@@ -18,8 +18,7 @@
   "type": "module",
   "main": "lib/index.js",
   "files": [
-    "config/default_config",
-    "config/PluginConfigView.yaml",
+    "config/d",
     "lib/",
     "LICENSE",
     "package.json",

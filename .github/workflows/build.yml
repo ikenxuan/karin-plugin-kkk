@@ -157,6 +157,11 @@ jobs:
           fork: false
           create-release: true
 
+      - run: npm run pub
+        if: ${{ steps.release-please.outputs.release_created }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} # 发布到 npm
+
       - name: 上传 release
         if: ${{ steps.release_please.outputs.release_created }}
         env:
