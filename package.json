@@ -27,7 +27,7 @@
   "scripts": {
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix",
     "fix": "eslint lib/**/*.js --fix && eslint lib/**/*.d.ts --fix",
-    "fix:all": "eslint src/**/*.ts --fix && eslint lib/**/*.d.ts --fix",
+    "fix:ts": "eslint src/**/*.ts --fix",
     "pub": "npm publish --access public",
     "sort": "npx sort-package-json"
   },
