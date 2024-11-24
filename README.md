@@ -4,6 +4,8 @@
 
 ## 安装
 
+# 暂时只有 GitHub 一个渠道可下载
+
 1. 克隆 **`build`** 分支（非常推荐）
    ```sh
    git clone --depth=1 -b build https://github.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-kkk/
