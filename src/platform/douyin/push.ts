@@ -32,11 +32,11 @@ interface WillBePushList {
 export class DouYinpush extends Base {
   private force: boolean = false
   /**
-   * 
+   *
    * @param e  事件KarinMessage
    * @param force 是否强制推送
    * @default false
-   * @returns 
+   * @returns
    */
   constructor (e = {} as KarinMessage, force: boolean = false) {
     super(e)
@@ -77,7 +77,7 @@ export class DouYinpush extends Base {
       if (!skip) {
         if (data[awemeId].living) {
           img = await Render('douyin/live', {
-            image_url: [{ image_src: Detail_Data.live_data.data.data[0].cover.url_list[0] }],
+            image_url: [ { image_src: Detail_Data.live_data.data.data[0].cover.url_list[0] } ],
             text: Detail_Data.live_data.data.data[0].title,
             liveinf: `${Detail_Data.live_data.data.partition_road_map.partition.title} | 房间号: ${Detail_Data.room_data.owner.web_rid}`,
             在线观众: this.count(Detail_Data.live_data.data.data[0].room_view_stats.display_value),
@@ -117,9 +117,9 @@ export class DouYinpush extends Base {
         for (const groupId of data[awemeId].group_id) {
           let status: any
           if (!skip) {
-            const [group_id, uin] = groupId.split(':')
+            const [ group_id, uin ] = groupId.split(':')
             const bot = karin.getBot(uin) as KarinAdapter
-            status = await karin.sendMsg(String(uin), karin.contactGroup(group_id), img ? [...img] : [])
+            status = await karin.sendMsg(String(uin), karin.contactGroup(group_id), img ? [ ...img ] : [])
             // 是否一同解析该新作品？
             if (Config.douyin.push.parsedynamic) {
               // 如果新作品是视频
@@ -128,7 +128,7 @@ export class DouYinpush extends Base {
                   // 下载视频
                   await this.DownLoadVideo({
                     video_url: `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`,
-                    title: { timestampTitle: 'tmp_' + Date.now(), originTitle: Detail_Data.desc },
+                    title: { timestampTitle: 'tmp_' + Date.now(), originTitle: Detail_Data.desc }
                   }, { active: true, activeOption: { uin, group_id } })
                 } catch (error) {
                   logger.error(error)
@@ -188,8 +188,8 @@ export class DouYinpush extends Base {
                     remark: data[awemeId].remark,
                     create_time: Number(data[awemeId].create_time),
                     sec_uid: data[awemeId].sec_uid,
-                    aweme_idlist: !data[awemeId].living ? [awemeId] : [],
-                    group_id: [groupId],
+                    aweme_idlist: !data[awemeId].living ? [ awemeId ] : [],
+                    group_id: [ groupId ],
                     avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + data[awemeId].Detail_Data.user_info.user.avatar_larger.uri,
                     living: data[awemeId].living
                   }
@@ -204,9 +204,9 @@ export class DouYinpush extends Base {
                   remark: data[awemeId].remark,
                   create_time: data[awemeId].create_time,
                   sec_uid: data[awemeId].sec_uid,
-                  aweme_idlist: !data[awemeId].living ? [awemeId] : [],
+                  aweme_idlist: !data[awemeId].living ? [ awemeId ] : [],
                   avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + data[awemeId].Detail_Data.user_info.user.avatar_larger.uri,
-                  group_id: [groupId],
+                  group_id: [ groupId ],
                   living: data[awemeId].living
                 }
               })
@@ -221,7 +221,7 @@ export class DouYinpush extends Base {
 
   /**
    * 根据配置文件获取UP当天的动态列表。
-   * @returns 
+   * @returns
    */
   async getDynamicList () {
     const willbepushlist: WillBePushList = {}
@@ -411,7 +411,7 @@ export class DouYinpush extends Base {
    */
   async forcepush (data: WillBePushList) {
     for (const detail in data) {
-      data[detail].group_id = [...[`${this.e.group_id}:${this.e.self_id}`]]
+      data[detail].group_id = [ ...[ `${this.e.group_id}:${this.e.self_id}` ] ]
     }
     await this.getdata(data)
   }
@@ -435,7 +435,7 @@ export class DouYinpush extends Base {
       const group_id = this.e.group_id
       /** 处理抖音号 */
       let user_shortid
-      UserInfoData.user.unique_id == '' ? (user_shortid = UserInfoData.user.short_id) : (user_shortid = UserInfoData.user.unique_id)
+      UserInfoData.user.unique_id === '' ? (user_shortid = UserInfoData.user.short_id) : (user_shortid = UserInfoData.user.unique_id)
 
       // 初始化 group_id 对应的数组
       if (!config.douyin) {
@@ -488,7 +488,7 @@ export class DouYinpush extends Base {
           await DB.CreateSheet('douyin', `${group_id}:${this.e.self_id}`, {})
         }
         // 如果不存在相同的 sec_uid，则新增一个属性
-        config.douyin.push({ sec_uid, group_id: [`${group_id}:${this.e.self_id}`], remark: UserInfoData.user.nickname, short_id: user_shortid })
+        config.douyin.push({ sec_uid, group_id: [ `${group_id}:${this.e.self_id}` ], remark: UserInfoData.user.nickname, short_id: user_shortid })
         msg = `群：${groupInfo.group_name}(${group_id})\n添加成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`
       }
 
@@ -504,7 +504,7 @@ export class DouYinpush extends Base {
 /**
  * 判断标题是否有屏蔽词或屏蔽标签
  * @param Detail_Data 作品详情数据
- * @returns 
+ * @returns
  */
 const skipDynamic = (Detail_Data: PushItem['Detail_Data']): boolean => {
   if (Detail_Data.living) return false

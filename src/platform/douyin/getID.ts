@@ -10,10 +10,10 @@ export interface ExtendedDouyinOptionsType extends DouyinOptionsType {
 }
 
 /**
- * 
+ *
  * @param url 分享链接
  * @param log 输出日志，默认true
- * @returns 
+ * @returns
  */
 export async function getDouyinID (url: string, log = true): Promise<ExtendedDouyinOptionsType> {
   const longLink = await new Networks({ url }).getLongLink()
@@ -27,7 +27,7 @@ export async function getDouyinID (url: string, log = true): Promise<ExtendedDou
       result = {
         type: 'user_mix_videos',
         aweme_id: match ? match[1] : undefined,
-        is_mp4: true,
+        is_mp4: true
       }
       break
     }
@@ -54,7 +54,7 @@ export async function getDouyinID (url: string, log = true): Promise<ExtendedDou
       result = {
         type: 'one_work',
         aweme_id: videoMatch ? videoMatch[1] : undefined,
-        is_mp4: true,
+        is_mp4: true
       }
       break
     }
@@ -63,7 +63,7 @@ export async function getDouyinID (url: string, log = true): Promise<ExtendedDou
       result = {
         type: 'one_work',
         aweme_id: noteMatch ? noteMatch[1] : undefined,
-        is_mp4: false,
+        is_mp4: false
       }
       break
     }
@@ -71,7 +71,7 @@ export async function getDouyinID (url: string, log = true): Promise<ExtendedDou
       const userMatch = longLink.match(/user\/([a-zA-Z0-9_-]+)\b/)
       result = {
         type: 'user_dynamic',
-        sec_uid: userMatch ? userMatch[1] : undefined,
+        sec_uid: userMatch ? userMatch[1] : undefined
       }
       break
     }
@@ -79,7 +79,7 @@ export async function getDouyinID (url: string, log = true): Promise<ExtendedDou
       const musicMatch = longLink.match(/music\/(\d+)/)
       result = {
         type: 'music_work',
-        music_id: musicMatch ? musicMatch[1] : undefined,
+        music_id: musicMatch ? musicMatch[1] : undefined
       }
       break
     }

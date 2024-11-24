@@ -55,7 +55,7 @@ async function checkCommitIdAndUpdateStatus (pluginPath: string): Promise<Result
       await git.fetch()
 
       // Get the remote commit ID (short version)
-      const remoteCommitId = (await git.revparse(['HEAD@{u}'])).substring(0, 7)
+      const remoteCommitId = (await git.revparse([ 'HEAD@{u}' ])).substring(0, 7)
       result.remoteCommitId = remoteCommitId
 
       // Compare local and remote commit IDs
@@ -76,7 +76,7 @@ async function checkCommitIdAndUpdateStatus (pluginPath: string): Promise<Result
 
   // Race the main logic against the timeout
   try {
-    return await Promise.race([mainLogic, timeoutPromise])
+    return await Promise.race([ mainLogic, timeoutPromise ])
   } catch (error) {
     console.error((error as Error).message)
     result.error = (error as Error).message

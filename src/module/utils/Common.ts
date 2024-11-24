@@ -83,8 +83,8 @@ export const Common = {
   formatCookies: (cookies: any[]): string => {
     return cookies.map(cookie => {
       // 分割每个cookie字符串以获取名称和值
-      const [nameValue, ...attributes] = cookie.split(';').map((part: string) => part.trim())
-      const [name, value] = nameValue.split('=')
+      const [ nameValue, ...attributes ] = cookie.split(';').map((part: string) => part.trim())
+      const [ name, value ] = nameValue.split('=')
 
       // 重新组合名称和值，忽略其他属性
       return `${name}=${value}`
@@ -122,7 +122,7 @@ export const Common = {
    * 根据配置文件的配置项，删除缓存文件
    * @param path 文件的绝对路径
    * @param force 是否强制删除，默认false
-   * @returns 
+   * @returns
    */
   removeFile: async (path: string, force: boolean = false): Promise<boolean> => {
     path = path.replace(/\\/g, '/')
@@ -165,7 +165,7 @@ export const Common = {
   },
   /**
    * 获取当前时间：年-月-日 时:分:秒
-   * @returns 
+   * @returns
    */
   getCurrentTime: () => {
     // 创建一个Date对象以获取当前时间
@@ -187,7 +187,7 @@ export const Common = {
   },
   /**
    * 评论图、推送图是否使用深色模式
-   * @returns 
+   * @returns
    */
   useDarkTheme: (): boolean => {
     let dark = true

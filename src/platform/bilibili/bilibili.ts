@@ -114,7 +114,7 @@ export class Bilibili extends Base {
           title: OBJECT.INFODATA.result.title
         })
 
-        await this.e.reply([`请在120秒内输入 第?集 选择集数`])
+        await this.e.reply([ `请在120秒内输入 第?集 选择集数` ])
         const context = await karin.ctx(this.e, { reply: true })
         const regex = context.msg.match(/第([一二三四五六七八九十百千万0-9]+)集/)
         let Episode
@@ -264,7 +264,7 @@ export class Bilibili extends Base {
         }
         const img = await Render('bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
           {
-            image_url: [{ image_src: OBJECT.live_info.data.user_cover }],
+            image_url: [ { image_src: OBJECT.live_info.data.user_cover } ],
             text: br(OBJECT.live_info.data.title),
             liveinf: br(`${OBJECT.live_info.data.area_name} | 房间号: ${OBJECT.live_info.data.room_id}`),
             username: OBJECT.USERDATA.data.card.name,
@@ -401,17 +401,17 @@ export class Bilibili extends Base {
       // 更新 OBJECT.DATA.data.accept_description
       data.DATA.data.accept_description = data.DATA.data.accept_description.filter((desc: any) => desc === closestQuality)
       if (data.DATA.data.accept_description.length === 0) {
-        data.DATA.data.accept_description = [closestQuality]
+        data.DATA.data.accept_description = [ closestQuality ]
       }
       // 找到对应的视频对象
       const video = data.DATA.data.dash.video.find((video: { id: number }) => video.id === Number(closestId))
       // 更新 OBJECT.DATA.data.dash.video 数组
-      data.DATA.data.dash.video = [video]
+      data.DATA.data.dash.video = [ video ]
     } else {
       // 如果没有找到符合条件的视频，使用最低画质的视频对象
-      data.DATA.data.dash.video = [[...data.DATA.data.dash.video].pop()]
+      data.DATA.data.dash.video = [ [ ...data.DATA.data.dash.video ].pop() ]
       // 更新 OBJECT.DATA.data.accept_description 为最低画质的描述
-      data.DATA.data.accept_description = [...data.DATA.data.accept_description].pop()
+      data.DATA.data.accept_description = [ ...data.DATA.data.accept_description ].pop()
     }
     return data
   }

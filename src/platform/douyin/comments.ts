@@ -82,7 +82,7 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
 
 
   const CommentData = {
-    jsonArray,
+    jsonArray
   }
 
   for (let i = 0; i < jsonArray.length; i++) {
@@ -138,7 +138,7 @@ async function getRelativeTimeFromTimestamp (timestamp: number) {
 /**
  * 高亮 @ 的内容
  * @param data 评论数据
- * @returns 
+ * @returns
  */
 async function handling_at (data: any[]): Promise<any> {
   for (const item of data) {
@@ -161,7 +161,7 @@ async function handling_at (data: any[]): Promise<any> {
 /**
  * 高亮热点搜索关键词
  * @param data 评论数据
- * @returns 
+ * @returns
  */
 async function search_text (data: {
   id: number
@@ -210,7 +210,7 @@ async function search_text (data: {
 /**
  * 换行符转义为<br>
  * @param data 评论数据
- * @returns 
+ * @returns
  */
 function br (data: any[]): any[] {
   for (let i = 0; i < data.length; i++) {
@@ -225,7 +225,7 @@ function br (data: any[]): any[] {
 /**
  * HEIC转JPG
  * @param jsonArray 评论数据
- * @returns 
+ * @returns
  */
 const heic2jpg = async (jsonArray: any[]): Promise<any> => {
   for (const item of jsonArray) {

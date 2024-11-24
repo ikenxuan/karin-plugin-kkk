@@ -147,8 +147,8 @@ export class Base {
           const bot = karin.getBot(String(options.activeOption?.uin)) as KarinAdapter
           const status = await bot.UploadGroupFile(String(options.activeOption?.group_id), File, file.originTitle ? file.originTitle : `tmp_${Date.now()}`)
           status ? sendStatus = true : sendStatus = false
-        } else { // 不是群文件 
-          const status = await karin.sendMsg(String(options?.activeOption?.uin), karin.contactGroup(String(options?.activeOption?.group_id)), [segment.video(File)])
+        } else { // 不是群文件
+          const status = await karin.sendMsg(String(options?.activeOption?.uin), karin.contactGroup(String(options?.activeOption?.group_id)), [ segment.video(File) ])
           status.message_id ? sendStatus = true : sendStatus = false
         }
       }
@@ -176,7 +176,7 @@ export class Base {
    * @param video_url 视频链接
    * @param title 文件名，是一个对象，时间戳或自定义
    * @param opt 上传参数
-   * @returns 
+   * @returns
    */
   async DownLoadVideo (downloadOpt: downloadFileOptions, uploadOpt?: uploadFileOptions): Promise<boolean> {
     /** 获取文件大小 */
@@ -188,7 +188,7 @@ export class Base {
       await karin.sendMsg(
         String(this.e.self_id || uploadOpt?.activeOption?.uin),
         karin.contactGroup(this.e.group_id || String(uploadOpt?.activeOption?.group_id)),
-        [segment.text(`视频：「${downloadOpt.title.originTitle ? downloadOpt.title.originTitle : 'Error: 文件名获取失败'}」大小 (${fileSizeInMB} MB) 超出最大限制（设定值：${Config.upload.filelimit} MB），已取消上传`)]
+        [ segment.text(`视频：「${downloadOpt.title.originTitle ? downloadOpt.title.originTitle : 'Error: 文件名获取失败'}」大小 (${fileSizeInMB} MB) 超出最大限制（设定值：${Config.upload.filelimit} MB），已取消上传`) ]
       )
       return false
     }

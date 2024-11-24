@@ -5,7 +5,7 @@ import amagi from '@ikenxuan/amagi'
 const haha = new amagi({
   bilibili: Config.cookies.bilibili,
   douyin: Config.cookies.douyin,
-  kuaishou: Config.cookies.kuaishou,
+  kuaishou: Config.cookies.kuaishou
 })
 Config.app.APIServer && haha.startClient(Config.app.APIServerPort)
 

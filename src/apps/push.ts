@@ -6,12 +6,12 @@ import { DouYinpush, Bilibilipush } from '@/platform'
 export const douyinPush = Config.douyin.push.switch && karin.task('抖音推送', Config.douyin.push.cron, async () => {
   await new DouYinpush().action()
   return true
-}, { name: 'kkk-推送功能-抖音', notAdapter: ['QQBot'], log: Config.douyin.push.log })
+}, { name: 'kkk-推送功能-抖音', notAdapter: [ 'QQBot' ], log: Config.douyin.push.log })
 
 export const bilibiliPush = Config.bilibili.push.switch && karin.task('B站推送', Config.bilibili.push.cron, async () => {
   await new Bilibilipush().action()
   return true
-}, { name: 'kkk-推送功能-B站', notAdapter: ['QQBot'], log: Config.bilibili.push.log })
+}, { name: 'kkk-推送功能-B站', notAdapter: [ 'QQBot' ], log: Config.bilibili.push.log })
 
 export const forcePush = karin.command(new RegExp(/#(抖音|B站)强制推送/), async (e) => {
   if (e.msg.includes('抖音')) {

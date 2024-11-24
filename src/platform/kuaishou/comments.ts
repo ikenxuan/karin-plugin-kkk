@@ -97,7 +97,7 @@ function getRelativeTimeFromTimestamp (timestamp: number) {
 /**
  * 处理换行符
  * @param data 评论数据
- * @returns 
+ * @returns
  */
 function br (data: any) {
   for (let i = 0; i < data.length; i++) {
@@ -112,7 +112,7 @@ function br (data: any) {
 /**
  * 处理 @
  * @param data 评论数据
- * @returns 
+ * @returns
  */
 async function handling_at (data: any) {
   for (let i = 0; i < data.length; i++) {

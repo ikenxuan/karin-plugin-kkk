@@ -21,7 +21,7 @@ export async function getBilibiliID (url: string) {
       const bvideoMatch = longLink.match(/video\/([A-Za-z0-9]+)|bvid=([A-Za-z0-9]+)/)
       result = {
         type: 'one_video',
-        id: bvideoMatch ? bvideoMatch[1] || bvideoMatch[2] : undefined,
+        id: bvideoMatch ? bvideoMatch[1] || bvideoMatch[2] : undefined
       }
       break
     }
@@ -45,7 +45,7 @@ export async function getBilibiliID (url: string) {
       const dynamic_id = tMatch || opusMatch
       result = {
         type: 'dynamic_info',
-        dynamic_id: dynamic_id ? dynamic_id[1] : dynamic_id,
+        dynamic_id: dynamic_id ? dynamic_id[1] : dynamic_id
       }
       break
     }
@@ -53,7 +53,7 @@ export async function getBilibiliID (url: string) {
       const match = longLink.match(/https?:\/\/live\.bilibili\.com\/(\d+)/)
       result = {
         type: 'live_room_detail',
-        room_id: match ? match[1] : undefined,
+        room_id: match ? match[1] : undefined
       }
       break
     }

@@ -28,11 +28,12 @@
   "scripts": {
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix",
     "fix": "eslint lib/**/*.js --fix && eslint lib/**/*.d.ts --fix",
+    "fix:all": "eslint src/**/*.ts --fix && eslint lib/**/*.d.ts --fix",
     "pub": "npm publish --access public",
     "sort": "npx sort-package-json"
   },
   "dependencies": {
-    "@ikenxuan/amagi": "^3.4.0",
+    "@ikenxuan/amagi": "^3.4.3",
     "@karinjs/md-html": "^1.1.6",
     "axios": "^1.7.7",
     "heic-convert": "^2.1.0",
@@ -46,12 +47,13 @@
   "devDependencies": {
     "@types/heic-convert": "^2.1.0",
     "@types/lodash": "^4.17.13",
-    "@types/node": "^22.9.2",
+    "@types/node": "^22.9.3",
     "@types/qrcode": "^1.5.5",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
     "@typescript-eslint/parser": "^8.15.0",
     "eslint": "^9.15.0",
     "globals": "^15.12.0",
-    "sort-package-json": "^2.11.0",
+    "sort-package-json": "^2.12.0",
     "tsc-alias": "^1.8.10",
     "typescript": "^5.7.2"
   },

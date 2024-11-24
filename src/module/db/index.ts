@@ -109,7 +109,7 @@ export class db {
    * @param ModelName 表单名称
    * @param group_id 群号
    * @param data 数据体
-   * @returns 
+   * @returns
    */
   async CreateSheet<T extends keyof ModelNameMap> (ModelName: T, group_id: any, data: AllDataType<T>[T][string]): Promise<any> {
     const Model = sequelize.models[ModelName]
@@ -130,7 +130,7 @@ export class db {
   /**
    * 获取对应表单的所有群组原始数据
    * @param ModelName 表单名称
-   * @returns 
+   * @returns
    */
   async FindAll<T extends keyof ModelNameMap> (ModelName: T): Promise<AllDataType<T>[T]> {
     const Model = sequelize.models[ModelName]
@@ -152,7 +152,7 @@ export class db {
    * 获取指定群组的数据
    * @param ModelName 表单名称
    * @param Group_ID 群号
-   * @returns 
+   * @returns
    */
   async FindGroup<T extends keyof ModelNameMap> (ModelName: T, Group_ID: string): Promise<AllDataType<T>[T][string]> {
     // AllDataType<'douyin'> 表示 { douyin: { [group_id: string]: DouyinDBType } }，
@@ -171,11 +171,11 @@ export class db {
    * @param ModelName 表单名称
    * @param Group_ID 群号
    * @param NewData 新的数据对象
-   * @returns 
+   * @returns
    */
   async UpdateGroupData<T extends keyof ModelNameMap> (ModelName: T, Group_ID: any, NewData: object = {}): Promise<number> {
     const Model = sequelize.models[ModelName]
-    const [affectedRowsData] = await Model.update(
+    const [ affectedRowsData ] = await Model.update(
       {
         data: JSON.stringify(NewData)
       },

@@ -46,10 +46,10 @@ export const changelogs = karin.command(/^#?kkk更新日志$/, async (e) => {
 }, { name: 'kkk-更新日志', permission: 'master' })
 
 export const update = karin.command(/^#?kkk更新$/, async (e) => {
-  let [name, cmd] = [Version.pluginName, 'git pull']
+  let [ name, cmd ] = [ Version.pluginName, 'git pull' ]
   if (e.msg.includes('强制')) cmd = 'git reset --hard && git pull --allow-unrelated-histories'
   const { data, status } = await Update.update(Version.pluginPath, cmd)
-  await e.bot.sendForwardMessage(e.contact, common.makeForward([segment.text(`更新${name}...${data}`)], e.sender.uid, e.sender.nick))
+  await e.bot.sendForwardMessage(e.contact, common.makeForward([ segment.text(`更新${name}...${data}`) ], e.sender.uid, e.sender.nick))
   if (status === 'ok') {
     try {
       await e.reply(`\n更新完成，开始重启 本次运行时间：${common.uptime()}`, { at: true })
@@ -77,7 +77,7 @@ const getLatestCommitsSync = (): CommitLog[] => {
 
   return commits.map((commit) => {
     // 分割SHA和其他信息
-    const [sha, ...rest] = commit.split(' ')
+    const [ sha, ...rest ] = commit.split(' ')
     // 找到冒号的位置，分割提交者和提交信息
     const spaceIndex = rest.findIndex(word => word.includes(':'))
     const committerAndMessage = rest.slice(0, spaceIndex)

@@ -47,7 +47,7 @@ export async function Render (path: string, params?: any) {
     // 这里是模板引擎渲染完成之后生成的html文件名称 如果这里不传递会默认使用name作为默认值 建议传递。
     fileID: basename(newPath),
     type: 'jpeg',
-    multiPage: 12000,
+    multiPage: 12000
   }
 
   const img = await render.render({
@@ -64,7 +64,7 @@ export async function Render (path: string, params?: any) {
       copyright: `<span class="name">kkk</span><span class="version">${Version.pluginVersion} Preview</span> Powered By <span class="name">Karin</span>`,
       useDarkTheme: Common.useDarkTheme()
     },
-    screensEval: '#container',
+    screensEval: '#container'
   })
   // 分片截图传回来的是数组
   let ret: ImageElement[] = []

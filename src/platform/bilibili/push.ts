@@ -30,10 +30,10 @@ interface WillBePushList {
 export class Bilibilipush extends Base {
   private force: boolean = false
   /**
-   * 
+   *
    * @param e 事件对象，提供给实例使用的事件相关信息，默认为空对象{}
    * @param force 强制执行标志，用于控制实例行为，默认false
-   * @returns 
+   * @returns
    */
   constructor (e = {} as KarinMessage, force: boolean = false) {
     super(e) // 调用父类的构造函数
@@ -46,7 +46,7 @@ export class Bilibilipush extends Base {
 
   /**
    * 执行主要的操作流程，包括检查缓存并根据需要获取和更新用户数据。
-   * @returns 
+   * @returns
    */
   async action () {
     if (await this.checkremark()) return true
@@ -88,7 +88,7 @@ export class Bilibilipush extends Base {
           case 'DYNAMIC_TYPE_DRAW': {
             /**
              * 生成图片数组
-             * @returns 
+             * @returns
              */
             const cover = () => {
               // 初始化一个空数组来存放图片对象
@@ -172,7 +172,7 @@ export class Bilibilipush extends Base {
               }
               img = await Render('bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {
-                  image_url: [{ image_src: INFODATA.data.pic }],
+                  image_url: [ { image_src: INFODATA.data.pic } ],
                   text: br(INFODATA.data.title),
                   desc: br(dycrad.desc),
                   dianzan: this.count(INFODATA.data.stat.like),
@@ -197,7 +197,7 @@ export class Bilibilipush extends Base {
           case 'DYNAMIC_TYPE_LIVE_RCMD': {
             img = await Render('bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
               {
-                image_url: [{ image_src: dycrad.live_play_info.cover }],
+                image_url: [ { image_src: dycrad.live_play_info.cover } ],
                 text: br(dycrad.live_play_info.title),
                 liveinf: br(`${dycrad.live_play_info.area_name} | 房间号: ${dycrad.live_play_info.room_id}`),
                 username: checkvip(userINFO.data.card),
@@ -225,16 +225,16 @@ export class Bilibilipush extends Base {
       for (const groupId of data[dynamicId].group_id) {
         let status: any
         if (!skip) {
-          const [group_id, uin] = groupId.split(':')
+          const [ group_id, uin ] = groupId.split(':')
           const bot = karin.getBot(uin) as KarinAdapter
-          status = await karin.sendMsg(String(uin), karin.contactGroup(group_id), img ? [...img] : [])
+          status = await karin.sendMsg(String(uin), karin.contactGroup(group_id), img ? [ ...img ] : [])
           if (Config.bilibili.push.parsedynamic) {
             switch (data[dynamicId].dynamic_type) {
               case 'DYNAMIC_TYPE_AV': {
                 if (send_video) {
                   await this.DownLoadVideo({
                     video_url: nocd_data.data.durl[0].url,
-                    title: { timestampTitle: 'tmp_' + Date.now(), originTitle: dycrad.title },
+                    title: { timestampTitle: 'tmp_' + Date.now(), originTitle: dycrad.title }
                   }, { active: true, activeOption: { uin, group_id } })
                 }
                 break
@@ -293,10 +293,10 @@ export class Bilibilipush extends Base {
                   remark: data[dynamicId].remark,
                   create_time: data[dynamicId].create_time,
                   host_mid: data[dynamicId].host_mid,
-                  dynamic_idlist: [dynamicId],
+                  dynamic_idlist: [ dynamicId ],
                   avatar_img: data[dynamicId].Dynamic_Data.modules.module_author.face,
                   dynamic_type: data[dynamicId].dynamic_type,
-                  group_id: [groupId]
+                  group_id: [ groupId ]
                 }
               }
               // 更新数据库
@@ -309,10 +309,10 @@ export class Bilibilipush extends Base {
                 remark: data[dynamicId].remark,
                 create_time: data[dynamicId].create_time,
                 host_mid: data[dynamicId].host_mid,
-                dynamic_idlist: [dynamicId],
+                dynamic_idlist: [ dynamicId ],
                 avatar_img: data[dynamicId].Dynamic_Data.modules.module_author.face,
                 dynamic_type: data[dynamicId].dynamic_type,
-                group_id: [groupId]
+                group_id: [ groupId ]
               }
             })
           }
@@ -323,7 +323,7 @@ export class Bilibilipush extends Base {
 
   /**
    * 根据配置文件获取UP当天的动态列表。
-   * @returns 
+   * @returns
    */
   async getDynamicList () {
     const willbepushlist: WillBePushList = {}
@@ -338,7 +338,7 @@ export class Bilibilipush extends Base {
 
         // 配置文件中的 group_id 转换为对象数组，每个对象包含群号和机器人账号
         const configGroupIdObjs = item.group_id.map(groupIdStr => {
-          const [groupId, robotId] = groupIdStr.split(':')
+          const [ groupId, robotId ] = groupIdStr.split(':')
           return { groupId: groupId, robotId }
         })
 
@@ -370,7 +370,7 @@ export class Bilibilipush extends Base {
                   remark: item.remark,
                   host_mid: item.host_mid,
                   create_time: dynamic.modules.module_author.pub_ts,
-                  group_id: [...item.group_id],
+                  group_id: [ ...item.group_id ],
                   Dynamic_Data: dynamic, // 存储 dynamic 对象
                   avatar_img: dynamic.modules.module_author.face,
                   dynamic_type: dynamic.type
@@ -514,7 +514,7 @@ export class Bilibilipush extends Base {
         await DB.CreateSheet('bilibili', `${group_id}:${this.e.self_id}`, {})
       }
       // 不存在相同的 host_mid，新增一个配置项
-      config.bilibili.push({ host_mid, group_id: [`${group_id}:${this.e.self_id}`], remark: data.data.card.name })
+      config.bilibili.push({ host_mid, group_id: [ `${group_id}:${this.e.self_id}` ], remark: data.data.card.name })
       msg = `群：${groupInfo.group_name}(${group_id})\n添加成功！${data.data.card.name}\nUID：${host_mid}`
     }
 
@@ -538,7 +538,7 @@ export class Bilibilipush extends Base {
       const group_id = Config.pushlist.bilibili[i].group_id
       const host_mid = Config.pushlist.bilibili[i].host_mid
 
-      if (remark == undefined || remark === '') {
+      if (remark === undefined || remark === '') {
         abclist.push({ host_mid, group_id })
       }
     }
@@ -566,7 +566,7 @@ export class Bilibilipush extends Base {
    */
   async forcepush (data: WillBePushList) {
     for (const detail in data) {
-      data[detail].group_id = [...[`${this.e.group_id}:${this.e.self_id}`]]
+      data[detail].group_id = [ ...[ `${this.e.group_id}:${this.e.self_id}` ] ]
     }
     await this.getdata(data)
   }
@@ -654,7 +654,7 @@ function replacetext (text: string, obj: any) {
 /**
  * 判断标题是否有屏蔽词或屏蔽标签
  * @param Dynamic_Data 作品详情数据
- * @returns 
+ * @returns
  */
 const skipDynamic = (Dynamic_Data: PushItem['Dynamic_Data']): boolean => {
   for (const banWord of Config.douyin.push.banWords) {

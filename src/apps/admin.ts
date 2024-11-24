@@ -42,7 +42,6 @@ export const setbilick = karin.command(new RegExp(/^#?(kkk)?s*设置s*(B站)ck$/
 }, { permission: 'master', name: 'kkk-ck管理', event: 'message.private_message' })
 
 
-
 // 插件类
 export class Admin extends Plugin {
   constructor () {
@@ -145,7 +144,7 @@ export class Admin extends Plugin {
 
   // 检查数值范围
   checkNumberValue (value: number, limit: string): number {
-    const [min, max] = limit.split('-').map(Number)
+    const [ min, max ] = limit.split('-').map(Number)
     return Math.min(Math.max(value, min), max)
   }
 }
@@ -230,8 +229,8 @@ const PlatformTypeConfig: Record<string, PlatformType> = {
       上传拦截阈值: { key: 'filelimit', limit: '0-1000000' },
       上传压缩触发值: { key: 'compresstrigger', limit: '0-1000000' },
       上传压缩后的值: { key: 'compressvalue', limit: '0-1000000' },
-      上传群文件阈值: { key: 'groupfilevalue', limit: '0-1000000' },
-    },
+      上传群文件阈值: { key: 'groupfilevalue', limit: '0-1000000' }
+    }
   },
   app: {
     name: 'APP',
@@ -249,7 +248,7 @@ const PlatformTypeConfig: Record<string, PlatformType> = {
       优先级: { key: 'priority', limit: '0-114514' },
       限制: { key: 'filelimit', limit: '5-114514' },
       主题: { key: 'Theme', limit: '0-2' }
-    },
+    }
   },
   douyin: {
     name: '抖音',
@@ -260,15 +259,15 @@ const PlatformTypeConfig: Record<string, PlatformType> = {
       抖音推送日志: 'push.log',
       抖音解析提示: 'tip',
       抖音高清语音: 'sendHDrecord',
-      抖音动态解析: 'push.parsedynamic',
+      抖音动态解析: 'push.parsedynamic'
     },
     numberConfig: {
-      抖音评论数量: { key: 'numcomment', limit: '0-999999' },
+      抖音评论数量: { key: 'numcomment', limit: '0-999999' }
     },
     customConfig: {
       抖音推送表达式: { key: 'push.cron', type: 'string' },
-      抖音推送权限: { key: 'push.permission', type: 'string' },
-    },
+      抖音推送权限: { key: 'push.permission', type: 'string' }
+    }
   },
   bilibili: {
     name: 'B站',
@@ -279,25 +278,25 @@ const PlatformTypeConfig: Record<string, PlatformType> = {
       B站推送日志: 'push.log',
       B站解析提示: 'tip',
       B站动态解析: 'push.parsedynamic',
-      B站内容优先: 'videopriority',
+      B站内容优先: 'videopriority'
     },
     numberConfig: {
-      B站评论数量: { key: 'numcomment', limit: '0-999999' },
+      B站评论数量: { key: 'numcomment', limit: '0-999999' }
     },
     customConfig: {
       B站推送表达式: { key: 'push.cron', type: 'string' },
-      B站推送权限: { key: 'push.permission', type: 'string' },
-    },
+      B站推送权限: { key: 'push.permission', type: 'string' }
+    }
   },
   kuaishou: {
     name: '快手',
     types: {
       快手解析: 'switch',
-      快手解析提示: 'tip',
+      快手解析提示: 'tip'
     },
     numberConfig: {
-      快手评论数量: { key: 'numcomment', limit: '0-30' },
-    },
+      快手评论数量: { key: 'numcomment', limit: '0-30' }
+    }
   }
 }
 

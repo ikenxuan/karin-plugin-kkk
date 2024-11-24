@@ -73,7 +73,7 @@ interface ffhandlerOptions {
  * 使用 FFmpeg 对文件进行处理
  * @param type 处理方法
  * @param options 参数
- * @returns 
+ * @returns
  */
 export const mergeFile = async <T extends keyof ffhandlerOptions> (
   type: T,
@@ -122,4 +122,4 @@ class FFmpeg {
       }
     }
   }
-}  
+}

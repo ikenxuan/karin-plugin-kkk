@@ -9,10 +9,10 @@ export interface ExtendedKuaishouOptionsType extends KuaishouOptionsType {
 }
 
 /**
- * 
+ *
  * @param url 分享链接
  * @param log 输出日志，默认true
- * @returns 
+ * @returns
  */
 export async function getKuaishouID (url: string, log = true) {
   const longLink = await new Networks({ url }).getLongLink()
@@ -22,7 +22,7 @@ export async function getKuaishouID (url: string, log = true) {
       const workid = longLink.match(/photoId=([^&]+)/)
       result = {
         type: 'one_work',
-        photoId: workid ? workid[1] : undefined,
+        photoId: workid ? workid[1] : undefined
       }
       break
     }

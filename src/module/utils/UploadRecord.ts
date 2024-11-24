@@ -253,7 +253,7 @@ function fileHash (filepath: fs.PathLike) {
     readable.on('error', reject)
     readable.pipe(crypto.createHash('sha1').on('error', reject).on('data', resolve))
   })
-  return Promise.all([md5Stream(readable), sha])
+  return Promise.all([ md5Stream(readable), sha ])
 }
 
 /** 群号转uin */
@@ -288,7 +288,7 @@ function uin2code (uin: number) {
 function int32ip2str (ip: number) {
   if (typeof ip === 'string') return ip
   ip = ip & 0xffffffff
-  return [ip & 0xff, (ip & 0xff00) >> 8, (ip & 0xff0000) >> 16, ((ip & 0xff000000) >> 24) & 0xff].join('.')
+  return [ ip & 0xff, (ip & 0xff00) >> 8, (ip & 0xff0000) >> 16, ((ip & 0xff000000) >> 24) & 0xff ].join('.')
 }
 
 /** 解析彩色群名片 */
@@ -297,7 +297,7 @@ function parseFunString (buf: number[]) {
     let res = ''
     try {
       let arr = core.pb.decode(buf as any)[1]
-      if (!Array.isArray(arr)) arr = [arr]
+      if (!Array.isArray(arr)) arr = [ arr ]
       for (const v of arr) {
         if (v[2]) res += String(v[2])
       }

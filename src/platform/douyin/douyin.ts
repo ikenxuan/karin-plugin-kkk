@@ -149,7 +149,7 @@ export class DouYin extends Base {
               Title: g_title,
               VideoSize: mp4size,
               VideoFPS: FPS,
-              ImageLength: imagenum,
+              ImageLength: imagenum
             }
           )
           await this.e.reply(img)
@@ -285,7 +285,7 @@ export class DouYin extends Base {
             `\n正在上传 ${data.music_info.title}\n`,
             `作曲: ${data.music_info.original_musician_display_name || data.music_info.owner_nickname === '' ? data.music_info.author : data.music_info.owner_nickname}\n`,
             `music_id: ${data.music_info.id}`
-          ],
+          ]
         )
 
         // const record = await UploadRecord(this.e, data.music_info.play_url.uri, 0, false)
@@ -302,7 +302,7 @@ export class DouYin extends Base {
           const room_data = JSON.parse(data.user.room_data)
           const img = await Render('douyin/live',
             {
-              image_url: [{ image_src: live_data.data.data[0].cover.url_list[0] }],
+              image_url: [ { image_src: live_data.data.data[0].cover.url_list[0] } ],
               text: live_data.data.data[0].title,
               liveinf: `${live_data.data.partition_road_map.partition.title} | 房间号: ${room_data.owner.web_rid}`,
               在线观众: this.count(live_data.data.data[0].room_view_stats.display_value),

@@ -16,7 +16,7 @@ export const bilibiliLogin = async (e: KarinMessage) => {
   const qrcode_key = qrcodeurl.data.qrcode_key
   const msg_id = []
   const message1 = await e.reply('免责声明:\n您将通过扫码完成获取哔哩哔哩网页端的用户登录凭证（ck），该ck将用于请求哔哩哔哩WEB API接口。\n本Bot不会保存您的登录状态。\n我方仅提供视频解析及相关抖音内容服务,若您的账号封禁、被盗等处罚与我方无关。\n害怕风险请勿扫码 ~')
-  const message2 = await e.reply([segment.image(qrimg.split(';')[1].replace('base64,', 'base64://')), segment.text('请在120秒内通过哔哩哔哩APP扫码进行登录')], { reply: true })
+  const message2 = await e.reply([ segment.image(qrimg.split(';')[1].replace('base64,', 'base64://')), segment.text('请在120秒内通过哔哩哔哩APP扫码进行登录') ], { reply: true })
   msg_id.push(message1.message_id, message2.message_id)
   /** 判断二维码状态 */
   // let Execution86038 = -1
