@@ -44,7 +44,7 @@
     "sequelize": "6.37.3",
     "simple-git": "^3.27.0",
     "sqlite3": "5.1.6",
-    "yaml": "2.6.0"
+    "yaml": "2.6.1"
   },
   "devDependencies": {
     "@types/heic-convert": "^2.1.0",
