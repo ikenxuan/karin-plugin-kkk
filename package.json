@@ -18,7 +18,7 @@
   "type": "module",
   "main": "lib/index.js",
   "files": [
-    "config/d",
+    "config/",
     "lib/",
     "LICENSE",
     "package.json",
