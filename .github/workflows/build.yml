@@ -1,0 +1,171 @@
+name: Build, Bump Version, and Commit
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 安装node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.20.4
+          registry-url: "https://registry.npmjs.org"
+
+      - name: 安装pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9.7.1
+
+      - name: 安装依赖
+        run: |
+          pnpm install
+          pnpm add node-karin@latest chokidar@latest lodash@latest yaml@latest
+
+      - name: 放弃 package.json 的本地更改
+        run: |
+          git checkout HEAD package.json
+
+      - name: 删除 pnpm-lock.yaml
+        run: rm -rf pnpm-lock.yaml
+
+      - name: 编译
+        run: pnpm build
+
+      - name: 设置时区
+        run: |
+          sudo timedatectl set-timezone Asia/Shanghai
+
+      - name: 设置git用户名和邮箱
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: 创建临时文件夹存储编译后的lib文件夹
+        run: |
+          mkdir ./../temp
+
+      - name: 复制编译后的lib文件夹到临时文件夹
+        run: |
+          cp -r ./lib ./../temp/lib
+
+      - name: 检查并创建空的 build 分支
+        run: |
+          git fetch origin
+          # 检查 build 分支是否存在
+          if git show-ref --verify --quiet refs/heads/build; then
+            echo "Build branch exists locally. Switching to it."
+            git checkout build
+          else
+            # 检查远程是否有 build 分支
+            if git ls-remote --exit-code --heads origin build; then
+              echo "Build branch exists remotely. Fetching and switching to it."
+              git checkout build
+            else
+              # build 分支不存在，创建一个空的 build 分支
+              echo "Build branch does not exist. Creating an empty build branch."
+              git checkout --orphan build  # 创建一个没有历史记录的空分支
+              git reset --hard  # 重置所有文件
+              git clean -fdx  # 删除未被 Git 管理的文件和文件夹
+              echo "Empty build branch created."
+              git commit --allow-empty -m "Initial empty commit on build branch"
+              git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} build  # 推送到远程仓库
+            fi
+          fi
+
+      - name: 切换到 build 分支
+        run: |
+          git fetch origin build
+          git checkout build
+
+      - name: 删除build分支上的lib文件夹
+        run: |
+          rm -rf lib
+
+      - name: 复制编译后的lib文件夹到 build 分支
+        run: |
+          cp -r ./../temp/lib ./
+
+      - name: 删除临时文件夹
+        run: |
+          rm -rf ./../temp
+
+      - name: 从main分支复制文件到build分支
+        run: |
+          git checkout main -- package.json CHANGELOG.md README.md config resources LICENSE
+      - name: 删除依赖文件夹 node_modules
+        run: |
+          rm -rf node_modules
+
+      - name: 将文件整理到 karin-plugin-kkk 文件夹
+        run: |
+          mkdir -p karin-plugin-kkk
+          find . -path "./.git" -prune -o -type f -print | while read file; do
+            mkdir -p "karin-plugin-kkk/$(dirname "$file")"
+            cp "$file" "karin-plugin-kkk/$file"
+          done
+
+      - name: 创建 build.zip
+        run: zip -r build.zip karin-plugin-kkk
+
+      - name: 上传 build.zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-zip
+          path: build.zip
+
+      - name: 删除 karin-plugin-kkk 文件夹
+        run: rm -rf karin-plugin-kkk
+
+      - name: 删除开发依赖
+        run: npm run clean
+
+      - name: 根据main分支的commit信息生成提交消息
+        run: |
+          git add .
+          git reset build.zip
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            echo "No changes detected"
+            exit 0
+          else
+            git commit -m "chore(build): ${{ github.event.head_commit.message }}"
+          fi
+
+      - name: 设置 build 分支的上游分支
+        run: git push --set-upstream origin build
+
+      - name: 推送到 build 分支
+        uses: ad-m/github-push-action@master
+        with:
+          branch: build
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          force_with_lease: true
+          args: --set-upstream
+
+      - name: 更新版本号
+        uses: google-github-actions/release-please-action@v3
+        id: release_please
+        with:
+          release-type: node
+          package-name: 'karin-plugin-kkk'
+
+      - name: 发布到 npm
+        run: npm run pub
+        if: ${{ steps.release_please.outputs.release_created }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+
+      - name: 上传 release
+        if: ${{ steps.release_please.outputs.release_created }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload ${{ steps.release_please.outputs.tag_name }} build.zip
