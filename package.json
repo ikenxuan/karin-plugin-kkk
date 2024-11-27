@@ -1,0 +1,59 @@
+{
+  "name": "karin-plugin-kkk",
+  "version": "0.0.1",
+  "description": "a Karin video parsing tool",
+  "keywords": [
+    "karin-plugin"
+  ],
+  "homepage": "https://github.com/ikenxuan/karin-plugin-kkk",
+  "bugs": {
+    "url": "https://github.com/ikenxuan/karin-plugin-kkk/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ikenxuan/karin-plugin-kkk.git"
+  },
+  "license": "GPL-3.0-only",
+  "author": "ikenxuan",
+  "type": "module",
+  "main": "lib/index.js",
+  "files": [
+    "config/",
+    "lib/",
+    "resources/",
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && npm run fix",
+    "clean": "node lib/clean.js",
+    "fix": "eslint lib/**/*.js --fix && eslint lib/**/*.d.ts --fix",
+    "fix:ts": "eslint src/**/*.ts --fix",
+    "pub": "npm publish --access public",
+    "sort": "npx sort-package-json"
+  },
+  "dependencies": {
+    "@ikenxuan/amagi": "^3.4.3",
+    "@karinjs/md-html": "^1.1.6",
+    "axios": "^1.7.8",
+    "heic-convert": "^2.1.0",
+    "icqq": "^0.6.10",
+    "playwright": "^1.49.0",
+    "qrcode": "^1.5.4",
+    "sequelize": "6.37.3",
+    "sqlite3": "5.1.6"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "karin": {
+    "apps": [
+      "lib/apps"
+    ],
+    "outDir": "lib",
+    "rootDir": "src"
+  }
+}
