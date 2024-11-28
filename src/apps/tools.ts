@@ -49,9 +49,9 @@ const kuaishou = karin.command(reg.kuaishou, async (e) => {
 export const prefix = karin.command(new RegExp('^#?(解析|kkk解析)'), async (e) => {
   e.msg = await Common.getReplyMessage(e)
   if (reg.douyin.test(e.msg)) {
-    return await douyin.fn(e)
+    return await douyin.fnc(e)
   } else if (reg.bilibili.test(e.msg)) {
-    return await bilibili.fn(e)
+    return await bilibili.fnc(e)
   }
   return true
 }, { name: 'kkk-视频功能-引用解析' })

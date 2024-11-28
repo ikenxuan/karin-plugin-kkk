@@ -6,15 +6,15 @@ import util from 'node:util'
 import stream from 'node:stream'
 import crypto from 'node:crypto'
 import { exec } from 'node:child_process'
-import { logger, KarinMessage, Cfg } from 'node-karin'
+import { logger, Message ,config } from 'node-karin'
 import { core } from 'icqq'
 
 
 const errors = {} as any
 
-async function UploadRecord (e: KarinMessage, record_url: string, seconds: number = 0, transcoding: boolean = true, brief: string = ''): Promise<any> {
+async function UploadRecord (e: Message, record_url: string, seconds: number = 0, transcoding: boolean = true, brief: string = ''): Promise<any> {
   const bot = { ...e.bot, super: {} as any }
-  const result = await getPttBuffer(record_url, Cfg.Config.ffmpeg_path, transcoding)
+  const result = await getPttBuffer(record_url, config.getYaml('config', 'user').value.ffmpegPath, transcoding)
   if (!result.buffer) {
     return false
   }

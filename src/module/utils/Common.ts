@@ -1,4 +1,4 @@
-import { KarinMessage, logger } from 'node-karin'
+import { Message, logger } from 'node-karin'
 import { Config, Version } from '@/module/utils'
 import fs from 'node:fs'
 
@@ -9,9 +9,9 @@ export const Common = {
    * @param e event 消息事件
    * @returns 被引用的消息
    */
-  getReplyMessage: async (e: KarinMessage): Promise<string> => {
-    if (e.reply_id) {
-      const reply = await e.bot.GetMessage(e.contact, e.reply_id)
+  getReplyMessage: async (e: Message): Promise<string> => {
+    if (e.replyId) {
+      const reply = await e.bot.getMsg(e.contact, e.reply_id)
       for (const v of reply.elements) {
         if (v.type === 'text') {
           return v.text
