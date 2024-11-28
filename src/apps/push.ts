@@ -13,7 +13,7 @@ export const bilibiliPush = Config.bilibili.push.switch && karin.task('B站推�
   return true
 }, { name: 'kkk-推送功能-B站', notAdapter: [ 'QQBot' ], log: Config.bilibili.push.log })
 
-export const forcePush = karin.command(new RegExp(/#(抖音|B站)全部?强制推送/), async (e) => {
+export const forcePush = karin.command(new RegExp(/#(抖音|B站)(全部)?强制推送/), async (e) => {
   if (e.msg.includes('抖音')) {
     await new DouYinpush(e, true).action()
     return true
@@ -22,7 +22,7 @@ export const forcePush = karin.command(new RegExp(/#(抖音|B站)全部?强制�
     return true
   }
   return true
-}, { name: 'Ciallo～(∠・ω< )⌒☆' ,permission: 'master'})
+}, { name: 'Ciallo～(∠・ω< )⌒☆' ,permission: 'master' })
 
 export const setdyPush = Config.bilibili.push.switch && karin.command(new RegExp(/^#设置抖音推送/), async (e) => {
   const data = await getDouyinData('搜索数据', Config.cookies.douyin, { query: e.msg.replace(/^#设置抖音推送/, '') })

@@ -265,9 +265,8 @@ export class DouYinpush extends Base {
         }
         // 如果正在开播
         if (userinfo.user.live_status === 1) {
-          // 生成一个 19 位 fake aweme_id
           const live_data = await getDouyinData('直播间信息数据', Config.cookies.douyin, { sec_uid: item.sec_uid })
-          const room_data = JSON.parse(userinfo.user.room_data)//room_data.owner.web_rid
+          const room_data = JSON.parse(userinfo.user.room_data)
           if (!willbepushlist[room_data.owner.web_rid]) {
             willbepushlist[room_data.owner.web_rid] = {
               remark: item.remark,
@@ -320,8 +319,6 @@ export class DouYinpush extends Base {
           continue
         }
 
-        let shouldPush = false
-
         // 获取与 pushItem.sec_uid 对应的 cachedData
         const cachedData = groupData[pushItem.sec_uid]
         // 如果找不到对应的 sec_uid 数据，直接保留该群组
@@ -331,17 +328,16 @@ export class DouYinpush extends Base {
         }
 
         // 如果是普通动态，检查 aweme_id 是否已缓存
-        if (cachedData.aweme_idlist.includes(awemeId)) {
-          shouldPush = true
+        // 如果缓存列表中没有该 awemeId，则保留该群组
+        if (!cachedData.aweme_idlist.includes(awemeId)) {
+          filteredGroupIds.push(groupId)
+          continue
         }
 
         // 如果是直播动态，只推送开播
         if (pushItem.living === true && cachedData.living === false) {
-          shouldPush = false
-        } else shouldPush = true
-
-        if (!shouldPush) {
           filteredGroupIds.push(groupId)
+          continue
         }
       }
 
