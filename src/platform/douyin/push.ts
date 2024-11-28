@@ -1,6 +1,6 @@
 import { Base, Render, Config, DB, Common, DouyinDBType, AllDataType } from '@/module'
 import { getDouyinID } from '@/platform/douyin'
-import { karin, logger, KarinMessage, segment, ImageElement, KarinAdapter, common } from 'node-karin'
+import { karin, logger, Message, segment, ImageElementType, AdapterType, common } from 'node-karin'
 import { getDouyinData } from '@ikenxuan/amagi'
 
 /** 每个推送项的类型定义 */
@@ -33,12 +33,12 @@ export class DouYinpush extends Base {
   private force: boolean = false
   /**
    *
-   * @param e  事件KarinMessage
+   * @param e  事件Message
    * @param force 是否强制推送
    * @default false
    * @returns
    */
-  constructor (e = {} as KarinMessage, force: boolean = false) {
+  constructor (e = {} as Message, force: boolean = false) {
     super(e)
     if (this.botadapter === 'QQBot') {
       return
@@ -71,7 +71,7 @@ export class DouYinpush extends Base {
 
       const Detail_Data = data[awemeId].Detail_Data
       const skip = skipDynamic(Detail_Data)
-      let img: ImageElement[] = []
+      let img: ImageElementType[] = []
       const iddata = await getDouyinID(Detail_Data.share_url || 'https://live.douyin.com/' + Detail_Data.room_data.owner.web_rid, false)
 
       if (!skip) {
@@ -118,7 +118,7 @@ export class DouYinpush extends Base {
           let status: any
           if (!skip) {
             const [ group_id, uin ] = groupId.split(':')
-            const bot = karin.getBot(uin) as KarinAdapter
+            const bot = karin.getBot(uin) as AdapterType
             status = await karin.sendMsg(String(uin), karin.contactGroup(group_id), img ? [ ...img ] : [])
             // 是否一同解析该新作品？
             if (Config.douyin.push.parsedynamic) {
@@ -134,14 +134,14 @@ export class DouYinpush extends Base {
                   logger.error(error)
                 }
               } else if (!iddata.is_mp4 && iddata.type === 'one_work') { // 如果新作品是图集
-                const imageres: ImageElement[] = []
+                const imageres: ImageElementType[] = []
                 let image_url
                 for (const item of Detail_Data.aweme_detail.images) {
                   image_url = item.url_list[2] || item.url_list[1] // 图片地址
                   imageres.push(segment.image(image_url))
                 }
-                const forwardMsg = common.makeForward(imageres, uin, (await bot?.GetCurrentAccount()).account_name)
-                await bot.sendForwardMessage(karin.contactFriend(uin), forwardMsg)
+                const forwardMsg = common.makeForward(imageres, uin, bot.account.name)
+                await bot.sendForwardMsg(karin.contactFriend(uin), forwardMsg)
               }
             }
           }
@@ -412,7 +412,7 @@ export class DouYinpush extends Base {
   async forcepush (data: WillBePushList) {
     if (!this.e.msg.includes('全部')) {
       for (const detail in data) {
-        data[detail].group_id = [ ...[ `${this.e.group_id}:${this.e.self_id}` ] ]
+        data[detail].group_id = [ ...[ `${'groupId' in this.e && this.e.groupId ? this.e.groupId : ''}:${this.e.self_id}` ] ]
       }
     }
     await this.getdata(data)
@@ -424,7 +424,7 @@ export class DouYinpush extends Base {
    * @returns 操作成功或失败的消息字符串。
    */
   async setting (data: any) {
-    const groupInfo = await this.e.bot.GetGroupInfo(this.e.group_id)
+    const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
     try {
       let index = 0
       while (data.data[index].card_unique_name !== 'user') {
@@ -434,7 +434,7 @@ export class DouYinpush extends Base {
       const sec_uid = data.data[index].user_list[0].user_info.sec_uid
       const UserInfoData = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid })
       const config = Config.pushlist
-      const group_id = this.e.group_id
+      const group_id = 'groupId' in this.e && this.e.groupId ? this.e.groupId : ''
       /** 处理抖音号 */
       let user_shortid
       UserInfoData.user.unique_id === '' ? (user_shortid = UserInfoData.user.short_id) : (user_shortid = UserInfoData.user.unique_id)
@@ -467,7 +467,7 @@ export class DouYinpush extends Base {
           // 如果存在相同的 group_id，则删除它
           existingItem.group_id.splice(groupIndexToRemove, 1)
           logger.info(`\n删除成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.user.sec_uid}`)
-          msg = `群：${groupInfo.group_name}(${group_id})\n删除成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`
+          msg = `群：${groupInfo.groupName}(${group_id})\n删除成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`
 
           // 如果删除后 group_id 数组为空，则删除整个属性
           if (existingItem.group_id.length === 0) {
@@ -475,23 +475,23 @@ export class DouYinpush extends Base {
             config.douyin.splice(index, 1)
           }
         } else {
-          const status = await DB.FindGroup('douyin', `${group_id}:${this.e.self_id}`)
+          const status = await DB.FindGroup('douyin', `${group_id}:${this.e.selfId}`)
           if (!status) {
-            await DB.CreateSheet('douyin', `${group_id}:${this.e.self_id}`, {})
+            await DB.CreateSheet('douyin', `${group_id}:${this.e.selfId}`, {})
           }
           // 否则，将新的 group_id 添加到该 sec_uid 对应的数组中
-          existingItem.group_id.push(`${group_id}:${this.e.self_id}`)
-          msg = `群：${groupInfo.group_name}(${group_id})\n添加成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`
+          existingItem.group_id.push(`${group_id}:${this.e.selfId}`)
+          msg = `群：${groupInfo.groupName}(${group_id})\n添加成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`
           logger.info(`\n设置成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.user.sec_uid}`)
         }
       } else {
-        const status = await DB.FindGroup('douyin', `${group_id}:${this.e.self_id}`)
+        const status = await DB.FindGroup('douyin', `${group_id}:${this.e.selfId}`)
         if (!status) {
-          await DB.CreateSheet('douyin', `${group_id}:${this.e.self_id}`, {})
+          await DB.CreateSheet('douyin', `${group_id}:${this.e.selfId}`, {})
         }
         // 如果不存在相同的 sec_uid，则新增一个属性
-        config.douyin.push({ sec_uid, group_id: [ `${group_id}:${this.e.self_id}` ], remark: UserInfoData.user.nickname, short_id: user_shortid })
-        msg = `群：${groupInfo.group_name}(${group_id})\n添加成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`
+        config.douyin.push({ sec_uid, group_id: [ `${group_id}:${this.e.selfId}` ], remark: UserInfoData.user.nickname, short_id: user_shortid })
+        msg = `群：${groupInfo.groupName}(${group_id})\n添加成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`
       }
 
       Config.modify('pushlist', 'douyin', config.douyin)

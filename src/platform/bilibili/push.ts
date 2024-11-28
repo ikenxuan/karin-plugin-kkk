@@ -1,7 +1,7 @@
 import { fetchBilibiliData } from '@/platform/bilibili'
 import { getBilibiliData } from '@ikenxuan/amagi'
 import { Base, Config, Render, DB, Common, BilibiliDBType, AllDataType } from '@/module'
-import { karin, logger, KarinMessage, segment, ImageElement, common, KarinAdapter } from 'node-karin'
+import { karin, logger, Message, segment, ImageElementType, common, AdapterType } from 'node-karin'
 
 /** 每个推送项的类型定义 */
 interface PushItem {
@@ -35,7 +35,7 @@ export class Bilibilipush extends Base {
    * @param force 强制执行标志，用于控制实例行为，默认false
    * @returns
    */
-  constructor (e = {} as KarinMessage, force: boolean = false) {
+  constructor (e = {} as Message, force: boolean = false) {
     super(e) // 调用父类的构造函数
     // 判断当前bot适配器是否为'QQBot'，如果是，则直接返回true，否则继续执行
     if (this.botadapter === 'QQBot') {
@@ -73,7 +73,7 @@ export class Bilibilipush extends Base {
     for (const dynamicId in data) {
       // 检查banWords，banTags
       let skip = skipDynamic(data[dynamicId].Dynamic_Data)
-      let send = true, send_video = true, img: ImageElement[] = []
+      let send = true, send_video = true, img: ImageElementType[] = []
       const dynamicCARDINFO = await fetchBilibiliData('dynamic_card', { dynamic_id: dynamicId })
       const dycrad = dynamicCARDINFO.data.card && dynamicCARDINFO.data.card.card && JSON.parse(dynamicCARDINFO.data.card.card)
 
@@ -226,7 +226,7 @@ export class Bilibilipush extends Base {
         let status: any
         if (!skip) {
           const [ group_id, uin ] = groupId.split(':')
-          const bot = karin.getBot(uin) as KarinAdapter
+          const bot = karin.getBot(uin) as AdapterType
           status = await karin.sendMsg(String(uin), karin.contactGroup(group_id), img ? [ ...img ] : [])
           if (Config.bilibili.push.parsedynamic) {
             switch (data[dynamicId].dynamic_type) {
@@ -240,12 +240,12 @@ export class Bilibilipush extends Base {
                 break
               }
               case 'DYNAMIC_TYPE_DRAW': {
-                const imgArray: ImageElement[] = []
+                const imgArray: ImageElementType[] = []
                 for (const img of data[dynamicId].Dynamic_Data.modules.module_dynamic.major && data[dynamicId].Dynamic_Data.modules.module_dynamic?.major?.draw?.items) {
                   imgArray.push(segment.image(img.src))
                 }
-                const forwardMsg = common.makeForward(imgArray, uin, (await bot?.GetCurrentAccount()).account_name)
-                await bot.sendForwardMessage(karin.contactFriend(uin), forwardMsg)
+                const forwardMsg = common.makeForward(imgArray, uin, bot.account.name)
+                await bot.sendForwardMsg(karin.contactFriend(uin), forwardMsg)
                 break
               }
             }
@@ -457,11 +457,11 @@ export class Bilibilipush extends Base {
    * @returns 操作成功或失败的消息字符串。
    */
   async setting (data: any): Promise<string> {
-    const groupInfo = await this.e.bot.GetGroupInfo(this.e.group_id)
+    const groupInfo = await this.e.bot.getGroupInfo( 'groupId' in this.e && this.e.groupId ? this.e.groupId : '')
     let msg
     const host_mid = data.data.card.mid
     const config = Config.pushlist // 读取配置文件
-    const group_id = this.e.group_id
+    const group_id = 'groupId' in this.e && this.e.groupId ? this.e.groupId : ''
 
     // 初始化或确保 bilibilipushlist 数组存在
     if (!config.bilibili) {
@@ -491,7 +491,7 @@ export class Bilibilipush extends Base {
         // 如果已存在相同的 group_id，则删除它
         existingItem.group_id.splice(groupIndexToRemove, 1)
         logger.info(`\n删除成功！${data.data.card.name}\nUID：${host_mid}`)
-        msg = `群：${groupInfo.group_name}(${group_id})\n删除成功！${data.data.card.name}\nUID：${host_mid}`
+        msg = `群：${groupInfo.groupName}(${group_id})\n删除成功！${data.data.card.name}\nUID：${host_mid}`
 
         // 如果删除后 group_id 数组为空，则删除整个属性
         if (existingItem.group_id.length === 0) {
@@ -499,23 +499,23 @@ export class Bilibilipush extends Base {
           config.bilibili.splice(index, 1)
         }
       } else {
-        const status = await DB.FindGroup('bilibili', `${group_id}:${this.e.self_id}`)
+        const status = await DB.FindGroup('bilibili', `${group_id}:${this.e.selfId}`)
         if (!status) {
-          await DB.CreateSheet('bilibili', `${group_id}:${this.e.self_id}`, {})
+          await DB.CreateSheet('bilibili', `${group_id}:${this.e.selfId}`, {})
         }
         // 否则，将新的 group_id 添加到该 host_mid 对应的数组中
-        existingItem.group_id.push(`${group_id}:${this.e.self_id}`)
-        msg = `群：${groupInfo.group_name}(${group_id})\n添加成功！${data.data.card.name}\nUID：${host_mid}`
+        existingItem.group_id.push(`${group_id}:${this.e.selfId}`)
+        msg = `群：${groupInfo.groupName}(${group_id})\n添加成功！${data.data.card.name}\nUID：${host_mid}`
         logger.info(`\n设置成功！${data.data.card.name}\nUID：${host_mid}`)
       }
     } else {
-      const status = await DB.FindGroup('bilibili', `${group_id}:${this.e.self_id}`)
+      const status = await DB.FindGroup('bilibili', `${group_id}:${this.e.selfId}`)
       if (!status) {
-        await DB.CreateSheet('bilibili', `${group_id}:${this.e.self_id}`, {})
+        await DB.CreateSheet('bilibili', `${group_id}:${this.e.selfId}`, {})
       }
       // 不存在相同的 host_mid，新增一个配置项
-      config.bilibili.push({ host_mid, group_id: [ `${group_id}:${this.e.self_id}` ], remark: data.data.card.name })
-      msg = `群：${groupInfo.group_name}(${group_id})\n添加成功！${data.data.card.name}\nUID：${host_mid}`
+      config.bilibili.push({ host_mid, group_id: [ `${group_id}:${this.e.selfId}` ], remark: data.data.card.name })
+      msg = `群：${groupInfo.groupName}(${group_id})\n添加成功！${data.data.card.name}\nUID：${host_mid}`
     }
 
     // 更新配置文件
@@ -565,9 +565,13 @@ export class Bilibilipush extends Base {
    * @param data 处理完成的推送列表
    */
   async forcepush (data: WillBePushList) {
+    if (!this.e.isGroup) {
+      await this.e.reply('请在群组中使用该命令！')
+      return true
+    }
     if (!this.e.msg.includes('全部')) {
       for (const detail in data) {
-        data[detail].group_id = [ ...[ `${this.e.group_id}:${this.e.self_id}` ] ]
+        data[detail].group_id = [ ...[ `${'groupId' in this.e && this.e.groupId ? this.e.groupId : ''}:${this.e.selfId}` ] ]
       }
     }
     await this.getdata(data)

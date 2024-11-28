@@ -1,6 +1,6 @@
 import { Config, Common } from '@/module/utils'
 import { Networks, mergeFile } from '@/module/utils'
-import karin, { segment, logger, GroupMessage, AdapterType } from 'node-karin'
+import karin, { segment, logger,  AdapterType, Message } from 'node-karin'
 import fs from 'node:fs'
 
 interface uploadFileOptions {
@@ -65,10 +65,10 @@ interface downLoadFileOptions {
   filetype?: string
 }
 export class Base {
-  e: GroupMessage
+  e: Message
   headers: any
   _path: string
-  constructor (e: GroupMessage) {
+  constructor (e: Message) {
     this.e = e
     this.headers = {
       Accept: '*/*',
@@ -77,11 +77,6 @@ export class Base {
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
     }
     this._path = process.cwd()?.replace(/\\/g, '/')
-  }
-
-  /** 检查是或否设置抖音ck */
-  get allow (): boolean {
-    return Config.cookies.douyin !== ''
   }
 
   /** 获取适配器名称 */
@@ -110,7 +105,7 @@ export class Base {
       logger.warn(logger.yellow(`视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.upload.compresstrigger} MB），正在进行压缩至${Config.upload.compressvalue} MB...`))
       const msg1 = await karin.sendMsg(
         String(this.e.selfId || options?.activeOption?.uin),
-        karin.contactGroup(this.e.groupId || String(options?.activeOption?.group_id)),
+        karin.contactGroup('groupId' in this.e && this.e.groupId && this.e.groupId || String(options?.activeOption?.group_id)),
         [
           segment.text(`视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.upload.compresstrigger} MB），正在进行压缩至${Config.upload.compressvalue} MB...`),
           options?.message_id ? segment.reply(options.message_id) : segment.text('')
@@ -126,8 +121,8 @@ export class Base {
       newFileSize = await Common.getVideoFileSize(file.filepath)
       logger.debug(`原始视频大小为: ${file.totalBytes.toFixed(2)} MB, ${logger.green(`经 FFmpeg 压缩后最终视频大小为: ${newFileSize.toFixed(2)} MB，原视频文件已删除`)}`)
       await karin.sendMsg(
-        String(this.e.self_id || options?.activeOption?.uin),
-        karin.contactGroup(this.e.group_id || String(options?.activeOption?.group_id)),
+        String(this.e.selfId || options?.activeOption?.uin),
+        karin.contactGroup('groupId' in this.e && this.e.groupId && this.e.groupId || String(options?.activeOption?.group_id)),
         [
           segment.text(`压缩后最终视频大小为: ${newFileSize.toFixed(2)} MB，压缩耗时：${((endTime - startTime) / 1000).toFixed(2)} 秒`),
           segment.reply(msg1.message_id)
@@ -154,7 +149,7 @@ export class Base {
       }
       else { // 不是主动消息
         if (options?.useGroupFile) { // 是群文件
-          const status = await this.e.bot.uploadGroupFile(Number(this.e.groupId), File, file.originTitle ? file.originTitle : `tmp_${Date.now()}`)
+          const status = await this.e.bot.uploadGroupFile(Number('groupId' in this.e && this.e.groupId && this.e.groupId), File, file.originTitle ? file.originTitle : `tmp_${Date.now()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是群文件
           const status = await this.e.reply(segment.video(File) || video_url)
@@ -186,8 +181,8 @@ export class Base {
     const fileSize = parseInt(parseFloat(fileSizeInMB).toFixed(2))
     if (Config.upload.usefilelimit && fileSize > Config.upload.filelimit) {
       await karin.sendMsg(
-        String(this.e.self_id || uploadOpt?.activeOption?.uin),
-        karin.contactGroup(this.e.group_id || String(uploadOpt?.activeOption?.group_id)),
+        String(this.e.selfId || uploadOpt?.activeOption?.uin),
+        karin.contactGroup('groupId' in this.e && this.e.groupId && this.e.groupId || String(uploadOpt?.activeOption?.group_id)),
         [ segment.text(`视频：「${downloadOpt.title.originTitle ? downloadOpt.title.originTitle : 'Error: 文件名获取失败'}」大小 (${fileSizeInMB} MB) 超出最大限制（设定值：${Config.upload.filelimit} MB），已取消上传`) ]
       )
       return false

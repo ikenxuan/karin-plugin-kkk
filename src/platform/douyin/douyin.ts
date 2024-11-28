@@ -1,7 +1,7 @@
 import { Base, Config, Networks, Render, mergeFile, Version, UploadRecord, Common } from '@/module/utils'
 import { DouyinDataTypes, ExtendedDouyinOptionsType } from '@/types'
 import { douyinComments } from '@/platform/douyin'
-import { common, segment, logger, KarinMessage, render } from 'node-karin'
+import { common, segment, logger, Message, render } from 'node-karin'
 import fs from 'node:fs'
 import { markdown } from '@karinjs/md-html'
 import QRCode from 'qrcode'
@@ -11,13 +11,13 @@ let mp4size = ''
 let img
 
 export class DouYin extends Base {
-  e: KarinMessage
+  e: Message
   type: DouyinDataTypes[keyof DouyinDataTypes]
   is_mp4: any
   get botadapter (): string {
     return this.e.bot?.adapter?.name
   }
-  constructor (e: KarinMessage, iddata: ExtendedDouyinOptionsType) {
+  constructor (e: Message, iddata: ExtendedDouyinOptionsType) {
     super(e)
     this.e = e
     this.type = iddata?.type
@@ -52,13 +52,13 @@ export class DouYin extends Base {
               await new Networks({ url: image_url, type: 'arraybuffer' }).getData().then((data) => fs.promises.writeFile(path, Buffer.from(data)))
             }
           }
-          const res = common.makeForward(imageres, this.e.sender.uin, this.e.sender.nick)
+          const res = common.makeForward(imageres, this.e.sender.userId, this.e.sender.nick)
           image_data.push(res)
           image_res.push(image_data)
           if (imageres.length === 1) {
             await this.e.reply(segment.image(image_url))
           } else {
-            await this.e.bot.sendForwardMessage(this.e.contact, res)
+            await this.e.bot.sendForwardMsg(this.e.contact, res)
           }
         } else {
           image_res.push('图集信息解析失败')
@@ -80,14 +80,14 @@ export class DouYin extends Base {
           switch (this.botadapter) {
             case 'OneBotv11': {
               if (haspath) {
-                await this.e.reply(segment.record(music_url))
+                await this.e.reply(segment.record(music_url, false))
               }
               break
             }
             case 'ICQQ': {
               if (haspath) {
                 if (Config.douyin.sendHDrecord) await this.e.reply(await UploadRecord(this.e, music_url, 0, false))
-                else this.e.reply(segment.record(music_url))
+                else this.e.reply(segment.record(music_url, false))
               }
               break
             }
@@ -129,7 +129,7 @@ export class DouYin extends Base {
           videores.push(segment.image(cover))
           g_video_url = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${data.VideoData.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`
           logger.info('视频地址', g_video_url)
-          const res = common.makeForward(videores, this.e.sender.uin, this.e.sender.nick)
+          const res = common.makeForward(videores, this.e.sender.userId, this.e.sender.nick)
           video_data.push(res)
           video_res.push(video_data)
         }
@@ -221,8 +221,8 @@ export class DouYin extends Base {
             })
           }
         }
-        const Element = common.makeForward(images, this.e.sender.uin, this.e.sender.nick)
-        await this.e.bot.sendForwardMessage(this.e.contact, Element)
+        const Element = common.makeForward(images, this.e.sender.userId, this.e.sender.nick)
+        await this.e.bot.sendForwardMsg(this.e.contact, Element)
         return true
       }
 
@@ -249,8 +249,8 @@ export class DouYin extends Base {
         fs.writeFileSync(htmlpath, matext, 'utf8')
         const img = await render.renderHtml(htmlpath)
         await this.e.reply(segment.image(img))
-        const Element2 = common.makeForward(forwardmsg, this.e.sender.uin, this.e.sender.nick)
-        await this.e.bot.sendForwardMessage(this.e.contact, Element2)
+        const Element2 = common.makeForward(forwardmsg, this.e.sender.userId, this.e.sender.nick)
+        await this.e.bot.sendForwardMsg(this.e.contact, Element2)
         return true
       }
       case 'music_work': {
@@ -291,7 +291,7 @@ export class DouYin extends Base {
         // const record = await UploadRecord(this.e, data.music_info.play_url.uri, 0, false)
         if (this.botadapter === 'ICQQ') {
           await this.e.reply(await UploadRecord(this.e, data.music_info.play_url.uri, 0, false))
-        } else await this.e.reply(segment.record(data.music_info.play_url.uri))
+        } else await this.e.reply(segment.record(data.music_info.play_url.uri, false))
 
         return true
       }

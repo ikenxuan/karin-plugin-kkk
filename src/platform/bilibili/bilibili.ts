@@ -1,14 +1,14 @@
 import { Base, Render, Config, Networks, mergeFile, Common } from '@/module/utils'
 import { bilibiliComments, genParams } from '@/platform/bilibili'
 import { bilibiliAPI } from '@ikenxuan/amagi'
-import karin, { KarinMessage, segment, logger, common, KarinElement } from 'node-karin'
+import karin, { Message, segment, logger, ElementTypes } from 'node-karin'
 import fs from 'node:fs'
 import { BilibiliDataTypes } from '@/types'
 
-let img: string | KarinElement | (string | KarinElement)[]
+let img: string | ElementTypes | (string | ElementTypes)[]
 
 export class Bilibili extends Base {
-  e: KarinMessage
+  e: Message
   type: any
   STATUS: any
   ISVIP: boolean
@@ -18,7 +18,7 @@ export class Bilibili extends Base {
   get botadapter (): string {
     return this.e.bot?.adapter?.name
   }
-  constructor (e: KarinMessage, data: any) {
+  constructor (e: Message, data: any) {
     super(e)
     this.e = e
     this.STATUS = data?.USER?.STATUS
@@ -116,7 +116,7 @@ export class Bilibili extends Base {
 
         await this.e.reply([ `请在120秒内输入 第?集 选择集数` ])
         const context = await karin.ctx(this.e, { reply: true })
-        const regex = context.msg.match(/第([一二三四五六七八九十百千万0-9]+)集/)
+        const regex = context && context.msg.match(/第([一二三四五六七八九十百千万0-9]+)集/)
         let Episode
         if (regex && regex[1]) {
           Episode = regex[1]

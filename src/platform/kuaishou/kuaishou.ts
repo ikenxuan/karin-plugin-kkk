@@ -1,13 +1,13 @@
 import { Base, Config, Render, Networks } from '@/module'
 import { kuaishouComments } from '@/platform/kuaishou'
-import { KarinMessage } from 'node-karin'
+import { Message } from 'node-karin'
 import { KuaishouDataTypes, ExtendedKuaishouOptionsType } from '@/types'
 
 export class Kuaishou extends Base {
-  e: KarinMessage
+  e: Message
   type: KuaishouDataTypes[keyof KuaishouDataTypes]
   is_mp4: any
-  constructor (e: KarinMessage, iddata: ExtendedKuaishouOptionsType) {
+  constructor (e: Message, iddata: ExtendedKuaishouOptionsType) {
     super(e)
     this.e = e
     this.type = iddata?.type
