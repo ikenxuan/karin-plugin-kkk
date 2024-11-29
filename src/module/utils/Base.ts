@@ -140,7 +140,7 @@ export class Base {
       if (options?.active) {
         if (options.useGroupFile) { // 是群文件
           const bot = karin.getBot(String(options.activeOption?.uin)) as AdapterType
-          const status = await bot.uploadGroupFile(Number(options.activeOption?.group_id), File, file.originTitle ? file.originTitle : `tmp_${Date.now()}`)
+          const status = await bot.uploadGroupFile(options.activeOption?.group_id ?? '', File, file.originTitle ? file.originTitle : `tmp_${Date.now()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是群文件
           const status = await karin.sendMsg(String(options?.activeOption?.uin), karin.contactGroup(String(options?.activeOption?.group_id)), [ segment.video(File) ])
@@ -149,7 +149,7 @@ export class Base {
       }
       else { // 不是主动消息
         if (options?.useGroupFile) { // 是群文件
-          const status = await this.e.bot.uploadGroupFile(Number('groupId' in this.e && this.e.groupId && this.e.groupId), File, file.originTitle ? file.originTitle : `tmp_${Date.now()}`)
+          const status = await this.e.bot.uploadGroupFile('groupId' in this.e ? this.e.groupId: '', File, file.originTitle ? file.originTitle : `tmp_${Date.now()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是群文件
           const status = await this.e.reply(segment.video(File) || video_url)
@@ -215,8 +215,7 @@ export class Base {
       url: video_url, // 视频地址
       headers: opt.headers || this.headers, // 请求头
       filepath: Common.tempDri.video + `${opt.title}${opt.filetype || '.mp4'}`, // 文件保存路径
-      timeout: 30000, // 设置30秒超时
-      maxRetries: 3   // 最多重试3次
+      timeout: 30000 // 设置30秒超时
     }).downloadStream((downloadedBytes, totalBytes) => {
       // 定义进度条长度及生成进度条字符串的函数
       const barLength = 45
