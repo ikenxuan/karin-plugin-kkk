@@ -1,7 +1,16 @@
-import { Model } from 'sequelize'
+import { join } from 'node:path'
 
-import { DataTypes, sequelize } from './base'
+import { DataTypes, Sequelize } from 'sequelize'
 
+/** 创建 Sequelize 实例，需要传入配置对象。 */
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: join((process.cwd()).replace(/\\/g, '/'), 'data', 'karin-plugin-kkk', 'push.db'),
+  logging: false
+})
+
+/** 测试数据库连接是否成功 */
+await sequelize.authenticate()
 
 export interface BilibiliDBType {
   /** UP主UID */
