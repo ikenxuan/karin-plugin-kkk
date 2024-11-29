@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.0...v0.1.1) (2024-11-29)
+
+
+### Performance Improvements
+
+* 格式化大王 ([699ded0](https://github.com/ikenxuan/karin-plugin-kkk/commit/699ded0ab0afed12bb5546446136018e8817519a))
+
 ## 0.1.0 (2024-11-27)
 
 
