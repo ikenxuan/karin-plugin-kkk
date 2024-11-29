@@ -1,5 +1,5 @@
-import { Base, DouyinDBType, AllDataType } from '../../module/index.js';
 import { KarinMessage } from 'node-karin';
+import { AllDataType, Base, DouyinDBType } from '../../module/index.js';
 /** 每个推送项的类型定义 */
 interface PushItem {
     /** 博主的昵称 */

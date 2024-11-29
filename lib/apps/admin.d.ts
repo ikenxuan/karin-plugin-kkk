@@ -1,4 +1,4 @@
-import { Plugin, KarinMessage } from 'node-karin'
+import { KarinMessage, Plugin } from 'node-karin'
 export declare const task: false | import("node-karin").TaskInfo
 export declare const biLogin: import("node-karin").CommandInfo
 export declare const dylogin: import("node-karin").CommandInfo

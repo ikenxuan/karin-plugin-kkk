@@ -1,5 +1,5 @@
-import { Base } from '../../module/utils/index.js';
 import { KarinMessage } from 'node-karin';
+import { Base } from '../../module/utils/index.js';
 import { BilibiliDataTypes } from '../../types/index.js';
 export declare class Bilibili extends Base {
     e: KarinMessage;

@@ -1,5 +1,5 @@
-import { Base, BilibiliDBType, AllDataType } from '../../module/index.js';
 import { KarinMessage } from 'node-karin';
+import { AllDataType, Base, BilibiliDBType } from '../../module/index.js';
 /** 每个推送项的类型定义 */
 interface PushItem {
     /** 该UP主的昵称 */
