@@ -79,7 +79,7 @@ export class DouYinpush extends Base {
           img = await Render('douyin/live', {
             image_url: [ { image_src: Detail_Data.live_data.data.data[0].cover.url_list[0] } ],
             text: Detail_Data.live_data.data.data[0].title,
-            liveinf: `${Detail_Data.live_data.data.partition_road_map.partition.title} | 房间号: ${Detail_Data.room_data.owner.web_rid}`,
+            liveinf: `${Detail_Data.live_data.data.partition_road_map?.partition?.title || Detail_Data.live_data.data.data[0].title} | 房间号: ${Detail_Data.room_data.owner.web_rid}`,
             在线观众: this.count(Detail_Data.live_data.data.data[0].room_view_stats.display_value),
             总观看次数: this.count(Detail_Data.live_data.data.data[0].stats.total_user_str),
             username: Detail_Data.user_info.user.nickname,
@@ -173,9 +173,7 @@ export class DouYinpush extends Base {
                 if (isSecUidFound && this.force ? true : !DBdata[data[awemeId].sec_uid].aweme_idlist.includes(awemeId)) {
                   !data[awemeId].living ? DBdata[isSecUidFound].aweme_idlist.push(awemeId) : false
                   DBdata[isSecUidFound].create_time = Number(data[awemeId].create_time)
-                  if ('living' in data[awemeId]) {
-                    DBdata[isSecUidFound].living = true
-                  }
+                  DBdata[isSecUidFound].living = data[awemeId].living
                   await DB.UpdateGroupData('douyin', groupId, DBdata)
                   found = true
                 }
@@ -308,7 +306,7 @@ export class DouYinpush extends Base {
     // 遍历推送列表中的每一个作品
     for (const awemeId in willBePushList) {
       const pushItem = willBePushList[awemeId]
-      const filteredGroupIds: string[] = []
+      let filteredGroupIds: string[] = []
 
       for (const groupId of pushItem.group_id) {
         const groupData = dbData[groupId]
@@ -329,7 +327,7 @@ export class DouYinpush extends Base {
 
         // 如果是普通动态，检查 aweme_id 是否已缓存
         // 如果缓存列表中没有该 awemeId，则保留该群组
-        if (!cachedData.aweme_idlist.includes(awemeId)) {
+        if (pushItem.living === true && cachedData.living === false && !cachedData.aweme_idlist.includes(awemeId)) {
           filteredGroupIds.push(groupId)
           continue
         }
@@ -344,6 +342,7 @@ export class DouYinpush extends Base {
       // 更新 group_id，如果为空则删除该作品
       if (filteredGroupIds.length > 0) {
         pushItem.group_id = filteredGroupIds
+        filteredGroupIds = []
       } else {
         delete willBePushList[awemeId]
       }
