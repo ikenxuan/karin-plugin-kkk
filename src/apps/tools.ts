@@ -1,8 +1,9 @@
 import karin from 'node-karin'
-import { Config, Common } from '@/module'
-import { getDouyinID, fetchDouyinData, DouYin } from '@/platform/douyin'
-import { getBilibiliID, fetchBilibiliData, Bilibili } from '@/platform/bilibili'
-import { getKuaishouID, fetchKuaishouData, Kuaishou } from '@/platform/kuaishou'
+
+import { Common, Config } from '@/module'
+import { Bilibili, fetchBilibiliData, getBilibiliID } from '@/platform/bilibili'
+import { DouYin, fetchDouyinData, getDouyinID } from '@/platform/douyin'
+import { fetchKuaishouData, getKuaishouID, Kuaishou } from '@/platform/kuaishou'
 
 const reg = {
   douyin: new RegExp('^.*((www|v|jx)\\.(douyin|iesdouyin)\\.com|douyin\\.com\\/(video|note)).*'),
@@ -16,7 +17,7 @@ const douyin = karin.command(reg.douyin, async (e) => {
   const data = await fetchDouyinData(iddata.type, iddata)
   await new DouYin(e, iddata).RESOURCES(data)
   return true
-}, { name: 'kkk-视频功能-抖音', priority: Config.app.defaulttool ? -Infinity : 800 })
+}, { name: 'kkk-视频功能-抖音', priority: Config.app.defaulttool ? - Infinity : 800 })
 
 const bilibili = karin.command(reg.bilibili, async (e) => {
   e.msg = e.msg.replace(/\\/g, '')
@@ -37,14 +38,14 @@ const bilibili = karin.command(reg.bilibili, async (e) => {
   const data = await fetchBilibiliData(iddata.type, iddata)
   await new Bilibili(e, data).RESOURCES(data)
   return true
-}, { name: 'kkk-视频功能-B站', priority: Config.app.defaulttool ? -Infinity : 800 })
+}, { name: 'kkk-视频功能-B站', priority: Config.app.defaulttool ? - Infinity : 800 })
 
 const kuaishou = karin.command(reg.kuaishou, async (e) => {
   const iddata = await getKuaishouID(String(e.msg.replaceAll('\\', '').match(/https:\/\/v\.kuaishou\.com\/\w+/g)))
   const WorkData = await fetchKuaishouData(iddata.type, iddata)
   await new Kuaishou(e, iddata).RESOURCES(WorkData)
   return true
-}, { name: 'kkk-视频功能-快手', priority: Config.app.defaulttool ? -Infinity : 800 })
+}, { name: 'kkk-视频功能-快手', priority: Config.app.defaulttool ? - Infinity : 800 })
 
 export const prefix = karin.command(new RegExp('^#?(解析|kkk解析)'), async (e) => {
   e.msg = await Common.getReplyMessage(e)

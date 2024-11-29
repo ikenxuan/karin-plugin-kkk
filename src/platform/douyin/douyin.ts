@@ -1,11 +1,13 @@
-import { Base, Config, Networks, Render, mergeFile, Version, UploadRecord, Common } from '@/module/utils'
-import { DouyinDataTypes, ExtendedDouyinOptionsType } from '@/types'
-import { douyinComments } from '@/platform/douyin'
-import { common, segment, logger, KarinMessage, render } from 'node-karin'
 import fs from 'node:fs'
-import { markdown } from '@karinjs/md-html'
-import QRCode from 'qrcode'
+
 import { getDouyinData } from '@ikenxuan/amagi'
+import { markdown } from '@karinjs/md-html'
+import { common, KarinMessage, logger, render, segment } from 'node-karin'
+import QRCode from 'qrcode'
+
+import { Base, Common, Config, mergeFile, Networks, Render, UploadRecord, Version } from '@/module/utils'
+import { douyinComments } from '@/platform/douyin'
+import { DouyinDataTypes, ExtendedDouyinOptionsType } from '@/types'
 
 let mp4size = ''
 let img
@@ -39,13 +41,13 @@ export class DouYin extends Base {
           const image_data = []
           const imageres = []
           let image_url
-          for (let i = 0; i < data.VideoData.aweme_detail.images.length; i++) {
+          for (let i = 0; i < data.VideoData.aweme_detail.images.length; i ++) {
             image_url = data.VideoData.aweme_detail.images[i].url_list[2] || data.VideoData.aweme_detail.images[i].url_list[1] // 图片地址
 
             const title = data.VideoData.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:\*\?"<>\|\r\n]/g, ' ') // 标题，去除特殊字符
             g_title = title
             imageres.push(segment.image(image_url))
-            imagenum++
+            imagenum ++
             if (Config.app.rmmp4 === false) {
               common.mkdir(`${Common.tempDri.images}${g_title}`)
               const path = `${Common.tempDri.images}${g_title}/${i + 1}.png`
@@ -231,7 +233,7 @@ export class DouYin extends Base {
         veoarray.unshift(`------------------------------ | ---------------------------- |\n`)
         veoarray.unshift(`标题                           | 分享二维码                    |\n`)
         const forwardmsg = []
-        for (let i = 0; i < data.aweme_list.length; i++) {
+        for (let i = 0; i < data.aweme_list.length; i ++) {
           const title = data.aweme_list[i].desc
           const cover = data.aweme_list[i].share_url
           veoarray.push(`${title}       | ![img](${await QRCode.toDataURL(cover, {
@@ -367,7 +369,7 @@ function convertTimestampToDateTime (timestamp: number): string {
 function Emoji (data: any): any {
   const ListArray = []
 
-  for (let i = 0; i < data.emoji_list.length; i++) {
+  for (let i = 0; i < data.emoji_list.length; i ++) {
     const display_name = data.emoji_list[i].display_name
     const url = data.emoji_list[i].emoji_url.url_list[0]
 

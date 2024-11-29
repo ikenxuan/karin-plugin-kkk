@@ -1,6 +1,7 @@
-import { genParams } from '@/platform/bilibili'
-import amagi, { bilibiliAPI, wbi_sign, getBilibiliData } from '@ikenxuan/amagi'
+import amagi, { bilibiliAPI, getBilibiliData, wbi_sign } from '@ikenxuan/amagi'
+
 import { Config } from '@/module'
+import { genParams } from '@/platform/bilibili'
 import { BilibiliDataTypes } from '@/types'
 
 export async function fetchBilibiliData<T extends keyof BilibiliDataTypes> (

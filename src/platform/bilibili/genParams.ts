@@ -1,5 +1,6 @@
-import { Config } from '@/module/utils'
 import { getBilibiliData, wbi_sign } from '@ikenxuan/amagi'
+
+import { Config } from '@/module/utils'
 
 export async function genParams (apiURL: string) {
   if (Config.cookies.bilibili === '' || Config.cookies.bilibili === null) return { QUERY: '&platform=html5', STATUS: '!isLogin' }

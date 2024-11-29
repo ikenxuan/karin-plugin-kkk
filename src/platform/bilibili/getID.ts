@@ -1,5 +1,6 @@
-import { Networks } from '@/module/utils'
 import { logger } from 'node-karin'
+
+import { Networks } from '@/module/utils'
 import { BilibiliDataTypes } from '@/types'
 
 export interface IDDataTypes {

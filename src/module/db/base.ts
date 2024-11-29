@@ -1,7 +1,8 @@
-import { join } from 'path'
-import { Sequelize, DataTypes } from 'sequelize'
-import { Version } from '@/module'
 import { common } from 'node-karin'
+import { join } from 'path'
+import { DataTypes, Sequelize } from 'sequelize'
+
+import { Version } from '@/module'
 
 common.mkdir(`${Version.karinPath}/data/${Version.pluginName}`)
 
@@ -17,4 +18,4 @@ const sequelize = new Sequelize({
 /** 测试数据库连接是否成功 */
 await sequelize.authenticate()
 
-export { sequelize, DataTypes }
+export { DataTypes, sequelize }

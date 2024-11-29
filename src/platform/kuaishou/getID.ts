@@ -1,6 +1,7 @@
-import { Networks } from '@/module'
-import { logger } from 'node-karin'
 import { KuaishouOptionsType } from '@ikenxuan/amagi'
+import { logger } from 'node-karin'
+
+import { Networks } from '@/module'
 import { KuaishouDataTypes } from '@/types'
 
 export interface ExtendedKuaishouOptionsType extends KuaishouOptionsType {

@@ -1,6 +1,7 @@
+import amagi, { KuaishouDataOptionsMap } from '@ikenxuan/amagi'
+
 import { Config } from '@/module'
 import { KuaishouDataTypes } from '@/types'
-import amagi, { KuaishouDataOptionsMap } from '@ikenxuan/amagi'
 
 export async function fetchKuaishouData<T extends keyof KuaishouDataTypes> (
   type: T,

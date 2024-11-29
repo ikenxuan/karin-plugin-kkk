@@ -1,8 +1,10 @@
-import { Config, Render, Common } from '@/module'
-import karin, { Plugin, KarinMessage, logger } from 'node-karin'
-import { bilibiliLogin, douyinLogin } from '@/platform'
-import path from 'path'
 import fs from 'node:fs'
+
+import karin, { KarinMessage, logger, Plugin } from 'node-karin'
+import path from 'path'
+
+import { Common, Config, Render } from '@/module'
+import { bilibiliLogin, douyinLogin } from '@/platform'
 
 export const task = Config.app.rmmp4 && karin.task('[kkk-视频缓存自动删除]', '0 0 4 * * *', async () => {
   try {
@@ -112,7 +114,7 @@ export class Admin extends Plugin {
 
       // 检查 customConfig 是否存在
       const customConfig = PlatformTypeConfig[platform]?.customConfig
-      if (!customConfig || !customConfig[key]) {
+      if (! customConfig || ! customConfig[key]) {
         await e.reply(`无效的设置项：${key}`)
         return false
       }
@@ -189,7 +191,7 @@ function getStatus (data: Record<string, any>): Record<string, any> {
     const res: Record<string, any> = {}
     for (const key in obj) {
       const value = obj[key]
-      if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+      if (value !== null && typeof value === 'object' && ! Array.isArray(value)) {
         // 如果是子对象，递归处理
         res[key] = processObject(value)
       } else {

@@ -1,6 +1,8 @@
-import { logger, ffmpeg } from 'node-karin'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
+
+import { ffmpeg, logger } from 'node-karin'
+
 import { Common } from '@/module/utils'
 const execPromise = promisify(exec)
 

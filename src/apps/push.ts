@@ -1,7 +1,8 @@
+import { getBilibiliData, getDouyinData } from '@ikenxuan/amagi'
 import karin from 'node-karin'
+
 import { Config } from '@/module'
-import { getDouyinData, getBilibiliData } from '@ikenxuan/amagi'
-import { DouYinpush, Bilibilipush } from '@/platform'
+import { Bilibilipush, DouYinpush } from '@/platform'
 
 export const douyinPush = Config.douyin.push.switch && karin.task('抖音推送', Config.douyin.push.cron, async () => {
   await new DouYinpush().action()
@@ -22,7 +23,7 @@ export const forcePush = karin.command(new RegExp(/#(抖音|B站)(全部)?强制
     return true
   }
   return true
-}, { name: 'Ciallo～(∠・ω< )⌒☆' ,permission: 'master' })
+}, { name: 'Ciallo～(∠・ω< )⌒☆', permission: 'master' })
 
 export const setdyPush = Config.bilibili.push.switch && karin.command(new RegExp(/^#设置抖音推送/), async (e) => {
   const data = await getDouyinData('搜索数据', Config.cookies.douyin, { query: e.msg.replace(/^#设置抖音推送/, '') })

@@ -1,7 +1,9 @@
-import { Config, Common } from '@/module/utils'
-import { Networks, mergeFile } from '@/module/utils'
-import karin, { segment, logger, KarinMessage, KarinAdapter } from 'node-karin'
 import fs from 'node:fs'
+
+import karin, { KarinAdapter, KarinMessage, logger, segment } from 'node-karin'
+
+import { Common, Config } from '@/module/utils'
+import { mergeFile, Networks } from '@/module/utils'
 
 interface uploadFileOptions {
   /** 是否使用群文件上传 */

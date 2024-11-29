@@ -1,8 +1,10 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, AxiosInstance, ResponseType } from 'axios'
-import { NetworksConfigType } from '@/types'
-import { logger } from 'node-karin'
 import fs from 'node:fs'
+
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, ResponseType } from 'axios'
+import { logger } from 'node-karin'
 import { pipeline } from 'stream/promises'
+
+import { NetworksConfigType } from '@/types'
 
 interface HeadersObject {
   [key: string]: string
@@ -92,7 +94,7 @@ export class Networks {
       clearTimeout(timeoutId)
 
       // 检查HTTP响应状态码，如果状态码不在200到299之间，则抛出错误
-      if (!(response.status >= 200 && response.status < 300)) {
+      if (! (response.status >= 200 && response.status < 300)) {
         throw new Error(`无法获取 ${this.url}。状态: ${response.status} ${response.statusText}`)
       }
 
@@ -105,7 +107,7 @@ export class Networks {
 
       // 初始化已下载字节数和上次打印的进度百分比
       let downloadedBytes = 0
-      let lastPrintedPercentage = -1
+      let lastPrintedPercentage = - 1
 
       // 创建一个文件写入流，用于将下载的资源保存到本地文件系统
       const writer = fs.createWriteStream(this.filepath)
