@@ -10,6 +10,7 @@ const haha = new amagi({
 })
 Config.app.APIServer && haha.startClient(Config.app.APIServerPort)
 
+common.mkdir(`${Version.karinPath}/data/${Version.pluginName}`)
 common.mkdir(`${Version.karinPath}/temp/${Version.pluginName}/kkkdownload/video/`)
 common.mkdir(`${Version.karinPath}/temp/${Version.pluginName}/kkkdownload/images/`)
 logger.info(`${logger.green(`[插件:${Version.pluginName}]`)} ${logger.violet(`${Version.pluginVersion}`)} 初始化完成~`)

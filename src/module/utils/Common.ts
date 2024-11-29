@@ -2,8 +2,9 @@ import fs from 'node:fs'
 
 import { logger, Message } from 'node-karin'
 
-import { Config, Version } from '@/module/utils'
+import { Config  } from '@/module/utils'
 
+import { Version } from './Version'
 /** 常用工具合集 */
 export const Common = {
   /**
