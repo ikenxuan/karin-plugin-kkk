@@ -1,12 +1,14 @@
-export declare const Version: {
+declare class version {
     /** 插件名字 */
-    pluginName: string;
+    get pluginName(): string;
     /** 插件版本号 */
-    pluginVersion: string | undefined;
+    get pluginVersion(): string | undefined;
     /** 插件路径 */
-    pluginPath: string;
+    get pluginPath(): string;
     /** Karin版本 */
-    karinVersion: string;
+    get karinVersion(): string;
     /** Karin程序/客户端路径 */
-    karinPath: string;
-};
+    get karinPath(): string;
+}
+export declare const Version: version;
+export {};
