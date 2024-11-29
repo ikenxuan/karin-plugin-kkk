@@ -2,7 +2,6 @@ import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 
 import karin, { AdapterType, handler, logger, Message, segment } from 'node-karin'
-
 import { chromium } from 'playwright'
 
 import { Config, Version } from '@/module'

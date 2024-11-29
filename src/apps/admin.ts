@@ -1,7 +1,6 @@
 import fs from 'node:fs'
 
 import karin, { logger, Message, Plugin } from 'node-karin'
-
 import path from 'path'
 
 import { Common, Config, Render } from '@/module'

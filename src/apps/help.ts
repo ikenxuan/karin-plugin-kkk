@@ -4,7 +4,6 @@ import fs from 'node:fs'
 import { markdown } from '@karinjs/md-html'
 import karin, { common, render, segment, updateGitPlugin } from 'node-karin'
 
-
 import { Common, Render, Version } from '@/module'
 
 export const help = karin.command(/^#?(kkk)?帮助$/, async (e) => {

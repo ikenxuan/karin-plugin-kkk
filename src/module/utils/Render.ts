@@ -2,7 +2,6 @@ import { basename, join } from 'node:path'
 
 import { ImageElementType, Options, render, segment } from 'node-karin'
 
-
 import { Common, Config, Version } from '@/module'
 
 function scale (pct = 1): string {

@@ -47,17 +47,17 @@ export default [
       // 要求导出语句按照字母顺序排序。
       'simple-import-sort/exports': 'error',
       // 要求逗号后面有空格，而逗号前面没有空格。
-      "comma-spacing": ["error", { "before": false, "after": true }],
+      "comma-spacing": [1, { "before": false, "after": true }],
       // 要求对象字面量中键和冒号之间没有空格，而冒号后面有空格。
-      "key-spacing": ["error", { "beforeColon": false, "afterColon": true }],
+      "key-spacing": [1, { "beforeColon": false, "afterColon": true }],
       // 要求二元操作符周围有空格。
-      "space-infix-ops": "error",
+      "space-infix-ops": 1,
       // 要求一元操作符与其操作数之间有空格，无论是单词类型的操作符还是非单词类型的操作符。
-      "space-unary-ops": ["error", { "words": true, "nonwords": true }],
+      "space-unary-ops": [1, { "words": true, "nonwords": true }],
       // 要求代码块的开括号前有一个空格。
-      "space-before-blocks": ["error", "always"],
+      "space-before-blocks": [1, "always"],
       // 要求小括号内侧没有空格。
-      "space-in-parens": ["error", "never"]
+      "space-in-parens": [1, "never"]
     }
   },
   {
@@ -103,21 +103,21 @@ export default [
       // 禁止多个空行，最多允许两行空行，文件末尾不允许空行。
       'no-multiple-empty-lines': [1, { max: 2, maxEOF: 0 }],
       // 要求导入语句按照字母顺序排序。
-      'simple-import-sort/imports': 'error',
+      'simple-import-sort/imports': 1,
       // 要求导出语句按照字母顺序排序。
-      'simple-import-sort/exports': 'error',
+      'simple-import-sort/exports': 1,
       // 要求逗号后面有空格，而逗号前面没有空格。
-      "comma-spacing": ["error", { "before": false, "after": true }],
+      "comma-spacing": [1, { "before": false, "after": true }],
       // 要求对象字面量中键和冒号之间没有空格，而冒号后面有空格。
-      "key-spacing": ["error", { "beforeColon": false, "afterColon": true }],
+      "key-spacing": [1, { "beforeColon": false, "afterColon": true }],
       // 要求二元操作符周围有空格。
-      "space-infix-ops": "error",
+      "space-infix-ops": 1,
       // 要求一元操作符与其操作数之间有空格，无论是单词类型的操作符还是非单词类型的操作符。
-      "space-unary-ops": ["error", { "words": true, "nonwords": true }],
+      "space-unary-ops": [1, { "words": true, "nonwords": true }],
       // 要求代码块的开括号前有一个空格。
-      "space-before-blocks": ["error", "always"],
+      "space-before-blocks": [1, "always"],
       // 要求小括号内侧没有空格。
-      "space-in-parens": ["error", "never"]
+      "space-in-parens": [1, "never"]
     }
   }
 ]

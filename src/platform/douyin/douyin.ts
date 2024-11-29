@@ -3,7 +3,6 @@ import fs from 'node:fs'
 import { getDouyinData } from '@ikenxuan/amagi'
 import { markdown } from '@karinjs/md-html'
 import { common, logger, Message, render, segment } from 'node-karin'
-
 import QRCode from 'qrcode'
 
 import { Base, Common, Config, mergeFile, Networks, Render, UploadRecord, Version } from '@/module/utils'

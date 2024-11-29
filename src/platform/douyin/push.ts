@@ -1,7 +1,6 @@
 import { getDouyinData } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElementType, karin, logger, Message, segment } from 'node-karin'
 
-
 import { AllDataType, Base, Common, Config, DB, DouyinDBType, Render } from '@/module'
 import { getDouyinID } from '@/platform/douyin'
 

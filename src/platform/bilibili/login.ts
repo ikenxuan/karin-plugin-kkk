@@ -2,7 +2,6 @@ import fs from 'node:fs'
 
 import amagi from '@ikenxuan/amagi'
 import karin, { AdapterType, common, Message, segment } from 'node-karin'
-
 import QRCode from 'qrcode'
 
 import { Common, Config, Version } from '@/module/utils'
