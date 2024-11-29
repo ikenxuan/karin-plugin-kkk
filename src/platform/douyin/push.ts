@@ -1,6 +1,7 @@
 import { getDouyinData } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElementType, karin, logger, Message, segment } from 'node-karin'
 
+
 import { AllDataType, Base, Common, Config, DB, DouyinDBType, Render } from '@/module'
 import { getDouyinID } from '@/platform/douyin'
 
@@ -136,6 +137,7 @@ export class DouYinpush extends Base {
                 }
               } else if (! iddata.is_mp4 && iddata.type === 'one_work') { // 如果新作品是图集
                 const imageres: ImageElementType[] = []
+
                 let image_url
                 for (const item of Detail_Data.aweme_detail.images) {
                   image_url = item.url_list[2] || item.url_list[1] // 图片地址
@@ -264,9 +266,8 @@ export class DouYinpush extends Base {
         }
         // 如果正在开播
         if (userinfo.user.live_status === 1) {
-          // 生成一个 19 位 fake aweme_id
           const live_data = await getDouyinData('直播间信息数据', Config.cookies.douyin, { sec_uid: item.sec_uid })
-          const room_data = JSON.parse(userinfo.user.room_data)//room_data.owner.web_rid
+          const room_data = JSON.parse(userinfo.user.room_data)
           if (! willbepushlist[room_data.owner.web_rid]) {
             willbepushlist[room_data.owner.web_rid] = {
               remark: item.remark,

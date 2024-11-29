@@ -5,4 +5,4 @@ switch: true
 tip: true
 
 # 快手评论数量，范围1~30条
-kscomments: 5
+numcomment: 5

@@ -3,6 +3,7 @@ import fs from 'node:fs'
 import { bilibiliAPI } from '@ikenxuan/amagi'
 import karin, { ElementTypes, logger, Message, segment } from 'node-karin'
 
+
 import { Base, Common, Config, mergeFile, Networks, Render } from '@/module/utils'
 import { bilibiliComments, genParams } from '@/platform/bilibili'
 import { BilibiliDataTypes } from '@/types'

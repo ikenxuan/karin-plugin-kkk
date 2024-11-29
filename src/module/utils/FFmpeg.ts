@@ -4,6 +4,7 @@ import { promisify } from 'node:util'
 import { ffmpeg, logger } from 'node-karin'
 
 import { Common, Version } from '@/module/utils'
+
 const execPromise = promisify(exec)
 
 interface fffmpegClientOptions {

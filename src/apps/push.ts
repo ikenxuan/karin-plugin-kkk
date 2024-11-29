@@ -14,7 +14,7 @@ export const bilibiliPush = Config.bilibili.push.switch && karin.task('B站推�
   return true
 }, { name: 'kkk-推送功能-B站', log: Config.bilibili.push.log })
 
-export const forcePush = karin.command(new RegExp(/#(抖音|B站)全部?强制推送/), async (e) => {
+export const forcePush = karin.command(new RegExp(/#(抖音|B站)(全部)?强制推送/), async (e) => {
   if (e.msg.includes('抖音')) {
     await new DouYinpush(e, true).action()
     return true

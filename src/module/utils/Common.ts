@@ -5,6 +5,7 @@ import { logger, Message } from 'node-karin'
 import { Config  } from '@/module/utils'
 
 import { Version } from './Version'
+
 /** 常用工具合集 */
 export const Common = {
   /**

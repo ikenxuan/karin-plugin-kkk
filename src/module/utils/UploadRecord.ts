@@ -11,11 +11,13 @@ import { core } from 'icqq'
 import { config, logger, Message  } from 'node-karin'
 
 
+
 const errors = {} as any
 
 async function UploadRecord (e: Message, record_url: string, seconds: number = 0, transcoding: boolean = true, brief: string = ''): Promise<any> {
   const bot = { ...e.bot, super: {} as any }
   const result = await getPttBuffer(record_url, config.getYaml('config', 'user').value.ffmpegPath, transcoding)
+
   if (! result.buffer) {
     return false
   }

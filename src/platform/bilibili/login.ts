@@ -2,6 +2,7 @@ import fs from 'node:fs'
 
 import amagi from '@ikenxuan/amagi'
 import karin, { AdapterType, common, Message, segment } from 'node-karin'
+
 import QRCode from 'qrcode'
 
 import { Common, Config, Version } from '@/module/utils'
@@ -53,7 +54,9 @@ export const bilibiliLogin = async (e: Message) => {
           await bot.recallMsg(e.contact, message2.messageId)
           executed86090 = true
           // 删除 msg_id 数组中的 message2.message_id
+
           const index = msg_id.indexOf(message2.messageId)
+
           if (index > - 1) {
             msg_id.splice(index, 1)
           }
