@@ -1,7 +1,9 @@
-import { Config, Common } from '@/module/utils'
-import { Networks, mergeFile } from '@/module/utils'
-import karin, { segment, logger,  AdapterType, Message } from 'node-karin'
 import fs from 'node:fs'
+
+import karin, { AdapterType, logger,  Message, segment } from 'node-karin'
+
+import { Common, Config, mergeFile, Networks } from '@/module/utils'
+
 
 interface uploadFileOptions {
   /** 是否使用群文件上传 */
@@ -125,7 +127,7 @@ export class Base {
         karin.contactGroup('groupId' in this.e && this.e.groupId && this.e.groupId || String(options?.activeOption?.group_id)),
         [
           segment.text(`压缩后最终视频大小为: ${newFileSize.toFixed(2)} MB，压缩耗时：${((endTime - startTime) / 1000).toFixed(2)} 秒`),
-          segment.reply(msg1.message_id)
+          segment.reply(msg1.messageId)
         ]
       )
     }
@@ -144,16 +146,16 @@ export class Base {
           status ? sendStatus = true : sendStatus = false
         } else { // 不是群文件
           const status = await karin.sendMsg(String(options?.activeOption?.uin), karin.contactGroup(String(options?.activeOption?.group_id)), [ segment.video(File) ])
-          status.message_id ? sendStatus = true : sendStatus = false
+          status.messageId ? sendStatus = true : sendStatus = false
         }
       }
       else { // 不是主动消息
         if (options?.useGroupFile) { // 是群文件
-          const status = await this.e.bot.uploadGroupFile('groupId' in this.e ? this.e.groupId: '', File, file.originTitle ? file.originTitle : `tmp_${Date.now()}`)
+          const status = await this.e.bot.uploadGroupFile('groupId' in this.e ? this.e.groupId : '', File, file.originTitle ? file.originTitle : `tmp_${Date.now()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是群文件
           const status = await this.e.reply(segment.video(File) || video_url)
-          status.message_id ? sendStatus = true : sendStatus = false
+          status.messageId ? sendStatus = true : sendStatus = false
         }
       }
       return sendStatus

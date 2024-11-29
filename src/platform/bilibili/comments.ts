@@ -1,6 +1,6 @@
 export function bilibiliComments (OBJECT: any) {
   let jsonArray = []
-  for (let i = 0; i < OBJECT.COMMENTSDATA.data.replies.length; i++) {
+  for (let i = 0; i < OBJECT.COMMENTSDATA.data.replies.length; i ++) {
     const ctime = getRelativeTimeFromTimestamp(OBJECT.COMMENTSDATA.data.replies[i].ctime)
     const emote = OBJECT.COMMENTSDATA.data.replies[i].content.emote
     let message = OBJECT.COMMENTSDATA.data.replies[i].content.message
@@ -57,7 +57,7 @@ export function bilibiliComments (OBJECT: any) {
   jsonArray.sort((a, b) => b.like - a.like)
 
   /** 对评论点赞数过万整除 */
-  for (let i = 0; i < jsonArray.length; i++) {
+  for (let i = 0; i < jsonArray.length; i ++) {
     if (jsonArray[i].like > 10000) {
       jsonArray[i].like = (jsonArray[i].like / 10000).toFixed(1) + 'w'
     }
@@ -124,7 +124,7 @@ function br (data: any) {
 
 /** 检查等级 */
 function checklevel (obj: any) {
-  for (let i = 0; i < obj.length; i++) {
+  for (let i = 0; i < obj.length; i ++) {
     switch (obj[i].level) {
       case 6: {
         if (obj[i].viptype === 1) {

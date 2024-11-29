@@ -1,6 +1,8 @@
-import { join, basename } from 'node:path'
-import { Config, Version, Common } from '@/module'
-import { render, segment, Options, ImageElementType } from 'node-karin'
+import { basename, join } from 'node:path'
+
+import { ImageElementType, Options, render, segment } from 'node-karin'
+
+import { Common, Config, Version } from '@/module'
 
 function scale (pct = 1): string {
   const scale = Math.min(2, Math.max(0.5, Number(Config.app.renderScale) / 100))

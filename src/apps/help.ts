@@ -1,8 +1,10 @@
-import karin, { render, segment, common, updateGitPlugin } from 'node-karin'
-import { Render, Version, Common } from '@/module'
-import { markdown } from '@karinjs/md-html'
-import fs from 'node:fs'
 import { execSync } from 'node:child_process'
+import fs from 'node:fs'
+
+import { markdown } from '@karinjs/md-html'
+import karin, { common, render, segment, updateGitPlugin } from 'node-karin'
+
+import { Common, Render, Version } from '@/module'
 
 export const help = karin.command(/^#?(kkk)?帮助$/, async (e) => {
   const img = await Render('help/index')

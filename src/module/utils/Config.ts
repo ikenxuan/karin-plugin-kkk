@@ -1,10 +1,13 @@
-import _ from 'lodash'
-import YAML from 'yaml'
 import fs from 'node:fs'
-import { logger } from 'node-karin'
-import { Version } from './Version'
+
 import chokidar, { FSWatcher } from 'chokidar'
+import _ from 'lodash'
+import { logger } from 'node-karin'
+import YAML from 'yaml'
+
 import { ConfigType } from '@/types'
+
+import { Version } from './Version'
 
 type ConfigDirType = 'config' | 'default_config'
 
@@ -20,11 +23,11 @@ class config {
   private initCfg () {
     let path: string
     path = `${Version.karinPath}/config/plugin/${Version.pluginName}/`
-    if (!fs.existsSync(path)) fs.mkdirSync(path)
+    if (! fs.existsSync(path)) fs.mkdirSync(path)
     const pathDef = `${Version.pluginPath}/config/default_config/`
     const files = fs.readdirSync(pathDef).filter(file => file.endsWith('.yaml'))
     for (const file of files) {
-      if (!fs.existsSync(`${path}${file}`)) {
+      if (! fs.existsSync(`${path}${file}`)) {
         fs.copyFileSync(`${pathDef}${file}`, `${path}${file}`)
       } else {
         const config = YAML.parseDocument(fs.readFileSync(`${path}${file}`, 'utf8'))
@@ -169,13 +172,13 @@ class config {
     let current: YAML.YAMLMap | undefined = yamlData.contents as YAML.YAMLMap
 
     // 遍历键并确保每个子键都有对应的结构
-    for (let i = 0; i < keys.length - 1; i++) {
+    for (let i = 0; i < keys.length - 1; i ++) {
       const subKey = keys[i]
       if (current instanceof YAML.YAMLMap) {
         let subValue: YAML.YAMLMap | YAML.Scalar | any | undefined = current.get(subKey)
 
         // 类型保护，确保 subValue 是 YAMLMap
-        if (!YAML.isMap(subValue)) {
+        if (! YAML.isMap(subValue)) {
           subValue = new YAML.YAMLMap() // 创建新的 YAMLMap
           current.set(subKey, subValue) // 设置新的子值
         }
@@ -271,7 +274,7 @@ class YamlReader {
   private write () {
     fs.writeFileSync(this.filePath,
       this.document.toString({
-        lineWidth: -1,
+        lineWidth: - 1,
         simpleKeys: true
       }), 'utf8')
   }

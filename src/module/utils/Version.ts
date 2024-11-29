@@ -1,5 +1,6 @@
-import { join, dirname, basename } from 'node:path'
+import { basename, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
 import { getPluginInfo  } from 'node-karin'
 
 const __filename = fileURLToPath(import.meta.url)

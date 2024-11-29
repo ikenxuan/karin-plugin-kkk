@@ -1,8 +1,10 @@
-import { Base, Render, Config, Networks, mergeFile, Common } from '@/module/utils'
-import { bilibiliComments, genParams } from '@/platform/bilibili'
-import { bilibiliAPI } from '@ikenxuan/amagi'
-import karin, { Message, segment, logger, ElementTypes } from 'node-karin'
 import fs from 'node:fs'
+
+import { bilibiliAPI } from '@ikenxuan/amagi'
+import karin, { ElementTypes, logger, Message, segment } from 'node-karin'
+
+import { Base, Common, Config, mergeFile, Networks, Render } from '@/module/utils'
+import { bilibiliComments, genParams } from '@/platform/bilibili'
 import { BilibiliDataTypes } from '@/types'
 
 let img: string | ElementTypes | (string | ElementTypes)[]
@@ -87,7 +89,7 @@ export class Bilibili extends Base {
       case 'bangumi_video_info': {
         const barray = []
         let msg = []
-        for (let i = 0; i < OBJECT.INFODATA.result.episodes.length; i++) {
+        for (let i = 0; i < OBJECT.INFODATA.result.episodes.length; i ++) {
           const totalEpisodes = OBJECT.INFODATA.result.episodes.length
           const long_title = OBJECT.INFODATA.result.episodes[i].long_title
           const badge = OBJECT.INFODATA.result.episodes[i].badge
@@ -142,7 +144,7 @@ export class Bilibili extends Base {
           headers: this.headers
         }).getData()
         OBJECT.DATA = { ...DATA }
-        if (OBJECT.INFODATA.result.episodes[Number(Episode) - 1].badge === '会员' && !this.ISVIP) {
+        if (OBJECT.INFODATA.result.episodes[Number(Episode) - 1].badge === '会员' && ! this.ISVIP) {
           logger.warn('该CK不是大会员，无法获取视频流')
           return true
         }
@@ -180,7 +182,7 @@ export class Bilibili extends Base {
             const dynamicCARD = JSON.parse(OBJECT.dynamicINFO_CARD.data.card.card)
             const cover = () => {
               const imgArray = []
-              for (let i = 0; i < dynamicCARD.item.pictures.length; i++) {
+              for (let i = 0; i < dynamicCARD.item.pictures.length; i ++) {
                 const obj = {
                   image_src: dynamicCARD.item.pictures[i].img_src
                 }
@@ -271,7 +273,7 @@ export class Bilibili extends Base {
             avater_url: OBJECT.USERDATA.data.card.face,
             frame: OBJECT.dynamicINFO.data.item.modules.module_author.pendant.image,
             fans: this.count(OBJECT.USERDATA.data.card.fans),
-            create_time: OBJECT.live_info.data.live_time === -62170012800 ? '获取失败' : OBJECT.live_info.data.live_time,
+            create_time: OBJECT.live_info.data.live_time === - 62170012800 ? '获取失败' : OBJECT.live_info.data.live_time,
             now_time: 114514,
             share_url: 'https://live.bilibili.com/' + OBJECT.live_info.data.room_id,
             dynamicTYPE: '直播'

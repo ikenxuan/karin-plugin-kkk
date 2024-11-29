@@ -1,8 +1,10 @@
-import { Config, Common, Version } from '@/module/utils'
-import amagi from '@ikenxuan/amagi'
-import karin, { segment, common, Message, AdapterType } from 'node-karin'
-import QRCode from 'qrcode'
 import fs from 'node:fs'
+
+import amagi from '@ikenxuan/amagi'
+import karin, { AdapterType, common, Message, segment } from 'node-karin'
+import QRCode from 'qrcode'
+
+import { Common, Config, Version } from '@/module/utils'
 
 const cl = new amagi({ bilibili: Config.cookies.bilibili })
 export const bilibiliLogin = async (e: Message) => {
@@ -22,7 +24,7 @@ export const bilibiliLogin = async (e: Message) => {
   // let Execution86038 = -1
   let executed86090 = false
   let completedCase0 = false
-  for (let i = 0; i < 33; i++) {
+  for (let i = 0; i < 33; i ++) {
     const qrcodestatusdata = await cl.getBilibiliData('二维码状态', { qrcode_key })
     switch (qrcodestatusdata.data.data.code) {
       case 0: {
@@ -45,14 +47,14 @@ export const bilibiliLogin = async (e: Message) => {
         break
       }
       case 86090: {
-        if (!executed86090) {
+        if (! executed86090) {
           const message3 = await e.reply('二维码已扫码，未确认', { reply: true })
           msg_id.push(message3.messageId)
           await bot.recallMsg(e.contact, message2.messageId)
           executed86090 = true
           // 删除 msg_id 数组中的 message2.message_id
           const index = msg_id.indexOf(message2.messageId)
-          if (index > -1) {
+          if (index > - 1) {
             msg_id.splice(index, 1)
           }
         } else {

@@ -1,6 +1,7 @@
-import { Networks } from '@/module/utils'
-import { logger } from 'node-karin'
 import { DouyinOptionsType } from '@ikenxuan/amagi'
+import { logger } from 'node-karin'
+
+import { Networks } from '@/module/utils'
 import { DouyinDataTypes } from '@/types'
 
 export interface ExtendedDouyinOptionsType extends DouyinOptionsType {

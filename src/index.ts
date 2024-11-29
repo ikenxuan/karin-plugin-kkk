@@ -1,6 +1,7 @@
-import { logger, common } from 'node-karin'
-import { Version, Config } from '@/module'
 import amagi from '@ikenxuan/amagi'
+import { common, logger } from 'node-karin'
+
+import { Config, Version } from '@/module'
 
 const haha = new amagi({
   bilibili: Config.cookies.bilibili,

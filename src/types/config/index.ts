@@ -1,10 +1,10 @@
 import { appConfig } from './app'
 import { bilibiliConfig } from './bilibili'
 import { cookiesConfig } from './cookies'
-import { pushlistConfig } from './pushlist'
 import { douyinConfig } from './douyin'
-import { uploadConfig } from './upload'
 import { kuaishouConfig } from './kuaishou'
+import { pushlistConfig } from './pushlist'
+import { uploadConfig } from './upload'
 
 export interface ConfigType {
   app: appConfig,

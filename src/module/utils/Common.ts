@@ -1,6 +1,8 @@
-import { Message, logger } from 'node-karin'
-import { Config, Version } from '@/module/utils'
 import fs from 'node:fs'
+
+import { logger, Message } from 'node-karin'
+
+import { Config, Version } from '@/module/utils'
 
 /** 常用工具合集 */
 export const Common = {
@@ -51,7 +53,7 @@ export const Common = {
     let temp = 0 // 存储每一段的临时结果
     let unit = 1 // 当前处理的单位，初始为1
 
-    for (let i = chineseNumber.length - 1; i >= 0; i--) {
+    for (let i = chineseNumber.length - 1; i >= 0; i --) {
       const char = chineseNumber[i]
 
       // 如果是单位字符

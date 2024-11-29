@@ -1,7 +1,8 @@
-import { Config, Common } from '@/module/utils'
 import { getDouyinData } from '@ikenxuan/amagi'
-import { Networks } from '@/module/utils'
 import convert from 'heic-convert'
+
+import { Common, Config, Networks } from '@/module/utils'
+
 /**
  *
  * @param {*} data 完整的评论数据
@@ -12,7 +13,7 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
   let jsonArray = []
   if (data.comments === null) return []
 
-  for (let i = 0; i < data.comments.length; i++) {
+  for (let i = 0; i < data.comments.length; i ++) {
     const cid = data.comments[i].cid
     const aweme_id = data.comments[i].aweme_id
     const nickname = data.comments[i].user.nickname
@@ -20,7 +21,7 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
     const text = data.comments[i].text
     const ip = data.comments[i].ip_label ? data.comments[i].ip_label : '未知'
     const time = data.comments[i].create_time
-    const label_type = data.comments[i].label_type ? data.comments[i].label_type : -1
+    const label_type = data.comments[i].label_type ? data.comments[i].label_type : - 1
     const sticker = data.comments[i].sticker ? data.comments[i].sticker.animate_url.url_list[0] : null
     const digg_count = data.comments[i].digg_count
     const imageurl =
@@ -69,7 +70,7 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
   jsonArray.sort((a, b) => b.digg_count - a.digg_count)
   const indexLabelTypeOne = jsonArray.findIndex((comment) => comment.label_type === 1)
 
-  if (indexLabelTypeOne !== -1) {
+  if (indexLabelTypeOne !== - 1) {
     const commentTypeOne = jsonArray.splice(indexLabelTypeOne, 1)[0]
     jsonArray.unshift(commentTypeOne)
   }
@@ -85,7 +86,7 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
     jsonArray
   }
 
-  for (let i = 0; i < jsonArray.length; i++) {
+  for (let i = 0; i < jsonArray.length; i ++) {
     if (jsonArray[i].digg_count > 10000) {
       jsonArray[i].digg_count = (jsonArray[i].digg_count / 10000).toFixed(1) + 'w'
     }
@@ -213,7 +214,7 @@ async function search_text (data: {
  * @returns
  */
 function br (data: any[]): any[] {
-  for (let i = 0; i < data.length; i++) {
+  for (let i = 0; i < data.length; i ++) {
     let text = data[i].text
 
     text = text.replace(/\n/g, '<br>')

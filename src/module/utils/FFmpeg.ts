@@ -1,6 +1,8 @@
-import { logger, ffmpeg } from 'node-karin'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
+
+import { ffmpeg, logger } from 'node-karin'
+
 import { Common, Version } from '@/module/utils'
 const execPromise = promisify(exec)
 
@@ -95,13 +97,13 @@ class FFmpeg {
 
     switch (this.type) {
       case '二合一（视频 + 音频）': {
-        const result = await ffmpeg(`-y -i ${opt.path} -i ${opt.path2} -c copy ${opt.resultPath}`, { booleanResult:true })
+        const result = await ffmpeg(`-y -i ${opt.path} -i ${opt.path2} -c copy ${opt.resultPath}`, { booleanResult: true })
         result ? logger.mark('视频合成成功！') : logger.error('视频合成失败！')
         await opt.callback(result)
         return result as unknown as MergeFileResult<T> // 布尔类型
       }
       case '视频*3 + 音频': {
-        const result = await ffmpeg(`-y -stream_loop 2 -i ${opt.path} -i ${opt.path2} -filter_complex "[0:v]setpts=N/FRAME_RATE/TB[v];[0:a][1:a]amix=inputs=2:duration=shortest:dropout_transition=3[aout]" -map "[v]" -map "[aout]" -c:v libx264 -c:a aac -b:a 192k -shortest ${opt.resultPath}`, { booleanResult:true })
+        const result = await ffmpeg(`-y -stream_loop 2 -i ${opt.path} -i ${opt.path2} -filter_complex "[0:v]setpts=N/FRAME_RATE/TB[v];[0:a][1:a]amix=inputs=2:duration=shortest:dropout_transition=3[aout]" -map "[v]" -map "[aout]" -c:v libx264 -c:a aac -b:a 192k -shortest ${opt.resultPath}`, { booleanResult: true })
         result ? logger.mark('视频合成成功！') : logger.error('视频合成失败！')
         await opt.callback(result)
         return result as unknown as MergeFileResult<T> // 布尔类型
@@ -111,7 +113,7 @@ class FFmpeg {
         return parseFloat(stdout.trim()) as unknown as MergeFileResult<T>  // 数字类型
       }
       case '压缩视频': {
-        const result = await ffmpeg(`-y -i "${opt.path}" -b:v ${opt.targetBitrate}k -maxrate ${opt.maxRate || opt.targetBitrate * 1.5}k -bufsize ${opt.bufSize || opt.targetBitrate * 2}k -crf ${opt.crf || 35} -preset medium -c:v libx264 -vf "scale='if(gte(iw/ih,16/9),1280,-1)':'if(gte(iw/ih,16/9),-1,720)',scale=ceil(iw/2)*2:ceil(ih/2)*2" "${opt.resultPath}"`,{ booleanResult:true })
+        const result = await ffmpeg(`-y -i "${opt.path}" -b:v ${opt.targetBitrate}k -maxrate ${opt.maxRate || opt.targetBitrate * 1.5}k -bufsize ${opt.bufSize || opt.targetBitrate * 2}k -crf ${opt.crf || 35} -preset medium -c:v libx264 -vf "scale='if(gte(iw/ih,16/9),1280,-1)':'if(gte(iw/ih,16/9),-1,720)',scale=ceil(iw/2)*2:ceil(ih/2)*2" "${opt.resultPath}"`, { booleanResult: true })
         if (result) {
           logger.mark(`视频已压缩并保存到: ${opt.resultPath}`)
           await Common.removeFile(opt.path)

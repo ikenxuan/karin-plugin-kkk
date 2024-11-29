@@ -1,5 +1,6 @@
-import { sequelize, DataTypes } from './base'
 import { Model } from 'sequelize'
+
+import { DataTypes, sequelize } from './base'
 
 
 export interface BilibiliDBType {

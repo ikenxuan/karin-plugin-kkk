@@ -1,8 +1,10 @@
-import karin, { logger, Message, handler, segment, AdapterType } from 'node-karin'
-import { chromium } from 'playwright'
-import { Version, Config } from '@/module'
-import fs from 'node:fs'
 import { execSync } from 'node:child_process'
+import fs from 'node:fs'
+
+import karin, { AdapterType, handler, logger, Message, segment } from 'node-karin'
+import { chromium } from 'playwright'
+
+import { Config, Version } from '@/module'
 
 export const douyinLogin = async (e: Message) => {
   const hal = await handler.call('kkk.douyinLogin', { e })

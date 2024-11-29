@@ -1,7 +1,8 @@
-import { Base, Render, Config, DB, Common, DouyinDBType, AllDataType } from '@/module'
-import { getDouyinID } from '@/platform/douyin'
-import { karin, logger, Message, segment, ImageElementType, AdapterType, common } from 'node-karin'
 import { getDouyinData } from '@ikenxuan/amagi'
+import { AdapterType, common, ImageElementType, karin, logger, Message, segment } from 'node-karin'
+
+import { AllDataType, Base, Common, Config, DB, DouyinDBType, Render } from '@/module'
+import { getDouyinID } from '@/platform/douyin'
 
 /** 每个推送项的类型定义 */
 interface PushItem {
@@ -74,7 +75,7 @@ export class DouYinpush extends Base {
       let img: ImageElementType[] = []
       const iddata = await getDouyinID(Detail_Data.share_url || 'https://live.douyin.com/' + Detail_Data.room_data.owner.web_rid, false)
 
-      if (!skip) {
+      if (! skip) {
         if (data[awemeId].living) {
           img = await Render('douyin/live', {
             image_url: [ { image_src: Detail_Data.live_data.data.data[0].cover.url_list[0] } ],
@@ -116,7 +117,7 @@ export class DouYinpush extends Base {
       try {
         for (const groupId of data[awemeId].group_id) {
           let status: any
-          if (!skip) {
+          if (! skip) {
             const [ group_id, uin ] = groupId.split(':')
             const bot = karin.getBot(uin) as AdapterType
             status = await karin.sendMsg(String(uin), karin.contactGroup(group_id), img ? [ ...img ] : [])
@@ -133,7 +134,7 @@ export class DouYinpush extends Base {
                 } catch (error) {
                   logger.error(error)
                 }
-              } else if (!iddata.is_mp4 && iddata.type === 'one_work') { // 如果新作品是图集
+              } else if (! iddata.is_mp4 && iddata.type === 'one_work') { // 如果新作品是图集
                 const imageres: ImageElementType[] = []
                 let image_url
                 for (const item of Detail_Data.aweme_detail.images) {
@@ -170,8 +171,8 @@ export class DouYinpush extends Base {
               if (data[awemeId].sec_uid === findMatchingSecUid(DBdata, data[awemeId].sec_uid)) {
                 // 如果找到了对应的 sec_uid，将 awemeId 添加到 aweme_idlist 数组中
                 const isSecUidFound = findMatchingSecUid(DBdata, data[awemeId].sec_uid)
-                if (isSecUidFound && this.force ? true : !DBdata[data[awemeId].sec_uid].aweme_idlist.includes(awemeId)) {
-                  !data[awemeId].living ? DBdata[isSecUidFound].aweme_idlist.push(awemeId) : false
+                if (isSecUidFound && this.force ? true : ! DBdata[data[awemeId].sec_uid].aweme_idlist.includes(awemeId)) {
+                  ! data[awemeId].living ? DBdata[isSecUidFound].aweme_idlist.push(awemeId) : false
                   DBdata[isSecUidFound].create_time = Number(data[awemeId].create_time)
                   DBdata[isSecUidFound].living = data[awemeId].living
                   await DB.UpdateGroupData('douyin', groupId, DBdata)
@@ -179,14 +180,14 @@ export class DouYinpush extends Base {
                 }
               }
 
-              if (!found) {
+              if (! found) {
                 // 如果没有找到对应的 sec_uid，创建一个新的条目
                 newEntry = {
                   [data[awemeId].sec_uid]: {
                     remark: data[awemeId].remark,
                     create_time: Number(data[awemeId].create_time),
                     sec_uid: data[awemeId].sec_uid,
-                    aweme_idlist: !data[awemeId].living ? [ awemeId ] : [],
+                    aweme_idlist: ! data[awemeId].living ? [ awemeId ] : [],
                     group_id: [ groupId ],
                     avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + data[awemeId].Detail_Data.user_info.user.avatar_larger.uri,
                     living: data[awemeId].living
@@ -202,7 +203,7 @@ export class DouYinpush extends Base {
                   remark: data[awemeId].remark,
                   create_time: data[awemeId].create_time,
                   sec_uid: data[awemeId].sec_uid,
-                  aweme_idlist: !data[awemeId].living ? [ awemeId ] : [],
+                  aweme_idlist: ! data[awemeId].living ? [ awemeId ] : [],
                   avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + data[awemeId].Detail_Data.user_info.user.avatar_larger.uri,
                   group_id: [ groupId ],
                   living: data[awemeId].living
@@ -245,7 +246,7 @@ export class DouYinpush extends Base {
             // 如果 shouldPush 为 true，或该作品距现在的时间差小于一天，则将该动态添加到 willbepushlist 中
             if (shouldPush) {
               // 确保 willbepushlist[aweme.aweme_id] 是一个对象
-              if (!willbepushlist[aweme.aweme_id]) {
+              if (! willbepushlist[aweme.aweme_id]) {
                 willbepushlist[aweme.aweme_id] = {
                   remark: item.remark,
                   sec_uid: userinfo.user.sec_uid,
@@ -266,7 +267,7 @@ export class DouYinpush extends Base {
           // 生成一个 19 位 fake aweme_id
           const live_data = await getDouyinData('直播间信息数据', Config.cookies.douyin, { sec_uid: item.sec_uid })
           const room_data = JSON.parse(userinfo.user.room_data)//room_data.owner.web_rid
-          if (!willbepushlist[room_data.owner.web_rid]) {
+          if (! willbepushlist[room_data.owner.web_rid]) {
             willbepushlist[room_data.owner.web_rid] = {
               remark: item.remark,
               sec_uid: userinfo.user.sec_uid,
@@ -313,7 +314,7 @@ export class DouYinpush extends Base {
         const groupData = dbData[groupId]
 
         // 如果 dbData 是空或者没有对应的 groupId 数据，直接保留该群组
-        if (!groupData) {
+        if (! groupData) {
           filteredGroupIds.push(groupId)
           continue
         }
@@ -321,14 +322,14 @@ export class DouYinpush extends Base {
         // 获取与 pushItem.sec_uid 对应的 cachedData
         const cachedData = groupData[pushItem.sec_uid]
         // 如果找不到对应的 sec_uid 数据，直接保留该群组
-        if (!cachedData) {
+        if (! cachedData) {
           filteredGroupIds.push(groupId)
           continue
         }
 
         // 如果是普通动态，检查 awemeId 是否已缓存
         // 如果缓存列表中没有该 awemeId，则保留该群组
-        if (pushItem.living === true && cachedData.living === false && !cachedData.aweme_idlist.includes(awemeId)) {
+        if (pushItem.living === true && cachedData.living === false && ! cachedData.aweme_idlist.includes(awemeId)) {
           filteredGroupIds.push(groupId)
           continue
         }
@@ -356,25 +357,25 @@ export class DouYinpush extends Base {
     const config = Config.pushlist
     const abclist: { sec_uid: string, group_id: any }[] = []
     if (Config.pushlist.douyin === null || Config.pushlist.douyin.length === 0) return true
-    for (let i = 0; i < Config.pushlist.douyin.length; i++) {
+    for (let i = 0; i < Config.pushlist.douyin.length; i ++) {
       const remark = Config.pushlist.douyin[i].remark
       const group_id = Config.pushlist.douyin[i].group_id
       const sec_uid = Config.pushlist.douyin[i].sec_uid
       const short_id = Config.pushlist.douyin[i].short_id
 
-      if (!remark) {
+      if (! remark) {
         abclist.push({ sec_uid, group_id })
       }
-      if (!short_id) {
+      if (! short_id) {
         abclist.push({ sec_uid, group_id })
       }
     }
     if (abclist.length > 0) {
-      for (let i = 0; i < abclist.length; i++) {
+      for (let i = 0; i < abclist.length; i ++) {
         const resp = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid: abclist[i].sec_uid })
         const remark = resp.user.nickname
         const matchingItemIndex = config.douyin.findIndex((item: { sec_uid: string }) => item.sec_uid === abclist[i].sec_uid)
-        if (matchingItemIndex !== -1) {
+        if (matchingItemIndex !== - 1) {
           // 更新匹配的对象的 remark 和抖音号
           config.douyin[matchingItemIndex].remark = remark
           config.douyin[matchingItemIndex].short_id = resp.user.unique_id === '' ? resp.user.unique_id : resp.user.unique_id
@@ -406,7 +407,7 @@ export class DouYinpush extends Base {
    * @param data 处理完成的推送列表
    */
   async forcepush (data: WillBePushList) {
-    if (!this.e.msg.includes('全部')) {
+    if (! this.e.msg.includes('全部')) {
       for (const detail in data) {
         data[detail].group_id = [ ...[ `${'groupId' in this.e && this.e.groupId ? this.e.groupId : ''}:${this.e.self_id}` ] ]
       }
@@ -424,7 +425,7 @@ export class DouYinpush extends Base {
     try {
       let index = 0
       while (data.data[index].card_unique_name !== 'user') {
-        index++
+        index ++
       }
       let msg
       const sec_uid = data.data[index].user_list[0].user_info.sec_uid
@@ -436,7 +437,7 @@ export class DouYinpush extends Base {
       UserInfoData.user.unique_id === '' ? (user_shortid = UserInfoData.user.short_id) : (user_shortid = UserInfoData.user.unique_id)
 
       // 初始化 group_id 对应的数组
-      if (!config.douyin) {
+      if (! config.douyin) {
         config.douyin = []
       }
 
@@ -446,8 +447,8 @@ export class DouYinpush extends Base {
       if (existingItem) {
         // 如果已经存在相同的 sec_uid，则检查是否存在相同的 group_id
         let has = false
-        let groupIndexToRemove = -1 // 用于记录要删除的 group_id 对象的索引
-        for (let index = 0; index < existingItem.group_id.length; index++) {
+        let groupIndexToRemove = - 1 // 用于记录要删除的 group_id 对象的索引
+        for (let index = 0; index < existingItem.group_id.length; index ++) {
           // 分割每个对象的 id 属性，并获取第一部分
           const item = existingItem.group_id[index]
           const existingGroupId = item.split(':')[0]
@@ -472,7 +473,7 @@ export class DouYinpush extends Base {
           }
         } else {
           const status = await DB.FindGroup('douyin', `${group_id}:${this.e.selfId}`)
-          if (!status) {
+          if (! status) {
             await DB.CreateSheet('douyin', `${group_id}:${this.e.selfId}`, {})
           }
           // 否则，将新的 group_id 添加到该 sec_uid 对应的数组中
@@ -482,7 +483,7 @@ export class DouYinpush extends Base {
         }
       } else {
         const status = await DB.FindGroup('douyin', `${group_id}:${this.e.selfId}`)
-        if (!status) {
+        if (! status) {
           await DB.CreateSheet('douyin', `${group_id}:${this.e.selfId}`, {})
         }
         // 如果不存在相同的 sec_uid，则新增一个属性
