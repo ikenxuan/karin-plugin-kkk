@@ -1,8 +1,8 @@
 import { getDouyinData } from '@ikenxuan/amagi'
 import convert from 'heic-convert'
 
-import { Common, Config } from '@/module/utils'
-import { Networks } from '@/module/utils'
+import { Common, Config, Networks } from '@/module/utils'
+
 /**
  *
  * @param {*} data 完整的评论数据

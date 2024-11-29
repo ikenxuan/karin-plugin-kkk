@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import karin, { KarinMessage, logger, Plugin } from 'node-karin'
+import karin, { logger, Message, Plugin } from 'node-karin'
 import path from 'path'
 
 import { Common, Config, Render } from '@/module'
@@ -27,21 +27,21 @@ export const dylogin = karin.command(/^#?(kkk)?抖音(扫码)?登录$/, async (e
 
 export const setdyck = karin.command(new RegExp(/^#?(kkk)?s*设置抖音ck$/i), async (e) => {
   const msg = await e.reply('请发在120秒内送抖音ck\n教程：https://ikenxuan.github.io/kkkkkk-10086/docs/intro/other#%E9%85%8D%E7%BD%AE%E4%B8%8D%E5%90%8C%E5%B9%B3%E5%8F%B0%E7%9A%84-cookies\n')
-  const context = await karin.ctx(e)
+  const context = await karin.ctx(e) as Message
   Config.modify('cookies', 'douyin', context.msg)
-  await e.bot.RecallMessage(e.contact, msg.message_id)
+  await e.bot.recallMsg(e.contact, msg.messageId)
   await e.reply('设置成功！', { at: true })
   return true
-}, { permission: 'master', name: 'kkk-ck管理', event: 'message.private_message' })
+}, { permission: 'master', name: 'kkk-ck管理', event: 'message.friend' })
 
 export const setbilick = karin.command(new RegExp(/^#?(kkk)?s*设置s*(B站)ck$/i), async (e) => {
   const msg = await e.reply('请发在120秒内送B站ck\n教程：https://ikenxuan.github.io/kkkkkk-10086/docs/intro/other#%E9%85%8D%E7%BD%AE%E4%B8%8D%E5%90%8C%E5%B9%B3%E5%8F%B0%E7%9A%84-cookies\n')
-  const context = await karin.ctx(e)
+  const context = await karin.ctx(e) as Message
   Config.modify('cookies', 'bilibili', context.msg)
-  await e.bot.RecallMessage(e.contact, msg.message_id)
+  await e.bot.recallMsg(e.contact, msg.message_id)
   await e.reply('设置成功！', { at: true })
   return true
-}, { permission: 'master', name: 'kkk-ck管理', event: 'message.private_message' })
+}, { permission: 'master', name: 'kkk-ck管理', event: 'message.friend' })
 
 
 // 插件类
@@ -70,7 +70,7 @@ export class Admin extends Plugin {
       ]
     })
   }
-  async deleteCache (e: KarinMessage): Promise<boolean> {
+  async deleteCache (e: Message): Promise<boolean> {
     await removeAllFiles(Common.tempDri.video)
     await e.reply(Common.tempDri.video + '目录下所有文件已删除')
     return true
@@ -90,7 +90,7 @@ export class Admin extends Plugin {
   }
 
   // 修改数值配置
-  async ConfigNumber (e: KarinMessage): Promise<boolean> {
+  async ConfigNumber (e: Message): Promise<boolean> {
     const platform = this.getPlatformFromMessage(e.msg)
     const regRet = createNumberRegExp(platform).exec(e.msg)
     if (regRet) {
@@ -104,7 +104,7 @@ export class Admin extends Plugin {
   }
 
   // 处理自定义内容
-  async ConfigCustom (e: KarinMessage): Promise<boolean> {
+  async ConfigCustom (e: Message): Promise<boolean> {
     const platform = this.getPlatformFromMessage(e.msg)
     const regRet = createCustomRegExp(platform).exec(e.msg)
 
@@ -127,7 +127,7 @@ export class Admin extends Plugin {
   }
 
   // 渲染设置图片
-  async index_Settings (e: KarinMessage): Promise<boolean> {
+  async index_Settings (e: Message): Promise<boolean> {
     let _cfg = Config.All()
     const statusData = getStatus(_cfg) // 获取状态对象
     const img = await Render('admin/index', { data: statusData })

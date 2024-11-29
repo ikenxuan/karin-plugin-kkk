@@ -1,6 +1,6 @@
 import { basename, join } from 'node:path'
 
-import { ImageElement, KarinRenderType, render, segment } from 'node-karin'
+import { ImageElementType, Options, render, segment } from 'node-karin'
 
 import { Common, Config, Version } from '@/module'
 
@@ -31,20 +31,20 @@ export async function Render (path: string, params?: any) {
     newPath = newPath.substring(1)
   }
   path = `${basePaths[platform]}/${newPath}`
-  const renderOpt: KarinRenderType = {
+  const renderOpt: Options = {
     pageGotoParams: {
       waitUntil: 'load'
     },
     name: `${Version.pluginName}/${platform}/${newPath}/`.replace(/\\/g, '/'),
     file: `${Version.pluginPath}/resources/template/${path}.html`,
     // 这里是模板引擎渲染完成之后生成的html文件名称 如果这里不传递会默认使用name作为默认值 建议传递。
-    fileID: basename(newPath),
-    type: 'jpeg',
-    multiPage: 12000
+    type: 'jpeg'
   }
 
   const img = await render.render({
     ...renderOpt,
+    multiPage: 12000,
+    encoding: 'base64',
     data: {
       ...params,
       _res_path: (join(Version.pluginPath, '/resources') + '/').replace(/\\/g, '/'),
@@ -60,7 +60,7 @@ export async function Render (path: string, params?: any) {
     screensEval: '#container'
   })
   // 分片截图传回来的是数组
-  let ret: ImageElement[] = []
+  let ret: ImageElementType[] = []
   for (const imgae of img) {
     ret.push(segment.image(imgae))
   }

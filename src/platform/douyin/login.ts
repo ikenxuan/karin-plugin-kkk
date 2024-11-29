@@ -1,12 +1,12 @@
 import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 
-import karin, { handler, KarinAdapter, KarinMessage, logger, segment } from 'node-karin'
+import karin, { AdapterType, handler, logger, Message, segment } from 'node-karin'
 import { chromium } from 'playwright'
 
 import { Config, Version } from '@/module'
 
-export const douyinLogin = async (e: KarinMessage) => {
+export const douyinLogin = async (e: Message) => {
   const hal = await handler.call('kkk.douyinLogin', { e })
   if (hal) return true
   const msg_id: string[] = []
@@ -57,8 +57,8 @@ export const douyinLogin = async (e: KarinMessage) => {
           await browser.close()
           // 批量撤回
           msg_id.forEach(async (id) => {
-            const bot = karin.getBot(e.self_id) as KarinAdapter
-            await bot.RecallMessage(e.contact, id)
+            const bot = karin.getBot(e.selfId) as AdapterType
+            await bot.recallMsg(e.contact, id)
           })
         }
       })
@@ -66,8 +66,8 @@ export const douyinLogin = async (e: KarinMessage) => {
       await browser.close()
       // 批量撤回
       msg_id.forEach(async (id) => {
-        const bot = karin.getBot(e.self_id) as KarinAdapter
-        await bot.RecallMessage(e.contact, id)
+        const bot = karin.getBot(e.selfId) as AdapterType
+        await bot.recallMsg(e.contact, id)
       })
       await e.reply('登录超时！二维码已失效！', { reply: true })
       logger.error(err)

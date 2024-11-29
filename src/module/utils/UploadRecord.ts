@@ -8,14 +8,15 @@ import util from 'node:util'
 
 import axios from 'axios'
 import { core } from 'icqq'
-import { Cfg, KarinMessage, logger } from 'node-karin'
+import { config, logger, Message  } from 'node-karin'
 
 
 const errors = {} as any
 
-async function UploadRecord (e: KarinMessage, record_url: string, seconds: number = 0, transcoding: boolean = true, brief: string = ''): Promise<any> {
+async function UploadRecord (e: Message, record_url: string, seconds: number = 0, transcoding: boolean = true, brief: string = ''): Promise<any> {
   const bot = { ...e.bot, super: {} as any }
-  const result = await getPttBuffer(record_url, Cfg.Config.ffmpeg_path, transcoding)
+  const result = await getPttBuffer(record_url, config.getYaml('config', 'user').value.ffmpegPath, transcoding)
+
   if (! result.buffer) {
     return false
   }

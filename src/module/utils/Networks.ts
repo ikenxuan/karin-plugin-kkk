@@ -17,10 +17,7 @@ export class Networks {
   private type: ResponseType
   private body?: any
   private axiosInstance: AxiosInstance
-  private isGetResult: boolean
   private timeout: number
-  private timer: NodeJS.Timeout | undefined
-  private data: {}
   private filepath: string
   private maxRetries: number
 
@@ -30,12 +27,9 @@ export class Networks {
     this.type = data.type || 'json'
     this.method = data.method || 'GET'
     this.body = data.body || null
-    this.data = {}
     this.timeout = data.timeout || 5000
-    this.isGetResult = false
-    this.timer = undefined
     this.filepath = data.filepath || ''
-    this.maxRetries = 0
+    this.maxRetries = 3
 
     // 创建axios实例
     this.axiosInstance = axios.create({
@@ -174,7 +168,6 @@ export class Networks {
       if (result.status === 504) {
         return result
       }
-      this.isGetResult = true
       return result
     } catch (error) {
       logger.info(error)
@@ -236,7 +229,6 @@ export class Networks {
         logger.error('HTTP 响应状态码: 429')
         throw new Error('ratelimit triggered, 触发 https://www.douyin.com/ 的速率限制！！！')
       }
-      this.isGetResult = true
       return result.data
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
