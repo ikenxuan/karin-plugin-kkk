@@ -2,7 +2,7 @@ import { getDouyinData } from '@ikenxuan/amagi'
 import { common, ImageElement, karin, KarinAdapter, KarinMessage, logger, segment } from 'node-karin'
 
 import { AllDataType, Base, Common, Config, DB, DouyinDBType, Render } from '@/module'
-import { getDouyinID } from '@/platform/douyin'
+import { ExtendedDouyinOptionsType, getDouyinID } from '@/platform/douyin'
 
 /** 每个推送项的类型定义 */
 interface PushItem {
@@ -74,10 +74,13 @@ export class DouYinpush extends Base {
       const Detail_Data = data[awemeId].Detail_Data
       const skip = skipDynamic(Detail_Data)
       let img: ImageElement[] = []
-      const iddata = await getDouyinID(Detail_Data.share_url || 'https://live.douyin.com/' + Detail_Data.room_data.owner.web_rid, false)
+      let iddata: ExtendedDouyinOptionsType  = { is_mp4: true, type: 'one_work' }
+      if (! skip) {
+        iddata = await getDouyinID(Detail_Data.share_url || 'https://live.douyin.com/' + Detail_Data.room_data.owner.web_rid, false)
+      }
 
       if (! skip) {
-        if (data[awemeId].living) {
+        if (data[awemeId].living && 'room_data' in data[awemeId].Detail_Data) {
           img = await Render('douyin/live', {
             image_url: [ { image_src: Detail_Data.live_data.data.data[0].cover.url_list[0] } ],
             text: Detail_Data.live_data.data.data[0].title,
@@ -157,7 +160,11 @@ export class DouYinpush extends Base {
               if (data[awemeId].Detail_Data.liveStatus?.isChanged && data[awemeId].Detail_Data.liveStatus.isliving === false) {
                 const message_id = DBdata[data[awemeId].sec_uid].message_id
                 if (message_id !== '') {
-                  await karin.sendMsg(String(uin), karin.contactGroup(group_id), [ segment.reply(message_id), segment.text(`「${data[awemeId].remark}」的直播已经结束惹 ~`) ])
+                  await karin.sendMsg(String(uin), karin.contactGroup(group_id), [
+                    segment.reply(message_id),
+                    segment.text(`「${data[awemeId].remark}」的直播已经结束惹 ~`),
+                    segment.text(`直播时间：${Common.timeSince(DBdata[data[awemeId].sec_uid].start_living_pn)}`)
+                  ])
                 }
               }
 
@@ -193,8 +200,8 @@ export class DouYinpush extends Base {
                     group_id: [ groupId ],
                     avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + data[awemeId].Detail_Data.user_info.user.avatar_larger.uri,
                     living: data[awemeId].living,
-                    message_id: data[awemeId].living ? status.message_id : '',
-                    start_living_pn: data[awemeId].living ? Date.now() : 0
+                    message_id: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? status.message_id : '',
+                    start_living_pn: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? Date.now() : 0
                   }
                 }
                 // 更新数据库
@@ -211,8 +218,8 @@ export class DouYinpush extends Base {
                   avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + data[awemeId].Detail_Data.user_info.user.avatar_larger.uri,
                   group_id: [ groupId ],
                   living: data[awemeId].living,
-                  message_id: data[awemeId].living ? status.message_id : '',
-                  start_living_pn: data[awemeId].living ? Date.now() : 0
+                  message_id: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? status.message_id : '',
+                  start_living_pn: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? Date.now() : 0
                 }
               })
             }
@@ -529,7 +536,12 @@ export class DouYinpush extends Base {
  * @returns
  */
 const skipDynamic = (Detail_Data: PushItem['Detail_Data']): boolean => {
-  if (Detail_Data.liveStatus?.isliving) return false
+  if ('liveStatus' in Detail_Data) {
+    if (Detail_Data.liveStatus?.liveStatus === 'close' && Detail_Data.liveStatus?.isChanged) {
+      return true
+    } else return false
+  }
+
   for (const banWord of Config.douyin.push.banWords) {
     if (Detail_Data.item_title.includes(banWord)) {
       logger.mark(`作品：${logger.green(Detail_Data.share_url)} 包含屏蔽词：「${logger.red(banWord)}」，跳过推送`)
@@ -562,14 +574,11 @@ const checkUserLiveStatus = (userInfo: any, cacheData: AllDataType<'douyin'>['do
     return { liveStatus, isChanged: true, isliving: true }
   }
 
-  if (mergeCacheData[sec_uid] && mergeCacheData[sec_uid].living === isLiving) {
-    if (mergeCacheData[sec_uid].living === false && isLiving === true) {
-      isChanged = true
-    } else if (mergeCacheData[sec_uid].living === true && isLiving === false) {
-      isChanged = true
-    } else isChanged = false
-
-  }
+  if (mergeCacheData[sec_uid].living === false && isLiving === true) {
+    isChanged = true
+  } else if (mergeCacheData[sec_uid].living === true && isLiving === false) {
+    isChanged = true
+  } else isChanged = false
 
   return { liveStatus, isChanged, isliving: liveStatus === 'open' }
 }

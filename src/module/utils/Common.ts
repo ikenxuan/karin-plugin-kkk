@@ -207,5 +207,30 @@ export const Common = {
       dark = true
     }
     return dark
+  },
+
+  /**
+   * 传入一个时间戳（单位：毫秒），返回距离当前时间的相对的时间字符串
+   * @param timestamp 时间戳
+   * @returns 距离这个时间戳过去的多久的字符串
+   */
+  timeSince: (timestamp: number): string =>{
+    const now = Date.now()
+    const elapsed = now - timestamp
+
+    const seconds = Math.floor(elapsed / 1000)
+    const minutes = Math.floor(seconds / 60)
+    const hours = Math.floor(minutes / 60)
+
+    const remainingSeconds = seconds % 60
+    const remainingMinutes = minutes % 60
+
+    if (hours > 0) {
+      return `${hours}小时${remainingMinutes}分钟${remainingSeconds}秒`
+    } else if (minutes > 0) {
+      return `${minutes}分钟${remainingSeconds}秒`
+    } else {
+      return `${seconds}秒`
+    }
   }
 }
