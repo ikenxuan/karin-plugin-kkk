@@ -14,6 +14,11 @@ interface PushItem {
     Detail_Data: {
         /** 博主主页信息 */
         user_info: any;
+        liveStatus?: {
+            liveStatus: 'open' | 'close';
+            isChanged: boolean;
+            isliving: boolean;
+        };
         [key: string]: any;
     };
     /** 博主头像url */

@@ -33,6 +33,10 @@ export interface DouyinDBType {
         avatar_img: string;
         /** 是否正在直播 */
         living: boolean;
+        /** 直播推送图的消息ID */
+        message_id: string;
+        /** 直播开始时间，时间戳 */
+        start_living_pn: number;
     };
 }
 interface ModelNameMap {
