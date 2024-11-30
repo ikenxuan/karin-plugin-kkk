@@ -18,6 +18,7 @@ interface PushItem {
   Detail_Data: {
     /** 博主主页信息 */
     user_info: any
+    liveStatus?:{ liveStatus: 'open' |  'close', isChanged:boolean, isliving: boolean }
     [key: string]: any
   }
   /** 博主头像url */
@@ -86,8 +87,8 @@ export class DouYinpush extends Base {
             username: Detail_Data.user_info.user.nickname,
             avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.user.avatar_larger.uri,
             fans: this.count(Detail_Data.user_info.user.follower_count),
-            create_time: Common.convertTimestampToDateTime(new Date().getTime()),
-            now_time: Common.convertTimestampToDateTime(new Date().getTime()),
+            create_time: Common.convertTimestampToDateTime(Date.now()),
+            now_time: Common.convertTimestampToDateTime(Date.now()),
             share_url: 'https://live.douyin.com/' + Detail_Data.room_data.owner.web_rid,
             dynamicTYPE: '直播动态推送'
           })
@@ -116,10 +117,11 @@ export class DouYinpush extends Base {
       // 遍历 group_id 数组，并发送消息
       try {
         for (const groupId of data[awemeId].group_id) {
-          let status: any
+          let DBdata = await DB.FindGroup('douyin', groupId)
+          let status = { message_id: '' }
+          const [ group_id, uin ] = groupId.split(':')
+          const bot = karin.getBot(uin) as KarinAdapter
           if (! skip) {
-            const [ group_id, uin ] = groupId.split(':')
-            const bot = karin.getBot(uin) as KarinAdapter
             status = await karin.sendMsg(String(uin), karin.contactGroup(group_id), img ? [ ...img ] : [])
             // 是否一同解析该新作品？
             if (Config.douyin.push.parsedynamic) {
@@ -148,23 +150,18 @@ export class DouYinpush extends Base {
           }
           // 如果跳过该新作品或者动态图已成功发送且返回msg_id，则写入作品ID到数据库
           if (skip || status.message_id) {
-            let DBdata = await DB.FindGroup('douyin', groupId)
-            /**
-             * 检查 DBdata 中是否存在与给定 host_mid 匹配的项
-             * @param DBdata - 数据库中存储的群组数据
-             * @param host_midToCheck 要检查的host_mid
-             * @returns 匹配的host_mid
-             */
-            const findMatchingSecUid = (DBdata: DouyinDBType, secUidToCheck: string) => {
-              for (const sec_uid in DBdata) {
-                if (DBdata.hasOwnProperty(sec_uid) && DBdata[sec_uid].sec_uid === secUidToCheck) {
-                  return secUidToCheck
-                }
-              }
-              return ''
-            }
             let newEntry: DouyinDBType
             if (DBdata) {
+
+              // 如果直播状态改变了，且这次是关播状态，发送通知
+              if (data[awemeId].Detail_Data.liveStatus?.isChanged && data[awemeId].Detail_Data.liveStatus.isliving === false) {
+                const message_id = DBdata[data[awemeId].sec_uid].message_id
+                if (message_id !== '') {
+                  await karin.sendMsg(String(uin), karin.contactGroup(group_id), [ segment.reply(message_id), segment.text(`「${data[awemeId].remark}」的直播已经结束惹 ~`) ])
+                }
+              }
+
+
               // 如果 DBdata 存在，遍历 DBdata 来查找对应的 sec_uid
               let found = false
 
@@ -174,8 +171,11 @@ export class DouYinpush extends Base {
                 if (isSecUidFound && this.force ? true : ! DBdata[data[awemeId].sec_uid].aweme_idlist.includes(awemeId)) {
                   ! data[awemeId].living ? DBdata[isSecUidFound].aweme_idlist.push(awemeId) : false
                   DBdata[isSecUidFound].create_time = Number(data[awemeId].create_time)
+                  // 如果直播状态改变了且该次是开播状态，则更新数据库中的直播状态
                   if (Detail_Data?.liveStatus && Detail_Data.liveStatus.isChanged) {
+                    DBdata[isSecUidFound].message_id = status.message_id
                     DBdata[isSecUidFound].living = data[awemeId].living
+                    DBdata[isSecUidFound].start_living_pn = Date.now()
                   }
                   await DB.UpdateGroupData('douyin', groupId, DBdata)
                   found = true
@@ -192,7 +192,9 @@ export class DouYinpush extends Base {
                     aweme_idlist: ! data[awemeId].living ? [ awemeId ] : [],
                     group_id: [ groupId ],
                     avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + data[awemeId].Detail_Data.user_info.user.avatar_larger.uri,
-                    living: data[awemeId].living
+                    living: data[awemeId].living,
+                    message_id: data[awemeId].living ? status.message_id : '',
+                    start_living_pn: data[awemeId].living ? Date.now() : 0
                   }
                 }
                 // 更新数据库
@@ -208,7 +210,9 @@ export class DouYinpush extends Base {
                   aweme_idlist: ! data[awemeId].living ? [ awemeId ] : [],
                   avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + data[awemeId].Detail_Data.user_info.user.avatar_larger.uri,
                   group_id: [ groupId ],
-                  living: data[awemeId].living
+                  living: data[awemeId].living,
+                  message_id: data[awemeId].living ? status.message_id : '',
+                  start_living_pn: data[awemeId].living ? Date.now() : 0
                 }
               })
             }
@@ -267,26 +271,26 @@ export class DouYinpush extends Base {
         // 如果正在开播
         const liveStatus = checkUserLiveStatus(userinfo, DBdata)
         const fake_room_id = '7' + Math.random().toString().slice(2).padEnd(18, '0').slice(0, 18)
-        if (liveStatus.liveStatus === 'open' && liveStatus.isChanged === true) {
+        if (liveStatus?.liveStatus === 'open' && liveStatus.isChanged === true) {
           const live_data = await getDouyinData('直播间信息数据', Config.cookies.douyin, { sec_uid: item.sec_uid })
           const room_data = JSON.parse(userinfo.user.room_data)
           if (! willbepushlist[room_data.owner.web_rid]) {
             willbepushlist[room_data.owner.web_rid] = {
               remark: item.remark,
               sec_uid: userinfo.user.sec_uid,
-              create_time: new Date().getTime(),
+              create_time: Date.now(),
               group_id: item.group_id,
               Detail_Data: { live_data, room_data, user_info: userinfo, liveStatus },
               avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.user.avatar_larger.uri,
               living: liveStatus.isliving
             }
           }
-        } else if (liveStatus.liveStatus === 'close' && liveStatus.isChanged === true) {
+        } else if (liveStatus?.liveStatus === 'close' && liveStatus.isChanged === true) {
           if (! willbepushlist[fake_room_id]) {
             willbepushlist[fake_room_id] = {
               remark: item.remark,
               sec_uid: userinfo.user.sec_uid,
-              create_time: new Date().getTime(),
+              create_time: Date.now(),
               group_id: item.group_id,
               Detail_Data: { user_info: userinfo, liveStatus },
               avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.user.avatar_larger.uri,
@@ -525,7 +529,7 @@ export class DouYinpush extends Base {
  * @returns
  */
 const skipDynamic = (Detail_Data: PushItem['Detail_Data']): boolean => {
-  if (Detail_Data.liveStatus.isliving) return false
+  if (Detail_Data.liveStatus?.isliving) return false
   for (const banWord of Config.douyin.push.banWords) {
     if (Detail_Data.item_title.includes(banWord)) {
       logger.mark(`作品：${logger.green(Detail_Data.share_url)} 包含屏蔽词：「${logger.red(banWord)}」，跳过推送`)
@@ -547,8 +551,8 @@ const skipDynamic = (Detail_Data: PushItem['Detail_Data']): boolean => {
  * @param cacheData 数据库的缓存数据
  * @returns 直播状态和是否改变的布尔值，默认false
  */
-const checkUserLiveStatus = (userInfo: any, cacheData: AllDataType<'douyin'>['douyin'])    => {
-  let liveStatus = userInfo.user.live_status === 1 ? 'open' : 'close'
+const checkUserLiveStatus = (userInfo: any, cacheData: AllDataType<'douyin'>['douyin']): PushItem['Detail_Data']['liveStatus']    => {
+  const liveStatus = userInfo.user.live_status === 1 ? 'open' : 'close'
   const isLiving = userInfo.user.live_status === 1
   let isChanged = false
   const sec_uid = userInfo.user.sec_uid
@@ -583,4 +587,19 @@ const mergeDouyinData = (data: AllDataType<'douyin'>['douyin']) =>{
     }
   }
   return result
+}
+
+/**
+ * 检查 DBdata 中是否存在与给定 host_mid 匹配的项
+ * @param DBdata - 数据库中存储的群组数据
+ * @param host_midToCheck 要检查的host_mid
+ * @returns 匹配的host_mid
+ */
+const findMatchingSecUid = (DBdata: DouyinDBType, secUidToCheck: string) => {
+  for (const sec_uid in DBdata) {
+    if (DBdata.hasOwnProperty(sec_uid) && DBdata[sec_uid].sec_uid === secUidToCheck) {
+      return secUidToCheck
+    }
+  }
+  return ''
 }

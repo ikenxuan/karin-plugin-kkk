@@ -74,7 +74,7 @@ export const douyinLogin = async (e: KarinMessage) => {
     }
   } catch (error: any) {
     logger.warn('首次使用，正在初始化 playwright 环境，请稍等片刻...')
-    if (error.meeage.includes('npx playwright install')) {
+    if (error.includes('npx playwright install')) {
       execSync('npx playwright install', { cwd: Version.pluginPath, stdio: 'inherit' })
       await e.reply(`playwright 初始化成功，请再次发送「${e.msg}」`)
       return true
