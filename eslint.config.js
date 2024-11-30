@@ -67,7 +67,6 @@ export default [
           }
         }
       }],
-      "no-empty-first-line": "error"
     }
   },
   {
