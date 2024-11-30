@@ -2,7 +2,6 @@ import tsParser from '@typescript-eslint/parser'
 import tsPlugin from '@typescript-eslint/eslint-plugin'
 import globals from 'globals'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
-import header from 'eslint-plugin-header'
 
 export default [
   {
@@ -87,15 +86,8 @@ export default [
     plugins: {
       '@typescript-eslint': tsPlugin,
       'simple-import-sort': simpleImportSort,
-      "header": header.rulesConfig
     },
     rules: {
-      "header/header": [2, "block", [
-        "/*",
-        " * Copyright 2024",
-        " * 开发者: 你的名字",
-        " */"
-      ]],
       // 禁用驼峰命名规则，允许使用下划线或其他命名方式。
       'camelcase': ['off'],
       // 要求使用 === 和 !== 而不是 == 和 !=，以避免类型强制转换带来的潜在错误。
