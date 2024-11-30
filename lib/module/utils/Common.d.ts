@@ -64,4 +64,10 @@ export declare const Common: {
      * @returns
      */
     useDarkTheme: () => boolean;
+    /**
+     * 传入一个时间戳（单位：毫秒），返回距离当前时间的相对的时间字符串
+     * @param timestamp 时间戳
+     * @returns 距离这个时间戳过去的多久的字符串
+     */
+    timeSince: (timestamp: number) => string;
 };
