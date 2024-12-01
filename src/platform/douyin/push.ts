@@ -158,13 +158,16 @@ export class DouYinpush extends Base {
 
               // 如果直播状态改变了，且这次是关播状态，发送通知
               if (data[awemeId].Detail_Data.liveStatus?.isChanged && data[awemeId].Detail_Data.liveStatus.isliving === false) {
-                const message_id = DBdata[data[awemeId].sec_uid]?.message_id
-                if (message_id && message_id !== '') {
-                  await karin.sendMsg(String(uin), karin.contactGroup(group_id), [
-                    segment.reply(message_id),
-                    segment.text(`「${data[awemeId].remark}」的直播已经结束惹 ~\n`),
-                    segment.text(`直播时间：${Common.timeSince(DBdata[data[awemeId].sec_uid].start_living_pn)}`)
-                  ])
+                const msgItem = DBdata[data[awemeId].sec_uid]?.message_id
+                for (const gid in msgItem) {
+                  if (msgItem[gid] && msgItem[gid].message_id !== '' && groupId === gid) {
+                    await karin.sendMsg(String(uin), karin.contactGroup(gid), [
+                      segment.reply(msgItem[gid].message_id),
+                      segment.text(`「${data[awemeId].remark}」的直播已经结束惹 ~\n`),
+                      segment.text(`直播时间：${Common.timeSince(DBdata[data[awemeId].sec_uid].start_living_pn)}`)
+                    ])
+                    break
+                  }
                 }
               }
 
@@ -180,11 +183,11 @@ export class DouYinpush extends Base {
                   DBdata[isSecUidFound].create_time = Number(data[awemeId].create_time)
                   // 如果直播状态改变了且该次是开播状态，则更新数据库中的直播状态
                   if (Detail_Data?.liveStatus && Detail_Data.liveStatus.isChanged) {
-                    DBdata[isSecUidFound].message_id = status.message_id
+                    DBdata[isSecUidFound].message_id[groupId].message_id = status.message_id
                     DBdata[isSecUidFound].living = data[awemeId].living
                     DBdata[isSecUidFound].start_living_pn = Detail_Data?.liveStatus.isliving ? Date.now() : 0
                   } else {
-                    DBdata[isSecUidFound].message_id = '',
+                    DBdata[isSecUidFound].message_id[groupId].message_id = '',
                     DBdata[isSecUidFound].living = data[awemeId].Detail_Data.user_info.user.live_status === 1,
                     DBdata[isSecUidFound].start_living_pn = 0
                   }
@@ -204,7 +207,11 @@ export class DouYinpush extends Base {
                     group_id: [ groupId ],
                     avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + data[awemeId].Detail_Data.user_info.user.avatar_larger.uri,
                     living: data[awemeId].living,
-                    message_id: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? status.message_id : '',
+                    message_id: {
+                      [groupId]: {
+                        message_id: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? status.message_id : ''
+                      }
+                    },
                     start_living_pn: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? Date.now() : 0
                   }
                 }
@@ -222,7 +229,11 @@ export class DouYinpush extends Base {
                   avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + data[awemeId].Detail_Data.user_info.user.avatar_larger.uri,
                   group_id: [ groupId ],
                   living: data[awemeId].living,
-                  message_id: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? status.message_id : '',
+                  message_id: {
+                    [groupId]: {
+                      message_id: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? status.message_id : ''
+                    }
+                  },
                   start_living_pn: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? Date.now() : 0
                 }
               })
@@ -364,15 +375,20 @@ export class DouYinpush extends Base {
           continue
         }
 
+        // 如果直播状态更变，不管是开播还是关播，都要保留该群组
         if ('liveStatus' in pushItem.Detail_Data) {
-          // 如果直播状态更变，不管是开播还是关播，都要保留该群组
+          // 开播推送
           if (pushItem.living === true && cachedData.living === false) {
             filteredGroupIds.push(groupId)
             continue
           }
+          // 关播推送
           if (pushItem.living === false && cachedData.living === true) {
-            filteredGroupIds.push(groupId)
-            continue
+            const msgItem = cachedData.message_id[groupId]
+            if (msgItem && msgItem.message_id !== '') {
+              filteredGroupIds.push(groupId)
+              continue
+            }
           }
         }
       }
