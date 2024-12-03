@@ -161,7 +161,7 @@ export class DouYinpush extends Base {
                 const msgItem = DBdata[data[awemeId].sec_uid]?.message_id
                 for (const gid in msgItem) {
                   if (msgItem[gid] && msgItem[gid].message_id !== '' && groupId === gid) {
-                    await karin.sendMsg(String(uin), karin.contactGroup(gid), [
+                    await karin.sendMsg(String(uin), karin.contactGroup(group_id), [
                       segment.reply(msgItem[gid].message_id),
                       segment.text(`「${data[awemeId].remark}」的直播已经结束惹 ~\n`),
                       segment.text(`直播时间：${Common.timeSince(DBdata[data[awemeId].sec_uid].start_living_pn)}`)
