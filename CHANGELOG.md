@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.1...v0.1.2) (2024-12-03)
+
+
+### Bug Fixes
+
+* eslint ([a9f417f](https://github.com/ikenxuan/karin-plugin-kkk/commit/a9f417fbec4a40e40ca134d01d31bd280ca4bb4f))
+* 初始化playwright ([bdc1646](https://github.com/ikenxuan/karin-plugin-kkk/commit/bdc1646ebfafbf4ddc3b512b639521aab6697d54))
+* 抖音直播推送 ([d051d85](https://github.com/ikenxuan/karin-plugin-kkk/commit/d051d855bc0562e2440a792ca80f6dfd59c9a71d))
+* 抖音直播推送 ([612738b](https://github.com/ikenxuan/karin-plugin-kkk/commit/612738b1039be5da569d4e5e13425776baf9be31))
+* 细节优化 ([a4ae6e1](https://github.com/ikenxuan/karin-plugin-kkk/commit/a4ae6e1ff4fc039b668d1e884e1c81756c7ad7fe))
+
 ## [0.1.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.0...v0.1.1) (2024-11-29)
 
 
