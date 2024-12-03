@@ -72,7 +72,7 @@ export const douyinLogin = async (e: KarinMessage) => {
     }
   } catch (error: any) {
     const msg = await e.reply('首次使用，正在初始化 playwright 环境，请稍等片刻...')
-    if (error.includes('npx playwright install')) {
+    if (error.message.includes('npx playwright install')) {
       execSync('npx playwright install chromium', { cwd: Version.pluginPath, stdio: 'inherit' })
       await e.reply(`playwright 初始化成功，请再次发送「${e.msg}」`)
       await e.bot.RecallMessage(e.contact, msg.message_id)
