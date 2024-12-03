@@ -1,7 +1,7 @@
 import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 
-import karin, { handler, KarinAdapter, KarinMessage, logger, segment } from 'node-karin'
+import  { handler, KarinMessage, logger, segment } from 'node-karin'
 import { chromium } from 'playwright'
 
 import { Config, Version } from '@/module'
@@ -57,8 +57,7 @@ export const douyinLogin = async (e: KarinMessage) => {
           await browser.close()
           // 批量撤回
           msg_id.forEach(async (id) => {
-            const bot = karin.getBot(e.self_id) as KarinAdapter
-            await bot.RecallMessage(e.contact, id)
+            await e.bot.RecallMessage(e.contact, id)
           })
         }
       })
@@ -66,17 +65,17 @@ export const douyinLogin = async (e: KarinMessage) => {
       await browser.close()
       // 批量撤回
       msg_id.forEach(async (id) => {
-        const bot = karin.getBot(e.self_id) as KarinAdapter
-        await bot.RecallMessage(e.contact, id)
+        await e.bot.RecallMessage(e.contact, id)
       })
       await e.reply('登录超时！二维码已失效！', { reply: true })
       logger.error(err)
     }
   } catch (error: any) {
-    logger.warn('首次使用，正在初始化 playwright 环境，请稍等片刻...')
+    const msg = await e.reply('首次使用，正在初始化 playwright 环境，请稍等片刻...')
     if (error.includes('npx playwright install')) {
-      execSync('npx playwright install', { cwd: Version.pluginPath, stdio: 'inherit' })
+      execSync('npx playwright install chromium', { cwd: Version.pluginPath, stdio: 'inherit' })
       await e.reply(`playwright 初始化成功，请再次发送「${e.msg}」`)
+      await e.bot.RecallMessage(e.contact, msg.message_id)
       return true
     }
   }

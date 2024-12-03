@@ -1,14 +1,13 @@
 import fs from 'node:fs'
 
 import amagi from '@ikenxuan/amagi'
-import karin, { common, KarinAdapter, KarinMessage, segment } from 'node-karin'
+import { common, KarinMessage, segment } from 'node-karin'
 import QRCode from 'qrcode'
 
 import { Common, Config, Version } from '@/module/utils'
 
 const cl = new amagi({ bilibili: Config.cookies.bilibili })
 export const bilibiliLogin = async (e: KarinMessage) => {
-  const bot = karin.getBot(e.self_id) as KarinAdapter
   /** 申请二维码 */
   const qrcodeurl = await cl.getBilibiliData('申请二维码')
   const qrimg = await QRCode.toDataURL(qrcodeurl.data.url)
@@ -34,7 +33,7 @@ export const bilibiliLogin = async (e: KarinMessage) => {
         await e.reply('登录成功！用户登录凭证已保存至cookies.yaml', { reply: true })
         // 批量撤回
         msg_id.forEach(async (id) => {
-          await bot.RecallMessage(e.contact, id)
+          await e.bot.RecallMessage(e.contact, id)
         })
         completedCase0 = true
         break
@@ -42,7 +41,7 @@ export const bilibiliLogin = async (e: KarinMessage) => {
       case 86038: {
         i === 17 && await e.reply('二维码已失效', { reply: true })
         msg_id.forEach(async (id) => {
-          await bot.RecallMessage(e.contact, id)
+          await e.bot.RecallMessage(e.contact, id)
         })
         break
       }
@@ -50,7 +49,7 @@ export const bilibiliLogin = async (e: KarinMessage) => {
         if (! executed86090) {
           const message3 = await e.reply('二维码已扫码，未确认', { reply: true })
           msg_id.push(message3.message_id)
-          await bot.RecallMessage(e.contact, message2.message_id)
+          await e.bot.RecallMessage(e.contact, message2.message_id)
           executed86090 = true
           // 删除 msg_id 数组中的 message2.message_id
           const index = msg_id.indexOf(message2.message_id)
