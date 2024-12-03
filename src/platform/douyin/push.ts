@@ -182,10 +182,10 @@ export class DouYinpush extends Base {
                   ! data[awemeId].living ? DBdata[isSecUidFound].aweme_idlist.push(awemeId) : false
                   DBdata[isSecUidFound].create_time = Number(data[awemeId].create_time)
                   // 如果直播状态改变了且该次是开播状态，则更新数据库中的直播状态
-                  if (Detail_Data?.liveStatus && Detail_Data.liveStatus.isChanged) {
+                  if (Detail_Data?.liveStatus?.isliving) {
                     DBdata[isSecUidFound].message_id[groupId].message_id = status.message_id
                     DBdata[isSecUidFound].living = data[awemeId].living
-                    DBdata[isSecUidFound].start_living_pn = Detail_Data?.liveStatus.isliving ? Date.now() : 0
+                    DBdata[isSecUidFound].start_living_pn = Date.now()
                   } else {
                     DBdata[isSecUidFound].message_id[groupId].message_id = '',
                     DBdata[isSecUidFound].living = data[awemeId].Detail_Data.user_info.user.live_status === 1,
@@ -293,7 +293,7 @@ export class DouYinpush extends Base {
         // 如果正在开播
         const liveStatus = checkUserLiveStatus(userinfo, DBdata)
         const fake_room_id = '7' + Math.random().toString().slice(2).padEnd(18, '0').slice(0, 18)
-        if (liveStatus?.liveStatus === 'open' && liveStatus.isChanged === true) {
+        if (liveStatus?.liveStatus === 'open') {
           const live_data = await getDouyinData('直播间信息数据', Config.cookies.douyin, { sec_uid: item.sec_uid })
           const room_data = JSON.parse(userinfo.user.room_data)
           if (! willbepushlist[room_data.owner.web_rid]) {
@@ -378,9 +378,12 @@ export class DouYinpush extends Base {
         // 如果直播状态更变，不管是开播还是关播，都要保留该群组
         if ('liveStatus' in pushItem.Detail_Data) {
           // 开播推送
-          if (pushItem.living === true && cachedData.living === false) {
-            filteredGroupIds.push(groupId)
-            continue
+          if (pushItem.living === true) {
+            const msgItem = cachedData.message_id[groupId]
+            if (msgItem && msgItem.message_id === '') {
+              filteredGroupIds.push(groupId)
+              continue
+            }
           }
           // 关播推送
           if (pushItem.living === false && cachedData.living === true) {
