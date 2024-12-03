@@ -115,7 +115,7 @@ export class Admin extends Plugin {
       // 检查 customConfig 是否存在
       const customConfig = PlatformTypeConfig[platform]?.customConfig
       if (! customConfig || ! customConfig[key]) {
-        await e.reply(`无效的设置项：${key}`)
+        logger.warn(`无效的设置项：${key}`)
         return false
       }
       const configKey = customConfig[key].key // 提取实际的 key
