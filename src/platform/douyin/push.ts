@@ -387,7 +387,7 @@ export class DouYinpush extends Base {
         }
 
         // 当该作品ID不在数据库缓存列表中时，直接保留该群组
-        if (! cachedData.aweme_idlist.includes(awemeId)) {
+        if (! cachedData.aweme_idlist.includes(awemeId) && ! ('liveStatus' in pushItem.Detail_Data)) {
           filteredGroupIds.push(groupId)
           continue
         }
