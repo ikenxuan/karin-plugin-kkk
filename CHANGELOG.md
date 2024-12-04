@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.2...v0.1.3) (2024-12-04)
+
+
+### Bug Fixes
+
+* 用错gid了 ([0a4cae1](https://github.com/ikenxuan/karin-plugin-kkk/commit/0a4cae19ecf60b1e1104ad8f68709cd85053e70d))
+* 赋值msgid失败 ([cfb9dd7](https://github.com/ikenxuan/karin-plugin-kkk/commit/cfb9dd76a6a2b8321a61fd43ccd931cb4d1fede5))
+
 ## [0.1.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.1...v0.1.2) (2024-12-03)
 
 
