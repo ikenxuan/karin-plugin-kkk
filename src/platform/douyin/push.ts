@@ -185,7 +185,7 @@ export class DouYinpush extends Base {
                     DBdata[isSecUidFound].living = data[awemeId].living
                     DBdata[isSecUidFound].start_living_pn = Date.now()
                   } else {
-                    DBdata[isSecUidFound].message_id[groupId].message_id = '',
+                    DBdata[isSecUidFound].message_id = { [groupId]: { message_id: '' }, ...DBdata[isSecUidFound].message_id }
                     DBdata[isSecUidFound].living = data[awemeId].Detail_Data.user_info.user.live_status === 1,
                     DBdata[isSecUidFound].start_living_pn = 0
                   }
@@ -384,6 +384,12 @@ export class DouYinpush extends Base {
               continue
             }
           }
+        }
+
+        // 当该作品ID不在数据库缓存列表中时，直接保留该群组
+        if (! cachedData.aweme_idlist.includes(awemeId)) {
+          filteredGroupIds.push(groupId)
+          continue
         }
       }
 
