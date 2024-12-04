@@ -1,5 +1,5 @@
 import { ResponseType } from 'axios';
-export type NetworksConfigType = {
+export interface NetworksConfigType {
     /**
      * 请求地址
      */
@@ -36,4 +36,4 @@ export type NetworksConfigType = {
      * 最大重试请求次数
      */
     maxRetries?: number;
-};
+}

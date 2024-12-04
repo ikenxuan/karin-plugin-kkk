@@ -47,7 +47,7 @@ export declare const Common: {
      * @param force 是否强制删除，默认false
      * @returns
      */
-    removeFile: (path: string, force?: boolean) => Promise<boolean>;
+    removeFile: (path: string, force?: boolean) => boolean;
     /**
      * 将时间戳转换为日期时间字符串
      * @param timestamp 时间戳

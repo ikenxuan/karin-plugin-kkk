@@ -90,7 +90,7 @@ export declare class Base {
      */
     DownLoadFile(video_url: string, opt: downLoadFileOptions): Promise<fileInfo>;
     /** 删文件 */
-    removeFile(path: string, force?: boolean): Promise<boolean>;
+    removeFile(path: string, force?: boolean): boolean;
     /** 过万整除 */
     count(count: number): string;
 }

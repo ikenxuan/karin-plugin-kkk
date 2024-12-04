@@ -20,9 +20,7 @@ interface PushItem {
 /** 已支持推送的动态类型 */
 type dynamicTYPE = 'DYNAMIC_TYPE_AV' | 'DYNAMIC_TYPE_DRAW' | 'DYNAMIC_TYPE_WORD' | 'DYNAMIC_TYPE_LIVE_RCMD';
 /** 推送列表的类型定义 */
-interface WillBePushList {
-    [key: string]: PushItem;
-}
+type WillBePushList = Record<string, PushItem>;
 export declare class Bilibilipush extends Base {
     private force;
     /**
@@ -48,9 +46,7 @@ export declare class Bilibilipush extends Base {
      */
     getDynamicList(): Promise<{
         willbepushlist: WillBePushList;
-        DBdata: {
-            [group_id: string]: BilibiliDBType;
-        };
+        DBdata: Record<string, BilibiliDBType>;
     }>;
     /**
      * 排除已推送过的群组并返回更新后的推送列表

@@ -7,10 +7,7 @@ export declare class Networks {
     private type;
     private body?;
     private axiosInstance;
-    private isGetResult;
     private timeout;
-    private timer;
-    private data;
     private filepath;
     private maxRetries;
     constructor(data: NetworksConfigType);

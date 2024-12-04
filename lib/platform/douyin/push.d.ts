@@ -27,9 +27,7 @@ interface PushItem {
     living: boolean;
 }
 /** 推送列表的类型定义 */
-interface WillBePushList {
-    [key: string]: PushItem;
-}
+type WillBePushList = Record<string, PushItem>;
 export declare class DouYinpush extends Base {
     private force;
     /**
@@ -48,9 +46,7 @@ export declare class DouYinpush extends Base {
      */
     getDynamicList(): Promise<{
         willbepushlist: WillBePushList;
-        DBdata: {
-            [group_id: string]: DouyinDBType;
-        };
+        DBdata: Record<string, DouyinDBType>;
     }>;
     /**
      * 排除已推送过的群组并返回更新后的推送列表
