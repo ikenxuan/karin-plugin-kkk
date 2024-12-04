@@ -3,12 +3,9 @@ import crypto from 'node:crypto'
 import fs from 'node:fs'
 import os from 'node:os'
 import querystring from 'node:querystring'
-import stream from 'node:stream'
-import util from 'node:util'
 
 import axios from 'axios'
 import { core } from 'icqq'
-import { NOOP } from 'icqq/lib/common'
 import { Cfg, KarinMessage, logger } from 'node-karin'
 
 
@@ -107,7 +104,7 @@ async function getPttBuffer (file: string, ffmpeg = 'ffmpeg', transcoding = true
       const result = await getAudioTime(tmpfile, ffmpeg)
       if (result.code === 1) time = result.data
       buf = await fs.promises.readFile(tmpfile)
-      fs.unlink(tmpfile, NOOP)
+      fs.unlink(tmpfile, () => {})
       buffer = result.buffer ?? buf
     } else {
       const tmpfile = `${TMP_DIR}/${uuid()}`
@@ -115,7 +112,7 @@ async function getPttBuffer (file: string, ffmpeg = 'ffmpeg', transcoding = true
       if (result.code === 1) time = result.data
       await fs.promises.writeFile(tmpfile, buf)
       buffer = await audioTrans(tmpfile, ffmpeg) as any
-      fs.unlink(tmpfile, NOOP)
+      fs.unlink(tmpfile, () => {})
     }
   } else if (file.startsWith('http://') || file.startsWith('https://')) {
     const headers = {
@@ -133,7 +130,7 @@ async function getPttBuffer (file: string, ffmpeg = 'ffmpeg', transcoding = true
     } else {
       buffer = await audioTrans(tmpfile, ffmpeg) as any
     }
-    fs.unlink(tmpfile, NOOP)
+    fs.unlink(tmpfile, () => {})
   } else {
     file = String(file).replace(/^file:\/{2}/, '')
     IS_WIN && file.startsWith('/') && (file = file.slice(1))
@@ -201,7 +198,7 @@ async function audioTrans (file: string, ffmpeg = 'ffmpeg') {
         logger.error('音频转码到pcm失败，请确认你的ffmpeg可以处理此转换')
         resolve(false)
       } finally {
-        fs.unlink(tmpfile, NOOP)
+        fs.unlink(tmpfile, () => {})
       }
     })
   })
@@ -220,7 +217,7 @@ async function audioTrans1 (file: string, ffmpeg = 'ffmpeg') {
         logger.error('音频转码到amr失败，请确认你的ffmpeg可以处理此转换')
         resolve(false)
       } finally {
-        fs.unlink(tmpfile, NOOP)
+        fs.unlink(tmpfile, () => {})
       }
     })
   })
