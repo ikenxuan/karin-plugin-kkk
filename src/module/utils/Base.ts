@@ -99,7 +99,7 @@ export class Base {
    * @returns
    */
   async upload_file (file: fileInfo, video_url: string, options?: uploadFileOptions): Promise<boolean> {
-    let sendStatus: boolean = true
+    let sendStatus = true
     let File: Buffer | string, newFileSize = file.totalBytes
 
     // 判断是否使用群文件上传
@@ -146,7 +146,7 @@ export class Base {
       // 是主动消息
       if (options?.active) {
         if (options.useGroupFile) { // 是群文件
-          const bot = karin.getBot(String(options.activeOption?.uin)) as KarinAdapter
+          const bot = karin.getBot(String(options.activeOption?.uin))!
           const status = await bot.UploadGroupFile(String(options.activeOption?.group_id), File, file.originTitle ? file.originTitle : `tmp_${Date.now()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是群文件
@@ -165,10 +165,10 @@ export class Base {
       }
       return sendStatus
     } catch (error) {
-      logger.error('视频文件上传错误,' + error)
+      logger.error('视频文件上传错误,' + String(error))
       return false
     } finally {
-      await this.removeFile(file.filepath)
+      this.removeFile(file.filepath)
     }
   }
 
@@ -182,7 +182,7 @@ export class Base {
    */
   async DownLoadVideo (downloadOpt: downloadFileOptions, uploadOpt?: uploadFileOptions): Promise<boolean> {
     /** 获取文件大小 */
-    const fileHeaders = await new Networks({ url: downloadOpt.video_url, headers: downloadOpt.headers || this.headers }).getHeaders()
+    const fileHeaders = await new Networks({ url: downloadOpt.video_url, headers: downloadOpt.headers ?? this.headers }).getHeaders()
     const fileSizeContent = fileHeaders['content-range']?.match(/\/(\d+)/) ? parseInt(fileHeaders['content-range']?.match(/\/(\d+)/)[1], 10) : 0
     const fileSizeInMB = (fileSizeContent / (1024 * 1024)).toFixed(2)
     const fileSize = parseInt(parseFloat(fileSizeInMB).toFixed(2))
@@ -197,8 +197,8 @@ export class Base {
 
     // 下载文件，视频URL，标题和自定义headers
     let res = await this.DownLoadFile(downloadOpt.video_url, {
-      title: Config.app.rmmp4 ? downloadOpt.title.timestampTitle as string : downloadOpt.title.originTitle as string,
-      headers: downloadOpt.headers || this.headers,
+      title: Config.app.rmmp4 ? downloadOpt.title.timestampTitle! : downloadOpt.title.originTitle!,
+      headers: downloadOpt.headers ?? this.headers,
       filetype: '.mp4'
     })
     res = { ...res, ...downloadOpt.title }
@@ -220,8 +220,8 @@ export class Base {
     // 使用networks类进行文件下载，并通过回调函数实时更新下载进度
     const { filepath, totalBytes } = await new Networks({
       url: video_url, // 视频地址
-      headers: opt.headers || this.headers, // 请求头
-      filepath: Common.tempDri.video + `${opt.title}${opt.filetype || '.mp4'}`, // 文件保存路径
+      headers: opt.headers ?? this.headers, // 请求头
+      filepath: Common.tempDri.video + `${opt.title}${opt.filetype ?? '.mp4'}`, // 文件保存路径
       timeout: 30000, // 设置30秒超时
       maxRetries: 3   // 最多重试3次
     }).downloadStream((downloadedBytes, totalBytes) => {
@@ -234,7 +234,7 @@ export class Base {
         progress += '#'.repeat(filledLength)
         progress += '-'.repeat(Math.max(0, barLength - filledLength - 1))
         const formattedProgress = progressPercentage.toFixed(2) + '%'
-        console.log(`正在下载 ${opt.title}${opt.filetype || '.mp4'} [${progress}] ${formattedProgress}\r`)
+        console.log(`正在下载 ${opt.title}${opt.filetype ?? '.mp4'} [${progress}] ${formattedProgress}\r`)
       }
       // 计算并打印当前下载进度
       const progressPercentage = (downloadedBytes / totalBytes) * 100
@@ -244,7 +244,7 @@ export class Base {
   }
 
   /** 删文件 */
-  async removeFile (path: string, force: boolean = false): Promise<boolean> {
+  removeFile (path: string, force = false): boolean {
     return Common.removeFile(path, force)
   }
 

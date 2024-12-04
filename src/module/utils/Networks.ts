@@ -6,9 +6,7 @@ import { pipeline } from 'stream/promises'
 
 import { NetworksConfigType } from '@/types'
 
-interface HeadersObject {
-  [key: string]: string
-}
+type HeadersObject = Record<string, string>;
 
 export class Networks {
   private url: string
@@ -17,24 +15,18 @@ export class Networks {
   private type: ResponseType
   private body?: any
   private axiosInstance: AxiosInstance
-  private isGetResult: boolean
   private timeout: number
-  private timer: NodeJS.Timeout | undefined
-  private data: {}
   private filepath: string
   private maxRetries: number
 
   constructor (data: NetworksConfigType) {
     this.headers = data.headers || {}
-    this.url = data.url || ''
-    this.type = data.type || 'json'
-    this.method = data.method || 'GET'
-    this.body = data.body || null
-    this.data = {}
-    this.timeout = data.timeout || 5000
-    this.isGetResult = false
-    this.timer = undefined
-    this.filepath = data.filepath || ''
+    this.url = data.url ?? ''
+    this.type = data.type ?? 'json'
+    this.method = data.method ?? 'GET'
+    this.body = data.body ?? null
+    this.timeout = data.timeout ?? 5000
+    this.filepath = data.filepath ?? ''
     this.maxRetries = 0
 
     // 创建axios实例
@@ -49,7 +41,7 @@ export class Networks {
   }
 
   get config (): AxiosRequestConfig {
-    let config: AxiosRequestConfig = {
+    const config: AxiosRequestConfig = {
       url: this.url,
       method: this.method,
       headers: this.headers,
@@ -75,7 +67,7 @@ export class Networks {
    */
   async downloadStream (
     progressCallback: (downloadedBytes: number, totalBytes: number) => void,
-    retryCount: number = 0): Promise<{ filepath: string; totalBytes: number }> {
+    retryCount = 0): Promise<{ filepath: string; totalBytes: number }> {
     // 创建一个中止控制器，用于在请求超时时中止请求
     const controller = new AbortController()
     // 设置一个定时器，如果请求超过预定时间，则中止请求
@@ -174,7 +166,6 @@ export class Networks {
       if (result.status === 504) {
         return result
       }
-      this.isGetResult = true
       return result
     } catch (error) {
       logger.info(error)
@@ -217,7 +208,7 @@ export class Networks {
         maxRedirects: 0, // 禁止跟随重定向
         validateStatus: (status: number) => status >= 300 && status < 400 // 仅处理3xx响应
       })
-      return response.headers['location'] as string
+      return response.headers.location as string
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         throw new Error(error.stack)
@@ -236,11 +227,10 @@ export class Networks {
         logger.error('HTTP 响应状态码: 429')
         throw new Error('ratelimit triggered, 触发 https://www.douyin.com/ 的速率限制！！！')
       }
-      this.isGetResult = true
       return result.data
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        throw new Error(error.stack || error.message)
+        throw new Error(error.stack ?? error.message)
       }
       return false
     }

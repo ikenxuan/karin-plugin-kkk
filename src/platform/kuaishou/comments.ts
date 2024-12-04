@@ -114,7 +114,7 @@ function br (data: any) {
  * @param data 评论数据
  * @returns
  */
-async function handling_at (data: any) {
+function handling_at (data: any) {
   for (let i = 0; i < data.length; i ++) {
     let text = data[i].text
 

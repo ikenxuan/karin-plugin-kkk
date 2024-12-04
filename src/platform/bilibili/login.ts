@@ -32,17 +32,17 @@ export const bilibiliLogin = async (e: KarinMessage) => {
         // Config.bilibilirefresh_token = qrcodestatusdata.data.data.refresh_token
         await e.reply('登录成功！用户登录凭证已保存至cookies.yaml', { reply: true })
         // 批量撤回
-        msg_id.forEach(async (id) => {
+        for (const id of msg_id) {
           await e.bot.RecallMessage(e.contact, id)
-        })
+        }
         completedCase0 = true
         break
       }
       case 86038: {
         i === 17 && await e.reply('二维码已失效', { reply: true })
-        msg_id.forEach(async (id) => {
+        for (const id of msg_id) {
           await e.bot.RecallMessage(e.contact, id)
-        })
+        }
         break
       }
       case 86090: {

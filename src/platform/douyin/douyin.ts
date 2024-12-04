@@ -99,7 +99,7 @@ export class DouYin extends Base {
         /** 视频 */
         let FPS
         const video_res = []
-        let sendvideofile = true
+        const sendvideofile = true
         if (this.is_mp4) {
           const video_data = []
           const videores = []
@@ -202,8 +202,8 @@ export class DouYin extends Base {
                     resolvefilepath,
                     filePath
                   )
-                  await this.removeFile(liveimgbgm.filepath, true)
-                  await this.removeFile(liveimg.filepath, true)
+                  this.removeFile(liveimgbgm.filepath, true)
+                  this.removeFile(liveimg.filepath, true)
 
                   const stats = fs.statSync(filePath)
                   const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
@@ -215,8 +215,8 @@ export class DouYin extends Base {
                     return await this.upload_file({ filepath: filePath, totalBytes: fileSizeInMB }, '')
                   }
                 } else {
-                  await this.removeFile(liveimgbgm.filepath, true)
-                  await this.removeFile(liveimg.filepath, true)
+                  this.removeFile(liveimgbgm.filepath, true)
+                  this.removeFile(liveimg.filepath, true)
                   return true
                 }
               }
@@ -233,9 +233,9 @@ export class DouYin extends Base {
         veoarray.unshift(`------------------------------ | ---------------------------- |\n`)
         veoarray.unshift(`标题                           | 分享二维码                    |\n`)
         const forwardmsg = []
-        for (let i = 0; i < data.aweme_list.length; i ++) {
-          const title = data.aweme_list[i].desc
-          const cover = data.aweme_list[i].share_url
+        for (const i of data.aweme_list) {
+          const title = i.desc
+          const cover = i.share_url
           veoarray.push(`${title}       | ![img](${await QRCode.toDataURL(cover, {
             errorCorrectionLevel: 'H',
             type: 'image/png',
@@ -369,9 +369,9 @@ function convertTimestampToDateTime (timestamp: number): string {
 function Emoji (data: any): any {
   const ListArray = []
 
-  for (let i = 0; i < data.emoji_list.length; i ++) {
-    const display_name = data.emoji_list[i].display_name
-    const url = data.emoji_list[i].emoji_url.url_list[0]
+  for (const i of data.emoji_list) {
+    const display_name = i.display_name
+    const url = i.emoji_url.url_list[0]
 
     const Objject = {
       name: display_name,

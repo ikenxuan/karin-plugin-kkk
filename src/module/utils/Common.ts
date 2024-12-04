@@ -44,11 +44,11 @@ export const Common = {
    */
   chineseToArabic: (chineseNumber: string): number => {
     // 映射表，定义基础的中文数字
-    const chineseToArabicMap: { [key: string]: number } = {
+    const chineseToArabicMap: Record<string, number> = {
       '零': 0, '一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9
     }
     // 对应中文单位映射
-    const units: { [key: string]: number } = {
+    const units: Record<string, number> = {
       '十': 10, '百': 100, '千': 1000, '万': 10000, '亿': 100000000
     }
     let result = 0
@@ -128,7 +128,7 @@ export const Common = {
    * @param force 是否强制删除，默认false
    * @returns
    */
-  removeFile: async (path: string, force: boolean = false): Promise<boolean> => {
+  removeFile: (path: string, force = false): boolean => {
     path = path.replace(/\\/g, '/')
     if (Config.app.rmmp4) {
       try {
@@ -176,11 +176,11 @@ export const Common = {
     const now = new Date()
     // 获取年、月、日、时、分、秒
     const year = now.getFullYear()
-    let month = now.getMonth() + 1 // month 是 number 类型
-    let day = now.getDate()
-    let hour = now.getHours()
-    let minute = now.getMinutes()
-    let second = now.getSeconds()
+    const month = now.getMonth() + 1 // month 是 number 类型
+    const day = now.getDate()
+    const hour = now.getHours()
+    const minute = now.getMinutes()
+    const second = now.getSeconds()
 
     const formattedMonth = month < 10 ? '0' + month : '' + month
     const formattedDay = day < 10 ? '0' + day : '' + day

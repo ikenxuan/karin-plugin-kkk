@@ -20,7 +20,7 @@ export async function getKuaishouID (url: string, log = true) {
   let result = {} as ExtendedKuaishouOptionsType
   switch (true) {
     case /photoId=(.*)/.test(longLink): {
-      const workid = longLink.match(/photoId=([^&]+)/)
+      const workid = /photoId=([^&]+)/.exec(longLink)
       result = {
         type: 'one_work',
         photoId: workid ? workid[1] : undefined

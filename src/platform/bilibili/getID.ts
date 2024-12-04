@@ -19,7 +19,7 @@ export async function getBilibiliID (url: string) {
 
   switch (true) {
     case /(video\/|video\-)([A-Za-z0-9]+)/.test(longLink): {
-      const bvideoMatch = longLink.match(/video\/([A-Za-z0-9]+)|bvid=([A-Za-z0-9]+)/)
+      const bvideoMatch = /video\/([A-Za-z0-9]+)|bvid=([A-Za-z0-9]+)/.exec(longLink)
       result = {
         type: 'one_video',
         id: bvideoMatch ? bvideoMatch[1] || bvideoMatch[2] : undefined
@@ -27,8 +27,9 @@ export async function getBilibiliID (url: string) {
       break
     }
     case /play\/(\S+?)\??/.test(longLink): {
-      const playMatch = longLink.match(/play\/(\w+)/)
-      let id = playMatch ? playMatch[1] : '', realid = ''
+      const playMatch = /play\/(\w+)/.exec(longLink)
+      const id = playMatch ? playMatch[1] : ''
+      let realid = ''
       if (id.startsWith('ss')) {
         realid = 'season_id'
       } else if (id.startsWith('ep')) {
@@ -41,17 +42,17 @@ export async function getBilibiliID (url: string) {
       break
     }
     case /^https:\/\/t\.bilibili\.com\/(\d+)/.test(longLink) || /^https:\/\/www\.bilibili\.com\/opus\/(\d+)/.test(longLink): {
-      const tMatch = longLink.match(/^https:\/\/t\.bilibili\.com\/(\d+)/)
-      const opusMatch = longLink.match(/^https:\/\/www\.bilibili\.com\/opus\/(\d+)/)
-      const dynamic_id = tMatch || opusMatch
+      const tMatch = /^https:\/\/t\.bilibili\.com\/(\d+)/.exec(longLink)
+      const opusMatch = /^https:\/\/www\.bilibili\.com\/opus\/(\d+)/.exec(longLink)
+      const dynamic_id = tMatch ?? opusMatch
       result = {
         type: 'dynamic_info',
         dynamic_id: dynamic_id ? dynamic_id[1] : dynamic_id
       }
       break
     }
-    case /live\.bilibili\.com/.test(longLink): {
-      const match = longLink.match(/https?:\/\/live\.bilibili\.com\/(\d+)/)
+    case longLink.includes('live.bilibili.com'): {
+      const match = /https?:\/\/live\.bilibili\.com\/(\d+)/.exec(longLink)
       result = {
         type: 'live_room_detail',
         room_id: match ? match[1] : undefined

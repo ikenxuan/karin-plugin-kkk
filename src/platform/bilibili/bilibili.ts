@@ -88,7 +88,7 @@ export class Bilibili extends Base {
       }
       case 'bangumi_video_info': {
         const barray = []
-        let msg = []
+        const msg = []
         for (let i = 0; i < OBJECT.INFODATA.result.episodes.length; i ++) {
           const totalEpisodes = OBJECT.INFODATA.result.episodes.length
           const long_title = OBJECT.INFODATA.result.episodes[i].long_title
@@ -118,7 +118,7 @@ export class Bilibili extends Base {
 
         await this.e.reply([ `请在120秒内输入 第?集 选择集数` ])
         const context = await karin.ctx(this.e, { reply: true })
-        const regex = context.msg.match(/第([一二三四五六七八九十百千万0-9]+)集/)
+        const regex = /第([一二三四五六七八九十百千万0-9]+)集/.exec(context.msg)
         let Episode
         if (regex && regex[1]) {
           Episode = regex[1]
@@ -160,31 +160,34 @@ export class Bilibili extends Base {
           /** 图文、纯图 */
           case 'DYNAMIC_TYPE_DRAW': {
             const imgArray = []
-            for (const img of OBJECT.dynamicINFO.data.item.modules.module_dynamic.major && OBJECT.dynamicINFO.data.item.modules.module_dynamic?.major?.draw?.items) {
+            for (const img of OBJECT.dynamicINFO.data.item.modules.module_dynamic.major?.draw?.items) {
               imgArray.push(segment.image(img.src))
             }
-            // const commentsdata = bilibiliComments(OBJECT)
-            // img = await Render('bilibili/comment', {
-            //   Type: '动态',
-            //   CommentsData: commentsdata,
-            //   CommentLength: String(commentsdata?.length ? commentsdata.length : 0),
-            //   share_url: 'https://t.bilibili.com/' + OBJECT.dynamicINFO.data.item.id_str,
-            //   ImageLength: OBJECT.dynamicINFO.data.item.modules?.module_dynamic?.major?.draw?.items?.length || '动态中没有附带图片',
-            //   shareurl: '动态分享链接'
-            // })
-            // if (imgArray.length === 1) await this.e.reply(imgArray[0])
-            // if (imgArray.length > 1) {
-            //   const forwardMsg = common.makeForward(imgArray, this.e.sender.uin, this.e.sender.nick)
-            //   await this.e.bot.sendForwardMessage(this.e.contact, forwardMsg)
-            // }
-            // if (Config.bilibili.comment) await this.e.reply(img)
+
+            if (Config.bilibili.comment) {
+              const commentsdata = bilibiliComments(OBJECT)
+              img = await Render('bilibili/comment', {
+                Type: '动态',
+                CommentsData: commentsdata,
+                CommentLength: String(commentsdata?.length ? commentsdata.length : 0),
+                share_url: 'https://t.bilibili.com/' + OBJECT.dynamicINFO.data.item.id_str,
+                ImageLength: OBJECT.dynamicINFO.data.item.modules?.module_dynamic?.major?.draw?.items?.length || '动态中没有附带图片',
+                shareurl: '动态分享链接'
+              })
+              if (imgArray.length === 1) await this.e.reply(imgArray[0])
+              if (imgArray.length > 1) {
+                const forwardMsg = common.makeForward(imgArray, this.e.sender.uin, this.e.sender.nick)
+                await this.e.bot.sendForwardMessage(this.e.contact, forwardMsg)
+              }
+              await this.e.reply(img)
+            }
 
             const dynamicCARD = JSON.parse(OBJECT.dynamicINFO_CARD.data.card.card)
             const cover = () => {
               const imgArray = []
-              for (let i = 0; i < dynamicCARD.item.pictures.length; i ++) {
+              for (const i of dynamicCARD.item.pictures) {
                 const obj = {
-                  image_src: dynamicCARD.item.pictures[i].img_src
+                  image_src: i.img_src
                 }
                 imgArray.push(obj)
               }
@@ -323,8 +326,8 @@ export class Bilibili extends Base {
                   filePath
                 )
                 logger.mark('正在尝试删除缓存文件')
-                await this.removeFile(bmp4.filepath, true)
-                await this.removeFile(bmp3.filepath, true)
+                this.removeFile(bmp4.filepath, true)
+                this.removeFile(bmp3.filepath, true)
 
                 const stats = fs.statSync(filePath)
                 const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
@@ -336,8 +339,8 @@ export class Bilibili extends Base {
                   return await this.upload_file({ filepath: filePath, totalBytes: fileSizeInMB }, '')
                 }
               } else {
-                await this.removeFile(bmp4.filepath, true)
-                await this.removeFile(bmp3.filepath, true)
+                this.removeFile(bmp4.filepath, true)
+                this.removeFile(bmp3.filepath, true)
                 return true
               }
             }
@@ -375,21 +378,21 @@ export class Bilibili extends Base {
    * @returns 经过排除后的视频流数据（删减不符合Config.upload.filelimit条件的视频流）
    */
   async processVideos (data: any) {
-    let results: { [key: string]: string } = {}
+    const results: Record<string, string> = {}
 
-    for (let video of data.DATA.data.dash.video) {
-      let size = await this.getvideosize(video.base_url, data.DATA.data.dash.audio[0].base_url, data.INFODATA.data.bvid)
+    for (const video of data.DATA.data.dash.video) {
+      const size = await this.getvideosize(video.base_url, data.DATA.data.dash.audio[0].base_url, data.INFODATA.data.bvid)
       results[video.id] = size
     }
 
     // 将结果对象的值转换为数字，并找到最接近但不超过 Config.upload.filelimit 的值
-    let sizes = Object.values(results).map(size => parseFloat(size.replace('MB', '')))
+    const sizes = Object.values(results).map(size => parseFloat(size.replace('MB', '')))
     let closestId: string | null = null
     let smallestDifference = Infinity
 
     sizes.forEach((size, index) => {
       if (size <= Config.upload.filelimit) {
-        let difference = Math.abs(size - Config.upload.filelimit)
+        const difference = Math.abs(size - Config.upload.filelimit)
         if (difference < smallestDifference) {
           smallestDifference = difference
           closestId = Object.keys(results)[index]
@@ -463,7 +466,7 @@ function replacetext (text: string, obj: { data: { item: { modules: { module_dyn
   return text
 }
 
-const qnd: { [key: number]: string } = {
+const qnd: Record<number, string> = {
   6: '极速 240P',
   16: '流畅 360P',
   32: '清晰480P',

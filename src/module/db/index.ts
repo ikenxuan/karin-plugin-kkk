@@ -12,9 +12,7 @@ const sequelize = new Sequelize({
 /** 测试数据库连接是否成功 */
 await sequelize.authenticate()
 
-export interface BilibiliDBType {
-  /** UP主UID */
-  [host_mid: string]: {
+export type BilibiliDBType = Record<string, {
     /** 该UP主的昵称 */
     remark: string
     /** UP主UID */
@@ -29,11 +27,9 @@ export interface BilibiliDBType {
     dynamic_type: string
     /** 已缓存的动态ID列表 */
     dynamic_idlist: string[]
-  }
-}
+  }>;
 
-export interface DouyinDBType {
-  [sec_uid: string]: {
+export type DouyinDBType = Record<string, {
     /** 该博主的昵称 */
     remark: string
     /** 博主UID */
@@ -49,30 +45,22 @@ export interface DouyinDBType {
     /** 是否正在直播 */
     living: boolean
     /** 存储每个群的直播推送图相关 */
-    message_id: {
-      /** 群号 */
-      [group_id: string]: {
+    message_id: Record<string, {
         /** 直播推送图的消息ID */
         message_id: string
-      }
-    }
+      }>
     /** 直播开始时间，时间戳 */
     start_living_pn: number
-  }
-}
+  }>;
 
 interface ModelNameMap {
   douyin: 'douyin'
   bilibili: 'bilibili'
 }
 
-export type AllDataType<T extends keyof ModelNameMap> = {
-  douyin: {
-    [group_id: string]: DouyinDBType
-  },
-  bilibili: {
-    [group_id: string]: BilibiliDBType
-  }
+export interface AllDataType<T extends keyof ModelNameMap> {
+  douyin: Record<string, DouyinDBType>,
+  bilibili: Record<string, BilibiliDBType>
 }
 
 sequelize.define(

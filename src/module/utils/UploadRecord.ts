@@ -8,12 +8,13 @@ import util from 'node:util'
 
 import axios from 'axios'
 import { core } from 'icqq'
+import { NOOP } from 'icqq/lib/common'
 import { Cfg, KarinMessage, logger } from 'node-karin'
 
 
 const errors = {} as any
 
-async function UploadRecord (e: KarinMessage, record_url: string, seconds: number = 0, transcoding: boolean = true, brief: string = ''): Promise<any> {
+async function UploadRecord (e: KarinMessage, record_url: string, seconds = 0, transcoding = true, brief = ''): Promise<any> {
   const bot = { ...e.bot, super: {} as any }
   const result = await getPttBuffer(record_url, Cfg.Config.ffmpeg_path, transcoding)
   if (! result.buffer) {
@@ -107,7 +108,7 @@ async function getPttBuffer (file: string, ffmpeg = 'ffmpeg', transcoding = true
       if (result.code === 1) time = result.data
       buf = await fs.promises.readFile(tmpfile)
       fs.unlink(tmpfile, NOOP)
-      buffer = result.buffer || buf
+      buffer = result.buffer ?? buf
     } else {
       const tmpfile = `${TMP_DIR}/${uuid()}`
       const result = await getAudioTime(tmpfile, ffmpeg)
@@ -117,24 +118,22 @@ async function getPttBuffer (file: string, ffmpeg = 'ffmpeg', transcoding = true
       fs.unlink(tmpfile, NOOP)
     }
   } else if (file.startsWith('http://') || file.startsWith('https://')) {
-    try {
-      const headers = {
-        'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 12; MI 9 Build/SKQ1.211230.001)'
-      }
-      const response = await axios.get(file, { headers, responseType: 'arraybuffer' })
-      const buf = Buffer.from(response.data)
-      const tmpfile = `${TMP_DIR}/${uuid()}`
-      await fs.promises.writeFile(tmpfile, buf)
-      const head = await read7Bytes(tmpfile)
-      const result = await getAudioTime(tmpfile, ffmpeg)
-      if (result.code === 1) time = result.data
-      if (head.includes('SILK') || head.includes('AMR') || ! transcoding) {
-        buffer = result.buffer || buf
-      } else {
-        buffer = await audioTrans(tmpfile, ffmpeg) as any
-      }
-      fs.unlink(tmpfile, NOOP)
-    } catch (err) { }
+    const headers = {
+      'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 12; MI 9 Build/SKQ1.211230.001)'
+    }
+    const response = await axios.get(file, { headers, responseType: 'arraybuffer' })
+    const buf = Buffer.from(response.data)
+    const tmpfile = `${TMP_DIR}/${uuid()}`
+    await fs.promises.writeFile(tmpfile, buf)
+    const head = await read7Bytes(tmpfile)
+    const result = await getAudioTime(tmpfile, ffmpeg)
+    if (result.code === 1) time = result.data
+    if (head.includes('SILK') || head.includes('AMR') || ! transcoding) {
+      buffer = result.buffer ?? buf
+    } else {
+      buffer = await audioTrans(tmpfile, ffmpeg) as any
+    }
+    fs.unlink(tmpfile, NOOP)
   } else {
     file = String(file).replace(/^file:\/{2}/, '')
     IS_WIN && file.startsWith('/') && (file = file.slice(1))
@@ -142,7 +141,7 @@ async function getPttBuffer (file: string, ffmpeg = 'ffmpeg', transcoding = true
     const result = await getAudioTime(file, ffmpeg)
     if (result.code === 1) time = result.data
     if (head.includes('SILK') || head.includes('AMR') || ! transcoding) {
-      buffer = result.buffer || (await fs.promises.readFile(file))
+      buffer = result.buffer ?? (await fs.promises.readFile(file))
     } else {
       buffer = await audioTrans(file, ffmpeg) as any
     }
@@ -150,8 +149,8 @@ async function getPttBuffer (file: string, ffmpeg = 'ffmpeg', transcoding = true
   return { buffer, time }
 }
 
-async function getAudioTime (file: string, ffmpeg: string = 'ffmpeg'): Promise<{ code: number; buffer?: Buffer | null; data?: { time: string; seconds: number; exec_text: string } }> {
-  return new Promise((resolve, reject) => {
+async function getAudioTime (file: string, ffmpeg = 'ffmpeg'): Promise<{ code: number; buffer?: Buffer | null; data?: { time: string; seconds: number; exec_text: string } }> {
+  return new Promise((resolve) => {
     const file_info = fs.statSync(file)
     let cmd = `${ffmpeg} -i "${file}"`
     let is_aac = false
@@ -159,7 +158,7 @@ async function getAudioTime (file: string, ffmpeg: string = 'ffmpeg'): Promise<{
       cmd = `${ffmpeg} -i "${file}" -fs 10485600 -ab 128k "${file}.mp3"`
       is_aac = true
     }
-    exec(cmd, async (error, stdout, stderr) => {
+    exec(cmd, (error, stdout, stderr) => {
       try {
         let buffer: Buffer | null = null
         if (is_aac) {
@@ -191,9 +190,9 @@ async function getAudioTime (file: string, ffmpeg: string = 'ffmpeg'): Promise<{
   })
 }
 async function audioTrans (file: string, ffmpeg = 'ffmpeg') {
-  const result = await new Promise((resolve, reject) => {
+  const result = await new Promise((resolve) => {
     const tmpfile = TMP_DIR + '/' + uuid() + '.pcm'
-    exec(`${ffmpeg} -y -i "${file}" -f s16le -ar 24000 -ac 1 -fs 31457280 "${tmpfile}"`, async (error, stdout, stderr) => {
+    exec(`${ffmpeg} -y -i "${file}" -f s16le -ar 24000 -ac 1 -fs 31457280 "${tmpfile}"`, async () => {
       try {
         const silk_worker = await import('./silk_worker/index.cjs' as any)
         const ret = await silk_worker.encode(tmpfile, 24000)
@@ -211,9 +210,9 @@ async function audioTrans (file: string, ffmpeg = 'ffmpeg') {
 }
 
 async function audioTrans1 (file: string, ffmpeg = 'ffmpeg') {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const tmpfile = TMP_DIR + '/' + uuid()
-    exec(`${ffmpeg} -y -i "${file}" -ac 1 -ar 8000 -f amr "${tmpfile}"`, async (error, stdout, stderr) => {
+    exec(`${ffmpeg} -y -i "${file}" -ac 1 -ar 8000 -f amr "${tmpfile}"`, async () => {
       try {
         const amr = await fs.promises.readFile(tmpfile)
         resolve(amr)
@@ -247,44 +246,6 @@ function md5Stream (readable: fs.ReadStream) {
   })
 }
 
-/** 计算文件的md5和sha */
-function fileHash (filepath: fs.PathLike) {
-  const readable = fs.createReadStream(filepath)
-  const sha = new Promise((resolve, reject) => {
-    readable.on('error', reject)
-    readable.pipe(crypto.createHash('sha1').on('error', reject).on('data', resolve))
-  })
-  return Promise.all([ md5Stream(readable), sha ])
-}
-
-/** 群号转uin */
-function code2uin (code: number) {
-  let left = Math.floor(code / 1000000)
-  if (left >= 0 && left <= 10) left += 202
-  else if (left >= 11 && left <= 19) left += 469
-  else if (left >= 20 && left <= 66) left += 2080
-  else if (left >= 67 && left <= 156) left += 1943
-  else if (left >= 157 && left <= 209) left += 1990
-  else if (left >= 210 && left <= 309) left += 3890
-  else if (left >= 310 && left <= 335) left += 3490
-  else if (left >= 336 && left <= 386) left += 2265
-  else if (left >= 387 && left <= 499) left += 3490
-  return left * 1000000 + (code % 1000000)
-}
-
-/** uin转群号 */
-function uin2code (uin: number) {
-  let left = Math.floor(uin / 1000000)
-  if (left >= 202 && left <= 212) left -= 202
-  else if (left >= 480 && left <= 488) left -= 469
-  else if (left >= 2100 && left <= 2146) left -= 2080
-  else if (left >= 2010 && left <= 2099) left -= 1943
-  else if (left >= 2147 && left <= 2199) left -= 1990
-  else if (left >= 2600 && left <= 2651) left -= 2265
-  else if (left >= 3800 && left <= 3989) left -= 3490
-  else if (left >= 4100 && left <= 4199) left -= 3890
-  return left * 1000000 + (uin % 1000000)
-}
 
 function int32ip2str (ip: number) {
   if (typeof ip === 'string') return ip
@@ -292,61 +253,13 @@ function int32ip2str (ip: number) {
   return [ ip & 0xff, (ip & 0xff00) >> 8, (ip & 0xff0000) >> 16, ((ip & 0xff000000) >> 24) & 0xff ].join('.')
 }
 
-/** 解析彩色群名片 */
-function parseFunString (buf: number[]) {
-  if (buf[0] === 0xa) {
-    let res = ''
-    try {
-      let arr = core.pb.decode(buf as any)[1]
-      if (! Array.isArray(arr)) arr = [ arr ]
-      for (const v of arr) {
-        if (v[2]) res += String(v[2])
-      }
-    } catch { }
-    return res
-  } else {
-    return String(buf)
-  }
-}
 
-/** xml转义 */
-function escapeXml (str: string) {
-  return str.replace(/[&"><]/g, function (s: string) {
-    if (s === '&') return '&amp;'
-    if (s === '<') return '&lt;'
-    if (s === '>') return '&gt;'
-    if (s === '"') return '&quot;'
-    return ''
-  })
-}
-
-/** 用于下载限量 */
-class DownloadTransform extends stream.Transform {
-  _size: number
-  constructor () {
-    super(...arguments)
-    this._size = 0
-  }
-
-  _transform (data: string | any[], encoding: any, callback: (arg0: Error | null) => void) {
-    this._size += data.length
-    let error = null
-    if (this._size <= MAX_UPLOAD_SIZE) this.push(data)
-    else error = new Error('downloading over 30MB is refused')
-    callback(error)
-  }
-}
 const IS_WIN = os.platform() === 'win32'
 /** 系统临时目录，用于临时存放下载的图片等内容 */
 const TMP_DIR = os.tmpdir()
 /** 最大上传和下载大小，以图片上传限制为准：30MB */
 const MAX_UPLOAD_SIZE = 31457280
 
-/** no operation */
-const NOOP = () => { }
-
-/** promisified pipeline */
-const pipeline = (0, util.promisify)(stream.pipeline)
 /** md5 hash */
 const md5 = (data: Buffer | crypto.BinaryLike) => (0, crypto.createHash)('md5').update(data).digest()
 
@@ -401,6 +314,7 @@ const ErrorMessage = {
 }
 function drop (code: string | number, message: string | any[]) {
   if (! message || ! message.length) message = ErrorMessage[code as any]
+  // eslint-disable-next-line @typescript-eslint/only-throw-error
   throw new core.ApiRejection(code as number, message as string)
 }
 errors.drop = drop

@@ -1,5 +1,5 @@
 import { getDouyinData } from '@ikenxuan/amagi'
-import { common, ImageElement, karin, KarinAdapter, KarinMessage, logger, segment } from 'node-karin'
+import { common, ImageElement, karin, KarinMessage, logger, segment } from 'node-karin'
 
 import { AllDataType, Base, Common, Config, DB, DouyinDBType, Render } from '@/module'
 import { ExtendedDouyinOptionsType, getDouyinID } from '@/platform/douyin'
@@ -27,12 +27,10 @@ interface PushItem {
   living: boolean
 }
 /** 推送列表的类型定义 */
-interface WillBePushList {
-  [key: string]: PushItem
-}
+type WillBePushList = Record<string, PushItem>;
 
 export class DouYinpush extends Base {
-  private force: boolean = false
+  private force = false
   /**
    *
    * @param e  事件KarinMessage
@@ -40,7 +38,7 @@ export class DouYinpush extends Base {
    * @default false
    * @returns
    */
-  constructor (e = {} as KarinMessage, force: boolean = false) {
+  constructor (e = {} as KarinMessage, force = false) {
     super(e)
     if (this.botadapter === 'QQBot') {
       return
@@ -54,7 +52,7 @@ export class DouYinpush extends Base {
     if (await this.checkremark()) return true
 
     try {
-      let data = await this.getDynamicList()
+      const data = await this.getDynamicList()
       const pushdata = this.excludeAlreadyPushed(data.willbepushlist, data.DBdata)
 
       if (Object.keys(pushdata).length === 0) return true
@@ -120,10 +118,10 @@ export class DouYinpush extends Base {
       // 遍历 group_id 数组，并发送消息
       try {
         for (const groupId of data[awemeId].group_id) {
-          let DBdata = await DB.FindGroup('douyin', groupId)
+          const DBdata = await DB.FindGroup('douyin', groupId)
           let status = { message_id: '' }
           const [ group_id, uin ] = groupId.split(':')
-          const bot = karin.getBot(uin) as KarinAdapter
+          const bot = karin.getBot(uin)!
           if (! skip) {
             status = await karin.sendMsg(String(uin), karin.contactGroup(group_id), img ? [ ...img ] : [])
             // 是否一同解析该新作品？
@@ -164,7 +162,7 @@ export class DouYinpush extends Base {
                     await karin.sendMsg(String(uin), karin.contactGroup(group_id), [
                       segment.reply(msgItem[gid].message_id),
                       segment.text(`「${data[awemeId].remark}」的直播已经结束惹 ~\n`),
-                      segment.text(`直播时间：${Common.timeSince(DBdata[data[awemeId].sec_uid].start_living_pn)}`)
+                      segment.text(`直播时长：${Common.timeSince(DBdata[data[awemeId].sec_uid].start_living_pn)}`)
                     ])
                     break
                   }
@@ -368,13 +366,6 @@ export class DouYinpush extends Base {
           continue
         }
 
-        // 如果是普通动态，检查 aweme_id 是否已缓存
-        // 如果缓存列表中没有该 awemeId，则保留该群组
-        if (pushItem.living === true && cachedData.living === false && ! cachedData.aweme_idlist.includes(awemeId)) {
-          filteredGroupIds.push(groupId)
-          continue
-        }
-
         // 如果直播状态更变，不管是开播还是关播，都要保留该群组
         if ('liveStatus' in pushItem.Detail_Data) {
           // 开播推送
@@ -412,11 +403,11 @@ export class DouYinpush extends Base {
     const config = Config.pushlist
     const abclist: { sec_uid: string, group_id: any }[] = []
     if (Config.pushlist.douyin === null || Config.pushlist.douyin.length === 0) return true
-    for (let i = 0; i < Config.pushlist.douyin.length; i ++) {
-      const remark = Config.pushlist.douyin[i].remark
-      const group_id = Config.pushlist.douyin[i].group_id
-      const sec_uid = Config.pushlist.douyin[i].sec_uid
-      const short_id = Config.pushlist.douyin[i].short_id
+    for (const i of Config.pushlist.douyin) {
+      const remark = i.remark
+      const group_id = i.group_id
+      const sec_uid = i.sec_uid
+      const short_id = i.short_id
 
       if (! remark) {
         abclist.push({ sec_uid, group_id })
@@ -426,10 +417,10 @@ export class DouYinpush extends Base {
       }
     }
     if (abclist.length > 0) {
-      for (let i = 0; i < abclist.length; i ++) {
-        const resp = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid: abclist[i].sec_uid })
+      for (const i of abclist) {
+        const resp = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid: i.sec_uid })
         const remark = resp.user.nickname
-        const matchingItemIndex = config.douyin.findIndex((item: { sec_uid: string }) => item.sec_uid === abclist[i].sec_uid)
+        const matchingItemIndex = config.douyin.findIndex((item: { sec_uid: string }) => item.sec_uid === i.sec_uid)
         if (matchingItemIndex !== - 1) {
           // 更新匹配的对象的 remark 和抖音号
           config.douyin[matchingItemIndex].remark = remark

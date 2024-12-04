@@ -60,7 +60,7 @@ export async function Render (path: string, params?: any) {
     screensEval: '#container'
   })
   // 分片截图传回来的是数组
-  let ret: ImageElement[] = []
+  const ret: ImageElement[] = []
   for (const imgae of img) {
     ret.push(segment.image(imgae))
   }

@@ -21,8 +21,7 @@ class config {
 
   /** 初始化配置 */
   private initCfg () {
-    let path: string
-    path = `${Version.karinPath}/config/plugin/${Version.pluginName}/`
+    const path = `${Version.karinPath}/config/plugin/${Version.pluginName}/`
     if (! fs.existsSync(path)) fs.mkdirSync(path)
     const pathDef = `${Version.pluginPath}/config/default_config/`
     const files = fs.readdirSync(pathDef).filter(file => file.endsWith('.yaml'))
@@ -112,7 +111,7 @@ class config {
    * @param name 名称
    */
   private getYaml (type: ConfigDirType, name: string) {
-    let file: string = ''
+    let file = ''
     if (type === 'config') {
       file = `${Version.karinPath}/config/plugin/${Version.pluginName}/${name}.yaml`
     } else { file = `${Version.pluginPath}/config/default_config/${name}.yaml` }
@@ -136,7 +135,7 @@ class config {
     if (this.watcher[key]) return
 
     const watcher = chokidar.watch(file)
-    watcher.on('change', async () => {
+    watcher.on('change', () => {
       delete this.config[key]
       logger.mark(`[${Version.pluginName}][修改配置文件][${type}][${name}]`)
     })
@@ -175,7 +174,7 @@ class config {
     for (let i = 0; i < keys.length - 1; i ++) {
       const subKey = keys[i]
       if (current instanceof YAML.YAMLMap) {
-        let subValue: YAML.YAMLMap | YAML.Scalar | any | undefined = current.get(subKey)
+        let subValue: any = current.get(subKey)
 
         // 类型保护，确保 subValue 是 YAMLMap
         if (! YAML.isMap(subValue)) {

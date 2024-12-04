@@ -1,5 +1,5 @@
 import { getBilibiliData } from '@ikenxuan/amagi'
-import { common, ImageElement, karin, KarinAdapter, KarinMessage, logger, segment } from 'node-karin'
+import { common, ImageElement, karin, KarinMessage, logger, segment } from 'node-karin'
 
 import { AllDataType, Base, BilibiliDBType, Common, Config, DB, Render } from '@/module'
 import { fetchBilibiliData } from '@/platform/bilibili'
@@ -24,19 +24,17 @@ interface PushItem {
 /** 已支持推送的动态类型 */
 type dynamicTYPE = 'DYNAMIC_TYPE_AV' | 'DYNAMIC_TYPE_DRAW' | 'DYNAMIC_TYPE_WORD' | 'DYNAMIC_TYPE_LIVE_RCMD'
 /** 推送列表的类型定义 */
-interface WillBePushList {
-  [key: string]: PushItem
-}
+type WillBePushList = Record<string, PushItem>;
 
 export class Bilibilipush extends Base {
-  private force: boolean = false
+  private force = false
   /**
    *
    * @param e 事件对象，提供给实例使用的事件相关信息，默认为空对象{}
    * @param force 强制执行标志，用于控制实例行为，默认false
    * @returns
    */
-  constructor (e = {} as KarinMessage, force: boolean = false) {
+  constructor (e = {} as KarinMessage, force = false) {
     super(e) // 调用父类的构造函数
     // 判断当前bot适配器是否为'QQBot'，如果是，则直接返回true，否则继续执行
     if (this.botadapter === 'QQBot') {
@@ -53,7 +51,7 @@ export class Bilibilipush extends Base {
     if (await this.checkremark()) return true
 
     try {
-      let data = await this.getDynamicList()
+      const data = await this.getDynamicList()
       const pushdata = this.excludeAlreadyPushed(data.willbepushlist, data.DBdata)
 
       if (Object.keys(pushdata).length === 0) return true
@@ -74,7 +72,7 @@ export class Bilibilipush extends Base {
     for (const dynamicId in data) {
       // 检查banWords，banTags
       let skip = skipDynamic(data[dynamicId].Dynamic_Data)
-      let send = true, send_video = true, img: ImageElement[] = []
+      let send_video = true, img: ImageElement[] = []
       const dynamicCARDINFO = await fetchBilibiliData('dynamic_card', { dynamic_id: dynamicId })
       const dycrad = dynamicCARDINFO.data.card && dynamicCARDINFO.data.card.card && JSON.parse(dynamicCARDINFO.data.card.card)
 
@@ -95,9 +93,9 @@ export class Bilibilipush extends Base {
               // 初始化一个空数组来存放图片对象
               const imgArray = []
               // 遍历dycrad.item.pictures数组，将每个图片的img_src存入对象，并将该对象加入imgArray
-              for (let i = 0; i < dycrad.item.pictures.length; i ++) {
+              for (const i of dycrad.item.pictures) {
                 const obj = {
-                  image_src: dycrad.item.pictures[i].img_src
+                  image_src: i.img_src
                 }
                 imgArray.push(obj)
               }
@@ -227,7 +225,7 @@ export class Bilibilipush extends Base {
         let status: any
         if (! skip) {
           const [ group_id, uin ] = groupId.split(':')
-          const bot = karin.getBot(uin) as KarinAdapter
+          const bot = karin.getBot(uin)!
           status = await karin.sendMsg(String(uin), karin.contactGroup(group_id), img ? [ ...img ] : [])
           if (Config.bilibili.push.parsedynamic) {
             switch (data[dynamicId].dynamic_type) {
@@ -255,7 +253,7 @@ export class Bilibilipush extends Base {
 
 
         if (skip || status?.message_id) {
-          let DBdata = await DB.FindGroup('bilibili', groupId)
+          const DBdata = await DB.FindGroup('bilibili', groupId)
           /**
            * 检查 DBdata 中是否存在与给定 host_mid 匹配的项
            * @param DBdata - 数据库中存储的群组数据
@@ -534,10 +532,10 @@ export class Bilibilipush extends Base {
     const abclist: { host_mid: string }[] | { host_mid: string; group_id: string[] }[] = []
     if (Config.pushlist.bilibili === null || Config.pushlist.bilibili.length === 0) return true
     // 遍历配置文件中的用户列表，收集需要更新备注信息的用户
-    for (let i = 0; i < Config.pushlist.bilibili.length; i ++) {
-      const remark = Config.pushlist.bilibili[i].remark
-      const group_id = Config.pushlist.bilibili[i].group_id
-      const host_mid = Config.pushlist.bilibili[i].host_mid
+    for (const i of Config.pushlist.bilibili) {
+      const remark = i.remark
+      const group_id = i.group_id
+      const host_mid = i.host_mid
 
       if (remark === undefined || remark === '') {
         abclist.push({ host_mid, group_id })
@@ -546,12 +544,12 @@ export class Bilibilipush extends Base {
 
     // 如果有需要更新备注的用户，则逐个获取备注信息并更新到配置文件中
     if (abclist.length > 0) {
-      for (let i = 0; i < abclist.length; i ++) {
+      for (const i of abclist) {
         // 从外部数据源获取用户备注信息
-        const resp = await fetchBilibiliData('user_profile', { host_mid: abclist[i].host_mid })
+        const resp = await fetchBilibiliData('user_profile', { host_mid: i.host_mid })
         const remark = resp.data.card.name
         // 在配置文件中找到对应的用户，并更新其备注信息
-        const matchingItemIndex = config.bilibili.findIndex((item: { host_mid: string }) => item.host_mid === abclist[i].host_mid)
+        const matchingItemIndex = config.bilibili.findIndex((item: { host_mid: string }) => item.host_mid === i.host_mid)
         if (matchingItemIndex !== - 1) {
           config.bilibili[matchingItemIndex].remark = remark
         }
@@ -592,14 +590,9 @@ function br (data: string): string {
  */
 function checkvip (member: any): string {
   // 根据VIP状态选择不同的颜色显示成员名称
-  let light = false
-  const date = new Date().getHours()
-  if (date >= 6 && date < 18) {
-    light = true
-  }
   return member.vip.vipStatus === 1
     ? `<span style="color: ${member.vip.nickname_color || '#FB7299'}; font-weight: bold;">${member.name}</span>`
-    : `<span style="color: ${light ? '#606060' : '#dbdbdb'}">${member.name}</span>`
+    : `<span style="color: ${Common.useDarkTheme() ? '#EDEDED' : '#606060'}">${member.name}</span>`
 }
 
 /**
@@ -607,18 +600,14 @@ function checkvip (member: any): string {
  * @param data 表情数据的数组，每个元素包含一个表情包的信息。
  * @returns 返回一个对象数组，每个对象包含text(表情名称)和url(表情图片地址)属性。
  */
-function extractEmojisData (data: any[]): Array<any> {
+function extractEmojisData (data: any[]): any[] {
   const emojisData: any[] = []
 
   // 遍历data数组中的每个表情包
   data.forEach((packages) => {
     // 遍历每个表情包中的每个表情
     packages.emote.forEach((emote: { text: string; url: string }) => {
-      try {
-        // 尝试将表情的URL转换为URL对象，如果成功则将其添加到emojisData数组中
-        // new URL(emote.url)
-        emojisData.push({ text: emote.text, url: emote.url })
-      } catch { } // 如果URL无效，则忽略该表情
+      emojisData.push({ text: emote.text, url: emote.url })
     })
   })
 

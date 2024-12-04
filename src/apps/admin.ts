@@ -128,7 +128,7 @@ export class Admin extends Plugin {
 
   // 渲染设置图片
   async index_Settings (e: KarinMessage): Promise<boolean> {
-    let _cfg = Config.All()
+    const _cfg = Config.All()
     const statusData = getStatus(_cfg) // 获取状态对象
     const img = await Render('admin/index', { data: statusData })
     await e.reply(img)
@@ -137,10 +137,10 @@ export class Admin extends Plugin {
 
   // 根据消息判断平台
   getPlatformFromMessage (msg: string): 'app' | 'douyin' | 'bilibili' | 'upload' | 'kuaishou' {
-    if (/抖音/.test(msg)) return 'douyin'
-    if (/B站/.test(msg)) return 'bilibili'
-    if (/上传/.test(msg)) return 'upload'
-    if (/快手/.test(msg)) return 'kuaishou'
+    if (msg.includes('抖音')) return 'douyin'
+    if (msg.includes('B站')) return 'bilibili'
+    if (msg.includes('上传')) return 'upload'
+    if (msg.includes('快手')) return 'kuaishou'
     return 'app'
   }
 
@@ -174,7 +174,7 @@ function getStatus (data: Record<string, any>): Record<string, any> {
     if (typeof value === 'boolean') {
       return `<div class="cfg-status ${value ? '' : 'status-off'}">${value ? '已开启' : '已关闭'}</div>`
     } else if (typeof value === 'number') {
-      return `<div class="cfg-status ${value === null ? 'status-off' : ''}">${value !== null ? value : '未配置'}</div>`
+      return `<div class="cfg-status ${value === null ? 'status-off' : ''}">${value ?? '未配置'}</div>`
     } else if (typeof value === 'string') {
       return `<div class="cfg-status">${value.length > 12 ? `${value.slice(0, 12)}...` : value}</div>`
     } else if (Array.isArray(value)) {
