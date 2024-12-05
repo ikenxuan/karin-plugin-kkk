@@ -6,7 +6,7 @@ import { DataTypes, Sequelize } from 'sequelize'
 const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: join((process.cwd()).replace(/\\/g, '/'), 'data', 'karin-plugin-kkk', 'push.db'),
-  logging: false
+  logging: false,
 })
 
 /** 测试数据库连接是否成功 */
@@ -51,18 +51,12 @@ export interface DouyinDBType {
   }
 }
 
-interface ModelNameMap {
-  douyin: 'douyin'
-  bilibili: 'bilibili'
-}
+/** 单个群组数据 */
+export type GroupDataType = DouyinDBType | BilibiliDBType
 
-export type AllDataType<T extends keyof ModelNameMap> = {
-  douyin: {
-    [group_id: string]: DouyinDBType
-  },
-  bilibili: {
-    [group_id: string]: BilibiliDBType
-  }
+export type AllDataType = {
+  douyin: Record<string, DouyinDBType>
+  bilibili: Record<string, BilibiliDBType>
 }
 
 sequelize.define(
@@ -72,20 +66,20 @@ sequelize.define(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      comment: '主键ID'
+      comment: '主键ID',
     },
     group_id: {
       type: DataTypes.STRING,
-      comment: '群组标识符'
+      comment: '群组标识符',
     },
     data: {
       type: DataTypes.STRING, // 存储为字符串，JSON 格式
       defaultValue: '{}',
-      comment: '缓存数据'
-    }
+      comment: '缓存数据',
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 )
 
@@ -96,57 +90,58 @@ sequelize.define(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      comment: '主键ID'
+      comment: '主键ID',
     },
     group_id: {
       type: DataTypes.STRING,
-      comment: '群组标识符'
+      comment: '群组标识符',
     },
     data: {
       type: DataTypes.STRING, // 存储为字符串，JSON 格式
       defaultValue: '{}',
-      comment: '缓存数据'
-    }
+      comment: '缓存数据',
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 )
 
-export class db {
+export class DBBase {
   /**
    * 创建一个新的群组记录，具有默认值的新条目
    * @param ModelName 表单名称
-   * @param group_id 群号
+   * @param groupId 群号
    * @param data 数据体
    * @returns
    */
-  async CreateSheet<T extends keyof ModelNameMap> (ModelName: T, group_id: any, data: AllDataType<T>[T][string]): Promise<any> {
+  async CreateSheet<T extends keyof AllDataType> (ModelName: T, groupId: any, data: AllDataType[T]): Promise<any> {
     const Model = sequelize.models[ModelName]
     const resolve = (
       await Model.create(
         {
-          group_id: String(group_id),
-          data: JSON.stringify(data)
+          group_id: String(groupId),
+          data: JSON.stringify(data),
         },
         {
-          raw: true
+          raw: true,
         }
       )
     ).dataValues
 
     return resolve
   }
+
   /**
    * 获取对应表单的所有群组原始数据
    * @param ModelName 表单名称
    * @returns
    */
-  async FindAll<T extends keyof ModelNameMap> (ModelName: T): Promise<AllDataType<T>[T]> {
+  async FindAll<T extends keyof AllDataType> (ModelName: T): Promise<AllDataType[T]> {
     const Model = sequelize.models[ModelName]
 
     const groups = await Model.findAll({
-      raw: true
+      raw: true,
     })
     // 使用reduce方法将数组转换为对象
     const result = groups.reduce((accumulator: any, group: any) => {
@@ -155,53 +150,51 @@ export class db {
       return accumulator
     }, {} as Record<string | number, any>)
 
-    return result as AllDataType<T>[T]
+    return result as AllDataType[T]
   }
 
   /**
    * 获取指定群组的数据
-   * @param ModelName 表单名称
-   * @param Group_ID 群号
+   * @param modelName 表单名称
+   * @param groupId 群号
    * @returns
    */
-  async FindGroup<T extends keyof ModelNameMap> (ModelName: T, Group_ID: string): Promise<AllDataType<T>[T][string]> {
+  async FindGroup (modelName: keyof AllDataType, groupId: string): Promise<GroupDataType> {
     // AllDataType<'douyin'> 表示 { douyin: { [group_id: string]: DouyinDBType } }，
     // AllDataType<'douyin'>['douyin'] 或 AllDataType<'douyin'>[T] 表示 { [group_id: string]: DouyinDBType }，也就是 'douyin' 模型下，按照 group_id 索引的 DouyinDBType 对象。
 
-    const AllData = await this.FindAll(ModelName)
-    const groupData = AllData[Group_ID]  // 获取对应群组数据
+    const AllData = await this.FindAll(modelName)
+    const groupData = AllData[groupId]  // 获取对应群组数据
 
     // 返回获取的群组数据，类型推导将根据 ModelName 自动选择
-    return groupData as AllDataType<T>[T][string]
+    return groupData
   }
-
 
   /**
    * 更新指定群组的数据
    * @param ModelName 表单名称
-   * @param Group_ID 群号
+   * @param groupId 群号
    * @param NewData 新的数据对象
    * @returns
    */
-  async UpdateGroupData<T extends keyof ModelNameMap> (ModelName: T, Group_ID: any, NewData: object = {}): Promise<number> {
+  async UpdateGroupData (ModelName: keyof AllDataType, groupId: any, NewData: object = {}): Promise<number> {
     const Model = sequelize.models[ModelName]
-    const [ affectedRowsData ] = await Model.update(
+    const [affectedRowsData] = await Model.update(
       {
-        data: JSON.stringify(NewData)
+        data: JSON.stringify(NewData),
       },
       {
         where: {
-          group_id: Group_ID
+          group_id: groupId,
         },
-        individualHooks: true
+        individualHooks: true,
       }
     )
     return affectedRowsData
   }
-
 }
 
-export const DB = new db()
+export const DB = new DBBase()
 
 /** 每次调用都将强制同步已定义的模型 */
 await sequelize.sync({ alter: true })

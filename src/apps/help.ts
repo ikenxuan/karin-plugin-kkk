@@ -15,7 +15,7 @@ export const help = karin.command(/^#?(kkk)?帮助$/, async (e) => {
 export const version = karin.command(/^#?kkk版本$/, async (e) => {
   const changelogs = fs.readFileSync(Version.pluginPath + '/CHANGELOG.md', 'utf8')
   const html = markdown(changelogs, {
-    gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css'
+    gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css',
   })
   const htmlPath = `${Version.karinPath}/temp/html/${Version.pluginName}/help/version.html`
   fs.writeFileSync(htmlPath, html)
@@ -38,7 +38,7 @@ export const changelogs = karin.command(/^#?kkk更新日志$/, async (e) => {
 `
   }
   const html = markdown(htmlString, {
-    gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css'
+    gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css',
   })
   const htmlPath = `${Version.karinPath}/temp/html/${Version.pluginName}/help/changelogs.html`
   fs.writeFileSync(htmlPath, html)
@@ -48,10 +48,10 @@ export const changelogs = karin.command(/^#?kkk更新日志$/, async (e) => {
 }, { name: 'kkk-更新日志', permission: 'master' })
 
 export const update = karin.command(/^#?kkk更新$/, async (e) => {
-  let [ name, cmd ] = [ Version.pluginName, 'git pull' ]
+  let [name, cmd] = [Version.pluginName, 'git pull']
   if (e.msg.includes('强制')) cmd = 'git reset --hard && git pull --allow-unrelated-histories'
   const { data, status } = await updateGitPlugin(Version.pluginPath, cmd)
-  await e.bot.sendForwardMsg(e.contact, common.makeForward([ segment.text(`更新${name}...${data}`) ], e.sender.userId, e.sender.nick))
+  await e.bot.sendForwardMsg(e.contact, common.makeForward([segment.text(`更新${name}...${data}`)], e.sender.userId, e.sender.nick))
   if (status === 'ok') {
     await e.reply(`更新${name}成功，\n请手动重启以应用更新！`, { at: true })
     // try {
@@ -80,7 +80,7 @@ const getLatestCommitsSync = (): CommitLog[] => {
 
   return commits.map((commit) => {
     // 分割SHA和其他信息
-    const [ sha, ...rest ] = commit.split(' ')
+    const [sha, ...rest] = commit.split(' ')
     // 找到冒号的位置，分割提交者和提交信息
     const spaceIndex = rest.findIndex(word => word.includes(':'))
     const committerAndMessage = rest.slice(0, spaceIndex)

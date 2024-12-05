@@ -1,9 +1,6 @@
 import fs from 'node:fs'
-
 import { logger, Message } from 'node-karin'
-
-import { Config  } from '@/module/utils'
-
+import { Config } from '@/module/utils'
 import { Version } from './Version'
 
 /** 常用工具合集 */
@@ -34,7 +31,7 @@ export const Common = {
     /** 视频缓存文件 */
     video: `${Version.karinPath}/temp/${Version.pluginName}/kkkdownload/video/`,
     /** 图片缓存文件 */
-    images: `${Version.karinPath}/temp/${Version.pluginName}/kkkdownload/images/`
+    images: `${Version.karinPath}/temp/${Version.pluginName}/kkkdownload/images/`,
   },
 
   /**
@@ -45,17 +42,17 @@ export const Common = {
   chineseToArabic: (chineseNumber: string): number => {
     // 映射表，定义基础的中文数字
     const chineseToArabicMap: { [key: string]: number } = {
-      '零': 0, '一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9
+      零: 0, 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9,
     }
     // 对应中文单位映射
     const units: { [key: string]: number } = {
-      '十': 10, '百': 100, '千': 1000, '万': 10000, '亿': 100000000
+      十: 10, 百: 100, 千: 1000, 万: 10000, 亿: 100000000,
     }
     let result = 0
     let temp = 0 // 存储每一段的临时结果
     let unit = 1 // 当前处理的单位，初始为1
 
-    for (let i = chineseNumber.length - 1; i >= 0; i --) {
+    for (let i = chineseNumber.length - 1; i >= 0; i--) {
       const char = chineseNumber[i]
 
       // 如果是单位字符
@@ -65,9 +62,8 @@ export const Common = {
           result += temp * unit
           temp = 0
         }
-      }
-      // 如果是数字字符
-      else {
+      } else {
+        // 如果是数字字符
         const num = chineseToArabicMap[char]
         if (unit > 1) {
           temp += num * unit
@@ -87,8 +83,8 @@ export const Common = {
   formatCookies: (cookies: any[]): string => {
     return cookies.map(cookie => {
       // 分割每个cookie字符串以获取名称和值
-      const [ nameValue, ...attributes ] = cookie.split(';').map((part: string) => part.trim())
-      const [ name, value ] = nameValue.split('=')
+      const [nameValue] = cookie.split(';').map((part: string) => part.trim())
+      const [name, value] = nameValue.split('=')
 
       // 重新组合名称和值，忽略其他属性
       return `${name}=${value}`
@@ -176,11 +172,11 @@ export const Common = {
     const now = new Date()
     // 获取年、月、日、时、分、秒
     const year = now.getFullYear()
-    let month = now.getMonth() + 1 // month 是 number 类型
-    let day = now.getDate()
-    let hour = now.getHours()
-    let minute = now.getMinutes()
-    let second = now.getSeconds()
+    const month = now.getMonth() + 1 // month 是 number 类型
+    const day = now.getDate()
+    const hour = now.getHours()
+    const minute = now.getMinutes()
+    const second = now.getSeconds()
 
     const formattedMonth = month < 10 ? '0' + month : '' + month
     const formattedDay = day < 10 ? '0' + day : '' + day
@@ -207,5 +203,5 @@ export const Common = {
       dark = true
     }
     return dark
-  }
+  },
 }

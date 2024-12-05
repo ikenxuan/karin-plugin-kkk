@@ -1,14 +1,19 @@
 {{extend defaultLayout}} {{block 'css'}}
 <script src="{{_res_path}}template/extend/js/qrcode.min.js"></script>
-<link rel="stylesheet" type="text/css" href="{{_res_path}}template/bilibili/css/dynamic/base.css" />
+<link rel="stylesheet" type="text/css" href="{{_res_path}}template/bilibili/css/dynamic/DYNAMIC_TYPE_DRAW.css" />
 {{/block}} {{block 'main'}}
 <div class="spacer1"></div>
-<div class="bitop">
-  <img src="{{_res_path}}image/bilibili/bilibili.png" />
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <span style="font-size: 50px">你感兴趣的视频都在哔哩哔哩</span>
+
+<div class="userinfo">
+  <img src="{{avater_url}}" alt="头像" class="avatar" />
+  <img src="{{frame}}" class="avatar-1" />
+  <div class="name_and_followers">
+    <div class="username"><span>{{@username}}</span></div>
+    <div class="dynamic_create_time">{{create_time}}</div>
+  </div>
+  <div class="decoration_card">{{@decoration_card}}</div>
 </div>
-<div class="spacer2"></div>
+<div class="spacer1"></div>
 <div class="info">
   <div class="info_text">{{@text}}</div>
   <div class="spacer4"></div>
@@ -24,19 +29,16 @@
 <div class="info">
   <div class="work_status">{{dianzan}}点赞 · {{pinglun}}评论 · {{share}}分享</div>
   <div class="spacer5"></div>
-  <div class="dynamic_create_time">发布于{{create_time}}</div>
 </div>
 <div style="height: 90px"></div>
 <div class="other_text">哔哩哔哩{{dynamicTYPE}}</div>
 <div class="under">
   <div class="rectangular_box">
     <div class="user" style="align-items: center">
-      <div class="userinfo">
-        <div style="margin-left: 10px"><img src="{{avater_url}}" alt="头像" class="avatar" /></div>
-        <img src="{{frame}}" class="avatar-1" />
-        <div class="name_and_followers">
-          <div class="username"><span>{{@username}}</span></div>
-        </div>
+      <div class="bitop">
+        <img src="{{_res_path}}image/bilibili/bilibili-light.png" />
+        <br>
+        <span class="userinfo_text" style="font-size: 50px;">长按识别二维码即可查看全文</span>
       </div>
       <div class="userinfo_text">
         <span>UID: {{user_shortid}}</span>

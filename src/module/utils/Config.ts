@@ -1,44 +1,37 @@
 import fs from 'node:fs'
-
-import chokidar, { FSWatcher } from 'chokidar'
-import _ from 'lodash'
-import { logger } from 'node-karin'
-import YAML from 'yaml'
-
+import YAML from 'node-karin/yaml'
 import { ConfigType } from '@/types'
-
 import { Version } from './Version'
+import { copyConfigSync, basePath, filesByExt, watch, requireFileSync } from 'node-karin'
 
 type ConfigDirType = 'config' | 'default_config'
 
-class config {
-  private config: Record<string, any> = {}
-  private watcher: Record<string, FSWatcher> = { config: {} as FSWatcher, defSet: {} as FSWatcher }
+class Cfg {
+  /** 用户配置文件路径 */
+  dirCfgPath: string
+  /** 默认配置文件路径 */
+  defCfgPath: string
 
   constructor () {
     this.initCfg()
+    this.dirCfgPath = `${basePath}/${Version.pluginName}/config`
+    this.defCfgPath = `${Version.pluginPath}/config/default_config/`
   }
 
   /** 初始化配置 */
   private initCfg () {
-    let path: string
-    path = `${Version.karinPath}/config/plugin/${Version.pluginName}/`
-    if (! fs.existsSync(path)) fs.mkdirSync(path)
-    const pathDef = `${Version.pluginPath}/config/default_config/`
-    const files = fs.readdirSync(pathDef).filter(file => file.endsWith('.yaml'))
-    for (const file of files) {
-      if (! fs.existsSync(`${path}${file}`)) {
-        fs.copyFileSync(`${pathDef}${file}`, `${path}${file}`)
-      } else {
-        const config = YAML.parseDocument(fs.readFileSync(`${path}${file}`, 'utf8'))
-        const defConfig = YAML.parseDocument(fs.readFileSync(`${pathDef}${file}`, 'utf8'))
-        const { differences, result } = this.mergeObjectsWithPriority(config, defConfig)
-        if (differences) {
-          fs.writeFileSync(`${path}${file}`, result.toString())
-        }
-      }
-      this.watch(`${path}${file}`, file.replace('.yaml', ''), 'config')
-    }
+    copyConfigSync(this.defCfgPath, this.dirCfgPath)
+
+    /**
+     * @description 监听配置文件
+     */
+    setTimeout(() => {
+      const list = filesByExt(this.dirCfgPath, '.yaml', 'abs')
+      list.forEach(file => watch(file, (old, now) => {
+        // logger.info('旧数据:', old)
+        // logger.info('新数据:', now)
+      }))
+    }, 2000)
   }
 
   /** 插件相关配置 */
@@ -76,7 +69,6 @@ class config {
     return this.getDefOrConfig('kuaishou')
   }
 
-
   All (): ConfigType {
     return {
       cookies: this.cookies,
@@ -85,7 +77,7 @@ class config {
       bilibili: this.bilibili,
       pushlist: this.pushlist,
       upload: this.upload,
-      kuaishou: this.kuaishou
+      kuaishou: this.kuaishou,
     }
   }
 
@@ -112,36 +104,12 @@ class config {
    * @param name 名称
    */
   private getYaml (type: ConfigDirType, name: string) {
-    let file: string = ''
-    if (type === 'config') {
-      file = `${Version.karinPath}/config/plugin/${Version.pluginName}/${name}.yaml`
-    } else { file = `${Version.pluginPath}/config/default_config/${name}.yaml` }
+    const file = type === 'config'
+      ? `${this.dirCfgPath}/${name}.yaml`
+      : `${this.defCfgPath}/${name}.yaml`
 
-    const key = `${type}.${name}`
-
-    if (this.config[key]) return this.config[key]
-
-    this.config[key] = YAML.parse(
-      fs.readFileSync(file, 'utf8')
-    )
-
-    this.watch(file, name, type)
-
-    return this.config[key]
-  }
-
-  /** 监听配置文件 */
-  private watch (file: string, name: string, type: ConfigDirType = 'default_config') {
-    const key = `${type}.${name}`
-    if (this.watcher[key]) return
-
-    const watcher = chokidar.watch(file)
-    watcher.on('change', async () => {
-      delete this.config[key]
-      logger.mark(`[${Version.pluginName}][修改配置文件][${type}][${name}]`)
-    })
-
-    this.watcher[key] = watcher
+    // 自动管理缓存 无需手动清除 如无缓存 则会自动导入并加载
+    return requireFileSync(file)
   }
 
   /**
@@ -157,12 +125,9 @@ class config {
     value: any,
     type: ConfigDirType = 'config'
   ) {
-    let path = ''
-    if (type === 'config') {
-      path = `${Version.karinPath}/config/plugin/${Version.pluginName}/${name}.yaml`
-    } else {
-      path = `${Version.pluginPath}/config/default_config/${name}.yaml`
-    }
+    const path = type === 'config'
+      ? `${this.dirCfgPath}/${name}.yaml`
+      : `${this.defCfgPath}/${name}.yaml`
 
     // 读取 YAML 文件
     const yamlData = YAML.parseDocument(fs.readFileSync(path, 'utf8'))
@@ -172,13 +137,13 @@ class config {
     let current: YAML.YAMLMap | undefined = yamlData.contents as YAML.YAMLMap
 
     // 遍历键并确保每个子键都有对应的结构
-    for (let i = 0; i < keys.length - 1; i ++) {
+    for (let i = 0; i < keys.length - 1; i++) {
       const subKey = keys[i]
       if (current instanceof YAML.YAMLMap) {
         let subValue: YAML.YAMLMap | YAML.Scalar | any | undefined = current.get(subKey)
 
         // 类型保护，确保 subValue 是 YAMLMap
-        if (! YAML.isMap(subValue)) {
+        if (!YAML.isMap(subValue)) {
           subValue = new YAML.YAMLMap() // 创建新的 YAMLMap
           current.set(subKey, subValue) // 设置新的子值
         }
@@ -198,11 +163,7 @@ class config {
 
     // 写回 YAML 文件并保留注释
     fs.writeFileSync(path, yamlData.toString(), 'utf8')
-
-    // 删除缓存
-    delete this.config[`${type}.${name}`]
   }
-
 
   private mergeObjectsWithPriority (
     userDoc: YAML.Document.Parsed,
@@ -247,6 +208,7 @@ class config {
 /**
  * YamlReader类提供了对YAML文件的动态读写功能
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class YamlReader {
   private filePath: string
   private document: YAML.Document.Parsed
@@ -274,10 +236,10 @@ class YamlReader {
   private write () {
     fs.writeFileSync(this.filePath,
       this.document.toString({
-        lineWidth: - 1,
-        simpleKeys: true
+        lineWidth: -1,
+        simpleKeys: true,
       }), 'utf8')
   }
 }
 
-export const Config = new config()
+export const Config = new Cfg()
