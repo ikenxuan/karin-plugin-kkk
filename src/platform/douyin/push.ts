@@ -18,7 +18,7 @@ interface PushItem {
   Detail_Data: {
     /** 博主主页信息 */
     user_info: any
-    liveStatus?:{ liveStatus: 'open' |  'close', isChanged:boolean, isliving: boolean }
+    liveStatus?: { liveStatus: 'open' | 'close', isChanged: boolean, isliving: boolean }
     [key: string]: any
   }
   /** 博主头像url */
@@ -27,7 +27,7 @@ interface PushItem {
   living: boolean
 }
 /** 推送列表的类型定义 */
-type WillBePushList = Record<string, PushItem>;
+type WillBePushList = Record<string, PushItem>
 
 export class DouYinpush extends Base {
   private force = false
@@ -72,7 +72,7 @@ export class DouYinpush extends Base {
       const Detail_Data = data[awemeId].Detail_Data
       const skip = skipDynamic(Detail_Data)
       let img: ImageElement[] = []
-      let iddata: ExtendedDouyinOptionsType  = { is_mp4: true, type: 'one_work' }
+      let iddata: ExtendedDouyinOptionsType = { is_mp4: true, type: 'one_work' }
       if (! skip) {
         iddata = await getDouyinID(Detail_Data.share_url || 'https://live.douyin.com/' + Detail_Data.room_data.owner.web_rid, false)
       }
@@ -585,7 +585,7 @@ const skipDynamic = (Detail_Data: PushItem['Detail_Data']): boolean => {
  * @param cacheData 数据库的缓存数据
  * @returns 直播状态和是否改变的布尔值，默认false
  */
-const checkUserLiveStatus = (userInfo: any, cacheData: AllDataType<'douyin'>['douyin']): PushItem['Detail_Data']['liveStatus']    => {
+const checkUserLiveStatus = (userInfo: any, cacheData: AllDataType<'douyin'>['douyin']): PushItem['Detail_Data']['liveStatus'] => {
   const liveStatus = userInfo.user.live_status === 1 ? 'open' : 'close'
   const isLiving = userInfo.user.live_status === 1
   let isChanged = false
@@ -612,7 +612,7 @@ const checkUserLiveStatus = (userInfo: any, cacheData: AllDataType<'douyin'>['do
  * @param data 数据库的缓存数据
  * @returns
  */
-const mergeDouyinData = (data: AllDataType<'douyin'>['douyin']) =>{
+const mergeDouyinData = (data: AllDataType<'douyin'>['douyin']) => {
   const result: AllDataType<'douyin'>['douyin']['string'] = {}
   for (const group in data) {
     for (const secUid in data[group]) {

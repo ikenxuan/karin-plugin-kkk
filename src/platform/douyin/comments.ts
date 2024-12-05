@@ -231,8 +231,9 @@ function br (data: any[]): any[] {
 const heic2jpg = async (jsonArray: any[]): Promise<any> => {
   for (const item of jsonArray) {
     if (item.commentimage) {
-      const response = await new Networks({ url: item.commentimage, type: 'arraybuffer' }).returnResult()
-      if (response.headers["content-type"] && response.headers["content-type"] === 'image/heic') {
+      const headers = await new Networks({ url: item.commentimage, type: 'arraybuffer' }).getHeaders()
+      if (headers["content-type"] && headers["content-type"] === 'image/heic') {
+        const response = await new Networks({ url: item.commentimage, type: 'arraybuffer' }).returnResult()
         const jpegBuffer = await convert({
           buffer: response.data,
           format: 'JPEG'
