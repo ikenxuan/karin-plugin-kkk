@@ -13,13 +13,12 @@ class Cfg {
   defCfgPath: string
 
   constructor () {
-    this.initCfg()
     this.dirCfgPath = `${basePath}/${Version.pluginName}/config`
     this.defCfgPath = `${Version.pluginPath}/config/default_config/`
   }
 
   /** 初始化配置 */
-  private initCfg () {
+  initCfg () {
     copyConfigSync(this.defCfgPath, this.dirCfgPath)
 
     /**
@@ -32,6 +31,7 @@ class Cfg {
         // logger.info('新数据:', now)
       }))
     }, 2000)
+    return this
   }
 
   /** 插件相关配置 */
@@ -242,4 +242,4 @@ class YamlReader {
   }
 }
 
-export const Config = new Cfg()
+export const Config = new Cfg().initCfg()

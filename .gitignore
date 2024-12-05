@@ -5,3 +5,8 @@ node_modules/
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
+index.js
+pnpm-workspace.yaml
+@karinjs/
+data/
+logs/

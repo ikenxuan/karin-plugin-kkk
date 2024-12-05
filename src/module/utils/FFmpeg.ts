@@ -59,17 +59,13 @@ interface fffmpegClientOptions {
 
 // 为每个执行方法定义返回类型
 type MergeFileResult<T> =
-  T extends '二合一（视频 + 音频）' ? void :
-  T extends '视频*3 + 音频' ? void :
-  T extends '获取指定视频文件时长' ? number :
-  T extends '压缩视频' ? string :
-  never
+  T extends '二合一（视频 + 音频）' ? void : T extends '视频*3 + 音频' ? void : T extends '获取指定视频文件时长' ? number : T extends '压缩视频' ? string : never
 
 interface ffhandlerOptions {
   '二合一（视频 + 音频）': fffmpegClientOptions['VideoAudioOptions']
   '视频*3 + 音频': fffmpegClientOptions['Video3AudioOptions']
-  '获取指定视频文件时长': fffmpegClientOptions['getVideoSizeOptions']
-  '压缩视频': fffmpegClientOptions['compressVideoOptions']
+  获取指定视频文件时长: fffmpegClientOptions['getVideoSizeOptions']
+  压缩视频: fffmpegClientOptions['compressVideoOptions']
 }
 
 /**
@@ -90,6 +86,7 @@ class FFmpeg {
   constructor (type: keyof ffhandlerOptions) {
     this.type = type
   }
+
   async FFmpeg<T extends keyof fffmpegClientOptions> (opt: any): Promise<MergeFileResult<T>> {
     const ffmpegClient = await ffmpeg(Version.pluginPath, {})
     if (ffmpegClient === false) {

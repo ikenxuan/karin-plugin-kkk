@@ -1,4 +1,4 @@
-import { exec } from 'node:child_process'
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import os from 'node:os'
@@ -8,16 +8,15 @@ import util from 'node:util'
 
 import axios from 'axios'
 import { core } from 'icqq'
-import { config, logger, Message  } from 'node-karin'
-
+import { config, logger, Message, exec } from 'node-karin'
 
 const errors = {} as any
 
-async function UploadRecord (e: Message, record_url: string, seconds: number = 0, transcoding: boolean = true, brief: string = ''): Promise<any> {
+async function UploadRecord (e: Message, recordUrl: string, seconds: number = 0, transcoding: boolean = true, brief: string = ''): Promise<any> {
   const bot = { ...e.bot, super: {} as any }
-  const result = await getPttBuffer(record_url, config.getYaml('config', 'user').value.ffmpegPath, transcoding)
+  const result = await getPttBuffer(recordUrl, config.getYaml('config', 'user').value.ffmpegPath, transcoding)
 
-  if (! result.buffer) {
+  if (!result.buffer) {
     return false
   }
   const buf = result.buffer
@@ -42,8 +41,8 @@ async function UploadRecord (e: Message, record_url: string, seconds: number = 0
       12: 1,
       13: 1,
       14: codec,
-      15: 1
-    }
+      15: 1,
+    },
   })
   const payload = await bot.super.sendUni('PttStore.GroupPttUp', body)
   const rsp = core.pb.decode(payload)[5]
@@ -59,12 +58,12 @@ async function UploadRecord (e: Message, record_url: string, seconds: number = 0
     filesize: buf.length,
     bmd5: hash.toString('hex'),
     mType: 'pttDu',
-    voice_encodec: codec
+    voice_encodec: codec,
   }
   const url = `http://${int32ip2str(ip)}:${port}/?` + querystring.stringify(params)
   const headers = {
     'User-Agent': `QQ/${'9.1.0'} CFNetwork/1126`,
-    'Net-Type': 'Wifi'
+    'Net-Type': 'Wifi',
   }
   await axios.post(url, buf, { headers })
   const fid = rsp[11].toBuffer()
@@ -84,12 +83,12 @@ async function UploadRecord (e: Message, record_url: string, seconds: number = 0
       5: 0, // 是否显示评级
       6: 'sss', // 评级
       7: 0, // 未知参数
-      8: brief
-    }
+      8: brief,
+    },
   })
   return {
     type: 'record',
-    file: 'protobuf://' + Buffer.from(b).toString('base64')
+    file: 'protobuf://' + Buffer.from(b).toString('base64'),
   }
 }
 
@@ -101,7 +100,7 @@ async function getPttBuffer (file: string, ffmpeg = 'ffmpeg', transcoding = true
   if (Buffer.isBuffer(file) || file.startsWith('base64://')) {
     let buf: Buffer = Buffer.isBuffer(file) ? file : Buffer.from(file.slice(9), 'base64')
     const head = buf.slice(0, 7).toString()
-    if (head.includes('SILK') || head.includes('AMR') || ! transcoding) {
+    if (head.includes('SILK') || head.includes('AMR') || !transcoding) {
       const tmpfile = `${TMP_DIR}/${uuid()}`
       await fs.promises.writeFile(tmpfile, buf)
       const result = await getAudioTime(tmpfile, ffmpeg)
@@ -120,7 +119,7 @@ async function getPttBuffer (file: string, ffmpeg = 'ffmpeg', transcoding = true
   } else if (file.startsWith('http://') || file.startsWith('https://')) {
     try {
       const headers = {
-        'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 12; MI 9 Build/SKQ1.211230.001)'
+        'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 12; MI 9 Build/SKQ1.211230.001)',
       }
       const response = await axios.get(file, { headers, responseType: 'arraybuffer' })
       const buf = Buffer.from(response.data)
@@ -129,7 +128,7 @@ async function getPttBuffer (file: string, ffmpeg = 'ffmpeg', transcoding = true
       const head = await read7Bytes(tmpfile)
       const result = await getAudioTime(tmpfile, ffmpeg)
       if (result.code === 1) time = result.data
-      if (head.includes('SILK') || head.includes('AMR') || ! transcoding) {
+      if (head.includes('SILK') || head.includes('AMR') || !transcoding) {
         buffer = result.buffer || buf
       } else {
         buffer = await audioTrans(tmpfile, ffmpeg) as any
@@ -142,7 +141,7 @@ async function getPttBuffer (file: string, ffmpeg = 'ffmpeg', transcoding = true
     const head = await read7Bytes(file)
     const result = await getAudioTime(file, ffmpeg)
     if (result.code === 1) time = result.data
-    if (head.includes('SILK') || head.includes('AMR') || ! transcoding) {
+    if (head.includes('SILK') || head.includes('AMR') || !transcoding) {
       buffer = result.buffer || (await fs.promises.readFile(file))
     } else {
       buffer = await audioTrans(file, ffmpeg) as any
@@ -152,80 +151,73 @@ async function getPttBuffer (file: string, ffmpeg = 'ffmpeg', transcoding = true
 }
 
 async function getAudioTime (file: string, ffmpeg: string = 'ffmpeg'): Promise<{ code: number; buffer?: Buffer | null; data?: { time: string; seconds: number; exec_text: string } }> {
-  return new Promise((resolve, reject) => {
-    const file_info = fs.statSync(file)
-    let cmd = `${ffmpeg} -i "${file}"`
-    let is_aac = false
-    if (file_info.size >= 10485760) {
-      cmd = `${ffmpeg} -i "${file}" -fs 10485600 -ab 128k "${file}.mp3"`
-      is_aac = true
+  const fileInfo = fs.statSync(file)
+  let cmd = `${ffmpeg} -i "${file}"`
+  let isAac = false
+  if (fileInfo.size >= 10485760) {
+    cmd = `${ffmpeg} -i "${file}" -fs 10485600 -ab 128k "${file}.mp3"`
+    isAac = true
+  }
+
+  const { error, stdout, stderr } = await exec(cmd)
+  try {
+    let buffer: Buffer | null = null
+    if (isAac) {
+      buffer = fs.readFileSync(`${file}.mp3`)
+      fs.unlinkSync(`${file}.mp3`)
     }
-    exec(cmd, async (error, stdout, stderr) => {
-      try {
-        let buffer: Buffer | null = null
-        if (is_aac) {
-          buffer = fs.readFileSync(`${file}.mp3`)
-          fs.unlinkSync(`${file}.mp3`)
-        }
-        const time = stderr.split('Duration:')[1]?.split(',')[0]?.trim()
-        const arr = time?.split(':') ?? []
-        arr.reverse()
-        let n = 1
-        let s = 0
-        for (const val of arr) {
-          if (parseInt(val) > 0) s += parseInt(val) * n
-          n *= 60
-        }
-        resolve({
-          code: 1,
-          buffer,
-          data: {
-            time: time ?? '0:00:00',
-            seconds: s,
-            exec_text: stderr
-          }
-        })
-      } catch (err) {
-        resolve({ code: - 1 })
-      }
-    })
-  })
+    const time = stderr.split('Duration:')[1]?.split(',')[0]?.trim()
+    const arr = time?.split(':') ?? []
+    arr.reverse()
+    let n = 1
+    let s = 0
+    for (const val of arr) {
+      if (parseInt(val) > 0) s += parseInt(val) * n
+      n *= 60
+    }
+    return {
+      code: 1,
+      buffer,
+      data: {
+        time: time ?? '0:00:00',
+        seconds: s,
+        exec_text: stderr,
+      },
+    }
+  } catch (err) {
+    return { code: -1 }
+  }
 }
+
 async function audioTrans (file: string, ffmpeg = 'ffmpeg') {
-  const result = await new Promise((resolve, reject) => {
-    const tmpfile = TMP_DIR + '/' + uuid() + '.pcm'
-    exec(`${ffmpeg} -y -i "${file}" -f s16le -ar 24000 -ac 1 -fs 31457280 "${tmpfile}"`, async (error, stdout, stderr) => {
-      try {
-        const silk_worker = await import('./silk_worker/index.cjs' as any)
-        const ret = await silk_worker.encode(tmpfile, 24000)
-        resolve(Buffer.from(ret.data))
-      } catch (err) {
-        logger.error('音频转码到pcm失败，请确认你的ffmpeg可以处理此转换')
-        resolve(false)
-      } finally {
-        fs.unlink(tmpfile, NOOP)
-      }
-    })
-  })
-  if (result) return result
-  return await audioTrans1(file, ffmpeg)
+  const tmpfile = TMP_DIR + '/' + uuid() + '.pcm'
+  const cmd = `${ffmpeg} -y -i "${file}" -f s16le -ar 24000 -ac 1 -fs 31457280 "${tmpfile}"`
+  await exec(cmd)
+  try {
+    const silkWorker = await import('./silk_worker/index.cjs' as any)
+    const ret = await silkWorker.encode(tmpfile, 24000)
+    return Buffer.from(ret.data)
+  } catch (err) {
+    logger.error('音频转码到pcm失败，请确认你的ffmpeg可以处理此转换')
+    return false
+  } finally {
+    fs.unlink(tmpfile, NOOP)
+  }
 }
 
 async function audioTrans1 (file: string, ffmpeg = 'ffmpeg') {
-  return new Promise((resolve, reject) => {
-    const tmpfile = TMP_DIR + '/' + uuid()
-    exec(`${ffmpeg} -y -i "${file}" -ac 1 -ar 8000 -f amr "${tmpfile}"`, async (error, stdout, stderr) => {
-      try {
-        const amr = await fs.promises.readFile(tmpfile)
-        resolve(amr)
-      } catch (err) {
-        logger.error('音频转码到amr失败，请确认你的ffmpeg可以处理此转换')
-        resolve(false)
-      } finally {
-        fs.unlink(tmpfile, NOOP)
-      }
-    })
-  })
+  const tmpfile = TMP_DIR + '/' + uuid()
+  await exec(`${ffmpeg} -y -i "${file}" -ac 1 -ar 8000 -f amr "${tmpfile}"`)
+
+  try {
+    const amr = await fs.promises.readFile(tmpfile)
+    return amr
+  } catch (err) {
+    logger.error('音频转码到amr失败，请确认你的ffmpeg可以处理此转换')
+    return false
+  } finally {
+    fs.unlink(tmpfile, NOOP)
+  }
 }
 
 async function read7Bytes (file: string) {
@@ -255,7 +247,7 @@ function fileHash (filepath: fs.PathLike) {
     readable.on('error', reject)
     readable.pipe(crypto.createHash('sha1').on('error', reject).on('data', resolve))
   })
-  return Promise.all([ md5Stream(readable), sha ])
+  return Promise.all([md5Stream(readable), sha])
 }
 
 /** 群号转uin */
@@ -290,7 +282,7 @@ function uin2code (uin: number) {
 function int32ip2str (ip: number) {
   if (typeof ip === 'string') return ip
   ip = ip & 0xffffffff
-  return [ ip & 0xff, (ip & 0xff00) >> 8, (ip & 0xff0000) >> 16, ((ip & 0xff000000) >> 24) & 0xff ].join('.')
+  return [ip & 0xff, (ip & 0xff00) >> 8, (ip & 0xff0000) >> 16, ((ip & 0xff000000) >> 24) & 0xff].join('.')
 }
 
 /** 解析彩色群名片 */
@@ -299,7 +291,7 @@ function parseFunString (buf: number[]) {
     let res = ''
     try {
       let arr = core.pb.decode(buf as any)[1]
-      if (! Array.isArray(arr)) arr = [ arr ]
+      if (!Array.isArray(arr)) arr = [arr]
       for (const v of arr) {
         if (v[2]) res += String(v[2])
       }
@@ -355,39 +347,39 @@ errors.LoginErrorCode = errors.drop = errors.ErrorCode
 let ErrorCode
 (function (ErrorCode) {
   /** 客户端离线 */
-  ErrorCode[(ErrorCode.ClientNotOnline = - 1)] = 'ClientNotOnline'
+  ErrorCode[(ErrorCode.ClientNotOnline = -1)] = 'ClientNotOnline'
   /** 发包超时未收到服务器回应 */
-  ErrorCode[(ErrorCode.PacketTimeout = - 2)] = 'PacketTimeout'
+  ErrorCode[(ErrorCode.PacketTimeout = -2)] = 'PacketTimeout'
   /** 用户不存在 */
-  ErrorCode[(ErrorCode.UserNotExists = - 10)] = 'UserNotExists'
+  ErrorCode[(ErrorCode.UserNotExists = -10)] = 'UserNotExists'
   /** 群不存在(未加入) */
-  ErrorCode[(ErrorCode.GroupNotJoined = - 20)] = 'GroupNotJoined'
+  ErrorCode[(ErrorCode.GroupNotJoined = -20)] = 'GroupNotJoined'
   /** 群员不存在 */
-  ErrorCode[(ErrorCode.MemberNotExists = - 30)] = 'MemberNotExists'
+  ErrorCode[(ErrorCode.MemberNotExists = -30)] = 'MemberNotExists'
   /** 发消息时传入的参数不正确 */
-  ErrorCode[(ErrorCode.MessageBuilderError = - 60)] = 'MessageBuilderError'
+  ErrorCode[(ErrorCode.MessageBuilderError = -60)] = 'MessageBuilderError'
   /** 群消息被风控发送失败 */
-  ErrorCode[(ErrorCode.RiskMessageError = - 70)] = 'RiskMessageError'
+  ErrorCode[(ErrorCode.RiskMessageError = -70)] = 'RiskMessageError'
   /** 群消息有敏感词发送失败 */
-  ErrorCode[(ErrorCode.SensitiveWordsError = - 80)] = 'SensitiveWordsError'
+  ErrorCode[(ErrorCode.SensitiveWordsError = -80)] = 'SensitiveWordsError'
   /** 上传图片/文件/视频等数据超时 */
-  ErrorCode[(ErrorCode.HighwayTimeout = - 110)] = 'HighwayTimeout'
+  ErrorCode[(ErrorCode.HighwayTimeout = -110)] = 'HighwayTimeout'
   /** 上传图片/文件/视频等数据遇到网络错误 */
-  ErrorCode[(ErrorCode.HighwayNetworkError = - 120)] = 'HighwayNetworkError'
+  ErrorCode[(ErrorCode.HighwayNetworkError = -120)] = 'HighwayNetworkError'
   /** 没有上传通道 */
-  ErrorCode[(ErrorCode.NoUploadChannel = - 130)] = 'NoUploadChannel'
+  ErrorCode[(ErrorCode.NoUploadChannel = -130)] = 'NoUploadChannel'
   /** 不支持的file类型(没有流) */
-  ErrorCode[(ErrorCode.HighwayFileTypeError = - 140)] = 'HighwayFileTypeError'
+  ErrorCode[(ErrorCode.HighwayFileTypeError = -140)] = 'HighwayFileTypeError'
   /** 文件安全校验未通过不存在 */
-  ErrorCode[(ErrorCode.UnsafeFile = - 150)] = 'UnsafeFile'
+  ErrorCode[(ErrorCode.UnsafeFile = -150)] = 'UnsafeFile'
   /** 离线(私聊)文件不存在 */
-  ErrorCode[(ErrorCode.OfflineFileNotExists = - 160)] = 'OfflineFileNotExists'
+  ErrorCode[(ErrorCode.OfflineFileNotExists = -160)] = 'OfflineFileNotExists'
   /** 群文件不存在(无法转发) */
-  ErrorCode[(ErrorCode.GroupFileNotExists = - 170)] = 'GroupFileNotExists'
+  ErrorCode[(ErrorCode.GroupFileNotExists = -170)] = 'GroupFileNotExists'
   /** 获取视频中的图片失败 */
-  ErrorCode[(ErrorCode.FFmpegVideoThumbError = - 210)] = 'FFmpegVideoThumbError'
+  ErrorCode[(ErrorCode.FFmpegVideoThumbError = -210)] = 'FFmpegVideoThumbError'
   /** 音频转换失败 */
-  ErrorCode[(ErrorCode.FFmpegPttTransError = - 220)] = 'FFmpegPttTransError'
+  ErrorCode[(ErrorCode.FFmpegPttTransError = -220)] = 'FFmpegPttTransError'
 })((ErrorCode = errors.ErrorCode || (errors.ErrorCode = {})))
 const ErrorMessage = {
   [ErrorCode.UserNotExists]: '查无此人',
@@ -398,10 +390,10 @@ const ErrorMessage = {
   10: '消息过长',
   34: '消息过长',
   120: '在该群被禁言',
-  121: 'AT全体剩余次数不足'
+  121: 'AT全体剩余次数不足',
 }
 function drop (code: string | number, message: string | any[]) {
-  if (! message || ! message.length) message = ErrorMessage[code as any]
+  if (!message || !message.length) message = ErrorMessage[code as any]
   throw new core.ApiRejection(code as number, message as string)
 }
 errors.drop = drop
@@ -419,3 +411,4 @@ let LoginErrorCode
   /** 滑块ticket错误 */
   LoginErrorCode[(LoginErrorCode.WrongTicket = 237)] = 'WrongTicket'
 })((LoginErrorCode = errors.LoginErrorCode || (errors.LoginErrorCode = {})))
+logger.debug('🚀 ~ LoginErrorCode:', LoginErrorCode)
