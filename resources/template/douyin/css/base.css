@@ -296,7 +296,7 @@ body.light-mode .userinfo_text {
   display: -ms-flexbox;
   display: flex;
   font-size: 35px;
-  color: #2f2f2fb8;
+  color: #2f2f2f;
   padding: 25px 0 0 0;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
@@ -357,7 +357,7 @@ body.dark-mode .userinfo_text {
 
 .name_and_followers_text {
   font-size: 20px;
-  color: #2f2f2fb8;
+  color: #2f2f2f;
   margin-left: 10px;
   text-align: right;
   margin-right: 10px;
@@ -401,7 +401,7 @@ body.dark-mode .userinfo_text {
 
 body.ligth-mode .qrcode_text {
   font-size: 45px;
-  color: #2f2f2fb8;
+  color: #2f2f2f;
   text-align: right;
   margin: 20px 0 0 0;
 }

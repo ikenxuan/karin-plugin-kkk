@@ -193,7 +193,7 @@ export class Bilibili extends Base {
               }
               return imgArray
             }
-            if ('topic' in OBJECT.dynamicINFO.data.item.modules.module_dynamic) {
+            if ('topic' in OBJECT.dynamicINFO.data.item.modules.module_dynamic && OBJECT.dynamicINFO.data.item.modules.module_dynamic.topic !== null) {
               const name = OBJECT.dynamicINFO.data.item.modules.module_dynamic.topic.name
               OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.rich_text_nodes.unshift({
                 orig_text: name,
@@ -217,7 +217,10 @@ export class Bilibili extends Base {
               user_shortid: OBJECT.dynamicINFO.data.item.modules.module_author.mid,
               total_favorited: this.count(OBJECT.USERDATA.data.like_num),
               following_count: this.count(OBJECT.USERDATA.data.card.attention),
-              Botadapter: this.botadapter,
+              decoration_card: OBJECT.dynamicINFO.data.item.modules.module_author.decorate ?
+                `<div style="display: flex; width: 500px; height: 150px; background-position: center; background-attachment: fixed; background-repeat: no-repeat; background-size: contain; align-items: center; justify-content: flex-end; background-image: url('${OBJECT.dynamicINFO.data.item.modules.module_author.decorate.card_url}')">${generateGradientStyle(
+                  OBJECT.dynamicINFO.data.item.modules.module_author.decorate.fan.color_format.colors, OBJECT.dynamicINFO.data.item.modules.module_author.decorate.fan.num_str)}</div>` : '<div></div>',
+              render_time: Common.getCurrentTime(),
               dynamicTYPE: '图文动态'
             }))
             break
@@ -479,4 +482,13 @@ const qnd: Record<number, string> = {
   125: '真彩色 HDR ',
   126: '杜比视界',
   127: '超高清 8K'
+}
+
+const generateGradientStyle = (colors: string[], text: string): string => {
+  const gradientString = colors.map((color) => {
+    return `${color}`
+  }).join(', ')
+
+  // 返回完整的CSS样式字符串
+  return `<span style="font-family: bilifont; color: transparent; background-clip: text; margin: 0 200px 0 0; font-size: 43px; background-image: linear-gradient(135deg, ${gradientString} 0%, ${gradientString} 100%); ">${text}</span>`
 }
