@@ -66,6 +66,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "karin": {
+    "main": "src/index.ts",
     "apps": [
       "lib/apps"
     ],
