@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.3...v0.1.4) (2024-12-06)
+
+
+### Performance Improvements
+
+* 优化UI ([c0d032f](https://github.com/ikenxuan/karin-plugin-kkk/commit/c0d032f330bca208a84c0c14973b7d44fa961996))
+
 ## [0.1.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.2...v0.1.3) (2024-12-04)
 
 
