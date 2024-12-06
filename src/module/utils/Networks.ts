@@ -143,15 +143,15 @@ export class Networks {
 
       // 处理请求或下载过程中的错误
       if (error instanceof AxiosError) {
-        console.error(`请求在 ${this.timeout / 1000} 秒后超时`)
+        logger.error(`请求在 ${this.timeout / 1000} 秒后超时`)
       } else {
-        console.error('下载失败:', error)
+        logger.error('下载失败:', error)
       }
 
       // 如果重试次数小于最大重试次数，则等待一段时间后重试下载
       if (retryCount < this.maxRetries) {
         const delay = Math.min(Math.pow(2, retryCount) * 1000, 1000)
-        console.warn(`正在重试下载... (${retryCount + 1}/${this.maxRetries})，将在 ${delay / 1000} 秒后重试`)
+        logger.warn(`正在重试下载... (${retryCount + 1}/${this.maxRetries})，将在 ${delay / 1000} 秒后重试`)
         await new Promise(resolve => setTimeout(resolve, delay))
         return this.downloadStream(progressCallback, retryCount + 1)
       } else {

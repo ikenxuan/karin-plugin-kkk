@@ -18,12 +18,12 @@ export const task = Config.app.rmmp4 && karin.task('[kkk-视频缓存自动删�
 export const biLogin = karin.command(/^#?(kkk)?\s*B站\s*(扫码)?\s*登录$/i, async (e) => {
   await bilibiliLogin(e)
   return true
-}, { permission: 'group.admin', name: 'kkk-ck管理' })
+}, { perm: 'group.admin', name: 'kkk-ck管理' })
 
 export const dylogin = karin.command(/^#?(kkk)?抖音(扫码)?登录$/, async (e) => {
   await douyinLogin(e)
   return true
-}, { permission: 'group.admin', name: 'kkk-ck管理' })
+}, { perm: 'group.admin', name: 'kkk-ck管理' })
 
 export const setdyck = karin.command(/^#?(kkk)?s*设置抖音ck$/i, async (e) => {
   const msg = await e.reply('请发在120秒内送抖音ck\n教程：https://ikenxuan.github.io/kkkkkk-10086/docs/intro/other#%E9%85%8D%E7%BD%AE%E4%B8%8D%E5%90%8C%E5%B9%B3%E5%8F%B0%E7%9A%84-cookies\n')
@@ -32,7 +32,7 @@ export const setdyck = karin.command(/^#?(kkk)?s*设置抖音ck$/i, async (e) =>
   await e.bot.recallMsg(e.contact, msg.messageId)
   await e.reply('设置成功！', { at: true })
   return true
-}, { permission: 'master', name: 'kkk-ck管理', event: 'message.friend' })
+}, { perm: 'master', name: 'kkk-ck管理', event: 'message.friend' })
 
 export const setbilick = karin.command(/^#?(kkk)?s*设置s*(B站)ck$/i, async (e) => {
   const msg = await e.reply('请发在120秒内送B站ck\n教程：https://ikenxuan.github.io/kkkkkk-10086/docs/intro/other#%E9%85%8D%E7%BD%AE%E4%B8%8D%E5%90%8C%E5%B9%B3%E5%8F%B0%E7%9A%84-cookies\n')
@@ -41,7 +41,7 @@ export const setbilick = karin.command(/^#?(kkk)?s*设置s*(B站)ck$/i, async (e
   await e.bot.recallMsg(e.contact, msg.message_id)
   await e.reply('设置成功！', { at: true })
   return true
-}, { permission: 'master', name: 'kkk-ck管理', event: 'message.friend' })
+}, { perm: 'master', name: 'kkk-ck管理', event: 'message.friend' })
 
 // 插件类
 export class Admin extends Plugin {

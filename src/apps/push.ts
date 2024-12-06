@@ -24,7 +24,7 @@ export const forcePush = karin.command(/#(抖音|B站)(全部)?强制推送/, as
     return true
   }
   return true
-}, { name: '𝑪𝒊𝒂𝒍𝒍𝒐～(∠・ω< )⌒★', permission: 'master' })
+}, { name: '𝑪𝒊𝒂𝒍𝒍𝒐～(∠・ω< )⌒★', perm: 'master' })
 
 export const setdyPush = Config.bilibili.push.switch && karin.command(/^#设置抖音推送/, async (e) => {
   const data = await getDouyinData('搜索数据', Config.cookies.douyin, { query: e.msg.replace(/^#设置抖音推送/, '') })
@@ -39,7 +39,7 @@ export const setbiliPush = Config.bilibili.push.switch && karin.command(/^#设�
     await e.reply(await new Bilibilipush(e).setting(data))
   }
   return true
-}, { name: 'kkk-推送功能-设置', event: 'message.friend', permission: Config.bilibili.push.permission })
+}, { name: 'kkk-推送功能-设置', event: 'message.friend', perm: Config.bilibili.push.permission })
 
 export const changeBotID = karin.command(new RegExp(/^#kkk设置推送机器人/), async (e) => {
   const newDouyinlist = Config.pushlist.douyin.map(item => {
@@ -68,4 +68,4 @@ export const changeBotID = karin.command(new RegExp(/^#kkk设置推送机器人/
   Config.modify('pushlist', 'bilibili', newBilibililist)
   await e.reply('推送机器人已修改为' + e.msg.replace(/^#kkk设置推送机器人/, ''))
   return true
-}, { name: 'kkk-推送功能-设置', permission: 'master' })
+}, { name: 'kkk-推送功能-设置', perm: 'master' })

@@ -2,7 +2,7 @@ import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 
 import { markdown } from '@karinjs/md-html'
-import karin, { common, render, segment, updateGitPlugin } from 'node-karin'
+import karin, { common, isPkg, render, segment, updateGitPlugin, updatePkg } from 'node-karin'
 
 import { Common, Render, Version } from '@/module'
 
@@ -45,9 +45,16 @@ export const changelogs = karin.command(/^#?kkk更新日志$/, async (e) => {
   const img = await render.renderHtml(htmlPath)
   await e.reply(segment.image(img))
   return true
-}, { name: 'kkk-更新日志', permission: 'master' })
+}, { name: 'kkk-更新日志', perm: 'master' })
 
 export const update = karin.command(/^#?kkk更新$/, async (e) => {
+  if (isPkg) {
+    const data = await updatePkg(Version.pluginName)
+    if (data.status === 'ok') {
+      await e.reply(`更新${Version.pluginName}成功，\n请手动重启以应用更新！`, { at: true })
+      return true
+    }
+  }
   let [ name, cmd ] = [ Version.pluginName, 'git pull' ]
   if (e.msg.includes('强制')) cmd = 'git reset --hard && git pull --allow-unrelated-histories'
   const { data, status } = await updateGitPlugin(Version.pluginPath, cmd)
@@ -63,7 +70,7 @@ export const update = karin.command(/^#?kkk更新$/, async (e) => {
     // }
   }
   return true
-}, { name: 'kkk-更新', permission: 'master' })
+}, { name: 'kkk-更新', perm: 'master' })
 
 interface CommitLog {
   sha: string

@@ -1,13 +1,13 @@
 import fs from 'node:fs'
 
-import { bilibiliAPI } from '@ikenxuan/amagi'
+import { bilibiliAPI, getBilibiliData } from '@ikenxuan/amagi'
 import karin, { common, ElementTypes, logger, Message, segment } from 'node-karin'
 
 import { Base, Common, Config, mergeFile, Networks, Render } from '@/module/utils'
 import { bilibiliComments, genParams } from '@/platform/bilibili'
 import { BilibiliDataTypes } from '@/types'
 
-let img: string | ElementTypes | (string | ElementTypes)[]
+let img: ElementTypes[]
 
 export class Bilibili extends Base {
   e: Message
@@ -112,7 +112,6 @@ export class Bilibili extends Base {
         img = await Render('bilibili/bangumi', {
           saveId: 'bangumi',
           bangumiData: barray,
-          Botadapter: this.botadapter,
           title: OBJECT.INFODATA.result.title
         })
 
@@ -183,16 +182,7 @@ export class Bilibili extends Base {
             }
 
             const dynamicCARD = JSON.parse(OBJECT.dynamicINFO_CARD.data.card.card)
-            const cover = () => {
-              const imgArray = []
-              for (const i of dynamicCARD.item.pictures) {
-                const obj = {
-                  image_src: i.img_src
-                }
-                imgArray.push(obj)
-              }
-              return imgArray
-            }
+
             if ('topic' in OBJECT.dynamicINFO.data.item.modules.module_dynamic && OBJECT.dynamicINFO.data.item.modules.module_dynamic.topic !== null) {
               const name = OBJECT.dynamicINFO.data.item.modules.module_dynamic.topic.name
               OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.rich_text_nodes.unshift({
@@ -203,13 +193,13 @@ export class Bilibili extends Base {
               OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text = `${name}\n\n` + OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text
             }
             await this.e.reply(await Render('bilibili/dynamic/DYNAMIC_TYPE_DRAW', {
-              image_url: cover(),
-              text: replacetext(br(OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text), OBJECT.dynamicINFO),
+              image_url: cover(dynamicCARD.item.pictures),
+              text: replacetext(br(OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text), OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.rich_text_nodes),
               dianzan: this.count(OBJECT.dynamicINFO.data.item.modules.module_stat.like.count),
               pinglun: this.count(OBJECT.dynamicINFO.data.item.modules.module_stat.comment.count),
               share: this.count(OBJECT.dynamicINFO.data.item.modules.module_stat.forward.count),
               create_time: OBJECT.dynamicINFO.data.item.modules.module_author.pub_time,
-              avater_url: OBJECT.dynamicINFO.data.item.modules.module_author.face,
+              avatar_url: OBJECT.dynamicINFO.data.item.modules.module_author.face,
               frame: OBJECT.dynamicINFO.data.item.modules.module_author.pendant.image,
               share_url: 'https://t.bilibili.com/' + OBJECT.dynamicINFO.data.item.id_str,
               username: checkvip(OBJECT.USERDATA.data.card),
@@ -228,7 +218,7 @@ export class Bilibili extends Base {
           }
           /** 纯文 */
           case 'DYNAMIC_TYPE_WORD': {
-            const text = replacetext(br(OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text), OBJECT.dynamicINFO)
+            const text = replacetext(br(OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text), OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.rich_text_nodes)
             await this.e.reply(
               await Render('bilibili/dynamic/DYNAMIC_TYPE_WORD', {
                 text,
@@ -236,7 +226,7 @@ export class Bilibili extends Base {
                 pinglun: this.count(OBJECT.dynamicINFO.data.item.modules.module_stat.comment.count),
                 share: this.count(OBJECT.dynamicINFO.data.item.modules.module_stat.forward.count),
                 create_time: OBJECT.dynamicINFO.data.item.modules.module_author.pub_time,
-                avater_url: OBJECT.dynamicINFO.data.item.modules.module_author.face,
+                avatar_url: OBJECT.dynamicINFO.data.item.modules.module_author.face,
                 frame: OBJECT.dynamicINFO.data.item.modules.module_author.pendant.image,
                 share_url: 'https://t.bilibili.com/' + OBJECT.dynamicINFO.data.item.id_str,
                 username: checkvip(OBJECT.USERDATA.data.card),
@@ -244,7 +234,6 @@ export class Bilibili extends Base {
                 user_shortid: OBJECT.dynamicINFO.data.item.modules.module_author.mid,
                 total_favorited: this.count(OBJECT.USERDATA.data.like_num),
                 following_count: this.count(OBJECT.USERDATA.data.card.attention),
-                Botadapter: this.botadapter,
                 dynamicTYPE: '纯文动态'
               })
             )
@@ -255,8 +244,61 @@ export class Bilibili extends Base {
                 CommentLength: String((bilibiliComments(OBJECT)?.length) ? bilibiliComments(OBJECT).length : 0),
                 share_url: 'https://t.bilibili.com/' + OBJECT.dynamicINFO.data.item.id_str,
                 ImageLength: OBJECT.dynamicINFO.data.item.modules?.module_dynamic?.major?.draw?.items?.length || '动态中没有附带图片',
-                shareurl: '动态分享链接',
-                Botadapter: this.botadapter
+                shareurl: '动态分享链接'
+              })
+            )
+            break
+          }
+          case 'DYNAMIC_TYPE_FORWARD': {
+            const text = replacetext(br(OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text), OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.rich_text_nodes)
+            let data = {}
+            switch (OBJECT.dynamicINFO.data.item.orig.type) {
+              case 'DYNAMIC_TYPE_AV':{
+                data = {
+                  username: checkvip(OBJECT.dynamicINFO.data.item.orig.modules.module_author),
+                  pub_action: OBJECT.dynamicINFO.data.item.orig.modules.module_author.pub_action,
+                  avatar_url: OBJECT.dynamicINFO.data.item.orig.modules.module_author.face,
+                  duration_text: OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.major.archive.duration_text,
+                  title: OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.major.archive.title,
+                  danmaku: OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.major.archive.stat.danmaku,
+                  play: OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.major.archive.stat.play,
+                  cover: OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.major.archive.cover
+                }
+                break
+              }
+              case 'DYNAMIC_TYPE_DRAW': {
+                const dynamicCARD = await getBilibiliData('动态卡片数据', Config.cookies.bilibili, { dynamic_id: OBJECT.dynamicINFO.data.item.orig.id_str })
+                const cardData = JSON.parse(dynamicCARD.data.card.card)
+                data = {
+                  username: checkvip(OBJECT.dynamicINFO.data.item.orig.modules.module_author),
+                  avatar_url: OBJECT.dynamicINFO.data.item.orig.modules.module_author.face,
+                  text: replacetext(br(OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.desc.text), OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.desc.rich_text_nodes),
+                  image_url: cover(cardData.item.pictures)
+                }
+              }
+            }
+            await this.e.reply(
+              await Render('bilibili/dynamic/DYNAMIC_TYPE_FORWARD', {
+                text,
+                dianzan: this.count(OBJECT.dynamicINFO.data.item.modules.module_stat.like.count),
+                pinglun: this.count(OBJECT.dynamicINFO.data.item.modules.module_stat.comment.count),
+                share: this.count(OBJECT.dynamicINFO.data.item.modules.module_stat.forward.count),
+                create_time: OBJECT.dynamicINFO.data.item.modules.module_author.pub_time,
+                avatar_url: OBJECT.dynamicINFO.data.item.modules.module_author.face,
+                frame: OBJECT.dynamicINFO.data.item.modules.module_author.pendant.image,
+                share_url: 'https://t.bilibili.com/' + OBJECT.dynamicINFO.data.item.id_str,
+                username: checkvip(OBJECT.USERDATA.data.card),
+                fans: this.count(OBJECT.USERDATA.data.follower),
+                user_shortid: OBJECT.dynamicINFO.data.item.modules.module_author.mid,
+                total_favorited: this.count(OBJECT.USERDATA.data.like_num),
+                following_count: this.count(OBJECT.USERDATA.data.card.attention),
+                dynamicTYPE: '转发动态',
+                decoration_card: OBJECT.dynamicINFO.data.item.modules.module_author.decorate
+                  ? `<div style="display: flex; width: 500px; height: 150px; background-position: center; background-attachment: fixed; background-repeat: no-repeat; background-size: contain; align-items: center; justify-content: flex-end; background-image: url('${OBJECT.dynamicINFO.data.item.modules.module_author.decorate.card_url}')">${generateGradientStyle(
+                    OBJECT.dynamicINFO.data.item.modules.module_author.decorate.fan?.color_format?.colors, OBJECT.dynamicINFO.data.item.modules.module_author.decorate.fan.num_str)}</div>`
+                  : '<div></div>',
+                render_time: Common.getCurrentTime(),
+                original_content: { [OBJECT.dynamicINFO.data.item.orig.type]: data }
               })
             )
             break
@@ -277,8 +319,8 @@ export class Bilibili extends Base {
             text: br(OBJECT.live_info.data.title),
             liveinf: br(`${OBJECT.live_info.data.area_name} | 房间号: ${OBJECT.live_info.data.room_id}`),
             username: OBJECT.USERDATA.data.card.name,
-            avater_url: OBJECT.USERDATA.data.card.face,
-            frame: OBJECT.dynamicINFO.data.item.modules.module_author.pendant.image,
+            avatar_url: OBJECT.USERDATA.data.card.face,
+            frame: OBJECT.USERDATA.data.card.pendant.image,
             fans: this.count(OBJECT.USERDATA.data.card.fans),
             create_time: OBJECT.live_info.data.live_time === - 62170012800 ? '获取失败' : OBJECT.live_info.data.live_time,
             now_time: 114514,
@@ -429,15 +471,15 @@ export class Bilibili extends Base {
 function checkvip (member: { vip: { vipStatus: number; nickname_color: any }; name: any }) {
   return member.vip.vipStatus === 1
     ? `<span style="color: ${member.vip.nickname_color || '#FB7299'}; font-weight: bold;">${member.name}</span>`
-    : `<span style="color: #606060">${member.name}</span>`
+    : `<span style="color: ${Common.useDarkTheme() ? '#e9e9e9' : '#000000'}">${member.name}</span>`
 }
 
 function br (data: string) {
   return (data = data.replace(/\n/g, '<br>'))
 }
 
-function replacetext (text: string, obj: { data: { item: { modules: { module_dynamic: { desc: { rich_text_nodes: any } } } } } }) {
-  for (const tag of obj.data.item.modules.module_dynamic.desc.rich_text_nodes) {
+function replacetext (text: string, rich_text_nodes:any[]) {
+  for (const tag of rich_text_nodes) {
     // 对正则表达式中的特殊字符进行转义
     const escapedText = tag.orig_text.replace(/([.*+?^${}()|[\]\\])/g, '\\$1').replace(/\n/g, '\\n')
     const regex = new RegExp(escapedText, 'g')
@@ -492,4 +534,15 @@ export const generateGradientStyle = (colors: string[], text: string): string =>
 
   // 返回完整的CSS样式字符串
   return `<span style="font-family: bilifont; color: transparent; background-clip: text; margin: 0 200px 0 0; font-size: 43px; background-image: linear-gradient(135deg, ${gradientString} 0%, ${gradientString} 100%); ">${text}</span>`
+}
+
+const cover = (pic: { img_src: string }[]) => {
+  const imgArray = []
+  for (const i of pic) {
+    const obj = {
+      image_src: i.img_src
+    }
+    imgArray.push(obj)
+  }
+  return imgArray
 }

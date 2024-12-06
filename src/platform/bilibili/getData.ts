@@ -126,7 +126,13 @@ function mapping_table (type: any): number {
 }
 
 function oid (dynamicINFO: any, dynamicINFO_CARD: any) {
-  if (dynamicINFO.data.item.type === 'DYNAMIC_TYPE_WORD') {
-    return dynamicINFO.data.item.id_str
-  } else return dynamicINFO_CARD.data.card.desc.rid
+  switch (dynamicINFO.data.item.type) {
+    case 'DYNAMIC_TYPE_WORD':
+    case 'DYNAMIC_TYPE_FORWARD': {
+      return dynamicINFO.data.item.id_str
+    }
+    default: {
+      return dynamicINFO_CARD.data.card.desc.rid
+    }
+  }
 }
