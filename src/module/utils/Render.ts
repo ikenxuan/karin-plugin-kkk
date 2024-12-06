@@ -22,7 +22,7 @@ export async function Render (path: string, params?: any) {
     bilibili: 'bilibili/html',
     admin: 'admin/html',
     kuaishou: 'kuaishou/html',
-    help: 'help/html',
+    help: 'help/html'
   }
   const platform = Object.keys(basePaths).find(key => path.startsWith(key))!
   let newPath = path.substring(platform.length)
@@ -33,12 +33,12 @@ export async function Render (path: string, params?: any) {
   path = `${basePaths[platform]}/${newPath}`
   const renderOpt: Options = {
     pageGotoParams: {
-      waitUntil: 'load',
+      waitUntil: 'load'
     },
     name: `${Version.pluginName}/${platform}/${newPath}/`.replace(/\\/g, '/'),
     file: `${Version.pluginPath}/resources/template/${path}.html`,
     // 这里是模板引擎渲染完成之后生成的html文件名称 如果这里不传递会默认使用name作为默认值 建议传递。
-    type: 'jpeg',
+    type: 'jpeg'
   }
 
   const img = await render.render({
@@ -51,13 +51,13 @@ export async function Render (path: string, params?: any) {
       _layout_path: (join(Version.pluginPath, '/resources', 'template', 'extend') + '/').replace(/\\/g, '/'),
       defaultLayout: (join(Version.pluginPath, '/resources', 'template', 'extend', 'html') + '/default.html').replace(/\\/g, '/'),
       sys: {
-        scale: scale(params?.scale || 1),
+        scale: scale(params?.scale || 1)
       },
       pluResPath: `${Version.pluginPath}/resources/`,
       copyright: `<span class="name">kkk</span><span class="version">${Version.pluginVersion} Preview</span> Powered By <span class="name">Karin</span>`,
-      useDarkTheme: Common.useDarkTheme(),
+      useDarkTheme: Common.useDarkTheme()
     },
-    screensEval: '#container',
+    screensEval: '#container'
   })
   // 分片截图传回来的是数组
   const ret: ImageElementType[] = []

@@ -1,6 +1,9 @@
 import fs from 'node:fs'
+
 import { logger, Message } from 'node-karin'
+
 import { Config } from '@/module/utils'
+
 import { Version } from './Version'
 
 /** 常用工具合集 */
@@ -31,7 +34,7 @@ export const Common = {
     /** 视频缓存文件 */
     video: `${Version.karinPath}/temp/${Version.pluginName}/kkkdownload/video/`,
     /** 图片缓存文件 */
-    images: `${Version.karinPath}/temp/${Version.pluginName}/kkkdownload/images/`,
+    images: `${Version.karinPath}/temp/${Version.pluginName}/kkkdownload/images/`
   },
 
   /**
@@ -42,17 +45,17 @@ export const Common = {
   chineseToArabic: (chineseNumber: string): number => {
     // 映射表，定义基础的中文数字
     const chineseToArabicMap: Record<string, number> = {
-      '零': 0, '一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9
+      零: 0, 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9
     }
     // 对应中文单位映射
     const units: Record<string, number> = {
-      '十': 10, '百': 100, '千': 1000, '万': 10000, '亿': 100000000
+      十: 10, 百: 100, 千: 1000, 万: 10000, 亿: 100000000
     }
     let result = 0
     let temp = 0 // 存储每一段的临时结果
     let unit = 1 // 当前处理的单位，初始为1
 
-    for (let i = chineseNumber.length - 1; i >= 0; i--) {
+    for (let i = chineseNumber.length - 1; i >= 0; i --) {
       const char = chineseNumber[i]
 
       // 如果是单位字符
@@ -83,8 +86,8 @@ export const Common = {
   formatCookies: (cookies: any[]): string => {
     return cookies.map(cookie => {
       // 分割每个cookie字符串以获取名称和值
-      const [nameValue] = cookie.split(';').map((part: string) => part.trim())
-      const [name, value] = nameValue.split('=')
+      const [ nameValue ] = cookie.split(';').map((part: string) => part.trim())
+      const [ name, value ] = nameValue.split('=')
 
       // 重新组合名称和值，忽略其他属性
       return `${name}=${value}`

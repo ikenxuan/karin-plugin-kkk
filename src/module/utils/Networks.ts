@@ -36,7 +36,7 @@ export class Networks {
       maxRedirects: 5,
       validateStatus: (status) => {
         return (status >= 200 && status < 300) || status === 406 || (status >= 500)
-      },
+      }
     })
   }
 
@@ -45,7 +45,7 @@ export class Networks {
       url: this.url,
       method: this.method,
       headers: this.headers,
-      responseType: this.type,
+      responseType: this.type
     }
 
     if (this.method === 'POST' && this.body) {
@@ -79,14 +79,14 @@ export class Networks {
         ...this.config,
         url: this.url,
         responseType: 'stream',
-        signal: controller.signal,
+        signal: controller.signal
       })
 
       // 清除中止请求的定时器
       clearTimeout(timeoutId)
 
       // 检查HTTP响应状态码，如果状态码不在200到299之间，则抛出错误
-      if (!(response.status >= 200 && response.status < 300)) {
+      if (! (response.status >= 200 && response.status < 300)) {
         throw new Error(`无法获取 ${this.url}。状态: ${response.status} ${response.statusText}`)
       }
 
@@ -99,7 +99,7 @@ export class Networks {
 
       // 初始化已下载字节数和上次打印的进度百分比
       let downloadedBytes = 0
-      let lastPrintedPercentage = -1
+      let lastPrintedPercentage = - 1
 
       // 创建一个文件写入流，用于将下载的资源保存到本地文件系统
       const writer = fs.createWriteStream(this.filepath)
@@ -189,7 +189,7 @@ export class Networks {
     try {
       const response = await this.axiosInstance({
         method: 'GET',
-        url: this.url,
+        url: this.url
       })
       return response.request.res.responseUrl // axios中获取最终的请求URL
     } catch (error: unknown) {
@@ -207,7 +207,7 @@ export class Networks {
         method: 'GET',
         url: this.url,
         maxRedirects: 0, // 禁止跟随重定向
-        validateStatus: (status: number) => status >= 300 && status < 400, // 仅处理3xx响应
+        validateStatus: (status: number) => status >= 300 && status < 400 // 仅处理3xx响应
       })
       return response.headers.location as string
     } catch (error: unknown) {
@@ -249,8 +249,8 @@ export class Networks {
         method: 'GET',
         headers: {
           ...this.config.headers,
-          Range: 'bytes=0-0',
-        },
+          Range: 'bytes=0-0'
+        }
       })
       return response.headers
     } catch (error) {
@@ -267,7 +267,7 @@ export class Networks {
     try {
       const response = await this.axiosInstance({
         ...this.config,
-        method: 'GET',
+        method: 'GET'
       })
       return response.headers
     } catch (error) {

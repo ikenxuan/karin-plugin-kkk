@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import { karin, AdapterType, logger, Message, segment } from 'node-karin'
+import  karin, { AdapterType, logger, Message, segment } from 'node-karin'
 
 import { Common, Config, mergeFile, Networks } from '@/module/utils'
 
@@ -75,7 +75,7 @@ export class Base {
       Accept: '*/*',
       'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
       'User-Agent':
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
     }
     this._path = process.cwd()?.replace(/\\/g, '/')
   }
@@ -106,7 +106,7 @@ export class Base {
       logger.warn(logger.yellow(`视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.upload.compresstrigger} MB），正在进行压缩至${Config.upload.compressvalue} MB...`))
       const message = [
         segment.text(`视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.upload.compresstrigger} MB），正在进行压缩至${Config.upload.compressvalue} MB...`),
-        options?.message_id ? segment.reply(options.message_id) : segment.text(''),
+        options?.message_id ? segment.reply(options.message_id) : segment.text('')
       ]
 
       const msg1 = await karin.sendMsg(this.e.selfId, this.e.contact, message)
@@ -122,7 +122,7 @@ export class Base {
 
       const message2 = [
         segment.text(`压缩后最终视频大小为: ${newFileSize.toFixed(2)} MB，压缩耗时：${((endTime - startTime) / 1000).toFixed(2)} 秒`),
-        segment.reply(msg1.messageId),
+        segment.reply(msg1.messageId)
       ]
       await karin.sendMsg(this.e.selfId, this.e.contact, message2)
     }
@@ -140,7 +140,7 @@ export class Base {
           const status = await bot.uploadGroupFile(options.activeOption?.group_id ?? '', File, file.originTitle ? file.originTitle : `tmp_${Date.now()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是群文件
-          const status = await karin.sendMsg(String(options?.activeOption?.uin), karin.contactGroup(String(options?.activeOption?.group_id)), [segment.video(File)])
+          const status = await karin.sendMsg(String(options?.activeOption?.uin), karin.contactGroup(String(options?.activeOption?.group_id)), [ segment.video(File) ])
           status.messageId ? sendStatus = true : sendStatus = false
         }
       } else { // 不是主动消息
@@ -186,8 +186,8 @@ export class Base {
     // 下载文件，视频URL，标题和自定义headers
     let res = await this.DownLoadFile(downloadOpt.video_url, {
       title: Config.app.rmmp4 ? downloadOpt.title.timestampTitle as string : downloadOpt.title.originTitle as string,
-      headers: downloadOpt.headers || this.headers,
-      filetype: '.mp4',
+      headers: downloadOpt.headers ?? this.headers,
+      filetype: '.mp4'
     })
     res = { ...res, ...downloadOpt.title }
     // 将下载的文件大小转换为MB并保留两位小数
@@ -208,9 +208,9 @@ export class Base {
     // 使用networks类进行文件下载，并通过回调函数实时更新下载进度
     const { filepath, totalBytes } = await new Networks({
       url: videoUrl, // 视频地址
-      headers: opt.headers || this.headers, // 请求头
-      filepath: Common.tempDri.video + `${opt.title}${opt.filetype || '.mp4'}`, // 文件保存路径
-      timeout: 30000, // 设置30秒超时
+      headers: opt.headers ?? this.headers, // 请求头
+      filepath: Common.tempDri.video + `${opt.title}${opt.filetype ?? '.mp4'}`, // 文件保存路径
+      timeout: 30000 // 设置30秒超时
     }).downloadStream((downloadedBytes, totalBytes) => {
       // 定义进度条长度及生成进度条字符串的函数
       const barLength = 45

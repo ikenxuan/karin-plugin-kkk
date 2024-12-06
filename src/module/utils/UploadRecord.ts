@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import os from 'node:os'
@@ -6,7 +5,7 @@ import querystring from 'node:querystring'
 
 import axios from 'axios'
 import { core } from 'icqq'
-import { config, logger, Message, exec } from 'node-karin'
+import { config, exec, logger, Message } from 'node-karin'
 
 const errors = {} as any
 
@@ -14,7 +13,7 @@ async function UploadRecord (e: Message, recordUrl: string, seconds: number = 0,
   const bot = { ...e.bot, super: {} as any }
   const result = await getPttBuffer(recordUrl, config.getYaml('config', 'user').value.ffmpegPath, transcoding)
 
-  if (!result.buffer) {
+  if (! result.buffer) {
     return false
   }
   const buf = result.buffer
@@ -39,8 +38,8 @@ async function UploadRecord (e: Message, recordUrl: string, seconds: number = 0,
       12: 1,
       13: 1,
       14: codec,
-      15: 1,
-    },
+      15: 1
+    }
   })
   const payload = await bot.super.sendUni('PttStore.GroupPttUp', body)
   const rsp = core.pb.decode(payload)[5]
@@ -56,12 +55,12 @@ async function UploadRecord (e: Message, recordUrl: string, seconds: number = 0,
     filesize: buf.length,
     bmd5: hash.toString('hex'),
     mType: 'pttDu',
-    voice_encodec: codec,
+    voice_encodec: codec
   }
   const url = `http://${int32ip2str(ip)}:${port}/?` + querystring.stringify(params)
   const headers = {
     'User-Agent': `QQ/${'9.1.0'} CFNetwork/1126`,
-    'Net-Type': 'Wifi',
+    'Net-Type': 'Wifi'
   }
   await axios.post(url, buf, { headers })
   const fid = rsp[11].toBuffer()
@@ -81,12 +80,12 @@ async function UploadRecord (e: Message, recordUrl: string, seconds: number = 0,
       5: 0, // 是否显示评级
       6: 'sss', // 评级
       7: 0, // 未知参数
-      8: brief,
-    },
+      8: brief
+    }
   })
   return {
     type: 'record',
-    file: 'protobuf://' + Buffer.from(b).toString('base64'),
+    file: 'protobuf://' + Buffer.from(b).toString('base64')
   }
 }
 
@@ -98,7 +97,7 @@ async function getPttBuffer (file: string, ffmpeg = 'ffmpeg', transcoding = true
   if (Buffer.isBuffer(file) || file.startsWith('base64://')) {
     let buf: Buffer = Buffer.isBuffer(file) ? file : Buffer.from(file.slice(9), 'base64')
     const head = buf.slice(0, 7).toString()
-    if (head.includes('SILK') || head.includes('AMR') || !transcoding) {
+    if (head.includes('SILK') || head.includes('AMR') || ! transcoding) {
       const tmpfile = `${TMP_DIR}/${uuid()}`
       await fs.promises.writeFile(tmpfile, buf)
       const result = await getAudioTime(tmpfile, ffmpeg)
@@ -125,7 +124,7 @@ async function getPttBuffer (file: string, ffmpeg = 'ffmpeg', transcoding = true
     const head = await read7Bytes(tmpfile)
     const result = await getAudioTime(tmpfile, ffmpeg)
     if (result.code === 1) time = result.data
-    if (head.includes('SILK') || head.includes('AMR') || !transcoding) {
+    if (head.includes('SILK') || head.includes('AMR') || ! transcoding) {
       buffer = result.buffer ?? buf
     } else {
       buffer = await audioTrans(tmpfile, ffmpeg) as any
@@ -137,7 +136,7 @@ async function getPttBuffer (file: string, ffmpeg = 'ffmpeg', transcoding = true
     const head = await read7Bytes(file)
     const result = await getAudioTime(file, ffmpeg)
     if (result.code === 1) time = result.data
-    if (head.includes('SILK') || head.includes('AMR') || !transcoding) {
+    if (head.includes('SILK') || head.includes('AMR') || ! transcoding) {
       buffer = result.buffer ?? (await fs.promises.readFile(file))
     } else {
       buffer = await audioTrans(file, ffmpeg) as any
@@ -177,11 +176,11 @@ async function getAudioTime (file: string, ffmpeg: string = 'ffmpeg'): Promise<{
       data: {
         time: time ?? '0:00:00',
         seconds: s,
-        exec_text: stderr,
-      },
+        exec_text: stderr
+      }
     }
   } catch (err) {
-    return { code: -1 }
+    return { code: - 1 }
   }
 }
 
@@ -243,7 +242,7 @@ function fileHash (filepath: fs.PathLike) {
     readable.on('error', reject)
     readable.pipe(crypto.createHash('sha1').on('error', reject).on('data', resolve))
   })
-  return Promise.all([md5Stream(readable), sha])
+  return Promise.all([ md5Stream(readable), sha ])
 }
 
 /** 群号转uin */
@@ -278,7 +277,7 @@ function uin2code (uin: number) {
 function int32ip2str (ip: number) {
   if (typeof ip === 'string') return ip
   ip = ip & 0xffffffff
-  return [ip & 0xff, (ip & 0xff00) >> 8, (ip & 0xff0000) >> 16, ((ip & 0xff000000) >> 24) & 0xff].join('.')
+  return [ ip & 0xff, (ip & 0xff00) >> 8, (ip & 0xff0000) >> 16, ((ip & 0xff000000) >> 24) & 0xff ].join('.')
 }
 
 const IS_WIN = os.platform() === 'win32'
@@ -294,39 +293,39 @@ errors.LoginErrorCode = errors.drop = errors.ErrorCode
 let ErrorCode
 (function (ErrorCode) {
   /** 客户端离线 */
-  ErrorCode[(ErrorCode.ClientNotOnline = -1)] = 'ClientNotOnline'
+  ErrorCode[(ErrorCode.ClientNotOnline = - 1)] = 'ClientNotOnline'
   /** 发包超时未收到服务器回应 */
-  ErrorCode[(ErrorCode.PacketTimeout = -2)] = 'PacketTimeout'
+  ErrorCode[(ErrorCode.PacketTimeout = - 2)] = 'PacketTimeout'
   /** 用户不存在 */
-  ErrorCode[(ErrorCode.UserNotExists = -10)] = 'UserNotExists'
+  ErrorCode[(ErrorCode.UserNotExists = - 10)] = 'UserNotExists'
   /** 群不存在(未加入) */
-  ErrorCode[(ErrorCode.GroupNotJoined = -20)] = 'GroupNotJoined'
+  ErrorCode[(ErrorCode.GroupNotJoined = - 20)] = 'GroupNotJoined'
   /** 群员不存在 */
-  ErrorCode[(ErrorCode.MemberNotExists = -30)] = 'MemberNotExists'
+  ErrorCode[(ErrorCode.MemberNotExists = - 30)] = 'MemberNotExists'
   /** 发消息时传入的参数不正确 */
-  ErrorCode[(ErrorCode.MessageBuilderError = -60)] = 'MessageBuilderError'
+  ErrorCode[(ErrorCode.MessageBuilderError = - 60)] = 'MessageBuilderError'
   /** 群消息被风控发送失败 */
-  ErrorCode[(ErrorCode.RiskMessageError = -70)] = 'RiskMessageError'
+  ErrorCode[(ErrorCode.RiskMessageError = - 70)] = 'RiskMessageError'
   /** 群消息有敏感词发送失败 */
-  ErrorCode[(ErrorCode.SensitiveWordsError = -80)] = 'SensitiveWordsError'
+  ErrorCode[(ErrorCode.SensitiveWordsError = - 80)] = 'SensitiveWordsError'
   /** 上传图片/文件/视频等数据超时 */
-  ErrorCode[(ErrorCode.HighwayTimeout = -110)] = 'HighwayTimeout'
+  ErrorCode[(ErrorCode.HighwayTimeout = - 110)] = 'HighwayTimeout'
   /** 上传图片/文件/视频等数据遇到网络错误 */
-  ErrorCode[(ErrorCode.HighwayNetworkError = -120)] = 'HighwayNetworkError'
+  ErrorCode[(ErrorCode.HighwayNetworkError = - 120)] = 'HighwayNetworkError'
   /** 没有上传通道 */
-  ErrorCode[(ErrorCode.NoUploadChannel = -130)] = 'NoUploadChannel'
+  ErrorCode[(ErrorCode.NoUploadChannel = - 130)] = 'NoUploadChannel'
   /** 不支持的file类型(没有流) */
-  ErrorCode[(ErrorCode.HighwayFileTypeError = -140)] = 'HighwayFileTypeError'
+  ErrorCode[(ErrorCode.HighwayFileTypeError = - 140)] = 'HighwayFileTypeError'
   /** 文件安全校验未通过不存在 */
-  ErrorCode[(ErrorCode.UnsafeFile = -150)] = 'UnsafeFile'
+  ErrorCode[(ErrorCode.UnsafeFile = - 150)] = 'UnsafeFile'
   /** 离线(私聊)文件不存在 */
-  ErrorCode[(ErrorCode.OfflineFileNotExists = -160)] = 'OfflineFileNotExists'
+  ErrorCode[(ErrorCode.OfflineFileNotExists = - 160)] = 'OfflineFileNotExists'
   /** 群文件不存在(无法转发) */
-  ErrorCode[(ErrorCode.GroupFileNotExists = -170)] = 'GroupFileNotExists'
+  ErrorCode[(ErrorCode.GroupFileNotExists = - 170)] = 'GroupFileNotExists'
   /** 获取视频中的图片失败 */
-  ErrorCode[(ErrorCode.FFmpegVideoThumbError = -210)] = 'FFmpegVideoThumbError'
+  ErrorCode[(ErrorCode.FFmpegVideoThumbError = - 210)] = 'FFmpegVideoThumbError'
   /** 音频转换失败 */
-  ErrorCode[(ErrorCode.FFmpegPttTransError = -220)] = 'FFmpegPttTransError'
+  ErrorCode[(ErrorCode.FFmpegPttTransError = - 220)] = 'FFmpegPttTransError'
 })((ErrorCode = errors.ErrorCode || (errors.ErrorCode = {})))
 const ErrorMessage = {
   [ErrorCode.UserNotExists]: '查无此人',
@@ -337,11 +336,11 @@ const ErrorMessage = {
   10: '消息过长',
   34: '消息过长',
   120: '在该群被禁言',
-  121: 'AT全体剩余次数不足',
+  121: 'AT全体剩余次数不足'
 }
 function drop (code: string | number, message: string | any[]) {
-  if (!message || !message.length) message = ErrorMessage[code as any]
-  if (!message || !message.length) message = ErrorMessage[code as any]
+  if (! message || ! message.length) message = ErrorMessage[code as any]
+  if (! message || ! message.length) message = ErrorMessage[code as any]
   // eslint-disable-next-line @typescript-eslint/only-throw-error
   throw new core.ApiRejection(code as number, message as string)
 }

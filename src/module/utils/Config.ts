@@ -1,8 +1,11 @@
 import fs from 'node:fs'
+
+import { basePath, copyConfigSync, filesByExt, requireFileSync, watch } from 'node-karin'
 import YAML from 'node-karin/yaml'
+
 import { ConfigType } from '@/types'
+
 import { Version } from './Version'
-import { copyConfigSync, basePath, filesByExt, watch, requireFileSync } from 'node-karin'
 
 type ConfigDirType = 'config' | 'default_config'
 
@@ -77,7 +80,7 @@ class Cfg {
       bilibili: this.bilibili,
       pushlist: this.pushlist,
       upload: this.upload,
-      kuaishou: this.kuaishou,
+      kuaishou: this.kuaishou
     }
   }
 
@@ -137,13 +140,13 @@ class Cfg {
     let current: YAML.YAMLMap | undefined = yamlData.contents as YAML.YAMLMap
 
     // 遍历键并确保每个子键都有对应的结构
-    for (let i = 0; i < keys.length - 1; i++) {
+    for (let i = 0; i < keys.length - 1; i ++) {
       const subKey = keys[i]
       if (current instanceof YAML.YAMLMap) {
         let subValue: any = current.get(subKey)
 
         // 类型保护，确保 subValue 是 YAMLMap
-        if (!YAML.isMap(subValue)) {
+        if (! YAML.isMap(subValue)) {
           subValue = new YAML.YAMLMap() // 创建新的 YAMLMap
           current.set(subKey, subValue) // 设置新的子值
         }
@@ -202,43 +205,6 @@ class Cfg {
     mergeYamlNodes(defaultDoc.contents, userDoc.contents)
 
     return { differences, result: defaultDoc }
-  }
-}
-
-/**
- * YamlReader类提供了对YAML文件的动态读写功能
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-class YamlReader {
-  private filePath: string
-  private document: YAML.Document.Parsed
-
-  constructor (filePath: string) {
-    this.filePath = filePath
-    this.document = this.parseDocument()
-  }
-
-  private parseDocument (): YAML.Document.Parsed {
-    const fileContent = fs.readFileSync(this.filePath, 'utf8')
-    return YAML.parseDocument(fileContent)
-  }
-
-  set (key: string, value: any) {
-    this.document.set(key, value)
-    this.write()
-  }
-
-  rm (key: string) {
-    this.document.delete(key)
-    this.write()
-  }
-
-  private write () {
-    fs.writeFileSync(this.filePath,
-      this.document.toString({
-        lineWidth: -1,
-        simpleKeys: true,
-      }), 'utf8')
   }
 }
 

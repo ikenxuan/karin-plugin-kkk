@@ -39,7 +39,7 @@ export const douyinLogin = async (e: Message) => {
     const buffer = Buffer.from(base64Data, 'base64')
     fs.writeFileSync(`${Version.karinPath}/temp/${Version.pluginName}/DouyinLoginQrcode.png`, buffer)
 
-    const message2 = await e.reply([segment.image('base64://' + base64Data), segment.text('请在120秒内通过抖音APP扫码进行登录')], { reply: true })
+    const message2 = await e.reply([ segment.image('base64://' + base64Data), segment.text('请在120秒内通过抖音APP扫码进行登录') ], { reply: true })
     msg_id.push(message2.message_id, message1.message_id)
 
     try {

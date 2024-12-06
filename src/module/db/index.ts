@@ -1,14 +1,15 @@
-import { basePath } from 'node-karin'
 import { join } from 'node:path'
 
+import { basePath } from 'node-karin'
 import { DataTypes, Sequelize } from 'sequelize'
+
 import { Version } from '../utils'
 
 /** 创建 Sequelize 实例，需要传入配置对象。 */
 const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: join(`${basePath}/${Version.pluginName}/data`, 'push.db'),
-  logging: false,
+  logging: false
 })
 
 /** 测试数据库连接是否成功 */
@@ -46,6 +47,13 @@ export type DouyinDBType = Record<string, {
   avatar_img: string
   /** 是否正在直播 */
   living: boolean
+  /** 存储每个群的直播推送图相关 */
+  message_id: Record<string, {
+    /** 直播推送图的消息ID */
+    message_id: string
+  }>
+  /** 直播开始时间，时间戳 */
+  start_living_pn: number
 }>
 
 /** 单个群组数据 */
@@ -63,20 +71,20 @@ sequelize.define(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      comment: '主键ID',
+      comment: '主键ID'
     },
     group_id: {
       type: DataTypes.STRING,
-      comment: '群组标识符',
+      comment: '群组标识符'
     },
     data: {
       type: DataTypes.STRING, // 存储为字符串，JSON 格式
       defaultValue: '{}',
-      comment: '缓存数据',
-    },
+      comment: '缓存数据'
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 )
 
@@ -87,20 +95,20 @@ sequelize.define(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      comment: '主键ID',
+      comment: '主键ID'
     },
     group_id: {
       type: DataTypes.STRING,
-      comment: '群组标识符',
+      comment: '群组标识符'
     },
     data: {
       type: DataTypes.STRING, // 存储为字符串，JSON 格式
       defaultValue: '{}',
-      comment: '缓存数据',
-    },
+      comment: '缓存数据'
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 )
 
@@ -118,10 +126,10 @@ export class DBBase {
       await Model.create(
         {
           group_id: String(groupId),
-          data: JSON.stringify(data),
+          data: JSON.stringify(data)
         },
         {
-          raw: true,
+          raw: true
         }
       )
     ).dataValues
@@ -138,7 +146,7 @@ export class DBBase {
     const Model = sequelize.models[ModelName]
 
     const groups = await Model.findAll({
-      raw: true,
+      raw: true
     })
     // 使用reduce方法将数组转换为对象
     const result = groups.reduce((accumulator: any, group: any) => {
@@ -174,17 +182,17 @@ export class DBBase {
    * @param NewData 新的数据对象
    * @returns
    */
-  async UpdateGroupData (ModelName: keyof AllDataType, groupId: any, NewData: object = {}): Promise<number> {
+  async UpdateGroupData (ModelName: keyof AllDataType, groupId: string, NewData: object = {}): Promise<number> {
     const Model = sequelize.models[ModelName]
-    const [affectedRowsData] = await Model.update(
+    const [ affectedRowsData ] = await Model.update(
       {
-        data: JSON.stringify(NewData),
+        data: JSON.stringify(NewData)
       },
       {
         where: {
-          group_id: groupId,
+          group_id: groupId
         },
-        individualHooks: true,
+        individualHooks: true
       }
     )
     return affectedRowsData

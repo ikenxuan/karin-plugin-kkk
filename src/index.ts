@@ -1,12 +1,12 @@
 import Amagi from '@ikenxuan/amagi'
-import { common, logger, basePath } from 'node-karin'
+import { basePath, common, logger } from 'node-karin'
 
 import { Config, Version } from '@/module'
 
 const haha = new Amagi({
   bilibili: Config.cookies.bilibili,
   douyin: Config.cookies.douyin,
-  kuaishou: Config.cookies.kuaishou,
+  kuaishou: Config.cookies.kuaishou
 })
 Config.app.APIServer && haha.startClient(Config.app.APIServerPort)
 

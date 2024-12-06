@@ -45,7 +45,7 @@ export const changeBotID = karin.command(new RegExp(/^#kkk设置推送机器人/
   const newDouyinlist = Config.pushlist.douyin.map(item => {
     // 操作每个 group_id
     const modifiedGroupIds = item.group_id.map(groupId => {
-      const [group_id, uin] = groupId.split(':')
+      const [ group_id, uin ] = groupId.split(':')
       return `${group_id}:${e.msg.replace(/^#kkk设置推送机器人/, '')}`
     })
     return {
@@ -56,7 +56,7 @@ export const changeBotID = karin.command(new RegExp(/^#kkk设置推送机器人/
   const newBilibililist = Config.pushlist.bilibili.map(item => {
     // 操作每个 group_id
     const modifiedGroupIds = item.group_id.map(groupId => {
-      const [group_id, uin] = groupId.split(':')
+      const [ group_id, uin ] = groupId.split(':')
       return `${group_id}:${e.msg.replace(/^#kkk设置推送机器人/, '')}`
     })
     return {

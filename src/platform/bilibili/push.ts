@@ -76,7 +76,7 @@ export class Bilibilipush extends Base {
       const dynamicCARDINFO = await fetchBilibiliData('dynamic_card', { dynamic_id: dynamicId })
       const dycrad = dynamicCARDINFO.data.card && dynamicCARDINFO.data.card.card && JSON.parse(dynamicCARDINFO.data.card.card)
 
-      if (!skip) {
+      if (! skip) {
         const userINFO = await fetchBilibiliData('user_profile', { host_mid: data[dynamicId].host_mid })
         let emojiDATA = await fetchBilibiliData('emoji_list')
         emojiDATA = extractEmojisData(emojiDATA.data.packages)
@@ -163,7 +163,7 @@ export class Bilibilipush extends Base {
                 user_shortid: data[dynamicId].host_mid,
                 total_favorited: this.count(userINFO.data.like_num),
                 following_count: this.count(userINFO.data.card.attention),
-                dynamicTYPE: '纯文动态推送',
+                dynamicTYPE: '纯文动态推送'
               }
             )
             break
@@ -184,7 +184,7 @@ export class Bilibilipush extends Base {
               }
               img = await Render('bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {
-                  image_url: [{ image_src: INFODATA.data.pic }],
+                  image_url: [ { image_src: INFODATA.data.pic } ],
                   text: br(INFODATA.data.title),
                   desc: br(dycrad.desc),
                   dianzan: this.count(INFODATA.data.stat.like),
@@ -199,7 +199,7 @@ export class Bilibilipush extends Base {
                   user_shortid: data[dynamicId].host_mid,
                   total_favorited: this.count(userINFO.data.like_num),
                   following_count: this.count(userINFO.data.card.attention),
-                  dynamicTYPE: '视频动态推送',
+                  dynamicTYPE: '视频动态推送'
                 }
               )
             }
@@ -209,7 +209,7 @@ export class Bilibilipush extends Base {
           case 'DYNAMIC_TYPE_LIVE_RCMD': {
             img = await Render('bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
               {
-                image_url: [{ image_src: dycrad.live_play_info.cover }],
+                image_url: [ { image_src: dycrad.live_play_info.cover } ],
                 text: br(dycrad.live_play_info.title),
                 liveinf: br(`${dycrad.live_play_info.area_name} | 房间号: ${dycrad.live_play_info.room_id}`),
                 username: checkvip(userINFO.data.card),
@@ -219,7 +219,7 @@ export class Bilibilipush extends Base {
                 create_time: Common.convertTimestampToDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
                 now_time: Common.getCurrentTime(),
                 share_url: 'https://live.bilibili.com/' + dycrad.live_play_info.room_id,
-                dynamicTYPE: '直播动态推送',
+                dynamicTYPE: '直播动态推送'
               }
             )
             break
@@ -236,17 +236,17 @@ export class Bilibilipush extends Base {
       // 遍历 group_id 数组，并发送消息
       for (const groupId of data[dynamicId].group_id) {
         let status: any
-        if (!skip) {
-          const [group_id, uin] = groupId.split(':')
+        if (! skip) {
+          const [ group_id, uin ] = groupId.split(':')
           const bot = karin.getBot(uin) as AdapterType
-          status = await karin.sendMsg(String(uin), karin.contactGroup(group_id), img ? [...img] : [])
+          status = await karin.sendMsg(String(uin), karin.contactGroup(group_id), img ? [ ...img ] : [])
           if (Config.bilibili.push.parsedynamic) {
             switch (data[dynamicId].dynamic_type) {
               case 'DYNAMIC_TYPE_AV': {
                 if (send_video) {
                   await this.DownLoadVideo({
                     video_url: nocd_data.data.durl[0].url,
-                    title: { timestampTitle: 'tmp_' + Date.now(), originTitle: dycrad.title },
+                    title: { timestampTitle: 'tmp_' + Date.now(), originTitle: dycrad.title }
                   }, { active: true, activeOption: { uin, group_id } })
                 }
                 break
@@ -288,7 +288,7 @@ export class Bilibilipush extends Base {
             if (data[dynamicId].host_mid === findMatchingSecUid(DBdata, data[dynamicId].host_mid)) {
               // 如果找到了对应的 host_mid ，将 dynamicId 添加到 dynamic_idlist 数组中
               const isSecUidFound = findMatchingSecUid(DBdata, data[dynamicId].host_mid)
-              if (isSecUidFound && this.force ? true : !DBdata[data[dynamicId].host_mid].dynamic_idlist.includes(dynamicId)) {
+              if (isSecUidFound && this.force ? true : ! DBdata[data[dynamicId].host_mid].dynamic_idlist.includes(dynamicId)) {
                 DBdata[isSecUidFound].dynamic_idlist.push(dynamicId)
                 DBdata[isSecUidFound].create_time = Number(data[dynamicId].create_time)
                 await DB.UpdateGroupData('bilibili', groupId, DBdata)
@@ -296,18 +296,18 @@ export class Bilibilipush extends Base {
               }
             }
 
-            if (!found) {
+            if (! found) {
               // 如果没有找到对应的 host_mid ，创建一个新的条目
               newEntry = {
                 [data[dynamicId].host_mid]: {
                   remark: data[dynamicId].remark,
                   create_time: data[dynamicId].create_time,
                   host_mid: data[dynamicId].host_mid,
-                  dynamic_idlist: [dynamicId],
+                  dynamic_idlist: [ dynamicId ],
                   avatar_img: data[dynamicId].Dynamic_Data.modules.module_author.face,
                   dynamic_type: data[dynamicId].dynamic_type,
-                  group_id: [groupId],
-                },
+                  group_id: [ groupId ]
+                }
               }
               // 更新数据库
               await DB.UpdateGroupData('bilibili', groupId, { ...DBdata, ...newEntry })
@@ -319,11 +319,11 @@ export class Bilibilipush extends Base {
                 remark: data[dynamicId].remark,
                 create_time: data[dynamicId].create_time,
                 host_mid: data[dynamicId].host_mid,
-                dynamic_idlist: [dynamicId],
+                dynamic_idlist: [ dynamicId ],
                 avatar_img: data[dynamicId].Dynamic_Data.modules.module_author.face,
                 dynamic_type: data[dynamicId].dynamic_type,
-                group_id: [groupId],
-              },
+                group_id: [ groupId ]
+              }
             })
           }
         }
@@ -348,12 +348,12 @@ export class Bilibilipush extends Base {
 
         // 配置文件中的 group_id 转换为对象数组，每个对象包含群号和机器人账号
         const configGroupIdObjs = item.group_id.map(groupIdStr => {
-          const [groupId, robotId] = groupIdStr.split(':')
+          const [ groupId, robotId ] = groupIdStr.split(':')
           return { groupId, robotId }
         })
 
         // 找出新添加的群组ID
-        const newGroupIds = configGroupIdObjs.filter(groupIdObj => !dbGroupIds.has(groupIdObj.groupId))
+        const newGroupIds = configGroupIdObjs.filter(groupIdObj => ! dbGroupIds.has(groupIdObj.groupId))
 
         if (dynamic_list.data.items.length > 0) {
           // 遍历接口返回的视频列表
@@ -374,15 +374,15 @@ export class Bilibilipush extends Base {
             // 如果 shouldPush 为 true，或该作品距现在的时间差小于一天，则将该动态添加到 willbepushlist 中
             if (timeDifference < 86400000 || shouldPush) {
               // 确保 willbepushlist[host_mid.aweme_id] 是一个对象
-              if (!willbepushlist[dynamic.id_str]) {
+              if (! willbepushlist[dynamic.id_str]) {
                 willbepushlist[dynamic.id_str] = {
                   remark: item.remark,
                   host_mid: item.host_mid,
                   create_time: dynamic.modules.module_author.pub_ts,
-                  group_id: [...item.group_id],
+                  group_id: [ ...item.group_id ],
                   Dynamic_Data: dynamic, // 存储 dynamic 对象
                   avatar_img: dynamic.modules.module_author.face,
-                  dynamic_type: dynamic.type,
+                  dynamic_type: dynamic.type
                 }
               }
             }
@@ -427,7 +427,7 @@ export class Bilibilipush extends Base {
       // 遍历作品对应的群组
       for (const groupId of pushItem.group_id) {
         // 如果数据库中不存在该群组，保留此群组
-        if (!dbData) {
+        if (! dbData) {
           newGroupIds.push(groupId)
           continue
         }
@@ -443,7 +443,7 @@ export class Bilibilipush extends Base {
         }
 
         // 如果未被推送过，则保留此群组
-        if (!isAlreadyPushed) {
+        if (! isAlreadyPushed) {
           newGroupIds.push(groupId)
         }
       }
@@ -473,7 +473,7 @@ export class Bilibilipush extends Base {
     const group_id = 'groupId' in this.e && this.e.groupId ? this.e.groupId : ''
 
     // 初始化或确保 bilibilipushlist 数组存在
-    if (!config.bilibili) {
+    if (! config.bilibili) {
       config.bilibili = []
     }
 
@@ -483,8 +483,8 @@ export class Bilibilipush extends Base {
     if (existingItem) {
       // 如果已经存在相同的 host_mid ，则检查是否存在相同的 group_id
       let has = false
-      let groupIndexToRemove = -1 // 用于记录要删除的 group_id 对象的索引
-      for (let index = 0; index < existingItem.group_id.length; index++) {
+      let groupIndexToRemove = - 1 // 用于记录要删除的 group_id 对象的索引
+      for (let index = 0; index < existingItem.group_id.length; index ++) {
         // 分割每个对象的 id 属性，并获取第一部分
         const item = existingItem.group_id[index]
         const existingGroupId = item.split(':')[0]
@@ -509,7 +509,7 @@ export class Bilibilipush extends Base {
         }
       } else {
         const status = await DB.FindGroup('bilibili', `${group_id}:${this.e.selfId}`)
-        if (!status) {
+        if (! status) {
           await DB.CreateSheet('bilibili', `${group_id}:${this.e.selfId}`, {})
         }
         // 否则，将新的 group_id 添加到该 host_mid 对应的数组中
@@ -519,11 +519,11 @@ export class Bilibilipush extends Base {
       }
     } else {
       const status = await DB.FindGroup('bilibili', `${group_id}:${this.e.selfId}`)
-      if (!status) {
+      if (! status) {
         await DB.CreateSheet('bilibili', `${group_id}:${this.e.selfId}`, {})
       }
       // 不存在相同的 host_mid，新增一个配置项
-      config.bilibili.push({ host_mid, group_id: [`${group_id}:${this.e.selfId}`], remark: data.data.card.name })
+      config.bilibili.push({ host_mid, group_id: [ `${group_id}:${this.e.selfId}` ], remark: data.data.card.name })
       msg = `群：${groupInfo.groupName}(${group_id})\n添加成功！${data.data.card.name}\nUID：${host_mid}`
     }
 
@@ -574,13 +574,13 @@ export class Bilibilipush extends Base {
    * @param data 处理完成的推送列表
    */
   async forcepush (data: WillBePushList) {
-    if (!this.e.isGroup) {
+    if (! this.e.isGroup) {
       await this.e.reply('请在群组中使用该命令！')
       return true
     }
-    if (!this.e.msg.includes('全部')) {
+    if (! this.e.msg.includes('全部')) {
       for (const detail in data) {
-        data[detail].group_id = [...[`${'groupId' in this.e && this.e.groupId ? this.e.groupId : ''}:${this.e.selfId}`]]
+        data[detail].group_id = [ ...[ `${'groupId' in this.e && this.e.groupId ? this.e.groupId : ''}:${this.e.selfId}` ] ]
       }
     }
     await this.getdata(data)
