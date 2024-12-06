@@ -1,3 +1,5 @@
+import { Common } from '@/module'
+
 export function bilibiliComments (OBJECT: any) {
   let jsonArray: any[] = []
   for (let i = 0; i < OBJECT.COMMENTSDATA.data.replies.length; i ++) {
@@ -11,7 +13,6 @@ export function bilibiliComments (OBJECT: any) {
     const level = OBJECT.COMMENTSDATA.data.replies[i].member.level_info.current_level
     const vipstatus = OBJECT.COMMENTSDATA.data.replies[i].member.vip.status
     const like = OBJECT.COMMENTSDATA.data.replies[i].like
-    // const contentObject = OBJECT.COMMENTSDATA.data.replies[i].content
     const replylength = OBJECT.COMMENTSDATA.data.replies[i].rcount
     const location = OBJECT.COMMENTSDATA.data.replies[i].reply_control.location
     const img_src =
@@ -21,17 +22,6 @@ export function bilibiliComments (OBJECT: any) {
         ? OBJECT.COMMENTSDATA.data.replies[i].content.pictures[0].img_src
         : null
     const members = OBJECT.COMMENTSDATA.data.replies[i].content.members
-    // let emojiurl = ''
-    // // 检查 contentObject 是否存在并且不为 null
-    // if (contentObject && typeof contentObject === 'object') {
-    //   // 检查 emote 属性是否存在并且是一个对象
-    //   if (contentObject.emote && typeof contentObject.emote === 'object') {
-    //     // const emoteKeys = Object.keys(contentObject.emote)
-    //     // const firstKey = emoteKeys[0] // 获取第一个键名
-    //     // emojiurl = firstKey ? contentObject.emote[firstKey].url : null
-    //     // console.log()
-    //   }
-    // }
 
     const obj = {
       id: i + 1,
@@ -71,7 +61,7 @@ export function bilibiliComments (OBJECT: any) {
       for (const member of comment.members) {
         // 构建正则表达式，匹配被艾特的用户
         const regex = new RegExp(`@${member.uname}`, 'g')
-        originalText = originalText.replace(regex, `<span style="color: #0C6692;">@${member.uname}</span>`)
+        originalText = originalText.replace(regex, `<span style="color: ${Common.useDarkTheme() ? '#58B0D5' : '#006A9E'};">@${member.uname}</span>`)
       }
     }
 
@@ -179,26 +169,6 @@ function checkvip (member: any) {
     ? `<span style="color: ${member.vip.nickname_color || '#FB7299'}; font-weight: bold;">${member.uname}</span>`
     : `<span style="color: #888">${member.uname}</span>`
 }
-
-/** 处理表情，返回[{text: 表情名字, url: 表情地址}] */
-/**
-function extractEmojisData (data) {
-  const emojisData = []
-
-  // 遍历每个包
-  data.forEach((packages) => {
-    // 遍历每个表情
-    packages.emote.forEach((emote) => {
-      try {
-        // new URL(emote.url)
-        emojisData.push({ text: emote.text, url: emote.url })
-      } catch { }
-    })
-  })
-
-  return emojisData
-}
-*/
 
 /** 返回创建时间 */
 function getRelativeTimeFromTimestamp (timestamp: number) {

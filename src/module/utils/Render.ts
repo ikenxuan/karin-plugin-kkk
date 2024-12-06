@@ -37,7 +37,6 @@ export async function Render (path: string, params?: any) {
     },
     name: `${Version.pluginName}/${platform}/${newPath}/`.replace(/\\/g, '/'),
     file: `${Version.pluginPath}/resources/template/${path}.html`,
-    // 这里是模板引擎渲染完成之后生成的html文件名称 如果这里不传递会默认使用name作为默认值 建议传递。
     type: 'jpeg'
   }
 
@@ -62,7 +61,7 @@ export async function Render (path: string, params?: any) {
   // 分片截图传回来的是数组
   const ret: ImageElementType[] = []
   for (const imgae of img) {
-    ret.push(segment.image(imgae))
+    ret.push(segment.image('base64://' + imgae))
   }
   return ret
 }

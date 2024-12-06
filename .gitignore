@@ -10,3 +10,4 @@ pnpm-workspace.yaml
 @karinjs/
 data/
 logs/
+startpuppeteer.bat

@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import { logger, Message } from 'node-karin'
+import { logger, Message, tempPath } from 'node-karin'
 
 import { Config } from '@/module/utils'
 
@@ -32,9 +32,9 @@ export const Common = {
    */
   tempDri: {
     /** 视频缓存文件 */
-    video: `${Version.karinPath}/temp/${Version.pluginName}/kkkdownload/video/`,
+    video: `${tempPath}/${Version.pluginName}/kkkdownload/video/`,
     /** 图片缓存文件 */
-    images: `${Version.karinPath}/temp/${Version.pluginName}/kkkdownload/images/`
+    images: `${tempPath}/${Version.pluginName}/kkkdownload/images/`
   },
 
   /**
