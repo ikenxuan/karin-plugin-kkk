@@ -39,7 +39,7 @@ export const douyinLogin = async (e: Message) => {
     const buffer = Buffer.from(base64Data, 'base64')
     fs.writeFileSync(`${Version.karinPath}/temp/${Version.pluginName}/DouyinLoginQrcode.png`, buffer)
 
-    const message2 = await e.reply([ segment.image('base64://' + base64Data), segment.text('请在120秒内通过抖音APP扫码进行登录') ], { reply: true })
+    const message2 = await e.reply([segment.image('base64://' + base64Data), segment.text('请在120秒内通过抖音APP扫码进行登录')], { reply: true })
     msg_id.push(message2.message_id, message1.message_id)
 
     try {
@@ -73,10 +73,12 @@ export const douyinLogin = async (e: Message) => {
       logger.error(err)
     }
   } catch (error: any) {
-    logger.warn('首次使用，正在初始化 playwright 环境，请稍等片刻...')
-    if (error.meeage.includes('npx playwright install')) {
-      execSync('npx playwright install', { cwd: Version.pluginPath, stdio: 'inherit' })
+    const msg = await e.reply('首次使用，正在初始化 playwright 环境，请稍等片刻...')
+    logger.error(error)
+    if (error.message.includes('npx playwright install')) {
+      execSync('npx playwright install chromium', { cwd: Version.pluginPath, stdio: 'inherit' })
       await e.reply(`playwright 初始化成功，请再次发送「${e.msg}」`)
+      await e.bot.recallMsg(e.contact, msg.message_id)
       return true
     }
   }

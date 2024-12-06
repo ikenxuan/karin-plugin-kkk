@@ -1,4 +1,5 @@
 import { getBilibiliData, getDouyinData } from '@ikenxuan/amagi'
+import _ from 'lodash'
 import karin from 'node-karin'
 
 import { Config } from '@/module'
@@ -23,7 +24,7 @@ export const forcePush = karin.command(/#(抖音|B站)(全部)?强制推送/, as
     return true
   }
   return true
-}, { name: 'Ciallo～(∠・ω< )⌒☆', permission: 'master' })
+}, { name: '𝑪𝒊𝒂𝒍𝒍𝒐～(∠・ω< )⌒★', permission: 'master' })
 
 export const setdyPush = Config.bilibili.push.switch && karin.command(/^#设置抖音推送/, async (e) => {
   const data = await getDouyinData('搜索数据', Config.cookies.douyin, { query: e.msg.replace(/^#设置抖音推送/, '') })
@@ -39,3 +40,32 @@ export const setbiliPush = Config.bilibili.push.switch && karin.command(/^#设�
   }
   return true
 }, { name: 'kkk-推送功能-设置', event: 'message.friend', permission: Config.bilibili.push.permission })
+
+export const changeBotID = karin.command(new RegExp(/^#kkk设置推送机器人/), async (e) => {
+  const newDouyinlist = Config.pushlist.douyin.map(item => {
+    // 操作每个 group_id
+    const modifiedGroupIds = item.group_id.map(groupId => {
+      const [group_id, uin] = groupId.split(':')
+      return `${group_id}:${e.msg.replace(/^#kkk设置推送机器人/, '')}`
+    })
+    return {
+      ...item,
+      group_id: modifiedGroupIds
+    }
+  })
+  const newBilibililist = Config.pushlist.bilibili.map(item => {
+    // 操作每个 group_id
+    const modifiedGroupIds = item.group_id.map(groupId => {
+      const [group_id, uin] = groupId.split(':')
+      return `${group_id}:${e.msg.replace(/^#kkk设置推送机器人/, '')}`
+    })
+    return {
+      ...item,
+      group_id: modifiedGroupIds
+    }
+  })
+  Config.modify('pushlist', 'douyin', newDouyinlist)
+  Config.modify('pushlist', 'bilibili', newBilibililist)
+  await e.reply('推送机器人已修改为' + e.msg.replace(/^#kkk设置推送机器人/, ''))
+  return true
+}, { name: 'kkk-推送功能-设置', permission: 'master' })

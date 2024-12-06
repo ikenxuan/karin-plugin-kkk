@@ -154,10 +154,10 @@ export class Base {
       }
       return sendStatus
     } catch (error) {
-      logger.error('视频文件上传错误,' + error)
+      logger.error('视频文件上传错误,' + String(error))
       return false
     } finally {
-      await this.removeFile(file.filepath)
+      this.removeFile(file.filepath)
     }
   }
 
@@ -170,7 +170,7 @@ export class Base {
    */
   async DownLoadVideo (downloadOpt: downloadFileOptions, uploadOpt?: uploadFileOptions): Promise<boolean> {
     /** 获取文件大小 */
-    const fileHeaders = await new Networks({ url: downloadOpt.video_url, headers: downloadOpt.headers || this.headers }).getHeaders()
+    const fileHeaders = await new Networks({ url: downloadOpt.video_url, headers: downloadOpt.headers ?? this.headers }).getHeaders()
     const fileSizeContent = fileHeaders['content-range']?.match(/\/(\d+)/) ? parseInt(fileHeaders['content-range']?.match(/\/(\d+)/)[1], 10) : 0
     const fileSizeInMB = (fileSizeContent / (1024 * 1024)).toFixed(2)
     const fileSize = parseInt(parseFloat(fileSizeInMB).toFixed(2))
@@ -221,7 +221,7 @@ export class Base {
         progress += '#'.repeat(filledLength)
         progress += '-'.repeat(Math.max(0, barLength - filledLength - 1))
         const formattedProgress = progressPercentage.toFixed(2) + '%'
-        console.log(`正在下载 ${opt.title}${opt.filetype || '.mp4'} [${progress}] ${formattedProgress}\r`)
+        console.log(`正在下载 ${opt.title}${opt.filetype ?? '.mp4'} [${progress}] ${formattedProgress}\r`)
       }
       // 计算并打印当前下载进度
       const progressPercentage = (downloadedBytes / totalBytes) * 100
@@ -231,7 +231,7 @@ export class Base {
   }
 
   /** 删文件 */
-  async removeFile (path: string, force: boolean = false): Promise<boolean> {
+  removeFile (path: string, force = false): boolean {
     return Common.removeFile(path, force)
   }
 

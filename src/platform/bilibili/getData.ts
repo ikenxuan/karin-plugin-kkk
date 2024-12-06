@@ -35,6 +35,7 @@ export async function fetchBilibiliData<T extends keyof BilibiliDataTypes> (
         avid: opt.avid,
         cid: opt.cid
       })
+      return dt
     }
     case 'work_comments': {
       const INFODATA = await cl.getBilibiliData('单个视频作品数据', {
@@ -80,7 +81,6 @@ export async function fetchBilibiliData<T extends keyof BilibiliDataTypes> (
     case 'dynamic_info': {
       const dynamicINFO = await cl.getBilibiliData('动态详情数据', { dynamic_id: opt.dynamic_id })
       const dynamicINFO_CARD = await cl.getBilibiliData('动态卡片数据', { dynamic_id: dynamicINFO.data.item.id_str })
-      const PARAM = await wbi_sign(bilibiliAPI.评论区明细({ type: 1, oid: dynamicINFO_CARD.data.card.desc.rid, number: Config.bilibili.numcomment }), Config.cookies.bilibili)
       const COMMENTSDATA = await cl.getBilibiliData('评论数据', { type: mapping_table(dynamicINFO.data.item.type), oid: oid(dynamicINFO, dynamicINFO_CARD), number: Config.bilibili.numcomment })
       const EMOJIDATA = await cl.getBilibiliData('Emoji数据')
       const USERDATA = await cl.getBilibiliData('用户主页数据', { host_mid: dynamicINFO.data.item.modules.module_author.mid })
@@ -89,11 +89,6 @@ export async function fetchBilibiliData<T extends keyof BilibiliDataTypes> (
 
     case 'user_profile': {
       const result = await cl.getBilibiliData('用户主页数据', { host_mid: opt.host_mid })
-      return result
-    }
-
-    case 'dynamic_info': {
-      const result = await cl.getBilibiliData('动态详情数据', { dynamic_id: opt.dynamic_id })
       return result
     }
 
@@ -115,7 +110,7 @@ export async function fetchBilibiliData<T extends keyof BilibiliDataTypes> (
 }
 
 function mapping_table (type: any): number {
-  const Array: { [key: string]: string[] } = {
+  const Array: Record<string, string[]> = {
     1: [ 'DYNAMIC_TYPE_AV', 'DYNAMIC_TYPE_PGC', 'DYNAMIC_TYPE_UGC_SEASON' ],
     11: [ 'DYNAMIC_TYPE_DRAW' ],
     12: [ 'DYNAMIC_TYPE_ARTICLE' ],

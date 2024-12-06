@@ -44,33 +44,21 @@ body.dark-mode .container {
 body.light-mode .bitop {
   color: #3e3e3eb8;
   font-size: 65px;
-  /* display: -webkit-box; */
-  /* display: -webkit-flex; */
   display: -moz-box;
   display: -ms-flexbox;
-  /* display: flex; */
-  /* -webkit-box-align: center; */
-  /* -webkit-align-items: center; */
   -moz-box-align: center;
   -ms-flex-align: center;
-  /* padding: 0 0 0 80px; */
   align-items: center;
 }
 
 body.dark-mode .bitop {
   color: #d3d3d3;
   font-size: 65px;
-  display: -webkit-box;
-  display: -webkit-flex;
   display: -moz-box;
   display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
   -moz-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  padding: 0 0 0 50px;
 }
 
 .bitop img {
@@ -225,7 +213,7 @@ body.dark-mode .userinfo_text {
   display: flex;
   font-size: 35px;
   color: #cfcfcf;
-  padding: 25px 0 0 20px;
+  padding: 25px 0 0 0;
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
@@ -238,21 +226,9 @@ body.dark-mode .userinfo_text {
   flex-direction: column;
 }
 
-.decoration_card {
-  display: flex;
-  font-size: 30px;
-  flex-direction: column;
+.bili_dyn_item_ornament {
   padding: 0 0 0 235px;
 }
-
-/* .decoration_card {
-  display: flex;
-  flex-direction: row-reverse;
-  height: 33px;
-  position: relative;
-  user-select: none;
-  width: 110px;
-} */
 
 .name_and_followers_text {
   font-size: 20px;

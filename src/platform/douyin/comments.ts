@@ -10,7 +10,7 @@ import { Common, Config, Networks } from '@/module/utils'
  * @returns obj
  */
 export async function douyinComments (data: any, emojidata: any): Promise<any> {
-  let jsonArray = []
+  let jsonArray: any[] = []
   if (data.comments === null) return []
 
   for (let i = 0; i < data.comments.length; i ++) {
@@ -44,7 +44,7 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
           search_query_id: extra.search_query_id
         }))
         : null
-    const relativeTime = await getRelativeTimeFromTimestamp(time)
+    const relativeTime = getRelativeTimeFromTimestamp(time)
     const reply_comment_total = data.comments[i].reply_comment_total
     const commentObj = {
       id: i + 1,
@@ -86,9 +86,9 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
     jsonArray
   }
 
-  for (let i = 0; i < jsonArray.length; i ++) {
-    if (jsonArray[i].digg_count > 10000) {
-      jsonArray[i].digg_count = (jsonArray[i].digg_count / 10000).toFixed(1) + 'w'
+  for (const i of jsonArray) {
+    if (i.digg_count > 10000) {
+      i.digg_count = (i.digg_count / 10000).toFixed(1) + 'w'
     }
   }
 
@@ -110,7 +110,7 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
   return CommentData
 }
 
-async function getRelativeTimeFromTimestamp (timestamp: number) {
+function getRelativeTimeFromTimestamp (timestamp: number) {
   const now = Math.floor(Date.now() / 1000) // 当前时间的时间戳
   const differenceInSeconds = now - timestamp
 
@@ -214,11 +214,11 @@ async function search_text (data: {
  * @returns
  */
 function br (data: any[]): any[] {
-  for (let i = 0; i < data.length; i ++) {
-    let text = data[i].text
+  for (const i of data) {
+    let text = i.text
 
     text = text.replace(/\n/g, '<br>')
-    data[i].text = text
+    i.text = text
   }
   return data
 }
@@ -231,8 +231,9 @@ function br (data: any[]): any[] {
 const heic2jpg = async (jsonArray: any[]): Promise<any> => {
   for (const item of jsonArray) {
     if (item.commentimage) {
-      const response = await new Networks({ url: item.commentimage, type: 'arraybuffer' }).returnResult()
-      if (response.headers["content-type"] && response.headers["content-type"] === 'image/heic') {
+      const headers = await new Networks({ url: item.commentimage, type: 'arraybuffer' }).getHeaders()
+      if (headers["content-type"] && headers["content-type"] === 'image/heic') {
+        const response = await new Networks({ url: item.commentimage, type: 'arraybuffer' }).returnResult()
         const jpegBuffer = await convert({
           buffer: response.data,
           format: 'JPEG'

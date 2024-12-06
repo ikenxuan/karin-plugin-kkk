@@ -2,7 +2,7 @@ import { getDouyinData } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElementType, karin, logger, Message, segment } from 'node-karin'
 
 import { AllDataType, Base, Common, Config, DB, DouyinDBType, Render } from '@/module'
-import { getDouyinID } from '@/platform/douyin'
+import { ExtendedDouyinOptionsType, getDouyinID } from '@/platform/douyin'
 
 /** 每个推送项的类型定义 */
 interface PushItem {
@@ -18,6 +18,7 @@ interface PushItem {
   Detail_Data: {
     /** 博主主页信息 */
     user_info: any
+    liveStatus?: { liveStatus: 'open' | 'close', isChanged: boolean, isliving: boolean }
     [key: string]: any
   }
   /** 博主头像url */
@@ -26,12 +27,10 @@ interface PushItem {
   living: boolean
 }
 /** 推送列表的类型定义 */
-interface WillBePushList {
-  [key: string]: PushItem
-}
+type WillBePushList = Record<string, PushItem>
 
 export class DouYinpush extends Base {
-  private force: boolean = false
+  private force = false
   /**
    *
    * @param e  事件Message
@@ -69,13 +68,17 @@ export class DouYinpush extends Base {
     if (Object.keys(data).length === 0) return true
 
     for (const awemeId in data) {
+
       const Detail_Data = data[awemeId].Detail_Data
       const skip = skipDynamic(Detail_Data)
       let img: ImageElementType[] = []
-      const iddata = await getDouyinID(Detail_Data.share_url || 'https://live.douyin.com/' + Detail_Data.room_data.owner.web_rid, false)
+      let iddata: ExtendedDouyinOptionsType = { is_mp4: true, type: 'one_work' }
+      if (!skip) {
+        iddata = await getDouyinID(Detail_Data.share_url || 'https://live.douyin.com/' + Detail_Data.room_data.owner.web_rid, false)
+      }
 
       if (!skip) {
-        if (data[awemeId].living) {
+        if (data[awemeId].living && 'room_data' in data[awemeId].Detail_Data) {
           img = await Render('douyin/live', {
             image_url: [{ image_src: Detail_Data.live_data.data.data[0].cover.url_list[0] }],
             text: Detail_Data.live_data.data.data[0].title,
@@ -85,10 +88,10 @@ export class DouYinpush extends Base {
             username: Detail_Data.user_info.user.nickname,
             avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.user.avatar_larger.uri,
             fans: this.count(Detail_Data.user_info.user.follower_count),
-            create_time: Common.convertTimestampToDateTime(new Date().getTime()),
-            now_time: Common.convertTimestampToDateTime(new Date().getTime()),
+            create_time: Common.convertTimestampToDateTime(Date.now()),
+            now_time: Common.convertTimestampToDateTime(Date.now()),
             share_url: 'https://live.douyin.com/' + Detail_Data.room_data.owner.web_rid,
-            dynamicTYPE: '直播动态推送',
+            dynamicTYPE: '直播动态推送'
           })
         } else {
           img = await Render('douyin/dynamic', {
@@ -107,7 +110,7 @@ export class DouYinpush extends Base {
             抖音号: Detail_Data.user_info.user.unique_id === '' ? Detail_Data.user_info.user.unique_id : Detail_Data.user_info.user.unique_id,
             粉丝: this.count(Detail_Data.user_info.user.follower_count),
             获赞: this.count(Detail_Data.user_info.user.total_favorited),
-            关注: this.count(Detail_Data.user_info.user.following_count),
+            关注: this.count(Detail_Data.user_info.user.following_count)
           })
         }
       }
@@ -115,11 +118,12 @@ export class DouYinpush extends Base {
       // 遍历 group_id 数组，并发送消息
       try {
         for (const groupId of data[awemeId].group_id) {
-          let status: any
+          const DBdata = await DB.FindGroup('douyin', groupId)
+          let status = { message_id: '' }
+          const [group_id, uin] = groupId.split(':')
+          const bot = karin.getBot(uin)!
           if (!skip) {
-            const [group_id, uin] = groupId.split(':')
-            const bot = karin.getBot(uin) as AdapterType
-            status = await karin.sendMsg(String(uin), karin.contactGroup(group_id), img ? [...img] : [])
+            status = await karin.sendMsg(uin, karin.contactGroup(group_id), img ? [...img] : [])
             // 是否一同解析该新作品？
             if (Config.douyin.push.parsedynamic) {
               // 如果新作品是视频
@@ -128,14 +132,13 @@ export class DouYinpush extends Base {
                   // 下载视频
                   await this.DownLoadVideo({
                     video_url: `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`,
-                    title: { timestampTitle: 'tmp_' + Date.now(), originTitle: Detail_Data.desc },
+                    title: { timestampTitle: 'tmp_' + Date.now(), originTitle: Detail_Data.desc }
                   }, { active: true, activeOption: { uin, group_id } })
                 } catch (error) {
                   logger.error(error)
                 }
               } else if (!iddata.is_mp4 && iddata.type === 'one_work') { // 如果新作品是图集
                 const imageres: ImageElementType[] = []
-
                 let image_url
                 for (const item of Detail_Data.aweme_detail.images) {
                   image_url = item.url_list[2] || item.url_list[1] // 图片地址
@@ -148,23 +151,25 @@ export class DouYinpush extends Base {
           }
           // 如果跳过该新作品或者动态图已成功发送且返回msg_id，则写入作品ID到数据库
           if (skip || status.message_id) {
-            const DBdata = await DB.FindGroup('douyin', groupId)
-            /**
-             * 检查 DBdata 中是否存在与给定 host_mid 匹配的项
-             * @param DBdata - 数据库中存储的群组数据
-             * @param host_midToCheck 要检查的host_mid
-             * @returns 匹配的host_mid
-             */
-            const findMatchingSecUid = (DBdata: DouyinDBType, secUidToCheck: string) => {
-              for (const sec_uid in DBdata) {
-                if (DBdata.hasOwnProperty(sec_uid) && DBdata[sec_uid].sec_uid === secUidToCheck) {
-                  return secUidToCheck
-                }
-              }
-              return ''
-            }
             let newEntry: DouyinDBType
             if (DBdata) {
+
+              // 如果直播状态改变了，且这次是关播状态，发送通知
+              if (data[awemeId].Detail_Data.liveStatus?.isChanged && data[awemeId].Detail_Data.liveStatus.isliving === false) {
+                const msgItem = DBdata[data[awemeId].sec_uid]?.message_id
+                for (const gid in msgItem) {
+                  if (msgItem[gid] && msgItem[gid].message_id !== '' && groupId === gid) {
+                    await karin.sendMsg(String(uin), karin.contactGroup(group_id), [
+                      segment.reply(msgItem[gid].message_id),
+                      segment.text(`「${data[awemeId].remark}」的直播已经结束惹 ~\n`),
+                      segment.text(`直播时长：${Common.timeSince(DBdata[data[awemeId].sec_uid].start_living_pn)}`)
+                    ])
+                    break
+                  }
+                }
+              }
+
+
               // 如果 DBdata 存在，遍历 DBdata 来查找对应的 sec_uid
               let found = false
 
@@ -172,11 +177,18 @@ export class DouYinpush extends Base {
                 // 如果找到了对应的 sec_uid，将 awemeId 添加到 aweme_idlist 数组中
                 const isSecUidFound = findMatchingSecUid(DBdata, data[awemeId].sec_uid)
                 if (isSecUidFound && this.force ? true : !DBdata[data[awemeId].sec_uid].aweme_idlist.includes(awemeId)) {
-                  if (!data[awemeId].living) {
-                    DBdata[isSecUidFound].aweme_idlist.push(awemeId)
-                  }
+                  !data[awemeId].living ? DBdata[isSecUidFound].aweme_idlist.push(awemeId) : false
                   DBdata[isSecUidFound].create_time = Number(data[awemeId].create_time)
-                  DBdata[isSecUidFound].living = data[awemeId].living
+                  // 如果直播状态改变了且该次是开播状态，则更新数据库中的直播状态
+                  if (Detail_Data?.liveStatus?.isliving) {
+                    DBdata[isSecUidFound].message_id[groupId].message_id = status.message_id
+                    DBdata[isSecUidFound].living = data[awemeId].living
+                    DBdata[isSecUidFound].start_living_pn = Date.now()
+                  } else {
+                    DBdata[isSecUidFound].message_id = { [groupId]: { message_id: '' }, ...DBdata[isSecUidFound].message_id }
+                    DBdata[isSecUidFound].living = data[awemeId].Detail_Data.user_info.user.live_status === 1,
+                      DBdata[isSecUidFound].start_living_pn = 0
+                  }
                   await DB.UpdateGroupData('douyin', groupId, DBdata)
                   found = true
                 }
@@ -193,7 +205,13 @@ export class DouYinpush extends Base {
                     group_id: [groupId],
                     avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + data[awemeId].Detail_Data.user_info.user.avatar_larger.uri,
                     living: data[awemeId].living,
-                  },
+                    message_id: {
+                      [groupId]: {
+                        message_id: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? status.message_id : ''
+                      }
+                    },
+                    start_living_pn: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? Date.now() : 0
+                  }
                 }
                 // 更新数据库
                 await DB.UpdateGroupData('douyin', groupId, { ...DBdata, ...newEntry })
@@ -209,7 +227,13 @@ export class DouYinpush extends Base {
                   avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + data[awemeId].Detail_Data.user_info.user.avatar_larger.uri,
                   group_id: [groupId],
                   living: data[awemeId].living,
-                },
+                  message_id: {
+                    [groupId]: {
+                      message_id: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? status.message_id : ''
+                    }
+                  },
+                  start_living_pn: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? Date.now() : 0
+                }
               })
             }
           }
@@ -265,18 +289,32 @@ export class DouYinpush extends Base {
           logger.error(`‘${item.remark}’的主页视频列表数量为零！`)
         }
         // 如果正在开播
-        if (userinfo.user.live_status === 1) {
+        const liveStatus = checkUserLiveStatus(userinfo, DBdata)
+        const fake_room_id = '7' + Math.random().toString().slice(2).padEnd(18, '0').slice(0, 18)
+        if (liveStatus?.liveStatus === 'open') {
           const live_data = await getDouyinData('直播间信息数据', Config.cookies.douyin, { sec_uid: item.sec_uid })
           const room_data = JSON.parse(userinfo.user.room_data)
           if (!willbepushlist[room_data.owner.web_rid]) {
             willbepushlist[room_data.owner.web_rid] = {
               remark: item.remark,
               sec_uid: userinfo.user.sec_uid,
-              create_time: new Date().getTime(),
+              create_time: Date.now(),
               group_id: item.group_id,
-              Detail_Data: { live_data, room_data, user_info: userinfo, living: true },
+              Detail_Data: { live_data, room_data, user_info: userinfo, liveStatus },
               avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.user.avatar_larger.uri,
-              living: true,
+              living: liveStatus.isliving
+            }
+          }
+        } else if (liveStatus?.liveStatus === 'close' && liveStatus.isChanged === true) {
+          if (!willbepushlist[fake_room_id]) {
+            willbepushlist[fake_room_id] = {
+              remark: item.remark,
+              sec_uid: userinfo.user.sec_uid,
+              create_time: Date.now(),
+              group_id: item.group_id,
+              Detail_Data: { user_info: userinfo, liveStatus },
+              avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.user.avatar_larger.uri,
+              living: liveStatus.isliving
             }
           }
         }
@@ -328,15 +366,28 @@ export class DouYinpush extends Base {
           continue
         }
 
-        // 如果是普通动态，检查 awemeId 是否已缓存
-        // 如果缓存列表中没有该 awemeId，则保留该群组
-        if (pushItem.living === true && cachedData.living === false && !cachedData.aweme_idlist.includes(awemeId)) {
-          filteredGroupIds.push(groupId)
-          continue
+        // 如果直播状态更变，不管是开播还是关播，都要保留该群组
+        if ('liveStatus' in pushItem.Detail_Data) {
+          // 开播推送
+          if (pushItem.living === true) {
+            const msgItem = cachedData.message_id[groupId]
+            if (msgItem && msgItem.message_id === '') {
+              filteredGroupIds.push(groupId)
+              continue
+            }
+          }
+          // 关播推送
+          if (pushItem.living === false && cachedData.living === true) {
+            const msgItem = cachedData.message_id[groupId]
+            if (msgItem && msgItem.message_id !== '') {
+              filteredGroupIds.push(groupId)
+              continue
+            }
+          }
         }
 
-        // 如果是直播动态，只推送开播
-        if (pushItem.living === true && cachedData.living === false) {
+        // 当该作品ID不在数据库缓存列表中时，直接保留该群组
+        if (!cachedData.aweme_idlist.includes(awemeId) && !('liveStatus' in pushItem.Detail_Data)) {
           filteredGroupIds.push(groupId)
           continue
         }
@@ -358,11 +409,11 @@ export class DouYinpush extends Base {
     const config = Config.pushlist
     const abclist: { sec_uid: string, group_id: any }[] = []
     if (Config.pushlist.douyin === null || Config.pushlist.douyin.length === 0) return true
-    for (let i = 0; i < Config.pushlist.douyin.length; i++) {
-      const remark = Config.pushlist.douyin[i].remark
-      const group_id = Config.pushlist.douyin[i].group_id
-      const sec_uid = Config.pushlist.douyin[i].sec_uid
-      const short_id = Config.pushlist.douyin[i].short_id
+    for (const i of Config.pushlist.douyin) {
+      const remark = i.remark
+      const group_id = i.group_id
+      const sec_uid = i.sec_uid
+      const short_id = i.short_id
 
       if (!remark) {
         abclist.push({ sec_uid, group_id })
@@ -372,11 +423,11 @@ export class DouYinpush extends Base {
       }
     }
     if (abclist.length > 0) {
-      for (let i = 0; i < abclist.length; i++) {
-        const resp = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid: abclist[i].sec_uid })
+      for (const i of abclist) {
+        const resp = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid: i.sec_uid })
         const remark = resp.user.nickname
-        const matchingItemIndex = config.douyin.findIndex((item: { sec_uid: string }) => item.sec_uid === abclist[i].sec_uid)
-        if (matchingItemIndex !== -1) {
+        const matchingItemIndex = config.douyin.findIndex((item: { sec_uid: string }) => item.sec_uid === i.sec_uid)
+        if (matchingItemIndex !== - 1) {
           // 更新匹配的对象的 remark 和抖音号
           config.douyin[matchingItemIndex].remark = remark
           config.douyin[matchingItemIndex].short_id = resp.user.unique_id === '' ? resp.user.unique_id : resp.user.unique_id
@@ -506,7 +557,12 @@ export class DouYinpush extends Base {
  * @returns
  */
 const skipDynamic = (Detail_Data: PushItem['Detail_Data']): boolean => {
-  if (Detail_Data.living) return false
+  if ('liveStatus' in Detail_Data) {
+    if (Detail_Data.liveStatus?.liveStatus === 'close' && Detail_Data.liveStatus?.isChanged) {
+      return true
+    } else return false
+  }
+
   for (const banWord of Config.douyin.push.banWords) {
     if (Detail_Data.item_title.includes(banWord)) {
       logger.mark(`作品：${logger.green(Detail_Data.share_url)} 包含屏蔽词：「${logger.red(banWord)}」，跳过推送`)
@@ -520,4 +576,62 @@ const skipDynamic = (Detail_Data: PushItem['Detail_Data']): boolean => {
     }
   }
   return false
+}
+
+/**
+ * 检查博主是否在直播和是否改变直播状态
+ * @param userInfo 用户主页信息
+ * @param cacheData 数据库的缓存数据
+ * @returns 直播状态和是否改变的布尔值，默认false
+ */
+const checkUserLiveStatus = (userInfo: any, cacheData: AllDataType['douyin']): PushItem['Detail_Data']['liveStatus'] => {
+  const liveStatus = userInfo.user.live_status === 1 ? 'open' : 'close'
+  const isLiving = userInfo.user.live_status === 1
+  let isChanged = false
+  const sec_uid = userInfo.user.sec_uid
+  const mergeCacheData = mergeDouyinData(cacheData)
+
+  if (!mergeCacheData[sec_uid] && isLiving === true) {
+    return { liveStatus, isChanged: true, isliving: true }
+  }
+  if (!mergeCacheData[sec_uid] && isLiving === false) {
+    return { liveStatus, isChanged: false, isliving: false }
+  }
+  if (mergeCacheData[sec_uid].living === false && isLiving === true) {
+    isChanged = true
+  } else if (mergeCacheData[sec_uid].living === true && isLiving === false) {
+    isChanged = true
+  } else isChanged = false
+
+  return { liveStatus, isChanged, isliving: liveStatus === 'open' }
+}
+
+/**
+ * 合并数据库的博主对象
+ * @param data 数据库的缓存数据
+ * @returns
+ */
+const mergeDouyinData = (data: AllDataType['douyin']) => {
+  const result: AllDataType['douyin']['string'] = {}
+  for (const group in data) {
+    for (const secUid in data[group]) {
+      result[secUid] = data[group][secUid]
+    }
+  }
+  return result
+}
+
+/**
+ * 检查 DBdata 中是否存在与给定 host_mid 匹配的项
+ * @param DBdata - 数据库中存储的群组数据
+ * @param host_midToCheck 要检查的host_mid
+ * @returns 匹配的host_mid
+ */
+const findMatchingSecUid = (DBdata: DouyinDBType, secUidToCheck: string) => {
+  for (const sec_uid in DBdata) {
+    if (DBdata.hasOwnProperty(sec_uid) && DBdata[sec_uid].sec_uid === secUidToCheck) {
+      return secUidToCheck
+    }
+  }
+  return ''
 }

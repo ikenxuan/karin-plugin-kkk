@@ -14,44 +14,39 @@ const sequelize = new Sequelize({
 /** 测试数据库连接是否成功 */
 await sequelize.authenticate()
 
-export interface BilibiliDBType {
+export type BilibiliDBType = Record<string, {
+  /** 该UP主的昵称 */
+  remark: string
   /** UP主UID */
-  [host_mid: string]: {
-    /** 该UP主的昵称 */
-    remark: string
-    /** UP主UID */
-    host_mid: string
-    /** 动态发布时间，时间戳 */
-    create_time: number
-    /** 要推送到的群组 */
-    group_id: string[]
-    /** UP主头像url */
-    avatar_img: string
-    /** 动态类型 */
-    dynamic_type: string
-    /** 已缓存的动态ID列表 */
-    dynamic_idlist: string[]
-  }
-}
+  host_mid: string
+  /** 动态发布时间，时间戳 */
+  create_time: number
+  /** 要推送到的群组 */
+  group_id: string[]
+  /** UP主头像url */
+  avatar_img: string
+  /** 动态类型 */
+  dynamic_type: string
+  /** 已缓存的动态ID列表 */
+  dynamic_idlist: string[]
+}>
 
-export interface DouyinDBType {
-  [sec_uid: string]: {
-    /** 该博主的昵称 */
-    remark: string
-    /** 博主UID */
-    sec_uid: string
-    /** 作品发布时间，时间戳 */
-    create_time: number
-    /** 要推送到的群组 */
-    group_id: string[]
-    /** 已缓存的作品ID列表 */
-    aweme_idlist: string[],
-    /** 博主头像url */
-    avatar_img: string
-    /** 是否正在直播 */
-    living: boolean
-  }
-}
+export type DouyinDBType = Record<string, {
+  /** 该博主的昵称 */
+  remark: string
+  /** 博主UID */
+  sec_uid: string
+  /** 作品发布时间，时间戳 */
+  create_time: number
+  /** 要推送到的群组 */
+  group_id: string[]
+  /** 已缓存的作品ID列表 */
+  aweme_idlist: string[],
+  /** 博主头像url */
+  avatar_img: string
+  /** 是否正在直播 */
+  living: boolean
+}>
 
 /** 单个群组数据 */
 export type GroupDataType = DouyinDBType | BilibiliDBType

@@ -41,12 +41,12 @@ export const Common = {
    */
   chineseToArabic: (chineseNumber: string): number => {
     // 映射表，定义基础的中文数字
-    const chineseToArabicMap: { [key: string]: number } = {
-      零: 0, 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9,
+    const chineseToArabicMap: Record<string, number> = {
+      '零': 0, '一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9
     }
     // 对应中文单位映射
-    const units: { [key: string]: number } = {
-      十: 10, 百: 100, 千: 1000, 万: 10000, 亿: 100000000,
+    const units: Record<string, number> = {
+      '十': 10, '百': 100, '千': 1000, '万': 10000, '亿': 100000000
     }
     let result = 0
     let temp = 0 // 存储每一段的临时结果
@@ -124,7 +124,7 @@ export const Common = {
    * @param force 是否强制删除，默认false
    * @returns
    */
-  removeFile: async (path: string, force: boolean = false): Promise<boolean> => {
+  removeFile: (path: string, force = false): boolean => {
     path = path.replace(/\\/g, '/')
     if (Config.app.rmmp4) {
       try {
@@ -204,4 +204,29 @@ export const Common = {
     }
     return dark
   },
+
+  /**
+   * 传入一个时间戳（单位：毫秒），返回距离当前时间的相对的时间字符串
+   * @param timestamp 时间戳
+   * @returns 距离这个时间戳过去的多久的字符串
+   */
+  timeSince: (timestamp: number): string => {
+    const now = Date.now()
+    const elapsed = now - timestamp
+
+    const seconds = Math.floor(elapsed / 1000)
+    const minutes = Math.floor(seconds / 60)
+    const hours = Math.floor(minutes / 60)
+
+    const remainingSeconds = seconds % 60
+    const remainingMinutes = minutes % 60
+
+    if (hours > 0) {
+      return `${hours}小时${remainingMinutes}分钟${remainingSeconds}秒`
+    } else if (minutes > 0) {
+      return `${minutes}分钟${remainingSeconds}秒`
+    } else {
+      return `${seconds}秒`
+    }
+  }
 }

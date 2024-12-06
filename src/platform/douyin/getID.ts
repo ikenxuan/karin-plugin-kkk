@@ -36,7 +36,7 @@ export async function getDouyinID (url: string, log = true): Promise<ExtendedDou
     case longLink.includes('webcast.amemv.com'):
     case longLink.includes('live.douyin.com'): {
       if (longLink.includes('webcast.amemv.com')) {
-        const sec_uid = longLink.match(/sec_user_id=([^&]+)/)
+        const sec_uid = /sec_user_id=([^&]+)/.exec(longLink)
         result = {
           type: 'live_room_detail',
           sec_uid: sec_uid ? sec_uid[1] : undefined
@@ -51,7 +51,7 @@ export async function getDouyinID (url: string, log = true): Promise<ExtendedDou
     }
 
     case /video\/(\d+)/.test(longLink): {
-      const videoMatch = longLink.match(/video\/(\d+)/)
+      const videoMatch = /video\/(\d+)/.exec(longLink)
       result = {
         type: 'one_work',
         aweme_id: videoMatch ? videoMatch[1] : undefined,
@@ -60,7 +60,7 @@ export async function getDouyinID (url: string, log = true): Promise<ExtendedDou
       break
     }
     case /note\/(\d+)/.test(longLink): {
-      const noteMatch = longLink.match(/note\/(\d+)/)
+      const noteMatch = /note\/(\d+)/.exec(longLink)
       result = {
         type: 'one_work',
         aweme_id: noteMatch ? noteMatch[1] : undefined,
@@ -69,7 +69,7 @@ export async function getDouyinID (url: string, log = true): Promise<ExtendedDou
       break
     }
     case /https:\/\/(?:www\.douyin\.com|www\.iesdouyin\.com)\/share\/user\/(\S+)/.test(longLink): {
-      const userMatch = longLink.match(/user\/([a-zA-Z0-9_-]+)\b/)
+      const userMatch = /user\/([a-zA-Z0-9_-]+)\b/.exec(longLink)
       result = {
         type: 'user_dynamic',
         sec_uid: userMatch ? userMatch[1] : undefined
@@ -77,7 +77,7 @@ export async function getDouyinID (url: string, log = true): Promise<ExtendedDou
       break
     }
     case /music\/(\d+)/.test(longLink): {
-      const musicMatch = longLink.match(/music\/(\d+)/)
+      const musicMatch = /music\/(\d+)/.exec(longLink)
       result = {
         type: 'music_work',
         music_id: musicMatch ? musicMatch[1] : undefined

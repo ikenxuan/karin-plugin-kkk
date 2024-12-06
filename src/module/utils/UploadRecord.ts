@@ -3,8 +3,6 @@ import crypto from 'node:crypto'
 import fs from 'node:fs'
 import os from 'node:os'
 import querystring from 'node:querystring'
-import stream from 'node:stream'
-import util from 'node:util'
 
 import axios from 'axios'
 import { core } from 'icqq'
@@ -106,35 +104,33 @@ async function getPttBuffer (file: string, ffmpeg = 'ffmpeg', transcoding = true
       const result = await getAudioTime(tmpfile, ffmpeg)
       if (result.code === 1) time = result.data
       buf = await fs.promises.readFile(tmpfile)
-      fs.unlink(tmpfile, NOOP)
-      buffer = result.buffer || buf
+      fs.unlink(tmpfile, () => { })
+      buffer = result.buffer ?? buf
     } else {
       const tmpfile = `${TMP_DIR}/${uuid()}`
       const result = await getAudioTime(tmpfile, ffmpeg)
       if (result.code === 1) time = result.data
       await fs.promises.writeFile(tmpfile, buf)
       buffer = await audioTrans(tmpfile, ffmpeg) as any
-      fs.unlink(tmpfile, NOOP)
+      fs.unlink(tmpfile, () => { })
     }
   } else if (file.startsWith('http://') || file.startsWith('https://')) {
-    try {
-      const headers = {
-        'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 12; MI 9 Build/SKQ1.211230.001)',
-      }
-      const response = await axios.get(file, { headers, responseType: 'arraybuffer' })
-      const buf = Buffer.from(response.data)
-      const tmpfile = `${TMP_DIR}/${uuid()}`
-      await fs.promises.writeFile(tmpfile, buf)
-      const head = await read7Bytes(tmpfile)
-      const result = await getAudioTime(tmpfile, ffmpeg)
-      if (result.code === 1) time = result.data
-      if (head.includes('SILK') || head.includes('AMR') || !transcoding) {
-        buffer = result.buffer || buf
-      } else {
-        buffer = await audioTrans(tmpfile, ffmpeg) as any
-      }
-      fs.unlink(tmpfile, NOOP)
-    } catch (err) { }
+    const headers = {
+      'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 12; MI 9 Build/SKQ1.211230.001)'
+    }
+    const response = await axios.get(file, { headers, responseType: 'arraybuffer' })
+    const buf = Buffer.from(response.data)
+    const tmpfile = `${TMP_DIR}/${uuid()}`
+    await fs.promises.writeFile(tmpfile, buf)
+    const head = await read7Bytes(tmpfile)
+    const result = await getAudioTime(tmpfile, ffmpeg)
+    if (result.code === 1) time = result.data
+    if (head.includes('SILK') || head.includes('AMR') || !transcoding) {
+      buffer = result.buffer ?? buf
+    } else {
+      buffer = await audioTrans(tmpfile, ffmpeg) as any
+    }
+    fs.unlink(tmpfile, () => { })
   } else {
     file = String(file).replace(/^file:\/{2}/, '')
     IS_WIN && file.startsWith('/') && (file = file.slice(1))
@@ -142,7 +138,7 @@ async function getPttBuffer (file: string, ffmpeg = 'ffmpeg', transcoding = true
     const result = await getAudioTime(file, ffmpeg)
     if (result.code === 1) time = result.data
     if (head.includes('SILK') || head.includes('AMR') || !transcoding) {
-      buffer = result.buffer || (await fs.promises.readFile(file))
+      buffer = result.buffer ?? (await fs.promises.readFile(file))
     } else {
       buffer = await audioTrans(file, ffmpeg) as any
     }
@@ -201,7 +197,7 @@ async function audioTrans (file: string, ffmpeg = 'ffmpeg') {
     logger.error('音频转码到pcm失败，请确认你的ffmpeg可以处理此转换')
     return false
   } finally {
-    fs.unlink(tmpfile, NOOP)
+    fs.unlink(tmpfile, () => { })
   }
 }
 
@@ -216,7 +212,7 @@ async function audioTrans1 (file: string, ffmpeg = 'ffmpeg') {
     logger.error('音频转码到amr失败，请确认你的ffmpeg可以处理此转换')
     return false
   } finally {
-    fs.unlink(tmpfile, NOOP)
+    fs.unlink(tmpfile, () => { })
   }
 }
 
@@ -285,61 +281,12 @@ function int32ip2str (ip: number) {
   return [ip & 0xff, (ip & 0xff00) >> 8, (ip & 0xff0000) >> 16, ((ip & 0xff000000) >> 24) & 0xff].join('.')
 }
 
-/** 解析彩色群名片 */
-function parseFunString (buf: number[]) {
-  if (buf[0] === 0xa) {
-    let res = ''
-    try {
-      let arr = core.pb.decode(buf as any)[1]
-      if (!Array.isArray(arr)) arr = [arr]
-      for (const v of arr) {
-        if (v[2]) res += String(v[2])
-      }
-    } catch { }
-    return res
-  } else {
-    return String(buf)
-  }
-}
-
-/** xml转义 */
-function escapeXml (str: string) {
-  return str.replace(/[&"><]/g, function (s: string) {
-    if (s === '&') return '&amp;'
-    if (s === '<') return '&lt;'
-    if (s === '>') return '&gt;'
-    if (s === '"') return '&quot;'
-    return ''
-  })
-}
-
-/** 用于下载限量 */
-class DownloadTransform extends stream.Transform {
-  _size: number
-  constructor () {
-    super(...arguments)
-    this._size = 0
-  }
-
-  _transform (data: string | any[], encoding: any, callback: (arg0: Error | null) => void) {
-    this._size += data.length
-    let error = null
-    if (this._size <= MAX_UPLOAD_SIZE) this.push(data)
-    else error = new Error('downloading over 30MB is refused')
-    callback(error)
-  }
-}
 const IS_WIN = os.platform() === 'win32'
 /** 系统临时目录，用于临时存放下载的图片等内容 */
 const TMP_DIR = os.tmpdir()
 /** 最大上传和下载大小，以图片上传限制为准：30MB */
 const MAX_UPLOAD_SIZE = 31457280
 
-/** no operation */
-const NOOP = () => { }
-
-/** promisified pipeline */
-const pipeline = (0, util.promisify)(stream.pipeline)
 /** md5 hash */
 const md5 = (data: Buffer | crypto.BinaryLike) => (0, crypto.createHash)('md5').update(data).digest()
 
@@ -394,6 +341,8 @@ const ErrorMessage = {
 }
 function drop (code: string | number, message: string | any[]) {
   if (!message || !message.length) message = ErrorMessage[code as any]
+  if (!message || !message.length) message = ErrorMessage[code as any]
+  // eslint-disable-next-line @typescript-eslint/only-throw-error
   throw new core.ApiRejection(code as number, message as string)
 }
 errors.drop = drop

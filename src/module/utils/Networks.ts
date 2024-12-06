@@ -6,9 +6,7 @@ import { pipeline } from 'stream/promises'
 
 import { NetworksConfigType } from '@/types'
 
-interface HeadersObject {
-  [key: string]: string
-}
+type HeadersObject = Record<string, string>
 
 export class Networks {
   private url: string
@@ -23,13 +21,13 @@ export class Networks {
 
   constructor (data: NetworksConfigType) {
     this.headers = data.headers || {}
-    this.url = data.url || ''
-    this.type = data.type || 'json'
-    this.method = data.method || 'GET'
-    this.body = data.body || null
-    this.timeout = data.timeout || 5000
-    this.filepath = data.filepath || ''
-    this.maxRetries = 3
+    this.url = data.url ?? ''
+    this.type = data.type ?? 'json'
+    this.method = data.method ?? 'GET'
+    this.body = data.body ?? null
+    this.timeout = data.timeout ?? 5000
+    this.filepath = data.filepath ?? ''
+    this.maxRetries = 0
 
     // 创建axios实例
     this.axiosInstance = axios.create({
@@ -69,7 +67,7 @@ export class Networks {
    */
   async downloadStream (
     progressCallback: (downloadedBytes: number, totalBytes: number) => void,
-    retryCount: number = 0): Promise<{ filepath: string; totalBytes: number }> {
+    retryCount = 0): Promise<{ filepath: string; totalBytes: number }> {
     // 创建一个中止控制器，用于在请求超时时中止请求
     const controller = new AbortController()
     // 设置一个定时器，如果请求超过预定时间，则中止请求
@@ -211,7 +209,7 @@ export class Networks {
         maxRedirects: 0, // 禁止跟随重定向
         validateStatus: (status: number) => status >= 300 && status < 400, // 仅处理3xx响应
       })
-      return response.headers['location'] as string
+      return response.headers.location as string
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         throw new Error(error.stack)
@@ -233,7 +231,7 @@ export class Networks {
       return result.data
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        throw new Error(error.stack || error.message)
+        throw new Error(error.stack ?? error.message)
       }
       return false
     }

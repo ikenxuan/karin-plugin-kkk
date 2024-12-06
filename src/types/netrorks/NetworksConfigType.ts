@@ -1,5 +1,5 @@
 import { ResponseType } from 'axios'
-export type NetworksConfigType = {
+export interface NetworksConfigType {
   /**
    * 请求地址
    */

@@ -36,7 +36,7 @@ const bilibili = karin.command(reg.bilibili, async (e) => {
   } else if (/^BV[1-9a-zA-Z]{10}$/.test(e.msg)) {
     url = `https://www.bilibili.com/video/${e.msg}`
   }
-  const iddata = await getBilibiliID(url as string)
+  const iddata = await getBilibiliID(url!)
   const data = await fetchBilibiliData(iddata.type, iddata)
   await new Bilibili(e, data).RESOURCES(data)
   return true

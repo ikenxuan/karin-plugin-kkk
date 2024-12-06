@@ -140,7 +140,7 @@ class Cfg {
     for (let i = 0; i < keys.length - 1; i++) {
       const subKey = keys[i]
       if (current instanceof YAML.YAMLMap) {
-        let subValue: YAML.YAMLMap | YAML.Scalar | any | undefined = current.get(subKey)
+        let subValue: any = current.get(subKey)
 
         // 类型保护，确保 subValue 是 YAMLMap
         if (!YAML.isMap(subValue)) {
