@@ -47,11 +47,12 @@
     <div style="height: 15px"></div>
   </div>
   {{else if original_content.DYNAMIC_TYPE_DRAW}}
-  <div class="DYNAMIC_TYPE_AV">
-    <div class="AVuserinfo">
-      <img class="AV avatar" src="{{original_content.DYNAMIC_TYPE_DRAW.avatar_url}}">
+  <div class="DYNAMIC_TYPE_DRAW">
+    <div class="DRAWuserinfo">
+      <img class="DRAW avatar" src="{{original_content.DYNAMIC_TYPE_DRAW.avatar_url}}">
       <div class="name">{{@original_content.DYNAMIC_TYPE_DRAW.username}}</div>
     </div>
+    <div class="spacer4"></div>
     <div class="DRAWinfo">
       <div class="info_text">{{@original_content.DYNAMIC_TYPE_DRAW.text}}</div>
     </div>
@@ -72,6 +73,7 @@
       {{/each}}
     </div>
     {{/if}}
+    <div class="spacer4"></div>
   </div>
   {{/if}}
 </div>

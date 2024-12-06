@@ -468,10 +468,10 @@ export class Bilibili extends Base {
   }
 }
 
-function checkvip (member: { vip: { vipStatus: number; nickname_color: any }; name: any }) {
-  return member.vip.vipStatus === 1
+function checkvip (member: any) {
+  return member.vip.vipStatus || member.vip.status === 1
     ? `<span style="color: ${member.vip.nickname_color || '#FB7299'}; font-weight: bold;">${member.name}</span>`
-    : `<span style="color: ${Common.useDarkTheme() ? '#e9e9e9' : '#000000'}">${member.name}</span>`
+    : `<span style="color: ${Common.useDarkTheme() ? '#e9e9e9' : '#313131'}; font-weight: bold;">${member.name}</span>`
 }
 
 function br (data: string) {

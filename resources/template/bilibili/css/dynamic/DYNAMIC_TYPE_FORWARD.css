@@ -414,6 +414,36 @@ body.dark-mode .other_text {
   padding: 0 0 0 85px;
 }
 
+body.dark-mode .DYNAMIC_TYPE_DRAW {
+  background-color: #282828;
+  border-radius: 20px;
+  margin-top: 14px;
+  padding: 30px 50px 0 50px;
+  width: 100%;
+}
+
+body.light-mode .DYNAMIC_TYPE_DRAW {
+  background-color: #e6e6e6;
+  border-radius: 20px;
+  margin-top: 14px;
+  padding: 30px 50px 0 50px;
+  width: 100%;
+}
+
+.DRAWuserinfo {
+  display: flex;
+  align-items: center;
+  padding: 25px 0 0 0;
+}
+
+.DRAW.avatar {
+  margin: 0px 20px 0 0;
+  border-radius: 50%;
+  height: auto;
+  width: 135px;
+  box-shadow: 0px 10px 20px 0px #4343434f;
+}
+
 /* 单图样式 */
 .single-image-container {
   max-width: 100%;
