@@ -21,3 +21,4 @@ export declare class Bilibili extends Base {
      */
     processVideos(data: any): Promise<any>;
 }
+export declare const generateGradientStyle: (colors: string[], text: string) => string;
