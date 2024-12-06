@@ -9,6 +9,7 @@
 1. 克隆 **`build`** 分支（非常推荐）
    ```sh
    git clone --depth=1 -b build https://github.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-kkk/
+   
    ```
 
    > 如果你的网络环境较差，无法连接到 Github，可以使用 Gitee 镜像仓库，可能会更新不及时
