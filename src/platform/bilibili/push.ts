@@ -2,7 +2,7 @@ import { getBilibiliData } from '@ikenxuan/amagi'
 import { common, ImageElement, karin, KarinMessage, logger, segment } from 'node-karin'
 
 import { AllDataType, Base, BilibiliDBType, Common, Config, DB, Render } from '@/module'
-import { fetchBilibiliData } from '@/platform/bilibili'
+import { fetchBilibiliData, generateGradientStyle } from '@/platform/bilibili'
 
 /** 每个推送项的类型定义 */
 interface PushItem {
@@ -683,13 +683,4 @@ const skipDynamic = (Dynamic_Data: PushItem['Dynamic_Data']): boolean => {
     }
   }
   return false
-}
-
-const generateGradientStyle = (colors: string[], text: string): string => {
-  const gradientString = colors.map((color) => {
-    return `${color}`
-  }).join(', ')
-
-  // 返回完整的CSS样式字符串
-  return `<span style="font-family: bilifont; color: transparent; background-clip: text; margin: 0 200px 0 0; font-size: 43px; background-image: linear-gradient(135deg, ${gradientString} 0%, ${gradientString} 100%); ">${text}</span>`
 }

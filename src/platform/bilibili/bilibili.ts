@@ -219,7 +219,7 @@ export class Bilibili extends Base {
               following_count: this.count(OBJECT.USERDATA.data.card.attention),
               decoration_card: OBJECT.dynamicINFO.data.item.modules.module_author.decorate ?
                 `<div style="display: flex; width: 500px; height: 150px; background-position: center; background-attachment: fixed; background-repeat: no-repeat; background-size: contain; align-items: center; justify-content: flex-end; background-image: url('${OBJECT.dynamicINFO.data.item.modules.module_author.decorate.card_url}')">${generateGradientStyle(
-                  OBJECT.dynamicINFO.data.item.modules.module_author.decorate.fan.color_format.colors, OBJECT.dynamicINFO.data.item.modules.module_author.decorate.fan.num_str)}</div>` : '<div></div>',
+                  OBJECT.dynamicINFO.data.item.modules.module_author.decorate.fan?.color_format?.colors, OBJECT.dynamicINFO.data.item.modules.module_author.decorate.fan.num_str)}</div>` : '<div></div>',
               render_time: Common.getCurrentTime(),
               dynamicTYPE: '图文动态'
             }))
@@ -484,7 +484,8 @@ const qnd: Record<number, string> = {
   127: '超高清 8K'
 }
 
-const generateGradientStyle = (colors: string[], text: string): string => {
+export const generateGradientStyle = (colors: string[], text: string): string => {
+  if (! colors) return ''
   const gradientString = colors.map((color) => {
     return `${color}`
   }).join(', ')
