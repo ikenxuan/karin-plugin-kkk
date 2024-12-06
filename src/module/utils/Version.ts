@@ -17,7 +17,7 @@ class Ver {
 
   /** 插件版本号 */
   get pluginVersion () {
-    return getPluginInfo('karin-plugin-kkk')?.pkg?.version
+    return getPluginInfo('karin-plugin-kkk')?.pkg?.version as string
   }
 
   /** 插件路径 */

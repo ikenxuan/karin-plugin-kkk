@@ -53,7 +53,7 @@ export async function Render (path: string, params?: any) {
         scale: scale(params?.scale || 1)
       },
       pluResPath: `${Version.pluginPath}/resources/`,
-      copyright: `<span class="name">kkk</span><span class="version">${Version.pluginVersion} Preview</span> Powered By <span class="name">Karin</span>`,
+      copyright: `<span class="name">kkk</span><span class="version">${Version.pluginVersion} ${releaseType()}</span> Powered By <span class="name">Karin</span>`,
       useDarkTheme: Common.useDarkTheme()
     },
     screensEval: '#container'
@@ -64,4 +64,14 @@ export async function Render (path: string, params?: any) {
     ret.push(segment.image('base64://' + imgae))
   }
   return ret
+}
+
+/**
+ * 获取当前版本的发布类型
+ * @returns Preview | Stable
+ */
+const releaseType = () => {
+  if (Version.pluginVersion.includes('beta')) {
+    return 'Preview'
+  } else return 'Stable'
 }
