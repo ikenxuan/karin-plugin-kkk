@@ -1,10 +1,8 @@
 import eslint from '@eslint/js'
-import simpleImportSort from 'eslint-plugin-simple-import-sort'
-import { dirname } from 'path'
-import tseslint from 'typescript-eslint'
-import { fileURLToPath } from 'url'
 import tsParser from '@typescript-eslint/parser'
-const __dirname = dirname(fileURLToPath(import.meta.url))
+import simpleImportSort from 'eslint-plugin-simple-import-sort'
+import globals from 'globals'
+import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
   eslint.configs.recommended,
@@ -16,14 +14,14 @@ export default tseslint.config(
       parser: tsParser,
       parserOptions: {
         project: './tsconfig.json',
-        tsconfigRootDir: __dirname,
+        tsconfigRootDir: import.meta.dirname
       },
-      globals: { ...global.NodeJS }
+      globals: { ...globals.node }
     },
     plugins: {
-      'simple-import-sort': simpleImportSort,
+      'simple-import-sort': simpleImportSort
     },
-    files: ['src/**/*.ts'],
+    files: ['src/**/*.ts', 'eslint.config.js'],
     rules: {
       '@typescript-eslint/no-explicit-any': 0,
       '@typescript-eslint/no-unsafe-assignment': 0,
@@ -42,7 +40,6 @@ export default tseslint.config(
       '@typescript-eslint/prefer-nullish-coalescing': 1,
       '@typescript-eslint/no-misused-promises': 0,
       '@typescript-eslint/no-redundant-type-constituents': 0,
-      '@typescript-eslint/await-thenable': 1,
       "@typescript-eslint/no-unsafe-enum-comparison": 0,
       // 禁用驼峰命名规则，允许使用下划线或其他命名方式。
       camelcase: ['off'],
@@ -56,7 +53,7 @@ export default tseslint.config(
         objects: 'never',
         imports: 'never',
         exports: 'never',
-        functions: 'never',
+        functions: 'never'
       }],
       // 禁用箭头函数体的代码风格规则，允许使用大括号或不使用大括号。
       'arrow-body-style': 'off',
@@ -71,7 +68,7 @@ export default tseslint.config(
       // 要求对象字面量中的大括号内侧有一个空格。
       'object-curly-spacing': [1, 'always'],
       // 要求数组字面量中的方括号内侧有一个空格。
-      'array-bracket-spacing': [1, 'always'],
+      'array-bracket-spacing': [0, 'always'],
       // 禁止多个空行，最多允许两行空行，文件末尾不允许空行。
       'no-multiple-empty-lines': [1, { max: 2, maxEOF: 0, maxBOF: 0 }],
       // 要求导入语句按照字母顺序排序。
@@ -95,10 +92,10 @@ export default tseslint.config(
         after: true,
         overrides: {
           if: {
-            after: true,
-          },
-        },
-      }],
-    },
+            after: true
+          }
+        }
+      }]
+    }
   }
 )

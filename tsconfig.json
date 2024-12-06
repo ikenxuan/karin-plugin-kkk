@@ -33,7 +33,7 @@
     "resolveFullExtension": ".js" // 指定解析的文件扩展名
   },
   "include": [ // 指定编译器应该包含的文件或目录
-    "src/**/*",
+    "src/**/*.ts",
     "eslint.config.js"
   ],
 }

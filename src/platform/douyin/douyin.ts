@@ -5,7 +5,7 @@ import { markdown } from '@karinjs/md-html'
 import { common, logger, Message, render, segment } from 'node-karin'
 import QRCode from 'qrcode'
 
-import { Base, Common, Config, mergeFile, Networks, Render, UploadRecord, Version } from '@/module/utils'
+import { Base, Common, Config, mergeFile, Networks, Render, Version } from '@/module/utils'
 import { douyinComments } from '@/platform/douyin'
 import { DouyinDataTypes, ExtendedDouyinOptionsType } from '@/types'
 
@@ -79,21 +79,7 @@ export class DouYin extends Base {
             }
           }
           const haspath = music_url && this.is_mp4 === false && music_url !== undefined
-          switch (this.botadapter) {
-            case 'OneBotv11': {
-              if (haspath) {
-                await this.e.reply(segment.record(music_url, false))
-              }
-              break
-            }
-            case 'ICQQ': {
-              if (haspath) {
-                if (Config.douyin.sendHDrecord) await this.e.reply(await UploadRecord(this.e, music_url, 0, false))
-                else this.e.reply(segment.record(music_url, false))
-              }
-              break
-            }
-          }
+          haspath && await this.e.reply(segment.record(music_url, false))
         }
 
         /** 视频 */
@@ -290,10 +276,7 @@ export class DouYin extends Base {
           ]
         )
 
-        // const record = await UploadRecord(this.e, data.music_info.play_url.uri, 0, false)
-        if (this.botadapter === 'ICQQ') {
-          await this.e.reply(await UploadRecord(this.e, data.music_info.play_url.uri, 0, false))
-        } else await this.e.reply(segment.record(data.music_info.play_url.uri, false))
+        await this.e.reply(segment.record(data.music_info.play_url.uri, false))
 
         return true
       }

@@ -120,7 +120,7 @@ export class DBBase {
    * @param data 数据体
    * @returns
    */
-  async CreateSheet<T extends keyof AllDataType> (ModelName: T, groupId: any, data: AllDataType[T][string]): Promise<any> {
+  async CreateSheet<T extends keyof AllDataType> (ModelName: T, groupId: string, data: AllDataType[T][string]): Promise<any> {
     const Model = sequelize.models[ModelName]
     const resolve = (
       await Model.create(

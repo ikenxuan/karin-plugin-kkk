@@ -137,7 +137,7 @@ export class Base {
       if (options?.active) {
         if (options.useGroupFile) { // 是群文件
           const bot = karin.getBot(String(options.activeOption?.uin)) as AdapterType
-          const status = await bot.uploadGroupFile(options.activeOption?.group_id ?? '', File, file.originTitle ? file.originTitle : `tmp_${Date.now()}`)
+          const status = await bot.uploadGroupFile(options.activeOption?.group_id ?? '', File, file.originTitle ?? `tmp_${Date.now()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是群文件
           const status = await karin.sendMsg(String(options?.activeOption?.uin), karin.contactGroup(String(options?.activeOption?.group_id)), [ segment.video(File) ])
@@ -145,7 +145,7 @@ export class Base {
         }
       } else { // 不是主动消息
         if (options?.useGroupFile) { // 是群文件
-          const status = await this.e.bot.uploadGroupFile('groupId' in this.e ? this.e.groupId : '', File, file.originTitle ? file.originTitle : `tmp_${Date.now()}`)
+          const status = await this.e.bot.uploadGroupFile('groupId' in this.e ? this.e.groupId : '', File, file.originTitle ?? `tmp_${Date.now()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是群文件
           const status = await this.e.reply(segment.video(File) || videoUrl)
@@ -176,8 +176,7 @@ export class Base {
     const fileSize = parseInt(parseFloat(fileSizeInMB).toFixed(2))
     if (Config.upload.usefilelimit && fileSize > Config.upload.filelimit) {
       const message = segment.text(`视频：「${downloadOpt.title.originTitle
-        ? downloadOpt.title.originTitle
-        : 'Error: 文件名获取失败'}」大小 (${fileSizeInMB} MB) 超出最大限制（设定值：${Config.upload.filelimit} MB），已取消上传`)
+        ?? 'Error: 文件名获取失败'}」大小 (${fileSizeInMB} MB) 超出最大限制（设定值：${Config.upload.filelimit} MB），已取消上传`)
 
       await karin.sendMsg(this.e.selfId, this.e.contact, message)
       return false
