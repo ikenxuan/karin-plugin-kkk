@@ -6,7 +6,7 @@ import karin, { basePath, common, isPkg, mkdirSync, render, restart, segment, up
 
 import { Common, Render, Version } from '@/module'
 
-export const help = karin.command(/^#?(kkk)?帮助$/, async (e) => {
+export const help = karin.command(/^#?kkk帮助$/, async (e) => {
   const img = await Render('help/index')
   await e.reply(img)
   return true
@@ -71,15 +71,15 @@ export const update = karin.command(/^#?kkk更新(预览版)?$/, async (e) => {
     data = resolve.data
   }
   await e.bot.sendForwardMsg(e.contact, common.makeForward([segment.text(`更新 ${Version.pluginName}...\n${JSON.stringify(data)}`)], e.sender.userId, e.sender.nick))
-  if (status === 'ok') {
-    try {
-      await e.reply(`\n更新完成，开始重启 本次运行时间：${common.uptime()}`, { at: true })
-      await restart(e.selfId, e.contact, e.messageId)
-      return true
-    } catch (error) {
-      await e.reply(`${Version.pluginName}重启失败，请手动重启以应用更新！`)
-    }
+  // if (status === 'ok') {
+  try {
+    await e.reply(`\n更新完成，开始重启 本次运行时间：${common.uptime()}`, { at: true })
+    await restart(e.selfId, e.contact, e.messageId)
+    return true
+  } catch (error) {
+    await e.reply(`${Version.pluginName}重启失败，请手动重启以应用更新！`)
   }
+  // }
   return true
 }, { name: 'kkk-更新', perm: 'master' })
 
