@@ -11,3 +11,4 @@ pnpm-workspace.yaml
 data/
 logs/
 startpuppeteer.bat
+temp/

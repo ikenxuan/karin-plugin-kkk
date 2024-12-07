@@ -2,7 +2,7 @@ import { ExecException, execSync } from 'node:child_process'
 import fs from 'node:fs'
 
 import { markdown } from '@karinjs/md-html'
-import karin, { common, isPkg, render, restart, segment, updateGitPlugin, updatePkg } from 'node-karin'
+import karin, { basePath, common, isPkg, mkdirSync, render, restart, segment, updateGitPlugin, updatePkg } from 'node-karin'
 
 import { Common, Render, Version } from '@/module'
 
@@ -17,10 +17,11 @@ export const version = karin.command(/^#?kkk版本$/, async (e) => {
   const html = markdown(changelogs, {
     gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css'
   })
+  mkdirSync(`${basePath}/${Version.pluginName}/help`)
   const htmlPath = `${Version.karinPath}/temp/html/${Version.pluginName}/help/version.html`
   fs.writeFileSync(htmlPath, html)
   const img = await render.renderHtml(htmlPath)
-  await e.reply(segment.image(img))
+  await e.reply(segment.image('base64://' + img))
   return true
 }, { name: 'kkk-版本' })
 
@@ -40,23 +41,34 @@ export const changelogs = karin.command(/^#?kkk更新日志$/, async (e) => {
   const html = markdown(htmlString, {
     gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css'
   })
-  const htmlPath = `${Version.karinPath}/temp/html/${Version.pluginName}/help/changelogs.html`
+  mkdirSync(`${basePath}/${Version.pluginName}/help`)
+  const htmlPath = `${basePath}/${Version.pluginName}/help/changelogs.html`
   fs.writeFileSync(htmlPath, html)
   const img = await render.renderHtml(htmlPath)
-  await e.reply(segment.image(img))
+  await e.reply(segment.image('base64://' + img))
   return true
-}, { name: 'kkk-更新日志', perm: 'master' })
+}, { name: 'kkk-更新日志' })
 
-export const update = karin.command(/^#?kkk更新$/, async (e) => {
+export const update = karin.command(/^#?kkk更新(预览版)?$/, async (e) => {
   let status = 'failed'; let data: ExecException | string = ''
   if (isPkg) {
-    data = (await updatePkg(Version.pluginName)).data
+    if (e.msg.includes('预览版')) {
+      const resolve = await updatePkg(Version.pluginName, 'beta')
+      status = resolve.status
+      data = resolve.data
+    } else {
+      const resolve = await updatePkg(Version.pluginName)
+      status = resolve.status
+      data = resolve.data
+    }
   } else {
     let cmd = 'git pull'
     if (e.msg.includes('强制')) {
       cmd = 'git reset --hard && git pull --allow-unrelated-histories'
     }
-    data = (await updateGitPlugin(Version.pluginPath, cmd)).data
+    const resolve = await updateGitPlugin(Version.pluginPath, cmd)
+    status = resolve.status
+    data = resolve.data
   }
   await e.bot.sendForwardMsg(e.contact, common.makeForward([segment.text(`更新 ${Version.pluginName}...\n${JSON.stringify(data)}`)], e.sender.userId, e.sender.nick))
   if (status === 'ok') {
