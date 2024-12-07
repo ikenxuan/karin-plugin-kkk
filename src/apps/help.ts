@@ -18,7 +18,7 @@ export const version = karin.command(/^#?kkk版本$/, async (e) => {
     gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css'
   })
   mkdirSync(`${basePath}/${Version.pluginName}/help`)
-  const htmlPath = `${Version.karinPath}/temp/html/${Version.pluginName}/help/version.html`
+  const htmlPath = `${basePath}/${Version.pluginName}/help/version.html`
   fs.writeFileSync(htmlPath, html)
   const img = await render.renderHtml(htmlPath)
   await e.reply(segment.image('base64://' + img))
