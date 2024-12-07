@@ -1,10 +1,10 @@
 import fs from 'node:fs'
 
 import Amagi from '@ikenxuan/amagi'
-import karin, { AdapterType, common, Message, segment } from 'node-karin'
+import { common, Message, segment } from 'node-karin'
 import QRCode from 'qrcode'
 
-import { Common, Config, Version } from '@/module/utils'
+import { Common, Config } from '@/module/utils'
 
 const cl = new Amagi({ bilibili: Config.cookies.bilibili })
 export const bilibiliLogin = async (e: Message) => {
@@ -13,7 +13,7 @@ export const bilibiliLogin = async (e: Message) => {
   const qrimg = await QRCode.toDataURL(qrcodeurl.data.url)
   const base64Data = qrimg ? qrimg.replace(/^data:image\/\w+;base64,/, '') : ''
   const buffer = Buffer.from(base64Data, 'base64')
-  fs.writeFileSync(`${Version.karinPath}/temp/${Version.pluginName}/BilibiliLoginQrcode.png`, buffer)
+  fs.writeFileSync(`${Common.tempDri.default}BilibiliLoginQrcode.png`, buffer)
   const qrcode_key = qrcodeurl.data.qrcode_key
   const msg_id = []
   const message1 = await e.reply('免责声明:\n您将通过扫码完成获取哔哩哔哩网页端的用户登录凭证（ck），该ck将用于请求哔哩哔哩WEB API接口。\n本Bot不会保存您的登录状态。\n我方仅提供视频解析及相关抖音内容服务,若您的账号封禁、被盗等处罚与我方无关。\n害怕风险请勿扫码 ~')

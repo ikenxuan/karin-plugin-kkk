@@ -1,10 +1,10 @@
 import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 
-import karin, { AdapterType, handler, logger, Message, segment } from 'node-karin'
+import { handler, logger, Message, segment } from 'node-karin'
 import { chromium } from 'playwright'
 
-import { Config, Version } from '@/module'
+import { Common, Config, Version } from '@/module'
 
 export const douyinLogin = async (e: Message) => {
   const hal = await handler.call('kkk.douyinLogin', { e })
@@ -37,7 +37,7 @@ export const douyinLogin = async (e: Message) => {
 
     // 将 base64 转换为 Buffer 并保存为文件
     const buffer = Buffer.from(base64Data, 'base64')
-    fs.writeFileSync(`${Version.karinPath}/temp/${Version.pluginName}/DouyinLoginQrcode.png`, buffer)
+    fs.writeFileSync(`${Common.tempDri.default}DouyinLoginQrcode.png`, buffer)
 
     const message2 = await e.reply([segment.image('base64://' + base64Data), segment.text('请在120秒内通过抖音APP扫码进行登录')], { reply: true })
     msg_id.push(message2.message_id, message1.message_id)

@@ -31,6 +31,8 @@ export const Common = {
    * 插件缓存文件夹
    */
   tempDri: {
+    /** 插件缓存目录 */
+    default: `${tempPath}/${Version.pluginName}/`,
     /** 视频缓存文件 */
     video: `${tempPath}/${Version.pluginName}/kkkdownload/video/`,
     /** 图片缓存文件 */
