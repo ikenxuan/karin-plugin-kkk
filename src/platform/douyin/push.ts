@@ -186,7 +186,7 @@ export class DouYinpush extends Base {
                     DBdata[isSecUidFound].start_living_pn = Date.now()
                   } else {
                     DBdata[isSecUidFound].message_id = { [groupId]: { message_id: '' }, ...DBdata[isSecUidFound].message_id }
-                    DBdata[isSecUidFound].living = data[awemeId].Detail_Data.user_info.user.live_status === 1,
+                    DBdata[isSecUidFound].living = data[awemeId].Detail_Data.user_info.user.live_status === 1
                     DBdata[isSecUidFound].start_living_pn = 0
                   }
                   await DB.UpdateGroupData('douyin', groupId, DBdata)
