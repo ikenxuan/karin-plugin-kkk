@@ -26,20 +26,20 @@ export const forcePush = karin.command(/#(抖音|B站)(全部)?强制推送/, as
   return true
 }, { name: '𝑪𝒊𝒂𝒍𝒍𝒐～(∠・ω< )⌒★', perm: 'master' })
 
-export const setdyPush = Config.bilibili.push.switch && karin.command(/^#设置抖音推送/, async (e) => {
+export const setdyPush = Config.bilibili.push.switch && karin.command(new RegExp(/^#设置抖音推送/), async (e) => {
   const data = await getDouyinData('搜索数据', Config.cookies.douyin, { query: e.msg.replace(/^#设置抖音推送/, '') })
   await e.reply(await new DouYinpush(e).setting(data))
   return true
-}, { name: 'kkk-推送功能-设置', event: 'message.friend' })
+}, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.douyin.push.permission })
 
-export const setbiliPush = Config.bilibili.push.switch && karin.command(/^#设置[bB]站推送(?:[Uu][Ii][Dd]:)?(\d+)$/, async (e) => {
+export const setbiliPush = Config.bilibili.push.switch && karin.command(new RegExp(/^#设置[bB]站推送(?:[Uu][Ii][Dd]:)?(\d+)$/), async (e) => {
   const match = /^#设置[bB]站推送(?:UID:)?(\d+)$/.exec(e.msg)
   if (match && match[1]) {
     const data = await getBilibiliData('用户主页数据', Config.cookies.bilibili, { host_mid: match[1] })
     await e.reply(await new Bilibilipush(e).setting(data))
   }
   return true
-}, { name: 'kkk-推送功能-设置', event: 'message.friend', perm: Config.bilibili.push.permission })
+}, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.bilibili.push.permission })
 
 export const changeBotID = karin.command(new RegExp(/^#kkk设置推送机器人/), async (e) => {
   const newDouyinlist = Config.pushlist.douyin.map(item => {

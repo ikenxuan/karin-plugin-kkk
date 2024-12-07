@@ -18,20 +18,23 @@
   <div class="info_text">{{@text}}</div>
   <div class="spacer4"></div>
 </div>
-{{each image_url val}}
-<div class="cover">
-  <div class="imgbox">
-    <img class="imgbox_1" src="{{val.image_src}}" />
-  </div>
-</div>
-<div style="height: 70px"></div>
-{{/each}}
 <div class="original-content">
   {{if original_content.DYNAMIC_TYPE_AV}}
   <div class="DYNAMIC_TYPE_AV">
     <div class="AVuserinfo">
-      <img class="AV avatar" src="{{original_content.DYNAMIC_TYPE_AV.avatar_url}}">
-      <div class="name">{{@original_content.DYNAMIC_TYPE_AV.username}}</div>
+      <div class="forward_user_info">
+        <div class="forward_name">
+          <img class="forward_avatar" src="{{original_content.DYNAMIC_TYPE_AV.avatar_url}}">
+          <img src="{{original_content.DYNAMIC_TYPE_AV.frame}}" class="forward_avatar-1" />
+          <div>
+            <div class="name">{{@original_content.DYNAMIC_TYPE_AV.username}}</div>
+            <div class="dynamic_create_time">{{original_content.DYNAMIC_TYPE_AV.create_time}}</div>
+          </div>
+        </div>
+        <div class="forward_decoration_card">
+          {{@original_content.DYNAMIC_TYPE_AV.decoration_card}}
+        </div>
+      </div>
     </div>
     <div class="AVcover">
       <div class="imgbox">
@@ -49,13 +52,22 @@
   {{else if original_content.DYNAMIC_TYPE_DRAW}}
   <div class="DYNAMIC_TYPE_DRAW">
     <div class="DRAWuserinfo">
-      <img class="DRAW avatar" src="{{original_content.DYNAMIC_TYPE_DRAW.avatar_url}}">
-      <div class="name">{{@original_content.DYNAMIC_TYPE_DRAW.username}}</div>
+      <div class="forward_user_info">
+        <div class="forward_name">
+          <img class="forward_avatar" src="{{original_content.DYNAMIC_TYPE_DRAW.avatar_url}}">
+          <img src="{{original_content.DYNAMIC_TYPE_DRAW.frame}}" class="forward_avatar-1" />
+          <div>
+            <div class="name">{{@original_content.DYNAMIC_TYPE_DRAW.username}}</div>
+            <div class="dynamic_create_time">{{original_content.DYNAMIC_TYPE_DRAW.create_time}}</div>
+          </div>
+        </div>
+        <div class="forward_decoration_card">
+          {{@original_content.DYNAMIC_TYPE_DRAW.decoration_card}}
+        </div>
+      </div>
     </div>
     <div class="spacer4"></div>
-    <div class="DRAWinfo">
-      <div class="info_text">{{@original_content.DYNAMIC_TYPE_DRAW.text}}</div>
-    </div>
+    <div class="forward_info_text">{{@original_content.DYNAMIC_TYPE_DRAW.text}}</div>
     {{if original_content.DYNAMIC_TYPE_DRAW.image_url.length === 1}}
     <div class="single-image-container">
       <div class="DRAWcover">
@@ -75,6 +87,55 @@
     {{/if}}
     <div class="spacer4"></div>
   </div>
+  {{else if original_content.DYNAMIC_TYPE_WORD}}
+  <div class="DYNAMIC_TYPE_WORD">
+    <div class="DRAWuserinfo">
+      <div class="forward_user_info">
+        <div class="forward_name">
+          <img class="forward_avatar" src="{{original_content.DYNAMIC_TYPE_WORD.avatar_url}}">
+          <img src="{{original_content.DYNAMIC_TYPE_WORD.frame}}" class="forward_avatar-1" />
+          <div>
+            <div class="name">{{@original_content.DYNAMIC_TYPE_WORD.username}}</div>
+            <div class="dynamic_create_time">{{original_content.DYNAMIC_TYPE_WORD.create_time}}</div>
+          </div>
+        </div>
+        <div class="forward_decoration_card">
+          {{@original_content.DYNAMIC_TYPE_WORD.decoration_card}}
+        </div>
+      </div>
+    </div>
+    <div class="spacer4"></div>
+    <div class="forward_info_text">{{@original_content.DYNAMIC_TYPE_WORD.text}}</div>
+  </div>
+  {{else if original_content.DYNAMIC_TYPE_LIVE_RCMD}}
+  <div class="DYNAMIC_TYPE_LIVE_RCMD">
+    <div class="LIVE_RCMDuserinfo">
+      <div class="forward_user_info">
+        <div class="forward_name">
+          <img class="forward_avatar" src="{{original_content.DYNAMIC_TYPE_LIVE_RCMD.avatar_url}}">
+          <img src="{{original_content.DYNAMIC_TYPE_LIVE_RCMD.frame}}" class="forward_avatar-1" />
+          <div>
+            <div class="name">{{@original_content.DYNAMIC_TYPE_LIVE_RCMD.username}}</div>
+            <div class="dynamic_create_time">{{original_content.DYNAMIC_TYPE_LIVE_RCMD.create_time}}</div>
+          </div>
+        </div>
+        <div class="forward_decoration_card">
+          {{@original_content.DYNAMIC_TYPE_LIVE_RCMD.decoration_card}}
+        </div>
+      </div>
+    </div>
+    <div class="LIVE_RCMDcover">
+      <div class="imgbox">
+        <img class="LIVE_RCMDimgbox_1" src="{{original_content.DYNAMIC_TYPE_LIVE_RCMD.cover}}" />
+        <div class="gradient-overlay"></div>
+        <div class="image-text"><span
+            class="duration_text">{{original_content.DYNAMIC_TYPE_LIVE_RCMD.area_name}}</span>&nbsp;&nbsp;&nbsp;
+          {{original_content.DYNAMIC_TYPE_LIVE_RCMD.text_large}}&nbsp;&nbsp;&nbsp;
+          在线: {{original_content.DYNAMIC_TYPE_LIVE_RCMD.online}}</div>
+      </div>
+    </div>
+    <div class="intro">{{@original_content.DYNAMIC_TYPE_LIVE_RCMD.title}}</div>
+  </div>
   {{/if}}
 </div>
 <div class="spacer6"></div>
@@ -84,7 +145,6 @@
   <div class="spacer5"></div>
 </div>
 <div style="height: 90px"></div>
-<div class="other_text">哔哩哔哩{{dynamicTYPE}}</div>
 <div class="under">
   <div class="rectangular_box">
     <div class="user" style="align-items: center">
@@ -101,7 +161,7 @@
       </div>
     </div>
     <div class="qrcode_box">
-      <div class="qrcode_text">动态分享链接</div>
+      <div class="qrcode_text">{{dynamicTYPE}}</div>
       <div id="qrcode"></div>
     </div>
   </div>
