@@ -1,8 +1,8 @@
-import { execSync } from 'node:child_process'
+import { ExecException, execSync } from 'node:child_process'
 import fs from 'node:fs'
 
 import { markdown } from '@karinjs/md-html'
-import karin, { common, isPkg, render, segment, updateGitPlugin, updatePkg } from 'node-karin'
+import karin, { common, isPkg, render, restart, segment, updateGitPlugin, updatePkg } from 'node-karin'
 
 import { Common, Render, Version } from '@/module'
 
@@ -48,26 +48,23 @@ export const changelogs = karin.command(/^#?kkk更新日志$/, async (e) => {
 }, { name: 'kkk-更新日志', perm: 'master' })
 
 export const update = karin.command(/^#?kkk更新$/, async (e) => {
+  let status = 'failed', data: ExecException | string = ''
   if (isPkg) {
-    const data = await updatePkg(Version.pluginName)
-    if (data.status === 'ok') {
-      await e.reply(`更新${Version.pluginName}成功，\n请手动重启以应用更新！`, { at: true })
-      return true
-    }
+    data = (await updatePkg(Version.pluginName)).data
+  } else {
+    let cmd = 'git pull'
+    if (e.msg.includes('强制')) cmd = 'git reset --hard && git pull --allow-unrelated-histories'
+    data = (await updateGitPlugin(Version.pluginPath, cmd)).data
   }
-  let [ name, cmd ] = [ Version.pluginName, 'git pull' ]
-  if (e.msg.includes('强制')) cmd = 'git reset --hard && git pull --allow-unrelated-histories'
-  const { data, status } = await updateGitPlugin(Version.pluginPath, cmd)
-  await e.bot.sendForwardMsg(e.contact, common.makeForward([ segment.text(`更新${name}...${JSON.stringify(data)}`) ], e.sender.userId, e.sender.nick))
+  await e.bot.sendForwardMsg(e.contact, common.makeForward([ segment.text(`更新 ${Version.pluginName}...\n${JSON.stringify(data)}`) ], e.sender.userId, e.sender.nick))
   if (status === 'ok') {
-    await e.reply(`更新${name}成功，\n请手动重启以应用更新！`, { at: true })
-    // try {
-    //   await e.reply(`\n更新完成，开始重启 本次运行时间：${common.uptime()}`, { at: true })
-    //   await restart(e.selfId, e.contact, e.messageId)
-    //   return true
-    // } catch (error) {
-    //   await e.reply(`${Version.pluginName}重启失败，请手动重启以应用更新！`)
-    // }
+    try {
+      await e.reply(`\n更新完成，开始重启 本次运行时间：${common.uptime()}`, { at: true })
+      await restart(e.selfId, e.contact, e.messageId)
+      return true
+    } catch (error) {
+      await e.reply(`${Version.pluginName}重启失败，请手动重启以应用更新！`)
+    }
   }
   return true
 }, { name: 'kkk-更新', perm: 'master' })
