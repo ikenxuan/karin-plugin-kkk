@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.4...v0.1.5) (2024-12-07)
+
+
+### Bug Fixes
+
+* 语法错误 ([97d183a](https://github.com/ikenxuan/karin-plugin-kkk/commit/97d183aa8351c92ba8bdc35812f9dcb061c2cc5e))
+
 ## [0.1.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.3...v0.1.4) (2024-12-06)
 
 
