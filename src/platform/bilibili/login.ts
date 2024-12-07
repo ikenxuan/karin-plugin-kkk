@@ -8,7 +8,6 @@ import { Common, Config, Version } from '@/module/utils'
 
 const cl = new Amagi({ bilibili: Config.cookies.bilibili })
 export const bilibiliLogin = async (e: Message) => {
-  const bot = karin.getBot(e.selfId) as AdapterType
   /** 申请二维码 */
   const qrcodeurl = await cl.getBilibiliData('申请二维码')
   const qrimg = await QRCode.toDataURL(qrcodeurl.data.url)
@@ -33,24 +32,24 @@ export const bilibiliLogin = async (e: Message) => {
         // Config.bilibilirefresh_token = qrcodestatusdata.data.data.refresh_token
         await e.reply('登录成功！用户登录凭证已保存至cookies.yaml', { reply: true })
         // 批量撤回
-        msg_id.forEach(async (id) => {
-          await bot.recallMsg(e.contact, id)
-        })
+        await Promise.all(msg_id.map(async (id) => {
+          await e.bot.recallMsg(e.contact, id)
+        }))
         completedCase0 = true
         break
       }
       case 86038: {
         i === 17 && await e.reply('二维码已失效', { reply: true })
-        msg_id.forEach(async (id) => {
-          await bot.recallMsg(e.contact, id)
-        })
+        await Promise.all(msg_id.map(async (id) => {
+          await e.bot.recallMsg(e.contact, id)
+        }))
         break
       }
       case 86090: {
         if (! executed86090) {
           const message3 = await e.reply('二维码已扫码，未确认', { reply: true })
           msg_id.push(message3.messageId)
-          await bot.recallMsg(e.contact, message2.messageId)
+          await e.bot.recallMsg(e.contact, message2.messageId)
           executed86090 = true
           // 删除 msg_id 数组中的 message2.message_id
 

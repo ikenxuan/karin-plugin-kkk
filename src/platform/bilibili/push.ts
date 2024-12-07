@@ -19,11 +19,16 @@ interface PushItem {
   /** UP主头像url */
   avatar_img: string
   /** 动态类型 */
-  dynamic_type: dynamicTYPE
+  dynamic_type: DynamicType
 }
 /** 已支持推送的动态类型 */
-type dynamicTYPE = 'DYNAMIC_TYPE_AV' | 'DYNAMIC_TYPE_DRAW' | 'DYNAMIC_TYPE_WORD' | 'DYNAMIC_TYPE_LIVE_RCMD' | 'DYNAMIC_TYPE_FORWARD'
-/** 推送列表的类型定义 */
+export enum DynamicType {
+  AV = 'DYNAMIC_TYPE_AV',
+  DRAW = 'DYNAMIC_TYPE_DRAW',
+  WORD = 'DYNAMIC_TYPE_WORD',
+  LIVE_RCMD = 'DYNAMIC_TYPE_LIVE_RCMD',
+  FORWARD = 'DYNAMIC_TYPE_FORWARD'
+}/** 推送列表的类型定义 */
 type WillBePushList = Record<string, PushItem>
 
 export class Bilibilipush extends Base {
@@ -84,7 +89,7 @@ export class Bilibilipush extends Base {
         logger.debug(`UP: ${data[dynamicId].remark}\n动态id：${dynamicId}\nhttps://t.bilibili.com/${dynamicId}`)
         switch (data[dynamicId].dynamic_type) {
           /** 处理图文动态 */
-          case 'DYNAMIC_TYPE_DRAW': {
+          case DynamicType.DRAW: {
 
             if ('topic' in data[dynamicId].Dynamic_Data.modules.module_dynamic && data[dynamicId].Dynamic_Data.modules.module_dynamic.topic !== null) {
               const name = data[dynamicId].Dynamic_Data.modules.module_dynamic.topic.name
@@ -121,7 +126,7 @@ export class Bilibilipush extends Base {
             break
           }
           /** 处理纯文动态 */
-          case 'DYNAMIC_TYPE_WORD': {
+          case DynamicType.WORD: {
             let text = replacetext(data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.text, data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.rich_text_nodes)
             for (const item of emojiDATA) {
               if (text.includes(item.text)) {
@@ -152,7 +157,7 @@ export class Bilibilipush extends Base {
             break
           }
           /** 处理视频动态 */
-          case 'DYNAMIC_TYPE_AV': {
+          case DynamicType.AV: {
             if (data[dynamicId].Dynamic_Data.modules.module_dynamic.major.type === 'MAJOR_TYPE_ARCHIVE') {
               const aid = data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.aid
               const bvid = data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.bvid
@@ -189,7 +194,7 @@ export class Bilibilipush extends Base {
             break
           }
           /** 处理直播动态 */
-          case 'DYNAMIC_TYPE_LIVE_RCMD': {
+          case DynamicType.LIVE_RCMD: {
             img = await Render('bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
               {
                 image_url: [ { image_src: dycrad.live_play_info.cover } ],
@@ -207,11 +212,11 @@ export class Bilibilipush extends Base {
             )
             break
           }
-          case 'DYNAMIC_TYPE_FORWARD': {
+          case DynamicType.FORWARD: {
             const text = replacetext(br(data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.text), data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.rich_text_nodes)
             let param = {}
             switch (data[dynamicId].Dynamic_Data.orig.type) {
-              case 'DYNAMIC_TYPE_AV':{
+              case DynamicType.AV:{
                 param = {
                   username: checkvip(data[dynamicId].Dynamic_Data.orig.modules.module_author),
                   pub_action: data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_action,
@@ -227,7 +232,7 @@ export class Bilibilipush extends Base {
                 }
                 break
               }
-              case 'DYNAMIC_TYPE_DRAW': {
+              case DynamicType.DRAW: {
                 const dynamicCARD = await getBilibiliData('动态卡片数据', Config.cookies.bilibili, { dynamic_id: data[dynamicId].Dynamic_Data.orig.id_str })
                 const cardData = JSON.parse(dynamicCARD.data.card.card)
                 param = {
@@ -241,7 +246,7 @@ export class Bilibilipush extends Base {
                 }
                 break
               }
-              case 'DYNAMIC_TYPE_WORD': {
+              case DynamicType.WORD: {
                 param = {
                   username: checkvip(data[dynamicId].Dynamic_Data.orig.modules.module_author),
                   create_time: Common.convertTimestampToDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
@@ -252,7 +257,7 @@ export class Bilibilipush extends Base {
                 }
                 break
               }
-              case 'DYNAMIC_TYPE_LIVE_RCMD': {
+              case DynamicType.LIVE_RCMD: {
                 const liveData = JSON.parse(data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.live_rcmd.content)
                 param = {
                   username: checkvip(data[dynamicId].Dynamic_Data.orig.modules.module_author),
@@ -266,6 +271,11 @@ export class Bilibilipush extends Base {
                   title: liveData.live_play_info.title,
                   online: liveData.live_play_info.online
                 }
+                break
+              }
+              case DynamicType.FORWARD:
+              default: {
+                logger.warn(`UP主：${data[dynamicId].remark}的${logger.green('转发动态')}转发的原动态类型为「${logger.yellow(data[dynamicId].Dynamic_Data.orig.type)}」暂未支持解析`)
                 break
               }
             }

@@ -53,7 +53,9 @@ export const update = karin.command(/^#?kkk更新$/, async (e) => {
     data = (await updatePkg(Version.pluginName)).data
   } else {
     let cmd = 'git pull'
-    if (e.msg.includes('强制')) cmd = 'git reset --hard && git pull --allow-unrelated-histories'
+    if (e.msg.includes('强制')) {
+      cmd = 'git reset --hard && git pull --allow-unrelated-histories'
+    }
     data = (await updateGitPlugin(Version.pluginPath, cmd)).data
   }
   await e.bot.sendForwardMsg(e.contact, common.makeForward([ segment.text(`更新 ${Version.pluginName}...\n${JSON.stringify(data)}`) ], e.sender.userId, e.sender.nick))

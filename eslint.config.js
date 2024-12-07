@@ -66,7 +66,7 @@ export default tseslint.config(
       // 禁止行尾有多余的空格。
       'no-trailing-spaces': 1,
       // 要求对象字面量中的大括号内侧有一个空格。
-      'object-curly-spacing': [1, 'always'],
+      'object-curly-spacing': [0, 'always'],
       // 要求数组字面量中的方括号内侧有一个空格。
       'array-bracket-spacing': [0, 'always'],
       // 禁止多个空行，最多允许两行空行，文件末尾不允许空行。
@@ -95,7 +95,9 @@ export default tseslint.config(
             after: true
           }
         }
-      }]
+      }],
+      // 执行 one true brace 风格规则。
+      'brace-style': [1, '1tbs']
     }
   }
 )

@@ -56,19 +56,17 @@ export const douyinLogin = async (e: Message) => {
           // 关闭浏览器
           await browser.close()
           // 批量撤回
-          msg_id.forEach(async (id) => {
-            const bot = karin.getBot(e.selfId) as AdapterType
-            await bot.recallMsg(e.contact, id)
-          })
+          await Promise.all(msg_id.map(async (id) => {
+            await e.bot.recallMsg(e.contact, id)
+          }))
         }
       })
     } catch (err) {
       await browser.close()
       // 批量撤回
-      msg_id.forEach(async (id) => {
-        const bot = karin.getBot(e.selfId) as AdapterType
-        await bot.recallMsg(e.contact, id)
-      })
+      await Promise.all(msg_id.map(async (id) => {
+        await e.bot.recallMsg(e.contact, id)
+      }))
       await e.reply('登录超时！二维码已失效！', { reply: true })
       logger.error(err)
     }

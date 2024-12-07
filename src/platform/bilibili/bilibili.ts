@@ -4,7 +4,7 @@ import { bilibiliAPI, getBilibiliData } from '@ikenxuan/amagi'
 import karin, { common, ElementTypes, logger, Message, segment } from 'node-karin'
 
 import { Base, Common, Config, mergeFile, Networks, Render } from '@/module/utils'
-import { bilibiliComments, genParams } from '@/platform/bilibili'
+import { bilibiliComments, DynamicType, genParams } from '@/platform/bilibili'
 import { BilibiliDataTypes } from '@/types'
 
 let img: ElementTypes[]
@@ -250,7 +250,7 @@ export class Bilibili extends Base {
             const text = replacetext(br(OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text), OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.rich_text_nodes)
             let data = {}
             switch (OBJECT.dynamicINFO.data.item.orig.type) {
-              case 'DYNAMIC_TYPE_AV':{
+              case DynamicType.AV:{
                 data = {
                   username: checkvip(OBJECT.dynamicINFO.data.item.orig.modules.module_author),
                   pub_action: OBJECT.dynamicINFO.data.item.orig.modules.module_author.pub_action,
@@ -266,7 +266,7 @@ export class Bilibili extends Base {
                 }
                 break
               }
-              case 'DYNAMIC_TYPE_DRAW': {
+              case DynamicType.DRAW: {
                 const dynamicCARD = await getBilibiliData('动态卡片数据', Config.cookies.bilibili, { dynamic_id: OBJECT.dynamicINFO.data.item.orig.id_str })
                 const cardData = JSON.parse(dynamicCARD.data.card.card)
                 data = {
@@ -280,7 +280,7 @@ export class Bilibili extends Base {
                 }
                 break
               }
-              case 'DYNAMIC_TYPE_WORD': {
+              case DynamicType.WORD: {
                 data = {
                   username: checkvip(OBJECT.dynamicINFO.data.item.orig.modules.module_author),
                   create_time: Common.convertTimestampToDateTime(OBJECT.dynamicINFO.data.item.orig.modules.module_author.pub_ts),
@@ -291,7 +291,7 @@ export class Bilibili extends Base {
                 }
                 break
               }
-              case 'DYNAMIC_TYPE_LIVE_RCMD': {
+              case DynamicType.LIVE_RCMD: {
                 const liveData = JSON.parse(OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.major.live_rcmd.content)
                 data = {
                   username: checkvip(OBJECT.dynamicINFO.data.item.orig.modules.module_author),
@@ -305,6 +305,11 @@ export class Bilibili extends Base {
                   title: liveData.live_play_info.title,
                   online: liveData.live_play_info.online
                 }
+                break
+              }
+              case DynamicType.FORWARD:
+              default: {
+                logger.warn(`UP主：${OBJECT.USERDATA.data.card.name}的${logger.green('转发动态')}转发的原动态类型为「${logger.yellow(OBJECT.dynamicINFO.data.item.orig.type)}」暂未支持解析`)
                 break
               }
             }
