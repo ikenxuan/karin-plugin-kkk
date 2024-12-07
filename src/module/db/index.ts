@@ -184,7 +184,7 @@ export class DBBase {
    */
   async UpdateGroupData (ModelName: keyof AllDataType, groupId: string, NewData: object = {}): Promise<number> {
     const Model = sequelize.models[ModelName]
-    const [ affectedRowsData ] = await Model.update(
+    const [affectedRowsData] = await Model.update(
       {
         data: JSON.stringify(NewData)
       },

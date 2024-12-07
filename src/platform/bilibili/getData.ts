@@ -1,4 +1,4 @@
-import amagi, { bilibiliAPI, getBilibiliData, wbi_sign } from '@ikenxuan/amagi'
+import Amagi, { bilibiliAPI, getBilibiliData, wbi_sign } from '@ikenxuan/amagi'
 
 import { Config } from '@/module'
 import { genParams } from '@/platform/bilibili'
@@ -8,7 +8,7 @@ export async function fetchBilibiliData<T extends keyof BilibiliDataTypes> (
   type: T,
   opt?: any
 ): Promise<any> {
-  const cl = new amagi({ bilibili: Config.cookies.bilibili })
+  const cl = new Amagi({ bilibili: Config.cookies.bilibili })
   switch (type) {
     case 'one_video': {
       const INFODATA = await cl.getBilibiliData('单个视频作品数据', {
@@ -60,7 +60,7 @@ export async function fetchBilibiliData<T extends keyof BilibiliDataTypes> (
     }
 
     case 'bangumi_video_info': {
-      let cleanedId = '', isep = false
+      let cleanedId = ''; let isep = false
       if (opt.ep_id) {
         cleanedId = opt.ep_id.replace('ep', '')
         isep = true
@@ -111,11 +111,11 @@ export async function fetchBilibiliData<T extends keyof BilibiliDataTypes> (
 
 function mapping_table (type: any): number {
   const Array: Record<string, string[]> = {
-    1: [ 'DYNAMIC_TYPE_AV', 'DYNAMIC_TYPE_PGC', 'DYNAMIC_TYPE_UGC_SEASON' ],
-    11: [ 'DYNAMIC_TYPE_DRAW' ],
-    12: [ 'DYNAMIC_TYPE_ARTICLE' ],
-    17: [ 'DYNAMIC_TYPE_LIVE_RCMD', 'DYNAMIC_TYPE_FORWARD', 'DYNAMIC_TYPE_WORD', 'DYNAMIC_TYPE_COMMON_SQUARE' ],
-    19: [ 'DYNAMIC_TYPE_MEDIALIST' ]
+    1: ['DYNAMIC_TYPE_AV', 'DYNAMIC_TYPE_PGC', 'DYNAMIC_TYPE_UGC_SEASON'],
+    11: ['DYNAMIC_TYPE_DRAW'],
+    12: ['DYNAMIC_TYPE_ARTICLE'],
+    17: ['DYNAMIC_TYPE_LIVE_RCMD', 'DYNAMIC_TYPE_FORWARD', 'DYNAMIC_TYPE_WORD', 'DYNAMIC_TYPE_COMMON_SQUARE'],
+    19: ['DYNAMIC_TYPE_MEDIALIST']
   }
   for (const key in Array) {
     if (Array[key].includes(type)) {

@@ -115,7 +115,7 @@ export class Admin extends Plugin {
 
       // 检查 customConfig 是否存在
       const customConfig = PlatformTypeConfig[platform]?.customConfig
-      if (! customConfig || ! customConfig[key]) {
+      if (!customConfig || !customConfig[key]) {
         await e.reply(`无效的设置项：${key}`)
         return false
       }
@@ -147,7 +147,7 @@ export class Admin extends Plugin {
 
   // 检查数值范围
   checkNumberValue (value: number, limit: string): number {
-    const [ min, max ] = limit.split('-').map(Number)
+    const [min, max] = limit.split('-').map(Number)
     return Math.min(Math.max(value, min), max)
   }
 }
@@ -192,7 +192,7 @@ function getStatus (data: Record<string, any>): Record<string, any> {
     const res: Record<string, any> = {}
     for (const key in obj) {
       const value = obj[key]
-      if (value !== null && typeof value === 'object' && ! Array.isArray(value)) {
+      if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
         // 如果是子对象，递归处理
         res[key] = processObject(value)
       } else {

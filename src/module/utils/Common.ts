@@ -55,7 +55,7 @@ export const Common = {
     let temp = 0 // 存储每一段的临时结果
     let unit = 1 // 当前处理的单位，初始为1
 
-    for (let i = chineseNumber.length - 1; i >= 0; i --) {
+    for (let i = chineseNumber.length - 1; i >= 0; i--) {
       const char = chineseNumber[i]
 
       // 如果是单位字符
@@ -86,8 +86,8 @@ export const Common = {
   formatCookies: (cookies: any[]): string => {
     return cookies.map(cookie => {
       // 分割每个cookie字符串以获取名称和值
-      const [ nameValue ] = cookie.split(';').map((part: string) => part.trim())
-      const [ name, value ] = nameValue.split('=')
+      const [nameValue] = cookie.split(';').map((part: string) => part.trim())
+      const [name, value] = nameValue.split('=')
 
       // 重新组合名称和值，忽略其他属性
       return `${name}=${value}`

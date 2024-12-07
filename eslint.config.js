@@ -2,9 +2,11 @@ import eslint from '@eslint/js'
 import tsParser from '@typescript-eslint/parser'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import globals from 'globals'
+import neostandard from 'neostandard'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
+  ...neostandard(),
   eslint.configs.recommended,
   tseslint.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
@@ -40,7 +42,10 @@ export default tseslint.config(
       '@typescript-eslint/prefer-nullish-coalescing': 1,
       '@typescript-eslint/no-misused-promises': 0,
       '@typescript-eslint/no-redundant-type-constituents': 0,
-      "@typescript-eslint/no-unsafe-enum-comparison": 0,
+      '@typescript-eslint/no-unsafe-enum-comparison': 0,
+      '@typescript-eslint/prefer-for-of': 1,
+      // 允许使用 RegExp
+      'prefer-regex-literals': 0,
       // 禁用驼峰命名规则，允许使用下划线或其他命名方式。
       camelcase: ['off'],
       // 要求使用 === 和 !== 而不是 == 和 !=，以避免类型强制转换带来的潜在错误。
@@ -82,7 +87,11 @@ export default tseslint.config(
       // 要求二元操作符周围有空格。
       'space-infix-ops': 1,
       // 要求一元操作符与其操作数之间有空格，无论是单词类型的操作符还是非单词类型的操作符。
-      'space-unary-ops': [1, { words: true, nonwords: true }],
+      'space-unary-ops': [
+        1, {
+          words: true,
+          nonwords: false
+        }],
       // 要求代码块的开括号前有一个空格。
       'space-before-blocks': [1, 'always'],
       // 要求小括号内侧没有空格。

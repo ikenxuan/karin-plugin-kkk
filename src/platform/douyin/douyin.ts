@@ -19,6 +19,7 @@ export class DouYin extends Base {
   get botadapter (): string {
     return this.e.bot?.adapter?.name
   }
+
   constructor (e: Message, iddata: ExtendedDouyinOptionsType) {
     super(e)
     this.e = e
@@ -41,13 +42,13 @@ export class DouYin extends Base {
           const image_data = []
           const imageres = []
           let image_url
-          for (let i = 0; i < data.VideoData.aweme_detail.images.length; i ++) {
+          for (let i = 0; i < data.VideoData.aweme_detail.images.length; i++) {
             image_url = data.VideoData.aweme_detail.images[i].url_list[2] || data.VideoData.aweme_detail.images[i].url_list[1] // 图片地址
 
             const title = data.VideoData.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:\*\?"<>\|\r\n]/g, ' ') // 标题，去除特殊字符
             g_title = title
             imageres.push(segment.image(image_url))
-            imagenum ++
+            imagenum++
             if (Config.app.rmmp4 === false) {
               common.mkdir(`${Common.tempDri.images}${g_title}`)
               const path = `${Common.tempDri.images}${g_title}/${i + 1}.png`
@@ -216,8 +217,8 @@ export class DouYin extends Base {
 
       case 'user_dynamic': {
         const veoarray = []
-        veoarray.unshift(`------------------------------ | ---------------------------- |\n`)
-        veoarray.unshift(`标题                           | 分享二维码                    |\n`)
+        veoarray.unshift('------------------------------ | ---------------------------- |\n')
+        veoarray.unshift('标题                           | 分享二维码                    |\n')
         const forwardmsg = []
         for (const i of data.aweme_list) {
           const title = i.desc
@@ -287,7 +288,7 @@ export class DouYin extends Base {
           const room_data = JSON.parse(data.user.room_data)
           const img = await Render('douyin/live',
             {
-              image_url: [ { image_src: live_data.data.data[0].cover.url_list[0] } ],
+              image_url: [{ image_src: live_data.data.data[0].cover.url_list[0] }],
               text: live_data.data.data[0].title,
               liveinf: `${live_data.data.partition_road_map.partition.title} | 房间号: ${room_data.owner.web_rid}`,
               在线观众: this.count(live_data.data.data[0].room_view_stats.display_value),
@@ -347,7 +348,6 @@ function convertTimestampToDateTime (timestamp: number): string {
 
   return `${year}-${month}-${day} ${hours}:${minutes}`
 }
-
 
 function Emoji (data: any): any {
   const ListArray = []

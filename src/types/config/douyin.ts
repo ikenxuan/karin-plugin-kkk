@@ -12,7 +12,7 @@ export interface douyinConfig {
   /** 抖音评论数量，范围1 ~ x 条 */
   numcomment: number
 
-  /**图集BGM是否使用高清语音发送，高清语音「ios/PC」系统均无法播放，自行衡量开关（仅icqq） */
+  /** 图集BGM是否使用高清语音发送，高清语音「ios/PC」系统均无法播放，自行衡量开关（仅icqq） */
   sendHDrecord: boolean
 
   /** 抖音推送相关配置 */

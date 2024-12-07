@@ -21,7 +21,7 @@ export class Kuaishou extends Base {
     }
     Config.kuaishou.kuaishoutip && await this.e.reply('检测到快手链接，开始解析')
     const video_url = data.VideoData.data.visionVideoDetail.photo.photoUrl
-    const transformedData = Object.entries(data.EmojiData.data.visionBaseEmoticons.iconUrls).map(([ name, path ]) => {
+    const transformedData = Object.entries(data.EmojiData.data.visionBaseEmoticons.iconUrls).map(([name, path]) => {
       return { name, url: `https:${path}` }
     })
     const CommentsData = await kuaishouComments(data.CommentsData, transformedData)

@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import  karin, { AdapterType, logger, Message, segment } from 'node-karin'
+import karin, { AdapterType, logger, Message, segment } from 'node-karin'
 
 import { Common, Config, mergeFile, Networks } from '@/module/utils'
 
@@ -18,6 +18,14 @@ interface uploadFileOptions {
     /** 群号 */
     group_id: string
   }
+}
+
+/** 最少都要传一个 */
+interface title {
+  /** 文件名：自定义 */
+  originTitle?: string
+  /** 文件名：tmp + 时间戳 */
+  timestampTitle?: string
 }
 
 interface downloadFileOptions {
@@ -41,14 +49,6 @@ interface fileInfo {
   originTitle?: title['originTitle']
   /** 文件名：tmp + 时间戳 */
   timestampTitle?: title['timestampTitle']
-}
-
-/** 最少都要传一个 */
-interface title {
-  /** 文件名：自定义 */
-  originTitle?: string
-  /** 文件名：tmp + 时间戳 */
-  timestampTitle?: string
 }
 
 interface downLoadFileOptions {
@@ -140,7 +140,7 @@ export class Base {
           const status = await bot.uploadGroupFile(options.activeOption?.group_id ?? '', File, file.originTitle ?? `tmp_${Date.now()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是群文件
-          const status = await karin.sendMsg(String(options?.activeOption?.uin), karin.contactGroup(String(options?.activeOption?.group_id)), [ segment.video(File) ])
+          const status = await karin.sendMsg(String(options?.activeOption?.uin), karin.contactGroup(String(options?.activeOption?.group_id)), [segment.video(File)])
           status.messageId ? sendStatus = true : sendStatus = false
         }
       } else { // 不是主动消息
@@ -175,8 +175,8 @@ export class Base {
     const fileSizeInMB = (fileSizeContent / (1024 * 1024)).toFixed(2)
     const fileSize = parseInt(parseFloat(fileSizeInMB).toFixed(2))
     if (Config.upload.usefilelimit && fileSize > Config.upload.filelimit) {
-      const message = segment.text(`视频：「${downloadOpt.title.originTitle
-        ?? 'Error: 文件名获取失败'}」大小 (${fileSizeInMB} MB) 超出最大限制（设定值：${Config.upload.filelimit} MB），已取消上传`)
+      const message = segment.text(`视频：「${downloadOpt.title.originTitle ??
+        'Error: 文件名获取失败'}」大小 (${fileSizeInMB} MB) 超出最大限制（设定值：${Config.upload.filelimit} MB），已取消上传`)
 
       await karin.sendMsg(this.e.selfId, this.e.contact, message)
       return false

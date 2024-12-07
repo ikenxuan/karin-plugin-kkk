@@ -2,7 +2,7 @@ import { Common } from '@/module'
 
 export function bilibiliComments (OBJECT: any) {
   let jsonArray: any[] = []
-  for (let i = 0; i < OBJECT.COMMENTSDATA.data.replies.length; i ++) {
+  for (let i = 0; i < OBJECT.COMMENTSDATA.data.replies.length; i++) {
     const ctime = getRelativeTimeFromTimestamp(OBJECT.COMMENTSDATA.data.replies[i].ctime)
     const emote = OBJECT.COMMENTSDATA.data.replies[i].content.emote
     let message = OBJECT.COMMENTSDATA.data.replies[i].content.message
