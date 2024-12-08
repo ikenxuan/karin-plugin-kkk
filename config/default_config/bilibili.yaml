@@ -30,6 +30,6 @@ push:
   # 推送定时任务的cron表达式，默认为每十分钟推送一次
   cron: '*/10 * * * *'
   # 推送时是否一同解析该动态
-  parsedynamic: true
+  parsedynamic: false
   # 是否打印日志
   log: true

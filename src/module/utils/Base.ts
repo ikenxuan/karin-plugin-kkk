@@ -1,9 +1,8 @@
 import fs from 'node:fs'
 
-import karin, { KarinAdapter, KarinMessage, logger, segment } from 'node-karin'
+import karin, { AdapterType, logger, Message, segment } from 'node-karin'
 
-import { Common, Config } from '@/module/utils'
-import { mergeFile, Networks } from '@/module/utils'
+import { Common, Config, mergeFile, Networks } from '@/module/utils'
 
 interface uploadFileOptions {
   /** 是否使用群文件上传 */
@@ -19,6 +18,14 @@ interface uploadFileOptions {
     /** 群号 */
     group_id: string
   }
+}
+
+/** 最少都要传一个 */
+interface title {
+  /** 文件名：自定义 */
+  originTitle?: string
+  /** 文件名：tmp + 时间戳 */
+  timestampTitle?: string
 }
 
 interface downloadFileOptions {
@@ -44,14 +51,6 @@ interface fileInfo {
   timestampTitle?: title['timestampTitle']
 }
 
-/** 最少都要传一个 */
-interface title {
-  /** 文件名：自定义 */
-  originTitle?: string
-  /** 文件名：tmp + 时间戳 */
-  timestampTitle?: string
-}
-
 interface downLoadFileOptions {
   /** 文件名 */
   title: string
@@ -67,10 +66,10 @@ interface downLoadFileOptions {
   filetype?: string
 }
 export class Base {
-  e: KarinMessage
+  e: Message
   headers: any
   _path: string
-  constructor (e: KarinMessage) {
+  constructor (e: Message) {
     this.e = e
     this.headers = {
       Accept: '*/*',
@@ -81,11 +80,6 @@ export class Base {
     this._path = process.cwd()?.replace(/\\/g, '/')
   }
 
-  /** 检查是或否设置抖音ck */
-  get allow (): boolean {
-    return Config.cookies.douyin !== ''
-  }
-
   /** 获取适配器名称 */
   get botadapter (): string {
     return this.e.bot?.adapter?.name
@@ -94,13 +88,13 @@ export class Base {
   /**
    * 上传视频文件
    * @param file - 包含本地视频文件信息的对象。
-   * @param video_url 视频直链，无则传空字符串
+   * @param videoUrl 视频直链，无则传空字符串
    * @param options 上传参数
    * @returns
    */
-  async upload_file (file: fileInfo, video_url: string, options?: uploadFileOptions): Promise<boolean> {
-    let sendStatus = true
-    let File: Buffer | string, newFileSize = file.totalBytes
+  async upload_file (file: fileInfo, videoUrl: string, options?: uploadFileOptions): Promise<boolean> {
+    let sendStatus: boolean = true
+    let File: Buffer | string; let newFileSize = file.totalBytes
 
     // 判断是否使用群文件上传
     if (options) {
@@ -110,14 +104,12 @@ export class Base {
     if (Config.upload.compress && (file.totalBytes > Config.upload.compresstrigger)) {
       const Duration = await mergeFile('获取指定视频文件时长', { path: file.filepath })
       logger.warn(logger.yellow(`视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.upload.compresstrigger} MB），正在进行压缩至${Config.upload.compressvalue} MB...`))
-      const msg1 = await karin.sendMsg(
-        String(this.e.self_id || options?.activeOption?.uin),
-        karin.contactGroup(this.e.group_id || String(options?.activeOption?.group_id)),
-        [
-          segment.text(`视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.upload.compresstrigger} MB），正在进行压缩至${Config.upload.compressvalue} MB...`),
-          options?.message_id ? segment.reply(options.message_id) : segment.text('')
-        ]
-      )
+      const message = [
+        segment.text(`视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.upload.compresstrigger} MB），正在进行压缩至${Config.upload.compressvalue} MB...`),
+        options?.message_id ? segment.reply(options.message_id) : segment.text('')
+      ]
+
+      const msg1 = await karin.sendMsg(this.e.selfId, this.e.contact, message)
       // 计算目标视频平均码率
       const targetBitrate = Common.calculateBitrate(Config.upload.compresstrigger, Duration) * 0.75
       // 执行压缩
@@ -127,14 +119,12 @@ export class Base {
       // 再次检查大小
       newFileSize = await Common.getVideoFileSize(file.filepath)
       logger.debug(`原始视频大小为: ${file.totalBytes.toFixed(2)} MB, ${logger.green(`经 FFmpeg 压缩后最终视频大小为: ${newFileSize.toFixed(2)} MB，原视频文件已删除`)}`)
-      await karin.sendMsg(
-        String(this.e.self_id || options?.activeOption?.uin),
-        karin.contactGroup(this.e.group_id || String(options?.activeOption?.group_id)),
-        [
-          segment.text(`压缩后最终视频大小为: ${newFileSize.toFixed(2)} MB，压缩耗时：${((endTime - startTime) / 1000).toFixed(2)} 秒`),
-          segment.reply(msg1.message_id)
-        ]
-      )
+
+      const message2 = [
+        segment.text(`压缩后最终视频大小为: ${newFileSize.toFixed(2)} MB，压缩耗时：${((endTime - startTime) / 1000).toFixed(2)} 秒`),
+        segment.reply(msg1.messageId)
+      ]
+      await karin.sendMsg(this.e.selfId, this.e.contact, message2)
     }
 
     // 是否先转换为base64
@@ -146,21 +136,20 @@ export class Base {
       // 是主动消息
       if (options?.active) {
         if (options.useGroupFile) { // 是群文件
-          const bot = karin.getBot(String(options.activeOption?.uin))!
-          const status = await bot.UploadGroupFile(String(options.activeOption?.group_id), File, file.originTitle ? file.originTitle : `tmp_${Date.now()}`)
+          const bot = karin.getBot(String(options.activeOption?.uin)) as AdapterType
+          const status = await bot.uploadGroupFile(options.activeOption?.group_id ?? '', File, file.originTitle ?? `tmp_${Date.now()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是群文件
-          const status = await karin.sendMsg(String(options?.activeOption?.uin), karin.contactGroup(String(options?.activeOption?.group_id)), [ segment.video(File) ])
-          status.message_id ? sendStatus = true : sendStatus = false
+          const status = await karin.sendMsg(String(options?.activeOption?.uin), karin.contactGroup(String(options?.activeOption?.group_id)), [segment.video(File)])
+          status.messageId ? sendStatus = true : sendStatus = false
         }
-      }
-      else { // 不是主动消息
+      } else { // 不是主动消息
         if (options?.useGroupFile) { // 是群文件
-          const status = await this.e.bot.UploadGroupFile(this.e.group_id, File, file.originTitle ? file.originTitle : `tmp_${Date.now()}`)
+          const status = await this.e.bot.uploadGroupFile('groupId' in this.e ? this.e.groupId : '', File, file.originTitle ?? `tmp_${Date.now()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是群文件
-          const status = await this.e.reply(segment.video(File) || video_url)
-          status.message_id ? sendStatus = true : sendStatus = false
+          const status = await this.e.reply(segment.video(File) || videoUrl)
+          status.messageId ? sendStatus = true : sendStatus = false
         }
       }
       return sendStatus
@@ -171,7 +160,6 @@ export class Base {
       this.removeFile(file.filepath)
     }
   }
-
 
   /**
    * 下载视频并上传到群
@@ -187,17 +175,16 @@ export class Base {
     const fileSizeInMB = (fileSizeContent / (1024 * 1024)).toFixed(2)
     const fileSize = parseInt(parseFloat(fileSizeInMB).toFixed(2))
     if (Config.upload.usefilelimit && fileSize > Config.upload.filelimit) {
-      await karin.sendMsg(
-        String(this.e.self_id || uploadOpt?.activeOption?.uin),
-        karin.contactGroup(this.e.group_id || String(uploadOpt?.activeOption?.group_id)),
-        [ segment.text(`视频：「${downloadOpt.title.originTitle ? downloadOpt.title.originTitle : 'Error: 文件名获取失败'}」大小 (${fileSizeInMB} MB) 超出最大限制（设定值：${Config.upload.filelimit} MB），已取消上传`) ]
-      )
+      const message = segment.text(`视频：「${downloadOpt.title.originTitle ??
+        'Error: 文件名获取失败'}」大小 (${fileSizeInMB} MB) 超出最大限制（设定值：${Config.upload.filelimit} MB），已取消上传`)
+
+      await karin.sendMsg(this.e.selfId, this.e.contact, message)
       return false
     }
 
     // 下载文件，视频URL，标题和自定义headers
     let res = await this.DownLoadFile(downloadOpt.video_url, {
-      title: Config.app.rmmp4 ? downloadOpt.title.timestampTitle! : downloadOpt.title.originTitle!,
+      title: Config.app.rmmp4 ? downloadOpt.title.timestampTitle as string : downloadOpt.title.originTitle as string,
       headers: downloadOpt.headers ?? this.headers,
       filetype: '.mp4'
     })
@@ -210,20 +197,19 @@ export class Base {
 
   /**
    * 异步下载文件的函数。
-   * @param video_url 下载地址。
+   * @param videoUrl 下载地址。
    * @param title 文件名。
    * @param headers 请求头，可选参数，默认为空对象。
    * @param filetype 下载文件的类型，默认为'.mp4'。
    * @returns 返回一个包含文件路径和总字节数的对象。
    */
-  async DownLoadFile (video_url: string, opt: downLoadFileOptions): Promise<fileInfo> {
+  async DownLoadFile (videoUrl: string, opt: downLoadFileOptions): Promise<fileInfo> {
     // 使用networks类进行文件下载，并通过回调函数实时更新下载进度
     const { filepath, totalBytes } = await new Networks({
-      url: video_url, // 视频地址
+      url: videoUrl, // 视频地址
       headers: opt.headers ?? this.headers, // 请求头
       filepath: Common.tempDri.video + `${opt.title}${opt.filetype ?? '.mp4'}`, // 文件保存路径
-      timeout: 30000, // 设置30秒超时
-      maxRetries: 3   // 最多重试3次
+      timeout: 30000 // 设置30秒超时
     }).downloadStream((downloadedBytes, totalBytes) => {
       // 定义进度条长度及生成进度条字符串的函数
       const barLength = 45
