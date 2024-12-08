@@ -1,12 +1,12 @@
 import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 
-import  { handler, KarinMessage, logger, segment } from 'node-karin'
+import { handler, logger, Message, segment } from 'node-karin'
 import { chromium } from 'playwright'
 
-import { Config, Version } from '@/module'
+import { Common, Config, Version } from '@/module'
 
-export const douyinLogin = async (e: KarinMessage) => {
+export const douyinLogin = async (e: Message) => {
   const hal = await handler.call('kkk.douyinLogin', { e })
   if (hal) return true
   const msg_id: string[] = []
@@ -37,9 +37,9 @@ export const douyinLogin = async (e: KarinMessage) => {
 
     // 将 base64 转换为 Buffer 并保存为文件
     const buffer = Buffer.from(base64Data, 'base64')
-    fs.writeFileSync(`${Version.karinPath}/temp/${Version.pluginName}/DouyinLoginQrcode.png`, buffer)
+    fs.writeFileSync(`${Common.tempDri.default}DouyinLoginQrcode.png`, buffer)
 
-    const message2 = await e.reply([ segment.image('base64://' + base64Data), segment.text('请在120秒内通过抖音APP扫码进行登录') ], { reply: true })
+    const message2 = await e.reply([segment.image('base64://' + base64Data), segment.text('请在120秒内通过抖音APP扫码进行登录')], { reply: true })
     msg_id.push(message2.message_id, message1.message_id)
 
     try {
@@ -56,17 +56,17 @@ export const douyinLogin = async (e: KarinMessage) => {
           // 关闭浏览器
           await browser.close()
           // 批量撤回
-          for (const id of msg_id) {
-            await e.bot.RecallMessage(e.contact, id)
-          }
+          await Promise.all(msg_id.map(async (id) => {
+            await e.bot.recallMsg(e.contact, id)
+          }))
         }
       })
     } catch (err) {
       await browser.close()
       // 批量撤回
-      for (const id of msg_id) {
-        await e.bot.RecallMessage(e.contact, id)
-      }
+      await Promise.all(msg_id.map(async (id) => {
+        await e.bot.recallMsg(e.contact, id)
+      }))
       await e.reply('登录超时！二维码已失效！', { reply: true })
       logger.error(err)
     }
@@ -76,11 +76,10 @@ export const douyinLogin = async (e: KarinMessage) => {
     if (error.message.includes('npx playwright install')) {
       execSync('npx playwright install chromium', { cwd: Version.pluginPath, stdio: 'inherit' })
       await e.reply(`playwright 初始化成功，请再次发送「${e.msg}」`)
-      await e.bot.RecallMessage(e.contact, msg.message_id)
+      await e.bot.recallMsg(e.contact, msg.message_id)
       return true
     }
   }
-
 
   return true
 }
