@@ -105,7 +105,7 @@
         <span class="cfg-hint">#kkk设置抖音解析 + 开启/关闭</span>
         {{@data.douyin.switch}}
       </div>
-      <div class="cfg-desc">单独开关，受「总开关」影响</div>
+      <div class="cfg-desc">抖音解析开关，单独开关</div>
     </li>
     <li class="cfg-li">
       <div class="cfg-line">
@@ -190,7 +190,7 @@
         <span class="cfg-hint">#kkk设置B站解析 + 开启/关闭</span>
         {{@data.bilibili.switch}}
       </div>
-      <div class="cfg-desc">单独开关，受「总开关」影响</div>
+      <div class="cfg-desc">B站解析开关，单独开关</div>
     </li>
     <li class="cfg-li">
       <div class="cfg-line">
@@ -296,7 +296,7 @@
         <span class="cfg-hint">#kkk设置快手解析 + 开启/关闭</span>
         {{@data.kuaishou.switch}}
       </div>
-      <div class="cfg-desc">快手解析开关，单独开关，受「总开关」影响</div>
+      <div class="cfg-desc">快手解析开关，单独开关</div>
     </li>
   </ul>
   <ul class="cfg-ul">
@@ -304,7 +304,7 @@
       <div class="cfg-line">
         快手解析提示
         <span class="cfg-hint">#kkk设置快手解析提示 + 开启/关闭</span>
-        {{@data.kuaishou.kuaishoutip}}
+        {{@data.kuaishou.tip}}
       </div>
       <div class="cfg-desc">发送提示信息：“检测到快手链接，开始解析”</div>
     </li>
@@ -314,14 +314,14 @@
       <div class="cfg-line">
         快手评论数量
         <span class="cfg-hint">#kkk设置快手评论数量 + 1 ~ 30</span>
-        {{@data.kuaishou.kuaishounumcomments}}
+        {{@data.kuaishou.numcomment}}
       </div>
       <div class="cfg-desc">快手评论数量，范围1 ~ 30条</div>
     </li>
   </ul>
 </div>
 <div class="cfg-box">
-  <div class="cfg-group">上传设置（「视频上传拦截」为最高优先级）</div>
+  <div class="cfg-group">上传设置（该板块设置是全局生效的）</div>
   <ul class="cfg-ul">
     <li class="cfg-li">
       <div class="cfg-line">
