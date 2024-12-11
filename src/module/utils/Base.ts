@@ -198,34 +198,55 @@ export class Base {
   /**
    * 异步下载文件的函数。
    * @param videoUrl 下载地址。
-   * @param title 文件名。
-   * @param headers 请求头，可选参数，默认为空对象。
-   * @param filetype 下载文件的类型，默认为'.mp4'。
+   * @param opt 配置选项，包括标题、请求头等。
    * @returns 返回一个包含文件路径和总字节数的对象。
    */
   async DownLoadFile (videoUrl: string, opt: downLoadFileOptions): Promise<fileInfo> {
-    // 使用networks类进行文件下载，并通过回调函数实时更新下载进度
+    // 记录开始时间
+    const startTime = Date.now()
+
+    // 使用 networks 类进行文件下载，并通过回调函数实时更新下载进度
     const { filepath, totalBytes } = await new Networks({
       url: videoUrl, // 视频地址
       headers: opt.headers ?? this.headers, // 请求头
       filepath: Common.tempDri.video + `${opt.title}${opt.filetype ?? '.mp4'}`, // 文件保存路径
-      timeout: 30000 // 设置30秒超时
+      timeout: 30000 // 设置 30 秒超时
     }).downloadStream((downloadedBytes, totalBytes) => {
       // 定义进度条长度及生成进度条字符串的函数
       const barLength = 45
       function generateProgressBar (progressPercentage: number) {
-        // 根据进度计算填充的'#'字符数量，并生成进度条样式
         const filledLength = Math.floor((progressPercentage / 100) * barLength)
         let progress = ''
         progress += '#'.repeat(filledLength)
         progress += '-'.repeat(Math.max(0, barLength - filledLength - 1))
-        const formattedProgress = progressPercentage.toFixed(2) + '%'
-        console.log(`正在下载 ${opt.title}${opt.filetype ?? '.mp4'} [${progress}] ${formattedProgress}\r`)
+        return `[${progress}]`
       }
-      // 计算并打印当前下载进度
+
+      // 计算当前下载进度百分比
       const progressPercentage = (downloadedBytes / totalBytes) * 100
-      generateProgressBar(progressPercentage)
+
+      // 计算动态 RGB 颜色
+      const red = Math.floor(255 - (255 * progressPercentage) / 100) // 红色分量随进度减少
+      const coloredPercentage = logger.chalk.rgb(red, 255, 0)(`${progressPercentage.toFixed(1)}%`)
+
+      // 计算下载速度（MB/s）
+      const elapsedTime = (Date.now() - startTime) / 1000
+      const speed = downloadedBytes / elapsedTime
+      const formattedSpeed = (speed / 1048576).toFixed(1) + ' MB/s'
+
+      // 计算剩余时间
+      const remainingBytes = totalBytes - downloadedBytes // 剩余字节数
+      const remainingTime = remainingBytes / speed // 剩余时间（秒）
+      const formattedRemainingTime = remainingTime > 60
+        ? `${Math.floor(remainingTime / 60)}min ${Math.floor(remainingTime % 60)}s`
+        : `${remainingTime.toFixed(0)}s`
+
+      // 打印下载进度、速度和剩余时间
+      console.log(
+        `正在下载 ${opt.title}${opt.filetype ?? '.mp4'} ${generateProgressBar(progressPercentage)} ${coloredPercentage} ${formattedSpeed} 剩余: ${formattedRemainingTime}\r`
+      )
     })
+
     return { filepath, totalBytes }
   }
 
