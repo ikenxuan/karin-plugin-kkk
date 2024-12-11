@@ -182,13 +182,10 @@ export class DouYin extends Base {
               path: liveimg.filepath,
               path2: liveimgbgm.filepath,
               resultPath: resolvefilepath,
-              callback: async (success: boolean): Promise<boolean> => {
+              callback: async (success: boolean, resultPath: string): Promise<boolean> => {
                 if (success) {
                   const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
-                  fs.renameSync(
-                    resolvefilepath,
-                    filePath
-                  )
+                  fs.renameSync(resultPath, filePath)
                   this.removeFile(liveimgbgm.filepath, true)
                   this.removeFile(liveimg.filepath, true)
 

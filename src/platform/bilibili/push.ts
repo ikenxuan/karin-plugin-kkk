@@ -118,10 +118,7 @@ export class Bilibilipush extends Base {
                 user_shortid: data[dynamicId].host_mid,
                 total_favorited: this.count(userINFO.data.like_num),
                 following_count: this.count(userINFO.data.card.attention),
-                decoration_card: data[dynamicId].Dynamic_Data.modules.module_author.decorate
-                  ? `<div style="display: flex; width: 500px; height: 150px; background-position: center; background-attachment: fixed; background-repeat: no-repeat; background-size: contain; align-items: center; justify-content: flex-end; background-image: url('${data[dynamicId].Dynamic_Data.modules.module_author.decorate.card_url}')">${generateGradientStyle(
-                    data[dynamicId].Dynamic_Data.modules.module_author.decorate.fan.color_format.colors, data[dynamicId].Dynamic_Data.modules.module_author.decorate.fan.num_str)}</div>`
-                  : '<div></div>',
+                decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decorate),
                 render_time: Common.getCurrentTime(),
                 dynamicTYPE: '图文动态推送'
               }
@@ -215,6 +212,7 @@ export class Bilibilipush extends Base {
             )
             break
           }
+          /** 处理转发动态 */
           case DynamicType.FORWARD: {
             const text = replacetext(br(data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.text), data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.rich_text_nodes)
             let param = {}

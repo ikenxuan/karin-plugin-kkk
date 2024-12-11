@@ -16,7 +16,12 @@ interface fffmpegClientOptions {
     /** 合并完成后存放的绝对路径路径 */
     resultPath: string
     /** 处理结果的回调函数 */
-    callback: (success: boolean) => boolean | Promise<boolean>
+    callback: (
+      /** 处理状态 */
+      success: boolean,
+      /** 视频合成后的文件路径 */
+      resultPath: string
+    ) => boolean | Promise<boolean>
   }
   Video3AudioOptions: {
     /** 文件1绝对路径 */
@@ -26,7 +31,12 @@ interface fffmpegClientOptions {
     /** 合并完成后存放的绝对路径路径 */
     resultPath: string
     /** 处理结果的回调函数 */
-    callback: (success: boolean) => boolean | Promise<boolean>
+    callback: (
+      /** 处理状态 */
+      success: boolean,
+      /** 视频合成后的文件路径 */
+      resultPath: string
+    ) => boolean | Promise<boolean>
   }
   getVideoSizeOptions: {
     /** 视频文件路径 */
@@ -88,16 +98,11 @@ class FFmpeg {
   }
 
   async FFmpeg<T extends keyof fffmpegClientOptions> (opt: any): Promise<MergeFileResult<T>> {
-    const ffmpegClient = await ffmpeg(Version.pluginPath, {})
-    if (ffmpegClient === false) {
-      return false as unknown as MergeFileResult<T>  // 若ffmpeg初始化失败，返回 false
-    }
-
     switch (this.type) {
       case '二合一（视频 + 音频）': {
-        const result = await ffmpeg(`-y -i ${opt.path} -i ${opt.path2} -c copy ${opt.resultPath}`, { booleanResult: true })
+        const result = await ffmpeg(`-y -i ${opt.path} -i ${opt.path2} -c copy ${opt.resultPath}`)
         result ? logger.mark('视频合成成功！') : logger.error('视频合成失败！')
-        await opt.callback(result)
+        await opt.callback(result, opt.resultPath)
         return result as unknown as MergeFileResult<T> // 布尔类型
       }
       case '视频*3 + 音频': {

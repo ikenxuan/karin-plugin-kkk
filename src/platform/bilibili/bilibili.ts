@@ -397,13 +397,10 @@ export class Bilibili extends Base {
             path: bmp4.filepath,
             path2: bmp3.filepath,
             resultPath: Common.tempDri.video + `Bil_Result_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.episodes[0].bvid}.mp4`,
-            callback: async (success: boolean): Promise<boolean> => {
+            callback: async (success: boolean, resultPath: string): Promise<boolean> => {
               if (success) {
                 const filePath = Common.tempDri.video + `${Config.app.rmmp4 ? 'tmp_' + Date.now() : this.downloadfilename}.mp4`
-                fs.renameSync(
-                  Common.tempDri.video + `Bil_Result_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.episodes[0].bvid}.mp4`,
-                  filePath
-                )
+                fs.renameSync(resultPath, filePath)
                 logger.mark('正在尝试删除缓存文件')
                 this.removeFile(bmp4.filepath, true)
                 this.removeFile(bmp3.filepath, true)
