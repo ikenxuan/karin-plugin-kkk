@@ -4,7 +4,7 @@ layout: home
 hero:
   name: 'karin-plugin-kkk'
   text: 视频解析插
-  textsuffix: 件
+  textsuffix: 件（该文档存在滞后）
   tagline: ✨ <a href='https://github.com/Karinjs/Karin' target='_blank'>Karin</a> 生态
   prelink:
     title: '<p style="text-align: left;"><i class="fa-solid fa-bolt fa-shake" style="color: #FFD43B;"></i> 快速开始</p><div style="text-align: left; font-weight: bold; word-break: break-all; overflow-wrap: break-word;">git clone https://github.com/ikenxuan/karin-plugin-kkk.git</div>'
