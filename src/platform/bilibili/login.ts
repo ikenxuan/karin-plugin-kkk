@@ -28,7 +28,7 @@ export const bilibiliLogin = async (e: Message) => {
     switch (qrcodestatusdata.data.data.code) {
       case 0: {
         // console.log(qrcodestatusdata.data.data.refresh_token)
-        Config.modify('cookies', 'bilibili', Common.formatCookies(qrcodestatusdata.headers['set-cookie']))
+        Config.Modify('cookies', 'bilibili', Common.formatCookies(qrcodestatusdata.headers['set-cookie']))
         // Config.bilibilirefresh_token = qrcodestatusdata.data.data.refresh_token
         await e.reply('登录成功！用户登录凭证已保存至cookies.yaml', { reply: true })
         // 批量撤回

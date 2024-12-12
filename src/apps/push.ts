@@ -64,8 +64,8 @@ export const changeBotID = karin.command(/^#kkk设置推送机器人/, async (e)
       group_id: modifiedGroupIds
     }
   })
-  Config.modify('pushlist', 'douyin', newDouyinlist)
-  Config.modify('pushlist', 'bilibili', newBilibililist)
+  Config.Modify('pushlist', 'douyin', newDouyinlist)
+  Config.Modify('pushlist', 'bilibili', newBilibililist)
   await e.reply('推送机器人已修改为' + e.msg.replace(/^#kkk设置推送机器人/, ''))
   return true
 }, { name: 'kkk-推送功能-设置', perm: 'master' })

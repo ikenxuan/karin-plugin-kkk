@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import path from 'node:path'
 
 import { basePath, copyConfigSync, filesByExt, requireFileSync, watch } from 'node-karin'
 import YAML from 'node-karin/yaml'
@@ -11,9 +12,9 @@ type ConfigDirType = 'config' | 'default_config'
 
 class Cfg {
   /** 用户配置文件路径 */
-  dirCfgPath: string
+  private dirCfgPath: string
   /** 默认配置文件路径 */
-  defCfgPath: string
+  private defCfgPath: string
 
   constructor () {
     this.dirCfgPath = `${basePath}/${Version.pluginName}/config`
@@ -29,108 +30,74 @@ class Cfg {
      */
     setTimeout(() => {
       const list = filesByExt(this.dirCfgPath, '.yaml', 'abs')
-      list.forEach(file => watch(file, (old, now) => {
-        // logger.info('旧数据:', old)
-        // logger.info('新数据:', now)
+      list.forEach((file) => watch(file, (old, now) => {
+        // logger.info('旧数据:', old);
+        // logger.info('新数据:', now);
       }))
     }, 2000)
     return this
   }
 
-  /** 插件相关配置 */
-  get app (): ConfigType['app'] {
-    return this.getDefOrConfig('app')
-  }
-
-  /** ck相关配置 */
-  get cookies (): ConfigType['cookies'] {
-    return this.getDefOrConfig('cookies')
-  }
-
-  /** 抖音相关配置 */
-  get douyin (): ConfigType['douyin'] {
-    return this.getDefOrConfig('douyin')
-  }
-
-  /** B站相关配置 */
-  get bilibili (): ConfigType['bilibili'] {
-    return this.getDefOrConfig('bilibili')
-  }
-
-  /** 推送列表 */
-  get pushlist (): ConfigType['pushlist'] {
-    return this.getDefOrConfig('pushlist')
-  }
-
-  /** 上传相关配置 */
-  get upload (): ConfigType['upload'] {
-    return this.getDefOrConfig('upload')
-  }
-
-  /** 快手相关配置 */
-  get kuaishou (): ConfigType['kuaishou'] {
-    return this.getDefOrConfig('kuaishou')
-  }
-
-  All (): ConfigType {
-    return {
-      cookies: this.cookies,
-      app: this.app,
-      douyin: this.douyin,
-      bilibili: this.bilibili,
-      pushlist: this.pushlist,
-      upload: this.upload,
-      kuaishou: this.kuaishou
-    }
-  }
-
-  /** 默认配置和用户配置 */
-  private getDefOrConfig (name: string) {
-    const def = this.getdefSet(name)
-    const config = this.getConfig(name)
+  /**
+   * 获取默认配置和用户配置
+   * @param name 配置文件名
+   * @returns 返回合并后的配置
+   */
+  getDefOrConfig (name: keyof ConfigType) {
+    const def = this.getYaml('default_config', name)
+    const config = this.getYaml('config', name)
     return { ...def, ...config }
   }
 
-  /** 默认配置 */
-  private getdefSet (name: string) {
-    return this.getYaml('default_config', name)
-  }
+  /** 获取所有配置文件 */
+  All (): ConfigType {
+    const allConfig: ConfigType = {} as ConfigType  // 初始化为 ConfigType 类型
 
-  /** 用户配置 */
-  private getConfig (name: string) {
-    return this.getYaml('config', name)
+    // 读取默认配置文件夹中的所有文件
+    const files = fs.readdirSync(this.defCfgPath)
+    files.forEach((file) => {
+      const fileName = path.basename(file, '.yaml') as keyof ConfigType
+
+      // 加载配置并合并
+      allConfig[fileName] = this.getDefOrConfig(fileName) || {} as ConfigType[keyof ConfigType]
+    })
+
+    return allConfig
   }
 
   /**
-   * 获取配置yaml
-   * @param type 默认跑配置-defSet，用户配置-config
-   * @param name 名称
+   * 获取 YAML 文件内容
+   * @param type 配置文件类型
+   * @param name 配置文件名
+   * @returns 返回 YAML 文件内容
    */
-  private getYaml (type: ConfigDirType, name: string) {
-    const file = type === 'config'
-      ? `${this.dirCfgPath}/${name}.yaml`
-      : `${this.defCfgPath}/${name}.yaml`
+  private getYaml (type: ConfigDirType, name: keyof ConfigType) {
+    const file =
+      type === 'config'
+        ? `${this.dirCfgPath}/${name}.yaml`
+        : `${this.defCfgPath}/${name}.yaml`
 
     // 自动管理缓存 无需手动清除 如无缓存 则会自动导入并加载
     return requireFileSync(file)
   }
 
   /**
-   * 修改设置
+   * 修改配置文件
    * @param name 文件名
-   * @param key 修改的key值
-   * @param value 修改的value值
-   * @param type 配置文件或默认
+   * @param key 键
+   * @param value 值
+   * @param type 配置文件类型，默认为用户配置文件 `config`
    */
-  modify (
-    name: 'cookies' | 'app' | 'douyin' | 'bilibili' | 'pushlist' | 'upload' | 'kuaishou',
+  Modify (
+    name: keyof ConfigType,
     key: string,
     value: any,
     type: ConfigDirType = 'config'
   ) {
-    const path = type === 'config'
-      ? `${this.dirCfgPath}/${name}.yaml`
-      : `${this.defCfgPath}/${name}.yaml`
+    const path =
+      type === 'config'
+        ? `${this.dirCfgPath}/${name}.yaml`
+        : `${this.defCfgPath}/${name}.yaml`
 
     // 读取 YAML 文件
     const yamlData = YAML.parseDocument(fs.readFileSync(path, 'utf8'))
@@ -139,33 +106,38 @@ class Cfg {
     const keys = key.split('.')
     let current: YAML.YAMLMap | undefined = yamlData.contents as YAML.YAMLMap
 
-    // 遍历键并确保每个子键都有对应的结构
     for (const subKey of keys.slice(0, -1)) {
       if (current instanceof YAML.YAMLMap) {
         let subValue: any = current.get(subKey)
-
-        // 类型保护，确保 subValue 是 YAMLMap
         if (!YAML.isMap(subValue)) {
-          subValue = new YAML.YAMLMap() // 创建新的 YAMLMap
-          current.set(subKey, subValue) // 设置新的子值
+          subValue = new YAML.YAMLMap()
+          current.set(subKey, subValue)
         }
-
-        current = subValue // 更新 current 为子结构
+        current = subValue
       } else {
-        throw new Error(`Invalid YAML structure: ${subKey} is not a YAMLMap.`)
+        throw new Error(`无效的YAML结构：${subKey} 不是一个YAMLMap。`)
       }
     }
 
-    // 设置最终值
     if (current instanceof YAML.YAMLMap) {
       current.set(keys[keys.length - 1], value)
     } else {
-      throw new Error('Invalid YAML structure: Unable to set value.')
+      throw new Error('无效的YAML结构：无法设置值。')
     }
 
-    // 写回 YAML 文件并保留注释
     fs.writeFileSync(path, yamlData.toString({ lineWidth: -1 }), 'utf8')
   }
 }
 
-export const Config = new Cfg().initCfg()
+type Config = Omit<ConfigType & Cfg, | 'getDefOrConfig' | 'initCfg'>
+
+export const Config: Config = new Proxy(new Cfg().initCfg(), {
+  get (target, prop: string) {
+    if (prop in target) return target[prop as keyof Cfg]
+    // 动态获取配置
+    if (typeof prop === 'string') {
+      return target.getDefOrConfig(prop as keyof ConfigType)
+    }
+    throw new Error(`属性 ${prop} 在配置文件上不存在。`)
+  }
+}) as unknown as Config

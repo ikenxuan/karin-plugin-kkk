@@ -606,7 +606,7 @@ export class Bilibilipush extends Base {
     }
 
     // 更新配置文件
-    Config.modify('pushlist', 'bilibili', config.bilibili)
+    Config.Modify('pushlist', 'bilibili', config.bilibili)
     return msg
   }
 
@@ -643,7 +643,7 @@ export class Bilibilipush extends Base {
         }
       }
       // 将更新后的配置文件内容写回文件
-      Config.modify('pushlist', 'bilibili', config.bilibili)
+      Config.Modify('pushlist', 'bilibili', config.bilibili)
     }
   }
 

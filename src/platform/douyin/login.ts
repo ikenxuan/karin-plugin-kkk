@@ -51,7 +51,7 @@ export const douyinLogin = async (e: Message) => {
           const cookieString = localCookies.map(cookie => {
             return `${cookie.name}=${cookie.value}`
           }).join('; ')
-          Config.modify('cookies', 'douyin', cookieString)
+          Config.Modify('cookies', 'douyin', cookieString)
           await e.reply('登录成功！用户登录凭证已保存至cookies.yaml', { reply: true })
           // 关闭浏览器
           await browser.close()

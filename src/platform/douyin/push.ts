@@ -430,7 +430,7 @@ export class DouYinpush extends Base {
           config.douyin[matchingItemIndex].short_id = resp.user.unique_id === '' ? resp.user.unique_id : resp.user.unique_id
         }
       }
-      Config.modify('pushlist', 'douyin', config.douyin)
+      Config.Modify('pushlist', 'douyin', config.douyin)
     }
   }
 
@@ -539,7 +539,7 @@ export class DouYinpush extends Base {
         msg = `群：${groupInfo.groupName}(${group_id})\n添加成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`
       }
 
-      Config.modify('pushlist', 'douyin', config.douyin)
+      Config.Modify('pushlist', 'douyin', config.douyin)
       return msg
     } catch (error) {
       logger.error(error)

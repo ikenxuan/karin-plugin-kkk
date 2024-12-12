@@ -2,9 +2,9 @@ import { ExecException, execSync } from 'node:child_process'
 import fs from 'node:fs'
 
 import { markdown } from '@karinjs/md-html'
-import karin, { basePath, common, isPkg, mkdirSync, render, restart, segment, updateGitPlugin, updatePkg } from 'node-karin'
+import karin, { common, isPkg, mkdirSync, render, restart, segment, tempPath, updateGitPlugin, updatePkg } from 'node-karin'
 
-import { Common, Render, Version } from '@/module'
+import { Common, Config, Render, Version } from '@/module'
 
 export const help = karin.command(/^#?kkk帮助$/, async (e) => {
   const img = await Render('help/index')
@@ -13,12 +13,13 @@ export const help = karin.command(/^#?kkk帮助$/, async (e) => {
 }, { name: 'kkk-帮助' })
 
 export const version = karin.command(/^#?kkk版本$/, async (e) => {
+  Config.douyin.push.switch = false
   const changelogs = fs.readFileSync(Version.pluginPath + '/CHANGELOG.md', 'utf8')
   const html = markdown(changelogs, {
     gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css'
   })
-  mkdirSync(`${basePath}/${Version.pluginName}/help`)
-  const htmlPath = `${basePath}/${Version.pluginName}/help/version.html`
+  mkdirSync(`${tempPath}/html/${Version.pluginName}/version`)
+  const htmlPath = `${tempPath}/html/${Version.pluginName}/version/version.html`
   fs.writeFileSync(htmlPath, html)
   const img = await render.renderHtml(htmlPath)
   await e.reply(segment.image('base64://' + img))
@@ -41,8 +42,8 @@ export const changelogs = karin.command(/^#?kkk更新日志$/, async (e) => {
   const html = markdown(htmlString, {
     gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css'
   })
-  mkdirSync(`${basePath}/${Version.pluginName}/help`)
-  const htmlPath = `${basePath}/${Version.pluginName}/help/changelogs.html`
+  mkdirSync(`${tempPath}/html/${Version.pluginName}/version`)
+  const htmlPath = `${tempPath}/html/${Version.pluginName}/version/changelogs.html`
   fs.writeFileSync(htmlPath, html)
   const img = await render.renderHtml(htmlPath)
   await e.reply(segment.image('base64://' + img))

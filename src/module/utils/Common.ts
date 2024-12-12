@@ -15,7 +15,7 @@ export const Common = {
    */
   getReplyMessage: async (e: Message): Promise<string> => {
     if (e.replyId) {
-      const reply = await e.bot.getMsg(e.contact, e.reply_id)
+      const reply = await e.bot.getMsg(e.contact, e.replyId)
       for (const v of reply.elements) {
         if (v.type === 'text') {
           return v.text

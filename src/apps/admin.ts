@@ -28,7 +28,7 @@ export const dylogin = karin.command(/^#?(kkk)?抖音(扫码)?登录$/, async (e
 export const setdyck = karin.command(/^#?(kkk)?s*设置抖音ck$/i, async (e) => {
   const msg = await e.reply('请发在120秒内送抖音ck\n教程：https://ikenxuan.github.io/kkkkkk-10086/docs/intro/other#%E9%85%8D%E7%BD%AE%E4%B8%8D%E5%90%8C%E5%B9%B3%E5%8F%B0%E7%9A%84-cookies\n')
   const context = await karin.ctx(e)
-  Config.modify('cookies', 'douyin', context.msg)
+  Config.Modify('cookies', 'douyin', context.msg)
   await e.bot.recallMsg(e.contact, msg.messageId)
   await e.reply('设置成功！', { at: true })
   return true
@@ -37,7 +37,7 @@ export const setdyck = karin.command(/^#?(kkk)?s*设置抖音ck$/i, async (e) =>
 export const setbilick = karin.command(/^#?(kkk)?s*设置s*(B站)ck$/i, async (e) => {
   const msg = await e.reply('请发在120秒内送B站ck\n教程：https://ikenxuan.github.io/kkkkkk-10086/docs/intro/other#%E9%85%8D%E7%BD%AE%E4%B8%8D%E5%90%8C%E5%B9%B3%E5%8F%B0%E7%9A%84-cookies\n')
   const context = await karin.ctx(e)
-  Config.modify('cookies', 'bilibili', context.msg)
+  Config.Modify('cookies', 'bilibili', context.msg)
   await e.bot.recallMsg(e.contact, msg.message_id)
   await e.reply('设置成功！', { at: true })
   return true
@@ -83,7 +83,7 @@ export class Admin extends Plugin {
     if (regRet) {
       const key = regRet[1]
       const isOn = regRet[2] === '开启'
-      Config.modify(platform, PlatformTypeConfig[platform].types[key], isOn)
+      Config.Modify(platform, PlatformTypeConfig[platform].types[key], isOn)
       await this.index_Settings(e)
       return true
     }
@@ -97,7 +97,7 @@ export class Admin extends Plugin {
     if (regRet) {
       const configType = PlatformTypeConfig[platform].numberConfig[regRet[1]]
       const number = this.checkNumberValue(Number(regRet[2]), configType.limit)
-      Config.modify(platform, configType.key, number)
+      Config.Modify(platform, configType.key, number)
       await this.index_Settings(e)
       return true
     }
@@ -120,7 +120,7 @@ export class Admin extends Plugin {
         return false
       }
       const configKey = customConfig[key].key // 提取实际的 key
-      Config.modify(platform, configKey, customValue)
+      Config.Modify(platform, configKey, customValue)
       await this.index_Settings(e)
       return true
     }
