@@ -79,7 +79,7 @@ body.light-mode .imgbox {
   align-items: center;
   box-shadow: 0px 10px 20px 0px #a5a5a5;
   border-radius: 40px;
-  width: 100%;
+  width: 95%;
   aspect-ratio: 16 / 9;
   overflow: hidden;
   position: relative;
@@ -91,7 +91,7 @@ body.dark-mode .imgbox {
   align-items: center;
   box-shadow: 0px 10px 30px 10px #0f0f0f;
   border-radius: 25px;
-  width: 100%;
+  width: 95%;
   aspect-ratio: 16 / 9;
   overflow: hidden;
   position: relative;

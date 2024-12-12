@@ -1,11 +1,6 @@
-import { exec } from 'node:child_process'
-import { promisify } from 'node:util'
+import { ffmpeg, ffprobe, logger } from 'node-karin'
 
-import { ffmpeg, logger } from 'node-karin'
-
-import { Common, Version } from '@/module/utils'
-
-const execPromise = promisify(exec)
+import { Common } from '@/module/utils'
 
 interface fffmpegClientOptions {
   VideoAudioOptions: {
@@ -100,7 +95,7 @@ class FFmpeg {
   async FFmpeg<T extends keyof fffmpegClientOptions> (opt: any): Promise<MergeFileResult<T>> {
     switch (this.type) {
       case '二合一（视频 + 音频）': {
-        const result = await ffmpeg(`-y -i ${opt.path} -i ${opt.path2} -c copy ${opt.resultPath}`)
+        const result = await ffmpeg(`-y -i ${opt.path} -i ${opt.path2} -c copy ${opt.resultPath}`, { booleanResult: true })
         result ? logger.mark('视频合成成功！') : logger.error('视频合成失败！')
         await opt.callback(result, opt.resultPath)
         return result as unknown as MergeFileResult<T> // 布尔类型
@@ -112,8 +107,8 @@ class FFmpeg {
         return result as unknown as MergeFileResult<T> // 布尔类型
       }
       case '获取指定视频文件时长': {
-        const { stdout } = await execPromise(`ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${opt.path}`)
-        return parseFloat(stdout.trim()) as unknown as MergeFileResult<T>  // 数字类型
+        const { stdout } = await ffprobe(`-v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${opt.path}`)
+        return parseFloat(parseFloat(stdout.trim()).toFixed(2)) as unknown as MergeFileResult<T>  // 数字类型
       }
       case '压缩视频': {
         const result = await ffmpeg(`-y -i "${opt.path}" -b:v ${opt.targetBitrate}k -maxrate ${opt.maxRate || opt.targetBitrate * 1.5}k -bufsize ${opt.bufSize || opt.targetBitrate * 2}k -crf ${opt.crf || 35} -preset medium -c:v libx264 -vf "scale='if(gte(iw/ih,16/9),1280,-1)':'if(gte(iw/ih,16/9),-1,720)',scale=ceil(iw/2)*2:ceil(ih/2)*2" "${opt.resultPath}"`, { booleanResult: true })
