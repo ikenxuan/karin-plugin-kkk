@@ -1,0 +1,64 @@
+/* var.css */
+/*  */
+.VPSocialLinks.VPNavBarSocialLinks.social-links {
+    margin-right: 0;
+}
+
+:root {
+    --vp-c-brand-1: #52730d;
+    --vp-c-brand-2: #57791b;
+    --vp-c-brand-3: #506e10;
+    --vp-c-sponsor: #ca2971;
+    --vitest-c-sponsor-hover: #c13071;
+    --vp-home-hero-image-background-image: linear-gradient(-45deg, #f6abe9 50%, #ebe0ba 50%);
+    --vp-home-hero-image-filter: blur(150px);
+
+}
+
+.dark {
+    --vp-c-brand-1: #add467;
+    --vp-c-brand-2: #a7cc66;
+    --vp-c-brand-3: #acd268;
+    --vp-c-sponsor: #ee4e95;
+    --vitest-c-sponsor-hover: #e51370;
+}
+
+/* --vp-home-hero-image-background-image: linear-gradient(-45deg, #f6abe9 50%, #ebe0ba 50%);
+    --vp-home-hero-image-filter: blur(150px); */
+/* 移除链接跳转下划线 */
+/* .vp-doc a {
+    text-decoration: none;
+} */
+
+/* 提示框背景颜色 */
+:root {
+    --vp-custom-block-tip-bg: var(--vp-c-green-soft);
+    --vp-home-hero-name-color: transparent;
+    --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #9affa1, #ffca45);
+}
+
+/* 提示框 */
+/* .custom-block.tip {
+    border-color: var(--vp-c-green-2);
+} */
+
+/* 警告框 */
+/* .custom-block.warning {
+    border-color: var(--vp-c-yellow-2);
+} */
+
+/* 危险框 */
+/* .custom-block.danger {
+    border-color: var(--vp-c-red-2);
+} */
+
+/** 响应式图片缩放覆盖范围 */
+/** 最顶层 */
+.medium-zoom-overlay {
+    z-index: 20;
+}
+
+.medium-zoom-image {
+    z-index: 9999 !important;
+    /* 给的值是21，但是实测盖不住，直接999 */
+}
