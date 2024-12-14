@@ -26,7 +26,7 @@ export const forcePush = karin.command(/#(抖音|B站)(全部)?强制推送/, as
   return true
 }, { name: '𝑪𝒊𝒂𝒍𝒍𝒐～(∠・ω< )⌒★', perm: 'master' })
 
-export const setdyPush = Config.bilibili.push.switch && karin.command(/^#设置抖音推送/, async (e) => {
+export const setdyPush = Config.douyin.push.switch && karin.command(/^#设置抖音推送/, async (e) => {
   const data = await getDouyinData('搜索数据', Config.cookies.douyin, { query: e.msg.replace(/^#设置抖音推送/, '') })
   await e.reply(await new DouYinpush(e).setting(data))
   return true

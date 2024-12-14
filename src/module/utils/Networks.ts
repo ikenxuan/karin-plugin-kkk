@@ -212,6 +212,7 @@ export class Networks {
       return response.headers.location as string
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
+        logger.error(`获取 ${this.url} 重定向地址失败，接口响应状态码: ${error.response?.status}`)
         throw new Error(error.stack)
       }
     }

@@ -120,7 +120,7 @@ export class DouYinpush extends Base {
           const DBdata = await DB.FindGroup('douyin', groupId)
           let status = { message_id: '' }
           const [group_id, uin] = groupId.split(':')
-          const bot = karin.getBot(uin)!
+          const bot = karin.getBot(uin) as AdapterType
           if (!skip) {
             status = await karin.sendMsg(uin, karin.contactGroup(group_id), img ? [...img] : [])
             // 是否一同解析该新作品？
