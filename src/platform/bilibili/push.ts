@@ -294,7 +294,7 @@ export class Bilibilipush extends Base {
               user_shortid: data[dynamicId].Dynamic_Data.modules.module_author.mid,
               total_favorited: this.count(userINFO.data.like_num),
               following_count: this.count(userINFO.data.card.attention),
-              dynamicTYPE: '转发动态',
+              dynamicTYPE: '转发动态推送',
               decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decorate),
               render_time: Common.getCurrentTime(),
               original_content: { [data[dynamicId].Dynamic_Data.orig.type]: param }
