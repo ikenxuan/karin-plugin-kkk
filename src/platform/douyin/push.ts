@@ -447,9 +447,13 @@ export class DouYinpush extends Base {
    * @param data 处理完成的推送列表
    */
   async forcepush (data: WillBePushList) {
+    if (!this.e.isGroup) {
+      await this.e.reply('请在群组中使用该命令！')
+      return true
+    }
     if (!this.e.msg.includes('全部')) {
       for (const detail in data) {
-        data[detail].group_id = [...[`${'groupId' in this.e && this.e.groupId ? this.e.groupId : ''}:${this.e.self_id}`]]
+        data[detail].group_id = [...[`${'groupId' in this.e && this.e.groupId ? this.e.groupId : ''}:${this.e.selfId}`]]
       }
     }
     await this.getdata(data)
