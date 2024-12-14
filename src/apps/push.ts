@@ -1,5 +1,4 @@
 import { getBilibiliData, getDouyinData } from '@ikenxuan/amagi'
-import _ from 'lodash'
 import karin from 'node-karin'
 
 import { Config } from '@/module'
