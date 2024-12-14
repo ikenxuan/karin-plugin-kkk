@@ -241,9 +241,13 @@ export class Base {
         ? `${Math.floor(remainingTime / 60)}min ${Math.floor(remainingTime % 60)}s`
         : `${remainingTime.toFixed(0)}s`
 
+      // 计算已下载和总下载的文件大小（MB）
+      const downloadedSizeMB = (downloadedBytes / 1048576).toFixed(1)
+      const totalSizeMB = (totalBytes / 1048576).toFixed(1)
+
       // 打印下载进度、速度和剩余时间
       console.log(
-        `正在下载 ${opt.title}${opt.filetype ?? '.mp4'} ${generateProgressBar(progressPercentage)} ${coloredPercentage} ${formattedSpeed} 剩余: ${formattedRemainingTime}\r`
+        `🚀Downloading🚀 ${opt.title}${opt.filetype ?? '.mp4'} ${generateProgressBar(progressPercentage)} ${coloredPercentage} ${downloadedSizeMB}/${totalSizeMB} MB | ${formattedSpeed} 剩余: ${formattedRemainingTime}\r`
       )
     })
 
