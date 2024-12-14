@@ -174,15 +174,15 @@ export class DouYinpush extends Base {
                 // 如果找到了对应的 sec_uid，将 awemeId 添加到 aweme_idlist 数组中
                 const isSecUidFound = findMatchingSecUid(DBdata, data[awemeId].sec_uid)
                 if (isSecUidFound && this.force ? true : !DBdata[data[awemeId].sec_uid].aweme_idlist.includes(awemeId)) {
-                  !data[awemeId].living ? DBdata[isSecUidFound].aweme_idlist.push(awemeId) : false
+                  'liveStatus' in Detail_Data ? false : DBdata[isSecUidFound].aweme_idlist.push(awemeId)
                   DBdata[isSecUidFound].create_time = Number(data[awemeId].create_time)
                   // 如果直播状态改变了且该次是开播状态，则更新数据库中的直播状态
-                  if (Detail_Data?.liveStatus?.isliving) {
+                  if ('liveStatus' in Detail_Data && Detail_Data?.liveStatus && Detail_Data.liveStatus.isliving === true) {
                     DBdata[isSecUidFound].message_id[groupId].message_id = status.message_id
                     DBdata[isSecUidFound].living = data[awemeId].living
                     DBdata[isSecUidFound].start_living_pn = Date.now()
-                  } else {
-                    DBdata[isSecUidFound].message_id = { [groupId]: { message_id: '' }, ...DBdata[isSecUidFound].message_id }
+                  } else if (data[awemeId].living === false) {
+                    delete DBdata[isSecUidFound].message_id[groupId]
                     DBdata[isSecUidFound].living = data[awemeId].Detail_Data.user_info.user.live_status === 1
                     DBdata[isSecUidFound].start_living_pn = 0
                   }
@@ -202,11 +202,7 @@ export class DouYinpush extends Base {
                     group_id: [groupId],
                     avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + data[awemeId].Detail_Data.user_info.user.avatar_larger.uri,
                     living: data[awemeId].living,
-                    message_id: {
-                      [groupId]: {
-                        message_id: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? status.message_id : ''
-                      }
-                    },
+                    message_id: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? { [groupId]: { message_id: status.message_id } } : {},
                     start_living_pn: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? Date.now() : 0
                   }
                 }
@@ -224,11 +220,7 @@ export class DouYinpush extends Base {
                   avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + data[awemeId].Detail_Data.user_info.user.avatar_larger.uri,
                   group_id: [groupId],
                   living: data[awemeId].living,
-                  message_id: {
-                    [groupId]: {
-                      message_id: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? status.message_id : ''
-                    }
-                  },
+                  message_id: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? { [groupId]: { message_id: status.message_id } } : {},
                   start_living_pn: 'liveStatus' in data[awemeId].Detail_Data && data[awemeId].living ? Date.now() : 0
                 }
               })
