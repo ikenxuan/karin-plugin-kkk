@@ -33,7 +33,7 @@ export async function Render (path: string, params?: any) {
   path = `${basePaths[platform]}/${newPath}`
   const renderOpt: Options = {
     pageGotoParams: {
-      waitUntil: 'networkidle2'
+      waitUntil: 'load'
     },
     name: `${Version.pluginName}/${platform}/${newPath}/`.replace(/\\/g, '/'),
     file: `${Version.pluginPath}/resources/template/${path}.html`,
