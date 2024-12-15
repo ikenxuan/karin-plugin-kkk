@@ -250,7 +250,7 @@ export class Bilibili extends Base {
             const text = replacetext(br(OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text), OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.rich_text_nodes)
             let data = {}
             switch (OBJECT.dynamicINFO.data.item.orig.type) {
-              case DynamicType.AV:{
+              case DynamicType.AV: {
                 data = {
                   username: checkvip(OBJECT.dynamicINFO.data.item.orig.modules.module_author),
                   pub_action: OBJECT.dynamicINFO.data.item.orig.modules.module_author.pub_action,
@@ -337,6 +337,7 @@ export class Bilibili extends Base {
             break
           }
           default:
+            await this.e.reply(`该动态类型「${OBJECT.dynamicINFO.data.item.type}」暂未支持解析`)
             break
         }
         break
@@ -508,7 +509,7 @@ function br (data: string) {
   return (data = data.replace(/\n/g, '<br>'))
 }
 
-export function replacetext (text: string, rich_text_nodes:any[]) {
+export function replacetext (text: string, rich_text_nodes: any[]) {
   for (const tag of rich_text_nodes) {
     // 对正则表达式中的特殊字符进行转义
     const escapedText = tag.orig_text.replace(/([.*+?^${}()|[\]\\])/g, '\\$1').replace(/\n/g, '\\n')
