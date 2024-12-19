@@ -147,7 +147,7 @@ export class Base {
       if (options?.active) {
         if (options.useGroupFile) { // 是群文件
           const bot = karin.getBot(String(options.activeOption?.uin))!
-          const status = await bot.UploadGroupFile(String(options.activeOption?.group_id), File, file.originTitle ? file.originTitle : `tmp_${Date.now()}`)
+          const status = await bot.UploadGroupFile(String(options.activeOption?.group_id), File, file.originTitle ? file.originTitle : `${File.split('/').pop()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是群文件
           const status = await karin.sendMsg(String(options?.activeOption?.uin), karin.contactGroup(String(options?.activeOption?.group_id)), [ segment.video(File) ])
@@ -156,7 +156,7 @@ export class Base {
       }
       else { // 不是主动消息
         if (options?.useGroupFile) { // 是群文件
-          const status = await this.e.bot.UploadGroupFile(this.e.group_id, File, file.originTitle ? file.originTitle : `tmp_${Date.now()}`)
+          const status = await this.e.bot.UploadGroupFile(this.e.group_id, File, file.originTitle ? file.originTitle : `${File.split('/').pop()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是群文件
           const status = await this.e.reply(segment.video(File) || video_url)
