@@ -36,7 +36,7 @@
     "sort": "npx sort-package-json"
   },
   "dependencies": {
-    "@ikenxuan/amagi": "^3.4.4",
+    "@ikenxuan/amagi": "^4.0.1",
     "@karinjs/md-html": "^1.1.6",
     "axios": "^1.7.9",
     "heic-convert": "^2.1.0",
