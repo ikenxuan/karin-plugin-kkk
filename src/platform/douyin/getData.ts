@@ -8,7 +8,7 @@ export async function fetchDouyinData<T extends keyof DouyinDataTypes> (
   opt?: any
 ): Promise<any> {
   const dyck = Config.cookies.douyin
-  if (! dyck) throw new Error('获取抖音数据需要抖音ck，请使用 [#kkk设置抖音ck] 以设置抖音ck')
+  if (!dyck) throw new Error('获取抖音数据需要抖音ck，请使用 [#kkk设置抖音ck] 以设置抖音ck')
 
   switch (type) {
     case 'one_work': {
@@ -74,5 +74,4 @@ export async function fetchDouyinData<T extends keyof DouyinDataTypes> (
     default:
       break
   }
-
 }

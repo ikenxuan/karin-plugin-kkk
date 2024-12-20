@@ -8,7 +8,7 @@ import { Config } from '@/module'
  */
 export async function kuaishouComments (data: any, emojidata: any) {
   let jsonArray = []
-  for (let i = 0; i < data.data.visionCommentList.rootComments.length; i ++) {
+  for (let i = 0; i < data.data.visionCommentList.rootComments.length; i++) {
     const cid = data.data.visionCommentList.rootComments[i].commentId
     const aweme_id = data.data.visionCommentList.rootComments[i].commentId
     const nickname = data.data.visionCommentList.rootComments[i].authorName
@@ -41,7 +41,7 @@ export async function kuaishouComments (data: any, emojidata: any) {
   jsonArray = await handling_at(jsonArray)
   // jsonArray.text = await search_text(jsonArray)
 
-  for (let i = 0; i < jsonArray.length; i ++) {
+  for (const i of jsonArray) {
     if (jsonArray[i].digg_count > 10000) {
       jsonArray[i].digg_count = (jsonArray[i].digg_count / 10000).toFixed(1) + 'w'
     }
@@ -100,11 +100,10 @@ function getRelativeTimeFromTimestamp (timestamp: number) {
  * @returns
  */
 function br (data: any) {
-  for (let i = 0; i < data.length; i ++) {
-    let text = data[i].text
-
+  for (const i of data) {
+    let text = i.text
     text = text.replace(/\n/g, '<br>')
-    data[i].text = text
+    i.text = text
   }
   return data
 }
@@ -115,8 +114,8 @@ function br (data: any) {
  * @returns
  */
 function handling_at (data: any) {
-  for (let i = 0; i < data.length; i ++) {
-    let text = data[i].text
+  for (const i of data) {
+    let text = i.text
 
     // 匹配 @后面的字符，允许空格，直到 (\w+\)
     text = text.replace(/(@[\S\s]+?)\(\w+\)/g, (match: any, p1: string) => {

@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import karin, { KarinMessage, logger, Plugin } from 'node-karin'
+import karin, { logger, Message, Plugin } from 'node-karin'
 import path from 'path'
 
 import { Common, Config, Render } from '@/module'
@@ -15,34 +15,33 @@ export const task = Config.app.rmmp4 && karin.task('[kkk-视频缓存自动删�
   }
 })
 
-export const biLogin = karin.command(new RegExp(/^#?(kkk)?\s*B站\s*(扫码)?\s*登录$/i), async (e) => {
+export const biLogin = karin.command(/^#?(kkk)?\s*B站\s*(扫码)?\s*登录$/i, async (e) => {
   await bilibiliLogin(e)
   return true
-}, { permission: 'group.admin', name: 'kkk-ck管理' })
+}, { perm: 'group.admin', name: 'kkk-ck管理' })
 
 export const dylogin = karin.command(/^#?(kkk)?抖音(扫码)?登录$/, async (e) => {
   await douyinLogin(e)
   return true
-}, { permission: 'group.admin', name: 'kkk-ck管理' })
+}, { perm: 'group.admin', name: 'kkk-ck管理' })
 
-export const setdyck = karin.command(new RegExp(/^#?(kkk)?s*设置抖音ck$/i), async (e) => {
+export const setdyck = karin.command(/^#?(kkk)?s*设置抖音ck$/i, async (e) => {
   const msg = await e.reply('请发在120秒内送抖音ck\n教程：https://ikenxuan.github.io/kkkkkk-10086/docs/intro/other#%E9%85%8D%E7%BD%AE%E4%B8%8D%E5%90%8C%E5%B9%B3%E5%8F%B0%E7%9A%84-cookies\n')
   const context = await karin.ctx(e)
-  Config.modify('cookies', 'douyin', context.msg)
-  await e.bot.RecallMessage(e.contact, msg.message_id)
+  Config.Modify('cookies', 'douyin', context.msg)
+  await e.bot.recallMsg(e.contact, msg.messageId)
   await e.reply('设置成功！', { at: true })
   return true
-}, { permission: 'master', name: 'kkk-ck管理', event: 'message.private_message' })
+}, { perm: 'master', name: 'kkk-ck管理', event: 'message.friend' })
 
-export const setbilick = karin.command(new RegExp(/^#?(kkk)?s*设置s*(B站)ck$/i), async (e) => {
+export const setbilick = karin.command(/^#?(kkk)?s*设置s*(B站)ck$/i, async (e) => {
   const msg = await e.reply('请发在120秒内送B站ck\n教程：https://ikenxuan.github.io/kkkkkk-10086/docs/intro/other#%E9%85%8D%E7%BD%AE%E4%B8%8D%E5%90%8C%E5%B9%B3%E5%8F%B0%E7%9A%84-cookies\n')
   const context = await karin.ctx(e)
-  Config.modify('cookies', 'bilibili', context.msg)
-  await e.bot.RecallMessage(e.contact, msg.message_id)
+  Config.Modify('cookies', 'bilibili', context.msg)
+  await e.bot.recallMsg(e.contact, msg.message_id)
   await e.reply('设置成功！', { at: true })
   return true
-}, { permission: 'master', name: 'kkk-ck管理', event: 'message.private_message' })
-
+}, { perm: 'master', name: 'kkk-ck管理', event: 'message.friend' })
 
 // 插件类
 export class Admin extends Plugin {
@@ -70,11 +69,13 @@ export class Admin extends Plugin {
       ]
     })
   }
-  async deleteCache (e: KarinMessage): Promise<boolean> {
+
+  async deleteCache (e: Message): Promise<boolean> {
     await removeAllFiles(Common.tempDri.video)
     await e.reply(Common.tempDri.video + '目录下所有文件已删除')
     return true
   }
+
   // 配置开关
   async ConfigSwitch (e: any): Promise<boolean> {
     const platform = this.getPlatformFromMessage(e.msg)
@@ -82,7 +83,7 @@ export class Admin extends Plugin {
     if (regRet) {
       const key = regRet[1]
       const isOn = regRet[2] === '开启'
-      Config.modify(platform, PlatformTypeConfig[platform].types[key], isOn)
+      Config.Modify(platform, PlatformTypeConfig[platform].types[key], isOn)
       await this.index_Settings(e)
       return true
     }
@@ -90,13 +91,13 @@ export class Admin extends Plugin {
   }
 
   // 修改数值配置
-  async ConfigNumber (e: KarinMessage): Promise<boolean> {
+  async ConfigNumber (e: Message): Promise<boolean> {
     const platform = this.getPlatformFromMessage(e.msg)
     const regRet = createNumberRegExp(platform).exec(e.msg)
     if (regRet) {
       const configType = PlatformTypeConfig[platform].numberConfig[regRet[1]]
       const number = this.checkNumberValue(Number(regRet[2]), configType.limit)
-      Config.modify(platform, configType.key, number)
+      Config.Modify(platform, configType.key, number)
       await this.index_Settings(e)
       return true
     }
@@ -104,7 +105,7 @@ export class Admin extends Plugin {
   }
 
   // 处理自定义内容
-  async ConfigCustom (e: KarinMessage): Promise<boolean> {
+  async ConfigCustom (e: Message): Promise<boolean> {
     const platform = this.getPlatformFromMessage(e.msg)
     const regRet = createCustomRegExp(platform).exec(e.msg)
 
@@ -114,12 +115,12 @@ export class Admin extends Plugin {
 
       // 检查 customConfig 是否存在
       const customConfig = PlatformTypeConfig[platform]?.customConfig
-      if (! customConfig || ! customConfig[key]) {
-        logger.warn(`无效的设置项：${key}`)
+      if (!customConfig || !customConfig[key]) {
+        await e.reply(`无效的设置项：${key}`)
         return false
       }
       const configKey = customConfig[key].key // 提取实际的 key
-      Config.modify(platform, configKey, customValue)
+      Config.Modify(platform, configKey, customValue)
       await this.index_Settings(e)
       return true
     }
@@ -127,7 +128,7 @@ export class Admin extends Plugin {
   }
 
   // 渲染设置图片
-  async index_Settings (e: KarinMessage): Promise<boolean> {
+  async index_Settings (e: Message): Promise<boolean> {
     const _cfg = Config.All()
     const statusData = getStatus(_cfg) // 获取状态对象
     const img = await Render('admin/index', { data: statusData })
@@ -146,7 +147,7 @@ export class Admin extends Plugin {
 
   // 检查数值范围
   checkNumberValue (value: number, limit: string): number {
-    const [ min, max ] = limit.split('-').map(Number)
+    const [min, max] = limit.split('-').map(Number)
     return Math.min(Math.max(value, min), max)
   }
 }
@@ -179,19 +180,19 @@ function getStatus (data: Record<string, any>): Record<string, any> {
       return `<div class="cfg-status">${value.length > 12 ? `${value.slice(0, 12)}...` : value}</div>`
     } else if (Array.isArray(value)) {
       return value.length === 0
-        ? `<div class="cfg-status status-off">未配置</div>`
+        ? '<div class="cfg-status status-off">未配置</div>'
         : `<div class="cfg-status">已配置 ${value.length} 项</div>`
     } else if (value === null) {
-      return `<div class="cfg-status status-off">未配置</div>`
+      return '<div class="cfg-status status-off">未配置</div>'
     }
-    return `<div class="cfg-status status-off">未知类型</div>`
+    return '<div class="cfg-status status-off">未知类型</div>'
   }
 
   const processObject = (obj: any): Record<string, any> => {
     const res: Record<string, any> = {}
     for (const key in obj) {
       const value = obj[key]
-      if (value !== null && typeof value === 'object' && ! Array.isArray(value)) {
+      if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
         // 如果是子对象，递归处理
         res[key] = processObject(value)
       } else {
@@ -208,7 +209,6 @@ function getStatus (data: Record<string, any>): Record<string, any> {
 
   return result
 }
-
 
 // 定义开关类型配置的接口
 interface PlatformType {
