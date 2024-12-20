@@ -105,7 +105,7 @@
   <img src="https://contrib.rocks/image?repo=ikenxuan/karin-plugin-kkk" />
 </a>
 
-![Alt](https://repobeats.axiom.co/api/embed/248440b3f7cdd4e79031dcfb257234588fe1bb81.svg "Repobeats analytics image")
+![Alt](https://repobeats.axiom.co/api/embed/76efd64f02ce043df06e2cd21913a0981b87f069.svg "Repobeats analytics image")
 
 ## Star History
 
