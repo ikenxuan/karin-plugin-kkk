@@ -402,8 +402,8 @@ export class Bilibili extends Base {
                 const filePath = Common.tempDri.video + `${Config.app.rmmp4 ? 'tmp_' + Date.now() : this.downloadfilename}.mp4`
                 fs.renameSync(resultPath, filePath)
                 logger.mark('正在尝试删除缓存文件')
-                this.removeFile(bmp4.filepath, true)
-                this.removeFile(bmp3.filepath, true)
+                await this.removeFile(bmp4.filepath, true)
+                await this.removeFile(bmp3.filepath, true)
 
                 const stats = fs.statSync(filePath)
                 const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
@@ -415,8 +415,8 @@ export class Bilibili extends Base {
                   return await this.upload_file({ filepath: filePath, totalBytes: fileSizeInMB }, '')
                 }
               } else {
-                this.removeFile(bmp4.filepath, true)
-                this.removeFile(bmp3.filepath, true)
+                await this.removeFile(bmp4.filepath, true)
+                await this.removeFile(bmp3.filepath, true)
                 return true
               }
             }

@@ -186,8 +186,8 @@ export class DouYin extends Base {
                 if (success) {
                   const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
                   fs.renameSync(resultPath, filePath)
-                  this.removeFile(liveimgbgm.filepath, true)
-                  this.removeFile(liveimg.filepath, true)
+                  await this.removeFile(liveimgbgm.filepath, true)
+                  await this.removeFile(liveimg.filepath, true)
 
                   const stats = fs.statSync(filePath)
                   const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
@@ -199,8 +199,8 @@ export class DouYin extends Base {
                     return await this.upload_file({ filepath: filePath, totalBytes: fileSizeInMB }, '')
                   }
                 } else {
-                  this.removeFile(liveimgbgm.filepath, true)
-                  this.removeFile(liveimg.filepath, true)
+                  await this.removeFile(liveimgbgm.filepath, true)
+                  await this.removeFile(liveimg.filepath, true)
                   return true
                 }
               }

@@ -7,13 +7,36 @@ import { Config } from '@/module/utils'
 import { Version } from './Version'
 
 /** 常用工具合集 */
-export const Common = {
+class Tools {
+  /**
+   * 插件缓存目录
+   */
+  tempDri: {
+    /** 插件缓存目录 */
+    default: string
+    /** 视频缓存文件 */
+    video: string
+    /** 图片缓存文件 */
+    images: string
+  }
+
+  constructor () {
+    this.tempDri = {
+      /** 插件缓存目录 */
+      default: `${tempPath}/${Version.pluginName}/`,
+      /** 视频缓存文件 */
+      video: `${tempPath}/${Version.pluginName}/kkkdownload/video/`,
+      /** 图片缓存文件 */
+      images: `${tempPath}/${Version.pluginName}/kkkdownload/images/`
+    }
+  }
+
   /**
    * 获取引用消息
    * @param e event 消息事件
    * @returns 被引用的消息
    */
-  getReplyMessage: async (e: Message): Promise<string> => {
+  async getReplyMessage (e: Message): Promise<string> {
     if (e.replyId) {
       const reply = await e.bot.getMsg(e.contact, e.replyId)
       for (const v of reply.elements) {
@@ -25,26 +48,14 @@ export const Common = {
       }
     }
     return ''
-  },
+  }
 
   /**
-   * 插件缓存文件夹
-   */
-  tempDri: {
-    /** 插件缓存目录 */
-    default: `${tempPath}/${Version.pluginName}/`,
-    /** 视频缓存文件 */
-    video: `${tempPath}/${Version.pluginName}/kkkdownload/video/`,
-    /** 图片缓存文件 */
-    images: `${tempPath}/${Version.pluginName}/kkkdownload/images/`
-  },
-
-  /**
-   * 将中文数字转换为阿拉伯数字的函数
-   * @param chineseNumber 数字的中文
-   * @returns 中文数字对应的阿拉伯数字映射
-   */
-  chineseToArabic: (chineseNumber: string): number => {
+ * 将中文数字转换为阿拉伯数字的函数
+ * @param chineseNumber 数字的中文
+ * @returns 中文数字对应的阿拉伯数字映射
+ */
+  chineseToArabic (chineseNumber: string): number {
     // 映射表，定义基础的中文数字
     const chineseToArabicMap: Record<string, number> = {
       零: 0, 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9
@@ -79,13 +90,14 @@ export const Common = {
       }
     }
     return result + temp
-  },
+  }
+
   /**
-   * 格式化cookie字符串
-   * @param cookies cookie数组
-   * @returns 格式化后的cookie字符串
-   */
-  formatCookies: (cookies: any[]): string => {
+ * 格式化cookie字符串
+ * @param cookies cookie数组
+ * @returns 格式化后的cookie字符串
+ */
+  formatCookies (cookies: any[]): string {
     return cookies.map(cookie => {
       // 分割每个cookie字符串以获取名称和值
       const [nameValue] = cookie.split(';').map((part: string) => part.trim())
@@ -94,25 +106,27 @@ export const Common = {
       // 重新组合名称和值，忽略其他属性
       return `${name}=${value}`
     }).join('; ')
-  },
+  }
+
   /**
-   * 计算目标视频平均码率（单位：Kbps）
-   * @param targetSizeMB 目标视频大小（MB）
-   * @param duration 视频时长（秒）
-   * @returns
-   */
-  calculateBitrate: (targetSizeMB: number, duration: number): number => {
+ * 计算目标视频平均码率（单位：Kbps）
+ * @param targetSizeMB 目标视频大小（MB）
+ * @param duration 视频时长（秒）
+ * @returns
+ */
+  calculateBitrate (targetSizeMB: number, duration: number): number {
     // 将目标大小转换为字节
     const targetSizeBytes = targetSizeMB * 1024 * 1024 // 转换为字节
     // 计算比特率并返回单位 Mbps
     return (targetSizeBytes * 8) / duration / 1024 // Kbps
-  },
+  }
+
   /**
    * 获取视频文件大小（单位MB）
    * @param filePath 视频文件绝对路径
    * @returns
    */
-  getVideoFileSize: async (filePath: string): Promise<number> => {
+  async getVideoFileSize (filePath: string): Promise<number> {
     try {
       const stats = await fs.promises.stat(filePath) // 获取文件信息
       const fileSizeInBytes = stats.size // 文件大小（字节）
@@ -122,18 +136,19 @@ export const Common = {
       console.error('获取文件大小时发生错误:', error)
       throw error
     }
-  },
+  }
+
   /**
    * 根据配置文件的配置项，删除缓存文件
    * @param path 文件的绝对路径
-   * @param force 是否强制删除，默认false
+   * @param force 是否强制删除，默认 `false`
    * @returns
    */
-  removeFile: (path: string, force = false): boolean => {
+  async removeFile (path: string, force = false): Promise<boolean> {
     path = path.replace(/\\/g, '/')
     if (Config.app.rmmp4) {
       try {
-        fs.promises.unlink(path)
+        await fs.promises.unlink(path)
         logger.mark('缓存文件: ', path + ' 删除成功！')
         return true
       } catch (err) {
@@ -142,7 +157,7 @@ export const Common = {
       }
     } else if (force) {
       try {
-        fs.promises.unlink(path)
+        await fs.promises.unlink(path)
         logger.mark('缓存文件: ', path + ' 删除成功！')
         return true
       } catch (err) {
@@ -151,13 +166,14 @@ export const Common = {
       }
     }
     return true
-  },
+  }
+
   /**
-   * 将时间戳转换为日期时间字符串
-   * @param timestamp 时间戳
-   * @returns 格式为YYYY-MM-DD HH:MM的日期时间字符串
-   */
-  convertTimestampToDateTime: (timestamp: number): string => {
+ * 将时间戳转换为日期时间字符串
+ * @param timestamp 时间戳
+ * @returns 格式为YYYY-MM-DD HH:MM的日期时间字符串
+ */
+  convertTimestampToDateTime (timestamp: number): string {
     // 创建一个Date对象，时间戳乘以1000是为了转换为毫秒
     const date = new Date(timestamp * 1000)
     const year = date.getFullYear() // 获取年份
@@ -167,12 +183,13 @@ export const Common = {
     const minutes = String(date.getMinutes()).padStart(2, '0') // 获取分钟，确保两位数显示
     // 返回格式化后的日期时间字符串
     return `${year}-${month}-${day} ${hours}:${minutes}`
-  },
+  }
+
   /**
-   * 获取当前时间：年-月-日 时:分:秒
-   * @returns
-   */
-  getCurrentTime: () => {
+ * 获取当前时间：年-月-日 时:分:秒
+ * @returns
+ */
+  getCurrentTime () {
     // 创建一个Date对象以获取当前时间
     const now = new Date()
     // 获取年、月、日、时、分、秒
@@ -189,12 +206,13 @@ export const Common = {
     const formattedMinute = minute < 10 ? '0' + minute : '' + minute
     const formattedSecond = second < 10 ? '0' + second : '' + second
     return `${year}-${formattedMonth}-${formattedDay} ${formattedHour}:${formattedMinute}:${formattedSecond}`
-  },
+  }
+
   /**
-   * 评论图、推送图是否使用深色模式
-   * @returns
-   */
-  useDarkTheme: (): boolean => {
+ * 评论图、推送图是否使用深色模式
+ * @returns
+ */
+  useDarkTheme (): boolean {
     let dark = true
     const configTheme = Config.app.Theme
     if (configTheme === 0) { // 自动
@@ -208,14 +226,14 @@ export const Common = {
       dark = true
     }
     return dark
-  },
+  }
 
   /**
-   * 传入一个时间戳（单位：毫秒），返回距离当前时间的相对的时间字符串
-   * @param timestamp 时间戳
-   * @returns 距离这个时间戳过去的多久的字符串
-   */
-  timeSince: (timestamp: number): string => {
+ * 传入一个时间戳（单位：毫秒），返回距离当前时间的相对的时间字符串
+ * @param timestamp 时间戳
+ * @returns 距离这个时间戳过去的多久的字符串
+ */
+  timeSince (timestamp: number): string {
     const now = Date.now()
     const elapsed = now - timestamp
 
@@ -235,3 +253,6 @@ export const Common = {
     }
   }
 }
+
+/** 常用工具合集 */
+export const Common = new Tools()

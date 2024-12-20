@@ -157,7 +157,7 @@ export class Base {
       logger.error('视频文件上传错误,' + String(error))
       return false
     } finally {
-      this.removeFile(file.filepath)
+      await this.removeFile(file.filepath)
     }
   }
 
@@ -177,7 +177,6 @@ export class Base {
     if (Config.upload.usefilelimit && fileSize > Config.upload.filelimit) {
       const message = segment.text(`视频：「${downloadOpt.title.originTitle ??
         'Error: 文件名获取失败'}」大小 (${fileSizeInMB} MB) 超出最大限制（设定值：${Config.upload.filelimit} MB），已取消上传`)
-
       await karin.sendMsg(this.e.selfId, this.e.contact, message)
       return false
     }
@@ -255,8 +254,8 @@ export class Base {
   }
 
   /** 删文件 */
-  removeFile (path: string, force = false): boolean {
-    return Common.removeFile(path, force)
+  async removeFile (path: string, force = false) {
+    return await Common.removeFile(path, force)
   }
 
   /** 过万整除 */
