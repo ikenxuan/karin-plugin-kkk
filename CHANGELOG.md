@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.5...v0.1.6) (2024-12-19)
+
+
+### Bug Fixes
+
+* 上传群文件没有后缀名。close [#13](https://github.com/ikenxuan/karin-plugin-kkk/issues/13) ([a5a3de1](https://github.com/ikenxuan/karin-plugin-kkk/commit/a5a3de1952cec7c881586d8bb9cdf6a6219f610c))
+
 ## [0.1.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.4...v0.1.5) (2024-12-07)
 
 
