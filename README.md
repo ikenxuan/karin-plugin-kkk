@@ -107,7 +107,15 @@
 
 ![Alt](https://repobeats.axiom.co/api/embed/248440b3f7cdd4e79031dcfb257234588fe1bb81.svg "Repobeats analytics image")
 
-[![Star History Chart](https://api.star-history.com/svg?repos=ikenxuan/karin-plugin-kkk&type=Date)](https://star-history.com/#ikenxuan/karin-plugin-kkk&Date)
+## Star History
+
+<a href="https://star-history.com/#ikenxuan/karin-plugin-kkk&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=ikenxuan/karin-plugin-kkk&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=ikenxuan/karin-plugin-kkk&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=ikenxuan/karin-plugin-kkk&type=Date" />
+ </picture>
+</a>
 
 ## 😊 鸣谢
 **业务站点**
