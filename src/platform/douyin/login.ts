@@ -46,15 +46,15 @@ const startXvfb = async () => {
   while (retries > 0) {
     try {
       execSync(`xdpyinfo -display ${DISPLAY_NUMBER}`, { stdio: 'ignore' })
-      console.log(`Xvfb (${DISPLAY_NUMBER}) 启动成功`)
+      logger.debug(`Xvfb (${DISPLAY_NUMBER}) 启动成功`)
       return // 启动成功，退出
     } catch (err) {
-      console.log(`Xvfb (${DISPLAY_NUMBER}) 启动失败，正在重试...`)
+      logger.debug(logger.yellow(`Xvfb (${DISPLAY_NUMBER}) 启动失败，正在重试...`))
       retries -= 1
       if (retries > 0) {
         await new Promise((resolve) => setTimeout(resolve, 1000)) // 等待1秒后重试
       } else {
-        console.error('Xvfb 启动失败，重试多次后仍未成功')
+        logger.debug(logger.red('Xvfb 启动失败，重试多次后仍未成功'))
         throw err // 重试失败后抛出错误
       }
     }

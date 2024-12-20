@@ -2,7 +2,7 @@ import { ExecException, execSync } from 'node:child_process'
 import fs from 'node:fs'
 
 import { markdown } from '@karinjs/md-html'
-import karin, { common, isPkg, mkdirSync, render, restart, segment, tempPath, updateGitPlugin, updatePkg } from 'node-karin'
+import karin, { common, isPkg, logger, mkdirSync, render, restart, segment, tempPath, updateGitPlugin, updatePkg } from 'node-karin'
 
 import { Common, Config, Render, Version } from '@/module'
 
@@ -51,7 +51,8 @@ export const changelogs = karin.command(/^#?kkk更新日志$/, async (e) => {
 }, { name: 'kkk-更新日志' })
 
 export const update = karin.command(/^#?kkk更新(预览版)?$/, async (e) => {
-  let status = 'failed'; let data: ExecException | string = ''
+  let status: 'ok' | 'failed' = 'failed'
+  let data: ExecException | string = ''
   if (isPkg) {
     if (e.msg.includes('预览版')) {
       const resolve = await updatePkg(Version.pluginName, 'beta')
@@ -71,16 +72,17 @@ export const update = karin.command(/^#?kkk更新(预览版)?$/, async (e) => {
     status = resolve.status
     data = resolve.data
   }
+  logger.debug(data)
   await e.bot.sendForwardMsg(e.contact, common.makeForward([segment.text(`更新 ${Version.pluginName}...\n${JSON.stringify(data)}`)], e.sender.userId, e.sender.nick))
-  // if (status === 'ok') {
-  try {
-    await e.reply(`\n更新完成，开始重启 本次运行时间：${common.uptime()}`, { at: true })
-    await restart(e.selfId, e.contact, e.messageId)
-    return true
-  } catch (error) {
-    await e.reply(`${Version.pluginName}重启失败，请手动重启以应用更新！`)
+  if (status === 'ok') {
+    try {
+      await e.reply(`\n更新完成，开始重启 本次运行时间：${common.uptime()}`, { at: true })
+      await restart(e.selfId, e.contact, e.messageId)
+      return true
+    } catch (error) {
+      await e.reply(`${Version.pluginName}重启失败，请手动重启以应用更新！`)
+    }
   }
-  // }
   return true
 }, { name: 'kkk-更新', perm: 'master' })
 
