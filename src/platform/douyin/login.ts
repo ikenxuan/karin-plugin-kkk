@@ -93,7 +93,7 @@ export const douyinLogin = async (e: Message) => {
     const qrCodePromise = (async () => {
       // 监听页面的 response 事件，捕捉包含 Set-Cookie 的 302 重定向响应
       try {
-        await page.getByText('登录').click()
+        await page.getByRole('button', { name: '登录' }).click()
         // 等待二维码容器出现，给最多 20 秒
         await page.waitForSelector('.web-login-scan-code__content__qrcode-wrapper', { timeout: 20000 })
         // 等待 img 元素加载并变得可见，给最多 20 秒
