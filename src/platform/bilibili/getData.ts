@@ -1,4 +1,4 @@
-import Amagi, { bilibiliAPI, getBilibiliData, wbi_sign } from '@ikenxuan/amagi'
+import Amagi, { bilibiliAPI, getBilibiliData } from '@ikenxuan/amagi'
 
 import { Config } from '@/module'
 import { genParams } from '@/platform/bilibili'

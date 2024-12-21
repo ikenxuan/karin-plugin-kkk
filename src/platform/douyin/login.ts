@@ -1,7 +1,7 @@
 import { execSync, spawn } from 'node:child_process'
 import fs from 'node:fs'
 
-import { handler, logger, Message, segment } from 'node-karin'
+import karin, { handler, logger, Message, segment } from 'node-karin'
 import { chromium } from 'playwright'
 
 import { Common, Config, Version } from '@/module'
@@ -73,13 +73,17 @@ export const douyinLogin = async (e: Message) => {
       headless: false,
       args: [
         '--disable-blink-features=AutomationControlled', // 禁用自动化控制
-        '--window-position=-10000,-10000', // 将窗口移到屏幕外
-        '--start-minimized', // 启动时最小化
+        // '--window-position=-10000,-10000', // 将窗口移到屏幕外
+        // '--start-minimized', // 启动时最小化
         '--mute-audio', // 静音
         '--no-sandbox'  // 使用无沙箱模式，适合无桌面环境
       ]
     })
-    const page = await browser.newPage()
+    // 创建一个新的浏览器上下文，并设置User-Agent
+    const context = await browser.newContext({
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0'
+    })
+    const page = await context.newPage()
     await page.goto('https://www.douyin.com', { timeout: 120000 })
 
     const timeout = new Promise((resolve) => setTimeout(async () => {
@@ -89,6 +93,7 @@ export const douyinLogin = async (e: Message) => {
     const qrCodePromise = (async () => {
       // 监听页面的 response 事件，捕捉包含 Set-Cookie 的 302 重定向响应
       try {
+        await page.getByText('登录').click()
         // 等待二维码容器出现，给最多 20 秒
         await page.waitForSelector('.web-login-scan-code__content__qrcode-wrapper', { timeout: 20000 })
         // 等待 img 元素加载并变得可见，给最多 20 秒
@@ -128,11 +133,17 @@ export const douyinLogin = async (e: Message) => {
               const responseBody = await response.body()
               const jsonResponse = JSON.parse(responseBody.toString())
               logger.debug(jsonResponse.error_code, jsonResponse.description)
-              if (jsonResponse.error_code && errorMap[jsonResponse.error_code]) {
-                const errorMessage = errorMap[jsonResponse.error_code]
-                const errMsg = `登录失败！\n状态码：${jsonResponse.error_code}\n错误信息：${errorMessage}！`
-                await e.reply(errMsg, { reply: true })
-                throw new Error(errMsg)
+              if (jsonResponse.error_code === 2046) {
+                logger.debug('需要短信验证码')
+                await page.getByText('接收短信验证').click()
+                const elements = page.locator(':has-text(\'为保护账号安全，请输入当前手机号\')')
+                const texts = await elements.allInnerTexts()
+                await page.getByText('获取验证码').click()
+                await e.reply(segment.text(texts.pop() as string))
+                const ctx = await karin.ctx(e, { reply: true })
+                await page.getByPlaceholder('请输入验证码').click()
+                await page.getByPlaceholder('请输入验证码').fill(ctx.msg)
+                await page.getByText('验证', { exact: true }).click()
               }
             }
           } catch (error) {
