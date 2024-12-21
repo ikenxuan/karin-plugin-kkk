@@ -1,6 +1,7 @@
 import { Common } from '@/module'
 
 export function bilibiliComments (OBJECT: any) {
+  if (! OBJECT.COMMENTSDATA) return []
   let jsonArray: any[] = []
   for (let i = 0; i < OBJECT.COMMENTSDATA.data.replies.length; i++) {
     const ctime = getRelativeTimeFromTimestamp(OBJECT.COMMENTSDATA.data.replies[i].ctime)
