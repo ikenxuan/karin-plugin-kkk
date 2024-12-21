@@ -12,6 +12,8 @@ const startXvfb = async () => {
   const DISPLAY_NUMBER = ':150' // 指定唯一的 DISPLAY 编号
   const LOCK_FILE = '/tmp/.X150-lock'
 
+  // ps aux | grep Xvfb
+  // kill -9 PID
   // 检查当前是否有指定的 DISPLAY 环境正在运行
   try {
     execSync(`xdpyinfo -display ${DISPLAY_NUMBER}`, { stdio: 'ignore' })
@@ -79,11 +81,7 @@ export const douyinLogin = async (e: Message) => {
         '--no-sandbox'  // 使用无沙箱模式，适合无桌面环境
       ]
     })
-    // 创建一个新的浏览器上下文，并设置User-Agent
-    const context = await browser.newContext({
-      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0'
-    })
-    const page = await context.newPage()
+    const page = await browser.newPage()
     await page.goto('https://www.douyin.com', { timeout: 120000 })
 
     const timeout = new Promise((resolve) => setTimeout(async () => {
@@ -91,7 +89,6 @@ export const douyinLogin = async (e: Message) => {
     }, 120000))
 
     const qrCodePromise = (async () => {
-      // 监听页面的 response 事件，捕捉包含 Set-Cookie 的 302 重定向响应
       try {
         await page.getByRole('button', { name: '登录' }).click()
         // 等待二维码容器出现，给最多 20 秒
@@ -109,7 +106,7 @@ export const douyinLogin = async (e: Message) => {
         const message2 = await e.reply([segment.image('base64://' + base64Data), segment.text('请在120秒内通过抖音APP扫码进行登录')], { reply: true })
         msg_id.push(message2.messageId, message1.messageId)
 
-        // 监听页面的 response 事件，捕捉包含 Set-Cookie 的 302 重定向响应
+        // 捕获页面的所有 response 事件
         page.on('response', async (response) => {
           try {
             logger.debug(`接收到响应：${response.url()}`)
@@ -132,14 +129,15 @@ export const douyinLogin = async (e: Message) => {
             } else if (response.headers()['content-type'] && response.headers()['content-type'].includes('application/json') && response.url().includes('https://sso.douyin.com')) {
               const responseBody = await response.body()
               const jsonResponse = JSON.parse(responseBody.toString())
-              logger.debug(jsonResponse.error_code, jsonResponse.description)
+              logger.debug(`SSO 回调 Code：${jsonResponse.error_code}`, `响应内容：${jsonResponse.description}`)
               if (jsonResponse.error_code === 2046) {
                 logger.debug('需要短信验证码')
                 await page.getByText('接收短信验证').click()
                 const elements = page.locator(':has-text(\'为保护账号安全，请输入当前手机号\')')
                 const texts = await elements.allInnerTexts()
                 await page.getByText('获取验证码').click()
-                await e.reply(segment.text(texts.pop() as string))
+                const message3 = await e.reply(segment.text(texts.pop() as string))
+                msg_id.push(message3.messageId)
                 const ctx = await karin.ctx(e, { reply: true })
                 await page.getByPlaceholder('请输入验证码').click()
                 await page.getByPlaceholder('请输入验证码').fill(ctx.msg)
@@ -168,19 +166,16 @@ export const douyinLogin = async (e: Message) => {
     // 同时等待二维码加载和超时事件，先完成的先执行
     await Promise.race([qrCodePromise, timeout])
   } catch (error: any) {
-    const msg = await e.reply('首次使用，正在初始化 playwright 环境，请稍等片刻...')
     logger.error(error)
     if (error.message.includes('npx playwright install')) {
+      const msg = await e.reply('首次使用，正在初始化 playwright 环境，请稍等片刻...')
       execSync('npx playwright install chromium', { cwd: Version.pluginPath, stdio: 'inherit' })
       await e.reply(`playwright 初始化成功，请再次发送「${e.msg}」`)
       await e.bot.recallMsg(e.contact, msg.messageId)
       return true
+    } else {
+      await e.reply('chromiun 环境初始化失败，请查看控制台错误日志', { reply: true })
     }
   }
   return true
-}
-
-const errorMap: Record<number, string> = {
-  2046: '为保障你的账号安全，请前往抖音APP完成验证后再进行登录（遇到验证码，暂时无解）',
-  7: '访问太频繁，请稍后再试'
 }
