@@ -5,6 +5,8 @@ on:
   pull_request:
     # 监听 PR 被打开、重新打开和推送事件
     types: [opened, reopened, synchronize]
+    paths-ignore:
+      - '.github/**'
 
 # 赋予 release-please-action 权限
 permissions:
