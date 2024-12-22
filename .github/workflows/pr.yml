@@ -51,7 +51,7 @@ jobs:
           else
             echo "SHOULD_PUBLISH=false" >> $GITHUB_ENV
           fi
-          
+
       # 发布到 npm
       - name: 发布到 npm
         run: npm run pub-beta
@@ -73,3 +73,4 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: env.SHOULD_PUBLISH == 'true' && success()
