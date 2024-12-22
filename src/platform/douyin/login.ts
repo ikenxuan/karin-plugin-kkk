@@ -2,7 +2,7 @@ import { execSync, spawn } from 'node:child_process'
 import fs from 'node:fs'
 
 import karin, { handler, logger, Message, segment } from 'node-karin'
-import { chromium } from 'playwright'
+import { chromium, Page } from 'playwright'
 
 import { Common, Config, Version } from '@/module'
 
@@ -90,13 +90,8 @@ export const douyinLogin = async (e: Message) => {
 
     const qrCodePromise = (async () => {
       try {
-        await page.getByRole('button', { name: '登录' }).click()
-        // 等待二维码容器出现，给最多 20 秒
-        await page.waitForSelector('.web-login-scan-code__content__qrcode-wrapper', { timeout: 20000 })
-        // 等待 img 元素加载并变得可见，给最多 20 秒
-        const qrcodeImage = await page.waitForSelector('.web-login-scan-code__content__qrcode-wrapper img', { timeout: 20000 })
         // 获取 img 的 src 属性内容
-        const qrCodeBase64 = await qrcodeImage.getAttribute('src')
+        const qrCodeBase64 = await waitQrcode(page)
         // 移除 base64 前缀，提取实际数据
         const base64Data = qrCodeBase64 ? qrCodeBase64.replace(/^data:image\/\w+;base64,/, '') : ''
         // 将 base64 转换为 Buffer 并保存为文件
@@ -110,7 +105,6 @@ export const douyinLogin = async (e: Message) => {
         page.on('response', async (response) => {
           try {
             logger.debug(`接收到响应：${response.url()}`)
-
             // 检查 302 重定向的响应
             if (response.status() === 302 && response.url().includes('/passport/sso/login/callback')) {
               // 获取本地的 cookie
@@ -178,4 +172,33 @@ export const douyinLogin = async (e: Message) => {
     }
   }
   return true
+}
+
+/**
+ * 等待二维码出现并获取二维码信息
+ * @param page 页面对象
+ * @returns
+ */
+const waitQrcode = async (page: Page) => {
+  // 首先检查二维码是否已经出现
+  const qrCodeSelector = '.web-login-scan-code__content__qrcode-wrapper img'
+  const loginButton = page.getByRole('button', { name: '登录' })
+
+  // 检查二维码是否已经加载
+  const qrCodeImage = await page.waitForSelector(qrCodeSelector, { state: 'attached', timeout: 30000 })
+  if (qrCodeImage) {
+    // 如果二维码已经出现，直接获取二维码信息
+    const qrCodeBase64 = await qrCodeImage.getAttribute('src')
+    return qrCodeBase64
+  } else {
+    // 如果二维码未出现，点击登录按钮以触发二维码显示
+    await loginButton.click()
+    // 等待二维码容器出现，给最多 20 秒
+    await page.waitForSelector(qrCodeSelector, { timeout: 20000 })
+    // 获取二维码图片元素
+    const qrCodeImage = await page.waitForSelector(qrCodeSelector, { timeout: 20000 })
+    // 获取二维码信息
+    const qrCodeBase64 = await qrCodeImage.getAttribute('src')
+    return qrCodeBase64
+  }
 }
