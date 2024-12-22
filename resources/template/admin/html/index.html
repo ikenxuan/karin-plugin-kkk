@@ -329,8 +329,9 @@
         <span class="cfg-hint">#kkk设置上传base64 + 开启/关闭</span>
         {{@data.upload.sendbase64}}
       </div>
-      <div class="cfg-desc">发送视频经本插件转换为base64格式后再发送，适合Karin与Bot不在同一网络环境下开启。若发送的文件过大，可能会卡死系统，酌情开启（2c4g配置实测发送 90MB 左右
-        base64格式编码的视频文件将导致系统无响应）</div>
+      <div class="cfg-desc">
+        发送视频经本插件转换为base64格式后再发送，适合Karin与Bot不在同一网络环境下开启。<br />若发送的文件过大，可能会卡死系统，酌情开启（2c4g配置实测发送
+        90MB左右base64格式编码的视频文件将导致系统无响应）</div>
     </li>
     <li class="cfg-li">
       <div class="cfg-line">
@@ -346,7 +347,7 @@
         <span class="cfg-hint">#kkk设置上传拦截阈值 + 0 ~ x</span>
         {{@data.upload.filelimit}}
       </div>
-      <div class="cfg-desc">视频文件大于该数值则直接结束任务，不会上传，单位: MB，「视频上传拦截」开启后才会生效。（B站番剧无影响）</div>
+      <div class="cfg-desc">视频文件大于该数值则直接结束任务，不会上传，单位: MB，「视频上传拦截」开启后才会生效。（B站视频解析会根据该值自动选择适合的清晰度）</div>
     </li>
     <li class="cfg-li">
       <div class="cfg-line">

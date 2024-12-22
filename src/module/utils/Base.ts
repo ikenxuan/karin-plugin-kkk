@@ -129,7 +129,7 @@ export class Base {
     }
 
     // 是否先转换为base64
-    if (Config.upload.sendbase64) {
+    if (Config.upload.sendbase64 && !options?.useGroupFile) {
       const videoBuffer = await fs.promises.readFile(file.filepath)
       File = `base64://${videoBuffer.toString('base64')}`
     } else File = file.filepath
@@ -146,7 +146,7 @@ export class Base {
         }
       } else { // 不是主动消息
         if (options?.useGroupFile) { // 是文件
-          await this.e.reply(`视频大小: ${newFileSize.toFixed(1)}MB 正通过群文件上传中...`)
+          await this.e.reply(`视频大小: ${newFileSize.toFixed(1)}MB 正通过文件上传中...`)
           const status = await this.e.bot.uploadFile(this.e.contact, File, file.originTitle ? file.originTitle : `${File.split('/').pop()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是文件
