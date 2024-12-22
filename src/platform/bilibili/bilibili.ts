@@ -408,7 +408,7 @@ export class Bilibili extends Base {
                 const stats = fs.statSync(filePath)
                 const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
                 if (fileSizeInMB > Config.upload.groupfilevalue) {
-                  await this.e.reply(`视频大小: ${fileSizeInMB}MB 正通过群文件上传中...`)
+                  // 使用文件上传
                   return await this.upload_file({ filepath: filePath, totalBytes: fileSizeInMB }, '', { useGroupFile: true })
                 } else {
                   /** 因为本地合成，没有视频直链 */

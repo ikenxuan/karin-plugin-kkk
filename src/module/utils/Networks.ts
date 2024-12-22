@@ -25,7 +25,7 @@ export class Networks {
     this.type = data.type ?? 'json'
     this.method = data.method ?? 'GET'
     this.body = data.body ?? null
-    this.timeout = data.timeout ?? 5000
+    this.timeout = data.timeout ?? 15000
     this.filepath = data.filepath ?? ''
     this.maxRetries = 0
 

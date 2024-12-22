@@ -96,11 +96,7 @@ export class Base {
     let sendStatus: boolean = true
     let File: Buffer | string; let newFileSize = file.totalBytes
 
-    // 判断是否使用群文件上传
-    if (options) {
-      options.useGroupFile = Config.upload.usegroupfile && (file.totalBytes > Config.upload.groupfilevalue)
-    }
-
+    // 判断是否需要压缩后再上传
     if (Config.upload.compress && (file.totalBytes > Config.upload.compresstrigger)) {
       const Duration = await mergeFile('获取指定视频文件时长', { path: file.filepath })
       logger.warn(logger.yellow(`视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.upload.compresstrigger} MB），正在进行压缩至${Config.upload.compressvalue} MB...`))
@@ -118,13 +114,18 @@ export class Base {
       const endTime = Date.now()
       // 再次检查大小
       newFileSize = await Common.getVideoFileSize(file.filepath)
-      logger.debug(`原始视频大小为: ${file.totalBytes.toFixed(2)} MB, ${logger.green(`经 FFmpeg 压缩后最终视频大小为: ${newFileSize.toFixed(2)} MB，原视频文件已删除`)}`)
+      logger.debug(`原始视频大小为: ${file.totalBytes.toFixed(1)} MB, ${logger.green(`经 FFmpeg 压缩后最终视频大小为: ${newFileSize.toFixed(1)} MB，原视频文件已删除`)}`)
 
       const message2 = [
-        segment.text(`压缩后最终视频大小为: ${newFileSize.toFixed(2)} MB，压缩耗时：${((endTime - startTime) / 1000).toFixed(2)} 秒`),
+        segment.text(`压缩后最终视频大小为: ${newFileSize.toFixed(1)} MB，压缩耗时：${((endTime - startTime) / 1000).toFixed(1)} 秒`),
         segment.reply(msg1.messageId)
       ]
       await karin.sendMsg(this.e.selfId, this.e.contact, message2)
+    }
+
+    // 判断是否使用群文件上传
+    if (options) {
+      options.useGroupFile = Config.upload.usegroupfile && (newFileSize > Config.upload.groupfilevalue)
     }
 
     // 是否先转换为base64
@@ -144,10 +145,11 @@ export class Base {
           status.messageId ? sendStatus = true : sendStatus = false
         }
       } else { // 不是主动消息
-        if (options?.useGroupFile) { // 是群文件
-          const status = await this.e.bot.uploadGroupFile('groupId' in this.e ? this.e.groupId : '', File, file.originTitle ? file.originTitle : `${File.split('/').pop()}`)
+        if (options?.useGroupFile) { // 是文件
+          await this.e.reply(`视频大小: ${newFileSize.toFixed(1)}MB 正通过群文件上传中...`)
+          const status = await this.e.bot.uploadFile(this.e.contact, File, file.originTitle ? file.originTitle : `${File.split('/').pop()}`)
           status ? sendStatus = true : sendStatus = false
-        } else { // 不是群文件
+        } else { // 不是文件
           const status = await this.e.reply(segment.video(File) || videoUrl)
           status.messageId ? sendStatus = true : sendStatus = false
         }
