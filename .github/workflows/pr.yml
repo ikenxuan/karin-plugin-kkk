@@ -8,6 +8,10 @@ on:
     paths-ignore:
       - '.github/**'
 
+  push:
+    paths-ignore:
+      - '.github/**'
+
 # 赋予 release-please-action 权限
 permissions:
   contents: write
