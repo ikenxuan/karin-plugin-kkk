@@ -5,12 +5,6 @@ on:
   pull_request:
     # 监听 PR 被打开、重新打开和推送事件
     types: [opened, reopened, synchronize]
-    paths-ignore:
-      - '.github/**'
-
-  push:
-    paths-ignore:
-      - '.github/**'
 
 # 赋予 release-please-action 权限
 permissions:
@@ -22,6 +16,7 @@ jobs:
     # 设置任务运行环境为 ubuntu-latest
     runs-on: ubuntu-latest
     steps:
+
       - name: 检出代码
         uses: actions/checkout@v4
       # 设置 Node.js 环境
@@ -47,12 +42,21 @@ jobs:
       - name: 修订版本号
         run: npm run pr all
         if: success()
+
+      - name: 检查路径是否需要发布
+        id: check-paths
+        run: |
+          if git diff --name-only HEAD^ | grep -v '^.github/'; then
+            echo "SHOULD_PUBLISH=true" >> $GITHUB_ENV
+          else
+            echo "SHOULD_PUBLISH=false" >> $GITHUB_ENV
+
       # 发布到 npm
       - name: 发布到 npm
         run: npm run pub-beta
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        if: success()
+        if: env.SHOULD_PUBLISH == 'true' && success()
       # 在 PR 上发布构建完成或失败信息
       - name: 发布评论
         run: |

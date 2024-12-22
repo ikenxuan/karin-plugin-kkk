@@ -1,0 +1,37 @@
+name: 🚀 功能请求
+description: 提议一个新的功能或改进
+title: "[Feature Request] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: 功能描述
+      description: 清晰、简洁地描述你提议的新功能或改进。
+      placeholder: 请描述你提议的功能...
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: 使用场景
+      description: 描述在什么场景下需要这个功能，以及它如何帮助用户。
+      placeholder: 请描述使用场景...
+    validations:
+      required: false
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: 期望行为
+      description: 详细描述你期望这个功能如何工作。
+      placeholder: 请描述期望的行为...
+    validations:
+      required: true
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: 附加信息
+      description: 提供任何其他相关信息，如设计草图、伪代码或示例代码等。
+      placeholder: 请提供附加信息...
+    validations:
+      required: false
