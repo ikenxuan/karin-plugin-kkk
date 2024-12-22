@@ -50,7 +50,8 @@ jobs:
             echo "SHOULD_PUBLISH=true" >> $GITHUB_ENV
           else
             echo "SHOULD_PUBLISH=false" >> $GITHUB_ENV
-
+          fi
+          
       # 发布到 npm
       - name: 发布到 npm
         run: npm run pub-beta
