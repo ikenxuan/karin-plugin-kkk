@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.8](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.7...v0.1.8) (2024-12-22)
+
+
+### Bug Fixes
+
+* 更进上游解析库版本 [#17](https://github.com/ikenxuan/karin-plugin-kkk/issues/17) ([5b307ac](https://github.com/ikenxuan/karin-plugin-kkk/commit/5b307ac7aecf044038b20089a663d83aeb5e1a7c))
+
 ## [0.1.7](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.6...v0.1.7) (2024-12-21)
 
 
