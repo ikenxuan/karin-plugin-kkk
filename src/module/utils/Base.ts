@@ -248,7 +248,7 @@ export class Base {
 
       // 打印下载进度、速度和剩余时间
       console.log(
-        `🚀Downloading🚀 ${opt.title}${opt.filetype ?? '.mp4'} ${generateProgressBar(progressPercentage)} ${coloredPercentage} ${downloadedSizeMB}/${totalSizeMB} MB | ${formattedSpeed} 剩余: ${formattedRemainingTime}\r`
+        `🚀 Downloading 🚀 ${opt.title}${opt.filetype ?? '.mp4'} ${generateProgressBar(progressPercentage)} ${coloredPercentage} ${downloadedSizeMB}/${totalSizeMB} MB | ${formattedSpeed} 剩余: ${formattedRemainingTime}\r`
       )
     })
 
