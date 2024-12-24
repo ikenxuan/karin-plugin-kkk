@@ -61,7 +61,7 @@ jobs:
             gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 构建完成！您可以通过以下命令安装此版本：\n\n```\n'"${INSTALL_COMMAND_1}"$'\n```\n\n```\n'"${INSTALL_COMMAND_2}"$'\n```'
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # 撤回历史评论 保留最新的3条评论
       - name: 撤回历史评论
         run: |
@@ -82,7 +82,7 @@ jobs:
                 response=$(curl -L \
                 -X DELETE \
                 -H "Accept: application/vnd.github+json" \
-                -H "Authorization: Bearer ${{ secrets.RELEASE }}" \
+                -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
                 -H "X-GitHub-Api-Version: 2022-11-28" \
                 -w "%{http_code}" \
                 -o /dev/null \
@@ -98,4 +98,4 @@ jobs:
             echo "没有需要删除的历史评论"
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
