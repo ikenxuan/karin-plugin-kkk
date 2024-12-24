@@ -103,7 +103,7 @@ class FFmpeg {
       case '视频*3 + 音频': {
         const result = await ffmpeg(`-y -stream_loop 2 -i ${opt.path} -i ${opt.path2} -filter_complex "[0:v]setpts=N/FRAME_RATE/TB[v];[0:a][1:a]amix=inputs=2:duration=shortest:dropout_transition=3[aout]" -map "[v]" -map "[aout]" -c:v libx264 -c:a aac -b:a 192k -shortest ${opt.resultPath}`, { booleanResult: true })
         result ? logger.mark('视频合成成功！') : logger.error('视频合成失败！')
-        await opt.callback(result)
+        await opt.callback(result, opt.resultPath)
         return result as unknown as MergeFileResult<T> // 布尔类型
       }
       case '获取指定视频文件时长': {
