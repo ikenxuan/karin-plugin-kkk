@@ -15,11 +15,12 @@
    git clone --depth=1 -b build https://github.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-kkk/
    ```
    <details>
-   <summary>如果你的网络环境较差...点击打开</summary>
+   <summary>如果你的 git 无法访问至 Github...点击打开</summary>
 
-   > 如果你的网络环境较差，无法连接到 Github，可以使用 GitHub Proxy 镜像加速克隆
+   > 若克隆无法连接到 Github，可以使用 GitHub Proxy 提供的镜像加速克隆
+   > 建议收藏 [GitHub Proxy 最新地址发布](https://ghproxy.link/) 站点，以免镜像站被 GFW 封锁导致克隆失败
    > ```sh
-   > git clone --depth=1 -b build https://ghgo.xyz/https://gitee.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-kkk/
+   > git clone --depth=1 -b build https://ghgo.xyz/https://github.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-kkk/
    > ```
 
    </details>
@@ -52,7 +53,7 @@
     1. 打开 Release 页面: https://github.com/ikenxuan/karin-plugin-kkk/releases
     2. 找到最新的版本，下载名为 `build.zip` 的压缩包
     3. 在 `plugins/` 目录下解压该压缩包
-    
+
     * 完成后相关源码应在 `Karin根目录/plugins/karin-plugin-kkk/` 内<br><br>
 
     解压完成后在插件目录下运行
