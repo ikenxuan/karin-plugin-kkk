@@ -41,6 +41,7 @@ export class DouYinpush extends Base {
   constructor (e = {} as Message, force: boolean = false) {
     super(e)
     if (this.botadapter === 'QQBot') {
+      e.reply('不支持QQBot，请使用其他适配器')
       return
     }
     this.headers.Referer = 'https://www.douyin.com'

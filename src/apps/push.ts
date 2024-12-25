@@ -30,7 +30,7 @@ export const setdyPush = Config.douyin.push.switch && karin.command(/^#设置抖
   const data = await getDouyinData('搜索数据', Config.cookies.douyin, { query: e.msg.replace(/^#设置抖音推送/, '') })
   await e.reply(await new DouYinpush(e).setting(data))
   return true
-}, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.douyin.push.permission })
+}, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.douyin.push.permission, dsbAdapter: ['qqbot'] })
 
 export const setbiliPush = Config.bilibili.push.switch && karin.command(/^#设置[bB]站推送(?:[Uu][Ii][Dd]:)?(\d+)$/, async (e) => {
   const match = /^#设置[bB]站推送(?:UID:)?(\d+)$/.exec(e.msg)
@@ -39,7 +39,7 @@ export const setbiliPush = Config.bilibili.push.switch && karin.command(/^#设�
     await e.reply(await new Bilibilipush(e).setting(data))
   }
   return true
-}, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.bilibili.push.permission })
+}, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.bilibili.push.permission, dsbAdapter: ['qqbot'] })
 
 export const changeBotID = karin.command(/^#kkk设置推送机器人/, async (e) => {
   const newDouyinlist = Config.pushlist.douyin.map(item => {

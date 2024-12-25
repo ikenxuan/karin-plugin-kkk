@@ -46,6 +46,7 @@ export class Bilibilipush extends Base {
     super(e) // 调用父类的构造函数
     // 判断当前bot适配器是否为'QQBot'，如果是，则直接返回true，否则继续执行
     if (this.botadapter === 'QQBot') {
+      e.reply('不支持QQBot，请使用其他适配器')
       return
     }
     this.force = force // 保存传入的强制执行标志
@@ -217,7 +218,7 @@ export class Bilibilipush extends Base {
             const text = replacetext(br(data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.text), data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.rich_text_nodes)
             let param = {}
             switch (data[dynamicId].Dynamic_Data.orig.type) {
-              case DynamicType.AV:{
+              case DynamicType.AV: {
                 param = {
                   username: checkvip(data[dynamicId].Dynamic_Data.orig.modules.module_author),
                   pub_action: data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_action,
