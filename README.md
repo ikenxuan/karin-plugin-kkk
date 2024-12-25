@@ -6,7 +6,7 @@
 
 ## ⬇️ 安装
 
-1. 使用编译产物 **`build 分支`**（非常推荐）
+* 使用编译产物 **`build 分支`**（非常推荐）
    <details>
    <summary>点击展开</summary>
 
@@ -33,7 +33,7 @@
 
    </details>
 
-2. 使用 **`包管理器`** 安装（非常推荐）
+* 使用 **`包管理器`** 安装（非常推荐）
    <details>
    <summary>点击展开</summary>
 
@@ -43,7 +43,7 @@
    ```
    </details>
 
-3. 使用 Release **`发行版`**（不推荐）
+* 使用 Release **`发行版`**（不推荐）
     <details>
     <summary>点击展开</summary>
 
@@ -66,7 +66,7 @@
 
     </details>
 
-4. 克隆 main 分支 **`自行编译`**（不推荐）
+* 克隆 main 分支 **`自行编译`**（不推荐）
    <details>
    <summary>点击展开</summary>
 
