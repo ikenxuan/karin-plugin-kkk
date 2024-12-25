@@ -66,36 +66,41 @@
 
     </details>
 
-* 克隆 main 分支 **`自行编译`**（不推荐）
-   <details>
-   <summary>点击展开</summary>
-
-   <p style="color: red; font-weight: bolder;">不推荐该方式，只能通过 Git 进行更新，且更新后需要再次编译才可运行</p>
-
-   #### 克隆源码
-    ```sh
-    git clone --depth=1 https://github.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-kkk/
-    ```
-    **TypeScript 源码无法运行，需要先编译成 JavaScript 后才可运行**
-    #### 进入源码目录
-    ```sh
-    cd plugins/karin-plugin-kkk/
-    ```
-    #### 安装依赖
-    ```sh
-    pnpm install
-    ```
-    #### 编译
-    ```sh
-    pnpm build
-    ```
-    编译完成后即可回到根目录启动 Karin 运行
-   </details>
 
 ## 📖 功能
 
 **更多信息可打开 [文档主页](https://ikenxuan.github.io/karin-plugin-kkk/) 阅读。**<br>
 反馈群：[795874649](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=S8y6baEcSkO6TEO5kEdfgmJhz79Oxdw5&authKey=ficWQytHGz3KIv5i0HpGbEeMBpABBXfjEMYRzo3ZwMV%2B0Y5mq8cC0Yxbczfa904H&noverify=0&group_code=795874649)
+
+## 🛠️ 开发
+
+<details>
+<summary>点击展开</summary>
+
+1. [fork](https://github.com/ikenxuan/karin-plugin-kkk/fork) 本项目到自己的仓库
+2. 克隆到本地
+```sh
+git clone https://github.com/你的GitHub用户名/karin-plugin-kkk.git
+```
+3. 进入项目目录
+```sh
+cd karin-plugin-kkk/
+```
+4. 安装依赖
+```sh
+pnpm install
+```
+5. 启动开发环境
+
+两条命令任选一条执行
+
+```sh
+# 自动重载 apps 目录下的所有文件
+npx k ts
+# 保存 src 目录下的文件后自动重启
+npx k ts -w
+```
+</details>
 
 ## 🌟 贡献者
 
@@ -136,9 +141,6 @@
 
 **接口文档与加密参数算法**
 
-- [SocialSisterYi/bilibili-API-collect](https://github.com/SocialSisterYi/bilibili-API-collect)
-- [NearHuiwen/TiktokDouyinCrawler](https://github.com/NearHuiwen/TiktokDouyinCrawler)
-- [B1gM8c/X-Bogus](https://github.com/B1gM8c/X-Bogus)
 - [ikenxuan/amagi](https://github.com/ikenxuan/amagi)
 - 更多待补充...
 
@@ -149,7 +151,7 @@
 [**GPL-3.0**](./LICENSE)
 
 ## ❗ 声明
-> [!CAUTION]
-> 本项目提供的开源代码是出于学习进行开发。如果您认为该项目侵犯了您的知识产权或其他合法权益，请通过 **[<i class="fa-brands fa-qq fa-flip"></i> QQ](https://qm.qq.com/q/k6Up32hdWE)** 向我们提供书面通知。我们将在收到有效通知后，尽快进行审查，并采取必要的措施。
-> 
-> 未经同意，禁止将本项目的开源代码用于任何商业目的。因使用本项目产生的一切问题与后果由使用者自行承担，项目开发者不承担任何责任
+
+本项目提供的开源代码是出于学习进行开发。如果您认为该项目侵犯了您的知识产权或其他合法权益，请通过 **[<i class="fa-brands fa-qq fa-flip"></i> QQ](https://qm.qq.com/q/k6Up32hdWE)** 向我们提供书面通知。我们将在收到有效通知后，尽快进行审查，并采取必要的措施。
+
+未经同意，禁止将本项目的开源代码用于任何商业目的。因使用本项目产生的一切问题与后果由使用者自行承担，项目开发者不承担任何责任
