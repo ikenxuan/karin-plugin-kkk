@@ -38,7 +38,7 @@ export const setbilick = karin.command(/^#?(kkk)?s*设置s*(B站)ck$/i, async (e
   const msg = await e.reply('请发在120秒内送B站ck\n教程：https://ikenxuan.github.io/kkkkkk-10086/docs/intro/other#%E9%85%8D%E7%BD%AE%E4%B8%8D%E5%90%8C%E5%B9%B3%E5%8F%B0%E7%9A%84-cookies\n')
   const context = await karin.ctx(e)
   Config.Modify('cookies', 'bilibili', context.msg)
-  await e.bot.recallMsg(e.contact, msg.message_id)
+  await e.bot.recallMsg(e.contact, msg.messageId)
   await e.reply('设置成功！', { at: true })
   return true
 }, { perm: 'master', name: 'kkk-ck管理', event: 'message.friend' })
@@ -305,4 +305,13 @@ const PlatformTypeConfig: Record<string, PlatformType> = {
 // 创建正则表达式的函数
 const createSwitchRegExp = (platform: string): RegExp => new RegExp(`^#kkk设置(${Object.keys(PlatformTypeConfig[platform].types).join('|')})(开启|关闭)$`)
 const createNumberRegExp = (platform: string): RegExp => new RegExp(`^#kkk设置(${Object.keys(PlatformTypeConfig[platform].numberConfig).join('|')})(\\d+)$`)
-const createCustomRegExp = (platform: string): RegExp => new RegExp(`^#kkk设置(${Object.keys(PlatformTypeConfig[platform].customConfig ?? {}).join('|')})(.+)$`)
+const createCustomRegExp = (platform: string): RegExp => {
+  const keys = Object.keys(PlatformTypeConfig[platform].customConfig ?? {})
+  if (keys.length === 0) {
+    // 返回一个永远不会匹配的正则表达式
+    return /^$/
+  }
+  return new RegExp(`^#kkk设置(${keys.join('|')})(.+)$`)
+}
+
+console.log(createCustomRegExp('douyin').toString())
