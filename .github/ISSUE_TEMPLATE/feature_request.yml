@@ -1,6 +1,6 @@
 name: 🚀 功能请求
 description: 提议一个新的功能或改进
-title: "[Feature Request] "
+title: "[🚀 Feature Request] "
 labels: ["enhancement"]
 body:
   - type: textarea

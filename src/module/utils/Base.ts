@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import karin, { AdapterType, logger, Message, segment } from 'node-karin'
+import karin, { logger, Message, segment } from 'node-karin'
 
 import { Common, Config, mergeFile, Networks } from '@/module/utils'
 

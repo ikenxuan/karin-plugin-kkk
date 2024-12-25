@@ -51,7 +51,7 @@ export const changelogs = karin.command(/^#?kkk更新日志$/, async (e) => {
 }, { name: 'kkk-更新日志' })
 
 export const update = karin.command(/^#?kkk更新(预览版)?$/, async (e) => {
-  let status: 'ok' | 'failed' = 'failed'
+  let status: 'ok' | 'failed' | 'error' = 'failed'
   let data: ExecException | string = ''
   if (isPkg) {
     if (e.msg.includes('预览版')) {

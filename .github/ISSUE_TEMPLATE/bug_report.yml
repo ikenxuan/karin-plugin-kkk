@@ -1,6 +1,6 @@
 name: 🐛 Bug 报告
 description: 报告项目中的错误或问题
-title: "[Bug] "
+title: "[🐛 Bug] "
 labels: ["bug"]
 body:
   - type: textarea

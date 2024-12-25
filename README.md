@@ -17,7 +17,7 @@
    <details>
    <summary>如果你的网络环境较差...点击打开</summary>
 
-   > 如果你的网络环境较差，无法连接到 Github，可以使用 Github Proxy 镜像加速克隆
+   > 如果你的网络环境较差，无法连接到 Github，可以使用 GitHub Proxy 镜像加速克隆
    > ```sh
    > git clone --depth=1 -b build https://ghgo.xyz/https://gitee.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-kkk/
    > ```

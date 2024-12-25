@@ -4,6 +4,7 @@ import karin from 'node-karin'
 import { Config } from '@/module'
 import { Bilibilipush, DouYinpush } from '@/platform'
 
+// TODO: 传适配器实例
 export const douyinPush = Config.douyin.push.switch && karin.task('抖音推送', Config.douyin.push.cron, async () => {
   await new DouYinpush().action()
   return true
