@@ -78,6 +78,7 @@ export class Admin extends Plugin {
 
   // 配置开关
   async ConfigSwitch (e: any): Promise<boolean> {
+    logger.debug('开关配置', e.msg)
     const platform = this.getPlatformFromMessage(e.msg)
     const regRet = createSwitchRegExp(platform).exec(e.msg)
     if (regRet) {
@@ -85,13 +86,13 @@ export class Admin extends Plugin {
       const isOn = regRet[2] === '开启'
       Config.Modify(platform, PlatformTypeConfig[platform].types[key], isOn)
       await this.index_Settings(e)
-      return true
     }
     return false
   }
 
   // 修改数值配置
   async ConfigNumber (e: Message): Promise<boolean> {
+    logger.debug('数值配置', e.msg)
     const platform = this.getPlatformFromMessage(e.msg)
     const regRet = createNumberRegExp(platform).exec(e.msg)
     if (regRet) {
@@ -99,13 +100,13 @@ export class Admin extends Plugin {
       const number = this.checkNumberValue(Number(regRet[2]), configType.limit)
       Config.Modify(platform, configType.key, number)
       await this.index_Settings(e)
-      return true
     }
-    return true
+    return false
   }
 
   // 处理自定义内容
   async ConfigCustom (e: Message): Promise<boolean> {
+    logger.debug('自定义内容', e.msg)
     const platform = this.getPlatformFromMessage(e.msg)
     const regRet = createCustomRegExp(platform).exec(e.msg)
 
@@ -116,13 +117,12 @@ export class Admin extends Plugin {
       // 检查 customConfig 是否存在
       const customConfig = PlatformTypeConfig[platform]?.customConfig
       if (!customConfig || !customConfig[key]) {
-        await e.reply(`无效的设置项：${key}`)
+        logger.debug(logger.warn(`无效的设置项：${key}`))
         return false
       }
       const configKey = customConfig[key].key // 提取实际的 key
       Config.Modify(platform, configKey, customValue)
       await this.index_Settings(e)
-      return true
     }
     return false
   }
@@ -268,7 +268,7 @@ const PlatformTypeConfig: Record<string, PlatformType> = {
     },
     customConfig: {
       抖音推送表达式: { key: 'push.cron', type: 'string' },
-      抖音推送权限: { key: 'push.permission', type: 'string' }
+      抖音推送设置权限: { key: 'push.permission', type: 'string' }
     }
   },
   bilibili: {
@@ -287,7 +287,7 @@ const PlatformTypeConfig: Record<string, PlatformType> = {
     },
     customConfig: {
       B站推送表达式: { key: 'push.cron', type: 'string' },
-      B站推送权限: { key: 'push.permission', type: 'string' }
+      B站推送设置权限: { key: 'push.permission', type: 'string' }
     }
   },
   kuaishou: {
@@ -303,15 +303,18 @@ const PlatformTypeConfig: Record<string, PlatformType> = {
 }
 
 // 创建正则表达式的函数
-const createSwitchRegExp = (platform: string): RegExp => new RegExp(`^#kkk设置(${Object.keys(PlatformTypeConfig[platform].types).join('|')})(开启|关闭)$`)
-const createNumberRegExp = (platform: string): RegExp => new RegExp(`^#kkk设置(${Object.keys(PlatformTypeConfig[platform].numberConfig).join('|')})(\\d+)$`)
-const createCustomRegExp = (platform: string): RegExp => {
-  const keys = Object.keys(PlatformTypeConfig[platform].customConfig ?? {})
-  if (keys.length === 0) {
-    // 返回一个永远不会匹配的正则表达式
-    return /^$/
-  }
-  return new RegExp(`^#kkk设置(${keys.join('|')})(.+)$`)
+const createSwitchRegExp = (platform: string): RegExp => {
+  // 取出所有 'switch' 类型的命令
+  const switchKeys = Object.keys(PlatformTypeConfig[platform].types)
+  return new RegExp(`^#kkk设置(${switchKeys.join('|')})(开启|关闭)$`)
 }
 
-console.log(createCustomRegExp('douyin').toString())
+const createNumberRegExp = (platform: string): RegExp => {
+  const numberKeys = Object.keys(PlatformTypeConfig[platform].numberConfig)
+  return new RegExp(`^#kkk设置(${numberKeys.join('|')})(\\d+)$`)
+}
+
+const createCustomRegExp = (platform: string): RegExp => {
+  const customKeys = Object.keys(PlatformTypeConfig[platform].customConfig ?? {})
+  return new RegExp(`^#kkk设置(${customKeys.join('|')})(.*)$`)
+}
