@@ -138,7 +138,8 @@ export class Base {
       if (options?.active) {
         if (options.useGroupFile) { // 是群文件
           const bot = karin.getBot(String(options.activeOption?.uin))!
-          const status = await bot.uploadGroupFile(String(options.activeOption?.group_id), File, file.originTitle ? file.originTitle : `${File.split('/').pop()}`)
+          const contact = karin.contactGroup(String(options.activeOption?.group_id))
+          const status = await bot.uploadFile(contact, File, file.originTitle ? `${file.originTitle}.mp4` : `${File.split('/').pop()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是群文件
           const status = await karin.sendMsg(String(options?.activeOption?.uin), karin.contactGroup(String(options?.activeOption?.group_id)), [segment.video(File)])
@@ -147,7 +148,7 @@ export class Base {
       } else { // 不是主动消息
         if (options?.useGroupFile) { // 是文件
           await this.e.reply(`视频大小: ${newFileSize.toFixed(1)}MB 正通过文件上传中...`)
-          const status = await this.e.bot.uploadFile(this.e.contact, File, file.originTitle ? file.originTitle : `${File.split('/').pop()}`)
+          const status = await this.e.bot.uploadFile(this.e.contact, File, file.originTitle ? `${file.originTitle}.mp4` : `${File.split('/').pop()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是文件
           const status = await this.e.reply(segment.video(File) || videoUrl)
