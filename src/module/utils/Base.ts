@@ -144,7 +144,7 @@ export class Base {
           const status = await bot.uploadFile(contact, File, file.originTitle ? `${file.originTitle}.mp4` : `${File.split('/').pop()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是群文件
-          const status = await karin.sendMsg(String(options?.activeOption?.uin), karin.contactGroup(String(options?.activeOption?.group_id)), [segment.video(File)])
+          const status = await karin.sendMsg(selfId, contact, [segment.video(File)])
           status.messageId ? sendStatus = true : sendStatus = false
         }
       } else { // 不是主动消息
