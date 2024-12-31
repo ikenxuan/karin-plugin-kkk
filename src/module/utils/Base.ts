@@ -96,6 +96,8 @@ export class Base {
     let sendStatus: boolean = true
     let File: Buffer | string; let newFileSize = file.totalBytes
 
+    const selfId = this.e.selfId || options?.activeOption?.uin as string
+    const contact = this.e.contact || karin.contactGroup(options?.activeOption?.group_id as string) || karin.contactFriend(selfId)
     // 判断是否需要压缩后再上传
     if (Config.upload.compress && (file.totalBytes > Config.upload.compresstrigger)) {
       const Duration = await mergeFile('获取指定视频文件时长', { path: file.filepath })
@@ -105,7 +107,7 @@ export class Base {
         options?.message_id ? segment.reply(options.message_id) : segment.text('')
       ]
 
-      const msg1 = await karin.sendMsg(this.e.selfId, this.e.contact, message)
+      const msg1 = await karin.sendMsg(selfId, contact, message)
       // 计算目标视频平均码率
       const targetBitrate = Common.calculateBitrate(Config.upload.compresstrigger, Duration) * 0.75
       // 执行压缩
@@ -120,7 +122,7 @@ export class Base {
         segment.text(`压缩后最终视频大小为: ${newFileSize.toFixed(1)} MB，压缩耗时：${((endTime - startTime) / 1000).toFixed(1)} 秒`),
         segment.reply(msg1.messageId)
       ]
-      await karin.sendMsg(this.e.selfId, this.e.contact, message2)
+      await karin.sendMsg(selfId, contact, message2)
     }
 
     // 判断是否使用群文件上传
