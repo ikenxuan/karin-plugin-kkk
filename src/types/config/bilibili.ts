@@ -15,6 +15,9 @@ export interface bilibiliConfig {
   /** 解析视频是否优先保内容，true为优先保证上传将使用最低分辨率，false为优先保清晰度将使用最高分辨率 */
   videopriority: boolean
 
+  /** 番剧解析自动选择分辨率。开启时根据上传设置（upload.yaml）的「filelimit」值自动选择合适分辨率；关闭时下载番剧将不受视频文件大小限制，下载可支持的最高分辨率视频文件 */
+  autoResolution: boolean
+
   /** B站推送相关配置 */
   push: {
     /** 推送开关，开启后需重启；使用「#设置B站推送 + 用户UID」配置推送列表 */

@@ -9,6 +9,16 @@ import { BilibiliDataTypes } from '@/types'
 
 let img: ElementTypes[]
 
+type videoDownloadUrlList = {
+  /**
+   * 清晰度标识
+   *
+   * 详情见 [qn视频清晰度标识](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/video/videostream_url.md#qn%E8%A7%86%E9%A2%91%E6%B8%85%E6%99%B0%E5%BA%A6%E6%A0%87%E8%AF%86)
+   */
+  id: number
+  /** 视频文件下载地址 */
+  base_url: string
+}[]
 export class Bilibili extends Base {
   e: Message
   type: any
@@ -57,15 +67,26 @@ export class Bilibili extends Base {
         ])
 
         let videoSize
+        let correctList!: {
+          accept_description: string[]
+          videoList: videoDownloadUrlList
+        }
+
         if (this.islogin) {
+          /** 提取出视频流信息对象，并排除清晰度重复的视频流 */
           const simplify = OBJECT.DATA.data.dash.video.filter((item: { id: any }, index: any, self: any[]) => {
             return self.findIndex((t: { id: any }) => {
               return t.id === item.id
             }) === index
           })
+          /** 替换原始的视频信息对象 */
           OBJECT.DATA.data.dash.video = simplify
-          OBJECT = await this.processVideos(OBJECT)
-          videoSize = await this.getvideosize(OBJECT.DATA.data.dash.video[0].base_url, OBJECT.DATA.data.dash.audio[0].base_url, OBJECT.INFODATA.data.bvid)
+          /** 给视频信息对象删除不符合条件的视频流 */
+          correctList = await this.processVideos(OBJECT.DATA.data.accept_description, simplify, OBJECT.DATA.data.dash.audio[0].base_url, OBJECT.INFODATA.data.bvid)
+          OBJECT.DATA.data.dash.video = correctList.videoList
+          OBJECT.DATA.data.accept_description = correctList.accept_description
+          /** 获取第一个视频流的大小 */
+          videoSize = await this.getvideosize(correctList.videoList[0].base_url, OBJECT.DATA.data.dash.audio[0].base_url, OBJECT.INFODATA.data.bvid)
         } else {
           videoSize = (OBJECT.DATA.data.durl[0].size / (1024 * 1024)).toFixed(2)
         }
@@ -75,13 +96,13 @@ export class Bilibili extends Base {
           CommentsData: commentsdata,
           CommentLength: String(commentsdata?.length ? commentsdata.length : 0),
           share_url: 'https://b23.tv/' + OBJECT.INFODATA.data.bvid,
-          Clarity: Config.bilibili.videopriority === true ? nocdData.data.accept_description[0] : OBJECT.DATA.data.accept_description[0],
+          Clarity: Config.bilibili.videopriority === true ? nocdData.data.accept_description[0] : correctList.accept_description[0],
           VideoSize: Config.bilibili.videopriority === true ? (nocdData.data.durl[0].size / (1024 * 1024)).toFixed(2) : videoSize,
           ImageLength: 0,
           shareurl: 'https://b23.tv/' + OBJECT.INFODATA.data.bvid
         })
         Config.bilibili.comment && await this.e.reply(img)
-        if (Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) {
+        if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) || !Config.upload.compress) {
           await this.e.reply(`设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n` + '视频太大了，还是去B站看吧~', { reply: true })
         } else await this.getvideo(Config.bilibili.videopriority === true ? { DATA: nocdData } : OBJECT)
         break
@@ -453,11 +474,20 @@ export class Bilibili extends Base {
    * @param data 视频流数据
    * @returns 经过排除后的视频流数据（删减不符合Config.upload.filelimit条件的视频流）
    */
-  async processVideos (data: any) {
+
+  /**
+   * 检出符合大小的视频流信息对象
+   * @param accept_description 视频流清晰度列表
+   * @param videoList 包含所有清晰度的视频流信息对象
+   * @param audioUrl 音频流地址
+   * @param bvid 视频bvid（BV号）
+   * @returns
+   */
+  async processVideos (accept_description: string[], videoList: videoDownloadUrlList, audioUrl: string, bvid: string) {
     const results: Record<string, string> = {}
 
-    for (const video of data.DATA.data.dash.video) {
-      const size = await this.getvideosize(video.base_url, data.DATA.data.dash.audio[0].base_url, data.INFODATA.data.bvid)
+    for (const video of videoList) {
+      const size = await this.getvideosize(video.base_url, audioUrl, bvid)
       results[video.id] = size
     }
 
@@ -480,21 +510,24 @@ export class Bilibili extends Base {
       // 找到最接近但不超过文件大小限制的视频清晰度
       const closestQuality = qnd[Number(closestId)]
       // 更新 OBJECT.DATA.data.accept_description
-      data.DATA.data.accept_description = data.DATA.data.accept_description.filter((desc: any) => desc === closestQuality)
-      if (data.DATA.data.accept_description.length === 0) {
-        data.DATA.data.accept_description = [closestQuality]
+      accept_description = accept_description.filter((desc: any) => desc === closestQuality)
+      if (accept_description.length === 0) {
+        accept_description = [closestQuality]
       }
       // 找到对应的视频对象
-      const video = data.DATA.data.dash.video.find((video: { id: number }) => video.id === Number(closestId))
+      const video = videoList.find((video: { id: number }) => video.id === Number(closestId))!
       // 更新 OBJECT.DATA.data.dash.video 数组
-      data.DATA.data.dash.video = [video]
+      videoList = [video]
     } else {
       // 如果没有找到符合条件的视频，使用最低画质的视频对象
-      data.DATA.data.dash.video = [[...data.DATA.data.dash.video].pop()]
+      videoList = [[...videoList].pop()!]
       // 更新 OBJECT.DATA.data.accept_description 为最低画质的描述
-      data.DATA.data.accept_description = [...data.DATA.data.accept_description].pop()
+      accept_description = [[...accept_description].pop()!]
     }
-    return data
+    return {
+      accept_description,
+      videoList
+    }
   }
 }
 
