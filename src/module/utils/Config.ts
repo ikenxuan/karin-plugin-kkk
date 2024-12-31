@@ -25,6 +25,16 @@ class Cfg {
   initCfg () {
     copyConfigSync(this.defCfgPath, this.dirCfgPath)
 
+    const files = filesByExt(this.dirCfgPath, '.yaml', 'name')
+    for (const file of files) {
+      const config = YAML.parseDocument(fs.readFileSync(`${this.dirCfgPath}/${file}`, 'utf8'))
+      const defConfig = YAML.parseDocument(fs.readFileSync(`${this.defCfgPath}/${file}`, 'utf8'))
+      const { differences, result } = this.mergeObjectsWithPriority(config, defConfig)
+      if (differences) {
+        fs.writeFileSync(`${this.dirCfgPath}/${file}`, result.toString())
+      }
+    }
+
     /**
      * @description 监听配置文件
      */
@@ -127,9 +137,48 @@ class Cfg {
 
     fs.writeFileSync(path, yamlData.toString({ lineWidth: -1 }), 'utf8')
   }
+
+  mergeObjectsWithPriority (
+    userDoc: YAML.Document.Parsed,
+    defaultDoc: YAML.Document.Parsed
+  ): { result: YAML.Document.Parsed; differences: boolean } {
+    let differences = false
+
+    // 合并 YAML 对象，确保注释保留
+    function mergeYamlNodes (target: any, source: any): any {
+      if (YAML.isMap(target) && YAML.isMap(source)) {
+        // 遍历 source 中的每一项，合并到 target 中
+        for (const pair of source.items) {
+          const key = pair.key
+          const value = pair.value
+
+          // 查找现有的键
+          const existing = target.get(key)
+
+          // 如果目标中没有该键，则添加新的键值对
+          if (existing === undefined) {
+            differences = true
+            target.set(key, value)
+          } else if (YAML.isMap(value) && YAML.isMap(existing)) {
+            // 如果值是一个嵌套的 Map 类型，则递归合并
+            mergeYamlNodes(existing, value)
+          } else if (existing !== value) {
+            // 如果值不同，进行覆盖
+            differences = true
+            target.set(key, value)
+          }
+        }
+      }
+    }
+
+    // 执行合并操作
+    mergeYamlNodes(defaultDoc.contents, userDoc.contents)
+
+    return { differences, result: defaultDoc }
+  }
 }
 
-type Config = Omit<ConfigType & Cfg, | 'getDefOrConfig' | 'initCfg'>
+type Config = Omit<ConfigType & Cfg, | 'getDefOrConfig' | 'initCfg' | 'mergeObjectsWithPriority'>
 
 export const Config: Config = new Proxy(new Cfg().initCfg(), {
   get (target, prop: string) {

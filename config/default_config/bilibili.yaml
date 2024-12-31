@@ -14,7 +14,7 @@ numcomment: 5
 videopriority: false
 
 # 番剧解析自动选择分辨率。开启时根据上传设置（upload.yaml）的「filelimit」值自动选择合适分辨率；关闭时下载番剧将不受视频文件大小限制，下载可支持的最高分辨率视频文件
-autoResolution: false
+autoResolution: true
 
 # B站推送相关配置
 push: 
