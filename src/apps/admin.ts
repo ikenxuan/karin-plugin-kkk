@@ -280,7 +280,8 @@ const PlatformTypeConfig: Record<string, PlatformType> = {
       B站推送日志: 'push.log',
       B站解析提示: 'tip',
       B站动态解析: 'push.parsedynamic',
-      B站内容优先: 'videopriority'
+      B站内容优先: 'videopriority',
+      B站番剧自动清晰度: 'autoResolution'
     },
     numberConfig: {
       B站评论数量: { key: 'numcomment', limit: '0-999999' }

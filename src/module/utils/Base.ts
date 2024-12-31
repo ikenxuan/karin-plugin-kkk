@@ -182,7 +182,10 @@ export class Base {
     if (Config.upload.usefilelimit && fileSize > Config.upload.filelimit) {
       const message = segment.text(`视频：「${downloadOpt.title.originTitle ??
         'Error: 文件名获取失败'}」大小 (${fileSizeInMB} MB) 超出最大限制（设定值：${Config.upload.filelimit} MB），已取消上传`)
-      await karin.sendMsg(this.e.selfId, this.e.contact, message)
+      const selfId = this.e.selfId || uploadOpt?.activeOption?.uin as string
+      const contact = this.e.contact || karin.contactGroup(uploadOpt?.activeOption?.group_id as string) || karin.contactFriend(selfId)
+
+      await karin.sendMsg(selfId, contact, message)
       return false
     }
 

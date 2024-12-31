@@ -74,7 +74,7 @@ export class Bilibili extends Base {
 
         if (this.islogin) {
           /** 提取出视频流信息对象，并排除清晰度重复的视频流 */
-          const simplify = OBJECT.DATA.data.dash.video.filter((item: { id: any }, index: any, self: any[]) => {
+          const simplify = OBJECT.DATA.data.dash.video.filter((item: { id: number }, index: any, self: any[]) => {
             return self.findIndex((t: { id: any }) => {
               return t.id === item.id
             }) === index
@@ -130,12 +130,13 @@ export class Bilibili extends Base {
             this.botadapter !== 'QQBot' ? `\n> 🔗 分享链接: [🔗点击查看](${short_link})\r\r` : ''
           ])
         }
-        img = await Render('bilibili/bangumi', {
-          saveId: 'bangumi',
-          bangumiData: barray,
-          title: OBJECT.INFODATA.result.title
-        })
-        await this.e.reply([...img, segment.text('请在120秒内输入 第?集 选择集数')])
+        // img = await Render('bilibili/bangumi', {
+        //   saveId: 'bangumi',
+        //   bangumiData: barray,
+        //   title: OBJECT.INFODATA.result.title
+        // })
+        // await this.e.reply([...img, segment.text('请在120秒内输入 第?集 选择集数')])
+        await this.e.reply(segment.text('请在120秒内输入 第?集 选择集数'))
         const context = await karin.ctx(this.e, { reply: true })
         const regex = /第([一二三四五六七八九十百千万0-9]+)集/.exec(context.msg)
         let Episode
@@ -167,11 +168,32 @@ export class Bilibili extends Base {
           logger.warn('该CK不是大会员，无法获取视频流')
           return true
         }
-        await this.getvideo({
-          ...OBJECT,
-          video_url: this.ISVIP ? OBJECT.DATA.result.dash.video[0].base_url : OBJECT.DATA.result.dash.video[0].base_url,
-          audio_url: OBJECT.DATA.result.dash.audio[0].base_url
-        })
+        if (Config.bilibili.autoResolution) {
+          /** 提取出视频流信息对象，并排除清晰度重复的视频流 */
+          const simplify = DATA.result.dash.video.filter((item: { id: number }, index: any, self: any[]) => {
+            return self.findIndex((t: { id: any }) => {
+              return t.id === item.id
+            }) === index
+          })
+          /** 替换原始的视频信息对象 */
+          DATA.result.dash.video = simplify
+          /** 给视频信息对象删除不符合条件的视频流 */
+          const correctList = await this.processVideos(DATA.result.accept_description, simplify, DATA.result.dash.audio[0].base_url, OBJECT.INFODATA.result.season_id)
+          DATA.result.dash.video = correctList.videoList
+          DATA.result.cept_description = correctList.accept_description
+          await this.getvideo({
+            ...OBJECT,
+            video_url: DATA.result.dash.video[0].base_url,
+            audio_url: DATA.result.dash.audio[0].base_url
+          })
+        } else {
+          await this.getvideo({
+            ...OBJECT,
+            video_url: DATA.result.dash.video[0].base_url,
+            audio_url: DATA.result.dash.audio[0].base_url
+          })
+        }
+
         break
       }
       case 'dynamic_info': {
@@ -400,7 +422,7 @@ export class Bilibili extends Base {
         const bmp4 = await this.DownLoadFile(
           this.TYPE === 'one_video' ? OBJECT.DATA.data?.dash?.video[0].base_url : OBJECT.video_url,
           {
-            title: `Bil_V_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.episodes[0].bvid}`,
+            title: `Bil_V_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.season_id}`,
             headers: this.headers,
             filetype: '.mp4'
           }
@@ -408,7 +430,7 @@ export class Bilibili extends Base {
         const bmp3 = await this.DownLoadFile(
           this.TYPE === 'one_video' ? OBJECT.DATA.data?.dash?.audio[0].base_url : OBJECT.audio_url,
           {
-            title: `Bil_A_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.episodes[0].bvid}`,
+            title: `Bil_A_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.season_id}`,
             headers: this.headers,
             filetype: '.mp3'
           }
@@ -417,7 +439,7 @@ export class Bilibili extends Base {
           await mergeFile('二合一（视频 + 音频）', {
             path: bmp4.filepath,
             path2: bmp3.filepath,
-            resultPath: Common.tempDri.video + `Bil_Result_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.episodes[0].bvid}.mp4`,
+            resultPath: Common.tempDri.video + `Bil_Result_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.season_id}.mp4`,
             callback: async (success: boolean, resultPath: string): Promise<boolean> => {
               if (success) {
                 const filePath = Common.tempDri.video + `${Config.app.rmmp4 ? 'tmp_' + Date.now() : this.downloadfilename}.mp4`

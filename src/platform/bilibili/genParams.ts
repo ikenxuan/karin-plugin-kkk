@@ -2,6 +2,11 @@ import { getBilibiliData, wbi_sign } from '@ikenxuan/amagi'
 
 import { Config } from '@/module/utils'
 
+/**
+ * 计算请求参数
+ * @param apiURL 请求地址
+ * @returns
+ */
 export async function genParams (apiURL: string) {
   if (Config.cookies.bilibili === '' || Config.cookies.bilibili === null) return { QUERY: '&platform=html5', STATUS: '!isLogin' }
   const logininfo = await getBilibiliData('登录基本信息', Config.cookies.bilibili)
