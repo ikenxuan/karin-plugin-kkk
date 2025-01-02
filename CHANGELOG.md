@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.9](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.8...v0.1.9) (2025-01-02)
+
+
+### Bug Fixes
+
+* support bili2233.cn ([d7828d9](https://github.com/ikenxuan/karin-plugin-kkk/commit/d7828d9c053e926886658cd1f2556f78751371b4))
+
 ## [0.1.8](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.7...v0.1.8) (2024-12-22)
 
 
