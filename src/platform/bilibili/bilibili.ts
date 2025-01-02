@@ -102,7 +102,7 @@ export class Bilibili extends Base {
           shareurl: 'https://b23.tv/' + OBJECT.INFODATA.data.bvid
         })
         Config.bilibili.comment && await this.e.reply(img)
-        if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) || !Config.upload.compress) {
+        if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) && !Config.upload.compress) {
           await this.e.reply(`设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n` + '视频太大了，还是去B站看吧~', { reply: true })
         } else await this.getvideo(Config.bilibili.videopriority === true ? { DATA: nocdData } : OBJECT)
         break
@@ -130,12 +130,12 @@ export class Bilibili extends Base {
             this.botadapter !== 'QQBot' ? `\n> 🔗 分享链接: [🔗点击查看](${short_link})\r\r` : ''
           ])
         }
-        // img = await Render('bilibili/bangumi', {
-        //   saveId: 'bangumi',
-        //   bangumiData: barray,
-        //   title: OBJECT.INFODATA.result.title
-        // })
-        // await this.e.reply([...img, segment.text('请在120秒内输入 第?集 选择集数')])
+        img = await Render('bilibili/bangumi', {
+          saveId: 'bangumi',
+          bangumiData: barray,
+          title: OBJECT.INFODATA.result.title
+        })
+        await this.e.reply([...img, segment.text('请在120秒内输入 第?集 选择集数')])
         await this.e.reply(segment.text('请在120秒内输入 第?集 选择集数'))
         const context = await karin.ctx(this.e, { reply: true })
         const regex = /第([一二三四五六七八九十百千万0-9]+)集/.exec(context.msg)
