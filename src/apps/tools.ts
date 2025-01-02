@@ -7,7 +7,7 @@ import { fetchKuaishouData, getKuaishouID, Kuaishou } from '@/platform/kuaishou'
 
 const reg = {
   douyin: new RegExp('^.*((www|v|jx)\\.(douyin|iesdouyin)\\.com|douyin\\.com\\/(video|note)).*'),
-  bilibili: new RegExp(/(bilibili.com|b23.tv|t.bilibili.com|^BV[a-zA-Z0-9]{10}$)/),
+  bilibili: new RegExp(/(bilibili.com|b23.tv|t.bilibili.com|bili2233.cn|BV[a-zA-Z0-9]{10,})/),
   kuaishou: new RegExp('^((.*)快手(.*)快手(.*)|(.*)v.kuaishou(.*))$')
 }
 
@@ -21,8 +21,8 @@ const douyin = karin.command(reg.douyin, async (e) => {
 
 const bilibili = karin.command(reg.bilibili, async (e) => {
   e.msg = e.msg.replace(/\\/g, '')
-  const urlRex = /(https?:\/\/)?(www\.bilibili\.com|m\.bilibili\.com)\/[a-zA-Z0-9._%&+=\-\/?]*[a-zA-Z0-9_\/?=&#%+]*$/g
-  const bShortRex = /https?:\/\/b23\.tv\/([a-zA-Z0-9]+)/
+  const urlRex = /(https?:\/\/)?(www\.bilibili\.com|m\.bilibili\.com|bili2233\.cn)\/[a-zA-Z0-9._%&+=\-\/?]*[a-zA-Z0-9_\/?=&#%+]*$/g
+  const bShortRex = /https?:\/\/(b23\.tv|bili2233\.cn)\/([a-zA-Z0-9]+)/
   let url: string | null = ''
 
   if (urlRex.test(e.msg)) {
