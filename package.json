@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@ikenxuan/amagi": "^4.0.3",
+    "@infolektuell/noto-color-emoji": "^0.2.0",
     "@karinjs/md-html": "^1.1.6",
     "axios": "^1.7.9",
     "heic-convert": "^2.1.0",

@@ -1,6 +1,6 @@
 import { join } from 'node:path'
 
-import { ImageElementType, Options, render, segment } from 'node-karin'
+import { ImageElementType, Options, pkgRoot, render, segment } from 'node-karin'
 
 import { Common, Config, Version } from '@/module'
 
@@ -54,7 +54,8 @@ export async function Render (path: string, params?: any) {
       },
       pluResPath: `${Version.pluginPath}/resources/`,
       copyright: `<span class="name">kkk</span><span class="version">${Version.pluginVersion} ${releaseType()}</span> Powered By <span class="name">Karin</span>`,
-      useDarkTheme: Common.useDarkTheme()
+      useDarkTheme: Common.useDarkTheme(),
+      noto_emoji_font_path: pkgRoot('@infolektuell/noto-color-emoji')
     },
     screensEval: '#container'
   })
