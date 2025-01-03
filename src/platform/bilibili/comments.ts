@@ -96,7 +96,7 @@ const emoteToUrl = (message: any, emote: any) => {
 function space (data: any) {
   for (const i in data) {
     if (data[i].message) {
-      data[i].message = data[i].message.replace(/\s/g, ' ') // 替换空格
+      data[i].message = data[i].message.replace(/ /g, ' ') // 替换空格
     }
   }
   return data
