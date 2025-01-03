@@ -3,7 +3,8 @@
   "version": "0.1.9",
   "description": "a Karin video parsing tool",
   "keywords": [
-    "karin-plugin"
+    "karin-plugin",
+    "karin"
   ],
   "homepage": "https://github.com/ikenxuan/karin-plugin-kkk",
   "bugs": {
@@ -28,17 +29,18 @@
   ],
   "scripts": {
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
-    "clean": "node lib/clean.js",
     "fix": "eslint src/**/*.ts --fix",
+    "pr": "node lib/cli/pr.js",
     "pub": "npm publish --access public",
+    "pub-beta": "npm publish --tag beta",
     "sort": "npx sort-package-json"
   },
   "dependencies": {
     "@ikenxuan/amagi": "^4.0.3",
+    "@infolektuell/noto-color-emoji": "^0.2.0",
     "@karinjs/md-html": "^1.1.6",
-    "axios": "^1.7.8",
+    "axios": "^1.7.9",
     "heic-convert": "^2.1.0",
-    "icqq": "^0.6.10",
     "playwright": "^1.49.0",
     "qrcode": "^1.5.4",
     "sequelize": "6.37.3",
@@ -47,14 +49,17 @@
   "devDependencies": {
     "@eslint/js": "^9.16.0",
     "@types/heic-convert": "^2.1.0",
-    "@types/lodash": "^4.17.13",
-    "@types/node": "^22.10.0",
+    "@types/node": "^22.10.1",
     "@types/qrcode": "^1.5.5",
-    "eslint": "^9.15.0",
+    "@typescript-eslint/parser": "^8.17.0",
+    "eslint": "^9.16.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "globals": "^15.12.0",
+    "globals": "^15.13.0",
+    "neostandard": "^0.11.9",
+    "node-karin": "0.12.25-beta.pr.206.1-1735137396",
     "sort-package-json": "^2.12.0",
     "tsc-alias": "^1.8.10",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.17.0"
   },
@@ -63,10 +68,20 @@
     "registry": "https://registry.npmjs.org"
   },
   "karin": {
+    "main": "src/index.ts",
     "apps": [
       "lib/apps"
     ],
-    "outDir": "lib",
-    "rootDir": "src"
+    "ts-apps": [
+      "src/apps"
+    ],
+    "static": [
+      "resources"
+    ],
+    "files": [
+      "config",
+      "data",
+      "resources"
+    ]
   }
 }

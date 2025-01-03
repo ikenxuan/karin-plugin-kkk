@@ -1,0 +1,57 @@
+name: 🐛 Bug 报告
+description: 报告项目中的错误或问题
+title: "[🐛 Bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: describe-the-bug
+    attributes:
+      label: 问题描述
+      description: 清晰、简洁地描述你遇到的问题。
+      placeholder: 请描述你遇到的问题...
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce-steps
+    attributes:
+      label: 复现步骤
+      description: 列出复现该问题的步骤。
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+        4. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: 预期行为
+      description: 描述你期望发生的行为。
+      placeholder: 请描述你期望的行为...
+    validations:
+      required: false
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 错误日志或截图
+      description: 错误日志以帮助解释你的问题，也能帮助我更快定位问题所在。
+      placeholder: 请上传截图...
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: 操作系统
+      description: 你遇到问题时使用的操作系统。
+      placeholder: 例如：Windows 11、Ubuntu 24
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      description: 你所使用的版本。
+      placeholder: 例如：1.0.0
+    validations:
+      required: true

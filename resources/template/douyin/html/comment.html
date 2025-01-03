@@ -6,14 +6,16 @@
 <div class="video_info_container">
   <div class="svg_container">
     <div class="logo"></div>
-    <div class="top-info">作品类型：{{Type}}</div>
-    <div class="top-info">评论数量：{{CommentLength}}条</div>
-    {{if Type == '视频'}}
-    <div class="top-info">视频大小：{{VideoSize}}MB</div>
-    <div class="top-info">视频帧率：{{VideoFPS}}Hz</div>
-    {{else if Type == '图集'}}
-    <div class="top-info">图片数量：{{ImageLength}}张</div>
-    {{/if}}
+    <div class="work_info">
+      <div class="top-info">作品类型：{{Type}}</div>
+      <div class="top-info">评论数量：{{CommentLength}}条</div>
+      {{if Type == '视频'}}
+      <div class="top-info">视频大小：{{VideoSize}}MB</div>
+      <div class="top-info">视频帧率：{{VideoFPS}}Hz</div>
+      {{else if Type == '图集'}}
+      <div class="top-info">图片数量：{{ImageLength}}张</div>
+      {{/if}}
+    </div>
   </div>
   <div class="qrcode_box">
     <div class="qrcode" id="qrcode"></div>

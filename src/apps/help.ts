@@ -1,26 +1,28 @@
-import { execSync } from 'node:child_process'
+import { ExecException, execSync } from 'node:child_process'
 import fs from 'node:fs'
 
 import { markdown } from '@karinjs/md-html'
-import karin, { common, render, restart, segment, Update } from 'node-karin'
+import karin, { common, isPkg, logger, mkdirSync, render, restart, segment, tempPath, updateGitPlugin, updatePkg } from 'node-karin'
 
-import { Common, Render, Version } from '@/module'
+import { Common, Config, Render, Version } from '@/module'
 
-export const help = karin.command(/^#?(kkk)?帮助$/, async (e) => {
+export const help = karin.command(/^#?kkk帮助$/, async (e) => {
   const img = await Render('help/index')
   await e.reply(img)
   return true
 }, { name: 'kkk-帮助' })
 
 export const version = karin.command(/^#?kkk版本$/, async (e) => {
+  Config.douyin.push.switch = false
   const changelogs = fs.readFileSync(Version.pluginPath + '/CHANGELOG.md', 'utf8')
   const html = markdown(changelogs, {
     gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css'
   })
-  const htmlPath = `${Version.karinPath}/temp/html/${Version.pluginName}/help/version.html`
+  mkdirSync(`${tempPath}/html/${Version.pluginName}/version`)
+  const htmlPath = `${tempPath}/html/${Version.pluginName}/version/version.html`
   fs.writeFileSync(htmlPath, html)
   const img = await render.renderHtml(htmlPath)
-  await e.reply(segment.image(img))
+  await e.reply(segment.image('base64://' + img))
   return true
 }, { name: 'kkk-版本' })
 
@@ -40,29 +42,49 @@ export const changelogs = karin.command(/^#?kkk更新日志$/, async (e) => {
   const html = markdown(htmlString, {
     gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css'
   })
-  const htmlPath = `${Version.karinPath}/temp/html/${Version.pluginName}/help/changelogs.html`
+  mkdirSync(`${tempPath}/html/${Version.pluginName}/version`)
+  const htmlPath = `${tempPath}/html/${Version.pluginName}/version/changelogs.html`
   fs.writeFileSync(htmlPath, html)
   const img = await render.renderHtml(htmlPath)
-  await e.reply(segment.image(img))
+  await e.reply(segment.image('base64://' + img))
   return true
-}, { name: 'kkk-更新日志', permission: 'master' })
+}, { name: 'kkk-更新日志' })
 
-export const update = karin.command(/^#?kkk更新$/, async (e) => {
-  let cmd = 'git pull'
-  if (e.msg.includes('强制')) cmd = 'git reset --hard && git pull --allow-unrelated-histories'
-  const { data, status } = await Update.update(Version.pluginPath, cmd)
-  await e.bot.sendForwardMessage(e.contact, common.makeForward([ segment.text(`更新${Version.pluginName}...${data}`) ], e.sender.uid, e.sender.nick))
+export const update = karin.command(/^#?kkk更新(预览版)?$/, async (e) => {
+  let status: 'ok' | 'failed' | 'error' = 'failed'
+  let data: ExecException | string = ''
+  if (isPkg) {
+    if (e.msg.includes('预览版')) {
+      const resolve = await updatePkg(Version.pluginName, 'beta')
+      status = resolve.status
+      data = resolve.data
+    } else {
+      const resolve = await updatePkg(Version.pluginName)
+      status = resolve.status
+      data = resolve.data
+    }
+  } else {
+    let cmd = 'git pull'
+    if (e.msg.includes('强制')) {
+      cmd = 'git reset --hard && git pull --allow-unrelated-histories'
+    }
+    const resolve = await updateGitPlugin(Version.pluginPath, cmd)
+    status = resolve.status
+    data = resolve.data
+  }
+  logger.debug(data)
+  await e.bot.sendForwardMsg(e.contact, common.makeForward([segment.text(`更新 ${Version.pluginName}...\n${JSON.stringify(data)}`)], e.sender.userId, e.sender.nick))
   if (status === 'ok') {
     try {
       await e.reply(`\n更新完成，开始重启 本次运行时间：${common.uptime()}`, { at: true })
-      await restart(e.self_id, e.contact, e.message_id)
+      await restart(e.selfId, e.contact, e.messageId)
       return true
     } catch (error) {
       await e.reply(`${Version.pluginName}重启失败，请手动重启以应用更新！`)
     }
   }
   return true
-}, { name: 'kkk-更新', permission: 'master' })
+}, { name: 'kkk-更新', perm: 'master' })
 
 interface CommitLog {
   sha: string
@@ -79,7 +101,7 @@ const getLatestCommitsSync = (): CommitLog[] => {
 
   return commits.map((commit) => {
     // 分割SHA和其他信息
-    const [ sha, ...rest ] = commit.split(' ')
+    const [sha, ...rest] = commit.split(' ')
     // 找到冒号的位置，分割提交者和提交信息
     const spaceIndex = rest.findIndex(word => word.includes(':'))
     const committerAndMessage = rest.slice(0, spaceIndex)

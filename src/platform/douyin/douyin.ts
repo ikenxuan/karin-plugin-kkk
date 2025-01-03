@@ -2,10 +2,10 @@ import fs from 'node:fs'
 
 import { getDouyinData } from '@ikenxuan/amagi'
 import { markdown } from '@karinjs/md-html'
-import { common, KarinMessage, logger, render, segment } from 'node-karin'
+import { common, logger, Message, render, segment } from 'node-karin'
 import QRCode from 'qrcode'
 
-import { Base, Common, Config, mergeFile, Networks, Render, UploadRecord, Version } from '@/module/utils'
+import { Base, Common, Config, mergeFile, Networks, Render, Version } from '@/module/utils'
 import { douyinComments } from '@/platform/douyin'
 import { DouyinDataTypes, ExtendedDouyinOptionsType } from '@/types'
 
@@ -13,13 +13,14 @@ let mp4size = ''
 let img
 
 export class DouYin extends Base {
-  e: KarinMessage
+  e: Message
   type: DouyinDataTypes[keyof DouyinDataTypes]
   is_mp4: any
   get botadapter (): string {
     return this.e.bot?.adapter?.name
   }
-  constructor (e: KarinMessage, iddata: ExtendedDouyinOptionsType) {
+
+  constructor (e: Message, iddata: ExtendedDouyinOptionsType) {
     super(e)
     this.e = e
     this.type = iddata?.type
@@ -41,26 +42,26 @@ export class DouYin extends Base {
           const image_data = []
           const imageres = []
           let image_url
-          for (let i = 0; i < data.VideoData.aweme_detail.images.length; i ++) {
+          for (let i = 0; i < data.VideoData.aweme_detail.images.length; i++) {
             image_url = data.VideoData.aweme_detail.images[i].url_list[2] || data.VideoData.aweme_detail.images[i].url_list[1] // 图片地址
 
             const title = data.VideoData.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:\*\?"<>\|\r\n]/g, ' ') // 标题，去除特殊字符
             g_title = title
             imageres.push(segment.image(image_url))
-            imagenum ++
+            imagenum++
             if (Config.app.rmmp4 === false) {
               common.mkdir(`${Common.tempDri.images}${g_title}`)
               const path = `${Common.tempDri.images}${g_title}/${i + 1}.png`
               await new Networks({ url: image_url, type: 'arraybuffer' }).getData().then((data) => fs.promises.writeFile(path, Buffer.from(data)))
             }
           }
-          const res = common.makeForward(imageres, this.e.sender.uin, this.e.sender.nick)
+          const res = common.makeForward(imageres, this.e.sender.userId, this.e.sender.nick)
           image_data.push(res)
           image_res.push(image_data)
           if (imageres.length === 1) {
             await this.e.reply(segment.image(image_url))
           } else {
-            await this.e.bot.sendForwardMessage(this.e.contact, res)
+            await this.e.bot.sendForwardMsg(this.e.contact, res)
           }
         } else {
           image_res.push('图集信息解析失败')
@@ -79,21 +80,7 @@ export class DouYin extends Base {
             }
           }
           const haspath = music_url && this.is_mp4 === false && music_url !== undefined
-          switch (this.botadapter) {
-            case 'OneBotv11': {
-              if (haspath) {
-                await this.e.reply(segment.record(music_url))
-              }
-              break
-            }
-            case 'ICQQ': {
-              if (haspath) {
-                if (Config.douyin.sendHDrecord) await this.e.reply(await UploadRecord(this.e, music_url, 0, false))
-                else this.e.reply(segment.record(music_url))
-              }
-              break
-            }
-          }
+          haspath && await this.e.reply(segment.record(music_url, false))
         }
 
         /** 视频 */
@@ -131,7 +118,7 @@ export class DouYin extends Base {
           videores.push(segment.image(cover))
           g_video_url = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${data.VideoData.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`
           logger.info('视频地址', g_video_url)
-          const res = common.makeForward(videores, this.e.sender.uin, this.e.sender.nick)
+          const res = common.makeForward(videores, this.e.sender.userId, this.e.sender.nick)
           video_data.push(res)
           video_res.push(video_data)
         }
@@ -195,15 +182,12 @@ export class DouYin extends Base {
               path: liveimg.filepath,
               path2: liveimgbgm.filepath,
               resultPath: resolvefilepath,
-              callback: async (success: boolean): Promise<boolean> => {
+              callback: async (success: boolean, resultPath: string): Promise<boolean> => {
                 if (success) {
                   const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
-                  fs.renameSync(
-                    resolvefilepath,
-                    filePath
-                  )
-                  this.removeFile(liveimgbgm.filepath, true)
-                  this.removeFile(liveimg.filepath, true)
+                  fs.renameSync(resultPath, filePath)
+                  await this.removeFile(liveimgbgm.filepath, true)
+                  await this.removeFile(liveimg.filepath, true)
 
                   const stats = fs.statSync(filePath)
                   const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
@@ -215,23 +199,23 @@ export class DouYin extends Base {
                     return await this.upload_file({ filepath: filePath, totalBytes: fileSizeInMB }, '')
                   }
                 } else {
-                  this.removeFile(liveimgbgm.filepath, true)
-                  this.removeFile(liveimg.filepath, true)
+                  await this.removeFile(liveimgbgm.filepath, true)
+                  await this.removeFile(liveimg.filepath, true)
                   return true
                 }
               }
             })
           }
         }
-        const Element = common.makeForward(images, this.e.sender.uin, this.e.sender.nick)
-        await this.e.bot.sendForwardMessage(this.e.contact, Element)
+        const Element = common.makeForward(images, this.e.sender.userId, this.e.sender.nick)
+        await this.e.bot.sendForwardMsg(this.e.contact, Element)
         return true
       }
 
       case 'user_dynamic': {
         const veoarray = []
-        veoarray.unshift(`------------------------------ | ---------------------------- |\n`)
-        veoarray.unshift(`标题                           | 分享二维码                    |\n`)
+        veoarray.unshift('------------------------------ | ---------------------------- |\n')
+        veoarray.unshift('标题                           | 分享二维码                    |\n')
         const forwardmsg = []
         for (const i of data.aweme_list) {
           const title = i.desc
@@ -251,8 +235,8 @@ export class DouYin extends Base {
         fs.writeFileSync(htmlpath, matext, 'utf8')
         const img = await render.renderHtml(htmlpath)
         await this.e.reply(segment.image(img))
-        const Element2 = common.makeForward(forwardmsg, this.e.sender.uin, this.e.sender.nick)
-        await this.e.bot.sendForwardMessage(this.e.contact, Element2)
+        const Element2 = common.makeForward(forwardmsg, this.e.sender.userId, this.e.sender.nick)
+        await this.e.bot.sendForwardMsg(this.e.contact, Element2)
         return true
       }
       case 'music_work': {
@@ -290,10 +274,7 @@ export class DouYin extends Base {
           ]
         )
 
-        // const record = await UploadRecord(this.e, data.music_info.play_url.uri, 0, false)
-        if (this.botadapter === 'ICQQ') {
-          await this.e.reply(await UploadRecord(this.e, data.music_info.play_url.uri, 0, false))
-        } else await this.e.reply(segment.record(data.music_info.play_url.uri))
+        await this.e.reply(segment.record(data.music_info.play_url.uri, false))
 
         return true
       }
@@ -304,7 +285,7 @@ export class DouYin extends Base {
           const room_data = JSON.parse(data.user.room_data)
           const img = await Render('douyin/live',
             {
-              image_url: [ { image_src: live_data.data.data[0].cover.url_list[0] } ],
+              image_url: [{ image_src: live_data.data.data[0].cover.url_list[0] }],
               text: live_data.data.data[0].title,
               liveinf: `${live_data.data.partition_road_map.partition.title} | 房间号: ${room_data.owner.web_rid}`,
               在线观众: this.count(live_data.data.data[0].room_view_stats.display_value),
@@ -364,7 +345,6 @@ function convertTimestampToDateTime (timestamp: number): string {
 
   return `${year}-${month}-${day} ${hours}:${minutes}`
 }
-
 
 function Emoji (data: any): any {
   const ListArray = []
