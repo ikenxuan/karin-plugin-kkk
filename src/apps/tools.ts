@@ -20,7 +20,7 @@ const douyin = karin.command(reg.douyin, async (e) => {
 
 const bilibili = karin.command(reg.bilibili, async (e) => {
   e.msg = e.msg.replace(/\\/g, '')
-  const urlRex = /(https?:\/\/)?(www\.bilibili\.com|m\.bilibili\.com|bili2233\.cn)\/[a-zA-Z0-9._%&+=\-\/?]*[a-zA-Z0-9_\/?=&#%+]*$/g
+  const urlRex = /(https?:\/\/)?(www\.bilibili\.com|m\.bilibili\.com|t\.bilibili\.com|bili2233\.cn)\/[a-zA-Z0-9._%&+=\-\/?]*[a-zA-Z0-9_\/?=&#%+]*$/g
   const bShortRex = /https?:\/\/(b23\.tv|bili2233\.cn)\/([a-zA-Z0-9]+)/
   let url: string | null = ''
 
