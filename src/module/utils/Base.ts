@@ -216,7 +216,7 @@ export class Base {
     const { filepath, totalBytes } = await new Networks({
       url: videoUrl, // 视频地址
       headers: opt.headers ?? this.headers, // 请求头
-      filepath: Common.tempDri.video + `${opt.title}${opt.filetype ?? '.mp4'}`, // 文件保存路径
+      filepath: 'file://' + Common.tempDri.video + `${opt.title}${opt.filetype ?? '.mp4'}`, // 文件保存路径
       timeout: 30000 // 设置 30 秒超时
     }).downloadStream((downloadedBytes, totalBytes) => {
       // 定义进度条长度及生成进度条字符串的函数
