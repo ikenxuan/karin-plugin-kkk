@@ -1,5 +1,4 @@
 import fs from 'node:fs'
-import { fileURLToPath } from 'node:url'
 
 import { logger, Message, tempPath } from 'node-karin'
 
@@ -146,7 +145,7 @@ class Tools {
    * @returns
    */
   async removeFile (path: string, force = false): Promise<boolean> {
-    path = fileURLToPath(path.replace(/\\/g, '/'))
+    path = path.replace(/\\/g, '/')
     if (Config.app.rmmp4) {
       try {
         await fs.promises.unlink(path)

@@ -134,7 +134,7 @@ export class Base {
     if (Config.upload.sendbase64 && !options?.useGroupFile) {
       const videoBuffer = await fs.promises.readFile(file.filepath)
       File = `base64://${videoBuffer.toString('base64')}`
-    } else File = file.filepath
+    } else File = 'file://' + file.filepath
     try {
       // 是主动消息
       if (options?.active) {
@@ -258,7 +258,7 @@ export class Base {
       )
     })
 
-    return { filepath: `file://${filepath}`, totalBytes }
+    return { filepath, totalBytes }
   }
 
   /** 删文件 */

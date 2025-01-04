@@ -90,18 +90,20 @@ export class Bilibili extends Base {
         } else {
           videoSize = (OBJECT.DATA.data.durl[0].size / (1024 * 1024)).toFixed(2)
         }
-        const commentsdata = bilibiliComments(OBJECT)
-        img = await Render('bilibili/comment', {
-          Type: '视频',
-          CommentsData: commentsdata,
-          CommentLength: String(commentsdata?.length ? commentsdata.length : 0),
-          share_url: 'https://b23.tv/' + OBJECT.INFODATA.data.bvid,
-          Clarity: Config.bilibili.videopriority === true ? nocdData.data.accept_description[0] : correctList.accept_description[0],
-          VideoSize: Config.bilibili.videopriority === true ? (nocdData.data.durl[0].size / (1024 * 1024)).toFixed(2) : videoSize,
-          ImageLength: 0,
-          shareurl: 'https://b23.tv/' + OBJECT.INFODATA.data.bvid
-        })
-        Config.bilibili.comment && await this.e.reply(img)
+        if (Config.bilibili.comment) {
+          const commentsdata = bilibiliComments(OBJECT)
+          img = await Render('bilibili/comment', {
+            Type: '视频',
+            CommentsData: commentsdata,
+            CommentLength: String(commentsdata?.length ? commentsdata.length : 0),
+            share_url: 'https://b23.tv/' + OBJECT.INFODATA.data.bvid,
+            Clarity: Config.bilibili.videopriority === true ? nocdData.data.accept_description[0] : correctList.accept_description[0],
+            VideoSize: Config.bilibili.videopriority === true ? (nocdData.data.durl[0].size / (1024 * 1024)).toFixed(2) : videoSize,
+            ImageLength: 0,
+            shareurl: 'https://b23.tv/' + OBJECT.INFODATA.data.bvid
+          })
+          await this.e.reply(img)
+        }
         if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) && !Config.upload.compress) {
           await this.e.reply(`设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n` + '视频太大了，还是去B站看吧~', { reply: true })
         } else await this.getvideo(Config.bilibili.videopriority === true ? { DATA: nocdData } : OBJECT)
@@ -452,10 +454,10 @@ export class Bilibili extends Base {
                 const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
                 if (fileSizeInMB > Config.upload.groupfilevalue) {
                   // 使用文件上传
-                  return await this.upload_file({ filepath: 'file://' + filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '', { useGroupFile: true })
+                  return await this.upload_file({ filepath: filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '', { useGroupFile: true })
                 } else {
                   /** 因为本地合成，没有视频直链 */
-                  return await this.upload_file({ filepath: 'file://' + filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '')
+                  return await this.upload_file({ filepath: filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '')
                 }
               } else {
                 await this.removeFile(bmp4.filepath, true)
