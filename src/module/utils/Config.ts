@@ -31,7 +31,7 @@ class Cfg {
       const defConfig = YAML.parseDocument(fs.readFileSync(`${this.defCfgPath}/${file}`, 'utf8'))
       const { differences, result } = this.mergeObjectsWithPriority(config, defConfig)
       if (differences) {
-        fs.writeFileSync(`${this.dirCfgPath}/${file}`, result.toString())
+        fs.writeFileSync(`${this.dirCfgPath}/${file}`, result.toString({ lineWidth: -1 }))
       }
     }
 
