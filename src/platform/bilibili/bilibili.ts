@@ -452,10 +452,10 @@ export class Bilibili extends Base {
                 const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
                 if (fileSizeInMB > Config.upload.groupfilevalue) {
                   // 使用文件上传
-                  return await this.upload_file({ filepath: filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '', { useGroupFile: true })
+                  return await this.upload_file({ filepath: 'file://' + filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '', { useGroupFile: true })
                 } else {
                   /** 因为本地合成，没有视频直链 */
-                  return await this.upload_file({ filepath: filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '')
+                  return await this.upload_file({ filepath: 'file://' + filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '')
                 }
               } else {
                 await this.removeFile(bmp4.filepath, true)
