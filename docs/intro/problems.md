@@ -1,10 +1,8 @@
-
-
 # 遇到问题了咋办
 
 > 任何事物都不可能尽善尽美，karin-plugin-kkk 也是如此。
 
-如果你在使用 karin-plugin-kkk 的过程中遇到了任何问题（包括但不限于如何配置ck、推送报错等），请认真阅读并充分理解下述内容，这会对你有帮助。
+如果你在使用 karin-plugin-kkk 的过程中遇到了任何问题（包括但不限于如何配置 ck、推送报错等），请认真阅读并充分理解下述内容，这会对你有帮助。
 
 ## 遇到问题后的第一反应
 
@@ -57,13 +55,15 @@
 
 你可以从以下问题入手：
 
-* 你想要进行什么操作？为的是达到什么目的？
-* 在问题发生之前，你分别都进行了哪些操作？
+- 你想要进行什么操作？为的是达到什么目的？
+- 在问题发生之前，你分别都进行了哪些操作？
+
 ---
-* <Badge type="info" text="控制台" /> 你正在使用什么版本的 Node.js？你的操作系统是什么？网络环境是什么？
-* <Badge type="info" text="适配器" /> 你使用的是哪个适配器？是否已经更新到最新版本？
-* <Badge type="info" text="用户配置" /> 你的配置文件是什么样子的？（敏感信息请打码）
-* <Badge type="info" text="聊天记录" /> 你是否可以提供一些关于问题的聊天记录？（次要）
+
+- <Badge type="info" text="控制台" /> 你正在使用什么版本的 Node.js？你的操作系统是什么？网络环境是什么？
+- <Badge type="info" text="适配器" /> 你使用的是哪个适配器？是否已经更新到最新版本？
+- <Badge type="info" text="用户配置" /> 你的配置文件是什么样子的？（敏感信息请打码）
+- <Badge type="info" text="聊天记录" /> 你是否可以提供一些关于问题的聊天记录？（次要）
 
 若能在提问时提供上述信息，则将极大提高我们提供精准服务的效率。
 
@@ -81,12 +81,12 @@
 
 <p style="margin-bottom: 2em"></p>
 
-<NCard title='<i class="fa-regular fa-comment-dots fa-bounce" style="color: #FFB805;"></i> 底部发表评论' >
+<NCard title='<iconify-icon icon="mdi:comment-text-multiple" style="margin-right:0.25rem;color:#3498db;"></iconify-icon> 底部发表评论' >
 在每个功能页面的的底部通过 GitHub 登录后可发表对应功能的建议和反馈
 </NCard>
-<NCard title='<i class="fa-solid fa-hand fa-bounce" style="color: #FFB805;"></i> 获取即时支持' link="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=S8y6baEcSkO6TEO5kEdfgmJhz79Oxdw5&authKey=ficWQytHGz3KIv5i0HpGbEeMBpABBXfjEMYRzo3ZwMV%2B0Y5mq8cC0Yxbczfa904H&noverify=0&group_code=795874649" >
+<NCard title='<iconify-icon icon="mingcute:time-fill" style="margin-right:0.25rem;color:#ff551e;"></iconify-icon> 获取即时支持' link="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=S8y6baEcSkO6TEO5kEdfgmJhz79Oxdw5&authKey=ficWQytHGz3KIv5i0HpGbEeMBpABBXfjEMYRzo3ZwMV%2B0Y5mq8cC0Yxbczfa904H&noverify=0&group_code=795874649" >
 你可以加入我们的用户交流群: 795874649 来提问
 </NCard>
-<NCard title='<i class="fa-solid fa-envelope fa-shake" style="color: #FFB805;"></i> 通过 GitHub issue' link="https://github.com/ikenxuan/karin-plugin-kkk/issues/new/choose" >
+<NCard title='<iconify-icon icon="meteor-icons:github" style="margin-right:0.25rem"></iconify-icon> 通过 GitHub issue' link="https://github.com/ikenxuan/karin-plugin-kkk/issues/new/choose" >
 也可以给通过创建新的 GitHub issue 工单
 </NCard>

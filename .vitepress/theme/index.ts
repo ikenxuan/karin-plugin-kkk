@@ -1,12 +1,13 @@
 import DefaultTheme from 'vitepress/theme'
 import mediumZoom from 'medium-zoom'
 import { type Plugin, onMounted, watch, nextTick, h } from 'vue'
-import { useData, useRoute } from 'vitepress'
-import { Footer_Data } from '../data/fooertData'
+import { useData, useRoute, Theme } from 'vitepress'
+// 时间线样式
 import 'vitepress-markdown-timeline/dist/theme/index.css'
+// 自定义样式
 import './style/index.css'
 // 代码块添加折叠
-import codeblocksFold from 'vitepress-plugin-codeblocks-fold'
+// import codeblocksFold from 'vitepress-plugin-codeblocks-fold'
 import 'vitepress-plugin-codeblocks-fold/style/index.css'
 // 基于git的页面历史
 import {
@@ -19,11 +20,6 @@ import {
   NolebaseInlineLinkPreviewPlugin,
 } from '@nolebase/vitepress-plugin-inline-link-preview/client'
 import '@nolebase/vitepress-plugin-inline-link-preview/client/style.css'
-// 顶级的阅读增强，页面右上角小书本
-import {
-  NolebaseEnhancedReadabilitiesMenu,
-  NolebaseEnhancedReadabilitiesScreenMenu,
-} from '@nolebase/vitepress-plugin-enhanced-readabilities/client'
 
 import type { Options } from '@nolebase/vitepress-plugin-enhanced-readabilities/client'
 
@@ -31,20 +27,14 @@ import '@nolebase/vitepress-plugin-enhanced-readabilities/client/style.css'
 
 import { NolebaseEnhancedReadabilitiesPlugin } from '@nolebase/vitepress-plugin-enhanced-readabilities/client'
 
-// 闪烁高亮当前目标标题
-import {
-  NolebaseHighlightTargetedHeading,
-} from '@nolebase/vitepress-plugin-highlight-targeted-heading/client'
-// 快速复制当前页的url
-import { ShareButton } from '@theojs/lumen'
+// 大卡片
 import Ncard from './components/Ncard.vue'
+// 视频组件
 import Video from './components/Video.vue'
 import { HomeUnderline } from '@theojs/lumen'
 import Confetti from './components/Confetti.vue'
 import ChangeLogs from './components/ChangeLogs.vue'
 import Task from './components/Task.vue'
-import BackTop from './components/BackTop.vue'
-import { HomeFooter } from '@theojs/lumen'
 // 页面属性
 import {
   NolebasePagePropertiesPlugin,
@@ -60,8 +50,6 @@ import '@shikijs/vitepress-twoslash/style.css'
 // 卜算子浏览器统计
 import { inBrowser } from 'vitepress'
 import busuanzi from 'busuanzi.pure.js'
-// 首页公告栏
-import { Announcement } from '@theojs/lumen'
 // 缩略图模糊哈希生成
 import {
   NolebaseUnlazyImg,
@@ -71,6 +59,9 @@ import '@nolebase/vitepress-plugin-thumbnail-hash/client/style.css'
 import '@theojs/lumen/icon'
 //代码组图标样式
 import 'virtual:group-icons.css'
+// 高亮跳转
+import DocPill from './components/DocPill.vue'
+import Layout from './components/Layout.vue'
 
 export default {
   extends: DefaultTheme,
@@ -81,6 +72,7 @@ export default {
         defaultToggle: true,
       }
     } as Options)
+    app.component('Pill', DocPill)
     app.component('Home', HomeUnderline)
     app.component('NCard', Ncard)
     app.component('Video', Video)
@@ -129,24 +121,7 @@ export default {
       },
     })
   },
-  Layout: () => {
-    return h(DefaultTheme.Layout, null, {
-
-      'nav-bar-content-after': () => [
-        // 为较宽的屏幕的导航栏添加阅读增强菜单
-        h(NolebaseEnhancedReadabilitiesMenu),
-      ],
-      // 为较窄的屏幕（通常是小于 iPad Mini）添加阅读增强菜单
-      'nav-screen-content-after': () => h(NolebaseEnhancedReadabilitiesScreenMenu),
-      'layout-top': () => [
-        h(NolebaseHighlightTargetedHeading),
-      ],
-      'home-hero-info-before': () => h(Announcement),
-      'doc-footer-before': () => h(BackTop),
-      'layout-bottom': () => h(HomeFooter, { Footer_Data }),
-      'aside-outline-before': () => h(ShareButton),
-    })
-  },
+  Layout: Layout,
 
   /** 响应式图片缩放 */
   setup () {
@@ -172,7 +147,7 @@ export default {
       true
     )
     // 代码块添加折叠
-    codeblocksFold({ route, frontmatter }, true, 400)
+    // codeblocksFold({ route, frontmatter }, true, 400)
 
     const initZoom = () => {
       // 响应式的图片放大缩小
@@ -187,4 +162,4 @@ export default {
       () => nextTick(() => initZoom())
     )
   },
-}
+} satisfies Theme

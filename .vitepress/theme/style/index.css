@@ -19,5 +19,5 @@
 
 :root {
   --vp-sidebar-width: 300px;
-  --vp-font-family-base: 'HarmonyOS Sans SC', sans-serif;
+  --vp-font-family-base: 'HarmonyOS Sans SC', sans-serif !important;
 }

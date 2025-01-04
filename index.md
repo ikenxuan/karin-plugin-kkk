@@ -4,14 +4,17 @@ layout: home
 hero:
   name: 'karin-plugin-kkk'
   text: 视频解析插
-  textsuffix: 件（该文档存在滞后）
-  tagline: ✨ <a href='https://github.com/Karinjs/Karin' target='_blank'>Karin</a> 生态
+  textsuffix: 件
+  tagline: 在群聊中添加更多互动乐趣
   prelink:
-    title: '<p style="text-align: left;"><i class="fa-solid fa-bolt fa-shake" style="color: #FFD43B;"></i> 快速开始</p><div style="text-align: left; font-weight: bold; word-break: break-all; overflow-wrap: break-word;">git clone https://github.com/ikenxuan/karin-plugin-kkk.git</div>'
+    title: '<p style="text-align: left;"><i class="fa-solid fa-bolt fa-shake" style="color: #FFD43B;"></i> 快速开始</p><div style="text-align: left; font-weight: bold; word-break: break-all; overflow-wrap: break-word;">pnpm add karin-plugin-kkk.git -w</div>'
   image:
     src: /logo.png
   actions:
     - theme: brand
+      text: 源码
+      link: https://github.com/ikenxuan/karin-plugin-kkk
+    - theme: alt
       text: 简介
       link: /docs/start/start
     - theme: alt
@@ -19,17 +22,23 @@ hero:
       link: /docs/start/install
 
 features:
-  - title: 评论解析
-    icon: <i class="fa-solid fa-list fa-bounce"></i>
-    details: 解析评论列表渲染成图片返回
-  - title: 推送功能
-    icon: <i class="fa-brands fa-pushed fa-bounce"></i>
-    details: 抖音/B站动态推送
-  - title: 开放API
-    icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32"><path fill="currentColor" d="M26 22a3.86 3.86 0 0 0-2 .57l-3.09-3.1a6 6 0 0 0 0-6.94L24 9.43a3.86 3.86 0 0 0 2 .57a4 4 0 1 0-4-4a3.86 3.86 0 0 0 .57 2l-3.1 3.09a6 6 0 0 0-6.94 0L9.43 8A3.86 3.86 0 0 0 10 6a4 4 0 1 0-4 4a3.86 3.86 0 0 0 2-.57l3.09 3.1a6 6 0 0 0 0 6.94L8 22.57A3.86 3.86 0 0 0 6 22a4 4 0 1 0 4 4a3.86 3.86 0 0 0-.57-2l3.1-3.09a6 6 0 0 0 6.94 0l3.1 3.09a3.86 3.86 0 0 0-.57 2a4 4 0 1 0 4-4m0-18a2 2 0 1 1-2 2a2 2 0 0 1 2-2M4 6a2 2 0 1 1 2 2a2 2 0 0 1-2-2m2 22a2 2 0 1 1 2-2a2 2 0 0 1-2 2m10-8a4 4 0 1 1 4-4a4 4 0 0 1-4 4m10 8a2 2 0 1 1 2-2a2 2 0 0 1-2 2"/></svg>
-    details: 本地部署一个抖音、B站的 API 接口服务
+  - title: <iconify-icon icon="mdi:comment-text-multiple" style="margin-right:0.25rem;color:#3498db;"></iconify-icon>评论解析
+    details: 解析视频同时解析评论，并通过渲染器渲染精美的评论图片返回
+    rel: 'noopener'
+
+  - title: <iconify-icon icon="mingcute:horn-fill" style="margin-right:0.25rem;color:#d1a202;"></iconify-icon>推送功能
+    details: 用户可通过指定命令对自己喜欢的博主/UP主的视频或者动态进行定时推送，不错过他/她更新的动态
+    rel: 'noopener'
+
+  - title: '<iconify-icon icon="mingcute:align-arrow-up-fill" style="margin-right:0.25rem;color:#f39c12;"></iconify-icon>精细化的上传设置'
+    details: 当视频文件过大对服务器上行形成压力时可对其拦截或压缩后再上传；同时支持过大的视频使用群文件上传
+    rel: 'noopener'
+
+  - title: <iconify-icon icon="mingcute:route-fill" style="margin-right:0.25rem;color:#74ff5c;"></iconify-icon>开放API
+    details: 得益于解析库自带的http服务，本插件可开放解析库的所有API接口
     link: /docs/intro/apiserver
-    linkText: API Server
+    rel: 'noopener'
+    linkText: 了解更多  
 ---
 
 <Home />

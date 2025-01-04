@@ -1,52 +1,71 @@
 
 # 安装插件
-## 获取源码
 
-### 使用 Git 克隆（推荐）
+## ⬇️ 安装
 
-机器人目录下打开终端执行
-<mark>**务必使用**</mark> 以下的命令安装，否则插件可能不会被识别
+**以下三种方式任选其一即可安装插件**
 
-::: code-group
+* 使用编译产物 **`build 分支`**（非常推荐）
+   <details>
+   <summary>点击展开</summary>
 
-```sh [GitHub]
-git clone --depth=1 https://github.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-karin-plugin-kkk/
-```
+   1. 克隆源码
 
-```sh [Ghproxy]
-git clone --depth=1 https://ghp.ci/https://github.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-karin-plugin-kkk/
-```
+   <mark>**务必使用**</mark> 以下的命令安装，否则插件可能不会被识别
 
-```sh [Gitee 可能更新不及时]
-git clone --depth=1 https://gitee.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-karin-plugin-kkk/
-```
-:::
+   ```sh
+   git clone --depth=1 -b build https://github.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-kkk/
+   ```
+   <details>
+   <summary>如果你的 git 无法访问至 Github...点击打开查看解决方法</summary>
 
+   > 若克隆无法连接到 Github，可以使用 GitHub Proxy 提供的镜像加速克隆
+   > 建议收藏 [GitHub Proxy 最新地址发布](https://ghproxy.link/) 站点，以免镜像站被 GFW 封锁导致克隆失败
+   > ```sh
+   > git clone --depth=1 -b build https://ghgo.xyz/https://github.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-kkk/
+   > ```
 
-### 使用 Release 发行版（不推荐）
+   </details>
+   <br>
 
-<details>
-<summary>点击展开</summary>
+   2. 安装依赖
+   安装依赖，在 **Karin 根目录** 下运行
+   ```sh
+   pnpm install --filter=karin-plugin-kkk
+   ```
 
-<p style="color: red; font-weight: bolder;">不推荐该方式，后续无法通过 Git 进行更新</p>
+   </details>
 
-1. 打开 Release 页面: https://github.com/ikenxuan/karin-plugin-kkk/releases
-2. 找到最新的版本，下载后缀名为 `.zip` 的压缩包
-3. 在 `机器人根目录/plugins/` 中解压该压缩包
-4. 完成后插件应在 `机器人根目录/plugins/karin-plugin-kkk/`<br>[Karin](#获取源码) 则为 `机器人目录/plugins/karin-plugin-karin-plugin-kkk/`
+* 使用 **`包管理器`** 安装（非常推荐）
+   <details>
+   <summary>点击展开</summary>
 
+   在 **Karin 根目录** 下运行
+   ```sh
+   pnpm add karin-plugin-kkk -w
+   ```
+   </details>
 
-你可以在此处查看发布过的所有版本: [**版本历史**](../other/timeline.md)
-</details>
+* 使用 Release **`发行版`**（不推荐）
+    <details>
+    <summary>点击展开</summary>
 
-## 安装依赖
-二选一
-1. 根目录下执行
-```sh
-pnpm install --filter=karin-plugin-kkk
-```
-2. 插件目录下执行
-```sh
-cd plugins/karin-plugin-kkk
-pnpm install -P
-```
+    <p style="color: red; font-weight: bolder;">不推荐该方式，后续只能重复下载 Release 包进行更新，且无法通过 Git 或 包管理器 进行更新</p>
+    
+    1. 打开 Release 页面: https://github.com/ikenxuan/karin-plugin-kkk/releases
+    2. 找到最新的版本，下载名为 `build.zip` 的压缩包
+    3. 在 `plugins/` 目录下解压该压缩包
+
+    * 完成后相关源码应在 `Karin根目录/plugins/karin-plugin-kkk/` 内<br><br>
+
+    解压完成后在插件目录下运行
+    ```sh
+    pnpm install   
+    ```
+
+    或者在 **Karin 根目录** 下运行
+    ```sh
+    pnpm install --filter=karin-plugin-kkk
+    ```
+
+    </details>
