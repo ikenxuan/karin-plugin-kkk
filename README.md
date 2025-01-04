@@ -15,7 +15,7 @@
    git clone --depth=1 -b build https://github.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-kkk/
    ```
    <details>
-   <summary>如果你的 git 无法访问至 Github...点击打开</summary>
+   <summary>如果你的 git 无法访问至 Github...点击打开查看解决方法</summary>
 
    > 若克隆无法连接到 Github，可以使用 GitHub Proxy 提供的镜像加速克隆
    > 建议收藏 [GitHub Proxy 最新地址发布](https://ghproxy.link/) 站点，以免镜像站被 GFW 封锁导致克隆失败
@@ -29,7 +29,7 @@
    2. 安装依赖
    安装依赖，在 **Karin 根目录** 下运行
    ```sh
-   pnpm install --filter=karin-plugin-kkk -P
+   pnpm install --filter=karin-plugin-kkk
    ```
 
    </details>
@@ -63,7 +63,7 @@
 
     或者在 **Karin 根目录** 下运行
     ```sh
-    pnpm install --filter=karin-plugin-kkk -P
+    pnpm install --filter=karin-plugin-kkk
     ```
 
     </details>
