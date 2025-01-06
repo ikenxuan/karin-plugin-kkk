@@ -31,8 +31,8 @@ export async function fetchDouyinData<T extends keyof DouyinDataTypes> (
     }
 
     case 'user_mix_videos': {
-      const LiveImageData = await getDouyinData('实况图片图集数据', dyck, {
-        aweme_id: (opt as DouyinDataOptionsMap['实况图片图集数据']).aweme_id
+      const LiveImageData = await getDouyinData('合辑作品数据', dyck, {
+        aweme_id: (opt as DouyinDataOptionsMap['合辑作品数据']).aweme_id
       })
       return LiveImageData
     }

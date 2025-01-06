@@ -1,13 +1,13 @@
-import { DouyinOptionsType } from '@ikenxuan/amagi'
 import { logger } from 'node-karin'
 
 import { Networks } from '@/module/utils'
 import { DouyinDataTypes } from '@/types'
 
-export interface ExtendedDouyinOptionsType extends DouyinOptionsType {
-  type: DouyinDataTypes[keyof DouyinDataTypes],
+export interface ExtendedDouyinOptionsType {
+  type: DouyinDataTypes[keyof DouyinDataTypes]
   /** 该作品是否为视频 */
   is_mp4?: boolean
+  [key: string]: any
 }
 
 /**

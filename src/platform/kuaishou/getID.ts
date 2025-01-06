@@ -1,10 +1,9 @@
-import { KuaishouOptionsType } from '@ikenxuan/amagi'
 import { logger } from 'node-karin'
 
 import { Networks } from '@/module'
 import { KuaishouDataTypes } from '@/types'
 
-export interface ExtendedKuaishouOptionsType extends KuaishouOptionsType {
+export interface ExtendedKuaishouOptionsType {
   type: KuaishouDataTypes[keyof KuaishouDataTypes],
   [x: string]: any
 }
