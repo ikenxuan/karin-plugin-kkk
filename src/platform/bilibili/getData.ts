@@ -11,7 +11,7 @@ export async function fetchBilibiliData<T extends keyof BilibiliDataTypes> (
   const cl = new Amagi({ bilibili: Config.cookies.bilibili })
   switch (type) {
     case 'one_video': {
-      const INFODATA = await cl.getBilibiliData('单个视频作品数据', { bvid: opt.bvid })
+      const INFODATA = await cl.getBilibiliData('单个视频作品数据', { bvid: opt.id })
       const DATA = await cl.getBilibiliData('单个视频下载信息数据', {
         avid: INFODATA.data.aid,
         cid: INFODATA.data.cid
@@ -35,7 +35,7 @@ export async function fetchBilibiliData<T extends keyof BilibiliDataTypes> (
       return dt
     }
     case 'work_comments': {
-      const INFODATA = await cl.getBilibiliData('单个视频作品数据', { bvid: opt.bvid })
+      const INFODATA = await cl.getBilibiliData('单个视频作品数据', { bvid: opt.id })
       const aCOMMENTSDATA = await cl.getBilibiliData('评论数据', {
         number: Config.bilibili.numcomment,
         type: 1,
