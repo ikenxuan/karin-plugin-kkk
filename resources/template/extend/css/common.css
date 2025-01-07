@@ -6,7 +6,6 @@
 @import '../../../font//HarmonyOS_Sans_SC_Regular/font.css';
 @import '../../../font/HarmonyOS_Sans_SC_Thin/font.css';
 @import '../../../font//bilifont/font.css';
-@import '../../../font//KimjungchulGothic_Regular/font.css';
 
 * {
   margin: 0;
@@ -19,7 +18,7 @@
 
 body {
   color: #1e1f20;
-  font-family: "HarmonyOS Sans SC", "bilifont", "KimjungchulGothic_Regular", "Noto Color Emoji", "FZB", Number, "汉仪文黑-65W", YS, PingFangSC-Medium, "PingFang SC", sans-serif;
+  font-family: "HarmonyOS Sans SC", "bilifont", "Noto Sans KR", "Noto Color Emoji", "FZB", Number, "汉仪文黑-65W", YS, PingFangSC-Medium, "PingFang SC", sans-serif;
   transform-origin: 0 0;
   width: 1440px;
 }
