@@ -37,7 +37,7 @@
     "clean": "npm lib/cli/pr.js clean"
   },
   "dependencies": {
-    "@ikenxuan/amagi": "4.0.4-beta.pr.81.1-1736191953",
+    "@ikenxuan/amagi": "4.0.4-beta.pr.81.1-1736275196",
     "@infolektuell/noto-color-emoji": "^0.2.0",
     "@karinjs/md-html": "^1.1.6",
     "axios": "^1.7.9",

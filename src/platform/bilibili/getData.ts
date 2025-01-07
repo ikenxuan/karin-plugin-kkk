@@ -54,17 +54,8 @@ export async function fetchBilibiliData<T extends keyof BilibiliDataTypes> (
     }
 
     case 'bangumi_video_info': {
-      // let cleanedId = ''; let isep = false
-      // if (opt.ep_id) {
-      //   cleanedId = opt.ep_id.replace('ep', '')
-      //   isep = true
-      // } else if (opt.season_id) {
-      //   cleanedId = opt.season_id.replace('ss', '')
-      //   isep = false
-      // }
-      const INFO = await cl.getBilibiliData('番剧基本信息数据', { ...opt })
-      // const QUERY = await genParams(isep ? bilibiliAPI.番剧明细({ id: cleanedId, isep }) : bilibiliAPI.番剧明细({ id: cleanedId, isep }))
-      const QUERY = await genParams(bilibiliAPI.番剧明细({ ep_id: opt.ep_id.replace('ep', '') }))
+      const INFO = await cl.getBilibiliData('番剧基本信息数据', opt)
+      const QUERY = await genParams(bilibiliAPI.番剧明细(opt))
       return { INFODATA: INFO, USER: QUERY, TYPE: 'bangumi_video_info' }
     }
 
