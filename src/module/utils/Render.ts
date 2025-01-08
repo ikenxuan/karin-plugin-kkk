@@ -54,8 +54,7 @@ export async function Render (path: string, params?: any) {
       },
       pluResPath: `${Version.pluginPath}/resources/`,
       copyright: `<span class="name">kkk</span><span class="version">${Version.pluginVersion} ${releaseType()}</span> Powered By <span class="name">Karin</span>`,
-      useDarkTheme: Common.useDarkTheme(),
-      noto_emoji_font_path: pkgRoot('@infolektuell/noto-color-emoji')
+      useDarkTheme: Common.useDarkTheme()
     },
     screensEval: '#container'
   })

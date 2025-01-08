@@ -167,6 +167,7 @@ body.light-mode .forward_info_text {
   letter-spacing: 1.5px;
   position: relative;
   word-wrap: break-word;
+  line-height: 1.5;
 }
 
 body.dark-mode .forward_info_text {
@@ -176,6 +177,7 @@ body.dark-mode .forward_info_text {
   position: relative;
   word-wrap: break-word;
   color: #e9e9e9;
+  line-height: 1.5;
 }
 
 body.light-mode .video_info_text {
@@ -490,14 +492,24 @@ body.light-mode .DYNAMIC_TYPE_WORD {
   padding: 45px 0 25px 0;
 }
 
-.DRAWimgbox {
+body.light-mode .DRAWimgbox {
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0px 10px 30px 10px #a5a5a5;
+  box-shadow: 0px 10px 30px 10px #7d7d7d80;
   border-radius: 25px;
   width: 95%;
-  /* aspect-ratio: 16 / 9; */
+  overflow: hidden;
+  position: relative;
+}
+
+body.dark-mode .DRAWimgbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0px 10px 30px 10px #00000080;
+  border-radius: 25px;
+  width: 95%;
   overflow: hidden;
   position: relative;
 }
