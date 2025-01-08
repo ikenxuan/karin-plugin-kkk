@@ -261,7 +261,8 @@ const PlatformTypeConfig: Record<string, PlatformType> = {
       抖音推送日志: 'push.log',
       抖音解析提示: 'tip',
       抖音高清语音: 'sendHDrecord',
-      抖音动态解析: 'push.parsedynamic'
+      抖音动态解析: 'push.parsedynamic',
+      抖音自动清晰度: 'autoResolution'
     },
     numberConfig: {
       抖音评论数量: { key: 'numcomment', limit: '0-999999' }
@@ -281,7 +282,7 @@ const PlatformTypeConfig: Record<string, PlatformType> = {
       B站解析提示: 'tip',
       B站动态解析: 'push.parsedynamic',
       B站内容优先: 'videopriority',
-      B站番剧自动清晰度: 'autoResolution'
+      B站自动清晰度: 'autoResolution'
     },
     numberConfig: {
       B站评论数量: { key: 'numcomment', limit: '0-999999' }

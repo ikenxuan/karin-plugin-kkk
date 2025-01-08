@@ -23,11 +23,11 @@ class Tools {
   constructor () {
     this.tempDri = {
       /** 插件缓存目录 */
-      default: `${tempPath}/${Version.pluginName}/`,
+      default: `${tempPath}/${Version.pluginName}/`.replace(/\\/g, '/'),
       /** 视频缓存文件 */
-      video: `${tempPath}/${Version.pluginName}/kkkdownload/video/`,
+      video: `${tempPath}/${Version.pluginName}/kkkdownload/video/`.replace(/\\/g, '/'),
       /** 图片缓存文件 */
-      images: `${tempPath}/${Version.pluginName}/kkkdownload/images/`
+      images: `${tempPath}/${Version.pluginName}/kkkdownload/images/`.replace(/\\/g, '/')
     }
   }
 

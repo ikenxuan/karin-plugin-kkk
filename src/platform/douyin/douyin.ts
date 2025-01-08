@@ -11,7 +11,28 @@ import { DouyinDataTypes, ExtendedDouyinOptionsType } from '@/types'
 
 let mp4size = ''
 let img
-
+type Video = {
+  FPS: number
+  HDR_bit: string
+  HDR_type: string
+  bit_rate: number
+  format: string
+  gear_name: string
+  is_bytevc1: number
+  is_h265: number
+  play_addr: {
+    data_size: number
+    file_cs: string
+    file_hash: string
+    height: number
+    uri: string
+    url_key: string
+    url_list: string[]
+    width: number
+  }
+  quality_type: number
+  video_extra: string
+}
 export class DouYin extends Base {
   e: Message
   type: DouyinDataTypes[keyof DouyinDataTypes]
@@ -93,14 +114,15 @@ export class DouYin extends Base {
           // 视频地址特殊判断：play_addr_h264、play_addr、
           const video = data.VideoData.aweme_detail.video
           FPS = video.bit_rate[0].FPS // FPS
-          if (data.VideoData.aweme_detail.video.play_addr_h264) {
+          if (Config.douyin.autoResolution) {
+            video.bit_rate = this.processVideos(video.bit_rate, Config.upload.filelimit)
             g_video_url = await new Networks({
-              url: video.play_addr_h264.url_list[2],
+              url: video.bit_rate[0].play_addr.url_list[2],
               headers: this.headers
             }).getLongLink()
-          } else if (data.VideoData.aweme_detail.video.play_addr) {
+          } else {
             g_video_url = await new Networks({
-              url: video.play_addr.url_list[0],
+              url: video.play_addr_h264.url_list[2] || video.play_addr_h264.url_list[2],
               headers: this.headers
             }).getLongLink()
           }
@@ -307,6 +329,24 @@ export class DouYin extends Base {
       }
       default:
         break
+    }
+  }
+
+  processVideos (videos: Video[], filelimit: number): Video[] {
+    const sizeLimitBytes = filelimit * 1024 * 1024 // 将 MB 转换为字节
+    // 过滤出小于等于大小限制的视频
+    const validVideos = videos.filter(video => video.play_addr.data_size <= sizeLimitBytes)
+
+    if (validVideos.length > 0) {
+      // 如果有符合条件的视频，找到 data_size 最大的视频
+      return [validVideos.reduce((maxVideo, currentVideo) => {
+        return currentVideo.play_addr.data_size > maxVideo.play_addr.data_size ? currentVideo : maxVideo
+      })]
+    } else {
+      // 如果没有符合条件的视频，返回 data_size 最小的那个视频
+      return [videos.reduce((minVideo, currentVideo) => {
+        return currentVideo.play_addr.data_size < minVideo.play_addr.data_size ? currentVideo : minVideo
+      })]
     }
   }
 }

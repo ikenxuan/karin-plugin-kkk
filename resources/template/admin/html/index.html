@@ -179,6 +179,14 @@
       </div>
       <div class="cfg-desc">推送新作品时一同解析其中内容并发送</div>
     </li>
+    <li class="cfg-li">
+      <div class="cfg-line">
+        抖音自动清晰度
+        <span class="cfg-hint">#kkk设置抖音自动清晰度 + 开启/关闭</span>
+        {{@data.bilibili.autoResolution}}
+      </div>
+      <div class="cfg-desc">根据「视频大小拦截值」自动选择合适的分辨率，关闭后默认选择最大分辨率进行下载</div>
+    </li>
   </ul>
 </div>
 <div class="cfg-box">
@@ -266,11 +274,11 @@
     </li>
     <li class="cfg-li">
       <div class="cfg-line">
-        B站番剧自动清晰度
-        <span class="cfg-hint">#kkk设置B站番剧自动清晰度 + 开启/关闭</span>
+        B站自动清晰度
+        <span class="cfg-hint">#kkk设置B站自动清晰度 + 开启/关闭</span>
         {{@data.bilibili.autoResolution}}
       </div>
-      <div class="cfg-desc">解析视频是否优先保内容，打开为优先保证上传将使用最低分辨率，关闭为优先保清晰度将使用最高分辨率</div>
+      <div class="cfg-desc">根据「视频大小拦截值」自动选择合适的分辨率，关闭后默认选择最大分辨率进行下载</div>
     </li>
   </ul>
 </div>

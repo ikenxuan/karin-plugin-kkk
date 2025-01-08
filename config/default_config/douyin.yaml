@@ -10,8 +10,8 @@ comment: true
 # 抖音评论数量，范围 1 ~ x 条
 numcomment: 5
 
-# 图集BGM是否使用高清语音发送，高清语音「ios/PC」系统均无法播放，自行衡量开关（仅icqq）
-sendHDrecord: true
+# 根据「视频大小拦截值」自动选择合适的分辨率，关闭后默认选择最大分辨率进行下载
+autoResolution: true
 
 # 抖音推送相关配置
 push: 
