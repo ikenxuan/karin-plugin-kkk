@@ -138,8 +138,7 @@ export class DouYin extends Base {
           ))
           videores.push(segment.text(`视频直链（有时效性，永久直链在下一条消息）：\n${g_video_url}`))
           videores.push(segment.image(cover))
-          g_video_url = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${data.VideoData.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`
-          logger.info('视频地址', g_video_url)
+          logger.info('视频地址', `https://aweme.snssdk.com/aweme/v1/play/?video_id=${data.VideoData.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`)
           const res = common.makeForward(videores, this.e.sender.userId, this.e.sender.nick)
           video_data.push(res)
           video_res.push(video_data)
@@ -334,8 +333,8 @@ export class DouYin extends Base {
 
   processVideos (videos: Video[], filelimit: number): Video[] {
     const sizeLimitBytes = filelimit * 1024 * 1024 // 将 MB 转换为字节
-    // 过滤出小于等于大小限制的视频
-    const validVideos = videos.filter(video => video.play_addr.data_size <= sizeLimitBytes)
+    // 过滤掉 format 为 'dash' 的视频，并且过滤出小于等于大小限制的视频
+    const validVideos = videos.filter(video => video.format !== 'dash' && video.play_addr.data_size <= sizeLimitBytes)
 
     if (validVideos.length > 0) {
       // 如果有符合条件的视频，找到 data_size 最大的视频
@@ -343,8 +342,9 @@ export class DouYin extends Base {
         return currentVideo.play_addr.data_size > maxVideo.play_addr.data_size ? currentVideo : maxVideo
       })]
     } else {
-      // 如果没有符合条件的视频，返回 data_size 最小的那个视频
-      return [videos.reduce((minVideo, currentVideo) => {
+      // 如果没有符合条件的视频，返回 data_size 最小的那个视频（排除 'dash' 格式）
+      const allValidVideos = videos.filter(video => video.format !== 'dash')
+      return [allValidVideos.reduce((minVideo, currentVideo) => {
         return currentVideo.play_addr.data_size < minVideo.play_addr.data_size ? currentVideo : minVideo
       })]
     }
