@@ -98,7 +98,7 @@ body.dark-mode .container {
 }
 
 body.light-mode .info_title {
-  font-weight: bolder;
+  font-weight: bold;
   font-size: 65px;
   align-items: center;
   letter-spacing: 1.5px;
@@ -107,7 +107,7 @@ body.light-mode .info_title {
 }
 
 body.dark-mode .info_title {
-  font-weight: bolder;
+  font-weight: bold;
   font-size: 65px;
   align-items: center;
   letter-spacing: 1.5px;

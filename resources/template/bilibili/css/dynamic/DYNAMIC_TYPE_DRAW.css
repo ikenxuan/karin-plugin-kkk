@@ -261,7 +261,7 @@ img:not([src]) {
 }
 
 .username {
-  font-weight: bolder;
+  font-weight: bold;
   font-size: 60px;
   /* margin: 0 0 0 0; */
 }

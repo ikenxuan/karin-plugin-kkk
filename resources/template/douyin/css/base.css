@@ -373,7 +373,7 @@ body.dark-mode .userinfo_text {
 }
 
 .username {
-  font-weight: bolder;
+  font-weight: bold;
   color: #606060;
   font-size: 80px;
 }
@@ -414,13 +414,13 @@ body.dark-mode .qrcode_text {
 }
 
 body.ligth-mode .username {
-  font-weight: bolder;
+  font-weight: bold;
   color: #606060;
   font-size: 80px;
 }
 
 body.dark-mode .username {
-  font-weight: bolder;
+  font-weight: bold;
   color: #ededed;
   font-size: 80px;
 }
