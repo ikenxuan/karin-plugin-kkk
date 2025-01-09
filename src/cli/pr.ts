@@ -28,7 +28,7 @@ const updateVersion = (pkg: { version: string }) => {
   console.log('PR_COMMIT_HASH' + process.env.PR_COMMIT_HASH)
   const shortHash = process.env.PR_COMMIT_HASH?.substring(0, 7) ?? 'unknown'
   list[2] = `${Number(list[2]) + 1}`
-  pkg.version = `${list.join('.')}.pr${process.env.PR_NUMBER}.${shortHash}`
+  pkg.version = `${list.join('.')}-pr${process.env.PR_NUMBER}.${shortHash}`
 }
 
 /**
