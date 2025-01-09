@@ -37,6 +37,8 @@ jobs:
       # 获取当前 PR 编号并设置环境变量
       - name: 获取 PR 编号
         run: echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+      - name: 获取当前提交哈希
+        run: echo "GITHUB_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
       # 自动修改 package.json 的版本号、删除开发、对等依赖
       - name: 修订版本号
         run: npm run pr all
