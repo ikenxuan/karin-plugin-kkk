@@ -53,7 +53,7 @@ jobs:
           # 获取提交的哈希值
           COMMIT_HASH=$(git rev-parse --short HEAD)
           # 获取仓库的 URL
-          REPO_URL="https://github.com/${{ github.repository }}/commit/${COMMIT_HASH}"
+          REPO_URL="https://github.com/${{ github.repository }}/tree/${COMMIT_HASH}"
 
           if [ "${{ steps.build.outcome }}" = "failure" ]; then
             # 捕获构建失败日志
@@ -63,7 +63,7 @@ jobs:
           else
             # 构建成功评论
             INSTALL_COMMAND_1="pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -w"
-            gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 构建完成！\n\n该版本是基于 [`'"${COMMIT_HASH}"'`]('"${REPO_URL}"') 提交所构建，可能存在不稳定性。\n\n你可以通过以下命令安装此版本：\n\n```\n'"${INSTALL_COMMAND_1}"$'\n```\n'
+            gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 构建完成！<br>该版本是基于 [`'"${COMMIT_HASH}"'`]('"${REPO_URL}"') 提交所构建，可能存在不稳定性。 <br>你可以通过以下命令安装此版本：<br>```\n'"${INSTALL_COMMAND_1}"$'\n```\n'
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
