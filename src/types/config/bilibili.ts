@@ -15,7 +15,7 @@ export interface bilibiliConfig {
   /** 解析视频是否优先保内容，true为优先保证上传将使用最低分辨率，false为优先保清晰度将使用最高分辨率 */
   videopriority: boolean
 
-  /** 根据「视频大小拦截值」自动选择合适的分辨率，关闭后默认选择最大分辨率进行下载 */
+  /** 根据「视频拦截阈值」自动选择合适的分辨率，关闭后默认选择最大分辨率进行下载 */
   autoResolution: boolean
 
   /** B站推送相关配置 */

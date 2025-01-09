@@ -169,7 +169,7 @@ export class Bilibilipush extends Base {
                 send_video = false
                 logger.debug(`UP主：${INFODATA.data.owner.name} 的该动态类型为${logger.yellow('番剧或影视')}，默认跳过不下载，直达：${logger.green(INFODATA.data.redirect_url)}`)
               } else {
-                nocd_data = await getBilibiliData('单个视频下载信息数据', '', { avid: INFODATA.data.aid, cid: INFODATA.data.cid })
+                nocd_data = await getBilibiliData('单个视频下载信息数据', '', { avid: aid, cid: INFODATA.data.cid })
               }
               img = await Render('bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {
@@ -179,10 +179,13 @@ export class Bilibilipush extends Base {
                   dianzan: this.count(INFODATA.data.stat.like),
                   pinglun: this.count(INFODATA.data.stat.reply),
                   share: this.count(INFODATA.data.stat.share),
+                  view: this.count(dycrad.stat.view),
+                  coin: this.count(dycrad.stat.coin),
+                  duration_text: data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.duration_text,
                   create_time: Common.convertTimestampToDateTime(INFODATA.data.ctime),
                   avatar_url: INFODATA.data.owner.face,
                   frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
-                  share_url: 'https://www.bilibili.com/video/' + bvid,
+                  share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str || 'https://www.bilibili.com/video/' + bvid,
                   username: checkvip(userINFO.data.card),
                   fans: this.count(userINFO.data.follower),
                   user_shortid: data[dynamicId].host_mid,

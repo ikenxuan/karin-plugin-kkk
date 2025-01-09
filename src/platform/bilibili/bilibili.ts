@@ -201,7 +201,7 @@ export class Bilibili extends Base {
       case 'dynamic_info': {
         switch (OBJECT.dynamicINFO.data.item.type) {
           /** 图文、纯图 */
-          case 'DYNAMIC_TYPE_DRAW': {
+          case DynamicType.DRAW: {
             const imgArray = []
             for (const img of OBJECT.dynamicINFO.data.item.modules.module_dynamic.major?.draw?.items) {
               imgArray.push(segment.image(img.src))
@@ -258,7 +258,7 @@ export class Bilibili extends Base {
             break
           }
           /** 纯文 */
-          case 'DYNAMIC_TYPE_WORD': {
+          case DynamicType.WORD: {
             const text = replacetext(br(OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text), OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.rich_text_nodes)
             await this.e.reply(
               await Render('bilibili/dynamic/DYNAMIC_TYPE_WORD', {
@@ -290,7 +290,8 @@ export class Bilibili extends Base {
             )
             break
           }
-          case 'DYNAMIC_TYPE_FORWARD': {
+          /** 转发动态 */
+          case DynamicType.FORWARD: {
             const text = replacetext(br(OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text), OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.rich_text_nodes)
             let data = {}
             switch (OBJECT.dynamicINFO.data.item.orig.type) {
@@ -372,7 +373,7 @@ export class Bilibili extends Base {
                 user_shortid: OBJECT.dynamicINFO.data.item.modules.module_author.mid,
                 total_favorited: this.count(OBJECT.USERDATA.data.like_num),
                 following_count: this.count(OBJECT.USERDATA.data.card.attention),
-                dynamicTYPE: '转发动态',
+                dynamicTYPE: '转发动态解析',
                 decoration_card: generateDecorationCard(OBJECT.dynamicINFO.data.item.modules.module_author.decorate),
                 render_time: Common.getCurrentTime(),
                 original_content: { [OBJECT.dynamicINFO.data.item.orig.type]: data }
@@ -380,6 +381,52 @@ export class Bilibili extends Base {
             )
             break
           }
+          /** 视频动态 */
+          case DynamicType.AV: {
+            if (OBJECT.dynamicINFO.data.item.modules.module_dynamic.major.type === 'MAJOR_TYPE_ARCHIVE') {
+              const bvid = OBJECT.dynamicINFO.data.item.modules.module_dynamic.major.archive.bvid
+              const INFODATA = await getBilibiliData('单个视频作品数据', '', { bvid })
+              const dycrad = OBJECT.dynamicINFO_CARD.data.card && OBJECT.dynamicINFO_CARD.data.card.card && JSON.parse(OBJECT.dynamicINFO_CARD.data.card.card)
+
+              await this.e.reply(
+                await Render('bilibili/comment', {
+                  Type: '动态',
+                  CommentsData: bilibiliComments(OBJECT),
+                  CommentLength: String((bilibiliComments(OBJECT)?.length) ? bilibiliComments(OBJECT).length : 0),
+                  share_url: 'https://www.bilibili.com/video/' + bvid,
+                  ImageLength: OBJECT.dynamicINFO.data.item.modules?.module_dynamic?.major?.draw?.items?.length || '动态中没有附带图片',
+                  shareurl: '动态分享链接'
+                })
+              )
+
+              img = await Render('bilibili/dynamic/DYNAMIC_TYPE_AV',
+                {
+                  image_url: [{ image_src: INFODATA.data.pic }],
+                  text: br(INFODATA.data.title),
+                  desc: br(dycrad.desc),
+                  dianzan: this.count(INFODATA.data.stat.like),
+                  pinglun: this.count(INFODATA.data.stat.reply),
+                  share: this.count(INFODATA.data.stat.share),
+                  view: this.count(dycrad.stat.view),
+                  coin: this.count(dycrad.stat.coin),
+                  duration_text: OBJECT.dynamicINFO.data.item.modules.module_dynamic.major.archive.duration_text,
+                  create_time: Common.convertTimestampToDateTime(INFODATA.data.ctime),
+                  avatar_url: INFODATA.data.owner.face,
+                  frame: OBJECT.dynamicINFO.data.item.modules.module_author.pendant.image,
+                  share_url: 'https://www.bilibili.com/video/' + bvid,
+                  username: checkvip(OBJECT.USERDATA.data.card),
+                  fans: this.count(OBJECT.USERDATA.data.follower),
+                  user_shortid: OBJECT.USERDATA.data.card.mid,
+                  total_favorited: this.count(OBJECT.USERDATA.data.like_num),
+                  following_count: this.count(OBJECT.USERDATA.data.card.attention),
+                  dynamicTYPE: '视频动态'
+                }
+              )
+              await this.e.reply(img)
+            }
+            break
+          }
+
           default:
             await this.e.reply(`该动态类型「${OBJECT.dynamicINFO.data.item.type}」暂未支持解析`)
             break
