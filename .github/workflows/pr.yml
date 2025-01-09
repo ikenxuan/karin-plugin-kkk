@@ -50,12 +50,12 @@ jobs:
       # 在 PR 上发布构建完成或失败信息
       - name: 发布评论
         run: |
+          # 获取 PR 头部的完整提交哈希值（用于生成正确的 URL）
+          PR_COMMIT_HASH="${{ github.event.pull_request.head.sha }}"
           # 获取短哈希值（显示在评论中的哈希值）
-          SHORT_COMMIT_HASH=$(git rev-parse --short HEAD)
-          # 获取完整的哈希值（用于链接）
-          FULL_COMMIT_HASH=$(git rev-parse HEAD)
-          # 获取仓库的 URL
-          REPO_URL="https://github.com/${{ github.repository }}/tree/${FULL_COMMIT_HASH}"
+          SHORT_COMMIT_HASH=$(echo $PR_COMMIT_HASH | cut -c1-7)
+          # 获取仓库的 URL（基于 PR 中的提交哈希值，指向仓库快照）
+          REPO_URL="https://github.com/${{ github.repository }}/tree/${PR_COMMIT_HASH}"
 
           if [ "${{ steps.build.outcome }}" = "failure" ]; then
             # 捕获构建失败日志
@@ -65,7 +65,7 @@ jobs:
           else
             # 构建成功评论
             INSTALL_COMMAND_1="pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -w"
-            gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 该版本是基于 [`'"${SHORT_COMMIT_HASH}"$'`]('"${REPO_URL}"$') 提交所构建\n\n```\n'"${INSTALL_COMMAND_1}"$'\n```'
+            gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 🎉 构建完成！\n该版本是基于 [`'"${SHORT_COMMIT_HASH}"$'`]('"${REPO_URL}"$') 提交所构建的，你可以通过以下命令安装新版本：\n\n```\n'"${INSTALL_COMMAND_1}"$'\n```'
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
