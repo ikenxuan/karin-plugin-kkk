@@ -114,28 +114,46 @@ class Cfg {
 
     // 处理嵌套路径
     const keys = key.split('.')
-    let current: YAML.YAMLMap | undefined = yamlData.contents as YAML.YAMLMap
-
-    for (const subKey of keys.slice(0, -1)) {
-      if (current instanceof YAML.YAMLMap) {
-        let subValue: any = current.get(subKey)
-        if (!YAML.isMap(subValue)) {
-          subValue = new YAML.YAMLMap()
-          current.set(subKey, subValue)
-        }
-        current = subValue
-      } else {
-        throw new Error(`无效的YAML结构：${subKey} 不是一个YAMLMap。`)
-      }
-    }
-
-    if (current instanceof YAML.YAMLMap) {
-      current.set(keys[keys.length - 1], value)
-    } else {
-      throw new Error('无效的YAML结构：无法设置值。')
-    }
+    this.setNestedValue(yamlData.contents as YAML.YAMLMap, keys, value)
 
     fs.writeFileSync(path, yamlData.toString({ lineWidth: -1 }), 'utf8')
+  }
+
+  /**
+   * 在YAML映射中设置嵌套值
+   *
+   * 该函数用于在给定的YAML映射（map）中，根据指定的键路径（keys）设置值（value）
+   * 如果键路径不存在，该函数会创建必要的嵌套映射结构并设置值
+   *
+   * @param map YAML映射，作为设置值的目标
+   * @param keys 键路径，表示要设置的值的位置
+   * @param value 要设置的值
+   */
+  private setNestedValue (
+    map: YAML.YAMLMap,
+    keys: string[],
+    value: any
+  ) {
+    // 当键路径长度为1时，直接在map中设置值
+    if (keys.length === 1) {
+      map.set(keys[0], value)
+      return
+    }
+
+    // 获取当前层级的键
+    const subKey = keys[0]
+    // 尝试获取当前键对应的子映射
+    let subMap: YAML.YAMLMap | undefined = map.get(subKey) as YAML.YAMLMap
+
+    // 如果子映射不存在或不是YAML映射，则创建一个新的YAML映射
+    if (!subMap || !YAML.isMap(subMap)) {
+      subMap = new YAML.YAMLMap()
+      // 在当前映射中设置新的子映射
+      map.set(subKey, subMap)
+    }
+
+    // 递归调用自身，处理下一个键路径
+    this.setNestedValue(subMap, keys.slice(1), value)
   }
 
   mergeObjectsWithPriority (
@@ -144,8 +162,8 @@ class Cfg {
   ): { result: YAML.Document.Parsed; differences: boolean } {
     let differences = false
 
-    // 合并 YAML 对象，确保注释保留
-    function mergeYamlNodes (target: any, source: any): any {
+    /** 合并 YAML 对象，确保注释保留 */
+    const mergeYamlNodes = (target: any, source: any) => {
       if (YAML.isMap(target) && YAML.isMap(source)) {
         // 遍历 source 中的每一项，合并到 target 中
         for (const pair of source.items) {
