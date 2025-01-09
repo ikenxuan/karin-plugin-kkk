@@ -1,5 +1,5 @@
 import { getDouyinData } from '@ikenxuan/amagi'
-import { AdapterType, common, ImageElementType, karin, logger, Message, segment } from 'node-karin'
+import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
 import { AllDataType, Base, Common, Config, DB, DouyinDBType, Render } from '@/module'
 import { ExtendedDouyinOptionsType, getDouyinID } from '@/platform/douyin'
@@ -71,7 +71,7 @@ export class DouYinpush extends Base {
     for (const awemeId in data) {
       const Detail_Data = data[awemeId].Detail_Data
       const skip = skipDynamic(Detail_Data)
-      let img: ImageElementType[] = []
+      let img: ImageElement[] = []
       let iddata: ExtendedDouyinOptionsType = { is_mp4: true, type: 'one_work' }
       if (!skip) {
         iddata = await getDouyinID(Detail_Data.share_url || 'https://live.douyin.com/' + Detail_Data.room_data.owner.web_rid, false)
@@ -138,7 +138,7 @@ export class DouYinpush extends Base {
                   logger.error(error)
                 }
               } else if (!iddata.is_mp4 && iddata.type === 'one_work') { // 如果新作品是图集
-                const imageres: ImageElementType[] = []
+                const imageres: ImageElement[] = []
                 let image_url
                 for (const item of Detail_Data.aweme_detail.images) {
                   image_url = item.url_list[2] || item.url_list[1] // 图片地址

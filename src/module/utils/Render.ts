@@ -1,6 +1,6 @@
 import { join } from 'node:path'
 
-import { ImageElementType, Options, pkgRoot, render, segment } from 'node-karin'
+import { ImageElement, Options, render, segment } from 'node-karin'
 
 import { Common, Config, Version } from '@/module'
 
@@ -59,7 +59,7 @@ export async function Render (path: string, params?: any) {
     screensEval: '#container'
   })
   // 分片截图传回来的是数组
-  const ret: ImageElementType[] = []
+  const ret: ImageElement[] = []
   for (const imgae of img) {
     ret.push(segment.image('base64://' + imgae))
   }

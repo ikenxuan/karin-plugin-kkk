@@ -43,29 +43,30 @@ export const setbilick = karin.command(/^#?(kkk)?s*设置s*(B站)ck$/i, async (e
   return true
 }, { perm: 'master', name: 'kkk-ck管理', event: 'message.friend' })
 
+const authFailMsg = '你暂时没有这个权限使用这个功能啦 ~ 只有主人可以使用哦'
 // 插件类
 export class Admin extends Plugin {
   constructor () {
     super({
       name: 'kkk-管理',
       rule: [
-        { reg: createSwitchRegExp('app'), fnc: 'ConfigSwitch', permission: 'master' },
-        { reg: createNumberRegExp('app'), fnc: 'ConfigNumber', permission: 'master' },
-        { reg: createCustomRegExp('app'), fnc: 'ConfigCustom', permission: 'master' },
-        { reg: createSwitchRegExp('douyin'), fnc: 'ConfigSwitch', permission: 'master' },
-        { reg: createNumberRegExp('douyin'), fnc: 'ConfigNumber', permission: 'master' },
-        { reg: createNumberRegExp('douyin'), fnc: 'ConfigCustom', permission: 'master' },
-        { reg: createSwitchRegExp('bilibili'), fnc: 'ConfigSwitch', permission: 'master' },
-        { reg: createNumberRegExp('bilibili'), fnc: 'ConfigNumber', permission: 'master' },
-        { reg: createNumberRegExp('bilibili'), fnc: 'ConfigCustom', permission: 'master' },
-        { reg: createSwitchRegExp('upload'), fnc: 'ConfigSwitch', permission: 'master' },
-        { reg: createNumberRegExp('upload'), fnc: 'ConfigNumber', permission: 'master' },
-        { reg: createNumberRegExp('upload'), fnc: 'ConfigCustom', permission: 'master' },
-        { reg: createSwitchRegExp('kuaishou'), fnc: 'ConfigSwitch', permission: 'master' },
-        { reg: createNumberRegExp('kuaishou'), fnc: 'ConfigNumber', permission: 'master' },
-        { reg: createNumberRegExp('kuaishou'), fnc: 'ConfigCustom', permission: 'master' },
-        { reg: /^#kkk设置$/, fnc: 'index_Settings', permission: 'master' },
-        { reg: /^#?kkk删除缓存$/, fnc: 'deleteCache', permission: 'master' }
+        { reg: createSwitchRegExp('app'), fnc: 'ConfigSwitch', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('app'), fnc: 'ConfigNumber', permission: 'master', authFailMsg },
+        { reg: createCustomRegExp('app'), fnc: 'ConfigCustom', permission: 'master', authFailMsg },
+        { reg: createSwitchRegExp('douyin'), fnc: 'ConfigSwitch', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('douyin'), fnc: 'ConfigNumber', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('douyin'), fnc: 'ConfigCustom', permission: 'master', authFailMsg },
+        { reg: createSwitchRegExp('bilibili'), fnc: 'ConfigSwitch', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('bilibili'), fnc: 'ConfigNumber', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('bilibili'), fnc: 'ConfigCustom', permission: 'master', authFailMsg },
+        { reg: createSwitchRegExp('upload'), fnc: 'ConfigSwitch', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('upload'), fnc: 'ConfigNumber', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('upload'), fnc: 'ConfigCustom', permission: 'master', authFailMsg },
+        { reg: createSwitchRegExp('kuaishou'), fnc: 'ConfigSwitch', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('kuaishou'), fnc: 'ConfigNumber', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('kuaishou'), fnc: 'ConfigCustom', permission: 'master', authFailMsg },
+        { reg: /^#kkk设置$/, fnc: 'index_Settings', permission: 'master', authFailMsg },
+        { reg: /^#?kkk删除缓存$/, fnc: 'deleteCache', permission: 'master', authFailMsg }
       ]
     })
   }

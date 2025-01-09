@@ -43,17 +43,17 @@ const kuaishou = karin.command(reg.kuaishou, async (e) => {
   const iddata = await getKuaishouID(String(e.msg.replaceAll('\\', '').match(/https:\/\/v\.kuaishou\.com\/\w+/g)))
   const WorkData = await fetchKuaishouData(iddata.type, iddata)
   await new Kuaishou(e, iddata).RESOURCES(WorkData)
-  return true
 }, { name: 'kkk-视频功能-快手', priority: Config.app.defaulttool ? -Infinity : 800 })
 
-export const prefix = karin.command(/^#?(解析|kkk解析)/, async (e) => {
+export const prefix = karin.command(/^#?(解析|kkk解析)/, async (e, next) => {
   e.msg = await Common.getReplyMessage(e)
   if (reg.douyin.test(e.msg)) {
-    return await douyin.fnc(e)
+    return await douyin.fnc(e, next)
   } else if (reg.bilibili.test(e.msg)) {
-    return await bilibili.fnc(e)
+    return await bilibili.fnc(e, next)
+  } else if (reg.kuaishou.test(e.msg)) {
+    return await kuaishou.fnc(e, next)
   }
-  return true
 }, { name: 'kkk-视频功能-引用解析' })
 
 export const douyinAPP = Config.douyin.switch && douyin

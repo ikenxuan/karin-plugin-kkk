@@ -1,4 +1,4 @@
-import { ResponseType } from 'axios'
+import { ResponseType } from 'node-karin/axios'
 export interface NetworksConfigType {
   /**
    * 请求地址

@@ -1,5 +1,5 @@
 import { getBilibiliData } from '@ikenxuan/amagi'
-import { AdapterType, common, ImageElementType, karin, logger, Message, segment } from 'node-karin'
+import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
 import { AllDataType, Base, BilibiliDBType, Common, Config, DB, Render } from '@/module'
 import { cover, fetchBilibiliData, generateDecorationCard, generateGradientStyle, replacetext } from '@/platform/bilibili'
@@ -81,7 +81,7 @@ export class Bilibilipush extends Base {
     for (const dynamicId in data) {
       // 检查banWords，banTags
       let skip = skipDynamic(data[dynamicId].Dynamic_Data)
-      let send_video = true; let img: ImageElementType[] = []
+      let send_video = true; let img: ImageElement[] = []
       const dynamicCARDINFO = await fetchBilibiliData('dynamic_card', { dynamic_id: dynamicId })
       const dycrad = dynamicCARDINFO.data.card && dynamicCARDINFO.data.card.card && JSON.parse(dynamicCARDINFO.data.card.card)
 
@@ -334,7 +334,7 @@ export class Bilibilipush extends Base {
                 break
               }
               case 'DYNAMIC_TYPE_DRAW': {
-                const imgArray: ImageElementType[] = []
+                const imgArray: ImageElement[] = []
                 for (const img of data[dynamicId].Dynamic_Data.modules.module_dynamic.major && data[dynamicId].Dynamic_Data.modules.module_dynamic?.major?.draw?.items) {
                   imgArray.push(segment.image(img.src))
                 }
