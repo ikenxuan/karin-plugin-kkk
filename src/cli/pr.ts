@@ -25,7 +25,8 @@ const writePkg = (pkg: any) => fs.writeFileSync(getPkgPath(), JSON.stringify(pkg
  */
 const updateVersion = (pkg: { version: string }) => {
   const list = pkg.version.split('.')
-  const shortHash = process.env.GITHUB_SHA?.substring(0, 7) ?? 'unknown'
+  console.log('PR_COMMIT_HASH' + process.env.PR_COMMIT_HASH)
+  const shortHash = process.env.PR_COMMIT_HASH?.substring(0, 7) ?? 'unknown'
   list[2] = `${Number(list[2]) + 1}`
   pkg.version = `${list.join('.')}.pr${process.env.PR_NUMBER}.${shortHash}`
 }
