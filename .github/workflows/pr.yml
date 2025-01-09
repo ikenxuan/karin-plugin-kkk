@@ -65,7 +65,7 @@ jobs:
           else
             # 构建成功评论
             INSTALL_COMMAND_1="pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -w"
-            gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 构建完成！<br>该版本是基于 [`'"${SHORT_COMMIT_HASH}"'`]('"${REPO_URL}"') 提交所构建，可能存在不稳定性。 <br>你可以通过以下命令安装此版本：<br><br> ```\n'"${INSTALL_COMMAND_1}"$'\n```\n\n```\n'"${INSTALL_COMMAND_1}"$'\n```'
+            gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 构建完成！<br>该版本是基于 [`'"${SHORT_COMMIT_HASH}"'`]('"${REPO_URL}"') 提交所构建，可能存在不稳定性。 <br>你可以通过以下命令安装此版本:\n\n```\n'"${INSTALL_COMMAND_1}"$'\n```\n\n```\n'"${INSTALL_COMMAND_1}"$'\n```'
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
