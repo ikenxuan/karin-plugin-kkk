@@ -68,7 +68,7 @@ body.light-mode .menu-item {
   border-radius: 26px;
   cursor: pointer;
   justify-content: center;
-  font-weight: bold;
+  font-weight: 700;
 }
 
 body.dark-mode .menu-item {
@@ -80,7 +80,7 @@ body.dark-mode .menu-item {
   border-radius: 26px;
   cursor: pointer;
   justify-content: center;
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .menu-item:hover {

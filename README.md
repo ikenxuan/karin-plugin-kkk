@@ -48,7 +48,7 @@
     <details>
     <summary>点击展开</summary>
 
-    <p style="color: red; font-weight: bold;">不推荐该方式，后续只能重复下载 Release 包进行更新，且无法通过 Git 或 包管理器 进行更新</p>
+    <p style="color: red; font-weight: 700;">不推荐该方式，后续只能重复下载 Release 包进行更新，且无法通过 Git 或 包管理器 进行更新</p>
     
     1. 打开 Release 页面: https://github.com/ikenxuan/karin-plugin-kkk/releases
     2. 找到最新的版本，下载名为 `build.zip` 的压缩包

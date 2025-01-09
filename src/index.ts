@@ -1,14 +1,31 @@
-import Amagi from '@ikenxuan/amagi'
+import Client from '@ikenxuan/amagi'
+import cors from 'cors'
+import { createProxyMiddleware, Options } from 'http-proxy-middleware'
 import { basePath, common, logger } from 'node-karin'
+import express from 'node-karin/express'
 
 import { Common, Config, Version } from '@/module'
 
-const haha = new Amagi({
+const app = express()
+const port = 3780
+
+/** 代理参数 */
+const proxyOptions: Options = {
+  target: 'https://developer.huawei.com',
+  changeOrigin: true
+}
+app.use(cors())
+app.use('/', createProxyMiddleware(proxyOptions))
+app.listen(port, () => {
+  logger.mark(`代理服务器已启动，监听端口 ${port}。该服务器用于处理远程资源的跨域请求。`)
+})
+
+const amagiServer = new Client({
   bilibili: Config.cookies.bilibili,
   douyin: Config.cookies.douyin,
   kuaishou: Config.cookies.kuaishou
 })
-Config.app.APIServer && haha.startClient(Config.app.APIServerPort)
+Config.app.APIServer && amagiServer.startClient(Config.app.APIServerPort)
 
 const base = `${basePath}/${Version.pluginName}`
 common.mkdir(`${base}/data`)

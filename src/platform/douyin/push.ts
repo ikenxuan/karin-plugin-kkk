@@ -435,7 +435,7 @@ export class DouYinpush extends Base {
         // 对于每个匹配的话题标签，检查它是否在video_obj中存在
         const matchedObj = video_obj.find((obj) => `#${obj.hashtag_name}` === match)
         if (matchedObj) {
-          return `<span style="font-weight: bold; color: #cfcfcf">${match}</span>`
+          return `<span style="font-weight: 700; color: #cfcfcf">${match}</span>`
         }
         return match
       })

@@ -1,7 +1,4 @@
 @charset "UTF-8";
-@import '../../../font/HarmonyOS_Sans_SC_Bold/font.css';
-@import '../../../font/HarmonyOS_Sans_SC_Light/font.css';
-@import '../../../font//HarmonyOS_Sans_SC_Regular/font.css';
 @import '../../../font//bilifont/font.css';
 
 * {
@@ -15,7 +12,7 @@
 
 body {
   color: #1e1f20;
-  font-family: "HarmonyOS Sans SC", "bilifont", "Noto Sans KR", "Noto Color Emoji", "FZB", Number, "汉仪文黑-65W", YS, PingFangSC-Medium, "PingFang SC", sans-serif;
+  font-family: "HarmonyOSHans-Regular", "bilifont", "Noto Sans KR", "Noto Color Emoji", "FZB", Number, "PingFang SC", sans-serif;
   transform-origin: 0 0;
   width: 1440px;
 }
@@ -67,7 +64,7 @@ body.dark-mode .container {
 }
 
 body.light-mode .copyright {
-  font-weight: bold;
+  font-weight: 700;
   font-size: 50px;
   text-align: center;
   color: #b4b4b4;
@@ -92,7 +89,7 @@ body.light-mode .copyright .name {
 }
 
 body.dark-mode .copyright {
-  font-weight: bold;
+  font-weight: 700;
   font-size: 50px;
   text-align: center;
   color: #666666;
@@ -156,7 +153,7 @@ body.dark-mode .copyright .name {
   font-size: 12px;
   color: #aaa;
   margin-left: 10px;
-  font-weight: normal;
+  font-weight: 400;
 }
 
 .cont-title.border-less {
@@ -170,14 +167,14 @@ body.dark-mode .copyright .name {
   font-size: 12px;
   background: rgba(0, 0, 0, 0.5);
   box-shadow: 0 0 1px 0 #fff;
-  font-weight: normal;
+  font-weight: 400;
 }
 
 .cont-footer {
   padding: 10px 15px;
   font-size: 12px;
   background: rgba(0, 0, 0, 0.5);
-  font-weight: normal;
+  font-weight: 400;
 }
 
 ul.cont-msg,
@@ -193,7 +190,7 @@ ul.cont-msg li,
 
 ul.cont-msg li strong,
 .cont-footer ul li strong {
-  font-weight: normal;
+  font-weight: 400;
   margin: 0 2px;
   color: #d3bc8e;
 }

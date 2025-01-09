@@ -683,7 +683,7 @@ function br (data: string): string {
 function checkvip (member: any): string {
   // 根据VIP状态选择不同的颜色显示成员名称
   return member.vip.vipStatus === 1
-    ? `<span style="color: ${member.vip.nickname_color || '#FB7299'}; font-weight: bold;">${member.name}</span>`
+    ? `<span style="color: ${member.vip.nickname_color || '#FB7299'}; font-weight: 700;">${member.name}</span>`
     : `<span style="color: ${Common.useDarkTheme() ? '#EDEDED' : '#606060'}">${member.name}</span>`
 }
 
@@ -692,8 +692,8 @@ function checkvip (member: any): string {
  * @param data 表情数据的数组，每个元素包含一个表情包的信息。
  * @returns 返回一个对象数组，每个对象包含text(表情名称)和url(表情图片地址)属性。
  */
-function extractEmojisData (data: any[]): any[] {
-  const emojisData: any[] = []
+function extractEmojisData (data: any[]) {
+  const emojisData: { text: string; url: string }[] = []
 
   // 遍历data数组中的每个表情包
   data.forEach((packages) => {
