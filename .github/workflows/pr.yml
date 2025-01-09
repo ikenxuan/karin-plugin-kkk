@@ -38,7 +38,7 @@ jobs:
       - name: 获取 PR 编号
         run: echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
       - name: 获取当前提交哈希
-        run: echo "GITHUB_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+        run: echo "GITHUB_SHA=${{ github.sha }}" >> $GITHUB_ENV
       # 自动修改 package.json 的版本号、删除开发、对等依赖
       - name: 修订版本号
         run: npm run pr all
@@ -67,7 +67,7 @@ jobs:
           else
             # 构建成功评论
             INSTALL_COMMAND_1="pnpm install ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -w"
-            gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 🎉 构建完成！\n该版本是基于 [`'"${SHORT_COMMIT_HASH}"$'`]('"${REPO_URL}"$') 提交所构建的，你可以通过以下命令安装新版本：\n\n```\n'"${INSTALL_COMMAND_1}"$'\n```'
+            gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 🎉 构建完成！\n该版本是基于 [`'"${SHORT_COMMIT_HASH}"$'`]('"${REPO_URL}"$') 仓库快照所构建的，你可以通过以下命令安装该版本：\n\n```\n'"${INSTALL_COMMAND_1}"$'\n```'
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
