@@ -39,7 +39,6 @@
   "dependencies": {
     "@ikenxuan/amagi": "4.1.0",
     "@karinjs/md-html": "^1.1.6",
-    "@types/cors": "^2.8.17",
     "axios": "^1.7.9",
     "cors": "^2.8.5",
     "heic-convert": "^2.1.0",
@@ -51,6 +50,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.16.0",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/heic-convert": "^2.1.0",
     "@types/node": "^22.10.1",
