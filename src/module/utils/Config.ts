@@ -129,7 +129,7 @@ class Cfg {
    * @param keys 键路径，表示要设置的值的位置
    * @param value 要设置的值
    */
-  private setNestedValue (
+  setNestedValue (
     map: YAML.YAMLMap,
     keys: string[],
     value: any
@@ -196,15 +196,11 @@ class Cfg {
   }
 }
 
-type Config = Omit<ConfigType & Cfg, | 'getDefOrConfig' | 'initCfg' | 'mergeObjectsWithPriority'>
+type Config = ConfigType & Pick<Cfg, 'All' | 'Modify'>
 
 export const Config: Config = new Proxy(new Cfg().initCfg(), {
   get (target, prop: string) {
     if (prop in target) return target[prop as keyof Cfg]
-    // 动态获取配置
-    if (typeof prop === 'string') {
-      return target.getDefOrConfig(prop as keyof ConfigType)
-    }
-    throw new Error(`属性 ${prop} 在配置文件上不存在。`)
+    return target.getDefOrConfig(prop as keyof ConfigType)
   }
 }) as unknown as Config
