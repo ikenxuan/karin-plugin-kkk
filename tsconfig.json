@@ -22,7 +22,7 @@
     "removeComments": false, /* 删除注释 */
     "preserveWatchOutput": true, /* 保留 watch 输出 */
     "pretty": true,
-    "inlineSourceMap": true, /* 将源码映射文件内联到输出文件中 */
+    "inlineSourceMap": false, /* 将源码映射文件内联到输出文件中 */
     "alwaysStrict": true,
     "types": [
       "node"
@@ -30,7 +30,7 @@
   },
   "tsc-alias": { // tsc-alias 插件的配置
     "resolveFullPaths": true, // 解析完整路径
-    "resolveFullExtension": ".js" // 指定解析的文件扩展名
+    "resolveFullExtension": ".js", // 指定解析的文件扩展名
   },
   "include": [ // 指定编译器应该包含的文件或目录
     "src/**/*.ts",

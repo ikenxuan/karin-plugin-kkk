@@ -159,6 +159,9 @@ export class Base {
       }
       return sendStatus
     } catch (error) {
+      if (options && options.active === false) {
+        await this.e.reply('视频文件上传失败' + JSON.stringify(error, null, 2))
+      }
       logger.error('视频文件上传错误,' + String(error))
       return false
     } finally {

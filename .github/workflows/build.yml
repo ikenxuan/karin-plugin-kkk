@@ -28,7 +28,7 @@ jobs:
       - name: 安装依赖
         run: |
           pnpm install
-          pnpm add node-karin@latest chokidar@latest lodash@latest yaml@latest
+          pnpm add node-karin@latest
 
       - name: 放弃 package.json 的本地更改
         run: |
