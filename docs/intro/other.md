@@ -35,7 +35,7 @@
 
 ### 如何配置？
 
-打开 `config/config/cookies.yaml` 根据需要配置 ck<br>
+打开 `@karinjs/karin-plugin-kkk/config/cookies.yaml` 根据需要配置 ck<br>
 注意冒号后有个空格！
 
 ::: code-group

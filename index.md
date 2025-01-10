@@ -7,7 +7,9 @@ hero:
   textsuffix: 件
   tagline: 在群聊中添加更多互动乐趣
   prelink:
-    title: '<p style="text-align: left;"><i class="fa-solid fa-bolt fa-shake" style="color: #FFD43B;"></i> 快速开始</p><div style="text-align: left; font-weight: bold; word-break: break-all; overflow-wrap: break-word;">pnpm add karin-plugin-kkk.git -w</div>'
+    copy: true
+    install: 'pnpm add karin-plugin-kkk -w'
+    title: '<p style="text-align: left;"><i class="fa-solid fa-bolt fa-shake" style="color: #FFD43B;"></i> 快速开始，点击卡片复制安装命令</p><div style="text-align: left; font-weight: bold; word-break: break-all; overflow-wrap: break-word;">pnpm add karin-plugin-kkk -w</div>'
   image:
     src: /logo.png
   actions:
@@ -38,7 +40,7 @@ features:
     details: 得益于解析库自带的http服务，本插件可开放解析库的所有API接口
     link: /docs/intro/apiserver
     rel: 'noopener'
-    linkText: 了解更多  
+    linkText: 了解更多
 ---
 
 <Home />
