@@ -71,7 +71,7 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "globals": "^15.13.0",
     "neostandard": "^0.11.9",
-    "node-karin": "0.12.2-5.pr.206.31c91a1",
+    "node-karin": "0.12.2-5.pr.206.ffb848b",
     "sort-package-json": "^2.12.0",
     "tsc-alias": "^1.8.10",
     "tsx": "^4.19.2",
