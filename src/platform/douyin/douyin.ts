@@ -2,7 +2,7 @@ import fs from 'node:fs'
 
 import { getDouyinData } from '@ikenxuan/amagi'
 import { markdown } from '@karinjs/md-html'
-import { common, logger, Message, render, segment } from 'node-karin'
+import { common, logger, Message, mkdirSync, render, segment } from 'node-karin'
 import QRCode from 'qrcode'
 
 import { Base, Common, Config, mergeFile, Networks, Render, Version } from '@/module/utils'
@@ -71,7 +71,7 @@ export class DouYin extends Base {
             imageres.push(segment.image(image_url))
             imagenum++
             if (Config.app.rmmp4 === false) {
-              common.mkdir(`${Common.tempDri.images}${g_title}`)
+              mkdirSync(`${Common.tempDri.images}${g_title}`)
               const path = `${Common.tempDri.images}${g_title}/${i + 1}.png`
               await new Networks({ url: image_url, type: 'arraybuffer' }).getData().then((data) => fs.promises.writeFile(path, Buffer.from(data)))
             }

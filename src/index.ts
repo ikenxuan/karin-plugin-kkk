@@ -1,7 +1,7 @@
 import Client from '@ikenxuan/amagi'
 import cors from 'cors'
 import { createProxyMiddleware, Options } from 'http-proxy-middleware'
-import { basePath, common, logger } from 'node-karin'
+import { basePath, logger, mkdirSync } from 'node-karin'
 import express from 'node-karin/express'
 
 import { Common, Config, Version } from '@/module'
@@ -28,7 +28,7 @@ const amagiServer = new Client({
 Config.app.APIServer && amagiServer.startClient(Config.app.APIServerPort)
 
 const base = `${basePath}/${Version.pluginName}`
-common.mkdir(`${base}/data`)
-common.mkdir(Common.tempDri.images)
-common.mkdir(Common.tempDri.video)
+mkdirSync(`${base}/data`)
+mkdirSync(Common.tempDri.images)
+mkdirSync(Common.tempDri.video)
 logger.info(`${logger.green(`[插件:${Version.pluginName}]`)} ${logger.violet(`${Version.pluginVersion}`)} 初始化完成~`)
