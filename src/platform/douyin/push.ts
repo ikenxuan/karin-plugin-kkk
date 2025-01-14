@@ -1,8 +1,8 @@
 import { getDouyinData } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
-import { AllDataType, Base, Common, Config, DB, DouyinDBType, Render } from '@/module'
-import { ExtendedDouyinOptionsType, getDouyinID } from '@/platform/douyin'
+import { AllDataType, Base, Common, Config, DB, DouyinDBType, Networks, Render } from '@/module'
+import { ExtendedDouyinOptionsType, getDouyinID, processVideos } from '@/platform/douyin'
 
 /** 每个推送项的类型定义 */
 interface PushItem {
@@ -129,9 +129,24 @@ export class DouYinpush extends Base {
               // 如果新作品是视频
               if (iddata.is_mp4) {
                 try {
+                  /** 默认视频下载地址 */
+                  let downloadUrl = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
+                  // 根据配置文件自动选择分辨率
+                  if (Config.douyin.autoResolution) {
+                    const videoObj = processVideos(Detail_Data.video.bit_rate, Config.upload.filelimit)
+                    downloadUrl = await new Networks({
+                      url: videoObj[0].play_addr.url_list[2],
+                      headers: this.headers
+                    }).getLongLink()
+                  } else {
+                    downloadUrl = await new Networks({
+                      url: Detail_Data.video.play_addr_h264.url_list[2] || Detail_Data.video.play_addr_h264.url_list[2],
+                      headers: this.headers
+                    }).getLongLink()
+                  }
                   // 下载视频
                   await this.DownLoadVideo({
-                    video_url: `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`,
+                    video_url: downloadUrl,
                     title: { timestampTitle: 'tmp_' + Date.now(), originTitle: Detail_Data.desc }
                   }, { active: true, activeOption: { uin, group_id } })
                 } catch (error) {

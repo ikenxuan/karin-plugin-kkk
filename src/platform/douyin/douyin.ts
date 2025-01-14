@@ -11,7 +11,7 @@ import { DouyinDataTypes, ExtendedDouyinOptionsType } from '@/types'
 
 let mp4size = ''
 let img
-type Video = {
+export type dyVideo = {
   FPS: number
   HDR_bit: string
   HDR_type: string
@@ -115,7 +115,7 @@ export class DouYin extends Base {
           const video = data.VideoData.aweme_detail.video
           FPS = video.bit_rate[0].FPS // FPS
           if (Config.douyin.autoResolution) {
-            video.bit_rate = this.processVideos(video.bit_rate, Config.upload.filelimit)
+            video.bit_rate = processVideos(video.bit_rate, Config.upload.filelimit)
             g_video_url = await new Networks({
               url: video.bit_rate[0].play_addr.url_list[2],
               headers: this.headers
@@ -330,24 +330,24 @@ export class DouYin extends Base {
         break
     }
   }
+}
 
-  processVideos (videos: Video[], filelimit: number): Video[] {
-    const sizeLimitBytes = filelimit * 1024 * 1024 // 将 MB 转换为字节
-    // 过滤掉 format 为 'dash' 的视频，并且过滤出小于等于大小限制的视频
-    const validVideos = videos.filter(video => video.format !== 'dash' && video.play_addr.data_size <= sizeLimitBytes)
+export function processVideos (videos: dyVideo[], filelimit: number): dyVideo[] {
+  const sizeLimitBytes = filelimit * 1024 * 1024 // 将 MB 转换为字节
+  // 过滤掉 format 为 'dash' 的视频，并且过滤出小于等于大小限制的视频
+  const validVideos = videos.filter(video => video.format !== 'dash' && video.play_addr.data_size <= sizeLimitBytes)
 
-    if (validVideos.length > 0) {
-      // 如果有符合条件的视频，找到 data_size 最大的视频
-      return [validVideos.reduce((maxVideo, currentVideo) => {
-        return currentVideo.play_addr.data_size > maxVideo.play_addr.data_size ? currentVideo : maxVideo
-      })]
-    } else {
-      // 如果没有符合条件的视频，返回 data_size 最小的那个视频（排除 'dash' 格式）
-      const allValidVideos = videos.filter(video => video.format !== 'dash')
-      return [allValidVideos.reduce((minVideo, currentVideo) => {
-        return currentVideo.play_addr.data_size < minVideo.play_addr.data_size ? currentVideo : minVideo
-      })]
-    }
+  if (validVideos.length > 0) {
+    // 如果有符合条件的视频，找到 data_size 最大的视频
+    return [validVideos.reduce((maxVideo, currentVideo) => {
+      return currentVideo.play_addr.data_size > maxVideo.play_addr.data_size ? currentVideo : maxVideo
+    })]
+  } else {
+    // 如果没有符合条件的视频，返回 data_size 最小的那个视频（排除 'dash' 格式）
+    const allValidVideos = videos.filter(video => video.format !== 'dash')
+    return [allValidVideos.reduce((minVideo, currentVideo) => {
+      return currentVideo.play_addr.data_size < minVideo.play_addr.data_size ? currentVideo : minVideo
+    })]
   }
 }
 
