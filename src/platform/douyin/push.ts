@@ -147,7 +147,7 @@ export class DouYinpush extends Base {
                   // 下载视频
                   await this.DownLoadVideo({
                     video_url: downloadUrl,
-                    title: { timestampTitle: 'tmp_' + Date.now(), originTitle: Detail_Data.desc }
+                    title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${Detail_Data.desc}.mp4` }
                   }, { active: true, activeOption: { uin, group_id } })
                 } catch (error) {
                   logger.error(error)

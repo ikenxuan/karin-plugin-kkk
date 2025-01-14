@@ -59,11 +59,6 @@ interface downLoadFileOptions {
    * @default {}
    */
   headers?: object
-  /**
-   * 下载文件类型，默认为'.mp4'。
-   * @default '.mp4'
-   */
-  filetype?: string
 }
 export class Base {
   e: Message
@@ -195,8 +190,7 @@ export class Base {
     // 下载文件，视频URL，标题和自定义headers
     let res = await this.DownLoadFile(downloadOpt.video_url, {
       title: Config.app.rmmp4 ? downloadOpt.title.timestampTitle as string : downloadOpt.title.originTitle as string,
-      headers: downloadOpt.headers ?? this.headers,
-      filetype: '.mp4'
+      headers: downloadOpt.headers ?? this.headers
     })
     res = { ...res, ...downloadOpt.title }
     // 将下载的文件大小转换为MB并保留两位小数
@@ -219,7 +213,7 @@ export class Base {
     const { filepath, totalBytes } = await new Networks({
       url: videoUrl, // 视频地址
       headers: opt.headers ?? this.headers, // 请求头
-      filepath: Common.tempDri.video + `${opt.title}${opt.filetype ?? '.mp4'}`, // 文件保存路径
+      filepath: Common.tempDri.video + opt.title, // 文件保存路径
       timeout: 30000 // 设置 30 秒超时
     }).downloadStream((downloadedBytes, totalBytes) => {
       // 定义进度条长度及生成进度条字符串的函数
@@ -257,9 +251,9 @@ export class Base {
 
       // 打印下载进度、速度和剩余时间
       console.log(
-        `🚀 Downloading 🚀 ${opt.title}${opt.filetype ?? '.mp4'} ${generateProgressBar(progressPercentage)} ${coloredPercentage} ${downloadedSizeMB}/${totalSizeMB} MB | ${formattedSpeed} 剩余: ${formattedRemainingTime}\r`
+        `🚀 Downloading 🚀 ${opt.title} ${generateProgressBar(progressPercentage)} ${coloredPercentage} ${downloadedSizeMB}/${totalSizeMB} MB | ${formattedSpeed} 剩余: ${formattedRemainingTime}\r`
       )
-    })
+    }, 3)
 
     return { filepath, totalBytes }
   }

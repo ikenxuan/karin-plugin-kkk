@@ -38,7 +38,7 @@ export class Kuaishou extends Base {
       likeCount: data.VideoData.data.visionVideoDetail.photo.likeCount
     })
     await this.e.reply(img)
-    await this.DownLoadVideo({ video_url, title: Config.app.rmmp4 ? 'tmp_' + Date.now() : data.VideoData.data.visionVideoDetail.photo.caption })
+    await this.DownLoadVideo({ video_url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${data.VideoData.data.visionVideoDetail.photo.caption}.mp4` } })
     return true
   }
 }

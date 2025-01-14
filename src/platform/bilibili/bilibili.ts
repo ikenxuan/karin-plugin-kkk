@@ -471,17 +471,15 @@ export class Bilibili extends Base {
         const bmp4 = await this.DownLoadFile(
           this.TYPE === 'one_video' ? OBJECT.DATA.data?.dash?.video[0].base_url : OBJECT.video_url,
           {
-            title: `Bil_V_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.season_id}`,
-            headers: this.headers,
-            filetype: '.mp4'
+            title: `Bil_V_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.season_id}.mp4`,
+            headers: this.headers
           }
         )
         const bmp3 = await this.DownLoadFile(
           this.TYPE === 'one_video' ? OBJECT.DATA.data?.dash?.audio[0].base_url : OBJECT.audio_url,
           {
-            title: `Bil_A_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.season_id}`,
-            headers: this.headers,
-            filetype: '.mp3'
+            title: `Bil_A_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.season_id}.mp3`,
+            headers: this.headers
           }
         )
         if (bmp4.filepath && bmp3.filepath) {
@@ -518,7 +516,7 @@ export class Bilibili extends Base {
       }
       case '!isLogin': {
         /** 没登录（没配置ck）情况下直接发直链，传直链在DownLoadVideo()处理 */
-        await this.DownLoadVideo({ video_url: OBJECT.DATA.data.durl[0].url, title: { timestampTitle: 'tmp_' + Date.now(), originTitle: this.downloadfilename } })
+        await this.DownLoadVideo({ video_url: OBJECT.DATA.data.durl[0].url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${this.downloadfilename}.mp4` } })
         break
       }
       default:

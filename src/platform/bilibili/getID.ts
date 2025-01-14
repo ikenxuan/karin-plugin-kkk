@@ -26,6 +26,14 @@ export async function getBilibiliID (url: string) {
       }
       break
     }
+    case /festival\/([A-Za-z0-9]+)/.test(longLink): {
+      const festivalMatch = /festival\/([A-Za-z0-9]+)\?bvid=([A-Za-z0-9]+)/.exec(longLink)
+      result = {
+        type: 'one_video',
+        id: festivalMatch ? festivalMatch[2] : undefined
+      }
+      break
+    }
     case /play\/(\S+?)\??/.test(longLink): {
       const playMatch = /play\/(\w+)/.exec(longLink)
       const id = playMatch ? playMatch[1] : ''

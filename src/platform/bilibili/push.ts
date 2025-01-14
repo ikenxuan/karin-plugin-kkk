@@ -328,7 +328,7 @@ export class Bilibilipush extends Base {
                 if (send_video) {
                   await this.DownLoadVideo({
                     video_url: nocd_data.data.durl[0].url,
-                    title: { timestampTitle: 'tmp_' + Date.now(), originTitle: dycrad.title }
+                    title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${dycrad.title}.mp4` }
                   }, { active: true, activeOption: { uin, group_id } })
                 }
                 break

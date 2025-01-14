@@ -130,7 +130,7 @@ export class DouYin extends Base {
 
           const title = data.VideoData.aweme_detail.preview_title.substring(0, 80).replace(/[\\/:\*\?"<>\|\r\n]/g, ' ') // video title
           g_title = title
-          mp4size = (video.play_addr.data_size / (1024 * 1024)).toFixed(2)
+          mp4size = (video.bit_rate[0].play_addr.data_size / (1024 * 1024)).toFixed(2)
           videores.push(segment.text(`标题：\n${title}`))
           videores.push(segment.text(`视频帧率：${'' + FPS}\n视频大小：${mp4size}MB`))
           videores.push(segment.text(
@@ -165,7 +165,7 @@ export class DouYin extends Base {
           await this.e.reply(img)
         }
         /** 发送视频 */
-        sendvideofile && this.is_mp4 && await this.DownLoadVideo({ video_url: g_video_url, title: { timestampTitle: 'tmp_' + Date.now(), originTitle: g_title } })
+        sendvideofile && this.is_mp4 && await this.DownLoadVideo({ video_url: g_video_url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${g_title}.mp4` } })
         return true
       }
 
@@ -183,18 +183,16 @@ export class DouYin extends Base {
           const liveimg = await this.DownLoadFile(
             `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`,
             {
-              title: 'Douyin_tmp_' + Date.now(),
-              headers: this.headers,
-              filetype: '.mp4'
+              title: `Douyin_tmp_V_${Date.now()}.mp4`,
+              headers: this.headers
             }
           )
           // BGM
           const liveimgbgm = await this.DownLoadFile(
             bgmurl,
             {
-              title: 'Douyin_tmp_' + Date.now(),
-              headers: this.headers,
-              filetype: '.mp3'
+              title: `Douyin_tmp_A_${Date.now()}.mp3`,
+              headers: this.headers
             }
           )
           if (liveimg.filepath && liveimgbgm.filepath) {
