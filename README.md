@@ -98,9 +98,9 @@ pnpm install
 
 ```sh
 # 自动重载 apps 目录下的所有文件
-npx k ts
+pnpm ts
 # 保存 src 目录下的文件后自动重启
-npx k ts -w
+pnpm watch
 ```
 </details>
 
