@@ -72,7 +72,7 @@ export async function Render (path: string, params?: any) {
  * @returns Preview | Stable
  */
 const releaseType = () => {
-  const versionPattern = /^1\.\d+\.\d+$/
+  const versionPattern = /^\d+\.\d+\.\d+$/
   if (versionPattern.test(Version.pluginVersion)) {
     return 'Stable'
   } else {
