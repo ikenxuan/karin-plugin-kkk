@@ -17,7 +17,7 @@ jobs:
       - name: 安装node
         uses: actions/setup-node@v4
         with:
-          node-version: 18.20.4
+          node-version: 21
           registry-url: "https://registry.npmjs.org"
 
       - name: 安装pnpm
@@ -28,7 +28,7 @@ jobs:
       - name: 安装依赖
         run: |
           pnpm install
-          pnpm add node-karin@latest chokidar@latest lodash@latest yaml@latest
+          pnpm add node-karin@latest
 
       - name: 放弃 package.json 的本地更改
         run: |
@@ -125,8 +125,8 @@ jobs:
       - name: 删除 karin-plugin-kkk 文件夹
         run: rm -rf karin-plugin-kkk
 
-      - name: 删除开发依赖
-        run: npm run clean
+      - name: 删除开发依赖 
+        run: npm run pr clean
 
       - name: 根据main分支的commit信息生成提交消息
         run: |

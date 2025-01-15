@@ -1,14 +1,14 @@
-import { KarinMessage } from 'node-karin'
+import { Message } from 'node-karin'
 
 import { Base, Config, Networks, Render } from '@/module'
 import { kuaishouComments } from '@/platform/kuaishou'
 import { ExtendedKuaishouOptionsType, KuaishouDataTypes } from '@/types'
 
 export class Kuaishou extends Base {
-  e: KarinMessage
+  e: Message
   type: KuaishouDataTypes[keyof KuaishouDataTypes]
   is_mp4: any
-  constructor (e: KarinMessage, iddata: ExtendedKuaishouOptionsType) {
+  constructor (e: Message, iddata: ExtendedKuaishouOptionsType) {
     super(e)
     this.e = e
     this.type = iddata?.type
@@ -21,7 +21,7 @@ export class Kuaishou extends Base {
     }
     Config.kuaishou.kuaishoutip && await this.e.reply('检测到快手链接，开始解析')
     const video_url = data.VideoData.data.visionVideoDetail.photo.photoUrl
-    const transformedData = Object.entries(data.EmojiData.data.visionBaseEmoticons.iconUrls).map(([ name, path ]) => {
+    const transformedData = Object.entries(data.EmojiData.data.visionBaseEmoticons.iconUrls).map(([name, path]) => {
       return { name, url: `https:${path}` }
     })
     const CommentsData = await kuaishouComments(data.CommentsData, transformedData)
@@ -38,7 +38,7 @@ export class Kuaishou extends Base {
       likeCount: data.VideoData.data.visionVideoDetail.photo.likeCount
     })
     await this.e.reply(img)
-    await this.DownLoadVideo({ video_url, title: Config.app.rmmp4 ? 'tmp_' + Date.now() : data.VideoData.data.visionVideoDetail.photo.caption })
+    await this.DownLoadVideo({ video_url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${data.VideoData.data.visionVideoDetail.photo.caption}.mp4` } })
     return true
   }
 }

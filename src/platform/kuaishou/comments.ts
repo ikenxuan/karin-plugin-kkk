@@ -8,16 +8,15 @@ import { Config } from '@/module'
  */
 export async function kuaishouComments (data: any, emojidata: any) {
   let jsonArray = []
-  for (let i = 0; i < data.data.visionCommentList.rootComments.length; i ++) {
-    const cid = data.data.visionCommentList.rootComments[i].commentId
-    const aweme_id = data.data.visionCommentList.rootComments[i].commentId
-    const nickname = data.data.visionCommentList.rootComments[i].authorName
-    const userimageurl = data.data.visionCommentList.rootComments[i].headurl
-    const text = data.data.visionCommentList.rootComments[i].content
-    const time = getRelativeTimeFromTimestamp(data.data.visionCommentList.rootComments[i].timestamp)
-    const digg_count = data.data.visionCommentList.rootComments[i].likedCount
+  for (const i of data.data.visionCommentList.rootComments) {
+    const cid = i.commentId
+    const aweme_id = i.commentId
+    const nickname = i.authorName
+    const userimageurl = i.headurl
+    const text = i.content
+    const time = getRelativeTimeFromTimestamp(i.timestamp)
+    const digg_count = Number(i.likedCount)
     const commentObj = {
-      id: i + 1,
       cid,
       aweme_id,
       nickname,
@@ -41,9 +40,9 @@ export async function kuaishouComments (data: any, emojidata: any) {
   jsonArray = await handling_at(jsonArray)
   // jsonArray.text = await search_text(jsonArray)
 
-  for (let i = 0; i < jsonArray.length; i ++) {
-    if (jsonArray[i].digg_count > 10000) {
-      jsonArray[i].digg_count = (jsonArray[i].digg_count / 10000).toFixed(1) + 'w'
+  for (const i of jsonArray) {
+    if (i.digg_count > 10000) {
+      i.digg_count = (i.digg_count / 10000).toFixed(1) + 'w'
     }
   }
 
@@ -63,7 +62,7 @@ export async function kuaishouComments (data: any, emojidata: any) {
     }
   }
   // 从数组前方开始保留 Config.kuaishou.kuaishounumcomments 条评论，自动移除数组末尾的评论
-  return jsonArray.slice(0, Math.min(jsonArray.length, Config.kuaishou.kuaishounumcomments))
+  return jsonArray.slice(0, Math.min(jsonArray.length, Config.kuaishou.numcomment))
 }
 
 function getRelativeTimeFromTimestamp (timestamp: number) {
@@ -86,7 +85,7 @@ function getRelativeTimeFromTimestamp (timestamp: number) {
     // 三个月的秒数
     return Math.floor(differenceInSeconds / 2592000) + '个月前'
   } else {
-    const date = new Date(timestamp * 1000) // 将时间戳转换为毫秒
+    const date = new Date(timestamp)
     const year = date.getFullYear()
     const month = (date.getMonth() + 1).toString().padStart(2, '0')
     const day = date.getDate().toString().padStart(2, '0')
@@ -100,11 +99,10 @@ function getRelativeTimeFromTimestamp (timestamp: number) {
  * @returns
  */
 function br (data: any) {
-  for (let i = 0; i < data.length; i ++) {
-    let text = data[i].text
-
+  for (const i of data) {
+    let text = i.text
     text = text.replace(/\n/g, '<br>')
-    data[i].text = text
+    i.text = text
   }
   return data
 }
@@ -115,8 +113,8 @@ function br (data: any) {
  * @returns
  */
 function handling_at (data: any) {
-  for (let i = 0; i < data.length; i ++) {
-    let text = data[i].text
+  for (const i of data) {
+    let text = i.text
 
     // 匹配 @后面的字符，允许空格，直到 (\w+\)
     text = text.replace(/(@[\S\s]+?)\(\w+\)/g, (match: any, p1: string) => {
@@ -124,7 +122,7 @@ function handling_at (data: any) {
       return `<span style="color: rgb(3,72,141);">${p1.trim()}</span>`
     })
 
-    data[i].text = text
+    i.text = text
   }
   return data
 }

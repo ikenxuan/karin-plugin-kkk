@@ -10,18 +10,17 @@ const reg = {
   bilibili: new RegExp(/(bilibili.com|b23.tv|t.bilibili.com|bili2233.cn|BV[a-zA-Z0-9]{10,})/),
   kuaishou: new RegExp('^((.*)快手(.*)快手(.*)|(.*)v.kuaishou(.*))$')
 }
-
 const douyin = karin.command(reg.douyin, async (e) => {
   const url = String(e.msg.match(/(http|https):\/\/.*\.(douyin|iesdouyin)\.com\/[^ ]+/g))
   const iddata = await getDouyinID(url)
   const data = await fetchDouyinData(iddata.type, iddata)
   await new DouYin(e, iddata).RESOURCES(data)
   return true
-}, { name: 'kkk-视频功能-抖音', priority: Config.app.defaulttool ? - Infinity : 800 })
+}, { name: 'kkk-视频功能-抖音', priority: Config.app.defaulttool ? -Infinity : 800 })
 
 const bilibili = karin.command(reg.bilibili, async (e) => {
   e.msg = e.msg.replace(/\\/g, '')
-  const urlRex = /(https?:\/\/)?(www\.bilibili\.com|m\.bilibili\.com|bili2233\.cn)\/[a-zA-Z0-9._%&+=\-\/?]*[a-zA-Z0-9_\/?=&#%+]*$/g
+  const urlRex = /(https?:\/\/)?(www\.bilibili\.com|m\.bilibili\.com|t\.bilibili\.com|bili2233\.cn)\/[a-zA-Z0-9._%&+=\-\/?]*[a-zA-Z0-9_\/?=&#%+]*$/g
   const bShortRex = /https?:\/\/(b23\.tv|bili2233\.cn)\/([a-zA-Z0-9]+)/
   let url: string | null = ''
 
@@ -38,23 +37,23 @@ const bilibili = karin.command(reg.bilibili, async (e) => {
   const data = await fetchBilibiliData(iddata.type, iddata)
   await new Bilibili(e, data).RESOURCES(data)
   return true
-}, { name: 'kkk-视频功能-B站', priority: Config.app.defaulttool ? - Infinity : 800 })
+}, { name: 'kkk-视频功能-B站', priority: Config.app.defaulttool ? -Infinity : 800 })
 
 const kuaishou = karin.command(reg.kuaishou, async (e) => {
   const iddata = await getKuaishouID(String(e.msg.replaceAll('\\', '').match(/https:\/\/v\.kuaishou\.com\/\w+/g)))
   const WorkData = await fetchKuaishouData(iddata.type, iddata)
   await new Kuaishou(e, iddata).RESOURCES(WorkData)
-  return true
-}, { name: 'kkk-视频功能-快手', priority: Config.app.defaulttool ? - Infinity : 800 })
+}, { name: 'kkk-视频功能-快手', priority: Config.app.defaulttool ? -Infinity : 800 })
 
-export const prefix = karin.command(new RegExp('^#?(解析|kkk解析)'), async (e) => {
+export const prefix = karin.command(/^#?(解析|kkk解析)/, async (e, next) => {
   e.msg = await Common.getReplyMessage(e)
   if (reg.douyin.test(e.msg)) {
-    return await douyin.fn(e)
+    return await douyin.fnc(e, next)
   } else if (reg.bilibili.test(e.msg)) {
-    return await bilibili.fn(e)
+    return await bilibili.fnc(e, next)
+  } else if (reg.kuaishou.test(e.msg)) {
+    return await kuaishou.fnc(e, next)
   }
-  return true
 }, { name: 'kkk-视频功能-引用解析' })
 
 export const douyinAPP = Config.douyin.switch && douyin

@@ -1,6 +1,6 @@
-import { basename, join } from 'node:path'
+import { join } from 'node:path'
 
-import { ImageElement, KarinRenderType, render, segment } from 'node-karin'
+import { ImageElement, Options, render, segment } from 'node-karin'
 
 import { Common, Config, Version } from '@/module'
 
@@ -31,20 +31,20 @@ export async function Render (path: string, params?: any) {
     newPath = newPath.substring(1)
   }
   path = `${basePaths[platform]}/${newPath}`
-  const renderOpt: KarinRenderType = {
+  const renderOpt: Options = {
     pageGotoParams: {
-      waitUntil: 'load'
+      waitUntil: 'load',
+      timeout: 60000
     },
     name: `${Version.pluginName}/${platform}/${newPath}/`.replace(/\\/g, '/'),
     file: `${Version.pluginPath}/resources/template/${path}.html`,
-    // 这里是模板引擎渲染完成之后生成的html文件名称 如果这里不传递会默认使用name作为默认值 建议传递。
-    fileID: basename(newPath),
-    type: 'jpeg',
-    multiPage: 12000
+    type: 'jpeg'
   }
 
   const img = await render.render({
     ...renderOpt,
+    multiPage: 12000,
+    encoding: 'base64',
     data: {
       ...params,
       _res_path: (join(Version.pluginPath, '/resources') + '/').replace(/\\/g, '/'),
@@ -54,7 +54,7 @@ export async function Render (path: string, params?: any) {
         scale: scale(params?.scale || 1)
       },
       pluResPath: `${Version.pluginPath}/resources/`,
-      copyright: `<span class="name">kkk</span><span class="version">${Version.pluginVersion} Preview</span> Powered By <span class="name">Karin</span>`,
+      copyright: `<span class="name">kkk</span><span class="version">${Version.pluginVersion} ${releaseType()}</span> Powered By <span class="name">Karin</span>`,
       useDarkTheme: Common.useDarkTheme()
     },
     screensEval: '#container'
@@ -62,7 +62,20 @@ export async function Render (path: string, params?: any) {
   // 分片截图传回来的是数组
   const ret: ImageElement[] = []
   for (const imgae of img) {
-    ret.push(segment.image(imgae))
+    ret.push(segment.image('base64://' + imgae))
   }
   return ret
+}
+
+/**
+ * 获取当前版本的发布类型
+ * @returns Preview | Stable
+ */
+const releaseType = () => {
+  const versionPattern = /^\d+\.\d+\.\d+$/
+  if (versionPattern.test(Version.pluginVersion)) {
+    return 'Stable'
+  } else {
+    return 'Preview'
+  }
 }

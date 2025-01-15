@@ -1,7 +1,7 @@
 import { basename, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { Cfg, common } from 'node-karin'
+import { config, getPkgVersion, getPluginInfo } from 'node-karin'
 
 const __filename = fileURLToPath(import.meta.url)
 
@@ -9,27 +9,23 @@ const __dirname = dirname(__filename)
 
 const pluginPath = join(__dirname, '..', '..', '..').replace(/\\/g, '/')
 
-class version {
+const pluginName = basename(pluginPath)
+
+const Ver = {
   /** 插件名字 */
-  get pluginName () {
-    return basename(pluginPath)
-  }
+  pluginName,
+
   /** 插件版本号 */
-  get pluginVersion () {
-    return common.pkgJson('karin-plugin-kkk')?.version
-  }
+  pluginVersion: getPluginInfo('karin-plugin-kkk')?.pkg?.version as string || await getPkgVersion(pluginName),
+
   /** 插件路径 */
-  get pluginPath () {
-    return join(__dirname, '..', '..', '..').replace(/\\/g, '/')
-  }
+  pluginPath: join(__dirname, '..', '..', '..').replace(/\\/g, '/'),
+
   /** Karin版本 */
-  get karinVersion () {
-    return Cfg.package.version
-  }
+  karinVersion: config.pkg().version,
+
   /** Karin程序/客户端路径 */
-  get karinPath () {
-    return (process.cwd()).replace(/\\/g, '/')
-  }
+  karinPath: (process.cwd()).replace(/\\/g, '/')
 }
 
-export const Version = new version()
+export const Version = Ver

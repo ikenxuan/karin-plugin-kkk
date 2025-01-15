@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import karin, { KarinMessage, logger, Plugin } from 'node-karin'
+import karin, { logger, Message, Plugin } from 'node-karin'
 import path from 'path'
 
 import { Common, Config, Render } from '@/module'
@@ -15,96 +15,99 @@ export const task = Config.app.rmmp4 && karin.task('[kkk-视频缓存自动删�
   }
 })
 
-export const biLogin = karin.command(new RegExp(/^#?(kkk)?\s*B站\s*(扫码)?\s*登录$/i), async (e) => {
+export const biLogin = karin.command(/^#?(kkk)?\s*B站\s*(扫码)?\s*登录$/i, async (e) => {
   await bilibiliLogin(e)
   return true
-}, { permission: 'group.admin', name: 'kkk-ck管理' })
+}, { perm: 'group.admin', name: 'kkk-ck管理' })
 
 export const dylogin = karin.command(/^#?(kkk)?抖音(扫码)?登录$/, async (e) => {
   await douyinLogin(e)
   return true
-}, { permission: 'group.admin', name: 'kkk-ck管理' })
+}, { perm: 'group.admin', name: 'kkk-ck管理' })
 
-export const setdyck = karin.command(new RegExp(/^#?(kkk)?s*设置抖音ck$/i), async (e) => {
+export const setdyck = karin.command(/^#?(kkk)?s*设置抖音ck$/i, async (e) => {
   const msg = await e.reply('请发在120秒内送抖音ck\n教程：https://ikenxuan.github.io/kkkkkk-10086/docs/intro/other#%E9%85%8D%E7%BD%AE%E4%B8%8D%E5%90%8C%E5%B9%B3%E5%8F%B0%E7%9A%84-cookies\n')
   const context = await karin.ctx(e)
-  Config.modify('cookies', 'douyin', context.msg)
-  await e.bot.RecallMessage(e.contact, msg.message_id)
+  Config.Modify('cookies', 'douyin', context.msg)
+  await e.bot.recallMsg(e.contact, msg.messageId)
   await e.reply('设置成功！', { at: true })
   return true
-}, { permission: 'master', name: 'kkk-ck管理', event: 'message.private_message' })
+}, { perm: 'master', name: 'kkk-ck管理', event: 'message.friend' })
 
-export const setbilick = karin.command(new RegExp(/^#?(kkk)?s*设置s*(B站)ck$/i), async (e) => {
+export const setbilick = karin.command(/^#?(kkk)?s*设置s*(B站)ck$/i, async (e) => {
   const msg = await e.reply('请发在120秒内送B站ck\n教程：https://ikenxuan.github.io/kkkkkk-10086/docs/intro/other#%E9%85%8D%E7%BD%AE%E4%B8%8D%E5%90%8C%E5%B9%B3%E5%8F%B0%E7%9A%84-cookies\n')
   const context = await karin.ctx(e)
-  Config.modify('cookies', 'bilibili', context.msg)
-  await e.bot.RecallMessage(e.contact, msg.message_id)
+  Config.Modify('cookies', 'bilibili', context.msg)
+  await e.bot.recallMsg(e.contact, msg.messageId)
   await e.reply('设置成功！', { at: true })
   return true
-}, { permission: 'master', name: 'kkk-ck管理', event: 'message.private_message' })
+}, { perm: 'master', name: 'kkk-ck管理', event: 'message.friend' })
 
-
+const authFailMsg = '你暂时没有这个权限使用这个功能啦 ~ 只有主人可以使用哦'
 // 插件类
 export class Admin extends Plugin {
   constructor () {
     super({
       name: 'kkk-管理',
       rule: [
-        { reg: createSwitchRegExp('app'), fnc: 'ConfigSwitch', permission: 'master' },
-        { reg: createNumberRegExp('app'), fnc: 'ConfigNumber', permission: 'master' },
-        { reg: createCustomRegExp('app'), fnc: 'ConfigCustom', permission: 'master' },
-        { reg: createSwitchRegExp('douyin'), fnc: 'ConfigSwitch', permission: 'master' },
-        { reg: createNumberRegExp('douyin'), fnc: 'ConfigNumber', permission: 'master' },
-        { reg: createNumberRegExp('douyin'), fnc: 'ConfigCustom', permission: 'master' },
-        { reg: createSwitchRegExp('bilibili'), fnc: 'ConfigSwitch', permission: 'master' },
-        { reg: createNumberRegExp('bilibili'), fnc: 'ConfigNumber', permission: 'master' },
-        { reg: createNumberRegExp('bilibili'), fnc: 'ConfigCustom', permission: 'master' },
-        { reg: createSwitchRegExp('upload'), fnc: 'ConfigSwitch', permission: 'master' },
-        { reg: createNumberRegExp('upload'), fnc: 'ConfigNumber', permission: 'master' },
-        { reg: createNumberRegExp('upload'), fnc: 'ConfigCustom', permission: 'master' },
-        { reg: createSwitchRegExp('kuaishou'), fnc: 'ConfigSwitch', permission: 'master' },
-        { reg: createNumberRegExp('kuaishou'), fnc: 'ConfigNumber', permission: 'master' },
-        { reg: createNumberRegExp('kuaishou'), fnc: 'ConfigCustom', permission: 'master' },
-        { reg: /^#kkk设置$/, fnc: 'index_Settings', permission: 'master' },
-        { reg: /^#?kkk删除缓存$/, fnc: 'deleteCache', permission: 'master' }
+        { reg: createSwitchRegExp('app'), fnc: 'ConfigSwitch', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('app'), fnc: 'ConfigNumber', permission: 'master', authFailMsg },
+        { reg: createCustomRegExp('app'), fnc: 'ConfigCustom', permission: 'master', authFailMsg },
+        { reg: createSwitchRegExp('douyin'), fnc: 'ConfigSwitch', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('douyin'), fnc: 'ConfigNumber', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('douyin'), fnc: 'ConfigCustom', permission: 'master', authFailMsg },
+        { reg: createSwitchRegExp('bilibili'), fnc: 'ConfigSwitch', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('bilibili'), fnc: 'ConfigNumber', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('bilibili'), fnc: 'ConfigCustom', permission: 'master', authFailMsg },
+        { reg: createSwitchRegExp('upload'), fnc: 'ConfigSwitch', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('upload'), fnc: 'ConfigNumber', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('upload'), fnc: 'ConfigCustom', permission: 'master', authFailMsg },
+        { reg: createSwitchRegExp('kuaishou'), fnc: 'ConfigSwitch', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('kuaishou'), fnc: 'ConfigNumber', permission: 'master', authFailMsg },
+        { reg: createNumberRegExp('kuaishou'), fnc: 'ConfigCustom', permission: 'master', authFailMsg },
+        { reg: /^#kkk设置$/, fnc: 'index_Settings', permission: 'master', authFailMsg },
+        { reg: /^#?kkk删除缓存$/, fnc: 'deleteCache', permission: 'master', authFailMsg }
       ]
     })
   }
-  async deleteCache (e: KarinMessage): Promise<boolean> {
+
+  async deleteCache (e: Message): Promise<boolean> {
     await removeAllFiles(Common.tempDri.video)
     await e.reply(Common.tempDri.video + '目录下所有文件已删除')
     return true
   }
+
   // 配置开关
   async ConfigSwitch (e: any): Promise<boolean> {
+    logger.debug('开关配置', e.msg)
     const platform = this.getPlatformFromMessage(e.msg)
     const regRet = createSwitchRegExp(platform).exec(e.msg)
     if (regRet) {
       const key = regRet[1]
       const isOn = regRet[2] === '开启'
-      Config.modify(platform, PlatformTypeConfig[platform].types[key], isOn)
+      Config.Modify(platform, PlatformTypeConfig[platform].types[key], isOn)
       await this.index_Settings(e)
-      return true
     }
     return false
   }
 
   // 修改数值配置
-  async ConfigNumber (e: KarinMessage): Promise<boolean> {
+  async ConfigNumber (e: Message): Promise<boolean> {
+    logger.debug('数值配置', e.msg)
     const platform = this.getPlatformFromMessage(e.msg)
     const regRet = createNumberRegExp(platform).exec(e.msg)
     if (regRet) {
       const configType = PlatformTypeConfig[platform].numberConfig[regRet[1]]
       const number = this.checkNumberValue(Number(regRet[2]), configType.limit)
-      Config.modify(platform, configType.key, number)
+      Config.Modify(platform, configType.key, number)
       await this.index_Settings(e)
-      return true
     }
-    return true
+    return false
   }
 
   // 处理自定义内容
-  async ConfigCustom (e: KarinMessage): Promise<boolean> {
+  async ConfigCustom (e: Message): Promise<boolean> {
+    logger.debug('自定义内容', e.msg)
     const platform = this.getPlatformFromMessage(e.msg)
     const regRet = createCustomRegExp(platform).exec(e.msg)
 
@@ -114,20 +117,19 @@ export class Admin extends Plugin {
 
       // 检查 customConfig 是否存在
       const customConfig = PlatformTypeConfig[platform]?.customConfig
-      if (! customConfig || ! customConfig[key]) {
-        logger.warn(`无效的设置项：${key}`)
+      if (!customConfig || !customConfig[key]) {
+        logger.debug(logger.warn(`无效的设置项：${key}`))
         return false
       }
       const configKey = customConfig[key].key // 提取实际的 key
-      Config.modify(platform, configKey, customValue)
+      Config.Modify(platform, configKey, customValue)
       await this.index_Settings(e)
-      return true
     }
     return false
   }
 
   // 渲染设置图片
-  async index_Settings (e: KarinMessage): Promise<boolean> {
+  async index_Settings (e: Message): Promise<boolean> {
     const _cfg = Config.All()
     const statusData = getStatus(_cfg) // 获取状态对象
     const img = await Render('admin/index', { data: statusData })
@@ -146,7 +148,7 @@ export class Admin extends Plugin {
 
   // 检查数值范围
   checkNumberValue (value: number, limit: string): number {
-    const [ min, max ] = limit.split('-').map(Number)
+    const [min, max] = limit.split('-').map(Number)
     return Math.min(Math.max(value, min), max)
   }
 }
@@ -179,19 +181,19 @@ function getStatus (data: Record<string, any>): Record<string, any> {
       return `<div class="cfg-status">${value.length > 12 ? `${value.slice(0, 12)}...` : value}</div>`
     } else if (Array.isArray(value)) {
       return value.length === 0
-        ? `<div class="cfg-status status-off">未配置</div>`
+        ? '<div class="cfg-status status-off">未配置</div>'
         : `<div class="cfg-status">已配置 ${value.length} 项</div>`
     } else if (value === null) {
-      return `<div class="cfg-status status-off">未配置</div>`
+      return '<div class="cfg-status status-off">未配置</div>'
     }
-    return `<div class="cfg-status status-off">未知类型</div>`
+    return '<div class="cfg-status status-off">未知类型</div>'
   }
 
   const processObject = (obj: any): Record<string, any> => {
     const res: Record<string, any> = {}
     for (const key in obj) {
       const value = obj[key]
-      if (value !== null && typeof value === 'object' && ! Array.isArray(value)) {
+      if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
         // 如果是子对象，递归处理
         res[key] = processObject(value)
       } else {
@@ -208,7 +210,6 @@ function getStatus (data: Record<string, any>): Record<string, any> {
 
   return result
 }
-
 
 // 定义开关类型配置的接口
 interface PlatformType {
@@ -261,14 +262,15 @@ const PlatformTypeConfig: Record<string, PlatformType> = {
       抖音推送日志: 'push.log',
       抖音解析提示: 'tip',
       抖音高清语音: 'sendHDrecord',
-      抖音动态解析: 'push.parsedynamic'
+      抖音动态解析: 'push.parsedynamic',
+      抖音自动清晰度: 'autoResolution'
     },
     numberConfig: {
       抖音评论数量: { key: 'numcomment', limit: '0-999999' }
     },
     customConfig: {
       抖音推送表达式: { key: 'push.cron', type: 'string' },
-      抖音推送权限: { key: 'push.permission', type: 'string' }
+      抖音推送设置权限: { key: 'push.permission', type: 'string' }
     }
   },
   bilibili: {
@@ -280,14 +282,15 @@ const PlatformTypeConfig: Record<string, PlatformType> = {
       B站推送日志: 'push.log',
       B站解析提示: 'tip',
       B站动态解析: 'push.parsedynamic',
-      B站内容优先: 'videopriority'
+      B站内容优先: 'videopriority',
+      B站自动清晰度: 'autoResolution'
     },
     numberConfig: {
       B站评论数量: { key: 'numcomment', limit: '0-999999' }
     },
     customConfig: {
       B站推送表达式: { key: 'push.cron', type: 'string' },
-      B站推送权限: { key: 'push.permission', type: 'string' }
+      B站推送设置权限: { key: 'push.permission', type: 'string' }
     }
   },
   kuaishou: {
@@ -303,6 +306,18 @@ const PlatformTypeConfig: Record<string, PlatformType> = {
 }
 
 // 创建正则表达式的函数
-const createSwitchRegExp = (platform: string): RegExp => new RegExp(`^#kkk设置(${Object.keys(PlatformTypeConfig[platform].types).join('|')})(开启|关闭)$`)
-const createNumberRegExp = (platform: string): RegExp => new RegExp(`^#kkk设置(${Object.keys(PlatformTypeConfig[platform].numberConfig).join('|')})(\\d+)$`)
-const createCustomRegExp = (platform: string): RegExp => new RegExp(`^#kkk设置(${Object.keys(PlatformTypeConfig[platform].customConfig ?? {}).join('|')})(.+)$`)
+const createSwitchRegExp = (platform: string): RegExp => {
+  // 取出所有 'switch' 类型的命令
+  const switchKeys = Object.keys(PlatformTypeConfig[platform].types)
+  return new RegExp(`^#kkk设置(${switchKeys.join('|')})(开启|关闭)$`)
+}
+
+const createNumberRegExp = (platform: string): RegExp => {
+  const numberKeys = Object.keys(PlatformTypeConfig[platform].numberConfig)
+  return new RegExp(`^#kkk设置(${numberKeys.join('|')})(\\d+)$`)
+}
+
+const createCustomRegExp = (platform: string): RegExp => {
+  const customKeys = Object.keys(PlatformTypeConfig[platform].customConfig ?? {})
+  return new RegExp(`^#kkk设置(${customKeys.join('|')})(.*)$`)
+}

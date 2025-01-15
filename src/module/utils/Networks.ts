@@ -1,12 +1,12 @@
 import fs from 'node:fs'
 
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, ResponseType } from 'axios'
 import { logger } from 'node-karin'
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, ResponseType } from 'node-karin/axios'
 import { pipeline } from 'stream/promises'
 
 import { NetworksConfigType } from '@/types'
 
-type HeadersObject = Record<string, string>;
+type HeadersObject = Record<string, string>
 
 export class Networks {
   private url: string
@@ -25,7 +25,7 @@ export class Networks {
     this.type = data.type ?? 'json'
     this.method = data.method ?? 'GET'
     this.body = data.body ?? null
-    this.timeout = data.timeout ?? 5000
+    this.timeout = data.timeout ?? 15000
     this.filepath = data.filepath ?? ''
     this.maxRetries = 0
 
@@ -86,7 +86,7 @@ export class Networks {
       clearTimeout(timeoutId)
 
       // 检查HTTP响应状态码，如果状态码不在200到299之间，则抛出错误
-      if (! (response.status >= 200 && response.status < 300)) {
+      if (!(response.status >= 200 && response.status < 300)) {
         throw new Error(`无法获取 ${this.url}。状态: ${response.status} ${response.statusText}`)
       }
 
@@ -99,7 +99,7 @@ export class Networks {
 
       // 初始化已下载字节数和上次打印的进度百分比
       let downloadedBytes = 0
-      let lastPrintedPercentage = - 1
+      let lastPrintedPercentage = -1
 
       // 创建一个文件写入流，用于将下载的资源保存到本地文件系统
       const writer = fs.createWriteStream(this.filepath)
@@ -143,15 +143,15 @@ export class Networks {
 
       // 处理请求或下载过程中的错误
       if (error instanceof AxiosError) {
-        console.error(`请求在 ${this.timeout / 1000} 秒后超时`)
+        logger.error(`请求在 ${this.timeout / 1000} 秒后超时`)
       } else {
-        console.error('下载失败:', error)
+        logger.error('下载失败:', error)
       }
 
       // 如果重试次数小于最大重试次数，则等待一段时间后重试下载
       if (retryCount < this.maxRetries) {
         const delay = Math.min(Math.pow(2, retryCount) * 1000, 1000)
-        console.warn(`正在重试下载... (${retryCount + 1}/${this.maxRetries})，将在 ${delay / 1000} 秒后重试`)
+        logger.warn(`正在重试下载... (${retryCount + 1}/${this.maxRetries})，将在 ${delay / 1000} 秒后重试`)
         await new Promise(resolve => setTimeout(resolve, delay))
         return this.downloadStream(progressCallback, retryCount + 1)
       } else {
@@ -160,6 +160,7 @@ export class Networks {
       }
     }
   }
+
   async getfetch (): Promise<AxiosResponse | boolean> {
     try {
       const result = await this.returnResult()
@@ -211,6 +212,7 @@ export class Networks {
       return response.headers.location as string
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
+        logger.error(`获取 ${this.url} 重定向地址失败，接口响应状态码: ${error.response?.status}`)
         throw new Error(error.stack)
       }
     }

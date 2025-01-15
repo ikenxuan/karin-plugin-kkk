@@ -1,16 +1,26 @@
 import fs from 'node:fs'
 
-import { bilibiliAPI } from '@ikenxuan/amagi'
-import karin, { common, KarinElement, KarinMessage, logger, segment } from 'node-karin'
+import { bilibiliAPI, getBilibiliData } from '@ikenxuan/amagi'
+import karin, { common, ElementTypes, logger, Message, segment } from 'node-karin'
 
 import { Base, Common, Config, mergeFile, Networks, Render } from '@/module/utils'
-import { bilibiliComments, genParams } from '@/platform/bilibili'
+import { bilibiliComments, DynamicType, genParams } from '@/platform/bilibili'
 import { BilibiliDataTypes } from '@/types'
 
-let img: string | KarinElement | (string | KarinElement)[]
+let img: ElementTypes[]
 
+type videoDownloadUrlList = {
+  /**
+   * 清晰度标识
+   *
+   * 详情见 [qn视频清晰度标识](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/video/videostream_url.md#qn%E8%A7%86%E9%A2%91%E6%B8%85%E6%99%B0%E5%BA%A6%E6%A0%87%E8%AF%86)
+   */
+  id: number
+  /** 视频文件下载地址 */
+  base_url: string
+}[]
 export class Bilibili extends Base {
-  e: KarinMessage
+  e: Message
   type: any
   STATUS: any
   ISVIP: boolean
@@ -20,7 +30,8 @@ export class Bilibili extends Base {
   get botadapter (): string {
     return this.e.bot?.adapter?.name
   }
-  constructor (e: KarinMessage, data: any) {
+
+  constructor (e: Message, data: any) {
     super(e)
     this.e = e
     this.STATUS = data?.USER?.STATUS
@@ -42,7 +53,7 @@ export class Bilibili extends Base {
 
         this.downloadfilename = title.substring(0, 50).replace(/[\\/:\*\?"<>\|\r\n\s]/g, ' ')
 
-        const nocd_data = await new Networks({
+        const nocdData = await new Networks({
           url: bilibiliAPI.视频流信息({ avid: OBJECT.INFODATA.data.aid, cid: OBJECT.INFODATA.data.cid }) + '&platform=html5',
           headers: this.headers
         }).getData()
@@ -55,41 +66,53 @@ export class Bilibili extends Base {
           )},    收藏: ${this.count(favorite)}`
         ])
 
-
         let videoSize
+        let correctList!: {
+          accept_description: string[]
+          videoList: videoDownloadUrlList
+        }
+
         if (this.islogin) {
-          const simplify = OBJECT.DATA.data.dash.video.filter((item: { id: any }, index: any, self: any[]) => {
+          /** 提取出视频流信息对象，并排除清晰度重复的视频流 */
+          const simplify = OBJECT.DATA.data.dash.video.filter((item: { id: number }, index: any, self: any[]) => {
             return self.findIndex((t: { id: any }) => {
               return t.id === item.id
             }) === index
           })
+          /** 替换原始的视频信息对象 */
           OBJECT.DATA.data.dash.video = simplify
-          OBJECT = await this.processVideos(OBJECT)
-          videoSize = await this.getvideosize(OBJECT.DATA.data.dash.video[0].base_url, OBJECT.DATA.data.dash.audio[0].base_url, OBJECT.INFODATA.data.bvid)
+          /** 给视频信息对象删除不符合条件的视频流 */
+          correctList = await this.processVideos(OBJECT.DATA.data.accept_description, simplify, OBJECT.DATA.data.dash.audio[0].base_url, OBJECT.INFODATA.data.bvid)
+          OBJECT.DATA.data.dash.video = correctList.videoList
+          OBJECT.DATA.data.accept_description = correctList.accept_description
+          /** 获取第一个视频流的大小 */
+          videoSize = await this.getvideosize(correctList.videoList[0].base_url, OBJECT.DATA.data.dash.audio[0].base_url, OBJECT.INFODATA.data.bvid)
         } else {
           videoSize = (OBJECT.DATA.data.durl[0].size / (1024 * 1024)).toFixed(2)
         }
-        const commentsdata = bilibiliComments(OBJECT)
-        img = await Render('bilibili/comment', {
-          Type: '视频',
-          CommentsData: commentsdata,
-          CommentLength: String(commentsdata?.length ? commentsdata.length : 0),
-          share_url: 'https://b23.tv/' + OBJECT.INFODATA.data.bvid,
-          Clarity: Config.bilibili.videopriority === true ? nocd_data.data.accept_description[0] : OBJECT.DATA.data.accept_description[0],
-          VideoSize: Config.bilibili.videopriority === true ? (nocd_data.data.durl[0].size / (1024 * 1024)).toFixed(2) : videoSize,
-          ImageLength: 0,
-          shareurl: 'https://b23.tv/' + OBJECT.INFODATA.data.bvid
-        })
-        Config.bilibili.comment && await this.e.reply(img)
-        if (Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) {
+        if (Config.bilibili.comment) {
+          const commentsdata = bilibiliComments(OBJECT)
+          img = await Render('bilibili/comment', {
+            Type: '视频',
+            CommentsData: commentsdata,
+            CommentLength: String(commentsdata?.length ? commentsdata.length : 0),
+            share_url: 'https://b23.tv/' + OBJECT.INFODATA.data.bvid,
+            Clarity: Config.bilibili.videopriority === true ? nocdData.data.accept_description[0] : correctList.accept_description[0],
+            VideoSize: Config.bilibili.videopriority === true ? (nocdData.data.durl[0].size / (1024 * 1024)).toFixed(2) : videoSize,
+            ImageLength: 0,
+            shareurl: 'https://b23.tv/' + OBJECT.INFODATA.data.bvid
+          })
+          await this.e.reply(img)
+        }
+        if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) && !Config.upload.compress) {
           await this.e.reply(`设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n` + '视频太大了，还是去B站看吧~', { reply: true })
-        } else await this.getvideo(Config.bilibili.videopriority === true ? { DATA: nocd_data } : OBJECT)
+        } else await this.getvideo(Config.bilibili.videopriority === true ? { DATA: nocdData } : OBJECT)
         break
       }
       case 'bangumi_video_info': {
         const barray = []
         const msg = []
-        for (let i = 0; i < OBJECT.INFODATA.result.episodes.length; i ++) {
+        for (let i = 0; i < OBJECT.INFODATA.result.episodes.length; i++) {
           const totalEpisodes = OBJECT.INFODATA.result.episodes.length
           const long_title = OBJECT.INFODATA.result.episodes[i].long_title
           const badge = OBJECT.INFODATA.result.episodes[i].badge
@@ -112,11 +135,10 @@ export class Bilibili extends Base {
         img = await Render('bilibili/bangumi', {
           saveId: 'bangumi',
           bangumiData: barray,
-          Botadapter: this.botadapter,
           title: OBJECT.INFODATA.result.title
         })
-        await this.e.reply(img)
-        await this.e.reply([ `请在120秒内输入 第?集 选择集数` ])
+        await this.e.reply([...img, segment.text('请在120秒内输入 第?集 选择集数')])
+        await this.e.reply(segment.text('请在120秒内输入 第?集 选择集数'))
         const context = await karin.ctx(this.e, { reply: true })
         const regex = /第([一二三四五六七八九十百千万0-9]+)集/.exec(context.msg)
         let Episode
@@ -144,21 +166,42 @@ export class Bilibili extends Base {
           headers: this.headers
         }).getData()
         OBJECT.DATA = { ...DATA }
-        if (OBJECT.INFODATA.result.episodes[Number(Episode) - 1].badge === '会员' && ! this.ISVIP) {
+        if (OBJECT.INFODATA.result.episodes[Number(Episode) - 1].badge === '会员' && !this.ISVIP) {
           logger.warn('该CK不是大会员，无法获取视频流')
           return true
         }
-        await this.getvideo({
-          ...OBJECT,
-          video_url: this.ISVIP ? OBJECT.DATA.result.dash.video[0].base_url : OBJECT.DATA.result.dash.video[0].base_url,
-          audio_url: OBJECT.DATA.result.dash.audio[0].base_url
-        })
+        if (Config.bilibili.autoResolution) {
+          /** 提取出视频流信息对象，并排除清晰度重复的视频流 */
+          const simplify = DATA.result.dash.video.filter((item: { id: number }, index: any, self: any[]) => {
+            return self.findIndex((t: { id: any }) => {
+              return t.id === item.id
+            }) === index
+          })
+          /** 替换原始的视频信息对象 */
+          DATA.result.dash.video = simplify
+          /** 给视频信息对象删除不符合条件的视频流 */
+          const correctList = await this.processVideos(DATA.result.accept_description, simplify, DATA.result.dash.audio[0].base_url, OBJECT.INFODATA.result.season_id)
+          DATA.result.dash.video = correctList.videoList
+          DATA.result.cept_description = correctList.accept_description
+          await this.getvideo({
+            ...OBJECT,
+            video_url: DATA.result.dash.video[0].base_url,
+            audio_url: DATA.result.dash.audio[0].base_url
+          })
+        } else {
+          await this.getvideo({
+            ...OBJECT,
+            video_url: DATA.result.dash.video[0].base_url,
+            audio_url: DATA.result.dash.audio[0].base_url
+          })
+        }
+
         break
       }
       case 'dynamic_info': {
         switch (OBJECT.dynamicINFO.data.item.type) {
           /** 图文、纯图 */
-          case 'DYNAMIC_TYPE_DRAW': {
+          case DynamicType.DRAW: {
             const imgArray = []
             for (const img of OBJECT.dynamicINFO.data.item.modules.module_dynamic.major?.draw?.items) {
               imgArray.push(segment.image(img.src))
@@ -176,23 +219,14 @@ export class Bilibili extends Base {
               })
               if (imgArray.length === 1) await this.e.reply(imgArray[0])
               if (imgArray.length > 1) {
-                const forwardMsg = common.makeForward(imgArray, this.e.sender.uin, this.e.sender.nick)
-                await this.e.bot.sendForwardMessage(this.e.contact, forwardMsg)
+                const forwardMsg = common.makeForward(imgArray, this.e.userId, this.e.sender.nick)
+                await this.e.bot.sendForwardMsg(this.e.contact, forwardMsg)
               }
               await this.e.reply(img)
             }
 
             const dynamicCARD = JSON.parse(OBJECT.dynamicINFO_CARD.data.card.card)
-            const cover = () => {
-              const imgArray = []
-              for (const i of dynamicCARD.item.pictures) {
-                const obj = {
-                  image_src: i.img_src
-                }
-                imgArray.push(obj)
-              }
-              return imgArray
-            }
+
             if ('topic' in OBJECT.dynamicINFO.data.item.modules.module_dynamic && OBJECT.dynamicINFO.data.item.modules.module_dynamic.topic !== null) {
               const name = OBJECT.dynamicINFO.data.item.modules.module_dynamic.topic.name
               OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.rich_text_nodes.unshift({
@@ -203,13 +237,13 @@ export class Bilibili extends Base {
               OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text = `${name}\n\n` + OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text
             }
             await this.e.reply(await Render('bilibili/dynamic/DYNAMIC_TYPE_DRAW', {
-              image_url: cover(),
-              text: replacetext(br(OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text), OBJECT.dynamicINFO),
+              image_url: cover(dynamicCARD.item.pictures),
+              text: replacetext(br(OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text), OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.rich_text_nodes),
               dianzan: this.count(OBJECT.dynamicINFO.data.item.modules.module_stat.like.count),
               pinglun: this.count(OBJECT.dynamicINFO.data.item.modules.module_stat.comment.count),
               share: this.count(OBJECT.dynamicINFO.data.item.modules.module_stat.forward.count),
               create_time: OBJECT.dynamicINFO.data.item.modules.module_author.pub_time,
-              avater_url: OBJECT.dynamicINFO.data.item.modules.module_author.face,
+              avatar_url: OBJECT.dynamicINFO.data.item.modules.module_author.face,
               frame: OBJECT.dynamicINFO.data.item.modules.module_author.pendant.image,
               share_url: 'https://t.bilibili.com/' + OBJECT.dynamicINFO.data.item.id_str,
               username: checkvip(OBJECT.USERDATA.data.card),
@@ -217,17 +251,15 @@ export class Bilibili extends Base {
               user_shortid: OBJECT.dynamicINFO.data.item.modules.module_author.mid,
               total_favorited: this.count(OBJECT.USERDATA.data.like_num),
               following_count: this.count(OBJECT.USERDATA.data.card.attention),
-              decoration_card: OBJECT.dynamicINFO.data.item.modules.module_author.decorate ?
-                `<div style="display: flex; width: 500px; height: 150px; background-position: center; background-attachment: fixed; background-repeat: no-repeat; background-size: contain; align-items: center; justify-content: flex-end; background-image: url('${OBJECT.dynamicINFO.data.item.modules.module_author.decorate.card_url}')">${generateGradientStyle(
-                  OBJECT.dynamicINFO.data.item.modules.module_author.decorate.fan?.color_format?.colors, OBJECT.dynamicINFO.data.item.modules.module_author.decorate.fan.num_str)}</div>` : '<div></div>',
+              decoration_card: generateDecorationCard(OBJECT.dynamicINFO.data.item.modules.module_author.decorate),
               render_time: Common.getCurrentTime(),
               dynamicTYPE: '图文动态'
             }))
             break
           }
           /** 纯文 */
-          case 'DYNAMIC_TYPE_WORD': {
-            const text = replacetext(br(OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text), OBJECT.dynamicINFO)
+          case DynamicType.WORD: {
+            const text = replacetext(br(OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text), OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.rich_text_nodes)
             await this.e.reply(
               await Render('bilibili/dynamic/DYNAMIC_TYPE_WORD', {
                 text,
@@ -235,7 +267,7 @@ export class Bilibili extends Base {
                 pinglun: this.count(OBJECT.dynamicINFO.data.item.modules.module_stat.comment.count),
                 share: this.count(OBJECT.dynamicINFO.data.item.modules.module_stat.forward.count),
                 create_time: OBJECT.dynamicINFO.data.item.modules.module_author.pub_time,
-                avater_url: OBJECT.dynamicINFO.data.item.modules.module_author.face,
+                avatar_url: OBJECT.dynamicINFO.data.item.modules.module_author.face,
                 frame: OBJECT.dynamicINFO.data.item.modules.module_author.pendant.image,
                 share_url: 'https://t.bilibili.com/' + OBJECT.dynamicINFO.data.item.id_str,
                 username: checkvip(OBJECT.USERDATA.data.card),
@@ -243,7 +275,6 @@ export class Bilibili extends Base {
                 user_shortid: OBJECT.dynamicINFO.data.item.modules.module_author.mid,
                 total_favorited: this.count(OBJECT.USERDATA.data.like_num),
                 following_count: this.count(OBJECT.USERDATA.data.card.attention),
-                Botadapter: this.botadapter,
                 dynamicTYPE: '纯文动态'
               })
             )
@@ -254,13 +285,150 @@ export class Bilibili extends Base {
                 CommentLength: String((bilibiliComments(OBJECT)?.length) ? bilibiliComments(OBJECT).length : 0),
                 share_url: 'https://t.bilibili.com/' + OBJECT.dynamicINFO.data.item.id_str,
                 ImageLength: OBJECT.dynamicINFO.data.item.modules?.module_dynamic?.major?.draw?.items?.length || '动态中没有附带图片',
-                shareurl: '动态分享链接',
-                Botadapter: this.botadapter
+                shareurl: '动态分享链接'
               })
             )
             break
           }
+          /** 转发动态 */
+          case DynamicType.FORWARD: {
+            const text = replacetext(br(OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.text), OBJECT.dynamicINFO.data.item.modules.module_dynamic.desc.rich_text_nodes)
+            let data = {}
+            switch (OBJECT.dynamicINFO.data.item.orig.type) {
+              case DynamicType.AV: {
+                data = {
+                  username: checkvip(OBJECT.dynamicINFO.data.item.orig.modules.module_author),
+                  pub_action: OBJECT.dynamicINFO.data.item.orig.modules.module_author.pub_action,
+                  avatar_url: OBJECT.dynamicINFO.data.item.orig.modules.module_author.face,
+                  duration_text: OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.major.archive.duration_text,
+                  title: OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.major.archive.title,
+                  danmaku: OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.major.archive.stat.danmaku,
+                  play: OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.major.archive.stat.play,
+                  cover: OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.major.archive.cover,
+                  create_time: Common.convertTimestampToDateTime(OBJECT.dynamicINFO.data.item.orig.modules.module_author.pub_ts),
+                  decoration_card: generateDecorationCard(OBJECT.dynamicINFO.data.item.orig.modules.module_author.decorate),
+                  frame: OBJECT.dynamicINFO.data.item.orig.modules.module_author.pendant.image
+                }
+                break
+              }
+              case DynamicType.DRAW: {
+                const dynamicCARD = await getBilibiliData('动态卡片数据', Config.cookies.bilibili, { dynamic_id: OBJECT.dynamicINFO.data.item.orig.id_str })
+                const cardData = JSON.parse(dynamicCARD.data.card.card)
+                data = {
+                  username: checkvip(OBJECT.dynamicINFO.data.item.orig.modules.module_author),
+                  create_time: Common.convertTimestampToDateTime(OBJECT.dynamicINFO.data.item.orig.modules.module_author.pub_ts),
+                  avatar_url: OBJECT.dynamicINFO.data.item.orig.modules.module_author.face,
+                  text: replacetext(br(OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.desc.text), OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.desc.rich_text_nodes),
+                  image_url: cover(cardData.item.pictures),
+                  decoration_card: generateDecorationCard(OBJECT.dynamicINFO.data.item.orig.modules.module_author.decorate),
+                  frame: OBJECT.dynamicINFO.data.item.orig.modules.module_author.pendant.image
+                }
+                break
+              }
+              case DynamicType.WORD: {
+                data = {
+                  username: checkvip(OBJECT.dynamicINFO.data.item.orig.modules.module_author),
+                  create_time: Common.convertTimestampToDateTime(OBJECT.dynamicINFO.data.item.orig.modules.module_author.pub_ts),
+                  avatar_url: OBJECT.dynamicINFO.data.item.orig.modules.module_author.face,
+                  text: replacetext(br(OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.desc.text), OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.desc.rich_text_nodes),
+                  decoration_card: generateDecorationCard(OBJECT.dynamicINFO.data.item.orig.modules.module_author.decorate),
+                  frame: OBJECT.dynamicINFO.data.item.orig.modules.module_author.pendant.image
+                }
+                break
+              }
+              case DynamicType.LIVE_RCMD: {
+                const liveData = JSON.parse(OBJECT.dynamicINFO.data.item.orig.modules.module_dynamic.major.live_rcmd.content)
+                data = {
+                  username: checkvip(OBJECT.dynamicINFO.data.item.orig.modules.module_author),
+                  create_time: Common.convertTimestampToDateTime(OBJECT.dynamicINFO.data.item.orig.modules.module_author.pub_ts),
+                  avatar_url: OBJECT.dynamicINFO.data.item.orig.modules.module_author.face,
+                  decoration_card: generateDecorationCard(OBJECT.dynamicINFO.data.item.orig.modules.module_author.decorate),
+                  frame: OBJECT.dynamicINFO.data.item.orig.modules.module_author.pendant.image,
+                  cover: liveData.live_play_info.cover,
+                  text_large: liveData.live_play_info.watched_show.text_large,
+                  area_name: liveData.live_play_info.area_name,
+                  title: liveData.live_play_info.title,
+                  online: liveData.live_play_info.online
+                }
+                break
+              }
+              case DynamicType.FORWARD:
+              default: {
+                logger.warn(`UP主：${OBJECT.USERDATA.data.card.name}的${logger.green('转发动态')}转发的原动态类型为「${logger.yellow(OBJECT.dynamicINFO.data.item.orig.type)}」暂未支持解析`)
+                break
+              }
+            }
+            await this.e.reply(
+              await Render('bilibili/dynamic/DYNAMIC_TYPE_FORWARD', {
+                text,
+                dianzan: this.count(OBJECT.dynamicINFO.data.item.modules.module_stat.like.count),
+                pinglun: this.count(OBJECT.dynamicINFO.data.item.modules.module_stat.comment.count),
+                share: this.count(OBJECT.dynamicINFO.data.item.modules.module_stat.forward.count),
+                create_time: OBJECT.dynamicINFO.data.item.modules.module_author.pub_time,
+                avatar_url: OBJECT.dynamicINFO.data.item.modules.module_author.face,
+                frame: OBJECT.dynamicINFO.data.item.modules.module_author.pendant.image,
+                share_url: 'https://t.bilibili.com/' + OBJECT.dynamicINFO.data.item.id_str,
+                username: checkvip(OBJECT.USERDATA.data.card),
+                fans: this.count(OBJECT.USERDATA.data.follower),
+                user_shortid: OBJECT.dynamicINFO.data.item.modules.module_author.mid,
+                total_favorited: this.count(OBJECT.USERDATA.data.like_num),
+                following_count: this.count(OBJECT.USERDATA.data.card.attention),
+                dynamicTYPE: '转发动态解析',
+                decoration_card: generateDecorationCard(OBJECT.dynamicINFO.data.item.modules.module_author.decorate),
+                render_time: Common.getCurrentTime(),
+                original_content: { [OBJECT.dynamicINFO.data.item.orig.type]: data }
+              })
+            )
+            break
+          }
+          /** 视频动态 */
+          case DynamicType.AV: {
+            if (OBJECT.dynamicINFO.data.item.modules.module_dynamic.major.type === 'MAJOR_TYPE_ARCHIVE') {
+              const bvid = OBJECT.dynamicINFO.data.item.modules.module_dynamic.major.archive.bvid
+              const INFODATA = await getBilibiliData('单个视频作品数据', '', { bvid })
+              const dycrad = OBJECT.dynamicINFO_CARD.data.card && OBJECT.dynamicINFO_CARD.data.card.card && JSON.parse(OBJECT.dynamicINFO_CARD.data.card.card)
+
+              await this.e.reply(
+                await Render('bilibili/comment', {
+                  Type: '动态',
+                  CommentsData: bilibiliComments(OBJECT),
+                  CommentLength: String((bilibiliComments(OBJECT)?.length) ? bilibiliComments(OBJECT).length : 0),
+                  share_url: 'https://www.bilibili.com/video/' + bvid,
+                  ImageLength: OBJECT.dynamicINFO.data.item.modules?.module_dynamic?.major?.draw?.items?.length || '动态中没有附带图片',
+                  shareurl: '动态分享链接'
+                })
+              )
+
+              img = await Render('bilibili/dynamic/DYNAMIC_TYPE_AV',
+                {
+                  image_url: [{ image_src: INFODATA.data.pic }],
+                  text: br(INFODATA.data.title),
+                  desc: br(dycrad.desc),
+                  dianzan: this.count(INFODATA.data.stat.like),
+                  pinglun: this.count(INFODATA.data.stat.reply),
+                  share: this.count(INFODATA.data.stat.share),
+                  view: this.count(dycrad.stat.view),
+                  coin: this.count(dycrad.stat.coin),
+                  duration_text: OBJECT.dynamicINFO.data.item.modules.module_dynamic.major.archive.duration_text,
+                  create_time: Common.convertTimestampToDateTime(INFODATA.data.ctime),
+                  avatar_url: INFODATA.data.owner.face,
+                  frame: OBJECT.dynamicINFO.data.item.modules.module_author.pendant.image,
+                  share_url: 'https://www.bilibili.com/video/' + bvid,
+                  username: checkvip(OBJECT.USERDATA.data.card),
+                  fans: this.count(OBJECT.USERDATA.data.follower),
+                  user_shortid: OBJECT.USERDATA.data.card.mid,
+                  total_favorited: this.count(OBJECT.USERDATA.data.like_num),
+                  following_count: this.count(OBJECT.USERDATA.data.card.attention),
+                  dynamicTYPE: '视频动态'
+                }
+              )
+              await this.e.reply(img)
+            }
+            break
+          }
+
           default:
+            await this.e.reply(`该动态类型「${OBJECT.dynamicINFO.data.item.type}」暂未支持解析`)
             break
         }
         break
@@ -272,14 +440,14 @@ export class Bilibili extends Base {
         }
         const img = await Render('bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
           {
-            image_url: [ { image_src: OBJECT.live_info.data.user_cover } ],
+            image_url: [{ image_src: OBJECT.live_info.data.user_cover }],
             text: br(OBJECT.live_info.data.title),
             liveinf: br(`${OBJECT.live_info.data.area_name} | 房间号: ${OBJECT.live_info.data.room_id}`),
             username: OBJECT.USERDATA.data.card.name,
-            avater_url: OBJECT.USERDATA.data.card.face,
-            frame: OBJECT.dynamicINFO.data.item.modules.module_author.pendant.image,
+            avatar_url: OBJECT.USERDATA.data.card.face,
+            frame: OBJECT.USERDATA.data.card.pendant.image,
             fans: this.count(OBJECT.USERDATA.data.card.fans),
-            create_time: OBJECT.live_info.data.live_time === - 62170012800 ? '获取失败' : OBJECT.live_info.data.live_time,
+            create_time: OBJECT.live_info.data.live_time === -62170012800 ? '获取失败' : OBJECT.live_info.data.live_time,
             now_time: 114514,
             share_url: 'https://live.bilibili.com/' + OBJECT.live_info.data.room_id,
             dynamicTYPE: '直播'
@@ -303,47 +471,42 @@ export class Bilibili extends Base {
         const bmp4 = await this.DownLoadFile(
           this.TYPE === 'one_video' ? OBJECT.DATA.data?.dash?.video[0].base_url : OBJECT.video_url,
           {
-            title: `Bil_V_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.episodes[0].bvid}`,
-            headers: this.headers,
-            filetype: '.mp4'
+            title: `Bil_V_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.season_id}.mp4`,
+            headers: this.headers
           }
         )
         const bmp3 = await this.DownLoadFile(
           this.TYPE === 'one_video' ? OBJECT.DATA.data?.dash?.audio[0].base_url : OBJECT.audio_url,
           {
-            title: `Bil_A_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.episodes[0].bvid}`,
-            headers: this.headers,
-            filetype: '.mp3'
+            title: `Bil_A_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.season_id}.mp3`,
+            headers: this.headers
           }
         )
         if (bmp4.filepath && bmp3.filepath) {
           await mergeFile('二合一（视频 + 音频）', {
             path: bmp4.filepath,
             path2: bmp3.filepath,
-            resultPath: Common.tempDri.video + `Bil_Result_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.episodes[0].bvid}.mp4`,
-            callback: async (success: boolean): Promise<boolean> => {
+            resultPath: Common.tempDri.video + `Bil_Result_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.season_id}.mp4`,
+            callback: async (success: boolean, resultPath: string): Promise<boolean> => {
               if (success) {
                 const filePath = Common.tempDri.video + `${Config.app.rmmp4 ? 'tmp_' + Date.now() : this.downloadfilename}.mp4`
-                fs.renameSync(
-                  Common.tempDri.video + `Bil_Result_${this.TYPE === 'one_video' ? OBJECT.INFODATA.data.bvid : OBJECT.INFODATA.result.episodes[0].bvid}.mp4`,
-                  filePath
-                )
+                fs.renameSync(resultPath, filePath)
                 logger.mark('正在尝试删除缓存文件')
-                this.removeFile(bmp4.filepath, true)
-                this.removeFile(bmp3.filepath, true)
+                await this.removeFile(bmp4.filepath, true)
+                await this.removeFile(bmp3.filepath, true)
 
                 const stats = fs.statSync(filePath)
                 const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
                 if (fileSizeInMB > Config.upload.groupfilevalue) {
-                  await this.e.reply(`视频大小: ${fileSizeInMB}MB 正通过群文件上传中...`)
-                  return await this.upload_file({ filepath: filePath, totalBytes: fileSizeInMB }, '', { useGroupFile: true })
+                  // 使用文件上传
+                  return await this.upload_file({ filepath: filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '', { useGroupFile: true })
                 } else {
                   /** 因为本地合成，没有视频直链 */
-                  return await this.upload_file({ filepath: filePath, totalBytes: fileSizeInMB }, '')
+                  return await this.upload_file({ filepath: filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '')
                 }
               } else {
-                this.removeFile(bmp4.filepath, true)
-                this.removeFile(bmp3.filepath, true)
+                await this.removeFile(bmp4.filepath, true)
+                await this.removeFile(bmp3.filepath, true)
                 return true
               }
             }
@@ -353,7 +516,7 @@ export class Bilibili extends Base {
       }
       case '!isLogin': {
         /** 没登录（没配置ck）情况下直接发直链，传直链在DownLoadVideo()处理 */
-        await this.DownLoadVideo({ video_url: OBJECT.DATA.data.durl[0].url, title: { timestampTitle: 'tmp_' + Date.now(), originTitle: this.downloadfilename } })
+        await this.DownLoadVideo({ video_url: OBJECT.DATA.data.durl[0].url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${this.downloadfilename}.mp4` } })
         break
       }
       default:
@@ -380,11 +543,20 @@ export class Bilibili extends Base {
    * @param data 视频流数据
    * @returns 经过排除后的视频流数据（删减不符合Config.upload.filelimit条件的视频流）
    */
-  async processVideos (data: any) {
+
+  /**
+   * 检出符合大小的视频流信息对象
+   * @param accept_description 视频流清晰度列表
+   * @param videoList 包含所有清晰度的视频流信息对象
+   * @param audioUrl 音频流地址
+   * @param bvid 视频bvid（BV号）
+   * @returns
+   */
+  async processVideos (accept_description: string[], videoList: videoDownloadUrlList, audioUrl: string, bvid: string) {
     const results: Record<string, string> = {}
 
-    for (const video of data.DATA.data.dash.video) {
-      const size = await this.getvideosize(video.base_url, data.DATA.data.dash.audio[0].base_url, data.INFODATA.data.bvid)
+    for (const video of videoList) {
+      const size = await this.getvideosize(video.base_url, audioUrl, bvid)
       results[video.id] = size
     }
 
@@ -407,37 +579,39 @@ export class Bilibili extends Base {
       // 找到最接近但不超过文件大小限制的视频清晰度
       const closestQuality = qnd[Number(closestId)]
       // 更新 OBJECT.DATA.data.accept_description
-      data.DATA.data.accept_description = data.DATA.data.accept_description.filter((desc: any) => desc === closestQuality)
-      if (data.DATA.data.accept_description.length === 0) {
-        data.DATA.data.accept_description = [ closestQuality ]
+      accept_description = accept_description.filter((desc: any) => desc === closestQuality)
+      if (accept_description.length === 0) {
+        accept_description = [closestQuality]
       }
       // 找到对应的视频对象
-      const video = data.DATA.data.dash.video.find((video: { id: number }) => video.id === Number(closestId))
+      const video = videoList.find((video: { id: number }) => video.id === Number(closestId))!
       // 更新 OBJECT.DATA.data.dash.video 数组
-      data.DATA.data.dash.video = [ video ]
+      videoList = [video]
     } else {
       // 如果没有找到符合条件的视频，使用最低画质的视频对象
-      data.DATA.data.dash.video = [ [ ...data.DATA.data.dash.video ].pop() ]
+      videoList = [[...videoList].pop()!]
       // 更新 OBJECT.DATA.data.accept_description 为最低画质的描述
-      data.DATA.data.accept_description = [ ...data.DATA.data.accept_description ].pop()
+      accept_description = [[...accept_description].pop()!]
     }
-    return data
+    return {
+      accept_description,
+      videoList
+    }
   }
 }
 
-
-function checkvip (member: { vip: { vipStatus: number; nickname_color: any }; name: any }) {
-  return member.vip.vipStatus === 1
-    ? `<span style="color: ${member.vip.nickname_color || '#FB7299'}; font-weight: bold;">${member.name}</span>`
-    : `<span style="color: #606060">${member.name}</span>`
+function checkvip (member: any) {
+  return member.vip.vipStatus || member.vip.status === 1
+    ? `<span style="color: ${member.vip.nickname_color || '#FB7299'}; font-weight: 700;">${member.name}</span>`
+    : `<span style="color: ${Common.useDarkTheme() ? '#e9e9e9' : '#313131'}; font-weight: 700;">${member.name}</span>`
 }
 
 function br (data: string) {
   return (data = data.replace(/\n/g, '<br>'))
 }
 
-function replacetext (text: string, obj: { data: { item: { modules: { module_dynamic: { desc: { rich_text_nodes: any } } } } } }) {
-  for (const tag of obj.data.item.modules.module_dynamic.desc.rich_text_nodes) {
+export function replacetext (text: string, rich_text_nodes: any[]) {
+  for (const tag of rich_text_nodes) {
     // 对正则表达式中的特殊字符进行转义
     const escapedText = tag.orig_text.replace(/([.*+?^${}()|[\]\\])/g, '\\$1').replace(/\n/g, '\\n')
     const regex = new RegExp(escapedText, 'g')
@@ -485,11 +659,28 @@ const qnd: Record<number, string> = {
 }
 
 export const generateGradientStyle = (colors: string[], text: string): string => {
-  if (! colors) return ''
+  if (!colors) return ''
   const gradientString = colors.map((color) => {
     return `${color}`
   }).join(', ')
 
   // 返回完整的CSS样式字符串
   return `<span style="font-family: bilifont; color: transparent; background-clip: text; margin: 0 200px 0 0; font-size: 43px; background-image: linear-gradient(135deg, ${gradientString} 0%, ${gradientString} 100%); ">${text}</span>`
+}
+
+export const cover = (pic: { img_src: string }[]) => {
+  const imgArray = []
+  for (const i of pic) {
+    const obj = {
+      image_src: i.img_src
+    }
+    imgArray.push(obj)
+  }
+  return imgArray
+}
+
+export const generateDecorationCard = (decorate: any) => {
+  return decorate
+    ? `<div style="display: flex; width: 500px; height: 150px; background-position: center; background-attachment: fixed; background-repeat: no-repeat; background-size: contain; align-items: center; justify-content: flex-end; background-image: url('${decorate.card_url}')">${generateGradientStyle(decorate.fan?.color_format?.colors, decorate.fan.num_str)}</div>`
+    : '<div></div>'
 }

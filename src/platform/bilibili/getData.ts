@@ -1,4 +1,4 @@
-import amagi, { bilibiliAPI, getBilibiliData, wbi_sign } from '@ikenxuan/amagi'
+import Amagi, { bilibiliAPI, getBilibiliData } from '@ikenxuan/amagi'
 
 import { Config } from '@/module'
 import { genParams } from '@/platform/bilibili'
@@ -8,13 +8,10 @@ export async function fetchBilibiliData<T extends keyof BilibiliDataTypes> (
   type: T,
   opt?: any
 ): Promise<any> {
-  const cl = new amagi({ bilibili: Config.cookies.bilibili })
+  const cl = new Amagi({ bilibili: Config.cookies.bilibili })
   switch (type) {
     case 'one_video': {
-      const INFODATA = await cl.getBilibiliData('单个视频作品数据', {
-        id_type: 'bvid',
-        id: opt.id
-      })
+      const INFODATA = await cl.getBilibiliData('单个视频作品数据', { bvid: opt.id })
       const DATA = await cl.getBilibiliData('单个视频下载信息数据', {
         avid: INFODATA.data.aid,
         cid: INFODATA.data.cid
@@ -38,10 +35,7 @@ export async function fetchBilibiliData<T extends keyof BilibiliDataTypes> (
       return dt
     }
     case 'work_comments': {
-      const INFODATA = await cl.getBilibiliData('单个视频作品数据', {
-        id_type: 'bvid',
-        id: opt.id
-      })
+      const INFODATA = await cl.getBilibiliData('单个视频作品数据', { bvid: opt.id })
       const aCOMMENTSDATA = await cl.getBilibiliData('评论数据', {
         number: Config.bilibili.numcomment,
         type: 1,
@@ -60,16 +54,8 @@ export async function fetchBilibiliData<T extends keyof BilibiliDataTypes> (
     }
 
     case 'bangumi_video_info': {
-      let cleanedId = '', isep = false
-      if (opt.ep_id) {
-        cleanedId = opt.ep_id.replace('ep', '')
-        isep = true
-      } else if (opt.season_id) {
-        cleanedId = opt.season_id.replace('ss', '')
-        isep = false
-      }
-      const INFO = await cl.getBilibiliData('番剧基本信息数据', { ...opt })
-      const QUERY = await genParams(isep ? bilibiliAPI.番剧明细({ id: cleanedId, isep }) : bilibiliAPI.番剧明细({ id: cleanedId, isep }))
+      const INFO = await cl.getBilibiliData('番剧基本信息数据', opt)
+      const QUERY = await genParams(bilibiliAPI.番剧明细(opt))
       return { INFODATA: INFO, USER: QUERY, TYPE: 'bangumi_video_info' }
     }
 
@@ -111,11 +97,11 @@ export async function fetchBilibiliData<T extends keyof BilibiliDataTypes> (
 
 function mapping_table (type: any): number {
   const Array: Record<string, string[]> = {
-    1: [ 'DYNAMIC_TYPE_AV', 'DYNAMIC_TYPE_PGC', 'DYNAMIC_TYPE_UGC_SEASON' ],
-    11: [ 'DYNAMIC_TYPE_DRAW' ],
-    12: [ 'DYNAMIC_TYPE_ARTICLE' ],
-    17: [ 'DYNAMIC_TYPE_LIVE_RCMD', 'DYNAMIC_TYPE_FORWARD', 'DYNAMIC_TYPE_WORD', 'DYNAMIC_TYPE_COMMON_SQUARE' ],
-    19: [ 'DYNAMIC_TYPE_MEDIALIST' ]
+    1: ['DYNAMIC_TYPE_AV', 'DYNAMIC_TYPE_PGC', 'DYNAMIC_TYPE_UGC_SEASON'],
+    11: ['DYNAMIC_TYPE_DRAW'],
+    12: ['DYNAMIC_TYPE_ARTICLE'],
+    17: ['DYNAMIC_TYPE_LIVE_RCMD', 'DYNAMIC_TYPE_FORWARD', 'DYNAMIC_TYPE_WORD', 'DYNAMIC_TYPE_COMMON_SQUARE'],
+    19: ['DYNAMIC_TYPE_MEDIALIST']
   }
   for (const key in Array) {
     if (Array[key].includes(type)) {
@@ -126,7 +112,13 @@ function mapping_table (type: any): number {
 }
 
 function oid (dynamicINFO: any, dynamicINFO_CARD: any) {
-  if (dynamicINFO.data.item.type === 'DYNAMIC_TYPE_WORD') {
-    return dynamicINFO.data.item.id_str
-  } else return dynamicINFO_CARD.data.card.desc.rid
+  switch (dynamicINFO.data.item.type) {
+    case 'DYNAMIC_TYPE_WORD':
+    case 'DYNAMIC_TYPE_FORWARD': {
+      return dynamicINFO.data.item.id_str
+    }
+    default: {
+      return dynamicINFO_CARD.data.card.desc.rid
+    }
+  }
 }

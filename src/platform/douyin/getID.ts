@@ -1,13 +1,13 @@
-import { DouyinOptionsType } from '@ikenxuan/amagi'
 import { logger } from 'node-karin'
 
 import { Networks } from '@/module/utils'
 import { DouyinDataTypes } from '@/types'
 
-export interface ExtendedDouyinOptionsType extends DouyinOptionsType {
-  type: DouyinDataTypes[keyof DouyinDataTypes],
+export interface ExtendedDouyinOptionsType {
+  type: DouyinDataTypes[keyof DouyinDataTypes]
   /** 该作品是否为视频 */
   is_mp4?: boolean
+  [key: string]: any
 }
 
 /**
@@ -23,12 +23,11 @@ export async function getDouyinID (url: string, log = true): Promise<ExtendedDou
   switch (true) {
     case /https:\/\/(?:www\.iesdouyin\.com)\/share\/slides/.test(longLink):
     case longLink === 'https://www.douyin.com/': {
-      const newres = await new Networks({ url }).getLocation()
-      const match = newres.match(/share\/slides\/(\d+)/)
+      const match = longLink.match(/share\/slides\/(\d+)/)
       result = {
         type: 'user_mix_videos',
         aweme_id: match ? match[1] : undefined,
-        is_mp4: true
+        is_mp4: false
       }
       break
     }

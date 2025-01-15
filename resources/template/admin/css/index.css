@@ -19,7 +19,7 @@
 .head-box .title {
   font-size: 130px;
   text-shadow: 6px 5px 13px #4a4a4a, 1px 1px 0px rgba(0, 0, 0, 0.9);
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .head-box .title .label {
@@ -66,7 +66,7 @@
 .cfg-group {
   color: #ffcfde;
   font-size: 65px;
-  font-weight: bold;
+  font-weight: 700;
   padding: 30px 30px;
   text-shadow: 2px 2px 5px #0000008f;
 }
@@ -83,7 +83,7 @@
   color: #303030;
   line-height: 69px;
   padding-left: 41px;
-  font-weight: bold;
+  font-weight: 700;
   border-radius: 5px 30px;
   box-shadow: 3px 3px 20px 0px rgb(0 0 0 / 50%);
   background-image: linear-gradient(90deg, #fceae7a1 40%, #fbf3f1b5 65%, #d5dfff9e);
@@ -92,7 +92,7 @@
 
 .cfg-hint {
   font-size: 27px;
-  font-weight: normal;
+  font-weight: 400;
   margin-top: -4px;
   margin-bottom: -3px;
 }
@@ -107,7 +107,7 @@
   /* line-height: 80px; */
   font-size: 37px;
   color: #2d5285;
-  font-weight: bold;
+  font-weight: 700;
   border-radius: 0 16px 16px 0;
 }
 

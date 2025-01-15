@@ -1,8 +1,8 @@
 import { getDouyinData } from '@ikenxuan/amagi'
 import convert from 'heic-convert'
 
-import { Common, Config } from '@/module/utils'
-import { Networks } from '@/module/utils'
+import { Common, Config, Networks } from '@/module/utils'
+
 /**
  *
  * @param {*} data 完整的评论数据
@@ -13,7 +13,7 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
   let jsonArray: any[] = []
   if (data.comments === null) return []
 
-  for (let i = 0; i < data.comments.length; i ++) {
+  for (let i = 0; i < data.comments.length; i++) {
     const cid = data.comments[i].cid
     const aweme_id = data.comments[i].aweme_id
     const nickname = data.comments[i].user.nickname
@@ -21,7 +21,7 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
     const text = data.comments[i].text
     const ip = data.comments[i].ip_label ? data.comments[i].ip_label : '未知'
     const time = data.comments[i].create_time
-    const label_type = data.comments[i].label_type ? data.comments[i].label_type : - 1
+    const label_type = data.comments[i].label_type ? data.comments[i].label_type : -1
     const sticker = data.comments[i].sticker ? data.comments[i].sticker.animate_url.url_list[0] : null
     const digg_count = data.comments[i].digg_count
     const imageurl =
@@ -70,17 +70,15 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
   jsonArray.sort((a, b) => b.digg_count - a.digg_count)
   const indexLabelTypeOne = jsonArray.findIndex((comment) => comment.label_type === 1)
 
-  if (indexLabelTypeOne !== - 1) {
+  if (indexLabelTypeOne !== -1) {
     const commentTypeOne = jsonArray.splice(indexLabelTypeOne, 1)[0]
     jsonArray.unshift(commentTypeOne)
   }
-
 
   jsonArray = br(jsonArray)
   jsonArray = await handling_at(jsonArray)
   jsonArray = await search_text(jsonArray)
   jsonArray = await heic2jpg(jsonArray)
-
 
   const CommentData = {
     jsonArray
@@ -232,7 +230,7 @@ const heic2jpg = async (jsonArray: any[]): Promise<any> => {
   for (const item of jsonArray) {
     if (item.commentimage) {
       const headers = await new Networks({ url: item.commentimage, type: 'arraybuffer' }).getHeaders()
-      if (headers["content-type"] && headers["content-type"] === 'image/heic') {
+      if (headers['content-type'] && headers['content-type'] === 'image/heic') {
         const response = await new Networks({ url: item.commentimage, type: 'arraybuffer' }).returnResult()
         const jpegBuffer = await convert({
           buffer: response.data,
