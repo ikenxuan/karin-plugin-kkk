@@ -145,12 +145,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: "pre-${{ env.SHORT_COMMIT_HASH }}"
-          release_name: "${{ env.PKG_VERSION }} Preview-Release"
+          release_name: "${{ env.PKG_VERSION }}"
           body: |
             ### 🎉 构建完成！
             - 此版本是基于快照 [`${{ env.SHORT_COMMIT_HASH }}`](https://github.com/${{ github.repository }}/tree/${{ env.COMMIT_HASH }}) 所构建的，[**点击此处查看更改**](https://github.com/${{ github.repository }}/commit/${{ env.COMMIT_HASH }}) By @${{ github.actor }}
 
-            ### 安装
+            ### 安装该版本
+            **以下安装方式任选其一**
+            ---
             - 使用包管理器（根目录下执行）
             ```sh
             pnpm add karin-plugin-kkk@${{ env.PKG_VERSION }} -w
@@ -159,7 +161,8 @@ jobs:
             ```sh
             git checkout ${{ env.COMMIT_HASH }}
             ```
-            
+            ---
+            **此版本非正式版本，可能存在一些问题，请谨慎使用！**
             构建时间：${{ github.event.head_commit.timestamp }}
           draft: false
           prerelease: true
