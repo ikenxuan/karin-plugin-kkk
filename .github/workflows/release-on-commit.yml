@@ -1,4 +1,4 @@
-name: Build, Bump Version, and Commit
+name: Release on Commit
 
 on:
   push:
@@ -40,14 +40,12 @@ jobs:
       - name: 编译
         run: pnpm build
 
-      - name: 设置时区
-        run: |
-          sudo timedatectl set-timezone Asia/Shanghai
+      - name: 获取当前提交哈希
+        run: echo "COMMIT_HASH=${{ github.sha }}" >> $GITHUB_ENV
+        id: get_commit_hash
 
-      - name: 设置git用户名和邮箱
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+      - name: 获取短哈希值
+        run: echo "SHORT_COMMIT_HASH=$(echo ${{ env.COMMIT_HASH }} | cut -c1-7)" >> $GITHUB_ENV
 
       - name: 创建临时文件夹存储编译后的lib文件夹和resources文件夹
         run: |
@@ -104,7 +102,11 @@ jobs:
       - name: 从main分支复制文件到build分支
         run: |
           git checkout main -- package.json CHANGELOG.md README.md config resources LICENSE
-          
+
+      - name: 修订版本号
+        run: npm run commit all
+        if: success()
+
       - name: 删除依赖文件夹 node_modules
         run: |
           rm -rf node_modules
@@ -129,47 +131,31 @@ jobs:
       - name: 删除 karin-plugin-kkk 文件夹
         run: rm -rf karin-plugin-kkk
 
-      - name: 删除开发依赖 
-        run: npm run pr clean
-
-      - name: 根据main分支的commit信息生成提交消息
-        run: |
-          git add .
-          git reset build.zip
-          if [ -z "$(git diff --cached --name-only)" ]; then
-            echo "No changes detected"
-            exit 0
-          else
-            git commit -m "chore(build): ${{ github.event.head_commit.message }}"
-          fi
-
-      - name: 设置 build 分支的上游分支
-        run: git push --set-upstream origin build
-
-      - name: 推送到 build 分支
-        uses: ad-m/github-push-action@master
-        with:
-          branch: build
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          force_with_lease: true
-          args: --set-upstream
-
-      - name: 更新版本号
-        uses: google-github-actions/release-please-action@v3
-        id: release_please
-        with:
-          release-type: node
-          package-name: 'karin-plugin-kkk'
-
       - name: 发布到 npm
         run: npm run pub
-        if: ${{ steps.release_please.outputs.release_created }}
+        if: success()
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
 
-      - name: 上传 release
-        if: ${{ steps.release_please.outputs.release_created }}
+      - name: 创建发行版
+        id: create_release
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload ${{ steps.release_please.outputs.tag_name }} build.zip
+        with:
+          tag_name: "pre-${{ env.SHORT_COMMIT_HASH }}"
+          release_name: "Pre-release ${{ env.SHORT_COMMIT_HASH }}"
+          draft: false
+          prerelease: true
+
+      - name: 上传
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "./build-${{ env.SHORT_COMMIT_HASH }}.zip"
+          asset_name: "build-${{ env.SHORT_COMMIT_HASH }}.zip"
+          asset_content_type: application/zip
