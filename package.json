@@ -3,7 +3,8 @@
   "version": "0.1.9",
   "description": "a Karin video parsing tool",
   "keywords": [
-    "karin-plugin"
+    "karin-plugin",
+    "karin"
   ],
   "homepage": "https://github.com/ikenxuan/karin-plugin-kkk",
   "bugs": {
@@ -28,17 +29,31 @@
   ],
   "scripts": {
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
-    "clean": "node lib/clean.js",
+    "clean": "npm lib/cli/pr.js clean",
     "fix": "eslint src/**/*.ts --fix",
+    "pr": "node lib/cli/pr.js",
     "pub": "npm publish --access public",
-    "sort": "npx sort-package-json"
+    "pub-beta": "npm publish --tag beta",
+    "sort": "npx sort-package-json",
+    "karin": "karin",
+    "app": "karin app",
+    "start": "karin start",
+    "pm2": "karin pm2",
+    "stop": "karin stop",
+    "rs": "karin rs",
+    "log": "karin log",
+    "up": "karin up",
+    "init": "karin init",
+    "dev": "karin dev",
+    "ts": "karin ts",
+    "watch": "karin watch"
   },
   "dependencies": {
-    "@ikenxuan/amagi": "^4.0.3",
+    "@ikenxuan/amagi": "4.2.3",
     "@karinjs/md-html": "^1.1.6",
-    "axios": "^1.7.8",
+    "cors": "^2.8.5",
     "heic-convert": "^2.1.0",
-    "icqq": "^0.6.10",
+    "http-proxy-middleware": "^3.0.3",
     "playwright": "^1.49.0",
     "qrcode": "^1.5.4",
     "sequelize": "6.37.3",
@@ -49,10 +64,20 @@
     "registry": "https://registry.npmjs.org"
   },
   "karin": {
+    "main": "src/index.ts",
     "apps": [
       "lib/apps"
     ],
-    "outDir": "lib",
-    "rootDir": "src"
+    "ts-apps": [
+      "src/apps"
+    ],
+    "static": [
+      "resources"
+    ],
+    "files": [
+      "config",
+      "data",
+      "resources"
+    ]
   }
 }

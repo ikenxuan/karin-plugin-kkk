@@ -1,5 +1,13 @@
-import { KarinMessage } from 'node-karin';
+import { Message } from 'node-karin';
 import { AllDataType, Base, BilibiliDBType } from '../../module/index.js';
+/** 已支持推送的动态类型 */
+export declare enum DynamicType {
+    AV = "DYNAMIC_TYPE_AV",
+    DRAW = "DYNAMIC_TYPE_DRAW",
+    WORD = "DYNAMIC_TYPE_WORD",
+    LIVE_RCMD = "DYNAMIC_TYPE_LIVE_RCMD",
+    FORWARD = "DYNAMIC_TYPE_FORWARD"
+}
 /** 每个推送项的类型定义 */
 interface PushItem {
     /** 该UP主的昵称 */
@@ -15,10 +23,8 @@ interface PushItem {
     /** UP主头像url */
     avatar_img: string;
     /** 动态类型 */
-    dynamic_type: dynamicTYPE;
+    dynamic_type: DynamicType;
 }
-/** 已支持推送的动态类型 */
-type dynamicTYPE = 'DYNAMIC_TYPE_AV' | 'DYNAMIC_TYPE_DRAW' | 'DYNAMIC_TYPE_WORD' | 'DYNAMIC_TYPE_LIVE_RCMD';
 /** 推送列表的类型定义 */
 type WillBePushList = Record<string, PushItem>;
 export declare class Bilibilipush extends Base {
@@ -29,7 +35,7 @@ export declare class Bilibilipush extends Base {
      * @param force 强制执行标志，用于控制实例行为，默认false
      * @returns
      */
-    constructor(e?: KarinMessage, force?: boolean);
+    constructor(e?: Message, force?: boolean);
     /**
      * 执行主要的操作流程，包括检查缓存并根据需要获取和更新用户数据。
      * @returns
@@ -54,7 +60,7 @@ export declare class Bilibilipush extends Base {
      * @param dbData 数据库缓存
      * @returns 更新后的推送列表
      */
-    excludeAlreadyPushed(willBePushList: WillBePushList, dbData: AllDataType<'bilibili'>['bilibili']): WillBePushList;
+    excludeAlreadyPushed(willBePushList: WillBePushList, dbData: AllDataType['bilibili']): WillBePushList;
     /**
      * 设置或更新特定 host_mid 的群组信息。
      * @param data 包含 card 对象。

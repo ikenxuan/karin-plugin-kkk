@@ -1,4 +1,4 @@
-import { KarinMessage } from 'node-karin';
+import { Message } from 'node-karin';
 import { AllDataType, Base, DouyinDBType } from '../../module/index.js';
 /** 每个推送项的类型定义 */
 interface PushItem {
@@ -32,12 +32,12 @@ export declare class DouYinpush extends Base {
     private force;
     /**
      *
-     * @param e  事件KarinMessage
+     * @param e  事件Message
      * @param force 是否强制推送
      * @default false
      * @returns
      */
-    constructor(e?: KarinMessage, force?: boolean);
+    constructor(e?: Message, force?: boolean);
     action(): Promise<true | void>;
     getdata(data: WillBePushList): Promise<true | undefined>;
     /**
@@ -54,7 +54,7 @@ export declare class DouYinpush extends Base {
      * @param dbData 数据库缓存
      * @returns 更新后的推送列表
      */
-    excludeAlreadyPushed(willBePushList: WillBePushList, dbData: AllDataType<'douyin'>['douyin']): WillBePushList;
+    excludeAlreadyPushed(willBePushList: WillBePushList, dbData: AllDataType['douyin']): WillBePushList;
     checkremark(): Promise<true | undefined>;
     desc(video_obj: any, text: string): string;
     /**

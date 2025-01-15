@@ -87,7 +87,13 @@ body.dark-mode .search_text {
   display: inline-block;
 }
 
-.search-ico {
+body.light-mode .search_text {
+  color: #03488D;
+  position: relative;
+  display: inline-block;
+}
+
+body.light-mode .search-ico {
   position: absolute;
   top: 17px;
   right: -45px;
@@ -99,22 +105,30 @@ body.dark-mode .search_text {
 }
 
 body.dark-mode .logo {
-  width: 133%;
-  height: 245px;
-  margin: 0 0 50px -55px;
-  background-size: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(9%, 17%);
+  width: 650px;
+  height: 300px;
+  background-size: contain;
   background-position: center;
-  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
   background-image: url(../../../image/douyin/dylogo-light.svg);
 }
 
 body.light-mode .logo {
-  width: 133%;
-  height: 245px;
-  margin: 0 0 50px -55px;
-  background-size: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(9%, 17%);
+  width: 650px;
+  height: 300px;
+  background-size: contain;
   background-position: center;
-  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
   background-image: url(../../../image/douyin/dylogo-dark.svg);
 }
 
@@ -315,6 +329,10 @@ body.dark-mode .handling_at {
   width: 650px;
   height: auto;
   margin-bottom: 20px;
+}
+
+.work_info {
+  margin: 200px 0 0 0;
 }
 
 .top-info {

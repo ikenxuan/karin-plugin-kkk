@@ -1,6 +1,5 @@
-import { KuaishouOptionsType } from '@ikenxuan/amagi';
 import { KuaishouDataTypes } from '../../types/index.js';
-export interface ExtendedKuaishouOptionsType extends KuaishouOptionsType {
+export interface ExtendedKuaishouOptionsType {
     type: KuaishouDataTypes[keyof KuaishouDataTypes];
     [x: string]: any;
 }

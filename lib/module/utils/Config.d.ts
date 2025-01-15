@@ -1,49 +1,53 @@
+import YAML from 'node-karin/yaml';
 import { ConfigType } from '../../types/index.js';
 type ConfigDirType = 'config' | 'default_config';
-declare class config {
-    private config;
-    private watcher;
+declare class Cfg {
+    /** 用户配置文件路径 */
+    private dirCfgPath;
+    /** 默认配置文件路径 */
+    private defCfgPath;
     constructor();
     /** 初始化配置 */
-    private initCfg;
-    /** 插件相关配置 */
-    get app(): ConfigType['app'];
-    /** ck相关配置 */
-    get cookies(): ConfigType['cookies'];
-    /** 抖音相关配置 */
-    get douyin(): ConfigType['douyin'];
-    /** B站相关配置 */
-    get bilibili(): ConfigType['bilibili'];
-    /** 推送列表 */
-    get pushlist(): ConfigType['pushlist'];
-    /** 上传相关配置 */
-    get upload(): ConfigType['upload'];
-    /** 快手相关配置 */
-    get kuaishou(): ConfigType['kuaishou'];
-    All(): ConfigType;
-    /** 默认配置和用户配置 */
-    private getDefOrConfig;
-    /** 默认配置 */
-    private getdefSet;
-    /** 用户配置 */
-    private getConfig;
+    initCfg(): this;
     /**
-     * 获取配置yaml
-     * @param type 默认跑配置-defSet，用户配置-config
-     * @param name 名称
+     * 获取默认配置和用户配置
+     * @param name 配置文件名
+     * @returns 返回合并后的配置
+     */
+    getDefOrConfig(name: keyof ConfigType): any;
+    /** 获取所有配置文件 */
+    All(): ConfigType;
+    /**
+     * 获取 YAML 文件内容
+     * @param type 配置文件类型
+     * @param name 配置文件名
+     * @returns 返回 YAML 文件内容
      */
     private getYaml;
-    /** 监听配置文件 */
-    private watch;
     /**
-     * 修改设置
+     * 修改配置文件
      * @param name 文件名
-     * @param key 修改的key值
-     * @param value 修改的value值
-     * @param type 配置文件或默认
+     * @param key 键
+     * @param value 值
+     * @param type 配置文件类型，默认为用户配置文件 `config`
      */
-    modify(name: 'cookies' | 'app' | 'douyin' | 'bilibili' | 'pushlist' | 'upload' | 'kuaishou', key: string, value: any, type?: ConfigDirType): void;
-    private mergeObjectsWithPriority;
+    Modify(name: keyof ConfigType, key: string, value: any, type?: ConfigDirType): void;
+    /**
+     * 在YAML映射中设置嵌套值
+     *
+     * 该函数用于在给定的YAML映射（map）中，根据指定的键路径（keys）设置值（value）
+     * 如果键路径不存在，该函数会创建必要的嵌套映射结构并设置值
+     *
+     * @param map YAML映射，作为设置值的目标
+     * @param keys 键路径，表示要设置的值的位置
+     * @param value 要设置的值
+     */
+    setNestedValue(map: YAML.YAMLMap, keys: string[], value: any): void;
+    mergeObjectsWithPriority(userDoc: YAML.Document.Parsed, defaultDoc: YAML.Document.Parsed): {
+        result: YAML.Document.Parsed;
+        differences: boolean;
+    };
 }
-export declare const Config: config;
+type Config = ConfigType & Pick<Cfg, 'All' | 'Modify'>;
+export declare const Config: Config;
 export {};

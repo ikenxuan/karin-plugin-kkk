@@ -1,4 +1,4 @@
-import { KarinMessage } from 'node-karin';
+import { Message } from 'node-karin';
 interface uploadFileOptions {
     /** 是否使用群文件上传 */
     useGroupFile?: boolean;
@@ -13,6 +13,13 @@ interface uploadFileOptions {
         /** 群号 */
         group_id: string;
     };
+}
+/** 最少都要传一个 */
+interface title {
+    /** 文件名：自定义 */
+    originTitle?: string;
+    /** 文件名：tmp + 时间戳 */
+    timestampTitle?: string;
 }
 interface downloadFileOptions {
     /** 视频链接 */
@@ -34,13 +41,6 @@ interface fileInfo {
     /** 文件名：tmp + 时间戳 */
     timestampTitle?: title['timestampTitle'];
 }
-/** 最少都要传一个 */
-interface title {
-    /** 文件名：自定义 */
-    originTitle?: string;
-    /** 文件名：tmp + 时间戳 */
-    timestampTitle?: string;
-}
 interface downLoadFileOptions {
     /** 文件名 */
     title: string;
@@ -49,29 +49,22 @@ interface downLoadFileOptions {
      * @default {}
      */
     headers?: object;
-    /**
-     * 下载文件类型，默认为'.mp4'。
-     * @default '.mp4'
-     */
-    filetype?: string;
 }
 export declare class Base {
-    e: KarinMessage;
+    e: Message;
     headers: any;
     _path: string;
-    constructor(e: KarinMessage);
-    /** 检查是或否设置抖音ck */
-    get allow(): boolean;
+    constructor(e: Message);
     /** 获取适配器名称 */
     get botadapter(): string;
     /**
      * 上传视频文件
      * @param file - 包含本地视频文件信息的对象。
-     * @param video_url 视频直链，无则传空字符串
+     * @param videoUrl 视频直链，无则传空字符串
      * @param options 上传参数
      * @returns
      */
-    upload_file(file: fileInfo, video_url: string, options?: uploadFileOptions): Promise<boolean>;
+    upload_file(file: fileInfo, videoUrl: string, options?: uploadFileOptions): Promise<boolean>;
     /**
      * 下载视频并上传到群
      * @param video_url 视频链接
@@ -82,15 +75,13 @@ export declare class Base {
     DownLoadVideo(downloadOpt: downloadFileOptions, uploadOpt?: uploadFileOptions): Promise<boolean>;
     /**
      * 异步下载文件的函数。
-     * @param video_url 下载地址。
-     * @param title 文件名。
-     * @param headers 请求头，可选参数，默认为空对象。
-     * @param filetype 下载文件的类型，默认为'.mp4'。
+     * @param videoUrl 下载地址。
+     * @param opt 配置选项，包括标题、请求头等。
      * @returns 返回一个包含文件路径和总字节数的对象。
      */
-    DownLoadFile(video_url: string, opt: downLoadFileOptions): Promise<fileInfo>;
+    DownLoadFile(videoUrl: string, opt: downLoadFileOptions): Promise<fileInfo>;
     /** 删文件 */
-    removeFile(path: string, force?: boolean): boolean;
+    removeFile(path: string, force?: boolean): Promise<boolean>;
     /** 过万整除 */
     count(count: number): string;
 }

@@ -7,7 +7,11 @@ interface fffmpegClientOptions {
         /** 合并完成后存放的绝对路径路径 */
         resultPath: string;
         /** 处理结果的回调函数 */
-        callback: (success: boolean) => boolean | Promise<boolean>;
+        callback: (
+        /** 处理状态 */
+        success: boolean, 
+        /** 视频合成后的文件路径 */
+        resultPath: string) => boolean | Promise<boolean>;
     };
     Video3AudioOptions: {
         /** 文件1绝对路径 */
@@ -17,7 +21,11 @@ interface fffmpegClientOptions {
         /** 合并完成后存放的绝对路径路径 */
         resultPath: string;
         /** 处理结果的回调函数 */
-        callback: (success: boolean) => boolean | Promise<boolean>;
+        callback: (
+        /** 处理状态 */
+        success: boolean, 
+        /** 视频合成后的文件路径 */
+        resultPath: string) => boolean | Promise<boolean>;
     };
     getVideoSizeOptions: {
         /** 视频文件路径 */
@@ -51,8 +59,8 @@ type MergeFileResult<T> = T extends '二合一（视频 + 音频）' ? void : T 
 interface ffhandlerOptions {
     '二合一（视频 + 音频）': fffmpegClientOptions['VideoAudioOptions'];
     '视频*3 + 音频': fffmpegClientOptions['Video3AudioOptions'];
-    '获取指定视频文件时长': fffmpegClientOptions['getVideoSizeOptions'];
-    '压缩视频': fffmpegClientOptions['compressVideoOptions'];
+    获取指定视频文件时长: fffmpegClientOptions['getVideoSizeOptions'];
+    压缩视频: fffmpegClientOptions['compressVideoOptions'];
 }
 /**
  * 使用 FFmpeg 对文件进行处理

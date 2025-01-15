@@ -1,4 +1,4 @@
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosRequestConfig, AxiosResponse } from 'node-karin/axios';
 import { NetworksConfigType } from '../../types/index.js';
 export declare class Networks {
     private url;

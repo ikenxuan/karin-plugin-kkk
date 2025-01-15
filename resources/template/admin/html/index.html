@@ -105,7 +105,7 @@
         <span class="cfg-hint">#kkk设置抖音解析 + 开启/关闭</span>
         {{@data.douyin.switch}}
       </div>
-      <div class="cfg-desc">单独开关，受「总开关」影响</div>
+      <div class="cfg-desc">抖音解析开关，单独开关</div>
     </li>
     <li class="cfg-li">
       <div class="cfg-line">
@@ -137,7 +137,7 @@
         <span class="cfg-hint">#kkk设置抖音推送 + 开启/关闭</span>
         {{@data.douyin.push.switch}}
       </div>
-      <div class="cfg-desc">开启后需重启；使用[#设置抖音推送+抖音号]配置推送列表</div>
+      <div class="cfg-desc">修改后需重启；使用[#设置抖音推送+抖音号]配置推送列表</div>
     </li>
     <li class="cfg-li">
       <div class="cfg-line">
@@ -179,6 +179,14 @@
       </div>
       <div class="cfg-desc">推送新作品时一同解析其中内容并发送</div>
     </li>
+    <li class="cfg-li">
+      <div class="cfg-line">
+        抖音自动清晰度
+        <span class="cfg-hint">#kkk设置抖音自动清晰度 + 开启/关闭</span>
+        {{@data.bilibili.autoResolution}}
+      </div>
+      <div class="cfg-desc">根据「视频拦截阈值」自动选择合适的分辨率，关闭后默认选择最大分辨率进行下载</div>
+    </li>
   </ul>
 </div>
 <div class="cfg-box">
@@ -190,7 +198,7 @@
         <span class="cfg-hint">#kkk设置B站解析 + 开启/关闭</span>
         {{@data.bilibili.switch}}
       </div>
-      <div class="cfg-desc">单独开关，受「总开关」影响</div>
+      <div class="cfg-desc">B站解析开关，单独开关</div>
     </li>
     <li class="cfg-li">
       <div class="cfg-line">
@@ -222,7 +230,7 @@
         <span class="cfg-hint">#kkk设置B站推送 + 开启/关闭</span>
         {{@data.bilibili.push.switch}}
       </div>
-      <div class="cfg-desc">开启后需重启；使用[#设置B站推送+用户UID]配置推送列表</div>
+      <div class="cfg-desc">修改后需重启；使用[#设置B站推送+用户UID]配置推送列表</div>
     </li>
     <li class="cfg-li">
       <div class="cfg-line">
@@ -262,7 +270,15 @@
         <span class="cfg-hint">#kkk设置B站内容优先 + 开启/关闭</span>
         {{@data.bilibili.videopriority}}
       </div>
-      <div class="cfg-desc">解析视频是否优先保内容，打开为优先保证上传将使用最低分辨率，关闭为优先保清晰度将使用最高分辨率</div>
+      <div class="cfg-desc">番剧解析自动选择分辨率。<br />开启时根据上传设置的「视频拦截阈值」值自动选择合适分辨率<br />关闭时下载番剧将不受视频文件大小限制，下载可支持的最高分辨率视频文件</div>
+    </li>
+    <li class="cfg-li">
+      <div class="cfg-line">
+        B站自动清晰度
+        <span class="cfg-hint">#kkk设置B站自动清晰度 + 开启/关闭</span>
+        {{@data.bilibili.autoResolution}}
+      </div>
+      <div class="cfg-desc">根据「视频拦截阈值」自动选择合适的分辨率，关闭后默认选择最大分辨率进行下载</div>
     </li>
   </ul>
 </div>
@@ -296,7 +312,7 @@
         <span class="cfg-hint">#kkk设置快手解析 + 开启/关闭</span>
         {{@data.kuaishou.switch}}
       </div>
-      <div class="cfg-desc">快手解析开关，单独开关，受「总开关」影响</div>
+      <div class="cfg-desc">快手解析开关，单独开关</div>
     </li>
   </ul>
   <ul class="cfg-ul">
@@ -304,7 +320,7 @@
       <div class="cfg-line">
         快手解析提示
         <span class="cfg-hint">#kkk设置快手解析提示 + 开启/关闭</span>
-        {{@data.kuaishou.kuaishoutip}}
+        {{@data.kuaishou.tip}}
       </div>
       <div class="cfg-desc">发送提示信息：“检测到快手链接，开始解析”</div>
     </li>
@@ -314,14 +330,14 @@
       <div class="cfg-line">
         快手评论数量
         <span class="cfg-hint">#kkk设置快手评论数量 + 1 ~ 30</span>
-        {{@data.kuaishou.kuaishounumcomments}}
+        {{@data.kuaishou.numcomment}}
       </div>
       <div class="cfg-desc">快手评论数量，范围1 ~ 30条</div>
     </li>
   </ul>
 </div>
 <div class="cfg-box">
-  <div class="cfg-group">上传设置（「视频上传拦截」为最高优先级）</div>
+  <div class="cfg-group">上传设置（该板块设置是全局生效的）</div>
   <ul class="cfg-ul">
     <li class="cfg-li">
       <div class="cfg-line">
@@ -329,8 +345,9 @@
         <span class="cfg-hint">#kkk设置上传base64 + 开启/关闭</span>
         {{@data.upload.sendbase64}}
       </div>
-      <div class="cfg-desc">发送视频经本插件转换为base64格式后再发送，适合Karin与Bot不在同一网络环境下开启。若发送的文件过大，可能会卡死系统，酌情开启（2c4g配置实测发送 90MB 左右
-        base64格式编码的视频文件将导致系统无响应）</div>
+      <div class="cfg-desc">
+        发送视频经本插件转换为base64格式后再发送，适合Karin与Bot不在同一网络环境下开启。<br />若发送的文件过大，可能会卡死系统，酌情开启（2c4g配置实测发送
+        90MB左右base64格式编码的视频文件将导致系统无响应）</div>
     </li>
     <li class="cfg-li">
       <div class="cfg-line">
@@ -338,7 +355,7 @@
         <span class="cfg-hint">#kkk设置上传拦截 + 开启/关闭</span>
         {{@data.upload.usefilelimit}}
       </div>
-      <div class="cfg-desc">开启后会根据视频文件大小判断是否需要上传，需配置「视频大小拦截值」。（B站番剧无影响）</div>
+      <div class="cfg-desc">开启后会根据视频文件大小判断是否需要上传，需配置「视频拦截阈值」。</div>
     </li>
     <li class="cfg-li">
       <div class="cfg-line">
@@ -346,7 +363,7 @@
         <span class="cfg-hint">#kkk设置上传拦截阈值 + 0 ~ x</span>
         {{@data.upload.filelimit}}
       </div>
-      <div class="cfg-desc">视频文件大于该数值则直接结束任务，不会上传，单位: MB，「视频上传拦截」开启后才会生效。（B站番剧无影响）</div>
+      <div class="cfg-desc">视频文件大于该数值则直接结束任务，不会上传，单位: MB，「视频上传拦截」开启后才会生效。</div>
     </li>
     <li class="cfg-li">
       <div class="cfg-line">

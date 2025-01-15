@@ -1,9 +1,9 @@
-import { DouyinOptionsType } from '@ikenxuan/amagi';
 import { DouyinDataTypes } from '../../types/index.js';
-export interface ExtendedDouyinOptionsType extends DouyinOptionsType {
+export interface ExtendedDouyinOptionsType {
     type: DouyinDataTypes[keyof DouyinDataTypes];
     /** 该作品是否为视频 */
     is_mp4?: boolean;
+    [key: string]: any;
 }
 /**
  *

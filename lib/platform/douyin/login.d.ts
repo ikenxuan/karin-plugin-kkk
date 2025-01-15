@@ -1,2 +1,2 @@
-import { KarinMessage } from 'node-karin';
-export declare const douyinLogin: (e: KarinMessage) => Promise<boolean>;
+import { Message } from 'node-karin';
+export declare const douyinLogin: (e: Message) => Promise<boolean>;

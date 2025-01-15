@@ -8,8 +8,8 @@ export interface douyinConfig {
     comment: boolean;
     /** 抖音评论数量，范围1 ~ x 条 */
     numcomment: number;
-    /**图集BGM是否使用高清语音发送，高清语音「ios/PC」系统均无法播放，自行衡量开关（仅icqq） */
-    sendHDrecord: boolean;
+    /** 根据「视频拦截阈值」自动选择合适的分辨率，关闭后默认选择最大分辨率进行下载 */
+    autoResolution: boolean;
     /** 抖音推送相关配置 */
     push: {
         /** 推送开关，开启后需重启；使用「#设置抖音推送 + 抖音号」配置推送列表 */
