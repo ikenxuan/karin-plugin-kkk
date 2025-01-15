@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.0.0...v1.0.1) (2025-01-15)
+
+
+### Bug Fixes
+
+* pkg size was big ([d592a2c](https://github.com/ikenxuan/karin-plugin-kkk/commit/d592a2c5df6dc2ffe32db9af3f0f5726ad5aa7d2))
+
 ## [1.0.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.9...v1.0.0) (2025-01-15)
 
 
