@@ -1,6 +1,6 @@
 {
   "name": "karin-plugin-kkk",
-  "version": "0.1.9",
+  "version": "1.0.0",
   "description": "a Karin video parsing tool",
   "keywords": [
     "karin-plugin",
