@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.9...v1.0.0) (2025-01-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* 适配新版Karin ([#21](https://github.com/ikenxuan/karin-plugin-kkk/issues/21))
+
+### Features
+
+* 适配新版Karin ([#21](https://github.com/ikenxuan/karin-plugin-kkk/issues/21)) ([ef46290](https://github.com/ikenxuan/karin-plugin-kkk/commit/ef46290c67452237cb83fc4e552c3f3901f5a0a8))
+
 ## [0.1.9](https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.8...v0.1.9) (2025-01-02)
 
 
