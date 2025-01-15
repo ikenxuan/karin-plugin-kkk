@@ -120,19 +120,19 @@ jobs:
           done
 
       - name: 创建 build.zip
-        run: zip -r build.zip karin-plugin-kkk
+        run: zip -r "build-${{ env.SHORT_COMMIT_HASH }}.zip" karin-plugin-kkk
 
       - name: 上传 build.zip
         uses: actions/upload-artifact@v4
         with:
-          name: build-zip
-          path: build.zip
+          name: "build-${{ env.SHORT_COMMIT_HASH }}.zip"
+          path: "build-${{ env.SHORT_COMMIT_HASH }}.zip"
 
       - name: 删除 karin-plugin-kkk 文件夹
         run: rm -rf karin-plugin-kkk
 
       - name: 发布到 npm
-        run: npm run pub
+        run: npm run pub-beta
         if: success()
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
