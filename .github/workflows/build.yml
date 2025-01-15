@@ -49,13 +49,14 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-      - name: 创建临时文件夹存储编译后的lib文件夹
+      - name: 创建临时文件夹存储编译后的lib文件夹和resources文件夹
         run: |
           mkdir ./../temp
 
-      - name: 复制编译后的lib文件夹到临时文件夹
+      - name: 复制编译后的lib文件夹和resources文件夹到临时文件夹
         run: |
           cp -r ./lib ./../temp/lib
+          cp -r ./resources ./../temp/resources
 
       - name: 检查并创建空的 build 分支
         run: |
@@ -86,13 +87,15 @@ jobs:
           git fetch origin build
           git checkout build
 
-      - name: 删除build分支上的lib文件夹
+      - name: 删除build分支上的lib文件夹和resources文件夹
         run: |
           rm -rf lib
+          rm -rf resources
 
-      - name: 复制编译后的lib文件夹到 build 分支
+      - name: 复制编译后的lib文件夹和resources文件夹到 build 分支
         run: |
           cp -r ./../temp/lib ./
+          cp -r ./../temp/resources ./
 
       - name: 删除临时文件夹
         run: |
