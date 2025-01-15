@@ -137,6 +137,18 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: 上传
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "./build-${{ env.SHORT_COMMIT_HASH }}.zip"
+          asset_name: "build-${{ env.SHORT_COMMIT_HASH }}.zip"
+          asset_content_type: application/zip
+        outputs:
+          browser_download_url: ${{ steps.upload-release-asset.outputs.browser_download_url }}
 
       - name: 创建发行版
         id: create_release
@@ -153,54 +165,42 @@ jobs:
             ### 安装该版本
             **以下安装方式任选其一**
             ---
-            * 使用 **Git**（**插件根目录** 下执行）
-               <details>
-               <summary>点击展开</summary>
-               
-               ```sh
-               git checkout ${{ env.COMMIT_HASH }}
-               ```
-               若报错缺失依赖，可先运行 `pnpm install` 安装或更新依赖。
+            <details>
+            <summary>使用Git</summary>
+            
+            **插件根目录** 下执行
+            ```sh
+            git checkout ${{ env.COMMIT_HASH }}
+            ```
+            若报错缺失依赖，可先运行 `pnpm install` 安装或更新依赖。
 
-               </details>
+            </details>
            
-            * 使用 **`包管理器`**（**Karin 根目录** 下执行）
-               <details>
-               <summary>点击展开</summary>
-            
-               在 **Karin 根目录** 下运行
-               ```sh
-               pnpm add karin-plugin-kkk@${{ env.PKG_VERSION }} -w
-               ```
 
-               </details>
+            <details>
+            <summary>使用包管理器（**Karin 根目录** 下执行）</summary>
+          
+            **Karin 根目录** 下执行
+            ```sh
+            pnpm add karin-plugin-kkk@${{ env.PKG_VERSION }} -w
+            ```
+
+            </details>
            
-            * 使用 Release **`发行版`**（不推荐）
-                <details>
-                <summary>点击展开</summary>
-                            
-                1. 下载名为 `build-${{ env.SHORT_COMMIT_HASH }}.zip` 的压缩包
-                2. 在 `karin/plugins/` 目录下解压该压缩包，选择替换所有文件。
-            
-                * 完成后相关源码应在 `Karin根目录/plugins/karin-plugin-kkk/` 内<br><br>
-            
-                若报错缺失依赖，可先运行 `pnpm install` 安装或更新依赖。
-            
-                </details>
+
+            <details>
+            <summary>使用预发行版（不推荐）</summary>
+                        
+            1. 下载名为 [build-${{ env.SHORT_COMMIT_HASH }}.zip](${{ steps.upload-release-asset.outputs.browser_download_url }}) 的压缩包
+            2. 在 `karin/plugins/` 目录下解压该压缩包，选择替换所有文件。
+            3. 完成后相关源码应在 `Karin根目录/plugins/karin-plugin-kkk/` 内<br><br>
+          
+            若报错缺失依赖，可先运行 `pnpm install` 安装或更新依赖。
+          
+            </details>
             
             ---
             **此版本非正式版本，可能存在一些问题，请谨慎使用！**
             构建时间：${{ github.event.head_commit.timestamp }}
           draft: false
           prerelease: true
-
-      - name: 上传
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "./build-${{ env.SHORT_COMMIT_HASH }}.zip"
-          asset_name: "build-${{ env.SHORT_COMMIT_HASH }}.zip"
-          asset_content_type: application/zip
