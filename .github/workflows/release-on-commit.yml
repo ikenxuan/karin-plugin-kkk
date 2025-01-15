@@ -147,8 +147,6 @@ jobs:
           asset_path: "./build-${{ env.SHORT_COMMIT_HASH }}.zip"
           asset_name: "build-${{ env.SHORT_COMMIT_HASH }}.zip"
           asset_content_type: application/zip
-        outputs:
-          browser_download_url: ${{ steps.upload-release-asset.outputs.browser_download_url }}
 
       - name: 创建发行版
         id: create_release
