@@ -145,7 +145,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: "pre-${{ env.SHORT_COMMIT_HASH }}"
-          release_name: "Pre-release ${{ env.SHORT_COMMIT_HASH }}"
+          release_name: "${{ env.PKG_VERSION }} Preview-Release"
           body: |
             ### 🎉 🎉 🎉构建完成！
             - 此版本是基于快照 [`${{ env.SHORT_COMMIT_HASH }}`](https://github.com/${{ github.repository }}/tree/${{ env.COMMIT_HASH }}) 所构建的，[**点击此处查看更改**](https://github.com/${{ github.repository }}/commit/${{ env.COMMIT_HASH }}) By [**${{ github.actor }}**](https://github.com/${{ github.actor }})
