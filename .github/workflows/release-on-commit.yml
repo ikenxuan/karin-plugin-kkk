@@ -137,16 +137,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: 上传
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "./build-${{ env.SHORT_COMMIT_HASH }}.zip"
-          asset_name: "build-${{ env.SHORT_COMMIT_HASH }}.zip"
-          asset_content_type: application/zip
 
       - name: 创建发行版
         id: create_release
@@ -188,8 +178,8 @@ jobs:
 
             <details>
             <summary>使用预发行版（不推荐）</summary>
-                        
-            1. 下载名为 [build-${{ env.SHORT_COMMIT_HASH }}.zip](${{ steps.upload-release-asset.outputs.browser_download_url }}) 的压缩包
+                        https://github.com/ikenxuan/karin-plugin-kkk/releases/download/pre-c55ae71/build-c55ae71.zip
+            1. 下载名为 [build-${{ env.SHORT_COMMIT_HASH }}.zip](https://github.com/${{ github.actor }}/${{ github.repository }}/releases/download/pre-${{ env.SHORT_COMMIT_HASH }}/build-${{ env.SHORT_COMMIT_HASH }}.zip) 的压缩包
             2. 在 `karin/plugins/` 目录下解压该压缩包，选择替换所有文件。
             3. 完成后相关源码应在 `Karin根目录/plugins/karin-plugin-kkk/` 内<br><br>
           
@@ -202,3 +192,14 @@ jobs:
             构建时间：${{ github.event.head_commit.timestamp }}
           draft: false
           prerelease: true
+
+      - name: 上传
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "./build-${{ env.SHORT_COMMIT_HASH }}.zip"
+          asset_name: "build-${{ env.SHORT_COMMIT_HASH }}.zip"
+          asset_content_type: application/zip
