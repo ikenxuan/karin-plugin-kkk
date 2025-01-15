@@ -144,7 +144,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: "pre-${{ env.SHORT_COMMIT_HASH }}"
+          tag_name: "${{ env.PKG_VERSION }}"
           release_name: "${{ env.PKG_VERSION }}"
           body: |
             ### 🎉 构建完成！
