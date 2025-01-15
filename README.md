@@ -52,7 +52,7 @@
     
     1. 打开 Release 页面: https://github.com/ikenxuan/karin-plugin-kkk/releases
     2. 找到最新的版本，下载名为 `build.zip` 的压缩包
-    3. 在 `plugins/` 目录下解压该压缩包
+    3. 在 `plugins/` 目录下解压该压缩包，选择替换所有文件。
 
     * 完成后相关源码应在 `Karin根目录/plugins/karin-plugin-kkk/` 内<br><br>
 
