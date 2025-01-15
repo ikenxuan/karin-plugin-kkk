@@ -166,7 +166,7 @@ jobs:
            
 
             <details>
-            <summary>使用包管理器（**Karin 根目录** 下执行）</summary>
+            <summary>使用包管理器</summary>
           
             **Karin 根目录** 下执行
             ```sh
@@ -178,7 +178,7 @@ jobs:
 
             <details>
             <summary>使用预发行版（不推荐）</summary>
-                        https://github.com/ikenxuan/karin-plugin-kkk/releases/download/pre-c55ae71/build-c55ae71.zip
+
             1. 下载名为 [build-${{ env.SHORT_COMMIT_HASH }}.zip](https://github.com/${{ github.actor }}/${{ github.repository }}/releases/download/pre-${{ env.SHORT_COMMIT_HASH }}/build-${{ env.SHORT_COMMIT_HASH }}.zip) 的压缩包
             2. 在 `karin/plugins/` 目录下解压该压缩包，选择替换所有文件。
             3. 完成后相关源码应在 `Karin根目录/plugins/karin-plugin-kkk/` 内<br><br>
