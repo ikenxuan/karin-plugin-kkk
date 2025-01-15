@@ -32,6 +32,7 @@
     "clean": "npm lib/cli/pr.js clean",
     "fix": "eslint src/**/*.ts --fix",
     "pr": "node lib/cli/pr.js",
+    "commit": "node lib/cli/commit.js",
     "pub": "npm publish --access public",
     "pub-beta": "npm publish --tag beta",
     "sort": "npx sort-package-json",
