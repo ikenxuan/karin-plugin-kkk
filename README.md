@@ -40,7 +40,7 @@
 
    在 **Karin 根目录** 下运行
    ```sh
-   pnpm add karin-plugin-kkk -w
+   pnpm add karin-plugin-kkk@latest -w
    ```
    </details>
 
