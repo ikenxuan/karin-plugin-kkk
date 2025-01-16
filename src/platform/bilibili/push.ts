@@ -678,7 +678,7 @@ export class Bilibilipush extends Base {
       renderOpt.push({
         avatar_img: userInfo.data.card.face,
         username: userInfo.data.card.name,
-        host_mid,
+        host_mid: host_mid ?? userInfo.data.card.mid,
         fans: this.count(userInfo.data.follower),
         total_favorited: this.count(userInfo.data.like_num),
         following_count: this.count(userInfo.data.card.attention),
