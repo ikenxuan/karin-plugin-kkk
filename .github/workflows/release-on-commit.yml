@@ -50,6 +50,12 @@ jobs:
         run: echo "COMMIT_HASH=${{ github.sha }}" >> $GITHUB_ENV
         id: get_commit_hash
 
+      - name: 设置当前分支名称到环境变量
+        run: |
+          BRANCH_NAME=$(echo ${{ github.ref }} | sed 's|refs/heads/||')
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "Current branch: $BRANCH_NAME"
+
       - name: 获取短哈希值
         run: echo "SHORT_COMMIT_HASH=$(echo ${{ env.COMMIT_HASH }} | cut -c1-7)" >> $GITHUB_ENV
 
