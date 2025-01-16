@@ -45,7 +45,7 @@
     "log": "karin log",
     "up": "karin up",
     "init": "karin init",
-    "dev": "karin dev",
+    "dev": "tsx watch --include \"./src/**/*\"  node_modules/node-karin/dist/index.js",
     "ts": "karin ts",
     "watch": "karin watch"
   },

@@ -1,5 +1,6 @@
 import { Message } from 'node-karin';
 import { AllDataType, Base, DouyinDBType } from '../../module/index.js';
+import { douyinPushItem } from '../../types/config/pushlist.js';
 /** 每个推送项的类型定义 */
 interface PushItem {
     /** 博主的昵称 */
@@ -44,7 +45,7 @@ export declare class DouYinpush extends Base {
      * 根据配置文件获取UP当天的动态列表。
      * @returns
      */
-    getDynamicList(): Promise<{
+    getDynamicList(userList: douyinPushItem[]): Promise<{
         willbepushlist: WillBePushList;
         DBdata: Record<string, DouyinDBType>;
     }>;
@@ -67,6 +68,7 @@ export declare class DouYinpush extends Base {
      * @param data 抖音的搜索结果数据。需要接口返回的原始数据
      * @returns 操作成功或失败的消息字符串。
      */
-    setting(data: any): Promise<string>;
+    setting(data: any): Promise<void>;
+    renderPushList(pushList: douyinPushItem[], short_id?: string): Promise<true | undefined>;
 }
 export {};

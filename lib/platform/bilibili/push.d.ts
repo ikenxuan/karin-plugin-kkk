@@ -1,5 +1,6 @@
 import { Message } from 'node-karin';
 import { AllDataType, Base, BilibiliDBType } from '../../module/index.js';
+import { bilibiliPushItem } from '../../types/config/pushlist.js';
 /** 已支持推送的动态类型 */
 export declare enum DynamicType {
     AV = "DYNAMIC_TYPE_AV",
@@ -50,7 +51,7 @@ export declare class Bilibilipush extends Base {
      * 根据配置文件获取UP当天的动态列表。
      * @returns
      */
-    getDynamicList(): Promise<{
+    getDynamicList(userList: bilibiliPushItem[]): Promise<{
         willbepushlist: WillBePushList;
         DBdata: Record<string, BilibiliDBType>;
     }>;
@@ -66,7 +67,7 @@ export declare class Bilibilipush extends Base {
      * @param data 包含 card 对象。
      * @returns 操作成功或失败的消息字符串。
      */
-    setting(data: any): Promise<string>;
+    setting(data: any): Promise<void>;
     /**
      * 检查并更新配置文件中指定用户的备注信息。
      * 该函数会遍历配置文件中的用户列表，对于没有备注或备注为空的用户，会从外部数据源获取其备注信息，并更新到配置文件中。
@@ -77,5 +78,12 @@ export declare class Bilibilipush extends Base {
      * @param data 处理完成的推送列表
      */
     forcepush(data: WillBePushList): Promise<void>;
+    /**
+     * 渲染推送列表图片
+     * @param pushList B站配置文件的推送列表
+     * @param host_mid 优先展示的UP主的UID
+     * @returns
+     */
+    renderPushList(pushList: bilibiliPushItem[], host_mid?: string): Promise<true | undefined>;
 }
 export {};
