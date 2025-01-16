@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.3-commit.ced194c](https://github.com/ikenxuan/karin-plugin-kkk/compare/1.0.2-commit.ced194c...v1.0.3-commit.ced194c) (2025-01-16)
+## [1.0.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/1.0.2-commit.ced194c...v1.0.3-commit.ced194c) (2025-01-16)
 
 
 ### Bug Fixes
