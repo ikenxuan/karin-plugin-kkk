@@ -30,7 +30,7 @@ const updateVersion = (pkg: { version: string }) => {
   const shortHash = process.env.COMMIT_HASH?.substring(0, 7) ?? 'unknown'
   const BRANCH_NAME = process.env.BRANCH_NAME ?? 'unknown'
   list[2] = `${Number(list[2]) + 1}`
-  pkg.version = `${list.join('.')}.${BRANCH_NAME}.commit.${shortHash}`
+  pkg.version = `${list.join('.')}.commit.${BRANCH_NAME}.${shortHash}`
 }
 
 /**
