@@ -19,18 +19,16 @@ const readPkg = () => JSON.parse(fs.readFileSync(getPkgPath(), 'utf-8'))
 const writePkg = (pkg: any) => fs.writeFileSync(getPkgPath(), JSON.stringify(pkg, null, 2))
 
 /**
- * @description 构建pr版本号 <主版本号>.<次版本号>.<修订号>.<分支名>.<commit>.<当前提交唯一短哈希>
- * @example 1.0.0.master.commit.1234567
+ * @description 构建pr版本号 <主版本号>.<次版本号>.<修订号>.<PR标识PR编号>.<当前提交唯一短哈希>
+ * @example 1.0.0.pr.184.a1b2c3d
  * @param pkg package.json
  */
 const updateVersion = (pkg: { version: string }) => {
   const list = pkg.version.split('.')
   console.log('COMMIT_HASH: ' + process.env.COMMIT_HASH)
-  console.log('BRANCH_NAME: ' + process.env.BRANCH_NAME)
   const shortHash = process.env.COMMIT_HASH?.substring(0, 7) ?? 'unknown'
-  const BRANCH_NAME = process.env.BRANCH_NAME ?? 'unknown'
   list[2] = `${Number(list[2]) + 1}`
-  pkg.version = `${list.join('.')}.commit.${BRANCH_NAME}.${shortHash}`
+  pkg.version = `${list.join('.')}-commit.${shortHash}`
 }
 
 /**
