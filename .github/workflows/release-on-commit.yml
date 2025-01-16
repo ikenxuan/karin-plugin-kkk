@@ -159,8 +159,12 @@ jobs:
             
             **插件根目录** 下执行
             ```sh
+            git pull
+            ```
+            ```sh
             git checkout ${{ env.COMMIT_HASH }}
             ```
+
             若报错缺失依赖，可先运行 `pnpm install` 安装或更新依赖。
 
             </details>
@@ -170,8 +174,7 @@ jobs:
             <summary>使用包管理器</summary>
           
             **Karin 根目录** 下执行
-            ```sh
-            git pull
+
             ```sh
             pnpm add karin-plugin-kkk@${{ env.PKG_VERSION }} -w
             ```
