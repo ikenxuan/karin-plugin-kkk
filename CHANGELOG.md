@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3-commit.ced194c](https://github.com/ikenxuan/karin-plugin-kkk/compare/1.0.2-commit.ced194c...v1.0.3-commit.ced194c) (2025-01-16)
+
+
+### Bug Fixes
+
+* **platform/bilibili:** 优化 B 站推送中UP主信息的处理 ([079833f](https://github.com/ikenxuan/karin-plugin-kkk/commit/079833fef0a0e875f8c256f9e9898d4c0a67146f))
+
 ## [1.0.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.0.0...v1.0.1) (2025-01-15)
 
 
