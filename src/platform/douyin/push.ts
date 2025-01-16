@@ -1,8 +1,10 @@
 import { getDouyinData } from '@ikenxuan/amagi'
+import { get } from 'http'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
 import { AllDataType, Base, Common, Config, DB, DouyinDBType, Networks, Render } from '@/module'
 import { ExtendedDouyinOptionsType, getDouyinID, processVideos } from '@/platform/douyin'
+import { douyinPushItem } from '@/types/config/pushlist'
 
 /** 每个推送项的类型定义 */
 interface PushItem {
@@ -53,7 +55,7 @@ export class DouYinpush extends Base {
     if (await this.checkremark()) return true
 
     try {
-      const data = await this.getDynamicList()
+      const data = await this.getDynamicList(Config.pushlist.douyin)
       const pushdata = this.excludeAlreadyPushed(data.willbepushlist, data.DBdata)
 
       if (Object.keys(pushdata).length === 0) return true
@@ -253,12 +255,12 @@ export class DouYinpush extends Base {
    * 根据配置文件获取UP当天的动态列表。
    * @returns
    */
-  async getDynamicList () {
+  async getDynamicList (userList: douyinPushItem[]) {
     const willbepushlist: WillBePushList = {}
     const DBdata = await DB.FindAll('douyin')
 
     try {
-      for (const item of Config.pushlist.douyin) {
+      for (const item of userList) {
         const videolist = await getDouyinData('用户主页视频列表数据', Config.cookies.douyin, { sec_uid: item.sec_uid })
         const userinfo = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid: item.sec_uid })
 
@@ -476,7 +478,7 @@ export class DouYinpush extends Base {
    * @param data 抖音的搜索结果数据。需要接口返回的原始数据
    * @returns 操作成功或失败的消息字符串。
    */
-  async setting (data: any) {
+  async setting (data: any): Promise<void> {
     const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
     try {
       let index = 0
@@ -520,7 +522,7 @@ export class DouYinpush extends Base {
           // 如果存在相同的 group_id，则删除它
           existingItem.group_id.splice(groupIndexToRemove, 1)
           logger.info(`\n删除成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.user.sec_uid}`)
-          msg = `群：${groupInfo.groupName}(${group_id})\n删除成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`
+          await this.e.reply(`群：${groupInfo.groupName}(${group_id})\n删除成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`)
 
           // 如果删除后 group_id 数组为空，则删除整个属性
           if (existingItem.group_id.length === 0) {
@@ -534,8 +536,11 @@ export class DouYinpush extends Base {
           }
           // 否则，将新的 group_id 添加到该 sec_uid 对应的数组中
           existingItem.group_id.push(`${group_id}:${this.e.selfId}`)
-          msg = `群：${groupInfo.groupName}(${group_id})\n添加成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`
+          await this.e.reply(`群：${groupInfo.groupName}(${group_id})\n添加成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`)
+          if (Config.douyin.push.switch === false) await this.e.reply('请发送「#kkk设置B站推送开启」以进行推送')
           logger.info(`\n设置成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.user.sec_uid}`)
+          // 渲染状态图片
+          await this.renderPushList(config.douyin, user_shortid)
         }
       } else {
         const status = await DB.FindGroup('douyin', `${group_id}:${this.e.selfId}`)
@@ -544,15 +549,45 @@ export class DouYinpush extends Base {
         }
         // 如果不存在相同的 sec_uid，则新增一个属性
         config.douyin.push({ sec_uid, group_id: [`${group_id}:${this.e.selfId}`], remark: UserInfoData.user.nickname, short_id: user_shortid })
-        msg = `群：${groupInfo.groupName}(${group_id})\n添加成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`
+        await this.e.reply(`群：${groupInfo.groupName}(${group_id})\n添加成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`)
+        if (Config.douyin.push.switch === false) await this.e.reply('请发送「#kkk设置B站推送开启」以进行推送')
+        // 渲染状态图片
+        await this.renderPushList(config.douyin, user_shortid)
       }
 
       Config.Modify('pushlist', 'douyin', config.douyin)
-      return msg
     } catch (error) {
       logger.error(error)
-      return '无法获取用户信息，请确认抖音号是否正确'
     }
+  }
+
+  async renderPushList (pushList: douyinPushItem[], short_id?: string) {
+    const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
+    const filteredList = pushList.filter(item => item.group_id.some(group => group.split(':')[0] === groupInfo.groupId))
+    if (filteredList.length === 0) {
+      await this.e.reply(`当前群：${groupInfo.groupName}(${groupInfo.groupId})\n没有设置任何抖音博主推送！\n可使用「#设置抖音推送 + 抖音号」进行设置`)
+      return true
+    }
+    /** 用户的今日动态列表 */
+    const DynamicList = await this.getDynamicList(filteredList)
+    const renderOpt = []
+    for (const dynamic_id in removeDuplicateHostMid(DynamicList.willbepushlist)) {
+      const item = DynamicList.willbepushlist[dynamic_id]
+      const userInfo = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid: item.sec_uid })
+      renderOpt.push({
+        avatar_img: userInfo.user.avatar_larger.url_list[0],
+        username: userInfo.user.nickname,
+        short_id: userInfo.user.unique_id === '' ? userInfo.user.short_id : userInfo.user.unique_id,
+        fans: this.count(userInfo.user.follower_count),
+        total_favorited: this.count(userInfo.user.total_favorited),
+        following_count: this.count(userInfo.user.following_count),
+        willPushNum: 999
+      })
+    }
+    // 将此次设置推送的用户排序到首位
+    if (short_id) renderOpt.sort((a, b) => (a.short_id === short_id ? -1 : b.short_id === short_id ? 1 : 0))
+    const img = await Render('douyin/userlist', { renderOpt })
+    await this.e.reply(img)
   }
 }
 
@@ -639,4 +674,19 @@ const findMatchingSecUid = (DBdata: DouyinDBType, secUidToCheck: string) => {
     }
   }
   return ''
+}
+
+const removeDuplicateHostMid = (willBePushList: WillBePushList): WillBePushList => {
+  const result: WillBePushList = {}
+  const seenHostMids = new Set<string>()
+
+  for (const key in willBePushList) {
+    const item = willBePushList[key]
+    if (!seenHostMids.has(item.sec_uid)) {
+      result[key] = item
+      seenHostMids.add(item.sec_uid)
+    }
+  }
+
+  return result
 }

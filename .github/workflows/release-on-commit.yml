@@ -171,6 +171,8 @@ jobs:
           
             **Karin 根目录** 下执行
             ```sh
+            git pull
+            ```sh
             pnpm add karin-plugin-kkk@${{ env.PKG_VERSION }} -w
             ```
 
