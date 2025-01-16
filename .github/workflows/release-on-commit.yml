@@ -15,6 +15,11 @@ jobs:
       - name: 拉取代码
         uses: actions/checkout@v4
 
+      - name: 打印 github.actor
+        run: |
+          echo "ACTOR=${{ github.actor }}" >> $GITHUB_ENV
+          echo "Triggered by: $ACTOR"
+
       - name: 安装node
         uses: actions/setup-node@v4
         with:
