@@ -658,6 +658,12 @@ const qnd: Record<number, string> = {
   127: '超高清 8K'
 }
 
+/**
+ * 拼接B站动态卡片的html字符串
+ * @param colors 颜色数组
+ * @param text 卡片的文字
+ * @returns 拼接好的html字符串
+ */
 export const generateGradientStyle = (colors: string[], text: string): string => {
   if (!colors) return ''
   const gradientString = colors.map((color) => {
@@ -668,6 +674,11 @@ export const generateGradientStyle = (colors: string[], text: string): string =>
   return `<span style="font-family: bilifont; color: transparent; background-clip: text; margin: 0 200px 0 0; font-size: 43px; background-image: linear-gradient(135deg, ${gradientString} 0%, ${gradientString} 100%); ">${text}</span>`
 }
 
+/**
+ * 将给定的图片源数组转换为一个新的对象数组，每个对象包含单个图片源
+ * @param pic 一个包含图片源字符串的数组
+ * @returns 返回一个对象数组，每个对象包含单个图片源
+ */
 export const cover = (pic: { img_src: string }[]) => {
   const imgArray = []
   for (const i of pic) {
@@ -679,6 +690,11 @@ export const cover = (pic: { img_src: string }[]) => {
   return imgArray
 }
 
+/**
+ * 生成装饰卡片的HTML字符串
+ * @param decorate 装饰对象，包含卡片的URL和颜色信息
+ * @returns 返回装饰卡片的HTML字符串或空div字符串
+ */
 export const generateDecorationCard = (decorate: any) => {
   return decorate
     ? `<div style="display: flex; width: 500px; height: 150px; background-position: center; background-attachment: fixed; background-repeat: no-repeat; background-size: contain; align-items: center; justify-content: flex-end; background-image: url('${decorate.card_url}')">${generateGradientStyle(decorate.fan?.color_format?.colors, decorate.fan.num_str)}</div>`
