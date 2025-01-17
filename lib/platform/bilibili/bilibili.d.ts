@@ -43,11 +43,27 @@ export declare class Bilibili extends Base {
     }>;
 }
 export declare function replacetext(text: string, rich_text_nodes: any[]): string;
+/**
+ * 拼接B站动态卡片的html字符串
+ * @param colors 颜色数组
+ * @param text 卡片的文字
+ * @returns 拼接好的html字符串
+ */
 export declare const generateGradientStyle: (colors: string[], text: string) => string;
+/**
+ * 将给定的图片源数组转换为一个新的对象数组，每个对象包含单个图片源
+ * @param pic 一个包含图片源字符串的数组
+ * @returns 返回一个对象数组，每个对象包含单个图片源
+ */
 export declare const cover: (pic: {
     img_src: string;
 }[]) => {
     image_src: string;
 }[];
+/**
+ * 生成装饰卡片的HTML字符串
+ * @param decorate 装饰对象，包含卡片的URL和颜色信息
+ * @returns 返回装饰卡片的HTML字符串或空div字符串
+ */
 export declare const generateDecorationCard: (decorate: any) => string;
 export {};

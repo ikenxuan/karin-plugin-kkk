@@ -45,7 +45,7 @@
     "log": "karin log",
     "up": "karin up",
     "init": "karin init",
-    "dev": "tsx watch --include \"./src/**/*\"  node_modules/node-karin/dist/index.js",
+    "dev": "tsx watch --include \"src/**/*.ts\" src/index.ts",
     "ts": "karin ts",
     "watch": "karin watch"
   },
@@ -55,7 +55,7 @@
     "cors": "^2.8.5",
     "heic-convert": "^2.1.0",
     "http-proxy-middleware": "^3.0.3",
-    "playwright": "^1.49.0",
+    "playwright": "^1.49.1",
     "qrcode": "^1.5.4",
     "sequelize": "6.37.3",
     "sqlite3": "5.1.6"
