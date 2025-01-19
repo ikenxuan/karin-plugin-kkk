@@ -170,18 +170,32 @@ export class DouYin extends Base {
       }
 
       case 'user_mix_videos': {
+        const emojiData = await getDouyinData('Emoji数据')
+        const commentsData = await douyinComments(data.CommentsData, emojiData)
+        const commentImage = await Render('douyin/comment', {
+          Type: '合辑作品',
+          CommentsData: commentsData,
+          CommentLength: String(commentsData.jsonArray?.length ? commentsData.jsonArray.length : 0),
+          share_url: this.is_mp4
+            ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${data.VideoData.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`
+            : data.VideoData.aweme_detail.share_url,
+          VideoSize: '？？？',
+          VideoFPS: '？？？',
+          ImageLength: '？？？'
+        })
+        await this.e.reply(commentImage)
         const images: Elements[] = []
         const temp: fileInfo[] = []
         /** BGM */
         const liveimgbgm = await this.DownLoadFile(
-          data.aweme_details[0].music.play_url.uri,
+          data.LiveImageData.aweme_details[0].music.play_url.uri,
           {
             title: `Douyin_tmp_A_${Date.now()}.mp3`,
             headers: this.headers
           }
         )
         temp.push(liveimgbgm)
-        for (const item of data.aweme_details[0].images) {
+        for (const item of data.LiveImageData.aweme_details[0].images) {
           // 静态图片，clip_type为2
           if (item.clip_type === 2) {
             images.push(segment.image((item.url_list[0])))

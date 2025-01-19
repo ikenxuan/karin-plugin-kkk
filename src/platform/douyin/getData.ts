@@ -31,10 +31,14 @@ export async function fetchDouyinData<T extends keyof DouyinDataTypes> (
     }
 
     case 'user_mix_videos': {
+      const CommentsData = await getDouyinData('评论数据', dyck, {
+        aweme_id: (opt as DouyinDataOptionsMap['评论数据']).aweme_id,
+        number: Config.douyin.numcomment
+      })
       const LiveImageData = await getDouyinData('合辑作品数据', dyck, {
         aweme_id: (opt as DouyinDataOptionsMap['合辑作品数据']).aweme_id
       })
-      return LiveImageData
+      return { LiveImageData, CommentsData }
     }
     case 'live_room_detail':
     case 'user_profile': {
