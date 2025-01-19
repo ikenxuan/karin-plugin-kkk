@@ -1,6 +1,6 @@
 {
   "name": "karin-plugin-kkk",
-  "version": "1.0.3",
+  "version": "1.0.5-commit.db43730",
   "description": "a Karin video parsing tool",
   "keywords": [
     "karin-plugin",

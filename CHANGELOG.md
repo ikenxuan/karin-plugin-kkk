@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5-commit.db43730](https://github.com/ikenxuan/karin-plugin-kkk/compare/1.0.4-commit.db43730...v1.0.5-commit.db43730) (2025-01-19)
+
+
+### Performance Improvements
+
+* 优化合辑解析 ([a2a75b4](https://github.com/ikenxuan/karin-plugin-kkk/commit/a2a75b423525180ea7f03f9112893640dea12238))
+
 ## [1.0.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/1.0.2-commit.ced194c...v1.0.3-commit.ced194c) (2025-01-16)
 
 
