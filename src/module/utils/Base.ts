@@ -4,7 +4,7 @@ import karin, { logger, Message, segment } from 'node-karin'
 
 import { Common, Config, mergeFile, Networks } from '@/module/utils'
 
-interface uploadFileOptions {
+type uploadFileOptions = {
   /** 是否使用群文件上传 */
   useGroupFile?: boolean
   /** 消息ID，如果有，则将使用该消息ID制作回复元素 */
@@ -21,14 +21,14 @@ interface uploadFileOptions {
 }
 
 /** 最少都要传一个 */
-interface title {
+type title = {
   /** 文件名：自定义 */
   originTitle?: string
   /** 文件名：tmp + 时间戳 */
   timestampTitle?: string
 }
 
-interface downloadFileOptions {
+type downloadFileOptions = {
   /** 视频链接 */
   video_url: string
   /** 文件名 */
@@ -40,7 +40,7 @@ interface downloadFileOptions {
 
 }
 
-interface fileInfo {
+export type fileInfo = {
   /** 视频文件的绝对路径 */
   filepath: string
   /** 视频文件大小 */
@@ -51,7 +51,7 @@ interface fileInfo {
   timestampTitle?: title['timestampTitle']
 }
 
-interface downLoadFileOptions {
+type downLoadFileOptions = {
   /** 文件名 */
   title: string
   /**

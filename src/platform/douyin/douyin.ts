@@ -2,10 +2,10 @@ import fs from 'node:fs'
 
 import { getDouyinData } from '@ikenxuan/amagi'
 import { markdown } from '@karinjs/md-html'
-import { common, logger, Message, mkdirSync, render, segment } from 'node-karin'
+import { common, Elements, logger, Message, mkdirSync, render, segment } from 'node-karin'
 import QRCode from 'qrcode'
 
-import { Base, Common, Config, mergeFile, Networks, Render, Version } from '@/module/utils'
+import { Base, Common, Config, fileInfo, mergeFile, Networks, Render, Version } from '@/module/utils'
 import { douyinComments } from '@/platform/douyin'
 import { DouyinDataTypes, ExtendedDouyinOptionsType } from '@/types'
 
@@ -170,16 +170,24 @@ export class DouYin extends Base {
       }
 
       case 'user_mix_videos': {
-        const images = []
-        const bgmurl = data.aweme_details[0].music.play_url.uri
+        const images: Elements[] = []
+        const temp: fileInfo[] = []
+        /** BGM */
+        const liveimgbgm = await this.DownLoadFile(
+          data.aweme_details[0].music.play_url.uri,
+          {
+            title: `Douyin_tmp_A_${Date.now()}.mp3`,
+            headers: this.headers
+          }
+        )
+        temp.push(liveimgbgm)
         for (const item of data.aweme_details[0].images) {
           // 静态图片，clip_type为2
           if (item.clip_type === 2) {
-            images.push(segment.text(`动图直链:\nhttps://aweme.snssdk.com/aweme/v1/play/?video_id=${item.uri}&ratio=1080p&line=0`))
+            images.push(segment.image((item.url_list[0])))
             continue
           }
-          images.push(segment.text(`动图直链:\nhttps://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`))
-          // 动图
+          /** 动图 */
           const liveimg = await this.DownLoadFile(
             `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`,
             {
@@ -187,15 +195,8 @@ export class DouYin extends Base {
               headers: this.headers
             }
           )
-          // BGM
-          const liveimgbgm = await this.DownLoadFile(
-            bgmurl,
-            {
-              title: `Douyin_tmp_A_${Date.now()}.mp3`,
-              headers: this.headers
-            }
-          )
-          if (liveimg.filepath && liveimgbgm.filepath) {
+
+          if (liveimg.filepath) {
             const resolvefilepath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
             await mergeFile('视频*3 + 音频', {
               path: liveimg.filepath,
@@ -205,20 +206,11 @@ export class DouYin extends Base {
                 if (success) {
                   const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
                   fs.renameSync(resultPath, filePath)
-                  await this.removeFile(liveimgbgm.filepath, true)
                   await this.removeFile(liveimg.filepath, true)
-
-                  const stats = fs.statSync(filePath)
-                  const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
-                  if (fileSizeInMB > Config.upload.groupfilevalue) {
-                    this.e.reply(`视频大小: ${fileSizeInMB}MB 正通过群文件上传中...`)
-                    return await this.upload_file({ filepath: filePath, totalBytes: fileSizeInMB }, '', { useGroupFile: true })
-                  } else {
-                    /** 因为本地合成，没有视频直链 */
-                    return await this.upload_file({ filepath: filePath, totalBytes: fileSizeInMB }, '')
-                  }
+                  temp.push({ filepath: filePath, totalBytes: 0 })
+                  images.push(segment.video('file://' + filePath))
+                  return true
                 } else {
-                  await this.removeFile(liveimgbgm.filepath, true)
                   await this.removeFile(liveimg.filepath, true)
                   return true
                 }
@@ -227,7 +219,15 @@ export class DouYin extends Base {
           }
         }
         const Element = common.makeForward(images, this.e.sender.userId, this.e.sender.nick)
-        await this.e.bot.sendForwardMsg(this.e.contact, Element)
+        try {
+          await this.e.bot.sendForwardMsg(this.e.contact, Element)
+        } catch (error) {
+          await this.e.reply(JSON.stringify(error, null, 2))
+        } finally {
+          for (const item of temp) {
+            await this.removeFile(item.filepath, true)
+          }
+        }
         return true
       }
 
