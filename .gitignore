@@ -1,17 +1,16 @@
-config/config/
-lib/
-node_modules/
+lib/*
+node_modules/*
 
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
 index.js
 pnpm-workspace.yaml
-@karinjs/
-data/
-logs/
+@karinjs/*
+data/*
+logs/*
 startpuppeteer.bat
-temp/
+temp/*
 napcat.quick.bat
 .env
 .pnpmfile.cjs
