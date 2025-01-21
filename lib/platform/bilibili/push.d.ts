@@ -81,9 +81,8 @@ export declare class Bilibilipush extends Base {
     /**
      * 渲染推送列表图片
      * @param pushList B站配置文件的推送列表
-     * @param host_mid 优先展示的UP主的UID
      * @returns
      */
-    renderPushList(pushList: bilibiliPushItem[], host_mid?: string): Promise<true | undefined>;
+    renderPushList(pushList: bilibiliPushItem[]): Promise<void>;
 }
 export {};

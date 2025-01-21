@@ -69,6 +69,11 @@ export declare class DouYinpush extends Base {
      * @returns 操作成功或失败的消息字符串。
      */
     setting(data: any): Promise<void>;
-    renderPushList(pushList: douyinPushItem[], short_id?: string): Promise<true | undefined>;
+    /**
+     * 渲染推送列表图片
+     * @param pushList 抖音推送列表
+     * @returns
+     */
+    renderPushList(pushList: douyinPushItem[]): Promise<void>;
 }
 export {};
