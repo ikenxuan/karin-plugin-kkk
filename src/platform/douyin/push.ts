@@ -540,7 +540,7 @@ export class DouYinpush extends Base {
           if (Config.douyin.push.switch === false) await this.e.reply('请发送「#kkk设置B站推送开启」以进行推送')
           logger.info(`\n设置成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.user.sec_uid}`)
           // 渲染状态图片
-          await this.renderPushList(config.douyin, user_shortid)
+          await this.renderPushList(config.douyin)
         }
       } else {
         const status = await DB.FindGroup('douyin', `${group_id}:${this.e.selfId}`)
@@ -552,7 +552,7 @@ export class DouYinpush extends Base {
         await this.e.reply(`群：${groupInfo.groupName}(${group_id})\n添加成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`)
         if (Config.douyin.push.switch === false) await this.e.reply('请发送「#kkk设置B站推送开启」以进行推送')
         // 渲染状态图片
-        await this.renderPushList(config.douyin, user_shortid)
+        await this.renderPushList(config.douyin)
       }
 
       Config.Modify('pushlist', 'douyin', config.douyin)
@@ -561,18 +561,20 @@ export class DouYinpush extends Base {
     }
   }
 
-  async renderPushList (pushList: douyinPushItem[], short_id?: string) {
+  /**
+   * 渲染推送列表图片
+   * @param pushList 抖音推送列表
+   * @returns
+   */
+  async renderPushList (pushList: douyinPushItem[]): Promise<void> {
     const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
+    /** 排除出有e.groupId的推送用户 */
     const filteredList = pushList.filter(item => item.group_id.some(group => group.split(':')[0] === groupInfo.groupId))
     if (filteredList.length === 0) {
       await this.e.reply(`当前群：${groupInfo.groupName}(${groupInfo.groupId})\n没有设置任何抖音博主推送！\n可使用「#设置抖音推送 + 抖音号」进行设置`)
-      return true
     }
-    /** 用户的今日动态列表 */
-    const DynamicList = await this.getDynamicList(filteredList)
-    const renderOpt = []
-    for (const dynamic_id in removeDuplicateHostMid(DynamicList.willbepushlist)) {
-      const item = DynamicList.willbepushlist[dynamic_id]
+    const renderOpt: Record<string, string>[] = []
+    for (const item of filteredList) {
       const userInfo = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid: item.sec_uid })
       renderOpt.push({
         avatar_img: userInfo.user.avatar_larger.url_list[0],
@@ -580,12 +582,9 @@ export class DouYinpush extends Base {
         short_id: userInfo.user.unique_id === '' ? userInfo.user.short_id : userInfo.user.unique_id,
         fans: this.count(userInfo.user.follower_count),
         total_favorited: this.count(userInfo.user.total_favorited),
-        following_count: this.count(userInfo.user.following_count),
-        willPushNum: 999
+        following_count: this.count(userInfo.user.following_count)
       })
     }
-    // 将此次设置推送的用户排序到首位
-    if (short_id) renderOpt.sort((a, b) => (a.short_id === short_id ? -1 : b.short_id === short_id ? 1 : 0))
     const img = await Render('douyin/userlist', { renderOpt })
     await this.e.reply(img)
   }
@@ -674,19 +673,4 @@ const findMatchingSecUid = (DBdata: DouyinDBType, secUidToCheck: string) => {
     }
   }
   return ''
-}
-
-const removeDuplicateHostMid = (willBePushList: WillBePushList): WillBePushList => {
-  const result: WillBePushList = {}
-  const seenHostMids = new Set<string>()
-
-  for (const key in willBePushList) {
-    const item = willBePushList[key]
-    if (!seenHostMids.has(item.sec_uid)) {
-      result[key] = item
-      seenHostMids.add(item.sec_uid)
-    }
-  }
-
-  return result
 }
