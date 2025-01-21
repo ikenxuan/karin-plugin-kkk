@@ -1,9 +1,8 @@
 import { getBilibiliData } from '@ikenxuan/amagi'
-import { group } from 'console'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
 import { AllDataType, Base, BilibiliDBType, Common, Config, DB, Render } from '@/module'
-import { cover, fetchBilibiliData, generateDecorationCard, generateGradientStyle, replacetext } from '@/platform/bilibili'
+import { cover, fetchBilibiliData, generateDecorationCard, replacetext } from '@/platform/bilibili'
 import { bilibiliPushItem } from '@/types/config/pushlist'
 
 /** 已支持推送的动态类型 */

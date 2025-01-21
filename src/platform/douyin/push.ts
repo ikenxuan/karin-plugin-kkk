@@ -1,5 +1,4 @@
 import { getDouyinData } from '@ikenxuan/amagi'
-import { get } from 'http'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
 import { AllDataType, Base, Common, Config, DB, DouyinDBType, Networks, Render } from '@/module'
