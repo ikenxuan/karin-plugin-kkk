@@ -88,19 +88,17 @@ git clone https://github.com/你的GitHub用户名/karin-plugin-kkk.git
 ```sh
 cd karin-plugin-kkk/
 ```
-4. 安装依赖
+4. 初始化开发环境
+```sh
+pnpm run init
+```
+5. 安装依赖
 ```sh
 pnpm install
 ```
-5. 启动开发环境
-
-两条命令任选一条执行
-
+6. 启动开发环境 
 ```sh
-# 自动重载 apps 目录下的所有文件
-pnpm ts
-# 保存 src 目录下的文件后自动重启
-pnpm watch
+pnpm dev
 ```
 </details>
 
