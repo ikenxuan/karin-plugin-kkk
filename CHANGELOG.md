@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.6](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.0.5...v1.0.6) (2025-01-21)
+
+
+### Bug Fixes
+
+* **bilibili/douyin:** 优化用户列表渲染逻辑 ([dde7ee0](https://github.com/ikenxuan/karin-plugin-kkk/commit/dde7ee04d1f209d6da15ae06fe5e6590fae1bb1a))
+* 移除无用导入 ([3a3aac3](https://github.com/ikenxuan/karin-plugin-kkk/commit/3a3aac37291dae65cad66f0a9fc80850ad95c265))
+
 ## [1.0.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.0.4...v1.0.5) (2025-01-20)
 
 
