@@ -36,18 +36,9 @@
     "pub": "npm publish --access public",
     "pub-beta": "npm publish --tag beta",
     "sort": "npx sort-package-json",
-    "karin": "karin",
-    "app": "karin app",
     "start": "karin start",
-    "pm2": "karin pm2",
-    "stop": "karin stop",
-    "rs": "karin rs",
-    "log": "karin log",
-    "up": "karin up",
     "init": "karin init",
-    "dev": "tsx watch --include \"src/**/*.ts\" src/index.ts",
-    "ts": "karin ts",
-    "watch": "karin watch"
+    "dev": "tsx watch --include \"src/**/*.ts\" src/index.ts"
   },
   "dependencies": {
     "@ikenxuan/amagi": "4.2.5",
