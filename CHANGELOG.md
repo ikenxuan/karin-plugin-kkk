@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.7](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.0.6...v1.0.7) (2025-01-30)
+
+
+### Bug Fixes
+
+* 抖音推送图集解析 ([0ccc71a](https://github.com/ikenxuan/karin-plugin-kkk/commit/0ccc71a0bdb2e302a00a28bc9bbeeee415af4dba))
+* 移除无用导入 ([3a3aac3](https://github.com/ikenxuan/karin-plugin-kkk/commit/3a3aac37291dae65cad66f0a9fc80850ad95c265))
+
 ## [1.0.6](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.0.5...v1.0.6) (2025-01-21)
 
 
