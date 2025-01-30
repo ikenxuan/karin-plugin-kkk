@@ -17,7 +17,12 @@ export interface ExtendedDouyinOptionsType {
  * @returns
  */
 export async function getDouyinID (url: string, log = true): Promise<ExtendedDouyinOptionsType> {
-  const longLink = await new Networks({ url }).getLongLink()
+  const longLink = await new Networks({
+    url,
+    headers: {
+      'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
+    }
+  }).getLongLink()
   let result = {} as ExtendedDouyinOptionsType
 
   switch (true) {

@@ -185,18 +185,19 @@ export class Networks {
   }
 
   /** 最终地址（跟随重定向） */
-  async getLongLink (): Promise<string> {
+  async getLongLink (url = ''): Promise<string> {
     try {
-      const response = await this.axiosInstance({
-        method: 'GET',
-        url: this.url
-      })
-      return response.request.res.responseUrl // axios中获取最终的请求URL
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        throw new Error(error.stack)
+      const response = await this.axiosInstance.get(this.url || url)
+      return response.request.res.responseUrl
+    } catch (error) {
+      const axiosError = error as AxiosError
+      if (axiosError.response && axiosError.response.status === 302) {
+        // 获取重定向地址
+        const redirectUrl = axiosError.response.headers.location
+        // 递归调用，直到获取最终地址
+        return this.getLongLink(redirectUrl)
       }
-      return ''
+      throw error
     }
   }
 

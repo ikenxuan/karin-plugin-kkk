@@ -156,7 +156,7 @@ export class DouYinpush extends Base {
               } else if (!iddata.is_mp4 && iddata.type === 'one_work') { // 如果新作品是图集
                 const imageres: ImageElement[] = []
                 let image_url
-                for (const item of Detail_Data.aweme_detail.images) {
+                for (const item of Detail_Data.images) {
                   image_url = item.url_list[2] || item.url_list[1] // 图片地址
                   imageres.push(segment.image(image_url))
                 }
