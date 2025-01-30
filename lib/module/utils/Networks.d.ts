@@ -29,7 +29,7 @@ export declare class Networks {
     getfetch(): Promise<AxiosResponse | boolean>;
     returnResult(): Promise<AxiosResponse>;
     /** 最终地址（跟随重定向） */
-    getLongLink(): Promise<string>;
+    getLongLink(url?: string): Promise<string>;
     /** 获取首个302链接 */
     getLocation(): Promise<AxiosResponse['headers']['location']>;
     /** 获取数据并处理数据的格式化，默认json */
