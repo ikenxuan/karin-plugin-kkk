@@ -285,6 +285,10 @@ export class DouYin extends Base {
           }
           const search_data = new_userdata
         }
+        if (!data.music_info.play_url) {
+          await this.e.reply('解析错误！该音乐抖音未提供下载链接，无法下载', { reply: true })
+          return true
+        }
         img = await Render('douyin/musicinfo',
           {
             image_url: data.music_info.cover_hd.url_list[0],
@@ -309,9 +313,7 @@ export class DouYin extends Base {
             `music_id: ${data.music_info.id}`
           ]
         )
-
         await this.e.reply(segment.record(data.music_info.play_url.uri, false))
-
         return true
       }
       case 'live_room_detail': {
