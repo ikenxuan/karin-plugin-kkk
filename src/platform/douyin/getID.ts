@@ -26,17 +26,6 @@ export async function getDouyinID (url: string, log = true): Promise<ExtendedDou
   let result = {} as ExtendedDouyinOptionsType
 
   switch (true) {
-    case /https:\/\/(?:www\.iesdouyin\.com)\/share\/slides/.test(longLink):
-    case longLink === 'https://www.douyin.com/': {
-      const match = longLink.match(/share\/slides\/(\d+)/)
-      result = {
-        type: 'user_mix_videos',
-        aweme_id: match ? match[1] : undefined,
-        is_mp4: false
-      }
-      break
-    }
-
     case longLink.includes('webcast.amemv.com'):
     case longLink.includes('live.douyin.com'): {
       if (longLink.includes('webcast.amemv.com')) {
