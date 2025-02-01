@@ -278,13 +278,13 @@ export class DouYin extends Base {
       case 'music_work': {
         const sec_uid = data.music_info.sec_uid
         let userdata = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid })
-        if (userdata.status_code === 2) {
-          const new_userdata = await getDouyinData('搜索数据', Config.cookies.douyin, { query: data.music_info.author })
-          if (new_userdata.data[0].type === 4 && new_userdata.data[0].card_unique_name === 'user') {
-            userdata = { user: new_userdata.data[0].user_list[0].user_info }
-          }
-          const search_data = new_userdata
-        }
+        // if (userdata.status_code === 2) {
+        //   const new_userdata = await getDouyinData('搜索数据', Config.cookies.douyin, { query: data.music_info.author })
+        //   if (new_userdata.data[0].type === 4 && new_userdata.data[0].card_unique_name === 'user') {
+        //     userdata = { user: new_userdata.data[0].user_list[0].user_info }
+        //   }
+        //   const search_data = new_userdata
+        // }
         if (!data.music_info.play_url) {
           await this.e.reply('解析错误！该音乐抖音未提供下载链接，无法下载', { reply: true })
           return true
@@ -323,11 +323,11 @@ export class DouYin extends Base {
           const room_data = JSON.parse(data.user.room_data)
           const img = await Render('douyin/live',
             {
-              image_url: [{ image_src: live_data.data.data[0].cover.url_list[0] }],
+              image_url: [{ image_src: live_data.data.data[0].cover?.url_list[0] }],
               text: live_data.data.data[0].title,
               liveinf: `${live_data.data.partition_road_map.partition.title} | 房间号: ${room_data.owner.web_rid}`,
-              在线观众: this.count(live_data.data.data[0].room_view_stats.display_value),
-              总观看次数: this.count(live_data.data.data[0].stats.total_user_str),
+              在线观众: this.count(Number(live_data.data.data[0].room_view_stats?.display_value)),
+              总观看次数: this.count(Number(live_data.data.data[0].stats?.total_user_str)),
               username: data.user.nickname,
               avater_url: data.user.avatar_larger.url_list[0],
               fans: this.count(data.user.follower_count),

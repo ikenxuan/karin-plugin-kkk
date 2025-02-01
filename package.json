@@ -41,7 +41,7 @@
     "dev": "tsx watch --include \"src/**/*.ts\" src/index.ts"
   },
   "dependencies": {
-    "@ikenxuan/amagi": "4.2.5",
+    "@ikenxuan/amagi": "4.2.6-pr90.f5a31c6",
     "@karinjs/md-html": "^1.1.6",
     "cors": "^2.8.5",
     "heic-convert": "^2.1.0",

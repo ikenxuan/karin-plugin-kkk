@@ -19,7 +19,7 @@ interface PushItem {
   /** 该UP主的昵称 */
   remark: string
   /** UP主UID */
-  host_mid: string
+  host_mid: number
   /** 动态发布时间 */
   create_time: number
   /** 要推送到的群组 */
@@ -328,7 +328,7 @@ export class Bilibilipush extends Base {
               case 'DYNAMIC_TYPE_AV': {
                 if (send_video) {
                   await this.DownLoadVideo({
-                    video_url: nocd_data.data.durl[0].url,
+                    video_url: nocd_data ? nocd_data.data.durl[0].url : '',
                     title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${dycrad.title}.mp4` }
                   }, { active: true, activeOption: { uin, group_id } })
                 }
@@ -355,13 +355,13 @@ export class Bilibilipush extends Base {
            * @param host_midToCheck 要检查的host_mid
            * @returns 匹配的host_mid
            */
-          const findMatchingSecUid = (DBdata: BilibiliDBType, host_midToCheck: string): string => {
+          const findMatchingSecUid = (DBdata: BilibiliDBType, host_midToCheck: number): number => {
             for (const host_mid in DBdata) {
               if (DBdata.hasOwnProperty(host_mid) && DBdata[host_mid].host_mid === host_midToCheck) {
                 return host_midToCheck
               }
             }
-            return ''
+            return 0
           }
           let newEntry: BilibiliDBType
           if (DBdata) {
@@ -537,7 +537,7 @@ export class Bilibilipush extends Base {
    */
   async setting (data: any): Promise<void> {
     const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
-    const host_mid = data.data.card.mid
+    const host_mid = Number(data.data.card.mid)
     const config = Config.pushlist // 读取配置文件
     const group_id = 'groupId' in this.e && this.e.groupId ? this.e.groupId : ''
 
@@ -547,7 +547,7 @@ export class Bilibilipush extends Base {
     }
 
     // 检查是否存在相同的 host_mid
-    const existingItem = config.bilibili.find((item: { host_mid: string }) => item.host_mid === host_mid)
+    const existingItem = config.bilibili.find((item: { host_mid: number }) => item.host_mid === host_mid)
 
     if (existingItem) {
       // 如果已经存在相同的 host_mid ，则检查是否存在相同的 group_id
@@ -612,7 +612,7 @@ export class Bilibilipush extends Base {
   async checkremark () {
     // 读取配置文件内容
     const config = Config.pushlist
-    const abclist: { host_mid: string }[] | { host_mid: string; group_id: string[] }[] = []
+    const abclist: { host_mid: number }[] | { host_mid: number; group_id: string[] }[] = []
     if (Config.pushlist.bilibili === null || Config.pushlist.bilibili.length === 0) return true
     // 遍历配置文件中的用户列表，收集需要更新备注信息的用户
     for (const i of Config.pushlist.bilibili) {
@@ -632,7 +632,7 @@ export class Bilibilipush extends Base {
         const resp = await fetchBilibiliData('user_profile', { host_mid: i.host_mid })
         const remark = resp.data.card.name
         // 在配置文件中找到对应的用户，并更新其备注信息
-        const matchingItemIndex = config.bilibili.findIndex((item: { host_mid: string }) => item.host_mid === i.host_mid)
+        const matchingItemIndex = config.bilibili.findIndex((item: { host_mid: number }) => item.host_mid === i.host_mid)
         if (matchingItemIndex !== -1) {
           config.bilibili[matchingItemIndex].remark = remark
         }

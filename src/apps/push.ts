@@ -35,7 +35,7 @@ export const setdyPush = karin.command(/^#设置抖音推送/, async (e) => {
 export const setbiliPush = karin.command(/^#设置[bB]站推送(?:[Uu][Ii][Dd]:)?(\d+)$/, async (e) => {
   const match = /^#设置[bB]站推送(?:UID:)?(\d+)$/.exec(e.msg)
   if (match && match[1]) {
-    const data = await getBilibiliData('用户主页数据', Config.cookies.bilibili, { host_mid: match[1] })
+    const data = await getBilibiliData('用户主页数据', Config.cookies.bilibili, { host_mid: Number(match[1]) })
     await new Bilibilipush(e).setting(data)
   }
   return true
