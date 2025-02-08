@@ -59,7 +59,7 @@ const version = () => {
 }
 
 /**
- * @description 删除devDependencies和peerDependencies
+ * @description 删除devDependencies和
  */
 const clean = () => {
   console.log('开始清理依赖...')
