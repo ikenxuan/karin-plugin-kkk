@@ -12,7 +12,7 @@ export interface douyinPushItem {
 /** 定义推送列表项的接口 */
 export interface bilibiliPushItem {
     /** B站用户的UID，必填 */
-    host_mid: string;
+    host_mid: number;
     /** 推送群号和机器人账号，多个则使用逗号隔开，必填。如：群号1:机器人账号1 */
     group_id: string[];
     /** 博主或UP主的名字信息，可不填 */

@@ -14,7 +14,7 @@ interface PushItem {
     /** 该UP主的昵称 */
     remark: string;
     /** UP主UID */
-    host_mid: string;
+    host_mid: number;
     /** 动态发布时间 */
     create_time: number;
     /** 要推送到的群组 */
