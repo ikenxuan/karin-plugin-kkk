@@ -30,18 +30,18 @@
   "scripts": {
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "clean": "npm lib/cli/pr.js clean",
-    "fix": "eslint src/**/*.ts --fix",
-    "pr": "node lib/cli/pr.js",
     "commit": "node lib/cli/commit.js",
+    "dev": "tsx watch --include \"src/**/*.ts\" src/index.ts",
+    "fix": "eslint src/**/*.ts --fix",
+    "init": "karin init",
+    "pr": "node lib/cli/pr.js",
     "pub": "npm publish --access public",
     "pub-beta": "npm publish --tag beta",
     "sort": "npx sort-package-json",
-    "start": "karin start",
-    "init": "karin init",
-    "dev": "tsx watch --include \"src/**/*.ts\" src/index.ts"
+    "start": "karin start"
   },
   "dependencies": {
-    "@ikenxuan/amagi": "4.3.2",
+    "@ikenxuan/amagi": "4.3.3",
     "@karinjs/md-html": "^1.1.6",
     "cors": "^2.8.5",
     "heic-convert": "^2.1.0",
