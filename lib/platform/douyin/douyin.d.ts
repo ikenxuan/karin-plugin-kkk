@@ -1,6 +1,7 @@
+import Client from '@ikenxuan/amagi';
 import { Message } from 'node-karin';
 import { Base } from '../../module/utils/index.js';
-import { DouyinDataTypes, ExtendedDouyinOptionsType } from '../../types/index.js';
+import { DouyinDataTypes, DouyinIdData } from '../../types/index.js';
 export type dyVideo = {
     FPS: number;
     HDR_bit: string;
@@ -28,8 +29,9 @@ export declare class DouYin extends Base {
     type: DouyinDataTypes[keyof DouyinDataTypes];
     is_mp4: boolean | undefined;
     is_slides: boolean;
+    amagi: Client;
     get botadapter(): string;
-    constructor(e: Message, iddata: ExtendedDouyinOptionsType);
-    RESOURCES(data: any): Promise<true | undefined>;
+    constructor(e: Message, iddata: DouyinIdData);
+    RESOURCES(data: DouyinIdData): Promise<true | undefined>;
 }
 export declare function processVideos(videos: dyVideo[], filelimit: number): dyVideo[];

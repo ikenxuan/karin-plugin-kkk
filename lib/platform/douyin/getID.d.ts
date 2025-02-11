@@ -1,5 +1,5 @@
 import { DouyinDataTypes } from '../../types/index.js';
-export interface ExtendedDouyinOptionsType {
+export interface DouyinIdData {
     type: DouyinDataTypes[keyof DouyinDataTypes];
     /** 该作品是否为视频 */
     is_mp4?: boolean;
@@ -11,4 +11,4 @@ export interface ExtendedDouyinOptionsType {
  * @param log 输出日志，默认true
  * @returns
  */
-export declare function getDouyinID(url: string, log?: boolean): Promise<ExtendedDouyinOptionsType>;
+export declare function getDouyinID(url: string, log?: boolean): Promise<DouyinIdData>;
