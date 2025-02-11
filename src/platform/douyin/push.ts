@@ -2,7 +2,7 @@ import { getDouyinData } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
 import { AllDataType, Base, Common, Config, DB, DouyinDBType, Networks, Render } from '@/module'
-import { ExtendedDouyinOptionsType, getDouyinID, processVideos } from '@/platform/douyin'
+import { DouyinIdData, getDouyinID, processVideos } from '@/platform/douyin'
 import { douyinPushItem } from '@/types/config/pushlist'
 
 /** 每个推送项的类型定义 */
@@ -73,7 +73,7 @@ export class DouYinpush extends Base {
       const Detail_Data = data[awemeId].Detail_Data
       const skip = skipDynamic(Detail_Data)
       let img: ImageElement[] = []
-      let iddata: ExtendedDouyinOptionsType = { is_mp4: true, type: 'one_work' }
+      let iddata: DouyinIdData = { is_mp4: true, type: 'one_work' }
       if (!skip) {
         iddata = await getDouyinID(Detail_Data.share_url || 'https://live.douyin.com/' + Detail_Data.room_data.owner.web_rid, false)
       }

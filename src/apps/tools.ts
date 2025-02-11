@@ -2,7 +2,7 @@ import karin from 'node-karin'
 
 import { Common, Config } from '@/module'
 import { Bilibili, fetchBilibiliData, getBilibiliID } from '@/platform/bilibili'
-import { DouYin, fetchDouyinData, getDouyinID } from '@/platform/douyin'
+import { DouYin, getDouyinID } from '@/platform/douyin'
 import { fetchKuaishouData, getKuaishouID, Kuaishou } from '@/platform/kuaishou'
 
 const reg = {
@@ -13,8 +13,7 @@ const reg = {
 const douyin = karin.command(reg.douyin, async (e) => {
   const url = String(e.msg.match(/(http|https):\/\/.*\.(douyin|iesdouyin)\.com\/[^ ]+/g))
   const iddata = await getDouyinID(url)
-  const data = await fetchDouyinData(iddata.type, iddata)
-  await new DouYin(e, iddata).RESOURCES(data)
+  await new DouYin(e, iddata).RESOURCES(iddata)
   return true
 }, { name: 'kkk-视频功能-抖音', priority: Config.app.defaulttool ? -Infinity : 800 })
 

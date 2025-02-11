@@ -3,7 +3,7 @@ import { logger } from 'node-karin'
 import { Networks } from '@/module/utils'
 import { DouyinDataTypes } from '@/types'
 
-export interface ExtendedDouyinOptionsType {
+export interface DouyinIdData {
   type: DouyinDataTypes[keyof DouyinDataTypes]
   /** 该作品是否为视频 */
   is_mp4?: boolean
@@ -16,14 +16,14 @@ export interface ExtendedDouyinOptionsType {
  * @param log 输出日志，默认true
  * @returns
  */
-export async function getDouyinID (url: string, log = true): Promise<ExtendedDouyinOptionsType> {
+export async function getDouyinID (url: string, log = true): Promise<DouyinIdData> {
   const longLink = await new Networks({
     url,
     headers: {
       'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
     }
   }).getLongLink()
-  let result = {} as ExtendedDouyinOptionsType
+  let result = {} as DouyinIdData
 
   switch (true) {
     case longLink.includes('webcast.amemv.com'):

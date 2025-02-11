@@ -47,7 +47,7 @@ export async function fetchBilibiliData<T extends keyof BilibiliDataTypes> (
       return await cl.getBilibiliData('Emoji数据')
 
     case 'new_login_qrcode':
-      return await cl.getBilibiliData('申请二维码', Config.cookies.bilibili)
+      return await cl.getBilibiliData('申请二维码')
 
     case 'check_qrcode': {
       return await cl.getBilibiliData('二维码状态', { qrcode_key: opt.qrcode_key })
