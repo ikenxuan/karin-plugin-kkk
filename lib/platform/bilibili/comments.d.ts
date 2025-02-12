@@ -1,1 +1,1 @@
-export declare function bilibiliComments(OBJECT: any): any;
+export declare function bilibiliComments(commentsData: any): any;

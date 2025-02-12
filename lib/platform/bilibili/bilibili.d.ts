@@ -1,5 +1,6 @@
 import { Message } from 'node-karin';
 import { Base } from '../../module/utils/index.js';
+import { BilibiliId } from '../../platform/bilibili/index.js';
 import { BilibiliDataTypes } from '../../types/index.js';
 type videoDownloadUrlList = {
     /**
@@ -15,14 +16,14 @@ export declare class Bilibili extends Base {
     e: Message;
     type: any;
     STATUS: any;
-    ISVIP: boolean;
-    TYPE: BilibiliDataTypes[keyof BilibiliDataTypes];
+    isVIP: boolean;
+    Type: BilibiliDataTypes[keyof BilibiliDataTypes];
     islogin: boolean;
     downloadfilename: string;
     get botadapter(): string;
     constructor(e: Message, data: any);
-    RESOURCES(OBJECT: any): Promise<boolean | undefined>;
-    getvideo(OBJECT: any): Promise<void>;
+    RESOURCES(iddata: BilibiliId): Promise<boolean | undefined>;
+    getvideo({ infoData, playUrlData }: any): Promise<void>;
     getvideosize(videourl: any, audiourl: any, bvid: any): Promise<string>;
     /**
      * 检出应该下载的视频流

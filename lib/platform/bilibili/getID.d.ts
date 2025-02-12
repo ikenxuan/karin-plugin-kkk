@@ -1,5 +1,5 @@
 import { BilibiliDataTypes } from '../../types/index.js';
-export interface IDDataTypes {
+export interface BilibiliId {
     type: BilibiliDataTypes[keyof BilibiliDataTypes];
     [x: string]: any;
 }
@@ -8,4 +8,4 @@ export interface IDDataTypes {
  * @param {string} url 分享连接
  * @returns
  */
-export declare function getBilibiliID(url: string): Promise<IDDataTypes>;
+export declare function getBilibiliID(url: string): Promise<BilibiliId>;

@@ -1,3 +1,4 @@
+import Client from '@ikenxuan/amagi';
 import { Message } from 'node-karin';
 type uploadFileOptions = {
     /** 是否使用群文件上传 */
@@ -54,6 +55,7 @@ export declare class Base {
     e: Message;
     headers: any;
     _path: string;
+    amagi: Client;
     constructor(e: Message);
     /** 获取适配器名称 */
     get botadapter(): string;
