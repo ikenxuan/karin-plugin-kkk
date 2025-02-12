@@ -103,7 +103,7 @@ jobs:
 
       - name: 从main分支复制文件到build分支
         run: |
-          git checkout main -- package.json CHANGELOG.md README.md config resources LICENSE
+          git checkout main -- package.json CHANGELOG.md README.md config resources LICENSE web.config.mjs
           
       - name: 删除依赖文件夹 node_modules
         run: |
