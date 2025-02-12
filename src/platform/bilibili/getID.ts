@@ -3,7 +3,7 @@ import { logger } from 'node-karin'
 import { Networks } from '@/module/utils'
 import { BilibiliDataTypes } from '@/types'
 
-export interface IDDataTypes {
+export interface BilibiliId {
   type: BilibiliDataTypes[keyof BilibiliDataTypes]
   [x: string]: any
 }
@@ -15,14 +15,14 @@ export interface IDDataTypes {
  */
 export async function getBilibiliID (url: string) {
   const longLink = await new Networks({ url }).getLongLink()
-  let result = {} as IDDataTypes
+  let result = {} as BilibiliId
 
   switch (true) {
     case /(video\/|video\-)([A-Za-z0-9]+)/.test(longLink): {
       const bvideoMatch = /video\/([A-Za-z0-9]+)|bvid=([A-Za-z0-9]+)/.exec(longLink)
       result = {
         type: 'one_video',
-        id: bvideoMatch ? bvideoMatch[1] || bvideoMatch[2] : undefined
+        bvid: bvideoMatch ? bvideoMatch[1] || bvideoMatch[2] : undefined
       }
       break
     }
@@ -38,6 +38,7 @@ export async function getBilibiliID (url: string) {
       const playMatch = /play\/(\w+)/.exec(longLink)
       const id = playMatch ? playMatch[1] : ''
       let realid = ''
+      let isEpid = false
       if (id.startsWith('ss')) {
         realid = 'season_id'
       } else if (id.startsWith('ep')) {
@@ -45,7 +46,8 @@ export async function getBilibiliID (url: string) {
       }
       result = {
         type: 'bangumi_video_info',
-        [realid]: playMatch ? playMatch[1] : ''
+        isEpid,
+        realid: playMatch ? playMatch[1] : ''
       }
       break
     }

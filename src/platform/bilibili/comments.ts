@@ -1,28 +1,28 @@
 import { Common } from '@/module'
 
-export function bilibiliComments (OBJECT: any) {
-  if (!OBJECT.COMMENTSDATA) return []
+export function bilibiliComments (commentsData: any) {
+  if (!commentsData) return []
   let jsonArray: any[] = []
-  for (let i = 0; i < OBJECT.COMMENTSDATA.data.replies.length; i++) {
-    const ctime = getRelativeTimeFromTimestamp(OBJECT.COMMENTSDATA.data.replies[i].ctime)
-    const emote = OBJECT.COMMENTSDATA.data.replies[i].content.emote
-    let message = OBJECT.COMMENTSDATA.data.replies[i].content.message
+  for (let i = 0; i < commentsData.data.replies.length; i++) {
+    const ctime = getRelativeTimeFromTimestamp(commentsData.data.replies[i].ctime)
+    const emote = commentsData.data.replies[i].content.emote
+    let message = commentsData.data.replies[i].content.message
     if (message && emote) message = emoteToUrl(message, emote)
-    const avatar = OBJECT.COMMENTSDATA.data.replies[i].member.avatar
-    const frame = OBJECT.COMMENTSDATA.data.replies[i].member.pendant.image
-    const uname = checkvip(OBJECT.COMMENTSDATA.data.replies[i].member)
-    const level = OBJECT.COMMENTSDATA.data.replies[i].member.level_info.current_level
-    const vipstatus = OBJECT.COMMENTSDATA.data.replies[i].member.vip.status
-    const like = OBJECT.COMMENTSDATA.data.replies[i].like
-    const replylength = OBJECT.COMMENTSDATA.data.replies[i].rcount
-    const location = OBJECT.COMMENTSDATA.data.replies[i].reply_control.location
+    const avatar = commentsData.data.replies[i].member.avatar
+    const frame = commentsData.data.replies[i].member.pendant.image
+    const uname = checkvip(commentsData.data.replies[i].member)
+    const level = commentsData.data.replies[i].member.level_info.current_level
+    const vipstatus = commentsData.data.replies[i].member.vip.status
+    const like = commentsData.data.replies[i].like
+    const replylength = commentsData.data.replies[i].rcount
+    const location = commentsData.data.replies[i].reply_control.location
     const img_src =
-      OBJECT.COMMENTSDATA.data.replies[i].content &&
-        OBJECT.COMMENTSDATA.data.replies[i].content.pictures &&
-        OBJECT.COMMENTSDATA.data.replies[i].content.pictures.length > 0
-        ? OBJECT.COMMENTSDATA.data.replies[i].content.pictures[0].img_src
+      commentsData.data.replies[i].content &&
+        commentsData.data.replies[i].content.pictures &&
+        commentsData.data.replies[i].content.pictures.length > 0
+        ? commentsData.data.replies[i].content.pictures[0].img_src
         : null
-    const members = OBJECT.COMMENTSDATA.data.replies[i].content.members
+    const members = commentsData.data.replies[i].content.members
 
     const obj = {
       id: i + 1,

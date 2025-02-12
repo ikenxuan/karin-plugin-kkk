@@ -1,7 +1,7 @@
 import karin from 'node-karin'
 
 import { Common, Config } from '@/module'
-import { Bilibili, fetchBilibiliData, getBilibiliID } from '@/platform/bilibili'
+import { Bilibili, getBilibiliID } from '@/platform/bilibili'
 import { DouYin, getDouyinID } from '@/platform/douyin'
 import { fetchKuaishouData, getKuaishouID, Kuaishou } from '@/platform/kuaishou'
 
@@ -33,8 +33,7 @@ const bilibili = karin.command(reg.bilibili, async (e) => {
     url = `https://www.bilibili.com/video/${e.msg}`
   }
   const iddata = await getBilibiliID(url!)
-  const data = await fetchBilibiliData(iddata.type, iddata)
-  await new Bilibili(e, data).RESOURCES(data)
+  await new Bilibili(e, iddata).RESOURCES(iddata)
   return true
 }, { name: 'kkk-视频功能-B站', priority: Config.app.defaulttool ? -Infinity : 800 })
 

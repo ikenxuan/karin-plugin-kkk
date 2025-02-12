@@ -1,8 +1,8 @@
-import { getBilibiliData } from '@ikenxuan/amagi'
+import Client, { getBilibiliData } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
 import { AllDataType, Base, BilibiliDBType, Common, Config, DB, Render } from '@/module'
-import { cover, fetchBilibiliData, generateDecorationCard, replacetext } from '@/platform/bilibili'
+import { cover, generateDecorationCard, replacetext } from '@/platform/bilibili'
 import { bilibiliPushItem } from '@/types/config/pushlist'
 
 /** 已支持推送的动态类型 */
@@ -51,6 +51,7 @@ export class Bilibilipush extends Base {
       return
     }
     this.force = force // 保存传入的强制执行标志
+    this.amagi = new Client({ bilibili: Config.cookies.bilibili })
   }
 
   /**
@@ -83,12 +84,12 @@ export class Bilibilipush extends Base {
       // 检查banWords，banTags
       let skip = skipDynamic(data[dynamicId].Dynamic_Data)
       let send_video = true; let img: ImageElement[] = []
-      const dynamicCARDINFO = await fetchBilibiliData('dynamic_card', { dynamic_id: dynamicId })
+      const dynamicCARDINFO = await this.amagi.getBilibiliData('动态卡片数据', { dynamic_id: dynamicId })
       const dycrad = dynamicCARDINFO.data.card && dynamicCARDINFO.data.card.card && JSON.parse(dynamicCARDINFO.data.card.card)
 
       if (!skip) {
-        const userINFO = await fetchBilibiliData('user_profile', { host_mid: data[dynamicId].host_mid })
-        let emojiDATA = await fetchBilibiliData('emoji_list')
+        const userINFO = await this.amagi.getBilibiliData('用户主页数据', { host_mid: data[dynamicId].host_mid })
+        let emojiDATA = await this.amagi.getBilibiliData('Emoji数据')
         emojiDATA = extractEmojisData(emojiDATA.data.packages)
 
         logger.debug(`UP: ${data[dynamicId].remark}\n动态id：${dynamicId}\nhttps://t.bilibili.com/${dynamicId}`)
@@ -423,7 +424,7 @@ export class Bilibilipush extends Base {
 
     try {
       for (const item of userList) {
-        const dynamic_list = await fetchBilibiliData('user_dynamic', { host_mid: item.host_mid })
+        const dynamic_list = await this.amagi.getBilibiliData('用户主页动态列表数据', { host_mid: item.host_mid })
 
         if (dynamic_list.data.items.length > 0) {
           // 遍历接口返回的视频列表
@@ -629,7 +630,7 @@ export class Bilibilipush extends Base {
     if (abclist.length > 0) {
       for (const i of abclist) {
         // 从外部数据源获取用户备注信息
-        const resp = await fetchBilibiliData('user_profile', { host_mid: i.host_mid })
+        const resp = await this.amagi.getBilibiliData('用户主页数据', { host_mid: i.host_mid })
         const remark = resp.data.card.name
         // 在配置文件中找到对应的用户，并更新其备注信息
         const matchingItemIndex = config.bilibili.findIndex((item: { host_mid: number }) => item.host_mid === i.host_mid)
