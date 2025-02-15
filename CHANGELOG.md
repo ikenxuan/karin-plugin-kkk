@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.8](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.0.7...v1.0.8) (2025-02-15)
+
+
+### Bug Fixes
+
+* **bilibili:** 重构 B 站功能模块 ([9dbdd4e](https://github.com/ikenxuan/karin-plugin-kkk/commit/9dbdd4ef9e23154b6e7d8969a0a4f2005676aac9))
+* **douyin:** 重构抖音功能模块 ([b7d865d](https://github.com/ikenxuan/karin-plugin-kkk/commit/b7d865d6e327c52fec445b047607f0de512340f4))
+* **platform:** 重构部分平台的数据获取和推送逻辑 ([#34](https://github.com/ikenxuan/karin-plugin-kkk/issues/34)) ([1b8bf72](https://github.com/ikenxuan/karin-plugin-kkk/commit/1b8bf72db279cd07c775fd326fbc45d44cc05706))
+* 合辑和图集解析冲突 ([#32](https://github.com/ikenxuan/karin-plugin-kkk/issues/32)) ([9d33390](https://github.com/ikenxuan/karin-plugin-kkk/commit/9d33390aa7e038c2aa7c7dde80bbe1d007be38b2))
+
 ## [1.0.7](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.0.6...v1.0.7) (2025-01-30)
 
 
