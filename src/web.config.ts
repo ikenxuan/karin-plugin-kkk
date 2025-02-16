@@ -22,31 +22,27 @@ export default {
           children: [
             components.input.string('cfg.cookies.douyin', {
               label: '抖音',
-              isRequired: true,
               type: 'text',
               description: '请输入你的抖音Cookies，不输入则无法使用抖音相关功能噢',
               defaultValue: all.cookies.douyin,
-              isClearable: true,
-              placeholder: ''
+              placeholder: '',
+              rules: undefined
             }),
             components.input.string('cfg.cookies.bilibili', {
               label: 'B站',
-              fullWidth: true,
-              isRequired: true,
-              type: 'password',
+              type: 'text',
               description: '请输入你的B站Cookies，不输入则无法使用B站相关功能噢',
               defaultValue: all.cookies.bilibili,
               placeholder: '',
-              errorMessage: '请填写一个有效的 B站 Cookies'
+              rules: undefined
             }),
             components.input.string('cfg.cookies.kuaishou', {
               label: '快手',
-              isRequired: true,
-              type: 'password',
+              type: 'text',
               description: '请输入你的快手Cookies，不输入则无法使用快手相关功能噢',
               defaultValue: all.cookies.kuaishou,
-              isClearable: true,
-              placeholder: ''
+              placeholder: '',
+              rules: undefined
             })
           ]
         })
@@ -73,7 +69,7 @@ export default {
               description: '即识别最高优先级，修改后重启生效',
               defaultSelected: all.app.defaulttool
             }),
-            components.input.number('cfg.app.defaulttool', {
+            components.input.number('cfg.app.renderScale', {
               label: '渲染精度',
               description: '可选值50~200，建议100。设置高精度会提高图片的精细度，过高可能会影响渲染与发送速度',
               defaultValue: all.app.renderScale.toString(),
@@ -477,11 +473,155 @@ export default {
   ],
 
   /** 前端点击保存之后调用的方法 */
-  save: (config: ConfigType) => {
-    console.log(config)
+  save: (config: any) => {
+    const formatCfg = processFrontendConfig(config)
+    const fullData: ConfigType = { ...all, ...formatCfg }
+    let success = true
+
+    Object.keys(fullData).forEach((key: string) => {
+      const result = Config.ModifyPro(key as keyof ConfigType, fullData[key as keyof ConfigType])
+      if (result === false) {
+        success = false
+      }
+    })
+
     return {
-      success: true,
-      message: '还在写。。。Ciallo～(∠・ω< )⌒☆'
+      success,
+      message: '保存成功 Ciallo～(∠・ω< )⌒☆'
     }
   }
+}
+
+const convertToNumber = (value: string | number): number => {
+  if (typeof value === 'string') {
+    return parseInt(value, 10)
+  }
+  return value
+}
+
+const processFrontendConfig = (frontendConfig: any): ConfigType => {
+  const processedConfig: ConfigType = {
+    app: {} as ConfigType['app'],
+    bilibili: {} as ConfigType['bilibili'],
+    douyin: {} as ConfigType['douyin'],
+    cookies: {} as ConfigType['cookies'],
+    pushlist: {} as ConfigType['pushlist'],
+    upload: {} as ConfigType['upload'],
+    kuaishou: {} as ConfigType['kuaishou']
+  }
+
+  // 处理cookies配置
+  if (frontendConfig['cfg.cookies'] && frontendConfig['cfg.cookies'].length > 0) {
+    const cookiesData = frontendConfig['cfg.cookies'][0]
+    processedConfig.cookies = {
+      bilibili: cookiesData['cfg.cookies.bilibili'],
+      douyin: cookiesData['cfg.cookies.douyin'],
+      kuaishou: cookiesData['cfg.cookies.kuaishou']
+    }
+  }
+
+  // 处理app配置
+  if (frontendConfig['cfg.app'] && frontendConfig['cfg.app'].length > 0) {
+    const appData = frontendConfig['cfg.app'][0]
+    processedConfig.app = {
+      defaulttool: appData['cfg.app.defaulttool'],
+      priority: 0, // 未在前端数据中找到，这里假设默认值为0
+      rmmp4: appData['cfg.app.rmmp4'],
+      renderScale: convertToNumber(appData['cfg.app.renderScale']),
+      APIServer: appData['cfg.app.APIServer'],
+      APIServerPort: convertToNumber(appData['cfg.app.APIServerPort']),
+      Theme: convertToNumber(appData['cfg.app.Theme'])
+    }
+  }
+
+  // 处理douyin配置
+  if (frontendConfig['cfg.douyin'] && frontendConfig['cfg.douyin'].length > 0) {
+    const douyinData = frontendConfig['cfg.douyin'][0]
+    processedConfig.douyin = {
+      switch: douyinData['cfg.douyin.switch'],
+      tip: douyinData['cfg.douyin.tip'],
+      comment: false, // 未在前端数据中找到，这里假设默认值为false
+      numcomment: convertToNumber(douyinData['cfg.douyin.numcomment']),
+      autoResolution: false, // 未在前端数据中找到，这里假设默认值为false
+      push: {
+        switch: douyinData['cfg.douyin.push.switch'],
+        banWords: [], // 未在前端数据中找到，这里假设默认值为空数组
+        banTags: [], // 未在前端数据中找到，这里假设默认值为空数组
+        permission: douyinData['cfg.douyin.push.permission'] as 'all' | 'admin' | 'master' | 'group.owner' | 'group.admin',
+        cron: douyinData['cfg.douyin.push.cron'],
+        parsedynamic: douyinData['cfg.douyin.push.parsedynamic'],
+        log: douyinData['cfg.douyin.push.log']
+      }
+    }
+  }
+
+  // 处理bilibili配置
+  if (frontendConfig['cfg.bilibili'] && frontendConfig['cfg.bilibili'].length > 0) {
+    const bilibiliData = frontendConfig['cfg.bilibili'][0]
+    processedConfig.bilibili = {
+      switch: bilibiliData['cfg.bilibili.switch'],
+      tip: bilibiliData['cfg.bilibili.tip'],
+      comment: false, // 未在前端数据中找到，这里假设默认值为false
+      numcomment: convertToNumber(bilibiliData['cfg.bilibili.numcomment']),
+      videopriority: false, // 未在前端数据中找到，这里假设默认值为false
+      autoResolution: false, // 未在前端数据中找到，这里假设默认值为false
+      push: {
+        switch: bilibiliData['cfg.bilibili.push.switch'],
+        banWords: [], // 未在前端数据中找到，这里假设默认值为空数组
+        banTags: [], // 未在前端数据中找到，这里假设默认值为空数组
+        permission: bilibiliData['cfg.bilibili.push.permission'] as 'all' | 'admin' | 'master' | 'group.owner' | 'group.admin',
+        cron: bilibiliData['cfg.bilibili.push.cron'],
+        parsedynamic: bilibiliData['cfg.bilibili.push.parsedynamic'],
+        log: bilibiliData['cfg.bilibili.push.log']
+      }
+    }
+  }
+
+  // 处理kuaishou配置
+  if (frontendConfig['cfg.kuaishou'] && frontendConfig['cfg.kuaishou'].length > 0) {
+    const kuaishouData = frontendConfig['cfg.kuaishou'][0]
+    processedConfig.kuaishou = {
+      switch: kuaishouData['cfg.kuaishou.switch'],
+      tip: kuaishouData['cfg.kuaishou.tip'],
+      numcomment: convertToNumber(kuaishouData['cfg.kuaishou.numcomment'])
+    }
+  }
+
+  // 处理upload配置
+  if (frontendConfig['cfg.upload'] && frontendConfig['cfg.upload'].length > 0) {
+    const uploadData = frontendConfig['cfg.upload'][0]
+    processedConfig.upload = {
+      sendbase64: uploadData['cfg.upload.sendbase64'],
+      usefilelimit: uploadData['cfg.upload.usefilelimit'],
+      filelimit: convertToNumber(uploadData['cfg.upload.filelimit']),
+      compress: uploadData['cfg.upload.compress'],
+      compresstrigger: convertToNumber(uploadData['cfg.upload.compresstrigger']),
+      compressvalue: convertToNumber(uploadData['cfg.upload.compressvalue']),
+      usegroupfile: false, // 未在前端数据中找到，这里假设默认值为false
+      groupfilevalue: convertToNumber(uploadData['cfg.upload.groupfilevalue'])
+    }
+  }
+
+  // 处理pushlist配置
+  processedConfig.pushlist = {
+    douyin: [],
+    bilibili: []
+  }
+  if (frontendConfig['cfg.pushlist.douyin'] && frontendConfig['cfg.pushlist.douyin'].length > 0) {
+    processedConfig.pushlist.douyin = frontendConfig['cfg.pushlist.douyin'].map((item: any) => ({
+      sec_uid: item.sec_uid,
+      short_id: item.short_id,
+      group_id: item.group_id,
+      remark: item.remark
+    }))
+  }
+  if (frontendConfig['cfg.pushlist.bilibili'] && frontendConfig['cfg.pushlist.bilibili'].length > 0) {
+    processedConfig.pushlist.bilibili = frontendConfig['cfg.pushlist.bilibili'].map((item: any) => ({
+      host_mid: convertToNumber(item.host_mid),
+      group_id: item.group_id,
+      remark: item.remark
+    }))
+  }
+
+  return processedConfig
 }

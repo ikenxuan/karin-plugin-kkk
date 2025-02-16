@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { basePath, copyConfigSync, filesByExt, requireFileSync, watch } from 'node-karin'
+import { basePath, copyConfigSync, filesByExt, logger, requireFileSync, watch } from 'node-karin'
 import YAML from 'node-karin/yaml'
 
 import { ConfigType } from '@/types'
@@ -133,6 +133,72 @@ class Cfg {
   }
 
   /**
+ * 修改整个配置文件，保留注释
+ * @param name 文件名
+ * @param config 完整的配置对象
+ * @param type 配置文件类型，默认为用户配置文件 `config`
+ */
+  ModifyPro<T extends keyof ConfigType> (
+    name: T,
+    config: ConfigType[T],
+    type: ConfigDirType = 'config'
+  ) {
+    const filePath =
+      type === 'config'
+        ? `${this.dirCfgPath}/${name}.yaml`
+        : `${this.defCfgPath}/${name}.yaml`
+
+    try {
+      // 1. 读取现有文件（包含注释）
+      const existingContent = fs.readFileSync(filePath, 'utf8')
+      const doc = YAML.parseDocument(existingContent)
+
+      // 2. 将新配置转换为YAML节点（不解析注释）
+      const newConfigNode = YAML.parseDocument(YAML.stringify(config)).contents
+
+      // 3. 深度合并新配置到现有文档（保留注释结构）
+      this.deepMergeYaml(doc.contents, newConfigNode)
+
+      // 4. 写回文件
+      fs.writeFileSync(filePath, doc.toString({ lineWidth: -1 }), 'utf8')
+      return true
+    } catch (error) {
+      logger.error(`修改配置文件时发生错误：${error}`)
+      return false
+    }
+  }
+
+  /**
+ * 深度合并YAML节点（保留目标注释）
+ * @param target 目标节点（保留注释的原始节点）
+ * @param source 源节点（提供新值的节点）
+ */
+  private deepMergeYaml (target: any, source: any) {
+    if (YAML.isMap(target) && YAML.isMap(source)) {
+      // 遍历源节点的所有键
+      for (const pair of source.items) {
+        const key = pair.key
+        const sourceVal = pair.value
+        const targetVal = target.get(key)
+
+        if (targetVal === undefined) {
+          // 新增键：直接添加
+          target.set(key, sourceVal)
+        } else if (YAML.isMap(targetVal) && YAML.isMap(sourceVal)) {
+          // 递归合并嵌套Map
+          this.deepMergeYaml(targetVal, sourceVal)
+        } else if (YAML.isSeq(targetVal) && YAML.isSeq(sourceVal)) {
+          // 替换序列内容但保留注释
+          targetVal.items = sourceVal.items
+        } else {
+          // 覆盖标量值但保留原键的注释
+          target.set(key, sourceVal)
+        }
+      }
+    }
+  }
+
+  /**
    * 在YAML映射中设置嵌套值
    *
    * 该函数用于在给定的YAML映射（map）中，根据指定的键路径（keys）设置值（value）
@@ -209,7 +275,7 @@ class Cfg {
   }
 }
 
-type Config = ConfigType & Pick<Cfg, 'All' | 'Modify'>
+type Config = ConfigType & Pick<Cfg, 'All' | 'Modify' | 'ModifyPro'>
 
 export const Config: Config = new Proxy(new Cfg().initCfg(), {
   get (target, prop: string) {
