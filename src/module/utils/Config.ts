@@ -45,6 +45,7 @@ class Cfg {
         // logger.info('新数据:', now);
       }))
     }, 2000)
+    this.convertType()
     return this
   }
 
@@ -61,7 +62,7 @@ class Cfg {
 
   /** 获取所有配置文件 */
   All (): ConfigType {
-    const allConfig: ConfigType = {} as ConfigType  // 初始化为 ConfigType 类型
+    const allConfig: any = {}  // 初始化为 ConfigType 类型
 
     // 读取默认配置文件夹中的所有文件
     const files = fs.readdirSync(this.defCfgPath)
@@ -72,7 +73,7 @@ class Cfg {
       allConfig[fileName] = this.getDefOrConfig(fileName) || {} as ConfigType[keyof ConfigType]
     })
 
-    return allConfig
+    return allConfig as ConfigType
   }
 
   /**
@@ -81,7 +82,7 @@ class Cfg {
    * @param name 配置文件名
    * @returns 返回 YAML 文件内容
    */
-  private getYaml (type: ConfigDirType, name: keyof ConfigType) {
+  private getYaml<T extends keyof ConfigType> (type: ConfigDirType, name: T): ConfigType[T] {
     const file =
       type === 'config'
         ? `${this.dirCfgPath}/${name}.yaml`
@@ -89,6 +90,18 @@ class Cfg {
 
     // 自动管理缓存 无需手动清除 如无缓存 则会自动导入并加载
     return requireFileSync(file)
+  }
+
+  /** 由于上游类型定义错误，导致下游需要手动对已设置的内容进行类型转换。。。 */
+  private convertType () {
+    const pushList = this.getYaml('config', 'pushlist')
+    pushList.bilibili.map((item) => {
+      if (typeof item.host_mid === 'string') {
+        item.host_mid = parseInt(item.host_mid)
+      }
+      return item
+    })
+    this.Modify('pushlist', 'bilibili', pushList.bilibili)
   }
 
   /**
