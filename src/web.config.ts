@@ -85,7 +85,7 @@ export default {
               description: '本地部署一个视频解析API服务，接口范围为本插件用到的所有',
               defaultSelected: all.app.APIServer
             }),
-            components.input.number('cfg.app.defaulttool', {
+            components.input.number('cfg.app.APIServerPort', {
               label: 'API服务端口',
               defaultValue: all.app.APIServerPort.toString(),
               rules: [
@@ -476,20 +476,87 @@ export default {
   save: (config: any) => {
     const formatCfg = processFrontendConfig(config)
     const fullData: ConfigType = { ...all, ...formatCfg }
-    let success = true
+    let success = false
+    let isChange = false;
 
-    Object.keys(fullData).forEach((key: string) => {
-      const result = Config.ModifyPro(key as keyof ConfigType, fullData[key as keyof ConfigType])
-      if (result === false) {
-        success = false
+    (Object.keys(fullData) as Array<keyof ConfigType>).forEach((key: keyof ConfigType) => {
+      isChange = deepEqual({ ...all[key], ...fullData[key] }, all[key])
+      if (isChange) {
+        success = Config.ModifyPro(key, fullData[key])
       }
     })
 
     return {
       success,
-      message: '保存成功 Ciallo～(∠・ω< )⌒☆'
+      message: success ? '保存成功 Ciallo～(∠・ω< )⌒☆' : '配置无变化，无需保存'
     }
   }
+}
+
+/**
+ * 判断配置是否修改
+ * @param a 前端传回来的配置
+ * @param b 用户原本的配置
+ * @returns 配置对象是否被修改
+ */
+const deepEqual = (a: any, b: any): boolean => {
+  // 如果两个值严格相等，说明没有修改
+  if (a === b) {
+    return false
+  }
+
+  // 如果 a 和 b 都是字符串，比较是否相等
+  if (typeof a === 'string' && typeof b === 'string') {
+    if (a !== b) return true
+  }
+
+  // 如果其中一个为 null 或者不是对象/数组，说明有修改
+  if (a === null || b === null || typeof a !== typeof b) {
+    return true
+  }
+
+  // 如果 a 和 b 都是数组
+  if (Array.isArray(a) && Array.isArray(b)) {
+    // 如果数组长度不同，说明有修改
+    if (a.length !== b.length) {
+      return true
+    }
+
+    // 递归比较数组中的每个元素
+    for (let i = 0; i < a.length; i++) {
+      if (deepEqual(a[i], b[i])) {
+        return true // 如果某个元素有修改，返回 true
+      }
+    }
+  }
+
+  // 如果 a 和 b 都是对象
+  if (typeof a === 'object' && typeof b === 'object') {
+    // 获取两个对象的键
+    const keysA = Object.keys(a)
+    const keysB = Object.keys(b)
+
+    // 如果键的数量不同，说明对象结构有修改
+    if (keysA.length !== keysB.length) {
+      return true
+    }
+
+    // 遍历对象 a 的键
+    for (const key of keysA) {
+      // 如果 b 中没有该键，或者递归比较 a[key] 和 b[key] 有修改
+      if (!keysB.includes(key)) {
+        return true // 如果 b 中没有该键，返回 true
+      }
+
+      // 如果 a[key] 和 b[key] 不相等，返回 true
+      if (deepEqual(a[key], b[key])) {
+        return true
+      }
+    }
+  }
+
+  // 如果所有检查都没有发现修改，返回 false
+  return false
 }
 
 const convertToNumber = (value: string | number): number => {
