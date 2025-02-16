@@ -407,23 +407,31 @@ export default {
     }),
     components.accordionPro.create(
       'cfg.pushlist.douyin',
-      all.pushlist.douyin,
+      all.pushlist.douyin.map((item) => {
+        return {
+          ...item,
+          title: item.remark,
+          subtitle: item.short_id
+        }
+      }),
       {
         label: '抖音推送列表',
         children: components.accordion.createItem('accordion-item-douyin', {
-          title: '子项标题',
-          subtitle: '子项副标题',
+          className: 'ml-4 mr-4',
           children: [
             components.input.string('short_id', {
+              color: 'success',
               placeholder: '',
               label: '抖音号'
             }),
             components.input.string('sec_uid', {
+              color: 'default',
               placeholder: '',
               label: 'UID',
               isRequired: false
             }),
             components.input.string('remark', {
+              color: 'default',
               placeholder: '',
               label: '昵称',
               isRequired: false
@@ -438,19 +446,26 @@ export default {
     }),
     components.accordionPro.create(
       'cfg.pushlist.bilibili',
-      all.pushlist.bilibili,
+      all.pushlist.bilibili.map((item) => {
+        return {
+          ...item,
+          title: item.remark,
+          subtitle: item.host_mid
+        }
+      }),
       {
         label: 'B站推送列表',
         children: components.accordion.createItem('accordion-item-bilibili', {
-          title: '子项标题',
-          subtitle: '子项副标题',
+          className: 'ml-4 mr-4',
           children: [
             components.input.number('host_mid', {
+              color: 'success',
               placeholder: '',
               label: 'UID',
               rules: undefined
             }),
             components.input.string('remark', {
+              color: 'default',
               placeholder: '',
               label: '昵称',
               isRequired: false
