@@ -510,6 +510,16 @@ const deepEqual = (a: any, b: any): boolean => {
     if (a !== b) return true
   }
 
+  // 如果 a 和 b 都是数字，比较是否相等
+  if (typeof a === 'number' && typeof b === 'number') {
+    if (a !== b) return true
+  }
+
+  // 如果 a 和 b 都是布尔值，比较是否相等
+  if (typeof a === 'boolean' && typeof b === 'boolean') {
+    if (a !== b) return true
+  }
+
   // 如果其中一个为 null 或者不是对象/数组，说明有修改
   if (a === null || b === null || typeof a !== typeof b) {
     return true
