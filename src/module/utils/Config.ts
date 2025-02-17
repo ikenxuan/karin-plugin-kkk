@@ -89,7 +89,7 @@ class Cfg {
         : `${this.defCfgPath}/${name}.yaml`
 
     // 自动管理缓存 无需手动清除 如无缓存 则会自动导入并加载
-    return requireFileSync(file)
+    return requireFileSync(file, { force: true })
   }
 
   /** 由于上游类型定义错误，导致下游需要手动对已设置的内容进行类型转换。。。 */

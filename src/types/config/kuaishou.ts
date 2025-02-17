@@ -6,6 +6,9 @@ export interface kuaishouConfig {
   /** 快手解析提示，发送提示信息：“检测到快手链接，开始解析” */
   tip: boolean
 
+  /** 快手评论解析，发送快手作品评论图 */
+  comment: boolean
+
   /** 快手评论数量，范围1~30条 */
   numcomment: number
 }

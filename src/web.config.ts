@@ -1,4 +1,5 @@
 import { components } from 'node-karin'
+import _ from 'node-karin/lodash'
 
 import { Config } from '@/module'
 import { ConfigType } from '@/types'
@@ -140,7 +141,7 @@ export default {
               description: '抖音解析提示，发送提示信息：“检测到抖音链接，开始解析”',
               defaultSelected: all.douyin.tip
             }),
-            components.switch.create('cfg.douyin.switch', {
+            components.switch.create('cfg.douyin.comment', {
               startText: '评论解析',
               description: '抖音评论解析，开启后可发送抖音作品评论图',
               defaultSelected: all.douyin.comment
@@ -150,7 +151,7 @@ export default {
               defaultValue: all.douyin.numcomment.toString(),
               rules: [{ min: 1 }]
             }),
-            components.switch.create('cfg.douyin.switch', {
+            components.switch.create('cfg.douyin.autoResolution', {
               startText: '自动分辨率',
               description: '根据「视频拦截阈值」自动选择合适的分辨率，关闭后默认选择最大分辨率进行下载',
               defaultSelected: all.douyin.autoResolution
@@ -162,7 +163,7 @@ export default {
             components.switch.create('cfg.douyin.push.switch', {
               startText: '推送开关',
               description: '推送开关，开启后需重启；使用「#设置抖音推送 + 抖音号」配置推送列表',
-              defaultSelected: all.douyin.autoResolution
+              defaultSelected: all.douyin.push.switch
             }),
             components.radio.group('cfg.douyin.push.permission', {
               label: '谁可以设置推送',
@@ -230,7 +231,7 @@ export default {
               description: 'B站解析提示，发送提示信息：“检测到B站链接，开始解析”',
               defaultSelected: all.bilibili.tip
             }),
-            components.switch.create('cfg.bilibili.switch', {
+            components.switch.create('cfg.bilibili.comment', {
               startText: '评论解析',
               description: 'B站评论解析，开启后可发送B站作品评论图',
               defaultSelected: all.bilibili.comment
@@ -240,7 +241,12 @@ export default {
               defaultValue: all.bilibili.numcomment.toString(),
               rules: [{ min: 1 }]
             }),
-            components.switch.create('cfg.bilibili.switch', {
+            components.switch.create('cfg.bilibili.videopriority', {
+              startText: '优先保内容',
+              description: '解析视频是否优先保内容，true为优先保证上传将使用最低分辨率，false为优先保清晰度将使用最高分辨率',
+              defaultSelected: all.bilibili.videopriority
+            }),
+            components.switch.create('cfg.bilibili.autoResolution', {
               startText: '自动分辨率',
               description: '根据「视频拦截阈值」自动选择合适的分辨率，关闭后默认选择最大分辨率进行下载',
               defaultSelected: all.bilibili.autoResolution
@@ -252,7 +258,7 @@ export default {
             components.switch.create('cfg.bilibili.push.switch', {
               startText: '推送开关',
               description: '推送开关，开启后需重启；使用「#设置B站推送 + UID」配置推送列表',
-              defaultSelected: all.bilibili.autoResolution
+              defaultSelected: all.bilibili.push.switch
             }),
             components.radio.group('cfg.bilibili.push.permission', {
               label: '谁可以设置推送',
@@ -320,7 +326,7 @@ export default {
               description: '抖音解析提示，发送提示信息：“检测到快手链接，开始解析”',
               defaultSelected: all.kuaishou.tip
             }),
-            components.switch.create('cfg.kuaishou.switch', {
+            components.switch.create('cfg.kuaishou.comment', {
               startText: '评论解析',
               description: '快手评论解析，开启后可发送抖音作品评论图',
               defaultSelected: all.kuaishou.comment
@@ -348,7 +354,7 @@ export default {
             components.switch.create('cfg.upload.sendbase64', {
               startText: '转换Base64',
               description: '发送视频经本插件转换为base64格式后再发送，适合Karin与机器人不在同一网络环境下开启',
-              defaultSelected: all.upload.switch
+              defaultSelected: all.upload.swisendbase64tch
             }),
             components.switch.create('cfg.upload.usefilelimit', {
               startText: '视频上传拦截',
@@ -381,7 +387,7 @@ export default {
               rules: [{ min: 1 }],
               isDisabled: !all.upload.compress
             }),
-            components.switch.create('cfg.upload.compress', {
+            components.switch.create('cfg.upload.usegroupfile', {
               startText: '群文件上传',
               description: '使用群文件上传，开启后会将视频文件上传到群文件中，需配置「群文件上传阈值」',
               defaultSelected: all.upload.usegroupfile
@@ -475,12 +481,12 @@ export default {
   /** 前端点击保存之后调用的方法 */
   save: (config: any) => {
     const formatCfg = processFrontendConfig(config)
-    const fullData: ConfigType = { ...all, ...formatCfg }
+    const fullData: ConfigType = _.merge({}, all, formatCfg)
     let success = false
     let isChange = false;
 
     (Object.keys(fullData) as Array<keyof ConfigType>).forEach((key: keyof ConfigType) => {
-      isChange = deepEqual({ ...all[key], ...fullData[key] }, all[key])
+      isChange = deepEqual(fullData[key], all[key])
       if (isChange) {
         success = Config.ModifyPro(key, fullData[key])
       }
@@ -494,7 +500,7 @@ export default {
 }
 
 /**
- * 判断配置是否修改
+ * 归递判断配置是否修改
  * @param a 前端传回来的配置
  * @param b 用户原本的配置
  * @returns 配置对象是否被修改
@@ -540,8 +546,10 @@ const deepEqual = (a: any, b: any): boolean => {
     }
   }
 
+  let isChange = false
   // 如果 a 和 b 都是对象
   if (typeof a === 'object' && typeof b === 'object') {
+    if (isChange) return true
     // 获取两个对象的键
     const keysA = Object.keys(a)
     const keysB = Object.keys(b)
@@ -555,11 +563,13 @@ const deepEqual = (a: any, b: any): boolean => {
     for (const key of keysA) {
       // 如果 b 中没有该键，或者递归比较 a[key] 和 b[key] 有修改
       if (!keysB.includes(key)) {
+        isChange = true
         return true // 如果 b 中没有该键，返回 true
       }
 
       // 如果 a[key] 和 b[key] 不相等，返回 true
       if (deepEqual(a[key], b[key])) {
+        isChange = true
         return true
       }
     }
@@ -569,6 +579,11 @@ const deepEqual = (a: any, b: any): boolean => {
   return false
 }
 
+/**
+ * str 转 num
+ * @param value 字符串或者数字
+ * @returns
+ */
 const convertToNumber = (value: string | number): number => {
   if (typeof value === 'string') {
     return parseInt(value, 10)
@@ -576,6 +591,11 @@ const convertToNumber = (value: string | number): number => {
   return value
 }
 
+/**
+ * 转换前端传回来的配置成定义的配置文件格式
+ * @param frontendConfig 前端传回来的原始内容
+ * @returns
+ */
 const processFrontendConfig = (frontendConfig: any): ConfigType => {
   const processedConfig: ConfigType = {
     app: {} as ConfigType['app'],
@@ -602,7 +622,7 @@ const processFrontendConfig = (frontendConfig: any): ConfigType => {
     const appData = frontendConfig['cfg.app'][0]
     processedConfig.app = {
       defaulttool: appData['cfg.app.defaulttool'],
-      priority: 0, // 未在前端数据中找到，这里假设默认值为0
+      priority: appData['cfg.app.priority'],
       rmmp4: appData['cfg.app.rmmp4'],
       renderScale: convertToNumber(appData['cfg.app.renderScale']),
       APIServer: appData['cfg.app.APIServer'],
@@ -617,9 +637,9 @@ const processFrontendConfig = (frontendConfig: any): ConfigType => {
     processedConfig.douyin = {
       switch: douyinData['cfg.douyin.switch'],
       tip: douyinData['cfg.douyin.tip'],
-      comment: false, // 未在前端数据中找到，这里假设默认值为false
+      comment: douyinData['cfg.douyin.comment'],
       numcomment: convertToNumber(douyinData['cfg.douyin.numcomment']),
-      autoResolution: false, // 未在前端数据中找到，这里假设默认值为false
+      autoResolution: douyinData['cfg.douyin.autoResolution'],
       push: {
         switch: douyinData['cfg.douyin.push.switch'],
         banWords: [], // 未在前端数据中找到，这里假设默认值为空数组
@@ -638,10 +658,10 @@ const processFrontendConfig = (frontendConfig: any): ConfigType => {
     processedConfig.bilibili = {
       switch: bilibiliData['cfg.bilibili.switch'],
       tip: bilibiliData['cfg.bilibili.tip'],
-      comment: false, // 未在前端数据中找到，这里假设默认值为false
+      comment: bilibiliData['cfg.bilibili.comment'],
       numcomment: convertToNumber(bilibiliData['cfg.bilibili.numcomment']),
-      videopriority: false, // 未在前端数据中找到，这里假设默认值为false
-      autoResolution: false, // 未在前端数据中找到，这里假设默认值为false
+      videopriority: bilibiliData['cfg.bilibili.videopriority'],
+      autoResolution: bilibiliData['cfg.bilibili.autoResolution'],
       push: {
         switch: bilibiliData['cfg.bilibili.push.switch'],
         banWords: [], // 未在前端数据中找到，这里假设默认值为空数组
@@ -660,6 +680,7 @@ const processFrontendConfig = (frontendConfig: any): ConfigType => {
     processedConfig.kuaishou = {
       switch: kuaishouData['cfg.kuaishou.switch'],
       tip: kuaishouData['cfg.kuaishou.tip'],
+      comment: kuaishouData['cfg.kuaishou.comment'],
       numcomment: convertToNumber(kuaishouData['cfg.kuaishou.numcomment'])
     }
   }
@@ -674,7 +695,7 @@ const processFrontendConfig = (frontendConfig: any): ConfigType => {
       compress: uploadData['cfg.upload.compress'],
       compresstrigger: convertToNumber(uploadData['cfg.upload.compresstrigger']),
       compressvalue: convertToNumber(uploadData['cfg.upload.compressvalue']),
-      usegroupfile: false, // 未在前端数据中找到，这里假设默认值为false
+      usegroupfile: uploadData['cfg.upload.usegroupfile'],
       groupfilevalue: convertToNumber(uploadData['cfg.upload.groupfilevalue'])
     }
   }
