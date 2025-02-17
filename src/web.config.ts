@@ -488,13 +488,14 @@ export default {
   /** 前端点击保存之后调用的方法 */
   save: (config: any) => {
     const formatCfg = processFrontendConfig(config)
+    const oldAllCfg = Config.All()
     /** 合并旧新配置 */
-    const fullData: ConfigType = _.mergeWith({}, all, formatCfg, customizer)
+    const fullData: ConfigType = _.mergeWith({}, oldAllCfg, formatCfg, customizer)
     let success = false
     let isChange = false;
 
     (Object.keys(fullData) as Array<keyof ConfigType>).forEach((key: keyof ConfigType) => {
-      isChange = deepEqual(fullData[key], all[key])
+      isChange = deepEqual(fullData[key], oldAllCfg[key])
       if (isChange) {
         success = Config.ModifyPro(key, fullData[key])
       }
@@ -508,7 +509,7 @@ export default {
 }
 
 /**
- * 遇到数组时用源数组覆盖目标数组（而不是合并）
+ * 遇到数组时用新数组覆盖原始数组（而不是合并）
  * @param value 原始内容
  * @param srcValue 新内容
  * @returns
