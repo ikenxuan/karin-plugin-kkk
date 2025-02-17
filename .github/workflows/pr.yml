@@ -67,7 +67,7 @@ jobs:
           else
             # 构建成功评论
             INSTALL_COMMAND_1="pnpm add ${{ env.PKG_NAME }}@${{ env.PKG_VERSION }} -w"
-            gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 🎉 🎉构建完成！\n该版本是基于快照 [**`'"${SHORT_COMMIT_HASH}"$'`**]('"${REPO_URL}"$') 所构建的，你可以通过以下命令安装该版本：\n\n```\n'"${INSTALL_COMMAND_1}"$'\n```'
+            gh pr comment ${{ env.PR_NUMBER }} --body $'🎉 构建完成！\n该版本是基于快照 [**`'"${SHORT_COMMIT_HASH}"$'`**]('"${REPO_URL}"$') 所构建的，你可以通过以下命令安装该版本：\n\n```\n'"${INSTALL_COMMAND_1}"$'\n```'
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -78,7 +78,7 @@ jobs:
           comments=$(gh pr view ${{ env.PR_NUMBER }} --json comments)
 
           # 过滤目标评论并按时间排序
-          target_comments=$(echo "$comments" | jq -r '.comments[] | select(.body | test("🎉 构建完成！|❌ 构建失败！")) | {url: .url, created_at: .createdAt}' | jq -s '. | sort_by(.created_at) | reverse')
+          target_comments=$(echo "$comments" | jq -r '.comments[] | select(.body | test("🎉 构建完成！|❌ 构建失败！|构建过程中出现错误")) | {url: .url, created_at: .createdAt}' | jq -s '. | sort_by(.created_at) | reverse')
 
           # 获取需要删除的评论ID (保留最新的3条)
           comment_ids_to_delete=$(echo "$target_comments" | jq -r 'if length > 3 then .[3:][] | .url | capture("#issuecomment-(?<id>\\d+)$").id else empty end')
