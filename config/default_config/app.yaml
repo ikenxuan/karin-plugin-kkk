@@ -7,9 +7,6 @@ defaulttool: true
 # 自定义优先级，「默认解析」关闭后才会生效。修改后重启生效
 priority: 800
 
-# 发送合并转发消息，可能多用于抖音解析
-sendforwardmsg: true
-
 # 缓存删除，非必要不修改！
 rmmp4: true
 

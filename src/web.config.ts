@@ -70,6 +70,13 @@ export default {
               description: '即识别最高优先级，修改后重启生效',
               defaultSelected: all.app.defaulttool
             }),
+            components.input.number('cfg.app.priority', {
+              label: '自定义优先级',
+              description: '自定义优先级，「默认解析」关闭后才会生效。修改后重启生效',
+              defaultValue: all.app.priority.toString(),
+              isDisabled: all.app.defaulttool,
+              rules: undefined
+            }),
             components.input.number('cfg.app.renderScale', {
               label: '渲染精度',
               description: '可选值50~200，建议100。设置高精度会提高图片的精细度，过高可能会影响渲染与发送速度',
@@ -622,7 +629,7 @@ const processFrontendConfig = (frontendConfig: any): ConfigType => {
     const appData = frontendConfig['cfg.app'][0]
     processedConfig.app = {
       defaulttool: appData['cfg.app.defaulttool'],
-      priority: appData['cfg.app.priority'],
+      priority: convertToNumber(appData['cfg.app.priority']),
       rmmp4: appData['cfg.app.rmmp4'],
       renderScale: convertToNumber(appData['cfg.app.renderScale']),
       APIServer: appData['cfg.app.APIServer'],
