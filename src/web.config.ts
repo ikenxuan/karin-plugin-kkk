@@ -488,7 +488,8 @@ export default {
   /** 前端点击保存之后调用的方法 */
   save: (config: any) => {
     const formatCfg = processFrontendConfig(config)
-    const fullData: ConfigType = _.merge({}, all, formatCfg)
+    /** 合并旧新配置 */
+    const fullData: ConfigType = _.mergeWith({}, all, formatCfg, customizer)
     let success = false
     let isChange = false;
 
@@ -503,6 +504,18 @@ export default {
       success,
       message: success ? '保存成功 Ciallo～(∠・ω< )⌒☆' : '配置无变化，无需保存'
     }
+  }
+}
+
+/**
+ * 遇到数组时用源数组覆盖目标数组（而不是合并）
+ * @param value 原始内容
+ * @param srcValue 新内容
+ * @returns
+ */
+const customizer = (value: any, srcValue: any) => {
+  if (Array.isArray(srcValue)) {
+    return srcValue // 直接返回新数组（覆盖旧数组）
   }
 }
 
