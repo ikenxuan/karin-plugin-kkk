@@ -172,6 +172,28 @@ export default {
               description: '推送开关，开启后需重启；使用「#设置抖音推送 + 抖音号」配置推送列表',
               defaultSelected: all.douyin.push.switch
             }),
+            components.input.group('cfg.douyin.push.banWords', {
+              label: '作品中有以下指定关键词时，不推送',
+              maxRows: 2,
+              itemsPerRow: 4,
+              data: all.douyin.push.banWords,
+              template: components.input.string('cfg.douyin.push.banWords', {
+                placeholder: '',
+                label: '',
+                color: 'success'
+              })
+            }),
+            components.input.group('cfg.douyin.push.banTags', {
+              label: '作品中有指定标签时，不推送',
+              maxRows: 2,
+              itemsPerRow: 4,
+              data: all.douyin.push.banWords,
+              template: components.input.string('cfg.douyin.push.banTags', {
+                placeholder: '',
+                label: '',
+                color: 'success'
+              })
+            }),
             components.radio.group('cfg.douyin.push.permission', {
               label: '谁可以设置推送',
               orientation: 'horizontal',
@@ -266,6 +288,28 @@ export default {
               startText: '推送开关',
               description: '推送开关，开启后需重启；使用「#设置B站推送 + UID」配置推送列表',
               defaultSelected: all.bilibili.push.switch
+            }),
+            components.input.group('cfg.bilibili.push.banWords', {
+              label: '动态中有以下指定关键词时，不推送',
+              maxRows: 2,
+              itemsPerRow: 4,
+              data: all.bilibili.push.banWords,
+              template: components.input.string('cfg.bilibili.push.banWords', {
+                placeholder: '',
+                label: '',
+                color: 'success'
+              })
+            }),
+            components.input.group('cfg.bilibili.push.banTags', {
+              label: '动态中有指定标签时，不推送',
+              maxRows: 2,
+              itemsPerRow: 4,
+              data: all.bilibili.push.banWords,
+              template: components.input.string('cfg.bilibili.push.banTags', {
+                placeholder: '',
+                label: '',
+                color: 'success'
+              })
             }),
             components.radio.group('cfg.bilibili.push.permission', {
               label: '谁可以设置推送',
@@ -433,6 +477,16 @@ export default {
               placeholder: '',
               label: '抖音号'
             }),
+            components.input.group('group_id', {
+              label: '推送群号和机器人账号',
+              maxRows: 2,
+              data: [],
+              template: components.input.string('accordion-item-douyin.banTags', {
+                placeholder: '',
+                label: '',
+                color: 'success'
+              })
+            }),
             components.input.string('sec_uid', {
               color: 'default',
               placeholder: '',
@@ -473,6 +527,16 @@ export default {
               label: 'UID',
               rules: undefined
             }),
+            components.input.group('group_id', {
+              label: '推送群号和机器人账号',
+              maxRows: 2,
+              data: [],
+              template: components.input.string('accordion-item-bilibili.banTags', {
+                placeholder: '',
+                label: '',
+                color: 'success'
+              })
+            }),
             components.input.string('remark', {
               color: 'default',
               placeholder: '',
@@ -490,7 +554,7 @@ export default {
     const formatCfg = processFrontendConfig(config)
     const oldAllCfg = Config.All()
     /** 合并旧新配置 */
-    const fullData: ConfigType = _.mergeWith({}, oldAllCfg, formatCfg, customizer)
+    const fullData = _.mergeWith({}, oldAllCfg, formatCfg, customizer)
     let success = false
     let isChange = false;
 
@@ -663,8 +727,8 @@ const processFrontendConfig = (frontendConfig: any): ConfigType => {
       autoResolution: douyinData['cfg.douyin.autoResolution'],
       push: {
         switch: douyinData['cfg.douyin.push.switch'],
-        banWords: [], // 未在前端数据中找到，这里假设默认值为空数组
-        banTags: [], // 未在前端数据中找到，这里假设默认值为空数组
+        banWords: douyinData['cfg.douyin.push.banWords'],
+        banTags: douyinData['cfg.douyin.push.banTags'],
         permission: douyinData['cfg.douyin.push.permission'] as 'all' | 'admin' | 'master' | 'group.owner' | 'group.admin',
         cron: douyinData['cfg.douyin.push.cron'],
         parsedynamic: douyinData['cfg.douyin.push.parsedynamic'],
@@ -685,8 +749,8 @@ const processFrontendConfig = (frontendConfig: any): ConfigType => {
       autoResolution: bilibiliData['cfg.bilibili.autoResolution'],
       push: {
         switch: bilibiliData['cfg.bilibili.push.switch'],
-        banWords: [], // 未在前端数据中找到，这里假设默认值为空数组
-        banTags: [], // 未在前端数据中找到，这里假设默认值为空数组
+        banWords: bilibiliData['cfg.bilibili.push.banWords'],
+        banTags: bilibiliData['cfg.bilibili.push.banTags'],
         permission: bilibiliData['cfg.bilibili.push.permission'] as 'all' | 'admin' | 'master' | 'group.owner' | 'group.admin',
         cron: bilibiliData['cfg.bilibili.push.cron'],
         parsedynamic: bilibiliData['cfg.bilibili.push.parsedynamic'],
