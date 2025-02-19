@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.9](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.0.8...v1.0.9) (2025-02-19)
+
+
+### Bug Fixes
+
+* **douyin:** 修复分享链接选择错误 ([24d631d](https://github.com/ikenxuan/karin-plugin-kkk/commit/24d631df0f09d18ac2cb8a6f7f83335f90e4847c))
+* 适配web修改配置 ([#37](https://github.com/ikenxuan/karin-plugin-kkk/issues/37)) ([e8b3df8](https://github.com/ikenxuan/karin-plugin-kkk/commit/e8b3df88e2c46e282f843910c4526e9721b9214d))
+
 ## [1.0.8](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.0.7...v1.0.8) (2025-02-15)
 
 
