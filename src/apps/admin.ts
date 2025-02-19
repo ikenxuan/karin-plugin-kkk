@@ -240,7 +240,6 @@ const PlatformTypeConfig: Record<string, PlatformType> = {
       缓存删除: 'rmmp4',
       视频解析: 'videotool',
       默认解析: 'defaulttool',
-      转发: 'sendforwardmsg',
       上传限制: 'usefilelimit',
       API服务: 'APIServer',
       base64: 'sendbase64'
