@@ -13,6 +13,7 @@ import express from 'node-karin/express'
 import { Common, Config, Version } from '@/module'
 
 const server = express()
+const router = express.Router()
 /** 代理参数 */
 const proxyOptions: Options = {
   target: 'https://developer.huawei.com',
@@ -24,9 +25,9 @@ server.listen(3780)
 
 if (Config.app.APIServer && Config.app.APIServerMount) {
   app.use(logMiddleware)
-  app.use('/api/bilibili', registerBilibiliRoutes(Config.cookies.bilibili))
-  app.use('/api/douyin', registerDouyinRoutes(Config.cookies.douyin))
-  app.use('/api/kuaishou', registerKuaishouRoutes(Config.cookies.kuaishou))
+  app.use('/api/bilibili', registerBilibiliRoutes(router, Config.cookies.bilibili))
+  app.use('/api/douyin', registerDouyinRoutes(router, Config.cookies.douyin))
+  app.use('/api/kuaishou', registerKuaishouRoutes(router, Config.cookies.kuaishou))
   amagiLog.mark(`Amagi server listening on ${amagiLog.green('http://localhost:')}${amagiLog.green(process.env.HTTP_PORT!)} API docs: ${amagiLog.yellow('https://amagi.apifox.cn')}`)
 } else if (Config.app.APIServer) {
   const amagiServer = new Client({
