@@ -14,14 +14,14 @@ import { Common, Config, Version } from '@/module'
 
 const server = express()
 const router = express.Router()
-/** 代理参数 */
-const proxyOptions: Options = {
-  target: 'https://developer.huawei.com',
-  changeOrigin: true
-}
-server.use(cors())
-server.use('/', createProxyMiddleware(proxyOptions))
-server.listen(3780)
+// /** 代理参数 */
+// const proxyOptions: Options = {
+//   target: 'https://developer.huawei.com',
+//   changeOrigin: true
+// }
+// server.use(cors())
+// server.use('/', createProxyMiddleware(proxyOptions))
+// server.listen(3780)
 
 if (Config.app.APIServer && Config.app.APIServerMount) {
   app.use(logMiddleware)
