@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.0.9...v1.1.0) (2025-02-22)
+
+
+### Features
+
+* **app:** 添加 API 服务挂载到 Karin 的功能 ([c636166](https://github.com/ikenxuan/karin-plugin-kkk/commit/c63616638ae8ca86cf3ee979bee5ce6e8ff7d754))
+
 ## [1.0.9](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.0.8...v1.0.9) (2025-02-19)
 
 
