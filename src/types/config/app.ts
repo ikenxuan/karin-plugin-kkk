@@ -18,6 +18,9 @@ export interface appConfig {
   /** API服务端口 */
   APIServerPort: number
 
+  /** API 服务是否挂载到 Karin 上，开启后监听端口为 Karin 的 http 端口，修改后需重启 */
+  APIServerMount: boolean
+
   /** 渲染图片的主题色，0为自动，1为浅色，2为深色 */
   Theme: number
 }

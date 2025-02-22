@@ -93,9 +93,15 @@ export default {
               description: '本地部署一个视频解析API服务，接口范围为本插件用到的所有',
               defaultSelected: all.app.APIServer
             }),
+            components.switch.create('cfg.app.APIServerMount', {
+              startText: '挂载到 Karin',
+              description: 'API 服务是否挂载到 Karin 上，开启后监听端口为 Karin 的 http 端口，修改后需重启',
+              defaultSelected: all.app.APIServerMount
+            }),
             components.input.number('cfg.app.APIServerPort', {
               label: 'API服务端口',
               defaultValue: all.app.APIServerPort.toString(),
+              isDisabled: all.app.APIServerMount,
               rules: [
                 {
                   min: 1024,
@@ -712,6 +718,7 @@ const processFrontendConfig = (frontendConfig: any): ConfigType => {
       renderScale: convertToNumber(appData['cfg.app.renderScale']),
       APIServer: appData['cfg.app.APIServer'],
       APIServerPort: convertToNumber(appData['cfg.app.APIServerPort']),
+      APIServerMount: appData['cfg.app.APIServerMount'],
       Theme: convertToNumber(appData['cfg.app.Theme'])
     }
   }
