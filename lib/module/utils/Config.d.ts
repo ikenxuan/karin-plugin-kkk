@@ -37,6 +37,7 @@ declare class Cfg {
         renderScale: number;
         APIServer: boolean;
         APIServerPort: number;
+        APIServerMount: boolean;
         Theme: number;
         bilibili: string;
         douyin: string;
@@ -119,6 +120,7 @@ declare class Cfg {
         renderScale: number;
         APIServer: boolean;
         APIServerPort: number;
+        APIServerMount: boolean;
         Theme: number;
         sendbase64: boolean;
         usefilelimit: boolean;
@@ -211,6 +213,7 @@ declare class Cfg {
         renderScale: number;
         APIServer: boolean;
         APIServerPort: number;
+        APIServerMount: boolean;
         Theme: number;
     } | {
         sendbase64: boolean;
@@ -227,6 +230,7 @@ declare class Cfg {
         renderScale: number;
         APIServer: boolean;
         APIServerPort: number;
+        APIServerMount: boolean;
         Theme: number;
     } | {
         defaulttool: boolean;
@@ -235,6 +239,7 @@ declare class Cfg {
         renderScale: number;
         APIServer: boolean;
         APIServerPort: number;
+        APIServerMount: boolean;
         Theme: number;
     } | {
         switch: boolean;
@@ -258,6 +263,7 @@ declare class Cfg {
         renderScale: number;
         APIServer: boolean;
         APIServerPort: number;
+        APIServerMount: boolean;
         Theme: number;
     } | {
         switch: boolean;
@@ -280,6 +286,7 @@ declare class Cfg {
         renderScale: number;
         APIServer: boolean;
         APIServerPort: number;
+        APIServerMount: boolean;
         Theme: number;
     } | {
         switch: boolean;
@@ -292,6 +299,7 @@ declare class Cfg {
         renderScale: number;
         APIServer: boolean;
         APIServerPort: number;
+        APIServerMount: boolean;
         Theme: number;
     } | {
         douyin: import("../../types/config/pushlist.js").douyinPushItem[];
@@ -302,6 +310,7 @@ declare class Cfg {
         renderScale: number;
         APIServer: boolean;
         APIServerPort: number;
+        APIServerMount: boolean;
         Theme: number;
     } | {
         bilibili: string;
@@ -353,6 +362,7 @@ declare class Cfg {
         renderScale: number;
         APIServer: boolean;
         APIServerPort: number;
+        APIServerMount: boolean;
         Theme: number;
         switch: boolean;
         tip: boolean;
@@ -483,6 +493,7 @@ declare class Cfg {
         renderScale: number;
         APIServer: boolean;
         APIServerPort: number;
+        APIServerMount: boolean;
         Theme: number;
         switch: boolean;
         tip: boolean;
@@ -590,6 +601,7 @@ declare class Cfg {
         renderScale: number;
         APIServer: boolean;
         APIServerPort: number;
+        APIServerMount: boolean;
         Theme: number;
         switch: boolean;
         tip: boolean;
@@ -663,6 +675,7 @@ declare class Cfg {
         renderScale: number;
         APIServer: boolean;
         APIServerPort: number;
+        APIServerMount: boolean;
         Theme: number;
         douyin: import("../../types/config/pushlist.js").douyinPushItem[];
         bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
