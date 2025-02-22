@@ -15,7 +15,7 @@ export function bilibiliComments (commentsData: any) {
     const vipstatus = commentsData.data.replies[i].member.vip.status
     const like = commentsData.data.replies[i].like
     const replylength = commentsData.data.replies[i].rcount
-    const location = commentsData.data.replies[i].reply_control.location
+    const location = commentsData.data.replies[i].reply_control.location.replace('IP属地：', '')
     const img_src =
       commentsData.data.replies[i].content &&
         commentsData.data.replies[i].content.pictures &&

@@ -224,8 +224,8 @@ export class Base {
       function generateProgressBar (progressPercentage: number) {
         const filledLength = Math.floor((progressPercentage / 100) * barLength)
         let progress = ''
-        progress += '#'.repeat(filledLength)
-        progress += '-'.repeat(Math.max(0, barLength - filledLength - 1))
+        progress += '\u2588'.repeat(filledLength)
+        progress += '\u2591'.repeat(Math.max(0, barLength - filledLength - 1))
         return `[${progress}]`
       }
 
@@ -254,7 +254,7 @@ export class Base {
 
       // 打印下载进度、速度和剩余时间
       console.log(
-        `🚀 Downloading 🚀 ${opt.title} ${generateProgressBar(progressPercentage)} ${coloredPercentage} ${downloadedSizeMB}/${totalSizeMB} MB | ${formattedSpeed} 剩余: ${formattedRemainingTime}\r`
+        `⬇️  ${opt.title} ${generateProgressBar(progressPercentage)} ${coloredPercentage} ${downloadedSizeMB}/${totalSizeMB} MB | ${formattedSpeed} 剩余: ${formattedRemainingTime}\r`
       )
     }, 3)
 
