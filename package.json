@@ -32,7 +32,7 @@
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "clean": "npm lib/cli/pr.js clean",
     "commit": "node lib/cli/commit.js",
-    "dev": "tsx watch --include \"src/**/*.ts\" src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "fix": "eslint src/**/*.ts --fix",
     "init": "karin init",
     "pr": "node lib/cli/pr.js",
@@ -42,7 +42,7 @@
     "start": "karin start"
   },
   "dependencies": {
-    "@ikenxuan/amagi": "4.4.7-pr103.ca19953",
+    "@ikenxuan/amagi": "4.4.7-pr103.21e3451",
     "@karinjs/md-html": "^1.1.6",
     "cors": "^2.8.5",
     "heic-convert": "^2.1.0",
