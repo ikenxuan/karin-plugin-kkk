@@ -75,6 +75,7 @@ declare class Cfg {
             cron: string;
             parsedynamic: boolean;
             log: boolean;
+            shareType: "web" | "download";
         };
         bilibili: string;
         douyin: string;
@@ -168,6 +169,7 @@ declare class Cfg {
             cron: string;
             parsedynamic: boolean;
             log: boolean;
+            shareType: "web" | "download";
         };
         sendbase64: boolean;
         usefilelimit: boolean;
@@ -279,6 +281,7 @@ declare class Cfg {
             cron: string;
             parsedynamic: boolean;
             log: boolean;
+            shareType: "web" | "download";
         };
         defaulttool: boolean;
         priority: number;
@@ -409,6 +412,7 @@ declare class Cfg {
             cron: string;
             parsedynamic: boolean;
             log: boolean;
+            shareType: "web" | "download";
         };
         videopriority: boolean;
     } | {
@@ -462,6 +466,7 @@ declare class Cfg {
             cron: string;
             parsedynamic: boolean;
             log: boolean;
+            shareType: "web" | "download";
         };
     } | {
         sendbase64: boolean;
@@ -485,6 +490,7 @@ declare class Cfg {
             cron: string;
             parsedynamic: boolean;
             log: boolean;
+            shareType: "web" | "download";
         };
     } | {
         defaulttool: boolean;
@@ -508,6 +514,7 @@ declare class Cfg {
             cron: string;
             parsedynamic: boolean;
             log: boolean;
+            shareType: "web" | "download";
         };
     } | {
         switch: boolean;
@@ -539,6 +546,7 @@ declare class Cfg {
             cron: string;
             parsedynamic: boolean;
             log: boolean;
+            shareType: "web" | "download";
         };
     } | {
         switch: boolean;
@@ -554,6 +562,7 @@ declare class Cfg {
             cron: string;
             parsedynamic: boolean;
             log: boolean;
+            shareType: "web" | "download";
         };
     } | {
         douyin: import("../../types/config/pushlist.js").douyinPushItem[];
@@ -571,6 +580,7 @@ declare class Cfg {
             cron: string;
             parsedynamic: boolean;
             log: boolean;
+            shareType: "web" | "download";
         };
     } | {
         bilibili: string;
@@ -637,6 +647,7 @@ declare class Cfg {
             cron: string;
             parsedynamic: boolean;
             log: boolean;
+            shareType: "web" | "download";
         };
     } | {
         [x: string]: any;
@@ -711,6 +722,7 @@ declare class Cfg {
             cron: string;
             parsedynamic: boolean;
             log: boolean;
+            shareType: "web" | "download";
         };
         douyin: import("../../types/config/pushlist.js").douyinPushItem[];
         bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
