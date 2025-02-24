@@ -243,6 +243,21 @@ export default {
               startText: '推送日志',
               description: '是否打印推送日志（修改后需重启）',
               defaultSelected: all.douyin.push.log
+            }),
+            components.radio.group('push.shareType', {
+              label: '分享链接二维码的类型',
+              orientation: 'horizontal',
+              defaultValue: all.douyin.push.shareType,
+              radio: [
+                components.radio.create('push.shareType.radio-1', {
+                  label: '网页链接',
+                  value: 'web'
+                }),
+                components.radio.create('push.shareType.radio-2', {
+                  label: '下载链接',
+                  value: 'download'
+                })
+              ]
             })
           ]
         })

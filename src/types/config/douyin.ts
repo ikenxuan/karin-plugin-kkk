@@ -31,5 +31,7 @@ export interface douyinConfig {
     parsedynamic: boolean,
     /** 是否打印日志 */
     log: boolean
+    /** 分享链接二维码的类型，web为跳转到抖音网页，download为视频下载直链 */
+    shareType: 'web' | 'download'
   }
 }
