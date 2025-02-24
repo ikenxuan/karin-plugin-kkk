@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.0...v1.1.1) (2025-02-24)
+
+
+### Bug Fixes
+
+* fix [#41](https://github.com/ikenxuan/karin-plugin-kkk/issues/41) ([6335eea](https://github.com/ikenxuan/karin-plugin-kkk/commit/6335eeabaa59ca188473be191251f16c30ee4970))
+* save web config ([c594c0c](https://github.com/ikenxuan/karin-plugin-kkk/commit/c594c0c800abd8dff97c7af1d3f4dd175d068792))
+* 选择性记录 ([89f9e1b](https://github.com/ikenxuan/karin-plugin-kkk/commit/89f9e1b791eb257f40965fdaccf132ba210e5758))
+
+
+### Performance Improvements
+
+* web config ([24c9dd0](https://github.com/ikenxuan/karin-plugin-kkk/commit/24c9dd0d1e0591633565d4c05c26bc385aba2c0b))
+
 ## [1.1.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.0.9...v1.1.0) (2025-02-22)
 
 
