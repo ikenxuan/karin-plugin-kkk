@@ -42,7 +42,7 @@
     "start": "karin start"
   },
   "dependencies": {
-    "@ikenxuan/amagi": "^4.4.7",
+    "@ikenxuan/amagi": "^4.4.8",
     "@karinjs/md-html": "^1.1.6",
     "cors": "^2.8.5",
     "heic-convert": "^2.1.0",
