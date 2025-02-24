@@ -1,3 +1,4 @@
+import { BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliOneWork, BiliVideoPlayurlIsLogin } from '@ikenxuan/amagi';
 import { Message } from 'node-karin';
 import { Base } from '../../module/utils/index.js';
 import { BilibiliId } from '../../platform/bilibili/index.js';
@@ -23,7 +24,10 @@ export declare class Bilibili extends Base {
     get botadapter(): string;
     constructor(e: Message, data: any);
     RESOURCES(iddata: BilibiliId): Promise<boolean | undefined>;
-    getvideo({ infoData, playUrlData }: any): Promise<void>;
+    getvideo({ infoData, playUrlData }: {
+        infoData?: BiliBangumiVideoInfo | BiliOneWork;
+        playUrlData: BiliVideoPlayurlIsLogin | BiliBiliVideoPlayurlNoLogin | BiliBangumiVideoPlayurlIsLogin | BiliBangumiVideoPlayurlNoLogin;
+    }): Promise<void>;
     getvideosize(videourl: any, audiourl: any, bvid: any): Promise<string>;
     /**
      * 检出应该下载的视频流
