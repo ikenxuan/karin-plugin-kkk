@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.1...v1.1.2) (2025-02-24)
+
+
+### Performance Improvements
+
+* 抖音推送图可选二维码是网页链接还是下载链接 ([7bb6139](https://github.com/ikenxuan/karin-plugin-kkk/commit/7bb6139de1eecc9082b52969690f9349fae65b40))
+
 ## [1.1.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.0...v1.1.1) (2025-02-24)
 
 
