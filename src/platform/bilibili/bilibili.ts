@@ -1,6 +1,15 @@
 import fs from 'node:fs'
 
-import { bilibiliAPI, getBilibiliData } from '@ikenxuan/amagi'
+import {
+  BiliBangumiVideoInfo,
+  BiliBangumiVideoPlayurlIsLogin,
+  BiliBangumiVideoPlayurlNoLogin,
+  bilibiliAPI,
+  BiliBiliVideoPlayurlNoLogin,
+  BiliOneWork,
+  BiliVideoPlayurlIsLogin,
+  getBilibiliData
+} from '@ikenxuan/amagi'
 import karin, { common, ElementTypes, logger, Message, segment } from 'node-karin'
 
 import { Base, Common, Config, mergeFile, Networks, Render } from '@/module/utils'
@@ -200,17 +209,13 @@ export class Bilibili extends Base {
           playUrlData.result.dash.video = correctList.videoList
           playUrlData.result.cept_description = correctList.accept_description
           await this.getvideo({
-            videoInfo,
-            playUrlData,
-            video_url: playUrlData.result.dash.video[0].base_url,
-            audio_url: playUrlData.result.dash.audio[0].base_url
+            infoData: videoInfo,
+            playUrlData
           })
         } else {
           await this.getvideo({
-            videoInfo,
-            playUrlData,
-            video_url: playUrlData.result.dash.video[0].base_url,
-            audio_url: playUrlData.result.dash.audio[0].base_url
+            infoData: videoInfo,
+            playUrlData
           })
         }
 
@@ -489,7 +494,7 @@ export class Bilibili extends Base {
     }
   }
 
-  async getvideo ({ infoData, playUrlData }: any) {
+  async getvideo ({ infoData, playUrlData }: { infoData?: BiliBangumiVideoInfo | BiliOneWork, playUrlData: BiliVideoPlayurlIsLogin | BiliBiliVideoPlayurlNoLogin | BiliBangumiVideoPlayurlIsLogin | BiliBangumiVideoPlayurlNoLogin }) {
     /** 获取视频 => FFmpeg合成 */
     if (Config.bilibili.videopriority === true) {
       this.islogin = false
@@ -497,16 +502,16 @@ export class Bilibili extends Base {
     switch (this.islogin) {
       case true: {
         const bmp4 = await this.DownLoadFile(
-          this.Type === 'one_video' ? playUrlData.data?.dash?.video[0].base_url : playUrlData.video_url,
+          this.Type === 'one_video' ? playUrlData.data?.dash?.video[0].base_url : playUrlData.result.dash.video[0].base_url,
           {
-            title: `Bil_V_${this.Type === 'one_video' ? infoData.data.bvid : infoData.result.season_id}.mp4`,
+            title: `Bil_V_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.mp4`,
             headers: this.headers
           }
         )
         const bmp3 = await this.DownLoadFile(
-          this.Type === 'one_video' ? playUrlData.data?.dash?.audio[0].base_url : playUrlData.audio_url,
+          this.Type === 'one_video' ? playUrlData.data?.dash?.audio[0].base_url : playUrlData.result.dash.audio[0].base_url,
           {
-            title: `Bil_A_${this.Type === 'one_video' ? infoData.data.bvid : infoData.result.season_id}.mp3`,
+            title: `Bil_A_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.mp3`,
             headers: this.headers
           }
         )
@@ -514,7 +519,7 @@ export class Bilibili extends Base {
           await mergeFile('二合一（视频 + 音频）', {
             path: bmp4.filepath,
             path2: bmp3.filepath,
-            resultPath: Common.tempDri.video + `Bil_Result_${this.Type === 'one_video' ? infoData.data.bvid : infoData.result.season_id}.mp4`,
+            resultPath: Common.tempDri.video + `Bil_Result_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.mp4`,
             callback: async (success: boolean, resultPath: string): Promise<boolean> => {
               if (success) {
                 const filePath = Common.tempDri.video + `${Config.app.rmmp4 ? 'tmp_' + Date.now() : this.downloadfilename}.mp4`
