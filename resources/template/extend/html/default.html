@@ -27,7 +27,9 @@
 <body {{@sys.scale}}>
   <div class="container" id="container">
     {{block 'main'}}{{/block}}
+    {{if copyright}}
     <div class="copyright">{{@copyright}}</div>
+    {{/if}}
     <script>
       // 获取当前时间并自动设置主题
       function setThemeBasedOnTime () {

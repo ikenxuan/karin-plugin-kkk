@@ -1,6 +1,7 @@
+import { LocalApiResponse } from 'node-karin';
 import { ConfigType } from './types/index.js';
 declare const _default: {
-    info: {};
+    info: LocalApiResponse;
     /** 动态渲染的组件 */
     components: () => (import("node-karin").DividerProps | import("node-karin").AccordionProps | import("node-karin").AccordionProProps)[];
     /** 前端点击保存之后调用的方法 */

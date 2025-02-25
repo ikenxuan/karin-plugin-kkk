@@ -39,6 +39,7 @@ declare class Cfg {
         APIServerPort: number;
         APIServerMount: boolean;
         Theme: number;
+        RemoveWatermark: boolean;
         bilibili: string;
         douyin: string;
         kuaishou: string;
@@ -123,6 +124,7 @@ declare class Cfg {
         APIServerPort: number;
         APIServerMount: boolean;
         Theme: number;
+        RemoveWatermark: boolean;
         sendbase64: boolean;
         usefilelimit: boolean;
         filelimit: number;
@@ -217,6 +219,7 @@ declare class Cfg {
         APIServerPort: number;
         APIServerMount: boolean;
         Theme: number;
+        RemoveWatermark: boolean;
     } | {
         sendbase64: boolean;
         usefilelimit: boolean;
@@ -234,6 +237,7 @@ declare class Cfg {
         APIServerPort: number;
         APIServerMount: boolean;
         Theme: number;
+        RemoveWatermark: boolean;
     } | {
         defaulttool: boolean;
         priority: number;
@@ -243,6 +247,7 @@ declare class Cfg {
         APIServerPort: number;
         APIServerMount: boolean;
         Theme: number;
+        RemoveWatermark: boolean;
     } | {
         switch: boolean;
         tip: boolean;
@@ -267,6 +272,7 @@ declare class Cfg {
         APIServerPort: number;
         APIServerMount: boolean;
         Theme: number;
+        RemoveWatermark: boolean;
     } | {
         switch: boolean;
         tip: boolean;
@@ -291,6 +297,7 @@ declare class Cfg {
         APIServerPort: number;
         APIServerMount: boolean;
         Theme: number;
+        RemoveWatermark: boolean;
     } | {
         switch: boolean;
         tip: boolean;
@@ -304,6 +311,7 @@ declare class Cfg {
         APIServerPort: number;
         APIServerMount: boolean;
         Theme: number;
+        RemoveWatermark: boolean;
     } | {
         douyin: import("../../types/config/pushlist.js").douyinPushItem[];
         bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
@@ -315,6 +323,7 @@ declare class Cfg {
         APIServerPort: number;
         APIServerMount: boolean;
         Theme: number;
+        RemoveWatermark: boolean;
     } | {
         bilibili: string;
         douyin: string;
@@ -367,6 +376,7 @@ declare class Cfg {
         APIServerPort: number;
         APIServerMount: boolean;
         Theme: number;
+        RemoveWatermark: boolean;
         switch: boolean;
         tip: boolean;
         comment: boolean;
@@ -501,6 +511,7 @@ declare class Cfg {
         APIServerPort: number;
         APIServerMount: boolean;
         Theme: number;
+        RemoveWatermark: boolean;
         switch: boolean;
         tip: boolean;
         comment: boolean;
@@ -613,6 +624,7 @@ declare class Cfg {
         APIServerPort: number;
         APIServerMount: boolean;
         Theme: number;
+        RemoveWatermark: boolean;
         switch: boolean;
         tip: boolean;
         comment: boolean;
@@ -688,6 +700,7 @@ declare class Cfg {
         APIServerPort: number;
         APIServerMount: boolean;
         Theme: number;
+        RemoveWatermark: boolean;
         douyin: import("../../types/config/pushlist.js").douyinPushItem[];
         bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
     } | {
