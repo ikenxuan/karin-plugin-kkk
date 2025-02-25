@@ -23,4 +23,7 @@ export interface appConfig {
 
   /** 渲染图片的主题色，0为自动，1为浅色，2为深色 */
   Theme: number
+
+  /** 渲染的图片是否移除底部水印 */
+  RemoveWatermark: boolean
 }

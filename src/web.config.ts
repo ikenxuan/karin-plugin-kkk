@@ -1,4 +1,4 @@
-import { components } from 'node-karin'
+import { components, LocalApiResponse } from 'node-karin'
 import _ from 'node-karin/lodash'
 
 import { Config } from '@/module'
@@ -7,7 +7,14 @@ import { ConfigType } from '@/types'
 const all = Config.All()
 
 export default {
-  info: {},
+  info: {
+    name: 'karin-plugin-kkk',
+    description: 'Karin 的「抖音」「B站」「快手」视频解析/动态推送插件',
+    icon: {
+      name: 'tag',
+      color: '#EAC452'
+    }
+  } as LocalApiResponse,
   /** 动态渲染的组件 */
   components: () => [
     components.divider.create('divider-1', {
@@ -131,6 +138,11 @@ export default {
                   value: '2'
                 })
               ]
+            }),
+            components.switch.create('RemoveWatermark', {
+              startText: '移除水印',
+              description: '渲染的图片是否移除底部水印',
+              defaultSelected: all.app.RemoveWatermark
             })
           ]
         })

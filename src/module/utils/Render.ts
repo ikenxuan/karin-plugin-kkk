@@ -54,7 +54,7 @@ export async function Render (path: string, params?: any) {
         scale: scale(params?.scale || 1)
       },
       pluResPath: `${Version.pluginPath}/resources/`,
-      copyright: `<span class="name">kkk</span><span class="version">${Version.pluginVersion} ${releaseType()}</span> Powered By <span class="name">Karin</span>`,
+      copyright: Config.app.RemoveWatermark ? '' : `<span class="name">kkk</span><span class="version">${Version.pluginVersion} ${releaseType()}</span> Powered By <span class="name">Karin</span>`,
       useDarkTheme: Common.useDarkTheme()
     },
     screensEval: '#container'

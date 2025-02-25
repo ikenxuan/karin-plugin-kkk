@@ -24,3 +24,6 @@ APIServerMount: true
 
 # 渲染评论图和推送图的主题色，0为自动（06:00-18:00为浅色，18:00-06:00为深色），1为浅色，2为深色
 Theme: 0
+
+# 渲染的图片是否移除底部水印
+RemoveWatermark: false
