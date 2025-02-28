@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.2...v1.1.3) (2025-02-28)
+
+
+### Bug Fixes
+
+* add type ([65c9710](https://github.com/ikenxuan/karin-plugin-kkk/commit/65c9710f6691a4a105c1a3e5b356e95429785647))
+* avatar ([f4bd7a6](https://github.com/ikenxuan/karin-plugin-kkk/commit/f4bd7a61afe9a0146bf2fd8f1d27aa96cfcf7a5e))
+* web.config.ts ([e939cd5](https://github.com/ikenxuan/karin-plugin-kkk/commit/e939cd5efb0d581ebd8510ff4ae5f18acb2c9c3e))
+
 ## [1.1.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.1...v1.1.2) (2025-02-25)
 
 
