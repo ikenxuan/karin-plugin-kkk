@@ -133,11 +133,11 @@ class Cfg {
   }
 
   /**
- * 修改整个配置文件，保留注释
- * @param name 文件名
- * @param config 完整的配置对象
- * @param type 配置文件类型，默认为用户配置文件 `config`
- */
+   * 修改整个配置文件，保留注释
+   * @param name 文件名
+   * @param config 完整的配置对象
+   * @param type 配置文件类型，默认为用户配置文件 `config`
+   */
   ModifyPro<T extends keyof ConfigType> (
     name: T,
     config: ConfigType[T],
@@ -169,29 +169,27 @@ class Cfg {
   }
 
   /**
- * 深度合并YAML节点（保留目标注释）
- * @param target 目标节点（保留注释的原始节点）
- * @param source 源节点（提供新值的节点）
- */
+   * 深度合并YAML节点（保留目标注释）
+   * @param target 目标节点（保留注释的原始节点）
+   * @param source 源节点（提供新值的节点）
+   */
   private deepMergeYaml (target: any, source: any) {
     if (YAML.isMap(target) && YAML.isMap(source)) {
-      // 遍历源节点的所有键
       for (const pair of source.items) {
         const key = pair.key
         const sourceVal = pair.value
         const targetVal = target.get(key)
 
         if (targetVal === undefined) {
-          // 新增键：直接添加
           target.set(key, sourceVal)
         } else if (YAML.isMap(targetVal) && YAML.isMap(sourceVal)) {
-          // 递归合并嵌套Map
           this.deepMergeYaml(targetVal, sourceVal)
         } else if (YAML.isSeq(targetVal) && YAML.isSeq(sourceVal)) {
-          // 替换序列内容但保留注释
+          // 替换序列内容并保持源序列格式
           targetVal.items = sourceVal.items
+          // 同步序列的显示格式
+          targetVal.flow = sourceVal.flow
         } else {
-          // 覆盖标量值但保留原键的注释
           target.set(key, sourceVal)
         }
       }

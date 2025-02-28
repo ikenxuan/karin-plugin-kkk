@@ -729,10 +729,12 @@ const deepEqual = (a: any, b: any): boolean => {
  * @returns
  */
 function convertToNumber (value: string): any {
-  const num = parseInt(value)
-  return isNaN(num) ? value : num
+  // 检查字符串是否为有效的数字
+  if (/^\d+$/.test(value)) {
+    const num = parseInt(value, 10)
+    return num
+  } else return value
 }
-
 /**
  * 获取数组中的第一个对象，如果数组为空则返回空对象
  * @param arr 数组
@@ -763,13 +765,19 @@ function processFrontendData (data: newConfigType): ConfigType {
 
     for (const prop in firstObj) {
       let value = firstObj[prop]
-      value = convertToNumber(value)
+      if (typeof value === 'string') { // 确保仅对字符串类型进行转换
+        value = convertToNumber(value)
+      }
 
       if (prop.includes(':')) {
         const [parent, child] = prop.split(':')
-        if (!result[key][parent]) {
+        if (!result[key] || typeof result[key] !== 'object') {
+          result[key] = {}
+        }
+        if (!result[key][parent] || typeof result[key][parent] !== 'object') {
           result[key][parent] = {}
         }
+
         result[key][parent][child] = value
       } else {
         result[key][prop] = value
@@ -779,7 +787,12 @@ function processFrontendData (data: newConfigType): ConfigType {
 
   result.pushlist = {
     douyin: data['pushlist:douyin'] || [],
-    bilibili: data['pushlist:bilibili'] || []
+    bilibili: data['pushlist:bilibili'].map(item => {
+      return {
+        ...item,
+        host_mid: Number(item.host_mid)
+      }
+    }) || []
   }
 
   return result as ConfigType
