@@ -4,6 +4,20 @@ import _ from 'node-karin/lodash'
 import { Config } from '@/module'
 import { ConfigType } from '@/types'
 
+/** 基础配置的类型 */
+type BaseConfigType = {
+  [key in keyof Omit<ConfigType, 'pushlist'>]: ConfigType[key]
+}
+
+/** 推送列表配置的类型，要单独处理 */
+type PushConfigType = {
+  'pushlist:douyin': ConfigType['pushlist']['douyin']
+  'pushlist:bilibili': ConfigType['pushlist']['bilibili']
+}
+
+/** 前端传回来新配置的类型 */
+type newConfigType = BaseConfigType & PushConfigType
+
 const all = Config.All()
 
 export default {
@@ -13,7 +27,13 @@ export default {
     icon: {
       name: 'tag',
       color: '#EAC452'
-    }
+    },
+    author: [
+      {
+        name: 'ikenxuan',
+        home: 'https://github.com/ikenxuan'
+      }
+    ]
   } as LocalApiResponse,
   /** 动态渲染的组件 */
   components: () => [
@@ -21,9 +41,9 @@ export default {
       description: 'Cookies 相关',
       descPosition: 20
     }),
-    components.accordion.create('cfg:cookies', {
+    components.accordion.create('cookies', {
       children: [
-        components.accordion.createItem('cookies', {
+        components.accordion.createItem('cfg:cookies', {
           title: 'Cookies 相关',
           className: 'ml-4 mr-4',
           subtitle: '建议配置，否则大部分功能无法使用',
@@ -63,9 +83,9 @@ export default {
       description: '插件应用相关',
       descPosition: 20
     }),
-    components.accordion.create('cfg:app', {
+    components.accordion.create('app', {
       children: [
-        components.accordion.createItem('app', {
+        components.accordion.createItem('cfg:app', {
           title: '插件应用相关',
           className: 'ml-4 mr-4',
           subtitle: '此处用于管理插件的基本设置',
@@ -152,9 +172,9 @@ export default {
       description: '抖音相关',
       descPosition: 20
     }),
-    components.accordion.create('cfg:douyin', {
+    components.accordion.create('douyin', {
       children: [
-        components.accordion.createItem('douyin', {
+        components.accordion.createItem('cfg:douyin', {
           title: '抖音相关',
           className: 'ml-4 mr-4',
           subtitle: '此处为抖音相关的用户偏好设置',
@@ -279,9 +299,9 @@ export default {
       description: 'B站相关',
       descPosition: 20
     }),
-    components.accordion.create('cfg:bilibili', {
+    components.accordion.create('bilibili', {
       children: [
-        components.accordion.createItem('bilibili', {
+        components.accordion.createItem('cfg:bilibili', {
           title: 'B站相关',
           className: 'ml-4 mr-4',
           subtitle: '此处为B站相关的用户偏好设置',
@@ -396,9 +416,9 @@ export default {
       description: '快手相关',
       descPosition: 20
     }),
-    components.accordion.create('cfg:kuaishou', {
+    components.accordion.create('kuaishou', {
       children: [
-        components.accordion.createItem('kuaishou', {
+        components.accordion.createItem('cfg:kuaishou', {
           title: '快手相关',
           className: 'ml-4 mr-4',
           subtitle: '此处为快手相关的用户偏好设置',
@@ -431,9 +451,9 @@ export default {
       description: '上传相关',
       descPosition: 20
     }),
-    components.accordion.create('cfg:upload', {
+    components.accordion.create('upload', {
       children: [
-        components.accordion.createItem('upload', {
+        components.accordion.createItem('cfg:upload', {
           title: '上传相关',
           className: 'ml-4 mr-4',
           subtitle: '此处为上传相关的用户偏好设置',
@@ -495,7 +515,7 @@ export default {
       descPosition: 20
     }),
     components.accordionPro.create(
-      'cfg:pushlist:douyin',
+      'pushlist:douyin',
       all.pushlist.douyin.map((item) => {
         return {
           ...item,
@@ -542,67 +562,67 @@ export default {
     components.divider.create('divider-8', {
       description: 'B站推送列表相关',
       descPosition: 20
-    })
-    // components.accordionPro.create(
-    //   'cfg:pushlist:bilibili',
-    //   all.pushlist.bilibili.map((item) => {
-    //     return {
-    //       ...item,
-    //       title: item.remark,
-    //       subtitle: item.host_mid
-    //     }
-    //   }),
-    //   {
-    //     label: 'B站推送列表',
-    //     children: components.accordion.createItem('accordion-item-bilibili', {
-    //       className: 'ml-4 mr-4',
-    //       children: [
-    //         components.input.number('host_mid', {
-    //           color: 'success',
-    //           placeholder: '',
-    //           label: 'UID',
-    //           rules: undefined
-    //         }),
-    //         components.input.group('group_id', {
-    //           label: '推送群号和机器人账号',
-    //           maxRows: 2,
-    //           data: [],
-    //           template: components.input.string('accordion-item-bilibili:push:bilibili:group_id', {
-    //             placeholder: '',
-    //             label: '',
-    //             color: 'success'
-    //           })
-    //         }),
-    //         components.input.string('remark', {
-    //           color: 'default',
-    //           placeholder: '',
-    //           label: '昵称',
-    //           isRequired: false
-    //         })
-    //       ]
-    //     })
-    //   }
-    // )
+    }),
+    components.accordionPro.create(
+      'pushlist:bilibili',
+      all.pushlist.bilibili.map((item) => {
+        return {
+          ...item,
+          title: item.remark,
+          subtitle: item.host_mid
+        }
+      }),
+      {
+        label: 'B站推送列表',
+        children: components.accordion.createItem('accordion-item-bilibili', {
+          className: 'ml-4 mr-4',
+          children: [
+            components.input.number('host_mid', {
+              color: 'success',
+              placeholder: '',
+              label: 'UID',
+              rules: undefined
+            }),
+            components.input.group('group_id', {
+              label: '推送群号和机器人账号',
+              maxRows: 2,
+              data: [],
+              template: components.input.string('accordion-item-bilibili:push:bilibili:group_id', {
+                placeholder: '',
+                label: '',
+                color: 'success'
+              })
+            }),
+            components.input.string('remark', {
+              color: 'default',
+              placeholder: '',
+              label: '昵称',
+              isRequired: false
+            })
+          ]
+        })
+      }
+    )
   ],
 
   /** 前端点击保存之后调用的方法 */
-  save: (config: any) => {
+  save: (config: newConfigType) => {
     const formatCfg = processFrontendData(config)
     const oldAllCfg = Config.All()
     /** 合并旧新配置 */
-    const fullData = _.mergeWith({}, oldAllCfg, formatCfg, customizer)
+    const mergeCfg = _.mergeWith({}, oldAllCfg, formatCfg, customizer)
     let success = false
     let isChange = false;
 
-    (Object.keys(fullData) as Array<keyof ConfigType>).forEach((key: keyof ConfigType) => {
-      isChange = deepEqual(fullData[key], oldAllCfg[key])
+    (Object.keys(mergeCfg) as Array<keyof ConfigType>).forEach((key: keyof ConfigType) => {
+      isChange = deepEqual(mergeCfg[key], oldAllCfg[key])
       if (isChange) {
-        success = Config.ModifyPro(key, fullData[key])
+        success = Config.ModifyPro(key, mergeCfg[key])
       }
     })
 
     return {
-      fullData,
+      mergeCfg,
       formatCfg,
       success,
       message: success ? '保存成功 Ciallo～(∠・ω< )⌒☆' : '配置无变化，无需保存'
@@ -717,8 +737,8 @@ function convertToNumber (value: string): any {
  * @param arr 数组
  * @returns 数组中的第一个对象或空对象
  */
-function getFirstObject (arr: any[]): any {
-  return arr.length > 0 ? arr[0] : {}
+function getFirstObject<T> (arr: T[]): T {
+  return arr.length > 0 ? arr[0] : {} as T
 }
 
 /**
@@ -726,39 +746,39 @@ function getFirstObject (arr: any[]): any {
  * @param data 前端返回的数据
  * @returns 处理后符合 ConfigType 格式的数据
  */
-function processFrontendData (data: any): ConfigType {
-  const result: any = {}
+function processFrontendData (data: newConfigType): ConfigType {
+  const result: Partial<Record<keyof ConfigType, any>> = {}
 
-  // 处理普通配置项
-  // const configKeys = ['app', 'bilibili', 'douyin', 'cookies', 'kuaishou', 'upload']
-  const configKeys = Object.keys(data).filter(key => !key.includes('pushlist'))
+  const configKeys = Object.keys(data).filter((key): key is keyof BaseConfigType => {
+    return !key.includes('pushlist') && key in data
+  })
 
   for (const key of configKeys) {
-    const firstObj = getFirstObject(data[key] || [])
+    const value = data[key]
+    const firstObj = Array.isArray(value) ? getFirstObject(value) : {}
+
+    // 使用类型断言，确保 result[key] 的类型正确
     result[key] = {}
+
     for (const prop in firstObj) {
       let value = firstObj[prop]
-      // 尝试将值转换为数字
       value = convertToNumber(value)
 
-      if (prop.includes('.')) {
-        // 处理嵌套属性
-        const [parent, child] = prop.split('.')
+      if (prop.includes(':')) {
+        const [parent, child] = prop.split(':')
         if (!result[key][parent]) {
           result[key][parent] = {}
         }
         result[key][parent][child] = value
       } else {
-        // 处理普通属性
         result[key][prop] = value
       }
     }
   }
 
-  // 处理 pushlist 配置项
   result.pushlist = {
-    douyin: data['cfg:pushlist:douyin'] || [],
-    bilibili: data['cfg:pushlist:bilibili'] || []
+    douyin: data['pushlist:douyin'] || [],
+    bilibili: data['pushlist:bilibili'] || []
   }
 
   return result as ConfigType
