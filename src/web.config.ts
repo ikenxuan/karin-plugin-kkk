@@ -31,7 +31,8 @@ export default {
     author: [
       {
         name: 'ikenxuan',
-        home: 'https://github.com/ikenxuan'
+        home: 'https://github.com/ikenxuan',
+        avatar: 'https://avatars.githubusercontent.com/u/112480306'
       }
     ]
   } as LocalApiResponse,
