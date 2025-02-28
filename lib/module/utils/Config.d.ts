@@ -772,17 +772,17 @@ declare class Cfg {
      */
     Modify(name: keyof ConfigType, key: string, value: any, type?: ConfigDirType): void;
     /**
-   * 修改整个配置文件，保留注释
-   * @param name 文件名
-   * @param config 完整的配置对象
-   * @param type 配置文件类型，默认为用户配置文件 `config`
-   */
+     * 修改整个配置文件，保留注释
+     * @param name 文件名
+     * @param config 完整的配置对象
+     * @param type 配置文件类型，默认为用户配置文件 `config`
+     */
     ModifyPro<T extends keyof ConfigType>(name: T, config: ConfigType[T], type?: ConfigDirType): boolean;
     /**
-   * 深度合并YAML节点（保留目标注释）
-   * @param target 目标节点（保留注释的原始节点）
-   * @param source 源节点（提供新值的节点）
-   */
+     * 深度合并YAML节点（保留目标注释）
+     * @param target 目标节点（保留注释的原始节点）
+     * @param source 源节点（提供新值的节点）
+     */
     private deepMergeYaml;
     /**
      * 在YAML映射中设置嵌套值
