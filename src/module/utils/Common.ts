@@ -4,7 +4,7 @@ import { logger, Message, tempPath } from 'node-karin'
 
 import { Config } from '@/module/utils'
 
-import { Version } from './Version'
+import { Version } from '../../Version'
 
 /** 常用工具合集 */
 class Tools {
