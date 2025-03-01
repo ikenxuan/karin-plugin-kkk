@@ -6,7 +6,7 @@ import YAML from 'node-karin/yaml'
 
 import { ConfigType } from '@/types'
 
-import { Version } from './Version'
+import { Version } from '../../Version'
 
 type ConfigDirType = 'config' | 'default_config'
 
