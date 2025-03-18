@@ -38,11 +38,8 @@ export default {
   } as LocalApiResponse,
   /** 动态渲染的组件 */
   components: () => [
-    components.divider.create('divider-1', {
-      description: 'Cookies 相关',
-      descPosition: 20
-    }),
     components.accordion.create('cookies', {
+      label: 'Cookies 相关',
       children: [
         components.accordion.createItem('cfg:cookies', {
           title: 'Cookies 相关',
@@ -80,11 +77,8 @@ export default {
         })
       ]
     }),
-    components.divider.create('divider-2', {
-      description: '插件应用相关',
-      descPosition: 20
-    }),
     components.accordion.create('app', {
+      label: '插件应用相关',
       children: [
         components.accordion.createItem('cfg:app', {
           title: '插件应用相关',
@@ -169,11 +163,8 @@ export default {
         })
       ]
     }),
-    components.divider.create('divider-3', {
-      description: '抖音相关',
-      descPosition: 20
-    }),
     components.accordion.create('douyin', {
+      label: '抖音相关',
       children: [
         components.accordion.createItem('cfg:douyin', {
           title: '抖音相关',
@@ -296,11 +287,8 @@ export default {
         })
       ]
     }),
-    components.divider.create('divider-4', {
-      description: 'B站相关',
-      descPosition: 20
-    }),
     components.accordion.create('bilibili', {
+      label: 'B站相关',
       children: [
         components.accordion.createItem('cfg:bilibili', {
           title: 'B站相关',
@@ -413,11 +401,8 @@ export default {
         })
       ]
     }),
-    components.divider.create('divider-5', {
-      description: '快手相关',
-      descPosition: 20
-    }),
     components.accordion.create('kuaishou', {
+      label: '快手相关',
       children: [
         components.accordion.createItem('cfg:kuaishou', {
           title: '快手相关',
@@ -448,11 +433,8 @@ export default {
         })
       ]
     }),
-    components.divider.create('divider-6', {
-      description: '上传相关',
-      descPosition: 20
-    }),
     components.accordion.create('upload', {
+      label: '视频文件上传相关',
       children: [
         components.accordion.createItem('cfg:upload', {
           title: '上传相关',
