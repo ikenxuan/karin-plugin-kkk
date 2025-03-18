@@ -48,8 +48,7 @@
     "http-proxy-middleware": "^3.0.3",
     "playwright": "^1.49.1",
     "qrcode": "^1.5.4",
-    "sequelize": "6.37.3",
-    "sqlite3": "5.1.6"
+    "sequelize": "6.37.3"
   },
   "publishConfig": {
     "access": "public",
