@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.4...v1.1.5) (2025-03-18)
+
+
+### Bug Fixes
+
+* 优化前端配置显示 ([b64efa6](https://github.com/ikenxuan/karin-plugin-kkk/commit/b64efa65a82b191bd59dc8b82871eb5250a0f54a))
+
 ## [1.1.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.3...v1.1.4) (2025-03-01)
 
 
