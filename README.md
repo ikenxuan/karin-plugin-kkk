@@ -1,7 +1,4 @@
-# <span style="display: block; text-align: center;">karin-plugin-kkk</span>
-
-![karin-plugin-kkk](https://socialify.git.ci/ikenxuan/karin-plugin-kkk/image?description=1&font=Source+Code+Pro&forks=1&issues=1&language=1&name=1&owner=1&pattern=Floating+Cogs&pulls=1&stargazers=1&theme=Auto)
-
+# karin-plugin-kkk
 🦄 **_Karin 的「抖音」「B站」「快手」视频解析/动态推送插件_**
 
 PS: 快手暂不支持推送
