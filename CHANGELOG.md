@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.4...v1.1.5) (2025-03-24)
+
+
+### Bug Fixes
+
+* 优化前端配置显示 ([b64efa6](https://github.com/ikenxuan/karin-plugin-kkk/commit/b64efa65a82b191bd59dc8b82871eb5250a0f54a))
+* 移除一些过时内容 ([65d2a0a](https://github.com/ikenxuan/karin-plugin-kkk/commit/65d2a0a0d55ffaf3ecd87acbdfcd4c89ba0a5e1b))
+* 评论解析错误 ([d08c76e](https://github.com/ikenxuan/karin-plugin-kkk/commit/d08c76e363f7701df60c9e12d26fbbe0518a365d))
+
 ## [1.1.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.3...v1.1.4) (2025-03-01)
 
 
