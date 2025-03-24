@@ -52,7 +52,7 @@ export class Bilibilipush extends Base {
     }
     this.force = force // 保存传入的强制执行标志
     this.amagi = new Client({ bilibili: Config.cookies.bilibili })
-    this.mergeBilibiliItems(Config.pushlist.bilibili)
+    // this.mergeBilibiliItems(Config.pushlist.bilibili)
   }
 
   /**
@@ -63,7 +63,9 @@ export class Bilibilipush extends Base {
     if (await this.checkremark()) return true
 
     try {
-      const data = await this.getDynamicList(this.mergeBilibiliItems(Config.pushlist.bilibili))
+      // const data = await this.getDynamicList(this.mergeBilibiliItems(Config.pushlist.bilibili))
+      const data = await this.getDynamicList(Config.pushlist.bilibili)
+
       const pushdata = this.excludeAlreadyPushed(data.willbepushlist, data.DBdata)
 
       if (Object.keys(pushdata).length === 0) return true
@@ -687,26 +689,26 @@ export class Bilibilipush extends Base {
   }
 
   /** 由于上游类型定义错误，导致下游需要手动对已设置的内容进行类型转换。。。 */
-  mergeBilibiliItems (config: bilibiliPushItem[]) {
-    const mergedBilibili: bilibiliPushItem[] = []
-    const midMap = new Map<number, number>()
+  // mergeBilibiliItems (config: bilibiliPushItem[]) {
+  //   const mergedBilibili: bilibiliPushItem[] = []
+  //   const midMap = new Map<number, number>()
 
-    config.forEach(item => {
-      const { host_mid } = item
-      if (midMap.has(host_mid)) {
-        const index = midMap.get(host_mid)!
-        mergedBilibili[index].group_id = [
-          ...mergedBilibili[index].group_id,
-          ...item.group_id
-        ]
-      } else {
-        mergedBilibili.push({ ...item })
-        midMap.set(host_mid, mergedBilibili.length - 1)
-      }
-    })
-    Config.Modify('pushlist', 'bilibili', mergedBilibili)
-    return mergedBilibili
-  }
+  //   config.forEach(item => {
+  //     const { host_mid } = item
+  //     if (midMap.has(host_mid)) {
+  //       const index = midMap.get(host_mid)!
+  //       mergedBilibili[index].group_id = [
+  //         ...mergedBilibili[index].group_id,
+  //         ...item.group_id
+  //       ]
+  //     } else {
+  //       mergedBilibili.push({ ...item })
+  //       midMap.set(host_mid, mergedBilibili.length - 1)
+  //     }
+  //   })
+  //   Config.Modify('pushlist', 'bilibili', mergedBilibili)
+  //   return mergedBilibili
+  // }
 }
 
 /**

@@ -540,7 +540,7 @@ export class DouYinpush extends Base {
           // 否则，将新的 group_id 添加到该 sec_uid 对应的数组中
           existingItem.group_id.push(`${group_id}:${this.e.selfId}`)
           await this.e.reply(`群：${groupInfo.groupName}(${group_id})\n添加成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`)
-          if (Config.douyin.push.switch === false) await this.e.reply('请发送「#kkk设置B站推送开启」以进行推送')
+          if (Config.douyin.push.switch === false) await this.e.reply('请发送「#kkk设置抖音推送开启」以进行推送')
           logger.info(`\n设置成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.user.sec_uid}`)
           // 渲染状态图片
           await this.renderPushList(config.douyin)
@@ -553,7 +553,7 @@ export class DouYinpush extends Base {
         // 如果不存在相同的 sec_uid，则新增一个属性
         config.douyin.push({ sec_uid, group_id: [`${group_id}:${this.e.selfId}`], remark: UserInfoData.user.nickname, short_id: user_shortid })
         await this.e.reply(`群：${groupInfo.groupName}(${group_id})\n添加成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`)
-        if (Config.douyin.push.switch === false) await this.e.reply('请发送「#kkk设置B站推送开启」以进行推送')
+        if (Config.douyin.push.switch === false) await this.e.reply('请发送「#kkk设置抖音推送开启」以进行推送')
         // 渲染状态图片
         await this.renderPushList(config.douyin)
       }
