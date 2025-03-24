@@ -84,7 +84,5 @@ export declare class Bilibilipush extends Base {
      * @returns
      */
     renderPushList(pushList: bilibiliPushItem[]): Promise<void>;
-    /** 由于上游类型定义错误，导致下游需要手动对已设置的内容进行类型转换。。。 */
-    mergeBilibiliItems(config: bilibiliPushItem[]): bilibiliPushItem[];
 }
 export {};
