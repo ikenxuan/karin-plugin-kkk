@@ -1,12 +1,26 @@
-![karin-plugin-kkk](https://socialify.git.ci/ikenxuan/karin-plugin-kkk/image?description=1&font=Source+Code+Pro&forks=1&issues=1&language=1&name=1&owner=1&pattern=Floating+Cogs&pulls=1&stargazers=1&theme=Auto)
+# <span style="display: block; text-align: center;">karin-plugin-kkk</span>
 
-# karin-plugin-kkk
+![karin-plugin-kkk](https://socialify.git.ci/ikenxuan/karin-plugin-kkk/image?description=1&font=Source+Code+Pro&forks=1&issues=1&language=1&name=1&owner=1&pattern=Floating+Cogs&pulls=1&stargazers=1&theme=Auto)
 
 🦄 **_Karin 的「抖音」「B站」「快手」视频解析/动态推送插件_**
 
+PS: 快手暂不支持推送
+
 ## ⬇️ 安装
 
-* 使用编译产物 **`build 分支`**（非常推荐）
+* 使用 **`包管理器`** 安装（非常推荐）
+   <details>
+   <summary>点击展开</summary>
+
+   在 **Karin 根目录** 下运行
+   ```sh
+   pnpm add karin-plugin-kkk@latest -w
+   ```
+   </details>
+
+<br />
+
+* 克隆编译产物 **`build 分支`**（比较推荐）
    <details>
    <summary>点击展开</summary>
 
@@ -34,15 +48,7 @@
 
    </details>
 
-* 使用 **`包管理器`** 安装（非常推荐）
-   <details>
-   <summary>点击展开</summary>
-
-   在 **Karin 根目录** 下运行
-   ```sh
-   pnpm add karin-plugin-kkk@latest -w
-   ```
-   </details>
+<br />
 
 * 使用 Release **`发行版`**（不推荐）
     <details>
