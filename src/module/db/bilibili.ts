@@ -159,7 +159,7 @@ Group.hasMany(DynamicCache, { foreignKey: 'groupId' })
 DynamicCache.belongsTo(Group, { foreignKey: 'groupId' })
 
 /** 数据库操作类 */
-export class DBBase {
+export class BilibiliDBBase {
   /**
    * 获取或创建机器人记录
    * @param botId 机器人ID
@@ -386,9 +386,23 @@ export class DBBase {
   }
 }
 
-export const DB = new DBBase()
+export const bilibiliDB = new BilibiliDBBase()
 
 // 同步数据库结构
 await sequelize.sync({ alter: true, force: false })
 
 export { BilibiliUser, Bot, DynamicCache, Group, GroupUserSubscription }
+
+/** B站数据库模型集合 */
+export const bilibiliModels = {
+  /** BilibiliUsers表 - 存储B站用户信息 */
+  BilibiliUser,
+  /** Bots表 - 存储机器人信息 */
+  Bot,
+  /** DynamicCache表 - 存储已推送的动态ID */
+  DynamicCache,
+  /** Groups表 - 存储群组信息 */
+  Group,
+  /** GroupUserSubscriptions表 - 存储群组订阅的B站用户关系 */
+  GroupUserSubscription
+}

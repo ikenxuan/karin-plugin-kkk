@@ -42,11 +42,11 @@ export const setbiliPush = karin.command(/^#设置[bB]站推送(?:[Uu][Ii][Dd]:)
 }, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.bilibili.push.permission, dsbAdapter: ['qqbot'] })
 
 export const bilibiliPushList = karin.command(/^#?[bB]站推送列表$/, async (e) => {
-  await new Bilibilipush(e).renderPushList(Config.pushlist.bilibili)
+  await new Bilibilipush(e).renderPushList()
 }, { name: 'kkk-推送功能-列表', event: 'message.group' })
 
 export const douyinPushList = karin.command(/^#?抖音推送列表$/, async (e) => {
-  await new DouYinpush(e).renderPushList(Config.pushlist.douyin)
+  await new DouYinpush(e).renderPushList()
 }, { name: 'kkk-推送功能-列表', event: 'message.group' })
 
 export const changeBotID = karin.command(/^#kkk设置推送机器人/, async (e) => {

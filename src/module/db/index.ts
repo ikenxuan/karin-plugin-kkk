@@ -204,3 +204,43 @@
 // /** 每次调用都将强制同步已定义的模型 */
 // await sequelize.sync({ alter: true })
 export * from './bilibili'
+export * from './douyin'
+
+// 保留旧的类型定义，以便兼容现有代码
+export type BilibiliDBType = Record<string, {
+  /** 该UP主的昵称 */
+  remark: string
+  /** UP主UID */
+  host_mid: number
+  /** 动态发布时间，时间戳 */
+  create_time: number
+  /** 要推送到的群组 */
+  group_id: string[]
+  /** 动态ID列表 */
+  dynamic_idlist: string[]
+  /** 动态类型 */
+  dynamic_type: string
+  /** UP主头像url */
+  avatar_img: string
+}>
+
+export type DouyinDBType = Record<string, {
+  /** 该博主的昵称 */
+  remark: string
+  /** 作品发布时间，时间戳 */
+  create_time: number
+  /** 博主UID */
+  sec_uid: string
+  /** 作品ID列表 */
+  aweme_idlist: string[]
+  /** 要推送到的群组 */
+  group_id: string[]
+  /** 博主头像url */
+  avatar_img: string
+  /** 是否正在直播 */
+  living: boolean
+  /** 直播消息ID */
+  message_id: Record<string, { message_id: string }>
+  /** 直播开始时间 */
+  start_living_pn: number
+}>

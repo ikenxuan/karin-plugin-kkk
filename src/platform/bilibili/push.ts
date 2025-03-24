@@ -2,7 +2,7 @@ import Client, { getBilibiliData } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
 import { Base, Common, Config, Render } from '@/module'
-import { DB } from '@/module/db/bilibili'
+import { bilibiliDB } from '@/module/db/bilibili'
 import { cover, generateDecorationCard, replacetext } from '@/platform/bilibili'
 import { bilibiliPushItem } from '@/types/config/pushlist'
 
@@ -63,7 +63,7 @@ export class Bilibilipush extends Base {
   async action () {
     try {
       // 使用批量同步方法
-      await DB.syncConfigSubscriptions(Config.pushlist.bilibili)
+      await bilibiliDB.syncConfigSubscriptions(Config.pushlist.bilibili)
 
       const data = await this.getDynamicList(Config.pushlist.bilibili)
       const pushdata = await this.excludeAlreadyPushed(data.willbepushlist)
@@ -353,7 +353,7 @@ export class Bilibilipush extends Base {
 
         if (skip || status?.message_id) {
           // 使用新的数据库API添加动态缓存
-          await DB.addDynamicCache(
+          await bilibiliDB.addDynamicCache(
             dynamicId,
             data[dynamicId].host_mid,
             target.groupId,
@@ -439,7 +439,7 @@ export class Bilibilipush extends Base {
       // 遍历作品对应的目标群组
       for (const target of pushItem.targets) {
         // 检查该动态是否已经推送给该群组
-        const isPushed = await DB.isDynamicPushed(dynamicId, pushItem.host_mid, target.groupId)
+        const isPushed = await bilibiliDB.isDynamicPushed(dynamicId, pushItem.host_mid, target.groupId)
 
         // 如果未被推送过，则保留此目标
         if (!isPushed) {
@@ -480,7 +480,7 @@ export class Bilibilipush extends Base {
     const existingItem = config.bilibili.find((item: { host_mid: number }) => item.host_mid === host_mid)
 
     // 检查该群组是否已订阅该UP主
-    const isSubscribed = await DB.isSubscribed(host_mid, groupId)
+    const isSubscribed = await bilibiliDB.isSubscribed(host_mid, groupId)
 
     if (existingItem) {
       // 如果已经存在相同的 host_mid，则检查是否存在相同的 group_id
@@ -504,7 +504,7 @@ export class Bilibilipush extends Base {
 
         // 在数据库中取消订阅
         if (isSubscribed) {
-          await DB.unsubscribeBilibiliUser(groupId, host_mid)
+          await bilibiliDB.unsubscribeBilibiliUser(groupId, host_mid)
         }
 
         logger.info(`\n删除成功！${data.data.card.name}\nUID：${host_mid}`)
@@ -517,7 +517,7 @@ export class Bilibilipush extends Base {
         }
       } else {
         // 在数据库中添加订阅
-        await DB.subscribeBilibiliUser(
+        await bilibiliDB.subscribeBilibiliUser(
           groupId,
           botId,
           host_mid,
@@ -537,7 +537,7 @@ export class Bilibilipush extends Base {
       }
     } else {
       // 在数据库中添加订阅
-      await DB.subscribeBilibiliUser(
+      await bilibiliDB.subscribeBilibiliUser(
         groupId,
         botId,
         host_mid,
@@ -610,7 +610,7 @@ export class Bilibilipush extends Base {
     // 如果不是全部强制推送，需要过滤数据
     if (!this.e.msg.includes('全部')) {
       // 获取当前群组订阅的所有UP主
-      const subscriptions = await DB.getGroupSubscriptions(currentGroupId)
+      const subscriptions = await bilibiliDB.getGroupSubscriptions(currentGroupId)
       const subscribedUids = subscriptions.map(sub => sub.get('host_mid'))
 
       /** 创建一个新的推送列表，只包含当前群组订阅的UP主的动态 */
@@ -644,7 +644,7 @@ export class Bilibilipush extends Base {
     const groupId = 'groupId' in this.e && this.e.groupId ? this.e.groupId : ''
 
     // 获取该群组的所有订阅
-    const subscriptions = await DB.getGroupSubscriptions(groupId)
+    const subscriptions = await bilibiliDB.getGroupSubscriptions(groupId)
 
     if (subscriptions.length === 0) {
       await this.e.reply(`当前群：${groupInfo.groupName}(${groupInfo.groupId})\n没有设置任何B站UP推送！\n可使用「#设置B站推送 + UP主UID」进行设置`)
@@ -704,12 +704,12 @@ export class Bilibilipush extends Base {
         const [groupId, botId] = groupWithBot.split(':')
 
         // 检查数据库中是否已有该订阅
-        const isSubscribed = await DB.isSubscribed(host_mid, groupId)
+        const isSubscribed = await bilibiliDB.isSubscribed(host_mid, groupId)
 
         // 如果数据库中没有该订阅，则添加
         if (!isSubscribed) {
           logger.info(`同步订阅: 群组 ${groupId} 订阅UP主 ${host_mid}(${remark})`)
-          await DB.subscribeBilibiliUser(
+          await bilibiliDB.subscribeBilibiliUser(
             groupId,
             botId,
             host_mid,
