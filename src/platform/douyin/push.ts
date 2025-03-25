@@ -278,10 +278,11 @@ export class DouYinpush extends Base {
           }
         }
 
-        // 处理直播状态
+        /** 获取缓存的直播状态 */
+        const liveStatus = await douyinDB.getLiveStatus(sec_uid)
+
         if (userinfo.user.live_status === 1) {
           const liveInfo = await getDouyinData('直播间信息数据', Config.cookies.douyin, { sec_uid: userinfo.user.sec_uid })
-          const liveStatus = await douyinDB.getLiveStatus(sec_uid)
 
           // 如果之前没有直播，现在开播了，需要推送
           if (!liveStatus.living) {
@@ -308,6 +309,28 @@ export class DouYinpush extends Base {
               living: true
             }
           }
+        } else if (liveStatus.living) {
+          // 如果之前在直播，现在已经关播，需要更新状态
+          await douyinDB.updateLiveStatus(sec_uid, false)
+          logger.info(`用户 ${item.remark || sec_uid} 已关播，更新直播状态`)
+
+          // 可选：添加关播推送
+          // willbepushlist[`live_end_${sec_uid}`] = {
+          //   remark: item.remark,
+          //   sec_uid,
+          //   create_time: Date.now(),
+          //   targets,
+          //   Detail_Data: {
+          //     user_info: userinfo,
+          //     liveStatus: {
+          //       liveStatus: 'close',
+          //       isChanged: true,
+          //       isliving: false
+          //     }
+          //   },
+          //   avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.user.avatar_larger.uri,
+          //   living: false
+          // }
         }
       }
     } catch (error) {
