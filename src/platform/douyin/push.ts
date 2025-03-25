@@ -113,8 +113,8 @@ export class DouYinpush extends Base {
             username: Detail_Data.user_info.user.nickname,
             avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.user.avatar_larger.uri,
             fans: this.count(Detail_Data.user_info.user.follower_count),
-            create_time: Common.convertTimestampToDateTime(Date.now()),
-            now_time: Common.convertTimestampToDateTime(Date.now()),
+            create_time: Common.convertTimestampToDateTime(Date.now() / 1000),
+            now_time: Common.convertTimestampToDateTime(Date.now() / 1000),
             share_url: 'https://live.douyin.com/' + Detail_Data.room_data.owner.web_rid,
             dynamicTYPE: '直播动态推送'
           })
@@ -298,11 +298,7 @@ export class DouYinpush extends Base {
               targets,
               Detail_Data: {
                 user_info: userinfo,
-                room_data: {
-                  owner: {
-                    web_rid: userinfo.user.web_rid
-                  }
-                },
+                room_data: JSON.parse(userinfo.user.room_data),
                 live_data: liveInfo,
                 liveStatus: {
                   liveStatus: 'open',
