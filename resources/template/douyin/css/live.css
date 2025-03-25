@@ -179,8 +179,6 @@ body.dark-mode .other_text {
   -ms-flex-pack: justify;
   justify-content: space-between;
   padding: 60px 0 0 0;
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(5px);
   -webkit-box-align: center;
   -webkit-align-items: center;
   -moz-box-align: center;
