@@ -133,7 +133,7 @@ export class DouYinpush extends Base {
             pinglun: this.count(Detail_Data.statistics.comment_count),
             share: this.count(Detail_Data.statistics.share_count),
             shouchang: this.count(Detail_Data.statistics.collect_count),
-            create_time: Common.convertTimestampToDateTime(pushItem.create_time),
+            create_time: Common.convertTimestampToDateTime(pushItem.create_time / 1000),
             avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.user.avatar_larger.uri,
             share_url: Config.douyin.push.shareType === 'web' ? realUrl : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`,
             username: Detail_Data.author.nickname,
