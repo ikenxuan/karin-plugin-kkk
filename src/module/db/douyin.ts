@@ -440,7 +440,7 @@ export class DouyinDBBase {
 export const douyinDB = new DouyinDBBase()
 
 // 同步数据库结构
-await sequelize.sync({ alter: true, force: true })
+await sequelize.sync({ alter: true, force: false })
 
 /** 抖音数据库模型集合 */
 export const DouyinModels = {
