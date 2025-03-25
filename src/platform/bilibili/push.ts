@@ -1,10 +1,9 @@
 import Client, { getBilibiliData } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
-import { Base, Common, Config, Render } from '@/module'
-import { bilibiliDB } from '@/module/db/bilibili'
+import { Base, bilibiliDB, Common, Config, Render } from '@/module'
 import { cover, generateDecorationCard, replacetext } from '@/platform/bilibili'
-import { bilibiliPushItem } from '@/types/config/pushlist'
+import type { bilibiliPushItem } from '@/types/config/pushlist'
 
 /** 已支持推送的动态类型 */
 export enum DynamicType {
@@ -65,6 +64,12 @@ export class Bilibilipush extends Base {
       // 使用批量同步方法
       await bilibiliDB.syncConfigSubscriptions(Config.pushlist.bilibili)
 
+      // 清理旧的动态缓存记录
+      const deletedCount = await bilibiliDB.cleanOldDynamicCache(1)
+      if (deletedCount > 0) {
+        logger.info(`已清理 ${deletedCount} 条过期的B站动态缓存记录`)
+      }
+
       const data = await this.getDynamicList(Config.pushlist.bilibili)
       const pushdata = await this.excludeAlreadyPushed(data.willbepushlist)
 
@@ -75,6 +80,18 @@ export class Bilibilipush extends Base {
     } catch (error) {
       logger.error(error)
     }
+  }
+
+  /**
+   * 同步配置文件中的订阅信息到数据库
+   */
+  async syncConfigToDatabase () {
+    // 如果配置文件中没有B站推送列表，直接返回
+    if (!Config.pushlist.bilibili || Config.pushlist.bilibili.length === 0) {
+      return
+    }
+
+    await bilibiliDB.syncConfigSubscriptions(Config.pushlist.bilibili)
   }
 
   /**
@@ -671,55 +688,6 @@ export class Bilibilipush extends Base {
 
     const img = await Render('bilibili/userlist', { renderOpt })
     await this.e.reply(img)
-  }
-
-  /**
-   * 同步配置文件中的订阅信息到数据库
-   * 确保配置文件中的所有订阅在数据库中都有对应记录
-   */
-  async syncConfigToDatabase () {
-    // 如果配置文件中没有B站推送列表，直接返回
-    if (!Config.pushlist.bilibili || Config.pushlist.bilibili.length === 0) {
-      return
-    }
-
-    logger.info('正在同步B站推送配置到数据库...')
-
-    // 遍历配置文件中的每个UP主
-    for (const item of Config.pushlist.bilibili) {
-      const host_mid = item.host_mid
-      const remark = item.remark || ''
-
-      // 获取UP主信息，用于获取头像URL
-      let avatar_img = ''
-      try {
-        const userInfo = await this.amagi.getBilibiliData('用户主页数据', { host_mid })
-        avatar_img = userInfo.data.card.face
-      } catch (error) {
-        logger.warn(`获取UP主 ${host_mid} 的信息失败: ${error}`)
-      }
-
-      // 遍历该UP主的所有目标群组
-      for (const groupWithBot of item.group_id) {
-        const [groupId, botId] = groupWithBot.split(':')
-
-        // 检查数据库中是否已有该订阅
-        const isSubscribed = await bilibiliDB.isSubscribed(host_mid, groupId)
-
-        // 如果数据库中没有该订阅，则添加
-        if (!isSubscribed) {
-          logger.info(`同步订阅: 群组 ${groupId} 订阅UP主 ${host_mid}(${remark})`)
-          await bilibiliDB.subscribeBilibiliUser(
-            groupId,
-            botId,
-            host_mid,
-            remark
-          )
-        }
-      }
-    }
-
-    logger.info('B站推送配置同步完成')
   }
 }
 

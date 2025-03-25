@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 
 import { basePath } from 'node-karin'
-import { DataTypes, Model, Sequelize } from 'sequelize'
+import { DataTypes, Model, Op, Sequelize } from 'sequelize'
 
 import { douyinPushItem } from '@/types/config/pushlist'
 
@@ -395,6 +395,27 @@ export class DouyinDBBase {
    */
   async getGroupById (groupId: string) {
     return await Group.findByPk(groupId)
+  }
+
+  /**
+   * 清理旧的动态缓存记录
+   * @param days 保留最近几天的记录，默认为7天
+   * @returns 删除的记录数量
+   */
+  async cleanOldDynamicCache (days: number = 7): Promise<number> {
+    const cutoffDate = new Date()
+    console.log('cutoffDate', cutoffDate)
+    cutoffDate.setDate(cutoffDate.getDate() - days)
+
+    const result = await AwemeCache.destroy({
+      where: {
+        createdAt: {
+          [Op.lt]: cutoffDate
+        }
+      }
+    })
+
+    return result
   }
 }
 

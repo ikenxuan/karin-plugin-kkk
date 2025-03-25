@@ -1,10 +1,9 @@
 import { getDouyinData } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
-import { Base, Common, Config, Networks, Render } from '@/module'
-import { douyinDB } from '@/module/db/douyin'
+import { Base, Common, Config, douyinDB, Networks, Render } from '@/module'
 import { DouyinIdData, getDouyinID, processVideos } from '@/platform/douyin'
-import { douyinPushItem } from '@/types/config/pushlist'
+import type { douyinPushItem } from '@/types/config/pushlist'
 
 /** 每个推送项的类型定义 */
 interface PushItem {
@@ -55,6 +54,12 @@ export class DouYinpush extends Base {
     try {
       // 同步配置文件到数据库
       await this.syncConfigToDatabase()
+
+      // 清理旧的动态缓存记录
+      const deletedCount = await douyinDB.cleanOldDynamicCache(1)
+      if (deletedCount > 0) {
+        logger.info(`已清理 ${deletedCount} 条过期的B站动态缓存记录`)
+      }
 
       // 检查备注信息
       if (await this.checkremark()) return true
