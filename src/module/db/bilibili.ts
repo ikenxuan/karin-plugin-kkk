@@ -325,37 +325,6 @@ export class BilibiliDBBase {
   }
 
   /**
-   * 迁移旧数据到新数据库结构
-   * @param oldData 旧的数据结构
-   */
-  async migrateOldData (oldData: any) {
-    if (!oldData || !oldData.bilibili) return
-
-    for (const groupIdWithBotId in oldData.bilibili) {
-      const [groupId, botId] = groupIdWithBotId.split(':')
-      if (!groupId || !botId) continue
-
-      const groupData = oldData.bilibili[groupIdWithBotId]
-
-      for (const hostMidKey in groupData) {
-        const userData = groupData[hostMidKey]
-        const host_mid = userData.host_mid
-        const remark = userData.remark
-        const dynamic_idlist = userData.dynamic_idlist || []
-        const dynamic_type = userData.dynamic_type
-
-        // 创建订阅关系
-        await this.subscribeBilibiliUser(groupId, botId, host_mid, remark)
-
-        // 添加动态缓存
-        for (const dynamic_id of dynamic_idlist) {
-          await this.addDynamicCache(dynamic_id, host_mid, groupId, dynamic_type)
-        }
-      }
-    }
-  }
-
-  /**
    * 批量同步配置文件中的订阅到数据库
    * @param configItems 配置文件中的订阅项
    */

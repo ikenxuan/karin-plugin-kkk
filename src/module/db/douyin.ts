@@ -392,43 +392,6 @@ export class DouyinDBBase {
   }
 
   /**
-   * 迁移旧数据到新数据库结构
-   * @param oldData 旧的数据结构
-   */
-  async migrateOldData (oldData: any) {
-    if (!oldData || !oldData.douyin) return
-
-    for (const groupIdWithBotId in oldData.douyin) {
-      const [groupId, botId] = groupIdWithBotId.split(':')
-      if (!groupId || !botId) continue
-
-      const groupData = oldData.douyin[groupIdWithBotId]
-
-      for (const secUidKey in groupData) {
-        const userData = groupData[secUidKey]
-        const sec_uid = userData.sec_uid
-        const remark = userData.remark
-        const short_id = userData.short_id || ''
-        const aweme_idlist = userData.aweme_idlist || []
-        const living = userData.living || false
-
-        // 创建订阅关系
-        await this.subscribeDouyinUser(groupId, botId, sec_uid, short_id, remark)
-
-        // 更新直播状态
-        if (living) {
-          await this.updateLiveStatus(sec_uid, living)
-        }
-
-        // 添加作品缓存
-        for (const aweme_id of aweme_idlist) {
-          await this.addAwemeCache(aweme_id, sec_uid, groupId)
-        }
-      }
-    }
-  }
-
-  /**
    * 通过ID获取群组信息
    * @param groupId 群组ID
    */
