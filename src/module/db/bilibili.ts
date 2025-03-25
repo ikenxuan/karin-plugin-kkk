@@ -361,7 +361,6 @@ export class BilibiliDBBase {
    */
   async cleanOldDynamicCache (days: number = 7): Promise<number> {
     const cutoffDate = new Date()
-    console.log('cutoffDate', cutoffDate)
     cutoffDate.setDate(cutoffDate.getDate() - days)
 
     const result = await DynamicCache.destroy({
