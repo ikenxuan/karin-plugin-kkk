@@ -357,9 +357,6 @@ export class BilibiliDBBase {
 
 export const bilibiliDB = new BilibiliDBBase()
 
-// 同步数据库结构
-await sequelize.sync({ alter: true, force: false })
-
 export { BilibiliUser, Bot, DynamicCache, Group, GroupUserSubscription }
 
 /** B站数据库模型集合 */

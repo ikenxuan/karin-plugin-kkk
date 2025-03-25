@@ -225,13 +225,7 @@ export class DouYinpush extends Base {
 
         // 获取该用户的所有订阅群组
         const subscriptions = await douyinDB.getUserSubscribedGroups(sec_uid)
-        const targets = (subscriptions || []).map(sub => {
-          const group = sub.get('Group') as any
-          return {
-            groupId: sub.get('groupId') as string,
-            botId: group ? group.get('botId') as string : ''
-          }
-        })
+        const targets = []
 
         for (const sub of subscriptions) {
           const groupId = sub.get('groupId') as string
@@ -262,7 +256,7 @@ export class DouYinpush extends Base {
               // 检查是否已经推送过
               const alreadyPushed = await this.checkIfAlreadyPushed(aweme.aweme_id, sec_uid, targets.map(t => t.groupId))
 
-              if (!alreadyPushed || this.force) {
+              if (!alreadyPushed) {
                 shouldPush = true
               }
             }

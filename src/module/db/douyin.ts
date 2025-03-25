@@ -351,12 +351,10 @@ export class DouyinDBBase {
    */
   async getLiveStatus (sec_uid: string) {
     const user = await DouyinUser.findByPk(sec_uid)
-    if (!user) return { living: false, live_msg_id: '', live_start_time: 0 }
+    if (!user) return { living: false }
 
     return {
-      living: user.get('living') as boolean,
-      live_msg_id: user.get('live_msg_id') as string,
-      live_start_time: user.get('live_start_time') as number
+      living: user.get('living') as boolean
     }
   }
 
@@ -401,9 +399,6 @@ export class DouyinDBBase {
 }
 
 export const douyinDB = new DouyinDBBase()
-
-// 同步数据库结构
-await sequelize.sync({ alter: true, force: false })
 
 /** 抖音数据库模型集合 */
 export const DouyinModels = {
