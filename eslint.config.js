@@ -1,4 +1,3 @@
-import eslint from '@eslint/js'
 import tsParser from '@typescript-eslint/parser'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import globals from 'globals'
@@ -7,7 +6,6 @@ import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
   ...neostandard(),
-  eslint.configs.recommended,
   tseslint.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
   {
