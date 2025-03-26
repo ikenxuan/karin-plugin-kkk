@@ -70,6 +70,18 @@ jobs:
       - name: 删除开发依赖
         run: npm run pr clean
 
+      - name: 创建 pkg.pr.new 配置文件
+        run: |
+          cat > .pkg.pr.new.json << EOF
+          {
+            "comment": {
+              "header": "## 🎉 临时NPM包已发布 📦",
+              "body": "版本号: \`${PKG_VERSION}\`\n基于提交: [\`${SHORT_COMMIT_HASH}\`](${REPO_URL})\n\n### 安装命令\n\n使用 pnpm:\n\`\`\`\npnpm add {{npmInstallUrl}} -w\n\`\`\`\n\n使用 npm:\n\`\`\`\nnpm i {{npmInstallUrl}}\n\`\`\`",
+              "footer": "发布时间: $(date '+%Y-%m-%d %H:%M:%S')"
+            }
+          }
+          EOF
+
       - name: 发布临时NPM包
         id: publish_pkg
         run: |
