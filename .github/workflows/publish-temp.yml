@@ -96,18 +96,18 @@ jobs:
           
           # 在工作流摘要中添加信息
           echo "## Published Packages :package:" >> $GITHUB_STEP_SUMMARY
-          echo "版本号: \`${{ env.PKG_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "基于提交: [\`${{ env.SHORT_COMMIT_HASH }}\`](${{ env.REPO_URL }})" >> $GITHUB_STEP_SUMMARY
+          echo "version: \`${{ env.PKG_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "commit: [\`${{ env.SHORT_COMMIT_HASH }}\`](${{ env.REPO_URL }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 安装命令" >> $GITHUB_STEP_SUMMARY
-          echo "使用 pnpm:" >> $GITHUB_STEP_SUMMARY
+          echo "### install_cmd" >> $GITHUB_STEP_SUMMARY
+          echo "use pnpm:" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "$PNPM_INSTALL_CMD" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           # 添加完整输出到摘要，方便查看
-          echo "## 完整输出" >> $GITHUB_STEP_SUMMARY
+          echo "## Complete output" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat pkg-output.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
@@ -142,22 +142,28 @@ jobs:
             const shortSha = sha.substring(0, 7);
             const commitUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             
+            // 获取当前中国标准时间
+            const now = new Date();
+            // 转换为北京时间 (UTC+8)
+            now.setHours(now.getHours() + 8);
+            const cstTime = now.toISOString().replace('T', ' ').substring(0, 19);
+            
             // 构建与摘要类似的评论内容
             const body = `## Published Packages :package:
             
-            版本号: \`${{ env.PKG_VERSION }}\`
-            基于提交: [\`${shortSha}\`](${commitUrl})
+            version: \`${{ env.PKG_VERSION }}\`
+            commit: [\`${shortSha}\`](${commitUrl})
             
             ${stackblitzUrl ? `[Open in Stackblitz](${stackblitzUrl})` : ''}
             
-            ### 安装命令
+            ### install_cmd
             
-            使用 pnpm:
+            use pnpm:
             \`\`\`
             pnpm add ${installUrl} -w
             \`\`\`
             
-            _commit: <a href="${commitUrl}"><code>${shortSha}</code></a>_`;
+            pack time: <code>${cstTime} (CST)</code>`;
             
             const botCommentIdentifier = '## Published Packages';
             
