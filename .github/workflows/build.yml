@@ -115,11 +115,10 @@ jobs:
 
       - name: 删除开发依赖 
         run: npm run pr clean
-        
+
       - name: 根据main分支的commit信息生成提交消息
         run: |
           git add .
-          git reset build.zip
           if [ -z "$(git diff --cached --name-only)" ]; then
             echo "No changes detected"
             exit 0
