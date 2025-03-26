@@ -160,7 +160,30 @@ jobs:
           args: --set-upstream
 
       - name: 发布临时NPM包
-        run: pnpm dlx pkg-pr-new publish --comment=update
+        id: publish_pkg
+        run: |
+          # 将输出保存到文件
+          pnpm dlx pkg-pr-new publish | tee pkg-output.txt
+          
+          # 提取npm安装命令 - 修改匹配模式以适应实际输出格式
+          NPM_INSTALL_CMD=$(grep -E "npm i|npm install" pkg-output.txt || echo "")
+          
+          # 如果上面没找到，尝试其他可能的格式
+          if [ -z "$NPM_INSTALL_CMD" ]; then
+            NPM_INSTALL_CMD=$(grep -A 1 "karin-plugin-kkk:" pkg-output.txt | grep -E "https://pkg.pr.new" || echo "未找到安装命令")
+          fi
+          
+          echo "npm_install_cmd=$NPM_INSTALL_CMD" >> $GITHUB_OUTPUT
+          
+          # 在工作流摘要中添加信息
+          echo "## 临时NPM包已发布 :package:" >> $GITHUB_STEP_SUMMARY
+          echo "安装命令: \`$NPM_INSTALL_CMD\`" >> $GITHUB_STEP_SUMMARY
+          
+          # 添加完整输出到摘要，方便查看
+          echo "## 完整输出" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat pkg-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: 更新版本号
         uses: googleapis/release-please-action@v4
