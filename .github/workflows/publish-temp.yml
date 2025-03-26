@@ -95,6 +95,7 @@ jobs:
           
           echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
           echo "npm_install_cmd=$NPM_INSTALL_CMD" >> $GITHUB_OUTPUT
+          echo "install_url=$INSTALL_URL" >> $GITHUB_OUTPUT
           
           # 在工作流摘要中添加信息
           echo "## 临时NPM包已发布 :package:" >> $GITHUB_STEP_SUMMARY
@@ -172,33 +173,56 @@ jobs:
             
             const botCommentIdentifier = '## 临时NPM包已发布';
             
-            async function findBotComment(issueNumber) {
-              if (!issueNumber) return null;
+            // 查找机器人评论的函数
+            async function findBotComments(issueNumber) {
+              if (!issueNumber) return [];
               const comments = await github.rest.issues.listComments({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issueNumber,
               });
-              return comments.data.find((comment) =>
+              return comments.data.filter((comment) =>
                 comment.body.includes(botCommentIdentifier)
               );
             }
-      
+            
+            // 创建或更新评论
             async function createOrUpdateComment(issueNumber) {
               if (!issueNumber) {
                 console.log('No issue number provided. Cannot post or update comment.');
                 return;
               }
-      
-              const existingComment = await findBotComment(issueNumber);
-              if (existingComment) {
+              
+              // 获取所有机器人评论
+              const botComments = await findBotComments(issueNumber);
+              
+              // 如果有现有评论，更新最新的一条
+              if (botComments.length > 0) {
                 await github.rest.issues.updateComment({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  comment_id: existingComment.id,
+                  comment_id: botComments[0].id,
                   body: body,
                 });
+                
+                // 如果评论数超过3条，删除多余的评论
+                if (botComments.length > 3) {
+                  // 按创建时间排序，保留最新的3条
+                  const commentsToDelete = botComments
+                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                    .slice(3);
+                  
+                  for (const comment of commentsToDelete) {
+                    await github.rest.issues.deleteComment({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      comment_id: comment.id
+                    });
+                    console.log(`删除了评论 ID: ${comment.id}`);
+                  }
+                }
               } else {
+                // 没有现有评论，创建新评论
                 await github.rest.issues.createComment({
                   issue_number: issueNumber,
                   owner: context.repo.owner,
@@ -207,19 +231,18 @@ jobs:
                 });
               }
             }
-      
+            
+            // 记录发布信息到控制台
             async function logPublishInfo() {
               console.log('\n' + '='.repeat(50));
               console.log('Publish Information');
               console.log('='.repeat(50));
-              console.log('\nPublished Packages:');
-              console.log(packages);
-              console.log('\nTemplates:');
-              console.log(templates);
+              console.log(`\nInstall URL: ${installUrl}`);
               console.log(`\nCommit URL: ${commitUrl}`);
               console.log('\n' + '='.repeat(50));
             }
-      
+            
+            // 根据事件类型执行不同操作
             if (context.eventName === 'pull_request') {
               if (context.issue.number) {
                 await createOrUpdateComment(context.issue.number);
@@ -234,7 +257,7 @@ jobs:
                   ''
                 )}`,
               });
-      
+              
               if (pullRequests.data.length > 0) {
                 await createOrUpdateComment(pullRequests.data[0].number);
               } else {
