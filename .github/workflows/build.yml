@@ -159,7 +159,27 @@ jobs:
           force: true  # 使用 force 而不是 force_with_lease
           args: --set-upstream
 
-      - run: pnpm dlx pkg-pr-new publish
+      - name: 发布临时NPM包
+        id: publish_pkg
+        run: |
+          # 将输出保存到文件
+          pnpm dlx pkg-pr-new publish | tee pkg-output.txt
+          
+          # 提取npm安装命令并设置为输出变量
+          NPM_INSTALL_CMD=$(grep "npm i" pkg-output.txt || echo "未找到安装命令")
+          echo "npm_install_cmd=$NPM_INSTALL_CMD" >> $GITHUB_OUTPUT
+          
+          # 在工作流摘要中添加信息
+          echo "## 临时NPM包已发布 :package:" >> $GITHUB_STEP_SUMMARY
+          echo "安装命令: \`$NPM_INSTALL_CMD\`" >> $GITHUB_STEP_SUMMARY
+          echo "请复制上面的命令进行安装" >> $GITHUB_STEP_SUMMARY
+
+      - name: 上传NPM包信息
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-package-info
+          path: pkg-output.txt
+          retention-days: 5
 
       - name: 更新版本号
         uses: googleapis/release-please-action@v4
