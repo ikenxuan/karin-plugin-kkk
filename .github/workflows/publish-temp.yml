@@ -116,6 +116,7 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Post or update comment
+        if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -124,12 +125,15 @@ jobs:
             const output = JSON.parse(fs.readFileSync('output.json', 'utf8'));
             
             // 获取提交哈希
-            const sha =
-              context.event_name === 'pull_request'
-                ? context.payload.pull_request.head.sha
-                : context.payload.after;
+            let sha;
+            try {
+              sha = context.payload.pull_request.head.sha;
+            } catch (error) {
+              console.log('无法获取提交哈希，使用环境变量中的值');
+            }
             
-            const shortSha = sha.substring(0, 7);
+            // 如果无法从上下文获取SHA，则使用环境变量中的值
+            const shortSha = sha ? sha.substring(0, 7) : '${{ env.SHORT_COMMIT_HASH }}';
             const commitUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             
             // 获取安装URL
@@ -233,30 +237,18 @@ jobs:
               console.log('\n' + '='.repeat(50));
             }
             
-            // 根据事件类型执行不同操作
-            if (context.eventName === 'pull_request') {
-              if (context.issue.number) {
-                await createOrUpdateComment(context.issue.number);
-              }
-            } else if (context.eventName === 'push') {
-              const pullRequests = await github.rest.pulls.list({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                state: 'open',
-                head: `${context.repo.owner}:${context.ref.replace(
-                  'refs/heads/',
-                  ''
-                )}`,
-              });
+            if (context.issue.number) {
+              await createOrUpdateComment(context.issue.number);
+            }
               
-              if (pullRequests.data.length > 0) {
-                await createOrUpdateComment(pullRequests.data[0].number);
-              } else {
-                console.log(
-                  'No open pull request found for this push. Logging publish information to console:'
-                );
-                await logPublishInfo();
-              }
+            if (pullRequests.data.length > 0) {
+              await createOrUpdateComment(pullRequests.data[0].number);
+            } else {
+              console.log(
+                'No open pull request found for this push. Logging publish information to console:'
+              );
+              await logPublishInfo();
+            }
             }
 
       - name: 上传NPM包信息
