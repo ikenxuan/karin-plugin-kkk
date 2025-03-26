@@ -97,13 +97,24 @@ jobs:
       - name: 构建文件
         run: |
           echo "准备构建文件..."
-          if [ "$(git ls-files | wc -l)" -gt 0 ]; then
-            echo "清理现有文件..."
-            git rm -rf .
-          fi
+          # 清空当前目录但保留.git文件夹
+          find . -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} \;
+          echo "已清理现有文件，保留.git目录"
+          
+          # 显示临时目录中的文件
+          echo "临时目录中的文件:"
+          ls -la ${{ runner.temp }}/temp/
+          
+          # 复制构建产物到当前目录
           echo "复制构建产物..."
-          cp -r ${{ runner.temp }}/temp/* ./
-          rm -rf node_modules pnpm-lock.yaml
+          cp -rv ${{ runner.temp }}/temp/* ./
+          
+          # 确认文件已复制
+          echo "当前目录中的文件:"
+          ls -la
+          
+          # 移除不需要的文件
+          rm -rf node_modules pnpm-lock.yaml 2>/dev/null || true
           echo "文件已复制，准备提交"
           ls -la
 
