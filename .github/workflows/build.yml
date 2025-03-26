@@ -159,6 +159,8 @@ jobs:
           force: true  # 使用 force 而不是 force_with_lease
           args: --set-upstream
 
+      - run: pnpm dlx pkg-pr-new publish
+
       - name: 更新版本号
         uses: googleapis/release-please-action@v4
         id: release_please
