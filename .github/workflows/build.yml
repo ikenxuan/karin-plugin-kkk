@@ -36,22 +36,26 @@ jobs:
           cp -r package.json CHANGELOG.md README.md LICENSE resources config lib ${{ runner.temp }}/temp/
 
       - name: 配置 Git 用户
+        if: github.event_name != 'pull_request'
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: 获取最新的主分支
+        if: github.event_name != 'pull_request'
         run: |
           git fetch origin ${{ github.ref_name }}
           git checkout ${{ github.ref_name }}
           git pull origin ${{ github.ref_name }} --ff-only
 
       - name: 获取主分支的最新提交消息
+        if: github.event_name != 'pull_request'
         id: commit-message
         run: |
           echo "commit_msg=$(git log origin/${{ github.ref_name }} -1 --pretty=format:'%s')" >> $GITHUB_ENV
 
       - name: 检查编译分支是否存在
+        if: github.event_name != 'pull_request'
         id: check-branch
         run: |
           if git ls-remote --exit-code origin build; then
@@ -61,6 +65,7 @@ jobs:
           fi
 
       - name: 创建或切换到编译分支
+        if: github.event_name != 'pull_request'
         run: |          
           if [ "$branch_exists" = "false" ]; then
             git checkout --orphan build
@@ -77,6 +82,7 @@ jobs:
           fi
 
       - name: 构建文件
+        if: github.event_name != 'pull_request'
         run: |
           if [ "$(git ls-files | wc -l)" -gt 0 ]; then
             git rm -rf .
@@ -85,6 +91,7 @@ jobs:
           rm -rf node_modules pnpm-lock.yaml
 
       - name: 提交更改并推送
+        if: github.event_name != 'pull_request'
         run: |
           git add .
           git commit -m "${{ env.commit_msg }}" || echo "没有文件需要提交"
