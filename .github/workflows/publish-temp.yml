@@ -1,0 +1,150 @@
+name: 发布临时版本
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  publish-temp:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 获取完整历史记录，用于生成版本号
+
+      - name: 安装node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21
+          registry-url: "https://registry.npmjs.org"
+
+      - name: 安装pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9.7.1
+
+      - name: 获取当前提交哈希
+        run: |
+          COMMIT_HASH=$(git rev-parse HEAD)
+          SHORT_COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+          echo "SHORT_COMMIT_HASH=$SHORT_COMMIT_HASH" >> $GITHUB_ENV
+          echo "REPO_URL=https://github.com/${{ github.repository }}/tree/$COMMIT_HASH" >> $GITHUB_ENV
+
+      - name: 安装依赖
+        run: pnpm install
+
+      - name: 修改版本号
+        run: |
+          # 获取当前日期作为版本号的一部分
+          DATE=$(date +'%Y%m%d')
+          
+          # 从package.json获取当前版本号
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          
+          # 生成新的版本号：主版本号.次版本号.日期-短哈希
+          BASE_VERSION=$(echo $CURRENT_VERSION | sed -E 's/([0-9]+\.[0-9]+)\.[0-9]+.*/\1/')
+          NEW_VERSION="${BASE_VERSION}.${DATE}-${SHORT_COMMIT_HASH}"
+          
+          # 更新package.json中的版本号
+          npm version $NEW_VERSION --no-git-tag-version
+          
+          echo "PKG_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: 编译
+        run: pnpm build
+        id: build
+        continue-on-error: true
+
+      - name: 检查构建结果
+        if: steps.build.outcome != 'success'
+        run: |
+          echo "❌ 构建失败！" >> $GITHUB_STEP_SUMMARY
+          echo "提交哈希: ${{ env.SHORT_COMMIT_HASH }}" >> $GITHUB_STEP_SUMMARY
+          exit 1
+
+      - name: 删除开发依赖
+        run: npm run pr clean
+
+      - name: 发布临时NPM包
+        id: publish_pkg
+        run: |
+          # 将标准输出和标准错误都重定向到文件
+          pnpm dlx pkg-pr-new publish > pkg-output.txt 2>&1
+          
+          # 显示输出内容以便在日志中查看
+          echo "命令输出内容："
+          cat pkg-output.txt
+          
+          # 提取安装URL并转换为pnpm格式
+          INSTALL_URL=$(grep -E "npm i https://pkg.pr.new" pkg-output.txt | sed 's/.*npm i //' || echo "")
+          
+          if [ ! -z "$INSTALL_URL" ]; then
+            PNPM_INSTALL_CMD="pnpm add $INSTALL_URL"
+            NPM_INSTALL_CMD="npm i $INSTALL_URL"
+          else
+            PNPM_INSTALL_CMD="未找到安装命令"
+            NPM_INSTALL_CMD="未找到安装命令"
+          fi
+          
+          echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
+          echo "npm_install_cmd=$NPM_INSTALL_CMD" >> $GITHUB_OUTPUT
+          
+          # 在工作流摘要中添加信息
+          echo "## 临时NPM包已发布 :package:" >> $GITHUB_STEP_SUMMARY
+          echo "版本号: \`${{ env.PKG_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "基于提交: [\`${{ env.SHORT_COMMIT_HASH }}\`](${{ env.REPO_URL }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 安装命令" >> $GITHUB_STEP_SUMMARY
+          echo "使用 pnpm:" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "$PNPM_INSTALL_CMD" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "使用 npm:" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "$NPM_INSTALL_CMD" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          
+          # 添加完整输出到摘要，方便查看
+          echo "## 完整输出" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat pkg-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: 上传NPM包信息
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-package-info
+          path: pkg-output.txt
+          retention-days: 5
+
+      - name: 创建 build.zip
+        run: |
+          # 创建临时目录
+          mkdir -p temp-package
+          
+          # 复制必要文件
+          cp -r lib temp-package/
+          cp -r resources temp-package/
+          cp package.json CHANGELOG.md README.md LICENSE temp-package/
+          cp -r config temp-package/ || true
+          
+          # 创建zip文件
+          cd temp-package
+          zip -r ../build.zip .
+          cd ..
+          
+          # 清理临时目录
+          rm -rf temp-package
+
+      - name: 上传 build.zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-zip
+          path: build.zip
+          retention-days: 5
