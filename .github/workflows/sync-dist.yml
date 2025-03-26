@@ -1,0 +1,120 @@
+name: Sync dist
+
+on:
+  workflow_dispatch:  # 允许手动触发
+  workflow_run:
+    workflows: ["build"]
+    types: [completed]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]' && github.actor != 'dependabot[bot]'
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 放弃 package.json 的本地更改
+        run: |
+          git checkout HEAD package.json
+
+      - name: 删除 pnpm-lock.yaml
+        run: rm -rf pnpm-lock.yaml
+
+      - name: 编译
+        run: pnpm build
+
+      - name: 设置时区
+        run: |
+          sudo timedatectl set-timezone Asia/Shanghai
+
+      - name: 设置git用户名和邮箱
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: 创建临时文件夹存储编译后的lib文件夹和resources文件夹
+        run: |
+          mkdir ./../temp
+
+      - name: 复制编译后的lib文件夹和resources文件夹到临时文件夹
+        run: |
+          cp -r ./lib ./../temp/lib
+          cp -r ./resources ./../temp/resources
+
+      - name: 检查并创建空的 build 分支
+        run: |
+          git fetch origin
+          # 检查 build 分支是否存在
+          if git show-ref --verify --quiet refs/heads/build; then
+            echo "Build branch exists locally. Switching to it."
+            git checkout build
+          else
+            # 检查远程是否有 build 分支
+            if git ls-remote --exit-code --heads origin build; then
+              echo "Build branch exists remotely. Fetching and switching to it."
+              git checkout build
+            else
+              # build 分支不存在，创建一个空的 build 分支
+              echo "Build branch does not exist. Creating an empty build branch."
+              git checkout --orphan build  # 创建一个没有历史记录的空分支
+              git reset --hard  # 重置所有文件
+              git clean -fdx  # 删除未被 Git 管理的文件和文件夹
+              echo "Empty build branch created."
+              git commit --allow-empty -m "Initial empty commit on build branch"
+              git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} build  # 推送到远程仓库
+            fi
+          fi
+
+      - name: 切换到 build 分支
+        run: |
+          git fetch origin build
+          git checkout build
+
+      - name: 删除build分支上的lib文件夹和resources文件夹
+        run: |
+          rm -rf lib
+          rm -rf resources
+
+      - name: 复制编译后的lib文件夹和resources文件夹到 build 分支
+        run: |
+          cp -r ./../temp/lib ./
+          cp -r ./../temp/resources ./
+
+      - name: 删除临时文件夹
+        run: |
+          rm -rf ./../temp
+
+      - name: 从main分支复制文件到build分支
+        run: |
+          git checkout main -- package.json CHANGELOG.md README.md config resources LICENSE
+          
+      - name: 删除依赖文件夹 node_modules
+        run: |
+          rm -rf node_modules
+
+      - name: 删除开发依赖 
+        run: npm run pr clean
+
+      - name: 根据main分支的commit信息生成提交消息
+        run: |
+          git add .
+          git reset build.zip
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            echo "No changes detected"
+            exit 0
+          else
+            git commit -m "chore(build): ${{ github.event.head_commit.message }}"
+          fi
+
+      - name: 设置 build 分支的上游分支
+        run: git push --set-upstream origin build
+
+      - name: 推送到 build 分支
+        uses: ad-m/github-push-action@master
+        with:
+          branch: build
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          force_with_lease: true
+          args: --set-upstream
