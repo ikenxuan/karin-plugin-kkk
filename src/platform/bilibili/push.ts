@@ -1,7 +1,7 @@
 import Client, { getBilibiliData } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
-import { Base, bilibiliDB, Common, Config, Render } from '@/module'
+import { Base, bilibiliDB, cleanOldDynamicCache, Common, Config, Render } from '@/module'
 import { cover, generateDecorationCard, replacetext } from '@/platform/bilibili'
 import type { bilibiliPushItem } from '@/types/config/pushlist'
 
@@ -65,7 +65,7 @@ export class Bilibilipush extends Base {
       await bilibiliDB.syncConfigSubscriptions(Config.pushlist.bilibili)
 
       // 清理旧的动态缓存记录
-      const deletedCount = await bilibiliDB.cleanOldDynamicCache(1)
+      const deletedCount = await cleanOldDynamicCache('bilibili', 1)
       if (deletedCount > 0) {
         logger.info(`已清理 ${deletedCount} 条过期的B站动态缓存记录`)
       }
