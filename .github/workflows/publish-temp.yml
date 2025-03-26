@@ -70,129 +70,58 @@ jobs:
       - name: 删除开发依赖
         run: npm run pr clean
 
-      - name: 创建 pkg.pr.new 配置文件
+      - name: 发布临时NPM包
+        id: publish_pkg
         run: |
-          cat > .pkg.pr.new.json << EOF
-          {
-            "comment": {
-              "header": "## 🎉 临时NPM包已发布 📦",
-              "body": "版本号: \`${PKG_VERSION}\`\n基于提交: [\`${SHORT_COMMIT_HASH}\`](${REPO_URL})\n\n### 安装命令\n\n使用 pnpm:\n\`\`\`\npnpm add {{npmInstallUrl}} -w\n\`\`\`\n\n使用 npm:\n\`\`\`\nnpm i {{npmInstallUrl}}\n\`\`\`",
-              "footer": "发布时间: $(date '+%Y-%m-%d %H:%M:%S')"
-            }
-          }
-          EOF
+          # 将标准输出和标准错误都重定向到文件
+          pnpm dlx pkg-pr-new publish > pkg-output.txt 2>&1
+          
+          # 显示输出内容以便在日志中查看
+          echo "命令输出内容："
+          cat pkg-output.txt
+          
+          # 提取安装URL并转换为pnpm格式
+          INSTALL_URL=$(grep -E "npm i https://pkg.pr.new" pkg-output.txt | sed 's/.*npm i //' || echo "")
+          
+          if [ ! -z "$INSTALL_URL" ]; then
+            PNPM_INSTALL_CMD="pnpm add $INSTALL_URL -w"
+            NPM_INSTALL_CMD="npm i $INSTALL_URL -w"
+          else
+            PNPM_INSTALL_CMD="未找到安装命令"
+            NPM_INSTALL_CMD="未找到安装命令"
+          fi
+          
+          echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
+          echo "npm_install_cmd=$NPM_INSTALL_CMD" >> $GITHUB_OUTPUT
+          
+          # 在工作流摘要中添加信息
+          echo "## 临时NPM包已发布 :package:" >> $GITHUB_STEP_SUMMARY
+          echo "版本号: \`${{ env.PKG_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "基于提交: [\`${{ env.SHORT_COMMIT_HASH }}\`](${{ env.REPO_URL }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 安装命令" >> $GITHUB_STEP_SUMMARY
+          echo "使用 pnpm:" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "$PNPM_INSTALL_CMD" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "使用 npm:" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "$NPM_INSTALL_CMD" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          
+          # 添加完整输出到摘要，方便查看
+          echo "## 完整输出" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat pkg-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
-      - name: Publish packages
-        run: pnpx pkg-pr-new publish --json output.json --comment=off
-
-      - name: Post or update comment
-        uses: actions/github-script@v6
+      - name: 上传NPM包信息
+        uses: actions/upload-artifact@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const output = JSON.parse(fs.readFileSync('output.json', 'utf8'));
-      
-            const packages = output.packages
-              .map((p) => `- ${p.name}: ${p.url}`)
-              .join('\n');
-            const templates = output.templates
-              .map((t) => `- [${t.name}](${t.url})`)
-              .join('\n');
-      
-            const sha =
-              context.event_name === 'pull_request'
-                ? context.payload.pull_request.head.sha
-                : context.payload.after;
-      
-            const commitUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/commit/${sha}`;
-      
-            const body = `## Custom Publish Message
-      
-            ### Published Packages:
-      
-            ${packages}
-      
-            ### Templates:
-      
-            ${templates}
-      
-            [View Commit](${commitUrl})`;
-      
-            const botCommentIdentifier = '## Custom Publish Message';
-      
-            async function findBotComment(issueNumber) {
-              if (!issueNumber) return null;
-              const comments = await github.rest.issues.listComments({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issueNumber,
-              });
-              return comments.data.find((comment) =>
-                comment.body.includes(botCommentIdentifier)
-              );
-            }
-      
-            async function createOrUpdateComment(issueNumber) {
-              if (!issueNumber) {
-                console.log('No issue number provided. Cannot post or update comment.');
-                return;
-              }
-      
-              const existingComment = await findBotComment(issueNumber);
-              if (existingComment) {
-                await github.rest.issues.updateComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  comment_id: existingComment.id,
-                  body: body,
-                });
-              } else {
-                await github.rest.issues.createComment({
-                  issue_number: issueNumber,
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  body: body,
-                });
-              }
-            }
-      
-            async function logPublishInfo() {
-              console.log('\n' + '='.repeat(50));
-              console.log('Publish Information');
-              console.log('='.repeat(50));
-              console.log('\nPublished Packages:');
-              console.log(packages);
-              console.log('\nTemplates:');
-              console.log(templates);
-              console.log(`\nCommit URL: ${commitUrl}`);
-              console.log('\n' + '='.repeat(50));
-            }
-      
-            if (context.eventName === 'pull_request') {
-              if (context.issue.number) {
-                await createOrUpdateComment(context.issue.number);
-              }
-            } else if (context.eventName === 'push') {
-              const pullRequests = await github.rest.pulls.list({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                state: 'open',
-                head: `${context.repo.owner}:${context.ref.replace(
-                  'refs/heads/',
-                  ''
-                )}`,
-              });
-      
-              if (pullRequests.data.length > 0) {
-                await createOrUpdateComment(pullRequests.data[0].number);
-              } else {
-                console.log(
-                  'No open pull request found for this push. Logging publish information to console:'
-                );
-                await logPublishInfo();
-              }
-            }
+          name: npm-package-info
+          path: pkg-output.txt
+          retention-days: 5
 
       - name: 创建 build.zip
         run: |
