@@ -237,18 +237,12 @@ jobs:
               console.log('\n' + '='.repeat(50));
             }
             
+            // 只处理PR情况
             if (context.issue.number) {
               await createOrUpdateComment(context.issue.number);
-            }
-              
-            if (pullRequests.data.length > 0) {
-              await createOrUpdateComment(pullRequests.data[0].number);
             } else {
-              console.log(
-                'No open pull request found for this push. Logging publish information to console:'
-              );
+              console.log('No issue number found. Cannot post comment.');
               await logPublishInfo();
-            }
             }
 
       - name: 上传NPM包信息
