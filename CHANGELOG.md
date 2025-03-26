@@ -1,3 +1,16 @@
+# 变更日志
+
+## [1.1.8](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.7...v1.1.8) (2025-03-26)
+
+### 🐛 修复
+
+* ci ([2411982](https://github.com/ikenxuan/karin-plugin-kkk/commit/24119822b2b5a16d47a5f755d5a6cdddd87f6a98))
+* ci ([d43240c](https://github.com/ikenxuan/karin-plugin-kkk/commit/d43240c4069ae23226209f86f0e407a72864e76e))
+
+### 🔄 持续集成
+
+* 细优 ci/cd ([#55](https://github.com/ikenxuan/karin-plugin-kkk/issues/55)) ([9a586ce](https://github.com/ikenxuan/karin-plugin-kkk/commit/9a586cea89ead72ef5f634258196a80cc63f8f81))
+
 # Changelog
 
 ## [1.1.7](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.6...v1.1.7) (2025-03-26)
