@@ -86,20 +86,23 @@ jobs:
           INSTALL_URL=$(grep -E "npm i https://pkg.pr.new" pkg-output.txt | sed 's/.*npm i //' || echo "")
           
           if [ ! -z "$INSTALL_URL" ]; then
-            PNPM_INSTALL_CMD="pnpm add $INSTALL_URL -w"
+            # 获取仓库名和短哈希
+            REPO_NAME=$(basename ${{ github.repository }})
+            # 生成简化的安装URL
+            SIMPLIFIED_URL="https://pkg.pr.new/${REPO_NAME}@${SHORT_COMMIT_HASH}"
+            PNPM_INSTALL_CMD="pnpm add ${SIMPLIFIED_URL} -w"
           else
             PNPM_INSTALL_CMD="未找到安装命令"
           fi
           
           echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
-          echo "install_url=$INSTALL_URL" >> $GITHUB_OUTPUT
+          echo "install_url=$SIMPLIFIED_URL" >> $GITHUB_OUTPUT
           
           # 在工作流摘要中添加信息
           echo "## Published Packages :package:" >> $GITHUB_STEP_SUMMARY
           echo "version: \`${{ env.PKG_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
           echo "commit: [\`${{ env.SHORT_COMMIT_HASH }}\`](${{ env.REPO_URL }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### install_cmd" >> $GITHUB_STEP_SUMMARY
           echo "use pnpm:" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "$PNPM_INSTALL_CMD" >> $GITHUB_STEP_SUMMARY
@@ -127,26 +130,9 @@ jobs:
               break; // 只取第一个包的URL
             }
             
-            // 获取Stackblitz链接
-            let stackblitzUrl = '';
-            for (const template of output.templates) {
-              stackblitzUrl = template.url;
-              break; // 只取第一个模板的URL
-            }
-            
-            const sha =
-              context.event_name === 'pull_request'
-                ? context.payload.pull_request.head.sha
-                : context.payload.after;
-            
-            const shortSha = sha.substring(0, 7);
-            const commitUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            
-            // 获取当前中国标准时间
-            const now = new Date();
-            // 转换为北京时间 (UTC+8)
-            now.setHours(now.getHours() + 8);
-            const cstTime = now.toISOString().replace('T', ' ').substring(0, 19);
+            // 简化安装URL格式为 包名@短哈希
+            const repoName = context.repo.repo; // 获取仓库名
+            const simplifiedUrl = `https://pkg.pr.new/${repoName}@${shortSha}`;
             
             // 构建与摘要类似的评论内容
             const body = `## Published Packages :package:
@@ -156,11 +142,9 @@ jobs:
             
             ${stackblitzUrl ? `[Open in Stackblitz](${stackblitzUrl})` : ''}
             
-            ### install_cmd
-            
             use pnpm:
             \`\`\`
-            pnpm add ${installUrl} -w
+            pnpm add ${simplifiedUrl} -w
             \`\`\`
             
             pack time: <code>${cstTime} (CST)</code>`;
