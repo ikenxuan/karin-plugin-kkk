@@ -162,15 +162,29 @@ jobs:
       - name: 发布临时NPM包
         id: publish_pkg
         run: |
-          # 将输出保存到文件
-          pnpm dlx pkg-pr-new publish | tee pkg-output.txt
+          # 将标准输出和标准错误都重定向到文件
+          pnpm dlx pkg-pr-new publish > pkg-output.txt 2>&1
           
-          # 提取npm安装命令 - 修改匹配模式以适应实际输出格式
-          NPM_INSTALL_CMD=$(grep -E "npm i|npm install" pkg-output.txt || echo "")
+          # 显示输出内容以便在日志中查看
+          echo "命令输出内容："
+          cat pkg-output.txt
+          
+          # 提取npm安装命令 - 尝试多种可能的格式
+          NPM_INSTALL_CMD=$(grep -E "npm i |npm install " pkg-output.txt || echo "")
           
           # 如果上面没找到，尝试其他可能的格式
           if [ -z "$NPM_INSTALL_CMD" ]; then
-            NPM_INSTALL_CMD=$(grep -A 1 "karin-plugin-kkk:" pkg-output.txt | grep -E "https://pkg.pr.new" || echo "未找到安装命令")
+            NPM_INSTALL_CMD=$(grep -A 2 "karin-plugin-kkk:" pkg-output.txt | grep -E "npm:" | sed 's/.*npm: //' || echo "")
+          fi
+          
+          # 如果还是没找到，尝试直接提取URL
+          if [ -z "$NPM_INSTALL_CMD" ]; then
+            URL=$(grep -E "https://pkg.pr.new" pkg-output.txt || echo "")
+            if [ ! -z "$URL" ]; then
+              NPM_INSTALL_CMD="npm i $URL"
+            else
+              NPM_INSTALL_CMD="未找到安装命令"
+            fi
           fi
           
           echo "npm_install_cmd=$NPM_INSTALL_CMD" >> $GITHUB_OUTPUT
@@ -184,6 +198,14 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat pkg-output.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
+
+
+      - name: 上传NPM包信息
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-package-info
+          path: pkg-output.txt
+          retention-days: 5
 
       - name: 更新版本号
         uses: googleapis/release-please-action@v4
