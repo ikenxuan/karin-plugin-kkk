@@ -28,62 +28,91 @@ jobs:
       
       - name: 构建
         run: |
+          echo "开始构建项目..."
           pnpm build
+          if [ $? -ne 0 ]; then
+            echo "构建失败，退出工作流"
+            exit 1
+          fi
+          echo "构建成功，准备复制文件..."
           pnpm pkg delete devDependencies
           mkdir -p ${{ runner.temp }}/temp/
           cp -r package.json CHANGELOG.md README.md LICENSE resources config lib ${{ runner.temp }}/temp/
+          echo "文件已复制到临时目录"
 
       - name: 配置 Git 用户
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          echo "Git 用户已配置"
 
       - name: 获取最新的主分支
         run: |
+          echo "获取最新的主分支..."
           git fetch origin ${{ github.ref_name }}
           git checkout ${{ github.ref_name }}
           git pull origin ${{ github.ref_name }} --ff-only
+          echo "当前分支: $(git branch --show-current)"
 
       - name: 获取主分支的最新提交消息
         id: commit-message
         run: |
+          echo "获取最新提交消息..."
           echo "commit_msg=$(git log origin/${{ github.ref_name }} -1 --pretty=format:'%s')" >> $GITHUB_ENV
+          echo "提交消息: ${{ env.commit_msg }}"
 
       - name: 检查编译分支是否存在
         id: check-branch
         run: |
+          echo "检查编译分支是否存在..."
           if git ls-remote --exit-code origin build; then
             echo "branch_exists=true" >> $GITHUB_ENV
+            echo "编译分支存在"
           else
             echo "branch_exists=false" >> $GITHUB_ENV
+            echo "编译分支不存在，将创建新分支"
           fi
 
       - name: 创建或切换到编译分支
         run: |          
-          if [ "$branch_exists" = "false" ]; then
+          echo "开始处理编译分支..."
+          if [ "${{ env.branch_exists }}" = "false" ]; then
+            echo "创建新的编译分支..."
             git checkout --orphan build
             git reset --hard
             git clean -fd
             git commit --allow-empty -m "初始化编译分支"
             git push --set-upstream -f origin build
+            echo "新编译分支已创建并推送"
           else
+            echo "切换到现有编译分支..."
             git fetch origin build
             git reset --hard
             git clean -fd
             git reset --hard origin/build
             git checkout build
+            echo "已切换到编译分支: $(git branch --show-current)"
           fi
 
       - name: 构建文件
         run: |
+          echo "准备构建文件..."
           if [ "$(git ls-files | wc -l)" -gt 0 ]; then
+            echo "清理现有文件..."
             git rm -rf .
           fi
+          echo "复制构建产物..."
           cp -r ${{ runner.temp }}/temp/* ./
           rm -rf node_modules pnpm-lock.yaml
+          echo "文件已复制，准备提交"
+          ls -la
 
       - name: 提交更改并推送
         run: |
+          echo "提交更改到编译分支..."
           git add .
+          git status
           git commit -m "${{ env.commit_msg }}" || echo "没有文件需要提交"
+          echo "推送到编译分支..."
           git push origin build -f
+          echo "推送完成"
