@@ -1,6 +1,6 @@
 import { Message } from 'node-karin';
-import { AllDataType, Base, BilibiliDBType } from '../../module/index.js';
-import { bilibiliPushItem } from '../../types/config/pushlist.js';
+import { Base } from '../../module/index.js';
+import type { bilibiliPushItem } from '../../types/config/pushlist.js';
 /** 已支持推送的动态类型 */
 export declare enum DynamicType {
     AV = "DYNAMIC_TYPE_AV",
@@ -17,8 +17,11 @@ interface PushItem {
     host_mid: number;
     /** 动态发布时间 */
     create_time: number;
-    /** 要推送到的群组 */
-    group_id: string[];
+    /** 要推送到的群组和机器人ID */
+    targets: Array<{
+        groupId: string;
+        botId: string;
+    }>;
     /** 动态详情信息 */
     Dynamic_Data: any;
     /** UP主头像url */
@@ -43,6 +46,10 @@ export declare class Bilibilipush extends Base {
      */
     action(): Promise<true | void>;
     /**
+     * 同步配置文件中的订阅信息到数据库
+     */
+    syncConfigToDatabase(): Promise<void>;
+    /**
      * 异步获取数据并根据动态类型处理和发送动态信息。
      * @param data 包含动态相关信息的对象。
      */
@@ -53,15 +60,13 @@ export declare class Bilibilipush extends Base {
      */
     getDynamicList(userList: bilibiliPushItem[]): Promise<{
         willbepushlist: WillBePushList;
-        DBdata: Record<string, BilibiliDBType>;
     }>;
     /**
      * 排除已推送过的群组并返回更新后的推送列表
      * @param willBePushList 将要推送的列表
-     * @param dbData 数据库缓存
      * @returns 更新后的推送列表
      */
-    excludeAlreadyPushed(willBePushList: WillBePushList, dbData: AllDataType['bilibili']): WillBePushList;
+    excludeAlreadyPushed(willBePushList: WillBePushList): Promise<WillBePushList>;
     /**
      * 设置或更新特定 host_mid 的群组信息。
      * @param data 包含 card 对象。
@@ -78,11 +83,7 @@ export declare class Bilibilipush extends Base {
      * @param data 处理完成的推送列表
      */
     forcepush(data: WillBePushList): Promise<void>;
-    /**
-     * 渲染推送列表图片
-     * @param pushList B站配置文件的推送列表
-     * @returns
-     */
-    renderPushList(pushList: bilibiliPushItem[]): Promise<void>;
+    /** 渲染推送列表图片 */
+    renderPushList(): Promise<void>;
 }
 export {};

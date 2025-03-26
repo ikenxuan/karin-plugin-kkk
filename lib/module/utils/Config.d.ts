@@ -15,6 +15,86 @@ declare class Cfg {
      * @returns 返回合并后的配置
      */
     getDefOrConfig(name: keyof ConfigType): {
+        [x: string]: any;
+        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
+        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
+    } | {
+        bilibili: string;
+        douyin: string;
+        kuaishou: string;
+    } | {
+        [x: string]: any;
+        sendbase64: boolean;
+        usefilelimit: boolean;
+        filelimit: number;
+        compress: boolean;
+        compresstrigger: number;
+        compressvalue: number;
+        usegroupfile: boolean;
+        groupfilevalue: number;
+        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
+        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
+    } | {
+        defaulttool: boolean;
+        priority: number;
+        rmmp4: boolean;
+        renderScale: number;
+        APIServer: boolean;
+        APIServerPort: number;
+        APIServerMount: boolean;
+        Theme: number;
+        RemoveWatermark: boolean;
+        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
+        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
+    } | {
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        videopriority: boolean;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+        };
+        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
+        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
+    } | {
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+            shareType: "web" | "download";
+        };
+        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
+        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
+    } | {
+        [x: string]: any;
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
+        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
+    } | {
+        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
+        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
+        kuaishou: string;
+    } | {
         bilibili: string;
         douyin: string;
         kuaishou: string;
@@ -90,9 +170,17 @@ declare class Cfg {
         douyin: string;
         kuaishou: string;
     } | {
+        [x: string]: any;
         douyin: import("../../types/config/pushlist.js").douyinPushItem[];
         bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
-        kuaishou: string;
+        sendbase64: boolean;
+        usefilelimit: boolean;
+        filelimit: number;
+        compress: boolean;
+        compresstrigger: number;
+        compressvalue: number;
+        usegroupfile: boolean;
+        groupfilevalue: number;
     } | {
         bilibili: string;
         douyin: string;
@@ -196,403 +284,399 @@ declare class Cfg {
         usegroupfile: boolean;
         groupfilevalue: number;
     } | {
+        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
+        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
+        defaulttool: boolean;
+        priority: number;
+        rmmp4: boolean;
+        renderScale: number;
+        APIServer: boolean;
+        APIServerPort: number;
+        APIServerMount: boolean;
+        Theme: number;
+        RemoveWatermark: boolean;
+    } | {
+        bilibili: string;
+        douyin: string;
+        kuaishou: string;
+        defaulttool: boolean;
+        priority: number;
+        rmmp4: boolean;
+        renderScale: number;
+        APIServer: boolean;
+        APIServerPort: number;
+        APIServerMount: boolean;
+        Theme: number;
+        RemoveWatermark: boolean;
+    } | {
+        sendbase64: boolean;
+        usefilelimit: boolean;
+        filelimit: number;
+        compress: boolean;
+        compresstrigger: number;
+        compressvalue: number;
+        usegroupfile: boolean;
+        groupfilevalue: number;
+        defaulttool: boolean;
+        priority: number;
+        rmmp4: boolean;
+        renderScale: number;
+        APIServer: boolean;
+        APIServerPort: number;
+        APIServerMount: boolean;
+        Theme: number;
+        RemoveWatermark: boolean;
+    } | {
+        defaulttool: boolean;
+        priority: number;
+        rmmp4: boolean;
+        renderScale: number;
+        APIServer: boolean;
+        APIServerPort: number;
+        APIServerMount: boolean;
+        Theme: number;
+        RemoveWatermark: boolean;
+    } | {
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        videopriority: boolean;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+        };
+        defaulttool: boolean;
+        priority: number;
+        rmmp4: boolean;
+        renderScale: number;
+        APIServer: boolean;
+        APIServerPort: number;
+        APIServerMount: boolean;
+        Theme: number;
+        RemoveWatermark: boolean;
+    } | {
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+            shareType: "web" | "download";
+        };
+        defaulttool: boolean;
+        priority: number;
+        rmmp4: boolean;
+        renderScale: number;
+        APIServer: boolean;
+        APIServerPort: number;
+        APIServerMount: boolean;
+        Theme: number;
+        RemoveWatermark: boolean;
+    } | {
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        defaulttool: boolean;
+        priority: number;
+        rmmp4: boolean;
+        renderScale: number;
+        APIServer: boolean;
+        APIServerPort: number;
+        APIServerMount: boolean;
+        Theme: number;
+        RemoveWatermark: boolean;
+    } | {
+        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
+        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        videopriority: boolean;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+        };
+    } | {
+        bilibili: string;
+        douyin: string;
+        kuaishou: string;
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        videopriority: boolean;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+        };
+    } | {
+        sendbase64: boolean;
+        usefilelimit: boolean;
+        filelimit: number;
+        compress: boolean;
+        compresstrigger: number;
+        compressvalue: number;
+        usegroupfile: boolean;
+        groupfilevalue: number;
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        videopriority: boolean;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+        };
+    } | {
+        defaulttool: boolean;
+        priority: number;
+        rmmp4: boolean;
+        renderScale: number;
+        APIServer: boolean;
+        APIServerPort: number;
+        APIServerMount: boolean;
+        Theme: number;
+        RemoveWatermark: boolean;
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        videopriority: boolean;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+        };
+    } | {
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        videopriority: boolean;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+        };
+    } | {
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+            shareType: "web" | "download";
+        };
+        videopriority: boolean;
+    } | {
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        videopriority: boolean;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+        };
+    } | {
+        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
+        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+            shareType: "web" | "download";
+        };
+    } | {
+        bilibili: string;
+        douyin: string;
+        kuaishou: string;
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+            shareType: "web" | "download";
+        };
+    } | {
+        sendbase64: boolean;
+        usefilelimit: boolean;
+        filelimit: number;
+        compress: boolean;
+        compresstrigger: number;
+        compressvalue: number;
+        usegroupfile: boolean;
+        groupfilevalue: number;
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+            shareType: "web" | "download";
+        };
+    } | {
+        defaulttool: boolean;
+        priority: number;
+        rmmp4: boolean;
+        renderScale: number;
+        APIServer: boolean;
+        APIServerPort: number;
+        APIServerMount: boolean;
+        Theme: number;
+        RemoveWatermark: boolean;
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+            shareType: "web" | "download";
+        };
+    } | {
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        videopriority: boolean;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+        };
+    } | {
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+            shareType: "web" | "download";
+        };
+    } | {
+        switch: boolean;
+        tip: boolean;
+        comment: boolean;
+        numcomment: number;
+        autoResolution: boolean;
+        push: {
+            switch: boolean;
+            banWords: string[];
+            banTags: string[];
+            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
+            cron: string;
+            parsedynamic: boolean;
+            log: boolean;
+            shareType: "web" | "download";
+        };
+    } | {
         [x: string]: any;
         douyin: import("../../types/config/pushlist.js").douyinPushItem[];
         bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
-        sendbase64: boolean;
-        usefilelimit: boolean;
-        filelimit: number;
-        compress: boolean;
-        compresstrigger: number;
-        compressvalue: number;
-        usegroupfile: boolean;
-        groupfilevalue: number;
-    } | {
-        bilibili: string;
-        douyin: string;
-        kuaishou: string;
-        defaulttool: boolean;
-        priority: number;
-        rmmp4: boolean;
-        renderScale: number;
-        APIServer: boolean;
-        APIServerPort: number;
-        APIServerMount: boolean;
-        Theme: number;
-        RemoveWatermark: boolean;
-    } | {
-        sendbase64: boolean;
-        usefilelimit: boolean;
-        filelimit: number;
-        compress: boolean;
-        compresstrigger: number;
-        compressvalue: number;
-        usegroupfile: boolean;
-        groupfilevalue: number;
-        defaulttool: boolean;
-        priority: number;
-        rmmp4: boolean;
-        renderScale: number;
-        APIServer: boolean;
-        APIServerPort: number;
-        APIServerMount: boolean;
-        Theme: number;
-        RemoveWatermark: boolean;
-    } | {
-        defaulttool: boolean;
-        priority: number;
-        rmmp4: boolean;
-        renderScale: number;
-        APIServer: boolean;
-        APIServerPort: number;
-        APIServerMount: boolean;
-        Theme: number;
-        RemoveWatermark: boolean;
-    } | {
         switch: boolean;
         tip: boolean;
         comment: boolean;
         numcomment: number;
-        videopriority: boolean;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-        };
-        defaulttool: boolean;
-        priority: number;
-        rmmp4: boolean;
-        renderScale: number;
-        APIServer: boolean;
-        APIServerPort: number;
-        APIServerMount: boolean;
-        Theme: number;
-        RemoveWatermark: boolean;
-    } | {
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-            shareType: "web" | "download";
-        };
-        defaulttool: boolean;
-        priority: number;
-        rmmp4: boolean;
-        renderScale: number;
-        APIServer: boolean;
-        APIServerPort: number;
-        APIServerMount: boolean;
-        Theme: number;
-        RemoveWatermark: boolean;
-    } | {
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        defaulttool: boolean;
-        priority: number;
-        rmmp4: boolean;
-        renderScale: number;
-        APIServer: boolean;
-        APIServerPort: number;
-        APIServerMount: boolean;
-        Theme: number;
-        RemoveWatermark: boolean;
-    } | {
-        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
-        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
-        defaulttool: boolean;
-        priority: number;
-        rmmp4: boolean;
-        renderScale: number;
-        APIServer: boolean;
-        APIServerPort: number;
-        APIServerMount: boolean;
-        Theme: number;
-        RemoveWatermark: boolean;
-    } | {
-        bilibili: string;
-        douyin: string;
-        kuaishou: string;
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        videopriority: boolean;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-        };
-    } | {
-        sendbase64: boolean;
-        usefilelimit: boolean;
-        filelimit: number;
-        compress: boolean;
-        compresstrigger: number;
-        compressvalue: number;
-        usegroupfile: boolean;
-        groupfilevalue: number;
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        videopriority: boolean;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-        };
-    } | {
-        defaulttool: boolean;
-        priority: number;
-        rmmp4: boolean;
-        renderScale: number;
-        APIServer: boolean;
-        APIServerPort: number;
-        APIServerMount: boolean;
-        Theme: number;
-        RemoveWatermark: boolean;
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        videopriority: boolean;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-        };
-    } | {
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        videopriority: boolean;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-        };
-    } | {
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-            shareType: "web" | "download";
-        };
-        videopriority: boolean;
-    } | {
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        videopriority: boolean;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-        };
-    } | {
-        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
-        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        videopriority: boolean;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-        };
-    } | {
-        bilibili: string;
-        douyin: string;
-        kuaishou: string;
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-            shareType: "web" | "download";
-        };
-    } | {
-        sendbase64: boolean;
-        usefilelimit: boolean;
-        filelimit: number;
-        compress: boolean;
-        compresstrigger: number;
-        compressvalue: number;
-        usegroupfile: boolean;
-        groupfilevalue: number;
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-            shareType: "web" | "download";
-        };
-    } | {
-        defaulttool: boolean;
-        priority: number;
-        rmmp4: boolean;
-        renderScale: number;
-        APIServer: boolean;
-        APIServerPort: number;
-        APIServerMount: boolean;
-        Theme: number;
-        RemoveWatermark: boolean;
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-            shareType: "web" | "download";
-        };
-    } | {
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        videopriority: boolean;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-        };
-    } | {
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-            shareType: "web" | "download";
-        };
-    } | {
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-            shareType: "web" | "download";
-        };
-    } | {
-        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
-        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-            shareType: "web" | "download";
-        };
     } | {
         bilibili: string;
         douyin: string;
@@ -667,90 +751,6 @@ declare class Cfg {
         tip: boolean;
         comment: boolean;
         numcomment: number;
-    } | {
-        [x: string]: any;
-        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
-        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-    } | {
-        bilibili: string;
-        douyin: string;
-        kuaishou: string;
-    } | {
-        [x: string]: any;
-        sendbase64: boolean;
-        usefilelimit: boolean;
-        filelimit: number;
-        compress: boolean;
-        compresstrigger: number;
-        compressvalue: number;
-        usegroupfile: boolean;
-        groupfilevalue: number;
-        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
-        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
-    } | {
-        defaulttool: boolean;
-        priority: number;
-        rmmp4: boolean;
-        renderScale: number;
-        APIServer: boolean;
-        APIServerPort: number;
-        APIServerMount: boolean;
-        Theme: number;
-        RemoveWatermark: boolean;
-        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
-        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
-    } | {
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        videopriority: boolean;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-        };
-        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
-        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
-    } | {
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        autoResolution: boolean;
-        push: {
-            switch: boolean;
-            banWords: string[];
-            banTags: string[];
-            permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
-            cron: string;
-            parsedynamic: boolean;
-            log: boolean;
-            shareType: "web" | "download";
-        };
-        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
-        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
-    } | {
-        [x: string]: any;
-        switch: boolean;
-        tip: boolean;
-        comment: boolean;
-        numcomment: number;
-        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
-        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
-    } | {
-        [x: string]: any;
-        douyin: import("../../types/config/pushlist.js").douyinPushItem[];
-        bilibili: import("../../types/config/pushlist.js").bilibiliPushItem[];
     };
     /** 获取所有配置文件 */
     All(): ConfigType;
