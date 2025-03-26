@@ -252,7 +252,6 @@ jobs:
           path: |
             pkg-output.txt
             output.json
-          retention-days: 5
 
       - name: 创建 build.zip
         run: |
@@ -278,4 +277,3 @@ jobs:
         with:
           name: build-zip
           path: build.zip
-          retention-days: 5
