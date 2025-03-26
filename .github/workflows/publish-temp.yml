@@ -196,39 +196,30 @@ jobs:
               // 获取所有机器人评论
               const botComments = await findBotComments(issueNumber);
               
-              // 如果有现有评论，更新最新的一条
-              if (botComments.length > 0) {
-                await github.rest.issues.updateComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  comment_id: botComments[0].id,
-                  body: body,
-                });
+              // 创建新评论
+              const newComment = await github.rest.issues.createComment({
+                issue_number: issueNumber,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body,
+              });
+              console.log(`创建了新评论 ID: ${newComment.data.id}`);
+              
+              // 如果评论数超过3条，删除最旧的评论
+              if (botComments.length >= 3) {
+                // 按创建时间排序，旧的在前
+                const commentsToDelete = botComments
+                  .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+                  .slice(0, botComments.length - 2); // 删除最旧的，保留2条旧评论+1条新评论=3条
                 
-                // 如果评论数超过3条，删除多余的评论
-                if (botComments.length > 3) {
-                  // 按创建时间排序，保留最新的3条
-                  const commentsToDelete = botComments
-                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-                    .slice(3);
-                  
-                  for (const comment of commentsToDelete) {
-                    await github.rest.issues.deleteComment({
-                      owner: context.repo.owner,
-                      repo: context.repo.repo,
-                      comment_id: comment.id
-                    });
-                    console.log(`删除了评论 ID: ${comment.id}`);
-                  }
+                for (const comment of commentsToDelete) {
+                  await github.rest.issues.deleteComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    comment_id: comment.id
+                  });
+                  console.log(`删除了旧评论 ID: ${comment.id}`);
                 }
-              } else {
-                // 没有现有评论，创建新评论
-                await github.rest.issues.createComment({
-                  issue_number: issueNumber,
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  body: body,
-                });
               }
             }
             
