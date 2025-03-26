@@ -166,7 +166,7 @@ jobs:
             
             使用 npm:
             \`\`\`
-            npm i ${installUrl}
+            npm i ${installUrl} -w
             \`\`\`
             
             _commit: <a href="${commitUrl}"><code>${shortSha}</code></a>_`;
@@ -263,7 +263,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: npm-package-info
-          path: pkg-output.txt
+          path: |
+            pkg-output.txt
+            output.json
           retention-days: 5
 
       - name: 创建 build.zip
