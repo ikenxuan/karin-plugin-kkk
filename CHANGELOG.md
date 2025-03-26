@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.7](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.6...v1.1.7) (2025-03-26)
+
+
+### Bug Fixes
+
+* ci ([5eaedcf](https://github.com/ikenxuan/karin-plugin-kkk/commit/5eaedcf07c8fff90990808d115efdfd0f5e79cc8))
+* 统一将 `startText` 替换为 `label` 以提升代码一致性 ([05e6188](https://github.com/ikenxuan/karin-plugin-kkk/commit/05e61887430256eeeda668450dfcb5216386a734))
+
 ## [1.1.6](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.5...v1.1.6) (2025-03-24)
 
 
