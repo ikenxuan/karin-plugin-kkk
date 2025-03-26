@@ -109,14 +109,9 @@ jobs:
           echo "复制构建产物..."
           cp -rv ${{ runner.temp }}/temp/* ./
           
-          # 确认文件已复制
-          echo "当前目录中的文件:"
-          ls -la
-          
-          # 移除不需要的文件
-          rm -rf node_modules pnpm-lock.yaml 2>/dev/null || true
-          echo "文件已复制，准备提交"
-          ls -la
+      - name: 从main分支复制文件到build分支
+        run: |
+          git checkout main -- package.json CHANGELOG.md README.md config resources LICENSE
 
       - name: 提交更改并推送
         run: |
