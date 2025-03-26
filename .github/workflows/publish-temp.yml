@@ -1,4 +1,4 @@
-name: 发布临时版本
+name: publish-temp
 
 on:
   push:
