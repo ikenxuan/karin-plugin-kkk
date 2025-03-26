@@ -84,7 +84,7 @@ jobs:
           INSTALL_URL=$(grep -E "npm i https://pkg.pr.new" pkg-output.txt | sed 's/.*npm i //' || echo "")
           
           if [ ! -z "$INSTALL_URL" ]; then
-            PNPM_INSTALL_CMD="pnpm add $INSTALL_URL"
+            PNPM_INSTALL_CMD="pnpm add $INSTALL_URL -w"
             NPM_INSTALL_CMD="npm i $INSTALL_URL"
           else
             PNPM_INSTALL_CMD="未找到安装命令"
