@@ -169,29 +169,22 @@ jobs:
           echo "命令输出内容："
           cat pkg-output.txt
           
-          # 提取npm安装命令 - 尝试多种可能的格式
-          NPM_INSTALL_CMD=$(grep -E "npm i |npm install " pkg-output.txt || echo "")
+          # 提取安装URL并转换为pnpm格式
+          INSTALL_URL=$(grep -E "npm i https://pkg.pr.new" pkg-output.txt | sed 's/.*npm i //' || echo "")
           
-          # 如果上面没找到，尝试其他可能的格式
-          if [ -z "$NPM_INSTALL_CMD" ]; then
-            NPM_INSTALL_CMD=$(grep -A 2 "karin-plugin-kkk:" pkg-output.txt | grep -E "npm:" | sed 's/.*npm: //' || echo "")
+          if [ ! -z "$INSTALL_URL" ]; then
+            PNPM_INSTALL_CMD="pnpm add $INSTALL_URL"
+          else
+            PNPM_INSTALL_CMD="未找到安装命令"
           fi
           
-          # 如果还是没找到，尝试直接提取URL
-          if [ -z "$NPM_INSTALL_CMD" ]; then
-            URL=$(grep -E "https://pkg.pr.new" pkg-output.txt || echo "")
-            if [ ! -z "$URL" ]; then
-              NPM_INSTALL_CMD="npm i $URL"
-            else
-              NPM_INSTALL_CMD="未找到安装命令"
-            fi
-          fi
-          
-          echo "npm_install_cmd=$NPM_INSTALL_CMD" >> $GITHUB_OUTPUT
+          echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
           
           # 在工作流摘要中添加信息
           echo "## 临时NPM包已发布 :package:" >> $GITHUB_STEP_SUMMARY
-          echo "安装命令: \`$NPM_INSTALL_CMD\`" >> $GITHUB_STEP_SUMMARY
+          echo "安装命令: \`$PNPM_INSTALL_CMD\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "原始npm安装命令: \`npm i $INSTALL_URL\`" >> $GITHUB_STEP_SUMMARY
           
           # 添加完整输出到摘要，方便查看
           echo "## 完整输出" >> $GITHUB_STEP_SUMMARY
