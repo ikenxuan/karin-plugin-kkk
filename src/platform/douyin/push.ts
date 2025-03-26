@@ -58,7 +58,7 @@ export class DouYinpush extends Base {
       // 清理旧的动态缓存记录
       const deletedCount = await cleanOldDynamicCache('douyin', 1)
       if (deletedCount > 0) {
-        logger.info(`已清理 ${deletedCount} 条过期的B站动态缓存记录`)
+        logger.info(`已清理 ${deletedCount} 条过期的抖音动态缓存记录`)
       }
 
       // 检查备注信息
