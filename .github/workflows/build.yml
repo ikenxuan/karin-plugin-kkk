@@ -113,12 +113,27 @@ jobs:
         run: |
           git checkout main -- package.json CHANGELOG.md README.md config resources LICENSE
 
-      - name: 提交更改并推送
+      - name: 删除开发依赖 
+        run: npm run pr clean
+        
+      - name: 根据main分支的commit信息生成提交消息
         run: |
-          echo "提交更改到编译分支..."
           git add .
-          git status
-          git commit -m "${{ env.commit_msg }}" || echo "没有文件需要提交"
-          echo "推送到编译分支..."
-          git push origin build -f
-          echo "推送完成"
+          git reset build.zip
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            echo "No changes detected"
+            exit 0
+          else
+            git commit -m "chore(build): ${{ github.event.head_commit.message }}"
+          fi
+
+      - name: 设置 build 分支的上游分支
+        run: git push --set-upstream origin build
+
+      - name: 推送到 build 分支
+        uses: ad-m/github-push-action@master
+        with:
+          branch: build
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          force_with_lease: true
+          args: --set-upstream
