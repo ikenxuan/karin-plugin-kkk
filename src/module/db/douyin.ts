@@ -147,22 +147,24 @@ const AwemeCache = sequelize.define('AwemeCache', {
 })
 
 // 建立关联关系
+/** Bot和Group是一对多关系：一个机器人可以管理多个群组 */
 Bot.hasMany(Group, { foreignKey: 'botId' })
+/** Group从属于Bot：每个群组都有一个所属的机器人 */
 Group.belongsTo(Bot, { foreignKey: 'botId' })
 
-GroupUserSubscription.belongsTo(Group, { foreignKey: 'groupId' })
-Group.hasMany(GroupUserSubscription, { foreignKey: 'groupId' })
-
-GroupUserSubscription.belongsTo(DouyinUser, { foreignKey: 'sec_uid' })
-DouyinUser.hasMany(GroupUserSubscription, { foreignKey: 'sec_uid' })
-
+/** Group和DouyinUser是多对多关系：通过GroupUserSubscription表建立关联 */
 Group.belongsToMany(DouyinUser, { through: GroupUserSubscription, foreignKey: 'groupId' })
+/** 一个群组可以订阅多个抖音用户，一个抖音用户也可以被多个群组订阅 */
 DouyinUser.belongsToMany(Group, { through: GroupUserSubscription, foreignKey: 'sec_uid' })
 
+/** DouyinUser和AwemeCache是一对多关系：一个抖音用户可以有多个作品缓存 */
 DouyinUser.hasMany(AwemeCache, { foreignKey: 'sec_uid' })
+/** AwemeCache从属于DouyinUser：每个作品缓存都属于一个抖音用户 */
 AwemeCache.belongsTo(DouyinUser, { foreignKey: 'sec_uid' })
 
+/** Group和AwemeCache是一对多关系：一个群组可以有多个作品缓存 */
 Group.hasMany(AwemeCache, { foreignKey: 'groupId' })
+/** AwemeCache从属于Group：每个作品缓存都属于一个群组 */
 AwemeCache.belongsTo(Group, { foreignKey: 'groupId' })
 
 /** 数据库操作类 */
