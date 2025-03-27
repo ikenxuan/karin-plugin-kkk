@@ -25,7 +25,6 @@ const sequelize = new Sequelize({
 /** 测试数据库连接是否成功 */
 await sequelize.authenticate()
 
-// 定义模型
 /** Bots表 - 存储机器人信息 */
 const Bot = sequelize.define('Bot', {
   id: {
