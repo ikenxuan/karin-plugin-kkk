@@ -34,7 +34,6 @@ export declare class BilibiliDBBase {
      * 获取或创建B站用户记录
      * @param host_mid B站用户UID
      * @param remark UP主昵称
-     * @param avatar_img 头像URL
      */
     getOrCreateBilibiliUser(host_mid: number, remark?: string): Promise<Model<any, any>>;
     /**
