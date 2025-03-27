@@ -52,7 +52,6 @@ export class Bilibilipush extends Base {
     }
     this.force = force // 保存传入的强制执行标志
     this.amagi = new Client({ bilibili: Config.cookies.bilibili })
-    // this.mergeBilibiliItems(Config.pushlist.bilibili)
   }
 
   /**

@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 
 import { basePath } from 'node-karin'
-import { DataTypes, Model, Op, Sequelize } from 'sequelize'
+import { DataTypes, Model, Sequelize } from 'sequelize'
 
 import { bilibiliPushItem } from '@/types/config/pushlist'
 
@@ -21,9 +21,6 @@ const sequelize = new Sequelize({
   storage: join(`${basePath}/${Version.pluginName}/data`, 'bilibili.db'),
   logging: false
 })
-
-/** 测试数据库连接是否成功 */
-await sequelize.authenticate()
 
 /** Bots表 - 存储机器人信息 */
 const Bot = sequelize.define('Bot', {
@@ -66,10 +63,6 @@ const BilibiliUser = sequelize.define('BilibiliUser', {
   remark: {
     type: DataTypes.STRING,
     comment: 'B站用户昵称'
-  },
-  avatar_img: {
-    type: DataTypes.STRING,
-    comment: '头像URL'
   }
 }, {
   timestamps: true
@@ -195,7 +188,6 @@ export class BilibiliDBBase {
    * 获取或创建B站用户记录
    * @param host_mid B站用户UID
    * @param remark UP主昵称
-   * @param avatar_img 头像URL
    */
   async getOrCreateBilibiliUser (host_mid: number, remark: string = '') {
     const [user] = await BilibiliUser.findOrCreate({
@@ -361,6 +353,11 @@ export class BilibiliDBBase {
     }
   }
 }
+
+/** 测试数据库连接是否成功 */
+await sequelize.authenticate()
+/** 建表 */
+await sequelize.sync()
 
 export const bilibiliDB = new BilibiliDBBase()
 

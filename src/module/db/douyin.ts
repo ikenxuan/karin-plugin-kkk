@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 
 import { basePath } from 'node-karin'
-import { DataTypes, Model, Op, Sequelize } from 'sequelize'
+import { DataTypes, Model, Sequelize } from 'sequelize'
 
 import { douyinPushItem } from '@/types/config/pushlist'
 
@@ -21,9 +21,6 @@ const sequelize = new Sequelize({
   storage: join(`${basePath}/${Version.pluginName}/data`, 'douyin.db'),
   logging: false
 })
-
-/** 测试数据库连接是否成功 */
-await sequelize.authenticate()
 
 /** Bots表 - 存储机器人信息 */
 const Bot = sequelize.define('Bot', {
@@ -398,6 +395,11 @@ export class DouyinDBBase {
     return await Group.findByPk(groupId)
   }
 }
+
+/** 测试数据库连接是否成功 */
+await sequelize.authenticate()
+/** 建表 */
+await sequelize.sync()
 
 export const douyinDB = new DouyinDBBase()
 
