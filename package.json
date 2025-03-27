@@ -40,6 +40,9 @@
     "pub-beta": "npm publish --tag beta",
     "sort": "npx sort-package-json"
   },
+  "peerDependencies": {
+    "node-karin": ">=1.7.11"
+  },
   "dependencies": {
     "@ikenxuan/amagi": "^4.4.8",
     "@karinjs/md-html": "^1.1.6",
