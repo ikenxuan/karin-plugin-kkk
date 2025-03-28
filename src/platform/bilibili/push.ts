@@ -52,9 +52,6 @@ export class Bilibilipush extends Base {
     }
     this.force = force // 保存传入的强制执行标志
     this.amagi = new Client({ bilibili: Config.cookies.bilibili })
-    this.syncConfigToDatabase().catch(error => {
-      logger.error('同步配置文件到数据库失败:', error)
-    })
   }
 
   /**
@@ -63,6 +60,7 @@ export class Bilibilipush extends Base {
    */
   async action () {
     try {
+      await this.syncConfigToDatabase()
       // 清理旧的动态缓存记录
       const deletedCount = await cleanOldDynamicCache('bilibili', 1)
       if (deletedCount > 0) {
@@ -656,6 +654,7 @@ export class Bilibilipush extends Base {
 
   /** 渲染推送列表图片 */
   async renderPushList () {
+    await this.syncConfigToDatabase()
     const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
     const groupId = 'groupId' in this.e && this.e.groupId ? this.e.groupId : ''
 
