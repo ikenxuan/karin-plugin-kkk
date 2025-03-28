@@ -153,6 +153,14 @@ Group.belongsToMany(DouyinUser, { through: GroupUserSubscription, foreignKey: 'g
 /** 一个群组可以订阅多个抖音用户，一个抖音用户也可以被多个群组订阅 */
 DouyinUser.belongsToMany(Group, { through: GroupUserSubscription, foreignKey: 'sec_uid' })
 
+/** 添加Group和GroupUserSubscription之间的直接关联 */
+Group.hasMany(GroupUserSubscription, { foreignKey: 'groupId' })
+GroupUserSubscription.belongsTo(Group, { foreignKey: 'groupId' })
+
+/** 添加DouyinUser和GroupUserSubscription之间的直接关联 */
+DouyinUser.hasMany(GroupUserSubscription, { foreignKey: 'sec_uid' })
+GroupUserSubscription.belongsTo(DouyinUser, { foreignKey: 'sec_uid' })
+
 /** DouyinUser和AwemeCache是一对多关系：一个抖音用户可以有多个作品缓存 */
 DouyinUser.hasMany(AwemeCache, { foreignKey: 'sec_uid' })
 /** AwemeCache从属于DouyinUser：每个作品缓存都属于一个抖音用户 */
