@@ -48,9 +48,6 @@ export class DouYinpush extends Base {
     this.headers.Referer = 'https://www.douyin.com'
     this.headers.Cookie = Config.cookies.douyin
     this.force = force
-    this.syncConfigToDatabase().catch(error => {
-      logger.error('同步配置文件到数据库失败:', error)
-    })
   }
 
   async action () {
