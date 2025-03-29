@@ -43,6 +43,7 @@
   "dependencies": {
     "@ikenxuan/amagi": "^4.4.8",
     "@karinjs/md-html": "^1.1.6",
+    "@karinjs/puppeteer": "^2.0.5",
     "cors": "^2.8.5",
     "heic-convert": "^2.1.0",
     "http-proxy-middleware": "^3.0.3",
