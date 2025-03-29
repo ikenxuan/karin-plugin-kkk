@@ -136,3 +136,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           force_with_lease: true
           args: --set-upstream
+      - name: 发布到 npm
+        run: npm run pub
+        if: ${{ steps.release_please.outputs.release_created }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
