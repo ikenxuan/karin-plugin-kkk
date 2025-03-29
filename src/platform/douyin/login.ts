@@ -15,10 +15,10 @@ export const douyinLogin = async (e: Message) => {
     // 环境检查
     // startXvfb()
     const { browser, close } = await launch({
-      headless: true,
+      headless: false,
       args: [
         '--disable-blink-features=AutomationControlled', // 禁用自动化控制
-        // '--window-position=-10000,-10000', // 将窗口移到屏幕外
+        '--window-position=-10000,-10000', // 将窗口移到屏幕外
         '--start-minimized', // 启动时最小化
         '--mute-audio', // 静音
         '--no-sandbox'  // 使用无沙箱模式，适合无桌面环境
@@ -102,7 +102,12 @@ export const douyinLogin = async (e: Message) => {
  */
 const waitQrcode = async (page: Page) => {
   const qrCodeSelector = 'img[aria-label="二维码"]'
-  await page.waitForSelector(qrCodeSelector, { timeout: 10000 })
+  try {
+    await page.waitForSelector(qrCodeSelector, { timeout: 10000 })
+  } catch (error) {
+    // 截个图
+    await page.screenshot({ path: `DouyinLoginQrcode.png` })
+  }
   console.log('二维码加载完成')
   await new Promise(resolve => setTimeout(resolve, 5000))
   const images = await page.$$eval('img', (imgs) => {
