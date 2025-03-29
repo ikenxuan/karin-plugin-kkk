@@ -1,5 +1,13 @@
 # 变更日志
 
+## [1.1.9](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.8...v1.1.9) (2025-03-29)
+
+
+### Bug Fixes
+
+* ci pub ([#57](https://github.com/ikenxuan/karin-plugin-kkk/issues/57)) ([ced7969](https://github.com/ikenxuan/karin-plugin-kkk/commit/ced79693434dc9a394221e6bf371381c72dcc189))
+* npm run pub ([#56](https://github.com/ikenxuan/karin-plugin-kkk/issues/56)) ([84f10ed](https://github.com/ikenxuan/karin-plugin-kkk/commit/84f10eda0521307ad0f278bc00d3f2ff3a8ef963))
+
 ## [1.1.8](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.7...v1.1.8) (2025-03-26)
 
 ### 🐛 修复
