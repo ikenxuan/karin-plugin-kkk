@@ -51,6 +51,10 @@ jobs:
             git clean -fd
             git commit --allow-empty -m "初始化编译分支"
             git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+            # 先尝试拉取远程分支（忽略错误）
+            git fetch origin build || true
+            # 尝试合并远程变更（忽略错误）
+            git pull origin build --allow-unrelated-histories || true
             git push --set-upstream origin build
           else
             git fetch origin build
