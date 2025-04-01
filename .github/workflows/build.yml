@@ -98,10 +98,12 @@ jobs:
           git show main:README.md > README.md
           git show main:LICENSE > LICENSE
           
-          # 检出指定目录
-          git checkout main -- resources
-          git checkout main -- config
-          git checkout main -- lib
+          # 检出指定目录（如果存在）
+          for dir in resources config lib; do
+            if [ -d "$dir" ] || git ls-tree --name-only main | grep -q "^$dir/"; then
+              git checkout main -- $dir || echo "警告: 目录 $dir 不存在，已跳过"
+            fi
+          done
           
           # 提交变更
           git add .
