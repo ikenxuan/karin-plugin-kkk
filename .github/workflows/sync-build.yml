@@ -11,11 +11,19 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: 检出代码（包含构建产物）
+      - name: 检出主分支代码
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          path: main-repo
+
+      - name: 检出构建产物
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
+          path: build-artifacts
 
       - name: 配置 Git 用户
         run: |
@@ -52,8 +60,9 @@ jobs:
           # 清理现有文件（保留.git目录）
           find . -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} \;
           
-          # 从当前检出内容复制构建产物
-          cp -rv package.json CHANGELOG.md README.md LICENSE resources config lib ./
+          # 从构建产物目录复制文件
+          cp -rv build-artifacts/package.json build-artifacts/CHANGELOG.md build-artifacts/README.md build-artifacts/LICENSE ./
+          cp -rv build-artifacts/resources build-artifacts/config build-artifacts/lib ./
           
           # 提交变更
           git add .
