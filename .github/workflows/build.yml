@@ -150,7 +150,23 @@ jobs:
           
       - name: 从main分支复制文件到build分支
         run: |
-          git checkout main -- package.json CHANGELOG.md README.md config resources LICENSE
+          # 创建一个检查文件是否存在并检出的函数
+          checkout_if_exists() {
+            if git ls-tree -r --name-only origin/main | grep -q "^$1$"; then
+              git checkout main -- "$1"
+              echo "已检出: $1"
+            else
+              echo "文件不存在，跳过: $1"
+            fi
+          }
+          
+          # 逐个检查并检出文件
+          checkout_if_exists "package.json"
+          checkout_if_exists "CHANGELOG.md"
+          checkout_if_exists "README.md"
+          checkout_if_exists "LICENSE"
+          checkout_if_exists "config"
+          checkout_if_exists "resources"
 
       - name: 删除开发依赖 
         run: npm run pr clean
@@ -175,8 +191,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           force_with_lease: true
           args: --set-upstream
-      - name: 发布到 npm
-        run: npm run pub
-        if: ${{ steps.release_please.outputs.release_created }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
