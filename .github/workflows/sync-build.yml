@@ -47,7 +47,7 @@ jobs:
             git reset --hard
             git clean -fd
             git commit --allow-empty -m "初始化编译分支"
-            git remote add origin https://github.com/${{ github.repository }}.git
+            git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
             git push --set-upstream -f origin build
           else
             git fetch origin build
