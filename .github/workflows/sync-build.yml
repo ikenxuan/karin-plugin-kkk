@@ -16,25 +16,6 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-          path: main-repo
-
-      - name: 检出构建产物
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
-          fetch-depth: 0
-          path: build-artifacts
-          # 确保 sparse-checkout 正确配置
-          sparse-checkout: |
-            package.json
-            CHANGELOG.md
-            README.md
-            LICENSE
-            resources/
-            config/
-            lib/
-          # 添加此配置确保检出成功
-          persist-credentials: true
 
       - name: 配置 Git 用户
         run: |
@@ -56,71 +37,38 @@ jobs:
         run: |          
           if [ "${{ env.branch_exists }}" = "false" ]; then
             git init
-            git config --global init.defaultBranch main
             git checkout --orphan build
-            git reset --hard
-            git clean -fd
             git commit --allow-empty -m "初始化编译分支"
             git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-            # 先尝试拉取远程分支（忽略错误）
-            git fetch origin build || true
-            # 尝试合并远程变更（忽略错误）
-            git pull origin build --allow-unrelated-histories || true
             git push --set-upstream origin build
           else
             git fetch origin build
-            git checkout build
-            git config pull.rebase false
-            git pull origin build
-            git reset --hard origin/build
+            git checkout --orphan temp-build
+            git reset --hard
+            git clean -fd
+            git branch -D build
+            git checkout -b build
           fi
 
-      - name: 调试构建产物
+      - name: 从main分支同步指定内容
         run: |
-          echo "构建产物目录内容:"
-          ls -la build-artifacts
-          echo "当前目录内容:"
-          ls -la
-
-      - name: 同步构建产物
-        run: |
-          # 检查构建产物目录是否存在
-          if [ ! -d "build-artifacts" ]; then
-            echo "错误: 构建产物目录不存在，请检查检出步骤是否成功"
-            ls -la  # 列出当前目录内容用于调试
-            exit 1
-          fi
+          # 复制指定文件
+          cp -v package.json CHANGELOG.md README.md LICENSE ./
           
-          # 从构建产物目录复制文件
-          for file in package.json CHANGELOG.md README.md LICENSE; do
-            if [ -f "build-artifacts/$file" ]; then
-              cp -v "build-artifacts/$file" ./
-            else
-              echo "警告: 文件 build-artifacts/$file 不存在"
-            fi
-          done
-          
+          # 复制指定目录
           for dir in resources config lib; do
-            if [ -d "build-artifacts/$dir" ]; then
-              cp -rv "build-artifacts/$dir" ./
-            else
-              echo "警告: 目录 build-artifacts/$dir 不存在"
+            if [ -d "$dir" ]; then
+              cp -rv "$dir" ./
             fi
           done
           
           # 提交变更
           git add .
-          if [ -z "$(git diff --cached --name-only)" ]; then
-            echo "No changes detected"
-            exit 0
-          else
-            git commit -m "chore(build): sync build artifacts from ${{ github.event.workflow_run.head_sha }}"
-          fi
-
+          git commit -m "chore(build): sync required files from main branch"
+          
       - name: 推送到 build 分支
         uses: ad-m/github-push-action@master
         with:
           branch: build
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # force_with_lease: true
           args: --set-upstream
