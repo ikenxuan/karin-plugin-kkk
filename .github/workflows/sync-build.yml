@@ -1,0 +1,72 @@
+name: Sync Build Branch
+
+on:
+  workflow_run:
+    workflows: ["release"]
+    types: [completed]
+
+jobs:
+  sync:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 检出代码（包含构建产物）
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - name: 配置 Git 用户
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: 检查编译分支是否存在
+        id: check-branch
+        run: |
+          if git ls-remote --exit-code origin build; then
+            echo "branch_exists=true" >> $GITHUB_ENV
+          else
+            echo "branch_exists=false" >> $GITHUB_ENV
+          fi
+
+      - name: 创建或切换到编译分支
+        run: |          
+          if [ "${{ env.branch_exists }}" = "false" ]; then
+            git checkout --orphan build
+            git reset --hard
+            git clean -fd
+            git commit --allow-empty -m "初始化编译分支"
+            git push --set-upstream -f origin build
+          else
+            git fetch origin build
+            git reset --hard
+            git clean -fd
+            git reset --hard origin/build
+            git checkout build
+          fi
+
+      - name: 同步构建产物
+        run: |
+          # 清理现有文件（保留.git目录）
+          find . -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} \;
+          
+          # 从当前检出内容复制构建产物
+          cp -rv package.json CHANGELOG.md README.md LICENSE resources config lib ./
+          
+          # 提交变更
+          git add .
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            echo "No changes detected"
+            exit 0
+          else
+            git commit -m "chore(build): sync build artifacts from ${{ github.event.workflow_run.head_sha }}"
+          fi
+
+      - name: 推送到 build 分支
+        uses: ad-m/github-push-action@master
+        with:
+          branch: build
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          force_with_lease: true
