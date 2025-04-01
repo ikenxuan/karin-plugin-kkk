@@ -48,13 +48,11 @@ jobs:
             git clean -fd
             git commit --allow-empty -m "初始化编译分支"
             git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-            git push --set-upstream -f origin build
+            git push --set-upstream origin build
           else
             git fetch origin build
-            git reset --hard
-            git clean -fd
-            git reset --hard origin/build
             git checkout build
+            git reset --hard origin/build
           fi
 
       - name: 同步构建产物
@@ -80,4 +78,5 @@ jobs:
         with:
           branch: build
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          force_with_lease: true
+          # force_with_lease: true
+          args: --set-upstream
