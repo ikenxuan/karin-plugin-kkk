@@ -1,9 +1,9 @@
 name: Sync Build Branch
 
 on:
-  workflow_run:
-    workflows: ["release"]
-    types: [completed]
+  # workflow_run:
+  #   workflows: ["release"]
+  #   types: [completed]
 
 jobs:
   sync:

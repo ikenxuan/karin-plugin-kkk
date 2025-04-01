@@ -47,3 +47,70 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         if: ${{ steps.release.outputs.release_created }}
+  
+  sync-build:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 检出主分支代码
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: 配置 Git 用户
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global init.defaultBranch main
+          git config --global pull.rebase false
+
+      - name: 检查编译分支是否存在
+        id: check-branch
+        run: |
+          if git ls-remote --exit-code origin build; then
+            echo "branch_exists=true" >> $GITHUB_ENV
+          else
+            echo "branch_exists=false" >> $GITHUB_ENV
+          fi
+
+      - name: 创建或切换到编译分支
+        run: |          
+          if [ "${{ env.branch_exists }}" = "false" ]; then
+            git init
+            git checkout --orphan build
+            git commit --allow-empty -m "初始化编译分支"
+            git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+            git push --set-upstream origin build
+          else
+            git fetch origin build
+            git checkout build
+            git rm -rf .
+            git clean -fd
+          fi
+
+      - name: 从main分支同步指定内容
+        run: |
+          # 从main分支检出指定文件
+          git show main:package.json > package.json
+          git show main:CHANGELOG.md > CHANGELOG.md
+          git show main:README.md > README.md
+          git show main:LICENSE > LICENSE
+          
+          # 检出指定目录
+          git checkout main -- resources
+          git checkout main -- config
+          git checkout main -- lib
+          
+          # 提交变更
+          git add .
+          git commit -m "chore(build): sync required files from main branch"
+          
+      - name: 推送到 build 分支
+        uses: ad-m/github-push-action@master
+        with:
+          branch: build
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          args: --set-upstream
