@@ -29,6 +29,8 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global init.defaultBranch main
+          git config --global pull.rebase false
 
       - name: 检查编译分支是否存在
         id: check-branch
@@ -49,11 +51,12 @@ jobs:
             git clean -fd
             git commit --allow-empty -m "初始化编译分支"
             git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-            git pull origin build --allow-unrelated-histories || true
             git push --set-upstream origin build
           else
             git fetch origin build
             git checkout build
+            git config pull.rebase false
+            git pull origin build
             git reset --hard origin/build
           fi
 
