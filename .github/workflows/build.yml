@@ -53,65 +53,130 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: 检出主分支代码
+      - name: 检出代码
         uses: actions/checkout@v4
         with:
-          ref: main
           fetch-depth: 0
+
+      - name: 设置 pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.7.1
+          run_install: |
+            - args: [--no-frozen-lockfile]
+      
+      - name: 构建
+        run: |
+          echo "开始构建项目..."
+          pnpm build
+          if [ $? -ne 0 ]; then
+            echo "构建失败，退出工作流"
+            exit 1
+          fi
+          echo "构建成功，准备复制文件..."
+          pnpm pkg delete devDependencies
+          mkdir -p ${{ runner.temp }}/temp/
+          cp -r package.json CHANGELOG.md README.md LICENSE resources config lib ${{ runner.temp }}/temp/
+          echo "文件已复制到临时目录"
 
       - name: 配置 Git 用户
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global init.defaultBranch main
-          git config --global pull.rebase false
+          echo "Git 用户已配置"
+
+      - name: 获取最新的主分支
+        run: |
+          echo "获取最新的主分支..."
+          git fetch origin ${{ github.ref_name }}
+          git checkout ${{ github.ref_name }}
+          git pull origin ${{ github.ref_name }} --ff-only
+          echo "当前分支: $(git branch --show-current)"
+
+      - name: 获取主分支的最新提交消息
+        id: commit-message
+        run: |
+          echo "获取最新提交消息..."
+          echo "commit_msg=$(git log origin/${{ github.ref_name }} -1 --pretty=format:'%s')" >> $GITHUB_ENV
+          echo "提交消息: ${{ env.commit_msg }}"
 
       - name: 检查编译分支是否存在
         id: check-branch
         run: |
+          echo "检查编译分支是否存在..."
           if git ls-remote --exit-code origin build; then
             echo "branch_exists=true" >> $GITHUB_ENV
+            echo "编译分支存在"
           else
             echo "branch_exists=false" >> $GITHUB_ENV
+            echo "编译分支不存在，将创建新分支"
           fi
 
       - name: 创建或切换到编译分支
         run: |          
+          echo "开始处理编译分支..."
           if [ "${{ env.branch_exists }}" = "false" ]; then
-            git init
+            echo "创建新的编译分支..."
             git checkout --orphan build
-            git commit --allow-empty -m "初始化编译分支"
-            git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-            git push --set-upstream origin build
-          else
-            git fetch origin build
-            git checkout build
-            git rm -rf .
+            git reset --hard
             git clean -fd
+            git commit --allow-empty -m "初始化编译分支"
+            git push --set-upstream -f origin build
+            echo "新编译分支已创建并推送"
+          else
+            echo "切换到现有编译分支..."
+            git fetch origin build
+            git reset --hard
+            git clean -fd
+            git reset --hard origin/build
+            git checkout build
+            echo "已切换到编译分支: $(git branch --show-current)"
           fi
 
-      - name: 从main分支同步指定内容
+      - name: 构建文件
         run: |
-          # 从main分支检出指定文件
-          git show main:package.json > package.json
-          git show main:CHANGELOG.md > CHANGELOG.md
-          git show main:README.md > README.md
-          git show main:LICENSE > LICENSE
+          echo "准备构建文件..."
+          # 清空当前目录但保留.git文件夹
+          find . -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} \;
+          echo "已清理现有文件，保留.git目录"
           
-          # 检出指定目录（如果存在）
-          for dir in resources config lib; do
-            if [ -d "$dir" ] || git ls-tree --name-only main | grep -q "^$dir/"; then
-              git checkout main -- $dir || echo "警告: 目录 $dir 不存在，已跳过"
-            fi
-          done
+          # 显示临时目录中的文件
+          echo "临时目录中的文件:"
+          ls -la ${{ runner.temp }}/temp/
           
-          # 提交变更
+          # 复制构建产物到当前目录
+          echo "复制构建产物..."
+          cp -rv ${{ runner.temp }}/temp/* ./
+          
+      - name: 从main分支复制文件到build分支
+        run: |
+          git checkout main -- package.json CHANGELOG.md README.md config resources LICENSE
+
+      - name: 删除开发依赖 
+        run: npm run pr clean
+
+      - name: 根据main分支的commit信息生成提交消息
+        run: |
           git add .
-          git commit -m "chore(build): sync required files from main branch"
-          
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            echo "No changes detected"
+            exit 0
+          else
+            git commit -m "chore(build): ${{ github.event.head_commit.message }}"
+          fi
+
+      - name: 设置 build 分支的上游分支
+        run: git push --set-upstream origin build
+
       - name: 推送到 build 分支
         uses: ad-m/github-push-action@master
         with:
           branch: build
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          force_with_lease: true
           args: --set-upstream
+      - name: 发布到 npm
+        run: npm run pub
+        if: ${{ steps.release_please.outputs.release_created }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
