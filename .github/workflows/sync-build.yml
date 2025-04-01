@@ -24,7 +24,7 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
           path: build-artifacts
-          # 添加 sparse-checkout 只检出需要的文件
+          # 确保 sparse-checkout 正确配置
           sparse-checkout: |
             package.json
             CHANGELOG.md
@@ -33,6 +33,8 @@ jobs:
             resources/
             config/
             lib/
+          # 添加此配置确保检出成功
+          persist-credentials: true
 
       - name: 配置 Git 用户
         run: |
@@ -73,14 +75,19 @@ jobs:
             git reset --hard origin/build
           fi
 
+      - name: 调试构建产物
+        run: |
+          echo "构建产物目录内容:"
+          ls -la build-artifacts
+          echo "当前目录内容:"
+          ls -la
+
       - name: 同步构建产物
         run: |
-          # 清理现有文件（保留.git目录）
-          find . -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} \;
-          
-          # 检查构建产物是否存在
+          # 检查构建产物目录是否存在
           if [ ! -d "build-artifacts" ]; then
-            echo "构建产物目录不存在"
+            echo "错误: 构建产物目录不存在，请检查检出步骤是否成功"
+            ls -la  # 列出当前目录内容用于调试
             exit 1
           fi
           
