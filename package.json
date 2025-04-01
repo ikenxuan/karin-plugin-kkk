@@ -1,0 +1,76 @@
+{
+  "name": "karin-plugin-kkk",
+  "version": "1.1.7",
+  "description": "a Karin video parsing tool",
+  "keywords": [
+    "karin-plugin",
+    "karin"
+  ],
+  "homepage": "https://github.com/ikenxuan/karin-plugin-kkk",
+  "bugs": {
+    "url": "https://github.com/ikenxuan/karin-plugin-kkk/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ikenxuan/karin-plugin-kkk.git"
+  },
+  "license": "GPL-3.0-only",
+  "author": "ikenxuan",
+  "type": "module",
+  "main": "lib/index.js",
+  "files": [
+    "config/",
+    "lib/",
+    "resources/",
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "CHANGELOG.md",
+    "web.config.mjs"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "clean": "npm lib/cli/pr.js clean",
+    "commit": "node lib/cli/commit.js",
+    "dev": "tsx src/index.ts",
+    "watch": "tsx watch --include \"src/**/*.ts\" src/index.ts",
+    "fix": "eslint src/**/*.ts --fix",
+    "pr": "node lib/cli/pr.js",
+    "pub": "npm publish --access public",
+    "pub-beta": "npm publish --tag beta",
+    "sort": "npx sort-package-json"
+  },
+  "dependencies": {
+    "@ikenxuan/amagi": "^4.4.8",
+    "@karinjs/md-html": "^1.1.6",
+    "cors": "^2.8.5",
+    "heic-convert": "^2.1.0",
+    "http-proxy-middleware": "^3.0.3",
+    "playwright": "^1.49.1",
+    "qrcode": "^1.5.4",
+    "sequelize": "6.37.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "karin": {
+    "main": "src/index.ts",
+    "apps": [
+      "lib/apps"
+    ],
+    "ts-apps": [
+      "src/apps"
+    ],
+    "static": [
+      "resources"
+    ],
+    "files": [
+      "config",
+      "data",
+      "resources"
+    ],
+    "web": "./lib/web.config.js",
+    "ts-web": "./src/web.config.ts"
+  }
+}
