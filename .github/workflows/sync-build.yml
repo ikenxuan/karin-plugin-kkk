@@ -24,6 +24,15 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
           path: build-artifacts
+          # 添加 sparse-checkout 只检出需要的文件
+          sparse-checkout: |
+            package.json
+            CHANGELOG.md
+            README.md
+            LICENSE
+            resources/
+            config/
+            lib/
 
       - name: 配置 Git 用户
         run: |
@@ -69,9 +78,28 @@ jobs:
           # 清理现有文件（保留.git目录）
           find . -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} \;
           
+          # 检查构建产物是否存在
+          if [ ! -d "build-artifacts" ]; then
+            echo "构建产物目录不存在"
+            exit 1
+          fi
+          
           # 从构建产物目录复制文件
-          cp -rv build-artifacts/package.json build-artifacts/CHANGELOG.md build-artifacts/README.md build-artifacts/LICENSE ./
-          cp -rv build-artifacts/resources build-artifacts/config build-artifacts/lib ./
+          for file in package.json CHANGELOG.md README.md LICENSE; do
+            if [ -f "build-artifacts/$file" ]; then
+              cp -v "build-artifacts/$file" ./
+            else
+              echo "警告: 文件 build-artifacts/$file 不存在"
+            fi
+          done
+          
+          for dir in resources config lib; do
+            if [ -d "build-artifacts/$dir" ]; then
+              cp -rv "build-artifacts/$dir" ./
+            else
+              echo "警告: 目录 build-artifacts/$dir 不存在"
+            fi
+          done
           
           # 提交变更
           git add .
