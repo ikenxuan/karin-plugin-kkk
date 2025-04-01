@@ -43,11 +43,10 @@ jobs:
             git push --set-upstream origin build
           else
             git fetch origin build
-            git checkout --orphan temp-build
-            git reset --hard
+            git checkout build
+            # 清空分支下所有文件（保留.git目录）
+            git rm -rf .
             git clean -fd
-            git branch -D build
-            git checkout -b build
           fi
 
       - name: 从main分支同步指定内容
