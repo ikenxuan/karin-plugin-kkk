@@ -18,6 +18,7 @@ jobs:
       - uses: googleapis/release-please-action@v4
         id: release
         with:
+          config-file: .release-please-config.json
           # 设置发布类型为 node
           release-type: node
       # 检出代码
