@@ -51,15 +51,16 @@ jobs:
 
       - name: 从main分支同步指定内容
         run: |
-          # 复制指定文件
-          cp -v package.json CHANGELOG.md README.md LICENSE ./
+          # 从main分支检出指定文件到临时目录
+          git show main:package.json > package.json
+          git show main:CHANGELOG.md > CHANGELOG.md
+          git show main:README.md > README.md
+          git show main:LICENSE > LICENSE
           
-          # 复制指定目录
-          for dir in resources config lib; do
-            if [ -d "$dir" ]; then
-              cp -rv "$dir" ./
-            fi
-          done
+          # 检出指定目录
+          git checkout main -- resources
+          git checkout main -- config
+          git checkout main -- lib
           
           # 提交变更
           git add .
