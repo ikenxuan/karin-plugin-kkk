@@ -5,6 +5,7 @@ import { douyinConfig } from './douyin.js';
 import { kuaishouConfig } from './kuaishou.js';
 import { pushlistConfig } from './pushlist.js';
 import { uploadConfig } from './upload.js';
+/** 插件配置类型 */
 export interface ConfigType {
     /** 插件应用设置 */
     app: appConfig;
