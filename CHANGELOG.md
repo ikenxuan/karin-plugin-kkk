@@ -1,5 +1,13 @@
 # 变更日志
 
+## [1.1.10](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.9...v1.1.10) (2025-04-05)
+
+
+### Bug Fixes
+
+* ci ([9d2a907](https://github.com/ikenxuan/karin-plugin-kkk/commit/9d2a907aee3e868b58f78eafddff5402f4cbabab))
+* **config:** 将禁用词汇设置改为禁用标签设置 ([0454751](https://github.com/ikenxuan/karin-plugin-kkk/commit/0454751ccb8e93d5bb68996468ded5cb1c59f5f0))
+
 ## [1.1.9](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.8...v1.1.9) (2025-03-29)
 
 
