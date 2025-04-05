@@ -1,5 +1,13 @@
 # 变更日志
 
+## [1.1.11](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.10...v1.1.11) (2025-04-05)
+
+
+### Bug Fixes
+
+* **bilibili:** 屏蔽词/标签支持对转发动态的子动态进行检测 ([d3adc55](https://github.com/ikenxuan/karin-plugin-kkk/commit/d3adc552663d709675c763ff53594461f9d58f1d))
+* 前端配置添加更多说明 ([e39ecad](https://github.com/ikenxuan/karin-plugin-kkk/commit/e39ecadc4b1a251bf626e998ada09e79dac4e039))
+
 ## [1.1.10](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.9...v1.1.10) (2025-04-05)
 
 
