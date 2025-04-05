@@ -142,6 +142,7 @@ export default {
               radio: [
                 components.radio.create('Theme-1', {
                   label: '自动',
+                  description: '06:00-18:00为浅色，18:00-06:00为深色',
                   value: '0'
                 }),
                 components.radio.create('Theme-2', {
@@ -275,9 +276,11 @@ export default {
               radio: [
                 components.radio.create('push:shareType.radio-1', {
                   label: '网页链接',
+                  description: '识别后访问抖音官网对应的作品地址',
                   value: 'web'
                 }),
                 components.radio.create('push:shareType.radio-2', {
+                  description: '识别后访问无水印作品下载地址',
                   label: '下载链接',
                   value: 'download'
                 })
