@@ -6,6 +6,7 @@ import { kuaishouConfig } from './kuaishou'
 import { pushlistConfig } from './pushlist'
 import { uploadConfig } from './upload'
 
+/** 插件配置类型 */
 export interface ConfigType {
   /** 插件应用设置 */
   app: appConfig,

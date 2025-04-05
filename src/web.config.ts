@@ -269,7 +269,7 @@ export default {
               defaultSelected: all.douyin.push.log
             }),
             components.radio.group('push:shareType', {
-              label: '分享链接二维码的类型',
+              label: '推送图二维码的类型',
               orientation: 'horizontal',
               defaultValue: all.douyin.push.shareType,
               radio: [
