@@ -220,7 +220,7 @@ export default {
               label: '作品中有指定标签时，不推送',
               maxRows: 2,
               itemsPerRow: 4,
-              data: all.douyin.push.banWords,
+              data: all.douyin.push.banTags,
               template: components.input.string('push:banTags', {
                 placeholder: '',
                 label: '',
@@ -349,7 +349,7 @@ export default {
               label: '动态中有指定标签时，不推送',
               maxRows: 2,
               itemsPerRow: 4,
-              data: all.bilibili.push.banWords,
+              data: all.bilibili.push.banTags,
               template: components.input.string('push:banTags', {
                 placeholder: '',
                 label: '',
