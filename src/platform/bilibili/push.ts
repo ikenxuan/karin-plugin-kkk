@@ -14,6 +14,8 @@ export enum DynamicType {
   FORWARD = 'DYNAMIC_TYPE_FORWARD'
 }
 
+// type DataItem = BiliUserDynamic['data']['items'] extends Array<infer T> ? T : never
+
 /** 每个推送项的类型定义 */
 interface PushItem {
   /** 该UP主的昵称 */
@@ -387,14 +389,13 @@ export class Bilibilipush extends Base {
 
     try {
       for (const item of userList) {
-        const dynamic_list = await this.amagi.getBilibiliData('用户主页动态列表数据', { host_mid: item.host_mid })
-
+        const dynamic_list = await this.amagi.getBilibiliData('用户主页动态列表数据', { host_mid: item.host_mid, typeMode: 'strict' })
         if (dynamic_list.data.items.length > 0) {
           // 遍历接口返回的视频列表
           for (const dynamic of dynamic_list.data.items) {
             const now = Date.now()
             // B站的是秒为单位的时间戳，需要乘 1000 转为毫秒
-            const createTime = parseInt(dynamic.modules.module_author.pub_ts)
+            const createTime = dynamic.modules.module_author.pub_ts
             const timeDifference = (now - createTime * 1000)
 
             const is_top = dynamic.modules.module_tag?.text === '置顶' // 是否为置顶
@@ -423,7 +424,7 @@ export class Bilibilipush extends Base {
                   targets,
                   Dynamic_Data: dynamic, // 存储 dynamic 对象
                   avatar_img: dynamic.modules.module_author.face,
-                  dynamic_type: dynamic.type
+                  dynamic_type: dynamic.type as DynamicType
                 }
               }
             }
@@ -707,7 +708,7 @@ function br (data: string): string {
 function checkvip (member: any): string {
   // 根据VIP状态选择不同的颜色显示成员名称
   return member.vip.vipStatus === 1
-    ? `<span style="color: ${member.vip.nickname_color || '#FB7299'}; font-weight: 700;">${member.name}</span>`
+    ? `<span style="color: ${member.vip.nickname_color ?? '#FB7299'}; font-weight: 700;">${member.name}</span>`
     : `<span style="color: ${Common.useDarkTheme() ? '#EDEDED' : '#606060'}">${member.name}</span>`
 }
 
@@ -741,6 +742,12 @@ const skipDynamic = (Dynamic_Data: PushItem['Dynamic_Data']): boolean => {
       logger.mark(`动态：${logger.green(`https://t.bilibili.com/${Dynamic_Data.id_str}`)} 包含屏蔽词：「${logger.red(banWord)}」，跳过推送`)
       return true
     }
+    if (Dynamic_Data.type === "DYNAMIC_TYPE_FORWARD" && 'orig' in Dynamic_Data) {
+      if (Dynamic_Data.orig.modules.module_dynamic.major?.archive?.title.includes(banWord) || Dynamic_Data.orig.modules.module_dynamic.desc?.text?.includes(banWord)) {
+        logger.mark(`转发动态：${`https://t.bilibili.com/${Dynamic_Data.id_str}`} 的子动态 ${logger.green(`https://t.bilibili.com/${Dynamic_Data.orig.id_str}`)} 包含屏蔽词：「${logger.red(banWord)}」，跳过推送`)
+        return true
+      }
+    }
   }
   if (Dynamic_Data.type === DynamicType.DRAW || Dynamic_Data.type === DynamicType.FORWARD) {
     for (const banTag of Config.bilibili.push.banTags) {
@@ -748,6 +755,14 @@ const skipDynamic = (Dynamic_Data: PushItem['Dynamic_Data']): boolean => {
         if (tag.orig_text.includes(banTag)) {
           logger.mark(`图文动态：${logger.green(`https://t.bilibili.com/${Dynamic_Data.id_str}`)} 包含屏蔽标签：「${logger.red(banTag)}」，跳过推送`)
           return true
+        }
+      }
+      if (Dynamic_Data.type === "DYNAMIC_TYPE_FORWARD" && 'orig' in Dynamic_Data) {
+        for (const tag of Dynamic_Data.orig.modules.module_dynamic.desc.rich_text_nodes) {
+          if (tag.orig_text.includes(banTag)) {
+            logger.mark(`转发动态：${`https://t.bilibili.com/${Dynamic_Data.id_str}`} 的子动态 ${logger.green(`https://t.bilibili.com/${Dynamic_Data.orig.id_str}`)} 包含屏蔽标签：「${logger.red(banTag)}」，跳过推送`)
+            return true
+          }
         }
       }
     }

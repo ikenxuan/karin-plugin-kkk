@@ -1,7 +1,7 @@
 {
   "name": "karin-plugin-kkk",
   "version": "1.1.10",
-  "description": "a Karin video parsing tool",
+  "description": "Karin 的「抖音」「B 站」视频解析/动态推送插件",
   "keywords": [
     "karin-plugin",
     "karin"
@@ -33,12 +33,12 @@
     "clean": "npm lib/cli/pr.js clean",
     "commit": "node lib/cli/commit.js",
     "dev": "tsx src/index.ts",
-    "watch": "tsx watch --include \"src/**/*.ts\" src/index.ts",
     "fix": "eslint src/**/*.ts --fix",
     "pr": "node lib/cli/pr.js",
     "pub": "npm publish --access public",
     "pub-beta": "npm publish --tag beta",
-    "sort": "npx sort-package-json"
+    "sort": "npx sort-package-json",
+    "watch": "tsx watch --include \"src/**/*.ts\" src/index.ts"
   },
   "dependencies": {
     "@ikenxuan/amagi": "^4.4.8",
@@ -52,6 +52,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.23.0",
+    "@karinjs/plugin-puppeteer": "^1.0.6",
     "@types/cors": "^2.8.17",
     "@types/heic-convert": "^2.1.0",
     "@types/node": "^22.13.14",
