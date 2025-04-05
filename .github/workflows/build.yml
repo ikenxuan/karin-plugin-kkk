@@ -47,6 +47,9 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         if: ${{ steps.release.outputs.release_created }}
+      # 同步淘宝源
+      - run: npm run sync
+        if: ${{ steps.release.outputs.release_created }}
   
   sync-build:
     needs: release-please

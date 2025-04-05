@@ -38,7 +38,8 @@
     "pub": "npm publish --access public",
     "pub-beta": "npm publish --tag beta",
     "sort": "npx sort-package-json",
-    "watch": "tsx watch --include \"src/**/*.ts\" src/index.ts"
+    "watch": "tsx watch --include \"src/**/*.ts\" src/index.ts",
+    "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\""
   },
   "dependencies": {
     "@ikenxuan/amagi": "^4.4.8",
