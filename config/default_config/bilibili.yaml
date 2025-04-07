@@ -20,12 +20,22 @@ autoResolution: true
 push: 
   # 推送开关，开启后需重启；使用「#设置B站推送 + 用户UID」配置推送列表
   switch: true
-  # 动态中有指定关键词时，不推送
-  banWords: 
+  # 过滤模式：blacklist为黑名单模式，whitelist为白名单模式
+  filterMode: blacklist
+  # 黑名单模式：动态中有指定关键词时，不推送
+  filterKeywords:
     - 关键词1
     - 关键词2
-  # 动态中有指定标签时，不推送
-  banTags: 
+  # 黑名单模式：动态中有指定标签时，不推送
+  filterTags:
+    - 标签1
+    - 标签2 
+  # 白名单模式：动态中有指定关键词时，才推送
+  whitelistKeywords:
+    - 关键词1
+    - 关键词2
+  # 白名单模式：动态中有指定标签时，才推送
+  whitelistTags:
     - 标签1
     - 标签2
   # 谁可以设置推送，all为所有人，admin为管理员，master为主人，group.owner为群主，group.admin为群管理员

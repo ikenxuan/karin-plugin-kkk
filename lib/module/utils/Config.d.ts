@@ -10,6 +10,11 @@ declare class Cfg {
     /** 初始化配置 */
     initCfg(): this;
     /**
+      * 迁移配置中的 banWords 和 banTags 到新的字段
+      * @param configName 配置名称，如 'douyin' 或 'bilibili'
+      */
+    private migrateFilterConfig;
+    /**
      * 获取默认配置和用户配置
      * @param name 配置文件名
      * @returns 返回合并后的配置
@@ -55,8 +60,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -72,8 +80,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -132,8 +143,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -150,8 +164,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -230,8 +247,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -253,8 +273,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -345,8 +368,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -369,8 +395,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -411,8 +440,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -430,8 +462,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -454,8 +489,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -479,8 +517,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -495,8 +536,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -510,8 +554,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -528,8 +575,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -545,8 +595,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -564,8 +617,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -588,8 +644,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -613,8 +672,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -630,8 +692,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -645,8 +710,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -661,8 +729,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -722,8 +793,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
@@ -737,8 +811,11 @@ declare class Cfg {
         autoResolution: boolean;
         push: {
             switch: boolean;
-            banWords: string[];
-            banTags: string[];
+            filterMode: "blacklist" | "whitelist";
+            filterKeywords: string[];
+            filterTags: string[];
+            whitelistKeywords: string[];
+            whitelistTags: string[];
             permission: "all" | "admin" | "master" | "group.owner" | "group.admin";
             cron: string;
             parsedynamic: boolean;
