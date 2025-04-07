@@ -515,7 +515,6 @@ export default {
           className: 'ml-4 mr-4',
           children: [
             components.input.string('short_id', {
-              color: 'success',
               placeholder: '',
               label: '抖音号'
             }),
@@ -526,7 +525,7 @@ export default {
               template: components.input.string('accordion-item-douyin:push:douyin:group_id', {
                 placeholder: '',
                 label: '',
-                color: 'success'
+                color: 'default'
               })
             }),
             components.input.string('sec_uid', {
@@ -564,7 +563,6 @@ export default {
           className: 'ml-4 mr-4',
           children: [
             components.input.number('host_mid', {
-              color: 'success',
               placeholder: '',
               label: 'UID',
               rules: undefined
@@ -576,7 +574,7 @@ export default {
               template: components.input.string('accordion-item-bilibili:push:bilibili:group_id', {
                 placeholder: '',
                 label: '',
-                color: 'success'
+                color: 'default'
               })
             }),
             components.input.string('remark', {
