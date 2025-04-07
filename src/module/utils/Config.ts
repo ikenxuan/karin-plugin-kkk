@@ -1,10 +1,12 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { basePath, copyConfigSync, filesByExt, logger, requireFileSync, watch } from 'node-karin'
+import { copyConfigSync, filesByExt, karinPathBase, logger, requireFileSync, watch } from 'node-karin'
 import YAML from 'node-karin/yaml'
 
 import { ConfigType } from '@/types'
+import { bilibiliConfig } from '@/types/config/bilibili'
+import { douyinConfig } from '@/types/config/douyin'
 
 import { Version } from '../../Version'
 
@@ -17,7 +19,7 @@ class Cfg {
   private defCfgPath: string
 
   constructor () {
-    this.dirCfgPath = `${basePath}/${Version.pluginName}/config`
+    this.dirCfgPath = `${karinPathBase}/${Version.pluginName}/config`
     this.defCfgPath = `${Version.pluginPath}/config/default_config/`
   }
 
@@ -46,7 +48,89 @@ class Cfg {
       }))
     }, 2000)
     this.convertType()
+
+    // 迁移配置，使用通用方法
+    this.migrateFilterConfig('douyin')
+    this.migrateFilterConfig('bilibili')
+
     return this
+  }
+
+  /**
+    * 迁移配置中的 banWords 和 banTags 到新的字段
+    * @param configName 配置名称，如 'douyin' 或 'bilibili'
+    */
+  private migrateFilterConfig (configName: 'douyin' | 'bilibili') {
+    try {
+      // 检查配置文件是否存在
+      const configPath = `${this.dirCfgPath}/${configName}.yaml`
+      if (!fs.existsSync(configPath)) {
+        return
+      }
+
+      // 读取配置，并明确指定类型
+      const config = this.getYaml('config', configName as keyof ConfigType) as (douyinConfig | bilibiliConfig)
+
+      // 检查是否需要迁移
+      if (!config.push) {
+        return
+      }
+
+      let needsMigration = false
+      const push = config.push
+
+      // 检查并迁移 banWords 到 filterKeywords
+      if ('banWords' in push) {
+        if (!push.filterKeywords) {
+          push.filterKeywords = (push as any).banWords
+        } else {
+          // 如果已经有 filterKeywords，合并两个数组
+          push.filterKeywords = [...new Set([...push.filterKeywords, ...(push as any).banWords])]
+        }
+        delete (push as any).banWords
+        needsMigration = true
+      }
+
+      // 检查并迁移 banTags 到 filterTags
+      if ('banTags' in push) {
+        if (!push.filterTags) {
+          push.filterTags = (push as any).banTags
+        } else {
+          // 如果已经有 filterTags，合并两个数组
+          push.filterTags = [...new Set([...push.filterTags, ...(push as any).banTags])]
+        }
+        delete (push as any).banTags
+        needsMigration = true
+      }
+
+      // 确保 filterMode 字段存在，默认为黑名单模式
+      if (!push.filterMode) {
+        push.filterMode = 'blacklist'
+        needsMigration = true
+      }
+
+      // 确保白名单字段存在
+      if (!push.whitelistKeywords) {
+        push.whitelistKeywords = []
+        needsMigration = true
+      }
+
+      if (!push.whitelistTags) {
+        push.whitelistTags = []
+        needsMigration = true
+      }
+
+      // 如果有变更，保存配置
+      if (needsMigration) {
+        const serviceName = configName === 'douyin' ? '抖音' : '哔哩哔哩'
+        logger.info(`正在迁移${serviceName}配置中的黑名单字段到新格式...`)
+        this.ModifyPro(configName as keyof ConfigType, config)
+        logger.info(`${serviceName}配置迁移完成`)
+      }
+    } catch (error) {
+      const serviceName = configName === 'douyin' ? '抖音' : '哔哩哔哩'
+      logger.error(`迁移${serviceName}配置时发生错误: ${error}`)
+    }
   }
 
   /**
