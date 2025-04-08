@@ -21,6 +21,7 @@
   "files": [
     "config/",
     "lib/",
+    "!lib/cli/",
     "resources/",
     "LICENSE",
     "package.json",
@@ -29,7 +30,7 @@
     "web.config.mjs"
   ],
   "scripts": {
-    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "build": "tsup",
     "clean": "npm lib/cli/pr.js clean",
     "commit": "node lib/cli/commit.js",
     "dev": "tsx src/index.ts",
@@ -66,6 +67,7 @@
     "node-karin": "^1.7.14",
     "sort-package-json": "^2.15.1",
     "tsc-alias": "^1.8.12",
+    "tsup": "^8.4.0",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.28.0"

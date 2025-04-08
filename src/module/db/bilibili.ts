@@ -161,6 +161,15 @@ DynamicCache.belongsTo(Group, { foreignKey: 'groupId' })
 /** 数据库操作类 */
 export class BilibiliDBBase {
   /**
+   * 初始化数据库
+   */
+  async init () {
+    await sequelize.authenticate()
+    await sequelize.sync()
+    return this
+  }
+
+  /**
    * 获取或创建机器人记录
    * @param botId 机器人ID
    */
@@ -332,7 +341,7 @@ export class BilibiliDBBase {
 
     for (const item of configItems) {
       const host_mid = item.host_mid
-      const remark = item.remark || ''
+      const remark = item.remark ?? ''
 
       // 创建或更新B站用户记录
       await this.getOrCreateBilibiliUser(host_mid, remark)
@@ -354,12 +363,8 @@ export class BilibiliDBBase {
   }
 }
 
-/** 测试数据库连接是否成功 */
-await sequelize.authenticate()
-/** 建表 */
-await sequelize.sync()
-
-export const bilibiliDB = new BilibiliDBBase()
+/** 哔哩哔哩数据库实例 */
+export let bilibiliDB: BilibiliDBBase
 
 export { BilibiliUser, Bot, DynamicCache, Group, GroupUserSubscription }
 
@@ -375,4 +380,8 @@ export const bilibiliModels = {
   Group,
   /** GroupUserSubscriptions表 - 存储群组订阅的B站用户关系 */
   GroupUserSubscription
-}
+};
+
+(async () => {
+  bilibiliDB = await new BilibiliDBBase().init()
+})()

@@ -174,6 +174,15 @@ AwemeCache.belongsTo(Group, { foreignKey: 'groupId' })
 /** 数据库操作类 */
 export class DouyinDBBase {
   /**
+   * 初始化数据库
+   */
+  async init () {
+    await sequelize.authenticate()
+    await sequelize.sync()
+    return this
+  }
+
+  /**
    * 获取或创建机器人记录
    * @param botId 机器人ID
    */
@@ -403,14 +412,6 @@ export class DouyinDBBase {
     return await Group.findByPk(groupId)
   }
 }
-
-/** 测试数据库连接是否成功 */
-await sequelize.authenticate()
-/** 建表 */
-await sequelize.sync()
-
-export const douyinDB = new DouyinDBBase()
-
 /** 抖音数据库模型集合 */
 export const douyinModels = {
   /** AwemeCache表 - 存储已推送的作品ID */
@@ -424,3 +425,10 @@ export const douyinModels = {
   /** GroupUserSubscriptions表 - 存储群组订阅的抖音用户关系 */
   GroupUserSubscription
 }
+
+/** 抖音数据库实例 */
+export let douyinDB: DouyinDBBase
+
+(async () => {
+  douyinDB = await new DouyinDBBase().init()
+})()
