@@ -152,7 +152,7 @@ export class Networks {
       if (retryCount < this.maxRetries) {
         const delay = Math.min(Math.pow(2, retryCount) * 1000, 1000)
         logger.warn(`正在重试下载... (${retryCount + 1}/${this.maxRetries})，将在 ${delay / 1000} 秒后重试`)
-        // eslint-disable-next-line @typescript-eslint/no-implied-eval
+
         await new Promise(resolve => setTimeout(resolve, delay))
         return this.downloadStream(progressCallback, retryCount + 1)
       } else {

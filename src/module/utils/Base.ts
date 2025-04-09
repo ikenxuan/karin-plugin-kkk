@@ -4,7 +4,6 @@ import Client from '@ikenxuan/amagi'
 import karin, { logger, Message, segment } from 'node-karin'
 
 import { Common, Config, mergeFile, Networks } from '@/module/utils'
-logger.debug('1')
 type uploadFileOptions = {
   /** 是否使用群文件上传 */
   useGroupFile?: boolean
@@ -271,7 +270,7 @@ export class Base {
     if (count > 10000) {
       return (count / 10000).toFixed(1) + '万'
     } else {
-      return count?.toString() || '无法获取'
+      return count?.toString() ?? '无法获取'
     }
   }
 }

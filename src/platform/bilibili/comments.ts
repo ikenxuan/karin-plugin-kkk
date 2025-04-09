@@ -167,7 +167,7 @@ function checklevel (obj: any) {
 /** 检查是否大会员 */
 function checkvip (member: any) {
   return member.vip.vipStatus === 1
-    ? `<span style="color: ${member.vip.nickname_color || '#FB7299'}; font-weight: 700;">${member.uname}</span>`
+    ? `<span style="color: ${member.vip.nickname_color ?? '#FB7299'}; font-weight: 700;">${member.uname}</span>`
     : `<span style="color: #888">${member.uname}</span>`
 }
 

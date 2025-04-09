@@ -32,7 +32,7 @@ export class Kuaishou extends Base {
       Type: '视频',
       viewCount: data.VideoData.data.visionVideoDetail.photo.viewCount,
       CommentsData,
-      CommentLength: String(CommentsData?.length ? CommentsData.length : 0),
+      CommentLength: String(CommentsData?.length ?? 0),
       share_url: video_url,
       VideoSize: fileSizeInMB,
       likeCount: data.VideoData.data.visionVideoDetail.photo.likeCount

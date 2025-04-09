@@ -117,7 +117,7 @@ export class Bilibili extends Base {
           img = await Render('bilibili/comment', {
             Type: '视频',
             CommentsData: commentsdata,
-            CommentLength: String(commentsdata?.length ? commentsdata.length : 0),
+            CommentLength: String(commentsdata?.length ?? 0),
             share_url: 'https://b23.tv/' + infoData.data.bvid,
             Clarity: Config.bilibili.videopriority === true ? nockData.data.accept_description[0] : correctList.accept_description[0],
             VideoSize: Config.bilibili.videopriority === true ? (nockData.data.durl[0].size / (1024 * 1024)).toFixed(2) : videoSize,
@@ -241,9 +241,9 @@ export class Bilibili extends Base {
               img = await Render('bilibili/comment', {
                 Type: '动态',
                 CommentsData: commentsdata,
-                CommentLength: String(commentsdata?.length ? commentsdata.length : 0),
+                CommentLength: String(commentsdata?.length ?? 0),
                 share_url: 'https://t.bilibili.com/' + dynamicInfo.data.item.id_str,
-                ImageLength: dynamicInfo.data.item.modules?.module_dynamic?.major?.draw?.items?.length || '动态中没有附带图片',
+                ImageLength: dynamicInfo.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? '动态中没有附带图片',
                 shareurl: '动态分享链接'
               })
               if (imgArray.length === 1) await this.e.reply(imgArray[0])
@@ -313,7 +313,7 @@ export class Bilibili extends Base {
                 CommentsData: bilibiliComments(commentsData),
                 CommentLength: String((bilibiliComments(commentsData)?.length) ? bilibiliComments(commentsData).length : 0),
                 share_url: 'https://t.bilibili.com/' + dynamicInfo.data.item.id_str,
-                ImageLength: dynamicInfo.data.item.modules?.module_dynamic?.major?.draw?.items?.length || '动态中没有附带图片',
+                ImageLength: dynamicInfo.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? '动态中没有附带图片',
                 shareurl: '动态分享链接'
               })
             )
@@ -423,7 +423,7 @@ export class Bilibili extends Base {
                   CommentsData: bilibiliComments(commentsData),
                   CommentLength: String((bilibiliComments(commentsData)?.length) ? bilibiliComments(commentsData).length : 0),
                   share_url: 'https://www.bilibili.com/video/' + bvid,
-                  ImageLength: dynamicInfo.data.item.modules?.module_dynamic?.major?.draw?.items?.length || '动态中没有附带图片',
+                  ImageLength: dynamicInfo.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? '动态中没有附带图片',
                   shareurl: '动态分享链接'
                 })
               )
@@ -635,7 +635,7 @@ export class Bilibili extends Base {
 
 function checkvip (member: any) {
   return member.vip.vipStatus || member.vip.status === 1
-    ? `<span style="color: ${member.vip.nickname_color || '#FB7299'}; font-weight: 700;">${member.name}</span>`
+    ? `<span style="color: ${member.vip.nickname_color ?? '#FB7299'}; font-weight: 700;">${member.name}</span>`
     : `<span style="color: ${Common.useDarkTheme() ? '#e9e9e9' : '#313131'}; font-weight: 700;">${member.name}</span>`
 }
 

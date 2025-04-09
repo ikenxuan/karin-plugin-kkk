@@ -19,9 +19,9 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
     const nickname = data.comments[i].user.nickname
     const userimageurl = data.comments[i].user.avatar_thumb.url_list[0]
     const text = data.comments[i].text
-    const ip = data.comments[i].ip_label ? data.comments[i].ip_label : '未知'
+    const ip = data.comments[i].ip_label ?? '未知'
     const time = data.comments[i].create_time
-    const label_type = data.comments[i].label_type ? data.comments[i].label_type : -1
+    const label_type = data.comments[i].label_type ?? -1
     const sticker = data.comments[i].sticker ? data.comments[i].sticker.animate_url.url_list[0] : null
     const digg_count = data.comments[i].digg_count
     const imageurl =
