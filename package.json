@@ -1,7 +1,7 @@
 {
   "name": "karin-plugin-kkk",
-  "version": "1.1.9",
-  "description": "a Karin video parsing tool",
+  "version": "1.2.1",
+  "description": "Karin 的「抖音」「B 站」视频解析/动态推送插件",
   "keywords": [
     "karin-plugin",
     "karin"
@@ -21,6 +21,7 @@
   "files": [
     "config/",
     "lib/",
+    "!lib/cli/",
     "resources/",
     "LICENSE",
     "package.json",
@@ -29,16 +30,13 @@
     "web.config.mjs"
   ],
   "scripts": {
-    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
-    "clean": "npm lib/cli/pr.js clean",
-    "commit": "node lib/cli/commit.js",
+    "build": "tsup",
     "dev": "tsx src/index.ts",
-    "watch": "tsx watch --include \"src/**/*.ts\" src/index.ts",
     "fix": "eslint src/**/*.ts --fix",
-    "pr": "node lib/cli/pr.js",
     "pub": "npm publish --access public",
-    "pub-beta": "npm publish --tag beta",
-    "sort": "npx sort-package-json"
+    "sort": "npx sort-package-json",
+    "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
+    "watch": "tsx watch --include \"src/**/*.ts\" src/index.ts"
   },
   "dependencies": {
     "@ikenxuan/amagi": "^4.4.8",
