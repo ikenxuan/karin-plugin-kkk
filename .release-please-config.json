@@ -13,30 +13,26 @@
       "include-v-in-tag": true
     }
   },
-  "types": [
+  "changelog-sections": [
     {
       "type": "feat",
       "section": "✨ Features",
-      "hidden": false,
-      "bump": "minor"
+      "hidden": false
     },
     {
       "type": "fix",
       "section": "🐛 Bug Fixes",
-      "hidden": false,
-      "bump": "patch"
+      "hidden": false
     },
     {
       "type": "perf",
       "section": "⚡️ Performance",
-      "hidden": false,
-      "bump": "patch"
+      "hidden": false
     },
     {
       "type": "revert",
       "section": "⏪️ Reverts",
-      "hidden": false,
-      "bump": "patch"
+      "hidden": false
     },
     {
       "type": "docs",
@@ -56,8 +52,7 @@
     {
       "type": "refactor",
       "section": "♻️ Code Refactoring",
-      "hidden": false,
-      "bump": "patch"
+      "hidden": false
     },
     {
       "type": "test",
