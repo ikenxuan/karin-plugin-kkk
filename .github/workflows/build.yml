@@ -81,10 +81,8 @@ jobs:
           echo "构建成功，准备复制文件..."
           pnpm pkg delete devDependencies
           mkdir -p ${{ runner.temp }}/temp/
-          # 复制除 lib 外的其他文件
-          cp -r package.json CHANGELOG.md README.md LICENSE resources config ${{ runner.temp }}/temp/
-          # 创建 lib 目录并复制内容，排除 cli 子目录
-          mkdir -p ${{ runner.temp }}/temp/lib
+          # 复制所有必要文件，包括完整的 lib 目录
+          cp -r package.json CHANGELOG.md README.md LICENSE resources config lib ${{ runner.temp }}/temp/
           echo "文件已复制到临时目录"
 
       - name: 配置 Git 用户
