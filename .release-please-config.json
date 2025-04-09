@@ -1,74 +1,72 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "node",
-  "include-component-in-tag": true,
-  "bump-minor-pre-major": true,
-  "bump-patch-for-minor-pre-major": true,
-  "packages": {
-    ".": {
-      "release-type": "node",
-      "extra-files": [
-        "package.json"
-      ],
-      "include-v-in-tag": true
-    }
-  },
+  "include-component-in-tag": false,
   "changelog-sections": [
     {
       "type": "feat",
-      "section": "✨ Features",
+      "section": "✨ 新功能",
       "hidden": false
     },
     {
       "type": "fix",
-      "section": "🐛 Bug Fixes",
+      "section": "🐛 错误修复",
       "hidden": false
     },
     {
       "type": "perf",
-      "section": "⚡️ Performance",
+      "section": "⚡️ 性能优化",
       "hidden": false
     },
     {
       "type": "revert",
-      "section": "⏪️ Reverts",
+      "section": "⏪️ 回退提交",
       "hidden": false
     },
     {
       "type": "docs",
-      "section": "📝 Documentation",
+      "section": "📝 文档更新",
       "hidden": false
     },
     {
       "type": "style",
-      "section": "💄 Styles",
+      "section": "🎨 代码样式",
       "hidden": false
     },
     {
       "type": "chore",
-      "section": "🎫 Chores",
+      "section": "🔧 其他更新",
       "hidden": false
     },
     {
       "type": "refactor",
-      "section": "♻️ Code Refactoring",
+      "section": "♻️ 代码重构",
       "hidden": false
     },
     {
       "type": "test",
-      "section": "✅ Tests",
+      "section": "✅ 测试相关",
       "hidden": false
     },
     {
+      "type": "deps",
+      "section": "📦 依赖更新"
+    },
+    {
       "type": "build",
-      "section": "📦️ Build System",
+      "section": "📦️ 构建系统",
       "hidden": false
     },
     {
       "type": "ci",
-      "section": "🎡 Continuous Integration",
+      "section": "🎡 持续集成",
       "hidden": false
     }
   ],
+  "packages": {
+    ".": {
+      "release-type": "node"
+    }
+  },
   "commit-search-depth": 50
 }
