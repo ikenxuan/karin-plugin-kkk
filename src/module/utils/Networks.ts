@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-implied-eval */
 import fs from 'node:fs'
 
 import { logger } from 'node-karin'
