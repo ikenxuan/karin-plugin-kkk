@@ -21,6 +21,8 @@ jobs:
           config-file: .release-please-config.json
           # 设置发布类型为 node
           release-type: node
+          # 添加以下配置，使 refactor 类型提交也能触发版本更新
+          release-as: patch
       # 检出代码
       - uses: actions/checkout@v4
         if: ${{ steps.release.outputs.release_created }}
@@ -83,7 +85,6 @@ jobs:
           cp -r package.json CHANGELOG.md README.md LICENSE resources config ${{ runner.temp }}/temp/
           # 创建 lib 目录并复制内容，排除 cli 子目录
           mkdir -p ${{ runner.temp }}/temp/lib
-          find lib -type f -not -path "lib/cli/*" -exec cp --parents {} ${{ runner.temp }}/temp/ \;
           echo "文件已复制到临时目录"
 
       - name: 配置 Git 用户
@@ -180,6 +181,9 @@ jobs:
 
       - name: 根据main分支的commit信息生成提交消息
         run: |
+          # 在提交前忽略 lib/cli 目录
+          echo "lib/cli/" >> .gitignore
+          
           git add .
           if [ -z "$(git diff --cached --name-only)" ]; then
             echo "No changes detected"

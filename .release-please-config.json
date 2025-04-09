@@ -2,26 +2,41 @@
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "node",
   "include-component-in-tag": true,
-  "changelog-sections": [
+  "bump-minor-pre-major": true,
+  "bump-patch-for-minor-pre-major": true,
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "extra-files": [
+        "package.json"
+      ],
+      "include-v-in-tag": true
+    }
+  },
+  "types": [
     {
       "type": "feat",
       "section": "✨ Features",
-      "hidden": false
+      "hidden": false,
+      "bump": "minor"
     },
     {
       "type": "fix",
       "section": "🐛 Bug Fixes",
-      "hidden": false
+      "hidden": false,
+      "bump": "patch"
     },
     {
       "type": "perf",
       "section": "⚡️ Performance",
-      "hidden": false
+      "hidden": false,
+      "bump": "patch"
     },
     {
       "type": "revert",
       "section": "⏪️ Reverts",
-      "hidden": false
+      "hidden": false,
+      "bump": "patch"
     },
     {
       "type": "docs",
@@ -41,7 +56,8 @@
     {
       "type": "refactor",
       "section": "♻️ Code Refactoring",
-      "hidden": false
+      "hidden": false,
+      "bump": "patch"
     },
     {
       "type": "test",
