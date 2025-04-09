@@ -159,8 +159,12 @@ jobs:
           # 创建一个检查文件是否存在并检出的函数
           checkout_if_exists() {
             if git ls-tree -r --name-only origin/main | grep -q "^$1$"; then
-              git checkout main -- "$1"
-              echo "已检出: $1"
+              if [ "$1" != "package.json" ]; then
+                git checkout main -- "$1"
+                echo "已检出: $1"
+              else
+                echo "跳过检出 package.json，保留修改版本"
+              fi
             else
               echo "文件不存在，跳过: $1"
             fi
@@ -182,7 +186,20 @@ jobs:
           # 在提交前忽略 lib/cli 目录
           echo "lib/cli/" >> .gitignore
           
+          # 显示当前工作目录的状态
+          echo "当前工作目录状态:"
+          git status
+          
+          # 显示与暂存区的差异
+          echo "与暂存区的差异:"
+          git diff
+          
           git add .
+          
+          # 显示已暂存的变更
+          echo "已暂存的变更:"
+          git diff --cached
+          
           if [ -z "$(git diff --cached --name-only)" ]; then
             echo "No changes detected"
             exit 0
