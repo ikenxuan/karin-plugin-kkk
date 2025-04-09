@@ -7,8 +7,9 @@ import Client, {
 } from '@ikenxuan/amagi'
 import cors from 'cors'
 import { createProxyMiddleware, Options } from 'http-proxy-middleware'
-import { app, basePath, logger, mkdirSync } from 'node-karin'
+import { app, logger, mkdirSync } from 'node-karin'
 import express from 'node-karin/express'
+import { karinPathBase } from 'node-karin/root'
 
 import { Common, Config, Version } from '@/module'
 
@@ -37,7 +38,7 @@ if (Config.app.APIServer && Config.app.APIServerMount) {
   amagiServer.startClient(Config.app.APIServerPort)
 }
 
-const base = `${basePath}/${Version.pluginName}`
+const base = `${karinPathBase}/${Version.pluginName}`
 mkdirSync(`${base}/data`)
 mkdirSync(Common.tempDri.images)
 mkdirSync(Common.tempDri.video)

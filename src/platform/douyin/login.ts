@@ -54,6 +54,7 @@ const startXvfb = async () => {
       logger.debug(logger.yellow(`Xvfb (${DISPLAY_NUMBER}) 启动失败，正在重试...`))
       retries -= 1
       if (retries > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-implied-eval
         await new Promise((resolve) => setTimeout(resolve, 1000)) // 等待1秒后重试
       } else {
         logger.debug(logger.red('Xvfb 启动失败，重试多次后仍未成功'))

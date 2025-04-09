@@ -31,16 +31,12 @@
   ],
   "scripts": {
     "build": "tsup",
-    "clean": "npm lib/cli/pr.js clean",
-    "commit": "node lib/cli/commit.js",
     "dev": "tsx src/index.ts",
     "fix": "eslint src/**/*.ts --fix",
-    "pr": "node lib/cli/pr.js",
     "pub": "npm publish --access public",
-    "pub-beta": "npm publish --tag beta",
     "sort": "npx sort-package-json",
-    "watch": "tsx watch --include \"src/**/*.ts\" src/index.ts",
-    "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\""
+    "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
+    "watch": "tsx watch --include \"src/**/*.ts\" src/index.ts"
   },
   "dependencies": {
     "@ikenxuan/amagi": "^4.4.8",

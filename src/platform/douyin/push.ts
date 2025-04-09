@@ -97,7 +97,7 @@ export class DouYinpush extends Base {
       let iddata: DouyinIdData = { is_mp4: true, type: 'one_work' }
 
       if (!skip) {
-        iddata = await getDouyinID(Detail_Data.share_url || 'https://live.douyin.com/' + Detail_Data.room_data?.owner.web_rid, false)
+        iddata = await getDouyinID(Detail_Data.share_url ?? 'https://live.douyin.com/' + Detail_Data.room_data?.owner.web_rid, false)
       }
 
       if (!skip) {
@@ -106,7 +106,7 @@ export class DouYinpush extends Base {
           img = await Render('douyin/live', {
             image_url: [{ image_src: Detail_Data.live_data.data.data[0].cover.url_list[0] }],
             text: Detail_Data.live_data.data.data[0].title,
-            liveinf: `${Detail_Data.live_data.data.partition_road_map?.partition?.title || Detail_Data.live_data.data.data[0].title} | 房间号: ${Detail_Data.room_data.owner.web_rid}`,
+            liveinf: `${Detail_Data.live_data.data.partition_road_map?.partition?.title ?? Detail_Data.live_data.data.data[0].title} | 房间号: ${Detail_Data.room_data.owner.web_rid}`,
             在线观众: this.count(Detail_Data.live_data.data.data[0].room_view_stats.display_value),
             总观看次数: this.count(Detail_Data.live_data.data.data[0].stats.total_user_str),
             username: Detail_Data.user_info.user.nickname,
@@ -126,7 +126,7 @@ export class DouYinpush extends Base {
             }
           }).getLongLink()
           img = await Render('douyin/dynamic', {
-            image_url: iddata.is_mp4 ? Detail_Data.video.animated_cover?.url_list[0] || Detail_Data.video.cover.url_list[0] : Detail_Data.images[0].url_list[0],
+            image_url: iddata.is_mp4 ? Detail_Data.video.animated_cover?.url_list[0] ?? Detail_Data.video.cover.url_list[0] : Detail_Data.images[0].url_list[0],
             desc: this.desc(Detail_Data, Detail_Data.desc),
             dianzan: this.count(Detail_Data.statistics.digg_count),
             pinglun: this.count(Detail_Data.statistics.comment_count),
@@ -182,7 +182,7 @@ export class DouYinpush extends Base {
                   }).getLongLink()
                 } else {
                   downloadUrl = await new Networks({
-                    url: Detail_Data.video.play_addr_h264.url_list[2] || Detail_Data.video.play_addr_h264.url_list[2],
+                    url: Detail_Data.video.play_addr_h264.url_list[2] ?? Detail_Data.video.play_addr_h264.url_list[2],
                     headers: this.headers
                   }).getLongLink()
                 }
@@ -198,7 +198,7 @@ export class DouYinpush extends Base {
               const imageres: ImageElement[] = []
               let image_url
               for (const item of Detail_Data.images) {
-                image_url = item.url_list[2] || item.url_list[1] // 图片地址
+                image_url = item.url_list[2] ?? item.url_list[1] // 图片地址
                 imageres.push(segment.image(image_url))
               }
               const forwardMsg = common.makeForward(imageres, botId, bot.account.name)
@@ -312,7 +312,7 @@ export class DouYinpush extends Base {
         } else if (liveStatus.living) {
           // 如果之前在直播，现在已经关播，需要更新状态
           await douyinDB.updateLiveStatus(sec_uid, false)
-          logger.info(`用户 ${item.remark || sec_uid} 已关播，更新直播状态`)
+          logger.info(`用户 ${item.remark ?? sec_uid} 已关播，更新直播状态`)
 
           // 可选：添加关播推送
           // willbepushlist[`live_end_${sec_uid}`] = {
@@ -381,9 +381,7 @@ export class DouYinpush extends Base {
       UserInfoData.user.unique_id === '' ? (user_shortid = UserInfoData.user.short_id) : (user_shortid = UserInfoData.user.unique_id)
 
       // 初始化 douyin 数组
-      if (!config.douyin) {
-        config.douyin = []
-      }
+      config.douyin ??= []
 
       // 查找是否存在相同的 sec_uid
       const existingItem = config.douyin.find((item: { sec_uid: string }) => item.sec_uid === sec_uid)
@@ -609,7 +607,7 @@ export class DouYinpush extends Base {
 */
 const skipDynamic = (Detail_Data: PushItem['Detail_Data']): boolean => {
   // 获取过滤模式
-  const filterMode = Config.douyin.push.filterMode || 'blacklist'
+  const filterMode = Config.douyin.push.filterMode ?? 'blacklist'
 
   if (filterMode === 'blacklist') {
     // 检查关键词

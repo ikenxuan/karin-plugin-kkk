@@ -1,6 +1,6 @@
 import { join } from 'node:path'
 
-import { basePath } from 'node-karin'
+import { karinPathBase } from 'node-karin/root'
 import { DataTypes, Model, Sequelize } from 'sequelize'
 
 import { douyinPushItem } from '@/types/config/pushlist'
@@ -18,7 +18,7 @@ type GroupUserSubscriptionAttributes = {
 /** 创建 Sequelize 实例，需要传入配置对象。 */
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: join(`${basePath}/${Version.pluginName}/data`, 'douyin.db'),
+  storage: join(`${karinPathBase}/${Version.pluginName}/data`, 'douyin.db'),
   logging: false
 })
 
@@ -382,8 +382,8 @@ export class DouyinDBBase {
 
     for (const item of configItems) {
       const sec_uid = item.sec_uid
-      const short_id = item.short_id || ''
-      const remark = item.remark || ''
+      const short_id = item.short_id ?? ''
+      const remark = item.remark ?? ''
 
       // 创建或更新抖音用户记录
       await this.getOrCreateDouyinUser(sec_uid, short_id, remark)

@@ -1,6 +1,6 @@
 import { join } from 'node:path'
 
-import { basePath } from 'node-karin'
+import { karinPathBase } from 'node-karin/root'
 import { DataTypes, Model, Sequelize } from 'sequelize'
 
 import { bilibiliPushItem } from '@/types/config/pushlist'
@@ -18,7 +18,7 @@ type GroupUserSubscriptionAttributes = {
 /** 创建 Sequelize 实例，需要传入配置对象。 */
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: join(`${basePath}/${Version.pluginName}/data`, 'bilibili.db'),
+  storage: join(`${karinPathBase}/${Version.pluginName}/data`, 'bilibili.db'),
   logging: false
 })
 

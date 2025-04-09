@@ -70,7 +70,7 @@ jobs:
           exit 1
 
       - name: 删除开发依赖
-        run: npm run pr clean
+        run: node lib/cli/pr.js clean
 
       - name: 发布临时NPM包
         id: publish_pkg

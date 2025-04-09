@@ -79,7 +79,11 @@ jobs:
           echo "构建成功，准备复制文件..."
           pnpm pkg delete devDependencies
           mkdir -p ${{ runner.temp }}/temp/
-          cp -r package.json CHANGELOG.md README.md LICENSE resources config lib ${{ runner.temp }}/temp/
+          # 复制除 lib 外的其他文件
+          cp -r package.json CHANGELOG.md README.md LICENSE resources config ${{ runner.temp }}/temp/
+          # 创建 lib 目录并复制内容，排除 cli 子目录
+          mkdir -p ${{ runner.temp }}/temp/lib
+          find lib -type f -not -path "lib/cli/*" -exec cp --parents {} ${{ runner.temp }}/temp/ \;
           echo "文件已复制到临时目录"
 
       - name: 配置 Git 用户
@@ -172,7 +176,7 @@ jobs:
           checkout_if_exists "resources"
 
       - name: 删除开发依赖 
-        run: npm run pr clean
+        run: node lib/cli/pr.js clean
 
       - name: 根据main分支的commit信息生成提交消息
         run: |

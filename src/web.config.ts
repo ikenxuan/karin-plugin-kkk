@@ -853,7 +853,7 @@ function processFrontendData (data: newConfigType): ConfigType {
         ...item,
         host_mid: Number(item.host_mid)
       }
-    }) || []
+    }) ?? []
   }
 
   return result as ConfigType

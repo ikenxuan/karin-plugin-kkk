@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 
-import { logger, Message, tempPath } from 'node-karin'
+import { logger, Message } from 'node-karin'
+import { karinPathTemp } from 'node-karin/root'
 
 import { Config } from '@/module/utils'
 
@@ -23,11 +24,11 @@ class Tools {
   constructor () {
     this.tempDri = {
       /** 插件缓存目录 */
-      default: `${tempPath}/${Version.pluginName}/`.replace(/\\/g, '/'),
+      default: `${karinPathTemp}/${Version.pluginName}/`.replace(/\\/g, '/'),
       /** 视频缓存文件 */
-      video: `${tempPath}/${Version.pluginName}/kkkdownload/video/`.replace(/\\/g, '/'),
+      video: `${karinPathTemp}/${Version.pluginName}/kkkdownload/video/`.replace(/\\/g, '/'),
       /** 图片缓存文件 */
-      images: `${tempPath}/${Version.pluginName}/kkkdownload/images/`.replace(/\\/g, '/')
+      images: `${karinPathTemp}/${Version.pluginName}/kkkdownload/images/`.replace(/\\/g, '/')
     }
   }
 

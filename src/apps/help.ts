@@ -2,7 +2,8 @@ import { ExecException, execSync } from 'node:child_process'
 import fs from 'node:fs'
 
 import { markdown } from '@karinjs/md-html'
-import karin, { common, isPkg, logger, mkdirSync, render, restart, segment, tempPath, updateGitPlugin, updatePkg } from 'node-karin'
+import karin, { common, isPackaged, logger, mkdirSync, render, restart, segment, updateGitPlugin, updatePkg } from 'node-karin'
+import { karinPathTemp } from 'node-karin/root'
 
 import { Common, Config, Render, Version } from '@/module'
 
@@ -18,8 +19,8 @@ export const version = karin.command(/^#?kkk版本$/, async (e) => {
   const html = markdown(changelogs, {
     gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css'
   })
-  mkdirSync(`${tempPath}/html/${Version.pluginName}/version`)
-  const htmlPath = `${tempPath}/html/${Version.pluginName}/version/version.html`
+  mkdirSync(`${karinPathTemp}/html/${Version.pluginName}/version`)
+  const htmlPath = `${karinPathTemp}/html/${Version.pluginName}/version/version.html`
   fs.writeFileSync(htmlPath, html)
   const img = await render.renderHtml(htmlPath)
   await e.reply(segment.image('base64://' + img))
@@ -42,8 +43,8 @@ export const changelogs = karin.command(/^#?kkk更新日志$/, async (e) => {
   const html = markdown(htmlString, {
     gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css'
   })
-  mkdirSync(`${tempPath}/html/${Version.pluginName}/version`)
-  const htmlPath = `${tempPath}/html/${Version.pluginName}/version/changelogs.html`
+  mkdirSync(`${karinPathTemp}/html/${Version.pluginName}/version`)
+  const htmlPath = `${karinPathTemp}/html/${Version.pluginName}/version/changelogs.html`
   fs.writeFileSync(htmlPath, html)
   const img = await render.renderHtml(htmlPath)
   await e.reply(segment.image('base64://' + img))
@@ -53,7 +54,7 @@ export const changelogs = karin.command(/^#?kkk更新日志$/, async (e) => {
 export const update = karin.command(/^#?kkk更新(预览版)?$/, async (e) => {
   let status: 'ok' | 'failed' | 'error' = 'failed'
   let data: ExecException | string = ''
-  if (isPkg) {
+  if (isPackaged) {
     if (e.msg.includes('预览版')) {
       const resolve = await updatePkg(Version.pluginName, 'beta')
       status = resolve.status
