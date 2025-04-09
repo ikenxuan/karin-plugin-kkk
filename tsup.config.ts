@@ -21,6 +21,7 @@ export default defineConfig({
     ...builtinModules,
     ...builtinModules.map((node) => `node:${node}`),
     'node-karin',
+    'express',
   ],
   noExternal: [
     '@ikenxuan/amagi',
@@ -31,6 +32,9 @@ export default defineConfig({
         import { createRequire } from 'module';
         const require = createRequire(import.meta.url);
       `,
+    }
+    options.alias = {
+      'express': 'node-karin/express'
     }
     return options
   },
