@@ -4,7 +4,7 @@ import Client from '@ikenxuan/amagi'
 import karin, { logger, Message, segment } from 'node-karin'
 
 import { Common, Config, mergeFile, Networks } from '@/module/utils'
-
+logger.debug('1')
 type uploadFileOptions = {
   /** 是否使用群文件上传 */
   useGroupFile?: boolean
