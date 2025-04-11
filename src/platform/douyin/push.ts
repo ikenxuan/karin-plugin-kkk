@@ -469,22 +469,16 @@ export class DouYinpush extends Base {
   async renderPushList (): Promise<void> {
     await this.syncConfigToDatabase()
     const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
-    const groupId = 'groupId' in this.e && this.e.groupId ? this.e.groupId : ''
 
-    // 获取该群组的所有订阅
-    const subscriptions = await douyinDB.getGroupSubscriptions(groupId)
-
-    if (subscriptions.length === 0) {
+    if (Config.pushlist.douyin.length === 0) {
       await this.e.reply(`当前群：${groupInfo.groupName}(${groupInfo.groupId})\n没有设置任何抖音博主推送！\n可使用「#设置抖音推送 + 抖音号」进行设置`)
       return
     }
 
-    /** 用户的今日动态列表 */
     const renderOpt: Record<string, string>[] = []
 
-    for (const subscription of subscriptions) {
-      const sec_uid = subscription.get('sec_uid') as string
-      const userInfo = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid })
+    for (const item of Config.pushlist.douyin) {
+      const userInfo = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid: item.sec_uid })
 
       renderOpt.push({
         avatar_img: userInfo.user.avatar_larger.url_list[0],

@@ -658,10 +658,7 @@ export class Bilibilipush extends Base {
     const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
     const groupId = 'groupId' in this.e && this.e.groupId ? this.e.groupId : ''
 
-    // 获取该群组的所有订阅
-    const subscriptions = await bilibiliDB.getGroupSubscriptions(groupId)
-
-    if (subscriptions.length === 0) {
+    if (Config.pushlist.bilibili.length === 0) {
       await this.e.reply(`当前群：${groupInfo.groupName}(${groupInfo.groupId})\n没有设置任何B站UP推送！\n可使用「#设置B站推送 + UP主UID」进行设置`)
       return
     }
@@ -669,10 +666,9 @@ export class Bilibilipush extends Base {
     /** 用户的今日动态列表 */
     const renderOpt: Record<string, string>[] = []
 
-    for (const subscription of subscriptions) {
+    for (const item of Config.pushlist.bilibili) {
       // 现在可以直接使用 get 方法而不需要类型断言
-      const host_mid = subscription.get('host_mid') as number
-      const userInfo = await getBilibiliData('用户主页数据', Config.cookies.bilibili, { host_mid })
+      const userInfo = await getBilibiliData('用户主页数据', Config.cookies.bilibili, { host_mid: item.host_mid })
 
       renderOpt.push({
         avatar_img: userInfo.data.card.face,
