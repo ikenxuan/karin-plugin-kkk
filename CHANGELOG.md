@@ -1,5 +1,16 @@
 # 变更日志
 
+## [1.2.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.2.1...v1.2.2) (2025-04-13)
+
+
+### Bug Fixes
+
+* **bilibili:** 修复转发动态过滤逻辑中的遗漏条件 ([d11f485](https://github.com/ikenxuan/karin-plugin-kkk/commit/d11f485174d16f86a0b1d1918f05597614db3bd3))
+* **bilibili:** 添加空值检查以防止动态标签过滤时崩溃 ([2e3c7b1](https://github.com/ikenxuan/karin-plugin-kkk/commit/2e3c7b151eb46082611f82573146f1c4c8756978))
+* ci ([e73e132](https://github.com/ikenxuan/karin-plugin-kkk/commit/e73e13294efea2a471c5ce0dc14937ddc5d862a2))
+* **web.config.ts:** 优化推送配置组件布局和描述信息 ([be34225](https://github.com/ikenxuan/karin-plugin-kkk/commit/be342256032f2fad1e7122f7066dd579693a699b))
+* **抖音推送:** 修复视频下载链接获取逻辑，增加备用链接 ([d090f88](https://github.com/ikenxuan/karin-plugin-kkk/commit/d090f88d432ba4e9368642fd6ce0d04838a742c5))
+
 ## [1.2.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.2.0...v1.2.1) (2025-04-09)
 
 
