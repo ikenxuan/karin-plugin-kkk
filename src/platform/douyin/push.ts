@@ -182,7 +182,7 @@ export class DouYinpush extends Base {
                   }).getLongLink()
                 } else {
                   downloadUrl = await new Networks({
-                    url: Detail_Data.video.play_addr_h264.url_list[2] ?? Detail_Data.video.play_addr_h264.url_list[2],
+                    url: Detail_Data.video.bit_rate[0].play_addr.url_list[2] ?? Detail_Data.video.play_addr_h264.url_list[2] ?? Detail_Data.video.play_addr_h264.url_list[2],
                     headers: this.headers
                   }).getLongLink()
                 }
