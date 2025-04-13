@@ -206,6 +206,65 @@ export default {
               description: '推送开关，开启后需重启；使用「#设置抖音推送 + 抖音号」配置推送列表',
               defaultSelected: all.douyin.push.switch
             }),
+            components.radio.group('push:permission', {
+              label: '谁可以设置推送',
+              orientation: 'horizontal',
+              defaultValue: all.douyin.push.permission,
+              radio: [
+                components.radio.create('push:permission:radio-1', {
+                  label: '所有人',
+                  value: 'all'
+                }),
+                components.radio.create('push:permission:radio-2', {
+                  label: '管理员',
+                  value: 'admin'
+                }),
+                components.radio.create('push:permission:radio-3', {
+                  label: '主人',
+                  value: 'master'
+                }),
+                components.radio.create('push:permission:radio-4', {
+                  label: '群主',
+                  value: 'group.owner'
+                }),
+                components.radio.create('push:permission:radio-5', {
+                  label: '群管理员',
+                  value: 'group.admin'
+                })
+              ]
+            }),
+            components.input.string('push:cron', {
+              label: '定时任务表达式',
+              description: '定时推送的时间，格式为cron表达式（默认为每十分钟执行一次）',
+              defaultValue: all.douyin.push.cron
+            }),
+            components.switch.create('push:parsedynamic', {
+              label: '作品解析',
+              description: '触发推送时是否一同解析该作品',
+              defaultSelected: all.douyin.push.parsedynamic
+            }),
+            components.switch.create('push:log', {
+              label: '推送日志',
+              description: '是否打印推送日志（修改后需重启）',
+              defaultSelected: all.douyin.push.log
+            }),
+            components.radio.group('push:shareType', {
+              label: '推送图二维码的类型',
+              orientation: 'horizontal',
+              defaultValue: all.douyin.push.shareType,
+              radio: [
+                components.radio.create('push:shareType.radio-1', {
+                  label: '网页链接',
+                  description: '识别后访问抖音官网对应的作品地址',
+                  value: 'web'
+                }),
+                components.radio.create('push:shareType.radio-2', {
+                  description: '识别后访问无水印作品下载地址',
+                  label: '下载链接',
+                  value: 'download'
+                })
+              ]
+            }),
             components.radio.group('push:filterMode', {
               label: '过滤模式',
               orientation: 'horizontal',
@@ -266,64 +325,6 @@ export default {
                 label: '',
                 color: 'success'
               })
-            }),
-            components.radio.group('push:permission', {
-              label: '谁可以设置推送',
-              orientation: 'horizontal',
-              defaultValue: all.douyin.push.permission,
-              radio: [
-                components.radio.create('push:permission:radio-1', {
-                  label: '所有人',
-                  value: 'all'
-                }),
-                components.radio.create('push:permission:radio-2', {
-                  label: '管理员',
-                  value: 'admin'
-                }),
-                components.radio.create('push:permission:radio-3', {
-                  label: '主人',
-                  value: 'master'
-                }),
-                components.radio.create('push:permission:radio-4', {
-                  label: '群主',
-                  value: 'group.owner'
-                }),
-                components.radio.create('push:permission:radio-5', {
-                  label: '群管理员',
-                  value: 'group.admin'
-                })
-              ]
-            }),
-            components.input.string('push:cron', {
-              label: '定时任务表达式',
-              defaultValue: all.douyin.push.cron
-            }),
-            components.switch.create('push:parsedynamic', {
-              label: '作品解析',
-              description: '触发推送时是否一同解析该作品',
-              defaultSelected: all.douyin.push.parsedynamic
-            }),
-            components.switch.create('push:log', {
-              label: '推送日志',
-              description: '是否打印推送日志（修改后需重启）',
-              defaultSelected: all.douyin.push.log
-            }),
-            components.radio.group('push:shareType', {
-              label: '推送图二维码的类型',
-              orientation: 'horizontal',
-              defaultValue: all.douyin.push.shareType,
-              radio: [
-                components.radio.create('push:shareType.radio-1', {
-                  label: '网页链接',
-                  description: '识别后访问抖音官网对应的作品地址',
-                  value: 'web'
-                }),
-                components.radio.create('push:shareType.radio-2', {
-                  description: '识别后访问无水印作品下载地址',
-                  label: '下载链接',
-                  value: 'download'
-                })
-              ]
             })
           ]
         })
@@ -375,6 +376,48 @@ export default {
               label: '推送开关',
               description: '推送开关，开启后需重启；使用「#设置B站推送 + UID」配置推送列表',
               defaultSelected: all.bilibili.push.switch
+            }),
+            components.radio.group('push:permission', {
+              label: '谁可以设置推送',
+              orientation: 'horizontal',
+              defaultValue: all.bilibili.push.permission,
+              radio: [
+                components.radio.create('push:permission:radio-1', {
+                  label: '所有人',
+                  value: 'all'
+                }),
+                components.radio.create('push:permission:radio-2', {
+                  label: '管理员',
+                  value: 'admin'
+                }),
+                components.radio.create('push:permission:radio-3', {
+                  label: '主人',
+                  value: 'master'
+                }),
+                components.radio.create('push:permission:radio-4', {
+                  label: '群主',
+                  value: 'group.owner'
+                }),
+                components.radio.create('push:permission:radio-5', {
+                  label: '群管理员',
+                  value: 'group.admin'
+                })
+              ]
+            }),
+            components.input.string('push:cron', {
+              label: '定时任务表达式',
+              description: '定时推送的时间，格式为cron表达式（默认为每十分钟执行一次）',
+              defaultValue: all.bilibili.push.cron
+            }),
+            components.switch.create('push:parsedynamic', {
+              label: '作品解析',
+              description: '触发推送时是否一同解析该作品',
+              defaultSelected: all.bilibili.push.parsedynamic
+            }),
+            components.switch.create('push:log', {
+              label: '推送日志',
+              description: '是否打印推送日志（修改后需重启）',
+              defaultSelected: all.bilibili.push.log
             }),
             components.radio.group('push:filterMode', {
               label: '过滤模式',
@@ -436,47 +479,6 @@ export default {
                 label: '',
                 color: 'success'
               })
-            }),
-            components.radio.group('push:permission', {
-              label: '谁可以设置推送',
-              orientation: 'horizontal',
-              defaultValue: all.bilibili.push.permission,
-              radio: [
-                components.radio.create('push:permission:radio-1', {
-                  label: '所有人',
-                  value: 'all'
-                }),
-                components.radio.create('push:permission:radio-2', {
-                  label: '管理员',
-                  value: 'admin'
-                }),
-                components.radio.create('push:permission:radio-3', {
-                  label: '主人',
-                  value: 'master'
-                }),
-                components.radio.create('push:permission:radio-4', {
-                  label: '群主',
-                  value: 'group.owner'
-                }),
-                components.radio.create('push:permission:radio-5', {
-                  label: '群管理员',
-                  value: 'group.admin'
-                })
-              ]
-            }),
-            components.input.string('push:cron', {
-              label: '定时任务表达式',
-              defaultValue: all.bilibili.push.cron
-            }),
-            components.switch.create('push:parsedynamic', {
-              label: '作品解析',
-              description: '触发推送时是否一同解析该作品',
-              defaultSelected: all.bilibili.push.parsedynamic
-            }),
-            components.switch.create('push:log', {
-              label: '推送日志',
-              description: '是否打印推送日志（修改后需重启）',
-              defaultSelected: all.bilibili.push.log
             })
           ]
         })
@@ -594,29 +596,35 @@ export default {
           children: [
             components.input.string('short_id', {
               placeholder: '',
-              label: '抖音号'
+              label: '抖音号',
+              description: '抖音号, 必填',
+              errorMessage: '抖音号不能为空 Ciallo～(∠・ω< )⌒☆'
             }),
             components.input.group('group_id', {
               label: '推送群号和机器人账号',
               maxRows: 2,
               data: [],
               template: components.input.string('accordion-item-douyin:push:douyin:group_id', {
-                placeholder: '',
+                placeholder: '必填，不能出现空值',
                 label: '',
-                color: 'default'
+                color: 'default',
+                description: '推送群号和机器人账号，多个则使用逗号隔开，必填。如：群号1:机器人账号1',
+                errorMessage: '你不设置群号和Bot号，我怎么知道你要用什么推送给谁呢？'
               })
             }),
             components.input.string('sec_uid', {
               color: 'default',
-              placeholder: '',
+              placeholder: '可不填，会自动获取',
               label: 'UID',
-              isRequired: false
+              isRequired: false,
+              description: '获取方法：PC浏览器打开某个博主主页，https://www.douyin.com/user/MS4wLj..... 其中的user/后的即为UID'
             }),
             components.input.string('remark', {
               color: 'default',
-              placeholder: '',
+              placeholder: '可不填，会自动获取',
               label: '昵称',
-              isRequired: false
+              isRequired: false,
+              description: '博主的抖音名称'
             })
           ]
         })
@@ -643,23 +651,28 @@ export default {
             components.input.number('host_mid', {
               placeholder: '',
               label: 'UID',
-              rules: undefined
+              rules: undefined,
+              description: 'B站用户的UID，必填',
+              errorMessage: 'UID 不能为空 Ciallo～(∠・ω< )⌒☆'
             }),
             components.input.group('group_id', {
               label: '推送群号和机器人账号',
               maxRows: 2,
               data: [],
               template: components.input.string('accordion-item-bilibili:push:bilibili:group_id', {
-                placeholder: '',
+                placeholder: '必填，不能出现空值',
                 label: '',
-                color: 'default'
+                color: 'default',
+                description: '推送群号和机器人账号，多个则使用逗号隔开，必填。如：群号1:机器人账号1',
+                errorMessage: '你不设置群号和Bot号，我怎么知道你要用什么推送给谁呢？'
               })
             }),
             components.input.string('remark', {
               color: 'default',
-              placeholder: '',
+              placeholder: '可不填，会自动获取',
               label: '昵称',
-              isRequired: false
+              isRequired: false,
+              description: 'UP主的昵称'
             })
           ]
         })
