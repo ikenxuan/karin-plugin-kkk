@@ -753,6 +753,7 @@ const skipDynamic = (Dynamic_Data: PushItem['Dynamic_Data']): boolean => {
     // 检查标签
     if (Dynamic_Data.type === DynamicType.DRAW || Dynamic_Data.type === DynamicType.FORWARD) {
       for (const filterTags of Config.bilibili.push.filterTags) {
+        if (!Dynamic_Data.modules.module_dynamic?.desc?.rich_text_nodes) continue
         for (const tag of Dynamic_Data.modules.module_dynamic.desc.rich_text_nodes) {
           if (tag.orig_text.includes(filterTags)) {
             logger.mark(`图文动态：${logger.green(`https://t.bilibili.com/${Dynamic_Data.id_str}`)} 包含黑名单标签：「${logger.red(filterTags)}」，跳过推送`)
@@ -760,6 +761,7 @@ const skipDynamic = (Dynamic_Data: PushItem['Dynamic_Data']): boolean => {
           }
         }
         if (Dynamic_Data.type === 'DYNAMIC_TYPE_FORWARD' && 'orig' in Dynamic_Data) {
+          if (!Dynamic_Data.modules.module_dynamic?.desc?.rich_text_nodes) continue
           for (const tag of Dynamic_Data.orig.modules.module_dynamic.desc.rich_text_nodes) {
             if (tag.orig_text.includes(filterTags)) {
               logger.mark(`转发动态：${`https://t.bilibili.com/${Dynamic_Data.id_str}`} 的子动态 ${logger.green(`https://t.bilibili.com/${Dynamic_Data.orig.id_str}`)} 包含黑名单标签：「${logger.red(filterTags)}」，跳过推送`)
@@ -807,6 +809,7 @@ const skipDynamic = (Dynamic_Data: PushItem['Dynamic_Data']): boolean => {
     if (hasTagWhitelist && (Dynamic_Data.type === DynamicType.DRAW || Dynamic_Data.type === DynamicType.FORWARD)) {
       // 检查主动态标签
       for (const whiteTag of Config.bilibili.push.whitelistTags) {
+        if (!Dynamic_Data.modules.module_dynamic?.desc?.rich_text_nodes) continue
         for (const tag of Dynamic_Data.modules.module_dynamic.desc.rich_text_nodes) {
           if (tag.orig_text.includes(whiteTag)) {
             logger.mark(`图文动态：${logger.green(`https://t.bilibili.com/${Dynamic_Data.id_str}`)} 包含白名单标签：「${logger.green(whiteTag)}」，允许推送`)
@@ -816,6 +819,7 @@ const skipDynamic = (Dynamic_Data: PushItem['Dynamic_Data']): boolean => {
 
         // 检查转发的原动态标签
         if (Dynamic_Data.type === 'DYNAMIC_TYPE_FORWARD' && 'orig' in Dynamic_Data) {
+          if (!Dynamic_Data.modules.module_dynamic?.desc?.rich_text_nodes) continue
           for (const tag of Dynamic_Data.orig.modules.module_dynamic.desc.rich_text_nodes) {
             if (tag.orig_text.includes(whiteTag)) {
               logger.mark(`转发动态：${`https://t.bilibili.com/${Dynamic_Data.id_str}`} 的子动态 ${logger.green(`https://t.bilibili.com/${Dynamic_Data.orig.id_str}`)} 包含白名单标签：「${logger.green(whiteTag)}」，允许推送`)
