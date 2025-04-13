@@ -734,7 +734,7 @@ function extractEmojisData (data: any[]) {
 const skipDynamic = (Dynamic_Data: PushItem['Dynamic_Data']): boolean => {
   // 获取过滤模式
   const filterMode = Config.bilibili.push.filterMode || 'blacklist'
-
+  logger.mark(`https://t.bilibili.com/${Dynamic_Data.id_str}`)
   if (filterMode === 'blacklist') {
     // 检查关键词
     for (const filterKeywords of Config.bilibili.push.filterKeywords) {
