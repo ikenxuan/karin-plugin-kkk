@@ -602,6 +602,7 @@ export class DouYinpush extends Base {
 const skipDynamic = (Detail_Data: PushItem['Detail_Data']): boolean => {
   // 获取过滤模式
   const filterMode = Config.douyin.push.filterMode ?? 'blacklist'
+  logger.debug(`https://www.douyin.com/video/${Detail_Data.aweme_id}`)
 
   if (filterMode === 'blacklist') {
     // 检查关键词
