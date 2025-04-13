@@ -734,7 +734,7 @@ function extractEmojisData (data: any[]) {
 const skipDynamic = (Dynamic_Data: PushItem['Dynamic_Data']): boolean => {
   // 获取过滤模式
   const filterMode = Config.bilibili.push.filterMode || 'blacklist'
-  logger.mark(`https://t.bilibili.com/${Dynamic_Data.id_str}`)
+  logger.debug('判断标题是否有屏蔽词或屏蔽标签: ', `https://t.bilibili.com/${Dynamic_Data.id_str}`)
   if (filterMode === 'blacklist') {
     // 检查关键词
     for (const filterKeywords of Config.bilibili.push.filterKeywords) {
@@ -743,6 +743,7 @@ const skipDynamic = (Dynamic_Data: PushItem['Dynamic_Data']): boolean => {
         return true
       }
       if (Dynamic_Data.type === 'DYNAMIC_TYPE_FORWARD' && 'orig' in Dynamic_Data) {
+        if (Dynamic_Data.orig.type === DynamicType.AV || !Dynamic_Data.orig.modules.module_dynamic.desc) continue
         if (Dynamic_Data.orig.modules.module_dynamic.major?.archive?.title.includes(filterKeywords) || Dynamic_Data.orig.modules.module_dynamic.desc?.text?.includes(filterKeywords)) {
           logger.mark(`转发动态：${`https://t.bilibili.com/${Dynamic_Data.id_str}`} 的子动态 ${logger.green(`https://t.bilibili.com/${Dynamic_Data.orig.id_str}`)} 包含黑名单关键词：「${logger.red(filterKeywords)}」，跳过推送`)
           return true
@@ -761,7 +762,7 @@ const skipDynamic = (Dynamic_Data: PushItem['Dynamic_Data']): boolean => {
           }
         }
         if (Dynamic_Data.type === 'DYNAMIC_TYPE_FORWARD' && 'orig' in Dynamic_Data) {
-          if (!Dynamic_Data.modules.module_dynamic?.desc?.rich_text_nodes) continue
+          if (Dynamic_Data.orig.type === DynamicType.AV || !Dynamic_Data.orig.modules.module_dynamic.desc) continue
           for (const tag of Dynamic_Data.orig.modules.module_dynamic.desc.rich_text_nodes) {
             if (tag.orig_text.includes(filterTags)) {
               logger.mark(`转发动态：${`https://t.bilibili.com/${Dynamic_Data.id_str}`} 的子动态 ${logger.green(`https://t.bilibili.com/${Dynamic_Data.orig.id_str}`)} 包含黑名单标签：「${logger.red(filterTags)}」，跳过推送`)
@@ -796,6 +797,7 @@ const skipDynamic = (Dynamic_Data: PushItem['Dynamic_Data']): boolean => {
 
         // 检查转发的原动态
         if (Dynamic_Data.type === 'DYNAMIC_TYPE_FORWARD' && 'orig' in Dynamic_Data) {
+          if (Dynamic_Data.orig.type === DynamicType.AV || !Dynamic_Data.orig.modules.module_dynamic.desc) continue
           if (Dynamic_Data.orig.modules.module_dynamic.major?.archive?.title?.includes(whiteKeyword) ||
             Dynamic_Data.orig.modules.module_dynamic.desc?.text?.includes(whiteKeyword)) {
             logger.mark(`转发动态：${`https://t.bilibili.com/${Dynamic_Data.id_str}`} 的子动态 ${logger.green(`https://t.bilibili.com/${Dynamic_Data.orig.id_str}`)} 包含白名单关键词：「${logger.green(whiteKeyword)}」，允许推送`)
@@ -819,7 +821,7 @@ const skipDynamic = (Dynamic_Data: PushItem['Dynamic_Data']): boolean => {
 
         // 检查转发的原动态标签
         if (Dynamic_Data.type === 'DYNAMIC_TYPE_FORWARD' && 'orig' in Dynamic_Data) {
-          if (!Dynamic_Data.modules.module_dynamic?.desc?.rich_text_nodes) continue
+          if (Dynamic_Data.orig.type === DynamicType.AV || !Dynamic_Data.orig.modules.module_dynamic.desc) continue
           for (const tag of Dynamic_Data.orig.modules.module_dynamic.desc.rich_text_nodes) {
             if (tag.orig_text.includes(whiteTag)) {
               logger.mark(`转发动态：${`https://t.bilibili.com/${Dynamic_Data.id_str}`} 的子动态 ${logger.green(`https://t.bilibili.com/${Dynamic_Data.orig.id_str}`)} 包含白名单标签：「${logger.green(whiteTag)}」，允许推送`)
