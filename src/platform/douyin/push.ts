@@ -616,7 +616,7 @@ const skipDynamic = (Detail_Data: PushItem['Detail_Data']): boolean => {
     for (const filterTags of Config.douyin.push.filterTags) {
       if (!Detail_Data.text_extra) return false
       for (const tag of Detail_Data.text_extra) {
-        if (tag.hashtag_name.includes(filterTags)) {
+        if (tag.hashtag_name && tag.hashtag_name.includes(filterTags)) {
           logger.mark(`作品：${logger.green(`https://www.douyin.com/video/${Detail_Data.aweme_id}`)} 包含黑名单标签：「${logger.red(filterTags)}」，跳过推送`)
           return true
         }
@@ -649,7 +649,7 @@ const skipDynamic = (Detail_Data: PushItem['Detail_Data']): boolean => {
     if (hasTagWhitelist && Detail_Data.text_extra) {
       for (const whiteTag of Config.douyin.push.whitelistTags) {
         for (const tag of Detail_Data.text_extra) {
-          if (tag.hashtag_name.includes(whiteTag)) {
+          if (tag.hashtag_name && tag.hashtag_name.includes(whiteTag)) {
             logger.mark(`作品：${logger.green(`https://www.douyin.com/video/${Detail_Data.aweme_id}`)} 包含白名单标签：「${logger.green(whiteTag)}」，允许推送`)
             return false // 匹配到白名单标签，不跳过
           }
