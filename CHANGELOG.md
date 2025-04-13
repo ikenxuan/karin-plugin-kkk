@@ -1,5 +1,12 @@
 # 变更日志
 
+## [1.2.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.2.2...v1.2.3) (2025-04-13)
+
+
+### Bug Fixes
+
+* **douyin:** 修复标签过滤逻辑中标签无法检查艾特用户的错误 ([35110ca](https://github.com/ikenxuan/karin-plugin-kkk/commit/35110ca5ce9c365f2b9b5ee641a4be46a046bbd1))
+
 ## [1.2.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.2.1...v1.2.2) (2025-04-13)
 
 
