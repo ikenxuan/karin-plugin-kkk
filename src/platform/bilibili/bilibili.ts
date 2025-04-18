@@ -4,7 +4,7 @@ import {
   BiliBangumiVideoInfo,
   BiliBangumiVideoPlayurlIsLogin,
   BiliBangumiVideoPlayurlNoLogin,
-  bilibiliAPI,
+  bilibiliApiUrls,
   BiliBiliVideoPlayurlNoLogin,
   BiliOneWork,
   BiliVideoPlayurlIsLogin,
@@ -60,7 +60,7 @@ export class Bilibili extends Base {
           avid: infoData.data.aid,
           cid: iddata.p ? (infoData.data.pages[iddata.p - 1]?.cid ?? infoData.data.cid) : infoData.data.cid
         })
-        const playUrl = bilibiliAPI.视频流信息({ avid: infoData.data.aid, cid: infoData.data.cid })
+        const playUrl = bilibiliApiUrls.视频流信息({ avid: infoData.data.aid, cid: infoData.data.cid })
         this.islogin = (await checkCk()).Status === 'isLogin'
         const commentsData = await this.amagi.getBilibiliData('评论数据', {
           number: Config.bilibili.numcomment,
@@ -76,7 +76,7 @@ export class Bilibili extends Base {
         this.downloadfilename = title.substring(0, 50).replace(/[\\/:\*\?"<>\|\r\n\s]/g, ' ')
 
         const nockData = await new Networks({
-          url: bilibiliAPI.视频流信息({
+          url: bilibiliApiUrls.视频流信息({
             avid: infoData.data.aid,
             cid: iddata.p ? (infoData.data.pages[iddata.p - 1]?.cid ?? infoData.data.cid) : infoData.data.cid
           }) + '&platform=html5',
@@ -189,7 +189,7 @@ export class Bilibili extends Base {
           this.e.reply('匹配内容失败，请重新发送链接再次解析')
           return true
         }
-        const bangumidataBASEURL = bilibiliAPI.番剧视频流信息({
+        const bangumidataBASEURL = bilibiliApiUrls.番剧视频流信息({
           cid: videoInfo.result.episodes[Number(Episode) - 1].cid,
           ep_id: videoInfo.result.episodes[Number(Episode) - 1].ep_id.toString()
         })

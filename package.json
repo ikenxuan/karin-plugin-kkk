@@ -39,15 +39,14 @@
     "watch": "tsx watch --include \"src/**/*.ts\" src/index.ts"
   },
   "dependencies": {
-    "@ikenxuan/amagi": "^4.4.8",
+    "@ikenxuan/amagi": "^4.4.9",
     "@karinjs/md-html": "^1.1.6",
     "cors": "^2.8.5",
     "heic-convert": "^2.1.0",
     "http-proxy-middleware": "^3.0.3",
     "playwright": "^1.51.1",
     "qrcode": "^1.5.4",
-    "sequelize": "6.37.3",
-    "typeorm": "^0.3.22"
+    "sequelize": "6.37.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.23.0",
@@ -59,7 +58,6 @@
     "@typescript-eslint/parser": "^8.28.0",
     "eslint": "^9.23.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "express": "^5.1.0",
     "globals": "^15.15.0",
     "neostandard": "^0.11.9",
     "node-karin": "^1.7.14",
