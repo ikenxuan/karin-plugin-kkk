@@ -1,5 +1,13 @@
 # 变更日志
 
+## [1.2.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.2.3...v1.2.4) (2025-04-18)
+
+
+### Bug Fixes
+
+* 修复视频上传和评论处理中的问题 ([8036d4d](https://github.com/ikenxuan/karin-plugin-kkk/commit/8036d4d0c4d568c30b9140c5e3a7c50c7fda90ca))
+* 移除大部分命令设置功能，使用webui修改配置，仅保留推送相关的设置 ([883ff4c](https://github.com/ikenxuan/karin-plugin-kkk/commit/883ff4c1a1d34742c34b88da341d31e61332f8a9))
+
 ## [1.2.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.2.2...v1.2.3) (2025-04-13)
 
 
