@@ -147,7 +147,7 @@ export class Base {
       } else { // 不是主动消息
         if (options?.useGroupFile) { // 是文件
           await this.e.reply(`视频大小: ${newFileSize.toFixed(1)}MB 正通过文件上传中...`)
-          const status = await this.e.bot.uploadFile(this.e.contact, File, file.originTitle ? `${file.originTitle}.mp4` : `${File.split('/').pop()}`)
+          const status = await this.e.bot.uploadFile(this.e.contact, File, file.originTitle ? `${file.originTitle.replace(' - ', '_')}.mp4` : `${File.split('/').pop()}`)
           status ? sendStatus = true : sendStatus = false
         } else { // 不是文件
           const status = await this.e.reply(segment.video(File) || videoUrl)

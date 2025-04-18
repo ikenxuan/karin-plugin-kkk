@@ -58,7 +58,7 @@ export class Bilibili extends Base {
         const infoData = await this.amagi.getBilibiliData('单个视频作品数据', { bvid: iddata.bvid, typeMode: 'strict' })
         const playUrlData = await this.amagi.getBilibiliData('单个视频下载信息数据', {
           avid: infoData.data.aid,
-          cid: infoData.data.cid
+          cid: iddata.p ? (infoData.data.pages[iddata.p - 1]?.cid ?? infoData.data.cid) : infoData.data.cid
         })
         const playUrl = bilibiliAPI.视频流信息({ avid: infoData.data.aid, cid: infoData.data.cid })
         this.islogin = (await checkCk()).Status === 'isLogin'
@@ -76,7 +76,10 @@ export class Bilibili extends Base {
         this.downloadfilename = title.substring(0, 50).replace(/[\\/:\*\?"<>\|\r\n\s]/g, ' ')
 
         const nockData = await new Networks({
-          url: bilibiliAPI.视频流信息({ avid: infoData.data.aid, cid: infoData.data.cid }) + '&platform=html5',
+          url: bilibiliAPI.视频流信息({
+            avid: infoData.data.aid,
+            cid: iddata.p ? (infoData.data.pages[iddata.p - 1]?.cid ?? infoData.data.cid) : infoData.data.cid
+          }) + '&platform=html5',
           headers: this.headers
         }).getData()
 
@@ -114,18 +117,23 @@ export class Bilibili extends Base {
         }
         if (Config.bilibili.comment) {
           const commentsdata = bilibiliComments(commentsData)
-          img = await Render('bilibili/comment', {
-            Type: '视频',
-            CommentsData: commentsdata,
-            CommentLength: String(commentsdata?.length ?? 0),
-            share_url: 'https://b23.tv/' + infoData.data.bvid,
-            Clarity: Config.bilibili.videopriority === true ? nockData.data.accept_description[0] : correctList.accept_description[0],
-            VideoSize: Config.bilibili.videopriority === true ? (nockData.data.durl[0].size / (1024 * 1024)).toFixed(2) : videoSize,
-            ImageLength: 0,
-            shareurl: 'https://b23.tv/' + infoData.data.bvid
-          })
-          await this.e.reply(img)
+          if (!commentsdata?.length) {
+            await this.e.reply('这个视频没有评论 ~')
+          } else {
+            img = await Render('bilibili/comment', {
+              Type: '视频',
+              CommentsData: commentsdata,
+              CommentLength: String(commentsdata.length),
+              share_url: 'https://b23.tv/' + infoData.data.bvid,
+              Clarity: Config.bilibili.videopriority === true ? nockData.data.accept_description[0] : correctList.accept_description[0],
+              VideoSize: Config.bilibili.videopriority === true ? (nockData.data.durl[0].size / (1024 * 1024)).toFixed(2) : videoSize,
+              ImageLength: 0,
+              shareurl: 'https://b23.tv/' + infoData.data.bvid
+            })
+            await this.e.reply(img)
+          }
         }
+
         if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) && !Config.upload.compress) {
           await this.e.reply(`设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n` + '视频太大了，还是去B站看吧~', { reply: true })
         } else await this.getvideo(Config.bilibili.videopriority === true ? { playUrlData: nockData } : { infoData, playUrlData })

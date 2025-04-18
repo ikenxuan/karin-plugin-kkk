@@ -1,4 +1,4 @@
-import karin from 'node-karin'
+import karin, { logger } from 'node-karin'
 
 import { Common, Config } from '@/module'
 import { Bilibili, getBilibiliID } from '@/platform/bilibili'
@@ -18,21 +18,22 @@ const douyin = karin.command(reg.douyin, async (e) => {
 }, { name: 'kkk-视频功能-抖音', priority: Config.app.defaulttool ? -Infinity : 800 })
 
 const bilibili = karin.command(reg.bilibili, async (e) => {
-  e.msg = e.msg.replace(/\\/g, '')
-  const urlRex = /(https?:\/\/)?(www\.bilibili\.com|m\.bilibili\.com|t\.bilibili\.com|bili2233\.cn)\/[a-zA-Z0-9._%&+=\-\/?]*[a-zA-Z0-9_\/?=&#%+]*$/g
-  const bShortRex = /https?:\/\/(b23\.tv|bili2233\.cn)\/([a-zA-Z0-9]+)/
-  let url: string | null = ''
+  e.msg = e.msg.replace(/\\/g, '') // 移除消息中的反斜杠
+  const urlRegex = /(https?:\/\/(?:www\.bilibili\.com|m\.bilibili\.com|t\.bilibili\.com|b23\.tv|bili2233\.cn)\/[^\s]+)/
+  const bvRegex = /^BV[1-9a-zA-Z]{10}$/
+  let url: string | null = null
+  const urlMatch = e.msg.match(urlRegex)
 
-  if (urlRex.test(e.msg)) {
-    const matchResult = e.msg.match(urlRex)
-    url = matchResult ? matchResult[0] : null
-  } else if (bShortRex.test(e.msg)) {
-    const match = bShortRex.exec(e.msg)
-    url = match && match[0]
-  } else if (/^BV[1-9a-zA-Z]{10}$/.test(e.msg)) {
+  if (urlMatch) {
+    url = urlMatch[0]
+  } else if (bvRegex.test(e.msg)) {
     url = `https://www.bilibili.com/video/${e.msg}`
   }
-  const iddata = await getBilibiliID(url!)
+  if (!url) {
+    logger.warn(`未能在消息中找到有效的B站分享链接或BV号: ${e.msg}`)
+    return true
+  }
+  const iddata = await getBilibiliID(url)
   await new Bilibili(e, iddata).RESOURCES(iddata)
   return true
 }, { name: 'kkk-视频功能-B站', priority: Config.app.defaulttool ? -Infinity : 800 })

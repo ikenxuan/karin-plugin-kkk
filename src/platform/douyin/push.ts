@@ -175,6 +175,11 @@ export class DouYinpush extends Base {
                 let downloadUrl = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
                 // 根据配置文件自动选择分辨率
                 if (Config.douyin.autoResolution) {
+                  logger.debug(`开始排除不符合条件的视频分辨率；\n
+                    共拥有${logger.yellow(Detail_Data.video.bit_rate.length)}个视频源\n
+                    视频ID：${logger.green(Detail_Data.VideoData.aweme_detail.aweme_id)}\n
+                    分享链接：${logger.green(Detail_Data.VideoData.aweme_detail.share_url)}
+                    `)
                   const videoObj = processVideos(Detail_Data.video.bit_rate, Config.upload.filelimit)
                   downloadUrl = await new Networks({
                     url: videoObj[0].play_addr.url_list[2],

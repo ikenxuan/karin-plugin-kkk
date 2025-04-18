@@ -16,13 +16,25 @@ export interface BilibiliId {
 export async function getBilibiliID (url: string) {
   const longLink = await new Networks({ url }).getLongLink()
   let result = {} as BilibiliId
+  let pValue: number | undefined
+  const parsedUrl = new URL(longLink)
+  const pParam = parsedUrl.searchParams.get('p')
+  if (pParam) {
+    pValue = parseInt(pParam, 10) // 将 'p' 参数值转换为数字
+    if (isNaN(pValue)) { // 如果转换失败，则重置为 undefined
+      pValue = undefined
+    }
+  }
 
   switch (true) {
     case /(video\/|video\-)([A-Za-z0-9]+)/.test(longLink): {
       const bvideoMatch = /video\/([A-Za-z0-9]+)|bvid=([A-Za-z0-9]+)/.exec(longLink)
+      const parsedUrl = new URL(longLink)
+      const pParam = parsedUrl.searchParams.get('p')
       result = {
         type: 'one_video',
-        bvid: bvideoMatch ? bvideoMatch[1] || bvideoMatch[2] : undefined
+        bvid: bvideoMatch ? bvideoMatch[1] || bvideoMatch[2] : undefined,
+        ...(pValue !== undefined && { p: pValue })
       }
       break
     }

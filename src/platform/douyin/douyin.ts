@@ -205,6 +205,11 @@ export class DouYin extends Base {
           const video = VideoData.aweme_detail.video
           FPS = video.bit_rate[0].FPS // FPS
           if (Config.douyin.autoResolution) {
+            logger.debug(`开始排除不符合条件的视频分辨率；\n
+              共拥有${logger.yellow(video.bit_rate.length)}个视频源\n
+              视频ID：${logger.green(VideoData.aweme_detail.aweme_id)}\n
+              分享链接：${logger.green(VideoData.aweme_detail.share_url)}
+              `)
             video.bit_rate = processVideos(video.bit_rate, Config.upload.filelimit)
             g_video_url = await new Networks({
               url: video.bit_rate[0].play_addr.url_list[2],
@@ -238,21 +243,25 @@ export class DouYin extends Base {
           const EmojiData = await getDouyinData('Emoji数据')
           const list = await Emoji(EmojiData)
           const commentsArray = await douyinComments(CommentsData, list)
-          const img = await Render('douyin/comment',
-            {
-              Type: this.is_mp4 ? '视频' : this.is_slides ? '合辑' : '图集',
-              CommentsData: commentsArray,
-              CommentLength: String(commentsArray.jsonArray?.length ?? 0),
-              share_url: this.is_mp4
-                ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${VideoData.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`
-                : VideoData.aweme_detail.share_url,
-              Title: g_title,
-              VideoSize: mp4size,
-              VideoFPS: FPS,
-              ImageLength: imagenum
-            }
-          )
-          await this.e.reply(img)
+          if (!commentsArray?.length) {
+            await this.e.reply('这个作品没有评论 ~')
+          } else {
+            const img = await Render('douyin/comment',
+              {
+                Type: this.is_mp4 ? '视频' : this.is_slides ? '合辑' : '图集',
+                CommentsData: commentsArray,
+                CommentLength: String(commentsArray.jsonArray?.length ?? 0),
+                share_url: this.is_mp4
+                  ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${VideoData.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`
+                  : VideoData.aweme_detail.share_url,
+                Title: g_title,
+                VideoSize: mp4size,
+                VideoFPS: FPS,
+                ImageLength: imagenum
+              }
+            )
+            await this.e.reply(img)
+          }
         }
         /** 发送视频 */
         sendvideofile && this.is_mp4 && await this.DownLoadVideo({ video_url: g_video_url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${g_title}.mp4` } })
@@ -375,6 +384,7 @@ export class DouYin extends Base {
 
 export function processVideos (videos: dyVideo[], filelimit: number): dyVideo[] {
   const sizeLimitBytes = filelimit * 1024 * 1024 // 将 MB 转换为字节
+  logger.debug(videos)
   // 过滤掉 format 为 'dash' 的视频，并且过滤出小于等于大小限制的视频
   const validVideos = videos.filter(video => video.format !== 'dash' && video.play_addr.data_size <= sizeLimitBytes)
 
