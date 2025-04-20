@@ -243,7 +243,7 @@ export class DouYin extends Base {
           const EmojiData = await getDouyinData('Emoji数据')
           const list = await Emoji(EmojiData)
           const commentsArray = await douyinComments(CommentsData, list)
-          if (!commentsArray?.length) {
+          if (!commentsArray.jsonArray.length) {
             await this.e.reply('这个作品没有评论 ~')
           } else {
             const img = await Render('douyin/comment',
