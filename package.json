@@ -31,7 +31,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsx src/index.ts",
+    "dev": "tsx src/app.ts",
     "fix": "eslint src/**/*.ts --fix",
     "pub": "npm publish --access public",
     "sort": "npx sort-package-json",
@@ -41,6 +41,7 @@
   "dependencies": {
     "@ikenxuan/amagi": "^4.4.9",
     "@karinjs/md-html": "^1.1.6",
+    "@karinjs/node-pty": "^1.0.4",
     "cors": "^2.8.5",
     "heic-convert": "^2.1.0",
     "http-proxy-middleware": "^3.0.3",
@@ -50,7 +51,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.23.0",
-    "@karinjs/plugin-puppeteer": "^1.0.6",
+    "@karinjs/plugin-puppeteer": "^1.0.9",
     "@types/cors": "^2.8.17",
     "@types/heic-convert": "^2.1.0",
     "@types/node": "^22.13.14",
@@ -60,7 +61,7 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "globals": "^15.15.0",
     "neostandard": "^0.11.9",
-    "node-karin": "https://pkg.pr.new/node-karin@d8f5619",
+    "node-karin": "https://pkg.pr.new/node-karin@b9caf0e",
     "sort-package-json": "^2.15.1",
     "tsc-alias": "^1.8.12",
     "tsup": "^8.4.0",
