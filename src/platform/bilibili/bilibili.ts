@@ -117,7 +117,7 @@ export class Bilibili extends Base {
         }
         if (Config.bilibili.comment) {
           const commentsdata = bilibiliComments(commentsData)
-          if (!commentsdata.jsonArray.length) {
+          if (!commentsdata.length) {
             await this.e.reply('这个视频没有评论 ~')
           } else {
             img = await Render('bilibili/comment', {
