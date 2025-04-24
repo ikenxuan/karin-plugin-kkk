@@ -1,4 +1,4 @@
-import { components, defineConfig, LocalApiResponse } from 'node-karin'
+import { components } from 'node-karin'
 import _ from 'node-karin/lodash'
 
 import { Config } from '@/module'
@@ -357,67 +357,6 @@ export default {
               label: '推送日志',
               description: '是否打印推送日志（修改后需重启）',
               defaultSelected: all.bilibili.push.log
-            }),
-            components.radio.group('push:filterMode', {
-              label: '过滤模式',
-              orientation: 'horizontal',
-              defaultValue: all.douyin.push.filterMode,
-              radio: [
-                components.radio.create('push:filterMode.radio-1', {
-                  label: '黑名单模式',
-                  description: '动态中有指定关键词或标签时，不推送',
-                  value: 'blacklist'
-                }),
-                components.radio.create('push:filterMode.radio-2', {
-                  label: '白名单模式',
-                  description: '动态中有指定关键词或标签时，才推送',
-                  value: 'whitelist'
-                })
-              ]
-            }),
-            components.input.group('push:filterKeywords', {
-              label: '动态中有以下指定关键词时，不推送（排除模式为黑名单时生效）',
-              maxRows: 2,
-              itemsPerRow: 4,
-              data: all.bilibili.push.filterKeywords,
-              template: components.input.string('push:filterKeywords', {
-                placeholder: '',
-                label: '',
-                color: 'danger'
-              })
-            }),
-            components.input.group('push:filterTags', {
-              label: '动态中有以下指定标签时，不推送（排除模式为黑名单时生效）',
-              maxRows: 2,
-              itemsPerRow: 4,
-              data: all.bilibili.push.filterTags,
-              template: components.input.string('push:filterTags', {
-                placeholder: '',
-                label: '',
-                color: 'danger'
-              })
-            }),
-            components.input.group('push:whitelistKeywords', {
-              label: '动态中有以下指定关键词时，才推送（排除模式为白名单时生效）',
-              maxRows: 2,
-              itemsPerRow: 4,
-              data: all.douyin.push.whitelistKeywords,
-              template: components.input.string('push:whitelistKeywords', {
-                placeholder: '',
-                label: '',
-                color: 'success'
-              })
-            }),
-            components.input.group('push:whitelistTags', {
-              label: '动态中有以下指定标签时，才推送（排除模式为白名单时生效）',
-              maxRows: 2,
-              itemsPerRow: 4,
-              data: all.douyin.push.whitelistTags,
-              template: components.input.string('push:whitelistTags', {
-                placeholder: '',
-                label: '',
-                color: 'success'
-              })
             })
           ]
         })
@@ -565,43 +504,47 @@ export default {
               isRequired: false,
               description: '博主的抖音名称'
             }),
+            components.divider.create('push:douyin:divider-1', {
+              description: '过滤系统',
+              descPosition: 20
+            }),
             components.radio.group('filterMode', {
               label: '过滤模式',
               orientation: 'horizontal',
               // defaultValue: all.douyin.push.filterMode,
               radio: [
-                components.radio.create('push:filterMode.radio-1', {
+                components.radio.create('push:bilibili:filterMode.radio-1', {
                   label: '黑名单模式',
-                  description: '作品标题中有指定关键词或标签时，不推送',
+                  description: '命中以下内容时，不推送',
                   value: 'blacklist'
                 }),
-                components.radio.create('push:filterMode.radio-2', {
+                components.radio.create('push:bilibili:filterMode.radio-2', {
                   label: '白名单模式',
-                  description: '作品中有指定关键词或标签时，才推送',
+                  description: '命中以下内容时，才推送',
                   value: 'whitelist'
                 })
               ]
             }),
             components.input.group('Keywords', {
-              label: '关键词时',
+              label: '关键词',
               maxRows: 2,
               itemsPerRow: 4,
-              data: all.douyin.push.filterKeywords,
-              template: components.input.string('push:filterKeywords', {
-                placeholder: '',
+              data: [],
+              template: components.input.string('push:bilibili:filterKeywords', {
+                placeholder: '严禁提交空值',
                 label: '',
-                color: 'danger'
+                color: 'primary'
               })
             }),
             components.input.group('Tags', {
-              label: '作品标题中有以下指定标签时，不推送（排除模式为黑名单时生效）',
+              label: '标签',
               maxRows: 2,
               itemsPerRow: 4,
-              data: all.douyin.push.filterTags,
-              template: components.input.string('push:filterTags', {
-                placeholder: '',
+              data: [],
+              template: components.input.string('push:bilibili:filterTags', {
+                placeholder: '严禁提交空值',
                 label: '',
-                color: 'danger'
+                color: 'primary'
               })
             })
           ]
@@ -651,6 +594,45 @@ export default {
               label: '昵称',
               isRequired: false,
               description: 'UP主的昵称'
+            }),
+            components.radio.group('filterMode', {
+              label: '过滤模式',
+              orientation: 'horizontal',
+              // defaultValue: all.bilibili.push.filterMode,
+              radio: [
+                components.radio.create('push:bilibili:filterMode.radio-1', {
+                  label: '黑名单模式',
+                  description: '命中以下内容时，不推送',
+                  value: 'blacklist'
+                }),
+                components.radio.create('push:bilibili:filterMode.radio-2', {
+                  label: '白名单模式',
+                  description: '命中以下内容时，才推送',
+                  value: 'whitelist'
+                })
+              ]
+            }),
+            components.input.group('Keywords', {
+              label: '关键词',
+              maxRows: 2,
+              itemsPerRow: 4,
+              data: [],
+              template: components.input.string('push:bilibili:filterKeywords', {
+                placeholder: '严禁提交空值',
+                label: '',
+                color: 'primary'
+              })
+            }),
+            components.input.group('Tags', {
+              label: '标签',
+              maxRows: 2,
+              itemsPerRow: 4,
+              data: [],
+              template: components.input.string('push:bilibili:filterTags', {
+                placeholder: '严禁提交空值',
+                label: '',
+                color: 'primary'
+              })
             })
           ]
         })
@@ -662,17 +644,20 @@ export default {
   save: async (config: newConfigType) => {
     const formatCfg = processFrontendData(config)
     const oldAllCfg = await Config.All()
-    /** 合并旧新配置 */
     const mergeCfg = _.mergeWith({}, oldAllCfg, formatCfg, customizer)
-    let success = false
-    let isChange = false;
 
-    (Object.keys(mergeCfg) as Array<keyof ConfigType>).forEach((key: keyof ConfigType) => {
+    let success = false
+    let isChange = false
+
+    for (const key of Object.keys(mergeCfg) as Array<keyof ConfigType>) {
       isChange = deepEqual(mergeCfg[key], oldAllCfg[key])
       if (isChange) {
-        success = Config.ModifyPro(key, mergeCfg[key])
+        const modifySuccess = await Config.ModifyPro(key, mergeCfg[key])
+        if (modifySuccess) {
+          success = true
+        }
       }
-    })
+    }
 
     return {
       mergeCfg,

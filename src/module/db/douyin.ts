@@ -1,8 +1,10 @@
 import { join } from 'node:path'
 
+import { logger } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
 import { DataTypes, Model, Sequelize } from 'sequelize'
 
+import { PushItem } from '@/platform/douyin/push'
 import { douyinPushItem } from '@/types/config/pushlist'
 
 import { Version } from '../utils'
@@ -601,20 +603,30 @@ export class DouyinDBBase {
 
   /**
    * 检查内容是否应该被过滤
-   * @param sec_uid 抖音用户sec_uid
-   * @param content 内容文本
+   * @param PushItem 推送项
    * @param tags 标签列表
    */
-  async shouldFilter (sec_uid: string, content: string, tags: string[] = []) {
-    const { filterMode, filterWords, filterTags } = await this.getFilterConfig(sec_uid)
+  async shouldFilter (PushItem: PushItem, tags: string[] = []) {
+    const { filterMode, filterWords, filterTags } = await this.getFilterConfig(PushItem.Detail_Data.sec_uid)
+    const desc = PushItem.Detail_Data.desc ?? ''
 
     // 检查内容中是否包含过滤词
-    const hasFilterWord = filterWords.some(word => content.includes(word))
+    const hasFilterWord = filterWords.some(word => desc.includes(word))
 
     // 检查标签中是否包含过滤标签
     const hasFilterTag = filterTags.some(filterTag =>
       tags.some(tag => tag === filterTag)
     )
+
+    logger.debug(`
+      作者：${PushItem.remark}，
+      检查内容：${desc}，
+      过滤词：${filterWords}，
+      过滤标签：${filterTags}，
+      过滤模式：${filterMode}，
+      是否过滤：${hasFilterWord || hasFilterTag}，
+      作品地址：${logger.green(`https://www.douyin.com/video/${PushItem.Detail_Data.aweme_id}`)}，
+      `)
 
     // 根据过滤模式决定是否过滤
     if (filterMode === 'blacklist') {

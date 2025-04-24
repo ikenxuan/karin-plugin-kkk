@@ -17,7 +17,7 @@ export enum DynamicType {
 // type DataItem = BiliUserDynamic['data']['items'] extends Array<infer T> ? T : never
 
 /** 每个推送项的类型定义 */
-interface PushItem {
+export type PushItem = {
   /** 该UP主的昵称 */
   remark: string
   /** UP主UID */
@@ -100,7 +100,7 @@ export class Bilibilipush extends Base {
   async getdata (data: WillBePushList) {
     let nocd_data
     for (const dynamicId in data) {
-      let skip = skipDynamic(data[dynamicId].Dynamic_Data)
+      let skip = await skipDynamic(data[dynamicId])
       let send_video = true; let img: ImageElement[] = []
       const dynamicCARDINFO = await this.amagi.getBilibiliData('动态卡片数据', { dynamic_id: dynamicId })
       const dycrad = dynamicCARDINFO.data.card && dynamicCARDINFO.data.card.card && JSON.parse(dynamicCARDINFO.data.card.card)
@@ -545,9 +545,6 @@ export class Bilibilipush extends Base {
         if (Config.bilibili.push.switch === false) await this.e.reply('请发送「#kkk设置B站推送开启」以进行推送')
 
         logger.info(`\n设置成功！${data.data.card.name}\nUID：${host_mid}`)
-
-        // 渲染状态图片
-        await this.renderPushList()
       }
     } else {
       // 在数据库中添加订阅
@@ -567,13 +564,12 @@ export class Bilibilipush extends Base {
 
       await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${data.data.card.name}\nUID：${host_mid}`)
       if (Config.bilibili.push.switch === false) await this.e.reply('请发送「#kkk设置B站推送开启」以进行推送')
-
-      // 渲染状态图片
-      await this.renderPushList()
     }
 
     // 更新配置文件
     Config.Modify('pushlist', 'bilibili', config.bilibili)
+    // 渲染状态图片
+    await this.renderPushList()
   }
 
   /**
@@ -728,115 +724,36 @@ function extractEmojisData (data: any[]) {
 
 /**
  * 判断标题是否有屏蔽词或屏蔽标签
- * @param Dynamic_Data 作品详情数据
+ * @param PushItem 推送项
  * @returns 是否应该跳过推送
  */
-const skipDynamic = (Dynamic_Data: PushItem['Dynamic_Data']): boolean => {
-  // 获取过滤模式
-  const filterMode = Config.bilibili.push.filterMode || 'blacklist'
-  logger.debug('判断标题是否有屏蔽词或屏蔽标签: ', `https://t.bilibili.com/${Dynamic_Data.id_str}`)
-  if (filterMode === 'blacklist') {
-    // 检查关键词
-    for (const filterKeywords of Config.bilibili.push.filterKeywords) {
-      if (Dynamic_Data.modules.module_dynamic.major?.archive?.title.includes(filterKeywords) || Dynamic_Data.modules.module_dynamic.desc?.text?.includes(filterKeywords)) {
-        logger.mark(`动态：${logger.green(`https://t.bilibili.com/${Dynamic_Data.id_str}`)} 包含黑名单关键词：「${logger.red(filterKeywords)}」，跳过推送`)
-        return true
-      }
-      if (Dynamic_Data.type === 'DYNAMIC_TYPE_FORWARD' && 'orig' in Dynamic_Data) {
-        if (Dynamic_Data.orig.type === DynamicType.AV || !Dynamic_Data.orig.modules.module_dynamic.desc) continue
-        if (Dynamic_Data.orig.modules.module_dynamic.major?.archive?.title.includes(filterKeywords) || Dynamic_Data.orig.modules.module_dynamic.desc?.text?.includes(filterKeywords)) {
-          logger.mark(`转发动态：${`https://t.bilibili.com/${Dynamic_Data.id_str}`} 的子动态 ${logger.green(`https://t.bilibili.com/${Dynamic_Data.orig.id_str}`)} 包含黑名单关键词：「${logger.red(filterKeywords)}」，跳过推送`)
-          return true
-        }
-      }
-    }
-
-    // 检查标签
-    if (Dynamic_Data.type === DynamicType.DRAW || Dynamic_Data.type === DynamicType.FORWARD) {
-      for (const filterTags of Config.bilibili.push.filterTags) {
-        if (!Dynamic_Data.modules.module_dynamic?.desc?.rich_text_nodes) continue
-        for (const tag of Dynamic_Data.modules.module_dynamic.desc.rich_text_nodes) {
-          if (tag.orig_text.includes(filterTags)) {
-            logger.mark(`图文动态：${logger.green(`https://t.bilibili.com/${Dynamic_Data.id_str}`)} 包含黑名单标签：「${logger.red(filterTags)}」，跳过推送`)
-            return true
-          }
-        }
-        if (Dynamic_Data.type === 'DYNAMIC_TYPE_FORWARD' && 'orig' in Dynamic_Data) {
-          if (Dynamic_Data.orig.type === DynamicType.AV || !Dynamic_Data.orig.modules.module_dynamic.desc) continue
-          for (const tag of Dynamic_Data.orig.modules.module_dynamic.desc.rich_text_nodes) {
-            if (tag.orig_text.includes(filterTags)) {
-              logger.mark(`转发动态：${`https://t.bilibili.com/${Dynamic_Data.id_str}`} 的子动态 ${logger.green(`https://t.bilibili.com/${Dynamic_Data.orig.id_str}`)} 包含黑名单标签：「${logger.red(filterTags)}」，跳过推送`)
-              return true
-            }
-          }
-        }
-      }
-    }
-
-    // 黑名单模式下，没有匹配到任何黑名单项，不跳过
+const skipDynamic = async (PushItem: PushItem): Promise<boolean> => {
+  // 如果是直播动态，不跳过
+  if (PushItem.Dynamic_Data.type === DynamicType.LIVE_RCMD) {
     return false
-  } else if (filterMode === 'whitelist') {
-    // 如果白名单为空，则不过滤
-    const hasKeywordWhitelist = Config.bilibili.push.whitelistKeywords && Config.bilibili.push.whitelistKeywords.length > 0
-    const hasTagWhitelist = Config.bilibili.push.whitelistTags && Config.bilibili.push.whitelistTags.length > 0
+  }
+  const tags: string[] = []
 
-    // 如果没有设置任何白名单，则不过滤
-    if (!hasKeywordWhitelist && !hasTagWhitelist) {
-      return false
-    }
-
-    // 检查关键词白名单
-    if (hasKeywordWhitelist) {
-      // 检查主动态标题和描述
-      for (const whiteKeyword of Config.bilibili.push.whitelistKeywords) {
-        if (Dynamic_Data.modules.module_dynamic.major?.archive?.title?.includes(whiteKeyword) ||
-          Dynamic_Data.modules.module_dynamic.desc?.text?.includes(whiteKeyword)) {
-          logger.mark(`动态：${logger.green(`https://t.bilibili.com/${Dynamic_Data.id_str}`)} 包含白名单关键词：「${logger.green(whiteKeyword)}」，允许推送`)
-          return false // 匹配到白名单关键词，不跳过
-        }
-
-        // 检查转发的原动态
-        if (Dynamic_Data.type === 'DYNAMIC_TYPE_FORWARD' && 'orig' in Dynamic_Data) {
-          if (Dynamic_Data.orig.type === DynamicType.AV || !Dynamic_Data.orig.modules.module_dynamic.desc) continue
-          if (Dynamic_Data.orig.modules.module_dynamic.major?.archive?.title?.includes(whiteKeyword) ||
-            Dynamic_Data.orig.modules.module_dynamic.desc?.text?.includes(whiteKeyword)) {
-            logger.mark(`转发动态：${`https://t.bilibili.com/${Dynamic_Data.id_str}`} 的子动态 ${logger.green(`https://t.bilibili.com/${Dynamic_Data.orig.id_str}`)} 包含白名单关键词：「${logger.green(whiteKeyword)}」，允许推送`)
-            return false // 匹配到白名单关键词，不跳过
-          }
-        }
+  // 提取标签
+  if (PushItem.Dynamic_Data.modules.module_dynamic?.desc?.rich_text_nodes) {
+    for (const node of PushItem.Dynamic_Data.modules.module_dynamic.desc.rich_text_nodes) {
+      if (node.type === 'topic') {
+        tags.push(node.orig_text)
       }
     }
-
-    // 检查标签白名单
-    if (hasTagWhitelist && (Dynamic_Data.type === DynamicType.DRAW || Dynamic_Data.type === DynamicType.FORWARD)) {
-      // 检查主动态标签
-      for (const whiteTag of Config.bilibili.push.whitelistTags) {
-        if (!Dynamic_Data.modules.module_dynamic?.desc?.rich_text_nodes) continue
-        for (const tag of Dynamic_Data.modules.module_dynamic.desc.rich_text_nodes) {
-          if (tag.orig_text.includes(whiteTag)) {
-            logger.mark(`图文动态：${logger.green(`https://t.bilibili.com/${Dynamic_Data.id_str}`)} 包含白名单标签：「${logger.green(whiteTag)}」，允许推送`)
-            return false // 匹配到白名单标签，不跳过
-          }
-        }
-
-        // 检查转发的原动态标签
-        if (Dynamic_Data.type === 'DYNAMIC_TYPE_FORWARD' && 'orig' in Dynamic_Data) {
-          if (Dynamic_Data.orig.type === DynamicType.AV || !Dynamic_Data.orig.modules.module_dynamic.desc) continue
-          for (const tag of Dynamic_Data.orig.modules.module_dynamic.desc.rich_text_nodes) {
-            if (tag.orig_text.includes(whiteTag)) {
-              logger.mark(`转发动态：${`https://t.bilibili.com/${Dynamic_Data.id_str}`} 的子动态 ${logger.green(`https://t.bilibili.com/${Dynamic_Data.orig.id_str}`)} 包含白名单标签：「${logger.green(whiteTag)}」，允许推送`)
-              return false // 匹配到白名单标签，不跳过
-            }
-          }
-        }
-      }
-    }
-
-    // 白名单模式下，没有匹配到任何白名单项，跳过
-    logger.mark(`动态：${logger.green(`https://t.bilibili.com/${Dynamic_Data.id_str}`)} 未包含任何白名单关键词或标签，跳过推送`)
-    return true
   }
 
-  // 默认不跳过
-  return false
+  // 检查转发的原动态标签
+  if (PushItem.Dynamic_Data.type === 'DYNAMIC_TYPE_FORWARD' && 'orig' in PushItem.Dynamic_Data) {
+    if (PushItem.Dynamic_Data.orig.modules.module_dynamic?.desc?.rich_text_nodes) {
+      for (const node of PushItem.Dynamic_Data.orig.modules.module_dynamic.desc.rich_text_nodes) {
+        if (node.type === 'topic') {
+          tags.push(node.orig_text)
+        }
+      }
+    }
+  }
+
+  const shouldFilter = await bilibiliDB.shouldFilter(PushItem, tags)
+  return shouldFilter
 }

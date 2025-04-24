@@ -7,9 +7,10 @@ import YAML from 'node-karin/yaml'
 import { ConfigType } from '@/types'
 import { bilibiliConfig } from '@/types/config/bilibili'
 import { douyinConfig } from '@/types/config/douyin'
+import { bilibiliPushItem, douyinPushItem, pushlistConfig } from '@/types/config/pushlist'
 
 import { Version } from '../../Version'
-import { douyinDB } from '../db'
+import { bilibiliDB, douyinDB } from '../db'
 
 type ConfigDirType = 'config' | 'default_config'
 
@@ -159,23 +160,44 @@ class Cfg {
     }
 
     // 从数据库获取过滤配置并合并到推送列表中
-    if (allConfig.pushlist && allConfig.pushlist.douyin) {
+    if (allConfig.pushlist) {
       try {
-        // 使用 for-of 循环遍历抖音推送项
-        for (const item of allConfig.pushlist.douyin) {
-          // 从数据库获取该用户的过滤配置
-          const filterWords = await douyinDB.getFilterWords(item.sec_uid)
-          const filterTags = await douyinDB.getFilterTags(item.sec_uid)
-          const userInfo = await douyinDB.getDouyinUser(item.sec_uid)
+        // 处理抖音推送项
+        if (allConfig.pushlist.douyin) {
+          for (const item of allConfig.pushlist.douyin) {
+            // 从数据库获取该用户的过滤配置
+            const filterWords = await douyinDB.getFilterWords(item.sec_uid)
+            const filterTags = await douyinDB.getFilterTags(item.sec_uid)
+            const userInfo = await douyinDB.getDouyinUser(item.sec_uid)
 
-          // 将数据库中的过滤配置合并到推送项中
-          if (userInfo) {
-            item.filterMode = userInfo.get('filterMode') as 'blacklist' | 'whitelist' || 'blacklist'
+            // 将数据库中的过滤配置合并到推送项中
+            if (userInfo) {
+              item.filterMode = userInfo.get('filterMode') as 'blacklist' | 'whitelist' || 'blacklist'
+            }
+
+            // 将过滤词和标签添加到推送项中
+            item.Keywords = filterWords
+            item.Tags = filterTags
           }
+        }
 
-          // 将过滤词和标签添加到推送项中
-          item.Keywords = filterWords
-          item.Tags = filterTags
+        // 处理B站推送项
+        if (allConfig.pushlist.bilibili) {
+          for (const item of allConfig.pushlist.bilibili) {
+            // 从数据库获取该用户的过滤配置
+            const filterWords = await bilibiliDB.getFilterWords(item.host_mid)
+            const filterTags = await bilibiliDB.getFilterTags(item.host_mid)
+            const userInfo = await bilibiliDB.getOrCreateBilibiliUser(item.host_mid)
+
+            // 将数据库中的过滤配置合并到推送项中
+            if (userInfo) {
+              item.filterMode = userInfo.get('filterMode') as 'blacklist' | 'whitelist' || 'blacklist'
+            }
+
+            // 将过滤词和标签添加到推送项中
+            item.Keywords = filterWords
+            item.Tags = filterTags
+          }
         }
       } catch (error) {
         logger.error(`从数据库获取过滤配置时出错: ${error}`)
@@ -247,7 +269,7 @@ class Cfg {
    * @param config 完整的配置对象
    * @param type 配置文件类型，默认为用户配置文件 `config`
    */
-  ModifyPro<T extends keyof ConfigType> (
+  async ModifyPro<T extends keyof ConfigType> (
     name: T,
     config: ConfigType[T],
     type: ConfigDirType = 'config'
@@ -263,17 +285,109 @@ class Cfg {
       const doc = YAML.parseDocument(existingContent)
 
       // 2. 将新配置转换为YAML节点（不解析注释）
-      const newConfigNode = YAML.parseDocument(YAML.stringify(config)).contents
+      let filterCfg = config
+      if (name === 'pushlist' && ('douyin' in config || 'bilibili' in config)) {
+        const cleanedConfig = { ...config } as pushlistConfig
+
+        // 处理抖音配置
+        if ('douyin' in cleanedConfig) {
+          cleanedConfig.douyin = cleanedConfig.douyin.map(item => {
+            const { Keywords, Tags, filterMode, ...rest } = item
+            return rest as Omit<douyinPushItem, 'Keywords' | 'Tags' | 'filterMode'>
+          })
+        }
+
+        // 处理B站配置
+        if ('bilibili' in cleanedConfig) {
+          cleanedConfig.bilibili = cleanedConfig.bilibili.map(item => {
+            const { Keywords, Tags, filterMode, ...rest } = item
+            return rest as Omit<bilibiliPushItem, 'Keywords' | 'Tags' | 'filterMode'>
+          })
+        }
+
+        filterCfg = cleanedConfig as ConfigType[T]
+      }
+
+      const newConfigNode = YAML.parseDocument(YAML.stringify(filterCfg)).contents
 
       // 3. 深度合并新配置到现有文档（保留注释结构）
       this.deepMergeYaml(doc.contents, newConfigNode)
 
       // 4. 写回文件
       fs.writeFileSync(filePath, doc.toString({ lineWidth: -1 }), 'utf8')
+
+      // 同步抖音配置
+      if ('douyin' in config) {
+        await this.syncFilterConfigToDb(config.douyin, douyinDB, 'sec_uid')
+        logger.info('已同步抖音过滤配置到数据库')
+      }
+
+      // 同步B站配置
+      if ('bilibili' in config) {
+        await this.syncFilterConfigToDb(config.bilibili, bilibiliDB, 'host_mid')
+        logger.info('已同步B站过滤配置到数据库')
+      }
+
       return true
     } catch (error) {
       logger.error(`修改配置文件时发生错误：${error}`)
       return false
+    }
+  }
+
+  /**
+ * 同步过滤配置到数据库
+ * @param items 推送项列表
+ * @param db 数据库实例
+ * @param idField ID字段名称
+ */
+  private async syncFilterConfigToDb (items: any[], db: any, idField: string) {
+    for (const item of items) {
+      const id = item[idField]
+      if (!id) continue
+
+      // 更新过滤模式
+      if (item.filterMode) {
+        await db.updateFilterMode(id, item.filterMode)
+      }
+
+      // 更新过滤词
+      if (item.Keywords && Array.isArray(item.Keywords)) {
+        const existingWords = await db.getFilterWords(id)
+
+        // 删除不再需要的过滤词
+        for (const word of existingWords) {
+          if (!item.Keywords.includes(word)) {
+            await db.removeFilterWord(id, word)
+          }
+        }
+
+        // 添加新的过滤词
+        for (const word of item.Keywords) {
+          if (!existingWords.includes(word)) {
+            await db.addFilterWord(id, word)
+          }
+        }
+      }
+
+      // 更新过滤标签
+      if (item.Tags && Array.isArray(item.Tags)) {
+        const existingTags = await db.getFilterTags(id)
+
+        // 删除不再需要的过滤标签
+        for (const tag of existingTags) {
+          if (!item.Tags.includes(tag)) {
+            await db.removeFilterTag(id, tag)
+          }
+        }
+
+        // 添加新的过滤标签
+        for (const tag of item.Tags) {
+          if (!existingTags.includes(tag)) {
+            await db.addFilterTag(id, tag)
+          }
+        }
+      }
     }
   }
 

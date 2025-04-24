@@ -6,7 +6,7 @@ import { DouyinIdData, getDouyinID, processVideos } from '@/platform/douyin'
 import type { douyinPushItem } from '@/types/config/pushlist'
 
 /** 每个推送项的类型定义 */
-interface PushItem {
+export type PushItem = {
   /** 博主的昵称 */
   remark: string
   /** 博主UID */
@@ -92,7 +92,7 @@ export class DouYinpush extends Base {
     for (const awemeId in data) {
       const pushItem = data[awemeId]
       const Detail_Data = pushItem.Detail_Data
-      const skip = await skipDynamic(Detail_Data, pushItem.sec_uid)
+      const skip = await skipDynamic(pushItem)
       let img: ImageElement[] = []
       let iddata: DouyinIdData = { is_mp4: true, type: 'one_work' }
 
@@ -601,29 +601,31 @@ export class DouYinpush extends Base {
 
 /**
 * 判断标题是否有屏蔽词或屏蔽标签
-* @param Detail_Data 作品详情数据
+* @param PushItem 推送项
+* @param sec_uid 用户 sec_uid
+* @param remark 用户昵称
 * @returns 是否应该跳过推送
 */
-const skipDynamic = async (Detail_Data: PushItem['Detail_Data'], sec_uid: PushItem['sec_uid']): Promise<boolean> => {
+const skipDynamic = async (PushItem: PushItem): Promise<boolean> => {
   // 如果是直播动态，不跳过
-  if ('liveStatus' in Detail_Data) {
+  if ('liveStatus' in PushItem.Detail_Data) {
     return false
   }
 
   // 获取动态描述和标签
-  const desc = Detail_Data.desc ?? ''
+  const desc = PushItem.Detail_Data.desc ?? ''
   const tags: string[] = []
 
   // 提取标签
-  if (Detail_Data.text_extra) {
-    for (const item of Detail_Data.text_extra) {
+  if (PushItem.Detail_Data.text_extra) {
+    for (const item of PushItem.Detail_Data.text_extra) {
       if (item.hashtag_name) {
         tags.push(item.hashtag_name)
       }
     }
   }
 
-  const shouldFilter = await douyinDB.shouldFilter(sec_uid, desc, tags)
+  const shouldFilter = await douyinDB.shouldFilter(PushItem, tags)
   return shouldFilter
 }
 
