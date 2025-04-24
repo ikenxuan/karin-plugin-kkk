@@ -1,4 +1,4 @@
-import { components, LocalApiResponse } from 'node-karin'
+import { components, defineConfig, LocalApiResponse } from 'node-karin'
 import _ from 'node-karin/lodash'
 
 import { Config } from '@/module'
@@ -18,10 +18,11 @@ type PushConfigType = {
 /** 前端传回来新配置的类型 */
 type newConfigType = BaseConfigType & PushConfigType
 
-const all = Config.All()
+const all = await Config.All()
 
 export default {
   info: {
+    id: 'karin-plugin-kkk',
     name: 'karin-plugin-kkk',
     description: 'Karin 的「抖音」「B站」「快手」视频解析/动态推送插件',
     icon: {
@@ -35,8 +36,7 @@ export default {
         avatar: 'https://avatars.githubusercontent.com/u/112480306'
       }
     ]
-  } as LocalApiResponse,
-  /** 动态渲染的组件 */
+  },
   components: () => [
     components.accordion.create('cookies', {
       label: 'Cookies 相关',
@@ -264,67 +264,6 @@ export default {
                   value: 'download'
                 })
               ]
-            }),
-            components.radio.group('push:filterMode', {
-              label: '过滤模式',
-              orientation: 'horizontal',
-              defaultValue: all.douyin.push.filterMode,
-              radio: [
-                components.radio.create('push:filterMode.radio-1', {
-                  label: '黑名单模式',
-                  description: '作品标题中有指定关键词或标签时，不推送',
-                  value: 'blacklist'
-                }),
-                components.radio.create('push:filterMode.radio-2', {
-                  label: '白名单模式',
-                  description: '作品中有指定关键词或标签时，才推送',
-                  value: 'whitelist'
-                })
-              ]
-            }),
-            components.input.group('push:filterKeywords', {
-              label: '作品中有以下指定关键词时，不推送（排除模式为黑名单时生效）',
-              maxRows: 2,
-              itemsPerRow: 4,
-              data: all.douyin.push.filterKeywords,
-              template: components.input.string('push:filterKeywords', {
-                placeholder: '',
-                label: '',
-                color: 'danger'
-              })
-            }),
-            components.input.group('push:filterTags', {
-              label: '作品标题中有以下指定标签时，不推送（排除模式为黑名单时生效）',
-              maxRows: 2,
-              itemsPerRow: 4,
-              data: all.douyin.push.filterTags,
-              template: components.input.string('push:filterTags', {
-                placeholder: '',
-                label: '',
-                color: 'danger'
-              })
-            }),
-            components.input.group('push:whitelistKeywords', {
-              label: '作品中有以下指定关键词时，才推送（排除模式为白名单时生效）',
-              maxRows: 2,
-              itemsPerRow: 4,
-              data: all.douyin.push.whitelistKeywords,
-              template: components.input.string('push:whitelistKeywords', {
-                placeholder: '',
-                label: '',
-                color: 'success'
-              })
-            }),
-            components.input.group('push:whitelistTags', {
-              label: '作品标题中有以下指定标签时，才推送（排除模式为白名单时生效）',
-              maxRows: 2,
-              itemsPerRow: 4,
-              data: all.douyin.push.whitelistTags,
-              template: components.input.string('push:whitelistTags', {
-                placeholder: '',
-                label: '',
-                color: 'success'
-              })
             })
           ]
         })
@@ -625,6 +564,45 @@ export default {
               label: '昵称',
               isRequired: false,
               description: '博主的抖音名称'
+            }),
+            components.radio.group('filterMode', {
+              label: '过滤模式',
+              orientation: 'horizontal',
+              // defaultValue: all.douyin.push.filterMode,
+              radio: [
+                components.radio.create('push:filterMode.radio-1', {
+                  label: '黑名单模式',
+                  description: '作品标题中有指定关键词或标签时，不推送',
+                  value: 'blacklist'
+                }),
+                components.radio.create('push:filterMode.radio-2', {
+                  label: '白名单模式',
+                  description: '作品中有指定关键词或标签时，才推送',
+                  value: 'whitelist'
+                })
+              ]
+            }),
+            components.input.group('Keywords', {
+              label: '关键词时',
+              maxRows: 2,
+              itemsPerRow: 4,
+              data: all.douyin.push.filterKeywords,
+              template: components.input.string('push:filterKeywords', {
+                placeholder: '',
+                label: '',
+                color: 'danger'
+              })
+            }),
+            components.input.group('Tags', {
+              label: '作品标题中有以下指定标签时，不推送（排除模式为黑名单时生效）',
+              maxRows: 2,
+              itemsPerRow: 4,
+              data: all.douyin.push.filterTags,
+              template: components.input.string('push:filterTags', {
+                placeholder: '',
+                label: '',
+                color: 'danger'
+              })
             })
           ]
         })
@@ -681,9 +659,9 @@ export default {
   ],
 
   /** 前端点击保存之后调用的方法 */
-  save: (config: newConfigType) => {
+  save: async (config: newConfigType) => {
     const formatCfg = processFrontendData(config)
-    const oldAllCfg = Config.All()
+    const oldAllCfg = await Config.All()
     /** 合并旧新配置 */
     const mergeCfg = _.mergeWith({}, oldAllCfg, formatCfg, customizer)
     let success = false

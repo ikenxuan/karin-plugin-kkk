@@ -9,6 +9,7 @@ import { bilibiliConfig } from '@/types/config/bilibili'
 import { douyinConfig } from '@/types/config/douyin'
 
 import { Version } from '../../Version'
+import { douyinDB } from '../db'
 
 type ConfigDirType = 'config' | 'default_config'
 
@@ -145,17 +146,41 @@ class Cfg {
   }
 
   /** 获取所有配置文件 */
-  All (): ConfigType {
+  async All (): Promise<ConfigType> {
     const allConfig: any = {}  // 初始化为 ConfigType 类型
 
     // 读取默认配置文件夹中的所有文件
     const files = fs.readdirSync(this.defCfgPath)
-    files.forEach((file) => {
+    for (const file of files) {
       const fileName = path.basename(file, '.yaml') as keyof ConfigType
 
       // 加载配置并合并
       allConfig[fileName] = this.getDefOrConfig(fileName) || {} as ConfigType[keyof ConfigType]
-    })
+    }
+
+    // 从数据库获取过滤配置并合并到推送列表中
+    if (allConfig.pushlist && allConfig.pushlist.douyin) {
+      try {
+        // 使用 for-of 循环遍历抖音推送项
+        for (const item of allConfig.pushlist.douyin) {
+          // 从数据库获取该用户的过滤配置
+          const filterWords = await douyinDB.getFilterWords(item.sec_uid)
+          const filterTags = await douyinDB.getFilterTags(item.sec_uid)
+          const userInfo = await douyinDB.getDouyinUser(item.sec_uid)
+
+          // 将数据库中的过滤配置合并到推送项中
+          if (userInfo) {
+            item.filterMode = userInfo.get('filterMode') as 'blacklist' | 'whitelist' || 'blacklist'
+          }
+
+          // 将过滤词和标签添加到推送项中
+          item.Keywords = filterWords
+          item.Tags = filterTags
+        }
+      } catch (error) {
+        logger.error(`从数据库获取过滤配置时出错: ${error}`)
+      }
+    }
 
     return allConfig as ConfigType
   }

@@ -92,7 +92,7 @@ export class DouYinpush extends Base {
     for (const awemeId in data) {
       const pushItem = data[awemeId]
       const Detail_Data = pushItem.Detail_Data
-      const skip = skipDynamic(Detail_Data)
+      const skip = await skipDynamic(Detail_Data, pushItem.sec_uid)
       let img: ImageElement[] = []
       let iddata: DouyinIdData = { is_mp4: true, type: 'one_work' }
 
@@ -604,72 +604,27 @@ export class DouYinpush extends Base {
 * @param Detail_Data 作品详情数据
 * @returns 是否应该跳过推送
 */
-const skipDynamic = (Detail_Data: PushItem['Detail_Data']): boolean => {
-  // 获取过滤模式
-  const filterMode = Config.douyin.push.filterMode ?? 'blacklist'
-  logger.debug(`https://www.douyin.com/video/${Detail_Data.aweme_id}`)
-
-  if (filterMode === 'blacklist') {
-    // 检查关键词
-    for (const filterKeywords of Config.douyin.push.filterKeywords) {
-      if (Detail_Data.desc?.includes(filterKeywords)) {
-        logger.mark(`作品：${logger.green(`https://www.douyin.com/video/${Detail_Data.aweme_id}`)} 包含黑名单关键词：「${logger.red(filterKeywords)}」，跳过推送`)
-        return true
-      }
-    }
-
-    // 检查标签
-    for (const filterTags of Config.douyin.push.filterTags) {
-      if (!Detail_Data.text_extra) return false
-      for (const tag of Detail_Data.text_extra) {
-        if (tag.hashtag_name && tag.hashtag_name.includes(filterTags)) {
-          logger.mark(`作品：${logger.green(`https://www.douyin.com/video/${Detail_Data.aweme_id}`)} 包含黑名单标签：「${logger.red(filterTags)}」，跳过推送`)
-          return true
-        }
-      }
-    }
-
-    // 黑名单模式下，没有匹配到任何黑名单项，不跳过
+const skipDynamic = async (Detail_Data: PushItem['Detail_Data'], sec_uid: PushItem['sec_uid']): Promise<boolean> => {
+  // 如果是直播动态，不跳过
+  if ('liveStatus' in Detail_Data) {
     return false
-  } else if (filterMode === 'whitelist') {
-    // 如果白名单为空，则不过滤
-    const hasKeywordWhitelist = Config.douyin.push.whitelistKeywords && Config.douyin.push.whitelistKeywords.length > 0
-    const hasTagWhitelist = Config.douyin.push.whitelistTags && Config.douyin.push.whitelistTags.length > 0
-
-    // 如果没有设置任何白名单，则不过滤
-    if (!hasKeywordWhitelist && !hasTagWhitelist) {
-      return false
-    }
-
-    // 检查关键词白名单
-    if (hasKeywordWhitelist) {
-      for (const whiteKeyword of Config.douyin.push.whitelistKeywords) {
-        if (Detail_Data.desc?.includes(whiteKeyword)) {
-          logger.mark(`作品：${logger.green(`https://www.douyin.com/video/${Detail_Data.aweme_id}`)} 包含白名单关键词：「${logger.green(whiteKeyword)}」，允许推送`)
-          return false // 匹配到白名单关键词，不跳过
-        }
-      }
-    }
-
-    // 检查标签白名单
-    if (hasTagWhitelist && Detail_Data.text_extra) {
-      for (const whiteTag of Config.douyin.push.whitelistTags) {
-        for (const tag of Detail_Data.text_extra) {
-          if (tag.hashtag_name && tag.hashtag_name.includes(whiteTag)) {
-            logger.mark(`作品：${logger.green(`https://www.douyin.com/video/${Detail_Data.aweme_id}`)} 包含白名单标签：「${logger.green(whiteTag)}」，允许推送`)
-            return false // 匹配到白名单标签，不跳过
-          }
-        }
-      }
-    }
-
-    // 白名单模式下，没有匹配到任何白名单项，跳过
-    logger.mark(`作品：${logger.green(`https://www.douyin.com/video/${Detail_Data.aweme_id}`)} 未包含任何白名单关键词或标签，跳过推送`)
-    return true
   }
 
-  // 默认不跳过
-  return false
+  // 获取动态描述和标签
+  const desc = Detail_Data.desc ?? ''
+  const tags: string[] = []
+
+  // 提取标签
+  if (Detail_Data.text_extra) {
+    for (const item of Detail_Data.text_extra) {
+      if (item.hashtag_name) {
+        tags.push(item.hashtag_name)
+      }
+    }
+  }
+
+  const shouldFilter = await douyinDB.shouldFilter(sec_uid, desc, tags)
+  return shouldFilter
 }
 
 /**

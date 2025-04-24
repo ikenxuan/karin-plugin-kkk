@@ -8,6 +8,12 @@ export interface douyinPushItem {
   group_id: string[]
   /** 博主或UP主的名字信息，可不填 */
   remark: string
+  /** 黑名单：命中不推送；白名单：命中才推送 */
+  filterMode?: 'blacklist' | 'whitelist'
+  /** 指定关键词 */
+  Keywords?: string[]
+  /** 指定标签 */
+  Tags?: string[]
 }
 
 /** 定义推送列表项的接口 */

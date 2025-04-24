@@ -72,6 +72,11 @@ const DouyinUser = sequelize.define('DouyinUser', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
     comment: '是否正在直播'
+  },
+  filterMode: {
+    type: DataTypes.ENUM('blacklist', 'whitelist'),
+    defaultValue: 'blacklist',
+    comment: '过滤模式：黑名单或白名单'
   }
 }, {
   timestamps: true
@@ -142,6 +147,58 @@ const AwemeCache = sequelize.define('AwemeCache', {
   timestamps: true
 })
 
+/** FilterWords表 - 存储过滤词 */
+const FilterWord = sequelize.define('FilterWord', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+    comment: '过滤词ID'
+  },
+  sec_uid: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    comment: '抖音用户sec_uid',
+    references: {
+      model: 'DouyinUsers',
+      key: 'sec_uid'
+    }
+  },
+  word: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    comment: '过滤词'
+  }
+}, {
+  timestamps: true
+})
+
+/** FilterTags表 - 存储过滤标签 */
+const FilterTag = sequelize.define('FilterTag', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+    comment: '过滤标签ID'
+  },
+  sec_uid: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    comment: '抖音用户sec_uid',
+    references: {
+      model: 'DouyinUsers',
+      key: 'sec_uid'
+    }
+  },
+  tag: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    comment: '过滤标签'
+  }
+}, {
+  timestamps: true
+})
+
 // 建立关联关系
 /** Bot和Group是一对多关系：一个机器人可以管理多个群组 */
 Bot.hasMany(Group, { foreignKey: 'botId' })
@@ -170,6 +227,16 @@ AwemeCache.belongsTo(DouyinUser, { foreignKey: 'sec_uid' })
 Group.hasMany(AwemeCache, { foreignKey: 'groupId' })
 /** AwemeCache从属于Group：每个作品缓存都属于一个群组 */
 AwemeCache.belongsTo(Group, { foreignKey: 'groupId' })
+
+/** DouyinUser和FilterWord是一对多关系：一个抖音用户可以有多个过滤词 */
+DouyinUser.hasMany(FilterWord, { foreignKey: 'sec_uid' })
+/** FilterWord从属于DouyinUser：每个过滤词都属于一个抖音用户 */
+FilterWord.belongsTo(DouyinUser, { foreignKey: 'sec_uid' })
+
+/** DouyinUser和FilterTag是一对多关系：一个抖音用户可以有多个过滤标签 */
+DouyinUser.hasMany(FilterTag, { foreignKey: 'sec_uid' })
+/** FilterTag从属于DouyinUser：每个过滤标签都属于一个抖音用户 */
+FilterTag.belongsTo(DouyinUser, { foreignKey: 'sec_uid' })
 
 /** 数据库操作类 */
 export class DouyinDBBase {
@@ -347,6 +414,15 @@ export class DouyinDBBase {
   }
 
   /**
+   * 获取抖音用户信息
+   * @param sec_uid 抖音用户sec_uid
+   * @returns 返回用户信息，如果不存在则返回null
+   */
+  async getDouyinUser (sec_uid: string) {
+    return await DouyinUser.findByPk(sec_uid)
+  }
+
+  /**
    * 更新用户直播状态
    * @param sec_uid 抖音用户sec_uid
    * @param living 是否正在直播
@@ -411,7 +487,150 @@ export class DouyinDBBase {
   async getGroupById (groupId: string) {
     return await Group.findByPk(groupId)
   }
+
+  /**
+   * 更新用户的过滤模式
+   * @param sec_uid 抖音用户sec_uid
+   * @param filterMode 过滤模式
+   */
+  async updateFilterMode (sec_uid: string, filterMode: 'blacklist' | 'whitelist') {
+    const user = await this.getOrCreateDouyinUser(sec_uid)
+    await user.update({ filterMode })
+    return user
+  }
+
+  /**
+   * 添加过滤词
+   * @param sec_uid 抖音用户sec_uid
+   * @param word 过滤词
+   */
+  async addFilterWord (sec_uid: string, word: string) {
+    await this.getOrCreateDouyinUser(sec_uid)
+    const [filterWord] = await FilterWord.findOrCreate({
+      where: {
+        sec_uid,
+        word
+      }
+    })
+    return filterWord
+  }
+
+  /**
+   * 删除过滤词
+   * @param sec_uid 抖音用户sec_uid
+   * @param word 过滤词
+   */
+  async removeFilterWord (sec_uid: string, word: string) {
+    const result = await FilterWord.destroy({
+      where: {
+        sec_uid,
+        word
+      }
+    })
+    return result > 0
+  }
+
+  /**
+   * 添加过滤标签
+   * @param sec_uid 抖音用户sec_uid
+   * @param tag 过滤标签
+   */
+  async addFilterTag (sec_uid: string, tag: string) {
+    await this.getOrCreateDouyinUser(sec_uid)
+    const [filterTag] = await FilterTag.findOrCreate({
+      where: {
+        sec_uid,
+        tag
+      }
+    })
+    return filterTag
+  }
+
+  /**
+   * 删除过滤标签
+   * @param sec_uid 抖音用户sec_uid
+   * @param tag 过滤标签
+   */
+  async removeFilterTag (sec_uid: string, tag: string) {
+    const result = await FilterTag.destroy({
+      where: {
+        sec_uid,
+        tag
+      }
+    })
+    return result > 0
+  }
+
+  /**
+   * 获取用户的所有过滤词
+   * @param sec_uid 抖音用户sec_uid
+   */
+  async getFilterWords (sec_uid: string) {
+    const filterWords = await FilterWord.findAll({
+      where: { sec_uid }
+    })
+    return filterWords.map(word => word.get('word') as string)
+  }
+
+  /**
+   * 获取用户的所有过滤标签
+   * @param sec_uid 抖音用户sec_uid
+   */
+  async getFilterTags (sec_uid: string) {
+    const filterTags = await FilterTag.findAll({
+      where: { sec_uid }
+    })
+    return filterTags.map(tag => tag.get('tag') as string)
+  }
+
+  /**
+   * 获取用户的过滤配置
+   * @param sec_uid 抖音用户sec_uid
+   */
+  async getFilterConfig (sec_uid: string) {
+    const user = await this.getOrCreateDouyinUser(sec_uid)
+    const filterWords = await this.getFilterWords(sec_uid)
+    const filterTags = await this.getFilterTags(sec_uid)
+
+    return {
+      filterMode: user.get('filterMode') as 'blacklist' | 'whitelist',
+      filterWords,
+      filterTags
+    }
+  }
+
+  /**
+   * 检查内容是否应该被过滤
+   * @param sec_uid 抖音用户sec_uid
+   * @param content 内容文本
+   * @param tags 标签列表
+   */
+  async shouldFilter (sec_uid: string, content: string, tags: string[] = []) {
+    const { filterMode, filterWords, filterTags } = await this.getFilterConfig(sec_uid)
+
+    // 检查内容中是否包含过滤词
+    const hasFilterWord = filterWords.some(word => content.includes(word))
+
+    // 检查标签中是否包含过滤标签
+    const hasFilterTag = filterTags.some(filterTag =>
+      tags.some(tag => tag === filterTag)
+    )
+
+    // 根据过滤模式决定是否过滤
+    if (filterMode === 'blacklist') {
+      // 黑名单模式：如果包含过滤词或过滤标签，则过滤
+      return hasFilterWord || hasFilterTag
+    } else {
+      // 白名单模式：如果不包含任何白名单词或白名单标签，则过滤
+      // 注意：如果白名单为空，则不过滤任何内容
+      if (filterWords.length === 0 && filterTags.length === 0) {
+        return false
+      }
+      return !(hasFilterWord || hasFilterTag)
+    }
+  }
 }
+
 /** 抖音数据库模型集合 */
 export const douyinModels = {
   /** AwemeCache表 - 存储已推送的作品ID */
@@ -423,7 +642,11 @@ export const douyinModels = {
   /** Groups表 - 存储群组信息 */
   Group,
   /** GroupUserSubscriptions表 - 存储群组订阅的抖音用户关系 */
-  GroupUserSubscription
+  GroupUserSubscription,
+  /** FilterWord表 - 存储过滤词 */
+  FilterWord,
+  /** FilterTag表 - 存储过滤标签 */
+  FilterTag
 }
 
 /** 抖音数据库实例 */
