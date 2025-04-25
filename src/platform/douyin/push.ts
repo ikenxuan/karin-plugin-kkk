@@ -6,7 +6,7 @@ import { DouyinIdData, getDouyinID, processVideos } from '@/platform/douyin'
 import type { douyinPushItem } from '@/types/config/pushlist'
 
 /** 每个推送项的类型定义 */
-export type PushItem = {
+export type DouyinPushItem = {
   /** 博主的昵称 */
   remark: string
   /** 博主UID */
@@ -28,7 +28,7 @@ export type PushItem = {
   living: boolean
 }
 /** 推送列表的类型定义 */
-type WillBePushList = Record<string, PushItem>
+type WillBePushList = Record<string, DouyinPushItem>
 
 export class DouYinpush extends Base {
   private force = false
@@ -604,7 +604,7 @@ export class DouYinpush extends Base {
 * @param PushItem 推送项
 * @returns 是否应该跳过推送
 */
-const skipDynamic = async (PushItem: PushItem): Promise<boolean> => {
+const skipDynamic = async (PushItem: DouyinPushItem): Promise<boolean> => {
   // 如果是直播动态，不跳过
   if ('liveStatus' in PushItem.Detail_Data) {
     return false
