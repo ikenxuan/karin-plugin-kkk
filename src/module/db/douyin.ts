@@ -21,7 +21,17 @@ type GroupUserSubscriptionAttributes = {
 const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: join(`${karinPathBase}/${Version.pluginName}/data`, 'douyin.db'),
-  logging: false
+  logging: false,
+  pool: {
+    max: 5, // 连接池最大连接数
+    min: 0, // 连接池最小连接数
+    acquire: 30000, // 获取连接的超时时间(毫秒)
+    idle: 10000 // 连接在释放前可以空闲的最长时间(毫秒)
+  },
+  retry: {
+    max: 3 // 连接失败时的最大重试次数
+  },
+  isolationLevel: 'READ COMMITTED' // 隔离级别
 })
 
 /** Bots表 - 存储机器人信息 */
@@ -607,7 +617,14 @@ export class DouyinDBBase {
    * @param tags 标签列表
    */
   async shouldFilter (PushItem: PushItem, tags: string[] = []) {
-    const { filterMode, filterWords, filterTags } = await this.getFilterConfig(PushItem.Detail_Data.sec_uid)
+    // 使用 PushItem.sec_uid 而不是 PushItem.Detail_Data.sec_uid
+    const sec_uid = PushItem.sec_uid
+    if (!sec_uid) {
+      logger.warn(`推送项缺少 sec_uid 参数: ${JSON.stringify(PushItem)}`)
+      return false // 如果没有 sec_uid，默认不过滤
+    }
+
+    const { filterMode, filterWords, filterTags } = await this.getFilterConfig(sec_uid)
     const desc = PushItem.Detail_Data.desc ?? ''
 
     // 检查内容中是否包含过滤词
@@ -621,10 +638,10 @@ export class DouyinDBBase {
     logger.debug(`
       作者：${PushItem.remark}，
       检查内容：${desc}，
-      过滤词：${filterWords}，
-      过滤标签：${filterTags}，
+      命中词：${filterWords.join(', ')}，
+      命中标签：${filterTags.join(', ')}，
       过滤模式：${filterMode}，
-      是否过滤：${hasFilterWord || hasFilterTag}，
+      是否过滤：${(hasFilterWord || hasFilterTag) ? logger.red(`${hasFilterWord || hasFilterTag}`) : logger.green(`${hasFilterWord || hasFilterTag}`)}，
       作品地址：${logger.green(`https://www.douyin.com/video/${PushItem.Detail_Data.aweme_id}`)}，
       `)
 

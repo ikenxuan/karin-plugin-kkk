@@ -602,8 +602,6 @@ export class DouYinpush extends Base {
 /**
 * 判断标题是否有屏蔽词或屏蔽标签
 * @param PushItem 推送项
-* @param sec_uid 用户 sec_uid
-* @param remark 用户昵称
 * @returns 是否应该跳过推送
 */
 const skipDynamic = async (PushItem: PushItem): Promise<boolean> => {
@@ -625,6 +623,7 @@ const skipDynamic = async (PushItem: PushItem): Promise<boolean> => {
     }
   }
 
+  // 确保使用 PushItem.sec_uid 而不是 PushItem.Detail_Data.sec_uid
   const shouldFilter = await douyinDB.shouldFilter(PushItem, tags)
   return shouldFilter
 }

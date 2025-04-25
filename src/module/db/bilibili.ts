@@ -21,7 +21,17 @@ type GroupUserSubscriptionAttributes = {
 const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: join(`${karinPathBase}/${Version.pluginName}/data`, 'bilibili.db'),
-  logging: false
+  logging: false,
+  pool: {
+    max: 5, // 连接池最大连接数
+    min: 0, // 连接池最小连接数
+    acquire: 30000, // 获取连接的超时时间(毫秒)
+    idle: 10000 // 连接在释放前可以空闲的最长时间(毫秒)
+  },
+  retry: {
+    max: 3 // 连接失败时的最大重试次数
+  },
+  isolationLevel: 'READ COMMITTED' // 隔离级别
 })
 
 /** Bots表 - 存储机器人信息 */
@@ -576,11 +586,19 @@ export class BilibiliDBBase {
     }
 
     // 提取标签
+    // 主动态
     if (moduleDynamic.desc && moduleDynamic.desc.rich_text_nodes) {
       for (const node of moduleDynamic.desc.rich_text_nodes) {
-        if (node.type === 'topic' || (node.orig_text && node.orig_text.startsWith('#') && node.orig_text.endsWith('#'))) {
+        if (node.type !== 'RICH_TEXT_NODE_TYPE_TEXT') {
           tags.push(node.orig_text)
         }
+      }
+    }
+    // 若为转发动态，再检查子动态
+    if (dynamicData.type === 'DYNAMIC_TYPE_FORWARD' && 'orig' in dynamicData) {
+      text += dynamicData.orig.modules.module_dynamic.desc.text + ' '
+      for (const node of dynamicData.orig.modules.module_dynamic.desc.rich_text_nodes) {
+        tags.push(node.orig_text)
       }
     }
 
@@ -623,14 +641,16 @@ export class BilibiliDBBase {
       allTags.some(tag => tag.includes(filterTag))
     )
 
-    logger.debug(`
+    logger.warn(`
     UP主UID：${PushItem.host_mid}，
     检查内容：${allText}，
     检查标签：${allTags.join(', ')}，
-    过滤词：${filterWords.join(', ')}，
-    过滤标签：${filterTags.join(', ')}，
+    命中词：${filterWords.join(', ')}，
+    命中标签：${filterTags.join(', ')}，
     过滤模式：${filterMode}，
-    是否匹配过滤条件：${hasFilterWord || hasFilterTag}
+    是否过滤：${(hasFilterWord || hasFilterTag) ? logger.red(`${hasFilterWord || hasFilterTag}`) : logger.green(`${hasFilterWord || hasFilterTag}`)}，
+    动态地址：${logger.green(`https://t.bilibili.com/${PushItem.Dynamic_Data.dynamic_id_str}`)}，
+    动态类型：${PushItem.dynamic_type}
     `)
 
     // 根据过滤模式决定是否过滤

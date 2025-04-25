@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.23.0",
-    "@karinjs/plugin-puppeteer": "^1.0.6",
+    "@karinjs/plugin-puppeteer": "^1.0.9",
     "@types/cors": "^2.8.17",
     "@types/heic-convert": "^2.1.0",
     "@types/node": "^22.13.14",
