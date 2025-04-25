@@ -159,6 +159,14 @@ export default {
               label: '移除水印',
               description: '渲染的图片是否移除底部水印',
               defaultSelected: all.app.RemoveWatermark
+            }),
+            components.input.number('RenderWaitTime', {
+              label: '渲染图片的等待时间',
+              description: '单位：秒，传递 0 可禁用',
+              defaultValue: all.app.RenderWaitTime.toString(),
+              rules: [
+                { min: 0 }
+              ]
             })
           ]
         })

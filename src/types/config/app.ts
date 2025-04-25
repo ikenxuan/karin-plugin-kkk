@@ -26,4 +26,7 @@ export interface appConfig {
 
   /** 渲染的图片是否移除底部水印 */
   RemoveWatermark: boolean
+
+  /** 渲染图片的等待时间，单位：秒；传递0可禁用 */
+  RenderWaitTime: number
 }
