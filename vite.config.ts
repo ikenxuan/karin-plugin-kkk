@@ -2,20 +2,20 @@ import fs from 'node:fs'
 import dts from 'vite-plugin-dts'
 import { defineConfig } from 'vite'
 import { builtinModules } from 'node:module'
-import { resolve } from 'node:path';
+import { resolve } from 'node:path'
 
-const entry: string[] = ['src/index.ts', 'src/Version.ts', 'src/web.config.ts'];
+const entry: string[] = ['src/index.ts', 'src/Version.ts', 'src/web.config.ts']
 
-function getFiles(dir: string) {
+function getFiles (dir: string) {
   fs.readdirSync(dir).forEach((file) => {
     if (file.endsWith('.ts')) {
-      entry.push(`${dir}/${file}`);
+      entry.push(`${dir}/${file}`)
     }
-  });
+  })
 }
 
-getFiles('src/apps');
-getFiles('src/cli');
+getFiles('src/apps')
+getFiles('src/cli')
 
 export default defineConfig({
   build: {
@@ -25,7 +25,7 @@ export default defineConfig({
       entry,
     },
     emptyOutDir: true,
-    outDir: 'dist',
+    outDir: 'lib',
     rollupOptions: {
       external: [
         ...builtinModules,
