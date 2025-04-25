@@ -52,6 +52,7 @@ export class Bilibili extends Base {
   }
 
   async RESOURCES (iddata: BilibiliId): Promise<boolean | undefined> {
+    await this.e.bot.setMsgReaction(this.e.contact, this.e.messageId, 424, true)
     Config.bilibili.tip && await this.e.reply('检测到B站链接，开始解析')
     switch (this.Type) {
       case 'one_video': {

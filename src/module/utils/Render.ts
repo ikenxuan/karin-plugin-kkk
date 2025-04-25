@@ -34,7 +34,7 @@ export async function Render (path: string, params?: any) {
   const renderOpt: Options = {
     pageGotoParams: {
       waitUntil: 'load',
-      timeout: 60000
+      timeout: Config.app.RenderWaitTime * 1000
     },
     name: `${Version.pluginName}/${platform}/${newPath}/`.replace(/\\/g, '/'),
     file: `${Version.pluginPath}/resources/template/${path}.html`,

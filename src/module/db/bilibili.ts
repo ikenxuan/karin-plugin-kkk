@@ -1,8 +1,10 @@
 import { join } from 'node:path'
 
+import { logger } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
 import { DataTypes, Model, Sequelize } from 'sequelize'
 
+import { PushItem } from '@/platform/bilibili/push'
 import { bilibiliPushItem } from '@/types/config/pushlist'
 
 import { Version } from '../utils'
@@ -19,7 +21,17 @@ type GroupUserSubscriptionAttributes = {
 const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: join(`${karinPathBase}/${Version.pluginName}/data`, 'bilibili.db'),
-  logging: false
+  logging: false,
+  pool: {
+    max: 5, // 连接池最大连接数
+    min: 0, // 连接池最小连接数
+    acquire: 30000, // 获取连接的超时时间(毫秒)
+    idle: 10000 // 连接在释放前可以空闲的最长时间(毫秒)
+  },
+  retry: {
+    max: 3 // 连接失败时的最大重试次数
+  },
+  isolationLevel: 'READ COMMITTED' // 隔离级别
 })
 
 /** Bots表 - 存储机器人信息 */
@@ -63,6 +75,11 @@ const BilibiliUser = sequelize.define('BilibiliUser', {
   remark: {
     type: DataTypes.STRING,
     comment: 'B站用户昵称'
+  },
+  filterMode: {
+    type: DataTypes.ENUM('blacklist', 'whitelist'),
+    defaultValue: 'blacklist',
+    comment: '过滤模式：黑名单或白名单'
   }
 }, {
   timestamps: true
@@ -137,6 +154,58 @@ const DynamicCache = sequelize.define('DynamicCache', {
   timestamps: true
 })
 
+/** FilterWords表 - 存储过滤词 */
+const FilterWord = sequelize.define('FilterWord', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+    comment: '过滤词ID'
+  },
+  host_mid: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    comment: 'B站用户UID',
+    references: {
+      model: 'BilibiliUsers',
+      key: 'host_mid'
+    }
+  },
+  word: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    comment: '过滤词'
+  }
+}, {
+  timestamps: true
+})
+
+/** FilterTags表 - 存储过滤标签 */
+const FilterTag = sequelize.define('FilterTag', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+    comment: '过滤标签ID'
+  },
+  host_mid: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    comment: 'B站用户UID',
+    references: {
+      model: 'BilibiliUsers',
+      key: 'host_mid'
+    }
+  },
+  tag: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    comment: '过滤标签'
+  }
+}, {
+  timestamps: true
+})
+
 // 建立关联关系
 /** 一个机器人可以管理多个群组，一对多关系 */
 Bot.hasMany(Group, { foreignKey: 'botId' })
@@ -158,14 +227,55 @@ Group.hasMany(DynamicCache, { foreignKey: 'groupId' })
 /** 一条动态缓存记录属于一个群组，多对一关系 */
 DynamicCache.belongsTo(Group, { foreignKey: 'groupId' })
 
+/** BilibiliUser和FilterWord是一对多关系：一个B站用户可以有多个过滤词 */
+BilibiliUser.hasMany(FilterWord, { foreignKey: 'host_mid' })
+/** FilterWord从属于BilibiliUser：每个过滤词都属于一个B站用户 */
+FilterWord.belongsTo(BilibiliUser, { foreignKey: 'host_mid' })
+
+/** BilibiliUser和FilterTag是一对多关系：一个B站用户可以有多个过滤标签 */
+BilibiliUser.hasMany(FilterTag, { foreignKey: 'host_mid' })
+/** FilterTag从属于BilibiliUser：每个过滤标签都属于一个B站用户 */
+FilterTag.belongsTo(BilibiliUser, { foreignKey: 'host_mid' })
+
 /** 数据库操作类 */
 export class BilibiliDBBase {
   /**
    * 初始化数据库
    */
   async init () {
-    await sequelize.authenticate()
-    await sequelize.sync()
+    try {
+      await sequelize.authenticate()
+      try {
+        const queryInterface = sequelize.getQueryInterface()
+
+        // 检查 BilibiliUsers 表是否存在
+        const tables = await queryInterface.showAllTables()
+        if (tables.includes('BilibiliUsers')) {
+          // 获取表结构
+          const tableInfo = await queryInterface.describeTable('BilibiliUsers')
+
+          // 如果表中没有 filterMode 列，则添加它
+          if (!tableInfo.filterMode) {
+            logger.warn('正在添加缺失的 filterMode 列到 BilibiliUsers 表...')
+            await queryInterface.addColumn('BilibiliUsers', 'filterMode', {
+              type: DataTypes.STRING,
+              defaultValue: 'blacklist',
+              allowNull: false
+            })
+            logger.mark('成功添加 filterMode 列')
+          }
+        } else {
+          await sequelize.sync()
+        }
+      } catch (error) {
+        logger.error('检查或添加 filterMode 列时出错:', error)
+        await sequelize.sync()
+      }
+    } catch (error) {
+      logger.error('数据库初始化失败:', error)
+      throw error
+    }
+
     return this
   }
 
@@ -203,6 +313,13 @@ export class BilibiliDBBase {
       where: { host_mid },
       defaults: { remark }
     })
+
+    // 如果提供了新的信息，更新用户记录
+    if (remark && user.get('remark') !== remark) {
+      await user.update({
+        remark: remark || user.get('remark')
+      })
+    }
 
     return user
   }
@@ -361,12 +478,239 @@ export class BilibiliDBBase {
       }
     }
   }
+
+  /**
+ * 更新用户的过滤模式
+ * @param host_mid B站用户UID
+ * @param filterMode 过滤模式
+ */
+  async updateFilterMode (host_mid: number, filterMode: 'blacklist' | 'whitelist') {
+    const user = await this.getOrCreateBilibiliUser(host_mid)
+    await user.update({ filterMode })
+    return user
+  }
+
+  /**
+   * 添加过滤词
+   * @param host_mid B站用户UID
+   * @param word 过滤词
+   */
+  async addFilterWord (host_mid: number, word: string) {
+    await this.getOrCreateBilibiliUser(host_mid)
+    const [filterWord] = await FilterWord.findOrCreate({
+      where: {
+        host_mid,
+        word
+      }
+    })
+    return filterWord
+  }
+
+  /**
+   * 删除过滤词
+   * @param host_mid B站用户UID
+   * @param word 过滤词
+   */
+  async removeFilterWord (host_mid: number, word: string) {
+    const result = await FilterWord.destroy({
+      where: {
+        host_mid,
+        word
+      }
+    })
+    return result > 0
+  }
+
+  /**
+   * 添加过滤标签
+   * @param host_mid B站用户UID
+   * @param tag 过滤标签
+   */
+  async addFilterTag (host_mid: number, tag: string) {
+    await this.getOrCreateBilibiliUser(host_mid)
+    const [filterTag] = await FilterTag.findOrCreate({
+      where: {
+        host_mid,
+        tag
+      }
+    })
+    return filterTag
+  }
+
+  /**
+   * 删除过滤标签
+   * @param host_mid B站用户UID
+   * @param tag 过滤标签
+   */
+  async removeFilterTag (host_mid: number, tag: string) {
+    const result = await FilterTag.destroy({
+      where: {
+        host_mid,
+        tag
+      }
+    })
+    return result > 0
+  }
+
+  /**
+   * 获取用户的所有过滤词
+   * @param host_mid B站用户UID
+   */
+  async getFilterWords (host_mid: number) {
+    const filterWords = await FilterWord.findAll({
+      where: { host_mid }
+    })
+    return filterWords.map(word => word.get('word') as string)
+  }
+
+  /**
+   * 获取用户的所有过滤标签
+   * @param host_mid B站用户UID
+   */
+  async getFilterTags (host_mid: number) {
+    const filterTags = await FilterTag.findAll({
+      where: { host_mid }
+    })
+    return filterTags.map(tag => tag.get('tag') as string)
+  }
+
+  /**
+   * 获取用户的过滤配置
+   * @param host_mid B站用户UID
+   */
+  async getFilterConfig (host_mid: number) {
+    const user = await this.getOrCreateBilibiliUser(host_mid)
+    const filterWords = await this.getFilterWords(host_mid)
+    const filterTags = await this.getFilterTags(host_mid)
+
+    return {
+      filterMode: user.get('filterMode') as 'blacklist' | 'whitelist',
+      filterWords,
+      filterTags
+    }
+  }
+
+  /**
+   * 从动态中提取文本内容和标签
+   * @param dynamicData 动态数据
+   * @returns 提取的文本内容和标签
+   */
+  private extractTextAndTags (dynamicData: any): { text: string, tags: string[] } {
+    let text = ''
+    const tags: string[] = []
+
+    // 如果没有模块数据，返回空结果
+    if (!dynamicData || !dynamicData.modules || !dynamicData.modules.module_dynamic) {
+      return { text, tags }
+    }
+
+    const moduleDynamic = dynamicData.modules.module_dynamic
+
+    // 提取描述文本
+    if (moduleDynamic.desc && moduleDynamic.desc.text) {
+      text += moduleDynamic.desc.text + ' '
+    }
+
+    // 提取视频标题
+    if (moduleDynamic.major && moduleDynamic.major.archive && moduleDynamic.major.archive.title) {
+      text += moduleDynamic.major.archive.title + ' '
+    }
+
+    // 提取标签
+    // 主动态
+    if (moduleDynamic.desc && moduleDynamic.desc.rich_text_nodes) {
+      for (const node of moduleDynamic.desc.rich_text_nodes) {
+        if (node.type !== 'RICH_TEXT_NODE_TYPE_TEXT') {
+          tags.push(node.orig_text)
+        }
+      }
+    }
+    // 若为转发动态，再检查子动态
+    if (dynamicData.type === 'DYNAMIC_TYPE_FORWARD' && 'orig' in dynamicData) {
+      text += dynamicData.orig.modules.module_dynamic.desc.text + ' '
+      for (const node of dynamicData.orig.modules.module_dynamic.desc.rich_text_nodes) {
+        tags.push(node.orig_text)
+      }
+    }
+
+    return { text: text.trim(), tags }
+  }
+
+  /**
+   * 检查内容是否应该被过滤
+   * @param PushItem 推送项
+   * @param tags 额外的标签列表
+   */
+  async shouldFilter (PushItem: PushItem, extraTags: string[] = []): Promise<boolean> {
+    // 如果是直播动态，不过滤
+    if (PushItem.Dynamic_Data.type === 'DYNAMIC_TYPE_LIVE_RCMD') {
+      return false
+    }
+
+    // 获取用户的过滤配置
+    const { filterMode, filterWords, filterTags } = await this.getFilterConfig(PushItem.host_mid)
+
+    // 提取主动态的文本和标签
+    const { text: mainText, tags: mainTags } = this.extractTextAndTags(PushItem.Dynamic_Data)
+
+    // 合并所有标签
+    let allTags = [...mainTags, ...extraTags]
+    let allText = mainText
+
+    // 如果是转发动态，还需要检查原动态
+    if (PushItem.Dynamic_Data.type === 'DYNAMIC_TYPE_FORWARD' && 'orig' in PushItem.Dynamic_Data) {
+      const { text: origText, tags: origTags } = this.extractTextAndTags(PushItem.Dynamic_Data.orig)
+      allText += ' ' + origText
+      allTags = [...allTags, ...origTags]
+    }
+
+    // 检查内容中是否包含过滤词
+    const hasFilterWord = filterWords.some(word => allText.includes(word))
+
+    // 检查标签中是否包含过滤标签
+    const hasFilterTag = filterTags.some(filterTag =>
+      allTags.some(tag => tag.includes(filterTag))
+    )
+
+    logger.warn(`
+    UP主UID：${PushItem.host_mid}，
+    检查内容：${allText}，
+    检查标签：${allTags.join(', ')}，
+    命中词：${filterWords.join(', ')}，
+    命中标签：${filterTags.join(', ')}，
+    过滤模式：${filterMode}，
+    是否过滤：${(hasFilterWord || hasFilterTag) ? logger.red(`${hasFilterWord || hasFilterTag}`) : logger.green(`${hasFilterWord || hasFilterTag}`)}，
+    动态地址：${logger.green(`https://t.bilibili.com/${PushItem.Dynamic_Data.id_str}`)}，
+    动态类型：${PushItem.dynamic_type}
+    `)
+
+    // 根据过滤模式决定是否过滤
+    if (filterMode === 'blacklist') {
+      // 黑名单模式：如果包含过滤词或过滤标签，则过滤
+      if (hasFilterWord) {
+        return true
+      }
+      if (hasFilterTag) {
+        return true
+      }
+      return false
+    } else {
+      // 白名单模式：如果不包含任何白名单词或白名单标签，则过滤
+      // 注意：如果白名单为空，则不过滤任何内容
+      if (filterWords.length === 0 && filterTags.length === 0) {
+        return false
+      }
+
+      if (hasFilterWord || hasFilterTag) {
+        return false // 不过滤
+      }
+      return true // 过滤
+    }
+  }
 }
 
 /** 哔哩哔哩数据库实例 */
 export let bilibiliDB: BilibiliDBBase
-
-export { BilibiliUser, Bot, DynamicCache, Group, GroupUserSubscription }
 
 /** B站数据库模型集合 */
 export const bilibiliModels = {
@@ -379,7 +723,11 @@ export const bilibiliModels = {
   /** Groups表 - 存储群组信息 */
   Group,
   /** GroupUserSubscriptions表 - 存储群组订阅的B站用户关系 */
-  GroupUserSubscription
+  GroupUserSubscription,
+  /** FilterWord表 - 存储过滤词 */
+  FilterWord,
+  /** FilterTag表 - 存储过滤标签 */
+  FilterTag
 };
 
 (async () => {

@@ -27,3 +27,6 @@ Theme: 0
 
 # 渲染的图片是否移除底部水印
 RemoveWatermark: false
+
+# 渲染图片的等待时间，单位：秒。传递 0 可禁用等待
+RenderWaitTime: 60

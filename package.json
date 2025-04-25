@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.23.0",
-    "@karinjs/plugin-puppeteer": "^1.0.6",
+    "@karinjs/plugin-puppeteer": "^1.0.9",
     "@types/cors": "^2.8.17",
     "@types/heic-convert": "^2.1.0",
     "@types/node": "^22.13.14",
@@ -60,7 +60,7 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "globals": "^15.15.0",
     "neostandard": "^0.11.9",
-    "node-karin": "https://pkg.pr.new/node-karin@d8f5619",
+    "node-karin": "^1.7.14",
     "sort-package-json": "^2.15.1",
     "tsc-alias": "^1.8.12",
     "tsup": "^8.4.0",
