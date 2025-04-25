@@ -243,9 +243,39 @@ export class BilibiliDBBase {
    * 初始化数据库
    */
   async init () {
-    await sequelize.authenticate()
-    // 尝试保留数据并更新表结构
-    await sequelize.sync({ alter: true })
+    try {
+      await sequelize.authenticate()
+      try {
+        const queryInterface = sequelize.getQueryInterface()
+
+        // 检查 BilibiliUsers 表是否存在
+        const tables = await queryInterface.showAllTables()
+        if (tables.includes('BilibiliUsers')) {
+          // 获取表结构
+          const tableInfo = await queryInterface.describeTable('BilibiliUsers')
+
+          // 如果表中没有 filterMode 列，则添加它
+          if (!tableInfo.filterMode) {
+            logger.warn('正在添加缺失的 filterMode 列到 BilibiliUsers 表...')
+            await queryInterface.addColumn('BilibiliUsers', 'filterMode', {
+              type: DataTypes.STRING,
+              defaultValue: 'blacklist',
+              allowNull: false
+            })
+            logger.mark('成功添加 filterMode 列')
+          }
+        } else {
+          await sequelize.sync()
+        }
+      } catch (error) {
+        logger.error('检查或添加 filterMode 列时出错:', error)
+        await sequelize.sync()
+      }
+    } catch (error) {
+      logger.error('数据库初始化失败:', error)
+      throw error
+    }
+
     return this
   }
 
@@ -650,7 +680,7 @@ export class BilibiliDBBase {
     命中标签：${filterTags.join(', ')}，
     过滤模式：${filterMode}，
     是否过滤：${(hasFilterWord || hasFilterTag) ? logger.red(`${hasFilterWord || hasFilterTag}`) : logger.green(`${hasFilterWord || hasFilterTag}`)}，
-    动态地址：${logger.green(`https://t.bilibili.com/${PushItem.Dynamic_Data.dynamic_id_str}`)}，
+    动态地址：${logger.green(`https://t.bilibili.com/${PushItem.Dynamic_Data.id_str}`)}，
     动态类型：${PushItem.dynamic_type}
     `)
 

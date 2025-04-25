@@ -256,9 +256,39 @@ export class DouyinDBBase {
    * 初始化数据库
    */
   async init () {
-    await sequelize.authenticate()
-    // 尝试保留数据并更新表结构
-    await sequelize.sync({ alter: true })
+    try {
+      await sequelize.authenticate()
+      try {
+        const queryInterface = sequelize.getQueryInterface()
+
+        // 检查 DouyinUsers 表是否存在
+        const tables = await queryInterface.showAllTables()
+        if (tables.includes('DouyinUsers')) {
+          // 获取表结构
+          const tableInfo = await queryInterface.describeTable('DouyinUsers')
+
+          // 如果表中没有 filterMode 列，则添加它
+          if (!tableInfo.filterMode) {
+            logger.warn('正在添加缺失的 filterMode 列到 DouyinUsers 表...')
+            await queryInterface.addColumn('DouyinUsers', 'filterMode', {
+              type: DataTypes.STRING,
+              defaultValue: 'blacklist',
+              allowNull: false
+            })
+            logger.mark('成功添加 filterMode 列')
+          }
+        } else {
+          await sequelize.sync()
+        }
+      } catch (error) {
+        logger.error('检查或添加 filterMode 列时出错:', error)
+        await sequelize.sync()
+      }
+    } catch (error) {
+      logger.error('数据库初始化失败:', error)
+      throw error
+    }
+
     return this
   }
 
@@ -636,7 +666,7 @@ export class DouyinDBBase {
       tags.some(tag => tag === filterTag)
     )
 
-    logger.debug(`
+    logger.warn(`
       作者：${PushItem.remark}，
       检查内容：${desc}，
       命中词：${filterWords.join(', ')}，

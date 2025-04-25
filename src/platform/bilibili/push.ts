@@ -1,4 +1,4 @@
-import Client, { getBilibiliData } from '@ikenxuan/amagi'
+import Client, { BiliUserDynamic, getBilibiliData } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
 import { Base, bilibiliDB, cleanOldDynamicCache, Common, Config, Render } from '@/module'
