@@ -244,7 +244,8 @@ export class BilibiliDBBase {
    */
   async init () {
     await sequelize.authenticate()
-    await sequelize.sync()
+    // 尝试保留数据并更新表结构
+    await sequelize.sync({ alter: true })
     return this
   }
 
