@@ -219,6 +219,34 @@ export default {
               description: '根据「视频拦截阈值」自动选择合适的分辨率，关闭后默认选择最大分辨率进行下载',
               defaultSelected: all.douyin.autoResolution
             }),
+            components.radio.group('loginPerm', {
+              label: '谁可以触发扫码登录',
+              description: '修改后需重启',
+              orientation: 'horizontal',
+              defaultValue: all.douyin.loginPerm,
+              radio: [
+                components.radio.create('permission:radio-1', {
+                  label: '所有人',
+                  value: 'all'
+                }),
+                components.radio.create('permission:radio-2', {
+                  label: '管理员',
+                  value: 'admin'
+                }),
+                components.radio.create('permission:radio-3', {
+                  label: '主人',
+                  value: 'master'
+                }),
+                components.radio.create('permission:radio-4', {
+                  label: '群主',
+                  value: 'group.owner'
+                }),
+                components.radio.create('permission:radio-5', {
+                  label: '群管理员',
+                  value: 'group.admin'
+                })
+              ]
+            }),
             components.divider.create('divider-dy-1', {
               description: '抖音推送相关',
               descPosition: 20
@@ -230,6 +258,7 @@ export default {
             }),
             components.radio.group('push:permission', {
               label: '谁可以设置推送',
+              description: '修改后需重启',
               orientation: 'horizontal',
               defaultValue: all.douyin.push.permission,
               radio: [
@@ -329,7 +358,35 @@ export default {
               description: '根据「视频拦截阈值」自动选择合适的分辨率，关闭后默认选择最大分辨率进行下载',
               defaultSelected: all.bilibili.autoResolution
             }),
-            components.divider.create('divider-dy-1', {
+            components.radio.group('loginPerm', {
+              label: '谁可以触发扫码登录',
+              description: '修改后需重启',
+              orientation: 'horizontal',
+              defaultValue: all.bilibili.loginPerm,
+              radio: [
+                components.radio.create('permission:radio-1', {
+                  label: '所有人',
+                  value: 'all'
+                }),
+                components.radio.create('permission:radio-2', {
+                  label: '管理员',
+                  value: 'admin'
+                }),
+                components.radio.create('permission:radio-3', {
+                  label: '主人',
+                  value: 'master'
+                }),
+                components.radio.create('permission:radio-4', {
+                  label: '群主',
+                  value: 'group.owner'
+                }),
+                components.radio.create('permission:radio-5', {
+                  label: '群管理员',
+                  value: 'group.admin'
+                })
+              ]
+            }),
+            components.divider.create('divider-bilibili-1', {
               description: 'B站推送相关',
               descPosition: 20
             }),
@@ -340,6 +397,7 @@ export default {
             }),
             components.radio.group('push:permission', {
               label: '谁可以设置推送',
+              description: '修改后需重启',
               orientation: 'horizontal',
               defaultValue: all.bilibili.push.permission,
               radio: [
