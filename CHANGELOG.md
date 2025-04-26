@@ -1,5 +1,23 @@
 # 变更日志
 
+## [1.3.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.2.3...v1.3.0) (2025-04-26)
+
+
+### Features
+
+* **Config:** 添加扫码登录权限配置 close [#73](https://github.com/ikenxuan/karin-plugin-kkk/issues/73) ([0e22e6b](https://github.com/ikenxuan/karin-plugin-kkk/commit/0e22e6b7b128c663f9a6b81391aae528d93384ce))
+* **config:** 默认关闭平台解析提示并添加表情回应功能（默认开启） ([ea301d7](https://github.com/ikenxuan/karin-plugin-kkk/commit/ea301d7ffaaa80d6b4f046b143703e29ee322c98))
+
+
+### Bug Fixes
+
+* **login:** 更新抖音和哔哩哔哩登录免责声明 close [#72](https://github.com/ikenxuan/karin-plugin-kkk/issues/72) ([6b91d8e](https://github.com/ikenxuan/karin-plugin-kkk/commit/6b91d8e4d479f86ac41315124350b07085e821e7))
+* 修复视频上传和评论处理中的问题 ([8036d4d](https://github.com/ikenxuan/karin-plugin-kkk/commit/8036d4d0c4d568c30b9140c5e3a7c50c7fda90ca))
+* 修改默认回复表情 ([4dc106e](https://github.com/ikenxuan/karin-plugin-kkk/commit/4dc106ef160361f5daf773c855ed3c98dbd2eebf))
+* 修正评论数据长度检查逻辑 ([866de17](https://github.com/ikenxuan/karin-plugin-kkk/commit/866de17efb187f68c3df8871892f7b8d8c9926e8))
+* 每个推送对象单独过滤。close [#69](https://github.com/ikenxuan/karin-plugin-kkk/issues/69) ([#70](https://github.com/ikenxuan/karin-plugin-kkk/issues/70)) ([38b0cab](https://github.com/ikenxuan/karin-plugin-kkk/commit/38b0cab43c05107a2b4d853a13cc23887cc4579b))
+* 移除大部分命令设置功能，使用webui修改配置，仅保留推送相关的设置 ([883ff4c](https://github.com/ikenxuan/karin-plugin-kkk/commit/883ff4c1a1d34742c34b88da341d31e61332f8a9))
+
 ## [1.2.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.2.2...v1.2.3) (2025-04-13)
 
 

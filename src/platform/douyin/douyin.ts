@@ -53,7 +53,7 @@ export class DouYin extends Base {
   }
 
   async RESOURCES (data: DouyinIdData) {
-    await this.e.bot.setMsgReaction(this.e.contact, this.e.messageId, 424, true)
+    Config.app.EmojiReply && await this.e.bot.setMsgReaction(this.e.contact, this.e.messageId, Config.app.EmojiReplyID, true)
     if (Config.douyin.tip) this.e.reply('检测到抖音链接，开始解析')
     switch (this.type) {
       case 'one_work': {

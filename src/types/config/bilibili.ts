@@ -18,6 +18,9 @@ export interface bilibiliConfig {
   /** 根据「视频拦截阈值」自动选择合适的分辨率，关闭后默认选择最大分辨率进行下载 */
   autoResolution: boolean
 
+  /** 谁可以触发扫码登录，all为所有人，admin为管理员，master为主人，group.owner为群主，group.admin为群管理员。修改后需重启 */
+  loginPerm: 'all' | 'admin' | 'master' | 'group.owner' | 'group.admin'
+
   /** B站推送相关配置 */
   push: {
     /** 推送开关，开启后需重启；使用「#设置B站推送 + 用户UID」配置推送列表 */
@@ -32,7 +35,7 @@ export interface bilibiliConfig {
     whitelistKeywords: string[]
     /** 白名单模式：作品中有指定标签时，才推送 */
     whitelistTags: string[]
-    /** 推送权限，all为所有人，admin为管理员，master为主人，group.owner为群主，group.admin为群管理员 */
+    /** 推送权限，all为所有人，admin为管理员，master为主人，group.owner为群主，group.admin为群管理员。修改后需重启 */
     permission: 'all' | 'admin' | 'master' | 'group.owner' | 'group.admin'
     /** 推送表达式 */
     cron: string

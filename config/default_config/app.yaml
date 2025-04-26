@@ -30,3 +30,10 @@ RemoveWatermark: false
 
 # 渲染图片的等待时间，单位：秒。传递 0 可禁用等待
 RenderWaitTime: 60
+
+# 表情回应
+EmojiReply: true
+
+# 表情 ID，详情查看：https://github.com/NapNeko/NapCatQQ/blob/main/src/core/external/face_config.json
+EmojiReplyID: 128064
+
