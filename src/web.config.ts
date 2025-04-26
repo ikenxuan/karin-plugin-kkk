@@ -167,6 +167,20 @@ export default {
               rules: [
                 { min: 0 }
               ]
+            }),
+            components.switch.create('EmojiReply', {
+              label: '表情回应',
+              description: '在解析任务开始时添加表情回应',
+              defaultSelected: all.app.EmojiReply
+            }),
+            components.input.number('EmojiReplyID', {
+              label: '表情 ID',
+              isDisabled: !all.app.EmojiReply,
+              description: '详情查看：https://github.com/NapNeko/NapCatQQ/blob/main/src/core/external/face_config.json 的 QCid 字段',
+              defaultValue: all.app.EmojiReplyID.toString(),
+              rules: [
+                { min: 0, max: 1145141919810 }
+              ]
             })
           ]
         })

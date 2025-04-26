@@ -2,7 +2,7 @@
 switch: true
 
 # B站解析提示，发送提示信息：“检测到B站链接，开始解析”
-tip: true
+tip: false
 
 # B站评论解析，发送哔哩哔哩作品评论图
 comment: true

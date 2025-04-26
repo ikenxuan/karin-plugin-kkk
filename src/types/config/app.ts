@@ -29,4 +29,13 @@ export interface appConfig {
 
   /** 渲染图片的等待时间，单位：秒；传递0可禁用 */
   RenderWaitTime: number
+
+  /** 表情回应 */
+  EmojiReply: boolean
+
+  /**
+   * 表情 ID
+   * @see https://github.com/NapNeko/NapCatQQ/blob/main/src/core/external/face_config.json
+   */
+  EmojiReplyID: number
 }
