@@ -2,7 +2,7 @@
 switch: true
 
 # 抖音解析提示，发送提示信息：“检测到抖音链接，开始解析”
-tip: true
+tip: false
 
 # 抖音评论解析
 comment: true
