@@ -35,5 +35,5 @@ RenderWaitTime: 60
 EmojiReply: true
 
 # 表情 ID，详情查看：https://github.com/NapNeko/NapCatQQ/blob/main/src/core/external/face_config.json
-EmojiReplyID: 33
+EmojiReplyID: 128064
 
