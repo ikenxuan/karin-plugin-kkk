@@ -37,7 +37,7 @@
     "pub": "npm publish --access public",
     "sort": "npx sort-package-json",
     "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
-    "watch": "tsx watch --include \"src/**/*.ts\" src/app.ts"
+    "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" src/app.ts"
   },
   "dependencies": {
     "playwright": "^1.51.1",
