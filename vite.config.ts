@@ -42,6 +42,10 @@ export default defineConfig({
       ],
       output: {
         inlineDynamicImports: false,
+        banner: `
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+`,
         entryFileNames: (chunkInfo) => {
           if (chunkInfo.name === 'index' || chunkInfo.name === 'web.config' || chunkInfo.name === 'Version') {
             return `${chunkInfo.name}.js`
