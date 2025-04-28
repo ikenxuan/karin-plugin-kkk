@@ -37,6 +37,7 @@ export default defineConfig({
         'node-karin/lodash',
         'node-karin/yaml',
         'node-karin/axios',
+        'node-karin/sqlite3',
         'sequelize',
       ],
       output: {

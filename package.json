@@ -61,7 +61,7 @@
     "heic-convert": "^2.1.0",
     "http-proxy-middleware": "^3.0.3",
     "neostandard": "^0.11.9",
-    "node-karin": "https://pkg.pr.new/node-karin@0dd608a",
+    "node-karin": "https://pkg.pr.new/node-karin@1c33d5a",
     "qrcode": "^1.5.4",
     "sort-package-json": "^2.15.1",
     "tsx": "^4.19.3",
