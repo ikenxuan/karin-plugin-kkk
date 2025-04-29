@@ -6,7 +6,7 @@ import { DouYin, getDouyinID } from '@/platform/douyin'
 import { fetchKuaishouData, getKuaishouID, Kuaishou } from '@/platform/kuaishou'
 
 const reg = {
-  douyin: new RegExp('^.*((www|v|jx)\\.(douyin|iesdouyin)\\.com|douyin\\.com\\/(video|note)).*'),
+  douyin: new RegExp('^.*((www|v|jx|m)\\.(douyin|iesdouyin)\\.com|douyin\\.com\\/(video|note)).*'),
   bilibili: new RegExp(/(bilibili.com|b23.tv|t.bilibili.com|bili2233.cn|BV[a-zA-Z0-9]{10,})/),
   kuaishou: new RegExp('^((.*)快手(.*)快手(.*)|(.*)v.kuaishou(.*))$')
 }
