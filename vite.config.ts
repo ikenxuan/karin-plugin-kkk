@@ -2,7 +2,12 @@ import fs from 'node:fs'
 import dts from 'vite-plugin-dts'
 import { defineConfig } from 'vite'
 import { builtinModules } from 'node:module'
-import { resolve } from 'node:path'
+import { resolve, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+// 在ES模块中模拟__dirname
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const entry: string[] = ['src/index.ts', 'src/Version.ts', 'src/web.config.ts']
 
@@ -16,6 +21,26 @@ function getFiles (dir: string) {
 
 getFiles('src/apps')
 getFiles('src/cli')
+
+function injectDirnamePlugin () {
+  return {
+    name: 'inject-dirname',
+    renderChunk (code: string) {
+      // 检查代码中是否使用了__dirname或__filename
+      if (code.includes('__dirname') || code.includes('__filename')) {
+        // 在文件顶部添加必要的导入和变量定义
+        const injection = `
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+`
+        return injection + code
+      }
+      return code
+    }
+  }
+}
 
 export default defineConfig({
   build: {
@@ -42,8 +67,11 @@ export default defineConfig({
       ],
       output: {
         inlineDynamicImports: false,
+        format: 'esm',
         entryFileNames: (chunkInfo) => {
-          if (chunkInfo.name === 'index' || chunkInfo.name === 'web.config' || chunkInfo.name === 'Version') {
+          if (chunkInfo.name === 'index' ||
+            chunkInfo.name === 'web.config' ||
+            chunkInfo.name === 'Version') {
             return `${chunkInfo.name}.js`
           }
 
@@ -67,7 +95,7 @@ export default defineConfig({
         /node_modules/,
       ],
       transformMixedEsModules: true,  // 处理混合模块
-      defaultIsModuleExports: true    // 处理 module.exports
+      defaultIsModuleExports: true,   // 处理 module.exports
     },
   },
   resolve: {
@@ -77,5 +105,6 @@ export default defineConfig({
   },
   plugins: [
     // dts({ rollupTypes: true }) // 生成类型声明文件
+    injectDirnamePlugin()
   ]
 })
