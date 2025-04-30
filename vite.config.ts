@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import dts from 'vite-plugin-dts'
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import { builtinModules } from 'node:module'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -22,7 +22,8 @@ function getFiles (dir: string) {
 getFiles('src/apps')
 getFiles('src/cli')
 
-function injectDirnamePlugin () {
+
+function injectDirnamePlugin (): Plugin {
   return {
     name: 'inject-dirname',
     renderChunk (code: string) {
