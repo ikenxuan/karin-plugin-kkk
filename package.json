@@ -30,22 +30,17 @@
     "web.config.mjs"
   ],
   "scripts": {
-    "build": "tsup",
-    "dev": "tsx src/index.ts",
+    "app": "node --import tsx src/app.ts",
+    "build": "tsc && vite build",
+    "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts",
     "fix": "eslint src/**/*.ts --fix",
     "pub": "npm publish --access public",
     "sort": "npx sort-package-json",
     "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
-    "watch": "tsx watch --include \"src/**/*.ts\" src/index.ts"
+    "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" src/app.ts"
   },
   "dependencies": {
-    "@ikenxuan/amagi": "^4.4.9",
-    "@karinjs/md-html": "^1.1.6",
-    "cors": "^2.8.5",
-    "heic-convert": "^2.1.0",
-    "http-proxy-middleware": "^3.0.3",
     "playwright": "^1.51.1",
-    "qrcode": "^1.5.4",
     "sequelize": "6.37.3"
   },
   "publishConfig": {
