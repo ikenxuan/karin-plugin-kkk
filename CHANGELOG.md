@@ -1,5 +1,12 @@
 # 变更日志
 
+## [1.4.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.4.0...v1.4.1) (2025-05-03)
+
+
+### Bug Fixes
+
+* 描述错误 ([26cf7a5](https://github.com/ikenxuan/karin-plugin-kkk/commit/26cf7a569450fbadaf646d6313677103ca9e27b1))
+
 ## [1.4.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.3.0...v1.4.0) (2025-05-03)
 
 
