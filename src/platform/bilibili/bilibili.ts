@@ -70,7 +70,7 @@ export class Bilibili extends Base {
           typeMode: 'strict'
         })
 
-        const { owner, pic, title, stat } = infoData.data
+        const { owner, pic, title, stat, desc } = infoData.data
         const { name } = owner
         const { coin, like, share, view, favorite, danmaku } = stat
 
@@ -86,10 +86,10 @@ export class Bilibili extends Base {
 
         await this.e.reply([
           segment.image(pic),
-          `\n# 标题: ${title}\n`,
-          `\n作者: ${name}\n播放量: ${this.count(view)},    弹幕: ${this.count(danmaku)}\n点赞: ${this.count(like)},    投币: ${this.count(coin)}\n转发: ${this.count(
-            share
-          )},    收藏: ${this.count(favorite)}`
+          `\n📺 标题: ${title}\n`,
+          `\n👤 作者: ${name}\n`,
+          `📊 播放量: ${this.count(view)} | 💬 弹幕: ${this.count(danmaku)} | 👍 点赞: ${this.count(like)} | 🪙 投币: ${this.count(coin)} | 🔄 转发: ${this.count(share)} | ⭐ 收藏: ${this.count(favorite)}\n`,
+          `\n📝 简介: ${desc}\n`
         ])
 
         let videoSize
