@@ -162,7 +162,12 @@ export class Base {
       logger.error('视频文件上传错误,' + String(error))
       return false
     } finally {
-      await this.removeFile(file.filepath)
+      const filePath = file.filepath
+      logger.info(`文件 ${filePath} 将在 10 分钟后删除`)
+      setTimeout(async () => {
+        await this.removeFile(filePath)
+        logger.mark(`文件 ${filePath} 已被删除`)
+      }, 10 * 60 * 1000)
     }
   }
 
