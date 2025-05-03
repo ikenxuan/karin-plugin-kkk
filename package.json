@@ -54,6 +54,7 @@
     "@types/node": "^22.13.14",
     "@types/qrcode": "^1.5.5",
     "@typescript-eslint/parser": "^8.28.0",
+    "axios": "npm:@karinjs/axios@^1.0.1",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "eslint": "^9.23.0",
