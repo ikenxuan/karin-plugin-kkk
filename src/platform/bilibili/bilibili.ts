@@ -204,7 +204,7 @@ export class Bilibili extends Base {
           logger.warn('该CK不是大会员，无法获取视频流')
           return true
         }
-        if (Config.bilibili.autoResolution) {
+        if (Config.bilibili.videoQuality === 0) {
           /** 提取出视频流信息对象，并排除清晰度重复的视频流 */
           const simplify = playUrlData.result.dash.video.filter((item: { id: number }, index: any, self: any[]) => {
             return self.findIndex((t: { id: any }) => {
@@ -595,6 +595,46 @@ export class Bilibili extends Base {
    * @returns
    */
   async processVideos (accept_description: string[], videoList: videoDownloadUrlList, audioUrl: string, bvid: string) {
+    // 如果不是自动选择模式，直接根据配置的清晰度选择视频
+    if (Config.bilibili.videoQuality !== 0) {
+      const targetQuality = Config.bilibili.videoQuality
+
+      // 尝试找到完全匹配的清晰度
+      let matchedVideo = videoList.find(video => video.id === targetQuality)
+
+      // 如果没有完全匹配的清晰度，找最接近的
+      if (!matchedVideo) {
+        // 按照清晰度ID排序
+        const sortedVideos = [...videoList].sort((a, b) => a.id - b.id)
+
+        // 找到小于目标清晰度的最大值
+        const lowerVideos = sortedVideos.filter(video => video.id < targetQuality)
+        const higherVideos = sortedVideos.filter(video => video.id > targetQuality)
+
+        if (lowerVideos.length > 0) {
+          // 有小于目标清晰度的，取最大的
+          matchedVideo = lowerVideos[lowerVideos.length - 1]
+        } else if (higherVideos.length > 0) {
+          // 没有小于目标清晰度的，取最小的
+          matchedVideo = higherVideos[0]
+        } else {
+          // 如果都没有，取第一个（应该不会发生）
+          matchedVideo = sortedVideos[0]
+        }
+      }
+
+      // 更新视频列表和清晰度描述
+      const matchedQuality = qnd[matchedVideo.id] || accept_description[0]
+      accept_description = [matchedQuality]
+      videoList = [matchedVideo]
+
+      return {
+        accept_description,
+        videoList
+      }
+    }
+
+    // 自动选择逻辑（videoQuality === 0）
     const results: Record<string, string> = {}
 
     for (const video of videoList) {
@@ -602,14 +642,14 @@ export class Bilibili extends Base {
       results[video.id] = size
     }
 
-    // 将结果对象的值转换为数字，并找到最接近但不超过 Config.upload.filelimit 的值
+    // 将结果对象的值转换为数字，并找到最接近但不超过 Config.bilibili.maxAutoVideoSize 的值
     const sizes = Object.values(results).map(size => parseFloat(size.replace('MB', '')))
     let closestId: string | null = null
     let smallestDifference = Infinity
 
     sizes.forEach((size, index) => {
-      if (size <= Config.upload.filelimit) {
-        const difference = Math.abs(size - Config.upload.filelimit)
+      if (size <= Config.bilibili.maxAutoVideoSize) {
+        const difference = Math.abs(size - Config.bilibili.maxAutoVideoSize)
         if (difference < smallestDifference) {
           smallestDifference = difference
           closestId = Object.keys(results)[index]
