@@ -26,4 +26,13 @@ export default defineConfig({
   noExternal: [
     '@ikenxuan/amagi',
   ],
+  esbuildOptions (options) {
+    options.banner = {
+      js: `
+        import { createRequire as __createRequire } from 'module';
+        const require = __createRequire(import.meta.url);
+      `,
+    }
+    return options
+  },
 })
