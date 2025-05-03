@@ -410,7 +410,7 @@ export default defineConfig({
             }),
             components.input.number('maxAutoVideoSize', {
               label: '视频体积上限（MB）',
-              description: '自动画质模式下可接受的最大视频大小，仅在「画质偏好」 为 "自动选择" 时生效',
+              description: '根据该值自动选择分辨率进行下载。仅在「画质偏好」 为 "自动选择" 时生效',
               defaultValue: all.bilibili.maxAutoVideoSize.toString(),
               isDisabled: all.bilibili.videoQuality !== 0,
               rules: [{ min: 1, max: 20000 }]
