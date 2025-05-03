@@ -17,7 +17,7 @@ export enum DynamicType {
 // type DataItem = BiliUserDynamic['data']['items'] extends Array<infer T> ? T : never
 
 /** 每个推送项的类型定义 */
-export type PushItem = {
+export type BilibiliPushItem = {
   /** 该UP主的昵称 */
   remark: string
   /** UP主UID */
@@ -35,7 +35,7 @@ export type PushItem = {
 }
 
 /** 推送列表的类型定义 */
-type WillBePushList = Record<string, PushItem>
+type WillBePushList = Record<string, BilibiliPushItem>
 
 export class Bilibilipush extends Base {
   private force = false
@@ -727,7 +727,7 @@ function extractEmojisData (data: any[]) {
  * @param PushItem 推送项
  * @returns 是否应该跳过推送
  */
-const skipDynamic = async (PushItem: PushItem): Promise<boolean> => {
+const skipDynamic = async (PushItem: BilibiliPushItem): Promise<boolean> => {
   // 如果是直播动态，不跳过
   if (PushItem.Dynamic_Data.type === DynamicType.LIVE_RCMD) {
     return false

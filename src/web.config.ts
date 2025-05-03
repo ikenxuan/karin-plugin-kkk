@@ -1,4 +1,4 @@
-import { components } from 'node-karin'
+import { components, defineConfig } from 'node-karin'
 import _ from 'node-karin/lodash'
 
 import { Config } from '@/module'
@@ -20,7 +20,7 @@ type newConfigType = BaseConfigType & PushConfigType
 
 const all = await Config.All()
 
-export default {
+export default defineConfig({
   info: {
     id: 'karin-plugin-kkk',
     name: 'karin-plugin-kkk',
@@ -746,7 +746,7 @@ export default {
       message: success ? '保存成功 Ciallo～(∠・ω< )⌒☆' : '配置无变化，无需保存'
     }
   }
-}
+})
 
 /**
  * 遇到数组时用新数组覆盖原始数组（而不是合并）

@@ -13,3 +13,4 @@ startpuppeteer.bat
 temp/*
 napcat.quick.bat
 .pnpmfile.cjs
+/dist

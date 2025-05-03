@@ -4,7 +4,7 @@ import { logger } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
 import { DataTypes, Model, Sequelize } from 'sequelize'
 
-import { PushItem } from '@/platform/bilibili/push'
+import { BilibiliPushItem } from '@/platform/bilibili/push'
 import { bilibiliPushItem } from '@/types/config/pushlist'
 
 import { Version } from '../utils'
@@ -641,7 +641,7 @@ export class BilibiliDBBase {
    * @param PushItem 推送项
    * @param tags 额外的标签列表
    */
-  async shouldFilter (PushItem: PushItem, extraTags: string[] = []): Promise<boolean> {
+  async shouldFilter (PushItem: BilibiliPushItem, extraTags: string[] = []): Promise<boolean> {
     // 如果是直播动态，不过滤
     if (PushItem.Dynamic_Data.type === 'DYNAMIC_TYPE_LIVE_RCMD') {
       return false
