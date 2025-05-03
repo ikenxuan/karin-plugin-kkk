@@ -166,7 +166,6 @@ export class Base {
       logger.info(`文件 ${filePath} 将在 10 分钟后删除`)
       setTimeout(async () => {
         await this.removeFile(filePath)
-        logger.mark(`文件 ${filePath} 已被删除`)
       }, 10 * 60 * 1000)
     }
   }
