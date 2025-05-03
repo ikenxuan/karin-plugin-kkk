@@ -205,7 +205,7 @@ export class Bilibilipush extends Base {
                   create_time: Common.convertTimestampToDateTime(INFODATA.data.ctime),
                   avatar_url: INFODATA.data.owner.face,
                   frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
-                  share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str || 'https://www.bilibili.com/video/' + bvid,
+                  share_url: 'https://www.bilibili.com/video/' + bvid,
                   username: checkvip(userINFO.data.card),
                   fans: this.count(userINFO.data.follower),
                   user_shortid: data[dynamicId].host_mid,
