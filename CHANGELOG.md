@@ -1,5 +1,21 @@
 # 变更日志
 
+## [1.4.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.3.0...v1.4.0) (2025-05-03)
+
+
+### Features
+
+* close [#78](https://github.com/ikenxuan/karin-plugin-kkk/issues/78) ([39ae7e4](https://github.com/ikenxuan/karin-plugin-kkk/commit/39ae7e4b169c8c41fc11a8f685bf64af9d1aa9f1))
+* close [#80](https://github.com/ikenxuan/karin-plugin-kkk/issues/80) ([f3b30b2](https://github.com/ikenxuan/karin-plugin-kkk/commit/f3b30b2b95936b1b0bae09d058f52a65a3ca3268))
+
+
+### Bug Fixes
+
+* close [#74](https://github.com/ikenxuan/karin-plugin-kkk/issues/74) ([b16c890](https://github.com/ikenxuan/karin-plugin-kkk/commit/b16c8909fc1551bf54fc5945d5d44ee4cad6bfe5))
+* close [#79](https://github.com/ikenxuan/karin-plugin-kkk/issues/79) ([41fb13b](https://github.com/ikenxuan/karin-plugin-kkk/commit/41fb13b2208c1efa1e22cd50103ab6157ea1c44f))
+* 匹配m.douyin.com。close [#77](https://github.com/ikenxuan/karin-plugin-kkk/issues/77) ([c82c3f6](https://github.com/ikenxuan/karin-plugin-kkk/commit/c82c3f6b30f4dc0ef5588035786e3755aae2b451))
+* 将打包工具从`tsup`迁移到`vite` 适配`node-kairn` 1.8.0 版本 ([#71](https://github.com/ikenxuan/karin-plugin-kkk/issues/71)) ([fbbc329](https://github.com/ikenxuan/karin-plugin-kkk/commit/fbbc3297fb3d1cd3b9a0a6a630f0602de8624c10))
+
 ## [1.3.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.2.3...v1.3.0) (2025-04-26)
 
 
