@@ -1,5 +1,20 @@
 # 变更日志
 
+## [1.5.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.4.1...v1.5.0) (2025-05-04)
+
+
+### Features
+
+* **视频预览:** 添加视频临时预览功能 ([815828e](https://github.com/ikenxuan/karin-plugin-kkk/commit/815828efb12c647fa0964cc4e40eae28e9a41d6b))
+
+
+### Bug Fixes
+
+* **bilibili:** 修正视频动态分享链接的生成逻辑 ([9f15aaf](https://github.com/ikenxuan/karin-plugin-kkk/commit/9f15aaf77b0034099c76ccd52fe64d3537067c37))
+* **utils:** 延迟删除上传的视频文件以优化资源管理 ([4da868c](https://github.com/ikenxuan/karin-plugin-kkk/commit/4da868cfb4dd22d37f70c31835b8c237e628a6b3))
+* 优化描述 ([a578c82](https://github.com/ikenxuan/karin-plugin-kkk/commit/a578c8250420975acddac52aef566ea5614035fa))
+* 描述错误 ([43915cc](https://github.com/ikenxuan/karin-plugin-kkk/commit/43915cc4cae7637d012ae04dd10c38bf11878525))
+
 ## [1.4.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.4.0...v1.4.1) (2025-05-03)
 
 
