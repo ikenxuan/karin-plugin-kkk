@@ -63,7 +63,7 @@
     "heic-convert": "^2.1.0",
     "http-proxy-middleware": "^3.0.3",
     "neostandard": "^0.11.9",
-    "node-karin": "^1.8.4",
+    "node-karin": "^1.8.5",
     "qrcode": "^1.5.4",
     "sort-package-json": "^2.15.1",
     "tsup": "^8.4.0",

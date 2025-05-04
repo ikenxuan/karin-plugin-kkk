@@ -1,6 +1,8 @@
 import fs from 'node:fs'
+import path from 'node:path'
 
-import { logger, Message } from 'node-karin'
+import { createNotFoundResponse, logger, Message } from 'node-karin'
+import express from 'node-karin/express'
 import { karinPathTemp } from 'node-karin/root'
 
 import { Config } from '@/module/utils'
@@ -252,6 +254,47 @@ class Tools {
     } else {
       return `${seconds}秒`
     }
+  }
+
+  /**
+   * 验证视频请求
+   * @param filename 文件名
+   * @param res 响应对象
+   * @returns 返回安全解析后的路径
+   */
+  validateVideoRequest (filename: string | undefined, res: express.Response): string | null {
+    // 1. 基础校验
+    if (!filename) {
+      createNotFoundResponse(res, '无效的文件名')
+      return null
+    }
+
+    // 2. 规范化并解析路径
+    const intendedBaseDir = path.resolve(Common.tempDri.video)
+    const requestedPath = path.join(intendedBaseDir, filename) // 先拼接
+    const resolvedPath = path.normalize(requestedPath) // 规范化
+
+    // 3. 安全性检查：防止路径穿越
+    if (!resolvedPath.startsWith(intendedBaseDir + path.sep) || filename.includes('/') || filename.includes('\\')) {
+      logger.warn(`潜在的路径穿越尝试或无效文件名: ${filename}, 解析路径: ${resolvedPath}`)
+      createNotFoundResponse(res, '无效的文件名或路径')
+      return null
+    }
+
+    // 确保文件名本身不包含路径分隔符
+    if (path.basename(filename) !== filename) {
+      logger.warn(`文件名包含路径分隔符: ${filename}`)
+      createNotFoundResponse(res, '无效的文件名')
+      return null
+    }
+
+    // 检查文件是否存在
+    if (!fs.existsSync(resolvedPath)) {
+      createNotFoundResponse(res, '视频文件未找到')
+      return null
+    }
+
+    return resolvedPath // 返回安全解析后的路径
   }
 }
 
