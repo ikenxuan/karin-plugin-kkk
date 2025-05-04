@@ -66,7 +66,6 @@
     "node-karin": "^1.8.5",
     "qrcode": "^1.5.4",
     "sort-package-json": "^2.15.1",
-    "tsup": "^8.4.0",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.28.0",
