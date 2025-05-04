@@ -88,8 +88,8 @@ export class Bilibili extends Base {
           segment.image(pic),
           `\n📺 标题: ${title}\n`,
           `\n👤 作者: ${name}\n`,
-          `📊 播放量: ${this.count(view)} | 💬 弹幕: ${this.count(danmaku)} | 👍 点赞: ${this.count(like)} | 🪙 投币: ${this.count(coin)} | 🔄 转发: ${this.count(share)} | ⭐ 收藏: ${this.count(favorite)}\n`,
-          `\n📝 简介: ${desc}\n`
+          this.formatVideoStats(view, danmaku, like, coin, share, favorite),
+          `\n\n📝 简介: ${desc}`
         ])
 
         let videoSize
@@ -679,6 +679,80 @@ export class Bilibili extends Base {
       accept_description,
       videoList
     }
+  }
+
+  /**
+   * 格式化视频统计信息为三行，每行两个数据项，并保持对齐
+   */
+  formatVideoStats (view: number, danmaku: number, like: number, coin: number, share: number, favorite: number): string {
+    // 计算每个数据项的文本
+    const viewText = `📊 播放量: ${this.count(view)}`
+    const danmakuText = `💬 弹幕: ${this.count(danmaku)}`
+    const likeText = `👍 点赞: ${this.count(like)}`
+    const coinText = `🪙 投币: ${this.count(coin)}`
+    const shareText = `🔄 转发: ${this.count(share)}`
+    const favoriteText = `⭐ 收藏: ${this.count(favorite)}`
+
+    // 找出第一列中最长的项的长度
+    const firstColItems = [viewText, likeText, shareText]
+    const maxFirstColLength = Math.max(...firstColItems.map(item => this.getStringDisplayWidth(item)))
+
+    // 构建三行文本，确保第二列对齐
+    const line1 = this.alignTwoColumns(viewText, danmakuText, maxFirstColLength)
+    const line2 = this.alignTwoColumns(likeText, coinText, maxFirstColLength)
+    const line3 = this.alignTwoColumns(shareText, favoriteText, maxFirstColLength)
+
+    return `${line1}\n${line2}\n${line3}`
+  }
+
+  /**
+   * 对齐两列文本
+   */
+  alignTwoColumns (col1: string, col2: string, targetLength: number): string {
+    // 计算需要添加的空格数量
+    const col1Width = this.getStringDisplayWidth(col1)
+    const spacesNeeded = targetLength - col1Width + 5 // 5是两列之间的固定间距
+
+    // 添加空格使两列对齐
+    return col1 + ' '.repeat(spacesNeeded) + col2
+  }
+
+  /**
+   * 获取字符串在显示时的实际宽度
+   * 考虑到不同字符的显示宽度不同（如中文、emoji等）
+   */
+  getStringDisplayWidth (str: string): number {
+    let width = 0
+    for (let i = 0; i < str.length; i++) {
+      const code = str.codePointAt(i)
+      if (!code) continue
+
+      // 处理emoji和特殊Unicode字符
+      if (code > 0xFFFF) {
+        width += 2 // emoji通常占用2个字符宽度
+        i++ // 跳过代理对的后半部分
+      } else if ( // 处理中文字符和其他全角字符
+        (code >= 0x3000 && code <= 0x9FFF) || // 中文字符范围
+        (code >= 0xFF00 && code <= 0xFFEF) || // 全角ASCII、全角标点
+        code === 0x2026 || // 省略号
+        code === 0x2014 || // 破折号
+        (code >= 0x2E80 && code <= 0x2EFF) || // CJK部首补充
+        (code >= 0x3000 && code <= 0x303F) || // CJK符号和标点
+        (code >= 0x31C0 && code <= 0x31EF) || // CJK笔画
+        (code >= 0x3200 && code <= 0x32FF) || // 封闭式CJK字母和月份
+        (code >= 0x3300 && code <= 0x33FF) || // CJK兼容
+        (code >= 0xAC00 && code <= 0xD7AF) || // 朝鲜文音节
+        (code >= 0xF900 && code <= 0xFAFF) || // CJK兼容表意文字
+        (code >= 0xFE30 && code <= 0xFE4F)    // CJK兼容形式
+      ) {
+        width += 2
+      } else if (code === 0x200D || (code >= 0xFE00 && code <= 0xFE0F) || (code >= 0x1F3FB && code <= 0x1F3FF)) { // emoji修饰符和连接符
+        width += 0 // 这些字符不增加宽度，它们是修饰符
+      } else { // 普通ASCII字符
+        width += 1
+      }
+    }
+    return width
   }
 }
 
