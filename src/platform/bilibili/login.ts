@@ -1,15 +1,14 @@
 import fs from 'node:fs'
 
-import Amagi from '@ikenxuan/amagi'
+import { getBilibiliData } from '@ikenxuan/amagi'
 import { common, Message, segment } from 'node-karin'
 import QRCode from 'qrcode'
 
 import { Common, Config } from '@/module/utils'
 
-const cl = new Amagi({ bilibili: Config.cookies.bilibili })
 export const bilibiliLogin = async (e: Message) => {
   /** 申请二维码 */
-  const qrcodeurl = await cl.getBilibiliData('申请二维码')
+  const qrcodeurl = await getBilibiliData('申请二维码')
   const qrimg = await QRCode.toDataURL(qrcodeurl.data.url)
   const base64Data = qrimg ? qrimg.replace(/^data:image\/\w+;base64,/, '') : ''
   const buffer = Buffer.from(base64Data, 'base64')
@@ -24,7 +23,7 @@ export const bilibiliLogin = async (e: Message) => {
   let executed86090 = false
   let completedCase0 = false
   for (let i = 0; i < 33; i++) {
-    const qrcodestatusdata = await cl.getBilibiliData('二维码状态', { qrcode_key })
+    const qrcodestatusdata = await getBilibiliData('二维码状态', { qrcode_key })
     switch (qrcodestatusdata.data.data.code) {
       case 0: {
         // console.log(qrcodestatusdata.data.data.refresh_token)

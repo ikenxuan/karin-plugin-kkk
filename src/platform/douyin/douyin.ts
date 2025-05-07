@@ -38,7 +38,6 @@ export class DouYin extends Base {
   type: DouyinDataTypes[keyof DouyinDataTypes]
   is_mp4: boolean | undefined
   is_slides: boolean
-  amagi: Client
   get botadapter (): string {
     return this.e.bot?.adapter?.name
   }
@@ -49,7 +48,6 @@ export class DouYin extends Base {
     this.type = iddata?.type
     this.is_mp4 = iddata?.is_mp4
     this.is_slides = false
-    this.amagi = new Client({ douyin: Config.cookies.douyin })
   }
 
   async RESOURCES (data: DouyinIdData) {

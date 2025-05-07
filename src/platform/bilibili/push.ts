@@ -1,4 +1,4 @@
-import Client, { BiliUserDynamic, getBilibiliData } from '@ikenxuan/amagi'
+import { getBilibiliData } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
 import { Base, bilibiliDB, cleanOldDynamicCache, Common, Config, Render } from '@/module'
@@ -53,7 +53,6 @@ export class Bilibilipush extends Base {
       return
     }
     this.force = force // 保存传入的强制执行标志
-    this.amagi = new Client({ bilibili: Config.cookies.bilibili })
   }
 
   /**
