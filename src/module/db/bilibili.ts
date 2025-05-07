@@ -4,7 +4,7 @@ import { logger } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
 import { DataTypes, Model, Sequelize } from 'sequelize'
 
-import { BilibiliPushItem } from '@/platform/bilibili/push'
+import { BilibiliPushItem, DynamicType } from '@/platform/bilibili/push'
 import { bilibiliPushItem } from '@/types/config/pushlist'
 
 import { Version } from '../utils'
@@ -626,10 +626,14 @@ export class BilibiliDBBase {
       }
     }
     // 若为转发动态，再检查子动态
-    if (dynamicData.type === 'DYNAMIC_TYPE_FORWARD' && 'orig' in dynamicData) {
-      text += dynamicData.orig.modules.module_dynamic.desc.text + ' '
-      for (const node of dynamicData.orig.modules.module_dynamic.desc.rich_text_nodes) {
-        tags.push(node.orig_text)
+    if (dynamicData.type === DynamicType.FORWARD && 'orig' in dynamicData) {
+      if (dynamicData.orig.type === DynamicType.AV) {
+        text += dynamicData.orig.modules.module_dynamic.major.archive.title + ''
+      } else {
+        text += dynamicData.orig.modules.module_dynamic.desc.text + ' '
+        for (const node of dynamicData.orig.modules.module_dynamic.desc.rich_text_nodes) {
+          tags.push(node.orig_text)
+        }
       }
     }
 
@@ -643,7 +647,7 @@ export class BilibiliDBBase {
    */
   async shouldFilter (PushItem: BilibiliPushItem, extraTags: string[] = []): Promise<boolean> {
     // 如果是直播动态，不过滤
-    if (PushItem.Dynamic_Data.type === 'DYNAMIC_TYPE_LIVE_RCMD') {
+    if (PushItem.Dynamic_Data.type === DynamicType.LIVE_RCMD) {
       return false
     }
 
@@ -658,7 +662,7 @@ export class BilibiliDBBase {
     let allText = mainText
 
     // 如果是转发动态，还需要检查原动态
-    if (PushItem.Dynamic_Data.type === 'DYNAMIC_TYPE_FORWARD' && 'orig' in PushItem.Dynamic_Data) {
+    if (PushItem.Dynamic_Data.type === DynamicType.FORWARD && 'orig' in PushItem.Dynamic_Data) {
       const { text: origText, tags: origTags } = this.extractTextAndTags(PushItem.Dynamic_Data.orig)
       allText += ' ' + origText
       allTags = [...allTags, ...origTags]
@@ -673,14 +677,14 @@ export class BilibiliDBBase {
     )
 
     logger.warn(`
-    UP主UID：${PushItem.host_mid}，
-    检查内容：${allText}，
-    检查标签：${allTags.join(', ')}，
-    命中词：${filterWords.join(', ')}，
-    命中标签：${filterTags.join(', ')}，
-    过滤模式：${filterMode}，
-    是否过滤：${(hasFilterWord || hasFilterTag) ? logger.red(`${hasFilterWord || hasFilterTag}`) : logger.green(`${hasFilterWord || hasFilterTag}`)}，
-    动态地址：${logger.green(`https://t.bilibili.com/${PushItem.Dynamic_Data.id_str}`)}，
+    UP主UID：${PushItem.host_mid}
+    检查内容：${allText}
+    检查标签：${allTags.join(', ')}
+    命中词：${filterWords.join(', ')}
+    命中标签：${filterTags.join(', ')}
+    过滤模式：${filterMode}
+    是否过滤：${(hasFilterWord || hasFilterTag) ? logger.red(`${hasFilterWord || hasFilterTag}`) : logger.green(`${hasFilterWord || hasFilterTag}`)}
+    动态地址：${logger.green(`https://t.bilibili.com/${PushItem.Dynamic_Data.id_str}`)}
     动态类型：${PushItem.dynamic_type}
     `)
 

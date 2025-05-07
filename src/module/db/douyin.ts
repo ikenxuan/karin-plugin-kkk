@@ -667,13 +667,13 @@ export class DouyinDBBase {
     )
 
     logger.warn(`
-      作者：${PushItem.remark}，
-      检查内容：${desc}，
-      命中词：${filterWords.join(', ')}，
-      命中标签：${filterTags.join(', ')}，
-      过滤模式：${filterMode}，
-      是否过滤：${(hasFilterWord || hasFilterTag) ? logger.red(`${hasFilterWord || hasFilterTag}`) : logger.green(`${hasFilterWord || hasFilterTag}`)}，
-      作品地址：${logger.green(`https://www.douyin.com/video/${PushItem.Detail_Data.aweme_id}`)}，
+      作者：${PushItem.remark}
+      检查内容：${desc}
+      命中词：${filterWords.join(', ')}
+      命中标签：${filterTags.join(', ')}
+      过滤模式：${filterMode}
+      是否过滤：${(hasFilterWord || hasFilterTag) ? logger.red(`${hasFilterWord || hasFilterTag}`) : logger.green(`${hasFilterWord || hasFilterTag}`)}
+      作品地址：${logger.green(`https://www.douyin.com/video/${PushItem.Detail_Data.aweme_id}`)}
       `)
 
     // 根据过滤模式决定是否过滤

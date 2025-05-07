@@ -26,8 +26,7 @@
     "LICENSE",
     "package.json",
     "README.md",
-    "CHANGELOG.md",
-    "web.config.mjs"
+    "CHANGELOG.md"
   ],
   "scripts": {
     "app": "node --import tsx src/app.ts",
@@ -63,7 +62,7 @@
     "heic-convert": "^2.1.0",
     "http-proxy-middleware": "^3.0.3",
     "neostandard": "^0.11.9",
-    "node-karin": "^1.8.6",
+    "node-karin": "^1.8.8",
     "qrcode": "^1.5.4",
     "sort-package-json": "^2.15.1",
     "tsx": "^4.19.3",
