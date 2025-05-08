@@ -3,6 +3,9 @@ import { Common } from '@/module'
 export function bilibiliComments (commentsData: any) {
   if (!commentsData) return []
   let jsonArray: any[] = []
+  if (commentsData.code === 404) {
+    return null
+  }
   for (let i = 0; i < commentsData.data.replies.length; i++) {
     const ctime = getRelativeTimeFromTimestamp(commentsData.data.replies[i].ctime)
     const emote = commentsData.data.replies[i].content.emote
