@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import Client, { amagiClient } from '@ikenxuan/amagi'
 import karin, { logger, Message, segment } from 'node-karin'
 
-import { Common, Config, mergeFile, Networks } from '@/module/utils'
+import { baseHeaders, Common, Config, mergeFile, Networks } from '@/module/utils'
 type uploadFileOptions = {
   /** 是否使用群文件上传 */
   useGroupFile?: boolean
@@ -67,12 +67,7 @@ export class Base {
   amagi: amagiClient
   constructor (e: Message) {
     this.e = e
-    this.headers = {
-      Accept: '*/*',
-      'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
-      'User-Agent':
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
-    }
+    this.headers = baseHeaders
     this._path = process.cwd()?.replace(/\\/g, '/')
     this.amagi = Client({ douyin: Config.cookies.douyin, bilibili: Config.cookies.bilibili, kuaishou: Config.cookies.kuaishou })
   }

@@ -1,8 +1,8 @@
-import { getBilibiliData } from '@ikenxuan/amagi'
+import { BiliVideoPlayurlIsLogin, getBilibiliData } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
 import { Base, bilibiliDB, cleanOldDynamicCache, Common, Config, Render } from '@/module'
-import { cover, generateDecorationCard, replacetext } from '@/platform/bilibili'
+import { Bilibili, bilibiliProcessVideos, cover, generateDecorationCard, getvideosize, replacetext } from '@/platform/bilibili'
 import type { bilibiliPushItem } from '@/types/config/pushlist'
 
 /** 已支持推送的动态类型 */
@@ -97,7 +97,7 @@ export class Bilibilipush extends Base {
    * @param data 包含动态相关信息的对象。
    */
   async getdata (data: WillBePushList) {
-    let nocd_data
+    let noCkData
     for (const dynamicId in data) {
       let skip = await skipDynamic(data[dynamicId])
       let send_video = true; let img: ImageElement[] = []
@@ -188,7 +188,7 @@ export class Bilibilipush extends Base {
                 send_video = false
                 logger.debug(`UP主：${INFODATA.data.owner.name} 的该动态类型为${logger.yellow('番剧或影视')}，默认跳过不下载，直达：${logger.green(INFODATA.data.redirect_url)}`)
               } else {
-                nocd_data = await getBilibiliData('单个视频下载信息数据', '', { avid: aid, cid: INFODATA.data.cid })
+                noCkData = await getBilibiliData('单个视频下载信息数据', '', { avid: aid, cid: INFODATA.data.cid })
               }
               img = await Render('bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {
@@ -345,10 +345,49 @@ export class Bilibilipush extends Base {
             switch (data[dynamicId].dynamic_type) {
               case 'DYNAMIC_TYPE_AV': {
                 if (send_video) {
-                  await this.DownLoadVideo({
-                    video_url: nocd_data ? nocd_data.data.durl[0].url : '',
-                    title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${dycrad.title}.mp4` }
-                  }, { active: true, activeOption: { uin: botId, group_id: groupId } })
+                  let correctList!: {
+                    accept_description: string[]
+                    videoList: BiliVideoPlayurlIsLogin['data']['dash']['video']
+                  }
+                  let videoSize = ''
+                  const playUrlData = await this.amagi.getBilibiliData('单个视频下载信息数据', {
+                    avid: dycrad.aid,
+                    cid: dycrad.cid,
+                    typeMode: 'strict'
+                  }) as BiliVideoPlayurlIsLogin
+                  /** 提取出视频流信息对象，并排除清晰度重复的视频流 */
+                  const simplify = playUrlData.data.dash.video.filter((item: { id: number }, index: any, self: any[]) => {
+                    return self.findIndex((t: { id: any }) => {
+                      return t.id === item.id
+                    }) === index
+                  })
+                  /** 替换原始的视频信息对象 */
+                  playUrlData.data.dash.video = simplify
+                  /** 给视频信息对象删除不符合条件的视频流 */
+                  correctList = await bilibiliProcessVideos({
+                    accept_description: playUrlData.data.accept_description,
+                    bvid: dynamicCARDINFO.data.card.desc.bvid,
+                    qn: Config.bilibili.push.pushVideoQuality,
+                    maxAutoVideoSize: Config.bilibili.push.pushMaxAutoVideoSize
+                  }, simplify, playUrlData.data.dash.audio[0].base_url)
+                  playUrlData.data.dash.video = correctList.videoList
+                  playUrlData.data.accept_description = correctList.accept_description
+                  /** 获取第一个视频流的大小 */
+                  videoSize = await getvideosize(correctList.videoList[0].base_url, playUrlData.data.dash.audio[0].base_url, dynamicCARDINFO.data.card.desc.bvid)
+                  const infoData = await this.amagi.getBilibiliData('单个视频作品数据', { bvid: dynamicCARDINFO.data.card.desc.bvid, typeMode: 'strict' })
+                  if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) && !Config.upload.compress) {
+                    await this.e.reply(`设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n` + '视频太大了，还是去B站看吧~', { reply: true })
+                  } else {
+                    await new Bilibili(this.e, {
+                      Type: 'one_video',
+                      islogin: true
+                    }).getvideo(Config.bilibili.videopriority === true ? { playUrlData: noCkData } : { infoData, playUrlData })
+                  }
+
+                  // await this.DownLoadVideo({
+                  //   video_url: noCkData ? noCkData.data.durl[0].url : '',
+                  //   title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${dycrad.title}.mp4` }
+                  // }, { active: true, activeOption: { uin: botId, group_id: groupId } })
                 }
                 break
               }

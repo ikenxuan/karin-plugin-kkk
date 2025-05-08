@@ -12,22 +12,13 @@ import {
 } from '@ikenxuan/amagi'
 import karin, { common, ElementTypes, logger, Message, segment } from 'node-karin'
 
-import { Base, Common, Config, mergeFile, Networks, Render } from '@/module/utils'
+import { Base, baseHeaders, Common, Config, mergeFile, Networks, Render } from '@/module/utils'
 import { bilibiliComments, BilibiliId, checkCk, DynamicType, genParams } from '@/platform/bilibili'
 import { BilibiliDataTypes } from '@/types'
 
 let img: ElementTypes[]
+type videoDownloadUrlList = BiliVideoPlayurlIsLogin['data']['dash']['video']
 
-type videoDownloadUrlList = {
-  /**
-   * 清晰度标识
-   *
-   * 详情见 [qn视频清晰度标识](https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/video/videostream_url.md#qn%E8%A7%86%E9%A2%91%E6%B8%85%E6%99%B0%E5%BA%A6%E6%A0%87%E8%AF%86)
-   */
-  id: number
-  /** 视频文件下载地址 */
-  base_url: string
-}[]
 export class Bilibili extends Base {
   e: Message
   type: any
@@ -59,9 +50,10 @@ export class Bilibili extends Base {
         const infoData = await this.amagi.getBilibiliData('单个视频作品数据', { bvid: iddata.bvid, typeMode: 'strict' })
         const playUrlData = await this.amagi.getBilibiliData('单个视频下载信息数据', {
           avid: infoData.data.aid,
-          cid: iddata.p ? (infoData.data.pages[iddata.p - 1]?.cid ?? infoData.data.cid) : infoData.data.cid
-        })
-        const playUrl = bilibiliApiUrls.视频流信息({ avid: infoData.data.aid, cid: infoData.data.cid })
+          cid: iddata.p ? (infoData.data.pages[iddata.p - 1]?.cid ?? infoData.data.cid) : infoData.data.cid,
+          typeMode: 'strict'
+        }) as BiliVideoPlayurlIsLogin
+        // const playUrl = bilibiliApiUrls.视频流信息({ avid: infoData.data.aid, cid: infoData.data.cid })
         this.islogin = (await checkCk()).Status === 'isLogin'
         const commentsData = await this.amagi.getBilibiliData('评论数据', {
           number: Config.bilibili.numcomment,
@@ -92,7 +84,7 @@ export class Bilibili extends Base {
           `\n\n📝 简介: ${desc}`
         ])
 
-        let videoSize
+        let videoSize = ''
         let correctList!: {
           accept_description: string[]
           videoList: videoDownloadUrlList
@@ -108,11 +100,14 @@ export class Bilibili extends Base {
           /** 替换原始的视频信息对象 */
           playUrlData.data.dash.video = simplify
           /** 给视频信息对象删除不符合条件的视频流 */
-          correctList = await this.processVideos(playUrlData.data.accept_description, simplify, playUrlData.data.dash.audio[0].base_url, infoData.data.bvid)
+          correctList = await bilibiliProcessVideos({
+            accept_description: playUrlData.data.accept_description,
+            bvid: infoData.data.bvid
+          }, simplify, playUrlData.data.dash.audio[0].base_url)
           playUrlData.data.dash.video = correctList.videoList
           playUrlData.data.accept_description = correctList.accept_description
           /** 获取第一个视频流的大小 */
-          videoSize = await this.getvideosize(correctList.videoList[0].base_url, playUrlData.data.dash.audio[0].base_url, infoData.data.bvid)
+          videoSize = await getvideosize(correctList.videoList[0].base_url, playUrlData.data.dash.audio[0].base_url, infoData.data.bvid)
         } else {
           videoSize = (playUrlData.data.durl[0].size / (1024 * 1024)).toFixed(2)
         }
@@ -214,7 +209,10 @@ export class Bilibili extends Base {
           /** 替换原始的视频信息对象 */
           playUrlData.result.dash.video = simplify
           /** 给视频信息对象删除不符合条件的视频流 */
-          const correctList = await this.processVideos(playUrlData.result.accept_description, simplify, playUrlData.result.dash.audio[0].base_url, videoInfo.result.season_id.toString())
+          const correctList = await bilibiliProcessVideos({
+            accept_description: playUrlData.result.accept_description,
+            bvid: videoInfo.result.season_id.toString()
+          }, simplify, playUrlData.result.dash.audio[0].base_url)
           playUrlData.result.dash.video = correctList.videoList
           playUrlData.result.cept_description = correctList.accept_description
           await this.getvideo({
@@ -566,121 +564,6 @@ export class Bilibili extends Base {
     }
   }
 
-  async getvideosize (videourl: any, audiourl: any, bvid: any) {
-    const videoheaders = await new Networks({ url: videourl, headers: { ...this.headers, Referer: `https://api.bilibili.com/video/${bvid}` } }).getHeaders()
-    const audioheaders = await new Networks({ url: audiourl, headers: { ...this.headers, Referer: `https://api.bilibili.com/video/${bvid}` } }).getHeaders()
-
-    const videoSize = videoheaders['content-range']?.match(/\/(\d+)/) ? parseInt(videoheaders['content-range']?.match(/\/(\d+)/)[1], 10) : 0
-    const audioSize = audioheaders['content-range']?.match(/\/(\d+)/) ? parseInt(audioheaders['content-range']?.match(/\/(\d+)/)[1], 10) : 0
-
-    const videoSizeInMB = (videoSize / (1024 * 1024)).toFixed(2)
-    const audioSizeInMB = (audioSize / (1024 * 1024)).toFixed(2)
-
-    const totalSizeInMB = parseFloat(videoSizeInMB) + parseFloat(audioSizeInMB)
-    return totalSizeInMB.toFixed(2)
-  }
-
-  /**
-   * 检出应该下载的视频流
-   * @param data 视频流数据
-   * @returns 经过排除后的视频流数据（删减不符合Config.upload.filelimit条件的视频流）
-   */
-
-  /**
-   * 检出符合大小的视频流信息对象
-   * @param accept_description 视频流清晰度列表
-   * @param videoList 包含所有清晰度的视频流信息对象
-   * @param audioUrl 音频流地址
-   * @param bvid 视频bvid（BV号）
-   * @returns
-   */
-  async processVideos (accept_description: string[], videoList: videoDownloadUrlList, audioUrl: string, bvid: string) {
-    // 如果不是自动选择模式，直接根据配置的清晰度选择视频
-    if (Config.bilibili.videoQuality !== 0) {
-      const targetQuality = Config.bilibili.videoQuality
-
-      // 尝试找到完全匹配的清晰度
-      let matchedVideo = videoList.find(video => video.id === targetQuality)
-
-      // 如果没有完全匹配的清晰度，找最接近的
-      if (!matchedVideo) {
-        // 按照清晰度ID排序
-        const sortedVideos = [...videoList].sort((a, b) => a.id - b.id)
-
-        // 找到小于目标清晰度的最大值
-        const lowerVideos = sortedVideos.filter(video => video.id < targetQuality)
-        const higherVideos = sortedVideos.filter(video => video.id > targetQuality)
-
-        if (lowerVideos.length > 0) {
-          // 有小于目标清晰度的，取最大的
-          matchedVideo = lowerVideos[lowerVideos.length - 1]
-        } else if (higherVideos.length > 0) {
-          // 没有小于目标清晰度的，取最小的
-          matchedVideo = higherVideos[0]
-        } else {
-          // 如果都没有，取第一个（应该不会发生）
-          matchedVideo = sortedVideos[0]
-        }
-      }
-
-      // 更新视频列表和清晰度描述
-      const matchedQuality = qnd[matchedVideo.id] || accept_description[0]
-      accept_description = [matchedQuality]
-      videoList = [matchedVideo]
-
-      return {
-        accept_description,
-        videoList
-      }
-    }
-
-    // 自动选择逻辑（videoQuality === 0）
-    const results: Record<string, string> = {}
-
-    for (const video of videoList) {
-      const size = await this.getvideosize(video.base_url, audioUrl, bvid)
-      results[video.id] = size
-    }
-
-    // 将结果对象的值转换为数字，并找到最接近但不超过 Config.bilibili.maxAutoVideoSize 的值
-    const sizes = Object.values(results).map(size => parseFloat(size.replace('MB', '')))
-    let closestId: string | null = null
-    let smallestDifference = Infinity
-
-    sizes.forEach((size, index) => {
-      if (size <= Config.bilibili.maxAutoVideoSize) {
-        const difference = Math.abs(size - Config.bilibili.maxAutoVideoSize)
-        if (difference < smallestDifference) {
-          smallestDifference = difference
-          closestId = Object.keys(results)[index]
-        }
-      }
-    })
-
-    if (closestId !== null) {
-      // 找到最接近但不超过文件大小限制的视频清晰度
-      const closestQuality = qnd[Number(closestId)]
-      // 更新 OBJECT.DATA.data.accept_description
-      accept_description = accept_description.filter((desc: any) => desc === closestQuality)
-      if (accept_description.length === 0) {
-        accept_description = [closestQuality]
-      }
-      // 找到对应的视频对象
-      const video = videoList.find((video: { id: number }) => video.id === Number(closestId))!
-      // 更新 OBJECT.DATA.data.dash.video 数组
-      videoList = [video]
-    } else {
-      // 如果没有找到符合条件的视频，使用最低画质的视频对象
-      videoList = [[...videoList].pop()!]
-      // 更新 OBJECT.DATA.data.accept_description 为最低画质的描述
-      accept_description = [[...accept_description].pop()!]
-    }
-    return {
-      accept_description,
-      videoList
-    }
-  }
-
   /**
    * 格式化视频统计信息为三行，每行两个数据项，并保持对齐
    */
@@ -883,4 +766,146 @@ function oid (dynamicINFO: any, dynamicInfoCard: any) {
       return dynamicInfoCard.data.card.desc.rid
     }
   }
+}
+type qualityOptions = {
+  /**
+   * qn值
+   * @see https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/video/videostream_url.md#qn视频清晰度标识
+   */
+  qn?: number
+  /** 可接受的最大视频文件单位：MB */
+  maxAutoVideoSize?: number,
+  /** 视频BV号 */
+  bvid: string,
+  /** 视频流清晰度列表 */
+  accept_description: string[],
+}
+/**
+ * 检出符合大小的视频流信息对象
+ * @param accept_description 视频流清晰度列表
+ * @param videoList 包含所有清晰度的视频流信息对象
+ * @param audioUrl 音频流地址
+ * @param bvid 视频bvid（BV号）
+ * @returns
+ */
+export const bilibiliProcessVideos = async (qualityOptions: qualityOptions, videoList: videoDownloadUrlList, audioUrl: string) => {
+  // 如果不是自动选择模式，直接根据配置的清晰度选择视频
+  if (qualityOptions.qn !== 0 || Config.bilibili.videoQuality !== 0) {
+    const targetQuality = qualityOptions.qn ?? Config.bilibili.videoQuality
+
+    // 尝试找到完全匹配的清晰度
+    let matchedVideo = videoList.find(video => video.id === targetQuality)
+
+    // 如果没有完全匹配的清晰度，找最接近的
+    if (!matchedVideo) {
+      // 按照清晰度ID排序
+      const sortedVideos = [...videoList].sort((a, b) => a.id - b.id)
+
+      // 找到小于目标清晰度的最大值
+      const lowerVideos = sortedVideos.filter(video => video.id < targetQuality)
+      const higherVideos = sortedVideos.filter(video => video.id > targetQuality)
+
+      if (lowerVideos.length > 0) {
+        // 有小于目标清晰度的，取最大的
+        matchedVideo = lowerVideos[lowerVideos.length - 1]
+      } else if (higherVideos.length > 0) {
+        // 没有小于目标清晰度的，取最小的
+        matchedVideo = higherVideos[0]
+      } else {
+        // 如果都没有，取第一个（应该不会发生）
+        matchedVideo = sortedVideos[0]
+      }
+    }
+
+    // 更新视频列表和清晰度描述
+    const matchedQuality = qnd[matchedVideo.id] || qualityOptions.accept_description[0]
+    qualityOptions.accept_description = [matchedQuality]
+    videoList = [matchedVideo]
+
+    return {
+      accept_description: qualityOptions.accept_description,
+      videoList
+    }
+  }
+
+  // 自动选择逻辑（videoQuality === 0）
+  const results: Record<string, string> = {}
+
+  for (const video of videoList) {
+    const size = await getvideosize(video.base_url, audioUrl, qualityOptions.bvid)
+    results[video.id] = size
+  }
+
+  // 将结果对象的值转换为数字，并找到最接近但不超过 qualityOptions.maxAutoVideoSize 或 Config.bilibili.maxAutoVideoSize 的值
+  const sizes = Object.values(results).map(size => parseFloat(size.replace('MB', '')))
+  let closestId: string | null = null
+  let smallestDifference = Infinity
+
+  sizes.forEach((size, index) => {
+    if (size <= (qualityOptions?.maxAutoVideoSize ?? Config.bilibili.maxAutoVideoSize)) {
+      const difference = Math.abs(size - (qualityOptions?.maxAutoVideoSize ?? Config.bilibili.maxAutoVideoSize))
+      if (difference < smallestDifference) {
+        smallestDifference = difference
+        closestId = Object.keys(results)[index]
+      }
+    }
+  })
+
+  if (closestId !== null) {
+    // 找到最接近但不超过文件大小限制的视频清晰度
+    const closestQuality = qnd[Number(closestId)]
+    // 更新 OBJECT.DATA.data.accept_description
+    qualityOptions.accept_description = qualityOptions.accept_description.filter((desc: any) => desc === closestQuality)
+    if (qualityOptions.accept_description.length === 0) {
+      qualityOptions.accept_description = [closestQuality]
+    }
+    // 找到对应的视频对象
+    const video = videoList.find((video: { id: number }) => video.id === Number(closestId))!
+    // 更新 OBJECT.DATA.data.dash.video 数组
+    videoList = [video]
+  } else {
+    // 如果没有找到符合条件的视频，使用最低画质的视频对象
+    videoList = [[...videoList].pop()!]
+    // 更新 OBJECT.DATA.data.accept_description 为最低画质的描述
+    qualityOptions.accept_description = [[...qualityOptions.accept_description].pop()!]
+  }
+  return {
+    accept_description: qualityOptions.accept_description,
+    videoList
+  }
+}
+
+/**
+ * [bilibili] 获取视频和音频的总大小
+ * @param videourl - 视频流URL
+ * @param audiourl - 音频流URL
+ * @param bvid - 视频BV号
+ * @returns  返回视频和音频总大小(MB),保留2位小数
+ */
+export const getvideosize = async (videourl: string, audiourl: string, bvid: string) => {
+  const videoheaders = await new Networks({
+    url: videourl,
+    headers: {
+      ...baseHeaders,
+      Referer: `https://api.bilibili.com/video/${bvid}`,
+      Cookie: Config.cookies.bilibili
+    }
+  }).getHeaders()
+  const audioheaders = await new Networks({
+    url: audiourl,
+    headers: {
+      ...baseHeaders,
+      Referer: `https://api.bilibili.com/video/${bvid}`,
+      Cookie: Config.cookies.bilibili
+    }
+  }).getHeaders()
+
+  const videoSize = videoheaders['content-range']?.match(/\/(\d+)/) ? parseInt(videoheaders['content-range']?.match(/\/(\d+)/)[1], 10) : 0
+  const audioSize = audioheaders['content-range']?.match(/\/(\d+)/) ? parseInt(audioheaders['content-range']?.match(/\/(\d+)/)[1], 10) : 0
+
+  const videoSizeInMB = (videoSize / (1024 * 1024)).toFixed(2)
+  const audioSizeInMB = (audioSize / (1024 * 1024)).toFixed(2)
+
+  const totalSizeInMB = parseFloat(videoSizeInMB) + parseFloat(audioSizeInMB)
+  return totalSizeInMB.toFixed(2)
 }

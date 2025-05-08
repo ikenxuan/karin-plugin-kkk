@@ -2,7 +2,7 @@ import { getDouyinData } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
 import { Base, cleanOldDynamicCache, Common, Config, douyinDB, Networks, Render } from '@/module'
-import { DouyinIdData, getDouyinID, processVideos } from '@/platform/douyin'
+import { DouyinIdData, douyinProcessVideos, getDouyinID } from '@/platform/douyin'
 import type { douyinPushItem } from '@/types/config/pushlist'
 
 /** 每个推送项的类型定义 */
@@ -180,7 +180,7 @@ export class DouYinpush extends Base {
                     视频ID：${logger.green(Detail_Data.VideoData.aweme_detail.aweme_id)}\n
                     分享链接：${logger.green(Detail_Data.VideoData.aweme_detail.share_url)}
                     `)
-                  const videoObj = processVideos(Detail_Data.video.bit_rate, Config.upload.filelimit)
+                  const videoObj = douyinProcessVideos(Detail_Data.video.bit_rate, Config.upload.filelimit)
                   downloadUrl = await new Networks({
                     url: videoObj[0].play_addr.url_list[2],
                     headers: this.headers

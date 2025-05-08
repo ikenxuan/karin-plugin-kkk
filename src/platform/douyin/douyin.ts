@@ -209,7 +209,7 @@ export class DouYin extends Base {
               视频ID：${logger.green(VideoData.aweme_detail.aweme_id)}\n
               分享链接：${logger.green(VideoData.aweme_detail.share_url)}
               `)
-            video.bit_rate = processVideos(video.bit_rate, Config.upload.filelimit)
+            video.bit_rate = douyinProcessVideos(video.bit_rate, Config.upload.filelimit)
             g_video_url = await new Networks({
               url: video.bit_rate[0].play_addr.url_list[2],
               headers: this.headers
@@ -381,7 +381,7 @@ export class DouYin extends Base {
   }
 }
 
-export function processVideos (videos: dyVideo[], filelimit: number): dyVideo[] {
+export function douyinProcessVideos (videos: dyVideo[], filelimit: number): dyVideo[] {
   const sizeLimitBytes = filelimit * 1024 * 1024 // 将 MB 转换为字节
   logger.debug(videos)
   // 过滤掉 format 为 'dash' 的视频，并且过滤出小于等于大小限制的视频

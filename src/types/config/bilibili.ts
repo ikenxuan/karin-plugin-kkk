@@ -29,7 +29,7 @@ export interface bilibiliConfig {
    */
   videoQuality: 0 | 6 | 16 | 32 | 64 | 74 | 80 | 112 | 116 | 120
 
-  /** 视频体积上限，自动画质模式下可接受的最大视频大小（单位：MB），仅在 videoQuality 为 0 时生效 */
+  /** 视频体积上限，自动画质模式下可接受的最大视频大小（单位：MB），仅在 「videoQuality」 为 0 时生效 */
   maxAutoVideoSize: number
 
   /** 谁可以触发扫码登录，all为所有人，admin为管理员，master为主人，group.owner为群主，group.admin为群管理员。修改后需重启 */
@@ -47,5 +47,21 @@ export interface bilibiliConfig {
     parsedynamic: boolean,
     /** 是否打印日志 */
     log: boolean
+    /** 推送时遇到视频动态时解析的画质偏好设置，0 为自动根据「pushMaxAutoVideoSize」大小选择，其他为固定画质，仅「parsedynamic」为 true 时生效
+     * - 0: 自动根据大小选择
+     * - 6: 240P 极速 (仅MP4格式支持)
+     * - 16: 360P 流畅
+     * - 32: 480P 清晰
+     * - 64: 720P 高清 (WEB默认值)
+     * - 74: 720P60 高帧率 (需登录)
+     * - 80: 1080P 高清 (TV/APP默认值，需登录)
+     * - 112: 1080P+ 高码率 (需大会员)
+     * - 116: 1080P60 高帧率 (需大会员)
+     * - 120: 4K 超清 (需大会员且支持4K)
+     */
+    pushVideoQuality: 0 | 6 | 16 | 32 | 64 | 74 | 80 | 112 | 116 | 120
+
+    /** 推送时遇到视频动态时解析的视频体积上限，自动画质模式下可接受的最大视频大小（单位：MB），仅在 「pushVideoQuality」 为 0 且「parsedynamic」为 true时生效 */
+    pushMaxAutoVideoSize: number
   }
 }
