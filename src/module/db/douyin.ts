@@ -2,12 +2,11 @@ import { join } from 'node:path'
 
 import { logger } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
-import { DataTypes, Model, Sequelize } from 'sequelize'
+import { DataTypes, Model, Op, Sequelize } from 'sequelize'
 
+import { Config, Version } from '@/module/utils'
 import { DouyinPushItem } from '@/platform/douyin/push'
 import { douyinPushItem } from '@/types/config/pushlist'
-
-import { Version } from '../utils'
 
 type GroupUserSubscriptionAttributes = {
   id?: number
@@ -257,35 +256,22 @@ export class DouyinDBBase {
    */
   async init () {
     try {
+      logger.debug(logger.green('--------------------------[DouyinDB] 开始初始化数据库--------------------------'))
+      logger.debug('[DouyinDB] 正在连接数据库...')
       await sequelize.authenticate()
-      try {
-        const queryInterface = sequelize.getQueryInterface()
+      logger.debug('[DouyinDB] 数据库连接成功')
 
-        // 检查 DouyinUsers 表是否存在
-        const tables = await queryInterface.showAllTables()
-        if (tables.includes('DouyinUsers')) {
-          // 获取表结构
-          const tableInfo = await queryInterface.describeTable('DouyinUsers')
+      logger.debug('[DouyinDB] 正在同步数据库模型...')
+      await sequelize.sync()
+      logger.debug('[DouyinDB] 数据库模型同步成功')
 
-          // 如果表中没有 filterMode 列，则添加它
-          if (!tableInfo.filterMode) {
-            logger.warn('正在添加缺失的 filterMode 列到 DouyinUsers 表...')
-            await queryInterface.addColumn('DouyinUsers', 'filterMode', {
-              type: DataTypes.STRING,
-              defaultValue: 'blacklist',
-              allowNull: false
-            })
-            logger.mark('成功添加 filterMode 列')
-          }
-        } else {
-          await sequelize.sync()
-        }
-      } catch (error) {
-        logger.error('检查或添加 filterMode 列时出错:', error)
-        await sequelize.sync()
-      }
+      logger.debug('[DouyinDB] 正在同步配置订阅...')
+      logger.debug('[DouyinDB] 配置项数量:', Config.pushlist.douyin?.length || 0)
+      await this.syncConfigSubscriptions(Config.pushlist.douyin)
+      logger.debug('[DouyinDB] 配置订阅同步成功')
+      logger.debug(logger.green('--------------------------[DouyinDB] 初始化数据库完成--------------------------'))
     } catch (error) {
-      logger.error('数据库初始化失败:', error)
+      logger.error('[DouyinDB] 数据库初始化失败:', error)
       throw error
     }
 
@@ -434,13 +420,29 @@ export class DouyinDBBase {
    * @param sec_uid 抖音用户sec_uid
    */
   async getUserSubscribedGroups (sec_uid: string) {
-    return await GroupUserSubscription.findAll({
-      where: { sec_uid },
-      include: [{
-        model: Group,
-        required: true
-      }]
+    // 获取所有订阅关系
+    const subscriptions = await GroupUserSubscription.findAll({
+      where: { sec_uid }
     })
+
+    // 如果没有订阅关系，返回空数组
+    if (subscriptions.length === 0) {
+      return []
+    }
+
+    // 提取所有群组ID
+    const groupIds = subscriptions.map(sub => sub.get('groupId') as string)
+
+    // 获取这些群组的详细信息
+    const groups = await Group.findAll({
+      where: {
+        id: {
+          [Op.in]: groupIds
+        }
+      }
+    })
+
+    return groups
   }
 
   /**
@@ -497,8 +499,10 @@ export class DouyinDBBase {
    * @param configItems 配置文件中的订阅项
    */
   async syncConfigSubscriptions (configItems: douyinPushItem[]) {
-    if (!configItems || configItems.length === 0) return
+    // 1. 收集配置文件中的所有订阅关系
+    const configSubscriptions: Map<string, Set<string>> = new Map()
 
+    // 初始化每个群组的订阅用户集合
     for (const item of configItems) {
       const sec_uid = item.sec_uid
       const short_id = item.short_id ?? ''
@@ -512,6 +516,15 @@ export class DouyinDBBase {
         const [groupId, botId] = groupWithBot.split(':')
         if (!groupId || !botId) continue
 
+        // 确保群组存在
+        await this.getOrCreateGroup(groupId, botId)
+
+        // 记录配置文件中的订阅关系
+        if (!configSubscriptions.has(groupId)) {
+          configSubscriptions.set(groupId, new Set())
+        }
+        configSubscriptions.get(groupId)?.add(sec_uid)
+
         // 检查是否已订阅
         const isSubscribed = await this.isSubscribed(sec_uid, groupId)
 
@@ -519,6 +532,51 @@ export class DouyinDBBase {
         if (!isSubscribed) {
           await this.subscribeDouyinUser(groupId, botId, sec_uid, short_id, remark)
         }
+      }
+    }
+
+    // 2. 获取数据库中的所有订阅关系，并与配置文件比较，删除不在配置文件中的订阅
+    // 获取所有群组
+    const allGroups = await Group.findAll()
+
+    for (const group of allGroups) {
+      const groupId = group.get('id') as string
+      const configUsers = configSubscriptions.get(groupId) ?? new Set()
+
+      // 获取该群组在数据库中的所有订阅
+      const dbSubscriptions = await this.getGroupSubscriptions(groupId)
+
+      // 找出需要删除的订阅（在数据库中存在但配置文件中不存在）
+      for (const subscription of dbSubscriptions) {
+        const sec_uid = subscription.get('sec_uid') as string
+
+        if (!configUsers.has(sec_uid)) {
+          // 删除订阅关系
+          await this.unsubscribeDouyinUser(groupId, sec_uid)
+          logger.mark(`已删除群组 ${groupId} 对抖音用户 ${sec_uid} 的订阅`)
+        }
+      }
+    }
+
+    // 3. 清理不再被任何群组订阅的抖音用户记录及其过滤词和过滤标签
+    // 获取所有抖音用户
+    const allUsers = await DouyinUser.findAll()
+
+    for (const user of allUsers) {
+      const sec_uid = user.get('sec_uid') as string
+
+      // 检查该用户是否还有群组订阅
+      const subscribedGroups = await this.getUserSubscribedGroups(sec_uid)
+
+      if (subscribedGroups.length === 0) {
+        // 删除该用户的过滤词和过滤标签
+        await FilterWord.destroy({ where: { sec_uid } })
+        await FilterTag.destroy({ where: { sec_uid } })
+
+        // 删除该用户记录
+        await DouyinUser.destroy({ where: { sec_uid } })
+
+        logger.mark(`已删除抖音用户 ${sec_uid} 的记录及相关过滤设置（不再被任何群组订阅）`)
       }
     }
   }

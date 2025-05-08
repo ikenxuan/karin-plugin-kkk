@@ -49,7 +49,6 @@ class Cfg {
         // logger.info('新数据:', now);
       }))
     }, 2000)
-    this.convertType()
 
     return this
   }
@@ -140,18 +139,6 @@ class Cfg {
 
     // 自动管理缓存 无需手动清除 如无缓存 则会自动导入并加载
     return requireFileSync(file, { force: true })
-  }
-
-  /** 由于上游类型定义错误，导致下游需要手动对已设置的内容进行类型转换。。。 */
-  private convertType () {
-    const pushList = this.getYaml('config', 'pushlist')
-    pushList.bilibili.map((item) => {
-      if (typeof item.host_mid === 'string') {
-        item.host_mid = parseInt(item.host_mid)
-      }
-      return item
-    })
-    this.Modify('pushlist', 'bilibili', pushList.bilibili)
   }
 
   /**
@@ -255,11 +242,11 @@ class Cfg {
   }
 
   /**
- * 同步过滤配置到数据库
- * @param items 推送项列表
- * @param db 数据库实例
- * @param idField ID字段名称
- */
+   * 同步过滤配置到数据库
+   * @param items 推送项列表
+   * @param db 数据库实例
+   * @param idField ID字段名称
+   */
   private async syncFilterConfigToDb (items: any[], db: any, idField: string) {
     for (const item of items) {
       const id = item[idField]
@@ -413,9 +400,35 @@ class Cfg {
 
     return { differences, result: defaultDoc }
   }
+
+  /**
+   * 同步配置到数据库
+   * 这个方法应该在所有模块都初始化完成后调用
+   */
+  async syncConfigToDatabase () {
+    try {
+      const pushCfg = this.getYaml('config', 'pushlist')
+
+      // 导入数据库模块
+      const { bilibiliDB, douyinDB } = await import('@/module/db')
+
+      // 同步配置到数据库
+      if (pushCfg.bilibili) {
+        await bilibiliDB.syncConfigSubscriptions(pushCfg.bilibili)
+      }
+
+      if (pushCfg.douyin) {
+        await douyinDB.syncConfigSubscriptions(pushCfg.douyin)
+      }
+
+      logger.debug('[BilibiliDB] + [DouyinDB] 配置已同步到数据库')
+    } catch (error) {
+      logger.error('同步配置到数据库失败:', error)
+    }
+  }
 }
 
-type Config = ConfigType & Pick<Cfg, 'All' | 'Modify' | 'ModifyPro'>
+type Config = ConfigType & Pick<Cfg, 'All' | 'Modify' | 'ModifyPro' | 'syncConfigToDatabase'>
 
 export const Config: Config = new Proxy(new Cfg().initCfg(), {
   get (target, prop: string) {
