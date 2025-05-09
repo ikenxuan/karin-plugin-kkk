@@ -24,8 +24,8 @@ export default defineConfig({
     name: 'karin-plugin-kkk',
     description: 'Karin 的「抖音」「B站」「快手」视频解析/动态推送插件',
     icon: {
-      name: 'video_file ',
-      color: '#8C1AF6'
+      name: 'verified ',
+      color: '#FFFF55'
     },
     author: [
       {
@@ -566,7 +566,7 @@ export default defineConfig({
               }),
               components.input.number('maxAutoVideoSize', {
                 label: '视频动态的视频体积上限（MB）',
-                description: '根据该值自动选择分辨率进行下载。仅在「画质偏好」 为 "自动选择" 且「作品解析」开启时生效，仅对视频动态有效',
+                description: '根据该值自动选择分辨率进行下载。仅在「解析视频动态时的画质偏好」 为 "自动选择" 且「作品解析」开启时生效，仅对视频动态有效',
                 defaultValue: all.bilibili.push.pushMaxAutoVideoSize.toString(),
                 isDisabled: !all.bilibili.push.parsedynamic || all.bilibili.push.pushVideoQuality !== 0,
                 rules: [{ min: 1, max: 20000 }],

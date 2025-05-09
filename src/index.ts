@@ -46,4 +46,4 @@ const base = `${karinPathBase}/${Version.pluginName}`
 mkdirSync(`${base}/data`)
 mkdirSync(Common.tempDri.images)
 mkdirSync(Common.tempDri.video)
-logger.info(`${logger.green(`[插件:${Version.pluginName}]`)} ${logger.violet(`${Version.pluginVersion}`)} 初始化完成~`)
+logger.info(`${logger.green(`[插件:${Version.pluginName}]`)} ${logger.violet(`v${Version.pluginVersion}`)} 初始化完成~`)
