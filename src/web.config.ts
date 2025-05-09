@@ -31,7 +31,7 @@ export default defineConfig({
       {
         name: 'ikenxuan',
         home: 'https://github.com/ikenxuan',
-        avatar: 'https://avatars.githubusercontent.com/u/112480306'
+        avatar: 'https://github.com/ikenxuan.png'
       }
     ]
   },
