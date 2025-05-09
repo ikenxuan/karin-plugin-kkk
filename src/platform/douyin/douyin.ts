@@ -5,7 +5,19 @@ import { markdown } from '@karinjs/md-html'
 import { common, Elements, logger, Message, mkdirSync, render, segment } from 'node-karin'
 import QRCode from 'qrcode'
 
-import { Base, Common, Config, fileInfo, mergeFile, Networks, Render, Version } from '@/module/utils'
+import {
+  Base,
+  Common,
+  Config,
+  Count,
+  downloadFile,
+  downloadVideo,
+  fileInfo,
+  mergeFile,
+  Networks,
+  Render,
+  Version
+} from '@/module/utils'
 import { douyinComments } from '@/platform/douyin'
 import { DouyinDataTypes, DouyinIdData } from '@/types'
 
@@ -111,7 +123,7 @@ export class DouYin extends Base {
               const images: Elements[] = []
               const temp: fileInfo[] = []
               /** BGM */
-              const liveimgbgm = await this.DownLoadFile(
+              const liveimgbgm = await downloadFile(
                 VideoData.aweme_detail.music.play_url.uri,
                 {
                   title: `Douyin_tmp_A_${Date.now()}.mp3`,
@@ -127,7 +139,7 @@ export class DouYin extends Base {
                   continue
                 }
                 /** 动图 */
-                const liveimg = await this.DownLoadFile(
+                const liveimg = await downloadFile(
                   `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`,
                   {
                     title: `Douyin_tmp_V_${Date.now()}.mp4`,
@@ -145,12 +157,12 @@ export class DouYin extends Base {
                       if (success) {
                         const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
                         fs.renameSync(resultPath, filePath)
-                        await this.removeFile(liveimg.filepath, true)
+                        await Common.removeFile(liveimg.filepath, true)
                         temp.push({ filepath: filePath, totalBytes: 0 })
                         images.push(segment.video('file://' + filePath))
                         return true
                       } else {
-                        await this.removeFile(liveimg.filepath, true)
+                        await Common.removeFile(liveimg.filepath, true)
                         return true
                       }
                     }
@@ -169,7 +181,7 @@ export class DouYin extends Base {
                 await this.e.reply(JSON.stringify(error, null, 2))
               } finally {
                 for (const item of temp) {
-                  await this.removeFile(item.filepath, true)
+                  await Common.removeFile(item.filepath, true)
                 }
               }
               break
@@ -263,7 +275,7 @@ export class DouYin extends Base {
           }
         }
         /** 发送视频 */
-        sendvideofile && this.is_mp4 && await this.DownLoadVideo({ video_url: g_video_url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${g_title}.mp4` } })
+        sendvideofile && this.is_mp4 && await downloadVideo(this.e, { video_url: g_video_url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${g_title}.mp4` } })
         return true
       }
 
@@ -323,7 +335,7 @@ export class DouYin extends Base {
             desc: MusicData.music_info.title,
             music_id: MusicData.music_info.id,
             create_time: Time(0),
-            user_count: this.count(MusicData.music_info.user_count),
+            user_count: Count(MusicData.music_info.user_count),
             avater_url: MusicData.music_info.avatar_large?.url_list[0] || UserData.user.avatar_larger.url_list[0],
             fans: UserData.user.mplatform_followers_count || UserData.user.follower_count,
             following_count: UserData.user.following_count,
@@ -358,11 +370,11 @@ export class DouYin extends Base {
               image_url: [{ image_src: live_data.data.data[0].cover?.url_list[0] }],
               text: live_data.data.data[0].title,
               liveinf: `${live_data.data.partition_road_map.partition.title} | 房间号: ${room_data.owner.web_rid}`,
-              在线观众: this.count(Number(live_data.data.data[0].room_view_stats?.display_value)),
-              总观看次数: this.count(Number(live_data.data.data[0].stats?.total_user_str)),
+              在线观众: Count(Number(live_data.data.data[0].room_view_stats?.display_value)),
+              总观看次数: Count(Number(live_data.data.data[0].stats?.total_user_str)),
               username: UserInfoData.user.nickname,
               avater_url: UserInfoData.user.avatar_larger.url_list[0],
-              fans: this.count(UserInfoData.user.follower_count),
+              fans: Count(UserInfoData.user.follower_count),
               create_time: convertTimestampToDateTime(new Date().getTime()),
               now_time: convertTimestampToDateTime(new Date().getTime()),
               share_url: 'https://live.douyin.com/' + room_data.owner.web_rid,

@@ -1,6 +1,6 @@
 import { Message } from 'node-karin'
 
-import { Base, Config, Networks, Render } from '@/module'
+import { Base, Config, downloadVideo, Networks, Render } from '@/module'
 import { kuaishouComments } from '@/platform/kuaishou'
 import { ExtendedKuaishouOptionsType, KuaishouDataTypes } from '@/types'
 
@@ -39,7 +39,7 @@ export class Kuaishou extends Base {
       likeCount: data.VideoData.data.visionVideoDetail.photo.likeCount
     })
     await this.e.reply(img)
-    await this.DownLoadVideo({ video_url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${data.VideoData.data.visionVideoDetail.photo.caption}.mp4` } })
+    await downloadVideo(this.e, { video_url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${data.VideoData.data.visionVideoDetail.photo.caption}.mp4` } })
     return true
   }
 }

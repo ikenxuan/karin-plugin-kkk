@@ -1,4 +1,6 @@
 import { ResponseType } from 'node-karin/axios'
+
+import { downLoadFileOptions } from '@/module'
 export interface NetworksConfigType {
   /**
    * 请求地址
@@ -11,7 +13,7 @@ export interface NetworksConfigType {
   /**
    * 请求头
    */
-  headers?: any
+  headers?: downLoadFileOptions['headers']
   /**
    * 返回数据类型，默认json
    */

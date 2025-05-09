@@ -96,13 +96,13 @@ class FFmpeg {
     switch (this.type) {
       case '二合一（视频 + 音频）': {
         const result = await ffmpeg(`-y -i ${opt.path} -i ${opt.path2} -c copy ${opt.resultPath}`)
-        result.status ? logger.mark('视频合成成功！') : logger.error(result)
+        result.status ? logger.mark(`视频合成成功！文件地址：${opt.resultPath}`) : logger.error(result)
         await opt.callback(result.status, opt.resultPath)
         return result as unknown as MergeFileResult<T> // 布尔类型
       }
       case '视频*3 + 音频': {
         const result = await ffmpeg(`-y -stream_loop 2 -i ${opt.path} -i ${opt.path2} -filter_complex "[0:v]setpts=N/FRAME_RATE/TB[v];[0:a][1:a]amix=inputs=2:duration=shortest:dropout_transition=3[aout]" -map "[v]" -map "[aout]" -c:v libx264 -c:a aac -b:a 192k -shortest ${opt.resultPath}`)
-        result ? logger.mark('视频合成成功！') : logger.error(result)
+        result ? logger.mark(`视频合成成功！文件地址：${opt.resultPath}`) : logger.error(result)
         await opt.callback(result.status, opt.resultPath)
         return result as unknown as MergeFileResult<T> // 布尔类型
       }

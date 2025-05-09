@@ -1,7 +1,15 @@
+/* eslint-disable @stylistic/indent */
 import fs from 'node:fs'
 
 import { logger } from 'node-karin'
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, ResponseType } from 'node-karin/axios'
+import axios,
+{
+  AxiosError,
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  ResponseType
+} from 'node-karin/axios'
 import { pipeline } from 'stream/promises'
 
 import { NetworksConfigType } from '@/types'
@@ -26,7 +34,11 @@ export class Networks {
   private maxRetries: number
 
   constructor (data: NetworksConfigType) {
-    this.headers = data.headers ?? {}
+    this.headers = data.headers
+      ? Object.fromEntries(
+        Object.entries(data.headers).map(([key, value]) => [key, String(value)])
+      )
+      : {}
     this.url = data.url ?? ''
     this.type = data.type ?? 'json'
     this.method = data.method ?? 'GET'

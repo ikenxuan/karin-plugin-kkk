@@ -1,8 +1,29 @@
+import fs from 'node:fs'
+
 import { BiliVideoPlayurlIsLogin, getBilibiliData } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
-import { Base, bilibiliDB, cleanOldDynamicCache, Common, Config, Render } from '@/module'
-import { Bilibili, bilibiliProcessVideos, cover, generateDecorationCard, getvideosize, replacetext } from '@/platform/bilibili'
+import {
+  Base,
+  baseHeaders,
+  bilibiliDB,
+  cleanOldDynamicCache,
+  Common,
+  Config,
+  Count,
+  downloadFile,
+  downLoadFileOptions,
+  mergeFile,
+  Render,
+  uploadFile
+} from '@/module'
+import {
+  bilibiliProcessVideos,
+  cover,
+  generateDecorationCard,
+  getvideosize,
+  replacetext
+} from '@/platform/bilibili'
 import type { bilibiliPushItem } from '@/types/config/pushlist'
 
 /** 已支持推送的动态类型 */
@@ -36,7 +57,11 @@ export type BilibiliPushItem = {
 
 /** 推送列表的类型定义 */
 type WillBePushList = Record<string, BilibiliPushItem>
-
+const bilibiliBaseHeaders: downLoadFileOptions['headers'] = {
+  ...baseHeaders,
+  Referer: 'https://api.bilibili.com/',
+  Cookie: Config.cookies.bilibili
+}
 export class Bilibilipush extends Base {
   private force = false
   /**
@@ -48,7 +73,7 @@ export class Bilibilipush extends Base {
   constructor (e = {} as Message, force: boolean = false) {
     super(e) // 调用父类的构造函数
     // 判断当前bot适配器是否为'QQBot'，如果是，则直接返回true，否则继续执行
-    if (this.botadapter === 'QQBot') {
+    if (this.e.bot?.adapter?.name === 'QQBot') {
       e.reply('不支持QQBot，请使用其他适配器')
       return
     }
@@ -126,18 +151,18 @@ export class Bilibilipush extends Base {
               {
                 image_url: cover(dycrad.item.pictures),
                 text: replacetext(br(data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.text), data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.rich_text_nodes),
-                dianzan: this.count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
-                pinglun: this.count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
-                share: this.count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
+                dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
+                pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
+                share: Count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
                 create_time: Common.convertTimestampToDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
                 avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
                 frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
                 share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
                 username: checkvip(userINFO.data.card),
-                fans: this.count(userINFO.data.follower),
+                fans: Count(userINFO.data.follower),
                 user_shortid: data[dynamicId].host_mid,
-                total_favorited: this.count(userINFO.data.like_num),
-                following_count: this.count(userINFO.data.card.attention),
+                total_favorited: Count(userINFO.data.like_num),
+                following_count: Count(userINFO.data.card.attention),
                 decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decorate),
                 render_time: Common.getCurrentTime(),
                 dynamicTYPE: '图文动态推送'
@@ -159,18 +184,18 @@ export class Bilibilipush extends Base {
             img = await Render('bilibili/dynamic/DYNAMIC_TYPE_WORD',
               {
                 text: br(text),
-                dianzan: this.count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
-                pinglun: this.count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
-                share: this.count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
+                dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
+                pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
+                share: Count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
                 create_time: Common.convertTimestampToDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
                 avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
                 frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
                 share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
                 username: checkvip(userINFO.data.card),
-                fans: this.count(userINFO.data.follower),
+                fans: Count(userINFO.data.follower),
                 user_shortid: data[dynamicId].host_mid,
-                total_favorited: this.count(userINFO.data.like_num),
-                following_count: this.count(userINFO.data.card.attention),
+                total_favorited: Count(userINFO.data.like_num),
+                following_count: Count(userINFO.data.card.attention),
                 dynamicTYPE: '纯文动态推送'
               }
             )
@@ -195,21 +220,21 @@ export class Bilibilipush extends Base {
                   image_url: [{ image_src: INFODATA.data.pic }],
                   text: br(INFODATA.data.title),
                   desc: br(dycrad.desc),
-                  dianzan: this.count(INFODATA.data.stat.like),
-                  pinglun: this.count(INFODATA.data.stat.reply),
-                  share: this.count(INFODATA.data.stat.share),
-                  view: this.count(dycrad.stat.view),
-                  coin: this.count(dycrad.stat.coin),
+                  dianzan: Count(INFODATA.data.stat.like),
+                  pinglun: Count(INFODATA.data.stat.reply),
+                  share: Count(INFODATA.data.stat.share),
+                  view: Count(dycrad.stat.view),
+                  coin: Count(dycrad.stat.coin),
                   duration_text: data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.duration_text,
                   create_time: Common.convertTimestampToDateTime(INFODATA.data.ctime),
                   avatar_url: INFODATA.data.owner.face,
                   frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
                   share_url: 'https://www.bilibili.com/video/' + bvid,
                   username: checkvip(userINFO.data.card),
-                  fans: this.count(userINFO.data.follower),
+                  fans: Count(userINFO.data.follower),
                   user_shortid: data[dynamicId].host_mid,
-                  total_favorited: this.count(userINFO.data.like_num),
-                  following_count: this.count(userINFO.data.card.attention),
+                  total_favorited: Count(userINFO.data.like_num),
+                  following_count: Count(userINFO.data.card.attention),
                   dynamicTYPE: '视频动态推送'
                 }
               )
@@ -226,7 +251,7 @@ export class Bilibilipush extends Base {
                 username: checkvip(userINFO.data.card),
                 avatar_url: userINFO.data.card.face,
                 frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
-                fans: this.count(userINFO.data.follower),
+                fans: Count(userINFO.data.follower),
                 create_time: Common.convertTimestampToDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
                 now_time: Common.getCurrentTime(),
                 share_url: 'https://live.bilibili.com/' + dycrad.live_play_info.room_id,
@@ -305,18 +330,18 @@ export class Bilibilipush extends Base {
             }
             img = await Render('bilibili/dynamic/DYNAMIC_TYPE_FORWARD', {
               text,
-              dianzan: this.count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
-              pinglun: this.count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
-              share: this.count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
+              dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
+              pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
+              share: Count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
               create_time: data[dynamicId].Dynamic_Data.modules.module_author.pub_time,
               avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
               frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
               share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
               username: checkvip(userINFO.data.card),
-              fans: this.count(userINFO.data.follower),
+              fans: Count(userINFO.data.follower),
               user_shortid: data[dynamicId].Dynamic_Data.modules.module_author.mid,
-              total_favorited: this.count(userINFO.data.like_num),
-              following_count: this.count(userINFO.data.card.attention),
+              total_favorited: Count(userINFO.data.like_num),
+              following_count: Count(userINFO.data.card.attention),
               dynamicTYPE: '转发动态推送',
               decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decorate),
               render_time: Common.getCurrentTime(),
@@ -374,20 +399,62 @@ export class Bilibilipush extends Base {
                   playUrlData.data.accept_description = correctList.accept_description
                   /** 获取第一个视频流的大小 */
                   videoSize = await getvideosize(correctList.videoList[0].base_url, playUrlData.data.dash.audio[0].base_url, dynamicCARDINFO.data.card.desc.bvid)
+                  logger.mark(`当前处于自动推送状态，解析到的视频大小为 ${logger.yellow(Number(videoSize))} MB`)
                   const infoData = await this.amagi.getBilibiliData('单个视频作品数据', { bvid: dynamicCARDINFO.data.card.desc.bvid, typeMode: 'strict' })
-                  if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) && !Config.upload.compress) {
-                    await this.e.reply(`设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n` + '视频太大了，还是去B站看吧~', { reply: true })
-                  } else {
-                    await new Bilibili(this.e, {
-                      Type: 'one_video',
-                      islogin: true
-                    }).getvideo(Config.bilibili.videopriority === true ? { playUrlData: noCkData } : { infoData, playUrlData })
-                  }
+                  const mp4File = await downloadFile(
+                    playUrlData.data?.dash?.video[0].base_url,
+                    {
+                      title: `Bil_V_${infoData.data.bvid}.mp4`,
+                      headers: bilibiliBaseHeaders
+                    }
+                  )
+                  const mp3File = await downloadFile(
+                    playUrlData.data?.dash?.audio[0].base_url,
+                    {
+                      title: `Bil_A_${infoData.data.bvid}.mp3`,
+                      headers: bilibiliBaseHeaders
+                    }
+                  )
 
-                  // await this.DownLoadVideo({
-                  //   video_url: noCkData ? noCkData.data.durl[0].url : '',
-                  //   title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${dycrad.title}.mp4` }
-                  // }, { active: true, activeOption: { uin: botId, group_id: groupId } })
+                  if (mp4File.filepath && mp3File.filepath) {
+                    await mergeFile('二合一（视频 + 音频）', {
+                      path: mp4File.filepath,
+                      path2: mp3File.filepath,
+                      resultPath: Common.tempDri.video + `Bil_Result_${infoData.data.bvid}.mp4`,
+                      callback: async (success: boolean, resultPath: string): Promise<boolean> => {
+                        if (success) {
+                          const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
+                          fs.renameSync(resultPath, filePath)
+                          logger.mark('正在尝试删除缓存文件')
+                          await Common.removeFile(mp4File.filepath, true)
+                          await Common.removeFile(mp3File.filepath, true)
+
+                          const stats = fs.statSync(filePath)
+                          const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
+                          if (fileSizeInMB > Config.upload.groupfilevalue) {
+                            // 使用文件上传
+                            return await uploadFile(
+                              this.e,
+                              { filepath: filePath, totalBytes: fileSizeInMB },
+                              '',
+                              { useGroupFile: true, active: true, activeOption: { group_id: groupId, uin: botId } })
+                          } else {
+                            /** 因为本地合成，没有视频直链 */
+                            return await uploadFile(
+                              this.e,
+                              { filepath: filePath, totalBytes: fileSizeInMB },
+                              '',
+                              { active: true, activeOption: { group_id: groupId, uin: botId } }
+                            )
+                          }
+                        } else {
+                          await Common.removeFile(mp4File.filepath, true)
+                          await Common.removeFile(mp3File.filepath, true)
+                          return true
+                        }
+                      }
+                    })
+                  }
                 }
                 break
               }
@@ -708,9 +775,9 @@ export class Bilibilipush extends Base {
         avatar_img: userInfo.data.card.face,
         username: userInfo.data.card.name,
         host_mid: userInfo.data.card.mid,
-        fans: this.count(userInfo.data.follower),
-        total_favorited: this.count(userInfo.data.like_num),
-        following_count: this.count(userInfo.data.card.attention)
+        fans: Count(userInfo.data.follower),
+        total_favorited: Count(userInfo.data.like_num),
+        following_count: Count(userInfo.data.card.attention)
       })
     }
 

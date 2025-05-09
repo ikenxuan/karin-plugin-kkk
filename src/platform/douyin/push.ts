@@ -1,7 +1,18 @@
 import { getDouyinData } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
-import { Base, cleanOldDynamicCache, Common, Config, douyinDB, Networks, Render } from '@/module'
+import {
+  Base,
+  baseHeaders,
+  cleanOldDynamicCache,
+  Common,
+  Config,
+  douyinDB,
+  downLoadFileOptions,
+  downloadVideo,
+  Networks,
+  Render
+} from '@/module'
 import { DouyinIdData, douyinProcessVideos, getDouyinID } from '@/platform/douyin'
 import type { douyinPushItem } from '@/types/config/pushlist'
 
@@ -29,7 +40,11 @@ export type DouyinPushItem = {
 }
 /** 推送列表的类型定义 */
 type WillBePushList = Record<string, DouyinPushItem>
-
+const douyinBaseHeaders: downLoadFileOptions['headers'] = {
+  ...baseHeaders,
+  Referer: 'https://www.douyin.com',
+  Cookie: Config.cookies.douyin
+}
 export class DouYinpush extends Base {
   private force = false
   /**
@@ -41,7 +56,7 @@ export class DouYinpush extends Base {
    */
   constructor (e = {} as Message, force: boolean = false) {
     super(e)
-    if (this.botadapter === 'QQBot') {
+    if (this.e.bot?.adapter?.name === 'QQBot') {
       e.reply('不支持QQBot，请使用其他适配器')
       return
     }
@@ -183,16 +198,16 @@ export class DouYinpush extends Base {
                   const videoObj = douyinProcessVideos(Detail_Data.video.bit_rate, Config.upload.filelimit)
                   downloadUrl = await new Networks({
                     url: videoObj[0].play_addr.url_list[2],
-                    headers: this.headers
+                    headers: douyinBaseHeaders
                   }).getLongLink()
                 } else {
                   downloadUrl = await new Networks({
                     url: Detail_Data.video.bit_rate[0].play_addr.url_list[2] ?? Detail_Data.video.play_addr_h264.url_list[2] ?? Detail_Data.video.play_addr_h264.url_list[2],
-                    headers: this.headers
+                    headers: douyinBaseHeaders
                   }).getLongLink()
                 }
                 // 下载视频
-                await this.DownLoadVideo({
+                await downloadVideo(this.e, {
                   video_url: downloadUrl,
                   title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${Detail_Data.desc}.mp4` }
                 }, { active: true, activeOption: { uin: botId, group_id: groupId } })
