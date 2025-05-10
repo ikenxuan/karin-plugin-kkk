@@ -690,7 +690,8 @@ export default defineConfig({
                 placeholder: '',
                 label: '抖音号',
                 description: '抖音号, 必填',
-                errorMessage: '抖音号不能为空 Ciallo～(∠・ω< )⌒☆'
+                errorMessage: '抖音号不能为空 Ciallo～(∠・ω< )⌒☆',
+                color: 'warning'
               }),
               components.input.group('group_id', {
                 label: '推送群号和机器人账号',
@@ -699,7 +700,7 @@ export default defineConfig({
                 template: components.input.string('accordion-item-douyin:push:douyin:group_id', {
                   placeholder: '必填，不能出现空值',
                   label: '',
-                  color: 'default',
+                  color: 'warning',
                   description: '推送群号和机器人账号，多个则使用逗号隔开，必填。如：群号1:机器人账号1',
                   errorMessage: '你不设置群号和Bot号，我怎么知道你要用什么推送给谁呢？'
                 })
@@ -725,7 +726,7 @@ export default defineConfig({
               components.radio.group('filterMode', {
                 label: '过滤模式',
                 orientation: 'horizontal',
-                // defaultValue: all.douyin.push.filterMode,
+                color: 'warning',
                 radio: [
                   components.radio.create('push:bilibili:filterMode.radio-1', {
                     label: '黑名单模式',
@@ -747,7 +748,7 @@ export default defineConfig({
                 template: components.input.string('push:bilibili:filterKeywords', {
                   placeholder: '严禁提交空值',
                   label: '',
-                  color: 'primary'
+                  color: 'warning'
                 })
               }),
               components.input.group('Tags', {
@@ -758,7 +759,7 @@ export default defineConfig({
                 template: components.input.string('push:bilibili:filterTags', {
                   placeholder: '严禁提交空值',
                   label: '',
-                  color: 'primary'
+                  color: 'warning'
                 })
               })
             ]
@@ -788,7 +789,8 @@ export default defineConfig({
                 label: 'UID',
                 rules: undefined,
                 description: 'B站用户的UID，必填',
-                errorMessage: 'UID 不能为空 Ciallo～(∠・ω< )⌒☆'
+                errorMessage: 'UID 不能为空 Ciallo～(∠・ω< )⌒☆',
+                color: 'warning'
               }),
               components.input.group('group_id', {
                 label: '推送群号和机器人账号',
@@ -797,7 +799,7 @@ export default defineConfig({
                 template: components.input.string('accordion-item-bilibili:push:bilibili:group_id', {
                   placeholder: '必填，不能出现空值',
                   label: '',
-                  color: 'default',
+                  color: 'warning',
                   description: '推送群号和机器人账号，多个则使用逗号隔开，必填。如：群号1:机器人账号1',
                   errorMessage: '你不设置群号和Bot号，我怎么知道你要用什么推送给谁呢？'
                 })
@@ -812,7 +814,7 @@ export default defineConfig({
               components.radio.group('filterMode', {
                 label: '过滤模式',
                 orientation: 'horizontal',
-                // defaultValue: all.bilibili.push.filterMode,
+                color: 'warning',
                 radio: [
                   components.radio.create('push:bilibili:filterMode.radio-1', {
                     label: '黑名单模式',
@@ -835,7 +837,7 @@ export default defineConfig({
                 template: components.input.string('push:bilibili:filterKeywords', {
                   placeholder: '严禁提交空值',
                   label: '',
-                  color: 'primary'
+                  color: 'warning'
                 })
               }),
               components.input.group('Tags', {
@@ -846,7 +848,7 @@ export default defineConfig({
                 template: components.input.string('push:bilibili:filterTags', {
                   placeholder: '严禁提交空值',
                   label: '',
-                  color: 'primary'
+                  color: 'warning'
                 })
               })
             ]
