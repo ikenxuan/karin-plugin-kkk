@@ -88,7 +88,43 @@ export class Base {
     this.e = e
     this.headers = baseHeaders
     this._path = process.cwd()?.replace(/\\/g, '/')
-    this.amagi = Client({ douyin: Config.cookies.douyin, bilibili: Config.cookies.bilibili, kuaishou: Config.cookies.kuaishou })
+    const client = Client({ douyin: Config.cookies.douyin, bilibili: Config.cookies.bilibili, kuaishou: Config.cookies.kuaishou })
+
+    this.amagi = client
+    // 使用Proxy包装amagi客户端
+    // this.amagi = new Proxy(client, {
+    //   get (target: amagiClient, prop: keyof amagiClient) {
+    //     const method = target[prop]
+    //     if (typeof method === 'function') {
+    //       return async (...args: any[]) => {
+    //         const result = await Function.prototype.apply.call(method, target, args)
+
+    //         // 返回值检查逻辑
+    //         if (!result) {
+    //           logger.warn(`Amagi API调用 (${String(prop)}) 返回了空值`)
+    //           return result
+    //         }
+
+    //         // 检查抖音数据返回结构
+    //         if (prop === 'getDouyinData' && (result.status_code !== 0)) {
+    //           logger.error(`抖音API返回数据不完整: ${JSON.stringify(result)}`)
+    //           await e.reply('抖音API返回数据不完整，请稍后再试')
+    //           throw new Error('抖音API返回数据不完整')
+    //         }
+
+    //         // 检查哔哩哔哩数据返回结构
+    //         if (prop === 'getBilibiliData' && (result.message !== '0')) {
+    //           logger.error(`哔哩哔哩API返回数据不完整: ${JSON.stringify(result)}`)
+    //           await e.reply('哔哩哔哩API返回数据不完整，请稍后再试')
+    //           throw new Error('哔哩哔哩API返回数据不完整')
+    //         }
+
+    //         return result
+    //       }
+    //     }
+    //     return method
+    //   }
+    // })
   }
 }
 
