@@ -22,7 +22,7 @@ export default defineConfig({
   info: {
     id: 'karin-plugin-kkk',
     name: 'karin-plugin-kkk',
-    description: 'Karin 的「抖音」「B站」「快手」视频解析/动态推送插件',
+    description: 'Karin 的「抖音」「B站」视频解析/动态推送插件',
     icon: {
       name: 'verified ',
       color: '#FFFF55'
