@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 
 import Client, { amagiClient } from '@ikenxuan/amagi'
-import karin, { logger, Message, segment } from 'node-karin'
+import karin, { type Contact, logger, Message, segment } from 'node-karin'
 import { AxiosHeaders, Method, RawAxiosRequestHeaders } from 'node-karin/axios'
 
 import { baseHeaders, Common, Config, mergeFile, Networks } from '@/module/utils'
@@ -147,10 +147,19 @@ export const Count = (count: number): string => {
  */
 export const uploadFile = async (event: Message, file: fileInfo, videoUrl: string, options?: uploadFileOptions): Promise<boolean> => {
   let sendStatus: boolean = true
-  let File: Buffer | string; let newFileSize = file.totalBytes
+  let File: Buffer | string
+  let newFileSize = file.totalBytes
+  let selfId: string
+  let contact: Contact
 
-  const selfId = event.selfId || options?.activeOption?.uin as string
-  const contact = event.contact || karin.contactGroup(options?.activeOption?.group_id as string) || karin.contactFriend(selfId)
+  if (options?.active) {
+    selfId = options?.activeOption?.uin as string
+    contact = karin.contactGroup(options?.activeOption?.group_id as string)
+  } else {
+    selfId = event.selfId
+    contact = event.contact
+  }
+
   // 判断是否需要压缩后再上传
   if (Config.upload.compress && (file.totalBytes > Config.upload.compresstrigger)) {
     const Duration = await mergeFile('获取指定视频文件时长', { path: file.filepath })
@@ -193,7 +202,6 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
     if (options?.active) {
       if (options.useGroupFile) { // 是群文件
         const bot = karin.getBot(String(options.activeOption?.uin))!
-        const contact = karin.contactGroup(String(options.activeOption?.group_id))
         logger.mark(`视频大小: ${newFileSize.toFixed(1)}MB 正通过文件上传中...`)
         const status = await bot.uploadFile(contact, File, file.originTitle ? `${file.originTitle}.mp4` : `${File.split('/').pop()}`)
         status ? sendStatus = true : sendStatus = false
