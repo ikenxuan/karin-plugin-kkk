@@ -1,4 +1,4 @@
-import { getDouyinData } from '@ikenxuan/amagi'
+import { DySearchInfo } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
 
 import {
@@ -244,8 +244,8 @@ export class DouYinpush extends Base {
     try {
       for (const item of userList) {
         const sec_uid = item.sec_uid
-        const videolist = await getDouyinData('用户主页视频列表数据', Config.cookies.douyin, { sec_uid })
-        const userinfo = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid })
+        const videolist = await this.amagi.getDouyinData('用户主页视频列表数据', { sec_uid })
+        const userinfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid })
 
         // 获取该用户的所有订阅群组
         const subscriptions = await douyinDB.getUserSubscribedGroups(sec_uid)
@@ -306,7 +306,7 @@ export class DouYinpush extends Base {
         const liveStatus = await douyinDB.getLiveStatus(sec_uid)
 
         if (userinfo.user.live_status === 1) {
-          const liveInfo = await getDouyinData('直播间信息数据', Config.cookies.douyin, { sec_uid: userinfo.user.sec_uid })
+          const liveInfo = await this.amagi.getDouyinData('直播间信息数据', { sec_uid: userinfo.user.sec_uid })
 
           // 如果之前没有直播，现在开播了，需要推送
           if (!liveStatus.living) {
@@ -382,7 +382,7 @@ export class DouYinpush extends Base {
    * @param data 抖音的搜索结果数据。需要接口返回的原始数据
    * @returns 操作成功或失败的消息字符串。
    */
-  async setting (data: any): Promise<void> {
+  async setting (data: DySearchInfo): Promise<void> {
     const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
     const config = Config.pushlist // 读取配置文件
     const groupId = 'groupId' in this.e && this.e.groupId ? this.e.groupId : ''
@@ -394,7 +394,7 @@ export class DouYinpush extends Base {
         index++
       }
       const sec_uid = data.data[index].user_list[0].user_info.sec_uid
-      const UserInfoData = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid })
+      const UserInfoData = await this.amagi.getDouyinData('用户主页数据', { sec_uid })
 
       /** 处理抖音号 */
       let user_shortid
@@ -490,6 +490,9 @@ export class DouYinpush extends Base {
     await this.syncConfigToDatabase()
     const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
 
+    // 获取当前群组的所有订阅
+    const subscriptions = await douyinDB.getGroupSubscriptions(groupInfo.groupId)
+
     if (Config.pushlist.douyin.length === 0) {
       await this.e.reply(`当前群：${groupInfo.groupName}(${groupInfo.groupId})\n没有设置任何抖音博主推送！\n可使用「#设置抖音推送 + 抖音号」进行设置`)
       return
@@ -497,8 +500,9 @@ export class DouYinpush extends Base {
 
     const renderOpt: Record<string, string>[] = []
 
-    for (const item of Config.pushlist.douyin) {
-      const userInfo = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid: item.sec_uid })
+    for (const subscription of subscriptions) {
+      const sec_uid = subscription.get('sec_uid') as string
+      const userInfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
 
       renderOpt.push({
         avatar_img: userInfo.user.avatar_larger.url_list[0],
@@ -576,7 +580,7 @@ export class DouYinpush extends Base {
     if (updateList.length > 0) {
       for (const i of updateList) {
         // 从外部数据源获取用户备注信息
-        const userinfo = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid: i.sec_uid })
+        const userinfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid: i.sec_uid })
         const remark = userinfo.user.nickname
 
         // 在配置文件中找到对应的用户，并更新其备注信息

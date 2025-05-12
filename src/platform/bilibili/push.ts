@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import { BiliVideoPlayurlIsLogin, getBilibiliData } from '@ikenxuan/amagi'
+import { BiliUserProfile, BiliVideoPlayurlIsLogin, getBilibiliData } from '@ikenxuan/amagi'
 import { AdapterType, common, ImageElement, karin, logger, Message, segment, SendMsgResults } from 'node-karin'
 
 import {
@@ -594,7 +594,7 @@ export class Bilibilipush extends Base {
    * @param data 包含 card 对象。
    * @returns 操作成功或失败的消息字符串。
    */
-  async setting (data: any): Promise<void> {
+  async setting (data: BiliUserProfile): Promise<void> {
     const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
     const host_mid = Number(data.data.card.mid)
     const config = Config.pushlist // 读取配置文件
@@ -768,9 +768,11 @@ export class Bilibilipush extends Base {
   async renderPushList () {
     await this.syncConfigToDatabase()
     const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
-    const groupId = 'groupId' in this.e && this.e.groupId ? this.e.groupId : ''
 
-    if (Config.pushlist.bilibili.length === 0) {
+    // 获取当前群组的所有订阅
+    const subscriptions = await bilibiliDB.getGroupSubscriptions(groupInfo.groupId)
+
+    if (subscriptions.length === 0) {
       await this.e.reply(`当前群：${groupInfo.groupName}(${groupInfo.groupId})\n没有设置任何B站UP推送！\n可使用「#设置B站推送 + UP主UID」进行设置`)
       return
     }
@@ -778,9 +780,10 @@ export class Bilibilipush extends Base {
     /** 用户的今日动态列表 */
     const renderOpt: Record<string, string>[] = []
 
-    for (const item of Config.pushlist.bilibili) {
-      // 现在可以直接使用 get 方法而不需要类型断言
-      const userInfo = await getBilibiliData('用户主页数据', Config.cookies.bilibili, { host_mid: item.host_mid })
+    // 获取所有订阅UP主的信息
+    for (const subscription of subscriptions) {
+      const host_mid = subscription.get('host_mid') as number
+      const userInfo = await this.amagi.getBilibiliData('用户主页数据', { host_mid, typeMode: 'strict' })
 
       renderOpt.push({
         avatar_img: userInfo.data.card.face,

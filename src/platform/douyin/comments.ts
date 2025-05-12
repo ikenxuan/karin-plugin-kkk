@@ -26,12 +26,12 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
     const digg_count = data.comments[i].digg_count
     const imageurl =
       data.comments[i].image_list &&
-        data.comments[i].image_list[0] &&
-        data.comments[i].image_list[0].origin_url &&
-        data.comments[i].image_list[0].origin_url.url_list
-        ? data.comments[i].image_list[0].origin_url.url_list[0]
+        data.comments[i].image_list?.[0] &&
+        data.comments[i].image_list?.[0].origin_url &&
+        data.comments[i].image_list?.[0].origin_url.url_list
+        ? data.comments[i].image_list?.[0].origin_url.url_list[0]
         : null
-    const status_label = data.comments[i].label_list ? data.comments[i].label_list[0].text : null
+    const status_label = data.comments[i].label_list?.[0]?.text ?? null
     const userintextlongid =
       data.comments[i].text_extra && data.comments[i].text_extra[0] && data.comments[i].text_extra[0].sec_uid
         ? data.comments[i].text_extra[0].sec_uid && data.comments[i].text_extra.map((extra: { sec_uid: string }) => extra.sec_uid)
