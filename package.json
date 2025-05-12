@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.23.0",
-    "@ikenxuan/amagi": "^4.4.12",
+    "@ikenxuan/amagi": "^4.4.15",
     "@karinjs/md-html": "^1.1.6",
     "@karinjs/plugin-puppeteer": "^1.0.10",
     "@types/cors": "^2.8.17",
@@ -62,7 +62,7 @@
     "heic-convert": "^2.1.0",
     "http-proxy-middleware": "^3.0.3",
     "neostandard": "^0.11.9",
-    "node-karin": "^1.8.13",
+    "node-karin": "^1.9.2",
     "qrcode": "^1.5.4",
     "sort-package-json": "^2.15.1",
     "tsx": "^4.19.3",

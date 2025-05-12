@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 
 import { BiliVideoPlayurlIsLogin, getBilibiliData } from '@ikenxuan/amagi'
-import { AdapterType, common, ImageElement, karin, logger, Message, segment } from 'node-karin'
+import { AdapterType, common, ImageElement, karin, logger, Message, segment, SendMsgResults } from 'node-karin'
 
 import {
   Base,
@@ -361,11 +361,12 @@ export class Bilibilipush extends Base {
 
       // 遍历 targets 数组，并发送消息
       for (const target of data[dynamicId].targets) {
-        let status: any
+        let status: SendMsgResults | null = null
         if (!skip) {
           const { groupId, botId } = target
           const bot = karin.getBot(botId) as AdapterType
-          status = await karin.sendMsg(String(botId), karin.contactGroup(groupId), img ? [...img] : [])
+          const Contact = karin.contactGroup(groupId)
+          status = await bot.sendMsg(Contact, img ? [...img] : [])
           if (Config.bilibili.push.parsedynamic) {
             switch (data[dynamicId].dynamic_type) {
               case 'DYNAMIC_TYPE_AV': {
@@ -399,6 +400,16 @@ export class Bilibilipush extends Base {
                   playUrlData.data.accept_description = correctList.accept_description
                   /** 获取第一个视频流的大小 */
                   videoSize = await getvideosize(correctList.videoList[0].base_url, playUrlData.data.dash.audio[0].base_url, dynamicCARDINFO.data.card.desc.bvid)
+                  if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) && !Config.upload.compress) {
+                    await bot.sendMsg(
+                      Contact,
+                      [
+                        segment.text(`设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n视频太大了，还是去B站看吧~`),
+                        segment.reply(status.messageId)
+                      ]
+                    )
+                    break
+                  }
                   logger.mark(`当前处于自动推送状态，解析到的视频大小为 ${logger.yellow(Number(videoSize))} MB`)
                   const infoData = await this.amagi.getBilibiliData('单个视频作品数据', { bvid: dynamicCARDINFO.data.card.desc.bvid, typeMode: 'strict' })
                   const mp4File = await downloadFile(
@@ -435,7 +446,7 @@ export class Bilibilipush extends Base {
                             // 使用文件上传
                             return await uploadFile(
                               this.e,
-                              { filepath: filePath, totalBytes: fileSizeInMB },
+                              { filepath: filePath, totalBytes: fileSizeInMB, originTitle: `${infoData.data.desc.substring(0, 50).replace(/[\\/:\*\?"<>\|\r\n\s]/g, ' ')}` },
                               '',
                               { useGroupFile: true, active: true, activeOption: { group_id: groupId, uin: botId } })
                           } else {
@@ -471,7 +482,7 @@ export class Bilibilipush extends Base {
           }
         }
 
-        if (skip || status?.message_id) {
+        if (skip || (status && status?.messageId)) {
           // 使用新的数据库API添加动态缓存
           await bilibiliDB.addDynamicCache(
             dynamicId,
