@@ -493,7 +493,7 @@ export class DouYinpush extends Base {
     // 获取当前群组的所有订阅
     const subscriptions = await douyinDB.getGroupSubscriptions(groupInfo.groupId)
 
-    if (Config.pushlist.douyin.length === 0) {
+    if (subscriptions.length === 0) {
       await this.e.reply(`当前群：${groupInfo.groupName}(${groupInfo.groupId})\n没有设置任何抖音博主推送！\n可使用「#设置抖音推送 + 抖音号」进行设置`)
       return
     }
