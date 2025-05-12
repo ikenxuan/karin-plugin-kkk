@@ -1,5 +1,26 @@
 # 变更日志
 
+## [1.6.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.5.0...v1.6.0) (2025-05-12)
+
+
+### Features
+
+* 细优 close [#85](https://github.com/ikenxuan/karin-plugin-kkk/issues/85) ([1f29c68](https://github.com/ikenxuan/karin-plugin-kkk/commit/1f29c680075460edbd4faa0329a58ffa96f9a944))
+* 给B站推送添加画质偏好配置 ([471a84a](https://github.com/ikenxuan/karin-plugin-kkk/commit/471a84a445e06a75891883306e7211a9d04ce0fb))
+
+
+### Bug Fixes
+
+* **bilibili:** 适配UP关闭评论区 ([f3af874](https://github.com/ikenxuan/karin-plugin-kkk/commit/f3af8743e09a86a6a1ab7954ede81649c86c0607))
+* close [#83](https://github.com/ikenxuan/karin-plugin-kkk/issues/83) ([e0f0156](https://github.com/ikenxuan/karin-plugin-kkk/commit/e0f01568597e351788be832e8175b50aebb3de38))
+* **db:** 重构数据库初始化及配置同步逻辑 ([b5c4a89](https://github.com/ikenxuan/karin-plugin-kkk/commit/b5c4a89398ebbdaf96af3fd3332cc6797288a7d8))
+* key重复 ([589cc28](https://github.com/ikenxuan/karin-plugin-kkk/commit/589cc28f0bb8667640db5be80212d72fdaba2a89))
+* **utils:** 重构文件下载和上传功能，提取公共方法。燃尽了 ([7ff6e8a](https://github.com/ikenxuan/karin-plugin-kkk/commit/7ff6e8aca7849c09fc917d3df179b909cea69bee))
+* 优化推送逻辑 close [#86](https://github.com/ikenxuan/karin-plugin-kkk/issues/86) ([8fd48f5](https://github.com/ikenxuan/karin-plugin-kkk/commit/8fd48f508c0cf984efebb0c6007bdc8cbc06cb36))
+* 坠机了 ([471a84a](https://github.com/ikenxuan/karin-plugin-kkk/commit/471a84a445e06a75891883306e7211a9d04ce0fb))
+* 奇怪的bug ([029b005](https://github.com/ikenxuan/karin-plugin-kkk/commit/029b005505657f656d9004102b909486be66d6ea))
+* 移除多余amagi实例化并更新依赖版本 ([0c2dece](https://github.com/ikenxuan/karin-plugin-kkk/commit/0c2decee87de417c84894f80e3f047f786675e43))
+
 ## [1.5.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.4.1...v1.5.0) (2025-05-04)
 
 
