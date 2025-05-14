@@ -192,8 +192,8 @@ export class DouYinpush extends Base {
                 if (Config.douyin.autoResolution) {
                   logger.debug(`开始排除不符合条件的视频分辨率；\n
                     共拥有${logger.yellow(Detail_Data.video.bit_rate.length)}个视频源\n
-                    视频ID：${logger.green(Detail_Data.VideoData.aweme_detail.aweme_id)}\n
-                    分享链接：${logger.green(Detail_Data.VideoData.aweme_detail.share_url)}
+                    视频ID：${logger.green(Detail_Data.aweme_id)}\n
+                    分享链接：${logger.green(Detail_Data.share_url)}
                     `)
                   const videoObj = douyinProcessVideos(Detail_Data.video.bit_rate, Config.upload.filelimit)
                   downloadUrl = await new Networks({
@@ -247,19 +247,10 @@ export class DouYinpush extends Base {
         const videolist = await this.amagi.getDouyinData('用户主页视频列表数据', { sec_uid })
         const userinfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid })
 
-        // 获取该用户的所有订阅群组
-        const subscriptions = await douyinDB.getUserSubscribedGroups(sec_uid)
-        const targets = []
-
-        for (const sub of subscriptions) {
-          const groupId = sub.get('groupId') as string
-          // 获取群组信息
-          const groupModel = await douyinDB.getGroupById(groupId)
-          if (groupModel) {
-            const botId = groupModel.get('botId') as string
-            targets.push({ groupId, botId })
-          }
-        }
+        const targets = item.group_id.map(groupWithBot => {
+          const [groupId, botId] = groupWithBot.split(':')
+          return { groupId, botId }
+        })
 
         // 如果没有订阅群组，跳过该用户
         if (targets.length === 0) continue
