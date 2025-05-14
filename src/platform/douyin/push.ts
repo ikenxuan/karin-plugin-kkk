@@ -244,8 +244,8 @@ export class DouYinpush extends Base {
     try {
       for (const item of userList) {
         const sec_uid = item.sec_uid
-        const videolist = await this.amagi.getDouyinData('用户主页视频列表数据', { sec_uid })
-        const userinfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid })
+        const videolist = await this.amagi.getDouyinData('用户主页视频列表数据', { sec_uid, typeMode: 'strict' })
+        const userinfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
 
         const targets = item.group_id.map(groupWithBot => {
           const [groupId, botId] = groupWithBot.split(':')
@@ -297,7 +297,7 @@ export class DouYinpush extends Base {
         const liveStatus = await douyinDB.getLiveStatus(sec_uid)
 
         if (userinfo.user.live_status === 1) {
-          const liveInfo = await this.amagi.getDouyinData('直播间信息数据', { sec_uid: userinfo.user.sec_uid })
+          const liveInfo = await this.amagi.getDouyinData('直播间信息数据', { sec_uid: userinfo.user.sec_uid, typeMode: 'strict' })
 
           // 如果之前没有直播，现在开播了，需要推送
           if (!liveStatus.living) {
@@ -385,7 +385,7 @@ export class DouYinpush extends Base {
         index++
       }
       const sec_uid = data.data[index].user_list[0].user_info.sec_uid
-      const UserInfoData = await this.amagi.getDouyinData('用户主页数据', { sec_uid })
+      const UserInfoData = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
 
       /** 处理抖音号 */
       let user_shortid
@@ -571,7 +571,7 @@ export class DouYinpush extends Base {
     if (updateList.length > 0) {
       for (const i of updateList) {
         // 从外部数据源获取用户备注信息
-        const userinfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid: i.sec_uid })
+        const userinfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid: i.sec_uid, typeMode: 'strict' })
         const remark = userinfo.user.nickname
 
         // 在配置文件中找到对应的用户，并更新其备注信息
