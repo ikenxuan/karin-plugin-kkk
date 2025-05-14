@@ -41,6 +41,7 @@ displayContent:
   - title
   - author
   - stats
+  - desc
 
 # B站推送相关配置
 push: 
