@@ -450,6 +450,34 @@ export default defineConfig({
                   })
                 ]
               }),
+              components.checkbox.group('displayContent', {
+                label: '评论解析前返回的内容',
+                description: '若什么都不选，则不会返回任何视频相关信息',
+                orientation: 'horizontal',
+                defaultValue: all.bilibili.displayContent,
+                checkbox: [
+                  components.checkbox.create('displayContent:checkbox:1', {
+                    label: '封面',
+                    value: 'cover'
+                  }),
+                  components.checkbox.create('displayContent:checkbox:2', {
+                    label: '标题',
+                    value: 'title'
+                  }),
+                  components.checkbox.create('displayContent:checkbox:3', {
+                    label: '作者',
+                    value: 'author'
+                  }),
+                  components.checkbox.create('displayContent:checkbox:4', {
+                    label: '视频统计信息',
+                    value: 'stats'
+                  }),
+                  components.checkbox.create('displayContent:checkbox:5', {
+                    label: '简介',
+                    value: 'desc'
+                  })
+                ]
+              }),
               components.divider.create('divider-bilibili-1', {
                 description: 'B站推送相关',
                 descPosition: 20
