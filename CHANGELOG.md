@@ -1,5 +1,12 @@
 # 变更日志
 
+## [1.6.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.1...v1.6.2) (2025-05-14)
+
+
+### Bug Fixes
+
+* vipStatus ([f7f1a80](https://github.com/ikenxuan/karin-plugin-kkk/commit/f7f1a8096acaa01388b8e2b04137c8d60f95c683))
+
 ## [1.6.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.0...v1.6.1) (2025-05-14)
 
 
