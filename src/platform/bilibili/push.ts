@@ -366,7 +366,7 @@ export class Bilibilipush extends Base {
           const { groupId, botId } = target
           const bot = karin.getBot(botId) as AdapterType
           const Contact = karin.contactGroup(groupId)
-          status = await bot.sendMsg(Contact, img ? [...img] : [])
+          status = await karin.sendMsg(botId, Contact, img ? [...img] : [])
           if (Config.bilibili.push.parsedynamic) {
             switch (data[dynamicId].dynamic_type) {
               case 'DYNAMIC_TYPE_AV': {
@@ -401,7 +401,8 @@ export class Bilibilipush extends Base {
                   /** 获取第一个视频流的大小 */
                   videoSize = await getvideosize(correctList.videoList[0].base_url, playUrlData.data.dash.audio[0].base_url, dynamicCARDINFO.data.card.desc.bvid)
                   if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) && !Config.upload.compress) {
-                    await bot.sendMsg(
+                    await karin.sendMsg(
+                      botId,
                       Contact,
                       [
                         segment.text(`设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n视频太大了，还是去B站看吧~`),

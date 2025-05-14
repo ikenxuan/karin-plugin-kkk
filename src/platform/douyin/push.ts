@@ -169,7 +169,7 @@ export class DouYinpush extends Base {
           const bot = karin.getBot(botId) as AdapterType
           const Contact = karin.contactGroup(groupId)
           // 发送消息
-          status = await bot.sendMsg(Contact, img ? [...img] : [])
+          status = await karin.sendMsg(botId, Contact, img ? [...img] : [])
 
           // 如果是直播推送，更新直播状态
           if (pushItem.living && 'room_data' in pushItem.Detail_Data && status.message_id) {
