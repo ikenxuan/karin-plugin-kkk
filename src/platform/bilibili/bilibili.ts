@@ -685,7 +685,7 @@ export class Bilibili extends Base {
 }
 
 function checkvip (member: any) {
-  return member.vip.vipStatus || member.vip.status === 1
+  return member.vip.status === 1
     ? `<span style="color: ${member.vip.nickname_color ?? '#FB7299'}; font-weight: 700;">${member.name}</span>`
     : `<span style="color: ${Common.useDarkTheme() ? '#e9e9e9' : '#313131'}; font-weight: 700;">${member.name}</span>`
 }

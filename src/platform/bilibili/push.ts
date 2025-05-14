@@ -818,7 +818,7 @@ function br (data: string): string {
  */
 function checkvip (member: any): string {
   // 根据VIP状态选择不同的颜色显示成员名称
-  return member.vip.vipStatus === 1
+  return member.vip.status === 1
     ? `<span style="color: ${member.vip.nickname_color ?? '#FB7299'}; font-weight: 700;">${member.name}</span>`
     : `<span style="color: ${Common.useDarkTheme() ? '#EDEDED' : '#606060'}">${member.name}</span>`
 }
