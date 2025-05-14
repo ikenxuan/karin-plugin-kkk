@@ -1,5 +1,15 @@
 # 变更日志
 
+## [1.6.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.0...v1.6.1) (2025-05-14)
+
+
+### Bug Fixes
+
+* close [#88](https://github.com/ikenxuan/karin-plugin-kkk/issues/88) ([8ef73bc](https://github.com/ikenxuan/karin-plugin-kkk/commit/8ef73bc2fc1c24b43070d93adc3a1d3180231926))
+* send msg ([884b8e0](https://github.com/ikenxuan/karin-plugin-kkk/commit/884b8e0a27b9973ddf576923f2fd0e5d35bd04c8))
+* 简化抖音推送群组目标处理逻辑 ([f32d971](https://github.com/ikenxuan/karin-plugin-kkk/commit/f32d9718817dfb1e7ef6141a49d8a12245bccdef))
+* 类型安全 ([1cf5f7f](https://github.com/ikenxuan/karin-plugin-kkk/commit/1cf5f7f4132a6f478ca821132baa88a246e80df3))
+
 ## [1.6.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.5.0...v1.6.0) (2025-05-12)
 
 
