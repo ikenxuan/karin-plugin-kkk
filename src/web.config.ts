@@ -619,12 +619,12 @@ export default defineConfig({
               }),
               components.switch.create('tip', {
                 label: '解析提示',
-                description: '抖音解析提示，发送提示信息：“检测到快手链接，开始解析”',
+                description: '快手解析提示，发送提示信息：“检测到快手链接，开始解析”',
                 defaultSelected: all.kuaishou.tip
               }),
               components.switch.create('comment', {
                 label: '评论解析',
-                description: '快手评论解析，开启后可发送抖音作品评论图',
+                description: '快手评论解析，开启后可发送快手作品评论图',
                 defaultSelected: all.kuaishou.comment
               }),
               components.input.number('numcomment', {
