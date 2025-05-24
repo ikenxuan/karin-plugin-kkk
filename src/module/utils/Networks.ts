@@ -205,18 +205,24 @@ export class Networks {
 
   /** 最终地址（跟随重定向） */
   async getLongLink (url = ''): Promise<string> {
+    let errorMsg = `获取链接重定向失败: ${this.url || url}`
     try {
       const response = await this.axiosInstance.get(this.url || url)
       return response.request.res.responseUrl
     } catch (error) {
       const axiosError = error as AxiosError
-      if (axiosError.response && axiosError.response.status === 302) {
-        // 获取重定向地址
-        const redirectUrl = axiosError.response.headers.location
-        // 递归调用，直到获取最终地址
-        return this.getLongLink(redirectUrl)
+      if (axiosError.response) {
+        if (axiosError.response.status === 302) {
+          const redirectUrl = axiosError.response.headers.location
+          return await this.getLongLink(redirectUrl)
+        } else if (axiosError.response.status === 403) { // 403 Forbidden
+          errorMsg = `获取链接重定向失败: 403 Forbidden - ${this.url || url}`
+          logger.error(errorMsg)
+          return errorMsg
+        }
       }
-      throw error
+      logger.error(errorMsg)
+      return errorMsg
     }
   }
 

@@ -112,7 +112,7 @@ export class DouYinpush extends Base {
       let iddata: DouyinIdData = { is_mp4: true, type: 'one_work' }
 
       if (!skip) {
-        iddata = await getDouyinID(Detail_Data.share_url ?? 'https://live.douyin.com/' + Detail_Data.room_data?.owner.web_rid, false)
+        iddata = await getDouyinID(this.e, Detail_Data.share_url ?? 'https://live.douyin.com/' + Detail_Data.room_data?.owner.web_rid, false)
       }
 
       if (!skip) {

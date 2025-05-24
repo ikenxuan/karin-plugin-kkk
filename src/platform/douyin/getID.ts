@@ -1,4 +1,4 @@
-import { logger } from 'node-karin'
+import { logger, Message } from 'node-karin'
 
 import { Networks } from '@/module/utils'
 import { DouyinDataTypes } from '@/types'
@@ -11,12 +11,13 @@ export interface DouyinIdData {
 }
 
 /**
- *
+ * 获取抖音作品ID
+ * @param event 消息事件
  * @param url 分享链接
  * @param log 输出日志，默认true
  * @returns
  */
-export async function getDouyinID (url: string, log = true): Promise<DouyinIdData> {
+export async function getDouyinID (event: Message, url: string, log = true): Promise<DouyinIdData> {
   const longLink = await new Networks({
     url,
     headers: {
@@ -24,6 +25,9 @@ export async function getDouyinID (url: string, log = true): Promise<DouyinIdDat
     }
   }).getLongLink()
   let result = {} as DouyinIdData
+  if (longLink.includes('失败')) {
+    await event.reply(longLink)
+  }
 
   switch (true) {
     case longLink.includes('webcast.amemv.com'):

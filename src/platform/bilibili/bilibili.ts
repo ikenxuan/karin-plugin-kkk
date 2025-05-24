@@ -100,7 +100,7 @@ export class Bilibili extends Base {
             cid: iddata.p ? (infoData.data.pages[iddata.p - 1]?.cid ?? infoData.data.cid) : infoData.data.cid
           }) + '&platform=html5',
           headers: this.headers
-        }).getData()
+        }).getData() as BiliBiliVideoPlayurlNoLogin
 
         // 构建回复内容数组
         const replyContent: SendMessage = []
@@ -167,7 +167,7 @@ export class Bilibili extends Base {
               CommentLength: String(commentsdata.length),
               share_url: 'https://b23.tv/' + infoData.data.bvid,
               Clarity: Config.bilibili.videopriority === true ? nockData.data.accept_description[0] : correctList.accept_description[0],
-              VideoSize: Config.bilibili.videopriority === true ? (nockData.data.durl[0].size / (1024 * 1024)).toFixed(2) : videoSize,
+              VideoSize: Config.bilibili.videopriority === true ? (nockData.data.durl[0].size! / (1024 * 1024)).toFixed(2) : videoSize,
               ImageLength: 0,
               shareurl: 'https://b23.tv/' + infoData.data.bvid
             })
