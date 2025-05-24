@@ -1,8 +1,6 @@
 # karin-plugin-kkk
 
-🦄 **_Karin 的「抖音」「B 站」「快手」视频解析/动态推送插件_**
-
-PS: 快手暂不支持推送
+🦄 **_Karin 的「抖音」「B 站」视频解析/动态推送插件_**
 
 ## ⬇️ 安装
 
@@ -10,8 +8,8 @@ PS: 快手暂不支持推送
    <details>
    <summary>点击展开</summary>
 
-  在 **Karin 根目录** 下运行
-
+  在 **Karin 根目录** 下运行<br />
+  手动更新时更新也可以使用该命令
   ```sh
   pnpm add karin-plugin-kkk@latest -w
   ```
@@ -20,35 +18,12 @@ PS: 快手暂不支持推送
 
 <br />
 
-- 克隆编译产物 **`build 分支`**（比较推荐）
+- ~~克隆编译产物 **`build 分支`**（比较推荐）~~
    <details>
    <summary>点击展开</summary>
 
-  1.  克隆源码
-
-  ```sh
-  git clone --depth=1 -b build https://github.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-kkk/
-  ```
-
-   <details>
-   <summary>如果你的 git 无法访问至 Github...点击打开查看解决方法</summary>
-
-  > 若克隆无法连接到 Github，可以使用 GitHub Proxy 提供的镜像加速克隆
-  > 建议收藏 [GitHub Proxy 最新地址发布](https://ghproxy.link/) 站点，以免镜像站被 GFW 封锁导致克隆失败
-  >
-  > ```sh
-  > git clone --depth=1 -b build https://ghgo.xyz/https://github.com/ikenxuan/karin-plugin-kkk.git ./plugins/karin-plugin-kkk/
-  > ```
-
-   </details>
-   <br>
-
-  2.  安装依赖
-      安装依赖，在 **Karin 根目录** 下运行
-
-  ```sh
-  pnpm install --filter=karin-plugin-kkk
-  ```
+   由于上游框架 Karin 有全面拥抱 `包模块化` 的嫌疑，所以使用 git clone 安装的方法 **不再推荐**<br />
+   若实在需使用该安装方法，请自行切换到 `build` 分支，安装教程不多赘述
 
    </details>
 
@@ -71,28 +46,17 @@ PS: 快手暂不支持推送
 git clone https://github.com/你的GitHub用户名/karin-plugin-kkk.git
 ```
 
-3. 进入项目目录
-
-```sh
-cd karin-plugin-kkk/
-```
-
-4. 初始化开发环境
-
+1. 初始化开发环境
+以下命令同 `pnpm i`
 ```sh
 pnpm run init
 ```
 
-5. 安装依赖
-
+5. 启动开发环境
+以下命令任选一个即可
 ```sh
-pnpm install
-```
-
-6. 启动开发环境
-
-```sh
-pnpm dev
+pnpm dev    # tsx 直接运行，不自动重启
+pnpm watch  # tsx 监听文件变化并自动重启
 ```
 
 </details>
@@ -124,16 +88,6 @@ pnpm dev
 - [www.douyin.com](https://www.douyin.com) & [www.bilibili.com](https://www.bilibili.com) & [www.kuaishou.com](https://www.kuaishou.com)
 
 本项目的开发参考了以下开源项目部分代码，排名不分先后
-
-**部分代码借鉴**
-
-- [xfdown/xiaofei-plugin](https://gitee.com/xfdown/xiaofei-plugin)
-- [kyrzy0416/rconsole-plugin](https://gitee.com/kyrzy0416/rconsole-plugin)
-- [think-first-sxs/reset-qianyu-plugin](https://gitee.com/think-first-sxs/reset-qianyu-plugin)
-- [yeyang52/yenai-plugin](https://github.com/yeyang52/yenai-plugin)
-- [XasYer/Shiranai-Plugin](https://github.com/XasYer/Shiranai-Plugin)
-- [XasYer/YePanel](https://github.com/XasYer/YePanel)
-- 更多待补充...
 
 **接口文档与加密参数算法**
 
