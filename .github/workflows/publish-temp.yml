@@ -99,7 +99,6 @@ jobs:
           # 在工作流摘要中添加信息 (使用正确的命令)
           echo "## Published Packages :package:" >> $GITHUB_STEP_SUMMARY
           echo "version: \`${{ env.PKG_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "commit: [\`${{ env.SHORT_COMMIT_HASH }}\`](${{ env.REPO_URL }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "use pnpm:" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
@@ -148,6 +147,10 @@ jobs:
                installUrl = '无法获取安装 URL'; // 提供错误信息
             }
             
+            // 简化安装URL格式为 包名@短哈希
+            const repoName = context.repo.repo; // 获取仓库名
+            const simplifiedUrl = `https://pkg.pr.new/${repoName}@${shortSha}`;
+            
             // 获取Stackblitz链接
             let stackblitzUrl = '';
             try {
@@ -160,34 +163,22 @@ jobs:
                console.error('无法读取或解析 output.json 获取 Stackblitz URL:', error);
             }
             
-            // 简化安装URL格式为 包名@短哈希
-            const repoName = context.repo.repo; // 获取仓库名
-            const simplifiedUrl = `https://pkg.pr.new/${repoName}@${shortSha}`;
-            
-            // 获取Stackblitz链接
-            let stackblitzUrl = '';
-            for (const template of output.templates) {
-              stackblitzUrl = template.url;
-              break; // 只取第一个模板的URL
-            }
-            
             // 获取当前中国标准时间
             const now = new Date();
             // 转换为北京时间 (UTC+8)
             now.setHours(now.getHours() + 8);
             const cstTime = now.toISOString().replace('T', ' ').substring(0, 19);
             
-            // 构建与摘要类似的评论内容 (确保使用从 output.json 获取的 installUrl)
+            // 构建与摘要类似的评论内容 (使用简化后的URL)
             const body = `## Published Packages :package:
             
             version: \`${process.env.PKG_VERSION}\`
-            commit: [\`${shortSha}\`](${commitUrl})
             
             ${stackblitzUrl ? `[Open in Stackblitz](${stackblitzUrl})` : ''}
             
             use pnpm:
             \`\`\`
-            pnpm add ${installUrl || '无法获取安装 URL'} -w 
+            pnpm add ${simplifiedUrl || '无法获取安装 URL'} -w 
             \`\`\`
             
             pack time: <code>${cstTime} (CST)</code>`;
