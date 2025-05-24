@@ -1,5 +1,13 @@
 # 变更日志
 
+## [1.6.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.2...v1.6.3) (2025-05-24)
+
+
+### Bug Fixes
+
+* close [#94](https://github.com/ikenxuan/karin-plugin-kkk/issues/94) ([6ded26c](https://github.com/ikenxuan/karin-plugin-kkk/commit/6ded26cc38c3b5c8425fd04363adfbe0b689e3d1))
+* uploadFile API uses local absolute paths ([#93](https://github.com/ikenxuan/karin-plugin-kkk/issues/93)) ([09613ff](https://github.com/ikenxuan/karin-plugin-kkk/commit/09613ffe4567fb80652b5a49d36d76217b6d57bf))
+
 ## [1.6.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.1...v1.6.2) (2025-05-14)
 
 
