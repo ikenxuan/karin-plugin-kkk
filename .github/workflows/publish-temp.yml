@@ -148,28 +148,11 @@ jobs:
                installUrl = '无法获取安装 URL'; // 提供错误信息
             }
             
-            // 获取Stackblitz链接
-            let stackblitzUrl = '';
-            try {
-              const output = JSON.parse(fs.readFileSync('output.json', 'utf8'));
-              for (const template of output.templates) {
-                stackblitzUrl = template.url;
-                break; // 只取第一个模板的URL
-              }
-            } catch (error) {
-               console.error('无法读取或解析 output.json 获取 Stackblitz URL:', error);
-            }
-            
             // 简化安装URL格式为 包名@短哈希
             const repoName = context.repo.repo; // 获取仓库名
             const simplifiedUrl = `https://pkg.pr.new/${repoName}@${shortSha}`;
             
-            // 获取Stackblitz链接
-            let stackblitzUrl = '';
-            for (const template of output.templates) {
-              stackblitzUrl = template.url;
-              break; // 只取第一个模板的URL
-            }
+            // 注意：这里删除了重复声明的stackblitzUrl代码块
             
             // 获取当前中国标准时间
             const now = new Date();
