@@ -46,13 +46,12 @@
 git clone https://github.com/你的GitHub用户名/karin-plugin-kkk.git
 ```
 
-1. 初始化开发环境
-以下命令同 `pnpm i`
+1. 安装开发依赖
 ```sh
-pnpm run init
+`pnpm i
 ```
 
-5. 启动开发环境
+1. 启动开发环境
 以下命令任选一个即可
 ```sh
 pnpm dev    # tsx 直接运行，不自动重启

@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+body {
+  color: #1e1f20;
+  font-family: "HarmonyOSHans-Regular", "bilifont", "Noto Sans KR", "Noto Color Emoji", "FZB", Number, "PingFang SC", sans-serif;
+  transform-origin: 0 0;
+  width: 1440px;
+}

@@ -4,6 +4,7 @@ import { defineConfig, type Plugin } from 'vite'
 import { builtinModules } from 'node:module'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import vue from '@vitejs/plugin-vue'
 
 // 在ES模块中模拟__dirname
 const __filename = fileURLToPath(import.meta.url)
@@ -103,9 +104,20 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, './src'),
     },
+    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue']
   },
   plugins: [
     // dts({ rollupTypes: true }) // 生成类型声明文件
-    injectDirnamePlugin()
-  ]
+    injectDirnamePlugin(),
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => tag.includes('-')
+        }
+      }
+    })
+  ],
+  optimizeDeps: {
+    include: ['**/*.vue']
+  }
 })

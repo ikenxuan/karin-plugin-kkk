@@ -25,7 +25,9 @@
     "inlineSourceMap": false, /* 将源码映射文件内联到输出文件中 */
     "alwaysStrict": true,
     "types": [
-      "node"
+      "node",
+      "vite/client",
+      "vue"
     ],
     "noEmit": true
   },
