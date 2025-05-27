@@ -1,5 +1,12 @@
 # 变更日志
 
+## [1.6.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.3...v1.6.4) (2025-05-27)
+
+
+### Bug Fixes
+
+* **错误处理:** 添加中间件代理以处理请求错误 [#94](https://github.com/ikenxuan/karin-plugin-kkk/issues/94) ([f85fe48](https://github.com/ikenxuan/karin-plugin-kkk/commit/f85fe487d68fe04997c9eddf50e6ebe5218f89da))
+
 ## [1.6.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.2...v1.6.3) (2025-05-24)
 
 
