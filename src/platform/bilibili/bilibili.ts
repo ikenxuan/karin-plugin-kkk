@@ -166,7 +166,7 @@ export class Bilibili extends Base {
               CommentsData: commentsdata,
               CommentLength: String(commentsdata.length),
               share_url: 'https://b23.tv/' + infoData.data.bvid,
-              Clarity: Config.bilibili.videopriority === true ? nockData.data.accept_description[0] : correctList.accept_description[0],
+              Clarity: Config.bilibili.videopriority === true ? nockData.data.accept_description[0] : '"流畅 360P"',
               VideoSize: Config.bilibili.videopriority === true ? (nockData.data.durl[0].size! / (1024 * 1024)).toFixed(2) : videoSize,
               ImageLength: 0,
               shareurl: 'https://b23.tv/' + infoData.data.bvid

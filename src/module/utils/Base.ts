@@ -1,10 +1,11 @@
 import fs from 'node:fs'
 
-import Client, { amagiClient } from '@ikenxuan/amagi'
-import karin, { type Contact, logger, Message, segment } from 'node-karin'
+import Client, { amagiClient, type APIErrorType, bilibiliErrorCodeMap } from '@ikenxuan/amagi'
+import karin, { config, type Contact, logger, Message, segment } from 'node-karin'
 import { AxiosHeaders, Method, RawAxiosRequestHeaders } from 'node-karin/axios'
 
-import { baseHeaders, Common, Config, mergeFile, Networks } from '@/module/utils'
+import { baseHeaders, Common, Config, mergeFile, Networks, Render } from '@/module/utils'
+import { pushlistConfig } from '@/types/config/pushlist'
 type uploadFileOptions = {
   /** 是否使用群文件上传 */
   useGroupFile?: boolean
@@ -92,39 +93,124 @@ export class Base {
 
     this.amagi = client
     // 使用Proxy包装amagi客户端
-    // this.amagi = new Proxy(client, {
-    //   get (target: amagiClient, prop: keyof amagiClient) {
-    //     const method = target[prop]
-    //     if (typeof method === 'function') {
-    //       return async (...args: any[]) => {
-    //         const result = await Function.prototype.apply.call(method, target, args)
+    this.amagi = new Proxy(client, {
+      get (target: amagiClient, prop: keyof amagiClient) {
+        const method = target[prop]
+        if (typeof method === 'function') {
+          return async (...args: any[]) => {
+            let result = await Function.prototype.apply.call(method, target, args)
 
-    //         // 返回值检查逻辑
-    //         if (!result) {
-    //           logger.warn(`Amagi API调用 (${String(prop)}) 返回了空值`)
-    //           return result
-    //         }
+            // 返回值检查逻辑
+            if (!result) {
+              logger.warn(`Amagi API调用 (${String(prop)}) 返回了空值`)
+              return result
+            }
 
-    //         // 检查抖音数据返回结构
-    //         if (prop === 'getDouyinData' && (result.status_code !== 0)) {
-    //           logger.error(`抖音API返回数据不完整: ${JSON.stringify(result)}`)
-    //           await e.reply('抖音API返回数据不完整，请稍后再试')
-    //           throw new Error('抖音API返回数据不完整')
-    //         }
+            // 检查抖音数据返回结构
+            if (prop === 'getDouyinData' && (result.status_code !== 0)) {
+              const err = result as APIErrorType<'douyin'>
+              const img = await Render('apiError/index', err)
+              // 如果e为空对象才执行发送给主人
+              if (Object.keys(e).length === 0) {
+                const botId = statBotId(Config.pushlist)
+                const list = config.master()
+                let master = list[0]
+                if (master === 'console') {
+                  master = list[1]
+                }
+                await karin.sendMaster(botId.douyin.botId, master, [segment.text('推送任务出错！请即时解决以消除警告'), img[0]])
+                throw new Error(err.amagiMessage)
+              }
+              await e.reply(img)
+              throw new Error(err.amagiMessage)
+            }
 
-    //         // 检查哔哩哔哩数据返回结构
-    //         if (prop === 'getBilibiliData' && (result.message !== '0')) {
-    //           logger.error(`哔哩哔哩API返回数据不完整: ${JSON.stringify(result)}`)
-    //           await e.reply('哔哩哔哩API返回数据不完整，请稍后再试')
-    //           throw new Error('哔哩哔哩API返回数据不完整')
-    //         }
+            // 检查哔哩哔哩数据返回结构
+            if (prop === 'getBilibiliData' && result.code in bilibiliErrorCodeMap) {
+              const err = result as APIErrorType<'bilibili'>
+              const img = await Render('apiError/index', err)
+              // 如果e为空对象才执行发送给主人
+              if (Object.keys(e).length === 0) {
+                const botId = statBotId(Config.pushlist)
+                const list = config.master()
+                let master = list[0]
+                if (master === 'console') {
+                  master = list[1]
+                }
+                await karin.sendMaster(botId.bilibili.botId, master, [segment.text('推送任务出错！请即时解决以消除警告'), img[0]])
+                throw new Error(err.amagiMessage)
+              }
+              await e.reply(img)
+              throw new Error(err.amagiMessage)
+            }
+            return result
+          }
+        }
+        return method
+      }
+    })
+  }
+}
 
-    //         return result
-    //       }
-    //     }
-    //     return method
-    //   }
-    // })
+/** 统计每个平台使用最多的机器人ID和使用次数 */
+type PlatformBotStats = {
+  /** 机器人ID */
+  botId: string
+  /** 使用次数 */
+  count: number
+}
+
+export const statBotId = (pushList: pushlistConfig): { douyin: PlatformBotStats, bilibili: PlatformBotStats } => {
+  const platformBotCount = {
+    douyin: new Map<string, number>(),
+    bilibili: new Map<string, number>()
+  }
+
+  // 统计抖音平台机器人使用次数
+  pushList.douyin.forEach(item => {
+    item.group_id.forEach(gid => {
+      const botId = gid.split(':')[1]
+      platformBotCount.douyin.set(botId, (platformBotCount.douyin.get(botId) ?? 0) + 1)
+    })
+  })
+
+  // 统计B站平台机器人使用次数
+  pushList.bilibili.forEach(item => {
+    item.group_id.forEach(gid => {
+      const botId = gid.split(':')[1]
+      platformBotCount.bilibili.set(botId, (platformBotCount.bilibili.get(botId) ?? 0) + 1)
+    })
+  })
+
+  // 获取抖音平台使用最多的机器人
+  let douyinMaxCount = 0
+  let douyinMostFrequentBot = ''
+  platformBotCount.douyin.forEach((count, botId) => {
+    if (count > douyinMaxCount) {
+      douyinMaxCount = count
+      douyinMostFrequentBot = botId
+    }
+  })
+
+  // 获取B站平台使用最多的机器人
+  let biliMaxCount = 0
+  let biliMostFrequentBot = ''
+  platformBotCount.bilibili.forEach((count, botId) => {
+    if (count > biliMaxCount) {
+      biliMaxCount = count
+      biliMostFrequentBot = botId
+    }
+  })
+
+  return {
+    douyin: {
+      botId: douyinMostFrequentBot,
+      count: douyinMaxCount
+    },
+    bilibili: {
+      botId: biliMostFrequentBot,
+      count: biliMaxCount
+    }
   }
 }
 

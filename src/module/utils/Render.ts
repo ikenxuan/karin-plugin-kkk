@@ -22,7 +22,8 @@ export async function Render (path: string, params?: any) {
     bilibili: 'bilibili/html',
     admin: 'admin/html',
     kuaishou: 'kuaishou/html',
-    help: 'help/html'
+    help: 'help/html',
+    apiError: 'apiError/html'
   }
   const platform = Object.keys(basePaths).find(key => path.startsWith(key))!
   let newPath = path.substring(platform.length)
