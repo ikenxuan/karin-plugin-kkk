@@ -111,7 +111,7 @@ export const renderData = {
 export const help = karin.command(/^test$/, async (e) => {
   const templatePath = path.join(Version.pluginPath, 'resources/template')
 
-  const html = compileVueToHTML(renderData)
+  const html = await compileVueToHTML(renderData)
   fs.writeFileSync(join(templatePath, 'vueTest.html'), html)
 
   const renderOpt: Options = {

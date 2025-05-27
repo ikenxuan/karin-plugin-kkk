@@ -1,22 +1,23 @@
-<!DOCTYPE html>
-  <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>Generated Vue Component</title>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-      <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-      <script type="importmap">
-      {
-        "imports": {
-          "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js",
-          "lucide-vue-next": "https://cdn.jsdelivr.net/npm/lucide@0.511.0/+esm"
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f0f2f5;
+          }
+          #app {
+            display: inline-block;
+            position: relative;
+          }
           
-        }
-      }
-      </script>
-    </head>
-      <style>
-        
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 .glass-effect {
@@ -44,216 +45,45 @@
   background-repeat: no-repeat;
 }
 
-      </style>
-    <body>
-  <div id="app"></div>
-  <script type="module">
-  
-import { createCommentVNode as _createCommentVNode, createElementVNode as _createElementVNode, toDisplayString as _toDisplayString, unref as _unref, createVNode as _createVNode, renderList as _renderList, Fragment as _Fragment, openBlock as _openBlock, createElementBlock as _createElementBlock, resolveDynamicComponent as _resolveDynamicComponent, normalizeClass as _normalizeClass, createBlock as _createBlock, createStaticVNode as _createStaticVNode } from "vue"
+        </style>
+      </head>
+      <body>
+        <div id="app">
+        <div class="gradient-bg min-h-screen p-8"><div class="max-w-4xl mx-auto"><!-- 主容器 --><div class="dark-glass rounded-3xl p-8 shadow-2xl"><!-- 头部信息区域 --><div class="mb-8"><div class="flex items-center justify-between mb-6"><div class="flex items-center space-x-3"><div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center"><!----></div><div><p class="text-white font-medium text-lg">诗羽</p><p class="text-gray-300 text-sm">内容创作者</p></div></div><div class="flex items-center space-x-2 text-gray-300"><!----><span class="text-sm"></span></div></div><!-- 标题 --><div class="glass-effect rounded-2xl p-6 mb-6"><div class="flex items-start space-x-3"><!----><div><h1 class="text-white text-2xl font-bold mb-2">白虎vs眼镜 你们知道吗</h1><div class="flex items-center space-x-4 text-gray-300 text-sm"><span class="flex items-center space-x-1"><!----><span>游戏解说</span></span><span class="flex items-center space-x-1"><!----><span>热门</span></span></div></div></div></div></div><!-- 内容区域 --><div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8"><!-- 左侧：主要内容图片 --><div class="lg:col-span-2"><div class="content-image rounded-2xl h-80 lg:h-96 shadow-xl relative overflow-hidden"><div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div><div class="absolute bottom-4 left-4 right-4"><div class="glass-effect rounded-xl p-4"><p class="text-white text-sm font-medium">精彩战斗场面</p></div></div></div></div><!-- 右侧：数据统计 --><div class="space-y-4"><div class="stat-card rounded-2xl p-6 shadow-lg"><div class="flex items-center justify-between mb-4"><h3 class="text-gray-800 font-semibold flex items-center space-x-2"><!----><span>数据统计</span></h3></div><div class="grid grid-cols-2 gap-4"><!--[--><div class="bg-blue-50 text-center p-3 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play-icon lucide-play text-blue-500 w-8 h-8 mb-2 mx-auto"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg><p class="text-2xl font-bold text-gray-800">39.9万</p><p class="text-gray-600 text-sm">播放量</p></div><div class="bg-green-50 text-center p-3 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thumbs-up-icon lucide-thumbs-up text-green-500 w-8 h-8 mb-2 mx-auto"><path d="M7 10v12"></path><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"></path></svg><p class="text-2xl font-bold text-gray-800">7810</p><p class="text-gray-600 text-sm">点赞</p></div><div class="bg-purple-50 text-center p-3 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle-icon lucide-message-circle text-purple-500 w-8 h-8 mb-2 mx-auto"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg><p class="text-2xl font-bold text-gray-800">350</p><p class="text-gray-600 text-sm">弹幕</p></div><div class="bg-yellow-50 text-center p-3 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-coins-icon lucide-coins text-yellow-500 w-8 h-8 mb-2 mx-auto"><circle cx="8" cy="8" r="6"></circle><path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path><path d="M7 6h1v4"></path><path d="m16.71 13.88.7.71-2.82 2.82"></path></svg><p class="text-2xl font-bold text-gray-800">109</p><p class="text-gray-600 text-sm">投币</p></div><!--]--></div><div class="grid grid-cols-2 gap-4 mt-4"><!--[--><div class="bg-red-50 text-center p-3 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-share-icon lucide-share text-red-500 w-8 h-8 mb-2 mx-auto"><path d="M12 2v13"></path><path d="m16 6-4-4-4 4"></path><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path></svg><p class="text-xl font-bold text-gray-800">7417</p><p class="text-gray-600 text-sm">转发</p></div><div class="bg-indigo-50 text-center p-3 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star-icon lucide-star text-indigo-500 w-8 h-8 mb-2 mx-auto"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg><p class="text-xl font-bold text-gray-800">1093</p><p class="text-gray-600 text-sm">收藏</p></div><!--]--></div></div></div></div><!-- 简介区域 --><div class="glass-effect rounded-2xl p-8 shadow-xl"><div class="flex items-center space-x-3 mb-6"><div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center"><!----></div><h2 class="text-white text-2xl font-bold">内容简介</h2></div><div class="bg-white/10 rounded-xl p-6 min-h-[200px]"><p class="text-gray-200 leading-relaxed text-lg mb-4">这里是内容简介区域，可以容纳大量的文字内容。设计采用了毛玻璃效果和柔和的阴影，确保即使在长文本的情况下也能保持良好的可读性和视觉层次。</p><p class="text-gray-300 leading-relaxed">这个区域具有足够的垂直空间来容纳详细的内容描述、背景信息、制作花絮等各种类型的文字内容。布局设计考虑了内容的可扩展性，无论文字多少都能保持整体的美观和平衡。</p><!-- 标签区域 --><div class="flex flex-wrap gap-2 mt-6"><!--[--><span class="bg-blue-500/20 text-blue-200 px-3 py-1 rounded-full text-sm flex items-center space-x-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gamepad2-icon lucide-gamepad-2 w-3 h-3"><line x1="6" x2="10" y1="11" y2="11"></line><line x1="8" x2="8" y1="9" y2="13"></line><line x1="15" x2="15.01" y1="12" y2="12"></line><line x1="18" x2="18.01" y1="10" y2="10"></line><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"></path></svg><span>游戏</span></span><span class="bg-purple-500/20 text-purple-200 px-3 py-1 rounded-full text-sm flex items-center space-x-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mic-icon lucide-mic w-3 h-3"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg><span>解说</span></span><span class="bg-green-500/20 text-green-200 px-3 py-1 rounded-full text-sm flex items-center space-x-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trophy-icon lucide-trophy w-3 h-3"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg><span>竞技</span></span><!--]--></div></div></div><!-- 底部装饰 --><div class="mt-8 flex justify-center"><div class="flex space-x-4 text-gray-400"><div class="w-2 h-2 bg-current rounded-full"></div><div class="w-2 h-2 bg-current rounded-full"></div><div class="w-2 h-2 bg-current rounded-full"></div></div></div></div></div></div>
+        </div>
+        <script>
+        
+// 使用CDN方式引入lucide-vue-next
+const { User, Clock, Bookmark, Tag, Flame, TrendingUp, AlignLeft } = window['lucide-vue-next']
+// 使用CDN方式引入Vue
+const { onMounted } = Vue
 
-const _hoisted_1 = { class: "gradient-bg min-h-screen p-8" }
-const _hoisted_2 = { class: "max-w-4xl mx-auto" }
-const _hoisted_3 = { class: "dark-glass rounded-3xl p-8 shadow-2xl" }
-const _hoisted_4 = { class: "mb-8" }
-const _hoisted_5 = { class: "flex items-center justify-between mb-6" }
-const _hoisted_6 = { class: "flex items-center space-x-3" }
-const _hoisted_7 = { class: "text-white font-medium text-lg" }
-const _hoisted_8 = { class: "text-gray-300 text-sm" }
-const _hoisted_9 = { class: "flex items-center space-x-2 text-gray-300" }
-const _hoisted_10 = { class: "text-sm" }
-const _hoisted_11 = { class: "glass-effect rounded-2xl p-6 mb-6" }
-const _hoisted_12 = { class: "flex items-start space-x-3" }
-const _hoisted_13 = { class: "text-white text-2xl font-bold mb-2" }
-const _hoisted_14 = { class: "flex items-center space-x-4 text-gray-300 text-sm" }
-const _hoisted_15 = { class: "flex items-center space-x-1" }
-const _hoisted_16 = { class: "flex items-center space-x-1" }
-const _hoisted_17 = { class: "grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8" }
-const _hoisted_18 = { class: "lg:col-span-2" }
-const _hoisted_19 = { class: "content-image rounded-2xl h-80 lg:h-96 shadow-xl relative overflow-hidden" }
-const _hoisted_20 = { class: "absolute bottom-4 left-4 right-4" }
-const _hoisted_21 = { class: "glass-effect rounded-xl p-4" }
-const _hoisted_22 = { class: "text-white text-sm font-medium" }
-const _hoisted_23 = { class: "space-y-4" }
-const _hoisted_24 = { class: "stat-card rounded-2xl p-6 shadow-lg" }
-const _hoisted_25 = { class: "flex items-center justify-between mb-4" }
-const _hoisted_26 = { class: "text-gray-800 font-semibold flex items-center space-x-2" }
-const _hoisted_27 = { class: "grid grid-cols-2 gap-4" }
-const _hoisted_28 = { class: "grid grid-cols-2 gap-4 mt-4" }
-const _hoisted_29 = { class: "glass-effect rounded-2xl p-8 shadow-xl" }
-const _hoisted_30 = { class: "flex items-center space-x-3 mb-6" }
-const _hoisted_31 = { class: "w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center" }
-const _hoisted_32 = { class: "bg-white/10 rounded-xl p-6 min-h-[200px]" }
-const _hoisted_33 = { class: "text-gray-200 leading-relaxed text-lg mb-4" }
-const _hoisted_34 = { class: "text-gray-300 leading-relaxed" }
-const _hoisted_35 = { class: "flex flex-wrap gap-2 mt-6" }
+onMounted(() => {
+  // 检查是否在客户端环境
+  if (typeof window !== 'undefined') {
+    // 加载 CSS
+    const link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = 'https://cdn.jsdelivr.net/npm/tailwindcss@4.1.7/index.min.css'
+    link.type = 'text/css'
+    document.head.appendChild(link)
 
-import { User, Clock, Bookmark, Tag, Flame, TrendingUp, AlignLeft } from "lucide-vue-next"
-
-const __sfc__ = {
-  __name: 'vueTest',
-  setup(__props) {
-
-console.log({ User, Clock, Bookmark, Tag, Flame, TrendingUp, AlignLeft })
-
-return (_ctx, _cache) => {
-  return (_openBlock(), _createElementBlock("div", _hoisted_1, [
-    _createElementVNode("div", _hoisted_2, [
-      _createCommentVNode(" 主容器 "),
-      _createElementVNode("div", _hoisted_3, [
-        _createCommentVNode(" 头部信息区域 "),
-        _createElementVNode("div", _hoisted_4, [
-          _createElementVNode("div", _hoisted_5, [
-            _createElementVNode("div", _hoisted_6, [
-              _cache[0] || (_cache[0] = _createElementVNode("div", { class: "w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center" }, [
-                _createElementVNode("img", {
-                  class: "text-white w-6 h-6",
-                  src: "https://unpkg.com/lucide-static@latest/icons/user.svg"
-                })
-              ], -1 /* HOISTED */)),
-              _createElementVNode("div", null, [
-                _createElementVNode("p", _hoisted_7, _toDisplayString(_ctx.authorInfo.name), 1 /* TEXT */),
-                _createElementVNode("p", _hoisted_8, _toDisplayString(_ctx.authorInfo.role), 1 /* TEXT */)
-              ])
-            ]),
-            _createElementVNode("div", _hoisted_9, [
-              _cache[1] || (_cache[1] = _createElementVNode("img", {
-                class: "w-4 h-6",
-                src: "https://unpkg.com/lucide-static@latest/icons/clock.svg"
-              }, null, -1 /* HOISTED */)),
-              _createElementVNode("span", _hoisted_10, _toDisplayString(_ctx.publishTime), 1 /* TEXT */)
-            ])
-          ]),
-          _createCommentVNode(" 标题 "),
-          _createElementVNode("div", _hoisted_11, [
-            _createElementVNode("div", _hoisted_12, [
-              _cache[4] || (_cache[4] = _createElementVNode("img", {
-                class: "text-yellow-400 w-6 h-6 mt-1",
-                src: "https://unpkg.com/lucide-static@latest/icons/bookmark.svg"
-              }, null, -1 /* HOISTED */)),
-              _createElementVNode("div", null, [
-                _createElementVNode("h1", _hoisted_13, _toDisplayString(_ctx.contentInfo.title), 1 /* TEXT */),
-                _createElementVNode("div", _hoisted_14, [
-                  _createElementVNode("span", _hoisted_15, [
-                    _cache[2] || (_cache[2] = _createElementVNode("img", {
-                      class: "w-4 h-4",
-                      src: "https://unpkg.com/lucide-static@latest/icons/tag.svg"
-                    }, null, -1 /* HOISTED */)),
-                    _createElementVNode("span", null, _toDisplayString(_ctx.contentInfo.category), 1 /* TEXT */)
-                  ]),
-                  _createElementVNode("span", _hoisted_16, [
-                    _cache[3] || (_cache[3] = _createElementVNode("img", {
-                      class: "w-4 h-4",
-                      src: "https://unpkg.com/lucide-static@latest/icons/flame.svg"
-                    }, null, -1 /* HOISTED */)),
-                    _createElementVNode("span", null, _toDisplayString(_ctx.contentInfo.status), 1 /* TEXT */)
-                  ])
-                ])
-              ])
-            ])
-          ])
-        ]),
-        _createCommentVNode(" 内容区域 "),
-        _createElementVNode("div", _hoisted_17, [
-          _createCommentVNode(" 左侧：主要内容图片 "),
-          _createElementVNode("div", _hoisted_18, [
-            _createElementVNode("div", _hoisted_19, [
-              _cache[5] || (_cache[5] = _createElementVNode("div", { class: "absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" }, null, -1 /* HOISTED */)),
-              _createElementVNode("div", _hoisted_20, [
-                _createElementVNode("div", _hoisted_21, [
-                  _createElementVNode("p", _hoisted_22, _toDisplayString(_ctx.contentInfo.imageCaption), 1 /* TEXT */)
-                ])
-              ])
-            ])
-          ]),
-          _createCommentVNode(" 右侧：数据统计 "),
-          _createElementVNode("div", _hoisted_23, [
-            _createElementVNode("div", _hoisted_24, [
-              _createElementVNode("div", _hoisted_25, [
-                _createElementVNode("h3", _hoisted_26, [
-                  _createVNode(_unref(TrendingUp), { class: "text-blue-500 w-5 h-5" }),
-                  _cache[6] || (_cache[6] = _createElementVNode("span", null, "数据统计", -1 /* HOISTED */))
-                ])
-              ]),
-              _createElementVNode("div", _hoisted_27, [
-                (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.mainStats, (stat) => {
-                  return (_openBlock(), _createElementBlock("div", {
-                    key: stat.key,
-                    class: _normalizeClass(["text-center p-3 rounded-xl", stat.bgClass])
-                  }, [
-                    (_openBlock(), _createBlock(_resolveDynamicComponent(stat.icon), {
-                      class: _normalizeClass([stat.iconClass, "w-8 h-8 mb-2 mx-auto"])
-                    }, null, 8 /* PROPS */, ["class"])),
-                    _cache[7] || (_cache[7] = _createElementVNode("p", { class: "text-2xl font-bold text-gray-800" }, "111", -1 /* HOISTED */)),
-                    _cache[8] || (_cache[8] = _createElementVNode("p", { class: "text-gray-600 text-sm" }, "222", -1 /* HOISTED */))
-                  ], 2 /* CLASS */))
-                }), 128 /* KEYED_FRAGMENT */))
-              ]),
-              _createElementVNode("div", _hoisted_28, [
-                (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.secondaryStats, (stat) => {
-                  return (_openBlock(), _createElementBlock("div", {
-                    key: stat.key,
-                    class: _normalizeClass(["text-center p-3 rounded-xl", stat.bgClass])
-                  }, [
-                    (_openBlock(), _createBlock(_resolveDynamicComponent(stat.icon), {
-                      class: _normalizeClass([stat.iconClass, "w-8 h-8 mb-2 mx-auto"])
-                    }, null, 8 /* PROPS */, ["class"])),
-                    _cache[9] || (_cache[9] = _createElementVNode("p", { class: "text-xl font-bold text-gray-800" }, "111", -1 /* HOISTED */)),
-                    _cache[10] || (_cache[10] = _createElementVNode("p", { class: "text-gray-600 text-sm" }, "222", -1 /* HOISTED */))
-                  ], 2 /* CLASS */))
-                }), 128 /* KEYED_FRAGMENT */))
-              ])
-            ])
-          ])
-        ]),
-        _createCommentVNode(" 简介区域 "),
-        _createElementVNode("div", _hoisted_29, [
-          _createElementVNode("div", _hoisted_30, [
-            _createElementVNode("div", _hoisted_31, [
-              _createVNode(_unref(AlignLeft), { class: "text-white w-5 h-5" })
-            ]),
-            _cache[11] || (_cache[11] = _createElementVNode("h2", { class: "text-white text-2xl font-bold" }, "内容简介", -1 /* HOISTED */))
-          ]),
-          _createElementVNode("div", _hoisted_32, [
-            _createElementVNode("p", _hoisted_33, _toDisplayString(_ctx.description.main), 1 /* TEXT */),
-            _createElementVNode("p", _hoisted_34, _toDisplayString(_ctx.description.detail), 1 /* TEXT */),
-            _createCommentVNode(" 标签区域 "),
-            _createElementVNode("div", _hoisted_35, [
-              (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.tags, (tag) => {
-                return (_openBlock(), _createElementBlock("span", {
-                  key: tag.name,
-                  class: _normalizeClass(["px-3 py-1 rounded-full text-sm flex items-center space-x-1", tag.class])
-                }, [
-                  (_openBlock(), _createBlock(_resolveDynamicComponent(tag.icon), { class: "w-3 h-3" })),
-                  _cache[12] || (_cache[12] = _createElementVNode("span", null, "333", -1 /* HOISTED */))
-                ], 2 /* CLASS */))
-              }), 128 /* KEYED_FRAGMENT */))
-            ])
-          ])
-        ]),
-        _createCommentVNode(" 底部装饰 "),
-        _cache[13] || (_cache[13] = _createStaticVNode("<div class=\"mt-8 flex justify-center\" data-v-580e976a><div class=\"flex space-x-4 text-gray-400\" data-v-580e976a><div class=\"w-2 h-2 bg-current rounded-full\" data-v-580e976a></div><div class=\"w-2 h-2 bg-current rounded-full\" data-v-580e976a></div><div class=\"w-2 h-2 bg-current rounded-full\" data-v-580e976a></div></div></div>", 1))
-      ])
-    ])
-  ]))
-}
-}
-
-}
-
-
-__sfc__.__scopeId = "data-v-580e976a"
-export default __sfc__
-
-  
-  import { createApp } from "vue";
-  
-  // 创建并挂载应用
-  createApp({
-    render: __sfc__.setup(),
-    data() {
-      return {"authorInfo":{"name":"诗羽","role":"内容创作者"},"contentInfo":{"title":"白虎vs眼镜 你们知道吗","category":"游戏解说","status":"热门","imageCaption":"精彩战斗场面"},"mainStats":[{"key":"views","value":"39.9万","label":"播放量","bgClass":"bg-blue-50","iconClass":"text-blue-500"},{"key":"likes","value":"7810","label":"点赞","bgClass":"bg-green-50","iconClass":"text-green-500"},{"key":"comments","value":"350","label":"弹幕","bgClass":"bg-purple-50","iconClass":"text-purple-500"},{"key":"coins","value":"109","label":"投币","bgClass":"bg-yellow-50","iconClass":"text-yellow-500"}],"secondaryStats":[{"key":"shares","value":"7417","label":"转发","bgClass":"bg-red-50","iconClass":"text-red-500"},{"key":"favorites","value":"1093","label":"收藏","bgClass":"bg-indigo-50","iconClass":"text-indigo-500"}],"description":{"main":"这里是内容简介区域，可以容纳大量的文字内容。设计采用了毛玻璃效果和柔和的阴影，确保即使在长文本的情况下也能保持良好的可读性和视觉层次。","detail":"这个区域具有足够的垂直空间来容纳详细的内容描述、背景信息、制作花絮等各种类型的文字内容。布局设计考虑了内容的可扩展性，无论文字多少都能保持整体的美观和平衡。"},"tags":[{"name":"游戏","class":"bg-blue-500/20 text-blue-200"},{"name":"解说","class":"bg-purple-500/20 text-purple-200"},{"name":"竞技","class":"bg-green-500/20 text-green-200"}]}
+    // 加载 JS
+    const script = document.createElement('script')
+    script.src = 'https://cdn.jsdelivr.net/npm/tailwindcss@4.1.7/dist/lib.min.js'
+    script.async = true
+    script.charset = 'utf-8'
+    script.onload = () => {
+      console.log('External script loaded successfully')
     }
-  }).mount('#app');
-  </script>
-</body>
-  </html>
+    script.onerror = () => {
+      console.error('Failed to load external script')
+    }
+    document.head.appendChild(script)
+  }
+})
+
+        </script>
+      </body>
+    </html>
+    

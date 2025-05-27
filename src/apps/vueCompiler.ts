@@ -6,7 +6,7 @@ import { compile } from 'vue-simple-compiler'
 
 import { renderData } from './vueRenderDemo'
 
-export function compileVueToHTML (params: typeof renderData) {
+export async function compileVueToHTML (params: typeof renderData) {
   const vueFile = fs.readFileSync('./src/apps/vueTest.vue', 'utf-8')
 
   const {
@@ -21,41 +21,46 @@ export function compileVueToHTML (params: typeof renderData) {
     autoResolveImports: true,
     isProd: true
   })
-  return `<!DOCTYPE html>
-  <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>Generated Vue Component</title>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-      <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-      <script type="importmap">
-      {
-        "imports": {
-          "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js",
-          "lucide-vue-next": "https://cdn.jsdelivr.net/npm/lucide@0.511.0/+esm"
-          
-        }
-      }
-      </script>
-    </head>
-      <style>
-        ${css[0].code}
-      </style>
-    <body>
-  <div id="app"></div>
-  <script type="module">
-  ${js.code}
-  
-  import { createApp } from "vue";
-  
-  // 创建并挂载应用
-  createApp({
-    render: __sfc__.setup(),
-    data() {
-      return ${JSON.stringify(params)}
-    }
-  }).mount('#app');
-  </script>
-</body>
-  </html>`
+  const { descriptor } = parse(vueFile)
+  const template = descriptor.template?.content ?? ''
+  const app = createSSRApp({ template, data: () => params })
+  const html = await renderToString(app)
+  const styles = descriptor.styles.map(style => style.content).join('\n')
+  const script = compileScript(descriptor, { id: 'test' }).content
+  const scriptSetup = descriptor.scriptSetup?.content ?? ''
+
+  const data = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f0f2f5;
+          }
+          #app {
+            display: inline-block;
+            position: relative;
+          }
+          ${styles}
+        </style>
+      </head>
+      <body>
+        <div id="app">
+        ${html}
+        </div>
+        <script>
+        ${scriptSetup}
+        </script>
+      </body>
+    </html>
+    `
+
+  return data
 }

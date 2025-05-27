@@ -10,7 +10,7 @@
             <div class="flex items-center space-x-3">
               <div
                 class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                <img class="text-white w-6 h-6" src="https://unpkg.com/lucide-static@latest/icons/user.svg" />
+                <User class="text-white w-6 h-6" />
               </div>
               <div>
                 <p class="text-white font-medium text-lg">{{ authorInfo.name }}</p>
@@ -18,7 +18,7 @@
               </div>
             </div>
             <div class="flex items-center space-x-2 text-gray-300">
-              <img class="w-4 h-6" src="https://unpkg.com/lucide-static@latest/icons/clock.svg" />
+              <Clock class="w-4 h-4" />
               <span class="text-sm">{{ publishTime }}</span>
             </div>
           </div>
@@ -26,17 +26,16 @@
           <!-- 标题 -->
           <div class="glass-effect rounded-2xl p-6 mb-6">
             <div class="flex items-start space-x-3">
-              <img class="text-yellow-400 w-6 h-6 mt-1"
-                src="https://unpkg.com/lucide-static@latest/icons/bookmark.svg" />
+              <Bookmark class="text-yellow-400 w-6 h-6 mt-1" />
               <div>
                 <h1 class="text-white text-2xl font-bold mb-2">{{ contentInfo.title }}</h1>
                 <div class="flex items-center space-x-4 text-gray-300 text-sm">
                   <span class="flex items-center space-x-1">
-                    <img class="w-4 h-4" src="https://unpkg.com/lucide-static@latest/icons/tag.svg" />
+                    <Tag class="w-4 h-4" />
                     <span>{{ contentInfo.category }}</span>
                   </span>
                   <span class="flex items-center space-x-1">
-                    <img class="w-4 h-4" src="https://unpkg.com/lucide-static@latest/icons/flame.svg" />
+                    <Flame class="w-4 h-4" />
                     <span>{{ contentInfo.status }}</span>
                   </span>
                 </div>
@@ -73,8 +72,8 @@
               <div class="grid grid-cols-2 gap-4">
                 <div v-for="stat in mainStats" :key="stat.key" class="text-center p-3 rounded-xl" :class="stat.bgClass">
                   <component :is="stat.icon" :class="stat.iconClass" class="w-8 h-8 mb-2 mx-auto" />
-                  <p class="text-2xl font-bold text-gray-800">111</p>
-                  <p class="text-gray-600 text-sm">222</p>
+                  <p class="text-2xl font-bold text-gray-800">{{ stat.value }}</p>
+                  <p class="text-gray-600 text-sm">{{ stat.label }}</p>
                 </div>
               </div>
 
@@ -82,8 +81,8 @@
                 <div v-for="stat in secondaryStats" :key="stat.key" class="text-center p-3 rounded-xl"
                   :class="stat.bgClass">
                   <component :is="stat.icon" :class="stat.iconClass" class="w-8 h-8 mb-2 mx-auto" />
-                  <p class="text-xl font-bold text-gray-800">111</p>
-                  <p class="text-gray-600 text-sm">222</p>
+                  <p class="text-xl font-bold text-gray-800">{{ stat.value }}</p>
+                  <p class="text-gray-600 text-sm">{{ stat.label }}</p>
                 </div>
               </div>
             </div>
@@ -113,7 +112,7 @@
               <span v-for="tag in tags" :key="tag.name"
                 class="px-3 py-1 rounded-full text-sm flex items-center space-x-1" :class="tag.class">
                 <component :is="tag.icon" class="w-3 h-3" />
-                <span>333</span>
+                <span>{{ tag.name }}</span>
               </span>
             </div>
           </div>
@@ -131,10 +130,36 @@
     </div>
   </div>
 </template>
-
 <script setup>
-import { User, Clock, Bookmark, Tag, Flame, TrendingUp, AlignLeft } from 'lucide-vue-next'
-console.log({ User, Clock, Bookmark, Tag, Flame, TrendingUp, AlignLeft })
+// 使用CDN方式引入lucide-vue-next
+const { User, Clock, Bookmark, Tag, Flame, TrendingUp, AlignLeft } = window['lucide-vue-next']
+// 使用CDN方式引入Vue
+const { onMounted } = Vue
+
+onMounted(() => {
+  // 检查是否在客户端环境
+  if (typeof window !== 'undefined') {
+    // 加载 CSS
+    const link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = 'https://cdn.jsdelivr.net/npm/tailwindcss@4.1.7/index.min.css'
+    link.type = 'text/css'
+    document.head.appendChild(link)
+
+    // 加载 JS
+    const script = document.createElement('script')
+    script.src = 'https://cdn.jsdelivr.net/npm/tailwindcss@4.1.7/dist/lib.min.js'
+    script.async = true
+    script.charset = 'utf-8'
+    script.onload = () => {
+      console.log('External script loaded successfully')
+    }
+    script.onerror = () => {
+      console.error('Failed to load external script')
+    }
+    document.head.appendChild(script)
+  }
+})
 </script>
 
 <style scoped>
