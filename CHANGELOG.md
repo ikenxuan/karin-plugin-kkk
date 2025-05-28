@@ -1,5 +1,12 @@
 # 变更日志
 
+## [1.6.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.4...v1.6.5) (2025-05-28)
+
+
+### Bug Fixes
+
+* **config:** 移除接口中的冗余索引签名并修复配置引用 ([97d7237](https://github.com/ikenxuan/karin-plugin-kkk/commit/97d72379317db1f235fe83bd6454ba4f8db2656f))
+
 ## [1.6.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.3...v1.6.4) (2025-05-27)
 
 
