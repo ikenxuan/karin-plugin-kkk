@@ -4,7 +4,7 @@ import fs from 'node:fs'
 import karin, { handler, logger, Message, segment } from 'node-karin'
 import { chromium, Page } from 'playwright'
 
-import { Common, Config, Version } from '@/module'
+import { Common, Config, Root } from '@/module'
 
 /** 动态启动 Xvfb */
 const startXvfb = async () => {
@@ -163,7 +163,7 @@ export const douyinLogin = async (e: Message) => {
     logger.error(error)
     if (error.message.includes('npx playwright install')) {
       const msg = await e.reply('首次使用，正在初始化 playwright 环境，请稍等片刻...')
-      execSync('npx playwright install chromium', { cwd: Version.pluginPath, stdio: 'inherit' })
+      execSync('npx playwright install chromium', { cwd: Root.pluginPath, stdio: 'inherit' })
       await e.reply(`playwright 初始化成功，请再次发送「${e.msg}」`)
       await e.bot.recallMsg(e.contact, msg.messageId)
       return true

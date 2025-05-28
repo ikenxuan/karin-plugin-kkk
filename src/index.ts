@@ -11,7 +11,7 @@ import { app, logger, mkdirSync } from 'node-karin'
 import express from 'node-karin/express'
 import { karinPathBase } from 'node-karin/root'
 
-import { Common, Config, Version } from '@/module'
+import { Common, Config, Root } from '@/module'
 import { getVideoRouter, videoStreamRouter } from '@/module/server/router'
 
 const server = express()
@@ -42,8 +42,8 @@ if (Config.app.APIServer && Config.app.APIServerMount) {
 app.get('/api/kkk/stream/:filename', videoStreamRouter)
 app.get('/api/kkk/video/:filename', getVideoRouter)
 
-const base = `${karinPathBase}/${Version.pluginName}`
+const base = `${karinPathBase}/${Root.pluginName}`
 mkdirSync(`${base}/data`)
 mkdirSync(Common.tempDri.images)
 mkdirSync(Common.tempDri.video)
-logger.info(`${logger.green(`[插件:${Version.pluginName}]`)} ${logger.violet(`v${Version.pluginVersion}`)} 初始化完成~`)
+logger.info(`${logger.green(`[插件:${Root.pluginName}]`)} ${logger.violet(`v${Root.pluginVersion}`)} 初始化完成~`)

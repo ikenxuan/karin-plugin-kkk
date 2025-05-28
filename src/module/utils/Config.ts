@@ -9,7 +9,7 @@ import { bilibiliConfig } from '@/types/config/bilibili'
 import { douyinConfig } from '@/types/config/douyin'
 import { bilibiliPushItem, douyinPushItem, pushlistConfig } from '@/types/config/pushlist'
 
-import { Version } from '../../Version'
+import { Root } from '../../root'
 import { bilibiliDB, douyinDB } from '../db'
 
 type ConfigDirType = 'config' | 'default_config'
@@ -21,8 +21,8 @@ class Cfg {
   private defCfgPath: string
 
   constructor () {
-    this.dirCfgPath = `${karinPathBase}/${Version.pluginName}/config`
-    this.defCfgPath = `${Version.pluginPath}/config/default_config/`
+    this.dirCfgPath = `${karinPathBase}/${Root.pluginName}/config`
+    this.defCfgPath = `${Root.pluginPath}/config/default_config/`
   }
 
   /** 初始化配置 */

@@ -4,7 +4,7 @@ import { logger } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
 import { DataTypes, Model, Op, Sequelize } from 'sequelize'
 
-import { Config, Version } from '@/module/utils'
+import { Config, Root } from '@/module/utils'
 import { DouyinPushItem } from '@/platform/douyin/push'
 import { douyinPushItem } from '@/types/config/pushlist'
 
@@ -19,7 +19,7 @@ type GroupUserSubscriptionAttributes = {
 /** 创建 Sequelize 实例，需要传入配置对象。 */
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: join(`${karinPathBase}/${Version.pluginName}/data`, 'douyin.db'),
+  storage: join(`${karinPathBase}/${Root.pluginName}/data`, 'douyin.db'),
   logging: false,
   pool: {
     max: 5, // 连接池最大连接数

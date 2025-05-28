@@ -2,12 +2,12 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { createNotFoundResponse, logger, Message } from 'node-karin'
+import { Response } from 'node-karin/express'
 import { karinPathTemp } from 'node-karin/root'
 
 import { Config } from '@/module/utils'
 
-import { Version } from '../../Version'
-import { Response } from 'node-karin/express'
+import { Root } from '../../root'
 
 /** 常用工具合集 */
 class Tools {
@@ -23,14 +23,14 @@ class Tools {
     images: string
   }
 
-  constructor() {
+  constructor () {
     this.tempDri = {
       /** 插件缓存目录 */
-      default: `${karinPathTemp}/${Version.pluginName}/`.replace(/\\/g, '/'),
+      default: `${karinPathTemp}/${Root.pluginName}/`.replace(/\\/g, '/'),
       /** 视频缓存文件 */
-      video: `${karinPathTemp}/${Version.pluginName}/kkkdownload/video/`.replace(/\\/g, '/'),
+      video: `${karinPathTemp}/${Root.pluginName}/kkkdownload/video/`.replace(/\\/g, '/'),
       /** 图片缓存文件 */
-      images: `${karinPathTemp}/${Version.pluginName}/kkkdownload/images/`.replace(/\\/g, '/')
+      images: `${karinPathTemp}/${Root.pluginName}/kkkdownload/images/`.replace(/\\/g, '/')
     }
   }
 
@@ -39,7 +39,7 @@ class Tools {
    * @param e event 消息事件
    * @returns 被引用的消息
    */
-  async getReplyMessage(e: Message): Promise<string> {
+  async getReplyMessage (e: Message): Promise<string> {
     if (e.replyId) {
       const reply = await e.bot.getMsg(e.contact, e.replyId)
       for (const v of reply.elements) {
@@ -58,7 +58,7 @@ class Tools {
  * @param chineseNumber 数字的中文
  * @returns 中文数字对应的阿拉伯数字映射
  */
-  chineseToArabic(chineseNumber: string): number {
+  chineseToArabic (chineseNumber: string): number {
     // 映射表，定义基础的中文数字
     const chineseToArabicMap: Record<string, number> = {
       零: 0, 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9
@@ -100,7 +100,7 @@ class Tools {
  * @param cookies cookie数组
  * @returns 格式化后的cookie字符串
  */
-  formatCookies(cookies: any[]): string {
+  formatCookies (cookies: any[]): string {
     return cookies.map(cookie => {
       // 分割每个cookie字符串以获取名称和值
       const [nameValue] = cookie.split(';').map((part: string) => part.trim())
@@ -117,7 +117,7 @@ class Tools {
  * @param duration 视频时长（秒）
  * @returns
  */
-  calculateBitrate(targetSizeMB: number, duration: number): number {
+  calculateBitrate (targetSizeMB: number, duration: number): number {
     // 将目标大小转换为字节
     const targetSizeBytes = targetSizeMB * 1024 * 1024 // 转换为字节
     // 计算比特率并返回单位 Mbps
@@ -129,7 +129,7 @@ class Tools {
    * @param filePath 视频文件绝对路径
    * @returns
    */
-  async getVideoFileSize(filePath: string): Promise<number> {
+  async getVideoFileSize (filePath: string): Promise<number> {
     try {
       const stats = await fs.promises.stat(filePath) // 获取文件信息
       const fileSizeInBytes = stats.size // 文件大小（字节）
@@ -147,7 +147,7 @@ class Tools {
    * @param force 是否强制删除，默认 `false`
    * @returns
    */
-  async removeFile(path: string, force = false): Promise<boolean> {
+  async removeFile (path: string, force = false): Promise<boolean> {
     path = path.replace(/\\/g, '/')
     if (Config.app.rmmp4) {
       try {
@@ -176,7 +176,7 @@ class Tools {
  * @param timestamp 时间戳
  * @returns 格式为YYYY-MM-DD HH:MM的日期时间字符串
  */
-  convertTimestampToDateTime(timestamp: number): string {
+  convertTimestampToDateTime (timestamp: number): string {
     // 创建一个Date对象，时间戳乘以1000是为了转换为毫秒
     const date = new Date(timestamp * 1000)
     const year = date.getFullYear() // 获取年份
@@ -192,7 +192,7 @@ class Tools {
  * 获取当前时间：年-月-日 时:分:秒
  * @returns
  */
-  getCurrentTime() {
+  getCurrentTime () {
     // 创建一个Date对象以获取当前时间
     const now = new Date()
     // 获取年、月、日、时、分、秒
@@ -215,7 +215,7 @@ class Tools {
  * 评论图、推送图是否使用深色模式
  * @returns
  */
-  useDarkTheme(): boolean {
+  useDarkTheme (): boolean {
     let dark = true
     const configTheme = Config.app.Theme
     if (configTheme === 0) { // 自动
@@ -236,7 +236,7 @@ class Tools {
  * @param timestamp 时间戳
  * @returns 距离这个时间戳过去的多久的字符串
  */
-  timeSince(timestamp: number): string {
+  timeSince (timestamp: number): string {
     const now = Date.now()
     const elapsed = now - timestamp
 
@@ -262,7 +262,7 @@ class Tools {
    * @param res 响应对象
    * @returns 返回安全解析后的路径
    */
-  validateVideoRequest(filename: string | undefined, res: Response): string | null {
+  validateVideoRequest (filename: string | undefined, res: Response): string | null {
     // 1. 基础校验
     if (!filename) {
       createNotFoundResponse(res, '无效的文件名')

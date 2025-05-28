@@ -2,7 +2,7 @@ import { join } from 'node:path'
 
 import { ImageElement, Options, render, segment } from 'node-karin'
 
-import { Common, Config, Version } from '@/module'
+import { Common, Config, Root } from '@/module'
 
 function scale (pct = 1): string {
   const scale = Math.min(2, Math.max(0.5, Number(Config.app.renderScale) / 100))
@@ -37,8 +37,8 @@ export async function Render (path: string, params?: any) {
       waitUntil: 'load',
       timeout: Config.app.RenderWaitTime * 1000
     },
-    name: `${Version.pluginName}/${platform}/${newPath}/`.replace(/\\/g, '/'),
-    file: `${Version.pluginPath}/resources/template/${path}.html`,
+    name: `${Root.pluginName}/${platform}/${newPath}/`.replace(/\\/g, '/'),
+    file: `${Root.pluginPath}/resources/template/${path}.html`,
     type: 'jpeg'
   }
 
@@ -48,14 +48,14 @@ export async function Render (path: string, params?: any) {
     encoding: 'base64',
     data: {
       ...params,
-      _res_path: (join(Version.pluginPath, '/resources') + '/').replace(/\\/g, '/'),
-      _layout_path: (join(Version.pluginPath, '/resources', 'template', 'extend') + '/').replace(/\\/g, '/'),
-      defaultLayout: (join(Version.pluginPath, '/resources', 'template', 'extend', 'html') + '/default.html').replace(/\\/g, '/'),
+      _res_path: (join(Root.pluginPath, '/resources') + '/').replace(/\\/g, '/'),
+      _layout_path: (join(Root.pluginPath, '/resources', 'template', 'extend') + '/').replace(/\\/g, '/'),
+      defaultLayout: (join(Root.pluginPath, '/resources', 'template', 'extend', 'html') + '/default.html').replace(/\\/g, '/'),
       sys: {
         scale: scale(params?.scale ?? 1)
       },
-      pluResPath: `${Version.pluginPath}/resources/`,
-      copyright: Config.app.RemoveWatermark ? '' : `<span class="name">kkk</span><span class="version">${Version.pluginVersion} ${releaseType()}</span> Powered By <span class="name">Karin</span>`,
+      pluResPath: `${Root.pluginPath}/resources/`,
+      copyright: Config.app.RemoveWatermark ? '' : `<span class="name">kkk</span><span class="version">${Root.pluginVersion} ${releaseType()}</span> Powered By <span class="name">Karin</span>`,
       useDarkTheme: Common.useDarkTheme()
     },
     screensEval: '#container'
@@ -74,7 +74,7 @@ export async function Render (path: string, params?: any) {
  */
 const releaseType = () => {
   const versionPattern = /^\d+\.\d+\.\d+$/
-  if (versionPattern.test(Version.pluginVersion)) {
+  if (versionPattern.test(Root.pluginVersion)) {
     return 'Stable'
   } else {
     return 'Preview'

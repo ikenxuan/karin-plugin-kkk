@@ -4,12 +4,15 @@ import { defineConfig, type Plugin } from 'vite'
 import { builtinModules } from 'node:module'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { readFileSync } from 'node:fs'
+
 
 // 在ES模块中模拟__dirname
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
+const pkg = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'))
 
-const entry: string[] = ['src/index.ts', 'src/Version.ts', 'src/web.config.ts']
+const entry: string[] = ['src/index.ts', 'src/root.ts', 'src/web.config.ts']
 
 function getFiles (dir: string) {
   fs.readdirSync(dir).forEach((file) => {
@@ -31,10 +34,8 @@ function injectDirnamePlugin (): Plugin {
       if (code.includes('__dirname') || code.includes('__filename')) {
         // 在文件顶部添加必要的导入和变量定义
         const injection = `
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __filename = import.meta.url ? new URL(import.meta.url).pathname : '';
+const __dirname = import.meta.url ? new URL('.', import.meta.url).pathname : '';
 `
         return injection + code
       }
@@ -44,6 +45,10 @@ const __dirname = dirname(__filename);
 }
 
 export default defineConfig({
+  define: {
+    'process.env.PLUGIN_NAME': JSON.stringify(pkg.name),
+    'process.env.PLUGIN_VERSION': JSON.stringify(pkg.version),
+  },
   build: {
     target: 'node18',
     lib: {
@@ -72,7 +77,7 @@ export default defineConfig({
         entryFileNames: (chunkInfo) => {
           if (chunkInfo.name === 'index' ||
             chunkInfo.name === 'web.config' ||
-            chunkInfo.name === 'Version') {
+            chunkInfo.name === 'root') {
             return `${chunkInfo.name}.js`
           }
 
@@ -86,7 +91,20 @@ export default defineConfig({
 
           return `chunk/${chunkInfo.name}.js`
         },
+
         chunkFileNames: 'chunk/[name]-[hash].js',
+
+        manualChunks (id) {
+          if (id.includes('node_modules')) {
+            return 'vendor'
+          }
+          if (id.includes('src/root.ts')) {
+            return 'root'
+          }
+          if (id.includes('src/module') || id.includes('src/platform')) {
+            return 'main'
+          }
+        }
       },
       cache: false,
     },

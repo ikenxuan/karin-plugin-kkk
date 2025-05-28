@@ -2,7 +2,7 @@ import fs from 'node:fs'
 
 import Client, { getDouyinData } from '@ikenxuan/amagi'
 import { markdown } from '@karinjs/md-html'
-import { common, Elements, logger, Message, mkdirSync, render, segment } from 'node-karin'
+import { common, Elements, karinPathRoot, logger, Message, mkdirSync, render, segment } from 'node-karin'
 import QRCode from 'qrcode'
 
 import {
@@ -16,7 +16,7 @@ import {
   mergeFile,
   Networks,
   Render,
-  Version
+  Root
 } from '@/module/utils'
 import { douyinComments } from '@/platform/douyin'
 import { DouyinDataTypes, DouyinIdData } from '@/types'
@@ -303,7 +303,7 @@ export class DouYin extends Base {
           forwardmsg.push(segment.text(`作品标题: ${title}\n分享链接: ${cover}`))
         }
         const matext = markdown(veoarray.join(''), {})
-        const htmlpath = `${Version.karinPath}/temp/html/${Version.pluginName}/douyin/user_worklist.html`
+        const htmlpath = `${karinPathRoot}/temp/html/${Root.pluginName}/douyin/user_worklist.html`
         fs.writeFileSync(htmlpath, matext, 'utf8')
         const img = await render.renderHtml(htmlpath)
         await this.e.reply(segment.image(img))

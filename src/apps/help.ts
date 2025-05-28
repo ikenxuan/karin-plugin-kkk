@@ -5,7 +5,7 @@ import { markdown } from '@karinjs/md-html'
 import karin, { common, isPackaged, logger, mkdirSync, render, restart, segment, updateGitPlugin, updatePkg } from 'node-karin'
 import { karinPathTemp } from 'node-karin/root'
 
-import { Common, Config, Render, Version } from '@/module'
+import { Common, Config, Render, Root } from '@/module'
 
 export const help = karin.command(/^#?kkk帮助$/, async (e) => {
   const img = await Render('help/index')
@@ -15,12 +15,12 @@ export const help = karin.command(/^#?kkk帮助$/, async (e) => {
 
 export const version = karin.command(/^#?kkk版本$/, async (e) => {
   Config.douyin.push.switch = false
-  const changelogs = fs.readFileSync(Version.pluginPath + '/CHANGELOG.md', 'utf8')
+  const changelogs = fs.readFileSync(Root.pluginPath + '/CHANGELOG.md', 'utf8')
   const html = markdown(changelogs, {
     gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css'
   })
-  mkdirSync(`${karinPathTemp}/html/${Version.pluginName}/version`)
-  const htmlPath = `${karinPathTemp}/html/${Version.pluginName}/version/version.html`
+  mkdirSync(`${karinPathTemp}/html/${Root.pluginName}/version`)
+  const htmlPath = `${karinPathTemp}/html/${Root.pluginName}/version/version.html`
   fs.writeFileSync(htmlPath, html)
   const img = await render.renderHtml(htmlPath)
   await e.reply(segment.image('base64://' + img))
@@ -43,8 +43,8 @@ export const changelogs = karin.command(/^#?kkk更新日志$/, async (e) => {
   const html = markdown(htmlString, {
     gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css'
   })
-  mkdirSync(`${karinPathTemp}/html/${Version.pluginName}/version`)
-  const htmlPath = `${karinPathTemp}/html/${Version.pluginName}/version/changelogs.html`
+  mkdirSync(`${karinPathTemp}/html/${Root.pluginName}/version`)
+  const htmlPath = `${karinPathTemp}/html/${Root.pluginName}/version/changelogs.html`
   fs.writeFileSync(htmlPath, html)
   const img = await render.renderHtml(htmlPath)
   await e.reply(segment.image('base64://' + img))
@@ -56,11 +56,11 @@ export const update = karin.command(/^#?kkk更新(预览版)?$/, async (e) => {
   let data: ExecException | string = ''
   if (isPackaged) {
     if (e.msg.includes('预览版')) {
-      const resolve = await updatePkg(Version.pluginName, 'beta')
+      const resolve = await updatePkg(Root.pluginName, 'beta')
       status = resolve.status
       data = resolve.data
     } else {
-      const resolve = await updatePkg(Version.pluginName)
+      const resolve = await updatePkg(Root.pluginName)
       status = resolve.status
       data = resolve.data
     }
@@ -69,19 +69,19 @@ export const update = karin.command(/^#?kkk更新(预览版)?$/, async (e) => {
     if (e.msg.includes('强制')) {
       cmd = 'git reset --hard && git pull --allow-unrelated-histories'
     }
-    const resolve = await updateGitPlugin(Version.pluginPath, cmd)
+    const resolve = await updateGitPlugin(Root.pluginPath, cmd)
     status = resolve.status
     data = resolve.data
   }
   logger.debug(data)
-  await e.bot.sendForwardMsg(e.contact, common.makeForward([segment.text(`更新 ${Version.pluginName}...\n${JSON.stringify(data)}`)], e.sender.userId, e.sender.nick))
+  await e.bot.sendForwardMsg(e.contact, common.makeForward([segment.text(`更新 ${Root.pluginName}...\n${JSON.stringify(data)}`)], e.sender.userId, e.sender.nick))
   if (status === 'ok') {
     try {
       await e.reply(`\n更新完成，开始重启 本次运行时间：${common.uptime()}`, { at: true })
       await restart(e.selfId, e.contact, e.messageId)
       return true
     } catch (error) {
-      await e.reply(`${Version.pluginName}重启失败，请手动重启以应用更新！`)
+      await e.reply(`${Root.pluginName}重启失败，请手动重启以应用更新！`)
     }
   }
   return true
@@ -95,7 +95,7 @@ interface CommitLog {
 
 const getLatestCommitsSync = (): CommitLog[] => {
   const command = 'git log -150 --pretty=format:"%h %an %s"'
-  const output = execSync(command, { cwd: Version.pluginPath }).toString()
+  const output = execSync(command, { cwd: Root.pluginPath }).toString()
 
   // 将输出分割成数组，每一项是一个commit记录
   const commits: string[] = output.trim().split('\n')

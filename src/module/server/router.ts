@@ -5,7 +5,7 @@ import type { RequestHandler } from 'express'
 import { createNotFoundResponse, logger } from 'node-karin'
 import template from 'node-karin/template'
 
-import { Common, Version } from '@/module/utils'
+import { Common, Root } from '@/module/utils'
 
 /** 专门负责传输视频文件流 */
 export const videoStreamRouter: RequestHandler = (req, res) => {
@@ -108,7 +108,7 @@ export const getVideoRouter: RequestHandler = (req, res) => {
   const videoDataUrl = `/api/kkk/stream/${encodeURIComponent(filename)}`
 
   // 构造 HTML 内容
-  const resPath = path.join(Version.pluginPath, '/resources') + '/'.replace(/\\/g, '/')
+  const resPath = path.join(Root.pluginPath, '/resources') + '/'.replace(/\\/g, '/')
   const htmlContent = template(path.join(resPath, 'template', 'videoView', 'index.html'), {
     videoDataUrl,
     filename
