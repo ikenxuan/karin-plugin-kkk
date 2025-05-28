@@ -34,7 +34,6 @@ export type bilibiliPushItem = {
 
 /** 定义抖音和B站推送列表的接口 */
 export type pushlistConfig = {
-  [key: string]: any
   /** 抖音推送列表的接口 */
   douyin: douyinPushItem[]
   /** B站推送列表的接口 */

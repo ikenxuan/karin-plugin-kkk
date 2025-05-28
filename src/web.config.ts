@@ -647,7 +647,7 @@ export default defineConfig({
               components.switch.create('sendbase64', {
                 label: '转换Base64',
                 description: '发送视频经本插件转换为base64格式后再发送，适合Karin与机器人不在同一网络环境下开启',
-                defaultSelected: all.upload.swisendbase64tch
+                defaultSelected: all.upload.sendbase64
               }),
               components.switch.create('usefilelimit', {
                 label: '视频上传拦截',

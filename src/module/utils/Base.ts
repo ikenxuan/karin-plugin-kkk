@@ -233,7 +233,7 @@ export const Count = (count: number): string => {
  */
 export const uploadFile = async (event: Message, file: fileInfo, videoUrl: string, options?: uploadFileOptions): Promise<boolean> => {
   let sendStatus: boolean = true
-  let filePath: Buffer | string
+  let File: string
   let newFileSize = file.totalBytes
   let selfId: string
   let contact: Contact
@@ -281,29 +281,28 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
   // 是否先转换为base64
   if (Config.upload.sendbase64 && !options?.useGroupFile) {
     const videoBuffer = await fs.promises.readFile(file.filepath)
-    filePath = `base64://${videoBuffer.toString('base64')}`
-  } else {
-    filePath = file.filepath
-  }
+    File = `base64://${videoBuffer.toString('base64')}`
+  } else File = options?.useGroupFile ? file.filepath : `file://${file.filepath}`
+
   try {
     // 是主动消息
     if (options?.active) {
       if (options.useGroupFile) { // 是群文件
         const bot = karin.getBot(String(options.activeOption?.uin))!
         logger.mark(`视频大小: ${newFileSize.toFixed(1)}MB 正通过文件上传中...`)
-        const status = await bot.uploadFile(contact, filePath, file.originTitle ? `${file.originTitle}.mp4` : `${filePath.split('/').pop()}`)
+        const status = await bot.uploadFile(contact, File, file.originTitle ? `${file.originTitle}.mp4` : `${File.split('/').pop()}`)
         status ? sendStatus = true : sendStatus = false
       } else { // 不是群文件
-        const status = await karin.sendMsg(selfId, contact, [segment.video(`file://${filePath}`)])
+        const status = await karin.sendMsg(selfId, contact, [segment.video(File)])
         status.messageId ? sendStatus = true : sendStatus = false
       }
     } else { // 不是主动消息
       if (options?.useGroupFile) { // 是文件
         await event.reply(`视频大小: ${newFileSize.toFixed(1)}MB 正通过文件上传中...`)
-        const status = await event.bot.uploadFile(event.contact, filePath, file.originTitle ? `${file.originTitle}.mp4` : `${filePath.split('/').pop()}`)
+        const status = await event.bot.uploadFile(event.contact, File, file.originTitle ? `${file.originTitle}.mp4` : `${File.split('/').pop()}`)
         status ? sendStatus = true : sendStatus = false
       } else { // 不是文件
-        const status = await event.reply(segment.video(`file://${filePath}`) || videoUrl)
+        const status = await event.reply(segment.video(File) || videoUrl)
         status.messageId ? sendStatus = true : sendStatus = false
       }
     }

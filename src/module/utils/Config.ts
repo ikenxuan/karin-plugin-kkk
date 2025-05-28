@@ -224,13 +224,13 @@ class Cfg {
 
       // 同步抖音配置
       if ('douyin' in config) {
-        await this.syncFilterConfigToDb(config.douyin, douyinDB, 'sec_uid')
+        await this.syncFilterConfigToDb(config.douyin as douyinPushItem[], douyinDB, 'sec_uid')
         logger.debug('已同步抖音过滤配置到数据库')
       }
 
       // 同步B站配置
       if ('bilibili' in config) {
-        await this.syncFilterConfigToDb(config.bilibili, bilibiliDB, 'host_mid')
+        await this.syncFilterConfigToDb(config.bilibili as bilibiliPushItem[], bilibiliDB, 'host_mid')
         logger.debug('已同步B站过滤配置到数据库')
       }
 

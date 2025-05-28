@@ -1,5 +1,4 @@
 export interface kuaishouConfig {
-  [key: string]: any
   /** 快手解析开关，单独开关，受「总开关」影响 */
   switch: boolean
 

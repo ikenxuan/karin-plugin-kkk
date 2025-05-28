@@ -1,6 +1,4 @@
 export interface uploadConfig {
-  [key: string]: any
-
   /** 发送视频经本插件转换为base64格式后再发送，适合Karin与机器人不在同一网络环境下开启 */
   sendbase64: boolean
 
