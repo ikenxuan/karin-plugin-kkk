@@ -1,5 +1,5 @@
 import { getDouyinData } from '@ikenxuan/amagi'
-import convert from 'heic-convert'
+import * as convert from 'heic-convert'
 
 import { Common, Config, Networks } from '@/module/utils'
 
@@ -232,7 +232,7 @@ const heic2jpg = async (jsonArray: any[]): Promise<any> => {
       const headers = await new Networks({ url: item.commentimage, type: 'arraybuffer' }).getHeaders()
       if (headers['content-type'] && headers['content-type'] === 'image/heic') {
         const response = await new Networks({ url: item.commentimage, type: 'arraybuffer' }).returnResult()
-        const jpegBuffer = await convert({
+        const jpegBuffer = await convert.default({
           buffer: response.data,
           format: 'JPEG'
         })

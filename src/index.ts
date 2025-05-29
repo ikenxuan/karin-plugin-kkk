@@ -5,8 +5,8 @@ import Client, {
   registerDouyinRoutes,
   registerKuaishouRoutes
 } from '@ikenxuan/amagi'
-import cors from 'cors'
-import { createProxyMiddleware, Options } from 'http-proxy-middleware'
+import * as cors from 'cors'
+import * as httpProxy from 'http-proxy-middleware'
 import { app, logger, mkdirSync } from 'node-karin'
 import express from 'node-karin/express'
 import { karinPathBase } from 'node-karin/root'
@@ -16,12 +16,12 @@ import { getVideoRouter, videoStreamRouter } from '@/module/server/router'
 
 const server = express()
 /** 代理参数 */
-const proxyOptions: Options = {
+const proxyOptions: httpProxy.Options = {
   target: 'https://developer.huawei.com',
   changeOrigin: true
 }
-server.use(cors())
-server.use('/', createProxyMiddleware(proxyOptions))
+server.use(cors.default())
+server.use('/', httpProxy.createProxyMiddleware(proxyOptions))
 server.listen(3780)
 
 if (Config.app.APIServer && Config.app.APIServerMount) {

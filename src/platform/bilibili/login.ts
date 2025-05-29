@@ -2,7 +2,7 @@ import fs from 'node:fs'
 
 import { getBilibiliData } from '@ikenxuan/amagi'
 import { common, Message, segment } from 'node-karin'
-import QRCode from 'qrcode'
+import * as QRCode from 'qrcode'
 
 import { Common, Config } from '@/module/utils'
 
