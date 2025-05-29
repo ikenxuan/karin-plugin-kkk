@@ -1,12 +1,11 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { copyConfigSync, filesByExt, karinPathBase, logger, requireFileSync, watch } from 'node-karin'
+import { copyConfigSync, filesByExt, logger, requireFileSync, watch } from 'node-karin'
+import { karinPathBase } from 'node-karin/root'
 import YAML from 'node-karin/yaml'
 
 import { ConfigType } from '@/types'
-import { bilibiliConfig } from '@/types/config/bilibili'
-import { douyinConfig } from '@/types/config/douyin'
 import { bilibiliPushItem, douyinPushItem, pushlistConfig } from '@/types/config/pushlist'
 
 import { Root } from '../../root'

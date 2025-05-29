@@ -1,6 +1,5 @@
 import fs from 'node:fs'
 
-import Client, { getDouyinData } from '@ikenxuan/amagi'
 import { markdown } from '@karinjs/md-html'
 import { common, Elements, karinPathRoot, logger, Message, mkdirSync, render, segment } from 'node-karin'
 import QRCode from 'qrcode'
@@ -251,7 +250,7 @@ export class DouYin extends Base {
         }
 
         if (Config.douyin.comment && Config.douyin.comment) {
-          const EmojiData = await getDouyinData('Emoji数据')
+          const EmojiData = await this.amagi.getDouyinData('Emoji数据')
           const list = await Emoji(EmojiData)
           const commentsArray = await douyinComments(CommentsData, list)
           if (!commentsArray.jsonArray.length) {
