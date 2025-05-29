@@ -47,3 +47,5 @@ mkdirSync(`${base}/data`)
 mkdirSync(Common.tempDri.images)
 mkdirSync(Common.tempDri.video)
 logger.info(`${logger.green(`[插件:${Root.pluginName}]`)} ${logger.violet(`v${Root.pluginVersion}`)} 初始化完成~`)
+
+export { webConfig } from './web.config.js'

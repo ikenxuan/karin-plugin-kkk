@@ -18,7 +18,7 @@ type PushConfigType = {
 /** 前端传回来新配置的类型 */
 type newConfigType = BaseConfigType & PushConfigType
 
-export default defineConfig({
+export const webConfig = defineConfig({
   info: {
     id: 'karin-plugin-kkk',
     name: 'karin-plugin-kkk',
@@ -915,6 +915,8 @@ export default defineConfig({
     }
   }
 })
+
+export default webConfig
 
 /**
  * 遇到数组时用新数组覆盖原始数组（而不是合并）

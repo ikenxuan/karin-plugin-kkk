@@ -4,15 +4,14 @@ import { defineConfig, type Plugin } from 'vite'
 import { builtinModules } from 'node:module'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { readFileSync } from 'node:fs'
-
+import { readFileSync, writeFileSync } from 'node:fs'
 
 // 在ES模块中模拟__dirname
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const pkg = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'))
 
-const entry: string[] = ['src/index.ts', 'src/root.ts', 'src/web.config.ts']
+const entry: string[] = ['src/index.ts', 'src/root.ts']
 
 function getFiles (dir: string) {
   fs.readdirSync(dir).forEach((file) => {
@@ -24,7 +23,6 @@ function getFiles (dir: string) {
 
 getFiles('src/apps')
 getFiles('src/cli')
-
 
 function injectDirnamePlugin (): Plugin {
   return {
@@ -40,6 +38,39 @@ const __dirname = import.meta.url ? new URL('.', import.meta.url).pathname : '';
         return injection + code
       }
       return code
+    }
+  }
+}
+
+// 创建输出目录 web.config.js 的插件
+function createWebConfigPlugin (): Plugin {
+  return {
+    name: 'create-web-config',
+    writeBundle (options, bundle) {
+      // 查找包含 web.config 的 main chunk
+      const mainChunkFile = Object.keys(bundle).find(fileName => {
+        return fileName.startsWith('chunk/main-') && fileName.endsWith('.js')
+      })
+
+      if (mainChunkFile) {
+        // 读取 main chunk 文件内容
+        const mainChunkPath = resolve(__dirname, 'lib', mainChunkFile)
+        const mainChunkContent = readFileSync(mainChunkPath, 'utf-8')
+
+        // 使用正则表达式查找 webConfig 的导出别名
+        const webConfigExportMatch = mainChunkContent.match(/webConfig as (\w+)/)
+        const webConfigAlias = webConfigExportMatch ? webConfigExportMatch[1] : 'webConfig'
+
+        // 在 lib 目录中创建 web.config.js
+        const webConfigContent = `export { ${webConfigAlias} as default } from './${mainChunkFile}';\n`
+        const outputPath = resolve(__dirname, 'lib', 'web.config.js')
+        writeFileSync(outputPath, webConfigContent)
+        console.log(`✓ Created lib/web.config.js -> ./${mainChunkFile} (alias: ${webConfigAlias})`)
+      } else {
+        console.warn('⚠ Could not find main chunk file')
+        // 列出所有可用的 chunk 文件以便调试
+        console.log('Available chunks:', Object.keys(bundle).filter(f => f.endsWith('.js')))
+      }
     }
   }
 }
@@ -61,13 +92,8 @@ export default defineConfig({
       external: [
         ...builtinModules,
         ...builtinModules.map((mod) => `node:${mod}`),
-        'node-karin',
+        ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js'].map(p => `node-karin${p}`),
         'playwright',
-        'node-karin/express',
-        'node-karin/root',
-        'node-karin/lodash',
-        'node-karin/yaml',
-        'node-karin/axios',
         'sequelize',
         'sqlite3'
       ],
@@ -75,9 +101,7 @@ export default defineConfig({
         inlineDynamicImports: false,
         format: 'esm',
         entryFileNames: (chunkInfo) => {
-          if (chunkInfo.name === 'index' ||
-            chunkInfo.name === 'web.config' ||
-            chunkInfo.name === 'root') {
+          if (chunkInfo.name === 'index' || chunkInfo.name === 'root') {
             return `${chunkInfo.name}.js`
           }
 
@@ -101,7 +125,12 @@ export default defineConfig({
           if (id.includes('src/root.ts')) {
             return 'root'
           }
-          if (id.includes('src/module') || id.includes('src/platform')) {
+          if (id.includes('src/module/db')) {
+            return 'db'
+          }
+          if (id.includes('src/web.config.ts') ||
+            id.includes('src/module') ||
+            id.includes('src/platform')) {
             return 'main'
           }
         }
@@ -124,6 +153,7 @@ export default defineConfig({
   },
   plugins: [
     // dts({ rollupTypes: true }) // 生成类型声明文件
-    injectDirnamePlugin()
+    injectDirnamePlugin(),
+    createWebConfigPlugin()
   ]
 })
