@@ -1,5 +1,16 @@
 # 变更日志
 
+## [1.6.6](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.5...v1.6.6) (2025-06-01)
+
+
+### Bug Fixes
+
+* **Config:** 添加评论数量显示选项控制功能 close [#100](https://github.com/ikenxuan/karin-plugin-kkk/issues/100) ([a365506](https://github.com/ikenxuan/karin-plugin-kkk/commit/a3655060b290ea3d8a8317d2f178d126309dbde2))
+* **utils:** 更新User-Agent中的Chrome和Edge版本号 ([a963e2e](https://github.com/ikenxuan/karin-plugin-kkk/commit/a963e2ed831e5a18218de84405e3af964f9230a7))
+* 和node_modules分开打包 ([74b109a](https://github.com/ikenxuan/karin-plugin-kkk/commit/74b109acef14f801294bed93a0bc99d839e78026))
+* 改进视频处理和上传功能 close [#99](https://github.com/ikenxuan/karin-plugin-kkk/issues/99) ([1766e7c](https://github.com/ikenxuan/karin-plugin-kkk/commit/1766e7ca7897d088556091ec78a5db1148675572))
+* 统一cjs模块导入方式为命名空间导入 ([fffb1a2](https://github.com/ikenxuan/karin-plugin-kkk/commit/fffb1a27cc92a18680168f7de10be7fc6120b743))
+
 ## [1.6.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.4...v1.6.5) (2025-05-28)
 
 
