@@ -646,8 +646,9 @@ export const webConfig = defineConfig({
             children: [
               components.switch.create('sendbase64', {
                 label: '转换Base64',
-                description: '发送视频经本插件转换为base64格式后再发送，适合Karin与机器人不在同一网络环境下开启',
-                defaultSelected: all.upload.sendbase64
+                description: '发送视频经本插件转换为base64格式后再发送，适合Karin与机器人不在同一网络环境下开启。与「群文件上传」互斥。',
+                defaultSelected: all.upload.sendbase64,
+                isDisabled: all.upload.usegroupfile
               }),
               components.switch.create('usefilelimit', {
                 label: '视频上传拦截',
@@ -682,15 +683,16 @@ export const webConfig = defineConfig({
               }),
               components.switch.create('usegroupfile', {
                 label: '群文件上传',
-                description: '使用群文件上传，开启后会将视频文件上传到群文件中，需配置「群文件上传阈值」',
-                defaultSelected: all.upload.usegroupfile
+                description: '使用群文件上传，开启后会将视频文件上传到群文件中，需配置「群文件上传阈值」。与「转换Base64」互斥',
+                defaultSelected: all.upload.usegroupfile,
+                isDisabled: all.upload.sendbase64
               }),
               components.input.number('groupfilevalue', {
                 label: '群文件上传阈值',
                 description: '当文件大小超过该值时将使用群文件上传，单位：MB，「使用群文件上传」开启后才会生效',
                 defaultValue: all.upload.groupfilevalue.toString(),
                 rules: [{ min: 1 }],
-                isDisabled: !all.upload.usegroupfile
+                isDisabled: !all.upload.usegroupfile || all.upload.sendbase64
               })
             ]
           })

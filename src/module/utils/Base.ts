@@ -282,6 +282,7 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
   if (Config.upload.sendbase64 && !options?.useGroupFile) {
     const videoBuffer = await fs.promises.readFile(file.filepath)
     File = `base64://${videoBuffer.toString('base64')}`
+    logger.mark(`已开启视频文件 base64转换 正在进行${logger.yellow('base64转换中')}...`)
   } else File = options?.useGroupFile ? file.filepath : `file://${file.filepath}`
 
   try {
@@ -289,19 +290,21 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
     if (options?.active) {
       if (options.useGroupFile) { // 是群文件
         const bot = karin.getBot(String(options.activeOption?.uin))!
-        logger.mark(`视频大小: ${newFileSize.toFixed(1)}MB 正通过文件上传中...`)
+        logger.mark(`${logger.blue('主动消息:')} 视频大小: ${newFileSize.toFixed(1)}MB 正在通过${logger.yellow('bot.uploadFile')}回复...`)
         const status = await bot.uploadFile(contact, File, file.originTitle ? `${file.originTitle}.mp4` : `${File.split('/').pop()}`)
         status ? sendStatus = true : sendStatus = false
       } else { // 不是群文件
+        logger.mark(`${logger.blue('主动消息:')} 视频大小: ${newFileSize.toFixed(1)}MB 正在通过${logger.yellow('karin.sendMsg')}回复...`)
         const status = await karin.sendMsg(selfId, contact, [segment.video(File)])
         status.messageId ? sendStatus = true : sendStatus = false
       }
     } else { // 不是主动消息
       if (options?.useGroupFile) { // 是文件
-        await event.reply(`视频大小: ${newFileSize.toFixed(1)}MB 正通过文件上传中...`)
+        logger.mark(`${logger.blue('被动消息:')} 视频大小: ${newFileSize.toFixed(1)}MB 正在通过${logger.yellow('e.bot.uploadFile')}回复...`)
         const status = await event.bot.uploadFile(event.contact, File, file.originTitle ? `${file.originTitle}.mp4` : `${File.split('/').pop()}`)
         status ? sendStatus = true : sendStatus = false
       } else { // 不是文件
+        logger.mark(`${logger.blue('被动消息:')} 视频大小: ${newFileSize.toFixed(1)}MB 正在通过${logger.yellow('e.reply')}回复...`)
         const status = await event.reply(segment.video(File) || videoUrl)
         status.messageId ? sendStatus = true : sendStatus = false
       }

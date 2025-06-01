@@ -437,6 +437,7 @@ export class Bilibilipush extends Base {
                         if (success) {
                           const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
                           fs.renameSync(resultPath, filePath)
+                          logger.mark(`视频文件重命名完成: ${resultPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
                           logger.mark('正在尝试删除缓存文件')
                           await Common.removeFile(mp4File.filepath, true)
                           await Common.removeFile(mp3File.filepath, true)
@@ -546,7 +547,7 @@ export class Bilibilipush extends Base {
             }
           }
         } else {
-          throw new Error(`「${item.remark}」的动态列表数量为零！`)
+          logger.error(`「${item.remark}」的动态列表数量为零！`)
         }
       }
     } catch (error) {

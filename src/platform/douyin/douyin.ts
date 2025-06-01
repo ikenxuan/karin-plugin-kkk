@@ -156,6 +156,8 @@ export class DouYin extends Base {
                       if (success) {
                         const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
                         fs.renameSync(resultPath, filePath)
+                        logger.mark(`视频文件重命名完成: ${resultPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
+                        logger.mark('正在尝试删除缓存文件')
                         await Common.removeFile(liveimg.filepath, true)
                         temp.push({ filepath: filePath, totalBytes: 0 })
                         images.push(segment.video('file://' + filePath))
