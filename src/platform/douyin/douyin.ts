@@ -262,7 +262,7 @@ export class DouYin extends Base {
               {
                 Type: this.is_mp4 ? '视频' : this.is_slides ? '合辑' : '图集',
                 CommentsData: commentsArray,
-                CommentLength: String(commentsArray.jsonArray?.length ?? 0),
+                CommentLength: Config.douyin.realCommentCount ? Count(VideoData.aweme_detail.statistics.comment_count) : String(commentsArray.jsonArray?.length ?? 0),
                 share_url: this.is_mp4
                   ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${VideoData.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`
                   : VideoData.aweme_detail.share_url,

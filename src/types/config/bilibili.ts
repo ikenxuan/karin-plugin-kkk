@@ -12,6 +12,9 @@ export interface bilibiliConfig {
   /** B站评论数量，设置接口返回的评论数量，范围1 ~ x 条 */
   numcomment: number
 
+  /** 评论图是否显示真实评论数量，关闭则显示解析到的评论数量 */
+  realCommentCount: boolean
+
   /** 解析视频是否优先保内容，true为优先保证上传将使用最低分辨率，false为优先保清晰度将使用最高分辨率 */
   videopriority: boolean
 

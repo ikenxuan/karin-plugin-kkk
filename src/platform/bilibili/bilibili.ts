@@ -164,7 +164,7 @@ export class Bilibili extends Base {
             img = await Render('bilibili/comment', {
               Type: '视频',
               CommentsData: commentsdata,
-              CommentLength: String(commentsdata.length),
+              CommentLength: Config.bilibili.realCommentCount ? Count(infoData.data.stat.reply) : String(commentsdata.length),
               share_url: 'https://b23.tv/' + infoData.data.bvid,
               Clarity: Config.bilibili.videopriority === true ? nockData.data.accept_description[0] : '"流畅 360P"',
               VideoSize: Config.bilibili.videopriority === true ? (nockData.data.durl[0].size! / (1024 * 1024)).toFixed(2) : videoSize,

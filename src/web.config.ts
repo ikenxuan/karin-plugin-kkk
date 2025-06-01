@@ -213,7 +213,14 @@ export const webConfig = defineConfig({
               components.input.number('numcomment', {
                 label: '评论解析数量',
                 defaultValue: all.douyin.numcomment.toString(),
-                rules: [{ min: 1 }]
+                rules: [{ min: 1 }],
+                isDisabled: !all.douyin.comment
+              }),
+              components.switch.create('realCommentCount', {
+                label: '显示真实评论数量',
+                description: '评论图是否显示真实评论数量，关闭则显示解析到的评论数量',
+                defaultSelected: all.douyin.realCommentCount,
+                isDisabled: !all.douyin.comment
               }),
               components.switch.create('autoResolution', {
                 label: '自动分辨率',
@@ -354,6 +361,12 @@ export const webConfig = defineConfig({
                 label: '评论解析数量',
                 defaultValue: all.bilibili.numcomment.toString(),
                 rules: [{ min: 1 }]
+              }),
+              components.switch.create('realCommentCount', {
+                label: '显示真实评论数量',
+                description: '评论图是否显示真实评论数量，关闭则显示解析到的评论数量',
+                defaultSelected: all.bilibili.realCommentCount,
+                isDisabled: !all.bilibili.comment
               }),
               components.switch.create('videopriority', {
                 label: '优先保内容',

@@ -12,6 +12,9 @@ export interface douyinConfig {
   /** 抖音评论数量，范围1 ~ x 条 */
   numcomment: number
 
+  /** 评论图是否显示真实评论数量，关闭则显示解析到的评论数量 */
+  realCommentCount: boolean
+
   /** 根据「视频拦截阈值」自动选择合适的分辨率，关闭后默认选择最大分辨率进行下载 */
   autoResolution: boolean
 
