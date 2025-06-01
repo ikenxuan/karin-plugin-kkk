@@ -1,7 +1,7 @@
 import { logger } from 'node-karin'
 
 import { Networks } from '@/module'
-import { KuaishouDataTypes } from '@/types'
+import type { KuaishouDataTypes } from '@/types'
 
 export interface ExtendedKuaishouOptionsType {
   type: KuaishouDataTypes[keyof KuaishouDataTypes],

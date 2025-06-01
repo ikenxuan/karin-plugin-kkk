@@ -1,15 +1,14 @@
 import fs from 'node:fs'
 
-import {
+import type {
   BiliBangumiVideoInfo,
   BiliBangumiVideoPlayurlIsLogin,
   BiliBangumiVideoPlayurlNoLogin,
-  bilibiliApiUrls,
   BiliBiliVideoPlayurlNoLogin,
   BiliOneWork,
-  BiliVideoPlayurlIsLogin,
-  getBilibiliData
+  BiliVideoPlayurlIsLogin
 } from '@ikenxuan/amagi'
+import { bilibiliApiUrls, getBilibiliData } from '@ikenxuan/amagi'
 import karin,
 {
   common,

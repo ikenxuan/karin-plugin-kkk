@@ -1,7 +1,18 @@
 import fs from 'node:fs'
 
 import { BiliUserProfile, BiliVideoPlayurlIsLogin, getBilibiliData } from '@ikenxuan/amagi'
-import karin, { AdapterType, common, ImageElement, logger, Message, segment, SendMsgResults } from 'node-karin'
+import type {
+  AdapterType,
+  ImageElement,
+  Message,
+  SendMsgResults
+} from 'node-karin'
+import karin from 'node-karin'
+import {
+  common,
+  logger,
+  segment
+} from 'node-karin'
 
 import {
   Base,

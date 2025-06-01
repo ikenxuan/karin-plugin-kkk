@@ -2,14 +2,13 @@
 import fs from 'node:fs'
 
 import { logger } from 'node-karin'
-import axios,
-{
-  AxiosError,
+import type {
   AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
   ResponseType
 } from 'node-karin/axios'
+import axios, { AxiosError } from 'node-karin/axios'
 import { pipeline } from 'stream/promises'
 
 import { NetworksConfigType } from '@/types'

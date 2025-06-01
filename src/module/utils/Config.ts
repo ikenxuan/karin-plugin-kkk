@@ -5,8 +5,8 @@ import { copyConfigSync, filesByExt, logger, requireFileSync, watch } from 'node
 import { karinPathBase } from 'node-karin/root'
 import YAML from 'node-karin/yaml'
 
-import { ConfigType } from '@/types'
-import { bilibiliPushItem, douyinPushItem, pushlistConfig } from '@/types/config/pushlist'
+import type { ConfigType } from '@/types'
+import type { bilibiliPushItem, douyinPushItem, pushlistConfig } from '@/types/config/pushlist'
 
 import { Root } from '../../root'
 import { bilibiliDB, douyinDB } from '../db'

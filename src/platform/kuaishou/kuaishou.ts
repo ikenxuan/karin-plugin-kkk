@@ -1,8 +1,8 @@
-import { Message } from 'node-karin'
+import { type Message } from 'node-karin'
 
 import { Base, Config, downloadVideo, Networks, Render } from '@/module'
 import { kuaishouComments } from '@/platform/kuaishou'
-import { ExtendedKuaishouOptionsType, KuaishouDataTypes } from '@/types'
+import type { ExtendedKuaishouOptionsType, KuaishouDataTypes } from '@/types'
 
 export class Kuaishou extends Base {
   e: Message

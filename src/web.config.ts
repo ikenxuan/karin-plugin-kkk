@@ -2,7 +2,7 @@ import { components, defineConfig } from 'node-karin'
 import _ from 'node-karin/lodash'
 
 import { Config } from '@/module'
-import { ConfigType } from '@/types'
+import { type ConfigType } from '@/types'
 
 /** 基础配置的类型 */
 type BaseConfigType = {

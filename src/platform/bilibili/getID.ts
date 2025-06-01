@@ -1,7 +1,7 @@
 import { logger } from 'node-karin'
 
 import { Networks } from '@/module/utils'
-import { BilibiliDataTypes } from '@/types'
+import type { BilibiliDataTypes } from '@/types'
 
 export interface BilibiliId {
   type: BilibiliDataTypes[keyof BilibiliDataTypes]

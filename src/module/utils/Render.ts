@@ -1,6 +1,7 @@
 import { join } from 'node:path'
 
-import { ImageElement, Options, render, segment } from 'node-karin'
+import type { ImageElement, Options } from 'node-karin'
+import { render, segment } from 'node-karin'
 
 import { Common, Config, Root } from '@/module'
 

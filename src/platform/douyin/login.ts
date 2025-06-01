@@ -1,7 +1,7 @@
 import { execSync, spawn } from 'node:child_process'
 import fs from 'node:fs'
 
-import karin, { handler, logger, Message, segment } from 'node-karin'
+import karin, { handler, logger, type Message, segment } from 'node-karin'
 import { chromium, Page } from 'playwright'
 
 import { Common, Config, Root } from '@/module'

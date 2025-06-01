@@ -1,8 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { createNotFoundResponse, logger, Message } from 'node-karin'
-import { Response } from 'node-karin/express'
+import { createNotFoundResponse, logger, type Message } from 'node-karin'
+import type { Response } from 'node-karin/express'
 import { karinPathTemp } from 'node-karin/root'
 
 import { Config } from '@/module/utils'

@@ -1,5 +1,7 @@
-import { DySearchInfo } from '@ikenxuan/amagi'
-import karin, { AdapterType, common, ImageElement, logger, Message, segment } from 'node-karin'
+import type { DySearchInfo } from '@ikenxuan/amagi'
+import type { AdapterType, ImageElement, Message } from 'node-karin'
+import karin from 'node-karin'
+import { common, logger, segment } from 'node-karin'
 
 import {
   Base,

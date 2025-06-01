@@ -1,7 +1,8 @@
 import fs from 'node:fs'
 
 import { markdown } from '@karinjs/md-html'
-import { common, Elements, karinPathRoot, logger, Message, mkdirSync, render, segment } from 'node-karin'
+import type { Elements, Message } from 'node-karin'
+import { common, karinPathRoot, logger, mkdirSync, render, segment } from 'node-karin'
 import * as QRCode from 'qrcode'
 
 import {

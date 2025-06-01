@@ -1,7 +1,7 @@
-import { logger, Message } from 'node-karin'
+import { logger, type Message } from 'node-karin'
 
 import { Networks } from '@/module/utils'
-import { DouyinDataTypes } from '@/types'
+import type { DouyinDataTypes } from '@/types'
 
 export interface DouyinIdData {
   type: DouyinDataTypes[keyof DouyinDataTypes]
