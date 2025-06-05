@@ -275,8 +275,13 @@ export class Bilibili extends Base {
       case 'dynamic_info': {
         const dynamicInfo = await this.amagi.getBilibiliData('动态详情数据', { dynamic_id: iddata.dynamic_id })
         const dynamicInfoCard = await this.amagi.getBilibiliData('动态卡片数据', { dynamic_id: dynamicInfo.data.item.id_str, typeMode: 'strict' })
-        const commentsData = await this.amagi.getBilibiliData('评论数据', { type: mapping_table(dynamicInfo.data.item.type), oid: oid(dynamicInfo, dynamicInfoCard), number: Config.bilibili.numcomment, typeMode: 'strict' })
-        const emojiData = await this.amagi.getBilibiliData('Emoji数据')
+        const commentsData = dynamicInfo.data.item.type !== DynamicType.LIVE_RCMD && await this.amagi.getBilibiliData('评论数据', {
+          type: mapping_table(dynamicInfo.data.item.type),
+          oid: oid(dynamicInfo, dynamicInfoCard),
+          number: Config.bilibili.numcomment,
+          typeMode: 'strict'
+        })
+        const dynamicCARD = JSON.parse(dynamicInfoCard.data.card.card)
         const userProfileData = await this.amagi.getBilibiliData('用户主页数据', { host_mid: dynamicInfo.data.item.modules.module_author.mid, typeMode: 'strict' })
 
         switch (dynamicInfo.data.item.type) {
@@ -506,7 +511,27 @@ export class Bilibili extends Base {
             }
             break
           }
-
+          /** 直播动态 */
+          case DynamicType.LIVE_RCMD: {
+            const userINFO = await getBilibiliData('用户主页数据', '', { host_mid: dynamicInfo.data.item.modules.module_author.mid, typeMode: 'strict' })
+            img = await Render('bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
+              {
+                image_url: [{ image_src: dynamicCARD.live_play_info.cover }],
+                text: br(dynamicCARD.live_play_info.title),
+                liveinf: br(`${dynamicCARD.live_play_info.area_name} | 房间号: ${dynamicCARD.live_play_info.room_id}`),
+                username: checkvip(userINFO.data.card),
+                avatar_url: userINFO.data.card.face,
+                frame: dynamicInfo.data.item.modules.module_author.pendant.image,
+                fans: Count(userINFO.data.follower),
+                create_time: Common.convertTimestampToDateTime(dynamicInfo.data.item.modules.module_author.pub_ts),
+                now_time: Common.getCurrentTime(),
+                share_url: 'https://live.bilibili.com/' + dynamicCARD.live_play_info.room_id,
+                dynamicTYPE: '直播动态推送'
+              }
+            )
+            await this.e.reply(img)
+            break
+          }
           default:
             await this.e.reply(`该动态类型「${dynamicInfo.data.item.type}」暂未支持解析`)
             break
