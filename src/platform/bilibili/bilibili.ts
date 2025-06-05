@@ -526,7 +526,7 @@ export class Bilibili extends Base {
                 create_time: Common.convertTimestampToDateTime(dynamicInfo.data.item.modules.module_author.pub_ts),
                 now_time: Common.getCurrentTime(),
                 share_url: 'https://live.bilibili.com/' + dynamicCARD.live_play_info.room_id,
-                dynamicTYPE: '直播动态推送'
+                dynamicTYPE: '直播动态'
               }
             )
             await this.e.reply(img)
