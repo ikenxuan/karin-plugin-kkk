@@ -317,8 +317,8 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
     return false
   } finally {
     const filePath = file.filepath
-    logger.mark(`临时预览地址：http://localhost:${process.env.HTTP_PORT!}/api/kkk/video/${filePath.split('/').pop()}`)
-    logger.info(`文件 ${filePath} 将在 10 分钟后删除`)
+    logger.mark(`临时预览地址：http://localhost:${process.env.HTTP_PORT!}/api/kkk/video/${encodeURIComponent(filePath.split('/').pop() ?? '')}`)
+    Config.app.rmmp4 && logger.info(`文件 ${filePath} 将在 10 分钟后删除`)
     setTimeout(async () => {
       await Common.removeFile(filePath)
     }, 10 * 60 * 1000)
