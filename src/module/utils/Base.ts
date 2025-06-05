@@ -91,7 +91,6 @@ export class Base {
     this._path = process.cwd()?.replace(/\\/g, '/')
     const client = Client({ douyin: Config.cookies.douyin, bilibili: Config.cookies.bilibili, kuaishou: Config.cookies.kuaishou })
 
-    this.amagi = client
     // 使用Proxy包装amagi客户端
     this.amagi = new Proxy(client, {
       get (target: amagiClient, prop: keyof amagiClient) {

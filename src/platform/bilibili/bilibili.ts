@@ -106,25 +106,25 @@ export class Bilibili extends Base {
 
         // 如果配置项不存在或长度为0，则不显示任何内容
         if (Config.bilibili.displayContent && Config.bilibili.displayContent.length > 0) {
-          // 映射配置项到对应内容
           const contentMap = {
             cover: segment.image(pic),
-            title: `\n📺 标题: ${title}\n`,
-            author: `\n👤 作者: ${name}\n`,
-            stats: this.formatVideoStats(view, danmaku, like, coin, share, favorite),
-            desc: `\n\n📝 简介: ${desc}`
+            title: segment.text(`\n📺 标题: ${title}\n`),
+            author: segment.text(`\n👤 作者: ${name}\n`),
+            stats: segment.text(this.formatVideoStats(view, danmaku, like, coin, share, favorite)),
+            desc: segment.text(`\n\n📝 简介: ${desc}`)
           }
 
-          // 根据配置添加内容
-          Config.bilibili.displayContent.forEach(item => {
-            if (contentMap[item]) {
+          // 重新排序
+          const fixedOrder: (keyof typeof contentMap)[] = ['cover', 'title', 'author', 'stats', 'desc']
+
+          fixedOrder.forEach(item => {
+            if (Config.bilibili.displayContent.includes(item) && contentMap[item]) {
               replyContent.push(contentMap[item])
             }
           })
 
-          // 只有在有内容时才发送回复
           if (replyContent.length > 0) {
-            await this.e.reply(replyContent.reverse())
+            await this.e.reply(replyContent)
           }
         }
 
