@@ -1,5 +1,14 @@
 # 变更日志
 
+## [1.6.7](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.6...v1.6.7) (2025-06-05)
+
+
+### Bug Fixes
+
+* **bilibili:** 添加直播动态推送功能支持 ([231c7d7](https://github.com/ikenxuan/karin-plugin-kkk/commit/231c7d7a7ed9915819b55c9b6bb414276cee1996))
+* **bilibili:** 调整内容显示顺序并优化消息段格式 ([1abc7f5](https://github.com/ikenxuan/karin-plugin-kkk/commit/1abc7f59522f33f92caf8048276b78dfe7e3234f))
+* 优化类型导入使用type关键字 ([0d027d1](https://github.com/ikenxuan/karin-plugin-kkk/commit/0d027d1d313465f272fcc8f09507cd8b6da4c644))
+
 ## [1.6.6](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.5...v1.6.6) (2025-06-01)
 
 
