@@ -1,5 +1,12 @@
 # 变更日志
 
+## [1.6.8](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.7...v1.6.8) (2025-06-10)
+
+
+### Bug Fixes
+
+* 修复在根目录创建无关日志 ([f7eccaa](https://github.com/ikenxuan/karin-plugin-kkk/commit/f7eccaae568cdaf3b45b5df3b9c0732ead28f5bb))
+
 ## [1.6.7](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.6...v1.6.7) (2025-06-05)
 
 
