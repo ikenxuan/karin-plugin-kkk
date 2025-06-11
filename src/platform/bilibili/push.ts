@@ -516,7 +516,9 @@ export class Bilibilipush extends Base {
     const willbepushlist: WillBePushList = {}
 
     try {
-      for (const item of userList) {
+      /** 过滤掉不启用的订阅项 */
+      const filteredUserList = userList.filter(item => item.switch !== false)
+      for (const item of filteredUserList) {
         const dynamic_list = await this.amagi.getBilibiliData('用户主页动态列表数据', { host_mid: item.host_mid, typeMode: 'strict' })
         if (dynamic_list.data.items.length > 0) {
           // 遍历接口返回的视频列表
@@ -686,6 +688,7 @@ export class Bilibilipush extends Base {
 
       // 不存在相同的 host_mid，新增一个配置项
       config.bilibili.push({
+        switch: true,
         host_mid,
         group_id: [`${groupId}:${botId}`],
         remark: data.data.card.name

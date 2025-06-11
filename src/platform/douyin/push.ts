@@ -244,7 +244,9 @@ export class DouYinpush extends Base {
     const willbepushlist: WillBePushList = {}
 
     try {
-      for (const item of userList) {
+      /** 过滤掉不启用的订阅项 */
+      const filteredUserList = userList.filter(item => item.switch !== false)
+      for (const item of filteredUserList) {
         const sec_uid = item.sec_uid
         const videolist = await this.amagi.getDouyinData('用户主页视频列表数据', { sec_uid, typeMode: 'strict' })
         const userinfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
@@ -452,6 +454,7 @@ export class DouYinpush extends Base {
       } else {
         // 如果不存在相同的 sec_uid，则新增一个属性
         config.douyin.push({
+          switch: true,
           sec_uid,
           group_id: [`${groupId}:${botId}`],
           remark: UserInfoData.user.nickname,

@@ -33,7 +33,17 @@ class Cfg {
       const config = YAML.parseDocument(fs.readFileSync(`${this.dirCfgPath}/${file}`, 'utf8'))
       const defConfig = YAML.parseDocument(fs.readFileSync(`${this.defCfgPath}/${file}`, 'utf8'))
       const { differences, result } = this.mergeObjectsWithPriority(config, defConfig)
-      if (differences) {
+
+      // 对pushlist配置文件进行特殊处理，添加switch字段兼容
+      let needsUpdate = differences
+      if (file === 'pushlist.yaml') {
+        const updated = this.addSwitchFieldToPushlist(result)
+        if (updated) {
+          needsUpdate = true
+        }
+      }
+
+      if (needsUpdate) {
         fs.writeFileSync(`${this.dirCfgPath}/${file}`, result.toString({ lineWidth: -1 }))
       }
     }
@@ -359,6 +369,46 @@ class Cfg {
 
     // 递归调用自身，处理下一个键路径
     this.setNestedValue(subMap, keys.slice(1), value)
+  }
+
+  /**
+   * 为推送列表配置添加switch字段兼容
+   * @param doc YAML文档
+   * @returns 是否有更新
+   */
+  private addSwitchFieldToPushlist (doc: YAML.Document.Parsed): boolean {
+    let hasUpdates = false
+    const contents = doc.contents as YAML.YAMLMap
+
+    // 处理抖音推送列表
+    const douyinList = contents.get('douyin')
+    if (YAML.isSeq(douyinList)) {
+      for (const item of douyinList.items) {
+        if (YAML.isMap(item)) {
+          const switchField = item.get('switch')
+          if (switchField === undefined) {
+            item.set('switch', true)
+            hasUpdates = true
+          }
+        }
+      }
+    }
+
+    // 处理B站推送列表
+    const bilibiliList = contents.get('bilibili')
+    if (YAML.isSeq(bilibiliList)) {
+      for (const item of bilibiliList.items) {
+        if (YAML.isMap(item)) {
+          const switchField = item.get('switch')
+          if (switchField === undefined) {
+            item.set('switch', true)
+            hasUpdates = true
+          }
+        }
+      }
+    }
+
+    return hasUpdates
   }
 
   mergeObjectsWithPriority (

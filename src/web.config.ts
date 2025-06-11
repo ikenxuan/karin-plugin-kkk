@@ -757,6 +757,11 @@ export const webConfig = defineConfig({
           children: components.accordion.createItem('accordion-item-douyin', {
             className: 'ml-4 mr-4',
             children: [
+              components.switch.create('switch', {
+                label: '是否启用',
+                description: '是否启用该订阅项',
+                color: 'warning'
+              }),
               components.input.string('short_id', {
                 placeholder: '',
                 label: '抖音号',
@@ -855,6 +860,11 @@ export const webConfig = defineConfig({
           children: components.accordion.createItem('accordion-item-bilibili', {
             className: 'ml-4 mr-4',
             children: [
+              components.switch.create('switch', {
+                label: '是否启用',
+                description: '是否启用该订阅项',
+                color: 'warning'
+              }),
               components.input.number('host_mid', {
                 placeholder: '',
                 label: 'UID',
