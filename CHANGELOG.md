@@ -1,5 +1,13 @@
 # 变更日志
 
+## [1.6.9](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.8...v1.6.9) (2025-06-11)
+
+
+### Bug Fixes
+
+* **web:** 更新插件配置和依赖项 ([380f538](https://github.com/ikenxuan/karin-plugin-kkk/commit/380f5386b77a4dd7ee5e7649dcf458c40da27b52))
+* **推送配置:** 为推送列表添加启用开关功能 ([9865228](https://github.com/ikenxuan/karin-plugin-kkk/commit/98652285d07fda962af4dff313ac9ab9199a19eb))
+
 ## [1.6.8](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.7...v1.6.8) (2025-06-10)
 
 
