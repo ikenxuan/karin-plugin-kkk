@@ -1,7 +1,7 @@
 import { components, defineConfig } from 'node-karin'
 import _ from 'node-karin/lodash'
 
-import { Config } from '@/module'
+import { Config, Root } from '@/module'
 import { type ConfigType } from '@/types'
 
 /** 基础配置的类型 */
@@ -21,17 +21,23 @@ type newConfigType = BaseConfigType & PushConfigType
 export const webConfig = defineConfig({
   info: {
     id: 'karin-plugin-kkk',
-    name: 'karin-plugin-kkk',
+    name: 'kkk插件',
     description: 'Karin 的「抖音」「B站」视频解析/动态推送插件',
     icon: {
-      name: 'verified ',
-      color: '#FFFF55'
+      name: 'radio_button_checked',
+      color: '#F31260'
     },
+    version: Root.pluginVersion,
     author: [
       {
         name: 'ikenxuan',
         home: 'https://github.com/ikenxuan',
         avatar: 'https://github.com/ikenxuan.png'
+      },
+      {
+        name: 'sj817',
+        home: 'https://github.com/sj817',
+        avatar: 'https://github.com/sj817.png'
       }
     ]
   },
@@ -121,8 +127,9 @@ export const webConfig = defineConfig({
               }),
               components.switch.create('APIServerMount', {
                 label: '挂载到 Karin',
-                description: 'API 服务是否挂载到 Karin 上，开启后监听端口为 Karin 的 http 端口，修改后需重启',
-                defaultSelected: all.app.APIServerMount
+                description: 'API 服务是否挂载到 Karin 上，开启后监听端口为 Karin 的 http 端口，修改后需重启。需开启「API服务」',
+                defaultSelected: all.app.APIServerMount,
+                isDisabled: !all.app.APIServer
               }),
               components.input.number('APIServerPort', {
                 label: 'API服务端口',
@@ -203,29 +210,32 @@ export const webConfig = defineConfig({
               components.switch.create('tip', {
                 label: '解析提示',
                 description: '抖音解析提示，发送提示信息：“检测到抖音链接，开始解析”',
-                defaultSelected: all.douyin.tip
+                defaultSelected: all.douyin.tip,
+                isDisabled: !all.douyin.switch
               }),
               components.switch.create('comment', {
                 label: '评论解析',
                 description: '抖音评论解析，开启后可发送抖音作品评论图',
-                defaultSelected: all.douyin.comment
+                defaultSelected: all.douyin.comment,
+                isDisabled: !all.douyin.switch || !all.douyin.switch
               }),
               components.input.number('numcomment', {
                 label: '评论解析数量',
                 defaultValue: all.douyin.numcomment.toString(),
                 rules: [{ min: 1 }],
-                isDisabled: !all.douyin.comment
+                isDisabled: !all.douyin.comment || !all.douyin.switch
               }),
               components.switch.create('realCommentCount', {
                 label: '显示真实评论数量',
                 description: '评论图是否显示真实评论数量，关闭则显示解析到的评论数量',
                 defaultSelected: all.douyin.realCommentCount,
-                isDisabled: !all.douyin.comment
+                isDisabled: !all.douyin.comment || !all.douyin.switch
               }),
               components.switch.create('autoResolution', {
                 label: '自动分辨率',
                 description: '根据「视频拦截阈值」自动选择合适的分辨率，关闭后默认选择最大分辨率进行下载',
-                defaultSelected: all.douyin.autoResolution
+                defaultSelected: all.douyin.autoResolution,
+                isDisabled: !all.douyin.switch
               }),
               components.radio.group('loginPerm', {
                 label: '谁可以触发扫码登录',
@@ -270,6 +280,7 @@ export const webConfig = defineConfig({
                 description: '修改后需重启',
                 orientation: 'horizontal',
                 defaultValue: all.douyin.push.permission,
+                isDisabled: !all.douyin.push.switch,
                 color: 'warning',
                 radio: [
                   components.radio.create('push:permission:radio-1', {
@@ -298,25 +309,29 @@ export const webConfig = defineConfig({
                 label: '定时任务表达式',
                 description: '定时推送的时间，格式为cron表达式（默认为每十分钟执行一次）',
                 defaultValue: all.douyin.push.cron,
-                color: 'warning'
+                color: 'warning',
+                isDisabled: !all.douyin.push.switch
               }),
               components.switch.create('push:parsedynamic', {
                 label: '作品解析',
                 description: '触发推送时是否一同解析该作品',
                 defaultSelected: all.douyin.push.parsedynamic,
-                color: 'warning'
+                color: 'warning',
+                isDisabled: !all.douyin.push.switch
               }),
               components.switch.create('push:log', {
                 label: '推送日志',
                 description: '是否打印推送日志（修改后需重启）',
                 defaultSelected: all.douyin.push.log,
-                color: 'warning'
+                color: 'warning',
+                isDisabled: !all.douyin.push.switch
               }),
               components.radio.group('push:shareType', {
                 label: '推送图二维码的类型',
                 orientation: 'horizontal',
                 defaultValue: all.douyin.push.shareType,
                 color: 'warning',
+                isDisabled: !all.douyin.push.switch,
                 radio: [
                   components.radio.create('push:shareType.radio-1', {
                     label: '网页链接',
@@ -350,34 +365,39 @@ export const webConfig = defineConfig({
               components.switch.create('tip', {
                 label: '解析提示',
                 description: 'B站解析提示，发送提示信息：“检测到B站链接，开始解析”',
-                defaultSelected: all.bilibili.tip
+                defaultSelected: all.bilibili.tip,
+                isDisabled: !all.bilibili.switch
               }),
               components.switch.create('comment', {
                 label: '评论解析',
                 description: 'B站评论解析，开启后可发送B站作品评论图',
-                defaultSelected: all.bilibili.comment
+                defaultSelected: all.bilibili.comment,
+                isDisabled: !all.bilibili.switch
               }),
               components.input.number('numcomment', {
                 label: '评论解析数量',
                 defaultValue: all.bilibili.numcomment.toString(),
-                rules: [{ min: 1 }]
+                rules: [{ min: 1 }],
+                isDisabled: !all.bilibili.comment || !all.bilibili.switch
               }),
               components.switch.create('realCommentCount', {
                 label: '显示真实评论数量',
                 description: '评论图是否显示真实评论数量，关闭则显示解析到的评论数量',
                 defaultSelected: all.bilibili.realCommentCount,
-                isDisabled: !all.bilibili.comment
+                isDisabled: !all.bilibili.comment || !all.bilibili.switch
               }),
               components.switch.create('videopriority', {
                 label: '优先保内容',
                 description: '解析视频是否优先保内容，true为优先保证上传将使用最低分辨率，false为优先保清晰度将使用最高分辨率',
-                defaultSelected: all.bilibili.videopriority
+                defaultSelected: all.bilibili.videopriority,
+                isDisabled: !all.bilibili.switch
               }),
               components.radio.group('videoQuality', {
                 label: '画质偏好',
                 description: '解析视频的分辨率偏好。',
                 orientation: 'horizontal',
                 defaultValue: all.bilibili.videoQuality.toString(),
+                isDisabled: !all.bilibili.switch,
                 radio: [
                   components.radio.create('videoQuality:radio-1', {
                     label: '自动选择',
@@ -432,7 +452,7 @@ export const webConfig = defineConfig({
                 label: '视频体积上限（MB）',
                 description: '根据该值自动选择分辨率进行下载。仅在「画质偏好」 为 "自动选择" 时生效',
                 defaultValue: all.bilibili.maxAutoVideoSize.toString(),
-                isDisabled: all.bilibili.videoQuality !== 0,
+                isDisabled: all.bilibili.videoQuality !== 0 || !all.bilibili.switch,
                 rules: [{ min: 1, max: 20000 }]
               }),
               components.radio.group('loginPerm', {
@@ -468,6 +488,7 @@ export const webConfig = defineConfig({
                 description: '若什么都不选，则不会返回任何视频相关信息',
                 orientation: 'horizontal',
                 defaultValue: all.bilibili.displayContent,
+                isDisabled: !all.bilibili.switch,
                 checkbox: [
                   components.checkbox.create('displayContent:checkbox:1', {
                     label: '封面',
@@ -507,6 +528,7 @@ export const webConfig = defineConfig({
                 orientation: 'horizontal',
                 defaultValue: all.bilibili.push.permission,
                 color: 'warning',
+                isDisabled: !all.bilibili.push.switch,
                 radio: [
                   components.radio.create('push:permission:radio-1', {
                     label: '所有人',
@@ -534,25 +556,28 @@ export const webConfig = defineConfig({
                 label: '定时任务表达式',
                 description: '定时推送的时间，格式为cron表达式（默认为每十分钟执行一次）',
                 defaultValue: all.bilibili.push.cron,
-                color: 'warning'
+                color: 'warning',
+                isDisabled: !all.bilibili.push.switch
               }),
               components.switch.create('push:parsedynamic', {
                 label: '作品解析',
                 description: '触发推送时是否一同解析该作品',
                 defaultSelected: all.bilibili.push.parsedynamic,
-                color: 'warning'
+                color: 'warning',
+                isDisabled: !all.bilibili.push.switch
               }),
               components.switch.create('push:log', {
                 label: '推送日志',
                 description: '是否打印推送日志（修改后需重启）',
                 defaultSelected: all.bilibili.push.log,
-                color: 'warning'
+                color: 'warning',
+                isDisabled: !all.bilibili.push.switch
               }),
               components.radio.group('push:pushVideoQuality', {
                 label: '解析视频动态时的画质偏好',
                 description: '「作品解析」开启时生效，仅对视频动态有效',
                 orientation: 'horizontal',
-                isDisabled: !all.bilibili.push.parsedynamic,
+                isDisabled: !all.bilibili.push.parsedynamic || !all.bilibili.push.switch,
                 defaultValue: all.bilibili.push.pushVideoQuality.toString(),
                 color: 'warning',
                 radio: [
@@ -609,7 +634,7 @@ export const webConfig = defineConfig({
                 label: '视频动态的视频体积上限（MB）',
                 description: '根据该值自动选择分辨率进行下载。仅在「解析视频动态时的画质偏好」 为 "自动选择" 且「作品解析」开启时生效，仅对视频动态有效',
                 defaultValue: all.bilibili.push.pushMaxAutoVideoSize.toString(),
-                isDisabled: !all.bilibili.push.parsedynamic || all.bilibili.push.pushVideoQuality !== 0,
+                isDisabled: !all.bilibili.push.parsedynamic || all.bilibili.push.pushVideoQuality !== 0 || !all.bilibili.push.switch,
                 rules: [{ min: 1, max: 20000 }],
                 color: 'warning'
               })
@@ -633,17 +658,20 @@ export const webConfig = defineConfig({
               components.switch.create('tip', {
                 label: '解析提示',
                 description: '快手解析提示，发送提示信息：“检测到快手链接，开始解析”',
-                defaultSelected: all.kuaishou.tip
+                defaultSelected: all.kuaishou.tip,
+                isDisabled: !all.kuaishou.switch
               }),
               components.switch.create('comment', {
                 label: '评论解析',
                 description: '快手评论解析，开启后可发送快手作品评论图',
-                defaultSelected: all.kuaishou.comment
+                defaultSelected: all.kuaishou.comment,
+                isDisabled: !all.kuaishou.switch
               }),
               components.input.number('numcomment', {
                 label: '评论解析数量',
                 defaultValue: all.kuaishou.numcomment.toString(),
-                rules: [{ min: 1 }]
+                rules: [{ min: 1 }],
+                isDisabled: !all.kuaishou.switch || !all.kuaishou.comment
               })
             ]
           })
