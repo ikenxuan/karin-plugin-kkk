@@ -1,5 +1,12 @@
 # 变更日志
 
+## [1.6.12](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.11...v1.6.12) (2025-06-15)
+
+
+### Bug Fixes
+
+* 更新md-html依赖并优化版本信息展示 ([88115f1](https://github.com/ikenxuan/karin-plugin-kkk/commit/88115f108d09620885491dd990a8306bf586f096))
+
 ## [1.6.11](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.10...v1.6.11) (2025-06-15)
 
 
