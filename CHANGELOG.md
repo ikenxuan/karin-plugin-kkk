@@ -1,5 +1,14 @@
 # 变更日志
 
+## [1.6.10](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.9...v1.6.10) (2025-06-15)
+
+
+### Bug Fixes
+
+* **douyin:** 修复评论中表情替换和空格处理问题 ([d49a2e1](https://github.com/ikenxuan/karin-plugin-kkk/commit/d49a2e1b4dd5e7c28cbe15429c53f1d1951a3447))
+* 分割更新日志 ([11ddf95](https://github.com/ikenxuan/karin-plugin-kkk/commit/11ddf952338b459b9a0751c72aaad294f10559dc))
+* 移除内置更新 ([11ddf95](https://github.com/ikenxuan/karin-plugin-kkk/commit/11ddf952338b459b9a0751c72aaad294f10559dc))
+
 ## [1.6.9](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.8...v1.6.9) (2025-06-11)
 
 
