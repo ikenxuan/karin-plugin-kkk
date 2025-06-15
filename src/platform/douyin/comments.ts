@@ -93,18 +93,14 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
   for (const item1 of CommentData.jsonArray) {
     // 遍历emojidata中的每个元素
     for (const item2 of emojidata) {
-      // 如果jsonArray中的text包含在emojidata中的name中
+      // 如果text中包含这个特定的emoji
       if (item1.text.includes(item2.name)) {
-        // 检查是否存在中括号
-        if (item1.text.includes('[') && item1.text.includes(']')) {
-          item1.text = item1.text.replace(/\[[^\]]*\]/g, `<img src="${item2.url}"/>`).replace(/\\/g, '')
-        } else {
-          item1.text = `<img src="${item2.url}"/>`
-        }
+        item1.text = item1.text.replaceAll(item2.name, `<img src="${item2.url}"/>`)
         item1.text += '&#160'
       }
     }
   }
+
   return CommentData
 }
 
@@ -207,7 +203,7 @@ async function search_text (data: {
 }
 
 /**
- * 换行符转义为<br>
+ * 换行符转义为<br>，多个空格转义为&nbsp;
  * @param data 评论数据
  * @returns
  */
@@ -215,7 +211,12 @@ function br (data: any[]): any[] {
   for (const i of data) {
     let text = i.text
 
+    // 处理换行符
     text = text.replace(/\n/g, '<br>')
+    // 处理多个连续空格，将两个或更多连续空格替换为&nbsp;
+    text = text.replace(/ {2,}/g, (match: string) => {
+      return '&nbsp;'.repeat(match.length)
+    })
     i.text = text
   }
   return data

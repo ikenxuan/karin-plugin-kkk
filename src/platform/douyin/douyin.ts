@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 
+import type { DyEmojiList } from '@ikenxuan/amagi'
 import { markdown } from '@karinjs/md-html'
 import type { Elements, Message } from 'node-karin'
 import { common, karinPathRoot, logger, mkdirSync, render, segment } from 'node-karin'
@@ -253,8 +254,8 @@ export class DouYin extends Base {
         }
 
         if (Config.douyin.comment && Config.douyin.comment) {
-          const EmojiData = await this.amagi.getDouyinData('Emoji数据')
-          const list = await Emoji(EmojiData)
+          const EmojiData = await this.amagi.getDouyinData('Emoji数据', { typeMode: 'strict' })
+          const list = Emoji(EmojiData)
           const commentsArray = await douyinComments(CommentsData, list)
           if (!commentsArray.jsonArray.length) {
             await this.e.reply('这个作品没有评论 ~')
@@ -450,7 +451,7 @@ function convertTimestampToDateTime (timestamp: number): string {
   return `${year}-${month}-${day} ${hours}:${minutes}`
 }
 
-function Emoji (data: any): any {
+function Emoji (data: DyEmojiList) {
   const ListArray = []
 
   for (const i of data.emoji_list) {
