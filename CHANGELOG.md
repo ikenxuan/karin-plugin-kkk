@@ -1,5 +1,12 @@
 # 变更日志
 
+## [1.6.11](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.10...v1.6.11) (2025-06-15)
+
+
+### Bug Fixes
+
+* 不打包 '@karinjs/md-html' ([2392a0c](https://github.com/ikenxuan/karin-plugin-kkk/commit/2392a0cec5807ca035924cc6a3fdd7993676f6aa))
+
 ## [1.6.10](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.9...v1.6.10) (2025-06-15)
 
 
