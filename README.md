@@ -34,6 +34,10 @@
 
 <br />
 
+## ⚙️ 配置
+
+请在 WebUI 中查看并配置插件参数。
+
 ## 📖 功能
 
 **更多信息可打开 [文档主页](https://ikenxuan.github.io/karin-plugin-kkk/) 阅读。**<br>
