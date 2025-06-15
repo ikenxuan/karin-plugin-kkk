@@ -24,10 +24,14 @@ function getFiles (dir: string) {
 getFiles('src/apps')
 getFiles('src/cli')
 
-function injectDirnamePlugin (): Plugin {
+/**
+ * 注入 __dirname 和 __filename 变量的 Vite 插件
+ * 用于在 ESM 环境中模拟 CommonJS 的这两个全局变量
+ */
+const injectDirnamePlugin = (): Plugin => {
   return {
     name: 'inject-dirname',
-    renderChunk (code: string) {
+    renderChunk: (code: string) => {
       // 检查代码中是否使用了__dirname或__filename
       if (code.includes('__dirname') || code.includes('__filename')) {
         // 在文件顶部添加必要的导入和变量定义
@@ -42,11 +46,18 @@ const __dirname = import.meta.url ? new URL('.', import.meta.url).pathname : '';
   }
 }
 
-// 创建输出目录 web.config.js 的插件
-function createWebConfigPlugin (): Plugin {
+/**
+ * 创建输出目录 web.config.js 的 Vite 插件
+ * @description 该插件会在构建完成后:
+ * 1. 查找包含 web.config 的主 chunk 文件
+ * 2. 从主 chunk 中提取 webConfig 的导出别名
+ * 3. 在 lib 目录下创建 web.config.js 文件
+ * 4. 重新导出 webConfig 为默认导出
+ */
+const createWebConfigPlugin = (): Plugin => {
   return {
     name: 'create-web-config',
-    writeBundle (options, bundle) {
+    writeBundle: (options, bundle) => {
       // 查找包含 web.config 的 main chunk
       const mainChunkFile = Object.keys(bundle).find(fileName => {
         return fileName.startsWith('chunk/main-') && fileName.endsWith('.js')
@@ -95,7 +106,8 @@ export default defineConfig({
         ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js'].map(p => `node-karin${p}`),
         'playwright',
         'sequelize',
-        'sqlite3'
+        'sqlite3',
+        '@karinjs/md-html'
       ],
       output: {
         inlineDynamicImports: false,
@@ -154,6 +166,6 @@ export default defineConfig({
   plugins: [
     // dts({ rollupTypes: true }) // 生成类型声明文件
     injectDirnamePlugin(),
-    createWebConfigPlugin()
+    createWebConfigPlugin(),
   ]
 })
