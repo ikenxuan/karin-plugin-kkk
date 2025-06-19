@@ -27,7 +27,10 @@
     "types": [
       "node"
     ],
-    "noEmit": true
+    "noEmit": true,
+    "strictPropertyInitialization": true, // 确保类的属性在构造函数中被初始化
+    "experimentalDecorators": true, // 启用实验性的装饰器特性支持
+    "emitDecoratorMetadata": true, // 为装饰器生成设计类型元数据
   },
   "include": [ // 指定编译器应该包含的文件或目录
     "src/**/*.ts",

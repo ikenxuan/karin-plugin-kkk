@@ -1,256 +1,306 @@
+import 'reflect-metadata'
+
 import { join } from 'node:path'
 
 import { logger } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
-import { DataTypes, Model, Op, Sequelize } from 'sequelize'
+import {
+  Column,
+  CreateDateColumn,
+  DataSource,
+  Entity,
+  In,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  Repository,
+  UpdateDateColumn
+} from 'typeorm'
 
 import { Config, Root } from '@/module/utils'
 import { DouyinPushItem } from '@/platform/douyin/push'
 import { douyinPushItem } from '@/types/config/pushlist'
 
-type GroupUserSubscriptionAttributes = {
-  id?: number
-  /** 群号 */
-  groupId: string
-  /** 抖音用户sec_uid */
-  sec_uid: string
+/**
+ * 机器人实体 - 存储机器人信息
+ */
+@Entity('Bots')
+class Bot {
+  /** 机器人ID */
+  @PrimaryColumn({ type: 'varchar', comment: '机器人ID' })
+  id!: string
+
+  /** 创建时间 */
+  @CreateDateColumn()
+  createdAt!: Date
+
+  /** 更新时间 */
+  @UpdateDateColumn()
+  updatedAt!: Date
+
+  /** 关联的群组 */
+  @OneToMany(() => Group, group => group.bot)
+  groups!: Group[]
 }
 
-/** 创建 Sequelize 实例，需要传入配置对象。 */
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: join(`${karinPathBase}/${Root.pluginName}/data`, 'douyin.db'),
-  logging: false,
-  pool: {
-    max: 5, // 连接池最大连接数
-    min: 0, // 连接池最小连接数
-    acquire: 30000, // 获取连接的超时时间(毫秒)
-    idle: 10000 // 连接在释放前可以空闲的最长时间(毫秒)
-  },
-  retry: {
-    max: 3 // 连接失败时的最大重试次数
-  },
-  isolationLevel: 'READ COMMITTED' // 隔离级别
-})
+/**
+ * 群组实体 - 存储群组信息
+ */
+@Entity('Groups')
+class Group {
+  /** 群组ID */
+  @PrimaryColumn({ type: 'varchar', comment: '群组ID' })
+  id!: string
 
-/** Bots表 - 存储机器人信息 */
-const Bot = sequelize.define('Bot', {
-  id: {
-    type: DataTypes.STRING,
-    primaryKey: true,
-    comment: '机器人ID'
-  }
-}, {
-  timestamps: true
-})
+  /** 所属机器人ID */
+  @Column({ type: 'varchar', comment: '所属机器人ID' })
+  botId!: string
 
-/** Groups表 - 存储群组信息 */
-const Group = sequelize.define('Group', {
-  id: {
-    type: DataTypes.STRING,
-    primaryKey: true,
-    comment: '群组ID'
-  },
-  botId: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    comment: '所属机器人ID',
-    references: {
-      model: 'Bots',
-      key: 'id'
-    }
-  }
-}, {
-  timestamps: true
-})
+  /** 创建时间 */
+  @CreateDateColumn()
+  createdAt!: Date
 
-/** DouyinUsers表 - 存储抖音用户信息 */
-const DouyinUser = sequelize.define('DouyinUser', {
-  sec_uid: {
-    type: DataTypes.STRING,
-    primaryKey: true,
-    comment: '抖音用户sec_uid'
-  },
-  short_id: {
-    type: DataTypes.STRING,
-    comment: '抖音号'
-  },
-  remark: {
-    type: DataTypes.STRING,
-    comment: '抖音用户昵称'
-  },
-  living: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
-    comment: '是否正在直播'
-  },
-  filterMode: {
-    type: DataTypes.ENUM('blacklist', 'whitelist'),
-    defaultValue: 'blacklist',
+  /** 更新时间 */
+  @UpdateDateColumn()
+  updatedAt!: Date
+
+  /** 所属机器人 */
+  @ManyToOne(() => Bot, bot => bot.groups)
+  bot!: Bot
+
+  /** 订阅关系 */
+  @OneToMany(() => GroupUserSubscription, subscription => subscription.group)
+  subscriptions!: GroupUserSubscription[]
+
+  /** 作品缓存 */
+  @OneToMany(() => AwemeCache, cache => cache.group)
+  awemeCaches!: AwemeCache[]
+
+  /** 订阅的抖音用户（多对多关系） */
+  @ManyToMany(() => DouyinUser, user => user.subscribedGroups)
+  @JoinTable({
+    name: 'GroupUserSubscriptions',
+    joinColumn: { name: 'groupId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'sec_uid', referencedColumnName: 'sec_uid' }
+  })
+  subscribedUsers!: DouyinUser[]
+}
+
+/**
+ * 抖音用户实体 - 存储抖音用户信息
+ */
+@Entity('DouyinUsers')
+class DouyinUser {
+  /** 抖音用户sec_uid */
+  @PrimaryColumn({ type: 'varchar', comment: '抖音用户sec_uid' })
+  sec_uid!: string
+
+  /** 抖音号 */
+  @Column({ type: 'varchar', nullable: true, comment: '抖音号' })
+  short_id?: string
+
+  /** 抖音用户昵称 */
+  @Column({ type: 'varchar', nullable: true, comment: '抖音用户昵称' })
+  remark?: string
+
+  /** 是否正在直播 */
+  @Column({ type: 'boolean', default: false, comment: '是否正在直播' })
+  living!: boolean
+
+  /** 过滤模式：黑名单或白名单 */
+  @Column({
+    type: 'varchar',
+    default: 'blacklist',
     comment: '过滤模式：黑名单或白名单'
+  })
+  filterMode!: 'blacklist' | 'whitelist'
+
+  /** 创建时间 */
+  @CreateDateColumn()
+  createdAt!: Date
+
+  /** 更新时间 */
+  @UpdateDateColumn()
+  updatedAt!: Date
+
+  /** 订阅关系 */
+  @OneToMany(() => GroupUserSubscription, subscription => subscription.douyinUser)
+  subscriptions!: GroupUserSubscription[]
+
+  /** 作品缓存 */
+  @OneToMany(() => AwemeCache, cache => cache.douyinUser)
+  awemeCaches!: AwemeCache[]
+
+  /** 过滤词 */
+  @OneToMany(() => FilterWord, filterWord => filterWord.douyinUser)
+  filterWords!: FilterWord[]
+
+  /** 过滤标签 */
+  @OneToMany(() => FilterTag, filterTag => filterTag.douyinUser)
+  filterTags!: FilterTag[]
+
+  /** 订阅的群组（多对多关系） */
+  @ManyToMany(() => Group, group => group.subscribedUsers)
+  subscribedGroups!: Group[]
+}
+
+/**
+ * 群组用户订阅关系实体 - 存储群组订阅的抖音用户关系
+ */
+@Entity('GroupUserSubscriptions')
+class GroupUserSubscription {
+  /** 群组ID */
+  @PrimaryColumn({ type: 'varchar', comment: '群组ID' })
+  groupId!: string
+
+  /** 抖音用户sec_uid */
+  @PrimaryColumn({ type: 'varchar', comment: '抖音用户sec_uid' })
+  sec_uid!: string
+
+  /** 创建时间 */
+  @CreateDateColumn()
+  createdAt!: Date
+
+  /** 更新时间 */
+  @UpdateDateColumn()
+  updatedAt!: Date
+
+  /** 关联的群组 */
+  @ManyToOne(() => Group, group => group.subscriptions)
+  group!: Group
+
+  /** 关联的抖音用户 */
+  @ManyToOne(() => DouyinUser, user => user.subscriptions)
+  douyinUser!: DouyinUser
+}
+
+/**
+ * 作品缓存实体 - 存储已推送的作品ID
+ */
+@Entity('AwemeCaches')
+class AwemeCache {
+  /** 缓存ID */
+  @PrimaryGeneratedColumn({ comment: '缓存ID' })
+  id!: number
+
+  /** 作品ID */
+  @Column({ type: 'varchar', comment: '作品ID' })
+  aweme_id!: string
+
+  /** 抖音用户sec_uid */
+  @Column({ type: 'varchar', comment: '抖音用户sec_uid' })
+  sec_uid!: string
+
+  /** 群组ID */
+  @Column({ type: 'varchar', comment: '群组ID' })
+  groupId!: string
+
+  /** 创建时间 */
+  @CreateDateColumn()
+  createdAt!: Date
+
+  /** 更新时间 */
+  @UpdateDateColumn()
+  updatedAt!: Date
+
+  /** 关联的抖音用户 */
+  @ManyToOne(() => DouyinUser, user => user.awemeCaches)
+  douyinUser!: DouyinUser
+
+  /** 关联的群组 */
+  @ManyToOne(() => Group, group => group.awemeCaches)
+  group!: Group
+}
+
+/**
+ * 过滤词实体 - 存储过滤词
+ */
+@Entity('FilterWords')
+class FilterWord {
+  /** 过滤词ID */
+  @PrimaryGeneratedColumn({ comment: '过滤词ID' })
+  id!: number
+
+  /** 抖音用户sec_uid */
+  @Column({ type: 'varchar', comment: '抖音用户sec_uid' })
+  sec_uid!: string
+
+  /** 过滤词 */
+  @Column({ type: 'varchar', comment: '过滤词' })
+  word!: string
+
+  /** 创建时间 */
+  @CreateDateColumn()
+  createdAt!: Date
+
+  /** 更新时间 */
+  @UpdateDateColumn()
+  updatedAt!: Date
+
+  /** 关联的抖音用户 */
+  @ManyToOne(() => DouyinUser, user => user.filterWords)
+  douyinUser!: DouyinUser
+}
+
+/**
+ * 过滤标签实体 - 存储过滤标签
+ */
+@Entity('FilterTags')
+class FilterTag {
+  /** 过滤标签ID */
+  @PrimaryGeneratedColumn({ comment: '过滤标签ID' })
+  id!: number
+
+  /** 抖音用户sec_uid */
+  @Column({ type: 'varchar', comment: '抖音用户sec_uid' })
+  sec_uid!: string
+
+  /** 过滤标签 */
+  @Column({ type: 'varchar', comment: '过滤标签' })
+  tag!: string
+
+  /** 创建时间 */
+  @CreateDateColumn()
+  createdAt!: Date
+
+  /** 更新时间 */
+  @UpdateDateColumn()
+  updatedAt!: Date
+
+  /** 关联的抖音用户 */
+  @ManyToOne(() => DouyinUser, user => user.filterTags)
+  douyinUser!: DouyinUser
+}
+
+/** 创建 TypeORM 数据源 */
+const AppDataSource = new DataSource({
+  type: 'sqlite',
+  database: join(`${karinPathBase}/${Root.pluginName}/data`, 'douyin.db'),
+  synchronize: true,
+  logging: false,
+  entities: [Bot, Group, DouyinUser, GroupUserSubscription, AwemeCache, FilterWord, FilterTag],
+  extra: {
+    // SQLite 连接池配置
+    max: 5,
+    min: 0,
+    acquireTimeoutMillis: 30000,
+    idleTimeoutMillis: 10000
   }
-}, {
-  timestamps: true
 })
-
-/** GroupUserSubscriptions表 - 存储群组订阅的抖音用户关系 */
-const GroupUserSubscription = sequelize.define<Model<GroupUserSubscriptionAttributes>>('GroupUserSubscription', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    comment: '订阅ID'
-  },
-  groupId: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    comment: '群组ID',
-    references: {
-      model: 'Groups',
-      key: 'id'
-    }
-  },
-  sec_uid: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    comment: '抖音用户sec_uid',
-    references: {
-      model: 'DouyinUsers',
-      key: 'sec_uid'
-    }
-  }
-}, {
-  timestamps: true
-})
-
-/** AwemeCache表 - 存储已推送的作品ID */
-const AwemeCache = sequelize.define('AwemeCache', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    comment: '缓存ID'
-  },
-  aweme_id: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    comment: '作品ID'
-  },
-  sec_uid: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    comment: '抖音用户sec_uid',
-    references: {
-      model: 'DouyinUsers',
-      key: 'sec_uid'
-    }
-  },
-  groupId: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    comment: '群组ID',
-    references: {
-      model: 'Groups',
-      key: 'id'
-    }
-  }
-}, {
-  timestamps: true
-})
-
-/** FilterWords表 - 存储过滤词 */
-const FilterWord = sequelize.define('FilterWord', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    comment: '过滤词ID'
-  },
-  sec_uid: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    comment: '抖音用户sec_uid',
-    references: {
-      model: 'DouyinUsers',
-      key: 'sec_uid'
-    }
-  },
-  word: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    comment: '过滤词'
-  }
-}, {
-  timestamps: true
-})
-
-/** FilterTags表 - 存储过滤标签 */
-const FilterTag = sequelize.define('FilterTag', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    comment: '过滤标签ID'
-  },
-  sec_uid: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    comment: '抖音用户sec_uid',
-    references: {
-      model: 'DouyinUsers',
-      key: 'sec_uid'
-    }
-  },
-  tag: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    comment: '过滤标签'
-  }
-}, {
-  timestamps: true
-})
-
-// 建立关联关系
-/** Bot和Group是一对多关系：一个机器人可以管理多个群组 */
-Bot.hasMany(Group, { foreignKey: 'botId' })
-/** Group从属于Bot：每个群组都有一个所属的机器人 */
-Group.belongsTo(Bot, { foreignKey: 'botId' })
-
-/** Group和DouyinUser是多对多关系：通过GroupUserSubscription表建立关联 */
-Group.belongsToMany(DouyinUser, { through: GroupUserSubscription, foreignKey: 'groupId' })
-/** 一个群组可以订阅多个抖音用户，一个抖音用户也可以被多个群组订阅 */
-DouyinUser.belongsToMany(Group, { through: GroupUserSubscription, foreignKey: 'sec_uid' })
-
-/** 添加Group和GroupUserSubscription之间的直接关联 */
-Group.hasMany(GroupUserSubscription, { foreignKey: 'groupId' })
-GroupUserSubscription.belongsTo(Group, { foreignKey: 'groupId' })
-
-/** 添加DouyinUser和GroupUserSubscription之间的直接关联 */
-DouyinUser.hasMany(GroupUserSubscription, { foreignKey: 'sec_uid' })
-GroupUserSubscription.belongsTo(DouyinUser, { foreignKey: 'sec_uid' })
-
-/** DouyinUser和AwemeCache是一对多关系：一个抖音用户可以有多个作品缓存 */
-DouyinUser.hasMany(AwemeCache, { foreignKey: 'sec_uid' })
-/** AwemeCache从属于DouyinUser：每个作品缓存都属于一个抖音用户 */
-AwemeCache.belongsTo(DouyinUser, { foreignKey: 'sec_uid' })
-
-/** Group和AwemeCache是一对多关系：一个群组可以有多个作品缓存 */
-Group.hasMany(AwemeCache, { foreignKey: 'groupId' })
-/** AwemeCache从属于Group：每个作品缓存都属于一个群组 */
-AwemeCache.belongsTo(Group, { foreignKey: 'groupId' })
-
-/** DouyinUser和FilterWord是一对多关系：一个抖音用户可以有多个过滤词 */
-DouyinUser.hasMany(FilterWord, { foreignKey: 'sec_uid' })
-/** FilterWord从属于DouyinUser：每个过滤词都属于一个抖音用户 */
-FilterWord.belongsTo(DouyinUser, { foreignKey: 'sec_uid' })
-
-/** DouyinUser和FilterTag是一对多关系：一个抖音用户可以有多个过滤标签 */
-DouyinUser.hasMany(FilterTag, { foreignKey: 'sec_uid' })
-/** FilterTag从属于DouyinUser：每个过滤标签都属于一个抖音用户 */
-FilterTag.belongsTo(DouyinUser, { foreignKey: 'sec_uid' })
 
 /** 数据库操作类 */
 export class DouyinDBBase {
+  private botRepository!: Repository<Bot>
+  private groupRepository!: Repository<Group>
+  private douyinUserRepository!: Repository<DouyinUser>
+  private groupUserSubscriptionRepository!: Repository<GroupUserSubscription>
+  private awemeCacheRepository!: Repository<AwemeCache>
+  private filterWordRepository!: Repository<FilterWord>
+  private filterTagRepository!: Repository<FilterTag>
+
   /**
    * 初始化数据库
    */
@@ -258,11 +308,24 @@ export class DouyinDBBase {
     try {
       logger.debug(logger.green('--------------------------[DouyinDB] 开始初始化数据库--------------------------'))
       logger.debug('[DouyinDB] 正在连接数据库...')
-      await sequelize.authenticate()
-      logger.debug('[DouyinDB] 数据库连接成功')
 
-      logger.debug('[DouyinDB] 正在同步数据库模型...')
-      await sequelize.sync()
+      // 检查连接是否已经建立
+      if (!AppDataSource.isInitialized) {
+        await AppDataSource.initialize()
+        logger.mark('[DouyinDB] 数据库连接成功')
+      } else {
+        logger.mark('[DouyinDB] 数据库连接已存在，跳过初始化')
+      }
+
+      // 初始化仓库
+      this.botRepository = AppDataSource.getRepository(Bot)
+      this.groupRepository = AppDataSource.getRepository(Group)
+      this.douyinUserRepository = AppDataSource.getRepository(DouyinUser)
+      this.groupUserSubscriptionRepository = AppDataSource.getRepository(GroupUserSubscription)
+      this.awemeCacheRepository = AppDataSource.getRepository(AwemeCache)
+      this.filterWordRepository = AppDataSource.getRepository(FilterWord)
+      this.filterTagRepository = AppDataSource.getRepository(FilterTag)
+
       logger.debug('[DouyinDB] 数据库模型同步成功')
 
       logger.debug('[DouyinDB] 正在同步配置订阅...')
@@ -283,9 +346,11 @@ export class DouyinDBBase {
    * @param botId 机器人ID
    */
   async getOrCreateBot (botId: string) {
-    const [bot] = await Bot.findOrCreate({
-      where: { id: botId }
-    })
+    let bot = await this.botRepository.findOne({ where: { id: botId } })
+    if (!bot) {
+      bot = this.botRepository.create({ id: botId })
+      await this.botRepository.save(bot)
+    }
     return bot
   }
 
@@ -296,9 +361,11 @@ export class DouyinDBBase {
    */
   async getOrCreateGroup (groupId: string, botId: string) {
     await this.getOrCreateBot(botId)
-    const [group] = await Group.findOrCreate({
-      where: { id: groupId, botId }
-    })
+    let group = await this.groupRepository.findOne({ where: { id: groupId, botId } })
+    if (!group) {
+      group = this.groupRepository.create({ id: groupId, botId })
+      await this.groupRepository.save(group)
+    }
     return group
   }
 
@@ -309,20 +376,25 @@ export class DouyinDBBase {
    * @param remark 用户昵称
    */
   async getOrCreateDouyinUser (sec_uid: string, short_id: string = '', remark: string = '') {
-    const [user] = await DouyinUser.findOrCreate({
-      where: { sec_uid },
-      defaults: { short_id, remark }
-    })
-
-    // 如果提供了新的信息，更新用户记录
-    if ((remark && user.get('remark') !== remark) ||
-      (short_id && user.get('short_id') !== short_id)) {
-      await user.update({
-        remark: remark || user.get('remark'),
-        short_id: short_id || user.get('short_id')
-      })
+    let user = await this.douyinUserRepository.findOne({ where: { sec_uid } })
+    if (!user) {
+      user = this.douyinUserRepository.create({ sec_uid, short_id, remark })
+      await this.douyinUserRepository.save(user)
+    } else {
+      // 如果提供了新的信息，更新用户记录
+      let needUpdate = false
+      if (remark && user.remark !== remark) {
+        user.remark = remark
+        needUpdate = true
+      }
+      if (short_id && user.short_id !== short_id) {
+        user.short_id = short_id
+        needUpdate = true
+      }
+      if (needUpdate) {
+        await this.douyinUserRepository.save(user)
+      }
     }
-
     return user
   }
 
@@ -338,9 +410,13 @@ export class DouyinDBBase {
     await this.getOrCreateGroup(groupId, botId)
     await this.getOrCreateDouyinUser(sec_uid, short_id, remark)
 
-    const [subscription] = await GroupUserSubscription.findOrCreate({
+    let subscription = await this.groupUserSubscriptionRepository.findOne({
       where: { groupId, sec_uid }
     })
+    if (!subscription) {
+      subscription = this.groupUserSubscriptionRepository.create({ groupId, sec_uid })
+      await this.groupUserSubscriptionRepository.save(subscription)
+    }
 
     return subscription
   }
@@ -351,16 +427,12 @@ export class DouyinDBBase {
    * @param sec_uid 抖音用户sec_uid
    */
   async unsubscribeDouyinUser (groupId: string, sec_uid: string) {
-    const result = await GroupUserSubscription.destroy({
-      where: { groupId, sec_uid }
-    })
+    const result = await this.groupUserSubscriptionRepository.delete({ groupId, sec_uid })
 
     // 清除相关的作品缓存
-    await AwemeCache.destroy({
-      where: { groupId, sec_uid }
-    })
+    await this.awemeCacheRepository.delete({ groupId, sec_uid })
 
-    return result > 0
+    return result.affected! > 0
   }
 
   /**
@@ -370,10 +442,13 @@ export class DouyinDBBase {
    * @param groupId 群组ID
    */
   async addAwemeCache (aweme_id: string, sec_uid: string, groupId: string) {
-    const [cache] = await AwemeCache.findOrCreate({
+    let cache = await this.awemeCacheRepository.findOne({
       where: { aweme_id, sec_uid, groupId }
     })
-
+    if (!cache) {
+      cache = this.awemeCacheRepository.create({ aweme_id, sec_uid, groupId })
+      await this.awemeCacheRepository.save(cache)
+    }
     return cache
   }
 
@@ -384,10 +459,9 @@ export class DouyinDBBase {
    * @param groupId 群组ID
    */
   async isAwemePushed (aweme_id: string, sec_uid: string, groupId: string) {
-    const count = await AwemeCache.count({
+    const count = await this.awemeCacheRepository.count({
       where: { aweme_id, sec_uid, groupId }
     })
-
     return count > 0
   }
 
@@ -396,9 +470,7 @@ export class DouyinDBBase {
    * @param botId 机器人ID
    */
   async getBotGroups (botId: string) {
-    return await Group.findAll({
-      where: { botId }
-    })
+    return await this.groupRepository.find({ where: { botId } })
   }
 
   /**
@@ -406,12 +478,9 @@ export class DouyinDBBase {
    * @param groupId 群组ID
    */
   async getGroupSubscriptions (groupId: string) {
-    return await GroupUserSubscription.findAll({
+    return await this.groupUserSubscriptionRepository.find({
       where: { groupId },
-      include: [{
-        model: DouyinUser,
-        required: true
-      }]
+      relations: ['douyinUser']
     })
   }
 
@@ -421,7 +490,7 @@ export class DouyinDBBase {
    */
   async getUserSubscribedGroups (sec_uid: string) {
     // 获取所有订阅关系
-    const subscriptions = await GroupUserSubscription.findAll({
+    const subscriptions = await this.groupUserSubscriptionRepository.find({
       where: { sec_uid }
     })
 
@@ -431,15 +500,11 @@ export class DouyinDBBase {
     }
 
     // 提取所有群组ID
-    const groupIds = subscriptions.map(sub => sub.get('groupId') as string)
+    const groupIds = subscriptions.map(sub => sub.groupId)
 
     // 获取这些群组的详细信息
-    const groups = await Group.findAll({
-      where: {
-        id: {
-          [Op.in]: groupIds
-        }
-      }
+    const groups = await this.groupRepository.find({
+      where: { id: In(groupIds) }
     })
 
     return groups
@@ -451,10 +516,9 @@ export class DouyinDBBase {
    * @param groupId 群组ID
    */
   async isSubscribed (sec_uid: string, groupId: string) {
-    const count = await GroupUserSubscription.count({
+    const count = await this.groupUserSubscriptionRepository.count({
       where: { sec_uid, groupId }
     })
-
     return count > 0
   }
 
@@ -464,7 +528,7 @@ export class DouyinDBBase {
    * @returns 返回用户信息，如果不存在则返回null
    */
   async getDouyinUser (sec_uid: string) {
-    return await DouyinUser.findByPk(sec_uid)
+    return await this.douyinUserRepository.findOne({ where: { sec_uid } })
   }
 
   /**
@@ -473,10 +537,11 @@ export class DouyinDBBase {
    * @param living 是否正在直播
    */
   async updateLiveStatus (sec_uid: string, living: boolean) {
-    const user = await DouyinUser.findByPk(sec_uid)
+    const user = await this.douyinUserRepository.findOne({ where: { sec_uid } })
     if (!user) return false
 
-    await user.update({ living })
+    user.living = living
+    await this.douyinUserRepository.save(user)
 
     return true
   }
@@ -486,12 +551,10 @@ export class DouyinDBBase {
    * @param sec_uid 抖音用户sec_uid
    */
   async getLiveStatus (sec_uid: string) {
-    const user = await DouyinUser.findByPk(sec_uid)
+    const user = await this.douyinUserRepository.findOne({ where: { sec_uid } })
     if (!user) return { living: false }
 
-    return {
-      living: user.get('living') as boolean
-    }
+    return { living: user.living }
   }
 
   /**
@@ -537,10 +600,10 @@ export class DouyinDBBase {
 
     // 2. 获取数据库中的所有订阅关系，并与配置文件比较，删除不在配置文件中的订阅
     // 获取所有群组
-    const allGroups = await Group.findAll()
+    const allGroups = await this.groupRepository.find()
 
     for (const group of allGroups) {
-      const groupId = group.get('id') as string
+      const groupId = group.id
       const configUsers = configSubscriptions.get(groupId) ?? new Set()
 
       // 获取该群组在数据库中的所有订阅
@@ -548,7 +611,7 @@ export class DouyinDBBase {
 
       // 找出需要删除的订阅（在数据库中存在但配置文件中不存在）
       for (const subscription of dbSubscriptions) {
-        const sec_uid = subscription.get('sec_uid') as string
+        const sec_uid = subscription.sec_uid
 
         if (!configUsers.has(sec_uid)) {
           // 删除订阅关系
@@ -560,21 +623,21 @@ export class DouyinDBBase {
 
     // 3. 清理不再被任何群组订阅的抖音用户记录及其过滤词和过滤标签
     // 获取所有抖音用户
-    const allUsers = await DouyinUser.findAll()
+    const allUsers = await this.douyinUserRepository.find()
 
     for (const user of allUsers) {
-      const sec_uid = user.get('sec_uid') as string
+      const sec_uid = user.sec_uid
 
       // 检查该用户是否还有群组订阅
       const subscribedGroups = await this.getUserSubscribedGroups(sec_uid)
 
       if (subscribedGroups.length === 0) {
         // 删除该用户的过滤词和过滤标签
-        await FilterWord.destroy({ where: { sec_uid } })
-        await FilterTag.destroy({ where: { sec_uid } })
+        await this.filterWordRepository.delete({ sec_uid })
+        await this.filterTagRepository.delete({ sec_uid })
 
         // 删除该用户记录
-        await DouyinUser.destroy({ where: { sec_uid } })
+        await this.douyinUserRepository.delete({ sec_uid })
 
         logger.mark(`已删除抖音用户 ${sec_uid} 的记录及相关过滤设置（不再被任何群组订阅）`)
       }
@@ -586,7 +649,7 @@ export class DouyinDBBase {
    * @param groupId 群组ID
    */
   async getGroupById (groupId: string) {
-    return await Group.findByPk(groupId)
+    return await this.groupRepository.findOne({ where: { id: groupId } })
   }
 
   /**
@@ -596,7 +659,8 @@ export class DouyinDBBase {
    */
   async updateFilterMode (sec_uid: string, filterMode: 'blacklist' | 'whitelist') {
     const user = await this.getOrCreateDouyinUser(sec_uid)
-    await user.update({ filterMode })
+    user.filterMode = filterMode
+    await this.douyinUserRepository.save(user)
     return user
   }
 
@@ -607,12 +671,13 @@ export class DouyinDBBase {
    */
   async addFilterWord (sec_uid: string, word: string) {
     await this.getOrCreateDouyinUser(sec_uid)
-    const [filterWord] = await FilterWord.findOrCreate({
-      where: {
-        sec_uid,
-        word
-      }
+    let filterWord = await this.filterWordRepository.findOne({
+      where: { sec_uid, word }
     })
+    if (!filterWord) {
+      filterWord = this.filterWordRepository.create({ sec_uid, word })
+      await this.filterWordRepository.save(filterWord)
+    }
     return filterWord
   }
 
@@ -622,13 +687,8 @@ export class DouyinDBBase {
    * @param word 过滤词
    */
   async removeFilterWord (sec_uid: string, word: string) {
-    const result = await FilterWord.destroy({
-      where: {
-        sec_uid,
-        word
-      }
-    })
-    return result > 0
+    const result = await this.filterWordRepository.delete({ sec_uid, word })
+    return result.affected! > 0
   }
 
   /**
@@ -638,12 +698,13 @@ export class DouyinDBBase {
    */
   async addFilterTag (sec_uid: string, tag: string) {
     await this.getOrCreateDouyinUser(sec_uid)
-    const [filterTag] = await FilterTag.findOrCreate({
-      where: {
-        sec_uid,
-        tag
-      }
+    let filterTag = await this.filterTagRepository.findOne({
+      where: { sec_uid, tag }
     })
+    if (!filterTag) {
+      filterTag = this.filterTagRepository.create({ sec_uid, tag })
+      await this.filterTagRepository.save(filterTag)
+    }
     return filterTag
   }
 
@@ -653,13 +714,8 @@ export class DouyinDBBase {
    * @param tag 过滤标签
    */
   async removeFilterTag (sec_uid: string, tag: string) {
-    const result = await FilterTag.destroy({
-      where: {
-        sec_uid,
-        tag
-      }
-    })
-    return result > 0
+    const result = await this.filterTagRepository.delete({ sec_uid, tag })
+    return result.affected! > 0
   }
 
   /**
@@ -667,10 +723,8 @@ export class DouyinDBBase {
    * @param sec_uid 抖音用户sec_uid
    */
   async getFilterWords (sec_uid: string) {
-    const filterWords = await FilterWord.findAll({
-      where: { sec_uid }
-    })
-    return filterWords.map(word => word.get('word') as string)
+    const filterWords = await this.filterWordRepository.find({ where: { sec_uid } })
+    return filterWords.map(word => word.word)
   }
 
   /**
@@ -678,10 +732,8 @@ export class DouyinDBBase {
    * @param sec_uid 抖音用户sec_uid
    */
   async getFilterTags (sec_uid: string) {
-    const filterTags = await FilterTag.findAll({
-      where: { sec_uid }
-    })
-    return filterTags.map(tag => tag.get('tag') as string)
+    const filterTags = await this.filterTagRepository.find({ where: { sec_uid } })
+    return filterTags.map(tag => tag.tag)
   }
 
   /**
@@ -694,7 +746,7 @@ export class DouyinDBBase {
     const filterTags = await this.getFilterTags(sec_uid)
 
     return {
-      filterMode: user.get('filterMode') as 'blacklist' | 'whitelist',
+      filterMode: user.filterMode,
       filterWords,
       filterTags
     }
@@ -768,8 +820,30 @@ export const douyinModels = {
 }
 
 /** 抖音数据库实例 */
-export let douyinDB: DouyinDBBase
+let douyinDB: DouyinDBBase | null = null
+let isInitializing = false
 
-(async () => {
-  douyinDB = await new DouyinDBBase().init()
-})()
+/**
+ * 获取或初始化 DouyinDB 实例（单例模式）
+ */
+export const getDouyinDB = async (): Promise<DouyinDBBase> => {
+  if (douyinDB) {
+    return douyinDB
+  }
+
+  if (isInitializing) {
+    // 如果正在初始化，等待初始化完成
+    while (isInitializing) {
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+    return douyinDB!
+  }
+
+  isInitializing = true
+  try {
+    douyinDB = await new DouyinDBBase().init()
+    return douyinDB
+  } finally {
+    isInitializing = false
+  }
+}

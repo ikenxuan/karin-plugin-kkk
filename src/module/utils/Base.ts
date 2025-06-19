@@ -97,7 +97,7 @@ export class Base {
         const method = target[prop]
         if (typeof method === 'function') {
           return async (...args: any[]) => {
-            let result = await Function.prototype.apply.call(method, target, args)
+            const result = await Function.prototype.apply.call(method, target, args)
 
             // 返回值检查逻辑
             if (!result) {
@@ -351,7 +351,7 @@ export const downloadVideo = async (event: Message, downloadOpt: downloadFileOpt
 
   // 下载文件，视频URL，标题和自定义headers
   let res = await downloadFile(downloadOpt.video_url, {
-    title: Config.app.rmmp4 ? downloadOpt.title.timestampTitle as string : downloadOpt.title.originTitle!.substring(0, 50).replace(/[\\/:\*\?"<>\|\r\n\s]/g, ' '),
+    title: Config.app.rmmp4 ? downloadOpt.title.timestampTitle as string : downloadOpt.title.originTitle!.substring(0, 50).replace(/[\\/:*?"<>|\r\n\s]/g, ' '),
     headers: downloadOpt.headers ?? baseHeaders
   })
   res = { ...res, ...downloadOpt.title }

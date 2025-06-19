@@ -27,10 +27,8 @@ export async function getBilibiliID (url: string) {
   }
 
   switch (true) {
-    case /(video\/|video\-)([A-Za-z0-9]+)/.test(longLink): {
+    case /(video\/|video-)([A-Za-z0-9]+)/.test(longLink): {
       const bvideoMatch = /video\/([A-Za-z0-9]+)|bvid=([A-Za-z0-9]+)/.exec(longLink)
-      const parsedUrl = new URL(longLink)
-      const pParam = parsedUrl.searchParams.get('p')
       result = {
         type: 'one_video',
         bvid: bvideoMatch ? bvideoMatch[1] || bvideoMatch[2] : undefined,
@@ -49,12 +47,11 @@ export async function getBilibiliID (url: string) {
     case /play\/(\S+?)\??/.test(longLink): {
       const playMatch = /play\/(\w+)/.exec(longLink)
       const id = playMatch ? playMatch[1] : ''
-      let realid = ''
-      let isEpid = false
+      const isEpid = false
       if (id.startsWith('ss')) {
-        realid = 'season_id'
+        result.realid = 'season_id'
       } else if (id.startsWith('ep')) {
-        realid = 'ep_id'
+        result.realid = 'ep_id'
       }
       result = {
         type: 'bangumi_video_info',

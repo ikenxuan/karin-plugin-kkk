@@ -1,7 +1,7 @@
-import { Op } from 'sequelize'
+import { DeleteResult, LessThan } from 'typeorm'
 
-import { bilibiliModels } from './bilibili'
-import { douyinModels } from './douyin'
+import { getBilibiliDB } from './bilibili'
+import { getDouyinDB } from './douyin'
 
 export * from './bilibili'
 export * from './douyin'
@@ -16,15 +16,21 @@ export const cleanOldDynamicCache = async (platform: 'douyin' | 'bilibili', days
   const cutoffDate = new Date()
   cutoffDate.setDate(cutoffDate.getDate() - days)
 
-  const Cache = platform === 'douyin' ? douyinModels.AwemeCache : bilibiliModels.DynamicCache
+  let result: DeleteResult
 
-  const result = await Cache.destroy({
-    where: {
-      createdAt: {
-        [Op.lt]: cutoffDate
-      }
-    }
-  })
+  if (platform === 'douyin') {
+    // 使用 getDouyinDB 获取实例
+    const douyinDB = await getDouyinDB()
+    result = await douyinDB['awemeCacheRepository'].delete({
+      createdAt: LessThan(cutoffDate)
+    })
+  } else {
+    // 使用 getBilibiliDB 获取实例
+    const bilibiliDB = await getBilibiliDB()
+    result = await bilibiliDB['dynamicCacheRepository'].delete({
+      createdAt: LessThan(cutoffDate)
+    })
+  }
 
-  return result
+  return result.affected ?? 0
 }
