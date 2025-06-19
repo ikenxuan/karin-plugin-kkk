@@ -1,10 +1,10 @@
 import fs from 'node:fs'
-import dts from 'vite-plugin-dts'
-import { defineConfig, type Plugin } from 'vite'
-import { builtinModules } from 'node:module'
-import { resolve, dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { readFileSync, writeFileSync } from 'node:fs'
+import { builtinModules } from 'node:module'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+import { defineConfig, type Plugin } from 'vite'
 import banner from 'vite-plugin-banner'
 
 // 在ES模块中模拟__dirname
@@ -107,7 +107,8 @@ export default defineConfig({
         ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js'].map(p => `node-karin${p}`),
         'playwright',
         'sqlite3',
-        '@karinjs/md-html'
+        '@karinjs/md-html',
+        'typeorm',
       ],
       output: {
         inlineDynamicImports: false,
@@ -168,7 +169,7 @@ export default defineConfig({
     injectDirnamePlugin(),
     createWebConfigPlugin(),
     banner((fileName: string) => {
-        return `/**\n * name: ${pkg.name}\n * version: v${pkg.version}\n * description: ${pkg.description}\n * author: @${pkg.author}\n * homepage: ${pkg.homepage}\n * date ${new Date().toLocaleString()}\n * file: ${fileName}\n */`
+      return `/**\n * name: ${pkg.name}\n * version: v${pkg.version}\n * description: ${pkg.description}\n * author: @${pkg.author}\n * homepage: ${pkg.homepage}\n * date ${new Date().toLocaleString()}\n * file: ${fileName}\n */`
     }),
   ]
 })
