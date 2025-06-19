@@ -94,7 +94,7 @@ export class DouYin extends Base {
               for (let i = 0; i < VideoData.aweme_detail.images.length; i++) {
                 image_url = VideoData.aweme_detail.images[i].url_list[2] || VideoData.aweme_detail.images[i].url_list[1] // 图片地址
 
-                const title = VideoData.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:\*\?"<>\|\r\n]/g, ' ') // 标题，去除特殊字符
+                const title = VideoData.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:*?"<>|\r\n]/g, ' ') // 标题，去除特殊字符
                 g_title = title
                 imageres.push(segment.image(image_url))
                 imagenum++
@@ -237,7 +237,7 @@ export class DouYin extends Base {
           }
           const cover = video.origin_cover.url_list[0] // video cover image
 
-          const title = VideoData.aweme_detail.preview_title.substring(0, 80).replace(/[\\/:\*\?"<>\|\r\n]/g, ' ') // video title
+          const title = VideoData.aweme_detail.preview_title.substring(0, 80).replace(/[\\/:*?"<>|\r\n]/g, ' ') // video title
           g_title = title
           mp4size = (video.bit_rate[0].play_addr.data_size / (1024 * 1024)).toFixed(2)
           videores.push(segment.text(`标题：\n${title}`))

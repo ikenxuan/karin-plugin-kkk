@@ -9,7 +9,7 @@ import type { ConfigType } from '@/types'
 import type { bilibiliPushItem, douyinPushItem, pushlistConfig } from '@/types/config/pushlist'
 
 import { Root } from '../../root'
-import { bilibiliDB, douyinDB } from '../db'
+import { getBilibiliDB, getDouyinDB } from '../db'
 
 type ConfigDirType = 'config' | 'default_config'
 
@@ -75,6 +75,9 @@ class Cfg {
 
   /** 获取所有配置文件 */
   async All (): Promise<ConfigType> {
+    const douyinDB = await getDouyinDB()
+    const bilibiliDB = await getBilibiliDB()
+
     const allConfig: any = {}  // 初始化为 ConfigType 类型
 
     // 读取默认配置文件夹中的所有文件
@@ -99,7 +102,7 @@ class Cfg {
 
             // 将数据库中的过滤配置合并到推送项中
             if (userInfo) {
-              item.filterMode = userInfo.get('filterMode') as 'blacklist' | 'whitelist' || 'blacklist'
+              item.filterMode = userInfo.filterMode as 'blacklist' | 'whitelist' || 'blacklist'
             }
 
             // 将过滤词和标签添加到推送项中
@@ -118,7 +121,7 @@ class Cfg {
 
             // 将数据库中的过滤配置合并到推送项中
             if (userInfo) {
-              item.filterMode = userInfo.get('filterMode') as 'blacklist' | 'whitelist' || 'blacklist'
+              item.filterMode = userInfo.filterMode as 'blacklist' | 'whitelist' || 'blacklist'
             }
 
             // 将过滤词和标签添加到推送项中
@@ -189,6 +192,9 @@ class Cfg {
     config: ConfigType[T],
     type: ConfigDirType = 'config'
   ) {
+    const douyinDB = await getDouyinDB()
+    const bilibiliDB = await getBilibiliDB()
+
     const filePath =
       type === 'config'
         ? `${this.dirCfgPath}/${name}.yaml`
@@ -457,9 +463,8 @@ class Cfg {
   async syncConfigToDatabase () {
     try {
       const pushCfg = this.getYaml('config', 'pushlist')
-
-      // 导入数据库模块
-      const { bilibiliDB, douyinDB } = await import('@/module/db')
+      const douyinDB = await getDouyinDB()
+      const bilibiliDB = await getBilibiliDB()
 
       // 同步配置到数据库
       if (pushCfg.bilibili) {
@@ -477,11 +482,11 @@ class Cfg {
   }
 }
 
-type Config = ConfigType & Pick<Cfg, 'All' | 'Modify' | 'ModifyPro' | 'syncConfigToDatabase'>
+type Config$ = ConfigType & Pick<Cfg, 'All' | 'Modify' | 'ModifyPro' | 'syncConfigToDatabase'>
 
-export const Config: Config = new Proxy(new Cfg().initCfg(), {
+export const Config: Config$ = new Proxy(new Cfg().initCfg(), {
   get (target, prop: string) {
     if (prop in target) return target[prop as keyof Cfg]
     return target.getDefOrConfig(prop as keyof ConfigType)
   }
-}) as unknown as Config
+}) as unknown as Config$

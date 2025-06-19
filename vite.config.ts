@@ -5,6 +5,7 @@ import { builtinModules } from 'node:module'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { readFileSync, writeFileSync } from 'node:fs'
+import banner from 'vite-plugin-banner'
 
 // 在ES模块中模拟__dirname
 const __filename = fileURLToPath(import.meta.url)
@@ -105,7 +106,6 @@ export default defineConfig({
         ...builtinModules.map((mod) => `node:${mod}`),
         ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js'].map(p => `node-karin${p}`),
         'playwright',
-        'sequelize',
         'sqlite3',
         '@karinjs/md-html'
       ],
@@ -164,8 +164,11 @@ export default defineConfig({
     },
   },
   plugins: [
-    // dts({ rollupTypes: true }) // 生成类型声明文件
+    // dts({ rollupTypes: true }), // 生成类型声明文件
     injectDirnamePlugin(),
     createWebConfigPlugin(),
+    banner((fileName: string) => {
+        return `/**\n * name: ${pkg.name}\n * version: v${pkg.version}\n * description: ${pkg.description}\n * author: @${pkg.author}\n * homepage: ${pkg.homepage}\n * date ${new Date().toLocaleString()}\n * file: ${fileName}\n */`
+    }),
   ]
 })

@@ -1,243 +1,222 @@
+import 'reflect-metadata'
+
 import { join } from 'node:path'
 
 import { logger } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
-import { DataTypes, Model, Op, Sequelize } from 'sequelize'
+import {
+  Column,
+  CreateDateColumn,
+  DataSource,
+  Entity,
+  In,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  Repository,
+  UpdateDateColumn
+} from 'typeorm'
 
 import { Config, Root } from '@/module/utils'
 import { BilibiliPushItem, DynamicType } from '@/platform/bilibili/push'
 import { bilibiliPushItem } from '@/types/config/pushlist'
 
-type GroupUserSubscriptionAttributes = {
-  id?: number
-  /** 群号 */
-  groupId: string
-  /** UP主UID */
-  host_mid: number
+/** Bots表 - 存储机器人信息 */
+@Entity('Bots')
+class Bot {
+  @PrimaryColumn({ type: 'varchar', comment: '机器人ID' })
+  id!: string
+
+  @CreateDateColumn()
+  createdAt!: Date
+
+  @UpdateDateColumn()
+  updatedAt!: Date
+
+  @OneToMany(() => Group, group => group.bot)
+  groups!: Group[]
 }
 
-/** 创建 Sequelize 实例，需要传入配置对象。 */
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: join(`${karinPathBase}/${Root.pluginName}/data`, 'bilibili.db'),
-  logging: false,
-  pool: {
-    max: 5, // 连接池最大连接数
-    min: 0, // 连接池最小连接数
-    acquire: 30000, // 获取连接的超时时间(毫秒)
-    idle: 10000 // 连接在释放前可以空闲的最长时间(毫秒)
-  },
-  retry: {
-    max: 3 // 连接失败时的最大重试次数
-  },
-  isolationLevel: 'READ COMMITTED' // 隔离级别
-})
-
-/** Bots表 - 存储机器人信息 */
-const Bot = sequelize.define('Bot', {
-  id: {
-    type: DataTypes.STRING,
-    primaryKey: true,
-    comment: '机器人ID'
-  }
-}, {
-  timestamps: true
-})
-
 /** Groups表 - 存储群组信息 */
-const Group = sequelize.define('Group', {
-  id: {
-    type: DataTypes.STRING,
-    primaryKey: true,
-    comment: '群组ID'
-  },
-  botId: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    comment: '所属机器人ID',
-    references: {
-      model: 'Bots',
-      key: 'id'
-    }
-  }
-}, {
-  timestamps: true
-})
+@Entity('Groups')
+class Group {
+  @PrimaryColumn({ type: 'varchar', comment: '群组ID' })
+  id!: string
+
+  @Column({ type: 'varchar', comment: '所属机器人ID' })
+  botId!: string
+
+  @CreateDateColumn()
+  createdAt!: Date
+
+  @UpdateDateColumn()
+  updatedAt!: Date
+
+  @ManyToOne(() => Bot, bot => bot.groups)
+  bot!: Bot
+
+  @ManyToMany(() => BilibiliUser, user => user.groups)
+  @JoinTable({
+    name: 'GroupUserSubscriptions',
+    joinColumn: { name: 'groupId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'host_mid', referencedColumnName: 'host_mid' }
+  })
+  bilibiliUsers!: BilibiliUser[]
+
+  @OneToMany(() => DynamicCache, cache => cache.group)
+  dynamicCaches!: DynamicCache[]
+}
 
 /** BilibiliUsers表 - 存储B站用户信息 */
-const BilibiliUser = sequelize.define('BilibiliUser', {
-  host_mid: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    comment: 'B站用户UID'
-  },
-  remark: {
-    type: DataTypes.STRING,
-    comment: 'B站用户昵称'
-  },
-  filterMode: {
-    type: DataTypes.ENUM('blacklist', 'whitelist'),
-    defaultValue: 'blacklist',
+@Entity('BilibiliUsers')
+class BilibiliUser {
+  @PrimaryColumn({ type: 'integer', comment: 'B站用户UID' })
+  host_mid!: number
+
+  @Column({ type: 'varchar', nullable: true, comment: 'B站用户昵称' })
+  remark?: string
+
+  @Column({
+    type: 'varchar',
+    default: 'blacklist',
     comment: '过滤模式：黑名单或白名单'
-  }
-}, {
-  timestamps: true
-})
+  })
+  filterMode!: 'blacklist' | 'whitelist'
+
+  @CreateDateColumn()
+  createdAt!: Date
+
+  @UpdateDateColumn()
+  updatedAt!: Date
+
+  @ManyToMany(() => Group, group => group.bilibiliUsers)
+  groups!: Group[]
+
+  @OneToMany(() => DynamicCache, cache => cache.bilibiliUser)
+  dynamicCaches!: DynamicCache[]
+
+  @OneToMany(() => FilterWord, word => word.bilibiliUser)
+  filterWords!: FilterWord[]
+
+  @OneToMany(() => FilterTag, tag => tag.bilibiliUser)
+  filterTags!: FilterTag[]
+}
 
 /** GroupUserSubscriptions表 - 存储群组订阅的B站用户关系 */
-const GroupUserSubscription = sequelize.define<Model<GroupUserSubscriptionAttributes>>('GroupUserSubscription', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    comment: '订阅ID'
-  },
-  groupId: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    comment: '群组ID',
-    references: {
-      model: 'Groups',
-      key: 'id'
-    }
-  },
-  host_mid: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    comment: 'B站用户UID',
-    references: {
-      model: 'BilibiliUsers',
-      key: 'host_mid'
-    }
-  }
-}, {
-  timestamps: true
-})
+@Entity('GroupUserSubscriptions')
+class GroupUserSubscription {
+  @PrimaryColumn({ type: 'varchar', comment: '群组ID' })
+  groupId!: string
+
+  @PrimaryColumn({ type: 'integer', comment: 'B站用户UID' })
+  host_mid!: number
+
+  @CreateDateColumn()
+  createdAt!: Date
+
+  @UpdateDateColumn()
+  updatedAt!: Date
+}
 
 /** DynamicCache表 - 存储已推送的动态ID */
-const DynamicCache = sequelize.define('DynamicCache', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    comment: '缓存ID'
-  },
-  dynamic_id: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    comment: '动态ID'
-  },
-  host_mid: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    comment: 'B站用户UID',
-    references: {
-      model: 'BilibiliUsers',
-      key: 'host_mid'
-    }
-  },
-  groupId: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    comment: '群组ID',
-    references: {
-      model: 'Groups',
-      key: 'id'
-    }
-  },
-  dynamic_type: {
-    type: DataTypes.STRING,
-    comment: '动态类型'
-  }
-}, {
-  timestamps: true
-})
+@Entity('DynamicCaches')
+class DynamicCache {
+  @PrimaryGeneratedColumn({ comment: '缓存ID' })
+  id!: number
+
+  @Column({ type: 'varchar', comment: '动态ID' })
+  dynamic_id!: string
+
+  @Column({ type: 'integer', comment: 'B站用户UID' })
+  host_mid!: number
+
+  @Column({ type: 'varchar', comment: '群组ID' })
+  groupId!: string
+
+  @Column({ type: 'varchar', nullable: true, comment: '动态类型' })
+  dynamic_type?: string
+
+  @CreateDateColumn()
+  createdAt!: Date
+
+  @UpdateDateColumn()
+  updatedAt!: Date
+
+  @ManyToOne(() => BilibiliUser, user => user.dynamicCaches)
+  bilibiliUser!: BilibiliUser
+
+  @ManyToOne(() => Group, group => group.dynamicCaches)
+  group!: Group
+}
 
 /** FilterWords表 - 存储过滤词 */
-const FilterWord = sequelize.define('FilterWord', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    comment: '过滤词ID'
-  },
-  host_mid: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    comment: 'B站用户UID',
-    references: {
-      model: 'BilibiliUsers',
-      key: 'host_mid'
-    }
-  },
-  word: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    comment: '过滤词'
-  }
-}, {
-  timestamps: true
-})
+@Entity('FilterWords')
+class FilterWord {
+  @PrimaryGeneratedColumn({ comment: '过滤词ID' })
+  id!: number
+
+  @Column({ type: 'integer', comment: 'B站用户UID' })
+  host_mid!: number
+
+  @Column({ type: 'varchar', comment: '过滤词' })
+  word!: string
+
+  @CreateDateColumn()
+  createdAt!: Date
+
+  @UpdateDateColumn()
+  updatedAt!: Date
+
+  @ManyToOne(() => BilibiliUser, user => user.filterWords)
+  bilibiliUser!: BilibiliUser
+}
 
 /** FilterTags表 - 存储过滤标签 */
-const FilterTag = sequelize.define('FilterTag', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    comment: '过滤标签ID'
-  },
-  host_mid: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    comment: 'B站用户UID',
-    references: {
-      model: 'BilibiliUsers',
-      key: 'host_mid'
-    }
-  },
-  tag: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    comment: '过滤标签'
-  }
-}, {
-  timestamps: true
+@Entity('FilterTags')
+class FilterTag {
+  @PrimaryGeneratedColumn({ comment: '过滤标签ID' })
+  id!: number
+
+  @Column({ type: 'integer', comment: 'B站用户UID' })
+  host_mid!: number
+
+  @Column({ type: 'varchar', comment: '过滤标签' })
+  tag!: string
+
+  @CreateDateColumn()
+  createdAt!: Date
+
+  @UpdateDateColumn()
+  updatedAt!: Date
+
+  @ManyToOne(() => BilibiliUser, user => user.filterTags)
+  bilibiliUser!: BilibiliUser
+}
+
+// TypeORM 数据源配置
+const AppDataSource = new DataSource({
+  type: 'sqlite',
+  database: join(`${karinPathBase}/${Root.pluginName}/data`, 'bilibili.db'),
+  synchronize: true,
+  logging: false,
+  entities: [Bot, Group, BilibiliUser, GroupUserSubscription, DynamicCache, FilterWord, FilterTag],
+  migrations: [],
+  subscribers: []
 })
-
-// 建立关联关系
-/** 一个机器人可以管理多个群组，一对多关系 */
-Bot.hasMany(Group, { foreignKey: 'botId' })
-/** 一个群组属于一个机器人，多对一关系 */
-Group.belongsTo(Bot, { foreignKey: 'botId' })
-
-/** 群组和B站用户是多对多关系，通过 GroupUserSubscription 表关联 */
-Group.belongsToMany(BilibiliUser, { through: GroupUserSubscription, foreignKey: 'groupId' })
-/** B站用户和群组是多对多关系，通过 GroupUserSubscription 表关联 */
-BilibiliUser.belongsToMany(Group, { through: GroupUserSubscription, foreignKey: 'host_mid' })
-
-/** 一个B站用户可以有多条动态缓存记录，一对多关系 */
-BilibiliUser.hasMany(DynamicCache, { foreignKey: 'host_mid' })
-/** 一条动态缓存记录属于一个B站用户，多对一关系 */
-DynamicCache.belongsTo(BilibiliUser, { foreignKey: 'host_mid' })
-
-/** 一个群组可以有多条动态缓存记录，一对多关系 */
-Group.hasMany(DynamicCache, { foreignKey: 'groupId' })
-/** 一条动态缓存记录属于一个群组，多对一关系 */
-DynamicCache.belongsTo(Group, { foreignKey: 'groupId' })
-
-/** BilibiliUser和FilterWord是一对多关系：一个B站用户可以有多个过滤词 */
-BilibiliUser.hasMany(FilterWord, { foreignKey: 'host_mid' })
-/** FilterWord从属于BilibiliUser：每个过滤词都属于一个B站用户 */
-FilterWord.belongsTo(BilibiliUser, { foreignKey: 'host_mid' })
-
-/** BilibiliUser和FilterTag是一对多关系：一个B站用户可以有多个过滤标签 */
-BilibiliUser.hasMany(FilterTag, { foreignKey: 'host_mid' })
-/** FilterTag从属于BilibiliUser：每个过滤标签都属于一个B站用户 */
-FilterTag.belongsTo(BilibiliUser, { foreignKey: 'host_mid' })
 
 /** 数据库操作类 */
 export class BilibiliDBBase {
+  private botRepository!: Repository<Bot>
+  private groupRepository!: Repository<Group>
+  private bilibiliUserRepository!: Repository<BilibiliUser>
+  private groupUserSubscriptionRepository!: Repository<GroupUserSubscription>
+  private dynamicCacheRepository!: Repository<DynamicCache>
+  private filterWordRepository!: Repository<FilterWord>
+  private filterTagRepository!: Repository<FilterTag>
+
   /**
    * 初始化数据库
    */
@@ -245,11 +224,24 @@ export class BilibiliDBBase {
     try {
       logger.debug(logger.green('--------------------------[BilibiliDB] 开始初始化数据库--------------------------'))
       logger.debug('[BilibiliDB] 正在连接数据库...')
-      await sequelize.authenticate()
-      logger.debug('[BilibiliDB] 数据库连接成功')
 
-      logger.debug('[BilibiliDB] 正在同步数据库模型...')
-      await sequelize.sync()
+      // 检查连接是否已经建立
+      if (!AppDataSource.isInitialized) {
+        await AppDataSource.initialize()
+        logger.mark('[BilibiliDB] 数据库连接成功')
+      } else {
+        logger.mark('[BilibiliDB] 数据库连接已存在，跳过初始化')
+      }
+
+      // 初始化 Repository
+      this.botRepository = AppDataSource.getRepository(Bot)
+      this.groupRepository = AppDataSource.getRepository(Group)
+      this.bilibiliUserRepository = AppDataSource.getRepository(BilibiliUser)
+      this.groupUserSubscriptionRepository = AppDataSource.getRepository(GroupUserSubscription)
+      this.dynamicCacheRepository = AppDataSource.getRepository(DynamicCache)
+      this.filterWordRepository = AppDataSource.getRepository(FilterWord)
+      this.filterTagRepository = AppDataSource.getRepository(FilterTag)
+
       logger.debug('[BilibiliDB] 数据库模型同步成功')
 
       logger.debug('[BilibiliDB] 正在同步配置订阅...')
@@ -270,9 +262,11 @@ export class BilibiliDBBase {
    * @param botId 机器人ID
    */
   async getOrCreateBot (botId: string) {
-    const [bot] = await Bot.findOrCreate({
-      where: { id: botId }
-    })
+    let bot = await this.botRepository.findOne({ where: { id: botId } })
+    if (!bot) {
+      bot = this.botRepository.create({ id: botId })
+      await this.botRepository.save(bot)
+    }
     return bot
   }
 
@@ -283,9 +277,11 @@ export class BilibiliDBBase {
    */
   async getOrCreateGroup (groupId: string, botId: string) {
     await this.getOrCreateBot(botId)
-    const [group] = await Group.findOrCreate({
-      where: { id: groupId, botId }
-    })
+    let group = await this.groupRepository.findOne({ where: { id: groupId, botId } })
+    if (!group) {
+      group = this.groupRepository.create({ id: groupId, botId })
+      await this.groupRepository.save(group)
+    }
     return group
   }
 
@@ -295,18 +291,14 @@ export class BilibiliDBBase {
    * @param remark UP主昵称
    */
   async getOrCreateBilibiliUser (host_mid: number, remark: string = '') {
-    const [user] = await BilibiliUser.findOrCreate({
-      where: { host_mid },
-      defaults: { remark }
-    })
-
-    // 如果提供了新的信息，更新用户记录
-    if (remark && user.get('remark') !== remark) {
-      await user.update({
-        remark: remark || user.get('remark')
-      })
+    let user = await this.bilibiliUserRepository.findOne({ where: { host_mid } })
+    if (!user) {
+      user = this.bilibiliUserRepository.create({ host_mid, remark })
+      await this.bilibiliUserRepository.save(user)
+    } else if (remark && user.remark !== remark) {
+      user.remark = remark
+      await this.bilibiliUserRepository.save(user)
     }
-
     return user
   }
 
@@ -321,10 +313,13 @@ export class BilibiliDBBase {
     await this.getOrCreateGroup(groupId, botId)
     await this.getOrCreateBilibiliUser(host_mid, remark)
 
-    const [subscription] = await GroupUserSubscription.findOrCreate({
+    let subscription = await this.groupUserSubscriptionRepository.findOne({
       where: { groupId, host_mid }
     })
-
+    if (!subscription) {
+      subscription = this.groupUserSubscriptionRepository.create({ groupId, host_mid })
+      await this.groupUserSubscriptionRepository.save(subscription)
+    }
     return subscription
   }
 
@@ -334,16 +329,12 @@ export class BilibiliDBBase {
    * @param host_mid B站用户UID
    */
   async unsubscribeBilibiliUser (groupId: string, host_mid: number) {
-    const result = await GroupUserSubscription.destroy({
-      where: { groupId, host_mid }
-    })
+    const result = await this.groupUserSubscriptionRepository.delete({ groupId, host_mid })
 
     // 清除相关的动态缓存
-    await DynamicCache.destroy({
-      where: { groupId, host_mid }
-    })
+    await this.dynamicCacheRepository.delete({ groupId, host_mid })
 
-    return result > 0
+    return result.affected! > 0
   }
 
   /**
@@ -354,11 +345,13 @@ export class BilibiliDBBase {
    * @param dynamic_type 动态类型
    */
   async addDynamicCache (dynamic_id: string, host_mid: number, groupId: string, dynamic_type: string) {
-    const [cache] = await DynamicCache.findOrCreate({
-      where: { dynamic_id, host_mid, groupId },
-      defaults: { dynamic_type }
+    let cache = await this.dynamicCacheRepository.findOne({
+      where: { dynamic_id, host_mid, groupId }
     })
-
+    if (!cache) {
+      cache = this.dynamicCacheRepository.create({ dynamic_id, host_mid, groupId, dynamic_type })
+      await this.dynamicCacheRepository.save(cache)
+    }
     return cache
   }
 
@@ -369,10 +362,9 @@ export class BilibiliDBBase {
    * @param groupId 群组ID
    */
   async isDynamicPushed (dynamic_id: string, host_mid: number, groupId: string) {
-    const count = await DynamicCache.count({
+    const count = await this.dynamicCacheRepository.count({
       where: { dynamic_id, host_mid, groupId }
     })
-
     return count > 0
   }
 
@@ -381,19 +373,15 @@ export class BilibiliDBBase {
    * @param botId 机器人ID
    */
   async getBotGroups (botId: string) {
-    return await Group.findAll({
-      where: { botId }
-    })
+    return await this.groupRepository.find({ where: { botId } })
   }
 
   /**
    * 获取群组订阅的所有B站用户
    * @param groupId 群组ID
    */
-  async getGroupSubscriptions (groupId: string): Promise<Model<GroupUserSubscriptionAttributes>[]> {
-    return await GroupUserSubscription.findAll({
-      where: { groupId }
-    })
+  async getGroupSubscriptions (groupId: string) {
+    return await this.groupUserSubscriptionRepository.find({ where: { groupId } })
   }
 
   /**
@@ -402,7 +390,7 @@ export class BilibiliDBBase {
    */
   async getUserSubscribedGroups (host_mid: number) {
     // 获取所有订阅关系
-    const subscriptions = await GroupUserSubscription.findAll({
+    const subscriptions = await this.groupUserSubscriptionRepository.find({
       where: { host_mid }
     })
 
@@ -412,15 +400,11 @@ export class BilibiliDBBase {
     }
 
     // 提取所有群组ID
-    const groupIds = subscriptions.map(sub => sub.get('groupId') as string)
+    const groupIds = subscriptions.map(sub => sub.groupId)
 
     // 获取这些群组的详细信息
-    const groups = await Group.findAll({
-      where: {
-        id: {
-          [Op.in]: groupIds
-        }
-      }
+    const groups = await this.groupRepository.find({
+      where: { id: In(groupIds) }
     })
 
     return groups
@@ -435,22 +419,21 @@ export class BilibiliDBBase {
     const where: any = { groupId }
     if (host_mid) where.host_mid = host_mid
 
-    return await DynamicCache.findAll({
+    return await this.dynamicCacheRepository.find({
       where,
-      order: [['createdAt', 'DESC']]
+      order: { createdAt: 'DESC' }
     })
   }
 
   /**
- * 检查群组是否已订阅B站用户
- * @param host_mid B站用户UID
- * @param groupId 群组ID
- */
+   * 检查群组是否已订阅B站用户
+   * @param host_mid B站用户UID
+   * @param groupId 群组ID
+   */
   async isSubscribed (host_mid: number, groupId: string) {
-    const count = await GroupUserSubscription.count({
+    const count = await this.groupUserSubscriptionRepository.count({
       where: { host_mid, groupId }
     })
-
     return count > 0
   }
 
@@ -496,10 +479,10 @@ export class BilibiliDBBase {
 
     // 2. 获取数据库中的所有订阅关系，并与配置文件比较，删除不在配置文件中的订阅
     // 获取所有群组
-    const allGroups = await Group.findAll()
+    const allGroups = await this.groupRepository.find()
 
     for (const group of allGroups) {
-      const groupId = group.get('id') as string
+      const groupId = group.id
       const configUps = configSubscriptions.get(groupId) ?? new Set()
 
       // 获取该群组在数据库中的所有订阅
@@ -507,7 +490,7 @@ export class BilibiliDBBase {
 
       // 找出需要删除的订阅（在数据库中存在但配置文件中不存在）
       for (const subscription of dbSubscriptions) {
-        const host_mid = subscription.get('host_mid') as number
+        const host_mid = subscription.host_mid
 
         if (!configUps.has(host_mid)) {
           // 删除订阅关系
@@ -519,21 +502,21 @@ export class BilibiliDBBase {
 
     // 3. 清理不再被任何群组订阅的UP主记录及其过滤词和过滤标签
     // 获取所有B站用户
-    const allUsers = await BilibiliUser.findAll()
+    const allUsers = await this.bilibiliUserRepository.find()
 
     for (const user of allUsers) {
-      const host_mid = user.get('host_mid') as number
+      const host_mid = user.host_mid
 
       // 检查该UP主是否还有群组订阅
       const subscribedGroups = await this.getUserSubscribedGroups(host_mid)
 
       if (subscribedGroups.length === 0) {
         // 删除该UP主的过滤词和过滤标签
-        await FilterWord.destroy({ where: { host_mid } })
-        await FilterTag.destroy({ where: { host_mid } })
+        await this.filterWordRepository.delete({ host_mid })
+        await this.filterTagRepository.delete({ host_mid })
 
         // 删除该UP主记录
-        await BilibiliUser.destroy({ where: { host_mid } })
+        await this.bilibiliUserRepository.delete({ host_mid })
 
         logger.mark(`已删除UP主 ${host_mid} 的记录及相关过滤设置（不再被任何群组订阅）`)
       }
@@ -541,13 +524,14 @@ export class BilibiliDBBase {
   }
 
   /**
- * 更新用户的过滤模式
- * @param host_mid B站用户UID
- * @param filterMode 过滤模式
- */
+   * 更新用户的过滤模式
+   * @param host_mid B站用户UID
+   * @param filterMode 过滤模式
+   */
   async updateFilterMode (host_mid: number, filterMode: 'blacklist' | 'whitelist') {
     const user = await this.getOrCreateBilibiliUser(host_mid)
-    await user.update({ filterMode })
+    user.filterMode = filterMode
+    await this.bilibiliUserRepository.save(user)
     return user
   }
 
@@ -558,12 +542,11 @@ export class BilibiliDBBase {
    */
   async addFilterWord (host_mid: number, word: string) {
     await this.getOrCreateBilibiliUser(host_mid)
-    const [filterWord] = await FilterWord.findOrCreate({
-      where: {
-        host_mid,
-        word
-      }
-    })
+    let filterWord = await this.filterWordRepository.findOne({ where: { host_mid, word } })
+    if (!filterWord) {
+      filterWord = this.filterWordRepository.create({ host_mid, word })
+      await this.filterWordRepository.save(filterWord)
+    }
     return filterWord
   }
 
@@ -573,13 +556,8 @@ export class BilibiliDBBase {
    * @param word 过滤词
    */
   async removeFilterWord (host_mid: number, word: string) {
-    const result = await FilterWord.destroy({
-      where: {
-        host_mid,
-        word
-      }
-    })
-    return result > 0
+    const result = await this.filterWordRepository.delete({ host_mid, word })
+    return result.affected! > 0
   }
 
   /**
@@ -589,12 +567,11 @@ export class BilibiliDBBase {
    */
   async addFilterTag (host_mid: number, tag: string) {
     await this.getOrCreateBilibiliUser(host_mid)
-    const [filterTag] = await FilterTag.findOrCreate({
-      where: {
-        host_mid,
-        tag
-      }
-    })
+    let filterTag = await this.filterTagRepository.findOne({ where: { host_mid, tag } })
+    if (!filterTag) {
+      filterTag = this.filterTagRepository.create({ host_mid, tag })
+      await this.filterTagRepository.save(filterTag)
+    }
     return filterTag
   }
 
@@ -604,13 +581,8 @@ export class BilibiliDBBase {
    * @param tag 过滤标签
    */
   async removeFilterTag (host_mid: number, tag: string) {
-    const result = await FilterTag.destroy({
-      where: {
-        host_mid,
-        tag
-      }
-    })
-    return result > 0
+    const result = await this.filterTagRepository.delete({ host_mid, tag })
+    return result.affected! > 0
   }
 
   /**
@@ -618,10 +590,8 @@ export class BilibiliDBBase {
    * @param host_mid B站用户UID
    */
   async getFilterWords (host_mid: number) {
-    const filterWords = await FilterWord.findAll({
-      where: { host_mid }
-    })
-    return filterWords.map(word => word.get('word') as string)
+    const filterWords = await this.filterWordRepository.find({ where: { host_mid } })
+    return filterWords.map(word => word.word)
   }
 
   /**
@@ -629,10 +599,8 @@ export class BilibiliDBBase {
    * @param host_mid B站用户UID
    */
   async getFilterTags (host_mid: number) {
-    const filterTags = await FilterTag.findAll({
-      where: { host_mid }
-    })
-    return filterTags.map(tag => tag.get('tag') as string)
+    const filterTags = await this.filterTagRepository.find({ where: { host_mid } })
+    return filterTags.map(tag => tag.tag)
   }
 
   /**
@@ -645,7 +613,7 @@ export class BilibiliDBBase {
     const filterTags = await this.getFilterTags(host_mid)
 
     return {
-      filterMode: user.get('filterMode') as 'blacklist' | 'whitelist',
+      filterMode: user.filterMode,
       filterWords,
       filterTags
     }
@@ -774,9 +742,6 @@ export class BilibiliDBBase {
   }
 }
 
-/** 哔哩哔哩数据库实例 */
-export let bilibiliDB: BilibiliDBBase
-
 /** B站数据库模型集合 */
 export const bilibiliModels = {
   /** BilibiliUsers表 - 存储B站用户信息 */
@@ -793,8 +758,33 @@ export const bilibiliModels = {
   FilterWord,
   /** FilterTag表 - 存储过滤标签 */
   FilterTag
-};
+}
 
-(async () => {
-  bilibiliDB = await new BilibiliDBBase().init()
-})()
+/** B站数据库实例 */
+let bilibiliDB: BilibiliDBBase | null = null
+let isInitializing = false
+
+/**
+ * 获取或初始化 BilibiliDB 实例（单例模式）
+ */
+export const getBilibiliDB = async (): Promise<BilibiliDBBase> => {
+  if (bilibiliDB) {
+    return bilibiliDB
+  }
+
+  if (isInitializing) {
+    // 如果正在初始化，等待初始化完成
+    while (isInitializing) {
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+    return bilibiliDB!
+  }
+
+  isInitializing = true
+  try {
+    bilibiliDB = await new BilibiliDBBase().init()
+    return bilibiliDB
+  } finally {
+    isInitializing = false
+  }
+}
