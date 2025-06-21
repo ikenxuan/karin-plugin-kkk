@@ -6,6 +6,9 @@ import { getDouyinDB } from './douyin'
 export * from './bilibili'
 export * from './douyin'
 
+export const douyinDB = await getDouyinDB()
+export const bilibiliDB = await getBilibiliDB()
+
 /**
  * 清理旧的动态缓存记录
  * @param platform 指定数据库，'douyin' | 'bilibili'
@@ -19,14 +22,10 @@ export const cleanOldDynamicCache = async (platform: 'douyin' | 'bilibili', days
   let result: DeleteResult
 
   if (platform === 'douyin') {
-    // 使用 getDouyinDB 获取实例
-    const douyinDB = await getDouyinDB()
     result = await douyinDB['awemeCacheRepository'].delete({
       createdAt: LessThan(cutoffDate)
     })
   } else {
-    // 使用 getBilibiliDB 获取实例
-    const bilibiliDB = await getBilibiliDB()
     result = await bilibiliDB['dynamicCacheRepository'].delete({
       createdAt: LessThan(cutoffDate)
     })

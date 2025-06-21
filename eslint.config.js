@@ -20,6 +20,14 @@ data.forEach(val => {
     Object.keys(val.rules).forEach((key) => {
       if (val.rules[key] === 'off') val.rules[key] = 'error'
     })
+    // 在 TypeScript 配置中直接修改 no-unused-vars 规则
+    val.rules['@typescript-eslint/no-unused-vars'] = ['error', {
+      argsIgnorePattern: '^_',
+      varsIgnorePattern: '^_',
+      ignoreRestSiblings: true,
+      args: 'after-used',
+      enums: true
+    }]
   }
   newData.push(val)
 })

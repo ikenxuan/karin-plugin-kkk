@@ -88,10 +88,6 @@ const createWebConfigPlugin = (): Plugin => {
 }
 
 export default defineConfig({
-  define: {
-    'process.env.PLUGIN_NAME': JSON.stringify(pkg.name),
-    'process.env.PLUGIN_VERSION': JSON.stringify(pkg.version),
-  },
   build: {
     target: 'node18',
     lib: {
@@ -104,7 +100,7 @@ export default defineConfig({
       external: [
         ...builtinModules,
         ...builtinModules.map((mod) => `node:${mod}`),
-        ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js'].map(p => `node-karin${p}`),
+        ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js', '/template'].map(p => `node-karin${p}`),
         'playwright',
         'sqlite3',
         '@karinjs/md-html',

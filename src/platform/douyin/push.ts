@@ -9,9 +9,9 @@ import {
   cleanOldDynamicCache,
   Common,
   Config,
+  douyinDB,
   downLoadFileOptions,
   downloadVideo,
-  getDouyinDB,
   Networks,
   Render
 } from '@/module'
@@ -50,8 +50,6 @@ const douyinBaseHeaders: downLoadFileOptions['headers'] = {
 
 export class DouYinpush extends Base {
   private force = false
-  private douyinDB!: import('@/module/db/douyin').DouyinDBBase
-  private initialized = false
   /**
    *
    * @param e  事件Message
@@ -68,17 +66,6 @@ export class DouYinpush extends Base {
     this.headers.Referer = 'https://www.douyin.com'
     this.headers.Cookie = Config.cookies.douyin
     this.force = force
-  }
-
-  /**
-   * 初始化实例
-   */
-  async init () {
-    if (!this.initialized) {
-      this.douyinDB = await getDouyinDB()
-      this.initialized = true
-    }
-    return this
   }
 
   /**
@@ -117,7 +104,7 @@ export class DouYinpush extends Base {
       return
     }
 
-    await this.douyinDB.syncConfigSubscriptions(Config.pushlist.douyin)
+    await douyinDB.syncConfigSubscriptions(Config.pushlist.douyin)
   }
 
   async getdata (data: WillBePushList) {
@@ -192,12 +179,12 @@ export class DouYinpush extends Base {
 
           // 如果是直播推送，更新直播状态
           if (pushItem.living && 'room_data' in pushItem.Detail_Data && status.message_id) {
-            await this.douyinDB.updateLiveStatus(pushItem.sec_uid, true)
+            await douyinDB.updateLiveStatus(pushItem.sec_uid, true)
           }
 
           // 添加作品缓存
           if (!pushItem.living && status.message_id) {
-            await this.douyinDB.addAwemeCache(awemeId, pushItem.sec_uid, groupId)
+            await douyinDB.addAwemeCache(awemeId, pushItem.sec_uid, groupId)
           }
 
           // 是否一同解析该新作品？
@@ -315,7 +302,7 @@ export class DouYinpush extends Base {
         }
 
         /** 获取缓存的直播状态 */
-        const liveStatus = await this.douyinDB.getLiveStatus(sec_uid)
+        const liveStatus = await douyinDB.getLiveStatus(sec_uid)
 
         if (userinfo.user.live_status === 1) {
           const liveInfo = await this.amagi.getDouyinData('直播间信息数据', { sec_uid: userinfo.user.sec_uid, typeMode: 'strict' })
@@ -343,7 +330,7 @@ export class DouYinpush extends Base {
           }
         } else if (liveStatus.living) {
           // 如果之前在直播，现在已经关播，需要更新状态
-          await this.douyinDB.updateLiveStatus(sec_uid, false)
+          await douyinDB.updateLiveStatus(sec_uid, false)
           logger.info(`用户 ${item.remark ?? sec_uid} 已关播，更新直播状态`)
 
           // 可选：添加关播推送
@@ -381,7 +368,7 @@ export class DouYinpush extends Base {
  */
   async checkIfAlreadyPushed (aweme_id: string, sec_uid: string, groupIds: string[]): Promise<boolean> {
     for (const groupId of groupIds) {
-      const isPushed = await this.douyinDB.isAwemePushed(aweme_id, sec_uid, groupId)
+      const isPushed = await douyinDB.isAwemePushed(aweme_id, sec_uid, groupId)
       if (!isPushed) {
         return false
       }
@@ -419,7 +406,7 @@ export class DouYinpush extends Base {
       const existingItem = config.douyin.find((item: { sec_uid: string }) => item.sec_uid === sec_uid)
 
       // 检查数据库中是否已订阅
-      const isSubscribed = await this.douyinDB.isSubscribed(sec_uid, groupId)
+      const isSubscribed = await douyinDB.isSubscribed(sec_uid, groupId)
 
       if (existingItem) {
         // 如果已经存在相同的 sec_uid，则检查是否存在相同的 group_id
@@ -444,7 +431,7 @@ export class DouYinpush extends Base {
 
           // 同时从数据库中取消订阅
           if (isSubscribed) {
-            await this.douyinDB.unsubscribeDouyinUser(groupId, sec_uid)
+            await douyinDB.unsubscribeDouyinUser(groupId, sec_uid)
           }
 
           logger.info(`\n删除成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.user.sec_uid}`)
@@ -461,7 +448,7 @@ export class DouYinpush extends Base {
 
           // 同时在数据库中添加订阅
           if (!isSubscribed) {
-            await this.douyinDB.subscribeDouyinUser(groupId, botId, sec_uid, user_shortid, UserInfoData.user.nickname)
+            await douyinDB.subscribeDouyinUser(groupId, botId, sec_uid, user_shortid, UserInfoData.user.nickname)
           }
 
           await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`)
@@ -480,7 +467,7 @@ export class DouYinpush extends Base {
 
         // 同时在数据库中添加订阅
         if (!isSubscribed) {
-          await this.douyinDB.subscribeDouyinUser(groupId, botId, sec_uid, user_shortid, UserInfoData.user.nickname)
+          await douyinDB.subscribeDouyinUser(groupId, botId, sec_uid, user_shortid, UserInfoData.user.nickname)
         }
 
         await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`)
@@ -504,7 +491,7 @@ export class DouYinpush extends Base {
     const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
 
     // 获取当前群组的所有订阅
-    const subscriptions = await this.douyinDB.getGroupSubscriptions(groupInfo.groupId)
+    const subscriptions = await douyinDB.getGroupSubscriptions(groupInfo.groupId)
 
     if (subscriptions.length === 0) {
       await this.e.reply(`当前群：${groupInfo.groupName}(${groupInfo.groupId})\n没有设置任何抖音博主推送！\n可使用「#设置抖音推送 + 抖音号」进行设置`)
@@ -541,7 +528,7 @@ export class DouYinpush extends Base {
     // 如果不是全部强制推送，需要过滤数据
     if (!this.e.msg.includes('全部')) {
       // 获取当前群组订阅的所有抖音用户
-      const subscriptions = await this.douyinDB.getGroupSubscriptions(currentGroupId)
+      const subscriptions = await douyinDB.getGroupSubscriptions(currentGroupId)
       const subscribedUids = subscriptions.map(sub => sub.sec_uid)
 
       // 创建一个新的推送列表，只包含当前群组订阅的用户的动态
@@ -653,7 +640,6 @@ const skipDynamic = async (PushItem: DouyinPushItem): Promise<boolean> => {
     }
   }
 
-  const douyinDB = await getDouyinDB()
   // 确保使用 PushItem.sec_uid 而不是 PushItem.Detail_Data.sec_uid
   const shouldFilter = await douyinDB.shouldFilter(PushItem, tags)
   return shouldFilter

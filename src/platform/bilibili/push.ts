@@ -17,13 +17,13 @@ import {
 import {
   Base,
   baseHeaders,
+  bilibiliDB,
   cleanOldDynamicCache,
   Common,
   Config,
   Count,
   downloadFile,
   downLoadFileOptions,
-  getBilibiliDB,
   mergeFile,
   Render,
   uploadFile
@@ -76,8 +76,6 @@ const bilibiliBaseHeaders: downLoadFileOptions['headers'] = {
 
 export class Bilibilipush extends Base {
   private force = false
-  private bilibiliDB!: import('@/module/db/bilibili').BilibiliDBBase
-  private initialized = false
 
   constructor (e = {} as Message, force: boolean = false) {
     super(e)
@@ -89,24 +87,9 @@ export class Bilibilipush extends Base {
   }
 
   /**
-   * 初始化实例
-   */
-  async init () {
-    if (!this.initialized) {
-      this.bilibiliDB = await getBilibiliDB()
-      this.initialized = true
-    }
-    return this
-  }
-
-  /**
    * 执行主要的操作流程
    */
   async action () {
-    if (!this.initialized) {
-      throw new Error('实例未初始化，请先调用 init() 方法')
-    }
-
     try {
       await this.syncConfigToDatabase()
       // 清理旧的动态缓存记录
@@ -136,7 +119,7 @@ export class Bilibilipush extends Base {
       return
     }
 
-    await this.bilibiliDB.syncConfigSubscriptions(Config.pushlist.bilibili)
+    await bilibiliDB.syncConfigSubscriptions(Config.pushlist.bilibili)
   }
 
   /**
@@ -508,7 +491,7 @@ export class Bilibilipush extends Base {
 
         if (skip || (status && status?.messageId)) {
           // 使用新的数据库API添加动态缓存
-          await this.bilibiliDB.addDynamicCache(
+          await bilibiliDB.addDynamicCache(
             dynamicId,
             data[dynamicId].host_mid,
             target.groupId,
@@ -595,7 +578,7 @@ export class Bilibilipush extends Base {
       // 遍历作品对应的目标群组
       for (const target of pushItem.targets) {
         // 检查该动态是否已经推送给该群组
-        const isPushed = await this.bilibiliDB.isDynamicPushed(dynamicId, pushItem.host_mid, target.groupId)
+        const isPushed = await bilibiliDB.isDynamicPushed(dynamicId, pushItem.host_mid, target.groupId)
 
         // 如果未被推送过，则保留此目标
         if (!isPushed) {
@@ -636,7 +619,7 @@ export class Bilibilipush extends Base {
     const existingItem = config.bilibili.find((item: { host_mid: number }) => item.host_mid === host_mid)
 
     // 检查该群组是否已订阅该UP主
-    const isSubscribed = await this.bilibiliDB.isSubscribed(host_mid, groupId)
+    const isSubscribed = await bilibiliDB.isSubscribed(host_mid, groupId)
 
     if (existingItem) {
       // 如果已经存在相同的 host_mid，则检查是否存在相同的 group_id
@@ -660,7 +643,7 @@ export class Bilibilipush extends Base {
 
         // 在数据库中取消订阅
         if (isSubscribed) {
-          await this.bilibiliDB.unsubscribeBilibiliUser(groupId, host_mid)
+          await bilibiliDB.unsubscribeBilibiliUser(groupId, host_mid)
         }
 
         logger.info(`\n删除成功！${data.data.card.name}\nUID：${host_mid}`)
@@ -673,7 +656,7 @@ export class Bilibilipush extends Base {
         }
       } else {
         // 在数据库中添加订阅
-        await this.bilibiliDB.subscribeBilibiliUser(
+        await bilibiliDB.subscribeBilibiliUser(
           groupId,
           botId,
           host_mid,
@@ -690,7 +673,7 @@ export class Bilibilipush extends Base {
       }
     } else {
       // 在数据库中添加订阅
-      await this.bilibiliDB.subscribeBilibiliUser(
+      await bilibiliDB.subscribeBilibiliUser(
         groupId,
         botId,
         host_mid,
@@ -763,7 +746,7 @@ export class Bilibilipush extends Base {
     // 如果不是全部强制推送，需要过滤数据
     if (!this.e.msg.includes('全部')) {
       // 获取当前群组订阅的所有UP主
-      const subscriptions = await this.bilibiliDB.getGroupSubscriptions(currentGroupId)
+      const subscriptions = await bilibiliDB.getGroupSubscriptions(currentGroupId)
       const subscribedUids = subscriptions.map(sub => sub.host_mid)
 
       /** 创建一个新的推送列表，只包含当前群组订阅的UP主的动态 */
@@ -797,7 +780,7 @@ export class Bilibilipush extends Base {
     const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
 
     // 获取当前群组的所有订阅
-    const subscriptions = await this.bilibiliDB.getGroupSubscriptions(groupInfo.groupId)
+    const subscriptions = await bilibiliDB.getGroupSubscriptions(groupInfo.groupId)
 
     if (subscriptions.length === 0) {
       await this.e.reply(`当前群：${groupInfo.groupName}(${groupInfo.groupId})\n没有设置任何B站UP推送！\n可使用「#设置B站推送 + UP主UID」进行设置`)
@@ -900,7 +883,6 @@ const skipDynamic = async (PushItem: BilibiliPushItem): Promise<boolean> => {
     }
   }
 
-  const bilibiliDB = await getBilibiliDB()
   const shouldFilter = await bilibiliDB.shouldFilter(PushItem, tags)
   return shouldFilter
 }
