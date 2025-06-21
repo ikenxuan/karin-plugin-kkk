@@ -102,7 +102,6 @@ export default defineConfig({
         ...builtinModules.map((mod) => `node:${mod}`),
         ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js', '/template'].map(p => `node-karin${p}`),
         'playwright',
-        'sqlite3',
         '@karinjs/md-html',
         'typeorm',
       ],
