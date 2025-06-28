@@ -19,7 +19,7 @@ export const baseHeaders = {
   Accept: '*/*',
   'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
   'User-Agent':
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0'
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0'
 }
 export class Networks {
   private url: string
@@ -213,9 +213,10 @@ export class Networks {
       if (axiosError.response) {
         if (axiosError.response.status === 302) {
           const redirectUrl = axiosError.response.headers.location
+          logger.info(`检测到302重定向，目标地址: ${redirectUrl}`)
           return await this.getLongLink(redirectUrl)
         } else if (axiosError.response.status === 403) { // 403 Forbidden
-          errorMsg = `获取链接重定向失败: 403 Forbidden - ${this.url || url}`
+          errorMsg = `403 Forbidden 禁止访问！ - ${this.url || url}`
           logger.error(errorMsg)
           return errorMsg
         }
@@ -275,6 +276,7 @@ export class Networks {
         method: 'GET',
         headers: {
           ...this.config.headers,
+          Referer: this.config.url,
           Range: 'bytes=0-0'
         }
       })

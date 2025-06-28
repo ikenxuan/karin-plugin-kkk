@@ -25,10 +25,6 @@ export async function getDouyinID (event: Message, url: string, log = true): Pro
     }
   }).getLongLink()
   let result = {} as DouyinIdData
-  if (longLink.includes('失败')) {
-    await event.reply(longLink)
-  }
-
   switch (true) {
     case longLink.includes('webcast.amemv.com'):
     case longLink.includes('live.douyin.com'): {

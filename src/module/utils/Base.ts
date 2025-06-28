@@ -328,9 +328,8 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
 /**
  * 下载视频并上传到群
  * @param event 事件
- * @param video_url 视频链接
- * @param title 文件名，是一个对象，时间戳或自定义
- * @param opt 上传参数
+ * @param downloadOpt 下载参数
+ * @param uploadOpt 上传参数
  * @returns
  */
 export const downloadVideo = async (event: Message, downloadOpt: downloadFileOptions, uploadOpt?: uploadFileOptions): Promise<boolean> => {

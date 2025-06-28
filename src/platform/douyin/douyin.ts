@@ -8,6 +8,7 @@ import * as QRCode from 'qrcode'
 
 import {
   Base,
+  baseHeaders,
   Common,
   Config,
   Count,
@@ -226,12 +227,12 @@ export class DouYin extends Base {
               `)
             video.bit_rate = douyinProcessVideos(video.bit_rate, Config.upload.filelimit)
             g_video_url = await new Networks({
-              url: video.bit_rate[0].play_addr.url_list[0],
+              url: video.bit_rate[0].play_addr.url_list[2],
               headers: this.headers
             }).getLongLink()
           } else {
             g_video_url = await new Networks({
-              url: video.play_addr_h264.url_list[0] ?? video.play_addr_h264.url_list[0],
+              url: video.play_addr_h264.url_list[2] ?? video.play_addr_h264.url_list[2],
               headers: this.headers
             }).getLongLink()
           }
@@ -278,7 +279,23 @@ export class DouYin extends Base {
           }
         }
         /** 发送视频 */
-        sendvideofile && this.is_mp4 && await downloadVideo(this.e, { video_url: g_video_url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${g_title}.mp4` } })
+        sendvideofile && this.is_mp4 && await downloadVideo(
+          this.e,
+          {
+            video_url: g_video_url,
+            title: {
+              timestampTitle: `tmp_${Date.now()}.mp4`,
+              originTitle: `${g_title}.mp4`
+            },
+            headers: {
+              ...baseHeaders,
+              Referer: g_video_url
+            }
+          },
+          {
+            message_id: this.e.messageId,
+          }
+        )
         return true
       }
 

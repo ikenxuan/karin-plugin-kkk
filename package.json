@@ -54,7 +54,7 @@
     "@types/qrcode": "^1.5.5",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
-    "eslint": "^9.0.0",
+    "eslint": "^9.7.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "heic-convert": "^2.1.0",
     "http-proxy-middleware": "^3.0.3",
