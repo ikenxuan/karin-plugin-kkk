@@ -206,7 +206,7 @@ export class Networks {
   async getLongLink (url = ''): Promise<string> {
     let errorMsg = `获取链接重定向失败: ${this.url || url}`
     try {
-      const response = await this.axiosInstance.get(this.url || url)
+      const response = await this.axiosInstance.head(this.url || url)
       return response.request.res.responseUrl
     } catch (error) {
       const axiosError = error as AxiosError
@@ -216,7 +216,7 @@ export class Networks {
           logger.info(`检测到302重定向，目标地址: ${redirectUrl}`)
           return await this.getLongLink(redirectUrl)
         } else if (axiosError.response.status === 403) { // 403 Forbidden
-          errorMsg = `403 Forbidden 禁止访问！ - ${this.url || url}`
+          errorMsg = `403 Forbidden 禁止访问！${this.url || url}`
           logger.error(errorMsg)
           return errorMsg
         }
@@ -267,7 +267,7 @@ export class Networks {
   /**
    * 获取响应头信息（仅首个字节）
    * 适用于获取视频流的完整大小
-   * @returns
+   * @returns 返回响应头信息
    */
   async getHeaders (): Promise<AxiosResponse['headers']> {
     try {
