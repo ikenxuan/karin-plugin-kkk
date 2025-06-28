@@ -203,12 +203,12 @@ export class DouYinpush extends Base {
                     `)
                   const videoObj = douyinProcessVideos(Detail_Data.video.bit_rate, Config.upload.filelimit)
                   downloadUrl = await new Networks({
-                    url: videoObj[0].play_addr.url_list[2],
+                    url: videoObj[0].play_addr.url_list[0],
                     headers: douyinBaseHeaders
                   }).getLongLink()
                 } else {
                   downloadUrl = await new Networks({
-                    url: Detail_Data.video.bit_rate[0].play_addr.url_list[2] ?? Detail_Data.video.play_addr_h264.url_list[2] ?? Detail_Data.video.play_addr_h264.url_list[2],
+                    url: Detail_Data.video.bit_rate[0].play_addr.url_list[0] ?? Detail_Data.video.play_addr_h264.url_list[0] ?? Detail_Data.video.play_addr_h264.url_list[0],
                     headers: douyinBaseHeaders
                   }).getLongLink()
                 }

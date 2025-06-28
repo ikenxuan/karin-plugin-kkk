@@ -226,12 +226,12 @@ export class DouYin extends Base {
               `)
             video.bit_rate = douyinProcessVideos(video.bit_rate, Config.upload.filelimit)
             g_video_url = await new Networks({
-              url: video.bit_rate[0].play_addr.url_list[2],
+              url: video.bit_rate[0].play_addr.url_list[0],
               headers: this.headers
             }).getLongLink()
           } else {
             g_video_url = await new Networks({
-              url: video.play_addr_h264.url_list[2] ?? video.play_addr_h264.url_list[2],
+              url: video.play_addr_h264.url_list[0] ?? video.play_addr_h264.url_list[0],
               headers: this.headers
             }).getLongLink()
           }

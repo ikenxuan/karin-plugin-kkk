@@ -776,7 +776,7 @@ export class DouyinDBBase {
       tags.some(tag => tag === filterTag)
     )
 
-    logger.warn(`
+    logger.debug(`
       作者：${PushItem.remark}
       检查内容：${desc}
       命中词：${filterWords.join(', ')}
@@ -817,33 +817,4 @@ export const douyinModels = {
   FilterWord,
   /** FilterTag表 - 存储过滤标签 */
   FilterTag
-}
-
-/** 抖音数据库实例 */
-let douyinDB: DouyinDBBase | null = null
-let isInitializing = false
-
-/**
- * 获取或初始化 DouyinDB 实例（单例模式）
- */
-export const getDouyinDB = async (): Promise<DouyinDBBase> => {
-  if (douyinDB) {
-    return douyinDB
-  }
-
-  if (isInitializing) {
-    // 如果正在初始化，等待初始化完成
-    while (isInitializing) {
-      await new Promise(resolve => setTimeout(resolve, 100))
-    }
-    return douyinDB!
-  }
-
-  isInitializing = true
-  try {
-    douyinDB = await new DouyinDBBase().init()
-    return douyinDB
-  } finally {
-    isInitializing = false
-  }
 }

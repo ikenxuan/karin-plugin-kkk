@@ -759,32 +759,3 @@ export const bilibiliModels = {
   /** FilterTag表 - 存储过滤标签 */
   FilterTag
 }
-
-/** B站数据库实例 */
-let bilibiliDB: BilibiliDBBase | null = null
-let isInitializing = false
-
-/**
- * 获取或初始化 BilibiliDB 实例（单例模式）
- */
-export const getBilibiliDB = async (): Promise<BilibiliDBBase> => {
-  if (bilibiliDB) {
-    return bilibiliDB
-  }
-
-  if (isInitializing) {
-    // 如果正在初始化，等待初始化完成
-    while (isInitializing) {
-      await new Promise(resolve => setTimeout(resolve, 100))
-    }
-    return bilibiliDB!
-  }
-
-  isInitializing = true
-  try {
-    bilibiliDB = await new BilibiliDBBase().init()
-    return bilibiliDB
-  } finally {
-    isInitializing = false
-  }
-}
