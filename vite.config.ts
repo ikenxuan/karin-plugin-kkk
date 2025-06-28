@@ -5,12 +5,10 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { defineConfig, type Plugin } from 'vite'
-import banner from 'vite-plugin-banner'
 
 // 在ES模块中模拟__dirname
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const pkg = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'))
 
 const entry: string[] = ['src/index.ts', 'src/root.ts']
 
@@ -89,7 +87,7 @@ const createWebConfigPlugin = (): Plugin => {
 
 export default defineConfig({
   build: {
-    target: 'node18',
+    target: 'node22',
     lib: {
       formats: ['es'],
       entry,
@@ -143,7 +141,6 @@ export default defineConfig({
           }
         }
       },
-      cache: false,
     },
     minify: false,
     commonjsOptions: {
@@ -160,11 +157,7 @@ export default defineConfig({
     },
   },
   plugins: [
-    // dts({ rollupTypes: true }), // 生成类型声明文件
     injectDirnamePlugin(),
-    createWebConfigPlugin(),
-    banner((fileName: string) => {
-      return `/**\n * name: ${pkg.name}\n * version: v${pkg.version}\n * description: ${pkg.description}\n * author: @${pkg.author}\n * homepage: ${pkg.homepage}\n * date ${new Date().toLocaleString()}\n * file: ${fileName}\n */`
-    }),
+    createWebConfigPlugin()
   ]
 })

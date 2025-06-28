@@ -5,6 +5,7 @@ const data = neostandard({
   ignores: ['node_modules', 'temp', 'logs', 'data', 'lib', 'dist'],
   globals: ['NodeJS', 'RequestRedirect'],
   ts: true,
+  files: ['src/**/*.ts'],
 })
 
 const newData = []
@@ -20,14 +21,17 @@ data.forEach(val => {
     Object.keys(val.rules).forEach((key) => {
       if (val.rules[key] === 'off') val.rules[key] = 'error'
     })
-    // 在 TypeScript 配置中直接修改 no-unused-vars 规则
-    // val.rules['@typescript-eslint/no-unused-vars'] = ['error', {
-    //   argsIgnorePattern: '^_',
-    //   varsIgnorePattern: '^_',
-    //   ignoreRestSiblings: true,
-    //   args: 'after-used',
-    //   enums: true
-    // }]
+    val.rules['@typescript-eslint/no-unused-vars'] = ['error', {
+      argsIgnorePattern: '^_',
+      varsIgnorePattern: '^_',
+      ignoreRestSiblings: true,
+      args: 'after-used'
+    }]
+    val.rules['no-use-before-define'] = ['off', {
+      functions: false,
+      classes: false,
+      variables: true
+    }]
   }
   newData.push(val)
 })

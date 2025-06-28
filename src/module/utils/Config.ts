@@ -53,7 +53,7 @@ class Cfg {
      */
     setTimeout(() => {
       const list = filesByExt(this.dirCfgPath, '.yaml', 'abs')
-      list.forEach((file) => watch(file, (old, now) => {
+      list.forEach((file) => watch(file, (_old, _now) => {
         // logger.info('旧数据:', old);
         // logger.info('新数据:', now);
       }))

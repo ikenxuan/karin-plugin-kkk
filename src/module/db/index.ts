@@ -84,7 +84,7 @@ export const douyinDBInstance = await getDouyinDB()
 export const bilibiliDBInstance = await getBilibiliDB()
 
 // 为了保持向后兼容性，保留原有的导出名称
-export { douyinDBInstance as douyinDB, bilibiliDBInstance as bilibiliDB }
+export { bilibiliDBInstance as bilibiliDB, douyinDBInstance as douyinDB }
 
 /**
  * 清理旧的动态缓存记录

@@ -32,10 +32,10 @@
     "app": "node --import tsx src/app.ts",
     "build": "tsc && vite build",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts",
-    "fix": "eslint src/**/*.ts --fix",
+    "fix": "npx eslint . -c eslint.config.js --fix",
     "init": "karin init",
     "pub": "npm publish --access public",
-    "sort": "npx sort-package-json",
+    "sort": "sort-package-json",
     "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" src/app.ts"
   },
@@ -65,9 +65,7 @@
     "sort-package-json": "^2.15.1",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
-    "vite": "^6.3.3",
-    "vite-plugin-banner": "^0.8.1",
-    "vite-plugin-dts": "^4.5.3"
+    "vite": "^6.3.3"
   },
   "engines": {
     "node": ">=21.0.0",

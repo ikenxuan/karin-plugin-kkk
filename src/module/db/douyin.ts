@@ -1,5 +1,6 @@
 import 'reflect-metadata'
 
+import { copyFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { logger } from 'node-karin'
@@ -23,7 +24,6 @@ import {
 import { Config, Root } from '@/module/utils'
 import { DouyinPushItem } from '@/platform/douyin/push'
 import { douyinPushItem } from '@/types/config/pushlist'
-import { existsSync, copyFileSync } from 'node:fs'
 
 /**
  * 机器人实体 - 存储机器人信息
@@ -280,7 +280,7 @@ class FilterTag {
  * 备份旧版 Sequelize 数据库文件（仅在备份文件不存在时执行）
  * 用于从 Sequelize 迁移到 TypeORM 的测试版本
  */
-const backupOldDatabase = (() => {
+(() => {
   const dataDir = join(`${karinPathBase}/${Root.pluginName}/data`)
   const oldDbPath = join(dataDir, 'douyin.db')
   const backupDbPath = join(dataDir, 'douyin_sequelize_backup.db')

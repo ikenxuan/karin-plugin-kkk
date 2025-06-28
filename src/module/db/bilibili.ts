@@ -1,5 +1,6 @@
 import 'reflect-metadata'
 
+import { copyFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { logger } from 'node-karin'
@@ -23,7 +24,6 @@ import {
 import { Config, Root } from '@/module/utils'
 import { BilibiliPushItem, DynamicType } from '@/platform/bilibili/push'
 import { bilibiliPushItem } from '@/types/config/pushlist'
-import { copyFileSync, existsSync } from 'node:fs'
 
 /** Bots表 - 存储机器人信息 */
 @Entity('Bots')
