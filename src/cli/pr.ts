@@ -1,6 +1,4 @@
-#!/usr/bin/env node
-
-import fs from 'fs'
+import fs from 'node:fs'
 
 /**
  * @description 获取package.json路径

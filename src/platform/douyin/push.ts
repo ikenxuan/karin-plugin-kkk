@@ -47,6 +47,7 @@ const douyinBaseHeaders: downLoadFileOptions['headers'] = {
   Referer: 'https://www.douyin.com',
   Cookie: Config.cookies.douyin
 }
+
 export class DouYinpush extends Base {
   private force = false
   /**
@@ -67,6 +68,9 @@ export class DouYinpush extends Base {
     this.force = force
   }
 
+  /**
+   * 执行主要的操作流程
+   */
   async action () {
     try {
       await this.syncConfigToDatabase()
@@ -139,9 +143,12 @@ export class DouYinpush extends Base {
           const realUrl = Config.douyin.push.shareType === 'web' && await new Networks({
             url: Detail_Data.share_url,
             headers: {
-              'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
+              'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+              Accept: '*/*',
+              'Accept-Encoding': 'gzip, deflate, br',
+              Connection: 'keep-alive'
             }
-          }).getLongLink()
+          }).getLocation()
           img = await Render('douyin/dynamic', {
             image_url: iddata.is_mp4 ? Detail_Data.video.animated_cover?.url_list[0] ?? Detail_Data.video.cover.url_list[0] : Detail_Data.images[0].url_list[0],
             desc: this.desc(Detail_Data, Detail_Data.desc),
@@ -199,12 +206,12 @@ export class DouYinpush extends Base {
                     `)
                   const videoObj = douyinProcessVideos(Detail_Data.video.bit_rate, Config.upload.filelimit)
                   downloadUrl = await new Networks({
-                    url: videoObj[0].play_addr.url_list[2],
+                    url: videoObj[0].play_addr.url_list[0],
                     headers: douyinBaseHeaders
                   }).getLongLink()
                 } else {
                   downloadUrl = await new Networks({
-                    url: Detail_Data.video.bit_rate[0].play_addr.url_list[2] ?? Detail_Data.video.play_addr_h264.url_list[2] ?? Detail_Data.video.play_addr_h264.url_list[2],
+                    url: Detail_Data.video.bit_rate[0].play_addr.url_list[0] ?? Detail_Data.video.play_addr_h264.url_list[0] ?? Detail_Data.video.play_addr_h264.url_list[0],
                     headers: douyinBaseHeaders
                   }).getLongLink()
                 }
@@ -497,7 +504,7 @@ export class DouYinpush extends Base {
     const renderOpt: Record<string, string>[] = []
 
     for (const subscription of subscriptions) {
-      const sec_uid = subscription.get('sec_uid') as string
+      const sec_uid = subscription.sec_uid
       const userInfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
 
       renderOpt.push({
@@ -514,9 +521,9 @@ export class DouYinpush extends Base {
   }
 
   /**
- * 强制推送
- * @param data 处理完成的推送列表
- */
+   * 强制推送
+   * @param data 处理完成的推送列表
+   */
   async forcepush (data: WillBePushList) {
     const currentGroupId = 'groupId' in this.e && this.e.groupId ? this.e.groupId : ''
     const currentBotId = this.e.selfId
@@ -525,7 +532,7 @@ export class DouYinpush extends Base {
     if (!this.e.msg.includes('全部')) {
       // 获取当前群组订阅的所有抖音用户
       const subscriptions = await douyinDB.getGroupSubscriptions(currentGroupId)
-      const subscribedUids = subscriptions.map(sub => sub.get('sec_uid') as string)
+      const subscribedUids = subscriptions.map(sub => sub.sec_uid)
 
       // 创建一个新的推送列表，只包含当前群组订阅的用户的动态
       const filteredData: WillBePushList = {}
@@ -625,8 +632,6 @@ const skipDynamic = async (PushItem: DouyinPushItem): Promise<boolean> => {
     return false
   }
 
-  // 获取动态描述和标签
-  const desc = PushItem.Detail_Data.desc ?? ''
   const tags: string[] = []
 
   // 提取标签
@@ -641,15 +646,4 @@ const skipDynamic = async (PushItem: DouyinPushItem): Promise<boolean> => {
   // 确保使用 PushItem.sec_uid 而不是 PushItem.Detail_Data.sec_uid
   const shouldFilter = await douyinDB.shouldFilter(PushItem, tags)
   return shouldFilter
-}
-
-/**
-* 查找匹配的sec_uid
-* @param data 数据对象
-* @param sec_uid 要查找的sec_uid
-* @returns 找到的sec_uid或undefined
-*/
-function findMatchingSecUid (data: any, sec_uid: string): string | undefined {
-  if (!data) return undefined
-  return Object.keys(data).find(key => key === sec_uid)
 }

@@ -19,7 +19,7 @@ const startXvfb = async () => {
     execSync(`xdpyinfo -display ${DISPLAY_NUMBER}`, { stdio: 'ignore' })
     logger.debug(`检测到 DISPLAY ${DISPLAY_NUMBER} 已经在运行，无需启动新的 Xvfb。`)
     return // 如果 DISPLAY 已经存在，则直接返回，不再启动 Xvfb
-  } catch (err) {
+  } catch {
     logger.debug(logger.red(`未检测到 DISPLAY ${DISPLAY_NUMBER}，尝试启动 Xvfb...`))
   }
 
@@ -84,7 +84,7 @@ export const douyinLogin = async (e: Message) => {
     const page = await browser.newPage()
     await page.goto('https://www.douyin.com', { timeout: 120000 })
 
-    const timeout = new Promise((resolve) => setTimeout(async () => {
+    const timeout = new Promise((_resolve) => setTimeout(async () => {
       await browser.close() // 超时后关闭浏览器
     }, 120000))
 
@@ -138,7 +138,7 @@ export const douyinLogin = async (e: Message) => {
                 await page.getByText('验证', { exact: true }).click()
               }
             }
-          } catch (error) {
+          } catch {
             await browser.close()
             // 批量撤回
             await Promise.all(msg_id.map(async (id) => {

@@ -1,6 +1,6 @@
 import { logger, type Message } from 'node-karin'
+import axios from 'node-karin/axios'
 
-import { Networks } from '@/module/utils'
 import type { DouyinDataTypes } from '@/types'
 
 export interface DouyinIdData {
@@ -18,17 +18,13 @@ export interface DouyinIdData {
  * @returns
  */
 export async function getDouyinID (event: Message, url: string, log = true): Promise<DouyinIdData> {
-  const longLink = await new Networks({
-    url,
+  const resp = await axios.get(url, {
     headers: {
       'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
     }
-  }).getLongLink()
+  })
+  const longLink = resp.request.res.responseUrl
   let result = {} as DouyinIdData
-  if (longLink.includes('失败')) {
-    await event.reply(longLink)
-  }
-
   switch (true) {
     case longLink.includes('webcast.amemv.com'):
     case longLink.includes('live.douyin.com'): {
