@@ -276,7 +276,6 @@ export class Networks {
         method: 'GET',
         headers: {
           ...this.config.headers,
-          Referer: this.config.url,
           Range: 'bytes=0-0'
         }
       })
