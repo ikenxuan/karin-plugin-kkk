@@ -143,9 +143,12 @@ export class DouYinpush extends Base {
           const realUrl = Config.douyin.push.shareType === 'web' && await new Networks({
             url: Detail_Data.share_url,
             headers: {
-              'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
+              'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+              Accept: '*/*',
+              'Accept-Encoding': 'gzip, deflate, br',
+              Connection: 'keep-alive'
             }
-          }).getLongLink()
+          }).getLocation()
           img = await Render('douyin/dynamic', {
             image_url: iddata.is_mp4 ? Detail_Data.video.animated_cover?.url_list[0] ?? Detail_Data.video.cover.url_list[0] : Detail_Data.images[0].url_list[0],
             desc: this.desc(Detail_Data, Detail_Data.desc),
