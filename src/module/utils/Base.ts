@@ -97,7 +97,7 @@ export class Base {
         const method = target[prop]
         if (typeof method === 'function') {
           return async (...args: any[]) => {
-            let result = await Function.prototype.apply.call(method, target, args)
+            const result = await Function.prototype.apply.call(method, target, args)
 
             // 返回值检查逻辑
             if (!result) {
@@ -328,9 +328,8 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
 /**
  * 下载视频并上传到群
  * @param event 事件
- * @param video_url 视频链接
- * @param title 文件名，是一个对象，时间戳或自定义
- * @param opt 上传参数
+ * @param downloadOpt 下载参数
+ * @param uploadOpt 上传参数
  * @returns
  */
 export const downloadVideo = async (event: Message, downloadOpt: downloadFileOptions, uploadOpt?: uploadFileOptions): Promise<boolean> => {
@@ -351,7 +350,7 @@ export const downloadVideo = async (event: Message, downloadOpt: downloadFileOpt
 
   // 下载文件，视频URL，标题和自定义headers
   let res = await downloadFile(downloadOpt.video_url, {
-    title: Config.app.rmmp4 ? downloadOpt.title.timestampTitle as string : downloadOpt.title.originTitle!.substring(0, 50).replace(/[\\/:\*\?"<>\|\r\n\s]/g, ' '),
+    title: Config.app.rmmp4 ? downloadOpt.title.timestampTitle as string : downloadOpt.title.originTitle!.substring(0, 50).replace(/[\\/:*?"<>|\r\n\s]/g, ' '),
     headers: downloadOpt.headers ?? baseHeaders
   })
   res = { ...res, ...downloadOpt.title }

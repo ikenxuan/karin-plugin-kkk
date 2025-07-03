@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "christian-kohler.path-intellisense",
+    "formulahendry.code-runner",
+    "steoates.autoimport",
+    "Meezilla.json",
+    "yzhang.markdown-all-in-one",
+    "ChakrounAnas.turbo-console-log",
+    "Gruntfuggly.todo-tree"
+  ]
+}

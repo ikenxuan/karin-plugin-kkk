@@ -1,15 +1,14 @@
 import fs from 'node:fs'
-import dts from 'vite-plugin-dts'
-import { defineConfig, type Plugin } from 'vite'
-import { builtinModules } from 'node:module'
-import { resolve, dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { readFileSync, writeFileSync } from 'node:fs'
+import { builtinModules } from 'node:module'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+import { defineConfig, type Plugin } from 'vite'
 
 // 在ES模块中模拟__dirname
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const pkg = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'))
 
 const entry: string[] = ['src/index.ts', 'src/root.ts']
 
@@ -87,12 +86,8 @@ const createWebConfigPlugin = (): Plugin => {
 }
 
 export default defineConfig({
-  define: {
-    'process.env.PLUGIN_NAME': JSON.stringify(pkg.name),
-    'process.env.PLUGIN_VERSION': JSON.stringify(pkg.version),
-  },
   build: {
-    target: 'node18',
+    target: 'node22',
     lib: {
       formats: ['es'],
       entry,
@@ -103,11 +98,10 @@ export default defineConfig({
       external: [
         ...builtinModules,
         ...builtinModules.map((mod) => `node:${mod}`),
-        ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js'].map(p => `node-karin${p}`),
+        ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js', '/template'].map(p => `node-karin${p}`),
         'playwright',
-        'sequelize',
-        'sqlite3',
-        '@karinjs/md-html'
+        '@karinjs/md-html',
+        'typeorm',
       ],
       output: {
         inlineDynamicImports: false,
@@ -147,7 +141,6 @@ export default defineConfig({
           }
         }
       },
-      cache: false,
     },
     minify: false,
     commonjsOptions: {
@@ -164,8 +157,7 @@ export default defineConfig({
     },
   },
   plugins: [
-    // dts({ rollupTypes: true }) // 生成类型声明文件
     injectDirnamePlugin(),
-    createWebConfigPlugin(),
+    createWebConfigPlugin()
   ]
 })

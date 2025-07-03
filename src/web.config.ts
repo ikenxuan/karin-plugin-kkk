@@ -770,15 +770,20 @@ export const webConfig = defineConfig({
                 color: 'warning'
               }),
               components.input.group('group_id', {
-                label: '推送群号和机器人账号',
+                label: '绑定推送群',
                 maxRows: 2,
                 data: [],
                 template: components.input.string('accordion-item-douyin:push:douyin:group_id', {
                   placeholder: '必填，不能出现空值',
                   label: '',
                   color: 'warning',
-                  description: '推送群号和机器人账号，多个则使用逗号隔开，必填。如：群号1:机器人账号1',
-                  errorMessage: '你不设置群号和Bot号，我怎么知道你要用什么推送给谁呢？'
+                  errorMessage: '你不设置群号和Bot号，我怎么知道你要用什么推送给谁呢？',
+                  rules: [
+                    {
+                      regex: /.+:.+/,
+                      error: '请使用 `群号:机器人账号` 的格式'
+                    }
+                  ],
                 })
               }),
               components.input.string('sec_uid', {
@@ -874,15 +879,20 @@ export const webConfig = defineConfig({
                 color: 'warning'
               }),
               components.input.group('group_id', {
-                label: '推送群号和机器人账号',
+                label: '绑定推送群',
                 maxRows: 2,
                 data: [],
                 template: components.input.string('accordion-item-bilibili:push:bilibili:group_id', {
                   placeholder: '必填，不能出现空值',
                   label: '',
                   color: 'warning',
-                  description: '推送群号和机器人账号，多个则使用逗号隔开，必填。如：群号1:机器人账号1',
-                  errorMessage: '你不设置群号和Bot号，我怎么知道你要用什么推送给谁呢？'
+                  errorMessage: '你不设置群号和Bot号，我怎么知道你要用什么推送给谁呢？',
+                  rules: [
+                    {
+                      regex: /.+:.+/,
+                      error: '请使用 `群号:机器人账号` 的格式'
+                    }
+                  ],
                 })
               }),
               components.input.string('remark', {
@@ -964,7 +974,7 @@ export const webConfig = defineConfig({
       mergeCfg,
       formatCfg,
       success,
-      message: success ? '保存成功 Ciallo～(∠・ω< )⌒☆' : '配置无变化，无需保存'
+      message: success ? '保存成功 Ciallo～(∠・ω< )⌒☆' : '配置无变化 Ciallo～(∠・ω< )⌒☆'
     }
   }
 })

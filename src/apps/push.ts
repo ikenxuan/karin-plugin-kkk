@@ -17,10 +17,10 @@ export const bilibiliPush = Config.bilibili.push.switch && karin.task('B站推�
 
 export const forcePush = karin.command(/#(抖音|B站)(全部)?强制推送/, async (e) => {
   if (e.msg.includes('抖音')) {
-    await new DouYinpush(e, true).action()
+    await new DouYinpush().action()
     return true
   } else if (e.msg.includes('B站')) {
-    await new Bilibilipush(e, true).action()
+    await new Bilibilipush().action()
     return true
   }
   return true
@@ -57,7 +57,7 @@ export const changeBotID = karin.command(/^#kkk设置推送机器人/, async (e)
   const newDouyinlist = Config.pushlist.douyin.map(item => {
     // 操作每个 group_id
     const modifiedGroupIds = item.group_id.map(groupId => {
-      const [group_id, uin] = groupId.split(':')
+      const [group_id] = groupId.split(':')
       return `${group_id}:${e.msg.replace(/^#kkk设置推送机器人/, '')}`
     })
     return {
@@ -68,7 +68,7 @@ export const changeBotID = karin.command(/^#kkk设置推送机器人/, async (e)
   const newBilibililist = Config.pushlist.bilibili.map(item => {
     // 操作每个 group_id
     const modifiedGroupIds = item.group_id.map(groupId => {
-      const [group_id, uin] = groupId.split(':')
+      const [group_id] = groupId.split(':')
       return `${group_id}:${e.msg.replace(/^#kkk设置推送机器人/, '')}`
     })
     return {

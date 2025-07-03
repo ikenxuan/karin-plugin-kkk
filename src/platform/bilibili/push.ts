@@ -73,27 +73,21 @@ const bilibiliBaseHeaders: downLoadFileOptions['headers'] = {
   Referer: 'https://api.bilibili.com/',
   Cookie: Config.cookies.bilibili
 }
+
 export class Bilibilipush extends Base {
   private force = false
-  /**
-   *
-   * @param e 事件对象，提供给实例使用的事件相关信息，默认为空对象{}
-   * @param force 强制执行标志，用于控制实例行为，默认false
-   * @returns
-   */
+
   constructor (e = {} as Message, force: boolean = false) {
-    super(e) // 调用父类的构造函数
-    // 判断当前bot适配器是否为'QQBot'，如果是，则直接返回true，否则继续执行
+    super(e)
     if (this.e.bot?.adapter?.name === 'QQBot') {
       e.reply('不支持QQBot，请使用其他适配器')
       return
     }
-    this.force = force // 保存传入的强制执行标志
+    this.force = force
   }
 
   /**
-   * 执行主要的操作流程，包括检查缓存并根据需要获取和更新用户数据。
-   * @returns
+   * 执行主要的操作流程
    */
   async action () {
     try {
@@ -753,7 +747,7 @@ export class Bilibilipush extends Base {
     if (!this.e.msg.includes('全部')) {
       // 获取当前群组订阅的所有UP主
       const subscriptions = await bilibiliDB.getGroupSubscriptions(currentGroupId)
-      const subscribedUids = subscriptions.map(sub => sub.get('host_mid'))
+      const subscribedUids = subscriptions.map(sub => sub.host_mid)
 
       /** 创建一个新的推送列表，只包含当前群组订阅的UP主的动态 */
       const filteredData: WillBePushList = {}
@@ -798,7 +792,7 @@ export class Bilibilipush extends Base {
 
     // 获取所有订阅UP主的信息
     for (const subscription of subscriptions) {
-      const host_mid = subscription.get('host_mid') as number
+      const host_mid = subscription.host_mid
       const userInfo = await this.amagi.getBilibiliData('用户主页数据', { host_mid, typeMode: 'strict' })
 
       renderOpt.push({

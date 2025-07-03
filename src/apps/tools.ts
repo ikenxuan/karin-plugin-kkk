@@ -6,9 +6,9 @@ import { DouYin, getDouyinID } from '@/platform/douyin'
 import { fetchKuaishouData, getKuaishouID, Kuaishou } from '@/platform/kuaishou'
 
 const reg = {
-  douyin: new RegExp('^.*((www|v|jx|m)\\.(douyin|iesdouyin)\\.com|douyin\\.com\\/(video|note)).*'),
-  bilibili: new RegExp(/(bilibili.com|b23.tv|t.bilibili.com|bili2233.cn|BV[a-zA-Z0-9]{10,})/),
-  kuaishou: new RegExp('^((.*)快手(.*)快手(.*)|(.*)v.kuaishou(.*))$')
+  douyin: /^.*((www|v|jx|m)\.(douyin|iesdouyin)\.com|douyin\.com\/(video|note)).*/,
+  bilibili: /(bilibili.com|b23.tv|t.bilibili.com|bili2233.cn|BV[a-zA-Z0-9]{10,})/,
+  kuaishou: /^((.*)快手(.*)快手(.*)|(.*)v\.kuaishou(.*))$/
 }
 const douyin = karin.command(reg.douyin, async (e) => {
   const url = String(e.msg.match(/(http|https):\/\/.*\.(douyin|iesdouyin)\.com\/[^ ]+/g))
@@ -19,7 +19,7 @@ const douyin = karin.command(reg.douyin, async (e) => {
 
 const bilibili = karin.command(reg.bilibili, async (e) => {
   e.msg = e.msg.replace(/\\/g, '') // 移除消息中的反斜杠
-  const urlRegex = /(https?:\/\/(?:www\.bilibili\.com|m\.bilibili\.com|t\.bilibili\.com|b23\.tv|bili2233\.cn)\/[a-zA-Z0-9_\-\.~:\/\?#\[\]@!$&'\(\)\*\+,;=]+)/
+  const urlRegex = /(https?:\/\/(?:www\.bilibili\.com|m\.bilibili\.com|t\.bilibili\.com|b23\.tv|bili2233\.cn)\/[a-zA-Z0-9_\-.~:/?#[\]@!$&'()*+,;=]+)/
   const bvRegex = /^BV[1-9a-zA-Z]{10}$/
   let url: string | null = null
   const urlMatch = e.msg.match(urlRegex)

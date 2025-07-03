@@ -8,6 +8,7 @@ import * as QRCode from 'qrcode'
 
 import {
   Base,
+  baseHeaders,
   Common,
   Config,
   Count,
@@ -94,7 +95,7 @@ export class DouYin extends Base {
               for (let i = 0; i < VideoData.aweme_detail.images.length; i++) {
                 image_url = VideoData.aweme_detail.images[i].url_list[2] || VideoData.aweme_detail.images[i].url_list[1] // 图片地址
 
-                const title = VideoData.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:\*\?"<>\|\r\n]/g, ' ') // 标题，去除特殊字符
+                const title = VideoData.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:*?"<>|\r\n]/g, ' ') // 标题，去除特殊字符
                 g_title = title
                 imageres.push(segment.image(image_url))
                 imagenum++
@@ -227,17 +228,23 @@ export class DouYin extends Base {
             video.bit_rate = douyinProcessVideos(video.bit_rate, Config.upload.filelimit)
             g_video_url = await new Networks({
               url: video.bit_rate[0].play_addr.url_list[2],
-              headers: this.headers
+              headers: {
+                ...this.headers,
+                Referer: video.bit_rate[0].play_addr.url_list[0]
+              }
             }).getLongLink()
           } else {
             g_video_url = await new Networks({
-              url: video.play_addr_h264.url_list[2] ?? video.play_addr_h264.url_list[2],
-              headers: this.headers
+              url: video.play_addr_h264.url_list[0] ?? video.play_addr_h264.url_list[0],
+              headers: {
+                ...this.headers,
+                Referer: video.play_addr_h264.url_list[0] ?? video.play_addr_h264.url_list[0],
+              }
             }).getLongLink()
           }
           const cover = video.origin_cover.url_list[0] // video cover image
 
-          const title = VideoData.aweme_detail.preview_title.substring(0, 80).replace(/[\\/:\*\?"<>\|\r\n]/g, ' ') // video title
+          const title = VideoData.aweme_detail.preview_title.substring(0, 80).replace(/[\\/:*?"<>|\r\n]/g, ' ') // video title
           g_title = title
           mp4size = (video.bit_rate[0].play_addr.data_size / (1024 * 1024)).toFixed(2)
           videores.push(segment.text(`标题：\n${title}`))
@@ -278,7 +285,23 @@ export class DouYin extends Base {
           }
         }
         /** 发送视频 */
-        sendvideofile && this.is_mp4 && await downloadVideo(this.e, { video_url: g_video_url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${g_title}.mp4` } })
+        sendvideofile && this.is_mp4 && await downloadVideo(
+          this.e,
+          {
+            video_url: g_video_url,
+            title: {
+              timestampTitle: `tmp_${Date.now()}.mp4`,
+              originTitle: `${g_title}.mp4`
+            },
+            headers: {
+              ...baseHeaders,
+              Referer: g_video_url
+            }
+          },
+          {
+            message_id: this.e.messageId,
+          }
+        )
         return true
       }
 
