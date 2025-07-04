@@ -1,5 +1,12 @@
 # 变更日志
 
+## [1.7.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.12...v1.7.0) (2025-07-04)
+
+
+### Features
+
+* migrate from Sequelize to TypeORM for database operations ([#108](https://github.com/ikenxuan/karin-plugin-kkk/issues/108)) ([75ee71f](https://github.com/ikenxuan/karin-plugin-kkk/commit/75ee71f65e431f8d2e304129eccb0441e51eadf7))
+
 ## [1.6.12](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.11...v1.6.12) (2025-06-15)
 
 
