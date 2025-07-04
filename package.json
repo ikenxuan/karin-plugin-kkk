@@ -45,7 +45,7 @@
     "typeorm": "^0.3.24"
   },
   "devDependencies": {
-    "@ikenxuan/amagi": "^4.4.19",
+    "@ikenxuan/amagi": "^4.5.0",
     "@karinjs/plugin-puppeteer": "^1.0.17",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
