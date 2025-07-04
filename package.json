@@ -32,17 +32,17 @@
     "app": "node --import tsx src/app.ts",
     "build": "tsc && vite build",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts",
-    "fix": "eslint src/**/*.ts --fix",
+    "fix": "npx eslint . -c eslint.config.js --fix",
     "init": "karin init",
     "pub": "npm publish --access public",
-    "sort": "npx sort-package-json",
+    "sort": "sort-package-json",
     "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" src/app.ts"
   },
   "dependencies": {
     "@karinjs/md-html": "^1.3.0",
     "playwright": "^1.51.1",
-    "sequelize": "6.37.3"
+    "typeorm": "^0.3.24"
   },
   "engines": {
     "node": ">=21.0.0",
