@@ -290,8 +290,7 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
       if (options.useGroupFile) { // 是群文件
         const bot = karin.getBot(String(options.activeOption?.uin))!
         logger.mark(`${logger.blue('主动消息:')} 视频大小: ${newFileSize.toFixed(1)}MB 正在通过${logger.yellow('bot.uploadFile')}回复...`)
-        const status = await bot.uploadFile(contact, File, file.originTitle ? `${file.originTitle}.mp4` : `${File.split('/').pop()}`)
-        status ? sendStatus = true : sendStatus = false
+        await bot.uploadFile(contact, File, file.originTitle ? `${file.originTitle}.mp4` : `${File.split('/').pop()}`)
       } else { // 不是群文件
         logger.mark(`${logger.blue('主动消息:')} 视频大小: ${newFileSize.toFixed(1)}MB 正在通过${logger.yellow('karin.sendMsg')}回复...`)
         const status = await karin.sendMsg(selfId, contact, [segment.video(File)])
@@ -300,8 +299,7 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
     } else { // 不是主动消息
       if (options?.useGroupFile) { // 是文件
         logger.mark(`${logger.blue('被动消息:')} 视频大小: ${newFileSize.toFixed(1)}MB 正在通过${logger.yellow('e.bot.uploadFile')}回复...`)
-        const status = await event.bot.uploadFile(event.contact, File, file.originTitle ? `${file.originTitle}.mp4` : `${File.split('/').pop()}`)
-        status ? sendStatus = true : sendStatus = false
+        await event.bot.uploadFile(event.contact, File, file.originTitle ? `${file.originTitle}.mp4` : `${File.split('/').pop()}`)
       } else { // 不是文件
         logger.mark(`${logger.blue('被动消息:')} 视频大小: ${newFileSize.toFixed(1)}MB 正在通过${logger.yellow('e.reply')}回复...`)
         const status = await event.reply(segment.video(File) || videoUrl)
