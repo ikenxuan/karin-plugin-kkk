@@ -78,7 +78,7 @@ export class DouYin extends Base {
           number: Config.douyin.numcomment,
           typeMode: 'strict'
         })
-        this.is_slides = VideoData.data.data.aweme_detail.is_slides === true
+        this.is_slides = VideoData.data.aweme_detail.is_slides === true
         let g_video_url = ''
         let g_title
 

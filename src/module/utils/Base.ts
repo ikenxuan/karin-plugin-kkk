@@ -106,7 +106,7 @@ export class Base {
             }
 
             // 检查抖音数据返回结构
-            if (prop === 'getDouyinData' && (result.status_code !== 0)) {
+            if (prop === 'getDouyinData' && (result.code !== 200)) {
               const err = result as ApiResponse<APIErrorType<'douyin'>>
               const img = await Render('apiError/index', err.data)
               // 如果e为空对象才执行发送给主人
