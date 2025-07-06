@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import Client, { amagiClient, type APIErrorType, bilibiliErrorCodeMap } from '@ikenxuan/amagi'
+import Client, { type APIErrorType, bilibiliErrorCodeMap } from '@ikenxuan/amagi/v5'
 import karin, { config, type Contact, logger, Message, segment } from 'node-karin'
 import type { AxiosHeaders, Method, RawAxiosRequestHeaders } from 'node-karin/axios'
 
@@ -84,7 +84,7 @@ export class Base {
   e: Message
   headers: any
   _path: string
-  amagi: amagiClient
+  amagi: ReturnType<typeof Client>
   constructor (e: Message) {
     this.e = e
     this.headers = baseHeaders
@@ -93,7 +93,7 @@ export class Base {
 
     // 使用Proxy包装amagi客户端
     this.amagi = new Proxy(client, {
-      get (target: amagiClient, prop: keyof amagiClient) {
+      get (target: ReturnType<typeof Client>, prop: keyof ReturnType<typeof Client>) {
         const method = target[prop]
         if (typeof method === 'function') {
           return async (...args: any[]) => {

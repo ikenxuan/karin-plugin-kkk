@@ -9,6 +9,7 @@ import type {
   BiliVideoPlayurlIsLogin
 } from '@ikenxuan/amagi'
 import { bilibiliApiUrls, getBilibiliData } from '@ikenxuan/amagi'
+import { ApiResponse } from '@ikenxuan/amagi/v5'
 import karin,
 {
   common,
@@ -77,7 +78,7 @@ export class Bilibili extends Base {
           avid: infoData.data.aid,
           cid: iddata.p ? (infoData.data.pages[iddata.p - 1]?.cid ?? infoData.data.cid) : infoData.data.cid,
           typeMode: 'strict'
-        }) as BiliVideoPlayurlIsLogin
+        }) as ApiResponse<BiliVideoPlayurlIsLogin>
         // const playUrl = bilibiliApiUrls.视频流信息({ avid: infoData.data.aid, cid: infoData.data.cid })
         this.islogin = (await checkCk()).Status === 'isLogin'
         const commentsData = await this.amagi.getBilibiliData('评论数据', {
@@ -99,7 +100,7 @@ export class Bilibili extends Base {
             cid: iddata.p ? (infoData.data.pages[iddata.p - 1]?.cid ?? infoData.data.cid) : infoData.data.cid
           }) + '&platform=html5',
           headers: this.headers
-        }).getData() as BiliBiliVideoPlayurlNoLogin
+        }).getData() as ApiResponse<BiliBiliVideoPlayurlNoLogin>
 
         // 构建回复内容数组
         const replyContent: SendMessage = []
@@ -176,7 +177,12 @@ export class Bilibili extends Base {
 
         if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) && !Config.upload.compress) {
           await this.e.reply(`设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n` + '视频太大了，还是去B站看吧~', { reply: true })
-        } else await this.getvideo(Config.bilibili.videopriority === true ? { playUrlData: nockData } : { infoData, playUrlData })
+        } else {
+          await this.getvideo(
+            Config.bilibili.videopriority === true
+              ? { playUrlData: nockData.data }
+              : { infoData: infoData.data, playUrlData: playUrlData.data })
+        }
         break
       }
       case 'bangumi_video_info': {
@@ -186,11 +192,11 @@ export class Bilibili extends Base {
 
         const barray = []
         const msg = []
-        for (let i = 0; i < videoInfo.result.episodes.length; i++) {
-          const totalEpisodes = videoInfo.result.episodes.length
-          const long_title = videoInfo.result.episodes[i].long_title
-          const badge = videoInfo.result.episodes[i].badge
-          const short_link = videoInfo.result.episodes[i].short_link
+        for (let i = 0; i < videoInfo.data.result.episodes.length; i++) {
+          const totalEpisodes = videoInfo.data.result.episodes.length
+          const long_title = videoInfo.data.result.episodes[i].long_title
+          const badge = videoInfo.data.result.episodes[i].badge
+          const short_link = videoInfo.data.result.episodes[i].short_link
           barray.push({
             id: i + 1,
             totalEpisodes,
@@ -209,7 +215,7 @@ export class Bilibili extends Base {
         img = await Render('bilibili/bangumi', {
           saveId: 'bangumi',
           bangumiData: barray,
-          title: videoInfo.result.title
+          title: videoInfo.data.result.title
         })
         await this.e.reply([...img, segment.text('请在120秒内输入 第?集 选择集数')])
         await this.e.reply(segment.text('请在120秒内输入 第?集 选择集数'))
@@ -222,7 +228,7 @@ export class Bilibili extends Base {
           if (/^[一二三四五六七八九十百千万]+$/.test(Episode)) {
             Episode = Common.chineseToArabic(Episode).toString()
           }
-          this.downloadfilename = videoInfo.result.episodes[Number(Episode) - 1].share_copy.substring(0, 50).replace(/[\\/:*?"<>|\r\n\s]/g, ' ')
+          this.downloadfilename = videoInfo.data.result.episodes[Number(Episode) - 1].share_copy.substring(0, 50).replace(/[\\/:*?"<>|\r\n\s]/g, ' ')
           this.e.reply(`收到请求，第${Episode}集\n${this.downloadfilename}\n正在下载中`)
         } else {
           logger.debug(Episode)
@@ -230,8 +236,8 @@ export class Bilibili extends Base {
           return true
         }
         const bangumidataBASEURL = bilibiliApiUrls.番剧视频流信息({
-          cid: videoInfo.result.episodes[Number(Episode) - 1].cid,
-          ep_id: videoInfo.result.episodes[Number(Episode) - 1].ep_id.toString()
+          cid: videoInfo.data.result.episodes[Number(Episode) - 1].cid,
+          ep_id: videoInfo.data.result.episodes[Number(Episode) - 1].ep_id.toString()
         })
         const Params = await genParams(bangumidataBASEURL)
         if (!this.islogin) await this.e.reply('B站ck未配置或已失效，无法获取视频流，可尝试【#B站登录】以配置新ck')
@@ -239,7 +245,7 @@ export class Bilibili extends Base {
           url: bangumidataBASEURL + Params,
           headers: this.headers
         }).getData()
-        if (videoInfo.result.episodes[Number(Episode) - 1].badge === '会员' && !this.isVIP) {
+        if (videoInfo.data.result.episodes[Number(Episode) - 1].badge === '会员' && !this.isVIP) {
           logger.warn('该CK不是大会员，无法获取视频流')
           return true
         }
@@ -255,17 +261,17 @@ export class Bilibili extends Base {
           /** 给视频信息对象删除不符合条件的视频流 */
           const correctList = await bilibiliProcessVideos({
             accept_description: playUrlData.result.accept_description,
-            bvid: videoInfo.result.season_id.toString()
+            bvid: videoInfo.data.result.season_id.toString()
           }, simplify, playUrlData.result.dash.audio[0].base_url)
           playUrlData.result.dash.video = correctList.videoList
           playUrlData.result.cept_description = correctList.accept_description
           await this.getvideo({
-            infoData: videoInfo,
+            infoData: videoInfo.data,
             playUrlData
           })
         } else {
           await this.getvideo({
-            infoData: videoInfo,
+            infoData: videoInfo.data,
             playUrlData
           })
         }

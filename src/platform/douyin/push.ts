@@ -267,15 +267,15 @@ export class DouYinpush extends Base {
         if (targets.length === 0) continue
 
         // 处理视频列表
-        if (videolist.aweme_list.length > 0) {
-          for (const aweme of videolist.aweme_list) {
+        if (videolist.data.aweme_list.length > 0) {
+          for (const aweme of videolist.data.aweme_list) {
             const now = Date.now()
             const createTime = aweme.create_time * 1000
             const timeDifference = now - createTime // 时间差，单位毫秒
             const is_top = aweme.is_top === 1 // 是否为置顶
             let shouldPush = false
 
-            logger.debug(`前期获取该动态基本信息：\n动态ID：${aweme.aweme_id}\n发布时间：${Common.convertTimestampToDateTime(aweme.create_time)}\n发布时间戳（s）：${aweme.create_time}\n时间差（ms）：${timeDifference}\n是否置顶：${is_top}\n是否处于开播：${userinfo.user.live_status === 1 ? logger.green('true') : logger.red('false')}是否在一天内：${timeDifference < 86400000 ? logger.green('true') : logger.red('false')}`)
+            logger.debug(`前期获取该动态基本信息：\n动态ID：${aweme.aweme_id}\n发布时间：${Common.convertTimestampToDateTime(aweme.create_time)}\n发布时间戳（s）：${aweme.create_time}\n时间差（ms）：${timeDifference}\n是否置顶：${is_top}\n是否处于开播：${userinfo.data.user.live_status === 1 ? logger.green('true') : logger.red('false')}是否在一天内：${timeDifference < 86400000 ? logger.green('true') : logger.red('false')}`)
 
             // 判断是否需要推送
             if ((is_top && timeDifference < 86400000) || (timeDifference < 86400000 && !is_top)) {
@@ -297,7 +297,7 @@ export class DouYinpush extends Base {
                   ...aweme,
                   user_info: userinfo
                 },
-                avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.user.avatar_larger.uri,
+                avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.data.user.avatar_larger.uri,
                 living: false
               }
             }
@@ -307,8 +307,8 @@ export class DouYinpush extends Base {
         /** 获取缓存的直播状态 */
         const liveStatus = await douyinDB.getLiveStatus(sec_uid)
 
-        if (userinfo.user.live_status === 1) {
-          const liveInfo = await this.amagi.getDouyinData('直播间信息数据', { sec_uid: userinfo.user.sec_uid, typeMode: 'strict' })
+        if (userinfo.data.user.live_status === 1) {
+          const liveInfo = await this.amagi.getDouyinData('直播间信息数据', { sec_uid: userinfo.data.user.sec_uid, typeMode: 'strict' })
 
           // 如果之前没有直播，现在开播了，需要推送
           if (!liveStatus.living) {
@@ -319,7 +319,7 @@ export class DouYinpush extends Base {
               targets,
               Detail_Data: {
                 user_info: userinfo,
-                room_data: JSON.parse(userinfo.user.room_data),
+                room_data: JSON.parse(userinfo.data.user.room_data),
                 live_data: liveInfo,
                 liveStatus: {
                   liveStatus: 'open',
@@ -327,7 +327,7 @@ export class DouYinpush extends Base {
                   isliving: true
                 }
               },
-              avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.user.avatar_larger.uri,
+              avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.data.user.avatar_larger.uri,
               living: true
             }
           }
@@ -400,7 +400,7 @@ export class DouYinpush extends Base {
 
       /** 处理抖音号 */
       let user_shortid
-      UserInfoData.user.unique_id === '' ? (user_shortid = UserInfoData.user.short_id) : (user_shortid = UserInfoData.user.unique_id)
+      UserInfoData.data.user.unique_id === '' ? (user_shortid = UserInfoData.data.user.short_id) : (user_shortid = UserInfoData.data.user.unique_id)
 
       // 初始化 douyin 数组
       config.douyin ??= []
@@ -437,8 +437,8 @@ export class DouYinpush extends Base {
             await douyinDB.unsubscribeDouyinUser(groupId, sec_uid)
           }
 
-          logger.info(`\n删除成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.user.sec_uid}`)
-          await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n删除成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`)
+          logger.info(`\n删除成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.data.user.sec_uid}`)
+          await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n删除成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}`)
 
           // 如果删除后 group_id 数组为空，则删除整个属性
           if (existingItem.group_id.length === 0) {
@@ -451,12 +451,12 @@ export class DouYinpush extends Base {
 
           // 同时在数据库中添加订阅
           if (!isSubscribed) {
-            await douyinDB.subscribeDouyinUser(groupId, botId, sec_uid, user_shortid, UserInfoData.user.nickname)
+            await douyinDB.subscribeDouyinUser(groupId, botId, sec_uid, user_shortid, UserInfoData.data.user.nickname)
           }
 
-          await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`)
+          await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}`)
           if (Config.douyin.push.switch === false) await this.e.reply('请发送「#kkk设置抖音推送开启」以进行推送')
-          logger.info(`\n设置成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.user.sec_uid}`)
+          logger.info(`\n设置成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.data.user.sec_uid}`)
         }
       } else {
         // 如果不存在相同的 sec_uid，则新增一个属性
@@ -464,18 +464,18 @@ export class DouYinpush extends Base {
           switch: true,
           sec_uid,
           group_id: [`${groupId}:${botId}`],
-          remark: UserInfoData.user.nickname,
+          remark: UserInfoData.data.user.nickname,
           short_id: user_shortid
         })
 
         // 同时在数据库中添加订阅
         if (!isSubscribed) {
-          await douyinDB.subscribeDouyinUser(groupId, botId, sec_uid, user_shortid, UserInfoData.user.nickname)
+          await douyinDB.subscribeDouyinUser(groupId, botId, sec_uid, user_shortid, UserInfoData.data.user.nickname)
         }
 
-        await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}`)
+        await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}`)
         if (Config.douyin.push.switch === false) await this.e.reply('请发送「#kkk设置抖音推送开启」以进行推送')
-        logger.info(`\n设置成功！${UserInfoData.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.user.sec_uid}`)
+        logger.info(`\n设置成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.data.user.sec_uid}`)
       }
 
       // 保存配置到文件
@@ -508,12 +508,12 @@ export class DouYinpush extends Base {
       const userInfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
 
       renderOpt.push({
-        avatar_img: userInfo.user.avatar_larger.url_list[0],
-        username: userInfo.user.nickname,
-        short_id: userInfo.user.unique_id === '' ? userInfo.user.short_id : userInfo.user.unique_id,
-        fans: this.count(userInfo.user.follower_count),
-        total_favorited: this.count(userInfo.user.total_favorited),
-        following_count: this.count(userInfo.user.following_count)
+        avatar_img: userInfo.data.user.avatar_larger.url_list[0],
+        username: userInfo.data.user.nickname,
+        short_id: userInfo.data.user.unique_id === '' ? userInfo.data.user.short_id : userInfo.data.user.unique_id,
+        fans: this.count(userInfo.data.user.follower_count),
+        total_favorited: this.count(userInfo.data.user.total_favorited),
+        following_count: this.count(userInfo.data.user.following_count)
       })
     }
     const img = await Render('douyin/userlist', { renderOpt })
@@ -584,7 +584,7 @@ export class DouYinpush extends Base {
       for (const i of updateList) {
         // 从外部数据源获取用户备注信息
         const userinfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid: i.sec_uid, typeMode: 'strict' })
-        const remark = userinfo.user.nickname
+        const remark = userinfo.data.user.nickname
 
         // 在配置文件中找到对应的用户，并更新其备注信息
         const matchingItemIndex = config.douyin.findIndex((item: { sec_uid: string }) => item.sec_uid === i.sec_uid)

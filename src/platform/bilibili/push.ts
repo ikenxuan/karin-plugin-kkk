@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 
 import { BiliUserProfile, BiliVideoPlayurlIsLogin, getBilibiliData } from '@ikenxuan/amagi'
+import { ApiResponse } from '@ikenxuan/amagi/v5'
 import type {
   AdapterType,
   ImageElement,
@@ -136,8 +137,8 @@ export class Bilibilipush extends Base {
 
       if (!skip) {
         const userINFO = await this.amagi.getBilibiliData('用户主页数据', { host_mid: data[dynamicId].host_mid, typeMode: 'strict' })
-        let emojiDATA = await this.amagi.getBilibiliData('Emoji数据')
-        emojiDATA = extractEmojisData(emojiDATA.data.packages)
+        let emojiDATA = await this.amagi.getBilibiliData('Emoji数据') as any
+        emojiDATA = extractEmojisData(emojiDATA.data.data.packages)
 
         logger.debug(`UP: ${data[dynamicId].remark}\n动态id：${dynamicId}\nhttps://t.bilibili.com/${dynamicId}`)
         switch (data[dynamicId].dynamic_type) {
@@ -385,7 +386,7 @@ export class Bilibilipush extends Base {
                     avid: dycrad.aid,
                     cid: dycrad.cid,
                     typeMode: 'strict'
-                  }) as BiliVideoPlayurlIsLogin
+                  }) as ApiResponse<BiliVideoPlayurlIsLogin>
                   /** 提取出视频流信息对象，并排除清晰度重复的视频流 */
                   const simplify = playUrlData.data.dash.video.filter((item: { id: number }, index: any, self: any[]) => {
                     return self.findIndex((t: { id: any }) => {
