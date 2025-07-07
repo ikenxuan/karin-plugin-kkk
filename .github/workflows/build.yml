@@ -476,8 +476,7 @@ jobs:
             ### ⏰ 时间信息
             - **📦 打包时间:** `${{ steps.publish_pkg.outputs.pack_time }} (CST)`
             - **🔄 评论更新:** `${{ steps.publish_pkg.outputs.pack_time }} (CST)`
-            - **⚡ 构建序号:** #${{ github.run_number }}
-            - **🔄 评论耗时:** 约 ${{ github.event.pull_request.updated_at && github.event.pull_request.created_at && format('{0}', (github.run_number * 30)) || '未知' }} 秒
+            - **⚡ 构建耗时:** 约 ${{ github.run_number }} 分钟
             
             ### 🛠️ 环境信息
             - **Node.js:** `21.x`
