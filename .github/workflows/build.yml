@@ -1,4 +1,4 @@
-name: 构建与发布流水线
+name: CI/CD
 
 on:
   workflow_dispatch:
@@ -312,7 +312,7 @@ jobs:
       - name: 📦 配置 PNPM 环境
         uses: pnpm/action-setup@v4
         with:
-          version: 9.13.2
+          version: 9.7.1
 
       - name: ⏳ 等待构建分支同步完成
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -374,6 +374,9 @@ jobs:
       - name: 🚀 发布预览包
         id: publish_pkg
         run: |
+          # 记录开始时间
+          START_TIME=$(date +%s)
+          
           pnpm dlx pkg-pr-new publish --json output.json --comment=update --compact --packageManager=pnpm > pkg-output.txt 2>&1
           echo "命令输出内容："
           cat pkg-output.txt
@@ -389,6 +392,60 @@ jobs:
           
           echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
           echo "install_url=$ACTUAL_INSTALL_URL" >> $GITHUB_OUTPUT
+          
+          # 生成简化的安装URL
+          REPO_NAME="${{ github.event.repository.name }}"
+          SIMPLIFIED_URL="https://pkg.pr.new/${REPO_NAME}@${{ env.SHORT_COMMIT_HASH }}"
+          echo "simplified_url=$SIMPLIFIED_URL" >> $GITHUB_OUTPUT
+          
+          # 获取 Stackblitz URL
+          STACKBLITZ_URL=""
+          if [ -f "output.json" ]; then
+            STACKBLITZ_URL=$(node -p "try { const data = require('./output.json'); data.templates && data.templates[0] ? data.templates[0].url : ''; } catch(e) { ''; }" || echo "")
+          fi
+          echo "stackblitz_url=$STACKBLITZ_URL" >> $GITHUB_OUTPUT
+          
+          # 计算时间（转换为 CST 时区）
+          PACK_TIME=$(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S')
+          echo "pack_time=$PACK_TIME" >> $GITHUB_OUTPUT
+          
+          # 计算当前时间戳（用于计算时间差）
+          CURRENT_TIMESTAMP=$(date +%s)
+          echo "current_timestamp=$CURRENT_TIMESTAMP" >> $GITHUB_OUTPUT
+          
+          # 计算构建耗时
+          END_TIME=$(date +%s)
+          BUILD_DURATION=$((END_TIME - START_TIME))
+          BUILD_DURATION_MIN=$((BUILD_DURATION / 60))
+          BUILD_DURATION_SEC=$((BUILD_DURATION % 60))
+          if [ $BUILD_DURATION_MIN -gt 0 ]; then
+            DURATION_TEXT="${BUILD_DURATION_MIN}分${BUILD_DURATION_SEC}秒"
+          else
+            DURATION_TEXT="${BUILD_DURATION_SEC}秒"
+          fi
+          echo "build_duration=$DURATION_TEXT" >> $GITHUB_OUTPUT
+          
+          # 获取准确的 Node.js 版本
+          NODE_VERSION=$(node --version)
+          echo "node_version=$NODE_VERSION" >> $GITHUB_OUTPUT
+          
+          # 获取准确的 PNPM 版本
+          PNPM_VERSION=$(pnpm --version)
+          echo "pnpm_version=$PNPM_VERSION" >> $GITHUB_OUTPUT
+          
+          # 获取提交信息
+          COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')
+          COMMIT_AUTHOR=$(git log -1 --pretty=format:'%an')
+          echo "commit_message=$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
+          echo "commit_author=$COMMIT_AUTHOR" >> $GITHUB_OUTPUT
+          
+          # 获取文件变更统计
+          FILES_CHANGED=$(git diff --name-only HEAD~1 HEAD | wc -l)
+          LINES_ADDED=$(git diff --numstat HEAD~1 HEAD | awk '{added += $1} END {print added+0}')
+          LINES_DELETED=$(git diff --numstat HEAD~1 HEAD | awk '{deleted += $2} END {print deleted+0}')
+          echo "files_changed=$FILES_CHANGED" >> $GITHUB_OUTPUT
+          echo "lines_added=$LINES_ADDED" >> $GITHUB_OUTPUT
+          echo "lines_deleted=$LINES_DELETED" >> $GITHUB_OUTPUT
           
           echo "## 📦 预览包发布成功" >> $GITHUB_STEP_SUMMARY
           echo "版本号: \`${{ env.PKG_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
@@ -406,116 +463,76 @@ jobs:
 
       - name: 💬 更新 PR 评论
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v6
+        uses: thollander/actions-comment-pull-request@v3
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
+          message: |
+            ## 📦 预览包发布成功 
             
-            let sha;
-            try {
-              sha = context.payload.pull_request.head.sha;
-            } catch (error) {
-              console.log('无法获取提交哈希，使用环境变量中的值');
-            }
+            ### 🏷️ 包信息
+            - **版本号:** `${{ env.PKG_VERSION }}`
+            - **提交哈希:** [`${{ env.SHORT_COMMIT_HASH }}`](${{ env.REPO_URL }})
+            - **分支:** `${{ github.head_ref || github.ref_name }}`
             
-            const shortSha = sha ? sha.substring(0, 7) : '${{ env.SHORT_COMMIT_HASH }}';
-            const commitUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            ### 📥 安装方式
+            ```bash
+            # 推荐使用 pnpm 安装
+            pnpm add ${{ steps.publish_pkg.outputs.simplified_url }} -w
+            ```
             
-            let installUrl = '';
-            try {
-              const output = JSON.parse(fs.readFileSync('output.json', 'utf8'));
-              for (const pkg of output.packages) {
-                installUrl = pkg.url; 
-                break;
-              }
-            } catch (error) {
-               console.error('无法读取或解析 output.json:', error);
-               installUrl = '无法获取安装 URL';
-            }
+            ### 🚀 快速体验
+            ${{ steps.publish_pkg.outputs.stackblitz_url && format('- [🌐 在 Stackblitz 中打开]({0})', steps.publish_pkg.outputs.stackblitz_url) || '- 🌐 Stackblitz 链接暂不可用' }}
+            - [📋 查看构建日志](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            - [🔍 查看提交详情](${{ env.REPO_URL }})
             
-            const repoName = context.repo.repo;
-            const simplifiedUrl = `https://pkg.pr.new/${repoName}@${shortSha}`;
+            ### 📊 本次变更
+            - **提交信息:** ${{ steps.publish_pkg.outputs.commit_message }}
+            - **提交作者:** ${{ steps.publish_pkg.outputs.commit_author }}
+            - **文件变更:** ${{ steps.publish_pkg.outputs.files_changed }} 个文件
+            - **代码变更:** +${{ steps.publish_pkg.outputs.lines_added }} -${{ steps.publish_pkg.outputs.lines_deleted }} 行
             
-            let stackblitzUrl = '';
-            try {
-              const output = JSON.parse(fs.readFileSync('output.json', 'utf8'));
-              for (const template of output.templates) {
-                stackblitzUrl = template.url;
-                break;
-              }
-            } catch (error) {
-               console.error('无法读取或解析 output.json 获取 Stackblitz URL:', error);
-            }
+            ### ⏰ 时间信息
+            - **📦 打包时间:** `${{ steps.publish_pkg.outputs.pack_time }} (CST)`
+            - **🔄 评论更新:** `${{ steps.publish_pkg.outputs.pack_time }} (CST)`
+            - **⚡ 构建耗时:** ${{ steps.publish_pkg.outputs.build_duration }}
             
-            const now = new Date();
-            now.setHours(now.getHours() + 8);
-            const cstTime = now.toISOString().replace('T', ' ').substring(0, 19);
+            ### 🛠️ 环境信息
+            - **Node.js:** `${{ steps.publish_pkg.outputs.node_version }}`
+            - **PNPM:** `${{ steps.publish_pkg.outputs.pnpm_version }}`
+            - **构建平台:** `ubuntu-latest`
+            - **工作流:** `${{ github.workflow }}`
             
-            const body = `## Published Packages :package:
+            ---
             
-            version: \`${process.env.PKG_VERSION}\`
+            <details>
+            <summary>🔧 高级选项</summary>
             
-            ${stackblitzUrl ? `[Open in Stackblitz](${stackblitzUrl})` : ''}
+            #### 📋 完整安装 URL
+            ```
+            ${{ steps.publish_pkg.outputs.install_url }}
+            ```
             
-            use pnpm:
-            \`\`\`
-            pnpm add ${simplifiedUrl || '无法获取安装 URL'} -w 
-            \`\`\`
+            #### 🏃‍♂️ 快速测试命令
+            ```bash
+            # 创建测试目录
+            mkdir test-${{ env.SHORT_COMMIT_HASH }}
+            cd test-${{ env.SHORT_COMMIT_HASH }}
             
-            pack time: <code>${cstTime} (CST)</code>`;
+            # 初始化项目
+            npm init -y
             
-            const botCommentIdentifier = '## Published Packages';
+            # 安装预览包
+            pnpm add ${{ steps.publish_pkg.outputs.simplified_url }}
             
-            async function findBotComments(issueNumber) {
-              if (!issueNumber) return [];
-              const comments = await github.rest.issues.listComments({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issueNumber,
-              });
-              return comments.data.filter((comment) =>
-                comment.body.includes(botCommentIdentifier)
-              );
-            }
+            # 测试导入
+            node -e "console.log(require('${{ github.event.repository.name }}'))"
+            ```
             
-            async function createOrUpdateComment(issueNumber) {
-              if (!issueNumber) {
-                console.log('No issue number provided. Cannot post or update comment.');
-                return;
-              }
-              
-              const botComments = await findBotComments(issueNumber);
-              
-              const newComment = await github.rest.issues.createComment({
-                issue_number: issueNumber,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: body,
-              });
-              console.log(`创建了新评论 ID: ${newComment.data.id}`);
-              
-              if (botComments.length >= 3) {
-                const commentsToDelete = botComments
-                  .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-                  .slice(0, botComments.length - 2);
-                
-                for (const comment of commentsToDelete) {
-                  await github.rest.issues.deleteComment({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    comment_id: comment.id
-                  });
-                  console.log(`删除了旧评论 ID: ${comment.id}`);
-                }
-              }
-            }
+            </details>
             
-            if (context.issue.number) {
-              await createOrUpdateComment(context.issue.number);
-            } else {
-              console.log('No issue number found. Cannot post comment.');
-            }
+            > 💡 **提示:** 此评论会在每次推送新提交时自动更新，包含最新的构建信息
+          comment-tag: published-packages
+          mode: upsert
+          reactions: rocket, eyes, hooray
 
       - name: 上传NPM包信息
         uses: actions/upload-artifact@v4
