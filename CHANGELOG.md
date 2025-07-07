@@ -1,5 +1,12 @@
 # 变更日志
 
+## [1.7.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.7.2...v1.7.3) (2025-07-07)
+
+
+### 🐛 错误修复
+
+* **douyin:** 修复直播推送中live_data的数据结构问题并更新amagi依赖 ([7d4023f](https://github.com/ikenxuan/karin-plugin-kkk/commit/7d4023fcf41bb7e9613f4c56a5fe032ccd591975))
+
 ## [1.7.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.7.1...v1.7.2) (2025-07-07)
 
 
