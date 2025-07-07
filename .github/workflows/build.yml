@@ -1,56 +1,109 @@
-name: release
+name: 发布发行版
+
 on:
+  workflow_dispatch:
   push:
-    # 监听 main 分支的 push 事件
     branches:
       - main
-# 赋予 release-please-action 权限
+
 permissions:
   contents: write
+  id-token: write
+  packages: write
   pull-requests: write
+
 jobs:
-  # 设置 release-please 任务
-  release-please:
-    # 设置任务运行环境为 ubuntu-latest
+  release:
     runs-on: ubuntu-latest
+    outputs:
+      releases_created: ${{ steps.release-please.outputs.releases_created }}
+
     steps:
-      # 使用 release-please-action 动作来自动创建发布 PR
-      - uses: googleapis/release-please-action@v4
-        id: release
+      - name: 运行 release-please-action
+        id: release-please
+        uses: googleapis/release-please-action@v4
         with:
-          # 设置发布类型为 node
-          release-type: node
-          # 添加以下配置，使 refactor 类型提交也能触发版本更新
-          release-as: patch
-      # 检出代码
-      - uses: actions/checkout@v4
-        if: ${{ steps.release.outputs.release_created }}
-      # 设置 Node.js 环境
-      - uses: actions/setup-node@v4
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: .release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  build:
+    needs: release
+    if: needs.release.outputs.releases_created == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      package_name: ${{ steps.get-package-name.outputs.name }}
+      package_short_name: ${{ steps.get-package-name.outputs.PACKAGE_SHORT_NAME }}
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
         with:
-          # 设置 Node.js 版本
-          node-version: 20
-          # 设置 npm 源
-          registry-url: "https://registry.npmjs.org"
-      # 安装依赖
-      - run: npm install
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.RELEASE }}
-        if: ${{ steps.release.outputs.release_created }}
-      # 构建输出
-      - run: npm run build
-        if: ${{ steps.release.outputs.release_created }}
-      # 删除开发依赖
-      - run: npm pkg delete devDependencies
-        if: ${{ steps.release.outputs.release_created }}
-      # 发布到 npm
-      - run: npm run pub
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        if: ${{ steps.release.outputs.release_created }}
-      # 同步淘宝源
-      - run: npm run sync
-        if: ${{ steps.release.outputs.release_created }}
+          ref: main
+          fetch-depth: 0
+
+      - name: 设置 pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.13.2
+          run_install: |
+            - args: [--no-frozen-lockfile]
+
+      - name: 获取包名
+        id: get-package-name
+        run: |
+          PACKAGE_NAME=$(pnpm pkg get name | tr -d '"')
+          PACKAGE_SHORT_NAME=$(pnpm pkg get name | tr -d '"' | awk -F'/' '{print $2}')
+          echo "PACKAGE_SHORT_NAME=$PACKAGE_SHORT_NAME" >> $GITHUB_OUTPUT
+          echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+
+      - name: 构建
+        id: build-package
+        run: |
+          pnpm build
+          pnpm pkg delete devDependencies
+          mkdir -p ${{ runner.temp }}/temp/
+          cp -r package.json README.md CHANGELOG.md dist ${{ runner.temp }}/temp/
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.get-package-name.outputs.PACKAGE_SHORT_NAME }}
+          path: ${{ runner.temp }}/temp/
+
+  publish-to-npm:
+    runs-on: ubuntu-latest
+    needs: [release, build]
+    steps:
+      - name: 导入构建产物
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.package_short_name }}
+          path: ./
+
+      - name: 发布到 NPM
+        id: publish-to-npm
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          registry: https://registry.npmjs.org/
+          access: public
+          provenance: true
+
+      - name: 生成发布摘要
+        run: |
+          echo "## 发布信息 :" >> $GITHUB_STEP_SUMMARY
+          echo "包名: \`${{ steps.publish-to-npm.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "版本号: \`${{ steps.publish-to-npm.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+
+  syncn:
+    runs-on: ubuntu-latest
+    needs:
+      [publish-to-npm]
+    steps:
+      - name: 同步镜像源
+        run: |
+          curl -X PUT "https://registry-direct.npmmirror.com/-/package/@ikenxuan/amagi/syncs"
+
   
   sync-build:
     needs: release-please
