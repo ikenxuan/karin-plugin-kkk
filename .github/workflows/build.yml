@@ -1,5 +1,5 @@
 name: CI/CD
- 
+
 on:
   workflow_dispatch:
   push:
@@ -26,7 +26,7 @@ jobs:
         id: release-please
         uses: googleapis/release-please-action@v4
         with:
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
 
