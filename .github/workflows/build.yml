@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    types: [opened, reopened, synchronize]
 
 permissions:
   contents: write
@@ -62,7 +64,7 @@ jobs:
           pnpm build
           pnpm pkg delete devDependencies
           mkdir -p ${{ runner.temp }}/temp/
-          cp -r package.json README.md CHANGELOG.md dist ${{ runner.temp }}/temp/
+          cp -r package.json README.md CHANGELOG.md lib ${{ runner.temp }}/temp/
 
       - name: 上传构建产物
         uses: actions/upload-artifact@v4
@@ -102,10 +104,14 @@ jobs:
     steps:
       - name: 同步镜像源
         run: |
-          curl -X PUT "https://registry-direct.npmmirror.com/-/package/@ikenxuan/amagi/syncs"
+          curl -X PUT "https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs"
 
-  sync-build:
+  sync-build-branch:
     runs-on: ubuntu-latest
+
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    outputs:
+      build_completed: ${{ steps.build-success.outputs.completed }}
     
     steps:
       - name: 检出代码
@@ -135,6 +141,16 @@ jobs:
           cp -r package.json CHANGELOG.md README.md LICENSE resources config lib ${{ runner.temp }}/temp/
           echo "文件已复制到临时目录"
 
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: sync-build-artifacts
+          path: ${{ runner.temp }}/temp/
+      
+      - name: 标记构建完成
+        id: build-success
+        run: echo "completed=true" >> $GITHUB_OUTPUT
+      
       - name: 配置 Git 用户
         run: |
           git config --global user.name "github-actions[bot]"
@@ -267,3 +283,252 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           force_with_lease: true
           args: --set-upstream
+
+  publish-to-temp:
+    runs-on: ubuntu-latest
+    # main分支提交：依赖sync-build-branch
+    # PR提交：独立运行
+    needs: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'sync-build-branch' || '' }}
+    if: |
+      (
+        (github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.sync-build-branch.outputs.build_completed == 'true') ||
+        (github.event_name == 'pull_request') ||
+        (github.event_name == 'workflow_dispatch')
+      )
+    
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 安装node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21
+          registry-url: "https://registry.npmjs.org"
+
+      - name: 设置 pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.13.2
+
+      - name: 下载构建产物 (main分支提交)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/download-artifact@v4
+        with:
+          name: sync-build-artifacts
+          path: ./build-output/
+
+      - name: 安装依赖 (PR提交)
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+        run: pnpm install
+
+      - name: 构建 (PR提交)
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+        run: |
+          pnpm build
+          if [ $? -ne 0 ]; then
+            echo "❌ 构建失败！" >> $GITHUB_STEP_SUMMARY
+            echo "提交哈希: $(git rev-parse --short HEAD)" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+          pnpm pkg delete devDependencies
+
+      - name: 获取当前提交哈希
+        run: |
+          COMMIT_HASH=$(git rev-parse HEAD)
+          SHORT_COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+          echo "SHORT_COMMIT_HASH=$SHORT_COMMIT_HASH" >> $GITHUB_ENV
+          echo "REPO_URL=https://github.com/${{ github.repository }}/tree/$COMMIT_HASH" >> $GITHUB_ENV
+
+      - name: 准备发布包
+        run: |
+          # 如果是main分支提交，复制构建产物；否则使用当前目录
+          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "使用sync-build-branch的构建产物"
+            cp -r build-output/* ./
+          else
+            echo "使用当前构建的产物"
+          fi
+          
+          # 修改版本号
+          DATE=$(date +'%Y%m%d')
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          BASE_VERSION=$(echo $CURRENT_VERSION | sed -E 's/([0-9]+\.[0-9]+)\.[0-9]+.*/\1/')
+          NEW_VERSION="${BASE_VERSION}.${DATE}-${SHORT_COMMIT_HASH}"
+          npm version $NEW_VERSION --no-git-tag-version
+          echo "PKG_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: 发布临时NPM包
+        id: publish_pkg
+        run: |
+          pnpm dlx pkg-pr-new publish --json output.json --comment=update --compact --packageManager=pnpm > pkg-output.txt 2>&1
+          echo "命令输出内容："
+          cat pkg-output.txt
+          
+          ACTUAL_INSTALL_URL=$(grep -oE 'https://pkg\.pr\.new/[^[:space:]`]+' pkg-output.txt | head -n 1 || echo "")
+          
+          if [ ! -z "$ACTUAL_INSTALL_URL" ]; then
+            PNPM_INSTALL_CMD="pnpm add ${ACTUAL_INSTALL_URL} -w"
+          else
+            PNPM_INSTALL_CMD="未找到安装命令"
+            ACTUAL_INSTALL_URL="未找到安装URL"
+          fi
+          
+          echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
+          echo "install_url=$ACTUAL_INSTALL_URL" >> $GITHUB_OUTPUT
+          
+          echo "## Published Packages :package:" >> $GITHUB_STEP_SUMMARY
+          echo "version: \`${{ env.PKG_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "use pnpm:" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "$PNPM_INSTALL_CMD" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "## Complete output" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat pkg-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Post or update comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            
+            let sha;
+            try {
+              sha = context.payload.pull_request.head.sha;
+            } catch (error) {
+              console.log('无法获取提交哈希，使用环境变量中的值');
+            }
+            
+            const shortSha = sha ? sha.substring(0, 7) : '${{ env.SHORT_COMMIT_HASH }}';
+            const commitUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            
+            let installUrl = '';
+            try {
+              const output = JSON.parse(fs.readFileSync('output.json', 'utf8'));
+              for (const pkg of output.packages) {
+                installUrl = pkg.url; 
+                break;
+              }
+            } catch (error) {
+               console.error('无法读取或解析 output.json:', error);
+               installUrl = '无法获取安装 URL';
+            }
+            
+            const repoName = context.repo.repo;
+            const simplifiedUrl = `https://pkg.pr.new/${repoName}@${shortSha}`;
+            
+            let stackblitzUrl = '';
+            try {
+              const output = JSON.parse(fs.readFileSync('output.json', 'utf8'));
+              for (const template of output.templates) {
+                stackblitzUrl = template.url;
+                break;
+              }
+            } catch (error) {
+               console.error('无法读取或解析 output.json 获取 Stackblitz URL:', error);
+            }
+            
+            const now = new Date();
+            now.setHours(now.getHours() + 8);
+            const cstTime = now.toISOString().replace('T', ' ').substring(0, 19);
+            
+            const body = `## Published Packages :package:
+            
+            version: \`${process.env.PKG_VERSION}\`
+            
+            ${stackblitzUrl ? `[Open in Stackblitz](${stackblitzUrl})` : ''}
+            
+            use pnpm:
+            \`\`\`
+            pnpm add ${simplifiedUrl || '无法获取安装 URL'} -w 
+            \`\`\`
+            
+            pack time: <code>${cstTime} (CST)</code>`;
+            
+            const botCommentIdentifier = '## Published Packages';
+            
+            async function findBotComments(issueNumber) {
+              if (!issueNumber) return [];
+              const comments = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+              });
+              return comments.data.filter((comment) =>
+                comment.body.includes(botCommentIdentifier)
+              );
+            }
+            
+            async function createOrUpdateComment(issueNumber) {
+              if (!issueNumber) {
+                console.log('No issue number provided. Cannot post or update comment.');
+                return;
+              }
+              
+              const botComments = await findBotComments(issueNumber);
+              
+              const newComment = await github.rest.issues.createComment({
+                issue_number: issueNumber,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body,
+              });
+              console.log(`创建了新评论 ID: ${newComment.data.id}`);
+              
+              if (botComments.length >= 3) {
+                const commentsToDelete = botComments
+                  .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+                  .slice(0, botComments.length - 2);
+                
+                for (const comment of commentsToDelete) {
+                  await github.rest.issues.deleteComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    comment_id: comment.id
+                  });
+                  console.log(`删除了旧评论 ID: ${comment.id}`);
+                }
+              }
+            }
+            
+            if (context.issue.number) {
+              await createOrUpdateComment(context.issue.number);
+            } else {
+              console.log('No issue number found. Cannot post comment.');
+            }
+
+      - name: 上传NPM包信息
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-package-info
+          path: |
+            pkg-output.txt
+            output.json
+
+      - name: 创建 build.zip
+        run: |
+          mkdir -p temp-package
+          cp -r lib temp-package/
+          cp -r resources temp-package/
+          cp package.json CHANGELOG.md README.md LICENSE temp-package/
+          cp -r config temp-package/ || true
+          cd temp-package
+          zip -r ../build.zip .
+          cd ..
+          rm -rf temp-package
+
+      - name: 上传 build.zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-zip
+          path: build.zip
