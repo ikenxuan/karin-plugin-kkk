@@ -402,6 +402,14 @@ jobs:
           fi
           echo "stackblitz_url=$STACKBLITZ_URL" >> $GITHUB_OUTPUT
           
+          # 计算时间（转换为 CST 时区）
+          PACK_TIME=$(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S')
+          echo "pack_time=$PACK_TIME" >> $GITHUB_OUTPUT
+          
+          # 计算当前时间戳（用于计算时间差）
+          CURRENT_TIMESTAMP=$(date +%s)
+          echo "current_timestamp=$CURRENT_TIMESTAMP" >> $GITHUB_OUTPUT
+          
           echo "## 📦 预览包发布成功" >> $GITHUB_STEP_SUMMARY
           echo "版本号: \`${{ env.PKG_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -423,16 +431,23 @@ jobs:
           message: |
             ## Published Packages :package:
             
-            version: `${{ env.PKG_VERSION }}`
+            **版本号:** `${{ env.PKG_VERSION }}`
             
-            ${{ steps.publish_pkg.outputs.stackblitz_url && format('[Open in Stackblitz]({0})', steps.publish_pkg.outputs.stackblitz_url) || '' }}
+            ${{ steps.publish_pkg.outputs.stackblitz_url && format('🚀 [在 Stackblitz 中打开]({0})', steps.publish_pkg.outputs.stackblitz_url) || '' }}
             
-            use pnpm:
-            ```
+            **安装命令:**
+            ```bash
             pnpm add ${{ steps.publish_pkg.outputs.simplified_url }} -w
             ```
             
-            pack time: <code>$(date -d "+8 hours" "+%Y-%m-%d %H:%M:%S") (CST)</code>
+            ---
+            
+            **⏰ 时间信息:**
+            - 📦 打包时间: `${{ steps.publish_pkg.outputs.pack_time }} (CST)`
+            - 🔄 评论更新: `${{ steps.publish_pkg.outputs.pack_time }} (CST)`
+            - 📅 构建时间戳: `${{ steps.publish_pkg.outputs.current_timestamp }}`
+            
+            > 💡 提示：每次推送新提交时，此评论会自动更新
           comment-tag: published-packages
           mode: upsert
           reactions: rocket, eyes
