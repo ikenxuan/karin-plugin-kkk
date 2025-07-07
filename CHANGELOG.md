@@ -1,5 +1,12 @@
 # 变更日志
 
+## [1.7.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.7.0...v1.7.1) (2025-07-07)
+
+
+### 🎡 持续集成
+
+* fix ([21a2ecb](https://github.com/ikenxuan/karin-plugin-kkk/commit/21a2ecb33d215c5714e45daf595dcbe189456849))
+
 ## [1.7.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.12...v1.7.0) (2025-07-07)
 
 
