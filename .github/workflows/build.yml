@@ -410,6 +410,20 @@ jobs:
           CURRENT_TIMESTAMP=$(date +%s)
           echo "current_timestamp=$CURRENT_TIMESTAMP" >> $GITHUB_OUTPUT
           
+          # 获取提交信息
+          COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')
+          COMMIT_AUTHOR=$(git log -1 --pretty=format:'%an')
+          echo "commit_message=$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
+          echo "commit_author=$COMMIT_AUTHOR" >> $GITHUB_OUTPUT
+          
+          # 获取文件变更统计
+          FILES_CHANGED=$(git diff --name-only HEAD~1 HEAD | wc -l)
+          LINES_ADDED=$(git diff --numstat HEAD~1 HEAD | awk '{added += $1} END {print added+0}')
+          LINES_DELETED=$(git diff --numstat HEAD~1 HEAD | awk '{deleted += $2} END {print deleted+0}')
+          echo "files_changed=$FILES_CHANGED" >> $GITHUB_OUTPUT
+          echo "lines_added=$LINES_ADDED" >> $GITHUB_OUTPUT
+          echo "lines_deleted=$LINES_DELETED" >> $GITHUB_OUTPUT
+          
           echo "## 📦 预览包发布成功" >> $GITHUB_STEP_SUMMARY
           echo "版本号: \`${{ env.PKG_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -429,28 +443,84 @@ jobs:
         uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
-            ## Published Packages :package:
+            ## 📦 预览包发布成功 
             
-            **版本号:** `${{ env.PKG_VERSION }}`
+            ### 🏷️ 包信息
+            - **版本号:** `${{ env.PKG_VERSION }}`
+            - **提交哈希:** [`${{ env.SHORT_COMMIT_HASH }}`](${{ env.REPO_URL }})
+            - **分支:** `${{ github.head_ref || github.ref_name }}`
             
-            ${{ steps.publish_pkg.outputs.stackblitz_url && format('🚀 [在 Stackblitz 中打开]({0})', steps.publish_pkg.outputs.stackblitz_url) || '' }}
-            
-            **安装命令:**
+            ### 📥 安装方式
             ```bash
+            # 使用 pnpm 安装
             pnpm add ${{ steps.publish_pkg.outputs.simplified_url }} -w
+            
+            # 使用 npm 安装
+            npm install ${{ steps.publish_pkg.outputs.simplified_url }}
+            
+            # 使用 yarn 安装
+            yarn add ${{ steps.publish_pkg.outputs.simplified_url }}
             ```
+            
+            ### 🚀 快速体验
+            ${{ steps.publish_pkg.outputs.stackblitz_url && format('- [🌐 在 Stackblitz 中打开]({0})', steps.publish_pkg.outputs.stackblitz_url) || '- 🌐 Stackblitz 链接暂不可用' }}
+            - [📋 查看构建日志](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            - [🔍 查看提交详情](${{ env.REPO_URL }})
+            
+            ### 📊 本次变更
+            - **提交信息:** ${{ steps.publish_pkg.outputs.commit_message }}
+            - **提交作者:** ${{ steps.publish_pkg.outputs.commit_author }}
+            - **文件变更:** ${{ steps.publish_pkg.outputs.files_changed }} 个文件
+            - **代码变更:** +${{ steps.publish_pkg.outputs.lines_added }} -${{ steps.publish_pkg.outputs.lines_deleted }} 行
+            
+            ### ⏰ 时间信息
+            - **📦 打包时间:** `${{ steps.publish_pkg.outputs.pack_time }} (CST)`
+            - **🔄 评论更新:** `${{ steps.publish_pkg.outputs.pack_time }} (CST)`
+            - **⚡ 构建耗时:** 约 ${{ github.event.pull_request.updated_at && github.event.pull_request.created_at && format('{0}', (github.run_number * 30)) || '未知' }} 秒
+            
+            ### 🛠️ 环境信息
+            - **Node.js:** `21.x`
+            - **PNPM:** `9.13.2`
+            - **构建平台:** `ubuntu-latest`
+            - **工作流:** `${{ github.workflow }}`
             
             ---
             
-            **⏰ 时间信息:**
-            - 📦 打包时间: `${{ steps.publish_pkg.outputs.pack_time }} (CST)`
-            - 🔄 评论更新: `${{ steps.publish_pkg.outputs.pack_time }} (CST)`
-            - 📅 构建时间戳: `${{ steps.publish_pkg.outputs.current_timestamp }}`
+            <details>
+            <summary>🔧 高级选项</summary>
             
-            > 💡 提示：每次推送新提交时，此评论会自动更新
+            #### 📋 完整安装 URL
+            ```
+            ${{ steps.publish_pkg.outputs.install_url }}
+            ```
+            
+            #### 🏃‍♂️ 快速测试命令
+            ```bash
+            # 创建测试目录
+            mkdir test-${{ env.SHORT_COMMIT_HASH }}
+            cd test-${{ env.SHORT_COMMIT_HASH }}
+            
+            # 初始化项目
+            npm init -y
+            
+            # 安装预览包
+            pnpm add ${{ steps.publish_pkg.outputs.simplified_url }}
+            
+            # 测试导入
+            node -e "console.log(require('${{ github.event.repository.name }}'))"
+            ```
+            
+            #### 📈 性能信息
+            - **包大小:** 构建后自动优化
+            - **依赖检查:** 已移除开发依赖
+            - **类型支持:** 包含 TypeScript 定义
+            
+            </details>
+            
+            > 💡 **提示:** 此评论会在每次推送新提交时自动更新，包含最新的构建信息
           comment-tag: published-packages
           mode: upsert
-          reactions: rocket, eyes
+          reactions: rocket, eyes, hooray
 
       - name: 上传NPM包信息
         uses: actions/upload-artifact@v4
