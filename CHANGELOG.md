@@ -1,5 +1,30 @@
 # 变更日志
 
+## [1.7.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.12...v1.7.0) (2025-07-07)
+
+
+### ✨ 新功能
+
+* migrate from Sequelize to TypeORM for database operations ([#108](https://github.com/ikenxuan/karin-plugin-kkk/issues/108)) ([75ee71f](https://github.com/ikenxuan/karin-plugin-kkk/commit/75ee71f65e431f8d2e304129eccb0441e51eadf7))
+
+
+### 🐛 错误修复
+
+* ci ([7e705aa](https://github.com/ikenxuan/karin-plugin-kkk/commit/7e705aadc3327c9763cb5ecdcd20a5f67b732331))
+* 新版解析库 ([#110](https://github.com/ikenxuan/karin-plugin-kkk/issues/110)) ([f93814a](https://github.com/ikenxuan/karin-plugin-kkk/commit/f93814a5ca51c03390863ecaf6ac4070c4c6bb64))
+
+
+### ✅ 测试相关
+
+* ci/cd ([#113](https://github.com/ikenxuan/karin-plugin-kkk/issues/113)) ([dd13df0](https://github.com/ikenxuan/karin-plugin-kkk/commit/dd13df0eca0e21dc7e4ded6592191508d045fa51))
+
+
+### 🎡 持续集成
+
+* fix ([5b95a7f](https://github.com/ikenxuan/karin-plugin-kkk/commit/5b95a7fcead63dc5ba18c1c1211565c14acc66f0))
+* fix ([8faccb9](https://github.com/ikenxuan/karin-plugin-kkk/commit/8faccb9570eec6949d3e614d6f35e46cbe4d7f18))
+* test ([#112](https://github.com/ikenxuan/karin-plugin-kkk/issues/112)) ([3ed08ad](https://github.com/ikenxuan/karin-plugin-kkk/commit/3ed08ad45c724f0148bff522cfed498dfbafbd21))
+
 ## [1.6.12](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.6.11...v1.6.12) (2025-06-15)
 
 
