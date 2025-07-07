@@ -1,4 +1,4 @@
-name: 构建与发布流水线
+name: CI/CD
 
 on:
   workflow_dispatch:
