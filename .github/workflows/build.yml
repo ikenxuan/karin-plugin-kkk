@@ -33,7 +33,7 @@ jobs:
   # 正式版本构建
   production-build:
     needs: version-release
-    if: needs.version-release.outputs.releases_created == 'true'
+    # if: needs.version-release.outputs.releases_created == 'true'
     runs-on: ubuntu-latest
     outputs:
       package_name: ${{ steps.get-package-name.outputs.name }}
@@ -56,7 +56,7 @@ jobs:
         id: get-package-name
         run: |
           PACKAGE_NAME=$(pnpm pkg get name | tr -d '"')
-          PACKAGE_SHORT_NAME=$(pnpm pkg get name | tr -d '"' | awk -F'/' '{print $2}')
+          PACKAGE_SHORT_NAME=$(basename "$PACKAGE_NAME")
           echo "PACKAGE_SHORT_NAME=$PACKAGE_SHORT_NAME" >> $GITHUB_OUTPUT
           echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_OUTPUT
 
