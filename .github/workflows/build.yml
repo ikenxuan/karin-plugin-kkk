@@ -286,9 +286,7 @@ jobs:
 
   publish-to-temp:
     runs-on: ubuntu-latest
-    # main分支提交：依赖sync-build-branch
-    # PR提交：独立运行
-    needs: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'sync-build-branch' || '' }}
+    needs: sync-build-branch
     if: |
       (
         (github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.sync-build-branch.outputs.build_completed == 'true') ||
