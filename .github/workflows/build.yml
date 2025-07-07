@@ -33,7 +33,7 @@ jobs:
   # 正式版本构建
   production-build:
     needs: version-release
-    # if: needs.version-release.outputs.releases_created == 'true'
+    if: needs.version-release.outputs.releases_created == 'true'
     runs-on: ubuntu-latest
     outputs:
       package_name: ${{ steps.get-package-name.outputs.name }}
