@@ -312,7 +312,7 @@ jobs:
       - name: 📦 配置 PNPM 环境
         uses: pnpm/action-setup@v4
         with:
-          version: 9.13.2
+          version: 9.7.1
 
       - name: ⏳ 等待构建分支同步完成
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -374,6 +374,9 @@ jobs:
       - name: 🚀 发布预览包
         id: publish_pkg
         run: |
+          # 记录开始时间
+          START_TIME=$(date +%s)
+          
           pnpm dlx pkg-pr-new publish --json output.json --comment=update --compact --packageManager=pnpm > pkg-output.txt 2>&1
           echo "命令输出内容："
           cat pkg-output.txt
@@ -409,6 +412,26 @@ jobs:
           # 计算当前时间戳（用于计算时间差）
           CURRENT_TIMESTAMP=$(date +%s)
           echo "current_timestamp=$CURRENT_TIMESTAMP" >> $GITHUB_OUTPUT
+          
+          # 计算构建耗时
+          END_TIME=$(date +%s)
+          BUILD_DURATION=$((END_TIME - START_TIME))
+          BUILD_DURATION_MIN=$((BUILD_DURATION / 60))
+          BUILD_DURATION_SEC=$((BUILD_DURATION % 60))
+          if [ $BUILD_DURATION_MIN -gt 0 ]; then
+            DURATION_TEXT="${BUILD_DURATION_MIN}分${BUILD_DURATION_SEC}秒"
+          else
+            DURATION_TEXT="${BUILD_DURATION_SEC}秒"
+          fi
+          echo "build_duration=$DURATION_TEXT" >> $GITHUB_OUTPUT
+          
+          # 获取准确的 Node.js 版本
+          NODE_VERSION=$(node --version)
+          echo "node_version=$NODE_VERSION" >> $GITHUB_OUTPUT
+          
+          # 获取准确的 PNPM 版本
+          PNPM_VERSION=$(pnpm --version)
+          echo "pnpm_version=$PNPM_VERSION" >> $GITHUB_OUTPUT
           
           # 获取提交信息
           COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')
@@ -452,14 +475,8 @@ jobs:
             
             ### 📥 安装方式
             ```bash
-            # 使用 pnpm 安装
+            # 推荐使用 pnpm 安装
             pnpm add ${{ steps.publish_pkg.outputs.simplified_url }} -w
-            
-            # 使用 npm 安装
-            npm install ${{ steps.publish_pkg.outputs.simplified_url }}
-            
-            # 使用 yarn 安装
-            yarn add ${{ steps.publish_pkg.outputs.simplified_url }}
             ```
             
             ### 🚀 快速体验
@@ -476,11 +493,11 @@ jobs:
             ### ⏰ 时间信息
             - **📦 打包时间:** `${{ steps.publish_pkg.outputs.pack_time }} (CST)`
             - **🔄 评论更新:** `${{ steps.publish_pkg.outputs.pack_time }} (CST)`
-            - **⚡ 构建耗时:** 约 ${{ github.run_number }} 分钟
+            - **⚡ 构建耗时:** ${{ steps.publish_pkg.outputs.build_duration }}
             
             ### 🛠️ 环境信息
-            - **Node.js:** `21.x`
-            - **PNPM:** `9.13.2`
+            - **Node.js:** `${{ steps.publish_pkg.outputs.node_version }}`
+            - **PNPM:** `${{ steps.publish_pkg.outputs.pnpm_version }}`
             - **构建平台:** `ubuntu-latest`
             - **工作流:** `${{ github.workflow }}`
             
@@ -509,11 +526,6 @@ jobs:
             # 测试导入
             node -e "console.log(require('${{ github.event.repository.name }}'))"
             ```
-            
-            #### 📈 性能信息
-            - **包大小:** 构建后自动优化
-            - **依赖检查:** 已移除开发依赖
-            - **类型支持:** 包含 TypeScript 定义
             
             </details>
             
