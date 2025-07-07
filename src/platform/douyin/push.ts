@@ -1,4 +1,4 @@
-import type { ApiResponse, DySearchInfo, DyUserInfo } from '@ikenxuan/amagi/v5'
+import type { ApiResponse, DySearchInfo, DyUserInfo, DyUserLiveVideos } from '@ikenxuan/amagi/v5'
 import type { AdapterType, ImageElement, Message } from 'node-karin'
 import karin from 'node-karin'
 import { common, logger, segment } from 'node-karin'
@@ -33,6 +33,7 @@ export type DouyinPushItem = {
     /** 博主主页信息 */
     user_info: ApiResponse<DyUserInfo>
     liveStatus?: { liveStatus: 'open' | 'close', isChanged: boolean, isliving: boolean }
+    live_data?: ApiResponse<DyUserLiveVideos>
     [key: string]: any
   }
   /** 博主头像url */
@@ -122,14 +123,14 @@ export class DouYinpush extends Base {
       }
 
       if (!skip) {
-        if (pushItem.living && 'room_data' in pushItem.Detail_Data) {
+        if (pushItem.living && 'room_data' in pushItem.Detail_Data && Detail_Data.live_data) {
           // 处理直播推送
           img = await Render('douyin/live', {
-            image_url: [{ image_src: Detail_Data.live_data.data.data[0].cover.url_list[0] }],
-            text: Detail_Data.live_data.data.data[0].title,
-            liveinf: `${Detail_Data.live_data.data.partition_road_map?.partition?.title ?? Detail_Data.live_data.data.data[0].title} | 房间号: ${Detail_Data.room_data.owner.web_rid}`,
-            在线观众: this.count(Detail_Data.live_data.data.data[0].room_view_stats.display_value),
-            总观看次数: this.count(Detail_Data.live_data.data.data[0].stats.total_user_str),
+            image_url: [{ image_src: Detail_Data.live_data.data.data.data[0].cover!.url_list[0] }],
+            text: Detail_Data.live_data.data.data.data[0].title,
+            liveinf: `${Detail_Data.live_data.data.data.partition_road_map?.partition?.title ?? Detail_Data.live_data.data.data.data[0].title} | 房间号: ${Detail_Data.room_data.owner.web_rid}`,
+            在线观众: this.count(Detail_Data.live_data.data.data.data[0].room_view_stats!.display_value),
+            总观看次数: this.count(Number(Detail_Data.live_data.data.data.data[0].stats!.total_user_str)),
             username: Detail_Data.user_info.data.user.nickname,
             avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
             fans: this.count(Detail_Data.user_info.data.user.follower_count),
