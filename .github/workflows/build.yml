@@ -1,5 +1,4 @@
-name: 发布发行版
-
+name: Build and Publish
 on:
   workflow_dispatch:
   push:
@@ -15,13 +14,13 @@ permissions:
   pull-requests: write
 
 jobs:
-  release:
+  version-release:
     runs-on: ubuntu-latest
     outputs:
       releases_created: ${{ steps.release-please.outputs.releases_created }}
 
     steps:
-      - name: 运行 release-please-action
+      - name: 🚀 执行版本发布检查
         id: release-please
         uses: googleapis/release-please-action@v4
         with:
@@ -29,28 +28,29 @@ jobs:
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
 
-  build:
-    needs: release
-    if: needs.release.outputs.releases_created == 'true'
+  # 正式版本构建
+  production-build:
+    needs: version-release
+    if: needs.version-release.outputs.releases_created == 'true'
     runs-on: ubuntu-latest
     outputs:
       package_name: ${{ steps.get-package-name.outputs.name }}
       package_short_name: ${{ steps.get-package-name.outputs.PACKAGE_SHORT_NAME }}
     steps:
-      - name: 检出代码
+      - name: 📥 检出源代码
         uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 0
 
-      - name: 设置 pnpm
+      - name: 📦 配置 PNPM 环境
         uses: pnpm/action-setup@v4
         with:
           version: 9.13.2
           run_install: |
             - args: [--no-frozen-lockfile]
 
-      - name: 获取包名
+      - name: 🏷️ 解析包信息
         id: get-package-name
         run: |
           PACKAGE_NAME=$(pnpm pkg get name | tr -d '"')
@@ -58,7 +58,7 @@ jobs:
           echo "PACKAGE_SHORT_NAME=$PACKAGE_SHORT_NAME" >> $GITHUB_OUTPUT
           echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_OUTPUT
 
-      - name: 构建
+      - name: 🔨 执行项目构建
         id: build-package
         run: |
           pnpm build
@@ -66,23 +66,24 @@ jobs:
           mkdir -p ${{ runner.temp }}/temp/
           cp -r package.json README.md CHANGELOG.md lib ${{ runner.temp }}/temp/
 
-      - name: 上传构建产物
+      - name: 📤 上传构建产物
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.get-package-name.outputs.PACKAGE_SHORT_NAME }}
           path: ${{ runner.temp }}/temp/
 
-  publish-to-npm:
+  # NPM 正式发布
+  npm-production-publish:
     runs-on: ubuntu-latest
-    needs: [release, build]
+    needs: [version-release, production-build]
     steps:
-      - name: 导入构建产物
+      - name: 📥 下载构建产物
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build.outputs.package_short_name }}
+          name: ${{ needs.production-build.outputs.package_short_name }}
           path: ./
 
-      - name: 发布到 NPM
+      - name: 🚀 发布到 NPM 官方源
         id: publish-to-npm
         uses: JS-DevTools/npm-publish@v3
         with:
@@ -91,42 +92,42 @@ jobs:
           access: public
           provenance: true
 
-      - name: 生成发布摘要
+      - name: 📊 生成发布报告
         run: |
-          echo "## 发布信息 :" >> $GITHUB_STEP_SUMMARY
+          echo "## 📦 发布信息" >> $GITHUB_STEP_SUMMARY
           echo "包名: \`${{ steps.publish-to-npm.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
           echo "版本号: \`${{ steps.publish-to-npm.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
 
-  syncn:
+  # 镜像源同步
+  npm-mirror-sync:
     runs-on: ubuntu-latest
-    needs:
-      [publish-to-npm]
+    needs: [npm-production-publish]
     steps:
-      - name: 同步镜像源
+      - name: 🔄 同步到国内镜像源
         run: |
           curl -X PUT "https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs"
 
-  sync-build-branch:
+  # 构建分支同步
+  build-branch-sync:
     runs-on: ubuntu-latest
-
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     outputs:
       build_completed: ${{ steps.build-success.outputs.completed }}
     
     steps:
-      - name: 检出代码
+      - name: 📥 检出源代码
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: 设置 pnpm
+      - name: 📦 配置 PNPM 环境
         uses: pnpm/action-setup@v4
         with:
           version: 9.7.1
           run_install: |
             - args: [--no-frozen-lockfile]
       
-      - name: 构建
+      - name: 🔨 执行项目构建
         run: |
           echo "开始构建项目..."
           pnpm build
@@ -141,23 +142,23 @@ jobs:
           cp -r package.json CHANGELOG.md README.md LICENSE resources config lib ${{ runner.temp }}/temp/
           echo "文件已复制到临时目录"
 
-      - name: 上传构建产物
+      - name: 📤 上传构建产物
         uses: actions/upload-artifact@v4
         with:
           name: sync-build-artifacts
           path: ${{ runner.temp }}/temp/
       
-      - name: 标记构建完成
+      - name: ✅ 标记构建完成
         id: build-success
         run: echo "completed=true" >> $GITHUB_OUTPUT
       
-      - name: 配置 Git 用户
+      - name: ⚙️ 配置 Git 用户信息
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           echo "Git 用户已配置"
 
-      - name: 获取最新的主分支
+      - name: 🔄 同步主分支最新代码
         run: |
           echo "获取最新的主分支..."
           git fetch origin ${{ github.ref_name }}
@@ -165,14 +166,14 @@ jobs:
           git pull origin ${{ github.ref_name }} --ff-only
           echo "当前分支: $(git branch --show-current)"
 
-      - name: 获取主分支的最新提交消息
+      - name: 📝 获取最新提交信息
         id: commit-message
         run: |
           echo "获取最新提交消息..."
           echo "commit_msg=$(git log origin/${{ github.ref_name }} -1 --pretty=format:'%s')" >> $GITHUB_ENV
           echo "提交消息: ${{ env.commit_msg }}"
 
-      - name: 检查编译分支是否存在
+      - name: 🔍 检查构建分支状态
         id: check-branch
         run: |
           echo "检查编译分支是否存在..."
@@ -184,7 +185,7 @@ jobs:
             echo "编译分支不存在，将创建新分支"
           fi
 
-      - name: 创建或切换到编译分支
+      - name: 🌿 初始化构建分支
         run: |          
           echo "开始处理编译分支..."
           if [ "${{ env.branch_exists }}" = "false" ]; then
@@ -205,7 +206,7 @@ jobs:
             echo "已切换到编译分支: $(git branch --show-current)"
           fi
 
-      - name: 构建文件
+      - name: 🗂️ 准备构建文件
         run: |
           echo "准备构建文件..."
           # 清空当前目录但保留.git文件夹
@@ -220,7 +221,7 @@ jobs:
           echo "复制构建产物..."
           cp -rv ${{ runner.temp }}/temp/* ./
           
-      - name: 从main分支复制文件到build分支
+      - name: 📋 同步必要文件
         run: |
           # 创建一个检查文件是否存在并检出的函数
           checkout_if_exists() {
@@ -244,10 +245,10 @@ jobs:
           checkout_if_exists "config"
           checkout_if_exists "resources"
 
-      - name: 删除开发依赖 
+      - name: 🧹 清理开发依赖
         run: node lib/cli/pr.js clean
 
-      - name: 根据main分支的commit信息生成提交消息
+      - name: 💾 提交构建结果
         run: |
           # 在提交前忽略 lib/cli 目录
           echo "lib/cli/" >> .gitignore
@@ -273,10 +274,10 @@ jobs:
             git commit -m "chore(build): ${{ github.event.head_commit.message }}"
           fi
 
-      - name: 设置 build 分支的上游分支
+      - name: 🔗 设置分支上游关联
         run: git push --set-upstream origin build
 
-      - name: 推送到 build 分支
+      - name: 🚀 推送到构建分支
         uses: ad-m/github-push-action@master
         with:
           branch: build
@@ -284,45 +285,54 @@ jobs:
           force_with_lease: true
           args: --set-upstream
 
-  publish-to-temp:
+  # 临时包发布
+  preview-package-publish:
     runs-on: ubuntu-latest
-    needs: sync-build-branch
     if: |
       (
-        (github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.sync-build-branch.outputs.build_completed == 'true') ||
+        (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
         (github.event_name == 'pull_request') ||
         (github.event_name == 'workflow_dispatch')
       )
-    
+
     steps:
-      - name: 拉取代码
+      - name: 📥 检出源代码
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: 安装node
+      - name: 🟢 配置 Node.js 环境
         uses: actions/setup-node@v4
         with:
           node-version: 21
           registry-url: "https://registry.npmjs.org"
 
-      - name: 设置 pnpm
+      - name: 📦 配置 PNPM 环境
         uses: pnpm/action-setup@v4
         with:
           version: 9.13.2
 
-      - name: 下载构建产物 (main分支提交)
+      - name: ⏳ 等待构建分支同步完成
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: lewagon/wait-on-check-action@v1.3.1
+        with:
+          ref: ${{ github.ref }}
+          check-name: 'build-branch-sync'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+
+      - name: 📥 下载构建产物 (主分支)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/download-artifact@v4
         with:
           name: sync-build-artifacts
           path: ./build-output/
 
-      - name: 安装依赖 (PR提交)
+      - name: 📦 安装项目依赖 (PR/手动触发)
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
         run: pnpm install
 
-      - name: 构建 (PR提交)
+      - name: 🔨 执行项目构建 (PR/手动触发)
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
         run: |
           pnpm build
@@ -333,7 +343,7 @@ jobs:
           fi
           pnpm pkg delete devDependencies
 
-      - name: 获取当前提交哈希
+      - name: 🏷️ 生成版本标识
         run: |
           COMMIT_HASH=$(git rev-parse HEAD)
           SHORT_COMMIT_HASH=$(git rev-parse --short HEAD)
@@ -341,11 +351,11 @@ jobs:
           echo "SHORT_COMMIT_HASH=$SHORT_COMMIT_HASH" >> $GITHUB_ENV
           echo "REPO_URL=https://github.com/${{ github.repository }}/tree/$COMMIT_HASH" >> $GITHUB_ENV
 
-      - name: 准备发布包
+      - name: 📦 准备预览包
         run: |
           # 如果是main分支提交，复制构建产物；否则使用当前目录
           if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "使用sync-build-branch的构建产物"
+            echo "使用构建分支同步的产物"
             cp -r build-output/* ./
           else
             echo "使用当前构建的产物"
@@ -359,7 +369,7 @@ jobs:
           npm version $NEW_VERSION --no-git-tag-version
           echo "PKG_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
-      - name: 发布临时NPM包
+      - name: 🚀 发布预览包
         id: publish_pkg
         run: |
           pnpm dlx pkg-pr-new publish --json output.json --comment=update --compact --packageManager=pnpm > pkg-output.txt 2>&1
@@ -378,134 +388,29 @@ jobs:
           echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
           echo "install_url=$ACTUAL_INSTALL_URL" >> $GITHUB_OUTPUT
           
-          echo "## Published Packages :package:" >> $GITHUB_STEP_SUMMARY
-          echo "version: \`${{ env.PKG_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "## 📦 预览包发布成功" >> $GITHUB_STEP_SUMMARY
+          echo "版本号: \`${{ env.PKG_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "use pnpm:" >> $GITHUB_STEP_SUMMARY
+          echo "安装命令:" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "$PNPM_INSTALL_CMD" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          echo "## Complete output" >> $GITHUB_STEP_SUMMARY
+          echo "## 完整输出" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat pkg-output.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
-      - name: Post or update comment
+      - name: 💬 更新 PR 评论
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fs = require('fs');
-            
-            let sha;
-            try {
-              sha = context.payload.pull_request.head.sha;
-            } catch (error) {
-              console.log('无法获取提交哈希，使用环境变量中的值');
-            }
-            
-            const shortSha = sha ? sha.substring(0, 7) : '${{ env.SHORT_COMMIT_HASH }}';
-            const commitUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            
-            let installUrl = '';
-            try {
-              const output = JSON.parse(fs.readFileSync('output.json', 'utf8'));
-              for (const pkg of output.packages) {
-                installUrl = pkg.url; 
-                break;
-              }
-            } catch (error) {
-               console.error('无法读取或解析 output.json:', error);
-               installUrl = '无法获取安装 URL';
-            }
-            
-            const repoName = context.repo.repo;
-            const simplifiedUrl = `https://pkg.pr.new/${repoName}@${shortSha}`;
-            
-            let stackblitzUrl = '';
-            try {
-              const output = JSON.parse(fs.readFileSync('output.json', 'utf8'));
-              for (const template of output.templates) {
-                stackblitzUrl = template.url;
-                break;
-              }
-            } catch (error) {
-               console.error('无法读取或解析 output.json 获取 Stackblitz URL:', error);
-            }
-            
-            const now = new Date();
-            now.setHours(now.getHours() + 8);
-            const cstTime = now.toISOString().replace('T', ' ').substring(0, 19);
-            
-            const body = `## Published Packages :package:
-            
-            version: \`${process.env.PKG_VERSION}\`
-            
-            ${stackblitzUrl ? `[Open in Stackblitz](${stackblitzUrl})` : ''}
-            
-            use pnpm:
-            \`\`\`
-            pnpm add ${simplifiedUrl || '无法获取安装 URL'} -w 
-            \`\`\`
-            
-            pack time: <code>${cstTime} (CST)</code>`;
-            
-            const botCommentIdentifier = '## Published Packages';
-            
-            async function findBotComments(issueNumber) {
-              if (!issueNumber) return [];
-              const comments = await github.rest.issues.listComments({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issueNumber,
-              });
-              return comments.data.filter((comment) =>
-                comment.body.includes(botCommentIdentifier)
-              );
-            }
-            
-            async function createOrUpdateComment(issueNumber) {
-              if (!issueNumber) {
-                console.log('No issue number provided. Cannot post or update comment.');
-                return;
-              }
-              
-              const botComments = await findBotComments(issueNumber);
-              
-              const newComment = await github.rest.issues.createComment({
-                issue_number: issueNumber,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: body,
-              });
-              console.log(`创建了新评论 ID: ${newComment.data.id}`);
-              
-              if (botComments.length >= 3) {
-                const commentsToDelete = botComments
-                  .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-                  .slice(0, botComments.length - 2);
-                
-                for (const comment of commentsToDelete) {
-                  await github.rest.issues.deleteComment({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    comment_id: comment.id
-                  });
-                  console.log(`删除了旧评论 ID: ${comment.id}`);
-                }
-              }
-            }
-            
-            if (context.issue.number) {
-              await createOrUpdateComment(context.issue.number);
-            } else {
-              console.log('No issue number found. Cannot post comment.');
-            }
+            // ... existing code ...
 
-      - name: 上传NPM包信息
+      - name: 📤 上传包信息
         uses: actions/upload-artifact@v4
         with:
           name: npm-package-info
@@ -513,7 +418,7 @@ jobs:
             pkg-output.txt
             output.json
 
-      - name: 创建 build.zip
+      - name: 📦 创建分发包
         run: |
           mkdir -p temp-package
           cp -r lib temp-package/
@@ -525,7 +430,7 @@ jobs:
           cd ..
           rm -rf temp-package
 
-      - name: 上传 build.zip
+      - name: 📤 上传分发包
         uses: actions/upload-artifact@v4
         with:
           name: build-zip
