@@ -9,6 +9,7 @@ import type {
   BiliVideoPlayurlIsLogin
 } from '@ikenxuan/amagi'
 import { bilibiliApiUrls, getBilibiliData } from '@ikenxuan/amagi'
+import { ApiResponse } from '@ikenxuan/amagi/v5'
 import karin,
 {
   common,
@@ -74,20 +75,20 @@ export class Bilibili extends Base {
       case 'one_video': {
         const infoData = await this.amagi.getBilibiliData('单个视频作品数据', { bvid: iddata.bvid, typeMode: 'strict' })
         const playUrlData = await this.amagi.getBilibiliData('单个视频下载信息数据', {
-          avid: infoData.data.aid,
-          cid: iddata.p ? (infoData.data.pages[iddata.p - 1]?.cid ?? infoData.data.cid) : infoData.data.cid,
+          avid: infoData.data.data.aid,
+          cid: iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid,
           typeMode: 'strict'
-        }) as BiliVideoPlayurlIsLogin
+        }) as ApiResponse<BiliVideoPlayurlIsLogin>
         // const playUrl = bilibiliApiUrls.视频流信息({ avid: infoData.data.aid, cid: infoData.data.cid })
         this.islogin = (await checkCk()).Status === 'isLogin'
         const commentsData = await this.amagi.getBilibiliData('评论数据', {
           number: Config.bilibili.numcomment,
           type: 1,
-          oid: infoData.data.aid,
+          oid: infoData.data.data.aid,
           typeMode: 'strict'
-        })
+        }) as ApiResponse<BiliBangumiVideoInfo>
 
-        const { owner, pic, title, stat, desc } = infoData.data
+        const { owner, pic, title, stat, desc } = infoData.data.data
         const { name } = owner
         const { coin, like, share, view, favorite, danmaku } = stat
 
@@ -95,11 +96,11 @@ export class Bilibili extends Base {
 
         const nockData = await new Networks({
           url: bilibiliApiUrls.视频流信息({
-            avid: infoData.data.aid,
-            cid: iddata.p ? (infoData.data.pages[iddata.p - 1]?.cid ?? infoData.data.cid) : infoData.data.cid
+            avid: infoData.data.data.aid,
+            cid: iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid
           }) + '&platform=html5',
           headers: this.headers
-        }).getData() as BiliBiliVideoPlayurlNoLogin
+        }).getData() as ApiResponse<BiliBiliVideoPlayurlNoLogin>
 
         // 构建回复内容数组
         const replyContent: SendMessage = []
@@ -136,39 +137,39 @@ export class Bilibili extends Base {
 
         if (this.islogin) {
           /** 提取出视频流信息对象，并排除清晰度重复的视频流 */
-          const simplify = playUrlData.data.dash.video.filter((item: { id: number }, index: any, self: any[]) => {
+          const simplify = playUrlData.data.data.dash.video.filter((item: { id: number }, index: any, self: any[]) => {
             return self.findIndex((t: { id: any }) => {
               return t.id === item.id
             }) === index
           })
           /** 替换原始的视频信息对象 */
-          playUrlData.data.dash.video = simplify
+          playUrlData.data.data.dash.video = simplify
           /** 给视频信息对象删除不符合条件的视频流 */
           correctList = await bilibiliProcessVideos({
-            accept_description: playUrlData.data.accept_description,
-            bvid: infoData.data.bvid
-          }, simplify, playUrlData.data.dash.audio[0].base_url)
-          playUrlData.data.dash.video = correctList.videoList
-          playUrlData.data.accept_description = correctList.accept_description
+            accept_description: playUrlData.data.data.accept_description,
+            bvid: infoData.data.data.bvid
+          }, simplify, playUrlData.data.data.dash.audio[0].base_url)
+          playUrlData.data.data.dash.video = correctList.videoList
+          playUrlData.data.data.accept_description = correctList.accept_description
           /** 获取第一个视频流的大小 */
-          videoSize = await getvideosize(correctList.videoList[0].base_url, playUrlData.data.dash.audio[0].base_url, infoData.data.bvid)
+          videoSize = await getvideosize(correctList.videoList[0].base_url, playUrlData.data.data.dash.audio[0].base_url, infoData.data.data.bvid)
         } else {
-          videoSize = (playUrlData.data.durl[0].size / (1024 * 1024)).toFixed(2)
+          videoSize = (playUrlData.data.data.durl[0].size / (1024 * 1024)).toFixed(2)
         }
         if (Config.bilibili.comment) {
-          const commentsdata = bilibiliComments(commentsData)
+          const commentsdata = bilibiliComments(commentsData.data)
           if (!commentsdata?.length) {
             await this.e.reply('这个视频没有评论 ~')
           } else {
             img = await Render('bilibili/comment', {
               Type: '视频',
               CommentsData: commentsdata,
-              CommentLength: Config.bilibili.realCommentCount ? Count(infoData.data.stat.reply) : String(commentsdata.length),
-              share_url: 'https://b23.tv/' + infoData.data.bvid,
-              Clarity: Config.bilibili.videopriority === true ? nockData.data.accept_description[0] : '"流畅 360P"',
-              VideoSize: Config.bilibili.videopriority === true ? (nockData.data.durl[0].size! / (1024 * 1024)).toFixed(2) : videoSize,
+              CommentLength: Config.bilibili.realCommentCount ? Count(infoData.data.data.stat.reply) : String(commentsdata.length),
+              share_url: 'https://b23.tv/' + infoData.data.data.bvid,
+              Clarity: Config.bilibili.videopriority === true ? nockData.data.data.accept_description[0] : '"流畅 360P"',
+              VideoSize: Config.bilibili.videopriority === true ? (nockData.data.data.durl[0].size! / (1024 * 1024)).toFixed(2) : videoSize,
               ImageLength: 0,
-              shareurl: 'https://b23.tv/' + infoData.data.bvid
+              shareurl: 'https://b23.tv/' + infoData.data.data.bvid
             })
             await this.e.reply(img)
           }
@@ -176,7 +177,12 @@ export class Bilibili extends Base {
 
         if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) && !Config.upload.compress) {
           await this.e.reply(`设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n` + '视频太大了，还是去B站看吧~', { reply: true })
-        } else await this.getvideo(Config.bilibili.videopriority === true ? { playUrlData: nockData } : { infoData, playUrlData })
+        } else {
+          await this.getvideo(
+            Config.bilibili.videopriority === true
+              ? { playUrlData: nockData.data }
+              : { infoData: infoData.data, playUrlData: playUrlData.data })
+        }
         break
       }
       case 'bangumi_video_info': {
@@ -186,11 +192,11 @@ export class Bilibili extends Base {
 
         const barray = []
         const msg = []
-        for (let i = 0; i < videoInfo.result.episodes.length; i++) {
-          const totalEpisodes = videoInfo.result.episodes.length
-          const long_title = videoInfo.result.episodes[i].long_title
-          const badge = videoInfo.result.episodes[i].badge
-          const short_link = videoInfo.result.episodes[i].short_link
+        for (let i = 0; i < videoInfo.data.result.episodes.length; i++) {
+          const totalEpisodes = videoInfo.data.result.episodes.length
+          const long_title = videoInfo.data.result.episodes[i].long_title
+          const badge = videoInfo.data.result.episodes[i].badge
+          const short_link = videoInfo.data.result.episodes[i].short_link
           barray.push({
             id: i + 1,
             totalEpisodes,
@@ -209,7 +215,7 @@ export class Bilibili extends Base {
         img = await Render('bilibili/bangumi', {
           saveId: 'bangumi',
           bangumiData: barray,
-          title: videoInfo.result.title
+          title: videoInfo.data.result.title
         })
         await this.e.reply([...img, segment.text('请在120秒内输入 第?集 选择集数')])
         await this.e.reply(segment.text('请在120秒内输入 第?集 选择集数'))
@@ -222,7 +228,7 @@ export class Bilibili extends Base {
           if (/^[一二三四五六七八九十百千万]+$/.test(Episode)) {
             Episode = Common.chineseToArabic(Episode).toString()
           }
-          this.downloadfilename = videoInfo.result.episodes[Number(Episode) - 1].share_copy.substring(0, 50).replace(/[\\/:*?"<>|\r\n\s]/g, ' ')
+          this.downloadfilename = videoInfo.data.result.episodes[Number(Episode) - 1].share_copy.substring(0, 50).replace(/[\\/:*?"<>|\r\n\s]/g, ' ')
           this.e.reply(`收到请求，第${Episode}集\n${this.downloadfilename}\n正在下载中`)
         } else {
           logger.debug(Episode)
@@ -230,8 +236,8 @@ export class Bilibili extends Base {
           return true
         }
         const bangumidataBASEURL = bilibiliApiUrls.番剧视频流信息({
-          cid: videoInfo.result.episodes[Number(Episode) - 1].cid,
-          ep_id: videoInfo.result.episodes[Number(Episode) - 1].ep_id.toString()
+          cid: videoInfo.data.result.episodes[Number(Episode) - 1].cid,
+          ep_id: videoInfo.data.result.episodes[Number(Episode) - 1].ep_id.toString()
         })
         const Params = await genParams(bangumidataBASEURL)
         if (!this.islogin) await this.e.reply('B站ck未配置或已失效，无法获取视频流，可尝试【#B站登录】以配置新ck')
@@ -239,7 +245,7 @@ export class Bilibili extends Base {
           url: bangumidataBASEURL + Params,
           headers: this.headers
         }).getData()
-        if (videoInfo.result.episodes[Number(Episode) - 1].badge === '会员' && !this.isVIP) {
+        if (videoInfo.data.result.episodes[Number(Episode) - 1].badge === '会员' && !this.isVIP) {
           logger.warn('该CK不是大会员，无法获取视频流')
           return true
         }
@@ -255,17 +261,17 @@ export class Bilibili extends Base {
           /** 给视频信息对象删除不符合条件的视频流 */
           const correctList = await bilibiliProcessVideos({
             accept_description: playUrlData.result.accept_description,
-            bvid: videoInfo.result.season_id.toString()
+            bvid: videoInfo.data.result.season_id.toString()
           }, simplify, playUrlData.result.dash.audio[0].base_url)
           playUrlData.result.dash.video = correctList.videoList
           playUrlData.result.cept_description = correctList.accept_description
           await this.getvideo({
-            infoData: videoInfo,
+            infoData: videoInfo.data,
             playUrlData
           })
         } else {
           await this.getvideo({
-            infoData: videoInfo,
+            infoData: videoInfo.data,
             playUrlData
           })
         }

@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import Client, { amagiClient, type APIErrorType, bilibiliErrorCodeMap } from '@ikenxuan/amagi'
+import Client, { type APIErrorType, ApiResponse, bilibiliErrorCodeMap } from '@ikenxuan/amagi/v5'
 import karin, { config, type Contact, logger, Message, segment } from 'node-karin'
 import type { AxiosHeaders, Method, RawAxiosRequestHeaders } from 'node-karin/axios'
 
@@ -84,7 +84,7 @@ export class Base {
   e: Message
   headers: any
   _path: string
-  amagi: amagiClient
+  amagi: ReturnType<typeof Client>
   constructor (e: Message) {
     this.e = e
     this.headers = baseHeaders
@@ -93,7 +93,7 @@ export class Base {
 
     // 使用Proxy包装amagi客户端
     this.amagi = new Proxy(client, {
-      get (target: amagiClient, prop: keyof amagiClient) {
+      get (target: ReturnType<typeof Client>, prop: keyof ReturnType<typeof Client>) {
         const method = target[prop]
         if (typeof method === 'function') {
           return async (...args: any[]) => {
@@ -106,9 +106,9 @@ export class Base {
             }
 
             // 检查抖音数据返回结构
-            if (prop === 'getDouyinData' && (result.status_code !== 0)) {
-              const err = result as APIErrorType<'douyin'>
-              const img = await Render('apiError/index', err)
+            if (prop === 'getDouyinData' && (result.code !== 200)) {
+              const err = result as ApiResponse<APIErrorType<'douyin'>>
+              const img = await Render('apiError/index', err.data)
               // 如果e为空对象才执行发送给主人
               if (Object.keys(e).length === 0) {
                 const botId = statBotId(Config.pushlist)
@@ -118,16 +118,16 @@ export class Base {
                   master = list[1]
                 }
                 await karin.sendMaster(botId.douyin.botId, master, [segment.text('推送任务出错！请即时解决以消除警告'), img[0]])
-                throw new Error(err.amagiMessage)
+                throw new Error(err.data.amagiMessage)
               }
               await e.reply(img)
-              throw new Error(err.amagiMessage)
+              throw new Error(err.data.amagiMessage)
             }
 
             // 检查哔哩哔哩数据返回结构
             if (prop === 'getBilibiliData' && result.code in bilibiliErrorCodeMap) {
-              const err = result as APIErrorType<'bilibili'>
-              const img = await Render('apiError/index', err)
+              const err = result as ApiResponse<APIErrorType<'bilibili'>>
+              const img = await Render('apiError/index', err.data)
               // 如果e为空对象才执行发送给主人
               if (Object.keys(e).length === 0) {
                 const botId = statBotId(Config.pushlist)
@@ -137,10 +137,10 @@ export class Base {
                   master = list[1]
                 }
                 await karin.sendMaster(botId.bilibili.botId, master, [segment.text('推送任务出错！请即时解决以消除警告'), img[0]])
-                throw new Error(err.amagiMessage)
+                throw new Error(err.data.amagiMessage)
               }
               await e.reply(img)
-              throw new Error(err.amagiMessage)
+              throw new Error(err.data.amagiMessage)
             }
             return result
           }

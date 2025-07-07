@@ -1,6 +1,9 @@
+/* eslint-disable prefer-const */
+/* eslint-disable no-unused-vars */
 import fs from 'node:fs'
 
-import { BiliUserProfile, BiliVideoPlayurlIsLogin, getBilibiliData } from '@ikenxuan/amagi'
+import { BiliUserProfile, BiliVideoPlayurlIsLogin, getBilibiliData } from '@ikenxuan/amagi/v5'
+import { ApiResponse } from '@ikenxuan/amagi/v5'
 import type {
   AdapterType,
   ImageElement,
@@ -132,12 +135,12 @@ export class Bilibilipush extends Base {
       let skip = await skipDynamic(data[dynamicId])
       let send_video = true; let img: ImageElement[] = []
       const dynamicCARDINFO = await this.amagi.getBilibiliData('动态卡片数据', { dynamic_id: dynamicId, typeMode: 'strict' })
-      const dycrad = dynamicCARDINFO.data.card && dynamicCARDINFO.data.card.card && JSON.parse(dynamicCARDINFO.data.card.card)
+      const dycrad = dynamicCARDINFO.data.data.card && dynamicCARDINFO.data.data.card.card && JSON.parse(dynamicCARDINFO.data.data.card.card)
 
       if (!skip) {
         const userINFO = await this.amagi.getBilibiliData('用户主页数据', { host_mid: data[dynamicId].host_mid, typeMode: 'strict' })
-        let emojiDATA = await this.amagi.getBilibiliData('Emoji数据')
-        emojiDATA = extractEmojisData(emojiDATA.data.packages)
+        let emojiDATA = await this.amagi.getBilibiliData('Emoji数据') as any
+        emojiDATA = extractEmojisData(emojiDATA.data.data.packages)
 
         logger.debug(`UP: ${data[dynamicId].remark}\n动态id：${dynamicId}\nhttps://t.bilibili.com/${dynamicId}`)
         switch (data[dynamicId].dynamic_type) {
@@ -163,11 +166,11 @@ export class Bilibilipush extends Base {
                 avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
                 frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
                 share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
-                username: checkvip(userINFO.data.card),
-                fans: Count(userINFO.data.follower),
+                username: checkvip(userINFO.data.data.card),
+                fans: Count(userINFO.data.data.follower),
                 user_shortid: data[dynamicId].host_mid,
-                total_favorited: Count(userINFO.data.like_num),
-                following_count: Count(userINFO.data.card.attention),
+                total_favorited: Count(userINFO.data.data.like_num),
+                following_count: Count(userINFO.data.data.attention),
                 decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decorate),
                 render_time: Common.getCurrentTime(),
                 dynamicTYPE: '图文动态推送'
@@ -214,32 +217,33 @@ export class Bilibilipush extends Base {
               const INFODATA = await getBilibiliData('单个视频作品数据', '', { bvid, typeMode: 'strict' })
 
               /** 特殊字段，只有番剧和影视才会有，如果是该类型视频，默认不发送 */
-              if (INFODATA.data.redirect_url) {
+              if (INFODATA.data.data.redirect_url) {
                 send_video = false
-                logger.debug(`UP主：${INFODATA.data.owner.name} 的该动态类型为${logger.yellow('番剧或影视')}，默认跳过不下载，直达：${logger.green(INFODATA.data.redirect_url)}`)
+                logger.debug(`UP主：${INFODATA.data.data.owner.name} 的该动态类型为${logger.yellow('番剧或影视')}，默认跳过不下载，直达：${logger.green(INFODATA.data.redirect_url)}`)
               } else {
-                noCkData = await getBilibiliData('单个视频下载信息数据', '', { avid: aid, cid: INFODATA.data.cid, typeMode: 'strict' })
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                noCkData = await getBilibiliData('单个视频下载信息数据', '', { avid: aid, cid: INFODATA.data.data.cid, typeMode: 'strict' })
               }
               img = await Render('bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {
-                  image_url: [{ image_src: INFODATA.data.pic }],
-                  text: br(INFODATA.data.title),
+                  image_url: [{ image_src: INFODATA.data.data.pic }],
+                  text: br(INFODATA.data.data.title),
                   desc: br(dycrad.desc),
-                  dianzan: Count(INFODATA.data.stat.like),
-                  pinglun: Count(INFODATA.data.stat.reply),
-                  share: Count(INFODATA.data.stat.share),
+                  dianzan: Count(INFODATA.data.data.stat.like),
+                  pinglun: Count(INFODATA.data.data.stat.reply),
+                  share: Count(INFODATA.data.data.stat.share),
                   view: Count(dycrad.stat.view),
                   coin: Count(dycrad.stat.coin),
                   duration_text: data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.duration_text,
-                  create_time: Common.convertTimestampToDateTime(INFODATA.data.ctime),
-                  avatar_url: INFODATA.data.owner.face,
+                  create_time: Common.convertTimestampToDateTime(INFODATA.data.data.ctime),
+                  avatar_url: INFODATA.data.data.owner.face,
                   frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
                   share_url: 'https://www.bilibili.com/video/' + bvid,
-                  username: checkvip(userINFO.data.card),
-                  fans: Count(userINFO.data.follower),
+                  username: checkvip(userINFO.data.data.card),
+                  fans: Count(userINFO.data.data.follower),
                   user_shortid: data[dynamicId].host_mid,
-                  total_favorited: Count(userINFO.data.like_num),
-                  following_count: Count(userINFO.data.card.attention),
+                  total_favorited: Count(userINFO.data.data.like_num),
+                  following_count: Count(userINFO.data.data.attention),
                   dynamicTYPE: '视频动态推送'
                 }
               )
@@ -253,10 +257,10 @@ export class Bilibilipush extends Base {
                 image_url: [{ image_src: dycrad.live_play_info.cover }],
                 text: br(dycrad.live_play_info.title),
                 liveinf: br(`${dycrad.live_play_info.area_name} | 房间号: ${dycrad.live_play_info.room_id}`),
-                username: checkvip(userINFO.data.card),
-                avatar_url: userINFO.data.card.face,
+                username: checkvip(userINFO.data.data.card),
+                avatar_url: userINFO.data.data.card.face,
                 frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
-                fans: Count(userINFO.data.follower),
+                fans: Count(userINFO.data.data.follower),
                 create_time: Common.convertTimestampToDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
                 now_time: Common.getCurrentTime(),
                 share_url: 'https://live.bilibili.com/' + dycrad.live_play_info.room_id,
@@ -342,11 +346,11 @@ export class Bilibilipush extends Base {
               avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
               frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
               share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
-              username: checkvip(userINFO.data.card),
-              fans: Count(userINFO.data.follower),
+              username: checkvip(userINFO.data.data.card),
+              fans: Count(userINFO.data.data.follower),
               user_shortid: data[dynamicId].Dynamic_Data.modules.module_author.mid,
-              total_favorited: Count(userINFO.data.like_num),
-              following_count: Count(userINFO.data.card.attention),
+              total_favorited: Count(userINFO.data.data.like_num),
+              following_count: Count(userINFO.data.data.card.attention),
               dynamicTYPE: '转发动态推送',
               decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decorate),
               render_time: Common.getCurrentTime(),
@@ -385,7 +389,7 @@ export class Bilibilipush extends Base {
                     avid: dycrad.aid,
                     cid: dycrad.cid,
                     typeMode: 'strict'
-                  }) as BiliVideoPlayurlIsLogin
+                  }) as ApiResponse<BiliVideoPlayurlIsLogin>
                   /** 提取出视频流信息对象，并排除清晰度重复的视频流 */
                   const simplify = playUrlData.data.dash.video.filter((item: { id: number }, index: any, self: any[]) => {
                     return self.findIndex((t: { id: any }) => {
@@ -453,7 +457,7 @@ export class Bilibilipush extends Base {
                             // 使用文件上传
                             return await uploadFile(
                               this.e,
-                              { filepath: filePath, totalBytes: fileSizeInMB, originTitle: `${infoData.data.desc.substring(0, 50).replace(/[\\/:\*\?"<>\|\r\n\s]/g, ' ')}` },
+                              { filepath: filePath, totalBytes: fileSizeInMB, originTitle: `${infoData.data.desc.substring(0, 50).replace(/[\\/:\\*\\?"<>\\|\r\n\s]/g, ' ')}` },
                               '',
                               { useGroupFile: true, active: true, activeOption: { group_id: groupId, uin: botId } })
                           } else {
@@ -514,9 +518,9 @@ export class Bilibilipush extends Base {
       const filteredUserList = userList.filter(item => item.switch !== false)
       for (const item of filteredUserList) {
         const dynamic_list = await this.amagi.getBilibiliData('用户主页动态列表数据', { host_mid: item.host_mid, typeMode: 'strict' })
-        if (dynamic_list.data.items.length > 0) {
+        if (dynamic_list.data.data.items.length > 0) {
           // 遍历接口返回的视频列表
-          for (const dynamic of dynamic_list.data.items) {
+          for (const dynamic of dynamic_list.data.data.items) {
             const now = Date.now()
             // B站的是秒为单位的时间戳，需要乘 1000 转为毫秒
             const createTime = dynamic.modules.module_author.pub_ts
@@ -825,7 +829,7 @@ function br (data: string): string {
  * @param member 成员对象，需要包含vip属性，该属性应包含vipStatus和nickname_color（可选）。
  * @returns 返回成员名称的HTML标签字符串，VIP成员将显示为特定颜色，非VIP成员显示为默认颜色。
  */
-function checkvip (member: any): string {
+function checkvip (member: BiliUserProfile['data']['card']): string {
   // 根据VIP状态选择不同的颜色显示成员名称
   return member.vip.status === 1
     ? `<span style="color: ${member.vip.nickname_color ?? '#FB7299'}; font-weight: 700;">${member.name}</span>`
