@@ -1,4 +1,4 @@
-import type { DySearchInfo } from '@ikenxuan/amagi'
+import type { ApiResponse, DySearchInfo, DyUserInfo } from '@ikenxuan/amagi/v5'
 import type { AdapterType, ImageElement, Message } from 'node-karin'
 import karin from 'node-karin'
 import { common, logger, segment } from 'node-karin'
@@ -31,7 +31,7 @@ export type DouyinPushItem = {
   /** 作品详情信息 */
   Detail_Data: {
     /** 博主主页信息 */
-    user_info: any
+    user_info: ApiResponse<DyUserInfo>
     liveStatus?: { liveStatus: 'open' | 'close', isChanged: boolean, isliving: boolean }
     [key: string]: any
   }
@@ -130,9 +130,9 @@ export class DouYinpush extends Base {
             liveinf: `${Detail_Data.live_data.data.partition_road_map?.partition?.title ?? Detail_Data.live_data.data.data[0].title} | 房间号: ${Detail_Data.room_data.owner.web_rid}`,
             在线观众: this.count(Detail_Data.live_data.data.data[0].room_view_stats.display_value),
             总观看次数: this.count(Detail_Data.live_data.data.data[0].stats.total_user_str),
-            username: Detail_Data.user_info.user.nickname,
-            avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.user.avatar_larger.uri,
-            fans: this.count(Detail_Data.user_info.user.follower_count),
+            username: Detail_Data.user_info.data.user.nickname,
+            avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
+            fans: this.count(Detail_Data.user_info.data.user.follower_count),
             create_time: Common.convertTimestampToDateTime(Date.now() / 1000),
             now_time: Common.convertTimestampToDateTime(Date.now() / 1000),
             share_url: 'https://live.douyin.com/' + Detail_Data.room_data.owner.web_rid,
@@ -157,13 +157,13 @@ export class DouYinpush extends Base {
             share: this.count(Detail_Data.statistics.share_count),
             shouchang: this.count(Detail_Data.statistics.collect_count),
             create_time: Common.convertTimestampToDateTime(pushItem.create_time / 1000),
-            avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.user.avatar_larger.uri,
+            avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
             share_url: Config.douyin.push.shareType === 'web' ? realUrl : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`,
             username: Detail_Data.author.nickname,
-            抖音号: Detail_Data.user_info.user.unique_id === '' ? Detail_Data.user_info.user.short_id : Detail_Data.user_info.user.unique_id,
-            粉丝: this.count(Detail_Data.user_info.user.follower_count),
-            获赞: this.count(Detail_Data.user_info.user.total_favorited),
-            关注: this.count(Detail_Data.user_info.user.following_count)
+            抖音号: Detail_Data.user_info.data.user.unique_id === '' ? Detail_Data.user_info.data.user.short_id : Detail_Data.user_info.data.user.unique_id,
+            粉丝: this.count(Detail_Data.user_info.data.user.follower_count),
+            获赞: this.count(Detail_Data.user_info.data.user.total_favorited),
+            关注: this.count(Detail_Data.user_info.data.user.following_count)
           })
         }
       }

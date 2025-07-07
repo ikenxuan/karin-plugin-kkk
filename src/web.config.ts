@@ -775,9 +775,8 @@ export const webConfig = defineConfig({
                 data: [],
                 template: components.input.string('accordion-item-douyin:push:douyin:group_id', {
                   placeholder: '必填，不能出现空值',
-                  label: '',
+                  label: '群号:机器人账号',
                   color: 'warning',
-                  errorMessage: '你不设置群号和Bot号，我怎么知道你要用什么推送给谁呢？',
                   rules: [
                     {
                       regex: /.+:.+/,
@@ -886,7 +885,6 @@ export const webConfig = defineConfig({
                   placeholder: '必填，不能出现空值',
                   label: '',
                   color: 'warning',
-                  errorMessage: '你不设置群号和Bot号，我怎么知道你要用什么推送给谁呢？',
                   rules: [
                     {
                       regex: /.+:.+/,
