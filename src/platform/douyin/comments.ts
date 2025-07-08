@@ -11,43 +11,44 @@ import { Common, Config, Networks } from '@/module/utils'
  */
 export async function douyinComments (data: any, emojidata: any): Promise<any> {
   let jsonArray: any[] = []
-  if (data.comments === null) return []
+  if (data.data.comments === null) return []
 
-  for (let i = 0; i < data.comments.length; i++) {
-    const cid = data.comments[i].cid
-    const aweme_id = data.comments[i].aweme_id
-    const nickname = data.comments[i].user.nickname
-    const userimageurl = data.comments[i].user.avatar_thumb.url_list[0]
-    const text = data.comments[i].text
-    const ip = data.comments[i].ip_label ?? '未知'
-    const time = data.comments[i].create_time
-    const label_type = data.comments[i].label_type ?? -1
-    const sticker = data.comments[i].sticker ? data.comments[i].sticker.animate_url.url_list[0] : null
-    const digg_count = data.comments[i].digg_count
+  let id = 1
+  for (const comment of data.data.comments) {
+    const cid = comment.cid
+    const aweme_id = comment.aweme_id
+    const nickname = comment.user.nickname
+    const userimageurl = comment.user.avatar_thumb.url_list[0]
+    const text = comment.text
+    const ip = comment.ip_label ?? '未知'
+    const time = comment.create_time
+    const label_type = comment.label_type ?? -1
+    const sticker = comment.sticker ? comment.sticker.animate_url.url_list[0] : null
+    const digg_count = comment.digg_count
     const imageurl =
-      data.comments[i].image_list &&
-        data.comments[i].image_list?.[0] &&
-        data.comments[i].image_list?.[0].origin_url &&
-        data.comments[i].image_list?.[0].origin_url.url_list
-        ? data.comments[i].image_list?.[0].origin_url.url_list[0]
+      comment.image_list &&
+        comment.image_list?.[0] &&
+        comment.image_list?.[0].origin_url &&
+        comment.image_list?.[0].origin_url.url_list
+        ? comment.image_list?.[0].origin_url.url_list[0]
         : null
-    const status_label = data.comments[i].label_list?.[0]?.text ?? null
+    const status_label = comment.label_list?.[0]?.text ?? null
     const userintextlongid =
-      data.comments[i].text_extra && data.comments[i].text_extra[0] && data.comments[i].text_extra[0].sec_uid
-        ? data.comments[i].text_extra[0].sec_uid && data.comments[i].text_extra.map((extra: { sec_uid: string }) => extra.sec_uid)
+      comment.text_extra && comment.text_extra[0] && comment.text_extra[0].sec_uid
+        ? comment.text_extra[0].sec_uid && comment.text_extra.map((extra: { sec_uid: string }) => extra.sec_uid)
         : null
     const search_text =
-      data.comments[i].text_extra && data.comments[i].text_extra[0] && data.comments[i].text_extra[0].search_text
-        ? data.comments[i].text_extra[0].search_text &&
-        data.comments[i].text_extra.map((extra: { search_text: string; search_query_id: string }) => ({
+      comment.text_extra && comment.text_extra[0] && comment.text_extra[0].search_text
+        ? comment.text_extra[0].search_text &&
+        comment.text_extra.map((extra: { search_text: string; search_query_id: string }) => ({
           search_text: extra.search_text,
           search_query_id: extra.search_query_id
         }))
         : null
     const relativeTime = getRelativeTimeFromTimestamp(time)
-    const reply_comment_total = data.comments[i].reply_comment_total
+    const reply_comment_total = comment.reply_comment_total
     const commentObj = {
-      id: i + 1,
+      id: id++,
       cid,
       aweme_id,
       nickname,
