@@ -1,5 +1,12 @@
 # 变更日志
 
+## [1.7.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.7.3...v1.7.4) (2025-07-08)
+
+
+### ♻️ 代码重构
+
+* **douyin:** 修改评论数据处理逻辑以适应新数据结构 ([73a7384](https://github.com/ikenxuan/karin-plugin-kkk/commit/73a7384eb70c73e6a4ec803534f044b1dbade633))
+
 ## [1.7.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.7.2...v1.7.3) (2025-07-07)
 
 
