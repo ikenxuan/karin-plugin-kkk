@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import { getBilibiliData } from '@ikenxuan/amagi'
+import { getBilibiliData } from '@ikenxuan/amagi/v5'
 import type { Message } from 'node-karin'
 import { common, segment } from 'node-karin'
 import * as QRCode from 'qrcode'
@@ -10,11 +10,11 @@ import { Common, Config } from '@/module/utils'
 export const bilibiliLogin = async (e: Message) => {
   /** 申请二维码 */
   const qrcodeurl = await getBilibiliData('申请二维码')
-  const qrimg = await QRCode.toDataURL(qrcodeurl.data.url)
+  const qrimg = await QRCode.toDataURL(qrcodeurl.data.data.url)
   const base64Data = qrimg ? qrimg.replace(/^data:image\/\w+;base64,/, '') : ''
   const buffer = Buffer.from(base64Data, 'base64')
   fs.writeFileSync(`${Common.tempDri.default}BilibiliLoginQrcode.png`, buffer)
-  const qrcode_key = qrcodeurl.data.qrcode_key
+  const qrcode_key = qrcodeurl.data.data.qrcode_key
   const msg_id = []
   const message1 = await e.reply('免责声明:\n您将通过扫码完成获取哔哩哔哩网页端的用户登录凭证（ck），该ck将用于请求哔哩哔哩WEB API接口。\n本BOT不会上传任何有关你的信息到第三方，所配置的 ck 只会用于请求官方 API 接口。\n我方仅提供视频解析及相关哔哩哔哩内容服务,若您的账号封禁、被盗等处罚与我方无关。\n害怕风险请勿扫码 ~')
   const message2 = await e.reply([segment.image(qrimg.split(';')[1].replace('base64,', 'base64://')), segment.text('请在120秒内通过哔哩哔哩APP扫码进行登录')], { reply: true })
@@ -25,10 +25,10 @@ export const bilibiliLogin = async (e: Message) => {
   let completedCase0 = false
   for (let i = 0; i < 33; i++) {
     const qrcodestatusdata = await getBilibiliData('二维码状态', { qrcode_key })
-    switch (qrcodestatusdata.data.data.code) {
+    switch (qrcodestatusdata.data.data.data.code) {
       case 0: {
         // console.log(qrcodestatusdata.data.data.refresh_token)
-        Config.Modify('cookies', 'bilibili', Common.formatCookies(qrcodestatusdata.headers['set-cookie']))
+        Config.Modify('cookies', 'bilibili', Common.formatCookies(qrcodestatusdata.data.headers['set-cookie']))
         // Config.bilibilirefresh_token = qrcodestatusdata.data.data.refresh_token
         await e.reply('登录成功！用户登录凭证已保存至cookies.yaml', { reply: true })
         // 批量撤回

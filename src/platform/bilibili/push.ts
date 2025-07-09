@@ -391,24 +391,24 @@ export class Bilibilipush extends Base {
                     typeMode: 'strict'
                   }) as ApiResponse<BiliVideoPlayurlIsLogin>
                   /** 提取出视频流信息对象，并排除清晰度重复的视频流 */
-                  const simplify = playUrlData.data.dash.video.filter((item: { id: number }, index: any, self: any[]) => {
+                  const simplify = playUrlData.data.data.dash.video.filter((item, index: any, self: any[]) => {
                     return self.findIndex((t: { id: any }) => {
                       return t.id === item.id
                     }) === index
                   })
                   /** 替换原始的视频信息对象 */
-                  playUrlData.data.dash.video = simplify
+                  playUrlData.data.data.dash.video = simplify
                   /** 给视频信息对象删除不符合条件的视频流 */
                   correctList = await bilibiliProcessVideos({
-                    accept_description: playUrlData.data.accept_description,
+                    accept_description: playUrlData.data.data.accept_description,
                     bvid: dynamicCARDINFO.data.card.desc.bvid,
                     qn: Config.bilibili.push.pushVideoQuality,
                     maxAutoVideoSize: Config.bilibili.push.pushMaxAutoVideoSize
-                  }, simplify, playUrlData.data.dash.audio[0].base_url)
-                  playUrlData.data.dash.video = correctList.videoList
-                  playUrlData.data.accept_description = correctList.accept_description
+                  }, simplify, playUrlData.data.data.dash.audio[0].base_url)
+                  playUrlData.data.data.dash.video = correctList.videoList
+                  playUrlData.data.data.accept_description = correctList.accept_description
                   /** 获取第一个视频流的大小 */
-                  videoSize = await getvideosize(correctList.videoList[0].base_url, playUrlData.data.dash.audio[0].base_url, dynamicCARDINFO.data.card.desc.bvid)
+                  videoSize = await getvideosize(correctList.videoList[0].base_url, playUrlData.data.data.dash.audio[0].base_url, dynamicCARDINFO.data.card.desc.bvid)
                   if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) && !Config.upload.compress) {
                     await karin.sendMsg(
                       botId,
@@ -423,16 +423,16 @@ export class Bilibilipush extends Base {
                   logger.mark(`当前处于自动推送状态，解析到的视频大小为 ${logger.yellow(Number(videoSize))} MB`)
                   const infoData = await this.amagi.getBilibiliData('单个视频作品数据', { bvid: dynamicCARDINFO.data.card.desc.bvid, typeMode: 'strict' })
                   const mp4File = await downloadFile(
-                    playUrlData.data?.dash?.video[0].base_url,
+                    playUrlData.data?.data?.dash?.video[0].base_url,
                     {
-                      title: `Bil_V_${infoData.data.bvid}.mp4`,
+                      title: `Bil_V_${infoData.data.data.bvid}.mp4`,
                       headers: bilibiliBaseHeaders
                     }
                   )
                   const mp3File = await downloadFile(
-                    playUrlData.data?.dash?.audio[0].base_url,
+                    playUrlData.data?.data?.dash?.audio[0].base_url,
                     {
-                      title: `Bil_A_${infoData.data.bvid}.mp3`,
+                      title: `Bil_A_${infoData.data.data.bvid}.mp3`,
                       headers: bilibiliBaseHeaders
                     }
                   )
@@ -441,7 +441,8 @@ export class Bilibilipush extends Base {
                     await mergeFile('二合一（视频 + 音频）', {
                       path: mp4File.filepath,
                       path2: mp3File.filepath,
-                      resultPath: Common.tempDri.video + `Bil_Result_${infoData.data.bvid}.mp4`,
+                      resultPath: Common.tempDri.video + `Bil_Result_${infoData.data.data.bvid}.mp4`,
+
                       callback: async (success: boolean, resultPath: string): Promise<boolean> => {
                         if (success) {
                           const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
@@ -457,7 +458,7 @@ export class Bilibilipush extends Base {
                             // 使用文件上传
                             return await uploadFile(
                               this.e,
-                              { filepath: filePath, totalBytes: fileSizeInMB, originTitle: `${infoData.data.desc.substring(0, 50).replace(/[\\/:\\*\\?"<>\\|\r\n\s]/g, ' ')}` },
+                              { filepath: filePath, totalBytes: fileSizeInMB, originTitle: `${infoData.data.data.desc.substring(0, 50).replace(/[\\/:\\*\\?"<>\\|\r\n\s]/g, ' ')}` },
                               '',
                               { useGroupFile: true, active: true, activeOption: { group_id: groupId, uin: botId } })
                           } else {
@@ -727,9 +728,9 @@ export class Bilibilipush extends Base {
       for (const i of abclist) {
         // 从外部数据源获取用户备注信息
         const resp = await this.amagi.getBilibiliData('用户主页数据', { host_mid: i.host_mid, typeMode: 'strict' })
-        const remark = resp.data.card.name
+        const remark = resp.data.data.card.name
         // 在配置文件中找到对应的用户，并更新其备注信息
-        const matchingItemIndex = config.bilibili.findIndex((item: { host_mid: number }) => item.host_mid === i.host_mid)
+        const matchingItemIndex = config.bilibili.findIndex(item => item.host_mid === i.host_mid)
         if (matchingItemIndex !== -1) {
           config.bilibili[matchingItemIndex].remark = remark
         }
@@ -800,12 +801,12 @@ export class Bilibilipush extends Base {
       const userInfo = await this.amagi.getBilibiliData('用户主页数据', { host_mid, typeMode: 'strict' })
 
       renderOpt.push({
-        avatar_img: userInfo.data.card.face,
-        username: userInfo.data.card.name,
-        host_mid: userInfo.data.card.mid,
-        fans: Count(userInfo.data.follower),
-        total_favorited: Count(userInfo.data.like_num),
-        following_count: Count(userInfo.data.card.attention)
+        avatar_img: userInfo.data.data.card.face,
+        username: userInfo.data.data.card.name,
+        host_mid: userInfo.data.data.card.mid,
+        fans: Count(userInfo.data.data.follower),
+        total_favorited: Count(userInfo.data.data.like_num),
+        following_count: Count(userInfo.data.data.card.attention)
       })
     }
 

@@ -201,7 +201,7 @@ class FilterTag {
  * 备份旧版 Sequelize 数据库文件（仅在备份文件不存在时执行）
  * 用于从 Sequelize 迁移到 TypeORM 的测试版本
  */
-const backupOldDatabase = (() => {
+(() => {
   const dataDir = join(`${karinPathBase}/${Root.pluginName}/data`)
   const oldDbPath = join(dataDir, 'bilibili.db')
   const backupDbPath = join(dataDir, 'bilibili_sequelize_backup.db')
@@ -731,7 +731,7 @@ export class BilibiliDBBase {
       allTags.some(tag => tag.includes(filterTag))
     )
 
-    logger.warn(`
+    logger.debug(`
     UP主UID：${PushItem.host_mid}
     检查内容：${allText}
     检查标签：${allTags.join(', ')}

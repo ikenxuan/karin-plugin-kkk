@@ -1,4 +1,4 @@
-import { getBilibiliData, getDouyinData } from '@ikenxuan/amagi'
+import { getBilibiliData, getDouyinData } from '@ikenxuan/amagi/v5'
 import karin from 'node-karin'
 
 import { Config } from '@/module'
@@ -28,7 +28,7 @@ export const forcePush = karin.command(/#(抖音|B站)(全部)?强制推送/, as
 
 export const setdyPush = karin.command(/^#设置抖音推送/, async (e) => {
   const data = await getDouyinData('搜索数据', Config.cookies.douyin, { query: e.msg.replace(/^#设置抖音推送/, ''), typeMode: 'strict' })
-  await new DouYinpush(e).setting(data)
+  await new DouYinpush(e).setting(data.data)
   return true
 }, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.douyin.push.permission, dsbAdapter: ['qqbot'] })
 
@@ -40,7 +40,7 @@ export const setbiliPush = karin.command(/^#设置[bB]站推送(?:[Uu][Ii][Dd]:)
   const match = /^#设置[bB]站推送(?:UID:)?(\d+)$/.exec(e.msg)
   if (match && match[1]) {
     const data = await getBilibiliData('用户主页数据', Config.cookies.bilibili, { host_mid: Number(match[1]), typeMode: 'strict' })
-    await new Bilibilipush(e).setting(data)
+    await new Bilibilipush(e).setting(data.data)
   }
   return true
 }, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.bilibili.push.permission, dsbAdapter: ['qqbot'] })

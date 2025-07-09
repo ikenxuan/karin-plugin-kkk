@@ -5,6 +5,8 @@ import type {
   BiliBangumiVideoPlayurlIsLogin,
   BiliBangumiVideoPlayurlNoLogin,
   BiliBiliVideoPlayurlNoLogin,
+  BiliDynamicCard,
+  BiliDynamicInfo,
   BiliOneWork,
   BiliVideoPlayurlIsLogin
 } from '@ikenxuan/amagi'
@@ -81,12 +83,6 @@ export class Bilibili extends Base {
         }) as ApiResponse<BiliVideoPlayurlIsLogin>
         // const playUrl = bilibiliApiUrls.视频流信息({ avid: infoData.data.aid, cid: infoData.data.cid })
         this.islogin = (await checkCk()).Status === 'isLogin'
-        const commentsData = await this.amagi.getBilibiliData('评论数据', {
-          number: Config.bilibili.numcomment,
-          type: 1,
-          oid: infoData.data.data.aid,
-          typeMode: 'strict'
-        }) as ApiResponse<BiliBangumiVideoInfo>
 
         const { owner, pic, title, stat, desc } = infoData.data.data
         const { name } = owner
@@ -157,6 +153,12 @@ export class Bilibili extends Base {
           videoSize = (playUrlData.data.data.durl[0].size / (1024 * 1024)).toFixed(2)
         }
         if (Config.bilibili.comment) {
+          const commentsData = await this.amagi.getBilibiliData('评论数据', {
+            number: Config.bilibili.numcomment,
+            type: 1,
+            oid: infoData.data.data.aid,
+            typeMode: 'strict'
+          })
           const commentsdata = bilibiliComments(commentsData.data)
           if (!commentsdata?.length) {
             await this.e.reply('这个视频没有评论 ~')
@@ -279,33 +281,34 @@ export class Bilibili extends Base {
         break
       }
       case 'dynamic_info': {
-        const dynamicInfo = await this.amagi.getBilibiliData('动态详情数据', { dynamic_id: iddata.dynamic_id })
-        const dynamicInfoCard = await this.amagi.getBilibiliData('动态卡片数据', { dynamic_id: dynamicInfo.data.item.id_str, typeMode: 'strict' })
-        const commentsData = dynamicInfo.data.item.type !== DynamicType.LIVE_RCMD && await this.amagi.getBilibiliData('评论数据', {
-          type: mapping_table(dynamicInfo.data.item.type),
-          oid: oid(dynamicInfo, dynamicInfoCard),
+        const dynamicInfo = await this.amagi.getBilibiliData('动态详情数据', { dynamic_id: iddata.dynamic_id, typeMode: 'strict' })
+        const dynamicInfoCard = await this.amagi.getBilibiliData('动态卡片数据', { dynamic_id: dynamicInfo.data.data.item.id_str, typeMode: 'strict' })
+        const commentsData = dynamicInfo.data.data.item.type !== DynamicType.LIVE_RCMD && await this.amagi.getBilibiliData('评论数据', {
+          type: mapping_table(dynamicInfo.data.data.item.type),
+          oid: oid(dynamicInfo.data, dynamicInfoCard.data),
           number: Config.bilibili.numcomment,
           typeMode: 'strict'
         })
-        const dynamicCARD = JSON.parse(dynamicInfoCard.data.card.card)
-        const userProfileData = await this.amagi.getBilibiliData('用户主页数据', { host_mid: dynamicInfo.data.item.modules.module_author.mid, typeMode: 'strict' })
+        const dynamicCARD = JSON.parse(dynamicInfoCard.data.data.card.card)
+        const userProfileData = await this.amagi.getBilibiliData('用户主页数据', { host_mid: dynamicInfo.data.data.item.modules.module_author.mid, typeMode: 'strict' })
 
-        switch (dynamicInfo.data.item.type) {
+        switch (dynamicInfo.data.data.item.type) {
           /** 图文、纯图 */
           case DynamicType.DRAW: {
             const imgArray = []
-            for (const img of dynamicInfo.data.item.modules.module_dynamic.major?.draw?.items) {
+            for (const img of dynamicInfo.data.data.item.modules.module_dynamic.major?.draw?.items) {
               imgArray.push(segment.image(img.src))
             }
 
-            if (Config.bilibili.comment) {
-              const commentsdata = bilibiliComments(commentsData)
+            if (Config.bilibili.comment && commentsData) {
+              const commentsdata = bilibiliComments(commentsData.data)
               img = await Render('bilibili/comment', {
                 Type: '动态',
                 CommentsData: commentsdata,
                 CommentLength: String(commentsdata?.length ?? 0),
-                share_url: 'https://t.bilibili.com/' + dynamicInfo.data.item.id_str,
-                ImageLength: dynamicInfo.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? '动态中没有附带图片',
+                share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
+                ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? '动态中没有附带图片',
+
                 shareurl: '动态分享链接'
               })
               if (imgArray.length === 1) await this.e.reply(imgArray[0])
@@ -316,33 +319,34 @@ export class Bilibili extends Base {
               await this.e.reply(img)
             }
 
-            const dynamicCARD = JSON.parse(dynamicInfoCard.data.card.card)
+            const dynamicCARD = JSON.parse(dynamicInfoCard.data.data.card.card)
 
-            if ('topic' in dynamicInfo.data.item.modules.module_dynamic && dynamicInfo.data.item.modules.module_dynamic.topic !== null) {
-              const name = dynamicInfo.data.item.modules.module_dynamic.topic.name
-              dynamicInfo.data.item.modules.module_dynamic.desc.rich_text_nodes.unshift({
+            if ('topic' in dynamicInfo.data.data.item.modules.module_dynamic && dynamicInfo.data.data.item.modules.module_dynamic.topic !== null) {
+              const name = (dynamicInfo.data.data.item.modules.module_dynamic.topic as { name: string }).name
+              dynamicInfo.data.data.item.modules.module_dynamic.desc.rich_text_nodes.unshift({
                 orig_text: name,
+                jump_url: '',
                 text: name,
                 type: 'topic'
               })
-              dynamicInfo.data.item.modules.module_dynamic.desc.text = `${name}\n\n` + dynamicInfo.data.item.modules.module_dynamic.desc.text
+              dynamicInfo.data.data.item.modules.module_dynamic.desc.text = `${name}\n\n` + dynamicInfo.data.data.item.modules.module_dynamic.desc.text
             }
             await this.e.reply(await Render('bilibili/dynamic/DYNAMIC_TYPE_DRAW', {
               image_url: cover(dynamicCARD.item.pictures),
-              text: replacetext(br(dynamicInfo.data.item.modules.module_dynamic.desc.text), dynamicInfo.data.item.modules.module_dynamic.desc.rich_text_nodes),
-              dianzan: Count(dynamicInfo.data.item.modules.module_stat.like.count),
-              pinglun: Count(dynamicInfo.data.item.modules.module_stat.comment.count),
-              share: Count(dynamicInfo.data.item.modules.module_stat.forward.count),
-              create_time: dynamicInfo.data.item.modules.module_author.pub_time,
+              text: replacetext(br(dynamicInfo.data.data.item.modules.module_dynamic.desc.text), dynamicInfo.data.data.item.modules.module_dynamic.desc.rich_text_nodes),
+              dianzan: Count(dynamicInfo.data.data.item.modules.module_stat.like.count),
+              pinglun: Count(dynamicInfo.data.data.item.modules.module_stat.comment.count),
+              share: Count(dynamicInfo.data.data.item.modules.module_stat.forward.count),
+              create_time: dynamicInfo.data.data.item.modules.module_author.pub_time,
               avatar_url: dynamicInfo.data.item.modules.module_author.face,
-              frame: dynamicInfo.data.item.modules.module_author.pendant.image,
-              share_url: 'https://t.bilibili.com/' + dynamicInfo.data.item.id_str,
-              username: checkvip(userProfileData.data.card),
-              fans: Count(userProfileData.data.follower),
-              user_shortid: dynamicInfo.data.item.modules.module_author.mid,
-              total_favorited: Count(userProfileData.data.like_num),
-              following_count: Count(userProfileData.data.card.attention),
-              decoration_card: generateDecorationCard(dynamicInfo.data.item.modules.module_author.decorate),
+              frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
+              share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
+              username: checkvip(userProfileData.data.data.card),
+              fans: Count(userProfileData.data.data.follower),
+              user_shortid: dynamicInfo.data.data.item.modules.module_author.mid,
+              total_favorited: Count(userProfileData.data.data.like_num),
+              following_count: Count(userProfileData.data.data.card.attention),
+              decoration_card: generateDecorationCard(dynamicInfo.data.data.item.modules.module_author.decorate),
               render_time: Common.getCurrentTime(),
               dynamicTYPE: '图文动态'
             }))
@@ -350,32 +354,33 @@ export class Bilibili extends Base {
           }
           /** 纯文 */
           case DynamicType.WORD: {
-            const text = replacetext(br(dynamicInfo.data.item.modules.module_dynamic.desc.text), dynamicInfo.data.item.modules.module_dynamic.desc.rich_text_nodes)
+            const text = replacetext(br(dynamicInfo.data.data.item.modules.module_dynamic.desc.text), dynamicInfo.data.data.item.modules.module_dynamic.desc.rich_text_nodes)
+
             await this.e.reply(
               await Render('bilibili/dynamic/DYNAMIC_TYPE_WORD', {
                 text,
-                dianzan: Count(dynamicInfo.data.item.modules.module_stat.like.count),
-                pinglun: Count(dynamicInfo.data.item.modules.module_stat.comment.count),
-                share: Count(dynamicInfo.data.item.modules.module_stat.forward.count),
-                create_time: dynamicInfo.data.item.modules.module_author.pub_time,
-                avatar_url: dynamicInfo.data.item.modules.module_author.face,
-                frame: dynamicInfo.data.item.modules.module_author.pendant.image,
-                share_url: 'https://t.bilibili.com/' + dynamicInfo.data.item.id_str,
-                username: checkvip(dynamicInfo.data.card),
-                fans: Count(dynamicInfo.data.follower),
-                user_shortid: dynamicInfo.data.item.modules.module_author.mid,
-                total_favorited: Count(userProfileData.data.like_num),
-                following_count: Count(userProfileData.data.card.attention),
+                dianzan: Count(dynamicInfo.data.data.item.modules.module_stat.like.count),
+                pinglun: Count(dynamicInfo.data.data.item.modules.module_stat.comment.count),
+                share: Count(dynamicInfo.data.data.item.modules.module_stat.forward.count),
+                create_time: dynamicInfo.data.data.item.modules.module_author.pub_time,
+                avatar_url: dynamicInfo.data.data.item.modules.module_author.face,
+                frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
+                share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
+                username: checkvip(dynamicInfo.data.data.card),
+                fans: Count(dynamicInfo.data.data.follower),
+                user_shortid: dynamicInfo.data.data.item.modules.module_author.mid,
+                total_favorited: Count(userProfileData.data.data.like_num),
+                following_count: Count(userProfileData.data.data.card.attention),
                 dynamicTYPE: '纯文动态'
               })
             )
-            await this.e.reply(
+            commentsData && await this.e.reply(
               await Render('bilibili/comment', {
                 Type: '动态',
-                CommentsData: bilibiliComments(commentsData),
-                CommentLength: String((bilibiliComments(commentsData)?.length) ? bilibiliComments(commentsData).length : 0),
-                share_url: 'https://t.bilibili.com/' + dynamicInfo.data.item.id_str,
-                ImageLength: dynamicInfo.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? '动态中没有附带图片',
+                CommentsData: bilibiliComments(commentsData.data),
+                CommentLength: String((bilibiliComments(commentsData.data)?.length) ? bilibiliComments(commentsData.data).length : 0),
+                share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
+                ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? '动态中没有附带图片',
                 shareurl: '动态分享链接'
               })
             )
@@ -383,58 +388,59 @@ export class Bilibili extends Base {
           }
           /** 转发动态 */
           case DynamicType.FORWARD: {
-            const text = replacetext(br(dynamicInfo.data.item.modules.module_dynamic.desc.text), dynamicInfo.data.item.modules.module_dynamic.desc.rich_text_nodes)
+            const text = replacetext(br(dynamicInfo.data.data.item.modules.module_dynamic.desc.text), dynamicInfo.data.data.item.modules.module_dynamic.desc.rich_text_nodes)
             let data = {}
-            switch (dynamicInfo.data.item.orig.type) {
+            switch (dynamicInfo.data.data.item.orig.type) {
               case DynamicType.AV: {
                 data = {
-                  username: checkvip(dynamicInfo.data.item.orig.modules.module_author),
-                  pub_action: dynamicInfo.data.item.orig.modules.module_author.pub_action,
-                  avatar_url: dynamicInfo.data.item.orig.modules.module_author.face,
-                  duration_text: dynamicInfo.data.item.orig.modules.module_dynamic.major.archive.duration_text,
-                  title: dynamicInfo.data.item.orig.modules.module_dynamic.major.archive.title,
-                  danmaku: dynamicInfo.data.item.orig.modules.module_dynamic.major.archive.stat.danmaku,
-                  play: dynamicInfo.data.item.orig.modules.module_dynamic.major.archive.stat.play,
-                  cover: dynamicInfo.data.item.orig.modules.module_dynamic.major.archive.cover,
-                  create_time: Common.convertTimestampToDateTime(dynamicInfo.data.item.orig.modules.module_author.pub_ts),
-                  decoration_card: generateDecorationCard(dynamicInfo.data.item.orig.modules.module_author.decorate),
-                  frame: dynamicInfo.data.item.orig.modules.module_author.pendant.image
+                  username: checkvip(dynamicInfo.data.data.item.orig.modules.module_author),
+                  pub_action: dynamicInfo.data.data.item.orig.modules.module_author.pub_action,
+                  avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
+                  duration_text: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.duration_text,
+                  title: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.title,
+                  danmaku: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.stat.danmaku,
+                  view: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.stat.view,
+                  play: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.stat.play,
+                  cover: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.cover,
+                  create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
+                  decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decorate),
+                  frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image
                 }
                 break
               }
               case DynamicType.DRAW: {
-                const dynamicCARD = await getBilibiliData('动态卡片数据', Config.cookies.bilibili, { dynamic_id: dynamicInfo.data.item.orig.id_str })
+                const dynamicCARD = await getBilibiliData('动态卡片数据', Config.cookies.bilibili, { dynamic_id: dynamicInfo.data.data.item.orig.id_str })
                 const cardData = JSON.parse(dynamicCARD.data.card.card)
                 data = {
-                  username: checkvip(dynamicInfo.data.item.orig.modules.module_author),
-                  create_time: Common.convertTimestampToDateTime(dynamicInfo.data.item.orig.modules.module_author.pub_ts),
-                  avatar_url: dynamicInfo.data.item.orig.modules.module_author.face,
-                  text: replacetext(br(dynamicInfo.data.item.orig.modules.module_dynamic.desc.text), dynamicInfo.data.item.orig.modules.module_dynamic.desc.rich_text_nodes),
+                  username: checkvip(dynamicInfo.data.data.item.orig.modules.module_author),
+                  create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
+                  avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
+                  text: replacetext(br(dynamicInfo.data.data.item.orig.modules.module_dynamic.desc.text), dynamicInfo.data.data.item.orig.modules.module_dynamic.desc.rich_text_nodes),
                   image_url: cover(cardData.item.pictures),
-                  decoration_card: generateDecorationCard(dynamicInfo.data.item.orig.modules.module_author.decorate),
-                  frame: dynamicInfo.data.item.orig.modules.module_author.pendant.image
+                  decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decorate),
+                  frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image
                 }
                 break
               }
               case DynamicType.WORD: {
                 data = {
-                  username: checkvip(dynamicInfo.data.item.orig.modules.module_author),
-                  create_time: Common.convertTimestampToDateTime(dynamicInfo.data.item.orig.modules.module_author.pub_ts),
-                  avatar_url: dynamicInfo.data.item.orig.modules.module_author.face,
-                  text: replacetext(br(dynamicInfo.data.item.orig.modules.module_dynamic.desc.text), dynamicInfo.data.item.orig.modules.module_dynamic.desc.rich_text_nodes),
-                  decoration_card: generateDecorationCard(dynamicInfo.data.item.orig.modules.module_author.decorate),
-                  frame: dynamicInfo.data.item.orig.modules.module_author.pendant.image
+                  username: checkvip(dynamicInfo.data.data.item.orig.modules.module_author),
+                  create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
+                  avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
+                  text: replacetext(br(dynamicInfo.data.data.item.orig.modules.module_dynamic.desc.text), dynamicInfo.data.data.item.orig.modules.module_dynamic.desc.rich_text_nodes),
+                  decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decorate),
+                  frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image
                 }
                 break
               }
               case DynamicType.LIVE_RCMD: {
-                const liveData = JSON.parse(dynamicInfo.data.item.orig.modules.module_dynamic.major.live_rcmd.content)
+                const liveData = JSON.parse(dynamicInfo.data.data.item.orig.modules.module_dynamic.major.live_rcmd.content)
                 data = {
-                  username: checkvip(dynamicInfo.data.item.orig.modules.module_author),
-                  create_time: Common.convertTimestampToDateTime(dynamicInfo.data.item.orig.modules.module_author.pub_ts),
-                  avatar_url: dynamicInfo.data.item.orig.modules.module_author.face,
-                  decoration_card: generateDecorationCard(dynamicInfo.data.item.orig.modules.module_author.decorate),
-                  frame: dynamicInfo.data.item.orig.modules.module_author.pendant.image,
+                  username: checkvip(dynamicInfo.data.data.item.orig.modules.module_author),
+                  create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
+                  avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
+                  decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decorate),
+                  frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image,
                   cover: liveData.live_play_info.cover,
                   text_large: liveData.live_play_info.watched_show.text_large,
                   area_name: liveData.live_play_info.area_name,
@@ -445,47 +451,47 @@ export class Bilibili extends Base {
               }
               case DynamicType.FORWARD:
               default: {
-                logger.warn(`UP主：${userProfileData.data.card.name}的${logger.green('转发动态')}转发的原动态类型为「${logger.yellow(dynamicInfo.data.item.orig.type)}」暂未支持解析`)
+                logger.warn(`UP主：${userProfileData.data.data.card.name}的${logger.green('转发动态')}转发的原动态类型为「${logger.yellow(dynamicInfo.data.item.orig.type)}」暂未支持解析`)
                 break
               }
             }
             await this.e.reply(
               await Render('bilibili/dynamic/DYNAMIC_TYPE_FORWARD', {
                 text,
-                dianzan: Count(dynamicInfo.data.item.modules.module_stat.like.count),
-                pinglun: Count(dynamicInfo.data.item.modules.module_stat.comment.count),
-                share: Count(dynamicInfo.data.item.modules.module_stat.forward.count),
-                create_time: dynamicInfo.data.item.modules.module_author.pub_time,
-                avatar_url: dynamicInfo.data.item.modules.module_author.face,
-                frame: dynamicInfo.data.item.modules.module_author.pendant.image,
-                share_url: 'https://t.bilibili.com/' + dynamicInfo.data.item.id_str,
-                username: checkvip(userProfileData.data.card),
-                fans: Count(userProfileData.data.follower),
-                user_shortid: dynamicInfo.data.item.modules.module_author.mid,
-                total_favorited: Count(userProfileData.data.like_num),
-                following_count: Count(userProfileData.data.card.attention),
+                dianzan: Count(dynamicInfo.data.data.item.modules.module_stat.like.count),
+                pinglun: Count(dynamicInfo.data.data.item.modules.module_stat.comment.count),
+                share: Count(dynamicInfo.data.data.item.modules.module_stat.forward.count),
+                create_time: dynamicInfo.data.data.item.modules.module_author.pub_time,
+                avatar_url: dynamicInfo.data.data.item.modules.module_author.face,
+                frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
+                share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
+                username: checkvip(userProfileData.data.data.card),
+                fans: Count(userProfileData.data.data.follower),
+                user_shortid: dynamicInfo.data.data.item.modules.module_author.mid,
+                total_favorited: Count(userProfileData.data.data.like_num),
+                following_count: Count(userProfileData.data.data.card.attention),
                 dynamicTYPE: '转发动态解析',
-                decoration_card: generateDecorationCard(dynamicInfo.data.item.modules.module_author.decorate),
+                decoration_card: generateDecorationCard(dynamicInfo.data.data.item.modules.module_author.decorate),
                 render_time: Common.getCurrentTime(),
-                original_content: { [dynamicInfo.data.item.orig.type]: data }
+                original_content: { [dynamicInfo.data.data.item.orig.type]: data }
               })
             )
             break
           }
           /** 视频动态 */
           case DynamicType.AV: {
-            if (dynamicInfo.data.item.modules.module_dynamic.major.type === 'MAJOR_TYPE_ARCHIVE') {
-              const bvid = dynamicInfo.data.item.modules.module_dynamic.major.archive.bvid
+            if (dynamicInfo.data.data.item.modules.module_dynamic.major.type === 'MAJOR_TYPE_ARCHIVE') {
+              const bvid = dynamicInfo.data.data.item.modules.module_dynamic.major.archive.bvid
               const INFODATA = await getBilibiliData('单个视频作品数据', '', { bvid })
-              const dycrad = dynamicInfoCard.data.card && dynamicInfoCard.data.card.card && JSON.parse(dynamicInfoCard.data.card.card)
+              const dycrad = dynamicInfoCard.data.data.card && dynamicInfoCard.data.data.card.card && JSON.parse(dynamicInfoCard.data.data.card.card)
 
-              await this.e.reply(
+              commentsData && await this.e.reply(
                 await Render('bilibili/comment', {
                   Type: '动态',
-                  CommentsData: bilibiliComments(commentsData),
-                  CommentLength: String((bilibiliComments(commentsData)?.length) ? bilibiliComments(commentsData).length : 0),
+                  CommentsData: bilibiliComments(commentsData.data),
+                  CommentLength: String((bilibiliComments(commentsData.data)?.length) ? bilibiliComments(commentsData.data).length : 0),
                   share_url: 'https://www.bilibili.com/video/' + bvid,
-                  ImageLength: dynamicInfo.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? '动态中没有附带图片',
+                  ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? '动态中没有附带图片',
                   shareurl: '动态分享链接'
                 })
               )
@@ -500,16 +506,16 @@ export class Bilibili extends Base {
                   share: Count(INFODATA.data.stat.share),
                   view: Count(dycrad.stat.view),
                   coin: Count(dycrad.stat.coin),
-                  duration_text: dynamicInfo.data.item.modules.module_dynamic.major.archive.duration_text,
+                  duration_text: dynamicInfo.data.data.item.modules.module_dynamic.major.archive.duration_text,
                   create_time: Common.convertTimestampToDateTime(INFODATA.data.ctime),
                   avatar_url: INFODATA.data.owner.face,
-                  frame: dynamicInfo.data.item.modules.module_author.pendant.image,
+                  frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
                   share_url: 'https://www.bilibili.com/video/' + bvid,
-                  username: checkvip(userProfileData.data.card),
-                  fans: Count(userProfileData.data.follower),
-                  user_shortid: userProfileData.data.card.mid,
-                  total_favorited: Count(userProfileData.data.like_num),
-                  following_count: Count(userProfileData.data.card.attention),
+                  username: checkvip(userProfileData.data.data.card),
+                  fans: Count(userProfileData.data.data.follower),
+                  user_shortid: userProfileData.data.data.card.mid,
+                  total_favorited: Count(userProfileData.data.data.like_num),
+                  following_count: Count(userProfileData.data.data.card.attention),
                   dynamicTYPE: '视频动态'
                 }
               )
@@ -519,7 +525,7 @@ export class Bilibili extends Base {
           }
           /** 直播动态 */
           case DynamicType.LIVE_RCMD: {
-            const userINFO = await getBilibiliData('用户主页数据', '', { host_mid: dynamicInfo.data.item.modules.module_author.mid, typeMode: 'strict' })
+            const userINFO = await getBilibiliData('用户主页数据', '', { host_mid: dynamicInfo.data.data.item.modules.module_author.mid, typeMode: 'strict' })
             img = await Render('bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
               {
                 image_url: [{ image_src: dynamicCARD.live_play_info.cover }],
@@ -527,9 +533,9 @@ export class Bilibili extends Base {
                 liveinf: br(`${dynamicCARD.live_play_info.area_name} | 房间号: ${dynamicCARD.live_play_info.room_id}`),
                 username: checkvip(userINFO.data.card),
                 avatar_url: userINFO.data.card.face,
-                frame: dynamicInfo.data.item.modules.module_author.pendant.image,
+                frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
                 fans: Count(userINFO.data.follower),
-                create_time: Common.convertTimestampToDateTime(dynamicInfo.data.item.modules.module_author.pub_ts),
+                create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.modules.module_author.pub_ts),
                 now_time: Common.getCurrentTime(),
                 share_url: 'https://live.bilibili.com/' + dynamicCARD.live_play_info.room_id,
                 dynamicTYPE: '直播动态'
@@ -539,7 +545,7 @@ export class Bilibili extends Base {
             break
           }
           default:
-            await this.e.reply(`该动态类型「${dynamicInfo.data.item.type}」暂未支持解析`)
+            await this.e.reply(`该动态类型「${dynamicInfo.data.data.item.type}」暂未支持解析`)
             break
         }
         break
@@ -550,7 +556,7 @@ export class Bilibili extends Base {
         const userProfileData = await this.amagi.getBilibiliData('用户主页数据', { host_mid: roomInitInfo.data.uid, typeMode: 'strict' })
 
         if (roomInitInfo.data.live_status === 0) {
-          await this.e.reply(`${userProfileData.data.card.name} 未开播，正在休息中~`)
+          await this.e.reply(`${userProfileData.data.data.card.name} 未开播，正在休息中~`)
           return true
         }
         const img = await Render('bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
@@ -558,10 +564,10 @@ export class Bilibili extends Base {
             image_url: [{ image_src: liveInfo.data.user_cover }],
             text: br(liveInfo.data.title),
             liveinf: br(`${liveInfo.data.area_name} | 房间号: ${liveInfo.data.room_id}`),
-            username: userProfileData.data.card.name,
-            avatar_url: userProfileData.data.card.face,
-            frame: userProfileData.data.card.pendant.image,
-            fans: Count(userProfileData.data.card.fans),
+            username: userProfileData.data.data.card.name,
+            avatar_url: userProfileData.data.data.card.face,
+            frame: userProfileData.data.data.card.pendant.image,
+            fans: Count(userProfileData.data.data.card.fans),
             create_time: liveInfo.data.live_time === '-62170012800' ? '获取失败' : liveInfo.data.live_time,
             now_time: 114514,
             share_url: 'https://live.bilibili.com/' + liveInfo.data.room_id,
@@ -832,14 +838,14 @@ function mapping_table (type: any): number {
   return 1
 }
 
-function oid (dynamicINFO: any, dynamicInfoCard: any) {
+const oid = (dynamicINFO: BiliDynamicInfo, dynamicInfoCard: BiliDynamicCard) => {
   switch (dynamicINFO.data.item.type) {
     case 'DYNAMIC_TYPE_WORD':
     case 'DYNAMIC_TYPE_FORWARD': {
-      return dynamicINFO.data.item.id_str
+      return Number(dynamicINFO.data.item.id_str)
     }
     default: {
-      return dynamicInfoCard.data.card.desc.rid
+      return Number(dynamicInfoCard.data.card.desc.rid)
     }
   }
 }
