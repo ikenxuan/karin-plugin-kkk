@@ -337,7 +337,7 @@ export class Bilibili extends Base {
               pinglun: Count(dynamicInfo.data.data.item.modules.module_stat.comment.count),
               share: Count(dynamicInfo.data.data.item.modules.module_stat.forward.count),
               create_time: dynamicInfo.data.data.item.modules.module_author.pub_time,
-              avatar_url: dynamicInfo.data.item.modules.module_author.face,
+              avatar_url: dynamicInfo.data.data.item.modules.module_author.face,
               frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
               share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
               username: checkvip(userProfileData.data.data.card),
