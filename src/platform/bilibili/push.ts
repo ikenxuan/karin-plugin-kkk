@@ -170,7 +170,7 @@ export class Bilibilipush extends Base {
                 fans: Count(userINFO.data.data.follower),
                 user_shortid: data[dynamicId].host_mid,
                 total_favorited: Count(userINFO.data.data.like_num),
-                following_count: Count(userINFO.data.data.attention),
+                following_count: Count(userINFO.data.data.card.attention),
                 decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decorate),
                 render_time: Common.getCurrentTime(),
                 dynamicTYPE: '图文动态推送'
@@ -243,7 +243,7 @@ export class Bilibilipush extends Base {
                   fans: Count(userINFO.data.data.follower),
                   user_shortid: data[dynamicId].host_mid,
                   total_favorited: Count(userINFO.data.data.like_num),
-                  following_count: Count(userINFO.data.data.attention),
+                  following_count: Count(userINFO.data.data.card.attention),
                   dynamicTYPE: '视频动态推送'
                 }
               )

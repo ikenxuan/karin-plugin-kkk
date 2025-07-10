@@ -10,7 +10,7 @@ import type {
   BiliOneWork,
   BiliVideoPlayurlIsLogin
 } from '@ikenxuan/amagi'
-import { bilibiliApiUrls, getBilibiliData } from '@ikenxuan/amagi'
+import { bilibiliApiUrls, getBilibiliData } from '@ikenxuan/amagi/v5'
 import { ApiResponse } from '@ikenxuan/amagi/v5'
 import karin,
 {
@@ -482,7 +482,7 @@ export class Bilibili extends Base {
           case DynamicType.AV: {
             if (dynamicInfo.data.data.item.modules.module_dynamic.major.type === 'MAJOR_TYPE_ARCHIVE') {
               const bvid = dynamicInfo.data.data.item.modules.module_dynamic.major.archive.bvid
-              const INFODATA = await getBilibiliData('单个视频作品数据', '', { bvid })
+              const INFODATA = await getBilibiliData('单个视频作品数据', '', { bvid, typeMode: 'strict' })
               const dycrad = dynamicInfoCard.data.data.card && dynamicInfoCard.data.data.card.card && JSON.parse(dynamicInfoCard.data.data.card.card)
 
               commentsData && await this.e.reply(
@@ -498,17 +498,17 @@ export class Bilibili extends Base {
 
               img = await Render('bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {
-                  image_url: [{ image_src: INFODATA.data.pic }],
-                  text: br(INFODATA.data.title),
+                  image_url: [{ image_src: INFODATA.data.data.pic }],
+                  text: br(INFODATA.data.data.title),
                   desc: br(dycrad.desc),
-                  dianzan: Count(INFODATA.data.stat.like),
-                  pinglun: Count(INFODATA.data.stat.reply),
-                  share: Count(INFODATA.data.stat.share),
+                  dianzan: Count(INFODATA.data.data.stat.like),
+                  pinglun: Count(INFODATA.data.data.stat.reply),
+                  share: Count(INFODATA.data.data.stat.share),
                   view: Count(dycrad.stat.view),
                   coin: Count(dycrad.stat.coin),
                   duration_text: dynamicInfo.data.data.item.modules.module_dynamic.major.archive.duration_text,
-                  create_time: Common.convertTimestampToDateTime(INFODATA.data.ctime),
-                  avatar_url: INFODATA.data.owner.face,
+                  create_time: Common.convertTimestampToDateTime(INFODATA.data.data.ctime),
+                  avatar_url: INFODATA.data.data.owner.face,
                   frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
                   share_url: 'https://www.bilibili.com/video/' + bvid,
                   username: checkvip(userProfileData.data.data.card),
