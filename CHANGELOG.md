@@ -1,5 +1,17 @@
 # 变更日志
 
+## [1.7.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.7.4...v1.7.5) (2025-07-10)
+
+
+### 🐛 错误修复
+
+* 适配新版解析库1 ([cc11b1f](https://github.com/ikenxuan/karin-plugin-kkk/commit/cc11b1f0a7cb55da942f9004837eb4e97b5c93b9))
+* 适配新版解析库2 ([4c40bc4](https://github.com/ikenxuan/karin-plugin-kkk/commit/4c40bc4127bfdb8f66375c761896832ed9f1d1eb))
+* 适配新版解析库3 ([a9206b6](https://github.com/ikenxuan/karin-plugin-kkk/commit/a9206b6824b30f75715d9cf0bbeb6a616ffaf81a))
+* 适配新版解析库4 ([8ad68fd](https://github.com/ikenxuan/karin-plugin-kkk/commit/8ad68fd5ad6d38ccd5cef1e4af7fc936d653cca8))
+* 适配新版解析库5 ([d7014e8](https://github.com/ikenxuan/karin-plugin-kkk/commit/d7014e8f91d7a837a51626370757cd6f68bc55d4))
+* 适配新版解析库6 ([124b3e9](https://github.com/ikenxuan/karin-plugin-kkk/commit/124b3e9d34fcbb23d429c4645603d8951481dbf6))
+
 ## [1.7.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.7.3...v1.7.4) (2025-07-08)
 
 
