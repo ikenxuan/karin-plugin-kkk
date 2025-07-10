@@ -348,7 +348,7 @@ export const downloadVideo = async (event: Message, downloadOpt: downloadFileOpt
 
   // 下载文件，视频URL，标题和自定义headers
   let res = await downloadFile(downloadOpt.video_url, {
-    title: Config.app.rmmp4 ? downloadOpt.title.timestampTitle as string : downloadOpt.title.originTitle!.substring(0, 50).replace(/[\\/:*?"<>|\r\n\s]/g, ' '),
+    title: Config.app.rmmp4 ? downloadOpt.title.timestampTitle as string : processFilename(downloadOpt.title.originTitle!, 50),
     headers: downloadOpt.headers ?? baseHeaders
   })
   res = { ...res, ...downloadOpt.title }
@@ -415,4 +415,31 @@ export const downloadFile = async (videoUrl: string, opt: downLoadFileOptions): 
   }, 3)
 
   return { filepath, totalBytes }
+}
+
+/**
+ * 处理文件名长度，保留文件扩展名
+ * @param filename 原始文件名
+ * @param maxLength 最大长度（不包括扩展名）
+ * @returns 处理后的文件名
+ */
+const processFilename = (filename: string, maxLength: number = 50): string => {
+  // 提取文件扩展名
+  const lastDotIndex = filename.lastIndexOf('.')
+  const hasExtension = lastDotIndex > 0 && lastDotIndex < filename.length - 1
+
+  if (!hasExtension) {
+    // 没有扩展名，直接截取并清理特殊字符
+    return filename.substring(0, maxLength).replace(/[\\/:*?"<>|\r\n\s]/g, ' ')
+  }
+
+  // 分离文件名主体和扩展名
+  const nameWithoutExt = filename.substring(0, lastDotIndex)
+  const extension = filename.substring(lastDotIndex)
+
+  // 对文件名主体进行长度限制和特殊字符清理
+  const processedName = nameWithoutExt.substring(0, maxLength).replace(/[\\/:*?"<>|\r\n\s]/g, ' ')
+
+  // 重新拼接文件名和扩展名
+  return processedName + '...' + extension
 }
