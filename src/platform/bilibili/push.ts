@@ -199,11 +199,11 @@ export class Bilibilipush extends Base {
                 avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
                 frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
                 share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
-                username: checkvip(userINFO.data.card),
-                fans: Count(userINFO.data.follower),
+                username: checkvip(userINFO.data.data.card),
+                fans: Count(userINFO.data.data.follower),
                 user_shortid: data[dynamicId].host_mid,
-                total_favorited: Count(userINFO.data.like_num),
-                following_count: Count(userINFO.data.card.attention),
+                total_favorited: Count(userINFO.data.data.like_num),
+                following_count: Count(userINFO.data.data.card.attention),
                 dynamicTYPE: '纯文动态推送'
               }
             )
@@ -219,7 +219,7 @@ export class Bilibilipush extends Base {
               /** 特殊字段，只有番剧和影视才会有，如果是该类型视频，默认不发送 */
               if (INFODATA.data.data.redirect_url) {
                 send_video = false
-                logger.debug(`UP主：${INFODATA.data.data.owner.name} 的该动态类型为${logger.yellow('番剧或影视')}，默认跳过不下载，直达：${logger.green(INFODATA.data.redirect_url)}`)
+                logger.debug(`UP主：${INFODATA.data.data.owner.name} 的该动态类型为${logger.yellow('番剧或影视')}，默认跳过不下载，直达：${logger.green(INFODATA.data.data.redirect_url)}`)
               } else {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 noCkData = await getBilibiliData('单个视频下载信息数据', '', { avid: aid, cid: INFODATA.data.data.cid, typeMode: 'strict' })
@@ -292,7 +292,7 @@ export class Bilibilipush extends Base {
               }
               case DynamicType.DRAW: {
                 const dynamicCARD = await getBilibiliData('动态卡片数据', Config.cookies.bilibili, { dynamic_id: data[dynamicId].Dynamic_Data.orig.id_str, typeMode: 'strict' })
-                const cardData = JSON.parse(dynamicCARD.data.card.card)
+                const cardData = JSON.parse(dynamicCARD.data.data.card.card)
                 param = {
                   username: checkvip(data[dynamicId].Dynamic_Data.orig.modules.module_author),
                   create_time: Common.convertTimestampToDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
@@ -401,14 +401,14 @@ export class Bilibilipush extends Base {
                   /** 给视频信息对象删除不符合条件的视频流 */
                   correctList = await bilibiliProcessVideos({
                     accept_description: playUrlData.data.data.accept_description,
-                    bvid: dynamicCARDINFO.data.card.desc.bvid,
+                    bvid: dynamicCARDINFO.data.data.card.desc.bvid,
                     qn: Config.bilibili.push.pushVideoQuality,
                     maxAutoVideoSize: Config.bilibili.push.pushMaxAutoVideoSize
                   }, simplify, playUrlData.data.data.dash.audio[0].base_url)
                   playUrlData.data.data.dash.video = correctList.videoList
                   playUrlData.data.data.accept_description = correctList.accept_description
                   /** 获取第一个视频流的大小 */
-                  videoSize = await getvideosize(correctList.videoList[0].base_url, playUrlData.data.data.dash.audio[0].base_url, dynamicCARDINFO.data.card.desc.bvid)
+                  videoSize = await getvideosize(correctList.videoList[0].base_url, playUrlData.data.data.dash.audio[0].base_url, dynamicCARDINFO.data.data.card.desc.bvid)
                   if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) && !Config.upload.compress) {
                     await karin.sendMsg(
                       botId,
@@ -421,7 +421,7 @@ export class Bilibilipush extends Base {
                     break
                   }
                   logger.mark(`当前处于自动推送状态，解析到的视频大小为 ${logger.yellow(Number(videoSize))} MB`)
-                  const infoData = await this.amagi.getBilibiliData('单个视频作品数据', { bvid: dynamicCARDINFO.data.card.desc.bvid, typeMode: 'strict' })
+                  const infoData = await this.amagi.getBilibiliData('单个视频作品数据', { bvid: dynamicCARDINFO.data.data.card.desc.bvid, typeMode: 'strict' })
                   const mp4File = await downloadFile(
                     playUrlData.data?.data?.dash?.video[0].base_url,
                     {

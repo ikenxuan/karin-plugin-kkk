@@ -156,7 +156,7 @@ export class Bilibili extends Base {
           const commentsData = await this.amagi.getBilibiliData('评论数据', {
             number: Config.bilibili.numcomment,
             type: 1,
-            oid: infoData.data.data.aid,
+            oid: infoData.data.data.aid.toString(),
             typeMode: 'strict'
           })
           const commentsdata = bilibiliComments(commentsData.data)
@@ -842,10 +842,10 @@ const oid = (dynamicINFO: BiliDynamicInfo, dynamicInfoCard: BiliDynamicCard) => 
   switch (dynamicINFO.data.item.type) {
     case 'DYNAMIC_TYPE_WORD':
     case 'DYNAMIC_TYPE_FORWARD': {
-      return Number(dynamicINFO.data.item.id_str)
+      return dynamicINFO.data.item.id_str
     }
     default: {
-      return Number(dynamicInfoCard.data.card.desc.rid)
+      return dynamicInfoCard.data.card.desc.rid.toString()
     }
   }
 }
