@@ -1,4 +1,4 @@
-import { getBilibiliData, wbi_sign } from '@ikenxuan/amagi'
+import { getBilibiliData, wbi_sign } from '@ikenxuan/amagi/v5'
 
 import { Config } from '@/module/utils'
 
@@ -14,7 +14,7 @@ export async function genParams (apiURL: string): Promise<string> {
 
   const qn = [6, 16, 32, 64, 74, 80, 112, 116, 120, 125, 126, 127]
   let isvip
-  loginInfo.data.vipStatus === 1 ? (isvip = true) : (isvip = false)
+  loginInfo.data.data.vipStatus === 1 ? (isvip = true) : (isvip = false)
   if (isvip) {
     return `&fnval=16&fourk=1&${genSign}`
   } else return `&qn=${qn[3]}&fnval=16`
@@ -24,7 +24,7 @@ export async function checkCk (): Promise<{ Status: 'isLogin' | '!isLogin', isVI
   if (Config.cookies.bilibili === '' || Config.cookies.bilibili === null) return { Status: '!isLogin', isVIP: false }
   const loginInfo = await getBilibiliData('登录基本信息', Config.cookies.bilibili)
   let isVIP
-  loginInfo.data.vipStatus === 1 ? (isVIP = true) : (isVIP = false)
+  loginInfo.data.data.vipStatus === 1 ? (isVIP = true) : (isVIP = false)
   if (isVIP) {
     return { Status: 'isLogin', isVIP }
   } else return { Status: 'isLogin', isVIP }

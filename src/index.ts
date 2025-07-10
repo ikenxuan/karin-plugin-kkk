@@ -1,12 +1,12 @@
 import 'reflect-metadata'
 
 import Client, {
+  createBilibiliRoutes,
+  createDouyinRoutes,
+  createKuaishouRoutes,
   logger as amagiLog,
-  logMiddleware,
-  registerBilibiliRoutes,
-  registerDouyinRoutes,
-  registerKuaishouRoutes
-} from '@ikenxuan/amagi'
+  logMiddleware
+} from '@ikenxuan/amagi/v5'
 import * as cors from 'cors'
 import * as httpProxy from 'http-proxy-middleware'
 import { app, logger, mkdirSync } from 'node-karin'
@@ -28,9 +28,9 @@ server.listen(3780)
 
 if (Config.app.APIServer && Config.app.APIServerMount) {
   app.use(logMiddleware(['/api/bilibili', '/api/douyin', '/api/kuaishou']))
-  app.use('/api/bilibili', registerBilibiliRoutes(Config.cookies.bilibili))
-  app.use('/api/douyin', registerDouyinRoutes(Config.cookies.douyin))
-  app.use('/api/kuaishou', registerKuaishouRoutes(Config.cookies.kuaishou))
+  app.use('/api/bilibili', createBilibiliRoutes(Config.cookies.bilibili))
+  app.use('/api/douyin', createDouyinRoutes(Config.cookies.douyin))
+  app.use('/api/kuaishou', createKuaishouRoutes(Config.cookies.kuaishou))
   amagiLog.mark(`Amagi server listening on ${amagiLog.green('http://localhost:')}${amagiLog.green(process.env.HTTP_PORT!)} API docs: ${amagiLog.yellow('https://amagi.apifox.cn')}`)
 } else if (Config.app.APIServer) {
   const amagiServer = new Client({

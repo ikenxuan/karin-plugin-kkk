@@ -1,4 +1,4 @@
-import { getDouyinData } from '@ikenxuan/amagi'
+import { getDouyinData } from '@ikenxuan/amagi/v5'
 import * as convert from 'heic-convert'
 
 import { Common, Config, Networks } from '@/module/utils'
@@ -141,9 +141,10 @@ async function handling_at (data: any[]): Promise<any> {
     if (item.is_At_user_id !== null && Array.isArray(item.is_At_user_id)) {
       for (const secUid of item.is_At_user_id) {
         const UserInfoData = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid: secUid, typeMode: 'strict' })
-        if (UserInfoData.user.sec_uid === secUid) {
+        if (UserInfoData.data.user.sec_uid === secUid) {
           /** 这里评论只要生成了艾特，如果艾特的人改了昵称，评论也不会变，所以可能会出现有些艾特没有正确上颜色，因为接口没有提供历史昵称 */
-          const regex = new RegExp(`@${UserInfoData.user.nickname?.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')}`, 'g')
+          const regex = new RegExp(`@${UserInfoData.data.user.nickname?.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')}`, 'g')
+
           item.text = item.text.replace(regex, (match: any) => {
             return `<span class="${Common.useDarkTheme() ? 'dark-mode handling_at' : 'handling_at'}">${match}</span>`
           })
@@ -182,11 +183,11 @@ async function search_text (data: {
       for (const search_text of item.search_text) {
         const SuggestWordsData = await getDouyinData('热点词数据', Config.cookies.douyin, { query: search_text.search_text, typeMode: 'strict' })
         if (
-          SuggestWordsData.data &&
-          SuggestWordsData.data[0] &&
-          SuggestWordsData.data[0].params &&
-          SuggestWordsData.data[0].params.query_id &&
-          SuggestWordsData.data[0].params.query_id === search_text.search_query_id
+          SuggestWordsData.data.data &&
+          SuggestWordsData.data.data[0] &&
+          SuggestWordsData.data.data[0].params &&
+          SuggestWordsData.data.data[0].params.query_id &&
+          SuggestWordsData.data.data[0].params.query_id === search_text.search_query_id
         ) {
           const regex = new RegExp(`${search_text.search_text}`, 'g')
           item.text = item.text.replace(regex, (match: any) => {
