@@ -38,7 +38,7 @@ if (Config.app.APIServer && Config.app.APIServerMount) {
     douyin: Config.cookies.douyin,
     kuaishou: Config.cookies.kuaishou
   })
-  amagiServer.startClient(Config.app.APIServerPort)
+  amagiServer.startServer(Config.app.APIServerPort)
 }
 
 app.get('/api/kkk/stream/:filename', videoStreamRouter)

@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 
 import type {
+  ApiResponse,
   BiliBangumiVideoInfo,
   BiliBangumiVideoPlayurlIsLogin,
   BiliBangumiVideoPlayurlNoLogin,
@@ -9,11 +10,9 @@ import type {
   BiliDynamicInfo,
   BiliOneWork,
   BiliVideoPlayurlIsLogin
-} from '@ikenxuan/amagi'
+} from '@ikenxuan/amagi/v5'
 import { bilibiliApiUrls, getBilibiliData } from '@ikenxuan/amagi/v5'
-import { ApiResponse } from '@ikenxuan/amagi/v5'
-import karin,
-{
+import karin, {
   common,
   ElementTypes,
   logger,
