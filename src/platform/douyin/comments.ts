@@ -1,4 +1,4 @@
-import { getDouyinData } from '@ikenxuan/amagi/v5'
+import { getDouyinData } from '@ikenxuan/amagi'
 import * as convert from 'heic-convert'
 
 import { Common, Config, Networks } from '@/module/utils'

@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import { getBilibiliData } from '@ikenxuan/amagi/v5'
+import { getBilibiliData } from '@ikenxuan/amagi'
 import type { Message } from 'node-karin'
 import { common, segment } from 'node-karin'
 import * as QRCode from 'qrcode'

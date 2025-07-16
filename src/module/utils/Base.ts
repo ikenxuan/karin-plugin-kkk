@@ -1,8 +1,8 @@
 import fs from 'node:fs'
 
-import Client, { type APIErrorType, ApiResponse, bilibiliErrorCodeMap } from '@ikenxuan/amagi/v5'
+import Client, { type APIErrorType, ApiResponse, bilibiliErrorCodeMap } from '@ikenxuan/amagi'
 import karin, { config, type Contact, logger, Message, segment } from 'node-karin'
-import type { AxiosHeaders, Method, RawAxiosRequestHeaders } from 'node-karin/axios'
+import type { AxiosHeaders, AxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'node-karin/axios'
 
 import { baseHeaders, Common, Config, mergeFile, Networks, Render } from '@/module/utils'
 import type { pushlistConfig } from '@/types/config/pushlist'
@@ -82,14 +82,23 @@ export type downLoadFileOptions = {
 }
 export class Base {
   e: Message
-  headers: any
-  _path: string
+  headers: AxiosRequestConfig['headers']
   amagi: ReturnType<typeof Client>
   constructor (e: Message) {
     this.e = e
     this.headers = baseHeaders
-    this._path = process.cwd()?.replace(/\\/g, '/')
-    const client = Client({ douyin: Config.cookies.douyin, bilibili: Config.cookies.bilibili, kuaishou: Config.cookies.kuaishou })
+    const client = Client({
+      cookies: {
+        douyin: Config.cookies.douyin,
+        bilibili: Config.cookies.bilibili,
+        kuaishou: Config.cookies.kuaishou
+      },
+      request: {
+        timeout: Config.request.timeout,
+        headers: { 'User-Agent': Config.request['User-Agent'] },
+        proxy: Config.request.proxy?.switch ? Config.request.proxy : false,
+      }
+    })
 
     // 使用Proxy包装amagi客户端
     this.amagi = new Proxy(client, {
@@ -108,7 +117,7 @@ export class Base {
             // 检查抖音数据返回结构
             if (prop === 'getDouyinData' && (result.code !== 200)) {
               const err = result as ApiResponse<APIErrorType<'douyin'>>
-              const img = await Render('apiError/index', err.data)
+              const img = await Render('apiError/index', err.error)
               // 如果e为空对象才执行发送给主人
               if (Object.keys(e).length === 0) {
                 const botId = statBotId(Config.pushlist)
@@ -127,7 +136,7 @@ export class Base {
             // 检查哔哩哔哩数据返回结构
             if (prop === 'getBilibiliData' && result.code in bilibiliErrorCodeMap) {
               const err = result as ApiResponse<APIErrorType<'bilibili'>>
-              const img = await Render('apiError/index', err.data)
+              const img = await Render('apiError/index', err.error)
               // 如果e为空对象才执行发送给主人
               if (Object.keys(e).length === 0) {
                 const botId = statBotId(Config.pushlist)

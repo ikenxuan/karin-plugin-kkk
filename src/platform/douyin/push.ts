@@ -1,4 +1,4 @@
-import type { ApiResponse, DySearchInfo, DyUserInfo, DyUserLiveVideos } from '@ikenxuan/amagi/v5'
+import type { ApiResponse, DySearchInfo, DyUserInfo, DyUserLiveVideos } from '@ikenxuan/amagi'
 import type { AdapterType, ImageElement, Message } from 'node-karin'
 import karin from 'node-karin'
 import { common, logger, segment } from 'node-karin'
@@ -64,8 +64,8 @@ export class DouYinpush extends Base {
       e.reply('不支持QQBot，请使用其他适配器')
       return
     }
-    this.headers.Referer = 'https://www.douyin.com'
-    this.headers.Cookie = Config.cookies.douyin
+    this.headers!.Referer = 'https://www.douyin.com'
+    this.headers!.Cookie = Config.cookies.douyin
     this.force = force
   }
 

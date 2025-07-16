@@ -739,6 +739,106 @@ export const webConfig = defineConfig({
           })
         ]
       }),
+      components.accordion.create('request', {
+        label: '解析库请求配置相关',
+        children: [
+          components.accordion.createItem('cfg:request', {
+            title: '解析库请求配置相关',
+            className: 'ml-4 mr-4',
+            subtitle: '此处用于管理解析库的网络请求配置',
+            children: [
+              components.input.number('timeout', {
+                label: '请求超时时间',
+                description: '网络请求的超时时间，单位：毫秒',
+                defaultValue: all.request.timeout.toString(),
+                rules: [
+                  {
+                    min: 1000,
+                    max: 300000,
+                    error: '请输入一个范围在 1000 到 300000 之间的数字'
+                  }
+                ]
+              }),
+              components.input.string('User-Agent', {
+                label: 'User-Agent',
+                type: 'text',
+                description: '请求头中的User-Agent字段，用于标识客户端类型',
+                defaultValue: all.request['User-Agent'],
+                placeholder: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                rules: undefined,
+                isRequired: false
+              }),
+              components.divider.create('divider-proxy', {
+                description: '代理配置（可选）',
+                descPosition: 20
+              }),
+              components.switch.create('proxy:switch', {
+                label: '代理开关',
+                description: '开启后需要配置「代理主机」「代理端口」',
+                defaultSelected: all.request.proxy?.switch
+              }),
+              components.input.string('proxy:host', {
+                label: '代理主机',
+                type: 'text',
+                description: '代理服务器的主机地址，如：127.0.0.1',
+                defaultValue: all.request.proxy?.host || '',
+                placeholder: '127.0.0.1',
+                rules: undefined,
+                isDisabled: !all.request.proxy?.switch
+              }),
+              components.input.number('proxy:port', {
+                label: '代理端口',
+                description: '代理服务器的端口号',
+                defaultValue: all.request.proxy?.port?.toString() || '',
+                rules: [
+                  {
+                    min: 1,
+                    max: 65535,
+                    error: '请输入一个范围在 1 到 65535 之间的数字'
+                  }
+                ],
+                isDisabled: !all.request.proxy?.switch
+              }),
+              components.radio.group('proxy:protocol', {
+                label: '代理协议',
+                orientation: 'horizontal',
+                defaultValue: all.request.proxy?.protocol || 'http',
+                radio: [
+                  components.radio.create('proxy-protocol-1', {
+                    label: 'HTTP',
+                    value: 'http'
+                  }),
+                  components.radio.create('proxy-protocol-2', {
+                    label: 'HTTPS',
+                    value: 'https'
+                  })
+                ],
+                isDisabled: !all.request.proxy?.switch
+              }),
+              components.input.string('proxy:auth:username', {
+                label: '代理用户名',
+                type: 'text',
+                description: '代理服务器的认证用户名（如果需要）',
+                defaultValue: all.request.proxy?.auth?.username || '',
+                placeholder: '',
+                rules: undefined,
+                isRequired: false,
+                isDisabled: !all.request.proxy?.switch
+              }),
+              components.input.string('proxy:auth:password', {
+                label: '代理密码',
+                type: 'password',
+                description: '代理服务器的认证密码（如果需要）',
+                defaultValue: all.request.proxy?.auth?.password || '',
+                placeholder: '',
+                rules: undefined,
+                isRequired: false,
+                isDisabled: !all.request.proxy?.switch
+              })
+            ]
+          })
+        ]
+      }),
       components.divider.create('divider-7', {
         description: '抖音推送列表相关',
         descPosition: 20
@@ -943,7 +1043,7 @@ export const webConfig = defineConfig({
             ]
           })
         }
-      )
+      ),
     ]
   },
 
@@ -953,15 +1053,25 @@ export const webConfig = defineConfig({
     const oldAllCfg = await Config.All()
     const mergeCfg = _.mergeWith({}, oldAllCfg, formatCfg, customizer)
 
+    // 使用通用的扁平化字段清理方法
+    cleanFlattenedFields(mergeCfg)
+
     let success = false
     let isChange = false
 
     for (const key of Object.keys(mergeCfg) as Array<keyof ConfigType>) {
-      isChange = deepEqual(mergeCfg[key], oldAllCfg[key])
-      if (isChange) {
-        const modifySuccess = await Config.ModifyPro(key, mergeCfg[key])
-        if (modifySuccess) {
-          success = true
+      const configValue = mergeCfg[key]
+
+      // 检查配置是否有效且不为空
+      if (configValue &&
+        typeof configValue === 'object' &&
+        Object.keys(configValue).length > 0) {
+        isChange = deepEqual(configValue, oldAllCfg[key])
+        if (isChange) {
+          const modifySuccess = await Config.ModifyPro(key, configValue)
+          if (modifySuccess) {
+            success = true
+          }
         }
       }
     }
@@ -1093,6 +1203,27 @@ function getFirstObject<T> (arr: T[]): T {
 }
 
 /**
+ * 设置嵌套属性值
+ * @param obj 目标对象
+ * @param keys 键路径数组
+ * @param value 要设置的值
+ */
+function setNestedProperty (obj: any, keys: string[], value: any) {
+  let current = obj
+
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i]
+    if (!current[key] || typeof current[key] !== 'object') {
+      current[key] = {}
+    }
+    current = current[key]
+  }
+
+  const lastKey = keys[keys.length - 1]
+  current[lastKey] = value
+}
+
+/**
  * 处理前端返回的数据，将其转换为 ConfigType 格式
  * @param data 前端返回的数据
  * @returns 处理后符合 ConfigType 格式的数据
@@ -1108,40 +1239,127 @@ function processFrontendData (data: newConfigType): ConfigType {
     const value = data[key]
     const firstObj = Array.isArray(value) ? getFirstObject(value) : {}
 
-    // 使用类型断言，确保 result[key] 的类型正确
-    result[key] = {}
+    // 检查是否有有效数据
+    const objKeys = Object.keys(firstObj)
+    if (objKeys.length === 0) {
+      continue // 跳过空对象
+    }
 
-    for (const prop in firstObj) {
-      let value = firstObj[prop]
-      if (typeof value === 'string') { // 确保仅对字符串类型进行转换
-        value = convertToNumber(value)
+    // 初始化配置对象
+    const configObj: Record<string, any> = {}
+    let hasValidData = false
+
+    // 先处理所有嵌套字段
+    const nestedProps = objKeys.filter(prop => prop.includes(':'))
+    const flatProps = objKeys.filter(prop => !prop.includes(':'))
+
+    // 处理嵌套字段
+    for (const prop of nestedProps) {
+      let propValue = firstObj[prop]
+      if (typeof propValue === 'string') {
+        propValue = convertToNumber(propValue)
       }
 
-      if (prop.includes(':')) {
-        const [parent, child] = prop.split(':')
-        if (!result[key] || typeof result[key] !== 'object') {
-          result[key] = {}
-        }
-        if (!result[key][parent] || typeof result[key][parent] !== 'object') {
-          result[key][parent] = {}
+      // 只有当值不为空字符串或undefined时才设置
+      if (propValue !== '' && propValue !== undefined && propValue !== null) {
+        const keys = prop.split(':')
+        setNestedProperty(configObj, keys, propValue)
+        hasValidData = true
+      }
+    }
+
+    // 处理扁平字段
+    for (const prop of flatProps) {
+      // 检查是否有对应的嵌套字段存在
+      const hasNestedVersion = nestedProps.some(nestedProp => {
+        const nestedKeys = nestedProp.split(':')
+        return nestedKeys[nestedKeys.length - 1] === prop
+      })
+
+      if (!hasNestedVersion) {
+        let propValue = firstObj[prop]
+        if (typeof propValue === 'string') {
+          propValue = convertToNumber(propValue)
         }
 
-        result[key][parent][child] = value
-      } else {
-        result[key][prop] = value
+        // 只有当值不为空字符串或undefined时才设置
+        if (propValue !== '' && propValue !== undefined && propValue !== null) {
+          configObj[prop] = propValue
+          hasValidData = true
+        }
       }
+    }
+
+    // 只有当有有效数据时才添加到结果中
+    if (hasValidData && Object.keys(configObj).length > 0) {
+      result[key] = configObj
     }
   }
 
+  // 处理pushlist
   result.pushlist = {
     douyin: data['pushlist:douyin'] || [],
-    bilibili: data['pushlist:bilibili'].map(item => {
+    bilibili: (data['pushlist:bilibili'] || []).map(item => {
       return {
         ...item,
         host_mid: Number(item.host_mid)
       }
-    }) ?? []
+    })
   }
 
   return result as ConfigType
+}
+
+/**
+ * 通用的扁平化字段清理函数
+ * 自动检测并清理与嵌套结构冲突的扁平化字段
+ * @param obj 要清理的对象
+ */
+function cleanFlattenedFields (obj: any): void {
+  if (!obj || typeof obj !== 'object') return
+
+  for (const [, value] of Object.entries(obj)) {
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      // 递归处理嵌套对象
+      cleanFlattenedFields(value)
+
+      // 类型断言确保value是一个对象
+      const valueObj = value as Record<string, any>
+
+      // 收集所有扁平化字段（包含点号的字段）
+      const flattenedKeys = Object.keys(valueObj).filter(k => k.includes('.'))
+
+      for (const flatKey of flattenedKeys) {
+        const parts = flatKey.split('.')
+
+        // 检查是否存在对应的嵌套结构
+        if (hasNestedStructure(valueObj, parts)) {
+          // 删除扁平化字段
+          delete valueObj[flatKey]
+        }
+      }
+    }
+  }
+}
+
+/**
+ * 检查对象中是否存在指定路径的嵌套结构
+ * @param obj 要检查的对象
+ * @param path 路径数组
+ * @returns 是否存在嵌套结构
+ */
+function hasNestedStructure (obj: Record<string, any>, path: string[]): boolean {
+  let current = obj
+
+  for (let i = 0; i < path.length - 1; i++) {
+    const key = path[i]
+    if (!current[key] || typeof current[key] !== 'object') {
+      return false
+    }
+    current = current[key]
+  }
+
+  // 检查最后一个键是否存在
+  const lastKey = path[path.length - 1]
+  return lastKey in current
 }

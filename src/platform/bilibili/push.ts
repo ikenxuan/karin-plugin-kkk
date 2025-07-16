@@ -2,8 +2,8 @@
 /* eslint-disable no-unused-vars */
 import fs from 'node:fs'
 
-import type { ApiResponse } from '@ikenxuan/amagi/v5'
-import { BiliUserProfile, BiliVideoPlayurlIsLogin, getBilibiliData } from '@ikenxuan/amagi/v5'
+import type { ApiResponse } from '@ikenxuan/amagi'
+import { BiliUserProfile, BiliVideoPlayurlIsLogin, getBilibiliData } from '@ikenxuan/amagi'
 import type {
   AdapterType,
   ImageElement,

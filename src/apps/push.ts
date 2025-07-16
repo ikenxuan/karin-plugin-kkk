@@ -1,4 +1,4 @@
-import { getBilibiliData, getDouyinData } from '@ikenxuan/amagi/v5'
+import { getBilibiliData, getDouyinData } from '@ikenxuan/amagi'
 import karin from 'node-karin'
 
 import { Config } from '@/module'

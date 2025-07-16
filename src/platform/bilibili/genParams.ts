@@ -1,4 +1,4 @@
-import { getBilibiliData, wbi_sign } from '@ikenxuan/amagi/v5'
+import { getBilibiliData, wbi_sign } from '@ikenxuan/amagi'
 
 import { Config } from '@/module/utils'
 

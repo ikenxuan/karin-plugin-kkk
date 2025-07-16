@@ -10,8 +10,8 @@ import type {
   BiliDynamicInfo,
   BiliOneWork,
   BiliVideoPlayurlIsLogin
-} from '@ikenxuan/amagi/v5'
-import { bilibiliApiUrls, getBilibiliData } from '@ikenxuan/amagi/v5'
+} from '@ikenxuan/amagi'
+import { bilibiliApiUrls, getBilibiliData } from '@ikenxuan/amagi'
 import karin, {
   common,
   ElementTypes,
@@ -65,8 +65,8 @@ export class Bilibili extends Base {
     this.Type = data?.type
     this.islogin = data?.USER?.STATUS === 'isLogin'
     this.downloadfilename = ''
-    this.headers.Referer = 'https://api.bilibili.com/'
-    this.headers.Cookie = Config.cookies.bilibili
+    this.headers!.Referer = 'https://api.bilibili.com/'
+    this.headers!.Cookie = Config.cookies.bilibili
   }
 
   async RESOURCES (iddata: BilibiliId): Promise<boolean | undefined> {

@@ -4,6 +4,7 @@ import { cookiesConfig } from './cookies'
 import { douyinConfig } from './douyin'
 import { kuaishouConfig } from './kuaishou'
 import { pushlistConfig } from './pushlist'
+import { requestConfig } from './request'
 import { uploadConfig } from './upload'
 
 /** 插件配置类型 */
@@ -22,4 +23,6 @@ export interface ConfigType {
   upload: uploadConfig,
   /** 快手相关设置 */
   kuaishou: kuaishouConfig
+  /** 解析库请求配置设置 */
+  request: requestConfig
 }

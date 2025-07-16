@@ -1,4 +1,4 @@
-import Client, { type KuaishouDataOptionsMap } from '@ikenxuan/amagi/v5'
+import Client, { type KuaishouDataOptionsMap } from '@ikenxuan/amagi'
 
 import { Config } from '@/module'
 import { KuaishouDataTypes } from '@/types'
@@ -7,7 +7,14 @@ export async function fetchKuaishouData<T extends keyof KuaishouDataTypes> (
   type: T,
   opt?: any
 ) {
-  const client = Client({ kuaishou: Config.cookies.kuaishou })
+  const client = Client({
+    cookies: { kuaishou: Config.cookies.kuaishou },
+    request: {
+      timeout: Config.request.timeout,
+      headers: { 'User-Agent': Config.request['User-Agent'] },
+      proxy: Config.request.proxy,
+    }
+  })
   switch (type) {
     case 'one_work': {
       const VideoData = await client.getKuaishouData('单个视频作品数据', {

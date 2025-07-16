@@ -15,7 +15,7 @@ import { NetworksConfigType } from '@/types'
 
 type HeadersObject = Record<string, string>
 
-export const baseHeaders = {
+export const baseHeaders: AxiosRequestConfig['headers'] = {
   Accept: '*/*',
   'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
   'User-Agent':

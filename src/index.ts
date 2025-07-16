@@ -6,7 +6,7 @@ import Client, {
   createKuaishouRoutes,
   logger as amagiLog,
   logMiddleware
-} from '@ikenxuan/amagi/v5'
+} from '@ikenxuan/amagi'
 import * as cors from 'cors'
 import * as httpProxy from 'http-proxy-middleware'
 import { app, logger, mkdirSync } from 'node-karin'
@@ -34,9 +34,11 @@ if (Config.app.APIServer && Config.app.APIServerMount) {
   amagiLog.mark(`Amagi server listening on ${amagiLog.green('http://localhost:')}${amagiLog.green(process.env.HTTP_PORT!)} API docs: ${amagiLog.yellow('https://amagi.apifox.cn')}`)
 } else if (Config.app.APIServer) {
   const amagiServer = new Client({
-    bilibili: Config.cookies.bilibili,
-    douyin: Config.cookies.douyin,
-    kuaishou: Config.cookies.kuaishou
+    cookies: {
+      bilibili: Config.cookies.bilibili,
+      douyin: Config.cookies.douyin,
+      kuaishou: Config.cookies.kuaishou
+    }
   })
   amagiServer.startServer(Config.app.APIServerPort)
 }
