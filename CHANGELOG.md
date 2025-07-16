@@ -1,5 +1,12 @@
 # 变更日志
 
+## [1.8.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.7.5...v1.8.0) (2025-07-16)
+
+
+### ✨ 新功能
+
+* [#122](https://github.com/ikenxuan/karin-plugin-kkk/issues/122) ([9a4496c](https://github.com/ikenxuan/karin-plugin-kkk/commit/9a4496c8f4a24ac489ab72028570fef1bf360c81))
+
 ## [1.7.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.7.4...v1.7.5) (2025-07-10)
 
 
