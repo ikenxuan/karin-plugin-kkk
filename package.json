@@ -33,7 +33,6 @@
     "build": "tsc && vite build",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts",
     "fix": "npx eslint . -c eslint.config.js --fix",
-    "init": "karin init",
     "pub": "npm publish --access public",
     "sort": "sort-package-json",
     "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
