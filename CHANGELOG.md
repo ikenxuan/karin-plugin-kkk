@@ -1,5 +1,12 @@
 # 变更日志
 
+## [1.8.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.8.0...v1.8.1) (2025-07-16)
+
+
+### 🐛 错误修复
+
+* 默认配置 ([bc376c3](https://github.com/ikenxuan/karin-plugin-kkk/commit/bc376c3b1705b1be2374d2c5fd4bdbb1a9efaba3))
+
 ## [1.8.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.7.5...v1.8.0) (2025-07-16)
 
 
