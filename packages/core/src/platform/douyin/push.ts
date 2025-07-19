@@ -122,6 +122,7 @@ export class DouYinpush extends Base {
         iddata = await getDouyinID(this.e, Detail_Data.share_url ?? 'https://live.douyin.com/' + Detail_Data.room_data?.owner.web_rid, false)
       }
 
+      logger.mark(`UP: ${data[awemeId].remark}\n作品id：${awemeId}\nhttps://www.douyin.com/video/${awemeId}`)
       if (!skip) {
         if (pushItem.living && 'room_data' in pushItem.Detail_Data && Detail_Data.live_data) {
           // 处理直播推送
