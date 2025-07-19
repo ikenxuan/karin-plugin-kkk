@@ -1,5 +1,7 @@
 import 'reflect-metadata'
 
+import path from 'node:path'
+
 import Client, {
   createBilibiliRoutes,
   createDouyinRoutes,
@@ -9,12 +11,12 @@ import Client, {
 } from '@ikenxuan/amagi'
 import * as cors from 'cors'
 import * as httpProxy from 'http-proxy-middleware'
-import { app, logger, mkdirSync } from 'node-karin'
+import { app, authMiddleware, logger, mkdirSync } from 'node-karin'
 import express from 'node-karin/express'
 import { karinPathBase } from 'node-karin/root'
 
 import { Common, Config, Root } from '@/module'
-import { getVideoRouter, videoStreamRouter } from '@/module/server/router'
+import { getBilibiliDataRouter, getDouyinDataRouter, getKuaishouDataRouter, getLongLinkRouter, getVideoRouter, videoStreamRouter } from '@/module/server/router'
 
 const server = express()
 /** 代理参数 */
@@ -25,6 +27,9 @@ const proxyOptions: httpProxy.Options = {
 server.use(cors.default())
 server.use('/', httpProxy.createProxyMiddleware(proxyOptions))
 server.listen(3780)
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 if (Config.app.APIServer && Config.app.APIServerMount) {
   app.use(logMiddleware(['/api/bilibili', '/api/douyin', '/api/kuaishou']))
@@ -45,6 +50,18 @@ if (Config.app.APIServer && Config.app.APIServerMount) {
 
 app.get('/api/kkk/stream/:filename', videoStreamRouter)
 app.get('/api/kkk/video/:filename', getVideoRouter)
+
+app.use('/api/kkk/getLongLink', authMiddleware, getLongLinkRouter)
+app.use('/api/kkk/douyin/data', authMiddleware, getDouyinDataRouter)
+app.use('/api/kkk/bilibili/data', authMiddleware, getBilibiliDataRouter)
+app.use('/api/kkk/kuaishou/data', authMiddleware, getKuaishouDataRouter)
+
+// app.use('/api/kkk/getLongLink', getLongLinkRouter)
+// app.use('/api/kkk/douyin/data', getDouyinDataRouter)
+// app.use('/api/kkk/bilibili/data', getBilibiliDataRouter)
+// app.use('/api/kkk/kuaishou/data', getKuaishouDataRouter)
+
+app.use('/kkk', express.static(path.join(Root.pluginPath, 'lib', 'web')))
 
 const base = `${karinPathBase}/${Root.pluginName}`
 mkdirSync(`${base}/data`)

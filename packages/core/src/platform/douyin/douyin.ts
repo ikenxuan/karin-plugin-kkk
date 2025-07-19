@@ -474,7 +474,7 @@ function convertTimestampToDateTime (timestamp: number): string {
   return `${year}-${month}-${day} ${hours}:${minutes}`
 }
 
-function Emoji (data: DyEmojiList) {
+export const Emoji = (data: DyEmojiList) => {
   const ListArray = []
 
   for (const i of data.emoji_list) {

@@ -22,7 +22,7 @@ export const webConfig = defineConfig({
   info: {
     id: 'karin-plugin-kkk',
     name: 'kkk插件',
-    description: 'Karin 的「抖音」「B站」视频解析/动态推送插件',
+    description: `Karin 的「抖音」「B站」视频解析/动态推送插件。v${Root.pluginVersion}`,
     icon: {
       name: 'radio_button_checked',
       color: '#F31260'
