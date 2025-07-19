@@ -1,16 +1,25 @@
-lib/*
-node_modules/*
-
-pnpm-lock.yaml
-package-lock.json
+# 包管理器文件
+.npmrc
 yarn.lock
-index.js
-pnpm-workspace.yaml
-@karinjs/*
-data/*
-logs/*
-startpuppeteer.bat
-temp/*
+package-lock.json
+
+# 包管理器日志
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# 编辑器配置
+/.idea/
+/.vscode/
+
+# 临时文件
+logs/
+/temp/
+
+# 依赖
+node_modules/
+
+# 其他
 napcat.quick.bat
-.pnpmfile.cjs
-/dist

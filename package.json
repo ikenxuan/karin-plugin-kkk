@@ -1,96 +1,20 @@
 {
   "name": "karin-plugin-kkk",
-  "version": "1.8.1",
-  "description": "Karin 的「抖音」「B 站」视频解析/动态推送插件",
-  "keywords": [
-    "karin-plugin",
-    "karin"
-  ],
-  "homepage": "https://github.com/ikenxuan/karin-plugin-kkk",
-  "bugs": {
-    "url": "https://github.com/ikenxuan/karin-plugin-kkk/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ikenxuan/karin-plugin-kkk.git"
-  },
-  "license": "GPL-3.0-only",
-  "author": "ikenxuan",
-  "type": "module",
-  "main": "lib/index.js",
-  "files": [
-    "config/",
-    "lib/",
-    "!lib/cli/",
-    "resources/",
-    "LICENSE",
-    "package.json",
-    "README.md",
-    "CHANGELOG.md"
-  ],
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "app": "node --import tsx src/app.ts",
-    "build": "tsc && vite build",
-    "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts",
-    "fix": "npx eslint . -c eslint.config.js --fix",
-    "pub": "npm publish --access public",
-    "sort": "sort-package-json",
-    "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
-    "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" src/app.ts"
+    "build": "pnpm -r run build",
+    "build:core": "pnpm --filter karin-plugin-kkk run build",
+    "build:web": "pnpm --filter webui run build",
+    "build:all": "pnpm build",
+    "dev": "pnpm --filter karin-plugin-kkk run dev",
+    "dev:watch": "pnpm --filter karin-plugin-kkk run watch",
+    "watch": "pnpm --filter karin-plugin-kkk run watch",
+    "web": "pnpm --filter webui run dev",
+    "lint:fix": "eslint --fix \"packages/**/*.ts\""
   },
-  "dependencies": {
-    "@karinjs/md-html": "^1.3.0",
-    "playwright": "^1.51.1",
-    "typeorm": "^0.3.24"
-  },
-  "devDependencies": {
-    "@ikenxuan/amagi": "^5.0.0",
-    "@karinjs/plugin-puppeteer": "^1.0.17",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.1",
-    "@types/heic-convert": "^2.1.0",
-    "@types/node": "^22.13.14",
-    "@types/qrcode": "^1.5.5",
-    "cors": "^2.8.5",
-    "cross-env": "^7.0.3",
-    "eslint": "^9.7.0",
-    "eslint-plugin-simple-import-sort": "^12.1.1",
-    "heic-convert": "^2.1.0",
-    "http-proxy-middleware": "^3.0.3",
-    "neostandard": "^0.11.9",
-    "node-karin": "^1.10.8",
-    "qrcode": "^1.5.4",
-    "reflect-metadata": "^0.2.2",
-    "sort-package-json": "^2.15.1",
-    "tsx": "^4.19.3",
-    "typescript": "^5.8.2",
-    "vite": "^6.3.3"
-  },
-  "engines": {
-    "node": ">=21.0.0",
-    "pnpm": ">=9.0.0"
-  },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
-  },
-  "karin": {
-    "main": "src/index.ts",
-    "apps": [
-      "lib/apps"
-    ],
-    "ts-apps": [
-      "src/apps"
-    ],
-    "static": [
-      "resources"
-    ],
-    "files": [
-      "config",
-      "data",
-      "resources"
-    ],
-    "web": "./lib/web.config.js",
-    "ts-web": "./src/web.config.ts"
-  }
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

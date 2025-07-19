@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       releases_created: ${{ steps.release-please.outputs.releases_created }}
+      core_release_created: ${{ steps.release-please.outputs['packages/core--release_created'] }}
+      core_tag_name: ${{ steps.release-please.outputs['packages/core--tag_name'] }}
 
     steps:
       - name: 🚀 执行版本发布检查
@@ -30,10 +32,10 @@ jobs:
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
 
-  # 正式版本构建
+  # 正式版本构建 (仅 core 包)
   production-build:
     needs: version-release
-    if: needs.version-release.outputs.releases_created == 'true'
+    if: needs.version-release.outputs.core_release_created == 'true'
     runs-on: ubuntu-latest
     outputs:
       package_name: ${{ steps.get-package-name.outputs.name }}
@@ -54,16 +56,20 @@ jobs:
 
       - name: 🏷️ 解析包信息
         id: get-package-name
+        working-directory: packages/core
         run: |
           PACKAGE_NAME=$(pnpm pkg get name | tr -d '"')
           PACKAGE_SHORT_NAME=$(basename "$PACKAGE_NAME")
           echo "PACKAGE_SHORT_NAME=$PACKAGE_SHORT_NAME" >> $GITHUB_OUTPUT
           echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_OUTPUT
 
-      - name: 🔨 执行项目构建
+      - name: 🔨 执行完整项目构建
         id: build-package
         run: |
+          # 构建所有包（core 和 web）
           pnpm build
+          # 准备 core 包发布
+          cd packages/core
           pnpm pkg delete devDependencies
           mkdir -p ${{ runner.temp }}/temp/
           cp -r package.json README.md CHANGELOG.md LICENSE config resources lib ${{ runner.temp }}/temp/
@@ -74,7 +80,7 @@ jobs:
           name: ${{ steps.get-package-name.outputs.PACKAGE_SHORT_NAME }}
           path: ${{ runner.temp }}/temp/
 
-  # NPM 正式发布
+  # NPM 正式发布 (仅 core 包)
   npm-production-publish:
     runs-on: ubuntu-latest
     needs: [version-release, production-build]
@@ -109,7 +115,7 @@ jobs:
         run: |
           curl -X PUT "https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs"
 
-  # 构建分支同步
+  # 构建分支同步 (构建所有包，但只同步 core 包)
   build-branch-sync:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -129,15 +135,18 @@ jobs:
           run_install: |
             - args: [--no-frozen-lockfile]
       
-      - name: 🔨 执行项目构建
+      - name: 🔨 执行完整项目构建
         run: |
-          echo "开始构建项目..."
+          echo "开始构建所有包..."
+          # 构建所有包（core 和 web）
           pnpm build
           if [ $? -ne 0 ]; then
             echo "构建失败，退出工作流"
             exit 1
           fi
-          echo "构建成功，准备复制文件..."
+          echo "构建成功，准备复制 core 包文件..."
+          # 准备 core 包文件
+          cd packages/core
           pnpm pkg delete devDependencies
           mkdir -p ${{ runner.temp }}/temp/
           # 复制所有必要文件，包括完整的 lib 目录
@@ -227,15 +236,15 @@ jobs:
         run: |
           # 创建一个检查文件是否存在并检出的函数
           checkout_if_exists() {
-            if git ls-tree -r --name-only origin/main | grep -q "^$1$"; then
+            if git ls-tree -r --name-only origin/main | grep -q "^packages/core/$1$"; then
               if [ "$1" != "package.json" ]; then
-                git checkout main -- "$1"
-                echo "已检出: $1"
+                git checkout main -- "packages/core/$1"
+                echo "已检出: packages/core/$1"
               else
                 echo "跳过检出 package.json，保留修改版本"
               fi
             else
-              echo "文件不存在，跳过: $1"
+              echo "文件不存在，跳过: packages/core/$1"
             fi
           }
           
@@ -287,16 +296,10 @@ jobs:
           force_with_lease: true
           args: --set-upstream
 
-  # 临时包发布
+  # 预览包发布 (每次推送都执行)
   preview-package-publish:
     runs-on: ubuntu-latest
-    if: |
-      (
-        (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-        (github.event_name == 'pull_request') ||
-        (github.event_name == 'workflow_dispatch')
-      )
-
+    # 移除条件限制，每次推送都执行
     steps:
       - name: 📥 检出源代码
         uses: actions/checkout@v4
@@ -330,20 +333,33 @@ jobs:
           name: sync-build-artifacts
           path: ./build-output/
 
-      - name: 📦 安装项目依赖 (PR/手动触发)
+      - name: 📦 安装项目依赖
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
         run: pnpm install
 
-      - name: 🔨 执行项目构建 (PR/手动触发)
+      - name: 🔨 执行完整项目构建
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
         run: |
+          # 构建所有包（core 和 web）
           pnpm build
           if [ $? -ne 0 ]; then
             echo "❌ 构建失败！" >> $GITHUB_STEP_SUMMARY
             echo "提交哈希: $(git rev-parse --short HEAD)" >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
+          # 准备 core 包发布
+          cd packages/core
           pnpm pkg delete devDependencies
+          # 回到根目录准备发布
+          cd ../..
+          # 复制构建产物到根目录
+          cp -r packages/core/lib ./
+          cp -r packages/core/config ./
+          cp -r packages/core/resources ./
+          cp packages/core/package.json ./
+          cp packages/core/README.md ./
+          cp packages/core/CHANGELOG.md ./
+          cp packages/core/LICENSE ./
 
       - name: 🏷️ 生成版本标识
         run: |
