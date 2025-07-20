@@ -18,7 +18,6 @@ import {
   Camera,
   Video,
   Music,
-  Film,
   Palette,
   Target,
   Rocket,
@@ -36,55 +35,27 @@ import {
 import { useVideoParser } from '@/hooks/use-video-parser'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 import 'react-photo-view/dist/react-photo-view.css'
-import { extractVideoLink } from '@/parsers/utils'
-import HeicImage from '@/components/heicImage';
 import PhotoViewWithHeic from '@/components/PhotoViewWithHeic'
 import { clearAccessToken, clearRefreshToken, clearUserId } from '@/lib/token'
 import { useHeartbeat } from '@/hooks/useHeartbeat'
+import { downloadWithSmartNaming, downloadImagesAsZip, handleOpenOriginal, handleShare } from '@/lib/tools'
+import UniversalPhotoView from '@/components/UniversalPhotoView'
+import { ImageType } from '@/components/UniversalImage'
+import type { CommentInfo, VideoInfo } from '@/parsers/types'
 
-/**
- * 评论信息接口
- * @interface CommentInfo
- */
-interface CommentInfo {
-  id: string
-  author: string
-  avatar: string
-  content: string
-  images?: string[] // 评论中的图片
-  likes: number
-  timestamp: string
-}
-
-/**
- * 视频信息接口
- * @interface VideoInfo
- */
-interface VideoInfo {
-  id: string
-  title: string
-  description: string
-  thumbnail: string
-  duration: string
-  views: string
-  likes: string
-  author: string
-  type: "video" | "note"
-  downloadUrl?: {
-    video: string
-    audio: string
+// 声明livephotoskit类型
+declare global {
+  interface Window {
+    LivePhotosKit: any
   }
-  images?: string[]
-  tags: string[]
-  comments: CommentInfo[]
-  commentCount: number
 }
+
 
 /**
  * 视频解析器组件
  * @returns JSX.Element
  */
-export default function VideoParserPage() {
+export default function VideoParserPage () {
   useHeartbeat()
   const [url, setUrl] = useState('')
   const [result, setResult] = useState<VideoInfo | null>(null)
@@ -187,7 +158,7 @@ export default function VideoParserPage() {
       )
     }
   }, [])
-  
+
   /**
    * 评论组件
    * @param comment - 评论数据
@@ -288,7 +259,6 @@ export default function VideoParserPage() {
     </div>
   ), [])
 
-
   // 使用useMemo优化评论组件，只在result.comments变化时重新渲染
   const commentItems = useMemo(() => {
     if (!result?.comments) return null
@@ -297,7 +267,7 @@ export default function VideoParserPage() {
       <CommentItem key={comment.id} comment={comment} />
     ))
   }, [result?.comments, CommentItem])
-  
+
   return (
     <PhotoProvider
       key={result?.id || 'default'}
@@ -322,7 +292,7 @@ export default function VideoParserPage() {
           <div className="hidden sm:block absolute top-1/3 left-0 w-32 h-1 bg-black transform rotate-45"></div>
           <div className="hidden sm:block absolute bottom-1/3 right-0 w-24 h-1 bg-black transform -rotate-45"></div>
         </div>
-      
+
         <div className="max-w-4xl mx-auto relative z-10">
           {/* Header */}
           <div className="mb-4 sm:mb-8 relative">
@@ -337,7 +307,7 @@ export default function VideoParserPage() {
                 </h2>
               </div>
               <Sparkles className="w-6 sm:w-10 h-6 sm:h-10 text-blue-600 transform -rotate-12" />
-              
+
               {/* 退出登录按钮 */}
               <Button
                 onClick={handleLogout}
@@ -354,7 +324,7 @@ export default function VideoParserPage() {
               <div className="w-12 sm:w-24 h-1 sm:h-2 bg-green-600 transform rotate-1"></div>
             </div>
           </div>
-      
+
           {/* Input Section */}
           <Card className="border-2 sm:border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white mb-4 sm:mb-8 transform md:-rotate-1 relative overflow-hidden">
             <div className="absolute -top-2 sm:-top-3 -right-2 sm:-right-3">
@@ -429,7 +399,7 @@ export default function VideoParserPage() {
               </div>
             </CardContent>
           </Card>
-      
+
           {/* Results Section */}
           {result && (
             <>
@@ -443,6 +413,8 @@ export default function VideoParserPage() {
                     <div className="flex items-start gap-3 mb-3">
                       {result.type === "video" ? (
                         <Video className="w-8 h-8 text-red-600 mt-1" />
+                      ) : result.type === "slides" ? (
+                        <Archive className="w-8 h-8 text-purple-600 mt-1" />
                       ) : (
                         <Camera className="w-8 h-8 text-blue-600 mt-1" />
                       )}
@@ -457,7 +429,7 @@ export default function VideoParserPage() {
                       </p>
                     </div>
                   </div>
-      
+
                   {/* Tags */}
                   <div className="flex flex-wrap gap-2 mb-6">
                     {result.tags.map((tag, index) => (
@@ -470,7 +442,7 @@ export default function VideoParserPage() {
                       </Badge>
                     ))}
                   </div>
-      
+
                   {/* Content based on type */}
                   {result.type === "video" ? (
                     <div className="grid md:grid-cols-2 gap-6 mb-6">
@@ -482,84 +454,167 @@ export default function VideoParserPage() {
                             <img
                               src={result.thumbnail}
                               alt={result.title}
-                              className="w-full h-64 object-cover border-3 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+                              className="w-full h-64 object-cover border-3 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] cursor-pointer"
+                              onClick={handleVideoPlay}
                               referrerPolicy="no-referrer"
                               crossOrigin="anonymous"
                             />
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <Button 
-                                onClick={handleVideoPlay}
-                                className="bg-red-600 hover:bg-red-700 text-white rounded-full w-16 h-16 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:scale-110 transition-transform"
-                              >
-                                <Play className="w-8 h-8 fill-current" />
-                              </Button>
+                            <div className="absolute inset-0 flex items-center justify-center bg-opacity-30 cursor-pointer" onClick={handleVideoPlay}>
+                              <div className="bg-yellow-400 border-4 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-3 hover:translate-y-3 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-150 p-5 hover:bg-yellow-500 group hover:rotate-3">
+                                <Play className="w-10 h-10 text-black fill-black group-hover:scale-125 transition-transform duration-200" />
+                              </div>
                             </div>
-                            <div className="absolute top-2 right-2">
-                              <Film className="w-6 h-6 text-white drop-shadow-lg" />
+                            <div className="absolute bottom-3 right-3 bg-black bg-opacity-80 text-white px-2 py-1 rounded font-bold">
+                              {result.duration}
                             </div>
                           </>
                         ) : (
-                            <video
-                              src={result.downloadUrl?.video}
-                              poster={result.thumbnail}
-                              controls
-                              autoPlay
-                              className="w-full aspect-video object-contain border-3 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
-                              onPause={handleVideoPause}
-                              onEnded={handleVideoEnded}
-                              onError={(e) => {
-                                console.error('视频播放错误:', e)
-                                alert('视频播放失败，请尝试下载后观看')
-                                setIsVideoPlaying(false)
-                              }}
-                            >
-                              您的浏览器不支持视频播放。
-                            </video>
+                          // 显示视频播放器
+                          <video
+                            controls
+                            autoPlay
+                            className="w-full h-64 object-cover border-3 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+                            poster={result.thumbnail}
+                            onPause={handleVideoPause}
+                            onEnded={handleVideoEnded}
+                          >
+                            <source src={result.downloadUrl?.video} type="video/mp4" />
+                            您的浏览器不支持视频播放。
+                          </video>
                         )}
                       </div>
-      
+
                       {/* Video Stats */}
                       <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="bg-blue-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform -rotate-1">
-                            <div className="flex items-center gap-2">
-                              <Clock className="w-5 h-5" />
-                              <div>
-                                <span className="font-bold">{result.duration}</span>
-                                <div className="text-xs text-gray-600">时长</div>
-                              </div>
+                        <div className="bg-blue-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform -rotate-1">
+                          <div className="flex items-center gap-2">
+                            <Eye className="w-5 h-5" />
+                            <div>
+                              <span className="font-bold">{result.views}</span>
+                              <div className="text-xs text-gray-600">浏览量</div>
                             </div>
                           </div>
-                          <div className="bg-green-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform rotate-1">
-                            <div className="flex items-center gap-2">
-                              <Eye className="w-5 h-5" />
-                              <div>
-                                <span className="font-bold">{result.views}</span>
-                                <div className="text-xs text-gray-600">观看</div>
-                              </div>
+                        </div>
+                        <div className="bg-red-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform rotate-1">
+                          <div className="flex items-center gap-2">
+                            <Heart className="w-5 h-5" />
+                            <div>
+                              <span className="font-bold">{result.likes}</span>
+                              <div className="text-xs text-gray-600">点赞数</div>
                             </div>
                           </div>
-                          <div className="bg-pink-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform rotate-1">
-                            <div className="flex items-center gap-2">
-                              <Heart className="w-5 h-5" />
-                              <div>
-                                <span className="font-bold">{result.likes}</span>
-                                <div className="text-xs text-gray-600">点赞</div>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="bg-yellow-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform -rotate-1">
-                            <div className="flex items-center gap-2">
-                              <Share2 className="w-5 h-5" />
-                              <div>
-                                <span className="font-bold">分享</span>
-                                <div className="text-xs text-gray-600">SHARE</div>
-                              </div>
+                        </div>
+                        <div className="bg-green-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform -rotate-1">
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-5 h-5" />
+                            <div>
+                              <span className="font-bold">{result.duration}</span>
+                              <div className="text-xs text-gray-600">时长</div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
+                  ) : result.type === "slides" ? (
+                      // 合辑内容显示
+                      <div className="space-y-6">
+                        {/* Masonry Grid for Mixed Content */}
+                        <div className="mb-6">
+                          <div className="flex items-center gap-2 mb-4">
+                            <Archive className="w-6 h-6 text-purple-600" />
+                            <h4 className="text-lg font-bold">合辑内容 Slides Collection</h4>
+                          </div>
+
+                          {/* 合辑内容的瀑布流布局 */}
+                          <div className="columns-2 md:columns-3 gap-4 space-y-4">
+                            {result.slides?.map((slide, index) => {
+                              // 模拟不同的图片尺寸
+                              const heights = ['h-48', 'h-64', 'h-40', 'h-56', 'h-44', 'h-52']
+                              const randomHeight = heights[index % heights.length]
+
+                              return (
+                                <div
+                                  key={index}
+                                  className={`relative group cursor-pointer transform hover:scale-105 transition-transform break-inside-avoid mb-4 overflow-hidden`}
+                                >
+                                  {slide.type === 'video' ? (
+                                    <div className="relative">
+                                      <video
+                                        controls
+                                        preload="metadata"
+                                        poster={slide.thumbnail}
+                                        className={`w-full ${randomHeight} object-cover border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+                                        style={{ pointerEvents: 'auto' }}
+                                      >
+                                        <source src={slide.url} type="video/mp4" />
+                                        您的浏览器不支持视频播放。
+                                      </video>
+                                      {/* 视频时长标签 */}
+                                      {slide.duration && (
+                                        <div className="absolute top-2 left-2 bg-black bg-opacity-80 text-white px-2 py-1 rounded font-bold text-xs">
+                                          {slide.duration}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ) : (
+                                    // 静态图片和Live Photo使用UniversalPhotoView
+                                    <UniversalPhotoView
+                                      src={slide.url}
+                                      videoSrc={slide.type === 'livephoto' ? slide.videoUrl : undefined}
+                                      alt={`合辑${slide.type === 'livephoto' ? 'Live Photo' : '图片'} ${index + 1}`}
+                                      className={`w-full ${slide.type === 'livephoto'
+                                        ? 'h-auto min-h-[200px] max-h-[400px] object-contain'
+                                        : `${randomHeight} object-cover`
+                                        } border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+                                      type={slide.type === 'livephoto' ? ImageType.LIVE : ImageType.STATIC}
+                                      liveConfig={{
+                                        muted: true,
+                                        loop: false,
+                                        showIcon: slide.type === 'livephoto',
+                                        enableHoverPlay: true,
+                                        enableLongPress: true,
+                                      }}
+                                    />
+                                  )}
+
+                                  {/* 序号标签 */}
+                                  <div className={`absolute ${slide.type === 'video' ? 'top-2 right-2' : 'bottom-2 right-2'} z-10`}>
+                                    <div className={`${slide.type === 'video' ? 'bg-red-400' :
+                                      slide.type === 'livephoto' ? 'bg-purple-400' : 'bg-yellow-400'
+                                      } text-black px-2 py-1 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-black text-sm transform rotate-3 hover:rotate-6 transition-transform`}>
+                                      {String(index + 1).padStart(2, '0')}
+                                      {slide.type === 'video' && <span className="ml-1">📹</span>}
+                                      {slide.type === 'livephoto' && <span className="ml-1">🎭</span>}
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+
+                          {/* 合辑统计信息 */}
+                          <div className="grid grid-cols-2 gap-4 mt-6">
+                            <div className="bg-yellow-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform -rotate-1">
+                              <div className="flex items-center gap-2">
+                                <Eye className="w-5 h-5" />
+                                <div>
+                                  <span className="font-bold">{result.views}</span>
+                                  <div className="text-xs text-gray-600">浏览量</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="bg-orange-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform rotate-1">
+                              <div className="flex items-center gap-2">
+                                <Heart className="w-5 h-5" />
+                                <div>
+                                  <span className="font-bold">{result.likes}</span>
+                                  <div className="text-xs text-gray-600">点赞数</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                   ) : (
                     /* Gallery Layout - Masonry Style */
                     <div className="mb-6">
@@ -567,40 +622,35 @@ export default function VideoParserPage() {
                         <ImageIcon className="w-6 h-6 text-purple-600" />
                         <h4 className="text-lg font-bold">图片集 Gallery Collection</h4>
                       </div>
-      
-                        {/* Masonry Grid for Mixed Aspect Ratios */}
-                        <div className="columns-2 md:columns-3 gap-4 space-y-4">
-                          {result.images?.map((image, index) => {
-                            // 模拟不同的图片尺寸
-                            const heights = ['h-48', 'h-64', 'h-40', 'h-56', 'h-44', 'h-52']
-                            const randomHeight = heights[index % heights.length]
 
-                            return (
-                              <PhotoView key={index} src={image}>
+                          {/* 图集的瀑布流布局 */}
+                          <div className="columns-2 md:columns-3 gap-4 space-y-4">
+                            {result.images?.map((image, index) => {
+                              // 模拟不同的图片尺寸
+                              const heights = ['h-48', 'h-64', 'h-40', 'h-56', 'h-44', 'h-52']
+                              const randomHeight = heights[index % heights.length]
+
+                              return (
                                 <div
-                                  className={`relative group cursor-pointer transform hover:scale-105 transition-transform break-inside-avoid mb-4`}
+                                  key={index}
+                                  className={`relative group cursor-pointer transform hover:scale-105 transition-transform break-inside-avoid mb-4 overflow-hidden`}
                                 >
-                                  <HeicImage
+                                  <UniversalPhotoView
                                     src={image}
                                     alt={`Gallery image ${index + 1}`}
                                     className={`w-full ${randomHeight} object-cover border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
-                                    referrerPolicy="no-referrer"
-                                    crossOrigin="anonymous"
                                   />
-                                  <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 transition-opacity flex items-center justify-center pointer-events-none">
-                                    <ImageIcon className="w-8 h-8 text-white" />
-                                  </div>
-                                  <div className="absolute top-2 left-2 pointer-events-none">
-                                    <div className="bg-white bg-opacity-80 px-2 py-1 rounded text-xs font-bold">
-                                      {index + 1}
+                                  {/* 序号标签 */}
+                                  <div className="absolute bottom-2 right-2 z-10">
+                                    <div className="bg-red-400 text-white px-2 py-1 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-black text-sm transform -rotate-3 hover:-rotate-6 transition-transform">
+                                      {String(index + 1).padStart(2, '0')}
                                     </div>
                                   </div>
                                 </div>
-                              </PhotoView>
-                            )
-                          })}
-                        </div>
-      
+                              )
+                            })}
+                          </div>
+
                       {/* Gallery Stats */}
                       <div className="grid grid-cols-2 gap-4 mt-6">
                         <div className="bg-purple-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform -rotate-1">
@@ -612,91 +662,96 @@ export default function VideoParserPage() {
                             </div>
                           </div>
                         </div>
-                        <div className="bg-orange-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform rotate-1">
+                        <div className="bg-pink-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform rotate-1">
                           <div className="flex items-center gap-2">
                             <Heart className="w-5 h-5" />
                             <div>
                               <span className="font-bold">{result.likes}</span>
-                              <div className="text-xs text-gray-600">喜欢数</div>
+                              <div className="text-xs text-gray-600">点赞数</div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                )}
-      
-                {/* Description */}
-                <div className="mb-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Music className="w-6 h-6 text-green-600" />
-                    <h4 className="text-xl font-black text-black transform -rotate-1">
-                      内容描述 DESCRIPTION
-                    </h4>
-                  </div>
-                  <p className="text-gray-800 font-medium leading-relaxed bg-gray-100 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform rotate-1">
-                    {result.description}
-                  </p>
-                </div>
-      
-                {/* Action Buttons */}
-                <div className="flex flex-wrap gap-4">
-                  {result.downloadUrl && (
-                    <>
-                      {/* 视频下载按钮 */}
-                        {result.downloadUrl.video && (
-                          <Button
-                            onClick={() => downloadWithSmartNaming(result.downloadUrl!.video, result.title, 'video')}
-                            className="bg-green-500 hover:bg-green-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
-                          >
-                            <Download className="w-5 h-5 mr-2" />
-                            下载视频 VIDEO
-                        </Button>
-                        )}
-                      
-                        {/* 音频下载按钮 */}
-                        {result.downloadUrl.audio && result.downloadUrl.audio !== result.downloadUrl.video && (
-                          <Button
-                            onClick={() => downloadWithSmartNaming(result.downloadUrl!.audio, result.title, 'audio')}
-                            className="bg-orange-500 hover:bg-orange-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
-                          >
-                            <Music className="w-5 h-5 mr-2" />
-                            下载音频 AUDIO
-                        </Button>
-                        )}
-                    </>
-                  )}
-                  
-                  {/* 图片打包下载按钮 */}
-                  {result.images && result.images.length > 1 && (
-                    <Button
-                      onClick={() => downloadImagesAsZip(result.images!, result.title)}
-                      className="bg-indigo-500 hover:bg-indigo-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
-                    >
-                      <Archive className="w-5 h-5 mr-2" />
-                      打包下载 ({result.images.length}张)
-                    </Button>
                   )}
 
-                  {/* 原链接按钮 */}
-                  <Button 
-                    onClick={() => handleOpenOriginal(url)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
-                  >
-                    <Link className="w-5 h-5 mr-2" />
-                    原链接 ORIGINAL
-                  </Button>
-                  
-                  {/* 分享按钮 */}
-                  <Button 
-                    onClick={() => handleShare(url, result.title)}
-                    className="bg-purple-500 hover:bg-purple-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
-                  >
-                    <Share2 className="w-5 h-5 mr-2" />
-                    分享 SHARE
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                  {/* Action Buttons */}
+                  <div className="flex flex-wrap gap-3 mb-6">
+                    {/* 下载按钮 */}
+                    {result.downloadUrl?.video && (
+                      <Button
+                        onClick={() => downloadWithSmartNaming(result.downloadUrl!.video!, result.title, 'video')}
+                        className="bg-green-500 hover:bg-green-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+                      >
+                        <Download className="w-5 h-5 mr-2" />
+                        下载视频 VIDEO
+                      </Button>
+                    )}
+
+                    {/* 音频下载按钮 */}
+                    {result.downloadUrl?.audio && (
+                      <Button
+                        onClick={() => downloadWithSmartNaming(result.downloadUrl!.audio, result.title, 'audio')}
+                        className="bg-orange-500 hover:bg-orange-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+                      >
+                        <Music className="w-5 h-5 mr-2" />
+                        下载音频 AUDIO
+                      </Button>
+                    )}
+
+                    {/* 合辑打包下载按钮 - 添加到 Action Buttons 部分 */}
+                    {result.slides && result.slides.length > 1 && (
+                      <Button
+                        onClick={() => {
+                          // 提取合辑中的所有图片URL（排除纯视频）
+                          const slideUrls = result.slides!
+                            .filter(slide => slide.type !== 'video') // 排除纯视频
+                            .map(slide => slide.thumbnail || slide.url)
+                            .filter(url => url) // 过滤掉空值
+                          if (slideUrls.length > 0) {
+                            downloadImagesAsZip(slideUrls, result.title)
+                          } else {
+                            alert('该合辑中没有可下载的图片内容')
+                          }
+                        }}
+                        className="bg-indigo-500 hover:bg-indigo-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+                      >
+                        <Archive className="w-5 h-5 mr-2" />
+                        打包下载图片 ({result.slides.filter(s => s.type !== 'video').length}项)
+                      </Button>
+                    )}
+
+                    {/* 图片打包下载按钮 */}
+                    {result.images && result.images.length > 1 && (
+                      <Button
+                        onClick={() => downloadImagesAsZip(result.images!, result.title)}
+                        className="bg-indigo-500 hover:bg-indigo-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+                      >
+                        <Archive className="w-5 h-5 mr-2" />
+                        打包下载 ({result.images.length}张)
+                      </Button>
+                    )}
+
+                    {/* 原链接按钮 */}
+                    <Button
+                      onClick={() => handleOpenOriginal(url)}
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+                    >
+                      <Link className="w-5 h-5 mr-2" />
+                      原链接 ORIGINAL
+                    </Button>
+
+                    {/* 分享按钮 */}
+                    <Button
+                      onClick={() => handleShare(url, result.title)}
+                      className="bg-purple-500 hover:bg-purple-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+                    >
+                      <Share2 className="w-5 h-5 mr-2" />
+                      分享 SHARE
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* Comments Section */}
               <Card className="border-2 sm:border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] sm:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] bg-white transform md:-rotate-1 relative mb-4 sm:mb-8 overflow-hidden">
@@ -733,8 +788,8 @@ export default function VideoParserPage() {
                   </div>
                 </CardContent>
               </Card>
-          </>
-        )}
+            </>
+          )}
 
           {/* Footer */}
           <div className="mt-12 text-center relative">
@@ -762,350 +817,9 @@ export default function VideoParserPage() {
               <Zap className="absolute -bottom-2 -right-2 w-6 h-6 text-blue-400" />
             </div>
           </div>
+        </div>
       </div>
-    </div>
     </PhotoProvider>
   )
 }
 
-/**
- * 处理分享功能
- * @param shareUrl - 分享链接
- * @param title - 分享标题
- */
-const handleShare = async (shareUrl: string, title: string) => {
-  if (navigator.share) {
-    try {
-      await navigator.share({
-        title: title,
-        url: shareUrl
-      })
-    } catch (err: any) {
-      console.log('分享取消或失败', err)
-    }
-  } else {
-    // 降级方案：复制到剪贴板
-    try {
-      await navigator.clipboard.writeText(shareUrl)
-      alert('链接已复制到剪贴板')
-    } catch (err: any) {
-      console.log(err)
-      // 再次降级：手动选择文本
-      const textArea = document.createElement('textarea')
-      textArea.value = shareUrl
-      document.body.appendChild(textArea)
-      textArea.select()
-      document.execCommand('copy')
-      document.body.removeChild(textArea)
-      alert('链接已复制到剪贴板')
-    }
-  }
-}
-
-/**
- * 打开原链接
- * @param originalUrl - 原始链接
- */
-const handleOpenOriginal = (originalUrl: string) => {
-  const videoLink = extractVideoLink(originalUrl);
-  if (videoLink) {
-    window.open(videoLink, '_blank');
-  }
-}
-
-/**
- * 智能生成下载文件名
- * @param downloadUrl - 下载链接
- * @param title - 视频标题
- * @param type - 文件类型 ('video' | 'audio')
- * @returns 清理后的文件名
- */
-function generateDownloadFilename (downloadUrl: string, title: string, type: 'video' | 'audio'): string {
-  let filename = ''
-
-  // 1. 优先使用标题
-  if (title && title.trim()) {
-    filename = sanitizeName(title.trim())
-  }
-
-  // 2. 如果标题无效，尝试从URL提取文件名
-  if (!filename || filename === 'untitled') {
-    try {
-      const url = new URL(downloadUrl)
-      const pathname = url.pathname
-      const urlFilename = pathname.split('/').pop() || ''
-
-      if (urlFilename && urlFilename.includes('.')) {
-        // 移除扩展名，只保留文件名部分
-        const nameWithoutExt = urlFilename.replace(/\.[^.]*$/, '')
-        if (nameWithoutExt.length > 0) {
-          filename = sanitizeName(nameWithoutExt)
-        }
-      }
-    } catch (error) {
-      console.warn('无法从URL提取文件名:', error)
-    }
-  }
-
-  // 3. 如果还是无效，使用时间戳
-  if (!filename || filename === 'untitled') {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
-    filename = `${type}_${timestamp}`
-  }
-
-  // 4. 添加类型后缀和扩展名
-  const extension = type === 'video' ? '.mp4' : '.mp3'
-  const suffix = type === 'video' ? '_video' : '_audio'
-
-  // 避免重复后缀
-  if (!filename.toLowerCase().includes(suffix.toLowerCase())) {
-    filename += suffix
-  }
-
-  return filename + extension
-}
-
-/**
- * 原生下载函数（使用浏览器默认下载弹窗）
- * @param downloadUrl - 下载链接
- * @param suggestedFilename - 建议保存的文件名
- */
-function downloadWithNative (downloadUrl: string, suggestedFilename: string) {
-  try {
-    // 创建隐藏的下载链接
-    const link = document.createElement('a')
-    link.href = downloadUrl
-    link.download = suggestedFilename
-    link.style.display = 'none'
-
-    // 添加到页面并触发点击
-    document.body.appendChild(link)
-    link.click()
-
-    // 清理
-    document.body.removeChild(link)
-
-  } catch (error) {
-    console.error('❌ 下载失败:', error)
-    // 降级方案：直接打开链接
-    window.open(downloadUrl, '_blank')
-  }
-}
-
-/**
- * 改进的原生下载函数
- * @param downloadUrl - 下载链接
- * @param title - 视频标题
- * @param type - 文件类型
- */
-function downloadWithSmartNaming (downloadUrl: string, title: string, type: 'video' | 'audio') {
-  const filename = generateDownloadFilename(downloadUrl, title, type)
-  downloadWithNative(downloadUrl, filename)
-}
-
-/**
- * 清理文件名和文件夹名中的非法字符
- * @param name - 原始名称
- * @returns 清理后的名称
- */
-function sanitizeName (name: string): string {
-  // 移除或替换Windows和其他系统中的非法字符
-  return name
-    .replace(/[<>:"/\\|?*]/g, '_')  // 替换非法字符为下划线
-    .replace(/^\.|\.$/, '')  // 移除开头和结尾的点
-    .substring(0, 200) || 'untitled'  // 限制长度并提供默认值
-}
-
-/**
- * 图片打包下载（改进版，增强防盗链处理）
- * @param images - 图片URL数组
- * @param title - 作品标题
- */
-async function downloadImagesAsZip (images: string[], title: string) {
-  try {
-    const JSZip = (await import('jszip')).default
-    const zip = new JSZip()
-    const cleanTitle = sanitizeName(title || '图片集')
-    const imageFolder = zip.folder(cleanTitle)
-
-    // 简化的进度显示
-    let successCount = 0
-    const failedImages: Array<{ index: number, url: string, error: string }> = []
-
-    /**
-     * 下载单张图片的函数（带重试机制）
-     * @param imageUrl - 图片URL
-     * @param actualIndex - 图片索引
-     * @param retryCount - 重试次数
-     */
-    const downloadSingleImage = async (imageUrl: string, actualIndex: number, retryCount = 0): Promise<{ success: boolean, index: number, error?: any }> => {
-      const maxRetries = 3
-
-      try {
-        // 尝试多种请求策略
-        const strategies = [
-          // 策略1：模拟浏览器请求
-          {
-            method: 'GET',
-            headers: {
-              'Accept': 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-              'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-              'Cache-Control': 'no-cache',
-              'Pragma': 'no-cache',
-              'Sec-Fetch-Dest': 'image',
-              'Sec-Fetch-Mode': 'no-cors',
-              'Sec-Fetch-Site': 'cross-site',
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            },
-            mode: 'cors' as RequestMode,
-            credentials: 'omit' as RequestCredentials,
-            referrerPolicy: 'no-referrer' as ReferrerPolicy
-          },
-          // 策略2：无Referer请求
-          {
-            method: 'GET',
-            headers: {
-              'Accept': 'image/*,*/*',
-              'User-Agent': navigator.userAgent
-            },
-            mode: 'no-cors' as RequestMode,
-            credentials: 'omit' as RequestCredentials
-          },
-          // 策略3：最简请求
-          {
-            method: 'GET',
-            mode: 'cors' as RequestMode,
-            credentials: 'omit' as RequestCredentials
-          }
-        ]
-
-        let lastError: any
-
-        // 尝试不同的请求策略
-        for (let strategyIndex = 0; strategyIndex < strategies.length; strategyIndex++) {
-          try {
-            const response = await fetch(imageUrl, strategies[strategyIndex] as RequestInit)
-
-            if (!response.ok) {
-              throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-            }
-
-            // 检查响应是否为图片
-            const contentType = response.headers.get('content-type') || ''
-            if (!contentType.startsWith('image/') && response.headers.get('content-length') !== '0') {
-              // 如果不是图片类型，尝试下一个策略
-              if (strategyIndex < strategies.length - 1) {
-                continue
-              }
-            }
-
-            // 直接转换为blob
-            const blob = await response.blob()
-
-            // 验证blob是否有效
-            if (blob.size === 0) {
-              throw new Error('图片文件为空')
-            }
-
-            // 确定文件扩展名
-            let extension = '.jpg'
-            const blobType = blob.type || contentType
-            if (blobType) {
-              if (blobType.includes('png')) extension = '.png'
-              else if (blobType.includes('gif')) extension = '.gif'
-              else if (blobType.includes('webp')) extension = '.webp'
-              else if (blobType.includes('heic') || blobType.includes('heif')) extension = '.heic'
-              else if (blobType.includes('jpeg') || blobType.includes('jpg')) extension = '.jpg'
-            }
-
-            const fileName = `${String(actualIndex + 1).padStart(3, '0')}${extension}`
-            imageFolder?.file(fileName, blob)
-
-            successCount++
-
-            return { success: true, index: actualIndex }
-          } catch (strategyError) {
-            lastError = strategyError
-            console.warn(`策略${strategyIndex + 1}失败:`, strategyError)
-            continue
-          }
-        }
-
-        throw lastError || new Error('所有请求策略都失败')
-
-      } catch (error) {
-        // 重试机制
-        if (retryCount < maxRetries) {
-          await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1))) // 递增延迟
-          return downloadSingleImage(imageUrl, actualIndex, retryCount + 1)
-        }
-
-        const errorMessage = error instanceof Error ? error.message : String(error)
-        console.error(`❌ 图片 ${actualIndex + 1} 最终失败:`, errorMessage)
-        failedImages.push({ index: actualIndex, url: imageUrl, error: errorMessage })
-        return { success: false, index: actualIndex, error }
-      }
-    }
-
-    // 并发下载图片（限制并发数避免内存爆炸和请求过多）
-    const CONCURRENT_LIMIT = 2 // 降低并发数，避免触发防护机制
-    const downloadPromises: Promise<any>[] = []
-
-    for (let i = 0; i < images.length; i += CONCURRENT_LIMIT) {
-      const batch = images.slice(i, i + CONCURRENT_LIMIT)
-
-      const batchPromise = Promise.all(
-        batch.map(async (imageUrl, batchIndex) => {
-          const actualIndex = i + batchIndex
-          // 添加随机延迟，避免请求过于密集
-          await new Promise(resolve => setTimeout(resolve, Math.random() * 500))
-          return downloadSingleImage(imageUrl, actualIndex)
-        })
-      )
-
-      downloadPromises.push(batchPromise)
-
-      // 批次间添加延迟
-      if (i + CONCURRENT_LIMIT < images.length) {
-        await new Promise(resolve => setTimeout(resolve, 200))
-      }
-    }
-
-    // 等待所有批次完成
-    const allResults = await Promise.all(downloadPromises)
-    allResults.flat()
-
-    if (successCount === 0) {
-      // 提供详细的错误信息
-      const errorDetails = failedImages.slice(0, 3).map(img =>
-        `图片${img.index + 1}: ${img.error}`
-      ).join('\n')
-
-      throw new Error(`所有图片下载失败，可能原因：\n1. 网络连接问题\n2. 图片服务器防盗链机制\n3. 图片链接已失效\n\n详细错误:\n${errorDetails}${failedImages.length > 3 ? '\n...' : ''}`)
-    }
-
-    if (failedImages.length > 0) {
-      console.warn(`⚠️ ${failedImages.length} 张图片下载失败，将继续打包成功的图片`)
-    }
-
-    // 生成ZIP文件
-    const zipBlob = await zip.generateAsync({
-      type: 'blob',
-      compression: 'DEFLATE',
-      compressionOptions: { level: 6 }
-    })
-    const zipFileName = `${cleanTitle}_${successCount}张图片.zip`
-
-    // 使用原生下载方式下载ZIP
-    const zipUrl = URL.createObjectURL(zipBlob)
-    downloadWithNative(zipUrl, zipFileName)
-
-    // 延迟清理URL
-    setTimeout(() => {
-      URL.revokeObjectURL(zipUrl)
-    }, 2000)
-  } catch (error) {
-    console.error('❌ 打包下载失败:', error)
-    alert(`❌ 打包下载失败:\n${error instanceof Error ? error.message : String(error)}`)
-  }
-}

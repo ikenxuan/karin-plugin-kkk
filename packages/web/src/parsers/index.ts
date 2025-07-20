@@ -43,13 +43,13 @@ export class VideoParser {
     
     switch (platform) {
       case 'douyin':
-        workInfo = await parseDouyinWorkId(finalUrl)
+        workInfo = parseDouyinWorkId(finalUrl)
         break
       case 'bilibili':
-        workInfo = await parseBilibiliWorkId(finalUrl)
+        workInfo = parseBilibiliWorkId(finalUrl)
         break
       case 'kuaishou':
-        workInfo = await parseKuaishouWorkId(finalUrl)
+        workInfo = parseKuaishouWorkId(finalUrl)
         break
       default:
         throw new Error(`不支持的平台: ${platform}`)

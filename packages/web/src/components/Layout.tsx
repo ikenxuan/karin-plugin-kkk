@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { Sidebar } from "./sideber"
-import { Header } from "./header"
 
 interface LayoutProps {
   children: React.ReactNode
@@ -25,7 +24,6 @@ export function Layout({ children }: LayoutProps) {
       <Sidebar collapsed={sidebarCollapsed} onToggle={handleSidebarToggle} />
       
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header onMenuClick={handleSidebarToggle} />
         <main className="flex-1 overflow-auto">
           {children}
         </main>

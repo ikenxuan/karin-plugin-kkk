@@ -492,7 +492,7 @@ jobs:
             ### 📥 安装方式
             ```bash
             # 推荐使用 pnpm 安装
-            pnpm add ${{ steps.publish_pkg.outputs.simplified_url }} -w
+            ${{ steps.publish_pkg.outputs.pnpm_install_cmd }}
             ```
             
             ### 🚀 快速体验
@@ -537,7 +537,7 @@ jobs:
             npm init -y
             
             # 安装预览包
-            pnpm add ${{ steps.publish_pkg.outputs.simplified_url }}
+            ${{ steps.publish_pkg.outputs.pnpm_install_cmd }}
             
             # 测试导入
             node -e "console.log(require('${{ github.event.repository.name }}'))"

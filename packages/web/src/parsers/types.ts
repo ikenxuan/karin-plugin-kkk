@@ -31,6 +31,23 @@ export interface CommentInfo {
 }
 
 /**
+ * 合辑项目接口
+ * @description 合辑中的单个项目，可以是静态图片、Live Photo或视频
+ */
+export interface SlideItem {
+  /** 项目类型 */
+  type: 'image' | 'livephoto' | 'video'
+  /** 图片或视频URL */
+  url: string
+  /** 缩略图URL */
+  thumbnail?: string
+  /** 视频时长（仅视频和livephoto类型） */
+  duration?: string
+  /** Live Photo的视频URL（仅livephoto类型） */
+  videoUrl?: string
+}
+
+/**
  * 视频信息接口
  */
 export interface VideoInfo {
@@ -51,14 +68,16 @@ export interface VideoInfo {
   /** 作者 */
   author: string
   /** 作品类型 */
-  type: 'video' | 'note'
+  type: 'video' | 'note' | 'slides'
   /** 下载链接 */
   downloadUrl?: {
-    video: string,
+    video?: string,
     audio: string
   }
   /** 图片列表（图集类型） */
   images?: string[]
+  /** 合辑项目列表（合辑类型） */
+  slides?: SlideItem[]
   /** 标签 */
   tags: string[]
   /** 评论列表 */

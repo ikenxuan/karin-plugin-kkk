@@ -1,8 +1,3 @@
-/**
- * 哔哩哔哩数据解析器
- * @description 负责解析哔哩哔哩平台的原始数据
- */
-
 import request from '@/lib/request'
 import { formatDuration, formatCount, formatTimestamp } from '@/parsers/utils'
 import type { VideoInfo, CommentInfo, ParsedWorkInfo, apiResponse } from '@/parsers/types'
@@ -13,7 +8,7 @@ import type { BiliOneWork, BiliVideoPlayurlIsLogin, BiliWorkComments, BiliEmojiL
  * @param finalUrl 最终重定向后的URL
  * @returns 解析后的作品信息
  */
-export async function parseBilibiliWorkId(finalUrl: string): Promise<ParsedWorkInfo> {
+export function parseBilibiliWorkId(finalUrl: string): ParsedWorkInfo {
   // 从URL中提取bvid或aid
   const bvidMatch = finalUrl.match(/\/video\/(BV[a-zA-Z0-9]+)/)
   const aidMatch = finalUrl.match(/\/video\/av(\d+)/)

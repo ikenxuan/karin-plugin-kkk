@@ -1,11 +1,6 @@
-/**
- * 抖音数据解析器
- * @description 负责解析抖音平台的原始数据
- */
-
 import request from '@/lib/request'
 import { formatDuration, formatCount, formatTimestamp } from '@/parsers/utils'
-import type { VideoInfo, CommentInfo, ParsedWorkInfo, apiResponse } from '@/parsers/types'
+import type { VideoInfo, CommentInfo, ParsedWorkInfo, apiResponse, SlideItem } from '@/parsers/types'
 import type { DyVideoWork, DyImageAlbumWork, DySlidesWork, DyEmojiList, DyWorkComments } from '@ikenxuan/amagi'
 
 /**
@@ -13,7 +8,7 @@ import type { DyVideoWork, DyImageAlbumWork, DySlidesWork, DyEmojiList, DyWorkCo
  * @param finalUrl 最终重定向后的URL
  * @returns 解析后的作品信息
  */
-export async function parseDouyinWorkId(finalUrl: string): Promise<ParsedWorkInfo> {
+export function parseDouyinWorkId(finalUrl: string): ParsedWorkInfo {
   // 从URL中提取aweme_id
   const videoMatch = /video\/(\d+)/.exec(finalUrl)
   const noteMatch = /note\/(\d+)/.exec(finalUrl)
@@ -109,8 +104,9 @@ export async function parseDouyinVideoDetail(workInfo: ParsedWorkInfo): Promise<
     const emojiData = emojiResponse.data.data.data
 
     // 判断作品类型
-    const isVideo = !awemeDetail.images
-    const workType = isVideo ? 'video' : 'note'
+    const isSlides = awemeDetail.is_slides === true && awemeDetail.images !== null
+    const isVideo = !awemeDetail.images && !isSlides
+    const workType = isSlides ? 'slides' : (isVideo ? 'video' : 'note')
 
     // 解析评论数据
     const comments = parseDouyinComments(commentsData.comments, emojiData)
@@ -126,24 +122,67 @@ export async function parseDouyinVideoDetail(workInfo: ParsedWorkInfo): Promise<
     const originalTitle = awemeDetail.desc || '无标题'
     const cleanTitle = removeTags(originalTitle, tags)
 
+    // 处理合辑项目
+    let slides: SlideItem[] | undefined
+    if (isSlides && awemeDetail.images) {
+      slides = awemeDetail.images.map((item) => {
+        // 静态图片，clip_type为2
+        if (item.clip_type === 2) {
+          return {
+            type: 'image',
+            url: item.url_list[2],
+            thumbnail: item.url_list[2]
+          }
+        } else if (item.clip_type === 3) {
+          // Live Photo
+          const videoUrl = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`
+          return {
+            type: 'livephoto',
+            url: item.url_list[2], // 静态图片作为主URL
+            videoUrl: videoUrl, // Live Photo的视频URL
+            thumbnail: item.url_list[2],
+            duration: formatDuration(item.video?.duration / 1000 || 0)
+          }
+        } else {
+          // 视频，clip_type = 4
+          const videoUrl = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`
+          return {
+            type: 'video',
+            url: videoUrl,
+            thumbnail: item.url_list[2],
+            duration: formatDuration(item.video?.duration / 1000 || 0)
+          }
+        }
+      })
+    }
+
     // 格式化为统一的VideoInfo接口
     const videoInfo: VideoInfo = {
       id: `${awemeDetail.aweme_id}_${Date.now()}`,
       title: cleanTitle,
       description: awemeDetail.desc || '',
-      thumbnail: isVideo 
-        ? awemeDetail.video?.cover?.url_list?.[0] 
-        : awemeDetail.images?.[0]?.url_list?.[0] || '',
-      duration: isVideo ? formatDuration(awemeDetail.video?.duration || 0) : '0:00',
+      thumbnail: isVideo
+        ? awemeDetail.video?.cover?.url_list?.[0]
+        : isSlides
+          ? awemeDetail.images?.[0]?.url_list?.[0] || ''
+          : awemeDetail.images?.[0]?.url_list?.[0] || '',
+      duration: isVideo ? formatDuration(awemeDetail.video?.duration / 1000 || 0) : '0:00',
       views: formatCount(awemeDetail.statistics?.play_count || 0),
       likes: formatCount(awemeDetail.statistics?.digg_count || 0),
       author: awemeDetail.author?.nickname || '未知用户',
       type: workType,
-      downloadUrl: isVideo ? {
-        video: awemeDetail.video?.play_addr?.url_list?.[0] || '获取失败',
-        audio: awemeDetail.music?.play_url?.uri || '获取失败'
-      } : undefined,
-      images: !isVideo ? awemeDetail.images?.map(img => img.url_list?.[2]).filter(Boolean) : undefined,
+      downloadUrl: {
+        video: isVideo
+          ? awemeDetail.video?.play_addr?.url_list?.[0] || '获取失败'
+          : isSlides && slides
+            ? slides.find(slide => slide.type === 'video')?.url || undefined
+            : undefined,
+        audio: isSlides && awemeDetail.video
+          ? awemeDetail.video?.play_addr?.url_list?.[0] || '获取失败'
+          : awemeDetail.music?.play_url?.uri || '获取失败'
+      },
+      images: workType === 'note' ? awemeDetail.images?.map(img => img.url_list?.[2]).filter(Boolean) : undefined,
+      slides: slides,
       tags,
       comments,
       commentCount: awemeDetail.statistics?.comment_count || 0

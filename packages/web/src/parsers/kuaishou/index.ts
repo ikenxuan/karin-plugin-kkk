@@ -1,8 +1,3 @@
-/**
- * 快手数据解析器
- * @description 负责解析快手平台的原始数据
- */
-
 import request from '@/lib/request'
 import { formatDuration, formatCount, formatTimestamp } from '@/parsers/utils'
 import type { VideoInfo, CommentInfo, ParsedWorkInfo } from '@/parsers/types'
@@ -12,7 +7,7 @@ import type { VideoInfo, CommentInfo, ParsedWorkInfo } from '@/parsers/types'
  * @param finalUrl 最终重定向后的URL
  * @returns 解析后的作品信息
  */
-export async function parseKuaishouWorkId(finalUrl: string): Promise<ParsedWorkInfo> {
+export function parseKuaishouWorkId(finalUrl: string): ParsedWorkInfo {
   // 从URL中提取photoId
   const photoIdMatch = finalUrl.match(/\/short-video\/(\w+)/)
   if (!photoIdMatch) {

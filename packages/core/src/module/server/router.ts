@@ -10,9 +10,10 @@ import {
   createSuccessResponse,
   logger
 } from 'node-karin'
+import axios from 'node-karin/axios'
 import template from 'node-karin/template'
 
-import { Common, Config, Networks, Root } from '@/module/utils'
+import { Common, Config, Root } from '@/module/utils'
 
 /** 专门负责传输视频文件流 */
 export const videoStreamRouter: RequestHandler = (req, res) => {
@@ -139,9 +140,12 @@ export const getLongLinkRouter: RequestHandler = async (req, res) => {
       return createBadRequestResponse(res, '请提供有效的链接')
     }
 
-    // 获取最终重定向地址
-    const networks = new Networks({ url: link })
-    const finalUrl = await networks.getLongLink()
+    const resp = await axios.get(link, {
+      headers: {
+        'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
+      }
+    })
+    const finalUrl = resp.request.res.responseUrl
 
     // 检查重定向是否成功
     if (finalUrl.includes('获取链接重定向失败') || finalUrl.includes('403 Forbidden')) {

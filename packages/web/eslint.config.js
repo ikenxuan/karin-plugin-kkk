@@ -30,7 +30,8 @@ export default tseslint.config([
           'ts-check': false,
           minimumDescriptionLength: 3
         },
-      ]
+      ],
+      'react-refresh/only-export-components': 'off' // 关闭只能导出组件的限制
     }
   },
 ])

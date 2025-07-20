@@ -9,8 +9,23 @@
  * @returns 格式化后的时长字符串
  */
 export function formatDuration(seconds: number): string {
-  const minutes = Math.floor(seconds / 60)
-  const remainingSeconds = seconds % 60
+  // 处理负数情况
+  if (seconds < 0) return '0:00'
+  
+  // 向下取整总秒数,避免出现小数
+  const totalSeconds = Math.floor(seconds)
+  
+  // 计算分钟数和剩余秒数
+  const minutes = Math.floor(totalSeconds / 60)
+  const remainingSeconds = totalSeconds % 60
+  
+  // 当分钟数超过60时,需要转换为小时显示
+  if (minutes >= 60) {
+    const hours = Math.floor(minutes / 60)
+    const remainingMinutes = minutes % 60
+    return `${hours}:${remainingMinutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
+  }
+  
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
 }
 
