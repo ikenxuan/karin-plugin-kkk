@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import convert from 'heic-convert/browser'
 
 interface HeicImageProps {
@@ -8,7 +9,7 @@ interface HeicImageProps {
   referrerPolicy?: React.ImgHTMLAttributes<HTMLImageElement>['referrerPolicy']
   crossOrigin?: React.ImgHTMLAttributes<HTMLImageElement>['crossOrigin']
   onClick?: () => void
-  onProcessed?: (processedSrc: string) => void // 新增：转换完成后的回调
+  onProcessed?: (processedSrc: string) => void
 }
 
 /**
@@ -94,18 +95,12 @@ const HeicImage: React.FC<HeicImageProps> = ({
         setIsLoading(true)
         setError(null)
 
-        // 获取图片数据
-        const response = await fetch(src, {
-          referrerPolicy: referrerPolicy || 'no-referrer',
-          mode: 'cors'
+        // 使用axios获取图片数据
+        const response = await axios.get(src, {
+          responseType: 'arraybuffer'
         })
 
-        if (!response.ok) {
-          throw new Error(`图片加载失败: ${response.status} ${response.statusText}`)
-        }
-
-        const blob = await response.blob()
-        const arrayBuffer = await blob.arrayBuffer()
+        const arrayBuffer = response.data
 
         // 通过文件头部字节检测是否为HEIC格式
         if (isHeicFormat(arrayBuffer)) {
@@ -118,7 +113,7 @@ const HeicImage: React.FC<HeicImageProps> = ({
             const outputBuffer = await convert({
               buffer: inputBuffer,
               format: 'PNG',
-              quality: 0.9 // 添加质量参数
+              quality: 0.9
             })
 
             // 创建新的Blob和URL

@@ -61,6 +61,9 @@ app.use('/api/kkk/kuaishou/data', authMiddleware, getKuaishouDataRouter)
 // app.use('/api/kkk/bilibili/data', getBilibiliDataRouter)
 // app.use('/api/kkk/kuaishou/data', getKuaishouDataRouter)
 
+app.get('/kkk/login', (req, res) => {
+  res.sendFile(path.join(Root.pluginPath, 'lib', 'web', 'index.html'))
+})
 app.use('/kkk', express.static(path.join(Root.pluginPath, 'lib', 'web')))
 
 const base = `${karinPathBase}/${Root.pluginName}`

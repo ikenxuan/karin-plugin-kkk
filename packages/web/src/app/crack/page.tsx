@@ -31,6 +31,7 @@ import {
   Maximize,
   Archive,
   X,
+  LogOut,
 } from "lucide-react"
 import { useVideoParser } from '@/hooks/use-video-parser'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
@@ -38,6 +39,8 @@ import 'react-photo-view/dist/react-photo-view.css'
 import { extractVideoLink } from '@/parsers/utils'
 import HeicImage from '@/components/heicImage';
 import PhotoViewWithHeic from '@/components/PhotoViewWithHeic'
+import { clearAccessToken, clearRefreshToken, clearUserId } from '@/lib/token'
+import { useHeartbeat } from '@/hooks/useHeartbeat'
 
 /**
  * 评论信息接口
@@ -81,11 +84,27 @@ interface VideoInfo {
  * 视频解析器组件
  * @returns JSX.Element
  */
-export default function VideoParser() {
+export default function VideoParserPage() {
+  useHeartbeat()
   const [url, setUrl] = useState('')
   const [result, setResult] = useState<VideoInfo | null>(null)
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   const { parseVideo, loading, error, clearError } = useVideoParser()
+
+  /**
+   * 处理退出登录
+   */
+  const handleLogout = useCallback(() => {
+    // 这里可以添加退出登录的逻辑，比如清除token、跳转到登录页等
+    if (confirm('确定要退出登录吗？')) {
+      // 清除本地存储的用户信息
+      clearAccessToken()
+      clearRefreshToken()
+      clearUserId()
+      // 跳转到登录页或首页
+      window.location.href = '/kkk/login'
+    }
+  }, [])
 
   /**
    * 处理解析请求
@@ -318,6 +337,16 @@ export default function VideoParser() {
                 </h2>
               </div>
               <Sparkles className="w-6 sm:w-10 h-6 sm:h-10 text-blue-600 transform -rotate-12" />
+              
+              {/* 退出登录按钮 */}
+              <Button
+                onClick={handleLogout}
+                className="bg-purple-500 hover:bg-purple-600 text-white font-bold border-2 sm:border-3 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all p-2 sm:p-3"
+                title="退出登录"
+              >
+                <LogOut className="w-4 sm:w-6 h-4 sm:h-6" />
+                <span className="hidden sm:inline ml-2">退出</span>
+              </Button>
             </div>
             <div className="flex gap-1 sm:gap-2">
               <div className="w-16 sm:w-32 h-1 sm:h-2 bg-blue-600 transform rotate-2"></div>

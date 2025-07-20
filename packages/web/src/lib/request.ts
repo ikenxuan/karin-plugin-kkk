@@ -144,7 +144,7 @@ const redirectToLogin = (message: string): void => {
     cacheToken.token = null
   }
 
-  if (window.location.pathname === '/login') {
+  if (window.location.pathname === '/kkk/login') {
     if (token) {
       toast.error('登录会话过期，请重新登录', { duration: 2000 })
     }
@@ -154,17 +154,18 @@ const redirectToLogin = (message: string): void => {
     return
   }
 
-  toast.error(`${message}，5秒后将跳转登录界面`, { duration: 5000 })
+  toast.error('5秒后将跳转登录界面', { duration: 5000 })
+  toast.error(message, { duration: 5000 })
 
   setTimeout(() => {
     isRedirecting = false
     /** 如果当前页面已经是登录页面，则不进行跳转 */
-    if (window.location.pathname === '/login') return
+    if (window.location.pathname === '/kkk/login') return
     // 在跳转前再次检查是否已经有了新的token
     if (getAccessToken()) {
       return
     }
-    window.location.href = '/login'
+    window.location.href = '/kkk/login'
   }, 5000)
 }
 
