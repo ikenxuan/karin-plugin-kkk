@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { videoParser } from '@/parsers'
+
 import type { VideoInfo } from '@/parsers'
+import { videoParser } from '@/parsers'
 
 /**
  * 视频解析器Hook
