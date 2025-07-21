@@ -1,5 +1,6 @@
 import React from 'react'
 import { PhotoView } from 'react-photo-view'
+
 import UniversalImage, { ImageType } from './UniversalImage'
 
 interface UniversalPhotoViewProps {

@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
+import { BrowserRouter as Router, Route,Routes } from 'react-router-dom'
 
 // 使用懒加载导入组件
 const LoginPage = lazy(() => import('./app/login/page'))

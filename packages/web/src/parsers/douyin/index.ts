@@ -1,7 +1,8 @@
+import type { DyEmojiList, DyImageAlbumWork, DySlidesWork, DyVideoWork, DyWorkComments } from '@ikenxuan/amagi'
+
 import request from '@/lib/request'
-import { formatDuration, formatCount, formatTimestamp } from '@/parsers/utils'
-import type { VideoInfo, CommentInfo, ParsedWorkInfo, apiResponse, SlideItem } from '@/parsers/types'
-import type { DyVideoWork, DyImageAlbumWork, DySlidesWork, DyEmojiList, DyWorkComments } from '@ikenxuan/amagi'
+import type { apiResponse, CommentInfo, ParsedWorkInfo, SlideItem,VideoInfo } from '@/parsers/types'
+import { formatCount, formatDuration, formatTimestamp } from '@/parsers/utils'
 
 /**
  * 抖音作品ID解析器

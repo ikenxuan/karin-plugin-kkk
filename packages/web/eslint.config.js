@@ -1,9 +1,10 @@
 import js from '@eslint/js'
-import globals from 'globals'
+import { globalIgnores } from 'eslint/config'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
+import simpleImportSort from 'eslint-plugin-simple-import-sort'
+import globals from 'globals'
 import tseslint from 'typescript-eslint'
-import { globalIgnores } from 'eslint/config'
 
 export default tseslint.config([
   globalIgnores(['dist']),
@@ -31,7 +32,17 @@ export default tseslint.config([
           minimumDescriptionLength: 3
         },
       ],
-      'react-refresh/only-export-components': 'off' // 关闭只能导出组件的限制
+      'react-refresh/only-export-components': 'off'
     }
   },
+  {
+    name: 'simple-import-sort',
+    plugins: {
+      'simple-import-sort': simpleImportSort
+    },
+    rules: {
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error'
+    }
+  }
 ])

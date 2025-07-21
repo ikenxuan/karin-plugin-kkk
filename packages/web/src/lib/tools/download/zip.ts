@@ -1,6 +1,8 @@
-import type { SlideItem } from '@/parsers/types'
 import axios from 'axios'
-import { sanitizeName, downloadWithNative } from './video'
+
+import type { SlideItem } from '@/parsers/types'
+
+import { downloadWithNative,sanitizeName } from './video'
 
 
 /**

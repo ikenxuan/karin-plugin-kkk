@@ -3,12 +3,13 @@
  * @description 提供统一的解析接口，根据平台自动选择对应的解析器
  */
 
-import { parseDouyinWorkId, parseDouyinVideoDetail } from './douyin'
-import { parseBilibiliWorkId, parseBilibiliVideoDetail } from './bilibili'
-import { parseKuaishouWorkId, parseKuaishouVideoDetail } from './kuaishou'
-import { extractVideoLink } from './utils'
 import request from '@/lib/request'
-import { type VideoInfo, type ParsedWorkInfo, type LinkParseResponse, HTTPStatusCode } from './types'
+
+import { parseBilibiliVideoDetail,parseBilibiliWorkId } from './bilibili'
+import { parseDouyinVideoDetail,parseDouyinWorkId } from './douyin'
+import { parseKuaishouVideoDetail,parseKuaishouWorkId } from './kuaishou'
+import { HTTPStatusCode,type LinkParseResponse, type ParsedWorkInfo, type VideoInfo } from './types'
+import { extractVideoLink } from './utils'
 
 /**
  * 统一视频解析器
@@ -80,4 +81,4 @@ export class VideoParser {
 export const videoParser = new VideoParser()
 
 // 导出类型
-export type { VideoInfo, CommentInfo, ParsedWorkInfo } from './types'
+export type { CommentInfo, ParsedWorkInfo,VideoInfo } from './types'

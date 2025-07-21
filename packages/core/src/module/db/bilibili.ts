@@ -1,6 +1,5 @@
 import 'reflect-metadata'
 
-import { copyFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { logger } from 'node-karin'
@@ -197,31 +196,6 @@ class FilterTag {
   bilibiliUser!: BilibiliUser
 }
 
-/**
- * 备份旧版 Sequelize 数据库文件（仅在备份文件不存在时执行）
- * 用于从 Sequelize 迁移到 TypeORM 的测试版本
- */
-(() => {
-  const dataDir = join(`${karinPathBase}/${Root.pluginName}/data`)
-  const oldDbPath = join(dataDir, 'bilibili.db')
-  const backupDbPath = join(dataDir, 'bilibili_sequelize_backup.db')
-
-  // 检查是否已存在备份文件
-  if (existsSync(backupDbPath)) {
-    logger.info('[Bilibili DB] 检测到已存在备份文件，跳过备份操作')
-    return
-  }
-
-  if (existsSync(oldDbPath)) {
-    try {
-      copyFileSync(oldDbPath, backupDbPath)
-      logger.info(`[Bilibili DB] 已备份旧版数据库文件到: ${backupDbPath}`)
-    } catch (error) {
-      logger.warn(`[Bilibili DB] 备份旧版数据库文件失败: ${error}`)
-    }
-  }
-})()
-
 /** TypeORM 数据源配置 */
 const AppDataSource = new DataSource({
   type: 'sqlite',
@@ -254,9 +228,9 @@ export class BilibiliDBBase {
       // 检查连接是否已经建立
       if (!AppDataSource.isInitialized) {
         await AppDataSource.initialize()
-        logger.mark('[BilibiliDB] 数据库连接成功')
+        logger.debug('[BilibiliDB] 数据库连接成功')
       } else {
-        logger.mark('[BilibiliDB] 数据库连接已存在，跳过初始化')
+        logger.debug('[BilibiliDB] 数据库连接已存在，跳过初始化')
       }
 
       // 初始化 Repository

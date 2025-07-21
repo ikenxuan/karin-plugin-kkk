@@ -1,7 +1,8 @@
+import type { BiliEmojiList,BiliOneWork, BiliVideoPlayurlIsLogin, BiliWorkComments } from '@ikenxuan/amagi'
+
 import request from '@/lib/request'
-import { formatDuration, formatCount, formatTimestamp } from '@/parsers/utils'
-import type { VideoInfo, CommentInfo, ParsedWorkInfo, apiResponse } from '@/parsers/types'
-import type { BiliOneWork, BiliVideoPlayurlIsLogin, BiliWorkComments, BiliEmojiList } from '@ikenxuan/amagi'
+import type { apiResponse,CommentInfo, ParsedWorkInfo, VideoInfo } from '@/parsers/types'
+import { formatCount, formatDuration, formatTimestamp } from '@/parsers/utils'
 
 /**
  * 哔哩哔哩作品ID解析器

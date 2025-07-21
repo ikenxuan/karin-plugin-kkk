@@ -1,6 +1,6 @@
 import request from '@/lib/request'
-import { formatDuration, formatCount, formatTimestamp } from '@/parsers/utils'
-import type { VideoInfo, CommentInfo, ParsedWorkInfo } from '@/parsers/types'
+import type { CommentInfo, ParsedWorkInfo,VideoInfo } from '@/parsers/types'
+import { formatCount, formatDuration, formatTimestamp } from '@/parsers/utils'
 
 /**
  * 快手作品ID解析器
