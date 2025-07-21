@@ -135,20 +135,18 @@ export async function parseDouyinVideoDetail(workInfo: ParsedWorkInfo): Promise<
           }
         } else if (item.clip_type === 3) {
           // Live Photo
-          const videoUrl = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`
           return {
             type: 'livephoto',
             url: item.url_list[2], // 静态图片作为主URL
-            videoUrl: videoUrl, // Live Photo的视频URL
+            videoUrl: item.video.play_addr_h264.url_list[0], // Live Photo的视频URL
             thumbnail: item.url_list[2],
             duration: formatDuration(item.video?.duration / 1000 || 0)
           }
         } else {
           // 视频，clip_type = 4
-          const videoUrl = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`
           return {
             type: 'video',
-            url: videoUrl,
+            url: item.video.play_addr_h264.url_list[0],
             thumbnail: item.url_list[2],
             duration: formatDuration(item.video?.duration / 1000 || 0)
           }

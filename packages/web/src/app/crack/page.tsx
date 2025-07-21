@@ -38,10 +38,11 @@ import 'react-photo-view/dist/react-photo-view.css'
 import PhotoViewWithHeic from '@/components/PhotoViewWithHeic'
 import { clearAccessToken, clearRefreshToken, clearUserId } from '@/lib/token'
 import { useHeartbeat } from '@/hooks/useHeartbeat'
-import { downloadWithSmartNaming, downloadImagesAsZip, handleOpenOriginal, handleShare } from '@/lib/tools'
+import { downloadWithSmartNaming, downloadImagesAsZip, handleOpenOriginal, handleShare, downloadVideosAsZip } from '@/lib/tools'
 import UniversalPhotoView from '@/components/UniversalPhotoView'
 import { ImageType } from '@/components/UniversalImage'
 import type { CommentInfo, VideoInfo } from '@/parsers/types'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 // 声明livephotoskit类型
 declare global {
@@ -61,7 +62,7 @@ export default function VideoParserPage () {
   const [result, setResult] = useState<VideoInfo | null>(null)
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   const { parseVideo, loading, error, clearError } = useVideoParser()
-
+  const isMobile = useIsMobile()
   /**
    * 处理退出登录
    */
@@ -581,10 +582,10 @@ export default function VideoParserPage () {
                                   <div className={`absolute ${slide.type === 'video' ? 'top-2 right-2' : 'bottom-2 right-2'} z-10`}>
                                     <div className={`${slide.type === 'video' ? 'bg-red-400' :
                                       slide.type === 'livephoto' ? 'bg-purple-400' : 'bg-yellow-400'
-                                      } text-black px-2 py-1 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-black text-sm transform rotate-3 hover:rotate-6 transition-transform`}>
+                                      } text-black ${isMobile ? 'px-1 py-0.5 text-xs' : 'px-2 py-1 text-sm'} border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-black transform rotate-3 hover:rotate-6 transition-transform`}>
                                       {String(index + 1).padStart(2, '0')}
-                                      {slide.type === 'video' && <span className="ml-1">📹</span>}
-                                      {slide.type === 'livephoto' && <span className="ml-1">🎭</span>}
+                                      {slide.type === 'video' && <span className={`${isMobile ? 'ml-0.5' : 'ml-1'}`}>📹</span>}
+                                      {slide.type === 'livephoto' && <span className={`${isMobile ? 'ml-0.5' : 'ml-1'}`}>🎭</span>}
                                     </div>
                                   </div>
                                 </div>
@@ -642,8 +643,9 @@ export default function VideoParserPage () {
                                   />
                                   {/* 序号标签 */}
                                   <div className="absolute bottom-2 right-2 z-10">
-                                    <div className="bg-red-400 text-white px-2 py-1 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-black text-sm transform -rotate-3 hover:-rotate-6 transition-transform">
+                                    <div className={`bg-red-400 text-white ${isMobile ? 'px-1 py-0.5 text-xs' : 'px-2 py-1 text-sm'} border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-black transform -rotate-3 hover:-rotate-6 transition-transform`}>
                                       {String(index + 1).padStart(2, '0')}
+                                      <span className={`${isMobile ? 'ml-0.5' : 'ml-1'}`}>🖼️</span>
                                     </div>
                                   </div>
                                 </div>
@@ -678,7 +680,7 @@ export default function VideoParserPage () {
                   {/* Action Buttons */}
                   <div className="flex flex-wrap gap-3 mb-6">
                     {/* 下载按钮 */}
-                    {result.downloadUrl?.video && (
+                    {result.downloadUrl?.video && result.type !== 'slides' && (
                       <Button
                         onClick={() => downloadWithSmartNaming(result.downloadUrl!.video!, result.title, 'video')}
                         className="bg-green-500 hover:bg-green-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
@@ -687,6 +689,40 @@ export default function VideoParserPage () {
                         下载视频 VIDEO
                       </Button>
                     )}
+
+                    {/* 合辑视频下载按钮 - 根据视频数量动态显示 */}
+                    {result.type === 'slides' && result.slides && (() => {
+                      const videoSlides = result.slides.filter(slide => slide.type === 'video')
+                      if (videoSlides.length === 1) {
+                        // 只有一个视频，显示单个下载按钮
+                        return (
+                          <Button
+                            onClick={() => downloadWithSmartNaming(videoSlides[0].url, result.title, 'video')}
+                            className="bg-green-500 hover:bg-green-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+                          >
+                            <Download className="w-5 h-5 mr-2" />
+                            下载视频 VIDEO
+                          </Button>
+                        )
+                      } else if (videoSlides.length > 1) {
+                        // 多个视频，显示打包下载按钮
+                        return (
+                          <Button
+                            onClick={() => {
+                              // 创建一个下载视频的函数，这里需要实现批量下载逻辑
+                              const videoUrls = videoSlides.map(slide => slide.url)
+                              // 可以调用一个批量下载视频的函数
+                              downloadVideosAsZip(videoUrls, result.title)
+                            }}
+                            className="bg-green-500 hover:bg-green-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+                          >
+                            <Archive className="w-5 h-5 mr-2" />
+                            打包下载视频 ({videoSlides.length}个)
+                          </Button>
+                        )
+                      }
+                      return null
+                    })()}
 
                     {/* 音频下载按钮 */}
                     {result.downloadUrl?.audio && (
@@ -699,27 +735,28 @@ export default function VideoParserPage () {
                       </Button>
                     )}
 
-                    {/* 合辑打包下载按钮 - 添加到 Action Buttons 部分 */}
-                    {result.slides && result.slides.length > 1 && (
-                      <Button
-                        onClick={() => {
-                          // 提取合辑中的所有图片URL（排除纯视频）
-                          const slideUrls = result.slides!
-                            .filter(slide => slide.type !== 'video') // 排除纯视频
-                            .map(slide => slide.thumbnail || slide.url)
-                            .filter(url => url) // 过滤掉空值
-                          if (slideUrls.length > 0) {
-                            downloadImagesAsZip(slideUrls, result.title)
-                          } else {
-                            alert('该合辑中没有可下载的图片内容')
-                          }
-                        }}
-                        className="bg-indigo-500 hover:bg-indigo-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
-                      >
-                        <Archive className="w-5 h-5 mr-2" />
-                        打包下载图片 ({result.slides.filter(s => s.type !== 'video').length}项)
-                      </Button>
-                    )}
+                    {/* 合辑打包下载按钮 */}
+                    {result.slides && result.slides.length > 1 && (() => {
+                      const imageSlides = result.slides.filter(slide => slide.type !== 'video')
+                      return imageSlides.length > 0 ? (
+                        <Button
+                          onClick={() => {
+                            const slideUrls = imageSlides
+                              .map(slide => slide.thumbnail || slide.url)
+                              .filter(url => url)
+                            if (slideUrls.length > 0) {
+                              downloadImagesAsZip(slideUrls, result.title)
+                            } else {
+                              alert('该合辑中没有可下载的图片内容')
+                            }
+                          }}
+                          className="bg-indigo-500 hover:bg-indigo-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+                        >
+                          <Archive className="w-5 h-5 mr-2" />
+                          打包下载图片 ({imageSlides.length}项)
+                        </Button>
+                      ) : null
+                    })()}
 
                     {/* 图片打包下载按钮 */}
                     {result.images && result.images.length > 1 && (

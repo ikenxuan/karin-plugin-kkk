@@ -75,7 +75,7 @@ export default function LoginPage () {
       localStorage.setItem(key.refreshToken, response.refreshToken)
 
       toast.success('登录成功')
-      navigate('/')
+      navigate('/', { replace: true })
     } catch (error) {
       console.error(error)
       toast.error(`登录失败: ${(error as Error).message}`)

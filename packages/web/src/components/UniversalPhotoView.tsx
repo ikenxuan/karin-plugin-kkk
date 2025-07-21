@@ -43,6 +43,7 @@ const UniversalPhotoView: React.FC<UniversalPhotoViewProps> = ({
 }) => {
   const [previewSrc, setPreviewSrc] = React.useState<string>(src)
   const [imageType, setImageType] = React.useState<ImageType>(type || ImageType.STATIC)
+  const [videoLoaded, setVideoLoaded] = React.useState<boolean>(false)
 
   /**
    * 处理图片处理完成
@@ -53,6 +54,13 @@ const UniversalPhotoView: React.FC<UniversalPhotoViewProps> = ({
   }
 
   /**
+ * 处理视频加载状态变化
+ */
+  const handleVideoLoadingChange = (loading: boolean) => {
+    setVideoLoaded(!loading)
+    }
+
+  /**
    * 处理Live图标点击
    */
   const handleImageClick = (e: React.MouseEvent) => {
@@ -60,6 +68,13 @@ const UniversalPhotoView: React.FC<UniversalPhotoViewProps> = ({
     const target = e.target as HTMLElement
     if (target.closest('.live-icon')) {
       e.stopPropagation()
+      return
+    }
+
+    // 如果是Live图片但视频还没加载完成，也阻止预览
+    if (imageType === ImageType.LIVE && !videoLoaded) {
+      e.stopPropagation()
+      console.log('Live图片正在加载中，请稍候...')
       return
     }
   }
@@ -83,7 +98,14 @@ const UniversalPhotoView: React.FC<UniversalPhotoViewProps> = ({
           showLiveIcon={true}
           enableHoverPlay={liveConfig.enableHoverPlay ?? true}
           enableLongPress={liveConfig.enableLongPress ?? true}
+          onLoadingChange={handleVideoLoadingChange}
         />
+        {/* 如果视频还在加载，显示加载提示 */}
+        {!videoLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
+            <div className="text-white text-sm">Live图片加载中...</div>
+          </div>
+        )}
       </div>
     )
   }
@@ -110,6 +132,7 @@ const UniversalPhotoView: React.FC<UniversalPhotoViewProps> = ({
           enableLongPress={liveConfig.enableLongPress ?? true}
           onClick={handleImageClick}
           onProcessed={handleProcessed}
+          onLoadingChange={handleVideoLoadingChange}
         />
       </PhotoView>
     )

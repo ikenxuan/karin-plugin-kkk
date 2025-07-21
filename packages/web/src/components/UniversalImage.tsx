@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import convert from 'heic-convert/browser'
-import { TbLivePhoto } from "react-icons/tb"
+import { CgLivePhoto } from "react-icons/cg"
 import { useIsMobile } from '@/hooks/use-mobile'
 
 /**
@@ -80,6 +80,8 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
   const [videoPlaying, setVideoPlaying] = useState(false)
   const [videoRunning, setVideoRunning] = useState(false)
   const [videoReady, setVideoReady] = useState(false)
+  const [videoLoaded, setVideoLoaded] = useState(false)
+  const [, setVideoError] = useState(false)
   const [, setIsHoveringIcon] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   
@@ -193,24 +195,38 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
    * 播放Live视频
    */
   const playLiveVideo = async () => {
-    if (!videoRef.current || videoRunning) return
+    if (!videoRef.current || videoRunning || !videoLoaded) {
+      return
+    }
 
-    // 重置视频状态，确保从干净状态开始
     const video = videoRef.current
+
+    // 确保视频从头开始播放
     video.currentTime = 0
+
+    // 不要立即改变透明度，等视频真正开始播放
     video.style.transition = 'none'
-    video.style.opacity = '1'
     video.style.transform = 'scale(1)'
 
     setVideoPlaying(true)
-    video.play().catch(console.error)
+
+    try {
+      await video.play()
+      // 视频开始播放后立即显示，减少延迟
+      video.style.transition = 'opacity 0.1s ease-out'
+      video.style.opacity = '1'
+    } catch (error) {
+      console.error('视频播放失败:', error)
+      setVideoPlaying(false)
+      video.style.opacity = '0'
+    }
   }
 
   /**
    * 停止Live视频播放
    */
   const stopLiveVideo = () => {
-    if (!videoRef.current || !videoRunning) return
+    if (!videoRef.current) return
 
     const video = videoRef.current
     video.pause()
@@ -224,7 +240,8 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
     if (!enableHoverPlay || detectedType !== ImageType.LIVE || !videoSrc) return
     
     setIsHoveringIcon(true)
-    if (videoReady) {
+    // 只有当视频完全加载完成时才允许播放
+    if (videoReady && videoLoaded) {
       playLiveVideo()
     }
   }
@@ -242,28 +259,25 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
   /**
    * 处理触摸开始（长按开始）
    */
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (!enableLongPress || detectedType !== ImageType.LIVE || !videoSrc || !videoReady) return
+  const handleTouchStart = () => {
+    if (!enableLongPress || detectedType !== ImageType.LIVE || !videoSrc || !videoReady || !videoLoaded) return
 
     // 清除之前的定时器
     if (longPressTimerRef.current) {
       clearTimeout(longPressTimerRef.current)
     }
 
-    // 设置长按定时器，500ms后才开始播放
+    // 设置长按定时器，300ms后开始播放（减少延迟）
     longPressTimerRef.current = setTimeout(() => {
       setIsLongPressing(true)
       playLiveVideo()
-      // 阻止默认行为，防止浏览器弹出下载菜单
-      e.preventDefault()
-      e.stopPropagation()
-    }, 500) // 500ms延迟，可以根据需要调整
+    }, 300)
   }
 
   /**
    * 处理触摸结束（长按结束）
    */
-  const handleTouchEnd = (e: React.TouchEvent) => {
+  const handleTouchEnd = () => {
     if (!enableLongPress) return
 
     // 清除长按定时器
@@ -274,18 +288,17 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
 
     // 如果正在长按播放，停止播放
     if (isLongPressing && videoPlaying) {
-      e.preventDefault()
-      e.stopPropagation()
       stopLiveVideo()
     }
-    
+
+    // 立即重置长按状态，允许快速再次长按
     setIsLongPressing(false)
   }
 
   /**
    * 处理触摸移动（防止滚动时误触）
    */
-  const handleTouchMove = (e: React.TouchEvent) => {
+  const handleTouchMove = () => {
     if (!enableLongPress) return
 
     // 清除长按定时器（用户开始滑动）
@@ -297,10 +310,8 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
     // 如果正在播放视频，停止播放（用户开始滑动）
     if (isLongPressing && videoPlaying) {
       stopLiveVideo()
-      e.preventDefault()
-      e.stopPropagation()
     }
-    
+
     setIsLongPressing(false)
   }
 
@@ -314,30 +325,19 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
     setVideoPlaying(false)
     setVideoRunning(false)
 
-    // 稍微延迟后开始视频淡出
+    // 快速淡出
+    video.style.transition = 'opacity 0.1s ease-out'
+    video.style.opacity = '0'
+
+    // 重置状态
     setTimeout(() => {
       if (video) {
-        video.style.transition = 'opacity 0.3s ease-in-out'
-        video.style.opacity = '0'
-
-        // 等待淡出完成后彻底重置状态
-        setTimeout(() => {
-          if (video) {
-            video.pause()
-            video.currentTime = 0
-            video.style.transition = 'none'
-            video.style.transform = 'scale(1)'
-            video.style.opacity = '0'
-
-            // 延迟重置videoReady，确保图标状态稳定
-            setTimeout(() => {
-              setVideoReady(false)
-              video.load()
-            }, 100)
-          }
-        }, 300)
+        video.pause()
+        video.currentTime = 0
+        video.style.transition = 'none'
+        video.style.transform = 'scale(1)'
       }
-    }, 50)
+    }, 100)
   }
 
   /**
@@ -368,32 +368,33 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
   // Live图片渲染
   if (detectedType === ImageType.LIVE && videoSrc) {
     return (
-      <div 
-        className={`universal-image live-photo relative ${className}`} 
+      <div
+        className={`universal-image live-photo relative ${className}`}
         onClick={handleImageClick}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onTouchMove={handleTouchMove}
-        style={{ 
-          touchAction: 'manipulation', // 允许平移和缩放，但禁用双击缩放
-          userSelect: 'none', // 防止文本选择
-          WebkitUserSelect: 'none', // Safari
-          WebkitTouchCallout: 'none' // 禁用iOS长按菜单
+        style={{
+          touchAction: 'pan-y',
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+          WebkitTouchCallout: 'none'
         }}
       >
         {/* Live图标 */}
         {showLiveIcon && (
           <div
-            className="live-icon absolute top-2 left-2 z-10 cursor-pointer transition-opacity"
+            className="live-icon absolute top-1 z-10 cursor-pointer transition-opacity"
             onMouseEnter={handleIconMouseEnter}
             onMouseLeave={handleIconMouseLeave}
             style={{
-              pointerEvents: videoReady ? 'auto' : 'none'
+              pointerEvents: (videoReady && videoLoaded) ? 'auto' : 'none',
+              opacity: videoLoaded ? 1 : 0.5 // 视频未加载时半透明显示
             }}
           >
-            <div className="text-white px-2 py-1 flex items-center gap-1 text-xs bg-black/30 rounded-md">
-              <TbLivePhoto className='w-5 h-5' />
-              {!isMobile ? '实况': ''}
+            <div className="text-white px-2 py-1 flex items-center gap-1 text-xs rounded-md">
+              <CgLivePhoto className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} />
+              {isMobile ? '' : (videoLoaded ? '实况' : '加载中')}
             </div>
           </div>
         )}
@@ -406,8 +407,8 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
             videoPlaying ? 'opacity-0' : 'opacity-100'
           }`}
           style={{
-            backgroundColor: '#000000',
-            transition: 'opacity 0.3s ease-in-out'
+            backgroundColor: '#f3f4f6', // 使用浅灰色背景，避免纯白
+            transition: 'opacity 0.1s ease-out' // 极快的过渡
           }}
           referrerPolicy={referrerPolicy}
           crossOrigin={crossOrigin}
@@ -421,7 +422,6 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
             setIsLoading(false)
             onLoadingChange?.(false)
           }}
-          // 防止图片被拖拽和右键菜单
           onDragStart={(e) => e.preventDefault()}
           onContextMenu={(e) => e.preventDefault()}
         />
@@ -435,28 +435,44 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
           muted={muted}
           playsInline
           webkit-playsinline="true"
+          preload="auto"
           style={{
             opacity: 0,
             transformOrigin: 'center',
             transform: 'scale(1)',
             transition: 'none',
             maxHeight: '100%',
-            maxWidth: '100%'
+            maxWidth: '100%',
+            backgroundColor: '#f3f4f6' // 与静态图片相同的背景色
           }}
-          onCanPlay={() => setVideoReady(true)}
-          onLoadedMetadata={() => setVideoReady(true)}
+          onCanPlay={() => {
+            setVideoReady(true)
+            setVideoLoaded(true)
+          }}
+          onLoadedData={() => {
+            setVideoLoaded(true)
+          }}
+          onLoadedMetadata={() => {
+            setVideoReady(true)
+          }}
           onPlaying={() => setVideoRunning(true)}
           onPause={() => setVideoRunning(false)}
           onEnded={handleVideoEnded}
+          onError={(e) => {
+            console.error('视频加载失败:', e)
+            setVideoError(true)
+            setVideoLoaded(false)
+            setVideoReady(false)
+          }}
           onLoadStart={() => {
-            // 每次开始加载时重置状态
+            setVideoLoaded(false)
+            setVideoError(false)
             if (videoRef.current) {
               videoRef.current.style.opacity = '0'
               videoRef.current.style.transform = 'scale(1)'
               videoRef.current.style.transition = 'none'
             }
           }}
-          // 防止视频被拖拽和右键菜单
           onDragStart={(e) => e.preventDefault()}
           onContextMenu={(e) => e.preventDefault()}
         />
