@@ -8,7 +8,7 @@
  * @param seconds 秒数
  * @returns 格式化后的时长字符串
  */
-export function formatDuration(seconds: number): string {
+export const formatDuration = (seconds: number): string => {
   // 处理负数情况
   if (seconds < 0) return '0:00'
   
@@ -34,7 +34,7 @@ export function formatDuration(seconds: number): string {
  * @param count 数量
  * @returns 格式化后的数量字符串
  */
-export function formatCount(count: number): string {
+export const formatCount = (count: number): string => {
   if (count >= 10000) {
     return (count / 10000).toFixed(1) + 'w'
   } else if (count >= 1000) {
@@ -48,7 +48,7 @@ export function formatCount(count: number): string {
  * @param timestamp 时间戳（秒）
  * @returns 格式化后的时间字符串
  */
-export function formatTimestamp(timestamp: number): string {
+export const formatTimestamp = (timestamp: number): string => {
   const now = Math.floor(Date.now() / 1000)
   const diff = now - timestamp
 
@@ -71,13 +71,13 @@ export function formatTimestamp(timestamp: number): string {
  * @param text 包含链接的文本
  * @returns 提取到的链接，如果没有找到则返回null
  */
-export function extractVideoLink(text: string): string | null {
+export const extractVideoLink = (text: string): string | null => {
   // 定义支持的平台域名模式
   const platformPatterns = [
     // 抖音相关域名
     /https?:\/\/(?:[^\s]*\.)?(?:douyin\.com|iesdouyin\.com|webcast\.amemv\.com|live\.douyin\.com)(?:\/[^\s\u4e00-\u9fff]*)*/gi,
     // 哔哩哔哩相关域名
-    /(https?:\/\/(?:www\.bilibili\.com|m\.bilibili\.com|t\.bilibili\.com|b23\.tv|bili2233\.cn)\/[a-zA-Z0-9_\-.~:/?#[\]@!$&'()*+,;=]+)/gi,
+    /(https?:\/\/(?:www\.bilibili\.com|m\.bilibili\.com|t\.bilibili\.com|b23\.tv|bili2233\.cn)\/[a-zA-Z0-9_\-.~:\\/?#[\]@!$&'()*+,;=]+)/gi,
     // 快手相关域名
     /https?:\/\/(?:[^\s]*\.)?(?:kuaishou\.com|kwai\.com|chenzhongtech\.com)(?:\/[^\s\u4e00-\u9fff]*)*/gi
   ]

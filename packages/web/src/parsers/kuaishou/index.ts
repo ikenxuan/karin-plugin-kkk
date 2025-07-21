@@ -7,7 +7,7 @@ import type { VideoInfo, CommentInfo, ParsedWorkInfo } from '@/parsers/types'
  * @param finalUrl 最终重定向后的URL
  * @returns 解析后的作品信息
  */
-export function parseKuaishouWorkId(finalUrl: string): ParsedWorkInfo {
+export const parseKuaishouWorkId = (finalUrl: string): ParsedWorkInfo => {
   // 从URL中提取photoId
   const photoIdMatch = finalUrl.match(/\/short-video\/(\w+)/)
   if (!photoIdMatch) {
@@ -31,7 +31,7 @@ export function parseKuaishouWorkId(finalUrl: string): ParsedWorkInfo {
  * @param workInfo 作品基础信息
  * @returns 格式化后的视频信息
  */
-export async function parseKuaishouVideoDetail(workInfo: ParsedWorkInfo): Promise<VideoInfo> {
+export const parseKuaishouVideoDetail = async (workInfo: ParsedWorkInfo): Promise<VideoInfo> => {
   try {
     // 获取作品详细数据
     const videoResponse = await request.post('/api/kkk/kuaishou/data', {
@@ -91,7 +91,7 @@ export async function parseKuaishouVideoDetail(workInfo: ParsedWorkInfo): Promis
  * @param emojiData 表情数据
  * @returns 格式化后的评论列表
  */
-function parseKuaishouComments(commentsData: any[], emojiData: any): CommentInfo[] {
+const parseKuaishouComments = (commentsData: any[], emojiData: any): CommentInfo[] => {
   if (!commentsData || !Array.isArray(commentsData)) {
     return []
   }
@@ -121,7 +121,7 @@ function parseKuaishouComments(commentsData: any[], emojiData: any): CommentInfo
  * @param emojiData 表情数据
  * @returns 处理后的文本
  */
-function processKuaishouCommentEmojis(text: string, emojiData: any): string {
+const processKuaishouCommentEmojis = (text: string, emojiData: any): string => {
   // 根据实际的快手表情数据结构来实现
   let processedText = text
   

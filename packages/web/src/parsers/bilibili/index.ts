@@ -8,7 +8,7 @@ import type { BiliOneWork, BiliVideoPlayurlIsLogin, BiliWorkComments, BiliEmojiL
  * @param finalUrl 最终重定向后的URL
  * @returns 解析后的作品信息
  */
-export function parseBilibiliWorkId(finalUrl: string): ParsedWorkInfo {
+export const parseBilibiliWorkId = (finalUrl: string): ParsedWorkInfo => {
   // 从URL中提取bvid或aid
   const bvidMatch = finalUrl.match(/\/video\/(BV[a-zA-Z0-9]+)/)
   const aidMatch = finalUrl.match(/\/video\/av(\d+)/)
@@ -41,7 +41,7 @@ export function parseBilibiliWorkId(finalUrl: string): ParsedWorkInfo {
  * @param workInfo 作品基础信息
  * @returns 格式化后的视频信息
  */
-export async function parseBilibiliVideoDetail(workInfo: ParsedWorkInfo): Promise<VideoInfo> {
+export const parseBilibiliVideoDetail = async (workInfo: ParsedWorkInfo): Promise<VideoInfo> => {
   try {
     // 获取视频详细数据
     const infoDataResponse = await request.post<apiResponse<BiliOneWork>>('/api/kkk/bilibili/data', {
@@ -114,7 +114,7 @@ export async function parseBilibiliVideoDetail(workInfo: ParsedWorkInfo): Promis
  * @param emojiData 表情包数据
  * @returns 格式化后的评论列表
  */
-function parseBilibiliComments (commentsData: BiliWorkComments['data']['replies'], emojiData: BiliEmojiList): CommentInfo[] {
+const parseBilibiliComments = (commentsData: BiliWorkComments['data']['replies'], emojiData: BiliEmojiList): CommentInfo[] => {
   if (!commentsData || !Array.isArray(commentsData)) {
     return []
   }
@@ -144,7 +144,7 @@ function parseBilibiliComments (commentsData: BiliWorkComments['data']['replies'
  * @param emojiData B站表情包数据
  * @returns 处理后的文本
  */
-function processBilibiliCommentEmojis (text: string, emojiData: BiliEmojiList): string {
+const processBilibiliCommentEmojis = (text: string, emojiData: BiliEmojiList): string => {
   if (!text || !emojiData?.data?.packages) {
     return text
   }

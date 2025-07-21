@@ -404,8 +404,7 @@ export default function VideoParserPage () {
           {/* Results Section */}
           {result && (
             <>
-              <Card className="border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] bg-white transform md:rotate-1 relative mb-8 overflow-hidden">
-                <div className="absolute -top-4 -left-4">
+              <Card className="border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] bg-white transform md:rotate-[0.3deg] relative mb-8 overflow-hidden">                <div className="absolute -top-4 -left-4">
                   <Star className="w-10 h-10 text-yellow-500 transform -rotate-12" />
                 </div>
                 <CardContent className="p-6">
@@ -527,6 +526,7 @@ export default function VideoParserPage () {
                           </div>
 
                           {/* 合辑内容的瀑布流布局 */}
+                          <PhotoProvider>
                           <div className="columns-2 md:columns-3 gap-4 space-y-4">
                             {result.slides?.map((slide, index) => {
                               // 模拟不同的图片尺寸
@@ -586,12 +586,14 @@ export default function VideoParserPage () {
                                       {String(index + 1).padStart(2, '0')}
                                       {slide.type === 'video' && <span className={`${isMobile ? 'ml-0.5' : 'ml-1'}`}>📹</span>}
                                       {slide.type === 'livephoto' && <span className={`${isMobile ? 'ml-0.5' : 'ml-1'}`}>🎭</span>}
+                                      {slide.type === 'image' && <span className={`${isMobile ? 'ml-0.5' : 'ml-1'}`}>🖼️</span>}
                                     </div>
                                   </div>
                                 </div>
                               )
                             })}
                           </div>
+                          </PhotoProvider>
 
                           {/* 合辑统计信息 */}
                           <div className="grid grid-cols-2 gap-4 mt-6">
@@ -625,6 +627,7 @@ export default function VideoParserPage () {
                       </div>
 
                           {/* 图集的瀑布流布局 */}
+                          <PhotoProvider>
                           <div className="columns-2 md:columns-3 gap-4 space-y-4">
                             {result.images?.map((image, index) => {
                               // 模拟不同的图片尺寸
@@ -652,6 +655,7 @@ export default function VideoParserPage () {
                               )
                             })}
                           </div>
+                          </PhotoProvider>
 
                       {/* Gallery Stats */}
                       <div className="grid grid-cols-2 gap-4 mt-6">

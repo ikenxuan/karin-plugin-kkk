@@ -8,7 +8,7 @@ const VideoParserPage = lazy(() => import('./app/crack/page'))
 /**
  * 主应用组件
  */
-function App () {
+const App = () => {
   return (
     <Router basename="/kkk">
       <Suspense fallback={<div className="flex items-center justify-center h-screen text-lg font-bold">加载中...</div>}>

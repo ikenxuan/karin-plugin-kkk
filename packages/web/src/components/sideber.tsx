@@ -19,7 +19,7 @@ interface SidebarProps {
   onToggle: () => void
 }
 
-export function Sidebar ({ collapsed, onToggle }: SidebarProps) {
+export const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
   const location = useLocation()
   const pathname = location.pathname
 

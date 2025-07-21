@@ -30,7 +30,7 @@ export const SidebarContext = React.createContext<SidebarContextProps | null>(nu
  * @returns 侧边栏上下文属性
  * @throws 如果在 SidebarProvider 外部使用则抛出错误
  */
-export function useSidebar(): SidebarContextProps {
+export const useSidebar = (): SidebarContextProps => {
   const context = React.useContext(SidebarContext)
   if (!context) {
     throw new Error("useSidebar must be used within a SidebarProvider.")

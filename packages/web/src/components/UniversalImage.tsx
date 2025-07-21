@@ -84,7 +84,7 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
   const [, setVideoError] = useState(false)
   const [, setIsHoveringIcon] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
-  
+
   // 添加长按定时器引用
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null)
   const [isLongPressing, setIsLongPressing] = useState(false)
@@ -195,16 +195,13 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
    * 播放Live视频
    */
   const playLiveVideo = async () => {
-    if (!videoRef.current || videoRunning || !videoLoaded) {
+    if (!videoRef.current || videoRunning) {
       return
     }
 
     const video = videoRef.current
 
-    // 确保视频从头开始播放
     video.currentTime = 0
-
-    // 不要立即改变透明度，等视频真正开始播放
     video.style.transition = 'none'
     video.style.transform = 'scale(1)'
 
@@ -212,8 +209,7 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
 
     try {
       await video.play()
-      // 视频开始播放后立即显示，减少延迟
-      video.style.transition = 'opacity 0.1s ease-out'
+      video.style.transition = 'opacity 0.2s ease-out'
       video.style.opacity = '1'
     } catch (error) {
       console.error('视频播放失败:', error)
@@ -238,7 +234,7 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
    */
   const handleIconMouseEnter = () => {
     if (!enableHoverPlay || detectedType !== ImageType.LIVE || !videoSrc) return
-    
+
     setIsHoveringIcon(true)
     // 只有当视频完全加载完成时才允许播放
     if (videoReady && videoLoaded) {
@@ -260,14 +256,14 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
    * 处理触摸开始（长按开始）
    */
   const handleTouchStart = () => {
-    if (!enableLongPress || detectedType !== ImageType.LIVE || !videoSrc || !videoReady || !videoLoaded) return
+    if (!enableLongPress || detectedType !== ImageType.LIVE || !videoSrc) return
 
     // 清除之前的定时器
     if (longPressTimerRef.current) {
       clearTimeout(longPressTimerRef.current)
     }
 
-    // 设置长按定时器，300ms后开始播放（减少延迟）
+    // 设置长按定时器，300ms后开始播放
     longPressTimerRef.current = setTimeout(() => {
       setIsLongPressing(true)
       playLiveVideo()
@@ -325,8 +321,8 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
     setVideoPlaying(false)
     setVideoRunning(false)
 
-    // 快速淡出
-    video.style.transition = 'opacity 0.1s ease-out'
+    // 平滑淡出
+    video.style.transition = 'opacity 0.25s ease-in-out'
     video.style.opacity = '0'
 
     // 重置状态
@@ -337,7 +333,7 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
         video.style.transition = 'none'
         video.style.transform = 'scale(1)'
       }
-    }, 100)
+    }, 250)
   }
 
   /**
@@ -359,6 +355,20 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
     }
 
     return () => {
+      // 清理定时器
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current)
+      }
+
+      // 清理视频资源
+      if (videoRef.current) {
+        const video = videoRef.current
+        video.pause()
+        video.removeAttribute('src')
+        video.load() // 释放视频资源
+      }
+
+      // 清理blob URL
       if (processedSrc !== src && processedSrc.startsWith('blob:')) {
         URL.revokeObjectURL(processedSrc)
       }
@@ -375,7 +385,7 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
         onTouchEnd={handleTouchEnd}
         onTouchMove={handleTouchMove}
         style={{
-          touchAction: 'pan-y',
+          touchAction: 'pan-y pinch-zoom',
           userSelect: 'none',
           WebkitUserSelect: 'none',
           WebkitTouchCallout: 'none'
@@ -389,12 +399,12 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
             onMouseLeave={handleIconMouseLeave}
             style={{
               pointerEvents: (videoReady && videoLoaded) ? 'auto' : 'none',
-              opacity: videoLoaded ? 1 : 0.5 // 视频未加载时半透明显示
+              opacity: videoLoaded ? 1 : 0.5
             }}
           >
             <div className="text-white px-2 py-1 flex items-center gap-1 text-xs rounded-md">
               <CgLivePhoto className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} />
-              {isMobile ? '' : (videoLoaded ? '实况' : '加载中')}
+              {isMobile ? (videoLoaded ? '' : '加载中') : (videoLoaded ? '实况' : '加载中')}
             </div>
           </div>
         )}
@@ -403,12 +413,11 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
         <img
           src={processedSrc}
           alt={alt}
-          className={`w-full h-full object-cover absolute top-0 left-0 ${
-            videoPlaying ? 'opacity-0' : 'opacity-100'
-          }`}
+          className={`w-full h-full object-cover absolute top-0 left-0 ${videoPlaying ? 'opacity-0' : 'opacity-100'
+            }`}
           style={{
-            backgroundColor: '#f3f4f6', // 使用浅灰色背景，避免纯白
-            transition: 'opacity 0.1s ease-out' // 极快的过渡
+            backgroundColor: '#f3f4f6',
+            transition: 'opacity 0.25s ease-in-out'
           }}
           referrerPolicy={referrerPolicy}
           crossOrigin={crossOrigin}
@@ -435,7 +444,7 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
           muted={muted}
           playsInline
           webkit-playsinline="true"
-          preload="auto"
+          preload="metadata"
           style={{
             opacity: 0,
             transformOrigin: 'center',
@@ -443,17 +452,28 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
             transition: 'none',
             maxHeight: '100%',
             maxWidth: '100%',
-            backgroundColor: '#f3f4f6' // 与静态图片相同的背景色
+            backgroundColor: '#f3f4f6'
           }}
+          // 移动端优化属性
+          {...(isMobile && {
+            'x-webkit-airplay': 'allow',
+            'webkit-playsinline': 'true',
+            'playsinline': true
+          })}
           onCanPlay={() => {
             setVideoReady(true)
             setVideoLoaded(true)
+          }}
+          onCanPlayThrough={() => {
+            setVideoLoaded(true)
+            setVideoReady(true)
           }}
           onLoadedData={() => {
             setVideoLoaded(true)
           }}
           onLoadedMetadata={() => {
             setVideoReady(true)
+            setVideoLoaded(true)
           }}
           onPlaying={() => setVideoRunning(true)}
           onPause={() => setVideoRunning(false)}
@@ -465,7 +485,6 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
             setVideoReady(false)
           }}
           onLoadStart={() => {
-            setVideoLoaded(false)
             setVideoError(false)
             if (videoRef.current) {
               videoRef.current.style.opacity = '0'

@@ -9,7 +9,7 @@ interface LayoutProps {
  * 主布局组件，包含侧边栏和头部
  * @param children - 子组件内容
  */
-export function Layout({ children }: LayoutProps) {
+export const Layout = ({ children }: LayoutProps) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   /**

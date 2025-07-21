@@ -8,16 +8,17 @@ import type { DyVideoWork, DyImageAlbumWork, DySlidesWork, DyEmojiList, DyWorkCo
  * @param finalUrl 最终重定向后的URL
  * @returns 解析后的作品信息
  */
-export function parseDouyinWorkId(finalUrl: string): ParsedWorkInfo {
+export const parseDouyinWorkId = (finalUrl: string): ParsedWorkInfo => {
   // 从URL中提取aweme_id
   const videoMatch = /video\/(\d+)/.exec(finalUrl)
   const noteMatch = /note\/(\d+)/.exec(finalUrl)
+  const modalMatch = /modal_id=(\d+)/.exec(finalUrl)
 
   switch (true) {
     case /video\/(\d+)/.test(finalUrl): {
       return {
         platform: 'douyin',
-        workId: videoMatch? videoMatch[1] : '',
+        workId: videoMatch ? videoMatch[1] : '',
         workType: 'video',
         params: {
           aweme_id: videoMatch ? videoMatch[1] : ''
@@ -34,6 +35,16 @@ export function parseDouyinWorkId(finalUrl: string): ParsedWorkInfo {
         }
       }
     }
+    case /modal_id=(\d+)/.test(finalUrl): {
+      return {
+        platform: 'douyin',
+        workId: modalMatch ? modalMatch[1] : '',
+        workType: 'video',
+        params: {
+          aweme_id: modalMatch ? modalMatch[1] : ''
+        }
+      }
+    }
     default: {
       throw new Error('无法从URL中提取抖音作品ID')
     }
@@ -46,7 +57,7 @@ export function parseDouyinWorkId(finalUrl: string): ParsedWorkInfo {
  * @param tags 标签数组
  * @returns 移除标签后的标题
  */
-function removeTags(title: string, tags: string[]): string {
+const removeTags = (title: string, tags: string[]): string => {
   if (!title || !tags || tags.length === 0) {
     return title
   }
@@ -79,7 +90,7 @@ function removeTags(title: string, tags: string[]): string {
  * @param workInfo 作品基础信息
  * @returns 格式化后的视频信息
  */
-export async function parseDouyinVideoDetail(workInfo: ParsedWorkInfo): Promise<VideoInfo> {
+export const parseDouyinVideoDetail = async (workInfo: ParsedWorkInfo): Promise<VideoInfo> => {
   try {
     // 获取作品详细数据
     const videoResponse = await request.post<apiResponse<DyVideoWork | DyImageAlbumWork | DySlidesWork>>('/api/kkk/douyin/data', {
@@ -198,7 +209,7 @@ export async function parseDouyinVideoDetail(workInfo: ParsedWorkInfo): Promise<
  * @param emojiData 表情数据
  * @returns 格式化后的评论列表
  */
-function parseDouyinComments (commentsData: DyWorkComments['comments'], emojiData: DyEmojiList): CommentInfo[] {
+const parseDouyinComments = (commentsData: DyWorkComments['comments'], emojiData: DyEmojiList): CommentInfo[] => {
   if (!commentsData || !Array.isArray(commentsData)) {
     return []
   }
@@ -229,7 +240,7 @@ function parseDouyinComments (commentsData: DyWorkComments['comments'], emojiDat
  * @param emojiData 表情数据
  * @returns 处理后的文本
  */
-function processCommentEmojis (text: string, emojiData: DyEmojiList): string {
+const processCommentEmojis = (text: string, emojiData: DyEmojiList): string => {
   if (!text || !emojiData?.emoji_list) {
     return text
   }
