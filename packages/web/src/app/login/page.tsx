@@ -1,13 +1,14 @@
+import { ArrowRight,Eye, EyeOff, Lock } from "lucide-react"
 import { useState } from "react"
+import { toast } from "react-hot-toast"
+import { useNavigate } from "react-router-dom"
+
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card } from "@/components/ui/card"
-import { Eye, EyeOff, Lock, ArrowRight } from "lucide-react"
-import { useNavigate } from "react-router-dom"
-import { toast } from "react-hot-toast"
-import request from "@/lib/request"
 import key from "@/const/key"
+import request from "@/lib/request"
 
 /**
  * SHA256加密函数

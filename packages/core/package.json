@@ -46,11 +46,13 @@
   "devDependencies": {
     "@ikenxuan/amagi": "^5.0.0",
     "@karinjs/plugin-puppeteer": "^1.0.17",
+    "@types/connect-history-api-fallback": "^1.5.4",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/heic-convert": "^2.1.0",
     "@types/node": "^22.13.14",
     "@types/qrcode": "^1.5.5",
+    "connect-history-api-fallback": "^2.0.0",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "eslint": "^9.7.0",

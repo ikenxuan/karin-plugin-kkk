@@ -9,6 +9,7 @@ import Client, {
   logger as amagiLog,
   logMiddleware
 } from '@ikenxuan/amagi'
+import history from 'connect-history-api-fallback'
 import * as cors from 'cors'
 import * as httpProxy from 'http-proxy-middleware'
 import { app, authMiddleware, logger, mkdirSync } from 'node-karin'
@@ -16,10 +17,16 @@ import express from 'node-karin/express'
 import { karinPathBase } from 'node-karin/root'
 
 import { Common, Config, Root } from '@/module'
-import { getBilibiliDataRouter, getDouyinDataRouter, getKuaishouDataRouter, getLongLinkRouter, getVideoRouter, videoStreamRouter } from '@/module/server/router'
+import {
+  getBilibiliDataRouter,
+  getDouyinDataRouter,
+  getKuaishouDataRouter,
+  getLongLinkRouter,
+  getVideoRouter,
+  videoStreamRouter
+} from '@/module/server/router'
 
 const server = express()
-/** 代理参数 */
 const proxyOptions: httpProxy.Options = {
   target: 'https://developer.huawei.com',
   changeOrigin: true
@@ -30,6 +37,8 @@ server.listen(3780)
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
+// ----------------- API ROUTES -----------------
 
 if (Config.app.APIServer && Config.app.APIServerMount) {
   app.use(logMiddleware(['/api/bilibili', '/api/douyin', '/api/kuaishou']))
@@ -56,20 +65,37 @@ app.use('/api/kkk/douyin/data', authMiddleware, getDouyinDataRouter)
 app.use('/api/kkk/bilibili/data', authMiddleware, getBilibiliDataRouter)
 app.use('/api/kkk/kuaishou/data', authMiddleware, getKuaishouDataRouter)
 
-// app.use('/api/kkk/getLongLink', getLongLinkRouter)
-// app.use('/api/kkk/douyin/data', getDouyinDataRouter)
-// app.use('/api/kkk/bilibili/data', getBilibiliDataRouter)
-// app.use('/api/kkk/kuaishou/data', getKuaishouDataRouter)
+// ----------------- PLUGIN FRONTEND ROUTER -----------------
 
-app.get('/kkk/login', (req, res) => {
-  res.sendFile(path.join(Root.pluginPath, 'lib', 'web', 'index.html'))
-})
-app.use('/kkk', express.static(path.join(Root.pluginPath, 'lib', 'web')))
+const pluginRouter = express.Router()
+const staticDir = path.join(Root.pluginPath, 'lib', 'web')
+
+// history fallback 用于支持 /kkk/login、/kkk/dashboard 等前端子路由
+pluginRouter.use(
+  history({
+    rewrites: [{ from: /^\/kkk\/.*$/, to: '/kkk/index.html' }],
+    htmlAcceptHeaders: ['text/html', 'application/xhtml+xml'],
+    disableDotRule: true,
+  })
+)
+
+// static 处理 /kkk 静态文件
+pluginRouter.use(
+  '/kkk',
+  express.static(staticDir, {
+    redirect: false,
+  })
+)
+
+app.use(pluginRouter)
+
+// ----------------- INIT -----------------
 
 const base = `${karinPathBase}/${Root.pluginName}`
 mkdirSync(`${base}/data`)
 mkdirSync(Common.tempDri.images)
 mkdirSync(Common.tempDri.video)
+
 logger.info(`${logger.green(`[插件:${Root.pluginName}]`)} ${logger.violet(`v${Root.pluginVersion}`)} 初始化完成~`)
 
 export { webConfig } from './web.config'
