@@ -386,7 +386,7 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
         onTouchEnd={handleTouchEnd}
         onTouchMove={handleTouchMove}
         style={{
-          touchAction: 'pan-y pinch-zoom',
+          touchAction: 'auto',
           userSelect: 'none',
           WebkitUserSelect: 'none',
           WebkitTouchCallout: 'none'
@@ -446,6 +446,7 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
           playsInline
           webkit-playsinline="true"
           preload="metadata"
+          crossOrigin="anonymous"
           style={{
             opacity: 0,
             transformOrigin: 'center',
