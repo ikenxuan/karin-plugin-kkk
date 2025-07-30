@@ -1,10 +1,10 @@
-import { ArrowRight,Eye, EyeOff, Lock } from "lucide-react"
+import { ArrowRight, Eye, EyeOff, Lock } from "lucide-react"
 import { useState } from "react"
 import { toast } from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import key from "@/const/key"
@@ -86,49 +86,43 @@ export default function LoginPage () {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-yellow-300 via-pink-300 to-blue-300 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background geometric shapes */}
-      <div className="absolute top-10 left-10 w-32 h-32 bg-red-500 rotate-45 opacity-20"></div>
-      <div className="absolute bottom-20 right-20 w-24 h-24 bg-green-500 rounded-full opacity-30"></div>
-      <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-purple-500 opacity-25"></div>
-
-      <Card className="w-full max-w-md bg-white border-8 border-black shadow-[12px_12px_0px_0px_#000] relative">
-        <div className="p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="inline-block bg-black text-white px-6 py-3 transform -rotate-2 mb-4">
-              <h1 className="text-2xl font-black uppercase tracking-wider">LOGIN</h1>
-            </div>
-            <p className="text-lg font-bold text-gray-800">欢迎回来，请输入密钥继续</p>
-          </div>
-
-          {/* Form */}
-          <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleLogin() }}>
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-semibold tracking-tight">
+            登录
+          </CardTitle>
+          <CardDescription>
+            欢迎回来，请输入密钥继续
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleLogin() }}>
             <div className="space-y-2">
-              <Label htmlFor="token" className="text-sm font-black uppercase tracking-wide">
+              <Label htmlFor="token">
                 密钥
               </Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="token"
                   type={showPassword ? "text" : "password"}
                   value={token}
                   onChange={(e) => setToken(e.target.value)}
-                  className="pl-10 pr-10 h-12 border-4 border-black focus:border-blue-500 focus:ring-0 bg-pink-100 font-bold"
+                  className="pl-9 pr-9"
                   placeholder="请输入 HTTP 鉴权密钥"
                   disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   disabled={isLoading}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-500" />
+                    <EyeOff className="h-4 w-4" />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-500" />
+                    <Eye className="h-4 w-4" />
                   )}
                 </button>
               </div>
@@ -137,17 +131,13 @@ export default function LoginPage () {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-14 bg-green-400 hover:bg-green-500 text-black font-black text-lg uppercase tracking-wider border-4 border-black shadow-[6px_6px_0px_0px_#000] hover:shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50"
+              className="w-full"
             >
               {isLoading ? '登录中...' : '登录'}
-              {!isLoading && <ArrowRight className="ml-2 h-5 w-5" />}
+              {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
             </Button>
           </form>
-        </div>
-
-        {/* Decorative elements */}
-        <div className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 rotate-45"></div>
-        <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-blue-500 rounded-full"></div>
+        </CardContent>
       </Card>
     </div>
   )

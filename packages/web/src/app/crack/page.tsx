@@ -18,12 +18,10 @@ import {
   Music,
   Palette,
   Play,
-  Rocket,
   RotateCw,
   Share2,
   Sparkles,
   Star,
-  Target,
   ThumbsUp,
   Video,
   X,
@@ -33,17 +31,18 @@ import { useCallback, useMemo, useState } from "react"
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 
 import PhotoViewWithHeic from '@/components/PhotoViewWithHeic'
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
 import { ImageType } from '@/components/UniversalImage'
 import UniversalPhotoView from '@/components/UniversalPhotoView'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { useVideoParser } from '@/hooks/use-video-parser'
 import { useHeartbeat } from '@/hooks/useHeartbeat'
 import { clearAccessToken, clearRefreshToken, clearUserId } from '@/lib/token'
-import { downloadImagesAsZip, downloadVideosAsZip,downloadWithSmartNaming, handleOpenOriginal, handleShare } from '@/lib/tools'
+import { downloadImagesAsZip, downloadVideosAsZip, downloadWithSmartNaming, handleOpenOriginal, handleShare } from '@/lib/tools'
 import type { CommentInfo, VideoInfo } from '@/parsers/types'
 
 // 声明livephotoskit类型
@@ -52,7 +51,6 @@ declare global {
     LivePhotosKit: any
   }
 }
-
 
 /**
  * 视频解析器组件
@@ -64,18 +62,15 @@ export default function VideoParserPage () {
   const [result, setResult] = useState<VideoInfo | null>(null)
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   const { parseVideo, loading, error, clearError } = useVideoParser()
-  const isMobile = useIsMobile()
+
   /**
    * 处理退出登录
    */
   const handleLogout = useCallback(() => {
-    // 这里可以添加退出登录的逻辑，比如清除token、跳转到登录页等
     if (confirm('确定要退出登录吗？')) {
-      // 清除本地存储的用户信息
       clearAccessToken()
       clearRefreshToken()
       clearUserId()
-      // 跳转到登录页或首页
       window.location.href = '/kkk/login'
     }
   }, [])
@@ -140,24 +135,36 @@ export default function VideoParserPage () {
       }
 
       return (
-        <span className='flex items-center gap-3 opacity-70'>
-          <CirclePlus
+        <div className='flex items-center gap-3'>
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => onScale(scale + 1)}
-            className="cursor-pointer hover:opacity-100 transition-opacity"
-          />
-          <CircleMinus
+          >
+            <CirclePlus className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => onScale(scale - 1)}
-            className="cursor-pointer hover:opacity-100 transition-opacity"
-          />
-          <RotateCw
+          >
+            <CircleMinus className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => onRotate(rotate + 90)}
-            className="cursor-pointer hover:opacity-100 transition-opacity"
-          />
-          <Maximize
+          >
+            <RotateCw className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleFullscreen}
-            className="cursor-pointer hover:opacity-100 transition-opacity"
-          />
-        </span>
+          >
+            <Maximize className="h-4 w-4" />
+          </Button>
+        </div>
       )
     }
   }, [])
@@ -168,95 +175,92 @@ export default function VideoParserPage () {
    * @returns JSX.Element
    */
   const CommentItem = useCallback(({ comment }: { comment: CommentInfo }) => (
-    <div className="mb-6">
+    <div className="space-y-3">
       <div className="flex gap-3">
-        {/* 评论头像 */}
         <img
           src={comment.avatar}
-          className="w-10 h-10 rounded-full border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+          className="w-10 h-10 rounded-full"
           referrerPolicy="no-referrer"
           crossOrigin="anonymous"
         />
-        <div className="flex-1">
-          <div className="bg-gray-50 p-4 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-            <div className="flex items-center gap-2 mb-2">
+        <div className="flex-1 space-y-2">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div
+                  className="text-sm font-medium [&_svg]:inline [&_svg]:h-[1.2em] [&_svg]:w-auto [&_svg]:align-middle [&_svg]:mx-1"
+                  dangerouslySetInnerHTML={{ __html: comment.author }}
+                  style={{
+                    wordBreak: 'break-word',
+                    overflowWrap: 'break-word'
+                  }}
+                />
+                <span className="text-xs text-muted-foreground">{comment.timestamp}</span>
+                {comment.author.includes('NatureFilms') && (
+                  <Badge variant="secondary">
+                    <Star className="w-3 h-3 mr-1" />
+                    作者
+                  </Badge>
+                )}
+              </div>
+
               <div
-                className="opacity-50 text-sm [&_svg]:inline [&_svg]:h-[2em] [&_svg]:w-auto [&_svg]:align-middle [&_svg]:mx-1"
-                dangerouslySetInnerHTML={{ __html: comment.author }}
+                className="text-sm leading-relaxed mb-3 whitespace-pre-wrap [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]"
+                dangerouslySetInnerHTML={{ __html: comment.content }}
                 style={{
                   wordBreak: 'break-word',
                   overflowWrap: 'break-word'
                 }}
               />
-              <span className="text-xs opacity-50">{comment.timestamp}</span>
-              {comment.author.includes('NatureFilms') && (
-                <Badge className="bg-blue-100 text-blue-800 text-xs border border-blue-300">
-                  <Star className="w-3 h-3 mr-1" />
-                  作者
-                </Badge>
+
+              {comment.images && comment.images.length > 0 && (
+                <div className="mb-3">
+                  {comment.images.length === 1 ? (
+                    <div className="max-w-xs">
+                      <PhotoViewWithHeic
+                        src={comment.images[0]}
+                        alt="评论图片"
+                        className="w-full h-auto max-h-64 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity"
+                        referrerPolicy="no-referrer"
+                        crossOrigin="anonymous"
+                      />
+                    </div>
+                  ) : (
+                    <div className={`grid gap-2 ${comment.images.length === 2 ? 'grid-cols-2' :
+                        comment.images.length === 3 ? 'grid-cols-3' :
+                          'grid-cols-2'
+                      } max-w-md`}>
+                      {comment.images.slice(0, 4).map((image, index) => (
+                        <div key={`${comment.id}-${index}`} className="relative">
+                          <PhotoView key={`${comment.id}-${index}`} src={image}>
+                            <PhotoViewWithHeic
+                              src={image}
+                              alt={`评论图片 ${index + 1}`}
+                              className="w-full h-24 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity"
+                              referrerPolicy="no-referrer"
+                              crossOrigin="anonymous"
+                            />
+                          </PhotoView>
+                          {comment.images!.length > 4 && index === 3 && (
+                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-bold text-sm rounded-md">
+                              +{comment.images!.length - 4}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               )}
-            </div>
 
-            {/* 评论文字内容 */}
-            <div
-              className="text-md leading-relaxed mb-3 text-left whitespace-pre-wrap [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]"
-              dangerouslySetInnerHTML={{ __html: comment.content }}
-              style={{
-                wordBreak: 'break-word',
-                overflowWrap: 'break-word'
-              }}
-            />
-
-            {/* 评论图片 - 添加图片预览功能 */}
-            {comment.images && comment.images.length > 0 && (
-              <div className="mb-3">
-                {comment.images.length === 1 ? (
-                  // 单张图片
-                  <div className="max-w-xs">
-                    <PhotoViewWithHeic
-                      src={comment.images[0]}
-                      alt="评论图片"
-                      className="w-full h-auto max-h-64 object-cover border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer hover:scale-105 transition-transform"
-                      referrerPolicy="no-referrer"
-                      crossOrigin="anonymous"
-                    />
-                  </div>
-                ) : (
-                  // 多张图片 - 网格布局
-                  <div className={`grid gap-2 ${comment.images.length === 2 ? 'grid-cols-2' :
-                      comment.images.length === 3 ? 'grid-cols-3' :
-                        'grid-cols-2'
-                    } max-w-md`}>
-                    {comment.images.slice(0, 4).map((image, index) => (
-                      <div key={`${comment.id}-${index}`} className="relative">
-                        <PhotoView key={`${comment.id}-${index}`} src={image}>
-                          <PhotoViewWithHeic
-                            src={image}
-                            alt={`评论图片 ${index + 1}`}
-                            className="w-full h-24 object-cover border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer hover:scale-105 transition-transform"
-                            referrerPolicy="no-referrer"
-                            crossOrigin="anonymous"
-                          />
-                        </PhotoView>
-                        {comment.images!.length > 4 && index === 3 && (
-                          <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center text-white font-bold text-sm">
-                            +{comment.images!.length - 4}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
+              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <Button variant="ghost" size="sm" className="h-auto p-0">
+                  <ThumbsUp className="w-3 h-3 mr-1" />
+                  <span>{comment.likes}</span>
+                </Button>
               </div>
-            )}
-
-            <div className="flex items-center gap-4 text-xs text-gray-500">
-              <button className="flex items-center gap-1 hover:text-red-600 transition-colors">
-                <ThumbsUp className="w-3 h-3" />
-                <span>{comment.likes}</span>
-              </button>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
@@ -277,169 +281,111 @@ export default function VideoParserPage () {
       photoClosable
       toolbarRender={toolbarRender}
     >
-      <div className="min-h-screen bg-yellow-300 p-2 sm:p-4 md:p-8 relative overflow-hidden">
-        {/* 背景装饰元素 - 手机端隐藏部分装饰 */}
-        <div className="absolute inset-0 pointer-events-none">
-          {/* 几何图形装饰 - 手机端调整位置和大小 */}
-          <div className="absolute top-10 sm:top-20 left-2 sm:left-10 w-8 sm:w-16 h-8 sm:h-16 bg-red-500 border-2 sm:border-4 border-black transform rotate-45 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"></div>
-          <div className="absolute top-20 sm:top-40 right-4 sm:right-20 w-6 sm:w-12 h-6 sm:h-12 bg-blue-500 border-2 sm:border-4 border-black rounded-full shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"></div>
-          <div className="hidden sm:block absolute bottom-40 left-20 w-20 h-8 bg-green-500 border-4 border-black transform -rotate-12 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"></div>
-          <div className="hidden sm:block absolute bottom-20 right-10 w-14 h-14 bg-purple-500 border-4 border-black transform rotate-12 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"></div>
-
-          {/* 点状装饰 - 手机端隐藏 */}
-          <div className="hidden sm:block absolute top-60 left-1/4 w-3 h-3 bg-black rounded-full"></div>
-          <div className="hidden sm:block absolute top-80 right-1/3 w-2 h-2 bg-black rounded-full"></div>
-          <div className="hidden sm:block absolute bottom-60 left-1/3 w-4 h-4 bg-black rounded-full"></div>
-
-          {/* 线条装饰 - 手机端隐藏 */}
-          <div className="hidden sm:block absolute top-1/3 left-0 w-32 h-1 bg-black transform rotate-45"></div>
-          <div className="hidden sm:block absolute bottom-1/3 right-0 w-24 h-1 bg-black transform -rotate-45"></div>
-        </div>
-
-        <div className="max-w-4xl mx-auto relative z-10">
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto p-4 max-w-4xl">
           {/* Header */}
-          <div className="mb-4 sm:mb-8 relative">
-            <div className="flex items-center gap-2 sm:gap-4 mb-2 sm:mb-4">
-              <Zap className="w-8 sm:w-12 h-8 sm:h-12 text-red-600 transform rotate-12" />
-              <div className="flex-1">
-                <h1 className="text-2xl sm:text-4xl md:text-6xl font-black text-black mb-1 sm:mb-2 transform -rotate-1 leading-tight">
-                  抖音视频解析器
-                </h1>
-                <h2 className="text-lg sm:text-2xl md:text-3xl font-black text-red-600 transform rotate-1 leading-tight">
-                  VIDEO PARSER
-                </h2>
-              </div>
-              <Sparkles className="w-6 sm:w-10 h-6 sm:h-10 text-blue-600 transform -rotate-12" />
-
-              {/* 退出登录按钮 */}
-              <Button
-                onClick={handleLogout}
-                className="bg-purple-500 hover:bg-purple-600 text-white font-bold border-2 sm:border-3 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all p-2 sm:p-3"
-                title="退出登录"
-              >
-                <LogOut className="w-4 sm:w-6 h-4 sm:h-6" />
-                <span className="hidden sm:inline ml-2">退出</span>
-              </Button>
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                抖音视频解析器
+              </h1>
+              <p className="text-muted-foreground">
+                Video Parser
+              </p>
             </div>
-            <div className="flex gap-1 sm:gap-2">
-              <div className="w-16 sm:w-32 h-1 sm:h-2 bg-blue-600 transform rotate-2"></div>
-              <div className="w-8 sm:w-16 h-1 sm:h-2 bg-red-600 transform -rotate-1"></div>
-              <div className="w-12 sm:w-24 h-1 sm:h-2 bg-green-600 transform rotate-1"></div>
-            </div>
+            <Button variant="outline" onClick={handleLogout}>
+              <LogOut className="w-4 h-4 mr-2" />
+              退出登录
+            </Button>
           </div>
 
           {/* Input Section */}
-          <Card className="border-2 sm:border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white mb-4 sm:mb-8 transform md:-rotate-1 relative overflow-hidden">
-            <div className="absolute -top-2 sm:-top-3 -right-2 sm:-right-3">
-              <Target className="w-6 sm:w-8 h-6 sm:h-8 text-red-600 transform rotate-45" />
-            </div>
-            <CardContent className="p-3 sm:p-6">
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <Link className="w-5 sm:w-6 h-5 sm:h-6 text-blue-600" />
-                  <label className="text-lg sm:text-xl font-bold text-black block transform rotate-1 flex-1">
-                    粘贴链接地址 PASTE YOUR LINK
-                  </label>
-                  <Rocket className="w-4 sm:w-5 h-4 sm:h-5 text-green-600" />
-                </div>
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Link className="w-5 h-5" />
+                粘贴链接地址
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* 错误提示 */}
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
 
-                {/* 错误提示 */}
-                {error && (
-                  <div className="bg-red-100 border-2 border-red-500 p-2 sm:p-3 rounded-lg flex items-center gap-2">
-                    <AlertCircle className="w-4 sm:w-5 h-4 sm:h-5 text-red-600 flex-shrink-0" />
-                    <span className="text-red-700 font-medium text-sm sm:text-base">{error}</span>
-                  </div>
-                )}
-
-                <div className="flex flex-col gap-3 sm:gap-4">
-                  <div className="flex gap-2 flex-1">
-                    <Input
-                      value={url}
-                      onChange={(e) => setUrl(e.target.value)}
-                      placeholder="在此输入视频分享链接"
-                      className="border-2 sm:border-3 border-black text-base sm:text-lg font-semibold bg-yellow-100 focus:bg-white transition-colors flex-1 h-10 sm:h-auto"
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter' && !loading && url.trim()) {
-                          handleParse()
-                        }
-                      }}
-                    />
-
-                    {/* 删除按钮 */}
-                    {url && (
-                      <Button
-                        type="button"
-                        onClick={() => setUrl('')}
-                        className="bg-gray-400 hover:bg-gray-500 text-white font-bold border-2 sm:border-3 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all w-8 sm:w-9 h-8 sm:h-9 p-0 flex items-center justify-center flex-shrink-0"
-                        title="清除输入"
-                      >
-                        <X className="w-4 sm:w-5 h-4 sm:h-5" />
-                      </Button>
-                    )}
-                  </div>
-
-                  {/* 解析按钮 */}
+              <div className="flex gap-2">
+                <Input
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="在此输入视频分享链接"
+                  className="flex-1"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && !loading && url.trim()) {
+                      handleParse()
+                    }
+                  }}
+                />
+                {url && (
                   <Button
-                    onClick={handleParse}
-                    disabled={loading || !url.trim()}
-                    className="bg-red-500 hover:bg-red-600 text-white font-black text-base sm:text-lg px-6 sm:px-8 w-full h-12 sm:h-auto border-2 sm:border-3 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setUrl('')}
                   >
-                    {loading ? (
-                      <>
-                        <Sparkles className="w-4 sm:w-5 h-4 sm:h-5 mr-2 animate-spin" />
-                        <span className="hidden sm:inline">解析中... PARSING</span>
-                        <span className="sm:hidden">解析中...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Zap className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
-                        <span className="hidden sm:inline">开始解析 PARSE!</span>
-                        <span className="sm:hidden">开始解析</span>
-                      </>
-                    )}
+                    <X className="h-4 w-4" />
                   </Button>
-                </div>
+                )}
               </div>
+
+              <Button
+                onClick={handleParse}
+                disabled={loading || !url.trim()}
+                className="w-full"
+              >
+                {loading ? (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-2 animate-spin" />
+                    解析中...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-4 h-4 mr-2" />
+                    开始解析
+                  </>
+                )}
+              </Button>
             </CardContent>
           </Card>
 
           {/* Results Section */}
           {result && (
             <>
-              <Card className="border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] bg-white transform md:rotate-[0.3deg] relative mb-8 overflow-hidden">                <div className="absolute -top-4 -left-4">
-                  <Star className="w-10 h-10 text-yellow-500 transform -rotate-12" />
-                </div>
-                <CardContent className="p-6">
-                  {/* Title and Author */}
-                  <div className="mb-6">
-                    <div className="flex items-start gap-3 mb-3">
-                      {result.type === "video" ? (
-                        <Video className="w-8 h-8 text-red-600 mt-1" />
-                      ) : result.type === "slides" ? (
-                        <Archive className="w-8 h-8 text-purple-600 mt-1" />
-                      ) : (
-                        <Camera className="w-8 h-8 text-blue-600 mt-1" />
-                      )}
-                      <h3 className="text-2xl md:text-3xl font-black text-black transform -rotate-1 flex-1">
-                        {result.title}
-                      </h3>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Palette className="w-5 h-5 text-blue-600" />
-                      <p className="text-lg font-bold text-blue-600 transform rotate-1">
-                        作者 BY: {result.author}
+              <Card className="mb-8">
+                <CardHeader>
+                  <div className="flex items-start gap-3">
+                    {result.type === "video" ? (
+                      <Video className="w-6 h-6 mt-1" />
+                    ) : result.type === "slides" ? (
+                      <Archive className="w-6 h-6 mt-1" />
+                    ) : (
+                      <Camera className="w-6 h-6 mt-1" />
+                    )}
+                    <div className="flex-1">
+                      <CardTitle className="text-xl">{result.title}</CardTitle>
+                      <p className="text-muted-foreground flex items-center gap-2 mt-1">
+                        <Palette className="w-4 h-4" />
+                        作者: {result.author}
                       </p>
                     </div>
                   </div>
-
+                </CardHeader>
+                <CardContent className="space-y-6">
                   {/* Tags */}
-                  <div className="flex flex-wrap gap-2 mb-6">
+                  <div className="flex flex-wrap gap-2">
                     {result.tags.map((tag, index) => (
-                      <Badge
-                        key={index}
-                        className="bg-green-400 text-black font-bold border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer"
-                      >
-                        <Star className="w-3 h-3 mr-1" />
+                      <Badge key={index} variant="secondary">
                         #{tag}
                       </Badge>
                     ))}
@@ -447,35 +393,33 @@ export default function VideoParserPage () {
 
                   {/* Content based on type */}
                   {result.type === "video" ? (
-                    <div className="grid md:grid-cols-2 gap-6 mb-6">
+                    <div className="grid md:grid-cols-2 gap-6">
                       {/* Video Player / Thumbnail */}
                       <div className="relative">
                         {!isVideoPlaying ? (
-                          // 显示视频封面和播放按钮
                           <>
                             <img
                               src={result.thumbnail}
                               alt={result.title}
-                              className="w-full h-64 object-cover border-3 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] cursor-pointer"
+                              className="w-full h-64 object-cover rounded-lg cursor-pointer"
                               onClick={handleVideoPlay}
                               referrerPolicy="no-referrer"
                               crossOrigin="anonymous"
                             />
-                            <div className="absolute inset-0 flex items-center justify-center bg-opacity-30 cursor-pointer" onClick={handleVideoPlay}>
-                              <div className="bg-yellow-400 border-4 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-3 hover:translate-y-3 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-150 p-5 hover:bg-yellow-500 group hover:rotate-3">
-                                <Play className="w-10 h-10 text-black fill-black group-hover:scale-125 transition-transform duration-200" />
-                              </div>
+                            <div className="absolute inset-0 flex items-center justify-center cursor-pointer" onClick={handleVideoPlay}>
+                              <Button size="lg" className="rounded-full">
+                                <Play className="w-6 h-6" />
+                              </Button>
                             </div>
-                            <div className="absolute bottom-3 right-3 bg-black bg-opacity-80 text-white px-2 py-1 rounded font-bold">
+                            <div className="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-sm">
                               {result.duration}
                             </div>
                           </>
                         ) : (
-                          // 显示视频播放器
                           <video
                             controls
                             autoPlay
-                            className="w-full h-64 object-cover border-3 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+                            className="w-full h-64 object-cover rounded-lg"
                             poster={result.thumbnail}
                             onPause={handleVideoPause}
                             onEnded={handleVideoEnded}
@@ -488,241 +432,210 @@ export default function VideoParserPage () {
 
                       {/* Video Stats */}
                       <div className="space-y-4">
-                        <div className="bg-blue-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform -rotate-1">
-                          <div className="flex items-center gap-2">
-                            <Eye className="w-5 h-5" />
-                            <div>
-                              <span className="font-bold">{result.views}</span>
-                              <div className="text-xs text-gray-600">浏览量</div>
+                        <Card>
+                          <CardContent className="p-4">
+                            <div className="flex items-center gap-2">
+                              <Eye className="w-5 h-5" />
+                              <div>
+                                <div className="font-semibold">{result.views}</div>
+                                <div className="text-sm text-muted-foreground">浏览量</div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                        <div className="bg-red-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform rotate-1">
-                          <div className="flex items-center gap-2">
-                            <Heart className="w-5 h-5" />
-                            <div>
-                              <span className="font-bold">{result.likes}</span>
-                              <div className="text-xs text-gray-600">点赞数</div>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardContent className="p-4">
+                            <div className="flex items-center gap-2">
+                              <Heart className="w-5 h-5" />
+                              <div>
+                                <div className="font-semibold">{result.likes}</div>
+                                <div className="text-sm text-muted-foreground">点赞数</div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                        <div className="bg-green-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform -rotate-1">
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-5 h-5" />
-                            <div>
-                              <span className="font-bold">{result.duration}</span>
-                              <div className="text-xs text-gray-600">时长</div>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardContent className="p-4">
+                            <div className="flex items-center gap-2">
+                              <Clock className="w-5 h-5" />
+                              <div>
+                                <div className="font-semibold">{result.duration}</div>
+                                <div className="text-sm text-muted-foreground">时长</div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
+                          </CardContent>
+                        </Card>
                       </div>
                     </div>
                   ) : result.type === "slides" ? (
-                      // 合辑内容显示
-                      <div className="space-y-6">
-                        {/* Masonry Grid for Mixed Content */}
-                        <div className="mb-6">
-                          <div className="flex items-center gap-2 mb-4">
-                            <Archive className="w-6 h-6 text-purple-600" />
-                            <h4 className="text-lg font-bold">合辑内容 Slides Collection</h4>
-                          </div>
+                    <div className="space-y-6">
+                      <div>
+                        <div className="flex items-center gap-2 mb-4">
+                          <Archive className="w-5 h-5" />
+                          <h4 className="text-lg font-semibold">合辑内容</h4>
+                        </div>
 
-                          {/* 合辑内容的瀑布流布局 */}
-                          <PhotoProvider>
-                          <div className="columns-2 md:columns-3 gap-4 space-y-4">
-                            {result.slides?.map((slide, index) => {
-                              // 模拟不同的图片尺寸
-                              const heights = ['h-48', 'h-64', 'h-40', 'h-56', 'h-44', 'h-52']
-                              const randomHeight = heights[index % heights.length]
-
-                              return (
-                                <div
-                                  key={index}
-                                  className={`relative group cursor-pointer transform hover:scale-105 transition-transform break-inside-avoid mb-4 overflow-hidden`}
-                                >
-                                  {slide.type === 'video' ? (
-                                    <div className="relative">
-                                      <video
-                                        controls
-                                        preload="metadata"
-                                        poster={slide.thumbnail}
-                                        className={`w-full ${randomHeight} object-cover border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
-                                        style={{ pointerEvents: 'auto' }}
-                                      >
-                                        <source src={slide.url} type="video/mp4" />
-                                        您的浏览器不支持视频播放。
-                                      </video>
-                                      {/* 视频时长标签 */}
-                                      {slide.duration && (
-                                        <div className="absolute top-2 left-2 bg-black bg-opacity-80 text-white px-2 py-1 rounded font-bold text-xs">
-                                          {slide.duration}
-                                        </div>
-                                      )}
-                                    </div>
-                                  ) : (
-                                    // 静态图片和Live Photo使用UniversalPhotoView
-                                    <UniversalPhotoView
-                                      src={slide.url}
-                                      videoSrc={slide.type === 'livephoto' ? slide.videoUrl : undefined}
-                                      alt={`合辑${slide.type === 'livephoto' ? 'Live Photo' : '图片'} ${index + 1}`}
-                                      className={`w-full ${slide.type === 'livephoto'
-                                        ? 'h-auto min-h-[200px] max-h-[400px] object-contain'
-                                        : `${randomHeight} object-cover`
-                                        } border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
-                                      type={slide.type === 'livephoto' ? ImageType.LIVE : ImageType.STATIC}
-                                      liveConfig={{
-                                        muted: true,
-                                        loop: false,
-                                        showIcon: slide.type === 'livephoto',
-                                        enableHoverPlay: true,
-                                        enableLongPress: true,
-                                      }}
-                                    />
-                                  )}
-
-                                  {/* 序号标签 */}
-                                  <div className={`absolute ${slide.type === 'video' ? 'top-2 right-2' : 'bottom-2 right-2'} z-10`}>
-                                    <div className={`${slide.type === 'video' ? 'bg-red-400' :
-                                      slide.type === 'livephoto' ? 'bg-purple-400' : 'bg-yellow-400'
-                                      } text-black ${isMobile ? 'px-1 py-0.5 text-xs' : 'px-2 py-1 text-sm'} border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-black transform rotate-3 hover:rotate-6 transition-transform`}>
-                                      {String(index + 1).padStart(2, '0')}
-                                      {slide.type === 'video' && <span className={`${isMobile ? 'ml-0.5' : 'ml-1'}`}>📹</span>}
-                                      {slide.type === 'livephoto' && <span className={`${isMobile ? 'ml-0.5' : 'ml-1'}`}>🎭</span>}
-                                      {slide.type === 'image' && <span className={`${isMobile ? 'ml-0.5' : 'ml-1'}`}>🖼️</span>}
-                                    </div>
+                        <PhotoProvider>
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            {result.slides?.map((slide, index) => (
+                              <div key={index} className="relative group">
+                                {slide.type === 'video' ? (
+                                  <div className="relative">
+                                    <video
+                                      controls
+                                      preload="metadata"
+                                      poster={slide.thumbnail}
+                                      className="w-full h-48 object-cover rounded-lg"
+                                    >
+                                      <source src={slide.url} type="video/mp4" />
+                                      您的浏览器不支持视频播放。
+                                    </video>
+                                    {slide.duration && (
+                                      <div className="absolute top-2 left-2 bg-black/80 text-white px-2 py-1 rounded text-xs">
+                                        {slide.duration}
+                                      </div>
+                                    )}
                                   </div>
+                                ) : (
+                                  <UniversalPhotoView
+                                    src={slide.url}
+                                    videoSrc={slide.type === 'livephoto' ? slide.videoUrl : undefined}
+                                    alt={`合辑${slide.type === 'livephoto' ? 'Live Photo' : '图片'} ${index + 1}`}
+                                    className="w-full h-48 object-cover rounded-lg"
+                                    type={slide.type === 'livephoto' ? ImageType.LIVE : ImageType.STATIC}
+                                    liveConfig={{
+                                      muted: true,
+                                      loop: false,
+                                      showIcon: slide.type === 'livephoto',
+                                      enableHoverPlay: true,
+                                      enableLongPress: true,
+                                    }}
+                                  />
+                                )}
+                                <div className="absolute bottom-2 right-2">
+                                  <Badge variant="secondary" className="text-xs">
+                                    {String(index + 1).padStart(2, '0')}
+                                  </Badge>
                                 </div>
-                              )
-                            })}
+                              </div>
+                            ))}
                           </div>
-                          </PhotoProvider>
+                        </PhotoProvider>
 
-                          {/* 合辑统计信息 */}
-                          <div className="grid grid-cols-2 gap-4 mt-6">
-                            <div className="bg-yellow-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform -rotate-1">
+                        <div className="grid grid-cols-2 gap-4 mt-6">
+                          <Card>
+                            <CardContent className="p-4">
                               <div className="flex items-center gap-2">
                                 <Eye className="w-5 h-5" />
                                 <div>
-                                  <span className="font-bold">{result.views}</span>
-                                  <div className="text-xs text-gray-600">浏览量</div>
+                                  <div className="font-semibold">{result.views}</div>
+                                  <div className="text-sm text-muted-foreground">浏览量</div>
                                 </div>
                               </div>
-                            </div>
-                            <div className="bg-orange-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform rotate-1">
+                            </CardContent>
+                          </Card>
+                          <Card>
+                            <CardContent className="p-4">
                               <div className="flex items-center gap-2">
                                 <Heart className="w-5 h-5" />
                                 <div>
-                                  <span className="font-bold">{result.likes}</span>
-                                  <div className="text-xs text-gray-600">点赞数</div>
+                                  <div className="font-semibold">{result.likes}</div>
+                                  <div className="text-sm text-muted-foreground">点赞数</div>
                                 </div>
                               </div>
-                            </div>
-                          </div>
+                            </CardContent>
+                          </Card>
                         </div>
                       </div>
+                    </div>
                   ) : (
-                    /* Gallery Layout - Masonry Style */
-                    <div className="mb-6">
-                      <div className="flex items-center gap-2 mb-4">
-                        <ImageIcon className="w-6 h-6 text-purple-600" />
-                        <h4 className="text-lg font-bold">图片集 Gallery Collection</h4>
-                      </div>
-
-                          {/* 图集的瀑布流布局 */}
-                          <PhotoProvider>
-                          <div className="columns-2 md:columns-3 gap-4 space-y-4">
-                            {result.images?.map((image, index) => {
-                              // 模拟不同的图片尺寸
-                              const heights = ['h-48', 'h-64', 'h-40', 'h-56', 'h-44', 'h-52']
-                              const randomHeight = heights[index % heights.length]
-
-                              return (
-                                <div
-                                  key={index}
-                                  className={`relative group cursor-pointer transform hover:scale-105 transition-transform break-inside-avoid mb-4 overflow-hidden`}
-                                >
-                                  <UniversalPhotoView
-                                    src={image}
-                                    alt={`Gallery image ${index + 1}`}
-                                    className={`w-full ${randomHeight} object-cover border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
-                                  />
-                                  {/* 序号标签 */}
-                                  <div className="absolute bottom-2 right-2 z-10">
-                                    <div className={`bg-red-400 text-white ${isMobile ? 'px-1 py-0.5 text-xs' : 'px-2 py-1 text-sm'} border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-black transform -rotate-3 hover:-rotate-6 transition-transform`}>
-                                      {String(index + 1).padStart(2, '0')}
-                                      <span className={`${isMobile ? 'ml-0.5' : 'ml-1'}`}>🖼️</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              )
-                            })}
-                          </div>
-                          </PhotoProvider>
-
-                      {/* Gallery Stats */}
-                      <div className="grid grid-cols-2 gap-4 mt-6">
-                        <div className="bg-purple-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform -rotate-1">
-                          <div className="flex items-center gap-2">
-                            <Eye className="w-5 h-5" />
-                            <div>
-                              <span className="font-bold">{result.views}</span>
-                              <div className="text-xs text-gray-600">浏览量</div>
-                            </div>
-                          </div>
+                    <div className="space-y-6">
+                      <div>
+                        <div className="flex items-center gap-2 mb-4">
+                          <ImageIcon className="w-5 h-5" />
+                          <h4 className="text-lg font-semibold">图片集</h4>
                         </div>
-                        <div className="bg-pink-200 p-4 border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform rotate-1">
-                          <div className="flex items-center gap-2">
-                            <Heart className="w-5 h-5" />
-                            <div>
-                              <span className="font-bold">{result.likes}</span>
-                              <div className="text-xs text-gray-600">点赞数</div>
-                            </div>
+
+                        <PhotoProvider>
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            {result.images?.map((image, index) => (
+                              <div key={index} className="relative group">
+                                <UniversalPhotoView
+                                  src={image}
+                                  alt={`Gallery image ${index + 1}`}
+                                  className="w-full h-48 object-cover rounded-lg"
+                                />
+                                <div className="absolute bottom-2 right-2">
+                                  <Badge variant="secondary" className="text-xs">
+                                    {String(index + 1).padStart(2, '0')}
+                                  </Badge>
+                                </div>
+                              </div>
+                            ))}
                           </div>
+                        </PhotoProvider>
+
+                        <div className="grid grid-cols-2 gap-4 mt-6">
+                          <Card>
+                            <CardContent className="p-4">
+                              <div className="flex items-center gap-2">
+                                <Eye className="w-5 h-5" />
+                                <div>
+                                  <div className="font-semibold">{result.views}</div>
+                                  <div className="text-sm text-muted-foreground">浏览量</div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                          <Card>
+                            <CardContent className="p-4">
+                              <div className="flex items-center gap-2">
+                                <Heart className="w-5 h-5" />
+                                <div>
+                                  <div className="font-semibold">{result.likes}</div>
+                                  <div className="text-sm text-muted-foreground">点赞数</div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
                         </div>
                       </div>
                     </div>
                   )}
 
+                  <Separator />
+
                   {/* Action Buttons */}
-                  <div className="flex flex-wrap gap-3 mb-6">
-                    {/* 下载按钮 */}
+                  <div className="flex flex-wrap gap-3">
                     {result.downloadUrl?.video && result.type !== 'slides' && (
                       <Button
                         onClick={() => downloadWithSmartNaming(result.downloadUrl!.video!, result.title, 'video')}
-                        className="bg-green-500 hover:bg-green-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
                       >
-                        <Download className="w-5 h-5 mr-2" />
-                        下载视频 VIDEO
+                        <Download className="w-4 h-4 mr-2" />
+                        下载视频
                       </Button>
                     )}
 
-                    {/* 合辑视频下载按钮 - 根据视频数量动态显示 */}
                     {result.type === 'slides' && result.slides && (() => {
                       const videoSlides = result.slides.filter(slide => slide.type === 'video')
                       if (videoSlides.length === 1) {
-                        // 只有一个视频，显示单个下载按钮
                         return (
                           <Button
                             onClick={() => downloadWithSmartNaming(videoSlides[0].url, result.title, 'video')}
-                            className="bg-green-500 hover:bg-green-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
                           >
-                            <Download className="w-5 h-5 mr-2" />
-                            下载视频 VIDEO
+                            <Download className="w-4 h-4 mr-2" />
+                            下载视频
                           </Button>
                         )
                       } else if (videoSlides.length > 1) {
-                        // 多个视频，显示打包下载按钮
                         return (
                           <Button
                             onClick={() => {
-                              // 创建一个下载视频的函数，这里需要实现批量下载逻辑
                               const videoUrls = videoSlides.map(slide => slide.url)
-                              // 可以调用一个批量下载视频的函数
                               downloadVideosAsZip(videoUrls, result.title)
                             }}
-                            className="bg-green-500 hover:bg-green-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
                           >
-                            <Archive className="w-5 h-5 mr-2" />
+                            <Archive className="w-4 h-4 mr-2" />
                             打包下载视频 ({videoSlides.length}个)
                           </Button>
                         )
@@ -730,22 +643,19 @@ export default function VideoParserPage () {
                       return null
                     })()}
 
-                    {/* 音频下载按钮 */}
                     {result.downloadUrl?.audio && (
-                      <Button
+                      <Button variant="outline"
                         onClick={() => downloadWithSmartNaming(result.downloadUrl!.audio, result.title, 'audio')}
-                        className="bg-orange-500 hover:bg-orange-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
                       >
-                        <Music className="w-5 h-5 mr-2" />
-                        下载音频 AUDIO
+                        <Music className="w-4 h-4 mr-2" />
+                        下载音频
                       </Button>
                     )}
 
-                    {/* 合辑打包下载按钮 */}
                     {result.slides && result.slides.length > 1 && (() => {
                       const imageSlides = result.slides.filter(slide => slide.type !== 'video')
                       return imageSlides.length > 0 ? (
-                        <Button
+                        <Button variant="outline"
                           onClick={() => {
                             const slideUrls = imageSlides
                               .map(slide => slide.thumbnail || slide.url)
@@ -756,78 +666,55 @@ export default function VideoParserPage () {
                               alert('该合辑中没有可下载的图片内容')
                             }
                           }}
-                          className="bg-indigo-500 hover:bg-indigo-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
                         >
-                          <Archive className="w-5 h-5 mr-2" />
+                          <Archive className="w-4 h-4 mr-2" />
                           打包下载图片 ({imageSlides.length}项)
                         </Button>
                       ) : null
                     })()}
 
-                    {/* 图片打包下载按钮 */}
                     {result.images && result.images.length > 1 && (
-                      <Button
+                      <Button variant="outline"
                         onClick={() => downloadImagesAsZip(result.images!, result.title)}
-                        className="bg-indigo-500 hover:bg-indigo-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
                       >
-                        <Archive className="w-5 h-5 mr-2" />
+                        <Archive className="w-4 h-4 mr-2" />
                         打包下载 ({result.images.length}张)
                       </Button>
                     )}
 
-                    {/* 原链接按钮 */}
-                    <Button
+                    <Button variant="outline"
                       onClick={() => handleOpenOriginal(url)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
                     >
-                      <Link className="w-5 h-5 mr-2" />
-                      原链接 ORIGINAL
+                      <Link className="w-4 h-4 mr-2" />
+                      原链接
                     </Button>
 
-                    {/* 分享按钮 */}
-                    <Button
+                    <Button variant="outline"
                       onClick={() => handleShare(url, result.title)}
-                      className="bg-purple-500 hover:bg-purple-600 text-white font-black border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
                     >
-                      <Share2 className="w-5 h-5 mr-2" />
-                      分享 SHARE
+                      <Share2 className="w-4 h-4 mr-2" />
+                      分享
                     </Button>
                   </div>
                 </CardContent>
               </Card>
 
               {/* Comments Section */}
-              <Card className="border-2 sm:border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] sm:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] bg-white transform md:-rotate-1 relative mb-4 sm:mb-8 overflow-hidden">
-                <div className="absolute -top-2 sm:-top-3 -right-2 sm:-right-3">
-                  <MessageCircle className="w-6 sm:w-8 h-6 sm:h-8 text-green-600 transform rotate-12" />
-                </div>
-                <CardContent className="p-3 sm:p-6">
-                  {/* Comments Header */}
-                  <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 flex-wrap">
-                    <MessageCircle className="w-5 sm:w-7 h-5 sm:h-7 text-blue-600" />
-                    <h4 className="text-lg sm:text-2xl font-black text-black transform rotate-1 flex-1">
-                      热门评论 <span className="hidden sm:inline">HOT COMMENTS</span>
-                    </h4>
-                    <Badge className="bg-red-100 text-red-800 border-2 border-red-300 font-bold text-xs sm:text-sm">
-                      <Star className="w-2 sm:w-3 h-2 sm:h-3 mr-1" />
-                      {result.comments.length} 条热评
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2">
+                      <MessageCircle className="w-5 h-5" />
+                      热门评论
+                    </CardTitle>
+                    <Badge variant="secondary">
+                      {result.comments.length} 条评论
                     </Badge>
-                    <Sparkles className="w-4 sm:w-5 h-4 sm:h-5 text-yellow-500" />
                   </div>
-
-                  {/* Comments List */}
-                  <div className="space-y-4 sm:space-y-6 max-h-80 sm:max-h-96 md:max-h-[32rem] lg:max-h-[40rem] overflow-y-auto hide-scrollbar">
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4 max-h-96 overflow-y-auto">
                     {commentItems}
-                  </div>
-
-                  {/* 热评说明 */}
-                  <div className="mt-4 sm:mt-6 text-center">
-                    <div className="inline-flex items-center gap-2 bg-orange-100 px-3 sm:px-4 py-2 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transform -rotate-1">
-                      <Star className="w-3 sm:w-4 h-3 sm:h-4 text-orange-600" />
-                      <span className="text-xs sm:text-sm font-bold text-orange-800">
-                        以上为热门评论 <span className="hidden sm:inline">Above are hot comments</span>
-                      </span>
-                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -835,34 +722,30 @@ export default function VideoParserPage () {
           )}
 
           {/* Footer */}
-          <div className="mt-12 text-center relative">
-            <div className="inline-block bg-black text-white px-6 py-3 font-black text-lg transform -rotate-2 shadow-[6px_6px_0px_0px_rgba(255,0,0,1)] relative">
-              <Sparkles className="absolute -top-2 -left-2 w-6 h-6 text-yellow-400" />
-              <span className="opacity-50">POWER BY</span>{" "}
+          <div className="mt-12 text-center">
+            <p className="text-sm text-muted-foreground">
+              Powered by{" "}
               <a
                 href="https://github.com/ikenxuan/karin-plugin-kkk"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-bold no-link-style hover:opacity-70 transition-opacity duration-200"
+                className="font-medium hover:underline"
               >
                 karin-plugin-kkk
               </a>{" "}
-              <span className="opacity-50">&</span>{" "}
-              <span className="opacity-50">DESIGN BY</span>{" "}
+              & Designed by{" "}
               <a
                 href="https://github.com/ikenxuan"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-bold no-link-style hover:opacity-70 transition-opacity duration-200"
+                className="font-medium hover:underline"
               >
                 ikenxuan
               </a>
-              <Zap className="absolute -bottom-2 -right-2 w-6 h-6 text-blue-400" />
-            </div>
+            </p>
           </div>
         </div>
       </div>
     </PhotoProvider>
   )
 }
-
