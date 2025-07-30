@@ -75,13 +75,13 @@ app.use('/api/kkk/douyin/data', authMiddleware, getDouyinDataRouter)
 app.use('/api/kkk/bilibili/data', authMiddleware, getBilibiliDataRouter)
 app.use('/api/kkk/kuaishou/data', authMiddleware, getKuaishouDataRouter)
 
-app.get('/api/kkk/content/douyin', getDouyinContentRouter)
-app.get('/api/kkk/content/bilibili', getBilibiliContentRouter)
-app.get('/api/kkk/groups', getGroupsRouter)
-app.get('/api/kkk/authors', getAuthorsRouter)
-app.post('/api/kkk/content/douyin', addDouyinContentRouter)
-app.post('/api/kkk/content/bilibili', addBilibiliContentRouter)
-app.delete('/api/kkk/content', deleteContentRouter)
+app.get('/api/kkk/content/douyin', authMiddleware, getDouyinContentRouter)
+app.get('/api/kkk/content/bilibili', authMiddleware, getBilibiliContentRouter)
+app.get('/api/kkk/groups', authMiddleware, getGroupsRouter)
+app.get('/api/kkk/authors', authMiddleware, getAuthorsRouter)
+app.post('/api/kkk/content/douyin', authMiddleware, addDouyinContentRouter)
+app.post('/api/kkk/content/bilibili', authMiddleware, addBilibiliContentRouter)
+app.delete('/api/kkk/content', authMiddleware, deleteContentRouter)
 
 // ----------------- PLUGIN FRONTEND ROUTER -----------------
 

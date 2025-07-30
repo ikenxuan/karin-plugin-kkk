@@ -404,11 +404,11 @@ export default function ContentManagePage () {
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="douyin" className="flex items-center gap-2">
                 <Video className="h-4 w-4" />
-                抖音内容
+                抖音
               </TabsTrigger>
               <TabsTrigger value="bilibili" className="flex items-center gap-2">
                 <MessageSquare className="h-4 w-4" />
-                B站内容
+                B站
               </TabsTrigger>
             </TabsList>
 
