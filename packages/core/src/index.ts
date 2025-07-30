@@ -26,6 +26,16 @@ import {
   videoStreamRouter
 } from '@/module/server/router'
 
+import {
+  addBilibiliContentRouter,
+  addDouyinContentRouter,
+  deleteContentRouter,
+  getAuthorsRouter,
+  getBilibiliContentRouter,
+  getDouyinContentRouter,
+  getGroupsRouter
+} from './module/server/content-router'
+
 const server = express()
 const proxyOptions: httpProxy.Options = {
   target: 'https://developer.huawei.com',
@@ -64,6 +74,14 @@ app.use('/api/kkk/getLongLink', authMiddleware, getLongLinkRouter)
 app.use('/api/kkk/douyin/data', authMiddleware, getDouyinDataRouter)
 app.use('/api/kkk/bilibili/data', authMiddleware, getBilibiliDataRouter)
 app.use('/api/kkk/kuaishou/data', authMiddleware, getKuaishouDataRouter)
+
+app.get('/api/kkk/content/douyin', getDouyinContentRouter)
+app.get('/api/kkk/content/bilibili', getBilibiliContentRouter)
+app.get('/api/kkk/groups', getGroupsRouter)
+app.get('/api/kkk/authors', getAuthorsRouter)
+app.post('/api/kkk/content/douyin', addDouyinContentRouter)
+app.post('/api/kkk/content/bilibili', addBilibiliContentRouter)
+app.delete('/api/kkk/content', deleteContentRouter)
 
 // ----------------- PLUGIN FRONTEND ROUTER -----------------
 

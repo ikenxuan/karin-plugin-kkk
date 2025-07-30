@@ -10,6 +10,7 @@ import {
   DataSource,
   Entity,
   In,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -68,6 +69,10 @@ class Group {
 
   @OneToMany(() => DynamicCache, cache => cache.group)
   dynamicCaches!: DynamicCache[]
+
+  /** 订阅关系 */
+  @OneToMany(() => GroupUserSubscription, subscription => subscription.group)
+  subscriptions!: GroupUserSubscription[]
 }
 
 /** BilibiliUsers表 - 存储B站用户信息 */
@@ -103,6 +108,10 @@ class BilibiliUser {
 
   @OneToMany(() => FilterTag, tag => tag.bilibiliUser)
   filterTags!: FilterTag[]
+
+  /** 订阅关系 */
+  @OneToMany(() => GroupUserSubscription, subscription => subscription.bilibiliUser)
+  subscriptions!: GroupUserSubscription[]
 }
 
 /** GroupUserSubscriptions表 - 存储群组订阅的B站用户关系 */
@@ -119,6 +128,16 @@ class GroupUserSubscription {
 
   @UpdateDateColumn()
   updatedAt!: Date
+
+  /** 关联的群组 */
+  @ManyToOne(() => Group, group => group.subscriptions)
+  @JoinColumn({ name: 'groupId', referencedColumnName: 'id' })
+  group!: Group
+
+  /** 关联的B站用户 */
+  @ManyToOne(() => BilibiliUser, user => user.subscriptions)
+  @JoinColumn({ name: 'host_mid', referencedColumnName: 'host_mid' })
+  bilibiliUser!: BilibiliUser
 }
 
 /** DynamicCache表 - 存储已推送的动态ID */
@@ -146,9 +165,11 @@ class DynamicCache {
   updatedAt!: Date
 
   @ManyToOne(() => BilibiliUser, user => user.dynamicCaches)
+  @JoinColumn({ name: 'host_mid', referencedColumnName: 'host_mid' })
   bilibiliUser!: BilibiliUser
 
   @ManyToOne(() => Group, group => group.dynamicCaches)
+  @JoinColumn({ name: 'groupId', referencedColumnName: 'id' })
   group!: Group
 }
 
@@ -213,7 +234,7 @@ export class BilibiliDBBase {
   private groupRepository!: Repository<Group>
   private bilibiliUserRepository!: Repository<BilibiliUser>
   private groupUserSubscriptionRepository!: Repository<GroupUserSubscription>
-  private dynamicCacheRepository!: Repository<DynamicCache>
+  dynamicCacheRepository!: Repository<DynamicCache>
   private filterWordRepository!: Repository<FilterWord>
   private filterTagRepository!: Repository<FilterTag>
 
@@ -381,7 +402,10 @@ export class BilibiliDBBase {
    * @param groupId 群组ID
    */
   async getGroupSubscriptions (groupId: string) {
-    return await this.groupUserSubscriptionRepository.find({ where: { groupId } })
+    return await this.groupUserSubscriptionRepository.find({
+      where: { groupId },
+      relations: ['bilibiliUser']
+    })
   }
 
   /**

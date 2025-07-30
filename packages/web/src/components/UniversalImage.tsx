@@ -446,7 +446,6 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
           playsInline
           webkit-playsinline="true"
           preload="metadata"
-          crossOrigin="anonymous"
           style={{
             opacity: 0,
             transformOrigin: 'center',

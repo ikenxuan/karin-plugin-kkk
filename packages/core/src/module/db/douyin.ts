@@ -10,6 +10,7 @@ import {
   DataSource,
   Entity,
   In,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -170,10 +171,12 @@ class GroupUserSubscription {
 
   /** 关联的群组 */
   @ManyToOne(() => Group, group => group.subscriptions)
+  @JoinColumn({ name: 'groupId', referencedColumnName: 'id' })
   group!: Group
 
   /** 关联的抖音用户 */
   @ManyToOne(() => DouyinUser, user => user.subscriptions)
+  @JoinColumn({ name: 'sec_uid', referencedColumnName: 'sec_uid' })
   douyinUser!: DouyinUser
 }
 
@@ -208,10 +211,12 @@ class AwemeCache {
 
   /** 关联的抖音用户 */
   @ManyToOne(() => DouyinUser, user => user.awemeCaches)
+  @JoinColumn({ name: 'sec_uid', referencedColumnName: 'sec_uid' })
   douyinUser!: DouyinUser
 
   /** 关联的群组 */
   @ManyToOne(() => Group, group => group.awemeCaches)
+  @JoinColumn({ name: 'groupId', referencedColumnName: 'id' })
   group!: Group
 }
 
@@ -294,10 +299,10 @@ const AppDataSource = new DataSource({
 /** 数据库操作类 */
 export class DouyinDBBase {
   private botRepository!: Repository<Bot>
-  private groupRepository!: Repository<Group>
+  groupRepository!: Repository<Group>
   private douyinUserRepository!: Repository<DouyinUser>
   private groupUserSubscriptionRepository!: Repository<GroupUserSubscription>
-  private awemeCacheRepository!: Repository<AwemeCache>
+  awemeCacheRepository!: Repository<AwemeCache>
   private filterWordRepository!: Repository<FilterWord>
   private filterTagRepository!: Repository<FilterTag>
 
