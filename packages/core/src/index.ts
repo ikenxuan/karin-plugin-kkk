@@ -70,20 +70,20 @@ if (Config.app.APIServer && Config.app.APIServerMount) {
 app.get('/api/kkk/stream/:filename', videoStreamRouter)
 app.get('/api/kkk/video/:filename', getVideoRouter)
 
-app.use('/api/kkk/getLongLink', authMiddleware, getLongLinkRouter)
-app.use('/api/kkk/douyin/data', authMiddleware, getDouyinDataRouter)
-app.use('/api/kkk/bilibili/data', authMiddleware, getBilibiliDataRouter)
-app.use('/api/kkk/kuaishou/data', authMiddleware, getKuaishouDataRouter)
-
 const middleware = Config.app.webAuth ? [authMiddleware] : []
 
-app.get('/api/kkk/content/douyin', ...middleware, getDouyinContentRouter)
-app.get('/api/kkk/content/bilibili', ...middleware, getBilibiliContentRouter)
-app.get('/api/kkk/groups', ...middleware, getGroupsRouter)
-app.get('/api/kkk/authors', ...middleware, getAuthorsRouter)
-app.post('/api/kkk/content/douyin', ...middleware, addDouyinContentRouter)
-app.post('/api/kkk/content/bilibili', ...middleware, addBilibiliContentRouter)
-app.post('/api/kkk/content/delete', ...middleware, deleteContentRouter)
+app.use('/api/kkk/getLongLink', ...middleware, getLongLinkRouter)
+app.use('/api/kkk/douyin/data', ...middleware, getDouyinDataRouter)
+app.use('/api/kkk/bilibili/data', ...middleware, getBilibiliDataRouter)
+app.use('/api/kkk/kuaishou/data', ...middleware, getKuaishouDataRouter)
+
+app.get('/api/kkk/content/douyin', authMiddleware, getDouyinContentRouter)
+app.get('/api/kkk/content/bilibili', authMiddleware, getBilibiliContentRouter)
+app.get('/api/kkk/groups', authMiddleware, getGroupsRouter)
+app.get('/api/kkk/authors', authMiddleware, getAuthorsRouter)
+app.post('/api/kkk/content/douyin', authMiddleware, addDouyinContentRouter)
+app.post('/api/kkk/content/bilibili', authMiddleware, addBilibiliContentRouter)
+app.post('/api/kkk/content/delete', authMiddleware, deleteContentRouter)
 
 // ----------------- PLUGIN FRONTEND ROUTER -----------------
 
