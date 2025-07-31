@@ -136,37 +136,122 @@ export const getAuthorsRouter: RequestHandler = async (req, res) => {
     const douyinDB = await getDouyinDB()
     const bilibiliDB = await getBilibiliDB()
 
-    const authorOptions: AuthorOption[] = []
+    // 并发获取订阅数据
+    const [douyinSubscriptions, bilibiliSubscriptions] = await Promise.all([
+      douyinDB.getGroupSubscriptions(groupId as string),
+      bilibiliDB.getGroupSubscriptions(groupId as string)
+    ])
 
-    // 获取抖音作者
-    const douyinSubscriptions = await douyinDB.getGroupSubscriptions(groupId as string)
-    for (const subscription of douyinSubscriptions) {
-      if (subscription.douyinUser) {
-        const userProfile = await getDouyinData('用户主页数据', { sec_uid: subscription.douyinUser.sec_uid, typeMode: 'strict' }, Config.cookies.douyin)
+    /**
+     * 并发获取抖音用户数据
+     * @param subscriptions 抖音订阅列表
+     * @returns Promise<AuthorOption[]> 作者选项数组
+     */
+    const fetchDouyinAuthors = async (subscriptions: any[]): Promise<AuthorOption[]> => {
+      // 过滤出有效的订阅
+      const validSubscriptions = subscriptions.filter(sub => sub.douyinUser)
 
-        authorOptions.push({
-          id: subscription.douyinUser.sec_uid,
-          name: subscription.douyinUser.remark || subscription.douyinUser.short_id || subscription.douyinUser.sec_uid,
-          avatar: userProfile.data.user.avatar_larger.url_list[0],
-          platform: 'douyin'
-        })
+      if (validSubscriptions.length === 0) {
+        return []
       }
+
+      const batchSize = 5 // 每批最多5个并发请求
+      const results: AuthorOption[] = []
+
+      for (let i = 0; i < validSubscriptions.length; i += batchSize) {
+        const batch = validSubscriptions.slice(i, i + batchSize)
+
+        // 并发处理当前批次
+        const batchPromises = batch.map(async (subscription) => {
+          try {
+            const userProfile = await getDouyinData(
+              '用户主页数据',
+              { sec_uid: subscription.douyinUser.sec_uid, typeMode: 'strict' },
+              Config.cookies.douyin
+            )
+
+            return {
+              id: subscription.douyinUser.sec_uid,
+              name: subscription.douyinUser.remark || subscription.douyinUser.short_id || subscription.douyinUser.sec_uid,
+              avatar: userProfile.data.user.avatar_larger.url_list[0],
+              platform: 'douyin' as const
+            }
+          } catch (error) {
+            logger.warn(`获取抖音用户数据失败 (${subscription.douyinUser.sec_uid}):`, error)
+            return {
+              id: subscription.douyinUser.sec_uid,
+              name: subscription.douyinUser.remark || subscription.douyinUser.short_id || subscription.douyinUser.sec_uid,
+              avatar: '',
+              platform: 'douyin' as const
+            }
+          }
+        })
+
+        const batchResults = await Promise.all(batchPromises)
+        results.push(...batchResults)
+      }
+
+      return results
     }
 
-    // 获取B站作者
-    const bilibiliSubscriptions = await bilibiliDB.getGroupSubscriptions(groupId as string)
-    for (const subscription of bilibiliSubscriptions) {
-      if (subscription.bilibiliUser) {
-        const userProfile = await getBilibiliData('用户主页数据', { host_mid: subscription.bilibiliUser.host_mid, typeMode: 'strict' }, Config.cookies.bilibili)
+    /**
+     * 并发获取B站用户数据
+     * @param subscriptions B站订阅列表
+     * @returns Promise<AuthorOption[]> 作者选项数组
+     */
+    const fetchBilibiliAuthors = async (subscriptions: any[]): Promise<AuthorOption[]> => {
+      // 过滤出有效的订阅
+      const validSubscriptions = subscriptions.filter(sub => sub.bilibiliUser)
 
-        authorOptions.push({
-          id: subscription.bilibiliUser.host_mid.toString(),
-          name: subscription.bilibiliUser.remark || subscription.bilibiliUser.host_mid.toString(),
-          avatar: userProfile.data.data.card.face,
-          platform: 'bilibili'
-        })
+      if (validSubscriptions.length === 0) {
+        return []
       }
+
+      const batchSize = 5 // 每批最多5个并发请求
+      const results: AuthorOption[] = []
+
+      for (let i = 0; i < validSubscriptions.length; i += batchSize) {
+        const batch = validSubscriptions.slice(i, i + batchSize)
+
+        // 并发处理当前批次
+        const batchPromises = batch.map(async (subscription) => {
+          try {
+            const userProfile = await getBilibiliData(
+              '用户主页数据',
+              { host_mid: subscription.bilibiliUser.host_mid, typeMode: 'strict' },
+              Config.cookies.bilibili
+            )
+
+            return {
+              id: subscription.bilibiliUser.host_mid.toString(),
+              name: subscription.bilibiliUser.remark || subscription.bilibiliUser.host_mid.toString(),
+              avatar: userProfile.data.data.card.face,
+              platform: 'bilibili' as const
+            }
+          } catch (error) {
+            logger.warn(`获取B站用户数据失败 (${subscription.bilibiliUser.host_mid}):`, error)
+            return {
+              id: subscription.bilibiliUser.host_mid.toString(),
+              name: subscription.bilibiliUser.remark || subscription.bilibiliUser.host_mid.toString(),
+              avatar: '',
+              platform: 'bilibili' as const
+            }
+          }
+        })
+
+        const batchResults = await Promise.all(batchPromises)
+        results.push(...batchResults)
+      }
+
+      return results
     }
+
+    const [douyinAuthors, bilibiliAuthors] = await Promise.all([
+      fetchDouyinAuthors(douyinSubscriptions),
+      fetchBilibiliAuthors(bilibiliSubscriptions)
+    ])
+
+    const authorOptions = [...douyinAuthors, ...bilibiliAuthors]
 
     return createSuccessResponse(res, authorOptions)
   } catch (error) {
@@ -210,7 +295,7 @@ export const getDouyinContentRouter: RequestHandler = async (req, res) => {
         platform: 'douyin' as const,
         title: `抖音作品 ${cache.aweme_id}`,
         author: authorName,
-        avatar: userProfile.data.user.avatar_larger.url_list[0],
+        avatar: userProfile.data?.user?.avatar_larger?.url_list[0] || '',
         publishTime: cache.createdAt.toISOString(),
         thumbnail: '',
         type: 'video' as const,
@@ -223,7 +308,7 @@ export const getDouyinContentRouter: RequestHandler = async (req, res) => {
     return createSuccessResponse(res, contentList)
   } catch (error) {
     logger.error('获取抖音内容列表失败:', error)
-    return createServerErrorResponse(res, '获取抖音内容列表失败')
+    return createServerErrorResponse(res, '获取抖音内容列表失败: ' + error)
   }
 }
 
@@ -241,7 +326,6 @@ export const getBilibiliContentRouter: RequestHandler = async (req, res) => {
     }
 
     const bilibiliDB = await getBilibiliDB()
-    // 修复：确保正确加载关联的bilibiliUser数据
     const caches = await bilibiliDB.dynamicCacheRepository.find({
       where: { groupId: groupId as string },
       relations: ['bilibiliUser'],
@@ -262,7 +346,7 @@ export const getBilibiliContentRouter: RequestHandler = async (req, res) => {
         platform: 'bilibili' as const,
         title: `B站动态 ${cache.dynamic_id}`,
         author: authorName,
-        avatar: userProfile.data.data.card.face,
+        avatar: userProfile.data?.data?.card?.face || '',
         publishTime: cache.createdAt.toISOString(),
         thumbnail: '',
         type: 'dynamic' as const,
@@ -275,7 +359,7 @@ export const getBilibiliContentRouter: RequestHandler = async (req, res) => {
     return createSuccessResponse(res, contentList)
   } catch (error) {
     logger.error('获取B站内容列表失败:', error)
-    return createServerErrorResponse(res, '获取B站内容列表失败')
+    return createServerErrorResponse(res, '获取B站内容列表失败: ' + error)
   }
 }
 

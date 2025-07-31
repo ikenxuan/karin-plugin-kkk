@@ -1,5 +1,5 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
-import { toast } from 'react-hot-toast'
+import { toast } from "sonner"
 
 import {
   clearAccessToken,

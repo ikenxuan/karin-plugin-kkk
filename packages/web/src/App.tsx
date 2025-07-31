@@ -1,6 +1,8 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 
+import { ThemeProvider } from './components/theme-provider'
+
 // 使用懒加载导入组件
 const LoginPage = lazy(() => import('./app/login/page'))
 const VideoParserPage = lazy(() => import('./app/crack/page'))
@@ -11,6 +13,7 @@ const ContentManagePage = lazy(() => import('./app/content-manage/page'))
  */
 const App = () => {
   return (
+    <ThemeProvider>
     <Router basename="/kkk">
       <Suspense fallback={<div className="flex items-center justify-center h-screen text-lg font-bold">加载中...</div>}>
         <Routes>
@@ -23,6 +26,7 @@ const App = () => {
         </Routes>
       </Suspense>
     </Router>
+    </ThemeProvider>
   )
 }
 
