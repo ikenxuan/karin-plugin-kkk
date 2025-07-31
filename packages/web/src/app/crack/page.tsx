@@ -40,7 +40,6 @@ import { Separator } from "@/components/ui/separator"
 import { ImageType } from '@/components/UniversalImage'
 import UniversalPhotoView from '@/components/UniversalPhotoView'
 import { useVideoParser } from '@/hooks/use-video-parser'
-import { useHeartbeat } from '@/hooks/useHeartbeat'
 import { clearAccessToken, clearRefreshToken, clearUserId } from '@/lib/token'
 import { downloadImagesAsZip, downloadVideosAsZip, downloadWithSmartNaming, handleOpenOriginal, handleShare } from '@/lib/tools'
 import type { CommentInfo, VideoInfo } from '@/parsers/types'
@@ -57,7 +56,6 @@ declare global {
  * @returns JSX.Element
  */
 export default function VideoParserPage () {
-  useHeartbeat()
   const [url, setUrl] = useState('')
   const [result, setResult] = useState<VideoInfo | null>(null)
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)

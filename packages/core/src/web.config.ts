@@ -196,7 +196,7 @@ export const webConfig = defineConfig({
               }),
               components.switch.create('webAuth', {
                 label: 'web解鉴权',
-                description: '开启后，需要拥有 Karin 的 HTTP 鉴权密钥才能访问',
+                description: '开启后，需要拥有 Karin 的 HTTP 鉴权密钥才能访问。修改后重启生效',
                 defaultSelected: all.app.webAuth
               }),
             ]
