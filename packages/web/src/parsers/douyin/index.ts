@@ -173,9 +173,7 @@ export const parseDouyinVideoDetail = async (workInfo: ParsedWorkInfo): Promise<
       description: awemeDetail.desc || '',
       thumbnail: isVideo
         ? awemeDetail.video?.cover?.url_list?.[0]
-        : isSlides
-          ? awemeDetail.images?.[0]?.url_list?.[0] || ''
-          : awemeDetail.images?.[0]?.url_list?.[0] || '',
+        : awemeDetail.images?.[0]?.url_list?.[0] || '',
       duration: isVideo ? formatDuration(awemeDetail.video?.duration / 1000 || 0) : '0:00',
       views: formatCount(awemeDetail.statistics?.play_count || 0),
       likes: formatCount(awemeDetail.statistics?.digg_count || 0),
