@@ -236,25 +236,34 @@ jobs:
         run: |
           # 创建一个检查文件是否存在并检出的函数
           checkout_if_exists() {
+            echo "检查文件: packages/core/$1"
+            # 首先检查文件是否存在于 Git 树中
             if git ls-tree -r --name-only origin/main | grep -q "^packages/core/$1$"; then
+              echo "文件存在于 Git 中: packages/core/$1"
+              # 尝试检出文件，如果失败则跳过
               if [ "$1" != "package.json" ]; then
-                git checkout main -- "packages/core/$1"
-                echo "已检出: packages/core/$1"
+                if git checkout main -- "packages/core/$1" 2>/dev/null; then
+                  echo "✅ 已检出: packages/core/$1"
+                else
+                  echo "⚠️ 检出失败，但继续执行: packages/core/$1"
+                fi
               else
-                echo "跳过检出 package.json，保留修改版本"
+                echo "⏭️ 跳过检出 package.json，保留修改版本"
               fi
             else
-              echo "文件不存在，跳过: packages/core/$1"
+              echo "📁 文件不存在于 Git 中，跳过: packages/core/$1"
             fi
           }
           
-          # 逐个检查并检出文件
-          checkout_if_exists "package.json"
-          checkout_if_exists "CHANGELOG.md"
-          checkout_if_exists "README.md"
-          checkout_if_exists "LICENSE"
-          checkout_if_exists "config"
-          checkout_if_exists "resources"
+          # 逐个检查并检出文件（添加错误处理）
+          echo "开始同步必要文件..."
+          checkout_if_exists "package.json" || true
+          checkout_if_exists "CHANGELOG.md" || true
+          checkout_if_exists "README.md" || true
+          checkout_if_exists "LICENSE" || true
+          checkout_if_exists "config" || true
+          checkout_if_exists "resources" || true
+          echo "文件同步完成"
 
       - name: 🧹 清理开发依赖
         run: pnpm pkg delete devDependencies
