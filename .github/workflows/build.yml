@@ -360,11 +360,32 @@ jobs:
 
       - name: 🏷️ 生成版本标识
         run: |
+          # 基础信息
           COMMIT_HASH=$(git rev-parse HEAD)
           SHORT_COMMIT_HASH=$(git rev-parse --short HEAD)
+          COMMIT_COUNT=$(git rev-list --count HEAD)
+          TIMESTAMP=$(date +%s)
+          
+          # 分支信息
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BRANCH_NAME="${{ github.head_ref }}"
+            PR_NUMBER="${{ github.event.number }}"
+            echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+          else
+            BRANCH_NAME="${{ github.ref_name }}"
+          fi
+          
+          # 导出环境变量
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
           echo "SHORT_COMMIT_HASH=$SHORT_COMMIT_HASH" >> $GITHUB_ENV
+          echo "COMMIT_COUNT=$COMMIT_COUNT" >> $GITHUB_ENV
+          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
           echo "REPO_URL=https://github.com/${{ github.repository }}/tree/$COMMIT_HASH" >> $GITHUB_ENV
+          
+          echo "提交哈希: $SHORT_COMMIT_HASH"
+          echo "提交计数: $COMMIT_COUNT"
+          echo "分支名称: $BRANCH_NAME"
 
       - name: 📦 准备预览包
         run: |
@@ -376,26 +397,29 @@ jobs:
             echo "使用当前构建的产物"
           fi
           
-          # 获取当前版本号和提交信息
+          # 获取版本信息
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           SHORT_COMMIT_HASH=$(git rev-parse --short HEAD)
           COMMIT_COUNT=$(git rev-list --count HEAD)
+          TIMESTAMP=$(date +%s)
           
           # 解析当前版本号
           MAJOR=$(echo $CURRENT_VERSION | cut -d. -f1)
           MINOR=$(echo $CURRENT_VERSION | cut -d. -f2)
           PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
           
-          # 根据不同的触发事件生成不同的预发布版本号
+          # 根据不同场景生成版本号
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            # PR 版本：使用 alpha 预发布标识
+            # PR 版本：alpha.PR编号.提交序号
             PR_NUMBER=${{ github.event.number }}
-            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-alpha.${PR_NUMBER}.${SHORT_COMMIT_HASH}"
+            PR_COMMIT_COUNT=$(git rev-list --count HEAD ^origin/main)
+            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-alpha.${PR_NUMBER}.${PR_COMMIT_COUNT}"
           elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            # 主分支推送：使用 beta 预发布标识
-            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-beta.${COMMIT_COUNT}.${SHORT_COMMIT_HASH}"
+            # 主分支：beta.提交计数.时间戳后4位
+            TIME_SUFFIX=$(echo $TIMESTAMP | tail -c 5)
+            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-beta.${COMMIT_COUNT}.${TIME_SUFFIX}"
           else
-            # 其他情况：使用 dev 预发布标识
+            # 其他分支：dev.分支名.提交哈希
             BRANCH_NAME=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
             NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-dev.${BRANCH_NAME}.${SHORT_COMMIT_HASH}"
           fi
