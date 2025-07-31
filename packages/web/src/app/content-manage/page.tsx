@@ -529,7 +529,7 @@ export default function ContentManagePage () {
       {selectedGroup && (
         <>
           {/* 统计信息 - 紧凑网格 */}
-          <div className="grid grid-cols-4 gap-1 bg-gray-50 p-2 rounded-lg">
+          <div className="grid grid-cols-4 gap-1 bg-default/5 p-2 rounded-lg">
             <div className="text-center">
               <Video className="h-4 w-4 text-blue-600 mx-auto mb-1" />
               <div className="text-lg font-bold text-blue-700">{filteredDouyinContent.length}</div>

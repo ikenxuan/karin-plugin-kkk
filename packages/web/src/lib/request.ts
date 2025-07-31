@@ -155,8 +155,10 @@ const redirectToLogin = (message: string): void => {
     return
   }
 
-  toast.error('5秒后将跳转登录界面', { duration: 5000 })
   toast.error(message, { duration: 5000 })
+  setTimeout(() => {
+    toast.error('3秒后将跳转登录界面', { duration: 5000 })
+  }, 2000)
 
   setTimeout(() => {
     isRedirecting = false
