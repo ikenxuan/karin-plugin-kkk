@@ -75,13 +75,15 @@ app.use('/api/kkk/douyin/data', authMiddleware, getDouyinDataRouter)
 app.use('/api/kkk/bilibili/data', authMiddleware, getBilibiliDataRouter)
 app.use('/api/kkk/kuaishou/data', authMiddleware, getKuaishouDataRouter)
 
-app.get('/api/kkk/content/douyin', authMiddleware, getDouyinContentRouter)
-app.get('/api/kkk/content/bilibili', authMiddleware, getBilibiliContentRouter)
-app.get('/api/kkk/groups', authMiddleware, getGroupsRouter)
-app.get('/api/kkk/authors', authMiddleware, getAuthorsRouter)
-app.post('/api/kkk/content/douyin', authMiddleware, addDouyinContentRouter)
-app.post('/api/kkk/content/bilibili', authMiddleware, addBilibiliContentRouter)
-app.delete('/api/kkk/content', authMiddleware, deleteContentRouter)
+const middleware = Config.app.webAuth ? [authMiddleware] : []
+
+app.get('/api/kkk/content/douyin', ...middleware, getDouyinContentRouter)
+app.get('/api/kkk/content/bilibili', ...middleware, getBilibiliContentRouter)
+app.get('/api/kkk/groups', ...middleware, getGroupsRouter)
+app.get('/api/kkk/authors', ...middleware, getAuthorsRouter)
+app.post('/api/kkk/content/douyin', ...middleware, addDouyinContentRouter)
+app.post('/api/kkk/content/bilibili', ...middleware, addBilibiliContentRouter)
+app.post('/api/kkk/content/delete', ...middleware, deleteContentRouter)
 
 // ----------------- PLUGIN FRONTEND ROUTER -----------------
 
@@ -114,6 +116,12 @@ mkdirSync(`${base}/data`)
 mkdirSync(Common.tempDri.images)
 mkdirSync(Common.tempDri.video)
 
-logger.info(`${logger.green(`[插件:${Root.pluginName}]`)} ${logger.violet(`v${Root.pluginVersion}`)} 初始化完成~`)
+console.log('')
+console.log('-------------------------- karin-plugin-kkk --------------------------')
+logger.info(`${logger.violet(`[插件:v${Root.pluginVersion}]`)} ${logger.green(Root.pluginName)} 初始化完成~`)
+logger.info(`${logger.violet('[server]')} ${logger.yellow('外部解析页面:')} ${logger.green(`http://127.0.0.1:${process.env.HTTP_PORT!}/kkk/`)}`)
+logger.info(`${logger.violet('[server]')} ${logger.yellow('推送历史管理:')} ${logger.green(`http://127.0.0.1:${process.env.HTTP_PORT!}/kkk/database`)}`)
+console.log('-------------------------- karin-plugin-kkk --------------------------')
+console.log('')
 
 export { webConfig } from './web.config'

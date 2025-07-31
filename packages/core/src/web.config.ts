@@ -1,3 +1,5 @@
+import os from 'node:os'
+
 import { components, defineConfig } from 'node-karin'
 import _ from 'node-karin/lodash'
 
@@ -170,10 +172,12 @@ export const webConfig = defineConfig({
               }),
               components.input.number('RenderWaitTime', {
                 label: '渲染图片的等待时间',
-                description: '单位：秒，传递 0 可禁用',
+                description: os.platform() === 'linux' ? '单位：秒，Linux系统下不能为0' : '单位：秒，传递 0 可禁用',
                 defaultValue: all.app.RenderWaitTime.toString(),
                 rules: [
-                  { min: 0 }
+                  os.platform() === 'linux'
+                    ? { min: 1, error: 'Linux系统下渲染等待时间不能为0' }
+                    : { min: 0 }
                 ]
               }),
               components.switch.create('EmojiReply', {
@@ -189,7 +193,12 @@ export const webConfig = defineConfig({
                 rules: [
                   { min: 0, max: 1145141919810 }
                 ]
-              })
+              }),
+              components.switch.create('webAuth', {
+                label: 'web解鉴权',
+                description: '开启后，需要拥有 Karin 的 HTTP 鉴权密钥才能访问',
+                defaultSelected: all.app.webAuth
+              }),
             ]
           })
         ]

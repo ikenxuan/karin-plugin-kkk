@@ -69,6 +69,9 @@ export default function ContentManagePage () {
   const [selectedAuthorId, setSelectedAuthorId] = useState('')
   const [activeTab, setActiveTab] = useState('douyin')
   const [loading, setLoading] = useState(false)
+  const [showAddConfirm, setShowAddConfirm] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<{id: string, platform: 'douyin' | 'bilibili'} | null>(null)
 
   /**
    * 获取群组列表
@@ -100,6 +103,7 @@ export default function ContentManagePage () {
       }
     } catch (error) {
       console.error('获取作者列表失败:', error)
+      toast(error as string || '获取作者列表失败')
     }
   }
 
@@ -142,14 +146,20 @@ export default function ContentManagePage () {
   }
 
   /**
-   * 添加新内容
+   * 显示添加确认
    */
-  const handleAddContent = async () => {
+  const handleShowAddConfirm = () => {
     if (!newContentId.trim() || !selectedGroupId || !selectedAuthorId) {
       alert('请填写完整信息')
       return
     }
+    setShowAddConfirm(true)
+    }
 
+  /**
+   * 添加新内容
+   */
+  const handleAddContent = async () => {
     try {
       const endpoint = activeTab === 'douyin' ? '/api/kkk/content/douyin' : '/api/kkk/content/bilibili'
       await request.serverPost(endpoint, {
@@ -161,6 +171,7 @@ export default function ContentManagePage () {
       setNewContentId('')
       setSelectedAuthorId('')
       setIsAddDialogOpen(false)
+      setShowAddConfirm(false)
 
       // 刷新对应的内容列表
       if (activeTab === 'douyin') {
@@ -168,43 +179,48 @@ export default function ContentManagePage () {
       } else {
         await fetchBilibiliContent()
       }
+
+      toast.success('内容添加成功')
     } catch (error) {
       console.error('添加内容失败:', error)
+      toast.error('添加内容失败')
     }
   }
 
   /**
+   * 显示删除确认
+   */
+  const handleShowDeleteConfirm = (id: string, platform: 'douyin' | 'bilibili') => {
+    setDeleteTarget({ id, platform })
+    setShowDeleteConfirm(true)
+    }
+
+  /**
    * 删除内容
    */
-  const handleDeleteContent = async (id: string, platform: 'douyin' | 'bilibili') => {
-    if (!selectedGroupId) return
+  const handleDeleteContent = async () => {
+    if (!selectedGroupId || !deleteTarget) return
 
     try {
-      // 修复：使用正确的DELETE请求方法
-      const response = await fetch('/api/kkk/content', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id,
-          platform,
-          groupId: selectedGroupId
-        })
+      await request.serverPost('/api/kkk/content/delete', {
+        id: deleteTarget.id,
+        platform: deleteTarget.platform,
+        groupId: selectedGroupId
       })
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
       // 刷新对应的内容列表
-      if (platform === 'douyin') {
+      if (deleteTarget.platform === 'douyin') {
         await fetchDouyinContent()
       } else {
         await fetchBilibiliContent()
       }
+
+      setShowDeleteConfirm(false)
+      setDeleteTarget(null)
+      toast.success('内容删除成功')
     } catch (error) {
       console.error('删除内容失败:', error)
+      toast.error('删除内容失败')
     }
   }
 
@@ -263,7 +279,7 @@ export default function ContentManagePage () {
     <div className="container mx-auto p-4 space-y-4">
       {/* 页面标题 - 移动端优化 */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-bold">推送（已缓存）</h1>
+        <h1 className="text-2xl font-bold">推送历史管理</h1>
 
         {/* 群组选择器 */}
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
@@ -341,11 +357,24 @@ export default function ContentManagePage () {
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-md">
-                <DialogHeader className="pb-4">  {/* 增加底部间距 */}
+                <DialogHeader className="pb-4">
                   <DialogTitle>添加新内容</DialogTitle>
+                  {/* 添加当前群信息显示 */}
+                  {selectedGroup && (
+                    <div className="flex items-center justify-center gap-2 mt-2 p-3 bg-muted/50 rounded-lg border">
+                      <img
+                        src={selectedGroup.avatar}
+                        alt={selectedGroup.name}
+                        className="w-6 h-6 rounded-full"
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        将添加到 <span className="font-medium text-foreground">{selectedGroup.name}</span> 群
+                      </span>
+                    </div>
+                  )}
                 </DialogHeader>
-                <div className="space-y-6">  {/* 增加间距从 space-y-4 到 space-y-6 */}
-                  <div className="space-y-2">  {/* 为每个字段组添加内部间距 */}
+                <div className="space-y-6">
+                  <div className="space-y-2">
                     <Label>平台类型</Label>
                     <Tabs value={activeTab} onValueChange={setActiveTab}>
                       <TabsList className="grid w-full grid-cols-2">
@@ -387,13 +416,39 @@ export default function ContentManagePage () {
                       onChange={(e) => setNewContentId(e.target.value)}
                     />
                   </div>
-                  <Button
-                    onClick={handleAddContent}
-                    className="w-full"
-                    disabled={!newContentId.trim() || !selectedAuthorId}
-                  >
-                    添加内容
-                  </Button>
+
+                  {/* 二次确认区域 */}
+                  {!showAddConfirm ? (
+                    <Button
+                      onClick={handleShowAddConfirm}
+                      className="w-full"
+                      disabled={!newContentId.trim() || !selectedAuthorId}
+                    >
+                      添加内容
+                    </Button>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="text-center text-sm text-muted-foreground border-t pt-3">
+                        确认添加该内容到已缓存列表？
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => setShowAddConfirm(false)}
+                          className="flex-1"
+                        >
+                          取消
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          onClick={handleAddContent}
+                          className="flex-1"
+                        >
+                          确认！下次推送将不再推送该{activeTab === 'douyin' ? '作品' : '动态'}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </DialogContent>
             </Dialog>
@@ -425,9 +480,19 @@ export default function ContentManagePage () {
                   {loading ? (
                     <div className="text-center py-8">加载中...</div>
                   ) : filteredDouyinContent.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      {searchTerm ? '没有找到匹配的内容' : '暂无抖音内容'}
-                    </div>
+                      <div className="text-center py-8 text-muted-foreground">
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                          {selectedGroup?.avatar && (
+                            <img
+                              src={selectedGroup.avatar}
+                              alt={selectedGroup.name}
+                              className="w-6 h-6 rounded-full"
+                            />
+                          )}
+                          <span className="font-medium">{selectedGroup?.name || '当前群'}</span>
+                        </div>
+                        {searchTerm ? '没有找到匹配的内容' : '暂无已缓存的抖音推送'}
+                      </div>
                   ) : (
                     <div className="overflow-x-auto">
                       <Table>
@@ -473,7 +538,7 @@ export default function ContentManagePage () {
                                       variant="ghost"
                                       size="sm"
                                       className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                                      onClick={() => handleDeleteContent(item.id, 'douyin')}
+                                      onClick={() => handleShowDeleteConfirm(item.id, 'douyin')}
                                     >
                                       <Trash2 className="h-4 w-4" />
                                     </Button>
@@ -501,9 +566,19 @@ export default function ContentManagePage () {
                   {loading ? (
                     <div className="text-center py-8">加载中...</div>
                   ) : filteredBilibiliContent.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      {searchTerm ? '没有找到匹配的内容' : '暂无B站内容'}
-                    </div>
+                      <div className="text-center py-8 text-muted-foreground">
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                          {selectedGroup?.avatar && (
+                            <img
+                              src={selectedGroup.avatar}
+                              alt={selectedGroup.name}
+                              className="w-6 h-6 rounded-full"
+                            />
+                          )}
+                          <span className="font-medium">{selectedGroup?.name || '当前群'}</span>
+                        </div>
+                        {searchTerm ? '没有找到匹配的内容' : '暂无已缓存的B站推送'}
+                      </div>
                   ) : (
                     <div className="overflow-x-auto">
                       <Table>
@@ -549,7 +624,7 @@ export default function ContentManagePage () {
                                       variant="ghost"
                                       size="sm"
                                       className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                                      onClick={() => handleDeleteContent(item.id, 'bilibili')}
+                                      onClick={() => handleShowDeleteConfirm(item.id, 'bilibili')}
                                     >
                                       <Trash2 className="h-4 w-4" />
                                     </Button>
@@ -575,6 +650,42 @@ export default function ContentManagePage () {
           </CardContent>
         </Card>
       )}
+      
+      {/* 删除确认对话框 */}
+      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>确认删除</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              确定要删除这个{deleteTarget?.platform === 'douyin' ? '抖音作品' : 'B站动态'}吗？
+            </p>
+            <p className="text-sm text-muted-foreground">
+              删除后该内容将从已缓存列表中移除，下次推送时可能会重新推送。
+            </p>
+            <div className="flex gap-2 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowDeleteConfirm(false)
+                  setDeleteTarget(null)
+                }}
+                className="flex-1"
+              >
+                取消
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDeleteContent}
+                className="flex-1"
+              >
+                确认删除
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

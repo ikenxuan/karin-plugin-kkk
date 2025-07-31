@@ -38,4 +38,7 @@ export interface appConfig {
    * @see https://github.com/NapNeko/NapCatQQ/blob/main/src/core/external/face_config.json
    */
   EmojiReplyID: number
+
+  /** web解析页面是否启用鉴权 */
+  webAuth: boolean
 }
