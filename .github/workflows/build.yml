@@ -257,13 +257,10 @@ jobs:
           checkout_if_exists "resources"
 
       - name: 🧹 清理开发依赖
-        run: node lib/cli/pr.js clean
+        run: pnpm pkg delete devDependencies
 
       - name: 💾 提交构建结果
         run: |
-          # 在提交前忽略 lib/cli 目录
-          echo "lib/cli/" >> .gitignore
-          
           # 显示当前工作目录的状态
           echo "当前工作目录状态:"
           git status
@@ -379,13 +376,33 @@ jobs:
             echo "使用当前构建的产物"
           fi
           
-          # 修改版本号
-          DATE=$(date +'%Y%m%d')
+          # 获取当前版本号和提交信息
           CURRENT_VERSION=$(node -p "require('./package.json').version")
-          BASE_VERSION=$(echo $CURRENT_VERSION | sed -E 's/([0-9]+\.[0-9]+)\.[0-9]+.*/\1/')
-          NEW_VERSION="${BASE_VERSION}.${DATE}-${SHORT_COMMIT_HASH}"
+          SHORT_COMMIT_HASH=$(git rev-parse --short HEAD)
+          COMMIT_COUNT=$(git rev-list --count HEAD)
+          
+          # 解析当前版本号
+          MAJOR=$(echo $CURRENT_VERSION | cut -d. -f1)
+          MINOR=$(echo $CURRENT_VERSION | cut -d. -f2)
+          PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
+          
+          # 根据不同的触发事件生成不同的预发布版本号
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # PR 版本：使用 alpha 预发布标识
+            PR_NUMBER=${{ github.event.number }}
+            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-alpha.${PR_NUMBER}.${SHORT_COMMIT_HASH}"
+          elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            # 主分支推送：使用 beta 预发布标识
+            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-beta.${COMMIT_COUNT}.${SHORT_COMMIT_HASH}"
+          else
+            # 其他情况：使用 dev 预发布标识
+            BRANCH_NAME=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
+            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-dev.${BRANCH_NAME}.${SHORT_COMMIT_HASH}"
+          fi
+          
           npm version $NEW_VERSION --no-git-tag-version
           echo "PKG_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "生成的版本号: $NEW_VERSION"
 
       - name: 🚀 发布预览包
         id: publish_pkg

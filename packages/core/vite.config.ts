@@ -21,7 +21,6 @@ function getFiles (dir: string) {
 }
 
 getFiles('src/apps')
-getFiles('src/cli')
 
 /**
  * 注入 __dirname 和 __filename 变量的 Vite 插件
@@ -113,10 +112,6 @@ export default defineConfig({
 
           if (chunkInfo.facadeModuleId?.includes('src/apps')) {
             return `apps/${chunkInfo.name}.js`
-          }
-
-          if (chunkInfo.facadeModuleId?.includes('src/cli')) {
-            return `cli/${chunkInfo.name}.js`
           }
 
           return `chunk/${chunkInfo.name}.js`

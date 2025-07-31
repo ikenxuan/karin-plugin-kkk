@@ -21,7 +21,6 @@
   "files": [
     "config/",
     "lib/",
-    "!lib/cli/",
     "resources/",
     "LICENSE",
     "package.json",
