@@ -1,5 +1,5 @@
-import { Check, ChevronsUpDown,MessageSquare, Plus, Trash2, Users, Video } from 'lucide-react'
-import React, { useCallback, useEffect, useMemo, useRef,useState } from 'react'
+import { Check, ChevronsUpDown, Copy, ExternalLink, MessageSquare, Plus, Trash2, Users, Video } from 'lucide-react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -14,6 +14,13 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -22,8 +29,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import {
+  Sheet,
+  SheetContent,
+} from '@/components/ui/sheet'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useIsMobile } from '@/hooks/use-mobile'
 import request from '@/lib/request'
 import { cn } from '@/lib/utils'
 
@@ -111,6 +123,7 @@ const CustomAvatar = React.memo(({ src, alt, className, fallbackIcon: FallbackIc
  * 内容管理页面组件
  */
 export default function ContentManagePage () {
+  const isMobile = useIsMobile()
   const [groups, setGroups] = useState<GroupInfo[]>([])
   const [selectedGroupId, setSelectedGroupId] = useState<string>('')
   const [douyinContent, setDouyinContent] = useState<ContentItem[]>([])
@@ -125,9 +138,14 @@ export default function ContentManagePage () {
   const [authorsLoading, setAuthorsLoading] = useState(false)
   const [showAddConfirm, setShowAddConfirm] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [deleteTarget, setDeleteTarget] = useState<{id: string, platform: 'douyin' | 'bilibili'} | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string, platform: 'douyin' | 'bilibili' } | null>(null)
   const [groupComboboxOpen, setGroupComboboxOpen] = useState(false)
   const [authorComboboxOpen, setAuthorComboboxOpen] = useState(false)
+
+  // 移动端底部弹出窗状态
+  const [mobileSheetOpen, setMobileSheetOpen] = useState(false)
+  const [selectedItem, setSelectedItem] = useState<ContentItem | null>(null)
+  const [mobileDeleteConfirm, setMobileDeleteConfirm] = useState(false)
   
   // 缓存数据
   const cacheRef = useRef<CacheData>({
@@ -142,6 +160,53 @@ export default function ContentManagePage () {
 
   // 防抖定时器 - 修复：提供初始值
   const debounceTimerRef = useRef<NodeJS.Timeout | undefined>(undefined)
+
+  /**
+   * 处理移动端行点击事件
+   * @param item - 内容项
+   */
+  const handleMobileRowClick = useCallback((item: ContentItem) => {
+    setSelectedItem(item)
+    setMobileSheetOpen(true)
+  }, [])
+
+  /**
+   * 处理PC端删除点击
+   * @param id - 内容ID
+   * @param platform - 平台
+   */
+  const handlePCDeleteClick = useCallback((id: string, platform: 'douyin' | 'bilibili') => {
+    setDeleteTarget({ id, platform })
+    setShowDeleteConfirm(true)
+  }, [])
+
+  /**
+   * 复制文本到剪贴板
+   * @param text - 要复制的文本
+   * @param successMessage - 成功提示信息
+   */
+  const copyToClipboard = useCallback(async (text: string, successMessage: string = '复制成功') => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text)
+      } else {
+        const textArea = document.createElement('textarea')
+        textArea.value = text
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-999999px'
+        textArea.style.top = '-999999px'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        document.execCommand('copy')
+        textArea.remove()
+      }
+      toast(successMessage)
+    } catch (err) {
+      console.error('复制失败:', err)
+      toast.error('复制失败，请手动长按复制')
+    }
+  }, [])
 
   /**
    * 检查缓存是否有效
@@ -344,14 +409,6 @@ export default function ContentManagePage () {
   }
 
   /**
-   * 显示删除确认
-   */
-  const handleShowDeleteConfirm = (id: string, platform: 'douyin' | 'bilibili') => {
-    setDeleteTarget({ id, platform })
-    setShowDeleteConfirm(true)
-    }
-
-  /**
    * 删除内容
    */
   const handleDeleteContent = async () => {
@@ -364,16 +421,27 @@ export default function ContentManagePage () {
         groupId: selectedGroupId
       })
 
-      // 刷新对应的内容列表
+      // 清除缓存
+      const cacheKey = `${deleteTarget.platform}_${selectedGroupId}`
+      delete cacheRef.current.lastFetch[cacheKey]
+      if (deleteTarget.platform === 'douyin') {
+        delete cacheRef.current.douyinContent[selectedGroupId]
+      } else {
+        delete cacheRef.current.bilibiliContent[selectedGroupId]
+      }
+
+      // 刷新对应平台的内容列表
       if (deleteTarget.platform === 'douyin') {
         await fetchDouyinContent(selectedGroupId)
       } else {
         await fetchBilibiliContent(selectedGroupId)
       }
 
+      // 关闭删除确认对话框并清空删除目标
       setShowDeleteConfirm(false)
       setDeleteTarget(null)
-      toast.success('内容删除成功')
+
+      toast.success('删除成功')
     } catch (error) {
       console.error('删除内容失败:', error)
       toast.error('删除内容失败')
@@ -444,6 +512,154 @@ export default function ContentManagePage () {
       }
     }
   }, [])
+
+    /**
+     * 处理移动端删除确认
+     * @param item - 内容项
+     */
+  const handleMobileDeleteClick = useCallback(async (item: ContentItem) => {
+    if (mobileDeleteConfirm) {
+      // 第二次点击，直接执行删除
+      if (!selectedGroupId) return
+
+      try {
+        await request.serverPost('/api/kkk/content/delete', {
+          id: item.id,
+          platform: item.platform,
+          groupId: selectedGroupId
+        })
+
+        // 清除缓存
+        const cacheKey = `${item.platform}_${selectedGroupId}`
+        delete cacheRef.current.lastFetch[cacheKey]
+        if (item.platform === 'douyin') {
+          delete cacheRef.current.douyinContent[selectedGroupId]
+        } else {
+          delete cacheRef.current.bilibiliContent[selectedGroupId]
+        }
+
+        // 刷新对应平台的内容列表
+        if (item.platform === 'douyin') {
+          await fetchDouyinContent(selectedGroupId)
+        } else {
+          await fetchBilibiliContent(selectedGroupId)
+        }
+
+        setMobileSheetOpen(false)
+        setMobileDeleteConfirm(false)
+        toast.success('删除成功')
+      } catch (error) {
+        console.error('删除失败:', error)
+        toast.error('删除失败，请重试')
+        setMobileDeleteConfirm(false)
+      }
+    } else {
+      // 第一次点击，显示确认状态
+      setMobileDeleteConfirm(true)
+    }
+  }, [mobileDeleteConfirm, selectedGroupId, fetchBilibiliContent, fetchDouyinContent])
+  
+
+  /**
+   * 移动端内容详情组件
+   */
+  const MobileContentDetail = React.memo(({ item }: { item: ContentItem }) => (
+    <div className="space-y-6">
+      {/* 作者信息 */}
+      <div className="flex items-start gap-4">
+        <CustomAvatar
+          src={item.avatar}
+          alt={`${item.author}头像`}
+          className="h-16 w-16 rounded-full object-cover"
+          fallbackIcon={Users}
+        />
+        <div className="flex-1 space-y-2">
+          <h3 className="text-lg font-semibold">{item.author}</h3>
+          <p className="text-sm text-muted-foreground line-clamp-3">
+            {item.title || '暂无标题'}
+          </p>
+          <div className="flex items-center gap-2">
+            <Badge variant='secondary' className="text-xs">
+              {item.type === 'video' ? '视频' : item.type === 'note' ? '图文' : '动态'}
+            </Badge>
+            <Badge variant='outline' className="text-xs">
+              {item.platform === 'douyin' ? '抖音' : 'B站'}
+            </Badge>
+          </div>
+        </div>
+      </div>
+
+      {/* 详细信息 */}
+      <div className="space-y-4">
+        <div>
+          <h4 className="text-sm font-medium mb-2">内容ID</h4>
+          <div className="bg-muted p-3 rounded-md">
+            <p className="text-xs font-mono break-all">{item.id}</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <h4 className="text-sm font-medium mb-1">发布时间</h4>
+            <p className="text-sm text-muted-foreground">
+              {new Date(item.publishTime).toLocaleString()}
+            </p>
+          </div>
+          <div>
+            <h4 className="text-sm font-medium mb-1">创建时间</h4>
+            <p className="text-sm text-muted-foreground">
+              {new Date(item.createdAt).toLocaleString()}
+            </p>
+          </div>
+        </div>
+          <div className="flex items-center gap-2">
+            <h4 className="text-sm font-medium">推送状态</h4>
+            <Badge variant={item.pushStatus === 'success' ? 'default' :
+              item.pushStatus === 'failed' ? 'destructive' :
+                item.pushStatus === 'blocked' ? 'secondary' : 'outline'}>
+              {item.pushStatus === 'success' ? '成功' :
+                item.pushStatus === 'failed' ? '失败' :
+                  item.pushStatus === 'blocked' ? '已屏蔽' : '待处理'}
+            </Badge>
+          </div>
+      </div>
+
+      {/* 操作按钮 */}
+      <div className="space-y-3 pt-4 border-t">
+        <Button
+          variant="outline"
+          className="w-full justify-start"
+          onClick={() => {
+            const url = item.platform === 'douyin'
+              ? `https://www.douyin.com/video/${item.id}`
+              : `https://t.bilibili.com/${item.id}`
+            window.open(url, '_blank')
+          }}
+        >
+          <ExternalLink className="h-4 w-4 mr-2" />
+          跳转{item.platform === 'douyin' ? '抖音' : 'B站'}
+        </Button>
+
+        <Button
+          variant="outline"
+          className="w-full justify-start"
+          onClick={() => copyToClipboard(item.id, '复制成功')}
+        >
+          <Copy className="h-4 w-4 mr-2" />
+          复制链接
+        </Button>
+
+        <Button
+          variant={mobileDeleteConfirm ? "destructive" : "outline"}
+          className="w-full justify-start"
+          onClick={() => handleMobileDeleteClick(item)}
+        >
+          <Trash2 className={`${mobileDeleteConfirm ? '' : 'text-destructive'} h-4 w-4 mr-2`} />
+          <span className={`${mobileDeleteConfirm ? '' : 'text-destructive'}`}>{mobileDeleteConfirm ? '确认删除' : '删除内容'}</span>
+        </Button>
+      </div>
+    </div>
+    ))
 
   return (
     <div className="container mx-auto p-4 space-y-4">
@@ -528,7 +744,7 @@ export default function ContentManagePage () {
 
       {selectedGroup && (
         <>
-          {/* 统计信息 - 紧凑网格 */}
+          {/* 统计信息 */}
           <div className="grid grid-cols-4 gap-1 bg-default/5 p-2 rounded-lg">
             <div className="text-center">
               <Video className="h-4 w-4 text-blue-600 mx-auto mb-1" />
@@ -752,69 +968,140 @@ export default function ContentManagePage () {
                   {loading ? (
                     <div className="text-center py-8">加载中...</div>
                   ) : filteredDouyinContent.length === 0 ? (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                          {selectedGroup?.avatar && (
-                            <CustomAvatar
-                              src={selectedGroup.avatar}
-                              alt={selectedGroup.name}
-                              className="w-6 h-6 rounded-full"
-                              fallbackIcon={Users}
-                            />
-                          )}
-                          <span className="font-medium">{selectedGroup?.name || '当前群'}</span>
-                        </div>
-                        {searchTerm ? '没有找到匹配的内容' : '暂无已缓存的抖音推送'}
+                    <div className="text-center py-8 text-muted-foreground">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        {selectedGroup?.avatar && (
+                          <CustomAvatar
+                            src={selectedGroup.avatar}
+                            alt={selectedGroup.name}
+                            className="w-6 h-6 rounded-full"
+                            fallbackIcon={Users}
+                          />
+                        )}
+                        <span className="font-medium">{selectedGroup?.name || '当前群'}</span>
                       </div>
+                      {searchTerm ? '没有找到匹配的内容' : '暂无已缓存的抖音推送'}
+                    </div>
                   ) : (
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto relative">
                       <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>作者</TableHead>
-                                <TableHead>ID</TableHead>
-                                <TableHead className="hidden sm:table-cell">发布时间</TableHead>
-                                <TableHead>操作</TableHead>
-                              </TableRow>
-                            </TableHeader>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>作者</TableHead>
+                            <TableHead>ID</TableHead>
+                            <TableHead className="hidden sm:table-cell">发布时间</TableHead>
+                          </TableRow>
+                        </TableHeader>
                             <TableBody>
                               {filteredDouyinContent.map((item) => (
-                                <TableRow key={item.id}>
-                                  <TableCell>
-                                    <div className="flex items-center gap-2">
-                                      <CustomAvatar
-                                        src={item.avatar}
-                                        alt={`${item.author}头像`}
-                                        className="h-6 w-6 rounded-full object-cover"
-                                        fallbackIcon={Users}
-                                      />
-                                      <span title={item.author}>{truncateText(item.author)}</span>
-                                    </div>
-                                  </TableCell>
-                                  <TableCell
-                                    className="font-mono text-sm cursor-pointer hover:bg-muted/50 transition-colors"
-                                    title={`点击查看完整ID: ${item.id}`}
-                                    onClick={() => {
-                                      navigator.clipboard.writeText(item.id)
-                                      toast('复制成功')
-                                    }}
+                                isMobile ? (
+                                  // 移动端：点击整行弹出底部模态窗
+                                  <TableRow
+                                    key={item.id}
+                                    className="cursor-pointer hover:bg-muted/50 transition-colors"
+                                    onClick={() => handleMobileRowClick(item)}
                                   >
-                                    {truncateText(item.id, 10)}
-                                  </TableCell>
-                                  <TableCell className="hidden sm:table-cell">
-                                    {new Date(item.publishTime).toLocaleDateString()}
-                                  </TableCell>
-                                  <TableCell>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                                      onClick={() => handleShowDeleteConfirm(item.id, 'douyin')}
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                  </TableCell>
-                                </TableRow>
+                                    <TableCell className="py-4">
+                                      <div className="flex items-center gap-3">
+                                        <CustomAvatar
+                                          src={item.avatar}
+                                          alt={`${item.author}头像`}
+                                          className="h-8 w-8 rounded-full object-cover"
+                                          fallbackIcon={Users}
+                                        />
+                                        <span className="font-medium" title={item.author}>{truncateText(item.author)}</span>
+                                      </div>
+                                    </TableCell>
+                                    <TableCell className="py-4 font-mono text-sm">
+                                      {truncateText(item.id, 12)}
+                                    </TableCell>
+                                    <TableCell className="hidden sm:table-cell py-4">
+                                      {new Date(item.publishTime).toLocaleString()}
+                                    </TableCell>
+                                  </TableRow>
+                                ) : (
+                                  // PC端：右键上下文菜单
+                                  <ContextMenu key={item.id}>
+                                    <ContextMenuTrigger asChild>
+                                      <TableRow className="cursor-pointer hover:bg-muted/50 transition-colors">
+                                        <TableCell className="py-3">
+                                          <div className="flex items-center gap-2 rounded-md p-1 transition-colors">
+                                            <CustomAvatar
+                                              src={item.avatar}
+                                              alt={`${item.author}头像`}
+                                              className="h-6 w-6 rounded-full object-cover"
+                                              fallbackIcon={Users}
+                                            />
+                                            <span title={item.author}>{truncateText(item.author)}</span>
+                                          </div>
+                                        </TableCell>
+                                        <TableCell className="py-3 font-mono text-sm hover:text-primary transition-colors">
+                                          {truncateText(item.id, 12)}
+                                        </TableCell>
+                                        <TableCell className="hidden sm:table-cell py-3 hover:text-primary transition-colors">
+                                          {new Date(item.publishTime).toLocaleString()}
+                                        </TableCell>
+                                      </TableRow>
+                                    </ContextMenuTrigger>
+                                    <ContextMenuContent className="w-80">
+                                      {/* 作者信息 */}
+                                      <div className="p-4">
+                                        <div className="flex items-start gap-3">
+                                          <CustomAvatar
+                                            src={item.avatar}
+                                            alt={`${item.author}头像`}
+                                            className="h-12 w-12 rounded-full object-cover"
+                                            fallbackIcon={Users}
+                                          />
+                                          <div className="flex-1 space-y-1">
+                                            <h4 className="text-sm font-semibold">{item.author}</h4>
+                                            <p className="text-sm text-muted-foreground line-clamp-2">
+                                              {item.title || '暂无标题'}
+                                            </p>
+                                            <div className="flex items-center gap-2 text-xs">
+                                              <Badge variant='secondary'>
+                                                {item.type === 'video' ? '视频' : item.type === 'note' ? '图文' : '动态'}
+                                              </Badge>
+                                              <span className="text-muted-foreground">
+                                                {new Date(item.publishTime).toLocaleString()}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        {/* ID信息 */}
+                                        <div className="mt-3 pt-3 border-t">
+                                          <h5 className="text-xs font-medium text-muted-foreground mb-1">内容ID</h5>
+                                          <p className="text-xs font-mono bg-muted p-2 rounded break-all">
+                                            {item.id}
+                                          </p>
+                                        </div>
+                                      </div>
+
+                                      <ContextMenuSeparator />
+
+                                      {/* 操作项 */}
+                                      <ContextMenuItem onClick={() => window.open(`https://www.douyin.com/video/${item.id}`, '_blank')}>
+                                        <ExternalLink className="h-4 w-4 mr-2" />
+                                        跳转抖音
+                                      </ContextMenuItem>
+                                        <ContextMenuItem onClick={() => copyToClipboard(`https://www.douyin.com/video/${item.id}`, '复制成功')}>
+                                        <Copy className="h-4 w-4 mr-2" />
+                                        复制链接
+                                      </ContextMenuItem>
+
+                                      <ContextMenuSeparator />
+
+                                      <ContextMenuItem
+                                        className="text-destructive focus:text-destructive"
+                                        onClick={() => handlePCDeleteClick(item.id, 'douyin')}
+                                      >
+                                          <Trash2 className="text-destructive h-4 w-4 mr-2" />
+                                        删除内容
+                                      </ContextMenuItem>
+                                    </ContextMenuContent>
+                                  </ContextMenu>
+                                )
                               ))}
                             </TableBody>
                       </Table>
@@ -837,68 +1124,140 @@ export default function ContentManagePage () {
                   {loading ? (
                     <div className="text-center py-8">加载中...</div>
                   ) : filteredBilibiliContent.length === 0 ? (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                          {selectedGroup?.avatar && (
-                            <CustomAvatar
-                              src={selectedGroup.avatar}
-                              alt={selectedGroup.name}
-                              className="w-6 h-6 rounded-full"
-                              fallbackIcon={Users}
-                            />
-                          )}
-                          <span className="font-medium">{selectedGroup?.name || '当前群'}</span>
-                        </div>
-                        {searchTerm ? '没有找到匹配的内容' : '暂无已缓存的B站推送'}
+                    <div className="text-center py-8 text-muted-foreground">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        {selectedGroup?.avatar && (
+                          <CustomAvatar
+                            src={selectedGroup.avatar}
+                            alt={selectedGroup.name}
+                            className="w-6 h-6 rounded-full"
+                            fallbackIcon={Users}
+                          />
+                        )}
+                        <span className="font-medium">{selectedGroup?.name || '当前群'}</span>
                       </div>
+                      {searchTerm ? '没有找到匹配的内容' : '暂无已缓存的B站推送'}
+                    </div>
                   ) : (
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto relative">
                       <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>作者</TableHead>
-                                <TableHead>ID</TableHead>
-                                <TableHead className="hidden sm:table-cell">发布时间</TableHead>
-                                <TableHead>操作</TableHead>
-                              </TableRow>
-                            </TableHeader>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>作者</TableHead>
+                            <TableHead>ID</TableHead>
+                            <TableHead className="hidden sm:table-cell">发布时间</TableHead>
+                          </TableRow>
+                        </TableHeader>
                             <TableBody>
                               {filteredBilibiliContent.map((item) => (
-                                <TableRow key={item.id}>
-                                  <TableCell>
-                                    <div className="flex items-center gap-2">
-                                      <CustomAvatar
-                                        src={item.avatar}
-                                        alt={`${item.author}头像`}
-                                        className="h-6 w-6 rounded-full object-cover"
-                                      />
-                                      <span title={item.author}>{truncateText(item.author)}</span>
-                                    </div>
-                                  </TableCell>
-                                  <TableCell
-                                    className="font-mono text-sm cursor-pointer hover:bg-muted/50 transition-colors"
-                                    title={`点击查看完整ID: ${item.id}`}
-                                    onClick={() => {
-                                      navigator.clipboard.writeText(item.id)
-                                      toast('复制成功')
-                                    }}
+                                isMobile ? (
+                                  // 移动端：点击整行弹出底部模态窗
+                                  <TableRow
+                                    key={item.id}
+                                    className="cursor-pointer hover:bg-muted/50 transition-colors"
+                                    onClick={() => handleMobileRowClick(item)}
                                   >
-                                    {truncateText(item.id, 10)}
-                                  </TableCell>
-                                  <TableCell className="hidden sm:table-cell">
-                                    {new Date(item.publishTime).toLocaleDateString()}
-                                  </TableCell>
-                                  <TableCell>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                                      onClick={() => handleShowDeleteConfirm(item.id, 'bilibili')}
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                  </TableCell>
-                                </TableRow>
+                                    <TableCell className="py-4">
+                                      <div className="flex items-center gap-3">
+                                        <CustomAvatar
+                                          src={item.avatar}
+                                          alt={`${item.author}头像`}
+                                          className="h-8 w-8 rounded-full object-cover"
+                                          fallbackIcon={Users}
+                                        />
+                                        <span className="font-medium" title={item.author}>{truncateText(item.author)}</span>
+                                      </div>
+                                    </TableCell>
+                                    <TableCell className="py-4 font-mono text-sm">
+                                      {truncateText(item.id, 12)}
+                                    </TableCell>
+                                    <TableCell className="hidden sm:table-cell py-4">
+                                      {new Date(item.publishTime).toLocaleString()}
+                                    </TableCell>
+                                  </TableRow>
+                                ) : (
+                                  // PC端：右键上下文菜单
+                                  <ContextMenu key={item.id}>
+                                    <ContextMenuTrigger asChild>
+                                      <TableRow className="cursor-pointer hover:bg-muted/50 transition-colors">
+                                        <TableCell className="py-3">
+                                          <div className="flex items-center gap-2 rounded-md p-1 transition-colors">
+                                            <CustomAvatar
+                                              src={item.avatar}
+                                              alt={`${item.author}头像`}
+                                              className="h-6 w-6 rounded-full object-cover"
+                                              fallbackIcon={Users}
+                                            />
+                                            <span title={item.author}>{truncateText(item.author)}</span>
+                                          </div>
+                                        </TableCell>
+                                        <TableCell className="py-3 font-mono text-sm hover:text-primary transition-colors">
+                                          {truncateText(item.id, 12)}
+                                        </TableCell>
+                                        <TableCell className="hidden sm:table-cell py-3 hover:text-primary transition-colors">
+                                          {new Date(item.publishTime).toLocaleString()}
+                                        </TableCell>
+                                      </TableRow>
+                                    </ContextMenuTrigger>
+                                    <ContextMenuContent className="w-80">
+                                      {/* 作者信息 */}
+                                      <div className="p-4">
+                                        <div className="flex items-start gap-3">
+                                          <CustomAvatar
+                                            src={item.avatar}
+                                            alt={`${item.author}头像`}
+                                            className="h-12 w-12 rounded-full object-cover"
+                                            fallbackIcon={Users}
+                                          />
+                                          <div className="flex-1 space-y-1">
+                                            <h4 className="text-sm font-semibold">{item.author}</h4>
+                                            <p className="text-sm text-muted-foreground line-clamp-2">
+                                              {item.title || '暂无标题'}
+                                            </p>
+                                            <div className="flex items-center gap-2 text-xs">
+                                              <Badge variant='secondary'>
+                                                {item.type === 'video' ? '视频' : item.type === 'note' ? '图文' : '动态'}
+                                              </Badge>
+                                              <span className="text-muted-foreground">
+                                                {new Date(item.publishTime).toLocaleString()}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        {/* ID信息 */}
+                                        <div className="mt-3 pt-3 border-t">
+                                          <h5 className="text-xs font-medium text-muted-foreground mb-1">内容ID</h5>
+                                          <p className="text-xs font-mono bg-muted p-2 rounded break-all">
+                                            {item.id}
+                                          </p>
+                                        </div>
+                                      </div>
+
+                                      <ContextMenuSeparator />
+
+                                      {/* 操作项 */}
+                                      <ContextMenuItem onClick={() => window.open(`https://t.bilibili.com/${item.id}`, '_blank')}>
+                                        <ExternalLink className="h-4 w-4 mr-2" />
+                                        跳转B站
+                                      </ContextMenuItem>
+                                        <ContextMenuItem onClick={() => copyToClipboard(`https://t.bilibili.com/${item.id}`, '复制成功')}>
+                                        <Copy className="h-4 w-4 mr-2" />
+                                        复制链接
+                                      </ContextMenuItem>
+
+                                      <ContextMenuSeparator />
+
+                                      <ContextMenuItem
+                                        className="text-destructive focus:text-destructive"
+                                        onClick={() => handlePCDeleteClick(item.id, 'bilibili')}
+                                      >
+                                          <Trash2 className="text-destructive text-danger h-4 w-4 mr-2" />
+                                        删除内容
+                                      </ContextMenuItem>
+                                    </ContextMenuContent>
+                                  </ContextMenu>
+                                )
                               ))}
                             </TableBody>
                       </Table>
@@ -908,6 +1267,19 @@ export default function ContentManagePage () {
               </Card>
             </TabsContent>
           </Tabs>
+
+          {/* 移动端底部弹出模态窗 */}
+          <Sheet open={mobileSheetOpen} onOpenChange={(open) => {
+            setMobileSheetOpen(open)
+            // 模态框关闭时重置删除确认状态
+            if (!open) {
+              setMobileDeleteConfirm(false)
+            }
+          }}>
+            <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto p-6">
+              {selectedItem && <MobileContentDetail item={selectedItem} />}
+            </SheetContent>
+          </Sheet>
         </>
       )}
 
