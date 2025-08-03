@@ -43,7 +43,7 @@
     "typeorm": "^0.3.24"
   },
   "devDependencies": {
-    "@ikenxuan/amagi": "^5.0.1",
+    "@ikenxuan/amagi": "^5.0.2",
     "@karinjs/plugin-puppeteer": "^1.0.17",
     "@types/connect-history-api-fallback": "^1.5.4",
     "@types/cors": "^2.8.17",

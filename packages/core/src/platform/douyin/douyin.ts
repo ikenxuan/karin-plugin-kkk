@@ -342,7 +342,7 @@ export class DouYin extends Base {
           music_id: data.music_id,
           typeMode: 'strict'
         })
-        const sec_uid = MusicData.data.data.music_info.sec_uid
+        const sec_uid = MusicData.data.music_info.sec_uid
         const UserData = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
         // if (UserData.data.status_code === 2) {
         //   const new_UserData.data = await getDouyinData('搜索数据', Config.cookies.douyin, { query: data.music_info.author })
