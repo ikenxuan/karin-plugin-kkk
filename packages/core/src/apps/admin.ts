@@ -4,6 +4,7 @@ import karin, { logger } from 'node-karin'
 import path from 'path'
 
 import { Common, Config } from '@/module'
+import { bilibiliLogin } from '@/platform'
 
 export const task = Config.app.rmmp4 && karin.task('[kkk-视频缓存自动删除]', '0 0 4 * * *', async () => {
   try {
@@ -15,10 +16,10 @@ export const task = Config.app.rmmp4 && karin.task('[kkk-视频缓存自动删�
 })
 
 export const biLogin = karin.command(/^#?(kkk)?\s*B站\s*(扫码)?\s*登录$/i, async (e) => {
-  await e.reply('暂时不可用')
-  return true
-  // await bilibiliLogin(e)
+  // await e.reply('暂时不可用')
   // return true
+  await bilibiliLogin(e)
+  return true
 }, { perm: Config.bilibili.loginPerm, name: 'kkk-ck管理' })
 
 export const dylogin = karin.command(/^#?(kkk)?抖音(扫码)?登录$/, async (e) => {

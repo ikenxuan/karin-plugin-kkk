@@ -421,9 +421,9 @@ jobs:
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             # 检查是否为 release-please 创建的 PR
             if [[ "${{ github.head_ref }}" == release-please--branches--* ]]; then
-              # Release-please PR：rc.提交序号
-              PR_COMMIT_COUNT=$(git rev-list --count HEAD ^origin/main)
-              NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-rc.${PR_COMMIT_COUNT}"
+              # Release-please PR：rc.月日时分
+              TIME_SUFFIX=$(date +%m%d%H%M)
+              NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-rc.${TIME_SUFFIX}"
             else
               # 普通 PR 版本：alpha.PR编号.提交序号
               PR_NUMBER=${{ github.event.number }}
