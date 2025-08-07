@@ -28,7 +28,7 @@ const generateHash = async (authKey: string): Promise<string> => {
     // @ts-ignore
     if (typeof sha256 !== 'function') {
       const script = document.createElement('script')
-      script.src = '/web/sha256.min.js'
+      script.src = '/kkk/sha256.min.js'
       await new Promise((resolve, reject) => {
         script.onload = resolve
         script.onerror = reject
@@ -76,10 +76,22 @@ export default function LoginPage () {
       localStorage.setItem(key.refreshToken, response.refreshToken)
 
       toast.success('登录成功')
-      navigate('/', { replace: true })
+
+      // 获取保存的重定向路径
+      const redirectPath = localStorage.getItem('redirectPath')
+      // 清除保存的重定向路径
+      localStorage.removeItem('redirectPath')
+
+      // 如果有保存的路径且不是登录页面，则跳转到该路径，否则跳转到根路径
+      if (redirectPath && redirectPath !== '/kkk/login') {
+        window.location.href = redirectPath
+      } else {
+        navigate('/', { replace: true })
+      }
     } catch (error) {
       console.error(error)
-      toast.error(`登录失败: ${(error as Error).message}`)
+      // toast.error(`登录失败: ${(error as Error).message}`)
+      toast.error(`登录失败: ${JSON.stringify(error, null, 2)}`)
     } finally {
       setIsLoading(false)
     }

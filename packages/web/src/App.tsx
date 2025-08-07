@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
 import { ThemeProvider } from './components/theme-provider'
 
@@ -14,7 +14,6 @@ const ContentManagePage = lazy(() => import('./app/content-manage/page'))
 const App = () => {
   return (
     <ThemeProvider>
-    <Router basename="/kkk">
       <Suspense fallback={<div className="flex items-center justify-center h-screen text-lg font-bold">加载中...</div>}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -25,7 +24,6 @@ const App = () => {
           } />
         </Routes>
       </Suspense>
-    </Router>
     </ThemeProvider>
   )
 }

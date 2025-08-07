@@ -155,6 +155,10 @@ const redirectToLogin = (message: string): void => {
     return
   }
 
+  // 保存当前页面路径到localStorage，用于登录成功后跳转
+  const currentPath = window.location.pathname + window.location.search + window.location.hash
+  localStorage.setItem('redirectPath', currentPath)
+
   toast.error(message, { duration: 5000 })
   setTimeout(() => {
     toast.error('3秒后将跳转登录界面', { duration: 5000 })

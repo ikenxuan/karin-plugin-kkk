@@ -68,3 +68,26 @@ export const setUserId = (userId: string): void => {
 export const clearUserId = (): void => {
   localStorage.removeItem(key.userId)
 }
+
+/**
+ * 设置重定向路径
+ * @param path 重定向路径
+ */
+export const setRedirectPath = (path: string): void => {
+  localStorage.setItem('redirectPath', path)
+}
+
+/**
+ * 获取重定向路径
+ * @returns 重定向路径
+ */
+export const getRedirectPath = (): string | null => {
+  return localStorage.getItem('redirectPath')
+}
+
+/**
+ * 清除重定向路径
+ */
+export const clearRedirectPath = (): void => {
+  localStorage.removeItem('redirectPath')
+}
