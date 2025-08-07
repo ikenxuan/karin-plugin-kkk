@@ -68,7 +68,7 @@ export interface VideoInfo {
   /** 作者 */
   author: string
   /** 作品类型 */
-  type: 'video' | 'note' | 'slides'
+  type: 'video' | 'note' | 'slides' | 'dynamic'
   /** 下载链接 */
   downloadUrl?: {
     video?: string,

@@ -1,4 +1,4 @@
-import type { BiliEmojiList,BiliOneWork, BiliVideoPlayurlIsLogin, BiliWorkComments } from '@ikenxuan/amagi'
+import type { BiliDynamicCard,BiliDynamicInfo, BiliEmojiList, BiliOneWork, BiliVideoPlayurlIsLogin, BiliWorkComments } from '@ikenxuan/amagi'
 
 import request from '@/lib/request'
 import type { apiResponse,CommentInfo, ParsedWorkInfo, VideoInfo } from '@/parsers/types'
@@ -13,25 +13,56 @@ export const parseBilibiliWorkId = (finalUrl: string): ParsedWorkInfo => {
   // 从URL中提取bvid或aid
   const bvidMatch = finalUrl.match(/\/video\/(BV[a-zA-Z0-9]+)/)
   const aidMatch = finalUrl.match(/\/video\/av(\d+)/)
-  
+  const tMatch = finalUrl.match(/^https:\/\/t\.bilibili\.com\/(\d+)/)
+  const opusMatch = finalUrl.match(/^https:\/\/www\.bilibili\.com\/opus\/(\d+)/)
+
+  let matchResult = null
+  let matchType = ''
+
   if (bvidMatch) {
-    return {
-      platform: 'bilibili',
-      workId: bvidMatch[1],
-      workType: 'video',
-      params: {
-        bvid: bvidMatch[1]
-      }
-    }
+    matchResult = bvidMatch
+    matchType = 'bvid'
   } else if (aidMatch) {
-    return {
-      platform: 'bilibili',
-      workId: aidMatch[1],
-      workType: 'video',
-      params: {
-        aid: aidMatch[1]
+    matchResult = aidMatch
+    matchType = 'aid'
+  } else if (tMatch) {
+    matchResult = tMatch
+    matchType = 'dynamic'
+  } else if (opusMatch) {
+    matchResult = opusMatch
+    matchType = 'dynamic'
+  }
+
+  switch (matchType) {
+    case 'bvid':
+      return {
+        platform: 'bilibili',
+        workId: matchResult?.[1] ?? '',
+        workType: 'video',
+        params: {
+          bvid: matchResult?.[1] ?? ''
+        }
       }
-    }
+    case 'aid':
+      return {
+        platform: 'bilibili',
+        workId: matchResult?.[1] ?? '',
+        workType: 'video',
+        params: {
+          aid: matchResult?.[1] ?? ''
+        }
+      }
+    case 'dynamic':
+      return {
+        platform: 'bilibili',
+        workId: matchResult?.[1] ?? '',
+        workType: 'dynamic_info',
+        params: {
+          dynamic_id: matchResult?.[1] ?? ''
+        }
+      }
+    default:
+      break
   }
   
   throw new Error('无法从URL中提取哔哩哔哩作品ID')
@@ -44,6 +75,11 @@ export const parseBilibiliWorkId = (finalUrl: string): ParsedWorkInfo => {
  */
 export const parseBilibiliVideoDetail = async (workInfo: ParsedWorkInfo): Promise<VideoInfo> => {
   try {
+    // 根据作品类型选择不同的处理逻辑
+    if (workInfo.workType === 'dynamic_info') {
+      return await parseBilibiliDynamicDetail(workInfo)
+    }
+    
     // 获取视频详细数据
     const infoDataResponse = await request.post<apiResponse<BiliOneWork>>('/api/kkk/bilibili/data', {
       dataType: '单个视频作品数据',
@@ -106,6 +142,189 @@ export const parseBilibiliVideoDetail = async (workInfo: ParsedWorkInfo): Promis
     return videoInfo
   } catch (error: any) {
     throw new Error(`哔哩哔哩数据解析失败: ${error.message}`)
+  }
+}
+
+/**
+ * 解析哔哩哔哩动态详细信息
+ * @param workInfo 动态基础信息
+ * @returns 格式化后的动态信息
+ */
+const parseBilibiliDynamicDetail = async (workInfo: ParsedWorkInfo): Promise<VideoInfo> => {
+  try {
+    // 获取动态详情数据
+    const dynamicInfoResponse = await request.post<apiResponse<BiliDynamicInfo>>('/api/kkk/bilibili/data', {
+      dataType: '动态详情数据',
+      params: {
+        dynamic_id: workInfo.params.dynamic_id,
+        typeMode: 'strict'
+      }
+    })
+
+    // 获取动态卡片数据
+    const dynamicCardResponse = await request.post<apiResponse<BiliDynamicCard>>('/api/kkk/bilibili/data', {
+      dataType: '动态卡片数据',
+      params: {
+        dynamic_id: dynamicInfoResponse.data.data.data.data.item.id_str,
+        typeMode: 'strict'
+      }
+    })
+
+    const dynamicInfo = dynamicInfoResponse.data.data.data.data
+    const dynamicCard = dynamicCardResponse.data.data.data.data
+    
+    // 获取评论数据（如果动态类型支持评论）
+    let comments: CommentInfo[] = []
+    let commentCount = 0
+    
+    if (dynamicInfo.item.type !== 'LIVE_RCMD') {
+      try {
+        const commentsResponse = await request.post<apiResponse<BiliWorkComments>>('/api/kkk/bilibili/data', {
+          dataType: '评论数据',
+          params: {
+            type: getDynamicCommentType(dynamicInfo.item.type),
+            oid: getDynamicOid(dynamicInfo, dynamicCard),
+            number: 50
+          }
+        })
+
+        // 获取表情包数据
+        const emojiResponse = await request.post<apiResponse<BiliEmojiList>>('/api/kkk/bilibili/data', {
+          dataType: 'Emoji数据',
+          params: {}
+        })
+
+        const commentsData = commentsResponse.data.data.data
+        const emojiData = emojiResponse.data.data.data
+        comments = parseBilibiliComments(commentsData.data?.replies || [], emojiData)
+        commentCount = dynamicInfo.item.modules?.module_stat?.comment?.count || 0
+      } catch (error) {
+        console.warn('获取动态评论失败:', error)
+      }
+    }
+
+    // 解析动态内容
+    const dynamicContent = parseDynamicContent(dynamicInfo)
+    
+    // 格式化为统一的VideoInfo接口
+    const videoInfo: VideoInfo = {
+      id: dynamicInfo.item.id_str,
+      title: dynamicContent.title || `${dynamicInfo.item.modules.module_author.name}的动态`,
+      description: dynamicContent.description || '',
+      thumbnail: dynamicContent.thumbnail || dynamicInfo.item.modules.module_author.face,
+      duration: '0:00',
+      views: formatCount(dynamicInfo.item.modules?.module_stat?.view?.count || 0),
+      likes: formatCount(dynamicInfo.item.modules?.module_stat?.like?.count || 0),
+      author: dynamicInfo.item.modules.module_author.name || '未知用户',
+      type: dynamicContent.type,
+      downloadUrl: undefined,
+      images: dynamicContent.images,
+      tags: [],
+      comments,
+      commentCount
+    }
+
+    return videoInfo
+  } catch (error: any) {
+    throw new Error(`哔哩哔哩动态解析失败: ${error.message}`)
+  }
+}
+
+/**
+ * 解析动态内容
+ * @param dynamicInfo 动态信息
+ * @returns 解析后的动态内容
+ */
+const parseDynamicContent = (dynamicInfo: BiliDynamicInfo['data']['data']) => {
+  const item = dynamicInfo.item
+  const moduleType = item.type
+  
+  switch (moduleType) {
+    case 'DYNAMIC_TYPE_DRAW': // 图文动态
+      return {
+        title: '图文动态',
+        description: item.modules.module_dynamic?.desc?.text || '',
+        thumbnail: item.modules.module_dynamic?.major?.draw?.items?.[0]?.src || '',
+        images: item.modules.module_dynamic?.major?.draw?.items?.map((img: any) => img.src) || [],
+        type: 'note' as const
+      }
+    
+    case 'DYNAMIC_TYPE_WORD': // 纯文字动态
+      return {
+        title: '文字动态',
+        description: item.modules.module_dynamic?.desc?.text || '',
+        thumbnail: '',
+        images: [],
+        type: 'note' as const
+      }
+    
+    case 'DYNAMIC_TYPE_AV': // 视频动态
+      return {
+        title: item.modules.module_dynamic?.major?.archive?.title || '视频动态',
+        description: item.modules.module_dynamic?.major?.archive?.desc || '',
+        thumbnail: item.modules.module_dynamic?.major?.archive?.cover || '',
+        images: [],
+        type: 'video' as const
+      }
+    
+    case 'DYNAMIC_TYPE_FORWARD': // 转发动态
+      return {
+        title: '转发动态',
+        description: item.modules.module_dynamic?.desc?.text || '',
+        thumbnail: '',
+        images: [],
+        type: 'note' as const
+      }
+    
+    default:
+      return {
+        title: '动态内容',
+        description: item.modules.module_dynamic?.desc?.text || '',
+        thumbnail: '',
+        images: [],
+        type: 'note' as const
+      }
+  }
+}
+
+/**
+ * 获取动态评论类型映射
+ * @param dynamicType 动态类型
+ * @returns 评论类型
+ */
+const getDynamicCommentType = (dynamicType: string): number => {
+  // 根据动态类型返回对应的评论类型
+  // 这个映射需要根据B站API文档确定
+  switch (dynamicType) {
+    case 'DYNAMIC_TYPE_AV':
+      return 1 // 视频评论
+    case 'DYNAMIC_TYPE_DRAW':
+    case 'DYNAMIC_TYPE_WORD':
+    case 'DYNAMIC_TYPE_FORWARD':
+      return 17 // 动态评论
+    default:
+      return 17
+  }
+}
+
+/**
+ * 获取动态OID
+ * @param dynamicInfo 动态信息
+ * @param dynamicCard 动态卡片信息
+ * @returns OID
+ */
+const getDynamicOid = (dynamicInfo: BiliDynamicInfo['data'], dynamicCard: BiliDynamicCard['data']): string => {
+  // 根据动态类型返回对应的OID
+  const item = dynamicInfo.item
+  
+  switch (item.type) {
+    case 'DYNAMIC_TYPE_AV':
+      return item.modules.module_dynamic?.major?.archive?.aid?.toString() || item.id_str
+    case 'DYNAMIC_TYPE_WORD':
+    case 'DYNAMIC_TYPE_FORWARD':
+      return item.id_str
+    default:
+      return dynamicCard.card.desc.rid.toString()
   }
 }
 

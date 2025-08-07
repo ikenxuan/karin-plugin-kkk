@@ -38,6 +38,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useIsMobile } from '@/hooks/use-mobile'
 import request from '@/lib/request'
 import { cn } from '@/lib/utils'
+import { videoParser } from '@/parsers'
 
 /**
  * 内容项接口
@@ -146,7 +147,10 @@ export default function ContentManagePage () {
   const [mobileSheetOpen, setMobileSheetOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<ContentItem | null>(null)
   const [mobileDeleteConfirm, setMobileDeleteConfirm] = useState(false)
-  
+  // 解析相关状态
+  const [isParsingLink, setIsParsingLink] = useState(false)
+  const [parsedVideoInfo, setParsedVideoInfo] = useState<any>(null)
+
   // 缓存数据
   const cacheRef = useRef<CacheData>({
     authors: {},
@@ -370,12 +374,24 @@ export default function ContentManagePage () {
    * 显示添加确认
    */
   const handleShowAddConfirm = () => {
-    if (!newContentId.trim() || !selectedGroupId || !selectedAuthorId) {
+    if (!newContentId.trim() || !selectedGroupId) {
       alert('请填写完整信息')
       return
     }
-    setShowAddConfirm(true)
+
+    // 如果没有选择作者但有解析信息，提示用户
+    if (!selectedAuthorId && parsedVideoInfo) {
+      toast.error('请选择或添加对应的作者')
+      return
     }
+
+    if (!selectedAuthorId) {
+      alert('请选择作者')
+      return
+    }
+
+    setShowAddConfirm(true)
+  }
 
   /**
    * 添加新内容
@@ -383,16 +399,44 @@ export default function ContentManagePage () {
   const handleAddContent = async () => {
     try {
       const endpoint = activeTab === 'douyin' ? '/api/kkk/content/douyin' : '/api/kkk/content/bilibili'
-      await request.serverPost(endpoint, {
+
+      // 准备请求数据
+      const requestData: any = {
         contentId: newContentId.trim(),
         groupId: selectedGroupId,
         authorId: selectedAuthorId
-      })
+      }
 
+      // 如果有解析信息，附加额外数据
+      if (parsedVideoInfo) {
+        requestData.parsedInfo = {
+          title: parsedVideoInfo.title,
+          author: parsedVideoInfo.author,
+          type: parsedVideoInfo.type,
+          thumbnail: parsedVideoInfo.thumbnail,
+          description: parsedVideoInfo.description
+        }
+      }
+
+      await request.serverPost(endpoint, requestData)
+
+      // 清除缓存 - 添加这部分逻辑
+      const cacheKey = `${activeTab}_${selectedGroupId}`
+      delete cacheRef.current.lastFetch[cacheKey]
+      if (activeTab === 'douyin') {
+        delete cacheRef.current.douyinContent[selectedGroupId]
+      } else {
+        delete cacheRef.current.bilibiliContent[selectedGroupId]
+      }
+
+      // 完全重置所有状态
       setNewContentId('')
       setSelectedAuthorId('')
+      setParsedVideoInfo(null)
+      setIsParsingLink(false)
       setIsAddDialogOpen(false)
       setShowAddConfirm(false)
+      setAuthorComboboxOpen(false)
 
       // 刷新对应的内容列表
       if (activeTab === 'douyin') {
@@ -456,6 +500,102 @@ export default function ContentManagePage () {
     return text.substring(0, maxLength) + '...'
   }
 
+  /**
+ * 判断输入是否为链接
+ * @param input - 用户输入的内容
+ * @returns 是否为链接
+ */
+  const isVideoLink = useCallback((input: string): boolean => {
+    const linkPatterns = [
+      // 抖音链接
+      /https?:\/\/(?:[^\s]*\.)?(?:douyin\.com|iesdouyin\.com|webcast\.amemv\.com|live\.douyin\.com)/i,
+      // B站链接
+      /https?:\/\/(?:www\.bilibili\.com|m\.bilibili\.com|t\.bilibili\.com|b23\.tv|bili2233\.cn)/i,
+    ]
+
+    return linkPatterns.some(pattern => pattern.test(input.trim()))
+  }, [])
+
+  /**
+   * 解析视频链接获取详细信息
+   * @param link - 视频链接
+   */
+  const parseVideoLink = useCallback(async (link: string) => {
+    try {
+      setIsParsingLink(true)
+      const videoInfo = await videoParser.parseVideo(link)
+      videoInfo.id = videoInfo.id.split('_')[0]
+
+      setParsedVideoInfo(videoInfo)
+
+      // 自动填充解析到的信息
+      setNewContentId(videoInfo.id)
+
+      // 确保作者列表已加载
+      if (selectedGroupId && authors.length === 0) {
+        await fetchAuthorsLazy(selectedGroupId)
+      }
+
+      // 延迟一下确保作者列表已更新
+      setTimeout(() => {
+        // 尝试根据作者名称自动选择作者（如果存在）
+        const matchedAuthor = authors.find(author =>
+          author.name === videoInfo.author && author.platform === activeTab
+        )
+        if (matchedAuthor) {
+          setSelectedAuthorId(matchedAuthor.id)
+          toast.success(`已自动选择作者：${matchedAuthor.name}`)
+        } else {
+          toast.info(`未找到匹配的作者"${videoInfo.author}"，请手动选择或添加新作者`)
+        }
+      }, 500)
+
+      toast.success(`解析成功！获取到${videoInfo.type === 'video' ? '视频' : videoInfo.type === 'note' ? '图文' : '动态'}：${videoInfo.title}`)
+    } catch (error) {
+      console.error('解析链接失败:', error)
+      toast.error(`解析失败：${error instanceof Error ? error.message : '未知错误'}`)
+      setParsedVideoInfo(null)
+    } finally {
+      setIsParsingLink(false)
+    }
+  }, [authors, activeTab, selectedGroupId, fetchAuthorsLazy])
+
+  /**
+   * 处理输入内容变化
+   * @param value - 输入值
+   */
+  const handleContentInputChange = useCallback((value: string) => {
+    setNewContentId(value)
+
+    // 输入变化时清理之前的解析结果
+    if (parsedVideoInfo) {
+      setParsedVideoInfo(null)
+    }
+
+    // 如果输入的是链接，自动解析
+    if (isVideoLink(value)) {
+      parseVideoLink(value)
+    }
+  }, [isVideoLink, parseVideoLink, parsedVideoInfo])
+
+  /**
+   * 处理添加对话框关闭
+   * @param open - 对话框开启状态
+   */
+  const handleAddDialogOpenChange = useCallback((open: boolean) => {
+    setIsAddDialogOpen(open)
+
+    // 对话框关闭时清理所有相关状态
+    if (!open) {
+      setNewContentId('')
+      setSelectedAuthorId('')
+      setParsedVideoInfo(null)
+      setIsParsingLink(false)
+      setShowAddConfirm(false)
+      setAuthorComboboxOpen(false)
+    }
+  }, [])
+    
   // 组件挂载时获取数据
   useEffect(() => {
     fetchGroups()
@@ -469,10 +609,13 @@ export default function ContentManagePage () {
     }
   }, [selectedGroupId, fetchDouyinContent, fetchBilibiliContent])
 
-  // 当activeTab改变时，重置选中的作者和作者筛选
+  // 当activeTab改变时，重置选中的作者和解析信息
   useEffect(() => {
     setSelectedAuthorId('')
     setAuthorComboboxOpen(false)
+    setParsedVideoInfo(null)
+    setNewContentId('')
+    setIsParsingLink(false)
   }, [activeTab])
 
   const selectedGroup = groups.find(g => g.id === selectedGroupId)
@@ -780,9 +923,13 @@ export default function ContentManagePage () {
               className="flex-1"
             />
 
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <Dialog open={isAddDialogOpen} onOpenChange={handleAddDialogOpenChange}>
               <DialogTrigger asChild>
-                <Button className="whitespace-nowrap">
+                <Button onClick={() => {
+                  if (selectedGroupId && authors.length === 0) {
+                    debouncedFetchAuthors(selectedGroupId)
+                  }
+                }}>
                   <Plus className="h-4 w-4 mr-2" />
                   添加内容
                 </Button>
@@ -896,13 +1043,54 @@ export default function ContentManagePage () {
                       </PopoverContent>
                     </Popover>
                   </div>
+                  {/* 在添加对话框中的输入框部分 */}
                   <div className="space-y-2">
-                    <Label>内容ID <span className="text-red-500">*</span></Label>
+                    <Label htmlFor="contentId" className="text-sm font-medium">内容ID或链接</Label>
                     <Input
-                      placeholder={activeTab === 'douyin' ? '输入抖音作品ID' : '输入B站动态ID'}
+                      id="contentId"
+                      placeholder={`请输入${activeTab === 'douyin' ? '抖音' : 'B站'}内容ID或分享链接`}
                       value={newContentId}
-                      onChange={(e) => setNewContentId(e.target.value)}
+                      onChange={(e) => handleContentInputChange(e.target.value)}
+                      disabled={isParsingLink}
+                      className="transition-all duration-200"
                     />
+                    {isParsingLink && (
+                      <div className="flex items-center gap-2 text-sm text-blue-600">
+                        <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        <span>正在解析链接...</span>
+                      </div>
+                    )}
+
+                    {parsedVideoInfo && (
+                      <div className="mt-4 p-4 rounded-lg border">
+                        {/* 成功状态指示 */}
+                        <div className="flex items-center gap-2 mb-4">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <span className="text-sm font-medium text-default/80">解析成功</span>
+                        </div>
+
+                        {/* 核心信息展示 */}
+                        <div className="space-y-4">
+                          {/* 标题 */}
+                          <div>
+                            <div className="text-xs text-default/40 mb-1 font-medium">标题</div>
+                            <div className="text-sm text-default leading-relaxed line-clamp-2">
+                              {parsedVideoInfo.title}
+                            </div>
+                          </div>
+
+                          {/* ID */}
+                          <div>
+                            <div className="text-xs text-default/40 mb-1 font-medium">内容ID</div>
+                            <div className="rounded-md">
+                              <code className="text-xs font-mono text-default break-all">
+                                {parsedVideoInfo.id}
+                              </code>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* 二次确认区域 */}
@@ -917,7 +1105,7 @@ export default function ContentManagePage () {
                   ) : (
                     <div className="space-y-3">
                       <div className="text-center text-sm text-muted-foreground border-t pt-3">
-                        确认添加该内容到已缓存列表？
+                          下次推送任务将不再推送该{activeTab === 'douyin' ? '作品' : '动态'}
                       </div>
                       <div className="flex gap-2">
                         <Button
@@ -932,7 +1120,7 @@ export default function ContentManagePage () {
                           onClick={handleAddContent}
                           className="flex-1"
                         >
-                          确认！下次推送将不再推送该{activeTab === 'douyin' ? '作品' : '动态'}
+                          确认！
                         </Button>
                       </div>
                     </div>
