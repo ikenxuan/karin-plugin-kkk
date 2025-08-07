@@ -228,14 +228,18 @@ export default function ContentManagePage () {
       const response = await request.serverGet<GroupInfo[]>('/api/kkk/groups')
       if (response) {
         setGroups(response)
-        if (response.length > 0 && !selectedGroupId) {
-          setSelectedGroupId(response[0].id)
-        }
+        // 使用函数式更新，避免依赖当前值
+        setSelectedGroupId(prev => {
+          if (!prev && response.length > 0) {
+            return response[0].id
+          }
+          return prev
+        })
       }
     } catch (error) {
       console.error('获取群组列表失败:', error)
     }
-  }, [selectedGroupId])
+  }, [])
 
   /**
    * 懒加载获取作者列表 - 仅在需要时请求
@@ -601,14 +605,6 @@ export default function ContentManagePage () {
     fetchGroups()
   }, [fetchGroups])
 
-  // 群组切换时重新获取内容和作者
-  useEffect(() => {
-    if (selectedGroupId) {
-      fetchDouyinContent(selectedGroupId)
-      fetchBilibiliContent(selectedGroupId)
-    }
-  }, [selectedGroupId, fetchDouyinContent, fetchBilibiliContent])
-
   // 当activeTab改变时，重置选中的作者和解析信息
   useEffect(() => {
     setSelectedAuthorId('')
@@ -627,27 +623,15 @@ export default function ContentManagePage () {
     return authors.filter(author => author.platform === activeTab)
   }, [authors, activeTab])
 
-  // 组件挂载时获取数据
-  useEffect(() => {
-    fetchGroups()
-  }, [fetchGroups])
-
-  // 群组切换时获取内容，但不立即获取作者 - 修复：添加groupId参数
+  // 群组切换时获取内容，但不立即获取作者
   useEffect(() => {
     if (selectedGroupId) {
       fetchDouyinContent(selectedGroupId)
       fetchBilibiliContent(selectedGroupId)
-      // 不立即获取作者，等用户需要时再获取
     }
   }, [selectedGroupId, fetchDouyinContent, fetchBilibiliContent])
-    
-    // 当activeTab改变时，重置选中的作者
-    useEffect(() => {
-      setSelectedAuthorId('')
-      setAuthorComboboxOpen(false)
-    }, [activeTab])
 
-      // 清理防抖定时器
+  // 清理防抖定时器
   useEffect(() => {
     return () => {
       if (debounceTimerRef.current) {
@@ -656,10 +640,10 @@ export default function ContentManagePage () {
     }
   }, [])
 
-    /**
-     * 处理移动端删除确认
-     * @param item - 内容项
-     */
+  /**
+   * 处理移动端删除确认
+   * @param item - 内容项
+   */
   const handleMobileDeleteClick = useCallback(async (item: ContentItem) => {
     if (mobileDeleteConfirm) {
       // 第二次点击，直接执行删除

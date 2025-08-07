@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@import 'atropos/css';
 @import './font.css';
 
 @custom-variant dark (&:is(.dark *));
