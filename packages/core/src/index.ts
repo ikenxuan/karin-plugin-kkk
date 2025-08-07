@@ -26,6 +26,7 @@ import {
   videoStreamRouter
 } from '@/module/server/router'
 
+import { signatureVerificationMiddleware } from './module/server/auth'
 import {
   addBilibiliContentRouter,
   addDouyinContentRouter,
@@ -70,22 +71,19 @@ if (Config.app.APIServer && Config.app.APIServerMount) {
 app.get('/api/kkk/stream/:filename', videoStreamRouter)
 app.get('/api/kkk/video/:filename', getVideoRouter)
 
-const middleware = Config.app.webAuth ? [authMiddleware] : []
-
+const middleware = Config.app.webAuth ? [authMiddleware, signatureVerificationMiddleware] : []
 app.use('/api/kkk/getLongLink', ...middleware, getLongLinkRouter)
 app.use('/api/kkk/douyin/data', ...middleware, getDouyinDataRouter)
 app.use('/api/kkk/bilibili/data', ...middleware, getBilibiliDataRouter)
 app.use('/api/kkk/kuaishou/data', ...middleware, getKuaishouDataRouter)
 
-app.get('/api/kkk/content/douyin', authMiddleware, getDouyinContentRouter)
-app.get('/api/kkk/content/bilibili', authMiddleware, getBilibiliContentRouter)
-app.get('/api/kkk/groups', authMiddleware, getGroupsRouter)
-app.get('/api/kkk/authors', authMiddleware, getAuthorsRouter)
-app.post('/api/kkk/content/douyin', authMiddleware, addDouyinContentRouter)
-app.post('/api/kkk/content/bilibili', authMiddleware, addBilibiliContentRouter)
-app.post('/api/kkk/content/delete', authMiddleware, deleteContentRouter)
-
-// ----------------- PLUGIN FRONTEND ROUTER -----------------
+app.get('/api/kkk/content/douyin', authMiddleware, signatureVerificationMiddleware, getDouyinContentRouter)
+app.get('/api/kkk/content/bilibili', authMiddleware, signatureVerificationMiddleware, getBilibiliContentRouter)
+app.get('/api/kkk/groups', authMiddleware, signatureVerificationMiddleware, getGroupsRouter)
+app.get('/api/kkk/authors', authMiddleware, signatureVerificationMiddleware, getAuthorsRouter)
+app.post('/api/kkk/content/douyin', authMiddleware, signatureVerificationMiddleware, addDouyinContentRouter)
+app.post('/api/kkk/content/bilibili', authMiddleware, signatureVerificationMiddleware, addBilibiliContentRouter)
+app.post('/api/kkk/content/delete', authMiddleware, signatureVerificationMiddleware, deleteContentRouter)
 
 const pluginRouter = express.Router()
 const staticDir = path.join(Root.pluginPath, 'lib', 'web_chunk')
@@ -99,7 +97,6 @@ pluginRouter.use(
   })
 )
 
-// static 处理 /kkk 静态文件
 pluginRouter.use(
   '/kkk',
   express.static(staticDir, {

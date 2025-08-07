@@ -7,9 +7,7 @@
     "build": "pnpm -r run build",
     "build:core": "pnpm --filter karin-plugin-kkk run build",
     "build:web": "pnpm --filter webui run build",
-    "build:all": "pnpm build",
     "dev": "pnpm --filter karin-plugin-kkk run dev",
-    "dev:watch": "pnpm --filter karin-plugin-kkk run watch",
     "watch": "pnpm --filter karin-plugin-kkk run watch",
     "web": "pnpm --filter webui run dev",
     "lint:fix": "eslint --fix \"packages/**/*.ts\""
