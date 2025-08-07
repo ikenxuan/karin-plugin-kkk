@@ -15,7 +15,7 @@ export default defineConfig({
   },
   build: {
     emptyOutDir: true,
-    outDir: '../core/lib/web',
+    outDir: '../core/lib/web_chunk',
     // 启用CSS代码分割
     cssCodeSplit: true,
     // 最小化混淆

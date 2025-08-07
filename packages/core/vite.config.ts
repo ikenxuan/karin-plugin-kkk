@@ -58,7 +58,7 @@ const createWebConfigPlugin = (): Plugin => {
     writeBundle: (options, bundle) => {
       // 查找包含 web.config 的 main chunk
       const mainChunkFile = Object.keys(bundle).find(fileName => {
-        return fileName.startsWith('chunk/main-') && fileName.endsWith('.js')
+        return fileName.startsWith('core_chunk/main-') && fileName.endsWith('.js')
       })
 
       if (mainChunkFile) {
@@ -114,10 +114,10 @@ export default defineConfig({
             return `apps/${chunkInfo.name}.js`
           }
 
-          return `chunk/${chunkInfo.name}.js`
+          return `core_chunk/${chunkInfo.name}.js`
         },
 
-        chunkFileNames: 'chunk/[name]-[hash].js',
+        chunkFileNames: 'core_chunk/[name]-[hash].js',
 
         manualChunks (id) {
           if (id.includes('node_modules')) {

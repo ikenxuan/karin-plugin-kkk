@@ -88,7 +88,7 @@ app.post('/api/kkk/content/delete', authMiddleware, deleteContentRouter)
 // ----------------- PLUGIN FRONTEND ROUTER -----------------
 
 const pluginRouter = express.Router()
-const staticDir = path.join(Root.pluginPath, 'lib', 'web')
+const staticDir = path.join(Root.pluginPath, 'lib', 'web_chunk')
 
 // history fallback 用于支持 /kkk/login、/kkk/dashboard 等前端子路由
 pluginRouter.use(
