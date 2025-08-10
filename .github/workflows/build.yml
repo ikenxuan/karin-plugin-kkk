@@ -669,7 +669,7 @@ jobs:
 
       - name: 🖥️ 调用桌面应用构建
         id: call-desktop-build
-        uses: ./.github/workflows/build-desktop.yml@${{ github.ref }}
+        uses: ./.github/workflows/build-desktop.yml
         with:
           core_version: ${{ steps.get-version-info.outputs.core_version }}
           should_upload_release: ${{ steps.get-version-info.outputs.should_upload_release == 'true' }}
