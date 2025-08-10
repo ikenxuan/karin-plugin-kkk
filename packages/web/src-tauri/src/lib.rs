@@ -140,7 +140,7 @@ pub fn run() {
         .setup(|_app| {
             #[cfg(debug_assertions)]
             {
-                if let Some(window) = _app.get_window("main") {
+                if let Some(window) = _app.get_webview_window("main") {
                     window.open_devtools();
                 }
             }

@@ -1,4 +1,4 @@
-import { isTauri } from '@tauri-apps/api/core'
+import { invoke, isTauri } from '@tauri-apps/api/core'
 import { LogOut, Monitor, Moon, Save, Server, Shield, Sun, User } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import request from '@/lib/request'
 import { clearAccessToken, clearRefreshToken, clearUserId } from '@/lib/token'
@@ -21,12 +22,9 @@ export default function AboutPage () {
   const [serverUrl, setServerUrl] = useState('')
   const [isTesting, setIsTesting] = useState(false)
   const [isLogoutPending, setIsLogoutPending] = useState(false)
-
-  // 获取主题相关状态和方法
   const { isDark, isSystem, isInverse, setSystemTheme, setInverseTheme, toggleTheme } = useThemeContext()
 
   useEffect(() => {
-    // 从localStorage获取服务器地址
     const savedServerUrl = localStorage.getItem('serverUrl') || ''
     setServerUrl(savedServerUrl)
   }, [])
@@ -40,7 +38,7 @@ export default function AboutPage () {
       clearAccessToken()
       clearRefreshToken()
       clearUserId()
-      window.location.href = isTauri() ? '/login' : '/kkk/login'
+      window.location.href = (isTauri() || import.meta.env.DEV) ? '/kkk/login' : '/login'
     } else {
       // 第一次点击，设置待确认状态
       setIsLogoutPending(true)
@@ -48,7 +46,7 @@ export default function AboutPage () {
         icon: '⚠️',
         duration: 3000
       })
-      
+
       // 3秒后自动取消待确认状态
       setTimeout(() => {
         setIsLogoutPending(false)
@@ -59,26 +57,65 @@ export default function AboutPage () {
   /**
    * 测试服务器连接
    */
-  const testConnection = async () => {
+  const testConnection = async (): Promise<boolean> => {
     if (!serverUrl.trim()) {
       toast.error('请输入服务器地址')
-      return
+      return false
+    }
+
+    // 验证URL格式
+    try {
+      const url = new URL(serverUrl)
+      // 检查是否是有效的服务器地址格式（不应该包含路径）
+      if (url.pathname !== '/' || url.search || url.hash) {
+        toast.error('请输入有效的服务器地址，不应包含路径或参数')
+        return false
+      }
+    } catch {
+      toast.error('请输入有效的服务器地址格式')
+      return false
     }
 
     setIsTesting(true)
+    
+    // 保存原始URL
+    const originalUrl = localStorage.getItem('serverUrl')
+    let originalTauriUrl = null
+    
     try {
+      if (isTauri()) {
+        originalTauriUrl = await invoke('get_server_url')
+        await invoke('set_server_url', { url: serverUrl })
+      }
+      // 临时设置localStorage中的URL用于测试
+      localStorage.setItem('serverUrl', serverUrl)
+      
       const response = await request.serverGet<{
         ping: string
       }>('/api/v1/ping', { timeout: 5000 })
 
       if (response.ping === 'pong') {
         toast.success('服务器连接成功')
+        return true
       } else {
-        toast.error('服务器连接失败')
+        throw new Error('服务器响应异常')
       }
     } catch (error) {
       console.error('连接测试失败:', error)
       toast.error('服务器连接失败')
+      
+      // 恢复原始URL
+      if (originalUrl) {
+        localStorage.setItem('serverUrl', originalUrl)
+      } else {
+        localStorage.removeItem('serverUrl')
+      }
+      
+      if (isTauri() && originalTauriUrl) {
+        await invoke('set_server_url', { url: originalTauriUrl })
+      }
+      
+      return false
     } finally {
       setIsTesting(false)
     }
@@ -88,9 +125,49 @@ export default function AboutPage () {
    * 保存服务器地址并测试连接
    */
   const handleSaveServer = async () => {
+    if (!serverUrl.trim()) {
+      toast.error('请输入服务器地址')
+      return
+    }
+    const currentUrl = localStorage.getItem('serverUrl')
+    const isConnected = await testConnection()
+
+    // 测试连接
+    if (currentUrl !== serverUrl) {
+      if (!isConnected) {
+        return
+      }
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
+      localStorage.removeItem('userId')
+
+      setTimeout(() => {
+        toast.error('后端服务已更改，请重新登录')
+      }, 1000)
+
+      setTimeout(() => {
+        window.location.reload()
+      }, 4000)
+    }
     localStorage.setItem('serverUrl', serverUrl)
-    await testConnection()
   }
+
+  /**
+   * 根据当前serverUrl构建完整的服务器URL，自动处理默认端口
+   * @returns 完整的服务器URL
+   */
+  const buildCompleteServerUrl = useCallback((): string => {
+    if (!serverUrl) return ''
+
+    const protocol = serverUrl.startsWith('https://') ? 'https' : 'http'
+    const hostname = serverUrl.replace(/^https?:\/\//, '').replace(/:\d+$/, '')
+    const port = serverUrl.match(/:(\d+)$/)?.[1]
+
+    if (!hostname) return ''
+
+    const finalPort = port || (protocol === 'https' ? '443' : '7777')
+    return `${protocol}://${hostname}:${finalPort}`
+  }, [serverUrl])
 
   /**
    * 获取主题图标
@@ -141,7 +218,7 @@ export default function AboutPage () {
             </div>
 
             {/* 退出登录按钮 */}
-            <Button 
+            <Button
               variant={isLogoutPending ? "destructive" : "outline"}
               onClick={handleLogoutClick}
             >
@@ -232,7 +309,7 @@ export default function AboutPage () {
                       className="flex items-center gap-2"
                     >
                       {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                      智能切换
+                      相反色
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -243,37 +320,128 @@ export default function AboutPage () {
             </CardContent>
           </Card>
 
-          {/* 服务器设置卡片 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>服务器设置</CardTitle>
-              <CardDescription>配置服务器连接地址</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="serverUrl">服务器地址</Label>
-                <div className="relative">
-                  <Server className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="serverUrl"
-                    type="url"
-                    value={serverUrl}
-                    onChange={(e) => setServerUrl(e.target.value)}
-                    className="pl-9"
-                    placeholder="http://localhost:7777"
-                  />
+          {isTauri() && (
+            <Card>
+              <CardHeader>
+                <CardTitle>服务器设置</CardTitle>
+                <CardDescription>配置服务器连接地址</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="serverConfig">
+                    服务器地址
+                  </Label>
+                  <div className="space-y-3">
+                    {/* 协议选择器 */}
+                    <div className="flex items-center space-x-2">
+                      <Label htmlFor="protocol" className="text-sm text-muted-foreground min-w-[40px]">
+                        协议
+                      </Label>
+                      <Select
+                        value={serverUrl.startsWith('https://') ? 'https' : 'http'}
+                        onValueChange={(value: 'http' | 'https') => {
+                          const hostname = serverUrl.replace(/^https?:\/\//, '').replace(/:\d+$/, '')
+                          const port = serverUrl.match(/:(\d+)$/)?.[1] || (value === 'https' ? '443' : '7777')
+                          setServerUrl(`${value}://${hostname}:${port}`)
+                        }}
+                      >
+                        <SelectTrigger className="w-[100px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="http">HTTP</SelectItem>
+                          <SelectItem value="https">HTTPS</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* 主机名和端口号 */}
+                    <div className="flex items-center space-x-2">
+                      <Label htmlFor="hostname" className="text-sm text-muted-foreground min-w-[40px]">
+                        地址
+                      </Label>
+                      <div className="relative flex-1">
+                        <Server className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="hostname"
+                          type="text"
+                          value={serverUrl.replace(/^https?:\/\//, '').replace(/:\d+$/, '')}
+                          onChange={(e) => {
+                            const input = e.target.value
+
+                            // 检查是否粘贴了完整URL
+                            if (input.includes('://')) {
+                              // 尝试从输入中提取完整URL
+                              const urlMatch = input.match(/(https?:\/\/[^\s]+)/)
+                              if (urlMatch) {
+                                const fullUrl = urlMatch[1]
+                                const url = new URL(fullUrl)
+                                const protocol = url.protocol === 'https:' ? 'https' : 'http'
+                                const hostname = url.hostname
+                                const port = url.port || (protocol === 'https' ? '443' : '7777')
+                                setServerUrl(`${protocol}://${hostname}:${port}`)
+                                return
+                              }
+                            }
+                            const protocol = serverUrl.startsWith('https://') ? 'https' : 'http'
+                            const currentPort = serverUrl.match(/:(\d+)$/)?.[1] || (protocol === 'https' ? '443' : '7777')
+                            setServerUrl(`${protocol}://${input}:${currentPort}`)
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              handleSaveServer()
+                            }
+                          }}
+                          className="pl-9"
+                          placeholder="localhost 或粘贴完整URL"
+                          disabled={isTesting}
+                        />
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <span className="text-sm text-muted-foreground">:</span>
+                        <Input
+                          id="port"
+                          type="number"
+                          value={serverUrl.match(/:(\d+)$/)?.[1] || ''}
+                          onChange={(e) => {
+                            const port = e.target.value
+                            const protocol = serverUrl.startsWith('https://') ? 'https' : 'http'
+                            const hostname = serverUrl.replace(/^https?:\/\//, '').replace(/:\d+$/, '')
+                            
+                            if (port.trim()) {
+                              setServerUrl(`${protocol}://${hostname}:${port}`)
+                            } else {
+                              setServerUrl(`${protocol}://${hostname}`)
+                            }
+                          }}
+                          className="w-[80px]"
+                          placeholder={serverUrl.startsWith('https://') ? '443' : '7777'}
+                          disabled={isTesting}
+                          min="1"
+                          max="65535"
+                        />
+                      </div>
+                    </div>
+
+                    {/* 完整URL预览 */}
+                    {serverUrl && (
+                      <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded border">
+                        地址预览: {buildCompleteServerUrl()}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <Button
-                onClick={handleSaveServer}
-                disabled={isTesting}
-                className="w-full"
-              >
-                <Save className="h-4 w-4 mr-2" />
-                {isTesting ? '测试连接中...' : '保存并测试连接'}
-              </Button>
-            </CardContent>
-          </Card>
+                <Button
+                  onClick={handleSaveServer}
+                  disabled={isTesting}
+                  className="w-full"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {isTesting ? '测试连接中...' : '保存并测试连接'}
+                </Button>
+              </CardContent>
+            </Card>
+          )}
 
           {/* 系统信息卡片 */}
           <Card>

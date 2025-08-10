@@ -47,17 +47,38 @@ jobs:
         with:
           targets: x86_64-pc-windows-msvc
 
+      - name: 💾 缓存Rust依赖
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: packages/web/src-tauri
+          cache-on-failure: true
+          shared-key: "desktop-build"
+
       - name: 🟢 配置Node.js环境
         uses: actions/setup-node@v4
         with:
           node-version: 21
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
 
       - name: 📦 配置PNPM环境
         uses: pnpm/action-setup@v4
         with:
           version: 9.13.2
-          run_install: |
-            - args: [--no-frozen-lockfile]
+
+      - name: 💾 缓存PNPM依赖
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: 📦 安装依赖
+        run: pnpm install --frozen-lockfile
 
       - name: 🔄 同步版本号到桌面应用配置
         id: sync-version
@@ -82,26 +103,23 @@ jobs:
         id: build
         run: |
           echo "开始构建Windows桌面应用..."
-          # 使用根级的 build:desktop 命令
           pnpm run build:desktop --target x86_64-pc-windows-msvc
           echo "Windows桌面应用构建完成"
           
-          # 查找构建产物
-          $EXE_PATH = Get-ChildItem -Path "packages/web/src-tauri/target" -Recurse -Filter "*.exe" | Select-Object -First 1 -ExpandProperty FullName
-          $EXE_NAME = Split-Path $EXE_PATH -Leaf
+          # 查找NSIS安装程序
+          $NSIS_PATH = Get-ChildItem -Path "packages/web/src-tauri/target" -Recurse -Filter "*.exe" -Path "**/bundle/nsis/**" | Select-Object -First 1 -ExpandProperty FullName
+          $NSIS_NAME = Split-Path $NSIS_PATH -Leaf
           
-          echo "exe_path=$EXE_PATH" >> $env:GITHUB_OUTPUT
-          echo "exe_name=$EXE_NAME" >> $env:GITHUB_OUTPUT
-          echo "找到Windows可执行文件: $EXE_PATH"
-          echo "文件名: $EXE_NAME"
+          echo "nsis_path=$NSIS_PATH" >> $env:GITHUB_OUTPUT
+          echo "nsis_name=$NSIS_NAME" >> $env:GITHUB_OUTPUT
+          echo "找到NSIS安装程序: $NSIS_PATH"
+          echo "文件名: $NSIS_NAME"
 
       - name: 📤 上传构建产物
         uses: actions/upload-artifact@v4
         with:
           name: windows-desktop-app-v${{ steps.sync-version.outputs.desktop_version }}
-          path: |
-            packages/web/src-tauri/target/**/bundle/**/*
-            ${{ steps.build.outputs.exe_path }}
+          path: ${{ steps.build.outputs.nsis_path }}
           retention-days: 30
 
       - name: 🚀 上传到Release
@@ -120,9 +138,17 @@ jobs:
           echo "" >> $env:GITHUB_STEP_SUMMARY
           echo "### 📱 应用信息" >> $env:GITHUB_STEP_SUMMARY
           echo "- **平台:** Windows x64" >> $env:GITHUB_STEP_SUMMARY
-          echo "- **文件名:** \`${{ steps.build.outputs.exe_name }}\`" >> $env:GITHUB_STEP_SUMMARY
-          echo "- **版本:** \`${{ steps.sync-version.outputs.desktop_version }}\`" >> $env:GITHUB_STEP_SUMMARY
-          echo "- **基于Core版本:** \`${{ inputs.core_version }}\`" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **文件名:** ``${{ steps.build.outputs.exe_name }}``" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **版本:** ``${{ steps.sync-version.outputs.desktop_version }}``" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **基于Core版本:** ``${{ inputs.core_version }}``" >> $env:GITHUB_STEP_SUMMARY
           echo "" >> $env:GITHUB_STEP_SUMMARY
           echo "### 📥 下载方式" >> $env:GITHUB_STEP_SUMMARY
-          echo "可在当前Actions运行页面的Artifacts部分下载 \`windows-desktop-app-v${{ steps.sync-version.outputs.desktop_version }}\` 文件" >> $env:GITHUB_STEP_SUMMARY
+          echo "- 📦 **Artifact下载:** 在当前Actions运行页面的Artifacts部分下载 ``windows-desktop-app-v${{ steps.sync-version.outputs.desktop_version }}`` 文件" >> $env:GITHUB_STEP_SUMMARY
+          if ("${{ inputs.should_upload_release }}" -eq "true" -and "${{ inputs.release_tag_name }}" -ne "") {
+            echo "- 🚀 **Release下载:** [点击这里下载最新版本](https://github.com/${{ github.repository }}/releases/tag/${{ inputs.release_tag_name }})" >> $env:GITHUB_STEP_SUMMARY
+          }
+          echo "" >> $env:GITHUB_STEP_SUMMARY
+          echo "### 📋 构建详情" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **构建时间:** $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **提交SHA:** ``${{ github.sha }}``" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **分支:** ``${{ github.ref_name }}``" >> $env:GITHUB_STEP_SUMMARY

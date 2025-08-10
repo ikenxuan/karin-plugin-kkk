@@ -53,9 +53,6 @@ const pendingRequests: Array<{
   reject: (reason?: any) => void
 }> = []
 
-/**
- * 无感知刷新访问令牌
- */
 const refreshAccessToken = async () => {
   // 如果已经有正在进行的刷新token请求，直接返回该Promise
   if (refreshTokenPromise) {
@@ -70,17 +67,32 @@ const refreshAccessToken = async () => {
       const refreshToken = getRefreshToken()
       if (!accessToken || !refreshToken) {
         isRefreshingToken = false
+        // 清理队列中的请求
+        pendingRequests.forEach(({ reject }) => {
+          reject(new Error('没有可用的令牌'))
+        })
+        pendingRequests.length = 0
         return false
       }
 
       /** 刷新访问令牌 */
-      const data = await axios.post(
-        '/api/v1/refresh',
-        { accessToken, refreshToken },
-        {
+      let data: any
+
+      if (isTauri()) {
+        data = await tauriRequest('/api/v1/refresh', {
+          method: 'POST',
+          data: { accessToken, refreshToken },
           timeout: 10000,
-        }
-      )
+        })
+      } else {
+        data = await axios.post(
+          '/api/v1/refresh',
+          { accessToken, refreshToken },
+          {
+            timeout: 10000,
+          }
+        )
+      }
 
       if (data.status === 200 && data.data?.data?.accessToken) {
         const newToken = data.data.data.accessToken
@@ -96,11 +108,40 @@ const refreshAccessToken = async () => {
       return false
     } catch (error: any) {
       console.error('[auth] 刷新token失败', error.message)
-      // 如果刷新失败，但错误不是401或420，不要清除token
-      const status = error?.response?.status
-      if (status !== 401 && status !== 420) {
+
+      // 获取错误状态码
+      let status: number
+      if (isTauri()) {
+        status = error?.response?.data?.code || error?.response?.status
+      } else {
+        status = error?.response?.status
+      }
+
+      // 如果是 401 或 420 错误，说明令牌完全失效，需要清理并重定向
+      if (status === 401 || status === 420) {
+        // 清理所有认证数据
+        clearLocalAuthData()
+
+        // 拒绝队列中的所有请求
+        pendingRequests.forEach(({ reject }) => {
+          reject(new Error('Authentication failed, please login again'))
+        })
+        pendingRequests.length = 0
+
+        // 重定向到登录页
+        setTimeout(() => {
+          redirectToLogin('登录信息已失效，请重新登录')
+        }, 100)
+
         return false
       }
+
+      // 其他错误，拒绝队列中的请求但不清理令牌
+      pendingRequests.forEach(({ reject }) => {
+        reject(error)
+      })
+      pendingRequests.length = 0
+
       return false
     } finally {
       isRefreshingToken = false
@@ -161,7 +202,7 @@ const redirectToLogin = (message: string) => {
     cacheToken.token = null
   }
 
-  const loginPath = isTauri() ? '/login' : '/kkk/login'
+  const loginPath = (isTauri() || import.meta.env.DEV) ? '/kkk/login' : '/login'
 
   if (window.location.pathname === loginPath) {
     if (token) {
@@ -173,7 +214,10 @@ const redirectToLogin = (message: string) => {
     return
   }
 
-  toast.error(`${message}，5秒后将跳转登录界面`, { duration: 5000 })
+  toast.error(message)
+  setTimeout(() => {
+    toast.error('3秒后将跳转到登录界面')
+  }, 3000)
 
   setTimeout(() => {
     isRedirecting = false
@@ -220,7 +264,9 @@ const handleAuthError = async (error: any) => {
 
   if (isRedirecting) return false
 
-  const status = error?.response?.status
+  const status = isTauri()
+    ? error?.response?.data?.code
+    : error?.response?.status
 
   switch (status) {
     /** 访问令牌过期 */
@@ -259,6 +305,8 @@ const handleAuthError = async (error: any) => {
     }
     /** 刷新令牌过期 */
     case 420:
+      // 清理认证数据并重定向
+      clearLocalAuthData()
       redirectToLogin('登录信息已过期')
       break
     /** 未授权 */
@@ -275,25 +323,34 @@ const handleAuthError = async (error: any) => {
       if (!token) {
         redirectToLogin('登录信息已失效')
       } else {
-        // 尝试刷新token
-        config._retry = true
-        const result = await refreshAccessToken()
-        if (result) {
-          // 更新配置中的token
-          const newToken = getToken().token
-          if (newToken) {
-            config.headers['Authorization'] = `Bearer ${newToken}`
-          }
+        // 只有在没有重试过的情况下才尝试刷新token
+        if (!config._retry) {
+          config._retry = true
+          const result = await refreshAccessToken()
+          if (result) {
+            // 更新配置中的token
+            const newToken = getToken().token
+            if (newToken) {
+              config.headers['Authorization'] = `Bearer ${newToken}`
+            }
 
-          try {
-            // 根据环境选择请求方式
-            return isTauri()
-              ? await tauriRequest(config.url, config)
-              : await getRequestInstance().request(config)
-          } catch {
+            try {
+              return isTauri()
+                ? await tauriRequest(config.url, config)
+                : await getRequestInstance().request(config)
+            } catch {
+              // 如果重试后仍然失败，清理数据并重定向
+              clearLocalAuthData()
+              redirectToLogin('登录信息已失效')
+            }
+          } else {
+            // 刷新失败，清理数据并重定向
+            clearLocalAuthData()
             redirectToLogin('登录信息已失效')
           }
         } else {
+          // 已经重试过但仍然失败，清理数据并重定向
+          clearLocalAuthData()
           redirectToLogin('登录信息已失效')
         }
       }
@@ -375,7 +432,7 @@ const createAxiosInstance = (): AxiosInstance => {
 }
 
 /**
- * 创建Tauri代理请求函数 - 官方推荐实现
+ * 创建Tauri代理请求函数
  */
 async function tauriRequest<T> (
   url: string,
@@ -384,7 +441,7 @@ async function tauriRequest<T> (
   const { token, userId } = getToken()
   const method = config?.method?.toUpperCase() || 'GET'
 
-  // 构建标准请求头 - 修复类型错误
+  // 构建标准请求头
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(config?.headers as Record<string, string> || {})
@@ -393,12 +450,11 @@ async function tauriRequest<T> (
   if (token) {
     headers['Authorization'] = `Bearer ${token}`
   }
-  
+
   if (userId) {
     headers['x-user-id'] = userId
   }
 
-  // 添加多层编码签名逻辑
   if (token && !url.includes('/v1/refresh')) {
     const timestamp = Date.now().toString()
     const nonce = generateNonce()
@@ -412,7 +468,6 @@ async function tauriRequest<T> (
   }
 
   try {
-    // 使用官方推荐的单一参数调用方式 - 添加类型断言
     const response = await invoke<TauriProxyResponse>('proxy_request', {
       request: {
         url,
@@ -422,7 +477,6 @@ async function tauriRequest<T> (
       }
     })
 
-    // 直接映射到AxiosResponse格式 - 修复类型兼容性问题
     const axiosResponse: AxiosResponse<ServerResponse<T>> = {
       data: response.data as ServerResponse<T>,
       status: response.status,
@@ -446,10 +500,24 @@ async function tauriRequest<T> (
             data: errorPayload,
             status: errorPayload.status || 500,
             statusText: errorPayload.status_text || 'Error',
-            headers: errorPayload.headers || {}
+            headers: errorPayload.headers || {},
           }
+          ; (err as any).config = config
+
+        // 添加鉴权错误处理
+        if (config?.url !== '/api/v1/login') {
+          const shouldRetry = await handleAuthError(err)
+          if (shouldRetry) {
+            return shouldRetry as AxiosResponse<ServerResponse<T>>
+          }
+        }
+
         throw err
       } catch (e) {
+        // 如果不是 JSON 格式的错误，直接抛出
+        if (e instanceof Error && e.message.includes('请求发生错误')) {
+          throw e
+        }
         throw new Error(errorString)
       }
     }
@@ -480,6 +548,33 @@ export const request: ServerRequest = {
   serverGet: async <T> (url: string, config?: AxiosRequestConfig): Promise<T> => {
     if (isTauri()) {
       const response = await tauriRequest<T>(url, { ...config, method: 'GET' })
+
+      // 检查业务状态码，如果是鉴权错误，构造错误对象让拦截器处理
+      if (response.data && typeof response.data === 'object' && 'code' in response.data) {
+        const businessCode = (response.data as any).code
+        if (businessCode === 401 || businessCode === 419 || businessCode === 420) {
+          const authError = {
+            response: {
+              data: { code: businessCode, message: '鉴权失败' },
+              status: response.status,
+              statusText: response.statusText,
+              headers: response.headers
+            },
+            config: { ...config, url, method: 'GET' }
+          }
+
+          // 排除登录请求，避免无限循环
+          if (url !== '/api/v1/login') {
+            const retryResult = await handleAuthError(authError)
+            if (retryResult) {
+              return (retryResult as AxiosResponse<ServerResponse<T>>).data.data
+            }
+          }
+
+          throw new Error('鉴权失败')
+        }
+      }
+
       return response.data.data
     } else {
       const instance = getRequestInstance()
@@ -491,6 +586,33 @@ export const request: ServerRequest = {
   serverPost: async <T, R> (url: string, data?: R, config?: AxiosRequestConfig): Promise<T> => {
     if (isTauri()) {
       const response = await tauriRequest<T>(url, { ...config, method: 'POST', data })
+
+      // 检查业务状态码，如果是鉴权错误，构造错误对象让拦截器处理
+      if (response.data && typeof response.data === 'object' && 'code' in response.data) {
+        const businessCode = (response.data as any).code
+        if (businessCode === 401 || businessCode === 419 || businessCode === 420) {
+          const authError = {
+            response: {
+              data: { code: businessCode, message: '鉴权失败' },
+              status: response.status,
+              statusText: response.statusText,
+              headers: response.headers
+            },
+            config: { ...config, url, method: 'POST', data }
+          }
+
+          // 排除登录请求，避免无限循环
+          if (url !== '/api/v1/login') {
+            const retryResult = await handleAuthError(authError)
+            if (retryResult) {
+              return (retryResult as AxiosResponse<ServerResponse<T>>).data.data
+            }
+          }
+
+          throw new Error('鉴权失败')
+        }
+      }
+
       return response.data.data
     } else {
       const instance = getRequestInstance()

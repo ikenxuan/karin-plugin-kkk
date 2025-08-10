@@ -1,6 +1,7 @@
+import { invoke, isTauri } from '@tauri-apps/api/core'
 import Atropos from 'atropos/react'
 import { ArrowRight, Eye, EyeOff, Lock, Server } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import Toaster from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
 
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import key from "@/const/key"
 import { sha256HashSync } from '@/lib/crypto'
@@ -19,7 +21,10 @@ import request from "@/lib/request"
 export default function LoginPage () {
   const [showPassword, setShowPassword] = useState(false)
   const [token, setToken] = useState("")
-  const [serverUrl, setServerUrl] = useState('')
+  const [, setServerUrl] = useState('')
+  const [protocol, setProtocol] = useState<'http' | 'https'>('http')
+  const [hostname, setHostname] = useState('')
+  const [port, setPort] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isTestingConnection, setIsTestingConnection] = useState(false)
   const navigate = useNavigate()
@@ -38,34 +43,83 @@ export default function LoginPage () {
   }
 
   /**
+   * 解析URL为协议、主机名和端口
+   * @param url 完整的URL
+   */
+  const parseUrl = (url: string) => {
+    try {
+      const urlObj = new URL(url)
+      setProtocol(urlObj.protocol === 'https:' ? 'https' : 'http')
+      setHostname(urlObj.hostname)
+      setPort(urlObj.port || (urlObj.protocol === 'https:' ? '443' : '7777'))
+    } catch {
+      // 如果解析失败，使用默认值
+      setProtocol('http')
+      setHostname('localhost')
+      setPort('7777')
+    }
+  }
+
+  /**
+   * 根据协议、主机名和端口构建完整URL
+   * @returns 完整的服务器URL
+   */
+  const buildServerUrl = useCallback((): string => {
+    if (!hostname) return ''
+    const currentPort = port || (protocol === 'https' ? '443' : '7777')
+    return `${protocol}://${hostname}:${currentPort}`
+  }, [protocol, hostname, port])
+
+  /**
    * 组件挂载时加载已保存的服务器地址
    */
-  // 在useEffect中添加同步服务器地址到Tauri后端
   useEffect(() => {
-    const savedUrl = localStorage.getItem('serverUrl')
-    if (savedUrl) {
-      setServerUrl(savedUrl)
-      // 同步到Tauri后端
-      if (typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__) {
+    if (isTauri()) {
+      const savedUrl = localStorage.getItem('serverUrl')
+      if (savedUrl) {
+        setServerUrl(savedUrl)
+        parseUrl(savedUrl)
         import('@tauri-apps/api/core').then(({ invoke }) => {
           invoke('set_server_url', { url: savedUrl }).catch(console.error)
         })
+      } else {
+        const defaultUrl = getCurrentBaseUrl()
+        setServerUrl(defaultUrl)
+        parseUrl(defaultUrl)
       }
-    } else {
-      const defaultUrl = getCurrentBaseUrl()
-      setServerUrl(defaultUrl)
     }
   }, [])
+
+  /**
+   * 当协议、主机名或端口变化时，更新完整的服务器URL
+   */
+  useEffect(() => {
+    if (isTauri() && hostname) {
+      const newUrl = buildServerUrl()
+      setServerUrl(newUrl)
+    }
+  }, [protocol, hostname, port, buildServerUrl])
   
-  // 在testConnection函数中替换toast调用
+  /**
+   * 测试服务器连接
+   * @returns 连接是否成功
+   */
   const testConnection = async () => {
-    if (!serverUrl.trim()) {
+    if (!isTauri()) return true
+    
+    if (!hostname.trim()) {
       Toaster.error('请输入服务器地址')
       return false
     }
   
+    const fullUrl = buildServerUrl()
+    if (!fullUrl) {
+      Toaster.error('请输入服务器地址')
+      return false
+    }
+    
     try {
-      new URL(serverUrl)
+      new URL(fullUrl)
     } catch {
       Toaster.error('请输入有效的服务器地址')
       return false
@@ -73,11 +127,7 @@ export default function LoginPage () {
   
     setIsTestingConnection(true)
     try {
-      // 先同步服务器地址到Tauri后端
-      if (typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__) {
-        const { invoke } = await import('@tauri-apps/api/core')
-        await invoke('set_server_url', { url: serverUrl })
-      }
+      await invoke('set_server_url', { url: fullUrl })
   
       const response = await request.serverGet<{
         ping: string
@@ -86,7 +136,8 @@ export default function LoginPage () {
       })
   
       if (response.ping === 'pong') {
-        localStorage.setItem('serverUrl', serverUrl)
+        localStorage.setItem('serverUrl', fullUrl)
+        setServerUrl(fullUrl)
         Toaster.success('服务器连接成功')
         return true
       } else {
@@ -136,6 +187,7 @@ export default function LoginPage () {
   
       if (!response || response === null) {
         Toaster.error('登录失败，密钥错误！')
+        return
       }
   
       // 存储token信息
@@ -148,14 +200,15 @@ export default function LoginPage () {
       const redirectPath = localStorage.getItem('redirectPath')
       localStorage.removeItem('redirectPath')
   
-        if (redirectPath && redirectPath !== '/kkk/login') {
-          window.location.href = redirectPath
-        } else {
-          navigate('/crack', { replace: true })
-        }
+      if (redirectPath && redirectPath !== '/kkk/login') {
+        window.location.href = redirectPath
+      } else {
+        navigate('/crack', { replace: true })
+      }
   
     } catch (error) {
       console.error(error)
+      Toaster.error('登录失败，请检查密钥是否正确')
     } finally {
       setIsLoading(false)
     }
@@ -189,41 +242,112 @@ export default function LoginPage () {
               kkk 插件登录
             </CardTitle>
             <CardDescription>
-              请先配置服务器地址，然后输入密钥登录
+              {isTauri() ? '请先配置服务器地址，然后输入密钥登录' : '请输入密钥登录'}
             </CardDescription>
           </CardHeader>
           <CardContent data-atropos-offset="1">
             <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleLogin() }}>
-              <div className="space-y-2">
-                <Label htmlFor="serverUrl">
-                  服务器地址
-                </Label>
-                <div className="relative" data-atropos-offset="3">
-                  <Server className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" data-atropos-offset="5" />
-                  <Input
-                    id="serverUrl"
-                    type="url"
-                    value={serverUrl}
-                    onChange={(e) => setServerUrl(e.target.value)}
-                    className="pl-9"
-                    placeholder={getCurrentBaseUrl()}
-                    disabled={isLoading || isTestingConnection}
-                    onTouchStart={handleInputTouch}
-                  />
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleSaveServer}
-                  disabled={isLoading || isTestingConnection}
-                  className="w-full"
-                  data-atropos-offset="4"
-                >
-                  {isTestingConnection ? '测试连接中...' : '测试服务器连接'}
-                </Button>
-              </div>
+              {isTauri() && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="serverConfig">
+                      服务器地址
+                    </Label>
+                    <div className="space-y-3">
+                      {/* 协议选择器 */}
+                      <div className="flex items-center space-x-2" data-atropos-offset="3">
+                        <Label htmlFor="protocol" className="text-sm text-muted-foreground min-w-[40px]">
+                          协议
+                        </Label>
+                        <Select value={protocol} onValueChange={(value: 'http' | 'https') => setProtocol(value)}>
+                          <SelectTrigger className="w-[100px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="http">HTTP</SelectItem>
+                            <SelectItem value="https">HTTPS</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      {/* 主机名和端口号 */}
+                      <div className="flex items-center space-x-2" data-atropos-offset="3">
+                        <Label htmlFor="hostname" className="text-sm text-muted-foreground min-w-[40px]">
+                          地址
+                        </Label>
+                        <div className="relative flex-1">
+                          <Server className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" data-atropos-offset="5" />
+                          <Input
+                            id="hostname"
+                            type="text"
+                            value={hostname}
+                            onChange={(e) => {
+                              const input = e.target.value
+                              
+                              // 检查是否粘贴了完整URL
+                              if (input.includes('://')) {
+                                // 尝试从输入中提取完整URL
+                                const urlMatch = input.match(/(https?:\/\/[^\s]+)/)
+                                if (urlMatch) {
+                                  const fullUrl = urlMatch[1]
+                                  const url = new URL(fullUrl)
+                                  const newProtocol = url.protocol === 'https:' ? 'https' : 'http'
+                                  const newHostname = url.hostname
+                                  const newPort = url.port || (newProtocol === 'https' ? '443' : '7777')
+                                  setProtocol(newProtocol)
+                                  setHostname(newHostname)
+                                  setPort(newPort)
+                                  return
+                                }
+                              }
+                              setHostname(input)
+                            }}
+                            className="pl-9"
+                            placeholder="localhost 或粘贴完整URL"
+                            disabled={isLoading || isTestingConnection}
+                            onTouchStart={handleInputTouch}
+                          />
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <span className="text-sm text-muted-foreground">:</span>
+                          <Input
+                            id="port"
+                            type="number"
+                            value={port}
+                            onChange={(e) => setPort(e.target.value)}
+                            className="w-[80px]"
+                            placeholder={protocol === 'https' ? '443' : '7777'}
+                            disabled={isLoading || isTestingConnection}
+                            onTouchStart={handleInputTouch}
+                            min="1"
+                            max="65535"
+                          />
+                        </div>
+                      </div>
+                      
+                      {/* 完整URL预览 */}
+                      {hostname && (
+                        <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded border" data-atropos-offset="2">
+                          地址预览: {buildServerUrl()}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleSaveServer}
+                      disabled={isTestingConnection || !hostname.trim()}
+                      className="w-full"
+                      data-atropos-offset="4"
+                    >
+                      {isTestingConnection ? '测试连接中...' : '测试服务器连接'}
+                    </Button>
+                  </div>
 
-              <Separator data-atropos-offset="2" />
+                  <Separator data-atropos-offset="2" />
+                </>
+              )}
 
               {/* 登录部分 */}
               <div className="space-y-2">
@@ -239,7 +363,7 @@ export default function LoginPage () {
                     onChange={(e) => setToken(e.target.value)}
                     className="pl-9 pr-9"
                     placeholder="请输入 HTTP 鉴权密钥"
-                    disabled={isLoading || isTestingConnection}
+                    disabled={isLoading}
                     onTouchStart={handleInputTouch}
                   />
                   <button
@@ -260,12 +384,12 @@ export default function LoginPage () {
 
               <Button
                 type="submit"
-                disabled={isLoading || isTestingConnection}
+                disabled={isLoading}
                 className="w-full"
                 data-atropos-offset="4"
               >
                 {isLoading ? '登录中...' : '登录'}
-                {!isLoading && !isTestingConnection && <ArrowRight className="ml-2 h-4 w-4" data-atropos-offset="6" />}
+                {!isLoading && <ArrowRight className="ml-2 h-4 w-4" data-atropos-offset="6" />}
               </Button>
             </form>
           </CardContent>

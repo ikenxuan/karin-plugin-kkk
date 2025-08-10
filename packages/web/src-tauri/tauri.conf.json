@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "karin-plugin-kkk-webui",
+  "productName": "kkk",
   "version": "0.1.0",
   "identifier": "com.karin.plugin.kkk.webui",
   "build": {
@@ -25,7 +25,7 @@
     "windows": [
       {
         "title": "炫炫的小工具",
-        "width": 400,
+        "width": 600,
         "height": 800,
         "resizable": true,
         "fullscreen": false,
@@ -38,14 +38,26 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": "nsis",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/icon.ico",
+        "installMode": "perMachine",
+        "languages": [
+          "SimpChinese",
+          "TradChinese",
+          "English"
+        ],
+        "displayLanguageSelector": true
+      }
+    }
   },
   "plugins": {
     "globalShortcut": {
