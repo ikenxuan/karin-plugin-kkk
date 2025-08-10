@@ -649,7 +649,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 🏷️ 自动获取版本信息
+      - name: 🏷️ 获取版本信息
         id: get-version-info
         run: |
           # 获取 core 包版本号
@@ -669,7 +669,7 @@ jobs:
 
       - name: 🖥️ 调用桌面应用构建
         id: call-desktop-build
-        uses: ./.github/workflows/build-desktop.yml@main
+        uses: ./.github/workflows/build-desktop.yml@${{ github.ref }}
         with:
           core_version: ${{ steps.get-version-info.outputs.core_version }}
           should_upload_release: ${{ steps.get-version-info.outputs.should_upload_release == 'true' }}
