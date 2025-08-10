@@ -673,7 +673,6 @@ jobs:
           core_version: ${{ steps.get-version-info.outputs.core_version }}
           should_upload_release: ${{ steps.get-version-info.outputs.should_upload_release == 'true' }}
           release_tag_name: ${{ steps.get-version-info.outputs.release_tag_name }}
-        secrets: inherit
 
       - name: 📊 桌面构建完成摘要
         run: |
