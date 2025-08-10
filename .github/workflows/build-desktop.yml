@@ -107,7 +107,7 @@ jobs:
           echo "Windows桌面应用构建完成"
           
           # 查找NSIS安装程序
-          $NSIS_PATH = Get-ChildItem -Path "packages/web/src-tauri/target" -Recurse -Filter "*.exe" -Path "**/bundle/nsis/**" | Select-Object -First 1 -ExpandProperty FullName
+          $NSIS_PATH = Get-ChildItem -Path "packages/web/src-tauri/target" -Recurse -Filter "*.exe" | Where-Object { $_.FullName -like "**/bundle/nsis/**" } | Select-Object -First 1 -ExpandProperty FullName
           $NSIS_NAME = Split-Path $NSIS_PATH -Leaf
           
           echo "nsis_path=$NSIS_PATH" >> $env:GITHUB_OUTPUT
