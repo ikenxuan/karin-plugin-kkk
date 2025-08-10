@@ -1,0 +1,55 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "karin-plugin-kkk-webui",
+  "version": "0.1.0",
+  "identifier": "com.karin.plugin.kkk.webui",
+  "build": {
+    "removeUnusedCommands": true,
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "pnpm run dev",
+    "beforeBuildCommand": "vite build --mode standalone"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "security": {
+      "csp": null,
+      "dangerousDisableAssetCspModification": true,
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "**"
+        ]
+      }
+    },
+    "windows": [
+      {
+        "title": "炫炫的小工具",
+        "width": 400,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false,
+        "decorations": true,
+        "transparent": false,
+        "alwaysOnTop": false,
+        "skipTaskbar": false
+      }
+    ]
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  },
+  "plugins": {
+    "globalShortcut": {
+      "all": true
+    }
+  }
+}

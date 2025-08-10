@@ -1,3 +1,4 @@
+import fs from "node:fs"
 import path from "node:path"
 
 import tailwindcss from "@tailwindcss/vite"
@@ -5,74 +6,120 @@ import react from '@vitejs/plugin-react-swc'
 import { defineConfig } from 'vite'
 import obfuscator from 'vite-plugin-javascript-obfuscator'
 
+/** 读取插件的版本信息 */
+const getPluginVersion = () => {
+  try {
+    const pluginPackageJson = JSON.parse(
+      fs.readFileSync(path.resolve(__dirname, '../core/package.json'), 'utf-8')
+    )
+    return pluginPackageJson.version
+  } catch {
+    return '1.0.0'
+  }
+}
+
+/** 获取格式化的构建时间 */
+const getBuildTime = () => {
+  const now = new Date()
+  const chinaTime = now.toLocaleString('zh-CN', {
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  })
+  
+  // 获取时区偏移
+  const offset = -now.getTimezoneOffset() / 60
+  const timezone = offset >= 0 ? `UTC+${offset}` : `UTC${offset}`
+  
+  return `${chinaTime} (${timezone})`
+}
 
 // https://vite.dev/config/
-export default defineConfig({
-  base: '/kkk/',
-  plugins: [
-    react(),
-    tailwindcss(),
-    obfuscator({
-    include: ['src/**/*.ts', 'src/**/*.tsx'],
-    exclude: ['node_modules/**', 'src/App.tsx', 'src/main.tsx'],
-    apply: 'build',
-    debugger: true,
-    options: {
-      compact: true,
-      controlFlowFlattening: true,
-      controlFlowFlatteningThreshold: 1,
-      numbersToExpressions: true,
-      simplify: true,
-      stringArrayShuffle: true,
-      splitStrings: true,
-      stringArray: true,
-      stringArrayThreshold: 1,
-      stringArrayWrappersCount: 10,
-      deadCodeInjection: true,
-      stringArrayWrappersChainedCalls: true,
-      stringArrayWrappersParametersMaxCount: 5,
-      stringArrayWrappersType: 'function',
-      stringArrayEncoding: ['rc4'],
-      unicodeEscapeSequence: true,
-      identifierNamesGenerator: 'hexadecimal',
-      renameGlobals: false,
-      selfDefending: true,
-      debugProtection: false,
-      debugProtectionInterval: 2000,
-      disableConsoleOutput: true,
-      domainLock: [],
-      reservedNames: [],
-      seed: 0,
-      sourceMap: false,
-      sourceMapBaseUrl: '',
-      sourceMapFileName: '',
-      sourceMapMode: 'separate',
-      target: 'browser'
-    }
-  })],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-  build: {
-    emptyOutDir: true,
-    outDir: '../core/lib/web_chunk',
-    // 启用CSS代码分割
-    cssCodeSplit: true,
-    // 最小化混淆
-    minify: 'esbuild',
-    // 设置chunk大小警告阈值
-    chunkSizeWarningLimit: 1000,
-    // sourcemap: true,
-  },
-  server: {
-    host: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:7777',
-        changeOrigin: true,
+export default defineConfig(({ mode }) => {
+  const isStandalone = mode === 'standalone'
+  const buildTime = getBuildTime()
+  const version = getPluginVersion()
+
+  return {
+    base: isStandalone? '/':  '/kkk/',
+    plugins: [
+      react(),
+      tailwindcss(),
+      !isStandalone && obfuscator({
+        include: ['src/**/*.ts', 'src/**/*.tsx'],
+        exclude: ['node_modules/**', 'src-tauri/**', 'src/App.tsx', 'src/main.tsx'],
+        apply: 'build',
+        debugger: true,
+        options: {
+          compact: true,
+          controlFlowFlattening: true,
+          controlFlowFlatteningThreshold: 1,
+          numbersToExpressions: true,
+          simplify: true,
+          stringArrayShuffle: true,
+          splitStrings: true,
+          stringArray: true,
+          stringArrayThreshold: 1,
+          stringArrayWrappersCount: 10,
+          deadCodeInjection: true,
+          stringArrayWrappersChainedCalls: true,
+          stringArrayWrappersParametersMaxCount: 5,
+          stringArrayWrappersType: 'function',
+          stringArrayEncoding: ['rc4'],
+          unicodeEscapeSequence: true,
+          identifierNamesGenerator: 'hexadecimal',
+          renameGlobals: false,
+          selfDefending: true,
+          debugProtection: false,
+          debugProtectionInterval: 2000,
+          disableConsoleOutput: true,
+          domainLock: [],
+          reservedNames: [],
+          seed: 0,
+          sourceMap: false,
+          sourceMapBaseUrl: '',
+          sourceMapFileName: '',
+          sourceMapMode: 'separate',
+          target: 'browser'
+        }
+      })
+    ].filter(Boolean),
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
       },
     },
-  },
+    define: {
+      __TAURI__: JSON.stringify(process.env.TAURI_PLATFORM !== undefined),
+      __APP_VERSION__: JSON.stringify(version),
+      __BUILD_TIME__: JSON.stringify(buildTime)
+    },
+    build: {
+      emptyOutDir: true,
+      // 根据模式设置不同的输出目录
+      outDir: isStandalone ? 'dist' : '../core/lib/web_chunk',
+      // 启用CSS代码分割
+      cssCodeSplit: true,
+      // 最小化混淆
+      minify: 'esbuild',
+      // 设置chunk大小警告阈值
+      chunkSizeWarningLimit: 1000,
+    },
+    server: {
+      host: true,
+      watch: {
+        ignored: ['**/src-tauri/**'],
+      },
+      proxy: {
+        '/api': {
+          target: 'http://localhost:7777',
+          changeOrigin: true,
+        },
+      }
+    },
+  }
 })

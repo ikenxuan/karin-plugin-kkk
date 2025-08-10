@@ -1,6 +1,6 @@
+import { invoke, isTauri } from '@tauri-apps/api/core'
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
-import CryptoJS from 'crypto-js'
-import { toast } from "sonner"
+import { toast } from 'react-hot-toast'
 
 import {
   clearAccessToken,
@@ -11,6 +11,15 @@ import {
   getUserId,
   setAccessToken,
 } from '@/lib/token'
+
+import { generateNonce, generateSignature } from './crypto'
+
+type TauriProxyResponse = {
+  data: ServerResponse<any>
+  status: number
+  status_text: string
+  headers: Record<string, string>
+}
 
 export interface ServerRequest extends AxiosInstance {
   serverGet<T> (url: string, config?: AxiosRequestConfig): Promise<T>
@@ -47,7 +56,7 @@ const pendingRequests: Array<{
 /**
  * 无感知刷新访问令牌
  */
-const refreshAccessToken = async (): Promise<boolean> => {
+const refreshAccessToken = async () => {
   // 如果已经有正在进行的刷新token请求，直接返回该Promise
   if (refreshTokenPromise) {
     return refreshTokenPromise
@@ -63,6 +72,7 @@ const refreshAccessToken = async (): Promise<boolean> => {
         isRefreshingToken = false
         return false
       }
+
       /** 刷新访问令牌 */
       const data = await axios.post(
         '/api/v1/refresh',
@@ -105,7 +115,7 @@ const refreshAccessToken = async (): Promise<boolean> => {
 /**
  * 处理队列中的请求
  */
-const processPendingRequests = (): void => {
+const processPendingRequests = () => {
   // 检查token是否有效
   const { token } = getToken()
   if (!token) {
@@ -120,7 +130,12 @@ const processPendingRequests = (): void => {
     // 手动更新token
     config.headers['Authorization'] = `Bearer ${token}`
 
-    request(config)
+    // 根据环境选择请求方式
+    const requestPromise = isTauri()
+      ? tauriRequest(config.url, config)
+      : getRequestInstance().request(config)
+
+    requestPromise
       .then(response => resolve(response))
       .catch(error => reject(error))
   })
@@ -130,7 +145,7 @@ const processPendingRequests = (): void => {
 }
 
 /** 处理重定向到登录页 */
-const redirectToLogin = (message: string): void => {
+const redirectToLogin = (message: string) => {
   if (isRedirecting) return
   isRedirecting = true
 
@@ -146,7 +161,9 @@ const redirectToLogin = (message: string): void => {
     cacheToken.token = null
   }
 
-  if (window.location.pathname === '/kkk/login') {
+  const loginPath = isTauri() ? '/login' : '/kkk/login'
+
+  if (window.location.pathname === loginPath) {
     if (token) {
       toast.error('登录会话过期，请重新登录', { duration: 2000 })
     }
@@ -156,29 +173,22 @@ const redirectToLogin = (message: string): void => {
     return
   }
 
-  // 保存当前页面路径到localStorage，用于登录成功后跳转
-  const currentPath = window.location.pathname + window.location.search + window.location.hash
-  localStorage.setItem('redirectPath', currentPath)
-
-  toast.error(message, { duration: 5000 })
-  setTimeout(() => {
-    toast.error('3秒后将跳转登录界面', { duration: 5000 })
-  }, 2000)
+  toast.error(`${message}，5秒后将跳转登录界面`, { duration: 5000 })
 
   setTimeout(() => {
     isRedirecting = false
     /** 如果当前页面已经是登录页面，则不进行跳转 */
-    if (window.location.pathname === '/kkk/login') return
+    if (window.location.pathname === loginPath) return
     // 在跳转前再次检查是否已经有了新的token
     if (getAccessToken()) {
       return
     }
-    window.location.href = '/kkk/login'
+    window.location.href = loginPath
   }, 5000)
 }
 
 /** 清除本地认证数据 */
-const clearLocalAuthData = (): void => {
+const clearLocalAuthData = () => {
   cacheToken.token = null
   cacheToken.userId = null
   clearAccessToken()
@@ -203,178 +213,8 @@ export const getToken = (): { token: string | null; userId: string | null } => {
   return { token, userId }
 }
 
-/**
- * axios实例
- */
-export const request: ServerRequest = axios.create({
-  timeout: 10000,
-}) as ServerRequest
-
-/**
- * 生成随机字符串作为nonce
- * @param length 字符串长度，默认16位
- * @returns 随机字符串
- */
-const generateNonce = (length: number = 16): string => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-  let result = ''
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length))
-  }
-  return result
-}
-
-/**
- * Base64编码
- * @param str 待编码字符串
- * @returns Base64编码后的字符串
- */
-const base64Encode = (str: string): string => {
-  return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(str))
-}
-
-/**
- * URL编码
- * @param str 待编码字符串
- * @returns URL编码后的字符串
- */
-const urlEncode = (str: string): string => {
-  return encodeURIComponent(str)
-}
-
-/**
- * 十六进制编码
- * @param str 待编码字符串
- * @returns 十六进制编码后的字符串
- */
-const hexEncode = (str: string): string => {
-  return CryptoJS.enc.Hex.stringify(CryptoJS.enc.Utf8.parse(str))
-}
-
-/**
- * 反转字符串
- * @param str 待反转字符串
- * @returns 反转后的字符串
- */
-const reverseString = (str: string): string => {
-  return str.split('').reverse().join('')
-}
-
-/**
- * 字符偏移编码（类似凯撒密码）
- * @param str 待编码字符串
- * @param offset 偏移量
- * @returns 编码后的字符串
- */
-const charOffsetEncode = (str: string, offset: number = 3): string => {
-  return str.split('').map(char => {
-    const code = char.charCodeAt(0)
-    return String.fromCharCode(code + offset)
-  }).join('')
-}
-
-/**
- * 多层编码加密
- * @param str 待加密字符串
- * @returns 多层编码后的字符串
- */
-const multiLayerEncode = (str: string): string => {
-  // 第1层：字符偏移编码
-  let encoded = charOffsetEncode(str, 5)
-  
-  // 第2层：十六进制编码
-  encoded = hexEncode(encoded)
-  
-  // 第3层：反转字符串
-  encoded = reverseString(encoded)
-  
-  // 第4层：Base64编码
-  encoded = base64Encode(encoded)
-  
-  // 第5层：URL编码
-  encoded = urlEncode(encoded)
-  
-  // 第6层：再次Base64编码
-  encoded = base64Encode(encoded)
-  
-  return encoded
-}
-
-/**
- * 生成请求签名
- * @param method HTTP方法
- * @param url 请求URL
- * @param body 请求体
- * @param timestamp 时间戳
- * @param nonce 随机字符串
- * @param secretKey 密钥
- * @returns 多层编码的HMAC-SHA256签名
- */
-const generateSignature = (
-  method: string,
-  url: string,
-  body: string,
-  timestamp: string,
-  nonce: string,
-  secretKey: string
-): string => {
-  // 签名字符串格式：METHOD|URL|BODY|TIMESTAMP|NONCE
-  const signatureString = `${method.toUpperCase()}|${url}|${body}|${timestamp}|${nonce}`
-  
-  // 使用HMAC-SHA256生成原始签名
-  const rawSignature = CryptoJS.HmacSHA256(signatureString, secretKey).toString(CryptoJS.enc.Hex)
-  
-  // 对签名进行多层编码加密
-  return multiLayerEncode(rawSignature)
-}
-
-/**
- * 请求拦截器
- * @description 在请求发送前进行统一处理，添加认证信息和多层编码签名
- */
-request.interceptors.request.use(config => {
-  // 如果正在刷新token，并且不是刷新token的请求本身
-  if (isRefreshingToken && !config.url?.includes('/api/v1/refresh')) {
-    return new Promise((resolve, reject) => {
-      pendingRequests.push({
-        config,
-        resolve,
-        reject,
-      })
-    })
-  }
-
-  const { token, userId } = getToken()
-  if (token) {
-    config.headers['Authorization'] = `Bearer ${token}`
-  }
-
-  if (userId) {
-    config.headers['x-user-id'] = userId
-  }
-
-  // 添加多层编码签名逻辑
-  if (token && config.url && !config.url.includes('/api/v1/refresh')) {
-    const timestamp = Date.now().toString()
-    const nonce = generateNonce()
-    const method = config.method?.toUpperCase() || 'GET'
-    const url = config.url
-    const body = method === 'GET' ? '' : JSON.stringify(config.data || {})
-    
-    // 生成多层编码签名
-    const signature = generateSignature(method, url, body, timestamp, nonce, token)
-    
-    // 添加签名相关的请求头
-    config.headers['x-signature'] = signature
-    config.headers['x-timestamp'] = timestamp
-    config.headers['x-nonce'] = nonce
-  }
-
-  return config
-})
-
 /** 处理认证相关错误 */
-const handleAuthError = async (error: any): Promise<boolean> => {
+const handleAuthError = async (error: any) => {
   const config = error?.config
   if (!config) return false
 
@@ -404,7 +244,10 @@ const handleAuthError = async (error: any): Promise<boolean> => {
             config.headers['Authorization'] = `Bearer ${token}`
           }
 
-          return await request(config)
+          // 根据环境选择请求方式
+          return isTauri()
+            ? await tauriRequest(config.url, config)
+            : await getRequestInstance().request(config)
         }
       }
 
@@ -443,7 +286,10 @@ const handleAuthError = async (error: any): Promise<boolean> => {
           }
 
           try {
-            return await request(config)
+            // 根据环境选择请求方式
+            return isTauri()
+              ? await tauriRequest(config.url, config)
+              : await getRequestInstance().request(config)
           } catch {
             redirectToLogin('登录信息已失效')
           }
@@ -459,35 +305,199 @@ const handleAuthError = async (error: any): Promise<boolean> => {
 }
 
 /**
- * 响应拦截器
- * @description 在响应返回后进行统一处理，包括认证错误处理
+ * 创建axios实例（用于Web模式）
  */
-request.interceptors.response.use(
-  response => response,
-  async error => {
-    // 对于非登录接口的错误，尝试处理认证错误
-    if (error?.config?.url !== '/api/v1/login') {
-      const shouldRetry = await handleAuthError(error)
-      if (shouldRetry) {
-        return await request(error.config)
+const createAxiosInstance = (): AxiosInstance => {
+  const instance = axios.create({
+    timeout: 10000,
+    baseURL: '/'
+  })
+
+  // 添加请求拦截器
+  instance.interceptors.request.use(config => {
+    // 如果正在刷新token，并且不是刷新token的请求本身
+    if (isRefreshingToken && !config.url?.includes('/api/v1/refresh')) {
+      return new Promise((resolve, reject) => {
+        pendingRequests.push({
+          config,
+          resolve,
+          reject,
+        })
+      })
+    }
+
+    const { token, userId } = getToken()
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`
+    }
+    if (userId) {
+      config.headers['x-user-id'] = userId
+    }
+
+    // 添加多层编码签名逻辑
+    if (token && config.url && !config.url.includes('/v1/refresh')) {
+      const timestamp = Date.now().toString()
+      const nonce = generateNonce()
+      const method = config.method?.toUpperCase() || 'GET'
+      const url = config.url
+      const body = method === 'GET' ? '' : JSON.stringify(config.data || {})
+
+      const signature = generateSignature(method, url, body, timestamp, nonce, token)
+
+      config.headers['x-signature'] = signature
+      config.headers['x-timestamp'] = timestamp
+      config.headers['x-nonce'] = nonce
+    }
+
+    return config
+  })
+
+  // 添加响应拦截器
+  instance.interceptors.response.use(
+    response => response,
+    async error => {
+      // 排除登录请求的错误处理
+      if (error?.config?.url !== '/api/v1/login') {
+        const shouldRetry = await handleAuthError(error)
+        if (shouldRetry) {
+          return shouldRetry
+        }
+      }
+
+      if (error?.response?.data?.message) {
+        throw new Error(error.response.data.message)
+      }
+      throw new Error(error.message)
+    }
+  )
+
+  return instance
+}
+
+/**
+ * 创建Tauri代理请求函数 - 官方推荐实现
+ */
+async function tauriRequest<T> (
+  url: string,
+  config?: AxiosRequestConfig
+): Promise<AxiosResponse<ServerResponse<T>>> {
+  const { token, userId } = getToken()
+  const method = config?.method?.toUpperCase() || 'GET'
+
+  // 构建标准请求头 - 修复类型错误
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(config?.headers as Record<string, string> || {})
+  }
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+  
+  if (userId) {
+    headers['x-user-id'] = userId
+  }
+
+  // 添加多层编码签名逻辑
+  if (token && !url.includes('/v1/refresh')) {
+    const timestamp = Date.now().toString()
+    const nonce = generateNonce()
+    const body = method === 'GET' ? '' : JSON.stringify(config?.data || {})
+
+    const signature = generateSignature(method, url, body, timestamp, nonce, token)
+
+    headers['x-signature'] = signature
+    headers['x-timestamp'] = timestamp
+    headers['x-nonce'] = nonce
+  }
+
+  try {
+    // 使用官方推荐的单一参数调用方式 - 添加类型断言
+    const response = await invoke<TauriProxyResponse>('proxy_request', {
+      request: {
+        url,
+        method,
+        body: config?.data ? JSON.stringify(config.data) : null,
+        headers
+      }
+    })
+
+    // 直接映射到AxiosResponse格式 - 修复类型兼容性问题
+    const axiosResponse: AxiosResponse<ServerResponse<T>> = {
+      data: response.data as ServerResponse<T>,
+      status: response.status,
+      statusText: response.status_text,
+      headers: response.headers,
+      config: config || {} as any
+    }
+
+    return axiosResponse
+  } catch (error: any) {
+    // 统一错误处理
+    const errorString = String(error || 'Request failed')
+    const jsonStartIndex = errorString.indexOf('{')
+
+    if (jsonStartIndex !== -1) {
+      const jsonPart = errorString.substring(jsonStartIndex)
+      try {
+        const errorPayload = JSON.parse(jsonPart)
+        const err = new Error(errorPayload.message || '请求发生错误')
+          ; (err as any).response = {
+            data: errorPayload,
+            status: errorPayload.status || 500,
+            statusText: errorPayload.status_text || 'Error',
+            headers: errorPayload.headers || {}
+          }
+        throw err
+      } catch (e) {
+        throw new Error(errorString)
       }
     }
 
-    if (error?.response?.data?.message) {
-      throw new Error(error.response.data.message)
-    }
-    throw new Error(error.message)
+    throw new Error(errorString)
   }
-)
-
-request.serverGet = async <T> (url: string, config?: AxiosRequestConfig): Promise<T> => {
-  const response = await request.get<unknown, AxiosResponse<ServerResponse<T>>>(url, config)
-  return response.data.data
 }
 
-request.serverPost = async <T, R> (url: string, data: R = {} as R, config?: AxiosRequestConfig): Promise<T> => {
-  const response = await request.post<R, AxiosResponse<ServerResponse<T>>>(url, data, config)
-  return response.data.data
+// 创建统一的请求实例
+let axiosInstance: AxiosInstance | null = null
+
+/**
+ * 获取请求实例
+ */
+function getRequestInstance (): AxiosInstance {
+  if (!axiosInstance) {
+    axiosInstance = createAxiosInstance()
+  }
+  return axiosInstance
 }
+
+/**
+ * 统一的请求方法
+ */
+export const request: ServerRequest = {
+  ...getRequestInstance(),
+
+  serverGet: async <T> (url: string, config?: AxiosRequestConfig): Promise<T> => {
+    if (isTauri()) {
+      const response = await tauriRequest<T>(url, { ...config, method: 'GET' })
+      return response.data.data
+    } else {
+      const instance = getRequestInstance()
+      const response = await instance.get<unknown, AxiosResponse<ServerResponse<T>>>(url, config)
+      return response.data.data
+    }
+  },
+
+  serverPost: async <T, R> (url: string, data?: R, config?: AxiosRequestConfig): Promise<T> => {
+    if (isTauri()) {
+      const response = await tauriRequest<T>(url, { ...config, method: 'POST', data })
+      return response.data.data
+    } else {
+      const instance = getRequestInstance()
+      const response = await instance.post<R, AxiosResponse<ServerResponse<T>>>(url, data, config)
+      return response.data.data
+    }
+  }
+} as ServerRequest
 
 export default request

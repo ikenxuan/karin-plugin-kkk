@@ -6,10 +6,11 @@
   "scripts": {
     "build": "pnpm -r run build",
     "build:core": "pnpm --filter karin-plugin-kkk run build",
-    "build:web": "pnpm --filter webui run build",
+    "build:web": "pnpm --filter web run build",
+    "build:desktop": "pnpm --filter web run build:desktop",
     "dev": "pnpm --filter karin-plugin-kkk run dev",
     "watch": "pnpm --filter karin-plugin-kkk run watch",
-    "web": "pnpm --filter webui run dev",
+    "web": "pnpm --filter web run dev",
     "lint:fix": "eslint --fix \"packages/**/*.ts\""
   },
   "keywords": [],

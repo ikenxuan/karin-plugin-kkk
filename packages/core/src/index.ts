@@ -12,7 +12,7 @@ import Client, {
 import history from 'connect-history-api-fallback'
 import * as cors from 'cors'
 import * as httpProxy from 'http-proxy-middleware'
-import { app, authMiddleware, logger, mkdirSync } from 'node-karin'
+import { app as karinApp, authMiddleware, logger, mkdirSync } from 'node-karin'
 import express from 'node-karin/express'
 import { karinPathBase } from 'node-karin/root'
 
@@ -44,8 +44,10 @@ const proxyOptions: httpProxy.Options = {
 }
 server.use(cors.default())
 server.use('/', httpProxy.createProxyMiddleware(proxyOptions))
+// TODO: 后续将此反代放到 karin 中
 server.listen(3780)
 
+const app = express.Router()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -53,9 +55,9 @@ app.use(express.urlencoded({ extended: true }))
 
 if (Config.app.APIServer && Config.app.APIServerMount) {
   app.use(logMiddleware(['/api/bilibili', '/api/douyin', '/api/kuaishou']))
-  app.use('/api/bilibili', createBilibiliRoutes(Config.cookies.bilibili))
-  app.use('/api/douyin', createDouyinRoutes(Config.cookies.douyin))
-  app.use('/api/kuaishou', createKuaishouRoutes(Config.cookies.kuaishou))
+  app.use('/amagi/api/bilibili', createBilibiliRoutes(Config.cookies.bilibili))
+  app.use('/amagi/api/douyin', createDouyinRoutes(Config.cookies.douyin))
+  app.use('/amagi/api/kuaishou', createKuaishouRoutes(Config.cookies.kuaishou))
   amagiLog.mark(`Amagi server listening on ${amagiLog.green('http://localhost:')}${amagiLog.green(process.env.HTTP_PORT!)} API docs: ${amagiLog.yellow('https://amagi.apifox.cn')}`)
 } else if (Config.app.APIServer) {
   const amagiServer = new Client({
@@ -68,28 +70,27 @@ if (Config.app.APIServer && Config.app.APIServerMount) {
   amagiServer.startServer(Config.app.APIServerPort)
 }
 
-app.get('/api/kkk/stream/:filename', videoStreamRouter)
-app.get('/api/kkk/video/:filename', getVideoRouter)
+app.get('/stream/:filename', videoStreamRouter)
+app.get('/video/:filename', getVideoRouter)
 
 const middleware = Config.app.webAuth ? [authMiddleware, signatureVerificationMiddleware] : []
-app.use('/api/kkk/getLongLink', ...middleware, getLongLinkRouter)
-app.use('/api/kkk/douyin/data', ...middleware, getDouyinDataRouter)
-app.use('/api/kkk/bilibili/data', ...middleware, getBilibiliDataRouter)
-app.use('/api/kkk/kuaishou/data', ...middleware, getKuaishouDataRouter)
+app.use('/getLongLink', ...middleware, getLongLinkRouter)
+app.use('/douyin/data', ...middleware, getDouyinDataRouter)
+app.use('/bilibili/data', ...middleware, getBilibiliDataRouter)
+app.use('/kuaishou/data', ...middleware, getKuaishouDataRouter)
 
-app.get('/api/kkk/content/douyin', authMiddleware, signatureVerificationMiddleware, getDouyinContentRouter)
-app.get('/api/kkk/content/bilibili', authMiddleware, signatureVerificationMiddleware, getBilibiliContentRouter)
-app.get('/api/kkk/groups', authMiddleware, signatureVerificationMiddleware, getGroupsRouter)
-app.get('/api/kkk/authors', authMiddleware, signatureVerificationMiddleware, getAuthorsRouter)
-app.post('/api/kkk/content/douyin', authMiddleware, signatureVerificationMiddleware, addDouyinContentRouter)
-app.post('/api/kkk/content/bilibili', authMiddleware, signatureVerificationMiddleware, addBilibiliContentRouter)
-app.post('/api/kkk/content/delete', authMiddleware, signatureVerificationMiddleware, deleteContentRouter)
+app.get('/content/douyin', authMiddleware, signatureVerificationMiddleware, getDouyinContentRouter)
+app.get('/content/bilibili', authMiddleware, signatureVerificationMiddleware, getBilibiliContentRouter)
+app.get('/groups', authMiddleware, signatureVerificationMiddleware, getGroupsRouter)
+app.get('/authors', authMiddleware, signatureVerificationMiddleware, getAuthorsRouter)
+app.post('/content/douyin', authMiddleware, signatureVerificationMiddleware, addDouyinContentRouter)
+app.post('/content/bilibili', authMiddleware, signatureVerificationMiddleware, addBilibiliContentRouter)
+app.post('/content/delete', authMiddleware, signatureVerificationMiddleware, deleteContentRouter)
 
-const pluginRouter = express.Router()
-const staticDir = path.join(Root.pluginPath, 'lib', 'web_chunk')
+const staticRouter = express.Router()
 
 // history fallback 用于支持 /kkk/login、/kkk/dashboard 等前端子路由
-pluginRouter.use(
+staticRouter.use(
   history({
     rewrites: [{ from: /^\/kkk\/.*$/, to: '/kkk/index.html' }],
     htmlAcceptHeaders: ['text/html', 'application/xhtml+xml'],
@@ -97,14 +98,13 @@ pluginRouter.use(
   })
 )
 
-pluginRouter.use(
-  '/kkk',
-  express.static(staticDir, {
-    redirect: false,
-  })
-)
+staticRouter.use(express.static(path.join(Root.pluginPath, 'lib', 'web_chunk'), {
+  redirect: false,
+}))
 
-app.use(pluginRouter)
+/** 将子路由挂载到主路由上 */
+karinApp.use('/kkk', staticRouter)
+karinApp.use('/api/kkk', app)
 
 // ----------------- INIT -----------------
 

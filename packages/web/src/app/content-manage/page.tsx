@@ -1,6 +1,6 @@
 import { Check, ChevronsUpDown, Copy, ExternalLink, MessageSquare, Plus, Trash2, Users, Video } from 'lucide-react'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { toast } from 'sonner'
+import { toast } from 'react-hot-toast'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -550,7 +550,7 @@ export default function ContentManagePage () {
           setSelectedAuthorId(matchedAuthor.id)
           toast.success(`已自动选择作者：${matchedAuthor.name}`)
         } else {
-          toast.info(`未找到匹配的作者"${videoInfo.author}"，请手动选择或添加新作者`)
+          toast.error(`未找到匹配的作者"${videoInfo.author}"，请手动选择或添加新作者`)
         }
       }, 500)
 

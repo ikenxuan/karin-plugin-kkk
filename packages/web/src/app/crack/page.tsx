@@ -12,7 +12,6 @@ import {
   Heart,
   ImageIcon,
   Link,
-  LogOut,
   Maximize,
   MessageCircle,
   Music,
@@ -40,7 +39,6 @@ import { Separator } from "@/components/ui/separator"
 import { ImageType } from '@/components/UniversalImage'
 import UniversalPhotoView from '@/components/UniversalPhotoView'
 import { useVideoParser } from '@/hooks/use-video-parser'
-import { clearAccessToken, clearRefreshToken, clearUserId } from '@/lib/token'
 import { downloadImagesAsZip, downloadVideosAsZip, downloadWithSmartNaming, handleOpenOriginal, handleShare } from '@/lib/tools'
 import type { CommentInfo, VideoInfo } from '@/parsers/types'
 
@@ -60,18 +58,6 @@ export default function VideoParserPage () {
   const [result, setResult] = useState<VideoInfo | null>(null)
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   const { parseVideo, loading, error, clearError } = useVideoParser()
-
-  /**
-   * 处理退出登录
-   */
-  const handleLogout = useCallback(() => {
-    if (confirm('确定要退出登录吗？')) {
-      clearAccessToken()
-      clearRefreshToken()
-      clearUserId()
-      window.location.href = '/kkk/login'
-    }
-  }, [])
 
   /**
    * 处理解析请求
@@ -282,21 +268,16 @@ export default function VideoParserPage () {
       <div className="min-h-screen bg-background">
         <div className="container mx-auto p-4 max-w-4xl">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">
-                抖音视频解析器
-              </h1>
-              <p className="text-muted-foreground">
-                Video Parser
-              </p>
-            </div>
-            <Button variant="outline" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" />
-              退出登录
-            </Button>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold tracking-tight">
+              抖音视频解析器
+            </h1>
+            <p className="text-muted-foreground">
+              Video Parser
+            </p>
           </div>
 
+          {/* 其余代码保持不变 */}
           {/* Input Section */}
           <Card className="mb-8">
             <CardHeader>

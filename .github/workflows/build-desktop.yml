@@ -1,0 +1,128 @@
+name: 构建Windows桌面应用程序
+
+on:
+  workflow_call:
+    inputs:
+      core_version:
+        description: 'Core包版本号
+        required: true
+        type: string
+      should_upload_release:
+        description: '是否上传到Release
+        required: false
+        type: boolean
+        default: false
+      release_tag_name:
+        description: 'Release标签名称
+        required: false
+        type: string
+    outputs:
+      exe_path:
+        description: 'Windows exe文件路径'
+        value: ${{ jobs.build-windows-desktop.outputs.exe_path }}
+      exe_name:
+        description: 'Windows exe文件名'
+        value: ${{ jobs.build-windows-desktop.outputs.exe_name }}
+      desktop_version:
+        description: '桌面应用版本号'
+        value: ${{ jobs.build-windows-desktop.outputs.desktop_version }}
+
+jobs:
+  build-windows-desktop:
+    name: 构建Windows桌面应用
+    runs-on: windows-latest
+    outputs:
+      exe_path: ${{ steps.build.outputs.exe_path }}
+      exe_name: ${{ steps.build.outputs.exe_name }}
+      desktop_version: ${{ steps.sync-version.outputs.desktop_version }}
+
+    steps:
+      - name: 📥 检出源代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🦀 安装Rust工具链
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: 🟢 配置Node.js环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21
+
+      - name: 📦 配置PNPM环境
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.13.2
+          run_install: |
+            - args: [--no-frozen-lockfile]
+
+      - name: 🔄 同步版本号到桌面应用配置
+        id: sync-version
+        run: |
+          $CORE_VERSION = "${{ inputs.core_version }}"
+          echo "同步版本号: $CORE_VERSION"
+          
+          # 更新 tauri.conf.json 中的版本号
+          $configPath = "packages/web/src-tauri/tauri.conf.json"
+          $config = Get-Content $configPath | ConvertFrom-Json
+          $config.version = $CORE_VERSION
+          $config | ConvertTo-Json -Depth 10 | Set-Content $configPath
+          
+          # 更新 Cargo.toml 中的版本号
+          $cargoPath = "packages/web/src-tauri/Cargo.toml"
+          (Get-Content $cargoPath) -replace '^version = ".*"', "version = `"$CORE_VERSION`"" | Set-Content $cargoPath
+          
+          echo "desktop_version=$CORE_VERSION" >> $env:GITHUB_OUTPUT
+          echo "✅ 版本号已同步为: $CORE_VERSION"
+
+      - name: 📱 构建Windows桌面应用
+        id: build
+        run: |
+          echo "开始构建Windows桌面应用..."
+          # 使用根级的 build:desktop 命令
+          pnpm run build:desktop --target x86_64-pc-windows-msvc
+          echo "Windows桌面应用构建完成"
+          
+          # 查找构建产物
+          $EXE_PATH = Get-ChildItem -Path "packages/web/src-tauri/target" -Recurse -Filter "*.exe" | Select-Object -First 1 -ExpandProperty FullName
+          $EXE_NAME = Split-Path $EXE_PATH -Leaf
+          
+          echo "exe_path=$EXE_PATH" >> $env:GITHUB_OUTPUT
+          echo "exe_name=$EXE_NAME" >> $env:GITHUB_OUTPUT
+          echo "找到Windows可执行文件: $EXE_PATH"
+          echo "文件名: $EXE_NAME"
+
+      - name: 📤 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-desktop-app-v${{ steps.sync-version.outputs.desktop_version }}
+          path: |
+            packages/web/src-tauri/target/**/bundle/**/*
+            ${{ steps.build.outputs.exe_path }}
+          retention-days: 30
+
+      - name: 🚀 上传到Release
+        if: inputs.should_upload_release && inputs.release_tag_name && steps.build.outputs.exe_path
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag_name }}
+          files: ${{ steps.build.outputs.exe_path }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📊 生成构建摘要
+        run: |
+          echo "## 🖥️ Windows桌面应用构建完成" >> $env:GITHUB_STEP_SUMMARY
+          echo "" >> $env:GITHUB_STEP_SUMMARY
+          echo "### 📱 应用信息" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **平台:** Windows x64" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **文件名:** \`${{ steps.build.outputs.exe_name }}\`" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **版本:** \`${{ steps.sync-version.outputs.desktop_version }}\`" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **基于Core版本:** \`${{ inputs.core_version }}\`" >> $env:GITHUB_STEP_SUMMARY
+          echo "" >> $env:GITHUB_STEP_SUMMARY
+          echo "### 📥 下载方式" >> $env:GITHUB_STEP_SUMMARY
+          echo "可在当前Actions运行页面的Artifacts部分下载 \`windows-desktop-app-v${{ steps.sync-version.outputs.desktop_version }}\` 文件" >> $env:GITHUB_STEP_SUMMARY
