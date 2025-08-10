@@ -47,13 +47,6 @@ jobs:
         with:
           targets: x86_64-pc-windows-msvc
 
-      - name: 💾 缓存Rust依赖
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: packages/web/src-tauri
-          cache-on-failure: true
-          shared-key: "desktop-build"
-
       - name: 📦 配置PNPM环境
         uses: pnpm/action-setup@v4
         with:
@@ -65,17 +58,6 @@ jobs:
           node-version: 21
           cache: 'pnpm'
           cache-dependency-path: 'pnpm-lock.yaml'
-
-      - name: 💾 缓存PNPM依赖
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pnpm-store
-            node_modules
-            packages/*/node_modules
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
 
       - name: 📦 安装依赖
         run: pnpm install --frozen-lockfile
@@ -107,9 +89,18 @@ jobs:
           echo "Windows桌面应用构建完成"
           
           # 查找NSIS安装程序
-          $NSIS_PATH = Get-ChildItem -Path "packages/web/src-tauri/target" -Recurse -Filter "*.exe" | Where-Object { $_.FullName -like "**/bundle/nsis/**" } | Select-Object -First 1 -ExpandProperty FullName
-          $NSIS_NAME = Split-Path $NSIS_PATH -Leaf
+          $NSIS_PATH = Get-ChildItem -Path "packages/web/src-tauri/target" -Recurse -Filter "*.exe" | Where-Object { $_.FullName -like "*bundle*nsis*" } | Select-Object -First 1 -ExpandProperty FullName
           
+          if ($NSIS_PATH) {
+            $NSIS_NAME = Split-Path $NSIS_PATH -Leaf
+            echo "exe_path=$NSIS_PATH" >> $env:GITHUB_OUTPUT
+            echo "exe_name=$NSIS_NAME" >> $env:GITHUB_OUTPUT
+            echo "找到NSIS安装程序: $NSIS_PATH"
+            echo "文件名: $NSIS_NAME"
+          } else {
+            echo "错误: 未找到NSIS安装程序"
+            exit 1
+          }
           echo "nsis_path=$NSIS_PATH" >> $env:GITHUB_OUTPUT
           echo "nsis_name=$NSIS_NAME" >> $env:GITHUB_OUTPUT
           echo "找到NSIS安装程序: $NSIS_PATH"
