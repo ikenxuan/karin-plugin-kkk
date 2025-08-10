@@ -636,7 +636,8 @@ jobs:
   # 桌面应用构建
   desktop-build:
     name: 构建桌面应用
-    needs: [version-release, build-branch-sync]
+    needs: [version-release]
+    if: always() && !cancelled() && !failure()
     runs-on: windows-latest
     outputs:
       desktop_version: ${{ steps.call-desktop-build.outputs.desktop_version }}
