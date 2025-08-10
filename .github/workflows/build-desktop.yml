@@ -4,16 +4,16 @@ on:
   workflow_call:
     inputs:
       core_version:
-        description: 'Core包版本号
+        description: 'Core包版本号'
         required: true
         type: string
       should_upload_release:
-        description: '是否上传到Release
+        description: '是否上传到Release'
         required: false
         type: boolean
         default: false
       release_tag_name:
-        description: 'Release标签名称
+        description: 'Release标签名称'
         required: false
         type: string
     outputs:
