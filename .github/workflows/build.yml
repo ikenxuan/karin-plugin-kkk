@@ -22,6 +22,9 @@ jobs:
       releases_created: ${{ steps.release-please.outputs.releases_created }}
       core_release_created: ${{ steps.release-please.outputs['packages/core--release_created'] }}
       core_tag_name: ${{ steps.release-please.outputs['packages/core--tag_name'] }}
+      core_version: ${{ steps.get-version-info.outputs.core_version }}
+      should_upload_release: ${{ steps.get-version-info.outputs.should_upload_release }}
+      release_tag_name: ${{ steps.get-version-info.outputs.release_tag_name }}
 
     steps:
       - name: 🚀 执行版本发布检查
@@ -31,6 +34,28 @@ jobs:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
+
+      - name: 📥 检出源代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🏷️ 获取版本信息
+        id: get-version-info
+        run: |
+          # 获取当前core包版本
+          cd packages/core
+          CORE_VERSION=$(node -p "require('./package.json').version")
+          echo "core_version=$CORE_VERSION" >> $GITHUB_OUTPUT
+          
+          # 判断是否应该上传到Release
+          if [ "${{ steps.release-please.outputs.core_release_created }}" = "true" ]; then
+            echo "should_upload_release=true" >> $GITHUB_OUTPUT
+            echo "release_tag_name=${{ steps.release-please.outputs.core_tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "should_upload_release=false" >> $GITHUB_OUTPUT
+            echo "release_tag_name=" >> $GITHUB_OUTPUT
+          fi
 
   # 正式版本构建 (仅 core 包)
   production-build:
@@ -612,8 +637,7 @@ jobs:
         with:
           name: npm-package-info
           path: |
-            pkg-output.txt
-            output.json
+            pkg-output.json
 
       - name: 创建分发包
         run: |
@@ -635,56 +659,10 @@ jobs:
 
   # 桌面应用构建
   desktop-build:
-    name: 构建桌面应用
-    needs: [version-release]
+    needs: [version-release, build-branch-sync]
     if: always() && !cancelled() && !failure()
-    runs-on: windows-latest
-    outputs:
-      desktop_version: ${{ steps.call-desktop-build.outputs.desktop_version }}
-      exe_name: ${{ steps.call-desktop-build.outputs.exe_name }}
-    
-    steps:
-      - name: 📥 检出源代码
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: 🏷️ 获取版本信息
-        id: get-version-info
-        run: |
-          # 获取 core 包版本号
-          $CORE_VERSION = node -p "require('./packages/core/package.json').version"
-          echo "core_version=$CORE_VERSION" >> $env:GITHUB_OUTPUT
-          
-          # 判断是否为正式发布
-          if ("${{ needs.version-release.outputs.core_release_created }}" -eq "true") {
-            echo "should_upload_release=true" >> $env:GITHUB_OUTPUT
-            echo "release_tag_name=${{ needs.version-release.outputs.core_tag_name }}" >> $env:GITHUB_OUTPUT
-            echo "🎉 正式发布构建，版本: $CORE_VERSION"
-          } else {
-            echo "should_upload_release=false" >> $env:GITHUB_OUTPUT
-            echo "release_tag_name=" >> $env:GITHUB_OUTPUT
-            echo "🔧 开发构建，版本: $CORE_VERSION"
-          }
-
-      - name: 🖥️ 调用桌面应用构建
-        id: call-desktop-build
-        uses: ./.github/workflows/build-desktop/
-        with:
-          core_version: ${{ steps.get-version-info.outputs.core_version }}
-          should_upload_release: ${{ steps.get-version-info.outputs.should_upload_release == 'true' }}
-          release_tag_name: ${{ steps.get-version-info.outputs.release_tag_name }}
-
-      - name: 📊 桌面构建完成摘要
-        run: |
-          echo "## 🖥️ 桌面应用构建摘要" >> $env:GITHUB_STEP_SUMMARY
-          echo "" >> $env:GITHUB_STEP_SUMMARY
-          echo "- **桌面应用版本:** \`${{ steps.call-desktop-build.outputs.desktop_version }}\`" >> $env:GITHUB_STEP_SUMMARY
-          echo "- **可执行文件:** \`${{ steps.call-desktop-build.outputs.exe_name }}\`" >> $env:GITHUB_STEP_SUMMARY
-          echo "- **构建类型:** ${{ steps.get-version-info.outputs.should_upload_release == 'true' && '正式发布' || '开发构建' }}" >> $env:GITHUB_STEP_SUMMARY
-          echo "" >> $env:GITHUB_STEP_SUMMARY
-          if ("${{ steps.get-version-info.outputs.should_upload_release }}" -eq "true") {
-            echo "✅ 已自动上传到 Release: ${{ steps.get-version-info.outputs.release_tag_name }}" >> $env:GITHUB_STEP_SUMMARY
-          } else {
-            echo "📦 构建产物已上传到 Artifacts" >> $env:GITHUB_STEP_SUMMARY
-          }
+    uses: ./.github/workflows/build-desktop.yml
+    with:
+      core_version: ${{ needs.version-release.outputs.core_version }}
+      should_upload_release: ${{ needs.version-release.outputs.should_upload_release == 'true' }}
+      release_tag_name: ${{ needs.version-release.outputs.release_tag_name }}
