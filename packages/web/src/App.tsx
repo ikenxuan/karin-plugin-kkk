@@ -1,9 +1,12 @@
+import { isTauri } from '@tauri-apps/api/core'
 import { lazy, Suspense, useEffect } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import { DockBar } from './components/dock-bar'
+import { DraggableTitlebar } from './components/draggable-titlebar'
 import { ThemeProvider } from './components/theme-provider'
-import { getDefaultRedirectPath,isAuthenticated } from './lib/auth'
+import { WindowControls } from './components/window-controls'
+import { getDefaultRedirectPath, isAuthenticated } from './lib/auth'
 
 // 使用懒加载导入组件
 const LoginPage = lazy(() => import('./app/login/page'))
@@ -60,35 +63,46 @@ const App = () => {
 
   return (
     <ThemeProvider defaultTheme="system">
+      {/* Tauri 环境下显示自定义窗口控制和拖拽区域 */}
+      {isTauri() && (
+        <>
+          <DraggableTitlebar />
+          <WindowControls />
+        </>
+      )}
+
       <Suspense fallback={<div className="flex items-center justify-center h-screen text-lg font-bold">加载中...</div>}>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/crack"
-            element={
-              <ProtectedRoute>
-                <VideoParserPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/database"
-            element={
-              <ProtectedRoute>
-                <ContentManagePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/about"
-            element={
-              <ProtectedRoute>
-                <AboutPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/" element={<RootRedirect />} />
-        </Routes>
+        {/* 为 Tauri 环境添加顶部间距，避免内容被标题栏遮挡 */}
+        <div className={isTauri() ? 'pt-10' : ''}>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/crack"
+              element={
+                <ProtectedRoute>
+                  <VideoParserPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/database"
+              element={
+                <ProtectedRoute>
+                  <ContentManagePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <ProtectedRoute>
+                  <AboutPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/" element={<RootRedirect />} />
+          </Routes>
+        </div>
 
         {showDockBar && <DockBar />}
       </Suspense>

@@ -134,18 +134,26 @@ fn get_backend_url() -> String {
     backend_url.clone().unwrap_or_else(|| "http://127.0.0.1:7777".to_string())
 }
 
+/**
+ * 开始拖拽窗口
+ */
+#[command]
+async fn start_drag(window: tauri::WebviewWindow) -> Result<(), String> {
+    window.start_dragging().map_err(|e| e.to_string())
+}
+
 pub fn run() {
-    tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![proxy_request, set_server_url, get_server_url])
-        .setup(|_app| {
-            #[cfg(debug_assertions)]
-            {
-                if let Some(window) = _app.get_webview_window("main") {
-                    window.open_devtools();
-                }
-            }
-            Ok(())
-        })
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+  tauri::Builder::default()
+      .invoke_handler(tauri::generate_handler![proxy_request, set_server_url, get_server_url, start_drag])
+      .setup(|_app| {
+          #[cfg(debug_assertions)]
+          {
+              if let Some(window) = _app.get_webview_window("main") {
+                  window.open_devtools();
+              }
+          }
+          Ok(())
+      })
+      .run(tauri::generate_context!())
+      .expect("error while running tauri application");
 }

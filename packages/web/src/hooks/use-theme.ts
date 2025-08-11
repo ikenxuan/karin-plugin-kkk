@@ -14,11 +14,6 @@ const ThemeProps = {
 type Theme = typeof ThemeProps.system | typeof ThemeProps.inverse
 
 export const useTheme = (defaultTheme?: Theme) => {
-  try {
-    JSON.parse(localStorage.getItem(ThemeProps.key) ?? '')
-  } catch {
-    localStorage.setItem(ThemeProps.key, ThemeProps.system)
-  }
   const [theme, setTheme] = useLocalStorageState<Theme>(key.theme, {
     defaultValue: defaultTheme ?? ThemeProps.system, // 默认使用系统主题
   })

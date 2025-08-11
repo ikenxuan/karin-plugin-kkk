@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "kkk",
+  "productName": "炫炫的小工具",
   "version": "0.1.0",
   "identifier": "com.karin.plugin.kkk.webui",
   "build": {
@@ -29,10 +29,11 @@
         "height": 800,
         "resizable": true,
         "fullscreen": false,
-        "decorations": true,
+        "decorations": false,
         "transparent": false,
         "alwaysOnTop": false,
-        "skipTaskbar": false
+        "skipTaskbar": false,
+        "devtools": false
       }
     ]
   },
@@ -60,8 +61,6 @@
     }
   },
   "plugins": {
-    "globalShortcut": {
-      "all": true
-    }
+    "globalShortcut": {}
   }
 }
