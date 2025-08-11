@@ -39,10 +39,11 @@ const getBuildTime = () => {
 }
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
   const isStandalone = mode === 'standalone'
   const buildTime = getBuildTime()
   const version = getPluginVersion()
+  const isDev = command === 'serve'
 
   return {
     base: isStandalone? '/':  '/kkk/',
@@ -105,10 +106,12 @@ export default defineConfig(({ mode }) => {
       // 启用CSS代码分割
       cssCodeSplit: true,
       // 最小化混淆
-      minify: 'esbuild',
+      minify: isDev || process.env.TAURI_ENV_DEBUG ? false : 'esbuild',
       // 设置chunk大小警告阈值
       chunkSizeWarningLimit: 1000,
+      sourcemap: isDev || !!process.env.TAURI_ENV_DEBUG,
     },
+    clearScreen: false,
     server: {
       host: true,
       watch: {
