@@ -38,7 +38,7 @@ export default function AboutPage () {
       clearAccessToken()
       clearRefreshToken()
       clearUserId()
-      window.location.href = (isTauri() || import.meta.env.DEV) ? '/kkk/login' : '/login'
+      window.location.href = (isTauri() && import.meta.env.DEV) ? '/kkk/login' : (isTauri() ? '/login' : '/kkk/login')
     } else {
       // 第一次点击，设置待确认状态
       setIsLogoutPending(true)
@@ -174,9 +174,9 @@ export default function AboutPage () {
    */
   const getThemeIcon = () => {
     if (isSystem) {
-      return <Monitor className="h-4 w-4" />
+      return <Monitor className="w-4 h-4" />
     }
-    return isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />
+    return isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />
   }
 
   /**
@@ -204,10 +204,10 @@ export default function AboutPage () {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-background p-4">
-        <div className="max-w-2xl mx-auto space-y-6">
+      <div className="p-4 min-h-screen bg-background">
+        <div className="mx-auto space-y-6 max-w-2xl">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
                 关于我的
@@ -222,7 +222,7 @@ export default function AboutPage () {
               variant={isLogoutPending ? "destructive" : "outline"}
               onClick={handleLogoutClick}
             >
-              <LogOut className="w-4 h-4 mr-2" />
+              <LogOut className="mr-2 w-4 h-4" />
               {isLogoutPending ? '确认退出' : '退出登录'}
             </Button>
           </div>
@@ -235,16 +235,16 @@ export default function AboutPage () {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center space-x-4">
-                <Avatar className="h-20 w-20">
+                <Avatar className="w-20 h-20">
                   <AvatarImage alt="管理员头像" />
                   <AvatarFallback>
-                    <User className="h-10 w-10" />
+                    <User className="w-10 h-10" />
                   </AvatarFallback>
                 </Avatar>
                 <div>
                   <h3 className="text-lg font-semibold">管理员</h3>
                   <div className="flex items-center text-sm text-muted-foreground">
-                    <Shield className="h-4 w-4 mr-1" />
+                    <Shield className="mr-1 w-4 h-4" />
                     <span>系统管理员</span>
                   </div>
                 </div>
@@ -259,7 +259,7 @@ export default function AboutPage () {
               <CardDescription>选择您偏好的界面主题</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex justify-between items-center">
                 <div className="space-y-1">
                   <Label className="text-sm font-medium">当前主题</Label>
                   <p className="text-sm text-muted-foreground">
@@ -272,7 +272,7 @@ export default function AboutPage () {
                       variant="outline"
                       size="sm"
                       onClick={toggleTheme}
-                      className="flex items-center gap-2"
+                      className="flex gap-2 items-center"
                     >
                       {getThemeIcon()}
                       {getToggleThemeText()}
@@ -290,9 +290,9 @@ export default function AboutPage () {
                       variant={isSystem ? "default" : "outline"}
                       size="sm"
                       onClick={setSystemTheme}
-                      className="flex items-center gap-2"
+                      className="flex gap-2 items-center"
                     >
-                      <Monitor className="h-4 w-4" />
+                      <Monitor className="w-4 h-4" />
                       跟随系统
                     </Button>
                   </TooltipTrigger>
@@ -306,9 +306,9 @@ export default function AboutPage () {
                       variant={isInverse ? "default" : "outline"}
                       size="sm"
                       onClick={setInverseTheme}
-                      className="flex items-center gap-2"
+                      className="flex gap-2 items-center"
                     >
-                      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                      {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                       相反色
                     </Button>
                   </TooltipTrigger>
@@ -361,7 +361,7 @@ export default function AboutPage () {
                         地址
                       </Label>
                       <div className="relative flex-1">
-                        <Server className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Server className="absolute left-3 top-1/2 w-4 h-4 transform -translate-y-1/2 text-muted-foreground" />
                         <Input
                           id="hostname"
                           type="text"
@@ -425,7 +425,7 @@ export default function AboutPage () {
 
                     {/* 完整URL预览 */}
                     {serverUrl && (
-                      <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded border">
+                      <div className="p-2 text-xs rounded border text-muted-foreground bg-muted/50">
                         地址预览: {buildCompleteServerUrl()}
                       </div>
                     )}
@@ -436,7 +436,7 @@ export default function AboutPage () {
                   disabled={isTesting}
                   className="w-full"
                 >
-                  <Save className="h-4 w-4 mr-2" />
+                  <Save className="mr-2 w-4 h-4" />
                   {isTesting ? '测试连接中...' : '保存并测试连接'}
                 </Button>
               </CardContent>

@@ -97,7 +97,9 @@ export default defineConfig(({ command, mode }) => {
     define: {
       __TAURI__: JSON.stringify(process.env.TAURI_PLATFORM !== undefined),
       __APP_VERSION__: JSON.stringify(version),
-      __BUILD_TIME__: JSON.stringify(buildTime)
+      __BUILD_TIME__: JSON.stringify(buildTime),
+      'import.meta.env.DEV': JSON.stringify(command === 'serve'),
+      'import.meta.env.PROD': JSON.stringify(command === 'build')
     },
     build: {
       emptyOutDir: true,

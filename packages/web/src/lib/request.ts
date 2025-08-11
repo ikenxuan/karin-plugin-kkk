@@ -202,7 +202,7 @@ const redirectToLogin = (message: string) => {
     cacheToken.token = null
   }
 
-  const loginPath = (isTauri() && import.meta.env.DEV) ? '/kkk/login' : (isTauri() ? '/kkk' : '/kkk/login')
+  const loginPath = (isTauri() && import.meta.env.DEV) ? '/kkk/login' : (isTauri() ? '/login' : '/kkk/login')
 
   if (window.location.pathname === loginPath) {
     if (token) {
