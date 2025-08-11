@@ -26,10 +26,22 @@ on:
       desktop_version:
         description: '桌面应用版本号'
         value: ${{ jobs.build-windows-desktop.outputs.desktop_version }}
+      desktop_exe_name:
+        description: '桌面应用exe文件名'
+        value: ${{ jobs.build-windows-desktop.outputs.desktop_exe_name }}
+      artifact_id:
+        description: 'Release资产ID'
+        value: ${{ jobs.build-windows-desktop.outputs.artifact_id }}
+      artifact_url:
+        description: 'Release资产URL'
+        value: ${{ jobs.build-windows-desktop.outputs.artifact_url }}
+      build_success:
+        description: '构建是否成功'
+        value: ${{ jobs.build-windows-desktop.outputs.build_success }}
 
 jobs:
   build-windows-desktop:
-    name: 构建Windows桌面应用
+    name: Build Windows App
     runs-on: windows-latest
     outputs:
       exe_path: ${{ steps.build.outputs.exe_path }}
@@ -113,6 +125,18 @@ jobs:
             echo "错误: 未找到NSIS安装程序"
             exit 1
           }
+
+
+      - name: 🚀 上传到Release
+        id: upload-release
+        if: ${{ inputs.should_upload_release == true && inputs.release_tag_name != '' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag_name }}
+          files: ${{ steps.build.outputs.exe_path }}
+          name: ${{ steps.build.outputs.exe_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 📤 上传构建产物
         id: upload-artifact
