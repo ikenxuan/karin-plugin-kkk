@@ -33,8 +33,11 @@ jobs:
     runs-on: windows-latest
     outputs:
       exe_path: ${{ steps.build.outputs.exe_path }}
-      exe_name: ${{ steps.build.outputs.exe_name }}
-      desktop_version: ${{ steps.sync-version.outputs.desktop_version }}
+      exe_name: ${{ steps.summary.outputs.exe_name }}
+      desktop_version: ${{ steps.summary.outputs.desktop_version }}
+      artifact_id: ${{ steps.summary.outputs.artifact_id }}
+      artifact_url: ${{ steps.summary.outputs.artifact_url }}
+      build_success: ${{ steps.build.conclusion == 'success' }}
 
     steps:
       - name: 📥 检出源代码
@@ -110,6 +113,7 @@ jobs:
           }
 
       - name: 📤 上传构建产物
+        id: upload-artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.build.outputs.exe_name }}
@@ -117,33 +121,37 @@ jobs:
           retention-days: 30
           compression-level: 0
 
-      - name: 🚀 上传到Release
-        if: inputs.should_upload_release && inputs.release_tag_name && steps.build.outputs.exe_path
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ inputs.release_tag_name }}
-          files: ${{ steps.build.outputs.exe_path }}
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: 📊 生成构建摘要
+        id: summary
         run: |
+          # 获取真实的 artifact 下载链接
+          $ARTIFACT_ID = "${{ steps.upload-artifact.outputs.artifact-id }}"
+          $ARTIFACT_URL = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/$ARTIFACT_ID"
+          
           echo "## 🖥️ Windows桌面应用构建完成" >> $env:GITHUB_STEP_SUMMARY
           echo "" >> $env:GITHUB_STEP_SUMMARY
           echo "### 📱 应用信息" >> $env:GITHUB_STEP_SUMMARY
           echo "- **平台:** Windows x64" >> $env:GITHUB_STEP_SUMMARY
-          echo "- **文件名:** ``${{ steps.build.outputs.exe_name }}``" >> $env:GITHUB_STEP_SUMMARY
-          echo "- **版本:** ``${{ steps.sync-version.outputs.desktop_version }}``" >> $env:GITHUB_STEP_SUMMARY
-          echo "- **基于Core版本:** ``${{ inputs.core_version }}``" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **文件名:** \`\`${{ steps.build.outputs.exe_name }}\`\`" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **版本:** \`\`${{ steps.sync-version.outputs.desktop_version }}\`\`" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **基于Core版本:** \`\`${{ inputs.core_version }}\`\`" >> $env:GITHUB_STEP_SUMMARY
           echo "" >> $env:GITHUB_STEP_SUMMARY
           echo "### 📥 下载方式" >> $env:GITHUB_STEP_SUMMARY
-          echo "- 📦 **Artifact下载:** [点击下载 ${{ steps.build.outputs.exe_name }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $env:GITHUB_STEP_SUMMARY
+          echo "- 📦 **直接下载:** [点击下载 ${{ steps.build.outputs.exe_name }}]($ARTIFACT_URL)" >> $env:GITHUB_STEP_SUMMARY
           if ("${{ inputs.should_upload_release }}" -eq "true" -and "${{ inputs.release_tag_name }}" -ne "") {
             echo "- 🚀 **Release下载:** [点击这里下载最新版本](https://github.com/${{ github.repository }}/releases/tag/${{ inputs.release_tag_name }})" >> $env:GITHUB_STEP_SUMMARY
           }
           echo "" >> $env:GITHUB_STEP_SUMMARY
           echo "### 📋 构建详情" >> $env:GITHUB_STEP_SUMMARY
           echo "- **构建时间:** $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')" >> $env:GITHUB_STEP_SUMMARY
-          echo "- **提交SHA:** ``${{ github.sha }}``" >> $env:GITHUB_STEP_SUMMARY
-          echo "- **分支:** ``${{ github.ref_name }}``" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **提交SHA:** \`\`${{ github.sha }}\`\`" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **分支:** \`\`${{ github.ref_name }}\`\`" >> $env:GITHUB_STEP_SUMMARY
+          
+          # 输出信息供其他工作流使用
+          echo "artifact_id=$ARTIFACT_ID" >> $env:GITHUB_OUTPUT
+          echo "artifact_url=$ARTIFACT_URL" >> $env:GITHUB_OUTPUT
+          echo "exe_name=${{ steps.build.outputs.exe_name }}" >> $env:GITHUB_OUTPUT
+          echo "desktop_version=${{ steps.sync-version.outputs.desktop_version }}" >> $env:GITHUB_OUTPUT
+          echo "desktop_exe_name=${{ steps.build.outputs.exe_name }}" >> $env:GITHUB_OUTPUT
+          echo "desktop_version=${{ steps.sync-version.outputs.desktop_version }}" >> $env:GITHUB_OUTPUT
+          echo "desktop_artifact_url=$ARTIFACT_URL" >> $env:GITHUB_OUTPUT

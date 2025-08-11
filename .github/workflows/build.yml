@@ -330,7 +330,6 @@ jobs:
   # 预览包发布 (每次推送都执行)
   preview-package-publish:
     runs-on: ubuntu-latest
-    # 移除条件限制，每次推送都执行
     steps:
       - name: 📥 检出源代码
         uses: actions/checkout@v4
@@ -577,6 +576,10 @@ jobs:
             ${{ steps.publish_pkg.outputs.pnpm_install_cmd }}
             ```
             
+            ### 🖥️ Windows 桌面应用
+            - **状态:** 🔄 构建中...
+            - **预计完成时间:** 约 5-10 分钟
+            
             ### 🚀 快速体验
             ${{ steps.publish_pkg.outputs.stackblitz_url && format('- [🌐 在 Stackblitz 中打开]({0})', steps.publish_pkg.outputs.stackblitz_url) || '- 🌐 Stackblitz 链接暂不可用' }}
             - [📋 查看构建日志](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
@@ -627,35 +630,10 @@ jobs:
             
             </details>
             
-            > 💡 **提示:** 此评论会在每次推送新提交时自动更新，包含最新的构建信息
+            > 💡 **提示:** 此评论会在桌面应用构建完成后自动更新
           comment-tag: published-packages
           mode: upsert
           reactions: rocket, eyes, hooray
-
-      - name: 上传NPM包信息
-        uses: actions/upload-artifact@v4
-        with:
-          name: npm-package-info
-          path: |
-            pkg-output.json
-
-      - name: 创建分发包
-        run: |
-          mkdir -p temp-package
-          cp -r lib temp-package/
-          cp -r resources temp-package/
-          cp package.json CHANGELOG.md README.md LICENSE temp-package/
-          cp -r config temp-package/ || true
-          cd temp-package
-          zip -r ../build.zip .
-          cd ..
-          rm -rf temp-package
-
-      - name: 上传分发包
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-zip
-          path: build.zip
 
   # 桌面应用构建
   desktop-build:
@@ -666,3 +644,39 @@ jobs:
       core_version: ${{ needs.version-release.outputs.core_version }}
       should_upload_release: ${{ needs.version-release.outputs.should_upload_release == 'true' }}
       release_tag_name: ${{ needs.version-release.outputs.release_tag_name }}
+
+  # 桌面应用完成后更新 PR 评论
+  update-pr-comment-with-desktop:
+    runs-on: ubuntu-latest
+    needs: [preview-package-publish, desktop-build]
+    if: github.event_name == 'pull_request' && always()
+    steps:
+      - name: 💬 更新 PR 评论 (包含桌面应用信息)
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: |
+            ## 📦 预览包发布成功 
+            
+            ### 🏷️ 包信息
+            - **版本号:** `${{ needs.preview-package-publish.outputs.pkg_version || '获取中...' }}`
+            - **提交哈希:** [`${{ github.sha }}`](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+            - **分支:** `${{ github.head_ref || github.ref_name }}`
+            
+            ### 📥 NPM 包安装
+            ```bash
+            # 推荐使用 pnpm 安装
+            ${{ needs.preview-package-publish.outputs.pnpm_install_cmd || 'pnpm add 包名' }}
+            ```
+            
+            ### 🖥️ Windows 桌面应用
+            ${{ needs.desktop-build.result == 'success' && format('- **状态:** ✅ 构建成功\n- **版本:** `{0}`\n- **文件名:** `{1}`\n- **直接下载:** [点击下载桌面应用]({2})', needs.desktop-build.outputs.desktop_version, needs.desktop-build.outputs.exe_name, needs.desktop-build.outputs.artifact_url) || needs.desktop-build.result == 'failure' && '- **状态:** ❌ 构建失败' || needs.desktop-build.result == 'cancelled' && '- **状态:** ⏹️ 构建取消' || '- **状态:** 🔄 构建中...' }}
+            
+            ### 🚀 快速体验
+            - [📋 查看构建日志](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            - [🔍 查看提交详情](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+            
+            ---
+            
+          comment-tag: published-packages
+          mode: upsert
+          reactions: rocket, eyes, hooray
