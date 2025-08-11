@@ -686,9 +686,12 @@ jobs:
             ```
             
             ### 🖥️ Windows 桌面应用
-            ${{ needs.desktop-build.result == 'success' && format('- **状态:** ✅ 构建成功\n- **文件名:** `{0}`\n- **版本:** `{1}`\n- **📥 下载链接:** [点击下载 {0}]({2})', needs.desktop-build.outputs.desktop_exe_name, needs.desktop-build.outputs.desktop_version, needs.desktop-build.outputs.desktop_artifact_url) || '- **状态:** ❌ 构建失败或跳过' }}
+            ${{ needs.desktop-build.result == 'success' && '- **状态:** ✅ 构建成功' || '- **状态:** ❌ 构建失败或跳过' }}
+            ${{ needs.desktop-build.result == 'success' && format('- **文件名:** `{0}`', needs.desktop-build.outputs.desktop_exe_name) || '' }}
+            ${{ needs.desktop-build.result == 'success' && format('- **版本:** `{0}`', needs.desktop-build.outputs.desktop_version) || '' }}
+            ${{ needs.desktop-build.result == 'success' && format('- **📥 下载链接:** [点击下载 {0}]({1})', needs.desktop-build.outputs.desktop_exe_name, needs.desktop-build.outputs.artifact_url) || '' }}
             ${{ needs.desktop-build.result == 'success' && '- **💡 安装说明:** 下载后直接运行安装程序，支持 Windows 10/11 x64 系统' || '' }}
-            
+
             ### 🚀 快速体验
             ${{ needs.preview-package-publish.outputs.stackblitz_url && format('- [🌐 在 Stackblitz 中打开]({0})', needs.preview-package-publish.outputs.stackblitz_url) || '- 🌐 Stackblitz 链接暂不可用' }}
             - [📋 查看构建日志](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})

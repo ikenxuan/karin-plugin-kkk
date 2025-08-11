@@ -38,6 +38,8 @@ jobs:
       artifact_id: ${{ steps.summary.outputs.artifact_id }}
       artifact_url: ${{ steps.summary.outputs.artifact_url }}
       build_success: ${{ steps.build.conclusion == 'success' }}
+      desktop_exe_name: ${{ steps.summary.outputs.desktop_exe_name }}
+
 
     steps:
       - name: 📥 检出源代码
