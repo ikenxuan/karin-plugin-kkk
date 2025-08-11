@@ -1,4 +1,4 @@
-import { CheckCircle, Download, X } from 'lucide-react'
+import { Download} from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 
