@@ -24,7 +24,7 @@ struct ProxyResponse {
 }
 
 #[command]
-async fn proxy_request(request: ProxyRequest) -> Result<ProxyResponse, String> {
+async fn request(request: ProxyRequest) -> Result<ProxyResponse, String> {
     let backend_url: String = get_backend_url();
     let full_url: String = format!("{}{}", backend_url, request.url);
     
@@ -144,13 +144,11 @@ async fn start_drag(window: tauri::WebviewWindow) -> Result<(), String> {
 
 pub fn run() {
   tauri::Builder::default()
-      .invoke_handler(tauri::generate_handler![proxy_request, set_server_url, get_server_url, start_drag])
+      .invoke_handler(tauri::generate_handler![request, set_server_url, get_server_url, start_drag])
       .setup(|_app: &mut tauri::App| {
           #[cfg(debug_assertions)]
           {
-            let window: tauri::WebviewWindow<_> = _app.get_webview_window("main").unwrap();
-            window.open_devtools();
-            window.close_devtools();
+            _app.get_webview_window("main").unwrap().open_devtools();
           }
           Ok(())
       })

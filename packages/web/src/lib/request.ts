@@ -202,7 +202,7 @@ const redirectToLogin = (message: string) => {
     cacheToken.token = null
   }
 
-  const loginPath = (isTauri() || import.meta.env.DEV) ? '/kkk/login' : '/login'
+  const loginPath = (isTauri() && import.meta.env.DEV) ? '/kkk/login' : (isTauri() ? '/kkk' : '/kkk/login')
 
   if (window.location.pathname === loginPath) {
     if (token) {
@@ -468,7 +468,7 @@ async function tauriRequest<T> (
   }
 
   try {
-    const response = await invoke<TauriProxyResponse>('proxy_request', {
+    const response = await invoke<TauriProxyResponse>('request', {
       request: {
         url,
         method,
