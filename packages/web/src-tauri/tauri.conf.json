@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "炫炫的小工具",
+  "productName": "kkkWebUI",
   "version": "0.1.0",
   "identifier": "com.karin.plugin.kkk.webui",
   "build": {

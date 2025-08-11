@@ -1,12 +1,7 @@
 [package]
 name = "app"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["ikenxuan"]
-license = ""
-repository = "github:ikenxuan/karin-plugin-kkk"
 edition = "2021"
-rust-version = "1.77.2"
 
 [profile.dev]
 incremental = true # 以较小的步骤编译您的二进制文件。
@@ -28,5 +23,5 @@ tauri-build = { version = "2.3.1", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "2.7.0", features = ["protocol-asset", "devtools"] }
-reqwest = { version = "0.12", features = ["json"] }
+tauri = { version = "2.7.0", features = ["protocol-asset"] }
+reqwest = { version = "0.12", default-features = false }
