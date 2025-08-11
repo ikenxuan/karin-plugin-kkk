@@ -1,16 +1,13 @@
 import { getCurrentWindow } from '@tauri-apps/api/window'
-import { Minus, Square, X } from 'lucide-react'
+import { Minus, X } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
-
-import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 /**
  * 窗口控制组件
- * 提供最小化、最大化/还原、关闭功能
+ * 提供最小化、关闭功能
  */
 export const WindowControls = () => {
-  const [isMaximized, setIsMaximized] = useState(false)
+  const [, setIsMaximized] = useState(false)
 
   useEffect(() => {
     const checkMaximized = async () => {
@@ -42,19 +39,6 @@ export const WindowControls = () => {
   }, [])
 
   /**
-   * 切换最大化状态
-   */
-  const handleToggleMaximize = useCallback(async () => {
-    try {
-      const appWindow = getCurrentWindow()
-      await appWindow.toggleMaximize()
-      setIsMaximized(!isMaximized)
-    } catch (error) {
-      console.error('切换最大化状态失败:', error)
-    }
-  }, [isMaximized])
-
-  /**
    * 关闭窗口
    */
   const handleClose = useCallback(async () => {
@@ -67,57 +51,22 @@ export const WindowControls = () => {
   }, [])
 
   return (
-    <div className="fixed top-4 right-4 z-50 flex items-center bg-default/5 backdrop-blur-md rounded-lg overflow-hidden shadow-lg shadow-black/20">
+    <div className="fixed top-4 right-4 z-50 flex items-center bg-black/10 dark:bg-white/10 backdrop-blur-md rounded-md overflow-hidden shadow-sm">
       {/* 最小化按钮 */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleMinimize}
-            className="ext-default"
-          >
-            <Minus size={18} strokeWidth={3} absoluteStrokeWidth />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="bottom">
-          <p>最小化</p>
-        </TooltipContent>
-      </Tooltip>
-
-      {/* 最大化/还原按钮 */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleToggleMaximize}
-            className="text-default"
-          >
-            <Square size={18} strokeWidth={3} absoluteStrokeWidth />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="bottom">
-          <p>{isMaximized ? "还原" : "最大化"}</p>
-        </TooltipContent>
-      </Tooltip>
+      <button
+        onClick={handleMinimize}
+        className="w-12 h-8 flex items-center justify-center text-default hover:bg-white/60 dark:hover:bg-black/40 transition-colors duration-200"
+      >
+        <Minus size={18} strokeWidth={3} absoluteStrokeWidth />
+      </button>
 
       {/* 关闭按钮 */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleClose}
-            className="text-default hover:text-white hover:bg-red-500"
-          >
-            <X size={18} strokeWidth={3} absoluteStrokeWidth />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="bottom">
-          <p>关闭</p>
-        </TooltipContent>
-      </Tooltip>
+      <button
+        onClick={handleClose}
+        className="w-12 h-8 flex items-center justify-center text-default hover:text-white hover:bg-red-500 transition-colors duration-200"
+      >
+        <X size={16} strokeWidth={3} absoluteStrokeWidth />
+      </button>
     </div>
   )
 }

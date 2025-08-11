@@ -108,24 +108,24 @@ async fn set_server_url(app_handle: AppHandle, url: String) -> Result<(), String
 #[command]
 async fn get_server_url(app_handle: AppHandle) -> Result<String, String> {
     let backend_url = BACKEND_URL.lock().map_err(|e| e.to_string())?;
-    if let Some(url) = &*backend_url {
+    if let Some(url) = backend_url.as_ref() {
         return Ok(url.clone());
     }
+    drop(backend_url);
     
-    // 从配置文件读取
     if let Ok(app_dir) = app_handle.path().app_config_dir() {
         let config_path = app_dir.join("server_config.json");
-        if let Ok(content) = fs::read_to_string(config_path) {
-            if let Ok(config) = serde_json::from_str::<serde_json::Value>(&content) {
-                if let Some(url) = config["server_url"].as_str() {
+        if let Ok(config_content) = fs::read_to_string(config_path) {
+            if let Ok(config) = serde_json::from_str::<serde_json::Value>(&config_content) {
+                if let Some(server_url) = config.get("server_url").and_then(|v| v.as_str()) {
                     let mut backend_url = BACKEND_URL.lock().map_err(|e| e.to_string())?;
-                    *backend_url = Some(url.to_string());
-                    return Ok(url.to_string());
+                    *backend_url = Some(server_url.to_string());
+                    return Ok(server_url.to_string());
                 }
             }
         }
     }
-    
+      
     Ok("http://127.0.0.1:7777".to_string())
 }
 
