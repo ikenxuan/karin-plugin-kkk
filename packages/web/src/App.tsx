@@ -4,6 +4,8 @@ import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import { DockBar } from './components/dock-bar'
 import { DraggableTitlebar } from './components/draggable-titlebar'
+// import { PWADebugPanel } from './components/PWADebugPanel'
+import { PWAUpdatePrompt } from './components/PWAUpdatePrompt'
 import { ThemeProvider } from './components/theme-provider'
 import { WindowControls } from './components/window-controls'
 import { getDefaultRedirectPath, isAuthenticated } from './lib/auth'
@@ -27,7 +29,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }, [navigate])
 
   if (!isAuthenticated()) {
-    return <div className="flex items-center justify-center h-screen text-lg font-bold">验证登录状态...</div>
+    return <div className="flex justify-center items-center h-screen text-lg font-bold">验证登录状态...</div>
   }
 
   return <>{children}</>
@@ -49,7 +51,7 @@ const RootRedirect = () => {
     }
   }, [navigate])
 
-  return <div className="flex items-center justify-center h-screen text-lg font-bold">加载中...</div>
+  return <div className="flex justify-center items-center h-screen text-lg font-bold">加载中...</div>
 }
 
 /**
@@ -71,7 +73,7 @@ const App = () => {
         </>
       )}
 
-      <Suspense fallback={<div className="flex items-center justify-center h-screen text-lg font-bold">加载中...</div>}>
+      <Suspense fallback={<div className="flex justify-center items-center h-screen text-lg font-bold">加载中...</div>}>
         {/* 为 Tauri 环境添加顶部间距，避免内容被标题栏遮挡 */}
         <div className={isTauri() ? 'pt-10' : ''}>
           <Routes>
@@ -106,6 +108,8 @@ const App = () => {
 
         {showDockBar && <DockBar />}
       </Suspense>
+      <PWAUpdatePrompt />
+      {/* <PWADebugPanel /> */}
     </ThemeProvider>
   )
 }
