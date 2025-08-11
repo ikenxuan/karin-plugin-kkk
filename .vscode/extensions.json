@@ -1,12 +1,30 @@
 {
   "recommendations": [
+    // === 代码质量和格式化 ===
     "dbaeumer.vscode-eslint",
-    "christian-kohler.path-intellisense",
-    "formulahendry.code-runner",
+    "usernamehw.errorlens",
+    // === TypeScript 和 JavaScript 支持 ===
+    "ms-vscode.vscode-typescript-next",
     "steoates.autoimport",
-    "Meezilla.json",
-    "yzhang.markdown-all-in-one",
     "ChakrounAnas.turbo-console-log",
-    "Gruntfuggly.todo-tree"
+    // === 前端开发 ===
+    "bradlc.vscode-tailwindcss",
+    "heybourn.headwind",
+    // === Rust 开发 ===
+    "rust-lang.rust-analyzer",
+    "vadimcn.vscode-lldb",
+    "fill-labs.dependi",
+    "tauri-apps.tauri-vscode",
+    // === 文件和路径管理 ===
+    "christian-kohler.path-intellisense",
+    "redhat.vscode-yaml",
+    // === 开发工具和实用程序 ===
+    "formulahendry.code-runner",
+    "Gruntfuggly.todo-tree",
+    // === Markdown ===
+    "yzhang.markdown-all-in-one",
+    // === Git 版本控制 ===
+    "eamodio.gitlens",
+    "mhutchie.git-graph",
   ]
 }

@@ -1,6 +1,6 @@
 import axios from 'axios'
 import convert from 'heic-convert/browser'
-import React, { useEffect, useRef,useState } from 'react'
+import React, { useCallback, useEffect, useRef,useState } from 'react'
 import { CgLivePhoto } from "react-icons/cg"
 
 import { useIsMobile } from '@/hooks/use-mobile'
@@ -128,7 +128,7 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
   /**
    * 处理图片
    */
-  const processImage = async () => {
+  const processImage = useCallback(async () => {
     try {
       setIsLoading(true)
       setError(null)
@@ -158,7 +158,7 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
         try {
           const inputBuffer = new Uint8Array(arrayBuffer)
           const outputBuffer = await convert({
-            buffer: inputBuffer,
+            buffer: inputBuffer.buffer,
             format: 'PNG',
             quality: 0.9
           })
@@ -190,7 +190,7 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
       setIsLoading(false)
       onLoadingChange?.(false)
     }
-  }
+  }, [src, type, videoSrc, onLoadingChange, onProcessed])
 
   /**
    * 播放Live视频
@@ -355,18 +355,21 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
       processImage()
     }
 
+    // 在 effect 内部保存 ref 的当前值
+    const currentVideo = videoRef.current
+    const currentTimer = longPressTimerRef.current
+
     return () => {
       // 清理定时器
-      if (longPressTimerRef.current) {
-        clearTimeout(longPressTimerRef.current)
+      if (currentTimer) {
+        clearTimeout(currentTimer)
       }
 
       // 清理视频资源
-      if (videoRef.current) {
-        const video = videoRef.current
-        video.pause()
-        video.removeAttribute('src')
-        video.load() // 释放视频资源
+      if (currentVideo) {
+        currentVideo.pause()
+        currentVideo.removeAttribute('src')
+        currentVideo.load()
       }
 
       // 清理blob URL
@@ -374,13 +377,13 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
         URL.revokeObjectURL(processedSrc)
       }
     }
-  }, [src, type])
+  }, [processImage, processedSrc, src, type])
 
   // Live图片渲染
   if (detectedType === ImageType.LIVE && videoSrc) {
     return (
       <div
-        className={`universal-image live-photo relative ${className}`}
+        className={`relative universal-image live-photo ${className}`}
         onClick={handleImageClick}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
@@ -395,7 +398,7 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
         {/* Live图标 */}
         {showLiveIcon && (
           <div
-            className="live-icon absolute top-1 z-10 cursor-pointer transition-opacity"
+            className="absolute top-1 z-10 transition-opacity cursor-pointer live-icon"
             onMouseEnter={handleIconMouseEnter}
             onMouseLeave={handleIconMouseLeave}
             style={{
@@ -403,7 +406,7 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
               opacity: videoLoaded ? 1 : 0.5
             }}
           >
-            <div className="text-white px-2 py-1 flex items-center gap-1 text-xs rounded-md">
+            <div className="flex gap-1 items-center px-2 py-1 text-xs text-white rounded-md">
               <CgLivePhoto className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} />
               {isMobile ? (videoLoaded ? '' : '加载中') : (videoLoaded ? '实况' : '加载中')}
             </div>
@@ -439,7 +442,7 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
         {/* 视频播放器 */}
         <video
           ref={videoRef}
-          className="w-full h-full object-contain absolute top-0 left-0"
+          className="object-contain absolute top-0 left-0 w-full h-full"
           src={videoSrc}
           loop={loop}
           muted={muted}
@@ -499,12 +502,12 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
 
         {/* 加载和错误状态 */}
         {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75 z-20">
+          <div className="flex absolute inset-0 z-20 justify-center items-center bg-gray-100 bg-opacity-75">
             <div className="text-xs text-gray-600">处理中...</div>
           </div>
         )}
         {error && (
-          <div className="absolute top-0 left-0 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded z-20">
+          <div className="absolute top-0 left-0 z-20 px-2 py-1 text-xs text-yellow-800 bg-yellow-100 rounded">
             {error}
           </div>
         )}
@@ -514,23 +517,23 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
 
   // 普通图片和HEIC图片渲染
   return (
-    <div className={`universal-image relative ${className}`} onClick={handleImageClick}>
+    <div className={`relative universal-image ${className}`} onClick={handleImageClick}>
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75 z-10">
+        <div className="flex absolute inset-0 z-10 justify-center items-center bg-gray-100 bg-opacity-75">
           <div className="text-xs text-gray-600">
             {detectedType === ImageType.HEIC ? 'HEIC转换中...' : '加载中...'}
           </div>
         </div>
       )}
       {error && (
-        <div className="absolute top-0 left-0 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded z-20">
+        <div className="absolute top-0 left-0 z-20 px-2 py-1 text-xs text-yellow-800 bg-yellow-100 rounded">
           {error}
         </div>
       )}
       <img
         src={processedSrc}
         alt={alt}
-        className="w-full h-full object-cover"
+        className="object-cover w-full h-full"
         referrerPolicy={referrerPolicy}
         crossOrigin={crossOrigin}
         onLoad={() => {

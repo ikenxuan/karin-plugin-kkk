@@ -11,7 +11,7 @@
     "dev": "pnpm --filter karin-plugin-kkk run dev",
     "watch": "pnpm --filter karin-plugin-kkk run watch",
     "web": "pnpm --filter web run dev",
-    "lint:fix": "eslint --fix \"packages/**/*.ts\""
+    "lint": "pnpm -r run lint"
   },
   "keywords": [],
   "author": "",

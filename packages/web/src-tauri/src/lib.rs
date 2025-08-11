@@ -25,12 +25,12 @@ struct ProxyResponse {
 
 #[command]
 async fn proxy_request(request: ProxyRequest) -> Result<ProxyResponse, String> {
-    let backend_url = get_backend_url();
-    let full_url = format!("{}{}", backend_url, request.url);
+    let backend_url: String = get_backend_url();
+    let full_url: String = format!("{}{}", backend_url, request.url);
     
-    let client = reqwest::Client::new();
+    let client: reqwest::Client = reqwest::Client::new();
     
-    let mut req = match request.method.to_uppercase().as_str() {
+    let mut req: reqwest::RequestBuilder = match request.method.to_uppercase().as_str() {
         "GET" => client.get(&full_url),
         "POST" => client.post(&full_url),
         "PUT" => client.put(&full_url),
@@ -64,13 +64,13 @@ async fn proxy_request(request: ProxyRequest) -> Result<ProxyResponse, String> {
         }
     }
 
-    let res = req.send().await.map_err(|e| e.to_string())?;
+    let res: reqwest::Response = req.send().await.map_err(|e: reqwest::Error| e.to_string())?;
     
-    let status = res.status();
-    let status_text = res.status().canonical_reason().unwrap_or("Unknown").to_string();
+    let status: reqwest::StatusCode = res.status();
+    let status_text: String = res.status().canonical_reason().unwrap_or("Unknown").to_string();
     
     // 收集响应头
-    let mut headers_map = serde_json::Map::new();
+    let mut headers_map: serde_json::Map<String, serde_json::Value> = serde_json::Map::new();
     for header_name in res.headers().keys() {
         if let Some(header_value) = res.headers().get(header_name) {
             if let Ok(value_str) = header_value.to_str() {
@@ -79,7 +79,7 @@ async fn proxy_request(request: ProxyRequest) -> Result<ProxyResponse, String> {
         }
     }
     
-    let response_text = res.text().await.map_err(|e| e.to_string())?;
+    let response_text: String = res.text().await.map_err(|e: reqwest::Error| e.to_string())?;
     let data: serde_json::Value = serde_json::from_str(&response_text).unwrap_or_else(|_| serde_json::Value::String(response_text));
 
     Ok(ProxyResponse {
@@ -92,13 +92,13 @@ async fn proxy_request(request: ProxyRequest) -> Result<ProxyResponse, String> {
 
 #[command]
 async fn set_server_url(app_handle: AppHandle, url: String) -> Result<(), String> {
-    let mut backend_url = BACKEND_URL.lock().map_err(|e| e.to_string())?;
+    let mut backend_url: std::sync::MutexGuard<'_, Option<String>> = BACKEND_URL.lock().map_err(|e: std::sync::PoisonError<std::sync::MutexGuard<'_, Option<String>>>| e.to_string())?;
     *backend_url = Some(url.clone());
     
     // 保存到配置文件
     if let Ok(app_dir) = app_handle.path().app_config_dir() {
         let _ = fs::create_dir_all(&app_dir);
-        let config_path = app_dir.join("server_config.json");
+        let config_path: std::path::PathBuf = app_dir.join("server_config.json");
         let _ = fs::write(config_path, serde_json::to_string_pretty(&serde_json::json!({"server_url": url})).unwrap_or_default());
     }
     
@@ -107,18 +107,18 @@ async fn set_server_url(app_handle: AppHandle, url: String) -> Result<(), String
 
 #[command]
 async fn get_server_url(app_handle: AppHandle) -> Result<String, String> {
-    let backend_url = BACKEND_URL.lock().map_err(|e| e.to_string())?;
+    let backend_url: std::sync::MutexGuard<'_, Option<String>> = BACKEND_URL.lock().map_err(|e: std::sync::PoisonError<std::sync::MutexGuard<'_, Option<String>>>| e.to_string())?;
     if let Some(url) = backend_url.as_ref() {
         return Ok(url.clone());
     }
     drop(backend_url);
     
     if let Ok(app_dir) = app_handle.path().app_config_dir() {
-        let config_path = app_dir.join("server_config.json");
+        let config_path: std::path::PathBuf = app_dir.join("server_config.json");
         if let Ok(config_content) = fs::read_to_string(config_path) {
             if let Ok(config) = serde_json::from_str::<serde_json::Value>(&config_content) {
-                if let Some(server_url) = config.get("server_url").and_then(|v| v.as_str()) {
-                    let mut backend_url = BACKEND_URL.lock().map_err(|e| e.to_string())?;
+                if let Some(server_url) = config.get("server_url").and_then(|v: &serde_json::Value| v.as_str()) {
+                    let mut backend_url: std::sync::MutexGuard<'_, Option<String>> = BACKEND_URL.lock().map_err(|e: std::sync::PoisonError<std::sync::MutexGuard<'_, Option<String>>>| e.to_string())?;
                     *backend_url = Some(server_url.to_string());
                     return Ok(server_url.to_string());
                 }
@@ -130,7 +130,7 @@ async fn get_server_url(app_handle: AppHandle) -> Result<String, String> {
 }
 
 fn get_backend_url() -> String {
-    let backend_url = BACKEND_URL.lock().unwrap();
+    let backend_url: std::sync::MutexGuard<'_, Option<String>> = BACKEND_URL.lock().unwrap();
     backend_url.clone().unwrap_or_else(|| "http://127.0.0.1:7777".to_string())
 }
 
@@ -145,12 +145,12 @@ async fn start_drag(window: tauri::WebviewWindow) -> Result<(), String> {
 pub fn run() {
   tauri::Builder::default()
       .invoke_handler(tauri::generate_handler![proxy_request, set_server_url, get_server_url, start_drag])
-      .setup(|_app| {
+      .setup(|_app: &mut tauri::App| {
           #[cfg(debug_assertions)]
           {
-              if let Some(window) = _app.get_webview_window("main") {
-                  window.open_devtools();
-              }
+            let window: tauri::WebviewWindow<_> = _app.get_webview_window("main").unwrap();
+            window.open_devtools();
+            window.close_devtools();
           }
           Ok(())
       })

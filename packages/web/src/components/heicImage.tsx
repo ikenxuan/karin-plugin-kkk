@@ -111,7 +111,7 @@ const HeicImage: React.FC<HeicImageProps> = ({
 
             // 使用heic-convert转换为PNG
             const outputBuffer = await convert({
-              buffer: inputBuffer,
+              buffer: inputBuffer.buffer,
               format: 'PNG',
               quality: 0.9
             })
@@ -158,11 +158,11 @@ const HeicImage: React.FC<HeicImageProps> = ({
         URL.revokeObjectURL(processedSrc)
       }
     }
-  }, [src, referrerPolicy, onProcessed])
+  }, [src, referrerPolicy, onProcessed, processedSrc])
 
   if (error && !processedSrc) {
     return (
-      <div className={`${className} flex items-center justify-center bg-gray-100 text-gray-500 text-sm`}>
+      <div className={`flex justify-center items-center text-sm text-gray-500 bg-gray-100 ${className}`}>
         图片加载失败
       </div>
     )
@@ -171,12 +171,12 @@ const HeicImage: React.FC<HeicImageProps> = ({
   return (
     <div className="relative">
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75 z-10">
+        <div className="flex absolute inset-0 z-10 justify-center items-center bg-gray-100 bg-opacity-75">
           <div className="text-xs text-gray-600">转换中...</div>
         </div>
       )}
       {error && (
-        <div className="absolute top-0 left-0 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded z-20">
+        <div className="absolute top-0 left-0 z-20 px-2 py-1 text-xs text-yellow-800 bg-yellow-100 rounded">
           {error}
         </div>
       )}

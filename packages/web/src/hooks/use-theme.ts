@@ -1,5 +1,5 @@
 import { useLocalStorageState } from 'ahooks'
-import { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 
 import key from '@/const/key'
 
@@ -48,7 +48,7 @@ export const useTheme = (defaultTheme?: Theme) => {
     return getInverseSystemTheme() === ThemeProps.light
   }, [theme])
 
-  const _setTheme = (theme: Theme) => {
+  const _setTheme = useCallback((theme: Theme) => {
     localStorage.setItem(ThemeProps.key, theme)
     document.documentElement.classList.remove(ThemeProps.light, ThemeProps.dark)
 
@@ -57,7 +57,7 @@ export const useTheme = (defaultTheme?: Theme) => {
     document.documentElement.classList.add(appliedTheme)
 
     setTheme(theme)
-  }
+  }, [setTheme])
 
   const setSystemTheme = () => _setTheme(ThemeProps.system)
   const setInverseTheme = () => _setTheme(ThemeProps.inverse)
@@ -84,7 +84,7 @@ export const useTheme = (defaultTheme?: Theme) => {
 
     mediaQuery.addEventListener('change', handleChange)
     return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [theme])
+  }, [_setTheme, theme])
 
   return {
     theme,

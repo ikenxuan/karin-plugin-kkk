@@ -10,8 +10,7 @@ import type {
   Message,
   SendMsgResults
 } from 'node-karin'
-import karin from 'node-karin'
-import {
+import karin, {
   common,
   logger,
   segment

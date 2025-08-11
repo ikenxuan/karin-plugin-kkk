@@ -2,7 +2,7 @@ import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import neostandard from 'neostandard'
 
 const data = neostandard({
-  ignores: ['node_modules', 'temp', 'logs', 'data', 'lib', 'dist'],
+  ignores: ['node_modules', 'temp', 'logs', 'data', 'lib', 'dist', 'resources/**/*.js'],
   globals: ['NodeJS', 'RequestRedirect'],
   ts: true,
   files: ['src/**/*.ts'],

@@ -1,13 +1,13 @@
 /** 定义视频解析工具的配置接口 */
 export interface appConfig {
   /** 默认解析，即识别最高优先级，修改后重启生效 */
-  defaulttool: boolean
+  videoTool: boolean
 
   /** 自定义优先级，「默认解析」关闭后才会生效。修改后重启生效 */
   priority: number
 
   /** 缓存自动删除，非必要不修改！ */
-  rmmp4: boolean
+  removeCache: boolean
 
   /** 渲染精度，可选值50~200，建议100。设置高精度会提高图片的精细度，过高可能会影响渲染与发送速度 */
   renderScale: number

@@ -97,18 +97,18 @@ export const webConfig = defineConfig({
               components.switch.create('rmmp4', {
                 label: '缓存删除',
                 description: '缓存自动删除，非必要不修改！',
-                defaultSelected: all.app.rmmp4
+                defaultSelected: all.app.removeCache
               }),
               components.switch.create('defaulttool', {
                 label: '默认解析',
                 description: '即识别最高优先级，修改后重启生效',
-                defaultSelected: all.app.defaulttool
+                defaultSelected: all.app.videoTool
               }),
               components.input.number('priority', {
                 label: '自定义优先级',
                 description: '自定义优先级，「默认解析」关闭后才会生效。修改后重启生效',
                 defaultValue: all.app.priority.toString(),
-                isDisabled: all.app.defaulttool,
+                isDisabled: all.app.videoTool,
                 rules: undefined
               }),
               components.input.number('renderScale', {
