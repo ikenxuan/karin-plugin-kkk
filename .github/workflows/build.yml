@@ -330,6 +330,15 @@ jobs:
   # 预览包发布 (每次推送都执行)
   preview-package-publish:
     runs-on: ubuntu-latest
+    # 添加输出定义
+    outputs:
+      pkg_version: ${{ env.PKG_VERSION }}
+      pnpm_install_cmd: ${{ steps.publish_pkg.outputs.pnpm_install_cmd }}
+      stackblitz_url: ${{ steps.publish_pkg.outputs.stackblitz_url }}
+      pack_time: ${{ steps.publish_pkg.outputs.pack_time }}
+      build_duration: ${{ steps.publish_pkg.outputs.build_duration }}
+      node_version: ${{ steps.publish_pkg.outputs.node_version }}
+      pnpm_version: ${{ steps.publish_pkg.outputs.pnpm_version }}
     steps:
       - name: 📥 检出源代码
         uses: actions/checkout@v4
@@ -625,6 +634,40 @@ jobs:
     needs: [preview-package-publish, desktop-build]
     if: github.event_name == 'pull_request' && always()
     steps:
+      - name: 📥 检出源代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: 🏷️ 重新生成变量
+        run: |
+          # 重新生成所需的环境变量
+          COMMIT_HASH=$(git rev-parse HEAD)
+          SHORT_COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "SHORT_COMMIT_HASH=$SHORT_COMMIT_HASH" >> $GITHUB_ENV
+          echo "REPO_URL=https://github.com/${{ github.repository }}/tree/$COMMIT_HASH" >> $GITHUB_ENV
+          
+          # 重新获取版本信息（需要先构建或从artifact获取）
+          # 这里需要根据实际情况调整
+          
+          # 获取当前时间
+          CURRENT_TIME=$(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S')
+          echo "CURRENT_TIME=$CURRENT_TIME" >> $GITHUB_ENV
+          
+          # 重新获取提交信息
+          COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')
+          COMMIT_AUTHOR=$(git log -1 --pretty=format:'%an')
+          echo "COMMIT_MESSAGE=$COMMIT_MESSAGE" >> $GITHUB_ENV
+          echo "COMMIT_AUTHOR=$COMMIT_AUTHOR" >> $GITHUB_ENV
+          
+          # 获取文件变更统计
+          FILES_CHANGED=$(git diff --name-only HEAD~1 HEAD | wc -l)
+          LINES_ADDED=$(git diff --numstat HEAD~1 HEAD | awk '{added += $1} END {print added+0}')
+          LINES_DELETED=$(git diff --numstat HEAD~1 HEAD | awk '{deleted += $2} END {print deleted+0}')
+          echo "FILES_CHANGED=$FILES_CHANGED" >> $GITHUB_ENV
+          echo "LINES_ADDED=$LINES_ADDED" >> $GITHUB_ENV
+          echo "LINES_DELETED=$LINES_DELETED" >> $GITHUB_ENV
+  
       - name: 💬 更新 PR 评论 (包含桌面应用信息)
         uses: thollander/actions-comment-pull-request@v3
         with:
@@ -632,39 +675,39 @@ jobs:
             ## 📦 预览包发布成功 
             
             ### 🏷️ 包信息
-            - **版本号:** `${{ env.PKG_VERSION }}`
+            - **版本号:** `${{ needs.preview-package-publish.outputs.pkg_version || '获取失败' }}`
             - **提交哈希:** [`${{ env.SHORT_COMMIT_HASH }}`](${{ env.REPO_URL }})
             - **分支:** `${{ github.head_ref || github.ref_name }}`
             
             ### 📥 安装方式
             ```bash
             # 推荐使用 pnpm 安装
-            ${{ steps.publish_pkg.outputs.pnpm_install_cmd }}
+            ${{ needs.preview-package-publish.outputs.pnpm_install_cmd || 'pnpm add 安装命令获取失败' }}
             ```
             
             ### 🖥️ Windows 桌面应用
-            ${{ needs.desktop-build.result == 'success' && format('- **状态:** ✅ 构建成功\n- **文件名:** `{0}`\n- **版本:** `{1}`\n- **📥 下载链接:** [点击下载 {0}]({2})', needs.desktop-build.outputs.exe_name, needs.desktop-build.outputs.desktop_version, needs.desktop-build.outputs.artifact_url) || '- **状态:** ❌ 构建失败或跳过' }}
+            ${{ needs.desktop-build.result == 'success' && format('- **状态:** ✅ 构建成功\n- **文件名:** `{0}`\n- **版本:** `{1}`\n- **📥 下载链接:** [点击下载 {0}]({2})', needs.desktop-build.outputs.desktop_exe_name, needs.desktop-build.outputs.desktop_version, needs.desktop-build.outputs.desktop_artifact_url) || '- **状态:** ❌ 构建失败或跳过' }}
             ${{ needs.desktop-build.result == 'success' && '- **💡 安装说明:** 下载后直接运行安装程序，支持 Windows 10/11 x64 系统' || '' }}
             
             ### 🚀 快速体验
-            ${{ steps.publish_pkg.outputs.stackblitz_url && format('- [🌐 在 Stackblitz 中打开]({0})', steps.publish_pkg.outputs.stackblitz_url) || '- 🌐 Stackblitz 链接暂不可用' }}
+            ${{ needs.preview-package-publish.outputs.stackblitz_url && format('- [🌐 在 Stackblitz 中打开]({0})', needs.preview-package-publish.outputs.stackblitz_url) || '- 🌐 Stackblitz 链接暂不可用' }}
             - [📋 查看构建日志](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
             - [🔍 查看提交详情](${{ env.REPO_URL }})
             
             ### 📊 本次变更
-            - **提交信息:** ${{ steps.publish_pkg.outputs.commit_message }}
-            - **提交作者:** ${{ steps.publish_pkg.outputs.commit_author }}
-            - **文件变更:** ${{ steps.publish_pkg.outputs.files_changed }} 个文件
-            - **代码变更:** +${{ steps.publish_pkg.outputs.lines_added }} -${{ steps.publish_pkg.outputs.lines_deleted }} 行
+            - **提交信息:** ${{ env.COMMIT_MESSAGE }}
+            - **提交作者:** ${{ env.COMMIT_AUTHOR }}
+            - **文件变更:** ${{ env.FILES_CHANGED }} 个文件
+            - **代码变更:** +${{ env.LINES_ADDED }} -${{ env.LINES_DELETED }} 行
             
             ### ⏰ 时间信息
-            - **📦 打包时间:** `${{ steps.publish_pkg.outputs.pack_time }} (CST)`
-            - **🔄 评论更新:** `$(date +'%Y-%m-%d %H:%M:%S') (CST)`
-            - **⚡ 构建耗时:** ${{ steps.publish_pkg.outputs.build_duration }}
+            - **📦 打包时间:** `${{ needs.preview-package-publish.outputs.pack_time || '获取失败' }} (CST)`
+            - **🔄 评论更新:** `${{ env.CURRENT_TIME }} (CST)`
+            - **⚡ 构建耗时:** ${{ needs.preview-package-publish.outputs.build_duration || '获取失败' }}
             
             ### 🛠️ 环境信息
-            - **Node.js:** `${{ steps.publish_pkg.outputs.node_version }}`
-            - **PNPM:** `${{ steps.publish_pkg.outputs.pnpm_version }}`
+            - **Node.js:** `${{ needs.preview-package-publish.outputs.node_version || '获取失败' }}`
+            - **PNPM:** `${{ needs.preview-package-publish.outputs.pnpm_version || '获取失败' }}`
             - **构建平台:** `ubuntu-latest`
             - **工作流:** `${{ github.workflow }}`
             

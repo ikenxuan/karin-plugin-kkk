@@ -132,9 +132,9 @@ jobs:
           echo "" >> $env:GITHUB_STEP_SUMMARY
           echo "### 📱 应用信息" >> $env:GITHUB_STEP_SUMMARY
           echo "- **平台:** Windows x64" >> $env:GITHUB_STEP_SUMMARY
-          echo "- **文件名:** \`\`${{ steps.build.outputs.exe_name }}\`\`" >> $env:GITHUB_STEP_SUMMARY
-          echo "- **版本:** \`\`${{ steps.sync-version.outputs.desktop_version }}\`\`" >> $env:GITHUB_STEP_SUMMARY
-          echo "- **基于Core版本:** \`\`${{ inputs.core_version }}\`\`" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **文件名:** ``${{ steps.build.outputs.exe_name }}``" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **版本:** ``${{ steps.sync-version.outputs.desktop_version }}``" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **基于Core版本:** ``${{ inputs.core_version }}``" >> $env:GITHUB_STEP_SUMMARY
           echo "" >> $env:GITHUB_STEP_SUMMARY
           echo "### 📥 下载方式" >> $env:GITHUB_STEP_SUMMARY
           echo "- 📦 **直接下载:** [点击下载 ${{ steps.build.outputs.exe_name }}]($ARTIFACT_URL)" >> $env:GITHUB_STEP_SUMMARY
@@ -144,8 +144,8 @@ jobs:
           echo "" >> $env:GITHUB_STEP_SUMMARY
           echo "### 📋 构建详情" >> $env:GITHUB_STEP_SUMMARY
           echo "- **构建时间:** $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')" >> $env:GITHUB_STEP_SUMMARY
-          echo "- **提交SHA:** \`\`${{ github.sha }}\`\`" >> $env:GITHUB_STEP_SUMMARY
-          echo "- **分支:** \`\`${{ github.ref_name }}\`\`" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **提交SHA:** ``${{ github.sha }}``" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **分支:** ``${{ github.ref_name }}``" >> $env:GITHUB_STEP_SUMMARY
           
           # 输出信息供其他工作流使用
           echo "artifact_id=$ARTIFACT_ID" >> $env:GITHUB_OUTPUT
@@ -153,5 +153,4 @@ jobs:
           echo "exe_name=${{ steps.build.outputs.exe_name }}" >> $env:GITHUB_OUTPUT
           echo "desktop_version=${{ steps.sync-version.outputs.desktop_version }}" >> $env:GITHUB_OUTPUT
           echo "desktop_exe_name=${{ steps.build.outputs.exe_name }}" >> $env:GITHUB_OUTPUT
-          echo "desktop_version=${{ steps.sync-version.outputs.desktop_version }}" >> $env:GITHUB_OUTPUT
           echo "desktop_artifact_url=$ARTIFACT_URL" >> $env:GITHUB_OUTPUT
