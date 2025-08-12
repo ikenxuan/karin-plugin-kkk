@@ -84,12 +84,30 @@ export const getGroupsRouter: RequestHandler = async (req, res) => {
     const douyinDB = await getDouyinDB()
     const bilibiliDB = await getBilibiliDB()
 
-    // 获取所有群组
-    const allGroups = await douyinDB.groupRepository.find()
+    // 获取两个数据库中的所有群组
+    const [douyinGroups, bilibiliGroups] = await Promise.all([
+      douyinDB.groupRepository.find(),
+      bilibiliDB.groupRepository.find()
+    ])
+
+    // 合并群组并去重（使用Map以群组ID为key）
+    const allGroupsMap = new Map<string, { id: string; botId: string }>()
+
+    // 添加抖音群组
+    douyinGroups.forEach(group => {
+      allGroupsMap.set(group.id, { id: group.id, botId: group.botId })
+    })
+
+    // 添加B站群组（如果已存在则保持原有的，确保botId一致性）
+    bilibiliGroups.forEach(group => {
+      if (!allGroupsMap.has(group.id)) {
+        allGroupsMap.set(group.id, { id: group.id, botId: group.botId })
+      }
+    })
 
     const groupList: GroupInfo[] = []
 
-    for (const group of allGroups) {
+    for (const group of allGroupsMap.values()) {
       // 获取该群组的抖音订阅数
       const douyinSubscriptions = await douyinDB.getGroupSubscriptions(group.id)
       // 获取该群组的B站订阅数
@@ -119,7 +137,6 @@ export const getGroupsRouter: RequestHandler = async (req, res) => {
     return createServerErrorResponse(res, '获取群组列表失败')
   }
 }
-
 /**
  * 获取群组的作者选项列表
  * @param req 请求对象

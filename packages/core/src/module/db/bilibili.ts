@@ -231,7 +231,7 @@ const AppDataSource = new DataSource({
 /** 数据库操作类 */
 export class BilibiliDBBase {
   private botRepository!: Repository<Bot>
-  private groupRepository!: Repository<Group>
+  groupRepository!: Repository<Group>
   private bilibiliUserRepository!: Repository<BilibiliUser>
   private groupUserSubscriptionRepository!: Repository<GroupUserSubscription>
   dynamicCacheRepository!: Repository<DynamicCache>

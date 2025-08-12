@@ -17,6 +17,7 @@ import {
   Music,
   Palette,
   Play,
+  RotateCcw,
   RotateCw,
   Share2,
   Sparkles,
@@ -119,34 +120,41 @@ export default function VideoParserPage () {
       }
 
       return (
-        <div className='flex items-center gap-3'>
+        <div className='flex gap-3 items-center'>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => onScale(scale + 1)}
           >
-            <CirclePlus className="h-4 w-4" />
+            <CirclePlus className="w-4 h-4" />
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => onScale(scale - 1)}
           >
-            <CircleMinus className="h-4 w-4" />
+            <CircleMinus className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onRotate(rotate - 90)}
+          >
+            <RotateCcw className="w-4 h-4" />
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => onRotate(rotate + 90)}
           >
-            <RotateCw className="h-4 w-4" />
+            <RotateCw className="w-4 h-4" />
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={handleFullscreen}
           >
-            <Maximize className="h-4 w-4" />
+            <Maximize className="w-4 h-4" />
           </Button>
         </div>
       )
@@ -154,97 +162,95 @@ export default function VideoParserPage () {
   }, [])
 
   /**
-   * 评论组件
+   * 评论组件 - 优化移动端布局
    * @param comment - 评论数据
    * @returns JSX.Element
    */
   const CommentItem = useCallback(({ comment }: { comment: CommentInfo }) => (
-    <div className="space-y-3">
-      <div className="flex gap-3">
+    <div className="pb-3 border-b border-border/50 last:border-b-0">
+      <div className="flex gap-2 md:gap-3">
         <img
           src={comment.avatar}
-          className="w-10 h-10 rounded-full"
+          className="flex-shrink-0 w-8 h-8 rounded-full md:w-10 md:h-10"
           referrerPolicy="no-referrer"
           crossOrigin="anonymous"
         />
-        <div className="flex-1 space-y-2">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <div
-                  className="text-sm font-medium [&_svg]:inline [&_svg]:h-[1.2em] [&_svg]:w-auto [&_svg]:align-middle [&_svg]:mx-1"
-                  dangerouslySetInnerHTML={{ __html: comment.author }}
-                  style={{
-                    wordBreak: 'break-word',
-                    overflowWrap: 'break-word'
-                  }}
-                />
-                <span className="text-xs text-muted-foreground">{comment.timestamp}</span>
-                {comment.author.includes('NatureFilms') && (
-                  <Badge variant="secondary">
-                    <Star className="w-3 h-3 mr-1" />
-                    作者
-                  </Badge>
-                )}
-              </div>
-
+        <div className="flex-1 min-w-0">
+          <div className="p-2 rounded-lg bg-muted/30 md:p-3">
+            <div className="flex gap-2 items-center mb-1 md:mb-2">
               <div
-                className="text-sm leading-relaxed mb-3 whitespace-pre-wrap [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]"
-                dangerouslySetInnerHTML={{ __html: comment.content }}
+                className="text-xs md:text-sm font-medium [&_svg]:inline [&_svg]:h-[1.2em] [&_svg]:w-auto [&_svg]:align-middle [&_svg]:mx-1 truncate"
+                dangerouslySetInnerHTML={{ __html: comment.author }}
                 style={{
                   wordBreak: 'break-word',
                   overflowWrap: 'break-word'
                 }}
               />
-
-              {comment.images && comment.images.length > 0 && (
-                <div className="mb-3">
-                  {comment.images.length === 1 ? (
-                    <div className="max-w-xs">
-                      <PhotoViewWithHeic
-                        src={comment.images[0]}
-                        alt="评论图片"
-                        className="w-full h-auto max-h-64 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity"
-                        referrerPolicy="no-referrer"
-                        crossOrigin="anonymous"
-                      />
-                    </div>
-                  ) : (
-                    <div className={`grid gap-2 ${comment.images.length === 2 ? 'grid-cols-2' :
-                        comment.images.length === 3 ? 'grid-cols-3' :
-                          'grid-cols-2'
-                      } max-w-md`}>
-                      {comment.images.slice(0, 4).map((image, index) => (
-                        <div key={`${comment.id}-${index}`} className="relative">
-                          <PhotoView key={`${comment.id}-${index}`} src={image}>
-                            <PhotoViewWithHeic
-                              src={image}
-                              alt={`评论图片 ${index + 1}`}
-                              className="w-full h-24 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity"
-                              referrerPolicy="no-referrer"
-                              crossOrigin="anonymous"
-                            />
-                          </PhotoView>
-                          {comment.images!.length > 4 && index === 3 && (
-                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-bold text-sm rounded-md">
-                              +{comment.images!.length - 4}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+              <span className="flex-shrink-0 text-xs text-muted-foreground">{comment.timestamp}</span>
+              {comment.author.includes('NatureFilms') && (
+                <Badge variant="secondary" className="px-1 py-0 text-xs">
+                  <Star className="mr-1 w-2 h-2" />
+                  作者
+                </Badge>
               )}
+            </div>
 
-              <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                <Button variant="ghost" size="sm" className="h-auto p-0">
-                  <ThumbsUp className="w-3 h-3 mr-1" />
-                  <span>{comment.likes}</span>
-                </Button>
+            <div
+              className="text-xs md:text-sm leading-relaxed mb-2 whitespace-pre-wrap [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]"
+              dangerouslySetInnerHTML={{ __html: comment.content }}
+              style={{
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word'
+              }}
+            />
+
+            {comment.images && comment.images.length > 0 && (
+              <div className="mb-2">
+                {comment.images.length === 1 ? (
+                  <div className="max-w-[200px] md:max-w-xs">
+                    <PhotoViewWithHeic
+                      src={comment.images[0]}
+                      alt="评论图片"
+                      className="object-cover w-full h-auto max-h-32 rounded-md transition-opacity cursor-pointer md:max-h-48 hover:opacity-80"
+                      referrerPolicy="no-referrer"
+                      crossOrigin="anonymous"
+                    />
+                  </div>
+                ) : (
+                  <div className={`grid gap-1 md:gap-2 ${comment.images.length === 2 ? 'grid-cols-2' :
+                    comment.images.length === 3 ? 'grid-cols-3' :
+                      'grid-cols-2'
+                    } max-w-[250px] md:max-w-md`}>
+                    {comment.images.slice(0, 4).map((image, index) => (
+                      <div key={`${comment.id}-${index}`} className="relative">
+                        <PhotoView key={`${comment.id}-${index}`} src={image}>
+                          <PhotoViewWithHeic
+                            src={image}
+                            alt={`评论图片 ${index + 1}`}
+                            className="object-cover w-full h-16 rounded-md transition-opacity cursor-pointer md:h-20 hover:opacity-80"
+                            referrerPolicy="no-referrer"
+                            crossOrigin="anonymous"
+                          />
+                        </PhotoView>
+                        {comment.images!.length > 4 && index === 3 && (
+                          <div className="flex absolute inset-0 justify-center items-center text-xs font-bold text-white rounded-md bg-black/60">
+                            +{comment.images!.length - 4}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            </CardContent>
-          </Card>
+            )}
+
+            <div className="flex gap-4 items-center text-xs text-muted-foreground">
+              <Button variant="ghost" size="sm" className="p-0 h-auto text-xs">
+                <ThumbsUp className="mr-1 w-3 h-3" />
+                <span>{comment.likes}</span>
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -266,22 +272,21 @@ export default function VideoParserPage () {
       toolbarRender={toolbarRender}
     >
       <div className="min-h-screen bg-background">
-        <div className="container mx-auto p-4 max-w-4xl">
+        <div className="container p-3 mx-auto max-w-4xl md:p-4">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight">
+          <div className="mb-6 md:mb-8">
+            <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
               抖音视频解析器
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm md:text-base text-muted-foreground">
               Video Parser
             </p>
           </div>
 
-          {/* 其余代码保持不变 */}
           {/* Input Section */}
-          <Card className="mb-8">
+          <Card className="mb-6 md:mb-8">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex gap-2 items-center">
                 <Link className="w-5 h-5" />
                 粘贴链接地址
               </CardTitle>
@@ -290,7 +295,7 @@ export default function VideoParserPage () {
               {/* 错误提示 */}
               {error && (
                 <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
+                  <AlertCircle className="w-4 h-4" />
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
@@ -313,7 +318,7 @@ export default function VideoParserPage () {
                     size="icon"
                     onClick={() => setUrl('')}
                   >
-                    <X className="h-4 w-4" />
+                    <X className="w-4 h-4" />
                   </Button>
                 )}
               </div>
@@ -325,12 +330,12 @@ export default function VideoParserPage () {
               >
                 {loading ? (
                   <>
-                    <Sparkles className="w-4 h-4 mr-2 animate-spin" />
+                    <Sparkles className="mr-2 w-4 h-4 animate-spin" />
                     解析中...
                   </>
                 ) : (
                   <>
-                    <Zap className="w-4 h-4 mr-2" />
+                    <Zap className="mr-2 w-4 h-4" />
                     开始解析
                   </>
                 )}
@@ -341,19 +346,19 @@ export default function VideoParserPage () {
           {/* Results Section */}
           {result && (
             <>
-              <Card className="mb-8">
+              <Card className="mb-6 md:mb-8">
                 <CardHeader>
-                  <div className="flex items-start gap-3">
+                  <div className="flex gap-3 items-start">
                     {result.type === "video" ? (
-                      <Video className="w-6 h-6 mt-1" />
+                      <Video className="mt-1 w-6 h-6" />
                     ) : result.type === "slides" ? (
-                      <Archive className="w-6 h-6 mt-1" />
+                      <Archive className="mt-1 w-6 h-6" />
                     ) : (
-                      <Camera className="w-6 h-6 mt-1" />
+                      <Camera className="mt-1 w-6 h-6" />
                     )}
                     <div className="flex-1">
                       <CardTitle className="text-xl">{result.title}</CardTitle>
-                      <p className="text-muted-foreground flex items-center gap-2 mt-1">
+                      <p className="flex gap-2 items-center mt-1 text-muted-foreground">
                         <Palette className="w-4 h-4" />
                         作者: {result.author}
                       </p>
@@ -372,7 +377,7 @@ export default function VideoParserPage () {
 
                   {/* Content based on type */}
                   {result.type === "video" ? (
-                    <div className="grid md:grid-cols-2 gap-6">
+                    <div className="grid gap-6 md:grid-cols-2">
                       {/* Video Player / Thumbnail */}
                       <div className="relative">
                         {!isVideoPlaying ? (
@@ -380,17 +385,17 @@ export default function VideoParserPage () {
                             <img
                               src={result.thumbnail}
                               alt={result.title}
-                              className="w-full h-64 object-cover rounded-lg cursor-pointer"
+                              className="object-cover w-full h-64 rounded-lg cursor-pointer"
                               onClick={handleVideoPlay}
                               referrerPolicy="no-referrer"
                               crossOrigin="anonymous"
                             />
-                            <div className="absolute inset-0 flex items-center justify-center cursor-pointer" onClick={handleVideoPlay}>
+                            <div className="flex absolute inset-0 justify-center items-center cursor-pointer" onClick={handleVideoPlay}>
                               <Button size="lg" className="rounded-full">
                                 <Play className="w-6 h-6" />
                               </Button>
                             </div>
-                            <div className="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-sm">
+                            <div className="absolute right-2 bottom-2 px-2 py-1 text-sm text-white rounded bg-black/80">
                               {result.duration}
                             </div>
                           </>
@@ -398,7 +403,7 @@ export default function VideoParserPage () {
                           <video
                             controls
                             autoPlay
-                            className="w-full h-64 object-cover rounded-lg"
+                            className="object-cover w-full h-64 rounded-lg"
                             poster={result.thumbnail}
                             onPause={handleVideoPause}
                             onEnded={handleVideoEnded}
@@ -410,52 +415,44 @@ export default function VideoParserPage () {
                       </div>
 
                       {/* Video Stats */}
-                      <div className="space-y-4">
-                        <Card>
-                          <CardContent className="p-4">
-                            <div className="flex items-center gap-2">
-                              <Eye className="w-5 h-5" />
-                              <div>
-                                <div className="font-semibold">{result.views}</div>
-                                <div className="text-sm text-muted-foreground">浏览量</div>
-                              </div>
+                      <div className="p-3 rounded-lg bg-muted/30 md:p-4">
+                        <div className="grid grid-cols-3 gap-4 text-center">
+                          <div className="space-y-1">
+                            <div className="flex gap-1 justify-center items-center text-muted-foreground">
+                              <Eye className="w-3 h-3 md:w-4 md:h-4" />
                             </div>
-                          </CardContent>
-                        </Card>
-                        <Card>
-                          <CardContent className="p-4">
-                            <div className="flex items-center gap-2">
-                              <Heart className="w-5 h-5" />
-                              <div>
-                                <div className="font-semibold">{result.likes}</div>
-                                <div className="text-sm text-muted-foreground">点赞数</div>
-                              </div>
+                            <div className="text-sm font-semibold md:text-base">{result.views}</div>
+                            <div className="text-xs text-muted-foreground">浏览量</div>
+                          </div>
+                          <div className="space-y-1">
+                            <div className="flex gap-1 justify-center items-center text-muted-foreground">
+                              <Heart className="w-3 h-3 md:w-4 md:h-4" />
                             </div>
-                          </CardContent>
-                        </Card>
-                        <Card>
-                          <CardContent className="p-4">
-                            <div className="flex items-center gap-2">
-                              <Clock className="w-5 h-5" />
-                              <div>
-                                <div className="font-semibold">{result.duration}</div>
-                                <div className="text-sm text-muted-foreground">时长</div>
-                              </div>
+                            <div className="text-sm font-semibold md:text-base">{result.likes}</div>
+                            <div className="text-xs text-muted-foreground">点赞数</div>
+                          </div>
+                          <div className="space-y-1">
+                            <div className="flex gap-1 justify-center items-center text-muted-foreground">
+                              <Clock className="w-3 h-3 md:w-4 md:h-4" />
                             </div>
-                          </CardContent>
-                        </Card>
+                            <div className="text-sm font-semibold md:text-base">{result.duration}</div>
+                            <div className="text-xs text-muted-foreground">时长</div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ) : result.type === "slides" ? (
                     <div className="space-y-6">
                       <div>
-                        <div className="flex items-center gap-2 mb-4">
+                        <div className="flex gap-2 items-center mb-4">
                           <Archive className="w-5 h-5" />
                           <h4 className="text-lg font-semibold">合辑内容</h4>
                         </div>
 
-                        <PhotoProvider>
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                          <PhotoProvider
+                            toolbarRender={toolbarRender}
+                          >
+                          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
                             {result.slides?.map((slide, index) => (
                               <div key={index} className="relative group">
                                 {slide.type === 'video' ? (
@@ -464,13 +461,13 @@ export default function VideoParserPage () {
                                       controls
                                       preload="metadata"
                                       poster={slide.thumbnail}
-                                      className="w-full h-48 object-cover rounded-lg"
+                                      className="object-cover w-full h-48 rounded-lg"
                                     >
                                       <source src={slide.url} type="video/mp4" />
                                       您的浏览器不支持视频播放。
                                     </video>
                                     {slide.duration && (
-                                      <div className="absolute top-2 left-2 bg-black/80 text-white px-2 py-1 rounded text-xs">
+                                      <div className="absolute top-2 left-2 px-2 py-1 text-xs text-white rounded bg-black/80">
                                         {slide.duration}
                                       </div>
                                     )}
@@ -480,7 +477,7 @@ export default function VideoParserPage () {
                                     src={slide.url}
                                     videoSrc={slide.type === 'livephoto' ? slide.videoUrl : undefined}
                                     alt={`合辑${slide.type === 'livephoto' ? 'Live Photo' : '图片'} ${index + 1}`}
-                                    className="w-full h-48 object-cover rounded-lg"
+                                    className="object-cover w-full h-48 rounded-lg"
                                     type={slide.type === 'livephoto' ? ImageType.LIVE : ImageType.STATIC}
                                     liveConfig={{
                                       muted: true,
@@ -491,7 +488,7 @@ export default function VideoParserPage () {
                                     }}
                                   />
                                 )}
-                                <div className="absolute bottom-2 right-2">
+                                <div className="absolute right-2 bottom-2">
                                   <Badge variant="secondary" className="text-xs">
                                     {String(index + 1).padStart(2, '0')}
                                   </Badge>
@@ -501,50 +498,47 @@ export default function VideoParserPage () {
                           </div>
                         </PhotoProvider>
 
-                        <div className="grid grid-cols-2 gap-4 mt-6">
-                          <Card>
-                            <CardContent className="p-4">
-                              <div className="flex items-center gap-2">
-                                <Eye className="w-5 h-5" />
-                                <div>
-                                  <div className="font-semibold">{result.views}</div>
-                                  <div className="text-sm text-muted-foreground">浏览量</div>
-                                </div>
+                        {/* 合辑统计信息 */}
+                        <div className="p-3 mt-6 rounded-lg bg-muted/30 md:p-4">
+                          <div className="grid grid-cols-2 gap-4 text-center">
+                            <div className="space-y-1">
+                              <div className="flex gap-1 justify-center items-center text-muted-foreground">
+                                <Eye className="w-3 h-3 md:w-4 md:h-4" />
                               </div>
-                            </CardContent>
-                          </Card>
-                          <Card>
-                            <CardContent className="p-4">
-                              <div className="flex items-center gap-2">
-                                <Heart className="w-5 h-5" />
-                                <div>
-                                  <div className="font-semibold">{result.likes}</div>
-                                  <div className="text-sm text-muted-foreground">点赞数</div>
-                                </div>
+                              <div className="text-sm font-semibold md:text-base">{result.views}</div>
+                              <div className="text-xs text-muted-foreground">浏览量</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="flex gap-1 justify-center items-center text-muted-foreground">
+                                <Heart className="w-3 h-3 md:w-4 md:h-4" />
                               </div>
-                            </CardContent>
-                          </Card>
+                              <div className="text-sm font-semibold md:text-base">{result.likes}</div>
+                              <div className="text-xs text-muted-foreground">点赞数</div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
                   ) : (
                     <div className="space-y-6">
                       <div>
-                        <div className="flex items-center gap-2 mb-4">
+                        <div className="flex gap-2 items-center mb-4">
                           <ImageIcon className="w-5 h-5" />
                           <h4 className="text-lg font-semibold">图片集</h4>
                         </div>
 
-                        <PhotoProvider>
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <PhotoProvider
+                          toolbarRender={toolbarRender}
+                        >
+                          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
                             {result.images?.map((image, index) => (
                               <div key={index} className="relative group">
                                 <UniversalPhotoView
                                   src={image}
                                   alt={`Gallery image ${index + 1}`}
-                                  className="w-full h-48 object-cover rounded-lg"
+                                  className="object-cover w-full h-48 rounded-lg"
                                 />
-                                <div className="absolute bottom-2 right-2">
+                                <div className="absolute right-2 bottom-2">
                                   <Badge variant="secondary" className="text-xs">
                                     {String(index + 1).padStart(2, '0')}
                                   </Badge>
@@ -554,29 +548,24 @@ export default function VideoParserPage () {
                           </div>
                         </PhotoProvider>
 
-                        <div className="grid grid-cols-2 gap-4 mt-6">
-                          <Card>
-                            <CardContent className="p-4">
-                              <div className="flex items-center gap-2">
-                                <Eye className="w-5 h-5" />
-                                <div>
-                                  <div className="font-semibold">{result.views}</div>
-                                  <div className="text-sm text-muted-foreground">浏览量</div>
-                                </div>
+                        {/* 图集统计信息 */}
+                        <div className="p-3 mt-6 rounded-lg bg-muted/30 md:p-4">
+                          <div className="grid grid-cols-2 gap-4 text-center">
+                            <div className="space-y-1">
+                              <div className="flex gap-1 justify-center items-center text-muted-foreground">
+                                <Eye className="w-3 h-3 md:w-4 md:h-4" />
                               </div>
-                            </CardContent>
-                          </Card>
-                          <Card>
-                            <CardContent className="p-4">
-                              <div className="flex items-center gap-2">
-                                <Heart className="w-5 h-5" />
-                                <div>
-                                  <div className="font-semibold">{result.likes}</div>
-                                  <div className="text-sm text-muted-foreground">点赞数</div>
-                                </div>
+                              <div className="text-sm font-semibold md:text-base">{result.views}</div>
+                              <div className="text-xs text-muted-foreground">浏览量</div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="flex gap-1 justify-center items-center text-muted-foreground">
+                                <Heart className="w-3 h-3 md:w-4 md:h-4" />
                               </div>
-                            </CardContent>
-                          </Card>
+                              <div className="text-sm font-semibold md:text-base">{result.likes}</div>
+                              <div className="text-xs text-muted-foreground">点赞数</div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -590,7 +579,7 @@ export default function VideoParserPage () {
                       <Button
                         onClick={() => downloadWithSmartNaming(result.downloadUrl!.video!, result.title, 'video')}
                       >
-                        <Download className="w-4 h-4 mr-2" />
+                        <Download className="mr-2 w-4 h-4" />
                         下载视频
                       </Button>
                     )}
@@ -602,7 +591,7 @@ export default function VideoParserPage () {
                           <Button
                             onClick={() => downloadWithSmartNaming(videoSlides[0].url, result.title, 'video')}
                           >
-                            <Download className="w-4 h-4 mr-2" />
+                            <Download className="mr-2 w-4 h-4" />
                             下载视频
                           </Button>
                         )
@@ -614,7 +603,7 @@ export default function VideoParserPage () {
                               downloadVideosAsZip(videoUrls, result.title)
                             }}
                           >
-                            <Archive className="w-4 h-4 mr-2" />
+                            <Archive className="mr-2 w-4 h-4" />
                             打包下载视频 ({videoSlides.length}个)
                           </Button>
                         )
@@ -626,7 +615,7 @@ export default function VideoParserPage () {
                       <Button variant="outline"
                         onClick={() => downloadWithSmartNaming(result.downloadUrl!.audio, result.title, 'audio')}
                       >
-                        <Music className="w-4 h-4 mr-2" />
+                        <Music className="mr-2 w-4 h-4" />
                         下载音频
                       </Button>
                     )}
@@ -646,7 +635,7 @@ export default function VideoParserPage () {
                             }
                           }}
                         >
-                          <Archive className="w-4 h-4 mr-2" />
+                          <Archive className="mr-2 w-4 h-4" />
                           打包下载图片 ({imageSlides.length}项)
                         </Button>
                       ) : null
@@ -656,7 +645,7 @@ export default function VideoParserPage () {
                       <Button variant="outline"
                         onClick={() => downloadImagesAsZip(result.images!, result.title)}
                       >
-                        <Archive className="w-4 h-4 mr-2" />
+                        <Archive className="mr-2 w-4 h-4" />
                         打包下载 ({result.images.length}张)
                       </Button>
                     )}
@@ -664,14 +653,14 @@ export default function VideoParserPage () {
                     <Button variant="outline"
                       onClick={() => handleOpenOriginal(url)}
                     >
-                      <Link className="w-4 h-4 mr-2" />
+                      <Link className="mr-2 w-4 h-4" />
                       原链接
                     </Button>
 
                     <Button variant="outline"
                       onClick={() => handleShare(url, result.title)}
                     >
-                      <Share2 className="w-4 h-4 mr-2" />
+                      <Share2 className="mr-2 w-4 h-4" />
                       分享
                     </Button>
                   </div>
@@ -680,19 +669,19 @@ export default function VideoParserPage () {
 
               {/* Comments Section */}
               <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center gap-2">
-                      <MessageCircle className="w-5 h-5" />
+                <CardHeader className="pb-3">
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="flex gap-2 items-center text-lg">
+                      <MessageCircle className="w-4 h-4 md:w-5 md:h-5" />
                       热门评论
                     </CardTitle>
-                    <Badge variant="secondary">
-                      {result.comments.length} 条评论
+                    <Badge variant="secondary" className="text-xs">
+                      {result.comments.length} 条
                     </Badge>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                <CardContent className="pt-0">
+                  <div className="overflow-y-auto space-y-3 max-h-[800px] md:max-h-[900px]">
                     {commentItems}
                   </div>
                 </CardContent>

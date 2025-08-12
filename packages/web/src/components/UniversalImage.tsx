@@ -462,7 +462,7 @@ const UniversalImage: React.FC<UniversalImageProps> = ({
           {...(isMobile && {
             'x-webkit-airplay': 'allow',
             'webkit-playsinline': 'true',
-            'playsinline': true
+            'playsInline': true
           })}
           onCanPlay={() => {
             setVideoReady(true)
