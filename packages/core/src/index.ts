@@ -89,12 +89,29 @@ app.post('/content/delete', authMiddleware, signatureVerificationMiddleware, del
 
 const staticRouter = express.Router()
 
-// history fallback 用于支持 /kkk/login、/kkk/dashboard 等前端子路由
+staticRouter.use(express.static(path.join(Root.pluginPath, 'lib', 'web_chunk'), {
+  redirect: false,
+  // 添加静态资源的缓存控制
+  setHeaders: (res, path) => {
+    if (path.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache')
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=31536000')
+    }
+  }
+}))
+
+// 处理 SPA 路由（history fallback）
 staticRouter.use(
   history({
-    rewrites: [{ from: /^\/kkk\/.*$/, to: '/kkk/index.html' }],
     htmlAcceptHeaders: ['text/html', 'application/xhtml+xml'],
-    disableDotRule: true,
+    rewrites: [
+      {
+        from: /^\/kkk\/(?!.*\.[a-zA-Z0-9]+$).*$/,
+        to: '/kkk/index.html'
+      }
+    ],
+    disableDotRule: true
   })
 )
 

@@ -1,67 +1,37 @@
 import { isTauri } from '@tauri-apps/api/core'
-import { lazy, Suspense, useEffect } from 'react'
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
+import { Route, Routes, useLocation } from 'react-router-dom'
 
 import { DockBar } from './components/dock-bar'
 import { DraggableTitlebar } from './components/draggable-titlebar'
-// import { PWADebugPanel } from './components/PWADebugPanel'
+import { LoadingComponent } from './components/loading-components'
 import { PWAUpdatePrompt } from './components/PWAUpdatePrompt'
+import { createRouteElement,RootRedirect, type RouteConfig } from './components/route-components'
 import { ThemeProvider } from './components/theme-provider'
 import { WindowControls } from './components/window-controls'
-import { getDefaultRedirectPath, isAuthenticated } from './lib/auth'
 
 // 使用懒加载导入组件
 const LoginPage = lazy(() => import('./app/login/page'))
 const VideoParserPage = lazy(() => import('./app/crack/page'))
 const ContentManagePage = lazy(() => import('./app/content-manage/page'))
 const AboutPage = lazy(() => import('./app/about/page'))
-
-/**
- * 受保护的路由组件
- */
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate('/login', { replace: true })
-    }
-  }, [navigate])
-
-  if (!isAuthenticated()) {
-    return <div className="flex justify-center items-center h-screen text-lg font-bold">验证登录状态...</div>
-  }
-
-  return <>{children}</>
-}
-
-/**
- * 根路径重定向组件
- */
-const RootRedirect = () => {
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    if (isAuthenticated()) {
-      // 如果已登录，跳转到默认页面
-      navigate(getDefaultRedirectPath(), { replace: true })
-    } else {
-      // 如果未登录，跳转到登录页
-      navigate('/login', { replace: true })
-    }
-  }, [navigate])
-
-  return <div className="flex justify-center items-center h-screen text-lg font-bold">加载中...</div>
-}
+const NotFoundPage = lazy(() => import('./app/404/page'))
 
 /**
  * 主应用组件
+ * @description 应用的根组件，包含路由配置和全局布局
  */
 const App = () => {
   const location = useLocation()
-
-  // 登录页不显示dock栏
   const showDockBar = location.pathname !== '/login'
+
+  // 路由配置数组
+  const routes: RouteConfig[] = [
+    { path: '/login', component: LoginPage },
+    { path: '/crack', component: VideoParserPage, protected: true },
+    { path: '/database', component: ContentManagePage, protected: true },
+    { path: '/about', component: AboutPage, protected: true },
+  ]
 
   return (
     <ThemeProvider defaultTheme="system">
@@ -73,43 +43,33 @@ const App = () => {
         </>
       )}
 
-      <Suspense fallback={<div className="flex justify-center items-center h-screen text-lg font-bold">加载中...</div>}>
+      <Suspense fallback={<LoadingComponent />}>
         {/* 为 Tauri 环境添加顶部间距，避免内容被标题栏遮挡 */}
         <div className={isTauri() ? 'pt-10' : ''}>
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route
-              path="/crack"
-              element={
-                <ProtectedRoute>
-                  <VideoParserPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/database"
-              element={
-                <ProtectedRoute>
-                  <ContentManagePage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/about"
-              element={
-                <ProtectedRoute>
-                  <AboutPage />
-                </ProtectedRoute>
-              }
-            />
+            {/* 动态生成路由 */}
+            {routes.map((route) => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={createRouteElement(route)}
+              />
+            ))}
+
+            {/* 根路径重定向 */}
             <Route path="/" element={<RootRedirect />} />
+
+            {/* 404 页面 */}
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>
-
-        {showDockBar && <DockBar />}
       </Suspense>
+
+      {/* 底部导航栏 */}
+      {showDockBar && <DockBar />}
+
+      {/* PWA 更新提示 */}
       <PWAUpdatePrompt />
-      {/* <PWADebugPanel /> */}
     </ThemeProvider>
   )
 }
