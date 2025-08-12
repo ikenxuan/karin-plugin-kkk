@@ -6,7 +6,7 @@ import { DockBar } from './components/dock-bar'
 import { DraggableTitlebar } from './components/draggable-titlebar'
 import { LoadingComponent } from './components/loading-components'
 import { PWAUpdatePrompt } from './components/PWAUpdatePrompt'
-import { createRouteElement,RootRedirect, type RouteConfig } from './components/route-components'
+import { type RouteConfig } from './components/route-components'
 import { ThemeProvider } from './components/theme-provider'
 import { WindowControls } from './components/window-controls'
 
@@ -19,7 +19,6 @@ const NotFoundPage = lazy(() => import('./app/404/page'))
 
 /**
  * 主应用组件
- * @description 应用的根组件，包含路由配置和全局布局
  */
 const App = () => {
   const location = useLocation()
@@ -52,12 +51,12 @@ const App = () => {
               <Route
                 key={route.path}
                 path={route.path}
-                element={createRouteElement(route)}
+                element={<route.component />}
               />
             ))}
 
             {/* 根路径重定向 */}
-            <Route path="/" element={<RootRedirect />} />
+            <Route path="/" element={<VideoParserPage />} />
 
             {/* 404 页面 */}
             <Route path="*" element={<NotFoundPage />} />

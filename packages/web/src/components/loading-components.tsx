@@ -1,70 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import LoadingIcon from '/loading.svg'
-import LoginIcon from '/login.svg'
 import { Progress } from '@/components/ui/progress'
-
-/**
- * 登录验证加载组件
- * @description 显示登录验证状态的加载界面，包含动态进度条
- */
-export const AuthLoadingComponent = () => {
-  const [progress, setProgress] = useState(0)
-
-  useEffect(() => {
-    /**
-     * 模拟进度条动画
-     * @description 创建平滑的进度条动画效果
-     */
-    const startTime = Date.now()
-    const timer = setInterval(() => {
-      const elapsed = Date.now() - startTime
-      const progress = Math.min((elapsed / 150) * 100, 100)
-      setProgress(progress)
-      if (progress >= 100) {
-        clearInterval(timer)
-      }
-    }, 16)
-
-    // 清理定时器
-    return () => clearInterval(timer)
-  }, [])
-
-  return (
-    <div className="flex justify-center items-center h-screen bg-background">
-      <div className="flex flex-col items-center p-8 space-y-6 w-full max-w-md">
-        {/* 登录图标 */}
-        <img
-          src={LoginIcon}
-          alt="登录验证"
-          className="w-96 h-96"
-        />
-
-        {/* 加载文本 */}
-        <div className="space-y-2 text-center">
-          <h3 className="text-4xl font-semibold text-foreground">验证登录状态</h3>
-          <p className="text-sm text-muted-foreground">正在检查您的身份信息...</p>
-        </div>
-
-        {/* 进度条 */}
-        <div className="space-y-2 w-full">
-          <Progress value={progress} className="w-full h-2" />
-          <div className="flex justify-between text-xs text-muted-foreground">
-            <span>验证中...</span>
-            <span>{Math.round(progress)}%</span>
-          </div>
-        </div>
-
-        {/* 加载指示器 */}
-        <div className="flex space-x-2">
-          <div className="w-2 h-2 rounded-full animate-bounce bg-primary" style={{ animationDelay: '0ms' }} />
-          <div className="w-2 h-2 rounded-full animate-bounce bg-primary" style={{ animationDelay: '150ms' }} />
-          <div className="w-2 h-2 rounded-full animate-bounce bg-primary" style={{ animationDelay: '300ms' }} />
-        </div>
-      </div>
-    </div>
-  )
-}
 
 /**
  * 页面加载组件
