@@ -6,6 +6,7 @@ import react from '@vitejs/plugin-react-swc'
 import { defineConfig } from 'vite'
 import viteImagemin from 'vite-plugin-imagemin'
 import obfuscator from 'vite-plugin-javascript-obfuscator'
+import mkcert from 'vite-plugin-mkcert'
 import { VitePWA } from 'vite-plugin-pwa'
 
 /** 读取插件的版本信息 */
@@ -52,6 +53,7 @@ export default defineConfig(({ command, mode }) => {
     plugins: [
       react(),
       tailwindcss(),
+      mkcert(),
       viteImagemin({
         gifsicle: { optimizationLevel: 7 },
         mozjpeg: { quality: 80 },
@@ -118,7 +120,7 @@ export default defineConfig(({ command, mode }) => {
         },
         includeAssets: ['favicon/*.png', 'favicon/*.ico', 'favicon/*.svg'],
         // 开发模式下禁用 PWA
-        disable: !isDev,
+        disable: isDev,
         // 支持 HTTP 协议
         devOptions: {
           enabled: true

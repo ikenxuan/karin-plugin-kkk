@@ -6,7 +6,7 @@
   "build": {
     "removeUnusedCommands": true,
     "frontendDist": "../dist",
-    "devUrl": "http://localhost:5173",
+    "devUrl": "https://localhost:5173",
     "beforeDevCommand": "pnpm run dev",
     "beforeBuildCommand": "vite build --mode standalone"
   },

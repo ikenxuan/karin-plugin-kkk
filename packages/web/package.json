@@ -58,7 +58,7 @@
     "@tauri-apps/api": "^2.7.0",
     "@tauri-apps/cli": "^2.7.1",
     "@types/crypto-js": "^4.2.2",
-    "@types/node": "^22.13.14",
+    "@types/node": "24.2.1",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react-swc": "4.0.0",
@@ -74,6 +74,7 @@
     "vite": "^7.0.4",
     "vite-plugin-imagemin": "^0.6.1",
     "vite-plugin-javascript-obfuscator": "^3.1.0",
+    "vite-plugin-mkcert": "^1.17.8",
     "vite-plugin-pwa": "^1.0.2"
   }
 }
