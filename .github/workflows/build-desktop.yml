@@ -74,12 +74,12 @@ jobs:
       - name: 📦 配置PNPM环境
         uses: pnpm/action-setup@v4
         with:
-          version: 9.13.2
+          version: 9.15.9
 
       - name: 🟢 配置Node.js环境
         uses: actions/setup-node@v4
         with:
-          node-version: 21
+          node-version: 22
           cache: 'pnpm'
           cache-dependency-path: 'pnpm-lock.yaml'
 
