@@ -43,6 +43,7 @@
   "background_color": "transparent",
   "display": "standalone",
   "orientation": "portrait",
+  "prefer_related_applications": false,
   "scope": "/kkk/",
   "start_url": "/kkk/",
   "categories": [

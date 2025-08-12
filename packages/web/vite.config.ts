@@ -123,8 +123,14 @@ export default defineConfig(({ command, mode }) => {
         disable: isDev,
         // 支持 HTTP 协议
         devOptions: {
-          enabled: true
-        }
+          enabled: true,
+          type: 'module',
+          navigateFallback: '/kkk/index.html'
+        },
+        injectRegister: 'auto',
+        strategies: 'injectManifest',
+        srcDir: 'public',
+        filename: 'sw.js'
       }),
       !isStandalone && obfuscator({
         include: ['src/**/*.ts', 'src/**/*.tsx'],
