@@ -523,12 +523,12 @@ jobs:
           cache-on-failure: true
           shared-key: "desktop-build"
 
-      # 安装 Windows 构建依赖
-      - name: 🔧 安装Windows构建依赖
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-mingw-w64-x86-64
-          sudo apt-get install -y nsis
+      - name: 💾 缓存并安装 Windows 构建依赖
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: gcc-mingw-w64-x86-64 nsis build-essential
+          version: 1.0
+          execute_install_scripts: true
 
       - name: 📦 配置 PNPM 环境
         uses: pnpm/action-setup@v4
