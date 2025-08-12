@@ -124,7 +124,6 @@ export default defineConfig(({ command, mode }) => {
         // 支持 HTTP 协议
         devOptions: {
           enabled: true,
-          type: 'module',
           navigateFallback: '/kkk/index.html'
         },
         injectRegister: 'auto',
