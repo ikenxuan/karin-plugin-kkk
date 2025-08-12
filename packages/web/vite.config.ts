@@ -127,9 +127,7 @@ export default defineConfig(({ command, mode }) => {
           navigateFallback: '/kkk/index.html'
         },
         injectRegister: 'auto',
-        strategies: 'injectManifest',
-        srcDir: 'public',
-        filename: 'sw.js'
+        strategies: 'generateSW',
       }),
       !isStandalone && obfuscator({
         include: ['src/**/*.ts', 'src/**/*.tsx'],
