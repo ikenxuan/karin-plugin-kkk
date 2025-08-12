@@ -136,9 +136,10 @@ jobs:
           echo "core_version=$CORE_VERSION" >> $GITHUB_OUTPUT
           echo "📦 当前版本：$CORE_VERSION"
 
-  # 统一构建作业
+  # 统一构建作业（仅核心包和Web应用）
   unified-build:
     runs-on: ubuntu-latest
+    needs: [version-release]
     outputs:
       build_success: ${{ steps.build-status.outputs.success }}
       package_name: ${{ steps.package-info.outputs.name }}
@@ -378,7 +379,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           force_with_lease: true
 
-  # 预览包发布
+  # 预览包发布（优先执行）
   preview-package-publish:
     runs-on: ubuntu-latest
     needs: [unified-build]
@@ -463,7 +464,7 @@ jobs:
           
           echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
 
-      # 精简的 PR 评论
+      # 精简的 PR 评论（初始版本）
       - name: 💬 发布 PR 评论
         if: github.event_name == 'pull_request'
         uses: thollander/actions-comment-pull-request@v3
@@ -489,17 +490,159 @@ jobs:
           mode: upsert
           reactions: rocket
 
-  # 桌面应用构建
+  # 桌面应用构建（在预览包发布后执行）
   desktop-build:
-    needs: [version-release, unified-build]
+    runs-on: ubuntu-latest
+    needs: [version-release, unified-build, preview-package-publish]
     if: |
       needs.unified-build.outputs.build_success == 'true' && 
-      (github.event_name != 'workflow_dispatch' || inputs.skip_desktop != true)
-    uses: ./.github/workflows/build-desktop.yml
-    with:
-      core_version: ${{ needs.version-release.outputs.core_version }}
-      should_upload_release: ${{ needs.version-release.outputs.should_upload_release == 'true' }}
-      release_tag_name: ${{ needs.version-release.outputs.release_tag_name }}
+      (github.event_name != 'workflow_dispatch' || inputs.skip_desktop != true) &&
+      (needs.preview-package-publish.result == 'success' || needs.version-release.outputs.should_upload_release == 'true')
+    outputs:
+      desktop_build_success: ${{ steps.desktop-build.outputs.success }}
+      desktop_version: ${{ steps.sync-desktop-version.outputs.desktop_version }}
+      desktop_exe_name: ${{ steps.desktop-build.outputs.exe_name }}
+      desktop_artifact_url: ${{ steps.desktop-summary.outputs.artifact_url }}
+    
+    steps:
+      - name: 📥 检出源代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Rust 工具链配置
+      - name: 🦀 安装Rust工具链
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-gnu
+
+      - name: 💾 缓存Rust依赖
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: packages/web/src-tauri
+          cache-on-failure: true
+          shared-key: "desktop-build"
+
+      # 安装 Windows 构建依赖
+      - name: 🔧 安装Windows构建依赖
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-mingw-w64-x86-64
+          sudo apt-get install -y nsis
+
+      - name: 📦 配置 PNPM 环境
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - name: 🟢 配置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
+
+      - name: 📦 安装依赖
+        run: pnpm install
+
+      # 修复后的版本号同步步骤
+      - name: 🔄 同步版本号到桌面应用配置
+        id: sync-desktop-version
+        run: |
+          CORE_VERSION="${{ needs.version-release.outputs.core_version }}"
+          echo "同步版本号: $CORE_VERSION"
+          
+          # 更新 tauri.conf.json 中的版本号
+          configPath="packages/web/src-tauri/tauri.conf.json"
+          jq --arg version "$CORE_VERSION" '.version = $version' "$configPath" > tmp.json && mv tmp.json "$configPath"
+          
+          # 更新 Cargo.toml 中的版本号
+          cargoPath="packages/web/src-tauri/Cargo.toml"
+          sed -i "s/^version = \".*\"/version = \"$CORE_VERSION\"/" "$cargoPath"
+          
+          echo "desktop_version=$CORE_VERSION" >> $GITHUB_OUTPUT
+          echo "✅ 版本号已同步为: $CORE_VERSION"
+
+      - name: 📱 构建Windows桌面应用
+        id: desktop-build
+        run: |
+          echo "开始构建Windows桌面应用..."
+          
+          # 设置交叉编译环境变量
+          export CC_x86_64_pc_windows_gnu=x86_64-w64-mingw32-gcc
+          export CXX_x86_64_pc_windows_gnu=x86_64-w64-mingw32-g++
+          export AR_x86_64_pc_windows_gnu=x86_64-w64-mingw32-ar
+          export CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc
+          
+          # 进入web包目录并构建桌面应用
+          cd packages/web
+          
+          # 使用 pnpm build:desktop 构建桌面应用
+          if pnpm build:desktop --target x86_64-pc-windows-gnu; then
+            echo "success=true" >> $GITHUB_OUTPUT
+            
+            # 查找构建产物
+            NSIS_PATH=$(find src-tauri/target -name "*.exe" -path "*bundle*nsis*" | head -1)
+            
+            if [ -n "$NSIS_PATH" ]; then
+              NSIS_NAME=$(basename "$NSIS_PATH")
+              echo "exe_path=$NSIS_PATH" >> $GITHUB_OUTPUT
+              echo "exe_name=$NSIS_NAME" >> $GITHUB_OUTPUT
+              echo "找到NSIS安装程序: $NSIS_PATH"
+              echo "文件名: $NSIS_NAME"
+            else
+              echo "警告: 未找到NSIS安装程序，但构建成功"
+              echo "success=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "❌ 桌面应用构建失败"
+            echo "success=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 📤 上传桌面应用构建产物
+        if: steps.desktop-build.outputs.success == 'true'
+        id: upload-desktop-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.desktop-build.outputs.exe_name }}
+          path: packages/web/${{ steps.desktop-build.outputs.exe_path }}
+          retention-days: 30
+          compression-level: 0
+
+      - name: 🚀 上传到Release
+        if: |
+          steps.desktop-build.outputs.success == 'true' && 
+          needs.version-release.outputs.should_upload_release == 'true' && 
+          needs.version-release.outputs.release_tag_name != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.version-release.outputs.release_tag_name }}
+          files: packages/web/${{ steps.desktop-build.outputs.exe_path }}
+          name: ${{ steps.desktop-build.outputs.exe_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📊 生成桌面应用信息
+        if: steps.desktop-build.outputs.success == 'true'
+        id: desktop-summary
+        run: |
+          ARTIFACT_ID="${{ steps.upload-desktop-artifact.outputs.artifact-id }}"
+          ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/$ARTIFACT_ID"
+          echo "artifact_url=$ARTIFACT_URL" >> $GITHUB_OUTPUT
+          
+          echo "## 🖥️ Windows桌面应用构建完成" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📱 应用信息" >> $GITHUB_STEP_SUMMARY
+          echo "- **平台:** Windows x64" >> $GITHUB_STEP_SUMMARY
+          echo "- **文件名:** \`${{ steps.desktop-build.outputs.exe_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **版本:** \`${{ steps.sync-desktop-version.outputs.desktop_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **基于Core版本:** \`${{ needs.version-release.outputs.core_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📥 下载方式" >> $GITHUB_STEP_SUMMARY
+          echo "- 📦 **直接下载:** [点击下载 ${{ steps.desktop-build.outputs.exe_name }}]($ARTIFACT_URL)" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.version-release.outputs.should_upload_release }}" = "true" ] && [ "${{ needs.version-release.outputs.release_tag_name }}" != "" ]; then
+            echo "- 🚀 **Release下载:** [点击这里下载最新版本](https://github.com/${{ github.repository }}/releases/tag/${{ needs.version-release.outputs.release_tag_name }})" >> $GITHUB_STEP_SUMMARY
+          fi
 
   # 桌面应用完成后更新 PR 评论
   update-pr-comment-with-desktop:
@@ -525,7 +668,7 @@ jobs:
             ### 🖥️ Windows 桌面应用
             ${{ needs.desktop-build.result == 'success' && '- **状态:** ✅ 构建成功' || '- **状态:** ❌ 构建失败' }}
             ${{ needs.desktop-build.result == 'success' && format('- **版本:** `{0}`', needs.desktop-build.outputs.desktop_version) || '' }}
-            ${{ needs.desktop-build.result == 'success' && format('- **下载:** [点击下载]({0})', needs.desktop-build.outputs.artifact_url) || '' }}
+            ${{ needs.desktop-build.result == 'success' && format('- **下载:** [点击下载]({0})', needs.desktop-build.outputs.desktop_artifact_url) || '' }}
             
             ---
           comment-tag: published-packages
