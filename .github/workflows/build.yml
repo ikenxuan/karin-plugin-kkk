@@ -513,7 +513,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Rust 工具链配置
       - name: 🦀 安装Rust工具链
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -529,8 +528,8 @@ jobs:
       - name: 💾 缓存并安装 Windows 构建依赖
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: gcc-mingw-w64-x86-64 nsis build-essential libglib2.0-dev libgtk-3-dev libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev pkg-config
-          version: 1.1
+          packages: gcc-mingw-w64-x86-64 nsis build-essential
+          version: 1.0
           execute_install_scripts: true
 
       - name: 📦 配置 PNPM 环境
@@ -548,7 +547,6 @@ jobs:
       - name: 📦 安装依赖
         run: pnpm install
 
-      # 修复后的版本号同步步骤
       - name: 🔄 同步版本号到桌面应用配置
         id: sync-desktop-version
         run: |
@@ -670,13 +668,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Android 开发环境配置
       - name: 🤖 配置 Android 开发环境
         uses: android-actions/setup-android@v3
-        with:
-          api-level: 36
-          build-tools: 36.0.0
-          ndk-version: 28.2.13676358
 
       - name: 🦀 安装 Rust 工具链
         uses: dtolnay/rust-toolchain@stable
