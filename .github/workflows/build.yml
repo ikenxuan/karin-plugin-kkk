@@ -513,6 +513,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: 🔧 安装和配置 NSIS
+        run: sudo apt-get install -y nsis
+
       - name: 💾 缓存并安装 Windows 构建依赖
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
@@ -565,6 +568,19 @@ jobs:
           echo "desktop_version=$CORE_VERSION" >> $GITHUB_OUTPUT
           echo "✅ 版本号已同步为: $CORE_VERSION"
 
+      - name: 🔧 验证构建环境和依赖
+        run: |
+          echo "🔍 检查 NSIS 安装状态:"
+          which makensis || echo "❌ makensis 未找到"
+          makensis /VERSION || echo "❌ 无法获取 NSIS 版本"
+          
+          echo "📦 检查图标文件:"
+          cd packages/web/src-tauri
+          ls -la icons/ || echo "❌ 图标目录不存在"
+          
+          echo "📋 验证 Tauri 配置:"
+          cat tauri.conf.json | jq '.bundle' || echo "❌ 配置文件解析失败"
+
       - name: 📱 构建桌面应用 (Windows)
         id: desktop-build
         run: |
@@ -572,55 +588,38 @@ jobs:
           
           cd packages/web
           
-          # 确保构建环境正确
-          echo "🔍 检查构建环境:"
-          echo "当前目录: $(pwd)"
-          echo "Tauri 版本: $(pnpm tauri --version)"
+          # 设置详细日志
+          export RUST_LOG=debug
+          export TAURI_DEBUG=1
           
-          # 显示 tauri.conf.json 配置
-          echo "📋 Tauri 配置:"
-          cat src-tauri/tauri.conf.json | jq '.bundle'
-          
-          # 构建桌面应用，添加详细输出
-          echo "🚀 开始构建..."
-          if pnpm build:desktop --verbose; then
+          # 构建桌面应用
+          echo "🚀 开始构建 (详细模式)..."
+          if pnpm tauri build --verbose --target x86_64-pc-windows-msvc; then
             echo "success=true" >> $GITHUB_OUTPUT
             
-            # 详细列出所有构建产物
-            echo "🔍 列出所有构建产物:"
-            find src-tauri/target -name "*.exe" -o -name "*.msi" -o -name "*.deb" -o -name "*.rpm" -o -name "*.dmg" -o -name "*.app" 2>/dev/null || echo "未找到任何安装包"
+            # 详细列出构建产物
+            echo "🔍 搜索所有可能的安装包:"
+            find src-tauri/target -type f \( -name "*.exe" -o -name "*.msi" \) 2>/dev/null || echo "未找到安装包"
             
-            # 检查 bundle 目录结构
-            echo "📁 Bundle 目录结构:"
-            if [ -d "src-tauri/target/release/bundle" ]; then
-              find src-tauri/target/release/bundle -type f 2>/dev/null
-            else
-              echo "❌ Bundle 目录不存在"
-            fi
+            # 检查完整的 target 目录结构
+            echo "📁 Target 目录结构:"
+            find src-tauri/target -type d -name "*bundle*" 2>/dev/null || echo "未找到 bundle 目录"
             
-            # 查找 NSIS 安装程序
-            NSIS_PATH=$(find "$PWD/src-tauri/target" -name "*.exe" -path "*/bundle/nsis/*" 2>/dev/null | head -1)
+            # 查找安装程序
+            INSTALLER_PATH=$(find "$PWD/src-tauri/target" -type f \( -name "*.exe" -o -name "*.msi" \) 2>/dev/null | head -1)
             
-            if [ -n "$NSIS_PATH" ]; then
-              NSIS_NAME=$(basename "$NSIS_PATH")
-              RELATIVE_PATH=$(realpath --relative-to="$PWD" "$NSIS_PATH")
+            if [ -n "$INSTALLER_PATH" ]; then
+              INSTALLER_NAME=$(basename "$INSTALLER_PATH")
+              RELATIVE_PATH=$(realpath --relative-to="$PWD" "$INSTALLER_PATH")
               echo "exe_path=$RELATIVE_PATH" >> $GITHUB_OUTPUT
-              echo "exe_name=$NSIS_NAME" >> $GITHUB_OUTPUT
-              echo "✅ 找到NSIS安装程序: $NSIS_PATH"
+              echo "exe_name=$INSTALLER_NAME" >> $GITHUB_OUTPUT
+              echo "✅ 找到安装程序: $INSTALLER_PATH"
             else
-              # 如果没有找到 NSIS，尝试查找其他格式的安装包
-              OTHER_INSTALLER=$(find "$PWD/src-tauri/target" -name "*.exe" -o -name "*.msi" 2>/dev/null | head -1)
-              if [ -n "$OTHER_INSTALLER" ]; then
-                INSTALLER_NAME=$(basename "$OTHER_INSTALLER")
-                RELATIVE_PATH=$(realpath --relative-to="$PWD" "$OTHER_INSTALLER")
-                echo "exe_path=$RELATIVE_PATH" >> $GITHUB_OUTPUT
-                echo "exe_name=$INSTALLER_NAME" >> $GITHUB_OUTPUT
-                echo "✅ 找到安装程序: $OTHER_INSTALLER"
-              else
-                echo "❌ 未找到任何安装程序"
-                echo "success=false" >> $GITHUB_OUTPUT
-                exit 1
-              fi
+              echo "❌ 未找到任何安装程序"
+              echo "🔍 尝试手动构建 bundle:"
+              pnpm tauri build --bundles nsis --verbose || echo "手动 bundle 构建也失败"
+              echo "success=false" >> $GITHUB_OUTPUT
+              exit 1
             fi
           else
             echo "❌ 桌面应用构建失败"
