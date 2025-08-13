@@ -525,12 +525,11 @@ jobs:
           cache-on-failure: true
           shared-key: "desktop-build"
 
-      - name: 💾 缓存并安装 Windows 构建依赖
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: gcc-mingw-w64-x86-64 nsis build-essential
-          version: 1.0
-          execute_install_scripts: true
+      - name: 🔧 安装Windows构建依赖
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-mingw-w64-x86-64
+          sudo apt-get install -y nsis
 
       - name: 📦 配置 PNPM 环境
         uses: pnpm/action-setup@v4
@@ -567,37 +566,39 @@ jobs:
       - name: 📱 构建桌面应用 (Windows)
         id: desktop-build
         run: |
-          echo "开始构建Windows桌面应用..."
+          echo "开始构建桌面应用..."
           
-          # 设置交叉编译环境变量
-          export CC_x86_64_pc_windows_gnu=x86_64-w64-mingw32-gcc
-          export CXX_x86_64_pc_windows_gnu=x86_64-w64-mingw32-g++
-          export AR_x86_64_pc_windows_gnu=x86_64-w64-mingw32-ar
-          export CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc
-          
-          # 进入web包目录并构建桌面应用
           cd packages/web
           
-          # 使用 pnpm build:desktop 构建桌面应用
-          if pnpm build:desktop --target x86_64-pc-windows-gnu; then
+          # 构建桌面应用，如果失败立即退出
+          if pnpm build:desktop; then
             echo "success=true" >> $GITHUB_OUTPUT
             
-            # 查找构建产物
-            NSIS_PATH=$(find src-tauri/target -name "*.exe" -path "*bundle*nsis*" | head -1)
+            # 使用绝对路径查找构建产物
+            NSIS_PATH=$(find "$PWD/src-tauri/target/release/bundle/nsis" -name "*.exe" 2>/dev/null | head -1)
             
             if [ -n "$NSIS_PATH" ]; then
               NSIS_NAME=$(basename "$NSIS_PATH")
-              echo "exe_path=$NSIS_PATH" >> $GITHUB_OUTPUT
+              # 转换为相对于 packages/web 的路径
+              RELATIVE_PATH=$(realpath --relative-to="$PWD" "$NSIS_PATH")
+              echo "exe_path=$RELATIVE_PATH" >> $GITHUB_OUTPUT
               echo "exe_name=$NSIS_NAME" >> $GITHUB_OUTPUT
-              echo "找到NSIS安装程序: $NSIS_PATH"
-              echo "文件名: $NSIS_NAME"
+              echo "✅ 找到NSIS安装程序: $NSIS_PATH"
+              echo "📁 相对路径: $RELATIVE_PATH"
+              echo "📄 文件名: $NSIS_NAME"
             else
-              echo "警告: 未找到NSIS安装程序，但构建成功"
+              echo "❌ 未找到NSIS安装程序"
+              echo "🔍 尝试列出构建目录内容:"
+              ls -la src-tauri/target/release/ || echo "release目录不存在"
+              ls -la src-tauri/target/release/bundle/ || echo "bundle目录不存在"
+              ls -la src-tauri/target/release/bundle/nsis/ || echo "nsis目录不存在"
               echo "success=false" >> $GITHUB_OUTPUT
+              exit 1
             fi
           else
             echo "❌ 桌面应用构建失败"
             echo "success=false" >> $GITHUB_OUTPUT
+            exit 1
           fi
 
       - name: 📤 上传桌面应用构建产物
