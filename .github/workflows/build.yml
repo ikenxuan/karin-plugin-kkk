@@ -490,7 +490,7 @@ jobs:
           mode: upsert
           reactions: rocket
 
-  # 桌面应用构建（在预览包发布后执行）
+  # 桌面应用 EXE 构建
   desktop-build:
     runs-on: ubuntu-latest
     needs: [version-release, unified-build, preview-package-publish]
@@ -644,11 +644,179 @@ jobs:
             echo "- 🚀 **Release下载:** [点击这里下载最新版本](https://github.com/${{ github.repository }}/releases/tag/${{ needs.version-release.outputs.release_tag_name }})" >> $GITHUB_STEP_SUMMARY
           fi
 
-  # 桌面应用完成后更新 PR 评论
-  update-pr-comment-with-desktop:
+  # Android APK 构建
+  android-build:
     runs-on: ubuntu-latest
-    needs: [unified-build, preview-package-publish, desktop-build]
-    if: github.event_name == 'pull_request' && always() && needs.desktop-build.result != 'skipped'
+    needs: [version-release, unified-build, preview-package-publish]
+    if: |
+      needs.unified-build.outputs.build_success == 'true' && 
+      (github.event_name != 'workflow_dispatch' || inputs.skip_desktop != true) &&
+      (needs.preview-package-publish.result == 'success' || needs.version-release.outputs.should_upload_release == 'true')
+    outputs:
+      android_build_success: ${{ steps.android-build.outputs.success }}
+      android_version: ${{ steps.sync-android-version.outputs.android_version }}
+      android_apk_name: ${{ steps.android-build.outputs.apk_name }}
+      android_artifact_url: ${{ steps.android-summary.outputs.artifact_url }}
+    
+    steps:
+      - name: 📥 检出源代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Android 开发环境配置
+      - name: 🤖 配置 Android 开发环境
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 36
+          build-tools: 36.0.0
+          ndk-version: 28.2.1.13676358
+
+      - name: 🦀 安装 Rust 工具链
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+
+      - name: 💾 缓存 Rust 依赖
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: packages/web/src-tauri
+          cache-on-failure: true
+          shared-key: "android-build"
+
+      - name: ☕ 配置 Java 环境
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 📦 配置 PNPM 环境
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - name: 🟢 配置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
+
+      - name: 📦 安装依赖
+        run: pnpm install
+
+      # 配置 Android 构建环境
+      - name: 🔧 配置 Android 构建环境
+        run: |
+          # 设置 Android 环境变量
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+          echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk/26.1.10909125" >> $GITHUB_ENV
+          
+          # 配置 Rust 交叉编译
+          echo "CC_aarch64_linux_android=$ANDROID_SDK_ROOT/ndk/26.1.10909125/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang" >> $GITHUB_ENV
+          echo "CXX_aarch64_linux_android=$ANDROID_SDK_ROOT/ndk/26.1.10909125/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang++" >> $GITHUB_ENV
+          echo "AR_aarch64_linux_android=$ANDROID_SDK_ROOT/ndk/26.1.10909125/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar" >> $GITHUB_ENV
+          echo "CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$ANDROID_SDK_ROOT/ndk/26.1.10909125/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang" >> $GITHUB_ENV
+
+      # 同步版本号到 Android 配置
+      - name: 🔄 同步版本号到 Android 应用配置
+        id: sync-android-version
+        run: |
+          CORE_VERSION="${{ needs.version-release.outputs.core_version }}"
+          echo "同步版本号: $CORE_VERSION"
+          
+          # 更新 tauri.conf.json 中的版本号
+          configPath="packages/web/src-tauri/tauri.conf.json"
+          jq --arg version "$CORE_VERSION" '.version = $version' "$configPath" > tmp.json && mv tmp.json "$configPath"
+          
+          # 更新 Cargo.toml 中的版本号
+          cargoPath="packages/web/src-tauri/Cargo.toml"
+          sed -i "s/^version = \".*\"/version = \"$CORE_VERSION\"/" "$cargoPath"
+          
+          echo "android_version=$CORE_VERSION" >> $GITHUB_OUTPUT
+          echo "✅ Android 版本号已同步为: $CORE_VERSION"
+
+      - name: 📱 构建 Android APK (aarch64)
+        id: android-build
+        run: |
+          echo "开始构建 Android APK (aarch64 架构)..."
+          
+          # 进入 web 包目录并构建 Android APK
+          cd packages/web
+          
+          # 使用 pnpm build:android 构建 APK
+          if pnpm build:android; then
+            echo "success=true" >> $GITHUB_OUTPUT
+            
+            # 查找构建产物
+            APK_PATH=$(find src-tauri/gen/android -name "*.apk" | head -1)
+            
+            if [ -n "$APK_PATH" ]; then
+              APK_NAME=$(basename "$APK_PATH")
+              echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
+              echo "apk_name=$APK_NAME" >> $GITHUB_OUTPUT
+              echo "找到 APK 文件: $APK_PATH"
+              echo "文件名: $APK_NAME"
+            else
+              echo "警告: 未找到 APK 文件，但构建成功"
+              echo "success=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "❌ Android APK 构建失败"
+            echo "success=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 📤 上传 Android APK 构建产物
+        if: steps.android-build.outputs.success == 'true'
+        id: upload-android-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.android-build.outputs.apk_name }}
+          path: packages/web/${{ steps.android-build.outputs.apk_path }}
+          retention-days: 30
+          compression-level: 0
+
+      - name: 🚀 上传 APK 到 Release
+        if: |
+          steps.android-build.outputs.success == 'true' && 
+          needs.version-release.outputs.should_upload_release == 'true' && 
+          needs.version-release.outputs.release_tag_name != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.version-release.outputs.release_tag_name }}
+          files: packages/web/${{ steps.android-build.outputs.apk_path }}
+          name: ${{ steps.android-build.outputs.apk_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📊 生成 Android 应用信息
+        if: steps.android-build.outputs.success == 'true'
+        id: android-summary
+        run: |
+          ARTIFACT_ID="${{ steps.upload-android-artifact.outputs.artifact-id }}"
+          ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/$ARTIFACT_ID"
+          echo "artifact_url=$ARTIFACT_URL" >> $GITHUB_OUTPUT
+          
+          echo "## 📱 Android APK 构建完成" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📱 应用信息" >> $GITHUB_STEP_SUMMARY
+          echo "- **平台:** Android (aarch64)" >> $GITHUB_STEP_SUMMARY
+          echo "- **文件名:** \`${{ steps.android-build.outputs.apk_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **版本:** \`${{ steps.sync-android-version.outputs.android_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **基于Core版本:** \`${{ needs.version-release.outputs.core_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📥 下载方式" >> $GITHUB_STEP_SUMMARY
+          echo "- 📦 **直接下载:** [点击下载 ${{ steps.android-build.outputs.apk_name }}]($ARTIFACT_URL)" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.version-release.outputs.should_upload_release }}" = "true" ] && [ "${{ needs.version-release.outputs.release_tag_name }}" != "" ]; then
+            echo "- 🚀 **Release下载:** [点击这里下载最新版本](https://github.com/${{ github.repository }}/releases/tag/${{ needs.version-release.outputs.release_tag_name }})" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # 应用构建完成后更新 PR 评论
+  update-pr-comment-with-apps:
+    runs-on: ubuntu-latest
+    needs: [unified-build, preview-package-publish, desktop-build, android-build]
+    if: github.event_name == 'pull_request' && always() && (needs.desktop-build.result != 'skipped' || needs.android-build.result != 'skipped')
     steps:
       - name: 💬 更新 PR 评论
         uses: thollander/actions-comment-pull-request@v3
@@ -666,9 +834,15 @@ jobs:
             ```
             
             ### 🖥️ Windows 桌面应用
-            ${{ needs.desktop-build.result == 'success' && '- **状态:** ✅ 构建成功' || '- **状态:** ❌ 构建失败' }}
+            ${{ needs.desktop-build.result == 'success' && '- **状态:** ✅ 构建成功' || (needs.desktop-build.result == 'skipped' && '- **状态:** ⏭️ 已跳过构建' || '- **状态:** ❌ 构建失败') }}
             ${{ needs.desktop-build.result == 'success' && format('- **版本:** `{0}`', needs.desktop-build.outputs.desktop_version) || '' }}
             ${{ needs.desktop-build.result == 'success' && format('- **下载:** [点击下载]({0})', needs.desktop-build.outputs.desktop_artifact_url) || '' }}
+            
+            ### 📱 Android 应用
+            ${{ needs.android-build.result == 'success' && '- **状态:** ✅ 构建成功' || (needs.android-build.result == 'skipped' && '- **状态:** ⏭️ 已跳过构建' || '- **状态:** ❌ 构建失败') }}
+            ${{ needs.android-build.result == 'success' && format('- **版本:** `{0}`', needs.android-build.outputs.android_version) || '' }}
+            ${{ needs.android-build.result == 'success' && format('- **架构:** aarch64') || '' }}
+            ${{ needs.android-build.result == 'success' && format('- **下载:** [点击下载]({0})', needs.android-build.outputs.android_artifact_url) || '' }}
             
             ---
           comment-tag: published-packages

@@ -138,10 +138,19 @@ fn get_backend_url() -> String {
  * 开始拖拽窗口
  */
 #[command]
-async fn start_drag(window: tauri::WebviewWindow) -> Result<(), String> {
-    window.start_dragging().map_err(|e| e.to_string())
+async fn start_drag(window: tauri::Window) -> Result<(), String> {
+    #[cfg(any(target_os = "windows", target_os = "macos", target_os = "linux"))]
+    {
+        window.start_dragging().map_err(|e: tauri::Error| e.to_string())
+    }
+    
+    #[cfg(any(target_os = "android", target_os = "ios"))]
+    {
+        Ok(())
+    }
 }
 
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
       .invoke_handler(tauri::generate_handler![request, set_server_url, get_server_url, start_drag])

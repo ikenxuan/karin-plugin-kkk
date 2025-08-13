@@ -4,10 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "tauri": "tauri",
     "dev": "vite",
     "dev:desktop": "tauri dev",
     "build": "tsc -b && vite build",
     "build:desktop": "tauri build",
+    "build:android": "tauri android build --target aarch64",
     "build:desktop-debug": "tauri build --debug",
     "lint": "eslint . --fix",
     "preview": "vite preview"
