@@ -526,6 +526,19 @@ jobs:
           version: 1.2
           execute_install_scripts: true
 
+      - name: 🔧 安装 LLVM 工具链
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y llvm-dev libclang-dev clang
+          
+          # 验证 llvm-rc 是否可用
+          which llvm-rc || echo "llvm-rc not found in PATH"
+          
+          # 如果 llvm-rc 不在 PATH 中，创建符号链接
+          if ! which llvm-rc; then
+            sudo ln -sf /usr/bin/llvm-rc-* /usr/bin/llvm-rc 2>/dev/null || true
+          fi
+
       - name: 🦀 安装 Rust 工具链
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -735,18 +748,6 @@ jobs:
           workspaces: packages/web/src-tauri
           cache-on-failure: true
           shared-key: ${{ env.APP_NAME }}-android-build
-
-      - name: 💾 缓存 NDK 和 SDK 组件
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ env.ANDROID_SDK_ROOT }}/ndk
-            ${{ env.ANDROID_SDK_ROOT }}/build-tools
-            ${{ env.ANDROID_SDK_ROOT }}/platforms
-          key: android-sdk-${{ runner.os }}-ndk-28.2.13676358-api36
-          restore-keys: |
-            android-sdk-${{ runner.os }}-ndk-28.2.13676358
-            android-sdk-${{ runner.os }}-
 
       - name: 🔍 检查缓存恢复状态
         run: |
