@@ -577,24 +577,31 @@ jobs:
           if pnpm build:desktop; then
             echo "success=true" >> $GITHUB_OUTPUT
             
-            # 查找构建产物
-            NSIS_PATH=$(find src-tauri/target/release/bundle/nsis -name "*.exe" | head -1)
+            # 使用绝对路径查找构建产物
+            NSIS_PATH=$(find "$PWD/src-tauri/target/release/bundle/nsis" -name "*.exe" 2>/dev/null | head -1)
             
             if [ -n "$NSIS_PATH" ]; then
               NSIS_NAME=$(basename "$NSIS_PATH")
-              echo "exe_path=$NSIS_PATH" >> $GITHUB_OUTPUT
+              # 转换为相对于 packages/web 的路径
+              RELATIVE_PATH=$(realpath --relative-to="$PWD" "$NSIS_PATH")
+              echo "exe_path=$RELATIVE_PATH" >> $GITHUB_OUTPUT
               echo "exe_name=$NSIS_NAME" >> $GITHUB_OUTPUT
-              echo "找到NSIS安装程序: $NSIS_PATH"
-              echo "文件名: $NSIS_NAME"
+              echo "✅ 找到NSIS安装程序: $NSIS_PATH"
+              echo "📁 相对路径: $RELATIVE_PATH"
+              echo "📄 文件名: $NSIS_NAME"
             else
               echo "❌ 未找到NSIS安装程序"
+              echo "🔍 尝试列出构建目录内容:"
+              ls -la src-tauri/target/release/ || echo "release目录不存在"
+              ls -la src-tauri/target/release/bundle/ || echo "bundle目录不存在"
+              ls -la src-tauri/target/release/bundle/nsis/ || echo "nsis目录不存在"
               echo "success=false" >> $GITHUB_OUTPUT
-              exit 1  # 立即终止
+              exit 1
             fi
           else
             echo "❌ 桌面应用构建失败"
             echo "success=false" >> $GITHUB_OUTPUT
-            exit 1  # 立即终止
+            exit 1
           fi
 
       - name: 📤 上传桌面应用构建产物
@@ -671,7 +678,7 @@ jobs:
         with:
           api-level: 36
           build-tools: 36.0.0
-          ndk-version: 28.2.1.13676358
+          ndk-version: 28.2.13676358
 
       - name: 🦀 安装 Rust 工具链
         uses: dtolnay/rust-toolchain@stable
@@ -719,7 +726,6 @@ jobs:
       - name: 📦 安装依赖
         run: pnpm install
 
-      # 配置 Android 构建环境
       - name: 🔧 配置 Android 构建环境
         run: |
           # 设置 Android 环境变量
@@ -727,8 +733,8 @@ jobs:
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
           
           # 检查并设置正确的 NDK 路径
-          if [ -d "$ANDROID_SDK_ROOT/ndk/28.2.1.13676358" ]; then
-            NDK_PATH="$ANDROID_SDK_ROOT/ndk/28.2.1.13676358"
+          if [ -d "$ANDROID_SDK_ROOT/ndk/28.2.13676358" ]; then
+            NDK_PATH="$ANDROID_SDK_ROOT/ndk/28.2.13676358"
           elif [ -d "$ANDROID_SDK_ROOT/ndk-bundle" ]; then
             NDK_PATH="$ANDROID_SDK_ROOT/ndk-bundle"
           else
