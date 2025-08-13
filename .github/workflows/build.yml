@@ -574,10 +574,6 @@ jobs:
           which makensis || echo "❌ makensis 未找到"
           makensis /VERSION || echo "❌ 无法获取 NSIS 版本"
           
-          echo "📦 检查图标文件:"
-          cd packages/web/src-tauri
-          ls -la icons/ || echo "❌ 图标目录不存在"
-          
           echo "📋 验证 Tauri 配置:"
           cat tauri.conf.json | jq '.bundle' || echo "❌ 配置文件解析失败"
 
