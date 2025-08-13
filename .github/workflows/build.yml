@@ -529,7 +529,7 @@ jobs:
       - name: 💾 缓存并安装 Windows 构建依赖
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: gcc-mingw-w64-x86-64 nsis build-essential libglib2.0-dev libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev pkg-config
+          packages: gcc-mingw-w64-x86-64 nsis build-essential libglib2.0-dev libgtk-3-dev libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev pkg-config
           version: 1.1
           execute_install_scripts: true
 
@@ -671,7 +671,7 @@ jobs:
         with:
           api-level: 36
           build-tools: 36.0.0
-          ndk-version: 28.2.13676358
+          ndk-version: 28.2.1.13676358
 
       - name: 🦀 安装 Rust 工具链
         uses: dtolnay/rust-toolchain@stable
@@ -727,8 +727,8 @@ jobs:
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
           
           # 检查并设置正确的 NDK 路径
-          if [ -d "$ANDROID_SDK_ROOT/ndk/28.2.13676358" ]; then
-            NDK_PATH="$ANDROID_SDK_ROOT/ndk/28.2.13676358"
+          if [ -d "$ANDROID_SDK_ROOT/ndk/28.2.1.13676358" ]; then
+            NDK_PATH="$ANDROID_SDK_ROOT/ndk/28.2.1.13676358"
           elif [ -d "$ANDROID_SDK_ROOT/ndk-bundle" ]; then
             NDK_PATH="$ANDROID_SDK_ROOT/ndk-bundle"
           else
