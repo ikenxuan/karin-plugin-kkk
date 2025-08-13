@@ -464,7 +464,6 @@ jobs:
           
           echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
 
-      # 精简的 PR 评论（初始版本）
       - name: 💬 发布 PR 评论
         if: github.event_name == 'pull_request'
         uses: thollander/actions-comment-pull-request@v3
@@ -484,8 +483,12 @@ jobs:
             ### 🖥️ Windows 桌面应用
             ${{ inputs.skip_desktop == true && '- **状态:** ⏭️ 已跳过构建' || '- **状态:** 🔄 构建中...' }}
             
+            ### 📱 Android 应用
+            ${{ inputs.skip_desktop == true && '- **状态:** ⏭️ 已跳过构建' || '- **状态:** 🔄 构建中...' }}
+            ${{ inputs.skip_desktop != true && '- **架构:** aarch64' || '' }}
+            
             ---
-            ${{ inputs.skip_desktop != true && '> 💡 桌面应用构建完成后将自动更新此评论' || '' }}
+            ${{ inputs.skip_desktop != true && '> 💡 桌面和移动应用构建完成后将自动更新此评论' || '' }}
           comment-tag: published-packages
           mode: upsert
           reactions: rocket
@@ -643,6 +646,9 @@ jobs:
           if [ "${{ needs.version-release.outputs.should_upload_release }}" = "true" ] && [ "${{ needs.version-release.outputs.release_tag_name }}" != "" ]; then
             echo "- 🚀 **Release下载:** [点击这里下载最新版本](https://github.com/${{ github.repository }}/releases/tag/${{ needs.version-release.outputs.release_tag_name }})" >> $GITHUB_STEP_SUMMARY
           fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
 
   # Android APK 构建
   android-build:
@@ -671,6 +677,18 @@ jobs:
           api-level: 36
           build-tools: 36.0.0
           ndk-version: 28.2.1.13676358
+          
+      - name: 🔍 验证 Android 环境
+        run: |
+          echo "Android SDK Root: $ANDROID_SDK_ROOT"
+          echo "可用的 NDK 版本:"
+          ls -la $ANDROID_SDK_ROOT/ndk/ || echo "NDK 目录不存在"
+          
+          # 如果指定版本的 NDK 不存在，尝试安装
+          if [ ! -d "$ANDROID_SDK_ROOT/ndk/28.2.1.13676358" ]; then
+            echo "🔧 安装 NDK 28.2.1.13676358..."
+            $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "ndk;28.2.1.13676358"
+          fi
 
       - name: 🦀 安装 Rust 工具链
         uses: dtolnay/rust-toolchain@stable
@@ -683,6 +701,19 @@ jobs:
           workspaces: packages/web/src-tauri
           cache-on-failure: true
           shared-key: "android-build"
+          key: android-${{ runner.os }}-${{ hashFiles('packages/web/src-tauri/Cargo.lock') }}
+          
+      - name: 💾 缓存 Android 构建产物
+        uses: actions/cache@v4
+        with:
+          path: |
+            packages/web/src-tauri/gen/android/app/build
+            packages/web/src-tauri/gen/android/.gradle
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: android-gradle-${{ runner.os }}-${{ hashFiles('packages/web/src-tauri/gen/android/**/*.gradle*', 'packages/web/src-tauri/gen/android/gradle-wrapper.properties') }}
+          restore-keys: |
+            android-gradle-${{ runner.os }}-
 
       - name: ☕ 配置 Java 环境
         uses: actions/setup-java@v4
@@ -731,11 +762,10 @@ jobs:
           echo "✅ NDK 路径设置为: $NDK_PATH"
           
           # 配置 Rust 交叉编译工具链
-          echo "CC_aarch64_linux_android=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang" >> $GITHUB_ENV
-          echo "CXX_aarch64_linux_android=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang++" >> $GITHUB_ENV
+          echo "CC_aarch64_linux_android=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android36-clang" >> $GITHUB_ENV
+          echo "CXX_aarch64_linux_android=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android36-clang++" >> $GITHUB_ENV
           echo "AR_aarch64_linux_android=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar" >> $GITHUB_ENV
-          echo "CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang" >> $GITHUB_ENV
-
+          echo "CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android36-clang" >> $GITHUB_ENV
 
       # 同步版本号到 Android 配置
       - name: 🔄 同步版本号到 Android 应用配置
@@ -866,3 +896,48 @@ jobs:
           comment-tag: published-packages
           mode: upsert
           reactions: rocket, hooray
+
+  build-summary:
+    runs-on: ubuntu-latest
+    needs: [unified-build, preview-package-publish, desktop-build, android-build]
+    if: always() && needs.unified-build.outputs.build_success == 'true'
+    steps:
+      - name: 📊 生成完整构建摘要
+        run: |
+          echo "# 🚀 构建完成摘要" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # NPM 包信息
+          if [ "${{ needs.preview-package-publish.result }}" = "success" ]; then
+            echo "## 📦 NPM 预览包" >> $GITHUB_STEP_SUMMARY
+            echo "- **版本:** \`${{ needs.preview-package-publish.outputs.pkg_version }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "- **安装命令:** \`${{ needs.preview-package-publish.outputs.pnpm_install_cmd }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # 桌面应用信息
+          if [ "${{ needs.desktop-build.result }}" = "success" ]; then
+            echo "## 🖥️ Windows 桌面应用" >> $GITHUB_STEP_SUMMARY
+            echo "- **状态:** ✅ 构建成功" >> $GITHUB_STEP_SUMMARY
+            echo "- **版本:** \`${{ needs.desktop-build.outputs.desktop_version }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "- **下载:** [点击下载](${{ needs.desktop-build.outputs.desktop_artifact_url }})" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.desktop-build.result }}" = "failure" ]; then
+            echo "## 🖥️ Windows 桌面应用" >> $GITHUB_STEP_SUMMARY
+            echo "- **状态:** ❌ 构建失败" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Android 应用信息
+          if [ "${{ needs.android-build.result }}" = "success" ]; then
+            echo "## 📱 Android 应用" >> $GITHUB_STEP_SUMMARY
+            echo "- **状态:** ✅ 构建成功" >> $GITHUB_STEP_SUMMARY
+            echo "- **版本:** \`${{ needs.android-build.outputs.android_version }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "- **架构:** aarch64" >> $GITHUB_STEP_SUMMARY
+            echo "- **下载:** [点击下载](${{ needs.android-build.outputs.android_artifact_url }})" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.android-build.result }}" = "failure" ]; then
+            echo "## 📱 Android 应用" >> $GITHUB_STEP_SUMMARY
+            echo "- **状态:** ❌ 构建失败" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
