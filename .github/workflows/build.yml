@@ -513,10 +513,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 🦀 安装Rust工具链
-        uses: dtolnay/rust-toolchain@stable
+      - name: 💾 缓存并安装 Windows 构建依赖
+        uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          targets: x86_64-pc-windows-gnu
+          packages: gcc-mingw-w64-x86-64 nsis build-essential libglib2.0-dev libgtk-3-dev libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev pkg-config libssl-dev
+          version: 1.2
+          execute_install_scripts: true
 
       - name: 💾 缓存Rust依赖
         uses: Swatinem/rust-cache@v2
@@ -671,6 +673,11 @@ jobs:
 
       - name: 🤖 配置 Android 开发环境
         uses: android-actions/setup-android@v3
+        with:
+          api-level: 36
+          build-tools: 36.0.0
+          ndk-version: 28.2.13676358
+          cmake-version: 3.22.1
 
       - name: 🦀 安装 Rust 工具链
         uses: dtolnay/rust-toolchain@stable
@@ -724,29 +731,59 @@ jobs:
           echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
           
-          # 检查并设置正确的 NDK 路径
-          if [ -d "$ANDROID_SDK_ROOT/ndk/28.2.13676358" ]; then
-            NDK_PATH="$ANDROID_SDK_ROOT/ndk/28.2.13676358"
-          elif [ -d "$ANDROID_SDK_ROOT/ndk-bundle" ]; then
-            NDK_PATH="$ANDROID_SDK_ROOT/ndk-bundle"
-          else
-            # 查找可用的 NDK 版本
-            NDK_PATH=$(find $ANDROID_SDK_ROOT/ndk -maxdepth 1 -type d -name "*.*.*" | head -1)
-            if [ -z "$NDK_PATH" ]; then
-              echo "❌ 未找到 NDK 安装目录"
-              exit 1
+          # 明确设置NDK路径
+          NDK_VERSION="28.2.13676358"
+          NDK_PATH="$ANDROID_SDK_ROOT/ndk/$NDK_VERSION"
+          
+          # 验证NDK是否存在
+          if [ ! -d "$NDK_PATH" ]; then
+            echo "❌ NDK $NDK_VERSION 未找到，尝试安装..."
+            $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "ndk;$NDK_VERSION"
+            
+            # 再次检查
+            if [ ! -d "$NDK_PATH" ]; then
+              echo "❌ NDK 安装失败，查找可用版本..."
+              ls -la $ANDROID_SDK_ROOT/ndk/
+              # 使用找到的第一个NDK版本
+              NDK_PATH=$(find $ANDROID_SDK_ROOT/ndk -maxdepth 1 -type d -name "*.*.*" | head -1)
+              if [ -z "$NDK_PATH" ]; then
+                echo "❌ 未找到任何NDK版本"
+                exit 1
+              fi
+              NDK_VERSION=$(basename "$NDK_PATH")
             fi
           fi
           
           echo "NDK_HOME=$NDK_PATH" >> $GITHUB_ENV
           echo "ANDROID_NDK_ROOT=$NDK_PATH" >> $GITHUB_ENV
-          echo "✅ NDK 路径设置为: $NDK_PATH"
+          echo "✅ NDK 路径设置为: $NDK_PATH (版本: $NDK_VERSION)"
+          
+          # 验证链接器是否存在
+          LINKER_PATH="$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android36-clang"
+          if [ ! -f "$LINKER_PATH" ]; then
+            echo "❌ 链接器不存在: $LINKER_PATH"
+            echo "查找可用的链接器..."
+            find $NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/ -name "aarch64-linux-android*-clang" | head -5
+            
+            # 尝试使用可用的API级别
+            AVAILABLE_LINKER=$(find $NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/ -name "aarch64-linux-android*-clang" | head -1)
+            if [ -n "$AVAILABLE_LINKER" ]; then
+              API_LEVEL=$(basename "$AVAILABLE_LINKER" | sed 's/aarch64-linux-android\([0-9]*\)-clang/\1/')
+              echo "✅ 使用可用的API级别: $API_LEVEL"
+              LINKER_PATH="$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android${API_LEVEL}-clang"
+            else
+              echo "❌ 未找到任何aarch64链接器"
+              exit 1
+            fi
+          fi
           
           # 配置 Rust 交叉编译工具链
-          echo "CC_aarch64_linux_android=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android36-clang" >> $GITHUB_ENV
-          echo "CXX_aarch64_linux_android=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android36-clang++" >> $GITHUB_ENV
+          echo "CC_aarch64_linux_android=$LINKER_PATH" >> $GITHUB_ENV
+          echo "CXX_aarch64_linux_android=${LINKER_PATH}++" >> $GITHUB_ENV
           echo "AR_aarch64_linux_android=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar" >> $GITHUB_ENV
-          echo "CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android36-clang" >> $GITHUB_ENV
+          echo "CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$LINKER_PATH" >> $GITHUB_ENV
+          
+          echo "✅ Rust交叉编译环境配置完成"
 
       # 同步版本号到 Android 配置
       - name: 🔄 同步版本号到 Android 应用配置
