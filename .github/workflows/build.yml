@@ -572,30 +572,55 @@ jobs:
           
           cd packages/web
           
-          # 构建桌面应用，如果失败立即退出
-          if pnpm build:desktop; then
+          # 确保构建环境正确
+          echo "🔍 检查构建环境:"
+          echo "当前目录: $(pwd)"
+          echo "Tauri 版本: $(pnpm tauri --version)"
+          
+          # 显示 tauri.conf.json 配置
+          echo "📋 Tauri 配置:"
+          cat src-tauri/tauri.conf.json | jq '.bundle'
+          
+          # 构建桌面应用，添加详细输出
+          echo "🚀 开始构建..."
+          if pnpm build:desktop --verbose; then
             echo "success=true" >> $GITHUB_OUTPUT
             
-            # 使用绝对路径查找构建产物
-            NSIS_PATH=$(find "$PWD/src-tauri/target/release/bundle/nsis" -name "*.exe" 2>/dev/null | head -1)
+            # 详细列出所有构建产物
+            echo "🔍 列出所有构建产物:"
+            find src-tauri/target -name "*.exe" -o -name "*.msi" -o -name "*.deb" -o -name "*.rpm" -o -name "*.dmg" -o -name "*.app" 2>/dev/null || echo "未找到任何安装包"
+            
+            # 检查 bundle 目录结构
+            echo "📁 Bundle 目录结构:"
+            if [ -d "src-tauri/target/release/bundle" ]; then
+              find src-tauri/target/release/bundle -type f 2>/dev/null
+            else
+              echo "❌ Bundle 目录不存在"
+            fi
+            
+            # 查找 NSIS 安装程序
+            NSIS_PATH=$(find "$PWD/src-tauri/target" -name "*.exe" -path "*/bundle/nsis/*" 2>/dev/null | head -1)
             
             if [ -n "$NSIS_PATH" ]; then
               NSIS_NAME=$(basename "$NSIS_PATH")
-              # 转换为相对于 packages/web 的路径
               RELATIVE_PATH=$(realpath --relative-to="$PWD" "$NSIS_PATH")
               echo "exe_path=$RELATIVE_PATH" >> $GITHUB_OUTPUT
               echo "exe_name=$NSIS_NAME" >> $GITHUB_OUTPUT
               echo "✅ 找到NSIS安装程序: $NSIS_PATH"
-              echo "📁 相对路径: $RELATIVE_PATH"
-              echo "📄 文件名: $NSIS_NAME"
             else
-              echo "❌ 未找到NSIS安装程序"
-              echo "🔍 尝试列出构建目录内容:"
-              ls -la src-tauri/target/release/ || echo "release目录不存在"
-              ls -la src-tauri/target/release/bundle/ || echo "bundle目录不存在"
-              ls -la src-tauri/target/release/bundle/nsis/ || echo "nsis目录不存在"
-              echo "success=false" >> $GITHUB_OUTPUT
-              exit 1
+              # 如果没有找到 NSIS，尝试查找其他格式的安装包
+              OTHER_INSTALLER=$(find "$PWD/src-tauri/target" -name "*.exe" -o -name "*.msi" 2>/dev/null | head -1)
+              if [ -n "$OTHER_INSTALLER" ]; then
+                INSTALLER_NAME=$(basename "$OTHER_INSTALLER")
+                RELATIVE_PATH=$(realpath --relative-to="$PWD" "$OTHER_INSTALLER")
+                echo "exe_path=$RELATIVE_PATH" >> $GITHUB_OUTPUT
+                echo "exe_name=$INSTALLER_NAME" >> $GITHUB_OUTPUT
+                echo "✅ 找到安装程序: $OTHER_INSTALLER"
+              else
+                echo "❌ 未找到任何安装程序"
+                echo "success=false" >> $GITHUB_OUTPUT
+                exit 1
+              fi
             fi
           else
             echo "❌ 桌面应用构建失败"
@@ -684,13 +709,19 @@ jobs:
         with:
           targets: aarch64-linux-android
 
-      - name: 💾 缓存 Rust 依赖
+      - name: 💾 缓存 Rust 依赖和构建产物
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: packages/web/src-tauri
           cache-on-failure: true
           shared-key: "android-build"
-          key: android-${{ runner.os }}-${{ hashFiles('packages/web/src-tauri/Cargo.lock') }}
+          key: android-rust-${{ runner.os }}-${{ hashFiles('packages/web/src-tauri/Cargo.lock', 'packages/web/src-tauri/Cargo.toml', 'packages/web/src-tauri/tauri.conf.json') }}
+          cache-targets: true
+          cache-directories: |
+            packages/web/src-tauri/target
+            packages/web/src-tauri/gen/android/app/src/main/jniLibs
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
           
       - name: 💾 缓存 Android 构建产物
         uses: actions/cache@v4
@@ -698,11 +729,60 @@ jobs:
           path: |
             packages/web/src-tauri/gen/android/app/build
             packages/web/src-tauri/gen/android/.gradle
+            packages/web/src-tauri/gen/android/build
+            packages/web/src-tauri/gen/android/app/src/main/jniLibs
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: android-gradle-${{ runner.os }}-${{ hashFiles('packages/web/src-tauri/gen/android/**/*.gradle*', 'packages/web/src-tauri/gen/android/gradle-wrapper.properties') }}
+            ~/.gradle/daemon
+            ~/.android/build-cache
+          key: android-gradle-${{ runner.os }}-${{ hashFiles('packages/web/src-tauri/gen/android/**/*.gradle*', 'packages/web/src-tauri/gen/android/gradle-wrapper.properties', 'packages/web/src-tauri/Cargo.lock', 'packages/web/src-tauri/tauri.conf.json') }}
           restore-keys: |
+            android-gradle-${{ runner.os }}-${{ hashFiles('packages/web/src-tauri/gen/android/**/*.gradle*') }}
             android-gradle-${{ runner.os }}-
+
+      - name: 💾 缓存 NDK 和 SDK 组件
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.ANDROID_SDK_ROOT }}/ndk
+            ${{ env.ANDROID_SDK_ROOT }}/build-tools
+            ${{ env.ANDROID_SDK_ROOT }}/platforms
+          key: android-sdk-${{ runner.os }}-ndk-28.2.13676358-api36
+          restore-keys: |
+            android-sdk-${{ runner.os }}-ndk-28.2.13676358
+            android-sdk-${{ runner.os }}-
+
+      - name: 🔍 检查缓存恢复状态
+        run: |
+          echo "=== Rust Target 目录状态 ==="
+          if [ -d "packages/web/src-tauri/target" ]; then
+            echo "✅ Rust target目录存在"
+            ls -la packages/web/src-tauri/target/
+            if [ -d "packages/web/src-tauri/target/aarch64-linux-android" ]; then
+              echo "✅ Android target存在"
+              ls -la packages/web/src-tauri/target/aarch64-linux-android/
+            else
+              echo "❌ Android target不存在，需要重新构建"
+            fi
+          else
+            echo "❌ Rust target目录不存在"
+          fi
+          
+          echo "=== Android 构建缓存状态 ==="
+          if [ -d "packages/web/src-tauri/gen/android/app/build" ]; then
+            echo "✅ Android构建目录存在"
+            ls -la packages/web/src-tauri/gen/android/app/build/
+          else
+            echo "❌ Android构建目录不存在"
+          fi
+          
+          echo "=== JNI库状态 ==="
+          if [ -d "packages/web/src-tauri/gen/android/app/src/main/jniLibs" ]; then
+            echo "✅ JNI库目录存在"
+            find packages/web/src-tauri/gen/android/app/src/main/jniLibs -name "*.so" | head -10
+          else
+            echo "❌ JNI库目录不存在"
+          fi
 
       - name: ☕ 配置 Java 环境
         uses: actions/setup-java@v4
