@@ -519,7 +519,7 @@ jobs:
       - name: 🔧 安装构建依赖
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-mingw-w64-x86-64 nsis build-essential
+          sudo apt-get install -y gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 nsis build-essential
 
       - name: 🦀 安装 Rust 工具链
         uses: dtolnay/rust-toolchain@stable
