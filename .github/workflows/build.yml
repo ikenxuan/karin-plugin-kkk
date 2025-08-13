@@ -45,6 +45,9 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
+env:
+  APP_NAME: karin-plugin-kkk
+
 permissions:
   contents: write
   id-token: write
@@ -523,12 +526,29 @@ jobs:
           version: 1.2
           execute_install_scripts: true
 
+      - name: 🦀 安装 Rust 工具链
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          targets: x86_64-pc-windows-msvc
+
       - name: 💾 缓存Rust依赖
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: packages/web/src-tauri
           cache-on-failure: true
-          shared-key: "desktop-build"
+          shared-key: ${{ env.APP_NAME }}-desktop-build
+
+      - name: 🔧 安装 Windows 构建目标
+        run: |
+          echo "🎯 安装 Windows 构建目标..."
+          rustup target add x86_64-pc-windows-msvc
+          
+          echo "📋 验证已安装的目标:"
+          rustup target list --installed
+          
+          echo "🔍 验证 Windows 目标是否可用:"
+          rustup target list | grep windows
 
       - name: 🔧 安装Windows构建依赖
         run: |
@@ -691,6 +711,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: 🤖 配置 Gradle 环境
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: wrapper
+
       - name: 🤖 配置 Android 开发环境
         uses: android-actions/setup-android@v3
         with:
@@ -709,31 +734,7 @@ jobs:
         with:
           workspaces: packages/web/src-tauri
           cache-on-failure: true
-          shared-key: "android-build"
-          key: android-rust-${{ runner.os }}-${{ hashFiles('packages/web/src-tauri/Cargo.lock', 'packages/web/src-tauri/Cargo.toml', 'packages/web/src-tauri/tauri.conf.json') }}
-          cache-targets: true
-          cache-directories: |
-            packages/web/src-tauri/target
-            packages/web/src-tauri/gen/android/app/src/main/jniLibs
-            ~/.cargo/registry/cache
-            ~/.cargo/git/db
-          
-      - name: 💾 缓存 Android 构建产物
-        uses: actions/cache@v4
-        with:
-          path: |
-            packages/web/src-tauri/gen/android/app/build
-            packages/web/src-tauri/gen/android/.gradle
-            packages/web/src-tauri/gen/android/build
-            packages/web/src-tauri/gen/android/app/src/main/jniLibs
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            ~/.gradle/daemon
-            ~/.android/build-cache
-          key: android-gradle-${{ runner.os }}-${{ hashFiles('packages/web/src-tauri/gen/android/**/*.gradle*', 'packages/web/src-tauri/gen/android/gradle-wrapper.properties', 'packages/web/src-tauri/Cargo.lock', 'packages/web/src-tauri/tauri.conf.json') }}
-          restore-keys: |
-            android-gradle-${{ runner.os }}-${{ hashFiles('packages/web/src-tauri/gen/android/**/*.gradle*') }}
-            android-gradle-${{ runner.os }}-
+          shared-key: ${{ env.APP_NAME }}-android-build
 
       - name: 💾 缓存 NDK 和 SDK 组件
         uses: actions/cache@v4
