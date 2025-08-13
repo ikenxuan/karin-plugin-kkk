@@ -529,8 +529,8 @@ jobs:
       - name: 💾 缓存并安装 Windows 构建依赖
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: gcc-mingw-w64-x86-64 nsis build-essential
-          version: 1.0
+          packages: gcc-mingw-w64-x86-64 nsis build-essential libglib2.0-dev libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev pkg-config
+          version: 1.1
           execute_install_scripts: true
 
       - name: 📦 配置 PNPM 环境
