@@ -566,26 +566,19 @@ jobs:
           echo "desktop_version=$CORE_VERSION" >> $GITHUB_OUTPUT
           echo "✅ 版本号已同步为: $CORE_VERSION"
 
-      - name: 📱 构建Windows桌面应用
+      - name: 📱 构建桌面应用 (Windows)
         id: desktop-build
         run: |
-          echo "开始构建Windows桌面应用..."
+          echo "开始构建桌面应用..."
           
-          # 设置交叉编译环境变量
-          export CC_x86_64_pc_windows_gnu=x86_64-w64-mingw32-gcc
-          export CXX_x86_64_pc_windows_gnu=x86_64-w64-mingw32-g++
-          export AR_x86_64_pc_windows_gnu=x86_64-w64-mingw32-ar
-          export CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc
-          
-          # 进入web包目录并构建桌面应用
           cd packages/web
           
-          # 使用 pnpm build:desktop 构建桌面应用
-          if pnpm build:desktop --target x86_64-pc-windows-gnu; then
+          # 构建桌面应用，如果失败立即退出
+          if pnpm build:desktop; then
             echo "success=true" >> $GITHUB_OUTPUT
             
             # 查找构建产物
-            NSIS_PATH=$(find src-tauri/target -name "*.exe" -path "*bundle*nsis*" | head -1)
+            NSIS_PATH=$(find src-tauri/target/release/bundle/nsis -name "*.exe" | head -1)
             
             if [ -n "$NSIS_PATH" ]; then
               NSIS_NAME=$(basename "$NSIS_PATH")
@@ -594,12 +587,14 @@ jobs:
               echo "找到NSIS安装程序: $NSIS_PATH"
               echo "文件名: $NSIS_NAME"
             else
-              echo "警告: 未找到NSIS安装程序，但构建成功"
+              echo "❌ 未找到NSIS安装程序"
               echo "success=false" >> $GITHUB_OUTPUT
+              exit 1  # 立即终止
             fi
           else
             echo "❌ 桌面应用构建失败"
             echo "success=false" >> $GITHUB_OUTPUT
+            exit 1  # 立即终止
           fi
 
       - name: 📤 上传桌面应用构建产物
@@ -676,7 +671,7 @@ jobs:
         with:
           api-level: 36
           build-tools: 36.0.0
-          ndk-version: 28.2.1.13676358
+          ndk-version: 28.2.13676358
 
       - name: 🦀 安装 Rust 工具链
         uses: dtolnay/rust-toolchain@stable
@@ -732,8 +727,8 @@ jobs:
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
           
           # 检查并设置正确的 NDK 路径
-          if [ -d "$ANDROID_SDK_ROOT/ndk/28.2.1.13676358" ]; then
-            NDK_PATH="$ANDROID_SDK_ROOT/ndk/28.2.1.13676358"
+          if [ -d "$ANDROID_SDK_ROOT/ndk/28.2.13676358" ]; then
+            NDK_PATH="$ANDROID_SDK_ROOT/ndk/28.2.13676358"
           elif [ -d "$ANDROID_SDK_ROOT/ndk-bundle" ]; then
             NDK_PATH="$ANDROID_SDK_ROOT/ndk-bundle"
           else
@@ -778,10 +773,9 @@ jobs:
         run: |
           echo "开始构建 Android APK (aarch64 架构)..."
           
-          # 进入 web 包目录并构建 Android APK
           cd packages/web
           
-          # 使用 pnpm build:android 构建 APK
+          # 构建Android APK，如果失败立即退出
           if pnpm build:android; then
             echo "success=true" >> $GITHUB_OUTPUT
             
@@ -795,12 +789,14 @@ jobs:
               echo "找到 APK 文件: $APK_PATH"
               echo "文件名: $APK_NAME"
             else
-              echo "警告: 未找到 APK 文件，但构建成功"
+              echo "❌ 未找到 APK 文件"
               echo "success=false" >> $GITHUB_OUTPUT
+              exit 1  # 立即终止
             fi
           else
             echo "❌ Android APK 构建失败"
             echo "success=false" >> $GITHUB_OUTPUT
+            exit 1  # 立即终止
           fi
 
       - name: 📤 上传 Android APK 构建产物
@@ -848,13 +844,49 @@ jobs:
             echo "- 🚀 **Release下载:** [点击这里下载最新版本](https://github.com/${{ github.repository }}/releases/tag/${{ needs.version-release.outputs.release_tag_name }})" >> $GITHUB_STEP_SUMMARY
           fi
 
-  # 应用构建完成后更新 PR 评论
-  update-pr-comment-with-apps:
+  # 桌面应用构建完成后立即更新评论
+  update-pr-comment-desktop:
+    runs-on: ubuntu-latest
+    needs: [unified-build, preview-package-publish, desktop-build]
+    if: github.event_name == 'pull_request' && always() && needs.desktop-build.result != 'skipped'
+    steps:
+      - name: 💬 更新桌面应用构建状态
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: |
+            ## 📦 预览包发布成功
+            
+            ### 🏷️ 包信息
+            - **版本:** `${{ needs.preview-package-publish.outputs.pkg_version }}`
+            - **提交:** [`${{ needs.unified-build.outputs.short_commit_hash }}`](https://github.com/${{ github.repository }}/tree/${{ needs.unified-build.outputs.commit_hash }})
+            
+            ### 📥 安装命令
+            ```bash
+            ${{ needs.preview-package-publish.outputs.pnpm_install_cmd }}
+            ```
+            
+            ### 🖥️ Windows 桌面应用
+            ${{ needs.desktop-build.result == 'success' && '- **状态:** ✅ 构建成功' || '- **状态:** ❌ 构建失败' }}
+            ${{ needs.desktop-build.result == 'success' && format('- **版本:** `{0}`', needs.desktop-build.outputs.desktop_version) || '' }}
+            ${{ needs.desktop-build.result == 'success' && format('- **下载:** [点击下载]({0})', needs.desktop-build.outputs.desktop_artifact_url) || '' }}
+            
+            ### 📱 Android 应用
+            - **状态:** 🔄 构建中...
+            - **架构:** aarch64
+            
+            ---
+            > 💡 Android 应用构建完成后将自动更新此评论
+          comment-tag: published-packages
+          mode: upsert
+          reactions: rocket
+
+  # Android应用构建完成后更新评论
+  update-pr-comment-android:
     runs-on: ubuntu-latest
     needs: [unified-build, preview-package-publish, desktop-build, android-build]
-    if: github.event_name == 'pull_request' && always() && (needs.desktop-build.result != 'skipped' || needs.android-build.result != 'skipped')
+    if: github.event_name == 'pull_request' && always() && needs.android-build.result != 'skipped'
     steps:
-      - name: 💬 更新 PR 评论
+      - name: 💬 更新最终构建状态
         uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
@@ -875,7 +907,7 @@ jobs:
             ${{ needs.desktop-build.result == 'success' && format('- **下载:** [点击下载]({0})', needs.desktop-build.outputs.desktop_artifact_url) || '' }}
             
             ### 📱 Android 应用
-            ${{ needs.android-build.result == 'success' && '- **状态:** ✅ 构建成功' || (needs.android-build.result == 'skipped' && '- **状态:** ⏭️ 已跳过构建' || '- **状态:** ❌ 构建失败') }}
+            ${{ needs.android-build.result == 'success' && '- **状态:** ✅ 构建成功' || '- **状态:** ❌ 构建失败' }}
             ${{ needs.android-build.result == 'success' && format('- **版本:** `{0}`', needs.android-build.outputs.android_version) || '' }}
             ${{ needs.android-build.result == 'success' && format('- **架构:** aarch64') || '' }}
             ${{ needs.android-build.result == 'success' && format('- **下载:** [点击下载]({0})', needs.android-build.outputs.android_artifact_url) || '' }}
