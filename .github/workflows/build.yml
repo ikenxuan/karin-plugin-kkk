@@ -711,13 +711,31 @@ jobs:
           # 设置 Android 环境变量
           echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
-          echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk/26.1.10909125" >> $GITHUB_ENV
           
-          # 配置 Rust 交叉编译
-          echo "CC_aarch64_linux_android=$ANDROID_SDK_ROOT/ndk/26.1.10909125/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang" >> $GITHUB_ENV
-          echo "CXX_aarch64_linux_android=$ANDROID_SDK_ROOT/ndk/26.1.10909125/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang++" >> $GITHUB_ENV
-          echo "AR_aarch64_linux_android=$ANDROID_SDK_ROOT/ndk/26.1.10909125/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar" >> $GITHUB_ENV
-          echo "CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$ANDROID_SDK_ROOT/ndk/26.1.10909125/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang" >> $GITHUB_ENV
+          # 检查并设置正确的 NDK 路径
+          if [ -d "$ANDROID_SDK_ROOT/ndk/28.2.1.13676358" ]; then
+            NDK_PATH="$ANDROID_SDK_ROOT/ndk/28.2.1.13676358"
+          elif [ -d "$ANDROID_SDK_ROOT/ndk-bundle" ]; then
+            NDK_PATH="$ANDROID_SDK_ROOT/ndk-bundle"
+          else
+            # 查找可用的 NDK 版本
+            NDK_PATH=$(find $ANDROID_SDK_ROOT/ndk -maxdepth 1 -type d -name "*.*.*" | head -1)
+            if [ -z "$NDK_PATH" ]; then
+              echo "❌ 未找到 NDK 安装目录"
+              exit 1
+            fi
+          fi
+          
+          echo "NDK_HOME=$NDK_PATH" >> $GITHUB_ENV
+          echo "ANDROID_NDK_ROOT=$NDK_PATH" >> $GITHUB_ENV
+          echo "✅ NDK 路径设置为: $NDK_PATH"
+          
+          # 配置 Rust 交叉编译工具链
+          echo "CC_aarch64_linux_android=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang" >> $GITHUB_ENV
+          echo "CXX_aarch64_linux_android=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang++" >> $GITHUB_ENV
+          echo "AR_aarch64_linux_android=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar" >> $GITHUB_ENV
+          echo "CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang" >> $GITHUB_ENV
+
 
       # 同步版本号到 Android 配置
       - name: 🔄 同步版本号到 Android 应用配置
