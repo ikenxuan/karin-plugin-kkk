@@ -708,6 +708,32 @@ jobs:
           cache-on-failure: true
           shared-key: ${{ env.APP_NAME }}-android-build
 
+      - name: 💾 缓存 Gradle 依赖和构建缓存
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            packages/web/src-tauri/gen/android/.gradle
+            packages/web/src-tauri/gen/android/app/build
+            packages/web/src-tauri/gen/android/app/.cxx
+          key: gradle-${{ runner.os }}-${{ hashFiles('packages/web/src-tauri/gen/android/**/*.gradle*', 'packages/web/src-tauri/gen/android/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: 💾 缓存 Android 构建产物
+        uses: actions/cache@v4
+        with:
+          path: |
+            packages/web/src-tauri/gen/android/app/build/intermediates
+            packages/web/src-tauri/gen/android/app/build/generated
+            packages/web/src-tauri/gen/android/app/build/kotlin
+            packages/web/src-tauri/gen/android/app/build/tmp
+            packages/web/src-tauri/gen/android/app/src/main/jniLibs
+          key: android-build-${{ runner.os }}-${{ hashFiles('packages/web/src-tauri/Cargo.toml', 'packages/web/src-tauri/src/**/*.rs') }}
+          restore-keys: |
+            android-build-${{ runner.os }}-
+
       - name: 🔍 检查缓存恢复状态
         run: |
           echo "=== Rust Target 目录状态 ==="

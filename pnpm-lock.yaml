@@ -93,8 +93,8 @@ importers:
   packages/web:
     dependencies:
       '@ikenxuan/amagi':
-        specifier: ^5.0.0
-        version: 5.0.0
+        specifier: 5.0.3
+        version: 5.0.3
       '@radix-ui/react-avatar':
         specifier: ^1.1.10
         version: 1.1.10(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -1042,9 +1042,6 @@ packages:
   '@humanwhocodes/retry@0.4.3':
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
-
-  '@ikenxuan/amagi@5.0.0':
-    resolution: {integrity: sha512-5hm8dvP6B52GLRmGXm/2MkA0AUkFkpGQKGK8sR/g/uBrvd5fYd3MxgoYLlv3PQmzTrau6QgaoO/5YsLnKSO7PQ==}
 
   '@ikenxuan/amagi@5.0.3':
     resolution: {integrity: sha512-ygQueMhfKI5174q8PNWU4eS0gvoe5mSfuOiOONjZ47De/Mlkb/E8h9N0FBA5jJW7zi9xoLMJgSMd6aqvzOTNlA==}
@@ -7137,15 +7134,6 @@ snapshots:
   '@humanwhocodes/retry@0.3.1': {}
 
   '@humanwhocodes/retry@0.4.3': {}
-
-  '@ikenxuan/amagi@5.0.0':
-    dependencies:
-      axios: '@karinjs/axios@1.2.0'
-      chalk: 5.4.1
-      express: '@karinjs/express@1.0.3'
-      log4js: '@karinjs/log4js@1.1.4'
-      pino-pretty: 13.0.0
-      zod: 3.25.76
 
   '@ikenxuan/amagi@5.0.3':
     dependencies:
