@@ -1,4 +1,7 @@
 {
+  "rust-analyzer.linkedProjects": [
+    "./packages/web/src-tauri/Cargo.toml"
+  ],
   "editor.detectIndentation": false,
   "editor.tabSize": 2,
   "editor.formatOnSave": false,

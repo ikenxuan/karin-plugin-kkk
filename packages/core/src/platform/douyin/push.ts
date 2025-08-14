@@ -1,7 +1,6 @@
 import type { ApiResponse, DySearchInfo, DyUserInfo, DyUserLiveVideos } from '@ikenxuan/amagi'
 import type { AdapterType, ImageElement, Message } from 'node-karin'
-import karin from 'node-karin'
-import { common, logger, segment } from 'node-karin'
+import karin, { common, logger, segment } from 'node-karin'
 
 import {
   Base,

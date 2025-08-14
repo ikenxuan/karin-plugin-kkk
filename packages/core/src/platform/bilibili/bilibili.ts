@@ -609,7 +609,7 @@ export class Bilibili extends Base {
             resultPath: Common.tempDri.video + `Bil_Result_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.mp4`,
             callback: async (success: boolean, resultPath: string): Promise<boolean> => {
               if (success) {
-                const filePath = Common.tempDri.video + `${Config.app.rmmp4 ? 'tmp_' + Date.now() : this.downloadfilename}.mp4`
+                const filePath = Common.tempDri.video + `${Config.app.removeCache ? 'tmp_' + Date.now() : this.downloadfilename}.mp4`
                 fs.renameSync(resultPath, filePath)
                 logger.mark(`视频文件重命名完成: ${resultPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
                 logger.mark('正在尝试删除缓存文件')

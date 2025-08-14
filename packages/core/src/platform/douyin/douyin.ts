@@ -92,16 +92,22 @@ export class DouYin extends Base {
               const image_data = []
               const imageres = []
               let image_url = ''
-              for (let i = 0; i < VideoData.data.aweme_detail.images.length; i++) {
-                image_url = VideoData.data.aweme_detail.images[i].url_list[2] || VideoData.data.aweme_detail.images[i].url_list[1] // 图片地址
+              // 使用可选链和空值合并操作符确保安全访问
+              const images = VideoData.data.aweme_detail.images ?? []
+              for (const [index, imageItem] of images.entries()) {
+                // 获取图片地址，优先使用第三个URL，其次使用第二个URL
+                image_url = imageItem.url_list[2] || imageItem.url_list[1]
 
-                const title = VideoData.data.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:*?"<>|\r\n]/g, ' ') // 标题，去除特殊字符
+                // 处理标题，去除特殊字符
+                const title = VideoData.data.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:*?"<>|\r\n]/g, ' ')
                 g_title = title
+
                 imageres.push(segment.image(image_url))
                 imagenum++
-                if (Config.app.rmmp4 === false) {
+
+                if (Config.app.removeCache === false) {
                   mkdirSync(`${Common.tempDri.images}${g_title}`)
-                  const path = `${Common.tempDri.images}${g_title}/${i + 1}.png`
+                  const path = `${Common.tempDri.images}${g_title}/${index + 1}.png`
                   await new Networks({ url: image_url, type: 'arraybuffer' }).getData().then((data) => fs.promises.writeFile(path, Buffer.from(data)))
                 }
               }
@@ -133,7 +139,11 @@ export class DouYin extends Base {
                 }
               )
               temp.push(liveimgbgm)
-              for (const item of VideoData.data.aweme_detail.images) {
+              const images1 = VideoData.data.aweme_detail.images ?? []
+              if (!images1.length) {
+                logger.debug('未获取到合辑的图片数据')
+              }
+              for (const item of images1) {
                 imagenum++
                 // 静态图片，clip_type为2
                 if (item.clip_type === 2) {
@@ -197,7 +207,7 @@ export class DouYin extends Base {
         if (VideoData.data.aweme_detail.music) {
           const music = VideoData.data.aweme_detail.music
           const music_url = music.play_url.uri // BGM link
-          if (this.is_mp4 === false && Config.app.rmmp4 === false && music_url !== undefined) {
+          if (this.is_mp4 === false && Config.app.removeCache === false && music_url !== undefined) {
             try {
               const path = Common.tempDri.images + `${g_title}/BGM.mp3`
               await new Networks({ url: music_url, type: 'arraybuffer' }).getData().then((data) => fs.promises.writeFile(path, Buffer.from(data)))

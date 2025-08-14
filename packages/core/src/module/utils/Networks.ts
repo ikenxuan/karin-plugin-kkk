@@ -1,4 +1,3 @@
-/* eslint-disable @stylistic/indent */
 import fs from 'node:fs'
 
 import { logger } from 'node-karin'

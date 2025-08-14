@@ -149,7 +149,7 @@ class Tools {
    */
   async removeFile (path: string, force = false): Promise<boolean> {
     path = path.replace(/\\/g, '/')
-    if (Config.app.rmmp4) {
+    if (Config.app.removeCache) {
       try {
         await fs.promises.unlink(path)
         logger.mark('缓存文件: ', path + ' 删除成功！')

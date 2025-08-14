@@ -325,7 +325,7 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
   } finally {
     const filePath = file.filepath
     logger.mark(`临时预览地址：http://localhost:${process.env.HTTP_PORT!}/api/kkk/video/${encodeURIComponent(filePath.split('/').pop() ?? '')}`)
-    Config.app.rmmp4 && logger.info(`文件 ${filePath} 将在 10 分钟后删除`)
+    Config.app.removeCache && logger.info(`文件 ${filePath} 将在 10 分钟后删除`)
     setTimeout(async () => {
       await Common.removeFile(filePath)
     }, 10 * 60 * 1000)
@@ -357,7 +357,7 @@ export const downloadVideo = async (event: Message, downloadOpt: downloadFileOpt
 
   // 下载文件，视频URL，标题和自定义headers
   let res = await downloadFile(downloadOpt.video_url, {
-    title: Config.app.rmmp4 ? downloadOpt.title.timestampTitle as string : processFilename(downloadOpt.title.originTitle!, 50),
+    title: Config.app.removeCache ? downloadOpt.title.timestampTitle as string : processFilename(downloadOpt.title.originTitle!, 50),
     headers: downloadOpt.headers ?? baseHeaders
   })
   res = { ...res, ...downloadOpt.title }

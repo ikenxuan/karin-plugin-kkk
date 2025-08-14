@@ -6,7 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { scan } from 'react-scan'
 
 import App from './App.tsx'
-import { Toaster } from './components/ui/sonner.tsx'
+import Toaster from './components/ui/toast.tsx'
 
 if (import.meta.env.MODE === 'development') {
   if (typeof window !== 'undefined') {
@@ -16,11 +16,13 @@ if (import.meta.env.MODE === 'development') {
   }
 }
 
+const basename = import.meta.env.MODE === 'standalone' ? '/' : '/kkk/'
+
 createRoot(document.getElementById('root')!).render(
   // <StrictMode>
-  <BrowserRouter basename='/kkk/'>
-    <Toaster />
+  <BrowserRouter basename={basename}>
     <App />
+    <Toaster />
   </BrowserRouter>
   // </StrictMode>,
 )

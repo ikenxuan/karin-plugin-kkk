@@ -1,13 +1,13 @@
 /**
  * 后端数据响应接口
  */
-export type apiResponse<T> = {
-  code: HTTPStatusCode
-  data: {
-    data: T,
-    platform: string,
-    dataType: string,
-  }
+export type ResponseData<T> = {
+  /** 数据 */
+  data: T,
+  /** 平台 */
+  platform: string,
+  /** 数据类型 */
+  dataType: string,
 }
 
 /**
@@ -127,13 +127,9 @@ export enum HTTPStatusCode {
  * 链接解析响应
  */
 export interface LinkParseResponse {
-  code: HTTPStatusCode
-  data: {
     originalUrl: string
     finalUrl: string
     platform: string
-  }
-  message?: string
 }
 
 /**

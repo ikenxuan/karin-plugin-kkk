@@ -1,7 +1,7 @@
 import type { BiliDynamicCard,BiliDynamicInfo, BiliEmojiList, BiliOneWork, BiliVideoPlayurlIsLogin, BiliWorkComments } from '@ikenxuan/amagi'
 
 import request from '@/lib/request'
-import type { apiResponse,CommentInfo, ParsedWorkInfo, VideoInfo } from '@/parsers/types'
+import type { CommentInfo, ParsedWorkInfo, ResponseData, VideoInfo } from '@/parsers/types'
 import { formatCount, formatDuration, formatTimestamp } from '@/parsers/utils'
 
 /**
@@ -81,23 +81,23 @@ export const parseBilibiliVideoDetail = async (workInfo: ParsedWorkInfo): Promis
     }
     
     // 获取视频详细数据
-    const infoDataResponse = await request.post<apiResponse<BiliOneWork>>('/api/kkk/bilibili/data', {
+    const infoDataResponse = await request.serverPost<ResponseData<BiliOneWork>, any>('/api/kkk/bilibili/data', {
       dataType: '单个视频作品数据',
       params: workInfo.params
     })
 
-    const videoStreamResponse = await request.post<apiResponse<BiliVideoPlayurlIsLogin>>('/api/kkk/bilibili/data', {
+    const videoStreamResponse = await request.serverPost<ResponseData<BiliVideoPlayurlIsLogin>, any>('/api/kkk/bilibili/data', {
       dataType: '单个视频下载信息数据',
       params: {
-        avid: infoDataResponse.data.data.data.data.aid,
-        cid: infoDataResponse.data.data.data.data.cid,
+        avid: infoDataResponse.data.data.aid,
+        cid: infoDataResponse.data.data.cid,
       }
     })
 
-    const videoDetail = infoDataResponse.data.data.data.data
+    const videoDetail = infoDataResponse.data.data
 
     // 获取评论数据
-    const commentsResponse = await request.post<apiResponse<BiliWorkComments>>('/api/kkk/bilibili/data', {
+    const commentsResponse = await request.serverPost<ResponseData<BiliWorkComments>, any>('/api/kkk/bilibili/data', {
       dataType: '评论数据',
       params: {
         oid: videoDetail.aid.toString(),
@@ -107,16 +107,17 @@ export const parseBilibiliVideoDetail = async (workInfo: ParsedWorkInfo): Promis
     })
 
     // 获取表情包数据
-    const emojiResponse = await request.post<apiResponse<BiliEmojiList>>('/api/kkk/bilibili/data', {
+    const emojiResponse = await request.serverPost<ResponseData<BiliEmojiList>, any>('/api/kkk/bilibili/data', {
+
       dataType: 'Emoji数据',
       params: {}
     })
 
-    const commentsData = commentsResponse.data.data.data
-    const emojiData = emojiResponse.data.data.data
+    const commentsData = commentsResponse.data.data
+    const emojiData = emojiResponse.data
 
     // 解析评论数据
-    const comments = parseBilibiliComments(commentsData.data?.replies || [], emojiData)
+    const comments = parseBilibiliComments(commentsData.replies || [], emojiData)
 
     // 格式化为统一的VideoInfo接口
     const videoInfo: VideoInfo = {
@@ -130,8 +131,8 @@ export const parseBilibiliVideoDetail = async (workInfo: ParsedWorkInfo): Promis
       author: videoDetail.owner?.name || '未知用户',
       type: 'video',
       downloadUrl: {
-        video: videoStreamResponse.data.data.data.data.dash.video[0].baseUrl || '获取失败',
-        audio: videoStreamResponse.data.data.data.data.dash.audio[0].baseUrl || '获取失败',
+        video: videoStreamResponse.data.data.dash.video[0].baseUrl || '获取失败',
+        audio: videoStreamResponse.data.data.dash.audio[0].baseUrl || '获取失败',
       },
       images: undefined,
       tags: videoDetail.tname ? [videoDetail.tname] : [],
@@ -153,7 +154,7 @@ export const parseBilibiliVideoDetail = async (workInfo: ParsedWorkInfo): Promis
 const parseBilibiliDynamicDetail = async (workInfo: ParsedWorkInfo): Promise<VideoInfo> => {
   try {
     // 获取动态详情数据
-    const dynamicInfoResponse = await request.post<apiResponse<BiliDynamicInfo>>('/api/kkk/bilibili/data', {
+    const dynamicInfoResponse = await request.serverPost<ResponseData<BiliDynamicInfo>, any>('/api/kkk/bilibili/data', {
       dataType: '动态详情数据',
       params: {
         dynamic_id: workInfo.params.dynamic_id,
@@ -162,7 +163,7 @@ const parseBilibiliDynamicDetail = async (workInfo: ParsedWorkInfo): Promise<Vid
     })
 
     // 获取动态卡片数据
-    const dynamicCardResponse = await request.post<apiResponse<BiliDynamicCard>>('/api/kkk/bilibili/data', {
+    const dynamicCardResponse = await request.serverPost<ResponseData<BiliDynamicCard>, any>('/api/kkk/bilibili/data', {
       dataType: '动态卡片数据',
       params: {
         dynamic_id: dynamicInfoResponse.data.data.data.data.item.id_str,
@@ -179,7 +180,7 @@ const parseBilibiliDynamicDetail = async (workInfo: ParsedWorkInfo): Promise<Vid
     
     if (dynamicInfo.item.type !== 'LIVE_RCMD') {
       try {
-        const commentsResponse = await request.post<apiResponse<BiliWorkComments>>('/api/kkk/bilibili/data', {
+        const commentsResponse = await request.serverPost<ResponseData<BiliWorkComments>, any>('/api/kkk/bilibili/data', {
           dataType: '评论数据',
           params: {
             type: getDynamicCommentType(dynamicInfo.item.type),
@@ -189,12 +190,12 @@ const parseBilibiliDynamicDetail = async (workInfo: ParsedWorkInfo): Promise<Vid
         })
 
         // 获取表情包数据
-        const emojiResponse = await request.post<apiResponse<BiliEmojiList>>('/api/kkk/bilibili/data', {
+        const emojiResponse = await request.serverPost<ResponseData<BiliEmojiList>, any>('/api/kkk/bilibili/data', {
           dataType: 'Emoji数据',
           params: {}
         })
 
-        const commentsData = commentsResponse.data.data.data
+        const commentsData = commentsResponse.data.data
         const emojiData = emojiResponse.data.data.data
         comments = parseBilibiliComments(commentsData.data?.replies || [], emojiData)
         commentCount = dynamicInfo.item.modules?.module_stat?.comment?.count || 0

@@ -120,7 +120,7 @@ export const signatureVerificationMiddleware: RequestHandler = (req, res, next) 
 
     // 构建签名字符串，使用|分割
     const method = req.method.toUpperCase()
-    const url = req.originalUrl
+    const url = (req.headers['x-original-url'] as string) || req.originalUrl
     const body = req.method === 'GET' ? '' : JSON.stringify(req.body || {})
 
     // 签名字符串格式：METHOD|URL|BODY|TIMESTAMP|NONCE

@@ -1,0 +1,74 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "kkkWebUI",
+  "version": "0.1.0",
+  "identifier": "com.karin.plugin.kkk.webui",
+  "build": {
+    "removeUnusedCommands": true,
+    "frontendDist": "../dist",
+    "devUrl": "https://localhost:5173",
+    "beforeDevCommand": "pnpm run dev",
+    "beforeBuildCommand": "vite build --mode standalone"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "security": {
+      "csp": null,
+      "dangerousDisableAssetCspModification": true,
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "**"
+        ]
+      }
+    },
+    "windows": [
+      {
+        "title": "炫炫的小工具",
+        "width": 600,
+        "height": 900,
+        "minWidth": 400,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false,
+        "decorations": false,
+        "transparent": false,
+        "alwaysOnTop": false,
+        "skipTaskbar": false,
+        "devtools": true
+      }
+    ]
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "android": {
+      "minSdkVersion": 24
+    },
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/icon.ico",
+        "installMode": "perMachine",
+        "languages": [
+          "SimpChinese",
+          "TradChinese",
+          "English"
+        ],
+        "displayLanguageSelector": true,
+        "startMenuFolder": "炫炫的小工具"
+      }
+    }
+  },
+  "plugins": {
+    "globalShortcut": {}
+  }
+}

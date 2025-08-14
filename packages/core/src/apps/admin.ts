@@ -6,7 +6,7 @@ import path from 'path'
 import { Common, Config } from '@/module'
 import { bilibiliLogin } from '@/platform'
 
-export const task = Config.app.rmmp4 && karin.task('[kkk-视频缓存自动删除]', '0 0 4 * * *', async () => {
+export const task = Config.app.removeCache && karin.task('[kkk-视频缓存自动删除]', '0 0 4 * * *', async () => {
   try {
     await removeAllFiles(Common.tempDri.video)
     logger.mark(Common.tempDri.video + '目录下所有文件已删除')
