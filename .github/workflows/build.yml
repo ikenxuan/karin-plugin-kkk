@@ -690,11 +690,6 @@ jobs:
 
       - name: 🤖 配置 Android 开发环境
         uses: android-actions/setup-android@v3
-        with:
-          api-level: 36
-          build-tools: 36.0.0
-          ndk-version: 28.2.13676358
-          cmake-version: 3.22.1
 
       - name: 🦀 安装 Rust 工具链
         uses: dtolnay/rust-toolchain@stable
