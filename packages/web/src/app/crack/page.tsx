@@ -1,5 +1,7 @@
 import 'react-photo-view/dist/react-photo-view.css'
 
+import { isTauri } from '@tauri-apps/api/core'
+import { openUrl } from '@tauri-apps/plugin-opener'
 import {
   AlertCircle,
   Archive,
@@ -159,6 +161,28 @@ export default function VideoParserPage () {
         </div>
       )
     }
+  }, [])
+
+  /**
+   * 处理外部链接点击事件
+   * 在 Tauri 环境下使用原生方式打开链接，在 Web 环境下使用默认行为
+   * @param url - 要打开的链接地址
+   * @param event - 点击事件对象
+   */
+  const handleExternalLink = useCallback(async (url: string, event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (isTauri()) {
+      // 阻止默认的链接跳转行为
+      event.preventDefault()
+      try {
+        // 使用 Tauri 的 openUrl 在系统默认浏览器中打开链接
+        await openUrl(url)
+      } catch (error) {
+        console.error('打开链接失败:', error)
+        // 如果 Tauri 方式失败，回退到默认行为
+        window.open(url, '_blank', 'noopener,noreferrer')
+      }
+    }
+    // 在 Web 环境下不阻止默认行为，让浏览器正常处理链接
   }, [])
 
   /**
@@ -449,9 +473,9 @@ export default function VideoParserPage () {
                           <h4 className="text-lg font-semibold">合辑内容</h4>
                         </div>
 
-                          <PhotoProvider
-                            toolbarRender={toolbarRender}
-                          >
+                        <PhotoProvider
+                          toolbarRender={toolbarRender}
+                        >
                           <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
                             {result.slides?.map((slide, index) => (
                               <div key={index} className="relative group">
@@ -695,6 +719,7 @@ export default function VideoParserPage () {
               Powered by{" "}
               <a
                 href="https://github.com/ikenxuan/karin-plugin-kkk"
+                onClick={(e) => handleExternalLink('https://github.com/ikenxuan/karin-plugin-kkk', e)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-medium hover:underline"
@@ -704,6 +729,7 @@ export default function VideoParserPage () {
               & Designed by{" "}
               <a
                 href="https://github.com/ikenxuan"
+                onClick={(e) => handleExternalLink('https://github.com/ikenxuan', e)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-medium hover:underline"

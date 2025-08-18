@@ -13,8 +13,8 @@
   "app": {
     "withGlobalTauri": true,
     "security": {
-      "csp": null,
-      "dangerousDisableAssetCspModification": true,
+      "csp": "default-src 'self'; connect-src 'self' http://localhost:* http://127.0.0.1:* https: wss:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' https: data:; media-src 'self' https: data:;",
+      "dangerousDisableAssetCspModification": false,
       "assetProtocol": {
         "enable": true,
         "scope": [
