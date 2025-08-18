@@ -2,6 +2,7 @@ import fs from "node:fs"
 import path from "node:path"
 
 import tailwindcss from "@tailwindcss/vite"
+import { isTauri } from '@tauri-apps/api/core';
 import react from '@vitejs/plugin-react-swc'
 import { defineConfig } from 'vite'
 import viteImagemin from 'vite-plugin-imagemin'
@@ -49,11 +50,11 @@ export default defineConfig(({ command, mode }) => {
   const isDev = command === 'serve'
 
   return {
-    base: isStandalone? '/':  '/kkk/',
+    base: isStandalone ? '/' : '/kkk/',
     plugins: [
       react(),
       tailwindcss(),
-      mkcert(),
+      !isTauri() && mkcert(),
       viteImagemin({
         gifsicle: { optimizationLevel: 7 },
         mozjpeg: { quality: 80 },

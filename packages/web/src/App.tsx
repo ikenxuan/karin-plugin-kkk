@@ -1,4 +1,5 @@
 import { isTauri } from '@tauri-apps/api/core'
+import { type } from '@tauri-apps/plugin-os'
 import { lazy, Suspense } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 
@@ -6,7 +7,7 @@ import { DockBar } from './components/dock-bar'
 import { DraggableTitlebar } from './components/draggable-titlebar'
 import { LoadingComponent } from './components/loading-components'
 import { PWAUpdatePrompt } from './components/PWAUpdatePrompt'
-import { type RouteConfig } from './components/route-components'
+import { createRouteElement, type RouteConfig } from './components/route-components'
 import { ThemeProvider } from './components/theme-provider'
 import { WindowControls } from './components/window-controls'
 
@@ -26,16 +27,18 @@ const App = () => {
 
   // 路由配置数组
   const routes: RouteConfig[] = [
-    { path: '/login', component: LoginPage },
     { path: '/crack', component: VideoParserPage, protected: true },
     { path: '/database', component: ContentManagePage, protected: true },
     { path: '/about', component: AboutPage, protected: true },
+    { path: '/', component: VideoParserPage, protected: true },
+    { path: '/login', component: LoginPage, protected: false },
+    { path: '*', component: NotFoundPage, protected: false },
   ]
 
   return (
     <ThemeProvider defaultTheme="system">
-      {/* Tauri 环境下显示自定义窗口控制和拖拽区域 */}
-      {isTauri() && (
+      {/* Tauri 的 Windows 环境下显示自定义窗口控制和拖拽区域 */}
+      {isTauri() && type() === 'windows' && (
         <>
           <DraggableTitlebar />
           <WindowControls />
@@ -43,7 +46,7 @@ const App = () => {
       )}
 
       <Suspense fallback={<LoadingComponent />}>
-        {/* 为 Tauri 环境添加顶部间距，避免内容被标题栏遮挡 */}
+        {/* 为 Tauri 的 Windows 环境添加顶部间距，避免内容被标题栏遮挡 */}
         <div className={isTauri() ? 'pt-10' : ''}>
           <Routes>
             {/* 动态生成路由 */}
@@ -51,15 +54,9 @@ const App = () => {
               <Route
                 key={route.path}
                 path={route.path}
-                element={<route.component />}
+                element={createRouteElement(route)}
               />
             ))}
-
-            {/* 根路径重定向 */}
-            <Route path="/" element={<VideoParserPage />} />
-
-            {/* 404 页面 */}
-            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>
       </Suspense>

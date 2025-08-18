@@ -226,9 +226,9 @@ export default function LoginPage () {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="flex justify-center items-center p-4 min-h-screen bg-background">
       <Atropos
-        className="max-w-lg w-full"
+        className="w-full max-w-lg"
         activeOffset={40}
         shadowScale={1.05}
         rotateXMax={15}
@@ -276,7 +276,7 @@ export default function LoginPage () {
                           地址
                         </Label>
                         <div className="relative flex-1">
-                          <Server className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" data-atropos-offset="5" />
+                          <Server className="absolute left-3 top-1/2 w-4 h-4 transform -translate-y-1/2 text-muted-foreground" data-atropos-offset="5" />
                           <Input
                             id="hostname"
                             type="text"
@@ -327,7 +327,7 @@ export default function LoginPage () {
                       
                       {/* 完整URL预览 */}
                       {hostname && (
-                        <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded border" data-atropos-offset="2">
+                        <div className="p-2 text-xs rounded border text-muted-foreground bg-muted/50" data-atropos-offset="2">
                           地址预览: {buildServerUrl()}
                         </div>
                       )}
@@ -355,13 +355,13 @@ export default function LoginPage () {
                   密钥
                 </Label>
                 <div className="relative" data-atropos-offset="3">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" data-atropos-offset="5" />
+                  <Lock className="absolute left-3 top-1/2 w-4 h-4 transform -translate-y-1/2 text-muted-foreground" data-atropos-offset="5" />
                   <Input
                     id="token"
                     type={showPassword ? "text" : "password"}
                     value={token}
                     onChange={(e) => setToken(e.target.value)}
-                    className="pl-9 pr-9"
+                    className="pr-9 pl-9"
                     placeholder="请输入 HTTP 鉴权密钥"
                     disabled={isLoading}
                     onTouchStart={handleInputTouch}
@@ -374,9 +374,9 @@ export default function LoginPage () {
                     data-atropos-offset="5"
                   >
                     {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
+                      <EyeOff className="w-4 h-4" />
                     ) : (
-                      <Eye className="h-4 w-4" />
+                      <Eye className="w-4 h-4" />
                     )}
                   </button>
                 </div>
@@ -389,7 +389,7 @@ export default function LoginPage () {
                 data-atropos-offset="4"
               >
                 {isLoading ? '登录中...' : '登录'}
-                {!isLoading && <ArrowRight className="ml-2 h-4 w-4" data-atropos-offset="6" />}
+                {!isLoading && <ArrowRight className="ml-2 w-4 h-4" data-atropos-offset="6" />}
               </Button>
             </form>
           </CardContent>

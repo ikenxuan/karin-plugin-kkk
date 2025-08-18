@@ -5,7 +5,7 @@ import { Progress } from '@/components/ui/progress'
 
 /**
  * 页面加载组件
- * @description 显示页面加载状态的组件，包含动态进度条
+ * @description 显示页面加载状态的组件
  */
 export const LoadingComponent = () => {
   const [progress, setProgress] = useState(0)
