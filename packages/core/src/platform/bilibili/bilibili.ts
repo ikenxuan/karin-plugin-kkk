@@ -295,8 +295,8 @@ export class Bilibili extends Base {
           /** 图文、纯图 */
           case DynamicType.DRAW: {
             const imgArray = []
-            for (const img of dynamicInfo.data.data.item.modules.module_dynamic.major?.draw?.items) {
-              imgArray.push(segment.image(img.src))
+            for (const img of dynamicInfo.data.data.item.modules.module_dynamic.major.opus.pics) {
+              imgArray.push(segment.image(img.url))
             }
 
             if (Config.bilibili.comment && commentsData) {
@@ -332,7 +332,8 @@ export class Bilibili extends Base {
             }
             await this.e.reply(await Render('bilibili/dynamic/DYNAMIC_TYPE_DRAW', {
               image_url: cover(dynamicCARD.item.pictures),
-              text: replacetext(br(dynamicInfo.data.data.item.modules.module_dynamic.desc.text), dynamicInfo.data.data.item.modules.module_dynamic.desc.rich_text_nodes),
+              // TIP: 2025/08/20, 动态卡片数据中，图文动态的描述文本在 major.opus.summary 中
+              text: replacetext(br(dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text), dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.rich_text_nodes),
               dianzan: Count(dynamicInfo.data.data.item.modules.module_stat.like.count),
               pinglun: Count(dynamicInfo.data.data.item.modules.module_stat.comment.count),
               share: Count(dynamicInfo.data.data.item.modules.module_stat.forward.count),

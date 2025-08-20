@@ -648,7 +648,7 @@ export class BilibiliDBBase {
    * @param dynamicData 动态数据
    * @returns 提取的文本内容和标签
    */
-  private extractTextAndTags (dynamicData: any): { text: string, tags: string[] } {
+  private async extractTextAndTags (dynamicData: any): Promise<{ text: string; tags: string[] }> {
     let text = ''
     const tags: string[] = []
 
@@ -708,7 +708,7 @@ export class BilibiliDBBase {
     const { filterMode, filterWords, filterTags } = await this.getFilterConfig(PushItem.host_mid)
 
     // 提取主动态的文本和标签
-    const { text: mainText, tags: mainTags } = this.extractTextAndTags(PushItem.Dynamic_Data)
+    const { text: mainText, tags: mainTags } = await this.extractTextAndTags(PushItem.Dynamic_Data)
 
     // 合并所有标签
     let allTags = [...mainTags, ...extraTags]
@@ -716,7 +716,7 @@ export class BilibiliDBBase {
 
     // 如果是转发动态，还需要检查原动态
     if (PushItem.Dynamic_Data.type === DynamicType.FORWARD && 'orig' in PushItem.Dynamic_Data) {
-      const { text: origText, tags: origTags } = this.extractTextAndTags(PushItem.Dynamic_Data.orig)
+      const { text: origText, tags: origTags } = await this.extractTextAndTags(PushItem.Dynamic_Data.orig)
       allText += ' ' + origText
       allTags = [...allTags, ...origTags]
     }

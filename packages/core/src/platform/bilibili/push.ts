@@ -105,8 +105,11 @@ export class Bilibilipush extends Base {
 
       if (Object.keys(pushdata).length === 0) return true
 
-      if (this.force) return await this.forcepush(pushdata)
-      else return await this.getdata(pushdata)
+      if (this.force) {
+        return await this.forcepush(pushdata)
+      } else {
+        return await this.getdata(pushdata)
+      }
     } catch (error) {
       logger.error(error)
     }
@@ -157,7 +160,8 @@ export class Bilibilipush extends Base {
             img = await Render('bilibili/dynamic/DYNAMIC_TYPE_DRAW',
               {
                 image_url: cover(dycrad.item.pictures),
-                text: replacetext(br(data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.text), data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.rich_text_nodes),
+                // TIP: 2025/08/20, 动态卡片数据中，图文动态的描述文本在 major.opus.summary 中
+                text: replacetext(br(data[dynamicId].Dynamic_Data.modules.module_dynamic.major.opus.summary.text), data[dynamicId].Dynamic_Data.modules.module_dynamic.major.opus.summary.rich_text_nodes),
                 dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
                 pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
                 share: Count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
