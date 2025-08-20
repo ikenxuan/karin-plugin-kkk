@@ -75,10 +75,10 @@ export class DouYinpush extends Base {
     try {
       await this.syncConfigToDatabase()
 
-      // 清理旧的动态缓存记录
+      // 清理旧的作品缓存记录
       const deletedCount = await cleanOldDynamicCache('douyin', 1)
       if (deletedCount > 0) {
-        logger.info(`已清理 ${deletedCount} 条过期的抖音动态缓存记录`)
+        logger.info(`已清理 ${deletedCount} 条过期的抖音作品缓存记录`)
       }
 
       // 检查备注信息
@@ -245,7 +245,7 @@ export class DouYinpush extends Base {
   }
 
   /**
-   * 根据配置文件获取用户当天的动态列表。
+   * 根据配置文件获取用户当天的作品列表。
    * @returns 将要推送的列表
    */
   async getDynamicList (userList: douyinPushItem[]): Promise<WillBePushList> {
@@ -256,6 +256,7 @@ export class DouYinpush extends Base {
       const filteredUserList = userList.filter(item => item.switch !== false)
       for (const item of filteredUserList) {
         const sec_uid = item.sec_uid
+        logger.debug(`开始获取用户：${item.remark}（${sec_uid}）的主页作品列表`)
         const videolist = await this.amagi.getDouyinData('用户主页视频列表数据', { sec_uid, typeMode: 'strict' })
         const userinfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
 
@@ -270,6 +271,7 @@ export class DouYinpush extends Base {
         // 处理视频列表
         if (videolist.data.aweme_list.length > 0) {
           for (const aweme of videolist.data.aweme_list) {
+            logger.debug(`开始处理作品：${aweme.aweme_id}`)
             const now = Date.now()
             const createTime = aweme.create_time * 1000
             const timeDifference = now - createTime // 时间差，单位毫秒
@@ -280,7 +282,7 @@ export class DouYinpush extends Base {
             const timeDiffHours = Math.round((timeDifference / 1000 / 60 / 60) * 100) / 100 // 保留2位小数
 
             logger.debug(`
-              前期获取该动态基本信息：
+              前期获取该作品基本信息：
               作者：${aweme.author.nickname}
               作品ID：${aweme.aweme_id}
               发布时间：${Common.convertTimestampToDateTime(aweme.create_time)}
@@ -288,7 +290,7 @@ export class DouYinpush extends Base {
               当前时间戳（ms）：${now}
               时间差（ms）：${timeDifference} ms (${timeDiffSeconds}s) (${timeDiffHours}h)
               是否置顶：${is_top}
-              是否处于开播：${userinfo.data.user.live_status === 1 ? logger.green('true') : logger.red('false')}
+              是否处于开播：${userinfo.data.user?.live_status === 1 ? logger.green('true') : logger.red('false')}
               是否在一天内：${timeDifference < 86400000 ? logger.green('true') : logger.red('false')}
               `)
 
@@ -350,28 +352,10 @@ export class DouYinpush extends Base {
           // 如果之前在直播，现在已经关播，需要更新状态
           await douyinDB.updateLiveStatus(sec_uid, false)
           logger.info(`用户 ${item.remark ?? sec_uid} 已关播，更新直播状态`)
-
-          // 可选：添加关播推送
-          // willbepushlist[`live_end_${sec_uid}`] = {
-          //   remark: item.remark,
-          //   sec_uid,
-          //   create_time: Date.now(),
-          //   targets,
-          //   Detail_Data: {
-          //     user_info: userinfo,
-          //     liveStatus: {
-          //       liveStatus: 'close',
-          //       isChanged: true,
-          //       isliving: false
-          //     }
-          //   },
-          //   avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.user.avatar_larger.uri,
-          //   living: false
-          // }
         }
       }
     } catch (error) {
-      logger.error('获取抖音动态列表失败:', error)
+      logger.error('获取抖音用户主页作品列表失败:', error)
     }
 
     return willbepushlist
@@ -549,13 +533,13 @@ export class DouYinpush extends Base {
       const subscriptions = await douyinDB.getGroupSubscriptions(currentGroupId)
       const subscribedUids = subscriptions.map(sub => sub.sec_uid)
 
-      // 创建一个新的推送列表，只包含当前群组订阅的用户的动态
+      // 创建一个新的推送列表，只包含当前群组订阅的用户的作品
       const filteredData: WillBePushList = {}
 
       for (const awemeId in data) {
-        // 检查该动态的用户是否被当前群组订阅
+        // 检查该作品的用户是否被当前群组订阅
         if (subscribedUids.includes(data[awemeId].sec_uid)) {
-          // 复制该动态到过滤后的列表，并将目标设置为当前群组
+          // 复制该作品到过滤后的列表，并将目标设置为当前群组
           filteredData[awemeId] = {
             ...data[awemeId],
             targets: [{
@@ -616,11 +600,11 @@ export class DouYinpush extends Base {
   }
 
   /**
- * 处理动态描述
+ * 处理作品描述
  */
   desc (Detail_Data: any, desc: string) {
     if (desc === '') {
-      return '该动态没有描述'
+      return '该作品没有描述'
     }
     return desc
   }

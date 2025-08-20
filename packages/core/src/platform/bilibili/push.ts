@@ -300,7 +300,7 @@ export class Bilibilipush extends Base {
                   username: checkvip(data[dynamicId].Dynamic_Data.orig.modules.module_author),
                   create_time: Common.convertTimestampToDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
                   avatar_url: data[dynamicId].Dynamic_Data.orig.modules.module_author.face,
-                  text: replacetext(br(data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.desc.text), data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.desc.rich_text_nodes),
+                  text: replacetext(br(data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.opus.summary.text), data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes),
                   image_url: cover(cardData.item.pictures),
                   decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.orig.modules.module_author.decorate),
                   frame: data[dynamicId].Dynamic_Data.orig.modules.module_author.pendant.image
