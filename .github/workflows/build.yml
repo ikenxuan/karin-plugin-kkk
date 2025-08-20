@@ -83,6 +83,7 @@ jobs:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
+          release-please-version: "17.1.2"
 
       # 手动生产发布处理
       - name: 🎯 处理手动生产发布
