@@ -526,15 +526,29 @@ export class Bilibilipush extends Base {
           // 遍历接口返回的视频列表
           for (const dynamic of dynamic_list.data.data.items) {
             const now = Date.now()
-            // B站的是秒为单位的时间戳，需要乘 1000 转为毫秒
-            const createTime = dynamic.modules.module_author.pub_ts
-            const timeDifference = (now - createTime * 1000)
+            // 获取动态发布时间戳(毫秒)
+            const createTime = dynamic.modules.module_author.pub_ts * 1000
+            const timeDifference = (now - createTime)
 
             const is_top = dynamic.modules.module_tag?.text === '置顶' // 是否为置顶
             let shouldPush = false // 是否列入推送数组
 
+            const timeDiffSeconds = Math.round(timeDifference / 1000)
+            const timeDiffHours = Math.round((timeDifference / 1000 / 60 / 60) * 100) / 100 // 保留2位小数
+
             // 条件判断，以下任何一项成立都将进行推送：如果是置顶且发布时间在一天内 || 如果是置顶作品且有新的群组且发布时间在一天内 || 如果有新的群组且发布时间在一天内
-            logger.debug(`前期获取该动态基本信息：\n动态ID：${dynamic.id_str}\n发布时间：${Common.convertTimestampToDateTime(Number(createTime))}\n发布时间戳（s）：${createTime}\n时间差（ms）：${timeDifference}\n是否置顶：${is_top}\n是否在一天内：${timeDifference < 86400000 ? logger.green('true') : logger.red('false')}`)
+            logger.debug(`
+              前期获取该动态基本信息：
+              UP主：${dynamic.modules.module_author.name}
+              动态ID：${dynamic.id_str}
+              发布时间：${Common.convertTimestampToDateTime(createTime / 1000)}
+              发布时间戳（ms）：${createTime}
+              当前时间戳（ms）：${now}
+              时间差（ms）：${timeDifference} ms (${timeDiffSeconds}s) (${timeDiffHours}h)
+              是否置顶：${is_top}
+              是否在一天内：${timeDifference < 86400000 ? logger.green('true') : logger.red('false')}
+              `)
+
             if ((is_top && timeDifference < 86400000) || (timeDifference < 86400000)) {
               shouldPush = true
               logger.debug(logger.green(`根据以上判断，shoulPush 为 true，将对该动态纳入当天推送列表：https://t.bilibili.com/${dynamic.id_str}\n`))
@@ -865,10 +879,6 @@ function extractEmojisData (data: any[]) {
  * @returns 是否应该跳过推送
  */
 const skipDynamic = async (PushItem: BilibiliPushItem): Promise<boolean> => {
-  // 如果是直播动态，不跳过
-  if (PushItem.Dynamic_Data.type === DynamicType.LIVE_RCMD) {
-    return false
-  }
   const tags: string[] = []
 
   // 提取标签
@@ -891,6 +901,7 @@ const skipDynamic = async (PushItem: BilibiliPushItem): Promise<boolean> => {
     }
   }
 
+  logger.debug(`检查动态是否需要过滤：https://t.bilibili.com/${PushItem.Dynamic_Data.id_str}`)
   const shouldFilter = await bilibiliDB.shouldFilter(PushItem, tags)
   return shouldFilter
 }

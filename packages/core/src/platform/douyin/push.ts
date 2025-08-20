@@ -276,7 +276,21 @@ export class DouYinpush extends Base {
             const is_top = aweme.is_top === 1 // 是否为置顶
             let shouldPush = false
 
-            logger.debug(`前期获取该动态基本信息：\n动态ID：${aweme.aweme_id}\n发布时间：${Common.convertTimestampToDateTime(aweme.create_time)}\n发布时间戳（s）：${aweme.create_time}\n时间差（ms）：${timeDifference}\n是否置顶：${is_top}\n是否处于开播：${userinfo.data.user.live_status === 1 ? logger.green('true') : logger.red('false')}是否在一天内：${timeDifference < 86400000 ? logger.green('true') : logger.red('false')}`)
+            const timeDiffSeconds = Math.round(timeDifference / 1000)
+            const timeDiffHours = Math.round((timeDifference / 1000 / 60 / 60) * 100) / 100 // 保留2位小数
+
+            logger.debug(`
+              前期获取该动态基本信息：
+              作者：${aweme.author.nickname}
+              作品ID：${aweme.aweme_id}
+              发布时间：${Common.convertTimestampToDateTime(aweme.create_time)}
+              发布时间戳（s）：${aweme.create_time}
+              当前时间戳（ms）：${now}
+              时间差（ms）：${timeDifference} ms (${timeDiffSeconds}s) (${timeDiffHours}h)
+              是否置顶：${is_top}
+              是否处于开播：${userinfo.data.user.live_status === 1 ? logger.green('true') : logger.red('false')}
+              是否在一天内：${timeDifference < 86400000 ? logger.green('true') : logger.red('false')}
+              `)
 
             // 判断是否需要推送
             if ((is_top && timeDifference < 86400000) || (timeDifference < 86400000 && !is_top)) {
@@ -644,7 +658,7 @@ const skipDynamic = async (PushItem: DouyinPushItem): Promise<boolean> => {
     }
   }
 
-  // 确保使用 PushItem.sec_uid 而不是 PushItem.Detail_Data.sec_uid
+  logger.debug(`检查作品是否需要过滤：${PushItem.Detail_Data.share_url}`)
   const shouldFilter = await douyinDB.shouldFilter(PushItem, tags)
   return shouldFilter
 }

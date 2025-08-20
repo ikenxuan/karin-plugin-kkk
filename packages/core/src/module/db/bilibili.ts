@@ -659,6 +659,13 @@ export class BilibiliDBBase {
 
     const moduleDynamic = dynamicData.modules.module_dynamic
 
+    // 提取直播标题和分区
+    if (moduleDynamic.major && moduleDynamic.major.live_rcmd) {
+      const content = JSON.parse(moduleDynamic.major.live_rcmd.content)
+      text += content.live_play_info.title + ' '
+      tags.push(content.live_play_info.area_name)
+    }
+
     // 提取描述文本
     if (moduleDynamic.desc && moduleDynamic.desc.text) {
       text += moduleDynamic.desc.text + ' '
@@ -683,9 +690,14 @@ export class BilibiliDBBase {
       if (dynamicData.orig.type === DynamicType.AV) {
         text += dynamicData.orig.modules.module_dynamic.major.archive.title + ''
       } else {
-        text += dynamicData.orig.modules.module_dynamic.desc.text + ' '
-        for (const node of dynamicData.orig.modules.module_dynamic.desc.rich_text_nodes) {
-          tags.push(node.orig_text)
+        logger.debug(`提取子动态文本和tag：https://t.bilibili.com/${dynamicData.id_str}`)
+        try {
+          text += dynamicData.orig.modules.module_dynamic.major.opus.summary.text + ' '
+          for (const node of dynamicData.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes) {
+            tags.push(node.orig_text)
+          }
+        } catch (error) {
+          logger.error(`提取子动态文本和tag失败：${error}`)
         }
       }
     }
@@ -699,16 +711,22 @@ export class BilibiliDBBase {
    * @param tags 额外的标签列表
    */
   async shouldFilter (PushItem: BilibiliPushItem, extraTags: string[] = []): Promise<boolean> {
-    // 如果是直播动态，不过滤
-    if (PushItem.Dynamic_Data.type === DynamicType.LIVE_RCMD) {
-      return false
-    }
-
     // 获取用户的过滤配置
     const { filterMode, filterWords, filterTags } = await this.getFilterConfig(PushItem.host_mid)
+    logger.debug(`
+      获取用户${PushItem.remark}（${PushItem.host_mid}）的过滤配置：
+      过滤模式：${filterMode}
+      过滤词：${filterWords}
+      过滤标签：${filterTags}
+      `)
 
     // 提取主动态的文本和标签
     const { text: mainText, tags: mainTags } = await this.extractTextAndTags(PushItem.Dynamic_Data)
+    logger.debug(`
+      提取主动态的文本和标签：
+      文本：${mainText}
+      标签：[${mainTags.join('][')}]
+      `)
 
     // 合并所有标签
     let allTags = [...mainTags, ...extraTags]
@@ -733,8 +751,8 @@ export class BilibiliDBBase {
     UP主UID：${PushItem.host_mid}
     检查内容：${allText}
     检查标签：${allTags.join(', ')}
-    命中词：${filterWords.join(', ')}
-    命中标签：${filterTags.join(', ')}
+    命中词：[${filterWords.join('], [')}]
+    命中标签：[${filterTags.join('], [')}]
     过滤模式：${filterMode}
     是否过滤：${(hasFilterWord || hasFilterTag) ? logger.red(`${hasFilterWord || hasFilterTag}`) : logger.green(`${hasFilterWord || hasFilterTag}`)}
     动态地址：${logger.green(`https://t.bilibili.com/${PushItem.Dynamic_Data.id_str}`)}
@@ -744,10 +762,13 @@ export class BilibiliDBBase {
     // 根据过滤模式决定是否过滤
     if (filterMode === 'blacklist') {
       // 黑名单模式：如果包含过滤词或过滤标签，则过滤
-      if (hasFilterWord) {
-        return true
-      }
-      if (hasFilterTag) {
+      if (hasFilterWord || hasFilterTag) {
+        logger.warn(`
+        动态内容命中黑名单规则，已过滤该动态不再推送
+        动态地址：${logger.yellow(`https://t.bilibili.com/${PushItem.Dynamic_Data.id_str}`)}
+        命中的黑名单词：[${filterWords.join('], [')}]
+        命中的黑名单标签：[${filterTags.join('], [')}]
+        `)
         return true
       }
       return false
@@ -761,6 +782,12 @@ export class BilibiliDBBase {
       if (hasFilterWord || hasFilterTag) {
         return false // 不过滤
       }
+      logger.warn(`
+        动态内容未命中白名单规则，已过滤该动态不再推送
+        动态地址：${logger.yellow(`https://t.bilibili.com/${PushItem.Dynamic_Data.id_str}`)}
+        当前白名单词：[${filterWords.join('], [')}]
+        当前白名单标签：[${filterTags.join('], [')}]
+      `)
       return true // 过滤
     }
   }
