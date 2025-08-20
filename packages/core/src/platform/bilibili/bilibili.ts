@@ -120,7 +120,7 @@ export class Bilibili extends Base {
           })
 
           if (replyContent.length > 0) {
-            await this.e.reply(replyContent)
+            this.e.reply(replyContent)
           }
         }
 
@@ -160,7 +160,7 @@ export class Bilibili extends Base {
           })
           const commentsdata = bilibiliComments(commentsData.data)
           if (!commentsdata?.length) {
-            await this.e.reply('这个视频没有评论 ~')
+            this.e.reply('这个视频没有评论 ~')
           } else {
             img = await Render('bilibili/comment', {
               Type: '视频',
@@ -172,12 +172,12 @@ export class Bilibili extends Base {
               ImageLength: 0,
               shareurl: 'https://b23.tv/' + infoData.data.data.bvid
             })
-            await this.e.reply(img)
+            this.e.reply(img)
           }
         }
 
         if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) && !Config.upload.compress) {
-          await this.e.reply(`设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n` + '视频太大了，还是去B站看吧~', { reply: true })
+          this.e.reply(`设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n` + '视频太大了，还是去B站看吧~', { reply: true })
         } else {
           await this.getvideo(
             Config.bilibili.videopriority === true
@@ -218,8 +218,8 @@ export class Bilibili extends Base {
           bangumiData: barray,
           title: videoInfo.data.result.title
         })
-        await this.e.reply([...img, segment.text('请在120秒内输入 第?集 选择集数')])
-        await this.e.reply(segment.text('请在120秒内输入 第?集 选择集数'))
+        this.e.reply([...img, segment.text('请在120秒内输入 第?集 选择集数')])
+        this.e.reply(segment.text('请在120秒内输入 第?集 选择集数'))
         const context = await karin.ctx(this.e, { reply: true })
         const regex = /第([一二三四五六七八九十百千万0-9]+)集/.exec(context.msg)
         let Episode
@@ -241,7 +241,7 @@ export class Bilibili extends Base {
           ep_id: videoInfo.data.result.episodes[Number(Episode) - 1].ep_id.toString()
         })
         const Params = await genParams(bangumidataBASEURL)
-        if (!this.islogin) await this.e.reply('B站ck未配置或已失效，无法获取视频流，可尝试【#B站登录】以配置新ck')
+        if (!this.islogin) this.e.reply('B站ck未配置或已失效，无法获取视频流，可尝试【#B站登录】以配置新ck')
         const playUrlData = await new Networks({
           url: bangumidataBASEURL + Params,
           headers: this.headers
@@ -310,12 +310,12 @@ export class Bilibili extends Base {
 
                 shareurl: '动态分享链接'
               })
-              if (imgArray.length === 1) await this.e.reply(imgArray[0])
+              if (imgArray.length === 1) this.e.reply(imgArray[0])
               if (imgArray.length > 1) {
                 const forwardMsg = common.makeForward(imgArray, this.e.userId, this.e.sender.nick)
                 await this.e.bot.sendForwardMsg(this.e.contact, forwardMsg)
               }
-              await this.e.reply(img)
+              this.e.reply(img)
             }
 
             const dynamicCARD = JSON.parse(dynamicInfoCard.data.data.card.card)
@@ -330,8 +330,8 @@ export class Bilibili extends Base {
               })
               dynamicInfo.data.data.item.modules.module_dynamic.desc.text = `${name}\n\n` + dynamicInfo.data.data.item.modules.module_dynamic.desc.text
             }
-            await this.e.reply(await Render('bilibili/dynamic/DYNAMIC_TYPE_DRAW', {
-              image_url: cover(dynamicCARD.item.pictures),
+            this.e.reply(await Render('bilibili/dynamic/DYNAMIC_TYPE_DRAW', {
+              image_url: dynamicCARD.item.pictures && cover(dynamicCARD.item.pictures),
               // TIP: 2025/08/20, 动态卡片数据中，图文动态的描述文本在 major.opus.summary 中
               text: replacetext(br(dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text), dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.rich_text_nodes),
               dianzan: Count(dynamicInfo.data.data.item.modules.module_stat.like.count),
@@ -356,7 +356,7 @@ export class Bilibili extends Base {
           case DynamicType.WORD: {
             const text = replacetext(br(dynamicInfo.data.data.item.modules.module_dynamic.desc.text), dynamicInfo.data.data.item.modules.module_dynamic.desc.rich_text_nodes)
 
-            await this.e.reply(
+            this.e.reply(
               await Render('bilibili/dynamic/DYNAMIC_TYPE_WORD', {
                 text,
                 dianzan: Count(dynamicInfo.data.data.item.modules.module_stat.like.count),
@@ -374,7 +374,7 @@ export class Bilibili extends Base {
                 dynamicTYPE: '纯文动态'
               })
             )
-            commentsData && await this.e.reply(
+            commentsData && this.e.reply(
               await Render('bilibili/comment', {
                 Type: '动态',
                 CommentsData: bilibiliComments(commentsData.data),
@@ -455,7 +455,7 @@ export class Bilibili extends Base {
                 break
               }
             }
-            await this.e.reply(
+            this.e.reply(
               await Render('bilibili/dynamic/DYNAMIC_TYPE_FORWARD', {
                 text,
                 dianzan: Count(dynamicInfo.data.data.item.modules.module_stat.like.count),
@@ -485,7 +485,7 @@ export class Bilibili extends Base {
               const INFODATA = await getBilibiliData('单个视频作品数据', '', { bvid, typeMode: 'strict' })
               const dycrad = dynamicInfoCard.data.data.card && dynamicInfoCard.data.data.card.card && JSON.parse(dynamicInfoCard.data.data.card.card)
 
-              commentsData && await this.e.reply(
+              commentsData && this.e.reply(
                 await Render('bilibili/comment', {
                   Type: '动态',
                   CommentsData: bilibiliComments(commentsData.data),
@@ -519,7 +519,7 @@ export class Bilibili extends Base {
                   dynamicTYPE: '视频动态'
                 }
               )
-              await this.e.reply(img)
+              this.e.reply(img)
             }
             break
           }
@@ -541,11 +541,11 @@ export class Bilibili extends Base {
                 dynamicTYPE: '直播动态'
               }
             )
-            await this.e.reply(img)
+            this.e.reply(img)
             break
           }
           default:
-            await this.e.reply(`该动态类型「${dynamicInfo.data.data.item.type}」暂未支持解析`)
+            this.e.reply(`该动态类型「${dynamicInfo.data.data.item.type}」暂未支持解析`)
             break
         }
         break
@@ -556,7 +556,7 @@ export class Bilibili extends Base {
         const userProfileData = await this.amagi.getBilibiliData('用户主页数据', { host_mid: roomInitInfo.data.uid, typeMode: 'strict' })
 
         if (roomInitInfo.data.live_status === 0) {
-          await this.e.reply(`${userProfileData.data.data.card.name} 未开播，正在休息中~`)
+          this.e.reply(`${userProfileData.data.data.card.name} 未开播，正在休息中~`)
           return true
         }
         const img = await Render('bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
@@ -574,7 +574,7 @@ export class Bilibili extends Base {
             dynamicTYPE: '直播'
           }
         )
-        await this.e.reply(img)
+        this.e.reply(img)
         break
       }
       default:
