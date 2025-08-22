@@ -1,5 +1,33 @@
 # 变更日志
 
+## [1.9.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.8.1...v1.9.0) (2025-08-22)
+
+
+### ✨ 新功能
+
+* Add Tauri desktop support and Web UI enhancements ([#130](https://github.com/ikenxuan/karin-plugin-kkk/issues/130)) ([617d5cf](https://github.com/ikenxuan/karin-plugin-kkk/commit/617d5cf841c4912c76fda2998151c831e5883b44))
+
+
+### 🐛 错误修复
+
+* **bilibili:** 修复动态卡片中图片可能为空的判断缺失问题 ([44e8bc1](https://github.com/ikenxuan/karin-plugin-kkk/commit/44e8bc165a334233c53f826278a4935602b8feec))
+* **bilibili:** 修复动态类型处理中的空值检查和类型定义 ([332823a](https://github.com/ikenxuan/karin-plugin-kkk/commit/332823a23019879cf7b1dae051d2c2ab21aaf8b3))
+* **bilibili:** 更新动态卡片数据解析逻辑并升级依赖 ([0ebc356](https://github.com/ikenxuan/karin-plugin-kkk/commit/0ebc356c1345f04f2d9c97a66819ac71f95e2c30))
+* **douyin/bilibili:** 优化动态推送日志顺序并更新依赖版本 ([54e0088](https://github.com/ikenxuan/karin-plugin-kkk/commit/54e00886af2383139b370ea3809cd405c73a73d6))
+* 修复抖音作品推送文本描述及日志信息 ([cff097a](https://github.com/ikenxuan/karin-plugin-kkk/commit/cff097aa45e3794c5ce61e4fe29db7ac3d1d359f))
+* 增强动态过滤日志并支持直播内容处理 close: [#131](https://github.com/ikenxuan/karin-plugin-kkk/issues/131) ([dfa9956](https://github.com/ikenxuan/karin-plugin-kkk/commit/dfa9956163d0c0342179d81e9a19a12c3543d4a6))
+
+
+### ♻️ 代码重构
+
+* **bilibili:** 重构动态数据处理逻辑，使用更严格的类型检查 ([332823a](https://github.com/ikenxuan/karin-plugin-kkk/commit/332823a23019879cf7b1dae051d2c2ab21aaf8b3))
+
+
+### 📦️ 构建系统
+
+* 更新 @ikenxuan/amagi 依赖至正式版本 5.1.0 ([542a38c](https://github.com/ikenxuan/karin-plugin-kkk/commit/542a38c4f9a69238ddd5296068a55c0bc32febad))
+* 更新@ikenxuan/amagi依赖到特定PR版本 ([332823a](https://github.com/ikenxuan/karin-plugin-kkk/commit/332823a23019879cf7b1dae051d2c2ab21aaf8b3))
+
 ## [1.8.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.8.0...v1.8.1) (2025-07-16)
 
 
