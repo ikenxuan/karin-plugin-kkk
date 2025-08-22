@@ -137,7 +137,12 @@ export class Bilibilipush extends Base {
         let emojiDATA = await this.amagi.getBilibiliData('Emoji数据') as any
         emojiDATA = extractEmojisData(emojiDATA.data.data.packages)
 
-        logger.mark(`UP: ${data[dynamicId].remark}\n动态id：${dynamicId}\nhttps://t.bilibili.com/${dynamicId}`)
+        logger.mark(`
+          ${logger.blue('开始处理并渲染B站动态图片')}
+          ${logger.cyan('UP')}: ${logger.green(data[dynamicId].remark)}
+          ${logger.cyan('动态id')}：${logger.yellow(dynamicId)}
+          ${logger.cyan('访问地址')}：${logger.green('https://t.bilibili.com/' + dynamicId)}
+          `)
         switch (data[dynamicId].dynamic_type) {
           /** 处理图文动态 */
           case DynamicType.DRAW: {
