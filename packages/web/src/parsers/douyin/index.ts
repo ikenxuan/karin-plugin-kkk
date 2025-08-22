@@ -1,7 +1,7 @@
 import type { DyEmojiList, DyImageAlbumWork, DySlidesWork, DyVideoWork, DyWorkComments } from '@ikenxuan/amagi'
 
 import request from '@/lib/request'
-import type { apiResponse, CommentInfo, ParsedWorkInfo, SlideItem,VideoInfo } from '@/parsers/types'
+import type { CommentInfo, ParsedWorkInfo, ResponseData, SlideItem, VideoInfo } from '@/parsers/types'
 import { formatCount, formatDuration, formatTimestamp } from '@/parsers/utils'
 
 /**
@@ -94,26 +94,27 @@ const removeTags = (title: string, tags: string[]): string => {
 export const parseDouyinVideoDetail = async (workInfo: ParsedWorkInfo): Promise<VideoInfo> => {
   try {
     // 获取作品详细数据
-    const videoResponse = await request.post<apiResponse<DyVideoWork | DyImageAlbumWork | DySlidesWork>>('/api/kkk/douyin/data', {
+    const videoResponse = await request.serverPost<ResponseData<DyVideoWork | DyImageAlbumWork | DySlidesWork>, any>('/api/kkk/douyin/data', {
       dataType: '聚合解析',
       params: workInfo.params
     })
 
     // 获取评论数据
-    const commentsResponse = await request.post<apiResponse<DyWorkComments>>('/api/kkk/douyin/data', {
+    const commentsResponse = await request.serverPost<ResponseData<DyWorkComments>, any>('/api/kkk/douyin/data', {
       dataType: '评论数据',
       params: workInfo.params
     })
 
     // 获取表情数据
-    const emojiResponse = await request.post<apiResponse<DyEmojiList>>('/api/kkk/douyin/data', {
+    const emojiResponse = await request.serverPost<ResponseData<DyEmojiList>, any>('/api/kkk/douyin/data', {
       dataType: 'Emoji数据',
       params: {}
     })
 
-    const awemeDetail = videoResponse.data.data.data.aweme_detail
-    const commentsData = commentsResponse.data.data.data
-    const emojiData = emojiResponse.data.data.data
+    const awemeDetail = videoResponse.data.aweme_detail
+    const commentsData = commentsResponse.data.comments
+    const emojiData = emojiResponse.data
+
 
     // 判断作品类型
     const isSlides = awemeDetail.is_slides === true && awemeDetail.images !== null
@@ -121,7 +122,7 @@ export const parseDouyinVideoDetail = async (workInfo: ParsedWorkInfo): Promise<
     const workType = isSlides ? 'slides' : (isVideo ? 'video' : 'note')
 
     // 解析评论数据
-    const comments = parseDouyinComments(commentsData.comments, emojiData)
+    const comments = parseDouyinComments(commentsData, emojiData)
 
     // 提取标签
     const tags = Array.isArray(awemeDetail.text_extra)

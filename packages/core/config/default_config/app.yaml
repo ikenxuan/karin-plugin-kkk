@@ -1,14 +1,11 @@
 # 视频解析工具总开关，修改后重启生效
-videotool: true
-
-# 默认解析，即识别最高优先级，修改后重启生效
-defaulttool: true
+videoTool: true
 
 # 自定义优先级，「默认解析」关闭后才会生效。修改后重启生效
 priority: 800
 
 # 缓存删除，非必要不修改！
-rmmp4: true
+removeCache: true
 
 # 渲染精度，可选值50~200，建议100。设置高精度会提高图片的精细度，过高可能会影响渲染与发送速度
 renderScale: 100

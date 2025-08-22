@@ -8,7 +8,7 @@ import request from '@/lib/request'
 import { parseBilibiliVideoDetail,parseBilibiliWorkId } from './bilibili'
 import { parseDouyinVideoDetail,parseDouyinWorkId } from './douyin'
 import { parseKuaishouVideoDetail,parseKuaishouWorkId } from './kuaishou'
-import { HTTPStatusCode,type LinkParseResponse, type ParsedWorkInfo, type VideoInfo } from './types'
+import { type LinkParseResponse, type ParsedWorkInfo, type VideoInfo } from './types'
 import { extractVideoLink } from './utils'
 
 /**
@@ -29,15 +29,9 @@ export class VideoParser {
     }
 
     // 2. 获取重定向后的最终链接和平台信息
-    const linkResponse = await request.post<LinkParseResponse>('/api/kkk/getLongLink', {
+    const { finalUrl, platform } = await request.serverPost<LinkParseResponse, { link: string }>('/api/kkk/getLongLink', {
       link: extractedLink
     })
-
-    if (linkResponse.data.code !== HTTPStatusCode.OK) {
-      throw new Error(linkResponse.data.message || '链接解析失败')
-    }
-
-    const { finalUrl, platform } = linkResponse.data.data
 
     // 3. 根据平台解析作品ID和基础信息
     let workInfo: ParsedWorkInfo

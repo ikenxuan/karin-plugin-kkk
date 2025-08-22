@@ -1,5 +1,4 @@
-import fs from 'node:fs'
-import { readFileSync, writeFileSync } from 'node:fs'
+import fs, { readFileSync, writeFileSync } from 'node:fs'
 import { builtinModules } from 'node:module'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'

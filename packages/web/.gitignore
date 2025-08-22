@@ -32,3 +32,4 @@ bun.lockb
 !.npmrc
 
 !src/*
+dev-dist

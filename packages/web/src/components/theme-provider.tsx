@@ -1,96 +1,68 @@
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, type ReactNode, useContext } from 'react'
 
-import { useSystemTheme } from "@/hooks/use-system-theme"
-
-type Theme = "dark" | "light" | "system"
+import { useTheme } from '@/hooks/use-theme'
 
 type ThemeProviderProps = {
-  children: React.ReactNode
-  defaultTheme?: Theme
-  storageKey?: string
+  children: ReactNode
   /**
-   * 是否启用自动跟随系统主题
-   * @default true
+   * 默认主题模式
+   * @default 'system'
    */
-  autoFollowSystem?: boolean
+  defaultTheme?: 'system' | 'inverse'
 }
 
 type ThemeProviderState = {
-  theme: Theme
-  setTheme: (theme: Theme) => void
-  /**
-   * 当前实际应用的主题
-   */
-  actualTheme: 'light' | 'dark'
+  theme: 'system' | 'inverse'
+  isDark: boolean
+  isLight: boolean
+  setSystemTheme: () => void
+  setInverseTheme: () => void
+  toggleTheme: () => void
+  isSystem: boolean
+  isInverse: boolean
 }
 
 const initialState: ThemeProviderState = {
-  theme: "system",
-  setTheme: () => null,
-  actualTheme: 'light',
+  theme: 'system',
+  isDark: false,
+  isLight: true,
+  setSystemTheme: () => null,
+  setInverseTheme: () => null,
+  toggleTheme: () => null,
+  isSystem: true,
+  isInverse: false,
 }
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
-export function ThemeProvider ({
+/**
+ * 主题提供者组件
+ * @param children - 子组件
+ * @param defaultTheme - 默认主题模式
+ */
+export function ThemeProvider({
   children,
-  defaultTheme = "system",
-  storageKey = "vite-ui-theme",
-  autoFollowSystem = true,
+  defaultTheme = 'system',
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-  )
-
-  // 使用系统主题监听 hook
-  const systemTheme = useSystemTheme()
-
-  // 计算实际应用的主题
-  const actualTheme = theme === "system" ? systemTheme : theme
-
-  useEffect(() => {
-    const root = window.document.documentElement
-
-    root.classList.remove("light", "dark")
-    root.classList.add(actualTheme)
-  }, [actualTheme])
-
-  // 如果启用自动跟随系统且当前主题是 system，则自动切换
-  useEffect(() => {
-    if (autoFollowSystem && theme === "system") {
-      // 系统主题变化时会自动通过 actualTheme 的变化触发上面的 useEffect
-      console.log(`系统主题已切换为: ${systemTheme}`)
-    }
-  }, [systemTheme, theme, autoFollowSystem])
-
-  /**
-   * 设置主题
-   * @param newTheme - 新的主题设置
-   */
-  const handleSetTheme = (newTheme: Theme) => {
-    localStorage.setItem(storageKey, newTheme)
-    setTheme(newTheme)
-  }
-
-  const value = {
-    theme,
-    setTheme: handleSetTheme,
-    actualTheme,
-  }
+  const themeState = useTheme(defaultTheme)
 
   return (
-    <ThemeProviderContext.Provider {...props} value={value}>
+    <ThemeProviderContext.Provider {...props} value={themeState}>
       {children}
     </ThemeProviderContext.Provider>
   )
 }
 
-export const useTheme = () => {
+/**
+ * 使用主题上下文的 Hook
+ * @returns 主题状态和操作方法
+ */
+export const useThemeContext = () => {
   const context = useContext(ThemeProviderContext)
 
   if (context === undefined)
-    throw new Error("useTheme must be used within a ThemeProvider")
+    throw new Error('useThemeContext must be used within a ThemeProvider')
 
   return context
 }

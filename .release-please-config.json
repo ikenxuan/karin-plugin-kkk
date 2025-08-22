@@ -2,7 +2,9 @@
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "node",
   "include-component-in-tag": true,
-  "commit-search-depth": 50,
+  "commit-search-depth": 20,
+  "tag-separator": "-",
+  "separate-pull-requests": true,
   "changelog-sections": [
     {
       "type": "feat",
@@ -68,14 +70,16 @@
     "packages/core": {
       "release-type": "node",
       "package-name": "karin-plugin-kkk",
-      "changelog-path": "CHANGELOG.md"
+      "changelog-path": "CHANGELOG.md",
+      "include-component-in-tag": false
     },
     "packages/web": {
       "release-type": "node",
-      "package-name": "webui",
+      "package-name": "web",
       "changelog-path": "CHANGELOG.md",
       "release-as": "0.0.0",
-      "skip-github-release": true
+      "skip-github-release": true,
+      "include-component-in-tag": true
     }
   }
 }

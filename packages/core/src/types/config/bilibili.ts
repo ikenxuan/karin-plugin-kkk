@@ -15,7 +15,7 @@ export interface bilibiliConfig {
   /** 评论图是否显示真实评论数量，关闭则显示解析到的评论数量 */
   realCommentCount: boolean
 
-  /** 解析视频是否优先保内容，true为优先保证上传将使用最低分辨率，false为优先保清晰度将使用最高分辨率 */
+  /** 解析视频是否优先保内容，true为优先保证上传将使用最低分辨率，false则使用自定义画质偏好 */
   videopriority: boolean
 
   /** 视频画质偏好设置，0 为自动根据大小选择，其他为固定画质

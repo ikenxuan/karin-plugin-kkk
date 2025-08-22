@@ -97,18 +97,18 @@ export const webConfig = defineConfig({
               components.switch.create('rmmp4', {
                 label: '缓存删除',
                 description: '缓存自动删除，非必要不修改！',
-                defaultSelected: all.app.rmmp4
+                defaultSelected: all.app.removeCache
               }),
               components.switch.create('defaulttool', {
                 label: '默认解析',
                 description: '即识别最高优先级，修改后重启生效',
-                defaultSelected: all.app.defaulttool
+                defaultSelected: all.app.videoTool
               }),
               components.input.number('priority', {
                 label: '自定义优先级',
                 description: '自定义优先级，「默认解析」关闭后才会生效。修改后重启生效',
                 defaultValue: all.app.priority.toString(),
-                isDisabled: all.app.defaulttool,
+                isDisabled: all.app.videoTool,
                 rules: undefined
               }),
               components.input.number('renderScale', {
@@ -397,7 +397,7 @@ export const webConfig = defineConfig({
               }),
               components.switch.create('videopriority', {
                 label: '优先保内容',
-                description: '解析视频是否优先保内容，true为优先保证上传将使用最低分辨率，false为优先保清晰度将使用最高分辨率',
+                description: '解析视频是否优先保内容，true为优先保证上传将使用最低分辨率，false则使用自定义画质偏好',
                 defaultSelected: all.bilibili.videopriority,
                 isDisabled: !all.bilibili.switch
               }),

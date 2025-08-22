@@ -2,11 +2,51 @@ name: CI/CD
 
 on:
   workflow_dispatch:
+    inputs:
+      # 手动运行模式选择
+      run_mode:
+        description: '运行模式'
+        required: true
+        default: 'preview'
+        type: choice
+        options:
+          - preview
+          - production
+      
+      # 手动发布版本号（仅生产模式需要）
+      manual_version:
+        description: '手动指定版本号 (如: 1.2.3，仅生产模式有效)'
+        required: false
+        type: string
+      
+      # 发布说明
+      release_notes:
+        description: '发布说明 (可选)'
+        required: false
+        type: string
+      
+      # 是否跳过桌面应用构建
+      skip_desktop:
+        description: '跳过桌面应用构建'
+        required: false
+        default: false
+        type: boolean
+      
+      # 是否强制发布到 NPM
+      force_npm_publish:
+        description: '强制发布到 NPM (仅生产模式)'
+        required: false
+        default: false
+        type: boolean
+
   push:
     branches:
       - main
   pull_request:
     types: [opened, reopened, synchronize]
+
+env:
+  APP_NAME: karin-plugin-kkk
 
 permissions:
   contents: write
@@ -19,12 +59,24 @@ jobs:
   version-release:
     runs-on: ubuntu-latest
     outputs:
-      releases_created: ${{ steps.release-please.outputs.releases_created }}
-      core_release_created: ${{ steps.release-please.outputs['packages/core--release_created'] }}
-      core_tag_name: ${{ steps.release-please.outputs['packages/core--tag_name'] }}
+      releases_created: ${{ steps.release-please.outputs.releases_created || steps.manual-release.outputs.releases_created }}
+      core_release_created: ${{ steps.release-please.outputs['packages/core--release_created'] || steps.manual-release.outputs.core_release_created }}
+      core_tag_name: ${{ steps.release-please.outputs['packages/core--tag_name'] || steps.manual-release.outputs.core_tag_name }}
+      core_version: ${{ steps.get-version-info.outputs.core_version }}
+      should_upload_release: ${{ steps.get-version-info.outputs.should_upload_release }}
+      release_tag_name: ${{ steps.get-version-info.outputs.release_tag_name }}
+      is_manual_production: ${{ steps.get-version-info.outputs.is_manual_production }}
+      manual_release_notes: ${{ steps.get-version-info.outputs.manual_release_notes }}
 
     steps:
+      - name: 📥 检出源代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 自动版本发布检查（非手动生产模式）
       - name: 🚀 执行版本发布检查
+        if: github.event_name != 'workflow_dispatch' || inputs.run_mode != 'production'
         id: release-please
         uses: googleapis/release-please-action@v4
         with:
@@ -32,63 +84,191 @@ jobs:
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
 
-  # 正式版本构建 (仅 core 包)
-  production-build:
-    needs: version-release
-    if: needs.version-release.outputs.core_release_created == 'true'
+      # 手动生产发布处理
+      - name: 🎯 处理手动生产发布
+        if: github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production'
+        id: manual-release
+        run: |
+          if [ -z "${{ inputs.manual_version }}" ]; then
+            echo "❌ 生产模式必须指定版本号" >&2
+            exit 1
+          fi
+          
+          # 验证版本号格式
+          if ! echo "${{ inputs.manual_version }}" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "❌ 版本号格式错误，应为 x.y.z 格式" >&2
+            exit 1
+          fi
+          
+          echo "releases_created=true" >> $GITHUB_OUTPUT
+          echo "core_release_created=true" >> $GITHUB_OUTPUT
+          echo "core_tag_name=v${{ inputs.manual_version }}" >> $GITHUB_OUTPUT
+          
+          echo "✅ 手动生产发布已配置：v${{ inputs.manual_version }}"
+
+      - name: 🏷️ 获取版本信息
+        id: get-version-info
+        run: |
+          cd packages/core
+          
+          # 处理手动生产模式
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.run_mode }}" = "production" ]; then
+            # 手动更新 package.json 版本号
+            npm version ${{ inputs.manual_version }} --no-git-tag-version
+            CORE_VERSION="${{ inputs.manual_version }}"
+            echo "should_upload_release=true" >> $GITHUB_OUTPUT
+            echo "release_tag_name=v${{ inputs.manual_version }}" >> $GITHUB_OUTPUT
+            echo "is_manual_production=true" >> $GITHUB_OUTPUT
+            echo "manual_release_notes=${{ inputs.release_notes }}" >> $GITHUB_OUTPUT
+            echo "🎯 手动生产模式：版本 $CORE_VERSION"
+          else
+            # 自动模式或预览模式
+            CORE_VERSION=$(node -p "require('./package.json').version")
+            echo "is_manual_production=false" >> $GITHUB_OUTPUT
+            echo "manual_release_notes=" >> $GITHUB_OUTPUT
+            
+            if [ "${{ steps.release-please.outputs.core_release_created }}" = "true" ] || [ "${{ inputs.force_npm_publish }}" = "true" ]; then
+              echo "should_upload_release=true" >> $GITHUB_OUTPUT
+              echo "release_tag_name=${{ steps.release-please.outputs.core_tag_name }}" >> $GITHUB_OUTPUT
+            else
+              echo "should_upload_release=false" >> $GITHUB_OUTPUT
+              echo "release_tag_name=" >> $GITHUB_OUTPUT
+            fi
+          fi
+          
+          echo "core_version=$CORE_VERSION" >> $GITHUB_OUTPUT
+          echo "📦 当前版本：$CORE_VERSION"
+
+  # 统一构建作业（仅核心包和Web应用）
+  unified-build:
     runs-on: ubuntu-latest
+    needs: [version-release]
     outputs:
-      package_name: ${{ steps.get-package-name.outputs.name }}
-      package_short_name: ${{ steps.get-package-name.outputs.PACKAGE_SHORT_NAME }}
+      build_success: ${{ steps.build-status.outputs.success }}
+      package_name: ${{ steps.package-info.outputs.name }}
+      package_short_name: ${{ steps.package-info.outputs.short_name }}
+      commit_hash: ${{ steps.git-info.outputs.commit_hash }}
+      short_commit_hash: ${{ steps.git-info.outputs.short_commit_hash }}
+    
     steps:
       - name: 📥 检出源代码
         uses: actions/checkout@v4
         with:
-          ref: main
           fetch-depth: 0
 
       - name: 📦 配置 PNPM 环境
         uses: pnpm/action-setup@v4
         with:
-          version: 9.13.2
-          run_install: |
-            - args: [--no-frozen-lockfile]
+          version: 9.15.9
 
-      - name: 🏷️ 解析包信息
-        id: get-package-name
+      - name: 🟢 配置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
+
+      - name: 📦 安装依赖
+        run: pnpm install
+
+      - name: 🔨 执行完整项目构建
+        run: |
+          echo "开始构建所有包..."
+          pnpm build
+          if [ $? -ne 0 ]; then
+            echo "❌ 构建失败，退出工作流"
+            exit 1
+          fi
+          echo "✅ 构建成功"
+
+      - name: 🏷️ 获取包信息
+        id: package-info
         working-directory: packages/core
         run: |
           PACKAGE_NAME=$(pnpm pkg get name | tr -d '"')
           PACKAGE_SHORT_NAME=$(basename "$PACKAGE_NAME")
-          echo "PACKAGE_SHORT_NAME=$PACKAGE_SHORT_NAME" >> $GITHUB_OUTPUT
-          echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+          echo "name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+          echo "short_name=$PACKAGE_SHORT_NAME" >> $GITHUB_OUTPUT
 
-      - name: 🔨 执行完整项目构建
-        id: build-package
+      - name: 📊 获取 Git 信息
+        id: git-info
         run: |
-          # 构建所有包（core 和 web）
-          pnpm build
-          # 准备 core 包发布
+          COMMIT_HASH=$(git rev-parse HEAD)
+          SHORT_COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "commit_hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
+          echo "short_commit_hash=$SHORT_COMMIT_HASH" >> $GITHUB_OUTPUT
+
+      # 手动生产模式：应用版本号变更
+      - name: 🎯 应用手动版本号
+        if: github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production'
+        run: |
+          cd packages/core
+          npm version ${{ inputs.manual_version }} --no-git-tag-version
+          echo "✅ 已应用手动版本号：${{ inputs.manual_version }}"
+
+      - name: 📦 准备发布产物 (正式版)
+        if: needs.version-release.outputs.core_release_created == 'true' || (github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production')
+        run: |
           cd packages/core
           pnpm pkg delete devDependencies
-          mkdir -p ${{ runner.temp }}/temp/
-          cp -r package.json README.md CHANGELOG.md LICENSE config resources lib ${{ runner.temp }}/temp/
+          mkdir -p ${{ runner.temp }}/production/
+          cp -r package.json README.md CHANGELOG.md LICENSE config resources lib ${{ runner.temp }}/production/
 
-      - name: 📤 上传构建产物
+      - name: 📦 准备构建分支产物
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          cd packages/core
+          pnpm pkg delete devDependencies
+          mkdir -p ${{ runner.temp }}/build-branch/
+          cp -r package.json CHANGELOG.md README.md LICENSE resources config lib ${{ runner.temp }}/build-branch/
+
+      - name: 📦 准备预览包产物
+        if: github.event_name != 'workflow_dispatch' || inputs.run_mode != 'production'
+        run: |
+          cd packages/core
+          mkdir -p ${{ runner.temp }}/preview/
+          cp -r package.json README.md CHANGELOG.md LICENSE config resources lib ${{ runner.temp }}/preview/
+
+      - name: 📤 上传正式版构建产物
+        if: needs.version-release.outputs.core_release_created == 'true' || (github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production')
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.get-package-name.outputs.PACKAGE_SHORT_NAME }}
-          path: ${{ runner.temp }}/temp/
+          name: production-build
+          path: ${{ runner.temp }}/production/
 
-  # NPM 正式发布 (仅 core 包)
+      - name: 📤 上传构建分支产物
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-branch-artifacts
+          path: ${{ runner.temp }}/build-branch/
+
+      - name: 📤 上传预览包产物
+        if: github.event_name != 'workflow_dispatch' || inputs.run_mode != 'production'
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-build
+          path: ${{ runner.temp }}/preview/
+
+      - name: ✅ 标记构建状态
+        id: build-status
+        run: echo "success=true" >> $GITHUB_OUTPUT
+
+  # NPM 正式发布
   npm-production-publish:
     runs-on: ubuntu-latest
-    needs: [version-release, production-build]
+    needs: [version-release, unified-build]
+    if: |
+      needs.unified-build.outputs.build_success == 'true' && (
+        needs.version-release.outputs.core_release_created == 'true' ||
+        (github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production') ||
+        inputs.force_npm_publish == true
+      )
     steps:
       - name: 📥 下载构建产物
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.production-build.outputs.package_short_name }}
+          name: production-build
           path: ./
 
       - name: 🚀 发布到 NPM 官方源
@@ -102,9 +282,14 @@ jobs:
 
       - name: 📊 生成发布报告
         run: |
-          echo "## 📦 发布信息" >> $GITHUB_STEP_SUMMARY
-          echo "包名: \`${{ steps.publish-to-npm.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "版本号: \`${{ steps.publish-to-npm.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "## 📦 NPM 发布成功" >> $GITHUB_STEP_SUMMARY
+          echo "- **包名:** \`${{ steps.publish-to-npm.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **版本:** \`${{ steps.publish-to-npm.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **模式:** ${{ github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production' && '🎯 手动生产发布' || '🤖 自动发布' }}" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.version-release.outputs.manual_release_notes }}" != "" ]; then
+            echo "- **发布说明:** ${{ needs.version-release.outputs.manual_release_notes }}" >> $GITHUB_STEP_SUMMARY
+          fi
 
   # 镜像源同步
   npm-mirror-sync:
@@ -115,12 +300,96 @@ jobs:
         run: |
           curl -X PUT "https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs"
 
-  # 构建分支同步 (构建所有包，但只同步 core 包)
+  # 构建分支同步
   build-branch-sync:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [unified-build]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.unified-build.outputs.build_success == 'true'
     outputs:
       build_completed: ${{ steps.build-success.outputs.completed }}
+    
+    steps:
+      - name: 📥 检出源代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📥 下载构建产物
+        uses: actions/download-artifact@v4
+        with:
+          name: build-branch-artifacts
+          path: ${{ runner.temp }}/build-artifacts/
+      
+      - name: ✅ 标记构建完成
+        id: build-success
+        run: echo "completed=true" >> $GITHUB_OUTPUT
+      
+      - name: ⚙️ 配置 Git 用户信息
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: 🔄 同步主分支最新代码
+        run: |
+          git fetch origin ${{ github.ref_name }}
+          git checkout ${{ github.ref_name }}
+          git pull origin ${{ github.ref_name }} --ff-only
+
+      - name: 🔍 检查构建分支状态
+        id: check-branch
+        run: |
+          if git ls-remote --exit-code origin build; then
+            echo "branch_exists=true" >> $GITHUB_ENV
+          else
+            echo "branch_exists=false" >> $GITHUB_ENV
+          fi
+
+      - name: 🌿 初始化构建分支
+        run: |          
+          if [ "${{ env.branch_exists }}" = "false" ]; then
+            git checkout --orphan build
+            git reset --hard
+            git clean -fd
+            git commit --allow-empty -m "初始化编译分支"
+            git push --set-upstream -f origin build
+          else
+            git fetch origin build
+            git reset --hard
+            git clean -fd
+            git reset --hard origin/build
+            git checkout build
+          fi
+
+      - name: 🗂️ 准备构建文件
+        run: |
+          find . -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} \;
+          cp -rv ${{ runner.temp }}/build-artifacts/* ./
+
+      - name: 💾 提交构建结果
+        run: |
+          git add .
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            echo "No changes detected"
+            exit 0
+          else
+            git commit -m "chore(build): 构建分支同步"
+          fi
+
+      - name: 🚀 推送到构建分支
+        uses: ad-m/github-push-action@master
+        with:
+          branch: build
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          force_with_lease: true
+
+  # 预览包发布（优先执行）
+  preview-package-publish:
+    runs-on: ubuntu-latest
+    needs: [unified-build]
+    if: needs.unified-build.outputs.build_success == 'true' && (github.event_name != 'workflow_dispatch' || inputs.run_mode != 'production')
+    outputs:
+      pkg_version: ${{ steps.version-gen.outputs.version }}
+      pnpm_install_cmd: ${{ steps.publish_pkg.outputs.pnpm_install_cmd }}
     
     steps:
       - name: 📥 检出源代码
@@ -131,328 +400,62 @@ jobs:
       - name: 📦 配置 PNPM 环境
         uses: pnpm/action-setup@v4
         with:
-          version: 9.7.1
-          run_install: |
-            - args: [--no-frozen-lockfile]
-      
-      - name: 🔨 执行完整项目构建
-        run: |
-          echo "开始构建所有包..."
-          # 构建所有包（core 和 web）
-          pnpm build
-          if [ $? -ne 0 ]; then
-            echo "构建失败，退出工作流"
-            exit 1
-          fi
-          echo "构建成功，准备复制 core 包文件..."
-          # 准备 core 包文件
-          cd packages/core
-          pnpm pkg delete devDependencies
-          mkdir -p ${{ runner.temp }}/temp/
-          # 复制所有必要文件，包括完整的 lib 目录
-          cp -r package.json CHANGELOG.md README.md LICENSE resources config lib ${{ runner.temp }}/temp/
-          echo "文件已复制到临时目录"
-
-      - name: 📤 上传构建产物
-        uses: actions/upload-artifact@v4
-        with:
-          name: sync-build-artifacts
-          path: ${{ runner.temp }}/temp/
-      
-      - name: ✅ 标记构建完成
-        id: build-success
-        run: echo "completed=true" >> $GITHUB_OUTPUT
-      
-      - name: ⚙️ 配置 Git 用户信息
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          echo "Git 用户已配置"
-
-      - name: 🔄 同步主分支最新代码
-        run: |
-          echo "获取最新的主分支..."
-          git fetch origin ${{ github.ref_name }}
-          git checkout ${{ github.ref_name }}
-          git pull origin ${{ github.ref_name }} --ff-only
-          echo "当前分支: $(git branch --show-current)"
-
-      - name: 📝 获取最新提交信息
-        id: commit-message
-        run: |
-          echo "获取最新提交消息..."
-          echo "commit_msg=$(git log origin/${{ github.ref_name }} -1 --pretty=format:'%s')" >> $GITHUB_ENV
-          echo "提交消息: ${{ env.commit_msg }}"
-
-      - name: 🔍 检查构建分支状态
-        id: check-branch
-        run: |
-          echo "检查编译分支是否存在..."
-          if git ls-remote --exit-code origin build; then
-            echo "branch_exists=true" >> $GITHUB_ENV
-            echo "编译分支存在"
-          else
-            echo "branch_exists=false" >> $GITHUB_ENV
-            echo "编译分支不存在，将创建新分支"
-          fi
-
-      - name: 🌿 初始化构建分支
-        run: |          
-          echo "开始处理编译分支..."
-          if [ "${{ env.branch_exists }}" = "false" ]; then
-            echo "创建新的编译分支..."
-            git checkout --orphan build
-            git reset --hard
-            git clean -fd
-            git commit --allow-empty -m "初始化编译分支"
-            git push --set-upstream -f origin build
-            echo "新编译分支已创建并推送"
-          else
-            echo "切换到现有编译分支..."
-            git fetch origin build
-            git reset --hard
-            git clean -fd
-            git reset --hard origin/build
-            git checkout build
-            echo "已切换到编译分支: $(git branch --show-current)"
-          fi
-
-      - name: 🗂️ 准备构建文件
-        run: |
-          echo "准备构建文件..."
-          # 清空当前目录但保留.git文件夹
-          find . -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} \;
-          echo "已清理现有文件，保留.git目录"
-          
-          # 显示临时目录中的文件
-          echo "临时目录中的文件:"
-          ls -la ${{ runner.temp }}/temp/
-          
-          # 复制构建产物到当前目录
-          echo "复制构建产物..."
-          cp -rv ${{ runner.temp }}/temp/* ./
-          
-      - name: 📋 同步必要文件
-        run: |
-          # 创建一个检查文件是否存在并检出的函数
-          checkout_if_exists() {
-            echo "检查文件: packages/core/$1"
-            # 首先检查文件是否存在于 Git 树中
-            if git ls-tree -r --name-only origin/main | grep -q "^packages/core/$1$"; then
-              echo "文件存在于 Git 中: packages/core/$1"
-              # 尝试检出文件，如果失败则跳过
-              if [ "$1" != "package.json" ]; then
-                if git checkout main -- "packages/core/$1" 2>/dev/null; then
-                  echo "✅ 已检出: packages/core/$1"
-                else
-                  echo "⚠️ 检出失败，但继续执行: packages/core/$1"
-                fi
-              else
-                echo "⏭️ 跳过检出 package.json，保留修改版本"
-              fi
-            else
-              echo "📁 文件不存在于 Git 中，跳过: packages/core/$1"
-            fi
-          }
-          
-          # 逐个检查并检出文件（添加错误处理）
-          echo "开始同步必要文件..."
-          checkout_if_exists "package.json" || true
-          checkout_if_exists "CHANGELOG.md" || true
-          checkout_if_exists "README.md" || true
-          checkout_if_exists "LICENSE" || true
-          checkout_if_exists "config" || true
-          checkout_if_exists "resources" || true
-          echo "文件同步完成"
-
-      - name: 🧹 清理开发依赖
-        run: pnpm pkg delete devDependencies
-
-      - name: 💾 提交构建结果
-        run: |
-          # 显示当前工作目录的状态
-          echo "当前工作目录状态:"
-          git status
-          
-          # 显示与暂存区的差异
-          echo "与暂存区的差异:"
-          git diff
-          
-          git add .
-          
-          # 显示已暂存的变更
-          echo "已暂存的变更:"
-          git diff --cached
-          
-          if [ -z "$(git diff --cached --name-only)" ]; then
-            echo "No changes detected"
-            exit 0
-          else
-            git commit -m "chore(build): ${{ github.event.head_commit.message }}"
-          fi
-
-      - name: 🔗 设置分支上游关联
-        run: git push --set-upstream origin build
-
-      - name: 🚀 推送到构建分支
-        uses: ad-m/github-push-action@master
-        with:
-          branch: build
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          force_with_lease: true
-          args: --set-upstream
-
-  # 预览包发布 (每次推送都执行)
-  preview-package-publish:
-    runs-on: ubuntu-latest
-    # 移除条件限制，每次推送都执行
-    steps:
-      - name: 📥 检出源代码
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+          version: 9.15.9
 
       - name: 🟢 配置 Node.js 环境
         uses: actions/setup-node@v4
         with:
-          node-version: 21
-          registry-url: "https://registry.npmjs.org"
+          node-version: 22
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
 
-      - name: 📦 配置 PNPM 环境
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.7.1
-
-      - name: ⏳ 等待构建分支同步完成
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: lewagon/wait-on-check-action@v1.3.1
-        with:
-          ref: ${{ github.ref }}
-          check-name: 'build-branch-sync'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-
-      - name: 📥 下载构建产物 (主分支)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: 📥 下载构建产物
         uses: actions/download-artifact@v4
         with:
-          name: sync-build-artifacts
-          path: ./build-output/
-
-      - name: 📦 安装项目依赖
-        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
-        run: pnpm install
-
-      - name: 🔨 执行完整项目构建
-        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
-        run: |
-          # 构建所有包（core 和 web）
-          pnpm build
-          if [ $? -ne 0 ]; then
-            echo "❌ 构建失败！" >> $GITHUB_STEP_SUMMARY
-            echo "提交哈希: $(git rev-parse --short HEAD)" >> $GITHUB_STEP_SUMMARY
-            exit 1
-          fi
-          # 准备 core 包发布
-          cd packages/core
-          pnpm pkg delete devDependencies
-          # 回到根目录准备发布
-          cd ../..
-          # 复制构建产物到根目录
-          cp -r packages/core/lib ./
-          cp -r packages/core/config ./
-          cp -r packages/core/resources ./
-          cp packages/core/package.json ./
-          cp packages/core/README.md ./
-          cp packages/core/CHANGELOG.md ./
-          cp packages/core/LICENSE ./
+          name: preview-build
+          path: ./
 
       - name: 🏷️ 生成版本标识
+        id: version-gen
         run: |
-          # 基础信息
-          COMMIT_HASH=$(git rev-parse HEAD)
-          SHORT_COMMIT_HASH=$(git rev-parse --short HEAD)
-          COMMIT_COUNT=$(git rev-list --count HEAD)
-          TIMESTAMP=$(date +%s)
-          
-          # 分支信息
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BRANCH_NAME="${{ github.head_ref }}"
-            PR_NUMBER="${{ github.event.number }}"
-            echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
-          else
-            BRANCH_NAME="${{ github.ref_name }}"
-          fi
-          
-          # 导出环境变量
-          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
-          echo "SHORT_COMMIT_HASH=$SHORT_COMMIT_HASH" >> $GITHUB_ENV
-          echo "COMMIT_COUNT=$COMMIT_COUNT" >> $GITHUB_ENV
-          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
-          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
-          echo "REPO_URL=https://github.com/${{ github.repository }}/tree/$COMMIT_HASH" >> $GITHUB_ENV
-          
-          echo "提交哈希: $SHORT_COMMIT_HASH"
-          echo "提交计数: $COMMIT_COUNT"
-          echo "分支名称: $BRANCH_NAME"
-
-      - name: 📦 准备预览包
-        run: |
-          # 如果是main分支提交，复制构建产物；否则使用当前目录
-          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "使用构建分支同步的产物"
-            cp -r build-output/* ./
-          else
-            echo "使用当前构建的产物"
-          fi
-          
-          # 获取版本信息
           CURRENT_VERSION=$(node -p "require('./package.json').version")
-          SHORT_COMMIT_HASH=$(git rev-parse --short HEAD)
           COMMIT_COUNT=$(git rev-list --count HEAD)
           TIMESTAMP=$(date +%s)
           
-          # 解析当前版本号
           MAJOR=$(echo $CURRENT_VERSION | cut -d. -f1)
           MINOR=$(echo $CURRENT_VERSION | cut -d. -f2)
           PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
           
-          # 根据不同场景生成版本号
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            # 检查是否为 release-please 创建的 PR
             if [[ "${{ github.head_ref }}" == release-please--branches--* ]]; then
-              # Release-please PR：rc.月日时分
               TIME_SUFFIX=$(TZ='Asia/Shanghai' date +%m%d%H%M)
               NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-rc.${TIME_SUFFIX}"
             else
-              # 普通 PR 版本：alpha.PR编号.提交序号
               PR_NUMBER=${{ github.event.number }}
               PR_COMMIT_COUNT=$(git rev-list --count HEAD ^origin/main)
               NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-alpha.${PR_NUMBER}.${PR_COMMIT_COUNT}"
             fi
           elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            # 主分支：beta.提交计数.时间戳后4位
             TIME_SUFFIX=$(echo $TIMESTAMP | tail -c 5)
             NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-beta.${COMMIT_COUNT}.${TIME_SUFFIX}"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TIME_SUFFIX=$(TZ='Asia/Shanghai' date +%m%d%H%M)
+            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-manual.${TIME_SUFFIX}"
           else
-            # 其他分支：dev.分支名.提交哈希
             BRANCH_NAME=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
-            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-dev.${BRANCH_NAME}.${SHORT_COMMIT_HASH}"
+            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-dev.${BRANCH_NAME}.${{ needs.unified-build.outputs.short_commit_hash }}"
           fi
           
           npm version $NEW_VERSION --no-git-tag-version
-          echo "PKG_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-          echo "生成的版本号: $NEW_VERSION"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: 🧹 清理开发依赖
+        run: pnpm pkg delete devDependencies
 
       - name: 🚀 发布预览包
         id: publish_pkg
         run: |
-          # 记录开始时间
-          START_TIME=$(date +%s)
-          
           pnpm dlx pkg-pr-new publish --json output.json --comment=update --compact --packageManager=pnpm > pkg-output.txt 2>&1
-          echo "命令输出内容："
-          cat pkg-output.txt
           
           ACTUAL_INSTALL_URL=$(grep -oE 'https://pkg\.pr\.new/[^[:space:]`]+' pkg-output.txt | head -n 1 || echo "")
           
@@ -460,175 +463,593 @@ jobs:
             PNPM_INSTALL_CMD="pnpm add ${ACTUAL_INSTALL_URL} -w"
           else
             PNPM_INSTALL_CMD="未找到安装命令"
-            ACTUAL_INSTALL_URL="未找到安装URL"
           fi
           
           echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
-          echo "install_url=$ACTUAL_INSTALL_URL" >> $GITHUB_OUTPUT
-          
-          # 生成简化的安装URL
-          REPO_NAME="${{ github.event.repository.name }}"
-          SIMPLIFIED_URL="https://pkg.pr.new/${REPO_NAME}@${{ env.SHORT_COMMIT_HASH }}"
-          echo "simplified_url=$SIMPLIFIED_URL" >> $GITHUB_OUTPUT
-          
-          # 获取 Stackblitz URL
-          STACKBLITZ_URL=""
-          if [ -f "output.json" ]; then
-            STACKBLITZ_URL=$(node -p "try { const data = require('./output.json'); data.templates && data.templates[0] ? data.templates[0].url : ''; } catch(e) { ''; }" || echo "")
-          fi
-          echo "stackblitz_url=$STACKBLITZ_URL" >> $GITHUB_OUTPUT
-          
-          # 计算时间（转换为 CST 时区）
-          PACK_TIME=$(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S')
-          echo "pack_time=$PACK_TIME" >> $GITHUB_OUTPUT
-          
-          # 计算当前时间戳（用于计算时间差）
-          CURRENT_TIMESTAMP=$(date +%s)
-          echo "current_timestamp=$CURRENT_TIMESTAMP" >> $GITHUB_OUTPUT
-          
-          # 计算构建耗时
-          END_TIME=$(date +%s)
-          BUILD_DURATION=$((END_TIME - START_TIME))
-          BUILD_DURATION_MIN=$((BUILD_DURATION / 60))
-          BUILD_DURATION_SEC=$((BUILD_DURATION % 60))
-          if [ $BUILD_DURATION_MIN -gt 0 ]; then
-            DURATION_TEXT="${BUILD_DURATION_MIN}分${BUILD_DURATION_SEC}秒"
-          else
-            DURATION_TEXT="${BUILD_DURATION_SEC}秒"
-          fi
-          echo "build_duration=$DURATION_TEXT" >> $GITHUB_OUTPUT
-          
-          # 获取准确的 Node.js 版本
-          NODE_VERSION=$(node --version)
-          echo "node_version=$NODE_VERSION" >> $GITHUB_OUTPUT
-          
-          # 获取准确的 PNPM 版本
-          PNPM_VERSION=$(pnpm --version)
-          echo "pnpm_version=$PNPM_VERSION" >> $GITHUB_OUTPUT
-          
-          # 获取提交信息
-          COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')
-          COMMIT_AUTHOR=$(git log -1 --pretty=format:'%an')
-          echo "commit_message=$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
-          echo "commit_author=$COMMIT_AUTHOR" >> $GITHUB_OUTPUT
-          
-          # 获取文件变更统计
-          FILES_CHANGED=$(git diff --name-only HEAD~1 HEAD | wc -l)
-          LINES_ADDED=$(git diff --numstat HEAD~1 HEAD | awk '{added += $1} END {print added+0}')
-          LINES_DELETED=$(git diff --numstat HEAD~1 HEAD | awk '{deleted += $2} END {print deleted+0}')
-          echo "files_changed=$FILES_CHANGED" >> $GITHUB_OUTPUT
-          echo "lines_added=$LINES_ADDED" >> $GITHUB_OUTPUT
-          echo "lines_deleted=$LINES_DELETED" >> $GITHUB_OUTPUT
-          
-          echo "## 📦 预览包发布成功" >> $GITHUB_STEP_SUMMARY
-          echo "版本号: \`${{ env.PKG_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "安装命令:" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "$PNPM_INSTALL_CMD" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          echo "## 完整输出" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat pkg-output.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
 
-      - name: 💬 更新 PR 评论
+      - name: 💬 发布 PR 评论
         if: github.event_name == 'pull_request'
         uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
-            ## 📦 预览包发布成功 
+            ## 📦 预览包发布成功
             
             ### 🏷️ 包信息
-            - **版本号:** `${{ env.PKG_VERSION }}`
-            - **提交哈希:** [`${{ env.SHORT_COMMIT_HASH }}`](${{ env.REPO_URL }})
-            - **分支:** `${{ github.head_ref || github.ref_name }}`
+            - **版本:** `${{ steps.version-gen.outputs.version }}`
+            - **提交:** [`${{ needs.unified-build.outputs.short_commit_hash }}`](https://github.com/${{ github.repository }}/tree/${{ needs.unified-build.outputs.commit_hash }})
             
-            ### 📥 安装方式
+            ### 📥 安装命令
             ```bash
-            # 推荐使用 pnpm 安装
             ${{ steps.publish_pkg.outputs.pnpm_install_cmd }}
             ```
             
-            ### 🚀 快速体验
-            ${{ steps.publish_pkg.outputs.stackblitz_url && format('- [🌐 在 Stackblitz 中打开]({0})', steps.publish_pkg.outputs.stackblitz_url) || '- 🌐 Stackblitz 链接暂不可用' }}
-            - [📋 查看构建日志](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-            - [🔍 查看提交详情](${{ env.REPO_URL }})
+            ### 🖥️ Windows 桌面应用
+            ${{ inputs.skip_desktop == true && '- **状态:** ⏭️ 已跳过构建' || '- **状态:** 🔄 构建中...' }}
             
-            ### 📊 本次变更
-            - **提交信息:** ${{ steps.publish_pkg.outputs.commit_message }}
-            - **提交作者:** ${{ steps.publish_pkg.outputs.commit_author }}
-            - **文件变更:** ${{ steps.publish_pkg.outputs.files_changed }} 个文件
-            - **代码变更:** +${{ steps.publish_pkg.outputs.lines_added }} -${{ steps.publish_pkg.outputs.lines_deleted }} 行
-            
-            ### ⏰ 时间信息
-            - **📦 打包时间:** `${{ steps.publish_pkg.outputs.pack_time }} (CST)`
-            - **🔄 评论更新:** `${{ steps.publish_pkg.outputs.pack_time }} (CST)`
-            - **⚡ 构建耗时:** ${{ steps.publish_pkg.outputs.build_duration }}
-            
-            ### 🛠️ 环境信息
-            - **Node.js:** `${{ steps.publish_pkg.outputs.node_version }}`
-            - **PNPM:** `${{ steps.publish_pkg.outputs.pnpm_version }}`
-            - **构建平台:** `ubuntu-latest`
-            - **工作流:** `${{ github.workflow }}`
+            ### 📱 Android 应用
+            ${{ inputs.skip_desktop == true && '- **状态:** ⏭️ 已跳过构建' || '- **状态:** 🔄 构建中...' }}
+            ${{ inputs.skip_desktop != true && '- **架构:** aarch64' || '' }}
             
             ---
-            
-            <details>
-            <summary>🔧 高级选项</summary>
-            
-            #### 📋 完整安装 URL
-            ```
-            ${{ steps.publish_pkg.outputs.install_url }}
-            ```
-            
-            #### 🏃‍♂️ 快速测试命令
-            ```bash
-            # 创建测试目录
-            mkdir test-${{ env.SHORT_COMMIT_HASH }}
-            cd test-${{ env.SHORT_COMMIT_HASH }}
-            
-            # 初始化项目
-            npm init -y
-            
-            # 安装预览包
-            ${{ steps.publish_pkg.outputs.pnpm_install_cmd }}
-            
-            # 测试导入
-            node -e "console.log(require('${{ github.event.repository.name }}'))"
-            ```
-            
-            </details>
-            
-            > 💡 **提示:** 此评论会在每次推送新提交时自动更新，包含最新的构建信息
+            ${{ inputs.skip_desktop != true && '> 💡 桌面和移动应用构建完成后将自动更新此评论' || '' }}
           comment-tag: published-packages
           mode: upsert
-          reactions: rocket, eyes, hooray
+          reactions: rocket
 
-      - name: 上传NPM包信息
-        uses: actions/upload-artifact@v4
+  # 桌面应用 EXE 构建
+  desktop-build:
+    runs-on: ubuntu-latest
+    needs: [version-release, unified-build, preview-package-publish]
+    if: |
+      needs.unified-build.outputs.build_success == 'true' && 
+      (github.event_name != 'workflow_dispatch' || inputs.skip_desktop != true) &&
+      (needs.preview-package-publish.result == 'success' || needs.version-release.outputs.should_upload_release == 'true')
+    outputs:
+      desktop_build_success: ${{ steps.desktop-build.outputs.success }}
+      desktop_version: ${{ steps.sync-desktop-version.outputs.desktop_version }}
+      desktop_exe_name: ${{ steps.desktop-build.outputs.exe_name }}
+      desktop_artifact_url: ${{ steps.desktop-summary.outputs.artifact_url }}
+    
+    steps:
+      - name: 📥 检出源代码
+        uses: actions/checkout@v4
         with:
-          name: npm-package-info
-          path: |
-            pkg-output.txt
-            output.json
+          fetch-depth: 0
 
-      - name: 创建分发包
+      - name: 🔧 安装构建依赖
         run: |
-          mkdir -p temp-package
-          cp -r lib temp-package/
-          cp -r resources temp-package/
-          cp package.json CHANGELOG.md README.md LICENSE temp-package/
-          cp -r config temp-package/ || true
-          cd temp-package
-          zip -r ../build.zip .
-          cd ..
-          rm -rf temp-package
+          sudo apt-get update
+          sudo apt-get install -y gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 nsis build-essential
 
-      - name: 上传分发包
+      - name: 🦀 安装 Rust 工具链
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          targets: x86_64-pc-windows-gnu
+
+      - name: 💾 缓存 Rust 依赖
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: packages/web/src-tauri
+          cache-on-failure: true
+          shared-key: ${{ env.APP_NAME }}-desktop-build
+
+      - name: 📦 配置 PNPM 环境
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - name: 🟢 配置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
+
+      - name: 📦 安装依赖
+        run: pnpm install
+
+      - name: 🔄 同步版本号到桌面应用配置
+        id: sync-desktop-version
+        run: |
+          CORE_VERSION="${{ needs.version-release.outputs.core_version }}"
+          echo "同步版本号: $CORE_VERSION"
+          
+          # 更新 tauri.conf.json 中的版本号
+          configPath="packages/web/src-tauri/tauri.conf.json"
+          jq --arg version "$CORE_VERSION" '.version = $version' "$configPath" > tmp.json && mv tmp.json "$configPath"
+          
+          # 更新 Cargo.toml 中的版本号
+          cargoPath="packages/web/src-tauri/Cargo.toml"
+          sed -i "s/^version = \".*\"/version = \"$CORE_VERSION\"/" "$cargoPath"
+          
+          echo "desktop_version=$CORE_VERSION" >> $GITHUB_OUTPUT
+          echo "✅ 版本号已同步为: $CORE_VERSION"
+
+      - name: 🔧 配置交叉编译环境
+        run: |
+          # 设置 MinGW 工具链环境变量
+          echo "CC_x86_64_pc_windows_gnu=x86_64-w64-mingw32-gcc" >> $GITHUB_ENV
+          echo "CXX_x86_64_pc_windows_gnu=x86_64-w64-mingw32-g++" >> $GITHUB_ENV
+          echo "AR_x86_64_pc_windows_gnu=x86_64-w64-mingw32-ar" >> $GITHUB_ENV
+          echo "CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc" >> $GITHUB_ENV
+          
+          # 验证工具链
+          x86_64-w64-mingw32-gcc --version
+          x86_64-w64-mingw32-g++ --version
+
+      - name: 📱 构建桌面应用 (Windows)
+        id: desktop-build
+        run: |
+          echo "开始构建桌面应用..."
+          
+          cd packages/web
+          
+          # 设置详细日志
+          export RUST_LOG=info
+          
+          # 构建桌面应用 (使用 GNU 工具链)
+          echo "🚀 开始构建 (使用 GNU 工具链)..."
+          if pnpm tauri build --target x86_64-pc-windows-gnu; then
+            echo "success=true" >> $GITHUB_OUTPUT
+            
+            # 查找安装程序
+            INSTALLER_PATH=$(find "$PWD/src-tauri/target/x86_64-pc-windows-gnu/release/bundle" -type f \( -name "*.exe" -o -name "*.msi" \) 2>/dev/null | head -1)
+            
+            if [ -n "$INSTALLER_PATH" ]; then
+              INSTALLER_NAME=$(basename "$INSTALLER_PATH")
+              RELATIVE_PATH=$(realpath --relative-to="$PWD" "$INSTALLER_PATH")
+              echo "exe_path=$RELATIVE_PATH" >> $GITHUB_OUTPUT
+              echo "exe_name=$INSTALLER_NAME" >> $GITHUB_OUTPUT
+              echo "✅ 找到安装程序: $INSTALLER_PATH"
+            else
+              echo "❌ 未找到任何安装程序"
+              echo "🔍 列出构建产物:"
+              find src-tauri/target -name "*.exe" -o -name "*.msi" 2>/dev/null || echo "无构建产物"
+              echo "success=false" >> $GITHUB_OUTPUT
+              exit 1
+            fi
+          else
+            echo "❌ 桌面应用构建失败"
+            echo "success=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: 📤 上传桌面应用构建产物
+        if: steps.desktop-build.outputs.success == 'true'
+        id: upload-desktop-artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-zip
-          path: build.zip
+          name: ${{ steps.desktop-build.outputs.exe_name }}
+          path: packages/web/${{ steps.desktop-build.outputs.exe_path }}
+          retention-days: 30
+          compression-level: 0
+
+      - name: 🚀 上传到Release
+        if: |
+          steps.desktop-build.outputs.success == 'true' && 
+          needs.version-release.outputs.should_upload_release == 'true' && 
+          needs.version-release.outputs.release_tag_name != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.version-release.outputs.release_tag_name }}
+          files: packages/web/${{ steps.desktop-build.outputs.exe_path }}
+          name: ${{ steps.desktop-build.outputs.exe_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📊 生成桌面应用信息
+        if: steps.desktop-build.outputs.success == 'true'
+        id: desktop-summary
+        run: |
+          ARTIFACT_ID="${{ steps.upload-desktop-artifact.outputs.artifact-id }}"
+          ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/$ARTIFACT_ID"
+          echo "artifact_url=$ARTIFACT_URL" >> $GITHUB_OUTPUT
+          
+          echo "## 🖥️ Windows桌面应用构建完成" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📱 应用信息" >> $GITHUB_STEP_SUMMARY
+          echo "- **平台:** Windows x64" >> $GITHUB_STEP_SUMMARY
+          echo "- **文件名:** \`${{ steps.desktop-build.outputs.exe_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **版本:** \`${{ steps.sync-desktop-version.outputs.desktop_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **基于Core版本:** \`${{ needs.version-release.outputs.core_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📥 下载方式" >> $GITHUB_STEP_SUMMARY
+          echo "- 📦 **直接下载:** [点击下载 ${{ steps.desktop-build.outputs.exe_name }}]($ARTIFACT_URL)" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.version-release.outputs.should_upload_release }}" = "true" ] && [ "${{ needs.version-release.outputs.release_tag_name }}" != "" ]; then
+            echo "- 🚀 **Release下载:** [点击这里下载最新版本](https://github.com/${{ github.repository }}/releases/tag/${{ needs.version-release.outputs.release_tag_name }})" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+  # Android APK 构建
+  android-build:
+    runs-on: ubuntu-latest
+    needs: [version-release, unified-build, preview-package-publish]
+    if: |
+      needs.unified-build.outputs.build_success == 'true' && 
+      (github.event_name != 'workflow_dispatch' || inputs.skip_desktop != true) &&
+      (needs.preview-package-publish.result == 'success' || needs.version-release.outputs.should_upload_release == 'true')
+    outputs:
+      android_build_success: ${{ steps.android-build.outputs.success }}
+      android_version: ${{ steps.sync-android-version.outputs.android_version }}
+      android_apk_name: ${{ steps.android-build.outputs.apk_name }}
+      android_artifact_url: ${{ steps.android-summary.outputs.artifact_url }}
+    
+    steps:
+      - name: 📥 检出源代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🤖 配置 Gradle 环境
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: wrapper
+
+      - name: 🤖 配置 Android 开发环境
+        uses: android-actions/setup-android@v3
+
+      - name: 🦀 安装 Rust 工具链
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+
+      - name: 💾 缓存 Rust 依赖和构建产物
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: packages/web/src-tauri
+          cache-on-failure: true
+          shared-key: ${{ env.APP_NAME }}-android-build
+
+      - name: 💾 缓存 Gradle 依赖和构建缓存
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            packages/web/src-tauri/gen/android/.gradle
+            packages/web/src-tauri/gen/android/app/build
+            packages/web/src-tauri/gen/android/app/.cxx
+          key: gradle-${{ runner.os }}-${{ hashFiles('packages/web/src-tauri/gen/android/**/*.gradle*', 'packages/web/src-tauri/gen/android/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: 💾 缓存 Android 构建产物
+        uses: actions/cache@v4
+        with:
+          path: |
+            packages/web/src-tauri/gen/android/app/build/intermediates
+            packages/web/src-tauri/gen/android/app/build/generated
+            packages/web/src-tauri/gen/android/app/build/kotlin
+            packages/web/src-tauri/gen/android/app/build/tmp
+            packages/web/src-tauri/gen/android/app/src/main/jniLibs
+          key: android-build-${{ runner.os }}-${{ hashFiles('packages/web/src-tauri/Cargo.toml', 'packages/web/src-tauri/src/**/*.rs') }}
+          restore-keys: |
+            android-build-${{ runner.os }}-
+
+      - name: 🔍 检查缓存恢复状态
+        run: |
+          echo "=== Rust Target 目录状态 ==="
+          if [ -d "packages/web/src-tauri/target" ]; then
+            echo "✅ Rust target目录存在"
+            ls -la packages/web/src-tauri/target/
+            if [ -d "packages/web/src-tauri/target/aarch64-linux-android" ]; then
+              echo "✅ Android target存在"
+              ls -la packages/web/src-tauri/target/aarch64-linux-android/
+            else
+              echo "❌ Android target不存在，需要重新构建"
+            fi
+          else
+            echo "❌ Rust target目录不存在"
+          fi
+          
+          echo "=== Android 构建缓存状态 ==="
+          if [ -d "packages/web/src-tauri/gen/android/app/build" ]; then
+            echo "✅ Android构建目录存在"
+            ls -la packages/web/src-tauri/gen/android/app/build/
+          else
+            echo "❌ Android构建目录不存在"
+          fi
+          
+          echo "=== JNI库状态 ==="
+          if [ -d "packages/web/src-tauri/gen/android/app/src/main/jniLibs" ]; then
+            echo "✅ JNI库目录存在"
+            find packages/web/src-tauri/gen/android/app/src/main/jniLibs -name "*.so" | head -10
+          else
+            echo "❌ JNI库目录不存在"
+          fi
+
+      - name: ☕ 配置 Java 环境
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 📦 配置 PNPM 环境
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - name: 🟢 配置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
+
+      - name: 📦 安装依赖
+        run: pnpm install
+
+      - name: 🔧 配置 Android 构建环境
+        run: |
+          # 设置 Android 环境变量
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+          
+          # 明确设置NDK路径
+          NDK_VERSION="28.2.13676358"
+          NDK_PATH="$ANDROID_SDK_ROOT/ndk/$NDK_VERSION"
+          
+          # 验证NDK是否存在
+          if [ ! -d "$NDK_PATH" ]; then
+            echo "❌ NDK $NDK_VERSION 未找到，尝试安装..."
+            $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "ndk;$NDK_VERSION"
+            
+            # 再次检查
+            if [ ! -d "$NDK_PATH" ]; then
+              echo "❌ NDK 安装失败，查找可用版本..."
+              ls -la $ANDROID_SDK_ROOT/ndk/
+              # 使用找到的第一个NDK版本
+              NDK_PATH=$(find $ANDROID_SDK_ROOT/ndk -maxdepth 1 -type d -name "*.*.*" | head -1)
+              if [ -z "$NDK_PATH" ]; then
+                echo "❌ 未找到任何NDK版本"
+                exit 1
+              fi
+              NDK_VERSION=$(basename "$NDK_PATH")
+            fi
+          fi
+          
+          echo "NDK_HOME=$NDK_PATH" >> $GITHUB_ENV
+          echo "ANDROID_NDK_ROOT=$NDK_PATH" >> $GITHUB_ENV
+          echo "✅ NDK 路径设置为: $NDK_PATH (版本: $NDK_VERSION)"
+          
+          # 验证链接器是否存在
+          LINKER_PATH="$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android36-clang"
+          if [ ! -f "$LINKER_PATH" ]; then
+            echo "❌ 链接器不存在: $LINKER_PATH"
+            echo "查找可用的链接器..."
+            find $NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/ -name "aarch64-linux-android*-clang" | head -5
+            
+            # 尝试使用可用的API级别
+            AVAILABLE_LINKER=$(find $NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/ -name "aarch64-linux-android*-clang" | head -1)
+            if [ -n "$AVAILABLE_LINKER" ]; then
+              API_LEVEL=$(basename "$AVAILABLE_LINKER" | sed 's/aarch64-linux-android\([0-9]*\)-clang/\1/')
+              echo "✅ 使用可用的API级别: $API_LEVEL"
+              LINKER_PATH="$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android${API_LEVEL}-clang"
+            else
+              echo "❌ 未找到任何aarch64链接器"
+              exit 1
+            fi
+          fi
+          
+          # 配置 Rust 交叉编译工具链
+          echo "CC_aarch64_linux_android=$LINKER_PATH" >> $GITHUB_ENV
+          echo "CXX_aarch64_linux_android=${LINKER_PATH}++" >> $GITHUB_ENV
+          echo "AR_aarch64_linux_android=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar" >> $GITHUB_ENV
+          echo "CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$LINKER_PATH" >> $GITHUB_ENV
+          
+          echo "✅ Rust交叉编译环境配置完成"
+
+      # 同步版本号到 Android 配置
+      - name: 🔄 同步版本号到 Android 应用配置
+        id: sync-android-version
+        run: |
+          CORE_VERSION="${{ needs.version-release.outputs.core_version }}"
+          echo "同步版本号: $CORE_VERSION"
+          
+          # 更新 tauri.conf.json 中的版本号
+          configPath="packages/web/src-tauri/tauri.conf.json"
+          jq --arg version "$CORE_VERSION" '.version = $version' "$configPath" > tmp.json && mv tmp.json "$configPath"
+          
+          # 更新 Cargo.toml 中的版本号
+          cargoPath="packages/web/src-tauri/Cargo.toml"
+          sed -i "s/^version = \".*\"/version = \"$CORE_VERSION\"/" "$cargoPath"
+          
+          echo "android_version=$CORE_VERSION" >> $GITHUB_OUTPUT
+          echo "✅ Android 版本号已同步为: $CORE_VERSION"
+
+      - name: 📱 构建 Android APK (aarch64)
+        id: android-build
+        run: |
+          echo "开始构建 Android APK (aarch64 架构)..."
+          
+          cd packages/web
+          
+          # 构建Android APK，如果失败立即退出
+          if pnpm build:android; then
+            echo "success=true" >> $GITHUB_OUTPUT
+            
+            # 查找构建产物
+            APK_PATH=$(find src-tauri/gen/android -name "*.apk" | head -1)
+            
+            if [ -n "$APK_PATH" ]; then
+              APK_NAME=$(basename "$APK_PATH")
+              echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
+              echo "apk_name=$APK_NAME" >> $GITHUB_OUTPUT
+              echo "找到 APK 文件: $APK_PATH"
+              echo "文件名: $APK_NAME"
+            else
+              echo "❌ 未找到 APK 文件"
+              echo "success=false" >> $GITHUB_OUTPUT
+              exit 1  # 立即终止
+            fi
+          else
+            echo "❌ Android APK 构建失败"
+            echo "success=false" >> $GITHUB_OUTPUT
+            exit 1  # 立即终止
+          fi
+
+      - name: 📤 上传 Android APK 构建产物
+        if: steps.android-build.outputs.success == 'true'
+        id: upload-android-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.android-build.outputs.apk_name }}
+          path: packages/web/${{ steps.android-build.outputs.apk_path }}
+          retention-days: 30
+          compression-level: 0
+
+      - name: 🚀 上传 APK 到 Release
+        if: |
+          steps.android-build.outputs.success == 'true' && 
+          needs.version-release.outputs.should_upload_release == 'true' && 
+          needs.version-release.outputs.release_tag_name != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.version-release.outputs.release_tag_name }}
+          files: packages/web/${{ steps.android-build.outputs.apk_path }}
+          name: ${{ steps.android-build.outputs.apk_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📊 生成 Android 应用信息
+        if: steps.android-build.outputs.success == 'true'
+        id: android-summary
+        run: |
+          ARTIFACT_ID="${{ steps.upload-android-artifact.outputs.artifact-id }}"
+          ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/$ARTIFACT_ID"
+          echo "artifact_url=$ARTIFACT_URL" >> $GITHUB_OUTPUT
+          
+          echo "## 📱 Android APK 构建完成" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📱 应用信息" >> $GITHUB_STEP_SUMMARY
+          echo "- **平台:** Android (aarch64)" >> $GITHUB_STEP_SUMMARY
+          echo "- **文件名:** \`${{ steps.android-build.outputs.apk_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **版本:** \`${{ steps.sync-android-version.outputs.android_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **基于Core版本:** \`${{ needs.version-release.outputs.core_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📥 下载方式" >> $GITHUB_STEP_SUMMARY
+          echo "- 📦 **直接下载:** [点击下载 ${{ steps.android-build.outputs.apk_name }}]($ARTIFACT_URL)" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.version-release.outputs.should_upload_release }}" = "true" ] && [ "${{ needs.version-release.outputs.release_tag_name }}" != "" ]; then
+            echo "- 🚀 **Release下载:** [点击这里下载最新版本](https://github.com/${{ github.repository }}/releases/tag/${{ needs.version-release.outputs.release_tag_name }})" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # 桌面应用构建完成后立即更新评论
+  update-pr-comment-desktop:
+    runs-on: ubuntu-latest
+    needs: [unified-build, preview-package-publish, desktop-build]
+    if: github.event_name == 'pull_request' && always() && needs.desktop-build.result != 'skipped'
+    steps:
+      - name: 💬 更新桌面应用构建状态
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: |
+            ## 📦 预览包发布成功
+            
+            ### 🏷️ 包信息
+            - **版本:** `${{ needs.preview-package-publish.outputs.pkg_version }}`
+            - **提交:** [`${{ needs.unified-build.outputs.short_commit_hash }}`](https://github.com/${{ github.repository }}/tree/${{ needs.unified-build.outputs.commit_hash }})
+            
+            ### 📥 安装命令
+            ```bash
+            ${{ needs.preview-package-publish.outputs.pnpm_install_cmd }}
+            ```
+            
+            ### 🖥️ Windows 桌面应用
+            ${{ needs.desktop-build.result == 'success' && '- **状态:** ✅ 构建成功' || '- **状态:** ❌ 构建失败' }}
+            ${{ needs.desktop-build.result == 'success' && format('- **版本:** `{0}`', needs.desktop-build.outputs.desktop_version) || '' }}
+            ${{ needs.desktop-build.result == 'success' && format('- **下载:** [点击下载]({0})', needs.desktop-build.outputs.desktop_artifact_url) || '' }}
+            
+            ### 📱 Android 应用
+            - **状态:** 🔄 构建中...
+            - **架构:** aarch64
+            
+            ---
+            > 💡 Android 应用构建完成后将自动更新此评论
+          comment-tag: published-packages
+          mode: upsert
+          reactions: rocket
+
+  # Android应用构建完成后更新评论
+  update-pr-comment-android:
+    runs-on: ubuntu-latest
+    needs: [unified-build, preview-package-publish, desktop-build, android-build]
+    if: github.event_name == 'pull_request' && always() && needs.android-build.result != 'skipped'
+    steps:
+      - name: 💬 更新最终构建状态
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: |
+            ## 📦 预览包发布成功
+            
+            ### 🏷️ 包信息
+            - **版本:** `${{ needs.preview-package-publish.outputs.pkg_version }}`
+            - **提交:** [`${{ needs.unified-build.outputs.short_commit_hash }}`](https://github.com/${{ github.repository }}/tree/${{ needs.unified-build.outputs.commit_hash }})
+            
+            ### 📥 安装命令
+            ```bash
+            ${{ needs.preview-package-publish.outputs.pnpm_install_cmd }}
+            ```
+            
+            ### 🖥️ Windows 桌面应用
+            ${{ needs.desktop-build.result == 'success' && '- **状态:** ✅ 构建成功' || (needs.desktop-build.result == 'skipped' && '- **状态:** ⏭️ 已跳过构建' || '- **状态:** ❌ 构建失败') }}
+            ${{ needs.desktop-build.result == 'success' && format('- **版本:** `{0}`', needs.desktop-build.outputs.desktop_version) || '' }}
+            ${{ needs.desktop-build.result == 'success' && format('- **下载:** [点击下载]({0})', needs.desktop-build.outputs.desktop_artifact_url) || '' }}
+            
+            ### 📱 Android 应用
+            ${{ needs.android-build.result == 'success' && '- **状态:** ✅ 构建成功' || '- **状态:** ❌ 构建失败' }}
+            ${{ needs.android-build.result == 'success' && format('- **版本:** `{0}`', needs.android-build.outputs.android_version) || '' }}
+            ${{ needs.android-build.result == 'success' && format('- **架构:** aarch64') || '' }}
+            ${{ needs.android-build.result == 'success' && format('- **下载:** [点击下载]({0})', needs.android-build.outputs.android_artifact_url) || '' }}
+            
+            ---
+          comment-tag: published-packages
+          mode: upsert
+          reactions: rocket, hooray
+
+  build-summary:
+    runs-on: ubuntu-latest
+    needs: [unified-build, preview-package-publish, desktop-build, android-build]
+    if: always() && needs.unified-build.outputs.build_success == 'true'
+    steps:
+      - name: 📊 生成完整构建摘要
+        run: |
+          echo "# 🚀 构建完成摘要" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # NPM 包信息
+          if [ "${{ needs.preview-package-publish.result }}" = "success" ]; then
+            echo "## 📦 NPM 预览包" >> $GITHUB_STEP_SUMMARY
+            echo "- **版本:** \`${{ needs.preview-package-publish.outputs.pkg_version }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "- **安装命令:** \`${{ needs.preview-package-publish.outputs.pnpm_install_cmd }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # 桌面应用信息
+          if [ "${{ needs.desktop-build.result }}" = "success" ]; then
+            echo "## 🖥️ Windows 桌面应用" >> $GITHUB_STEP_SUMMARY
+            echo "- **状态:** ✅ 构建成功" >> $GITHUB_STEP_SUMMARY
+            echo "- **版本:** \`${{ needs.desktop-build.outputs.desktop_version }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "- **下载:** [点击下载](${{ needs.desktop-build.outputs.desktop_artifact_url }})" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.desktop-build.result }}" = "failure" ]; then
+            echo "## 🖥️ Windows 桌面应用" >> $GITHUB_STEP_SUMMARY
+            echo "- **状态:** ❌ 构建失败" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Android 应用信息
+          if [ "${{ needs.android-build.result }}" = "success" ]; then
+            echo "## 📱 Android 应用" >> $GITHUB_STEP_SUMMARY
+            echo "- **状态:** ✅ 构建成功" >> $GITHUB_STEP_SUMMARY
+            echo "- **版本:** \`${{ needs.android-build.outputs.android_version }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "- **架构:** aarch64" >> $GITHUB_STEP_SUMMARY
+            echo "- **下载:** [点击下载](${{ needs.android-build.outputs.android_artifact_url }})" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.android-build.result }}" = "failure" ]; then
+            echo "## 📱 Android 应用" >> $GITHUB_STEP_SUMMARY
+            echo "- **状态:** ❌ 构建失败" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi

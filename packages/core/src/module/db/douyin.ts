@@ -771,6 +771,12 @@ export class DouyinDBBase {
     }
 
     const { filterMode, filterWords, filterTags } = await this.getFilterConfig(sec_uid)
+    logger.debug(`
+      获取用户${PushItem.remark}（${PushItem.sec_uid}）的过滤配置：
+      过滤模式：${filterMode}
+      过滤词：${filterWords}
+      过滤标签：${filterTags}
+      `)
     const desc = PushItem.Detail_Data.desc ?? ''
 
     // 检查内容中是否包含过滤词
@@ -784,8 +790,8 @@ export class DouyinDBBase {
     logger.debug(`
       作者：${PushItem.remark}
       检查内容：${desc}
-      命中词：${filterWords.join(', ')}
-      命中标签：${filterTags.join(', ')}
+      命中词：[${filterWords.join('], [')}]
+      命中标签：[${filterTags.join('], [')}]
       过滤模式：${filterMode}
       是否过滤：${(hasFilterWord || hasFilterTag) ? logger.red(`${hasFilterWord || hasFilterTag}`) : logger.green(`${hasFilterWord || hasFilterTag}`)}
       作品地址：${logger.green(`https://www.douyin.com/video/${PushItem.Detail_Data.aweme_id}`)}
@@ -794,14 +800,33 @@ export class DouyinDBBase {
     // 根据过滤模式决定是否过滤
     if (filterMode === 'blacklist') {
       // 黑名单模式：如果包含过滤词或过滤标签，则过滤
-      return hasFilterWord || hasFilterTag
+      if (hasFilterWord || hasFilterTag) {
+        logger.warn(`
+          作品内容命中黑名单规则，已过滤该作品不再推送
+          作品地址：${logger.yellow(PushItem.Detail_Data.share_url)}
+          命中的黑名单词：[${filterWords.join('], [')}]
+          命中的黑名单标签：[${filterTags.join('], [')}]
+          `)
+        return true
+      }
+      return false
     } else {
       // 白名单模式：如果不包含任何白名单词或白名单标签，则过滤
       // 注意：如果白名单为空，则不过滤任何内容
       if (filterWords.length === 0 && filterTags.length === 0) {
         return false
       }
-      return !(hasFilterWord || hasFilterTag)
+
+      if (hasFilterWord || hasFilterTag) {
+        return false // 不过滤
+      }
+      logger.warn(`
+        作品内容未命中白名单规则，已过滤该作品不再推送
+        作品地址：${logger.yellow(PushItem.Detail_Data.share_url)}
+        命中的黑名单词：[${filterWords.join('], [')}]
+        命中的黑名单标签：[${filterTags.join('], [')}]
+        `)
+      return true
     }
   }
 }
