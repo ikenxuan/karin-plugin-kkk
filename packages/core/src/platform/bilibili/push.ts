@@ -143,13 +143,13 @@ export class Bilibilipush extends Base {
           case DynamicType.DRAW: {
             if (data[dynamicId].Dynamic_Data.modules.module_dynamic.topic !== null && data[dynamicId].Dynamic_Data.modules.module_dynamic && data[dynamicId].Dynamic_Data.modules.module_dynamic.topic !== null) {
               const name = data[dynamicId].Dynamic_Data.modules.module_dynamic.topic!.name
-              data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.rich_text_nodes.unshift({
+              data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus.summary.rich_text_nodes.unshift({
                 orig_text: name,
                 text: name,
                 type: 'topic',
                 rid: data[dynamicId].Dynamic_Data.modules.module_dynamic.topic!.id.toString(),
               })
-              data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.text = `${name}\n\n` + data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.text
+              data[dynamicId].Dynamic_Data.modules.module_dynamic.major!.opus.summary.text = `${name}\n\n` + data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.summary?.text
             }
             img = await Render('bilibili/dynamic/DYNAMIC_TYPE_DRAW',
               {
