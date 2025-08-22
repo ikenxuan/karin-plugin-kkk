@@ -111,6 +111,12 @@ export class DouYinpush extends Base {
     if (Object.keys(data).length === 0) return true
 
     for (const awemeId in data) {
+      logger.mark(`
+        ${logger.blue('开始处理并渲染抖音动态图片')}
+        ${logger.blue('博主')}: ${logger.green(data[awemeId].remark)} 
+        ${logger.cyan('作品id')}：${logger.yellow(awemeId)}
+        ${logger.cyan('访问地址')}：${logger.green('https://www.douyin.com/video/' + awemeId)}`)
+
       const pushItem = data[awemeId]
       const Detail_Data = pushItem.Detail_Data
       const skip = await skipDynamic(pushItem)
@@ -121,12 +127,6 @@ export class DouYinpush extends Base {
         iddata = await getDouyinID(this.e, Detail_Data.share_url ?? 'https://live.douyin.com/' + Detail_Data.room_data?.owner.web_rid, false)
       }
 
-      logger.mark(`
-        ${logger.blue('开始处理并渲染抖音动态图片')}
-        ${logger.blue('博主')}: ${logger.green(data[awemeId].remark)}
-        ${logger.cyan('作品id')}：${logger.yellow(awemeId)}
-        ${logger.cyan('访问地址')}：${logger.green('https://www.douyin.com/video/' + awemeId)}
-      `)
       if (!skip) {
         if (pushItem.living && 'room_data' in pushItem.Detail_Data && Detail_Data.live_data) {
           // 处理直播推送

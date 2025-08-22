@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 import fs from 'node:fs'
 
-import { ApiResponse, BiliUserDynamic, BiliUserProfile, BiliVideoPlayurlIsLogin, DynamicType, getBilibiliData } from '@ikenxuan/amagi'
+import { ApiResponse, BiliUserDynamic, BiliUserProfile, BiliVideoPlayurlIsLogin, DynamicType, getBilibiliData, MajorType } from '@ikenxuan/amagi'
 import type {
   AdapterType,
   ImageElement,
@@ -127,6 +127,12 @@ export class Bilibilipush extends Base {
   async getdata (data: WillBePushList) {
     let noCkData
     for (const dynamicId in data) {
+      logger.mark(`
+        ${logger.blue('开始处理并渲染B站动态图片')}
+        ${logger.cyan('UP')}: ${logger.green(data[dynamicId].remark)}
+        ${logger.cyan('动态id')}：${logger.yellow(dynamicId)}
+        ${logger.cyan('访问地址')}：${logger.green('https://t.bilibili.com/' + dynamicId)}`)
+
       let skip = await skipDynamic(data[dynamicId])
       let send_video = true; let img: ImageElement[] = []
       const dynamicCARDINFO = await this.amagi.getBilibiliData('动态卡片数据', { dynamic_id: dynamicId, typeMode: 'strict' })
@@ -137,12 +143,6 @@ export class Bilibilipush extends Base {
         let emojiDATA = await this.amagi.getBilibiliData('Emoji数据') as any
         emojiDATA = extractEmojisData(emojiDATA.data.data.packages)
 
-        logger.mark(`
-          ${logger.blue('开始处理并渲染B站动态图片')}
-          ${logger.cyan('UP')}: ${logger.green(data[dynamicId].remark)}
-          ${logger.cyan('动态id')}：${logger.yellow(dynamicId)}
-          ${logger.cyan('访问地址')}：${logger.green('https://t.bilibili.com/' + dynamicId)}
-          `)
         switch (data[dynamicId].dynamic_type) {
           /** 处理图文动态 */
           case DynamicType.DRAW: {
@@ -896,8 +896,12 @@ const skipDynamic = async (PushItem: BilibiliPushItem): Promise<boolean> => {
   }
 
   // 检查转发的原动态标签
-  if (PushItem.Dynamic_Data.type === 'DYNAMIC_TYPE_FORWARD' && 'orig' in PushItem.Dynamic_Data) {
-    if (PushItem.Dynamic_Data.orig.modules.module_dynamic.major.opus.summary.text) {
+  if (PushItem.Dynamic_Data.type === DynamicType.FORWARD && 'orig' in PushItem.Dynamic_Data) {
+    if (
+      PushItem.Dynamic_Data.orig.modules.module_dynamic.major.type === MajorType.DRAW ||
+      PushItem.Dynamic_Data.orig.modules.module_dynamic.major.type === MajorType.OPUS ||
+      PushItem.Dynamic_Data.orig.modules.module_dynamic.major.type === MajorType.LIVE_RCMD
+    ) {
       for (const node of PushItem.Dynamic_Data.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes) {
         if (node.type === 'topic') {
           tags.push(node.orig_text)
