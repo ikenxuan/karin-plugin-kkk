@@ -443,17 +443,22 @@ export const webConfig = defineConfig({
                   components.radio.create('videoQuality:radio-8', {
                     label: '1080P+ 高码率',
                     value: '112',
-                    description: '需大会员'
+                    description: '需大会员&视频支持'
                   }),
                   components.radio.create('videoQuality:radio-9', {
                     label: '1080P60 高帧率',
                     value: '116',
-                    description: '需大会员'
+                    description: '需大会员&视频支持'
                   }),
                   components.radio.create('videoQuality:radio-10', {
                     label: '4K 超清',
                     value: '120',
-                    description: '需大会员'
+                    description: '需大会员&视频支持'
+                  }),
+                  components.radio.create('videoQuality:radio-11', {
+                    label: '8K 超高清',
+                    value: '127',
+                    description: '需大会员&视频支持'
                   })
                 ]
               }),
@@ -625,17 +630,22 @@ export const webConfig = defineConfig({
                   components.radio.create('push:pushVideoQuality:radio-8', {
                     label: '1080P+ 高码率',
                     value: '112',
-                    description: '需大会员'
+                    description: '需大会员&视频支持'
                   }),
                   components.radio.create('push:pushVideoQuality:radio-9', {
                     label: '1080P60 高帧率',
                     value: '116',
-                    description: '需大会员'
+                    description: '需大会员&视频支持'
                   }),
                   components.radio.create('push:pushVideoQuality:radio-10', {
                     label: '4K 超清',
                     value: '120',
-                    description: '需大会员'
+                    description: '需大会员&视频支持'
+                  }),
+                  components.radio.create('push:pushVideoQuality:radio-11', {
+                    label: '8K 超高清',
+                    value: '127',
+                    description: '需大会员&视频支持'
                   })
                 ]
               }),

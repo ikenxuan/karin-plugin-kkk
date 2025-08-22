@@ -142,7 +142,8 @@ export class Bilibili extends Base {
           /** 给视频信息对象删除不符合条件的视频流 */
           correctList = await bilibiliProcessVideos({
             accept_description: playUrlData.data.data.accept_description,
-            bvid: infoData.data.data.bvid
+            bvid: infoData.data.data.bvid,
+            qn: Config.bilibili.videoQuality
           }, simplify, playUrlData.data.data.dash.audio[0].base_url)
           playUrlData.data.data.dash.video = correctList.videoList
           playUrlData.data.data.accept_description = correctList.accept_description
@@ -167,7 +168,7 @@ export class Bilibili extends Base {
               CommentsData: commentsdata,
               CommentLength: Config.bilibili.realCommentCount ? Count(infoData.data.data.stat.reply) : String(commentsdata.length),
               share_url: 'https://b23.tv/' + infoData.data.data.bvid,
-              Clarity: Config.bilibili.videopriority === true ? nockData.data.data.accept_description[0] : '"流畅 360P"',
+              Clarity: Config.bilibili.videopriority === true ? nockData.data.data.accept_description[0] : playUrlData.data.data.accept_description[0],
               VideoSize: Config.bilibili.videopriority === true ? (nockData.data.data.durl[0].size! / (1024 * 1024)).toFixed(2) : videoSize,
               ImageLength: 0,
               shareurl: 'https://b23.tv/' + infoData.data.data.bvid
@@ -262,7 +263,8 @@ export class Bilibili extends Base {
           /** 给视频信息对象删除不符合条件的视频流 */
           const correctList = await bilibiliProcessVideos({
             accept_description: playUrlData.result.accept_description,
-            bvid: videoInfo.data.result.season_id.toString()
+            bvid: videoInfo.data.result.season_id.toString(),
+            qn: Config.bilibili.videoQuality
           }, simplify, playUrlData.result.dash.audio[0].base_url)
           playUrlData.result.dash.video = correctList.videoList
           playUrlData.result.cept_description = correctList.accept_description
