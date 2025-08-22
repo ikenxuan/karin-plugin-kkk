@@ -768,7 +768,7 @@ export function replacetext (text: string, rich_text_nodes: any[]) {
       }
       case 'RICH_TEXT_NODE_TYPE_EMOJI': {
         const regex = new RegExp(tag.orig_text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')
-        text = text.replace(regex, `<img src='${tag.emoji.icon_url}' style='height: 60px; margin: 0 0 -10px 0;'>`)
+        text = text.replace(regex, `<img src='${tag.emoji.icon_url}' style='height: 160px; margin: 0 0 -10px 0;'>`)
         break
       }
     }

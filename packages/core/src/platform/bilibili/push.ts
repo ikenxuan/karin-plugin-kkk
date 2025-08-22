@@ -158,7 +158,7 @@ export class Bilibilipush extends Base {
             }
             img = await Render('bilibili/dynamic/DYNAMIC_TYPE_DRAW',
               {
-                image_url: cover(dycrad.item.pictures),
+                image_url: dycrad.item.pictures && cover(dycrad.item.pictures),
                 // TIP: 2025/08/20, 动态卡片数据中，图文动态的描述文本在 major.opus.summary 中
                 text: replacetext(
                   br(
