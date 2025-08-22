@@ -397,7 +397,7 @@ export const webConfig = defineConfig({
               }),
               components.switch.create('videopriority', {
                 label: '优先保内容',
-                description: '解析视频是否优先保内容，true为优先保证上传将使用最低分辨率，false为优先保清晰度将使用最高分辨率',
+                description: '解析视频是否优先保内容，true为优先保证上传将使用最低分辨率，false则使用自定义画质偏好',
                 defaultSelected: all.bilibili.videopriority,
                 isDisabled: !all.bilibili.switch
               }),
