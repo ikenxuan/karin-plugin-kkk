@@ -4,7 +4,7 @@
   "include-component-in-tag": true,
   "commit-search-depth": 20,
   "tag-separator": "-",
-  "separate-pull-requests": true,
+  "separate-pull-requests": false,
   "changelog-sections": [
     {
       "type": "feat",
