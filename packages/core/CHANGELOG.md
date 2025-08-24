@@ -1,5 +1,53 @@
 # 变更日志
 
+## [2.0.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.8.1...v2.0.0) (2025-08-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* 重构项目结构为多包工作区模式 ([#125](https://github.com/ikenxuan/karin-plugin-kkk/issues/125))
+
+### ✨ 新功能
+
+* Add Tauri desktop support and Web UI enhancements ([#130](https://github.com/ikenxuan/karin-plugin-kkk/issues/130)) ([617d5cf](https://github.com/ikenxuan/karin-plugin-kkk/commit/617d5cf841c4912c76fda2998151c831e5883b44))
+* **auth:** 添加多层编码签名验证中间件和前端实现 ([2bed9bf](https://github.com/ikenxuan/karin-plugin-kkk/commit/2bed9bf3739e1d1bb013852342ae632799dad714))
+* **bilibili:** 添加8K视频质量支持并更新依赖 ([83b9095](https://github.com/ikenxuan/karin-plugin-kkk/commit/83b9095a1c4c935cb44246656a93be218f53493a))
+* **web:** 添加进度条组件和404页面 ([ee3aa17](https://github.com/ikenxuan/karin-plugin-kkk/commit/ee3aa17db2241717187989ab059bc23a2d556e7d))
+* 重构内容管理页面并添加主题支持 ([cbc3283](https://github.com/ikenxuan/karin-plugin-kkk/commit/cbc328305afdb8fbd0d7028237348ab145c1d60b))
+* 重构项目结构为多包工作区模式 ([#125](https://github.com/ikenxuan/karin-plugin-kkk/issues/125)) ([9fbb970](https://github.com/ikenxuan/karin-plugin-kkk/commit/9fbb970ad3824b0eed8ae1fe39643cead70e80d0))
+
+
+### 🐛 错误修复
+
+* **bilibili:** 修复动态卡片中图片可能为空的判断缺失问题 ([44e8bc1](https://github.com/ikenxuan/karin-plugin-kkk/commit/44e8bc165a334233c53f826278a4935602b8feec))
+* **bilibili:** 修复动态类型处理中的空值检查和类型定义 ([332823a](https://github.com/ikenxuan/karin-plugin-kkk/commit/332823a23019879cf7b1dae051d2c2ab21aaf8b3))
+* **bilibili:** 更新动态卡片数据解析逻辑并升级依赖 ([0ebc356](https://github.com/ikenxuan/karin-plugin-kkk/commit/0ebc356c1345f04f2d9c97a66819ac71f95e2c30))
+* **bilibili:** 重构哔哩哔哩登录功能并更新依赖 ([8a1bf89](https://github.com/ikenxuan/karin-plugin-kkk/commit/8a1bf89a30c8dd7e586ecbe4f807c4c66a47b584))
+* close [#126](https://github.com/ikenxuan/karin-plugin-kkk/issues/126) ([9fbb970](https://github.com/ikenxuan/karin-plugin-kkk/commit/9fbb970ad3824b0eed8ae1fe39643cead70e80d0))
+* **douyin/bilibili:** 优化动态推送日志顺序并更新依赖版本 ([54e0088](https://github.com/ikenxuan/karin-plugin-kkk/commit/54e00886af2383139b370ea3809cd405c73a73d6))
+* 修复抖音作品推送文本描述及日志信息 ([cff097a](https://github.com/ikenxuan/karin-plugin-kkk/commit/cff097aa45e3794c5ce61e4fe29db7ac3d1d359f))
+* 修复抖音平台音乐数据解析中 sec_uid 的变量引用问题 close [#128](https://github.com/ikenxuan/karin-plugin-kkk/issues/128) ([7a4a996](https://github.com/ikenxuan/karin-plugin-kkk/commit/7a4a996b4735b359fd75c1cd31a4fe4e580dbf8a))
+* 增强动态过滤日志并支持直播内容处理 close: [#131](https://github.com/ikenxuan/karin-plugin-kkk/issues/131) ([dfa9956](https://github.com/ikenxuan/karin-plugin-kkk/commit/dfa9956163d0c0342179d81e9a19a12c3543d4a6))
+
+
+### 🔧 其他更新
+
+* 更新@ikenxuan/amagi依赖至5.2.0版本并添加动态卡片类型处理 ([837b8b5](https://github.com/ikenxuan/karin-plugin-kkk/commit/837b8b54f7b8e10a79c4e921a03bb2268bf511ff))
+
+
+### ♻️ 代码重构
+
+* **bilibili:** 重构动态数据处理逻辑，使用更严格的类型检查 ([332823a](https://github.com/ikenxuan/karin-plugin-kkk/commit/332823a23019879cf7b1dae051d2c2ab21aaf8b3))
+* **build:** 更新构建输出目录和chunk命名规范 ([8fd55b5](https://github.com/ikenxuan/karin-plugin-kkk/commit/8fd55b5b3690ea65bc3c244fc4d312ff9fa4565b))
+* 重构代码并优化配置 ([d476d58](https://github.com/ikenxuan/karin-plugin-kkk/commit/d476d58e6df321029bc311b0f7af17c79132bfc3))
+
+
+### 📦️ 构建系统
+
+* 更新 @ikenxuan/amagi 依赖至 5.0.2 版本 ([7a4a996](https://github.com/ikenxuan/karin-plugin-kkk/commit/7a4a996b4735b359fd75c1cd31a4fe4e580dbf8a))
+* 更新 @ikenxuan/amagi 依赖至正式版本 5.1.0 ([542a38c](https://github.com/ikenxuan/karin-plugin-kkk/commit/542a38c4f9a69238ddd5296068a55c0bc32febad))
+* 更新@ikenxuan/amagi依赖到特定PR版本 ([332823a](https://github.com/ikenxuan/karin-plugin-kkk/commit/332823a23019879cf7b1dae051d2c2ab21aaf8b3))
+
 ## [1.8.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.8.0...v1.8.1) (2025-07-16)
 
 
