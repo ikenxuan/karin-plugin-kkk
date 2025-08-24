@@ -205,7 +205,7 @@ export class Bilibilipush extends Base {
                 avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
                 frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
                 share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
-                username: checkvip(userINFO.data.data.card),
+                username: checkvip(userINFO.data.data.card ?? userINFO.data.data.card),
                 fans: Count(userINFO.data.data.follower),
                 user_shortid: data[dynamicId].host_mid,
                 total_favorited: Count(userINFO.data.data.like_num),
