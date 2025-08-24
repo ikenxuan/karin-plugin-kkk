@@ -1,17 +1,17 @@
 import fs from 'node:fs'
 
-import type {
+import {
+  AdditionalType,
   ApiResponse,
   BiliBangumiVideoInfo,
   BiliBangumiVideoPlayurlIsLogin,
   BiliBangumiVideoPlayurlNoLogin,
-  BiliBiliVideoPlayurlNoLogin,
+  bilibiliApiUrls, BiliBiliVideoPlayurlNoLogin,
   BiliDynamicCard,
   BiliDynamicInfo,
   BiliOneWork,
-  BiliVideoPlayurlIsLogin
+  BiliVideoPlayurlIsLogin, getBilibiliData
 } from '@ikenxuan/amagi'
-import { bilibiliApiUrls, getBilibiliData } from '@ikenxuan/amagi'
 import karin, {
   common,
   ElementTypes,
@@ -365,6 +365,25 @@ export class Bilibili extends Base {
           case DynamicType.WORD: {
             const text = replacetext(br(dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text), dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.rich_text_nodes)
 
+            if (dynamicInfo.data.data.item.modules.module_dynamic.additional) {
+              switch (dynamicInfo.data.data.item.modules.module_dynamic.additional.type) {
+                // TODO: 动态中的额外卡片元素，
+                // see: https://github.com/SocialSisterYi/bilibili-API-collect/blob/afc4349247ff7d59ac16dfe6eec8ff2b766a74f0/docs/dynamic/all.md
+                // find: data.items[n].modules.module_dynamic.additional
+                case AdditionalType.RESERVE: {
+                  break
+                }
+                case AdditionalType.COMMON:
+                case AdditionalType.GOODS:
+                case AdditionalType.VOTE:
+                case AdditionalType.UGC:
+                case AdditionalType.MATCH:
+                case AdditionalType.UPOWER_LOTTERY:
+                default: {
+                  break
+                }
+              }
+            }
             this.e.reply(
               await Render('bilibili/dynamic/DYNAMIC_TYPE_WORD', {
                 text,
@@ -375,7 +394,7 @@ export class Bilibili extends Base {
                 avatar_url: dynamicInfo.data.data.item.modules.module_author.face,
                 frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
                 share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
-                username: checkvip(dynamicInfo.data.data.card),
+                username: checkvip(dynamicInfo.data.data.card ?? userProfileData.data.data.card),
                 fans: Count(dynamicInfo.data.data.follower),
                 user_shortid: dynamicInfo.data.data.item.modules.module_author.mid,
                 total_favorited: Count(userProfileData.data.data.like_num),
