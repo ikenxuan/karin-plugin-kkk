@@ -3,7 +3,7 @@ import { dirname, join } from 'node:path'
 
 import { logger } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
-import { Database } from 'sqlite3'
+import sqlite3 from 'sqlite3'
 
 import { Root } from '@/module/utils'
 
@@ -11,7 +11,7 @@ import { Root } from '@/module/utils'
  * SQLite3 数据库基础操作类
  */
 export class SQLiteBase {
-  protected db!: Database
+  protected db!: sqlite3.Database
   protected dbPath: string
 
   constructor (dbName: string) {
@@ -29,7 +29,7 @@ export class SQLiteBase {
    */
   async init (): Promise<this> {
     return new Promise((resolve, reject) => {
-      this.db = new Database(this.dbPath, (err) => {
+      this.db = new sqlite3.Database(this.dbPath, (err) => {
         if (err) {
           logger.error(`[SQLiteBase] 数据库连接失败: ${err.message}`)
           reject(err)
