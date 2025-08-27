@@ -1,29 +1,24 @@
-/**
- * SQLite 版本的数据库索引文件，完全兼容原 TypeORM 版本的 API
- */
-import { BilibiliDBSQLite } from './bilibili'
-import { DouyinDBSQLite } from './douyin'
+import { DeleteResult, LessThan } from 'typeorm'
 
-// 重新导出所有需要的类型和接口，保持与原版本完全一致
+import { BilibiliDBBase } from './bilibili'
+import { DouyinDBBase } from './douyin'
+
 export * from './bilibili'
 export * from './douyin'
 
-// 导出 SQLite 实现的类
-export { BilibiliDBSQLite, DouyinDBSQLite }
-
 /** 抖音数据库实例 */
-let douyinDB: DouyinDBSQLite | null = null
+let douyinDB: DouyinDBBase | null = null
 let douyinInitializing = false
 
 /** B站数据库实例 */
-let bilibiliDB: BilibiliDBSQLite | null = null
+let bilibiliDB: BilibiliDBBase | null = null
 let bilibiliInitializing = false
 
 /**
  * 获取或初始化 DouyinDB 实例（单例模式）
  * @returns DouyinDB实例
  */
-export const getDouyinDB = async (): Promise<DouyinDBSQLite> => {
+export const getDouyinDB = async (): Promise<DouyinDBBase> => {
   if (douyinDB) {
     return douyinDB
   }
@@ -38,7 +33,7 @@ export const getDouyinDB = async (): Promise<DouyinDBSQLite> => {
 
   douyinInitializing = true
   try {
-    douyinDB = await new DouyinDBSQLite().init()
+    douyinDB = await new DouyinDBBase().init()
     return douyinDB
   } finally {
     douyinInitializing = false
@@ -49,7 +44,7 @@ export const getDouyinDB = async (): Promise<DouyinDBSQLite> => {
  * 获取或初始化 BilibiliDB 实例（单例模式）
  * @returns BilibiliDB实例
  */
-export const getBilibiliDB = async (): Promise<BilibiliDBSQLite> => {
+export const getBilibiliDB = async (): Promise<BilibiliDBBase> => {
   if (bilibiliDB) {
     return bilibiliDB
   }
@@ -64,7 +59,7 @@ export const getBilibiliDB = async (): Promise<BilibiliDBSQLite> => {
 
   bilibiliInitializing = true
   try {
-    bilibiliDB = await new BilibiliDBSQLite().init()
+    bilibiliDB = await new BilibiliDBBase().init()
     return bilibiliDB
   } finally {
     bilibiliInitializing = false
@@ -100,23 +95,20 @@ export { bilibiliDBInstance as bilibiliDB, douyinDBInstance as douyinDB }
 export const cleanOldDynamicCache = async (platform: 'douyin' | 'bilibili', days: number = 7): Promise<number> => {
   const cutoffDate = new Date()
   cutoffDate.setDate(cutoffDate.getDate() - days)
-  const cutoffDateStr = cutoffDate.toISOString()
 
-  let result: { changes: number }
+  let result: DeleteResult
 
   if (platform === 'douyin') {
     const db = await getDouyinDB()
-    result = await db.run(
-      'DELETE FROM AwemeCaches WHERE createdAt < ?',
-      [cutoffDateStr]
-    )
+    result = await db['awemeCacheRepository'].delete({
+      createdAt: LessThan(cutoffDate)
+    })
   } else {
     const db = await getBilibiliDB()
-    result = await db.run(
-      'DELETE FROM DynamicCaches WHERE createdAt < ?',
-      [cutoffDateStr]
-    )
+    result = await db['dynamicCacheRepository'].delete({
+      createdAt: LessThan(cutoffDate)
+    })
   }
 
-  return result.changes ?? 0
+  return result.affected ?? 0
 }
