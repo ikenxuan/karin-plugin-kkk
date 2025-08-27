@@ -1,5 +1,4 @@
 # 包管理器文件
-.npmrc
 yarn.lock
 package-lock.json
 
