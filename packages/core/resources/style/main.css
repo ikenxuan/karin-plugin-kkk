@@ -1,4 +1,4 @@
-/*! tailwindcss v4.1.11 | MIT License | https://tailwindcss.com */
+/*! tailwindcss v4.1.12 | MIT License | https://tailwindcss.com */
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
     *, :before, :after, ::backdrop {
@@ -83,9 +83,6 @@
     --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     --color-red-500: oklch(63.7% .237 25.331);
-    --color-gray-400: oklch(70.7% .022 261.325);
-    --color-gray-500: oklch(55.1% .027 264.364);
-    --color-gray-600: oklch(44.6% .03 256.802);
     --color-black: #000;
     --color-white: #fff;
     --spacing: .25rem;
@@ -3420,18 +3417,6 @@
     .text-foreground\/50 {
       color: color-mix(in oklab, hsl(var(--heroui-foreground) / 1) 50%, transparent);
     }
-  }
-
-  .text-gray-400 {
-    color: var(--color-gray-400);
-  }
-
-  .text-gray-500 {
-    color: var(--color-gray-500);
-  }
-
-  .text-gray-600 {
-    color: var(--color-gray-600);
   }
 
   .text-inherit {

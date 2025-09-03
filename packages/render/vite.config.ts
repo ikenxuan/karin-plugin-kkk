@@ -87,7 +87,7 @@ export default defineConfig(({ command, mode }) => {
         entry: {
           'douyin/Comment': resolve(__dirname, 'src/components/platforms/douyin/Comment.tsx'),
           'layouts/DefaultLayout': resolve(__dirname, 'src/components/layouts/DefaultLayout.tsx'),
-          'index': resolve(__dirname, 'src/index.ts')
+          'index': resolve(__dirname, 'src/client.ts')
         },
         formats: ['es'],
         fileName: (format, entryName) => `${entryName}.js`

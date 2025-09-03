@@ -1,57 +1,18 @@
-import { RenderRequest, RenderResponse } from './types'
-
 /**
- * 渲染客户端类
+ * 浏览器端入口（包含样式导入）
+ * 用途：
+ * - 当在浏览器环境使用本渲染库时，通过该入口引入，以确保样式正常加载。
+ * 注意：
+ * - 该入口会导入 CSS，适合在前端应用中使用；不建议在 Node/SSR 构建链路中引用。
  */
-export class RenderClient {
-  private serverUrl: string
 
-  /**
-   * 构造函数
-   * @param serverUrl 渲染服务器地址，默认为 http://localhost:3001
-   */
-  constructor (serverUrl = 'http://localhost:3001') {
-    this.serverUrl = serverUrl
-  }
+// 导入全局样式（由 Vite 处理）
+import './styles/main.css'
 
-  /**
-   * 渲染组件为HTML文件
-   * @param request 渲染请求参数
-   * @returns 渲染结果Promise
-   */
-  async render (request: RenderRequest): Promise<RenderResponse> {
-    try {
-      const response = await fetch(`${this.serverUrl}/render`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(request)
-      })
+// 复用与无样式入口一致的导出
+export * from './types'
+export * from './server'
+export { renderComponentToHtml, type RenderRequest, type RenderResponse } from './server'
 
-      if (!response.ok) {
-        throw new Error(`HTTP错误: ${response.status}`)
-      }
-
-      return await response.json()
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : '网络请求失败'
-      }
-    }
-  }
-
-  /**
-   * 检查服务器健康状态
-   * @returns 健康状态Promise
-   */
-  async checkHealth (): Promise<boolean> {
-    try {
-      const response = await fetch(`${this.serverUrl}/health`)
-      return response.ok
-    } catch {
-      return false
-    }
-  }
-}
+import RenderServer from './server'
+export default RenderServer
