@@ -4,7 +4,8 @@ import fs from 'node:fs'
 import karin, { handler, logger, type Message, segment } from 'node-karin'
 import { chromium, Page } from 'playwright'
 
-import { Common, Config, Root } from '@/module'
+import { Common, Root } from '@/module'
+import { Config } from '@/module/utils/Config'
 
 /** 动态启动 Xvfb */
 const startXvfb = async () => {

@@ -1,6 +1,6 @@
 import Client, { type KuaishouDataOptionsMap } from '@ikenxuan/amagi'
 
-import { Config } from '@/module'
+import { Config } from '@/module/utils/Config'
 import { KuaishouDataTypes } from '@/types'
 
 export async function fetchKuaishouData<T extends keyof KuaishouDataTypes> (

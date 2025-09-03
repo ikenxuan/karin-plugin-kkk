@@ -2,18 +2,42 @@
   "name": "karin-plugin-kkk",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "build": "pnpm -r run build",
-    "build:core": "pnpm --filter karin-plugin-kkk run build",
-    "build:web": "pnpm --filter web run build",
-    "build:desktop": "pnpm --filter web run build:desktop",
-    "dev": "pnpm --filter karin-plugin-kkk run dev",
-    "watch": "pnpm --filter karin-plugin-kkk run watch",
-    "web": "pnpm --filter web run dev",
-    "lint": "pnpm -r run lint"
-  },
   "keywords": [],
-  "author": "",
-  "license": "GPL-3.0-only"
+  "license": "GPL-3.0-only",
+  "author": "ikenxuan",
+  "scripts": {
+    "build": "pnpm run build:core && pnpm run build:web",
+    "build:core": "pnpm --filter karin-plugin-kkk run build",
+    "build:desktop": "pnpm --filter web run build:desktop",
+    "build:render": "pnpm --filter render run build",
+    "build:web": "pnpm --filter web run build",
+    "dev": "pnpm --filter karin-plugin-kkk run dev",
+    "lint": "pnpm -r run lint",
+    "watch": "pnpm --filter karin-plugin-kkk run watch",
+    "web": "pnpm --filter web run dev"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "4.1.12",
+    "clsx": "^2.1.1",
+    "cors": "^2.8.5",
+    "lucide-react": "0.542.0",
+    "node-karin": "1.10.20",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/cors": "2.8.19",
+    "@types/node": "24.3.0",
+    "@typescript-eslint/eslint-plugin": "8.42.0",
+    "@typescript-eslint/parser": "8.42.0",
+    "cross-env": "10.0.0",
+    "eslint": "9.34.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "tsx": "4.20.5",
+    "typescript": "5.9.2",
+    "typescript-eslint": "8.42.0",
+    "vite": "7.1.4"
+  }
 }

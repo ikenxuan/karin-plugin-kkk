@@ -122,6 +122,9 @@ export default defineConfig({
           if (id.includes('node_modules')) {
             return 'vendor'
           }
+          if (id.includes('render')) {
+            return 'render'
+          }
           if (id.includes('src/root.ts')) {
             return 'root'
           }

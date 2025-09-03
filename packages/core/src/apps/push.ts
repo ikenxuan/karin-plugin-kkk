@@ -1,7 +1,7 @@
 import { getBilibiliData, getDouyinData } from '@ikenxuan/amagi'
 import karin from 'node-karin'
 
-import { Config } from '@/module'
+import { Config } from '@/module/utils/Config'
 import { Bilibilipush, DouYinpush } from '@/platform'
 
 // TODO: 传适配器实例

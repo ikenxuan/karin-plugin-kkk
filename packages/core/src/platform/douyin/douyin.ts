@@ -10,7 +10,6 @@ import {
   Base,
   baseHeaders,
   Common,
-  Config,
   Count,
   downloadFile,
   downloadVideo,
@@ -20,6 +19,7 @@ import {
   Render,
   Root
 } from '@/module/utils'
+import { Config } from '@/module/utils/Config'
 import { douyinComments } from '@/platform/douyin'
 import { DouyinDataTypes, DouyinIdData } from '@/types'
 

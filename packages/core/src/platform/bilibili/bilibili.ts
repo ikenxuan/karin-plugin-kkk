@@ -25,7 +25,6 @@ import {
   Base,
   baseHeaders,
   Common,
-  Config,
   Count,
   downloadFile,
   downloadVideo,
@@ -34,6 +33,7 @@ import {
   Render,
   uploadFile
 } from '@/module/utils'
+import { Config } from '@/module/utils/Config'
 import {
   bilibiliComments,
   BilibiliId,

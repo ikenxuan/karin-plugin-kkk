@@ -1,6 +1,7 @@
 import { type Message } from 'node-karin'
 
-import { Base, Config, downloadVideo, Networks, Render } from '@/module'
+import { Base, downloadVideo, Networks, Render } from '@/module'
+import { Config } from '@/module/utils/Config'
 import { kuaishouComments } from '@/platform/kuaishou'
 import type { ExtendedKuaishouOptionsType, KuaishouDataTypes } from '@/types'
 

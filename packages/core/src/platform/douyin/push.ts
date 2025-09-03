@@ -7,13 +7,13 @@ import {
   baseHeaders,
   cleanOldDynamicCache,
   Common,
-  Config,
   douyinDB,
   downLoadFileOptions,
   downloadVideo,
   Networks,
   Render
 } from '@/module'
+import { Config } from '@/module/utils/Config'
 import { DouyinIdData, douyinProcessVideos, getDouyinID } from '@/platform/douyin'
 import type { douyinPushItem } from '@/types/config/pushlist'
 

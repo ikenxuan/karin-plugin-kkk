@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-/* eslint-disable no-unused-vars */
+
 import fs from 'node:fs'
 
 import { ApiResponse, BiliUserDynamic, BiliUserProfile, BiliVideoPlayurlIsLogin, DynamicType, getBilibiliData, MajorType } from '@ikenxuan/amagi'
@@ -21,7 +21,6 @@ import {
   bilibiliDB,
   cleanOldDynamicCache,
   Common,
-  Config,
   Count,
   downloadFile,
   downLoadFileOptions,
@@ -29,6 +28,7 @@ import {
   Render,
   uploadFile
 } from '@/module'
+import { Config } from '@/module/utils/Config'
 import {
   bilibiliProcessVideos,
   cover,
@@ -125,7 +125,6 @@ export class Bilibilipush extends Base {
    * @param data 包含动态相关信息的对象。
    */
   async getdata (data: WillBePushList) {
-    let noCkData
     for (const dynamicId in data) {
       logger.mark(`
         ${logger.blue('开始处理并渲染B站动态图片')}
@@ -218,7 +217,6 @@ export class Bilibilipush extends Base {
           /** 处理视频动态 */
           case DynamicType.AV: {
             if (data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.type === 'MAJOR_TYPE_ARCHIVE') {
-              const aid = data[dynamicId].Dynamic_Data?.modules.module_dynamic.major?.archive?.aid
               const bvid = data[dynamicId].Dynamic_Data?.modules.module_dynamic.major?.archive?.bvid ?? ''
               const INFODATA = await getBilibiliData('单个视频作品数据', '', { bvid, typeMode: 'strict' })
 
@@ -227,8 +225,7 @@ export class Bilibilipush extends Base {
                 send_video = false
                 logger.debug(`UP主：${INFODATA.data.data.owner.name} 的该动态类型为${logger.yellow('番剧或影视')}，默认跳过不下载，直达：${logger.green(INFODATA.data.data.redirect_url)}`)
               } else {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                noCkData = await getBilibiliData('单个视频下载信息数据', '', { avid: Number(aid), cid: INFODATA.data.data.cid, typeMode: 'strict' })
+                // const noCkData = await getBilibiliData('单个视频下载信息数据', '', { avid: Number(aid), cid: INFODATA.data.data.cid, typeMode: 'strict' })
               }
               img = await Render('bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {

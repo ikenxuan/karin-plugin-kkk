@@ -3,7 +3,8 @@ import fs from 'node:fs'
 import karin, { logger } from 'node-karin'
 import path from 'path'
 
-import { Common, Config } from '@/module'
+import { Common } from '@/module'
+import { Config } from '@/module/utils/Config'
 import { bilibiliLogin } from '@/platform'
 
 export const task = Config.app.removeCache && karin.task('[kkk-视频缓存自动删除]', '0 0 4 * * *', async () => {

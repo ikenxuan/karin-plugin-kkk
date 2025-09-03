@@ -1,0 +1,54 @@
+{
+  "name": "render",
+  "version": "0.0.1",
+  "description": "React渲染服务包",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -b && vite build",
+    "dev": "cross-env RENDER_ENV=render_dev LOG_LEVEL=debug tsx watch --include \"src/**/*.ts\" src/server.ts",
+    "dev:core": "cross-env RENDER_ENV=core_dev tsx watch src/server.ts",
+    "start": "cross-env RENDER_ENV=production node dist/server.js",
+    "preview": "vite preview"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "development": "./src/index.ts",
+      "import": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "development": "./src/server.ts",
+      "import": "./dist/server.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
+  },
+  "dependencies": {
+    "@heroui/chip": "^2.2.21",
+    "@heroui/react": "^2.8.3",
+    "@heroui/system": "^2.4.21",
+    "@heroui/theme": "^2.4.21",
+    "@vitejs/plugin-react-swc": "4.0.0",
+    "autoprefixer": "^10.4.16",
+    "cross-env": "10.0.0",
+    "framer-motion": "^12.23.12",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.3",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "19.1.12",
+    "@types/react-dom": "19.1.9",
+    "vite-plugin-dts": "^4.5.4",
+    "vite-plugin-static-copy": "^3.1.2",
+    "vite-plugin-svgr": "^4.5.0"
+  }
+}

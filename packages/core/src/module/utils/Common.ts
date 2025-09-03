@@ -5,7 +5,7 @@ import { createNotFoundResponse, logger, type Message } from 'node-karin'
 import type { Response } from 'node-karin/express'
 import { karinPathTemp } from 'node-karin/root'
 
-import { Config } from '@/module/utils'
+import { Config } from '@/module/utils/Config'
 
 import { Root } from '../../root'
 

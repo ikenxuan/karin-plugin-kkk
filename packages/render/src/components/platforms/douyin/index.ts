@@ -1,0 +1,1 @@
+export { DouyinComment } from './Comment';
