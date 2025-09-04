@@ -7,6 +7,7 @@ import {
 } from '../../../types/douyin'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 import { Heart, MessageCircle, QrCode } from 'lucide-react'
+import { useMemo } from 'react'
 
 /**
  * 二维码组件
@@ -185,36 +186,49 @@ const CommentItemComponent: React.FC<CommentItemComponentProps> = ({ comment }) 
  * @param props 组件属性
  * @returns JSX元素
  */
-export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | 'templateName'>> = (props) => {
-  // 添加数据验证和默认值
-  const safeData = {
-    ...props.data,
-    CommentsData: props.data?.CommentsData || { jsonArray: [] }
-  }
+export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | 'templateName'>> = React.memo((props) => {
+  const processedData = useMemo(() => {
+    if (!props.data) {
+      return {
+        commentsArray: [],
+        type: '未知',
+        commentLength: 0,
+        videoSize: undefined,
+        videoFPS: undefined,
+        imageLength: undefined,
+        useDarkTheme: false
+      };
+    }
 
-  // 确保 jsonArray 存在且是数组
-  const commentsArray = Array.isArray(safeData.CommentsData?.jsonArray)
-    ? safeData.CommentsData.jsonArray
-    : []
+    return {
+      commentsArray: props.data.CommentsData?.jsonArray || [],
+      type: props.data.Type || '未知',
+      commentLength: props.data.CommentLength || 0,
+      videoSize: props.data.VideoSize,
+      videoFPS: props.data.VideoFPS,
+      imageLength: props.data.ImageLength,
+      useDarkTheme: props.data.useDarkTheme || false
+    };
+  }, [props.data])
 
   return (
-    <DefaultLayout {...props} data={safeData}>
+    <DefaultLayout {...props}>
       <div className='p-5'>
         {/* 视频信息头部 */}
         <VideoInfoHeader
-          type={safeData.Type || '未知'}
-          commentLength={safeData.CommentLength || 0}
-          videoSize={safeData.VideoSize}
-          videoFPS={safeData.VideoFPS}
-          imageLength={safeData.ImageLength}
+          type={processedData.type}
+          commentLength={processedData.commentLength}
+          videoSize={processedData.videoSize}
+          videoFPS={processedData.videoFPS}
+          imageLength={processedData.imageLength}
           qrCodeDataUrl={props.qrCodeDataUrl || ''}
-          useDarkTheme={safeData.useDarkTheme}
+          useDarkTheme={processedData.useDarkTheme}
         />
 
         {/* 评论列表 */}
         <div className="overflow-auto mx-auto max-w-full">
-          {commentsArray.length > 0 ? (
-            commentsArray.map((comment, index) => (
+          {processedData.commentsArray.length > 0 ? (
+            processedData.commentsArray.map((comment, index) => (
               <CommentItemComponent key={index} comment={comment} />
             ))
           ) : (
@@ -229,6 +243,6 @@ export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | '
       </div>
     </DefaultLayout>
   )
-}
+});
 
 export default DouyinComment

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Skeleton } from '@heroui/react'
 import {
   BilibiliCommentProps,
@@ -203,9 +203,9 @@ const CommentItemComponent: React.FC<CommentItemComponentProps> = ({
 }) => {
   return (
     <div className="flex px-10 pb-0 relative max-w-full mb-[70px]">
-      {/* 用户头像区域 - 左侧 */}
+      {/* 用户头像区域 */}
       <div className="relative mr-[33.75px] flex-shrink-0">
-        {/* 主头像 - 移除绝对定位 */}
+        {/* 主头像 */}
         <ImageWithSkeleton
           src={comment.avatar || 'AVATAR_PLACEHOLDER'}
           alt="用户头像"
@@ -214,7 +214,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps> = ({
           isCircular={true}
         />
 
-        {/* 头像框 - 保持绝对定位 */}
+        {/* 头像框 */}
         {comment.frame && (
           <ImageWithSkeleton
             src={comment.frame}
@@ -224,7 +224,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps> = ({
           />
         )}
 
-        {/* VIP图标 - 改为相对于头像容器的绝对定位 */}
+        {/* VIP图标 */}
         {comment.icon_big_vip && (
           <ImageWithSkeleton
             src={comment.icon_big_vip}
@@ -235,11 +235,11 @@ const CommentItemComponent: React.FC<CommentItemComponentProps> = ({
         )}
       </div>
 
-      {/* 评论内容区域 - 右侧 */}
+      {/* 评论内容区域 */}
       <div className="flex-1 min-w-0">
-        {/* 用户信息 - 用户名和等级标签在同一行 */}
+        {/* 用户信息 */}
         <div className="flex items-start gap-[10px] mb-[15px] text-[50px]">
-          {/* 用户名区域 - 处理HTML内容中的多个元素 */}
+          {/* 用户名区域  */}
           <div
             className="flex-shrink-0 flex items-center gap-2 leading-[1.2] text-default-30 font-bold [&>span]:inline-block [&>span]:leading-[1.2] [&>svg]:inline-block [&>svg]:w-[100px] [&>svg]:h-[100px] [&>svg]:align-middle [&>svg]:flex-shrink-0"
             dangerouslySetInnerHTML={{ __html: comment.uname }}
@@ -260,7 +260,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps> = ({
           )}
         </div>
 
-        {/* 评论文本 - 紧跟在用户信息下方 */}
+        {/* 评论文本 */}
         <CommentText
           content={comment.message}
           className="text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-default-90 mb-[20px] [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]"
@@ -317,37 +317,62 @@ const CommentItemComponent: React.FC<CommentItemComponentProps> = ({
  * @param props 组件属性
  * @returns JSX元素
  */
-export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType' | 'templateName'>> = (props) => {
-  const { data, qrCodeDataUrl } = props
-  const { useDarkTheme, Type, CommentLength, VideoSize, Clarity, ImageLength, shareurl, share_url, CommentsData = [] } = data
+export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType' | 'templateName'>> = React.memo((props) => {
+  const processedData = useMemo(() => {
+    if (!props.data) {
+      return {
+        useDarkTheme: false,
+        Type: '视频' as const,
+        CommentLength: 0,
+        VideoSize: undefined,
+        Clarity: undefined,
+        ImageLength: undefined,
+        shareurl: '',
+        share_url: '',
+        CommentsData: []
+      };
+    }
+
+    return {
+      useDarkTheme: props.data.useDarkTheme || false,
+      Type: props.data.Type || '视频',
+      CommentLength: props.data.CommentLength || 0,
+      VideoSize: props.data.VideoSize,
+      Clarity: props.data.Clarity,
+      ImageLength: props.data.ImageLength,
+      shareurl: props.data.shareurl || '',
+      share_url: props.data.share_url || '',
+      CommentsData: props.data.CommentsData || []
+    };
+  }, [props.data]);
 
   return (
     <DefaultLayout {...props}>
       {/* 视频信息和二维码区域 */}
       <div className="flex justify-between items-center max-w-[1200px] mx-auto p-5">
         <VideoInfoHeader
-          type={Type}
-          commentLength={CommentLength}
-          videoSize={VideoSize}
-          clarity={Clarity}
-          imageLength={ImageLength}
+          type={processedData.Type}
+          commentLength={processedData.CommentLength}
+          videoSize={processedData.VideoSize}
+          clarity={processedData.Clarity}
+          imageLength={processedData.ImageLength}
         />
 
         <QRCodeSection
-          shareurl={shareurl || share_url}
-          qrCodeDataUrl={qrCodeDataUrl}
-          useDarkTheme={useDarkTheme}
+          shareurl={processedData.shareurl || processedData.share_url}
+          qrCodeDataUrl={props.qrCodeDataUrl}
+          useDarkTheme={processedData.useDarkTheme}
         />
       </div>
 
       {/* 评论列表 */}
       <div className="max-w-full mx-0 mb-[70px]">
-        {CommentsData.length > 0 ? (
-          CommentsData.map((comment, index) => (
+        {processedData.CommentsData.length > 0 ? (
+          processedData.CommentsData.map((comment, index) => (
             <CommentItemComponent
               key={index}
               comment={comment}
-              useDarkTheme={useDarkTheme}
+              useDarkTheme={processedData.useDarkTheme}
             />
           ))
         ) : (
@@ -358,7 +383,7 @@ export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType'
       </div>
     </DefaultLayout>
   )
-}
+});
 
 export default BilibiliComment
 
