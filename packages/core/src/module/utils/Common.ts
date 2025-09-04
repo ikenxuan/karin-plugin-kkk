@@ -296,6 +296,18 @@ class Tools {
 
     return resolvedPath // 返回安全解析后的路径
   }
+
+  /**
+   * 格式化数字
+   * @param num 数字
+   * @returns 格式化后的字符串
+   */
+  count (num: number) {
+    if (num > 10000) {
+      return (num / 10000).toFixed(1) + '万'
+    }
+    return num.toString()
+  }
 }
 
 /** 常用工具合集 */

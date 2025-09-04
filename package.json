@@ -27,6 +27,7 @@
     "tailwindcss": "^4.1.12"
   },
   "devDependencies": {
+    "@tailwindcss/cli": "^4.1.12",
     "@types/cors": "2.8.19",
     "@types/node": "24.3.0",
     "@typescript-eslint/eslint-plugin": "8.42.0",

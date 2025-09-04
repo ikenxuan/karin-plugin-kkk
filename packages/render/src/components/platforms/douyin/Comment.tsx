@@ -22,7 +22,7 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
         {qrCodeDataUrl ? (
           <img src={qrCodeDataUrl} alt="二维码" className="object-contain w-full h-full" />
         ) : (
-            <div className="flex flex-col justify-center items-center text-default-400">
+          <div className="flex flex-col justify-center items-center text-default-400">
             <QrCode size={80} className="mb-4" />
             <span className="text-lg">二维码生成失败</span>
           </div>
@@ -54,6 +54,14 @@ const VideoInfoHeader: React.FC<VideoInfoHeaderProps> = ({
             src={useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
             alt="抖音Logo"
             className="object-contain w-full h-full"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement
+              target.style.display = 'none'
+              const parent = target.parentElement
+              if (parent) {
+                parent.innerHTML = '<div class="flex justify-center items-center h-full text-2xl font-bold text-gray-600">抖音</div>'
+              }
+            }}
           />
         </div>
         <div className="mt-[250px] space-y-2 text-default-90">
@@ -113,7 +121,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps> = ({ comment }) 
             </div>
           )}
           {comment.status_label && (
-            <div className="inline-block px-4 py-1 rounded-xl ml-3 text-[40px] bg-default-20 text-default-80">
+            <div className="inline-block px-4 py-1 rounded-xl ml-3 text-[40px] bg-default-10 text-default-90">
               {comment.status_label}
             </div>
           )}
@@ -150,7 +158,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps> = ({ comment }) 
                 共{comment.reply_comment_total}条回复
               </span>
             ) : (
-                <span className="text-[40px] text-default-600">回复</span>
+              <span className="text-[40px] text-default-600">回复</span>
             )}
           </div>
 
@@ -178,25 +186,45 @@ const CommentItemComponent: React.FC<CommentItemComponentProps> = ({ comment }) 
  * @returns JSX元素
  */
 export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | 'templateName'>> = (props) => {
+  // 添加数据验证和默认值
+  const safeData = {
+    ...props.data,
+    CommentsData: props.data?.CommentsData || { jsonArray: [] }
+  }
+
+  // 确保 jsonArray 存在且是数组
+  const commentsArray = Array.isArray(safeData.CommentsData?.jsonArray)
+    ? safeData.CommentsData.jsonArray
+    : []
+
   return (
-    <DefaultLayout {...props}>
+    <DefaultLayout {...props} data={safeData}>
       <div className='p-5'>
         {/* 视频信息头部 */}
         <VideoInfoHeader
-          type={props.data.Type}
-          commentLength={props.data.CommentLength}
-          videoSize={props.data.VideoSize}
-          videoFPS={props.data.VideoFPS}
-          imageLength={props.data.ImageLength}
-          qrCodeDataUrl={props.qrCodeDataUrl}
-          useDarkTheme={props.data.useDarkTheme}
+          type={safeData.Type || '未知'}
+          commentLength={safeData.CommentLength || 0}
+          videoSize={safeData.VideoSize}
+          videoFPS={safeData.VideoFPS}
+          imageLength={safeData.ImageLength}
+          qrCodeDataUrl={props.qrCodeDataUrl || ''}
+          useDarkTheme={safeData.useDarkTheme}
         />
 
         {/* 评论列表 */}
         <div className="overflow-auto mx-auto max-w-full">
-          {props.data.CommentsData.jsonArray.map((comment, index) => (
-            <CommentItemComponent key={index} comment={comment} />
-          ))}
+          {commentsArray.length > 0 ? (
+            commentsArray.map((comment, index) => (
+              <CommentItemComponent key={index} comment={comment} />
+            ))
+          ) : (
+            <div className="flex justify-center items-center py-20 text-gray-500">
+              <div className="text-center">
+                <MessageCircle size={64} className="mx-auto mb-4 text-gray-300" />
+                <p className="text-xl">暂无评论数据</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </DefaultLayout>

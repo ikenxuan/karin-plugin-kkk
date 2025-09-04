@@ -101,3 +101,131 @@ export interface CommentItemComponentProps {
   /** 评论数据 */
   comment: CommentItem
 }
+
+/**
+ * 抖音动态组件属性接口
+ */
+export interface DouyinDynamicProps extends BaseComponentProps {
+  /** 渲染请求数据 */
+  data: {
+    /** 是否使用深色主题 */
+    useDarkTheme?: boolean
+    /** 封面图片URL */
+    image_url: string
+    /** 作品描述 */
+    desc: string
+    /** 点赞数 */
+    dianzan: string
+    /** 评论数 */
+    pinglun: string
+    /** 收藏数 */
+    shouchang: string
+    /** 分享数 */
+    share: string
+    /** 创建时间 */
+    create_time: string
+    /** 用户头像URL */
+    avater_url: string
+    /** 用户名 */
+    username: string
+    /** 抖音号 */
+    抖音号: string
+    /** 获赞数 */
+    获赞: string
+    /** 关注数 */
+    关注: string
+    /** 粉丝数 */
+    粉丝: string
+    /** 分享链接 */
+    share_url: string
+  }
+  /** 预生成的二维码数据URL */
+  qrCodeDataUrl: string
+}
+
+/**
+ * 抖音动态用户信息组件属性接口
+ */
+export interface DouyinDynamicUserInfoProps {
+  /** 用户头像URL */
+  avater_url: string
+  /** 用户名 */
+  username: string
+  /** 抖音号 */
+  douyinId: string
+  /** 获赞数 */
+  likes: string
+  /** 关注数 */
+  following: string
+  /** 粉丝数 */
+  followers: string
+  /** 是否使用深色主题 */
+  useDarkTheme?: boolean
+}
+
+/**
+ * 抖音动态二维码组件属性接口
+ */
+export interface DouyinDynamicQRCodeProps {
+  /** 二维码数据URL */
+  qrCodeDataUrl: string
+  /** 是否使用深色主题 */
+  useDarkTheme?: boolean
+}
+
+/**
+ * 抖音直播组件属性接口
+ */
+export interface DouyinLiveProps extends BaseComponentProps {
+  /** 渲染请求数据 */
+  data: {
+    /** 是否使用深色主题 */
+    useDarkTheme?: boolean
+    /** 封面图片URL */
+    image_url: string
+    /** 直播标题 */
+    text: string
+    /** 直播信息 */
+    liveinf: string
+    /** 总观看次数 */
+    总观看次数: string
+    /** 在线观众 */
+    在线观众: string
+    /** 用户头像URL */
+    avater_url: string
+    /** 用户名 */
+    username: string
+    /** 粉丝数 */
+    fans: string
+    /** 动态类型 */
+    dynamicTYPE: string
+    /** 分享链接 */
+    share_url: string
+  }
+  /** 预生成的二维码数据URL */
+  qrCodeDataUrl: string
+}
+
+/**
+ * 抖音直播用户信息组件属性接口
+ */
+export interface DouyinLiveUserInfoProps {
+  /** 用户头像URL */
+  avater_url: string
+  /** 用户名 */
+  username: string
+  /** 粉丝数 */
+  fans: string
+  /** 是否使用深色主题 */
+  useDarkTheme?: boolean
+}
+
+/**
+ * 抖音直播二维码组件属性接口
+ */
+export interface DouyinLiveQRCodeProps {
+  /** 二维码数据URL */
+  qrCodeDataUrl: string
+  /** 是否使用深色主题 */
+  useDarkTheme?: boolean
+}

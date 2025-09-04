@@ -1,12 +1,5 @@
 @import "tailwindcss";
-@plugin './heroui.ts';
-
-/* 关键：添加 heroui 组件源文件路径，让 Tailwind v4 自动发现所有使用的类 */
-@source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
-@source '../../node_modules/@heroui/react/dist/**/*.{js,ts,jsx,tsx}';
-
-/* 自定义变体 */
-@custom-variant dark (&:is(.dark *));
+@config "../../tailwind.config.js";
 
 /* 自定义主题变量 */
 @theme {

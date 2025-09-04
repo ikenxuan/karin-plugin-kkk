@@ -4,8 +4,8 @@ import fs, { writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import path from 'node:path'
 import React from 'react'
 import { RenderRequest, RenderResponse } from './types'
-import { DouyinComment } from './components/platforms/douyin/Comment'
-import { DouyinCommentProps } from './types/douyin'
+import { DouyinComment, DouyinDynamic } from './components/platforms/douyin'
+import { DouyinCommentProps, DouyinDynamicProps } from './types/douyin'
 import QRCode from 'qrcode'
 import { karinPathTemp } from 'node-karin/root'
 import { logger } from 'node-karin'
@@ -57,20 +57,49 @@ const getPackageDir = () => {
 const packageDir = getPackageDir()
 
 /**
- * 渲染服务器类
+ * React渲染类
  */
-class RenderServer {
-  private app = express()
+class ReactRender {
   private outputDir = path.join(karinPathTemp, 'html', 'karin-plugin-kkk', 'renderServer')
   private cssContent: string = ''
-
-  /**
-   * 初始化服务器
-   * @param port 13851
-   */
+  
   constructor () {
     this.ensureOutputDir()
     this.loadCssContent()
+  }
+
+  /**
+   * 获取静态资源路径配置
+   * @param renderEnv 渲染环境
+   * @returns 静态资源路径配置对象
+   */
+  private getResourcePaths(renderEnv: string = process.env.RENDER_ENV || 'production'): {
+    cssDir: string
+    imageDir: string
+  } {
+    switch (renderEnv) {
+      case 'render_dev':
+        // render 开发环境
+        return {
+          cssDir: path.join(packageDir, 'resources/style'),
+          imageDir: path.join(packageDir, 'resources/image')
+        }
+
+      case 'core_dev':
+        // core 开发环境
+        return {
+          cssDir: path.join(path.dirname(packageDir), 'core/resources/style'),
+          imageDir: path.join(path.dirname(packageDir), 'core/resources/image')
+        }
+
+      case 'production':
+      default:
+        // 生产环境
+        return {
+          cssDir: path.join(packageDir, 'node_modules', 'karin-plugin-kkk', 'resources', 'style'),
+          imageDir: path.join(packageDir, 'node_modules', 'karin-plugin-kkk', 'resources', 'image')
+        }
+    }
   }
 
   /**
@@ -78,26 +107,8 @@ class RenderServer {
    */
   private loadCssContent (): void {
     try {
-      const renderEnv = process.env.RENDER_ENV || 'production'
-      let cssPath: string
-
-      switch (renderEnv) {
-        case 'render_dev':
-          // render 开发环境：CSS在 dist/css/main.css
-          cssPath = path.join(packageDir, 'resources/style/main.css')
-          break
-
-        case 'core_dev':
-          // core 开发环境：CSS在 ../core/lib/assets/css/main.css
-          cssPath = path.join(path.dirname(packageDir), 'core/resources/style/main.css')
-          break
-
-        case 'production':
-        default:
-          // 生产环境：CSS在 packages/core/lib/assets/css/main.css
-          cssPath = path.join(packageDir, 'node_modules', 'karin-plugin-kkk', 'resources', 'style', 'main.css')
-          break
-      }
+      const { cssDir } = this.getResourcePaths()
+      const cssPath = path.join(cssDir, 'main.css')
 
       logger.debug('尝试加载CSS文件:', cssPath)
 
@@ -124,39 +135,43 @@ class RenderServer {
    * @returns 渲染结果
    */
   private async renderComponent<T> (request: RenderRequest<T>): Promise<RenderResponse> {
-    // 根据模板类型选择组件
     let component: React.ReactElement
     logger.debug('renderToString: ' + request.templateName)
     switch (request.templateType) {
       case 'douyin':
         if (request.templateName === 'comment') {
           const data = request.data as unknown as DouyinCommentProps['data']
+          const qrCodeSvg = await QRCode.toString(data.share_url, {
+            type: 'svg',
+            width: 600,
+            errorCorrectionLevel: 'L',
+            color: {
+              dark: request.data.useDarkTheme ? '#c3c3c3' : '#3a3a3a', // 背景
+              light: request.data.useDarkTheme ? '#000000' : '#EEEEF0', // 码
+            },
+          })
 
-          // 在服务器端预生成二维码
-          let qrCodeDataUrl = ''
-          try {
-            // 使用 SVG 格式，不需要 canvas 支持
-            const qrCodeSvg = await QRCode.toString(data.share_url, {
-              type: 'svg',
-              width: 600,
-              errorCorrectionLevel: 'L',
-              color: {
-                dark: request.data.useDarkTheme ? '#c3c3c3' : '#3a3a3a', // 背景
-                light: request.data.useDarkTheme ? '#000000' : '#EEEEF0', // 码
-              },
-            })
-            // 将 SVG 转换为 Data URL
-            qrCodeDataUrl = `data:image/svg+xml;base64,${Buffer.from(qrCodeSvg).toString('base64')}`
-          } catch (err) {
-            logger.error('生成二维码失败:', err)
-            // 生成失败时使用空字符串
-            qrCodeDataUrl = ''
-          }
-
-          // 将二维码数据添加到组件props中
           component = React.createElement(DouyinComment, {
             data: request.data as unknown as DouyinCommentProps['data'],
-            qrCodeDataUrl: qrCodeDataUrl,
+            qrCodeDataUrl: `data:image/svg+xml;base64,${Buffer.from(qrCodeSvg).toString('base64')}`,
+            version: request.version,
+            scale: request.scale,
+          })
+        } else if (request.templateName === 'dynamic') {
+          const data = request.data as unknown as DouyinDynamicProps['data']
+          const qrCodeSvg = await QRCode.toString(data.share_url, {
+            type: 'svg',
+            width: 600,
+            errorCorrectionLevel: 'L',
+            color: {
+              dark: request.data.useDarkTheme ? '#c3c3c3' : '#3a3a3a',
+              light: request.data.useDarkTheme ? '#121212' : '#f4f4f4',
+            },
+          })
+
+          component = React.createElement(DouyinDynamic, {
+            data: request.data as unknown as DouyinDynamicProps['data'],
+            qrCodeDataUrl: `data:image/svg+xml;base64,${Buffer.from(qrCodeSvg).toString('base64')}`,
             version: request.version,
             scale: request.scale,
           })
@@ -194,35 +209,12 @@ class RenderServer {
    * @returns 完整的HTML文档
    */
   private wrapHtmlContent (htmlContent: string, htmlFilePath: string): string {
-    const renderEnv = process.env.RENDER_ENV || 'production'
     const htmlDir = path.dirname(htmlFilePath)
-    let cssDir: string
-    let imageDir: string
-
-    switch (renderEnv) {
-      case 'render_dev':
-        // render 开发环境
-        cssDir = path.join(packageDir, 'resources/style')
-        imageDir = path.join(packageDir, 'resources/image')
-        break
-
-      case 'core_dev':
-        // core 开发环境
-        cssDir = path.join(path.dirname(packageDir), 'core/resources/style')
-        imageDir = path.join(path.dirname(packageDir), 'core/resources/image')
-        break
-
-      case 'production':
-      default:
-        // 生产环境
-        cssDir = path.join(packageDir, 'node_modules', 'karin-plugin-kkk', 'resources', 'style')
-        imageDir = path.join(packageDir, 'node_modules', 'karin-plugin-kkk', 'resources', 'image')
-        break
-    }
+    const { cssDir, imageDir } = this.getResourcePaths()
 
     const cssRelativePath = path.relative(htmlDir, cssDir).replace(/\\/g, '/')
     const imageRelativePath = path.relative(htmlDir, imageDir).replace(/\\/g, '/')
-    const cssUrl = `${cssRelativePath}/main.css`
+    const cssUrl = path.join(cssRelativePath, 'main.css')
 
     logger.debug('CSS相对路径:', cssUrl)
     logger.debug('图片相对路径:', imageRelativePath)
@@ -234,18 +226,18 @@ class RenderServer {
     )
 
     return `
-  <!DOCTYPE html>
-  <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" href="${cssUrl}">
-  </head>
-  <body>
-    ${processedHtml}
-  </body>
-  </html>
-  `
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width">
+      <link rel="stylesheet" href="${cssUrl}">
+    </head>
+    <body>
+      ${processedHtml}
+    </body>
+    </html>
+    `
   }
 
   /**
@@ -265,7 +257,7 @@ class RenderServer {
   }
 
   /**
-   * 启动服务器
+   * 启动
    * @returns void
    */
   public start (): void {
@@ -275,33 +267,31 @@ class RenderServer {
 }
 
 if (process.env.RENDER_ENV === 'render_dev' && !process.env.DISABLE_AUTO_START) {
-  const server = new RenderServer()
+  const server = new ReactRender()
   server.start()
 }
 
 /**
- * 渲染React组件为HTML的独立函数（用于本地调用）
+ * 渲染React组件为HTML
  * @param request 渲染请求参数
  * @param outputDir 输出目录路径
  * @returns 渲染结果Promise
  */
-export async function renderComponentToHtml<T = any>(
+export const renderComponentToHtml = async <T>(
   request: RenderRequest<T>, 
   outputDir: string
-): Promise<RenderResponse> {
-  // 确保输出目录存在
+): Promise<RenderResponse> => {
   if (!existsSync(outputDir)) {
     mkdirSync(outputDir, { recursive: true })
   }
 
   // 创建临时服务器实例来复用渲染逻辑
-  const tempServer = new RenderServer()
+  const tempServer = new ReactRender()
   // 设置输出目录
   tempServer['outputDir'] = outputDir
-  
-  // 调用私有渲染方法
+
   return await tempServer['renderComponent'](request)
 }
 
-export default RenderServer
+export default ReactRender
 export type { RenderRequest, RenderResponse }

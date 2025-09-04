@@ -1,32 +1,14 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
-import { resolve } from 'node:path'
+import path, { resolve } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import autoprefixer from 'autoprefixer'
 import { builtinModules } from 'node:module'
 import dts from 'vite-plugin-dts'
-import { copyFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'node:fs'
+import { copyFileSync, mkdirSync, existsSync } from 'node:fs'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
-
-/**
- * 递归复制目录的函数
- * @param src 源目录路径
- * @param dest 目标目录路径
- */
-function copyRecursive (src: string, dest: string) {
-  if (statSync(src).isDirectory()) {
-    if (!existsSync(dest)) {
-      mkdirSync(dest, { recursive: true })
-    }
-    readdirSync(src).forEach(file => {
-      copyRecursive(resolve(src, file), resolve(dest, file))
-    })
-  } else {
-    copyFileSync(src, dest)
-  }
-}
 
 export default defineConfig(({ command, mode }) => {
   // 基础配置
@@ -37,7 +19,7 @@ export default defineConfig(({ command, mode }) => {
     ],
     resolve: {
       alias: {
-        '@': resolve(__dirname, 'src')
+        '@': resolve(__dirname, './src')
       }
     },
     css: {
@@ -50,7 +32,30 @@ export default defineConfig(({ command, mode }) => {
     },
   }
 
-  // 组件库构建模式
+  // 开发模式
+  if (command === 'serve') {
+    return {
+      ...baseConfig,
+      root: path.resolve(__dirname, "./src/dev"),
+      publicDir: path.resolve(__dirname, "./public"), // 指定public目录
+      server: {
+        port: 5173,
+        proxy: {
+          // 代理API请求到后端服务器
+          '/api': {
+            target: 'http://localhost:3001',
+            changeOrigin: true,
+            rewrite: (path) => path.replace(/^\/api/, '')
+          }
+        }
+      },
+      define: {
+        __DEV__: true
+      }
+    }
+  }
+
+  // 构建模式保持不变
   return {
     ...baseConfig,
     plugins: [
@@ -85,8 +90,11 @@ export default defineConfig(({ command, mode }) => {
     build: {
       lib: {
         entry: {
-          'douyin/Comment': resolve(__dirname, 'src/components/platforms/douyin/Comment.tsx'),
           'layouts/DefaultLayout': resolve(__dirname, 'src/components/layouts/DefaultLayout.tsx'),
+          'douyin/Comment': resolve(__dirname, 'src/components/platforms/douyin/Comment.tsx'),
+          'douyin/Dynamic': resolve(__dirname, 'src/components/platforms/douyin/Dynamic.tsx'),
+          'douyin/Live': resolve(__dirname, 'src/components/platforms/douyin/Live.tsx'),
+          // 'bilibili/Comment': resolve(__dirname, 'src/components/platforms/bilibili/Comment.tsx'),
           'index': resolve(__dirname, 'src/client.ts')
         },
         formats: ['es'],

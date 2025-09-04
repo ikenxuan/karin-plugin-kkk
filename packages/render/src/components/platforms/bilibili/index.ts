@@ -1,0 +1,1 @@
+export { default as Comment, BilibiliComment } from './Comment'

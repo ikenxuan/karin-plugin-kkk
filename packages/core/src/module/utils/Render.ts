@@ -55,7 +55,6 @@ async function renderWithReact (path: string, params?: any): Promise<ImageElemen
  */
 async function renderWithLocalComponent (templateType: RenderRequest['templateType'], templateName: string, params?: any): Promise<ImageElement[]> {
   const outputDir = join(Root.pluginPath, 'temp', 'html')
-
   const renderRequest: RenderRequest = {
     templateType,
     templateName,
