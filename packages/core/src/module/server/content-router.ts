@@ -305,7 +305,7 @@ export const getDouyinContentRouter: RequestHandler = async (req, res) => {
       if (cache.douyinUser) {
         authorName = cache.douyinUser.remark || cache.douyinUser.short_id || cache.douyinUser.sec_uid
       }
-      const userProfile = await getDouyinData('用户主页数据', { sec_uid: cache.douyinUser.sec_uid, typeMode: 'strict' }, Config.cookies.douyin)
+      const userProfile = await getDouyinData('用户主页数据', { sec_uid: cache.douyinUser?.sec_uid || cache.sec_uid, typeMode: 'strict' }, Config.cookies.douyin)
 
       return {
         id: cache.aweme_id,
