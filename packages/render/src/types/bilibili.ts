@@ -87,8 +87,18 @@ export interface VideoInfoHeaderProps {
   clarity?: string
   /** 图片数量 */
   imageLength?: number
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
+}
+
+export interface QRCodeSectionProps {
+  /** 分享链接 */
+  shareurl: string
+  /** 二维码数据URL */
+  qrCodeDataUrl?: string
+}
+
+export interface CommentItemComponentProps {
+  /** 评论数据 */
+  comment: CommentItem
 }
 
 /**

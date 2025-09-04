@@ -4,6 +4,9 @@ import { Eye, Download, Maximize2, Minimize2 } from 'lucide-react'
 import { PlatformType } from '../../types/platforms'
 import { ComponentRenderer } from './ComponentRenderer'
 
+/**
+ * 预览面板组件属性接口
+ */
 interface PreviewPanelProps {
   /** 平台类型 */
   platform: PlatformType
@@ -17,6 +20,46 @@ interface PreviewPanelProps {
   scale: number
   /** 缩放变化回调 */
   onScaleChange: (scale: number) => void
+}
+
+/**
+ * 滚动条状态接口
+ */
+interface ScrollBarState {
+  /** 是否显示 */
+  show: boolean
+  /** 位置百分比 */
+  position: number
+  /** 大小百分比 */
+  size: number
+}
+
+/**
+ * 滚动条集合接口
+ */
+interface ScrollBars {
+  /** 水平滚动条 */
+  horizontal: ScrollBarState
+  /** 垂直滚动条 */
+  vertical: ScrollBarState
+}
+
+/**
+ * 滚动条拖拽状态接口
+ */
+interface ScrollBarDragState {
+  /** 滚动条类型 */
+  type: "horizontal" | "vertical"
+  /** 初始鼠标位置 */
+  initialMousePos: number
+  /** 初始组件位置 */
+  initialComponentPos: number
+  /** 初始溢出量 */
+  initialOverflow: number
+  /** 最大溢出量 */
+  maxOverflow: number
+  /** 滚动条轨道大小 */
+  trackSize: number
 }
 
 /**
@@ -50,28 +93,182 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
   scale,
   onScaleChange
 }) => {
-  /** 键盘按键状态 */
+  // 键盘状态
   const [isSpacePressed, setIsSpacePressed] = useState(false)
   const [isAltPressed, setIsAltPressed] = useState(false)
-
-  /** 拖拽状态 */
+  
+  // 拖拽状态
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const [dragEasing, setDragEasing] = useState(false)
 
-  /** 预览容器引用 */
+  // 滚动条状态
+  const [scrollBars, setScrollBars] = useState<ScrollBars>({
+    horizontal: { show: false, position: 0, size: 0 },
+    vertical: { show: false, position: 0, size: 0 },
+  })
+  const [isScrollbarDragging, setIsScrollbarDragging] = useState(false)
+  const [scrollbarDragState, setScrollbarDragState] = useState<ScrollBarDragState | null>(null)
+
+  // 引用
   const previewContainerRef = useRef<HTMLDivElement>(null)
   const previewContentRef = useRef<HTMLDivElement>(null)
-  const animationFrameRef = useRef<number>(0)
-  const [needsScrollbar, setNeedsScrollbar] = useState(false)
+  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
   /**
-   * 重置所有按键状态
+   * 重置键盘状态
    */
   const resetKeyStates = useCallback(() => {
     setIsSpacePressed(false)
     setIsAltPressed(false)
   }, [])
+
+  /**
+   * 检查边界并计算滚动条状态 - 优化响应性
+   */
+  const checkBounds = useCallback(() => {
+    if (!previewContainerRef.current || !previewContentRef.current) return
+
+    const container = previewContainerRef.current.getBoundingClientRect()
+    const contentWidth = 1440 * scale
+    const contentHeight = previewContentRef.current.scrollHeight * scale
+
+    // 计算内容在容器中的实际位置
+    const contentLeft = container.width / 2 + panOffset.x - contentWidth / 2
+    const contentTop = container.height / 2 + panOffset.y - contentHeight / 2
+    const contentRight = contentLeft + contentWidth
+    const contentBottom = contentTop + contentHeight
+
+    // 计算超出边界的阈值（10%）
+    const overflowThreshold = 0.1
+
+    // 水平滚动条逻辑
+    let horizontalShow = false
+    let horizontalPosition = 0
+    let horizontalSize = 0
+
+    const leftOverflow = Math.max(0, -contentLeft)
+    const rightOverflow = Math.max(0, contentRight - container.width)
+
+    if (leftOverflow > container.width * overflowThreshold || rightOverflow > container.width * overflowThreshold) {
+      horizontalShow = true
+
+      // 总内容宽度 = 容器宽度 + 左右超出部分
+      const totalContentWidth = container.width + leftOverflow + rightOverflow
+      const scrollableWidth = totalContentWidth - container.width
+
+      // 滚动条大小 = 可视区域占总内容的比例
+      horizontalSize = Math.max(10, (container.width / totalContentWidth) * 100)
+
+      if (scrollableWidth > 0) {
+        // 滚动条位置 = 左侧溢出占可滚动范围的比例
+        horizontalPosition = (leftOverflow / scrollableWidth) * (100 - horizontalSize)
+      } else {
+        horizontalPosition = 0
+      }
+    }
+
+    // 垂直滚动条逻辑
+    let verticalShow = false
+    let verticalPosition = 0
+    let verticalSize = 0
+
+    const topOverflow = Math.max(0, -contentTop)
+    const bottomOverflow = Math.max(0, contentBottom - container.height)
+
+    if (topOverflow > container.height * overflowThreshold || bottomOverflow > container.height * overflowThreshold) {
+      verticalShow = true
+
+      // 总内容高度 = 容器高度 + 上下超出部分
+      const totalContentHeight = container.height + topOverflow + bottomOverflow
+      const scrollableHeight = totalContentHeight - container.height
+
+      // 滚动条大小 = 可视区域占总内容的比例
+      verticalSize = Math.max(10, (container.height / totalContentHeight) * 100)
+
+      if (scrollableHeight > 0) {
+        // 滚动条位置 = 顶部溢出占可滚动范围的比例
+        verticalPosition = (topOverflow / scrollableHeight) * (100 - verticalSize)
+      } else {
+        verticalPosition = 0
+      }
+    }
+
+    setScrollBars({
+      horizontal: { show: horizontalShow, position: horizontalPosition, size: horizontalSize },
+      vertical: { show: verticalShow, position: verticalPosition, size: verticalSize },
+    })
+  }, [scale, panOffset])
+
+  /**
+   * 立即更新滚动条状态 - 解决响应延迟问题
+   */
+  const updateScrollBarsImmediate = useCallback(() => {
+    // 清除之前的延迟更新
+    if (updateTimeoutRef.current) {
+      clearTimeout(updateTimeoutRef.current)
+    }
+
+    // 立即更新
+    checkBounds()
+  }, [checkBounds])
+
+  /**
+   * 滚动条拖拽开始处理
+   */
+  const handleScrollBarMouseDown = useCallback(
+    (type: "horizontal" | "vertical", e: React.MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      if (!previewContainerRef.current || !previewContentRef.current) return
+
+      const container = previewContainerRef.current.getBoundingClientRect()
+      const contentWidth = 1440 * scale
+      const contentHeight = previewContentRef.current.scrollHeight * scale
+
+      // 计算当前内容位置和溢出情况
+      const contentLeft = container.width / 2 + panOffset.x - contentWidth / 2
+      const contentTop = container.height / 2 + panOffset.y - contentHeight / 2
+      const contentRight = contentLeft + contentWidth
+      const contentBottom = contentTop + contentHeight
+
+      let initialState: ScrollBarDragState
+
+      if (type === "horizontal") {
+        const leftOverflow = Math.max(0, -contentLeft)
+        const rightOverflow = Math.max(0, contentRight - container.width)
+        const maxOverflow = leftOverflow + rightOverflow
+
+        initialState = {
+          type: "horizontal",
+          initialMousePos: e.clientX - container.left,
+          initialComponentPos: panOffset.x,
+          initialOverflow: leftOverflow,
+          maxOverflow: maxOverflow,
+          trackSize: container.width
+        }
+      } else {
+        const topOverflow = Math.max(0, -contentTop)
+        const bottomOverflow = Math.max(0, contentBottom - container.height)
+        const maxOverflow = topOverflow + bottomOverflow
+
+        initialState = {
+          type: "vertical",
+          initialMousePos: e.clientY - container.top,
+          initialComponentPos: panOffset.y,
+          initialOverflow: topOverflow,
+          maxOverflow: maxOverflow,
+          trackSize: container.height
+        }
+      }
+
+      setIsScrollbarDragging(true)
+      setScrollbarDragState(initialState)
+    },
+    [scale, panOffset],
+  )
 
   /**
    * 键盘事件处理
@@ -134,21 +331,42 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
 
     setPanOffset({ x: newOffsetX, y: newOffsetY })
     onScaleChange(newScale)
-  }, [scale, panOffset, onScaleChange])
+
+    // 立即更新滚动条
+    updateScrollBarsImmediate()
+  }, [scale, panOffset, onScaleChange, updateScrollBarsImmediate])
 
   /**
-   * 节流的鼠标滚轮缩放事件处理（左Alt + 滚轮）
+   * 改进的滚轮事件处理 - 支持普通Y轴滚动和Alt+滚轮缩放
    */
   const handleWheel = useCallback(
     throttle((e: WheelEvent) => {
       if (isAltPressed) {
+        // Alt + 滚轮：缩放
         e.preventDefault()
-        const delta = e.deltaY > 0 ? -0.05 : 0.05
-        const newScale = Math.max(0.2, Math.min(1, scale + delta))
+        const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1
+        const newScale = Math.max(0.1, Math.min(3, scale * zoomFactor))
         zoomAtPoint(newScale, e.clientX, e.clientY)
+      } else {
+        // 普通滚轮：Y轴滚动（仅在有垂直滚动条时）
+        if (scrollBars.vertical.show) {
+          e.preventDefault()
+          const scrollSpeed = 50 // 滚动速度
+          const deltaY = e.deltaY > 0 ? scrollSpeed : -scrollSpeed
+
+          setPanOffset(prev => {
+            const newY = prev.y - deltaY
+            const newOffset = { ...prev, y: newY }
+
+            // 立即更新滚动条
+            setTimeout(() => updateScrollBarsImmediate(), 0)
+
+            return newOffset
+          })
+        }
       }
-    }, 16),
-    [isAltPressed, scale, zoomAtPoint]
+    }, 8),
+    [isAltPressed, scale, zoomAtPoint, scrollBars.vertical.show, updateScrollBarsImmediate]
   )
 
   /**
@@ -156,29 +374,49 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
    */
   const handleSliderChange = useCallback((value: number | number[]) => {
     const newScale = Array.isArray(value) ? value[0] : value
-    const container = previewContainerRef.current
-    if (container) {
-      const rect = container.getBoundingClientRect()
-      const centerX = rect.left + rect.width / 2
-      const centerY = rect.top + rect.height / 2
-      zoomAtPoint(newScale, centerX, centerY)
-    }
-  }, [zoomAtPoint])
+    onScaleChange(newScale / 100)
+    // 立即更新滚动条
+    updateScrollBarsImmediate()
+  }, [onScaleChange, updateScrollBarsImmediate])
 
   /**
    * 快速缩放按钮处理
    */
-  const handleQuickZoom = useCallback(() => {
-    const targetScale = scale < 0.6 ? 1 : 0.3
-    const container = previewContainerRef.current
-    if (container) {
-      const rect = container.getBoundingClientRect()
-      const centerX = rect.left + rect.width / 2
-      const centerY = rect.top + rect.height / 2
-      zoomAtPoint(targetScale, centerX, centerY)
-    }
-  }, [scale, zoomAtPoint])
+  const handleQuickZoom = useCallback((targetScale: number) => {
+    onScaleChange(targetScale)
+    // 立即更新滚动条
+    updateScrollBarsImmediate()
+  }, [onScaleChange, updateScrollBarsImmediate])
 
+  /**
+   * 适应画布大小 - 计算Y轴填满画布的缩放比例
+   * 根据容器高度和内容高度自动计算最佳缩放比例
+   */
+  const handleFitToCanvas = useCallback(() => {
+    if (!previewContainerRef.current || !previewContentRef.current) return
+
+    const container = previewContainerRef.current.getBoundingClientRect()
+    const contentHeight = previewContentRef.current.scrollHeight
+
+    // 预留一些边距，避免内容完全贴边
+    const padding = 40
+    const availableHeight = container.height - padding
+
+    // 计算适应Y轴的缩放比例
+    const fitScale = availableHeight / contentHeight
+
+    // 限制缩放范围在0.1到3之间
+    const clampedScale = Math.max(0.1, Math.min(3, fitScale))
+
+    onScaleChange(clampedScale)
+
+    // 重置位移到中心位置
+    setPanOffset({ x: 0, y: 0 })
+
+    // 立即更新滚动条
+    updateScrollBarsImmediate()
+  }, [onScaleChange, updateScrollBarsImmediate])
+  
   /**
    * 鼠标按下事件处理
    */
@@ -207,9 +445,52 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
           y: e.clientY - dragStart.y
         }
         setPanOffset(newOffset)
+        // 立即更新滚动条
+        updateScrollBarsImmediate()
       }
-    }, 16),
-    [isDragging, isSpacePressed, dragStart]
+
+      // 滚动条拖拽处理
+      if (isScrollbarDragging && scrollbarDragState && previewContainerRef.current) {
+        const container = previewContainerRef.current.getBoundingClientRect()
+
+        if (scrollbarDragState.type === "horizontal") {
+          const mouseX = e.clientX - container.left
+          const mouseDelta = mouseX - scrollbarDragState.initialMousePos
+
+          const scrollbarTrackWidth = container.width - 20
+          const scrollbarSize = (scrollBars.horizontal.size / 100) * scrollbarTrackWidth
+          const scrollbarMovableRange = scrollbarTrackWidth - scrollbarSize
+
+          if (scrollbarMovableRange > 0) {
+            const scrollPercent = mouseDelta / scrollbarMovableRange
+            const moveDistance = scrollPercent * scrollbarDragState.maxOverflow
+            const newX = scrollbarDragState.initialComponentPos - moveDistance
+
+            setPanOffset((prev) => ({ ...prev, x: newX }))
+            // 立即更新滚动条
+            updateScrollBarsImmediate()
+          }
+        } else {
+          const mouseY = e.clientY - container.top
+          const mouseDelta = mouseY - scrollbarDragState.initialMousePos
+
+          const scrollbarTrackHeight = container.height - 20
+          const scrollbarSize = (scrollBars.vertical.size / 100) * scrollbarTrackHeight
+          const scrollbarMovableRange = scrollbarTrackHeight - scrollbarSize
+
+          if (scrollbarMovableRange > 0) {
+            const scrollPercent = mouseDelta / scrollbarMovableRange
+            const moveDistance = scrollPercent * scrollbarDragState.maxOverflow
+            const newY = scrollbarDragState.initialComponentPos - moveDistance
+
+            setPanOffset((prev) => ({ ...prev, y: newY }))
+            // 立即更新滚动条
+            updateScrollBarsImmediate()
+          }
+        }
+      }
+    }, 4), // 进一步减少节流时间以提高响应性
+    [isDragging, isSpacePressed, dragStart, isScrollbarDragging, scrollbarDragState, scrollBars, updateScrollBarsImmediate]
   )
 
   /**
@@ -232,6 +513,10 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
         }
       }, 300)
     }
+
+    // 重置滚动条拖拽状态
+    setIsScrollbarDragging(false)
+    setScrollbarDragState(null)
   }, [isDragging])
 
   /**
@@ -262,174 +547,199 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
         container.removeEventListener('wheel', handleWheel)
       }
 
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
+      // 清理定时器
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current)
       }
     }
   }, [handleKeyDown, handleKeyUp, handleWindowBlur, handleWindowFocus, handleMouseMove, handleMouseUp, handleWheel])
 
-  const checkScrollbarNeeded = useCallback(() => {
-    if (!previewContainerRef.current || !previewContentRef.current) return
-
-    const container = previewContainerRef.current
-    const content = previewContentRef.current
-
-    // 获取容器和内容的尺寸
-    const containerRect = container.getBoundingClientRect()
-    const contentRect = content.getBoundingClientRect()
-
-    // 计算内容超出容器的具体尺寸
-    const overflowLeft = Math.max(0, containerRect.left - contentRect.left)
-    const overflowRight = Math.max(0, contentRect.right - containerRect.right)
-    const overflowTop = Math.max(0, containerRect.top - contentRect.top)
-    const overflowBottom = Math.max(0, contentRect.bottom - containerRect.bottom)
-
-    // 计算总的超出尺寸
-    const totalOverflowWidth = overflowLeft + overflowRight
-    const totalOverflowHeight = overflowTop + overflowBottom
-
-    const needsScroll = totalOverflowWidth > 0 || totalOverflowHeight > 0
-    setNeedsScrollbar(needsScroll)
-
-    // 设置容器的滚动区域大小
-    if (needsScroll && container) {
-      const scrollableWidth = containerRect.width + totalOverflowWidth
-      const scrollableHeight = containerRect.height + totalOverflowHeight
-
-      // 通过设置一个隐藏的伪元素来控制滚动区域
-      container.style.setProperty('--scroll-width', `${scrollableWidth}px`)
-      container.style.setProperty('--scroll-height', `${scrollableHeight}px`)
-    }
-  }, [scale, panOffset])
-  
+  /**
+   * 监听缩放和位移变化，立即更新滚动条
+   */
   useEffect(() => {
-    checkScrollbarNeeded()
+    updateScrollBarsImmediate()
+  }, [scale, panOffset.x, panOffset.y, updateScrollBarsImmediate])
 
-    // 监听窗口大小变化
+  /**
+   * 组件挂载后初始化滚动条状态
+   * 确保DOM完全渲染后再检查滚动条显示条件
+   */
+  useEffect(() => {
+    // 使用setTimeout确保DOM完全渲染后再执行
+    const initScrollBars = () => {
+      if (previewContainerRef.current && previewContentRef.current) {
+        // 等待一个渲染周期后再检查
+        requestAnimationFrame(() => {
+          updateScrollBarsImmediate()
+        })
+      }
+    }
+
+    // 立即执行一次
+    initScrollBars()
+
+    // 监听窗口大小变化，重新计算滚动条
     const handleResize = () => {
-      checkScrollbarNeeded()
+      updateScrollBarsImmediate()
     }
 
     window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [checkScrollbarNeeded])
 
-  useEffect(() => {
-    checkScrollbarNeeded()
-  }, [scale, panOffset, checkScrollbarNeeded])
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [updateScrollBarsImmediate])
 
   /**
-   * 获取鼠标指针样式
+   * 监听data、platform、templateId变化，重新计算滚动条
+   * 当内容发生变化时，需要重新检查滚动条显示条件
+   * 这是解决首次加载和组件切换问题的关键
+   */
+  useEffect(() => {
+    // 确保data存在且不为null
+    if (!data) return
+
+    // 内容变化后，需要等待ComponentRenderer完全渲染
+    // 使用多重延迟确保DOM完全更新
+    const timer1 = setTimeout(() => {
+      if (previewContainerRef.current && previewContentRef.current) {
+        requestAnimationFrame(() => {
+          // 再次确保在下一个渲染周期执行
+          setTimeout(() => {
+            updateScrollBarsImmediate()
+          }, 50)
+        })
+      }
+    }, 100)
+
+    return () => clearTimeout(timer1)
+  }, [data, platform, templateId, updateScrollBarsImmediate])
+
+  /**
+   * 专门处理qrCodeDataUrl变化的useEffect
+   * 二维码加载完成后可能影响内容高度
+   */
+  useEffect(() => {
+    if (qrCodeDataUrl) {
+      const timer = setTimeout(() => {
+        updateScrollBarsImmediate()
+      }, 200) // 给二维码图片加载留出时间
+
+      return () => clearTimeout(timer)
+    }
+  }, [qrCodeDataUrl, updateScrollBarsImmediate])
+
+  /**
+   * 获取鼠标样式
    */
   const getCursorStyle = () => {
-    if (isDragging) {
-      return 'grabbing'
-    }
-    if (isSpacePressed) {
-      return 'grab'
-    }
-    if (isAltPressed) {
-      return 'zoom-in'
-    }
+    if (isScrollbarDragging) return 'grabbing'
+    if (isSpacePressed) return isDragging ? 'grabbing' : 'grab'
     return 'default'
   }
 
   return (
     <Card className="flex flex-col h-full">
-      <CardHeader>
+      <CardHeader className="flex-shrink-0 pb-2">
         <div className="flex justify-between items-center w-full">
           <div className="flex gap-2 items-center">
-            <Eye className="w-5 h-5" />
-            <h3 className="text-lg font-semibold">
-              组件预览 - {platform}/{templateId}
-            </h3>
-          </div>
-          <div className="flex gap-4 items-center">
-            <span className="text-sm text-gray-600">
-              缩放: {Math.round(scale * 100)}%
+            <Eye className="w-4 h-4" />
+            <span className="text-sm font-medium">
+              {platform} - {templateId}
             </span>
-            <Slider
-              size="sm"
-              step={0.01}
-              minValue={0.2}
-              maxValue={1}
-              value={scale}
-              onChange={handleSliderChange}
-              className="w-32"
-              color="primary"
-              aria-label="缩放比例调节"
-            />
-            <Button
-              size="sm"
-              variant="flat"
-              startContent={scale < 0.6 ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
-              onPress={handleQuickZoom}
-            >
-              {scale < 0.6 ? '放大' : '缩小'}
-            </Button>
-            <Button
-              size="sm"
-              variant="flat"
-              startContent={<Download className="w-4 h-4" />}
-            >
-              导出
-            </Button>
+          </div>
+          <div className="flex gap-3 items-center">
+            {/* 缩放滑块和显示 */}
+            <div className="flex gap-2 items-center">
+              <span className="text-xs whitespace-nowrap text-default-500">缩放:</span>
+              <Slider
+                size="sm"
+                step={1}
+                minValue={10}
+                maxValue={300}
+                value={[scale * 100]}
+                onChange={handleSliderChange}
+                className="flex-shrink-0 w-32"
+                aria-label="缩放比例滑块"
+              />
+              <div className="flex gap-1 items-center">
+                <span className="text-xs font-medium tabular-nums">{Math.round(scale * 100)}%</span>
+              </div>
+            </div>
+
+            {/* 适应画布按钮 */}
+            <div className="flex gap-1">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={handleFitToCanvas}
+                className="flex-shrink-0 px-2 text-xs"
+                startContent={<Minimize2 className="w-3 h-3" />}
+              >
+                适应
+              </Button>
+            </div>
+
+            {/* 功能按钮组 */}
+            <div className="flex gap-1">
+              <Button size="sm" variant="ghost">
+                <Download className="w-4 h-4" />
+              </Button>
+              <Button size="sm" variant="ghost">
+                <Maximize2 className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </CardHeader>
+
       <CardBody className="overflow-hidden relative flex-1 p-0">
-        {/* 快捷键 */}
-        <div className="absolute top-4 left-4 z-10 p-3 space-y-2 text-sm rounded-lg shadow-lg backdrop-blur-sm bg-default-0/20 border-default-20">
-          <div className="flex gap-2 items-center">
-            <Kbd keys={["alt"]} className="bg-default-10 text-default-70">Alt</Kbd>
-            <span className="text-default-50">+</span>
-            <span className="px-2 py-1 text-xs rounded bg-default-10 text-default-70">滚轮</span>
-            <span className="text-default-600">缩放</span>
+        {/* 快捷键提示 */}
+        <div className="flex flex-col absolute p-4 z-10 gap-1.5 text-sm bg-default-0/50 backdrop-blur-sm rounded-br-3xl">
+          <div className="flex gap-1 items-center">
+            <Kbd className="bg-default-0" keys={['space']}>Space</Kbd>
+            <span>+ 拖拽移动</span>
           </div>
-          <div className="flex gap-2 items-center">
-            <Kbd keys={["space"]} className="bg-default-10 text-default-70">Space</Kbd>
-            <span className="text-default-500">+</span>
-            <span className="px-2 py-1 text-xs rounded bg-default-10 text-default-70">拖拽</span>
-            <span className="text-default-600">移动</span>
+          <div className="flex gap-1 items-center">
+            <Kbd className="bg-default-0" keys={['alt']}>Alt</Kbd>
+            <span>+ 滚轮缩放</span>
+          </div>
+          <div className="flex gap-1 items-center">
+            <span>滚轮 Y 轴滚动</span>
           </div>
         </div>
 
+        {/* 预览容器 */}
         <div
           ref={previewContainerRef}
-          className={`flex justify-center items-center w-full h-full ${needsScrollbar ? 'overflow-auto' : 'overflow-hidden'
-            }`}
-          style={{
-            cursor: getCursorStyle(),
-            ...(needsScrollbar && {
-              '--scroll-width': 'var(--scroll-width)',
-              '--scroll-height': 'var(--scroll-height)'
-            })
-          }}
+          className="overflow-hidden relative w-full h-full bg-default-0"
+          style={{ cursor: getCursorStyle() }}
           onMouseDown={handleMouseDown}
-          onScroll={checkScrollbarNeeded}
         >
-          {needsScrollbar && (
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: 'var(--scroll-width, 100%)',
-                height: 'var(--scroll-height, 100%)',
-                pointerEvents: 'none',
-                visibility: 'hidden'
-              }}
-            />
-          )}
+          {/* 网格背景 */}
+          <div
+            className="absolute inset-0 opacity-30"
+            style={{
+              backgroundImage: `
+                linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)
+              `,
+              backgroundSize: '20px 20px',
+            }}
+          />
+
+          {/* 实际渲染的组件 */}
           <div
             ref={previewContentRef}
-            className="bg-white border border-gray-300 shadow-lg"
+            className="absolute"
             style={{
-              transform: `scale(${scale}) translate(${panOffset.x / scale}px, ${panOffset.y / scale}px)`,
-              width: '1440px',
-              transformOrigin: 'center center',
+              left: '50%',
+              top: '50%',
+              transform: `translate(-50%, -50%) translate(${panOffset.x}px, ${panOffset.y}px) scale(${scale})`,
+              transformOrigin: 'center',
               transition: dragEasing ? 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'transform 0.1s ease-out',
-              willChange: isDragging ? 'transform' : 'auto'
+              width: '1440px',
             }}
           >
             <ComponentRenderer
@@ -439,6 +749,60 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
               qrCodeDataUrl={qrCodeDataUrl}
             />
           </div>
+
+          {/* 水平滚动条 */}
+          {scrollBars.horizontal.show && (
+            <div
+              className="absolute right-2 bottom-2 left-2 h-3 rounded-full border shadow-sm backdrop-blur-sm bg-black/10 border-white/20"
+              style={{
+                background: 'linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(240,240,240,0.9))',
+                boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.1)'
+              }}
+            >
+              <div
+                className={`absolute top-0.5 h-2 rounded-full transition-all ${isScrollbarDragging && scrollbarDragState?.type === 'horizontal'
+                  ? 'bg-blue-500 shadow-md'
+                  : 'bg-default-60 hover:bg-default-70'
+                  }`}
+                style={{
+                  left: `${scrollBars.horizontal.position}%`,
+                  width: `${scrollBars.horizontal.size}%`,
+                  background: isScrollbarDragging && scrollbarDragState?.type === 'horizontal'
+                    ? 'linear-gradient(to bottom, #3b82f6, #2563eb)'
+                    : 'linear-gradient(to bottom, #6b7280, #4b5563)',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3)'
+                }}
+                onMouseDown={(e) => handleScrollBarMouseDown('horizontal', e)}
+              />
+            </div>
+          )}
+
+          {/* 垂直滚动条 */}
+          {scrollBars.vertical.show && (
+            <div
+              className="absolute top-2 right-2 bottom-2 w-3 rounded-full shadow-sm backdrop-blur-sm bg-black/10 border-white/20"
+              style={{
+                background: 'linear-gradient(to right, rgba(255,255,255,0.8), rgba(240,240,240,0.9))',
+                boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.1)'
+              }}
+            >
+              <div
+                className={`absolute left-0.5 w-2 rounded-full transition-all ${isScrollbarDragging && scrollbarDragState?.type === 'vertical'
+                  ? 'bg-blue-500 shadow-md'
+                  : 'bg-default-60 hover:bg-default-70'
+                  }`}
+                style={{
+                  top: `${scrollBars.vertical.position}%`,
+                  height: `${scrollBars.vertical.size}%`,
+                  background: isScrollbarDragging && scrollbarDragState?.type === 'vertical'
+                    ? 'linear-gradient(to right, #3b82f6, #2563eb)'
+                    : 'linear-gradient(to right, #6b7280, #4b5563)',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3)'
+                }}
+                onMouseDown={(e) => handleScrollBarMouseDown('vertical', e)}
+              />
+            </div>
+          )}
         </div>
       </CardBody>
     </Card>

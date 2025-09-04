@@ -66,15 +66,15 @@ const LiveInfoSection: React.FC<{
   return (
     <div className="px-20">
       <div className="h-[10px]"></div>
-      <div className={`text-[65px] items-center tracking-[1.5px] relative break-words font-bold ${useDarkTheme ? 'text-[#e7e7e7e7]' : 'text-black'
+      <div className={`text-[65px] items-center tracking-[1.5px] relative break-words font-bold text-default-10'
         }`}>
         {text}
       </div>
       <div className="h-[10px]"></div>
-      <div className="text-[45px] items-center tracking-[1.5px] relative break-words text-[#808080] tracking-normal">
+      <div className="text-[45px] items-center tracking-[1.5px] relative break-words text-default-50">
         {liveinf}
       </div>
-      <div className="text-[45px] items-center tracking-[1.5px] relative break-words text-[#808080] tracking-normal">
+      <div className="text-[45px] items-center tracking-[1.5px] relative break-words text-default-50">
         观看总人数{totalViews} | 在线观众{onlineAudience}
       </div>
     </div>

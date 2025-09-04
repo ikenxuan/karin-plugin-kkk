@@ -94,7 +94,7 @@ export default defineConfig(({ command, mode }) => {
           'douyin/Comment': resolve(__dirname, 'src/components/platforms/douyin/Comment.tsx'),
           'douyin/Dynamic': resolve(__dirname, 'src/components/platforms/douyin/Dynamic.tsx'),
           'douyin/Live': resolve(__dirname, 'src/components/platforms/douyin/Live.tsx'),
-          // 'bilibili/Comment': resolve(__dirname, 'src/components/platforms/bilibili/Comment.tsx'),
+          'bilibili/Comment': resolve(__dirname, 'src/components/platforms/bilibili/Comment.tsx'),
           'index': resolve(__dirname, 'src/client.ts')
         },
         formats: ['es'],
