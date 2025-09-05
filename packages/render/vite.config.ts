@@ -95,6 +95,7 @@ export default defineConfig(({ command, mode }) => {
           'douyin/Dynamic': resolve(__dirname, 'src/components/platforms/douyin/Dynamic.tsx'),
           'douyin/Live': resolve(__dirname, 'src/components/platforms/douyin/Live.tsx'),
           'bilibili/Comment': resolve(__dirname, 'src/components/platforms/bilibili/Comment.tsx'),
+          'bilibili/Dynamic/DYNAMIC_TYPE_DRAW': resolve(__dirname, 'src/components/platforms/bilibili/dynamic/DrawDynamic.tsx'),
           'index': resolve(__dirname, 'src/client.ts')
         },
         formats: ['es'],

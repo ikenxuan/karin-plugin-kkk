@@ -1,6 +1,7 @@
 import React from 'react'
 import { PlatformType } from '../../types/platforms'
 import { version } from '../../services/DataService'
+import BilibiliDrawDynamic from '../../components/platforms/bilibili/dynamic/DrawDynamic'
 
 // 抖音
 const DouyinComment = React.lazy(() =>
@@ -177,6 +178,16 @@ const renderBilibiliComponent = (templateId: string, data: any, qrCodeDataUrl: s
         </React.Suspense>
       )
     
+    case 'dynamic/DYNAMIC_TYPE_DRAW':
+      return (
+        <React.Suspense fallback={
+          <div className="flex justify-center items-center h-full text-default-50">
+            加载动态组件中...
+          </div>
+        }>
+          <BilibiliDrawDynamic {...commonProps} />
+        </React.Suspense>
+      )
     default:
       return (
         <div className="flex justify-center items-center h-full text-default-50">

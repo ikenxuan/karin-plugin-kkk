@@ -53,10 +53,31 @@ const bilibiliTemplates: TemplateConfig[] = [
     enabled: true
   },
   {
-    id: 'dynamic',
-    name: '动态',
+    id: 'dynamic/DYNAMIC_TYPE_DRAW',
+    name: '图文动态',
     platform: PlatformType.BILIBILI,
-    description: 'B站动态展示模板',
+    description: 'B站图文动态展示模板',
+    enabled: true
+  },
+  {
+    id: 'dynamic/DYNAMIC_TYPE_AV',
+    name: '视频动态',
+    platform: PlatformType.BILIBILI,
+    description: 'B站视频动态展示模板',
+    enabled: false
+  },
+  {
+    id: 'dynamic/DYNAMIC_TYPE_WORD',
+    name: '纯文字动态',
+    platform: PlatformType.BILIBILI,
+    description: 'B站纯文字动态展示模板',
+    enabled: false
+  },
+  {
+    id: 'dynamic/DYNAMIC_TYPE_FORWARD',
+    name: '转发动态',
+    platform: PlatformType.BILIBILI,
+    description: 'B站转发动态展示模板',
     enabled: false
   }
 ]

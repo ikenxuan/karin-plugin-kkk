@@ -32,13 +32,27 @@ export async function Render (path: string, params?: any, useReact = true): Prom
 
 /**
  * 使用React组件渲染
- * @param path 组件路径标识，格式：platform/templateName
+ * @param path 组件路径标识，格式：platform/category/templateName 或 platform/templateName
  * @param params 渲染参数
  * @returns 图片元素数组
  */
 async function renderWithReact (path: string, params?: any): Promise<ImageElement[]> {
   try {
-    const [templateType, templateName] = path.split('/')
+    const pathParts = path.split('/')
+    let templateType: string
+    let templateName: string
+
+    if (pathParts.length === 2) {
+      // 二级路径：platform/templateName
+      [templateType, templateName] = pathParts
+    } else if (pathParts.length === 3) {
+      // 三级路径：platform/category/templateName
+      templateType = pathParts[0]
+      templateName = `${pathParts[1]}/${pathParts[2]}`
+    } else {
+      throw new Error(`不支持的路径格式: ${path}`)
+    }
+
     return await renderWithLocalComponent(templateType as RenderRequest['templateType'], templateName, params)
   } catch (error) {
     console.error('React渲染失败，回退到传统模板渲染:', error)

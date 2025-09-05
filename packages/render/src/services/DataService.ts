@@ -60,7 +60,7 @@ export class DataService {
   async saveTemplateData (platform: PlatformType, templateId: string, data: any, filename?: string): Promise<void> {
     try {
       const url = filename
-        ? `/data/${platform}/${templateId}/${filename}`
+        ? `/data/${platform}/${templateId}/files/${filename}`
         : `/data/${platform}/${templateId}`
       await this.axiosInstance.post(url, data)
     } catch (error) {

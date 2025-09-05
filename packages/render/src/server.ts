@@ -5,7 +5,9 @@ import path from 'node:path'
 import React from 'react'
 import { RenderRequest, RenderResponse } from './types'
 import { DouyinComment, DouyinDynamic } from './components/platforms/douyin'
+import { BilibiliComment, BilibiliDrawDynamic } from './components/platforms/bilibili'
 import { DouyinCommentProps, DouyinDynamicProps } from './types/douyin'
+import { BilibiliCommentProps, BilibiliDynamicProps } from './types/bilibili'
 import QRCode from 'qrcode'
 import { karinPathTemp } from 'node-karin/root'
 import { logger } from 'node-karin'
@@ -146,8 +148,8 @@ class ReactRender {
             width: 600,
             errorCorrectionLevel: 'L',
             color: {
-              dark: request.data.useDarkTheme ? '#c3c3c3' : '#3a3a3a', // 背景
-              light: request.data.useDarkTheme ? '#000000' : '#EEEEF0', // 码
+              dark: request.data.useDarkTheme ? '#c3c3c3' : '#3a3a3a',
+              light: request.data.useDarkTheme ? '#000000' : '#EEEEF0',
             },
           })
 
@@ -179,6 +181,56 @@ class ReactRender {
           throw new Error(`不支持的抖音模板: ${request.templateName}`)
         }
         break
+
+      case 'bilibili':
+        if (request.templateName === 'comment') {
+          const data = request.data as unknown as BilibiliCommentProps['data']
+          const qrCodeSvg = await QRCode.toString(data.share_url, {
+            type: 'svg',
+            width: 600,
+            errorCorrectionLevel: 'L',
+            color: {
+              dark: request.data.useDarkTheme ? '#c3c3c3' : '#3a3a3a',
+              light: request.data.useDarkTheme ? '#121212' : '#f4f4f4',
+            },
+          })
+
+          component = React.createElement(BilibiliComment, {
+            data: request.data as unknown as BilibiliCommentProps['data'],
+            qrCodeDataUrl: `data:image/svg+xml;base64,${Buffer.from(qrCodeSvg).toString('base64')}`,
+            version: request.version,
+            scale: request.scale,
+          })
+        } else if (request.templateName.startsWith('dynamic/')) {
+          // B站动态有多种类型，需要根据具体的模板名称进行switch处理
+          const dynamicType = request.templateName.split('/')[1]
+          switch (dynamicType) {
+            case 'DYNAMIC_TYPE_DRAW':
+              const data = request.data as unknown as BilibiliDynamicProps['data']
+              const qrCodeSvg = await QRCode.toString(data.share_url, {
+                type: 'svg',
+                width: 600,
+                errorCorrectionLevel: 'L',
+                color: {
+                  dark: request.data.useDarkTheme ? '#c3c3c3' : '#3a3a3a',
+                  light: request.data.useDarkTheme ? '#121212' : '#f4f4f4',
+                },
+              })
+
+              component = React.createElement(BilibiliDrawDynamic, {
+                data: request.data as unknown as BilibiliDynamicProps['data'],
+                qrCodeDataUrl: `data:image/svg+xml;base64,${Buffer.from(qrCodeSvg).toString('base64')}`,
+                version: request.version,
+                scale: request.scale,
+              })
+              break
+            default:
+              throw new Error(`不支持的B站动态模板: ${dynamicType}`)
+          }
+        } else {
+          throw new Error(`不支持的B站模板: ${request.templateName}`)
+        }
+        break
       default:
         throw new Error(`不支持的模板类型: ${request.templateType}`)
     }
@@ -187,7 +239,8 @@ class ReactRender {
     const htmlContent = renderToString(component)
 
     // 生成文件路径
-    const fileName = `${request.templateType}_${request.templateName}_${Date.now()}.html`
+    const safeTemplateName = request.templateName.replace(/\//g, '_')
+    const fileName = `${request.templateType}_${safeTemplateName}_${Date.now()}.html`
     const filePath = path.join(this.outputDir, fileName)
 
     // 添加TailwindCSS样式，使用绝对路径

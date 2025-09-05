@@ -1,10 +1,11 @@
 import express from 'node-karin/express'
 import cors from 'cors'
-import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from 'node:fs'
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, unlinkSync, statSync } from 'node:fs'
 import { resolve, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import QRCode from 'qrcode'
 import { PlatformType } from '../types/platforms'
+import { logger } from 'node-karin'
 
 const __dirname = fileURLToPath(new URL('..', import.meta.url))
 const dataDir = resolve(__dirname, '../dev-data')
@@ -24,7 +25,7 @@ app.use(express.json({ limit: '10mb' }))
  * @param templateId 模板ID
  * @returns 目录路径
  */
-function getTemplateDataDir(platform: PlatformType, templateId: string): string {
+function getTemplateDataDir (platform: PlatformType, templateId: string): string {
   const dir = join(dataDir, platform, templateId)
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true })
@@ -39,11 +40,19 @@ function getTemplateDataDir(platform: PlatformType, templateId: string): string 
  * @param filename 文件名
  * @returns 数据对象或null
  */
-function readDataFile(platform: PlatformType, templateId: string, filename: string = 'default.json') {
+function readDataFile (platform: PlatformType, templateId: string, filename: string = 'default.json') {
   const dir = getTemplateDataDir(platform, templateId)
   const filePath = join(dir, filename)
+
   if (existsSync(filePath)) {
     try {
+      // 检查路径是否为文件而不是目录
+      const stats = statSync(filePath)
+      if (stats.isDirectory()) {
+        console.error(`路径是目录而不是文件: ${filePath}`)
+        return null
+      }
+
       return JSON.parse(readFileSync(filePath, 'utf-8'))
     } catch (error) {
       console.error(`读取数据文件失败: ${filePath}`, error)
@@ -60,7 +69,7 @@ function readDataFile(platform: PlatformType, templateId: string, filename: stri
  * @param data 数据对象
  * @param filename 文件名
  */
-function writeDataFile(platform: PlatformType, templateId: string, data: any, filename: string = 'default.json') {
+function writeDataFile (platform: PlatformType, templateId: string, data: any, filename: string = 'default.json') {
   const dir = getTemplateDataDir(platform, templateId)
   const filePath = join(dir, filename)
   writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8')
@@ -72,7 +81,7 @@ function writeDataFile(platform: PlatformType, templateId: string, data: any, fi
  * @param templateId 模板ID
  * @returns 文件名列表
  */
-function getAvailableDataFiles(platform: PlatformType, templateId: string): string[] {
+function getAvailableDataFiles (platform: PlatformType, templateId: string): string[] {
   const dir = getTemplateDataDir(platform, templateId)
   try {
     return readdirSync(dir).filter(file => file.endsWith('.json'))
@@ -81,18 +90,21 @@ function getAvailableDataFiles(platform: PlatformType, templateId: string): stri
   }
 }
 
-// 获取模板数据文件列表
-app.get('/data/:platform/:templateId/files', (req, res) => {
-  const { platform, templateId } = req.params
-  const files = getAvailableDataFiles(platform as PlatformType, templateId)
+// 匹配 /data/{platform}/{templateId}/files 格式
+app.get(/^\/data\/([^/]+)\/(.+)\/files$/, (req, res) => {
+  const platform = req.params[0] as PlatformType
+  const templateId = req.params[1]
+  const files = getAvailableDataFiles(platform, templateId)
   res.json({ files })
 })
 
-// 获取特定数据文件
-app.get('/data/:platform/:templateId/:filename', (req, res) => {
-  const { platform, templateId, filename } = req.params
-  const data = readDataFile(platform as PlatformType, templateId, filename)
-  
+// 匹配 /data/{platform}/{templateId}/files/{filename} 格式
+app.get(/^\/data\/([^/]+)\/(.+)\/files\/([^/]+)$/, (req, res) => {
+  const platform = req.params[0] as PlatformType
+  const templateId = req.params[1]
+  const filename = req.params[2]
+  const data = readDataFile(platform, templateId, filename)
+
   if (data) {
     res.json(data)
   } else {
@@ -100,19 +112,35 @@ app.get('/data/:platform/:templateId/:filename', (req, res) => {
   }
 })
 
-// 获取默认模板数据
-app.get('/data/:platform/:templateId', (req, res) => {
-  const { platform, templateId } = req.params
-  let data = readDataFile(platform as PlatformType, templateId, 'default.json')
-  
+// 匹配 /data/{platform}/{templateId}/{filename} 格式（特定文件）
+app.get(/^\/data\/([^/]+)\/(.+)\/([^/]+\.json)$/, (req, res) => {
+  const platform = req.params[0] as PlatformType
+  const templateId = req.params[1]
+  const filename = req.params[2]
+  const data = readDataFile(platform, templateId, filename)
+
+  if (data) {
+    res.json(data)
+  } else {
+    res.status(404).json({ error: '数据文件不存在' })
+  }
+})
+
+// 匹配 /data/{platform}/{templateId} 格式（默认数据）
+app.get(/^\/data\/([^/]+)\/(.+)$/, (req, res) => {
+  const platform = req.params[0] as PlatformType
+  const templateId = req.params[1]
+  let data = readDataFile(platform, templateId, 'default.json')
   res.json(data)
 })
 
-// 保存特定数据文件
-app.post('/data/:platform/:templateId/:filename', (req, res) => {
+// POST 路由 - 保存特定数据文件
+app.post(/^\/data\/([^/]+)\/(.+)\/files\/([^/]+)$/, (req, res) => {
   try {
-    const { platform, templateId, filename } = req.params
-    writeDataFile(platform as PlatformType, templateId, req.body, filename)
+    const platform = req.params[0] as PlatformType
+    const templateId = req.params[1]
+    const filename = req.params[2]
+    writeDataFile(platform, templateId, req.body, filename)
     res.json({ success: true, message: `${platform}/${templateId}/${filename} 数据保存成功` })
   } catch (error) {
     console.error('保存数据失败:', error)
@@ -120,11 +148,12 @@ app.post('/data/:platform/:templateId/:filename', (req, res) => {
   }
 })
 
-// 保存默认模板数据
-app.post('/data/:platform/:templateId', (req, res) => {
+// POST 路由 - 保存默认模板数据
+app.post(/^\/data\/([^/]+)\/(.+)$/, (req, res) => {
   try {
-    const { platform, templateId } = req.params
-    writeDataFile(platform as PlatformType, templateId, req.body, 'default.json')
+    const platform = req.params[0] as PlatformType
+    const templateId = req.params[1]
+    writeDataFile(platform, templateId, req.body, 'default.json')
     res.json({ success: true, message: `${platform}/${templateId} 默认数据保存成功` })
   } catch (error) {
     console.error('保存数据失败:', error)
@@ -132,28 +161,30 @@ app.post('/data/:platform/:templateId', (req, res) => {
   }
 })
 
-// 删除数据文件
-app.delete('/data/:platform/:templateId/:filename', (req, res) => {
+// DELETE 路由 - 删除数据文件
+app.delete(/^\/data\/([^/]+)\/(.+)\/files\/([^/]+)$/, (req, res) => {
   try {
-    const { platform, templateId, filename } = req.params
-    
+    const platform = req.params[0] as PlatformType
+    const templateId = req.params[1]
+    const filename = req.params[2]
+
     // 不允许删除default.json
     if (filename === 'default.json') {
       return res.status(400).json({ error: '不能删除默认数据文件' })
     }
-    
-    const dir = getTemplateDataDir(platform as PlatformType, templateId)
-    const filePath = join(dir, filename)
-    
+
+    const templateDataDir = getTemplateDataDir(platform, templateId)
+    const filePath = join(templateDataDir, filename)
+
     if (existsSync(filePath)) {
       unlinkSync(filePath)
-      res.json({ success: true, message: '文件删除成功' })
+      res.json({ success: true, message: `${filename} 删除成功` })
     } else {
-      res.status(404).json({ error: '文件不存在' })
+      res.status(404).json({ success: false, error: '文件不存在' })
     }
   } catch (error) {
     console.error('删除文件失败:', error)
-    res.status(500).json({ error: '删除失败' })
+    res.status(500).json({ success: false, error: '删除失败' })
   }
 })
 
@@ -184,6 +215,6 @@ app.get('/qrcode', async (req, res) => {
 
 const PORT = 3001
 app.listen(PORT, () => {
-  console.log(`🚀 Mock API服务器运行在 http://localhost:${PORT}`)
-  console.log(`📁 数据文件存储在: ${dataDir}`)
+  logger.info(`🚀 Mock API服务器运行在 http://localhost:${PORT}`)
+  logger.info(`📁 数据文件存储在: ${dataDir}`)
 })
