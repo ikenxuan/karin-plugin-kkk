@@ -6,7 +6,7 @@
   "license": "GPL-3.0-only",
   "author": "ikenxuan",
   "scripts": {
-    "build": "pnpm run build:render && pnpm run build:core && pnpm run build:web",
+    "build": "pnpm -r run build",
     "build:core": "pnpm --filter karin-plugin-kkk run build",
     "build:desktop": "pnpm --filter web run build:desktop",
     "build:render": "pnpm --filter render run build",
