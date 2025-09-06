@@ -4,7 +4,7 @@ import path from 'node:path'
 import React from 'react'
 import type { RenderRequest, RenderResponse } from './types'
 import { DouyinComment, DouyinDynamic } from './components/platforms/douyin'
-import { BilibiliComment, BilibiliDrawDynamic, BilibiliLiveDynamic, BilibiliVideoDynamic } from './components/platforms/bilibili'
+import { BilibiliComment, BilibiliDrawDynamic, BilibiliForwardDynamic, BilibiliLiveDynamic, BilibiliVideoDynamic } from './components/platforms/bilibili'
 import QRCode, { type QRCodeRenderersOptions } from 'qrcode'
 import { karinPathTemp } from 'node-karin/root'
 import { logger } from 'node-karin'
@@ -301,6 +301,10 @@ function registerComponents (): void {
   })
   ComponentRegistry.register('bilibili', 'dynamic/DYNAMIC_TYPE_AV', {
     component: BilibiliVideoDynamic,
+    validateData: (data) => data && typeof data.share_url === 'string'
+  })
+  ComponentRegistry.register('bilibili', 'dynamic/DYNAMIC_TYPE_FORWARD', {
+    component: BilibiliForwardDynamic,
     validateData: (data) => data && typeof data.share_url === 'string'
   })
 }

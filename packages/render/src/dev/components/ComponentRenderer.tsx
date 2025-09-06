@@ -25,22 +25,24 @@ const BilibiliComment = React.lazy(() =>
     default: module.BilibiliComment
   }))
 )
-
 const BilibiliDrawDynamic = React.lazy(() =>
   import('../../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_DRAW').then(module => ({
     default: module.BilibiliDrawDynamic
   }))
 )
-
 const BilibiliVideoDynamic = React.lazy(() =>
   import('../../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_AV').then(module => ({
     default: module.BilibiliVideoDynamic
   }))
 )
-
 const BilibiliLiveDynamic = React.lazy(() =>
   import('../../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD').then(module => ({
     default: module.BilibiliLiveDynamic
+  }))
+)
+const BilibiliForwardDynamic = React.lazy(() =>
+  import('../../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_FORWARD').then(module => ({
+    default: module.BilibiliForwardDynamic
   }))
 )
 
@@ -225,6 +227,17 @@ const renderBilibiliComponent = (templateId: string, data: any, qrCodeDataUrl: s
           </div>
         }>
           <BilibiliLiveDynamic {...commonProps} />
+        </React.Suspense>
+      )
+    
+    case 'dynamic/DYNAMIC_TYPE_FORWARD':
+      return (
+        <React.Suspense fallback={
+          <div className="flex justify-center items-center h-full text-default-50">
+            加载动态组件中...
+          </div>
+        }>
+          <BilibiliForwardDynamic {...commonProps} />
         </React.Suspense>
       )
     

@@ -79,7 +79,7 @@ const bilibiliTemplates: TemplateConfig[] = [
     name: '转发动态',
     platform: PlatformType.BILIBILI,
     description: 'B站转发动态展示模板',
-    enabled: false
+    enabled: true
   },
   {
     id: 'dynamic/DYNAMIC_TYPE_LIVE_RCMD',
