@@ -70,8 +70,8 @@ export default defineConfig(({ command }) => {
         name: 'copy-css-to-core',
         writeBundle () {
           const sourceFile = resolve(__dirname, 'dist/css/main.css')
-          const targetDir = resolve(__dirname, '../core/resources/style')
-          const targetFile = resolve(targetDir, 'main.css')
+          const targetDir = resolve(__dirname, '../core/lib/karin-plugin-kkk.css')
+          const targetFile = resolve(targetDir)
 
           if (!existsSync(targetDir)) {
             mkdirSync(targetDir, { recursive: true })

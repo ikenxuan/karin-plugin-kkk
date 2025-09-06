@@ -1,3 +1,4 @@
+@import './font.css';
 @import "tailwindcss";
 @config "../../tailwind.config.js";
 
@@ -337,31 +338,6 @@
   }
 }
 
-/* 字体配置 */
-@font-face {
-  font-family: 'HarmonyOS Sans';
-  src: url('/fonts/HarmonyOS_Sans_Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'HarmonyOS Sans';
-  src: url('/fonts/HarmonyOS_Sans_Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'HarmonyOS Sans';
-  src: url('/fonts/HarmonyOS_Sans_Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* 基础样式 */
 @layer base {
   * {
@@ -373,7 +349,7 @@
   }
 
   body {
-    font-family: 'HarmonyOS Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    font-family: HarmonyOSHans-Regular, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
     line-height: 1.6;
     color: var(--theme-text);
     background-color: var(--theme-bg);

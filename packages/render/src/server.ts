@@ -226,7 +226,7 @@ class ResourcePathManager {
       case 'production':
       default:
         return {
-          cssDir: path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'resources', 'style'),
+          cssDir: path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'lib'),
           imageDir: path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'resources', 'image')
         }
     }
@@ -255,7 +255,7 @@ class HtmlWrapper {
 
     const cssRelativePath = path.relative(htmlDir, cssDir).replace(/\\/g, '/')
     const imageRelativePath = path.relative(htmlDir, imageDir).replace(/\\/g, '/')
-    const cssUrl = path.join(cssRelativePath, 'main.css')
+    const cssUrl = path.join(cssRelativePath, 'karin-plugin-kkk.css')
 
     logger.debug('CSS相对路径:', cssUrl)
     logger.debug('图片相对路径:', imageRelativePath)
@@ -340,7 +340,7 @@ class ReactRender {
   private loadCssContent (): void {
     try {
       const { cssDir } = this.resourceManager.getResourcePaths()
-      const cssPath = path.join(cssDir, 'main.css')
+      const cssPath = path.join(cssDir, 'karin-plugin-kkk.css')
 
       logger.debug('尝试加载CSS文件:', cssPath)
 
@@ -426,9 +426,9 @@ class ReactRender {
    * 启动服务
    */
   public start (): void {
-    logger.info(`📁 HTML输出目录: ${this.outputDir}`)
-    logger.info(`🎨 CSS文件状态: ${this.cssContent ? '已加载' : '未加载'}`)
-    logger.info(`📦 已注册组件: ${ComponentRegistry.getAllKeys().join(', ')}`)
+    logger.debug(`📁 HTML输出目录: ${this.outputDir}`)
+    logger.debug(`🎨 CSS文件状态: ${this.cssContent ? '已加载' : '未加载'}`)
+    logger.debug(`📦 已注册组件: ${ComponentRegistry.getAllKeys().join(', ')}`)
   }
 
   /**
@@ -439,11 +439,6 @@ class ReactRender {
   public async render<T> (request: RenderRequest<T>): Promise<RenderResponse> {
     return this.renderComponent(request)
   }
-}
-
-if (process.env.NODE_ENV === 'development' && !process.env.DISABLE_AUTO_START) {
-  const server = new ReactRender()
-  server.start()
 }
 
 /**

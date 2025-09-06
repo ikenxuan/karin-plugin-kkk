@@ -3,6 +3,8 @@ import { builtinModules } from 'node:module'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import tailwindcss from '@tailwindcss/vite'
+import react from '@vitejs/plugin-react'
 import { defineConfig, type Plugin } from 'vite'
 
 // 在ES模块中模拟__dirname
@@ -151,9 +153,12 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
+      render: resolve(__dirname, '../render/src/client.ts'),
     },
   },
   plugins: [
+    react(),
+    tailwindcss(),
     injectDirnamePlugin(),
     createWebConfigPlugin()
   ]

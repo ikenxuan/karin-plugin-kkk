@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 
 const pluginPath = path.join(
   fileURLToPath(import.meta.url),
-  process.env.NODE_ENV === 'development' ? '../..' : '../../..'
+  '../..'
 )
 const pkg = JSON.parse(fs.readFileSync(path.join(pluginPath, 'package.json'), 'utf-8'))
 

@@ -43,13 +43,14 @@
     "typeorm": "^0.3.24"
   },
   "devDependencies": {
-    "render": "workspace:*",
     "@ikenxuan/amagi": "5.3.0",
     "@karinjs/plugin-puppeteer": "^1.0.17",
+    "@tailwindcss/vite": "4.1.12",
     "@types/connect-history-api-fallback": "^1.5.4",
     "@types/express": "^5.0.1",
     "@types/heic-convert": "^2.1.0",
     "@types/qrcode": "^1.5.5",
+    "@vitejs/plugin-react": "^5.0.2",
     "connect-history-api-fallback": "^2.0.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "heic-convert": "^2.1.0",
@@ -57,6 +58,7 @@
     "neostandard": "0.12.2",
     "qrcode": "^1.5.4",
     "reflect-metadata": "^0.2.2",
+    "render": "workspace:*",
     "sort-package-json": "3.4.0"
   },
   "engines": {
