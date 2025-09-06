@@ -186,7 +186,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps> = ({
         <ImageWithSkeleton
           src={comment.avatar || 'AVATAR_PLACEHOLDER'}
           alt="用户头像"
-          className="w-[187.5px] h-[187.5px] rounded-full shadow-[0_20px_50px_0_rgba(0,0,0,0.3)]"
+          className="w-50 h-50 rounded-full shadow-[0_20px_50px_0_rgba(0,0,0,0.3)]"
           placeholder="头像"
           isCircular={true}
         />
@@ -196,7 +196,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps> = ({
           <ImageWithSkeleton
             src={comment.frame}
             alt="头像框"
-            className="w-[220px] h-[220px] absolute top-0 left-0 transform -translate-y-[5%] scale-150"
+            className="absolute inset-0 transform scale-180"
             placeholder="头像框"
           />
         )}

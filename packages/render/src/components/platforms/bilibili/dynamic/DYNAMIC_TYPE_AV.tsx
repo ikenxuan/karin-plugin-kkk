@@ -7,7 +7,6 @@ import type {
 } from '../../../../types/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { CommentText, EnhancedImage } from '../shared'
-import clsx from 'clsx'
 
 /**
  * B站视频动态头部组件
@@ -138,19 +137,19 @@ const BilibiliVideoDynamicFooter: React.FC<BilibiliVideoDynamicFooterProps> = (p
                 <EnhancedImage
                   src={props.avatar_url}
                   alt="头像"
-                  className="mr-5 rounded-full shadow-lg w-50 h-50"
+                  className="rounded-full shadow-lg w-50 h-50"
                   isCircular
                 />
                 {props.frame && (
                   <EnhancedImage
                     src={props.frame}
                     alt="头像框"
-                    className="absolute w-55 h-55 -mr-40 mt-12 transform scale-150 -translate-y-[13%] -translate-x-[105%]"
+                    className="absolute inset-0 transform scale-140"
                   />
                 )}
               </div>
               <div className="flex flex-col">
-                <div className="text-8xl font-bold text-default-90">
+                <div className="text-7xl font-bold text-default-90">
                   <span dangerouslySetInnerHTML={{ __html: props.username }} />
                 </div>
               </div>

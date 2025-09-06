@@ -6,7 +6,6 @@ import type {
 } from '../../../../types/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { CommentText, EnhancedImage } from '../shared'
-import clsx from 'clsx'
 
 /**
  * B站直播动态头部组件
@@ -110,7 +109,7 @@ const BilibiliLiveDynamicContent: React.FC<BilibiliLiveDynamicContentProps> = (p
               <EnhancedImage
                 src={props.frame}
                 alt="头像框"
-                className="absolute w-55 h-55 transform scale-150 -translate-y-[11%] -translate-x-[105%]"
+                className="absolute inset-0 transform scale-160"
               />
             )}
           </div>

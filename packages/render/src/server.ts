@@ -160,10 +160,10 @@ class ComponentRendererFactory {
  */
 class ResourcePathManager {
   private packageDir: string
-  private renderEnv: string
+  private NODE_ENV: string
 
   constructor () {
-    this.renderEnv = process.env.RENDER_ENV || 'production'
+    this.NODE_ENV = process.env.NODE_ENV || 'production'
     this.packageDir = this.getPackageDir()
   }
 
@@ -174,14 +174,11 @@ class ResourcePathManager {
   private getPackageDir (): string {
     const cwd = process.cwd()
 
-    logger.debug('当前运行环境:', this.renderEnv)
+    logger.debug('当前运行环境:', this.NODE_ENV)
     logger.debug('当前工作目录:', cwd)
 
-    switch (this.renderEnv) {
-      case 'render_dev':
-        return cwd
-
-      case 'core_dev':
+    switch (this.NODE_ENV) {
+      case 'development':
         let currentDir = cwd
         while (currentDir !== path.dirname(currentDir)) {
           if (existsSync(path.join(currentDir, 'pnpm-workspace.yaml'))) {
@@ -210,16 +207,10 @@ class ResourcePathManager {
    * @returns 静态资源路径配置对象
    */
   getResourcePaths (): { cssDir: string; imageDir: string } {
-    switch (this.renderEnv) {
-      case 'render_dev':
+    switch (this.NODE_ENV) {
+       case 'development':
         return {
-          cssDir: path.join(this.packageDir, 'resources/style'),
-          imageDir: path.join(this.packageDir, 'resources/image')
-        }
-
-      case 'core_dev':
-        return {
-          cssDir: path.join(path.dirname(this.packageDir), 'core/resources/style'),
+          cssDir: path.join(path.dirname(this.packageDir), 'core', 'lib'),
           imageDir: path.join(path.dirname(this.packageDir), 'core/resources/image')
         }
 

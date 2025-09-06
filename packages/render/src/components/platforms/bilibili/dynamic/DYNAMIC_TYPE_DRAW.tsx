@@ -20,14 +20,14 @@ const BilibiliDynamicUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
         <EnhancedImage
           src={props.avatar_url}
           alt="头像"
-          className="mr-5 w-32 h-32 rounded-full shadow-lg"
+          className="w-32 h-32 rounded-full shadow-lg"
           isCircular
         />
         {props.frame && (
           <EnhancedImage
             src={props.frame}
             alt="头像框"
-            className="absolute top-12 -right-28 w-36 h-36 transform scale-150 -translate-y-[38%] -translate-x-[85%]"
+            className="absolute inset-0 transform scale-180"
           />
         )}
       </div>

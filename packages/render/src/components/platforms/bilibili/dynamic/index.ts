@@ -1,9 +1,9 @@
-export { BilibiliDrawDynamic } from './DrawDynamic'
-export { default as DrawDynamic } from './DrawDynamic'
+export { BilibiliDrawDynamic } from './DYNAMIC_TYPE_DRAW'
+export { default as DrawDynamic } from './DYNAMIC_TYPE_DRAW'
 
-export { BilibiliVideoDynamic } from './DrawVideoDynamic'
-export { default as VideoDynamic } from './DrawVideoDynamic'
+export { BilibiliVideoDynamic } from './DYNAMIC_TYPE_AV'
+export { default as VideoDynamic } from './DYNAMIC_TYPE_AV'
 
-export { BilibiliLiveDynamic } from './DrawLiveDynamic'
-export { default as LiveDynamic } from './DrawLiveDynamic'
+export { BilibiliLiveDynamic } from './DYNAMIC_TYPE_LIVE_RCMD'
+export { default as LiveDynamic } from './DYNAMIC_TYPE_LIVE_RCMD'
 

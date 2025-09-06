@@ -27,19 +27,19 @@ const BilibiliComment = React.lazy(() =>
 )
 
 const BilibiliDrawDynamic = React.lazy(() =>
-  import('../../components/platforms/bilibili/dynamic/DrawDynamic').then(module => ({
+  import('../../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_DRAW').then(module => ({
     default: module.BilibiliDrawDynamic
   }))
 )
 
 const BilibiliVideoDynamic = React.lazy(() =>
-  import('../../components/platforms/bilibili/dynamic/DrawVideoDynamic').then(module => ({
+  import('../../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_AV').then(module => ({
     default: module.BilibiliVideoDynamic
   }))
 )
 
 const BilibiliLiveDynamic = React.lazy(() =>
-  import('../../components/platforms/bilibili/dynamic/DrawLiveDynamic').then(module => ({
+  import('../../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD').then(module => ({
     default: module.BilibiliLiveDynamic
   }))
 )
