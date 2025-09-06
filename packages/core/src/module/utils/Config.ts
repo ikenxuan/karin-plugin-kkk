@@ -435,9 +435,32 @@ class Cfg {
 
 type Config$ = ConfigType & Pick<Cfg, 'All' | 'Modify' | 'ModifyPro' | 'syncConfigToDatabase'>
 
-export const Config: Config$ = new Proxy(new Cfg().initCfg(), {
-  get (target, prop: string) {
-    if (prop in target) return target[prop as keyof Cfg]
-    return target.getDefOrConfig(prop as keyof ConfigType)
+/**
+ * 配置实例缓存
+ */
+let configInstance: Config$ | null = null
+
+/**
+ * 获取配置实例（延迟初始化）
+ * @returns 配置实例
+ */
+const getConfigInstance = (): Config$ => {
+  if (!configInstance) {
+    configInstance = new Proxy(new Cfg().initCfg(), {
+      get (target, prop: string) {
+        if (prop in target) return target[prop as keyof Cfg]
+        return target.getDefOrConfig(prop as keyof ConfigType)
+      }
+    }) as unknown as Config$
   }
-}) as unknown as Config$
+  return configInstance
+}
+
+/**
+ * 配置对象代理
+ */
+export const Config: Config$ = new Proxy({} as Config$, {
+  get (target, prop: string) {
+    return getConfigInstance()[prop as keyof Config$]
+  }
+})

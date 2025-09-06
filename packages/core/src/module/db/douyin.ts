@@ -21,7 +21,8 @@ import {
   UpdateDateColumn
 } from 'typeorm'
 
-import { Config, Root } from '@/module/utils'
+import { Root } from '@/module/utils'
+import { Config } from '@/module/utils/Config'
 import { DouyinPushItem } from '@/platform/douyin/push'
 import { douyinPushItem } from '@/types/config/pushlist'
 

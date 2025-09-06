@@ -1,0 +1,392 @@
+@import './font.css';
+@import "tailwindcss";
+@config "../../tailwind.config.js";
+
+/* 自定义主题变量 */
+@theme {
+  --color-default-0: oklch(100% 0 0);
+  --color-default-5: oklch(95% 0 0);
+  --color-default-10: oklch(90% 0 0);
+  --color-default-15: oklch(85% 0 0);
+  --color-default-20: oklch(80% 0 0);
+  --color-default-25: oklch(75% 0 0);
+  --color-default-30: oklch(70% 0 0);
+  --color-default-35: oklch(65% 0 0);
+  --color-default-40: oklch(60% 0 0);
+  --color-default-45: oklch(55% 0 0);
+  --color-default-50: oklch(50% 0 0);
+  --color-default-55: oklch(45% 0 0);
+  --color-default-60: oklch(40% 0 0);
+  --color-default-65: oklch(35% 0 0);
+  --color-default-70: oklch(30% 0 0);
+  --color-default-75: oklch(25% 0 0);
+  --color-default-80: oklch(20% 0 0);
+  --color-default-85: oklch(15% 0 0);
+  --color-default-90: oklch(10% 0 0);
+  --color-default-95: oklch(5% 0 0);
+  --color-default-100: oklch(0% 0 0);
+}
+
+/* 全局主题变量 */
+:root {
+  /* 主题色变量 - 浅色模式 */
+  --theme-bg: var(--color-default-0);
+  --theme-text: var(--color-default-100);
+  --theme-text-muted: var(--color-default-70);
+  --theme-border: var(--color-default-20);
+  --theme-surface: var(--color-default-10);
+
+  /* 平台颜色变量 */
+  --qq-blue: #12b7f5;
+  --wechat-green: #07c160;
+  --telegram-blue: #0088cc;
+  --discord-purple: #5865f2;
+  --douyin-primary: #fe2c55;
+  --douyin-secondary: #25f4ee;
+  --bilibili-primary: #00a1d6;
+  --bilibili-secondary: #fb7299;
+}
+
+/* 深色模式主题变量 - 反转逻辑修复版 */
+.dark {
+  /* 基础用途变量保持与浅色模式的逻辑对应，但明暗反转 */
+  --theme-bg: var(--color-default-0);
+  --theme-text: var(--color-default-100);
+  --theme-text-muted: var(--color-default-60);
+  --theme-border: var(--color-default-20);
+  --theme-surface: var(--color-default-10);
+
+  --color-default-0: oklch(0% 0 0);
+  --color-default-5: oklch(5% 0 0);
+  --color-default-10: oklch(10% 0 0);
+  --color-default-15: oklch(15% 0 0);
+  --color-default-20: oklch(20% 0 0);
+  --color-default-25: oklch(25% 0 0);
+  --color-default-30: oklch(30% 0 0);
+  --color-default-35: oklch(35% 0 0);
+  --color-default-40: oklch(40% 0 0);
+  --color-default-45: oklch(45% 0 0);
+  --color-default-50: oklch(50% 0 0);
+  --color-default-55: oklch(55% 0 0);
+  --color-default-60: oklch(60% 0 0);
+  --color-default-65: oklch(65% 0 0);
+  --color-default-70: oklch(70% 0 0);
+  --color-default-75: oklch(75% 0 0);
+  --color-default-80: oklch(80% 0 0);
+  --color-default-85: oklch(85% 0 0);
+  --color-default-90: oklch(90% 0 0);
+  --color-default-95: oklch(95% 0 0);
+  --color-default-100: oklch(100% 0 0);
+}
+
+/* 全局主题工具类 */
+@layer utilities {
+
+  /* 主题背景和文本 */
+  .theme-bg {
+    background-color: var(--theme-bg);
+  }
+
+  .theme-text {
+    color: var(--theme-text);
+  }
+
+  .theme-text-muted {
+    color: var(--theme-text-muted);
+  }
+
+  .theme-border {
+    border-color: var(--theme-border);
+  }
+
+  .theme-surface {
+    background-color: var(--theme-surface);
+  }
+
+  /* 自定义背景色类 */
+  .bg-default-0 {
+    background-color: var(--color-default-0);
+  }
+
+  .bg-default-10 {
+    background-color: var(--color-default-10);
+  }
+
+  .bg-default-20 {
+    background-color: var(--color-default-20);
+  }
+
+  .bg-default-30 {
+    background-color: var(--color-default-30);
+  }
+
+  .bg-default-40 {
+    background-color: var(--color-default-40);
+  }
+
+  .bg-default-50 {
+    background-color: var(--color-default-50);
+  }
+
+  .bg-default-60 {
+    background-color: var(--color-default-60);
+  }
+
+  .bg-default-70 {
+    background-color: var(--color-default-70);
+  }
+
+  .bg-default-80 {
+    background-color: var(--color-default-80);
+  }
+
+  .bg-default-90 {
+    background-color: var(--color-default-90);
+  }
+
+  .bg-default-100 {
+    background-color: var(--color-default-100);
+  }
+
+  .bg-default-5 {
+    background-color: var(--color-default-5);
+  }
+
+  .bg-default-15 {
+    background-color: var(--color-default-15);
+  }
+
+  .bg-default-25 {
+    background-color: var(--color-default-25);
+  }
+
+  .bg-default-35 {
+    background-color: var(--color-default-35);
+  }
+
+  .bg-default-45 {
+    background-color: var(--color-default-45);
+  }
+
+  .bg-default-55 {
+    background-color: var(--color-default-55);
+  }
+
+  .bg-default-65 {
+    background-color: var(--color-default-65);
+  }
+
+  .bg-default-75 {
+    background-color: var(--color-default-75);
+  }
+
+  .bg-default-85 {
+    background-color: var(--color-default-85);
+  }
+
+  .bg-default-95 {
+    background-color: var(--color-default-95);
+  }
+  
+  .text-default-0 {
+    color: var(--color-default-0);
+  }
+
+  .text-default-10 {
+    color: var(--color-default-10);
+  }
+
+  .text-default-20 {
+    color: var(--color-default-20);
+  }
+
+  .text-default-30 {
+    color: var(--color-default-30);
+  }
+
+  .text-default-40 {
+    color: var(--color-default-40);
+  }
+
+  .text-default-50 {
+    color: var(--color-default-50);
+  }
+
+  .text-default-60 {
+    color: var(--color-default-60);
+  }
+
+  .text-default-70 {
+    color: var(--color-default-70);
+  }
+
+  .text-default-80 {
+    color: var(--color-default-80);
+  }
+
+  .text-default-90 {
+    color: var(--color-default-90);
+  }
+
+  .text-default-100 {
+    color: var(--color-default-100);
+  }
+
+  .text-default-5 {
+    color: var(--color-default-5);
+  }
+
+  .text-default-15 {
+    color: var(--color-default-15);
+  }
+
+  .text-default-25 {
+    color: var(--color-default-25);
+  }
+
+  .text-default-35 {
+    color: var(--color-default-35);
+  }
+
+  .text-default-45 {
+    color: var(--color-default-45);
+  }
+
+  .text-default-55 {
+    color: var(--color-default-55);
+  }
+
+  .text-default-65 {
+    color: var(--color-default-65);
+  }
+
+  .text-default-75 {
+    color: var(--color-default-75);
+  }
+
+  .text-default-85 {
+    color: var(--color-default-85);
+  }
+
+  .text-default-95 {
+    color: var(--color-default-95);
+  }
+
+  /* 平台颜色工具类 */
+  .qq-blue {
+    color: var(--qq-blue);
+  }
+
+  .bg-qq-blue {
+    background-color: var(--qq-blue);
+  }
+
+  .wechat-green {
+    color: var(--wechat-green);
+  }
+
+  .bg-wechat-green {
+    background-color: var(--wechat-green);
+  }
+
+  .telegram-blue {
+    color: var(--telegram-blue);
+  }
+
+  .bg-telegram-blue {
+    background-color: var(--telegram-blue);
+  }
+
+  .discord-purple {
+    color: var(--discord-purple);
+  }
+
+  .bg-discord-purple {
+    background-color: var(--discord-purple);
+  }
+
+  .douyin-primary {
+    color: var(--douyin-primary);
+  }
+
+  .bg-douyin-primary {
+    background-color: var(--douyin-primary);
+  }
+
+  .douyin-secondary {
+    color: var(--douyin-secondary);
+  }
+
+  .bg-douyin-secondary {
+    background-color: var(--douyin-secondary);
+  }
+
+  .bilibili-primary {
+    color: var(--bilibili-primary);
+  }
+
+  .bg-bilibili-primary {
+    background-color: var(--bilibili-primary);
+  }
+
+  .bilibili-secondary {
+    color: var(--bilibili-secondary);
+  }
+
+  .bg-bilibili-secondary {
+    background-color: var(--bilibili-secondary);
+  }
+}
+
+/* 基础样式 */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: HarmonyOSHans-Regular, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    line-height: 1.6;
+    color: var(--theme-text);
+    background-color: var(--theme-bg);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    transition: color 0.3s ease, background-color 0.3s ease;
+  }
+
+  /* 滚动条样式 */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--theme-surface);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--theme-border);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--theme-text-muted);
+  }
+
+  /* 选择文本样式 */
+  ::selection {
+    background-color: var(--theme-text-muted);
+    color: var(--theme-bg);
+  }
+
+  /* 焦点样式 */
+  :focus-visible {
+    outline: 2px solid var(--theme-text);
+    outline-offset: 2px;
+  }
+}

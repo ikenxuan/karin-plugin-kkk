@@ -5,7 +5,8 @@ import type { Message } from 'node-karin'
 import { common, segment } from 'node-karin'
 import * as QRCode from 'qrcode'
 
-import { Common, Config } from '@/module/utils'
+import { Common } from '@/module/utils'
+import { Config } from '@/module/utils/Config'
 
 /** B站登录 */
 export const bilibiliLogin = async (e: Message) => {

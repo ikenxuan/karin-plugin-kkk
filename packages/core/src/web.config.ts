@@ -3,7 +3,8 @@ import os from 'node:os'
 import { components, defineConfig } from 'node-karin'
 import _ from 'node-karin/lodash'
 
-import { Config, Root } from '@/module'
+import { Root } from '@/module'
+import { Config } from '@/module/utils/Config'
 import { type ConfigType } from '@/types'
 
 /** 基础配置的类型 */

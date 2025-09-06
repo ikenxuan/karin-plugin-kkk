@@ -1,4 +1,4 @@
-import { Config } from '@/module'
+import { Config } from '@/module/utils/Config'
 
 /**
  *

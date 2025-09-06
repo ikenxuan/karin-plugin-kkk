@@ -8,8 +8,8 @@ import {
   logger
 } from 'node-karin'
 
-import { Config } from '@/module'
 import { getBilibiliDB, getDouyinDB } from '@/module/db'
+import { Config } from '@/module/utils/Config'
 
 /**
  * 内容项接口定义

@@ -13,7 +13,8 @@ import {
 import axios from 'node-karin/axios'
 import template from 'node-karin/template'
 
-import { Common, Config, Root } from '@/module/utils'
+import { Common, Root } from '@/module/utils'
+import { Config } from '@/module/utils/Config'
 
 /** 专门负责传输视频文件流 */
 export const videoStreamRouter: RequestHandler = (req, res) => {
