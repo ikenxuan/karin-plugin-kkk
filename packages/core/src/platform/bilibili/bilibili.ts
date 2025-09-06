@@ -529,7 +529,7 @@ export class Bilibili extends Base {
 
               img = await Render('bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {
-                  image_url: [{ image_src: INFODATA.data.data.pic }],
+                  image_url: INFODATA.data.data.pic,
                   text: br(INFODATA.data.data.title),
                   desc: br(dycrad.desc),
                   dianzan: Count(INFODATA.data.data.stat.like),
@@ -559,13 +559,13 @@ export class Bilibili extends Base {
             const userINFO = await getBilibiliData('用户主页数据', '', { host_mid: dynamicInfo.data.data.item.modules.module_author.mid, typeMode: 'strict' })
             img = await Render('bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
               {
-                image_url: [{ image_src: dynamicCARD.live_play_info.cover }],
+                image_url: dynamicCARD.live_play_info.cover,
                 text: br(dynamicCARD.live_play_info.title),
                 liveinf: br(`${dynamicCARD.live_play_info.area_name} | 房间号: ${dynamicCARD.live_play_info.room_id}`),
-                username: checkvip(userINFO.data.card),
-                avatar_url: userINFO.data.card.face,
+                username: checkvip(userINFO.data.data.card),
+                avatar_url: userINFO.data.data.card.face,
                 frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
-                fans: Count(userINFO.data.follower),
+                fans: Count(userINFO.data.data.follower),
                 create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.modules.module_author.pub_ts),
                 now_time: Common.getCurrentTime(),
                 share_url: 'https://live.bilibili.com/' + dynamicCARD.live_play_info.room_id,

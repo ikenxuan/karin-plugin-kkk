@@ -229,7 +229,7 @@ export class Bilibilipush extends Base {
               }
               img = await Render('bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {
-                  image_url: [{ image_src: INFODATA.data.data.pic }],
+                  image_url: INFODATA.data.data.pic,
                   text: br(INFODATA.data.data.title),
                   desc: br(dycrad.desc),
                   dianzan: Count(INFODATA.data.data.stat.like),
@@ -257,7 +257,7 @@ export class Bilibilipush extends Base {
           case DynamicType.LIVE_RCMD: {
             img = await Render('bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
               {
-                image_url: [{ image_src: dycrad.live_play_info.cover }],
+                image_url: dycrad.live_play_info.cover,
                 text: br(dycrad.live_play_info.title),
                 liveinf: br(`${dycrad.live_play_info.area_name} | 房间号: ${dycrad.live_play_info.room_id}`),
                 username: checkvip(userINFO.data.data.card),

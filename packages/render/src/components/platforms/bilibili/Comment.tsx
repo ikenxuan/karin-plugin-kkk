@@ -196,7 +196,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps> = ({
           <ImageWithSkeleton
             src={comment.frame}
             alt="头像框"
-            className="w-[220px] h-[220px] absolute top-0 left-0 transform -translate-y-[5%] scale-125"
+            className="w-[220px] h-[220px] absolute top-0 left-0 transform -translate-y-[5%] scale-150"
             placeholder="头像框"
           />
         )}

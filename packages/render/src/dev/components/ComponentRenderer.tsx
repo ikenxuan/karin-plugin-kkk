@@ -32,6 +32,18 @@ const BilibiliDrawDynamic = React.lazy(() =>
   }))
 )
 
+const BilibiliVideoDynamic = React.lazy(() =>
+  import('../../components/platforms/bilibili/dynamic/DrawVideoDynamic').then(module => ({
+    default: module.BilibiliVideoDynamic
+  }))
+)
+
+const BilibiliLiveDynamic = React.lazy(() =>
+  import('../../components/platforms/bilibili/dynamic/DrawLiveDynamic').then(module => ({
+    default: module.BilibiliLiveDynamic
+  }))
+)
+
 // 未来可以在这里添加更多平台的组件导入
 // const WechatMoments = React.lazy(() => import('../../components/platforms/wechat/Moments'))
 // const QQZone = React.lazy(() => import('../../components/platforms/qq/Zone'))
@@ -193,6 +205,29 @@ const renderBilibiliComponent = (templateId: string, data: any, qrCodeDataUrl: s
           <BilibiliDrawDynamic {...commonProps} />
         </React.Suspense>
       )
+    
+    case 'dynamic/DYNAMIC_TYPE_AV':
+      return (
+        <React.Suspense fallback={
+          <div className="flex justify-center items-center h-full text-default-50">
+            加载动态组件中...
+          </div>
+        }>
+          <BilibiliVideoDynamic {...commonProps} />
+        </React.Suspense>
+      )
+
+    case 'dynamic/DYNAMIC_TYPE_LIVE_RCMD':
+      return (
+        <React.Suspense fallback={
+          <div className="flex justify-center items-center h-full text-default-50">
+            加载动态组件中...
+          </div>
+        }>
+          <BilibiliLiveDynamic {...commonProps} />
+        </React.Suspense>
+      )
+    
     default:
       return (
         <div className="flex justify-center items-center h-full text-default-50">

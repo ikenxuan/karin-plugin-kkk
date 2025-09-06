@@ -89,20 +89,13 @@ export default defineConfig(({ command }) => {
     build: {
       lib: {
         entry: {
-          'layouts/DefaultLayout': resolve(__dirname, 'src/components/layouts/DefaultLayout.tsx'),
-          'douyin/Comment': resolve(__dirname, 'src/components/platforms/douyin/Comment.tsx'),
-          'douyin/Dynamic': resolve(__dirname, 'src/components/platforms/douyin/Dynamic.tsx'),
-          'douyin/Live': resolve(__dirname, 'src/components/platforms/douyin/Live.tsx'),
-          'bilibili/Comment': resolve(__dirname, 'src/components/platforms/bilibili/Comment.tsx'),
-          'bilibili/Dynamic/DYNAMIC_TYPE_DRAW': resolve(__dirname, 'src/components/platforms/bilibili/dynamic/DrawDynamic.tsx'),
           'index': resolve(__dirname, 'src/client.ts')
         },
         formats: ['es'],
-        fileName: (_format, entryName) => `${entryName}.js`
       },
       outDir: 'dist',
       cssCodeSplit: false,
-      rolldownOptions: {
+      rollupOptions: {
         external: [
           'cors',
           ...builtinModules,

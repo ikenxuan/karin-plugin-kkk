@@ -1,2 +1,3 @@
 export { default as Comment, BilibiliComment } from './Comment'
-export { BilibiliDrawDynamic } from './dynamic'
+export * from './dynamic'
+export { processCommentHTML, CommentText, EnhancedImage } from './shared'

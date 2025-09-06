@@ -65,7 +65,7 @@ const bilibiliTemplates: TemplateConfig[] = [
     name: '视频动态',
     platform: PlatformType.BILIBILI,
     description: 'B站视频动态展示模板',
-    enabled: false
+    enabled: true
   },
   {
     id: 'dynamic/DYNAMIC_TYPE_WORD',
@@ -80,6 +80,13 @@ const bilibiliTemplates: TemplateConfig[] = [
     platform: PlatformType.BILIBILI,
     description: 'B站转发动态展示模板',
     enabled: false
+  },
+  {
+    id: 'dynamic/DYNAMIC_TYPE_LIVE_RCMD',
+    name: '直播动态',
+    platform: PlatformType.BILIBILI,
+    description: 'B站直播动态展示模板',
+    enabled: true
   }
 ]
 

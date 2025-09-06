@@ -25,6 +25,8 @@ export interface RenderRequest<T = any> {
   data: T & {
     /** 是否使用深色主题 */
     useDarkTheme?: boolean
+    /** 二维码分享链接 */
+    share_url?: string
   }
 }
 

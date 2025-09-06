@@ -84,9 +84,6 @@ const createWebConfigPlugin = (): Plugin => {
 }
 
 export default defineConfig({
-  define: {
-    'process.env.NODE_ENV': JSON.stringify('production'),
-  },
   build: {
     target: 'node22',
     lib: {
@@ -95,8 +92,7 @@ export default defineConfig({
     },
     emptyOutDir: true,
     outDir: 'lib',
-    rolldownOptions: {
-      platform: 'node',
+    rollupOptions: {
       external: [
         ...builtinModules,
         ...builtinModules.map((mod) => `node:${mod}`),
@@ -119,34 +115,38 @@ export default defineConfig({
 
           return `core_chunk/${chunkInfo.name}.js`
         },
+
         chunkFileNames: 'core_chunk/[name]-[hash].js',
-        advancedChunks: {
-          groups: [
-            {
-              name: 'vendor',
-              test: /node_modules/
-            },
-            {
-              name: 'render',
-              test: /render/
-            },
-            {
-              name: 'root',
-              test: /src\/root\.ts/
-            },
-            {
-              name: 'db',
-              test: /src\/module\/db/
-            },
-            {
-              name: 'main',
-              test: /src\/(web\.config\.ts|module|platform)/
-            }
-          ]
+
+        manualChunks (id) {
+          if (id.includes('node_modules')) {
+            return 'vendor'
+          }
+          if (id.includes('render')) {
+            return 'render'
+          }
+          if (id.includes('src/root.ts')) {
+            return 'root'
+          }
+          if (id.includes('src/module/db')) {
+            return 'db'
+          }
+          if (id.includes('src/web.config.ts') ||
+            id.includes('src/module') ||
+            id.includes('src/platform')) {
+            return 'main'
+          }
         }
       },
     },
     minify: false,
+    commonjsOptions: {
+      include: [
+        /node_modules/,
+      ],
+      transformMixedEsModules: true,  // 处理混合模块
+      defaultIsModuleExports: true,   // 处理 module.exports
+    },
   },
   resolve: {
     alias: {

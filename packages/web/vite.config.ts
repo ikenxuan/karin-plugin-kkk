@@ -192,7 +192,7 @@ export default defineConfig(({ command, mode }) => {
       // 设置chunk大小警告阈值
       chunkSizeWarningLimit: 1000,
       sourcemap: isDev || !!process.env.TAURI_ENV_DEBUG,
-      rolldownOptions: {
+      rollupOptions: {
         platform: 'browser',
         external: ['workbox-window']
       }

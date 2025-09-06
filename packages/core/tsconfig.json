@@ -14,6 +14,7 @@
       "render": ["../render/src/index.ts"],
       "render/*": ["../render/src/*"]
     },
+    "jsx": "preserve",
     "rootDir": "./src",
     "declaration": true,
     "noImplicitAny": true,

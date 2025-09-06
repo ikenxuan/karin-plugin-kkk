@@ -8,13 +8,84 @@ import { PlatformSelector } from './components/PlatformSelector'
 import { QuickSettings } from './components/QuickSettings'
 import { JsonEditor } from './components/JsonEditor'
 import { PreviewPanel } from './components/PreviewPanel'
+import { platformConfigs } from '../config/platforms'
+
+/**
+ * URL参数接口
+ */
+interface URLParams {
+  /** 平台类型 */
+  platform?: PlatformType
+  /** 模板ID（可能包含嵌套路径，如 dynamic/DYNAMIC_TYPE_DRAW） */
+  template?: string
+}
+
+/**
+ * 从URL解析参数
+ * @returns URL参数对象
+ */
+const parseURLParams = (): URLParams => {
+  const urlParams = new URLSearchParams(window.location.search)
+  const platform = urlParams.get('platform') as PlatformType
+  const template = urlParams.get('template')
+  
+  return {
+    platform: platform && Object.values(PlatformType).includes(platform) ? platform : undefined,
+    template: template || undefined
+  }
+}
+
+/**
+ * 更新URL参数
+ * @param platform 平台类型
+ * @param template 模板ID
+ */
+const updateURLParams = (platform: PlatformType, template: string) => {
+  const url = new URL(window.location.href)
+  url.searchParams.set('platform', platform)
+  url.searchParams.set('template', template)
+  
+  // 使用 replaceState 避免在历史记录中创建过多条目
+  window.history.replaceState({}, '', url.toString())
+}
+
+/**
+ * 验证平台和模板组合是否有效
+ * @param platform 平台类型
+ * @param template 模板ID
+ * @returns 是否有效
+ */
+const isValidPlatformTemplate = (platform: PlatformType, template: string): boolean => {
+  const platformConfig = platformConfigs.find(config => config.type === platform)
+  if (!platformConfig) return false
+  
+  return platformConfig.templates.some(t => t.id === template && t.enabled)
+}
+
+/**
+ * 获取平台的默认模板
+ * @param platform 平台类型
+ * @returns 默认模板ID
+ */
+const getDefaultTemplate = (platform: PlatformType): string => {
+  const platformConfig = platformConfigs.find(config => config.type === platform)
+  const firstEnabledTemplate = platformConfig?.templates.find(t => t.enabled)
+  return firstEnabledTemplate?.id || 'dynamic'
+}
 
 /**
  * 开发环境主应用组件
  */
 export const App: React.FC = () => {
-  const [selectedPlatform, setSelectedPlatform] = useState<PlatformType>(PlatformType.DOUYIN)
-  const [selectedTemplate, setSelectedTemplate] = useState<string>('dynamic')
+  // 从URL参数初始化状态
+  const urlParams = parseURLParams()
+  const initialPlatform = urlParams.platform || PlatformType.DOUYIN
+  const initialTemplate = urlParams.template && isValidPlatformTemplate(initialPlatform, urlParams.template) 
+    ? urlParams.template 
+    : getDefaultTemplate(initialPlatform)
+
+  const [selectedPlatform, setSelectedPlatform] = useState<PlatformType>(initialPlatform)
+  const [selectedTemplate, setSelectedTemplate] = useState<string>(initialTemplate)
   const [templateData, setTemplateData] = useState<any>(null)
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
   const [scale, setScale] = useState(0.5)
@@ -24,11 +95,52 @@ export const App: React.FC = () => {
 
   const dataService = DataService.getInstance()
 
+  // 监听浏览器前进后退按钮
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = parseURLParams()
+      if (params.platform && params.template) {
+        if (isValidPlatformTemplate(params.platform, params.template)) {
+          setSelectedPlatform(params.platform)
+          setSelectedTemplate(params.template)
+        }
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
+  // 初始化时更新URL（确保URL与初始状态同步）
+  useEffect(() => {
+    updateURLParams(selectedPlatform, selectedTemplate)
+  }, [])
+
   // 加载数据
   useEffect(() => {
     loadData()
     loadAvailableFiles()
   }, [selectedPlatform, selectedTemplate])
+
+  /**
+   * 处理平台变更
+   * @param platform 新的平台类型
+   */
+  const handlePlatformChange = (platform: PlatformType) => {
+    const defaultTemplate = getDefaultTemplate(platform)
+    setSelectedPlatform(platform)
+    setSelectedTemplate(defaultTemplate)
+    updateURLParams(platform, defaultTemplate)
+  }
+
+  /**
+   * 处理模板变更
+   * @param template 新的模板ID
+   */
+  const handleTemplateChange = (template: string) => {
+    setSelectedTemplate(template)
+    updateURLParams(selectedPlatform, template)
+  }
 
   /**
    * 加载可用的数据文件列表
@@ -172,6 +284,10 @@ export const App: React.FC = () => {
                 {selectedDataFile.replace('.json', '')}
               </Chip>
             )}
+            {/* 显示当前路径信息 */}
+            <Chip color="default" variant="flat" size="sm">
+              {selectedPlatform}/{selectedTemplate.includes('/') ? selectedTemplate.split('/').join(' → ') : selectedTemplate}
+            </Chip>
           </div>
           <div className="flex flex-shrink-0 gap-2 items-center">
             <Button
@@ -214,8 +330,8 @@ export const App: React.FC = () => {
                   <PlatformSelector
                     selectedPlatform={selectedPlatform}
                     selectedTemplate={selectedTemplate}
-                    onPlatformChange={setSelectedPlatform}
-                    onTemplateChange={setSelectedTemplate}
+                    onPlatformChange={handlePlatformChange}
+                    onTemplateChange={handleTemplateChange}
                   />
                 </div>
 
