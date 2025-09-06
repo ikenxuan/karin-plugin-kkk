@@ -7,6 +7,7 @@ import type {
 } from '../../../../types/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { CommentText, EnhancedImage } from '../shared'
+import { Heart, MessageCircle, Share2, Coins, Eye, Clock, Hash, Users } from 'lucide-react'
 
 /**
  * B站视频动态头部组件
@@ -47,12 +48,20 @@ const BilibiliVideoDynamicContent: React.FC<BilibiliVideoDynamicContentProps> = 
       {props.image_url && (
         <React.Fragment>
           <div className="flex flex-col items-center">
-            <div className='flex flex-col items-center overflow-hidden rounded-3xl w-11/12 flex-1 shadow-[0px_10px_20px_0px_rgba(67,67,67,0.31)]'>
+            <div className='relative flex flex-col items-center overflow-hidden rounded-3xl w-11/12 flex-1 shadow-[0px_10px_20px_0px_rgba(67,67,67,0.31)]'>
               <EnhancedImage
                 src={props.image_url}
                 alt="封面"
                 className="object-contain w-full h-full rounded-3xl"
               />
+              {/* 播放图标覆盖层 */}
+              <div className="flex absolute inset-0 justify-center items-center">
+                <img 
+                src="/image/bilibili/play.svg" 
+                alt="播放图标" 
+                className="w-40 h-40"
+                />
+              </div>
             </div>
           </div>
           <div className="h-5" />
@@ -92,18 +101,47 @@ const BilibiliVideoDynamicContent: React.FC<BilibiliVideoDynamicContentProps> = 
         <div className="h-30" />
 
         {/* 统计信息 */}
-        <div className="flex flex-col gap-10 text-default-80">
-          <div className="text-5xl font-light tracking-normal">
-            {props.dianzan}点赞 · {props.pinglun}评论 · {props.share}分享 · {props.coin}硬币 · {props.view}浏览
-          </div>
+        <div className="flex flex-col gap-15 text-default-80">
+          <div className="flex flex-col gap-8">
+            <div className="flex gap-12 items-center text-5xl font-light tracking-normal">
+              <div className="flex gap-3 items-center">
+                <Heart size={48} />
+                <span>{props.dianzan}点赞</span>
+              </div>
+              
+              <div className="flex gap-3 items-center">
+                <MessageCircle size={48} />
+                <span>{props.pinglun}评论</span>
+              </div>
+              
+              <div className="flex gap-3 items-center">
+                <Share2 size={48} />
+                <span>{props.share}分享</span>
+              </div>
+            </div>
 
-          <div className="text-5xl font-light tracking-normal">
-            视频时长: {props.duration_text}
+            <div className="flex gap-12 items-center text-5xl font-light tracking-normal">
+              <div className="flex gap-3 items-center">
+                <Coins size={48} />
+                <span>{props.coin}硬币</span>
+              </div>
+              
+              <div className="flex gap-3 items-center">
+                <Eye size={48} />
+                <span>{props.view}浏览</span>
+              </div>
+
+              <div className="flex gap-3 items-center text-5xl font-light tracking-normal">
+                <Clock size={48} />
+                <span>视频时长: {props.duration_text}</span>
+              </div>
+            </div>
           </div>
 
           {/* 发布时间 */}
-          <div className="text-4xl font-light whitespace-nowrap">
-            发布于{props.create_time}
+          <div className="flex gap-3 items-center text-4xl font-light whitespace-nowrap">
+            <Clock size={32} />
+            <span>发布于{props.create_time}</span>
           </div>
         </div>
         <div className="h-40" />
@@ -132,7 +170,7 @@ const BilibiliVideoDynamicFooter: React.FC<BilibiliVideoDynamicFooterProps> = (p
         <div className="flex justify-between items-center pb-11 h-auto pt-25">
           {/* 用户信息 */}
           <div className="flex flex-col items-center pl-12" style={{ padding: '0 0 0 50px' }}>
-            <div className='flex items-center'>
+            <div className='flex gap-8 items-center'>
               <div className="relative">
                 <EnhancedImage
                   src={props.avatar_url}
@@ -156,11 +194,23 @@ const BilibiliVideoDynamicFooter: React.FC<BilibiliVideoDynamicFooterProps> = (p
             </div>
 
             {/* 用户统计信息 */}
-            <div className="flex flex-col gap-2 items-start pt-6 w-full text-4xl tracking-wider text-default-80">
-              <span>UID: {props.user_shortid}</span>
-              <span>获赞: {props.total_favorited}</span>
-              <span>关注: {props.following_count}</span>
-              <span>粉丝: {props.fans}</span>
+            <div className="flex flex-col gap-4 items-start pt-6 w-full text-4xl tracking-wider text-default-80">
+              <div className="flex gap-2 items-center">
+                <Hash size={32} />
+                <span>UID: {props.user_shortid}</span>
+              </div>
+              <div className="flex gap-2 items-center">
+                <Heart size={32} />
+                <span>获赞: {props.total_favorited}</span>
+              </div>
+              <div className="flex gap-2 items-center">
+                <Eye size={32} />
+                <span>关注: {props.following_count}</span>
+              </div>
+              <div className="flex gap-2 items-center">
+                <Users size={32} />
+                <span>粉丝: {props.fans}</span>
+              </div>
             </div>
           </div>
 

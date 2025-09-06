@@ -6,6 +6,7 @@ import type {
 } from '../../../../types/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { CommentText, EnhancedImage } from '../shared'
+import { Radio, Clock, Users } from 'lucide-react'
 
 /**
  * B站直播动态头部组件
@@ -49,7 +50,7 @@ const BilibiliLiveDynamicContent: React.FC<BilibiliLiveDynamicContentProps> = (p
       {props.image_url && (
         <React.Fragment>
           <div className="flex flex-col items-center">
-            <div className='flex flex-col items-center overflow-hidden rounded-3xl w-11/12 flex-1 shadow-[0px_10px_20px_0px_rgba(125,125,125,0.5)]'>
+            <div className='relative flex flex-col items-center overflow-hidden rounded-3xl w-11/12 flex-1 shadow-[0px_10px_20px_0px_rgba(125,125,125,0.5)]'>
               <EnhancedImage
                 src={props.image_url}
                 alt="封面"
@@ -82,14 +83,16 @@ const BilibiliLiveDynamicContent: React.FC<BilibiliLiveDynamicContentProps> = (p
         <div className="h-10" />
 
         {/* 房间信息 */}
-        <div className="text-5xl tracking-normal text-default-60">
+        <div className="flex gap-2 items-center text-5xl tracking-normal text-default-60">
+          <Radio size={48} />
           {props.liveinf}
         </div>
 
         <div className="h-5" />
 
         {/* 开始时间 */}
-        <div className="text-4xl tracking-normal text-default-60">
+        <div className="flex gap-2 items-center text-4xl tracking-normal text-default-60">
+          <Clock size={32} />
           直播开始时间: {props.create_time}
         </div>
 
@@ -120,7 +123,8 @@ const BilibiliLiveDynamicContent: React.FC<BilibiliLiveDynamicContentProps> = (p
               </div>
               <img className="w-32 h-auto" src="/image/bilibili/直播中.png" alt="直播中" />
             </div>
-            <div className="text-4xl text-default-70">
+            <div className="flex gap-2 items-center text-4xl text-default-70">
+              <Users size={32} />
               {props.fans}粉丝
             </div>
           </div>

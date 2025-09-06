@@ -8,6 +8,7 @@ import type {
 } from '../../../../types/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { CommentText, EnhancedImage } from '../shared'
+import { Clock, Heart, MessageCircle, Share2, Users, Eye, Hash } from 'lucide-react'
 import clsx from 'clsx'
 
 /**
@@ -35,12 +36,13 @@ const BilibiliDynamicUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
         <div className={`text-6xl font-bold text-default-90`}>
           <span dangerouslySetInnerHTML={{ __html: props.username }} />
         </div>
-        <div className="text-4xl font-normal whitespace-nowrap text-default-50">
+        <div className="flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-default-50">
+          <Clock size={36} />
           {props.create_time}
         </div>
       </div>
       {props.decoration_card && (
-        <div className="pl-60">
+        <div className="pl-40">
           <div dangerouslySetInnerHTML={{ __html: props.decoration_card }} />
         </div>
       )}
@@ -98,10 +100,24 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
 const BilibiliDynamicStatus: React.FC<BilibiliDynamicStatusProps> = (props) => {
   return (
     <div className="flex flex-col gap-10 px-20 w-full leading-relaxed">
-      <div className="text-5xl font-light tracking-normal text-default-60">
-        {props.dianzan}点赞 · {props.pinglun}评论 · {props.share}分享
+      <div className="flex gap-6 items-center text-5xl font-light tracking-normal text-default-60">
+        <div className="flex gap-2 items-center">
+          <Heart size={48}  />
+          {props.dianzan}点赞
+        </div>
+        <span>·</span>
+        <div className="flex gap-2 items-center">
+          <MessageCircle size={48}  />
+          {props.pinglun}评论
+        </div>
+        <span>·</span>
+        <div className="flex gap-2 items-center">
+          <Share2 size={48}  />
+          {props.share}分享
+        </div>
       </div>
-      <div className="text-5xl font-light tracking-normal text-default-60">
+      <div className="flex gap-2 items-center text-5xl font-light tracking-normal text-default-60">
+        <Clock size={48}  />
         图片生成时间: {props.render_time}
       </div>
       <div className="h-3" />
@@ -129,10 +145,22 @@ const BilibiliDynamicFooter: React.FC<BilibiliDynamicFooterProps> = (props) => {
             长按识别二维码即可查看全文
           </span>
           <div className='flex flex-col gap-4 items-start pt-6 w-full text-4xl tracking-wider text-default-60'>
-            <span>UID: {props.user_shortid}</span>
-            <span>获赞: {props.total_favorited}</span>
-            <span>关注: {props.following_count}</span>
-            <span>粉丝: {props.fans}</span>
+            <div className="flex gap-2 items-center">
+              <Hash size={36}/>
+              <span>UID: {props.user_shortid}</span>
+            </div>
+            <div className="flex gap-2 items-center">
+              <Heart size={36} />
+              <span>获赞: {props.total_favorited}</span>
+            </div>
+            <div className="flex gap-2 items-center">
+              <Eye size={36} />
+              <span>关注: {props.following_count}</span>
+            </div>
+            <div className="flex gap-2 items-center">
+              <Users size={36} />
+              <span>粉丝: {props.fans}</span>
+            </div>
           </div>
         </div>
         <div className="flex flex-col-reverse items-center -mb-12 mr-19">

@@ -5,6 +5,7 @@ import type {
   DouyinDynamicQRCodeProps
 } from '../../../types/douyin'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
+import { Heart, MessageCircle, Bookmark, Share2, Clock, Hash, Eye, Users, QrCode } from 'lucide-react'
 
 /**
  * 抖音Logo头部组件
@@ -38,7 +39,7 @@ const DouyinHeader: React.FC<{ useDarkTheme?: boolean }> = ({ useDarkTheme }) =>
 const CoverSection: React.FC<{ imageUrl: string }> = ({ imageUrl }) => {
   return (
     <div className="flex flex-col items-center my-5">
-      <div className="flex flex-col items-center overflow-hidden shadow-[0px_10px_20px_0px_#4343434f] rounded-[25px] w-[90%]">
+      <div className="flex flex-col items-center overflow-hidden shadow-[0px_10px_20px_0px_#4343434f] rounded-[25px] w-[90%] relative">
         <img
           className="rounded-[25px] object-contain w-full h-full"
           src={imageUrl}
@@ -71,11 +72,30 @@ const InfoSection: React.FC<{
            style={{ letterSpacing: '1.5px', wordWrap: 'break-word' }}
            dangerouslySetInnerHTML={{ __html: desc }}
       />
-      <div className="text-[45px] text-[#808080] font-light mb-2.5">
-        {dianzan}点赞 · {pinglun}评论 · {shouchang}收藏 · {share}分享
+      <div className="flex items-center gap-6 text-[45px] text-[#808080] font-light mb-2.5">
+        <div className="flex gap-2 items-center">
+          <Heart className="w-11 h-11" />
+          <span>{dianzan}点赞</span>
+        </div>
+        <span>·</span>
+        <div className="flex gap-2 items-center">
+          <MessageCircle className="w-11 h-11" />
+          <span>{pinglun}评论</span>
+        </div>
+        <span>·</span>
+        <div className="flex gap-2 items-center">
+          <Bookmark className="w-11 h-11" />
+          <span>{shouchang}收藏</span>
+        </div>
+        <span>·</span>
+        <div className="flex gap-2 items-center">
+          <Share2 className="w-11 h-11" />
+          <span>{share}分享</span>
+        </div>
       </div>
-      <div className="text-[45px] text-[#808080] font-light">
-        发布于{createTime}
+      <div className="flex items-center gap-2 text-[45px] text-[#808080] font-light">
+        <Clock className="w-11 h-11" />
+        <span>发布于{createTime}</span>
       </div>
     </div>
   )
@@ -114,10 +134,22 @@ const UserInfoSection: React.FC<DouyinDynamicUserInfoProps> = ({
       <div className={`flex flex-col text-[35px] mt-6 space-y-1 ${
         useDarkTheme ? 'text-[#d1d1d1]' : 'text-[#2f2f2f]'
       }`} style={{ letterSpacing: '2.5px' }}>
-        <span>抖音号: {douyinId}</span>
-        <span>获赞: {likes}</span>
-        <span>关注: {following}</span>
-        <span>粉丝: {followers}</span>
+        <div className="flex gap-2 items-center">
+          <Hash className="w-8 h-8" />
+          <span>抖音号: {douyinId}</span>
+        </div>
+        <div className="flex gap-2 items-center">
+          <Heart className="w-8 h-8" />
+          <span>获赞: {likes}</span>
+        </div>
+        <div className="flex gap-2 items-center">
+          <Eye className="w-8 h-8" />
+          <span>关注: {following}</span>
+        </div>
+        <div className="flex gap-2 items-center">
+          <Users className="w-8 h-8" />
+          <span>粉丝: {followers}</span>
+        </div>
       </div>
     </div>
   )
@@ -131,8 +163,9 @@ const UserInfoSection: React.FC<DouyinDynamicUserInfoProps> = ({
 const QRCodeSection: React.FC<DouyinDynamicQRCodeProps> = ({ qrCodeDataUrl }) => {
   return (
     <div className="flex flex-col-reverse items-center -mb-12 mr-18">
-      <div className="text-[45px] text-right mt-5 text-default-90">
-        作品直链：永久有效
+      <div className="flex items-center gap-2 text-[45px] text-right mt-5 text-default-90">
+        <QrCode className="w-11 h-11" />
+        <span>作品直链：永久有效</span>
       </div>
       <div className="p-2.5 rounded-sm border-[7px] border-dashed border-default-90">
         <img

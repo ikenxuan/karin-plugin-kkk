@@ -5,7 +5,7 @@ import type {
   DouyinLiveQRCodeProps
 } from '../../../types/douyin'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
-import clsx from 'clsx'
+import { Radio, Users, Eye, QrCode } from 'lucide-react'
 
 /**
  * 抖音Logo头部组件
@@ -39,12 +39,19 @@ const CoverSection: React.FC<{ imageUrl: string }> = ({ imageUrl }) => {
   return (
     <div className='py-10'>
       <div className="flex flex-col items-center">
-        <div className="flex flex-col items-center overflow-hidden shadow-[0px_10px_20px_0px_#4343434f] rounded-[25px] w-[95%] flex-1">
+        <div className="flex flex-col items-center overflow-hidden shadow-[0px_10px_20px_0px_#4343434f] rounded-[25px] w-[95%] flex-1 relative">
           <img
             className="rounded-[25px] object-contain w-full h-full"
             src={imageUrl}
             alt="封面"
           />
+          {/* 直播图标覆盖层 */}
+          <div className="absolute top-4 left-4">
+            <div className="flex gap-2 items-center px-3 py-2 bg-red-500 bg-opacity-90 rounded-lg">
+              <Radio className="w-6 h-6 text-white" />
+              <span className="text-sm font-bold text-white">直播中</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -61,8 +68,7 @@ const LiveInfoSection: React.FC<{
   liveinf: string
   totalViews: string
   onlineAudience: string
-  useDarkTheme?: boolean
-}> = ({ text, liveinf, totalViews, onlineAudience, useDarkTheme }) => {
+}> = ({ text, liveinf, totalViews, onlineAudience }) => {
   return (
     <div className="px-20">
       <div className="h-[10px]"></div>
@@ -112,7 +118,8 @@ const UserInfoSection: React.FC<DouyinLiveUserInfoProps> = ({
             alt="直播中"
           />
         </div>
-        <div>
+        <div className="flex gap-2 items-center">
+          <Users className="w-8 h-8 text-[#808080]" />
           <span className="text-[#808080] text-[35px]">{fans}粉丝</span>
         </div>
       </div>
@@ -128,13 +135,11 @@ const UserInfoSection: React.FC<DouyinLiveUserInfoProps> = ({
 const QRCodeSection: React.FC<DouyinLiveQRCodeProps> = ({ qrCodeDataUrl, useDarkTheme }) => {
   return (
     <div className="flex flex-col-reverse items-center mt-[30px] mr-5">
-      <div className={`text-[50px] ml-[10px] text-right mr-[10px] ${useDarkTheme ? 'text-[#dbdbdb]' : 'text-[#2f2f2ff9]'
+      <div className={`flex items-center gap-2 text-[50px] ml-[10px] text-right mr-[10px] ${useDarkTheme ? 'text-[#dbdbdb]' : 'text-[#2f2f2ff9]'
         }`}>
-        直播分享链接
+        <QrCode className="w-12 h-12" />
+        <span>直播分享链接</span>
       </div>
-      {/* <div className={`p-[10px] rounded-[2%] ${
-        useDarkTheme ? 'border-[7px] border-dashed border-[#C3C3C3]' : 'border-[7px] border-dashed border-[#3a3a3a]'
-      }`}> */}
       <div className='p-[10px] rounded-[2%] border-[7px] border-dashed border-default-90'>
         <img
           src={qrCodeDataUrl}
@@ -170,8 +175,16 @@ export const DouyinLive: React.FC<Omit<DouyinLiveProps, 'templateType' | 'templa
         <div className="text-[45px] items-center tracking-[1.5px] relative break-words text-[#808080]">
           {props.data.liveinf}
         </div>
-        <div className="text-[45px] items-center tracking-[1.5px] relative break-words text-[#808080]">
-          观看总人数{props.data.总观看次数} | 在线观众{props.data.在线观众}
+        <div className="flex items-center gap-6 text-[45px] tracking-[1.5px] relative break-words text-[#808080]">
+          <div className="flex gap-2 items-center">
+            <Eye className="w-11 h-11" />
+            <span>观看总人数{props.data.总观看次数}</span>
+          </div>
+          <span>|</span>
+          <div className="flex gap-2 items-center">
+            <Users className="w-11 h-11" />
+            <span>在线观众{props.data.在线观众}</span>
+          </div>
         </div>
         <div className="h-20"></div>
 
