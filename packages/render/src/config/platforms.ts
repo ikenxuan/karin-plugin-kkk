@@ -1,4 +1,5 @@
-import { PlatformConfig, PlatformType, TemplateConfig } from '../types/platforms'
+import type { PlatformConfig, TemplateConfig } from '../types/platforms'
+import { PlatformType } from '../types/platforms'
 
 /**
  * 抖音平台模板配置

@@ -1,6 +1,5 @@
-import React, { useMemo, useState } from 'react'
-import { Skeleton } from '@heroui/react'
-import {
+import React, { useState } from 'react'
+import type {
   BilibiliDynamicProps,
   BilibiliDynamicUserInfoProps,
   BilibiliDynamicContentProps,
@@ -8,17 +7,69 @@ import {
   BilibiliDynamicFooterProps
 } from '../../../../types/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
+import clsx from 'clsx'
 
 /**
- * 带有加载状态的图片组件
+ * 带有错误处理的图片组件
+ * @param props 图片组件属性
+ * @returns JSX元素
  */
 interface ImageWithSkeletonProps {
+  /** 图片源地址 */
   src: string
+  /** 替代文本 */
   alt: string
+  /** CSS类名 */
   className?: string
+  /** 占位符文本 */
   placeholder?: string
+  /** 是否为圆形 */
   isCircular?: boolean
 }
+
+/**
+ * 处理评论文本中的图片防盗链问题
+ * @param htmlContent HTML内容
+ * @returns 处理后的HTML内容
+ */
+const processCommentHTML = (htmlContent: string): string => {
+  if (!htmlContent || typeof htmlContent !== 'string') {
+    return ''
+  }
+
+  // 使用正则表达式匹配所有img标签并添加防盗链属性
+  return htmlContent.replace(
+    /<img([^>]*?)>/gi,
+    '<img$1 referrerpolicy="no-referrer" crossorigin="anonymous">'
+  )
+}
+
+/**
+ * 评论文本组件
+ * @param props 组件属性
+ * @returns JSX元素
+ */
+interface CommentTextProps {
+  /** HTML内容 */
+  content: string
+  /** CSS类名 */
+  className?: string
+  /** 内联样式 */
+  style?: React.CSSProperties
+}
+
+const CommentText: React.FC<CommentTextProps> = ({ content, className, style }) => {
+  const processedContent = processCommentHTML(content)
+
+  return (
+    <div
+      className={className}
+      style={style}
+      dangerouslySetInnerHTML={{ __html: processedContent }}
+    />
+  )
+}
+
 
 const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
   src,
@@ -27,17 +78,13 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
   placeholder,
   isCircular = false
 }) => {
-  const [isLoaded, setIsLoaded] = useState(false)
   const [hasError, setHasError] = useState(false)
 
-  const handleLoad = () => {
-    setIsLoaded(true)
-    setHasError(false)
-  }
-
+  /**
+   * 处理图片加载失败
+   */
   const handleError = () => {
     setHasError(true)
-    setIsLoaded(false)
   }
 
   if (!src || hasError) {
@@ -49,20 +96,14 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
   }
 
   return (
-    <div className="relative">
-      {!isLoaded && (
-        <Skeleton className={`${className} ${isCircular ? 'rounded-full' : 'rounded-md'}`} />
-      )}
-      <img
-        src={src}
-        alt={alt}
-        className={`${className} ${!isLoaded ? 'absolute opacity-0' : 'opacity-100'} transition-opacity duration-300`}
-        onLoad={handleLoad}
-        onError={handleError}
-        referrerPolicy="no-referrer"
-        crossOrigin="anonymous"
-      />
-    </div>
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      onError={handleError}
+      referrerPolicy="no-referrer"
+      crossOrigin="anonymous"
+    />
   )
 }
 
@@ -89,7 +130,7 @@ const BilibiliDynamicUserInfo: React.FC<BilibiliDynamicUserInfoProps> = ({
           <ImageWithSkeleton
             src={frame}
             alt="头像框"
-            className="absolute top-12 -right-28 w-36 h-36 transform scale-150 -translate-y-[125%] -translate-x-[85%]"
+            className="absolute top-12 -right-28 w-36 h-36 transform scale-150 -translate-y-[38%] -translate-x-[85%]"
           />
         )}
       </div>
@@ -122,9 +163,17 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = ({
       {/* 文本内容 */}
       <div className="flex flex-col px-20 w-full leading-relaxed">
         <div className={`relative items-center text-5xl tracking-wider break-words text-default-90`}>
-          <div 
-            className='text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-default-90 mb-[20px] [&_svg]:inline [&_svg]:!mb-4'
-          dangerouslySetInnerHTML={{ __html: text }} 
+          <CommentText 
+            className={clsx(
+              'text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-default-90 mb-[20px]',
+              '[&_svg]:inline [&_svg]:!mb-4',
+              '[&_img]:mb-3 [&_img]:inline [&_img]:mx-1'
+            )}
+            content={text} 
+            style={{
+              wordBreak: 'break-word',
+              overflowWrap: 'break-word'
+            }}
           />
         </div>
         <div className="h-15" />
@@ -187,7 +236,7 @@ const BilibiliDynamicFooter: React.FC<BilibiliDynamicFooterProps> = ({
       <div className="flex justify-between items-center pb-11 h-auto pt-25">
         <div className="flex flex-col self-start pl-16">
           <div className='flex items-center text-6xl text-default-80'>
-            <ImageWithSkeleton
+            <img
               src="/image/bilibili/bilibili-light.png"
               alt="B站Logo"
               className="h-auto w-120"

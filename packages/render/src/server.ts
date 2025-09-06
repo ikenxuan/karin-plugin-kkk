@@ -1,13 +1,12 @@
-import express from 'node-karin/express'
 import { renderToString } from 'react-dom/server'
 import fs, { writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import path from 'node:path'
 import React from 'react'
-import { RenderRequest, RenderResponse } from './types'
+import type { RenderRequest, RenderResponse } from './types'
 import { DouyinComment, DouyinDynamic } from './components/platforms/douyin'
 import { BilibiliComment, BilibiliDrawDynamic } from './components/platforms/bilibili'
-import { DouyinCommentProps, DouyinDynamicProps } from './types/douyin'
-import { BilibiliCommentProps, BilibiliDynamicProps } from './types/bilibili'
+import type { DouyinCommentProps, DouyinDynamicProps } from './types/douyin'
+import type { BilibiliCommentProps, BilibiliDynamicProps } from './types/bilibili'
 import QRCode from 'qrcode'
 import { karinPathTemp } from 'node-karin/root'
 import { logger } from 'node-karin'
@@ -167,7 +166,7 @@ class ReactRender {
             errorCorrectionLevel: 'L',
             color: {
               dark: request.data.useDarkTheme ? '#c3c3c3' : '#3a3a3a',
-              light: request.data.useDarkTheme ? '#121212' : '#f4f4f4',
+              light: request.data.useDarkTheme ? '#000000' : '#EEEEF0',
             },
           })
 
@@ -191,7 +190,7 @@ class ReactRender {
             errorCorrectionLevel: 'L',
             color: {
               dark: request.data.useDarkTheme ? '#c3c3c3' : '#3a3a3a',
-              light: request.data.useDarkTheme ? '#121212' : '#f4f4f4',
+              light: request.data.useDarkTheme ? '#000000' : '#EEEEF0',
             },
           })
 
@@ -213,7 +212,7 @@ class ReactRender {
                 errorCorrectionLevel: 'L',
                 color: {
                   dark: request.data.useDarkTheme ? '#c3c3c3' : '#3a3a3a',
-                  light: request.data.useDarkTheme ? '#121212' : '#f4f4f4',
+                  light: request.data.useDarkTheme ? '#000000' : '#EEEEF0',
                 },
               })
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Card, CardBody, CardHeader, Textarea, Button, Select, SelectItem } from '@heroui/react'
-import { Code, Copy, Download, Upload, Plus, Trash2 } from 'lucide-react'
+import { Code, Copy, Download, Upload, Plus } from 'lucide-react'
 
 interface JsonEditorProps {
   /** 当前数据 */

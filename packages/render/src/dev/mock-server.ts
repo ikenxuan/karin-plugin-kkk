@@ -90,16 +90,16 @@ function getAvailableDataFiles (platform: PlatformType, templateId: string): str
   }
 }
 
-// 匹配 /data/{platform}/{templateId}/files 格式
-app.get(/^\/data\/([^/]+)\/(.+)\/files$/, (req, res) => {
+// 匹配 /api/data/{platform}/{templateId}/files 格式
+app.get(/^\/api\/data\/([^/]+)\/(.+)\/files$/, (req, res) => {
   const platform = req.params[0] as PlatformType
   const templateId = req.params[1]
   const files = getAvailableDataFiles(platform, templateId)
   res.json({ files })
 })
 
-// 匹配 /data/{platform}/{templateId}/files/{filename} 格式
-app.get(/^\/data\/([^/]+)\/(.+)\/files\/([^/]+)$/, (req, res) => {
+// 匹配 /api/data/{platform}/{templateId}/files/{filename} 格式
+app.get(/^\/api\/data\/([^/]+)\/(.+)\/files\/([^/]+)$/, (req, res) => {
   const platform = req.params[0] as PlatformType
   const templateId = req.params[1]
   const filename = req.params[2]
@@ -112,8 +112,8 @@ app.get(/^\/data\/([^/]+)\/(.+)\/files\/([^/]+)$/, (req, res) => {
   }
 })
 
-// 匹配 /data/{platform}/{templateId}/{filename} 格式（特定文件）
-app.get(/^\/data\/([^/]+)\/(.+)\/([^/]+\.json)$/, (req, res) => {
+// 匹配 /api/data/{platform}/{templateId}/{filename} 格式（特定文件）
+app.get(/^\/api\/data\/([^/]+)\/(.+)\/([^/]+\.json)$/, (req, res) => {
   const platform = req.params[0] as PlatformType
   const templateId = req.params[1]
   const filename = req.params[2]
@@ -126,8 +126,8 @@ app.get(/^\/data\/([^/]+)\/(.+)\/([^/]+\.json)$/, (req, res) => {
   }
 })
 
-// 匹配 /data/{platform}/{templateId} 格式（默认数据）
-app.get(/^\/data\/([^/]+)\/(.+)$/, (req, res) => {
+// 匹配 /api/data/{platform}/{templateId} 格式（默认数据）
+app.get(/^\/api\/data\/([^/]+)\/(.+)$/, (req, res) => {
   const platform = req.params[0] as PlatformType
   const templateId = req.params[1]
   let data = readDataFile(platform, templateId, 'default.json')
@@ -135,7 +135,7 @@ app.get(/^\/data\/([^/]+)\/(.+)$/, (req, res) => {
 })
 
 // POST 路由 - 保存特定数据文件
-app.post(/^\/data\/([^/]+)\/(.+)\/files\/([^/]+)$/, (req, res) => {
+app.post(/^\/api\/data\/([^/]+)\/(.+)\/files\/([^/]+)$/, (req, res) => {
   try {
     const platform = req.params[0] as PlatformType
     const templateId = req.params[1]
@@ -149,7 +149,7 @@ app.post(/^\/data\/([^/]+)\/(.+)\/files\/([^/]+)$/, (req, res) => {
 })
 
 // POST 路由 - 保存默认模板数据
-app.post(/^\/data\/([^/]+)\/(.+)$/, (req, res) => {
+app.post(/^\/api\/data\/([^/]+)\/(.+)$/, (req, res) => {
   try {
     const platform = req.params[0] as PlatformType
     const templateId = req.params[1]
@@ -162,7 +162,7 @@ app.post(/^\/data\/([^/]+)\/(.+)$/, (req, res) => {
 })
 
 // DELETE 路由 - 删除数据文件
-app.delete(/^\/data\/([^/]+)\/(.+)\/files\/([^/]+)$/, (req, res) => {
+app.delete(/^\/api\/data\/([^/]+)\/(.+)\/files\/([^/]+)$/, (req, res) => {
   try {
     const platform = req.params[0] as PlatformType
     const templateId = req.params[1]
@@ -189,7 +189,7 @@ app.delete(/^\/data\/([^/]+)\/(.+)\/files\/([^/]+)$/, (req, res) => {
 })
 
 // 生成二维码
-app.get('/qrcode', async (req, res) => {
+app.get('/api/qrcode', async (req, res) => {
   try {
     const url = req.query.url as string || 'https://example.com'
     const useDarkTheme = req.query.useDarkTheme === 'true'

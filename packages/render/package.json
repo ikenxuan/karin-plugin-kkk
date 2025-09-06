@@ -6,11 +6,10 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc -b && vite build",
-    "dev": "cross-env RENDER_ENV=render_dev LOG_LEVEL=debug tsx watch --include \"src/**/*.ts\" src/server.ts",
+    "build": "vite build",
+    "dev:mock": "cross-env RENDER_ENV=core_dev LOG_LEVEL=debug tsx watch src/dev/mock-server.ts",
     "dev:core": "cross-env RENDER_ENV=core_dev tsx watch src/server.ts",
-    "dev:ui": "concurrently \"npm run dev:mock\" \"vite\"",
-    "dev:mock": "tsx watch src/dev/mock-server.ts",
+    "dev": "vite",
     "start": "cross-env RENDER_ENV=production node dist/server.js",
     "preview": "vite preview"
   },
@@ -39,7 +38,6 @@
     "@heroui/system": "^2.4.21",
     "@heroui/theme": "^2.4.21",
     "@shopify/draggable": "^1.1.4",
-    "@vitejs/plugin-react-swc": "4.0.0",
     "autoprefixer": "^10.4.16",
     "cross-env": "10.0.0",
     "framer-motion": "^12.23.12",

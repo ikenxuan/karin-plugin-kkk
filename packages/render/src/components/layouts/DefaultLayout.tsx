@@ -1,6 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
-import { BaseComponentProps, RenderRequest } from '@/types'
+import type { BaseComponentProps, RenderRequest } from '@/types'
 import { HeroUIProvider } from '@heroui/react'
 
 /**

@@ -2,8 +2,8 @@ import fs from "node:fs"
 import path from "node:path"
 
 import tailwindcss from "@tailwindcss/vite"
-import { isTauri } from '@tauri-apps/api/core';
-import react from '@vitejs/plugin-react-swc'
+import { isTauri } from '@tauri-apps/api/core'
+import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import viteImagemin from 'vite-plugin-imagemin'
 import obfuscator from 'vite-plugin-javascript-obfuscator'
@@ -34,11 +34,11 @@ const getBuildTime = () => {
     minute: '2-digit',
     hour12: false
   })
-  
+
   // 获取时区偏移
   const offset = -now.getTimezoneOffset() / 60
   const timezone = offset >= 0 ? `UTC+${offset}` : `UTC${offset}`
-  
+
   return `${chinaTime} (${timezone})`
 }
 
@@ -72,6 +72,7 @@ export default defineConfig(({ command, mode }) => {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
           navigateFallback: isStandalone ? '/index.html' : '/kkk/index.html',
           navigateFallbackDenylist: [/^\/api\//],
+          maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
           // 支持 HTTP 协议下的 PWA
           skipWaiting: true,
           clientsClaim: true,
@@ -159,7 +160,6 @@ export default defineConfig(({ command, mode }) => {
           debugProtectionInterval: 2000,
           disableConsoleOutput: true,
           domainLock: [],
-          reservedNames: [],
           seed: 0,
           sourceMap: false,
           sourceMapBaseUrl: '',
@@ -192,7 +192,8 @@ export default defineConfig(({ command, mode }) => {
       // 设置chunk大小警告阈值
       chunkSizeWarningLimit: 1000,
       sourcemap: isDev || !!process.env.TAURI_ENV_DEBUG,
-      rollupOptions: {
+      rolldownOptions: {
+        platform: 'browser',
         external: ['workbox-window']
       }
     },

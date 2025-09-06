@@ -1,5 +1,5 @@
 import React from 'react'
-import { DouyinCommentProps, DouyinDynamicProps } from '../types/douyin'
+import type { DouyinCommentProps, DouyinDynamicProps } from '../types/douyin'
 
 interface DataManagerProps {
   selectedTemplate: 'comment' | 'dynamic'

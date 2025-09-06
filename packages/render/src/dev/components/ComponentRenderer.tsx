@@ -1,7 +1,6 @@
 import React from 'react'
 import { PlatformType } from '../../types/platforms'
 import { version } from '../../services/DataService'
-import BilibiliDrawDynamic from '../../components/platforms/bilibili/dynamic/DrawDynamic'
 
 // 抖音
 const DouyinComment = React.lazy(() =>
@@ -24,6 +23,12 @@ const DouyinLive = React.lazy(() =>
 const BilibiliComment = React.lazy(() =>
   import('../../components/platforms/bilibili/Comment').then(module => ({
     default: module.BilibiliComment
+  }))
+)
+
+const BilibiliDrawDynamic = React.lazy(() =>
+  import('../../components/platforms/bilibili/dynamic/DrawDynamic').then(module => ({
+    default: module.BilibiliDrawDynamic
   }))
 )
 

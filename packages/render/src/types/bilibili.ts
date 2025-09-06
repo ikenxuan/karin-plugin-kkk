@@ -1,4 +1,4 @@
-import { BaseComponentProps } from '.'
+import type { BaseComponentProps } from './index'
 
 /**
  * B站评论组件属性接口

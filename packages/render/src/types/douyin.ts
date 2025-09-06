@@ -1,4 +1,4 @@
-import { BaseComponentProps } from '.'
+import type { BaseComponentProps } from './index'
 
 /**
  * 抖音评论组件属性接口

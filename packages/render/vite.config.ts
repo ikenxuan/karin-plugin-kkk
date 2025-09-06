@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
 import path, { resolve } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
@@ -10,7 +10,7 @@ import { copyFileSync, mkdirSync, existsSync } from 'node:fs'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(({ command }) => {
   // 基础配置
   const baseConfig = {
     plugins: [
@@ -25,7 +25,6 @@ export default defineConfig(({ command, mode }) => {
     css: {
       postcss: {
         plugins: [
-          tailwindcss,
           autoprefixer
         ]
       }
@@ -39,13 +38,12 @@ export default defineConfig(({ command, mode }) => {
       root: path.resolve(__dirname, "./src/dev"),
       publicDir: path.resolve(__dirname, "./public"), // 指定public目录
       server: {
-        port: 5173,
+        port: 5174,
         proxy: {
           // 代理API请求到后端服务器
           '/api': {
             target: 'http://localhost:3001',
             changeOrigin: true,
-            rewrite: (path) => path.replace(/^\/api/, '')
           }
         }
       },
@@ -58,6 +56,7 @@ export default defineConfig(({ command, mode }) => {
   // 构建模式保持不变
   return {
     ...baseConfig,
+    emptyOutDir: true,
     plugins: [
       ...baseConfig.plugins,
       dts({
@@ -99,11 +98,11 @@ export default defineConfig(({ command, mode }) => {
           'index': resolve(__dirname, 'src/client.ts')
         },
         formats: ['es'],
-        fileName: (format, entryName) => `${entryName}.js`
+        fileName: (_format, entryName) => `${entryName}.js`
       },
       outDir: 'dist',
       cssCodeSplit: false,
-      rollupOptions: {
+      rolldownOptions: {
         external: [
           'cors',
           ...builtinModules,
@@ -111,9 +110,6 @@ export default defineConfig(({ command, mode }) => {
           ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js', '/template'].map(p => `node-karin${p}`)
         ],
         output: {
-          generatedCode: {
-            constBindings: true
-          },
           format: 'es',
           inlineDynamicImports: false,
           assetFileNames: (assetInfo) => {

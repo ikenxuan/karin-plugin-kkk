@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Skeleton } from '@heroui/react'
-import {
+import type {
   BilibiliCommentProps,
   QRCodeSectionProps,
   VideoInfoHeaderProps,
@@ -34,28 +33,17 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
   placeholder,
   isCircular = false
 }) => {
-  const [isLoaded, setIsLoaded] = useState(false)
   const [hasError, setHasError] = useState(false)
-
-  /**
-   * 处理图片加载成功
-   */
-  const handleLoad = () => {
-    setIsLoaded(true)
-    setHasError(false)
-  }
 
   /**
    * 处理图片加载失败
    */
   const handleError = () => {
-    setIsLoaded(false)
     setHasError(true)
   }
 
   // 重置状态当src改变时
   useEffect(() => {
-    setIsLoaded(false)
     setHasError(false)
   }, [src])
 
@@ -68,20 +56,14 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
   }
 
   return (
-    <Skeleton
-      isLoaded={isLoaded}
-      className={`${className} ${isCircular ? 'rounded-full' : 'rounded-lg'}`}
-    >
-      <img
-        src={src}
-        alt={alt}
-        className={className}
-        onLoad={handleLoad}
-        onError={handleError}
-        referrerPolicy="no-referrer"
-        crossOrigin="anonymous"
-      />
-    </Skeleton>
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      onError={handleError}
+      referrerPolicy="no-referrer"
+      crossOrigin="anonymous"
+    />
   )
 }
 
@@ -103,16 +85,11 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
         className="mt-20 w-[600px] h-[600px] flex items-center justify-center"
       >
         {qrCodeDataUrl ? (
-          <Skeleton
-            isLoaded={true}
-            className="w-full h-full rounded-lg"
-          >
-            <img
-              src={qrCodeDataUrl}
-              alt="二维码"
-              className="object-contain w-full h-full"
-            />
-          </Skeleton>
+          <img
+            src={qrCodeDataUrl}
+            alt="二维码"
+            className="object-contain w-full h-full"
+          />
         ) : (
           <div className="flex justify-center items-center w-full h-full text-6xl text-default-40">
             二维码占位符
@@ -219,7 +196,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps> = ({
           <ImageWithSkeleton
             src={comment.frame}
             alt="头像框"
-            className="w-[220px] h-[220px] absolute top-0 left-0 transform -translate-y-[7%] -translate-x-[4%] scale-125"
+            className="w-[220px] h-[220px] absolute top-0 left-0 transform -translate-y-[5%] scale-125"
             placeholder="头像框"
           />
         )}

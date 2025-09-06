@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card, CardBody, CardHeader, Tabs, Tab, Chip } from '@heroui/react'
 import { Settings } from 'lucide-react'
-import { PlatformType, PlatformConfig } from '../../types/platforms'
+import { PlatformType } from '../../types/platforms'
 import { platformConfigs } from '../../config/platforms'
 
 interface PlatformSelectorProps {

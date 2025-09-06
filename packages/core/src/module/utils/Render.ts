@@ -99,7 +99,11 @@ async function renderWithLocalComponent (templateType: RenderRequest['templateTy
     multiPage: 12000,
     selector: '#container',
     fullPage: false,
-    type: 'jpeg'
+    type: 'jpeg',
+    pageGotoParams: {
+      waitUntil: 'load',
+      timeout: Config.app.RenderWaitTime * 1000
+    },
   })
 
   // 转换为ImageElement数组
