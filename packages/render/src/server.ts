@@ -3,7 +3,7 @@ import fs, { writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import path from 'node:path'
 import React from 'react'
 import type { RenderRequest, RenderResponse } from './types'
-import { DouyinComment, DouyinDynamic } from './components/platforms/douyin'
+import { DouyinComment, DouyinDynamic, DouyinLive } from './components/platforms/douyin'
 import { BilibiliComment, BilibiliDrawDynamic, BilibiliForwardDynamic, BilibiliLiveDynamic, BilibiliVideoDynamic } from './components/platforms/bilibili'
 import QRCode, { type QRCodeRenderersOptions } from 'qrcode'
 import { karinPathTemp } from 'node-karin/root'
@@ -280,9 +280,12 @@ function registerComponents (): void {
     component: DouyinComment,
     validateData: (data) => data && typeof data.share_url === 'string'
   })
-
   ComponentRegistry.register('douyin', 'dynamic', {
     component: DouyinDynamic,
+    validateData: (data) => data && typeof data.share_url === 'string'
+  })
+  ComponentRegistry.register('douyin', 'live', {
+    component: DouyinLive,
     validateData: (data) => data && typeof data.share_url === 'string'
   })
 
