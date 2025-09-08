@@ -7,6 +7,8 @@ import { logger } from 'node-karin'
 import express from 'node-karin/express'
 import QRCode from 'qrcode'
 
+// 使用新的配置系统
+import { componentConfigs } from '../config/components'
 import { PlatformType } from '../types/platforms'
 
 const __dirname = fileURLToPath(new URL('..', import.meta.url))
@@ -22,18 +24,41 @@ app.use(cors())
 app.use(express.json({ limit: '10mb' }))
 
 /**
- * 获取平台模板数据目录
+ * 获取平台组件数据目录
  * @param platform 平台类型
- * @param templateId 模板ID
+ * @param componentId 组件ID
  * @returns 目录路径
  */
-function getTemplateDataDir (platform: PlatformType, templateId: string): string {
-  const dir = join(dataDir, platform, templateId)
+function getTemplateDataDir (platform: PlatformType, componentId: string): string {
+  const dir = join(dataDir, platform, componentId)
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true })
   }
   return dir
 }
+
+/**
+ * 获取平台的可用组件列表
+ * @param platform 平台类型
+ * @returns 组件配置列表
+ */
+function getAvailableComponents(platform: PlatformType) {
+  const platformConfig = componentConfigs.find(config => config.type === platform)
+  return platformConfig?.components || []
+}
+
+app.get('/api/components/:platform', (req, res) => {
+  const platform = req.params.platform as PlatformType
+  const components = getAvailableComponents(platform)
+  res.json({ 
+    components: components.map(component => ({
+      id: component.id,
+      name: component.name,
+      description: component.description,
+      enabled: component.enabled
+    }))
+  })
+})
 
 /**
  * 读取数据文件

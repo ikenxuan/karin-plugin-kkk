@@ -3,7 +3,8 @@ import { Palette, RefreshCw, Save } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 
-import { platformConfigs } from '../config/platforms'
+// 使用新的配置系统
+import { getEnabledComponents } from '../config/components'
 import { DataService } from '../services/DataService'
 import { PlatformType } from '../types/platforms'
 import { JsonEditor } from './components/JsonEditor'
@@ -17,7 +18,7 @@ import { QuickSettings } from './components/QuickSettings'
 interface URLParams {
   /** 平台类型 */
   platform?: PlatformType
-  /** 模板ID（可能包含嵌套路径，如 dynamic/DYNAMIC_TYPE_DRAW） */
+  /** 组件ID（可能包含嵌套路径，如 dynamic/DYNAMIC_TYPE_DRAW） */
   template?: string
 }
 
@@ -39,7 +40,7 @@ const parseURLParams = (): URLParams => {
 /**
  * 更新URL参数
  * @param platform 平台类型
- * @param template 模板ID
+ * @param template 组件ID
  */
 const updateURLParams = (platform: PlatformType, template: string) => {
   const url = new URL(window.location.href)
@@ -51,27 +52,24 @@ const updateURLParams = (platform: PlatformType, template: string) => {
 }
 
 /**
- * 验证平台和模板组合是否有效
+ * 验证平台和组件组合是否有效
  * @param platform 平台类型
- * @param template 模板ID
+ * @param componentId 组件ID
  * @returns 是否有效
  */
-const isValidPlatformTemplate = (platform: PlatformType, template: string): boolean => {
-  const platformConfig = platformConfigs.find(config => config.type === platform)
-  if (!platformConfig) return false
-
-  return platformConfig.templates.some(t => t.id === template && t.enabled)
+const isValidPlatformTemplate = (platform: PlatformType, componentId: string): boolean => {
+  const enabledComponents = getEnabledComponents(platform)
+  return enabledComponents.some(component => component.id === componentId)
 }
 
 /**
- * 获取平台的默认模板
+ * 获取平台的默认组件
  * @param platform 平台类型
- * @returns 默认模板ID
+ * @returns 默认组件ID
  */
 const getDefaultTemplate = (platform: PlatformType): string => {
-  const platformConfig = platformConfigs.find(config => config.type === platform)
-  const firstEnabledTemplate = platformConfig?.templates.find(t => t.enabled)
-  return firstEnabledTemplate?.id || 'dynamic'
+  const enabledComponents = getEnabledComponents(platform)
+  return enabledComponents[0]?.id || 'dynamic'
 }
 
 /**

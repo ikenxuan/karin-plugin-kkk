@@ -16,7 +16,7 @@ import { ComponentAutoRegistry } from './utils/ComponentAutoRegistry'
 interface ComponentConfig {
   /** 组件构造函数 */
   component: React.ComponentType<any>
-  /** 数据类型验证函数（可选） */
+  /** 数据类型验证函数 */
   validateData?: (data: any) => boolean
 }
 
@@ -277,7 +277,7 @@ class HtmlWrapper {
 
 
 /**
- * React渲染类（重构版）
+ * React渲染类
  */
 class ReactRender {
   private outputDir = path.join(karinPathTemp, 'html', 'karin-plugin-kkk', 'renderServer')
@@ -291,9 +291,6 @@ class ReactRender {
     this.outputDir = path.join(karinPathTemp, 'html', 'karin-plugin-kkk', 'renderServer')
     this.ensureOutputDir()
     this.loadCssContent()
-
-    // 使用自动注册器初始化组件
-    this.initializeComponents()
   }
 
   /**
@@ -336,7 +333,7 @@ class ReactRender {
   }
 
   /**
-   * 渲染React组件为HTML
+   * 渲染React组件为HTML字符串
    * @param request 渲染请求参数
    * @returns 渲染结果
    */
@@ -412,7 +409,7 @@ class ReactRender {
   }
 
   /**
-   * 渲染组件（公共方法）
+   * 渲染组件
    * @param request 渲染请求参数
    * @returns 渲染结果
    */
@@ -437,9 +434,8 @@ export const renderComponentToHtml = async <T> (
 
   // 初始化组件注册器
   await ComponentAutoRegistry.initialize()
-
-  // 创建临时服务器实例来复用渲染逻辑
   const tempServer = new ReactRender()
+
   // 设置输出目录
   tempServer['outputDir'] = outputDir
 

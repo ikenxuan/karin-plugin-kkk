@@ -211,7 +211,7 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
  * @param platform 平台类型
  * @returns 平台配置
  */
-export function getPlatformConfig(platform: PlatformType): ExtendedPlatformConfig | undefined {
+export function getPlatformConfig (platform: PlatformType): ExtendedPlatformConfig | undefined {
   return componentConfigs.find(config => config.type === platform)
 }
 
@@ -220,7 +220,7 @@ export function getPlatformConfig(platform: PlatformType): ExtendedPlatformConfi
  * @param platform 平台类型
  * @returns 启用的组件配置列表
  */
-export function getEnabledComponents(platform: PlatformType): ComponentConfig[] {
+export function getEnabledComponents (platform: PlatformType): ComponentConfig[] {
   const config = getPlatformConfig(platform)
   return config?.components.filter(component => component.enabled) || []
 }
@@ -231,7 +231,7 @@ export function getEnabledComponents(platform: PlatformType): ComponentConfig[] 
  * @param componentId 组件ID
  * @returns 组件配置
  */
-export function getComponentConfig(platform: PlatformType, componentId: string): ComponentConfig | undefined {
+export function getComponentConfig (platform: PlatformType, componentId: string): ComponentConfig | undefined {
   const platformConfig = getPlatformConfig(platform)
   return platformConfig?.components.find(component => component.id === componentId)
 }
@@ -240,8 +240,8 @@ export function getComponentConfig(platform: PlatformType, componentId: string):
  * 获取所有启用的组件配置（扁平化）
  * @returns 所有启用的组件配置
  */
-export function getAllEnabledComponents(): Array<ComponentConfig & { platform: PlatformType }> {
-  return componentConfigs.flatMap(platformConfig => 
+export function getAllEnabledComponents (): Array<ComponentConfig & { platform: PlatformType }> {
+  return componentConfigs.flatMap(platformConfig =>
     platformConfig.components
       .filter(component => component.enabled)
       .map(component => ({ ...component, platform: platformConfig.type }))

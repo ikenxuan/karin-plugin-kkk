@@ -1,56 +1,8 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 
+import { getComponentConfig } from '../../config/components'
 import { version } from '../../services/DataService'
 import { PlatformType } from '../../types/platforms'
-
-// 抖音
-const DouyinComment = React.lazy(() =>
-  import('../../components/platforms/douyin/Comment').then(module => ({
-    default: module.DouyinComment
-  }))
-)
-const DouyinDynamic = React.lazy(() =>
-  import('../../components/platforms/douyin/Dynamic').then(module => ({
-    default: module.DouyinDynamic
-  }))
-)
-const DouyinLive = React.lazy(() =>
-  import('../../components/platforms/douyin/Live').then(module => ({
-    default: module.DouyinLive
-  }))
-)
-
-// 哔哩哔哩
-const BilibiliComment = React.lazy(() =>
-  import('../../components/platforms/bilibili/Comment').then(module => ({
-    default: module.BilibiliComment
-  }))
-)
-const BilibiliDrawDynamic = React.lazy(() =>
-  import('../../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_DRAW').then(module => ({
-    default: module.BilibiliDrawDynamic
-  }))
-)
-const BilibiliVideoDynamic = React.lazy(() =>
-  import('../../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_AV').then(module => ({
-    default: module.BilibiliVideoDynamic
-  }))
-)
-const BilibiliLiveDynamic = React.lazy(() =>
-  import('../../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD').then(module => ({
-    default: module.BilibiliLiveDynamic
-  }))
-)
-const BilibiliForwardDynamic = React.lazy(() =>
-  import('../../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_FORWARD').then(module => ({
-    default: module.BilibiliForwardDynamic
-  }))
-)
-
-// 未来可以在这里添加更多平台的组件导入
-// const WechatMoments = React.lazy(() => import('../../components/platforms/wechat/Moments'))
-// const QQZone = React.lazy(() => import('../../components/platforms/qq/Zone'))
-// const WeiboPost = React.lazy(() => import('../../components/platforms/weibo/Post'))
 
 interface ComponentRendererProps {
   /** 当前平台 */
@@ -92,7 +44,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
    * @returns JSX元素
    */
   const renderInDevelopment = (type: string, name: string) => (
-    <div className='flex justify-center items-center h-full text-default-50'>
+    <div className='flex justify-center items-center h-full text-6xl text-default-50'>
       {type} {name} 开发中...
     </div>
   )
@@ -102,164 +54,40 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     return renderLoading('正在加载预览...')
   }
 
-  // 根据平台渲染对应组件
-  switch (platform) {
-    case PlatformType.DOUYIN:
-      return renderDouyinComponent(templateId, data, qrCodeDataUrl)
-    case PlatformType.BILIBILI:
-      return renderBilibiliComponent(templateId, data, qrCodeDataUrl)
-    default:
-      return renderInDevelopment('平台', platform)
+  // 获取组件配置
+  const componentConfig = getComponentConfig(platform, templateId)
+  
+  if (!componentConfig) {
+    return renderInDevelopment('模板', templateId)
   }
-}
 
-/**
- * 渲染抖音平台组件
- * @param templateId 模板ID
- * @param data 数据
- * @param qrCodeDataUrl 二维码URL
- * @returns JSX元素
- */
-const renderDouyinComponent = (templateId: string, data: any, qrCodeDataUrl: string) => {
+  if (!componentConfig.enabled) {
+    return renderInDevelopment('模板', componentConfig.name)
+  }
+
+  if (!componentConfig.lazyComponent) {
+    return renderInDevelopment('组件', componentConfig.name)
+  }
+
+  const LazyComponent = useMemo(() => {
+    return React.lazy(componentConfig.lazyComponent!)
+  }, [componentConfig.lazyComponent])
+
+  // 准备组件属性
   const commonProps = {
     data,
     qrCodeDataUrl,
     version,
     scale: 1
   }
-
-  switch (templateId) {
-    case 'comment':
-      return (
-        <React.Suspense fallback={
-          <div className='flex justify-center items-center h-full text-default-50'>
-            加载评论组件中...
-          </div>
-        }
-        >
-          <DouyinComment {...commonProps} />
-        </React.Suspense>
-      )
-
-    case 'dynamic':
-      return (
-        <React.Suspense fallback={
-          <div className='flex justify-center items-center h-full text-default-50'>
-            加载动态组件中...
-          </div>
-        }
-        >
-          <DouyinDynamic {...commonProps} />
-        </React.Suspense>
-      )
-
-    case 'live':
-      return (
-        <React.Suspense fallback={
-          <div className='flex justify-center items-center h-full text-default-50'>
-            加载直播组件中...
-          </div>
-        }
-        >
-          <DouyinLive {...commonProps} />
-        </React.Suspense>
-      )
-
-    default:
-      return (
-        <div className='flex justify-center items-center h-full text-default-50'>
-          模板 {templateId} 开发中...
-        </div>
-      )
-  }
+  
+  return (
+    <React.Suspense fallback={
+      <div className='flex justify-center items-center h-full text-6xl text-default-50'>
+        加载{componentConfig.name}组件中...
+      </div>
+    }>
+      <LazyComponent {...commonProps} />
+    </React.Suspense>
+  )
 }
-
-/**
- * 渲染哔哩哔哩平台组件
- * @param templateId 模板ID
- * @param data 数据
- * @param qrCodeDataUrl 二维码URL
- * @returns JSX元素
- */
-const renderBilibiliComponent = (templateId: string, data: any, qrCodeDataUrl: string) => {
-  const commonProps = {
-    data,
-    qrCodeDataUrl,
-    version,
-    scale: 1
-  }
-
-  switch (templateId) {
-    case 'comment':
-      return (
-        <React.Suspense fallback={
-          <div className='flex justify-center items-center h-full text-default-50'>
-            加载评论组件中...
-          </div>
-        }
-        >
-          <BilibiliComment {...commonProps} />
-        </React.Suspense>
-      )
-
-    case 'dynamic/DYNAMIC_TYPE_DRAW':
-      return (
-        <React.Suspense fallback={
-          <div className='flex justify-center items-center h-full text-default-50'>
-            加载动态组件中...
-          </div>
-        }
-        >
-          <BilibiliDrawDynamic {...commonProps} />
-        </React.Suspense>
-      )
-
-    case 'dynamic/DYNAMIC_TYPE_AV':
-      return (
-        <React.Suspense fallback={
-          <div className='flex justify-center items-center h-full text-default-50'>
-            加载动态组件中...
-          </div>
-        }
-        >
-          <BilibiliVideoDynamic {...commonProps} />
-        </React.Suspense>
-      )
-
-    case 'dynamic/DYNAMIC_TYPE_LIVE_RCMD':
-      return (
-        <React.Suspense fallback={
-          <div className='flex justify-center items-center h-full text-default-50'>
-            加载动态组件中...
-          </div>
-        }
-        >
-          <BilibiliLiveDynamic {...commonProps} />
-        </React.Suspense>
-      )
-
-    case 'dynamic/DYNAMIC_TYPE_FORWARD':
-      return (
-        <React.Suspense fallback={
-          <div className='flex justify-center items-center h-full text-default-50'>
-            加载动态组件中...
-          </div>
-        }
-        >
-          <BilibiliForwardDynamic {...commonProps} />
-        </React.Suspense>
-      )
-
-    default:
-      return (
-        <div className='flex justify-center items-center h-full text-default-50'>
-          模板 {templateId} 开发中...
-        </div>
-      )
-  }
-}
-
-// 未来可以添加更多平台的渲染函数
-// function renderWechatComponent(templateId: string, data: any, qrCodeDataUrl: string) { ... }
-// function renderQQComponent(templateId: string, data: any, qrCodeDataUrl: string) { ... }
-// function renderWeiboComponent(templateId: string, data: any, qrCodeDataUrl: string) { ... }

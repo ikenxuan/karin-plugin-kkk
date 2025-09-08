@@ -9,7 +9,7 @@ import { componentConfigs } from '../config/components'
 interface ComponentRegistryItem {
   /** 组件构造函数 */
   component: React.ComponentType<any>
-  /** 数据类型验证函数（可选） */
+  /** 数据类型验证函数 */
   validateData?: (data: any) => boolean
   /** 组件配置 */
   config: ComponentConfig
