@@ -100,6 +100,7 @@ export default defineConfig({
         'playwright',
         '@karinjs/md-html',
         'typeorm',
+        'sqlite3'
       ],
       output: {
         inlineDynamicImports: false,
