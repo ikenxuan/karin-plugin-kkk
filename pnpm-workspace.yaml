@@ -1,3 +1,6 @@
+publicHoistPattern:
+  - "*sqlite3*"
+  - "*express*"
 packages:
   - packages/*
 onlyBuiltDependencies:
