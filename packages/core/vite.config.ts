@@ -124,8 +124,8 @@ export default defineConfig({
           if (id.includes('node_modules')) {
             return 'vendor'
           }
-          if (id.includes('render')) {
-            return 'render'
+          if (id.includes('template')) {
+            return 'template'
           }
           if (id.includes('src/root.ts')) {
             return 'root'
@@ -153,7 +153,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
-      render: resolve(__dirname, '../render/src/client.ts')
+      template: resolve(__dirname, '../template/src/client.ts')
     }
   },
   plugins: [

@@ -12,10 +12,10 @@
     "build:render": "pnpm --filter render run build",
     "build:web": "pnpm --filter web run build",
     "dev": "pnpm --filter karin-plugin-kkk run dev",
-    "dev:render": "pnpm --filter render run dev",
+    "dev:ui": "pnpm --filter render run dev",
     "dev:web": "pnpm --filter web run dev",
     "lint": "pnpm -r run lint",
-    "render": "pnpm --filter render run dev",
+    "ui": "pnpm --filter render run dev",
     "sort": "pnpm -r sort",
     "watch": "pnpm --filter karin-plugin-kkk run watch",
     "web": "pnpm --filter web run dev"

@@ -12,15 +12,14 @@
       "@/*": [
         "./src/*"
       ],
-      "render": [
-        "../render/src/index.ts"
+      "template": [
+        "../template/src/index.ts"
       ],
-      "render/*": [
-        "../render/src/*"
+      "template/*": [
+        "../template/src/*"
       ]
     },
     "jsx": "preserve",
-    "rootDir": "./src",
     "declaration": true,
     "noImplicitAny": true,
     "strict": true,
@@ -47,7 +46,13 @@
   ],
   "references": [
     {
-      "path": "../render"
+      "path": "../template"
     }
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.d.ts"
   ]
 }

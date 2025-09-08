@@ -1,7 +1,7 @@
 {
-  "name": "render",
+  "name": "template",
   "version": "0.0.1",
-  "description": "React渲染服务包",
+  "description": "React模板渲染服务包",
   "type": "module",
   "exports": {
     ".": {
