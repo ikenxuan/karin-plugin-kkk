@@ -7,9 +7,8 @@ import QRCode, { type QRCodeRenderersOptions } from 'qrcode'
 import React from 'react'
 import { renderToString } from 'react-dom/server'
 
-import { BilibiliComment, BilibiliDrawDynamic, BilibiliForwardDynamic, BilibiliLiveDynamic, BilibiliVideoDynamic } from './components/platforms/bilibili'
-import { DouyinComment, DouyinDynamic, DouyinLive } from './components/platforms/douyin'
 import type { RenderRequest, RenderResponse } from './types'
+import { ComponentAutoRegistry } from './utils/ComponentAutoRegistry'
 
 /**
  * 组件配置接口
@@ -126,17 +125,17 @@ class ComponentRendererFactory {
    * @param qrCodeDataUrl 二维码数据URL
    * @returns React组件元素
    */
-  static async createComponent<T> (request: RenderRequest<T>, qrCodeDataUrl: string): Promise<React.ReactElement> {
+  static async createComponent<T>(request: RenderRequest<T>, qrCodeDataUrl: string): Promise<React.ReactElement> {
     const { templateType, templateName } = request
 
-    const config = ComponentRegistry.get(templateType, templateName)
+    const registryItem = ComponentAutoRegistry.get(templateType, templateName)
 
-    if (!config) {
+    if (!registryItem) {
       throw new Error(`未找到组件配置: ${templateType}:${templateName}`)
     }
 
     // 验证数据（如果提供了验证函数）
-    if (config.validateData && !config.validateData(request.data)) {
+    if (registryItem.validateData && !registryItem.validateData(request.data)) {
       throw new Error(`数据验证失败: ${templateType}:${templateName}`)
     }
 
@@ -151,10 +150,10 @@ class ComponentRendererFactory {
     // 对于嵌套模板，传递子模板类型
     if (templateName.includes('/')) {
       const subType = templateName.split('/')[1]
-        ; (props as any).subType = subType
+      ;(props as any).subType = subType
     }
 
-    return React.createElement(config.component, props)
+    return React.createElement(registryItem.component, props)
   }
 }
 
@@ -276,47 +275,9 @@ class HtmlWrapper {
   }
 }
 
-// 注册所有组件
-function registerComponents (): void {
-  // 抖音组件
-  ComponentRegistry.register('douyin', 'comment', {
-    component: DouyinComment,
-    validateData: (data) => data && typeof data.share_url === 'string'
-  })
-  ComponentRegistry.register('douyin', 'dynamic', {
-    component: DouyinDynamic,
-    validateData: (data) => data && typeof data.share_url === 'string'
-  })
-  ComponentRegistry.register('douyin', 'live', {
-    component: DouyinLive,
-    validateData: (data) => data && typeof data.share_url === 'string'
-  })
-
-  // B站组件
-  ComponentRegistry.register('bilibili', 'comment', {
-    component: BilibiliComment,
-    validateData: (data) => data && typeof data.share_url === 'string'
-  })
-  ComponentRegistry.register('bilibili', 'dynamic/DYNAMIC_TYPE_DRAW', {
-    component: BilibiliDrawDynamic,
-    validateData: (data) => data && typeof data.share_url === 'string'
-  })
-  ComponentRegistry.register('bilibili', 'dynamic/DYNAMIC_TYPE_LIVE_RCMD', {
-    component: BilibiliLiveDynamic,
-    validateData: (data) => data && typeof data.share_url === 'string'
-  })
-  ComponentRegistry.register('bilibili', 'dynamic/DYNAMIC_TYPE_AV', {
-    component: BilibiliVideoDynamic,
-    validateData: (data) => data && typeof data.share_url === 'string'
-  })
-  ComponentRegistry.register('bilibili', 'dynamic/DYNAMIC_TYPE_FORWARD', {
-    component: BilibiliForwardDynamic,
-    validateData: (data) => data && typeof data.share_url === 'string'
-  })
-}
 
 /**
- * React渲染类
+ * React渲染类（重构版）
  */
 class ReactRender {
   private outputDir = path.join(karinPathTemp, 'html', 'karin-plugin-kkk', 'renderServer')
@@ -324,15 +285,27 @@ class ReactRender {
   private resourceManager: ResourcePathManager
   private htmlWrapper: HtmlWrapper
 
-  constructor () {
+  constructor() {
     this.resourceManager = new ResourcePathManager()
     this.htmlWrapper = new HtmlWrapper(this.resourceManager)
     this.outputDir = path.join(karinPathTemp, 'html', 'karin-plugin-kkk', 'renderServer')
     this.ensureOutputDir()
     this.loadCssContent()
 
-    // 注册所有组件
-    registerComponents()
+    // 使用自动注册器初始化组件
+    this.initializeComponents()
+  }
+
+  /**
+   * 初始化组件注册
+   */
+  private async initializeComponents(): Promise<void> {
+    try {
+      await ComponentAutoRegistry.initialize()
+      logger.debug('✅ 组件自动注册完成')
+    } catch (error) {
+      logger.error('❌ 组件自动注册失败:', error)
+    }
   }
 
   /**
@@ -426,10 +399,16 @@ class ReactRender {
   /**
    * 启动服务
    */
-  public start (): void {
+  public async start(): Promise<void> {
+    // 确保组件已初始化
+    await ComponentAutoRegistry.initialize()
+    
+    const stats = ComponentAutoRegistry.getStats()
     logger.debug(`📁 HTML输出目录: ${this.outputDir}`)
     logger.debug(`🎨 CSS文件状态: ${this.cssContent ? '已加载' : '未加载'}`)
-    logger.debug(`📦 已注册组件: ${ComponentRegistry.getAllKeys().join(', ')}`)
+    logger.debug(`📦 已注册组件总数: ${stats.total}`)
+    logger.debug('📊 各平台组件数量:', stats.byPlatform)
+    logger.debug(`🔧 已注册组件: ${ComponentAutoRegistry.getAllKeys().join(', ')}`)
   }
 
   /**
@@ -455,6 +434,9 @@ export const renderComponentToHtml = async <T> (
   if (!existsSync(outputDir)) {
     mkdirSync(outputDir, { recursive: true })
   }
+
+  // 初始化组件注册器
+  await ComponentAutoRegistry.initialize()
 
   // 创建临时服务器实例来复用渲染逻辑
   const tempServer = new ReactRender()

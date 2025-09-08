@@ -1,6 +1,6 @@
-import RenderServer from './server'
-export * from './server'
-export { renderComponentToHtml, type RenderRequest, type RenderResponse } from './server'
+import RenderServer from './main'
+export * from './main'
+export { renderComponentToHtml, type RenderRequest, type RenderResponse } from './main'
 export * from './types'
 
 if (process.env.RENDER_ENV === 'render_dev') {

@@ -32,10 +32,10 @@
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
     "lint": "eslint . --fix",
     "pub": "npm publish --access public",
-    "render:dev": "cross-env RENDER_ENV=core_dev tsx ../render/src/server.ts",
+    "dev:template": "cross-env RENDER_ENV=core_dev tsx ../render/src/main.ts",
     "sort": "sort-package-json",
     "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
-    "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../render/src/dev/mock-server.ts\" --include \"../render/src/server.ts\" src/app.ts --trace-deprecation"
+    "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../render/src/dev/mock-server.ts\" --include \"../render/src/main.ts\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
     "@karinjs/md-html": "^1.3.0",
