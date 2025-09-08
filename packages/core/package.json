@@ -56,7 +56,7 @@
     "http-proxy-middleware": "^3.0.3",
     "qrcode": "^1.5.4",
     "reflect-metadata": "^0.2.2",
-    "render": "workspace:*"
+    "template": "workspace:*"
   },
   "engines": {
     "node": ">=21.0.0",

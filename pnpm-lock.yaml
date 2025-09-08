@@ -139,11 +139,11 @@ importers:
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
-      render:
+      template:
         specifier: workspace:*
-        version: link:../render
+        version: link:../template
 
-  packages/render:
+  packages/template:
     dependencies:
       '@heroui/chip':
         specifier: ^2.2.21
@@ -10397,7 +10397,7 @@ snapshots:
   '@react-aria/dialog@3.5.29(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@react-aria/interactions': 3.25.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      '@react-aria/overlays': 3.29.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@react-aria/overlays': 3.29.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@react-aria/utils': 3.30.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@react-types/dialog': 3.5.21(react@19.1.1)
       '@react-types/shared': 3.32.0(react@19.1.1)
