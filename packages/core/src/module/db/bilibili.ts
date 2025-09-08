@@ -987,8 +987,14 @@ export class BilibiliDBBase {
         // 构建ORDER BY
         if (order) {
           const orderClauses: string[] = []
+          const allowedFields = ['id', 'dynamic_id', 'host_mid', 'groupId', 'dynamic_type', 'createdAt', 'updatedAt']
+          const allowedDirections = ['ASC', 'DESC']
+
           for (const [field, direction] of Object.entries(order)) {
-            orderClauses.push(`${field} ${direction}`)
+            // 验证字段名和排序方向，防止SQL注入
+            if (allowedFields.includes(field) && allowedDirections.includes(direction)) {
+              orderClauses.push(`${field} ${direction}`)
+            }
           }
           if (orderClauses.length > 0) {
             sql += ' ORDER BY ' + orderClauses.join(', ')
