@@ -12,7 +12,7 @@ export async function fetchKuaishouData<T extends keyof KuaishouDataTypes> (
     request: {
       timeout: Config.request.timeout,
       headers: { 'User-Agent': Config.request['User-Agent'] },
-      proxy: Config.request.proxy,
+      proxy: Config.request.proxy
     }
   })
   switch (type) {

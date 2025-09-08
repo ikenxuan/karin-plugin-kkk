@@ -1,7 +1,7 @@
 /**
  * 渲染请求参数接口
  */
-export interface RenderRequest<T = any> { 
+export interface RenderRequest<T = any> {
   /** 模板类型 */
   templateType: 'douyin' | 'bilibili' | 'kuaishou' | 'admin' | 'help' | 'apiError'
   /** 模板名称 */

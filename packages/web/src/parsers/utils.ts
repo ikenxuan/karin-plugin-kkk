@@ -11,21 +11,21 @@
 export const formatDuration = (seconds: number): string => {
   // 处理负数情况
   if (seconds < 0) return '0:00'
-  
+
   // 向下取整总秒数,避免出现小数
   const totalSeconds = Math.floor(seconds)
-  
+
   // 计算分钟数和剩余秒数
   const minutes = Math.floor(totalSeconds / 60)
   const remainingSeconds = totalSeconds % 60
-  
+
   // 当分钟数超过60时,需要转换为小时显示
   if (minutes >= 60) {
     const hours = Math.floor(minutes / 60)
     const remainingMinutes = minutes % 60
     return `${hours}:${remainingMinutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
   }
-  
+
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
 }
 
@@ -81,7 +81,7 @@ export const extractVideoLink = (text: string): string | null => {
     // 快手相关域名
     /https?:\/\/(?:[^\s]*\.)?(?:kuaishou\.com|kwai\.com|chenzhongtech\.com)(?:\/[^\s\u4e00-\u9fff]*)*/gi
   ]
-  
+
   // 尝试匹配各个平台的链接
   for (const pattern of platformPatterns) {
     const matches = text.match(pattern)
@@ -92,7 +92,7 @@ export const extractVideoLink = (text: string): string | null => {
       return link
     }
   }
-  
+
   // 如果没有匹配到特定平台，尝试匹配通用的http/https链接
   const genericPattern = /https?:\/\/[^\s\u4e00-\u9fff]+/gi
   const genericMatches = text.match(genericPattern)
@@ -101,6 +101,6 @@ export const extractVideoLink = (text: string): string | null => {
     link = link.replace(/[，。！？；：、"'`]+$/, '')
     return link
   }
-  
+
   return null
 }

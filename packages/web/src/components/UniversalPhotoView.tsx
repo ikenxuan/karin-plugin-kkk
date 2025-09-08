@@ -59,7 +59,7 @@ const UniversalPhotoView: React.FC<UniversalPhotoViewProps> = ({
  */
   const handleVideoLoadingChange = (loading: boolean) => {
     setVideoLoaded(!loading)
-    }
+  }
 
   /**
    * 处理Live图标点击
@@ -76,7 +76,6 @@ const UniversalPhotoView: React.FC<UniversalPhotoViewProps> = ({
     if (imageType === ImageType.LIVE && !videoLoaded) {
       e.stopPropagation()
       console.log('Live图片正在加载中，请稍候...')
-      return
     }
   }
 
@@ -85,26 +84,26 @@ const UniversalPhotoView: React.FC<UniversalPhotoViewProps> = ({
    */
   const renderLivePreview = () => {
     return (
-      <div className="relative w-full h-full flex items-center justify-center bg-black">
+      <div className='relative w-full h-full flex items-center justify-center bg-black'>
         <UniversalImage
           src={src}
           videoSrc={videoSrc}
           alt={alt}
           type={ImageType.LIVE}
-          className="max-w-full max-h-full"
+          className='max-w-full max-h-full'
           referrerPolicy={referrerPolicy}
           crossOrigin={crossOrigin}
           muted={liveConfig.muted}
           loop={liveConfig.loop}
-          showLiveIcon={true}
+          showLiveIcon
           enableHoverPlay={liveConfig.enableHoverPlay ?? true}
           enableLongPress={liveConfig.enableLongPress ?? true}
           onLoadingChange={handleVideoLoadingChange}
         />
         {/* 如果视频还在加载，显示加载提示 */}
         {!videoLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
-            <div className="text-white text-sm">Live图片加载中...</div>
+          <div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10'>
+            <div className='text-white text-sm'>Live图片加载中...</div>
           </div>
         )}
       </div>

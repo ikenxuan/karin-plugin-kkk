@@ -1,4 +1,4 @@
-import { useCallback,useState } from 'react'
+import { useCallback, useState } from 'react'
 
 /**
  * 异步操作Hook
@@ -18,7 +18,7 @@ export const useAsync = <T>() => {
   const execute = useCallback(async (asyncFn: () => Promise<T>): Promise<T> => {
     setLoading(true)
     setError(null)
-    
+
     try {
       const result = await asyncFn()
       setData(result)
@@ -54,6 +54,6 @@ export const useAsync = <T>() => {
     data,
     execute,
     clearError,
-    reset,
+    reset
   }
 }

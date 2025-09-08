@@ -1,6 +1,7 @@
 import React from 'react'
-import { PlatformType } from '../../types/platforms'
+
 import { version } from '../../services/DataService'
+import { PlatformType } from '../../types/platforms'
 
 // 抖音
 const DouyinComment = React.lazy(() =>
@@ -79,7 +80,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
    * @returns JSX元素
    */
   const renderLoading = (message: string) => (
-    <div className="flex justify-center items-center h-full text-default-50">
+    <div className='flex justify-center items-center h-full text-default-50'>
       {message}
     </div>
   )
@@ -91,7 +92,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
    * @returns JSX元素
    */
   const renderInDevelopment = (type: string, name: string) => (
-    <div className="flex justify-center items-center h-full text-default-50">
+    <div className='flex justify-center items-center h-full text-default-50'>
       {type} {name} 开发中...
     </div>
   )
@@ -131,39 +132,42 @@ const renderDouyinComponent = (templateId: string, data: any, qrCodeDataUrl: str
     case 'comment':
       return (
         <React.Suspense fallback={
-          <div className="flex justify-center items-center h-full text-default-50">
+          <div className='flex justify-center items-center h-full text-default-50'>
             加载评论组件中...
           </div>
-        }>
+        }
+        >
           <DouyinComment {...commonProps} />
         </React.Suspense>
       )
-    
+
     case 'dynamic':
       return (
         <React.Suspense fallback={
-          <div className="flex justify-center items-center h-full text-default-50">
+          <div className='flex justify-center items-center h-full text-default-50'>
             加载动态组件中...
           </div>
-        }>
+        }
+        >
           <DouyinDynamic {...commonProps} />
         </React.Suspense>
       )
-    
+
     case 'live':
       return (
         <React.Suspense fallback={
-          <div className="flex justify-center items-center h-full text-default-50">
+          <div className='flex justify-center items-center h-full text-default-50'>
             加载直播组件中...
           </div>
-        }>
+        }
+        >
           <DouyinLive {...commonProps} />
         </React.Suspense>
       )
-    
+
     default:
       return (
-        <div className="flex justify-center items-center h-full text-default-50">
+        <div className='flex justify-center items-center h-full text-default-50'>
           模板 {templateId} 开发中...
         </div>
       )
@@ -189,32 +193,35 @@ const renderBilibiliComponent = (templateId: string, data: any, qrCodeDataUrl: s
     case 'comment':
       return (
         <React.Suspense fallback={
-          <div className="flex justify-center items-center h-full text-default-50">
+          <div className='flex justify-center items-center h-full text-default-50'>
             加载评论组件中...
           </div>
-        }>
+        }
+        >
           <BilibiliComment {...commonProps} />
         </React.Suspense>
       )
-    
+
     case 'dynamic/DYNAMIC_TYPE_DRAW':
       return (
         <React.Suspense fallback={
-          <div className="flex justify-center items-center h-full text-default-50">
+          <div className='flex justify-center items-center h-full text-default-50'>
             加载动态组件中...
           </div>
-        }>
+        }
+        >
           <BilibiliDrawDynamic {...commonProps} />
         </React.Suspense>
       )
-    
+
     case 'dynamic/DYNAMIC_TYPE_AV':
       return (
         <React.Suspense fallback={
-          <div className="flex justify-center items-center h-full text-default-50">
+          <div className='flex justify-center items-center h-full text-default-50'>
             加载动态组件中...
           </div>
-        }>
+        }
+        >
           <BilibiliVideoDynamic {...commonProps} />
         </React.Suspense>
       )
@@ -222,28 +229,30 @@ const renderBilibiliComponent = (templateId: string, data: any, qrCodeDataUrl: s
     case 'dynamic/DYNAMIC_TYPE_LIVE_RCMD':
       return (
         <React.Suspense fallback={
-          <div className="flex justify-center items-center h-full text-default-50">
+          <div className='flex justify-center items-center h-full text-default-50'>
             加载动态组件中...
           </div>
-        }>
+        }
+        >
           <BilibiliLiveDynamic {...commonProps} />
         </React.Suspense>
       )
-    
+
     case 'dynamic/DYNAMIC_TYPE_FORWARD':
       return (
         <React.Suspense fallback={
-          <div className="flex justify-center items-center h-full text-default-50">
+          <div className='flex justify-center items-center h-full text-default-50'>
             加载动态组件中...
           </div>
-        }>
+        }
+        >
           <BilibiliForwardDynamic {...commonProps} />
         </React.Suspense>
       )
-    
+
     default:
       return (
-        <div className="flex justify-center items-center h-full text-default-50">
+        <div className='flex justify-center items-center h-full text-default-50'>
           模板 {templateId} 开发中...
         </div>
       )

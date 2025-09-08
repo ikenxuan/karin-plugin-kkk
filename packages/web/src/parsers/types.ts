@@ -127,9 +127,9 @@ export enum HTTPStatusCode {
  * 链接解析响应
  */
 export interface LinkParseResponse {
-    originalUrl: string
-    finalUrl: string
-    platform: string
+  originalUrl: string
+  finalUrl: string
+  platform: string
 }
 
 /**

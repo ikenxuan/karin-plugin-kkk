@@ -9,10 +9,15 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      // 开发时指向源码，编译时会被项目引用覆盖
-      "render": ["../render/src/index.ts"],
-      "render/*": ["../render/src/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "render": [
+        "../render/src/index.ts"
+      ],
+      "render/*": [
+        "../render/src/*"
+      ]
     },
     "jsx": "preserve",
     "rootDir": "./src",
@@ -26,19 +31,23 @@
     "pretty": true,
     "inlineSourceMap": false,
     "alwaysStrict": true,
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "noEmit": true,
     "strictPropertyInitialization": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    // 添加复合项目支持
     "composite": true
   },
   "include": [
     "src/**/*.ts",
-    "eslint.config.js"
+    "eslint.config.js",
+    "vite.config.ts"
   ],
   "references": [
-    { "path": "../render" }
+    {
+      "path": "../render"
+    }
   ]
 }

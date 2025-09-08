@@ -373,7 +373,6 @@ export interface BilibiliLiveDynamicProps {
   qrCodeDataUrl?: string
 }
 
-
 /**
  * B站直播动态内容组件属性接口
  */

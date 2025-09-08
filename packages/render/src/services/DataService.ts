@@ -1,11 +1,12 @@
 import axios from 'axios'
+
 import { PlatformType } from '../types/platforms'
 
 export const version = {
-  pluginName: "kkk",
-  pluginVersion: "2.0.0",
-  releaseType: "Stable",
-  poweredBy: "karin"
+  pluginName: 'kkk',
+  pluginVersion: '2.0.0',
+  releaseType: 'Stable',
+  poweredBy: 'karin'
 }
 
 /**
@@ -96,7 +97,7 @@ export class DataService {
       await this.axiosInstance.delete(`/data/${platform}/${templateId}/${filename}`)
     } catch (error) {
       console.error(`删除${platform}/${templateId}/${filename}失败:`, error)
-      throw new Error(`删除数据文件失败`)
+      throw new Error('删除数据文件失败')
     }
   }
 

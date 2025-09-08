@@ -32,7 +32,7 @@ export const parseDouyinWorkId = (finalUrl: string): ParsedWorkInfo => {
         workId: noteMatch ? noteMatch[1] : '',
         workType: 'video',
         params: {
-          aweme_id: noteMatch ? noteMatch[1] : '',
+          aweme_id: noteMatch ? noteMatch[1] : ''
         }
       }
     }
@@ -62,26 +62,26 @@ const removeTags = (title: string, tags: string[]): string => {
   if (!title || !tags || tags.length === 0) {
     return title
   }
-  
+
   let cleanTitle = title
-  
+
   // 移除每个标签（支持#标签和@标签格式）
   tags.forEach(tag => {
     if (tag) {
       // 移除 #标签名 格式
       const hashtagPattern = new RegExp(`#${tag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\s|$)`, 'gi')
       cleanTitle = cleanTitle.replace(hashtagPattern, '')
-      
+
       // 移除 @标签名 格式
       const atPattern = new RegExp(`@${tag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\s|$)`, 'gi')
       cleanTitle = cleanTitle.replace(atPattern, '')
-      
+
       // 移除纯标签名
       const plainPattern = new RegExp(`\\b${tag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi')
       cleanTitle = cleanTitle.replace(plainPattern, '')
     }
   })
-  
+
   // 清理多余的空格和换行符
   return cleanTitle.replace(/\s+/g, ' ').trim()
 }
@@ -115,7 +115,6 @@ export const parseDouyinVideoDetail = async (workInfo: ParsedWorkInfo): Promise<
     const commentsData = commentsResponse.data.comments
     const emojiData = emojiResponse.data
 
-
     // 判断作品类型
     const isSlides = awemeDetail.is_slides === true && awemeDetail.images !== null
     const isVideo = !awemeDetail.images && !isSlides
@@ -126,11 +125,11 @@ export const parseDouyinVideoDetail = async (workInfo: ParsedWorkInfo): Promise<
 
     // 提取标签
     const tags = Array.isArray(awemeDetail.text_extra)
-      ? awemeDetail.text_extra.map(tag => 
-          typeof tag === 'string' ? tag : tag.hashtag_name
-        ).filter(Boolean)
+      ? awemeDetail.text_extra.map(tag =>
+        typeof tag === 'string' ? tag : tag.hashtag_name
+      ).filter(Boolean)
       : []
-    
+
     // 从标题中移除标签
     const originalTitle = awemeDetail.desc || '无标题'
     const cleanTitle = removeTags(originalTitle, tags)
@@ -191,7 +190,7 @@ export const parseDouyinVideoDetail = async (workInfo: ParsedWorkInfo): Promise<
           : awemeDetail.music?.play_url?.uri || '获取失败'
       },
       images: workType === 'note' ? awemeDetail.images?.map(img => img.url_list?.[2]).filter(Boolean) : undefined,
-      slides: slides,
+      slides,
       tags,
       comments,
       commentCount: awemeDetail.statistics?.comment_count || 0

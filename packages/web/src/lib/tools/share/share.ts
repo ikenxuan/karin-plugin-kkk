@@ -7,7 +7,7 @@ export const handleShare = async (shareUrl: string, title: string) => {
   if (navigator.share) {
     try {
       await navigator.share({
-        title: title,
+        title,
         url: shareUrl
       })
     } catch (err: any) {

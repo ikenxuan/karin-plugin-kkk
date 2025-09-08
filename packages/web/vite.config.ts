@@ -1,7 +1,7 @@
-import fs from "node:fs"
-import path from "node:path"
+import fs from 'node:fs'
+import path from 'node:path'
 
-import tailwindcss from "@tailwindcss/vite"
+import tailwindcss from '@tailwindcss/vite'
 import { isTauri } from '@tauri-apps/api/core'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
@@ -129,7 +129,7 @@ export default defineConfig(({ command, mode }) => {
           navigateFallback: '/kkk/index.html'
         },
         injectRegister: 'auto',
-        strategies: 'generateSW',
+        strategies: 'generateSW'
       }),
       !isStandalone && obfuscator({
         include: ['src/**/*.ts', 'src/**/*.tsx'],
@@ -171,8 +171,8 @@ export default defineConfig(({ command, mode }) => {
     ].filter(Boolean),
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "./src"),
-      },
+        '@': path.resolve(__dirname, './src')
+      }
     },
     define: {
       __TAURI__: JSON.stringify(process.env.TAURI_PLATFORM !== undefined),
@@ -201,14 +201,14 @@ export default defineConfig(({ command, mode }) => {
     server: {
       host: true,
       watch: {
-        ignored: ['**/src-tauri/**'],
+        ignored: ['**/src-tauri/**']
       },
       proxy: {
         '/api': {
           target: 'http://localhost:7777',
-          changeOrigin: true,
-        },
+          changeOrigin: true
+        }
       }
-    },
+    }
   }
 })

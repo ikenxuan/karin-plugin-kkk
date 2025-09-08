@@ -1,5 +1,3 @@
-/* eslint-disable prefer-const */
-
 import fs from 'node:fs'
 
 import { ApiResponse, BiliUserDynamic, BiliUserProfile, BiliVideoPlayurlIsLogin, DynamicType, getBilibiliData, MajorType } from '@ikenxuan/amagi'
@@ -151,7 +149,7 @@ export class Bilibilipush extends Base {
                 orig_text: name,
                 text: name,
                 type: 'topic',
-                rid: data[dynamicId].Dynamic_Data.modules.module_dynamic.topic!.id.toString(),
+                rid: data[dynamicId].Dynamic_Data.modules.module_dynamic.topic!.id.toString()
               })
               data[dynamicId].Dynamic_Data.modules.module_dynamic.major!.opus.summary.text = `${name}\n\n` + data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.summary?.text
             }

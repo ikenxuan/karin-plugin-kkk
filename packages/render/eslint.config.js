@@ -2,17 +2,16 @@ import stylistic from '@stylistic/eslint-plugin'
 import parserTs from '@typescript-eslint/parser'
 import typescriptEslint from '@typescript-eslint/eslint-plugin'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
 
 export default [
   {
-    ignores:  [
-      'node_modules', 
-      'temp', 
-      'logs', 
-      'data', 
-      'lib', 
-      'dist', 
-      'resources/**/*.js'
+    ignores: [
+      'src-tauri/**',
+      'dist/**',
+      'dev-data/**',
+      'node_modules/**'
     ]
   },
   {
@@ -20,7 +19,9 @@ export default [
     plugins: {
       '@stylistic': stylistic,
       '@typescript-eslint': typescriptEslint,
-      'simple-import-sort': simpleImportSort
+      'simple-import-sort': simpleImportSort,
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh
     },
     languageOptions: {
       parser: parserTs,
@@ -36,7 +37,7 @@ export default [
       // 导入排序规则
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
-
+      
       // TypeScript 未使用变量规则
       '@typescript-eslint/no-unused-vars': ['error', {
         argsIgnorePattern: '^_',
@@ -44,14 +45,14 @@ export default [
         ignoreRestSiblings: true,
         args: 'after-used'
       }],
-
+      
       // 禁用变量提升检查
       'no-use-before-define': ['off', {
         functions: false,
         classes: false,
         variables: true
       }],
-
+      
       // 代码格式化规则
       '@stylistic/comma-dangle': ['error', 'never'], // 禁止对象末尾逗号
       'no-multiple-empty-lines': ['error', { max: 2, maxEOF: 1, maxBOF: 0 }], // 限制空行数量
@@ -66,6 +67,16 @@ export default [
       '@stylistic/quotes': ['error', 'single'], // 使用单引号
       '@stylistic/indent': ['error', 2], // 使用2个空格缩进
       '@stylistic/no-multi-spaces': 'error', // 禁止多个空格
+
+      // JSX 格式化规则
+      '@stylistic/jsx-curly-spacing': ['error', { when: 'never' }], // JSX花括号内无空格
+      '@stylistic/jsx-equals-spacing': ['error', 'never'], // JSX等号周围无空格
+      '@stylistic/jsx-tag-spacing': ['error', {
+        closingSlash: 'never',
+        beforeSelfClosing: 'always',
+        afterOpening: 'never',
+        beforeClosing: 'never'
+      }]
     }
   }
 ]

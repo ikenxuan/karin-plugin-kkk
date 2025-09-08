@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
-import { Card, CardBody, CardHeader, Textarea, Button, Select, SelectItem } from '@heroui/react'
-import { Code, Copy, Download, Upload, Plus } from 'lucide-react'
+import { Button, Card, CardBody, CardHeader, Select, SelectItem, Textarea } from '@heroui/react'
+import { Code, Copy, Download, Plus, Upload } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
 
 interface JsonEditorProps {
   /** 当前数据 */
@@ -62,10 +62,10 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
     // 先尝试标准JSON解析
     try {
       return JSON.parse(text)
-    } catch (e) {
+    } catch {
       // JSON解析失败，尝试解析JavaScript对象字面量
       try {
-        let cleanText = text
+        const cleanText = text
           .replace(/`([^`]*)`/g, (match, content) => {
             return `"${content.trim()}"`
           })
@@ -79,7 +79,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
         // 使用Function构造器安全地解析JavaScript对象
         const result = new Function('return ' + cleanText)()
         return result
-      } catch (err) {
+      } catch {
         throw new Error('无法解析JavaScript对象或JSON格式')
       }
     }
@@ -109,7 +109,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
       setJsonText(JSON.stringify(parsed, null, 2))
       setIsFormatted(true)
       setError('')
-    } catch (err) {
+    } catch {
       setError('无法格式化：格式错误')
     }
   }
@@ -123,7 +123,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
       setJsonText(JSON.stringify(parsed))
       setIsFormatted(false)
       setError('')
-    } catch (err) {
+    } catch {
       setError('无法压缩：格式错误')
     }
   }
@@ -186,51 +186,51 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader className="flex-shrink-0">
-        <div className="flex flex-col gap-2 w-full">
-          <div className="flex gap-2 items-center">
-            <Code className="flex-shrink-0 w-5 h-5" />
-            <h3 className="text-lg font-semibold whitespace-nowrap">JSON数据编辑</h3>
+    <Card className='w-full'>
+      <CardHeader className='flex-shrink-0'>
+        <div className='flex flex-col gap-2 w-full'>
+          <div className='flex gap-2 items-center'>
+            <Code className='flex-shrink-0 w-5 h-5' />
+            <h3 className='text-lg font-semibold whitespace-nowrap'>JSON数据编辑</h3>
           </div>
-          <div className="flex flex-wrap gap-1 items-center">
+          <div className='flex flex-wrap gap-1 items-center'>
             <Button
-              size="sm"
-              variant="flat"
+              size='sm'
+              variant='flat'
               onPress={formatJson}
               isDisabled={readonly}
             >
               格式化
             </Button>
             <Button
-              size="sm"
-              variant="flat"
+              size='sm'
+              variant='flat'
               onPress={compressJson}
               isDisabled={readonly}
             >
               压缩
             </Button>
             <Button
-              size="sm"
-              variant="flat"
-              startContent={<Copy className="w-3 h-3" />}
+              size='sm'
+              variant='flat'
+              startContent={<Copy className='w-3 h-3' />}
               onPress={copyToClipboard}
             >
               复制
             </Button>
             <Button
-              size="sm"
-              variant="flat"
-              startContent={<Upload className="w-3 h-3" />}
+              size='sm'
+              variant='flat'
+              startContent={<Upload className='w-3 h-3' />}
               onPress={importJson}
               isDisabled={readonly}
             >
               导入
             </Button>
             <Button
-              size="sm"
-              variant="flat"
-              startContent={<Download className="w-3 h-3" />}
+              size='sm'
+              variant='flat'
+              startContent={<Download className='w-3 h-3' />}
               onPress={exportJson}
             >
               导出
@@ -238,14 +238,14 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
           </div>
         </div>
       </CardHeader>
-      <CardBody className="space-y-4">
+      <CardBody className='space-y-4'>
         {/* 数据文件选择器 - 修复颜色问题 */}
         {availableDataFiles.length > 0 && (
-          <div className="space-y-2">
-            <div className="flex gap-2 items-center">
+          <div className='space-y-2'>
+            <div className='flex gap-2 items-center'>
               <Select
-                label="选择数据文件"
-                placeholder="选择预设数据"
+                label='选择数据文件'
+                placeholder='选择预设数据'
                 selectedKeys={selectedDataFile ? [selectedDataFile] : []}
                 onSelectionChange={(keys) => {
                   const key = Array.from(keys)[0] as string
@@ -253,30 +253,30 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
                     onDataFileChange(key)
                   }
                 }}
-                className="flex-1"
-                size="sm"
-                variant="bordered"
-                color="default"
+                className='flex-1'
+                size='sm'
+                variant='bordered'
+                color='default'
                 classNames={{
-                  trigger: "bg-white border-gray-300 text-gray-900 data-[hover=true]:border-gray-400",
-                  value: "text-gray-900",
-                  listbox: "bg-white",
-                  popoverContent: "bg-white border border-gray-200"
+                  trigger: 'bg-white border-gray-300 text-gray-900 data-[hover=true]:border-gray-400',
+                  value: 'text-gray-900',
+                  listbox: 'bg-white',
+                  popoverContent: 'bg-white border border-gray-200'
                 }}
               >
                 {availableDataFiles.map((filename) => (
                   <SelectItem
                     key={filename}
-                    className="text-gray-900 data-[hover=true]:bg-gray-100 data-[selected=true]:bg-blue-50"
+                    className='text-gray-900 data-[hover=true]:bg-gray-100 data-[selected=true]:bg-blue-50'
                   >
                     {filename.replace('.json', '')}
                   </SelectItem>
                 ))}
               </Select>
               <Button
-                size="sm"
-                variant="flat"
-                startContent={<Plus className="w-3 h-3" />}
+                size='sm'
+                variant='flat'
+                startContent={<Plus className='w-3 h-3' />}
                 onPress={() => setShowNewFileInput(true)}
                 isDisabled={readonly}
               >
@@ -286,25 +286,25 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
 
             {/* 新建文件输入框 */}
             {showNewFileInput && (
-              <div className="flex gap-2 items-center">
+              <div className='flex gap-2 items-center'>
                 <input
-                  type="text"
-                  placeholder="输入文件名"
+                  type='text'
+                  placeholder='输入文件名'
                   value={newFileName}
                   onChange={(e) => setNewFileName(e.target.value)}
-                  className="flex-1 px-3 py-2 text-sm placeholder-gray-500 text-gray-900 bg-white rounded-md border border-gray-300 focus:border-blue-500 focus:outline-none"
+                  className='flex-1 px-3 py-2 text-sm placeholder-gray-500 text-gray-900 bg-white rounded-md border border-gray-300 focus:border-blue-500 focus:outline-none'
                 />
                 <Button
-                  size="sm"
-                  color="primary"
+                  size='sm'
+                  color='primary'
                   onPress={saveNewFile}
                   isDisabled={!newFileName}
                 >
                   保存
                 </Button>
                 <Button
-                  size="sm"
-                  variant="flat"
+                  size='sm'
+                  variant='flat'
                   onPress={() => {
                     setShowNewFileInput(false)
                     setNewFileName('')
@@ -320,17 +320,17 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
         <Textarea
           value={jsonText}
           onValueChange={handleJsonChange}
-          variant="bordered"
+          variant='bordered'
           minRows={15}
           maxRows={25}
-          className="font-mono text-sm"
-          placeholder="在此粘贴或编辑您的JSON数据...\n支持JavaScript对象字面量格式"
-          description={error || "支持标准JSON和JavaScript对象字面量格式，可手动调整输入框大小"}
+          className='font-mono text-sm'
+          placeholder='在此粘贴或编辑您的JSON数据...\n支持JavaScript对象字面量格式'
+          description={error || '支持标准JSON和JavaScript对象字面量格式，可手动调整输入框大小'}
           color={error ? 'danger' : 'default'}
           isReadOnly={readonly}
           classNames={{
-            input: "bg-white text-gray-900 placeholder-gray-500",
-            inputWrapper: "bg-white border-gray-300 data-[hover=true]:border-gray-400"
+            input: 'bg-white text-gray-900 placeholder-gray-500',
+            inputWrapper: 'bg-white border-gray-300 data-[hover=true]:border-gray-400'
           }}
         />
       </CardBody>

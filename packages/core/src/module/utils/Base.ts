@@ -97,7 +97,7 @@ export class Base {
       request: {
         timeout: Config.request.timeout,
         headers: { 'User-Agent': Config.request['User-Agent'] },
-        proxy: Config.request.proxy?.switch ? Config.request.proxy : false,
+        proxy: Config.request.proxy?.switch ? Config.request.proxy : false
       }
     })
 

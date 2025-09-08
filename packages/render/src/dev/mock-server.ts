@@ -1,11 +1,13 @@
-import express from 'node-karin/express'
-import cors from 'cors'
-import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, unlinkSync, statSync } from 'node:fs'
-import { resolve, join } from 'node:path'
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from 'node:fs'
+import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import QRCode from 'qrcode'
-import { PlatformType } from '../types/platforms'
+
+import cors from 'cors'
 import { logger } from 'node-karin'
+import express from 'node-karin/express'
+import QRCode from 'qrcode'
+
+import { PlatformType } from '../types/platforms'
 
 const __dirname = fileURLToPath(new URL('..', import.meta.url))
 const dataDir = resolve(__dirname, '../dev-data')
@@ -85,7 +87,7 @@ function getAvailableDataFiles (platform: PlatformType, templateId: string): str
   const dir = getTemplateDataDir(platform, templateId)
   try {
     return readdirSync(dir).filter(file => file.endsWith('.json'))
-  } catch (error) {
+  } catch {
     return []
   }
 }
@@ -130,7 +132,7 @@ app.get(/^\/api\/data\/([^/]+)\/(.+)\/([^/]+\.json)$/, (req, res) => {
 app.get(/^\/api\/data\/([^/]+)\/(.+)$/, (req, res) => {
   const platform = req.params[0] as PlatformType
   const templateId = req.params[1]
-  let data = readDataFile(platform, templateId, 'default.json')
+  const data = readDataFile(platform, templateId, 'default.json')
   res.json(data)
 })
 
@@ -199,8 +201,9 @@ app.get('/api/qrcode', async (req, res) => {
       errorCorrectionLevel: 'L',
       color: {
         dark: useDarkTheme ? '#c3c3c3' : '#3a3a3a', // 码的颜色
-        light: useDarkTheme ? '#000000' : '#EEEEF0', // 背景色
-      }
+        light: useDarkTheme ? '#000000' : '#EEEEF0' // 背景色
+      },
+      margin: 0
     })
 
     const dataUrl = `data:image/svg+xml;base64,${Buffer.from(qrCodeSvg).toString('base64')}`

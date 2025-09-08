@@ -1,4 +1,4 @@
-import { CheckCircle, Download,RefreshCw, Settings } from 'lucide-react'
+import { CheckCircle, Download, RefreshCw, Settings } from 'lucide-react'
 import { useState } from 'react'
 
 import { Badge } from '@/components/ui/badge'
@@ -10,7 +10,7 @@ import { Separator } from '@/components/ui/separator'
  * PWA 调试面板组件
  * 用于开发环境下测试 PWA 更新流程
  */
-export function PWADebugPanel() {
+export function PWADebugPanel () {
   const [debugState, setDebugState] = useState<{
     offlineReady: boolean
     needRefresh: boolean
@@ -31,7 +31,7 @@ export function PWADebugPanel() {
       needRefresh: false,
       isVisible: true
     }))
-    
+
     // 模拟事件触发
     window.dispatchEvent(new CustomEvent('pwa-offline-ready'))
   }
@@ -46,7 +46,7 @@ export function PWADebugPanel() {
       needRefresh: true,
       isVisible: true
     }))
-    
+
     // 模拟事件触发
     window.dispatchEvent(new CustomEvent('pwa-need-refresh'))
   }
@@ -60,7 +60,7 @@ export function PWADebugPanel() {
       needRefresh: false,
       isVisible: false
     })
-    
+
     // 模拟重置事件
     window.dispatchEvent(new CustomEvent('pwa-reset'))
   }
@@ -77,91 +77,91 @@ export function PWADebugPanel() {
   if (import.meta.env.PROD) return null
 
   return (
-    <Card className="fixed top-4 left-4 z-50 w-80 shadow-lg backdrop-blur bg-background/95">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex gap-2 items-center text-sm">
-          <Settings className="w-4 h-4" />
+    <Card className='fixed top-4 left-4 z-50 w-80 shadow-lg backdrop-blur bg-background/95'>
+      <CardHeader className='pb-3'>
+        <CardTitle className='flex gap-2 items-center text-sm'>
+          <Settings className='w-4 h-4' />
           PWA 调试面板
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant='secondary' className='text-xs'>
             DEV
           </Badge>
         </CardTitle>
       </CardHeader>
-      
-      <CardContent className="space-y-3">
-        <div className="text-xs text-muted-foreground">
+
+      <CardContent className='space-y-3'>
+        <div className='text-xs text-muted-foreground'>
           当前状态:
         </div>
-        
-        <div className="flex gap-2">
-          <Badge 
-            variant={debugState.offlineReady ? "default" : "outline"}
-            className="text-xs"
+
+        <div className='flex gap-2'>
+          <Badge
+            variant={debugState.offlineReady ? 'default' : 'outline'}
+            className='text-xs'
           >
-            <CheckCircle className="mr-1 w-3 h-3" />
+            <CheckCircle className='mr-1 w-3 h-3' />
             离线就绪
           </Badge>
-          <Badge 
-            variant={debugState.needRefresh ? "default" : "outline"}
-            className="text-xs"
+          <Badge
+            variant={debugState.needRefresh ? 'default' : 'outline'}
+            className='text-xs'
           >
-            <Download className="mr-1 w-3 h-3" />
+            <Download className='mr-1 w-3 h-3' />
             需要更新
           </Badge>
         </div>
-        
+
         <Separator />
-        
-        <div className="space-y-2">
-          <div className="text-xs text-muted-foreground">
+
+        <div className='space-y-2'>
+          <div className='text-xs text-muted-foreground'>
             测试操作:
           </div>
-          
-          <div className="grid grid-cols-2 gap-2">
-            <Button 
-              size="sm" 
-              variant="outline"
+
+          <div className='grid grid-cols-2 gap-2'>
+            <Button
+              size='sm'
+              variant='outline'
               onClick={triggerOfflineReady}
-              className="text-xs"
+              className='text-xs'
             >
-              <CheckCircle className="mr-1 w-3 h-3" />
+              <CheckCircle className='mr-1 w-3 h-3' />
               离线就绪
             </Button>
-            
-            <Button 
-              size="sm" 
-              variant="outline"
+
+            <Button
+              size='sm'
+              variant='outline'
               onClick={triggerNeedRefresh}
-              className="text-xs"
+              className='text-xs'
             >
-              <Download className="mr-1 w-3 h-3" />
+              <Download className='mr-1 w-3 h-3' />
               需要更新
             </Button>
-            
-            <Button 
-              size="sm" 
-              variant="outline"
+
+            <Button
+              size='sm'
+              variant='outline'
               onClick={simulateUpdateComplete}
-              className="text-xs"
+              className='text-xs'
             >
-              <RefreshCw className="mr-1 w-3 h-3" />
+              <RefreshCw className='mr-1 w-3 h-3' />
               更新完成
             </Button>
-            
-            <Button 
-              size="sm" 
-              variant="destructive"
+
+            <Button
+              size='sm'
+              variant='destructive'
               onClick={resetStates}
-              className="text-xs"
+              className='text-xs'
             >
               重置状态
             </Button>
           </div>
         </div>
-        
+
         <Separator />
-        
-        <div className="text-xs text-muted-foreground">
+
+        <div className='text-xs text-muted-foreground'>
           💡 提示: 点击按钮测试不同的 PWA 更新状态
         </div>
       </CardContent>

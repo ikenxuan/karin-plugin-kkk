@@ -1,4 +1,4 @@
-import { Download} from 'lucide-react'
+import { Download } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 
@@ -18,14 +18,14 @@ export function PWAUpdatePrompt () {
   const {
     offlineReady: [offlineReady, setOfflineReady],
     needRefresh: [needRefresh, setNeedRefresh],
-    updateServiceWorker,
+    updateServiceWorker
   } = useRegisterSW({
     onRegistered (registration: ServiceWorkerRegistration | undefined) {
       console.log('SW Registered: ', registration)
     },
     onRegisterError (error: any) {
       console.log('SW registration error', error)
-    },
+    }
   })
 
   // 监听调试事件（仅开发环境）
@@ -105,34 +105,34 @@ export function PWAUpdatePrompt () {
   if (!showUpdatePrompt && !isOfflineReady) return null
 
   return (
-    <Card className="fixed right-4 bottom-4 z-50 w-80 shadow-lg">
-      <CardContent className="p-4">
+    <Card className='fixed right-4 bottom-4 z-50 w-80 shadow-lg'>
+      <CardContent className='p-4'>
         {isNeedRefresh && (
-          <div className="space-y-3">
+          <div className='space-y-3'>
             <Alert>
-              <Download className="w-4 h-4" />
-              <AlertDescription className="text-blue-600">
+              <Download className='w-4 h-4' />
+              <AlertDescription className='text-blue-600'>
                 发现新版本，是否立即更新？
                 {import.meta.env.DEV && debugNeedRefresh && (
-                  <span className="ml-2 text-xs text-muted-foreground">(调试模式)</span>
+                  <span className='ml-2 text-xs text-muted-foreground'>(调试模式)</span>
                 )}
               </AlertDescription>
             </Alert>
 
-            <div className="flex gap-2">
+            <div className='flex gap-2'>
               <Button
                 onClick={handleUpdate}
-                size="sm"
-                className="flex-1"
+                size='sm'
+                className='flex-1'
               >
-                <Download className="mr-2 w-4 h-4" />
+                <Download className='mr-2 w-4 h-4' />
                 更新
               </Button>
               <Button
-                variant="outline"
+                variant='outline'
                 onClick={handleClose}
-                size="sm"
-                className="flex-1"
+                size='sm'
+                className='flex-1'
               >
                 稍后
               </Button>

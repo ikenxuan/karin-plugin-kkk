@@ -74,7 +74,7 @@ async function renderWithLocalComponent (templateType: RenderRequest['templateTy
     templateName,
     data: {
       ...params,
-      useDarkTheme: Common.useDarkTheme(),
+      useDarkTheme: Common.useDarkTheme()
     },
     version: {
       pluginName: 'kkk',
@@ -82,7 +82,7 @@ async function renderWithLocalComponent (templateType: RenderRequest['templateTy
       releaseType: releaseType(),
       poweredBy: 'Karin'
     },
-    scale: Math.min(2, Math.max(0.5, Number(Config.app.renderScale) / 100)),
+    scale: Math.min(2, Math.max(0.5, Number(Config.app.renderScale) / 100))
   }
 
   // 调用本地渲染函数
@@ -103,7 +103,7 @@ async function renderWithLocalComponent (templateType: RenderRequest['templateTy
     pageGotoParams: {
       waitUntil: 'load',
       timeout: Config.app.RenderWaitTime * 1000
-    },
+    }
   })
 
   // 转换为ImageElement数组

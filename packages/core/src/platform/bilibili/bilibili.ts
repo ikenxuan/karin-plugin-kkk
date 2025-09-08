@@ -741,7 +741,7 @@ export class Bilibili extends Base {
         (code >= 0x3300 && code <= 0x33FF) || // CJK兼容
         (code >= 0xAC00 && code <= 0xD7AF) || // 朝鲜文音节
         (code >= 0xF900 && code <= 0xFAFF) || // CJK兼容表意文字
-        (code >= 0xFE30 && code <= 0xFE4F)    // CJK兼容形式
+        (code >= 0xFE30 && code <= 0xFE4F) // CJK兼容形式
       ) {
         width += 2
       } else if (code === 0x200D || (code >= 0xFE00 && code <= 0xFE0F) || (code >= 0x1F3FB && code <= 0x1F3FF)) { // emoji修饰符和连接符

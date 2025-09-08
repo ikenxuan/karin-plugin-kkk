@@ -90,7 +90,7 @@ export default defineConfig({
     target: 'node22',
     lib: {
       formats: ['es'],
-      entry,
+      entry
     },
     emptyOutDir: true,
     outDir: 'lib',
@@ -101,7 +101,7 @@ export default defineConfig({
         ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js', '/template'].map(p => `node-karin${p}`),
         'playwright',
         '@karinjs/md-html',
-        'typeorm',
+        'typeorm'
       ],
       output: {
         inlineDynamicImports: false,
@@ -139,22 +139,22 @@ export default defineConfig({
             return 'main'
           }
         }
-      },
+      }
     },
     minify: false,
     commonjsOptions: {
       include: [
-        /node_modules/,
+        /node_modules/
       ],
-      transformMixedEsModules: true,  // 处理混合模块
-      defaultIsModuleExports: true,   // 处理 module.exports
-    },
+      transformMixedEsModules: true, // 处理混合模块
+      defaultIsModuleExports: true // 处理 module.exports
+    }
   },
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
-      render: resolve(__dirname, '../render/src/client.ts'),
-    },
+      render: resolve(__dirname, '../render/src/client.ts')
+    }
   },
   plugins: [
     react(),

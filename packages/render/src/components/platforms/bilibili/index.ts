@@ -1,3 +1,3 @@
-export { default as Comment, BilibiliComment } from './Comment'
+export { BilibiliComment, default as Comment } from './Comment'
 export * from './dynamic'
-export { processCommentHTML, CommentText, EnhancedImage } from './shared'
+export { CommentText, EnhancedImage, processCommentHTML } from './shared'

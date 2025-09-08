@@ -2,17 +2,7 @@
   "name": "render",
   "version": "0.0.1",
   "description": "React渲染服务包",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "type": "module",
-  "scripts": {
-    "build": "vite build",
-    "dev:mock": "cross-env RENDER_ENV=core_dev LOG_LEVEL=debug tsx watch src/dev/mock-server.ts",
-    "dev:core": "cross-env RENDER_ENV=core_dev tsx watch src/server.ts",
-    "dev": "vite",
-    "start": "cross-env RENDER_ENV=production node dist/server.js",
-    "preview": "vite preview"
-  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -25,12 +15,24 @@
       "import": "./dist/server.js"
     }
   },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
         "dist/*"
       ]
     }
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "dev:core": "cross-env RENDER_ENV=core_dev tsx watch src/server.ts",
+    "dev:mock": "cross-env RENDER_ENV=core_dev LOG_LEVEL=debug tsx watch src/dev/mock-server.ts",
+    "lint": "eslint . --fix",
+    "preview": "vite preview",
+    "sort": "sort-package-json",
+    "start": "cross-env RENDER_ENV=production node dist/server.js"
   },
   "dependencies": {
     "@heroui/chip": "^2.2.21",

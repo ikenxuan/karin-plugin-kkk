@@ -1,8 +1,9 @@
-import React from 'react'
-import { Card, CardBody, CardHeader, Tabs, Tab, Chip } from '@heroui/react'
+import { Card, CardBody, CardHeader, Chip, Tab, Tabs } from '@heroui/react'
 import { Settings } from 'lucide-react'
-import { PlatformType } from '../../types/platforms'
+import React from 'react'
+
 import { platformConfigs } from '../../config/platforms'
+import { PlatformType } from '../../types/platforms'
 
 interface PlatformSelectorProps {
   /** 当前选中的平台 */
@@ -32,15 +33,15 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
   return (
     <Card>
       <CardHeader>
-        <div className="flex gap-2 items-center">
-          <Settings className="w-5 h-5" />
-          <h3 className="text-lg font-semibold">平台与模板</h3>
+        <div className='flex gap-2 items-center'>
+          <Settings className='w-5 h-5' />
+          <h3 className='text-lg font-semibold'>平台与模板</h3>
         </div>
       </CardHeader>
-      <CardBody className="space-y-4">
+      <CardBody className='space-y-4'>
         {/* 平台选择 */}
         <div>
-          <label className="block mb-2 text-sm font-medium text-gray-70">选择平台</label>
+          <label className='block mb-2 text-sm font-medium text-gray-70'>选择平台</label>
           <Tabs
             selectedKey={selectedPlatform}
             onSelectionChange={(key) => {
@@ -54,15 +55,15 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
                 onTemplateChange(firstTemplate.id)
               }
             }}
-            color="primary"
-            variant="bordered"
-            className="w-full"
+            color='primary'
+            variant='bordered'
+            className='w-full'
           >
             {platformConfigs.map(config => (
               <Tab
                 key={config.type}
                 title={
-                  <div className="flex gap-2 items-center">
+                  <div className='flex gap-2 items-center'>
                     <span>{config.icon}</span>
                     <span>{config.name}</span>
                   </div>
@@ -74,22 +75,22 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
 
         {/* 模板选择 */}
         <div>
-          <label className="block mb-2 text-sm font-medium text-gray-70">选择模板</label>
+          <label className='block mb-2 text-sm font-medium text-gray-70'>选择模板</label>
           <Tabs
             selectedKey={selectedTemplate}
             onSelectionChange={(key) => onTemplateChange(key as string)}
             color={currentPlatformConfig?.color as any || 'primary'}
-            variant="bordered"
-            className="w-full"
+            variant='bordered'
+            className='w-full'
           >
             {enabledTemplates.map(template => (
               <Tab
                 key={template.id}
                 title={
-                  <div className="flex gap-2 items-center">
+                  <div className='flex gap-2 items-center'>
                     <span>{template.name}</span>
                     {!template.enabled && (
-                      <Chip size="sm" color="warning" variant="flat">
+                      <Chip size='sm' color='warning' variant='flat'>
                         开发中
                       </Chip>
                     )}

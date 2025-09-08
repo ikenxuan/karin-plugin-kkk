@@ -1,12 +1,13 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { copyFileSync, existsSync, mkdirSync } from 'node:fs'
+import { builtinModules } from 'node:module'
 import path, { resolve } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
+
 import tailwindcss from '@tailwindcss/vite'
+import react from '@vitejs/plugin-react'
 import autoprefixer from 'autoprefixer'
-import { builtinModules } from 'node:module'
+import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
-import { copyFileSync, mkdirSync, existsSync } from 'node:fs'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
@@ -15,7 +16,7 @@ export default defineConfig(({ command }) => {
   const baseConfig = {
     plugins: [
       react(),
-      tailwindcss(),
+      tailwindcss()
     ],
     resolve: {
       alias: {
@@ -28,22 +29,22 @@ export default defineConfig(({ command }) => {
           autoprefixer
         ]
       }
-    },
+    }
   }
 
   // 开发模式
   if (command === 'serve') {
     return {
       ...baseConfig,
-      root: path.resolve(__dirname, "./src/dev"),
-      publicDir: path.resolve(__dirname, "./public"), // 指定public目录
+      root: path.resolve(__dirname, './src/dev'),
+      publicDir: path.resolve(__dirname, './public'), // 指定public目录
       server: {
         port: 5174,
         proxy: {
           // 代理API请求到后端服务器
           '/api': {
             target: 'http://localhost:3001',
-            changeOrigin: true,
+            changeOrigin: true
           }
         }
       },
@@ -84,14 +85,14 @@ export default defineConfig(({ command }) => {
             console.warn('⚠️ 源CSS文件不存在:', sourceFile)
           }
         }
-      },
+      }
     ],
     build: {
       lib: {
         entry: {
-          'index': resolve(__dirname, 'src/client.ts')
+          index: resolve(__dirname, 'src/client.ts')
         },
-        formats: ['es'],
+        formats: ['es']
       },
       outDir: 'dist',
       cssCodeSplit: false,

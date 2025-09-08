@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import clsx from 'clsx'
 
 /**
  * 处理评论文本中的图片防盗链问题
@@ -89,7 +88,7 @@ export const EnhancedImage: React.FC<EnhancedImageProps> = ({
   if (!src || hasError) {
     return (
       <div className={`${className} ${isCircular ? 'rounded-full' : 'rounded-md'} bg-gray-200 dark:bg-gray-700 flex items-center justify-center`}>
-        <span className="text-sm text-gray-400">{placeholder || alt}</span>
+        <span className='text-sm text-gray-400'>{placeholder || alt}</span>
       </div>
     )
   }
@@ -100,8 +99,8 @@ export const EnhancedImage: React.FC<EnhancedImageProps> = ({
       alt={alt}
       className={className}
       onError={handleError}
-      referrerPolicy="no-referrer"
-      crossOrigin="anonymous"
+      referrerPolicy='no-referrer'
+      crossOrigin='anonymous'
     />
   )
 }

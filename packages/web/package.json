@@ -1,19 +1,20 @@
 {
   "name": "web",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "dev:desktop": "tauri dev",
-    "dev:android": "tauri android dev",
     "build": "vite build",
-    "build:desktop": "tauri build",
     "build:android": "tauri android build --target aarch64",
+    "build:desktop": "tauri build",
     "build:desktop-debug": "tauri build --debug",
-    "tauri": "tauri",
+    "dev": "vite",
+    "dev:android": "tauri android dev",
+    "dev:desktop": "tauri dev",
     "lint": "eslint . --fix",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sort": "sort-package-json",
+    "tauri": "tauri"
   },
   "dependencies": {
     "@ikenxuan/amagi": "5.0.3",
@@ -54,13 +55,11 @@
     "workbox-window": "^7.3.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.30.1",
     "@tauri-apps/api": "^2.7.0",
     "@tauri-apps/cli": "^2.7.1",
     "@types/crypto-js": "^4.2.2",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
-    "globals": "^16.3.0",
     "pwa-asset-generator": "8.1.1",
     "react-scan": "^0.4.3",
     "tw-animate-css": "1.3.8",

@@ -122,7 +122,7 @@ staticRouter.use(
 )
 
 staticRouter.use(express.static(path.join(Root.pluginPath, 'lib', 'web_chunk'), {
-  redirect: false,
+  redirect: false
 }))
 
 /** 将子路由挂载到主路由上 */

@@ -1,13 +1,15 @@
-import { renderToString } from 'react-dom/server'
-import fs, { writeFileSync, mkdirSync, existsSync } from 'node:fs'
+import fs, { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import React from 'react'
-import type { RenderRequest, RenderResponse } from './types'
-import { DouyinComment, DouyinDynamic, DouyinLive } from './components/platforms/douyin'
-import { BilibiliComment, BilibiliDrawDynamic, BilibiliForwardDynamic, BilibiliLiveDynamic, BilibiliVideoDynamic } from './components/platforms/bilibili'
-import QRCode, { type QRCodeRenderersOptions } from 'qrcode'
-import { karinPathTemp } from 'node-karin/root'
+
 import { logger } from 'node-karin'
+import { karinPathTemp } from 'node-karin/root'
+import QRCode, { type QRCodeRenderersOptions } from 'qrcode'
+import React from 'react'
+import { renderToString } from 'react-dom/server'
+
+import { BilibiliComment, BilibiliDrawDynamic, BilibiliForwardDynamic, BilibiliLiveDynamic, BilibiliVideoDynamic } from './components/platforms/bilibili'
+import { DouyinComment, DouyinDynamic, DouyinLive } from './components/platforms/douyin'
+import type { RenderRequest, RenderResponse } from './types'
 
 /**
  * 组件配置接口
@@ -24,9 +26,9 @@ interface ComponentConfig {
  */
 interface QRCodeConfig {
   /** 二维码宽度 */
-  width?: QRCodeRenderersOptions["width"]
+  width?: QRCodeRenderersOptions['width']
   /** 错误纠正级别 */
-  errorCorrectionLevel?: QRCodeRenderersOptions["errorCorrectionLevel"]
+  errorCorrectionLevel?: QRCodeRenderersOptions['errorCorrectionLevel']
 }
 
 /**
@@ -56,8 +58,9 @@ class QRCodeGenerator {
       errorCorrectionLevel,
       color: {
         dark: useDarkTheme ? '#c3c3c3' : '#3a3a3a',
-        light: useDarkTheme ? '#000000' : '#EEEEF0',
+        light: useDarkTheme ? '#000000' : '#EEEEF0'
       },
+      margin: 0
     })
 
     return `data:image/svg+xml;base64,${Buffer.from(qrCodeSvg).toString('base64')}`
@@ -142,7 +145,7 @@ class ComponentRendererFactory {
       data: request.data,
       qrCodeDataUrl,
       version: request.version,
-      scale: request.scale,
+      scale: request.scale
     }
 
     // 对于嵌套模板，传递子模板类型
@@ -208,7 +211,7 @@ class ResourcePathManager {
    */
   getResourcePaths (): { cssDir: string; imageDir: string } {
     switch (this.NODE_ENV) {
-       case 'development':
+      case 'development':
         return {
           cssDir: path.join(path.dirname(this.packageDir), 'core', 'lib'),
           imageDir: path.join(path.dirname(this.packageDir), 'core/resources/image')
@@ -463,4 +466,4 @@ export const renderComponentToHtml = async <T> (
 
 export default ReactRender
 export type { RenderRequest, RenderResponse }
-export { ComponentRegistry, QRCodeGenerator, ComponentRendererFactory }
+export { ComponentRegistry, ComponentRendererFactory, QRCodeGenerator }

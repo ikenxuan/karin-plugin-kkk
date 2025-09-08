@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { Card, CardBody, CardHeader, Button, Slider, Kbd } from '@heroui/react'
-import { Eye, Download, Maximize2, Minimize2 } from 'lucide-react'
+import { Button, Card, CardBody, CardHeader, Kbd, Slider } from '@heroui/react'
+import { Download, Eye, Maximize2, Minimize2 } from 'lucide-react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+
 import { PlatformType } from '../../types/platforms'
 import { ComponentRenderer } from './ComponentRenderer'
 
@@ -49,7 +50,7 @@ interface ScrollBars {
  */
 interface ScrollBarDragState {
   /** 滚动条类型 */
-  type: "horizontal" | "vertical"
+  type: 'horizontal' | 'vertical'
   /** 初始鼠标位置 */
   initialMousePos: number
   /** 初始组件位置 */
@@ -96,7 +97,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
   // 键盘状态
   const [isSpacePressed, setIsSpacePressed] = useState(false)
   const [isAltPressed, setIsAltPressed] = useState(false)
-  
+
   // 拖拽状态
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState(false)
@@ -106,7 +107,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
   // 滚动条状态
   const [scrollBars, setScrollBars] = useState<ScrollBars>({
     horizontal: { show: false, position: 0, size: 0 },
-    vertical: { show: false, position: 0, size: 0 },
+    vertical: { show: false, position: 0, size: 0 }
   })
   const [isScrollbarDragging, setIsScrollbarDragging] = useState(false)
   const [scrollbarDragState, setScrollbarDragState] = useState<ScrollBarDragState | null>(null)
@@ -197,7 +198,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
 
     setScrollBars({
       horizontal: { show: horizontalShow, position: horizontalPosition, size: horizontalSize },
-      vertical: { show: verticalShow, position: verticalPosition, size: verticalSize },
+      vertical: { show: verticalShow, position: verticalPosition, size: verticalSize }
     })
   }, [scale, panOffset])
 
@@ -218,7 +219,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
    * 滚动条拖拽开始处理
    */
   const handleScrollBarMouseDown = useCallback(
-    (type: "horizontal" | "vertical", e: React.MouseEvent) => {
+    (type: 'horizontal' | 'vertical', e: React.MouseEvent) => {
       e.preventDefault()
       e.stopPropagation()
 
@@ -236,17 +237,17 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
 
       let initialState: ScrollBarDragState
 
-      if (type === "horizontal") {
+      if (type === 'horizontal') {
         const leftOverflow = Math.max(0, -contentLeft)
         const rightOverflow = Math.max(0, contentRight - container.width)
         const maxOverflow = leftOverflow + rightOverflow
 
         initialState = {
-          type: "horizontal",
+          type: 'horizontal',
           initialMousePos: e.clientX - container.left,
           initialComponentPos: panOffset.x,
           initialOverflow: leftOverflow,
-          maxOverflow: maxOverflow,
+          maxOverflow,
           trackSize: container.width
         }
       } else {
@@ -255,11 +256,11 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
         const maxOverflow = topOverflow + bottomOverflow
 
         initialState = {
-          type: "vertical",
+          type: 'vertical',
           initialMousePos: e.clientY - container.top,
           initialComponentPos: panOffset.y,
           initialOverflow: topOverflow,
-          maxOverflow: maxOverflow,
+          maxOverflow,
           trackSize: container.height
         }
       }
@@ -267,7 +268,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
       setIsScrollbarDragging(true)
       setScrollbarDragState(initialState)
     },
-    [scale, panOffset],
+    [scale, panOffset]
   )
 
   /**
@@ -379,10 +380,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
     updateScrollBarsImmediate()
   }, [onScaleChange, updateScrollBarsImmediate])
 
-  /**
-   * 快速缩放按钮处理
-   */
-  const handleQuickZoom = useCallback((targetScale: number) => {
+  useCallback((targetScale: number) => {
     onScaleChange(targetScale)
     // 立即更新滚动条
     updateScrollBarsImmediate()
@@ -416,7 +414,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
     // 立即更新滚动条
     updateScrollBarsImmediate()
   }, [onScaleChange, updateScrollBarsImmediate])
-  
+
   /**
    * 鼠标按下事件处理
    */
@@ -453,7 +451,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
       if (isScrollbarDragging && scrollbarDragState && previewContainerRef.current) {
         const container = previewContainerRef.current.getBoundingClientRect()
 
-        if (scrollbarDragState.type === "horizontal") {
+        if (scrollbarDragState.type === 'horizontal') {
           const mouseX = e.clientX - container.left
           const mouseDelta = mouseX - scrollbarDragState.initialMousePos
 
@@ -640,72 +638,72 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
   }
 
   return (
-    <Card className="flex flex-col h-full">
-      <CardHeader className="flex-shrink-0 pb-2">
-        <div className="flex justify-between items-center w-full">
-          <div className="flex gap-2 items-center">
-            <Eye className="w-4 h-4" />
-            <span className="text-sm font-medium">
+    <Card className='flex flex-col h-full'>
+      <CardHeader className='flex-shrink-0 pb-2'>
+        <div className='flex justify-between items-center w-full'>
+          <div className='flex gap-2 items-center'>
+            <Eye className='w-4 h-4' />
+            <span className='text-sm font-medium'>
               {platform} - {templateId}
             </span>
           </div>
-          <div className="flex gap-3 items-center">
+          <div className='flex gap-3 items-center'>
             {/* 缩放滑块和显示 */}
-            <div className="flex gap-2 items-center">
-              <span className="text-xs whitespace-nowrap text-default-500">缩放:</span>
+            <div className='flex gap-2 items-center'>
+              <span className='text-xs whitespace-nowrap text-default-500'>缩放:</span>
               <Slider
-                size="sm"
+                size='sm'
                 step={1}
                 minValue={10}
                 maxValue={300}
                 value={[scale * 100]}
                 onChange={handleSliderChange}
-                className="flex-shrink-0 w-32"
-                aria-label="缩放比例滑块"
+                className='flex-shrink-0 w-32'
+                aria-label='缩放比例滑块'
               />
-              <div className="flex gap-1 items-center">
-                <span className="text-xs font-medium tabular-nums">{Math.round(scale * 100)}%</span>
+              <div className='flex gap-1 items-center'>
+                <span className='text-xs font-medium tabular-nums'>{Math.round(scale * 100)}%</span>
               </div>
             </div>
 
             {/* 适应画布按钮 */}
-            <div className="flex gap-1">
+            <div className='flex gap-1'>
               <Button
-                size="sm"
-                variant="ghost"
+                size='sm'
+                variant='ghost'
                 onClick={handleFitToCanvas}
-                className="flex-shrink-0 px-2 text-xs"
-                startContent={<Minimize2 className="w-3 h-3" />}
+                className='flex-shrink-0 px-2 text-xs'
+                startContent={<Minimize2 className='w-3 h-3' />}
               >
                 适应
               </Button>
             </div>
 
             {/* 功能按钮组 */}
-            <div className="flex gap-1">
-              <Button size="sm" variant="ghost">
-                <Download className="w-4 h-4" />
+            <div className='flex gap-1'>
+              <Button size='sm' variant='ghost'>
+                <Download className='w-4 h-4' />
               </Button>
-              <Button size="sm" variant="ghost">
-                <Maximize2 className="w-4 h-4" />
+              <Button size='sm' variant='ghost'>
+                <Maximize2 className='w-4 h-4' />
               </Button>
             </div>
           </div>
         </div>
       </CardHeader>
 
-      <CardBody className="overflow-hidden relative flex-1 p-0">
+      <CardBody className='overflow-hidden relative flex-1 p-0'>
         {/* 快捷键提示 */}
-        <div className="flex flex-col absolute p-4 z-10 gap-1.5 text-sm bg-default-0/50 backdrop-blur-sm rounded-br-3xl">
-          <div className="flex gap-1 items-center">
-            <Kbd className="bg-default-0" keys={['space']}>Space</Kbd>
+        <div className='flex flex-col absolute p-4 z-10 gap-1.5 text-sm bg-default-0/50 backdrop-blur-sm rounded-br-3xl'>
+          <div className='flex gap-1 items-center'>
+            <Kbd className='bg-default-0' keys={['space']}>Space</Kbd>
             <span>+ 拖拽移动</span>
           </div>
-          <div className="flex gap-1 items-center">
-            <Kbd className="bg-default-0" keys={['alt']}>Alt</Kbd>
+          <div className='flex gap-1 items-center'>
+            <Kbd className='bg-default-0' keys={['alt']}>Alt</Kbd>
             <span>+ 滚轮缩放</span>
           </div>
-          <div className="flex gap-1 items-center">
+          <div className='flex gap-1 items-center'>
             <span>滚轮 Y 轴滚动</span>
           </div>
         </div>
@@ -713,33 +711,33 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
         {/* 预览容器 */}
         <div
           ref={previewContainerRef}
-          className="overflow-hidden relative w-full h-full bg-default-0"
+          className='overflow-hidden relative w-full h-full bg-default-0'
           style={{ cursor: getCursorStyle() }}
           onMouseDown={handleMouseDown}
         >
           {/* 网格背景 */}
           <div
-            className="absolute inset-0 opacity-30"
+            className='absolute inset-0 opacity-30'
             style={{
               backgroundImage: `
                 linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)
               `,
-              backgroundSize: '20px 20px',
+              backgroundSize: '20px 20px'
             }}
           />
 
           {/* 实际渲染的组件 */}
           <div
             ref={previewContentRef}
-            className="absolute"
+            className='absolute'
             style={{
               left: '50%',
               top: '50%',
               transform: `translate(-50%, -50%) translate(${panOffset.x}px, ${panOffset.y}px) scale(${scale})`,
               transformOrigin: 'center',
               transition: dragEasing ? 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'transform 0.1s ease-out',
-              width: '1440px',
+              width: '1440px'
             }}
           >
             <ComponentRenderer
@@ -753,7 +751,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
           {/* 水平滚动条 */}
           {scrollBars.horizontal.show && (
             <div
-              className="absolute right-2 bottom-2 left-2 h-3 rounded-full border shadow-sm backdrop-blur-sm bg-black/10 border-white/20"
+              className='absolute right-2 bottom-2 left-2 h-3 rounded-full border shadow-sm backdrop-blur-sm bg-black/10 border-white/20'
               style={{
                 background: 'linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(240,240,240,0.9))',
                 boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.1)'
@@ -763,7 +761,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
                 className={`absolute top-0.5 h-2 rounded-full transition-all ${isScrollbarDragging && scrollbarDragState?.type === 'horizontal'
                   ? 'bg-blue-500 shadow-md'
                   : 'bg-default-60 hover:bg-default-70'
-                  }`}
+                }`}
                 style={{
                   left: `${scrollBars.horizontal.position}%`,
                   width: `${scrollBars.horizontal.size}%`,
@@ -780,7 +778,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
           {/* 垂直滚动条 */}
           {scrollBars.vertical.show && (
             <div
-              className="absolute top-2 right-2 bottom-2 w-3 rounded-full shadow-sm backdrop-blur-sm bg-black/10 border-white/20"
+              className='absolute top-2 right-2 bottom-2 w-3 rounded-full shadow-sm backdrop-blur-sm bg-black/10 border-white/20'
               style={{
                 background: 'linear-gradient(to right, rgba(255,255,255,0.8), rgba(240,240,240,0.9))',
                 boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.1)'
@@ -790,7 +788,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
                 className={`absolute left-0.5 w-2 rounded-full transition-all ${isScrollbarDragging && scrollbarDragState?.type === 'vertical'
                   ? 'bg-blue-500 shadow-md'
                   : 'bg-default-60 hover:bg-default-70'
-                  }`}
+                }`}
                 style={{
                   top: `${scrollBars.vertical.position}%`,
                   height: `${scrollBars.vertical.size}%`,

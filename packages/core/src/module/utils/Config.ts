@@ -69,7 +69,7 @@ class Cfg {
     const douyinDB = await getDouyinDB()
     const bilibiliDB = await getBilibiliDB()
 
-    const allConfig: any = {}  // 初始化为 ConfigType 类型
+    const allConfig: any = {} // 初始化为 ConfigType 类型
 
     // 读取默认配置文件夹中的所有文件
     const files = fs.readdirSync(this.defCfgPath)

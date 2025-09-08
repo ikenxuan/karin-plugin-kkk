@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react'
 import { Button, Chip } from '@heroui/react'
-import { RefreshCw, Save, Palette } from 'lucide-react'
+import { Palette, RefreshCw, Save } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import { PlatformType } from '../types/platforms'
-import { DataService } from '../services/DataService'
-import { PlatformSelector } from './components/PlatformSelector'
-import { QuickSettings } from './components/QuickSettings'
-import { JsonEditor } from './components/JsonEditor'
-import { PreviewPanel } from './components/PreviewPanel'
+
 import { platformConfigs } from '../config/platforms'
+import { DataService } from '../services/DataService'
+import { PlatformType } from '../types/platforms'
+import { JsonEditor } from './components/JsonEditor'
+import { PlatformSelector } from './components/PlatformSelector'
+import { PreviewPanel } from './components/PreviewPanel'
+import { QuickSettings } from './components/QuickSettings'
 
 /**
  * URL参数接口
@@ -28,7 +29,7 @@ const parseURLParams = (): URLParams => {
   const urlParams = new URLSearchParams(window.location.search)
   const platform = urlParams.get('platform') as PlatformType
   const template = urlParams.get('template')
-  
+
   return {
     platform: platform && Object.values(PlatformType).includes(platform) ? platform : undefined,
     template: template || undefined
@@ -44,7 +45,7 @@ const updateURLParams = (platform: PlatformType, template: string) => {
   const url = new URL(window.location.href)
   url.searchParams.set('platform', platform)
   url.searchParams.set('template', template)
-  
+
   // 使用 replaceState 避免在历史记录中创建过多条目
   window.history.replaceState({}, '', url.toString())
 }
@@ -58,7 +59,7 @@ const updateURLParams = (platform: PlatformType, template: string) => {
 const isValidPlatformTemplate = (platform: PlatformType, template: string): boolean => {
   const platformConfig = platformConfigs.find(config => config.type === platform)
   if (!platformConfig) return false
-  
+
   return platformConfig.templates.some(t => t.id === template && t.enabled)
 }
 
@@ -80,8 +81,8 @@ export const App: React.FC = () => {
   // 从URL参数初始化状态
   const urlParams = parseURLParams()
   const initialPlatform = urlParams.platform || PlatformType.DOUYIN
-  const initialTemplate = urlParams.template && isValidPlatformTemplate(initialPlatform, urlParams.template) 
-    ? urlParams.template 
+  const initialTemplate = urlParams.template && isValidPlatformTemplate(initialPlatform, urlParams.template)
+    ? urlParams.template
     : getDefaultTemplate(initialPlatform)
 
   const [selectedPlatform, setSelectedPlatform] = useState<PlatformType>(initialPlatform)
@@ -227,7 +228,7 @@ export const App: React.FC = () => {
     if (templateData) {
       const newData = { ...templateData, [field]: value }
       setTemplateData(newData)
-      
+
       // 如果是主题变更且有分享链接，重新生成二维码
       if (field === 'useDarkTheme' && newData.share_url) {
         try {
@@ -267,45 +268,45 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="overflow-hidden h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className='overflow-hidden h-screen bg-gradient-to-br from-blue-50 to-indigo-100'>
       {/* 顶部导航 */}
-      <div className="flex-shrink-0 h-20 bg-white border-b border-gray-200 shadow-sm">
-        <div className="flex justify-between items-center px-4 h-full">
-          <div className="flex gap-4 items-center">
-            <div className="flex gap-2 items-center">
-              <Palette className="flex-shrink-0 w-6 h-6 text-blue-600" />
-              <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">Render 开发环境</h1>
+      <div className='flex-shrink-0 h-20 bg-white border-b border-gray-200 shadow-sm'>
+        <div className='flex justify-between items-center px-4 h-full'>
+          <div className='flex gap-4 items-center'>
+            <div className='flex gap-2 items-center'>
+              <Palette className='flex-shrink-0 w-6 h-6 text-blue-600' />
+              <h1 className='text-xl font-bold text-gray-900 whitespace-nowrap'>Render 开发环境</h1>
             </div>
-            <Chip color="primary" variant="flat" size="sm">
+            <Chip color='primary' variant='flat' size='sm'>
               HMR 已启用
             </Chip>
             {selectedDataFile && (
-              <Chip color="secondary" variant="flat" size="sm">
+              <Chip color='secondary' variant='flat' size='sm'>
                 {selectedDataFile.replace('.json', '')}
               </Chip>
             )}
             {/* 显示当前路径信息 */}
-            <Chip color="default" variant="flat" size="sm">
+            <Chip color='default' variant='flat' size='sm'>
               {selectedPlatform}/{selectedTemplate.includes('/') ? selectedTemplate.split('/').join(' → ') : selectedTemplate}
             </Chip>
           </div>
-          <div className="flex flex-shrink-0 gap-2 items-center">
+          <div className='flex flex-shrink-0 gap-2 items-center'>
             <Button
-              color="success"
-              variant="flat"
-              startContent={<RefreshCw className="w-4 h-4" />}
+              color='success'
+              variant='flat'
+              startContent={<RefreshCw className='w-4 h-4' />}
               onPress={() => loadData()}
               isLoading={isLoading}
-              size="sm"
+              size='sm'
             >
               重新加载
             </Button>
             <Button
-              color="primary"
-              startContent={<Save className="w-4 h-4" />}
+              color='primary'
+              startContent={<Save className='w-4 h-4' />}
               onPress={saveData}
               isLoading={isLoading}
-              size="sm"
+              size='sm'
             >
               保存数据
             </Button>
@@ -314,19 +315,19 @@ export const App: React.FC = () => {
       </div>
 
       {/* 主要内容区域 - 使用可调整大小的面板 */}
-      <div className="h-[calc(100vh-5rem)] overflow-hidden">
-        <PanelGroup direction="horizontal" className="h-full">
+      <div className='h-[calc(100vh-5rem)] overflow-hidden'>
+        <PanelGroup direction='horizontal' className='h-full'>
           {/* 左侧控制面板 - 可调整大小，独立滚动 */}
           <Panel
             defaultSize={30}
             minSize={20}
             maxSize={50}
-            className="bg-white border-r border-gray-200"
+            className='bg-white border-r border-gray-200'
           >
-            <div className="overflow-y-auto h-full scrollbar-hide">
-              <div className="p-4 space-y-4">
+            <div className='overflow-y-auto h-full scrollbar-hide'>
+              <div className='p-4 space-y-4'>
                 {/* 平台与模板选择 */}
-                <div className="flex-shrink-0">
+                <div className='flex-shrink-0'>
                   <PlatformSelector
                     selectedPlatform={selectedPlatform}
                     selectedTemplate={selectedTemplate}
@@ -336,7 +337,7 @@ export const App: React.FC = () => {
                 </div>
 
                 {/* 快速设置 */}
-                <div className="flex-shrink-0">
+                <div className='flex-shrink-0'>
                   <QuickSettings
                     platform={selectedPlatform}
                     templateId={selectedTemplate}
@@ -346,7 +347,7 @@ export const App: React.FC = () => {
                 </div>
 
                 {/* JSON编辑器 */}
-                <div className="flex-shrink-0">
+                <div className='flex-shrink-0'>
                   <JsonEditor
                     data={templateData}
                     onChange={setTemplateData}
@@ -363,17 +364,17 @@ export const App: React.FC = () => {
           </Panel>
 
           {/* 可调整大小的分隔条 */}
-          <PanelResizeHandle className="flex justify-center items-center w-2 bg-gray-100 transition-colors duration-200 hover:bg-gray-200 cursor-col-resize group">
-            <div className="w-1 h-8 bg-gray-300 rounded-full transition-colors duration-200 group-hover:bg-gray-400"></div>
+          <PanelResizeHandle className='flex justify-center items-center w-2 bg-gray-100 transition-colors duration-200 hover:bg-gray-200 cursor-col-resize group'>
+            <div className='w-1 h-8 bg-gray-300 rounded-full transition-colors duration-200 group-hover:bg-gray-400' />
           </PanelResizeHandle>
 
           {/* 右侧预览面板 - 可调整大小，独立滚动 */}
           <Panel
             defaultSize={70}
             minSize={50}
-            className="bg-gray-50"
+            className='bg-gray-50'
           >
-            <div className="overflow-hidden h-full">
+            <div className='overflow-hidden h-full'>
               <PreviewPanel
                 platform={selectedPlatform}
                 templateId={selectedTemplate}

@@ -1,6 +1,7 @@
 import type { PlatformConfig, TemplateConfig } from '../types/platforms'
 import { PlatformType } from '../types/platforms'
 
+
 /**
  * 抖音平台模板配置
  */
@@ -135,7 +136,7 @@ export const platformConfigs: PlatformConfig[] = [
  * @param platform 平台类型
  * @returns 平台配置
  */
-export function getPlatformConfig(platform: PlatformType): PlatformConfig | undefined {
+export function getPlatformConfig (platform: PlatformType): PlatformConfig | undefined {
   return platformConfigs.find(config => config.type === platform)
 }
 
@@ -144,7 +145,7 @@ export function getPlatformConfig(platform: PlatformType): PlatformConfig | unde
  * @param platform 平台类型
  * @returns 启用的模板配置列表
  */
-export function getEnabledTemplates(platform: PlatformType): TemplateConfig[] {
+export function getEnabledTemplates (platform: PlatformType): TemplateConfig[] {
   const config = getPlatformConfig(platform)
   return config?.templates.filter(template => template.enabled) || []
 }

@@ -1,11 +1,11 @@
-import * as React from "react"
+import * as React from 'react'
 
 /**
  * 侧边栏上下文属性类型
  */
 export type SidebarContextProps = {
   /** 侧边栏状态：展开或折叠 */
-  state: "expanded" | "collapsed"
+  state: 'expanded' | 'collapsed'
   /** 侧边栏是否打开 */
   open: boolean
   /** 设置侧边栏打开状态的函数 */
@@ -33,7 +33,7 @@ export const SidebarContext = React.createContext<SidebarContextProps | null>(nu
 export const useSidebar = (): SidebarContextProps => {
   const context = React.useContext(SidebarContext)
   if (!context) {
-    throw new Error("useSidebar must be used within a SidebarProvider.")
+    throw new Error('useSidebar must be used within a SidebarProvider.')
   }
 
   return context

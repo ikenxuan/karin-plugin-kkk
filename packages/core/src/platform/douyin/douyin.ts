@@ -248,7 +248,7 @@ export class DouYin extends Base {
               url: video.play_addr_h264.url_list[0] ?? video.play_addr_h264.url_list[0],
               headers: {
                 ...this.headers,
-                Referer: video.play_addr_h264.url_list[0] ?? video.play_addr_h264.url_list[0],
+                Referer: video.play_addr_h264.url_list[0] ?? video.play_addr_h264.url_list[0]
               }
             }).getLongLink()
           }
@@ -309,7 +309,7 @@ export class DouYin extends Base {
             }
           },
           {
-            message_id: this.e.messageId,
+            message_id: this.e.messageId
           }
         )
         return true

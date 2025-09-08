@@ -79,7 +79,7 @@ export const douyinLogin = async (e: Message) => {
         '--window-position=-10000,-10000', // 将窗口移到屏幕外
         '--start-minimized', // 启动时最小化
         '--mute-audio', // 静音
-        '--no-sandbox'  // 使用无沙箱模式，适合无桌面环境
+        '--no-sandbox' // 使用无沙箱模式，适合无桌面环境
       ]
     })
     const page = await browser.newPage()
