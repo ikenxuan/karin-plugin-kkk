@@ -2,7 +2,7 @@ import { join } from 'node:path'
 
 import { logger } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
-import sqlite3 from 'sqlite3'
+import sqlite3 from 'node-karin/sqlite3'
 
 import { Config, Root } from '@/module/utils'
 import { DouyinPushItem } from '@/platform/douyin/push'
