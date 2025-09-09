@@ -343,7 +343,7 @@ class ReactRender {
 
       // 生成二维码
       const qrCodeDataUrl = await QRCodeGenerator.generateDataUrl(
-        request.data.share_url!,
+        request.data.share_url || 'https://github.com/ikenxuan/karin-plugin-kkk',
         request.data.useDarkTheme || false
       )
 

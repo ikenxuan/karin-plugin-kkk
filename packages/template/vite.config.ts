@@ -37,7 +37,7 @@ export default defineConfig(({ command }) => {
     return {
       ...baseConfig,
       root: path.resolve(__dirname, './src/dev'),
-      publicDir: path.resolve(__dirname, './public'), // 指定public目录
+      publicDir: path.resolve(__dirname, './public'),
       server: {
         port: 5174,
         proxy: {
@@ -106,11 +106,27 @@ export default defineConfig(({ command }) => {
         output: {
           format: 'es',
           inlineDynamicImports: false,
+          // 手动分包配置 - 将components目录下的所有文件打包到components.js
+          manualChunks: (id) => {
+            // 检查模块ID是否包含components路径
+            if (id.includes('/src/components/') || id.includes('\\src\\components\\')) {
+              return 'components'
+            }
+            // 其他模块保持默认行为
+            return undefined
+          },
           assetFileNames: (assetInfo) => {
             if (assetInfo.name?.endsWith('.css')) {
               return 'css/main.css'
             }
             return 'assets/[name].[hash][extname]'
+          },
+          // 自定义chunk文件名
+          chunkFileNames: (chunkInfo) => {
+            if (chunkInfo.name === 'components') {
+              return 'js/components.js'
+            }
+            return 'js/[name].[hash].js'
           }
         }
       },

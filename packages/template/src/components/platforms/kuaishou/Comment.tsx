@@ -2,20 +2,22 @@ import { Heart, MessageCircle, QrCode } from 'lucide-react'
 import React, { useMemo } from 'react'
 
 import type {
-  CommentItemComponentProps,
-  DouyinCommentProps,
-  QRCodeSectionProps,
-  VideoInfoHeaderProps
-} from '../../../types/platforms/douyin'
+  KuaishouCommentItemComponentProps,
+  KuaishouCommentProps,
+  KuaishouQRCodeSectionProps,
+  KuaishouVideoInfoHeaderProps
+} from '../../../types/platforms/kuaishou'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
- * 二维码组件
+ * 快手二维码组件
  * @param props 组件属性
  * @returns JSX元素
  */
-const QRCodeSection: React.FC<QRCodeSectionProps> = ({
-  qrCodeDataUrl
+const KuaishouQRCodeSection: React.FC<KuaishouQRCodeSectionProps> = ({
+  qrCodeDataUrl,
+  type,
+  imageLength
 }) => {
   return (
     <div className='flex flex-col items-center -mr-10'>
@@ -31,46 +33,49 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
             </div>
           )}
       </div>
+      <div className='mt-5 text-[45px] text-center text-default-90'>
+        {type === '视频'
+          ? '视频直链(永久)'
+          : type === '图集'
+            ? `图集分享链接 共${imageLength}张`
+            : '分享链接'}
+      </div>
     </div>
   )
 }
 
 /**
- * 视频信息头部组件
+ * 快手视频信息头部组件
  * @param props 组件属性
  * @returns JSX元素
  */
-const VideoInfoHeader: React.FC<VideoInfoHeaderProps> = ({
+const KuaishouVideoInfoHeader: React.FC<KuaishouVideoInfoHeaderProps> = ({
   type,
   commentLength,
   videoSize,
-  videoFPS,
-  imageLength,
-  qrCodeDataUrl,
-  useDarkTheme
+  likeCount,
+  viewCount,
+  imageLength
 }) => {
   return (
     <div className='flex justify-between items-center max-w-[1200px] mx-auto p-5'>
-      <div className='mt-2.5 flex flex-col -ml-10'>
-        <div className='absolute top-0 left-0 transform translate-x-[9%] translate-y-[17%] w-[650px] h-[300px]'>
+      <div className='mt-2.5 flex flex-col -ml-11'>
+        <div className='mb-5'>
           <img
-            src={useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
-            alt='抖音Logo'
-            className='object-contain w-full h-full'
+            src='/image/kuaishou/logo.png'
+            alt='快手Logo'
+            className='w-[650px] h-auto'
             onError={(e) => {
               const target = e.target as HTMLImageElement
               target.style.display = 'none'
               const parent = target.parentElement
               if (parent) {
-                parent.innerHTML = '<div class="flex justify-center items-center h-full text-2xl font-bold text-gray-600">抖音</div>'
+                parent.innerHTML = '<div class="flex justify-center items-center h-full text-2xl font-bold text-gray-600">快手</div>'
               }
             }}
           />
         </div>
-        <div className='mt-[250px] space-y-2 text-default-90'>
-          <div className='flex items-center p-2.5 tracking-[6px] text-[45px] text-left'>
-            作品类型：{type}
-          </div>
+        <div className='space-y-2 text-default-90'>
           <div className='flex items-center p-2.5 tracking-[6px] text-[45px] text-left'>
             评论数量：{commentLength}条
           </div>
@@ -80,30 +85,30 @@ const VideoInfoHeader: React.FC<VideoInfoHeaderProps> = ({
                 视频大小：{videoSize}MB
               </div>
               <div className='flex items-center p-2.5 tracking-[6px] text-[45px] text-left'>
-                视频帧率：{videoFPS}Hz
+                点赞数量：{likeCount}
+              </div>
+              <div className='flex items-center p-2.5 tracking-[6px] text-[45px] text-left'>
+                观看次数：{viewCount}
               </div>
             </>
           )}
-          {(type === '图集' || type === '合辑') && (
+          {type === '图集' && (
             <div className='flex items-center p-2.5 tracking-[6px] text-[45px] text-left'>
               图片数量：{imageLength}张
             </div>
           )}
         </div>
       </div>
-      <QRCodeSection
-        qrCodeDataUrl={qrCodeDataUrl}
-      />
     </div>
   )
 }
 
 /**
- * 单个评论组件
+ * 快手单个评论组件
  * @param props 组件属性
  * @returns JSX元素
  */
-const CommentItemComponent: React.FC<CommentItemComponentProps> = ({ comment }) => {
+const KuaishouCommentItemComponent: React.FC<KuaishouCommentItemComponentProps> = ({ comment }) => {
   return (
     <div className='flex p-10'>
       {/* 用户头像 */}
@@ -118,16 +123,6 @@ const CommentItemComponent: React.FC<CommentItemComponentProps> = ({ comment }) 
         {/* 用户信息 */}
         <div className='mb-12.5 text-[50px] text-default-40 relative flex items-center'>
           <span className='font-medium'>{comment.nickname}</span>
-          {comment.label_type === 1 && (
-            <div className='inline-block px-4 py-1 rounded-full ml-3 text-[40px] bg-red-500 text-white'>
-              作者
-            </div>
-          )}
-          {comment.status_label && (
-            <div className='inline-block px-4 py-1 rounded-xl ml-3 text-[40px] bg-default-10 text-default-90'>
-              {comment.status_label}
-            </div>
-          )}
         </div>
 
         {/* 评论文本 */}
@@ -155,8 +150,10 @@ const CommentItemComponent: React.FC<CommentItemComponentProps> = ({ comment }) 
         <div className='flex justify-between items-center mt-6 text-default-500'>
           <div className='flex items-center space-x-6'>
             <span className='text-[45px]'>{comment.create_time}</span>
-            <span className='text-[45px]'>{comment.ip_label}</span>
-            {comment.reply_comment_total > 0
+            {comment.ip_label && (
+              <span className='text-[45px]'>{comment.ip_label}</span>
+            )}
+            {comment.reply_comment_total && comment.reply_comment_total > 0
               ? (
                 <span className='text-[40px] text-default-'>
                   共{comment.reply_comment_total}条回复
@@ -186,11 +183,11 @@ const CommentItemComponent: React.FC<CommentItemComponentProps> = ({ comment }) 
 }
 
 /**
- * 抖音评论组件
+ * 快手评论组件
  * @param props 组件属性
  * @returns JSX元素
  */
-export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | 'templateName'>> = React.memo((props) => {
+export const KuaishouComment: React.FC<Omit<KuaishouCommentProps, 'templateType' | 'templateName'>> = React.memo((props) => {
   const processedData = useMemo(() => {
     if (!props.data) {
       return {
@@ -198,18 +195,22 @@ export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | '
         type: '未知',
         commentLength: 0,
         videoSize: undefined,
-        videoFPS: undefined,
+        likeCount: undefined,
+        viewCount: undefined,
         imageLength: undefined,
         useDarkTheme: false
       }
     }
 
     return {
-      commentsArray: props.data.CommentsData?.jsonArray || [],
+      commentsArray: Array.isArray(props.data.CommentsData) 
+        ? props.data.CommentsData 
+        : (props.data.CommentsData?.jsonArray || []),
       type: props.data.Type || '未知',
       commentLength: props.data.CommentLength || 0,
       videoSize: props.data.VideoSize,
-      videoFPS: props.data.VideoFPS,
+      likeCount: props.data.likeCount,
+      viewCount: props.data.viewCount,
       imageLength: props.data.ImageLength,
       useDarkTheme: props.data.useDarkTheme || false
     }
@@ -219,22 +220,30 @@ export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | '
     <DefaultLayout {...props}>
       <div className='p-5'>
         {/* 视频信息头部 */}
-        <VideoInfoHeader
-          type={processedData.type}
-          commentLength={processedData.commentLength}
-          videoSize={processedData.videoSize}
-          videoFPS={processedData.videoFPS}
-          imageLength={processedData.imageLength}
-          qrCodeDataUrl={props.qrCodeDataUrl || ''}
-          useDarkTheme={processedData.useDarkTheme}
-        />
+        <div className='flex justify-between items-center max-w-[1200px] mx-auto p-5'>
+          <KuaishouVideoInfoHeader
+            type={processedData.type}
+            commentLength={processedData.commentLength}
+            videoSize={processedData.videoSize}
+            likeCount={processedData.likeCount}
+            viewCount={processedData.viewCount}
+            imageLength={processedData.imageLength}
+            useDarkTheme={processedData.useDarkTheme}
+          />
+          <KuaishouQRCodeSection
+            qrCodeDataUrl={props.qrCodeDataUrl || ''}
+            type={processedData.type}
+            imageLength={processedData.imageLength}
+            useDarkTheme={processedData.useDarkTheme}
+          />
+        </div>
 
         {/* 评论列表 */}
         <div className='overflow-auto mx-auto max-w-full'>
           {processedData.commentsArray.length > 0
             ? (
               processedData.commentsArray.map((comment, index) => (
-                <CommentItemComponent key={index} comment={comment} />
+                <KuaishouCommentItemComponent key={index} comment={comment} />
               ))
             )
             : (
@@ -251,4 +260,4 @@ export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | '
   )
 })
 
-export default DouyinComment
+export default KuaishouComment

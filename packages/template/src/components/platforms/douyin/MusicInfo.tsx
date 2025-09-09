@@ -1,11 +1,13 @@
-import { Bookmark, Clock, Eye, Hash, Heart, MessageCircle, QrCode, Share2, Users } from 'lucide-react'
+import { Hash, Music, QrCode, Users } from 'lucide-react'
 import React from 'react'
 
 import type {
-  DouyinDynamicProps,
-  DouyinDynamicQRCodeProps,
-  DouyinDynamicUserInfoProps
-} from '../../../types/platforms/douyin'
+  DouyinMusicInfoProps,
+  MusicAuthorInfoProps,
+  MusicCoverProps,
+  MusicInfoProps,
+  MusicQRCodeProps
+} from '../../../types/platforms/douyin/musicinfo'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
@@ -34,18 +36,18 @@ const DouyinHeader: React.FC<{ useDarkTheme?: boolean }> = ({ useDarkTheme }) =>
 }
 
 /**
- * 作品封面组件
+ * 音乐封面组件
  * @param props 组件属性
  * @returns JSX元素
  */
-const CoverSection: React.FC<{ imageUrl: string }> = ({ imageUrl }) => {
+const MusicCoverSection: React.FC<MusicCoverProps> = ({ imageUrl }) => {
   return (
     <div className='flex flex-col items-center my-5'>
       <div className='flex flex-col items-center overflow-hidden shadow-[0px_10px_20px_0px_#4343434f] rounded-[25px] w-[90%] relative'>
         <img
           className='rounded-[25px] object-contain w-full h-full'
           src={imageUrl}
-          alt='封面'
+          alt='音乐封面'
         />
       </div>
     </div>
@@ -53,19 +55,17 @@ const CoverSection: React.FC<{ imageUrl: string }> = ({ imageUrl }) => {
 }
 
 /**
- * 作品信息组件
+ * 音乐信息组件
  * @param props 组件属性
  * @returns JSX元素
  */
-const InfoSection: React.FC<{
-  desc: string
-  dianzan: string
-  pinglun: string
-  shouchang: string
-  share: string
-  createTime: string
-  useDarkTheme?: boolean
-}> = ({ desc, dianzan, pinglun, shouchang, share, createTime, useDarkTheme }) => {
+const MusicInfoSection: React.FC<MusicInfoProps & { desc: string }> = ({ 
+  desc, 
+  musicId, 
+  userCount, 
+  createTime, 
+  useDarkTheme 
+}) => {
   return (
     <div className='flex flex-col px-16 py-5'>
       <div
@@ -75,54 +75,42 @@ const InfoSection: React.FC<{
         style={{ letterSpacing: '1.5px', wordWrap: 'break-word' }}
         dangerouslySetInnerHTML={{ __html: desc }}
       />
-      <div className='flex items-center gap-6 text-[45px] text-[#808080] font-light mb-2.5'>
+      <div className='flex flex-col gap-2 text-[45px] text-[#808080] font-light mb-2.5'>
         <div className='flex gap-2 items-center'>
-          <Heart className='w-11 h-11' />
-          <span>{dianzan}点赞</span>
+          <Music className='w-11 h-11' />
+          <span>音乐ID: {musicId}</span>
         </div>
-        <span>·</span>
         <div className='flex gap-2 items-center'>
-          <MessageCircle className='w-11 h-11' />
-          <span>{pinglun}评论</span>
-        </div>
-        <span>·</span>
-        <div className='flex gap-2 items-center'>
-          <Bookmark className='w-11 h-11' />
-          <span>{shouchang}收藏</span>
-        </div>
-        <span>·</span>
-        <div className='flex gap-2 items-center'>
-          <Share2 className='w-11 h-11' />
-          <span>{share}分享</span>
+          <Users className='w-11 h-11' />
+          <span>{userCount} 人使用过</span>
         </div>
       </div>
       <div className='flex items-center gap-2 text-[45px] text-[#808080] font-light'>
-        <Clock className='w-11 h-11' />
-        <span>发布于{createTime}</span>
+        <span>图片生成于{createTime}</span>
       </div>
     </div>
   )
 }
 
 /**
- * 用户信息组件
+ * 音乐作者信息组件
  * @param props 组件属性
  * @returns JSX元素
  */
-const UserInfoSection: React.FC<DouyinDynamicUserInfoProps> = ({
-  avater_url,
+const MusicAuthorInfoSection: React.FC<MusicAuthorInfoProps> = ({
+  avatarUrl,
   username,
-  douyinId,
-  likes,
-  following,
-  followers,
+  userShortId,
+  totalFavorited,
+  followingCount,
+  fans,
   useDarkTheme
 }) => {
   return (
     <div className='flex flex-col pl-16'>
       <div className='flex items-center mb-6'>
         <img
-          src={avater_url}
+          src={avatarUrl}
           alt='头像'
           className='w-[200px] h-[200px] rounded-full mr-7 shadow-[0px_10px_20px_0px_#4343434f]'
         />
@@ -138,23 +126,22 @@ const UserInfoSection: React.FC<DouyinDynamicUserInfoProps> = ({
       <div
         className={`flex flex-col text-[35px] mt-6 space-y-1 ${
           useDarkTheme ? 'text-[#d1d1d1]' : 'text-[#2f2f2f]'
-        }`} style={{ letterSpacing: '2.5px' }}
+        }`} 
+        style={{ letterSpacing: '2.5px' }}
       >
         <div className='flex gap-2 items-center'>
           <Hash className='w-8 h-8' />
-          <span>抖音号: {douyinId}</span>
+          <span>ID: {userShortId}</span>
         </div>
         <div className='flex gap-2 items-center'>
-          <Heart className='w-8 h-8' />
-          <span>获赞: {likes}</span>
+          <span>获赞: {totalFavorited}</span>
         </div>
         <div className='flex gap-2 items-center'>
-          <Eye className='w-8 h-8' />
-          <span>关注: {following}</span>
+          <span>关注: {followingCount}</span>
         </div>
         <div className='flex gap-2 items-center'>
           <Users className='w-8 h-8' />
-          <span>粉丝: {followers}</span>
+          <span>粉丝: {fans}</span>
         </div>
       </div>
     </div>
@@ -162,16 +149,16 @@ const UserInfoSection: React.FC<DouyinDynamicUserInfoProps> = ({
 }
 
 /**
- * 二维码组件
+ * 音乐二维码组件
  * @param props 组件属性
  * @returns JSX元素
  */
-const QRCodeSection: React.FC<DouyinDynamicQRCodeProps> = ({ qrCodeDataUrl }) => {
+const MusicQRCodeSection: React.FC<MusicQRCodeProps> = ({ qrCodeDataUrl }) => {
   return (
     <div className='flex flex-col-reverse items-center -mb-12 mr-18'>
       <div className='flex items-center gap-2 text-[45px] text-right mt-5 text-default-90'>
         <QrCode className='w-11 h-11' />
-        <span>作品直链：永久有效</span>
+        <span>文件直链：永久有效</span>
       </div>
       <div className='p-2.5 rounded-sm border-[7px] border-dashed border-default-90'>
         <img
@@ -185,54 +172,53 @@ const QRCodeSection: React.FC<DouyinDynamicQRCodeProps> = ({ qrCodeDataUrl }) =>
 }
 
 /**
- * 抖音动态组件
+ * 抖音音乐信息组件
  * @param props 组件属性
  * @returns JSX元素
  */
-export const DouyinDynamic: React.FC<Omit<DouyinDynamicProps, 'templateType' | 'templateName'>> = (props) => {
+export const DouyinMusicInfo: React.FC<Omit<DouyinMusicInfoProps, 'templateType' | 'templateName'>> = (props) => {
   const { data, qrCodeDataUrl } = props
 
   return (
     <DefaultLayout {...props}>
       <div>
-        {/* 头部Logo */}
-        <div className='h-[60px]' />
         <DouyinHeader useDarkTheme={data.useDarkTheme} />
-        <div className='h-[60px]' />
 
-        {/* 封面 */}
-        <CoverSection imageUrl={data.image_url} />
-        <div className='h-[20px]' />
+        {/* 音乐封面 */}
+        <MusicCoverSection 
+          imageUrl={data.image_url} 
+          description={data.desc}
+          useDarkTheme={data.useDarkTheme}
+        />
+        <div className='h-[90px]' />
 
-        {/* 作品信息 */}
-        <InfoSection
+        {/* 音乐信息 */}
+        <MusicInfoSection
           desc={data.desc}
-          dianzan={data.dianzan}
-          pinglun={data.pinglun}
-          shouchang={data.shouchang}
-          share={data.share}
+          musicId={data.music_id}
+          userCount={data.user_count}
           createTime={data.create_time}
           useDarkTheme={data.useDarkTheme}
         />
         <div className='h-[100px]' />
 
         {/* 底部文字 */}
-        <div className='text-[70px] text-right mr-21 -mb-11 z-[-1] text-default-90 '>
-          抖音作品推送
+        <div className='text-[70px] text-right mr-21 -mb-11 z-[-1] text-default-90'>
+          抖音音乐信息
         </div>
 
         {/* 用户信息和二维码 */}
         <div className='flex justify-between items-center px-0 py-25'>
-          <UserInfoSection
-            avater_url={data.avater_url}
+          <MusicAuthorInfoSection
+            avatarUrl={data.avater_url}
             username={data.username}
-            douyinId={data.抖音号}
-            likes={data.获赞}
-            following={data.关注}
-            followers={data.粉丝}
+            userShortId={data.user_shortid}
+            totalFavorited={data.total_favorited}
+            followingCount={data.following_count}
+            fans={data.fans}
             useDarkTheme={data.useDarkTheme}
           />
-          <QRCodeSection
+          <MusicQRCodeSection
             qrCodeDataUrl={qrCodeDataUrl}
             useDarkTheme={data.useDarkTheme}
           />
@@ -242,4 +228,4 @@ export const DouyinDynamic: React.FC<Omit<DouyinDynamicProps, 'templateType' | '
   )
 }
 
-export default DouyinDynamic
+export default DouyinMusicInfo

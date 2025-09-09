@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 
-import { getComponentConfig } from '../../config/components'
+import { getComponentConfig } from '../../config/config'
 import { version } from '../../services/DataService'
 import { PlatformType } from '../../types/platforms'
 

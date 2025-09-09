@@ -9,7 +9,7 @@ import { fetchKuaishouData, getKuaishouID, Kuaishou } from '@/platform/kuaishou'
 const reg = {
   douyin: /^.*((www|v|jx|m)\.(douyin|iesdouyin)\.com|douyin\.com\/(video|note)).*/,
   bilibili: /(bilibili.com|b23.tv|t.bilibili.com|bili2233.cn|BV[a-zA-Z0-9]{10,})/,
-  kuaishou: /^((.*)快手(.*)快手(.*)|(.*)v\.kuaishou(.*))$/
+  kuaishou: /^((.*)快手(.*)快手(.*)|(.*)v\.kuaishou(.*)|(.*)kuaishou\.com\/f\/[a-zA-Z0-9]+.*)$/
 }
 const douyin = karin.command(reg.douyin, async (e) => {
   const url = String(e.msg.match(/(http|https):\/\/.*\.(douyin|iesdouyin)\.com\/[^ ]+/g))
@@ -40,7 +40,8 @@ const bilibili = karin.command(reg.bilibili, async (e) => {
 }, { name: 'kkk-视频功能-B站', priority: Config.app.videoTool ? -Infinity : 800 })
 
 const kuaishou = karin.command(reg.kuaishou, async (e) => {
-  const iddata = await getKuaishouID(String(e.msg.replaceAll('\\', '').match(/https:\/\/v\.kuaishou\.com\/\w+/g)))
+  const kuaishouUrl = e.msg.replaceAll('\\', '').match(/(https:\/\/v\.kuaishou\.com\/\w+|https:\/\/www\.kuaishou\.com\/f\/[a-zA-Z0-9]+)/g)
+  const iddata = await getKuaishouID(String(kuaishouUrl))
   const WorkData = await fetchKuaishouData(iddata.type, iddata)
   await new Kuaishou(e, iddata).RESOURCES(WorkData)
 }, { name: 'kkk-视频功能-快手', priority: Config.app.videoTool ? -Infinity : 800 })

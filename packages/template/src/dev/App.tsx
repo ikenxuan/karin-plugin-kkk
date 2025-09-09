@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 
 // 使用新的配置系统
-import { getEnabledComponents } from '../config/components'
+import { getEnabledComponents } from '../config/config'
 import { DataService } from '../services/DataService'
 import { PlatformType } from '../types/platforms'
 import { JsonEditor } from './components/JsonEditor'
@@ -46,7 +46,6 @@ const updateURLParams = (platform: PlatformType, template: string) => {
   const url = new URL(window.location.href)
   url.searchParams.set('platform', platform)
   url.searchParams.set('template', template)
-
   // 使用 replaceState 避免在历史记录中创建过多条目
   window.history.replaceState({}, '', url.toString())
 }

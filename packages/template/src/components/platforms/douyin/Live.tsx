@@ -5,7 +5,7 @@ import type {
   DouyinLiveProps,
   DouyinLiveQRCodeProps,
   DouyinLiveUserInfoProps
-} from '../../../types/douyin'
+} from '../../../types/platforms/douyin'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**

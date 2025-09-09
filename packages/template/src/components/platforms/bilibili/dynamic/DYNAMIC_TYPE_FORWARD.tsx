@@ -12,7 +12,7 @@ import type {
   OriginalContentDraw,
   OriginalContentLiveRcmd,
   OriginalContentWord
-} from '../../../../types/bilibili'
+} from '../../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { CommentText, EnhancedImage } from '../shared'
 

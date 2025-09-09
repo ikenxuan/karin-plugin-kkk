@@ -8,7 +8,7 @@ import express from 'node-karin/express'
 import QRCode from 'qrcode'
 
 // 使用新的配置系统
-import { componentConfigs } from '../config/components'
+import { componentConfigs } from '../config/config'
 import { PlatformType } from '../types/platforms'
 
 const __dirname = fileURLToPath(new URL('..', import.meta.url))

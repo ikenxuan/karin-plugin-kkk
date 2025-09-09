@@ -91,6 +91,18 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
         }))
       },
       {
+        id: 'musicinfo',
+        name: '音乐信息',
+        description: '抖音音乐信息展示模板',
+        enabled: true,
+        componentPath: 'platforms/douyin/MusicInfo',
+        exportName: 'DouyinMusicInfo',
+        validateData: (data) => data && typeof data.share_url === 'string',
+        lazyComponent: () => import('../components/platforms/douyin/MusicInfo').then(module => ({
+          default: module.DouyinMusicInfo
+        }))
+      },
+      {
         id: 'user_profile',
         name: '用户主页',
         description: '抖音用户主页信息模板',
@@ -98,6 +110,20 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
         componentPath: 'platforms/douyin/UserProfile',
         exportName: 'DouyinUserProfile',
         validateData: (data) => data && typeof data.share_url === 'string'
+      },
+      {
+        id: 'userlist',
+        name: '抖音推送列表',
+        description: '抖音用户推送列表组件',
+        enabled: true,
+        componentPath: 'platforms/douyin/UserList',
+        exportName: 'default',
+        validateData: (data: any) => {
+          return data && Array.isArray(data.renderOpt)
+        },
+        lazyComponent: () => import('../components/platforms/douyin/UserList').then(module => ({
+          default: module.default
+        }))
       }
     ]
   },
@@ -117,6 +143,20 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
         validateData: (data) => data && typeof data.share_url === 'string',
         lazyComponent: () => import('../components/platforms/bilibili/Comment').then(module => ({
           default: module.BilibiliComment
+        }))
+      },
+      {
+        id: 'userlist',
+        name: 'B站推送列表',
+        description: 'B站用户推送列表组件',
+        enabled: true,
+        componentPath: 'platforms/bilibili/UserList',
+        exportName: 'default',
+        validateData: (data: any) => {
+          return data && Array.isArray(data.renderOpt)
+        },
+        lazyComponent: () => import('../components/platforms/bilibili/UserList').then(module => ({
+          default: module.default
         }))
       },
       {
@@ -194,13 +234,35 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
     color: 'warning',
     components: [
       {
-        id: 'video',
-        name: '视频信息',
-        description: '快手视频信息展示模板',
-        enabled: false,
-        componentPath: 'platforms/kuaishou/Video',
-        exportName: 'KuaishouVideo',
-        validateData: (data) => data && typeof data.share_url === 'string'
+        id: 'comment',
+        name: '评论列表',
+        description: '快手视频评论列表展示模板',
+        enabled: true,
+        componentPath: 'platforms/kuaishou/Comment',
+        exportName: 'KuaishouComment',
+        validateData: (data) => data && typeof data.share_url === 'string',
+        lazyComponent: () => import('../components/platforms/kuaishou/Comment').then(module => ({
+          default: module.KuaishouComment
+        }))
+      }
+    ]
+  },
+  {
+    type: PlatformType.HELP,
+    name: '帮助',
+    icon: '❓',
+    color: 'secondary',
+    components: [
+      {
+        id: 'help',
+        name: '帮助页面',
+        description: 'KKK插件帮助页面',
+        enabled: true,
+        componentPath: 'platforms/help/Help',
+        exportName: 'Help',
+        lazyComponent: () => import('../components/platforms/help/Help').then(module => ({
+          default: module.Help
+        }))
       }
     ]
   }

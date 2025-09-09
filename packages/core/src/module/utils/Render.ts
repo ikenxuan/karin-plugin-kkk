@@ -7,7 +7,7 @@ import { renderComponentToHtml, type RenderRequest } from 'template'
 import { Common, Root } from '@/module'
 import { Config } from '@/module/utils/Config'
 
-function scale (pct = 1): string {
+const scale = (pct = 1): string => {
   const scale = Math.min(2, Math.max(0.5, Number(Config.app.renderScale) / 100))
   pct = pct * scale
   return `style=transform:scale(${pct})`
@@ -20,7 +20,7 @@ function scale (pct = 1): string {
  * @param useReact 是否使用React渲染，默认true
  * @returns 图片元素数组
  */
-export async function Render (path: string, params?: any, useReact = true): Promise<ImageElement[]> {
+export const Render = async (path: string, params?: any, useReact = true): Promise<ImageElement[]> => {
   // 如果使用React渲染
   if (useReact) {
     return await renderWithReact(path, params)
@@ -36,7 +36,7 @@ export async function Render (path: string, params?: any, useReact = true): Prom
  * @param params 渲染参数
  * @returns 图片元素数组
  */
-async function renderWithReact (path: string, params?: any): Promise<ImageElement[]> {
+const renderWithReact = async (path: string, params?: any): Promise<ImageElement[]> => {
   try {
     const pathParts = path.split('/')
     let templateType: string
@@ -67,7 +67,7 @@ async function renderWithReact (path: string, params?: any): Promise<ImageElemen
  * @param params 渲染参数
  * @returns 图片元素数组
  */
-async function renderWithLocalComponent (templateType: RenderRequest['templateType'], templateName: string, params?: any): Promise<ImageElement[]> {
+const renderWithLocalComponent = async (templateType: RenderRequest['templateType'], templateName: string, params?: any): Promise<ImageElement[]> => {
   const outputDir = join(Root.pluginPath, 'temp', 'html')
   const renderRequest: RenderRequest = {
     templateType,
@@ -121,7 +121,7 @@ async function renderWithLocalComponent (templateType: RenderRequest['templateTy
  * @param params 模板参数
  * @returns 图片元素数组
  */
-async function renderWithTemplate (path: string, params?: any): Promise<ImageElement[]> {
+const renderWithTemplate = async (path: string, params?: any): Promise<ImageElement[]> => {
   const basePaths: Record<string, string> = {
     douyin: 'douyin/html',
     bilibili: 'bilibili/html',

@@ -6,7 +6,7 @@ import type {
   BilibiliVideoDynamicFooterProps,
   BilibiliVideoDynamicHeaderProps,
   BilibiliVideoDynamicProps
-} from '../../../../types/bilibili'
+} from '../../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { CommentText, EnhancedImage } from '../shared'
 

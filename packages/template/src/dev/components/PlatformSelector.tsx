@@ -3,7 +3,7 @@ import { Settings } from 'lucide-react'
 import React from 'react'
 
 // 使用新的配置系统
-import { componentConfigs, getEnabledComponents, getPlatformConfig } from '../../config/components'
+import { componentConfigs, getEnabledComponents, getPlatformConfig } from '../../config/config'
 import { PlatformType } from '../../types/platforms'
 
 interface PlatformSelectorProps {
@@ -31,7 +31,7 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
   const currentPlatformConfig = getPlatformConfig(selectedPlatform)
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className='w-full'>
       <CardHeader className="pb-2">
         <div className='flex gap-2 items-center'>
           <Settings className='w-4 h-4' />
