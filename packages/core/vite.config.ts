@@ -98,10 +98,9 @@ export default defineConfig({
       external: [
         ...builtinModules,
         ...builtinModules.map((mod) => `node:${mod}`),
-        ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js', '/template'].map(p => `node-karin${p}`),
+        ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js', '/template', '/sqlite3'].map(p => `node-karin${p}`),
         'playwright',
-        '@karinjs/md-html',
-        'typeorm'
+        '@karinjs/md-html'
       ],
       output: {
         inlineDynamicImports: false,

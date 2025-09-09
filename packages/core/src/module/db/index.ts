@@ -1,5 +1,3 @@
-import { DeleteResult, LessThan } from 'typeorm'
-
 import { BilibiliDBBase } from './bilibili'
 import { DouyinDBBase } from './douyin'
 
@@ -87,22 +85,11 @@ export { bilibiliDBInstance as bilibiliDB, douyinDBInstance as douyinDB }
  * @returns 删除的记录数量
  */
 export const cleanOldDynamicCache = async (platform: 'douyin' | 'bilibili', days: number = 7): Promise<number> => {
-  const cutoffDate = new Date()
-  cutoffDate.setDate(cutoffDate.getDate() - days)
-
-  let result: DeleteResult
-
   if (platform === 'douyin') {
     const db = await getDouyinDB()
-    result = await db['awemeCacheRepository'].delete({
-      createdAt: LessThan(cutoffDate)
-    })
+    return await db.cleanOldAwemeCache(days)
   } else {
     const db = await getBilibiliDB()
-    result = await db['dynamicCacheRepository'].delete({
-      createdAt: LessThan(cutoffDate)
-    })
+    return await db.cleanOldDynamicCache(days)
   }
-
-  return result.affected ?? 0
 }

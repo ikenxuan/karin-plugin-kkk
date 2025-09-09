@@ -1,6 +1,3 @@
-import 'reflect-metadata'
-
-// import fs from 'node:fs'
 import path from 'node:path'
 
 import Client, {
@@ -135,19 +132,6 @@ const base = `${karinPathBase}/${Root.pluginName}`
 mkdirSync(`${base}/data`)
 mkdirSync(Common.tempDri.images)
 mkdirSync(Common.tempDri.video)
-
-// 条件性启动渲染服务器（仅在开发环境或未找到编译组件时启动）
-// const componentPath = path.join(Root.pluginPath, 'lib', 'components', 'server.js')
-// const hasCompiledComponents = fs.existsSync(componentPath)
-
-// if (!hasCompiledComponents || process.env.NODE_ENV === 'development') {
-//   // 启动渲染服务器
-//   const renderServer = new RenderServer(13851)
-//   renderServer.start()
-//   logger.info(`${logger.violet('[render]')} ${logger.yellow('kkk渲染服务器:')} ${logger.green(renderServer.getServerUrl())}`)
-// } else {
-//   logger.info(`${logger.violet('[render]')} ${logger.green('使用本地编译组件渲染')}`)
-// }
 
 console.log('')
 console.log('-------------------------- karin-plugin-kkk --------------------------')

@@ -292,7 +292,15 @@ export const getDouyinContentRouter: RequestHandler = async (req, res) => {
 
     const douyinDB = await getDouyinDB()
     // 修复：确保正确加载关联的douyinUser数据
-    const caches = await douyinDB.awemeCacheRepository.find({
+    const caches = await douyinDB.awemeCacheRepository.find<{
+      id: number
+      aweme_id: string
+      sec_uid: string
+      groupId: string
+      createdAt: Date
+      updatedAt: Date
+      douyinUser?: any
+    }>({
       where: { groupId: groupId as string },
       relations: ['douyinUser'],
       order: { createdAt: 'DESC' },
@@ -343,7 +351,16 @@ export const getBilibiliContentRouter: RequestHandler = async (req, res) => {
     }
 
     const bilibiliDB = await getBilibiliDB()
-    const caches = await bilibiliDB.dynamicCacheRepository.find({
+    const caches = await bilibiliDB.dynamicCacheRepository.find<{
+      id: number,
+      dynamic_id: string,
+      host_mid: number,
+      groupId: string,
+      dynamic_type?: string,
+      createdAt: Date,
+      updatedAt: Date,
+      bilibiliUser?: any
+    }>({
       where: { groupId: groupId as string },
       relations: ['bilibiliUser'],
       order: { createdAt: 'DESC' },
