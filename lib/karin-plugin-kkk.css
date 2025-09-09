@@ -7180,10 +7180,6 @@
     padding: calc(var(--spacing) * 5);
   }
 
-  .p-10 {
-    padding: calc(var(--spacing) * 10);
-  }
-
   .p-\[10px\] {
     padding: 10px;
   }
@@ -7328,10 +7324,6 @@
     padding-block: calc(var(--spacing) * 20);
   }
 
-  .py-25 {
-    padding-block: calc(var(--spacing) * 25);
-  }
-
   .py-\[2px\] {
     padding-block: 2px;
   }
@@ -7378,6 +7370,10 @@
 
   .pt-25 {
     padding-top: calc(var(--spacing) * 25);
+  }
+
+  .pt-32 {
+    padding-top: calc(var(--spacing) * 32);
   }
 
   .pt-\[60px\] {
@@ -7428,8 +7424,8 @@
     padding-bottom: calc(var(--spacing) * 10);
   }
 
-  .pb-11 {
-    padding-bottom: calc(var(--spacing) * 11);
+  .pb-20 {
+    padding-bottom: calc(var(--spacing) * 20);
   }
 
   .pl-0\.5 {
