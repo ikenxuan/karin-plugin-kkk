@@ -1206,7 +1206,7 @@ const deepEqual = (a: any, b: any): boolean => {
  * @param value 字符串
  * @returns
  */
-function convertToNumber (value: string): any {
+const convertToNumber = (value: string): any => {
   // 检查字符串是否为有效的数字
   if (/^\d+$/.test(value)) {
     const num = parseInt(value, 10)
@@ -1218,7 +1218,7 @@ function convertToNumber (value: string): any {
  * @param arr 数组
  * @returns 数组中的第一个对象或空对象
  */
-function getFirstObject<T> (arr: T[]): T {
+const getFirstObject = <T> (arr: T[]): T => {
   return arr.length > 0 ? arr[0] : {} as T
 }
 
@@ -1228,7 +1228,7 @@ function getFirstObject<T> (arr: T[]): T {
  * @param keys 键路径数组
  * @param value 要设置的值
  */
-function setNestedProperty (obj: any, keys: string[], value: any) {
+const setNestedProperty = (obj: any, keys: string[], value: any) => {
   let current = obj
 
   for (let i = 0; i < keys.length - 1; i++) {
@@ -1248,7 +1248,7 @@ function setNestedProperty (obj: any, keys: string[], value: any) {
  * @param data 前端返回的数据
  * @returns 处理后符合 ConfigType 格式的数据
  */
-function processFrontendData (data: newConfigType): ConfigType {
+const processFrontendData = (data: newConfigType): ConfigType => {
   const result: Partial<Record<keyof ConfigType, any>> = {}
 
   const configKeys = Object.keys(data).filter((key): key is keyof BaseConfigType => {
@@ -1290,23 +1290,15 @@ function processFrontendData (data: newConfigType): ConfigType {
 
     // 处理扁平字段
     for (const prop of flatProps) {
-      // 检查是否有对应的嵌套字段存在
-      const hasNestedVersion = nestedProps.some(nestedProp => {
-        const nestedKeys = nestedProp.split(':')
-        return nestedKeys[nestedKeys.length - 1] === prop
-      })
+      let propValue = firstObj[prop]
+      if (typeof propValue === 'string') {
+        propValue = convertToNumber(propValue)
+      }
 
-      if (!hasNestedVersion) {
-        let propValue = firstObj[prop]
-        if (typeof propValue === 'string') {
-          propValue = convertToNumber(propValue)
-        }
-
-        // 只有当值不为空字符串或undefined时才设置
-        if (propValue !== '' && propValue !== undefined && propValue !== null) {
-          configObj[prop] = propValue
-          hasValidData = true
-        }
+      // 只有当值不为空字符串或undefined时才设置
+      if (propValue !== '' && propValue !== undefined && propValue !== null) {
+        configObj[prop] = propValue
+        hasValidData = true
       }
     }
 
@@ -1335,7 +1327,7 @@ function processFrontendData (data: newConfigType): ConfigType {
  * 自动检测并清理与嵌套结构冲突的扁平化字段
  * @param obj 要清理的对象
  */
-function cleanFlattenedFields (obj: any): void {
+const cleanFlattenedFields = (obj: any): void => {
   if (!obj || typeof obj !== 'object') return
 
   for (const [, value] of Object.entries(obj)) {
@@ -1368,7 +1360,7 @@ function cleanFlattenedFields (obj: any): void {
  * @param path 路径数组
  * @returns 是否存在嵌套结构
  */
-function hasNestedStructure (obj: Record<string, any>, path: string[]): boolean {
+const hasNestedStructure = (obj: Record<string, any>, path: string[]): boolean => {
   let current = obj
 
   for (let i = 0; i < path.length - 1; i++) {
