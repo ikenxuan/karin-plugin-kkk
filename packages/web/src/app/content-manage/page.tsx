@@ -12,14 +12,14 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList,
+  CommandList
 } from '@/components/ui/command'
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
-  ContextMenuTrigger,
+  ContextMenuTrigger
 } from '@/components/ui/context-menu'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -27,11 +27,11 @@ import { Label } from '@/components/ui/label'
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger,
+  PopoverTrigger
 } from '@/components/ui/popover'
 import {
   Sheet,
-  SheetContent,
+  SheetContent
 } from '@/components/ui/sheet'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -514,7 +514,7 @@ export default function ContentManagePage () {
       // 抖音链接
       /https?:\/\/(?:[^\s]*\.)?(?:douyin\.com|iesdouyin\.com|webcast\.amemv\.com|live\.douyin\.com)/i,
       // B站链接
-      /https?:\/\/(?:www\.bilibili\.com|m\.bilibili\.com|t\.bilibili\.com|b23\.tv|bili2233\.cn)/i,
+      /https?:\/\/(?:www\.bilibili\.com|m\.bilibili\.com|t\.bilibili\.com|b23\.tv|bili2233\.cn)/i
     ]
 
     return linkPatterns.some(pattern => pattern.test(input.trim()))
@@ -739,16 +739,16 @@ export default function ContentManagePage () {
             </p>
           </div>
         </div>
-          <div className="flex items-center gap-2">
-            <h4 className="text-sm font-medium">推送状态</h4>
-            <Badge variant={item.pushStatus === 'success' ? 'default' :
-              item.pushStatus === 'failed' ? 'destructive' :
-                item.pushStatus === 'blocked' ? 'secondary' : 'outline'}>
-              {item.pushStatus === 'success' ? '成功' :
-                item.pushStatus === 'failed' ? '失败' :
-                  item.pushStatus === 'blocked' ? '已屏蔽' : '待处理'}
-            </Badge>
-          </div>
+        <div className="flex items-center gap-2">
+          <h4 className="text-sm font-medium">推送状态</h4>
+          <Badge variant={item.pushStatus === 'success' ? 'default' :
+            item.pushStatus === 'failed' ? 'destructive' :
+              item.pushStatus === 'blocked' ? 'secondary' : 'outline'}>
+            {item.pushStatus === 'success' ? '成功' :
+              item.pushStatus === 'failed' ? '失败' :
+                item.pushStatus === 'blocked' ? '已屏蔽' : '待处理'}
+          </Badge>
+        </div>
       </div>
 
       {/* 操作按钮 */}
@@ -777,7 +777,7 @@ export default function ContentManagePage () {
         </Button>
 
         <Button
-          variant={mobileDeleteConfirm ? "destructive" : "outline"}
+          variant={mobileDeleteConfirm ? 'destructive' : 'outline'}
           className="w-full justify-start"
           onClick={() => handleMobileDeleteClick(item)}
         >
@@ -786,7 +786,7 @@ export default function ContentManagePage () {
         </Button>
       </div>
     </div>
-    ))
+  ))
 
   return (
     <div className="container mx-auto p-4 space-y-4">
@@ -806,8 +806,8 @@ export default function ContentManagePage () {
                 role="combobox"
                 aria-expanded={groupComboboxOpen}
                 className={cn(
-                  "w-full sm:w-[200px] justify-between",
-                  !selectedGroupId && "text-muted-foreground"
+                  'w-full sm:w-[200px] justify-between',
+                  !selectedGroupId && 'text-muted-foreground'
                 )}
               >
                 {selectedGroupId
@@ -825,7 +825,7 @@ export default function ContentManagePage () {
                       </div>
                     ) : '请选择群组'
                   })()
-                  : "请选择群组"}
+                  : '请选择群组'}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -855,8 +855,8 @@ export default function ContentManagePage () {
                         </div>
                         <Check
                           className={cn(
-                            "ml-auto h-4 w-4",
-                            selectedGroupId === group.id ? "opacity-100" : "opacity-0"
+                            'ml-auto h-4 w-4',
+                            selectedGroupId === group.id ? 'opacity-100' : 'opacity-0'
                           )}
                         />
                       </CommandItem>
@@ -964,8 +964,8 @@ export default function ContentManagePage () {
                           role="combobox"
                           aria-expanded={authorComboboxOpen}
                           className={cn(
-                            "w-full justify-between",
-                            !selectedAuthorId && "text-muted-foreground"
+                            'w-full justify-between',
+                            !selectedAuthorId && 'text-muted-foreground'
                           )}
                         >
                           {selectedAuthorId
@@ -983,7 +983,7 @@ export default function ContentManagePage () {
                                 </div>
                               ) : '请选择作者'
                             })()
-                            : "请选择作者"}
+                            : '请选择作者'}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
@@ -992,7 +992,7 @@ export default function ContentManagePage () {
                           <CommandInput placeholder="搜索作者..." className="h-9" />
                           <CommandList>
                             <CommandEmpty>
-                              {authorsLoading ? "加载中..." : "该平台未订阅任何内容"}
+                              {authorsLoading ? '加载中...' : '该平台未订阅任何内容'}
                             </CommandEmpty>
                             <CommandGroup>
                               {filteredAuthors.map((author) => (
@@ -1015,8 +1015,8 @@ export default function ContentManagePage () {
                                   </div>
                                   <Check
                                     className={cn(
-                                      "ml-auto h-4 w-4",
-                                      selectedAuthorId === author.id ? "opacity-100" : "opacity-0"
+                                      'ml-auto h-4 w-4',
+                                      selectedAuthorId === author.id ? 'opacity-100' : 'opacity-0'
                                     )}
                                   />
                                 </CommandItem>
@@ -1089,7 +1089,7 @@ export default function ContentManagePage () {
                   ) : (
                     <div className="space-y-3">
                       <div className="text-center text-sm text-muted-foreground border-t pt-3">
-                          下次推送任务将不再推送该{activeTab === 'douyin' ? '作品' : '动态'}
+                        下次推送任务将不再推送该{activeTab === 'douyin' ? '作品' : '动态'}
                       </div>
                       <div className="flex gap-2">
                         <Button
@@ -1164,118 +1164,118 @@ export default function ContentManagePage () {
                             <TableHead className="hidden sm:table-cell">发布时间</TableHead>
                           </TableRow>
                         </TableHeader>
-                            <TableBody>
-                              {filteredDouyinContent.map((item) => (
-                                isMobile ? (
-                                  // 移动端：点击整行弹出底部模态窗
-                                  <TableRow
-                                    key={item.id}
-                                    className="cursor-pointer hover:bg-muted/50 transition-colors"
-                                    onClick={() => handleMobileRowClick(item)}
-                                  >
-                                    <TableCell className="py-4">
-                                      <div className="flex items-center gap-3">
+                        <TableBody>
+                          {filteredDouyinContent.map((item) => (
+                            isMobile ? (
+                            // 移动端：点击整行弹出底部模态窗
+                              <TableRow
+                                key={item.id}
+                                className="cursor-pointer hover:bg-muted/50 transition-colors"
+                                onClick={() => handleMobileRowClick(item)}
+                              >
+                                <TableCell className="py-4">
+                                  <div className="flex items-center gap-3">
+                                    <CustomAvatar
+                                      src={item.avatar}
+                                      alt={`${item.author}头像`}
+                                      className="h-8 w-8 rounded-full object-cover"
+                                      fallbackIcon={Users}
+                                    />
+                                    <span className="font-medium" title={item.author}>{truncateText(item.author)}</span>
+                                  </div>
+                                </TableCell>
+                                <TableCell className="py-4 font-mono text-sm">
+                                  {truncateText(item.id, 12)}
+                                </TableCell>
+                                <TableCell className="hidden sm:table-cell py-4">
+                                  {new Date(item.publishTime).toLocaleString()}
+                                </TableCell>
+                              </TableRow>
+                            ) : (
+                            // PC端：右键上下文菜单
+                              <ContextMenu key={item.id}>
+                                <ContextMenuTrigger asChild>
+                                  <TableRow className="cursor-pointer hover:bg-muted/50 transition-colors">
+                                    <TableCell className="py-3">
+                                      <div className="flex items-center gap-2 rounded-md p-1 transition-colors">
                                         <CustomAvatar
                                           src={item.avatar}
                                           alt={`${item.author}头像`}
-                                          className="h-8 w-8 rounded-full object-cover"
+                                          className="h-6 w-6 rounded-full object-cover"
                                           fallbackIcon={Users}
                                         />
-                                        <span className="font-medium" title={item.author}>{truncateText(item.author)}</span>
+                                        <span title={item.author}>{truncateText(item.author)}</span>
                                       </div>
                                     </TableCell>
-                                    <TableCell className="py-4 font-mono text-sm">
+                                    <TableCell className="py-3 font-mono text-sm hover:text-primary transition-colors">
                                       {truncateText(item.id, 12)}
                                     </TableCell>
-                                    <TableCell className="hidden sm:table-cell py-4">
+                                    <TableCell className="hidden sm:table-cell py-3 hover:text-primary transition-colors">
                                       {new Date(item.publishTime).toLocaleString()}
                                     </TableCell>
                                   </TableRow>
-                                ) : (
-                                  // PC端：右键上下文菜单
-                                  <ContextMenu key={item.id}>
-                                    <ContextMenuTrigger asChild>
-                                      <TableRow className="cursor-pointer hover:bg-muted/50 transition-colors">
-                                        <TableCell className="py-3">
-                                          <div className="flex items-center gap-2 rounded-md p-1 transition-colors">
-                                            <CustomAvatar
-                                              src={item.avatar}
-                                              alt={`${item.author}头像`}
-                                              className="h-6 w-6 rounded-full object-cover"
-                                              fallbackIcon={Users}
-                                            />
-                                            <span title={item.author}>{truncateText(item.author)}</span>
-                                          </div>
-                                        </TableCell>
-                                        <TableCell className="py-3 font-mono text-sm hover:text-primary transition-colors">
-                                          {truncateText(item.id, 12)}
-                                        </TableCell>
-                                        <TableCell className="hidden sm:table-cell py-3 hover:text-primary transition-colors">
-                                          {new Date(item.publishTime).toLocaleString()}
-                                        </TableCell>
-                                      </TableRow>
-                                    </ContextMenuTrigger>
-                                    <ContextMenuContent className="w-80">
-                                      {/* 作者信息 */}
-                                      <div className="p-4">
-                                        <div className="flex items-start gap-3">
-                                          <CustomAvatar
-                                            src={item.avatar}
-                                            alt={`${item.author}头像`}
-                                            className="h-12 w-12 rounded-full object-cover"
-                                            fallbackIcon={Users}
-                                          />
-                                          <div className="flex-1 space-y-1">
-                                            <h4 className="text-sm font-semibold">{item.author}</h4>
-                                            <p className="text-sm text-muted-foreground line-clamp-2">
-                                              {item.title || '暂无标题'}
-                                            </p>
-                                            <div className="flex items-center gap-2 text-xs">
-                                              <Badge variant='secondary'>
-                                                {item.type === 'video' ? '视频' : item.type === 'note' ? '图文' : '动态'}
-                                              </Badge>
-                                              <span className="text-muted-foreground">
-                                                {new Date(item.publishTime).toLocaleString()}
-                                              </span>
-                                            </div>
-                                          </div>
-                                        </div>
-
-                                        {/* ID信息 */}
-                                        <div className="mt-3 pt-3 border-t">
-                                          <h5 className="text-xs font-medium text-muted-foreground mb-1">内容ID</h5>
-                                          <p className="text-xs font-mono bg-muted p-2 rounded break-all">
-                                            {item.id}
-                                          </p>
+                                </ContextMenuTrigger>
+                                <ContextMenuContent className="w-80">
+                                  {/* 作者信息 */}
+                                  <div className="p-4">
+                                    <div className="flex items-start gap-3">
+                                      <CustomAvatar
+                                        src={item.avatar}
+                                        alt={`${item.author}头像`}
+                                        className="h-12 w-12 rounded-full object-cover"
+                                        fallbackIcon={Users}
+                                      />
+                                      <div className="flex-1 space-y-1">
+                                        <h4 className="text-sm font-semibold">{item.author}</h4>
+                                        <p className="text-sm text-muted-foreground line-clamp-2">
+                                          {item.title || '暂无标题'}
+                                        </p>
+                                        <div className="flex items-center gap-2 text-xs">
+                                          <Badge variant='secondary'>
+                                            {item.type === 'video' ? '视频' : item.type === 'note' ? '图文' : '动态'}
+                                          </Badge>
+                                          <span className="text-muted-foreground">
+                                            {new Date(item.publishTime).toLocaleString()}
+                                          </span>
                                         </div>
                                       </div>
+                                    </div>
 
-                                      <ContextMenuSeparator />
+                                    {/* ID信息 */}
+                                    <div className="mt-3 pt-3 border-t">
+                                      <h5 className="text-xs font-medium text-muted-foreground mb-1">内容ID</h5>
+                                      <p className="text-xs font-mono bg-muted p-2 rounded break-all">
+                                        {item.id}
+                                      </p>
+                                    </div>
+                                  </div>
 
-                                      {/* 操作项 */}
-                                      <ContextMenuItem onClick={() => window.open(`https://www.douyin.com/video/${item.id}`, '_blank')}>
-                                        <ExternalLink className="h-4 w-4 mr-2" />
-                                        跳转抖音
-                                      </ContextMenuItem>
-                                        <ContextMenuItem onClick={() => copyToClipboard(`https://www.douyin.com/video/${item.id}`, '复制成功')}>
-                                        <Copy className="h-4 w-4 mr-2" />
-                                        复制链接
-                                      </ContextMenuItem>
+                                  <ContextMenuSeparator />
 
-                                      <ContextMenuSeparator />
+                                  {/* 操作项 */}
+                                  <ContextMenuItem onClick={() => window.open(`https://www.douyin.com/video/${item.id}`, '_blank')}>
+                                    <ExternalLink className="h-4 w-4 mr-2" />
+                                    跳转抖音
+                                  </ContextMenuItem>
+                                  <ContextMenuItem onClick={() => copyToClipboard(`https://www.douyin.com/video/${item.id}`, '复制成功')}>
+                                    <Copy className="h-4 w-4 mr-2" />
+                                    复制链接
+                                  </ContextMenuItem>
 
-                                      <ContextMenuItem
-                                        className="text-destructive focus:text-destructive"
-                                        onClick={() => handlePCDeleteClick(item.id, 'douyin')}
-                                      >
-                                          <Trash2 className="text-destructive h-4 w-4 mr-2" />
-                                        删除内容
-                                      </ContextMenuItem>
-                                    </ContextMenuContent>
-                                  </ContextMenu>
-                                )
-                              ))}
-                            </TableBody>
+                                  <ContextMenuSeparator />
+
+                                  <ContextMenuItem
+                                    className="text-destructive focus:text-destructive"
+                                    onClick={() => handlePCDeleteClick(item.id, 'douyin')}
+                                  >
+                                    <Trash2 className="text-destructive h-4 w-4 mr-2" />
+                                    删除内容
+                                  </ContextMenuItem>
+                                </ContextMenuContent>
+                              </ContextMenu>
+                            )
+                          ))}
+                        </TableBody>
                       </Table>
                     </div>
                   )}
@@ -1320,118 +1320,118 @@ export default function ContentManagePage () {
                             <TableHead className="hidden sm:table-cell">发布时间</TableHead>
                           </TableRow>
                         </TableHeader>
-                            <TableBody>
-                              {filteredBilibiliContent.map((item) => (
-                                isMobile ? (
-                                  // 移动端：点击整行弹出底部模态窗
-                                  <TableRow
-                                    key={item.id}
-                                    className="cursor-pointer hover:bg-muted/50 transition-colors"
-                                    onClick={() => handleMobileRowClick(item)}
-                                  >
-                                    <TableCell className="py-4">
-                                      <div className="flex items-center gap-3">
+                        <TableBody>
+                          {filteredBilibiliContent.map((item) => (
+                            isMobile ? (
+                            // 移动端：点击整行弹出底部模态窗
+                              <TableRow
+                                key={item.id}
+                                className="cursor-pointer hover:bg-muted/50 transition-colors"
+                                onClick={() => handleMobileRowClick(item)}
+                              >
+                                <TableCell className="py-4">
+                                  <div className="flex items-center gap-3">
+                                    <CustomAvatar
+                                      src={item.avatar}
+                                      alt={`${item.author}头像`}
+                                      className="h-8 w-8 rounded-full object-cover"
+                                      fallbackIcon={Users}
+                                    />
+                                    <span className="font-medium" title={item.author}>{truncateText(item.author)}</span>
+                                  </div>
+                                </TableCell>
+                                <TableCell className="py-4 font-mono text-sm">
+                                  {truncateText(item.id, 12)}
+                                </TableCell>
+                                <TableCell className="hidden sm:table-cell py-4">
+                                  {new Date(item.publishTime).toLocaleString()}
+                                </TableCell>
+                              </TableRow>
+                            ) : (
+                            // PC端：右键上下文菜单
+                              <ContextMenu key={item.id}>
+                                <ContextMenuTrigger asChild>
+                                  <TableRow className="cursor-pointer hover:bg-muted/50 transition-colors">
+                                    <TableCell className="py-3">
+                                      <div className="flex items-center gap-2 rounded-md p-1 transition-colors">
                                         <CustomAvatar
                                           src={item.avatar}
                                           alt={`${item.author}头像`}
-                                          className="h-8 w-8 rounded-full object-cover"
+                                          className="h-6 w-6 rounded-full object-cover"
                                           fallbackIcon={Users}
                                         />
-                                        <span className="font-medium" title={item.author}>{truncateText(item.author)}</span>
+                                        <span title={item.author}>{truncateText(item.author)}</span>
                                       </div>
                                     </TableCell>
-                                    <TableCell className="py-4 font-mono text-sm">
+                                    <TableCell className="py-3 font-mono text-sm hover:text-primary transition-colors">
                                       {truncateText(item.id, 12)}
                                     </TableCell>
-                                    <TableCell className="hidden sm:table-cell py-4">
+                                    <TableCell className="hidden sm:table-cell py-3 hover:text-primary transition-colors">
                                       {new Date(item.publishTime).toLocaleString()}
                                     </TableCell>
                                   </TableRow>
-                                ) : (
-                                  // PC端：右键上下文菜单
-                                  <ContextMenu key={item.id}>
-                                    <ContextMenuTrigger asChild>
-                                      <TableRow className="cursor-pointer hover:bg-muted/50 transition-colors">
-                                        <TableCell className="py-3">
-                                          <div className="flex items-center gap-2 rounded-md p-1 transition-colors">
-                                            <CustomAvatar
-                                              src={item.avatar}
-                                              alt={`${item.author}头像`}
-                                              className="h-6 w-6 rounded-full object-cover"
-                                              fallbackIcon={Users}
-                                            />
-                                            <span title={item.author}>{truncateText(item.author)}</span>
-                                          </div>
-                                        </TableCell>
-                                        <TableCell className="py-3 font-mono text-sm hover:text-primary transition-colors">
-                                          {truncateText(item.id, 12)}
-                                        </TableCell>
-                                        <TableCell className="hidden sm:table-cell py-3 hover:text-primary transition-colors">
-                                          {new Date(item.publishTime).toLocaleString()}
-                                        </TableCell>
-                                      </TableRow>
-                                    </ContextMenuTrigger>
-                                    <ContextMenuContent className="w-80">
-                                      {/* 作者信息 */}
-                                      <div className="p-4">
-                                        <div className="flex items-start gap-3">
-                                          <CustomAvatar
-                                            src={item.avatar}
-                                            alt={`${item.author}头像`}
-                                            className="h-12 w-12 rounded-full object-cover"
-                                            fallbackIcon={Users}
-                                          />
-                                          <div className="flex-1 space-y-1">
-                                            <h4 className="text-sm font-semibold">{item.author}</h4>
-                                            <p className="text-sm text-muted-foreground line-clamp-2">
-                                              {item.title || '暂无标题'}
-                                            </p>
-                                            <div className="flex items-center gap-2 text-xs">
-                                              <Badge variant='secondary'>
-                                                {item.type === 'video' ? '视频' : item.type === 'note' ? '图文' : '动态'}
-                                              </Badge>
-                                              <span className="text-muted-foreground">
-                                                {new Date(item.publishTime).toLocaleString()}
-                                              </span>
-                                            </div>
-                                          </div>
-                                        </div>
-
-                                        {/* ID信息 */}
-                                        <div className="mt-3 pt-3 border-t">
-                                          <h5 className="text-xs font-medium text-muted-foreground mb-1">内容ID</h5>
-                                          <p className="text-xs font-mono bg-muted p-2 rounded break-all">
-                                            {item.id}
-                                          </p>
+                                </ContextMenuTrigger>
+                                <ContextMenuContent className="w-80">
+                                  {/* 作者信息 */}
+                                  <div className="p-4">
+                                    <div className="flex items-start gap-3">
+                                      <CustomAvatar
+                                        src={item.avatar}
+                                        alt={`${item.author}头像`}
+                                        className="h-12 w-12 rounded-full object-cover"
+                                        fallbackIcon={Users}
+                                      />
+                                      <div className="flex-1 space-y-1">
+                                        <h4 className="text-sm font-semibold">{item.author}</h4>
+                                        <p className="text-sm text-muted-foreground line-clamp-2">
+                                          {item.title || '暂无标题'}
+                                        </p>
+                                        <div className="flex items-center gap-2 text-xs">
+                                          <Badge variant='secondary'>
+                                            {item.type === 'video' ? '视频' : item.type === 'note' ? '图文' : '动态'}
+                                          </Badge>
+                                          <span className="text-muted-foreground">
+                                            {new Date(item.publishTime).toLocaleString()}
+                                          </span>
                                         </div>
                                       </div>
+                                    </div>
 
-                                      <ContextMenuSeparator />
+                                    {/* ID信息 */}
+                                    <div className="mt-3 pt-3 border-t">
+                                      <h5 className="text-xs font-medium text-muted-foreground mb-1">内容ID</h5>
+                                      <p className="text-xs font-mono bg-muted p-2 rounded break-all">
+                                        {item.id}
+                                      </p>
+                                    </div>
+                                  </div>
 
-                                      {/* 操作项 */}
-                                      <ContextMenuItem onClick={() => window.open(`https://t.bilibili.com/${item.id}`, '_blank')}>
-                                        <ExternalLink className="h-4 w-4 mr-2" />
-                                        跳转B站
-                                      </ContextMenuItem>
-                                        <ContextMenuItem onClick={() => copyToClipboard(`https://t.bilibili.com/${item.id}`, '复制成功')}>
-                                        <Copy className="h-4 w-4 mr-2" />
-                                        复制链接
-                                      </ContextMenuItem>
+                                  <ContextMenuSeparator />
 
-                                      <ContextMenuSeparator />
+                                  {/* 操作项 */}
+                                  <ContextMenuItem onClick={() => window.open(`https://t.bilibili.com/${item.id}`, '_blank')}>
+                                    <ExternalLink className="h-4 w-4 mr-2" />
+                                    跳转B站
+                                  </ContextMenuItem>
+                                  <ContextMenuItem onClick={() => copyToClipboard(`https://t.bilibili.com/${item.id}`, '复制成功')}>
+                                    <Copy className="h-4 w-4 mr-2" />
+                                    复制链接
+                                  </ContextMenuItem>
 
-                                      <ContextMenuItem
-                                        className="text-destructive focus:text-destructive"
-                                        onClick={() => handlePCDeleteClick(item.id, 'bilibili')}
-                                      >
-                                          <Trash2 className="text-destructive text-danger h-4 w-4 mr-2" />
-                                        删除内容
-                                      </ContextMenuItem>
-                                    </ContextMenuContent>
-                                  </ContextMenu>
-                                )
-                              ))}
-                            </TableBody>
+                                  <ContextMenuSeparator />
+
+                                  <ContextMenuItem
+                                    className="text-destructive focus:text-destructive"
+                                    onClick={() => handlePCDeleteClick(item.id, 'bilibili')}
+                                  >
+                                    <Trash2 className="text-destructive text-danger h-4 w-4 mr-2" />
+                                    删除内容
+                                  </ContextMenuItem>
+                                </ContextMenuContent>
+                              </ContextMenu>
+                            )
+                          ))}
+                        </TableBody>
                       </Table>
                     </div>
                   )}

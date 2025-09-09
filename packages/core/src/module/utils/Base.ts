@@ -4,7 +4,8 @@ import Client, { type APIErrorType, ApiResponse, bilibiliErrorCodeMap } from '@i
 import karin, { config, type Contact, logger, Message, segment } from 'node-karin'
 import type { AxiosHeaders, AxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'node-karin/axios'
 
-import { baseHeaders, Common, Config, mergeFile, Networks, Render } from '@/module/utils'
+import { baseHeaders, Common, mergeFile, Networks, Render } from '@/module/utils'
+import { Config } from '@/module/utils/Config'
 import type { pushlistConfig } from '@/types/config/pushlist'
 type uploadFileOptions = {
   /** 是否使用群文件上传 */
@@ -96,7 +97,7 @@ export class Base {
       request: {
         timeout: Config.request.timeout,
         headers: { 'User-Agent': Config.request['User-Agent'] },
-        proxy: Config.request.proxy?.switch ? Config.request.proxy : false,
+        proxy: Config.request.proxy?.switch ? Config.request.proxy : false
       }
     })
 

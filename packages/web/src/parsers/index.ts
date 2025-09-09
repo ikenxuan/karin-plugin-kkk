@@ -5,9 +5,9 @@
 
 import request from '@/lib/request'
 
-import { parseBilibiliVideoDetail,parseBilibiliWorkId } from './bilibili'
-import { parseDouyinVideoDetail,parseDouyinWorkId } from './douyin'
-import { parseKuaishouVideoDetail,parseKuaishouWorkId } from './kuaishou'
+import { parseBilibiliVideoDetail, parseBilibiliWorkId } from './bilibili'
+import { parseDouyinVideoDetail, parseDouyinWorkId } from './douyin'
+import { parseKuaishouVideoDetail, parseKuaishouWorkId } from './kuaishou'
 import { type LinkParseResponse, type ParsedWorkInfo, type VideoInfo } from './types'
 import { extractVideoLink } from './utils'
 
@@ -21,7 +21,7 @@ export class VideoParser {
    * @param url 视频链接或包含链接的文本
    * @returns 解析后的视频信息
    */
-  async parseVideo(url: string): Promise<VideoInfo> {
+  async parseVideo (url: string): Promise<VideoInfo> {
     // 1. 提取真正的链接
     const extractedLink = extractVideoLink(url)
     if (!extractedLink) {
@@ -35,7 +35,7 @@ export class VideoParser {
 
     // 3. 根据平台解析作品ID和基础信息
     let workInfo: ParsedWorkInfo
-    
+
     switch (platform) {
       case 'douyin':
         workInfo = parseDouyinWorkId(finalUrl)
@@ -52,7 +52,7 @@ export class VideoParser {
 
     // 4. 获取作品详细信息
     let videoInfo: VideoInfo
-    
+
     switch (platform) {
       case 'douyin':
         videoInfo = await parseDouyinVideoDetail(workInfo)
@@ -75,4 +75,4 @@ export class VideoParser {
 export const videoParser = new VideoParser()
 
 // 导出类型
-export type { CommentInfo, ParsedWorkInfo,VideoInfo } from './types'
+export type { CommentInfo, ParsedWorkInfo, VideoInfo } from './types'

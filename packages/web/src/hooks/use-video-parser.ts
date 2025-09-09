@@ -61,6 +61,6 @@ export const useVideoParser = () => {
     parseVideo,
     loading,
     error,
-    clearError,
+    clearError
   }
 }

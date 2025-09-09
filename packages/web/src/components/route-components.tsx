@@ -24,7 +24,7 @@ export const createRouteElement = (config: RouteConfig) => {
 
   if (config.protected) {
     if (!isAuthenticated()) {
-      return <Navigate to="/login" replace />
+      return <Navigate to='/login' replace />
     }
     return <Component />
   }

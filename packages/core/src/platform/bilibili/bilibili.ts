@@ -25,7 +25,6 @@ import {
   Base,
   baseHeaders,
   Common,
-  Config,
   Count,
   downloadFile,
   downloadVideo,
@@ -34,6 +33,7 @@ import {
   Render,
   uploadFile
 } from '@/module/utils'
+import { Config } from '@/module/utils/Config'
 import {
   bilibiliComments,
   BilibiliId,
@@ -355,7 +355,7 @@ export class Bilibili extends Base {
               user_shortid: dynamicInfo.data.data.item.modules.module_author.mid,
               total_favorited: Count(userProfileData.data.data.like_num),
               following_count: Count(userProfileData.data.data.card.attention),
-              decoration_card: generateDecorationCard(dynamicInfo.data.data.item.modules.module_author.decorate),
+              decoration_card: generateDecorationCard(dynamicInfo.data.data.item.modules.module_author.decoration_card),
               render_time: Common.getCurrentTime(),
               dynamicTYPE: '图文动态'
             }))
@@ -434,7 +434,7 @@ export class Bilibili extends Base {
                   play: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.stat.play,
                   cover: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.cover,
                   create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
-                  decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decorate),
+                  decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decoration_card),
                   frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image
                 }
                 break
@@ -448,7 +448,7 @@ export class Bilibili extends Base {
                   avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
                   text: replacetext(br(dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.text), dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes),
                   image_url: cover(cardData.item.pictures),
-                  decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decorate),
+                  decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decoration_card),
                   frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image
                 }
                 break
@@ -459,7 +459,7 @@ export class Bilibili extends Base {
                   create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
                   avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
                   text: replacetext(br(dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.text), dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes),
-                  decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decorate),
+                  decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decoration_card),
                   frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image
                 }
                 break
@@ -470,7 +470,7 @@ export class Bilibili extends Base {
                   username: checkvip(dynamicInfo.data.data.item.orig.modules.module_author),
                   create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
                   avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
-                  decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decorate),
+                  decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decoration_card),
                   frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image,
                   cover: liveData.live_play_info.cover,
                   text_large: liveData.live_play_info.watched_show.text_large,
@@ -529,7 +529,7 @@ export class Bilibili extends Base {
 
               img = await Render('bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {
-                  image_url: [{ image_src: INFODATA.data.data.pic }],
+                  image_url: INFODATA.data.data.pic,
                   text: br(INFODATA.data.data.title),
                   desc: br(dycrad.desc),
                   dianzan: Count(INFODATA.data.data.stat.like),
@@ -559,13 +559,13 @@ export class Bilibili extends Base {
             const userINFO = await getBilibiliData('用户主页数据', '', { host_mid: dynamicInfo.data.data.item.modules.module_author.mid, typeMode: 'strict' })
             img = await Render('bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
               {
-                image_url: [{ image_src: dynamicCARD.live_play_info.cover }],
+                image_url: dynamicCARD.live_play_info.cover,
                 text: br(dynamicCARD.live_play_info.title),
                 liveinf: br(`${dynamicCARD.live_play_info.area_name} | 房间号: ${dynamicCARD.live_play_info.room_id}`),
-                username: checkvip(userINFO.data.card),
-                avatar_url: userINFO.data.card.face,
+                username: checkvip(userINFO.data.data.card),
+                avatar_url: userINFO.data.data.card.face,
                 frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
-                fans: Count(userINFO.data.follower),
+                fans: Count(userINFO.data.data.follower),
                 create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.modules.module_author.pub_ts),
                 now_time: Common.getCurrentTime(),
                 share_url: 'https://live.bilibili.com/' + dynamicCARD.live_play_info.room_id,
@@ -741,7 +741,7 @@ export class Bilibili extends Base {
         (code >= 0x3300 && code <= 0x33FF) || // CJK兼容
         (code >= 0xAC00 && code <= 0xD7AF) || // 朝鲜文音节
         (code >= 0xF900 && code <= 0xFAFF) || // CJK兼容表意文字
-        (code >= 0xFE30 && code <= 0xFE4F)    // CJK兼容形式
+        (code >= 0xFE30 && code <= 0xFE4F) // CJK兼容形式
       ) {
         width += 2
       } else if (code === 0x200D || (code >= 0xFE00 && code <= 0xFE0F) || (code >= 0x1F3FB && code <= 0x1F3FF)) { // emoji修饰符和连接符
@@ -789,7 +789,8 @@ export function replacetext (text: string, rich_text_nodes: any[]) {
       }
       case 'RICH_TEXT_NODE_TYPE_EMOJI': {
         const regex = new RegExp(tag.orig_text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')
-        text = text.replace(regex, `<img src='${tag.emoji.icon_url}' style='height: 160px; margin: 0 0 -10px 0;'>`)
+        const emojiUrl = tag.emoji.gif_url || tag.emoji.icon_url
+        text = text.replace(regex, `<img src='${emojiUrl}' style='height: 160px; margin: 0 0 -10px 0;'>`)
         break
       }
     }
@@ -851,7 +852,7 @@ export const cover = (pic: { img_src: string }[]) => {
  */
 export const generateDecorationCard = (decorate: any) => {
   return decorate
-    ? `<div style="display: flex; width: 500px; height: 150px; background-position: center; background-attachment: fixed; background-repeat: no-repeat; background-size: contain; align-items: center; justify-content: flex-end; background-image: url('${decorate.card_url}')">${generateGradientStyle(decorate.fan?.color_format?.colors, decorate.fan.num_str)}</div>`
+    ? `<div style="display: flex; width: 500px; height: 150px; background-position: center; background-attachment: fixed; background-repeat: no-repeat; background-size: contain; align-items: center; justify-content: flex-end; background-image: url('${decorate.card_url}')">${generateGradientStyle(decorate.fan?.color_format?.colors, decorate.fan.num_str || decorate.fan.num_desc)}</div>`
     : '<div></div>'
 }
 

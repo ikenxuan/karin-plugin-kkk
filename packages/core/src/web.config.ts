@@ -3,7 +3,8 @@ import os from 'node:os'
 import { components, defineConfig } from 'node-karin'
 import _ from 'node-karin/lodash'
 
-import { Config, Root } from '@/module'
+import { Root } from '@/module'
+import { Config } from '@/module/utils/Config'
 import { type ConfigType } from '@/types'
 
 /** 基础配置的类型 */
@@ -198,7 +199,7 @@ export const webConfig = defineConfig({
                 label: 'web解鉴权',
                 description: '开启后，需要拥有 Karin 的 HTTP 鉴权密钥才能访问。修改后重启生效',
                 defaultSelected: all.app.webAuth
-              }),
+              })
             ]
           })
         ]
@@ -901,7 +902,7 @@ export const webConfig = defineConfig({
                       regex: /.+:.+/,
                       error: '请使用 `群号:机器人账号` 的格式'
                     }
-                  ],
+                  ]
                 })
               }),
               components.input.string('sec_uid', {
@@ -1009,7 +1010,7 @@ export const webConfig = defineConfig({
                       regex: /.+:.+/,
                       error: '请使用 `群号:机器人账号` 的格式'
                     }
-                  ],
+                  ]
                 })
               }),
               components.input.string('remark', {
@@ -1062,7 +1063,7 @@ export const webConfig = defineConfig({
             ]
           })
         }
-      ),
+      )
     ]
   },
 

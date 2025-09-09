@@ -77,11 +77,11 @@ export default function AboutPage () {
     }
 
     setIsTesting(true)
-    
+
     // 保存原始URL
     const originalUrl = localStorage.getItem('serverUrl')
     let originalTauriUrl = null
-    
+
     try {
       if (isTauri()) {
         originalTauriUrl = await invoke('get_server_url')
@@ -89,7 +89,7 @@ export default function AboutPage () {
       }
       // 临时设置localStorage中的URL用于测试
       localStorage.setItem('serverUrl', serverUrl)
-      
+
       const response = await request.serverGet<{
         ping: string
       }>('/api/v1/ping', { timeout: 5000 })
@@ -103,18 +103,18 @@ export default function AboutPage () {
     } catch (error) {
       console.error('连接测试失败:', error)
       toast.error('服务器连接失败')
-      
+
       // 恢复原始URL
       if (originalUrl) {
         localStorage.setItem('serverUrl', originalUrl)
       } else {
         localStorage.removeItem('serverUrl')
       }
-      
+
       if (isTauri() && originalTauriUrl) {
         await invoke('set_server_url', { url: originalTauriUrl })
       }
-      
+
       return false
     } finally {
       setIsTesting(false)
@@ -174,9 +174,9 @@ export default function AboutPage () {
    */
   const getThemeIcon = () => {
     if (isSystem) {
-      return <Monitor className="w-4 h-4" />
+      return <Monitor className='w-4 h-4' />
     }
-    return isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />
+    return isDark ? <Sun className='w-4 h-4' /> : <Moon className='w-4 h-4' />
   }
 
   /**
@@ -204,25 +204,25 @@ export default function AboutPage () {
 
   return (
     <TooltipProvider>
-      <div className="p-4 min-h-screen bg-background">
-        <div className="mx-auto space-y-6 max-w-2xl">
+      <div className='p-4 min-h-screen bg-background'>
+        <div className='mx-auto space-y-6 max-w-2xl'>
           {/* Header */}
-          <div className="flex justify-between items-center mb-8">
+          <div className='flex justify-between items-center mb-8'>
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">
+              <h1 className='text-3xl font-bold tracking-tight'>
                 关于我的
               </h1>
-              <p className="text-muted-foreground">
+              <p className='text-muted-foreground'>
                 About Me
               </p>
             </div>
 
             {/* 退出登录按钮 */}
             <Button
-              variant={isLogoutPending ? "destructive" : "outline"}
+              variant={isLogoutPending ? 'destructive' : 'outline'}
               onClick={handleLogoutClick}
             >
-              <LogOut className="mr-2 w-4 h-4" />
+              <LogOut className='mr-2 w-4 h-4' />
               {isLogoutPending ? '确认退出' : '退出登录'}
             </Button>
           </div>
@@ -233,18 +233,18 @@ export default function AboutPage () {
               <CardTitle>用户信息</CardTitle>
               <CardDescription>当前登录用户的基本信息</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <Avatar className="w-20 h-20">
-                  <AvatarImage alt="管理员头像" />
+            <CardContent className='space-y-4'>
+              <div className='flex items-center space-x-4'>
+                <Avatar className='w-20 h-20'>
+                  <AvatarImage alt='管理员头像' />
                   <AvatarFallback>
-                    <User className="w-10 h-10" />
+                    <User className='w-10 h-10' />
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="text-lg font-semibold">管理员</h3>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Shield className="mr-1 w-4 h-4" />
+                  <h3 className='text-lg font-semibold'>管理员</h3>
+                  <div className='flex items-center text-sm text-muted-foreground'>
+                    <Shield className='mr-1 w-4 h-4' />
                     <span>系统管理员</span>
                   </div>
                 </div>
@@ -258,21 +258,21 @@ export default function AboutPage () {
               <CardTitle>主题设置</CardTitle>
               <CardDescription>选择您偏好的界面主题</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between items-center">
-                <div className="space-y-1">
-                  <Label className="text-sm font-medium">当前主题</Label>
-                  <p className="text-sm text-muted-foreground">
+            <CardContent className='space-y-4'>
+              <div className='flex justify-between items-center'>
+                <div className='space-y-1'>
+                  <Label className='text-sm font-medium'>当前主题</Label>
+                  <p className='text-sm text-muted-foreground'>
                     {getCurrentThemeDescription()}
                   </p>
                 </div>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      variant="outline"
-                      size="sm"
+                      variant='outline'
+                      size='sm'
                       onClick={toggleTheme}
-                      className="flex gap-2 items-center"
+                      className='flex gap-2 items-center'
                     >
                       {getThemeIcon()}
                       {getToggleThemeText()}
@@ -283,16 +283,16 @@ export default function AboutPage () {
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className='grid grid-cols-2 gap-2'>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      variant={isSystem ? "default" : "outline"}
-                      size="sm"
+                      variant={isSystem ? 'default' : 'outline'}
+                      size='sm'
                       onClick={setSystemTheme}
-                      className="flex gap-2 items-center"
+                      className='flex gap-2 items-center'
                     >
-                      <Monitor className="w-4 h-4" />
+                      <Monitor className='w-4 h-4' />
                       跟随系统
                     </Button>
                   </TooltipTrigger>
@@ -303,12 +303,12 @@ export default function AboutPage () {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      variant={isInverse ? "default" : "outline"}
-                      size="sm"
+                      variant={isInverse ? 'default' : 'outline'}
+                      size='sm'
                       onClick={setInverseTheme}
-                      className="flex gap-2 items-center"
+                      className='flex gap-2 items-center'
                     >
-                      {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                      {isDark ? <Sun className='w-4 h-4' /> : <Moon className='w-4 h-4' />}
                       相反色
                     </Button>
                   </TooltipTrigger>
@@ -326,15 +326,15 @@ export default function AboutPage () {
                 <CardTitle>服务器设置</CardTitle>
                 <CardDescription>配置服务器连接地址</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="serverConfig">
+              <CardContent className='space-y-4'>
+                <div className='space-y-2'>
+                  <Label htmlFor='serverConfig'>
                     服务器地址
                   </Label>
-                  <div className="space-y-3">
+                  <div className='space-y-3'>
                     {/* 协议选择器 */}
-                    <div className="flex items-center space-x-2">
-                      <Label htmlFor="protocol" className="text-sm text-muted-foreground min-w-[40px]">
+                    <div className='flex items-center space-x-2'>
+                      <Label htmlFor='protocol' className='text-sm text-muted-foreground min-w-[40px]'>
                         协议
                       </Label>
                       <Select
@@ -345,26 +345,26 @@ export default function AboutPage () {
                           setServerUrl(`${value}://${hostname}:${port}`)
                         }}
                       >
-                        <SelectTrigger className="w-[100px]">
+                        <SelectTrigger className='w-[100px]'>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="http">HTTP</SelectItem>
-                          <SelectItem value="https">HTTPS</SelectItem>
+                          <SelectItem value='http'>HTTP</SelectItem>
+                          <SelectItem value='https'>HTTPS</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
                     {/* 主机名和端口号 */}
-                    <div className="flex items-center space-x-2">
-                      <Label htmlFor="hostname" className="text-sm text-muted-foreground min-w-[40px]">
+                    <div className='flex items-center space-x-2'>
+                      <Label htmlFor='hostname' className='text-sm text-muted-foreground min-w-[40px]'>
                         地址
                       </Label>
-                      <div className="relative flex-1">
-                        <Server className="absolute left-3 top-1/2 w-4 h-4 transform -translate-y-1/2 text-muted-foreground" />
+                      <div className='relative flex-1'>
+                        <Server className='absolute left-3 top-1/2 w-4 h-4 transform -translate-y-1/2 text-muted-foreground' />
                         <Input
-                          id="hostname"
-                          type="text"
+                          id='hostname'
+                          type='text'
                           value={serverUrl.replace(/^https?:\/\//, '').replace(/:\d+$/, '')}
                           onChange={(e) => {
                             const input = e.target.value
@@ -392,40 +392,40 @@ export default function AboutPage () {
                               handleSaveServer()
                             }
                           }}
-                          className="pl-9"
-                          placeholder="localhost 或粘贴完整URL"
+                          className='pl-9'
+                          placeholder='localhost 或粘贴完整URL'
                           disabled={isTesting}
                         />
                       </div>
-                      <div className="flex items-center space-x-1">
-                        <span className="text-sm text-muted-foreground">:</span>
+                      <div className='flex items-center space-x-1'>
+                        <span className='text-sm text-muted-foreground'>:</span>
                         <Input
-                          id="port"
-                          type="number"
+                          id='port'
+                          type='number'
                           value={serverUrl.match(/:(\d+)$/)?.[1] || ''}
                           onChange={(e) => {
                             const port = e.target.value
                             const protocol = serverUrl.startsWith('https://') ? 'https' : 'http'
                             const hostname = serverUrl.replace(/^https?:\/\//, '').replace(/:\d+$/, '')
-                            
+
                             if (port.trim()) {
                               setServerUrl(`${protocol}://${hostname}:${port}`)
                             } else {
                               setServerUrl(`${protocol}://${hostname}`)
                             }
                           }}
-                          className="w-[80px]"
+                          className='w-[80px]'
                           placeholder={serverUrl.startsWith('https://') ? '443' : '7777'}
                           disabled={isTesting}
-                          min="1"
-                          max="65535"
+                          min='1'
+                          max='65535'
                         />
                       </div>
                     </div>
 
                     {/* 完整URL预览 */}
                     {serverUrl && (
-                      <div className="p-2 text-xs rounded border text-muted-foreground bg-muted/50">
+                      <div className='p-2 text-xs rounded border text-muted-foreground bg-muted/50'>
                         地址预览: {buildCompleteServerUrl()}
                       </div>
                     )}
@@ -434,9 +434,9 @@ export default function AboutPage () {
                 <Button
                   onClick={handleSaveServer}
                   disabled={isTesting}
-                  className="w-full"
+                  className='w-full'
                 >
-                  <Save className="mr-2 w-4 h-4" />
+                  <Save className='mr-2 w-4 h-4' />
                   {isTesting ? '测试连接中...' : '保存并测试连接'}
                 </Button>
               </CardContent>
@@ -449,14 +449,14 @@ export default function AboutPage () {
               <CardTitle>系统信息</CardTitle>
               <CardDescription>关于本系统的基本信息</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">版本</span>
-                <span className="text-sm font-medium">v{__APP_VERSION__}</span>
+            <CardContent className='space-y-2'>
+              <div className='flex justify-between'>
+                <span className='text-sm text-muted-foreground'>版本</span>
+                <span className='text-sm font-medium'>v{__APP_VERSION__}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">构建时间</span>
-                <span className="text-sm font-medium">{__BUILD_TIME__}</span>
+              <div className='flex justify-between'>
+                <span className='text-sm text-muted-foreground'>构建时间</span>
+                <span className='text-sm font-medium'>{__BUILD_TIME__}</span>
               </div>
             </CardContent>
           </Card>

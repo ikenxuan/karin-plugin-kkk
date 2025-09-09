@@ -1,8 +1,9 @@
-import { getBilibiliData, getDouyinData } from '@ikenxuan/amagi'
+import { amagi, getBilibiliData, getDouyinData } from '@ikenxuan/amagi'
 import karin from 'node-karin'
 
-import { Config } from '@/module'
-import { Bilibilipush, DouYinpush } from '@/platform'
+import { Common, Networks, Render } from '@/module'
+import { Config } from '@/module/utils/Config'
+import { Bilibilipush, DouYinpush, getDouyinID } from '@/platform'
 
 // TODO: 传适配器实例
 export const douyinPush = Config.douyin.push.switch && karin.task('抖音推送', Config.douyin.push.cron, async () => {
@@ -81,3 +82,40 @@ export const changeBotID = karin.command(/^#kkk设置推送机器人/, async (e)
   await e.reply('推送机器人已修改为' + e.msg.replace(/^#kkk设置推送机器人/, ''))
   return true
 }, { name: 'kkk-推送功能-设置', perm: 'master' })
+
+export const testDouyinPush = karin.command(/^#测试抖音推送\s*(https?:\/\/[^\s]+)?/, async (e) => {
+  const url = String(e.msg.match(/(http|https):\/\/.*\.(douyin|iesdouyin)\.com\/[^ ]+/g))
+  const iddata = await getDouyinID(e, url)
+  const workInfo = await amagi.getDouyinData('聚合解析', { aweme_id: iddata.aweme_id, typeMode: 'strict' }, Config.cookies.douyin)
+  const userProfile = await amagi.getDouyinData('用户主页数据', { sec_uid: workInfo.data.aweme_detail.author.sec_uid, typeMode: 'strict' }, Config.cookies.douyin)
+
+  const realUrl = Config.douyin.push.shareType === 'web' && await new Networks({
+    url: workInfo.data.aweme_detail.share_url,
+    headers: {
+      'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+      Accept: '*/*',
+      'Accept-Encoding': 'gzip, deflate, br',
+      Connection: 'keep-alive'
+    }
+  }).getLocation()
+
+  const img = await Render('douyin/dynamic', {
+    image_url: iddata.is_mp4 ? workInfo.data.aweme_detail.video.animated_cover?.url_list[0] ?? workInfo.data.aweme_detail.video.cover.url_list[0] : workInfo.data.aweme_detail.images![0].url_list[0],
+    desc: workInfo.data.aweme_detail.desc,
+    dianzan: Common.count(workInfo.data.aweme_detail.statistics.digg_count),
+    pinglun: Common.count(workInfo.data.aweme_detail.statistics.comment_count),
+    share: Common.count(workInfo.data.aweme_detail.statistics.share_count),
+    shouchang: Common.count(workInfo.data.aweme_detail.statistics.collect_count),
+    create_time: Common.convertTimestampToDateTime(workInfo.data.aweme_detail.create_time / 1000),
+    avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userProfile.data.user.avatar_larger.uri,
+    share_url: Config.douyin.push.shareType === 'web' ? realUrl : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${workInfo.data.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`,
+    username: workInfo.data.aweme_detail.author.nickname,
+    抖音号: userProfile.data.user.unique_id === '' ? userProfile.data.user.short_id : userProfile.data.user.unique_id,
+    粉丝: Common.count(userProfile.data.user.follower_count),
+    获赞: Common.count(userProfile.data.user.total_favorited),
+    关注: Common.count(userProfile.data.user.following_count)
+  })
+
+  e.reply(img)
+  return true
+}, { name: 'kkk-推送功能-测试', event: 'message.group', perm: Config.douyin.push.permission, dsbAdapter: ['qqbot'] })

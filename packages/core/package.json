@@ -28,13 +28,14 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "tsc -b && vite build",
+    "build": "cross-env NODE_ENV=production vite build",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
     "lint": "eslint . --fix",
     "pub": "npm publish --access public",
+    "dev:template": "cross-env RENDER_ENV=core_dev tsx ../render/src/main.ts",
     "sort": "sort-package-json",
     "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
-    "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" src/app.ts --trace-deprecation"
+    "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../render/src/dev/mock-server.ts\" --include \"../render/src/main.ts\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
     "@karinjs/md-html": "^1.3.0",
@@ -44,27 +45,18 @@
   "devDependencies": {
     "@ikenxuan/amagi": "5.3.0",
     "@karinjs/plugin-puppeteer": "^1.0.17",
+    "@tailwindcss/vite": "4.1.12",
     "@types/connect-history-api-fallback": "^1.5.4",
-    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/heic-convert": "^2.1.0",
-    "@types/node": "24.2.1",
     "@types/qrcode": "^1.5.5",
+    "@vitejs/plugin-react": "^5.0.2",
     "connect-history-api-fallback": "^2.0.0",
-    "cors": "^2.8.5",
-    "cross-env": "10.0.0",
-    "eslint": "^9.7.0",
-    "eslint-plugin-simple-import-sort": "^12.1.1",
     "heic-convert": "^2.1.0",
     "http-proxy-middleware": "^3.0.3",
-    "neostandard": "0.12.2",
-    "node-karin": "^1.10.8",
     "qrcode": "^1.5.4",
     "reflect-metadata": "^0.2.2",
-    "sort-package-json": "3.4.0",
-    "tsx": "^4.19.3",
-    "typescript": "^5.8.2",
-    "vite": "7.1.1"
+    "template": "workspace:*"
   },
   "engines": {
     "node": ">=21.0.0",

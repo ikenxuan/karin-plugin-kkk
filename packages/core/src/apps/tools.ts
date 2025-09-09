@@ -1,6 +1,7 @@
 import karin, { logger } from 'node-karin'
 
-import { Common, Config } from '@/module'
+import { Common } from '@/module'
+import { Config } from '@/module/utils/Config'
 import { Bilibili, getBilibiliID } from '@/platform/bilibili'
 import { DouYin, getDouyinID } from '@/platform/douyin'
 import { fetchKuaishouData, getKuaishouID, Kuaishou } from '@/platform/kuaishou'

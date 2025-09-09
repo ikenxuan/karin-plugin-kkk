@@ -1,9 +1,9 @@
-import fs from "node:fs"
-import path from "node:path"
+import fs from 'node:fs'
+import path from 'node:path'
 
-import tailwindcss from "@tailwindcss/vite"
-import { isTauri } from '@tauri-apps/api/core';
-import react from '@vitejs/plugin-react-swc'
+import tailwindcss from '@tailwindcss/vite'
+import { isTauri } from '@tauri-apps/api/core'
+import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import viteImagemin from 'vite-plugin-imagemin'
 import obfuscator from 'vite-plugin-javascript-obfuscator'
@@ -34,11 +34,11 @@ const getBuildTime = () => {
     minute: '2-digit',
     hour12: false
   })
-  
+
   // 获取时区偏移
   const offset = -now.getTimezoneOffset() / 60
   const timezone = offset >= 0 ? `UTC+${offset}` : `UTC${offset}`
-  
+
   return `${chinaTime} (${timezone})`
 }
 
@@ -72,6 +72,7 @@ export default defineConfig(({ command, mode }) => {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
           navigateFallback: isStandalone ? '/index.html' : '/kkk/index.html',
           navigateFallbackDenylist: [/^\/api\//],
+          maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
           // 支持 HTTP 协议下的 PWA
           skipWaiting: true,
           clientsClaim: true,
@@ -128,7 +129,7 @@ export default defineConfig(({ command, mode }) => {
           navigateFallback: '/kkk/index.html'
         },
         injectRegister: 'auto',
-        strategies: 'generateSW',
+        strategies: 'generateSW'
       }),
       !isStandalone && obfuscator({
         include: ['src/**/*.ts', 'src/**/*.tsx'],
@@ -159,7 +160,6 @@ export default defineConfig(({ command, mode }) => {
           debugProtectionInterval: 2000,
           disableConsoleOutput: true,
           domainLock: [],
-          reservedNames: [],
           seed: 0,
           sourceMap: false,
           sourceMapBaseUrl: '',
@@ -171,8 +171,8 @@ export default defineConfig(({ command, mode }) => {
     ].filter(Boolean),
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "./src"),
-      },
+        '@': path.resolve(__dirname, './src')
+      }
     },
     define: {
       __TAURI__: JSON.stringify(process.env.TAURI_PLATFORM !== undefined),
@@ -193,6 +193,7 @@ export default defineConfig(({ command, mode }) => {
       chunkSizeWarningLimit: 1000,
       sourcemap: isDev || !!process.env.TAURI_ENV_DEBUG,
       rollupOptions: {
+        platform: 'browser',
         external: ['workbox-window']
       }
     },
@@ -200,14 +201,14 @@ export default defineConfig(({ command, mode }) => {
     server: {
       host: true,
       watch: {
-        ignored: ['**/src-tauri/**'],
+        ignored: ['**/src-tauri/**']
       },
       proxy: {
         '/api': {
           target: 'http://localhost:7777',
-          changeOrigin: true,
-        },
+          changeOrigin: true
+        }
       }
-    },
+    }
   }
 })

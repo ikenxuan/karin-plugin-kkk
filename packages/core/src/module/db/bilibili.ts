@@ -21,7 +21,8 @@ import {
   UpdateDateColumn
 } from 'typeorm'
 
-import { Config, Root } from '@/module/utils'
+import { Root } from '@/module/utils'
+import { Config } from '@/module/utils/Config'
 import { BilibiliPushItem, DynamicType } from '@/platform/bilibili/push'
 import { bilibiliPushItem } from '@/types/config/pushlist'
 

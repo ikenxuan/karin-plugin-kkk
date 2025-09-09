@@ -9,7 +9,7 @@ import {
   getAccessToken,
   getRefreshToken,
   getUserId,
-  setAccessToken,
+  setAccessToken
 } from '@/lib/token'
 
 import { generateNonce, generateSignature } from './crypto'
@@ -37,7 +37,7 @@ const cacheToken: {
   userId: string | null
 } = {
   token: null,
-  userId: null,
+  userId: null
 }
 
 /** 防抖 */
@@ -82,14 +82,14 @@ const refreshAccessToken = async () => {
         data = await tauriRequest('/api/v1/refresh', {
           method: 'POST',
           data: { accessToken, refreshToken },
-          timeout: 10000,
+          timeout: 10000
         })
       } else {
         data = await axios.post(
           '/api/v1/refresh',
           { accessToken, refreshToken },
           {
-            timeout: 10000,
+            timeout: 10000
           }
         )
       }
@@ -378,7 +378,7 @@ const createAxiosInstance = (): AxiosInstance => {
         pendingRequests.push({
           config,
           resolve,
-          reject,
+          reject
         })
       })
     }
@@ -497,12 +497,12 @@ async function tauriRequest<T> (
         const errorPayload = JSON.parse(jsonPart)
         const err = new Error(errorPayload.message || '请求发生错误')
           ; (err as any).response = {
-            data: errorPayload,
-            status: errorPayload.status || 500,
-            statusText: errorPayload.status_text || 'Error',
-            headers: errorPayload.headers || {},
-          }
-          ; (err as any).config = config
+          data: errorPayload,
+          status: errorPayload.status || 500,
+          statusText: errorPayload.status_text || 'Error',
+          headers: errorPayload.headers || {}
+        }
+        ; (err as any).config = config
 
         // 添加鉴权错误处理
         if (config?.url !== '/api/v1/login') {

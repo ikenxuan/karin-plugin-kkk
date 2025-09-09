@@ -30,7 +30,7 @@ const initialState: ThemeProviderState = {
   setInverseTheme: () => null,
   toggleTheme: () => null,
   isSystem: true,
-  isInverse: false,
+  isInverse: false
 }
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
@@ -40,7 +40,7 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
  * @param children - 子组件
  * @param defaultTheme - 默认主题模式
  */
-export function ThemeProvider({
+export function ThemeProvider ({
   children,
   defaultTheme = 'system',
   ...props
@@ -61,8 +61,7 @@ export function ThemeProvider({
 export const useThemeContext = () => {
   const context = useContext(ThemeProviderContext)
 
-  if (context === undefined)
-    throw new Error('useThemeContext must be used within a ThemeProvider')
+  if (context === undefined) { throw new Error('useThemeContext must be used within a ThemeProvider') }
 
   return context
 }

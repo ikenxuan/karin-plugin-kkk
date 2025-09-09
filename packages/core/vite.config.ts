@@ -3,6 +3,8 @@ import { builtinModules } from 'node:module'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import tailwindcss from '@tailwindcss/vite'
+import react from '@vitejs/plugin-react'
 import { defineConfig, type Plugin } from 'vite'
 
 // 在ES模块中模拟__dirname
@@ -88,7 +90,7 @@ export default defineConfig({
     target: 'node22',
     lib: {
       formats: ['es'],
-      entry,
+      entry
     },
     emptyOutDir: true,
     outDir: 'lib',
@@ -99,7 +101,7 @@ export default defineConfig({
         ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js', '/template'].map(p => `node-karin${p}`),
         'playwright',
         '@karinjs/md-html',
-        'typeorm',
+        'typeorm'
       ],
       output: {
         inlineDynamicImports: false,
@@ -122,6 +124,9 @@ export default defineConfig({
           if (id.includes('node_modules')) {
             return 'vendor'
           }
+          if (id.includes('template')) {
+            return 'template'
+          }
           if (id.includes('src/root.ts')) {
             return 'root'
           }
@@ -134,23 +139,26 @@ export default defineConfig({
             return 'main'
           }
         }
-      },
+      }
     },
     minify: false,
     commonjsOptions: {
       include: [
-        /node_modules/,
+        /node_modules/
       ],
-      transformMixedEsModules: true,  // 处理混合模块
-      defaultIsModuleExports: true,   // 处理 module.exports
-    },
+      transformMixedEsModules: true, // 处理混合模块
+      defaultIsModuleExports: true // 处理 module.exports
+    }
   },
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
-    },
+      template: resolve(__dirname, '../template/src/client.ts')
+    }
   },
   plugins: [
+    react(),
+    tailwindcss(),
     injectDirnamePlugin(),
     createWebConfigPlugin()
   ]

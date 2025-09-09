@@ -68,7 +68,7 @@ export const DraggableTitlebar = () => {
   return (
     <div
       ref={dragRef}
-      className="fixed top-0 left-0 right-0 h-15 z-40 cursor-move select-none touch-none pointer-events-auto"
+      className='fixed top-0 left-0 right-0 h-15 z-40 cursor-move select-none touch-none pointer-events-auto'
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onDoubleClick={handleDoubleClick}

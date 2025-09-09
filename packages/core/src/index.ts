@@ -1,5 +1,6 @@
 import 'reflect-metadata'
 
+// import fs from 'node:fs'
 import path from 'node:path'
 
 import Client, {
@@ -16,7 +17,8 @@ import { app as karinApp, authMiddleware, logger, mkdirSync } from 'node-karin'
 import express from 'node-karin/express'
 import { karinPathBase } from 'node-karin/root'
 
-import { Common, Config, Root } from '@/module'
+// import RenderServer from 'render'
+import { Common, Root } from '@/module'
 import {
   getBilibiliDataRouter,
   getDouyinDataRouter,
@@ -25,6 +27,7 @@ import {
   getVideoRouter,
   videoStreamRouter
 } from '@/module/server/router'
+import { Config } from '@/module/utils/Config'
 
 import { signatureVerificationMiddleware } from './module/server/auth'
 import {
@@ -36,6 +39,9 @@ import {
   getDouyinContentRouter,
   getGroupsRouter
 } from './module/server/content-router'
+
+const { initAllDatabases } = await import('@/module/db')
+await initAllDatabases()
 
 const server = express()
 const proxyOptions: httpProxy.Options = {
@@ -116,7 +122,7 @@ staticRouter.use(
 )
 
 staticRouter.use(express.static(path.join(Root.pluginPath, 'lib', 'web_chunk'), {
-  redirect: false,
+  redirect: false
 }))
 
 /** 将子路由挂载到主路由上 */
@@ -129,6 +135,19 @@ const base = `${karinPathBase}/${Root.pluginName}`
 mkdirSync(`${base}/data`)
 mkdirSync(Common.tempDri.images)
 mkdirSync(Common.tempDri.video)
+
+// 条件性启动渲染服务器（仅在开发环境或未找到编译组件时启动）
+// const componentPath = path.join(Root.pluginPath, 'lib', 'components', 'server.js')
+// const hasCompiledComponents = fs.existsSync(componentPath)
+
+// if (!hasCompiledComponents || process.env.NODE_ENV === 'development') {
+//   // 启动渲染服务器
+//   const renderServer = new RenderServer(13851)
+//   renderServer.start()
+//   logger.info(`${logger.violet('[render]')} ${logger.yellow('kkk渲染服务器:')} ${logger.green(renderServer.getServerUrl())}`)
+// } else {
+//   logger.info(`${logger.violet('[render]')} ${logger.green('使用本地编译组件渲染')}`)
+// }
 
 console.log('')
 console.log('-------------------------- karin-plugin-kkk --------------------------')

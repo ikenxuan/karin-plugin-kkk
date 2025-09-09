@@ -10,7 +10,6 @@ import {
   Base,
   baseHeaders,
   Common,
-  Config,
   Count,
   downloadFile,
   downloadVideo,
@@ -20,6 +19,7 @@ import {
   Render,
   Root
 } from '@/module/utils'
+import { Config } from '@/module/utils/Config'
 import { douyinComments } from '@/platform/douyin'
 import { DouyinDataTypes, DouyinIdData } from '@/types'
 
@@ -248,7 +248,7 @@ export class DouYin extends Base {
               url: video.play_addr_h264.url_list[0] ?? video.play_addr_h264.url_list[0],
               headers: {
                 ...this.headers,
-                Referer: video.play_addr_h264.url_list[0] ?? video.play_addr_h264.url_list[0],
+                Referer: video.play_addr_h264.url_list[0] ?? video.play_addr_h264.url_list[0]
               }
             }).getLongLink()
           }
@@ -309,7 +309,7 @@ export class DouYin extends Base {
             }
           },
           {
-            message_id: this.e.messageId,
+            message_id: this.e.messageId
           }
         )
         return true

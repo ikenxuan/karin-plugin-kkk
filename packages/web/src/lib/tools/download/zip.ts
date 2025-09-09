@@ -2,8 +2,7 @@ import axios from 'axios'
 
 import type { SlideItem } from '@/parsers/types'
 
-import { downloadWithNative,sanitizeName } from './video'
-
+import { downloadWithNative, sanitizeName } from './video'
 
 /**
  * 合辑打包下载
@@ -38,10 +37,10 @@ export const downloadSlidesAsZip = async (slides: SlideItem[], title: string) =>
           {
             method: 'GET',
             headers: {
-              'Accept': slide.type === 'video' ? 'video/*,*/*;q=0.8' : 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+              Accept: slide.type === 'video' ? 'video/*,*/*;q=0.8' : 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
               'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
               'Cache-Control': 'no-cache',
-              'Pragma': 'no-cache',
+              Pragma: 'no-cache',
               'Sec-Fetch-Dest': slide.type === 'video' ? 'video' : 'image',
               'Sec-Fetch-Mode': 'no-cors',
               'Sec-Fetch-Site': 'cross-site',
@@ -94,7 +93,6 @@ export const downloadSlidesAsZip = async (slides: SlideItem[], title: string) =>
         }
 
         throw lastError || new Error('所有下载策略都失败了')
-
       } catch (error: any) {
         console.error(`❌ 下载合辑项目 ${actualIndex + 1} 失败:`, error)
 
@@ -162,7 +160,6 @@ export const downloadSlidesAsZip = async (slides: SlideItem[], title: string) =>
     if (failedItems.length > 0) {
       console.log('❌ 失败的项目:', failedItems)
     }
-
   } catch (error: any) {
     console.error('❌ 合辑打包下载失败:', error)
     alert(`合辑打包下载失败: ${error.message}`)
@@ -201,10 +198,10 @@ export const downloadImagesAsZip = async (images: string[], title: string) => {
           {
             method: 'GET',
             headers: {
-              'Accept': 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+              Accept: 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
               'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
               'Cache-Control': 'no-cache',
-              'Pragma': 'no-cache',
+              Pragma: 'no-cache',
               'Sec-Fetch-Dest': 'image',
               'Sec-Fetch-Mode': 'no-cors',
               'Sec-Fetch-Site': 'cross-site',
@@ -216,7 +213,7 @@ export const downloadImagesAsZip = async (images: string[], title: string) => {
           {
             method: 'GET',
             headers: {
-              'Accept': 'image/*,*/*',
+              Accept: 'image/*,*/*',
               'User-Agent': navigator.userAgent
             },
             responseType: 'blob' as const
@@ -277,7 +274,6 @@ export const downloadImagesAsZip = async (images: string[], title: string) => {
         }
 
         throw lastError || new Error('所有请求策略都失败')
-
       } catch (error) {
         // 重试机制
         if (retryCount < maxRetries) {
@@ -387,10 +383,10 @@ export const downloadVideosAsZip = async (videos: string[], title: string) => {
           {
             method: 'GET',
             headers: {
-              'Accept': 'video/*,*/*;q=0.8',
+              Accept: 'video/*,*/*;q=0.8',
               'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
               'Cache-Control': 'no-cache',
-              'Pragma': 'no-cache',
+              Pragma: 'no-cache',
               'Sec-Fetch-Dest': 'video',
               'Sec-Fetch-Mode': 'no-cors',
               'Sec-Fetch-Site': 'cross-site',
@@ -402,7 +398,7 @@ export const downloadVideosAsZip = async (videos: string[], title: string) => {
           {
             method: 'GET',
             headers: {
-              'Accept': 'video/*,*/*',
+              Accept: 'video/*,*/*',
               'User-Agent': navigator.userAgent
             },
             responseType: 'blob' as const
@@ -463,7 +459,6 @@ export const downloadVideosAsZip = async (videos: string[], title: string) => {
         }
 
         throw lastError || new Error('所有请求策略都失败')
-
       } catch (error) {
         // 重试机制
         if (retryCount < maxRetries) {
