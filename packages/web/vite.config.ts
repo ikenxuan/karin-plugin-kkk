@@ -135,7 +135,7 @@ export default defineConfig(({ command, mode }) => {
         include: ['src/**/*.ts', 'src/**/*.tsx'],
         exclude: ['node_modules/**', 'src-tauri/**', 'src/App.tsx', 'src/main.tsx'],
         apply: 'build',
-        debugger: true,
+        debugger: false,
         options: {
           compact: true,
           controlFlowFlattening: true,

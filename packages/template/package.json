@@ -25,7 +25,7 @@
     }
   },
   "scripts": {
-    "build": "vite build",
+    "build": "cross-env NODE_ENV=production vite build",
     "dev": "vite",
     "dev:core": "cross-env RENDER_ENV=core_dev tsx watch src/server.ts",
     "dev:mock": "cross-env RENDER_ENV=core_dev LOG_LEVEL=debug tsx watch src/dev/mock-server.ts",
