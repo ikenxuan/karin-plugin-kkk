@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdirSync } from 'node:fs'
+import { copyFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs'
 import { builtinModules } from 'node:module'
 import path, { resolve } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
@@ -10,6 +10,35 @@ import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
+
+/**
+ * 递归复制目录
+ * @param sourceDir 源目录路径
+ * @param targetDir 目标目录路径
+ */
+const copyDirectory = (sourceDir: string, targetDir: string) => {
+  if (!existsSync(sourceDir)) {
+    console.warn('⚠️ 源目录不存在:', sourceDir)
+    return
+  }
+
+  if (!existsSync(targetDir)) {
+    mkdirSync(targetDir, { recursive: true })
+  }
+
+  const files = readdirSync(sourceDir)
+
+  files.forEach(file => {
+    const sourcePath = resolve(sourceDir, file)
+    const targetPath = resolve(targetDir, file)
+
+    if (statSync(sourcePath).isDirectory()) {
+      copyDirectory(sourcePath, targetPath)
+    } else {
+      copyFileSync(sourcePath, targetPath)
+    }
+  })
+}
 
 export default defineConfig(({ command }) => {
   // 基础配置
@@ -66,13 +95,13 @@ export default defineConfig(({ command }) => {
         include: ['src/**/*'],
         exclude: ['src/**/*.test.ts', 'src/**/*.spec.ts']
       }),
-      // CSS复制插件
       {
-        name: 'copy-css-to-core',
+        name: 'copy-assets-to-core',
         writeBundle () {
+          // 复制CSS文件
           const sourceFile = resolve(__dirname, 'dist/css/main.css')
-          const targetDir = resolve(__dirname, '../core/lib/karin-plugin-kkk.css')
-          const targetFile = resolve(targetDir)
+          const targetFile = resolve(__dirname, '../core/lib/karin-plugin-kkk.css')
+          const targetDir = resolve(__dirname, '../core/lib')
 
           if (!existsSync(targetDir)) {
             mkdirSync(targetDir, { recursive: true })
@@ -84,6 +113,13 @@ export default defineConfig(({ command }) => {
           } else {
             console.warn('⚠️ 源CSS文件不存在:', sourceFile)
           }
+
+          // 复制静态资源
+          const imageSourceDir = resolve(__dirname, 'public/image')
+          const imageTargetDir = resolve(__dirname, '../core/resources/image')
+
+          copyDirectory(imageSourceDir, imageTargetDir)
+          console.log('✅ 静态资源已复制到:', imageTargetDir)
         }
       }
     ],

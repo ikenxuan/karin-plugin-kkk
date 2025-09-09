@@ -1,4 +1,4 @@
-import { Hash, Music, QrCode, Users } from 'lucide-react'
+import { Clock, Hash, Heart, Music, QrCode, UserPlus, Users } from 'lucide-react'
 import React from 'react'
 
 import type {
@@ -86,6 +86,7 @@ const MusicInfoSection: React.FC<MusicInfoProps & { desc: string }> = ({
         </div>
       </div>
       <div className='flex items-center gap-2 text-[45px] text-[#808080] font-light'>
+        <Clock className='w-11 h-11' />
         <span>图片生成于{createTime}</span>
       </div>
     </div>
@@ -134,9 +135,11 @@ const MusicAuthorInfoSection: React.FC<MusicAuthorInfoProps> = ({
           <span>ID: {userShortId}</span>
         </div>
         <div className='flex gap-2 items-center'>
+          <Heart className='w-8 h-8' />
           <span>获赞: {totalFavorited}</span>
         </div>
         <div className='flex gap-2 items-center'>
+          <UserPlus className='w-8 h-8' />
           <span>关注: {followingCount}</span>
         </div>
         <div className='flex gap-2 items-center'>

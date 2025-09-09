@@ -6,7 +6,7 @@ import type {
   CommentItemComponentProps,
   QRCodeSectionProps,
   VideoInfoHeaderProps
-} from '../../../types/bilibili'
+} from '../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**

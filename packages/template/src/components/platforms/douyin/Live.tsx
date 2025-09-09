@@ -1,4 +1,4 @@
-import { Eye, QrCode, Radio, Users } from 'lucide-react'
+import { Eye, QrCode, Users } from 'lucide-react'
 import React from 'react'
 
 import type {
@@ -23,13 +23,6 @@ const CoverSection: React.FC<{ imageUrl: string }> = ({ imageUrl }) => {
             src={imageUrl}
             alt='封面'
           />
-          {/* 直播图标覆盖层 */}
-          <div className='absolute top-4 left-4'>
-            <div className='flex gap-2 items-center px-3 py-2 bg-red-500 bg-opacity-90 rounded-lg'>
-              <Radio className='w-6 h-6 text-white' />
-              <span className='text-sm font-bold text-white'>直播中</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>

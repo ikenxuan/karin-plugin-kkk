@@ -51,18 +51,41 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
       >
         {children}
         {version && (
-          <div className='font-bold text-[50px] text-center relative py-10'>
-            <div>
-              <span>
-                {version.pluginName}
-              </span>
-              <span className='px-2.5 ml-1.5 text-[25px] rounded-[10px] align-super bg-default-10'>
-                {version.pluginVersion} {version.releaseType}
-              </span>
-              {' Powered By '}
-              <span>
-                {version.poweredBy}
-              </span>
+          <div className='px-10 py-10 text-default-100'>
+            <div className='flex relative justify-center items-center space-x-12'>
+              <div className='flex items-center space-x-8 whitespace-nowrap'>
+                <img src="/image/logo.png" className='w-auto h-24' />
+                <h1 className='text-6xl font-black tracking-tight leading-none'>
+                  {version.pluginName}
+                </h1>
+              </div>
+    
+              <div className='relative'>
+                <div className={clsx(
+                  'absolute -top-8 -left-10 px-5 py-2 text-sm font-bold tracking-widest uppercase rounded-full transform -rotate-12',
+                  'border border-dashed border-default-100 text-default-100 bg-default-0'
+                )}>
+                  {version.releaseType}
+                </div>
+                <div className='text-5xl font-bold tracking-wide'>
+                  v{version.pluginVersion}
+                </div>
+              </div>
+    
+              <div className='w-1 h-12 bg-default-100' />
+    
+              <div className='flex relative items-center space-x-5'>
+                <div className={clsx(
+                  'absolute -top-8 -left-10 px-5 py-2 text-sm font-bold tracking-widest uppercase rounded-full transform -rotate-12',
+                  'border border-dashed border-default-100 text-default-100 bg-default-0'
+                )}>
+                  Powered By
+                </div>
+                <img src="/image/karin-logo.png" className='w-auto h-16' />
+                <span className='text-5xl font-black'>
+                  Karin & Vite 
+                </span>
+              </div>
             </div>
           </div>
         )}
