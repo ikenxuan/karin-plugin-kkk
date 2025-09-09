@@ -1,6 +1,6 @@
 import axios from 'axios'
 import convert from 'heic-convert/browser'
-import React, { useEffect,useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 interface HeicImageProps {
   src: string
@@ -73,7 +73,7 @@ const HeicImage: React.FC<HeicImageProps> = ({
           'ftyphevx', // HEIC sequence with video codec
           'ftypmif1', // HEIF
           'ftypmsf1', // HEIF sequence
-          'ftypavif'  // AVIF (也是基于HEIF的格式)
+          'ftypavif' // AVIF (也是基于HEIF的格式)
         ]
 
         // 修复检测逻辑：直接比较完整的文件类型标识
@@ -104,7 +104,6 @@ const HeicImage: React.FC<HeicImageProps> = ({
 
         // 通过文件头部字节检测是否为HEIC格式
         if (isHeicFormat(arrayBuffer)) {
-
           try {
             // 将ArrayBuffer转换为Uint8Array
             const inputBuffer = new Uint8Array(arrayBuffer)
@@ -123,7 +122,6 @@ const HeicImage: React.FC<HeicImageProps> = ({
 
             // 通知父组件转换完成
             onProcessed?.(convertedUrl)
-
           } catch (convertError) {
             console.error('HEIC转换失败:', convertError)
             // 转换失败时，尝试直接显示原图
@@ -169,14 +167,14 @@ const HeicImage: React.FC<HeicImageProps> = ({
   }
 
   return (
-    <div className="relative">
+    <div className='relative'>
       {isLoading && (
-        <div className="flex absolute inset-0 z-10 justify-center items-center bg-gray-100 bg-opacity-75">
-          <div className="text-xs text-gray-600">转换中...</div>
+        <div className='flex absolute inset-0 z-10 justify-center items-center bg-gray-100 bg-opacity-75'>
+          <div className='text-xs text-gray-600'>转换中...</div>
         </div>
       )}
       {error && (
-        <div className="absolute top-0 left-0 z-20 px-2 py-1 text-xs text-yellow-800 bg-yellow-100 rounded">
+        <div className='absolute top-0 left-0 z-20 px-2 py-1 text-xs text-yellow-800 bg-yellow-100 rounded'>
           {error}
         </div>
       )}

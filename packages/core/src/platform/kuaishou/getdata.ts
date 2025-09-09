@@ -1,6 +1,6 @@
 import Client, { type KuaishouDataOptionsMap } from '@ikenxuan/amagi'
 
-import { Config } from '@/module'
+import { Config } from '@/module/utils/Config'
 import { KuaishouDataTypes } from '@/types'
 
 export async function fetchKuaishouData<T extends keyof KuaishouDataTypes> (
@@ -12,7 +12,7 @@ export async function fetchKuaishouData<T extends keyof KuaishouDataTypes> (
     request: {
       timeout: Config.request.timeout,
       headers: { 'User-Agent': Config.request['User-Agent'] },
-      proxy: Config.request.proxy,
+      proxy: Config.request.proxy
     }
   })
   switch (type) {

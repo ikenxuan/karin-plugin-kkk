@@ -1,7 +1,50 @@
 import { getDouyinData } from '@ikenxuan/amagi'
 import * as convert from 'heic-convert'
 
-import { Common, Config, Networks } from '@/module/utils'
+import { Common, Networks } from '@/module/utils'
+import { Config } from '@/module/utils/Config'
+
+/**
+ * 处理评论中的表情
+ * @param text 原始文本
+ * @param emojiData 表情数据
+ * @returns 处理后的文本
+ */
+const processCommentEmojis = (text: string, emojiData: any): string => {
+  if (!text || !emojiData || !Array.isArray(emojiData)) {
+    return text
+  }
+
+  let processedText = text
+
+  // 遍历表情数据，替换文本中的表情
+  for (const emoji of emojiData) {
+    if (emoji.name && emoji.url && processedText.includes(emoji.name)) {
+      // 使用正则表达式进行全局替换，确保特殊字符被正确转义
+      const escapedName = emoji.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      const regex = new RegExp(escapedName, 'g')
+      processedText = processedText.replace(regex, `<img src="${emoji.url}" alt="${emoji.name}" />`)
+    }
+  }
+
+  // 处理表情和文本混合的情况，将非表情文本用span包裹
+  // 先分割文本，区分表情和普通文本
+  const parts = processedText.split(/(<img[^>]*>)/)
+
+  const wrappedParts = parts.map(part => {
+    // 如果是img标签（表情），直接返回
+    if (part.startsWith('<img')) {
+      return part
+    }
+    // 如果是普通文本且不为空，用span包裹
+    if (part.trim()) {
+      return `<span>${part}</span>`
+    }
+    return part
+  })
+
+  return wrappedParts.join('')
+}
 
 /**
  *
@@ -78,7 +121,6 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
 
   jsonArray = br(jsonArray)
   jsonArray = await handling_at(jsonArray)
-  jsonArray = await search_text(jsonArray)
   jsonArray = await heic2jpg(jsonArray)
 
   const CommentData = {
@@ -91,15 +133,9 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
     }
   }
 
-  for (const item1 of CommentData.jsonArray) {
-    // 遍历emojidata中的每个元素
-    for (const item2 of emojidata) {
-      // 如果text中包含这个特定的emoji
-      if (item1.text.includes(item2.name)) {
-        item1.text = item1.text.replaceAll(item2.name, `<img src="${item2.url}"/>`)
-        item1.text += '&#160'
-      }
-    }
+  // 使用新的表情处理方法
+  for (const item of CommentData.jsonArray) {
+    item.text = processCommentEmojis(item.text, emojidata)
   }
 
   return CommentData
@@ -147,55 +183,6 @@ async function handling_at (data: any[]): Promise<any> {
 
           item.text = item.text.replace(regex, (match: any) => {
             return `<span class="${Common.useDarkTheme() ? 'dark-mode handling_at' : 'handling_at'}">${match}</span>`
-          })
-        }
-      }
-    }
-  }
-  return data
-}
-
-/**
- * 高亮热点搜索关键词
- * @param data 评论数据
- * @returns
- */
-async function search_text (data: {
-  id: number
-  cid: any
-  aweme_id: any
-  nickname: any
-  userimageurl: any
-  text: any
-  digg_count: any
-  ip_label: any
-  create_time: string
-  commentimage: any
-  label_type: any
-  sticker: any
-  status_label: any
-  is_At_user_id: any
-  search_text: any
-  reply_comment_total: any
-}[]): Promise<any> {
-  for (const item of data) {
-    if (item.search_text !== null && Array.isArray(item.search_text)) {
-      for (const search_text of item.search_text) {
-        const SuggestWordsData = await getDouyinData('热点词数据', Config.cookies.douyin, { query: search_text.search_text, typeMode: 'strict' })
-        if (
-          SuggestWordsData.data.data &&
-          SuggestWordsData.data.data[0] &&
-          SuggestWordsData.data.data[0].params &&
-          SuggestWordsData.data.data[0].params.query_id &&
-          SuggestWordsData.data.data[0].params.query_id === search_text.search_query_id
-        ) {
-          const regex = new RegExp(`${search_text.search_text}`, 'g')
-          item.text = item.text.replace(regex, (match: any) => {
-            const themeClass = Common.useDarkTheme() ? 'dark-mode' : ''
-            return `<span class="search_text ${themeClass}">
-                ${match}
-                <span class="search-ico"></span>
-            </span>&nbsp;&nbsp;&nbsp;`
           })
         }
       }

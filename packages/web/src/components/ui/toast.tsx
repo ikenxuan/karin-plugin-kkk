@@ -12,11 +12,11 @@ export const Toaster = () => {
           borderRadius: '20px',
           background: isDark ? '#333' : '#fff',
           color: isDark ? '#fff' : '#333',
-          zIndex: 10000,
-        },
+          zIndex: 10000
+        }
       }}
       containerStyle={{
-        zIndex: 10000,
+        zIndex: 10000
       }}
     />
   )

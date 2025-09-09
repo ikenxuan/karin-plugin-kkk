@@ -21,7 +21,6 @@ export const downloadWithNative = (downloadUrl: string, suggestedFilename: strin
 
     // 清理
     document.body.removeChild(link)
-
   } catch (error) {
     console.error('❌ 下载失败:', error)
     // 降级方案：直接在新标签页打开链接
@@ -39,7 +38,6 @@ export const downloadWithSmartNaming = (downloadUrl: string, title: string, type
   const filename = generateDownloadFilename(downloadUrl, title, type)
   downloadWithNative(downloadUrl, filename)
 }
-
 
 /**
  * 打开原链接
@@ -59,7 +57,7 @@ export const handleOpenOriginal = (originalUrl: string) => {
  * @param type - 文件类型 ('video' | 'audio')
  * @returns 清理后的文件名
  */
-export const generateDownloadFilename =  (downloadUrl: string, title: string, type: 'video' | 'audio'): string => {
+export const generateDownloadFilename = (downloadUrl: string, title: string, type: 'video' | 'audio'): string => {
   let filename = ''
 
   // 1. 优先使用标题

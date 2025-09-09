@@ -1,5 +1,5 @@
 import request from '@/lib/request'
-import type { CommentInfo, ParsedWorkInfo,VideoInfo } from '@/parsers/types'
+import type { CommentInfo, ParsedWorkInfo, VideoInfo } from '@/parsers/types'
 import { formatCount, formatDuration, formatTimestamp } from '@/parsers/utils'
 
 /**
@@ -15,13 +15,13 @@ export const parseKuaishouWorkId = (finalUrl: string): ParsedWorkInfo => {
   }
 
   const photoId = photoIdMatch[1]
-  
+
   return {
     platform: 'kuaishou',
     workId: photoId,
     workType: 'video',
     params: {
-      photoId: photoId
+      photoId
     }
   }
 }
@@ -124,7 +124,7 @@ const parseKuaishouComments = (commentsData: any[], emojiData: any): CommentInfo
 const processKuaishouCommentEmojis = (text: string, emojiData: any): string => {
   // 根据实际的快手表情数据结构来实现
   let processedText = text
-  
+
   if (emojiData && emojiData.emoji_list) {
     emojiData.emoji_list.forEach((emoji: any) => {
       const emojiRegex = new RegExp(`\\[${emoji.name}\\]`, 'g')
@@ -132,6 +132,6 @@ const processKuaishouCommentEmojis = (text: string, emojiData: any): string => {
       processedText = processedText.replace(emojiRegex, emojiImg)
     })
   }
-  
+
   return processedText
 }

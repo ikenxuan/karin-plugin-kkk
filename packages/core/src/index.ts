@@ -14,7 +14,8 @@ import { app as karinApp, authMiddleware, logger, mkdirSync } from 'node-karin'
 import express from 'node-karin/express'
 import { karinPathBase } from 'node-karin/root'
 
-import { Common, Config, Root } from '@/module'
+// import RenderServer from 'render'
+import { Common, Root } from '@/module'
 import {
   getBilibiliDataRouter,
   getDouyinDataRouter,
@@ -23,6 +24,7 @@ import {
   getVideoRouter,
   videoStreamRouter
 } from '@/module/server/router'
+import { Config } from '@/module/utils/Config'
 
 import { signatureVerificationMiddleware } from './module/server/auth'
 import {
@@ -34,6 +36,9 @@ import {
   getDouyinContentRouter,
   getGroupsRouter
 } from './module/server/content-router'
+
+const { initAllDatabases } = await import('@/module/db')
+await initAllDatabases()
 
 const server = express()
 const proxyOptions: httpProxy.Options = {
@@ -114,7 +119,7 @@ staticRouter.use(
 )
 
 staticRouter.use(express.static(path.join(Root.pluginPath, 'lib', 'web_chunk'), {
-  redirect: false,
+  redirect: false
 }))
 
 /** 将子路由挂载到主路由上 */

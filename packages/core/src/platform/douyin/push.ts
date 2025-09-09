@@ -7,13 +7,13 @@ import {
   baseHeaders,
   cleanOldDynamicCache,
   Common,
-  Config,
   douyinDB,
   downLoadFileOptions,
   downloadVideo,
   Networks,
   Render
 } from '@/module'
+import { Config } from '@/module/utils/Config'
 import { DouyinIdData, douyinProcessVideos, getDouyinID } from '@/platform/douyin'
 import type { douyinPushItem } from '@/types/config/pushlist'
 
@@ -131,7 +131,7 @@ export class DouYinpush extends Base {
         if (pushItem.living && 'room_data' in pushItem.Detail_Data && Detail_Data.live_data) {
           // 处理直播推送
           img = await Render('douyin/live', {
-            image_url: [{ image_src: Detail_Data.live_data.data.data.data[0].cover!.url_list[0] }],
+            image_url: Detail_Data.live_data.data.data.data[0].cover!.url_list[0],
             text: Detail_Data.live_data.data.data.data[0].title,
             liveinf: `${Detail_Data.live_data.data.data.partition_road_map?.partition?.title ?? Detail_Data.live_data.data.data.data[0].title} | 房间号: ${Detail_Data.room_data.owner.web_rid}`,
             在线观众: this.count(Detail_Data.live_data.data.data.data[0].room_view_stats!.display_value),
@@ -605,8 +605,8 @@ export class DouYinpush extends Base {
   }
 
   /**
- * 处理作品描述
- */
+   * 处理作品描述
+   */
   desc (Detail_Data: any, desc: string) {
     if (desc === '') {
       return '该作品没有描述'
@@ -615,8 +615,8 @@ export class DouYinpush extends Base {
   }
 
   /**
- * 格式化数字
- */
+   * 格式化数字
+   */
   count (num: number) {
     if (num > 10000) {
       return (num / 10000).toFixed(1) + '万'

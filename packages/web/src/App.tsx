@@ -32,11 +32,11 @@ const App = () => {
     { path: '/about', component: AboutPage, protected: true },
     { path: '/', component: VideoParserPage, protected: true },
     { path: '/login', component: LoginPage, protected: false },
-    { path: '*', component: NotFoundPage, protected: false },
+    { path: '*', component: NotFoundPage, protected: false }
   ]
 
   return (
-    <ThemeProvider defaultTheme="system">
+    <ThemeProvider defaultTheme='system'>
       {/* Tauri 的 Windows 环境下显示自定义窗口控制和拖拽区域 */}
       {isTauri() && type() === 'windows' && (
         <>

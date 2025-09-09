@@ -11,7 +11,7 @@ import Toaster from './components/ui/toast.tsx'
 if (import.meta.env.MODE === 'development') {
   if (typeof window !== 'undefined') {
     scan({
-      log: false,
+      log: false
     })
   }
 }

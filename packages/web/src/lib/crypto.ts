@@ -80,22 +80,22 @@ export const charOffsetEncode = (str: string, offset: number = 3): string => {
 export const multiLayerEncode = (str: string): string => {
   // 第1层：字符偏移编码
   let encoded = charOffsetEncode(str, 5)
-  
+
   // 第2层：十六进制编码
   encoded = hexEncode(encoded)
-  
+
   // 第3层：反转字符串
   encoded = reverseString(encoded)
-  
+
   // 第4层：Base64编码
   encoded = base64Encode(encoded)
-  
+
   // 第5层：URL编码
   encoded = urlEncode(encoded)
-  
+
   // 第6层：再次Base64编码
   encoded = base64Encode(encoded)
-  
+
   return encoded
 }
 
@@ -119,10 +119,10 @@ export const generateSignature = (
 ): string => {
   // 签名字符串格式：METHOD|URL|BODY|TIMESTAMP|NONCE
   const signatureString = `${method.toUpperCase()}|${url}|${body}|${timestamp}|${nonce}`
-  
+
   // 使用HMAC-SHA256生成原始签名
   const rawSignature = CryptoJS.HmacSHA256(signatureString, secretKey).toString(CryptoJS.enc.Hex)
-  
+
   // 对签名进行多层编码加密
   return multiLayerEncode(rawSignature)
 }

@@ -2,18 +2,56 @@
   "name": "karin-plugin-kkk",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "build": "pnpm -r run build",
-    "build:core": "pnpm --filter karin-plugin-kkk run build",
-    "build:web": "pnpm --filter web run build",
-    "build:desktop": "pnpm --filter web run build:desktop",
-    "dev": "pnpm --filter karin-plugin-kkk run dev",
-    "watch": "pnpm --filter karin-plugin-kkk run watch",
-    "web": "pnpm --filter web run dev",
-    "lint": "pnpm -r run lint"
-  },
   "keywords": [],
-  "author": "",
-  "license": "GPL-3.0-only"
+  "license": "GPL-3.0-only",
+  "author": "ikenxuan",
+  "scripts": {
+    "build": "pnpm run build:core && pnpm run build:web",
+    "build:core": "pnpm --filter karin-plugin-kkk run build",
+    "build:desktop": "pnpm --filter web run build:desktop",
+    "build:template": "pnpm --filter template run build",
+    "build:web": "pnpm --filter web run build",
+    "dev": "pnpm --filter karin-plugin-kkk run dev",
+    "dev:template": "pnpm --filter template run dev",
+    "dev:web": "pnpm --filter web run dev",
+    "lint": "pnpm -r run lint",
+    "template": "pnpm --filter template run dev",
+    "sort": "pnpm -r sort",
+    "watch": "pnpm --filter karin-plugin-kkk run watch",
+    "web": "pnpm --filter web run dev"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "4.1.13",
+    "@vitejs/plugin-react": "^5.0.2",
+    "clsx": "^2.1.1",
+    "cors": "^2.8.5",
+    "lucide-react": "0.542.0",
+    "node-karin": "1.10.22",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "tailwindcss": "^4.1.13"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.30.1",
+    "@stylistic/eslint-plugin": "^5.3.1",
+    "@tailwindcss/cli": "4.1.13",
+    "@types/cors": "2.8.19",
+    "@types/node": "24.3.1",
+    "@typescript-eslint/eslint-plugin": "8.42.0",
+    "@typescript-eslint/parser": "8.42.0",
+    "cross-env": "10.0.0",
+    "eslint": "9.35.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "sort-package-json": "^3.4.0",
+    "tsx": "4.20.5",
+    "typescript": "5.9.2",
+    "vite": "^7.1.4"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "^7.1.4"
+    }
+  }
 }

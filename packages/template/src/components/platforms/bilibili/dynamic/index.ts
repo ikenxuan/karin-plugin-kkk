@@ -1,0 +1,8 @@
+export { BilibiliVideoDynamic } from './DYNAMIC_TYPE_AV'
+export { default as VideoDynamic } from './DYNAMIC_TYPE_AV'
+export { BilibiliDrawDynamic } from './DYNAMIC_TYPE_DRAW'
+export { default as DrawDynamic } from './DYNAMIC_TYPE_DRAW'
+export { BilibiliForwardDynamic } from './DYNAMIC_TYPE_FORWARD'
+export { default as ForwardDynamic } from './DYNAMIC_TYPE_FORWARD'
+export { BilibiliLiveDynamic } from './DYNAMIC_TYPE_LIVE_RCMD'
+export { default as LiveDynamic } from './DYNAMIC_TYPE_LIVE_RCMD'

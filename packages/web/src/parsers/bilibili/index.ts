@@ -1,4 +1,4 @@
-import type { BiliDynamicCard,BiliDynamicInfo, BiliEmojiList, BiliOneWork, BiliVideoPlayurlIsLogin, BiliWorkComments } from '@ikenxuan/amagi'
+import type { BiliDynamicCard, BiliDynamicInfo, BiliEmojiList, BiliOneWork, BiliVideoPlayurlIsLogin, BiliWorkComments } from '@ikenxuan/amagi'
 
 import request from '@/lib/request'
 import type { CommentInfo, ParsedWorkInfo, ResponseData, VideoInfo } from '@/parsers/types'
@@ -64,7 +64,7 @@ export const parseBilibiliWorkId = (finalUrl: string): ParsedWorkInfo => {
     default:
       break
   }
-  
+
   throw new Error('无法从URL中提取哔哩哔哩作品ID')
 }
 
@@ -79,7 +79,7 @@ export const parseBilibiliVideoDetail = async (workInfo: ParsedWorkInfo): Promis
     if (workInfo.workType === 'dynamic_info') {
       return await parseBilibiliDynamicDetail(workInfo)
     }
-    
+
     // 获取视频详细数据
     const infoDataResponse = await request.serverPost<ResponseData<BiliOneWork>, any>('/api/kkk/bilibili/data', {
       dataType: '单个视频作品数据',
@@ -90,7 +90,7 @@ export const parseBilibiliVideoDetail = async (workInfo: ParsedWorkInfo): Promis
       dataType: '单个视频下载信息数据',
       params: {
         avid: infoDataResponse.data.data.aid,
-        cid: infoDataResponse.data.data.cid,
+        cid: infoDataResponse.data.data.cid
       }
     })
 
@@ -132,7 +132,7 @@ export const parseBilibiliVideoDetail = async (workInfo: ParsedWorkInfo): Promis
       type: 'video',
       downloadUrl: {
         video: videoStreamResponse.data.data.dash.video[0].baseUrl || '获取失败',
-        audio: videoStreamResponse.data.data.dash.audio[0].baseUrl || '获取失败',
+        audio: videoStreamResponse.data.data.dash.audio[0].baseUrl || '获取失败'
       },
       images: undefined,
       tags: videoDetail.tname ? [videoDetail.tname] : [],
@@ -173,11 +173,11 @@ const parseBilibiliDynamicDetail = async (workInfo: ParsedWorkInfo): Promise<Vid
 
     const dynamicInfo = dynamicInfoResponse.data.data.data.data
     const dynamicCard = dynamicCardResponse.data.data.data.data
-    
+
     // 获取评论数据（如果动态类型支持评论）
     let comments: CommentInfo[] = []
     let commentCount = 0
-    
+
     if (dynamicInfo.item.type !== 'LIVE_RCMD') {
       try {
         const commentsResponse = await request.serverPost<ResponseData<BiliWorkComments>, any>('/api/kkk/bilibili/data', {
@@ -206,7 +206,7 @@ const parseBilibiliDynamicDetail = async (workInfo: ParsedWorkInfo): Promise<Vid
 
     // 解析动态内容
     const dynamicContent = parseDynamicContent(dynamicInfo)
-    
+
     // 格式化为统一的VideoInfo接口
     const videoInfo: VideoInfo = {
       id: dynamicInfo.item.id_str,
@@ -239,7 +239,7 @@ const parseBilibiliDynamicDetail = async (workInfo: ParsedWorkInfo): Promise<Vid
 const parseDynamicContent = (dynamicInfo: BiliDynamicInfo['data']['data']) => {
   const item = dynamicInfo.item
   const moduleType = item.type
-  
+
   switch (moduleType) {
     case 'DYNAMIC_TYPE_DRAW': // 图文动态
       return {
@@ -249,7 +249,7 @@ const parseDynamicContent = (dynamicInfo: BiliDynamicInfo['data']['data']) => {
         images: item.modules.module_dynamic?.major?.draw?.items?.map((img: any) => img.src) || [],
         type: 'note' as const
       }
-    
+
     case 'DYNAMIC_TYPE_WORD': // 纯文字动态
       return {
         title: '文字动态',
@@ -258,7 +258,7 @@ const parseDynamicContent = (dynamicInfo: BiliDynamicInfo['data']['data']) => {
         images: [],
         type: 'note' as const
       }
-    
+
     case 'DYNAMIC_TYPE_AV': // 视频动态
       return {
         title: item.modules.module_dynamic?.major?.archive?.title || '视频动态',
@@ -267,7 +267,7 @@ const parseDynamicContent = (dynamicInfo: BiliDynamicInfo['data']['data']) => {
         images: [],
         type: 'video' as const
       }
-    
+
     case 'DYNAMIC_TYPE_FORWARD': // 转发动态
       return {
         title: '转发动态',
@@ -276,7 +276,7 @@ const parseDynamicContent = (dynamicInfo: BiliDynamicInfo['data']['data']) => {
         images: [],
         type: 'note' as const
       }
-    
+
     default:
       return {
         title: '动态内容',
@@ -317,7 +317,7 @@ const getDynamicCommentType = (dynamicType: string): number => {
 const getDynamicOid = (dynamicInfo: BiliDynamicInfo['data'], dynamicCard: BiliDynamicCard['data']): string => {
   // 根据动态类型返回对应的OID
   const item = dynamicInfo.item
-  
+
   switch (item.type) {
     case 'DYNAMIC_TYPE_AV':
       return item.modules.module_dynamic?.major?.archive?.aid?.toString() || item.id_str
@@ -387,7 +387,7 @@ const processBilibiliCommentEmojis = (text: string, emojiData: BiliEmojiList): s
   processedText = processedText.replace(emojiRegex, (match, emojiName) => {
     // 查找匹配的表情
     const emojiUrl = emojiMap.get(match) || emojiMap.get(emojiName)
-    
+
     if (emojiUrl) {
       // 返回img标签替换表情文本
       return `<img src="${emojiUrl}" alt="${emojiName}" class="emoji" />`

@@ -83,7 +83,7 @@ export function bilibiliComments (commentsData: any) {
 const emoteToUrl = (message: any, emote: any) => {
   // 遍历 emote 对象的键
   for (const key in emote) {
-    if (Object.prototype.hasOwnProperty.call(emote, key)) {  // 确保是对象自身的属性
+    if (Object.prototype.hasOwnProperty.call(emote, key)) { // 确保是对象自身的属性
       // 如果message中有对应的表情包名，替换为图片标签
       if (message.includes(key)) {
         if (message.includes('[') && message.includes(']')) {

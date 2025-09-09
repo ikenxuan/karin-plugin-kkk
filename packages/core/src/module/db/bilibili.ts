@@ -4,7 +4,8 @@ import { logger } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
 import sqlite3 from 'node-karin/sqlite3'
 
-import { Config, Root } from '@/module/utils'
+import { Root } from '@/module/utils'
+import { Config } from '@/module/utils/Config'
 import { BilibiliPushItem, DynamicType } from '@/platform/bilibili/push'
 import { bilibiliPushItem } from '@/types/config/pushlist'
 

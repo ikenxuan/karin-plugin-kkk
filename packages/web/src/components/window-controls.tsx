@@ -51,11 +51,11 @@ export const WindowControls = () => {
   }, [])
 
   return (
-    <div className="fixed top-4 right-4 z-50 flex items-center bg-black/10 dark:bg-white/10 backdrop-blur-md rounded-md overflow-hidden shadow-sm">
+    <div className='fixed top-4 right-4 z-50 flex items-center bg-black/10 dark:bg-white/10 backdrop-blur-md rounded-md overflow-hidden shadow-sm'>
       {/* 最小化按钮 */}
       <button
         onClick={handleMinimize}
-        className="w-12 h-8 flex items-center justify-center text-default hover:bg-white/60 dark:hover:bg-black/40 transition-colors duration-200"
+        className='w-12 h-8 flex items-center justify-center text-default hover:bg-white/60 dark:hover:bg-black/40 transition-colors duration-200'
       >
         <Minus size={18} strokeWidth={3} absoluteStrokeWidth />
       </button>
@@ -63,7 +63,7 @@ export const WindowControls = () => {
       {/* 关闭按钮 */}
       <button
         onClick={handleClose}
-        className="w-12 h-8 flex items-center justify-center text-default hover:text-white hover:bg-red-500 transition-colors duration-200"
+        className='w-12 h-8 flex items-center justify-center text-default hover:text-white hover:bg-red-500 transition-colors duration-200'
       >
         <X size={16} strokeWidth={3} absoluteStrokeWidth />
       </button>

@@ -8,14 +8,14 @@ const ThemeProps = {
   light: 'light',
   dark: 'dark',
   system: 'system',
-  inverse: 'inverse',
+  inverse: 'inverse'
 } as const
 
 type Theme = typeof ThemeProps.system | typeof ThemeProps.inverse
 
 export const useTheme = (defaultTheme?: Theme) => {
   const [theme, setTheme] = useLocalStorageState<Theme>(key.theme, {
-    defaultValue: defaultTheme ?? ThemeProps.system, // 默认使用系统主题
+    defaultValue: defaultTheme ?? ThemeProps.system // 默认使用系统主题
   })
 
   // 获取系统主题偏好
@@ -94,6 +94,6 @@ export const useTheme = (defaultTheme?: Theme) => {
     setInverseTheme,
     toggleTheme,
     isSystem: theme === ThemeProps.system,
-    isInverse: theme === ThemeProps.inverse,
+    isInverse: theme === ThemeProps.inverse
   }
 }

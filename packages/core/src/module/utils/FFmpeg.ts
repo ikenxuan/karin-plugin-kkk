@@ -108,7 +108,7 @@ class FFmpeg {
       }
       case '获取指定视频文件时长': {
         const { stdout } = await ffprobe(`-v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${opt.path}`)
-        return parseFloat(parseFloat(stdout.trim()).toFixed(2)) as unknown as MergeFileResult<T>  // 数字类型
+        return parseFloat(parseFloat(stdout.trim()).toFixed(2)) as unknown as MergeFileResult<T> // 数字类型
       }
       case '压缩视频': {
         const result = await ffmpeg(`-y -i "${opt.path}" -b:v ${opt.targetBitrate}k -maxrate ${opt.maxRate ?? opt.targetBitrate * 1.5}k -bufsize ${opt.bufSize ?? opt.targetBitrate * 2}k -crf ${opt.crf ?? 35} -preset medium -c:v libx264 -vf "scale='if(gte(iw/ih,16/9),1280,-1)':'if(gte(iw/ih,16/9),-1,720)',scale=ceil(iw/2)*2:ceil(ih/2)*2" "${opt.resultPath}"`)
@@ -119,7 +119,7 @@ class FFmpeg {
           logger.error(opt.path + ' 压缩失败！')
           logger.error(result)
         }
-        return opt.resultPath as unknown as MergeFileResult<T>  // 字符串类型
+        return opt.resultPath as unknown as MergeFileResult<T> // 字符串类型
       }
     }
   }

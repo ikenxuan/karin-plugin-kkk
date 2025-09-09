@@ -22,10 +22,7 @@ export const getDouyinDB = async (): Promise<DouyinDBBase> => {
   }
 
   if (douyinInitializing) {
-    // 如果正在初始化，等待初始化完成
-    while (douyinInitializing) {
-      await new Promise(resolve => setTimeout(resolve, 100))
-    }
+    await new Promise(resolve => setTimeout(resolve, 100))
     return douyinDB!
   }
 
@@ -48,10 +45,7 @@ export const getBilibiliDB = async (): Promise<BilibiliDBBase> => {
   }
 
   if (bilibiliInitializing) {
-    // 如果正在初始化，等待初始化完成
-    while (bilibiliInitializing) {
-      await new Promise(resolve => setTimeout(resolve, 100))
-    }
+    await new Promise(resolve => setTimeout(resolve, 100))
     return bilibiliDB!
   }
 

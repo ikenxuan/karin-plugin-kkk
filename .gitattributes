@@ -1,4 +1,5 @@
 *.ts linguist-detectable
+*.tsx linguist-detectable
 *.js linguist-vendored
 *.js.map linguist-vendored
 *.json linguist-vendored

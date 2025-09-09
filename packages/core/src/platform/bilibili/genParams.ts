@@ -1,6 +1,6 @@
 import { getBilibiliData, wbi_sign } from '@ikenxuan/amagi'
 
-import { Config } from '@/module/utils'
+import { Config } from '@/module/utils/Config'
 
 /**
  * 计算请求参数
