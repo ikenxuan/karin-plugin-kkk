@@ -176,11 +176,12 @@ const VideoInfoHeader: React.FC<VideoInfoHeaderProps> = ({
  * @param props 组件属性
  * @returns JSX元素
  */
-const CommentItemComponent: React.FC<CommentItemComponentProps> = ({
-  comment
+const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: boolean }> = ({
+  comment,
+  isLast = false
 }) => {
   return (
-    <div className='flex px-10 pb-0 relative max-w-full mb-[70px]'>
+    <div className={`flex px-10 pb-0 relative max-w-full ${isLast ? '' : 'mb-[70px]'}`}>
       {/* 用户头像区域 */}
       <div className='relative mr-[33.75px] flex-shrink-0'>
         {/* 主头像 */}
@@ -346,7 +347,7 @@ export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType'
       </div>
 
       {/* 评论列表 */}
-      <div className='max-w-full mx-0 mb-[70px]'>
+      <div className='mx-0 max-w-full'>
         {processedData.CommentsData.length > 0
           ? (
             processedData.CommentsData.map((comment, index) => (
@@ -354,6 +355,7 @@ export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType'
                 key={index}
                 comment={comment}
                 useDarkTheme={processedData.useDarkTheme}
+                isLast={index === processedData.CommentsData.length - 1}
               />
             ))
           )

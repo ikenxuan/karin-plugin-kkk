@@ -1,9 +1,9 @@
-import RenderServer from './main'
-export * from './main'
+import { renderComponentToHtml } from './main'
 export { renderComponentToHtml, type RenderRequest, type RenderResponse } from './main'
 export * from './types'
 
-if (process.env.RENDER_ENV === 'render_dev') {
+if (process.env.NODE_ENV === 'development') {
   import('./dev/mock-server')
 }
-export default RenderServer
+
+export default renderComponentToHtml

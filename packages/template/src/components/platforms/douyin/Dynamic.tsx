@@ -222,7 +222,7 @@ export const DouyinDynamic: React.FC<Omit<DouyinDynamicProps, 'templateType' | '
         </div>
 
         {/* 用户信息和二维码 */}
-        <div className='flex justify-between items-center px-0 py-25'>
+        <div className='flex justify-between items-center px-0 pt-25'>
           <UserInfoSection
             avater_url={data.avater_url}
             username={data.username}

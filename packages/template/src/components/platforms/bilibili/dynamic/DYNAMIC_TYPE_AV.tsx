@@ -168,7 +168,7 @@ const BilibiliVideoDynamicFooter: React.FC<BilibiliVideoDynamicFooterProps> = (p
 
       {/* 底部信息区域 */}
       <div className='flex flex-col h-full'>
-        <div className='flex justify-between items-center pb-11 h-auto pt-25'>
+        <div className='flex justify-between items-center h-auto pt-25'>
           {/* 用户信息 */}
           <div className='flex flex-col items-center pl-12' style={{ padding: '0 0 0 50px' }}>
             <div className='flex gap-8 items-center'>

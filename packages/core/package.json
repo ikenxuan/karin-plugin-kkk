@@ -18,6 +18,16 @@
   "author": "ikenxuan",
   "type": "module",
   "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js"
+    },
+    "./template": {
+      "types": "./lib/core_chunk/modules.d.ts",
+      "import": "./lib/core_chunk/modules.js"
+    }
+  },
   "files": [
     "config/",
     "lib/",
@@ -28,7 +38,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "cross-env NODE_ENV=production vite build",
+    "build": "cross-env NODE_ENV=production vite build && tsup",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
     "lint": "eslint . --fix",
     "pub": "npm publish --access public",
@@ -54,7 +64,8 @@
     "heic-convert": "^2.1.0",
     "http-proxy-middleware": "^3.0.3",
     "qrcode": "^1.5.4",
-    "template": "workspace:*"
+    "template": "workspace:*",
+    "tsup": "^8.5.0"
   },
   "engines": {
     "node": ">=21.0.0",

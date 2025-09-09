@@ -57,5 +57,10 @@
     "vite-plugin-dts": "^4.5.4",
     "vite-plugin-static-copy": "^3.1.2",
     "vite-plugin-svgr": "^4.5.0"
+  },
+  "peerDependencies": {
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "vite": "^7.1.4"
   }
 }

@@ -108,9 +108,9 @@ const KuaishouVideoInfoHeader: React.FC<KuaishouVideoInfoHeaderProps> = ({
  * @param props 组件属性
  * @returns JSX元素
  */
-const KuaishouCommentItemComponent: React.FC<KuaishouCommentItemComponentProps> = ({ comment }) => {
+const KuaishouCommentItemComponent: React.FC<KuaishouCommentItemComponentProps & { isLast?: boolean }> = ({ comment, isLast = false }) => {
   return (
-    <div className='flex p-10'>
+    <div className={`flex px-10 pt-10 ${isLast ? 'pb-0' : 'pb-10'}`}>
       {/* 用户头像 */}
       <img
         src={comment.userimageurl}
@@ -243,7 +243,11 @@ export const KuaishouComment: React.FC<Omit<KuaishouCommentProps, 'templateType'
           {processedData.commentsArray.length > 0
             ? (
               processedData.commentsArray.map((comment, index) => (
-                <KuaishouCommentItemComponent key={index} comment={comment} />
+                <KuaishouCommentItemComponent 
+                  key={index} 
+                  comment={comment} 
+                  isLast={index === processedData.commentsArray.length - 1}
+                />
               ))
             )
             : (

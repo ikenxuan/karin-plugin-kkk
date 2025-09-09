@@ -132,7 +132,7 @@ const BilibiliDynamicStatus: React.FC<BilibiliDynamicStatusProps> = (props) => {
 const BilibiliDynamicFooter: React.FC<BilibiliDynamicFooterProps> = (props) => {
   return (
     <div className='flex flex-col h-full'>
-      <div className='flex justify-between items-center pb-11 h-auto pt-25'>
+      <div className='flex justify-between items-center h-auto pt-25'>
         <div className='flex flex-col self-start pl-16'>
           <div className='flex items-center text-6xl text-default-60'>
             <img

@@ -11,9 +11,9 @@ import { defineConfig, type Plugin } from 'vite'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const entry: string[] = ['src/index.ts', 'src/root.ts']
+const entry: string[] = ['src/index.ts', 'src/root.ts', 'src/export/modules.ts']
 
-function getFiles (dir: string) {
+const getFiles = (dir: string) => {
   fs.readdirSync(dir).forEach((file) => {
     if (file.endsWith('.ts')) {
       entry.push(`${dir}/${file}`)
@@ -145,8 +145,8 @@ export default defineConfig({
       include: [
         /node_modules/
       ],
-      transformMixedEsModules: true, // 处理混合模块
-      defaultIsModuleExports: true // 处理 module.exports
+      transformMixedEsModules: true,
+      defaultIsModuleExports: true
     }
   },
   resolve: {

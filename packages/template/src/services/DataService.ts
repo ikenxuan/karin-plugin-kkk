@@ -6,7 +6,7 @@ export const version = {
   pluginName: 'kkk',
   pluginVersion: '2.0.0',
   releaseType: 'Stable',
-  poweredBy: 'karin'
+  poweredBy: 'Karin'
 }
 
 /**

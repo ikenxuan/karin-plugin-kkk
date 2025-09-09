@@ -11,16 +11,6 @@ import type { RenderRequest, RenderResponse } from './types'
 import { ComponentAutoRegistry } from './utils/ComponentAutoRegistry'
 
 /**
- * 组件配置接口
- */
-interface ComponentConfig {
-  /** 组件构造函数 */
-  component: React.ComponentType<any>
-  /** 数据类型验证函数 */
-  validateData?: (data: any) => boolean
-}
-
-/**
  * 二维码配置接口
  */
 interface QRCodeConfig {
@@ -63,55 +53,6 @@ class QRCodeGenerator {
     })
 
     return `data:image/svg+xml;base64,${Buffer.from(qrCodeSvg).toString('base64')}`
-  }
-}
-
-/**
- * 组件注册表类
- */
-class ComponentRegistry {
-  private static components = new Map<string, ComponentConfig>()
-
-  /**
-   * 注册组件
-   * @param templateType 模板类型
-   * @param templateName 模板名称
-   * @param config 组件配置
-   */
-  static register (templateType: string, templateName: string, config: ComponentConfig): void {
-    const key = `${templateType}:${templateName}`
-    this.components.set(key, config)
-    logger.debug(`📝 注册组件: ${key}`)
-  }
-
-  /**
-   * 获取组件配置
-   * @param templateType 模板类型
-   * @param templateName 模板名称
-   * @returns 组件配置或undefined
-   */
-  static get (templateType: string, templateName: string): ComponentConfig | undefined {
-    const key = `${templateType}:${templateName}`
-    return this.components.get(key)
-  }
-
-  /**
-   * 检查组件是否已注册
-   * @param templateType 模板类型
-   * @param templateName 模板名称
-   * @returns 是否已注册
-   */
-  static has (templateType: string, templateName: string): boolean {
-    const key = `${templateType}:${templateName}`
-    return this.components.has(key)
-  }
-
-  /**
-   * 获取所有已注册的组件键
-   * @returns 组件键数组
-   */
-  static getAllKeys (): string[] {
-    return Array.from(this.components.keys())
   }
 }
 
@@ -442,6 +383,4 @@ export const renderComponentToHtml = async <T> (
   return await tempServer.render(request)
 }
 
-export default ReactRender
 export type { RenderRequest, RenderResponse }
-export { ComponentRegistry, ComponentRendererFactory, QRCodeGenerator }

@@ -103,9 +103,9 @@ const VideoInfoHeader: React.FC<VideoInfoHeaderProps> = ({
  * @param props 组件属性
  * @returns JSX元素
  */
-const CommentItemComponent: React.FC<CommentItemComponentProps> = ({ comment }) => {
+const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: boolean }> = ({ comment, isLast = false }) => {
   return (
-    <div className='flex p-10'>
+    <div className={`flex px-10 pt-10 ${isLast ? 'pb-0' : 'pb-10'}`}>
       {/* 用户头像 */}
       <img
         src={comment.userimageurl}
@@ -234,7 +234,11 @@ export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | '
           {processedData.commentsArray.length > 0
             ? (
               processedData.commentsArray.map((comment, index) => (
-                <CommentItemComponent key={index} comment={comment} />
+                <CommentItemComponent 
+                  key={index} 
+                  comment={comment} 
+                  isLast={index === processedData.commentsArray.length - 1}
+                />
               ))
             )
             : (

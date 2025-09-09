@@ -25,7 +25,7 @@
     "@vitejs/plugin-react": "^5.0.2",
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
-    "lucide-react": "0.542.0",
+    "lucide-react": "0.543.0",
     "node-karin": "1.10.22",
     "react": "19.1.1",
     "react-dom": "19.1.1",
@@ -47,7 +47,8 @@
     "sort-package-json": "^3.4.0",
     "tsx": "4.20.5",
     "typescript": "5.9.2",
-    "vite": "^7.1.4"
+    "vite": "^7.1.4",
+    "vite-plugin-dts": "^4.5.4"
   },
   "pnpm": {
     "overrides": {

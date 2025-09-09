@@ -2,7 +2,7 @@ import { join } from 'node:path'
 
 import type { ImageElement, Options } from 'node-karin'
 import { render, segment } from 'node-karin'
-import { renderComponentToHtml, type RenderRequest } from 'template'
+import renderComponentToHtml, { type RenderRequest } from 'template'
 
 import { Common, Root } from '@/module'
 import { Config } from '@/module/utils/Config'

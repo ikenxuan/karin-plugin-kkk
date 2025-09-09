@@ -51,7 +51,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
       >
         {children}
         {version && (
-          <div className='px-10 py-10 text-default-100'>
+          <div className='pt-32 pb-20 text-default-100'>
             <div className='flex relative justify-center items-center space-x-12'>
               <div className='flex items-center space-x-8 whitespace-nowrap'>
                 <img src="/image/logo.png" className='w-auto h-24' />
@@ -83,7 +83,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                 </div>
                 <img src="/image/karin-logo.png" className='w-auto h-16' />
                 <span className='text-5xl font-black'>
-                  Karin & Vite 
+                  {version.poweredBy} & Vite 
                 </span>
               </div>
             </div>

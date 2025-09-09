@@ -22,7 +22,7 @@ const BilibiliLiveDynamicHeader: React.FC = () => {
       {/* B站Logo和标语 */}
       <div className='flex flex-col items-start text-6xl text-default-80'>
         <img
-          src='/image/bilibili/bilibili.png'
+          src='/image/bilibili/bilibili-light.png'
           alt='哔哩哔哩'
           className='h-auto w-120'
         />
@@ -152,7 +152,7 @@ const BilibiliLiveDynamicFooter: React.FC<BilibiliLiveDynamicFooterProps> = (pro
 
       {/* 底部信息区域 */}
       <div className='flex flex-col h-full'>
-        <div className='flex justify-between items-center pb-11 h-auto pt-25'>
+        <div className='flex justify-between items-center h-auto pt-25'>
           {/* 用户信息 */}
           <div className='flex flex-col items-center pl-16'>
             <BilibiliLiveDynamicHeader />

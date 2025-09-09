@@ -211,7 +211,7 @@ export const DouyinMusicInfo: React.FC<Omit<DouyinMusicInfoProps, 'templateType'
         </div>
 
         {/* 用户信息和二维码 */}
-        <div className='flex justify-between items-center px-0 py-25'>
+        <div className='flex justify-between items-center px-0 pt-25'>
           <MusicAuthorInfoSection
             avatarUrl={data.avater_url}
             username={data.username}

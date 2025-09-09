@@ -7,9 +7,8 @@
  */
 import './styles/main.css'
 
-import RenderServer from './main'
+import { renderComponentToHtml } from './main'
 
-export * from './main'
 export { renderComponentToHtml, type RenderRequest, type RenderResponse } from './main'
 export * from './types'
-export default RenderServer
+export default renderComponentToHtml
