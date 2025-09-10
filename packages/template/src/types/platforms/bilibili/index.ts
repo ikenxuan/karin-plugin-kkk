@@ -1,3 +1,4 @@
+export * from './bangumi'
 export * from './comment'
 export * from './dynamic'
 export * from './dynamic/forward'

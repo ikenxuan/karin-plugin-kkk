@@ -1,0 +1,218 @@
+{
+  "mainCover": "https://i0.hdslb.com/bfs/bangumi/image/08bf0c1e24e454de51b58d1e26c0a9aecbe9b0c1.png",
+  "Actors": "白月魁：夏一可\n马  克：图特哈蒙\n查尔斯：藤新\n镜  南：季冠霖\n墨  城：谷江山\n随影：刘明月\n麦朵：徐佳琦\n夏豆：巩大方\n梵蒂：常蓉珊\n飞雪：段艺璇",
+  "Evaluate": "数百年前，欲望催生了几乎灭绝人类的玛娜生态。人类瞬间沦为猎物，文明毁灭殆尽，末日中猜忌和恐惧拉开了人与人之间的距离。灾难当前，人们逐渐意识到：情感——这个被灯塔视为禁忌的存在，如今成为突破一切障碍、构建命运共同体的最强纽带。已被逼至绝境的幸存者们能否重夺未来？",
+  "Link": "http://www.bilibili.com/bangumi/media/md21123554/",
+  "newEP": {
+    "desc": "已完结, 全12话",
+    "id": 1633654,
+    "is_new": 0,
+    "title": "12"
+  },
+  "Title": "灵笼 第二季",
+  "Styles": [
+    "原创",
+    "战斗",
+    "科幻",
+    "热血"
+  ],
+  "seasonID": 46585,
+  "subtitle": "已观看3.4亿次",
+  "UPInfo": {
+    "avatar": "https://i2.hdslb.com/bfs/face/ae8149db0fe146563cdbf7ff346eb9bb3dc25a12.jpg",
+    "avatar_subscript_url": "",
+    "follower": 6858335,
+    "is_follow": 0,
+    "mid": 98627270,
+    "nickname_color": "#FB7299",
+    "pendant": {
+      "image": "https://i2.hdslb.com/bfs/garb/open/f259a38dbec1041705ba9bdc8425bfc39e5ddaf3.png",
+      "name": "有兽焉动画收藏集-可动塔罗Q版",
+      "pid": -1014771399
+    },
+    "theme_type": 0,
+    "uname": "哔哩哔哩国创",
+    "verify_type": 3,
+    "vip_label": {
+      "bg_color": "#FB7299",
+      "bg_style": 1,
+      "border_color": "",
+      "text": "十年大会员",
+      "text_color": "#FFFFFF"
+    },
+    "vip_status": 1,
+    "vip_type": 2
+  },
+  "Copyright": "dujia",
+  "Stat": {
+    "coins": 4591827,
+    "danmakus": 2810926,
+    "favorite": 858249,
+    "favorites": 10697599,
+    "follow_text": "1134.3万系列追番",
+    "likes": 4813075,
+    "reply": 324443,
+    "share": 312885,
+    "views": 343113565,
+    "vt": 0
+  },
+  "Episodes": [
+    {
+      "cover": "https://i0.hdslb.com/bfs/bangumi/image/e8b82ecc0fbd7c69a1e0a84a0f74c1da7bc85cfd.png",
+      "bvid": "BV1bSJez1Et8",
+      "link": "https://b23.tv/ep1633643",
+      "long_title": "末世桃源",
+      "pub_time": 1747969200,
+      "badge": "限免",
+      "badge_info": {
+        "bg_color": "#FB7299",
+        "bg_color_night": "#D44E7D",
+        "text": ""
+      }
+    },
+    {
+      "cover": "http://i0.hdslb.com/bfs/archive/6d9adda093d18bc12cdd92f3c836253403dd86e8.png",
+      "bvid": "BV1WAJqzyEZF",
+      "link": "https://b23.tv/ep1633644",
+      "long_title": "波澜初起",
+      "pub_time": 1747969200,
+      "badge": "会员",
+      "badge_info": {
+        "bg_color": "#FB7299",
+        "bg_color_night": "#D44E7D",
+        "text": "会员"
+      }
+    },
+    {
+      "cover": "http://i0.hdslb.com/bfs/archive/8b8a822f36a0816e6a5da3c62eb6ec43c2472711.png",
+      "bvid": "BV1PWj7zUEbL",
+      "link": "https://b23.tv/ep1633645",
+      "long_title": "烈枪如虹",
+      "pub_time": 1748574001,
+      "badge": "会员",
+      "badge_info": {
+        "bg_color": "#FB7299",
+        "bg_color_night": "#D44E7D",
+        "text": "会员"
+      }
+    },
+    {
+      "cover": "http://i0.hdslb.com/bfs/archive/65340baba482fa5d2a2de77edc1d70ec417b5a4b.jpg",
+      "bvid": "BV1pB7rzJEuE",
+      "link": "https://b23.tv/ep1633646",
+      "long_title": "行者正觉",
+      "pub_time": 1749178801,
+      "badge": "会员",
+      "badge_info": {
+        "bg_color": "#FB7299",
+        "bg_color_night": "#D44E7D",
+        "text": "会员"
+      }
+    },
+    {
+      "cover": "http://i0.hdslb.com/bfs/archive/d187510c9efa1050a37caa8444c0834b409f568d.png",
+      "bvid": "BV1vQMLzGEfF",
+      "link": "https://b23.tv/ep1633647",
+      "long_title": "彩虹远航",
+      "pub_time": 1749783600,
+      "badge": "会员",
+      "badge_info": {
+        "bg_color": "#FB7299",
+        "bg_color_night": "#D44E7D",
+        "text": "会员"
+      }
+    },
+    {
+      "cover": "http://i0.hdslb.com/bfs/archive/2da8e1cab2f5451e771f4f4b8e8b5cdefb63fb11.png",
+      "bvid": "BV1ZeNezREwA",
+      "link": "https://b23.tv/ep1633648",
+      "long_title": "魂沄终聚",
+      "pub_time": 1750388400,
+      "badge": "会员",
+      "badge_info": {
+        "bg_color": "#FB7299",
+        "bg_color_night": "#D44E7D",
+        "text": "会员"
+      }
+    },
+    {
+      "cover": "http://i0.hdslb.com/bfs/archive/71ae9a720a34740c54c6e53af53d3e829a794fa4.png",
+      "bvid": "BV1mqK8zcEFJ",
+      "link": "https://b23.tv/ep1633649",
+      "long_title": "迷局初解",
+      "pub_time": 1750993200,
+      "badge": "会员",
+      "badge_info": {
+        "bg_color": "#FB7299",
+        "bg_color_night": "#D44E7D",
+        "text": "会员"
+      }
+    },
+    {
+      "cover": "http://i0.hdslb.com/bfs/archive/3ef71b3694b038276d8e30be3770aaa305627178.png",
+      "bvid": "BV1FwgDznE7N",
+      "link": "https://b23.tv/ep1633650",
+      "long_title": "暴风将至",
+      "pub_time": 1751598000,
+      "badge": "会员",
+      "badge_info": {
+        "bg_color": "#FB7299",
+        "bg_color_night": "#D44E7D",
+        "text": "会员"
+      }
+    },
+    {
+      "cover": "http://i0.hdslb.com/bfs/archive/a229f5f7467a85e5953213c4aca6667aca25bde9.png",
+      "bvid": "BV1aKGwzgEhm",
+      "link": "https://b23.tv/ep1633651",
+      "long_title": "影烬残灰",
+      "pub_time": 1752202800,
+      "badge": "会员",
+      "badge_info": {
+        "bg_color": "#FB7299",
+        "bg_color_night": "#D44E7D",
+        "text": "会员"
+      }
+    },
+    {
+      "cover": "http://i0.hdslb.com/bfs/archive/4c75663532120d51d5b7eb8ef2e179722fa60808.png",
+      "bvid": "BV1nDutzsEtg",
+      "link": "https://b23.tv/ep1633652",
+      "long_title": "为谁而战",
+      "pub_time": 1752807600,
+      "badge": "会员",
+      "badge_info": {
+        "bg_color": "#FB7299",
+        "bg_color_night": "#D44E7D",
+        "text": "会员"
+      }
+    },
+    {
+      "cover": "http://i0.hdslb.com/bfs/archive/1eca8339280b3191fe71205ebfcdf55e6445146a.png",
+      "bvid": "BV1xXbZzPEDd",
+      "link": "https://b23.tv/ep1633653",
+      "long_title": "无惧临渊",
+      "pub_time": 1753412400,
+      "badge": "会员",
+      "badge_info": {
+        "bg_color": "#FB7299",
+        "bg_color_night": "#D44E7D",
+        "text": "会员"
+      }
+    },
+    {
+      "cover": "https://i0.hdslb.com/bfs/bangumi/image/5df64c3d305358b564b30de96822729310d417bf.png",
+      "bvid": "BV1LThczxEjk",
+      "link": "https://b23.tv/ep1633654",
+      "long_title": "棋盘之上",
+      "pub_time": 1753419400,
+      "badge": "会员",
+      "badge_info": {
+        "bg_color": "#FB7299",
+        "bg_color_night": "#D44E7D",
+        "text": "会员"
+      }
+    }
+  ],
+  "useDarkTheme": false
+}

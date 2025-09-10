@@ -139,7 +139,7 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
         description: 'B站视频稿件评论列表展示模板',
         enabled: true,
         componentPath: 'platforms/bilibili/Comment',
-        exportName: 'BilibiliComment',
+        exportName: 'default',
         validateData: (data) => data && typeof data.share_url === 'string',
         lazyComponent: () => import('../components/platforms/bilibili/Comment').then(module => ({
           default: module.BilibiliComment
@@ -156,6 +156,17 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
           return data && Array.isArray(data.renderOpt)
         },
         lazyComponent: () => import('../components/platforms/bilibili/UserList').then(module => ({
+          default: module.default
+        }))
+      },
+      {
+        id: 'bangumi',
+        name: 'B站番剧列表',
+        description: 'B站番剧列表组件',
+        enabled: true,
+        componentPath: 'platforms/bilibili/bangumi/BangumiBilibili',
+        exportName: 'default',
+        lazyComponent: () => import('../components/platforms/bilibili/bangumi/bangumi').then(module => ({
           default: module.default
         }))
       },

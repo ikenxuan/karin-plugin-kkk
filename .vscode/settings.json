@@ -29,7 +29,7 @@
     "markdown"
   ],
   // "eslint.trace.server": "verbose",
-  "files.autoSave": "onFocusChange",
+  "files.autoSave": "off",
   "javascript.preferences.quoteStyle": "single",
   "typescript.preferences.quoteStyle": "single",
   "javascript.format.semicolons": "remove",

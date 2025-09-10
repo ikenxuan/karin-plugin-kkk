@@ -192,32 +192,32 @@ export class Bilibili extends Base {
         this.islogin = (await checkCk()).Status === 'isLogin'
         this.isVIP = (await checkCk()).isVIP
 
-        const barray = []
-        const msg = []
-        for (let i = 0; i < videoInfo.data.result.episodes.length; i++) {
-          const totalEpisodes = videoInfo.data.result.episodes.length
-          const long_title = videoInfo.data.result.episodes[i].long_title
-          const badge = videoInfo.data.result.episodes[i].badge
-          const short_link = videoInfo.data.result.episodes[i].short_link
-          barray.push({
-            id: i + 1,
-            totalEpisodes,
-            long_title,
-            badge: badge === '' ? '暂无' : badge,
-            short_link
+        const Episodes = []
+        for (const item of videoInfo.data.result.episodes) {
+          Episodes.push({
+            cover: item.cover,
+            bvid: item.bvid,
+            link: item.short_link,
+            long_title: item.long_title,
+            pub_time: item.pub_time,
+            badge: item.badge === '' ? '限免' : item.badge,
+            badge_info: item.badge_info
           })
-          msg.push([
-            `\n> ## 第${i + 1}集`,
-            `\n> 标题: ${long_title}`,
-            `\n> 类型: ${badge !== '预告' ? '正片' : '预告'}`,
-            `\n> 🔒 播放要求: ${badge === '预告' || badge === '' ? '暂无' : badge}`,
-            this.botadapter !== 'QQBot' ? `\n> 🔗 分享链接: [🔗点击查看](${short_link})\r\r` : ''
-          ])
         }
         img = await Render('bilibili/bangumi', {
-          saveId: 'bangumi',
-          bangumiData: barray,
-          title: videoInfo.data.result.title
+          mainCover: videoInfo.data.result.cover,
+          Actors: videoInfo.data.result.actors,
+          Evaluate: videoInfo.data.result.evaluate,
+          Link: videoInfo.data.result.link,
+          newEP: videoInfo.data.result.new_ep,
+          Title: videoInfo.data.result.title,
+          Styles: videoInfo.data.result.styles,
+          seasonID: videoInfo.data.result.season_id,
+          subtitle: videoInfo.data.result.subtitle,
+          UPInfo: videoInfo.data.result.up_info,
+          Copyright: videoInfo.data.result.rights.copyright,
+          Stat: videoInfo.data.result.stat,
+          Episodes
         })
         this.e.reply([...img, segment.text('请在120秒内输入 第?集 选择集数')])
         this.e.reply(segment.text('请在120秒内输入 第?集 选择集数'))
