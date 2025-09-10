@@ -398,7 +398,7 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
                 </div>
 
                 {/* 剧集卡片 */}
-                <div className='overflow-hidden bg-white shadow-lg rounded-4xl'>
+                <div className='overflow-hidden shadow-lg bg-default-0 rounded-4xl'>
                   <div className='flex gap-12 p-12'>
                     {/* 剧集封面 */}
                     <div className='relative flex-shrink-0'>
