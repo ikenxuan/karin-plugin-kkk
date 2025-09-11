@@ -304,19 +304,23 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
     episodesInSameDate: number
   }> = []
 
-  dateKeys.forEach((dateIndex, dateIdx) => {
+  dateKeys.forEach((dateIndex) => {
     const episodesInDate = groupedEpisodes[dateIndex]
     episodesInDate.forEach((episode, episodeIndex) => {
       flattenedEpisodes.push({
         episode,
         isFirstOfDate: episodeIndex === 0,
         isLastOfDate: episodeIndex === episodesInDate.length - 1,
-        isLastOfAll: dateIdx === dateKeys.length - 1 && episodeIndex === episodesInDate.length - 1,
+        isLastOfAll: false,
         dateKey: dateIndex,
         episodesInSameDate: episodesInDate.length
       })
     })
   })
+
+  if (flattenedEpisodes.length > 0) {
+    flattenedEpisodes[flattenedEpisodes.length - 1].isLastOfAll = true
+  }
 
   return (
     <div className='px-10'>
@@ -340,7 +344,7 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
       {/* 时间线剧集列表 */}
       <div>
         {flattenedEpisodes.map((item) => {
-          const { episode, isFirstOfDate, isLastOfAll, episodesInSameDate } = item
+          const { episode, isFirstOfDate, isLastOfAll, episodesInSameDate, isLastOfDate } = item
           const { month, day } = formatDateParts(episode.pub_time)
           const episodeNumber = sortedEpisodes.findIndex(e => e.bvid === episode.bvid)
           const actualEpisodeNumber = sortedEpisodes.length - episodeNumber
@@ -358,7 +362,7 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
                     {!isLastOfAll && (
                       <div className={clsx(
                         'mt-8 w-1 bg-default-30',
-                        episodesInSameDate > 1 ? 'h-125' : 'h-90'
+                        episodesInSameDate > 1 ? 'h-110' : 'h-95'
                       )} />
                     )}
                   </>
@@ -368,7 +372,10 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
                     <div className='w-1 h-10 bg-default-30' />
                     <div className='my-2 w-4 h-4 rounded-full bg-default-30' />
                     {(!isLastOfAll || episodesInSameDate > 1) && (
-                      <div className='w-1 h-100 bg-default-30' />
+                      <div className={clsx(
+                        'w-1 bg-default-30',
+                        isLastOfDate ? 'h-110' : 'h-130'
+                      )} />
                     )}
                   </>
                 )}
@@ -377,26 +384,35 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
               {/* 剧集内容 */}
               <div className={clsx(
                 'flex-1 min-w-0', 
-                !isLastOfAll && 'mb-30'
+                (!isLastOfAll && isLastOfDate) && 'mb-20'
               )}>
-                {/* UP主信息 */}
-                <div className='flex gap-8 items-center mb-10'>
-                  <div className='relative'>
-                    <EnhancedImage 
-                      className='w-32 h-32 rounded-full'
-                      src={`https://images.weserv.nl/?url=${encodeURIComponent(props.upInfo.avatar)}`} 
-                      alt={''}   
-                    />
+                {/* UP主信息和第x集 */}
+                <div className='flex justify-between items-center mb-10'>
+                  {/* UP主信息 */}
+                  <div className='flex flex-shrink-0 gap-8 items-center'>
+                    <div className='relative'>
+                      <EnhancedImage 
+                        className='w-32 h-32 rounded-full'
+                        src={`https://images.weserv.nl/?url=${encodeURIComponent(props.upInfo.avatar)}`} 
+                        alt={''}   
+                      />
+                    </div>
+                    <div className='flex flex-col gap-6'>
+                      <div className='text-4xl font-bold text-default-80'>{props.upInfo.uname}</div>
+                      <div className='flex gap-4 items-center text-3xl text-default-60'>
+                        <Calendar size={30} />
+                        <span>发布了内容</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className='flex flex-col gap-6'>
-                    <div className='text-4xl font-bold text-default-80'>{props.upInfo.uname}</div>
-                    <div className='flex gap-4 items-center text-3xl text-default-60'>
-                      <Calendar size={30} />
-                      <span>发布了内容</span>
+                  
+                  {/* 第x集标题 */}
+                  <div className='flex-shrink-0 pr-20'>
+                    <div className='text-5xl font-semibold text-default-70'>
+                      第{actualEpisodeNumber}集
                     </div>
                   </div>
                 </div>
-
                 {/* 剧集卡片 */}
                 <div className='overflow-hidden shadow-lg bg-default-0 rounded-4xl'>
                   <div className='flex gap-12 p-12'>
@@ -427,7 +443,7 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
                     {/* 剧集信息 */}
                     <div className='flex flex-col flex-1 justify-center h-64'>
                       <div className='mb-8 text-5xl font-semibold text-default-90 line-clamp-2'>
-                        第{actualEpisodeNumber}集 · {episode.long_title}
+                        {episode.long_title}
                       </div>
                       
                       <div className='space-y-4 text-4xl'>
@@ -450,6 +466,7 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
                   </div>
                 </div>
               </div>
+
             </div>
           )
         })}
