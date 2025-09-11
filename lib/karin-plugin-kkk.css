@@ -4692,10 +4692,6 @@
     margin-bottom: calc(var(--spacing) * 20);
   }
 
-  .mb-30 {
-    margin-bottom: calc(var(--spacing) * 30);
-  }
-
   .mb-\[5px\] {
     margin-bottom: 5px;
   }
@@ -4992,16 +4988,16 @@
     height: calc(var(--spacing) * 88);
   }
 
-  .h-90 {
-    height: calc(var(--spacing) * 90);
+  .h-95 {
+    height: calc(var(--spacing) * 95);
   }
 
-  .h-100 {
-    height: calc(var(--spacing) * 100);
+  .h-110 {
+    height: calc(var(--spacing) * 110);
   }
 
-  .h-125 {
-    height: calc(var(--spacing) * 125);
+  .h-130 {
+    height: calc(var(--spacing) * 130);
   }
 
   .h-160 {
