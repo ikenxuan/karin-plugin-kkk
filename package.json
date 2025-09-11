@@ -8,7 +8,6 @@
   "scripts": {
     "build": "pnpm run build:core && pnpm run build:web",
     "build:core": "pnpm --filter karin-plugin-kkk run build",
-    "build:desktop": "pnpm --filter web run build:desktop",
     "build:template": "pnpm --filter template run build",
     "build:web": "pnpm --filter web run build",
     "dev": "pnpm --filter karin-plugin-kkk run dev",

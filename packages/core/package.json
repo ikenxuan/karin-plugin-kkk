@@ -17,7 +17,6 @@
   "license": "GPL-3.0-only",
   "author": "ikenxuan",
   "type": "module",
-  "main": "lib/index.js",
   "exports": {
     ".": {
       "types": "./lib/index.d.ts",
@@ -28,6 +27,7 @@
       "import": "./lib/core_chunk/modules.js"
     }
   },
+  "main": "lib/index.js",
   "files": [
     "config/",
     "lib/",
@@ -40,9 +40,9 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production vite build && tsup",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
+    "dev:template": "cross-env RENDER_ENV=core_dev tsx ../render/src/main.ts",
     "lint": "eslint . --fix",
     "pub": "npm publish --access public",
-    "dev:template": "cross-env RENDER_ENV=core_dev tsx ../render/src/main.ts",
     "sort": "sort-package-json",
     "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../render/src/dev/mock-server.ts\" --include \"../render/src/main.ts\" src/app.ts --trace-deprecation"
