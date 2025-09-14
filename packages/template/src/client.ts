@@ -7,8 +7,8 @@
  */
 import './styles/main.css'
 
-import { renderComponentToHtml } from './main'
+import { reactServerRender } from './main'
 
-export { renderComponentToHtml, type RenderRequest, type RenderResponse } from './main'
+export { reactServerRender, type RenderRequest, type RenderResponse } from './main'
 export * from './types'
-export default renderComponentToHtml
+export default reactServerRender

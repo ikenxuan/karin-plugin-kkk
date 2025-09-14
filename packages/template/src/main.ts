@@ -218,9 +218,9 @@ class HtmlWrapper {
 
 
 /**
- * React渲染类
+ * SSR渲染类
  */
-class ReactRender {
+class SSRRender {
   private outputDir = path.join(karinPathTemp, 'html', 'karin-plugin-kkk', 'renderServer')
   private cssContent: string = ''
   private resourceManager: ResourcePathManager
@@ -232,18 +232,6 @@ class ReactRender {
     this.outputDir = path.join(karinPathTemp, 'html', 'karin-plugin-kkk', 'renderServer')
     this.ensureOutputDir()
     this.loadCssContent()
-  }
-
-  /**
-   * 初始化组件注册
-   */
-  private async initializeComponents(): Promise<void> {
-    try {
-      await ComponentAutoRegistry.initialize()
-      logger.debug('✅ 组件自动注册完成')
-    } catch (error) {
-      logger.error('❌ 组件自动注册失败:', error)
-    }
   }
 
   /**
@@ -274,7 +262,7 @@ class ReactRender {
   }
 
   /**
-   * 渲染React组件为HTML字符串
+   * SSR渲染组件为HTML字符串
    * @param request 渲染请求参数
    * @returns 渲染结果
    */
@@ -360,12 +348,12 @@ class ReactRender {
 }
 
 /**
- * 渲染React组件为HTML
+ * SSR预渲染组件为HTML预渲染组件为HTML
  * @param request 渲染请求参数
  * @param outputDir 输出目录路径
  * @returns 渲染结果Promise
  */
-export const renderComponentToHtml = async <T> (
+export const reactServerRender = async <T> (
   request: RenderRequest<T>,
   outputDir: string
 ): Promise<RenderResponse> => {
@@ -375,7 +363,7 @@ export const renderComponentToHtml = async <T> (
 
   // 初始化组件注册器
   await ComponentAutoRegistry.initialize()
-  const tempServer = new ReactRender()
+  const tempServer = new SSRRender()
 
   // 设置输出目录
   tempServer['outputDir'] = outputDir
