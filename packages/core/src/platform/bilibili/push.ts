@@ -83,26 +83,22 @@ export class Bilibilipush extends Base {
    * 执行主要的操作流程
    */
   async action () {
-    try {
-      await this.syncConfigToDatabase()
-      // 清理旧的动态缓存记录
-      const deletedCount = await cleanOldDynamicCache('bilibili', 1)
-      if (deletedCount > 0) {
-        logger.info(`已清理 ${deletedCount} 条过期的B站动态缓存记录`)
-      }
+    await this.syncConfigToDatabase()
+    // 清理旧的动态缓存记录
+    const deletedCount = await cleanOldDynamicCache('bilibili', 1)
+    if (deletedCount > 0) {
+      logger.info(`已清理 ${deletedCount} 条过期的B站动态缓存记录`)
+    }
 
-      const data = await this.getDynamicList(Config.pushlist.bilibili)
-      const pushdata = await this.excludeAlreadyPushed(data.willbepushlist)
+    const data = await this.getDynamicList(Config.pushlist.bilibili)
+    const pushdata = await this.excludeAlreadyPushed(data.willbepushlist)
 
-      if (Object.keys(pushdata).length === 0) return true
+    if (Object.keys(pushdata).length === 0) return true
 
-      if (this.force) {
-        return await this.forcepush(pushdata)
-      } else {
-        return await this.getdata(pushdata)
-      }
-    } catch (error) {
-      logger.error(error)
+    if (this.force) {
+      return await this.forcepush(pushdata)
+    } else {
+      return await this.getdata(pushdata)
     }
   }
 
@@ -578,7 +574,7 @@ export class Bilibilipush extends Base {
         }
       }
     } catch (error) {
-      logger.error(error)
+      throw new Error(`获取动态列表失败: ${error}`)
     }
 
     return { willbepushlist }

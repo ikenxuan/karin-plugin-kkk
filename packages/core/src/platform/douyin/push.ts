@@ -72,27 +72,23 @@ export class DouYinpush extends Base {
    * 执行主要的操作流程
    */
   async action () {
-    try {
-      await this.syncConfigToDatabase()
+    await this.syncConfigToDatabase()
 
-      // 清理旧的作品缓存记录
-      const deletedCount = await cleanOldDynamicCache('douyin', 1)
-      if (deletedCount > 0) {
-        logger.info(`已清理 ${deletedCount} 条过期的抖音作品缓存记录`)
-      }
-
-      // 检查备注信息
-      if (await this.checkremark()) return true
-
-      const data = await this.getDynamicList(Config.pushlist.douyin)
-
-      if (Object.keys(data).length === 0) return true
-
-      if (this.force) return await this.forcepush(data)
-      else return await this.getdata(data)
-    } catch (error) {
-      logger.error(error)
+    // 清理旧的作品缓存记录
+    const deletedCount = await cleanOldDynamicCache('douyin', 1)
+    if (deletedCount > 0) {
+      logger.info(`已清理 ${deletedCount} 条过期的抖音作品缓存记录`)
     }
+
+    // 检查备注信息
+    if (await this.checkremark()) return true
+
+    const data = await this.getDynamicList(Config.pushlist.douyin)
+
+    if (Object.keys(data).length === 0) return true
+
+    if (this.force) return await this.forcepush(data)
+    else return await this.getdata(data)
   }
 
   /**
@@ -227,7 +223,7 @@ export class DouYinpush extends Base {
                   title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${Detail_Data.desc}.mp4` }
                 }, { active: true, activeOption: { uin: botId, group_id: groupId } })
               } catch (error) {
-                logger.error(error)
+                throw new Error(`下载视频失败: ${error}`)
               }
             } else if (!iddata.is_mp4 && iddata.type === 'one_work') { // 如果新作品是图集
               const imageres: ImageElement[] = []
@@ -241,7 +237,7 @@ export class DouYinpush extends Base {
             }
           }
         } catch (error) {
-          logger.error(error)
+          throw new Error(`${error}`)
         }
       }
     }
@@ -360,7 +356,7 @@ export class DouYinpush extends Base {
         }
       }
     } catch (error) {
-      logger.error('获取抖音用户主页作品列表失败:', error)
+      throw new Error(`获取抖音用户主页作品列表失败: ${error}`)
     }
 
     return willbepushlist
@@ -487,8 +483,7 @@ export class DouYinpush extends Base {
 
       await this.renderPushList()
     } catch (error) {
-      logger.error(error)
-      await this.e.reply('设置失败，请查看日志')
+      throw new Error(`设置失败，请查看日志: ${error}`)
     }
   }
 

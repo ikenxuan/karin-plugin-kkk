@@ -75,22 +75,13 @@ const menuData: MenuGroup[] = [
 const MenuItemComponent: React.FC<{
   item: { title: string; description: string }
   useDarkTheme?: boolean
-}> = ({ item, useDarkTheme }) => {
+}> = ({ item }) => {
   return (
     <>
-      <div className={`
-        flex justify-center items-center font-bold cursor-pointer rounded-[26px] p-5 text-[34px]
-        ${useDarkTheme 
-      ? 'bg-[#1e1e1e] text-[cornsilk] hover:bg-[#d6d6d6]' 
-      : 'bg-[#e9e9e9] text-black hover:bg-[#d6d6d6]'
-    }
-      `}>
+      <div className="flex justify-center items-center font-bold cursor-pointer rounded-[26px] p-5 text-[34px] bg-content2 text-foreground hover:bg-content3 transition-colors select-text">
         {item.title}
       </div>
-      <div className={`
-        flex text-[27px] mx-[15px] my-[10px] mb-5
-        ${useDarkTheme ? 'text-[#b4b4b4]' : 'text-[#666]'}
-      `}>
+      <div className="flex text-[27px] mx-[15px] my-[10px] mb-5 text-foreground-600 select-text">
         {item.description.split('\\n').map((line, index) => (
           <React.Fragment key={index}>
             {line}
@@ -113,27 +104,15 @@ const MenuGroupComponent: React.FC<{
 }> = ({ group, useDarkTheme }) => {
   return (
     <div className="flex justify-around p-5">
-      <div className={`
-        flex-[0_0_88%] p-[45px] rounded-[70px_15px_70px_15px] shadow-[0_2px_20px_3px_rgba(0,0,0,0.21)]
-        ${useDarkTheme ? 'bg-[#303030]' : 'bg-[#f4f4f4]'}
-      `}>
-        <h2 className={`
-          text-[50px] m-0 mb-[15px]
-          ${useDarkTheme ? 'text-[cornsilk]' : 'text-[#333]'}
-        `}>
+      <div className="flex-[0_0_88%] p-[45px] rounded-[70px_15px_70px_15px] shadow-large bg-content1">
+        <h2 className="text-[50px] m-0 mb-[15px] text-foreground">
           {group.title}
         </h2>
         
         {/* 子分组 */}
         {group.subGroups?.map((subGroup, subIndex) => (
-          <div key={subIndex} className={`
-            p-[60px] rounded-[70px_15px_70px_15px] shadow-[0_2px_20px_3px_rgba(0,0,0,0.21)] mb-[45px]
-            ${useDarkTheme ? 'bg-[#393939]' : 'bg-[#f4f4f4]'}
-          `}>
-            <h3 className={`
-              text-[xx-large] m-0 mb-[25px]
-              ${useDarkTheme ? 'text-[cornsilk]' : 'text-[#333]'}
-            `}>
+          <div key={subIndex} className="p-[60px] rounded-[70px_15px_70px_15px] shadow-medium mb-[45px] bg-content2">
+            <h3 className="text-[xx-large] m-0 mb-[25px] text-foreground">
               {subGroup.title}
             </h3>
             {subGroup.items.map((item, itemIndex) => (

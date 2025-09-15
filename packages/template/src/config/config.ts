@@ -276,6 +276,25 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
         }))
       }
     ]
+  },
+  {
+    type: PlatformType.OTHER,
+    name: '其他',
+    icon: '❓',
+    color: 'secondary',
+    components: [
+      {
+        id: 'handlerError',
+        name: '错误页面',
+        description: 'KKK插件错误页面',
+        enabled: true,
+        componentPath: 'platforms/other/handlerError',
+        exportName: 'handlerError',
+        lazyComponent: () => import('../components/platforms/other/handlerError').then(module => ({
+          default: module.handlerError
+        }))
+      }
+    ]
   }
 ]
 

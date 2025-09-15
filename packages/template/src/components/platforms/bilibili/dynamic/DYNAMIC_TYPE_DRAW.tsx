@@ -22,7 +22,7 @@ const BilibiliDynamicUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
         <EnhancedImage
           src={props.avatar_url}
           alt='头像'
-          className='w-32 h-32 rounded-full shadow-lg'
+          className='w-32 h-32 rounded-full shadow-medium'
           isCircular
         />
         {props.frame && (
@@ -34,11 +34,11 @@ const BilibiliDynamicUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
         )}
       </div>
       <div className='flex flex-col gap-8 text-7xl'>
-        <div className='text-6xl font-bold text-default-90'>
+        <div className='text-6xl font-bold select-text text-foreground'>
           <span dangerouslySetInnerHTML={{ __html: props.username }} />
         </div>
-        <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-default-50'>
-          <Clock size={36} />
+        <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-foreground-500'>
+          <Clock size={36} className='text-time' />
           {props.create_time}
         </div>
       </div>
@@ -59,10 +59,10 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
     <>
       {/* 文本内容 */}
       <div className='flex flex-col px-20 w-full leading-relaxed'>
-        <div className='relative items-center text-5xl tracking-wider break-words text-default-90'>
+        <div className='relative items-center text-5xl tracking-wider break-words text-foreground'>
           <CommentText
             className={clsx(
-              'text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-default-90 mb-[20px]',
+              'text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-foreground mb-[20px] select-text',
               '[&_svg]:inline [&_svg]:!mb-4',
               '[&_img]:mb-3 [&_img]:inline [&_img]:mx-1'
             )}
@@ -80,7 +80,7 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
       {props.image_url && Array.isArray(props.image_url) && props.image_url.map((img, index) => (
         <React.Fragment key={index}>
           <div className='flex flex-col items-center'>
-            <div className='flex flex-col items-center overflow-hidden rounded-3xl w-11/12 flex-1 shadow-[0px_10px_20px_0px_rgba(0,0,0,0.5)]'>
+            <div className='flex overflow-hidden flex-col flex-1 items-center w-11/12 rounded-3xl shadow-large'>
               <EnhancedImage
                 src={img.image_src}
                 alt='封面'
@@ -101,24 +101,24 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
 const BilibiliDynamicStatus: React.FC<BilibiliDynamicStatusProps> = (props) => {
   return (
     <div className='flex flex-col gap-10 px-20 w-full leading-relaxed'>
-      <div className='flex gap-6 items-center text-5xl font-light tracking-normal text-default-60'>
+      <div className='flex gap-6 items-center text-5xl font-light tracking-normal select-text text-foreground-600'>
         <div className='flex gap-2 items-center'>
-          <Heart size={48} />
+          <Heart size={48} className='text-like' />
           {props.dianzan}点赞
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <MessageCircle size={48} />
+          <MessageCircle size={48} className='text-primary text-comment' />
           {props.pinglun}评论
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <Share2 size={48} />
+          <Share2 size={48} className='text-success' />
           {props.share}分享
         </div>
       </div>
-      <div className='flex gap-2 items-center text-5xl font-light tracking-normal text-default-60'>
-        <Clock size={48} />
+      <div className='flex gap-2 items-center text-5xl font-light tracking-normal select-text text-foreground-600'>
+        <Clock size={48} className='text-time' />
         图片生成时间: {props.render_time}
       </div>
       <div className='h-3' />
@@ -134,7 +134,7 @@ const BilibiliDynamicFooter: React.FC<BilibiliDynamicFooterProps> = (props) => {
     <div className='flex flex-col h-full'>
       <div className='flex justify-between items-center h-auto pt-25'>
         <div className='flex flex-col self-start pl-16'>
-          <div className='flex items-center text-6xl text-default-60'>
+          <div className='flex items-center text-6xl text-foreground-600'>
             <img
               src='/image/bilibili/bilibili-light.png'
               alt='B站Logo'
@@ -142,33 +142,33 @@ const BilibiliDynamicFooter: React.FC<BilibiliDynamicFooterProps> = (props) => {
             />
           </div>
           <br />
-          <span className='text-5xl text-default-60'>
+          <span className='text-5xl select-text text-foreground-600'>
             长按识别二维码即可查看全文
           </span>
-          <div className='flex flex-col gap-4 items-start pt-6 w-full text-4xl tracking-wider text-default-60'>
+          <div className='flex flex-col gap-4 items-start pt-6 w-full text-4xl tracking-wider select-text text-foreground-600'>
             <div className='flex gap-2 items-center'>
-              <Hash size={36} />
+              <Hash size={36} className='text-foreground-600' />
               <span>UID: {props.user_shortid}</span>
             </div>
             <div className='flex gap-2 items-center'>
-              <Heart size={36} />
+              <Heart size={36} className='text-like' />
               <span>获赞: {props.total_favorited}</span>
             </div>
             <div className='flex gap-2 items-center'>
-              <Eye size={36} />
+              <Eye size={36} className='text-view' />
               <span>关注: {props.following_count}</span>
             </div>
             <div className='flex gap-2 items-center'>
-              <Users size={36} />
+              <Users size={36} className='text-follow' />
               <span>粉丝: {props.fans}</span>
             </div>
           </div>
         </div>
         <div className='flex flex-col-reverse items-center -mb-12 mr-19'>
-          <div className='mt-5 ml-3 text-5xl text-right text-default-60'>
+          <div className='mt-5 ml-3 text-5xl text-right select-text text-foreground-600'>
             {props.dynamicTYPE}
           </div>
-          <div className='p-3 rounded-sm border-8 border-dashed border-default-60'>
+          <div className='p-3 rounded-sm border-8 border-dashed border-divider'>
             {props.qrCodeDataUrl
               ? (
                 <img
@@ -178,8 +178,8 @@ const BilibiliDynamicFooter: React.FC<BilibiliDynamicFooterProps> = (props) => {
                 />
               )
               : (
-                <div className='flex justify-center items-center rounded bg-default-20 w-88 h-88'>
-                  <span className='text-default-40'>二维码</span>
+                <div className='flex justify-center items-center rounded bg-content2 w-88 h-88'>
+                  <span className='text-foreground-400'>二维码</span>
                 </div>
               )}
           </div>

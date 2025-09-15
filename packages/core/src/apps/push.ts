@@ -3,20 +3,31 @@ import karin from 'node-karin'
 
 import { Common, Networks, Render } from '@/module'
 import { Config } from '@/module/utils/Config'
+import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { Bilibilipush, DouYinpush, getDouyinID } from '@/platform'
 
-// TODO: 传适配器实例
-export const douyinPush = Config.douyin.push.switch && karin.task('抖音推送', Config.douyin.push.cron, async () => {
+// 包装抖音推送任务
+const handleDouyinPush = wrapWithErrorHandler(async () => {
   await new DouYinpush().action()
   return true
-}, { log: Config.douyin.push.log })
+}, {
+  businessName: '抖音推送任务',
+  sendToUser: false,
+  sendToMaster: true
+})
 
-export const bilibiliPush = Config.bilibili.push.switch && karin.task('B站推送', Config.bilibili.push.cron, async () => {
+// 包装B站推送任务
+const handleBilibiliPush = wrapWithErrorHandler(async () => {
   await new Bilibilipush().action()
   return true
-}, { log: Config.bilibili.push.log })
+}, {
+  businessName: 'B站推送任务',
+  sendToUser: false,
+  sendToMaster: true
+})
 
-export const forcePush = karin.command(/#(抖音|B站)(全部)?强制推送/, async (e) => {
+// 包装强制推送命令
+const handleForcePush = wrapWithErrorHandler(async (e) => {
   if (e.msg.includes('抖音')) {
     await new DouYinpush().action()
     return true
@@ -25,38 +36,67 @@ export const forcePush = karin.command(/#(抖音|B站)(全部)?强制推送/, as
     return true
   }
   return true
-}, { name: '𝑪𝒊𝒂𝒍𝒍𝒐～(∠・ω< )⌒★', perm: 'master', event: 'message.group' })
+}, {
+  businessName: '强制推送',
+  sendToUser: true,
+  sendToMaster: true
+})
 
-export const setdyPush = karin.command(/^#设置抖音推送/, async (e) => {
-  const data = await getDouyinData('搜索数据', Config.cookies.douyin, { query: e.msg.replace(/^#设置抖音推送/, ''), typeMode: 'strict' })
+// 包装设置抖音推送命令
+const handleSetDouyinPush = wrapWithErrorHandler(async (e) => {
+  const data = await getDouyinData('搜索数据', Config.cookies.douyin, { 
+    query: e.msg.replace(/^#设置抖音推送/, ''), 
+    typeMode: 'strict' 
+  })
   await new DouYinpush(e).setting(data.data)
   return true
-}, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.douyin.push.permission, dsbAdapter: ['qqbot'] })
+}, {
+  businessName: '设置抖音推送',
+  sendToUser: true,
+  sendToMaster: true
+})
 
-export const setbiliPush = karin.command(/^#设置[bB]站推送(?:[Uu][Ii][Dd]:)?(\d+)$/, async (e) => {
+// 包装设置B站推送命令
+const handleSetBilibiliPush = wrapWithErrorHandler(async (e) => {
   if (!Config.cookies.bilibili) {
     await e.reply('\n请先配置B站Cookie', { at: true })
     return true
   }
   const match = /^#设置[bB]站推送(?:UID:)?(\d+)$/.exec(e.msg)
   if (match && match[1]) {
-    const data = await getBilibiliData('用户主页数据', Config.cookies.bilibili, { host_mid: Number(match[1]), typeMode: 'strict' })
+    const data = await getBilibiliData('用户主页数据', Config.cookies.bilibili, { 
+      host_mid: Number(match[1]), 
+      typeMode: 'strict' 
+    })
     await new Bilibilipush(e).setting(data.data)
   }
   return true
-}, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.bilibili.push.permission, dsbAdapter: ['qqbot'] })
+}, {
+  businessName: '设置B站推送',
+  sendToUser: true,
+  sendToMaster: true
+})
 
-export const bilibiliPushList = karin.command(/^#?[bB]站推送列表$/, async (e) => {
+// 包装推送列表命令
+const handleBilibiliPushList = wrapWithErrorHandler(async (e) => {
   await new Bilibilipush(e).renderPushList()
-}, { name: 'kkk-推送功能-列表', event: 'message.group' })
+}, {
+  businessName: 'B站推送列表',
+  sendToUser: true,
+  sendToMaster: false
+})
 
-export const douyinPushList = karin.command(/^#?抖音推送列表$/, async (e) => {
+const handleDouyinPushList = wrapWithErrorHandler(async (e) => {
   await new DouYinpush(e).renderPushList()
-}, { name: 'kkk-推送功能-列表', event: 'message.group' })
+}, {
+  businessName: '抖音推送列表',
+  sendToUser: true,
+  sendToMaster: false
+})
 
-export const changeBotID = karin.command(/^#kkk设置推送机器人/, async (e) => {
+// 包装设置机器人ID命令
+const handleChangeBotID = wrapWithErrorHandler(async (e) => {
   const newDouyinlist = Config.pushlist.douyin.map(item => {
-    // 操作每个 group_id
     const modifiedGroupIds = item.group_id.map(groupId => {
       const [group_id] = groupId.split(':')
       return `${group_id}:${e.msg.replace(/^#kkk设置推送机器人/, '')}`
@@ -67,7 +107,6 @@ export const changeBotID = karin.command(/^#kkk设置推送机器人/, async (e)
     }
   })
   const newBilibililist = Config.pushlist.bilibili.map(item => {
-    // 操作每个 group_id
     const modifiedGroupIds = item.group_id.map(groupId => {
       const [group_id] = groupId.split(':')
       return `${group_id}:${e.msg.replace(/^#kkk设置推送机器人/, '')}`
@@ -81,9 +120,14 @@ export const changeBotID = karin.command(/^#kkk设置推送机器人/, async (e)
   Config.Modify('pushlist', 'bilibili', newBilibililist)
   await e.reply('推送机器人已修改为' + e.msg.replace(/^#kkk设置推送机器人/, ''))
   return true
-}, { name: 'kkk-推送功能-设置', perm: 'master' })
+}, {
+  businessName: '设置推送机器人',
+  sendToUser: true,
+  sendToMaster: true
+})
 
-export const testDouyinPush = karin.command(/^#测试抖音推送\s*(https?:\/\/[^\s]+)?/, async (e) => {
+// 包装测试推送命令
+const handleTestDouyinPush = wrapWithErrorHandler(async (e) => {
   const url = String(e.msg.match(/(http|https):\/\/.*\.(douyin|iesdouyin)\.com\/[^ ]+/g))
   const iddata = await getDouyinID(e, url)
   const workInfo = await amagi.getDouyinData('聚合解析', { aweme_id: iddata.aweme_id, typeMode: 'strict' }, Config.cookies.douyin)
@@ -118,4 +162,27 @@ export const testDouyinPush = karin.command(/^#测试抖音推送\s*(https?:\/\/
 
   e.reply(img)
   return true
-}, { name: 'kkk-推送功能-测试', event: 'message.group', perm: Config.douyin.push.permission, dsbAdapter: ['qqbot'] })
+}, {
+  businessName: '测试抖音推送',
+  sendToUser: true,
+  sendToMaster: true
+})
+
+// 注册任务和命令
+export const douyinPush = Config.douyin.push.switch && karin.task('抖音推送', Config.douyin.push.cron, handleDouyinPush, { log: Config.douyin.push.log })
+
+export const bilibiliPush = Config.bilibili.push.switch && karin.task('B站推送', Config.bilibili.push.cron, handleBilibiliPush, { log: Config.bilibili.push.log })
+
+export const forcePush = karin.command(/#(抖音|B站)(全部)?强制推送/, handleForcePush, { name: '𝑪𝒊𝒂𝒍𝒍𝒐～(∠・ω< )⌒★', perm: 'master', event: 'message.group' })
+
+export const setdyPush = karin.command(/^#设置抖音推送/, handleSetDouyinPush, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.douyin.push.permission, dsbAdapter: ['qqbot'] })
+
+export const setbiliPush = karin.command(/^#设置[bB]站推送(?:[Uu][Ii][Dd]:)?(\d+)$/, handleSetBilibiliPush, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.bilibili.push.permission, dsbAdapter: ['qqbot'] })
+
+export const bilibiliPushList = karin.command(/^#?[bB]站推送列表$/, handleBilibiliPushList, { name: 'kkk-推送功能-列表', event: 'message.group' })
+
+export const douyinPushList = karin.command(/^#?抖音推送列表$/, handleDouyinPushList, { name: 'kkk-推送功能-列表', event: 'message.group' })
+
+export const changeBotID = karin.command(/^#kkk设置推送机器人/, handleChangeBotID, { name: 'kkk-推送功能-设置', perm: 'master' })
+
+export const testDouyinPush = karin.command(/^#测试抖音推送\s*(https?:\/\/[^\s]+)?/, handleTestDouyinPush, { name: 'kkk-推送功能-测试', event: 'message.group', perm: Config.douyin.push.permission, dsbAdapter: ['qqbot'] })

@@ -1,10 +1,10 @@
 import fs from 'node:fs'
 
-import Client, { type APIErrorType, ApiResponse, bilibiliErrorCodeMap } from '@ikenxuan/amagi'
-import karin, { config, type Contact, logger, Message, segment } from 'node-karin'
+import Client from '@ikenxuan/amagi'
+import karin, { type Contact, logger, Message, segment } from 'node-karin'
 import type { AxiosHeaders, AxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'node-karin/axios'
 
-import { baseHeaders, Common, mergeFile, Networks, Render } from '@/module/utils'
+import { baseHeaders, Common, mergeFile, Networks } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
 import type { pushlistConfig } from '@/types/config/pushlist'
 type uploadFileOptions = {
@@ -113,44 +113,6 @@ export class Base {
             if (!result) {
               logger.warn(`Amagi API调用 (${String(prop)}) 返回了空值`)
               return result
-            }
-
-            // 检查抖音数据返回结构
-            if (prop === 'getDouyinData' && (result.code !== 200)) {
-              const err = result as ApiResponse<APIErrorType<'douyin'>>
-              const img = await Render('apiError/index', err.error)
-              // 如果e为空对象才执行发送给主人
-              if (Object.keys(e).length === 0) {
-                const botId = statBotId(Config.pushlist)
-                const list = config.master()
-                let master = list[0]
-                if (master === 'console') {
-                  master = list[1]
-                }
-                await karin.sendMaster(botId.douyin.botId, master, [segment.text('推送任务出错！请即时解决以消除警告'), img[0]])
-                throw new Error(err.data.amagiMessage)
-              }
-              await e.reply(img)
-              throw new Error(err.data.amagiMessage)
-            }
-
-            // 检查哔哩哔哩数据返回结构
-            if (prop === 'getBilibiliData' && result.code in bilibiliErrorCodeMap) {
-              const err = result as ApiResponse<APIErrorType<'bilibili'>>
-              const img = await Render('apiError/index', err.error)
-              // 如果e为空对象才执行发送给主人
-              if (Object.keys(e).length === 0) {
-                const botId = statBotId(Config.pushlist)
-                const list = config.master()
-                let master = list[0]
-                if (master === 'console') {
-                  master = list[1]
-                }
-                await karin.sendMaster(botId.bilibili.botId, master, [segment.text('推送任务出错！请即时解决以消除警告'), img[0]])
-                throw new Error(err.data.amagiMessage)
-              }
-              await e.reply(img)
-              throw new Error(err.data.amagiMessage)
             }
             return result
           }

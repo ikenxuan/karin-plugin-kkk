@@ -20,13 +20,13 @@ const BilibiliLiveDynamicHeader: React.FC = () => {
       <div className='h-5' />
 
       {/* B站Logo和标语 */}
-      <div className='flex flex-col items-start text-6xl text-default-80'>
+      <div className='flex flex-col items-start text-6xl text-default-600'>
         <img
           src='/image/bilibili/bilibili-light.png'
           alt='哔哩哔哩'
           className='h-auto w-120'
         />
-        <span className='pt-10 text-6xl'>
+        <span className='pt-10 text-6xl select-text'>
           你感兴趣的视频都在B站
         </span>
       </div>
@@ -51,7 +51,7 @@ const BilibiliLiveDynamicContent: React.FC<BilibiliLiveDynamicContentProps> = (p
       {props.image_url && (
         <>
           <div className='flex flex-col items-center'>
-            <div className='relative flex flex-col items-center overflow-hidden rounded-3xl w-11/12 flex-1 shadow-[0px_10px_20px_0px_rgba(125,125,125,0.5)]'>
+            <div className='flex overflow-hidden relative flex-col flex-1 items-center w-11/12 rounded-3xl shadow-large'>
               <EnhancedImage
                 src={props.image_url}
                 alt='封面'
@@ -69,9 +69,9 @@ const BilibiliLiveDynamicContent: React.FC<BilibiliLiveDynamicContentProps> = (p
         <div className='h-3' />
 
         {/* 直播标题 */}
-        <div className='relative items-center text-8xl font-bold tracking-wider break-words text-default-90'>
+        <div className='relative items-center text-8xl font-bold tracking-wider break-words text-foreground'>
           <CommentText
-            className='text-[65px] font-bold tracking-[1.5px] leading-[1.5] whitespace-pre-wrap text-default-90'
+            className='text-[65px] font-bold tracking-[1.5px] leading-[1.5] whitespace-pre-wrap text-foreground select-text'
             content={props.text}
             style={{
               wordBreak: 'break-word',
@@ -84,17 +84,17 @@ const BilibiliLiveDynamicContent: React.FC<BilibiliLiveDynamicContentProps> = (p
         <div className='h-10' />
 
         {/* 房间信息 */}
-        <div className='flex gap-2 items-center text-5xl tracking-normal text-default-60'>
-          <Radio size={48} />
-          {props.liveinf}
+        <div className='flex gap-2 items-center text-5xl tracking-normal text-default-500'>
+          <Radio size={48} className='text-primary' />
+          <span className='select-text'>{props.liveinf}</span>
         </div>
 
         <div className='h-5' />
 
         {/* 开始时间 */}
-        <div className='flex gap-2 items-center text-4xl tracking-normal text-default-60'>
-          <Clock size={32} />
-          直播开始时间: {props.create_time}
+        <div className='flex gap-2 items-center text-4xl tracking-normal text-default-500'>
+          <Clock size={32} className='text-time' />
+          <span className='select-text'>直播开始时间: {props.create_time}</span>
         </div>
 
         {/* 间距 */}
@@ -106,7 +106,7 @@ const BilibiliLiveDynamicContent: React.FC<BilibiliLiveDynamicContentProps> = (p
             <EnhancedImage
               src={props.avatar_url}
               alt='头像'
-              className='w-32 h-32 rounded-full shadow-lg'
+              className='w-32 h-32 rounded-full shadow-medium'
               isCircular
             />
             {props.frame && (
@@ -119,14 +119,14 @@ const BilibiliLiveDynamicContent: React.FC<BilibiliLiveDynamicContentProps> = (p
           </div>
           <div className='flex flex-col gap-5 items-start'>
             <div className='flex gap-4 items-center'>
-              <div className='text-6xl font-bold text-default-90'>
+              <div className='text-6xl font-bold select-text text-foreground'>
                 <CommentText content={props.username} />
               </div>
               <img className='w-32 h-auto' src='/image/bilibili/直播中.png' alt='直播中' />
             </div>
-            <div className='flex gap-2 items-center text-4xl text-default-70'>
-              <Users size={32} />
-              {props.fans}粉丝
+            <div className='flex gap-2 items-center text-4xl text-default-600'>
+              <Users size={32} className='text-follow' />
+              <span className='select-text'>{props.fans}粉丝</span>
             </div>
           </div>
         </div>
@@ -146,7 +146,7 @@ const BilibiliLiveDynamicFooter: React.FC<BilibiliLiveDynamicFooterProps> = (pro
   return (
     <>
       {/* 右上角类型标识 */}
-      <div className='relative z-0 mr-20 -mb-11 text-7xl text-right text-default-80'>
+      <div className='relative z-0 mr-20 -mb-11 text-7xl text-right select-text text-default-500'>
         哔哩哔哩{props.dynamicTYPE}
       </div>
 
@@ -160,10 +160,10 @@ const BilibiliLiveDynamicFooter: React.FC<BilibiliLiveDynamicFooterProps> = (pro
 
           {/* 二维码区域 */}
           <div className='flex flex-col-reverse items-center -mb-12 mr-19'>
-            <div className='mt-5 ml-3 text-5xl text-right text-default-80'>
+            <div className='mt-5 ml-3 text-5xl text-right select-text text-default-500'>
               动态分享链接
             </div>
-            <div className='p-3 rounded-sm border-8 border-dashed border-default-80'>
+            <div className='p-3 rounded-sm border-8 border-dashed border-default-300'>
               {props.qrCodeDataUrl
                 ? (
                   <img
@@ -173,8 +173,8 @@ const BilibiliLiveDynamicFooter: React.FC<BilibiliLiveDynamicFooterProps> = (pro
                   />
                 )
                 : (
-                  <div className='flex justify-center items-center rounded bg-default-20 w-88 h-88'>
-                    <span className='text-default-40'>二维码</span>
+                  <div className='flex justify-center items-center rounded bg-default-100 w-88 h-88'>
+                    <span className='text-default-400'>二维码</span>
                   </div>
                 )}
             </div>

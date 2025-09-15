@@ -1280,8 +1280,7 @@ const processFrontendData = (data: newConfigType): ConfigType => {
         propValue = convertToNumber(propValue)
       }
 
-      // 只有当值不为空字符串或undefined时才设置
-      if (propValue !== '' && propValue !== undefined && propValue !== null) {
+      if (propValue !== undefined && propValue !== null) {
         const keys = prop.split(':')
         setNestedProperty(configObj, keys, propValue)
         hasValidData = true
@@ -1295,8 +1294,7 @@ const processFrontendData = (data: newConfigType): ConfigType => {
         propValue = convertToNumber(propValue)
       }
 
-      // 只有当值不为空字符串或undefined时才设置
-      if (propValue !== '' && propValue !== undefined && propValue !== null) {
+      if (propValue !== undefined && propValue !== null) {
         configObj[prop] = propValue
         hasValidData = true
       }
