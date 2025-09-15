@@ -45,8 +45,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
         style={{
           transform: `scale(${scale})`,
           transformOrigin: 'top left',
-          width: '1440px',
-          minHeight: '100vh'
+          width: '1440px'
         }}
       >
         {children}

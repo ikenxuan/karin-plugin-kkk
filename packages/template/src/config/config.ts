@@ -228,13 +228,16 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
         validateData: (data) => data && typeof data.share_url === 'string'
       },
       {
-        id: 'video',
+        id: 'videoInfo',
         name: '视频信息',
         description: 'B站视频信息展示模板',
-        enabled: false,
-        componentPath: 'platforms/bilibili/Video',
-        exportName: 'BilibiliVideo',
-        validateData: (data) => data && typeof data.share_url === 'string'
+        enabled: true,
+        componentPath: 'platforms/bilibili/videoInfo',
+        exportName: 'BilibiliVideoInfo',
+        validateData: (data) => data && typeof data.share_url === 'string',
+        lazyComponent: () => import('../components/platforms/bilibili/videoInfo').then(module => ({
+          default: module.BilibiliVideoInfo
+        }))
       }
     ]
   },

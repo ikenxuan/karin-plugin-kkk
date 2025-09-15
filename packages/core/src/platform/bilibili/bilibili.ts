@@ -17,8 +17,7 @@ import karin, {
   ElementTypes,
   logger,
   Message,
-  segment,
-  SendMessage
+  segment
 } from 'node-karin'
 
 import {
@@ -83,11 +82,7 @@ export class Bilibili extends Base {
         // const playUrl = bilibiliApiUrls.视频流信息({ avid: infoData.data.aid, cid: infoData.data.cid })
         this.islogin = (await checkCk()).Status === 'isLogin'
 
-        const { owner, pic, title, stat, desc } = infoData.data.data
-        const { name } = owner
-        const { coin, like, share, view, favorite, danmaku } = stat
-
-        this.downloadfilename = title.substring(0, 50).replace(/[\\/:*?"<>|\r\n\s]/g, ' ')
+        this.downloadfilename = infoData.data.data.title.substring(0, 50).replace(/[\\/:*?"<>|\r\n\s]/g, ' ')
 
         const nockData = await new Networks({
           url: bilibiliApiUrls.视频流信息({
@@ -97,31 +92,18 @@ export class Bilibili extends Base {
           headers: this.headers
         }).getData() as ApiResponse<BiliBiliVideoPlayurlNoLogin>
 
-        // 构建回复内容数组
-        const replyContent: SendMessage = []
-
         // 如果配置项不存在或长度为0，则不显示任何内容
-        if (Config.bilibili.displayContent && Config.bilibili.displayContent.length > 0) {
-          const contentMap = {
-            cover: segment.image(pic),
-            title: segment.text(`\n📺 标题: ${title}\n`),
-            author: segment.text(`\n👤 作者: ${name}\n`),
-            stats: segment.text(this.formatVideoStats(view, danmaku, like, coin, share, favorite)),
-            desc: segment.text(`\n\n📝 简介: ${desc}`)
-          }
-
-          // 重新排序
-          const fixedOrder: (keyof typeof contentMap)[] = ['cover', 'title', 'author', 'stats', 'desc']
-
-          fixedOrder.forEach(item => {
-            if (Config.bilibili.displayContent.includes(item) && contentMap[item]) {
-              replyContent.push(contentMap[item])
-            }
+        if (Config.bilibili.sendContent.some(content => content === 'info')) {
+          const img = await Render('bilibili/videoInfo', {
+            share_url: 'https://b23.tv/' + infoData.data.data.bvid,
+            title: infoData.data.data.title,
+            stat: infoData.data.data.stat,
+            bvid: infoData.data.data.bvid,
+            ctime: infoData.data.data.ctime,
+            pic: infoData.data.data.pic,
+            owner: infoData.data.data.owner
           })
-
-          if (replyContent.length > 0) {
-            this.e.reply(replyContent)
-          }
+          this.e.reply(img)
         }
 
         let videoSize = ''
@@ -152,7 +134,7 @@ export class Bilibili extends Base {
         } else {
           videoSize = (playUrlData.data.data.durl[0].size / (1024 * 1024)).toFixed(2)
         }
-        if (Config.bilibili.comment) {
+        if (Config.bilibili.sendContent.some(content => content === 'comment')) {
           const commentsData = await this.amagi.getBilibiliData('评论数据', {
             number: Config.bilibili.numcomment,
             type: 1,
@@ -177,13 +159,15 @@ export class Bilibili extends Base {
           }
         }
 
-        if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) && !Config.upload.compress) {
-          this.e.reply(`设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n` + '视频太大了，还是去B站看吧~', { reply: true })
-        } else {
-          await this.getvideo(
-            Config.bilibili.videopriority === true
-              ? { playUrlData: nockData.data }
-              : { infoData: infoData.data, playUrlData: playUrlData.data })
+        if (Config.bilibili.sendContent.some(content => content === 'video')) {
+          if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) && !Config.upload.compress) {
+            this.e.reply(`设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n` + '视频太大了，还是去B站看吧~', { reply: true })
+          } else {
+            await this.getvideo(
+              Config.bilibili.videopriority === true
+                ? { playUrlData: nockData.data }
+                : { infoData: infoData.data, playUrlData: playUrlData.data })
+          }
         }
         break
       }
@@ -303,7 +287,7 @@ export class Bilibili extends Base {
               }
             }
 
-            if (Config.bilibili.comment && commentsData) {
+            if (Config.bilibili.sendContent.some(content => content === 'comment') && commentsData) {
               const commentsdata = bilibiliComments(commentsData.data)
               img = await Render('bilibili/comment', {
                 Type: '动态',
