@@ -48,8 +48,7 @@
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../render/src/dev/mock-server.ts\" --include \"../render/src/main.ts\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
-    "@karinjs/md-html": "^1.3.0",
-    "playwright": "^1.51.1"
+    "@karinjs/md-html": "^1.3.0"
   },
   "engines": {
     "node": ">=21.0.0",

@@ -53,11 +53,11 @@ interface BaseComponentProps<T = Record<string, any>> extends Pick<RenderRequest
 }
 
 /**
- * 渲染React组件为HTML
+ * SSR预渲染组件为HTML预渲染组件为HTML
  * @param request 渲染请求参数
  * @param outputDir 输出目录路径
  * @returns 渲染结果Promise
  */
-declare const renderComponentToHtml: <T>(request: RenderRequest<T>, outputDir: string) => Promise<RenderResponse>;
+declare const reactServerRender: <T>(request: RenderRequest<T>, outputDir: string) => Promise<RenderResponse>;
 
-export { type BaseComponentProps, type RenderRequest, type RenderResponse, renderComponentToHtml };
+export { type BaseComponentProps, type RenderRequest, type RenderResponse, reactServerRender };
