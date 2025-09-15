@@ -132,7 +132,6 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
         enabled: true,
         componentPath: 'platforms/douyin/videoInfo',
         exportName: 'DouyinVideoInfo',
-        validateData: (data) => data && typeof data.share_url === 'string',
         lazyComponent: () => import('../components/platforms/douyin/videoInfo').then(module => ({
           default: module.DouyinVideoInfo
         }))
