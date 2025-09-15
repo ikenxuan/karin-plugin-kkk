@@ -63,7 +63,8 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
               <div className='relative'>
                 <div className={clsx(
                   'absolute -top-8 -left-10 px-5 py-2 text-sm font-bold tracking-widest uppercase rounded-full transform -rotate-12',
-                  'border border-dashed border-default-900 text-default-900'
+                  'border border-dashed border-default-900 text-default-900 bg-default-100',
+                  'backdrop-blur-sm bg-default-100/10'
                 )}>
                   {version.releaseType}
                 </div>
@@ -77,7 +78,8 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
               <div className='flex relative items-center space-x-5'>
                 <div className={clsx(
                   'absolute -top-8 -left-10 px-5 py-2 text-sm font-bold tracking-widest uppercase rounded-full transform -rotate-12',
-                  'border border-dashed border-default-900 text-default-900'
+                  'border border-dashed border-default-900 text-default-900',
+                  'backdrop-blur-sm bg-default-100/10'
                 )}>
                   Powered By
                 </div>

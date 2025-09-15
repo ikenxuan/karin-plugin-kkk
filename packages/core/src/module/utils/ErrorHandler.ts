@@ -58,9 +58,6 @@ export function withErrorHandler(options: ErrorHandlerOptions) {
         
         return result
       } catch (error) {
-        // 停止收集日志
-        logCollector.stopCollecting()
-        
         // 获取收集到的日志
         const collectedLogs = logCollector.getFormattedLogs()
         
@@ -70,13 +67,50 @@ export function withErrorHandler(options: ErrorHandlerOptions) {
         // 重新抛出错误
         throw error
       } finally {
-        // 确保停止日志收集
+        // 停止日志收集
         logCollector.stopCollecting()
       }
     } as T
     
     return descriptor
   }
+}
+
+/**
+ * 函数式错误处理包装器
+ * @param fn 要包装的函数
+ * @param options 错误处理选项
+ * @returns 包装后的函数
+ */
+export function wrapWithErrorHandler<T extends (...args: any[]) => Promise<any>>(
+  fn: T,
+  options: ErrorHandlerOptions
+): T {
+  return (async (...args: any[]) => {
+    const logCollector = new LogCollector()
+    
+    try {
+      // 开始收集日志
+      logCollector.startCollecting()
+      
+      // 执行原始函数
+      const result = await fn(...args)
+      
+      return result
+    } catch (error) {
+      // 获取收集到的日志
+      const collectedLogs = logCollector.getFormattedLogs()
+      
+      // 处理错误
+      await handleBusinessError(error as Error, options, collectedLogs, args[0] as Message)
+      
+      // 重新抛出错误
+      throw error
+    } finally {
+      // 停止日志收集
+      logCollector.stopCollecting()
+    }
+  }) as T
 }
 
 /**
@@ -155,44 +189,4 @@ async function handleBusinessError(
       logger.error(`自定义错误处理失败: ${customError}`)
     }
   }
-}
-
-/**
- * 函数式错误处理包装器（用于非类方法）
- * @param fn 要包装的函数
- * @param options 错误处理选项
- * @returns 包装后的函数
- */
-export function wrapWithErrorHandler<T extends (...args: any[]) => Promise<any>>(
-  fn: T,
-  options: ErrorHandlerOptions
-): T {
-  return (async (...args: any[]) => {
-    const logCollector = new LogCollector()
-    
-    try {
-      // 开始收集日志
-      logCollector.startCollecting()
-      
-      // 执行原始函数
-      const result = await fn(...args)
-      
-      return result
-    } catch (error) {
-      // 停止收集日志
-      logCollector.stopCollecting()
-      
-      // 获取收集到的日志
-      const collectedLogs = logCollector.getFormattedLogs()
-      
-      // 处理错误
-      await handleBusinessError(error as Error, options, collectedLogs, args[0] as Message)
-      
-      // 重新抛出错误
-      throw error
-    } finally {
-      // 确保停止日志收集
-      logCollector.stopCollecting()
-    }
-  }) as T
 }

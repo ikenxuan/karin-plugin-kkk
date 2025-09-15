@@ -1,8 +1,7 @@
 import { logger as amagiLogger } from '@ikenxuan/amagi'
-import { logger } from 'node-karin'
 
 /**
- * 日志收集器类，用于收集任务执行期间的所有日志信息
+ * 日志收集器类，收集任务执行期间的amagi日志信息
  */
 export class LogCollector {
   /** 收集到的日志列表 */
@@ -10,17 +9,30 @@ export class LogCollector {
     level: string
     message: string
     timestamp: string
-    stack?: string
     source: string
   }> = []
 
-  /** 原始的logger方法备份 */
-  private originalMethods: Map<string, (...args: any[]) => void> = new Map()
-  /** 原始的解析库logger方法备份 */
-  private originalAmagiMethods: Map<string, (...args: any[]) => void> = new Map()
-
   /** 是否正在收集日志 */
   private isCollecting = false
+
+  /** amagi logger原始方法备份 */
+  private originalAmagiWarn: typeof amagiLogger.warn | null = null
+  private originalAmagiError: typeof amagiLogger.error | null = null
+  /** 是否已经拦截过amagi logger */
+  private static isAmagiIntercepted = false
+
+  /**
+   * 构造函数
+   */
+  constructor () {
+    // 如果还没有拦截过amagi logger，则进行拦截
+    if (!LogCollector.isAmagiIntercepted) {
+      this.interceptAmagiLogger()
+      LogCollector.isAmagiIntercepted = true
+    }
+    // 注册当前实例
+    this.registerInstance()
+  }
 
   /**
    * 开始收集日志
@@ -30,143 +42,97 @@ export class LogCollector {
 
     this.isCollecting = true
     this.logs = []
-
-    // 备份node-karin的logger方法
-    this.originalMethods.set('warn', logger.warn.bind(logger))
-    this.originalMethods.set('error', logger.error.bind(logger))
-    this.originalMethods.set('info', logger.info.bind(logger))
-    this.originalMethods.set('debug', logger.debug.bind(logger))
-
-    // 备份解析库的logger方法
-    this.originalAmagiMethods.set('warn', amagiLogger.warn.bind(amagiLogger))
-    this.originalAmagiMethods.set('error', amagiLogger.error.bind(amagiLogger))
-    this.originalAmagiMethods.set('info', amagiLogger.info.bind(amagiLogger))
-    this.originalAmagiMethods.set('debug', amagiLogger.debug.bind(amagiLogger))
-
-    // 拦截node-karin的logger方法
-    logger.warn = (...args: any[]) => {
-      this.collectLog('warn', args, 'node-karin')
-      const originalMethod = this.originalMethods.get('warn')
-      if (originalMethod) {
-        return originalMethod(...args)
-      }
-    }
-
-    logger.error = (...args: any[]) => {
-      this.collectLog('error', args, 'node-karin')
-      const originalMethod = this.originalMethods.get('error')
-      if (originalMethod) {
-        return originalMethod(...args)
-      }
-    }
-
-    logger.info = (...args: any[]) => {
-      this.collectLog('info', args, 'node-karin')
-      const originalMethod = this.originalMethods.get('info')
-      if (originalMethod) {
-        return originalMethod(...args)
-      }
-    }
-
-    logger.debug = (...args: any[]) => {
-      this.collectLog('debug', args, 'node-karin')
-      const originalMethod = this.originalMethods.get('debug')
-      if (originalMethod) {
-        return originalMethod(...args)
-      }
-    }
-
-    // 拦截解析库的logger方法
-    amagiLogger.warn = (...args: any[]) => {
-      this.collectLog('warn', args, 'amagi')
-      const originalMethod = this.originalAmagiMethods.get('warn')
-      if (originalMethod) {
-        return originalMethod(...args)
-      }
-    }
-
-    amagiLogger.error = (...args: any[]) => {
-      this.collectLog('error', args, 'amagi')
-      const originalMethod = this.originalAmagiMethods.get('error')
-      if (originalMethod) {
-        return originalMethod(...args)
-      }
-    }
-
-    amagiLogger.info = (...args: any[]) => {
-      this.collectLog('info', args, 'amagi')
-      const originalMethod = this.originalAmagiMethods.get('info')
-      if (originalMethod) {
-        return originalMethod(...args)
-      }
-    }
-
-    amagiLogger.debug = (...args: any[]) => {
-      this.collectLog('debug', args, 'amagi')
-      const originalMethod = this.originalAmagiMethods.get('debug')
-      if (originalMethod) {
-        return originalMethod(...args)
-      }
-    }
   }
 
   /**
-   * 停止收集日志并恢复原始方法
+   * 停止收集日志
    */
   stopCollecting () {
     if (!this.isCollecting) return
 
     this.isCollecting = false
-
-    // 恢复node-karin的logger方法
-    const warnMethod = this.originalMethods.get('warn')
-    const errorMethod = this.originalMethods.get('error')
-    const infoMethod = this.originalMethods.get('info')
-    const debugMethod = this.originalMethods.get('debug')
-
-    if (warnMethod) logger.warn = warnMethod
-    if (errorMethod) logger.error = errorMethod
-    if (infoMethod) logger.info = infoMethod
-    if (debugMethod) logger.debug = debugMethod
-
-    // 恢复解析库的logger方法
-    const amagiWarnMethod = this.originalAmagiMethods.get('warn')
-    const amagiErrorMethod = this.originalAmagiMethods.get('error')
-    const amagiInfoMethod = this.originalAmagiMethods.get('info')
-    const amagiDebugMethod = this.originalAmagiMethods.get('debug')
-
-    if (amagiWarnMethod) amagiLogger.warn = amagiWarnMethod
-    if (amagiErrorMethod) amagiLogger.error = amagiErrorMethod
-    if (amagiInfoMethod) amagiLogger.info = amagiInfoMethod
-    if (amagiDebugMethod) amagiLogger.debug = amagiDebugMethod
-
-    this.originalMethods.clear()
-    this.originalAmagiMethods.clear()
+    // 停止收集时注销实例
+    this.unregisterInstance()
   }
 
   /**
-   * 收集日志信息
+   * 拦截amagi logger的warn和error方法
+   */
+  private interceptAmagiLogger () {
+    // 备份原始方法
+    this.originalAmagiWarn = amagiLogger.warn.bind(amagiLogger)
+    this.originalAmagiError = amagiLogger.error.bind(amagiLogger)
+
+    // 替换warn方法
+    amagiLogger.warn = (message: any, ...args: any[]) => {
+      // 收集日志到所有活跃的收集器实例
+      LogCollector.collectToAllInstances('warn', [message, ...args])
+      // 调用原始方法
+      if (this.originalAmagiWarn) {
+        this.originalAmagiWarn(message, ...args)
+      }
+    }
+
+    // 替换error方法
+    amagiLogger.error = (message: any, ...args: any[]) => {
+      // 收集日志到所有活跃的收集器实例
+      LogCollector.collectToAllInstances('error', [message, ...args])
+      // 调用原始方法
+      if (this.originalAmagiError) {
+        this.originalAmagiError(message, ...args)
+      }
+    }
+  }
+
+  /** 所有活跃的收集器实例 */
+  private static activeInstances: LogCollector[] = []
+
+  /**
+   * 向所有活跃的收集器实例收集日志
    * @param level 日志级别
    * @param args 日志参数
-   * @param source 日志来源
    */
-  private collectLog (level: string, args: any[], source: string) {
+  private static collectToAllInstances (level: string, args: any[]) {
+    LogCollector.activeInstances.forEach(instance => {
+      if (instance.isCollecting) {
+        instance.collectAmagiLog(level, args)
+      }
+    })
+  }
+
+  /**
+   * 收集amagi日志
+   * @param level 日志级别
+   * @param args 日志参数
+   */
+  private collectAmagiLog (level: string, args: any[]) {
     if (!this.isCollecting) return
 
     const message = args.map(arg =>
-      typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+      typeof arg === 'string' ? arg : JSON.stringify(arg)
     ).join(' ')
 
-    // 获取调用栈
-    const stack = new Error().stack
-
-    this.logs.push({
+    const logEntry = {
       level,
       message,
-      timestamp: new Date().toISOString(),
-      stack,
-      source
-    })
+      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      source: 'amagi'
+    }
+
+    this.logs.push(logEntry)
+  }
+
+  /**
+   * 获取收集期间的所有日志
+   * @returns 日志条目数组
+   */
+  getCollectedLogs (): Array<{
+    level: string
+    message: string
+    timestamp: string
+    source: string
+  }> {
+    return [...this.logs]
   }
 
   /**
@@ -177,5 +143,31 @@ export class LogCollector {
     return this.logs.map(log => {
       return `[${log.timestamp}] [${log.source}] [${log.level.toUpperCase()}] ${log.message}`
     }).join('\n\n')
+  }
+
+  /**
+   * 清空收集到的日志
+   */
+  clearLogs () {
+    this.logs = []
+  }
+
+  /**
+   * 注册活跃实例
+   */
+  private registerInstance () {
+    if (!LogCollector.activeInstances.includes(this)) {
+      LogCollector.activeInstances.push(this)
+    }
+  }
+
+  /**
+   * 注销活跃实例
+   */
+  private unregisterInstance () {
+    const index = LogCollector.activeInstances.indexOf(this)
+    if (index > -1) {
+      LogCollector.activeInstances.splice(index, 1)
+    }
   }
 }
