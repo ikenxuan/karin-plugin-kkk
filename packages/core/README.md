@@ -1,42 +1,28 @@
 # karin-plugin-kkk
 
-🦄 **_Karin 的「抖音」「B 站」视频解析/动态推送插件_**
+🦄 **_Karin 的「抖音」「B 站」视频解析/动态推送插件。提供对 Bot 的视频解析和动态推送功能，通过接口获取数据并渲染图片返回_**
 
 ## ⬇️ 安装
 
 - 插件市场安装（非常推荐）
 
-  **通过 Karin 的插件市场直接安装本插件。**
+  **通过 Karin WebUI 的插件市场直接安装和管理本插件。**
 
 <br />
 
 - 使用 **`包管理器`** 安装（推荐）
-   <details>
-   <summary>点击展开</summary>
-
-  在 **Karin 根目录** 下运行<br />
+  在 **Karin 项目根目录** 下运行<br />
   手动更新时更新也可以使用该命令
   ```sh
   pnpm add karin-plugin-kkk@latest -w
   ```
 
-   </details>
-
-<br />
-
-- ~~克隆编译产物 **`build 分支`**（比较推荐）~~
-   <details>
-   <summary>点击展开</summary>
-
-   由于上游框架 Karin 有全面拥抱 `包模块化` 的嫌疑，所以使用 git clone 安装的方法 **不再推荐**
-
-   </details>
-
 <br />
 
 ## ⚙️ 配置
 
-请在 WebUI 中查看并配置插件参数。
+必须配置对应平台的 Cookies 才能使用。<br />
+其他更多配置项请在 Karin WebUI 插件配置中查看并配置。
 
 ## 📖 功能
 
@@ -50,22 +36,29 @@
 
 1. [fork](https://github.com/ikenxuan/karin-plugin-kkk/fork) 本项目到自己的仓库
 2. 克隆到本地
-
 ```sh
 git clone https://github.com/你的GitHub用户名/karin-plugin-kkk.git
 ```
-
-1. 初始化开发环境
-以下命令同 `pnpm i`
+3. 安装依赖
 ```sh
-pnpm run init
+pnpm i
 ```
-
-5. 启动开发环境
-以下命令任选一个即可
+4. 启动开发环境
 ```sh
-pnpm dev    # tsx 直接运行，不自动重启
-pnpm watch  # tsx 监听文件变化并自动重启
+# tsx 监听core子包文件变化并自动重启
+pnpm watch 
+```
+```sh
+# 调试图片模板
+pnpm template
+```
+```sh
+# 调试自带的web
+pnpm web
+```
+```sh
+# 打包
+pnpm build
 ```
 
 </details>
@@ -113,4 +106,4 @@ pnpm watch  # tsx 监听文件变化并自动重启
 
 ## ❗ 声明
 
-未经同意，禁止将本项目的开源代码用于任何商业目的。因使用本项目产生的一切问题与后果由使用者自行承担，项目开发者不承担任何责任
+未经同意，禁止将本项目的开源代码用于任何商业目的。因使用本项目产生的一切问题与后果由使用者自行承担，项目开发者不承担任何责任。
