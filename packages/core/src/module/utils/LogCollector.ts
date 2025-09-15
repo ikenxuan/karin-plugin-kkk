@@ -32,57 +32,81 @@ export class LogCollector {
     this.logs = []
 
     // 备份node-karin的logger方法
-    this.originalMethods.set('warn', logger.warn)
-    this.originalMethods.set('error', logger.error)
-    this.originalMethods.set('info', logger.info)
-    this.originalMethods.set('debug', logger.debug)
+    this.originalMethods.set('warn', logger.warn.bind(logger))
+    this.originalMethods.set('error', logger.error.bind(logger))
+    this.originalMethods.set('info', logger.info.bind(logger))
+    this.originalMethods.set('debug', logger.debug.bind(logger))
 
     // 备份解析库的logger方法
-    this.originalAmagiMethods.set('warn', amagiLogger.warn)
-    this.originalAmagiMethods.set('error', amagiLogger.error)
-    this.originalAmagiMethods.set('info', amagiLogger.info)
-    this.originalAmagiMethods.set('debug', amagiLogger.debug)
+    this.originalAmagiMethods.set('warn', amagiLogger.warn.bind(amagiLogger))
+    this.originalAmagiMethods.set('error', amagiLogger.error.bind(amagiLogger))
+    this.originalAmagiMethods.set('info', amagiLogger.info.bind(amagiLogger))
+    this.originalAmagiMethods.set('debug', amagiLogger.debug.bind(amagiLogger))
 
     // 拦截node-karin的logger方法
     logger.warn = (...args: any[]) => {
       this.collectLog('warn', args, 'node-karin')
-      return this.originalMethods.get('warn')!.apply(logger, args)
+      const originalMethod = this.originalMethods.get('warn')
+      if (originalMethod) {
+        return originalMethod(...args)
+      }
     }
 
     logger.error = (...args: any[]) => {
       this.collectLog('error', args, 'node-karin')
-      return this.originalMethods.get('error')!.apply(logger, args)
+      const originalMethod = this.originalMethods.get('error')
+      if (originalMethod) {
+        return originalMethod(...args)
+      }
     }
 
     logger.info = (...args: any[]) => {
       this.collectLog('info', args, 'node-karin')
-      return this.originalMethods.get('info')!.apply(logger, args)
+      const originalMethod = this.originalMethods.get('info')
+      if (originalMethod) {
+        return originalMethod(...args)
+      }
     }
 
     logger.debug = (...args: any[]) => {
       this.collectLog('debug', args, 'node-karin')
-      return this.originalMethods.get('debug')!.apply(logger, args)
+      const originalMethod = this.originalMethods.get('debug')
+      if (originalMethod) {
+        return originalMethod(...args)
+      }
     }
 
     // 拦截解析库的logger方法
     amagiLogger.warn = (...args: any[]) => {
       this.collectLog('warn', args, 'amagi')
-      return this.originalAmagiMethods.get('warn')!.apply(amagiLogger, args)
+      const originalMethod = this.originalAmagiMethods.get('warn')
+      if (originalMethod) {
+        return originalMethod(...args)
+      }
     }
 
     amagiLogger.error = (...args: any[]) => {
       this.collectLog('error', args, 'amagi')
-      return this.originalAmagiMethods.get('error')!.apply(amagiLogger, args)
+      const originalMethod = this.originalAmagiMethods.get('error')
+      if (originalMethod) {
+        return originalMethod(...args)
+      }
     }
 
     amagiLogger.info = (...args: any[]) => {
       this.collectLog('info', args, 'amagi')
-      return this.originalAmagiMethods.get('info')!.apply(amagiLogger, args)
+      const originalMethod = this.originalAmagiMethods.get('info')
+      if (originalMethod) {
+        return originalMethod(...args)
+      }
     }
 
     amagiLogger.debug = (...args: any[]) => {
       this.collectLog('debug', args, 'amagi')
-      return this.originalAmagiMethods.get('debug')!.apply(amagiLogger, args)
+      const originalMethod = this.originalAmagiMethods.get('debug')
+      if (originalMethod) {
+        return originalMethod(...args)
+      }
     }
   }
 
@@ -95,16 +119,26 @@ export class LogCollector {
     this.isCollecting = false
 
     // 恢复node-karin的logger方法
-    logger.warn = this.originalMethods.get('warn')!
-    logger.error = this.originalMethods.get('error')!
-    logger.info = this.originalMethods.get('info')!
-    logger.debug = this.originalMethods.get('debug')!
+    const warnMethod = this.originalMethods.get('warn')
+    const errorMethod = this.originalMethods.get('error')
+    const infoMethod = this.originalMethods.get('info')
+    const debugMethod = this.originalMethods.get('debug')
+
+    if (warnMethod) logger.warn = warnMethod
+    if (errorMethod) logger.error = errorMethod
+    if (infoMethod) logger.info = infoMethod
+    if (debugMethod) logger.debug = debugMethod
 
     // 恢复解析库的logger方法
-    amagiLogger.warn = this.originalAmagiMethods.get('warn')!
-    amagiLogger.error = this.originalAmagiMethods.get('error')!
-    amagiLogger.info = this.originalAmagiMethods.get('info')!
-    amagiLogger.debug = this.originalAmagiMethods.get('debug')!
+    const amagiWarnMethod = this.originalAmagiMethods.get('warn')
+    const amagiErrorMethod = this.originalAmagiMethods.get('error')
+    const amagiInfoMethod = this.originalAmagiMethods.get('info')
+    const amagiDebugMethod = this.originalAmagiMethods.get('debug')
+
+    if (amagiWarnMethod) amagiLogger.warn = amagiWarnMethod
+    if (amagiErrorMethod) amagiLogger.error = amagiErrorMethod
+    if (amagiInfoMethod) amagiLogger.info = amagiInfoMethod
+    if (amagiDebugMethod) amagiLogger.debug = amagiDebugMethod
 
     this.originalMethods.clear()
     this.originalAmagiMethods.clear()
