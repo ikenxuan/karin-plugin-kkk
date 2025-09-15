@@ -97,6 +97,7 @@ export class Bilibili extends Base {
           const img = await Render('bilibili/videoInfo', {
             share_url: 'https://b23.tv/' + infoData.data.data.bvid,
             title: infoData.data.data.title,
+            desc: infoData.data.data.desc,
             stat: infoData.data.data.stat,
             bvid: infoData.data.data.bvid,
             ctime: infoData.data.data.ctime,

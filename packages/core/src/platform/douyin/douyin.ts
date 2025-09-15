@@ -270,6 +270,20 @@ export class DouYin extends Base {
           video_res.push(video_data)
         }
 
+        const videoInfo = await Render('douyin/videoInfo',
+          {
+            desc: VideoData.data.aweme_detail.desc,
+            statistics: VideoData.data.aweme_detail.statistics,
+            aweme_id: VideoData.data.aweme_detail.aweme_id,
+            author: {
+              name: VideoData.data.aweme_detail.author.nickname,
+              avatar: VideoData.data.aweme_detail.author.avatar_thumb.url_list[0]
+            },
+            image_url: this.is_mp4 ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] : VideoData.data.aweme_detail.images![0].url_list[0],
+            create_time: VideoData.data.aweme_detail.create_time
+          }
+        )
+        this.e.reply(videoInfo)
         if (Config.douyin.comment && Config.douyin.comment) {
           const EmojiData = await this.amagi.getDouyinData('Emoji数据', { typeMode: 'strict' })
           const list = Emoji(EmojiData.data)

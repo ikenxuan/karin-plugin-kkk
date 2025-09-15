@@ -124,6 +124,18 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
         lazyComponent: () => import('../components/platforms/douyin/UserList').then(module => ({
           default: module.default
         }))
+      },
+      {
+        id: 'videoInfo',
+        name: '视频信息',
+        description: '抖音视频信息展示模板',
+        enabled: true,
+        componentPath: 'platforms/douyin/videoInfo',
+        exportName: 'DouyinVideoInfo',
+        validateData: (data) => data && typeof data.share_url === 'string',
+        lazyComponent: () => import('../components/platforms/douyin/videoInfo').then(module => ({
+          default: module.DouyinVideoInfo
+        }))
       }
     ]
   },

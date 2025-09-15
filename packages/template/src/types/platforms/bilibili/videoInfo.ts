@@ -52,6 +52,8 @@ export interface BilibiliVideoInfoData {
   share_url: string
   /** 视频标题 */
   title: string
+  /** 视频简介 */
+  desc: string
   /** 统计数据 */
   stat: BilibiliVideoStat
   /** 视频BV号 */
