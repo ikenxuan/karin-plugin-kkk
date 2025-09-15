@@ -147,7 +147,7 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
                 </div>
               </div>
               <div className="transform-gpu scale-[3.5] origin-right">
-                <Button size="sm" className="bg-[#FF6699] text-default-50">
+                <Button size="sm" className="bg-[#FF6699] text-default-100 dark:text-default-900">
                   <ExternalLink className="mr-1 w-4 h-4" />
                   观看
                 </Button>

@@ -11,4 +11,5 @@ export default {
     extend: {},
   },
   plugins: [heroui()],
+  darkMode: 'class',
 }

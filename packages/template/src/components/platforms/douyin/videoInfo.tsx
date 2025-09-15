@@ -81,19 +81,13 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
           {/* 主卡片 */}
           <div className="overflow-hidden transition-all">
             {/* 视频封面 */}
-            <div className="overflow-hidden relative aspect-[9/16] max-h-[600px]">
+            <div className="overflow-hidden relative">
               <img
                 src={props.data.image_url}
                 alt={props.data.desc}
                 className="object-cover w-full h-full"
               />
               <div className="absolute inset-0 bg-gradient-to-t to-transparent from-black/30" />
-              {/* 抖音风格的播放按钮 */}
-              <div className="flex absolute inset-0 justify-center items-center">
-                <div className="flex justify-center items-center w-24 h-24 rounded-full backdrop-blur-sm bg-white/20">
-                  <div className="w-0 h-0 border-l-[12px] border-l-white border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent ml-1"></div>
-                </div>
-              </div>
             </div>
 
             {/* 卡片头部 */}
@@ -164,7 +158,7 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
               <div className="transform-gpu scale-[3.5] origin-right">
                 <Button 
                   size="sm" 
-                  color="default"
+                  className='bg-default-800 dark:bg-default-100'
                 >
                   <div className='flex items-center'>
                     {/* 图标 - 使用多层叠加创造故障效果 */}
