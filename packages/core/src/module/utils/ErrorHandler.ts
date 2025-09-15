@@ -113,7 +113,7 @@ async function handleBusinessError(
   // 发送给用户
   if (event && options.sendToUser !== false) {
     try {
-      await event.reply(img[0])
+      await event.reply(img)
     } catch (replyError) {
       logger.error(`发送错误消息给用户失败: ${replyError}`)
     }
@@ -133,10 +133,14 @@ async function handleBusinessError(
       const selectedBotId = botId.douyin.botId || botId.bilibili.botId || ''
         
       if (selectedBotId && master) {
-        await karin.sendMaster(selectedBotId, master, [
-          segment.text(`${options.businessName}执行出错！请即时解决以消除警告`),
-          img[0]
-        ])
+        await karin.sendMaster(
+          selectedBotId, 
+          master, 
+          [
+            segment.text(`${options.businessName}执行出错！请即时解决以消除警告`),
+            ...img
+          ]
+        )
       }
     } catch (masterError) {
       logger.error(`发送错误消息给主人失败: ${masterError}`)

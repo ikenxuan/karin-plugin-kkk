@@ -78,7 +78,7 @@ const MenuItemComponent: React.FC<{
 }> = ({ item }) => {
   return (
     <>
-      <div className="flex justify-center items-center font-bold cursor-pointer rounded-[26px] p-5 text-[34px] bg-content2 text-foreground hover:bg-content3 transition-colors select-text">
+      <div className="flex justify-center items-center font-bold cursor-pointer rounded-[26px] p-5 text-[34px] text-foreground bg-content3 transition-colors select-text">
         {item.title}
       </div>
       <div className="flex text-[27px] mx-[15px] my-[10px] mb-5 text-foreground-600 select-text">

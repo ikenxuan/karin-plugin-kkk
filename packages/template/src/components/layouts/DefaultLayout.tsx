@@ -81,7 +81,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                 )}>
                   Powered By
                 </div>
-                <img src="/image/karin-logo.png" className='w-auto h-16' />
+                <img src="/image/frame-logo.png" className='w-auto h-16' />
                 <span className='text-5xl font-black'>
                   {version.poweredBy} & Vite 
                 </span>
