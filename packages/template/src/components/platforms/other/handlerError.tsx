@@ -1,0 +1,419 @@
+import { AlertCircle, Clock, Code, FileText, Hash, Info, Send, Terminal, Zap } from 'lucide-react'
+import React from 'react'
+
+import { type APIError, type ApiErrorProps, type BusinessError, type InternalError, PLATFORM_CONFIG } from '../../../types/ohter/handlerError'
+import { DefaultLayout } from '../../layouts/DefaultLayout'
+
+/**
+ * 解析ANSI颜色代码并转换为HTML，保留换行符和空格格式
+ * @param text 包含ANSI颜色代码的文本
+ * @returns 解析后的JSX元素数组
+ */
+const parseAnsiColors = (text: string): React.ReactNode[] => {
+  // ANSI颜色代码映射 - 使用HeroUI主题色
+  const colorMap: { [key: string]: string } = {
+    '30': 'text-foreground', // 黑色 - 使用主题前景色
+    '31': 'text-danger', // 红色
+    '32': 'text-success', // 绿色
+    '33': 'text-warning', // 黄色
+    '34': 'text-primary', // 蓝色
+    '35': 'text-secondary', // 紫色
+    '36': 'text-primary-400', // 青色
+    '37': 'text-default-300', // 白色
+    '90': 'text-default-400', // 亮黑色（灰色）
+    '91': 'text-danger-400', // 亮红色
+    '92': 'text-success-400', // 亮绿色
+    '93': 'text-warning-400', // 亮黄色
+    '94': 'text-primary-400', // 亮蓝色
+    '95': 'text-secondary-400', // 亮紫色
+    '96': 'text-primary-300', // 亮青色
+    '97': 'text-default-100' // 亮白色
+  }
+
+  // 匹配ANSI转义序列的正则表达式
+  const ansiRegex = /\u001b\[(\d+)m/g
+  const parts: React.ReactNode[] = []
+  let lastIndex = 0
+  let currentColor = ''
+  let match
+
+  while ((match = ansiRegex.exec(text)) !== null) {
+    // 添加颜色代码之前的文本
+    if (match.index > lastIndex) {
+      const textPart = text.slice(lastIndex, match.index)
+      // 保留换行符和空格，将\n转换为实际换行
+      const formattedText = textPart.replace(/\\n/g, '\n')
+      if (currentColor) {
+        parts.push(
+          <span key={`${lastIndex}-${match.index}`} className={currentColor}>
+            {formattedText}
+          </span>
+        )
+      } else {
+        parts.push(formattedText)
+      }
+    }
+
+    // 处理颜色代码
+    const colorCode = match[1]
+    if (colorCode === '39' || colorCode === '0') {
+      // 重置颜色
+      currentColor = ''
+    } else if (colorMap[colorCode]) {
+      currentColor = colorMap[colorCode]
+    }
+
+    lastIndex = ansiRegex.lastIndex
+  }
+
+  // 添加剩余的文本
+  if (lastIndex < text.length) {
+    const remainingText = text.slice(lastIndex)
+    // 保留换行符和空格，将\n转换为实际换行
+    const formattedText = remainingText.replace(/\\n/g, '\n')
+    if (currentColor) {
+      parts.push(
+        <span key={`${lastIndex}-end`} className={currentColor}>
+          {formattedText}
+        </span>
+      )
+    } else {
+      parts.push(formattedText)
+    }
+  }
+
+  return parts.length > 0 ? parts : [text.replace(/\\n/g, '\n')]
+}
+
+/**
+ * 错误头部组件
+ * @param props 组件属性
+ * @returns JSX元素
+ */
+const ErrorHeader: React.FC<{
+  type: 'api_error' | 'internal_error' | 'business_error'
+  platform: string
+  method: string
+  timestamp: string
+}> = ({ type, platform, method, timestamp }) => {
+  const platformConfig = PLATFORM_CONFIG[platform as keyof typeof PLATFORM_CONFIG] || PLATFORM_CONFIG.unknown
+  const isInternalError = type === 'internal_error'
+  const isBusinessError = type === 'business_error'
+
+  return (
+    <div className='w-full max-w-[1440px] mx-auto px-20 py-16'>
+      <div className='p-16 rounded-3xl bg-danger-50 dark:bg-danger-900/20'>
+        <div className='flex items-center mb-12'>
+          <AlertCircle className='mr-6 w-16 h-16 text-danger-600 dark:text-danger-400' />
+          <div>
+            <h1 className='text-6xl font-bold text-danger-600 dark:text-danger-400'>
+              {isInternalError ? '内部错误' : isBusinessError ? '业务错误' : 'API错误'}
+            </h1>
+            <p className='mt-4 text-3xl text-default-600 dark:text-default-400'>
+              {platformConfig.displayName} - {method}
+            </p>
+          </div>
+        </div>
+        
+        <div className='flex items-center'>
+          <Clock className='mr-4 w-8 h-8 text-default-600 dark:text-default-400' />
+          <span className='text-2xl text-default-600 dark:text-default-400'>
+            发生时间：{new Date(timestamp).toLocaleString('zh-CN')}
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * API错误详情组件
+ * @param props 组件属性
+ * @returns JSX元素
+ */
+const ApiErrorDetails: React.FC<{
+  error: APIError
+}> = ({ error }) => {
+  return (
+    <div className='w-full max-w-[1440px] mx-auto px-20 py-12'>
+      <h2 className='mb-16 text-6xl font-bold text-foreground'>API错误详情</h2>
+      
+      <div className='grid grid-cols-1 gap-12 mb-16 md:grid-cols-2'>
+        <div className='p-12 rounded-3xl bg-content1'>
+          <h3 className='flex items-center mb-8 text-4xl font-semibold text-foreground'>
+            <Hash className='mr-4 w-10 h-10' />
+            错误代码
+          </h3>
+          <p className='font-mono text-4xl select-text text-danger'>{error.code}</p>
+        </div>
+        
+        <div className='p-12 rounded-3xl bg-content1'>
+          <h3 className='flex items-center mb-8 text-4xl font-semibold text-foreground'>
+            <Info className='mr-4 w-10 h-10' />
+            错误消息
+          </h3>
+          <p className='text-3xl leading-relaxed select-text text-foreground-600'>{error.message}</p>
+        </div>
+      </div>
+
+      {error.amagiError && (
+        <div className='p-12 mb-16 rounded-3xl bg-warning-50 dark:bg-warning-900/20'>
+          <h3 className='flex items-center mb-10 text-4xl font-semibold text-warning-800 dark:text-warning-400'>
+            <Zap className='mr-4 w-10 h-10' />
+            详细错误信息
+          </h3>
+          <div className='space-y-8 text-3xl'>
+            <div>
+              <span className='font-medium text-warning-700 dark:text-warning-300'>错误描述：</span>
+              <span className='ml-4 select-text text-foreground-700'>{error.amagiError.errorDescription}</span>
+            </div>
+            <div>
+              <span className='font-medium text-warning-700 dark:text-warning-300'>请求类型：</span>
+              <span className='ml-4 select-text text-foreground-700'>{error.amagiError.requestType}</span>
+            </div>
+            <div>
+              <span className='font-medium text-warning-700 dark:text-warning-300'>请求URL：</span>
+              <span className='ml-4 break-all select-text text-foreground-700'>{error.amagiError.requestUrl}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {error.data && (
+        <div className='p-12 rounded-3xl bg-content1'>
+          <h3 className='flex items-center mb-10 text-4xl font-semibold text-foreground'>
+            <Code className='mr-4 w-10 h-10' />
+            响应数据
+          </h3>
+          <pre className='overflow-auto p-10 text-2xl leading-relaxed rounded-2xl select-text bg-content2 text-foreground-600'>
+            {JSON.stringify(error.data, null, 2)}
+          </pre>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/**
+ * 业务错误详情组件
+ * @param props 组件属性
+ * @returns JSX元素
+ */
+const BusinessErrorDetails: React.FC<{
+  error: BusinessError
+  logs?: string | string[]
+}> = ({ error, logs }) => {
+  return (
+    <div className='w-full max-w-[1440px] mx-auto px-20 py-12'>
+      <h2 className='mb-16 text-6xl font-bold text-foreground'>业务错误详情</h2>
+      
+      <div className='grid grid-cols-1 gap-12 mb-16 md:grid-cols-2'>
+        <div className='p-12 rounded-3xl bg-content1'>
+          <h3 className='flex items-center mb-8 text-4xl font-semibold text-foreground'>
+            <Hash className='mr-4 w-10 h-10' />
+            错误类型
+          </h3>
+          <p className='font-mono text-4xl select-text text-danger'>{error.name}</p>
+        </div>
+        
+        <div className='p-12 rounded-3xl bg-content1'>
+          <h3 className='flex items-center mb-8 text-4xl font-semibold text-foreground'>
+            <Info className='mr-4 w-10 h-10' />
+            业务名称
+          </h3>
+          <p className='text-3xl leading-relaxed select-text text-foreground-600'>{error.businessName}</p>
+        </div>
+      </div>
+
+      <div className='p-12 mb-16 rounded-3xl bg-warning-50 dark:bg-warning-900/20'>
+        <h3 className='flex items-center mb-10 text-4xl font-semibold text-warning-800 dark:text-warning-400'>
+          <Zap className='mr-4 w-10 h-10' />
+          错误消息
+        </h3>
+        <div className='p-10 rounded-2xl bg-content1'>
+          <pre className='text-2xl leading-relaxed whitespace-pre-wrap select-text text-foreground-700'>
+            {error.message}
+          </pre>
+        </div>
+      </div>
+
+      <div className='p-12 mb-16 rounded-3xl bg-danger-50 dark:bg-danger-900/20'>
+        <h3 className='flex items-center mb-10 text-4xl font-semibold text-danger-800 dark:text-danger-400'>
+          <Terminal className='mr-4 w-10 h-10' />
+          调用栈信息
+        </h3>
+        <div className='p-10 rounded-2xl bg-content1'>
+          <pre className='text-2xl leading-relaxed whitespace-pre-wrap break-all select-text text-foreground-700'>
+            {error.stack.split('\n').map((line, index) => (
+              <div key={index} className={`py-1 ${index === 0 ? 'font-semibold text-danger' : ''}`}>
+                {line}
+              </div>
+            ))}
+          </pre>
+        </div>
+      </div>
+
+      {logs && (typeof logs === 'string' ? logs.length > 0 : logs.length > 0) && (
+        <div className='p-12 rounded-3xl bg-content1'>
+          <h3 className='flex items-center mb-10 text-4xl font-semibold text-foreground'>
+            <FileText className='mr-4 w-10 h-10' />
+            相关日志
+          </h3>
+          <div className='p-10 rounded-2xl bg-content1'>
+            <div className='space-y-2'>
+              {typeof logs === 'string' ? (
+                logs.split('\n\n').map((logSection, index) => {
+                  const parsedLog = parseAnsiColors(logSection)
+                  return (
+                    <div key={index} className='mb-6 font-mono text-2xl leading-relaxed whitespace-pre-wrap break-all select-text'>
+                      {parsedLog.length > 0 ? parsedLog : logSection}
+                    </div>
+                  )
+                })
+              ) : (
+                logs.map((log, index) => {
+                  const parsedLog = parseAnsiColors(log)
+                  return (
+                    <div key={index} className='font-mono text-2xl leading-relaxed whitespace-pre-wrap break-all select-text'>
+                      {parsedLog.length > 0 ? parsedLog : log}
+                    </div>
+                  )
+                })
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/**
+ * 内部错误详情组件
+ * @param props 组件属性
+ * @returns JSX元素
+ */
+const InternalErrorDetails: React.FC<{
+  error: InternalError
+}> = ({ error }) => {
+  /**
+   * 格式化调用栈信息 - 显示全部调用栈
+   * @param stack - 调用栈字符串
+   * @returns 格式化后的调用栈数组
+   */
+  const formatStackTrace = (stack: string): string[] => {
+    return stack.split('\n').filter(line => line.trim())
+  }
+
+  return (
+    <div className='w-full max-w-[1440px] mx-auto px-20 py-12'>
+      <h2 className='mb-16 text-6xl font-bold text-foreground'>内部错误详情</h2>
+      
+      <div className='grid grid-cols-1 gap-12 mb-16 md:grid-cols-2'>
+        <div className='p-12 rounded-3xl bg-content1'>
+          <h3 className='flex items-center mb-8 text-4xl font-semibold text-foreground'>
+            <Hash className='mr-4 w-10 h-10' />
+            错误类型
+          </h3>
+          <p className='font-mono text-4xl select-text text-danger'>{error.name}</p>
+        </div>
+        
+        <div className='p-12 rounded-3xl bg-content1'>
+          <h3 className='flex items-center mb-8 text-4xl font-semibold text-foreground'>
+            <Info className='mr-4 w-10 h-10' />
+            错误消息
+          </h3>
+          <p className='text-3xl leading-relaxed select-text text-foreground-600'>{error.message}</p>
+        </div>
+      </div>
+
+      <div className='p-12 rounded-3xl bg-danger-50 dark:bg-danger-900/20'>
+        <h3 className='flex items-center mb-10 text-4xl font-semibold text-danger-800 dark:text-danger-400'>
+          <Terminal className='mr-4 w-10 h-10' />
+          完整调用栈信息
+        </h3>
+        <div className='p-10 rounded-2xl bg-content1'>
+          <pre className='text-2xl leading-relaxed whitespace-pre-wrap break-all select-text text-foreground-700'>
+            {formatStackTrace(error.stack).map((line, index) => (
+              <div key={index} className={`py-1 ${index === 0 ? 'font-semibold text-danger' : ''}`}>
+                {line}
+              </div>
+            ))}
+          </pre>
+        </div>
+        <p className='mt-8 text-2xl text-default-600 dark:text-default-400'>显示完整调用栈信息</p>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * 发送给开发者提示组件
+ * @param props 组件属性
+ * @returns JSX元素
+ */
+const SendToDeveloper: React.FC = () => {
+  return (
+    <div className='w-full max-w-[1440px] mx-auto px-20 py-12'>
+      <div className='p-16 rounded-3xl bg-primary-50'>
+        <h3 className='flex items-center mb-10 text-5xl font-semibold text-primary-800'>
+          <Send className='mr-6 w-12 h-12' />
+          发送错误报告
+        </h3>
+        <div className='space-y-6'>
+          <p className='text-3xl leading-relaxed text-default-700'>
+            请将此错误报告截图发送给开发者，以便快速定位和解决问题。
+          </p>
+          <p className='text-2xl text-default-600'>
+            您可以通过以下方式联系开发者：GitHub Issues、QQ群：795874649。
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * API错误显示组件
+ * @param props 组件属性
+ * @returns JSX元素
+ */
+export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templateName'>> = (props) => {
+  const { data } = props
+  const { type, platform, error, method, timestamp, logs } = data
+  
+  const isInternalError = type === 'internal_error'
+  const isBusinessError = type === 'business_error'
+  const apiError = !isInternalError && !isBusinessError ? error as APIError : null
+  const internalError = isInternalError ? error as InternalError : null
+  const businessError = isBusinessError ? error as BusinessError : null
+
+  return (
+    <DefaultLayout {...props}>
+      {/* 头部信息 */}
+      <div className='h-[60px]' />
+      <ErrorHeader
+        type={type}
+        platform={platform}
+        method={method}
+        timestamp={timestamp}
+      />
+
+      {/* 错误详情 */}
+      {apiError ? (
+        <ApiErrorDetails error={apiError} />
+      ) : businessError ? (
+        <BusinessErrorDetails error={businessError} logs={logs} />
+      ) : internalError ? (
+        <InternalErrorDetails error={internalError} />
+      ) : null}
+
+      {/* 发送给开发者提示 */}
+      <SendToDeveloper />
+    </DefaultLayout>
+  )
+}
+
+handlerError.displayName = 'handlerError'
+
+export default handlerError

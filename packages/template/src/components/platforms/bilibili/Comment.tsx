@@ -49,7 +49,7 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
 
   if (hasError) {
     return (
-      <div className={`flex justify-center items-center text-sm ${className} bg-default-100 text-default-400`}>
+      <div className={`flex justify-center items-center text-sm select-text ${className} bg-content2 text-foreground-500`}>
         {placeholder || '图片加载失败'}
       </div>
     )
@@ -59,7 +59,7 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
     <img
       src={src}
       alt={alt}
-      className={className}
+      className={`select-text ${className}`}
       onError={handleError}
       referrerPolicy='no-referrer'
       crossOrigin='anonymous'
@@ -88,11 +88,11 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
             <img
               src={qrCodeDataUrl}
               alt='二维码'
-              className='object-contain w-full h-full'
+              className='object-contain w-full h-full select-text'
             />
           )
           : (
-            <div className='flex justify-center items-center w-full h-full text-6xl text-default-40'>
+            <div className='flex justify-center items-center w-full h-full text-6xl select-text text-foreground-400'>
               二维码占位符
             </div>
           )}
@@ -119,7 +119,7 @@ interface InfoItemProps {
 
 const InfoItem: React.FC<InfoItemProps> = ({ label, value, unit }) => {
   return (
-    <div className='text-[45px] p-2.5 tracking-[6px] text-left break-all text-default-70'>
+    <div className='text-[45px] p-2.5 tracking-[6px] text-left break-all text-foreground-600 select-text'>
       {label}：{value}{unit}
     </div>
   )
@@ -141,8 +141,8 @@ const VideoInfoHeader: React.FC<VideoInfoHeaderProps> = ({
     <div className='flex flex-col mt-2.5 -ml-10'>
       {/* B站Logo占位符 */}
       <div className='w-[580px] h-auto mb-5'>
-        <div className='text-8xl font-bold text-blue-500'>
-          <img src='/image/bilibili/bilibili.png' alt='B站Logo' />
+        <div className='text-8xl font-bold text-primary'>
+          <img src='/image/bilibili/bilibili.png' alt='B站Logo' className='select-text' />
         </div>
       </div>
 
@@ -181,14 +181,15 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
   isLast = false
 }) => {
   return (
-    <div className={`flex px-10 pb-0 relative max-w-full ${isLast ? '' : 'mb-[70px]'}`}>
+    // eslint-disable-next-line @stylistic/space-infix-ops
+    <div className={`flex px-10 pb-0 relative max-w-full ${isLast ? '':'mb-[70px]'}`}>
       {/* 用户头像区域 */}
       <div className='relative mr-[33.75px] flex-shrink-0'>
         {/* 主头像 */}
         <ImageWithSkeleton
           src={comment.avatar || 'AVATAR_PLACEHOLDER'}
           alt='用户头像'
-          className='w-50 h-50 rounded-full shadow-[0_20px_50px_0_rgba(0,0,0,0.3)]'
+          className='rounded-full w-50 h-50 shadow-large'
           placeholder='头像'
           isCircular
         />
@@ -220,20 +221,20 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
         <div className='flex items-start gap-[10px] mb-[15px] text-[50px]'>
           {/* 用户名区域  */}
           <div
-            className='flex-shrink-0 flex items-center gap-2 leading-[1.2] text-default-30 font-bold [&>span]:inline-block [&>span]:leading-[1.2] [&>svg]:inline-block [&>svg]:w-[100px] [&>svg]:h-[100px] [&>svg]:align-middle [&>svg]:flex-shrink-0'
+            className='flex-shrink-0 flex items-center gap-2 leading-[1.2] text-foreground-700 font-bold [&>span]:inline-block [&>span]:leading-[1.2] [&>svg]:inline-block [&>svg]:w-[100px] [&>svg]:h-[100px] [&>svg]:align-middle [&>svg]:flex-shrink-0 select-text'
             dangerouslySetInnerHTML={{ __html: comment.uname }}
           />
 
           {/* 作者标签 */}
           {comment.label_type === 1 && (
-            <div className='inline-block px-[20px] py-[2px] rounded-[10px] text-[45px] bg-[rgb(254,44,85)] text-white flex-shrink-0 self-center'>
+            <div className='inline-block px-[20px] py-[2px] rounded-[10px] text-[45px] bg-danger text-danger-foreground flex-shrink-0 self-center select-text'>
               作者
             </div>
           )}
 
           {/* 状态标签 */}
           {comment.status_label && (
-            <div className='inline-block px-[20px] py-[2px] rounded-[10px] text-[45px] bg-default-20 text-default-60 flex-shrink-0 self-center'>
+            <div className='inline-block px-[20px] py-[2px] rounded-[10px] text-[45px] bg-content2 text-foreground-600 flex-shrink-0 self-center select-text'>
               {comment.status_label}
             </div>
           )}
@@ -242,7 +243,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
         {/* 评论文本 */}
         <CommentText
           content={comment.message}
-          className='text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-default-90 mb-[20px] [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
+          className='text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-foreground mb-[20px] [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em] select-text'
           style={{
             wordBreak: 'break-word',
             overflowWrap: 'break-word'
@@ -251,7 +252,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
 
         {/* 评论图片 */}
         {(comment.img_src || comment.sticker) && (
-          <div className='flex my-5 overflow-hidden rounded-[25px] w-[95%] shadow-[0_20px_50px_0_rgba(0,0,0,0.3)]'>
+          <div className='flex my-5 overflow-hidden rounded-[25px] w-[95%] shadow-large'>
             <ImageWithSkeleton
               src={comment.img_src || comment.sticker || 'IMAGE_PLACEHOLDER'}
               alt='评论图片'
@@ -262,29 +263,29 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
         )}
 
         {/* 点赞区域 */}
-        <div className='flex items-center justify-between mt-[37.5px] whitespace-nowrap text-default-50'>
+        <div className='flex items-center justify-between mt-[37.5px] whitespace-nowrap text-foreground-500'>
           <div className='flex flex-1 items-center'>
-            <div className='text-[45px] tracking-[2px]'>
+            <div className='text-[45px] tracking-[2px] select-text'>
               {comment.ctime} · {comment.location}
               {comment.replylength > 0
                 ? (
-                  <span className='text-default-40 tracking-[3px] ml-4'>
+                  <span className='text-foreground-400 tracking-[3px] ml-4'>
                     {comment.replylength}回复
                   </span>
                 )
                 : (
-                  <span className='ml-4 text-default-60'>回复</span>
+                  <span className='ml-4 text-foreground-600'>回复</span>
                 )}
             </div>
           </div>
 
           <div className='flex items-center gap-[75px] ml-auto'>
             <div className='flex items-center gap-[15px]'>
-              <ThumbsUp className='w-[60px] h-[60px] text-default-50' />
-              <span className='text-[45px] text-default-50'>{comment.like}</span>
+              <ThumbsUp className='w-[60px] h-[60px] text-foreground-500' />
+              <span className='text-[45px] text-foreground-500 select-text'>{comment.like}</span>
             </div>
             <div className='flex items-center gap-[15px]'>
-              <ThumbsDown className='w-[60px] h-[60px] text-default-50' />
+              <ThumbsDown className='w-[60px] h-[60px] text-foreground-500' />
             </div>
           </div>
         </div>
@@ -293,11 +294,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
   )
 }
 
-/**
- * B站评论组件
- * @param props 组件属性
- * @returns JSX元素
- */
+// ... existing code ...
 export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType' | 'templateName'>> = React.memo((props) => {
   const processedData = useMemo(() => {
     if (!props.data) {
@@ -360,7 +357,7 @@ export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType'
             ))
           )
           : (
-            <div className='py-10 text-center text-gray-500'>
+            <div className='py-10 text-center select-text text-foreground-500'>
               暂无评论数据
             </div>
           )}
@@ -371,11 +368,7 @@ export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType'
 
 export default BilibiliComment
 
-/**
- * 处理评论文本中的图片防盗链问题
- * @param htmlContent HTML内容
- * @returns 处理后的HTML内容
- */
+// ... existing code ...
 const processCommentHTML = (htmlContent: string): string => {
   // 使用正则表达式匹配所有img标签并添加防盗链属性
   return htmlContent.replace(
@@ -384,11 +377,7 @@ const processCommentHTML = (htmlContent: string): string => {
   )
 }
 
-/**
- * 评论文本组件
- * @param props 组件属性
- * @returns JSX元素
- */
+// ... existing code ...
 interface CommentTextProps {
   /** HTML内容 */
   content: string

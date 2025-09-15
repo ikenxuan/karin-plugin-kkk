@@ -71,20 +71,20 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
             <EnhancedImage
               src={props.mainCover}
               alt={props.title}
-              className='object-cover w-full h-full'
+              className='object-cover w-full h-full select-text'
             />
           </div>
           {/* UP主信息 */}
           <div className='flex gap-12 items-center mt-15'>
             <div className='relative'>
               <EnhancedImage 
-                className='w-28 h-28 rounded-full'
+                className='w-28 h-28 rounded-full select-text'
                 src={`https://images.weserv.nl/?url=${encodeURIComponent(props.upInfo.avatar)}`} 
                 alt={props.upInfo.uname}
               />
               {props.upInfo.avatar_subscript_url && (
                 <EnhancedImage
-                  className='absolute -right-1 -bottom-1 w-8 h-8'
+                  className='absolute -right-1 -bottom-1 w-8 h-8 select-text'
                   src={props.upInfo.avatar_subscript_url}
                   alt='头像角标'
                 />
@@ -92,7 +92,7 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
               {/* 挂件 */}
               {props.upInfo.pendant?.image && (
                 <EnhancedImage
-                  className='absolute inset-0 w-full h-full transform scale-160'
+                  className='absolute inset-0 w-full h-full transform select-text scale-160'
                   src={props.upInfo.pendant.image}
                   alt={props.upInfo.pendant.name || '挂件'}
                 />
@@ -102,7 +102,7 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
             <div className='flex flex-col gap-4'>
               <div className='flex gap-3 items-center'>
                 <div 
-                  className='text-4xl font-medium'
+                  className='text-4xl font-medium select-text'
                   style={{
                     color: props.upInfo.vip_status === 1 
                       ? (props.upInfo.nickname_color || '#FB7299')
@@ -117,12 +117,12 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
                     {props.upInfo.verify_type === 1 ? (
                       <Shield 
                         size={20} 
-                        className='text-yellow-400' 
+                        className='text-warning' 
                       />
                     ) : (
                       <Crown 
                         size={20} 
-                        className='text-blue-400' 
+                        className='text-primary' 
                       />
                     )}
                   </div>
@@ -131,7 +131,7 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
                 {props.upInfo.vip_status === 1 && props.upInfo.vip_label?.text && (
                   <Chip
                     size='sm'
-                    className='px-2 py-1 text-xs'
+                    className='px-2 py-1 text-xs select-text'
                     style={{
                       backgroundColor: props.upInfo.vip_label.bg_color || '#FB7299',
                       color: props.upInfo.vip_label.text_color || '#FFFFFF',
@@ -144,7 +144,7 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
               </div>
               
               {/* 粉丝数和关注状态 */}
-              <div className='flex gap-6 items-center text-3xl text-default-100'>
+              <div className='flex gap-6 items-center text-3xl select-text text-foreground'>
                 <Users size={30} />
                 <span>{formatNumber(props.upInfo.follower)}粉丝</span>
                 
@@ -154,14 +154,14 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
                     size='sm'
                     color='primary'
                     variant='flat'
-                    className='text-xs'
+                    className='text-xs select-text'
                   >
                     已关注
                   </Chip>
                 )}
               </div>
               
-              <div className='flex gap-2 items-center text-2xl text-default-60'>
+              <div className='flex gap-2 items-center text-2xl select-text text-foreground-600'>
                 <Hash size={20} />
                 <span>UID: {props.upInfo.mid}</span>
               </div>
@@ -169,13 +169,13 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
           </div>
         </div>
 
-        <div className='flex flex-col flex-1 justify-between text-default-100'>
+        <div className='flex flex-col flex-1 justify-between text-foreground'>
           <div>
-            <div className='mb-8 text-8xl font-bold leading-tight'>
+            <div className='mb-8 text-8xl font-bold leading-tight select-text'>
               {props.title}
             </div>
             {props.subtitle && (
-              <div className='mb-12 text-4xl text-default-100'>
+              <div className='mb-12 text-4xl select-text text-foreground'>
                 {props.subtitle}
               </div>
             )}
@@ -188,7 +188,7 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
                     key={index}
                     radius="sm"
                     size="lg"
-                    className='px-4 py-2 text-3xl backdrop-blur-sm text-default-100 bg-default-20'
+                    className='px-4 py-2 text-3xl backdrop-blur-sm select-text text-foreground bg-content2'
                     classNames={{
                       base: 'w-32 h-12'
                     }}
@@ -202,18 +202,18 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
             {/* CV信息 */}
             {actorList.length > 0 && (
               <div className='mb-12'>
-                <div className='flex gap-6 items-center mb-6 text-3xl text-default-100'>
+                <div className='flex gap-6 items-center mb-6 text-3xl select-text text-foreground'>
                   <Users size={30} />
                   <span>声优阵容</span>
                 </div>
                 <div className='flex flex-wrap gap-8'>
                   {actorList.slice(0, 6).map((actor, index) => (
-                    <div key={index} className='text-3xl text-default-100'>
+                    <div key={index} className='text-3xl select-text text-foreground'>
                       {actor}
                     </div>
                   ))}
                   {actorList.length > 6 && (
-                    <div className='text-3xl text-default-100'>等{actorList.length}人</div>
+                    <div className='text-3xl select-text text-foreground'>等{actorList.length}人</div>
                   )}
                 </div>
               </div>
@@ -222,11 +222,11 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
             {/* 评价信息 */}
             {props.evaluate && (
               <div className='mb-12'>
-                <div className='flex gap-6 items-center mb-6 text-3xl text-default-100'>
+                <div className='flex gap-6 items-center mb-6 text-3xl select-text text-foreground'>
                   <Star size={30} />
                   <span>评价</span>
                 </div>
-                <div className='text-3xl leading-relaxed text-default-100'>
+                <div className='text-3xl leading-relaxed select-text text-foreground'>
                   {props.evaluate}
                 </div>
               </div>
@@ -237,34 +237,34 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
           <div className='grid grid-cols-4 gap-16'>
             <div className='items-center min-w-0'>
               <div className='flex items-baseline'>
-                <span className='text-4xl font-bold text-default-100'>{formatNumber(props.stat.views).slice(0, -1)}</span>
-                <span className='text-xl font-bold text-default-100'>{formatNumber(props.stat.views).slice(-1)}</span>
+                <span className='text-4xl font-bold select-text text-foreground'>{formatNumber(props.stat.views).slice(0, -1)}</span>
+                <span className='text-xl font-bold select-text text-foreground'>{formatNumber(props.stat.views).slice(-1)}</span>
               </div>
-              <span className='text-2xl whitespace-nowrap'>播放</span>
+              <span className='text-2xl whitespace-nowrap select-text'>播放</span>
             </div>
 
             <div className='items-center min-w-0'>
               <div className='flex items-baseline'>
-                <span className='text-4xl font-bold text-default-100'>{formatNumber(props.stat.favorites).slice(0, -1)}</span>
-                <span className='text-xl font-bold text-default-100'>{formatNumber(props.stat.favorites).slice(-1)}</span>
+                <span className='text-4xl font-bold select-text text-foreground'>{formatNumber(props.stat.favorites).slice(0, -1)}</span>
+                <span className='text-xl font-bold select-text text-foreground'>{formatNumber(props.stat.favorites).slice(-1)}</span>
               </div>
-              <span className='text-2xl whitespace-nowrap'>收藏</span>
+              <span className='text-2xl whitespace-nowrap select-text'>收藏</span>
             </div>
 
             <div className='items-center min-w-0'>
               <div className='flex items-baseline'>
-                <span className='text-4xl font-bold text-default-100'>{formatNumber(props.stat.danmakus).slice(0, -1)}</span>
-                <span className='text-xl font-bold text-default-100'>{formatNumber(props.stat.danmakus).slice(-1)}</span>
+                <span className='text-4xl font-bold select-text text-foreground'>{formatNumber(props.stat.danmakus).slice(0, -1)}</span>
+                <span className='text-xl font-bold select-text text-foreground'>{formatNumber(props.stat.danmakus).slice(-1)}</span>
               </div>
-              <span className='text-2xl whitespace-nowrap'>弹幕</span>
+              <span className='text-2xl whitespace-nowrap select-text'>弹幕</span>
             </div>
 
             <div className='items-center min-w-0'>
               <div className='flex items-baseline'>
-                <span className='text-4xl font-bold text-default-100'>{formatNumber(props.stat.coins).slice(0, -1)}</span>
-                <span className='text-xl font-bold text-default-100'>{formatNumber(props.stat.coins).slice(-1)}</span>
+                <span className='text-4xl font-bold select-text text-foreground'>{formatNumber(props.stat.coins).slice(0, -1)}</span>
+                <span className='text-xl font-bold select-text text-foreground'>{formatNumber(props.stat.coins).slice(-1)}</span>
               </div>
-              <span className='text-2xl whitespace-nowrap'>投币</span>
+              <span className='text-2xl whitespace-nowrap select-text'>投币</span>
             </div>
           </div>
         </div>
@@ -325,14 +325,14 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
   return (
     <div className='px-10'>
       {/* 剧集标题 */}
-      <div className='flex gap-8 items-center mb-20 text-5xl font-bold text-default-90'>
+      <div className='flex gap-8 items-center mb-20 text-5xl font-bold select-text text-foreground'>
         <Play size={46} />
         <span>剧集列表</span>
         <Chip 
           size="lg"
           color='danger'
           variant='flat'
-          className='px-4 py-2 text-4xl'
+          className='px-4 py-2 text-4xl select-text'
           classNames={{
             base: 'h-18'
           }}
@@ -355,13 +355,13 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
                 {isFirstOfDate ? (
                   // 日期节点
                   <>  
-                    <div className='text-4xl text-default-100'>{month}</div>
-                    <div className='flex justify-center items-center text-7xl font-bold text-default-100'>
+                    <div className='text-4xl select-text text-foreground'>{month}</div>
+                    <div className='flex justify-center items-center text-7xl font-bold select-text text-foreground'>
                       {day}
                     </div>
                     {!isLastOfAll && (
                       <div className={clsx(
-                        'mt-8 w-1 bg-default-30',
+                        'mt-8 w-1 bg-divider',
                         episodesInSameDate > 1 ? 'h-110' : 'h-95'
                       )} />
                     )}
@@ -369,11 +369,11 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
                 ) : (
                   // 普通节点
                   <>
-                    <div className='w-1 h-10 bg-default-30' />
-                    <div className='my-2 w-4 h-4 rounded-full bg-default-30' />
+                    <div className='w-1 h-10 bg-divider' />
+                    <div className='my-2 w-4 h-4 rounded-full bg-divider' />
                     {(!isLastOfAll || episodesInSameDate > 1) && (
                       <div className={clsx(
-                        'w-1 bg-default-30',
+                        'w-1 bg-divider',
                         isLastOfDate ? 'h-110' : 'h-130'
                       )} />
                     )}
@@ -392,14 +392,14 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
                   <div className='flex flex-shrink-0 gap-8 items-center'>
                     <div className='relative'>
                       <EnhancedImage 
-                        className='w-32 h-32 rounded-full'
+                        className='w-32 h-32 rounded-full select-text'
                         src={`https://images.weserv.nl/?url=${encodeURIComponent(props.upInfo.avatar)}`} 
                         alt={''}   
                       />
                     </div>
                     <div className='flex flex-col gap-6'>
-                      <div className='text-4xl font-bold text-default-80'>{props.upInfo.uname}</div>
-                      <div className='flex gap-4 items-center text-3xl text-default-60'>
+                      <div className='text-4xl font-bold select-text text-foreground-700'>{props.upInfo.uname}</div>
+                      <div className='flex gap-4 items-center text-3xl select-text text-foreground-600'>
                         <Calendar size={30} />
                         <span>发布了内容</span>
                       </div>
@@ -408,13 +408,13 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
                   
                   {/* 第x集标题 */}
                   <div className='flex-shrink-0 pr-20'>
-                    <div className='text-5xl font-semibold text-default-70'>
+                    <div className='text-5xl font-semibold select-text text-foreground-600'>
                       第{actualEpisodeNumber}集
                     </div>
                   </div>
                 </div>
                 {/* 剧集卡片 */}
-                <div className='overflow-hidden shadow-lg bg-default-0 rounded-4xl'>
+                <div className='overflow-hidden shadow-large bg-content1 rounded-4xl'>
                   <div className='flex gap-12 p-12'>
                     {/* 剧集封面 */}
                     <div className='relative flex-shrink-0'>
@@ -422,13 +422,13 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
                         <EnhancedImage
                           src={episode.cover}
                           alt={`第${actualEpisodeNumber}集 ${episode.long_title}`}
-                          className='object-cover w-full h-full'
+                          className='object-cover w-full h-full select-text'
                         />
                         {episode.badge && (
                           <Chip 
                             radius="lg" 
                             size="lg" 
-                            className='absolute top-3 right-3 py-1 text-2xl font-medium'
+                            className='absolute top-3 right-3 py-1 text-2xl font-medium select-text'
                             style={{
                               backgroundColor: episode.badge_info?.bg_color || '#FB7299',
                               color: '#FFFFFF'
@@ -442,22 +442,22 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
 
                     {/* 剧集信息 */}
                     <div className='flex flex-col flex-1 justify-center h-64'>
-                      <div className='mb-8 text-5xl font-semibold text-default-90 line-clamp-2'>
+                      <div className='mb-8 text-5xl font-semibold select-text text-foreground line-clamp-2'>
                         {episode.long_title}
                       </div>
                       
                       <div className='space-y-4 text-4xl'>
-                        <div className='flex gap-6 items-center text-default-60'>
+                        <div className='flex gap-6 items-center select-text text-foreground-600'>
                           <Hash size={36} />
                           <span className='truncate'>{episode.bvid}</span>
                         </div>
                         
-                        <div className='flex gap-6 items-center text-default-60'>
+                        <div className='flex gap-6 items-center select-text text-foreground-600'>
                           <Clock size={36} />
                           <span className='whitespace-nowrap'>{formatDateTime(episode.pub_time)}</span>
                         </div>
 
-                        <div className='flex gap-6 items-center text-default-60'>
+                        <div className='flex gap-6 items-center select-text text-foreground-600'>
                           <Share2 size={36} />
                           <span className='truncate'>{episode.link}</span>
                         </div>
@@ -475,10 +475,7 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
   )
 }
 
-/**
- * B站番剧组件
- * @param props 番剧组件属性
- */
+// ... existing code ...
 export const BangumiBilibili: React.FC<Omit<BangumiBilibiliProps, 'templateType' | 'templateName'>> = React.memo((props) => {
   return (
     <DefaultLayout {...props}>

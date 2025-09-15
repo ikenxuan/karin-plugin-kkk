@@ -23,10 +23,7 @@ const DouyinHeader: React.FC<{ useDarkTheme?: boolean }> = ({ useDarkTheme }) =>
           className='object-contain w-full h-full'
         />
       </div>
-      <span className={`text-[65px] ml-4 ${
-        useDarkTheme ? 'text-[#d3d3d3]' : 'text-[#3e3e3eb8]'
-      }`}
-      >
+      <span className='text-[65px] ml-4 text-foreground-600'>
         记录美好生活
       </span>
     </div>
@@ -41,7 +38,7 @@ const DouyinHeader: React.FC<{ useDarkTheme?: boolean }> = ({ useDarkTheme }) =>
 const CoverSection: React.FC<{ imageUrl: string }> = ({ imageUrl }) => {
   return (
     <div className='flex flex-col items-center my-5'>
-      <div className='flex flex-col items-center overflow-hidden shadow-[0px_10px_20px_0px_#4343434f] rounded-[25px] w-[90%] relative'>
+      <div className='flex flex-col items-center overflow-hidden shadow-large rounded-[25px] w-[90%] relative'>
         <img
           className='rounded-[25px] object-contain w-full h-full'
           src={imageUrl}
@@ -65,24 +62,22 @@ const InfoSection: React.FC<{
   share: string
   createTime: string
   useDarkTheme?: boolean
-}> = ({ desc, dianzan, pinglun, shouchang, share, createTime, useDarkTheme }) => {
+}> = ({ desc, dianzan, pinglun, shouchang, share, createTime }) => {
   return (
     <div className='flex flex-col px-16 py-5'>
       <div
-        className={`text-[70px] font-bold leading-relaxed mb-9 ${
-          useDarkTheme ? 'text-[#e9e9e9]' : 'text-black'
-        }`}
+        className='text-[70px] font-bold leading-relaxed mb-9 text-foreground select-text'
         style={{ letterSpacing: '1.5px', wordWrap: 'break-word' }}
         dangerouslySetInnerHTML={{ __html: desc }}
       />
-      <div className='flex items-center gap-6 text-[45px] text-[#808080] font-light mb-2.5'>
+      <div className='flex items-center gap-6 text-[45px] text-foreground-500 font-light mb-2.5 select-text'>
         <div className='flex gap-2 items-center'>
-          <Heart className='w-11 h-11' />
+          <Heart className='w-11 h-11 text-like' />
           <span>{dianzan}点赞</span>
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <MessageCircle className='w-11 h-11' />
+          <MessageCircle className='w-11 h-11 text-comment' />
           <span>{pinglun}评论</span>
         </div>
         <span>·</span>
@@ -92,12 +87,12 @@ const InfoSection: React.FC<{
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <Share2 className='w-11 h-11' />
+          <Share2 className='w-11 h-11 text-success' />
           <span>{share}分享</span>
         </div>
       </div>
-      <div className='flex items-center gap-2 text-[45px] text-[#808080] font-light'>
-        <Clock className='w-11 h-11' />
+      <div className='flex items-center gap-2 text-[45px] text-foreground-500 font-light select-text'>
+        <Clock className='w-11 h-11 text-time' />
         <span>发布于{createTime}</span>
       </div>
     </div>
@@ -115,8 +110,7 @@ const UserInfoSection: React.FC<DouyinDynamicUserInfoProps> = ({
   douyinId,
   likes,
   following,
-  followers,
-  useDarkTheme
+  followers
 }) => {
   return (
     <div className='flex flex-col pl-16'>
@@ -124,36 +118,32 @@ const UserInfoSection: React.FC<DouyinDynamicUserInfoProps> = ({
         <img
           src={avater_url}
           alt='头像'
-          className='w-[200px] h-[200px] rounded-full mr-7 shadow-[0px_10px_20px_0px_#4343434f]'
+          className='w-[200px] h-[200px] rounded-full mr-7 shadow-large'
         />
         <div className='flex flex-col'>
-          <span className={`text-[80px] font-bold ${
-            useDarkTheme ? 'text-[#ededed]' : 'text-[#606060]'
-          }`}
-          >
+          <span className='text-[80px] font-bold text-foreground-700 select-text'>
             {username}
           </span>
         </div>
       </div>
       <div
-        className={`flex flex-col text-[35px] mt-6 space-y-1 ${
-          useDarkTheme ? 'text-[#d1d1d1]' : 'text-[#2f2f2f]'
-        }`} style={{ letterSpacing: '2.5px' }}
+        className='flex flex-col text-[35px] mt-6 space-y-1 text-foreground-600 select-text' 
+        style={{ letterSpacing: '2.5px' }}
       >
         <div className='flex gap-2 items-center'>
           <Hash className='w-8 h-8' />
           <span>抖音号: {douyinId}</span>
         </div>
         <div className='flex gap-2 items-center'>
-          <Heart className='w-8 h-8' />
+          <Heart className='w-8 h-8 text-like' />
           <span>获赞: {likes}</span>
         </div>
         <div className='flex gap-2 items-center'>
-          <Eye className='w-8 h-8' />
+          <Eye className='w-8 h-8 text-view' />
           <span>关注: {following}</span>
         </div>
         <div className='flex gap-2 items-center'>
-          <Users className='w-8 h-8' />
+          <Users className='w-8 h-8 text-follow' />
           <span>粉丝: {followers}</span>
         </div>
       </div>
@@ -169,11 +159,11 @@ const UserInfoSection: React.FC<DouyinDynamicUserInfoProps> = ({
 const QRCodeSection: React.FC<DouyinDynamicQRCodeProps> = ({ qrCodeDataUrl }) => {
   return (
     <div className='flex flex-col-reverse items-center -mb-12 mr-18'>
-      <div className='flex items-center gap-2 text-[45px] text-right mt-5 text-default-90'>
+      <div className='flex items-center gap-2 text-[45px] text-right mt-5 text-foreground-500 select-text'>
         <QrCode className='w-11 h-11' />
         <span>作品直链：永久有效</span>
       </div>
-      <div className='p-2.5 rounded-sm border-[7px] border-dashed border-default-90'>
+      <div className='p-2.5 rounded-sm border-[7px] border-dashed border-divider'>
         <img
           src={qrCodeDataUrl}
           alt='二维码'
@@ -217,7 +207,7 @@ export const DouyinDynamic: React.FC<Omit<DouyinDynamicProps, 'templateType' | '
         <div className='h-[100px]' />
 
         {/* 底部文字 */}
-        <div className='text-[70px] text-right mr-21 -mb-11 z-[-1] text-default-90 '>
+        <div className='text-[70px] text-right mr-21 -mb-11 z-[-1] text-foreground-400 select-text'>
           抖音作品推送
         </div>
 

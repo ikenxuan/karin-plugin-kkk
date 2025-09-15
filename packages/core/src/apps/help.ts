@@ -7,7 +7,7 @@ import { karinPathTemp } from 'node-karin/root'
 import { Common, Render, Root } from '@/module'
 
 export const help = karin.command(/^#?kkk帮助$/, async (e) => {
-  const img = await Render('help/index')
+  const img = await Render('other/help')
   await e.reply(img)
   return true
 }, { name: 'kkk-帮助' })

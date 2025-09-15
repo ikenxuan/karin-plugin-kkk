@@ -22,13 +22,10 @@ const DouyinHeader: React.FC<{ useDarkTheme?: boolean }> = ({ useDarkTheme }) =>
         <img
           src={useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
           alt='抖音Logo'
-          className='object-contain w-full h-full'
+          className='object-contain w-full h-full select-text'
         />
       </div>
-      <span className={`text-[65px] ml-4 ${
-        useDarkTheme ? 'text-[#d3d3d3]' : 'text-[#3e3e3eb8]'
-      }`}
-      >
+      <span className='text-[65px] ml-4 text-foreground select-text'>
         记录美好生活
       </span>
     </div>
@@ -43,9 +40,9 @@ const DouyinHeader: React.FC<{ useDarkTheme?: boolean }> = ({ useDarkTheme }) =>
 const MusicCoverSection: React.FC<MusicCoverProps> = ({ imageUrl }) => {
   return (
     <div className='flex flex-col items-center my-5'>
-      <div className='flex flex-col items-center overflow-hidden shadow-[0px_10px_20px_0px_#4343434f] rounded-[25px] w-[90%] relative'>
+      <div className='flex flex-col items-center overflow-hidden shadow-large rounded-[25px] w-[90%] relative'>
         <img
-          className='rounded-[25px] object-contain w-full h-full'
+          className='rounded-[25px] object-contain w-full h-full select-text'
           src={imageUrl}
           alt='音乐封面'
         />
@@ -63,30 +60,27 @@ const MusicInfoSection: React.FC<MusicInfoProps & { desc: string }> = ({
   desc, 
   musicId, 
   userCount, 
-  createTime, 
-  useDarkTheme 
+  createTime
 }) => {
   return (
     <div className='flex flex-col px-16 py-5'>
       <div
-        className={`text-[70px] font-bold leading-relaxed mb-9 ${
-          useDarkTheme ? 'text-[#e9e9e9]' : 'text-black'
-        }`}
+        className='text-[70px] font-bold leading-relaxed mb-9 text-foreground select-text'
         style={{ letterSpacing: '1.5px', wordWrap: 'break-word' }}
         dangerouslySetInnerHTML={{ __html: desc }}
       />
-      <div className='flex flex-col gap-2 text-[45px] text-[#808080] font-light mb-2.5'>
-        <div className='flex gap-2 items-center'>
+      <div className='flex flex-col gap-2 text-[45px] text-default-500 font-light mb-2.5'>
+        <div className='flex gap-2 items-center select-text'>
           <Music className='w-11 h-11' />
           <span>音乐ID: {musicId}</span>
         </div>
-        <div className='flex gap-2 items-center'>
-          <Users className='w-11 h-11' />
+        <div className='flex gap-2 items-center select-text'>
+          <Users className='w-11 h-11 text-follow' />
           <span>{userCount} 人使用过</span>
         </div>
       </div>
-      <div className='flex items-center gap-2 text-[45px] text-[#808080] font-light'>
-        <Clock className='w-11 h-11' />
+      <div className='flex items-center gap-2 text-[45px] text-default-500 font-light select-text'>
+        <Clock className='w-11 h-11 text-time' />
         <span>图片生成于{createTime}</span>
       </div>
     </div>
@@ -104,8 +98,7 @@ const MusicAuthorInfoSection: React.FC<MusicAuthorInfoProps> = ({
   userShortId,
   totalFavorited,
   followingCount,
-  fans,
-  useDarkTheme
+  fans
 }) => {
   return (
     <div className='flex flex-col pl-16'>
@@ -113,21 +106,16 @@ const MusicAuthorInfoSection: React.FC<MusicAuthorInfoProps> = ({
         <img
           src={avatarUrl}
           alt='头像'
-          className='w-[200px] h-[200px] rounded-full mr-7 shadow-[0px_10px_20px_0px_#4343434f]'
+          className='w-[200px] h-[200px] rounded-full mr-7 shadow-large select-text'
         />
         <div className='flex flex-col'>
-          <span className={`text-[80px] font-bold ${
-            useDarkTheme ? 'text-[#ededed]' : 'text-[#606060]'
-          }`}
-          >
+          <span className='text-[80px] font-bold text-foreground select-text'>
             {username}
           </span>
         </div>
       </div>
       <div
-        className={`flex flex-col text-[35px] mt-6 space-y-1 ${
-          useDarkTheme ? 'text-[#d1d1d1]' : 'text-[#2f2f2f]'
-        }`} 
+        className='flex flex-col text-[35px] mt-6 space-y-1 text-foreground select-text' 
         style={{ letterSpacing: '2.5px' }}
       >
         <div className='flex gap-2 items-center'>
@@ -135,7 +123,7 @@ const MusicAuthorInfoSection: React.FC<MusicAuthorInfoProps> = ({
           <span>ID: {userShortId}</span>
         </div>
         <div className='flex gap-2 items-center'>
-          <Heart className='w-8 h-8' />
+          <Heart className='w-8 h-8 text-like' />
           <span>获赞: {totalFavorited}</span>
         </div>
         <div className='flex gap-2 items-center'>
@@ -143,7 +131,7 @@ const MusicAuthorInfoSection: React.FC<MusicAuthorInfoProps> = ({
           <span>关注: {followingCount}</span>
         </div>
         <div className='flex gap-2 items-center'>
-          <Users className='w-8 h-8' />
+          <Users className='w-8 h-8 text-follow' />
           <span>粉丝: {fans}</span>
         </div>
       </div>
@@ -159,15 +147,15 @@ const MusicAuthorInfoSection: React.FC<MusicAuthorInfoProps> = ({
 const MusicQRCodeSection: React.FC<MusicQRCodeProps> = ({ qrCodeDataUrl }) => {
   return (
     <div className='flex flex-col-reverse items-center -mb-12 mr-18'>
-      <div className='flex items-center gap-2 text-[45px] text-right mt-5 text-default-90'>
+      <div className='flex items-center gap-2 text-[45px] text-right mt-5 text-default-500 select-text'>
         <QrCode className='w-11 h-11' />
         <span>文件直链：永久有效</span>
       </div>
-      <div className='p-2.5 rounded-sm border-[7px] border-dashed border-default-90'>
+      <div className='p-2.5 rounded-sm border-[7px] border-dashed border-default-300'>
         <img
           src={qrCodeDataUrl}
           alt='二维码'
-          className='w-[350px] h-[350px]'
+          className='w-[350px] h-[350px] select-text'
         />
       </div>
     </div>
@@ -206,7 +194,7 @@ export const DouyinMusicInfo: React.FC<Omit<DouyinMusicInfoProps, 'templateType'
         <div className='h-[100px]' />
 
         {/* 底部文字 */}
-        <div className='text-[70px] text-right mr-21 -mb-11 z-[-1] text-default-90'>
+        <div className='text-[70px] text-right mr-21 -mb-11 z-[-1] text-default-500 select-text'>
           抖音音乐信息
         </div>
 

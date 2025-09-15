@@ -2,40 +2,8 @@
 @import "tailwindcss";
 @config "../../tailwind.config.js";
 
-/* 自定义主题变量 */
-@theme {
-  --color-default-0: oklch(100% 0 0);
-  --color-default-5: oklch(95% 0 0);
-  --color-default-10: oklch(90% 0 0);
-  --color-default-15: oklch(85% 0 0);
-  --color-default-20: oklch(80% 0 0);
-  --color-default-25: oklch(75% 0 0);
-  --color-default-30: oklch(70% 0 0);
-  --color-default-35: oklch(65% 0 0);
-  --color-default-40: oklch(60% 0 0);
-  --color-default-45: oklch(55% 0 0);
-  --color-default-50: oklch(50% 0 0);
-  --color-default-55: oklch(45% 0 0);
-  --color-default-60: oklch(40% 0 0);
-  --color-default-65: oklch(35% 0 0);
-  --color-default-70: oklch(30% 0 0);
-  --color-default-75: oklch(25% 0 0);
-  --color-default-80: oklch(20% 0 0);
-  --color-default-85: oklch(15% 0 0);
-  --color-default-90: oklch(10% 0 0);
-  --color-default-95: oklch(5% 0 0);
-  --color-default-100: oklch(0% 0 0);
-}
-
 /* 全局主题变量 */
 :root {
-  /* 主题色变量 - 浅色模式 */
-  --theme-bg: var(--color-default-0);
-  --theme-text: var(--color-default-100);
-  --theme-text-muted: var(--color-default-70);
-  --theme-border: var(--color-default-20);
-  --theme-surface: var(--color-default-10);
-
   /* 平台颜色变量 */
   --qq-blue: #12b7f5;
   --wechat-green: #07c160;
@@ -45,38 +13,34 @@
   --douyin-secondary: #25f4ee;
   --bilibili-primary: #00a1d6;
   --bilibili-secondary: #fb7299;
-}
 
-/* 深色模式主题变量 - 反转逻辑修复版 */
-.dark {
-  /* 基础用途变量保持与浅色模式的逻辑对应，但明暗反转 */
-  --theme-bg: var(--color-default-0);
-  --theme-text: var(--color-default-100);
-  --theme-text-muted: var(--color-default-60);
-  --theme-border: var(--color-default-20);
-  --theme-surface: var(--color-default-10);
+  /* 新增语义化主题色 - 基于功能和图标含义 */
+  /* 互动相关颜色 */
+  --heroui-like: #ff6b6b;
+  /* 点赞/喜欢 - 温暖的红色 */
+  --heroui-comment: #4dabf7;
+  /* 评论 - 友好的蓝色 */
+  --heroui-share: #51cf66;
+  /* 分享 - 积极的绿色 */
+  --heroui-view: #845ef7;
+  /* 观看/浏览 - 紫色 */
+  --heroui-follow: #ff8cc8;
+  /* 关注/粉丝 - 粉色 */
 
-  --color-default-0: oklch(0% 0 0);
-  --color-default-5: oklch(5% 0 0);
-  --color-default-10: oklch(10% 0 0);
-  --color-default-15: oklch(15% 0 0);
-  --color-default-20: oklch(20% 0 0);
-  --color-default-25: oklch(25% 0 0);
-  --color-default-30: oklch(30% 0 0);
-  --color-default-35: oklch(35% 0 0);
-  --color-default-40: oklch(40% 0 0);
-  --color-default-45: oklch(45% 0 0);
-  --color-default-50: oklch(50% 0 0);
-  --color-default-55: oklch(55% 0 0);
-  --color-default-60: oklch(60% 0 0);
-  --color-default-65: oklch(65% 0 0);
-  --color-default-70: oklch(70% 0 0);
-  --color-default-75: oklch(75% 0 0);
-  --color-default-80: oklch(80% 0 0);
-  --color-default-85: oklch(85% 0 0);
-  --color-default-90: oklch(90% 0 0);
-  --color-default-95: oklch(95% 0 0);
-  --color-default-100: oklch(100% 0 0);
+  /* 状态相关颜色 */
+  --heroui-live: #ff6b35;
+  /* 直播 - 橙红色 */
+  --heroui-time: #868e96;
+  /* 时间 - 中性灰色 */
+  --heroui-tag: #ffd43b;
+  /* 标签/分类 - 黄色 */
+  --heroui-badge: #9775fa;
+  /* 徽章 - 紫色 */
+
+  /* 平台特色颜色增强 */
+  --heroui-bilibili-pink: #fb7299;
+  --heroui-douyin-cyan: #25f4ee;
+  --heroui-vip-gold: #ffb700;
 }
 
 /* 全局主题工具类 */
@@ -101,175 +65,6 @@
 
   .theme-surface {
     background-color: var(--theme-surface);
-  }
-
-  /* 自定义背景色类 */
-  .bg-default-0 {
-    background-color: var(--color-default-0);
-  }
-
-  .bg-default-10 {
-    background-color: var(--color-default-10);
-  }
-
-  .bg-default-20 {
-    background-color: var(--color-default-20);
-  }
-
-  .bg-default-30 {
-    background-color: var(--color-default-30);
-  }
-
-  .bg-default-40 {
-    background-color: var(--color-default-40);
-  }
-
-  .bg-default-50 {
-    background-color: var(--color-default-50);
-  }
-
-  .bg-default-60 {
-    background-color: var(--color-default-60);
-  }
-
-  .bg-default-70 {
-    background-color: var(--color-default-70);
-  }
-
-  .bg-default-80 {
-    background-color: var(--color-default-80);
-  }
-
-  .bg-default-90 {
-    background-color: var(--color-default-90);
-  }
-
-  .bg-default-100 {
-    background-color: var(--color-default-100);
-  }
-
-  .bg-default-5 {
-    background-color: var(--color-default-5);
-  }
-
-  .bg-default-15 {
-    background-color: var(--color-default-15);
-  }
-
-  .bg-default-25 {
-    background-color: var(--color-default-25);
-  }
-
-  .bg-default-35 {
-    background-color: var(--color-default-35);
-  }
-
-  .bg-default-45 {
-    background-color: var(--color-default-45);
-  }
-
-  .bg-default-55 {
-    background-color: var(--color-default-55);
-  }
-
-  .bg-default-65 {
-    background-color: var(--color-default-65);
-  }
-
-  .bg-default-75 {
-    background-color: var(--color-default-75);
-  }
-
-  .bg-default-85 {
-    background-color: var(--color-default-85);
-  }
-
-  .bg-default-95 {
-    background-color: var(--color-default-95);
-  }
-  
-  .text-default-0 {
-    color: var(--color-default-0);
-  }
-
-  .text-default-10 {
-    color: var(--color-default-10);
-  }
-
-  .text-default-20 {
-    color: var(--color-default-20);
-  }
-
-  .text-default-30 {
-    color: var(--color-default-30);
-  }
-
-  .text-default-40 {
-    color: var(--color-default-40);
-  }
-
-  .text-default-50 {
-    color: var(--color-default-50);
-  }
-
-  .text-default-60 {
-    color: var(--color-default-60);
-  }
-
-  .text-default-70 {
-    color: var(--color-default-70);
-  }
-
-  .text-default-80 {
-    color: var(--color-default-80);
-  }
-
-  .text-default-90 {
-    color: var(--color-default-90);
-  }
-
-  .text-default-100 {
-    color: var(--color-default-100);
-  }
-
-  .text-default-5 {
-    color: var(--color-default-5);
-  }
-
-  .text-default-15 {
-    color: var(--color-default-15);
-  }
-
-  .text-default-25 {
-    color: var(--color-default-25);
-  }
-
-  .text-default-35 {
-    color: var(--color-default-35);
-  }
-
-  .text-default-45 {
-    color: var(--color-default-45);
-  }
-
-  .text-default-55 {
-    color: var(--color-default-55);
-  }
-
-  .text-default-65 {
-    color: var(--color-default-65);
-  }
-
-  .text-default-75 {
-    color: var(--color-default-75);
-  }
-
-  .text-default-85 {
-    color: var(--color-default-85);
-  }
-
-  .text-default-95 {
-    color: var(--color-default-95);
   }
 
   /* 平台颜色工具类 */
@@ -335,6 +130,106 @@
 
   .bg-bilibili-secondary {
     background-color: var(--bilibili-secondary);
+  }
+
+  /* 新增语义化颜色工具类 */
+  /* 互动相关 */
+  .text-like {
+    color: var(--heroui-like);
+  }
+
+  .bg-like {
+    background-color: var(--heroui-like);
+  }
+
+  .text-comment {
+    color: var(--heroui-comment);
+  }
+
+  .bg-comment {
+    background-color: var(--heroui-comment);
+  }
+
+  .text-share {
+    color: var(--heroui-share);
+  }
+
+  .bg-share {
+    background-color: var(--heroui-share);
+  }
+
+  .text-view {
+    color: var(--heroui-view);
+  }
+
+  .bg-view {
+    background-color: var(--heroui-view);
+  }
+
+  .text-follow {
+    color: var(--heroui-follow);
+  }
+
+  .bg-follow {
+    background-color: var(--heroui-follow);
+  }
+
+  /* 状态相关 */
+  .text-live {
+    color: var(--heroui-live);
+  }
+
+  .bg-live {
+    background-color: var(--heroui-live);
+  }
+
+  .text-time {
+    color: var(--heroui-time);
+  }
+
+  .bg-time {
+    background-color: var(--heroui-time);
+  }
+
+  .text-tag {
+    color: var(--heroui-tag);
+  }
+
+  .bg-tag {
+    background-color: var(--heroui-tag);
+  }
+
+  .text-badge {
+    color: var(--heroui-badge);
+  }
+
+  .bg-badge {
+    background-color: var(--heroui-badge);
+  }
+
+  /* 平台特色颜色 */
+  .text-bilibili-pink {
+    color: var(--heroui-bilibili-pink);
+  }
+
+  .bg-bilibili-pink {
+    background-color: var(--heroui-bilibili-pink);
+  }
+
+  .text-douyin-cyan {
+    color: var(--heroui-douyin-cyan);
+  }
+
+  .bg-douyin-cyan {
+    background-color: var(--heroui-douyin-cyan);
+  }
+
+  .text-vip-gold {
+    color: var(--heroui-vip-gold);
+  }
+
+  .bg-vip-gold {
+    background-color: var(--heroui-vip-gold);
   }
 }
 

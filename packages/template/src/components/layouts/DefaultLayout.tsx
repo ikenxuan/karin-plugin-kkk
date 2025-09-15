@@ -39,7 +39,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
         className={clsx(
           'w-[1440px]',
           useDarkTheme && 'dark',
-          'bg-default-5 text-default-70'
+          'bg-default-100 dark:bg-black text-default-900'
         )}
         id='container'
         style={{
@@ -51,7 +51,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
       >
         {children}
         {version && (
-          <div className='pt-32 pb-20 text-default-100'>
+          <div className='pt-32 pb-20 text-default-800'>
             <div className='flex relative justify-center items-center space-x-12'>
               <div className='flex items-center space-x-8 whitespace-nowrap'>
                 <img src="/image/logo.png" className='w-auto h-24' />
@@ -63,7 +63,8 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
               <div className='relative'>
                 <div className={clsx(
                   'absolute -top-8 -left-10 px-5 py-2 text-sm font-bold tracking-widest uppercase rounded-full transform -rotate-12',
-                  'border border-dashed border-default-100 text-default-100 bg-default-0'
+                  'border border-dashed border-default-900 text-default-900 bg-default-100',
+                  'backdrop-blur-sm bg-default-100/10'
                 )}>
                   {version.releaseType}
                 </div>
@@ -72,16 +73,17 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                 </div>
               </div>
     
-              <div className='w-1 h-12 bg-default-100' />
+              <div className='w-1 h-12 bg-default-900' />
     
               <div className='flex relative items-center space-x-5'>
                 <div className={clsx(
                   'absolute -top-8 -left-10 px-5 py-2 text-sm font-bold tracking-widest uppercase rounded-full transform -rotate-12',
-                  'border border-dashed border-default-100 text-default-100 bg-default-0'
+                  'border border-dashed border-default-900 text-default-900',
+                  'backdrop-blur-sm bg-default-100/10'
                 )}>
                   Powered By
                 </div>
-                <img src="/image/karin-logo.png" className='w-auto h-16' />
+                <img src="/image/frame-logo.png" className='w-auto h-16' />
                 <span className='text-5xl font-black'>
                   {version.poweredBy} & Vite 
                 </span>

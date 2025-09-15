@@ -26,7 +26,7 @@ const BilibiliForwardUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
         <EnhancedImage
           src={props.avatar_url}
           alt='头像'
-          className='w-36 h-36 rounded-full shadow-lg'
+          className='w-36 h-36 rounded-full shadow-medium'
           isCircular
         />
         {props.frame && (
@@ -38,11 +38,11 @@ const BilibiliForwardUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
         )}
       </div>
       <div className='flex flex-col gap-8 text-7xl'>
-        <div className='text-6xl font-bold text-default-90'>
+        <div className='text-6xl font-bold select-text text-foreground'>
           <span dangerouslySetInnerHTML={{ __html: props.username }} />
         </div>
-        <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-default-50'>
-          <Clock size={36} />
+        <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-foreground-500'>
+          <Clock size={36} className='text-time' />
           {props.create_time}
         </div>
       </div>
@@ -71,7 +71,7 @@ const OriginalUserInfo: React.FC<{
         <EnhancedImage
           src={props.avatar_url}
           alt='转发用户头像'
-          className='rounded-full shadow-lg w-30 h-30'
+          className='rounded-full shadow-medium w-30 h-30'
         />
         {props.frame && (
           <EnhancedImage
@@ -82,11 +82,11 @@ const OriginalUserInfo: React.FC<{
         )}
       </div>
       <div className='flex flex-col gap-4 text-7xl'>
-        <div className='text-5xl font-normal text-default-90'>
+        <div className='text-5xl font-normal select-text text-foreground'>
           <span dangerouslySetInnerHTML={{ __html: props.username }} />
         </div>
-        <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-default-50'>
-          <Clock size={32} />
+        <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-foreground-500'>
+          <Clock size={32} className='text-time' />
           {props.create_time}
         </div>
       </div>
@@ -104,7 +104,7 @@ const OriginalUserInfo: React.FC<{
  */
 const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-default-10'>
+    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-content1'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -114,14 +114,14 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
       />
 
       <div className='flex flex-col items-center py-11'>
-        <div className='relative flex flex-col items-center rounded-10 w-11/12 aspect-video rounded-2xl overflow-hidden shadow-[0px_10px_20px_0px_rgba(0,0,0,0.3)]'>
+        <div className='flex overflow-hidden relative flex-col items-center w-11/12 rounded-2xl rounded-10 aspect-video shadow-large'>
           <EnhancedImage
             src={content.cover}
             alt='视频封面'
             className='object-cover object-center absolute'
           />
           <div className='absolute right-0 bottom-0 left-0 h-1/2 bg-gradient-to-t to-transparent pointer-events-none from-black/75' />
-          <div className='absolute right-5 left-12 bottom-14 z-10 text-4xl font-light text-white'>
+          <div className='absolute right-5 left-12 bottom-14 z-10 text-4xl font-light text-white select-text'>
             <span className='px-4 py-2 mr-3 text-4xl text-white rounded-2xl bg-black/50'>
               {content.duration_text}
             </span>
@@ -130,7 +130,7 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
         </div>
       </div>
 
-      <div className='pb-10 pl-8 text-6xl font-bold leading-20 text-default-90'>
+      <div className='pb-10 pl-8 text-6xl font-bold select-text leading-20 text-foreground'>
         <span dangerouslySetInnerHTML={{ __html: content.title }} />
       </div>
     </div>
@@ -142,7 +142,7 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
  */
 const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-default-10'>
+    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-content1'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -152,10 +152,10 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
       />
 
       <div className='py-4'>
-        <div className='text-5xl leading-relaxed text-default-90'>
+        <div className='text-5xl leading-relaxed text-foreground'>
           <CommentText
             className={clsx(
-              'text-[50px] tracking-[0.5px] leading-[1.5] whitespace-pre-wrap text-default-90',
+              'text-[50px] tracking-[0.5px] leading-[1.5] whitespace-pre-wrap text-foreground select-text',
               '[&_svg]:inline [&_svg]:!mb-4'
             )}
             content={content.text}
@@ -170,7 +170,7 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
       {content.image_url && content.image_url.length === 1
         ? (
           <div className='flex justify-center py-11'>
-            <div className='flex flex-col items-center rounded-6 w-11/12 overflow-hidden shadow-[0px_10px_30px_10px_rgba(0,0,0,0.3)]'>
+            <div className='flex overflow-hidden flex-col items-center w-11/12 rounded-6 shadow-large'>
               <EnhancedImage
                 src={content.image_url[0].image_src}
                 alt='图片'
@@ -182,7 +182,7 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
         : (
           <div className='grid grid-cols-3 gap-4 p-4'>
             {content.image_url?.map((img, index) => (
-              <div key={index} className='overflow-hidden relative shadow-md aspect-square rounded-2'>
+              <div key={index} className='overflow-hidden relative shadow-medium aspect-square rounded-2'>
                 <EnhancedImage
                   src={img.image_src}
                   alt={`图片${index + 1}`}
@@ -203,7 +203,7 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
  */
 const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-default-10'>
+    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-content1'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -213,9 +213,9 @@ const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ conte
       />
 
       <div className='py-4'>
-        <div className='text-5xl leading-relaxed text-default-90'>
+        <div className='text-5xl leading-relaxed text-foreground'>
           <CommentText
-            className='text-[50px] tracking-[0.5px] leading-[1.5] whitespace-pre-wrap text-default-90'
+            className='text-[50px] tracking-[0.5px] leading-[1.5] whitespace-pre-wrap text-foreground select-text'
             content={content.text}
           />
         </div>
@@ -229,7 +229,7 @@ const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ conte
  */
 const OriginalLiveRcmdContent: React.FC<{ content: OriginalContentLiveRcmd }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-default-10'>
+    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-content1'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -239,14 +239,14 @@ const OriginalLiveRcmdContent: React.FC<{ content: OriginalContentLiveRcmd }> = 
       />
 
       <div className='flex flex-col items-center py-11'>
-        <div className='relative flex flex-col items-center rounded-10 w-full aspect-video overflow-hidden shadow-[0px_10px_20px_0px_rgba(0,0,0,0.3)]'>
+        <div className='flex overflow-hidden relative flex-col items-center w-full rounded-10 aspect-video shadow-large'>
           <EnhancedImage
             src={content.cover}
             alt='直播封面'
             className='object-cover absolute w-full h-full'
           />
           <div className='absolute right-0 bottom-0 left-0 h-1/2 bg-gradient-to-t to-transparent pointer-events-none from-black/75' />
-          <div className='absolute right-5 bottom-8 left-12 z-10 text-4xl font-light text-white'>
+          <div className='absolute right-5 bottom-8 left-12 z-10 text-4xl font-light text-white select-text'>
             <span className='px-4 py-2 mr-3 text-4xl text-white bg-black/50 rounded-3'>
               {content.area_name}
             </span>
@@ -255,7 +255,7 @@ const OriginalLiveRcmdContent: React.FC<{ content: OriginalContentLiveRcmd }> = 
         </div>
       </div>
 
-      <div className='pl-8 text-6xl font-bold text-default-90'>
+      <div className='pl-8 text-6xl font-bold select-text text-foreground'>
         <span dangerouslySetInnerHTML={{ __html: content.title }} />
       </div>
     </div>
@@ -270,10 +270,10 @@ const BilibiliForwardContent: React.FC<BilibiliForwardContentProps> = (props) =>
     <>
       {/* 转发文本内容 */}
       <div className='flex flex-col px-20 w-full leading-relaxed'>
-        <div className='relative items-center text-5xl tracking-wider break-words text-default-90'>
+        <div className='relative items-center text-5xl tracking-wider break-words text-foreground'>
           <CommentText
             className={clsx(
-              'text-[65px] tracking-[1.5px] leading-[1.5] whitespace-pre-wrap text-default-90 mb-[20px]',
+              'text-[65px] tracking-[1.5px] leading-[1.5] whitespace-pre-wrap text-foreground mb-[20px] select-text',
               '[&_svg]:inline [&_svg]:!mb-4',
               '[&_img]:mb-3 [&_img]:inline [&_img]:mx-1'
             )}
@@ -312,24 +312,24 @@ const BilibiliForwardContent: React.FC<BilibiliForwardContentProps> = (props) =>
 const BilibiliForwardStatus: React.FC<BilibiliDynamicStatusProps> = (props) => {
   return (
     <div className='flex flex-col gap-10 px-20 w-full leading-relaxed'>
-      <div className='flex gap-6 items-center text-5xl font-light tracking-normal text-default-60'>
+      <div className='flex gap-6 items-center text-5xl font-light tracking-normal select-text text-foreground-600'>
         <div className='flex gap-2 items-center'>
-          <Heart size={48} />
+          <Heart size={48} className='text-like' />
           {props.dianzan}点赞
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <MessageCircle size={48} />
+          <MessageCircle size={48} className='text-primary text-comment' />
           {props.pinglun}评论
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <Share2 size={48} />
+          <Share2 size={48} className='text-success' />
           {props.share}分享
         </div>
       </div>
-      <div className='flex gap-2 items-center text-5xl font-light tracking-normal text-default-60'>
-        <Clock size={48} />
+      <div className='flex gap-2 items-center text-5xl font-light tracking-normal select-text text-foreground-600'>
+        <Clock size={48} className='text-time' />
         图片生成时间: {props.render_time}
       </div>
       <div className='h-3' />
@@ -345,7 +345,7 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps> = (props) => {
     <div className='flex flex-col h-full'>
       <div className='flex justify-between items-center h-auto pt-25'>
         <div className='flex flex-col self-start pl-16'>
-          <div className='flex items-center text-6xl text-default-60'>
+          <div className='flex items-center text-6xl text-foreground-600'>
             <img
               src='/image/bilibili/bilibili-light.png'
               alt='B站Logo'
@@ -353,33 +353,33 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps> = (props) => {
             />
           </div>
           <br />
-          <span className='text-5xl text-default-60'>
+          <span className='text-5xl select-text text-foreground-600'>
             长按识别二维码即可查看全文
           </span>
-          <div className='flex flex-col gap-4 items-start pt-6 w-full text-4xl tracking-wider text-default-60'>
+          <div className='flex flex-col gap-4 items-start pt-6 w-full text-4xl tracking-wider select-text text-foreground-600'>
             <div className='flex gap-2 items-center'>
-              <Hash size={36} />
+              <Hash size={36} className='text-foreground-600' />
               <span>UID: {props.user_shortid}</span>
             </div>
             <div className='flex gap-2 items-center'>
-              <Heart size={36} />
+              <Heart size={36} className='text-like' />
               <span>获赞: {props.total_favorited}</span>
             </div>
             <div className='flex gap-2 items-center'>
-              <Eye size={36} />
+              <Eye size={36} className='text-view' />
               <span>关注: {props.following_count}</span>
             </div>
             <div className='flex gap-2 items-center'>
-              <Users size={36} />
+              <Users size={36} className='text-follow' />
               <span>粉丝: {props.fans}</span>
             </div>
           </div>
         </div>
         <div className='flex flex-col-reverse items-center -mb-12 mr-19'>
-          <div className='mt-5 ml-3 text-5xl text-right text-default-60'>
+          <div className='mt-5 ml-3 text-5xl text-right select-text text-foreground-600'>
             {props.dynamicTYPE}
           </div>
-          <div className='p-3 rounded-sm border-8 border-dashed border-default-60'>
+          <div className='p-3 rounded-sm border-8 border-dashed border-divider'>
             {props.qrCodeDataUrl
               ? (
                 <img
@@ -389,8 +389,8 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps> = (props) => {
                 />
               )
               : (
-                <div className='flex justify-center items-center rounded bg-default-20 w-88 h-88'>
-                  <span className='text-default-40'>二维码</span>
+                <div className='flex justify-center items-center rounded bg-content2 w-88 h-88'>
+                  <span className='text-foreground-400'>二维码</span>
                 </div>
               )}
           </div>

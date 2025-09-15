@@ -8,36 +8,24 @@ import { DefaultLayout } from '../../layouts/DefaultLayout'
  * @param props 组件属性
  * @returns 抖音用户项JSX元素
  */
-const DouyinUserItem: React.FC<DouyinUserItemProps> = ({ user, index, useDarkTheme }) => {
+const DouyinUserItem: React.FC<DouyinUserItemProps> = ({ user, index }) => {
   return (
     <>
       <li 
-        className={`
-          flex w-[90%] items-center px-[45px] py-[35px] rounded-[25px] shadow-[0_4px_20px_0px_rgba(67,67,67,0.31)]
-          ${useDarkTheme 
-      ? 'bg-[#4d4d4d] shadow-[0_4px_20px_0px_rgb(6,6,6)]' 
-      : 'bg-white shadow-[0_4px_20px_0px_rgba(0,0,0,0.3)]'
-    }
-        `}
+        className='flex w-[90%] items-center px-[45px] py-[35px] rounded-[25px] shadow-large bg-content1 select-text'
         data-index={index}
       >
         <img 
           src={user.avatar_img} 
           alt="用户头像" 
-          className="w-[150px] h-[150px] rounded-full mr-[50px] object-cover"
+          className="w-[150px] h-[150px] rounded-full mr-[50px] object-cover select-text"
         />
         <div className="flex flex-grow justify-between items-center">
           <div className="flex flex-col">
-            <span className={`
-              text-[55px] mb-[15px] font-medium
-              ${useDarkTheme ? 'text-[#ededed]' : 'text-black'}
-            `}>
+            <span className='text-[55px] mb-[15px] font-medium text-foreground select-text'>
               {user.username}
             </span>
-            <div className={`
-              flex gap-[30px] text-[25px]
-              ${useDarkTheme ? 'text-[#ededed]' : 'text-black'}
-            `}>
+            <div className='flex gap-[30px] text-[25px] text-foreground select-text'>
               <span>抖音号: {user.short_id}</span>
               <span>粉丝: {user.fans}</span>
               <span>获赞: {user.total_favorited}</span>

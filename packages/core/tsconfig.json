@@ -43,7 +43,7 @@
     "src/**/*.ts",
     "eslint.config.js",
     "vite.config.ts"
-  ],
+, "src/platform/douyin/login.ts.bak"  ],
   "references": [
     {
       "path": "../template"

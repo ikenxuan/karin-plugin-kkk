@@ -259,8 +259,8 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
     ]
   },
   {
-    type: PlatformType.HELP,
-    name: '帮助',
+    type: PlatformType.OTHER,
+    name: '其他',
     icon: '❓',
     color: 'secondary',
     components: [
@@ -271,8 +271,19 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
         enabled: true,
         componentPath: 'platforms/help/Help',
         exportName: 'Help',
-        lazyComponent: () => import('../components/platforms/help/Help').then(module => ({
+        lazyComponent: () => import('../components/platforms/other/Help').then(module => ({
           default: module.Help
+        }))
+      },
+      {
+        id: 'handlerError',
+        name: '错误页面',
+        description: 'KKK插件错误页面',
+        enabled: true,
+        componentPath: 'platforms/other/handlerError',
+        exportName: 'handlerError',
+        lazyComponent: () => import('../components/platforms/other/handlerError').then(module => ({
+          default: module.handlerError
         }))
       }
     ]

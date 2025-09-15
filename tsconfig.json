@@ -1,7 +1,7 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/render" },
+    { "path": "./packages/template" },
     { "path": "./packages/core" }
   ]
 }
