@@ -1,4 +1,4 @@
-import { Chip } from '@heroui/react'
+import { Chip, Code } from '@heroui/react'
 import clsx from 'clsx'
 import { Calendar, Clock, Crown, Hash, Play, Share2, Shield, Star, Users } from 'lucide-react'
 import React from 'react'
@@ -166,6 +166,12 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
                 <span>UID: {props.upInfo.mid}</span>
               </div>
             </div>
+          </div>
+          {/** TIP */}
+          <div className='flex text-3xl select-text text-foreground'>
+            <span>提示：请在120秒内发送</span>
+            <Code size="lg" color='danger'> 第 ？ 集 </Code>
+            <span>选择集数</span>
           </div>
         </div>
 

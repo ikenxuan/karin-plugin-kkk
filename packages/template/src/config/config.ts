@@ -299,6 +299,17 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
         lazyComponent: () => import('../components/platforms/other/handlerError').then(module => ({
           default: module.handlerError
         }))
+      },
+      {
+        id: 'changelog_v2',
+        name: '更新日志',
+        description: 'KKK插件更新日志',
+        enabled: true,
+        componentPath: 'platforms/other/changelog_v2',
+        exportName: 'changelog_v2',
+        lazyComponent: () => import('../components/platforms/other/changelog_v2').then(module => ({
+          default: module.ChangelogV2
+        }))
       }
     ]
   }
