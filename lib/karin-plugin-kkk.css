@@ -3538,6 +3538,7 @@
   :root, :host {
     --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --color-yellow-500: oklch(79.5% .184 86.047);
     --color-blue-50: oklch(97% .014 254.604);
     --color-blue-500: oklch(62.3% .214 259.815);
     --color-blue-600: oklch(54.6% .245 262.881);
@@ -4547,6 +4548,10 @@
     margin-right: calc(var(--spacing) * -10);
   }
 
+  .mr-1 {
+    margin-right: calc(var(--spacing) * 1);
+  }
+
   .mr-3 {
     margin-right: calc(var(--spacing) * 3);
   }
@@ -4843,6 +4848,10 @@
     height: auto !important;
   }
 
+  .h-0\.5 {
+    height: calc(var(--spacing) * .5);
+  }
+
   .h-1 {
     height: calc(var(--spacing) * 1);
   }
@@ -4957,6 +4966,10 @@
 
   .h-40 {
     height: calc(var(--spacing) * 40);
+  }
+
+  .h-48 {
+    height: calc(var(--spacing) * 48);
   }
 
   .h-50 {
@@ -5211,6 +5224,10 @@
     min-height: 100dvh;
   }
 
+  .min-h-screen {
+    min-height: 100vh;
+  }
+
   .w-1 {
     width: calc(var(--spacing) * 1);
   }
@@ -5305,6 +5322,10 @@
 
   .w-40 {
     width: calc(var(--spacing) * 40);
+  }
+
+  .w-48 {
+    width: calc(var(--spacing) * 48);
   }
 
   .w-50 {
@@ -5477,6 +5498,10 @@
 
   .max-w-\[1280px\] {
     max-width: 1280px;
+  }
+
+  .max-w-\[1400px\] {
+    max-width: 1400px;
   }
 
   .max-w-\[1440px\] {
@@ -5784,6 +5809,14 @@
     scale: var(--tw-scale-x) var(--tw-scale-y);
   }
 
+  .scale-\[2\.5\] {
+    scale: 2.5;
+  }
+
+  .scale-\[3\.5\] {
+    scale: 3.5;
+  }
+
   .-rotate-12 {
     rotate: -12deg;
   }
@@ -5909,8 +5942,20 @@
     appearance: none;
   }
 
+  .columns-3 {
+    columns: 3;
+  }
+
+  .break-inside-avoid {
+    break-inside: avoid;
+  }
+
   .grid-cols-1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .grid-cols-3 {
@@ -6047,6 +6092,10 @@
 
   .gap-16 {
     gap: calc(var(--spacing) * 16);
+  }
+
+  .gap-18 {
+    gap: calc(var(--spacing) * 18);
   }
 
   .gap-20 {
@@ -6485,6 +6534,11 @@
     border-bottom-width: var(--heroui-border-width-medium);
   }
 
+  .border-l-3 {
+    border-left-style: var(--tw-border-style);
+    border-left-width: 3px;
+  }
+
   .\!border-none {
     --tw-border-style: none !important;
     border-style: none !important;
@@ -6724,6 +6778,10 @@
     background-color: #0000 !important;
   }
 
+  .bg-\[\#FF6699\] {
+    background-color: #f69;
+  }
+
   .bg-background, .bg-background\/10 {
     background-color: hsl(var(--heroui-background) / 1);
   }
@@ -6778,8 +6836,14 @@
     background-color: var(--color-blue-500);
   }
 
-  .bg-content1 {
+  .bg-content1, .bg-content1\/95 {
     background-color: hsl(var(--heroui-content1) / 1);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-content1\/95 {
+      background-color: color-mix(in oklab, hsl(var(--heroui-content1) / 1) 95%, transparent);
+    }
   }
 
   .bg-content2 {
@@ -6842,7 +6906,7 @@
     background-color: hsl(var(--heroui-default-200) / 1);
   }
 
-  .bg-default-300\/50 {
+  .bg-default-300, .bg-default-300\/50 {
     background-color: hsl(var(--heroui-default-300) / 1);
   }
 
@@ -7103,6 +7167,39 @@
     background-image: linear-gradient(45deg, hsl(var(--heroui-warning-200)) 25%, hsl(var(--heroui-warning)) 25%, hsl(var(--heroui-warning)) 50%, hsl(var(--heroui-warning-200)) 50%, hsl(var(--heroui-warning-200)) 75%, hsl(var(--heroui-warning)) 75%, hsl(var(--heroui-warning)));
   }
 
+  .from-background {
+    --tw-gradient-from: hsl(var(--heroui-background) / 1);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+
+  .from-black\/20 {
+    --tw-gradient-from: #0003;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .from-black\/20 {
+      --tw-gradient-from: color-mix(in oklab, var(--color-black) 20%, transparent);
+    }
+  }
+
+  .from-black\/20 {
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+
+  .from-black\/30 {
+    --tw-gradient-from: #0000004d;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .from-black\/30 {
+      --tw-gradient-from: color-mix(in oklab, var(--color-black) 30%, transparent);
+    }
+  }
+
+  .from-black\/30 {
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+
   .from-black\/75 {
     --tw-gradient-from: #000000bf;
   }
@@ -7127,10 +7224,39 @@
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
 
+  .via-content1\/20 {
+    --tw-gradient-via: hsl(var(--heroui-content1) / 1);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .via-content1\/20 {
+      --tw-gradient-via: color-mix(in oklab, hsl(var(--heroui-content1) / 1) 20%, transparent);
+    }
+  }
+
+  .via-content1\/20 {
+    --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-via-stops);
+  }
+
   .via-transparent {
     --tw-gradient-via: transparent;
     --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
     --tw-gradient-stops: var(--tw-gradient-via-stops);
+  }
+
+  .to-content2\/10 {
+    --tw-gradient-to: hsl(var(--heroui-content2) / 1);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .to-content2\/10 {
+      --tw-gradient-to: color-mix(in oklab, hsl(var(--heroui-content2) / 1) 10%, transparent);
+    }
+  }
+
+  .to-content2\/10 {
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
 
   .to-current {
@@ -7272,6 +7398,10 @@
     padding: calc(var(--spacing) * 5);
   }
 
+  .p-6 {
+    padding: calc(var(--spacing) * 6);
+  }
+
   .p-10 {
     padding: calc(var(--spacing) * 10);
   }
@@ -7282,6 +7412,10 @@
 
   .p-16 {
     padding: calc(var(--spacing) * 16);
+  }
+
+  .p-20 {
+    padding: calc(var(--spacing) * 20);
   }
 
   .p-25 {
@@ -7488,6 +7622,10 @@
     padding-top: calc(var(--spacing) * 25);
   }
 
+  .pt-30 {
+    padding-top: calc(var(--spacing) * 30);
+  }
+
   .pt-32 {
     padding-top: calc(var(--spacing) * 32);
   }
@@ -7544,12 +7682,20 @@
     padding-bottom: calc(var(--spacing) * 20);
   }
 
+  .pb-36 {
+    padding-bottom: calc(var(--spacing) * 36);
+  }
+
   .pl-0\.5 {
     padding-left: calc(var(--spacing) * .5);
   }
 
   .pl-1 {
     padding-left: calc(var(--spacing) * 1);
+  }
+
+  .pl-4 {
+    padding-left: calc(var(--spacing) * 4);
   }
 
   .pl-8 {
@@ -8053,6 +8199,10 @@
     color: hsl(var(--heroui-foreground-700) / 1);
   }
 
+  .text-foreground-900 {
+    color: hsl(var(--heroui-foreground-900) / 1);
+  }
+
   .text-foreground\/50 {
     color: hsl(var(--heroui-foreground) / 1);
   }
@@ -8229,6 +8379,10 @@
 
   .text-white {
     color: var(--color-white);
+  }
+
+  .text-yellow-500 {
+    color: var(--color-yellow-500);
   }
 
   .uppercase {
@@ -8973,6 +9127,11 @@
   .duration-200 {
     --tw-duration: .2s;
     transition-duration: .2s;
+  }
+
+  .duration-300 {
+    --tw-duration: .3s;
+    transition-duration: .3s;
   }
 
   .\!ease-out {
@@ -13822,486 +13981,304 @@
     rotate: -90deg;
   }
 
-  .dark\:border-danger-100.dark, .dark\:border-danger-100[data-theme="dark"] {
+  .dark\:border-danger-100:is(.dark *) {
     border-color: hsl(var(--heroui-danger-100) / 1);
   }
 
-  .dark\:border-default-200.dark, .dark\:border-default-200[data-theme="dark"] {
+  .dark\:border-default-200:is(.dark *) {
     border-color: hsl(var(--heroui-default-200) / 1);
   }
 
-  .dark\:border-primary-100.dark, .dark\:border-primary-100[data-theme="dark"] {
+  .dark\:border-primary-100:is(.dark *) {
     border-color: hsl(var(--heroui-primary-100) / 1);
   }
 
-  .dark\:border-success-100.dark, .dark\:border-success-100[data-theme="dark"] {
+  .dark\:border-success-100:is(.dark *) {
     border-color: hsl(var(--heroui-success-100) / 1);
   }
 
-  .dark\:border-warning-100.dark, .dark\:border-warning-100[data-theme="dark"] {
+  .dark\:border-warning-100:is(.dark *) {
     border-color: hsl(var(--heroui-warning-100) / 1);
   }
 
-  .dark\:bg-background.dark, .dark\:bg-background[data-theme="dark"], .dark\:bg-background\/20.dark {
+  .dark\:bg-background:is(.dark *), .dark\:bg-background\/20:is(.dark *) {
     background-color: hsl(var(--heroui-background) / 1);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-background\/20.dark {
+    .dark\:bg-background\/20:is(.dark *) {
       background-color: color-mix(in oklab, hsl(var(--heroui-background) / 1) 20%, transparent);
     }
   }
 
-  .dark\:bg-background\/20[data-theme="dark"] {
-    background-color: hsl(var(--heroui-background) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-background\/20[data-theme="dark"] {
-      background-color: color-mix(in oklab, hsl(var(--heroui-background) / 1) 20%, transparent);
-    }
-  }
-
-  .dark\:bg-black.dark, .dark\:bg-black[data-theme="dark"] {
-    background-color: var(--color-black);
-  }
-
-  .dark\:bg-content2.dark, .dark\:bg-content2[data-theme="dark"] {
+  .dark\:bg-content2:is(.dark *) {
     background-color: hsl(var(--heroui-content2) / 1);
   }
 
-  .dark\:bg-danger-50.dark, .dark\:bg-danger-50[data-theme="dark"], .dark\:bg-danger-50\/50.dark {
+  .dark\:bg-danger-50:is(.dark *), .dark\:bg-danger-50\/50:is(.dark *) {
     background-color: hsl(var(--heroui-danger-50) / 1);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-danger-50\/50.dark {
+    .dark\:bg-danger-50\/50:is(.dark *) {
       background-color: color-mix(in oklab, hsl(var(--heroui-danger-50) / 1) 50%, transparent);
     }
   }
 
-  .dark\:bg-danger-50\/50[data-theme="dark"] {
-    background-color: hsl(var(--heroui-danger-50) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-danger-50\/50[data-theme="dark"] {
-      background-color: color-mix(in oklab, hsl(var(--heroui-danger-50) / 1) 50%, transparent);
-    }
-  }
-
-  .dark\:bg-danger-100.dark, .dark\:bg-danger-100[data-theme="dark"] {
+  .dark\:bg-danger-100:is(.dark *) {
     background-color: hsl(var(--heroui-danger-100) / 1);
   }
 
-  .dark\:bg-danger-900\/20.dark {
-    background-color: hsl(var(--heroui-danger-900) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-danger-900\/20.dark {
-      background-color: color-mix(in oklab, hsl(var(--heroui-danger-900) / 1) 20%, transparent);
-    }
-  }
-
-  .dark\:bg-danger-900\/20[data-theme="dark"] {
-    background-color: hsl(var(--heroui-danger-900) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-danger-900\/20[data-theme="dark"] {
-      background-color: color-mix(in oklab, hsl(var(--heroui-danger-900) / 1) 20%, transparent);
-    }
-  }
-
-  .dark\:bg-default.dark, .dark\:bg-default[data-theme="dark"] {
+  .dark\:bg-default:is(.dark *) {
     background-color: hsl(var(--heroui-default) / 1);
   }
 
-  .dark\:bg-default-50\/50.dark {
+  .dark\:bg-default-50\/50:is(.dark *) {
     background-color: hsl(var(--heroui-default-50) / 1);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-default-50\/50.dark {
+    .dark\:bg-default-50\/50:is(.dark *) {
       background-color: color-mix(in oklab, hsl(var(--heroui-default-50) / 1) 50%, transparent);
     }
   }
 
-  .dark\:bg-default-50\/50[data-theme="dark"] {
-    background-color: hsl(var(--heroui-default-50) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-default-50\/50[data-theme="dark"] {
-      background-color: color-mix(in oklab, hsl(var(--heroui-default-50) / 1) 50%, transparent);
-    }
-  }
-
-  .dark\:bg-default-100.dark, .dark\:bg-default-100[data-theme="dark"] {
+  .dark\:bg-default-100:is(.dark *) {
     background-color: hsl(var(--heroui-default-100) / 1);
   }
 
-  .dark\:bg-gray-700.dark, .dark\:bg-gray-700[data-theme="dark"] {
+  .dark\:bg-gray-700:is(.dark *) {
     background-color: var(--color-gray-700);
   }
 
-  .dark\:bg-primary-50.dark, .dark\:bg-primary-50[data-theme="dark"], .dark\:bg-primary-50\/50.dark {
+  .dark\:bg-primary-50:is(.dark *), .dark\:bg-primary-50\/50:is(.dark *) {
     background-color: hsl(var(--heroui-primary-50) / 1);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-primary-50\/50.dark {
+    .dark\:bg-primary-50\/50:is(.dark *) {
       background-color: color-mix(in oklab, hsl(var(--heroui-primary-50) / 1) 50%, transparent);
     }
   }
 
-  .dark\:bg-primary-50\/50[data-theme="dark"] {
-    background-color: hsl(var(--heroui-primary-50) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-primary-50\/50[data-theme="dark"] {
-      background-color: color-mix(in oklab, hsl(var(--heroui-primary-50) / 1) 50%, transparent);
-    }
-  }
-
-  .dark\:bg-primary-100.dark, .dark\:bg-primary-100[data-theme="dark"] {
+  .dark\:bg-primary-100:is(.dark *) {
     background-color: hsl(var(--heroui-primary-100) / 1);
   }
 
-  .dark\:bg-secondary-50.dark, .dark\:bg-secondary-50[data-theme="dark"], .dark\:bg-secondary-50\/50.dark {
+  .dark\:bg-secondary-50:is(.dark *), .dark\:bg-secondary-50\/50:is(.dark *) {
     background-color: hsl(var(--heroui-secondary-50) / 1);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-secondary-50\/50.dark {
+    .dark\:bg-secondary-50\/50:is(.dark *) {
       background-color: color-mix(in oklab, hsl(var(--heroui-secondary-50) / 1) 50%, transparent);
     }
   }
 
-  .dark\:bg-secondary-50\/50[data-theme="dark"] {
-    background-color: hsl(var(--heroui-secondary-50) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-secondary-50\/50[data-theme="dark"] {
-      background-color: color-mix(in oklab, hsl(var(--heroui-secondary-50) / 1) 50%, transparent);
-    }
-  }
-
-  .dark\:bg-secondary-100.dark, .dark\:bg-secondary-100[data-theme="dark"] {
+  .dark\:bg-secondary-100:is(.dark *) {
     background-color: hsl(var(--heroui-secondary-100) / 1);
   }
 
-  .dark\:bg-success-50.dark, .dark\:bg-success-50[data-theme="dark"], .dark\:bg-success-50\/50.dark {
+  .dark\:bg-success-50:is(.dark *), .dark\:bg-success-50\/50:is(.dark *) {
     background-color: hsl(var(--heroui-success-50) / 1);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-success-50\/50.dark {
+    .dark\:bg-success-50\/50:is(.dark *) {
       background-color: color-mix(in oklab, hsl(var(--heroui-success-50) / 1) 50%, transparent);
     }
   }
 
-  .dark\:bg-success-50\/50[data-theme="dark"] {
-    background-color: hsl(var(--heroui-success-50) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-success-50\/50[data-theme="dark"] {
-      background-color: color-mix(in oklab, hsl(var(--heroui-success-50) / 1) 50%, transparent);
-    }
-  }
-
-  .dark\:bg-success-100.dark, .dark\:bg-success-100[data-theme="dark"] {
+  .dark\:bg-success-100:is(.dark *) {
     background-color: hsl(var(--heroui-success-100) / 1);
   }
 
-  .dark\:bg-transparent.dark, .dark\:bg-transparent[data-theme="dark"] {
+  .dark\:bg-transparent:is(.dark *) {
     background-color: #0000;
   }
 
-  .dark\:bg-warning-50.dark, .dark\:bg-warning-50[data-theme="dark"], .dark\:bg-warning-50\/50.dark {
+  .dark\:bg-warning-50:is(.dark *), .dark\:bg-warning-50\/50:is(.dark *) {
     background-color: hsl(var(--heroui-warning-50) / 1);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-warning-50\/50.dark {
+    .dark\:bg-warning-50\/50:is(.dark *) {
       background-color: color-mix(in oklab, hsl(var(--heroui-warning-50) / 1) 50%, transparent);
     }
   }
 
-  .dark\:bg-warning-50\/50[data-theme="dark"] {
-    background-color: hsl(var(--heroui-warning-50) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-warning-50\/50[data-theme="dark"] {
-      background-color: color-mix(in oklab, hsl(var(--heroui-warning-50) / 1) 50%, transparent);
-    }
-  }
-
-  .dark\:bg-warning-100.dark, .dark\:bg-warning-100[data-theme="dark"] {
+  .dark\:bg-warning-100:is(.dark *) {
     background-color: hsl(var(--heroui-warning-100) / 1);
   }
 
-  .dark\:bg-warning-900\/20.dark {
-    background-color: hsl(var(--heroui-warning-900) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-warning-900\/20.dark {
-      background-color: color-mix(in oklab, hsl(var(--heroui-warning-900) / 1) 20%, transparent);
-    }
-  }
-
-  .dark\:bg-warning-900\/20[data-theme="dark"] {
-    background-color: hsl(var(--heroui-warning-900) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-warning-900\/20[data-theme="dark"] {
-      background-color: color-mix(in oklab, hsl(var(--heroui-warning-900) / 1) 20%, transparent);
-    }
-  }
-
-  .dark\:text-danger-400.dark, .dark\:text-danger-400[data-theme="dark"] {
-    color: hsl(var(--heroui-danger-400) / 1);
-  }
-
-  .dark\:text-danger-500.dark, .dark\:text-danger-500[data-theme="dark"] {
+  .dark\:text-danger-500:is(.dark *) {
     color: hsl(var(--heroui-danger-500) / 1);
   }
 
-  .dark\:text-default-400.dark, .dark\:text-default-400[data-theme="dark"] {
-    color: hsl(var(--heroui-default-400) / 1);
+  .dark\:text-default-900:is(.dark *) {
+    color: hsl(var(--heroui-default-900) / 1);
   }
 
-  .dark\:text-success.dark, .dark\:text-success[data-theme="dark"] {
+  .dark\:text-success:is(.dark *) {
     color: hsl(var(--heroui-success) / 1);
   }
 
-  .dark\:text-warning.dark, .dark\:text-warning[data-theme="dark"] {
+  .dark\:text-warning:is(.dark *) {
     color: hsl(var(--heroui-warning) / 1);
   }
 
-  .dark\:text-warning-300.dark, .dark\:text-warning-300[data-theme="dark"] {
-    color: hsl(var(--heroui-warning-300) / 1);
-  }
-
-  .dark\:text-warning-400.dark, .dark\:text-warning-400[data-theme="dark"] {
-    color: hsl(var(--heroui-warning-400) / 1);
-  }
-
-  .dark\:placeholder\:text-danger-500.dark::placeholder, .dark\:placeholder\:text-danger-500[data-theme="dark"]::placeholder {
+  .dark\:placeholder\:text-danger-500:is(.dark *)::placeholder {
     color: hsl(var(--heroui-danger-500) / 1);
   }
 
-  .dark\:placeholder\:text-success.dark::placeholder, .dark\:placeholder\:text-success[data-theme="dark"]::placeholder {
+  .dark\:placeholder\:text-success:is(.dark *)::placeholder {
     color: hsl(var(--heroui-success) / 1);
   }
 
-  .dark\:placeholder\:text-warning.dark::placeholder, .dark\:placeholder\:text-warning[data-theme="dark"]::placeholder {
+  .dark\:placeholder\:text-warning:is(.dark *)::placeholder {
     color: hsl(var(--heroui-warning) / 1);
   }
 
-  .dark\:before\:via-default-700\/10.dark:before {
+  .dark\:before\:via-default-700\/10:is(.dark *):before {
     content: var(--tw-content);
     --tw-gradient-via: hsl(var(--heroui-default-700) / 1);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .dark\:before\:via-default-700\/10.dark:before {
+    .dark\:before\:via-default-700\/10:is(.dark *):before {
       --tw-gradient-via: color-mix(in oklab, hsl(var(--heroui-default-700) / 1) 10%, transparent);
     }
   }
 
-  .dark\:before\:via-default-700\/10.dark:before {
+  .dark\:before\:via-default-700\/10:is(.dark *):before {
     --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
     --tw-gradient-stops: var(--tw-gradient-via-stops);
   }
 
-  .dark\:before\:via-default-700\/10[data-theme="dark"]:before {
-    content: var(--tw-content);
-    --tw-gradient-via: hsl(var(--heroui-default-700) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:before\:via-default-700\/10[data-theme="dark"]:before {
-      --tw-gradient-via: color-mix(in oklab, hsl(var(--heroui-default-700) / 1) 10%, transparent);
-    }
-  }
-
-  .dark\:before\:via-default-700\/10[data-theme="dark"]:before {
-    --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
-    --tw-gradient-stops: var(--tw-gradient-via-stops);
-  }
-
-  .dark\:after\:bg-content2.dark:after, .dark\:after\:bg-content2[data-theme="dark"]:after {
+  .dark\:after\:bg-content2:is(.dark *):after {
     content: var(--tw-content);
     background-color: hsl(var(--heroui-content2) / 1);
   }
 
-  .dark\:focus\:bg-danger-400\/20.dark:focus {
+  .dark\:focus\:bg-danger-400\/20:is(.dark *):focus {
     background-color: hsl(var(--heroui-danger-400) / 1);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .dark\:focus\:bg-danger-400\/20.dark:focus {
+    .dark\:focus\:bg-danger-400\/20:is(.dark *):focus {
       background-color: color-mix(in oklab, hsl(var(--heroui-danger-400) / 1) 20%, transparent);
     }
   }
 
-  .dark\:focus\:bg-danger-400\/20[data-theme="dark"]:focus {
-    background-color: hsl(var(--heroui-danger-400) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:focus\:bg-danger-400\/20[data-theme="dark"]:focus {
-      background-color: color-mix(in oklab, hsl(var(--heroui-danger-400) / 1) 20%, transparent);
-    }
-  }
-
-  .dark\:focus\:bg-success-400\/20.dark:focus {
+  .dark\:focus\:bg-success-400\/20:is(.dark *):focus {
     background-color: hsl(var(--heroui-success-400) / 1);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .dark\:focus\:bg-success-400\/20.dark:focus {
+    .dark\:focus\:bg-success-400\/20:is(.dark *):focus {
       background-color: color-mix(in oklab, hsl(var(--heroui-success-400) / 1) 20%, transparent);
     }
   }
 
-  .dark\:focus\:bg-success-400\/20[data-theme="dark"]:focus {
-    background-color: hsl(var(--heroui-success-400) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:focus\:bg-success-400\/20[data-theme="dark"]:focus {
-      background-color: color-mix(in oklab, hsl(var(--heroui-success-400) / 1) 20%, transparent);
-    }
-  }
-
-  .dark\:focus\:bg-warning-400\/20.dark:focus {
+  .dark\:focus\:bg-warning-400\/20:is(.dark *):focus {
     background-color: hsl(var(--heroui-warning-400) / 1);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .dark\:focus\:bg-warning-400\/20.dark:focus {
+    .dark\:focus\:bg-warning-400\/20:is(.dark *):focus {
       background-color: color-mix(in oklab, hsl(var(--heroui-warning-400) / 1) 20%, transparent);
     }
   }
 
-  .dark\:focus\:bg-warning-400\/20[data-theme="dark"]:focus {
-    background-color: hsl(var(--heroui-warning-400) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:focus\:bg-warning-400\/20[data-theme="dark"]:focus {
-      background-color: color-mix(in oklab, hsl(var(--heroui-warning-400) / 1) 20%, transparent);
-    }
-  }
-
-  .dark\:data-\[hover\=true\]\:bg-content2.dark[data-hover="true"], .dark\:data-\[hover\=true\]\:bg-content2[data-theme="dark"][data-hover="true"] {
+  .dark\:data-\[hover\=true\]\:bg-content2:is(.dark *)[data-hover="true"] {
     background-color: hsl(var(--heroui-content2) / 1);
   }
 
-  .dark\:data-\[hover\=true\]\:bg-danger-50.dark[data-hover="true"], .dark\:data-\[hover\=true\]\:bg-danger-50[data-theme="dark"][data-hover="true"] {
+  .dark\:data-\[hover\=true\]\:bg-danger-50:is(.dark *)[data-hover="true"] {
     background-color: hsl(var(--heroui-danger-50) / 1);
   }
 
-  .dark\:data-\[hover\=true\]\:bg-success-50.dark[data-hover="true"], .dark\:data-\[hover\=true\]\:bg-success-50[data-theme="dark"][data-hover="true"] {
+  .dark\:data-\[hover\=true\]\:bg-success-50:is(.dark *)[data-hover="true"] {
     background-color: hsl(var(--heroui-success-50) / 1);
   }
 
-  .dark\:data-\[hover\=true\]\:bg-warning-50.dark[data-hover="true"], .dark\:data-\[hover\=true\]\:bg-warning-50[data-theme="dark"][data-hover="true"] {
+  .dark\:data-\[hover\=true\]\:bg-warning-50:is(.dark *)[data-hover="true"] {
     background-color: hsl(var(--heroui-warning-50) / 1);
   }
 
-  .dark\:data-\[hover\=true\]\:text-danger-500.dark[data-hover="true"], .dark\:data-\[hover\=true\]\:text-danger-500[data-theme="dark"][data-hover="true"] {
+  .dark\:data-\[hover\=true\]\:text-danger-500:is(.dark *)[data-hover="true"] {
     color: hsl(var(--heroui-danger-500) / 1);
   }
 
-  .dark\:data-\[hover\=true\]\:text-success-500.dark[data-hover="true"], .dark\:data-\[hover\=true\]\:text-success-500[data-theme="dark"][data-hover="true"] {
+  .dark\:data-\[hover\=true\]\:text-success-500:is(.dark *)[data-hover="true"] {
     color: hsl(var(--heroui-success-500) / 1);
   }
 
-  .dark\:data-\[hover\=true\]\:text-warning-500.dark[data-hover="true"], .dark\:data-\[hover\=true\]\:text-warning-500[data-theme="dark"][data-hover="true"] {
+  .dark\:data-\[hover\=true\]\:text-warning-500:is(.dark *)[data-hover="true"] {
     color: hsl(var(--heroui-warning-500) / 1);
   }
 
-  .dark\:data-\[invalid\=true\]\:focus\:bg-danger-400\/20.dark[data-invalid="true"]:focus {
+  .dark\:data-\[invalid\=true\]\:focus\:bg-danger-400\/20:is(.dark *)[data-invalid="true"]:focus {
     background-color: hsl(var(--heroui-danger-400) / 1);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .dark\:data-\[invalid\=true\]\:focus\:bg-danger-400\/20.dark[data-invalid="true"]:focus {
+    .dark\:data-\[invalid\=true\]\:focus\:bg-danger-400\/20:is(.dark *)[data-invalid="true"]:focus {
       background-color: color-mix(in oklab, hsl(var(--heroui-danger-400) / 1) 20%, transparent);
     }
   }
 
-  .dark\:data-\[invalid\=true\]\:focus\:bg-danger-400\/20[data-theme="dark"][data-invalid="true"]:focus {
-    background-color: hsl(var(--heroui-danger-400) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:data-\[invalid\=true\]\:focus\:bg-danger-400\/20[data-theme="dark"][data-invalid="true"]:focus {
-      background-color: color-mix(in oklab, hsl(var(--heroui-danger-400) / 1) 20%, transparent);
-    }
-  }
-
-  .dark\:data-\[selected\=true\]\:text-danger-500.dark[data-selected="true"], .dark\:data-\[selected\=true\]\:text-danger-500[data-theme="dark"][data-selected="true"] {
+  .dark\:data-\[selected\=true\]\:text-danger-500:is(.dark *)[data-selected="true"] {
     color: hsl(var(--heroui-danger-500) / 1);
   }
 
-  .dark\:data-\[selected\=true\]\:text-success.dark[data-selected="true"], .dark\:data-\[selected\=true\]\:text-success[data-theme="dark"][data-selected="true"] {
+  .dark\:data-\[selected\=true\]\:text-success:is(.dark *)[data-selected="true"] {
     color: hsl(var(--heroui-success) / 1);
   }
 
-  .dark\:data-\[selected\=true\]\:text-warning.dark[data-selected="true"], .dark\:data-\[selected\=true\]\:text-warning[data-theme="dark"][data-selected="true"] {
+  .dark\:data-\[selected\=true\]\:text-warning:is(.dark *)[data-selected="true"] {
     color: hsl(var(--heroui-warning) / 1);
   }
 
-  .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:bg-danger.dark[data-selected="true"][data-hover="true"], .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:bg-danger[data-theme="dark"][data-selected="true"][data-hover="true"] {
+  .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:bg-danger:is(.dark *)[data-selected="true"][data-hover="true"] {
     background-color: hsl(var(--heroui-danger) / 1);
   }
 
-  .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:bg-success.dark[data-selected="true"][data-hover="true"], .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:bg-success[data-theme="dark"][data-selected="true"][data-hover="true"] {
+  .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:bg-success:is(.dark *)[data-selected="true"][data-hover="true"] {
     background-color: hsl(var(--heroui-success) / 1);
   }
 
-  .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:bg-warning.dark[data-selected="true"][data-hover="true"], .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:bg-warning[data-theme="dark"][data-selected="true"][data-hover="true"] {
+  .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:bg-warning:is(.dark *)[data-selected="true"][data-hover="true"] {
     background-color: hsl(var(--heroui-warning) / 1);
   }
 
-  .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:text-danger-foreground.dark[data-selected="true"][data-hover="true"], .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:text-danger-foreground[data-theme="dark"][data-selected="true"][data-hover="true"] {
+  .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:text-danger-foreground:is(.dark *)[data-selected="true"][data-hover="true"] {
     color: hsl(var(--heroui-danger-foreground) / 1);
   }
 
-  .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:text-success-foreground.dark[data-selected="true"][data-hover="true"], .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:text-success-foreground[data-theme="dark"][data-selected="true"][data-hover="true"] {
+  .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:text-success-foreground:is(.dark *)[data-selected="true"][data-hover="true"] {
     color: hsl(var(--heroui-success-foreground) / 1);
   }
 
-  .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:text-warning-foreground.dark[data-selected="true"][data-hover="true"], .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:text-warning-foreground[data-theme="dark"][data-selected="true"][data-hover="true"] {
+  .dark\:data-\[selected\=true\]\:data-\[hover\=true\]\:text-warning-foreground:is(.dark *)[data-selected="true"][data-hover="true"] {
     color: hsl(var(--heroui-warning-foreground) / 1);
   }
 
-  .dark\:data-\[selected\=true\]\:data-\[range-selection\=true\]\:text-success-500.dark[data-selected="true"][data-range-selection="true"], .dark\:data-\[selected\=true\]\:data-\[range-selection\=true\]\:text-success-500[data-theme="dark"][data-selected="true"][data-range-selection="true"] {
+  .dark\:data-\[selected\=true\]\:data-\[range-selection\=true\]\:text-success-500:is(.dark *)[data-selected="true"][data-range-selection="true"] {
     color: hsl(var(--heroui-success-500) / 1);
   }
 
-  .dark\:data-\[selected\=true\]\:data-\[range-selection\=true\]\:before\:bg-success-50.dark[data-selected="true"][data-range-selection="true"]:before, .dark\:data-\[selected\=true\]\:data-\[range-selection\=true\]\:before\:bg-success-50[data-theme="dark"][data-selected="true"][data-range-selection="true"]:before {
+  .dark\:data-\[selected\=true\]\:data-\[range-selection\=true\]\:before\:bg-success-50:is(.dark *)[data-selected="true"][data-range-selection="true"]:before {
     content: var(--tw-content);
     background-color: hsl(var(--heroui-success-50) / 1);
   }
 
-  .dark\:data-\[selected\=true\]\:data-\[range-selection\=true\]\:before\:bg-warning-50.dark[data-selected="true"][data-range-selection="true"]:before, .dark\:data-\[selected\=true\]\:data-\[range-selection\=true\]\:before\:bg-warning-50[data-theme="dark"][data-selected="true"][data-range-selection="true"]:before {
+  .dark\:data-\[selected\=true\]\:data-\[range-selection\=true\]\:before\:bg-warning-50:is(.dark *)[data-selected="true"][data-range-selection="true"]:before {
     content: var(--tw-content);
     background-color: hsl(var(--heroui-warning-50) / 1);
   }
 
-  .dark\:data-\[selected\=true\]\:data-\[selection-end\=true\]\:data-\[range-selection\=true\]\:text-success-foreground.dark[data-selected="true"][data-selection-end="true"][data-range-selection="true"], .dark\:data-\[selected\=true\]\:data-\[selection-end\=true\]\:data-\[range-selection\=true\]\:text-success-foreground[data-theme="dark"][data-selected="true"][data-selection-end="true"][data-range-selection="true"], .dark\:data-\[selected\=true\]\:data-\[selection-start\=true\]\:data-\[range-selection\=true\]\:text-success-foreground.dark[data-selected="true"][data-selection-start="true"][data-range-selection="true"], .dark\:data-\[selected\=true\]\:data-\[selection-start\=true\]\:data-\[range-selection\=true\]\:text-success-foreground[data-theme="dark"][data-selected="true"][data-selection-start="true"][data-range-selection="true"] {
+  .dark\:data-\[selected\=true\]\:data-\[selection-end\=true\]\:data-\[range-selection\=true\]\:text-success-foreground:is(.dark *)[data-selected="true"][data-selection-end="true"][data-range-selection="true"], .dark\:data-\[selected\=true\]\:data-\[selection-start\=true\]\:data-\[range-selection\=true\]\:text-success-foreground:is(.dark *)[data-selected="true"][data-selection-start="true"][data-range-selection="true"] {
     color: hsl(var(--heroui-success-foreground) / 1);
   }
 
