@@ -272,7 +272,7 @@ export const App: React.FC = () => {
           <div className='flex gap-4 items-center'>
             <div className='flex gap-2 items-center'>
               <Palette className='flex-shrink-0 w-6 h-6 text-blue-600' />
-              <h1 className='text-xl font-bold text-gray-900 whitespace-nowrap'>Render 开发环境</h1>
+              <h1 className='text-xl font-bold text-gray-900 whitespace-nowrap'>Template 开发</h1>
             </div>
             <Chip color='primary' variant='flat' size='sm'>
               HMR 已启用

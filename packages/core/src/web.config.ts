@@ -223,23 +223,38 @@ export const webConfig = defineConfig({
                 defaultSelected: all.douyin.tip,
                 isDisabled: !all.douyin.switch
               }),
-              components.switch.create('comment', {
-                label: '评论解析',
-                description: '抖音评论解析，开启后可发送抖音作品评论图',
-                defaultSelected: all.douyin.comment,
-                isDisabled: !all.douyin.switch || !all.douyin.switch
+              components.checkbox.group('sendContent', {
+                label: '解析时发送的内容',
+                description: '若什么都不选，可能不会返回任何解析结果',
+                orientation: 'horizontal',
+                defaultValue: all.douyin.sendContent,
+                isDisabled: !all.douyin.switch,
+                checkbox: [
+                  components.checkbox.create('sendContent:checkbox:1', {
+                    label: '视频信息',
+                    value: 'info'
+                  }),
+                  components.checkbox.create('sendContent:checkbox:2', {
+                    label: '评论图片',
+                    value: 'comment'
+                  }),
+                  components.checkbox.create('sendContent:checkbox:3', {
+                    label: '视频文件',
+                    value: 'video'
+                  })
+                ]
               }),
               components.input.number('numcomment', {
                 label: '评论解析数量',
                 defaultValue: all.douyin.numcomment.toString(),
                 rules: [{ min: 1 }],
-                isDisabled: !all.douyin.comment || !all.douyin.switch
+                isDisabled: !all.douyin.sendContent.includes('comment') || !all.douyin.switch
               }),
               components.switch.create('realCommentCount', {
                 label: '显示真实评论数量',
                 description: '评论图是否显示真实评论数量，关闭则显示解析到的评论数量',
                 defaultSelected: all.douyin.realCommentCount,
-                isDisabled: !all.douyin.comment || !all.douyin.switch
+                isDisabled: !all.douyin.sendContent.includes('comment') || !all.douyin.switch
               }),
               components.switch.create('autoResolution', {
                 label: '自动分辨率',
@@ -378,23 +393,38 @@ export const webConfig = defineConfig({
                 defaultSelected: all.bilibili.tip,
                 isDisabled: !all.bilibili.switch
               }),
-              components.switch.create('comment', {
-                label: '评论解析',
-                description: 'B站评论解析，开启后可发送B站作品评论图',
-                defaultSelected: all.bilibili.comment,
-                isDisabled: !all.bilibili.switch
+              components.checkbox.group('sendContent', {
+                label: '解析时发送的内容',
+                description: '若什么都不选，可能不会返回任何解析结果',
+                orientation: 'horizontal',
+                defaultValue: all.bilibili.sendContent,
+                isDisabled: !all.bilibili.switch,
+                checkbox: [
+                  components.checkbox.create('sendContent:checkbox:1', {
+                    label: '视频信息',
+                    value: 'info'
+                  }),
+                  components.checkbox.create('sendContent:checkbox:2', {
+                    label: '评论图片',
+                    value: 'comment'
+                  }),
+                  components.checkbox.create('sendContent:checkbox:3', {
+                    label: '视频文件',
+                    value: 'video'
+                  })
+                ]
               }),
               components.input.number('numcomment', {
                 label: '评论解析数量',
                 defaultValue: all.bilibili.numcomment.toString(),
                 rules: [{ min: 1 }],
-                isDisabled: !all.bilibili.comment || !all.bilibili.switch
+                isDisabled: !all.bilibili.sendContent.some(content => content === 'comment') || !all.bilibili.switch
               }),
               components.switch.create('realCommentCount', {
                 label: '显示真实评论数量',
                 description: '评论图是否显示真实评论数量，关闭则显示解析到的评论数量',
                 defaultSelected: all.bilibili.realCommentCount,
-                isDisabled: !all.bilibili.comment || !all.bilibili.switch
+                isDisabled: !all.bilibili.sendContent.some(content => content === 'comment') || !all.bilibili.switch
               }),
               components.switch.create('videopriority', {
                 label: '优先保内容',
@@ -495,35 +525,6 @@ export const webConfig = defineConfig({
                   components.radio.create('permission:radio-5', {
                     label: '群管理员',
                     value: 'group.admin'
-                  })
-                ]
-              }),
-              components.checkbox.group('displayContent', {
-                label: '评论解析前返回的内容',
-                description: '若什么都不选，则不会返回任何视频相关信息',
-                orientation: 'horizontal',
-                defaultValue: all.bilibili.displayContent,
-                isDisabled: !all.bilibili.switch,
-                checkbox: [
-                  components.checkbox.create('displayContent:checkbox:1', {
-                    label: '封面',
-                    value: 'cover'
-                  }),
-                  components.checkbox.create('displayContent:checkbox:2', {
-                    label: '标题',
-                    value: 'title'
-                  }),
-                  components.checkbox.create('displayContent:checkbox:3', {
-                    label: '作者',
-                    value: 'author'
-                  }),
-                  components.checkbox.create('displayContent:checkbox:4', {
-                    label: '视频统计信息',
-                    value: 'stats'
-                  }),
-                  components.checkbox.create('displayContent:checkbox:5', {
-                    label: '简介',
-                    value: 'desc'
                   })
                 ]
               }),

@@ -6,8 +6,8 @@ export interface douyinConfig {
   /** 抖音解析提示，发送提示信息："检测到抖音链接，开始解析" */
   tip: boolean
 
-  /** 抖音评论解析，发送抖音作品评论图 */
-  comment: boolean
+  /** 解析时发送的内容，可选值：'info'(视频信息)、'comment'(评论图片)、'video'(视频文件) */
+  sendContent: ['info' | 'comment' | 'video']
 
   /** 抖音评论数量，范围1 ~ x 条 */
   numcomment: number

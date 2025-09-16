@@ -102,22 +102,22 @@ const ErrorHeader: React.FC<{
 
   return (
     <div className='w-full max-w-[1440px] mx-auto px-20 py-16'>
-      <div className='p-16 rounded-3xl bg-danger-50 dark:bg-danger-900/20'>
+      <div className='p-16 rounded-3xl bg-danger-50'>
         <div className='flex items-center mb-12'>
-          <AlertCircle className='mr-6 w-16 h-16 text-danger-600 dark:text-danger-400' />
+          <AlertCircle className='mr-6 w-16 h-16 text-danger-600' />
           <div>
-            <h1 className='text-6xl font-bold text-danger-600 dark:text-danger-400'>
+            <h1 className='text-6xl font-bold text-danger-600'>
               {isInternalError ? '内部错误' : isBusinessError ? '业务错误' : 'API错误'}
             </h1>
-            <p className='mt-4 text-3xl text-default-600 dark:text-default-400'>
+            <p className='mt-4 text-3xl text-default-600'>
               {platformConfig.displayName} - {method}
             </p>
           </div>
         </div>
         
         <div className='flex items-center'>
-          <Clock className='mr-4 w-8 h-8 text-default-600 dark:text-default-400' />
-          <span className='text-2xl text-default-600 dark:text-default-400'>
+          <Clock className='mr-4 w-8 h-8 text-default-600' />
+          <span className='text-2xl text-default-600'>
             发生时间：{new Date(timestamp).toLocaleString('zh-CN')}
           </span>
         </div>
@@ -157,22 +157,22 @@ const ApiErrorDetails: React.FC<{
       </div>
 
       {error.amagiError && (
-        <div className='p-12 mb-16 rounded-3xl bg-warning-50 dark:bg-warning-900/20'>
-          <h3 className='flex items-center mb-10 text-4xl font-semibold text-warning-800 dark:text-warning-400'>
+        <div className='p-12 mb-16 rounded-3xl bg-warning-50'>
+          <h3 className='flex items-center mb-10 text-4xl font-semibold text-warning-800'>
             <Zap className='mr-4 w-10 h-10' />
             详细错误信息
           </h3>
           <div className='space-y-8 text-3xl'>
             <div>
-              <span className='font-medium text-warning-700 dark:text-warning-300'>错误描述：</span>
+              <span className='font-medium text-warning-700'>错误描述：</span>
               <span className='ml-4 select-text text-foreground-700'>{error.amagiError.errorDescription}</span>
             </div>
             <div>
-              <span className='font-medium text-warning-700 dark:text-warning-300'>请求类型：</span>
+              <span className='font-medium text-warning-700'>请求类型：</span>
               <span className='ml-4 select-text text-foreground-700'>{error.amagiError.requestType}</span>
             </div>
             <div>
-              <span className='font-medium text-warning-700 dark:text-warning-300'>请求URL：</span>
+              <span className='font-medium text-warning-700'>请求URL：</span>
               <span className='ml-4 break-all select-text text-foreground-700'>{error.amagiError.requestUrl}</span>
             </div>
           </div>
@@ -225,8 +225,8 @@ const BusinessErrorDetails: React.FC<{
         </div>
       </div>
 
-      <div className='p-12 mb-16 rounded-3xl bg-warning-50 dark:bg-warning-900/20'>
-        <h3 className='flex items-center mb-10 text-4xl font-semibold text-warning-800 dark:text-warning-400'>
+      <div className='p-12 mb-16 rounded-3xl bg-warning-50'>
+        <h3 className='flex items-center mb-10 text-4xl font-semibold text-warning-800'>
           <Zap className='mr-4 w-10 h-10' />
           错误消息
         </h3>
@@ -237,8 +237,8 @@ const BusinessErrorDetails: React.FC<{
         </div>
       </div>
 
-      <div className='p-12 mb-16 rounded-3xl bg-danger-50 dark:bg-danger-900/20'>
-        <h3 className='flex items-center mb-10 text-4xl font-semibold text-danger-800 dark:text-danger-400'>
+      <div className='p-12 mb-16 rounded-3xl bg-danger-50'>
+        <h3 className='flex items-center mb-10 text-4xl font-semibold text-danger-800'>
           <Terminal className='mr-4 w-10 h-10' />
           调用栈信息
         </h3>
@@ -327,8 +327,8 @@ const InternalErrorDetails: React.FC<{
         </div>
       </div>
 
-      <div className='p-12 rounded-3xl bg-danger-50 dark:bg-danger-900/20'>
-        <h3 className='flex items-center mb-10 text-4xl font-semibold text-danger-800 dark:text-danger-400'>
+      <div className='p-12 rounded-3xl bg-danger-50'>
+        <h3 className='flex items-center mb-10 text-4xl font-semibold text-danger-800'>
           <Terminal className='mr-4 w-10 h-10' />
           完整调用栈信息
         </h3>
@@ -341,7 +341,7 @@ const InternalErrorDetails: React.FC<{
             ))}
           </pre>
         </div>
-        <p className='mt-8 text-2xl text-default-600 dark:text-default-400'>显示完整调用栈信息</p>
+        <p className='mt-8 text-2xl text-default-600'>显示完整调用栈信息</p>
       </div>
     </div>
   )

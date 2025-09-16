@@ -39,14 +39,13 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
         className={clsx(
           'w-[1440px]',
           useDarkTheme && 'dark',
-          'bg-default-100 dark:bg-black text-default-900'
+          'bg-default-50 text-default-900'
         )}
         id='container'
         style={{
           transform: `scale(${scale})`,
           transformOrigin: 'top left',
-          width: '1440px',
-          minHeight: '100vh'
+          width: '1440px'
         }}
       >
         {children}

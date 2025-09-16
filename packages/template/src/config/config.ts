@@ -124,6 +124,17 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
         lazyComponent: () => import('../components/platforms/douyin/UserList').then(module => ({
           default: module.default
         }))
+      },
+      {
+        id: 'videoInfo',
+        name: '视频信息',
+        description: '抖音视频信息展示模板',
+        enabled: true,
+        componentPath: 'platforms/douyin/videoInfo',
+        exportName: 'DouyinVideoInfo',
+        lazyComponent: () => import('../components/platforms/douyin/videoInfo').then(module => ({
+          default: module.DouyinVideoInfo
+        }))
       }
     ]
   },
@@ -228,13 +239,16 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
         validateData: (data) => data && typeof data.share_url === 'string'
       },
       {
-        id: 'video',
+        id: 'videoInfo',
         name: '视频信息',
         description: 'B站视频信息展示模板',
-        enabled: false,
-        componentPath: 'platforms/bilibili/Video',
-        exportName: 'BilibiliVideo',
-        validateData: (data) => data && typeof data.share_url === 'string'
+        enabled: true,
+        componentPath: 'platforms/bilibili/videoInfo',
+        exportName: 'BilibiliVideoInfo',
+        validateData: (data) => data && typeof data.share_url === 'string',
+        lazyComponent: () => import('../components/platforms/bilibili/videoInfo').then(module => ({
+          default: module.BilibiliVideoInfo
+        }))
       }
     ]
   },
@@ -284,6 +298,17 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
         exportName: 'handlerError',
         lazyComponent: () => import('../components/platforms/other/handlerError').then(module => ({
           default: module.handlerError
+        }))
+      },
+      {
+        id: 'changelog_v2',
+        name: '更新日志',
+        description: 'KKK插件更新日志',
+        enabled: true,
+        componentPath: 'platforms/other/changelog_v2',
+        exportName: 'changelog_v2',
+        lazyComponent: () => import('../components/platforms/other/changelog_v2').then(module => ({
+          default: module.ChangelogV2
         }))
       }
     ]
