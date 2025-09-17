@@ -41,4 +41,7 @@ export interface appConfig {
 
   /** web解析页面是否启用鉴权 */
   webAuth: boolean
+
+  /** 遇到错误时谁会收到错误日志？可选值：除'console'外的第一个主人、触发者 */
+  errorLogSendTo: ['master' | 'trigger']
 }

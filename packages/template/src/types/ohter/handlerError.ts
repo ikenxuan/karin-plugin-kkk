@@ -27,27 +27,6 @@ export interface InternalError {
 }
 
 /**
- * API错误类型
- */
-export interface APIError {
-  /** 错误代码 */
-  code: string | number
-  /** 错误消息 */
-  message: string
-  /** 详细错误信息 */
-  data?: any
-  /** amagi错误详情 */
-  amagiError?: {
-    /** 错误描述 */
-    errorDescription: string
-    /** 请求类型 */
-    requestType: string
-    /** 请求URL */
-    requestUrl: string
-  }
-}
-
-/**
  * 平台配置映射
  */
 export interface PlatformConfig {
@@ -66,18 +45,26 @@ export interface ApiErrorProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
     /** 错误类型 */
-    type: 'api_error' | 'internal_error' | 'business_error'
+    type: 'business_error'
     /** 平台名称 */
     platform: 'douyin' | 'bilibili' | 'kuaishou' | 'system' | 'unknown'
     /** 错误信息 */
-    error: APIError | InternalError | BusinessError
+    error: BusinessError
     /** 调用的方法名 */
     method: string
     /** 错误发生时间 */
     timestamp: string
-    /** 收集到的日志信息 - 修正为字符串数组 */
-    logs?: string[]
+    /** 收集到的日志信息 */
+    logs?: string | string[]
+    /** 触发命令 - 新增字段 */
+    triggerCommand?: string
+    /** 分享链接 - 新增字段 */
+    share_url?: string
+    /** 是否使用暗色主题 - 新增字段 */
+    useDarkTheme?: boolean
   }
+  /** 分享链接 */
+  qrCodeDataUrl: string
 }
 
 /**
@@ -110,23 +97,30 @@ export const PLATFORM_CONFIG: Record<ApiErrorProps['data']['platform'], Platform
     icon: '❓'
   }
 }
+
 /**
- * API错误属性接口
+ * 错误处理组件属性接口
  * 定义错误处理组件的完整属性结构
  */
-export interface ApiErrorProps {
+export interface HandlerErrorProps {
   /** 错误类型 */
   type: 'api_error' | 'internal_error' | 'business_error'
   /** 平台标识 */
   platform: string
   /** 错误对象 */
-  error: APIError | InternalError | BusinessError
+  error: BusinessError
   /** 方法名称 */
   method: string
   /** 时间戳 */
   timestamp: string
   /** 相关日志，可以是字符串或字符串数组 */
   logs?: string | string[]
+  /** 触发命令 - 新增字段 */
+  triggerCommand?: string
+  /** 分享链接 - 新增字段 */
+  share_url?: string
+  /** 是否使用暗色主题 - 新增字段 */
+  useDarkTheme?: boolean
   /** 模板类型 */
   templateType: string
   /** 模板名称 */

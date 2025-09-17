@@ -79,6 +79,9 @@ export default defineConfig(({ command }) => {
       },
       define: {
         __DEV__: true
+      },
+      build: {
+        sourcemap: true
       }
     }
   }

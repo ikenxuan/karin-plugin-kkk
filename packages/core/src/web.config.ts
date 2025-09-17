@@ -95,12 +95,12 @@ export const webConfig = defineConfig({
             className: 'ml-4 mr-4',
             subtitle: '此处用于管理插件的基本设置',
             children: [
-              components.switch.create('rmmp4', {
+              components.switch.create('removeCache', {
                 label: '缓存删除',
                 description: '缓存自动删除，非必要不修改！',
                 defaultSelected: all.app.removeCache
               }),
-              components.switch.create('defaulttool', {
+              components.switch.create('videoTool', {
                 label: '默认解析',
                 description: '即识别最高优先级，修改后重启生效',
                 defaultSelected: all.app.videoTool
@@ -199,6 +199,22 @@ export const webConfig = defineConfig({
                 label: 'web解鉴权',
                 description: '开启后，需要拥有 Karin 的 HTTP 鉴权密钥才能访问。修改后重启生效',
                 defaultSelected: all.app.webAuth
+              }),
+              components.checkbox.group('errorLogSendTo', {
+                label: '错误日志',
+                description: '解析遇到错误时谁会收到错误日志',
+                orientation: 'horizontal',
+                defaultValue: all.app.errorLogSendTo,
+                checkbox: [
+                  components.checkbox.create('errorLogSendTo:checkbox:1', {
+                    label: '除\'console\'外的第一个主人',
+                    value: 'master'
+                  }),
+                  components.checkbox.create('errorLogSendTo:checkbox:2', {
+                    label: '触发者',
+                    value: 'trigger'
+                  })
+                ]
               })
             ]
           })
@@ -651,7 +667,7 @@ export const webConfig = defineConfig({
                   })
                 ]
               }),
-              components.input.number('push:maxAutoVideoSize', {
+              components.input.number('push:pushMaxAutoVideoSize', {
                 label: '视频动态的视频体积上限（MB）',
                 description: '根据该值自动选择分辨率进行下载。仅在「解析视频动态时的画质偏好」 为 "自动选择" 且「作品解析」开启时生效，仅对视频动态有效',
                 defaultValue: all.bilibili.push.pushMaxAutoVideoSize.toString(),

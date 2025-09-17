@@ -20,9 +20,7 @@ const handleDouyin = wrapWithErrorHandler(async (e) => {
   await new DouYin(e, iddata).RESOURCES(iddata)
   return true
 }, {
-  businessName: '抖音视频解析',
-  sendToUser: true,
-  sendToMaster: true
+  businessName: '抖音视频解析'
 })
 
 // 包装B站处理函数
@@ -46,9 +44,7 @@ const handleBilibili = wrapWithErrorHandler(async (e) => {
   await new Bilibili(e, iddata).RESOURCES(iddata)
   return true
 }, {
-  businessName: 'B站视频解析',
-  sendToUser: true,
-  sendToMaster: true
+  businessName: 'B站视频解析'
 })
 
 // 包装快手处理函数
@@ -58,9 +54,7 @@ const handleKuaishou = wrapWithErrorHandler(async (e) => {
   const WorkData = await fetchKuaishouData(iddata.type, iddata)
   await new Kuaishou(e, iddata).RESOURCES(WorkData)
 }, {
-  businessName: '快手视频解析',
-  sendToUser: true,
-  sendToMaster: true
+  businessName: '快手视频解析'
 })
 
 // 包装引用解析函数
@@ -74,9 +68,7 @@ const handlePrefix = wrapWithErrorHandler(async (e) => {
     return await handleKuaishou(e)
   }
 }, {
-  businessName: '引用解析',
-  sendToUser: true,
-  sendToMaster: true
+  businessName: '引用解析'
 })
 
 // 注册命令

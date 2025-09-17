@@ -11,9 +11,7 @@ const handleDouyinPush = wrapWithErrorHandler(async () => {
   await new DouYinpush().action()
   return true
 }, {
-  businessName: '抖音推送任务',
-  sendToUser: false,
-  sendToMaster: true
+  businessName: '抖音推送任务'
 })
 
 // 包装B站推送任务
@@ -21,9 +19,7 @@ const handleBilibiliPush = wrapWithErrorHandler(async () => {
   await new Bilibilipush().action()
   return true
 }, {
-  businessName: 'B站推送任务',
-  sendToUser: false,
-  sendToMaster: true
+  businessName: 'B站推送任务'
 })
 
 // 包装强制推送命令
@@ -37,9 +33,7 @@ const handleForcePush = wrapWithErrorHandler(async (e) => {
   }
   return true
 }, {
-  businessName: '强制推送',
-  sendToUser: true,
-  sendToMaster: true
+  businessName: '强制推送'
 })
 
 // 包装设置抖音推送命令
@@ -51,9 +45,9 @@ const handleSetDouyinPush = wrapWithErrorHandler(async (e) => {
   await new DouYinpush(e).setting(data.data)
   return true
 }, {
-  businessName: '设置抖音推送',
-  sendToUser: true,
-  sendToMaster: true
+  businessName: '设置抖音推送'
+  
+  
 })
 
 // 包装设置B站推送命令
@@ -72,26 +66,20 @@ const handleSetBilibiliPush = wrapWithErrorHandler(async (e) => {
   }
   return true
 }, {
-  businessName: '设置B站推送',
-  sendToUser: true,
-  sendToMaster: true
+  businessName: '设置B站推送'
 })
 
 // 包装推送列表命令
 const handleBilibiliPushList = wrapWithErrorHandler(async (e) => {
   await new Bilibilipush(e).renderPushList()
 }, {
-  businessName: 'B站推送列表',
-  sendToUser: true,
-  sendToMaster: false
+  businessName: 'B站推送列表'
 })
 
 const handleDouyinPushList = wrapWithErrorHandler(async (e) => {
   await new DouYinpush(e).renderPushList()
 }, {
-  businessName: '抖音推送列表',
-  sendToUser: true,
-  sendToMaster: false
+  businessName: '抖音推送列表'
 })
 
 // 包装设置机器人ID命令
@@ -121,9 +109,7 @@ const handleChangeBotID = wrapWithErrorHandler(async (e) => {
   await e.reply('推送机器人已修改为' + e.msg.replace(/^#kkk设置推送机器人/, ''))
   return true
 }, {
-  businessName: '设置推送机器人',
-  sendToUser: true,
-  sendToMaster: true
+  businessName: '设置推送机器人'
 })
 
 // 包装测试推送命令
@@ -163,9 +149,7 @@ const handleTestDouyinPush = wrapWithErrorHandler(async (e) => {
   e.reply(img)
   return true
 }, {
-  businessName: '测试抖音推送',
-  sendToUser: true,
-  sendToMaster: true
+  businessName: '测试抖音推送'
 })
 
 // 注册任务和命令

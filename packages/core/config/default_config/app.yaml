@@ -1,4 +1,4 @@
-# 视频解析工具总开关，修改后重启生效
+# 默认解析，即识别最高优先级，修改后重启生效
 videoTool: true
 
 # 自定义优先级，「默认解析」关闭后才会生效。修改后重启生效
@@ -36,3 +36,8 @@ EmojiReplyID: 128064
 
 # web解析页面是否启用鉴权
 webAuth: true
+
+# 遇到错误时谁会收到错误日志？可选值：除'console'外的第一个主人、触发者
+errorLogSendTo: 
+  - master
+  - trigger

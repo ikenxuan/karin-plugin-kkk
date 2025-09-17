@@ -56,7 +56,7 @@ const BilibiliVideoDynamicContent: React.FC<BilibiliVideoDynamicContentProps> = 
                 className='object-contain w-full h-full rounded-3xl'
               />
               {/* 播放图标覆盖层 */}
-              <div className='flex absolute inset-0 justify-center items-center'>
+              <div className='flex absolute bottom-12 right-16'>
                 <img
                   src='/image/bilibili/play.svg'
                   alt='播放图标'

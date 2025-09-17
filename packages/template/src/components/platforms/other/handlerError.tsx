@@ -1,4 +1,4 @@
-import { AlertCircle, Clock, FileText, Hash, Info, Send, Terminal, Zap } from 'lucide-react'
+import { AlertCircle, Clock, FileText, QrCode, Send, Terminal } from 'lucide-react'
 import React from 'react'
 
 import { type ApiErrorProps, type BusinessError, PLATFORM_CONFIG } from '../../../types/ohter/handlerError'
@@ -85,6 +85,11 @@ const parseAnsiColors = (text: string): React.ReactNode[] => {
   return parts.length > 0 ? parts : [text.replace(/\\n/g, '\n')]
 }
 
+/**
+ * 错误头部组件
+ * @param props 组件属性
+ * @returns JSX元素
+ */
 const ErrorHeader: React.FC<{
   type: 'api_error' | 'internal_error' | 'business_error'
   platform: string
@@ -127,40 +132,26 @@ const ErrorHeader: React.FC<{
 const BusinessErrorDetails: React.FC<{
   error: BusinessError
   logs?: string | string[]
-}> = ({ error, logs }) => {
+  triggerCommand?: string
+}> = ({ error, logs, triggerCommand }) => {
   return (
     <div className='w-full max-w-[1440px] mx-auto px-20 py-12'>
       <h2 className='mb-16 text-6xl font-bold text-foreground'>错误详情</h2>
       
-      <div className='grid grid-cols-1 gap-12 mb-16 md:grid-cols-2'>
-        <div className='p-12 rounded-3xl bg-content1'>
+      {/* 触发命令信息 */}
+      {triggerCommand && (
+        <div className='p-12 mb-16 rounded-3xl bg-content1'>
           <h3 className='flex items-center mb-8 text-4xl font-semibold text-foreground'>
-            <Hash className='mr-4 w-10 h-10' />
-            错误类型
+            <Terminal className='mr-4 w-10 h-10' />
+            触发命令
           </h3>
-          <p className='font-mono text-4xl select-text text-danger'>{error.name}</p>
+          <div className='p-6 rounded-2xl bg-default-100'>
+            <pre className='text-2xl leading-relaxed whitespace-pre-wrap break-all select-text text-foreground-700'>
+              {triggerCommand}
+            </pre>
+          </div>
         </div>
-        
-        <div className='p-12 rounded-3xl bg-content1'>
-          <h3 className='flex items-center mb-8 text-4xl font-semibold text-foreground'>
-            <Info className='mr-4 w-10 h-10' />
-            业务名称
-          </h3>
-          <p className='text-3xl leading-relaxed select-text text-foreground-600'>{error.businessName}</p>
-        </div>
-      </div>
-
-      <div className='p-12 mb-16 rounded-3xl bg-warning-50'>
-        <h3 className='flex items-center mb-10 text-4xl font-semibold text-warning-800'>
-          <Zap className='mr-4 w-10 h-10' />
-          错误消息
-        </h3>
-        <div className='p-10 rounded-2xl bg-content1'>
-          <pre className='text-2xl leading-relaxed whitespace-pre-wrap select-text text-foreground-700'>
-            {error.message}
-          </pre>
-        </div>
-      </div>
+      )}
 
       <div className='p-12 mb-16 rounded-3xl bg-danger-50'>
         <h3 className='flex items-center mb-10 text-4xl font-semibold text-danger-800'>
@@ -213,32 +204,29 @@ const BusinessErrorDetails: React.FC<{
   )
 }
 
-
 /**
- * 发送给开发者提示组件
+ * 二维码组件
  * @param props 组件属性
  * @returns JSX元素
  */
-const SendToDeveloper: React.FC = () => {
+const QRCodeSection: React.FC<{ qrCodeDataUrl: string }> = ({ qrCodeDataUrl }) => {
   return (
-    <div className='w-full max-w-[1440px] mx-auto px-20 py-12'>
-      <div className='p-16 rounded-3xl bg-primary-50'>
-        <h3 className='flex items-center mb-10 text-5xl font-semibold text-primary-800'>
-          <Send className='mr-6 w-12 h-12' />
-          发送错误报告
-        </h3>
-        <div className='space-y-6'>
-          <p className='text-3xl leading-relaxed text-default-700'>
-            请将此错误报告截图发送给开发者，以便快速定位和解决问题。
-          </p>
-          <p className='text-2xl text-default-600'>
-            您可以通过以下方式联系开发者：GitHub Issues、QQ群：795874649。
-          </p>
-        </div>
+    <div className='flex flex-col-reverse items-center -mb-12 mr-18'>
+      <div className='flex items-center gap-2 text-[45px] text-right mt-5 text-default-500 select-text'>
+        <QrCode className='w-11 h-11' />
+        <span>触发命令</span>
+      </div>
+      <div className='p-2.5 rounded-sm border-[7px] border-dashed border-default-300'>
+        <img
+          src={qrCodeDataUrl}
+          alt='二维码'
+          className='w-[350px] h-[350px] select-text'
+        />
       </div>
     </div>
   )
 }
+
 
 /**
  * API错误显示组件
@@ -246,8 +234,8 @@ const SendToDeveloper: React.FC = () => {
  * @returns JSX元素
  */
 export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templateName'>> = (props) => {
-  const { data } = props
-  const { type, platform, error, method, timestamp, logs } = data
+  const { data, qrCodeDataUrl } = props
+  const { type, platform, error, method, timestamp, logs, triggerCommand } = data
   const isBusinessError = type === 'business_error'
   const businessError = isBusinessError ? error as BusinessError : null
 
@@ -263,10 +251,36 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
       />
 
       {/* 错误详情 */}
-      <BusinessErrorDetails error={businessError!} logs={logs} />
+      <BusinessErrorDetails 
+        error={businessError!} 
+        logs={logs} 
+        triggerCommand={triggerCommand}
+      />
 
-      {/* 发送给开发者提示 */}
-      <SendToDeveloper />
+      {/* 底部区域：发送给开发者提示和二维码 */}
+      <div className='w-full max-w-[1440px] mx-auto px-20 py-12'>
+        <div className='flex justify-between items-center'>
+          <div className='p-16 rounded-3xl bg-primary-50 flex-1 mr-8'>
+            <h3 className='flex items-center mb-10 text-5xl font-semibold text-primary-800'>
+              <Send className='mr-6 w-12 h-12' />
+              发送错误报告
+            </h3>
+            <div className='space-y-6'>
+              <p className='text-3xl leading-relaxed text-default-700'>
+                请将此错误报告截图发送给开发者，以便快速定位和解决问题。
+              </p>
+              <p className='text-2xl text-default-600'>
+                您可以通过以下方式联系开发者：GitHub Issues、QQ群：795874649。
+              </p>
+            </div>
+          </div>
+          
+          {/* 二维码区域 */}
+          {qrCodeDataUrl && (
+            <QRCodeSection qrCodeDataUrl={qrCodeDataUrl} />
+          )}
+        </div>
+      </div>
     </DefaultLayout>
   )
 }
