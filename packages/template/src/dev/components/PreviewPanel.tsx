@@ -1,6 +1,7 @@
 import { Button, Card, CardBody, CardHeader, Kbd, Slider } from '@heroui/react'
+import html2canvas from 'html2canvas-pro'
 import { Download, Eye, Maximize2, Minimize2 } from 'lucide-react'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 
 import { PlatformType } from '../../types/platforms'
 import { ComponentRenderer } from './ComponentRenderer'
@@ -64,6 +65,14 @@ interface ScrollBarDragState {
 }
 
 /**
+ * 预览面板组件暴露的方法接口
+ */
+export interface PreviewPanelRef {
+  /** 截图方法 */
+  captureScreenshot: () => Promise<void>
+}
+
+/**
  * 节流函数
  * @param func 要节流的函数
  * @param limit 节流时间间隔（毫秒）
@@ -86,14 +95,14 @@ const throttle = <T extends (...args: any[]) => any> (
 /**
  * 预览面板组件
  */
-export const PreviewPanel: React.FC<PreviewPanelProps> = ({
+export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   platform,
   templateId,
   data,
   qrCodeDataUrl,
   scale,
   onScaleChange
-}) => {
+}, ref) => {
   // 键盘状态
   const [isSpacePressed, setIsSpacePressed] = useState(false)
   const [isAltPressed, setIsAltPressed] = useState(false)
@@ -116,6 +125,10 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
   const previewContainerRef = useRef<HTMLDivElement>(null)
   const previewContentRef = useRef<HTMLDivElement>(null)
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // 截图
+  const [isCapturing, setIsCapturing] = useState(false)
+  const componentRendererRef = useRef<HTMLDivElement>(null)
 
   /**
    * 重置键盘状态
@@ -338,7 +351,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
   }, [scale, panOffset, onScaleChange, updateScrollBarsImmediate])
 
   /**
-   * 改进的滚轮事件处理 - 支持普通Y轴滚动和Alt+滚轮缩放
+   * 改进的滚轮事件处理
    */
   const handleWheel = useCallback(
     throttle((e: WheelEvent) => {
@@ -637,6 +650,339 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
     return 'default'
   }
 
+  /**
+   * 截图功能
+   */
+  const captureScreenshot = useCallback(async () => {
+    if (!previewContentRef.current || isCapturing) return
+
+    setIsCapturing(true)
+
+    try {
+      console.log('开始截图...')
+      console.log('当前缩放比例:', scale)
+      console.log('当前位移:', panOffset)
+
+      const element = previewContentRef.current
+    
+      // 临时移除 transform，获取原始尺寸
+      const originalTransform = element.style.transform
+      const originalTransition = element.style.transition
+    
+      // 暂时重置样式以获取真实内容尺寸
+      element.style.transform = 'none'
+      element.style.transition = 'none'
+      element.style.left = '0'
+      element.style.top = '0'
+      element.style.position = 'relative'
+    
+      // 等待样式应用
+      await new Promise(resolve => setTimeout(resolve, 100))
+    
+      // 获取内容的真实尺寸（无缩放状态下）
+      const rect = element.getBoundingClientRect()
+      const actualWidth = element.scrollWidth || rect.width
+      const actualHeight = element.scrollHeight || rect.height
+    
+      console.log(`真实内容尺寸: ${actualWidth}x${actualHeight}`)
+    
+      // 目标尺寸就是真实尺寸，不需要强制改变
+      const targetWidth = actualWidth
+      const targetHeight = actualHeight
+    
+      console.log(`目标截图尺寸: ${targetWidth}x${targetHeight}`)
+
+      // 预处理外链图片
+      const processImages = async (element: HTMLElement) => {
+        const images = element.querySelectorAll('img')
+        const imagePromises: Promise<void>[] = []
+
+        images.forEach(img => {
+          const src = img.src
+          if (src && (src.startsWith('http://') || src.startsWith('https://')) && !src.includes(window.location.origin)) {
+            const promise = new Promise<void>((resolve) => {
+              const canvas = document.createElement('canvas')
+              const ctx = canvas.getContext('2d')
+              const tempImg = new Image()
+              tempImg.crossOrigin = 'anonymous'
+
+              tempImg.onload = () => {
+                canvas.width = tempImg.width
+                canvas.height = tempImg.height
+                ctx?.drawImage(tempImg, 0, 0)
+
+                try {
+                  const dataUrl = canvas.toDataURL('image/png')
+                  img.setAttribute('data-original-src', src)
+                  img.src = dataUrl
+                  console.log('外链图片转换成功:', src)
+                } catch (e) {
+                  console.warn('外链图片转换失败:', src, e)
+                }
+                resolve()
+              }
+
+              tempImg.onerror = () => {
+                console.warn('外链图片加载失败:', src)
+                resolve()
+              }
+
+              tempImg.src = src + (src.includes('?') ? '&' : '?') + '_t=' + Date.now()
+            })
+
+            imagePromises.push(promise)
+          }
+        })
+
+        await Promise.all(imagePromises)
+      }
+
+      // 预处理图片
+      await processImages(element)
+      await new Promise(resolve => setTimeout(resolve, 300))
+
+      // html2canvas配置
+      const canvas = await html2canvas(element, {
+        backgroundColor: '#ffffff',
+        width: targetWidth,
+        height: targetHeight,
+        scale: 1, // 固定scale
+        useCORS: true,
+        allowTaint: true,
+        foreignObjectRendering: false,
+        logging: true,
+        removeContainer: true,
+        imageTimeout: 15000,
+      
+        ignoreElements: (element) => {
+        // 只忽略脚本和不必要的元素
+          if (['SCRIPT', 'NOSCRIPT'].includes(element.tagName)) {
+            return true
+          }
+          return false
+        },
+
+        onclone: (clonedDoc) => {
+          console.log('开始处理克隆文档...')
+  
+          // 1. 复制所有样式表和CSS变量
+          const originalStyleSheets = Array.from(document.styleSheets)
+          originalStyleSheets.forEach((styleSheet, index) => {
+            try {
+              const newStyle = clonedDoc.createElement('style')
+              newStyle.type = 'text/css'
+  
+              let cssText = ''
+              try {
+                const rules = Array.from(styleSheet.cssRules || styleSheet.rules || [])
+                cssText = rules.map(rule => rule.cssText).join('\n')
+              } catch (e) {
+                console.warn(`无法访问样式表 ${index}:`, e)
+                if (styleSheet.href) {
+                  const linkElement = clonedDoc.createElement('link')
+                  linkElement.rel = 'stylesheet'
+                  linkElement.href = styleSheet.href
+                  clonedDoc.head.appendChild(linkElement)
+                  return
+                }
+              }
+  
+              if (cssText) {
+                newStyle.textContent = cssText
+                clonedDoc.head.appendChild(newStyle)
+              }
+            } catch (e) {
+              console.warn('复制样式表失败:', e)
+            }
+          })
+  
+          // 2. 复制现有样式元素
+          const originalStyles = document.querySelectorAll('style, link[rel="stylesheet"]')
+          originalStyles.forEach(styleElement => {
+            try {
+              const clonedStyle = styleElement.cloneNode(true) as HTMLElement
+              clonedDoc.head.appendChild(clonedStyle)
+            } catch (e) {
+              console.warn('复制样式元素失败:', e)
+            }
+          })
+  
+          // 3. 添加CSS变量到克隆文档
+          const rootStyle = clonedDoc.createElement('style')
+          rootStyle.textContent = `
+            :root {
+              --qq-blue: #12b7f5;
+              --wechat-green: #07c160;
+              --telegram-blue: #0088cc;
+              --discord-purple: #5865f2;
+              --douyin-primary: #fe2c55;
+              --douyin-secondary: #25f4ee;
+              --bilibili-primary: #00a1d6;
+              --bilibili-secondary: #fb7299;
+              --heroui-like: #ff6b6b;
+              --heroui-comment: #4dabf7;
+              --heroui-share: #51cf66;
+              --heroui-view: #845ef7;
+              --heroui-follow: #ff8cc8;
+              --heroui-live: #ff6b35;
+              --heroui-time: #868e96;
+              --heroui-tag: #ffd43b;
+              --heroui-badge: #9775fa;
+              --heroui-bilibili-pink: #fb7299;
+              --heroui-douyin-cyan: #25f4ee;
+              --heroui-vip-gold: #ffb700;
+            }
+          `
+          clonedDoc.head.appendChild(rootStyle)
+  
+          // 4. 确保克隆元素布局正确
+          const clonedElement = clonedDoc.body.querySelector('[data-html2canvas-clone]') || 
+                           clonedDoc.body.firstElementChild as HTMLElement
+  
+          if (clonedElement instanceof HTMLElement) {
+            // 重置所有可能影响布局的样式
+            clonedElement.style.position = 'static'
+            clonedElement.style.left = 'auto'
+            clonedElement.style.top = 'auto'
+            clonedElement.style.transform = 'none'
+            clonedElement.style.margin = '0'
+            clonedElement.style.padding = '0'
+            clonedElement.style.width = 'auto'
+            clonedElement.style.height = 'auto'
+            clonedElement.style.maxWidth = 'none'
+            clonedElement.style.maxHeight = 'none'
+            clonedElement.style.overflow = 'visible'
+            clonedElement.style.display = 'block'
+          }
+  
+          // 5. 样式处理
+          const inlineComputedStyles = (el: Element, originalEl: Element) => {
+            if (el instanceof HTMLElement && originalEl instanceof HTMLElement) {
+              const computedStyle = window.getComputedStyle(originalEl)
+              const currentTransform = computedStyle.transform
+              
+              // 内联所有重要的计算样式
+              const importantStyles = [
+                'color', 'backgroundColor', 'fontSize', 'fontFamily', 'fontWeight',
+                'lineHeight', 'textAlign', 'padding', 'margin', 'border',
+                'borderRadius', 'boxShadow', 'opacity', 'zIndex', 'display',
+                'flexDirection', 'justifyContent', 'alignItems', 'gap'
+              ]
+              
+              importantStyles.forEach(prop => {
+                const value = computedStyle.getPropertyValue(prop)
+                if (value && value !== 'initial' && value !== 'inherit') {
+                  el.style.setProperty(prop, value, 'important')
+                }
+              })
+              
+              // 处理transform
+              const hasUsefulTransform = currentTransform && 
+                currentTransform !== 'none' && 
+                !currentTransform.includes('translate')
+              
+              if (hasUsefulTransform) {
+                let preservedTransform = currentTransform
+                  .replace(/translate[XYZ]?\([^)]*\)/g, '')
+                  .replace(/matrix\([^)]*\)/g, '')
+                  .replace(/\s+/g, ' ')
+                  .trim()
+                
+                if (preservedTransform && preservedTransform !== 'none') {
+                  el.style.setProperty('transform', preservedTransform, 'important')
+                  el.style.setProperty('transform-origin', computedStyle.transformOrigin, 'important')
+                  console.log(`内联transform: ${preservedTransform}`)
+                }
+              }
+              
+              // 处理定位
+              const position = computedStyle.position
+              if (position === 'absolute' || position === 'fixed') {
+                el.style.setProperty('position', 'relative', 'important')
+                el.style.removeProperty('left')
+                el.style.removeProperty('top')
+                el.style.removeProperty('right')
+                el.style.removeProperty('bottom')
+              }
+            }
+          }
+  
+          // 6. 递归处理所有元素
+          const processAllElements = (clonedEl: Element, originalEl: Element) => {
+            inlineComputedStyles(clonedEl, originalEl)
+            
+            const clonedChildren = Array.from(clonedEl.children)
+            const originalChildren = Array.from(originalEl.children)
+            
+            clonedChildren.forEach((clonedChild, index) => {
+              const originalChild = originalChildren[index]
+              if (originalChild) {
+                processAllElements(clonedChild, originalChild)
+              }
+            })
+          }
+  
+          // 开始处理
+          if (clonedElement) {
+            processAllElements(clonedElement, element)
+          }
+  
+          // 7. 恢复外链图片
+          const images = clonedDoc.querySelectorAll('img')
+          images.forEach(img => {
+            const originalSrc = img.getAttribute('data-original-src')
+            if (originalSrc) {
+              img.src = originalSrc
+              img.removeAttribute('data-original-src')
+            }
+          })
+  
+          console.log('克隆文档处理完成')
+        }
+      })
+
+      // 恢复原始样式
+      element.style.transform = originalTransform
+      element.style.transition = originalTransition
+      element.style.left = '50%'
+      element.style.top = '50%'
+      element.style.position = 'absolute'
+
+      console.log(`生成的画布尺寸: ${canvas.width}x${canvas.height}`)
+
+      // 下载图片
+      const link = document.createElement('a')
+      link.download = `screenshot-${Date.now()}.png`
+      link.href = canvas.toDataURL('image/png', 1.0)
+      link.click()
+
+      console.log('截图完成')
+
+    } catch (error) {
+      console.error('截图失败:', error)
+      alert('截图失败，请重试')
+    
+      // 确保恢复原始样式
+      if (previewContentRef.current) {
+        const element = previewContentRef.current
+        element.style.left = '50%'
+        element.style.top = '50%'
+        element.style.position = 'absolute'
+        element.style.transform = `translate(-50%, -50%) translate(${panOffset.x}px, ${panOffset.y}px) scale(${scale})`
+      }
+    } finally {
+      setIsCapturing(false)
+    }
+  }, [scale, panOffset, isCapturing])
+
+  
+  /**
+   * 暴露给父组件的方法
+   */
+  useImperativeHandle(ref, () => ({
+    captureScreenshot
+  }), [captureScreenshot])
+    
   return (
     <Card className='flex flex-col h-full'>
       <CardHeader className='flex-shrink-0 pb-2'>
@@ -646,6 +992,11 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
             <span className='text-sm font-medium'>
               {platform} - {templateId}
             </span>
+            {isCapturing && (
+              <span className='text-xs text-blue-600 animate-pulse'>
+                正在截图...
+              </span>
+            )}
           </div>
           <div className='flex gap-3 items-center'>
             {/* 缩放滑块和显示 */}
@@ -720,8 +1071,8 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
             className='absolute inset-0 opacity-30'
             style={{
               backgroundImage: `
-                linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)
+                linear-gradient(rgba(0,0,0,0.25) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.25) 1px, transparent 1px)
               `,
               backgroundSize: '20px 20px'
             }}
@@ -740,12 +1091,15 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
               width: '1440px'
             }}
           >
-            <ComponentRenderer
-              platform={platform}
-              templateId={templateId}
-              data={data}
-              qrCodeDataUrl={qrCodeDataUrl}
-            />
+            <div ref={componentRendererRef}>
+              <ComponentRenderer
+                platform={platform}
+                templateId={templateId}
+                data={data}
+                qrCodeDataUrl={qrCodeDataUrl}
+              />
+            </div>
+            
           </div>
 
           {/* 水平滚动条 */}
@@ -805,4 +1159,6 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
       </CardBody>
     </Card>
   )
-}
+})
+
+PreviewPanel.displayName = 'PreviewPanel'

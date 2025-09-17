@@ -1,6 +1,6 @@
 import { Button, Chip } from '@heroui/react'
-import { Palette, RefreshCw, Save } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import { Camera, Palette, RefreshCw, Save } from 'lucide-react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 
 // 使用新的配置系统
@@ -90,8 +90,11 @@ export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [availableDataFiles, setAvailableDataFiles] = useState<string[]>([])
   const [selectedDataFile, setSelectedDataFile] = useState<string>('default.json')
+  const [isCapturing, setIsCapturing] = useState(false)
 
   const dataService = DataService.getInstance()
+  const previewPanelRef = useRef<any>(null)
+
 
   // 监听浏览器前进后退按钮
   useEffect(() => {
@@ -264,6 +267,23 @@ export const App: React.FC = () => {
     }
   }
 
+  /**
+   * 处理截图
+   */
+  const handleCapture = async () => {
+    setIsCapturing(true)
+    try {
+      // 通过 ref 调用 PreviewPanel 的截图方法
+      if (previewPanelRef.current) {
+        await previewPanelRef.current.captureScreenshot()
+      }
+    } catch (error) {
+      console.error('截图失败:', error)
+    } finally {
+      setIsCapturing(false)
+    }
+  }
+  
   return (
     <div className='overflow-hidden h-screen bg-gradient-to-br from-blue-50 to-indigo-100'>
       {/* 顶部导航 */}
@@ -299,6 +319,16 @@ export const App: React.FC = () => {
               重新加载
             </Button>
             <Button
+              color='secondary'
+              variant='flat'
+              startContent={<Camera className='w-4 h-4' />}
+              onPress={handleCapture}
+              isLoading={isCapturing}
+              size='sm'
+            >
+              截图
+            </Button>
+            <Button
               color='primary'
               startContent={<Save className='w-4 h-4' />}
               onPress={saveData}
@@ -311,10 +341,10 @@ export const App: React.FC = () => {
         </div>
       </div>
 
-      {/* 主要内容区域 - 使用可调整大小的面板 */}
+      {/* 主要内容区域 */}
       <div className='h-[calc(100vh-5rem)] overflow-hidden'>
         <PanelGroup direction='horizontal' className='h-full'>
-          {/* 左侧控制面板 - 可调整大小，独立滚动 */}
+          {/* 左侧控制面板 */}
           <Panel
             defaultSize={30}
             minSize={20}
@@ -365,7 +395,7 @@ export const App: React.FC = () => {
             <div className='w-1 h-8 bg-gray-300 rounded-full transition-colors duration-200 group-hover:bg-gray-400' />
           </PanelResizeHandle>
 
-          {/* 右侧预览面板 - 可调整大小，独立滚动 */}
+          {/* 右侧预览面板 */}
           <Panel
             defaultSize={70}
             minSize={50}
@@ -373,6 +403,7 @@ export const App: React.FC = () => {
           >
             <div className='overflow-hidden h-full'>
               <PreviewPanel
+                ref={previewPanelRef}
                 platform={selectedPlatform}
                 templateId={selectedTemplate}
                 data={templateData}
