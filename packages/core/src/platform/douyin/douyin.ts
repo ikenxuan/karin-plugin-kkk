@@ -1,10 +1,8 @@
 import fs from 'node:fs'
 
 import { type DyEmojiList } from '@ikenxuan/amagi'
-import { markdown } from '@karinjs/md-html'
 import type { Elements, Message } from 'node-karin'
-import { common, karinPathRoot, logger, mkdirSync, render, segment } from 'node-karin'
-import * as QRCode from 'qrcode'
+import { common, logger, mkdirSync, segment } from 'node-karin'
 
 import {
   Base,
@@ -16,8 +14,7 @@ import {
   fileInfo,
   mergeFile,
   Networks,
-  Render,
-  Root
+  Render
 } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
 import { douyinComments } from '@/platform/douyin'
@@ -332,36 +329,36 @@ export class DouYin extends Base {
         return true
       }
 
-      case 'user_dynamic': {
-        const UserVideoListData = await this.amagi.getDouyinData('用户主页视频列表数据', {
-          sec_uid: data.sec_uid,
-          typeMode: 'strict'
-        })
+      case 'user_dynamic': {  
+        // const UserVideoListData = await this.amagi.getDouyinData('用户主页视频列表数据', {
+        //   sec_uid: data.sec_uid,
+        //   typeMode: 'strict'
+        // })
 
-        const veoarray = []
-        veoarray.unshift('------------------------------ | ---------------------------- |\n')
-        veoarray.unshift('标题                           | 分享二维码                    |\n')
-        const forwardmsg = []
-        for (const i of UserVideoListData.data.aweme_list) {
-          const title = i.desc
-          const cover = i.share_url
-          veoarray.push(`${title}       | ![img](${await QRCode.toDataURL(cover, {
-            errorCorrectionLevel: 'H',
-            type: 'image/png',
-            color: {
-              light: '#ffffff00',
-              dark: Common.useDarkTheme() ? '#FFFFFF' : '#000000'
-            }
-          })})    |\n`)
-          forwardmsg.push(segment.text(`作品标题: ${title}\n分享链接: ${cover}`))
-        }
-        const matext = markdown(veoarray.join(''), {})
-        const htmlpath = `${karinPathRoot}/temp/html/${Root.pluginName}/douyin/user_worklist.html`
-        fs.writeFileSync(htmlpath, matext, 'utf8')
-        const img = await render.renderHtml(htmlpath)
-        await this.e.reply(segment.image(img))
-        const Element2 = common.makeForward(forwardmsg, this.e.sender.userId, this.e.sender.nick)
-        await this.e.bot.sendForwardMsg(this.e.contact, Element2)
+        // const veoarray = []
+        // veoarray.unshift('------------------------------ | ---------------------------- |\n')
+        // veoarray.unshift('标题                           | 分享二维码                    |\n')
+        // const forwardmsg = []
+        // for (const i of UserVideoListData.data.aweme_list) {
+        //   const title = i.desc
+        //   const cover = i.share_url
+        //   veoarray.push(`${title}       | ![img](${await QRCode.toDataURL(cover, {
+        //     errorCorrectionLevel: 'H',
+        //     type: 'image/png',
+        //     color: {
+        //       light: '#ffffff00',
+        //       dark: Common.useDarkTheme() ? '#FFFFFF' : '#000000'
+        //     }
+        //   })})    |\n`)
+        //   forwardmsg.push(segment.text(`作品标题: ${title}\n分享链接: ${cover}`))
+        // }
+        // const matext = markdown(veoarray.join(''), {})
+        // const htmlpath = `${karinPathRoot}/temp/html/${Root.pluginName}/douyin/user_worklist.html`
+        // fs.writeFileSync(htmlpath, matext, 'utf8')
+        // const img = await render.renderHtml(htmlpath)
+        // await this.e.reply(segment.image(img))
+        // const Element2 = common.makeForward(forwardmsg, this.e.sender.userId, this.e.sender.nick)
+        // await this.e.bot.sendForwardMsg(this.e.contact, Element2)
         return true
       }
       case 'music_work': {

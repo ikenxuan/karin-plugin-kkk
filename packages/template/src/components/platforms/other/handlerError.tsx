@@ -1,7 +1,7 @@
-import { AlertCircle, Clock, Code, FileText, Hash, Info, Send, Terminal, Zap } from 'lucide-react'
+import { AlertCircle, Clock, FileText, Hash, Info, Send, Terminal, Zap } from 'lucide-react'
 import React from 'react'
 
-import { type APIError, type ApiErrorProps, type BusinessError, type InternalError, PLATFORM_CONFIG } from '../../../types/ohter/handlerError'
+import { type ApiErrorProps, type BusinessError, PLATFORM_CONFIG } from '../../../types/ohter/handlerError'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
@@ -85,20 +85,13 @@ const parseAnsiColors = (text: string): React.ReactNode[] => {
   return parts.length > 0 ? parts : [text.replace(/\\n/g, '\n')]
 }
 
-/**
- * 错误头部组件
- * @param props 组件属性
- * @returns JSX元素
- */
 const ErrorHeader: React.FC<{
   type: 'api_error' | 'internal_error' | 'business_error'
   platform: string
   method: string
   timestamp: string
-}> = ({ type, platform, method, timestamp }) => {
+}> = ({ platform, method, timestamp }) => {
   const platformConfig = PLATFORM_CONFIG[platform as keyof typeof PLATFORM_CONFIG] || PLATFORM_CONFIG.unknown
-  const isInternalError = type === 'internal_error'
-  const isBusinessError = type === 'business_error'
 
   return (
     <div className='w-full max-w-[1440px] mx-auto px-20 py-16'>
@@ -107,7 +100,7 @@ const ErrorHeader: React.FC<{
           <AlertCircle className='mr-6 w-16 h-16 text-danger-600' />
           <div>
             <h1 className='text-6xl font-bold text-danger-600'>
-              {isInternalError ? '内部错误' : isBusinessError ? '业务错误' : 'API错误'}
+              出错了~
             </h1>
             <p className='mt-4 text-3xl text-default-600'>
               {platformConfig.displayName} - {method}
@@ -127,74 +120,6 @@ const ErrorHeader: React.FC<{
 }
 
 /**
- * API错误详情组件
- * @param props 组件属性
- * @returns JSX元素
- */
-const ApiErrorDetails: React.FC<{
-  error: APIError
-}> = ({ error }) => {
-  return (
-    <div className='w-full max-w-[1440px] mx-auto px-20 py-12'>
-      <h2 className='mb-16 text-6xl font-bold text-foreground'>API错误详情</h2>
-      
-      <div className='grid grid-cols-1 gap-12 mb-16 md:grid-cols-2'>
-        <div className='p-12 rounded-3xl bg-content1'>
-          <h3 className='flex items-center mb-8 text-4xl font-semibold text-foreground'>
-            <Hash className='mr-4 w-10 h-10' />
-            错误代码
-          </h3>
-          <p className='font-mono text-4xl select-text text-danger'>{error.code}</p>
-        </div>
-        
-        <div className='p-12 rounded-3xl bg-content1'>
-          <h3 className='flex items-center mb-8 text-4xl font-semibold text-foreground'>
-            <Info className='mr-4 w-10 h-10' />
-            错误消息
-          </h3>
-          <p className='text-3xl leading-relaxed select-text text-foreground-600'>{error.message}</p>
-        </div>
-      </div>
-
-      {error.amagiError && (
-        <div className='p-12 mb-16 rounded-3xl bg-warning-50'>
-          <h3 className='flex items-center mb-10 text-4xl font-semibold text-warning-800'>
-            <Zap className='mr-4 w-10 h-10' />
-            详细错误信息
-          </h3>
-          <div className='space-y-8 text-3xl'>
-            <div>
-              <span className='font-medium text-warning-700'>错误描述：</span>
-              <span className='ml-4 select-text text-foreground-700'>{error.amagiError.errorDescription}</span>
-            </div>
-            <div>
-              <span className='font-medium text-warning-700'>请求类型：</span>
-              <span className='ml-4 select-text text-foreground-700'>{error.amagiError.requestType}</span>
-            </div>
-            <div>
-              <span className='font-medium text-warning-700'>请求URL：</span>
-              <span className='ml-4 break-all select-text text-foreground-700'>{error.amagiError.requestUrl}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {error.data && (
-        <div className='p-12 rounded-3xl bg-content1'>
-          <h3 className='flex items-center mb-10 text-4xl font-semibold text-foreground'>
-            <Code className='mr-4 w-10 h-10' />
-            响应数据
-          </h3>
-          <pre className='overflow-auto p-10 text-2xl leading-relaxed rounded-2xl select-text bg-content2 text-foreground-600'>
-            {JSON.stringify(error.data, null, 2)}
-          </pre>
-        </div>
-      )}
-    </div>
-  )
-}
-
-/**
  * 业务错误详情组件
  * @param props 组件属性
  * @returns JSX元素
@@ -205,7 +130,7 @@ const BusinessErrorDetails: React.FC<{
 }> = ({ error, logs }) => {
   return (
     <div className='w-full max-w-[1440px] mx-auto px-20 py-12'>
-      <h2 className='mb-16 text-6xl font-bold text-foreground'>业务错误详情</h2>
+      <h2 className='mb-16 text-6xl font-bold text-foreground'>错误详情</h2>
       
       <div className='grid grid-cols-1 gap-12 mb-16 md:grid-cols-2'>
         <div className='p-12 rounded-3xl bg-content1'>
@@ -288,64 +213,6 @@ const BusinessErrorDetails: React.FC<{
   )
 }
 
-/**
- * 内部错误详情组件
- * @param props 组件属性
- * @returns JSX元素
- */
-const InternalErrorDetails: React.FC<{
-  error: InternalError
-}> = ({ error }) => {
-  /**
-   * 格式化调用栈信息 - 显示全部调用栈
-   * @param stack - 调用栈字符串
-   * @returns 格式化后的调用栈数组
-   */
-  const formatStackTrace = (stack: string): string[] => {
-    return stack.split('\n').filter(line => line.trim())
-  }
-
-  return (
-    <div className='w-full max-w-[1440px] mx-auto px-20 py-12'>
-      <h2 className='mb-16 text-6xl font-bold text-foreground'>内部错误详情</h2>
-      
-      <div className='grid grid-cols-1 gap-12 mb-16 md:grid-cols-2'>
-        <div className='p-12 rounded-3xl bg-content1'>
-          <h3 className='flex items-center mb-8 text-4xl font-semibold text-foreground'>
-            <Hash className='mr-4 w-10 h-10' />
-            错误类型
-          </h3>
-          <p className='font-mono text-4xl select-text text-danger'>{error.name}</p>
-        </div>
-        
-        <div className='p-12 rounded-3xl bg-content1'>
-          <h3 className='flex items-center mb-8 text-4xl font-semibold text-foreground'>
-            <Info className='mr-4 w-10 h-10' />
-            错误消息
-          </h3>
-          <p className='text-3xl leading-relaxed select-text text-foreground-600'>{error.message}</p>
-        </div>
-      </div>
-
-      <div className='p-12 rounded-3xl bg-danger-50'>
-        <h3 className='flex items-center mb-10 text-4xl font-semibold text-danger-800'>
-          <Terminal className='mr-4 w-10 h-10' />
-          完整调用栈信息
-        </h3>
-        <div className='p-10 rounded-2xl bg-content1'>
-          <pre className='text-2xl leading-relaxed whitespace-pre-wrap break-all select-text text-foreground-700'>
-            {formatStackTrace(error.stack).map((line, index) => (
-              <div key={index} className={`py-1 ${index === 0 ? 'font-semibold text-danger' : ''}`}>
-                {line}
-              </div>
-            ))}
-          </pre>
-        </div>
-        <p className='mt-8 text-2xl text-default-600'>显示完整调用栈信息</p>
-      </div>
-    </div>
-  )
-}
 
 /**
  * 发送给开发者提示组件
@@ -381,11 +248,7 @@ const SendToDeveloper: React.FC = () => {
 export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templateName'>> = (props) => {
   const { data } = props
   const { type, platform, error, method, timestamp, logs } = data
-  
-  const isInternalError = type === 'internal_error'
   const isBusinessError = type === 'business_error'
-  const apiError = !isInternalError && !isBusinessError ? error as APIError : null
-  const internalError = isInternalError ? error as InternalError : null
   const businessError = isBusinessError ? error as BusinessError : null
 
   return (
@@ -400,13 +263,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
       />
 
       {/* 错误详情 */}
-      {apiError ? (
-        <ApiErrorDetails error={apiError} />
-      ) : businessError ? (
-        <BusinessErrorDetails error={businessError} logs={logs} />
-      ) : internalError ? (
-        <InternalErrorDetails error={internalError} />
-      ) : null}
+      <BusinessErrorDetails error={businessError!} logs={logs} />
 
       {/* 发送给开发者提示 */}
       <SendToDeveloper />

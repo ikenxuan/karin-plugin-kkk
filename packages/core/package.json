@@ -57,11 +57,9 @@
     "@types/connect-history-api-fallback": "^1.5.4",
     "@types/express": "^5.0.1",
     "@types/heic-convert": "^2.1.0",
-    "@types/qrcode": "^1.5.5",
     "connect-history-api-fallback": "^2.0.0",
     "heic-convert": "^2.1.0",
     "http-proxy-middleware": "^3.0.3",
-    "qrcode": "^1.5.4",
     "template": "workspace:*",
     "tsup": "^8.5.0"
   },

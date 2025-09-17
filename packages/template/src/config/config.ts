@@ -249,6 +249,18 @@ export const componentConfigs: ExtendedPlatformConfig[] = [
         lazyComponent: () => import('../components/platforms/bilibili/videoInfo').then(module => ({
           default: module.BilibiliVideoInfo
         }))
+      },
+      {
+        id: 'qrcodeImg',
+        name: '登录二维码',
+        description: 'B站登录二维码展示模板',
+        enabled: true,
+        componentPath: 'platforms/bilibili/qrcodeImg',
+        exportName: 'BilibiliQrcodeImg',
+        validateData: (data) => data && typeof data.share_url === 'string',
+        lazyComponent: () => import('../components/platforms/bilibili/qrcodeImg').then(module => ({
+          default: module.BilibiliQrcodeImg
+        }))
       }
     ]
   },

@@ -46,8 +46,8 @@ class QRCodeGenerator {
       width,
       errorCorrectionLevel,
       color: {
-        dark: useDarkTheme ? '#c3c3c3' : '#3a3a3a',
-        light: useDarkTheme ? '#000000' : '#EEEEF0'
+        dark: useDarkTheme ? '#C3C3C3' : '#3A3A3A', // 码的颜色
+        light: useDarkTheme ? '#18181B' : '#FAFAFA' // 背景色
       },
       margin: 0
     })
