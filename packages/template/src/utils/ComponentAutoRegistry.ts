@@ -1,7 +1,6 @@
-import { logger } from 'node-karin'
-
 import type { ComponentConfig, ExtendedPlatformConfig } from '../config/config'
 import { componentConfigs } from '../config/config'
+import { logger } from './logger'
 
 /**
  * 组件注册表接口

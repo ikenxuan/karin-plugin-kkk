@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 
 import type { ImageElement } from 'node-karin'
-import { render, segment } from 'node-karin'
+import { karinPathHtml, render, segment } from 'node-karin'
 import reactServerRender, { type RenderRequest } from 'template'
 
 import { Common, Root } from '@/module'
@@ -39,7 +39,7 @@ const SSR = async (path: string, params?: any): Promise<ImageElement[]> => {
     throw new Error(`不支持的路径格式: ${path}`)
   }
 
-  const outputDir = join(Root.pluginPath, 'temp', 'html')
+  const outputDir = join(karinPathHtml, Root.pluginName, templateType)
   const renderRequest: RenderRequest = {
     templateType: templateType as RenderRequest['templateType'],
     templateName,

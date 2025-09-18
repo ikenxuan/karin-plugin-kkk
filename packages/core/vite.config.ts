@@ -1,4 +1,4 @@
-import fs, { readFileSync, writeFileSync } from 'node:fs'
+import fs, { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { builtinModules } from 'node:module'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -11,7 +11,7 @@ import { defineConfig, type Plugin } from 'vite'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const entry: string[] = ['src/index.ts', 'src/root.ts', 'src/export/modules.ts']
+const entry: string[] = ['src/index.ts', 'src/root.ts', 'src/export/template.ts']
 
 const getFiles = (dir: string) => {
   fs.readdirSync(dir).forEach((file) => {
@@ -80,6 +80,68 @@ const createWebConfigPlugin = (): Plugin => {
         console.warn('⚠ Could not find main chunk file')
         // 列出所有可用的 chunk 文件以便调试
         console.log('Available chunks:', Object.keys(bundle).filter(f => f.endsWith('.js')))
+      }
+    }
+  }
+}
+
+/**
+ * 递归复制目录
+ * @param sourceDir 源目录路径
+ * @param targetDir 目标目录路径
+ */
+const copyDirectory = (sourceDir: string, targetDir: string) => {
+  if (!existsSync(sourceDir)) {
+    console.warn('⚠️ 源目录不存在:', sourceDir)
+    return
+  }
+
+  if (!existsSync(targetDir)) {
+    mkdirSync(targetDir, { recursive: true })
+  }
+
+  const files = readdirSync(sourceDir)
+
+  files.forEach(file => {
+    const sourcePath = resolve(sourceDir, file)
+    const targetPath = resolve(targetDir, file)
+
+    if (statSync(sourcePath).isDirectory()) {
+      copyDirectory(sourcePath, targetPath)
+    } else {
+      copyFileSync(sourcePath, targetPath)
+    }
+  })
+}
+
+/**
+ * 复制 template 静态资源的 Vite 插件
+ * @description 在构建时将 template 包的静态资源复制到 core 包的 resources 目录
+ */
+const copyTemplateAssetsPlugin = (): Plugin => {
+  return {
+    name: 'copy-template-assets',
+    writeBundle () {
+      // 复制 template 包的静态资源
+      const imageSourceDir = resolve(__dirname, '../template/public/image')
+      const imageTargetDir = resolve(__dirname, 'resources/image')
+
+      console.log('🔍 开始复制 template 静态资源...')
+      console.log('📁 源目录:', imageSourceDir)
+      console.log('📁 目标目录:', imageTargetDir)
+
+      copyDirectory(imageSourceDir, imageTargetDir)
+      console.log('✅ template 静态资源已复制到:', imageTargetDir)
+
+      // 如果需要复制 CSS 文件
+      const cssSourceFile = resolve(__dirname, '../template/dist/css/main.css')
+      const cssTargetFile = resolve(__dirname, 'lib/karin-plugin-kkk.css')
+
+      if (existsSync(cssSourceFile)) {
+        copyFileSync(cssSourceFile, cssTargetFile)
+        console.log('✅ CSS文件已复制到:', cssTargetFile)
+      } else {
+        console.warn('⚠️ template CSS文件不存在，可能需要先构建 template 包')
       }
     }
   }
@@ -159,6 +221,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     injectDirnamePlugin(),
-    createWebConfigPlugin()
+    createWebConfigPlugin(),
+    copyTemplateAssetsPlugin()
   ]
 })

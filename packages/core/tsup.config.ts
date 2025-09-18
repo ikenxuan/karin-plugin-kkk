@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
-  entry: ['src/export/modules.ts'],
+  entry: ['src/export/template.ts'],
   format: ['esm'],
   outDir: 'lib/core_chunk',
   dts: {

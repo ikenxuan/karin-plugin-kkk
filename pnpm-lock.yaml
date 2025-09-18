@@ -11,6 +11,9 @@ importers:
 
   .:
     dependencies:
+      '@ikenxuan/amagi':
+        specifier: 5.4.2
+        version: 5.4.2
       '@tailwindcss/vite':
         specifier: 4.1.13
         version: 4.1.13(vite@7.1.5(@types/node@24.5.0)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.7.0))
@@ -97,9 +100,6 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0
     devDependencies:
-      '@ikenxuan/amagi':
-        specifier: 5.4.0
-        version: 5.4.0
       '@karinjs/plugin-puppeteer':
         specifier: ^1.0.17
         version: 1.0.17
@@ -145,9 +145,6 @@ importers:
       '@heroui/theme':
         specifier: ^2.4.21
         version: 2.4.22(tailwindcss@4.1.13)
-      '@ikenxuan/amagi':
-        specifier: ^5.3.0
-        version: 5.3.0
       '@shopify/draggable':
         specifier: ^1.1.4
         version: 1.1.4
@@ -169,25 +166,13 @@ importers:
       qrcode:
         specifier: ^1.5.4
         version: 1.5.4
-      react:
-        specifier: 19.1.1
-        version: 19.1.1
-      react-dom:
-        specifier: 19.1.1
-        version: 19.1.1(react@19.1.1)
       react-resizable-panels:
         specifier: ^3.0.5
         version: 3.0.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      vite:
-        specifier: 7.1.5
-        version: 7.1.5(@types/node@24.5.0)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.7.0)
     devDependencies:
       '@types/express':
         specifier: 5.0.3
         version: 5.0.3
-      '@types/html2canvas':
-        specifier: ^1.0.0
-        version: 1.0.0
       '@types/qrcode':
         specifier: ^1.5.5
         version: 1.5.5
@@ -1693,11 +1678,8 @@ packages:
   '@ikenxuan/amagi@5.0.3':
     resolution: {integrity: sha512-ygQueMhfKI5174q8PNWU4eS0gvoe5mSfuOiOONjZ47De/Mlkb/E8h9N0FBA5jJW7zi9xoLMJgSMd6aqvzOTNlA==}
 
-  '@ikenxuan/amagi@5.3.0':
-    resolution: {integrity: sha512-8mKB6Mn7BUhQ1O26s7nyAYEd+wY9nCG3RN3ZSn8xBFRRgqrrza7sFSxe4WmZ2CqVNT49n5RoQKkgirHz6Kcd8w==}
-
-  '@ikenxuan/amagi@5.4.0':
-    resolution: {integrity: sha512-5JW+kqXzV1yTswJ/lai1DfR7C3KKVqoBjafwrb4kd5cABU6MFdaHEjg28Wq8vwu4f5uS/XnuiQQmG+vEBDtIig==}
+  '@ikenxuan/amagi@5.4.2':
+    resolution: {integrity: sha512-NvDnrKFk8Iil8Z7d0U79ThkgZZ54IppeWm1BOHaSV6W0tg5uuDcIEufSi0xjm7M/v12NnGNyGWUatPZkaIt8oQ==}
 
   '@internationalized/date@3.9.0':
     resolution: {integrity: sha512-yaN3brAnHRD+4KyyOsJyk49XUvj2wtbNACSqg0bz3u8t2VuzhC8Q5dfRnrSxjnnbDb+ienBnkn1TzQfE154vyg==}
@@ -3459,10 +3441,6 @@ packages:
   '@types/heic-convert@2.1.0':
     resolution: {integrity: sha512-Cf5Sdc2Gm2pfZ0uN1zjj35wcf3mF1lJCMIzws5OdJynrdMJRTIRUGa5LegbVg0hatzOPkH2uAf2JRjPYgl9apg==}
 
-  '@types/html2canvas@1.0.0':
-    resolution: {integrity: sha512-BJpVf+FIN9UERmzhbtUgpXj6XBZpG67FMgBLLoj9HZKd9XifcCpSV+UnFcwTZfEyun4U/KmCrrVOG7829L589w==}
-    deprecated: This is a stub types definition. html2canvas provides its own type definitions, so you do not need this installed.
-
   '@types/http-errors@2.0.5':
     resolution: {integrity: sha512-r8Tayk8HJnX0FztbZN7oVqGccWgw98T/0neJphO91KkmOzug1KkofZURD4UaD5uH8AqcFLfdPErnBod0u71/qg==}
 
@@ -5204,10 +5182,6 @@ packages:
   html2canvas-pro@1.5.11:
     resolution: {integrity: sha512-W4pEeKLG8+9a54RDOSiEKq7gRXXDzt0ORMaLXX+l6a3urSKbmnkmyzcRDCtgTOzmHLaZTLG2wiTQMJqKLlSh3w==}
     engines: {node: '>=16.0.0'}
-
-  html2canvas@1.4.1:
-    resolution: {integrity: sha512-fPU6BHNpsyIhr8yyMpTLLxAbkaK8ArIBcmZIRiBLiDhjeqvXolaEmDGmELFuX9I4xDcaKKcJl+TKZLqruBbmWA==}
-    engines: {node: '>=8.0.0'}
 
   htmlparser2@10.0.0:
     resolution: {integrity: sha512-TwAZM+zE5Tq3lrEHvOlvwgj1XLWQCtaaibSN11Q+gGBAS7Y1uZSWwXXRe4iF6OXnaq1riyQAPFOBtYc77Mxq0g==}
@@ -9636,16 +9610,7 @@ snapshots:
       pino-pretty: 13.1.1
       zod: 3.25.76
 
-  '@ikenxuan/amagi@5.3.0':
-    dependencies:
-      axios: '@karinjs/axios@1.2.0'
-      chalk: 5.4.1
-      express: '@karinjs/express@1.0.3'
-      log4js: '@karinjs/log4js@1.1.4'
-      pino-pretty: 13.1.1
-      zod: 3.25.76
-
-  '@ikenxuan/amagi@5.4.0':
+  '@ikenxuan/amagi@5.4.2':
     dependencies:
       axios: '@karinjs/axios@1.2.0'
       chalk: 5.4.1
@@ -11722,10 +11687,6 @@ snapshots:
 
   '@types/heic-convert@2.1.0': {}
 
-  '@types/html2canvas@1.0.0':
-    dependencies:
-      html2canvas: 1.4.1
-
   '@types/http-errors@2.0.5': {}
 
   '@types/http-proxy@1.17.16':
@@ -13731,11 +13692,6 @@ snapshots:
   hosted-git-info@2.8.9: {}
 
   html2canvas-pro@1.5.11:
-    dependencies:
-      css-line-break: 2.1.0
-      text-segmentation: 1.0.3
-
-  html2canvas@1.4.1:
     dependencies:
       css-line-break: 2.1.0
       text-segmentation: 1.0.3

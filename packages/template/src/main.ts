@@ -1,14 +1,13 @@
 import fs, { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 
-import { logger } from 'node-karin'
-import { karinPathTemp } from 'node-karin/root'
 import QRCode, { type QRCodeRenderersOptions } from 'qrcode'
 import React from 'react'
 import { renderToString } from 'react-dom/server'
 
 import type { RenderRequest, RenderResponse } from './types'
 import { ComponentAutoRegistry } from './utils/ComponentAutoRegistry'
+import { logger } from './utils/logger'
 
 /**
  * 二维码配置接口
@@ -112,20 +111,21 @@ class ResourcePathManager {
 
   /**
    * 获取包目录路径
-   * @returns 包目录路径
+   * @returns 包目录的绝对路径
    */
   private getPackageDir (): string {
     const cwd = process.cwd()
-
-    logger.debug('当前运行环境:', this.NODE_ENV)
     logger.debug('当前工作目录:', cwd)
+    logger.debug('NODE_ENV:', this.NODE_ENV)
 
     switch (this.NODE_ENV) {
       case 'development':
         let currentDir = cwd
         while (currentDir !== path.dirname(currentDir)) {
-          if (existsSync(path.join(currentDir, 'pnpm-workspace.yaml'))) {
-            return path.join(currentDir, 'packages', 'core')
+          const renderDir = path.join(currentDir, 'render')
+          if (existsSync(renderDir)) {
+            logger.debug('开发模式：找到 render 目录:', renderDir)
+            return currentDir
           }
           currentDir = path.dirname(currentDir)
         }
@@ -133,16 +133,131 @@ class ResourcePathManager {
 
       case 'production':
       default:
-        let projectRoot = cwd
-        while (projectRoot !== path.dirname(projectRoot)) {
-          if (existsSync(path.join(projectRoot, 'pnpm-workspace.yaml')) ||
-            existsSync(path.join(projectRoot, 'package.json'))) {
-            return projectRoot
-          }
-          projectRoot = path.dirname(projectRoot)
-        }
-        return cwd
+        return this.getPackageDirFromImportMeta()
     }
+  }
+
+  /**
+   * 通过 import.meta.url 获取 npm 包的安装目录
+   * @returns npm 包的安装目录路径
+   */
+  private getPackageDirFromImportMeta (): string {
+    try {
+      const currentModuleUrl = import.meta.url
+      logger.debug('当前模块 URL:', currentModuleUrl)
+      
+      // 转换为文件路径
+      const currentModulePath = new URL(currentModuleUrl).pathname
+      const normalizedPath = process.platform === 'win32' 
+        ? currentModulePath.slice(1) 
+        : currentModulePath
+      
+      logger.debug('当前模块路径:', normalizedPath)
+      const pluginDir = this.extractPluginDirFromPnpmPath(normalizedPath)
+      if (pluginDir) {
+        logger.debug('从 pnpm 路径提取的插件目录:', pluginDir)
+        return pluginDir
+      }
+      
+      const fallbackDir = this.findPluginDirByScanning()
+      if (fallbackDir) {
+        logger.debug('通过扫描找到的插件目录:', fallbackDir)
+        return fallbackDir
+      }
+      
+      logger.debug(logger.yellow('无法找到插件目录，使用当前工作目录'))
+      return process.cwd()
+      
+    } catch (error) {
+      logger.error('获取 import.meta.url 失败:', error)
+      return process.cwd()
+    }
+  }
+
+  /**
+   * 从 pnpm 路径中提取插件目录
+   * @param pnpmPath pnpm 的符号链接路径
+   * @returns 插件目录路径，如果无法提取则返回 null
+   */
+  private extractPluginDirFromPnpmPath (pnpmPath: string): string | null {
+    const pnpmIndex = pnpmPath.indexOf('.pnpm')
+    if (pnpmIndex === -1) return null
+    const projectRoot = pnpmPath.substring(0, pnpmIndex - '/node_modules/'.length)
+    logger.debug('从 pnpm 路径提取的项目根目录:', projectRoot)
+    const pluginsDir = path.join(projectRoot, 'plugins')
+    if (!existsSync(pluginsDir)) {
+      logger.debug('plugins 目录不存在:', pluginsDir)
+      return null
+    }
+    
+    try {
+      const pluginDirs = fs.readdirSync(pluginsDir, { withFileTypes: true })
+        .filter(dirent => dirent.isDirectory())
+      
+      for (const pluginDir of pluginDirs) {
+        const pluginPath = path.join(pluginsDir, pluginDir.name)
+        const karinPluginPath = path.join(pluginPath, 'node_modules', 'karin-plugin-kkk')
+        
+        if (existsSync(karinPluginPath)) {
+          logger.debug('找到包含 karin-plugin-kkk 的插件目录:', pluginPath)
+          return pluginPath
+        }
+      }
+    } catch (error) {
+      logger.debug('扫描 plugins 目录失败:', error)
+    }
+    
+    return null
+  }
+
+  /**
+   * 通过扫描当前工作目录查找插件目录
+   * @returns 插件目录路径，如果找不到则返回 null
+   */
+  private findPluginDirByScanning (): string | null {
+    const cwd = process.cwd()
+    const pluginsDir = path.join(cwd, 'plugins')
+    
+    if (!existsSync(pluginsDir)) {
+      logger.debug('当前工作目录下没有 plugins 目录')
+      return null
+    }
+    
+    try {
+      const pluginDirs = fs.readdirSync(pluginsDir, { withFileTypes: true })
+        .filter(dirent => dirent.isDirectory())
+      
+      for (const pluginDir of pluginDirs) {
+        const pluginPath = path.join(pluginsDir, pluginDir.name)
+        const karinPluginPath = path.join(pluginPath, 'node_modules', 'karin-plugin-kkk')
+        
+        if (existsSync(karinPluginPath)) {
+          logger.debug('通过扫描找到包含 karin-plugin-kkk 的插件目录:', pluginPath)
+          return pluginPath
+        }
+      }
+    } catch (error) {
+      logger.debug('扫描失败:', error)
+    }
+    
+    return null
+  }
+
+  /**
+   * 检测当前是否运行在 Monorepo 模式
+   * @returns 如果是 Monorepo 模式返回 true，否则返回 false
+   */
+  private isPluginMode (): boolean {
+    // 检测方法1：检查路径中是否包含 plugins 目录
+    const hasPluginsInPath = this.packageDir.includes('plugins')
+    
+    // 检测方法2：检查是否存在插件特有的 resources 目录
+    const pluginResourcesExists = fs.existsSync(path.join(this.packageDir, 'resources'))
+    
+    // 检测方法3：检查是否不存在 node_modules/karin-plugin-kkk
+    const npmPackageExists = fs.existsSync(path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk'))
+    
+    return hasPluginsInPath && pluginResourcesExists && npmPackageExists
   }
 
   /**
@@ -159,9 +274,20 @@ class ResourcePathManager {
 
       case 'production':
       default:
-        return {
-          cssDir: path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'lib'),
-          imageDir: path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'resources', 'image')
+        if (this.isPluginMode()) {
+          // Monorepo 模式
+          return {
+            cssDir: fs.existsSync(path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'lib'))
+              ? path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'lib')
+              : path.join(this.packageDir, 'lib'),
+            imageDir: path.join(this.packageDir, 'resources', 'image')
+          }
+        } else {
+          // Standalone 模式
+          return {
+            cssDir: path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'lib'),
+            imageDir: path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'resources', 'image')
+          }
         }
     }
   }
@@ -189,7 +315,7 @@ class HtmlWrapper {
 
     const cssRelativePath = path.relative(htmlDir, cssDir).replace(/\\/g, '/')
     const imageRelativePath = path.relative(htmlDir, imageDir).replace(/\\/g, '/')
-    const cssUrl = path.join(cssRelativePath, 'karin-plugin-kkk.css')
+    const cssUrl = path.join(cssRelativePath, 'karin-plugin-kkk.css').replace(/\\/g, '/')
 
     logger.debug('CSS相对路径:', cssUrl)
     logger.debug('图片相对路径:', imageRelativePath)
@@ -221,7 +347,7 @@ class HtmlWrapper {
  * SSR渲染类
  */
 class SSRRender {
-  private outputDir = path.join(karinPathTemp, 'html', 'karin-plugin-kkk', 'renderServer')
+  private outputDir: string
   private cssContent: string = ''
   private resourceManager: ResourcePathManager
   private htmlWrapper: HtmlWrapper
@@ -229,8 +355,7 @@ class SSRRender {
   constructor() {
     this.resourceManager = new ResourcePathManager()
     this.htmlWrapper = new HtmlWrapper(this.resourceManager)
-    this.outputDir = path.join(karinPathTemp, 'html', 'karin-plugin-kkk', 'renderServer')
-    this.ensureOutputDir()
+    this.outputDir = ''
     this.loadCssContent()
   }
 
@@ -303,15 +428,6 @@ class SSRRender {
         success: false,
         error: error instanceof Error ? error.message : String(error)
       }
-    }
-  }
-
-  /**
-   * 确保输出目录存在
-   */
-  private ensureOutputDir (): void {
-    if (!existsSync(this.outputDir)) {
-      mkdirSync(this.outputDir, { recursive: true })
     }
   }
 
