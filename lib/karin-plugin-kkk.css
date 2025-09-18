@@ -4267,6 +4267,10 @@
     bottom: 10%;
   }
 
+  .-left-8 {
+    left: calc(var(--spacing) * -8);
+  }
+
   .-left-10 {
     left: calc(var(--spacing) * -10);
   }
@@ -4291,8 +4295,8 @@
     left: calc(var(--spacing) * 12);
   }
 
-  .left-65 {
-    left: calc(var(--spacing) * 65);
+  .left-60 {
+    left: calc(var(--spacing) * 60);
   }
 
   .left-\[5\%\] {
@@ -7705,8 +7709,8 @@
     padding-bottom: calc(var(--spacing) * 10);
   }
 
-  .pb-16 {
-    padding-bottom: calc(var(--spacing) * 16);
+  .pb-20 {
+    padding-bottom: calc(var(--spacing) * 20);
   }
 
   .pb-36 {
