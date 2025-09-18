@@ -1,5 +1,6 @@
 import { HeroUIProvider } from '@heroui/react'
 import clsx from 'clsx'
+import { AlertTriangle, CheckCircle, Code, Info, Zap } from 'lucide-react'
 import React from 'react'
 
 import type { BaseComponentProps, RenderRequest } from '@/types'
@@ -50,7 +51,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
       >
         {children}
         {version && (
-          <div className='pt-32 pb-16 text-default-800'>
+          <div className='pt-32 pb-20 text-default-800'>
             <div className='flex relative justify-center items-center space-x-12'>
               <div className='flex items-center space-x-8 whitespace-nowrap'>
                 <img src="/image/logo.png" className='w-auto h-24' />
@@ -63,9 +64,18 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                 <div className={clsx(
                   'absolute -top-8 -left-10 px-5 py-2 text-sm font-bold tracking-widest uppercase rounded-full transform -rotate-12',
                   'border border-dashed border-default-900 text-default-900 bg-default-100',
-                  'backdrop-blur-sm bg-default-100/5'
+                  'backdrop-blur-sm bg-default-100/5',
+                  'flex items-center space-x-2'
                 )}>
-                  {version.releaseType}
+                  {/* 根据 releaseType 显示不同的图标 */}
+                  {version.releaseType === 'Stable' ? (
+                    <CheckCircle strokeWidth={3} className="w-4 h-4" />
+                  ) : version.releaseType === 'Preview' ? (
+                    <AlertTriangle strokeWidth={3} className="w-4 h-4" />
+                  ) : (
+                    <Info strokeWidth={3} className="w-4 h-4" />
+                  )}
+                  <span>{version.releaseType}</span>
                 </div>
                 <div className='text-5xl font-bold tracking-wide'>
                   v{version.pluginVersion}
@@ -76,26 +86,33 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
     
               <div className='flex relative items-center space-x-8'>
                 <div className={clsx(
-                  'absolute -top-8 -left-10 px-5 py-2 text-sm font-bold tracking-widest uppercase rounded-full transform -rotate-12',
+                  'absolute -top-8 -left-8 px-5 py-2 text-sm font-bold tracking-widest uppercase rounded-full transform -rotate-12',
                   'border border-dashed border-default-900 text-default-900',
-                  'backdrop-blur-sm bg-default-100/5'
+                  'backdrop-blur-sm bg-default-100/10',
+                  'flex items-center space-x-2'
                 )}>
-                  Powered By
-                </div>
-                <img src="/image/frame-logo.png" className='w-auto h-14' />
-                <span className='text-5xl font-black'>
-                  {version.poweredBy} & 
-                </span>
-                <div className={clsx(
-                  'absolute -top-8 px-5 py-2 text-sm font-bold tracking-widest uppercase rounded-full transform -rotate-12 left-65',
-                  'border border-dashed border-default-900 text-default-900',
-                  'backdrop-blur-sm bg-default-100/10'
-                )}>
-                  Built with
+                  {/* 构建工具图标 */}
+                  <Code strokeWidth={3} className="w-4 h-4" />
+                  <span>Built with</span>
                 </div>
                 <img src="/image/vite.svg" className='w-auto h-14' />
                 <span className='text-5xl font-black'>
-                  Vite 
+                  Vite & 
+                </span>
+                
+                <div className={clsx(
+                  'absolute -top-8 left-60 px-5 py-2 text-sm font-bold tracking-widest uppercase rounded-full transform -rotate-12',
+                  'border border-dashed border-default-900 text-default-900',
+                  'backdrop-blur-sm bg-default-100/5',
+                  'flex items-center space-x-2'
+                )}>
+                  {/* 驱动框架图标 */}
+                  <Zap strokeWidth={3} className="w-4 h-4" />
+                  <span>Powered By</span>
+                </div>
+                <img src="/image/frame-logo.png" className='w-auto h-14' />
+                <span className='text-5xl font-black'>
+                  {version.poweredBy}
                 </span>
               </div>
             </div>

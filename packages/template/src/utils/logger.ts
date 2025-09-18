@@ -97,7 +97,6 @@ const shouldEnableColors = (): boolean => {
  * 自定义日志器类
  */
 class CustomLogger {
-  private currentLevel: LogLevel
   private enableCallStack: boolean
   private enableColors: boolean
   public chalk: ChalkInstance
@@ -111,7 +110,6 @@ class CustomLogger {
   public gray: (text: string) => string
 
   constructor () {
-    this.currentLevel = getLogLevel()
     this.enableCallStack = shouldEnableCallStack()
     this.enableColors = shouldEnableColors()
     
@@ -279,7 +277,8 @@ class CustomLogger {
    * @param args 额外参数
    */
   private log (level: LogLevel, levelStr: string, color: (text: string) => string, message: any, ...args: any[]) {
-    if (level < this.currentLevel) return
+    const currentLevel = getLogLevel()
+    if (level < currentLevel) return
 
     const timestamp = this.formatTimestamp()
     const formattedLevel = levelStr.padEnd(4)
