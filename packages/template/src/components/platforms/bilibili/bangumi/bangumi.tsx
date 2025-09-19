@@ -6,7 +6,7 @@ import React from 'react'
 import type {
   BangumiBilibiliEpisodesProps,
   BangumiBilibiliHeaderProps,
-  BangumiBilibiliProps
+  BilibiliBangumiProps
 } from '../../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { EnhancedImage } from '../shared'
@@ -482,7 +482,7 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
 }
 
 // ... existing code ...
-export const BangumiBilibili: React.FC<Omit<BangumiBilibiliProps, 'templateType' | 'templateName'>> = React.memo((props) => {
+export const BangumiBilibili: React.FC<Omit<BilibiliBangumiProps, 'templateType' | 'templateName'>> = React.memo((props) => {
   return (
     <DefaultLayout {...props}>
       <div className='p-4'>
@@ -498,14 +498,12 @@ export const BangumiBilibili: React.FC<Omit<BangumiBilibiliProps, 'templateType'
           stat={props.data.Stat}
           copyright={props.data.Copyright}
           seasonID={props.data.seasonID}
-          useDarkTheme={props.data.useDarkTheme}
         />
 
         {/* 剧集列表区域 */}
         <BangumiBilibiliEpisodes
           episodes={props.data.Episodes}
           upInfo={props.data.UPInfo}
-          useDarkTheme={props.data.useDarkTheme}
         />
       </div>
     </DefaultLayout>

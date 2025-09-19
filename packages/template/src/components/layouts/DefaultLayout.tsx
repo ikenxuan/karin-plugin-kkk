@@ -3,7 +3,8 @@ import clsx from 'clsx'
 import { AlertTriangle, CheckCircle, Code, Info, Zap } from 'lucide-react'
 import React from 'react'
 
-import type { BaseComponentProps, RenderRequest } from '@/types'
+import type { BaseComponentProps, RenderRequest } from '../../types'
+
 
 /**
  * 默认布局组件属性接口

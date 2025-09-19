@@ -1,7 +1,6 @@
 import fs from 'node:fs'
 
 import {
-  AdditionalType,
   ApiResponse,
   BiliBangumiVideoInfo,
   BiliBangumiVideoPlayurlIsLogin,
@@ -202,7 +201,8 @@ export class Bilibili extends Base {
           UPInfo: videoInfo.data.result.up_info,
           Copyright: videoInfo.data.result.rights.copyright,
           Stat: videoInfo.data.result.stat,
-          Episodes
+          Episodes,
+          length: videoInfo.data.result.episodes.length
         })
         this.e.reply([...img, segment.text('请在120秒内输入 第?集 选择集数')])
         const context = await karin.ctx(this.e, { reply: true })
@@ -340,58 +340,58 @@ export class Bilibili extends Base {
             break
           }
           /** 纯文 */
-          case DynamicType.WORD: {
-            const text = replacetext(br(dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text), dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.rich_text_nodes)
+          // case DynamicType.WORD: {
+          //   const text = replacetext(br(dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text), dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.rich_text_nodes)
 
-            if (dynamicInfo.data.data.item.modules.module_dynamic.additional) {
-              switch (dynamicInfo.data.data.item.modules.module_dynamic.additional.type) {
-                // TODO: 动态中的额外卡片元素，
-                // see: https://github.com/SocialSisterYi/bilibili-API-collect/blob/afc4349247ff7d59ac16dfe6eec8ff2b766a74f0/docs/dynamic/all.md
-                // find: data.items[n].modules.module_dynamic.additional
-                case AdditionalType.RESERVE: {
-                  break
-                }
-                case AdditionalType.COMMON:
-                case AdditionalType.GOODS:
-                case AdditionalType.VOTE:
-                case AdditionalType.UGC:
-                case AdditionalType.MATCH:
-                case AdditionalType.UPOWER_LOTTERY:
-                default: {
-                  break
-                }
-              }
-            }
-            this.e.reply(
-              await Render('bilibili/dynamic/DYNAMIC_TYPE_WORD', {
-                text,
-                dianzan: Count(dynamicInfo.data.data.item.modules.module_stat.like.count),
-                pinglun: Count(dynamicInfo.data.data.item.modules.module_stat.comment.count),
-                share: Count(dynamicInfo.data.data.item.modules.module_stat.forward.count),
-                create_time: dynamicInfo.data.data.item.modules.module_author.pub_time,
-                avatar_url: dynamicInfo.data.data.item.modules.module_author.face,
-                frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
-                share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
-                username: checkvip(dynamicInfo.data.data.card ?? userProfileData.data.data.card),
-                fans: Count(dynamicInfo.data.data.follower),
-                user_shortid: dynamicInfo.data.data.item.modules.module_author.mid,
-                total_favorited: Count(userProfileData.data.data.like_num),
-                following_count: Count(userProfileData.data.data.card.attention),
-                dynamicTYPE: '纯文动态'
-              })
-            )
-            commentsData && this.e.reply(
-              await Render('bilibili/comment', {
-                Type: '动态',
-                CommentsData: bilibiliComments(commentsData.data),
-                CommentLength: String((bilibiliComments(commentsData.data)?.length) ? bilibiliComments(commentsData.data).length : 0),
-                share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
-                ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? '动态中没有附带图片',
-                shareurl: '动态分享链接'
-              })
-            )
-            break
-          }
+          //   if (dynamicInfo.data.data.item.modules.module_dynamic.additional) {
+          //     switch (dynamicInfo.data.data.item.modules.module_dynamic.additional.type) {
+          //       // TODO: 动态中的额外卡片元素，
+          //       // see: https://github.com/SocialSisterYi/bilibili-API-collect/blob/afc4349247ff7d59ac16dfe6eec8ff2b766a74f0/docs/dynamic/all.md
+          //       // find: data.items[n].modules.module_dynamic.additional
+          //       case AdditionalType.RESERVE: {
+          //         break
+          //       }
+          //       case AdditionalType.COMMON:
+          //       case AdditionalType.GOODS:
+          //       case AdditionalType.VOTE:
+          //       case AdditionalType.UGC:
+          //       case AdditionalType.MATCH:
+          //       case AdditionalType.UPOWER_LOTTERY:
+          //       default: {
+          //         break
+          //       }
+          //     }
+          //   }
+          //   this.e.reply(
+          //     await Render('bilibili/dynamic/DYNAMIC_TYPE_WORD', {
+          //       text,
+          //       dianzan: Count(dynamicInfo.data.data.item.modules.module_stat.like.count),
+          //       pinglun: Count(dynamicInfo.data.data.item.modules.module_stat.comment.count),
+          //       share: Count(dynamicInfo.data.data.item.modules.module_stat.forward.count),
+          //       create_time: dynamicInfo.data.data.item.modules.module_author.pub_time,
+          //       avatar_url: dynamicInfo.data.data.item.modules.module_author.face,
+          //       frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
+          //       share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
+          //       username: checkvip(dynamicInfo.data.data.card ?? userProfileData.data.data.card),
+          //       fans: Count(dynamicInfo.data.data.follower),
+          //       user_shortid: dynamicInfo.data.data.item.modules.module_author.mid,
+          //       total_favorited: Count(userProfileData.data.data.like_num),
+          //       following_count: Count(userProfileData.data.data.card.attention),
+          //       dynamicTYPE: '纯文动态'
+          //     })
+          //   )
+          //   commentsData && this.e.reply(
+          //     await Render('bilibili/comment', {
+          //       Type: '动态',
+          //       CommentsData: bilibiliComments(commentsData.data),
+          //       CommentLength: String((bilibiliComments(commentsData.data)?.length) ? bilibiliComments(commentsData.data).length : 0),
+          //       share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
+          //       ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? '动态中没有附带图片',
+          //       shareurl: '动态分享链接'
+          //     })
+          //   )
+          //   break
+          // }
           /** 转发动态 */
           case DynamicType.FORWARD: {
             const text = replacetext(
@@ -525,6 +525,7 @@ export class Bilibili extends Base {
                   user_shortid: userProfileData.data.data.card.mid,
                   total_favorited: Count(userProfileData.data.data.like_num),
                   following_count: Count(userProfileData.data.data.card.attention),
+                  render_time: Common.getCurrentTime(),
                   dynamicTYPE: '视频动态'
                 }
               )
@@ -572,7 +573,7 @@ export class Bilibili extends Base {
         }
         const img = await Render('bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
           {
-            image_url: [{ image_src: liveInfo.data.user_cover }],
+            image_url: liveInfo.data.user_cover,
             text: br(liveInfo.data.title),
             liveinf: br(`${liveInfo.data.area_name} | 房间号: ${liveInfo.data.room_id}`),
             username: userProfileData.data.data.card.name,
@@ -580,7 +581,7 @@ export class Bilibili extends Base {
             frame: userProfileData.data.data.card.pendant.image,
             fans: Count(userProfileData.data.data.card.fans),
             create_time: liveInfo.data.live_time === '-62170012800' ? '获取失败' : liveInfo.data.live_time,
-            now_time: 114514,
+            now_time: Common.getCurrentTime(),
             share_url: 'https://live.bilibili.com/' + liveInfo.data.room_id,
             dynamicTYPE: '直播'
           }
