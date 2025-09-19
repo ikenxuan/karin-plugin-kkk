@@ -2,28 +2,28 @@ import { join } from 'node:path'
 
 import type { ImageElement } from 'node-karin'
 import { karinPathHtml, render, segment } from 'node-karin'
-import reactServerRender, { type RenderRequest } from 'template'
+import type { 
+  DynamicRenderPath,
+  ExtractDataTypeFromPath,
+  TemplateDataTypeMap,
+  TypedRenderRequest
+} from 'template'
+import reactServerRender from 'template'
 
 import { Common, Root } from '@/module'
 import { Config } from '@/module/utils/Config'
 
 /**
- * 渲染模板
- * @param path 组件路径标识
- * @param params 模板参数
- * @returns 图片元素数组
+ * 渲染函数
+ * @template P 渲染路径，必须是有效的动态路径
+ * @param path 渲染路径，格式为 "平台/组件ID"
+ * @param data 渲染数据，类型根据路径自动推断
+ * @returns 渲染结果Promise
  */
-export const Render = async (path: string, params?: any): Promise<ImageElement[]> => {
-  return await SSR(path, params)
-}
-
-/**
- * SSR渲染
- * @param path 组件路径标识，格式：platform/category/templateName 或 platform/templateName
- * @param params 模板参数
- * @returns 图片元素数组
- */
-const SSR = async (path: string, params?: any): Promise<ImageElement[]> => {
+export const Render = async <P extends DynamicRenderPath> (
+  path: P,
+  data?: ExtractDataTypeFromPath<P>
+): Promise<ImageElement[]> => {
   const pathParts = path.split('/')
   let templateType: string
   let templateName: string
@@ -40,29 +40,36 @@ const SSR = async (path: string, params?: any): Promise<ImageElement[]> => {
   }
 
   const outputDir = join(karinPathHtml, Root.pluginName, templateType)
-  const renderRequest: RenderRequest = {
-    templateType: templateType as RenderRequest['templateType'],
+
+  const renderRequest: TypedRenderRequest<keyof TemplateDataTypeMap> = {
+    templateType: templateType as TypedRenderRequest<keyof TemplateDataTypeMap>['templateType'],
     templateName,
-    data: {
-      ...params,
-      useDarkTheme: Common.useDarkTheme()
-    },
+    scale: Math.min(2, Math.max(0.5, Number(Config.app.renderScale) / 100)),
+    useDarkTheme: Common.useDarkTheme(),
     version: {
       pluginName: 'kkk',
       pluginVersion: Root.pluginVersion,
       releaseType: /^\d+\.\d+\.\d+$/.test(Root.pluginVersion) ? 'Stable' : 'Preview',
       poweredBy: 'Karin'
     },
-    scale: Math.min(2, Math.max(0.5, Number(Config.app.renderScale) / 100))
+    data: {
+      ...data,
+      useDarkTheme: Common.useDarkTheme()
+    }
   }
 
   // 调用本地SSR渲染函数
   const result = await reactServerRender(renderRequest, outputDir)
-
-  if (!result.success || !result.htmlPath) {
-    throw new Error(result.error || 'SSR渲染失败')
-  }
-
+    .then(res => {
+      if (!res.success || !res.htmlPath) {
+        throw new Error(res.error || 'SSR渲染失败')
+      }
+      return res
+    })
+    .catch(err => {
+      throw new Error(err.message || 'SSR渲染失败')
+    })
+    
   // 截图
   const images = await render.render({
     name: `${Root.pluginName}/${templateType}/${templateName}`,

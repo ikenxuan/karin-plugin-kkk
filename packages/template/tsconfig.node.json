@@ -23,6 +23,9 @@
   },
   "include": [
     "vite.config.ts",
-    "tailwind.config.js"
+    "tailwind.config.js",
+    "src/dev/**/*.ts",
+    "src/config/config-base.ts",
+    "src/types/**/*.ts"
   ]
 }

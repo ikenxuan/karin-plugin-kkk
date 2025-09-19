@@ -1,27 +1,9 @@
 import { Clock, QrCode, Shield } from 'lucide-react'
 import React from 'react'
 
+import type { BilibiliQrcodeImgProps } from '../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
-import { EnhancedImage } from './shared'
-
-/**
- * B站二维码登录组件属性
- * @description
- * - 组件用于展示登录二维码（如果提供）与 share_url 文本，并附带登录提示与免责声明。
- * @property data 业务数据对象
- * @property data.share_url 扫码所需的分享链接
- * @property data.useDarkTheme 是否启用深色主题（可选，与同级组件保持一致的风格兼容）
- * @property qrCodeDataUrl 可选的二维码图片数据（DataURL），若提供将优先显示二维码
- * @property [key: string]: any 透传属性，保证与 DefaultLayout 的入参兼容
- */
-export interface BilibiliQrcodeImgProps {
-  data: {
-    share_url: string
-    useDarkTheme?: boolean
-  }
-  qrCodeDataUrl?: string
-  [key: string]: any
-}
+import { EnhancedImage } from './shared'  
 
 /**
  * B站二维码登录组件

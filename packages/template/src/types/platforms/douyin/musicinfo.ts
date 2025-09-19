@@ -25,11 +25,11 @@ export interface DouyinMusicInfoProps extends BaseComponentProps {
     /** 用户短ID */
     user_shortid: string
     /** 获赞数 */
-    total_favorited: string
+    total_favorited: number
     /** 关注数 */
-    following_count: string
+    following_count: number
     /** 粉丝数 */
-    fans: string
+    fans: number
     /** 分享链接 */
     share_url: string
   }
@@ -74,11 +74,11 @@ export interface MusicAuthorInfoProps {
   /** 用户短ID */
   userShortId: string
   /** 获赞数 */
-  totalFavorited: string
+  totalFavorited: number
   /** 关注数 */
-  followingCount: string
+  followingCount: number
   /** 粉丝数 */
-  fans: string
+  fans: number
   /** 是否使用深色主题 */
   useDarkTheme?: boolean
 }

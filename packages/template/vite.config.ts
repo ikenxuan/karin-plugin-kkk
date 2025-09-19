@@ -9,6 +9,8 @@ import autoprefixer from 'autoprefixer'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 
+import { mockApiPlugin } from './src/dev/vite-mock-plugin'
+
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 /**
@@ -65,17 +67,14 @@ export default defineConfig(({ command }) => {
   if (command === 'serve') {
     return {
       ...baseConfig,
+      plugins: [
+        ...baseConfig.plugins,
+        mockApiPlugin()
+      ],
       root: path.resolve(__dirname, './src/dev'),
       publicDir: path.resolve(__dirname, './public'),
       server: {
-        port: 5174,
-        proxy: {
-          // 代理API请求到后端服务器
-          '/api': {
-            target: 'http://localhost:3001',
-            changeOrigin: true
-          }
-        }
+        port: 5174
       },
       define: {
         __DEV__: true
@@ -102,7 +101,7 @@ export default defineConfig(({ command }) => {
         name: 'copy-assets-to-core',
         writeBundle () {
           // 复制CSS文件
-          const sourceFile = resolve(__dirname, 'dist/css/main.css')
+          const sourceFile = resolve(__dirname, 'dist/main.css')
           const targetFile = resolve(__dirname, '../core/lib/karin-plugin-kkk.css')
           const targetDir = resolve(__dirname, '../core/lib')
 
@@ -145,27 +144,52 @@ export default defineConfig(({ command }) => {
         output: {
           format: 'es',
           inlineDynamicImports: false,
-          // 手动分包配置 - 将components目录下的所有文件打包到components.js
           manualChunks: (id) => {
-            // 检查模块ID是否包含components路径
             if (id.includes('/src/components/') || id.includes('\\src\\components\\')) {
-              return 'components'
+              return 'template'
             }
+
+            // 主要依赖文件放到deps目录
+            if (id.includes('/src/main.ts') || id.includes('\\src\\main.ts') ||
+              id.includes('/src/utils/') || id.includes('\\src\\utils\\') ||
+              id.includes('/src/config/') || id.includes('\\src\\config\\') ||
+              id.includes('/src/types/') || id.includes('\\src\\types\\')) {
+              return 'deps/main'
+            }
+
+            // React相关依赖
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'deps/react'
+            }
+
+            // 其他第三方库
+            if (id.includes('node_modules')) {
+              return 'deps/vendor'
+            }
+
             // 其他模块保持默认行为
             return undefined
           },
           assetFileNames: (assetInfo) => {
             if (assetInfo.name?.endsWith('.css')) {
-              return 'css/main.css'
+              return 'main.css'
             }
             return 'assets/[name].[hash][extname]'
           },
-          // 自定义chunk文件名
           chunkFileNames: (chunkInfo) => {
-            if (chunkInfo.name === 'components') {
-              return 'js/components.js'
+            if (chunkInfo.name === 'template') {
+              return 'template.js'
             }
-            return 'js/[name].[hash].js'
+            if (chunkInfo.name?.startsWith('deps/')) {
+              return `${chunkInfo.name}.js`
+            }
+            return 'chunks/[name].[hash].js'
+          },
+          entryFileNames: (chunkInfo) => {
+            if (chunkInfo.name === 'index') {
+              return 'index.js'
+            }
+            return '[name].js'
           }
         }
       },

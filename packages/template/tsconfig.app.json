@@ -40,7 +40,6 @@
     "src/**/*",
     "src/**/*.ts",
     "src/**/*.tsx",
-    "src/global.d.ts",
-    "src/react-app-env.d.ts"
+    "src/global.d.ts"
   ]
 }

@@ -16,14 +16,19 @@ export interface BilibiliLiveDynamicProps extends BaseComponentProps {
     liveinf: string
     /** 用户信息 */
     username: string
+    /** 用户头像URL */
     avatar_url: string
+    /** 头像框 */
     frame?: string
+    /** 粉丝数 */
     fans: string
     /** 时间信息 */
     create_time: string
+    /** 直播开始时间 */
     now_time: string
     /** 分享和配置 */
     share_url: string
+    /** 动态类型 */
     dynamicTYPE: string
   }
   /** 预生成的二维码数据URL */

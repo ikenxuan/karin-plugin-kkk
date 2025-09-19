@@ -295,11 +295,10 @@ export class DouYin extends Base {
               {
                 Type: this.is_mp4 ? '视频' : this.is_slides ? '合辑' : '图集',
                 CommentsData: commentsArray,
-                CommentLength: Config.douyin.realCommentCount ? Count(VideoData.data.aweme_detail.statistics.comment_count) : String(commentsArray.jsonArray?.length ?? 0),
+                CommentLength: Config.douyin.realCommentCount ? VideoData.data.aweme_detail.statistics.comment_count : commentsArray.jsonArray?.length ?? 0,
                 share_url: this.is_mp4
                   ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${VideoData.data.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`
                   : VideoData.data.aweme_detail.share_url,
-                Title: g_title,
                 VideoSize: mp4size,
                 VideoFPS: FPS,
                 ImageLength: imagenum
@@ -383,7 +382,7 @@ export class DouYin extends Base {
           {
             image_url: MusicData.data.music_info.cover_hd.url_list[0],
             desc: MusicData.data.music_info.title,
-            music_id: MusicData.data.music_info.id,
+            music_id: MusicData.data.music_info.id.toString(),
             create_time: Time(0),
             user_count: Count(MusicData.data.music_info.user_count),
             avater_url: MusicData.data.music_info.avatar_large?.url_list[0] || UserData.data.user.avatar_larger.url_list[0],
@@ -417,7 +416,7 @@ export class DouYin extends Base {
           const room_data = JSON.parse(UserInfoData.data.user.room_data)
           const img = await Render('douyin/live',
             {
-              image_url: [{ image_src: live_data.data.data[0].cover?.url_list[0] }],
+              image_url: live_data.data.data[0].cover?.url_list[0],
               text: live_data.data.data[0].title,
               liveinf: `${live_data.data.partition_road_map.partition.title} | 房间号: ${room_data.owner.web_rid}`,
               在线观众: Count(Number(live_data.data.data[0].room_view_stats?.display_value)),
@@ -425,8 +424,6 @@ export class DouYin extends Base {
               username: UserInfoData.data.user.nickname,
               avater_url: UserInfoData.data.user.avatar_larger.url_list[0],
               fans: Count(UserInfoData.data.user.follower_count),
-              create_time: convertTimestampToDateTime(new Date().getTime()),
-              now_time: convertTimestampToDateTime(new Date().getTime()),
               share_url: 'https://live.douyin.com/' + room_data.owner.web_rid,
               dynamicTYPE: '直播间信息'
             }
@@ -480,22 +477,6 @@ function Time (delay: number): string {
   const seconds = String(currentDate.getSeconds()).padStart(2, '0')
 
   return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`
-}
-
-/**
-   *
-   * @param {number} timestamp 时间戳
-   * @returns 获取 年-月-日 时:分
-   */
-function convertTimestampToDateTime (timestamp: number): string {
-  const date = new Date(timestamp * 1000)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  const hours = String(date.getHours()).padStart(2, '0')
-  const minutes = String(date.getMinutes()).padStart(2, '0')
-
-  return `${year}-${month}-${day} ${hours}:${minutes}`
 }
 
 export const Emoji = (data: DyEmojiList) => {

@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../../../index'
+import type { BaseComponentProps } from '../../index'
 
 /**
  * 徽章信息接口
@@ -164,14 +164,12 @@ export interface BangumiBilibiliData {
   Episodes: BangumiBilibiliEpisode[]
   /** 剧集总数 */
   length: number
-  /** 是否使用深色主题 */
-  useDarkTheme: boolean
 }
 
 /**
  * B站番剧组件属性接口
  */
-export interface BangumiBilibiliProps extends BaseComponentProps {
+export interface BilibiliBangumiProps extends BaseComponentProps {
   /** 番剧数据 */
   data: BangumiBilibiliData
   /** 预生成的二维码数据URL */

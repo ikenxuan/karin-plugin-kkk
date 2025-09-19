@@ -13,7 +13,7 @@ export interface KuaishouCommentProps extends BaseComponentProps {
     /** 评论数量 */
     CommentLength: number
     /** 视频大小(MB) */
-    VideoSize?: number
+    VideoSize?: string
     /** 点赞数量 */
     likeCount?: number
     /** 观看次数 */

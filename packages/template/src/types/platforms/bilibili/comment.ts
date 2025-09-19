@@ -9,11 +9,11 @@ export interface BilibiliCommentProps extends BaseComponentProps {
     /** 是否使用深色主题 */
     useDarkTheme?: boolean
     /** 作品类型：视频/图集/动态 */
-    Type: '视频'
+    Type: '视频' | '动态'
     /** 评论数量 */
-    CommentLength: number
+    CommentLength: string
     /** 视频大小(MB) */
-    VideoSize?: number
+    VideoSize?: string
     /** 视频画质 */
     Clarity?: string
     /** 图片数量 */
@@ -62,25 +62,13 @@ export interface CommentItem {
 }
 
 /**
- * 二维码组件属性接口
- */
-export interface QRCodeSectionProps {
-  /** 分享链接 */
-  shareurl: string
-  /** 二维码数据URL */
-  qrCodeDataUrl?: string
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
-}
-
-/**
  * 视频信息头部组件属性接口
  */
 export interface VideoInfoHeaderProps {
   /** 作品类型 */
   type: string
   /** 评论数量 */
-  commentLength: number
+  commentLength: string
   /** 视频大小 */
   videoSize?: number
   /** 视频画质 */

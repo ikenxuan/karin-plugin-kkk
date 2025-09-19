@@ -1,3 +1,11 @@
+/**
+ * 全局类型声明文件
+ * 确保DOM类型和其他全局类型正确加载
+ */
+
+/// <reference lib="dom" />
+/// <reference lib="dom.iterable" />
+
 declare module '*.css' {
   const content: string
   export default content
@@ -57,3 +65,5 @@ declare module '*.woff2' {
   const content: string
   export default content
 }
+
+export { }

@@ -13,7 +13,7 @@ export interface DouyinCommentProps extends BaseComponentProps {
     /** 评论数量 */
     CommentLength: number
     /** 视频大小(MB) */
-    VideoSize?: number
+    VideoSize?: string
     /** 视频帧率(Hz) */
     VideoFPS?: number
     /** 图片数量 */
@@ -83,7 +83,7 @@ export interface VideoInfoHeaderProps {
   /** 评论数量 */
   commentLength: number
   /** 视频大小(MB) */
-  videoSize?: number
+  videoSize?: string
   /** 视频帧率(Hz) */
   videoFPS?: number
   /** 图片数量 */

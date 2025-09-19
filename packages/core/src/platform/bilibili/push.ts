@@ -12,6 +12,7 @@ import karin, {
   logger,
   segment
 } from 'node-karin'
+import { BilibiliUserItem } from 'template/types/platforms/bilibili'
 
 import {
   Base,
@@ -178,36 +179,36 @@ export class Bilibilipush extends Base {
             break
           }
           /** 处理纯文动态 */
-          case DynamicType.WORD: {
-            let text = replacetext(data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.text, data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.rich_text_nodes)
-            for (const item of emojiDATA) {
-              if (text.includes(item.text)) {
-                if (text.includes('[') && text.includes(']')) {
-                  text = text.replace(/\[[^\]]*\]/g, `<img src="${item.url}"/>`).replace(/\\/g, '')
-                }
-                text += '&#160'
-              }
-            }
-            img = await Render('bilibili/dynamic/DYNAMIC_TYPE_WORD',
-              {
-                text: br(text),
-                dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
-                pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
-                share: Count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
-                create_time: Common.convertTimestampToDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
-                avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
-                frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
-                share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
-                username: checkvip(userINFO.data.data.card ?? userINFO.data.data.card),
-                fans: Count(userINFO.data.data.follower),
-                user_shortid: data[dynamicId].host_mid,
-                total_favorited: Count(userINFO.data.data.like_num),
-                following_count: Count(userINFO.data.data.card.attention),
-                dynamicTYPE: '纯文动态推送'
-              }
-            )
-            break
-          }
+          // case DynamicType.WORD: {
+          //   let text = replacetext(data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.text, data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.rich_text_nodes)
+          //   for (const item of emojiDATA) {
+          //     if (text.includes(item.text)) {
+          //       if (text.includes('[') && text.includes(']')) {
+          //         text = text.replace(/\[[^\]]*\]/g, `<img src="${item.url}"/>`).replace(/\\/g, '')
+          //       }
+          //       text += '&#160'
+          //     }
+          //   }
+          //   img = await Render('bilibili/dynamic/DYNAMIC_TYPE_WORD',
+          //     {
+          //       text: br(text),
+          //       dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
+          //       pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
+          //       share: Count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
+          //       create_time: Common.convertTimestampToDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
+          //       avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
+          //       frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
+          //       share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
+          //       username: checkvip(userINFO.data.data.card ?? userINFO.data.data.card),
+          //       fans: Count(userINFO.data.data.follower),
+          //       user_shortid: data[dynamicId].host_mid,
+          //       total_favorited: Count(userINFO.data.data.like_num),
+          //       following_count: Count(userINFO.data.data.card.attention),
+          //       dynamicTYPE: '纯文动态推送'
+          //     }
+          //   )
+          //   break
+          // }
           /** 处理视频动态 */
           case DynamicType.AV: {
             if (data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.type === 'MAJOR_TYPE_ARCHIVE') {
@@ -241,6 +242,7 @@ export class Bilibilipush extends Base {
                   user_shortid: data[dynamicId].host_mid,
                   total_favorited: Count(userINFO.data.data.like_num),
                   following_count: Count(userINFO.data.data.card.attention),
+                  render_time: Common.getCurrentTime(),
                   dynamicTYPE: '视频动态推送'
                 }
               )
@@ -804,7 +806,7 @@ export class Bilibilipush extends Base {
     }
 
     /** 用户的今日动态列表 */
-    const renderOpt: Record<string, string>[] = []
+    const renderOpt: BilibiliUserItem[] = []
 
     // 获取所有订阅UP主的信息
     for (const subscription of subscriptions) {

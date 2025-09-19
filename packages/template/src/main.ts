@@ -5,7 +5,7 @@ import QRCode, { type QRCodeRenderersOptions } from 'qrcode'
 import React from 'react'
 import { renderToString } from 'react-dom/server'
 
-import type { RenderRequest, RenderResponse } from './types'
+import type { RenderRequest, RenderResponse, TemplateDataTypeMap, TypedRenderRequest } from './types'
 import { ComponentAutoRegistry } from './utils/ComponentAutoRegistry'
 import { logger } from './utils/logger'
 
@@ -426,6 +426,7 @@ class SSRRender {
       logger.error('❌ 渲染组件失败:', error)
       return {
         success: false,
+        htmlPath: '',
         error: error instanceof Error ? error.message : String(error)
       }
     }
@@ -464,13 +465,13 @@ class SSRRender {
 }
 
 /**
- * SSR预渲染组件为HTML预渲染组件为HTML
+ * SSR预渲染组件为HTML的具体实现
  * @param request 渲染请求参数
  * @param outputDir 输出目录路径
  * @returns 渲染结果Promise
  */
-export const reactServerRender = async <T> (
-  request: RenderRequest<T>,
+export const reactServerRender = async <K extends keyof TemplateDataTypeMap>(
+  request: RenderRequest<TemplateDataTypeMap[K]>,
   outputDir: string
 ): Promise<RenderResponse> => {
   if (!existsSync(outputDir)) {
@@ -487,4 +488,4 @@ export const reactServerRender = async <T> (
   return await tempServer.render(request)
 }
 
-export type { RenderRequest, RenderResponse }
+export type { TemplateDataTypeMap, TypedRenderRequest }
