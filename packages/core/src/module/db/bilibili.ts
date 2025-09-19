@@ -1,4 +1,5 @@
-import { join } from 'node:path'
+import fs from 'node:fs'
+import path from 'node:path'
 
 import { logger } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
@@ -123,7 +124,7 @@ export class BilibiliDBBase {
   private dbPath: string
 
   constructor () {
-    this.dbPath = join(`${karinPathBase}/${Root.pluginName}/data`, 'bilibili.db')
+    this.dbPath = path.join(`${karinPathBase}/${Root.pluginName}/data`, 'bilibili.db')
   }
 
   /**
@@ -135,6 +136,7 @@ export class BilibiliDBBase {
       logger.debug('[BilibiliDB] 正在连接数据库...')
 
       // 创建数据库连接
+      await fs.promises.mkdir(path.dirname(this.dbPath), { recursive: true })
       this.db = new sqlite3.Database(this.dbPath)
 
       // 创建表结构
