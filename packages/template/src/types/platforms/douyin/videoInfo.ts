@@ -15,7 +15,7 @@ export interface DouyinVideoStatistics {
   /** 播放数 */
   play_count: number
   /** 推荐数 */
-  recommend_count: number
+  recommend_count?: number
   /** 分享数 */
   share_count: number
 }
@@ -46,8 +46,6 @@ export interface DouyinVideoInfoData {
   image_url: string
   /** 创建时间戳 */
   create_time: number
-  /** 是否使用深色主题 */
-  useDarkTheme: boolean
 }
 
 /**

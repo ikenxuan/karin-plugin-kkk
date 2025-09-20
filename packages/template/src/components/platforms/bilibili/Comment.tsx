@@ -294,14 +294,13 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
   )
 }
 
-// ... existing code ...
 export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType' | 'templateName'>> = React.memo((props) => {
   const processedData = useMemo(() => {
     if (!props.data) {
       return {
         useDarkTheme: false,
         Type: '视频' as const,
-        CommentLength: 0,
+        CommentLength: '0',
         VideoSize: undefined,
         Clarity: undefined,
         ImageLength: undefined,
@@ -314,7 +313,7 @@ export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType'
     return {
       useDarkTheme: props.data.useDarkTheme || false,
       Type: props.data.Type || '视频',
-      CommentLength: props.data.CommentLength || 0,
+      CommentLength: props.data.CommentLength || '0',
       VideoSize: props.data.VideoSize,
       Clarity: props.data.Clarity,
       ImageLength: props.data.ImageLength,
@@ -368,7 +367,6 @@ export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType'
 
 export default BilibiliComment
 
-// ... existing code ...
 const processCommentHTML = (htmlContent: string): string => {
   // 使用正则表达式匹配所有img标签并添加防盗链属性
   return htmlContent.replace(
@@ -377,7 +375,6 @@ const processCommentHTML = (htmlContent: string): string => {
   )
 }
 
-// ... existing code ...
 interface CommentTextProps {
   /** HTML内容 */
   content: string
