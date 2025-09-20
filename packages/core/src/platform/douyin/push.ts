@@ -1,6 +1,7 @@
 import type { ApiResponse, DySearchInfo, DyUserInfo, DyUserLiveVideos } from '@ikenxuan/amagi'
 import type { AdapterType, ImageElement, Message } from 'node-karin'
 import karin, { common, logger, segment } from 'node-karin'
+import { DouyinUserItem } from 'template/types/platforms/douyin'
 
 import {
   Base,
@@ -128,15 +129,13 @@ export class DouYinpush extends Base {
           // 处理直播推送
           img = await Render('douyin/live', {
             image_url: Detail_Data.live_data.data.data.data[0].cover!.url_list[0],
-            text: Detail_Data.live_data.data.data.data[0].title,
+            text: Detail_Data.live_data.data.data.data[0].title!,
             liveinf: `${Detail_Data.live_data.data.data.partition_road_map?.partition?.title ?? Detail_Data.live_data.data.data.data[0].title} | 房间号: ${Detail_Data.room_data.owner.web_rid}`,
             在线观众: this.count(Detail_Data.live_data.data.data.data[0].room_view_stats!.display_value),
             总观看次数: this.count(Number(Detail_Data.live_data.data.data.data[0].stats!.total_user_str)),
             username: Detail_Data.user_info.data.user.nickname,
             avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
             fans: this.count(Detail_Data.user_info.data.user.follower_count),
-            create_time: Common.convertTimestampToDateTime(Date.now() / 1000),
-            now_time: Common.convertTimestampToDateTime(Date.now() / 1000),
             share_url: 'https://live.douyin.com/' + Detail_Data.room_data.owner.web_rid,
             dynamicTYPE: '直播动态推送'
           })
@@ -500,7 +499,7 @@ export class DouYinpush extends Base {
       return
     }
 
-    const renderOpt: Record<string, string>[] = []
+    const renderOpt: DouyinUserItem[] = []
 
     for (const subscription of subscriptions) {
       const sec_uid = subscription.sec_uid

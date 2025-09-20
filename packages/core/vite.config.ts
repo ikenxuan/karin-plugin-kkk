@@ -132,17 +132,6 @@ const copyTemplateAssetsPlugin = (): Plugin => {
 
       copyDirectory(imageSourceDir, imageTargetDir)
       console.log('✅ template 静态资源已复制到:', imageTargetDir)
-
-      // 如果需要复制 CSS 文件
-      const cssSourceFile = resolve(__dirname, '../template/dist/css/main.css')
-      const cssTargetFile = resolve(__dirname, 'lib/karin-plugin-kkk.css')
-
-      if (existsSync(cssSourceFile)) {
-        copyFileSync(cssSourceFile, cssTargetFile)
-        console.log('✅ CSS文件已复制到:', cssTargetFile)
-      } else {
-        console.warn('⚠️ template CSS文件不存在，可能需要先构建 template 包')
-      }
     }
   }
 }
