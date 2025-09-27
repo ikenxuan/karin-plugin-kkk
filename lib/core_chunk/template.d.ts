@@ -1116,14 +1116,6 @@ interface PathToDataTypeMap {
  */
 type ExtractDataTypeFromPath<P extends string> = P extends keyof PathToDataTypeMap ? PathToDataTypeMap[P] : Record<string, any>;
 /**
- * 渲染请求接口
- * @template P 路径字符串，必须是有效的动态路径
- */
-interface TypedRenderRequestByPath<P extends DynamicRenderPath> extends Omit<TypedRenderRequest<keyof TemplateDataTypeMap>, 'data'> {
-    /** 渲染数据 */
-    data: ExtractDataTypeFromPath<P>;
-}
-/**
  * 模板类型到数据类型的映射接口
  */
 interface TemplateDataTypeMap {
@@ -1155,4 +1147,4 @@ interface TypedRenderRequest<K extends keyof TemplateDataTypeMap> extends Omit<R
  */
 declare const reactServerRender: <K extends keyof TemplateDataTypeMap>(request: RenderRequest<TemplateDataTypeMap[K]>, outputDir: string) => Promise<RenderResponse>;
 
-export { type BaseComponentProps, type DynamicRenderPath, type ExtractDataTypeFromPath, type PathToDataTypeMap, type RenderRequest, type RenderResponse, type TemplateDataTypeMap, type TypedRenderRequest, type TypedRenderRequestByPath, reactServerRender as default, reactServerRender };
+export { type BaseComponentProps, type DynamicRenderPath, type ExtractDataTypeFromPath, type RenderRequest, type RenderResponse, type TemplateDataTypeMap, type TypedRenderRequest, reactServerRender as default, reactServerRender };
