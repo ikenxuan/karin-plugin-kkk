@@ -144,7 +144,6 @@ class ResourcePathManager {
   private getPackageDirFromImportMeta (): string {
     try {
       const currentModuleUrl = import.meta.url
-      logger.debug('当前模块 URL:', currentModuleUrl)
       
       // 转换为文件路径
       const currentModulePath = new URL(currentModuleUrl).pathname
@@ -152,7 +151,6 @@ class ResourcePathManager {
         ? currentModulePath.slice(1) 
         : currentModulePath
       
-      logger.debug('当前模块路径:', normalizedPath)
       const pluginDir = this.extractPluginDirFromPnpmPath(normalizedPath)
       if (pluginDir) {
         logger.debug('从 pnpm 路径提取的插件目录:', pluginDir)
@@ -165,7 +163,7 @@ class ResourcePathManager {
         return fallbackDir
       }
       
-      logger.debug(logger.yellow('无法找到插件目录，使用当前工作目录'))
+      logger.debug(logger.yellow('无法找到插件目录，使用当前项目工作目录'))
       return process.cwd()
       
     } catch (error) {
@@ -317,8 +315,8 @@ class HtmlWrapper {
     const imageRelativePath = path.relative(htmlDir, imageDir).replace(/\\/g, '/')
     const cssUrl = path.join(cssRelativePath, 'karin-plugin-kkk.css').replace(/\\/g, '/')
 
-    logger.debug('CSS相对路径:', cssUrl)
-    logger.debug('图片相对路径:', imageRelativePath)
+    // logger.debug('CSS相对路径:', cssUrl)
+    // logger.debug('图片相对路径:', imageRelativePath)
 
     // 处理HTML中的静态资源路径
     const processedHtml = htmlContent.replace(
@@ -371,7 +369,6 @@ class SSRRender {
 
       if (existsSync(cssPath)) {
         this.cssContent = fs.readFileSync(cssPath, 'utf-8')
-        logger.debug('✅ CSS内容加载成功')
       } else {
         logger.warn('⚠️ CSS文件未找到:', cssPath)
         // 尝试后备路径
@@ -393,7 +390,7 @@ class SSRRender {
    */
   private async renderComponent<T> (request: RenderRequest<T>): Promise<RenderResponse> {
     try {
-      logger.debug('renderToString:', request.templateName)
+      logger.debug('开始进行SSR，模板：', request.templateName)
 
       // 生成二维码
       const qrCodeDataUrl = await QRCodeGenerator.generateDataUrl(
