@@ -335,7 +335,8 @@ export class Bilibili extends Base {
               following_count: Count(userProfileData.data.data.card.attention),
               decoration_card: generateDecorationCard(dynamicInfo.data.data.item.modules.module_author.decoration_card),
               render_time: Common.getCurrentTime(),
-              dynamicTYPE: '图文动态'
+              dynamicTYPE: '图文动态',
+              imageLayout: Config.bilibili.imageLayout
             }))
             break
           }

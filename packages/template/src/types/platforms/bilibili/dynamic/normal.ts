@@ -42,6 +42,8 @@ export interface BilibiliDynamicProps extends BaseComponentProps {
     dynamicTYPE: string
     /** 分享链接 */
     share_url: string
+    /** 图片布局方式 */
+    imageLayout: string
   }
   /** 预生成的二维码数据URL */
   qrCodeDataUrl?: string
@@ -75,6 +77,8 @@ export interface BilibiliDynamicContentProps {
   image_url: Array<{ image_src: string }>
   /** 是否使用深色主题 */
   useDarkTheme?: boolean
+  /** 图片布局方式 */
+  imageLayout: string
 }
 
 /**

@@ -173,6 +173,7 @@ export class Bilibilipush extends Base {
                 following_count: Count(userINFO.data.data.card.attention),
                 decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decoration_card),
                 render_time: Common.getCurrentTime(),
+                imageLayout: Config.bilibili.imageLayout,
                 dynamicTYPE: '图文动态推送'
               }
             )

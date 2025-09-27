@@ -544,6 +544,30 @@ export const webConfig = defineConfig({
                   })
                 ]
               }),
+              components.radio.group('imageLayout', {
+                label: '解析图文动态时，遇到多张图片时的页面布局方式（动态推送图片也生效）',
+                description: '自动布局：少于4张时逐张上下排列；4~8张时瀑布流；9张及以上九宫格',
+                orientation: 'horizontal',
+                defaultValue: all.bilibili.imageLayout,
+                radio: [
+                  components.radio.create('imageLayout:radio-1', {
+                    label: '逐张上下排列',
+                    value: 'vertical'
+                  }),
+                  components.radio.create('imageLayout:radio-2', {
+                    label: '瀑布流排列',
+                    value: 'waterfall'
+                  }),
+                  components.radio.create('imageLayout:radio-3', {
+                    label: '九宫格排列',
+                    value: 'grid'
+                  }),
+                  components.radio.create('imageLayout:radio-4', {
+                    label: '自动布局',
+                    value: 'auto'
+                  })
+                ]
+              }),
               components.divider.create('divider-bilibili-1', {
                 description: 'B站推送相关',
                 descPosition: 20

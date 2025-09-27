@@ -55,6 +55,28 @@ const BilibiliDynamicUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
  * B站动态内容组件
  */
 const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) => {
+  // 根据配置决定布局方式
+  const getLayoutType = () => {
+    if (!props.image_url || props.image_url.length === 0) return 'auto'
+      
+    switch (props.imageLayout) {
+      case 'vertical':
+        return 'vertical'
+      case 'waterfall':
+        return 'waterfall'
+      case 'grid':
+        return 'grid'
+      case 'auto':
+      default:
+        // 自动布局逻辑
+        if (props.image_url.length <= 4) return 'vertical'
+        if (props.image_url.length >= 9) return 'grid'
+        return 'waterfall'
+    }
+  }
+    
+  const layoutType = getLayoutType()
+
   return (
     <>
       {/* 文本内容 */}
@@ -79,8 +101,8 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
       {/* 图片内容 */}
       {props.image_url && Array.isArray(props.image_url) && props.image_url.length > 0 && (
         <div className='px-20'>
-          {/* 九宫格布局：9张及以上图片 */}
-          {props.image_url.length >= 9 && (
+          {/* 九宫格布局 */}
+          {layoutType === 'grid' && (
             <div className='grid grid-cols-3 gap-4 w-full'>
               {props.image_url.slice(0, 9).map((img, index) => (
                 <div key={index} className='overflow-hidden rounded-2xl aspect-square shadow-medium'>
@@ -94,38 +116,48 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
             </div>
           )}
           
-          {/* 两列瀑布流布局：6张图片 */}
-          {props.image_url.length === 6 && (
+          {/* 瀑布流布局 */}
+          {layoutType === 'waterfall' && (
             <div className='flex gap-4 w-full'>
               {/* 左列 */}
               <div className='flex flex-col flex-1 gap-4'>
-                {[0, 2, 4].map(index => (
-                  <div key={index} className='overflow-hidden rounded-2xl shadow-medium'>
-                    <EnhancedImage
-                      src={props.image_url[index].image_src}
-                      alt={`图片${index + 1}`}
-                      className='object-cover w-full h-auto'
-                    />
-                  </div>
-                ))}
+                {props.image_url
+                  .filter((_, index) => index % 2 === 0)
+                  .map((img, arrayIndex) => {
+                    const originalIndex = arrayIndex * 2
+                    return (
+                      <div key={originalIndex} className='overflow-hidden rounded-2xl shadow-medium'>
+                        <EnhancedImage
+                          src={img.image_src}
+                          alt={`图片${originalIndex + 1}`}
+                          className='object-cover w-full h-auto'
+                        />
+                      </div>
+                    )
+                  })}
               </div>
               {/* 右列 */}
               <div className='flex flex-col flex-1 gap-4'>
-                {[1, 3, 5].map(index => (
-                  <div key={index} className='overflow-hidden rounded-2xl shadow-medium'>
-                    <EnhancedImage
-                      src={props.image_url[index].image_src}
-                      alt={`图片${index + 1}`}
-                      className='object-cover w-full h-auto'
-                    />
-                  </div>
-                ))}
+                {props.image_url
+                  .filter((_, index) => index % 2 === 1)
+                  .map((img, arrayIndex) => {
+                    const originalIndex = arrayIndex * 2 + 1
+                    return (
+                      <div key={originalIndex} className='overflow-hidden rounded-2xl shadow-medium'>
+                        <EnhancedImage
+                          src={img.image_src}
+                          alt={`图片${originalIndex + 1}`}
+                          className='object-cover w-full h-auto'
+                        />
+                      </div>
+                    )
+                  })}
               </div>
             </div>
           )}
           
-          {/* 原有布局：其他数量的图片 */}
-          {props.image_url.length < 6 || (props.image_url.length > 6 && props.image_url.length < 9) ? (
+          {/* 垂直布局（逐张上下排列） */}
+          {layoutType === 'vertical' && (
             props.image_url.map((img, index) => (
               <React.Fragment key={index}>
                 <div className='flex flex-col items-center'>
@@ -140,10 +172,10 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
                 <div className='h-18' />
               </React.Fragment>
             ))
-          ) : null}
+          )}
           
           {/* 底部间距 */}
-          {(props.image_url.length === 6 || props.image_url.length >= 9) && <div className='h-18' />}
+          {(layoutType === 'waterfall' || layoutType === 'grid') && <div className='h-18' />}
         </div>
       )}
     </>
@@ -270,6 +302,7 @@ export const BilibiliDrawDynamic: React.FC<Omit<BilibiliDynamicProps, 'templateT
         <BilibiliDynamicContent
           text={props.data.text}
           image_url={props.data.image_url}
+          imageLayout={props.data.imageLayout}
         />
 
         {/* 动态状态 */}
