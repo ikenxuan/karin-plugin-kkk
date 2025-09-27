@@ -46,7 +46,7 @@ export const Render = async <P extends DynamicRenderPath> (
     templateName,
     scale: Math.min(2, Math.max(0.5, Number(Config.app.renderScale) / 100)),
     useDarkTheme: Common.useDarkTheme(),
-    version: {
+    version: Config.app.RemoveWatermark ? undefined : {
       pluginName: 'kkk',
       pluginVersion: Root.pluginVersion,
       releaseType: /^\d+\.\d+\.\d+$/.test(Root.pluginVersion) ? 'Stable' : 'Preview',

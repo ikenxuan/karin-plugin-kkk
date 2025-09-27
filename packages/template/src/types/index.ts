@@ -11,7 +11,7 @@ export interface RenderRequest<T = any> {
   /** 是否使用深色主题 */
   useDarkTheme?: boolean
   /** 版本信息 */
-  version: {
+  version?: {
     /** 插件名称 */
     pluginName: string
     /** 插件版本 */

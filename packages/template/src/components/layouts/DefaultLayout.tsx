@@ -51,7 +51,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
         }}
       >
         {children}
-        {version && (
+        {version ? (
           <div className='pt-32 pb-20 text-default-800'>
             <div className='flex relative justify-center items-center space-x-12'>
               <div className='flex items-center space-x-8 whitespace-nowrap'>
@@ -118,7 +118,8 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
               </div>
             </div>
           </div>
-        )}
+        ) : ( <div className='h-24'></div> )
+        }
       </div>
     </HeroUIProvider>
   )
