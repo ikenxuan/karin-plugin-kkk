@@ -19,7 +19,7 @@ function Command ({
     <CommandPrimitive
       data-slot='command'
       className={cn(
-        'bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md',
+        'flex overflow-hidden flex-col w-full h-full rounded-md bg-popover text-popover-foreground',
         className
       )}
       {...props}
@@ -65,13 +65,13 @@ function CommandInput ({
   return (
     <div
       data-slot='command-input-wrapper'
-      className='flex h-9 items-center gap-2 border-b px-3'
+      className='flex gap-2 items-center px-3 h-9 border-b'
     >
-      <SearchIcon className='size-4 shrink-0 opacity-50' />
+      <SearchIcon className='opacity-50 size-4 shrink-0' />
       <CommandPrimitive.Input
         data-slot='command-input'
         className={cn(
-          'placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
+          'flex py-3 w-full h-10 text-sm bg-transparent rounded-md placeholder:text-muted-foreground outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
           className
         )}
         {...props}
@@ -88,7 +88,7 @@ function CommandList ({
     <CommandPrimitive.List
       data-slot='command-list'
       className={cn(
-        'max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto',
+        'overflow-y-auto overflow-x-hidden max-h-[300px] scroll-py-1',
         className
       )}
       {...props}
@@ -102,7 +102,7 @@ function CommandEmpty ({
   return (
     <CommandPrimitive.Empty
       data-slot='command-empty'
-      className='py-6 text-center text-sm'
+      className='py-6 text-sm text-center'
       {...props}
     />
   )
@@ -131,7 +131,7 @@ function CommandSeparator ({
   return (
     <CommandPrimitive.Separator
       data-slot='command-separator'
-      className={cn('bg-border -mx-1 h-px', className)}
+      className={cn('-mx-1 h-px bg-border', className)}
       {...props}
     />
   )
@@ -161,7 +161,7 @@ function CommandShortcut ({
     <span
       data-slot='command-shortcut'
       className={cn(
-        'text-muted-foreground ml-auto text-xs tracking-widest',
+        'ml-auto text-xs tracking-widest text-muted-foreground',
         className
       )}
       {...props}

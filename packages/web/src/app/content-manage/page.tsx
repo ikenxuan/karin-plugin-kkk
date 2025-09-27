@@ -948,84 +948,83 @@ export default function ContentManagePage () {
                   </div>
                   <div className="space-y-2">
                     <Label>选择作者 <span className="text-red-500">*</span></Label>
-                    <Popover
-                      open={authorComboboxOpen}
-                      onOpenChange={(open) => {
-                        setAuthorComboboxOpen(open)
-                        // 当打开作者选择器时，懒加载作者数据
-                        if (open && selectedGroupId) {
-                          debouncedFetchAuthors(selectedGroupId)
-                        }
-                      }}
-                    >
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={authorComboboxOpen}
-                          className={cn(
-                            'w-full justify-between',
-                            !selectedAuthorId && 'text-muted-foreground'
-                          )}
-                        >
-                          {selectedAuthorId
-                            ? (() => {
-                              const author = filteredAuthors.find(a => a.id === selectedAuthorId)
-                              return author ? (
-                                <div className="flex items-center gap-2">
-                                  <CustomAvatar
-                                    src={author.avatar}
-                                    alt={`${author.name}头像`}
-                                    className="h-4 w-4 rounded-full object-cover"
-                                    fallbackIcon={Users}
-                                  />
-                                  <span>{author.name}</span>
-                                </div>
-                              ) : '请选择作者'
-                            })()
-                            : '请选择作者'}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-0">
-                        <Command>
-                          <CommandInput placeholder="搜索作者..." className="h-9" />
-                          <CommandList>
-                            <CommandEmpty>
-                              {authorsLoading ? '加载中...' : '该平台未订阅任何内容'}
-                            </CommandEmpty>
-                            <CommandGroup>
-                              {filteredAuthors.map((author) => (
-                                <CommandItem
-                                  key={author.id}
-                                  value={author.name}
-                                  onSelect={() => {
-                                    setSelectedAuthorId(author.id)
-                                    setAuthorComboboxOpen(false)
-                                  }}
-                                >
-                                  <div className="flex items-center gap-2">
-                                    <CustomAvatar
-                                      src={author.avatar}
-                                      alt={`${author.name}头像`}
-                                      className="h-4 w-4 rounded-full object-cover"
-                                      fallbackIcon={Users}
+                    <div className="relative">
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={authorComboboxOpen}
+                        className={cn(
+                          'w-full justify-between',
+                          !selectedAuthorId && 'text-muted-foreground'
+                        )}
+                        onClick={() => {
+                          setAuthorComboboxOpen(!authorComboboxOpen)
+                          // 当打开作者选择器时，懒加载作者数据
+                          if (!authorComboboxOpen && selectedGroupId) {
+                            debouncedFetchAuthors(selectedGroupId)
+                          }
+                        }}
+                      >
+                        {selectedAuthorId
+                          ? (() => {
+                            const author = filteredAuthors.find(a => a.id === selectedAuthorId)
+                            return author ? (
+                              <div className="flex items-center gap-2">
+                                <CustomAvatar
+                                  src={author.avatar}
+                                  alt={`${author.name}头像`}
+                                  className="h-4 w-4 rounded-full object-cover"
+                                  fallbackIcon={Users}
+                                />
+                                <span>{author.name}</span>
+                              </div>
+                            ) : '请选择作者'
+                          })()
+                          : '请选择作者'}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                      
+                      {authorComboboxOpen && (
+                        <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-popover border rounded-md shadow-md">
+                          <Command>
+                            <CommandInput placeholder="搜索作者..." />
+                            <CommandList className="max-h-[200px] overflow-y-scroll">
+                              <CommandEmpty>
+                                {authorsLoading ? '加载中...' : '该平台未订阅任何内容'}
+                              </CommandEmpty>
+                              <CommandGroup>
+                                {filteredAuthors.map((author) => (
+                                  <CommandItem
+                                    key={author.id}
+                                    value={author.name}
+                                    onSelect={() => {
+                                      setSelectedAuthorId(author.id)
+                                      setAuthorComboboxOpen(false)
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        'mr-2 h-4 w-4',
+                                        selectedAuthorId === author.id ? 'opacity-100' : 'opacity-0'
+                                      )}
                                     />
-                                    <span>{author.name}</span>
-                                  </div>
-                                  <Check
-                                    className={cn(
-                                      'ml-auto h-4 w-4',
-                                      selectedAuthorId === author.id ? 'opacity-100' : 'opacity-0'
-                                    )}
-                                  />
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
+                                    <div className="flex items-center gap-2">
+                                      <CustomAvatar
+                                        src={author.avatar}
+                                        alt={`${author.name}头像`}
+                                        className="h-4 w-4 rounded-full object-cover"
+                                        fallbackIcon={Users}
+                                      />
+                                      <span>{author.name}</span>
+                                    </div>
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   {/* 在添加对话框中的输入框部分 */}
                   <div className="space-y-2">

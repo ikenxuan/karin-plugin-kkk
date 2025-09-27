@@ -166,13 +166,13 @@ const parseBilibiliDynamicDetail = async (workInfo: ParsedWorkInfo): Promise<Vid
     const dynamicCardResponse = await request.serverPost<ResponseData<BiliDynamicCard>, any>('/api/kkk/bilibili/data', {
       dataType: '动态卡片数据',
       params: {
-        dynamic_id: dynamicInfoResponse.data.data.data.data.item.id_str,
+        dynamic_id: dynamicInfoResponse.data.data.item.id_str,
         typeMode: 'strict'
       }
     })
 
-    const dynamicInfo = dynamicInfoResponse.data.data.data.data
-    const dynamicCard = dynamicCardResponse.data.data.data.data
+    const dynamicInfo = dynamicInfoResponse.data.data
+    const dynamicCard = dynamicCardResponse.data.data
 
     // 获取评论数据（如果动态类型支持评论）
     let comments: CommentInfo[] = []
@@ -196,8 +196,8 @@ const parseBilibiliDynamicDetail = async (workInfo: ParsedWorkInfo): Promise<Vid
         })
 
         const commentsData = commentsResponse.data.data
-        const emojiData = emojiResponse.data.data.data
-        comments = parseBilibiliComments(commentsData.data?.replies || [], emojiData)
+        const emojiData = emojiResponse.data
+        comments = parseBilibiliComments(commentsData.replies || [], emojiData)
         commentCount = dynamicInfo.item.modules?.module_stat?.comment?.count || 0
       } catch (error) {
         console.warn('获取动态评论失败:', error)

@@ -67,7 +67,7 @@ export default [
       '@stylistic/quotes': ['error', 'single'], // 使用单引号
       '@stylistic/indent': ['error', 2], // 使用2个空格缩进
       '@stylistic/no-multi-spaces': 'error', // 禁止多个空格
-      
+
       // JSX 格式化规则
       '@stylistic/jsx-curly-spacing': ['error', { when: 'never' }], // JSX花括号内无空格
       '@stylistic/jsx-equals-spacing': ['error', 'never'], // JSX等号周围无空格
