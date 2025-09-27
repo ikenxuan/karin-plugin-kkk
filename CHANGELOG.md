@@ -1,5 +1,152 @@
 # 变更日志
 
+## [2.0.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.8.1...v2.0.0) (2025-09-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* 使用sql语句操作sqlite3 ([#138](https://github.com/ikenxuan/karin-plugin-kkk/issues/138))
+* 重构项目结构为多包工作区模式 ([#125](https://github.com/ikenxuan/karin-plugin-kkk/issues/125))
+
+### ✨ 新功能
+
+* Add Tauri desktop support and Web UI enhancements ([#130](https://github.com/ikenxuan/karin-plugin-kkk/issues/130)) ([617d5cf](https://github.com/ikenxuan/karin-plugin-kkk/commit/617d5cf841c4912c76fda2998151c831e5883b44))
+* **auth:** 添加多层编码签名验证中间件和前端实现 ([2bed9bf](https://github.com/ikenxuan/karin-plugin-kkk/commit/2bed9bf3739e1d1bb013852342ae632799dad714))
+* **bilibili:** 新增视频和直播动态组件及共享功能 ([5b020c2](https://github.com/ikenxuan/karin-plugin-kkk/commit/5b020c25ff44d54c7948ba93e39718bf663625e7))
+* **bilibili:** 添加8K视频质量支持并更新依赖 ([83b9095](https://github.com/ikenxuan/karin-plugin-kkk/commit/83b9095a1c4c935cb44246656a93be218f53493a))
+* **bilibili:** 添加B站图文动态组件及支持 ([e570312](https://github.com/ikenxuan/karin-plugin-kkk/commit/e570312ccabba7cb5cae0bc27d7b96fa14feb0ed))
+* **bilibili:** 添加番剧组件支持及完善相关功能 ([329fbc6](https://github.com/ikenxuan/karin-plugin-kkk/commit/329fbc6eabac6adb2349d7617f556047ad52cc36))
+* **core:** 添加connect-history-api-fallback支持前端路由 ([573be90](https://github.com/ikenxuan/karin-plugin-kkk/commit/573be90b64c82935e08c1de8c88853c5176ff1ce))
+* **core:** 添加图文动态图片布局配置选项 ([786e75c](https://github.com/ikenxuan/karin-plugin-kkk/commit/786e75c3129def58419a8c8f79db7e2a083f4104))
+* **render:** 支持URL参数控制平台和模板选择 ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* **render:** 支持URL参数控制平台和模板选择 ([5b020c2](https://github.com/ikenxuan/karin-plugin-kkk/commit/5b020c25ff44d54c7948ba93e39718bf663625e7))
+* **render:** 新增React渲染服务模块 ([ac83c3d](https://github.com/ikenxuan/karin-plugin-kkk/commit/ac83c3d092b0acb8618952b2dbb4f82189b16d91))
+* **render:** 添加抖音动态和直播组件，优化评论组件及开发环境配置 ([337452a](https://github.com/ikenxuan/karin-plugin-kkk/commit/337452a5008473776f1407b2f3be758675971ca2))
+* **render:** 重构Bilibili评论组件并优化预览面板功能 ([da62df0](https://github.com/ikenxuan/karin-plugin-kkk/commit/da62df0c9394f5e3d4822a1666362100339417e1))
+* **template:** 优化动态图片布局 ([777befc](https://github.com/ikenxuan/karin-plugin-kkk/commit/777befcea468e699c2eb23023ab454909cfba90e))
+* **template:** 同时测试模板更新 ([cf8a7d9](https://github.com/ikenxuan/karin-plugin-kkk/commit/cf8a7d9df2ecda3032d2724996a1c97284e66500))
+* **template:** 新增B站二维码登录组件并优化登录流程 ([a6f93f3](https://github.com/ikenxuan/karin-plugin-kkk/commit/a6f93f3faf2f30b57c42d67da66712348ccf8078))
+* **template:** 添加视频信息组件 ([#140](https://github.com/ikenxuan/karin-plugin-kkk/issues/140)) ([7d681b3](https://github.com/ikenxuan/karin-plugin-kkk/commit/7d681b3732b54e4b43d8e6c352129e6c145b9de2))
+* **web:** 测试更新日志合并 ([cf8a7d9](https://github.com/ikenxuan/karin-plugin-kkk/commit/cf8a7d9df2ecda3032d2724996a1c97284e66500))
+* **web:** 添加web解析页面鉴权开关并优化内容管理界面 ([9562110](https://github.com/ikenxuan/karin-plugin-kkk/commit/956211008a6253cac9c75456d5de7a3b00f4d01a))
+* **web:** 添加进度条组件和404页面 ([ee3aa17](https://github.com/ikenxuan/karin-plugin-kkk/commit/ee3aa17db2241717187989ab059bc23a2d556e7d))
+* 使用sql语句操作sqlite3 ([#138](https://github.com/ikenxuan/karin-plugin-kkk/issues/138)) ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* 图片渲染使用 React 替代 art-template，集成 Vite 支持实时开发调试 ([#137](https://github.com/ikenxuan/karin-plugin-kkk/issues/137)) ([f355477](https://github.com/ikenxuan/karin-plugin-kkk/commit/f355477d12615523c67647b286daf06ebff9d626))
+* 支持合辑解析 ([e6cab24](https://github.com/ikenxuan/karin-plugin-kkk/commit/e6cab2435e8e98de9fa0fa0914a387fd68c799f4))
+* 添加内容管理功能及相关组件 ([ac93ede](https://github.com/ikenxuan/karin-plugin-kkk/commit/ac93edea9ebfb6ffc68a1d5da27814a56465830c))
+* 添加心跳检测和登录功能改进 ([4080580](https://github.com/ikenxuan/karin-plugin-kkk/commit/4080580f6f035e9e7f3f57050cd85929a5af8211))
+* 添加错误日志接收配置并优化错误处理组件 ([3c0d462](https://github.com/ikenxuan/karin-plugin-kkk/commit/3c0d462fdffea0a73551e23312547de3174e718e))
+* 重构内容管理页面并添加主题支持 ([cbc3283](https://github.com/ikenxuan/karin-plugin-kkk/commit/cbc328305afdb8fbd0d7028237348ab145c1d60b))
+* 重构项目结构为多包工作区模式 ([#125](https://github.com/ikenxuan/karin-plugin-kkk/issues/125)) ([9fbb970](https://github.com/ikenxuan/karin-plugin-kkk/commit/9fbb970ad3824b0eed8ae1fe39643cead70e80d0))
+
+
+### 🐛 错误修复
+
+* **bilibili:** 修复动态卡片中图片可能为空的判断缺失问题 ([44e8bc1](https://github.com/ikenxuan/karin-plugin-kkk/commit/44e8bc165a334233c53f826278a4935602b8feec))
+* **bilibili:** 修复动态类型处理中的空值检查和类型定义 ([332823a](https://github.com/ikenxuan/karin-plugin-kkk/commit/332823a23019879cf7b1dae051d2c2ab21aaf8b3))
+* **bilibili:** 修正动态数据渲染逻辑和类型定义 ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* **bilibili:** 修正动态数据渲染逻辑和类型定义 ([5b020c2](https://github.com/ikenxuan/karin-plugin-kkk/commit/5b020c25ff44d54c7948ba93e39718bf663625e7))
+* **bilibili:** 更新动态卡片数据解析逻辑并升级依赖 ([0ebc356](https://github.com/ikenxuan/karin-plugin-kkk/commit/0ebc356c1345f04f2d9c97a66819ac71f95e2c30))
+* **bilibili:** 重构哔哩哔哩登录功能并更新依赖 ([8a1bf89](https://github.com/ikenxuan/karin-plugin-kkk/commit/8a1bf89a30c8dd7e586ecbe4f807c4c66a47b584))
+* build error ([f42a371](https://github.com/ikenxuan/karin-plugin-kkk/commit/f42a3718e59d1787de07d6ec22445983d816bf8d))
+* close [#126](https://github.com/ikenxuan/karin-plugin-kkk/issues/126) ([9fbb970](https://github.com/ikenxuan/karin-plugin-kkk/commit/9fbb970ad3824b0eed8ae1fe39643cead70e80d0))
+* close [#126](https://github.com/ikenxuan/karin-plugin-kkk/issues/126) ([4b52e20](https://github.com/ikenxuan/karin-plugin-kkk/commit/4b52e20cd64515f331c6886ab66bcfe15a7c70a1))
+* **core:** web config 扁平化处理逻辑错误 ([a9b20be](https://github.com/ikenxuan/karin-plugin-kkk/commit/a9b20be374aff93b15256220bee0ccbf7d73edac))
+* **core:** 修正B站推送和动态数据处理逻辑 ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* **core:** 修正B站推送和动态数据处理逻辑 ([5b020c2](https://github.com/ikenxuan/karin-plugin-kkk/commit/5b020c25ff44d54c7948ba93e39718bf663625e7))
+* **DataService:** 修正文件路径生成逻辑 ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* **DataService:** 修正文件路径生成逻辑 ([e570312](https://github.com/ikenxuan/karin-plugin-kkk/commit/e570312ccabba7cb5cae0bc27d7b96fa14feb0ed))
+* **douyin/bilibili:** 优化动态推送日志顺序并更新依赖版本 ([54e0088](https://github.com/ikenxuan/karin-plugin-kkk/commit/54e00886af2383139b370ea3809cd405c73a73d6))
+* mkdir-db ([#141](https://github.com/ikenxuan/karin-plugin-kkk/issues/141)) ([7cde0a2](https://github.com/ikenxuan/karin-plugin-kkk/commit/7cde0a2f154e3b2a7bca26f75d91130410a0e63c))
+* 修复B站直播数据路径问题 ([b9f7226](https://github.com/ikenxuan/karin-plugin-kkk/commit/b9f7226f4385100ccb6ecd35fb6db37756d008f7))
+* 修复抖音作品推送文本描述及日志信息 ([cff097a](https://github.com/ikenxuan/karin-plugin-kkk/commit/cff097aa45e3794c5ce61e4fe29db7ac3d1d359f))
+* 修复抖音平台音乐数据解析中 sec_uid 的变量引用问题 close [#128](https://github.com/ikenxuan/karin-plugin-kkk/issues/128) ([7a4a996](https://github.com/ikenxuan/karin-plugin-kkk/commit/7a4a996b4735b359fd75c1cd31a4fe4e580dbf8a))
+* 修复抖音视频解析错误处理问题 ([215ab09](https://github.com/ikenxuan/karin-plugin-kkk/commit/215ab0944685dba0e74b6cc76b57126f741aafb5))
+* 增强动态过滤日志并支持直播内容处理 close: [#131](https://github.com/ikenxuan/karin-plugin-kkk/issues/131) ([dfa9956](https://github.com/ikenxuan/karin-plugin-kkk/commit/dfa9956163d0c0342179d81e9a19a12c3543d4a6))
+* 细节优化UI ([#139](https://github.com/ikenxuan/karin-plugin-kkk/issues/139)) ([215ab09](https://github.com/ikenxuan/karin-plugin-kkk/commit/215ab0944685dba0e74b6cc76b57126f741aafb5))
+
+
+### ⚡️ 性能优化
+
+* 优化图片加载和错误处理 ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* 优化图片加载和错误处理 ([5b020c2](https://github.com/ikenxuan/karin-plugin-kkk/commit/5b020c25ff44d54c7948ba93e39718bf663625e7))
+* 优化日志收集器性能减少内存占用 ([215ab09](https://github.com/ikenxuan/karin-plugin-kkk/commit/215ab0944685dba0e74b6cc76b57126f741aafb5))
+
+
+### 📝 文档更新
+
+* **bilibili:** 添加B站动态相关类型定义 ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* **bilibili:** 添加B站动态相关类型定义 ([e570312](https://github.com/ikenxuan/karin-plugin-kkk/commit/e570312ccabba7cb5cae0bc27d7b96fa14feb0ed))
+* readme ([9212037](https://github.com/ikenxuan/karin-plugin-kkk/commit/9212037cea6c6234f230a930f09d80594ea7f00e))
+* 更新配置注释和默认值 ([3c0d462](https://github.com/ikenxuan/karin-plugin-kkk/commit/3c0d462fdffea0a73551e23312547de3174e718e))
+* 更新错误处理组件文档和类型定义 ([215ab09](https://github.com/ikenxuan/karin-plugin-kkk/commit/215ab0944685dba0e74b6cc76b57126f741aafb5))
+* 添加类型注释和组件文档 ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* 添加类型注释和组件文档 ([5b020c2](https://github.com/ikenxuan/karin-plugin-kkk/commit/5b020c25ff44d54c7948ba93e39718bf663625e7))
+
+
+### 🎨 代码样式
+
+* 统一代码格式和命名规范 ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* 统一代码格式和命名规范 ([5b020c2](https://github.com/ikenxuan/karin-plugin-kkk/commit/5b020c25ff44d54c7948ba93e39718bf663625e7))
+* 统一组件样式使用CSS变量替代硬编码颜色 ([215ab09](https://github.com/ikenxuan/karin-plugin-kkk/commit/215ab0944685dba0e74b6cc76b57126f741aafb5))
+* 调整错误处理组件样式和布局 ([3c0d462](https://github.com/ikenxuan/karin-plugin-kkk/commit/3c0d462fdffea0a73551e23312547de3174e718e))
+
+
+### 🔧 其他更新
+
+* **mock-server:** 改进数据文件路由处理 ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* **mock-server:** 改进数据文件路由处理 ([e570312](https://github.com/ikenxuan/karin-plugin-kkk/commit/e570312ccabba7cb5cae0bc27d7b96fa14feb0ed))
+* 更新@ikenxuan/amagi依赖至5.2.0版本并添加动态卡片类型处理 ([837b8b5](https://github.com/ikenxuan/karin-plugin-kkk/commit/837b8b54f7b8e10a79c4e921a03bb2268bf511ff))
+* 更新依赖项和日志级别配置 ([ac93ede](https://github.com/ikenxuan/karin-plugin-kkk/commit/ac93edea9ebfb6ffc68a1d5da27814a56465830c))
+* 更新依赖项和构建配置 ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* 更新依赖项和构建配置 ([5b020c2](https://github.com/ikenxuan/karin-plugin-kkk/commit/5b020c25ff44d54c7948ba93e39718bf663625e7))
+* 清理无用文件和代码注释 ([215ab09](https://github.com/ikenxuan/karin-plugin-kkk/commit/215ab0944685dba0e74b6cc76b57126f741aafb5))
+
+
+### ♻️ 代码重构
+
+* **bilibili:** 优化动态组件代码结构并提取共享模块 ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* **bilibili:** 优化动态组件代码结构并提取共享模块 ([5b020c2](https://github.com/ikenxuan/karin-plugin-kkk/commit/5b020c25ff44d54c7948ba93e39718bf663625e7))
+* **bilibili:** 重构动态数据处理逻辑，使用更严格的类型检查 ([332823a](https://github.com/ikenxuan/karin-plugin-kkk/commit/332823a23019879cf7b1dae051d2c2ab21aaf8b3))
+* **build:** 更新构建输出目录和chunk命名规范 ([8fd55b5](https://github.com/ikenxuan/karin-plugin-kkk/commit/8fd55b5b3690ea65bc3c244fc4d312ff9fa4565b))
+* **core:** 重构模板系统并迁移静态资源 ([ec25300](https://github.com/ikenxuan/karin-plugin-kkk/commit/ec25300e90e239f64f5b1efeb1ab9a8125281dfe))
+* **render:** 重构组件加载逻辑 ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* **render:** 重构组件加载逻辑 ([5b020c2](https://github.com/ikenxuan/karin-plugin-kkk/commit/5b020c25ff44d54c7948ba93e39718bf663625e7))
+* **render:** 重构路径解析逻辑以支持三级路径格式 ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* **render:** 重构路径解析逻辑以支持三级路径格式 ([e570312](https://github.com/ikenxuan/karin-plugin-kkk/commit/e570312ccabba7cb5cae0bc27d7b96fa14feb0ed))
+* **template:** 重构模板项目结构并优化类型定义 ([#142](https://github.com/ikenxuan/karin-plugin-kkk/issues/142)) ([2fb3b06](https://github.com/ikenxuan/karin-plugin-kkk/commit/2fb3b06ca8d55a9f38785e59bc508b8ce9578900))
+* **template:** 重构组件注册和渲染逻辑，实现自动注册功能 ([00d7e57](https://github.com/ikenxuan/karin-plugin-kkk/commit/00d7e57f2af4f63d8e756701584bedb9ffaa28a9))
+* 优化数据库模型和API路由 ([ac93ede](https://github.com/ikenxuan/karin-plugin-kkk/commit/ac93edea9ebfb6ffc68a1d5da27814a56465830c))
+* 移除冗余代码并简化错误处理逻辑 ([215ab09](https://github.com/ikenxuan/karin-plugin-kkk/commit/215ab0944685dba0e74b6cc76b57126f741aafb5))
+* 重构代码并优化配置 ([d476d58](https://github.com/ikenxuan/karin-plugin-kkk/commit/d476d58e6df321029bc311b0f7af17c79132bfc3))
+* 重构错误处理逻辑使用新配置 ([3c0d462](https://github.com/ikenxuan/karin-plugin-kkk/commit/3c0d462fdffea0a73551e23312547de3174e718e))
+* 重构项目结构为多包工作区模式 ([f49437c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f49437c5bf9c0d9265039ef0618ab1b621fcc556))
+
+
+### ✅ 测试相关
+
+* **bilibili:** 添加图文动态测试数据 ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* **bilibili:** 添加图文动态测试数据 ([e570312](https://github.com/ikenxuan/karin-plugin-kkk/commit/e570312ccabba7cb5cae0bc27d7b96fa14feb0ed))
+* 添加动态组件测试数据 ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* 添加动态组件测试数据 ([5b020c2](https://github.com/ikenxuan/karin-plugin-kkk/commit/5b020c25ff44d54c7948ba93e39718bf663625e7))
+* 添加错误处理相关测试用例 ([215ab09](https://github.com/ikenxuan/karin-plugin-kkk/commit/215ab0944685dba0e74b6cc76b57126f741aafb5))
+
+
+### 📦️ 构建系统
+
+* 更新 @ikenxuan/amagi 依赖至 5.0.2 版本 ([7a4a996](https://github.com/ikenxuan/karin-plugin-kkk/commit/7a4a996b4735b359fd75c1cd31a4fe4e580dbf8a))
+* 更新 @ikenxuan/amagi 依赖至正式版本 5.1.0 ([542a38c](https://github.com/ikenxuan/karin-plugin-kkk/commit/542a38c4f9a69238ddd5296068a55c0bc32febad))
+* 更新@ikenxuan/amagi依赖到特定PR版本 ([332823a](https://github.com/ikenxuan/karin-plugin-kkk/commit/332823a23019879cf7b1dae051d2c2ab21aaf8b3))
+* 更新tsconfig和vite配置 ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* 更新tsconfig和vite配置 ([5b020c2](https://github.com/ikenxuan/karin-plugin-kkk/commit/5b020c25ff44d54c7948ba93e39718bf663625e7))
+* 更新依赖包版本 ([215ab09](https://github.com/ikenxuan/karin-plugin-kkk/commit/215ab0944685dba0e74b6cc76b57126f741aafb5))
+
+
+### 🎡 持续集成
+
+* 调整构建配置和外部依赖 ([f81e40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f81e40ccf64f600ff8c87f992fcb8092ea34c2f5))
+* 调整构建配置和外部依赖 ([5b020c2](https://github.com/ikenxuan/karin-plugin-kkk/commit/5b020c25ff44d54c7948ba93e39718bf663625e7))
+
 ## [1.8.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.8.0...v1.8.1) (2025-07-16)
 
 
