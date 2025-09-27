@@ -39,7 +39,6 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production vite build && tsup",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
-    "dev:template": "cross-env RENDER_ENV=core_dev tsx ../template/src/main.ts",
     "lint": "eslint . --fix",
     "pub": "npm publish --access public",
     "sort": "sort-package-json",

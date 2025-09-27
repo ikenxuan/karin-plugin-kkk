@@ -14,7 +14,6 @@ import { app as karinApp, authMiddleware, logger, mkdirSync } from 'node-karin'
 import express from 'node-karin/express'
 import { karinPathBase } from 'node-karin/root'
 
-// import RenderServer from 'render'
 import { Common, Root } from '@/module'
 import {
   getBilibiliDataRouter,

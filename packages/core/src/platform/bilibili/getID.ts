@@ -1,6 +1,6 @@
 import { logger } from 'node-karin'
+import axios from 'node-karin/axios'
 
-import { Networks } from '@/module/utils'
 import type { BilibiliDataTypes } from '@/types'
 
 export interface BilibiliId {
@@ -14,7 +14,12 @@ export interface BilibiliId {
  * @returns
  */
 export async function getBilibiliID (url: string) {
-  const longLink = await new Networks({ url }).getLongLink()
+  const resp = await axios.get(url, {
+    headers: {
+      'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
+    }
+  })
+  const longLink = resp.request.res.responseUrl
   let result = {} as BilibiliId
   let pValue: number | undefined
   const parsedUrl = new URL(longLink)

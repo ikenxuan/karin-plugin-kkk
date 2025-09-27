@@ -76,21 +76,76 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
         <div className='h-15' />
       </div>
 
-      {/* 图片内容 - 添加数组类型检查 */}
-      {props.image_url && Array.isArray(props.image_url) && props.image_url.map((img, index) => (
-        <React.Fragment key={index}>
-          <div className='flex flex-col items-center'>
-            <div className='flex overflow-hidden flex-col flex-1 items-center w-11/12 rounded-3xl shadow-large'>
-              <EnhancedImage
-                src={img.image_src}
-                alt='封面'
-                className='object-contain w-full h-full rounded-3xl'
-              />
+      {/* 图片内容 */}
+      {props.image_url && Array.isArray(props.image_url) && props.image_url.length > 0 && (
+        <div className='px-20'>
+          {/* 九宫格布局：9张及以上图片 */}
+          {props.image_url.length >= 9 && (
+            <div className='grid grid-cols-3 gap-4 w-full'>
+              {props.image_url.slice(0, 9).map((img, index) => (
+                <div key={index} className='overflow-hidden rounded-2xl aspect-square shadow-medium'>
+                  <EnhancedImage
+                    src={img.image_src}
+                    alt={`图片${index + 1}`}
+                    className='object-cover w-full h-full'
+                  />
+                </div>
+              ))}
             </div>
-          </div>
-          <div className='h-18' />
-        </React.Fragment>
-      ))}
+          )}
+          
+          {/* 两列瀑布流布局：6张图片 */}
+          {props.image_url.length === 6 && (
+            <div className='flex gap-4 w-full'>
+              {/* 左列 */}
+              <div className='flex flex-col flex-1 gap-4'>
+                {[0, 2, 4].map(index => (
+                  <div key={index} className='overflow-hidden rounded-2xl shadow-medium'>
+                    <EnhancedImage
+                      src={props.image_url[index].image_src}
+                      alt={`图片${index + 1}`}
+                      className='object-cover w-full h-auto'
+                    />
+                  </div>
+                ))}
+              </div>
+              {/* 右列 */}
+              <div className='flex flex-col flex-1 gap-4'>
+                {[1, 3, 5].map(index => (
+                  <div key={index} className='overflow-hidden rounded-2xl shadow-medium'>
+                    <EnhancedImage
+                      src={props.image_url[index].image_src}
+                      alt={`图片${index + 1}`}
+                      className='object-cover w-full h-auto'
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* 原有布局：其他数量的图片 */}
+          {props.image_url.length < 6 || (props.image_url.length > 6 && props.image_url.length < 9) ? (
+            props.image_url.map((img, index) => (
+              <React.Fragment key={index}>
+                <div className='flex flex-col items-center'>
+                  <div className='flex overflow-hidden flex-col flex-1 items-center w-11/12 rounded-3xl shadow-large'>
+                    <EnhancedImage
+                      src={img.image_src}
+                      alt='封面'
+                      className='object-contain w-full h-full rounded-3xl'
+                    />
+                  </div>
+                </div>
+                <div className='h-18' />
+              </React.Fragment>
+            ))
+          ) : null}
+          
+          {/* 底部间距 */}
+          {(props.image_url.length === 6 || props.image_url.length >= 9) && <div className='h-18' />}
+        </div>
+      )}
     </>
   )
 }

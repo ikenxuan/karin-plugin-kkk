@@ -96,7 +96,7 @@ export type DynamicRenderPath =
 /**
  * 路径到数据类型的精确映射接口
  */
-export interface PathToDataTypeMap {
+interface PathToDataTypeMap {
   // 抖音相关路径
   'douyin/comment': import('./platforms/douyin').DouyinCommentProps['data']
   'douyin/dynamic': import('./platforms/douyin').DouyinDynamicProps['data']
@@ -135,14 +135,6 @@ export type ExtractDataTypeFromPath<P extends string> = P extends keyof PathToDa
   ? PathToDataTypeMap[P]
   : Record<string, any>
 
-/**
- * 渲染请求接口
- * @template P 路径字符串，必须是有效的动态路径
- */
-export interface TypedRenderRequestByPath<P extends DynamicRenderPath> extends Omit<TypedRenderRequest<keyof TemplateDataTypeMap>, 'data'> {
-  /** 渲染数据 */
-  data: ExtractDataTypeFromPath<P>
-}
 
 /**
  * 模板类型到数据类型的映射接口
