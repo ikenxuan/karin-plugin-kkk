@@ -1,5 +1,5 @@
 {
-  "packages/core": "1.8.1",
+  "packages/core": "2.0.0",
   "packages/web": "0.0.0",
   "packages/template": "0.0.0"
 }
