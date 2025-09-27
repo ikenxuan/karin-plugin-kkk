@@ -430,7 +430,7 @@ export class DouYin extends Base {
           )
           await this.e.reply(img)
         } else {
-          this.e.reply('当前博主未开播 ~')
+          this.e.reply(`「${UserInfoData.data.user.nickname}」\n未开播，正在休息中~`)
         }
         return true
       }
