@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.0 (2025-09-28)
+
+**Full Changelog**: https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.0.0...v0.0.0
+
 ## 0.0.0 (2025-09-27)
 
 ## What's Changed
