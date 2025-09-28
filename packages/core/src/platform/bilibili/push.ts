@@ -483,11 +483,15 @@ export class Bilibilipush extends Base {
               }
               case 'DYNAMIC_TYPE_DRAW': {
                 const imgArray: ImageElement[] = []
-                for (const img of data[dynamicId].Dynamic_Data.modules.module_dynamic.major && data[dynamicId].Dynamic_Data.modules.module_dynamic?.major?.draw?.items) {
-                  imgArray.push(segment.image(img.src))
+                for (const img2 of 
+                  data[dynamicId].Dynamic_Data.modules.module_dynamic.major && 
+                  data[dynamicId].Dynamic_Data.modules.module_dynamic?.major?.draw?.items || 
+                  data[dynamicId].Dynamic_Data.modules.module_dynamic?.major?.opus.pics
+                ) {
+                  imgArray.push(segment.image(img2.src ?? img2.url))
                 }
                 const forwardMsg = common.makeForward(imgArray, botId, bot.account.name)
-                await bot.sendForwardMsg(karin.contactFriend(botId), forwardMsg)
+                bot.sendForwardMsg(karin.contactFriend(botId), forwardMsg)
                 break
               }
             }
