@@ -115,8 +115,6 @@ class ResourcePathManager {
    */
   private getPackageDir (): string {
     const cwd = process.cwd()
-    logger.debug('当前工作目录:', cwd)
-    logger.debug('NODE_ENV:', this.NODE_ENV)
 
     switch (this.NODE_ENV) {
       case 'development':
@@ -365,8 +363,6 @@ class SSRRender {
       const { cssDir } = this.resourceManager.getResourcePaths()
       const cssPath = path.join(cssDir, 'karin-plugin-kkk.css')
 
-      logger.debug('尝试加载CSS文件:', cssPath)
-
       if (existsSync(cssPath)) {
         this.cssContent = fs.readFileSync(cssPath, 'utf-8')
       } else {
@@ -390,7 +386,7 @@ class SSRRender {
    */
   private async renderComponent<T> (request: RenderRequest<T>): Promise<RenderResponse> {
     try {
-      logger.debug('开始进行SSR，模板：', request.templateName)
+      logger.debug('[SSR]开始渲染组件，预设模板:', `${logger.yellow(`${request.templateType}/`)}${request.templateName}`)
 
       // 生成二维码
       const qrCodeDataUrl = await QRCodeGenerator.generateDataUrl(

@@ -27,10 +27,11 @@ export class ComponentAutoRegistry {
    */
   static async initialize(): Promise<void> {
     if (this.initialized) {
-      logger.debug('组件注册器已初始化，跳过重复初始化')
       return
     }
-
+    const cwd = process.cwd()
+    logger.debug('当前环境: NODE_ENV =', process.env.NODE_ENV || 'production')
+    logger.debug('当前工作目录:', cwd)
     logger.debug('开始自动注册组件...')
     
     for (const platformConfig of componentConfigs) {
