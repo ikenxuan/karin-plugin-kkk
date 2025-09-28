@@ -1,5 +1,12 @@
 # 变更日志
 
+## [2.0.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.0.0...v2.0.1) (2025-09-28)
+
+
+### 🐛 错误修复
+
+* **bilibili:** 修复动态图片转发时未处理空值的问题 ([d2c67cc](https://github.com/ikenxuan/karin-plugin-kkk/commit/d2c67cc8ffdeca51488160d712787a96972c6418))
+
 ## [2.0.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.8.1...v2.0.0) (2025-09-27)
 
 
