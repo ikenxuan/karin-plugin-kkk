@@ -19,6 +19,8 @@ const sidebar = [
     text: '其他',
     items: [
       { text: '配置ck', link: '/docs/other/ck' },
+      { text: '图片样式', link: '/docs/other/images' },
+      { text: '开发贡献', link: '/docs/other/contribution' },
       { text: '投喂', link: '/docs/other/afdian' },
       { text: '免责声明', link: '/docs/other/disclaimer' },
     ],
