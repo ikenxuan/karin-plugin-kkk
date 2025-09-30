@@ -1,1 +1,0 @@
-<ChangeLogs src="https://raw.githubusercontent.com/ikenxuan/karin-plugin-kkk/master/CHANGELOG.md" />
