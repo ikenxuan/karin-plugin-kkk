@@ -2,6 +2,7 @@ import { amagi, getBilibiliData, getDouyinData } from '@ikenxuan/amagi'
 import karin from 'node-karin'
 
 import { Common, Networks, Render } from '@/module'
+import { bilibiliDB, douyinDB } from '@/module/db'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { Bilibilipush, DouYinpush, getDouyinID } from '@/platform'
@@ -84,29 +85,47 @@ const handleDouyinPushList = wrapWithErrorHandler(async (e) => {
 
 // 包装设置机器人ID命令
 const handleChangeBotID = wrapWithErrorHandler(async (e) => {
+  const newBotId = e.msg.replace(/^#kkk设置推送机器人/, '')
+  
+  // 更新抖音配置和数据库
   const newDouyinlist = Config.pushlist.douyin.map(item => {
     const modifiedGroupIds = item.group_id.map(groupId => {
-      const [group_id] = groupId.split(':')
-      return `${group_id}:${e.msg.replace(/^#kkk设置推送机器人/, '')}`
+      const [group_id, oldBotId] = groupId.split(':')
+      // 更新数据库中的botId
+      if (oldBotId && oldBotId !== newBotId) {
+        douyinDB.updateGroupBotId(group_id, oldBotId, newBotId).catch(err => {
+          console.error(`Failed to update douyin group ${group_id}:`, err)
+        })
+      }
+      return `${group_id}:${newBotId}`
     })
     return {
       ...item,
       group_id: modifiedGroupIds
     }
   })
+  
+  // 更新B站配置和数据库
   const newBilibililist = Config.pushlist.bilibili.map(item => {
     const modifiedGroupIds = item.group_id.map(groupId => {
-      const [group_id] = groupId.split(':')
-      return `${group_id}:${e.msg.replace(/^#kkk设置推送机器人/, '')}`
+      const [group_id, oldBotId] = groupId.split(':')
+      // 更新数据库中的botId
+      if (oldBotId && oldBotId !== newBotId) {
+        bilibiliDB.updateGroupBotId(group_id, oldBotId, newBotId).catch(err => {
+          console.error(`Failed to update bilibili group ${group_id}:`, err)
+        })
+      }
+      return `${group_id}:${newBotId}`
     })
     return {
       ...item,
       group_id: modifiedGroupIds
     }
   })
+  
   Config.Modify('pushlist', 'douyin', newDouyinlist)
   Config.Modify('pushlist', 'bilibili', newBilibililist)
-  await e.reply('推送机器人已修改为' + e.msg.replace(/^#kkk设置推送机器人/, ''))
+  await e.reply('推送机器人已修改为' + newBotId)
   return true
 }, {
   businessName: '设置推送机器人'

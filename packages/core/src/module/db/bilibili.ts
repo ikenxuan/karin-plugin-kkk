@@ -139,9 +139,6 @@ export class BilibiliDBBase {
       await fs.promises.mkdir(path.dirname(this.dbPath), { recursive: true })
       this.db = new sqlite3.Database(this.dbPath)
 
-      // 执行数据库迁移
-      await this.migrateDatabase()
-
       // 创建表结构
       await this.createTables()
 
@@ -161,55 +158,6 @@ export class BilibiliDBBase {
   }
 
   /**
-   * 数据库迁移 - 处理表结构变更
-   */
-  private async migrateDatabase (): Promise<void> {
-    try {
-      // 检查Groups表是否存在且使用旧的PRIMARY KEY结构
-      const tableInfo = await this.allQuery<any>(
-        'SELECT sql FROM sqlite_master WHERE type="table" AND name="Groups"'
-      )
-
-      if (tableInfo && tableInfo.length > 0) {
-        const tableSql = tableInfo[0].sql
-        // 检查是否使用旧的 "id TEXT PRIMARY KEY" 结构
-        if (tableSql && tableSql.includes('id TEXT PRIMARY KEY')) {
-          logger.mark('[BilibiliDB] 检测到旧版本数据库结构，正在迁移...')
-
-          // 1. 创建临时表（使用新的复合主键结构）
-          await this.runQuery(`
-            CREATE TABLE IF NOT EXISTS Groups_new (
-              id TEXT NOT NULL,
-              botId TEXT NOT NULL,
-              createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
-              updatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
-              PRIMARY KEY (id, botId),
-              FOREIGN KEY (botId) REFERENCES Bots(id)
-            )
-          `)
-
-          // 2. 复制数据到新表
-          await this.runQuery(`
-            INSERT INTO Groups_new (id, botId, createdAt, updatedAt)
-            SELECT id, botId, createdAt, updatedAt FROM Groups
-          `)
-
-          // 3. 删除旧表
-          await this.runQuery('DROP TABLE Groups')
-
-          // 4. 重命名新表
-          await this.runQuery('ALTER TABLE Groups_new RENAME TO Groups')
-
-          logger.mark('[BilibiliDB] 数据库结构迁移完成')
-        }
-      }
-    } catch (error) {
-      logger.error('[BilibiliDB] 数据库迁移失败:', error)
-      // 不抛出错误，允许继续初始化
-    }
-  }
-
-  /**
    * 创建数据库表结构
    */
   private async createTables (): Promise<void> {
@@ -223,11 +171,10 @@ export class BilibiliDBBase {
 
       // 创建群组表
       `CREATE TABLE IF NOT EXISTS Groups (
-        id TEXT NOT NULL,
+        id TEXT PRIMARY KEY,
         botId TEXT NOT NULL,
         createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
         updatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (id, botId),
         FOREIGN KEY (botId) REFERENCES Bots(id)
       )`,
 
@@ -518,6 +465,21 @@ export class BilibiliDBBase {
    */
   async getBotGroups (botId: string): Promise<Group[]> {
     return await this.allQuery<Group>('SELECT * FROM Groups WHERE botId = ?', [botId])
+  }
+
+  /**
+   * 更新群组的机器人ID
+   * @param groupId 群组ID
+   * @param oldBotId 旧的机器人ID
+   * @param newBotId 新的机器人ID
+   */
+  async updateGroupBotId (groupId: string, oldBotId: string, newBotId: string): Promise<void> {
+    await this.getOrCreateBot(newBotId)
+    const now = new Date().toISOString()
+    await this.runQuery(
+      'UPDATE Groups SET botId = ?, updatedAt = ? WHERE id = ? AND botId = ?',
+      [newBotId, now, groupId, oldBotId]
+    )
   }
 
   /**
