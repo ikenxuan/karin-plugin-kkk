@@ -1,5 +1,5 @@
 import { amagi, getBilibiliData, getDouyinData } from '@ikenxuan/amagi'
-import karin from 'node-karin'
+import karin, { logger } from 'node-karin'
 
 import { Common, Networks, Render } from '@/module'
 import { bilibiliDB, douyinDB } from '@/module/db'
@@ -94,7 +94,7 @@ const handleChangeBotID = wrapWithErrorHandler(async (e) => {
       // 更新数据库中的botId
       if (oldBotId && oldBotId !== newBotId) {
         douyinDB.updateGroupBotId(group_id, oldBotId, newBotId).catch(err => {
-          console.error(`Failed to update douyin group ${group_id}:`, err)
+          logger.error(`Failed to update douyin group ${group_id}:`, err)
         })
       }
       return `${group_id}:${newBotId}`
@@ -112,7 +112,7 @@ const handleChangeBotID = wrapWithErrorHandler(async (e) => {
       // 更新数据库中的botId
       if (oldBotId && oldBotId !== newBotId) {
         bilibiliDB.updateGroupBotId(group_id, oldBotId, newBotId).catch(err => {
-          console.error(`Failed to update bilibili group ${group_id}:`, err)
+          logger.error(`Failed to update bilibili group ${group_id}:`, err)
         })
       }
       return `${group_id}:${newBotId}`
