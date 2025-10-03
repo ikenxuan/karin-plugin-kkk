@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.0 (2025-10-03)
+
+## What's Changed
+* fix: SQLITE_CONSTRAINT error when changing push bot ID by @Copilot in https://github.com/ikenxuan/karin-plugin-kkk/pull/147
+
+## New Contributors
+* @Copilot made their first contribution in https://github.com/ikenxuan/karin-plugin-kkk/pull/147
+
+**Full Changelog**: https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.0.1...v0.0.0
+
 ## 0.0.0 (2025-09-28)
 
 **Full Changelog**: https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.0.0...v0.0.0

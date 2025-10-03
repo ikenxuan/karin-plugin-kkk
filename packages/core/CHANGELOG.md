@@ -1,5 +1,12 @@
 # 变更日志
 
+## [2.0.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.0.1...v2.0.2) (2025-10-03)
+
+
+### 🐛 错误修复
+
+* SQLITE_CONSTRAINT error when changing push bot ID ([#147](https://github.com/ikenxuan/karin-plugin-kkk/issues/147)) ([f1ceef2](https://github.com/ikenxuan/karin-plugin-kkk/commit/f1ceef294632fe001bfe1c590898d19113288187))
+
 ## [2.0.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.0.0...v2.0.1) (2025-09-28)
 
 
