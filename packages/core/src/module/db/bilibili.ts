@@ -468,6 +468,21 @@ export class BilibiliDBBase {
   }
 
   /**
+   * 更新群组的机器人ID
+   * @param groupId 群组ID
+   * @param oldBotId 旧的机器人ID
+   * @param newBotId 新的机器人ID
+   */
+  async updateGroupBotId (groupId: string, oldBotId: string, newBotId: string): Promise<void> {
+    await this.getOrCreateBot(newBotId)
+    const now = new Date().toISOString()
+    await this.runQuery(
+      'UPDATE Groups SET botId = ?, updatedAt = ? WHERE id = ? AND botId = ?',
+      [newBotId, now, groupId, oldBotId]
+    )
+  }
+
+  /**
    * 获取群组订阅的所有B站用户
    * @param groupId 群组ID
    */
