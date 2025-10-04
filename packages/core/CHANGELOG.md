@@ -1,5 +1,13 @@
 # 变更日志
 
+## [2.0.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.0.2...v2.0.3) (2025-10-04)
+
+
+### 🐛 错误修复
+
+* **bilibili:** 修正视频大小计算和清晰度选择逻辑 ([d107d79](https://github.com/ikenxuan/karin-plugin-kkk/commit/d107d79ae7516d13beedafb3a637283b0192e114))
+* **douyin:** 修复直播推送中可选字段的处理逻辑 ([1f13fd8](https://github.com/ikenxuan/karin-plugin-kkk/commit/1f13fd85e32a1ce9319c1885233c95879efaf5bb))
+
 ## [2.0.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.0.1...v2.0.2) (2025-10-03)
 
 
