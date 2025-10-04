@@ -132,7 +132,7 @@ export class Bilibili extends Base {
           /** 获取第一个视频流的大小 */
           videoSize = await getvideosize(correctList.videoList[0].base_url, playUrlData.data.data.dash.audio[0].base_url, infoData.data.data.bvid)
         } else {
-          videoSize = (playUrlData.data.data.durl[0].size / (1024 * 1024)).toFixed(2)
+          videoSize = (nockData.data.durl[0].size / (1024 * 1024)).toFixed(2)
         }
         if (Config.bilibili.sendContent.some(content => content === 'comment')) {
           const commentsData = await this.amagi.getBilibiliData('评论数据', {
@@ -150,8 +150,8 @@ export class Bilibili extends Base {
               CommentsData: commentsdata,
               CommentLength: Config.bilibili.realCommentCount ? Count(infoData.data.data.stat.reply) : String(commentsdata.length),
               share_url: 'https://b23.tv/' + infoData.data.data.bvid,
-              Clarity: Config.bilibili.videopriority === true ? nockData.data.data.accept_description[0] : playUrlData.data.data.accept_description[0],
-              VideoSize: Config.bilibili.videopriority === true ? (nockData.data.data.durl[0].size! / (1024 * 1024)).toFixed(2) : videoSize,
+              Clarity: Config.bilibili.videopriority === true ? nockData.data.accept_description[nockData.data.accept_description.length - 1] : playUrlData.data.data.accept_description[0],
+              VideoSize: Config.bilibili.videopriority === true ? (nockData.data.durl[0].size! / (1024 * 1024)).toFixed(2) : videoSize,
               ImageLength: 0,
               shareurl: 'https://b23.tv/' + infoData.data.data.bvid
             })
@@ -651,7 +651,7 @@ export class Bilibili extends Base {
       }
       case false: {
         /** 没登录（没配置ck）情况下直接发直链，传直链在DownLoadVideo()处理 */
-        await downloadVideo(this.e, { video_url: playUrlData.data.durl[0].url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${this.downloadfilename}.mp4` } })
+        await downloadVideo(this.e, { video_url: playUrlData.durl[0].url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${this.downloadfilename}.mp4` } })
         break
       }
       default:
