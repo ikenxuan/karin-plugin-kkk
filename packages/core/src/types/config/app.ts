@@ -30,7 +30,7 @@ export interface appConfig {
   /** 渲染图片的等待时间，单位：秒；传递0可禁用 */
   RenderWaitTime: number
 
-  /** 表情回应 */
+  /** 表情回应，若适配器不支持需要关闭 */
   EmojiReply: boolean
 
   /**
@@ -42,6 +42,6 @@ export interface appConfig {
   /** web解析页面是否启用鉴权 */
   webAuth: boolean
 
-  /** 遇到错误时谁会收到错误日志？可选值：除'console'外的第一个主人、触发者 */
+  /** 遇到错误时谁会收到错误日志？可选值：'master'（除console'外的第一个主人）、'trigger'（触发者） */
   errorLogSendTo: ['master' | 'trigger']
 }
