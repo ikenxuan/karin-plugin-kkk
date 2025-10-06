@@ -278,6 +278,12 @@ export const webConfig = defineConfig({
                 defaultSelected: all.douyin.autoResolution,
                 isDisabled: !all.douyin.switch
               }),
+              components.switch.create('textMode', {
+                label: '文本模式',
+                description: '开启后直接输出标题、简介等文本信息，关闭后渲染为图片',
+                defaultSelected: all.douyin.textMode ?? false,
+                isDisabled: !all.douyin.sendContent.includes('info') || !all.douyin.switch
+              }),
               components.radio.group('loginPerm', {
                 label: '谁可以触发扫码登录',
                 description: '修改后需重启',
@@ -543,6 +549,12 @@ export const webConfig = defineConfig({
                     value: 'group.admin'
                   })
                 ]
+              }),
+              components.switch.create('textMode', {
+                label: '文本模式',
+                description: '开启后直接输出标题、简介等文本信息，关闭后渲染为图片',
+                defaultSelected: all.bilibili.textMode ?? false,
+                isDisabled: !all.bilibili.sendContent.some(content => content === 'info') || !all.bilibili.switch
               }),
               components.radio.group('imageLayout', {
                 label: '解析图文动态时，遇到多张图片时的页面布局方式（动态推送图片也生效）',

@@ -268,20 +268,43 @@ export class DouYin extends Base {
         }
 
         if (Config.douyin.sendContent.includes('info')) {
-          const videoInfoImg = await Render('douyin/videoInfo',
-            {
-              desc: VideoData.data.aweme_detail.desc,
-              statistics: VideoData.data.aweme_detail.statistics,
-              aweme_id: VideoData.data.aweme_detail.aweme_id,
-              author: {
-                name: VideoData.data.aweme_detail.author.nickname,
-                avatar: VideoData.data.aweme_detail.author.avatar_thumb.url_list[0]
-              },
-              image_url: this.is_mp4 ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] : VideoData.data.aweme_detail.images![0].url_list[0],
-              create_time: VideoData.data.aweme_detail.create_time
+          if (Config.douyin.textMode ?? false) {
+            // 文本模式：直接输出标题、简介等信息
+            const infoTexts = []
+            infoTexts.push(segment.text(`标题：\n${VideoData.data.aweme_detail.desc}`))
+            infoTexts.push(segment.text(`作者：${VideoData.data.aweme_detail.author.nickname}`))
+            infoTexts.push(segment.text(`❤️ ${Count(VideoData.data.aweme_detail.statistics.digg_count)} | 💬 ${Count(VideoData.data.aweme_detail.statistics.comment_count)} | ⭐ ${Count(VideoData.data.aweme_detail.statistics.collect_count)} | 🔗 ${Count(VideoData.data.aweme_detail.statistics.share_count)}`))
+            infoTexts.push(segment.text(`作品ID：${VideoData.data.aweme_detail.aweme_id}`))
+            infoTexts.push(segment.text(`发布时间：${new Date(VideoData.data.aweme_detail.create_time * 1000).toLocaleString('zh-CN')}`))
+            if (this.is_mp4) {
+              infoTexts.push(segment.image(VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0]))
+            } else {
+              infoTexts.push(segment.image(VideoData.data.aweme_detail.images![0].url_list[0]))
             }
-          )
-          this.e.reply(videoInfoImg)
+            const Element = common.makeForward(infoTexts, this.e.sender.userId, this.e.sender.nick)
+            await this.e.bot.sendForwardMsg(this.e.contact, Element, {
+              source: '作品信息',
+              summary: '查看作品详细信息',
+              prompt: '抖音作品解析结果',
+              news: [{ text: '点击查看解析结果' }]
+            })
+          } else {
+            // 渲染为图片
+            const videoInfoImg = await Render('douyin/videoInfo',
+              {
+                desc: VideoData.data.aweme_detail.desc,
+                statistics: VideoData.data.aweme_detail.statistics,
+                aweme_id: VideoData.data.aweme_detail.aweme_id,
+                author: {
+                  name: VideoData.data.aweme_detail.author.nickname,
+                  avatar: VideoData.data.aweme_detail.author.avatar_thumb.url_list[0]
+                },
+                image_url: this.is_mp4 ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] : VideoData.data.aweme_detail.images![0].url_list[0],
+                create_time: VideoData.data.aweme_detail.create_time
+              }
+            )
+            this.e.reply(videoInfoImg)
+          }
         }
 
         if (Config.douyin.sendContent.includes('comment')) {
