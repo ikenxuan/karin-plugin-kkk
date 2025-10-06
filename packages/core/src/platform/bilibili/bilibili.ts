@@ -93,7 +93,7 @@ export class Bilibili extends Base {
 
         // 如果配置项不存在或长度为0，则不显示任何内容
         if (Config.bilibili.sendContent.some(content => content === 'info')) {
-          if (Config.bilibili.textMode) {
+          if (Config.bilibili.textMode ?? false) {
             // 文本模式：直接输出标题、简介等信息
             const infoTexts = []
             infoTexts.push(segment.text(`标题：\n${infoData.data.data.title}`))

@@ -268,7 +268,7 @@ export class DouYin extends Base {
         }
 
         if (Config.douyin.sendContent.includes('info')) {
-          if (Config.douyin.textMode) {
+          if (Config.douyin.textMode ?? false) {
             // 文本模式：直接输出标题、简介等信息
             const infoTexts = []
             infoTexts.push(segment.text(`标题：\n${VideoData.data.aweme_detail.desc}`))

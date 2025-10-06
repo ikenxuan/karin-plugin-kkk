@@ -281,7 +281,7 @@ export const webConfig = defineConfig({
               components.switch.create('textMode', {
                 label: '文本模式',
                 description: '开启后直接输出标题、简介等文本信息，关闭后渲染为图片',
-                defaultSelected: all.douyin.textMode,
+                defaultSelected: all.douyin.textMode ?? false,
                 isDisabled: !all.douyin.sendContent.includes('info') || !all.douyin.switch
               }),
               components.radio.group('loginPerm', {
@@ -553,7 +553,7 @@ export const webConfig = defineConfig({
               components.switch.create('textMode', {
                 label: '文本模式',
                 description: '开启后直接输出标题、简介等文本信息，关闭后渲染为图片',
-                defaultSelected: all.bilibili.textMode,
+                defaultSelected: all.bilibili.textMode ?? false,
                 isDisabled: !all.bilibili.sendContent.some(content => content === 'info') || !all.bilibili.switch
               }),
               components.radio.group('imageLayout', {
