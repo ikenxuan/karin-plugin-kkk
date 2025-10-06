@@ -93,17 +93,37 @@ export class Bilibili extends Base {
 
         // 如果配置项不存在或长度为0，则不显示任何内容
         if (Config.bilibili.sendContent.some(content => content === 'info')) {
-          const img = await Render('bilibili/videoInfo', {
-            share_url: 'https://b23.tv/' + infoData.data.data.bvid,
-            title: infoData.data.data.title,
-            desc: infoData.data.data.desc,
-            stat: infoData.data.data.stat,
-            bvid: infoData.data.data.bvid,
-            ctime: infoData.data.data.ctime,
-            pic: infoData.data.data.pic,
-            owner: infoData.data.data.owner
-          })
-          this.e.reply(img)
+          if (Config.bilibili.textMode ?? false) {
+            // 文本模式：直接输出标题、简介等信息
+            const infoTexts = []
+            infoTexts.push(segment.text(`标题：\n${infoData.data.data.title}`))
+            infoTexts.push(segment.text(`简介：\n${infoData.data.data.desc || '暂无简介'}`))
+            infoTexts.push(segment.text(`UP主：${infoData.data.data.owner.name}`))
+            infoTexts.push(segment.text(`▶️ ${Count(infoData.data.data.stat.view)} | 👍 ${Count(infoData.data.data.stat.like)} | 💰 ${Count(infoData.data.data.stat.coin)} | ⭐ ${Count(infoData.data.data.stat.favorite)} | 🔗 ${Count(infoData.data.data.stat.share)}`))
+            infoTexts.push(segment.text(`BV号：${infoData.data.data.bvid}`))
+            infoTexts.push(segment.text(`发布时间：${new Date(infoData.data.data.ctime * 1000).toLocaleString('zh-CN')}`))
+            infoTexts.push(segment.image(infoData.data.data.pic))
+            const Element = common.makeForward(infoTexts, this.e.sender.userId, this.e.sender.nick)
+            await this.e.bot.sendForwardMsg(this.e.contact, Element, {
+              source: '视频信息',
+              summary: '查看视频详细信息',
+              prompt: 'B站视频解析结果',
+              news: [{ text: '点击查看解析结果' }]
+            })
+          } else {
+            // 渲染为图片
+            const img = await Render('bilibili/videoInfo', {
+              share_url: 'https://b23.tv/' + infoData.data.data.bvid,
+              title: infoData.data.data.title,
+              desc: infoData.data.data.desc,
+              stat: infoData.data.data.stat,
+              bvid: infoData.data.data.bvid,
+              ctime: infoData.data.data.ctime,
+              pic: infoData.data.data.pic,
+              owner: infoData.data.data.owner
+            })
+            this.e.reply(img)
+          }
         }
 
         let videoSize = ''

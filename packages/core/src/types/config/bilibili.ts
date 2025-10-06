@@ -39,6 +39,9 @@ export interface bilibiliConfig {
   /** 谁可以触发扫码登录，all为所有人，admin为管理员，master为主人，group.owner为群主，group.admin为群管理员。修改后需重启 */
   loginPerm: 'all' | 'admin' | 'master' | 'group.owner' | 'group.admin'
 
+  /** 解析时是否直接输出文本，关闭后渲染为图片 */
+  textMode: boolean
+
   /** 解析图文动态时，遇到多张图片时的页面布局方式（动态推送图片也生效）：
    * - 'vertical'(逐张上下排列)
    * - 'waterfall'(瀑布流排列)
