@@ -1,5 +1,25 @@
 # 变更日志
 
+## [2.1.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.0.3...v2.1.0) (2025-10-07)
+
+
+### ✨ 新功能
+
+* add textMode option for direct text output instead of rendering images ([#151](https://github.com/ikenxuan/karin-plugin-kkk/issues/151)) ([bb6582b](https://github.com/ikenxuan/karin-plugin-kkk/commit/bb6582bf4cf58178cbcf4a2b6025c63562f8ca12))
+* **bilibili/douyin:** 新增视频信息展示模式配置选项，支持文本和图片两种模式 ([0f7c055](https://github.com/ikenxuan/karin-plugin-kkk/commit/0f7c0553cd21a0e49e740e991462bce768130d52))
+* **bilibili/douyin:** 添加视频信息内容自定义选项，可选择显示封面、标题、作者和统计数据 ([0f7c055](https://github.com/ikenxuan/karin-plugin-kkk/commit/0f7c0553cd21a0e49e740e991462bce768130d52))
+* **bilibili:** B站评论组件支持显示置顶和UP主标识 ([0f7c055](https://github.com/ikenxuan/karin-plugin-kkk/commit/0f7c0553cd21a0e49e740e991462bce768130d52))
+
+
+### 🐛 错误修复
+
+* 优化配置说明 close [#153](https://github.com/ikenxuan/karin-plugin-kkk/issues/153) ([c946824](https://github.com/ikenxuan/karin-plugin-kkk/commit/c94682434a57d9444ef41da68d63a610a6b1f82c))
+
+
+### 🎨 代码样式
+
+* **bilibili/douyin:** 优化视频信息展示和评论组件 ([0f7c055](https://github.com/ikenxuan/karin-plugin-kkk/commit/0f7c0553cd21a0e49e740e991462bce768130d52))
+
 ## [2.0.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.0.2...v2.0.3) (2025-10-04)
 
 
