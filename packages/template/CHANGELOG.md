@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.0 (2025-10-07)
+
+## What's Changed
+* feat: add textMode option for direct text output instead of rendering images by @Copilot in https://github.com/ikenxuan/karin-plugin-kkk/pull/151
+
+
+**Full Changelog**: https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.0.3...v0.0.0
+
 ## 0.0.0 (2025-10-04)
 
 **Full Changelog**: https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.0.2...v0.0.0
