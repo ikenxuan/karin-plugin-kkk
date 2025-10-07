@@ -1009,6 +1009,35 @@ jobs:
           mode: upsert
           reactions: rocket, hooray
 
+  # 预览包发布后的即时构建摘要（仅针对main分支推送）
+  main-push-summary:
+    runs-on: ubuntu-latest
+    needs: [unified-build, preview-package-publish]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.unified-build.outputs.build_success == 'true' && needs.preview-package-publish.result == 'success'
+    steps:
+      - name: 📊 生成main分支推送构建摘要
+        run: |
+          echo "# 🚀 Main分支构建完成摘要" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # NPM 预览包信息
+          echo "## 📦 NPM 预览包" >> $GITHUB_STEP_SUMMARY
+          echo "- **版本:** \`${{ needs.preview-package-publish.outputs.pkg_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **安装命令:** \`${{ needs.preview-package-publish.outputs.pnpm_install_cmd }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # 桌面和移动应用构建状态
+          echo "## 🖥️ 桌面和移动应用" >> $GITHUB_STEP_SUMMARY
+          echo "- **状态:** 🔄 后台构建中..." >> $GITHUB_STEP_SUMMARY
+          echo "- **说明:** 桌面应用和Android应用正在后台构建，完成后将在完整构建摘要中显示下载链接" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # 构建信息
+          echo "## ℹ️ 构建信息" >> $GITHUB_STEP_SUMMARY
+          echo "- **提交:** [\`${{ needs.unified-build.outputs.short_commit_hash }}\`](https://github.com/${{ github.repository }}/commit/${{ needs.unified-build.outputs.commit_hash }})" >> $GITHUB_STEP_SUMMARY
+          echo "- **分支:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **触发:** 推送到main分支" >> $GITHUB_STEP_SUMMARY
+
   build-summary:
     runs-on: ubuntu-latest
     needs: [unified-build, preview-package-publish, desktop-build, android-build]
@@ -1016,7 +1045,7 @@ jobs:
     steps:
       - name: 📊 生成完整构建摘要
         run: |
-          echo "# 🚀 构建完成摘要" >> $GITHUB_STEP_SUMMARY
+          echo "# 🚀 完整构建摘要" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           # NPM 包信息
