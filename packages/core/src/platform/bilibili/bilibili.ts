@@ -16,7 +16,8 @@ import karin, {
   ElementTypes,
   logger,
   Message,
-  segment
+  segment,
+  SendMessage
 } from 'node-karin'
 
 import {
@@ -93,23 +94,27 @@ export class Bilibili extends Base {
 
         // 如果配置项不存在或长度为0，则不显示任何内容
         if (Config.bilibili.sendContent.some(content => content === 'info')) {
-          if (Config.bilibili.textMode ?? false) {
-            // 文本模式：直接输出标题、简介等信息
-            const infoTexts = []
-            infoTexts.push(segment.text(`标题：\n${infoData.data.data.title}`))
-            infoTexts.push(segment.text(`简介：\n${infoData.data.data.desc || '暂无简介'}`))
-            infoTexts.push(segment.text(`UP主：${infoData.data.data.owner.name}`))
-            infoTexts.push(segment.text(`▶️ ${Count(infoData.data.data.stat.view)} | 👍 ${Count(infoData.data.data.stat.like)} | 💰 ${Count(infoData.data.data.stat.coin)} | ⭐ ${Count(infoData.data.data.stat.favorite)} | 🔗 ${Count(infoData.data.data.stat.share)}`))
-            infoTexts.push(segment.text(`BV号：${infoData.data.data.bvid}`))
-            infoTexts.push(segment.text(`发布时间：${new Date(infoData.data.data.ctime * 1000).toLocaleString('zh-CN')}`))
-            infoTexts.push(segment.image(infoData.data.data.pic))
-            const Element = common.makeForward(infoTexts, this.e.sender.userId, this.e.sender.nick)
-            await this.e.bot.sendForwardMsg(this.e.contact, Element, {
-              source: '视频信息',
-              summary: '查看视频详细信息',
-              prompt: 'B站视频解析结果',
-              news: [{ text: '点击查看解析结果' }]
+          if (Config.bilibili.videoInfoMode === 'text') {
+            // 构建回复内容数组
+            const replyContent: SendMessage = []
+            const { coin, like, share, view, favorite, danmaku } = infoData.data.data.stat
+            const contentMap = {
+              cover: segment.image(infoData.data.data.pic),
+              title: segment.text(`\n📺 标题: ${infoData.data.data.title}\n`),
+              author: segment.text(`\n👤 作者: ${infoData.data.data.owner.name}\n`),
+              stats: segment.text(formatVideoStats(view, danmaku, like, coin, share, favorite)),
+              desc: segment.text(`\n\n📝 简介: ${infoData.data.data.desc}`)
+            }
+            // 重新排序
+            const fixedOrder: (keyof typeof contentMap)[] = ['cover', 'title', 'author', 'stats', 'desc']
+            fixedOrder.forEach(item => {
+              if (Config.bilibili.displayContent.includes(item) && contentMap[item]) {
+                replyContent.push(contentMap[item])
+              }
             })
+            if (replyContent.length > 0) {
+              this.e.reply(replyContent)
+            }
           } else {
             // 渲染为图片
             const img = await Render('bilibili/videoInfo', {
@@ -161,7 +166,7 @@ export class Bilibili extends Base {
             oid: infoData.data.data.aid.toString(),
             typeMode: 'strict'
           })
-          const commentsdata = bilibiliComments(commentsData.data)
+          const commentsdata = bilibiliComments(commentsData.data, infoData.data.data.owner.mid.toString())
           if (!commentsdata?.length) {
             this.e.reply('这个视频没有评论 ~')
           } else {
@@ -302,14 +307,13 @@ export class Bilibili extends Base {
             }
 
             if (Config.bilibili.sendContent.some(content => content === 'comment') && commentsData) {
-              const commentsdata = bilibiliComments(commentsData.data)
+              const commentsdata = bilibiliComments(commentsData.data, dynamicInfo.data.data.item.modules.module_author.mid.toString())
               img = await Render('bilibili/comment', {
                 Type: '动态',
                 CommentsData: commentsdata,
                 CommentLength: String(commentsdata?.length ?? 0),
                 share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
                 ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? '动态中没有附带图片',
-
                 shareurl: '动态分享链接'
               })
               if (imgArray.length === 1) this.e.reply(imgArray[0])
@@ -518,8 +522,12 @@ export class Bilibili extends Base {
               commentsData && this.e.reply(
                 await Render('bilibili/comment', {
                   Type: '动态',
-                  CommentsData: bilibiliComments(commentsData.data),
-                  CommentLength: String((bilibiliComments(commentsData.data)?.length) ? bilibiliComments(commentsData.data).length : 0),
+                  CommentsData: bilibiliComments(commentsData.data, dynamicInfo.data.data.item.modules.module_author.mid.toString()),
+                  CommentLength: String((
+                    bilibiliComments(commentsData.data, dynamicInfo.data.data.item.modules.module_author.mid.toString())?.length) ?
+                    bilibiliComments(commentsData.data, dynamicInfo.data.data.item.modules.module_author.mid.toString()).length : 
+                    0
+                  ),
                   share_url: 'https://www.bilibili.com/video/' + bvid,
                   ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? '动态中没有附带图片',
                   shareurl: '动态分享链接'
@@ -677,80 +685,6 @@ export class Bilibili extends Base {
       default:
         break
     }
-  }
-
-  /**
-   * 格式化视频统计信息为三行，每行两个数据项，并保持对齐
-   */
-  formatVideoStats (view: number, danmaku: number, like: number, coin: number, share: number, favorite: number): string {
-    // 计算每个数据项的文本
-    const viewText = `📊 播放量: ${Count(view)}`
-    const danmakuText = `💬 弹幕: ${Count(danmaku)}`
-    const likeText = `👍 点赞: ${Count(like)}`
-    const coinText = `🪙 投币: ${Count(coin)}`
-    const shareText = `🔄 转发: ${Count(share)}`
-    const favoriteText = `⭐ 收藏: ${Count(favorite)}`
-
-    // 找出第一列中最长的项的长度
-    const firstColItems = [viewText, likeText, shareText]
-    const maxFirstColLength = Math.max(...firstColItems.map(item => this.getStringDisplayWidth(item)))
-
-    // 构建三行文本，确保第二列对齐
-    const line1 = this.alignTwoColumns(viewText, danmakuText, maxFirstColLength)
-    const line2 = this.alignTwoColumns(likeText, coinText, maxFirstColLength)
-    const line3 = this.alignTwoColumns(shareText, favoriteText, maxFirstColLength)
-
-    return `${line1}\n${line2}\n${line3}`
-  }
-
-  /**
-   * 对齐两列文本
-   */
-  alignTwoColumns (col1: string, col2: string, targetLength: number): string {
-    // 计算需要添加的空格数量
-    const col1Width = this.getStringDisplayWidth(col1)
-    const spacesNeeded = targetLength - col1Width + 5 // 5是两列之间的固定间距
-
-    // 添加空格使两列对齐
-    return col1 + ' '.repeat(spacesNeeded) + col2
-  }
-
-  /**
-   * 获取字符串在显示时的实际宽度
-   * 考虑到不同字符的显示宽度不同（如中文、emoji等）
-   */
-  getStringDisplayWidth (str: string): number {
-    let width = 0
-    for (let i = 0; i < str.length; i++) {
-      const code = str.codePointAt(i)
-      if (!code) continue
-
-      // 处理emoji和特殊Unicode字符
-      if (code > 0xFFFF) {
-        width += 2 // emoji通常占用2个字符宽度
-        i++ // 跳过代理对的后半部分
-      } else if ( // 处理中文字符和其他全角字符
-        (code >= 0x3000 && code <= 0x9FFF) || // 中文字符范围
-        (code >= 0xFF00 && code <= 0xFFEF) || // 全角ASCII、全角标点
-        code === 0x2026 || // 省略号
-        code === 0x2014 || // 破折号
-        (code >= 0x2E80 && code <= 0x2EFF) || // CJK部首补充
-        (code >= 0x3000 && code <= 0x303F) || // CJK符号和标点
-        (code >= 0x31C0 && code <= 0x31EF) || // CJK笔画
-        (code >= 0x3200 && code <= 0x32FF) || // 封闭式CJK字母和月份
-        (code >= 0x3300 && code <= 0x33FF) || // CJK兼容
-        (code >= 0xAC00 && code <= 0xD7AF) || // 朝鲜文音节
-        (code >= 0xF900 && code <= 0xFAFF) || // CJK兼容表意文字
-        (code >= 0xFE30 && code <= 0xFE4F) // CJK兼容形式
-      ) {
-        width += 2
-      } else if (code === 0x200D || (code >= 0xFE00 && code <= 0xFE0F) || (code >= 0x1F3FB && code <= 0x1F3FF)) { // emoji修饰符和连接符
-        width += 0 // 这些字符不增加宽度，它们是修饰符
-      } else { // 普通ASCII字符
-        width += 1
-      }
-    }
-    return width
   }
 }
 
@@ -1028,4 +962,78 @@ export const getvideosize = async (videourl: string, audiourl: string, bvid: str
 
   const totalSizeInMB = parseFloat(videoSizeInMB) + parseFloat(audioSizeInMB)
   return totalSizeInMB.toFixed(2)
+}
+
+/**
+ * 格式化视频统计信息为三行，每行两个数据项，并保持对齐
+ */
+const formatVideoStats = (view: number, danmaku: number, like: number, coin: number, share: number, favorite: number): string => {
+  // 计算每个数据项的文本
+  const viewText = `📊 播放量: ${Count(view)}`
+  const danmakuText = `💬 弹幕: ${Count(danmaku)}`
+  const likeText = `👍 点赞: ${Count(like)}`
+  const coinText = `🪙 投币: ${Count(coin)}`
+  const shareText = `🔄 转发: ${Count(share)}`
+  const favoriteText = `⭐ 收藏: ${Count(favorite)}`
+
+  // 找出第一列中最长的项的长度
+  const firstColItems = [viewText, likeText, shareText]
+  const maxFirstColLength = Math.max(...firstColItems.map(item => getStringDisplayWidth(item)))
+
+  // 构建三行文本，确保第二列对齐
+  const line1 = alignTwoColumns(viewText, danmakuText, maxFirstColLength)
+  const line2 = alignTwoColumns(likeText, coinText, maxFirstColLength)
+  const line3 = alignTwoColumns(shareText, favoriteText, maxFirstColLength)
+
+  return `${line1}\n${line2}\n${line3}`
+}
+
+/**
+ * 对齐两列文本
+ */
+const alignTwoColumns = (col1: string, col2: string, targetLength: number): string => {
+  // 计算需要添加的空格数量
+  const col1Width = getStringDisplayWidth(col1)
+  const spacesNeeded = targetLength - col1Width + 5 // 5是两列之间的固定间距
+
+  // 添加空格使两列对齐
+  return col1 + ' '.repeat(spacesNeeded) + col2
+}
+
+/**
+ * 获取字符串在显示时的实际宽度
+ * 考虑到不同字符的显示宽度不同（如中文、emoji等）
+ */
+const getStringDisplayWidth = (str: string): number => {
+  let width = 0
+  for (let i = 0; i < str.length; i++) {
+    const code = str.codePointAt(i)
+    if (!code) continue
+
+    // 处理emoji和特殊Unicode字符
+    if (code > 0xFFFF) {
+      width += 2 // emoji通常占用2个字符宽度
+      i++ // 跳过代理对的后半部分
+    } else if ( // 处理中文字符和其他全角字符
+      (code >= 0x3000 && code <= 0x9FFF) || // 中文字符范围
+      (code >= 0xFF00 && code <= 0xFFEF) || // 全角ASCII、全角标点
+      code === 0x2026 || // 省略号
+      code === 0x2014 || // 破折号
+      (code >= 0x2E80 && code <= 0x2EFF) || // CJK部首补充
+      (code >= 0x3000 && code <= 0x303F) || // CJK符号和标点
+      (code >= 0x31C0 && code <= 0x31EF) || // CJK笔画
+      (code >= 0x3200 && code <= 0x32FF) || // 封闭式CJK字母和月份
+      (code >= 0x3300 && code <= 0x33FF) || // CJK兼容
+      (code >= 0xAC00 && code <= 0xD7AF) || // 朝鲜文音节
+      (code >= 0xF900 && code <= 0xFAFF) || // CJK兼容表意文字
+      (code >= 0xFE30 && code <= 0xFE4F) // CJK兼容形式
+    ) {
+      width += 2
+    } else if (code === 0x200D || (code >= 0xFE00 && code <= 0xFE0F) || (code >= 0x1F3FB && code <= 0x1F3FF)) { // emoji修饰符和连接符
+      width += 0 // 这些字符不增加宽度，它们是修饰符
+    } else { // 普通ASCII字符
+      width += 1
+    }
+  }
+  return width
 }

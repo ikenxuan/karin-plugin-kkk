@@ -21,8 +21,13 @@ export interface douyinConfig {
   /** 谁可以触发扫码登录，all为所有人，admin为管理员，master为主人，group.owner为群主，group.admin为群管理员。修改后需重启 */
   loginPerm: 'all' | 'admin' | 'master' | 'group.owner' | 'group.admin'
 
-  /** 解析时是否直接输出文本，关闭后渲染为图片 */
-  textMode: boolean
+  /** 视频信息返回形式：
+   * - 'text'(文本模式)
+   * - 'image'(图片模式) */
+  videoInfoMode: 'text' | 'image'
+
+  /** 视频信息的内容，可选值：'cover'(封面)、'title'(标题)、'author'(作者)、'stats'(视频统计信息)，数组为空则不显示任何内容 */
+  displayContent: ('cover' | 'title' | 'author' | 'stats')[]
 
   /** 抖音推送相关配置 */
   push: {

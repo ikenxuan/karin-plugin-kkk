@@ -28,6 +28,8 @@ export interface DouyinAuthor {
   name: string
   /** 作者头像URL */
   avatar: string
+  /** 抖音号 */
+  short_id: string
 }
 
 /**

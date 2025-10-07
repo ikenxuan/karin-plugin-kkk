@@ -86,7 +86,7 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
               {/* 视频标题 */}
               <h1 className="mb-8 text-7xl font-bold leading-tight text-foreground-900">{props.data.title}</h1>
               {/* 视频简介 */}
-              <p className="mb-8 text-6xl text-foreground-700">{props.data.desc}</p>
+              <p className="mb-8 text-5xl leading-normal whitespace-pre-wrap text-foreground-700">{props.data.desc}</p>
               {/* 发布日期 */}
               <p className="mb-6 text-4xl text-foreground-500">{formattedDate}</p>
             </div>
@@ -121,7 +121,7 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
                 </div>
                 <div className="transform-gpu scale-[2.5] origin-right mb-8">
                   <Chip color="warning" variant="flat" size="lg" radius="sm">
-                    {props.data.bvid}
+                    稿件BV号：{props.data.bvid}
                   </Chip>
                 </div>
               </div>
@@ -143,7 +143,7 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
                 />
                 <div className="flex flex-col gap-6">
                   <p className="text-6xl font-semibold text-foreground-900">{props.data.owner.name}</p>
-                  <p className="text-5xl text-foreground-500">UP主</p>
+                  <p className="text-5xl text-foreground-500">ID: {props.data.owner.mid}</p>
                 </div>
               </div>
               <div className="transform-gpu scale-[3.5] origin-right">

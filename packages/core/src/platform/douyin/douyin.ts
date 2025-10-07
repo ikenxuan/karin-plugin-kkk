@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 
 import { type DyEmojiList } from '@ikenxuan/amagi'
-import type { Elements, Message } from 'node-karin'
+import type { Elements, Message, SendMessage } from 'node-karin'
 import { common, logger, mkdirSync, segment } from 'node-karin'
 
 import {
@@ -268,26 +268,26 @@ export class DouYin extends Base {
         }
 
         if (Config.douyin.sendContent.includes('info')) {
-          if (Config.douyin.textMode ?? false) {
-            // 文本模式：直接输出标题、简介等信息
-            const infoTexts = []
-            infoTexts.push(segment.text(`标题：\n${VideoData.data.aweme_detail.desc}`))
-            infoTexts.push(segment.text(`作者：${VideoData.data.aweme_detail.author.nickname}`))
-            infoTexts.push(segment.text(`❤️ ${Count(VideoData.data.aweme_detail.statistics.digg_count)} | 💬 ${Count(VideoData.data.aweme_detail.statistics.comment_count)} | ⭐ ${Count(VideoData.data.aweme_detail.statistics.collect_count)} | 🔗 ${Count(VideoData.data.aweme_detail.statistics.share_count)}`))
-            infoTexts.push(segment.text(`作品ID：${VideoData.data.aweme_detail.aweme_id}`))
-            infoTexts.push(segment.text(`发布时间：${new Date(VideoData.data.aweme_detail.create_time * 1000).toLocaleString('zh-CN')}`))
-            if (this.is_mp4) {
-              infoTexts.push(segment.image(VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0]))
-            } else {
-              infoTexts.push(segment.image(VideoData.data.aweme_detail.images![0].url_list[0]))
+          if (Config.douyin.videoInfoMode === 'text') {
+            // 构建回复内容数组
+            const replyContent: SendMessage = []
+            const { digg_count, share_count, collect_count, comment_count, recommend_count } = VideoData.data.aweme_detail.statistics
+            const contentMap = {
+              cover: segment.image(this.is_mp4 ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] : VideoData.data.aweme_detail.images![0].url_list[0]),
+              title: segment.text(`\n📺 标题: ${VideoData.data.aweme_detail.desc}\n`),
+              author: segment.text(`\n👤 作者: ${VideoData.data.aweme_detail.author.nickname}\n`),
+              stats: segment.text(formatVideoStats(digg_count, share_count, collect_count, comment_count, recommend_count))
             }
-            const Element = common.makeForward(infoTexts, this.e.sender.userId, this.e.sender.nick)
-            await this.e.bot.sendForwardMsg(this.e.contact, Element, {
-              source: '作品信息',
-              summary: '查看作品详细信息',
-              prompt: '抖音作品解析结果',
-              news: [{ text: '点击查看解析结果' }]
+            // 重新排序
+            const fixedOrder: (keyof typeof contentMap)[] = ['cover', 'title', 'author', 'stats']
+            fixedOrder.forEach(item => {
+              if (Config.douyin.displayContent.includes(item) && contentMap[item]) {
+                replyContent.push(contentMap[item])
+              }
             })
+            if (replyContent.length > 0) {
+              this.e.reply(replyContent)
+            }
           } else {
             // 渲染为图片
             const videoInfoImg = await Render('douyin/videoInfo',
@@ -297,7 +297,8 @@ export class DouYin extends Base {
                 aweme_id: VideoData.data.aweme_detail.aweme_id,
                 author: {
                   name: VideoData.data.aweme_detail.author.nickname,
-                  avatar: VideoData.data.aweme_detail.author.avatar_thumb.url_list[0]
+                  avatar: VideoData.data.aweme_detail.author.avatar_thumb.url_list[0],
+                  short_id: VideoData.data.aweme_detail.author.unique_id === '' ? VideoData.data.aweme_detail.author.short_id : VideoData.data.aweme_detail.author.unique_id
                 },
                 image_url: this.is_mp4 ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] : VideoData.data.aweme_detail.images![0].url_list[0],
                 create_time: VideoData.data.aweme_detail.create_time
@@ -516,4 +517,77 @@ export const Emoji = (data: DyEmojiList) => {
     ListArray.push(Objject)
   }
   return ListArray
+}
+
+/**
+ * 格式化视频统计信息为三行，每行两个数据项，并保持对齐
+ */
+const formatVideoStats = (digg_count: number, share_count: number, collect_count: number, comment_count: number, recommend_count: number ): string => {
+  // 计算每个数据项的文本
+  const diggText = `❤ 点赞: ${Count(digg_count)}`
+  const shareText = `🔄 转发: ${Count(share_count)}`
+  const collectText = `⭐ 收藏: ${Count(collect_count)}`
+  const commentText = `💬 评论: ${Count(comment_count)}`
+  const recommendText = `👍 推荐: ${Count(recommend_count)}`
+
+  // 找出第一列中最长的项的长度
+  const firstColItems = [diggText, shareText]
+  const maxFirstColLength = Math.max(...firstColItems.map(item => getStringDisplayWidth(item)))
+
+  // 构建三行文本，确保第二列对齐
+  const line1 = alignTwoColumns(diggText, shareText, maxFirstColLength)
+  const line2 = alignTwoColumns(collectText, commentText, maxFirstColLength)
+  const line3 = alignTwoColumns(recommendText, '', maxFirstColLength)
+
+  return `${line1}\n${line2}\n${line3}`
+}
+
+/**
+ * 对齐两列文本
+ */
+const alignTwoColumns = (col1: string, col2: string, targetLength: number): string => {
+  // 计算需要添加的空格数量
+  const col1Width = getStringDisplayWidth(col1)
+  const spacesNeeded = targetLength - col1Width + 5 // 5是两列之间的固定间距
+
+  // 添加空格使两列对齐
+  return col1 + ' '.repeat(spacesNeeded) + col2
+}
+
+/**
+ * 获取字符串在显示时的实际宽度
+ * 考虑到不同字符的显示宽度不同（如中文、emoji等）
+ */
+const getStringDisplayWidth = (str: string): number => {
+  let width = 0
+  for (let i = 0; i < str.length; i++) {
+    const code = str.codePointAt(i)
+    if (!code) continue
+
+    // 处理emoji和特殊Unicode字符
+    if (code > 0xFFFF) {
+      width += 2 // emoji通常占用2个字符宽度
+      i++ // 跳过代理对的后半部分
+    } else if ( // 处理中文字符和其他全角字符
+      (code >= 0x3000 && code <= 0x9FFF) || // 中文字符范围
+      (code >= 0xFF00 && code <= 0xFFEF) || // 全角ASCII、全角标点
+      code === 0x2026 || // 省略号
+      code === 0x2014 || // 破折号
+      (code >= 0x2E80 && code <= 0x2EFF) || // CJK部首补充
+      (code >= 0x3000 && code <= 0x303F) || // CJK符号和标点
+      (code >= 0x31C0 && code <= 0x31EF) || // CJK笔画
+      (code >= 0x3200 && code <= 0x32FF) || // 封闭式CJK字母和月份
+      (code >= 0x3300 && code <= 0x33FF) || // CJK兼容
+      (code >= 0xAC00 && code <= 0xD7AF) || // 朝鲜文音节
+      (code >= 0xF900 && code <= 0xFAFF) || // CJK兼容表意文字
+      (code >= 0xFE30 && code <= 0xFE4F) // CJK兼容形式
+    ) {
+      width += 2
+    } else if (code === 0x200D || (code >= 0xFE00 && code <= 0xFE0F) || (code >= 0x1F3FB && code <= 0x1F3FF)) { // emoji修饰符和连接符
+      width += 0 // 这些字符不增加宽度，它们是修饰符
+    } else { // 普通ASCII字符
+      width += 1
+    }
+  }
+  return width
 }

@@ -278,12 +278,6 @@ export const webConfig = defineConfig({
                 defaultSelected: all.douyin.autoResolution,
                 isDisabled: !all.douyin.switch
               }),
-              components.switch.create('textMode', {
-                label: '文本模式',
-                description: '开启后直接输出标题、简介等文本信息，关闭后渲染为图片',
-                defaultSelected: all.douyin.textMode ?? false,
-                isDisabled: !all.douyin.sendContent.includes('info') || !all.douyin.switch
-              }),
               components.radio.group('loginPerm', {
                 label: '谁可以触发扫码登录',
                 description: '修改后需重启',
@@ -309,6 +303,46 @@ export const webConfig = defineConfig({
                   components.radio.create('permission:radio-5', {
                     label: '群管理员',
                     value: 'group.admin'
+                  })
+                ]
+              }),
+              components.radio.group('videoInfoMode', {
+                label: '视频信息返回形式',
+                defaultValue: all.douyin.videoInfoMode,
+                isDisabled: !all.douyin.switch,
+                radio: [
+                  components.radio.create('videoInfoMode:radio-2', {
+                    label: '图片模式',
+                    value: 'image'
+                  }),
+                  components.radio.create('videoInfoMode:radio-1', {
+                    label: '文本模式',
+                    value: 'text'
+                  })
+                ]
+              }),
+              components.checkbox.group('displayContent', {
+                label: '视频信息的内容',
+                description: '若什么都不选，则不会返回任何视频相关信息',
+                orientation: 'horizontal',
+                defaultValue: all.douyin.displayContent,
+                isDisabled: !all.douyin.switch || (all.douyin.switch && all.douyin.videoInfoMode === 'image'),
+                checkbox: [
+                  components.checkbox.create('displayContent:checkbox:1', {
+                    label: '封面',
+                    value: 'cover'
+                  }),
+                  components.checkbox.create('displayContent:checkbox:2', {
+                    label: '标题',
+                    value: 'title'
+                  }),
+                  components.checkbox.create('displayContent:checkbox:3', {
+                    label: '作者',
+                    value: 'author'
+                  }),
+                  components.checkbox.create('displayContent:checkbox:4', {
+                    label: '视频统计信息',
+                    value: 'stats'
                   })
                 ]
               }),
@@ -550,18 +584,16 @@ export const webConfig = defineConfig({
                   })
                 ]
               }),
-              components.switch.create('textMode', {
-                label: '文本模式',
-                description: '开启后直接输出标题、简介等文本信息，关闭后渲染为图片',
-                defaultSelected: all.bilibili.textMode ?? false,
-                isDisabled: !all.bilibili.sendContent.some(content => content === 'info') || !all.bilibili.switch
-              }),
               components.radio.group('imageLayout', {
                 label: '解析图文动态时，遇到多张图片时的页面布局方式（动态推送图片也生效）',
                 description: '自动布局：少于4张时逐张上下排列；4~8张时瀑布流；9张及以上九宫格',
                 orientation: 'horizontal',
                 defaultValue: all.bilibili.imageLayout,
                 radio: [
+                  components.radio.create('imageLayout:radio-4', {
+                    label: '自动布局',
+                    value: 'auto'
+                  }),
                   components.radio.create('imageLayout:radio-1', {
                     label: '逐张上下排列',
                     value: 'vertical'
@@ -573,10 +605,50 @@ export const webConfig = defineConfig({
                   components.radio.create('imageLayout:radio-3', {
                     label: '九宫格排列',
                     value: 'grid'
+                  })
+                ]
+              }),
+              components.radio.group('videoInfoMode', {
+                label: '视频信息返回形式',
+                defaultValue: all.bilibili.videoInfoMode,
+                isDisabled: !all.bilibili.switch,
+                radio: [
+                  components.radio.create('videoInfoMode:radio-2', {
+                    label: '图片模式',
+                    value: 'image'
                   }),
-                  components.radio.create('imageLayout:radio-4', {
-                    label: '自动布局',
-                    value: 'auto'
+                  components.radio.create('videoInfoMode:radio-1', {
+                    label: '文本模式',
+                    value: 'text'
+                  })
+                ]
+              }),
+              components.checkbox.group('displayContent', {
+                label: '视频信息前返回的内容',
+                description: '若什么都不选，则不会返回任何视频相关信息',
+                orientation: 'horizontal',
+                defaultValue: all.bilibili.displayContent,
+                isDisabled: !all.bilibili.switch || (all.bilibili.switch && all.bilibili.videoInfoMode === 'image'),
+                checkbox: [
+                  components.checkbox.create('displayContent:checkbox:1', {
+                    label: '封面',
+                    value: 'cover'
+                  }),
+                  components.checkbox.create('displayContent:checkbox:2', {
+                    label: '标题',
+                    value: 'title'
+                  }),
+                  components.checkbox.create('displayContent:checkbox:3', {
+                    label: '作者',
+                    value: 'author'
+                  }),
+                  components.checkbox.create('displayContent:checkbox:4', {
+                    label: '视频统计信息',
+                    value: 'stats'
+                  }),
+                  components.checkbox.create('displayContent:checkbox:5', {
+                    label: '简介',
+                    value: 'desc'
                   })
                 ]
               }),

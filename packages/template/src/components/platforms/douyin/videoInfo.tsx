@@ -119,7 +119,7 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
                 <div className="flex gap-16 items-center">
                   <div className="flex gap-2 items-center">
                     <TrendingUp size={48} />
-                    <span className="font-medium">{formatNumber(props.data.statistics.recommend_count)}</span>
+                    <span className="font-medium">{formatNumber(props.data.statistics?.recommend_count ?? 0)}</span>
                     <span className="text-4xl">推荐</span>
                   </div>
                   {props.data.statistics.play_count > 0 && (
@@ -132,7 +132,7 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
                 </div>
                 <div className="transform-gpu scale-[2.5] origin-right mb-8">
                   <Chip color="primary" variant="flat" size="lg" radius="sm">
-                    {props.data.aweme_id}
+                    作品ID：{props.data.aweme_id}
                   </Chip>
                 </div>
               </div>
@@ -152,7 +152,7 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
                 />
                 <div className="flex flex-col gap-6">
                   <p className="text-6xl font-semibold text-foreground-900">{props.data.author.name}</p>
-                  <p className="text-5xl text-foreground-500">抖音创作者</p>
+                  <p className="text-5xl text-foreground-500">抖音号: {props.data.author.short_id}</p>
                 </div>
               </div>
               <div className="transform-gpu scale-[3.5] origin-right">

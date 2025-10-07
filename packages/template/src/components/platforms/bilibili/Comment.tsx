@@ -27,6 +27,36 @@ interface ImageWithSkeletonProps {
   isCircular?: boolean
 }
 
+
+const processCommentHTML = (htmlContent: string): string => {
+  // 使用正则表达式匹配所有img标签并添加防盗链属性
+  return htmlContent.replace(
+    /<img([^>]*?)>/gi,
+    '<img$1 referrerpolicy="no-referrer" crossorigin="anonymous">'
+  )
+}
+
+interface CommentTextProps {
+  /** HTML内容 */
+  content: string
+  /** CSS类名 */
+  className?: string
+  /** 内联样式 */
+  style?: React.CSSProperties
+}
+
+const CommentText: React.FC<CommentTextProps> = ({ content, className, style }) => {
+  const processedContent = processCommentHTML(content)
+
+  return (
+    <div
+      className={className}
+      style={style}
+      dangerouslySetInnerHTML={{ __html: processedContent }}
+    />
+  )
+}
+
 const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
   src,
   alt,
@@ -203,16 +233,6 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
             placeholder='头像框'
           />
         )}
-
-        {/* VIP图标 */}
-        {comment.icon_big_vip && (
-          <ImageWithSkeleton
-            src={comment.icon_big_vip}
-            alt='VIP图标'
-            className='w-[145px] h-[145px] absolute bottom-0 right-0 transform translate-x-[20%] translate-y-[20%] scale-50'
-            placeholder='VIP'
-          />
-        )}
       </div>
 
       {/* 评论内容区域 */}
@@ -220,10 +240,29 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
         {/* 用户信息 */}
         <div className='flex items-start gap-[10px] mb-[15px] text-[50px]'>
           {/* 用户名区域  */}
-          <div
-            className='flex-shrink-0 flex items-center gap-2 leading-[1.2] text-foreground-700 font-bold [&>span]:inline-block [&>span]:leading-[1.2] [&>svg]:inline-block [&>svg]:w-[100px] [&>svg]:h-[100px] [&>svg]:align-middle [&>svg]:flex-shrink-0 select-text'
-            dangerouslySetInnerHTML={{ __html: comment.uname }}
-          />
+          <div className='flex-shrink-0 flex items-center gap-2 leading-[1.2] text-foreground-700 font-bold select-text'>
+            <div
+              className='[&>span]:inline-block [&>span]:leading-[1.2] [&>svg]:inline-block [&>svg]:w-[100px] [&>svg]:h-[100px] [&>svg]:align-middle [&>svg]:flex-shrink-0'
+              dangerouslySetInnerHTML={{ __html: comment.uname }}
+            />
+            
+            {/* 等级图标 */}
+            {comment.level !== undefined && comment.level >= 0 && comment.level <= 7 && (
+              <img 
+                src={`/image/bilibili/level/lv${comment.level}.svg`}
+                alt={`等级${comment.level}`}
+                className='inline-block flex-shrink-0 w-24 h-24 align-middle'
+              />
+            )}
+            {/* UP主标签 */}
+            {comment.isUP && (
+              <img
+                src='/image/bilibili/up_pb.svg'
+                alt='UP主标签'
+                className='inline-block flex-shrink-0 align-middle w-23 h-23'
+              />
+            )}
+          </div>
 
           {/* 作者标签 */}
           {comment.label_type === 1 && (
@@ -241,14 +280,17 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
         </div>
 
         {/* 评论文本 */}
-        <CommentText
-          content={comment.message}
-          className='text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-foreground mb-[20px] [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em] select-text'
-          style={{
-            wordBreak: 'break-word',
-            overflowWrap: 'break-word'
-          }}
-        />
+        <div className='text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-foreground mb-[20px] select-text' style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+          {comment.isTop && (
+            <span className='inline-flex justify-center items-center relative border-4 border-[#006A9E] rounded-xl text-[#006A9E] text-5xl px-2 py-1 leading-none mr-2 align-baseline'>
+              置顶
+            </span>
+          )}
+          <CommentText
+            content={comment.message}
+            className='inline [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
+          />
+        </div>
 
         {/* 评论图片 */}
         {(comment.img_src || comment.sticker) && (
@@ -306,7 +348,8 @@ export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType'
         ImageLength: undefined,
         shareurl: '',
         share_url: '',
-        CommentsData: []
+        CommentsData: [],
+        host_mid: 0
       }
     }
 
@@ -366,32 +409,3 @@ export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType'
 })
 
 export default BilibiliComment
-
-const processCommentHTML = (htmlContent: string): string => {
-  // 使用正则表达式匹配所有img标签并添加防盗链属性
-  return htmlContent.replace(
-    /<img([^>]*?)>/gi,
-    '<img$1 referrerpolicy="no-referrer" crossorigin="anonymous">'
-  )
-}
-
-interface CommentTextProps {
-  /** HTML内容 */
-  content: string
-  /** CSS类名 */
-  className?: string
-  /** 内联样式 */
-  style?: React.CSSProperties
-}
-
-const CommentText: React.FC<CommentTextProps> = ({ content, className, style }) => {
-  const processedContent = processCommentHTML(content)
-
-  return (
-    <div
-      className={className}
-      style={style}
-      dangerouslySetInnerHTML={{ __html: processedContent }}
-    />
-  )
-}

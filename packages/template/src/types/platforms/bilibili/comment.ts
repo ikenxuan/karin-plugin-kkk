@@ -37,10 +37,10 @@ export interface CommentItem {
   avatar: string
   /** 用户昵称 */
   uname: string
+  /** 用户等级 */
+  level: number
   /** 头像框 */
   frame?: string
-  /** VIP大图标 */
-  icon_big_vip?: string
   /** 标签类型 (1=作者) */
   label_type?: number
   /** 状态标签 */
@@ -58,7 +58,11 @@ export interface CommentItem {
   /** 回复数量 */
   replylength: number
   /** 点赞数 */
-  like: number
+  like: string
+  /** 是否置顶评论 */
+  isTop: boolean
+  /** 是否为UP主评论 */
+  isUP: boolean
 }
 
 /**
@@ -70,7 +74,7 @@ export interface VideoInfoHeaderProps {
   /** 评论数量 */
   commentLength: string
   /** 视频大小 */
-  videoSize?: number
+  videoSize?: string
   /** 视频画质 */
   clarity?: string
   /** 图片数量 */
