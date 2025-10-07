@@ -607,10 +607,10 @@ interface CommentItem$1 {
     avatar: string;
     /** 用户昵称 */
     uname: string;
+    /** 用户等级 */
+    level: number;
     /** 头像框 */
     frame?: string;
-    /** VIP大图标 */
-    icon_big_vip?: string;
     /** 标签类型 (1=作者) */
     label_type?: number;
     /** 状态标签 */
@@ -628,7 +628,11 @@ interface CommentItem$1 {
     /** 回复数量 */
     replylength: number;
     /** 点赞数 */
-    like: number;
+    like: string;
+    /** 是否置顶评论 */
+    isTop: boolean;
+    /** 是否为UP主评论 */
+    isUP: boolean;
 }
 
 /**
@@ -981,6 +985,8 @@ interface DouyinAuthor {
     name: string;
     /** 作者头像URL */
     avatar: string;
+    /** 抖音号 */
+    short_id: string;
 }
 /**
  * 抖音视频信息数据接口
