@@ -169,14 +169,14 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
 
           <div className='flex items-center space-x-6'>
             {/* 点赞按钮 */}
-            <div className='flex items-center space-x-2 transition-colors cursor-pointer hover:text-danger'>
-              <Heart size={60} className='text-like' />
+            <div className='flex items-center space-x-2 transition-colors cursor-pointer'>
+              <Heart size={60} className='text-foreground-500' />
               <span className='text-[50px] select-text'>{comment.digg_count}</span>
             </div>
 
             {/* 回复按钮 */}
-            <div className='flex items-center transition-colors cursor-pointer hover:text-primary'>
-              <MessageCircle size={60} className='stroke-current text-comment' />
+            <div className='flex items-center transition-colors cursor-pointer'>
+              <MessageCircle size={60} className='stroke-current text-foreground-500' />
             </div>
           </div>
         </div>

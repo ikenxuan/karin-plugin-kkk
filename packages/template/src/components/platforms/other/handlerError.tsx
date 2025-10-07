@@ -160,11 +160,7 @@ const BusinessErrorDetails: React.FC<{
         </h3>
         <div className='p-10 rounded-2xl bg-content1'>
           <pre className='text-2xl leading-relaxed whitespace-pre-wrap break-all select-text text-foreground-700'>
-            {error.stack.split('\n').map((line, index) => (
-              <div key={index} className={`py-1 ${index === 0 ? 'font-semibold text-danger' : ''}`}>
-                {line}
-              </div>
-            ))}
+            {String(error.stack || '')}
           </pre>
         </div>
       </div>
@@ -260,7 +256,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
       {/* 底部区域：发送给开发者提示和二维码 */}
       <div className='w-full max-w-[1440px] mx-auto px-20 py-12'>
         <div className='flex justify-between items-center'>
-          <div className='p-16 rounded-3xl bg-primary-50 flex-1 mr-8'>
+          <div className='flex-1 p-16 mr-8 rounded-3xl bg-primary-50'>
             <h3 className='flex items-center mb-10 text-5xl font-semibold text-primary-800'>
               <Send className='mr-6 w-12 h-12' />
               发送错误报告

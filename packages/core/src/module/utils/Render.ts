@@ -71,10 +71,10 @@ export const Render = async <P extends DynamicRenderPath> (
     })
     
   // 截图
-  const images = await render.render({
+  const renderResult = await render.render({
     name: `${Root.pluginName}/${templateType}/${templateName}`,
     file: result.htmlPath,
-    multiPage: 12000,
+    multiPage: Config.app.multiPageRender ? Config.app.multiPageHeight : false,
     selector: '#container',
     fullPage: false,
     type: 'jpeg',
@@ -86,8 +86,12 @@ export const Render = async <P extends DynamicRenderPath> (
 
   // 转换为ImageElement数组
   const ret: ImageElement[] = []
-  for (const image of images) {
-    ret.push(segment.image('base64://' + image))
+  if (Config.app.multiPageRender) {
+    for (const image of renderResult) {
+      ret.push(segment.image('base64://' + image))
+    }
+  } else {
+    ret.push(segment.image('base64://' + renderResult))
   }
 
   return ret

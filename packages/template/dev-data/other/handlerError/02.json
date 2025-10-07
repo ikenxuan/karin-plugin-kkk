@@ -1,0 +1,16 @@
+{
+  "type": "business_error",
+  "platform": "system",
+  "error": {
+    "message": "[462433564][sendApi] 请求错误:\n  action: send_group_msg\n  params: {\"echo\":\"4\",\"action\":\"send_group_msg\",\"params\":{\"group_id\":608506114,\"message\":[{\"type\":\"image\",\"data\":{\"file\":\"base64://...}}],\"auto_escape\":false}}",
+    "name": "Error",
+    "stack": "Error: [462433564][sendApi] 请求错误:\n  action: send_group_msg\n  params: {\"echo\":\"4\",\"action\":\"send_group_msg\",\"params\":{\"group_id\":608506114,\"message\":[{\"type\":\"image\",\"data\":{\"file\":\"base64://...}}],\"auto_escape\":false}}\n    at OneBotWsServer._formatApiError (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@1.10.23\\node_modules\\node-karin\\dist\\index.mjs:3332:16)\n    at OneBotWsServer.<anonymous> (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@1.10.23\\node_modules\\node-karin\\dist\\index.mjs:5274:27)\n    at Object.onceWrapper (node:events:633:26)\n    at OneBotWsServer.emit (node:events:518:28)\n    at OneBotWsServer.emit (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@1.10.23\\node_modules\\node-karin\\dist\\index.mjs:3392:22)\n    at WebSocket.<anonymous> (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@1.10.23\\node_modules\\node-karin\\dist\\index.mjs:5605:18)\n    at WebSocket.emit (node:events:518:28)\n    at Receiver.receiverOnMessage (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\@karinjs+ws@1.0.4\\node_modules\\@karinjs\\ws\\dist\\ws.mjs:3014:22)\n    at Receiver.emit (node:events:518:28)\n    at Receiver.dataMessage (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\@karinjs+ws@1.0.4\\node_modules\\@karinjs\\ws\\dist\\ws.mjs:1235:16) {\n  [cause]: {\n    status: 'failed',\n    retcode: 1200,\n    data: null,\n    message: 'EventChecker Failed: NTEvent serviceAndMethod:NodeIKernelMsgService/sendMsg ListenerName:NodeIKernelMsgListener/onMsgInfoListUpdate EventRet:\\n' +\n      '{\\n' +\n      '    \"result\": -1,\\n' +\n      '    \"errMsg\": \"rich media transfer failed\"\\n' +\n      '}\\n',\n    wording: 'EventChecker Failed: NTEvent serviceAndMethod:NodeIKernelMsgService/sendMsg ListenerName:NodeIKernelMsgListener/onMsgInfoListUpdate EventRet:\\n' +\n      '{\\n' +\n      '    \"result\": -1,\\n' +\n      '    \"errMsg\": \"rich media transfer failed\"\\n' +\n      '}\\n',\n    echo: '4'\n  }\n}",
+    "businessName": "抖音视频解析"
+  },
+  "method": "抖音视频解析",
+  "timestamp": "2025-10-07T15:00:41.867Z",
+  "logs": "",
+  "triggerCommand": "4.69 【推荐你看】复制打开抖音👀孰强孰弱# 小米17 # 小米15ultra  https://v.douyin.com/AcirfPoAcVE/ s@E.us 06/28 ULW:/",
+  "share_url": "4.69 【推荐你看】复制打开抖音👀孰强孰弱# 小米17 # 小米15ultra  https://v.douyin.com/AcirfPoAcVE/ s@E.us 06/28 ULW:/",
+  "useDarkTheme": false
+}

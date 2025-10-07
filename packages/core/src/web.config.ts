@@ -215,6 +215,20 @@ export const webConfig = defineConfig({
                     value: 'trigger'
                   })
                 ]
+              }),
+              components.switch.create('multiPageRender', {
+                label: '分页渲染',
+                description: '将模板渲染成多页的图片，以降低渲染器压力，默认开启，非必要不修改！',
+                defaultSelected: all.app.multiPageRender
+              }),
+              components.input.number('multiPageHeight', {
+                label: '分页渲染时，每页的高度',
+                description: '经测试最佳每页高度为12000px，默认12000px',
+                defaultValue: all.app.multiPageHeight.toString(),
+                isDisabled: !all.app.multiPageRender,
+                rules: [
+                  { min: 1000, max: 20000, error: '请输入一个范围在 1000 到 20000 之间的数字' }
+                ]
               })
             ]
           })

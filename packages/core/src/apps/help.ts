@@ -9,8 +9,8 @@ import { Common, Render, Root } from '@/module'
 
 export const help = karin.command(/^#?kkk帮助$/, async (e) => {
   const img = await Render('other/help')
-  const img2 = await Render('other/changelog_v2')
-  await e.reply([...img, ...img2])
+  // const img2 = await Render('other/changelog_v2')
+  await e.reply(img)
   return true
 }, { name: 'kkk-帮助' })
 

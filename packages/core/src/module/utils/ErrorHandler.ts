@@ -1,3 +1,5 @@
+import util from 'node:util'
+
 import karin, { config, logger, type Message, segment } from 'node-karin'
 
 import { Render } from '@/module'
@@ -123,11 +125,8 @@ const handleBusinessError = async (
   logs: string,
   event?: Message
 ) => {
-  // 获取完整的调用栈
-  const stackTrace = error.stack || '无法获取调用栈信息'
-
   // 获取触发命令信息
-  const triggerCommand = event?.msg || '未知命令'
+  const triggerCommand = event?.msg || '未知命令或处于非消息环境'
 
   // 生成错误报告图片
   const img = await Render('other/handlerError', {
@@ -136,7 +135,7 @@ const handleBusinessError = async (
     error: {
       message: error.message,
       name: error.name,
-      stack: stackTrace,
+      stack: util.format(error),
       businessName: options.businessName
     },
     method: options.businessName,
