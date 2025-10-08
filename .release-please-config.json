@@ -8,6 +8,7 @@
     {
       "type": "linked-versions",
       "group-name": "karin-plugin-kkk",
+      "defaultComponent": "kkk",
       "components": [
         "karin-plugin-kkk",
         "karin-plugin-kkk/web",
