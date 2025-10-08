@@ -10,7 +10,7 @@
   "packages": {
     "packages/core": {
       "package-name": "karin-plugin-kkk",
-      "component": "karin-plugin-kkk",
+      "component": "packages/core",
       "release-type": "node",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
@@ -19,7 +19,7 @@
     },
     "packages/web": {
       "package-name": "web",
-      "component": "karin-plugin-kkk/web",
+      "component": "packages/web",
       "release-type": "node",
       "skip-github-release": true,
       "skip-tag": true,
@@ -30,7 +30,7 @@
     },
     "packages/template": {
       "package-name": "template",
-      "component": "karin-plugin-kkk/template",
+      "component": "packages/template",
       "release-type": "node",
       "skip-github-release": true,
       "skip-tag": true,
@@ -43,63 +43,51 @@
   "changelog-sections": [
     {
       "type": "feat",
-      "section": "✨ 新功能",
-      "hidden": false
+      "section": "✨ 新功能"
     },
     {
       "type": "fix",
-      "section": "🐛 错误修复",
-      "hidden": false
+      "section": "🐛 错误修复"
     },
     {
       "type": "perf",
-      "section": "⚡️ 性能优化",
-      "hidden": false
+      "section": "⚡️ 性能优化"
     },
     {
       "type": "revert",
-      "section": "⏪️ 回退提交",
-      "hidden": false
+      "section": "⏪️ 回退提交"
     },
     {
       "type": "docs",
-      "section": "📝 文档更新",
-      "hidden": false
+      "section": "📝 文档更新"
     },
     {
       "type": "style",
-      "section": "🎨 代码样式",
-      "hidden": false
+      "section": "🎨 代码样式"
     },
     {
       "type": "chore",
-      "section": "🔧 其他更新",
-      "hidden": false
+      "section": "🔧 其他更新"
     },
     {
       "type": "refactor",
-      "section": "♻️ 代码重构",
-      "hidden": false
+      "section": "♻️ 代码重构"
     },
     {
       "type": "test",
-      "section": "✅ 测试相关",
-      "hidden": false
+      "section": "✅ 测试相关"
     },
     {
       "type": "deps",
-      "section": "📦 依赖更新",
-      "hidden": false
+      "section": "📦 依赖更新"
     },
     {
       "type": "build",
-      "section": "📦️ 构建系统",
-      "hidden": false
+      "section": "📦️ 构建系统"
     },
     {
       "type": "ci",
-      "section": "🎡 持续集成",
-      "hidden": false
+      "section": "🎡 持续集成"
     }
   ]
 }
