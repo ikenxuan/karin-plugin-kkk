@@ -1,34 +1,31 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "node",
-  "include-component-in-tag": false,
-  "tag-separator": "-",
   "separate-pull-requests": false,
   "plugins": [
-    "linked-versions"
+    {
+      "type": "linked-versions",
+      "group-name": "karin-plugin-kkk",
+      "groupName": "karin-plugin-kkk",
+      "components": [
+        "karin-plugin-kkk",
+        "karin-plugin-kkk/web",
+        "karin-plugin-kkk/template"
+      ]
+    }
   ],
-  "always-bump-patch": true,
   "packages": {
     "packages/core": {
-      "release-type": "node",
       "package-name": "karin-plugin-kkk",
-      "component": "core",
-      "changelog-path": "CHANGELOG.md",
-      "linked-version-group": "core-group"
+      "component": "karin-plugin-kkk"
     },
     "packages/web": {
-      "release-type": "node",
       "package-name": "web",
-      "component": "web",
-      "linked-version-group": "core-group",
-      "skip-github-release": true
+      "component": "karin-plugin-kkk/web"
     },
     "packages/template": {
-      "release-type": "node",
       "package-name": "template",
-      "component": "template",
-      "linked-version-group": "core-group",
-      "skip-github-release": true
+      "component": "karin-plugin-kkk/template"
     }
   },
   "changelog-sections": [
