@@ -5,8 +5,8 @@
   "commit-search-depth": 100,
   "tag-separator": "-",
   "separate-pull-requests": false,
-  "linked-versions": [
-    "core-group"
+  "plugins": [
+    "linked-versions"
   ],
   "changelog-sections": [
     {
