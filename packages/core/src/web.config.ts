@@ -262,10 +262,11 @@ export const webConfig = defineConfig({
                 checkbox: [
                   components.checkbox.create('sendContent:checkbox:1', {
                     label: '视频信息',
-                    value: 'info'
+                    value: 'info',
+                    description: '仅解析视频时有效'
                   }),
                   components.checkbox.create('sendContent:checkbox:2', {
-                    label: '评论图片',
+                    label: '评论列表',
                     value: 'comment'
                   }),
                   components.checkbox.create('sendContent:checkbox:3', {
@@ -513,10 +514,11 @@ export const webConfig = defineConfig({
                 checkbox: [
                   components.checkbox.create('sendContent:checkbox:1', {
                     label: '视频信息',
-                    value: 'info'
+                    value: 'info',
+                    description: '仅解析视频时有效'
                   }),
                   components.checkbox.create('sendContent:checkbox:2', {
-                    label: '评论图片',
+                    label: '评论列表',
                     value: 'comment'
                   }),
                   components.checkbox.create('sendContent:checkbox:3', {

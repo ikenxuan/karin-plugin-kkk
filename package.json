@@ -26,7 +26,7 @@
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
     "lucide-react": "0.544.0",
-    "node-karin": "1.10.23",
+    "node-karin": "https://pkg.pr.new/node-karin@0c98133",
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "tailwindcss": "^4.1.13"

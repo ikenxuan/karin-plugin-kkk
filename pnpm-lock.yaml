@@ -30,8 +30,8 @@ importers:
         specifier: 0.544.0
         version: 0.544.0(react@19.1.1)
       node-karin:
-        specifier: 1.10.23
-        version: 1.10.23
+        specifier: https://pkg.pr.new/node-karin@0c98133
+        version: https://pkg.pr.new/node-karin@0c98133
       react:
         specifier: 19.1.1
         version: 19.1.1
@@ -6038,8 +6038,9 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  node-karin@1.10.23:
-    resolution: {integrity: sha512-4pPF4qps/jBnJDrke02Me42VeCYjsY6xreuCg59o8yrimitCeUeOSBcQxiUebtd2TXOimhwOqaNNOy75rjpEsQ==}
+  node-karin@https://pkg.pr.new/node-karin@0c98133:
+    resolution: {tarball: https://pkg.pr.new/node-karin@0c98133}
+    version: 1.11.4
     engines: {node: '>=18'}
     hasBin: true
 
@@ -14534,7 +14535,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  node-karin@1.10.23:
+  node-karin@https://pkg.pr.new/node-karin@0c98133:
     dependencies:
       art-template: '@karinjs/art-template@1.1.0'
       axios: '@karinjs/axios@1.2.0'
