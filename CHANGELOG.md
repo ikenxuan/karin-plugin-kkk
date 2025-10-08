@@ -1,5 +1,17 @@
 # 变更日志
 
+## [2.2.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.2.0...v2.2.1) (2025-10-08)
+
+
+### 🐛 错误修复
+
+* 1 ([3779329](https://github.com/ikenxuan/karin-plugin-kkk/commit/377932988b92d4221d3a0726f7214bdb7c613f60))
+
+
+### 🔧 其他更新
+
+* release main ([#158](https://github.com/ikenxuan/karin-plugin-kkk/issues/158)) ([1b8dda5](https://github.com/ikenxuan/karin-plugin-kkk/commit/1b8dda52ebef23b59ccf51685b9fbc0f6bf04ae3))
+
 ## [2.2.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/core-v2.1.0...core-v2.2.0) (2025-10-08)
 
 
