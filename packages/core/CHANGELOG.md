@@ -1,5 +1,13 @@
 # 变更日志
 
+## [2.2.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.1.0...v2.2.0) (2025-10-08)
+
+
+### ✨ 新功能
+
+* **douyin:** 添加视频画质偏好设置和自动选择功能 ([a08eb13](https://github.com/ikenxuan/karin-plugin-kkk/commit/a08eb131ba5a0ccde661f5e77178eb9c08288e49))
+* **render:** 添加分页渲染配置 ([544ed23](https://github.com/ikenxuan/karin-plugin-kkk/commit/544ed2302dfddab0016245826b84bd21305ce681))
+
 ## [2.1.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.0.3...v2.1.0) (2025-10-07)
 
 
