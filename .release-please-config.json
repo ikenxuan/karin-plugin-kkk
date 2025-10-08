@@ -83,7 +83,6 @@
       "changelog-path": "CHANGELOG.md",
       "release-as": "0.0.0",
       "skip-github-release": true,
-      "include-component-in-tag": false,
       "changelog-host": "https://github.com",
       "changelog-type": "github",
       "linked-version-group": "core-group"
@@ -94,7 +93,6 @@
       "changelog-path": "CHANGELOG.md",
       "release-as": "0.0.0",
       "skip-github-release": true,
-      "include-component-in-tag": false,
       "changelog-host": "https://github.com",
       "changelog-type": "github",
       "linked-version-group": "core-group"
