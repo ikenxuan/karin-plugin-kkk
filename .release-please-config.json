@@ -5,16 +5,7 @@
   "tag-separator": "-",
   "separate-pull-requests": false,
   "plugins": [
-    {
-      "type": "linked-versions",
-      "group-name": "karin-plugin-kkk",
-      "defaultComponent": "kkk",
-      "components": [
-        "karin-plugin-kkk",
-        "karin-plugin-kkk/web",
-        "karin-plugin-kkk/template"
-      ]
-    }
+    "linked-versions"
   ],
   "packages": {
     "packages/core": {
