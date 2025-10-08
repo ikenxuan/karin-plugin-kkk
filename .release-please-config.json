@@ -1,13 +1,29 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "node",
-  "include-component-in-tag": true,
-  "commit-search-depth": 100,
+  "include-component-in-tag": false,
   "tag-separator": "-",
   "separate-pull-requests": false,
+  "commit-search-depth": 0,
   "plugins": [
     "linked-versions"
   ],
+  "packages": {
+    "packages/core": {
+      "release-type": "node",
+      "linked-version-group": "core-group"
+    },
+    "packages/web": {
+      "release-type": "node",
+      "linked-version-group": "core-group",
+      "skip-github-release": true
+    },
+    "packages/template": {
+      "release-type": "node",
+      "linked-version-group": "core-group",
+      "skip-github-release": true
+    }
+  },
   "changelog-sections": [
     {
       "type": "feat",
@@ -68,25 +84,5 @@
       "section": "🎡 持续集成",
       "hidden": false
     }
-  ],
-  "packages": {
-    "packages/core": {
-      "release-type": "node",
-      "package-name": "karin-plugin-kkk",
-      "changelog-path": "CHANGELOG.md",
-      "linked-version-group": "core-group"
-    },
-    "packages/web": {
-      "release-type": "node",
-      "package-name": "web",
-      "linked-version-group": "core-group",
-      "skip-github-release": true
-    },
-    "packages/template": {
-      "release-type": "node",
-      "package-name": "template",
-      "linked-version-group": "core-group",
-      "skip-github-release": true
-    }
-  }
+  ]
 }
