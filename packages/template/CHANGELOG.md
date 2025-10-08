@@ -1,25 +1,45 @@
 # Changelog
 
-## [2.2.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.2.0...v2.2.1) (2025-10-08)
+## 0.0.0 (2025-10-07)
+
+## What's Changed
+* feat: add textMode option for direct text output instead of rendering images by @Copilot in https://github.com/ikenxuan/karin-plugin-kkk/pull/151
 
 
-### 🐛 错误修复
+**Full Changelog**: https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.0.3...v0.0.0
 
-* 1 ([98c1e1a](https://github.com/ikenxuan/karin-plugin-kkk/commit/98c1e1a0da4f66d91fb0902999a7d42a3a8208c4))
-* 2 ([43863d9](https://github.com/ikenxuan/karin-plugin-kkk/commit/43863d9912ac6a5d0672c4e3c723005f3616173a))
-* 3 ([38b5645](https://github.com/ikenxuan/karin-plugin-kkk/commit/38b5645dc626e71324dba1dc7b4af170a412d275))
-* 4 ([0953993](https://github.com/ikenxuan/karin-plugin-kkk/commit/095399328c52d71cdc6d92282cfd338f4601916a))
-* 5 ([e3288f4](https://github.com/ikenxuan/karin-plugin-kkk/commit/e3288f4e423a42b27446d488bba4fd61c456dc78))
-* test ([ce2b61c](https://github.com/ikenxuan/karin-plugin-kkk/commit/ce2b61c5f23625886559c5af6aa7c8b3aa5f7c91))
-* test ([6baf9ec](https://github.com/ikenxuan/karin-plugin-kkk/commit/6baf9ec48711e8d3b5c1e8ce1f55dfd476f3e128))
+## 0.0.0 (2025-10-04)
 
+**Full Changelog**: https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.0.2...v0.0.0
 
-### 🔧 其他更新
+## 0.0.0 (2025-10-03)
 
-* release main ([#156](https://github.com/ikenxuan/karin-plugin-kkk/issues/156)) ([685fb21](https://github.com/ikenxuan/karin-plugin-kkk/commit/685fb212d533b198726deaa90f50ac2a3df80b4f))
-* release main ([#158](https://github.com/ikenxuan/karin-plugin-kkk/issues/158)) ([1b8dda5](https://github.com/ikenxuan/karin-plugin-kkk/commit/1b8dda52ebef23b59ccf51685b9fbc0f6bf04ae3))
+## What's Changed
+* fix: SQLITE_CONSTRAINT error when changing push bot ID by @Copilot in https://github.com/ikenxuan/karin-plugin-kkk/pull/147
 
+## New Contributors
+* @Copilot made their first contribution in https://github.com/ikenxuan/karin-plugin-kkk/pull/147
 
-### ✅ 测试相关
+**Full Changelog**: https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.0.1...v0.0.0
 
-* 1 ([c2a8194](https://github.com/ikenxuan/karin-plugin-kkk/commit/c2a819479991324582f99b8ae9de77ddd10b0332))
+## 0.0.0 (2025-09-28)
+
+**Full Changelog**: https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.0.0...v0.0.0
+
+## 0.0.0 (2025-09-27)
+
+## What's Changed
+* feat!: 重构项目结构为多包工作区模式 by @ikenxuan in https://github.com/ikenxuan/karin-plugin-kkk/pull/125
+* feat: Add Tauri desktop support and Web UI enhancements by @ikenxuan in https://github.com/ikenxuan/karin-plugin-kkk/pull/130
+* feat: 图片渲染使用 React 替代 art-template，集成 Vite 支持实时开发调试 by @ikenxuan in https://github.com/ikenxuan/karin-plugin-kkk/pull/137
+* feat: 使用sql语句操作sqlite3 by @sj817 in https://github.com/ikenxuan/karin-plugin-kkk/pull/138
+* fix: 细节优化UI by @ikenxuan in https://github.com/ikenxuan/karin-plugin-kkk/pull/139
+* feat(template): 添加视频信息组件 by @ikenxuan in https://github.com/ikenxuan/karin-plugin-kkk/pull/140
+* fix: mkdir-db by @sj817 in https://github.com/ikenxuan/karin-plugin-kkk/pull/141
+* refactor(template): 重构模板项目结构并优化类型定义 by @ikenxuan in https://github.com/ikenxuan/karin-plugin-kkk/pull/142
+* refactor(tauri): 重构配置管理与请求代理逻辑 by @shiwuliya in https://github.com/ikenxuan/karin-plugin-kkk/pull/143
+
+## New Contributors
+* @shiwuliya made their first contribution in https://github.com/ikenxuan/karin-plugin-kkk/pull/143
+
+**Full Changelog**: https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.8.1...v0.0.0

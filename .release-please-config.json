@@ -1,81 +1,55 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "node",
-  "include-component-in-tag": false,
+  "include-component-in-tag": true,
+  "commit-search-depth": 50,
   "tag-separator": "-",
   "separate-pull-requests": false,
-  "plugins": [
-    "linked-versions"
-  ],
-  "packages": {
-    "packages/core": {
-      "package-name": "karin-plugin-kkk",
-      "component": "packages/core",
-      "release-type": "node",
-      "changelog-path": "CHANGELOG.md",
-      "extra-files": [
-        "packages/core/package.json"
-      ]
-    },
-    "packages/web": {
-      "package-name": "web",
-      "component": "packages/web",
-      "release-type": "node",
-      "skip-github-release": true,
-      "skip-tag": true,
-      "changelog": false,
-      "extra-files": [
-        "packages/web/package.json"
-      ]
-    },
-    "packages/template": {
-      "package-name": "template",
-      "component": "packages/template",
-      "release-type": "node",
-      "skip-github-release": true,
-      "skip-tag": true,
-      "changelog": false,
-      "extra-files": [
-        "packages/template/package.json"
-      ]
-    }
-  },
   "changelog-sections": [
     {
       "type": "feat",
-      "section": "✨ 新功能"
+      "section": "✨ 新功能",
+      "hidden": false
     },
     {
       "type": "fix",
-      "section": "🐛 错误修复"
+      "section": "🐛 错误修复",
+      "hidden": false
     },
     {
       "type": "perf",
-      "section": "⚡️ 性能优化"
+      "section": "⚡️ 性能优化",
+      "hidden": false
     },
     {
       "type": "revert",
-      "section": "⏪️ 回退提交"
+      "section": "⏪️ 回退提交",
+      "hidden": false
     },
     {
       "type": "docs",
-      "section": "📝 文档更新"
+      "section": "📝 文档更新",
+      "hidden": false
     },
     {
       "type": "style",
-      "section": "🎨 代码样式"
+      "section": "🎨 代码样式",
+      "hidden": false
     },
     {
       "type": "chore",
-      "section": "🔧 其他更新"
+      "section": "🔧 其他更新",
+      "hidden": false
     },
     {
       "type": "refactor",
-      "section": "♻️ 代码重构"
+      "section": "♻️ 代码重构",
+      "hidden": false
     },
     {
       "type": "test",
-      "section": "✅ 测试相关"
+      "section": "✅ 测试相关",
+      "hidden": false
     },
     {
       "type": "deps",
@@ -83,11 +57,39 @@
     },
     {
       "type": "build",
-      "section": "📦️ 构建系统"
+      "section": "📦️ 构建系统",
+      "hidden": false
     },
     {
       "type": "ci",
-      "section": "🎡 持续集成"
+      "section": "🎡 持续集成",
+      "hidden": false
     }
-  ]
+  ],
+  "packages": {
+    "packages/core": {
+      "release-type": "node",
+      "package-name": "karin-plugin-kkk",
+      "changelog-path": "CHANGELOG.md",
+      "include-component-in-tag": false
+    },
+    "packages/web": {
+      "release-type": "node",
+      "package-name": "web",
+      "changelog-path": "CHANGELOG.md",
+      "skip-github-release": true,
+      "include-component-in-tag": false,
+      "changelog-host": "https://github.com",
+      "changelog-type": "github"
+    },
+    "packages/template": {
+      "release-type": "node",
+      "package-name": "template",
+      "changelog-path": "CHANGELOG.md",
+      "skip-github-release": true,
+      "include-component-in-tag": false,
+      "changelog-host": "https://github.com",
+      "changelog-type": "github"
+    }
+  }
 }
