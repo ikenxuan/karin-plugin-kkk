@@ -3,7 +3,7 @@
   "release-type": "node",
   "include-component-in-tag": false,
   "separate-pull-requests": false,
-  "commit-search-depth": 0,
+  "commit-search-depth": 50,
   "plugins": [
     {
       "type": "linked-versions",
