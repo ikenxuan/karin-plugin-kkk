@@ -74,26 +74,19 @@
       "release-type": "node",
       "package-name": "karin-plugin-kkk",
       "changelog-path": "CHANGELOG.md",
-      "include-component-in-tag": false,
       "linked-version-group": "core-group"
     },
     "packages/web": {
       "release-type": "node",
       "package-name": "web",
-      "changelog-path": "CHANGELOG.md",
-      "skip-github-release": true,
-      "changelog-host": "https://github.com",
-      "changelog-type": "github",
-      "linked-version-group": "core-group"
+      "linked-version-group": "core-group",
+      "skip-github-release": true
     },
     "packages/template": {
       "release-type": "node",
       "package-name": "template",
-      "changelog-path": "CHANGELOG.md",
-      "skip-github-release": true,
-      "changelog-host": "https://github.com",
-      "changelog-type": "github",
-      "linked-version-group": "core-group"
+      "linked-version-group": "core-group",
+      "skip-github-release": true
     }
   }
 }
