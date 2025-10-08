@@ -2,28 +2,50 @@
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "node",
   "include-component-in-tag": false,
-  "separate-pull-requests": false,
   "tag-separator": "-",
-  "commit-search-depth": 50,
+  "separate-pull-requests": false,
   "plugins": [
-    "linked-versions"
+    {
+      "type": "linked-versions",
+      "group-name": "karin-plugin-kkk",
+      "components": [
+        "karin-plugin-kkk",
+        "karin-plugin-kkk/web",
+        "karin-plugin-kkk/template"
+      ]
+    }
   ],
   "packages": {
     "packages/core": {
+      "package-name": "karin-plugin-kkk",
+      "component": "karin-plugin-kkk",
       "release-type": "node",
-      "include-component-in-tag": false
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        "packages/core/package.json"
+      ]
     },
     "packages/web": {
+      "package-name": "web",
+      "component": "karin-plugin-kkk/web",
       "release-type": "node",
-      "include-component-in-tag": false,
       "skip-github-release": true,
-      "skip-tag": true
+      "skip-tag": true,
+      "changelog": false,
+      "extra-files": [
+        "packages/web/package.json"
+      ]
     },
     "packages/template": {
+      "package-name": "template",
+      "component": "karin-plugin-kkk/template",
       "release-type": "node",
-      "include-component-in-tag": false,
       "skip-github-release": true,
-      "skip-tag": true
+      "skip-tag": true,
+      "changelog": false,
+      "extra-files": [
+        "packages/template/package.json"
+      ]
     }
   },
   "changelog-sections": [
