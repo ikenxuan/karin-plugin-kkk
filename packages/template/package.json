@@ -1,6 +1,6 @@
 {
   "name": "template",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "React模板渲染服务包",
   "type": "module",
   "author": "ikenxuan",
