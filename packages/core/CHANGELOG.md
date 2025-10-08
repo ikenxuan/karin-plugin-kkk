@@ -1,5 +1,12 @@
 # 变更日志
 
+## [2.2.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.2.0...v2.2.1) (2025-10-08)
+
+
+### 🐛 错误修复
+
+* 1 ([3779329](https://github.com/ikenxuan/karin-plugin-kkk/commit/377932988b92d4221d3a0726f7214bdb7c613f60))
+
 ## [2.2.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.1.0...v2.2.0) (2025-10-08)
 
 

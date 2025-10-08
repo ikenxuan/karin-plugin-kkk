@@ -3,6 +3,14 @@
 ## 0.0.0 (2025-10-08)
 
 ## What's Changed
+* chore: release main by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/156
+
+
+**Full Changelog**: https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.2.0...template-v0.0.0
+
+## 0.0.0 (2025-10-08)
+
+## What's Changed
 * chore(main): release 1.0.1 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/23
 * chore(main): release 1.0.3 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/24
 * chore(main): release 1.0.4 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/28
