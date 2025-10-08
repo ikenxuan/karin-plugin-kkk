@@ -1,5 +1,64 @@
 # Changelog
 
+## [2.2.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/template-v2.1.0...template-v2.2.0) (2025-10-08)
+
+
+### ✨ 新功能
+
+* **bilibili/douyin:** 新增视频信息展示模式配置选项，支持文本和图片两种模式 ([0f7c055](https://github.com/ikenxuan/karin-plugin-kkk/commit/0f7c0553cd21a0e49e740e991462bce768130d52))
+* **bilibili/douyin:** 添加视频信息内容自定义选项，可选择显示封面、标题、作者和统计数据 ([0f7c055](https://github.com/ikenxuan/karin-plugin-kkk/commit/0f7c0553cd21a0e49e740e991462bce768130d52))
+* **bilibili:** B站评论组件支持显示置顶和UP主标识 ([0f7c055](https://github.com/ikenxuan/karin-plugin-kkk/commit/0f7c0553cd21a0e49e740e991462bce768130d52))
+* **core:** 添加图文动态图片布局配置选项 ([786e75c](https://github.com/ikenxuan/karin-plugin-kkk/commit/786e75c3129def58419a8c8f79db7e2a083f4104))
+* **render:** 添加分页渲染配置 ([544ed23](https://github.com/ikenxuan/karin-plugin-kkk/commit/544ed2302dfddab0016245826b84bd21305ce681))
+* **template:** 优化动态图片布局 ([777befc](https://github.com/ikenxuan/karin-plugin-kkk/commit/777befcea468e699c2eb23023ab454909cfba90e))
+* **template:** 新增B站二维码登录组件并优化登录流程 ([a6f93f3](https://github.com/ikenxuan/karin-plugin-kkk/commit/a6f93f3faf2f30b57c42d67da66712348ccf8078))
+* 添加错误日志接收配置并优化错误处理组件 ([3c0d462](https://github.com/ikenxuan/karin-plugin-kkk/commit/3c0d462fdffea0a73551e23312547de3174e718e))
+
+
+### 🐛 错误修复
+
+* 1 ([98c1e1a](https://github.com/ikenxuan/karin-plugin-kkk/commit/98c1e1a0da4f66d91fb0902999a7d42a3a8208c4))
+* 2 ([43863d9](https://github.com/ikenxuan/karin-plugin-kkk/commit/43863d9912ac6a5d0672c4e3c723005f3616173a))
+* 3 ([38b5645](https://github.com/ikenxuan/karin-plugin-kkk/commit/38b5645dc626e71324dba1dc7b4af170a412d275))
+* 4 ([0953993](https://github.com/ikenxuan/karin-plugin-kkk/commit/095399328c52d71cdc6d92282cfd338f4601916a))
+* 5 ([e3288f4](https://github.com/ikenxuan/karin-plugin-kkk/commit/e3288f4e423a42b27446d488bba4fd61c456dc78))
+* test ([ce2b61c](https://github.com/ikenxuan/karin-plugin-kkk/commit/ce2b61c5f23625886559c5af6aa7c8b3aa5f7c91))
+* test ([6baf9ec](https://github.com/ikenxuan/karin-plugin-kkk/commit/6baf9ec48711e8d3b5c1e8ce1f55dfd476f3e128))
+
+
+### 📝 文档更新
+
+* 更新配置注释和默认值 ([3c0d462](https://github.com/ikenxuan/karin-plugin-kkk/commit/3c0d462fdffea0a73551e23312547de3174e718e))
+
+
+### 🎨 代码样式
+
+* **bilibili/douyin:** 优化视频信息展示和评论组件 ([0f7c055](https://github.com/ikenxuan/karin-plugin-kkk/commit/0f7c0553cd21a0e49e740e991462bce768130d52))
+* 调整错误处理组件样式和布局 ([3c0d462](https://github.com/ikenxuan/karin-plugin-kkk/commit/3c0d462fdffea0a73551e23312547de3174e718e))
+
+
+### 🔧 其他更新
+
+* release main ([#127](https://github.com/ikenxuan/karin-plugin-kkk/issues/127)) ([c1ab61f](https://github.com/ikenxuan/karin-plugin-kkk/commit/c1ab61f487a124380a5fec6c1df64afddc8bf16f))
+* release main ([#144](https://github.com/ikenxuan/karin-plugin-kkk/issues/144)) ([a534b25](https://github.com/ikenxuan/karin-plugin-kkk/commit/a534b258c0b35ed6e8b5f5f0ffda714e71464955))
+* release main ([#145](https://github.com/ikenxuan/karin-plugin-kkk/issues/145)) ([1e391bf](https://github.com/ikenxuan/karin-plugin-kkk/commit/1e391bf43a8a32b22d23292eb085d8b289d6472e))
+* release main ([#148](https://github.com/ikenxuan/karin-plugin-kkk/issues/148)) ([4f4f064](https://github.com/ikenxuan/karin-plugin-kkk/commit/4f4f064b5283db1e5ca794d57c50d95d0c7d1559))
+* release main ([#149](https://github.com/ikenxuan/karin-plugin-kkk/issues/149)) ([7a703e1](https://github.com/ikenxuan/karin-plugin-kkk/commit/7a703e18ee1bf718517e4f0b0bcd245bcd329f0b))
+* release main ([#155](https://github.com/ikenxuan/karin-plugin-kkk/issues/155)) ([84ac24f](https://github.com/ikenxuan/karin-plugin-kkk/commit/84ac24f3ec4702bcf248acba01bfdb17a17389b2))
+* release main ([#156](https://github.com/ikenxuan/karin-plugin-kkk/issues/156)) ([685fb21](https://github.com/ikenxuan/karin-plugin-kkk/commit/685fb212d533b198726deaa90f50ac2a3df80b4f))
+
+
+### ♻️ 代码重构
+
+* **core:** 重构模板系统并迁移静态资源 ([ec25300](https://github.com/ikenxuan/karin-plugin-kkk/commit/ec25300e90e239f64f5b1efeb1ab9a8125281dfe))
+* **template:** 重构模板项目结构并优化类型定义 ([#142](https://github.com/ikenxuan/karin-plugin-kkk/issues/142)) ([2fb3b06](https://github.com/ikenxuan/karin-plugin-kkk/commit/2fb3b06ca8d55a9f38785e59bc508b8ce9578900))
+* 重构错误处理逻辑使用新配置 ([3c0d462](https://github.com/ikenxuan/karin-plugin-kkk/commit/3c0d462fdffea0a73551e23312547de3174e718e))
+
+
+### ✅ 测试相关
+
+* test template ([26d3fc8](https://github.com/ikenxuan/karin-plugin-kkk/commit/26d3fc8fedd6aa4cf056bdf4ea331ceb2a4d25f5))
+
 ## 0.0.0 (2025-10-08)
 
 ## What's Changed
