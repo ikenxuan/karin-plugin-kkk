@@ -287,12 +287,6 @@ export const webConfig = defineConfig({
                 defaultSelected: all.douyin.realCommentCount,
                 isDisabled: !all.douyin.sendContent.includes('comment') || !all.douyin.switch
               }),
-              components.switch.create('autoResolution', {
-                label: '自动分辨率',
-                description: '根据「视频拦截阈值」自动选择合适的分辨率，关闭后默认选择最大分辨率进行下载',
-                defaultSelected: all.douyin.autoResolution,
-                isDisabled: !all.douyin.switch
-              }),
               components.radio.group('videoQuality', {
                 label: '画质偏好',
                 description: '解析视频的分辨率偏好。',
@@ -481,6 +475,47 @@ export const webConfig = defineConfig({
                     value: 'download'
                   })
                 ]
+              }),
+              components.radio.group('videoQuality', {
+                label: '画质偏好',
+                description: '推送解析时解析视频的分辨率偏好。',
+                orientation: 'horizontal',
+                defaultValue: all.douyin.push.videoQuality.toString(),
+                isDisabled: !all.douyin.push.switch,
+                radio: [
+                  components.radio.create('videoQuality:radio-1', {
+                    label: '自动选择',
+                    value: 'adapt',
+                    description: '根据「视频体积上限（MB）」自动选择分辨率进行下载'
+                  }),
+                  components.radio.create('videoQuality:radio-2', {
+                    label: '标清 540p',
+                    value: '540p'
+                  }),
+                  components.radio.create('videoQuality:radio-3', {
+                    label: '高清 720p',
+                    value: '720p'
+                  }),
+                  components.radio.create('videoQuality:radio-4', {
+                    label: '高清 1080p',
+                    value: '1080p'
+                  }),
+                  components.radio.create('videoQuality:radio-5', {
+                    label: '超清 2k',
+                    value: '2k'
+                  }),
+                  components.radio.create('videoQuality:radio-6', {
+                    label: '超清 4k',
+                    value: '4k'
+                  })
+                ]
+              }),
+              components.input.number('maxAutoVideoSize', {
+                label: '视频体积上限（MB）',
+                description: '推送解析时根据该值自动选择分辨率进行下载。仅在「画质偏好」 为 "自动选择" 时生效',
+                defaultValue: all.douyin.push.maxAutoVideoSize.toString(),
+                isDisabled: all.douyin.push.videoQuality !== 'adapt' || !all.douyin.push.switch,
+                rules: [{ min: 1, max: 20000 }]
               })
             ]
           })

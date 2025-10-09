@@ -164,7 +164,47 @@ export class DouYinpush extends Base {
             抖音号: Detail_Data.user_info.data.user.unique_id === '' ? Detail_Data.user_info.data.user.short_id : Detail_Data.user_info.data.user.unique_id,
             粉丝: this.count(Detail_Data.user_info.data.user.follower_count),
             获赞: this.count(Detail_Data.user_info.data.user.total_favorited),
-            关注: this.count(Detail_Data.user_info.data.user.following_count)
+            关注: this.count(Detail_Data.user_info.data.user.following_count),
+            cooperation_info: (() => {
+              const raw = Detail_Data.cooperation_info
+              if (!raw) return undefined
+
+              const rawCreators = Array.isArray(raw.co_creators) ? raw.co_creators : []
+
+              // 作者标识，用于对比是否在共创列表中
+              const author = Detail_Data.author
+              const authorUid = author?.uid
+              const authorSecUid = author?.sec_uid
+              const authorNickname = author?.nickname
+
+              const authorInCreators = rawCreators.some((c: { uid: string; sec_uid: string; nickname: string }) =>
+                (authorUid && c.uid && c.uid === authorUid) ||
+                (authorSecUid && c.sec_uid && c.sec_uid === authorSecUid) ||
+                (authorNickname && c.nickname && c.nickname === authorNickname)
+              )
+
+              // 只保留：头像链接一条、名字、职位（兼容现有组件的 avatar_thumb 结构）
+              const co_creators = rawCreators.map((c: { avatar_thumb: { url_list: (string | undefined)[]; uri: any }; nickname: any; role_title: any }) => {
+                const firstUrl =
+                  c.avatar_thumb?.url_list?.[0] ??
+                  (c.avatar_thumb?.uri ? `https://p3.douyinpic.com/${c.avatar_thumb.uri}` : undefined)
+
+                return {
+                  avatar_thumb: firstUrl ? { url_list: [firstUrl] } : undefined,
+                  nickname: c.nickname,
+                  role_title: c.role_title
+                }
+              })
+
+              // 基础人数取接口给的 co_creator_nums 与列表长度的较大值
+              const baseCount = Math.max(Number(raw.co_creator_nums || 0), co_creators.length)
+              const teamCount = baseCount + (authorInCreators ? 0 : 1)
+
+              return {
+                co_creator_nums: teamCount,
+                co_creators
+              }
+            })()
           })
         }
       }
@@ -199,23 +239,16 @@ export class DouYinpush extends Base {
                 /** 默认视频下载地址 */
                 let downloadUrl = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
                 // 根据配置文件自动选择分辨率
-                if (Config.douyin.autoResolution) {
-                  logger.debug(`开始排除不符合条件的视频分辨率；\n
+                logger.debug(`开始排除不符合条件的视频分辨率；\n
                     共拥有${logger.yellow(Detail_Data.video.bit_rate.length)}个视频源\n
                     视频ID：${logger.green(Detail_Data.aweme_id)}\n
                     分享链接：${logger.green(Detail_Data.share_url)}
                     `)
-                  const videoObj = douyinProcessVideos(Detail_Data.video.bit_rate, Config.upload.filelimit)
-                  downloadUrl = await new Networks({
-                    url: videoObj[0].play_addr.url_list[0],
-                    headers: douyinBaseHeaders
-                  }).getLongLink()
-                } else {
-                  downloadUrl = await new Networks({
-                    url: Detail_Data.video.bit_rate[0].play_addr.url_list[0] ?? Detail_Data.video.play_addr_h264.url_list[0] ?? Detail_Data.video.play_addr_h264.url_list[0],
-                    headers: douyinBaseHeaders
-                  }).getLongLink()
-                }
+                const videoObj = douyinProcessVideos(Detail_Data.video.bit_rate, Config.douyin.videoQuality)
+                downloadUrl = await new Networks({
+                  url: videoObj[0].play_addr.url_list[0],
+                  headers: douyinBaseHeaders
+                }).getLongLink()
                 // 下载视频
                 await downloadVideo(this.e, {
                   video_url: downloadUrl,

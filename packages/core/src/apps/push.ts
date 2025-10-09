@@ -155,14 +155,54 @@ const handleTestDouyinPush = wrapWithErrorHandler(async (e) => {
     pinglun: Common.count(workInfo.data.aweme_detail.statistics.comment_count),
     share: Common.count(workInfo.data.aweme_detail.statistics.share_count),
     shouchang: Common.count(workInfo.data.aweme_detail.statistics.collect_count),
-    create_time: Common.convertTimestampToDateTime(workInfo.data.aweme_detail.create_time / 1000),
+    create_time: Common.convertTimestampToDateTime(workInfo.data.aweme_detail.create_time),
     avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userProfile.data.user.avatar_larger.uri,
     share_url: Config.douyin.push.shareType === 'web' ? realUrl : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${workInfo.data.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`,
     username: workInfo.data.aweme_detail.author.nickname,
     抖音号: userProfile.data.user.unique_id === '' ? userProfile.data.user.short_id : userProfile.data.user.unique_id,
     粉丝: Common.count(userProfile.data.user.follower_count),
     获赞: Common.count(userProfile.data.user.total_favorited),
-    关注: Common.count(userProfile.data.user.following_count)
+    关注: Common.count(userProfile.data.user.following_count),
+    cooperation_info: (() => {
+      const raw = workInfo.data.aweme_detail.cooperation_info
+      if (!raw) return undefined
+
+      const rawCreators = Array.isArray(raw.co_creators) ? raw.co_creators : []
+
+      // 作者标识，用于对比是否在共创列表中
+      const author = workInfo.data.aweme_detail.author
+      const authorUid = author?.uid
+      const authorSecUid = author?.sec_uid
+      const authorNickname = author?.nickname
+
+      const authorInCreators = rawCreators.some((c: { uid: string; sec_uid: string; nickname: string }) =>
+        (authorUid && c.uid && c.uid === authorUid) ||
+        (authorSecUid && c.sec_uid && c.sec_uid === authorSecUid) ||
+        (authorNickname && c.nickname && c.nickname === authorNickname)
+      )
+
+      // 只保留：头像链接一条、名字、职位（兼容现有组件的 avatar_thumb 结构）
+      const co_creators = rawCreators.map((c: { avatar_thumb: { url_list: (string | undefined)[]; uri: any }; nickname: any; role_title: any }) => {
+        const firstUrl =
+          c.avatar_thumb?.url_list?.[0] ??
+          (c.avatar_thumb?.uri ? `https://p3.douyinpic.com/${c.avatar_thumb.uri}` : undefined)
+
+        return {
+          avatar_thumb: firstUrl ? { url_list: [firstUrl] } : undefined,
+          nickname: c.nickname,
+          role_title: c.role_title
+        }
+      })
+
+      // 基础人数取接口给的 co_creator_nums 与列表长度的较大值
+      const baseCount = Math.max(Number(raw.co_creator_nums || 0), co_creators.length)
+      const teamCount = baseCount + (authorInCreators ? 0 : 1)
+
+      return {
+        co_creator_nums: teamCount,
+        co_creators
+      }
+    })()
   })
 
   e.reply(img)
