@@ -4966,6 +4966,10 @@
     height: calc(var(--spacing) * 20);
   }
 
+  .h-21 {
+    height: calc(var(--spacing) * 21);
+  }
+
   .h-23 {
     height: calc(var(--spacing) * 23);
   }
@@ -5004,6 +5008,14 @@
 
   .h-50 {
     height: calc(var(--spacing) * 50);
+  }
+
+  .h-51 {
+    height: calc(var(--spacing) * 51);
+  }
+
+  .h-54 {
+    height: calc(var(--spacing) * 54);
   }
 
   .h-64 {
@@ -5334,6 +5346,10 @@
     width: calc(var(--spacing) * 20);
   }
 
+  .w-21 {
+    width: calc(var(--spacing) * 21);
+  }
+
   .w-23 {
     width: calc(var(--spacing) * 23);
   }
@@ -5368,6 +5384,14 @@
 
   .w-50 {
     width: calc(var(--spacing) * 50);
+  }
+
+  .w-51 {
+    width: calc(var(--spacing) * 51);
+  }
+
+  .w-54 {
+    width: calc(var(--spacing) * 54);
   }
 
   .w-80 {
@@ -5410,6 +5434,10 @@
     width: 95%;
   }
 
+  .w-\[120px\] {
+    width: 120px;
+  }
+
   .w-\[130\%\] {
     width: 130%;
   }
@@ -5438,6 +5466,10 @@
     width: 350px;
   }
 
+  .w-\[420px\] {
+    width: 420px;
+  }
+
   .w-\[580px\] {
     width: 580px;
   }
@@ -5448,6 +5480,10 @@
 
   .w-\[650px\] {
     width: 650px;
+  }
+
+  .w-\[960px\] {
+    width: 960px;
   }
 
   .w-\[1440px\] {
@@ -5636,6 +5672,10 @@
 
   .min-w-40 {
     min-width: calc(var(--spacing) * 40);
+  }
+
+  .min-w-\[120px\] {
+    min-width: 120px;
   }
 
   .min-w-\[200px\] {
@@ -6320,6 +6360,10 @@
     border-radius: 10px;
   }
 
+  .rounded-\[20px\] {
+    border-radius: 20px;
+  }
+
   .rounded-\[25px\] {
     border-radius: 25px;
   }
@@ -6983,6 +7027,10 @@
 
   .bg-foreground-100 {
     background-color: hsl(var(--heroui-foreground-100) / 1);
+  }
+
+  .bg-foreground-200 {
+    background-color: hsl(var(--heroui-foreground-200) / 1);
   }
 
   .bg-foreground-400 {
@@ -7681,6 +7729,10 @@
     padding-right: calc(var(--spacing) * 1);
   }
 
+  .pr-2 {
+    padding-right: calc(var(--spacing) * 2);
+  }
+
   .pr-20 {
     padding-right: calc(var(--spacing) * 20);
   }
@@ -7896,8 +7948,16 @@
     font-size: 25px;
   }
 
+  .text-\[26px\] {
+    font-size: 26px;
+  }
+
   .text-\[27px\] {
     font-size: 27px;
+  }
+
+  .text-\[30px\] {
+    font-size: 30px;
   }
 
   .text-\[34px\] {
@@ -7910,6 +7970,10 @@
 
   .text-\[40px\] {
     font-size: 40px;
+  }
+
+  .text-\[42px\] {
+    font-size: 42px;
   }
 
   .text-\[45px\] {

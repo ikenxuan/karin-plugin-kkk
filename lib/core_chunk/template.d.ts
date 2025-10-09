@@ -851,6 +851,17 @@ interface DouyinDynamicProps extends BaseComponentProps {
         粉丝: string;
         /** 分享链接 */
         share_url: string;
+        /** 合作信息 */
+        cooperation_info?: {
+            co_creator_nums: number;
+            co_creators: Array<{
+                avatar_thumb: {
+                    url_list: string[];
+                };
+                nickname: string;
+                role_title: string;
+            }>;
+        };
     };
     /** 预生成的二维码数据URL */
     qrCodeDataUrl: string;
