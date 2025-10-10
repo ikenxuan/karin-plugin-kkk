@@ -281,7 +281,7 @@ export const XiaohongshuEmoji = (data: any) => {
 }
 
 /**
- * 处理小红书笔记描述中的表情
+ * 处理小红书笔记描述中的表情和话题标签
  * @param text 原始文本
  * @param emojiData 表情数据
  * @returns 处理后的HTML文本
@@ -292,6 +292,9 @@ const processXiaohongshuEmojis = (text: string, emojiData: any): string => {
   }
 
   let processedText = text
+
+  // 首先处理话题标签，移除[话题]标识
+  processedText = processedText.replace(/\[话题\]/g, '')
 
   // 遍历表情数据，替换文本中的表情
   for (const emoji of emojiData) {

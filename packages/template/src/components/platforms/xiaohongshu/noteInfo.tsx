@@ -167,7 +167,7 @@ export const XiaohongshuNoteInfo: React.FC<Omit<XiaohongshuNoteInfoProps, 'templ
               <div className="transform-gpu scale-[3.5] origin-right">
                 <Button 
                   size="sm" 
-                  className='text-white bg-red-500 hover:bg-red-600'
+                  className='text-white bg-[#FF2442]'
                 >
                   <div className='flex items-center'>
                     <ExternalLink className="mr-1 w-4 h-4" />
