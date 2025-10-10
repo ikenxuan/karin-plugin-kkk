@@ -58,7 +58,7 @@ const NoteInfoHeader: React.FC<XiaohongshuNoteInfoHeaderProps> = ({
           <img
             src='/image/xiaohongshu/logo.png'
             alt='小红书Logo'
-            className='object-contain mb-10 max-w-full max-h-full scale-150 ml-15'
+            className='object-contain mb-20 max-w-full max-h-full scale-180 ml-15'
             onError={(e) => {
               const target = e.target as HTMLImageElement
               target.style.display = 'none'
@@ -119,7 +119,7 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
           ))}
         </div>
 
-        {/* 评论文本 - 使用dangerouslySetInnerHTML渲染HTML */}
+        {/* 评论文本 */}
         <div
           className='text-[60px] text-foreground leading-relaxed mb-2 whitespace-pre-wrap select-text [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em] [&_span]:inline'
           dangerouslySetInnerHTML={{ __html: comment.content }}
@@ -254,6 +254,7 @@ export const XiaohongshuComment: React.FC<Omit<XiaohongshuCommentProps, 'templat
 
   return (
     <DefaultLayout {...props}>
+      <div className='h-30' />
       <div className='w-full min-h-screen'>
         {/* 页面头部 */}
         <NoteInfoHeader
