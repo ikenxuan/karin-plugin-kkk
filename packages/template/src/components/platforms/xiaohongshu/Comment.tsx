@@ -1,5 +1,5 @@
 import { Heart, MessageCircle, QrCode } from 'lucide-react'
-import React, { useMemo } from 'react'
+import React from 'react'
 
 import type {
   XiaohongshuCommentItemComponentProps,
@@ -99,7 +99,7 @@ const NoteInfoHeader: React.FC<XiaohongshuNoteInfoHeaderProps> = ({
  */
 const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { isLast?: boolean }> = ({ comment, isLast = false }) => {
   return (
-    <div className={`flex px-10 pt-10 ${isLast ? 'pb-0' : 'pb-10'}`}>
+    <div className={`flex px-10 pt-15 ${isLast ? 'pb-0' : 'pb-15'}`}>
       {/* 用户头像 */}
       <img
         src={comment.user_info.image}
@@ -111,12 +111,24 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
       <div className='flex-1'>
         {/* 用户信息 */}
         <div className='mb-12.5 text-[50px] text-foreground-600 relative flex items-center select-text'>
-          <span className='font-medium'>{comment.user_info.nickname}</span>
-          {comment.show_tags && comment.show_tags.length > 0 && comment.show_tags.map((tag, index) => (
-            <div key={index} className='inline-block px-4 py-1 rounded-full ml-3 text-[40px] bg-danger text-danger-foreground'>
-              {tag}
-            </div>
-          ))}
+          <span className='text-5xl'>{comment.user_info.nickname}</span>
+          {comment.show_tags && comment.show_tags.length > 0 && comment.show_tags.map((tag, index) => {
+            if (tag === 'is_author') {
+              return (
+                <div key={index} className='inline-block px-6 py-3 ml-3 text-4xl rounded-full bg-default-100 text-default-500'>
+                  作者
+                </div>
+              )
+            } else if (tag === 'user_top') {
+              return (
+                <div key={index} className='inline-block px-6 py-3 rounded-full ml-3 text-4xl bg-[#ff2e4d0f] text-[#ff2e4d]'>
+                  置顶评论
+                </div>
+              )
+            } else {
+              return null
+            }
+          })}
         </div>
 
         {/* 评论文本 */}
@@ -178,7 +190,7 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
                 <div className='flex items-start space-x-4'>
                   <img
                     src={subComment.user_info.image}
-                    className='w-[120px] h-[120px] rounded-full object-cover'
+                    className='object-cover mr-8 w-32 h-32 rounded-full'
                     alt='用户头像'
                   />
                   <div className='flex-1'>
@@ -186,7 +198,7 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
                       <span className='text-[40px] font-medium text-foreground-600'>{subComment.user_info.nickname}</span>
                       {subComment.show_tags && subComment.show_tags.length > 0 && subComment.show_tags.map((tag, tagIndex) => (
                         tag === 'is_author' ? (
-                          <div key={tagIndex} className='inline-block px-3 ml-2 py-1 rounded-2xl text-[30px] bg-default-100 text-default-500'>
+                          <div key={tagIndex} className='inline-block px-5 py-2 ml-2 text-3xl rounded-full bg-default-100 text-default-500'>
                             作者
                           </div>
                         ) : null
@@ -227,63 +239,36 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
  * @returns JSX元素
  */
 export const XiaohongshuComment: React.FC<Omit<XiaohongshuCommentProps, 'templateType' | 'templateName'>> = React.memo((props) => {
-  const processedData = useMemo(() => {
-    if (!props.data) {
-      return {
-        commentsArray: [],
-        type: '图文' as const,
-        commentLength: 0,
-        imageLength: undefined,
-        useDarkTheme: false
-      }
-    }
-
-    const { CommentsData, Type, CommentLength, ImageLength } = props.data
-    // 直接使用CommentsData，不再需要jsonArray包装
-    const commentsArray = CommentsData || []
-
-    return {
-      commentsArray,
-      type: Type,
-      commentLength: CommentLength,
-      imageLength: ImageLength
-    }
-  }, [props.data])
-
-  const { commentsArray, type, commentLength, imageLength } = processedData
-
   return (
     <DefaultLayout {...props}>
       <div className='h-30' />
-      <div className='w-full min-h-screen'>
-        {/* 页面头部 */}
-        <NoteInfoHeader
-          type={type}
-          commentLength={commentLength}
-          imageLength={imageLength}
-          qrCodeDataUrl={props.qrCodeDataUrl}
-        />
+      {/* 页面头部 */}
+      <NoteInfoHeader
+        type={props.data.Type}
+        commentLength={props.data.CommentLength}
+        imageLength={props.data.ImageLength}
+        qrCodeDataUrl={props.qrCodeDataUrl}
+      />
 
-        {/* 评论列表 */}
-        <div className='max-w-[1200px] mx-auto'>
-          {commentsArray.length > 0
-            ? (
-              <div className='divide-y divide-divider'>
-                {commentsArray.map((comment, index) => (
-                  <CommentItemComponent
-                    key={comment.id}
-                    comment={comment}
-                    isLast={index === commentsArray.length - 1}
-                  />
-                ))}
-              </div>
-            )
-            : (
-              <div className='flex justify-center items-center py-20'>
-                <p className='text-[60px] text-foreground-400'>暂无评论</p>
-              </div>
-            )}
-        </div>
+      {/* 评论列表 */}
+      <div className='overflow-auto mx-20 max-w-full'>
+        {props.data.CommentsData.length > 0
+          ? (
+            <div className='divide-y divide-divider'>
+              {props.data.CommentsData.map((comment, index) => (
+                <CommentItemComponent
+                  key={comment.id}
+                  comment={comment}
+                  isLast={index === props.data.CommentsData.length - 1}
+                />
+              ))}
+            </div>
+          )
+          : (
+            <div className='flex justify-center items-center py-20'>
+              <p className='text-[60px] text-foreground-400'>暂无评论</p>
+            </div>
+          )}
       </div>
     </DefaultLayout>
   )

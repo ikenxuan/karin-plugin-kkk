@@ -132,7 +132,12 @@ export async function xiaohongshuComments (data: any, emojiData: any, useDarkThe
       sub_comments: comment.sub_comments || [],
       show_tags: comment.show_tags || [],
       at_users: comment.at_users || [],
-      status: comment.status
+      status: comment.status,
+      isTop: Array.isArray(comment.show_tags) && comment.show_tags.some((t: any) => {
+        if (typeof t === 'string') return t === 'user_top'
+        if (t && typeof t === 'object') return t.name === 'user_top' || t.tag === 'user_top'
+        return false
+      })
     }
 
     // 处理子评论
@@ -150,7 +155,12 @@ export async function xiaohongshuComments (data: any, emojiData: any, useDarkThe
         show_tags: subComment.show_tags || [],
         at_users: subComment.at_users || [],
         status: subComment.status,
-        target_comment: subComment.target_comment
+        target_comment: subComment.target_comment,
+        isTop: Array.isArray(subComment.show_tags) && subComment.show_tags.some((t: any) => {
+          if (typeof t === 'string') return t === 'user_top'
+          if (t && typeof t === 'object') return t.name === 'user_top' || t.tag === 'user_top'
+          return false
+        })
       }))
     }
 
@@ -192,6 +202,9 @@ export async function xiaohongshuComments (data: any, emojiData: any, useDarkThe
       }
     }
   }
+
+  // 在返回前进行置顶排序：isTop=true 的评论优先
+  comments.sort((a: any, b: any) => Number(b.isTop) - Number(a.isTop))
 
   return comments.slice(0, Config.xiaohongshu.numcomment)
 }

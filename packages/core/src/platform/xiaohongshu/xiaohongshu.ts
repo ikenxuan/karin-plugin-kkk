@@ -37,7 +37,8 @@ export class Xiaohongshu extends Base {
   }
 
   async RESOURCES (data: XiaohongshuIdData) {
-    Config.xiaohongshu?.tip && await this.e.reply('检测到小红书链接，开始解析')
+    Config.app.EmojiReply && !this.e.isPrivate && await this.e.bot.setMsgReaction(this.e.contact, this.e.messageId, Config.app.EmojiReplyID, true)
+    Config.xiaohongshu.tip && await this.e.reply('检测到小红书链接，开始解析')
     const NoteData = await this.amagi.getXiaohongshuData('单个笔记数据', {
       typeMode: 'strict',
       note_id: data.note_id,
@@ -86,7 +87,7 @@ export class Xiaohongshu extends Base {
             CommentsData: processedComments,
             CommentLength: processedComments.length,
             ImageLength: NoteData.data.data.items[0].note_card!.image_list?.length || 0,
-            share_url: `https://www.xiaohongshu.com/explore/${data.note_id}`
+            share_url: `https://www.xiaohongshu.com/discovery/item/${data.note_id}?source=webshare&xhsshare=pc_web&xsec_token=${data.xsec_token}&xsec_source=pc_share`
           }
         )
         this.e.reply(commentListImg)
@@ -94,7 +95,7 @@ export class Xiaohongshu extends Base {
     }
     
     // 图片笔记
-    if (!NoteData.data.data.items[0].note_card!.video) {
+    if (!NoteData.data.data.items[0].note_card!.video && Config.xiaohongshu.sendContent.includes('image')) {
       const Imgs: ImageElement[] = []
       for (const item of NoteData.data.data.items[0].note_card!.image_list) {
         Imgs.push(segment.image(item.url_default))

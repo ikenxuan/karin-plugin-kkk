@@ -280,7 +280,8 @@ export const webConfig = defineConfig({
                   }),
                   components.checkbox.create('sendContent:checkbox:3', {
                     label: '视频文件',
-                    value: 'video'
+                    value: 'video',
+                    description: '仅对视频作品有效'
                   })
                 ]
               }),
@@ -567,7 +568,8 @@ export const webConfig = defineConfig({
                   }),
                   components.checkbox.create('sendContent:checkbox:3', {
                     label: '视频文件',
-                    value: 'video'
+                    value: 'video',
+                    description: '仅对视频稿件有效'
                   })
                 ]
               }),
@@ -958,8 +960,13 @@ export const webConfig = defineConfig({
                     value: 'comment'
                   }),
                   components.checkbox.create('sendContent:checkbox:3', {
+                    label: '笔记图片',
+                    value: 'image'
+                  }),
+                  components.checkbox.create('sendContent:checkbox:4', {
                     label: '视频文件',
-                    value: 'video'
+                    value: 'video',
+                    description: '仅对视频笔记有效'
                   })
                 ]
               }),
