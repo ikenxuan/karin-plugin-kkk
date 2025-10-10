@@ -20,7 +20,7 @@
     "web": "pnpm --filter web run dev"
   },
   "dependencies": {
-    "@ikenxuan/amagi": "https://pkg.pr.new/@ikenxuan/amagi@6e0477c",
+    "@ikenxuan/amagi": "5.5.0",
     "@tailwindcss/vite": "4.1.14",
     "@vitejs/plugin-react": "^5.0.2",
     "clsx": "^2.1.1",
