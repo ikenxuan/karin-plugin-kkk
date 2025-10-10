@@ -1,3 +1,5 @@
+import { Config } from '@/module/utils/Config'
+
 /**
  * 处理评论中的表情
  * @param text 原始文本
@@ -41,6 +43,35 @@ const processCommentEmojis = (text: string, emojiData: any): string => {
 }
 
 /**
+ * 处理评论中的@用户
+ * @param text 原始文本
+ * @param atUsers @用户列表
+ * @param useDarkTheme 是否使用深色主题
+ * @returns 处理后的文本
+ */
+const processAtUsers = (text: string, atUsers: any[], useDarkTheme: boolean = false): string => {
+  if (!text || !atUsers || !Array.isArray(atUsers) || atUsers.length === 0) {
+    return text
+  }
+
+  let processedText = text
+
+  // 遍历@用户列表，替换文本中的@用户昵称
+  for (const atUser of atUsers) {
+    if (atUser.nickname && processedText.includes(`@${atUser.nickname}`)) {
+      // 使用正则表达式进行全局替换，确保特殊字符被正确转义
+      const escapedNickname = atUser.nickname.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      const regex = new RegExp(`@${escapedNickname}`, 'g')
+
+      const spanClass = useDarkTheme ? 'text-[#c7daef]' : 'text-[#13386c]'
+      processedText = processedText.replace(regex, `<span class="${spanClass}">@${atUser.nickname}</span>`)
+    }
+  }
+
+  return processedText
+}
+
+/**
  * 格式化时间戳为相对时间
  * @param timestamp 时间戳（毫秒）
  * @returns 相对时间字符串
@@ -75,9 +106,10 @@ function getRelativeTimeFromTimestamp (timestamp: number): string {
  * 处理小红书评论数据 - 简化版本，直接返回评论数组
  * @param data 完整的评论数据
  * @param emojiData 处理过后的emoji列表
+ * @param useDarkTheme 是否使用深色主题
  * @returns 处理后的评论数组
  */
-export async function xiaohongshuComments (data: any, emojiData: any): Promise<any[]> {
+export async function xiaohongshuComments (data: any, emojiData: any, useDarkTheme: boolean = false): Promise<any[]> {
   if (!data.data || !data.data.comments || data.data.comments.length === 0) {
     return []
   }
@@ -125,10 +157,13 @@ export async function xiaohongshuComments (data: any, emojiData: any): Promise<a
     comments.push(processedComment)
   }
 
-  // 处理文本格式和表情包
+  // 处理文本格式、表情包和@用户
   for (const comment of comments) {
     // 处理换行符和空格
     comment.content = comment.content.replace(/\n/g, '<br>').replace(/ {2,}/g, (match: string) => '&nbsp;'.repeat(match.length))
+
+    // 处理@用户（在表情处理之前，避免冲突）
+    comment.content = processAtUsers(comment.content, comment.at_users, useDarkTheme)
 
     // 处理表情包
     comment.content = processCommentEmojis(comment.content, emojiData)
@@ -144,6 +179,9 @@ export async function xiaohongshuComments (data: any, emojiData: any): Promise<a
         // 处理换行符和空格
         subComment.content = subComment.content.replace(/\n/g, '<br>').replace(/ {2,}/g, (match: string) => '&nbsp;'.repeat(match.length))
 
+        // 处理@用户（在表情处理之前，避免冲突）
+        subComment.content = processAtUsers(subComment.content, subComment.at_users, useDarkTheme)
+
         // 处理表情包
         subComment.content = processCommentEmojis(subComment.content, emojiData)
 
@@ -155,5 +193,5 @@ export async function xiaohongshuComments (data: any, emojiData: any): Promise<a
     }
   }
 
-  return comments
+  return comments.slice(0, Config.xiaohongshu.numcomment)
 }
