@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.0 (2025-10-10)
+
+## What's Changed
+* feat!: 适配新版Karin by @ikenxuan in https://github.com/ikenxuan/karin-plugin-kkk/pull/21
+* chore(main): release 1.0.0 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/22
+
+
+**Full Changelog**: https://github.com/ikenxuan/karin-plugin-kkk/compare/v0.1.9...v1.0.0
+
 ## 0.0.0 (2025-10-07)
 
 ## What's Changed
