@@ -1,3 +1,4 @@
+// 顶部模块导入
 import karin, { logger } from 'node-karin'
 
 import { Common } from '@/module'
@@ -6,11 +7,13 @@ import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { Bilibili, getBilibiliID } from '@/platform/bilibili'
 import { DouYin, getDouyinID } from '@/platform/douyin'
 import { fetchKuaishouData, getKuaishouID, Kuaishou } from '@/platform/kuaishou'
+import { getXiaohongshuID, Xiaohongshu } from '@/platform/xiaohongshu'
 
 const reg = {
   douyin: /^.*((www|v|jx|m)\.(douyin|iesdouyin)\.com|douyin\.com\/(video|note)).*/,
   bilibili: /(bilibili.com|b23.tv|t.bilibili.com|bili2233.cn|BV[a-zA-Z0-9]{10,})/,
-  kuaishou: /^((.*)快手(.*)快手(.*)|(.*)v\.kuaishou(.*)|(.*)kuaishou\.com\/f\/[a-zA-Z0-9]+.*)$/
+  kuaishou: /^((.*)快手(.*)快手(.*)|(.*)v\.kuaishou(.*)|(.*)kuaishou\.com\/f\/[a-zA-Z0-9]+.*)$/,
+  xiaohongshu: /^((.*)小红书(.*)|(.*)xiaohongshu\.com(.*)|(.*)xhslink\.com\/[a-zA-Z0-9/]+.*|(.*)xiaohongshu\.com\/(discovery\/item|explore)\/[a-zA-Z0-9]+.*)$/
 }
 
 // 包装抖音处理函数
@@ -57,6 +60,22 @@ const handleKuaishou = wrapWithErrorHandler(async (e) => {
   businessName: '快手视频解析'
 })
 
+// 包装小红书处理函数
+const handleXiaohongshu = wrapWithErrorHandler(async (e) => {
+  const cleaned = e.msg.replaceAll('\\', '')
+  const m = cleaned.match(/https?:\/\/[^\s"'<>]+/)
+  const url = m?.[0]
+  if (!url) {
+    logger.warn(`未能在消息中找到有效链接: ${e.msg}`)
+    return true
+  }
+  const iddata = await getXiaohongshuID(url)
+  await new Xiaohongshu(e, iddata).RESOURCES(iddata)
+  return true
+}, {
+  businessName: '小红书视频解析'
+})
+
 // 包装引用解析函数
 const handlePrefix = wrapWithErrorHandler(async (e) => {
   e.msg = await Common.getReplyMessage(e)
@@ -66,6 +85,8 @@ const handlePrefix = wrapWithErrorHandler(async (e) => {
     return await handleBilibili(e)
   } else if (reg.kuaishou.test(e.msg)) {
     return await handleKuaishou(e)
+  } else if (reg.xiaohongshu.test(e.msg)) {
+    return await handleXiaohongshu(e)
   }
 }, {
   businessName: '引用解析'
@@ -87,6 +108,11 @@ const kuaishou = karin.command(reg.kuaishou, handleKuaishou, {
   priority: Config.app.videoTool ? -Infinity : 800
 })
 
+const xiaohongshu = karin.command(reg.xiaohongshu, handleXiaohongshu, {
+  name: 'kkk-视频功能-小红书',
+  priority: Config.app.videoTool ? -Infinity : 800
+})
+
 export const prefix = karin.command(/^#?(解析|kkk解析)/, handlePrefix, {
   name: 'kkk-视频功能-引用解析'
 })
@@ -94,3 +120,4 @@ export const prefix = karin.command(/^#?(解析|kkk解析)/, handlePrefix, {
 export const douyinAPP = Config.douyin.switch && douyin
 export const bilibiliAPP = Config.bilibili.switch && bilibili
 export const kuaishouAPP = Config.kuaishou.switch && kuaishou
+export const xiaohongshuAPP = Config.xiaohongshu.switch && xiaohongshu

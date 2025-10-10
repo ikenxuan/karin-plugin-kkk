@@ -6,4 +6,6 @@ export interface cookiesConfig {
   douyin: string
   /** 快手ck */
   kuaishou: string
+  /** 小红书ck */
+  xiaohongshu: string
 }

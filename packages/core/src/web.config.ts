@@ -82,6 +82,15 @@ export const webConfig = defineConfig({
                 placeholder: '',
                 rules: undefined,
                 isRequired: false
+              }),
+              components.input.string('xiaohongshu', {
+                label: '小红书',
+                type: 'text',
+                description: '请输入你的小红书Cookies，不输入则无法使用小红书相关功能噢',
+                defaultValue: all.cookies.xiaohongshu,
+                placeholder: '',
+                rules: undefined,
+                isRequired: false
               })
             ]
           })
