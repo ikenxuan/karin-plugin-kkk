@@ -8,4 +8,8 @@ export interface xiaohongshuConfig {
   sendContent: ['info' | 'comment']
   /** 小红书评论数量 */
   numcomment: number
+  /** 视频画质偏好设置，'adapt' 为自动根据「maxAutoVideoSize」大小选择，其他为固定画质 */
+  videoQuality: 'adapt' | '540p' | '720p' | '1080p' | '2k' | '4k'
+  /** 视频体积上限，自动画质模式下可接受的最大视频大小（单位：MB），仅在 「videoQuality」 为 'adapt' 时生效 */
+  maxAutoVideoSize: number
 }
