@@ -1,5 +1,18 @@
 # 变更日志
 
+## [2.3.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.2.1...v2.3.0) (2025-10-10)
+
+
+### ✨ 新功能
+
+* **douyin:** 添加共创信息展示功能并优化视频画质选择 ([88295a1](https://github.com/ikenxuan/karin-plugin-kkk/commit/88295a1a319ec2006b2e74c70ef67bcae774a779))
+
+
+### 🐛 错误修复
+
+* release ([1e864f3](https://github.com/ikenxuan/karin-plugin-kkk/commit/1e864f3fb206dbb4bd6c0b941845e60e7699d2ad))
+* 私聊不进行表情回复 close [#162](https://github.com/ikenxuan/karin-plugin-kkk/issues/162) ([da82635](https://github.com/ikenxuan/karin-plugin-kkk/commit/da826359e95b77cbe9705e6c84708b4a775b8786))
+
 ## [2.2.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.2.0...v2.2.1) (2025-10-08)
 
 
