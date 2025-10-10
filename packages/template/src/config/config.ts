@@ -210,12 +210,12 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
                 default: module.XiaohongshuNoteInfo
               }))
             })
-          // case 'comment':
-          //   return createComponentConfig(baseComponent, {
-          //     lazyComponent: () => import('../components/platforms/kuaishou/Comment').then(module => ({
-          //       default: module.KuaishouComment
-          //     }))
-          //   })
+          case 'comment':
+            return createComponentConfig(baseComponent, {
+              lazyComponent: () => import('../components/platforms/xiaohongshu/Comment').then(module => ({
+                default: module.XiaohongshuComment
+              }))
+            })
           default:
             return createComponentConfig(baseComponent)
         }

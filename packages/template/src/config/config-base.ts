@@ -223,6 +223,14 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
         enabled: true,
         componentPath: 'platforms/xiaohongshu/noteInfo',
         exportName: 'XiaohongshuNoteInfo'
+      },
+      {
+        id: 'comment',
+        name: '评论列表',
+        description: '小红书评论列表展示模板',
+        enabled: true,
+        componentPath: 'platforms/xiaohongshu/comment',
+        exportName: 'XiaohongshuComment'
       }
     ]
   },

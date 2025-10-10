@@ -244,7 +244,8 @@ export class Bilibilipush extends Base {
                   total_favorited: Count(userINFO.data.data.like_num),
                   following_count: Count(userINFO.data.data.card.attention),
                   render_time: Common.getCurrentTime(),
-                  dynamicTYPE: '视频动态推送'
+                  dynamicTYPE: '视频动态推送',
+                  dynamic_id: dynamicId
                 }
               )
             }

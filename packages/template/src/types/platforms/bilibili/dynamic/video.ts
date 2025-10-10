@@ -50,6 +50,8 @@ export interface BilibiliVideoDynamicProps extends BaseComponentProps {
     dynamicTYPE: string
     /** 分享链接 */
     share_url: string
+    /** 动态ID */
+    dynamic_id: string
   }
   /** 预生成的二维码数据URL */
   qrCodeDataUrl?: string
@@ -87,6 +89,8 @@ export interface BilibiliVideoDynamicContentProps {
   duration_text: string
   /** 动态创建时间 */
   create_time: string
+  /** 动态ID */
+  dynamic_id: string
   /** 是否使用深色主题 */
   useDarkTheme?: boolean
 }

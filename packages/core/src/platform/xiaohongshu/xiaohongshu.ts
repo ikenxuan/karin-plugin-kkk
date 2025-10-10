@@ -4,6 +4,7 @@ import { logger } from 'node-karin'
 import { Base, baseHeaders, downloadVideo, Render } from '@/module'
 import { Config } from '@/module/utils/Config'
 
+import { xiaohongshuComments } from './comments'
 import { XiaohongshuIdData } from './getID'
 
 // 定义小红书视频流类型
@@ -45,23 +46,53 @@ export class Xiaohongshu extends Base {
     const EmojiList = await this.amagi.getXiaohongshuData('表情列表', { typeMode: 'strict' })
     const formattedEmojis = XiaohongshuEmoji(EmojiList)
 
-    const noteInfoImg = await Render('xiaohongshu/noteInfo',
-      {
-        title: NoteData.data.data.items[0].note_card!.title,
-        desc: processXiaohongshuEmojis(
-          NoteData.data.data.items[0].note_card!.desc,
-          formattedEmojis
-        ),
-        statistics: NoteData.data.data.items[0].note_card!.interact_info,
-        note_id: NoteData.data.data.items[0].note_card!.note_id,
-        author: NoteData.data.data.items[0].note_card!.user,
-        image_url: NoteData.data.data.items[0].note_card!.image_list[0].url_default,
-        time: NoteData.data.data.items[0].note_card!.time,
-        ip_location: NoteData.data.data.items[0].note_card!.ip_location
-      }
-    )
-    this.e.reply(noteInfoImg)
+    // 笔记信息
+    if (Config.xiaohongshu.sendContent.some(item => item === 'info')) {
+      const noteInfoImg = await Render('xiaohongshu/noteInfo',
+        {
+          title: NoteData.data.data.items[0].note_card!.title,
+          desc: processXiaohongshuEmojis(
+            NoteData.data.data.items[0].note_card!.desc,
+            formattedEmojis
+          ),
+          statistics: NoteData.data.data.items[0].note_card!.interact_info,
+          note_id: NoteData.data.data.items[0].note_card!.note_id,
+          author: NoteData.data.data.items[0].note_card!.user,
+          image_url: NoteData.data.data.items[0].note_card!.image_list[0].url_default,
+          time: NoteData.data.data.items[0].note_card!.time,
+          ip_location: NoteData.data.data.items[0].note_card!.ip_location
+        }
+      )
+      this.e.reply(noteInfoImg)
+    }
 
+    // 评论列表
+    if (Config.xiaohongshu.sendContent.some(item => item === 'comment')) {
+      const CommentData = await this.amagi.getXiaohongshuData('评论数据', {
+        typeMode: 'strict',
+        note_id: data.note_id,
+        xsec_token: data.xsec_token
+      })
+
+      if (!CommentData.data.data.comments || CommentData.data.data.comments.length === 0) {
+        await this.e.reply('这个笔记没有评论 ~')
+      } else {
+        // 使用简化的评论处理函数，直接返回评论数组
+        const processedComments = await xiaohongshuComments(CommentData.data, formattedEmojis)
+
+        const commentListImg = await Render('xiaohongshu/comment',
+          {
+            Type: NoteData.data.data.items[0].note_card!.video ? '视频' : '图文',
+            CommentsData: processedComments,
+            CommentLength: processedComments.length,
+            ImageLength: NoteData.data.data.items[0].note_card!.image_list?.length || 0,
+            share_url: `https://www.xiaohongshu.com/explore/${data.note_id}`
+          }
+        )
+        this.e.reply(commentListImg)
+      }
+    }
+    
     // 图片笔记
     if (!NoteData.data.data.items[0].note_card!.video) {
       const Imgs: ImageElement[] = []
@@ -82,7 +113,7 @@ export class Xiaohongshu extends Base {
     }
 
     // 视频笔记
-    if (NoteData.data.data.items[0].note_card!.video && Config.douyin.sendContent.includes('video')) {
+    if (NoteData.data.data.items[0].note_card!.video && Config.xiaohongshu.sendContent.includes('video')) {
       const video = NoteData.data.data.items[0].note_card!.video
 
       // 使用新的视频选择逻辑

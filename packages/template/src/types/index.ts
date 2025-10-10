@@ -129,7 +129,8 @@ interface PathToDataTypeMap {
 
   // 小红书相关路径
   'xiaohongshu/noteInfo': import('./platforms/xiaohongshu').XiaohongshuNoteInfoProps['data']
-
+  'xiaohongshu/comment': import('./platforms/xiaohongshu').XiaohongshuCommentProps['data']
+  
   // 其他平台路径
   'other/help': import('./help').HelpProps['data']
   'other/handlerError': import('./ohter/handlerError').ApiErrorProps['data']

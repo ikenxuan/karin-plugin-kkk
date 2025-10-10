@@ -140,9 +140,15 @@ const BilibiliVideoDynamicContent: React.FC<BilibiliVideoDynamicContentProps> = 
           </div>
 
           {/* 发布时间 */}
-          <div className='flex gap-3 items-center text-4xl font-light whitespace-nowrap'>
-            <Clock size={32} className='text-time' />
-            <span className='select-text'>发布于{props.create_time}</span>
+          <div className='flex flex-col gap-4 text-4xl font-light'>
+            <div className='flex gap-3 items-center whitespace-nowrap'>
+              <Clock size={32} className='text-time' />
+              <span className='select-text'>发布于{props.create_time}</span>
+            </div>
+            <div className='flex gap-3 items-center'>
+              <Hash size={32} className='text-default-400' />
+              <span className='select-text'>动态ID: {props.dynamic_id}</span>
+            </div>
           </div>
         </div>
         <div className='h-40' />
@@ -183,7 +189,7 @@ const BilibiliVideoDynamicFooter: React.FC<BilibiliVideoDynamicFooterProps> = (p
                   <EnhancedImage
                     src={props.frame}
                     alt='头像框'
-                    className='absolute inset-0 transform scale-140'
+                    className='absolute inset-0 transform scale-180'
                   />
                 )}
               </div>
@@ -195,7 +201,7 @@ const BilibiliVideoDynamicFooter: React.FC<BilibiliVideoDynamicFooterProps> = (p
             </div>
 
             {/* 用户统计信息 */}
-            <div className='flex flex-col gap-4 items-start pt-6 w-full text-4xl tracking-wider text-default-600'>
+            <div className='flex flex-col gap-4 items-start pt-10 w-full text-4xl tracking-wider text-default-600'>
               <div className='flex gap-2 items-center'>
                 <Hash size={32} className='text-default-400' />
                 <span className='select-text'>UID: {props.user_shortid}</span>
@@ -265,6 +271,7 @@ export const BilibiliVideoDynamic: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
           view={props.data.view}
           duration_text={props.data.duration_text}
           create_time={props.data.create_time}
+          dynamic_id={props.data.dynamic_id}
         />
 
         {/* 底部区域 */}

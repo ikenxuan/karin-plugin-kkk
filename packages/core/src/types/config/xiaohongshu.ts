@@ -2,10 +2,10 @@
 export interface xiaohongshuConfig {
   /** 是否开启小红书解析功能 */
   switch: boolean
-  /** 解析提示 */
-  tip?: string
+  /** 小红书解析提示，发送提示信息：“检测到小红书链接，开始解析” */
+  tip: boolean
   /** 解析时发送的内容，可选值：'info'(笔记、视频信息)、'comment'(评论图片)、'video'(视频文件) */
-  sendContent: ['info' | 'comment']
+  sendContent: ('info' | 'comment' | 'video')[]
   /** 小红书评论数量 */
   numcomment: number
   /** 视频画质偏好设置，'adapt' 为自动根据「maxAutoVideoSize」大小选择，其他为固定画质 */
