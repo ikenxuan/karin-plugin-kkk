@@ -54,6 +54,185 @@ interface HelpProps extends BaseComponentProps {
 }
 
 /**
+ * 小红书评论组件属性接口
+ */
+interface XiaohongshuCommentProps extends BaseComponentProps {
+    /** 渲染请求数据 */
+    data: {
+        /** 是否使用深色主题 */
+        useDarkTheme?: boolean;
+        /** 笔记类型：图文/视频 */
+        Type: '图文' | '视频';
+        /** 评论数量 */
+        CommentLength: number;
+        /** 图片数量 */
+        ImageLength?: number;
+        /** 分享链接 */
+        share_url: string;
+        /** 评论数据 - 简化为直接的评论数组 */
+        CommentsData: XiaohongshuCommentItem[];
+    };
+    /** 预生成的二维码数据URL */
+    qrCodeDataUrl: string;
+}
+/**
+ * 小红书评论项数据接口
+ */
+interface XiaohongshuCommentItem {
+    /** 评论ID */
+    id: string;
+    /** 笔记ID */
+    note_id: string;
+    /** 评论内容 */
+    content: string;
+    /** 用户信息 */
+    user_info: {
+        user_id: string;
+        nickname: string;
+        image: string;
+        xsec_token: string;
+    };
+    /** 创建时间 - 已格式化为相对时间 */
+    create_time: string;
+    /** IP位置 */
+    ip_location: string;
+    /** 点赞数 - 已格式化（如1.2w） */
+    like_count: string;
+    /** 是否已点赞 */
+    liked: boolean;
+    /** 评论图片 */
+    pictures: Array<{
+        height: number;
+        width: number;
+        url_pre: string;
+        url_default: string;
+        info_list: Array<{
+            image_scene: string;
+            url: string;
+        }>;
+    }>;
+    /** 子评论数量 */
+    sub_comment_count: string;
+    /** 子评论列表 */
+    sub_comments: XiaohongshuSubComment[];
+    /** 显示标签 */
+    show_tags: string[];
+    /** @用户列表 */
+    at_users: string[];
+    /** 状态 */
+    status: number;
+}
+/**
+ * 小红书子评论数据接口
+ */
+interface XiaohongshuSubComment {
+    /** 子评论ID */
+    id: string;
+    /** 笔记ID */
+    note_id: string;
+    /** 评论内容 */
+    content: string;
+    /** 用户信息 */
+    user_info: {
+        user_id: string;
+        nickname: string;
+        image: string;
+        xsec_token: string;
+    };
+    /** 创建时间 - 已格式化为相对时间 */
+    create_time: string;
+    /** IP位置 */
+    ip_location: string;
+    /** 点赞数 - 已格式化（如1.2w） */
+    like_count: string;
+    /** 是否已点赞 */
+    liked: boolean;
+    /** 评论图片 */
+    pictures: string[];
+    /** 显示标签 */
+    show_tags: string[];
+    /** @用户列表 */
+    at_users: string[];
+    /** 状态 */
+    status: number;
+    /** 目标评论 */
+    target_comment?: {
+        id: string;
+        user_info: {
+            user_id: string;
+            nickname: string;
+            image: string;
+            xsec_token: string;
+        };
+    };
+}
+
+/**
+ * 小红书笔记统计信息接口
+ */
+interface XiaohongshuNoteStatistics {
+    /** 分享数 */
+    share_count: string | number;
+    /** 是否已关注 */
+    followed: boolean;
+    /** 关系状态 */
+    relation: string;
+    /** 是否已点赞 */
+    liked: boolean;
+    /** 点赞数 */
+    liked_count: string | number;
+    /** 是否已收藏 */
+    collected: boolean;
+    /** 收藏数 */
+    collected_count: string | number;
+    /** 评论数 */
+    comment_count: string | number;
+}
+/**
+ * 小红书作者信息接口
+ */
+interface XiaohongshuAuthor {
+    /** xsec_token */
+    xsec_token?: string;
+    /** 用户ID */
+    user_id: string;
+    /** 用户昵称 */
+    nickname: string;
+    /** 用户头像URL */
+    avatar: string;
+}
+/**
+ * 小红书笔记信息数据接口
+ */
+interface XiaohongshuNoteInfoData {
+    /** 笔记标题 */
+    title: string;
+    /** 笔记描述 */
+    desc: string;
+    /** 统计信息 */
+    statistics: XiaohongshuNoteStatistics;
+    /** 笔记ID */
+    note_id: string;
+    /** 作者信息 */
+    author: XiaohongshuAuthor;
+    /** 笔记封面图片URL */
+    image_url: string;
+    /** 创建时间戳 */
+    time: number;
+    /** IP位置 */
+    ip_location: string;
+    /** 是否使用深色主题 */
+    useDarkTheme?: boolean;
+}
+/**
+ * 小红书笔记信息组件属性接口
+ */
+interface XiaohongshuNoteInfoProps extends BaseComponentProps {
+    /** 渲染请求数据 */
+    data: XiaohongshuNoteInfoData;
+}
+
+/**
  * 快手评论组件属性接口
  */
 interface KuaishouCommentProps extends BaseComponentProps {
@@ -347,6 +526,8 @@ interface BilibiliVideoDynamicProps extends BaseComponentProps {
         dynamicTYPE: string;
         /** 分享链接 */
         share_url: string;
+        /** 动态ID */
+        dynamic_id: string;
     };
     /** 预生成的二维码数据URL */
     qrCodeDataUrl?: string;
@@ -1096,13 +1277,17 @@ type BilibiliComponentIds = 'comment' | 'userlist' | 'bangumi' | 'videoInfo' | '
  */
 type KuaishouComponentIds = 'comment';
 /**
+ * 小红书平台组件ID
+ */
+type XiaohongshuComponentIds = 'noteInfo' | 'comment';
+/**
  * 其他平台组件ID
  */
 type OtherComponentIds = 'help' | 'handlerError' | 'changelog_v2';
 /**
  * 路径类型
  */
-type DynamicRenderPath = `douyin/${DouyinComponentIds}` | `bilibili/${BilibiliComponentIds}` | `kuaishou/${KuaishouComponentIds}` | `other/${OtherComponentIds}`;
+type DynamicRenderPath = `douyin/${DouyinComponentIds}` | `bilibili/${BilibiliComponentIds}` | `kuaishou/${KuaishouComponentIds}` | `xiaohongshu/${XiaohongshuComponentIds}` | `other/${OtherComponentIds}`;
 /**
  * 路径到数据类型的精确映射接口
  */
@@ -1125,6 +1310,8 @@ interface PathToDataTypeMap {
     'bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD': BilibiliLiveDynamicProps['data'];
     'bilibili/dynamic/DYNAMIC_TYPE_WORD': BilibiliDynamicProps['data'];
     'kuaishou/comment': KuaishouCommentProps['data'];
+    'xiaohongshu/noteInfo': XiaohongshuNoteInfoProps['data'];
+    'xiaohongshu/comment': XiaohongshuCommentProps['data'];
     'other/help': HelpProps['data'];
     'other/handlerError': ApiErrorProps['data'];
     'other/changelog_v2': HelpProps['data'];
