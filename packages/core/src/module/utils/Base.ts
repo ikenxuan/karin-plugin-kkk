@@ -92,7 +92,8 @@ export class Base {
       cookies: {
         douyin: Config.cookies.douyin,
         bilibili: Config.cookies.bilibili,
-        kuaishou: Config.cookies.kuaishou
+        kuaishou: Config.cookies.kuaishou,
+        xiaohongshu: Config.cookies.xiaohongshu
       },
       request: {
         timeout: Config.request.timeout,

@@ -211,6 +211,30 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
     ]
   },
   {
+    type: PlatformType.XIAOHONGSHU,
+    name: '小红书',
+    icon: '⚡',
+    color: 'warning',
+    components: [
+      {
+        id: 'noteInfo',
+        name: '笔记信息',
+        description: '小红书笔记信息展示模板',
+        enabled: true,
+        componentPath: 'platforms/xiaohongshu/noteInfo',
+        exportName: 'XiaohongshuNoteInfo'
+      },
+      {
+        id: 'comment',
+        name: '评论列表',
+        description: '小红书评论列表展示模板',
+        enabled: true,
+        componentPath: 'platforms/xiaohongshu/comment',
+        exportName: 'XiaohongshuComment'
+      }
+    ]
+  },
+  {
     type: PlatformType.OTHER,
     name: '其他',
     icon: '❓',

@@ -201,6 +201,27 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
       })
       break
 
+    case PlatformType.XIAOHONGSHU:
+      platform.components = basePlatform.components.map(baseComponent => {
+        switch (baseComponent.id) {
+          case 'noteInfo':
+            return createComponentConfig(baseComponent, {
+              lazyComponent: () => import('../components/platforms/xiaohongshu/noteInfo').then(module => ({
+                default: module.XiaohongshuNoteInfo
+              }))
+            })
+          case 'comment':
+            return createComponentConfig(baseComponent, {
+              lazyComponent: () => import('../components/platforms/xiaohongshu/Comment').then(module => ({
+                default: module.XiaohongshuComment
+              }))
+            })
+          default:
+            return createComponentConfig(baseComponent)
+        }
+      })
+      break
+
     case PlatformType.OTHER:
       platform.components = basePlatform.components.map(baseComponent => {
         switch (baseComponent.id) {

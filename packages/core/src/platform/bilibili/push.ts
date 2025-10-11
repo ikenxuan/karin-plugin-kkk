@@ -86,7 +86,7 @@ export class Bilibilipush extends Base {
   async action () {
     await this.syncConfigToDatabase()
     // 清理旧的动态缓存记录
-    const deletedCount = await cleanOldDynamicCache('bilibili', 1)
+    const deletedCount = await cleanOldDynamicCache('bilibili')
     if (deletedCount > 0) {
       logger.info(`已清理 ${deletedCount} 条过期的B站动态缓存记录`)
     }
@@ -128,6 +128,10 @@ export class Bilibilipush extends Base {
         ${logger.cyan('访问地址')}：${logger.green('https://t.bilibili.com/' + dynamicId)}`)
 
       let skip = await skipDynamic(data[dynamicId])
+      if (skip) {
+        logger.warn(`动态 https://t.bilibili.com/${dynamicId} 已被处理，跳过`)
+        continue
+      }
       let send_video = true; let img: ImageElement[] = []
       const dynamicCARDINFO = await this.amagi.getBilibiliData('动态卡片数据', { dynamic_id: dynamicId, typeMode: 'strict' })
       const dycrad = dynamicCARDINFO.data.data.card && dynamicCARDINFO.data.data.card.card && JSON.parse(dynamicCARDINFO.data.data.card.card)
@@ -244,7 +248,8 @@ export class Bilibilipush extends Base {
                   total_favorited: Count(userINFO.data.data.like_num),
                   following_count: Count(userINFO.data.data.card.attention),
                   render_time: Common.getCurrentTime(),
-                  dynamicTYPE: '视频动态推送'
+                  dynamicTYPE: '视频动态推送',
+                  dynamic_id: dynamicId
                 }
               )
             }

@@ -82,7 +82,7 @@ export interface KuaishouVideoInfoHeaderProps {
   /** 评论数量 */
   commentLength: number
   /** 视频大小 */
-  videoSize?: number
+  videoSize?: string
   /** 点赞数量 */
   likeCount?: number
   /** 观看次数 */

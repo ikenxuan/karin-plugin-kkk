@@ -519,7 +519,7 @@ export class Bilibili extends Base {
               const INFODATA = await getBilibiliData('单个视频作品数据', '', { bvid, typeMode: 'strict' })
               const dycrad = dynamicInfoCard.data.data.card && dynamicInfoCard.data.data.card.card && JSON.parse(dynamicInfoCard.data.data.card.card)
 
-              commentsData && this.e.reply(
+              commentsData && Config.bilibili.sendContent.some(item => item === 'comment') && this.e.reply(
                 await Render('bilibili/comment', {
                   Type: '动态',
                   CommentsData: bilibiliComments(commentsData.data, dynamicInfo.data.data.item.modules.module_author.mid.toString()),
@@ -555,7 +555,8 @@ export class Bilibili extends Base {
                   total_favorited: Count(userProfileData.data.data.like_num),
                   following_count: Count(userProfileData.data.data.card.attention),
                   render_time: Common.getCurrentTime(),
-                  dynamicTYPE: '视频动态'
+                  dynamicTYPE: '视频动态',
+                  dynamic_id: dynamicInfo.data.data.item.id_str
                 }
               )
               this.e.reply(img)

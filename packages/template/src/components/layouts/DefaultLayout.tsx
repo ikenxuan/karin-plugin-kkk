@@ -4,6 +4,7 @@ import { AlertTriangle, CheckCircle, Code, Info, Zap } from 'lucide-react'
 import React from 'react'
 
 import type { BaseComponentProps, RenderRequest } from '../../types'
+import { GlowImage } from '../common/GlowImage'
 
 
 /**
@@ -53,22 +54,27 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
         {children}
         {version ? (
           <div className='pt-32 pb-20 text-default-800'>
-            <div className='flex relative justify-center items-center space-x-12'>
-              <div className='flex items-center space-x-8 whitespace-nowrap'>
-                <img src="/image/logo.png" className='w-auto h-24' />
-                <h1 className='text-6xl font-black tracking-tight leading-none'>
-                  {version.pluginName}
-                </h1>
+            <div className='flex relative justify-center items-center space-x-8'>
+              <div className='flex items-end space-x-8'>
+                {/* 原 logo 图改为辉光版本 */}
+                <GlowImage
+                  src="/image/logo.png"
+                  alt="logo"
+                  imgClassName="w-auto h-18"
+                  glowStrength={1}
+                  blurRadius={50}
+                />
+                <div className='flex flex-col items-start'>
+                  <div className='flex items-center mb-1 space-x-2 text-sm font-bold uppercase text-default-900'>
+                    {/* <Code strokeWidth={3} className="w-4 h-4" /> */}
+                    <span className='opacity-50 text-warning'>karin-plugin</span>
+                  </div>
+                  <span className='text-5xl font-black text-warning'>{version.pluginName}</span>
+                </div>
               </div>
-    
-              <div className='relative'>
-                <div className={clsx(
-                  'absolute -top-8 -left-10 px-5 py-2 text-sm font-bold tracking-widest uppercase rounded-full transform -rotate-12',
-                  'border border-dashed border-default-900 text-default-900 bg-default-100',
-                  'backdrop-blur-sm bg-default-100/5',
-                  'flex items-center space-x-2'
-                )}>
-                  {/* 根据 releaseType 显示不同的图标 */}
+
+              <div className='flex flex-col items-start opacity-80'>
+                <div className='flex items-center mb-1 space-x-2 text-sm font-bold tracking-widest uppercase text-default-900'>
                   {version.releaseType === 'Stable' ? (
                     <CheckCircle strokeWidth={3} className="w-4 h-4" />
                   ) : version.releaseType === 'Preview' ? (
@@ -82,39 +88,31 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                   v{version.pluginVersion}
                 </div>
               </div>
-    
-              <div className='w-1 h-12 bg-default-900' />
-    
-              <div className='flex relative items-center space-x-8'>
-                <div className={clsx(
-                  'absolute -top-8 -left-8 px-5 py-2 text-sm font-bold tracking-widest uppercase rounded-full transform -rotate-12',
-                  'border border-dashed border-default-900 text-default-900',
-                  'backdrop-blur-sm bg-default-100/10',
-                  'flex items-center space-x-2'
-                )}>
-                  {/* 构建工具图标 */}
-                  <Code strokeWidth={3} className="w-4 h-4" />
-                  <span>Built with</span>
+
+              <div className='w-1 h-14 opacity-80 bg-default-900' />
+
+              <div className='flex items-end space-x-8'>
+                <img src="/image/frame-logo.png" className='self-center w-auto h-18' />
+                <div className='flex flex-col items-start'>
+                  <div className='flex items-center mb-1 space-x-2 text-sm font-bold tracking-widest uppercase text-default-900'>
+                    <Zap strokeWidth={3} className="w-4 h-4 opacity-50 text-warning" />
+                    <span className='opacity-50 text-warning'>Powered By</span>
+                  </div>
+                  <span className='text-5xl font-black text-warning'>{version.poweredBy}</span>
                 </div>
-                <img src="/image/vite.svg" className='w-auto h-14' />
-                <span className='text-5xl font-black'>
-                  Vite & 
-                </span>
-                
-                <div className={clsx(
-                  'absolute -top-8 left-60 px-5 py-2 text-sm font-bold tracking-widest uppercase rounded-full transform -rotate-12',
-                  'border border-dashed border-default-900 text-default-900',
-                  'backdrop-blur-sm bg-default-100/5',
-                  'flex items-center space-x-2'
-                )}>
-                  {/* 驱动框架图标 */}
-                  <Zap strokeWidth={3} className="w-4 h-4" />
-                  <span>Powered By</span>
+              </div>
+              
+              <div className='w-1 h-14 opacity-80 bg-default-900' />
+              
+              <div className='flex items-end space-x-8'>
+                <img src="/image/vite.svg" className='self-center w-auto h-16' />
+                <div className='flex flex-col items-start opacity-80'>
+                  <div className='flex items-center mb-1 space-x-2 text-sm font-bold tracking-widest uppercase text-default-900'>
+                    <Code strokeWidth={3} className="w-4 h-4" />
+                    <span>Built with</span>
+                  </div>
+                  <span className='text-5xl font-black'>Vite</span>
                 </div>
-                <img src="/image/frame-logo.png" className='w-auto h-14' />
-                <span className='text-5xl font-black'>
-                  {version.poweredBy}
-                </span>
               </div>
             </div>
           </div>

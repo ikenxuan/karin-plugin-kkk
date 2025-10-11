@@ -5,6 +5,7 @@ export enum PlatformType {
   DOUYIN = 'douyin',
   BILIBILI = 'bilibili',
   KUAISHOU = 'kuaishou',
+  XIAOHONGSHU = 'xiaohongshu',
   HELP = 'help',
   OTHER = 'other'
 }

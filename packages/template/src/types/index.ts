@@ -80,6 +80,11 @@ type BilibiliComponentIds =
 type KuaishouComponentIds = 'comment'
 
 /**
+ * 小红书平台组件ID
+ */
+type XiaohongshuComponentIds = 'noteInfo' | 'comment'
+
+/**
  * 其他平台组件ID
  */
 type OtherComponentIds = 'help' | 'handlerError' | 'changelog_v2'
@@ -91,6 +96,7 @@ export type DynamicRenderPath =
   | `douyin/${DouyinComponentIds}`
   | `bilibili/${BilibiliComponentIds}`
   | `kuaishou/${KuaishouComponentIds}`
+  | `xiaohongshu/${XiaohongshuComponentIds}`
   | `other/${OtherComponentIds}`
 
 /**
@@ -121,6 +127,10 @@ interface PathToDataTypeMap {
   // 快手相关路径
   'kuaishou/comment': import('./platforms/kuaishou').KuaishouCommentProps['data']
 
+  // 小红书相关路径
+  'xiaohongshu/noteInfo': import('./platforms/xiaohongshu').XiaohongshuNoteInfoProps['data']
+  'xiaohongshu/comment': import('./platforms/xiaohongshu').XiaohongshuCommentProps['data']
+  
   // 其他平台路径
   'other/help': import('./help').HelpProps['data']
   'other/handlerError': import('./ohter/handlerError').ApiErrorProps['data']
