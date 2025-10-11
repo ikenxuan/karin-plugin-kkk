@@ -4,6 +4,7 @@ import karin, { logger } from 'node-karin'
 import { Common, Networks, Render } from '@/module'
 import { bilibiliDB, douyinDB } from '@/module/db'
 import { Config } from '@/module/utils/Config'
+import { convertToNewGroupIdFormat, parseGroupId } from '@/module/utils/ConfigParser'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { Bilibilipush, DouYinpush, getDouyinID } from '@/platform'
 
@@ -86,43 +87,59 @@ const handleDouyinPushList = wrapWithErrorHandler(async (e) => {
 // 包装设置机器人ID命令
 const handleChangeBotID = wrapWithErrorHandler(async (e) => {
   const newBotId = e.msg.replace(/^#kkk设置推送机器人/, '')
-  
-  // 更新抖音配置和数据库
   const newDouyinlist = Config.pushlist.douyin.map(item => {
     const modifiedGroupIds = item.group_id.map(groupId => {
-      const [group_id, oldBotId] = groupId.split(':')
-      // 更新数据库中的botId
-      if (oldBotId && oldBotId !== newBotId) {
-        douyinDB.updateGroupBotId(group_id, oldBotId, newBotId).catch(err => {
-          logger.error(`Failed to update douyin group ${group_id}:`, err)
-        })
+      // 解析新格式的groupId
+      try {
+        const parsedGroupId = parseGroupId(groupId)
+        const [group_id, oldBotId] = parsedGroupId.split(':')
+
+        // 更新数据库中的botId
+        if (oldBotId && oldBotId !== newBotId) {
+          douyinDB.updateGroupBotId(group_id, oldBotId, newBotId).catch(err => {
+            logger.error(`Failed to update douyin group ${group_id}:`, err)
+          })
+        }
+
+        // 将新的botId转换回新格式
+        return convertToNewGroupIdFormat(`${group_id}:${newBotId}`)
+      } catch (error) {
+        logger.error(`Failed to parse group_id ${groupId}:`, error)
+        return groupId
       }
-      return `${group_id}:${newBotId}`
     })
     return {
       ...item,
       group_id: modifiedGroupIds
     }
   })
-  
+
   // 更新B站配置和数据库
   const newBilibililist = Config.pushlist.bilibili.map(item => {
     const modifiedGroupIds = item.group_id.map(groupId => {
-      const [group_id, oldBotId] = groupId.split(':')
-      // 更新数据库中的botId
-      if (oldBotId && oldBotId !== newBotId) {
-        bilibiliDB.updateGroupBotId(group_id, oldBotId, newBotId).catch(err => {
-          logger.error(`Failed to update bilibili group ${group_id}:`, err)
-        })
+      try {
+        const parsedGroupId = parseGroupId(groupId)
+        const [group_id, oldBotId] = parsedGroupId.split(':')
+
+        // 更新数据库中的botId
+        if (oldBotId && oldBotId !== newBotId) {
+          bilibiliDB.updateGroupBotId(group_id, oldBotId, newBotId).catch(err => {
+            logger.error(`Failed to update bilibili group ${group_id}:`, err)
+          })
+        }
+
+        // 将新的botId转换回新格式
+        return convertToNewGroupIdFormat(`${group_id}:${newBotId}`)
+      } catch (error) {
+        logger.error(`Failed to parse group_id ${groupId}:`, error)
+        return groupId
       }
-      return `${group_id}:${newBotId}`
     })
     return {
       ...item,
       group_id: modifiedGroupIds
     }
   })
-  
   Config.Modify('pushlist', 'douyin', newDouyinlist)
   Config.Modify('pushlist', 'bilibili', newBilibililist)
   await e.reply('推送机器人已修改为' + newBotId)

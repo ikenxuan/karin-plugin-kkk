@@ -1,6 +1,6 @@
 import os from 'node:os'
 
-import { components, defineConfig } from 'node-karin'
+import karin, { components, defineConfig } from 'node-karin'
 import _ from 'node-karin/lodash'
 
 import { Root } from '@/module'
@@ -1190,14 +1190,48 @@ export const webConfig = defineConfig({
       components.accordionPro.create(
         'pushlist:douyin',
         all.pushlist.douyin.map((item) => {
+          // 解析 group_id 格式，支持新旧格式
+          const parseGroupId = (groupId: string) => {
+            if (groupId.includes('@')) {
+              // 新格式: 群号@平台.索引
+              const [groupNum, platformInfo] = groupId.split('@')
+              const [platform, index] = platformInfo.split('.')
+              return {
+                groupNum,
+                platform,
+                index: parseInt(index)
+              }
+            } else {
+              // 旧格式: 群号:机器人账号，转换为默认值
+              const [groupNum] = groupId.split(':')
+              return {
+                groupNum,
+                platform: 'qq',
+                index: 0
+              }
+            }
+          }
+
+          // 解析第一个 group_id 用于显示默认值
+          const firstGroupId = item.group_id[0] || ''
+          const parsed = parseGroupId(firstGroupId)
+
           return {
             ...item,
-            title: item.remark,
-            subtitle: item.short_id
+            title: item.remark || item.short_id || item.sec_uid,
+            subtitle: `群组: ${item.group_id.join(', ')}`,
+            // 添加解析后的字段用于前端显示
+            group_id: item.group_id.map(id => {
+              const p = parseGroupId(id)
+              return p.groupNum
+            }),
+            platform_select: parsed.platform,
+            account_index_select: parsed.index.toString()
           }
         }),
         {
           label: '抖音推送列表',
+          description: '使用新格式: 群号@平台.索引',
           children: components.accordion.createItem('accordion-item-douyin', {
             className: 'ml-4 mr-4',
             children: [
@@ -1217,16 +1251,72 @@ export const webConfig = defineConfig({
                 label: '绑定推送群',
                 maxRows: 2,
                 data: [],
-                template: components.input.string('accordion-item-douyin:push:douyin:group_id', {
-                  placeholder: '必填，不能出现空值',
-                  label: '群号:机器人账号',
-                  color: 'warning',
-                  rules: [
-                    {
-                      regex: /.+:.+/,
-                      error: '请使用 `群号:机器人账号` 的格式'
+                template: {
+                  key: 'modal-template',
+                  componentType: 'input-modal',
+                  label: '群配置',
+                  placeholder: '点击配置按钮设置群信息',
+                  buttonText: '配置群',
+                  modalTitle: '群推送配置',
+                  modalComponents: [
+                    components.input.string('group_id', {
+                      placeholder: '群号',
+                      label: '群号',
+                      color: 'warning',
+                      rules: [
+                        {
+                          regex: /^\d+$/,
+                          error: '群号必须为数字'
+                        }
+                      ]
+                    }),
+                    components.select.create('push_type', {
+                      label: '推送类型',
+                      items: [
+                        { value: 'all', label: '全部推送' },
+                        { value: 'important', label: '重要推送' }
+                      ]
+                    }),
+                    components.switch.create('enabled', {
+                      label: '启用推送',
+                      defaultSelected: true
+                    })
+                  ],
+                  valueSeparator: ' | '
+                }
+              }),
+              components.select.create('platform_select', {
+                label: '推送平台',
+                placeholder: '选择推送平台',
+                color: 'warning',
+                defaultValue: 'qq',
+                description: '选择用于推送的平台',
+                items: [
+                  components.select.createItem('qq', {
+                    value: 'qq',
+                    label: 'QQ',
+                    description: 'QQ平台'
+                  })
+                ]
+              }),
+              components.select.create('account_index_select', {
+                label: '账号索引',
+                placeholder: '选择账号索引',
+                color: 'warning',
+                description: '选择该平台下的账号索引',
+                defaultValue: '0',
+                items: all.pushlist.account_lists.qq.map((account, index) => {
+                  const botAdapter = karin.getBot(account)
+                  const Avatar = botAdapter?.account.avatar || ''
+                  return components.select.createItem(`index_${index}`, {
+                    value: index.toString(),
+                    label: `${botAdapter?.account.name} (${account})`,
+                    description: `第 ${index + 1} 个账号`,
+                    startContent: {
+                      type: 'image',
+                      value: Avatar
                     }
-                  ]
+                  })
                 })
               }),
               components.input.string('sec_uid', {
@@ -1297,14 +1387,48 @@ export const webConfig = defineConfig({
       components.accordionPro.create(
         'pushlist:bilibili',
         all.pushlist.bilibili.map((item) => {
+          // 解析 group_id 格式，支持新旧格式
+          const parseGroupId = (groupId: string) => {
+            if (groupId.includes('@')) {
+              // 新格式: 群号@平台.索引
+              const [groupNum, platformInfo] = groupId.split('@')
+              const [platform, index] = platformInfo.split('.')
+              return {
+                groupNum,
+                platform,
+                index: parseInt(index)
+              }
+            } else {
+              // 旧格式: 群号:机器人账号，转换为默认值
+              const [groupNum] = groupId.split(':')
+              return {
+                groupNum,
+                platform: 'qq',
+                index: 0
+              }
+            }
+          }
+
+          // 解析第一个 group_id 用于显示默认值
+          const firstGroupId = item.group_id[0] || ''
+          const parsed = parseGroupId(firstGroupId)
+
           return {
             ...item,
             title: item.remark,
-            subtitle: item.host_mid
+            subtitle: `UID: ${item.host_mid}, 群组: ${item.group_id.join(', ')}`,
+            // 添加解析后的字段用于前端显示
+            group_id: item.group_id.map(id => {
+              const p = parseGroupId(id)
+              return p.groupNum
+            }),
+            platform_select_bili: parsed.platform,
+            account_index_select_bili: parsed.index.toString()
           }
         }),
         {
           label: 'B站推送列表',
+          description: '使用新格式: 群号@平台.索引',
           children: components.accordion.createItem('accordion-item-bilibili', {
             className: 'ml-4 mr-4',
             children: [
@@ -1393,6 +1517,42 @@ export const webConfig = defineConfig({
 
   /** 前端点击保存之后调用的方法 */
   save: async (config: newConfigType) => {
+    // 处理抖音和B站推送列表的group_id格式转换
+    const processGroupIds = (items: any[]) => {
+      return items.map(item => {
+        if (item.group_id && (item.platform_select || item.platform_select_bili) &&
+          (item.account_index_select !== undefined || item.account_index_select_bili !== undefined)) {
+          // 将分离的字段组合成新格式
+          const platform = item.platform_select || item.platform_select_bili
+          const accountIndex = item.account_index_select || item.account_index_select_bili
+
+          const combinedGroupIds = item.group_id.map((groupNum: string) =>
+            `${groupNum}@${platform}.${accountIndex}`
+          )
+          return {
+            ...item,
+            group_id: combinedGroupIds,
+            // 清理临时字段
+            platform_select: undefined,
+            account_index_select: undefined,
+            platform_select_bili: undefined,
+            account_index_select_bili: undefined
+          }
+        }
+        return item
+      })
+    }
+
+    // 处理抖音推送列表
+    if (config['pushlist:douyin']) {
+      config['pushlist:douyin'] = processGroupIds(config['pushlist:douyin'])
+    }
+
+    // 处理B站推送列表
+    if (config['pushlist:bilibili']) {
+      config['pushlist:bilibili'] = processGroupIds(config['pushlist:bilibili'])
+    }
+
     const formatCfg = processFrontendData(config)
     const oldAllCfg = await Config.All()
     const mergeCfg = _.mergeWith({}, oldAllCfg, formatCfg, customizer)

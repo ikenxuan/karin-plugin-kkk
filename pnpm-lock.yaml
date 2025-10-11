@@ -30,8 +30,8 @@ importers:
         specifier: 0.545.0
         version: 0.545.0(react@19.2.0)
       node-karin:
-        specifier: 1.11.5
-        version: 1.11.5
+        specifier: file:../Karin-dev/packages/core
+        version: file:../Karin-dev/packages/core
       react:
         specifier: 19.2.0
         version: 19.2.0
@@ -5937,6 +5937,11 @@ packages:
 
   node-karin@1.11.5:
     resolution: {integrity: sha512-cP23tA9L/d2ttM3JAKTrgia/P4Zl9sWu9KTK1JwNxwkyrVXpA5cuZyAA7GHxKD4i+Gqlu6Usz7poRFXsuXWlSQ==}
+    engines: {node: '>=18'}
+    hasBin: true
+
+  node-karin@file:../Karin-dev/packages/core:
+    resolution: {directory: ../Karin-dev/packages/core, type: directory}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -14344,6 +14349,24 @@ snapshots:
   node-addon-api@7.1.1: {}
 
   node-karin@1.11.5:
+    dependencies:
+      art-template: '@karinjs/art-template@1.1.0'
+      axios: '@karinjs/axios@1.2.0'
+      chalk: 5.4.1
+      chokidar: 4.0.3
+      express: '@karinjs/express@1.0.3'
+      lodash: '@karinjs/lodash@1.1.1'
+      log4js: 6.9.1
+      moment: '@karinjs/moment@1.1.5'
+      node-schedule: '@karinjs/node-schedule@1.0.0'
+      redis: '@karinjs/redis@1.1.3'
+      sqlite3: '@karinjs/sqlite3-cjs@0.1.0'
+      ws: '@karinjs/ws@1.0.4'
+      yaml: 2.7.0
+    transitivePeerDependencies:
+      - supports-color
+
+  node-karin@file:../Karin-dev/packages/core:
     dependencies:
       art-template: '@karinjs/art-template@1.1.0'
       axios: '@karinjs/axios@1.2.0'

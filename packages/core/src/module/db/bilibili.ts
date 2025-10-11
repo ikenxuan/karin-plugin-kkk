@@ -171,10 +171,11 @@ export class BilibiliDBBase {
 
       // 创建群组表
       `CREATE TABLE IF NOT EXISTS Groups (
-        id TEXT PRIMARY KEY,
+        id TEXT NOT NULL,
         botId TEXT NOT NULL,
         createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
         updatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id, botId),
         FOREIGN KEY (botId) REFERENCES Bots(id)
       )`,
 
@@ -316,11 +317,19 @@ export class BilibiliDBBase {
 
     if (!group) {
       const now = new Date().toISOString()
-      await this.runQuery(
-        'INSERT INTO Groups (id, botId, createdAt, updatedAt) VALUES (?, ?, ?, ?)',
-        [groupId, botId, now, now]
-      )
-      group = { id: groupId, botId, createdAt: now, updatedAt: now }
+      try {
+        await this.runQuery(
+          'INSERT INTO Groups (id, botId, createdAt, updatedAt) VALUES (?, ?, ?, ?)',
+          [groupId, botId, now, now]
+        )
+        group = { id: groupId, botId, createdAt: now, updatedAt: now }
+      } catch (error) {
+        // 如果插入失败，可能是因为记录已存在，重新查询
+        group = await this.getQuery<Group>('SELECT * FROM Groups WHERE id = ? AND botId = ?', [groupId, botId])
+        if (!group) {
+          throw error
+        }
+      }
     }
 
     return group

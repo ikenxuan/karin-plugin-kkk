@@ -15,6 +15,7 @@ import {
   Render
 } from '@/module'
 import { Config } from '@/module/utils/Config'
+import { parseGroupIds } from '@/module/utils/ConfigParser'
 import { DouyinIdData, douyinProcessVideos, getDouyinID } from '@/platform/douyin'
 import type { douyinPushItem } from '@/types/config/pushlist'
 
@@ -101,7 +102,13 @@ export class DouYinpush extends Base {
       return
     }
 
-    await douyinDB.syncConfigSubscriptions(Config.pushlist.douyin)
+    // 转换新格式的配置为数据库兼容格式
+    const convertedConfig = Config.pushlist.douyin.map(item => ({
+      ...item,
+      group_id: parseGroupIds(item.group_id)
+    }))
+
+    await douyinDB.syncConfigSubscriptions(convertedConfig)
   }
 
   async getdata (data: WillBePushList) {
@@ -293,9 +300,9 @@ export class DouYinpush extends Base {
         const videolist = await this.amagi.getDouyinData('用户主页视频列表数据', { sec_uid, typeMode: 'strict' })
         const userinfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
 
-        const targets = item.group_id.map(groupWithBot => {
-          const [groupId, botId] = groupWithBot.split(':')
-          return { groupId, botId }
+        const targets = item.group_id.map(id => {
+          const parsedId = this.parseGroupId(id)
+          return parsedId
         })
 
         // 如果没有订阅群组，跳过该用户
@@ -412,6 +419,40 @@ export class DouYinpush extends Base {
   }
 
   /**
+   * 解析 group_id 格式，支持新旧格式
+   * @param groupId 群组ID字符串
+   * @returns 解析后的群组信息
+   */
+  private parseGroupId (groupId: string): { groupId: string, botId: string, platform: string, index: number } {
+    if (groupId.includes('@')) {
+      // 新格式: 群号@平台.索引
+      const [groupNum, platformInfo] = groupId.split('@')
+      const [platform, indexStr] = platformInfo.split('.')
+      const index = parseInt(indexStr)
+
+      // 根据平台和索引获取对应的机器人账号
+      const accountLists = Config.pushlist.account_lists
+      const botId = accountLists[platform]?.[index] || ''
+
+      return {
+        groupId: groupNum,
+        botId,
+        platform,
+        index
+      }
+    } else {
+      // 旧格式: 群号:机器人账号
+      const [groupNum, botId] = groupId.split(':')
+      return {
+        groupId: groupNum,
+        botId: botId || '',
+        platform: 'qq',
+        index: 0
+      }
+    }
+  }
+    
+  /**
    * 设置或更新特定 sec_uid 的群组信息。
    * @param data 抖音的搜索结果数据。需要接口返回的原始数据
    * @returns 操作成功或失败的消息字符串。
@@ -448,11 +489,12 @@ export class DouYinpush extends Base {
         let has = false
         let groupIndexToRemove = -1 // 用于记录要删除的 group_id 对象的索引
         for (let index = 0; index < existingItem.group_id.length; index++) {
-          // 分割每个对象的 id 属性，并获取第一部分
+          // 解析每个 group_id 并获取群号部分
           const item = existingItem.group_id[index]
-          const existingGroupId = item.split(':')[0]
+          const parsed = this.parseGroupId(item)
+          const existingGroupId = parsed.groupId
 
-          // 检查分割后的第一部分是否与提供的 group_id 相同
+          // 检查群号是否与提供的 group_id 相同
           if (existingGroupId === String(groupId)) {
             has = true
             groupIndexToRemove = index
@@ -479,7 +521,29 @@ export class DouYinpush extends Base {
           }
         } else {
           // 否则，将新的 group_id 添加到该 sec_uid 对应的数组中
-          existingItem.group_id.push(`${groupId}:${botId}`)
+          // 使用新格式: 群号@平台.索引
+          const accountLists = Config.pushlist.account_lists
+          const platform = 'qq' // 默认使用QQ平台
+          
+          // 确保平台账号列表存在
+          if (!accountLists[platform]) {
+            accountLists[platform] = []
+          }
+          
+          // 查找账号索引，如果不存在则添加
+          let accountIndex = accountLists[platform].findIndex(account => account === botId)
+          if (accountIndex === -1) {
+            // 账号不存在，添加到列表中
+            accountLists[platform].push(botId)
+            accountIndex = accountLists[platform].length - 1
+            
+            // 更新配置文件中的账号列表
+            Config.Modify('pushlist', 'account_lists', accountLists)
+            logger.info(`自动添加QQ账号 ${botId} 到账号列表，索引: ${accountIndex}`)
+          }
+      
+          // 将新的 group_id 添加到现有用户的数组中，而不是创建新的推送项
+          existingItem.group_id.push(`${groupId}@${platform}.${accountIndex}`)
 
           // 同时在数据库中添加订阅
           if (!isSubscribed) {
@@ -492,21 +556,48 @@ export class DouYinpush extends Base {
         }
       } else {
         // 如果不存在相同的 sec_uid，则新增一个属性
+        // 使用新格式: 群号@平台.索引
+        const accountLists = Config.pushlist.account_lists
+        const platform = 'qq' // 默认使用QQ平台
+        
+        // 检查账号是否存在，如果不存在则添加
+        if (!accountLists[platform]) {
+          accountLists[platform] = []
+        }
+        
+        let accountIndex = accountLists[platform].findIndex(account => account === botId)
+        if (accountIndex === -1) {
+          // 如果账号不存在，添加到列表中
+          accountLists[platform].push(botId)
+          accountIndex = accountLists[platform].length - 1
+          
+          // 保存更新后的账号列表
+          Config.Modify('pushlist', 'account_lists', accountLists)
+          logger.info(`自动添加QQ账号 ${botId} 到账号列表，索引: ${accountIndex}`)
+        }
+
         config.douyin.push({
           switch: true,
           sec_uid,
-          group_id: [`${groupId}:${botId}`],
+          group_id: [`${groupId}@${platform}.${accountIndex}`],
           remark: UserInfoData.data.user.nickname,
           short_id: user_shortid
         })
 
         // 同时在数据库中添加订阅
         if (!isSubscribed) {
-          await douyinDB.subscribeDouyinUser(groupId, botId, sec_uid, user_shortid, UserInfoData.data.user.nickname)
+          await douyinDB.subscribeDouyinUser(
+            groupId, 
+            botId,
+            sec_uid,
+            user_shortid,
+            UserInfoData.data.user.nickname
+          )
         }
 
         await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}`)
         if (Config.douyin.push.switch === false) await this.e.reply('请发送「#kkk设置抖音推送开启」以进行推送')
+        
         logger.info(`\n设置成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.data.user.sec_uid}`)
       }
 

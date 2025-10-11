@@ -28,6 +28,7 @@ import {
   uploadFile
 } from '@/module'
 import { Config } from '@/module/utils/Config'
+import { parseGroupIds } from '@/module/utils/ConfigParser'
 import {
   bilibiliProcessVideos,
   cover,
@@ -112,7 +113,13 @@ export class Bilibilipush extends Base {
       return
     }
 
-    await bilibiliDB.syncConfigSubscriptions(Config.pushlist.bilibili)
+    // 转换新格式的配置为数据库兼容格式
+    const convertedConfig = Config.pushlist.bilibili.map(item => ({
+      ...item,
+      group_id: parseGroupIds(item.group_id)
+    }))
+
+    await bilibiliDB.syncConfigSubscriptions(convertedConfig)
   }
 
   /**
@@ -562,9 +569,9 @@ export class Bilibilipush extends Base {
             // 如果 shouldPush 为 true，或该作品距现在的时间差小于一天，则将该动态添加到 willbepushlist 中
             if (timeDifference < 86400000 || shouldPush) {
               // 将群组ID和机器人ID分离
-              const targets = item.group_id.map(groupWithBot => {
-                const [groupId, botId] = groupWithBot.split(':')
-                return { groupId, botId }
+              const targets = item.group_id.map(id => {
+                const parsedId = this.parseGroupId(id)
+                return parsedId
               })
 
               // 确保 willbepushlist[dynamic.id_str] 是一个对象
@@ -627,6 +634,40 @@ export class Bilibilipush extends Base {
   }
 
   /**
+   * 解析 group_id 格式，支持新旧格式
+   * @param groupId 群组ID字符串
+   * @returns 解析后的群组信息
+   */
+  private parseGroupId (groupId: string): { groupId: string, botId: string, platform: string, index: number } {
+    if (groupId.includes('@')) {
+      // 新格式: 群号@平台.索引
+      const [groupNum, platformInfo] = groupId.split('@')
+      const [platform, indexStr] = platformInfo.split('.')
+      const index = parseInt(indexStr)
+
+      // 根据平台和索引获取对应的机器人账号
+      const accountLists = Config.pushlist.account_lists
+      const botId = accountLists[platform]?.[index] || ''
+
+      return {
+        groupId: groupNum,
+        botId,
+        platform,
+        index
+      }
+    } else {
+      // 旧格式: 群号:机器人账号
+      const [groupNum, botId] = groupId.split(':')
+      return {
+        groupId: groupNum,
+        botId: botId || '',
+        platform: 'qq',
+        index: 0
+      }
+    }
+  }
+
+  /**
    * 设置或更新特定 host_mid 的群组信息。
    * @param data 包含 card 对象。
    * @returns 操作成功或失败的消息字符串。
@@ -656,7 +697,8 @@ export class Bilibilipush extends Base {
 
       for (let index = 0; index < existingItem.group_id.length; index++) {
         const item = existingItem.group_id[index]
-        const existingGroupId = item.split(':')[0]
+        const parsed = this.parseGroupId(item)
+        const existingGroupId = parsed.groupId
 
         if (existingGroupId === String(groupId)) {
           has = true
@@ -683,16 +725,35 @@ export class Bilibilipush extends Base {
           config.bilibili.splice(index, 1)
         }
       } else {
-        // 在数据库中添加订阅
-        await bilibiliDB.subscribeBilibiliUser(
-          groupId,
-          botId,
-          host_mid,
-          data.data.card.name
-        )
-
         // 将新的 group_id 添加到该 host_mid 对应的数组中
-        existingItem.group_id.push(`${groupId}:${botId}`)
+        // 使用新格式: 群号@平台.索引
+        const accountLists = Config.pushlist.account_lists
+        const platform = 'qq' // 默认使用QQ平台
+        
+        // 确保平台账号列表存在
+        if (!accountLists[platform]) {
+          accountLists[platform] = []
+        }
+        
+        // 查找账号索引，如果不存在则添加
+        let accountIndex = accountLists[platform].findIndex(account => account === botId)
+        if (accountIndex === -1) {
+          // 账号不存在，添加到列表中
+          accountLists[platform].push(botId)
+          accountIndex = accountLists[platform].length - 1
+          
+          // 更新配置文件中的账号列表
+          Config.Modify('pushlist', 'account_lists', accountLists)
+          logger.info(`自动添加QQ账号 ${botId} 到账号列表，索引: ${accountIndex}`)
+        }
+        
+        // 将新的 group_id 添加到现有用户的数组中
+        existingItem.group_id.push(`${groupId}@${platform}.${accountIndex}`)
+
+        // 在数据库中添加订阅
+        if (!isSubscribed) {
+          await bilibiliDB.subscribeBilibiliUser(groupId, botId, host_mid, data.data.card.name)
+        }
 
         await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${data.data.card.name}\nUID：${host_mid}`)
         if (Config.bilibili.push.switch === false) await this.e.reply('请发送「#kkk设置B站推送开启」以进行推送')
@@ -700,6 +761,35 @@ export class Bilibilipush extends Base {
         logger.info(`\n设置成功！${data.data.card.name}\nUID：${host_mid}`)
       }
     } else {
+      // 如果不存在相同的 host_mid，则新增一个属性
+      // 使用新格式: 群号@平台.索引
+      const accountLists = Config.pushlist.account_lists
+      const platform = 'qq' // 默认使用QQ平台
+
+      // 确保平台账号列表存在
+      if (!accountLists[platform]) {
+        accountLists[platform] = []
+      }
+
+      // 查找账号索引，如果不存在则添加
+      let accountIndex = accountLists[platform].findIndex(account => account === botId)
+      if (accountIndex === -1) {
+        // 账号不存在，添加到列表中
+        accountLists[platform].push(botId)
+        accountIndex = accountLists[platform].length - 1
+        
+        // 更新配置文件中的账号列表
+        Config.Modify('pushlist', 'account_lists', accountLists)
+        logger.info(`自动添加QQ账号 ${botId} 到账号列表，索引: ${accountIndex}`)
+      }
+
+      config.bilibili.push({
+        switch: true,
+        host_mid,
+        group_id: [`${groupId}@${platform}.${accountIndex}`],
+        remark: data.data.card.name
+      })
+
       // 在数据库中添加订阅
       await bilibiliDB.subscribeBilibiliUser(
         groupId,
@@ -708,21 +798,15 @@ export class Bilibilipush extends Base {
         data.data.card.name
       )
 
-      // 不存在相同的 host_mid，新增一个配置项
-      config.bilibili.push({
-        switch: true,
-        host_mid,
-        group_id: [`${groupId}:${botId}`],
-        remark: data.data.card.name
-      })
-
       await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${data.data.card.name}\nUID：${host_mid}`)
       if (Config.bilibili.push.switch === false) await this.e.reply('请发送「#kkk设置B站推送开启」以进行推送')
+
+      logger.info(`\n设置成功！${data.data.card.name}\nUID：${host_mid}`)
     }
 
-    // 更新配置文件
+    // 保存配置到文件
     Config.Modify('pushlist', 'bilibili', config.bilibili)
-    // 渲染状态图片
+
     await this.renderPushList()
   }
 

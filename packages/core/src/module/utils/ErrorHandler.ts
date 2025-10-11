@@ -22,9 +22,27 @@ type ErrorHandlerOptions = {
  * @param pushlist 推送配置列表
  * @returns 机器人ID配置
  */
-function statBotId(pushlist: any) {
-  const douyin = pushlist.douyin?.[0]?.group_id?.[0]?.split(':')?.[1] || ''
-  const bilibili = pushlist.bilibili?.[0]?.group_id?.[0]?.split(':')?.[1] || ''
+function statBotId (pushlist: any) {
+  // 解析新格式的 group_id
+  const parseGroupId = (groupId: string) => {
+    if (groupId.includes('@')) {
+      // 新格式: 群号@平台.索引
+      const [, platformInfo] = groupId.split('@')
+      const [platform, indexStr] = platformInfo.split('.')
+      const index = parseInt(indexStr)
+
+      // 根据平台和索引获取对应的机器人账号
+      const accountLists = pushlist.account_lists
+      return accountLists[platform]?.[index] || ''
+    } else {
+      // 旧格式: 群号:机器人账号
+      return groupId.split(':')[1] || ''
+    }
+  }
+
+  const douyin = pushlist.douyin?.[0]?.group_id?.[0] ? parseGroupId(pushlist.douyin[0].group_id[0]) : ''
+  const bilibili = pushlist.bilibili?.[0]?.group_id?.[0] ? parseGroupId(pushlist.bilibili[0].group_id[0]) : ''
+
   return {
     douyin: { botId: douyin },
     bilibili: { botId: bilibili }
