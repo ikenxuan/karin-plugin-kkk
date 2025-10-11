@@ -76,7 +76,7 @@ export class DouYinpush extends Base {
     await this.syncConfigToDatabase()
 
     // 清理旧的作品缓存记录
-    const deletedCount = await cleanOldDynamicCache('douyin', 1)
+    const deletedCount = await cleanOldDynamicCache('douyin')
     if (deletedCount > 0) {
       logger.info(`已清理 ${deletedCount} 条过期的抖音作品缓存记录`)
     }
