@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.1.0 (2025-10-11)
+
+## What's Changed
+* chore(main): release 1.0.1 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/23
+* chore(main): release 1.0.3 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/24
+* chore(main): release 1.0.4 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/28
+* chore(main): release 1.0.5 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/29
+* chore(main): release 1.0.6 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/30
+* chore(main): release 1.0.7 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/31
+* fix: 合辑和图集解析冲突 by @ikenxuan in https://github.com/ikenxuan/karin-plugin-kkk/pull/32
+* fix(platform): 重构部分平台的数据获取和推送逻辑 by @ikenxuan in https://github.com/ikenxuan/karin-plugin-kkk/pull/34
+* chore(main): release 1.0.8 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/33
+* fix: 适配web修改配置 by @ikenxuan in https://github.com/ikenxuan/karin-plugin-kkk/pull/37
+* chore(main): release 1.0.9 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/38
+* chore(main): release 1.1.0 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/39
+
+
+**Full Changelog**: https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.0.0...v1.1.0
+
 ## 1.0.0 (2025-10-10)
 
 ## What's Changed
