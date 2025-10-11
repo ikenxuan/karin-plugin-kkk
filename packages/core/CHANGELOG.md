@@ -1,5 +1,12 @@
 # 变更日志
 
+## [2.4.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.4.0...v2.4.1) (2025-10-11)
+
+
+### 🐛 错误修复
+
+* 番剧匹配不到ID ([84dea7e](https://github.com/ikenxuan/karin-plugin-kkk/commit/84dea7eb49ab0ba55bffb3cf86873bccd58740fa))
+
 ## [2.4.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.3.0...v2.4.0) (2025-10-11)
 
 
