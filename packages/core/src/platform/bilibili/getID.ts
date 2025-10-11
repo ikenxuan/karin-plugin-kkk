@@ -32,6 +32,24 @@ export async function getBilibiliID (url: string) {
   }
 
   switch (true) {
+    case /\/bangumi\/play\/(\w+)/.test(longLink): {
+      const playMatch = /\/bangumi\/play\/(\w+)/.exec(longLink)
+      const id = playMatch ? playMatch[1] : ''
+      let realid = ''
+      let isEpid = false
+      if (id.startsWith('ss')) {
+        realid = id
+      } else if (id.startsWith('ep')) {
+        realid = id
+        isEpid = true
+      }
+      result = {
+        type: 'bangumi_video_info',
+        isEpid,
+        realid
+      }
+      break
+    }
     case /(video\/|video-)([A-Za-z0-9]+)/.test(longLink): {
       const bvideoMatch = /video\/([A-Za-z0-9]+)|bvid=([A-Za-z0-9]+)/.exec(longLink)
       result = {
