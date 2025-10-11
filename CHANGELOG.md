@@ -1,5 +1,12 @@
 # 变更日志
 
+## [2.4.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.3.0...v2.4.0) (2025-10-11)
+
+
+### ✨ 新功能
+
+* **core:** 新增小红书解析 ([#166](https://github.com/ikenxuan/karin-plugin-kkk/issues/166)) ([7c7e05e](https://github.com/ikenxuan/karin-plugin-kkk/commit/7c7e05e5765cff1f14030f3ab0f1fdd45c5032e3))
+
 ## [2.3.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.2.1...v2.3.0) (2025-10-10)
 
 
