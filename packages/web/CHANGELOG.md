@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.1 (2025-10-11)
+
+## What's Changed
+* chore(main): release 1.0.1 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/23
+
+
+**Full Changelog**: https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.0.0...v1.0.1
+
 ## 1.0.0 (2025-10-10)
 
 ## What's Changed
