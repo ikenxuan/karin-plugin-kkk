@@ -1,5 +1,5 @@
 import { getDouyinData } from '@ikenxuan/amagi'
-import * as convert from 'heic-convert'
+import convert from 'heic-convert'
 
 import { Common, Networks } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
@@ -47,6 +47,68 @@ const processCommentEmojis = (text: string, emojiData: any): string => {
 }
 
 /**
+ * 处理单个评论文本的换行符和空格
+ * @param text 原始文本
+ * @returns 处理后的文本
+ */
+const processTextFormatting = (text: string): string => {
+  // 处理换行符
+  let processedText = text.replace(/\n/g, '<br>')
+  // 处理多个连续空格，将两个或更多连续空格替换为&nbsp;
+  processedText = processedText.replace(/ {2,}/g, (match: string) => {
+    return '&nbsp;'.repeat(match.length)
+  })
+  return processedText
+}
+
+/**
+ * 处理单个评论的@用户高亮
+ * @param text 评论文本
+ * @param userIds @的用户ID列表
+ * @returns 处理后的文本
+ */
+const processAtUsers = async (text: string, userIds: string[] | null): Promise<string> => {
+  if (!userIds || !Array.isArray(userIds)) {
+    return text
+  }
+
+  let processedText = text
+  for (const secUid of userIds) {
+    const UserInfoData = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid: secUid, typeMode: 'strict' })
+    if (UserInfoData.data.user.sec_uid === secUid) {
+      /** 这里评论只要生成了艾特，如果艾特的人改了昵称，评论也不会变，所以可能会出现有些艾特没有正确上颜色，因为接口没有提供历史昵称 */
+      const regex = new RegExp(`@${UserInfoData.data.user.nickname?.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')}`, 'g')
+
+      processedText = processedText.replace(regex, match => {
+        return `<span class="${Common.useDarkTheme() ? 'dark-mode handling_at' : 'handling_at'}">${match}</span>`
+      })
+    }
+  }
+  return processedText
+}
+
+/**
+ * 处理单个评论图片的HEIC转JPG
+ * @param imageUrl 图片URL
+ * @returns 处理后的图片URL
+ */
+const processCommentImage = async (imageUrl: string | null): Promise<string | null> => {
+  if (!imageUrl) return null
+
+  const headers = await new Networks({ url: imageUrl, type: 'arraybuffer' }).getHeaders()
+  if (headers['content-type'] && headers['content-type'] === 'image/heic') {
+    const response = await new Networks({ url: imageUrl, type: 'arraybuffer' }).returnResult()
+    const jpegBuffer = await convert({
+      buffer: response.data,
+      format: 'JPEG'
+    })
+    const base64Image = Buffer.from(jpegBuffer).toString('base64')
+    return `data:image/jpeg;base64,${base64Image}`
+  }
+  return imageUrl
+}
+
+/**
  *
  * @param {*} data 完整的评论数据
  * @param {*} emojidata 处理过后的emoji列表
@@ -62,12 +124,12 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
     const aweme_id = comment.aweme_id
     const nickname = comment.user.nickname
     const userimageurl = comment.user.avatar_thumb.url_list[0]
-    const text = comment.text
+    let text = comment.text
     const ip = comment.ip_label ?? '未知'
     const time = comment.create_time
     const label_type = comment.label_type ?? -1
     const sticker = comment.sticker ? comment.sticker.animate_url.url_list[0] : null
-    const digg_count = comment.digg_count
+    let digg_count = comment.digg_count
     const imageurl =
       comment.image_list &&
         comment.image_list?.[0] &&
@@ -90,8 +152,43 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
         : null
     const relativeTime = getRelativeTimeFromTimestamp(time)
     const reply_comment_total = comment.reply_comment_total
+
+    // 在循环中处理文本格式化（换行符和空格）
+    text = processTextFormatting(text)
+
+    // 在循环中处理@用户高亮
+    text = await processAtUsers(text, userintextlongid)
+
+    // 在循环中处理表情
+    text = processCommentEmojis(text, emojidata)
+
+    // 在循环中处理图片HEIC转JPG
+    const processedImageUrl = await processCommentImage(imageurl)
+
+    // 在循环中处理点赞数格式化
+    if (digg_count > 10000) {
+      digg_count = (digg_count / 10000).toFixed(1) + 'w'
+    }
+
+    const replyComment = await getDouyinData('指定评论回复数据', {
+      aweme_id,
+      comment_id: cid,
+      typeMode: 'strict',
+      number: 2
+    }, Config.cookies.douyin)
+
     const commentObj = {
       id: id++,
+      replyComment: replyComment.data.comments.length > 0 ? {
+        create_time: replyComment.data.comments[0].create_time,
+        nickname: replyComment.data.comments[0].user.nickname,
+        userimageurl: replyComment.data.comments[0].user.avatar_thumb.url_list[0],
+        text: processCommentEmojis(replyComment.data.comments[0].text, emojidata),
+        digg_count: replyComment.data.comments[0].digg_count,
+        ip_label: replyComment.data.comments[0].ip_label,
+        text_extra: replyComment.data.comments[0].text_extra,
+        label_text: replyComment.data.comments[0].label_text
+      } : {},
       cid,
       aweme_id,
       nickname,
@@ -100,7 +197,7 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
       digg_count,
       ip_label: ip,
       create_time: relativeTime,
-      commentimage: imageurl,
+      commentimage: processedImageUrl,
       label_type,
       sticker,
       status_label,
@@ -111,7 +208,17 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
     jsonArray.push(commentObj)
   }
 
-  jsonArray.sort((a, b) => b.digg_count - a.digg_count)
+  jsonArray.sort((a, b) => {
+    // 由于digg_count可能已经是字符串格式，需要重新处理排序
+    const aCount = typeof a.digg_count === 'string' && a.digg_count.includes('w')
+      ? parseFloat(a.digg_count) * 10000
+      : typeof a.digg_count === 'number' ? a.digg_count : 0
+    const bCount = typeof b.digg_count === 'string' && b.digg_count.includes('w')
+      ? parseFloat(b.digg_count) * 10000
+      : typeof b.digg_count === 'number' ? b.digg_count : 0
+    return bCount - aCount
+  })
+
   const indexLabelTypeOne = jsonArray.findIndex((comment) => comment.label_type === 1)
 
   if (indexLabelTypeOne !== -1) {
@@ -119,23 +226,8 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
     jsonArray.unshift(commentTypeOne)
   }
 
-  jsonArray = br(jsonArray)
-  jsonArray = await handling_at(jsonArray)
-  jsonArray = await heic2jpg(jsonArray)
-
   const CommentData = {
     jsonArray
-  }
-
-  for (const i of jsonArray) {
-    if (i.digg_count > 10000) {
-      i.digg_count = (i.digg_count / 10000).toFixed(1) + 'w'
-    }
-  }
-
-  // 使用新的表情处理方法
-  for (const item of CommentData.jsonArray) {
-    item.text = processCommentEmojis(item.text, emojidata)
   }
 
   return CommentData
@@ -165,71 +257,4 @@ function getRelativeTimeFromTimestamp (timestamp: number) {
     const day = date.getDate().toString().padStart(2, '0')
     return year + '-' + month + '-' + day
   }
-}
-
-/**
- * 高亮 @ 的内容
- * @param data 评论数据
- * @returns
- */
-async function handling_at (data: any[]): Promise<any> {
-  for (const item of data) {
-    if (item.is_At_user_id !== null && Array.isArray(item.is_At_user_id)) {
-      for (const secUid of item.is_At_user_id) {
-        const UserInfoData = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid: secUid, typeMode: 'strict' })
-        if (UserInfoData.data.user.sec_uid === secUid) {
-          /** 这里评论只要生成了艾特，如果艾特的人改了昵称，评论也不会变，所以可能会出现有些艾特没有正确上颜色，因为接口没有提供历史昵称 */
-          const regex = new RegExp(`@${UserInfoData.data.user.nickname?.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')}`, 'g')
-
-          item.text = item.text.replace(regex, (match: any) => {
-            return `<span class="${Common.useDarkTheme() ? 'dark-mode handling_at' : 'handling_at'}">${match}</span>`
-          })
-        }
-      }
-    }
-  }
-  return data
-}
-
-/**
- * 换行符转义为<br>，多个空格转义为&nbsp;
- * @param data 评论数据
- * @returns
- */
-function br (data: any[]): any[] {
-  for (const i of data) {
-    let text = i.text
-
-    // 处理换行符
-    text = text.replace(/\n/g, '<br>')
-    // 处理多个连续空格，将两个或更多连续空格替换为&nbsp;
-    text = text.replace(/ {2,}/g, (match: string) => {
-      return '&nbsp;'.repeat(match.length)
-    })
-    i.text = text
-  }
-  return data
-}
-
-/**
- * HEIC转JPG
- * @param jsonArray 评论数据
- * @returns
- */
-const heic2jpg = async (jsonArray: any[]): Promise<any> => {
-  for (const item of jsonArray) {
-    if (item.commentimage) {
-      const headers = await new Networks({ url: item.commentimage, type: 'arraybuffer' }).getHeaders()
-      if (headers['content-type'] && headers['content-type'] === 'image/heic') {
-        const response = await new Networks({ url: item.commentimage, type: 'arraybuffer' }).returnResult()
-        const jpegBuffer = await convert.default({
-          buffer: response.data,
-          format: 'JPEG'
-        })
-        const base64Image = Buffer.from(jpegBuffer).toString('base64')
-        item.commentimage = `data:image/jpeg;base64,${base64Image}`
-      }
-    }
-  }
-  return jsonArray
 }

@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { Heart, MessageCircle, QrCode } from 'lucide-react'
 import React, { useMemo } from 'react'
 
@@ -105,7 +106,10 @@ const VideoInfoHeader: React.FC<VideoInfoHeaderProps> = ({
  */
 const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: boolean }> = ({ comment, isLast = false }) => {
   return (
-    <div className={`flex px-10 pt-10 ${isLast ? 'pb-0' : 'pb-10'}`}>
+    <div className={clsx(
+      'flex px-10 pt-10',
+      { 'pb-0': isLast, 'pb-10': !isLast }
+    )}>
       {/* 用户头像 */}
       <img
         src={comment.userimageurl}
@@ -119,7 +123,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
         <div className='mb-12.5 text-[50px] text-foreground-600 relative flex items-center select-text'>
           <span className='font-medium'>{comment.nickname}</span>
           {comment.label_type === 1 && (
-            <div className='inline-block px-4 py-1 rounded-full ml-3 text-[40px] bg-danger text-danger-foreground'>
+            <div className='inline-block px-4 py-1 rounded-xl ml-3 text-[40px] bg-[#fe2c55] text-white'>
               作者
             </div>
           )}
@@ -180,6 +184,59 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
             </div>
           </div>
         </div>
+
+        {/* 二级评论 */}
+        {comment.replyComment && Object.keys(comment.replyComment).length > 0 && (
+          <div className='pl-6 mt-6'>
+            <div className='py-4'>
+              <div className='flex items-start space-x-4'>
+                <img
+                  src={comment.replyComment.userimageurl}
+                  className='object-cover mr-8 w-32 h-32 rounded-full'
+                  alt='用户头像'
+                />
+                <div className='flex-1'>
+                  <div className='flex items-center mb-2 space-x-2'>
+                    <span className='text-[40px] font-medium text-foreground-600'>{comment.replyComment.nickname}</span>
+                    {comment.replyComment.label_text !== '' && (
+                      <div className={clsx(
+                        'inline-block px-3 py-1 ml-2 text-3xl rounded-xl', 
+                        comment.replyComment.label_text === '作者' ?
+                          'bg-[#fe2c55] text-white' :
+                          'bg-default-100 text-default-500'
+                      )}>
+                        {comment.replyComment.label_text}
+                      </div>
+                    )}
+                  </div>
+                  <div
+                    className='text-[45px] text-foreground leading-relaxed mb-2 select-text [&_img]:mb-2 [&_img]:inline [&_img]:h-[1.2em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.5em] [&_span]:inline'
+                    dangerouslySetInnerHTML={{ __html: comment.replyComment.text }}
+                    style={{
+                      wordBreak: 'break-word',
+                      overflowWrap: 'break-word'
+                    }}
+                  />
+                  <div className='flex justify-between items-center text-foreground-500'>
+                    <div className='flex items-center space-x-4'>
+                      <span className='text-[35px]'>{new Date(comment.replyComment.create_time * 1000).toLocaleString()}</span>
+                      <span className='text-[35px]'>{comment.replyComment.ip_label}</span>
+                    </div>
+                    <div className='flex items-center space-x-2'>
+                      <Heart size={40} className='text-foreground-500' />
+                      <span className='text-[35px]'>{comment.replyComment.digg_count}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 分割线 - 只在有二级评论时显示，水平居中，宽度为主评论容器的80% */}
+        {comment.replyComment && Object.keys(comment.replyComment).length > 0 && (
+          <div className='mx-auto mt-4 border-b-1 border-divider'></div>
+        )}
       </div>
     </div>
   )

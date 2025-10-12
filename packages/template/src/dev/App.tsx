@@ -20,6 +20,8 @@ interface URLParams {
   platform?: PlatformType
   /** 组件ID（可能包含嵌套路径，如 dynamic/DYNAMIC_TYPE_DRAW） */
   template?: string
+  /** 数据文件名 */
+  dataFile?: string
 }
 
 /**
@@ -30,10 +32,12 @@ const parseURLParams = (): URLParams => {
   const urlParams = new URLSearchParams(window.location.search)
   const platform = urlParams.get('platform') as PlatformType
   const template = urlParams.get('template')
+  const dataFile = urlParams.get('dataFile')
 
   return {
     platform: platform && Object.values(PlatformType).includes(platform) ? platform : undefined,
-    template: template || undefined
+    template: template || undefined,
+    dataFile: dataFile || undefined
   }
 }
 
@@ -41,11 +45,17 @@ const parseURLParams = (): URLParams => {
  * 更新URL参数
  * @param platform 平台类型
  * @param template 组件ID
+ * @param dataFile 数据文件名（可选）
  */
-const updateURLParams = (platform: PlatformType, template: string) => {
+const updateURLParams = (platform: PlatformType, template: string, dataFile?: string) => {
   const url = new URL(window.location.href)
   url.searchParams.set('platform', platform)
   url.searchParams.set('template', template)
+  if (dataFile) {
+    url.searchParams.set('dataFile', dataFile)
+  } else {
+    url.searchParams.delete('dataFile')
+  }
   // 使用 replaceState 避免在历史记录中创建过多条目
   window.history.replaceState({}, '', url.toString())
 }
@@ -89,7 +99,7 @@ export const App: React.FC = () => {
   const [scale, setScale] = useState(0.5)
   const [isLoading, setIsLoading] = useState(false)
   const [availableDataFiles, setAvailableDataFiles] = useState<string[]>([])
-  const [selectedDataFile, setSelectedDataFile] = useState<string>('default.json')
+  const [selectedDataFile, setSelectedDataFile] = useState<string>(urlParams.dataFile || 'default.json')
   const [isCapturing, setIsCapturing] = useState(false)
 
   const dataService = DataService.getInstance()
@@ -104,6 +114,9 @@ export const App: React.FC = () => {
         if (isValidPlatformTemplate(params.platform, params.template)) {
           setSelectedPlatform(params.platform)
           setSelectedTemplate(params.template)
+          if (params.dataFile) {
+            setSelectedDataFile(params.dataFile)
+          }
         }
       }
     }
@@ -112,10 +125,10 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('popstate', handlePopState)
   }, [])
 
-  // 初始化时更新URL（确保URL与初始状态同步）
+  // 当平台、模板或数据文件状态变化时更新URL
   useEffect(() => {
-    updateURLParams(selectedPlatform, selectedTemplate)
-  }, [])
+    updateURLParams(selectedPlatform, selectedTemplate, selectedDataFile !== 'default.json' ? selectedDataFile : undefined)
+  }, [selectedPlatform, selectedTemplate, selectedDataFile])
 
   // 加载数据
   useEffect(() => {
@@ -131,7 +144,7 @@ export const App: React.FC = () => {
     const defaultTemplate = getDefaultTemplate(platform)
     setSelectedPlatform(platform)
     setSelectedTemplate(defaultTemplate)
-    updateURLParams(platform, defaultTemplate)
+    setSelectedDataFile('default.json')
   }
 
   /**
@@ -140,7 +153,7 @@ export const App: React.FC = () => {
    */
   const handleTemplateChange = (template: string) => {
     setSelectedTemplate(template)
-    updateURLParams(selectedPlatform, template)
+    setSelectedDataFile('default.json')
   }
 
   /**
@@ -150,7 +163,12 @@ export const App: React.FC = () => {
     try {
       const files = await dataService.getAvailableDataFiles(selectedPlatform, selectedTemplate)
       setAvailableDataFiles(files)
-      if (files.includes('default.json')) {
+      
+      // 检查URL中的数据文件是否存在
+      const urlParams = parseURLParams()
+      if (urlParams.dataFile && files.includes(urlParams.dataFile)) {
+        setSelectedDataFile(urlParams.dataFile)
+      } else if (files.includes('default.json')) {
         setSelectedDataFile('default.json')
       } else if (files.length > 0) {
         setSelectedDataFile(files[0])
