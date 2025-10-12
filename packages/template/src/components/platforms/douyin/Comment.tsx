@@ -233,7 +233,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
           </div>
         )}
 
-        {/* 分割线 - 只在有二级评论时显示，水平居中，宽度为主评论容器的80% */}
+        {/* 分割线 */}
         {comment.replyComment && Object.keys(comment.replyComment).length > 0 && (
           <div className='mx-auto mt-4 border-b-1 border-divider'></div>
         )}

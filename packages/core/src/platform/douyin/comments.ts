@@ -180,7 +180,7 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
     const commentObj = {
       id: id++,
       replyComment: replyComment.data.comments.length > 0 ? {
-        create_time: replyComment.data.comments[0].create_time,
+        create_time: getRelativeTimeFromTimestamp(replyComment.data.comments[0].create_time),
         nickname: replyComment.data.comments[0].user.nickname,
         userimageurl: replyComment.data.comments[0].user.avatar_thumb.url_list[0],
         text: processCommentEmojis(replyComment.data.comments[0].text, emojidata),
