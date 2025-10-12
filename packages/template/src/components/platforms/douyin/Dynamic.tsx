@@ -123,8 +123,8 @@ const UserInfoSection: React.FC<DouyinDynamicUserInfoProps & { coCreatorCount?: 
             className='rounded-full w-51 h-51 shadow-large'
           />
         </div>
-        <div className='flex flex-col'>
-          <span className='text-[80px] font-bold text-foreground-700 select-text'>
+        <div className='flex flex-col flex-1 min-w-0'>
+          <span className='text-[80px] font-bold text-foreground-700 select-text break-words leading-tight max-w-full'>
             @{username}
           </span>
           {coCreatorCount && coCreatorCount > 0 && (
@@ -203,8 +203,8 @@ const CoCreatorsInfo: React.FC<{
       if (!el) return
       const containerWidth = el.offsetWidth
 
-      // 每项宽度120px，间距gap-8=32px，右内边距pr-2=8px
-      const ITEM_W = 120
+      // 每项实际宽度约152px（头像w-38），间距gap-8=32px，右内边距pr-2=8px
+      const ITEM_W = 152
       const GAP = 32
       const PAD_R = 8
 
@@ -232,19 +232,19 @@ const CoCreatorsInfo: React.FC<{
           return (
             <div
               key={`${c.nickname || 'creator'}-${idx}`}
-              className='flex flex-col items-center min-w-[120px] w-[120px] flex-shrink-0'
+              className='flex flex-col items-center min-w-[152px] w-[152px] flex-shrink-0'
             >
-              <div className='flex justify-center items-center bg-white rounded-full h-21 w-21'>
+              <div className='flex justify-center items-center bg-white rounded-full w-38 h-38'>
                 <img
                   src={avatar}
                   alt='共创者头像'
-                  className='object-cover w-20 h-20 rounded-full'
+                  className='object-cover w-36 h-36 rounded-full'
                 />
               </div>
-              <div className='mt-2 text-[30px] font-medium text-foreground-700 text-center leading-tight w-full overflow-hidden whitespace-nowrap truncate select-text'>
+              <div className='overflow-hidden mt-6 w-full text-3xl font-medium leading-tight text-center truncate whitespace-nowrap select-text text-foreground-700'>
                 {c.nickname || '未提供'}
               </div>
-              <div className='text-[26px] text-foreground-600 text-center leading-tight w-full overflow-hidden whitespace-nowrap truncate select-text'>
+              <div className='overflow-hidden mt-2 w-full text-3xl leading-tight text-center truncate whitespace-nowrap select-text text-foreground-600'>
                 {c.role_title || '未提供'}
               </div>
             </div>
@@ -252,12 +252,15 @@ const CoCreatorsInfo: React.FC<{
         })}
 
         {items.length > visibleCount && (
-          <div className='flex flex-col items-center min-w-[120px] w-[120px] flex-shrink-0'>
-            <div className='flex justify-center items-center bg-white rounded-full h-21 w-21'>
+          <div className='flex flex-col items-center min-w-[152px] w-[152px] flex-shrink-0'>
+            <div className='flex justify-center items-center rounded-full bg-default-200 w-38 h-38'>
               <span className='text-[42px] leading-none text-foreground-500'>···</span>
             </div>
-            <div className='mt-2 text-[26px] text-foreground-600 text-center leading-tight w-full overflow-hidden whitespace-nowrap truncate select-text'>
-              {`还有${items.length - visibleCount}人`}
+            <div className='overflow-hidden mt-6 w-full text-3xl font-medium leading-tight text-center truncate whitespace-nowrap select-text text-foreground-700'>
+              还有{items.length - visibleCount}人
+            </div>
+            <div className='overflow-hidden mt-2 w-full text-3xl leading-tight text-center truncate whitespace-nowrap select-text text-foreground-600'>
+              共创
             </div>
           </div>
         )}
