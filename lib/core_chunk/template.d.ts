@@ -962,9 +962,36 @@ interface DouyinCommentProps extends BaseComponentProps {
     qrCodeDataUrl: string;
 }
 /**
+ * 抖音子评论数据接口
+ */
+interface DouyinSubComment {
+    /** 创建时间戳 */
+    create_time: number;
+    /** 用户昵称 */
+    nickname: string;
+    /** 用户头像URL */
+    userimageurl: string;
+    /** 评论内容 */
+    text: string;
+    /** 点赞数 */
+    digg_count: number;
+    /** IP标签 */
+    ip_label: string;
+    /** 文本额外信息 */
+    text_extra: any[];
+    /** 标签文本 */
+    label_text: string;
+}
+/**
  * 评论项数据接口
  */
 interface CommentItem {
+    /** 评论ID */
+    id?: number;
+    /** 评论CID */
+    cid?: string;
+    /** 作品ID */
+    aweme_id?: string;
     /** 用户头像URL */
     userimageurl: string;
     /** 用户昵称 */
@@ -994,6 +1021,10 @@ interface CommentItem {
         /** 搜索查询ID */
         search_query_id: string;
     }> | null;
+    /** 是否@用户ID */
+    is_At_user_id?: any;
+    /** 回复评论数据 */
+    replyComment?: DouyinSubComment;
 }
 
 /**
