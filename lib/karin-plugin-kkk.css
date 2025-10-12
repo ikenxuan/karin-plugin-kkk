@@ -4969,10 +4969,6 @@
     height: calc(var(--spacing) * 20);
   }
 
-  .h-21 {
-    height: calc(var(--spacing) * 21);
-  }
-
   .h-23 {
     height: calc(var(--spacing) * 23);
   }
@@ -4999,6 +4995,10 @@
 
   .h-36 {
     height: calc(var(--spacing) * 36);
+  }
+
+  .h-38 {
+    height: calc(var(--spacing) * 38);
   }
 
   .h-40 {
@@ -5345,10 +5345,6 @@
     width: calc(var(--spacing) * 20);
   }
 
-  .w-21 {
-    width: calc(var(--spacing) * 21);
-  }
-
   .w-23 {
     width: calc(var(--spacing) * 23);
   }
@@ -5371,6 +5367,10 @@
 
   .w-36 {
     width: calc(var(--spacing) * 36);
+  }
+
+  .w-38 {
+    width: calc(var(--spacing) * 38);
   }
 
   .w-40 {
@@ -5437,10 +5437,6 @@
     width: 95%;
   }
 
-  .w-\[120px\] {
-    width: 120px;
-  }
-
   .w-\[130\%\] {
     width: 130%;
   }
@@ -5451,6 +5447,10 @@
 
   .w-\[150px\] {
     width: 150px;
+  }
+
+  .w-\[152px\] {
+    width: 152px;
   }
 
   .w-\[170px\] {
@@ -5677,8 +5677,8 @@
     min-width: calc(var(--spacing) * 40);
   }
 
-  .min-w-\[120px\] {
-    min-width: 120px;
+  .min-w-\[152px\] {
+    min-width: 152px;
   }
 
   .min-w-\[200px\] {
@@ -7960,16 +7960,8 @@
     font-size: 25px;
   }
 
-  .text-\[26px\] {
-    font-size: 26px;
-  }
-
   .text-\[27px\] {
     font-size: 27px;
-  }
-
-  .text-\[30px\] {
-    font-size: 30px;
   }
 
   .text-\[34px\] {
