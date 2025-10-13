@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.2.0 (2025-10-13)
+
+## What's Changed
+* chore(main): release 1.1.1 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/40
+* chore(main): release 1.1.2 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/42
+* chore(main): release 1.1.3 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/43
+* fix: 获取版本 by @sj817 in https://github.com/ikenxuan/karin-plugin-kkk/pull/46
+* chore(main): release 1.1.4 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/44
+* chore(main): release 1.1.5 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/48
+* chore(main): release 1.1.6 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/49
+* refactor(db): [毁灭性更新]: 重构数据库结构 by @ikenxuan in https://github.com/ikenxuan/karin-plugin-kkk/pull/51
+* chore(main): release 1.1.7 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/50
+* ci: 细优 ci/cd by @ikenxuan in https://github.com/ikenxuan/karin-plugin-kkk/pull/55
+* release: 发布版本 v1.1.8 🚀 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/52
+* fix: npm run pub by @sj817 in https://github.com/ikenxuan/karin-plugin-kkk/pull/56
+* Fix pub by @sj817 in https://github.com/ikenxuan/karin-plugin-kkk/pull/57
+* chore(main): release 1.1.9 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/58
+* chore(main): release 1.1.10 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/60
+* chore(main): release 1.1.11 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/61
+* chore(main): release 1.2.0 by @github-actions[bot] in https://github.com/ikenxuan/karin-plugin-kkk/pull/63
+
+
+**Full Changelog**: https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.1.0...v1.2.0
+
 ## 1.1.0 (2025-10-11)
 
 ## What's Changed
