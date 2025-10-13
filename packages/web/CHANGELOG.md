@@ -1,5 +1,40 @@
 # Changelog
 
+## [1.1.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v1.0.2...v1.1.0) (2025-10-13)
+
+
+### ✨ 新功能
+
+* **template:** 同时测试模板更新 ([cf8a7d9](https://github.com/ikenxuan/karin-plugin-kkk/commit/cf8a7d9df2ecda3032d2724996a1c97284e66500))
+* **web:** 测试更新日志合并 ([cf8a7d9](https://github.com/ikenxuan/karin-plugin-kkk/commit/cf8a7d9df2ecda3032d2724996a1c97284e66500))
+
+
+### 🐛 错误修复
+
+* release ([d8e0a49](https://github.com/ikenxuan/karin-plugin-kkk/commit/d8e0a49940f7c62d6ccf3f8127d4d4b4a3b18456))
+* **web:** 修复作者选择器样式和交互问题 ([2a7f42d](https://github.com/ikenxuan/karin-plugin-kkk/commit/2a7f42d4f3d8afdad9b6eb8284cc2712c355e0f0))
+
+
+### 🔧 其他更新
+
+* release main ([#127](https://github.com/ikenxuan/karin-plugin-kkk/issues/127)) ([c1ab61f](https://github.com/ikenxuan/karin-plugin-kkk/commit/c1ab61f487a124380a5fec6c1df64afddc8bf16f))
+* release main ([#144](https://github.com/ikenxuan/karin-plugin-kkk/issues/144)) ([a534b25](https://github.com/ikenxuan/karin-plugin-kkk/commit/a534b258c0b35ed6e8b5f5f0ffda714e71464955))
+* release main ([#145](https://github.com/ikenxuan/karin-plugin-kkk/issues/145)) ([1e391bf](https://github.com/ikenxuan/karin-plugin-kkk/commit/1e391bf43a8a32b22d23292eb085d8b289d6472e))
+* release main ([#148](https://github.com/ikenxuan/karin-plugin-kkk/issues/148)) ([4f4f064](https://github.com/ikenxuan/karin-plugin-kkk/commit/4f4f064b5283db1e5ca794d57c50d95d0c7d1559))
+* release main ([#149](https://github.com/ikenxuan/karin-plugin-kkk/issues/149)) ([7a703e1](https://github.com/ikenxuan/karin-plugin-kkk/commit/7a703e18ee1bf718517e4f0b0bcd245bcd329f0b))
+* release main ([#155](https://github.com/ikenxuan/karin-plugin-kkk/issues/155)) ([84ac24f](https://github.com/ikenxuan/karin-plugin-kkk/commit/84ac24f3ec4702bcf248acba01bfdb17a17389b2))
+* release main ([#156](https://github.com/ikenxuan/karin-plugin-kkk/issues/156)) ([685fb21](https://github.com/ikenxuan/karin-plugin-kkk/commit/685fb212d533b198726deaa90f50ac2a3df80b4f))
+* release main ([#158](https://github.com/ikenxuan/karin-plugin-kkk/issues/158)) ([1b8dda5](https://github.com/ikenxuan/karin-plugin-kkk/commit/1b8dda52ebef23b59ccf51685b9fbc0f6bf04ae3))
+* release main ([#159](https://github.com/ikenxuan/karin-plugin-kkk/issues/159)) ([108447b](https://github.com/ikenxuan/karin-plugin-kkk/commit/108447ba67ae7d300abc88fc5b60f79b8e61e7d3))
+* release main ([#161](https://github.com/ikenxuan/karin-plugin-kkk/issues/161)) ([31504c2](https://github.com/ikenxuan/karin-plugin-kkk/commit/31504c255f7bf28c69b322f2dc8d92ba07ff385a))
+* release main ([#163](https://github.com/ikenxuan/karin-plugin-kkk/issues/163)) ([c6552e1](https://github.com/ikenxuan/karin-plugin-kkk/commit/c6552e1ed2bd92a7f9e64bb4b62c492844b88193))
+* release main ([#167](https://github.com/ikenxuan/karin-plugin-kkk/issues/167)) ([2387f12](https://github.com/ikenxuan/karin-plugin-kkk/commit/2387f127cba0cb415eb4dbe6831bf52a1415b672))
+
+
+### ♻️ 代码重构
+
+* **tauri:** 重构配置管理与请求代理逻辑 ([#143](https://github.com/ikenxuan/karin-plugin-kkk/issues/143)) ([51b9fec](https://github.com/ikenxuan/karin-plugin-kkk/commit/51b9fec3c23a61c5b83f3ffbb4988287f596ed0b))
+
 ## 1.0.2 (2025-10-13)
 
 ## What's Changed
