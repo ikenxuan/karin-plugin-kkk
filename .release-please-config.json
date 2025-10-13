@@ -1,10 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "node",
-  "include-component-in-tag": false,
-  "commit-search-depth": 100,
-  "separate-pull-requests": true,
-  "bootstrap-sha": "HEAD",
+  "include-component-in-tag": true,
+  "commit-search-depth": 50,
+  "tag-separator": "-",
+  "separate-pull-requests": false,
   "changelog-sections": [
     {
       "type": "feat",
@@ -78,14 +78,20 @@
       "package-name": "web",
       "changelog-path": "CHANGELOG.md",
       "skip-github-release": true,
-      "include-component-in-tag": false
+      "release-as": "0.0.0",
+      "include-component-in-tag": false,
+      "changelog-host": "https://github.com",
+      "changelog-type": "github"
     },
     "packages/template": {
       "release-type": "node",
       "package-name": "template",
       "changelog-path": "CHANGELOG.md",
       "skip-github-release": true,
-      "include-component-in-tag": false
+      "release-as": "0.0.0",
+      "include-component-in-tag": false,
+      "changelog-host": "https://github.com",
+      "changelog-type": "github"
     }
   }
 }
