@@ -79,9 +79,7 @@
       "changelog-path": "CHANGELOG.md",
       "skip-github-release": true,
       "release-as": "0.0.0",
-      "include-component-in-tag": false,
-      "changelog-host": "https://github.com",
-      "changelog-type": "github"
+      "include-component-in-tag": false
     },
     "packages/template": {
       "release-type": "node",
@@ -89,9 +87,7 @@
       "changelog-path": "CHANGELOG.md",
       "skip-github-release": true,
       "release-as": "0.0.0",
-      "include-component-in-tag": false,
-      "changelog-host": "https://github.com",
-      "changelog-type": "github"
+      "include-component-in-tag": false
     }
   }
 }
