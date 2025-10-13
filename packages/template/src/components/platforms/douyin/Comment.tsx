@@ -219,7 +219,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
                   />
                   <div className='flex justify-between items-center text-foreground-500'>
                     <div className='flex items-center space-x-4'>
-                      <span className='text-[35px]'>{new Date(comment.replyComment.create_time * 1000).toLocaleString()}</span>
+                      <span className='text-[35px]'>{comment.replyComment.create_time}</span>
                       <span className='text-[35px]'>{comment.replyComment.ip_label}</span>
                     </div>
                     <div className='flex items-center space-x-2'>
