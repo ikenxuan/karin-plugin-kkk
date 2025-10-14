@@ -4721,10 +4721,6 @@
     margin-bottom: 52px;
   }
 
-  .mb-\[70px\] {
-    margin-bottom: 70px;
-  }
-
   .mb-px {
     margin-bottom: 1px;
   }
@@ -5339,6 +5335,10 @@
 
   .w-16 {
     width: calc(var(--spacing) * 16);
+  }
+
+  .w-18 {
+    width: calc(var(--spacing) * 18);
   }
 
   .w-20 {
