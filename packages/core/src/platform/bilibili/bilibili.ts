@@ -313,7 +313,7 @@ export class Bilibili extends Base {
                 CommentsData: commentsdata,
                 CommentLength: String(commentsdata?.length ?? 0),
                 share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
-                ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? '动态中没有附带图片',
+                ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? 0,
                 shareurl: '动态分享链接'
               })
               if (imgArray.length === 1) this.e.reply(imgArray[0])
@@ -529,7 +529,7 @@ export class Bilibili extends Base {
                     0
                   ),
                   share_url: 'https://www.bilibili.com/video/' + bvid,
-                  ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? '动态中没有附带图片',
+                  ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? 0,
                   shareurl: '动态分享链接'
                 })
               )

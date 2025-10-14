@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { ThumbsDown, ThumbsUp } from 'lucide-react'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 
@@ -111,7 +112,7 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
     <div className='flex flex-col items-center -mr-10'>
       <div
         ref={qrCodeRef}
-        className='mt-20 w-[600px] h-[600px] flex items-center justify-center'
+        className='flex justify-center items-center mt-20 w-120 h-120'
       >
         {qrCodeDataUrl
           ? (
@@ -164,8 +165,7 @@ const VideoInfoHeader: React.FC<VideoInfoHeaderProps> = ({
   type,
   commentLength,
   videoSize,
-  clarity,
-  imageLength
+  clarity
 }) => {
   return (
     <div className='flex flex-col mt-2.5 -ml-10'>
@@ -189,14 +189,6 @@ const VideoInfoHeader: React.FC<VideoInfoHeaderProps> = ({
           )}
         </>
       )}
-
-      {(type === '图集' || type === '动态') && imageLength && (
-        <InfoItem
-          label={type === '图集' ? '图片数量' : '附带图片'}
-          value={imageLength}
-          unit='张'
-        />
-      )}
     </div>
   )
 }
@@ -211,8 +203,11 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
   isLast = false
 }) => {
   return (
-    // eslint-disable-next-line @stylistic/space-infix-ops
-    <div className={`flex px-10 pb-0 relative max-w-full ${isLast ? '':'mb-[70px]'}`}>
+     
+    <div className={clsx(
+      'flex relative px-10 py-10 max-w-full', 
+      { 'pb-0': isLast }
+    )}>
       {/* 用户头像区域 */}
       <div className='relative mr-[33.75px] flex-shrink-0'>
         {/* 主头像 */}

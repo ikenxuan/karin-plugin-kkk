@@ -20,7 +20,7 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
 }) => {
   return (
     <div className='flex flex-col items-center -mr-10'>
-      <div className='mt-20 flex items-center justify-center w-[600px] h-[600px] bg-content1 rounded-lg shadow-medium'>
+      <div className='flex justify-center items-center mt-20 rounded-lg w-120 h-120 bg-content1 shadow-medium'>
         {qrCodeDataUrl
           ? (
             <img src={qrCodeDataUrl} alt='二维码' className='object-contain w-full h-full' />
@@ -120,7 +120,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
       {/* 评论内容 */}
       <div className='flex-1'>
         {/* 用户信息 */}
-        <div className='mb-12.5 text-[50px] text-foreground-600 relative flex items-center select-text'>
+        <div className='mb-12.5 text-5xl text-foreground-600 relative flex items-center select-text'>
           <span className='font-medium'>{comment.nickname}</span>
           {comment.label_type === 1 && (
             <div className='inline-block px-4 py-1 rounded-xl ml-3 text-[40px] bg-[#fe2c55] text-white'>
@@ -136,7 +136,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
 
         {/* 评论文本 */}
         <div
-          className='text-[60px] text-foreground leading-relaxed mb-2 whitespace-pre-wrap select-text [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
+          className='text-6xl text-foreground leading-relaxed mb-2 whitespace-pre-wrap select-text [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
           dangerouslySetInnerHTML={{ __html: comment.text }}
           style={{
             wordBreak: 'break-word',
@@ -192,7 +192,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
               <div className='flex items-start space-x-4'>
                 <img
                   src={comment.replyComment.userimageurl}
-                  className='object-cover mr-8 w-32 h-32 rounded-full'
+                  className='object-cover mr-8 rounded-full w-18 h-18'
                   alt='用户头像'
                 />
                 <div className='flex-1'>
@@ -210,7 +210,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
                     )}
                   </div>
                   <div
-                    className='text-[45px] text-foreground leading-relaxed mb-2 select-text [&_img]:mb-2 [&_img]:inline [&_img]:h-[1.2em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.5em] [&_span]:inline'
+                    className='text-6xl text-foreground leading-relaxed mb-2 select-text [&_img]:mb-2 [&_img]:inline [&_img]:h-[1.2em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.5em] [&_span]:inline'
                     dangerouslySetInnerHTML={{ __html: comment.replyComment.text }}
                     style={{
                       wordBreak: 'break-word',
