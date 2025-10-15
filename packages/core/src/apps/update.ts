@@ -18,6 +18,9 @@ const UPDATE_LOCK_KEY = 'kkk:update:lock'
 const UPDATE_MSGID_KEY = 'kkk:update:msgId'
 
 const Handler = async (e: Message) => {
+  if (process.env.NODE_ENV === 'development') {
+    return true
+  }
   logger.trace(e)
 
   // 版本提醒锁（只提醒一次，直到本地版本达到或超过锁定版本才解锁）
@@ -165,5 +168,5 @@ export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, async (e: Message
 
 export const update = karin.task('kkk-更新检测', '*/10 * * * *', Handler, {
   name: 'kkk-更新检测',
-  log: true
+  log: false
 })
