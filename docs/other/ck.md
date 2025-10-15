@@ -14,14 +14,14 @@
 
 > **看这个视频就懂了**
 
-<video src="../../public/video.mp4" controls>观看视频教程</video>
+<video src="/video.mp4" controls>观看视频教程</video>
 
 <details>
 <summary>图文版，点击展开</summary>
 
 找到携带 Cookie 的请求复制请求头中的 Cookie
 
-![img](../../public/intro/pic1.jpg)
+![img](/intro/pic1.jpg)
 
 </details>
 

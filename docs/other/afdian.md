@@ -5,7 +5,7 @@
 
 使用链接直达: [爱发电](https://afdian.com/a/ikenxuan)
 ::: details 扫码发电
-![afdian](../../public/other/afdian.jpg)
+![afdian](/other/afdian.jpg)
 :::
 
 ## 赞助列表
