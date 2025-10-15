@@ -6,8 +6,6 @@ import axios from 'node-karin/axios'
 
 import { Common, Render, Root } from '@/module'
 
-import { Config } from './Config'
-
 /**
  * 规范化为 x.x.x（剔除 v 前缀、预发布、构建标识）
  * @param v 版本字符串
@@ -55,17 +53,7 @@ export const getChangelogImage = async (localVersion: string, remoteVersion: str
   mkdirSync(`${karinPathTemp}/html/${Root.pluginName}/version`)
   const htmlPath = `${karinPathTemp}/html/${Root.pluginName}/version/version.html`
   fs.writeFileSync(htmlPath, html)
-  const base64 = await render.render({
-    file: htmlPath,
-    multiPage: Config.app.multiPageRender ? Config.app.multiPageHeight : false,
-    selector: '#container',
-    fullPage: false,
-    type: 'png',
-    pageGotoParams: {
-      waitUntil: 'load',
-      timeout: Config.app.RenderWaitTime * 1000
-    }
-  })
+  const base64 = await render.renderHtml(htmlPath)
   const img = await Render('other/changelog', {
     changeLogImg: `data:image/png;base64,${base64}`
   })
