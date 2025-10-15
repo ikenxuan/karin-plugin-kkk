@@ -165,11 +165,11 @@ export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, async (e: Message
   }
 }, { name: 'kkk-更新' })
 
-export const updateTest = karin.command('test', async (e: Message) => {
-  return Handler(e)
-}, {
-  name: 'kkk-更新检测'
-})
+// export const updateTest = karin.command('test', async (e: Message) => {
+//   return Handler(e)
+// }, {
+//   name: 'kkk-更新检测'
+// })
 
 export const update = karin.task('kkk-更新检测', '*/10 * * * *', Handler, {
   name: 'kkk-更新检测',
