@@ -6,6 +6,7 @@ import sidebar from './script/sidebar'
 export default defineConfig({
   title: "karin-plugin-kkk",
   description: "一个基于karin的抖音、B站插件",
+  dir: '/',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav,
