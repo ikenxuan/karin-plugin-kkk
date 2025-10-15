@@ -37,7 +37,6 @@
     "@heroui/system": "2.4.23",
     "@heroui/theme": "2.4.23",
     "@shopify/draggable": "^1.1.4",
-    "autoprefixer": "10.4.21",
     "axios": "1.12.2",
     "clsx": "^2.1.1",
     "cross-env": "10.1.0",

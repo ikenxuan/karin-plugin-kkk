@@ -5,7 +5,6 @@ import { fileURLToPath, URL } from 'node:url'
 
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import autoprefixer from 'autoprefixer'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 
@@ -52,13 +51,6 @@ export default defineConfig(({ command }) => {
     resolve: {
       alias: {
         '@': resolve(__dirname, './src')
-      }
-    },
-    css: {
-      postcss: {
-        plugins: [
-          autoprefixer
-        ]
       }
     }
   }
