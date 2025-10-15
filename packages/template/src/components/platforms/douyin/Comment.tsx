@@ -197,7 +197,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
                 />
                 <div className='flex-1'>
                   <div className='flex items-center mb-2 space-x-2'>
-                    <span className='mb-8 text-5xl font-medium text-foreground-600'>{comment.replyComment.nickname}</span>
+                    <span className='text-5xl font-medium text-foreground-600'>{comment.replyComment.nickname}</span>
                     {comment.replyComment.label_text !== '' && (
                       <div className={clsx(
                         'inline-block px-4 py-2 ml-2 text-3xl rounded-xl', 
@@ -210,7 +210,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
                     )}
                   </div>
                   <div
-                    className='text-6xl text-foreground leading-relaxed mb-2 select-text [&_img]:mb-2 [&_img]:inline [&_img]:h-[1.2em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.5em] [&_span]:inline'
+                    className='text-6xl text-foreground leading-relaxed mb-2 mt-8  select-text [&_img]:mb-2 [&_img]:inline [&_img]:h-[1.2em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.5em] [&_span]:inline'
                     dangerouslySetInnerHTML={{ __html: comment.replyComment.text }}
                     style={{
                       wordBreak: 'break-word',

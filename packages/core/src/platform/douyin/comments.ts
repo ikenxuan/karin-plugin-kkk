@@ -184,10 +184,9 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
         nickname: replyComment.data.comments[0].user.nickname,
         userimageurl: replyComment.data.comments[0].user.avatar_thumb.url_list[0],
         text: processCommentEmojis(replyComment.data.comments[0].text, emojidata),
-        digg_count: (() => {
-          const count = replyComment.data.comments[0].digg_count
-          return count > 10000 ? Math.round(count / 10000) + 'w' : count
-        })(),
+        digg_count: replyComment.data.comments[0].digg_count > 10000
+          ? (replyComment.data.comments[0].digg_count / 10000).toFixed(1) + 'w'
+          : replyComment.data.comments[0].digg_count,
         ip_label: replyComment.data.comments[0].ip_label,
         text_extra: replyComment.data.comments[0].text_extra,
         label_text: replyComment.data.comments[0].label_text
