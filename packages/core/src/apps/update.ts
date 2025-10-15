@@ -34,32 +34,34 @@ const Handler = async (e: Message) => {
     return true
   }
 
-  // 版本提醒锁
-  const lockKey = UPDATE_LOCK_KEY
+  // 2) 版本提醒锁（只提醒一次，直到本地版本达到或超过锁定版本才解锁）
   try {
-    const lockedVersion = await db.get(lockKey)
+    const lockedVersion = await db.get(UPDATE_LOCK_KEY)
     if (typeof lockedVersion === 'string' && lockedVersion.length > 0) {
-      // 本地版本达到或超过锁住的版本则自动解锁
+      // 本地版本达到或超过锁定版本 => 解锁
       if (!isSemverGreater(lockedVersion, Root.pluginVersion)) {
-        await db.del(lockKey)
+        await db.del(UPDATE_LOCK_KEY)
       } else {
+        // 仍处于锁定状态（本地版本小于锁定版本）=> 跳过本次提醒
         return true
       }
     }
   } catch { }
 
+  // 3) 判断是否有可更新版本（远程 > 本地）
   if (!isSemverGreater(latestVersion, Root.pluginVersion)) {
     // 没有可更新版本
     return true
   }
 
+  // 4) 设置锁为当前远程版本，确保只推送一次
   try {
-    await db.set(lockKey, latestVersion)
+    await db.set(UPDATE_LOCK_KEY, latestVersion)
   } catch { }
 
   const ChangeLogImg = await getChangelogImage(Root.pluginVersion, latestVersion)
 
-  // 6) 通知主人
+  // 5) 通知主人
   const list = config.master()
   let master = list[0]
   if (master === 'console') {
@@ -72,13 +74,13 @@ const Handler = async (e: Message) => {
       botList[0].bot.account.name === 'console' ? botList[1].bot.account.selfId : botList[0].bot.account.selfId,
       master,
       [
-        segment.text('karin-plugin-kkk 有新的更新！'),
+        segment.text('karin-plugin-kkk 有新的更新！\n引用该消息发送「更新」以更新插件'),
         ...ChangeLogImg
       ]
     )
     try {
       await db.set(UPDATE_MSGID_KEY, msgResult.messageId)
-      await db.set(lockKey, latestVersion)
+      // 不再重复写入锁，前面已设置
     } catch { }
   }
   return true
@@ -87,7 +89,7 @@ const Handler = async (e: Message) => {
 export const kkkUpdate = hooks.message.friend(async (e, next) => {
   if (e.msg.includes('更新')) {
     const msgId = await db.get(UPDATE_MSGID_KEY) as string
-    if ( e.replyId === msgId) {
+    if (e.replyId === msgId) {
       const updateStatus = await checkPkgUpdate(Root.pluginName)
       if (updateStatus.status === 'yes') {
         try {
@@ -177,5 +179,5 @@ export const updateTest = karin.command('test', async (e: Message) => {
 
 export const update = karin.task('kkk-更新检测', '*/10 * * * *', Handler, {
   name: 'kkk-更新检测',
-  log: false
+  log: true
 })
