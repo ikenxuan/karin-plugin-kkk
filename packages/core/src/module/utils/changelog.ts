@@ -4,7 +4,7 @@ import { markdown } from '@karinjs/md-html'
 import { karinPathTemp, mkdirSync, range, render } from 'node-karin'
 import axios from 'node-karin/axios'
 
-import { Common, Render, Root } from '@/module'
+import { baseHeaders, Common, Render, Root } from '@/module'
 
 /**
  * 规范化为 x.x.x（剔除 v 前缀、预发布、构建标识）
@@ -27,18 +27,35 @@ const versionCore = (v: string): string => {
  */
 export const getChangelogImage = async (localVersion: string, remoteVersion: string) => {
   const urls = [
+    // 国内镜像（优先）
+    `https://jsd.onmicrosoft.cn/npm/${Root.pluginName}@${remoteVersion}/CHANGELOG.md`,
+    `https://npm.onmicrosoft.cn/${Root.pluginName}@${remoteVersion}/CHANGELOG.md`,
+    // 国内代理
+    `https://jsd.onmicrosoft.cn/npm/${Root.pluginName}@${remoteVersion}/CHANGELOG.md`,
+    `https://npm.onmicrosoft.cn/${Root.pluginName}@${remoteVersion}/CHANGELOG.md`,
+    // 海外源
     `https://cdn.jsdelivr.net/npm/${Root.pluginName}@${remoteVersion}/CHANGELOG.md`,
-    `https://unpkg.com/${Root.pluginName}@${remoteVersion}/CHANGELOG.md`
+    `https://fastly.jsdelivr.net/npm/${Root.pluginName}@${remoteVersion}/CHANGELOG.md`,
+    `https://unpkg.com/${Root.pluginName}@${remoteVersion}/CHANGELOG.md`,
+    // GitHub Raw 代理
+    `https://jiashu.1win.eu.org/https://raw.githubusercontent.com/ikenxuan/karin-plugin-kkk/v${remoteVersion}/packages/core/CHANGELOG.md`
   ]
+
+  // 并发竞速
   let changelog = ''
-  for (const url of urls) {
-    try {
-      const res = await axios.get(url, { timeout: 10000 })
-      if (typeof res.data === 'string' && res.data.length > 0) {
-        changelog = res.data
-        break
-      }
-    } catch { }
+  const requests = urls.map((url) =>
+    axios.get(url, { timeout: 10000, headers: baseHeaders })
+      .then((res) => {
+        if (typeof res.data === 'string' && res.data.length > 0) {
+          return res.data as string
+        }
+        throw new Error('Invalid changelog content')
+      })
+  )
+  try {
+    changelog = await Promise.any(requests)
+  } catch {
+    return null
   }
   if (!changelog) return null
 
