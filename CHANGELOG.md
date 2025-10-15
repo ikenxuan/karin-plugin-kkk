@@ -1,5 +1,15 @@
 # 变更日志
 
+## [2.6.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.6.2...v2.6.3) (2025-10-15)
+
+
+### 🐛 错误修复
+
+* 更新检测开发环境不允许执行。 ([39b522d](https://github.com/ikenxuan/karin-plugin-kkk/commit/39b522d21c2d1bf09d25a45be6cd817070875386))
+* 细节优化 ([ce2f9a5](https://github.com/ikenxuan/karin-plugin-kkk/commit/ce2f9a5f6c5d96ea6e10ebe39bda122e528f9ba7))
+* 获取更新日志并发竞速请求 ([2d9f31d](https://github.com/ikenxuan/karin-plugin-kkk/commit/2d9f31d0a7f2a74369d9c69495006c0fcf958b88))
+* 过万整除 ([93f8753](https://github.com/ikenxuan/karin-plugin-kkk/commit/93f8753d59701faee7dc28c60bca8b344efa564a))
+
 ## [2.6.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.6.1...v2.6.2) (2025-10-15)
 
 
