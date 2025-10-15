@@ -128,10 +128,7 @@ export class Bilibilipush extends Base {
         ${logger.cyan('访问地址')}：${logger.green('https://t.bilibili.com/' + dynamicId)}`)
 
       let skip = await skipDynamic(data[dynamicId])
-      if (skip) {
-        logger.warn(`动态 https://t.bilibili.com/${dynamicId} 已被处理，跳过`)
-        continue
-      }
+      skip && logger.warn(`动态 https://t.bilibili.com/${dynamicId} 已被处理，跳过`)
       let send_video = true; let img: ImageElement[] = []
       const dynamicCARDINFO = await this.amagi.getBilibiliData('动态卡片数据', { dynamic_id: dynamicId, typeMode: 'strict' })
       const dycrad = dynamicCARDINFO.data.data.card && dynamicCARDINFO.data.data.card.card && JSON.parse(dynamicCARDINFO.data.data.card.card)
@@ -381,7 +378,7 @@ export class Bilibilipush extends Base {
           const bot = karin.getBot(botId) as AdapterType
           const Contact = karin.contactGroup(groupId)
           status = await karin.sendMsg(botId, Contact, img ? [...img] : [])
-          if (Config.bilibili.push.parsedynamic) {
+          if (Config.bilibili.push.parsedynamic && status.messageId) {
             switch (data[dynamicId].dynamic_type) {
               case 'DYNAMIC_TYPE_AV': {
                 if (send_video) {
