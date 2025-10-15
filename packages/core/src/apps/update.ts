@@ -97,13 +97,7 @@ export const kkkUpdate = hooks.message.friend(async (e, next) => {
           if (result.status === 'ok') {
             const msgResult = await e.reply(`${Root.pluginName} 更新成功！\n${result.local} -> ${result.remote}\n开始执行重启......`)
             msgResult.messageId && await db.del(UPDATE_MSGID_KEY) && await db.del(UPDATE_LOCK_KEY)
-            const restartStartTime = Date.now()
-            const restartResult = await restart(e.selfId, e.contact, e.messageId)
-            if (restartResult.status === 'success') {
-              await e.reply(`重启成功，耗时: ${(Date.now() - restartStartTime / 1000).toFixed(2)}s`)
-            } else {
-              await e.reply(`重启失败: ${restartResult.data}`)
-            }
+            await restart(e.selfId, e.contact, e.messageId)
           } else if (result.status === 'failed') {
             await e.reply(`${Root.pluginName} 更新失败: ${result.data}`)
           }

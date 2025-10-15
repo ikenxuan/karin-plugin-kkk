@@ -120,3 +120,83 @@ export const GlowImage: React.FC<GlowImageProps> = ({
     </div>
   )
 }
+
+/**
+ * 文字发光：在文字下方叠加一层模糊副本形成辉光
+ */
+type GlowTextProps = {
+  /** 子元素（文本或节点） */
+  children: React.ReactNode
+  /** 外层容器样式（尺寸、颜色等） */
+  className?: string
+  /** 辉光层样式（通常不需要，继承文字颜色） */
+  glowClassName?: string
+  /** 模糊强度，默认 12 */
+  blurRadius?: number
+  /** 发光不透明度，默认 0.6 */
+  glowStrength?: number
+  /** 辉光层缩放，默认 1.02 */
+  scale?: number
+}
+
+export const GlowText: React.FC<GlowTextProps> = ({
+  children,
+  className,
+  glowClassName,
+  blurRadius = 12,
+  glowStrength = 0.6,
+  scale = 1.02
+}) => {
+  return (
+    <span className={className} style={{ position: 'relative', display: 'inline-block' }}>
+      <span
+        aria-hidden="true"
+        className={glowClassName}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          transform: `scale(${scale})`,
+          filter: `blur(${blurRadius}px) saturate(1.1)`,
+          opacity: glowStrength,
+          pointerEvents: 'none'
+        }}
+      >
+        {children}
+      </span>
+      <span>{children}</span>
+    </span>
+  )
+}
+
+// 真实发光文本（多层 text-shadow 叠加，基于 `currentColor` 加色发光）
+type RealGlowTextProps = {
+  children: React.ReactNode
+  className?: string
+  /** 光晕层数（叠加圈数） */
+  levels?: number
+  /** 初始模糊半径（px） */
+  baseBlur?: number
+  /** 每层递增的模糊（px） */
+  spread?: number
+}
+
+export const RealGlowText: React.FC<RealGlowTextProps> = ({
+  children,
+  className,
+  levels = 4,
+  baseBlur = 6,
+  spread = 6
+}) => {
+  const textShadow = React.useMemo(() => {
+    return Array.from({ length: levels }, (_, i) => {
+      const blur = baseBlur + i * spread
+      return `0 0 ${blur}px currentColor`
+    }).join(', ')
+  }, [levels, baseBlur, spread])
+
+  return (
+    <span className={className} style={{ textShadow }}>
+      {children}
+    </span>
+  )
+}

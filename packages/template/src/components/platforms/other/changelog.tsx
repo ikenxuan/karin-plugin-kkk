@@ -1,10 +1,11 @@
 import React from 'react'
 
+import { GlowText } from '../../../components/common/GlowImage'
 import type { BaseComponentProps } from '../../../types'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
- * 2.0版本更新日志组件属性接口
+ * 更新日志组件属性接口
  */
 export interface ChangelogProps extends BaseComponentProps {
   /** 渲染请求数据 */
@@ -18,7 +19,7 @@ export interface ChangelogProps extends BaseComponentProps {
 
 
 /**
- * 2.0版本更新日志组件
+ * 更新日志组件
  * @param props 组件属性
  * @returns JSX元素
  */
@@ -29,7 +30,16 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
       {...props}
       className='bg-white dark:bg-[#0D1017]'
     >
-      <img className="mb-4" src={props.data?.changeLogImg} alt="更新日志" />
+      <div className='text-center'>
+        <img src={props.data.changeLogImg} alt='更新日志' />
+        <div className='text-5xl leading-relaxed text-primary-900'>
+          引用回复此消息包含
+          <GlowText className='text-7xl font-bold text-primary' blurRadius={20} glowStrength={2} scale={1.2}>
+            「更新」
+          </GlowText>
+          文本，即可开始更新
+        </div>
+      </div>
     </DefaultLayout>
   )
 })
