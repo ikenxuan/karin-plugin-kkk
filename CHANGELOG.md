@@ -1,5 +1,14 @@
 # 变更日志
 
+## [2.6.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.6.0...v2.6.1) (2025-10-15)
+
+
+### 🐛 错误修复
+
+* **bilibili/douyin:** 推送缓存写不进db ([4b0216f](https://github.com/ikenxuan/karin-plugin-kkk/commit/4b0216f28a01a6855e28cc1145e7f753ae5e98a6))
+* UI布局失效。 ([3ebab7c](https://github.com/ikenxuan/karin-plugin-kkk/commit/3ebab7c32fc7c2aaaae36a4424ba9e2236d380ab))
+* **update:** 修复更新检测逻辑并优化渲染配置 ([0036c59](https://github.com/ikenxuan/karin-plugin-kkk/commit/0036c596ddbc2917c374a9dd8410a4b42f749e57))
+
 ## [2.6.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.5.0...v2.6.0) (2025-10-15)
 
 
