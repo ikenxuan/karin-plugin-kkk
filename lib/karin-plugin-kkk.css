@@ -8347,6 +8347,10 @@
     color: hsl(var(--heroui-primary-800) / 1);
   }
 
+  .text-primary-900 {
+    color: hsl(var(--heroui-primary-900) / 1);
+  }
+
   .text-primary-foreground {
     color: hsl(var(--heroui-primary-foreground) / 1);
   }
