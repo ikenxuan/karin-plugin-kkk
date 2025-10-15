@@ -166,7 +166,11 @@ export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, async (e: Message
   }
 }, { name: 'kkk-更新' })
 
-export const updateTest = karin.command(/^#?kkk更新测试$/, async (e) => Handler(e))
+export const updateTest = karin.command(/^#?kkk更新测试$/, async (e) => {
+  await db.del(UPDATE_MSGID_KEY)
+  await db.del(UPDATE_LOCK_KEY)
+  return Handler(e)
+})
 
 export const update = karin.task('kkk-更新检测', '*/10 * * * *', Handler, {
   name: 'kkk-更新检测',
