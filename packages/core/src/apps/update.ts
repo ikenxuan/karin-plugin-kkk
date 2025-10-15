@@ -131,16 +131,16 @@ export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, async (e: Message
   }
 
   if (!isSemverGreater(latestVersion, Root.pluginVersion)) {
-    await e.reply(`当前已是最新版本：${Root.pluginVersion}`)
+    await e.reply(`当前已是最新版本：${Root.pluginVersion}`, { reply: true })
     return
   }
 
 
   const ChangeLogImg = await getChangelogImage(Root.pluginVersion, latestVersion)
   if (ChangeLogImg) {
-    await e.reply([segment.text(`${Root.pluginName} 有新的更新！`), ...ChangeLogImg])
+    await e.reply([segment.text(`${Root.pluginName} 的更新日志：`), ...ChangeLogImg], { reply: true })
   } else {
-    await e.reply('获取更新日志失败，更新进程继续......')
+    await e.reply('获取更新日志失败，更新进程继续......', { reply: true })
   }
 
   // 5) 执行更新并重启
