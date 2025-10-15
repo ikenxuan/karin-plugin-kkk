@@ -936,78 +936,30 @@ jobs:
             echo "- 🚀 **Release下载:** [点击这里下载最新版本](https://github.com/${{ github.repository }}/releases/tag/${{ needs.version-release.outputs.release_tag_name }})" >> $GITHUB_STEP_SUMMARY
           fi
 
-  # 桌面应用构建完成后立即更新评论
-  update-pr-comment-desktop:
-    runs-on: ubuntu-latest
-    needs: [unified-build, preview-package-publish, desktop-build]
-    if: github.event_name == 'pull_request' && always() && needs.desktop-build.result != 'skipped'
-    steps:
-      - name: 💬 更新桌面应用构建状态
-        uses: thollander/actions-comment-pull-request@v3
-        with:
-          message: |
-            ## 📦 预览包发布成功
-            
-            ### 🏷️ 包信息
-            - **版本:** `${{ needs.preview-package-publish.outputs.pkg_version }}`
-            - **提交:** [`${{ needs.unified-build.outputs.short_commit_hash }}`](https://github.com/${{ github.repository }}/tree/${{ needs.unified-build.outputs.commit_hash }})
-            
-            ### 📥 安装命令
-            ```bash
-            ${{ needs.preview-package-publish.outputs.pnpm_install_cmd }}
-            ```
-            
-            ### 🖥️ Windows 桌面应用
-            ${{ needs.desktop-build.result == 'success' && '- **状态:** ✅ 构建成功' || '- **状态:** ❌ 构建失败' }}
-            ${{ needs.desktop-build.result == 'success' && format('- **版本:** `{0}`', needs.desktop-build.outputs.desktop_version) || '' }}
-            ${{ needs.desktop-build.result == 'success' && format('- **下载:** [点击下载]({0})', needs.desktop-build.outputs.desktop_artifact_url) || '' }}
-            
-            ### 📱 Android 应用
-            - **状态:** 🔄 构建中...
-            - **架构:** aarch64
-            
-            ---
-            > 💡 Android 应用构建完成后将自动更新此评论
-          comment-tag: published-packages
-          mode: upsert
-          reactions: rocket
 
-  # Android应用构建完成后更新评论
-  update-pr-comment-android:
+
+
+
+  # 预览包发布后的即时构建摘要（PR）
+  pr-summary:
     runs-on: ubuntu-latest
-    needs: [unified-build, preview-package-publish, desktop-build, android-build]
-    if: github.event_name == 'pull_request' && always() && needs.android-build.result != 'skipped'
+    needs: [unified-build, preview-package-publish]
+    if: github.event_name == 'pull_request' && needs.unified-build.outputs.build_success == 'true' && needs.preview-package-publish.result == 'success'
     steps:
-      - name: 💬 更新最终构建状态
-        uses: thollander/actions-comment-pull-request@v3
-        with:
-          message: |
-            ## 📦 预览包发布成功
-            
-            ### 🏷️ 包信息
-            - **版本:** `${{ needs.preview-package-publish.outputs.pkg_version }}`
-            - **提交:** [`${{ needs.unified-build.outputs.short_commit_hash }}`](https://github.com/${{ github.repository }}/tree/${{ needs.unified-build.outputs.commit_hash }})
-            
-            ### 📥 安装命令
-            ```bash
-            ${{ needs.preview-package-publish.outputs.pnpm_install_cmd }}
-            ```
-            
-            ### 🖥️ Windows 桌面应用
-            ${{ needs.desktop-build.result == 'success' && '- **状态:** ✅ 构建成功' || (needs.desktop-build.result == 'skipped' && '- **状态:** ⏭️ 已跳过构建' || '- **状态:** ❌ 构建失败') }}
-            ${{ needs.desktop-build.result == 'success' && format('- **版本:** `{0}`', needs.desktop-build.outputs.desktop_version) || '' }}
-            ${{ needs.desktop-build.result == 'success' && format('- **下载:** [点击下载]({0})', needs.desktop-build.outputs.desktop_artifact_url) || '' }}
-            
-            ### 📱 Android 应用
-            ${{ needs.android-build.result == 'success' && '- **状态:** ✅ 构建成功' || '- **状态:** ❌ 构建失败' }}
-            ${{ needs.android-build.result == 'success' && format('- **版本:** `{0}`', needs.android-build.outputs.android_version) || '' }}
-            ${{ needs.android-build.result == 'success' && format('- **架构:** aarch64') || '' }}
-            ${{ needs.android-build.result == 'success' && format('- **下载:** [点击下载]({0})', needs.android-build.outputs.android_artifact_url) || '' }}
-            
-            ---
-          comment-tag: published-packages
-          mode: upsert
-          reactions: rocket, hooray
+      - name: 📊 生成PR构建摘要
+        run: |
+          echo "# 🚀 PR 构建完成摘要" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "## 📦 NPM 预览包" >> $GITHUB_STEP_SUMMARY
+          echo "- **版本:** \`${{ needs.preview-package-publish.outputs.pkg_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### 📥 安装命令" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "${{ needs.preview-package-publish.outputs.pnpm_install_cmd }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
 
   # 预览包发布后的即时构建摘要（仅针对main分支推送）
   main-push-summary:
