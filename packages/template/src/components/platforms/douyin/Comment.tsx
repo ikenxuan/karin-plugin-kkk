@@ -57,7 +57,7 @@ const VideoInfoHeader: React.FC<VideoInfoHeaderProps> = ({
           <img
             src={useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
             alt='抖音Logo'
-            className='object-contain w-full h-full'
+            className='object-contain pb-10 w-full h-full'
             onError={(e) => {
               const target = e.target as HTMLImageElement
               target.style.display = 'none'
@@ -123,12 +123,12 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
         <div className='mb-12.5 text-5xl text-foreground-600 relative flex items-center select-text'>
           <span className='font-medium'>{comment.nickname}</span>
           {comment.label_type === 1 && (
-            <div className='inline-block px-4 py-1 rounded-xl ml-3 text-[40px] bg-[#fe2c55] text-white'>
+            <div className='inline-block px-4 py-3 rounded-xl ml-3 text-4xl bg-[#fe2c55] text-white'>
               作者
             </div>
           )}
           {comment.status_label && (
-            <div className='inline-block px-4 py-1 rounded-xl ml-3 text-[40px] bg-content2 text-foreground-700'>
+            <div className='inline-block px-4 py-3 ml-3 text-4xl rounded-xl bg-content3 text-foreground-700'>
               {comment.status_label}
             </div>
           )}
@@ -158,16 +158,16 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
         {/* 底部信息和操作区域 */}
         <div className='flex justify-between items-center mt-6 text-foreground-500'>
           <div className='flex items-center space-x-6 select-text'>
-            <span className='text-[45px]'>{comment.create_time}</span>
-            <span className='text-[45px]'>{comment.ip_label}</span>
+            <span className='text-5xl'>{comment.create_time}</span>
+            <span className='text-5xl'>{comment.ip_label}</span>
             {comment.reply_comment_total > 0
               ? (
-                <span className='text-[40px] text-foreground-600'>
+                <span className='text-5xl text-foreground-600'>
                   共{comment.reply_comment_total}条回复
                 </span>
               )
               : (
-                <span className='text-[40px] text-foreground-600'>回复</span>
+                <span className='text-5xl text-foreground-600'>回复</span>
               )}
           </div>
 
@@ -175,7 +175,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
             {/* 点赞按钮 */}
             <div className='flex items-center space-x-2 transition-colors cursor-pointer'>
               <Heart size={60} className='text-foreground-500' />
-              <span className='text-[50px] select-text'>{comment.digg_count}</span>
+              <span className='text-5xl select-text'>{comment.digg_count}</span>
             </div>
 
             {/* 回复按钮 */}
@@ -187,20 +187,20 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
 
         {/* 二级评论 */}
         {comment.replyComment && Object.keys(comment.replyComment).length > 0 && (
-          <div className='pl-6 mt-6'>
+          <div className='pl-6 mt-20'>
             <div className='py-4'>
               <div className='flex items-start space-x-4'>
                 <img
                   src={comment.replyComment.userimageurl}
-                  className='object-cover mr-8 rounded-full w-18 h-18'
+                  className='object-cover mr-8 rounded-full w-26 h-26'
                   alt='用户头像'
                 />
                 <div className='flex-1'>
                   <div className='flex items-center mb-2 space-x-2'>
-                    <span className='text-[40px] font-medium text-foreground-600'>{comment.replyComment.nickname}</span>
+                    <span className='mb-8 text-5xl font-medium text-foreground-600'>{comment.replyComment.nickname}</span>
                     {comment.replyComment.label_text !== '' && (
                       <div className={clsx(
-                        'inline-block px-3 py-1 ml-2 text-3xl rounded-xl', 
+                        'inline-block px-4 py-2 ml-2 text-3xl rounded-xl', 
                         comment.replyComment.label_text === '作者' ?
                           'bg-[#fe2c55] text-white' :
                           'bg-default-100 text-default-500'
@@ -217,14 +217,14 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
                       overflowWrap: 'break-word'
                     }}
                   />
-                  <div className='flex justify-between items-center text-foreground-500'>
+                  <div className='flex justify-between items-center mt-10 text-foreground-500'>
                     <div className='flex items-center space-x-4'>
-                      <span className='text-[35px]'>{comment.replyComment.create_time}</span>
-                      <span className='text-[35px]'>{comment.replyComment.ip_label}</span>
+                      <span className='text-5xl'>{comment.replyComment.create_time}</span>
+                      <span className='text-5xl'>{comment.replyComment.ip_label}</span>
                     </div>
                     <div className='flex items-center space-x-2'>
-                      <Heart size={40} className='text-foreground-500' />
-                      <span className='text-[35px]'>{comment.replyComment.digg_count}</span>
+                      <Heart size={60} className='text-foreground-500' />
+                      <span className='text-5xl'>{comment.replyComment.digg_count}</span>
                     </div>
                   </div>
                 </div>
