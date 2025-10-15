@@ -1023,7 +1023,11 @@ jobs:
           # NPM 预览包信息
           echo "## 📦 NPM 预览包" >> $GITHUB_STEP_SUMMARY
           echo "- **版本:** \`${{ needs.preview-package-publish.outputs.pkg_version }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **安装命令:** \`${{ needs.preview-package-publish.outputs.pnpm_install_cmd }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📥 安装命令" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "${{ needs.preview-package-publish.outputs.pnpm_install_cmd }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           # 桌面和移动应用构建状态
@@ -1052,7 +1056,11 @@ jobs:
           if [ "${{ needs.preview-package-publish.result }}" = "success" ]; then
             echo "## 📦 NPM 预览包" >> $GITHUB_STEP_SUMMARY
             echo "- **版本:** \`${{ needs.preview-package-publish.outputs.pkg_version }}\`" >> $GITHUB_STEP_SUMMARY
-            echo "- **安装命令:** \`${{ needs.preview-package-publish.outputs.pnpm_install_cmd }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 📥 安装命令" >> $GITHUB_STEP_SUMMARY
+            echo '```bash' >> $GITHUB_STEP_SUMMARY
+            echo "${{ needs.preview-package-publish.outputs.pnpm_install_cmd }}" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
           fi
           
