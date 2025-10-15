@@ -87,7 +87,7 @@ type XiaohongshuComponentIds = 'noteInfo' | 'comment'
 /**
  * 其他平台组件ID
  */
-type OtherComponentIds = 'help' | 'handlerError' | 'changelog_v2'
+type OtherComponentIds = 'help' | 'handlerError' | 'changelog'
 
 /**
  * 路径类型

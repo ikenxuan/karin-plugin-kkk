@@ -257,12 +257,12 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
         exportName: 'handlerError'
       },
       {
-        id: 'changelog_v2',
+        id: 'changelog',
         name: '更新日志',
         description: 'KKK插件更新日志',
         enabled: true,
-        componentPath: 'platforms/other/changelog_v2',
-        exportName: 'changelog_v2'
+        componentPath: 'platforms/other/changelog',
+        exportName: 'changelog'
       }
     ]
   }

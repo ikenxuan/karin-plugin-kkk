@@ -299,13 +299,7 @@ class HtmlWrapper {
     this.resourceManager = resourceManager
   }
 
-  /**
-   * 包装HTML内容
-   * @param htmlContent React渲染的HTML内容
-   * @param htmlFilePath HTML文件的绝对路径
-   * @returns 完整的HTML文档
-   */
-  wrapContent (htmlContent: string, htmlFilePath: string): string {
+  wrapContent (htmlContent: string, htmlFilePath: string, isDark: boolean = false): string {
     const htmlDir = path.dirname(htmlFilePath)
     const { cssDir, imageDir } = this.resourceManager.getResourcePaths()
 
@@ -313,10 +307,6 @@ class HtmlWrapper {
     const imageRelativePath = path.relative(htmlDir, imageDir).replace(/\\/g, '/')
     const cssUrl = path.join(cssRelativePath, 'karin-plugin-kkk.css').replace(/\\/g, '/')
 
-    // logger.debug('CSS相对路径:', cssUrl)
-    // logger.debug('图片相对路径:', imageRelativePath)
-
-    // 处理HTML中的静态资源路径
     const processedHtml = htmlContent.replace(
       /src="\/image\//g,
       `src="${imageRelativePath}/`
@@ -330,7 +320,7 @@ class HtmlWrapper {
       <meta name="viewport" content="width=device-width">
       <link rel="stylesheet" href="${cssUrl}">
     </head>
-    <body>
+    <body class="${isDark ? 'dark' : ''}">
       ${processedHtml}
     </body>
     </html>
@@ -406,7 +396,7 @@ class SSRRender {
       const filePath = path.join(this.outputDir, fileName)
 
       // 包装HTML内容
-      const fullHtml = this.htmlWrapper.wrapContent(htmlContent, filePath)
+      const fullHtml = this.htmlWrapper.wrapContent(htmlContent, filePath, request.data.useDarkTheme || false)
 
       // 写入文件
       writeFileSync(filePath, fullHtml, 'utf-8')

@@ -1091,7 +1091,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
               width: '1440px'
             }}
           >
-            <div ref={componentRendererRef}>
+            <div ref={componentRendererRef} className={data?.useDarkTheme ? 'dark' : ''}>
               <ComponentRenderer
                 platform={platform}
                 templateId={templateId}

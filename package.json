@@ -11,8 +11,6 @@
     "build:template": "pnpm --filter template run build",
     "build:web": "pnpm --filter web run build",
     "dev": "pnpm --filter karin-plugin-kkk run dev",
-    "dev:template": "pnpm --filter template run dev",
-    "dev:web": "pnpm --filter web run dev",
     "lint": "pnpm -r run lint",
     "template": "pnpm --filter template run dev",
     "sort": "pnpm -r sort",

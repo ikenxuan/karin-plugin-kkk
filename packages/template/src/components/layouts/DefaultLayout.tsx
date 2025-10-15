@@ -32,7 +32,8 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
   children,
   version,
   data,
-  scale = 3
+  scale = 3,
+  className = ''
 }) => {
   const { useDarkTheme } = data
 
@@ -41,8 +42,9 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
       <div
         className={clsx(
           'w-[1440px]',
-          useDarkTheme && 'dark',
-          'bg-default-50 text-default-900'
+          'bg-default-50 text-default-900',
+          className,
+          useDarkTheme
         )}
         id='container'
         style={{
@@ -56,7 +58,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
           <div className='pt-32 pb-20 text-default-800'>
             <div className='flex relative justify-center items-center space-x-8'>
               <div className='flex items-end space-x-8'>
-                {/* 原 logo 图改为辉光版本 */}
+                {/* logo */}
                 <GlowImage
                   src="/image/logo.png"
                   alt="logo"

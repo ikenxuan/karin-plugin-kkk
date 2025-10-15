@@ -237,10 +237,10 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
                 default: module.handlerError
               }))
             })
-          case 'changelog_v2':
+          case 'changelog':
             return createComponentConfig(baseComponent, {
-              lazyComponent: () => import('../components/platforms/other/changelog_v2').then(module => ({
-                default: module.ChangelogV2
+              lazyComponent: () => import('../components/platforms/other/changelog').then(module => ({
+                default: module.Changelog
               }))
             })
           default:

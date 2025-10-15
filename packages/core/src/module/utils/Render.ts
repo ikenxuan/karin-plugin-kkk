@@ -77,7 +77,7 @@ export const Render = async <P extends DynamicRenderPath> (
     multiPage: Config.app.multiPageRender ? Config.app.multiPageHeight : false,
     selector: '#container',
     fullPage: false,
-    type: 'jpeg',
+    type: 'png',
     pageGotoParams: {
       waitUntil: 'load',
       timeout: Config.app.RenderWaitTime * 1000

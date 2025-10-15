@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 
 import { getComponentConfig } from '../../config/config'
 import { version } from '../../services/DataService'
@@ -54,9 +54,15 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     return renderLoading('正在加载预览...')
   }
 
-  // 获取组件配置
+  // 获取组件配置（在 Hooks 之前，供 useMemo 使用）
   const componentConfig = getComponentConfig(platform, templateId)
-  
+
+  // 保证 Hooks 顺序稳定：无条件 useMemo；缺失时返回 null，由渲染层处理
+  const LazyComponent = React.useMemo<React.ComponentType<any> | null>(() => {
+    if (!componentConfig?.lazyComponent) return null
+    return React.lazy(componentConfig.lazyComponent!)
+  }, [componentConfig?.lazyComponent])
+
   if (!componentConfig) {
     return renderInDevelopment('模板', templateId)
   }
@@ -65,13 +71,9 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     return renderInDevelopment('模板', componentConfig.name)
   }
 
-  if (!componentConfig.lazyComponent) {
+  if (!LazyComponent) {
     return renderInDevelopment('组件', componentConfig.name)
   }
-
-  const LazyComponent = useMemo(() => {
-    return React.lazy(componentConfig.lazyComponent!)
-  }, [componentConfig.lazyComponent])
 
   // 准备组件属性
   const commonProps = {
@@ -80,7 +82,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     version,
     scale: 1
   }
-  
+
   return (
     <React.Suspense fallback={
       <div className='flex justify-center items-center h-full text-6xl text-default-50'>
