@@ -1,5 +1,12 @@
 # 变更日志
 
+## [2.6.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.6.1...v2.6.2) (2025-10-15)
+
+
+### 🐛 错误修复
+
+* **update:** 优化更新流程并添加版本核心规范化 ([5b87bfb](https://github.com/ikenxuan/karin-plugin-kkk/commit/5b87bfb3b599931353969e8ab598c690a91d25d1))
+
 ## [2.6.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.6.0...v2.6.1) (2025-10-15)
 
 
