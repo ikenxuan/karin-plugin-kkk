@@ -22,3 +22,8 @@ node_modules/
 
 # 其他
 napcat.quick.bat
+
+node_modules/
+packages/docs/.vuepress/.cache/
+packages/docs/.vuepress/.temp/
+packages/docs/.vuepress/dist/
