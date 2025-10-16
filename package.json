@@ -75,5 +75,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "time": "1760495583"
+  "timestamp": "2025-10-15T19:55:51.103Z"
 }
