@@ -134,7 +134,7 @@ interface PathToDataTypeMap {
   // 其他平台路径
   'other/help': import('./help').HelpProps['data']
   'other/handlerError': import('./ohter/handlerError').ApiErrorProps['data']
-  'other/changelog_v2': import('./help').HelpProps['data']
+  'other/changelog': import('./ohter/changelog').ChangelogProps['data']
 }
 
 /**

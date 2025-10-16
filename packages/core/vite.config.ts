@@ -138,7 +138,7 @@ const copyTemplateAssetsPlugin = (): Plugin => {
 
 export default defineConfig({
   build: {
-    target: 'node22',
+    target: 'node21',
     lib: {
       formats: ['es'],
       entry

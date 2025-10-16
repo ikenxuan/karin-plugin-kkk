@@ -7,23 +7,8 @@ import remarkBreaks from 'remark-breaks'
 import remarkGfm from 'remark-gfm'
 
 import { GlowText } from '../../../components/common/GlowImage'
-import type { BaseComponentProps } from '../../../types'
+import type { ChangelogProps } from '../../../types/ohter/changelog'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
-
-/**
- * 更新日志组件属性接口
- */
-export interface ChangelogProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题（true=深色，false=浅色） */
-    useDarkTheme?: boolean
-    /** 是否包含更新提示 */
-    Tip?: boolean
-    /** 后端传入的 Markdown 源码 */
-    markdown: string
-  }
-}
 
 
 /**
