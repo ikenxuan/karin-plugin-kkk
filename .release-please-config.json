@@ -6,67 +6,6 @@
   "tag-separator": "-",
   "separate-pull-requests": true,
   "pull-request-title-pattern": "chore${scope}: release ${component} ${version}",
-  "changelog-sections": [
-    {
-      "type": "feat",
-      "section": "✨ 新功能",
-      "hidden": false
-    },
-    {
-      "type": "fix",
-      "section": "🐛 错误修复",
-      "hidden": false
-    },
-    {
-      "type": "perf",
-      "section": "⚡️ 性能优化",
-      "hidden": false
-    },
-    {
-      "type": "revert",
-      "section": "⏪️ 回退提交",
-      "hidden": false
-    },
-    {
-      "type": "docs",
-      "section": "📝 文档更新",
-      "hidden": false
-    },
-    {
-      "type": "style",
-      "section": "🎨 页面UI样式",
-      "hidden": false
-    },
-    {
-      "type": "chore",
-      "section": "🔧 其他更新",
-      "hidden": false
-    },
-    {
-      "type": "refactor",
-      "section": "♻️ 代码重构",
-      "hidden": false
-    },
-    {
-      "type": "test",
-      "section": "✅ 测试相关",
-      "hidden": false
-    },
-    {
-      "type": "deps",
-      "section": "📦 依赖更新"
-    },
-    {
-      "type": "build",
-      "section": "📦️ 构建系统",
-      "hidden": false
-    },
-    {
-      "type": "ci",
-      "section": "🎡 持续集成",
-      "hidden": false
-    }
-  ],
   "packages": {
     "packages/core": {
       "release-type": "node",
