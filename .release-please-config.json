@@ -33,7 +33,7 @@
     },
     {
       "type": "style",
-      "section": "🎨 页面 UI 样式",
+      "section": "🎨 页面UI样式",
       "hidden": false
     },
     {
@@ -70,7 +70,7 @@
     "packages/core": {
       "release-type": "node",
       "package-name": "karin-plugin-kkk",
-      "changelog-path": "CHANGELOG.md",
+      "changelog-path": "packages/core/CHANGELOG.md",
       "include-component-in-tag": false
     }
   }
