@@ -199,6 +199,7 @@ export default defineConfig({
     }
   },
   resolve: {
+    conditions: ['node'],
     alias: {
       '@': resolve(__dirname, './src'),
       template: resolve(__dirname, '../template/src/client.ts')
