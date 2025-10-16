@@ -14,6 +14,8 @@ export interface ChangelogProps extends BaseComponentProps {
     useDarkTheme?: boolean
     /** 更新日志图片 */
     changeLogImg?: string
+    /** 是否包含更新提示 */
+    Tip?: boolean
   }
 }
 
@@ -32,13 +34,15 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
     >
       <div className='text-center'>
         <img src={props.data.changeLogImg} alt='更新日志' />
-        <div className='text-5xl leading-relaxed text-primary-900'>
-          引用回复此消息包含
-          <GlowText className='text-7xl font-bold text-primary' blurRadius={20} glowStrength={2} scale={1.2}>
-            「更新」
-          </GlowText>
-          文本，即可开始更新
-        </div>
+        {props.data.Tip && (
+          <div className='text-5xl leading-relaxed text-primary-900'>
+            引用回复此消息包含
+            <GlowText className='text-7xl font-bold text-primary' blurRadius={20} glowStrength={2} scale={1.2}>
+              「更新」
+            </GlowText>
+            文本，即可开始更新
+          </div>
+        )}
       </div>
     </DefaultLayout>
   )

@@ -21,25 +21,36 @@ const versionCore = (v: string): string => {
 }
 
 /**
+ * 获取变更日志图片选项
+ */
+export type getChangelogImageOptions = {
+  /** 本地版本字符串 */
+  localVersion: string, 
+  /** 远程版本字符串 */
+  remoteVersion: string
+  /** 渲染的变更日志图片是否包含提示 */
+  Tip?: boolean
+}
+
+/**
  * 获取变更日志图片
- * @param localVersion 本地版本字符串
- * @param remoteVersion 远程版本字符串
+ * @param props 获取变更日志图片选项
  * @returns 变更日志图片base64字符串
  */
-export const getChangelogImage = async (localVersion: string, remoteVersion: string) => {
+export const getChangelogImage = async (props: getChangelogImageOptions) => {
   const urls = [
     // 国内镜像（优先）
-    `https://jsd.onmicrosoft.cn/npm/${Root.pluginName}@${remoteVersion}/CHANGELOG.md`,
-    `https://npm.onmicrosoft.cn/${Root.pluginName}@${remoteVersion}/CHANGELOG.md`,
+    `https://jsd.onmicrosoft.cn/npm/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
+    `https://npm.onmicrosoft.cn/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
     // 国内代理
-    `https://jsd.onmicrosoft.cn/npm/${Root.pluginName}@${remoteVersion}/CHANGELOG.md`,
-    `https://npm.onmicrosoft.cn/${Root.pluginName}@${remoteVersion}/CHANGELOG.md`,
+    `https://jsd.onmicrosoft.cn/npm/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
+    `https://npm.onmicrosoft.cn/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
     // 海外源
-    `https://cdn.jsdelivr.net/npm/${Root.pluginName}@${remoteVersion}/CHANGELOG.md`,
-    `https://fastly.jsdelivr.net/npm/${Root.pluginName}@${remoteVersion}/CHANGELOG.md`,
-    `https://unpkg.com/${Root.pluginName}@${remoteVersion}/CHANGELOG.md`,
+    `https://cdn.jsdelivr.net/npm/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
+    `https://fastly.jsdelivr.net/npm/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
+    `https://unpkg.com/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
     // GitHub Raw 代理
-    `https://jiashu.1win.eu.org/https://raw.githubusercontent.com/ikenxuan/karin-plugin-kkk/v${remoteVersion}/packages/core/CHANGELOG.md`
+    `https://jiashu.1win.eu.org/https://raw.githubusercontent.com/ikenxuan/karin-plugin-kkk/v${props.remoteVersion}/packages/core/CHANGELOG.md`
   ]
 
   // 并发竞速
@@ -60,7 +71,7 @@ export const getChangelogImage = async (localVersion: string, remoteVersion: str
   }
   if (!changelog) return null
 
-  const forwardLogs = range(changelog, versionCore(localVersion), versionCore(remoteVersion))
+  const forwardLogs = range(changelog, versionCore(props.localVersion), versionCore(props.remoteVersion))
   const html = markdown(forwardLogs, {
     gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css',
     scale: 5,
@@ -73,7 +84,8 @@ export const getChangelogImage = async (localVersion: string, remoteVersion: str
   fs.writeFileSync(htmlPath, html)
   const base64 = await render.renderHtml(htmlPath)
   const img = await Render('other/changelog', {
-    changeLogImg: `data:image/png;base64,${base64}`
+    changeLogImg: `data:image/png;base64,${base64}`,
+    Tip: false
   })
   return img || null
 }
