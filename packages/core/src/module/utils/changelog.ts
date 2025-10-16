@@ -1,5 +1,4 @@
 import fs from 'node:fs'
-import path from 'node:path'
 
 import { markdown } from '@karinjs/md-html'
 import { karinPathTemp, mkdirSync, range, render } from 'node-karin'
@@ -78,9 +77,8 @@ export const getChangelogImage = async (props: getChangelogImageOptions) => {
     customCSSFiles: [Root.pluginPath + '/resources/font/font.css'],
     fontFamily: 'HarmonyOSHans-Regular'
   })
-  fs.writeFileSync(path.join(process.cwd(), '1.html'), html)
   mkdirSync(`${karinPathTemp}/html/${Root.pluginName}/version`)
-  const htmlPath = `${karinPathTemp}/html/${Root.pluginName}/version/version.html`
+  const htmlPath = `${karinPathTemp}/html/${Root.pluginName}/version/CHANGELOG.html`
   fs.writeFileSync(htmlPath, html)
   const base64 = await render.renderHtml(htmlPath)
   const img = await Render('other/changelog', {
