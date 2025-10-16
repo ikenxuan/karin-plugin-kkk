@@ -1,4 +1,17 @@
 /**
+ * 更新日志组件属性接口
+ */
+interface ChangelogProps extends BaseComponentProps {
+    /** 渲染请求数据 */
+    data: {
+        /** 是否包含更新提示 */
+        Tip?: boolean;
+        /** 后端传入的 Markdown 源码 */
+        markdown: string;
+    };
+}
+
+/**
  * 业务错误类型
  */
 interface BusinessError {
@@ -1376,7 +1389,7 @@ interface PathToDataTypeMap {
     'xiaohongshu/comment': XiaohongshuCommentProps['data'];
     'other/help': HelpProps['data'];
     'other/handlerError': ApiErrorProps['data'];
-    'other/changelog_v2': HelpProps['data'];
+    'other/changelog': ChangelogProps['data'];
 }
 /**
  * 从路径字符串中提取数据类型的工具类型
