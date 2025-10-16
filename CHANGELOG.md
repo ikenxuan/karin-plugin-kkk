@@ -1,5 +1,12 @@
 # 变更日志
 
+## [2.6.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.6.4...v2.6.5) (2025-10-16)
+
+
+### 🐛 错误修复
+
+* **update:** 优化版本更新提醒逻辑并简化重启处理，将版本提醒锁检查移至获取更新信息后，增加对远程版本的比较 ([c4297d1](https://github.com/ikenxuan/karin-plugin-kkk/commit/c4297d1fe88f2dd50365ebf93c250dc4deb697d8))
+
 ## [2.6.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.6.3...v2.6.4) (2025-10-16)
 
 
