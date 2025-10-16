@@ -23,20 +23,6 @@ const Handler = async (e: Message) => {
   }
   logger.trace(e)
 
-  // 版本提醒锁（只提醒一次，直到本地版本达到或超过锁定版本才解锁）
-  try {
-    const lockedVersion = await db.get(UPDATE_LOCK_KEY)
-    if (typeof lockedVersion === 'string' && lockedVersion.length > 0) {
-      // 本地版本达到或超过锁定版本 => 解锁
-      if (!isSemverGreater(lockedVersion, Root.pluginVersion)) {
-        await db.del(UPDATE_LOCK_KEY)
-      } else {
-        // 仍处于锁定状态（本地版本小于锁定版本）=> 跳过本次提醒
-        return true
-      }
-    }
-  } catch { }
-
   let upd:
     | { status: 'yes'; local: string; remote: string }
     | { status: 'no'; local: string }
@@ -53,6 +39,24 @@ const Handler = async (e: Message) => {
     // 无更新或检测错误，结束本次任务
     return true
   }
+
+  // 版本提醒锁（检查是否已经推送过相同或更高版本的更新通知）
+  try {
+    const lockedVersion = await db.get(UPDATE_LOCK_KEY)
+    if (typeof lockedVersion === 'string' && lockedVersion.length > 0) {
+      // 本地版本达到或超过锁定版本 => 解锁
+      if (!isSemverGreater(lockedVersion, Root.pluginVersion)) {
+        await db.del(UPDATE_LOCK_KEY)
+      } else {
+        // 检查远程版本是否比锁定版本更新
+        if (!isSemverGreater(upd.remote, lockedVersion)) {
+          // 远程版本不比锁定版本新，跳过本次提醒
+          return true
+        }
+        // 远程版本比锁定版本新，继续推送并更新锁定版本
+      }
+    }
+  } catch { }
 
   // 设置锁为当前远程版本，确保只推送一次
   try {
@@ -159,13 +163,7 @@ export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, async (e: Message
           await db.del(UPDATE_LOCK_KEY)
         } catch { }
       }
-      const restartStartTime = Date.now()
-      const restartResult = await restart(e.selfId, e.contact, e.messageId)
-      if (restartResult.status === 'success') {
-        await e.reply(`重启成功，耗时: ${((Date.now() - restartStartTime) / 1000).toFixed(2)}s`)
-      } else {
-        await e.reply(`重启失败: ${restartResult.data}`)
-      }
+      await restart(e.selfId, e.contact, e.messageId)
     } else {
       await e.reply(`${Root.pluginName} 更新失败: ${result.data ?? '更新执行失败'}`)
     }
