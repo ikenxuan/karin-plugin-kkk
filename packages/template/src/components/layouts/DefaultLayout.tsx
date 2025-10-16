@@ -21,6 +21,8 @@ interface DefaultLayoutProps extends Omit<BaseComponentProps<Record<string, any>
   version?: RenderRequest['version']
   /** 缩放比例，用于高清截图 */
   scale?: number
+  /** 自定义样式 */
+  style?: React.CSSProperties
 }
 
 /**
@@ -33,7 +35,8 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
   version,
   data,
   scale = 3,
-  className = ''
+  className = '',
+  style = {}
 }) => {
   const { useDarkTheme } = data
 
@@ -50,7 +53,8 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
         style={{
           transform: `scale(${scale})`,
           transformOrigin: 'top left',
-          width: '1440px'
+          width: '1440px',
+          ...style
         }}
       >
         {children}

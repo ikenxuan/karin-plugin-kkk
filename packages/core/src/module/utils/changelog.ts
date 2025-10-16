@@ -1,10 +1,7 @@
-import fs from 'node:fs'
-
-import { markdown } from '@karinjs/md-html'
-import { karinPathTemp, mkdirSync, range, render } from 'node-karin'
+import { range } from 'node-karin'
 import axios from 'node-karin/axios'
 
-import { baseHeaders, Common, Render, Root } from '@/module'
+import { baseHeaders, Render, Root } from '@/module'
 
 /**
  * 规范化为 x.x.x（剔除 v 前缀、预发布、构建标识）
@@ -71,18 +68,8 @@ export const getChangelogImage = async (props: getChangelogImageOptions) => {
   if (!changelog) return null
 
   const forwardLogs = range(changelog, versionCore(props.localVersion), versionCore(props.remoteVersion))
-  const html = markdown(forwardLogs, {
-    gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css',
-    scale: 5,
-    customCSSFiles: [Root.pluginPath + '/resources/font/font.css'],
-    fontFamily: 'HarmonyOSHans-Regular'
-  })
-  mkdirSync(`${karinPathTemp}/html/${Root.pluginName}/version`)
-  const htmlPath = `${karinPathTemp}/html/${Root.pluginName}/version/CHANGELOG.html`
-  fs.writeFileSync(htmlPath, html)
-  const base64 = await render.renderHtml(htmlPath)
   const img = await Render('other/changelog', {
-    changeLogImg: `data:image/png;base64,${base64}`,
+    markdown: forwardLogs,
     Tip: props.Tip
   })
   return img || null
