@@ -5,6 +5,7 @@ import karin, { config, logs, mkdirSync, render } from 'node-karin'
 import { karinPathTemp } from 'node-karin/root'
 
 import { Common, Render, Root } from '@/module'
+import { Config } from '@/module/utils/Config'
 
 
 type Role = 'master' | 'member'
@@ -20,9 +21,16 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
     title: '常用功能',
     items: [
       {
-        title: '自动识别个平台的分享链接',
-        description: '支持「抖音」「哔哩哔哩」「快手」「小红书」',
-        icon: 'link',
+        title: '自动识别分享链接进行解析',
+        description: (() => {
+          const platforms = []
+          if (Config.douyin?.switch) platforms.push('抖音')
+          if (Config.bilibili?.switch) platforms.push('哔哩哔哩')
+          if (Config.kuaishou?.switch) platforms.push('快手')
+          if (Config.xiaohongshu?.switch) platforms.push('小红书')
+          return platforms.length > 0 ? `支持「${platforms.join('」「')}」` : '暂无可用平台'
+        })(),
+        icon: 'Link',
         roles: ['member', 'master']
       },
       {
@@ -57,13 +65,13 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
             title: '#设置抖音推送 + 抖音号',
             description: '在群聊中发送以对该群订阅该blogger的作品更新',
             icon: 'Bell',
-            roles: ['member', 'master']
+            roles: Config.douyin.push.permission === 'all' ? ['member', 'master'] : ['master']
           },
           {
             title: '#设置B站推送 + UP主UID',
             description: '在群聊中发送以对该群订阅该blogger的作品更新',
             icon: 'Bell',
-            roles: ['member', 'master']
+            roles: Config.bilibili.push.permission === 'all' ? ['member', 'master'] : ['master']
           }
         ]
       }
@@ -93,7 +101,7 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
         title: '「#kkk更新日志」「#kkk更新」',
         description: '字面意思~',
         icon: 'RefreshCw',
-        roles: ['member', 'master']
+        roles: ['master']
       }
     ]
   }
