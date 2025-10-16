@@ -16,7 +16,8 @@
     "sort": "pnpm -r sort",
     "watch": "pnpm --filter karin-plugin-kkk run watch",
     "web": "pnpm --filter web run dev",
-    "up-version": "tsx up-version.ts"
+    "up-version": "tsx up-version.ts",
+    "prepare": "husky"
   },
   "dependencies": {
     "@ikenxuan/amagi": "5.6.2",
@@ -43,6 +44,7 @@
     "eslint-plugin-react-hooks": "7.0.0",
     "eslint-plugin-react-refresh": "0.4.23",
     "eslint-plugin-simple-import-sort": "^12.1.1",
+    "husky": "^9.1.7",
     "sort-package-json": "^3.4.0",
     "tsx": "4.20.6",
     "typescript": "5.9.3",

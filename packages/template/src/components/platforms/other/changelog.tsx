@@ -42,7 +42,7 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
               更新
             </GlowText>
             <span className='text-7xl'>」</span>
-            文本，即可开始更新
+            字眼，即可开始更新
           </div>
         )}
       </div>

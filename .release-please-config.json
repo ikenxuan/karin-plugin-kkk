@@ -72,22 +72,6 @@
       "package-name": "karin-plugin-kkk",
       "changelog-path": "CHANGELOG.md",
       "include-component-in-tag": false
-    },
-    "packages/web": {
-      "release-type": "node",
-      "package-name": "web",
-      "changelog-path": "CHANGELOG.md",
-      "skip-github-release": true,
-      "release-as": "0.0.0",
-      "include-component-in-tag": false
-    },
-    "packages/template": {
-      "release-type": "node",
-      "package-name": "template",
-      "changelog-path": "CHANGELOG.md",
-      "skip-github-release": true,
-      "release-as": "0.0.0",
-      "include-component-in-tag": false
     }
   }
 }
