@@ -235,7 +235,7 @@ export class Bilibilipush extends Base {
                   view: Count(dycrad.stat.view),
                   coin: Count(dycrad.stat.coin),
                   duration_text: data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.archive?.duration_text ?? '0:00',
-                  create_time: Common.convertTimestampToDateTime(INFODATA.data.data.ctime),
+                  create_time: Common.convertTimestampToDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
                   avatar_url: INFODATA.data.data.owner.face,
                   frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
                   share_url: 'https://www.bilibili.com/video/' + bvid,
