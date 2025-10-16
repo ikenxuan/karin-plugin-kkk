@@ -13,18 +13,7 @@
     },
     {
       "title": "推送相关",
-      "items": [
-        {
-          "title": "#抖音/B站推送列表",
-          "description": "查看当前群的订阅推送列表",
-          "icon": "List"
-        },
-        {
-          "title": "#抖音/B站全部?强制推送",
-          "description": "全部强制推送：手动模拟一次定时任务；\n强制推送：只在触发群模拟一次定时任务；\n已推送过的不会再推送",
-          "icon": "Send"
-        }
-      ],
+      "items": [],
       "subGroups": [
         {
           "title": "在群聊中再发送一次即可取消订阅",
@@ -44,26 +33,6 @@
       ]
     },
     {
-      "title": "设置相关",
-      "items": [
-        {
-          "title": "#kkk设置推送机器人 + Bot ID",
-          "description": "一键更换推送机器人",
-          "icon": "Bot"
-        },
-        {
-          "title": "#抖音登录",
-          "description": "使用抖音APP扫码登录获取 Cookies",
-          "icon": "LogIn"
-        },
-        {
-          "title": "#B站登录",
-          "description": "使用哔哩哔哩APP扫码登录获取 Cookies",
-          "icon": "LogIn"
-        }
-      ]
-    },
-    {
       "title": "其他",
       "items": [
         {
@@ -74,6 +43,6 @@
       ]
     }
   ],
-  "role": "master",
-  "useDarkTheme": false
+  "role": "member",
+  "useDarkTheme": true
 }

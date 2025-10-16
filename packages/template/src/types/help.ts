@@ -10,6 +10,10 @@ export interface HelpProps extends BaseComponentProps {
     useDarkTheme?: boolean
     /** 页面标题 */
     title?: string
+    /** 角色：主人/普通 */
+    role?: 'master' | 'member'
+    /** 菜单数据：按角色筛选后的分组 */
+    menu?: MenuGroup[]
   }
 }
 
@@ -21,6 +25,8 @@ export interface MenuItem {
   title: string
   /** 菜单项描述 */
   description: string
+  /** 图标名称 */
+  icon?: string
 }
 
 /**

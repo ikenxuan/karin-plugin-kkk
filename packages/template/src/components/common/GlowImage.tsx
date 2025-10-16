@@ -200,3 +200,359 @@ export const RealGlowText: React.FC<RealGlowTextProps> = ({
     </span>
   )
 }
+
+/**
+ * SVG图标发光组件的属性
+ * 专门用于给SVG图标添加辉光效果
+ */
+type GlowIconProps = {
+  /** 图标组件 */
+  Icon: React.ComponentType<any>
+  /** 图标的props */
+  iconProps?: any
+  /** 外层容器的类名 */
+  className?: string
+  /** 辉光颜色（CSS颜色值），默认继承图标颜色 */
+  glowColor?: string
+  /** 辉光强度（0-1），默认0.8 */
+  glowStrength?: number
+  /** 辉光半径（像素），默认12 */
+  glowRadius?: number
+  /** 辉光层数，默认3层 */
+  glowLayers?: number
+  /** 辉光扩散程度，默认4 */
+  glowSpread?: number
+}
+
+export const GlowIcon: React.FC<GlowIconProps> = ({
+  Icon,
+  iconProps = {},
+  className,
+  glowColor,
+  glowStrength = 0.8,
+  glowRadius = 12,
+  glowLayers = 3,
+  glowSpread = 4
+}) => {
+  const dropShadow = React.useMemo(() => {
+    return Array.from({ length: glowLayers }, (_, i) => {
+      const radius = glowRadius + i * glowSpread
+      const opacity = Math.min(glowStrength * (1 - i * 0.2), 1)
+      const shadowColor = glowColor 
+        ? glowColor.replace(/rgb\(([^)]+)\)/, `rgba($1, ${opacity})`)
+        : `rgba(255, 255, 255, ${opacity})`
+      return `drop-shadow(0 0 ${radius}px ${shadowColor})`
+    }).join(' ')
+  }, [glowColor, glowStrength, glowRadius, glowLayers, glowSpread])
+
+  return (
+    <div className={className} style={{ display: 'inline-block' }}>
+      <Icon
+        {...iconProps}
+        style={{
+          filter: dropShadow,
+          ...iconProps.style
+        }}
+      />
+    </div>
+  )
+}
+
+/**
+ * SVG图标发光组件
+ * 使用CSS filter实现更简单的辉光效果
+ */
+type SimpleGlowIconProps = {
+  /** 图标组件 */
+  Icon: React.ComponentType<any>
+  /** 图标的props */
+  iconProps?: any
+  /** 外层容器的类名 */
+  className?: string
+  /** 辉光颜色，默认为当前颜色 */
+  glowColor?: string
+  /** 辉光强度，默认为中等 */
+  glowIntensity?: 'light' | 'medium' | 'strong'
+}
+
+export const SimpleGlowIcon: React.FC<SimpleGlowIconProps> = ({
+  Icon,
+  iconProps = {},
+  className,
+  glowColor,
+  glowIntensity = 'medium'
+}) => {
+  const getGlowFilter = () => {
+    const color = glowColor || 'currentColor'
+    
+    switch (glowIntensity) {
+      case 'light':
+        return `drop-shadow(0 0 8px ${color}) drop-shadow(0 0 16px ${color})`
+      case 'strong':
+        return `drop-shadow(0 0 12px ${color}) drop-shadow(0 0 24px ${color}) drop-shadow(0 0 36px ${color})`
+      default: // medium
+        return `drop-shadow(0 0 10px ${color}) drop-shadow(0 0 20px ${color})`
+    }
+  }
+
+  return (
+    <div className={className} style={{ display: 'inline-block' }}>
+      <Icon
+        {...iconProps}
+        style={{
+          filter: getGlowFilter(),
+          ...iconProps.style
+        }}
+      />
+    </div>
+  )
+}
+
+/**
+ * 辉光边框容器组件的属性
+ * 用于创建受辉光影响的边框效果，使边框根据内部发光元素的位置呈现渐变色彩
+ */
+type GlowBorderContainerProps = {
+  /** 子元素内容 */
+  children: React.ReactNode
+  /** 外层容器的类名 */
+  className?: string
+  /** 辉光颜色（CSS颜色值），默认为橙色 */
+  glowColor?: string
+  /** 辉光强度（0-1），控制边框受光影响的程度，默认0.6 */
+  glowStrength?: number
+  /** 边框宽度（像素），默认1px */
+  borderWidth?: number
+  /** 边框圆角，默认继承容器圆角 */
+  borderRadius?: string
+  /** 发光元素在容器中的位置，用于计算光影响方向 */
+  glowPosition?: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'left-top' | 'right-top' | 'left-bottom' | 'right-bottom'
+  /** 光影响范围（0-1），控制渐变的扩散程度，默认0.3 */
+  lightInfluenceRange?: number
+}
+
+export const GlowBorderContainer: React.FC<GlowBorderContainerProps> = ({
+  children,
+  className,
+  glowColor = 'rgb(245, 158, 11)',
+  glowStrength = 0.6,
+  borderWidth = 1,
+  borderRadius,
+  glowPosition = 'left-top',
+  lightInfluenceRange = 0.3
+}) => {
+  /**
+   * 根据发光位置生成边框渐变样式
+   * @param position 发光元素位置
+   * @returns CSS渐变字符串
+   */
+  const generateBorderGradient = (position: string) => {
+    // 解析辉光颜色的RGB值
+    const glowRgbMatch = glowColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/)
+    
+    const glowRgb = glowRgbMatch ? `${glowRgbMatch[1]}, ${glowRgbMatch[2]}, ${glowRgbMatch[3]}` : '245, 158, 11'
+    
+    // 辉光颜色渐变层
+    const maxGlow = `rgba(${glowRgb}, ${glowStrength})`
+    const strongGlow = `rgba(${glowRgb}, ${glowStrength * 0.7})`
+    const mediumGlow = `rgba(${glowRgb}, ${glowStrength * 0.4})`
+    const weakGlow = `rgba(${glowRgb}, ${glowStrength * 0.15})`
+    
+    // 光影扩散范围
+    const maxInfluence = Math.round(lightInfluenceRange * 100)
+    
+    switch (position) {
+      case 'left-top':
+        return `
+          radial-gradient(circle 220px at 5% 15%, 
+            ${maxGlow} 0%, 
+            ${strongGlow} 20%, 
+            ${mediumGlow} 40%, 
+            ${weakGlow} 65%, 
+            transparent ${maxInfluence}%
+          )
+        `
+      case 'left':
+        return `
+          radial-gradient(circle 150px at 10% 50%, 
+            ${maxGlow} 0%, 
+            ${strongGlow} 25%, 
+            ${mediumGlow} 45%, 
+            ${weakGlow} 70%, 
+            transparent ${maxInfluence}%
+          )
+        `
+      case 'right':
+        return `
+          radial-gradient(circle 150px at 90% 50%, 
+            ${maxGlow} 0%, 
+            ${strongGlow} 25%, 
+            ${mediumGlow} 45%, 
+            ${weakGlow} 70%, 
+            transparent ${maxInfluence}%
+          )
+        `
+      case 'top':
+        return `
+          radial-gradient(circle 150px at 50% 10%, 
+            ${maxGlow} 0%, 
+            ${strongGlow} 25%, 
+            ${mediumGlow} 45%, 
+            ${weakGlow} 70%, 
+            transparent ${maxInfluence}%
+          )
+        `
+      case 'bottom':
+        return `
+          radial-gradient(circle 150px at 50% 90%, 
+            ${maxGlow} 0%, 
+            ${strongGlow} 25%, 
+            ${mediumGlow} 45%, 
+            ${weakGlow} 70%, 
+            transparent ${maxInfluence}%
+          )
+        `
+      case 'right-top':
+        return `
+          radial-gradient(circle 150px at 92% 15%, 
+            ${maxGlow} 0%, 
+            ${strongGlow} 20%, 
+            ${mediumGlow} 40%, 
+            ${weakGlow} 65%, 
+            transparent ${maxInfluence}%
+          )
+        `
+      case 'left-bottom':
+        return `
+          radial-gradient(circle 150px at 8% 85%, 
+            ${maxGlow} 0%, 
+            ${strongGlow} 20%, 
+            ${mediumGlow} 40%, 
+            ${weakGlow} 65%, 
+            transparent ${maxInfluence}%
+          )
+        `
+      case 'right-bottom':
+        return `
+          radial-gradient(circle 150px at 92% 85%, 
+            ${maxGlow} 0%, 
+            ${strongGlow} 20%, 
+            ${mediumGlow} 40%, 
+            ${weakGlow} 65%, 
+            transparent ${maxInfluence}%
+          )
+        `
+      case 'center':
+        return `
+          radial-gradient(circle at center, 
+            ${maxGlow} 0%, 
+            ${strongGlow} 30%, 
+            ${mediumGlow} 55%, 
+            ${weakGlow} 80%, 
+            transparent ${maxInfluence}%
+          )
+        `
+      default:
+        return 'transparent'
+    }
+  }
+
+  const borderGradient = generateBorderGradient(glowPosition)
+
+  return (
+    <div
+      className={className}
+      style={{
+        position: 'relative',
+        background: borderGradient,
+        padding: `${borderWidth}px`,
+        borderRadius: borderRadius
+      }}
+    >
+      <div
+        style={{
+          borderRadius: borderRadius ? `calc(${borderRadius} - ${borderWidth}px)` : undefined,
+          overflow: 'hidden',
+          background: 'var(--background)',
+          width: '100%',
+          height: '100%'
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * 智能辉光边框容器组件的属性
+ * 自动检测内部发光元素位置并调整边框效果
+ */
+type SmartGlowBorderProps = {
+  /** 子元素内容 */
+  children: React.ReactNode
+  /** 外层容器的类名 */
+  className?: string
+  /** 辉光颜色，默认自动从子元素中提取 */
+  glowColor?: string
+  /** 辉光强度（0-1），默认0.5 */
+  glowStrength?: number
+  /** 边框宽度（像素），默认1px */
+  borderWidth?: number
+  /** 边框圆角 */
+  borderRadius?: string
+  /** 发光元素在容器中的位置，用于计算光影响方向 */
+  glowPosition?: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'left-top' | 'right-top' | 'left-bottom' | 'right-bottom'
+  /** 光影响范围（0-1），控制渐变的扩散程度，默认0.3 */
+  lightInfluenceRange?: number
+  /** 是否启用动态光影效果，默认true */
+  enableDynamicGlow?: boolean
+}
+
+export const SmartGlowBorder: React.FC<SmartGlowBorderProps> = ({
+  children,
+  className,
+  glowColor,
+  glowStrength = 0.5,
+  borderWidth = 1,
+  borderRadius = '1.5rem',
+  glowPosition = 'left-top',
+  lightInfluenceRange = 0.3,
+  enableDynamicGlow = true
+}) => {
+  const containerRef = React.useRef<HTMLDivElement>(null)
+  const [detectedGlowColor, setDetectedGlowColor] = React.useState<string>('rgb(245, 158, 11)')
+  
+  React.useEffect(() => {
+    if (!enableDynamicGlow || glowColor) return
+    
+    // 尝试从子元素中提取辉光颜色
+    const container = containerRef.current
+    if (container) {
+      const glowElements = container.querySelectorAll('[style*="drop-shadow"], [style*="filter"]')
+      if (glowElements.length > 0) {
+        // 这里可以添加更复杂的颜色提取逻辑
+        // 暂时使用默认的橙色
+        setDetectedGlowColor('rgb(245, 158, 11)')
+      }
+    }
+  }, [enableDynamicGlow, glowColor, children])
+
+  const finalGlowColor = glowColor || detectedGlowColor
+
+  return (
+    <div ref={containerRef}>
+      <GlowBorderContainer
+        className={className}
+        glowColor={finalGlowColor}
+        glowStrength={glowStrength}
+        borderWidth={borderWidth}
+        borderRadius={borderRadius}
+        glowPosition={glowPosition}
+        lightInfluenceRange={lightInfluenceRange}
+      >
+        {children}
+      </GlowBorderContainer>
+    </div>
+  )
+}
