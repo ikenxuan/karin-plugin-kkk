@@ -83,7 +83,7 @@ export const getChangelogImage = async (props: getChangelogImageOptions) => {
   const base64 = await render.renderHtml(htmlPath)
   const img = await Render('other/changelog', {
     changeLogImg: `data:image/png;base64,${base64}`,
-    Tip: false
+    Tip: props.Tip
   })
   return img || null
 }

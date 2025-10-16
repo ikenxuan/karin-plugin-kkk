@@ -1,6 +1,4 @@
-CHANGED="$(git diff --cached --name-only)"
-echo "$CHANGED" | grep -E '^packages/(template|web)/' >/dev/null 2>&1
-if [ $? -eq 0 ]; then
+if git diff --cached --name-only | grep -qE '^packages/(template|web)/'; then
   pnpm up-version
   git add packages/core/package.json
 fi
