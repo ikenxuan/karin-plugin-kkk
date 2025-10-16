@@ -37,9 +37,11 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
         {props.data.Tip && (
           <div className='text-5xl leading-relaxed text-primary-900'>
             引用回复此消息包含
+            <span className='text-7xl'>「</span>
             <GlowText className='text-7xl font-bold text-primary' blurRadius={20} glowStrength={2} scale={1.2}>
-              「更新」
+              更新
             </GlowText>
+            <span className='text-7xl'>」</span>
             文本，即可开始更新
           </div>
         )}
