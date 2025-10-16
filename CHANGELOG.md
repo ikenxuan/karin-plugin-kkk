@@ -1,5 +1,20 @@
 # 变更日志
 
+## [2.6.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.6.3...v2.6.4) (2025-10-16)
+
+
+### 🐛 错误修复
+
+* **bilibili:** 修正视频动态创建时间使用错误的时间戳字段 ([86fd365](https://github.com/ikenxuan/karin-plugin-kkk/commit/86fd3650577dbb6a570247ec5277ccee9c072061))
+* **help:** 修复版本命令图片渲染问题并更新变更日志处理 ([f87d38d](https://github.com/ikenxuan/karin-plugin-kkk/commit/f87d38db37397f4f040d3383028229af00c01c17))
+* **更新日志:** 为变更日志图片添加提示显示控制选项 ([937c62a](https://github.com/ikenxuan/karin-plugin-kkk/commit/937c62af98d2a41fee364eeea0d67178af7e95ea))
+* 更新逻辑 ([#177](https://github.com/ikenxuan/karin-plugin-kkk/issues/177)) ([12f1633](https://github.com/ikenxuan/karin-plugin-kkk/commit/12f16339637f9a181668bbb0619457cb3c7a6627))
+
+
+### 🎨 代码样式
+
+* **help:** 添加角色权限控制并优化帮助页面UI ([d85b4b6](https://github.com/ikenxuan/karin-plugin-kkk/commit/d85b4b6be342eabdd63c9f958574f92d4247e681))
+
 ## [2.6.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.6.2...v2.6.3) (2025-10-15)
 
 
