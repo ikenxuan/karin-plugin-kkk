@@ -15,7 +15,8 @@
     "template": "pnpm --filter template run dev",
     "sort": "pnpm -r sort",
     "watch": "pnpm --filter karin-plugin-kkk run watch",
-    "web": "pnpm --filter web run dev"
+    "web": "pnpm --filter web run dev",
+    "up-version": "tsx up-version.ts"
   },
   "dependencies": {
     "@ikenxuan/amagi": "5.6.2",

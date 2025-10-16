@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import path from 'node:path'
 
 import { markdown } from '@karinjs/md-html'
 import { karinPathTemp, mkdirSync, range, render } from 'node-karin'
@@ -60,13 +61,13 @@ export const getChangelogImage = async (localVersion: string, remoteVersion: str
   if (!changelog) return null
 
   const forwardLogs = range(changelog, versionCore(localVersion), versionCore(remoteVersion))
-
   const html = markdown(forwardLogs, {
     gitcss: Common.useDarkTheme() ? 'github-markdown-dark.css' : 'github-markdown-light.css',
     scale: 5,
     customCSSFiles: [Root.pluginPath + '/resources/font/font.css'],
     fontFamily: 'HarmonyOSHans-Regular'
   })
+  fs.writeFileSync(path.join(process.cwd(), '1.html'), html)
   mkdirSync(`${karinPathTemp}/html/${Root.pluginName}/version`)
   const htmlPath = `${karinPathTemp}/html/${Root.pluginName}/version/version.html`
   fs.writeFileSync(htmlPath, html)
