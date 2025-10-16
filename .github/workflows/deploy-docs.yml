@@ -28,6 +28,8 @@ jobs:
       # 设置 pnpm
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 9.0.0
 
       # 设置 Node 与缓存
       - name: Setup Node

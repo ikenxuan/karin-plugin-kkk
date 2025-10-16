@@ -42,8 +42,12 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'packages/docs/**'
   pull_request:
     types: [opened, reopened, synchronize]
+    paths-ignore:
+      - 'packages/docs/**'
 
 env:
   APP_NAME: karin-plugin-kkk

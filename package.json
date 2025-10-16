@@ -6,6 +6,7 @@
   "license": "GPL-3.0-only",
   "author": "ikenxuan",
   "type": "module",
+  "packageManager": "pnpm@9.0.0",
   "scripts": {
     "build": "pnpm run build:core && pnpm run build:web",
     "build:core": "pnpm --filter karin-plugin-kkk run build",
