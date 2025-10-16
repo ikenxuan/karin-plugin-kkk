@@ -127,9 +127,10 @@ jobs:
             echo "is_manual_production=false" >> $GITHUB_OUTPUT
             echo "manual_release_notes=" >> $GITHUB_OUTPUT
             
-            if [ "${{ steps.release-please.outputs.core_release_created }}" = "true" ] || [ "${{ inputs.force_npm_publish }}" = "true" ]; then
+            # 统一判断：release-please 的 manifest 输出或强制发布
+            if [ "${{ steps.release-please.outputs['packages/core--release_created'] }}" = "true" ] || [ "${{ inputs.force_npm_publish }}" = "true" ]; then
               echo "should_upload_release=true" >> $GITHUB_OUTPUT
-              echo "release_tag_name=${{ steps.release-please.outputs.core_tag_name }}" >> $GITHUB_OUTPUT
+              echo "release_tag_name=${{ steps.release-please.outputs['packages/core--tag_name'] }}" >> $GITHUB_OUTPUT
             else
               echo "should_upload_release=false" >> $GITHUB_OUTPUT
               echo "release_tag_name=" >> $GITHUB_OUTPUT
@@ -207,7 +208,7 @@ jobs:
           echo "✅ 已应用手动版本号：${{ inputs.manual_version }}"
 
       - name: 📦 准备发布产物 (正式版)
-        if: needs.version-release.outputs.core_release_created == 'true' || (github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production')
+        if: needs.version-release.outputs.should_upload_release == 'true'
         run: |
           cd packages/core
           pnpm pkg delete devDependencies
@@ -230,7 +231,7 @@ jobs:
           cp -r package.json README.md CHANGELOG.md LICENSE config resources lib ${{ runner.temp }}/preview/
 
       - name: 📤 上传正式版构建产物
-        if: needs.version-release.outputs.core_release_created == 'true' || (github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production')
+        if: needs.version-release.outputs.should_upload_release == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: production-build
@@ -258,12 +259,7 @@ jobs:
   npm-production-publish:
     runs-on: ubuntu-latest
     needs: [version-release, unified-build]
-    if: |
-      needs.unified-build.outputs.build_success == 'true' && (
-        needs.version-release.outputs.core_release_created == 'true' ||
-        (github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production') ||
-        inputs.force_npm_publish == true
-      )
+    if: needs.unified-build.outputs.build_success == 'true' && needs.version-release.outputs.should_upload_release == 'true'
     steps:
       - name: 📥 下载构建产物
         uses: actions/download-artifact@v4
