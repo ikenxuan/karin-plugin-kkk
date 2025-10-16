@@ -58,7 +58,7 @@ export interface bilibiliConfig {
   push: {
     /** 推送开关，开启后需重启；使用「#设置B站推送 + 用户UID」配置推送列表 */
     switch: boolean
-    /** 推送权限，all为所有人，admin为管理员，master为主人，group.owner为群主，group.admin为群管理员。修改后需重启 */
+    /** 谁可以设置推送，all为所有人，admin为管理员，master为主人，group.owner为群主，group.admin为群管理员。修改后需重启 */
     permission: 'all' | 'admin' | 'master' | 'group.owner' | 'group.admin'
     /** 推送表达式 */
     cron: string
