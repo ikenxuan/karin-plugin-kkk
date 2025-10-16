@@ -19,19 +19,31 @@ export async function getBilibiliID (url: string) {
       'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
     }
   })
-  const longLink = resp.request.res.responseUrl
+  const longLink = resp?.request?.res?.responseUrl ?? resp?.config?.url ?? url
   let result = {} as BilibiliId
   let pValue: number | undefined
   const parsedUrl = new URL(longLink)
   const pParam = parsedUrl.searchParams.get('p')
   if (pParam) {
-    pValue = parseInt(pParam, 10) // 将 'p' 参数值转换为数字
-    if (isNaN(pValue)) { // 如果转换失败，则重置为 undefined
+    pValue = parseInt(pParam, 10)
+    if (isNaN(pValue)) {
       pValue = undefined
     }
   }
+  const pathname = parsedUrl.pathname
+  const hostname = parsedUrl.hostname
 
   switch (true) {
+    case (hostname === 't.bilibili.com' && /^\/\d+/.test(pathname)) || (hostname === 'www.bilibili.com' && /^\/opus\/\d+/.test(pathname)): {
+      const tMatch = hostname === 't.bilibili.com' ? pathname.match(/^\/(\d+)/) : null
+      const opusMatch = hostname === 'www.bilibili.com' ? pathname.match(/^\/opus\/(\d+)/) : null
+      const dynamic_id = tMatch ?? opusMatch
+      result = {
+        type: 'dynamic_info',
+        dynamic_id: dynamic_id ? dynamic_id[1] : undefined
+      }
+      break
+    }
     case /\/bangumi\/play\/(\w+)/.test(longLink): {
       const playMatch = /\/bangumi\/play\/(\w+)/.exec(longLink)
       const id = playMatch ? playMatch[1] : ''
