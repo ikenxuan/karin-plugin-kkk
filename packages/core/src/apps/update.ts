@@ -31,12 +31,15 @@ const Handler = async (e: Message) => {
   try {
     upd = await checkPkgUpdate(Root.pluginName)
   } catch {
-    // 检测异常则跳过
+    return true
+  }
+
+  // 防守性校验：远程必须严格大于本地，否则视为无更新
+  if (upd.status === 'yes' && !isSemverGreater(upd.remote, upd.local)) {
     return true
   }
 
   if (upd.status !== 'yes') {
-    // 无更新或检测错误，结束本次任务
     return true
   }
 
@@ -136,6 +139,12 @@ export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, async (e: Message
   }
   if (upd.status === 'no') {
     await e.reply(`当前已是最新版本：${upd.local}`, { reply: true })
+    return
+  }
+
+  // 防守性校验：远程必须严格大于本地，否则视为无更新
+  if (upd.status === 'yes' && !isSemverGreater(upd.remote, upd.local)) {
+    await e.reply(`当前已是最新或预览版本：${upd.local}`, { reply: true })
     return
   }
 
