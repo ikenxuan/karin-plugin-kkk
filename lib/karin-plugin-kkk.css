@@ -4156,8 +4156,8 @@
     top: calc(var(--spacing) * -2);
   }
 
-  .-top-8 {
-    top: calc(var(--spacing) * -8);
+  .-top-13 {
+    top: calc(var(--spacing) * -13);
   }
 
   .-top-px {
@@ -7025,8 +7025,14 @@
     background-color: hsl(var(--heroui-default-100) / 1);
   }
 
-  .bg-default-200 {
+  .bg-default-200, .bg-default-200\/60 {
     background-color: hsl(var(--heroui-default-200) / 1);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-default-200\/60 {
+      background-color: color-mix(in oklab, hsl(var(--heroui-default-200) / 1) 60%, transparent);
+    }
   }
 
   .bg-default-300, .bg-default-300\/50 {
@@ -7973,8 +7979,8 @@
     font-size: 1.65em;
   }
 
-  .text-\[2\.2em\] {
-    font-size: 2.2em;
+  .text-\[2\.6em\] {
+    font-size: 2.6em;
   }
 
   .text-\[2\.11em\] {
@@ -7989,12 +7995,12 @@
     font-size: 2.64em;
   }
 
-  .text-\[3\.4em\] {
-    font-size: 3.4em;
+  .text-\[3\.3em\] {
+    font-size: 3.3em;
   }
 
-  .text-\[3\.17em\] {
-    font-size: 3.17em;
+  .text-\[3\.8em\] {
+    font-size: 3.8em;
   }
 
   .text-\[3rem\] {
@@ -8005,8 +8011,8 @@
     font-size: 5.28em;
   }
 
-  .text-\[9em\] {
-    font-size: 9em;
+  .text-\[11em\] {
+    font-size: 11em;
   }
 
   .text-\[26px\] {

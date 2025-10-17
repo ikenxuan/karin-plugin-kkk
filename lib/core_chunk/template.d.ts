@@ -515,6 +515,8 @@ interface BilibiliForwardDynamicProps extends BaseComponentProps {
         dynamicTYPE: string;
         /** 分享链接 */
         share_url: string;
+        /** 图片URL */
+        imgList: string[] | null;
     };
     /** 预生成的二维码数据URL */
     qrCodeDataUrl?: string;
