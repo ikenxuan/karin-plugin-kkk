@@ -3535,6 +3535,24 @@
   unicode-range: U+DF-E5, U+E7-EA, U+EC, U+ED, U+F1-F4, U+F6, U+F9, U+FA, U+FC, U+101, U+103, U+113, U+12B, U+148, U+14D, U+16B, U+1CE, U+1D0, U+300, U+301, U+1EBF, U+1EC7, U+3042, U+3044, U+3046, U+3048, U+304A-3055, U+3057, U+3059-305B, U+305D, U+305F-3061, U+3063-306B, U+306D-3073, U+3075, U+3076, U+3078, U+3079, U+307B, U+307E, U+307F, U+3081-308D, U+308F, U+3092, U+3093, U+30A1-30A4, U+30A6-30BB, U+30BD, U+30BF-30C1, U+30C3, U+30C4, U+30C6-30CB, U+30CD-30D7, U+30D9-30E1, U+30E3-30E7, U+30E9-30ED, U+30EF, U+30F3;
 }
 
+@font-face {
+  font-family: bilifont;
+  src: url("data:font/woff2;base64,d09GMgABAAAAAAKMAAoAAAAABvgAAAJBAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmAAgkIKMEUBNgIkAwgLBgAEIAWHTAcgG1QGyJ6aPBHUghHkAwANcxAggvr90L17L8QurCIUoMtEATmgoiJZoVtj6hEUGUHo0FZ//2tNw7bCvoLMbUmWA0BuJ7ez90NHGOHjKmWVLzcCDhavHFyU9HmuyVfPT+CLH+AZRi0ieBxVCNNsO8OBDHlAewOaim5TeF3SofaEGtdzee15I5OyFq+PY3dxJZXRWjm86Ld1d7XaSr3q6ZWDZoEZPuBDFRC/8o6UyZK9+NZRzrJsDTs7Z1JKHRDbbJrQ3zw2+ifRyvm9gWUnqKtHJ3qZ+r7ovNaZFztrV7nQ9frz6V3l7R9Of8a/Hfnu4ObPb35ytvyfUn7Bl5dnEp969e/eSi7f5Be0zRYNbnb+VBmSsptvri6aAOtKxFMn3BTSuALOy2Sve0Ods88QDsMlxUJqs41iyhzVsCNa7Hk/3WrYvyJqBy5FJ0OYDg+pN26hWI8XqKYzhxaPUnNr2/bPlatGaJHUHIw1fpAIbieMXMKC+AFlS3CHPIGKsEmWS3RWRMdR2X9INZUSSZo5ULvrpVt2g5K+U0dCujtuFQXH+kAZ/0CklM7GKJkJyyb9gLILvrOQWUJsiK31PTDgW4BNyysxnCrTGUIWImkcMKbhDiSk6QRG3Di6QO2PQ5lF4BzEI0CFYE+hIGM6pgg6HCpmpKqqpUlRMlEmtAfWbXUlt5gbUKLbUY1YteTa4SwguYMPE83qYVKu0uONEDOrdTxK11AUfNfKrmOxsEGYNd0eNCxjx6V8mOtu4C/JAs1TdxxLAgAAAA==") format("woff2");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+4E;
+}
+
+@font-face {
+  font-family: bilifont;
+  src: url("data:font/woff2;base64,d09GMgABAAAAAAO8AAoAAAAACZQAAANvAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmAAgloKhGiDCAE2AiQDPAsgAAQgBYdMByAb4wcRFZyHyH4UuDu3YuXAyE8fl7FOHvkOnse27OUnUDqEoet6dPGTi1ePa3YUEQLAt3ez0/huh1RWNtF2qq9I7pMiKWITl9Pm+QsswTCMNsnPUTwmrUF7I2R7URHlGlDXMHZhAk9gZJtcxMGT+dIJaGqvVz0oo4qCKNegmKgktrapX78JtShBS901qjzafIBkDApAvZSDQMGQpHUxb3qYdmj39bwYKgExPAShBJWpR8soghKUoi5dFr2I7kSXo5P1KMWcymVjHOO4CV5izLcBNFLydzVQCOHq/EA2YCawD+iNoNbVLygV93ltBj3HMUqaa23MehaGUXyTGWl1oOIm7OgE7U2fQHewE8XsPjqQjk7I5tmhFt/4HYscsCoUS8DEOAFWR4QTY2J1JMDvqHIBHYLXI2yuTzSjJ8EgfyjhMgNCnECqFCF8QEPls2zx9hvb51d6UInO+sGT+bvKPJjfdHSD1obzj3s/6J0x/0blG3TUyY2Sj8zNeSInLdPceSNqrKWr3n9h5Yl5TXZfXH9xDofS2iy4sHTsvLHrL8xrw460VWNzjV3990j6qgZnzTqz+czOFnPOrj27V+CS3dcXnz1+Zmah3YXomjZvZubqm1vfprtObpV87kCRlUUuFdlepMbZCwsvnG6TfGFNsb3FyLL3zN7VJfT7Nk070L1nWO2bp/VLgCeXey/APn/lbVnKYOSaPAESEEzcmWnQuYAycu100/salJ9dclFdlQ3zZ3USaKIduukQRhx6aUnngEIQV/dY3UXloQwKCLFnepNCyI8L9AP+OIf7kyrMIQKK3CGSAoUEWoGa4nQEDbmZBDp0Zs1pl9x81CiTCAxTMQAqyqkJoBBX+0FNM3UWNJQTAzocl0qcm7b9taHuyP8+iKkmPKqsMzBuF9xnwVeyDt7A2SQLw+dRTLhAycJtKul1iiS2K6YYtxG7I/dMJ7jalHc2c5MNQVQRnCLDnYJau7UmCt48jKIdwk6sykIamH9ChbZAjV8BRk0M5O2Dp/99EFNNeFRZZ+DmCu6z7f5K+i54A2eTLCgXPo9tkHnvKVm4TSXdgyBNbLcM2aK0UbHIPb/Ts+BqU95huZmbbMjB1V6npUk5rRraHR6J+i0M89MqnefGqgq0HgD/cqnQNqemHwmr8mXWuwZS/5aj6NSFDwEAAAA=") format("woff2");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+2E, U+30-39, U+43, U+44, U+4F;
+}
+
 @layer theme {
   :root, :host {
     --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -3877,7 +3895,7 @@
     min-height: 100vh;
     margin: 0;
     padding: 0;
-    font-family: HarmonyOSHans-Regular, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: HarmonyOSHans-Regular, bilifont, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     line-height: 1.6;
     transition: color .3s, background-color .3s;
   }
