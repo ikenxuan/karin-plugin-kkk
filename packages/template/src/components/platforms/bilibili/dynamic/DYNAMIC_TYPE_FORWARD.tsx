@@ -6,7 +6,6 @@ import type {
   BilibiliDynamicFooterProps,
   BilibiliDynamicStatusProps,
   BilibiliDynamicUserInfoProps,
-  BilibiliForwardContentProps,
   BilibiliForwardDynamicProps,
   OriginalContentAV,
   OriginalContentDraw,
@@ -104,7 +103,7 @@ const OriginalUserInfo: React.FC<{
  */
 const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-content1'>
+    <div className='px-12 py-8 mt-4 w-full rounded-3xl bg-default-200/60'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -265,7 +264,7 @@ const OriginalLiveRcmdContent: React.FC<{ content: OriginalContentLiveRcmd }> = 
 /**
  * B站转发动态内容组件
  */
-const BilibiliForwardContent: React.FC<BilibiliForwardContentProps> = (props) => {
+const BilibiliForwardContent: React.FC<BilibiliForwardDynamicProps['data']> = (props) => {
   return (
     <>
       {/* 转发文本内容 */}
@@ -284,8 +283,25 @@ const BilibiliForwardContent: React.FC<BilibiliForwardContentProps> = (props) =>
             }}
           />
         </div>
-        <div className='h-15' />
+        {props.imgList && props.imgList.length === 0 && <div className='h-15' />}
       </div>
+
+      {props.imgList && props.imgList.length > 0 && (
+        <div className='flex flex-col items-center px-20 w-full'>
+          {props.imgList.map((img, idx) => (
+            <React.Fragment key={`${img}-${idx}`}>
+              <div className='flex overflow-hidden relative flex-col items-center rounded-3xl shadow-large'>
+                <EnhancedImage
+                  src={img}
+                  alt={`图片${idx + 1}`}
+                  className='object-contain w-full h-full rounded-3xl'
+                />
+              </div>
+              <div className='h-10' />
+            </React.Fragment>
+          ))}
+        </div>
+      )}
 
       {/* 原始内容 */}
       <div className='flex px-20'>
@@ -424,8 +440,7 @@ export const BilibiliForwardDynamic: React.FC<BilibiliForwardDynamicProps> = Rea
 
         {/* 转发动态内容 */}
         <BilibiliForwardContent
-          text={props.data.text}
-          original_content={props.data.original_content}
+          {...props.data}
         />
 
         {/* 间距 */}

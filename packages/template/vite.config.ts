@@ -109,11 +109,11 @@ export default defineConfig(({ command }) => {
           }
 
           // 复制静态资源
-          const imageSourceDir = resolve(__dirname, 'public/image')
-          const imageTargetDir = resolve(__dirname, '../core/resources/image')
+          const SourceDir = resolve(__dirname, 'public')
+          const TargetDir = resolve(__dirname, '../core/resources')
 
-          copyDirectory(imageSourceDir, imageTargetDir)
-          console.log('✅ 静态资源已复制到:', imageTargetDir)
+          copyDirectory(SourceDir, TargetDir)
+          console.log('✅ 静态资源已复制到:', TargetDir)
         }
       }
     ],

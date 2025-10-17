@@ -123,15 +123,15 @@ const copyTemplateAssetsPlugin = (): Plugin => {
     name: 'copy-template-assets',
     writeBundle () {
       // 复制 template 包的静态资源
-      const imageSourceDir = resolve(__dirname, '../template/public/image')
-      const imageTargetDir = resolve(__dirname, 'resources/image')
+      const SourceDir = resolve(__dirname, '../template/public')
+      const TargetDir = resolve(__dirname, 'resources')
 
       console.log('🔍 开始复制 template 静态资源...')
-      console.log('📁 源目录:', imageSourceDir)
-      console.log('📁 目标目录:', imageTargetDir)
+      console.log('📁 源目录:', SourceDir)
+      console.log('📁 目标目录:', TargetDir)
 
-      copyDirectory(imageSourceDir, imageTargetDir)
-      console.log('✅ template 静态资源已复制到:', imageTargetDir)
+      copyDirectory(SourceDir, TargetDir)
+      console.log('✅ template 静态资源已复制到:', TargetDir)
     }
   }
 }
