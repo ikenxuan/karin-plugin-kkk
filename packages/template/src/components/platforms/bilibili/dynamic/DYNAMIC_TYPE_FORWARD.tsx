@@ -92,7 +92,7 @@ const OriginalUserInfo: React.FC<{
       </div>
       {props.decoration_card && (
         <div className='ml-39'>
-          <div dangerouslySetInnerHTML={{ __html: props.decoration_card }} />
+          <div className='font-bilifont' dangerouslySetInnerHTML={{ __html: props.decoration_card }} />
         </div>
       )}
     </div>

@@ -1,4 +1,4 @@
-import fs, { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import fs from 'node:fs'
 import { builtinModules } from 'node:module'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -65,7 +65,7 @@ const createWebConfigPlugin = (): Plugin => {
       if (mainChunkFile) {
         // 读取 main chunk 文件内容
         const mainChunkPath = resolve(__dirname, 'lib', mainChunkFile)
-        const mainChunkContent = readFileSync(mainChunkPath, 'utf-8')
+        const mainChunkContent = fs.readFileSync(mainChunkPath, 'utf-8')
 
         // 使用正则表达式查找 webConfig 的导出别名
         const webConfigExportMatch = mainChunkContent.match(/webConfig as (\w+)/)
@@ -74,7 +74,7 @@ const createWebConfigPlugin = (): Plugin => {
         // 在 lib 目录中创建 web.config.js
         const webConfigContent = `export { ${webConfigAlias} as default } from './${mainChunkFile}';\n`
         const outputPath = resolve(__dirname, 'lib', 'web.config.js')
-        writeFileSync(outputPath, webConfigContent)
+        fs.writeFileSync(outputPath, webConfigContent)
         console.log(`✓ Created lib/web.config.js -> ./${mainChunkFile} (alias: ${webConfigAlias})`)
       } else {
         console.warn('⚠ Could not find main chunk file')
@@ -91,25 +91,25 @@ const createWebConfigPlugin = (): Plugin => {
  * @param targetDir 目标目录路径
  */
 const copyDirectory = (sourceDir: string, targetDir: string) => {
-  if (!existsSync(sourceDir)) {
+  if (!fs.existsSync(sourceDir)) {
     console.warn('⚠️ 源目录不存在:', sourceDir)
     return
   }
 
-  if (!existsSync(targetDir)) {
-    mkdirSync(targetDir, { recursive: true })
+  if (!fs.existsSync(targetDir)) {
+    fs.mkdirSync(targetDir, { recursive: true })
   }
 
-  const files = readdirSync(sourceDir)
+  const files = fs.readdirSync(sourceDir)
 
   files.forEach(file => {
     const sourcePath = resolve(sourceDir, file)
     const targetPath = resolve(targetDir, file)
 
-    if (statSync(sourcePath).isDirectory()) {
+    if (fs.statSync(sourcePath).isDirectory()) {
       copyDirectory(sourcePath, targetPath)
     } else {
-      copyFileSync(sourcePath, targetPath)
+      fs.copyFileSync(sourcePath, targetPath)
     }
   })
 }
