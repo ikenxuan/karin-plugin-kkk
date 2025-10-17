@@ -422,32 +422,71 @@ jobs:
       - name: 🏷️ 生成版本标识
         id: version-gen
         run: |
-          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          # 基础版本来自版本发布管理输出
+          BASE_VERSION="${{ needs.version-release.outputs.core_version }}"
+          
+          # 计算推荐的版本提升（major/minor/patch）基于最近提交
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            COMMITS=$(git log --no-merges --pretty=%s HEAD ^origin/main || echo "")
+          else
+            if [ -n "$LAST_TAG" ]; then
+              COMMITS=$(git log --no-merges --pretty=%s "$LAST_TAG"..HEAD || echo "")
+            else
+              COMMITS=$(git log --no-merges --pretty=%s HEAD || echo "")
+            fi
+          fi
+          
+          BUMP="none"
+          echo "$COMMITS" | grep -E 'BREAKING CHANGE|^.*!:' >/dev/null && BUMP="major"
+          if [ "$BUMP" = "none" ]; then
+            echo "$COMMITS" | grep -E '^feat(\(.+\))?:' >/dev/null && BUMP="minor"
+          fi
+          if [ "$BUMP" = "none" ]; then
+            echo "$COMMITS" | grep -E '^fix(\(.+\))?:|^perf(\(.+\))?:' >/dev/null && BUMP="patch"
+          fi
+          
+          MAJOR=$(echo $BASE_VERSION | cut -d. -f1)
+          MINOR=$(echo $BASE_VERSION | cut -d. -f2)
+          PATCH=$(echo $BASE_VERSION | cut -d. -f3)
+          
+          case "$BUMP" in
+            major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
+            minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
+            patch) PATCH=$((PATCH + 1)) ;;
+            *) ;;
+          esac
+          
+          BASE_NEXT="${MAJOR}.${MINOR}.${PATCH}"
+          
           COMMIT_COUNT=$(git rev-list --count HEAD)
           TIMESTAMP=$(date +%s)
           
-          MAJOR=$(echo $CURRENT_VERSION | cut -d. -f1)
-          MINOR=$(echo $CURRENT_VERSION | cut -d. -f2)
-          PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
-          
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             if [[ "${{ github.head_ref }}" == release-please--branches--* ]]; then
+              # 如果 release-please 已给出 tag 名，优先使用
+              TAG="${{ needs.version-release.outputs.release_tag_name }}"
+              if [ -n "$TAG" ]; then
+                TAG=${TAG#v}
+                BASE_NEXT="$TAG"
+              fi
               TIME_SUFFIX=$(TZ='Asia/Shanghai' date +%m%d%H%M)
-              NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-rc.${TIME_SUFFIX}"
+              NEW_VERSION="${BASE_NEXT}-rc.${TIME_SUFFIX}"
             else
               PR_NUMBER=${{ github.event.number }}
               PR_COMMIT_COUNT=$(git rev-list --count HEAD ^origin/main)
-              NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-alpha.${PR_NUMBER}.${PR_COMMIT_COUNT}"
+              NEW_VERSION="${BASE_NEXT}-alpha.${PR_NUMBER}.${PR_COMMIT_COUNT}"
             fi
           elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
             TIME_SUFFIX=$(echo $TIMESTAMP | tail -c 5)
-            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-beta.${COMMIT_COUNT}.${TIME_SUFFIX}"
+            NEW_VERSION="${BASE_NEXT}-beta.${COMMIT_COUNT}.${TIME_SUFFIX}"
           elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             TIME_SUFFIX=$(TZ='Asia/Shanghai' date +%m%d%H%M)
-            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-manual.${TIME_SUFFIX}"
+            NEW_VERSION="${BASE_NEXT}-manual.${TIME_SUFFIX}"
           else
             BRANCH_NAME=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
-            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-dev.${BRANCH_NAME}.${{ needs.unified-build.outputs.short_commit_hash }}"
+            NEW_VERSION="${BASE_NEXT}-dev.${BRANCH_NAME}.${{ needs.unified-build.outputs.short_commit_hash }}"
           fi
           
           npm version $NEW_VERSION --no-git-tag-version
