@@ -52,19 +52,19 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
             h2: ({ children, ...props }) => (
               <div className="relative mt-20 mb-5">
                 <div 
-                  className="absolute -top-8 left-0 text-[9em] font-black text-default-200/50 select-none pointer-events-none uppercase leading-none"
+                  className="absolute -top-13 left-0 text-[11em] font-black text-default-200/50 select-none pointer-events-none uppercase leading-none"
                   aria-hidden="true"
                 >
                   {typeof children === 'string' ? children : 'H2'}
                 </div>
-                <h2 className="ml-15 relative z-10 text-[3.4em] pb-2  text-default-900 font-medium" {...props}>
+                <h2 className="ml-15 relative z-10 text-[3.8em] pb-2  text-default-900 font-medium" {...props}>
                   {children}
                 </h2>
                 <div className='w-full border-b border-default-400' />
               </div>
             ),
             h3: ({ children, ...props }) => (
-              <h3 className="flex items-baseline gap-3 text-[3.17em] font-semibold mb-6 text-default-900" {...props}>
+              <h3 className="flex items-baseline gap-3 text-[3.3em] font-semibold mb-6 text-default-900" {...props}>
                 {children}
                 <CornerDownLeft strokeWidth={2.5} className="w-[1em] h-[1em] text-default-200" /> 
               </h3>
@@ -100,7 +100,7 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
               </ol>
             ),
             li: ({ children, ...props }) => (
-              <li className="text-[2.2em] leading-[1.6] text-default-900" {...props}>
+              <li className="text-[2.6em] leading-[1.6] text-default-900" {...props}>
                 {children}
               </li>
             ),
@@ -119,8 +119,12 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
                 {children}
               </pre>
             ),
-            a: ({ children, ...props }) => (
-              <a className="inline-flex gap-3 items-baseline text-warning hover:underline" {...props}>
+            a: ({ children, href, ...props }) => (
+              <a
+                className="inline-flex gap-3 items-baseline cursor-pointer text-warning hover:underline"
+                onClick={(e) => e.preventDefault()}
+                {...props}
+              >
                 <GlowText blurRadius={10} glowStrength={3} scale={1.2}>
                   {children}
                 </GlowText>
