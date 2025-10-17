@@ -31,12 +31,20 @@ jobs:
         with:
           version: 9.0.0
 
-      # 设置 Node 与缓存
+      # 设置 Node（移除 cache: pnpm）
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
+
+      # 缓存 pnpm store（Linux 路径）
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       # 配置 Pages
       - name: Configure Pages
