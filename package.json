@@ -6,7 +6,6 @@
   "license": "GPL-3.0-only",
   "author": "ikenxuan",
   "type": "module",
-  "packageManager": "pnpm@9.0.0",
   "scripts": {
     "build": "pnpm run build:core && pnpm run build:web",
     "build:core": "pnpm --filter karin-plugin-kkk run build",
@@ -19,11 +18,8 @@
     "watch": "pnpm --filter karin-plugin-kkk run watch",
     "web": "pnpm --filter web run dev",
     "up-version": "tsx up-version.ts",
-    "prepare": "husky",
-    "docs:build": "vuepress-vite build packages/docs",
-    "docs:clean-dev": "vuepress-vite dev packages/docs --clean-cache",
-    "docs:dev": "vuepress-vite dev packages/docs",
-    "docs:update-package": "pnpm dlx vp-update"
+    "build:docs": "pnpm --filter docs run docs:build",
+    "prepare": "husky"
   },
   "dependencies": {
     "@ikenxuan/amagi": "5.6.2",
@@ -31,7 +27,7 @@
     "@vitejs/plugin-react": "^5.0.2",
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
-    "lucide-react": "0.545.0",
+    "lucide-react": "0.546.0",
     "node-karin": "1.11.5",
     "react": "19.2.0",
     "react-dom": "19.2.0",
@@ -55,19 +51,11 @@
     "tsx": "4.20.6",
     "typescript": "5.9.3",
     "vite": "7.1.9",
-    "vite-plugin-dts": "^4.5.4",
-    "@vuepress/bundler-vite": "2.0.0-rc.26",
-    "sass-embedded": "^1.93.2",
-    "vue": "^3.5.22",
-    "vuepress": "2.0.0-rc.26",
-    "vuepress-theme-hope": "2.0.0-rc.95"
+    "vite-plugin-dts": "^4.5.4"
   },
   "pnpm": {
     "overrides": {
       "vite": "7.1.5"
-    },
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
+    }
   }
 }
