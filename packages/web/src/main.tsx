@@ -16,7 +16,7 @@ if (import.meta.env.MODE === 'development') {
   }
 }
 
-const basename = import.meta.env.MODE === 'standalone' ? '/' : '/kkk/'
+const basename = import.meta.env.VITE_BUILD_MODE === true ? '/' : '/kkk/'
 
 createRoot(document.getElementById('root')!).render(
   // <StrictMode>

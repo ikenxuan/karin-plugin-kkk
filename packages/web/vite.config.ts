@@ -6,7 +6,6 @@ import { isTauri } from '@tauri-apps/api/core'
 import react from '@vitejs/plugin-react-swc'
 import { defineConfig } from 'vite'
 import viteImagemin from 'vite-plugin-imagemin'
-import obfuscator from 'vite-plugin-javascript-obfuscator'
 import mkcert from 'vite-plugin-mkcert'
 import { VitePWA } from 'vite-plugin-pwa'
 
@@ -130,43 +129,6 @@ export default defineConfig(({ command, mode }) => {
         },
         injectRegister: 'auto',
         strategies: 'generateSW'
-      }),
-      !isStandalone && obfuscator({
-        include: ['src/**/*.ts', 'src/**/*.tsx'],
-        exclude: ['node_modules/**', 'src-tauri/**', 'src/App.tsx', 'src/main.tsx'],
-        apply: 'build',
-        debugger: false,
-        options: {
-          compact: true,
-          controlFlowFlattening: true,
-          controlFlowFlatteningThreshold: 1,
-          numbersToExpressions: true,
-          simplify: true,
-          stringArrayShuffle: true,
-          splitStrings: true,
-          stringArray: true,
-          stringArrayThreshold: 1,
-          stringArrayWrappersCount: 10,
-          deadCodeInjection: true,
-          stringArrayWrappersChainedCalls: true,
-          stringArrayWrappersParametersMaxCount: 5,
-          stringArrayWrappersType: 'function',
-          stringArrayEncoding: ['rc4'],
-          unicodeEscapeSequence: true,
-          identifierNamesGenerator: 'hexadecimal',
-          renameGlobals: false,
-          selfDefending: true,
-          debugProtection: false,
-          debugProtectionInterval: 2000,
-          disableConsoleOutput: true,
-          domainLock: [],
-          seed: 0,
-          sourceMap: false,
-          sourceMapBaseUrl: '',
-          sourceMapFileName: '',
-          sourceMapMode: 'separate',
-          target: 'browser'
-        }
       })
     ].filter(Boolean),
     resolve: {
@@ -178,8 +140,8 @@ export default defineConfig(({ command, mode }) => {
       __TAURI__: JSON.stringify(process.env.TAURI_PLATFORM !== undefined),
       __APP_VERSION__: JSON.stringify(version),
       __BUILD_TIME__: JSON.stringify(buildTime),
-      'import.meta.env.DEV': JSON.stringify(command === 'serve'),
-      'import.meta.env.PROD': JSON.stringify(command === 'build')
+      'import.meta.env.VITE_DEV': JSON.stringify(command === 'serve'),
+      'import.meta.env.VITE_PROD': JSON.stringify(command === 'build')
     },
     build: {
       emptyOutDir: true,
