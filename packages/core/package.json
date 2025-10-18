@@ -46,7 +46,7 @@
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../template/src/dev/mock-server.ts\" --include \"../template/src/main.ts\" src/app.ts --trace-deprecation"
   },
   "devDependencies": {
-    "@karinjs/plugin-puppeteer": "1.0.19",
+    "@karinjs/plugin-puppeteer": "1.0.20",
     "@types/connect-history-api-fallback": "^1.5.4",
     "@types/express": "5.0.3",
     "@types/heic-convert": "^2.1.0",
@@ -57,8 +57,7 @@
     "tsup": "^8.5.0"
   },
   "engines": {
-    "node": ">=21.0.0",
-    "pnpm": ">=9.0.0"
+    "node": ">=18.0.0"
   },
   "publishConfig": {
     "access": "public",
@@ -83,5 +82,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2025-10-17T18:27:34.402Z"
+  "timestamp": "2025-10-18T04:11:05.450Z"
 }

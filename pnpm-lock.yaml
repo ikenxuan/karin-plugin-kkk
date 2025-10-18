@@ -100,8 +100,8 @@ importers:
   packages/core:
     devDependencies:
       '@karinjs/plugin-puppeteer':
-        specifier: 1.0.19
-        version: 1.0.19
+        specifier: 1.0.20
+        version: 1.0.20
       '@types/connect-history-api-fallback':
         specifier: ^1.5.4
         version: 1.5.4
@@ -1939,8 +1939,8 @@ packages:
   '@karinjs/node-schedule@1.0.0':
     resolution: {integrity: sha512-dHhYKcprM/5DQhVX/CFZGsJcNhbfUuE14zFuNunvzU5WdX+mqnpPpOAOaHdKMOLJunaq6zMdBHDYNw/NgEBQyg==}
 
-  '@karinjs/plugin-puppeteer@1.0.19':
-    resolution: {integrity: sha512-hDkYrelvx+Weu/FEAYZuvV+PdXRD0ggqHVgWzrG5Jky2zuHrK0FDxobGBZ1/4X+Mqv5I+t1JQzKvI6dKEv+9IQ==}
+  '@karinjs/plugin-puppeteer@1.0.20':
+    resolution: {integrity: sha512-R60UR4mob016T5p/mERTjW5BYRVk2QQwLPa93bn0vNZIZgW7nFRMqcn+GnPXNPdaSsZdkK77QGWKjhvF1Zzsxw==}
 
   '@karinjs/puppeteer@2.2.4':
     resolution: {integrity: sha512-u8ubMmxnmkco8PXr/vS5jkb61W+4/vSkaBRrlkdUqlPk6rh17TPdsIfoxuMI+bT94gG8c82KFzrI9I+2i4jkKg==}
@@ -11549,7 +11549,7 @@ snapshots:
 
   '@karinjs/node-schedule@1.0.0': {}
 
-  '@karinjs/plugin-puppeteer@1.0.19':
+  '@karinjs/plugin-puppeteer@1.0.20':
     dependencies:
       '@karinjs/puppeteer': 2.2.4
 

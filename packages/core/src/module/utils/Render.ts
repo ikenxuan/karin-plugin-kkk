@@ -86,7 +86,7 @@ export const Render = async <P extends DynamicRenderPath> (
 
   // 转换为ImageElement数组
   const ret: ImageElement[] = []
-  if (Config.app.multiPageRender) {
+  if (Array.isArray(renderResult)) {
     for (const image of renderResult) {
       ret.push(segment.image('base64://' + image))
     }
