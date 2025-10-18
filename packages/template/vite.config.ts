@@ -6,7 +6,6 @@ import { fileURLToPath, URL } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react-swc'
 import { defineConfig } from 'vite'
-import dts from 'vite-plugin-dts'
 
 import { mockApiPlugin } from './src/dev/vite-mock-plugin'
 
@@ -83,12 +82,6 @@ export default defineConfig(({ command }) => {
     emptyOutDir: true,
     plugins: [
       ...baseConfig.plugins,
-      dts({
-        insertTypesEntry: true,
-        outDir: 'dist',
-        include: ['src/**/*'],
-        exclude: ['src/**/*.test.ts', 'src/**/*.spec.ts']
-      }),
       {
         name: 'copy-assets-to-core',
         writeBundle () {

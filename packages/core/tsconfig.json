@@ -42,8 +42,14 @@
   "include": [
     "src/**/*.ts",
     "eslint.config.js",
-    "vite.config.ts"
-, "src/platform/douyin/login.ts.bak"  ],
+    "vite.config.ts",
+    "src/platform/douyin/login.ts.bak"
+  ],
+  "references": [
+    {
+      "path": "../template"
+    }
+  ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts",
