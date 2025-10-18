@@ -47,7 +47,7 @@
     },
     {
       "type": "chore",
-      "section": "🔧 其他更新",
+      "section": "🧰 其他更新",
       "hidden": false
     },
     {
@@ -63,6 +63,16 @@
     {
       "type": "deps",
       "section": "📦 依赖更新"
+    },
+    {
+      "type": "build",
+      "section": "🏗️ 构建系统",
+      "hidden": false
+    },
+    {
+      "type": "ci",
+      "section": "🎡 持续集成",
+      "hidden": false
     },
     {
       "type": "sec",
@@ -95,23 +105,8 @@
       "hidden": false
     },
     {
-      "type": "infra",
-      "section": "🏗️ 基础设施/运维",
-      "hidden": false
-    },
-    {
       "type": "db",
       "section": "🗃️ 数据库迁移",
-      "hidden": false
-    },
-    {
-      "type": "build",
-      "section": "📦️ 构建系统",
-      "hidden": false
-    },
-    {
-      "type": "ci",
-      "section": "🎡 持续集成",
       "hidden": false
     }
   ]
