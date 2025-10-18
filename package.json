@@ -46,8 +46,7 @@
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../template/src/dev/mock-server.ts\" --include \"../template/src/main.ts\" src/app.ts --trace-deprecation"
   },
   "engines": {
-    "node": ">=21.0.0",
-    "pnpm": ">=9.0.0"
+    "node": ">=18.0.0"
   },
   "publishConfig": {
     "access": "public",
@@ -72,5 +71,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2025-10-17T18:27:34.402Z"
+  "timestamp": "2025-10-18T04:23:04.457Z"
 }
