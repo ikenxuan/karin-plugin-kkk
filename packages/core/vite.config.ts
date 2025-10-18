@@ -11,7 +11,7 @@ import { defineConfig, type Plugin } from 'vite'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const entry: string[] = ['src/index.ts', 'src/root.ts', 'src/export/template.ts']
+const entry: string[] = ['src/index.ts', 'src/root.ts', 'src/web.config.ts', 'src/export/template.ts']
 
 const getFiles = (dir: string) => {
   fs.readdirSync(dir).forEach((file) => {
@@ -22,46 +22,6 @@ const getFiles = (dir: string) => {
 }
 
 getFiles('src/apps')
-
-/**
- * 创建输出目录 web.config.js 的 Vite 插件
- * @description 该插件会在构建完成后:
- * 1. 查找包含 web.config 的主 chunk 文件
- * 2. 从主 chunk 中提取 webConfig 的导出别名
- * 3. 在 lib 目录下创建 web.config.js 文件
- * 4. 重新导出 webConfig 为默认导出
- */
-const createWebConfigPlugin = (): Plugin => {
-  return {
-    name: 'create-web-config',
-    writeBundle: (options, bundle) => {
-      // 查找包含 web.config 的 main chunk
-      const mainChunkFile = Object.keys(bundle).find(fileName => {
-        return fileName.startsWith('core_chunk/main-') && fileName.endsWith('.js')
-      })
-
-      if (mainChunkFile) {
-        // 读取 main chunk 文件内容
-        const mainChunkPath = resolve(__dirname, 'lib', mainChunkFile)
-        const mainChunkContent = fs.readFileSync(mainChunkPath, 'utf-8')
-
-        // 使用正则表达式查找 webConfig 的导出别名
-        const webConfigExportMatch = mainChunkContent.match(/webConfig as (\w+)/)
-        const webConfigAlias = webConfigExportMatch ? webConfigExportMatch[1] : 'webConfig'
-
-        // 在 lib 目录中创建 web.config.js
-        const webConfigContent = `export { ${webConfigAlias} as default } from './${mainChunkFile}';\n`
-        const outputPath = resolve(__dirname, 'lib', 'web.config.js')
-        fs.writeFileSync(outputPath, webConfigContent)
-        console.log(`✓ Created lib/web.config.js -> ./${mainChunkFile} (alias: ${webConfigAlias})`)
-      } else {
-        console.warn('⚠ Could not find main chunk file')
-        // 列出所有可用的 chunk 文件以便调试
-        console.log('Available chunks:', Object.keys(bundle).filter(f => f.endsWith('.js')))
-      }
-    }
-  }
-}
 
 /**
  * 递归复制目录
@@ -116,54 +76,68 @@ const copyTemplateAssetsPlugin = (): Plugin => {
 
 export default defineConfig({
   define: {
-    __dirname: 'import.meta.url ? new URL(import.meta.url).pathname : \'\'',
-    __filename: 'import.meta.url ? new URL(\'.\', import.meta.url).pathname : \'\''
+    // 仅替换为全局引用，避免在 CJS 包裹函数内出现 import.meta
+    __dirname: 'new URL(\'.\', import.meta.url).pathname',
+    __filename: 'new URL(\'\', import.meta.url).pathname'
   },
   build: {
-    target: 'node21',
+    target: 'node18',
     lib: {
       formats: ['es'],
       entry
     },
     emptyOutDir: true,
     outDir: 'lib',
-    // 使用 rolldownOptions（按你的要求）
     rolldownOptions: {
       platform: 'node',
       external: [
-        // Node 内建模块保持 external
         ...builtinModules,
         ...builtinModules.map((mod) => `node:${mod}`),
-        // 你的 node-karin 相关 external
         ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js', '/template', '/sqlite3'].map(p => `node-karin${p}`)
       ],
       output: {
-        // 你要求必须开启：内联动态导入，收敛 chunk 数量
-        inlineDynamicImports: true,
+        inlineDynamicImports: false,
         format: 'esm',
+        manualChunks(id) {
+          const p = id.replace(/\\/g, '/')
+          // 任何 node_modules（含 pnpm 的 .pnpm）都强制进入 vendor
+          if (p.includes('/node_modules/') || p.includes('/.pnpm/')) {
+            return 'vendor'
+          }
+          // template 子包源码单独分包，避免并入 main
+          if (p.includes('/packages/template/') || p.includes('/../template/')) {
+            return 'template'
+          }
+          // 仅将实现代码放进 main
+          if (p.includes('/src/platform/') || p.includes('/src/module/')) {
+            return 'main'
+          }
+          // 其他实现代码放入 misc，避免因为单入口被折叠进 main
+          return 'misc'
+        },
+        chunkFileNames: (chunkInfo) => {
+          if (chunkInfo.name === 'main') {
+            return 'core_chunk/main-[hash].js'
+          }
+          if (chunkInfo.name === 'vendor') {
+            return 'core_chunk/vendor-[hash].js'
+          }
+          if (chunkInfo.name === 'template') {
+            return 'core_chunk/template-[hash].js'
+          }
+          if (chunkInfo.name === 'misc') {
+            return 'core_chunk/misc-[hash].js'
+          }
+          return 'core_chunk/[name].js'
+        },
         entryFileNames: (chunkInfo) => {
           if (chunkInfo.name === 'index' || chunkInfo.name === 'root') {
             return `${chunkInfo.name}.js`
           }
-          if (chunkInfo.facadeModuleId?.includes('src/apps')) {
+          if (chunkInfo.facadeModuleId?.replace(/\\/g, '/').includes('src/apps')) {
             return `apps/${chunkInfo.name}.js`
           }
           return `core_chunk/${chunkInfo.name}.js`
-        },
-        chunkFileNames: 'core_chunk/[name]-[hash].js',
-
-        // advancedChunks 顶层键，避免 TS 报错
-        advancedChunks: {
-          includeDependenciesRecursively: true,
-          minSize: 1024 * 200,
-          minShareCount: 2,
-          groups: [
-            { name: 'vendor', test: /[\\\/]node_modules[\\\/]/, priority: 100 },
-            { name: 'template', test: /[\\\/]template[\\\/]/, priority: 90 },
-            { name: 'root', test: /[\\\/]src[\\\/]root\.ts$/, priority: 1000 },
-            { name: 'db', test: /[\\\/]src[\\\/]module[\\\/]db/, priority: 70 },
-            { name: 'main', test: /[\\\/]src[\\\/]/, priority: 0 }
-          ]
         }
       }
     },
@@ -184,7 +158,6 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    createWebConfigPlugin(),
     copyTemplateAssetsPlugin()
   ]
 })
