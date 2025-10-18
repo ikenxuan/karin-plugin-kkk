@@ -22,7 +22,7 @@
     "web": "pnpm --filter web run dev"
   },
   "dependencies": {
-    "@ikenxuan/amagi": "https://pkg.pr.new/@ikenxuan/amagi@3834ed4",
+    "@ikenxuan/amagi": "https://pkg.pr.new/@ikenxuan/amagi@e1e6f04",
     "@tailwindcss/vite": "4.1.14",
     "@vitejs/plugin-react-swc": "4.1.0",
     "clsx": "^2.1.1",
