@@ -37,7 +37,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "cross-env NODE_ENV=production vite build && tsup",
+    "build": "tsdown",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
     "lint": "eslint . --fix",
     "pub": "npm publish --access public",
@@ -71,5 +71,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2025-10-18T04:48:30.212Z"
+  "timestamp": "2025-10-18T09:50:02.206Z"
 }
