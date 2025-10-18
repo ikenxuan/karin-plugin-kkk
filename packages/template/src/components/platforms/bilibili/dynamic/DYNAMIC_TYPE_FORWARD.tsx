@@ -141,7 +141,7 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
  */
 const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-content1'>
+    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-default-200/60'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -202,7 +202,7 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
  */
 const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-content1'>
+    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-default-200/60'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -228,7 +228,7 @@ const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ conte
  */
 const OriginalLiveRcmdContent: React.FC<{ content: OriginalContentLiveRcmd }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-content1'>
+    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-default-200/60'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}

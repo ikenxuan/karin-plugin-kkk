@@ -1,0 +1,34 @@
+{
+  "text": "转发动态",
+  "imgList": null,
+  "dianzan": "50",
+  "pinglun": "0",
+  "share": "0",
+  "create_time": "2025年10月18日 20:29",
+  "avatar_url": "https://i2.hdslb.com/bfs/face/3b03b2b538b15a64deac382fe574a869dda3c238.jpg",
+  "frame": "",
+  "share_url": "https://t.bilibili.com/1125076016203563009",
+  "username": "<span style=\"color: #e9e9e9; font-weight: 700;\">神椿音乐站</span>",
+  "fans": "11.4万",
+  "user_shortid": 1741301,
+  "total_favorited": "376.9万",
+  "following_count": "633",
+  "dynamicTYPE": "转发动态解析",
+  "decoration_card": "<div></div>",
+  "render_time": "2025-10-18 20:54:27",
+  "original_content": {
+    "DYNAMIC_TYPE_LIVE_RCMD": {
+      "username": "<span style=\"color: #FB7299; font-weight: 700;\">花谱_kaf</span>",
+      "create_time": "2025-10-18 20:28",
+      "avatar_url": "https://i1.hdslb.com/bfs/face/0204abc21d3568a17b4e5ce73c6610d09f35573d.jpg",
+      "decoration_card": "<div></div>",
+      "frame": "",
+      "cover": "https://i0.hdslb.com/bfs/live/new_room_cover/40c96ab1f87aad520e382c86a8269348a2264719.jpg",
+      "text_large": "9085人看过",
+      "area_name": "脱口秀",
+      "title": "纪念China 1st SoloLive",
+      "online": 29969
+    }
+  },
+  "useDarkTheme": true
+}
