@@ -108,16 +108,19 @@ export default defineConfig({
           if (chunkInfo.name === 'index' || chunkInfo.name === 'root') {
             return `${chunkInfo.name}.js`
           }
+          if (
+            chunkInfo.name === 'web.config' ||
+            chunkInfo.facadeModuleId?.replace(/\\/g, '/').endsWith('/src/web.config.ts')
+          ) {
+            return 'web.config.js'
+          }
           if (chunkInfo.facadeModuleId?.replace(/\\/g, '/').includes('src/apps')) {
             return `apps/${chunkInfo.name}.js`
           }
           return `core_chunk/${chunkInfo.name}.js`
         },
         chunkFileNames: (chunkInfo) => {
-          if (['main', 'template', 'vendor'].includes(chunkInfo.name)) {
-            return `core_chunk/${chunkInfo.name}-[hash].js`
-          }
-          return 'core_chunk/[name]-[hash].js'
+          return `core_chunk/${chunkInfo.name}.js`
         }
       }
     },
