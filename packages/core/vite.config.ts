@@ -24,28 +24,6 @@ const getFiles = (dir: string) => {
 getFiles('src/apps')
 
 /**
- * 注入 __dirname 和 __filename 变量的 Vite 插件
- * 用于在 ESM 环境中模拟 CommonJS 的这两个全局变量
- */
-const injectDirnamePlugin = (): Plugin => {
-  return {
-    name: 'inject-dirname',
-    renderChunk: (code: string) => {
-      // 检查代码中是否使用了__dirname或__filename
-      if (code.includes('__dirname') || code.includes('__filename')) {
-        // 在文件顶部添加必要的导入和变量定义
-        const injection = `
-const __filename = import.meta.url ? new URL(import.meta.url).pathname : '';
-const __dirname = import.meta.url ? new URL('.', import.meta.url).pathname : '';
-`
-        return injection + code
-      }
-      return code
-    }
-  }
-}
-
-/**
  * 创建输出目录 web.config.js 的 Vite 插件
  * @description 该插件会在构建完成后:
  * 1. 查找包含 web.config 的主 chunk 文件
@@ -137,6 +115,10 @@ const copyTemplateAssetsPlugin = (): Plugin => {
 }
 
 export default defineConfig({
+  define: {
+    __dirname: 'new URL(".", import.meta.url).pathname',
+    __filename: 'new URL("", import.meta.url).pathname'
+  },
   build: {
     target: 'node21',
     lib: {
@@ -145,55 +127,49 @@ export default defineConfig({
     },
     emptyOutDir: true,
     outDir: 'lib',
-    rollupOptions: {
+    // 使用 rolldownOptions（按你的要求）
+    rolldownOptions: {
+      platform: 'node',
       external: [
+        // Node 内建模块保持 external
         ...builtinModules,
         ...builtinModules.map((mod) => `node:${mod}`),
+        // 你的 node-karin 相关 external
         ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js', '/template', '/sqlite3'].map(p => `node-karin${p}`)
       ],
       output: {
-        inlineDynamicImports: false,
+        // 你要求必须开启：内联动态导入，收敛 chunk 数量
+        inlineDynamicImports: true,
         format: 'esm',
         entryFileNames: (chunkInfo) => {
           if (chunkInfo.name === 'index' || chunkInfo.name === 'root') {
             return `${chunkInfo.name}.js`
           }
-
           if (chunkInfo.facadeModuleId?.includes('src/apps')) {
             return `apps/${chunkInfo.name}.js`
           }
-
           return `core_chunk/${chunkInfo.name}.js`
         },
-
         chunkFileNames: 'core_chunk/[name]-[hash].js',
 
-        manualChunks (id) {
-          if (id.includes('node_modules')) {
-            return 'vendor'
-          }
-          if (id.includes('template')) {
-            return 'template'
-          }
-          if (id.includes('src/root.ts')) {
-            return 'root'
-          }
-          if (id.includes('src/module/db')) {
-            return 'db'
-          }
-          if (id.includes('src/web.config.ts') ||
-            id.includes('src/module') ||
-            id.includes('src/platform')) {
-            return 'main'
-          }
+        // advancedChunks 顶层键，避免 TS 报错
+        advancedChunks: {
+          includeDependenciesRecursively: true,
+          minSize: 1024 * 200,
+          minShareCount: 2,
+          groups: [
+            { name: 'vendor', test: /[\\\/]node_modules[\\\/]/, priority: 100 },
+            { name: 'template', test: /[\\\/]template[\\\/]/, priority: 90 },
+            { name: 'root', test: /[\\\/]src[\\\/]root\.ts$/, priority: 1000 },
+            { name: 'db', test: /[\\\/]src[\\\/]module[\\\/]db/, priority: 70 },
+            { name: 'main', test: /[\\\/]src[\\\/]/, priority: 0 }
+          ]
         }
       }
     },
     minify: false,
     commonjsOptions: {
-      include: [
-        /node_modules/
-      ],
+      include: [/node_modules/],
       transformMixedEsModules: true,
       defaultIsModuleExports: true
     }
@@ -208,7 +184,6 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    injectDirnamePlugin(),
     createWebConfigPlugin(),
     copyTemplateAssetsPlugin()
   ]
