@@ -42,7 +42,7 @@
     },
     {
       "type": "style",
-      "section": "🎨 页面 UI 样式",
+      "section": "🎨 代码样式",
       "hidden": false
     },
     {
@@ -63,6 +63,46 @@
     {
       "type": "deps",
       "section": "📦 依赖更新"
+    },
+    {
+      "type": "sec",
+      "section": "🔒 安全修复",
+      "hidden": false
+    },
+    {
+      "type": "i18n",
+      "section": "🌐 国际化",
+      "hidden": false
+    },
+    {
+      "type": "ui",
+      "section": "💄 UI 优化",
+      "hidden": false
+    },
+    {
+      "type": "lint",
+      "section": "🧹 Lint/代码格式",
+      "hidden": false
+    },
+    {
+      "type": "types",
+      "section": "📐 类型定义",
+      "hidden": false
+    },
+    {
+      "type": "config",
+      "section": "⚙️ 配置变更",
+      "hidden": false
+    },
+    {
+      "type": "infra",
+      "section": "🏗️ 基础设施/运维",
+      "hidden": false
+    },
+    {
+      "type": "db",
+      "section": "🗃️ 数据库迁移",
+      "hidden": false
     },
     {
       "type": "build",
