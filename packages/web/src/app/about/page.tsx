@@ -38,7 +38,7 @@ export default function AboutPage () {
       clearAccessToken()
       clearRefreshToken()
       clearUserId()
-      window.location.href = (isTauri() && import.meta.env.DEV) ? '/kkk/login' : (isTauri() ? '/login' : '/kkk/login')
+      window.location.href = (isTauri() && import.meta.env.VITE_DEV) ? '/kkk/login' : (isTauri() ? '/login' : '/kkk/login')
     } else {
       // 第一次点击，设置待确认状态
       setIsLogoutPending(true)

@@ -139,5 +139,3 @@ logger.info(`${logger.violet('[server]')} ${logger.yellow('外部解析页面:')
 logger.info(`${logger.violet('[server]')} ${logger.yellow('推送历史管理:')} ${logger.green(`http://127.0.0.1:${process.env.HTTP_PORT!}/kkk/database`)}`)
 console.log('-------------------------- karin-plugin-kkk --------------------------')
 console.log('')
-
-export { webConfig } from './web.config'
