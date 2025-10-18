@@ -1,2 +1,2 @@
-import { webConfig } from "./chunks/web.config-D1w7h0pw.js";
+import { webConfig } from "./chunks/web.config-CwfKimuY.js";
 export { webConfig as default, webConfig };

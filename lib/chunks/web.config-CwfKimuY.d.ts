@@ -1,4 +1,4 @@
-import * as node_karin13 from "node-karin";
+import * as node_karin23 from "node-karin";
 
 //#region src/types/config/app.d.ts
 /** 定义视频解析工具的配置接口 */
@@ -328,6 +328,6 @@ type PushConfigType = {
 };
 /** 前端传回来新配置的类型 */
 type newConfigType = BaseConfigType & PushConfigType;
-declare const webConfig: node_karin13.DefineConfig<newConfigType>;
+declare const webConfig: node_karin23.DefineConfig<newConfigType>;
 //#endregion
 export { webConfig };
