@@ -9,7 +9,7 @@ import type { ConfigType } from '@/types'
 import type { bilibiliPushItem, douyinPushItem, pushlistConfig } from '@/types/config/pushlist'
 
 import { Root } from '../../root'
-import { getBilibiliDB, getDouyinDB } from '../db'
+
 
 type ConfigDirType = 'config' | 'default_config'
 
@@ -66,10 +66,11 @@ class Cfg {
 
   /** 获取所有配置文件 */
   async All (): Promise<ConfigType> {
+    const { getDouyinDB, getBilibiliDB } = await import('../db')
     const douyinDB = await getDouyinDB()
     const bilibiliDB = await getBilibiliDB()
 
-    const allConfig: any = {} // 初始化为 ConfigType 类型
+    const allConfig: any = {}
 
     // 读取默认配置文件夹中的所有文件
     const files = fs.readdirSync(this.defCfgPath)
@@ -83,39 +84,22 @@ class Cfg {
     // 从数据库获取过滤配置并合并到推送列表中
     if (allConfig.pushlist) {
       try {
-        // 处理抖音推送项
         if (allConfig.pushlist.douyin) {
           for (const item of allConfig.pushlist.douyin) {
-            // 从数据库获取该用户的过滤配置
             const filterWords = await douyinDB.getFilterWords(item.sec_uid)
             const filterTags = await douyinDB.getFilterTags(item.sec_uid)
             const userInfo = await douyinDB.getDouyinUser(item.sec_uid)
-
-            // 将数据库中的过滤配置合并到推送项中
-            if (userInfo) {
-              item.filterMode = userInfo.filterMode as 'blacklist' | 'whitelist' || 'blacklist'
-            }
-
-            // 将过滤词和标签添加到推送项中
+            if (userInfo) item.filterMode = (userInfo.filterMode as 'blacklist' | 'whitelist' || 'blacklist') || 'blacklist'
             item.Keywords = filterWords
             item.Tags = filterTags
           }
         }
-
-        // 处理B站推送项
         if (allConfig.pushlist.bilibili) {
           for (const item of allConfig.pushlist.bilibili) {
-            // 从数据库获取该用户的过滤配置
             const filterWords = await bilibiliDB.getFilterWords(item.host_mid)
             const filterTags = await bilibiliDB.getFilterTags(item.host_mid)
             const userInfo = await bilibiliDB.getOrCreateBilibiliUser(item.host_mid)
-
-            // 将数据库中的过滤配置合并到推送项中
-            if (userInfo) {
-              item.filterMode = userInfo.filterMode as 'blacklist' | 'whitelist' || 'blacklist'
-            }
-
-            // 将过滤词和标签添加到推送项中
+            if (userInfo) item.filterMode = (userInfo.filterMode as 'blacklist' | 'whitelist' || 'blacklist') || 'blacklist'
             item.Keywords = filterWords
             item.Tags = filterTags
           }
@@ -183,6 +167,8 @@ class Cfg {
     config: ConfigType[T],
     type: ConfigDirType = 'config'
   ) {
+    // 动态引入，避免顶层 await 循环依赖
+    const { getDouyinDB, getBilibiliDB } = await import('../db')
     const douyinDB = await getDouyinDB()
     const bilibiliDB = await getBilibiliDB()
 
@@ -233,13 +219,10 @@ class Cfg {
         await this.syncFilterConfigToDb(config.douyin as douyinPushItem[], douyinDB, 'sec_uid')
         logger.debug('已同步抖音过滤配置到数据库')
       }
-
-      // 同步B站配置
       if ('bilibili' in config) {
         await this.syncFilterConfigToDb(config.bilibili as bilibiliPushItem[], bilibiliDB, 'host_mid')
         logger.debug('已同步B站过滤配置到数据库')
       }
-
       return true
     } catch (error) {
       logger.error(`修改配置文件时发生错误：${error}`)
@@ -413,19 +396,14 @@ class Cfg {
    */
   async syncConfigToDatabase () {
     try {
-      const pushCfg = this.getYaml('config', 'pushlist')
+      // 动态引入，避免顶层 await 循环依赖
+      const { getDouyinDB, getBilibiliDB } = await import('../db')
       const douyinDB = await getDouyinDB()
       const bilibiliDB = await getBilibiliDB()
 
-      // 同步配置到数据库
-      if (pushCfg.bilibili) {
-        await bilibiliDB.syncConfigSubscriptions(pushCfg.bilibili)
-      }
-
-      if (pushCfg.douyin) {
-        await douyinDB.syncConfigSubscriptions(pushCfg.douyin)
-      }
-
+      const pushCfg = this.getYaml('config', 'pushlist')
+      if (pushCfg.bilibili) await bilibiliDB.syncConfigSubscriptions(pushCfg.bilibili)
+      if (pushCfg.douyin) await douyinDB.syncConfigSubscriptions(pushCfg.douyin)
       logger.debug('[BilibiliDB] + [DouyinDB] 配置已同步到数据库')
     } catch (error) {
       logger.error('同步配置到数据库失败:', error)

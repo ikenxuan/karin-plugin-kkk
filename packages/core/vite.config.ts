@@ -76,7 +76,6 @@ const copyTemplateAssetsPlugin = (): Plugin => {
 
 export default defineConfig({
   define: {
-    // 仅替换为全局引用，避免在 CJS 包裹函数内出现 import.meta
     __dirname: 'new URL(\'.\', import.meta.url).pathname',
     __filename: 'new URL(\'\', import.meta.url).pathname'
   },
@@ -96,39 +95,14 @@ export default defineConfig({
         ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js', '/template', '/sqlite3'].map(p => `node-karin${p}`)
       ],
       output: {
-        inlineDynamicImports: false,
+        inlineDynamicImports: true,
         format: 'esm',
-        manualChunks(id) {
-          const p = id.replace(/\\/g, '/')
-          // 任何 node_modules（含 pnpm 的 .pnpm）都强制进入 vendor
-          if (p.includes('/node_modules/') || p.includes('/.pnpm/')) {
-            return 'vendor'
-          }
-          // template 子包源码单独分包，避免并入 main
-          if (p.includes('/packages/template/') || p.includes('/../template/')) {
-            return 'template'
-          }
-          // 仅将实现代码放进 main
-          if (p.includes('/src/platform/') || p.includes('/src/module/')) {
-            return 'main'
-          }
-          // 其他实现代码放入 misc，避免因为单入口被折叠进 main
-          return 'misc'
-        },
-        chunkFileNames: (chunkInfo) => {
-          if (chunkInfo.name === 'main') {
-            return 'core_chunk/main-[hash].js'
-          }
-          if (chunkInfo.name === 'vendor') {
-            return 'core_chunk/vendor-[hash].js'
-          }
-          if (chunkInfo.name === 'template') {
-            return 'core_chunk/template-[hash].js'
-          }
-          if (chunkInfo.name === 'misc') {
-            return 'core_chunk/misc-[hash].js'
-          }
-          return 'core_chunk/[name].js'
+        advancedChunks: {
+          groups: [
+            { name: 'vendor', test: /node_modules/ },
+            { name: 'template', test: /src\/export\/template/ },
+            { name: 'main', test: /src/ }
+          ]
         },
         entryFileNames: (chunkInfo) => {
           if (chunkInfo.name === 'index' || chunkInfo.name === 'root') {
@@ -138,6 +112,12 @@ export default defineConfig({
             return `apps/${chunkInfo.name}.js`
           }
           return `core_chunk/${chunkInfo.name}.js`
+        },
+        chunkFileNames: (chunkInfo) => {
+          if (['main', 'template', 'vendor'].includes(chunkInfo.name)) {
+            return `core_chunk/${chunkInfo.name}-[hash].js`
+          }
+          return 'core_chunk/[name]-[hash].js'
         }
       }
     },
