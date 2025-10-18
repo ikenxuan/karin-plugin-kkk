@@ -236,7 +236,7 @@ export default function LoginPage () {
         shadow
       >
         <Card className='w-full h-full' data-atropos-offset='0'>
-          <CardHeader className='space-y-1' data-atropos-offset='2'>
+          <CardHeader className='space-y-1' data-atropos-offset='0'>
             <CardTitle className='text-2xl font-semibold tracking-tight'>
               kkk 插件登录
             </CardTitle>
@@ -244,8 +244,8 @@ export default function LoginPage () {
               {isTauri() ? '请先配置服务器地址，然后输入密钥登录' : '请输入密钥登录'}
             </CardDescription>
           </CardHeader>
-          <CardContent data-atropos-offset='1'>
-            <form className='space-y-4' onSubmit={(e) => { e.preventDefault(); handleLogin() }}>
+          <CardContent data-atropos-offset='0'>
+            <form className='space-y-4 pointer-events-auto' onSubmit={(e) => { e.preventDefault(); handleLogin() }}>
               {isTauri() && (
                 <>
                   <div className='space-y-2'>
@@ -254,15 +254,15 @@ export default function LoginPage () {
                     </Label>
                     <div className='space-y-3'>
                       {/* 协议选择器 */}
-                      <div className='flex items-center space-x-2' data-atropos-offset='3'>
+                      <div className='flex items-center space-x-2 pointer-events-auto z-10' data-atropos-offset='0'>
                         <Label htmlFor='protocol' className='text-sm text-muted-foreground min-w-[40px]'>
                           协议
                         </Label>
                         <Select value={protocol} onValueChange={(value: 'http' | 'https') => setProtocol(value)}>
-                          <SelectTrigger className='w-[100px]'>
+                          <SelectTrigger className='w-[100px]' data-atropos-offset='0'>
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent data-atropos-offset='0'>
                             <SelectItem value='http'>HTTP</SelectItem>
                             <SelectItem value='https'>HTTPS</SelectItem>
                           </SelectContent>
@@ -270,12 +270,12 @@ export default function LoginPage () {
                       </div>
 
                       {/* 主机名和端口号 */}
-                      <div className='flex items-center space-x-2' data-atropos-offset='3'>
+                      <div className='flex items-center space-x-2 pointer-events-auto z-10' data-atropos-offset='0'>
                         <Label htmlFor='hostname' className='text-sm text-muted-foreground min-w-[40px]'>
                           地址
                         </Label>
-                        <div className='relative flex-1'>
-                          <Server className='absolute left-3 top-1/2 w-4 h-4 transform -translate-y-1/2 text-muted-foreground' data-atropos-offset='5' />
+                        <div className='relative flex-1 pointer-events-auto z-10' data-atropos-offset='0'>
+                          <Server className='absolute left-3 top-1/2 w-4 h-4 transform -translate-y-1/2 text-muted-foreground' data-atropos-offset='0' />
                           <Input
                             id='hostname'
                             type='text'
@@ -305,9 +305,10 @@ export default function LoginPage () {
                             placeholder='localhost 或粘贴完整URL'
                             disabled={isLoading || isTestingConnection}
                             onTouchStart={handleInputTouch}
+                            data-atropos-offset='0'
                           />
                         </div>
-                        <div className='flex items-center space-x-1'>
+                        <div className='flex items-center space-x-1 pointer-events-auto z-10' data-atropos-offset='0'>
                           <span className='text-sm text-muted-foreground'>:</span>
                           <Input
                             id='port'
@@ -320,13 +321,14 @@ export default function LoginPage () {
                             onTouchStart={handleInputTouch}
                             min='1'
                             max='65535'
+                            data-atropos-offset='0'
                           />
                         </div>
                       </div>
 
                       {/* 完整URL预览 */}
                       {hostname && (
-                        <div className='p-2 text-xs rounded border text-muted-foreground bg-muted/50' data-atropos-offset='2'>
+                        <div className='p-2 text-xs rounded border text-muted-foreground bg-muted/50 pointer-events-auto z-10' data-atropos-offset='0'>
                           地址预览: {buildServerUrl()}
                         </div>
                       )}
@@ -337,14 +339,14 @@ export default function LoginPage () {
                       variant='outline'
                       onClick={handleSaveServer}
                       disabled={isTestingConnection || !hostname.trim()}
-                      className='w-full'
-                      data-atropos-offset='4'
+                      className='w-full relative z-10 pointer-events-auto'
+                      data-atropos-offset='0'
                     >
                       {isTestingConnection ? '测试连接中...' : '测试服务器连接'}
                     </Button>
                   </div>
 
-                  <Separator data-atropos-offset='2' />
+                  <Separator data-atropos-offset='0' />
                 </>
               )}
 
@@ -353,8 +355,8 @@ export default function LoginPage () {
                 <Label htmlFor='token'>
                   密钥
                 </Label>
-                <div className='relative' data-atropos-offset='3'>
-                  <Lock className='absolute left-3 top-1/2 w-4 h-4 transform -translate-y-1/2 text-muted-foreground' data-atropos-offset='5' />
+                <div className='relative z-10 pointer-events-auto' data-atropos-offset='0'>
+                  <Lock className='absolute left-3 top-1/2 w-4 h-4 transform -translate-y-1/2 text-muted-foreground' data-atropos-offset='0' />
                   <Input
                     id='token'
                     type={showPassword ? 'text' : 'password'}
@@ -364,13 +366,14 @@ export default function LoginPage () {
                     placeholder='请输入 HTTP 鉴权密钥'
                     disabled={isLoading}
                     onTouchStart={handleInputTouch}
+                    data-atropos-offset='0'
                   />
                   <button
                     type='button'
                     onClick={() => setShowPassword(!showPassword)}
-                    className='absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground'
+                    className='absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground pointer-events-auto'
                     disabled={isLoading || isTestingConnection}
-                    data-atropos-offset='5'
+                    data-atropos-offset='0'
                   >
                     {showPassword
                       ? (
@@ -386,9 +389,8 @@ export default function LoginPage () {
               <Button
                 type='submit'
                 disabled={isLoading}
-                className='relative z-10 w-full pointer-events-auto'
+                className='relative z-10 pointer-events-auto w-full'
                 data-atropos-offset='0'
-                onClick={(e) => { e.preventDefault(); handleLogin() }}
               >
                 {isLoading ? '登录中...' : '登录'}
                 {!isLoading && <ArrowRight className='ml-2 w-4 h-4' data-atropos-offset='0' />}
