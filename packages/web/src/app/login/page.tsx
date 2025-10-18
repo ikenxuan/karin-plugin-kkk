@@ -227,7 +227,7 @@ export default function LoginPage () {
   return (
     <div className='flex justify-center items-center p-4 min-h-screen bg-background'>
       <Atropos
-        className='w-full max-w-lg'
+        className='w-full max-w-lg pointer-events-none'
         activeOffset={40}
         shadowScale={1.05}
         rotateXMax={15}
@@ -386,11 +386,12 @@ export default function LoginPage () {
               <Button
                 type='submit'
                 disabled={isLoading}
-                className='w-full'
-                data-atropos-offset='4'
+                className='relative z-10 w-full pointer-events-auto'
+                data-atropos-offset='0'
+                onClick={(e) => { e.preventDefault(); handleLogin() }}
               >
                 {isLoading ? '登录中...' : '登录'}
-                {!isLoading && <ArrowRight className='ml-2 w-4 h-4' data-atropos-offset='6' />}
+                {!isLoading && <ArrowRight className='ml-2 w-4 h-4' data-atropos-offset='0' />}
               </Button>
             </form>
           </CardContent>
