@@ -116,8 +116,8 @@ const copyTemplateAssetsPlugin = (): Plugin => {
 
 export default defineConfig({
   define: {
-    __dirname: 'new URL(".", import.meta.url).pathname',
-    __filename: 'new URL("", import.meta.url).pathname'
+    __dirname: 'import.meta.url ? new URL(import.meta.url).pathname : \'\'',
+    __filename: 'import.meta.url ? new URL(\'.\', import.meta.url).pathname : \'\''
   },
   build: {
     target: 'node21',
