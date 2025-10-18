@@ -19,7 +19,7 @@
         "../template/src/*"
       ]
     },
-    "jsx": "preserve",
+    "jsx": "react",
     "declaration": true,
     "noImplicitAny": true,
     "strict": true,
@@ -44,11 +44,6 @@
     "eslint.config.js",
     "vite.config.ts"
 , "src/platform/douyin/login.ts.bak"  ],
-  "references": [
-    {
-      "path": "../template"
-    }
-  ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts",
