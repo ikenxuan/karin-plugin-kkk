@@ -1,4 +1,4 @@
-import { join } from 'node:path'
+import pathModule from 'node:path'
 
 import type { ImageElement } from 'node-karin'
 import { karinPathHtml, render, segment } from 'node-karin'
@@ -39,7 +39,7 @@ export const Render = async <P extends DynamicRenderPath> (
     throw new Error(`不支持的路径格式: ${path}`)
   }
 
-  const outputDir = join(karinPathHtml, Root.pluginName, templateType)
+  const outputDir = pathModule.join(karinPathHtml, Root.pluginName, templateType)
 
   const renderRequest: TypedRenderRequest<keyof TemplateDataTypeMap> = {
     templateType: templateType as TypedRenderRequest<keyof TemplateDataTypeMap>['templateType'],

@@ -1,4 +1,4 @@
-import fs, { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import fs from 'node:fs'
 import path from 'node:path'
 
 import QRCode, { type QRCodeRenderersOptions } from 'qrcode'
@@ -121,7 +121,7 @@ class ResourcePathManager {
         let currentDir = cwd
         while (currentDir !== path.dirname(currentDir)) {
           const renderDir = path.join(currentDir, 'render')
-          if (existsSync(renderDir)) {
+          if (fs.existsSync(renderDir)) {
             logger.debug('开发模式：找到 render 目录:', renderDir)
             return currentDir
           }
@@ -181,7 +181,7 @@ class ResourcePathManager {
     const projectRoot = pnpmPath.substring(0, pnpmIndex - '/node_modules/'.length)
     logger.debug('从 pnpm 路径提取的项目根目录:', projectRoot)
     const pluginsDir = path.join(projectRoot, 'plugins')
-    if (!existsSync(pluginsDir)) {
+    if (!fs.existsSync(pluginsDir)) {
       logger.debug('plugins 目录不存在:', pluginsDir)
       return null
     }
@@ -194,7 +194,7 @@ class ResourcePathManager {
         const pluginPath = path.join(pluginsDir, pluginDir.name)
         const karinPluginPath = path.join(pluginPath, 'node_modules', 'karin-plugin-kkk')
         
-        if (existsSync(karinPluginPath)) {
+        if (fs.existsSync(karinPluginPath)) {
           logger.debug('找到包含 karin-plugin-kkk 的插件目录:', pluginPath)
           return pluginPath
         }
@@ -214,7 +214,7 @@ class ResourcePathManager {
     const cwd = process.cwd()
     const pluginsDir = path.join(cwd, 'plugins')
     
-    if (!existsSync(pluginsDir)) {
+    if (!fs.existsSync(pluginsDir)) {
       logger.debug('当前工作目录下没有 plugins 目录')
       return null
     }
@@ -227,7 +227,7 @@ class ResourcePathManager {
         const pluginPath = path.join(pluginsDir, pluginDir.name)
         const karinPluginPath = path.join(pluginPath, 'node_modules', 'karin-plugin-kkk')
         
-        if (existsSync(karinPluginPath)) {
+        if (fs.existsSync(karinPluginPath)) {
           logger.debug('通过扫描找到包含 karin-plugin-kkk 的插件目录:', pluginPath)
           return pluginPath
         }
@@ -353,13 +353,13 @@ class SSRRender {
       const { cssDir } = this.resourceManager.getResourcePaths()
       const cssPath = path.join(cssDir, 'karin-plugin-kkk.css')
 
-      if (existsSync(cssPath)) {
+      if (fs.existsSync(cssPath)) {
         this.cssContent = fs.readFileSync(cssPath, 'utf-8')
       } else {
         logger.warn('⚠️ CSS文件未找到:', cssPath)
         // 尝试后备路径
         const fallbackPath = path.join(this.resourceManager['packageDir'], 'dist/css/main.css')
-        if (existsSync(fallbackPath)) {
+        if (fs.existsSync(fallbackPath)) {
           this.cssContent = fs.readFileSync(fallbackPath, 'utf-8')
           logger.debug('✅ 从后备路径加载CSS:', fallbackPath)
         }
@@ -399,7 +399,7 @@ class SSRRender {
       const fullHtml = this.htmlWrapper.wrapContent(htmlContent, filePath, request.data.useDarkTheme || false)
 
       // 写入文件
-      writeFileSync(filePath, fullHtml, 'utf-8')
+      fs.writeFileSync(filePath, fullHtml, 'utf-8')
 
       return {
         success: true,
@@ -457,8 +457,8 @@ export const reactServerRender = async <K extends keyof TemplateDataTypeMap>(
   request: RenderRequest<TemplateDataTypeMap[K]>,
   outputDir: string
 ): Promise<RenderResponse> => {
-  if (!existsSync(outputDir)) {
-    mkdirSync(outputDir, { recursive: true })
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true })
   }
 
   // 初始化组件注册器

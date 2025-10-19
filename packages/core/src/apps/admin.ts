@@ -1,7 +1,7 @@
 import fs from 'node:fs'
+import path from 'node:path'
 
 import karin, { logger } from 'node-karin'
-import path from 'path'
 
 import { Common } from '@/module'
 import { Config } from '@/module/utils/Config'
