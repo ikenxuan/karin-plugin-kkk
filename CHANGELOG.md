@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.7.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.7.0...v2.7.1) (2025-10-19)
+
+
+### 🎡 持续集成
+
+* 更新日志放错了 ([f2fe6ff](https://github.com/ikenxuan/karin-plugin-kkk/commit/f2fe6ff73095ed973999907822d3b23eb172dda6))
+
+
+### 💄 UI 优化
+
+* 细优markdown代码块样式 ([f2fe6ff](https://github.com/ikenxuan/karin-plugin-kkk/commit/f2fe6ff73095ed973999907822d3b23eb172dda6))
+
 ## [2.7.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.6.6...v2.7.0) (2025-10-18)
 
 
