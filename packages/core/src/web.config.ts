@@ -492,6 +492,7 @@ export const webConfig = defineConfig({
                 orientation: 'horizontal',
                 defaultValue: all.douyin.push.videoQuality.toString(),
                 isDisabled: !all.douyin.push.switch,
+                color: 'warning',
                 radio: [
                   components.radio.create('videoQuality:radio-1', {
                     label: '自动选择',
@@ -522,6 +523,7 @@ export const webConfig = defineConfig({
               }),
               components.input.number('maxAutoVideoSize', {
                 label: '视频体积上限（MB）',
+                color: 'warning',
                 description: '推送解析时根据该值自动选择分辨率进行下载。仅在「画质偏好」 为 "自动选择" 时生效',
                 defaultValue: all.douyin.push.maxAutoVideoSize.toString(),
                 isDisabled: all.douyin.push.videoQuality !== 'adapt' || !all.douyin.push.switch,
