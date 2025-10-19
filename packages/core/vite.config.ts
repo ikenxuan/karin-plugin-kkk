@@ -3,6 +3,7 @@ import { builtinModules } from 'node:module'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import terser from '@rollup/plugin-terser'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react-swc'
 import { defineConfig, type Plugin } from 'vite'
@@ -149,6 +150,13 @@ export default defineConfig({
     }
   },
   plugins: [
+    terser({
+      compress: true,
+      mangle: false,
+      format: {
+        ascii_only: false
+      }
+    }),
     react(),
     tailwindcss(),
     copyTemplateAssetsPlugin()
