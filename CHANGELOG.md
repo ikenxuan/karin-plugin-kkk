@@ -2,6 +2,23 @@
 
 # Changelog
 
+## [2.7.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.7.1...v2.7.2) (2025-10-19)
+
+
+### 🐛 错误修复
+
+* close [#190](https://github.com/ikenxuan/karin-plugin-kkk/issues/190) 处理部分番剧无法解析 ([1c8f108](https://github.com/ikenxuan/karin-plugin-kkk/commit/1c8f1086247f62888f8363cfac9c79d633854207))
+
+
+### 🧰 其他更新
+
+* 细优导入，都使用node协议的内置模块 ([b3d896a](https://github.com/ikenxuan/karin-plugin-kkk/commit/b3d896a722c2bba507a03ab75770af8cc3a52646))
+
+
+### ⚙️ 配置变更
+
+* 移除过时配置 `videopriority` 解析视频是否优先保内容。通过画质偏好设置控制解析视频大小 ([1c8f108](https://github.com/ikenxuan/karin-plugin-kkk/commit/1c8f1086247f62888f8363cfac9c79d633854207))
+
 ## [2.7.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.7.0...v2.7.1) (2025-10-19)
 
 
