@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup'
+import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: ['src/export/template.ts'],
@@ -6,8 +6,13 @@ export default defineConfig({
   outDir: 'lib/core_chunk',
   dts: {
     resolve: true,
-    only: true,
+    emitDtsOnly: true,
+    build: true,
     compilerOptions: {
+      noEmit: false,
+      declaration: true,
+      emitDeclarationOnly: true,
+      declarationMap: false,
       module: 'ESNext',
       target: 'ESNext',
       esModuleInterop: true,
@@ -20,12 +25,9 @@ export default defineConfig({
         'template': ['../template/src/index.ts'],
         'template/*': ['../template/src/*']
       },
-      declaration: true,
       skipLibCheck: true,
       forceConsistentCasingInFileNames: true,
-      composite: false,
-      noEmit: false,
-      emitDeclarationOnly: true
+      composite: false
     }
   },
   clean: false,

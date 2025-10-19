@@ -151,7 +151,7 @@ export default defineConfig({
   },
   plugins: [
     terser({
-      compress: true,
+      compress: false,
       mangle: false,
       format: {
         ascii_only: false

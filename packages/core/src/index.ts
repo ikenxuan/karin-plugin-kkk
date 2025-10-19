@@ -36,6 +36,8 @@ import {
   getGroupsRouter
 } from './module/server/content-router'
 
+export * from 'template'
+
 const { initAllDatabases } = await import('@/module/db')
 await initAllDatabases()
 
