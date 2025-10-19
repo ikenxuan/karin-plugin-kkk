@@ -193,25 +193,13 @@ export interface BangumiBilibiliHeaderProps {
   /** 副标题信息 */
   subtitle: string
   /** UP主信息 */
-  upInfo: BangumiBilibiliUPInfo
+  upInfo?: BangumiBilibiliUPInfo
   /** 统计数据 */
   stat: BangumiBilibiliStat
   /** 版权信息 */
   copyright: string
   /** 季度ID */
   seasonID: number
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
-}
-
-/**
- * 番剧剧集列表组件属性接口
- */
-export interface BangumiBilibiliEpisodesProps {
-  /** 剧集列表 */
-  episodes: BangumiBilibiliEpisode[]
-  /** UP主信息 */
-  upInfo: BangumiBilibiliUPInfo
   /** 是否使用深色主题 */
   useDarkTheme?: boolean
 }

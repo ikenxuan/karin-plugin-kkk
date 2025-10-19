@@ -4,7 +4,7 @@ import { Calendar, Clock, Crown, Hash, Play, Share2, Shield, Star, Users } from 
 import React from 'react'
 
 import type {
-  BangumiBilibiliEpisodesProps,
+  BangumiBilibiliData,
   BangumiBilibiliHeaderProps,
   BilibiliBangumiProps
 } from '../../../../types/platforms/bilibili'
@@ -75,7 +75,7 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
             />
           </div>
           {/* UP主信息 */}
-          <div className='flex gap-12 items-center mt-15'>
+          {props.upInfo && (<div className='flex gap-12 items-center mt-15'>
             <div className='relative'>
               <EnhancedImage 
                 className='w-28 h-28 rounded-full select-text'
@@ -166,7 +166,7 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
                 <span>UID: {props.upInfo.mid}</span>
               </div>
             </div>
-          </div>
+          </div>)}
           {/** TIP */}
           <div className='flex text-3xl select-text text-foreground'>
             <span>提示：请在120秒内发送</span>
@@ -283,9 +283,9 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
  * B站番剧剧集列表组件
  * @param props 剧集列表组件属性
  */
-const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) => {
+const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliData> = (props) => {
   // 按发布时间倒序排序
-  const sortedEpisodes = [...props.episodes].sort((a, b) => b.pub_time - a.pub_time)
+  const sortedEpisodes = [...props.Episodes].sort((a, b) => b.pub_time - a.pub_time)
 
   // 按日期分组剧集
   const groupedEpisodes = sortedEpisodes.reduce((groups, episode) => {
@@ -399,12 +399,12 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
                     <div className='relative'>
                       <EnhancedImage 
                         className='w-32 h-32 rounded-full select-text'
-                        src={`https://images.weserv.nl/?url=${encodeURIComponent(props.upInfo.avatar)}`} 
+                        src={`https://images.weserv.nl/?url=${encodeURIComponent(props.UPInfo ? props.UPInfo.avatar : props.mainCover)}`} 
                         alt={''}   
                       />
                     </div>
                     <div className='flex flex-col gap-6'>
-                      <div className='text-4xl font-bold select-text text-foreground-700'>{props.upInfo.uname}</div>
+                      <div className='text-4xl font-bold select-text text-foreground-700'>{props.UPInfo ? props.UPInfo.uname : props.Title}</div>
                       <div className='flex gap-4 items-center text-3xl select-text text-foreground-600'>
                         <Calendar size={30} />
                         <span>发布了内容</span>
@@ -481,7 +481,6 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliEpisodesProps> = (props) 
   )
 }
 
-// ... existing code ...
 export const BangumiBilibili: React.FC<Omit<BilibiliBangumiProps, 'templateType' | 'templateName'>> = React.memo((props) => {
   return (
     <DefaultLayout {...props}>
@@ -501,10 +500,7 @@ export const BangumiBilibili: React.FC<Omit<BilibiliBangumiProps, 'templateType'
         />
 
         {/* 剧集列表区域 */}
-        <BangumiBilibiliEpisodes
-          episodes={props.data.Episodes}
-          upInfo={props.data.UPInfo}
-        />
+        <BangumiBilibiliEpisodes {...props.data} />
       </div>
     </DefaultLayout>
   )

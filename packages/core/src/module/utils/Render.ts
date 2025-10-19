@@ -62,12 +62,12 @@ export const Render = async <P extends DynamicRenderPath> (
   const result = await reactServerRender(renderRequest, outputDir)
     .then(res => {
       if (!res.success || !res.htmlPath) {
-        throw new Error(res.error || 'SSR渲染失败')
+        throw new Error(res.error)
       }
       return res
     })
     .catch(err => {
-      throw new Error(err.message || 'SSR渲染失败')
+      throw new Error(`SSR渲染失败: ${err.message || '未知错误'}`)
     })
     
   // 截图

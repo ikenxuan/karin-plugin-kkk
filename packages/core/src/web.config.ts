@@ -585,12 +585,6 @@ export const webConfig = defineConfig({
                 defaultSelected: all.bilibili.realCommentCount,
                 isDisabled: !all.bilibili.sendContent.some(content => content === 'comment') || !all.bilibili.switch
               }),
-              components.switch.create('videopriority', {
-                label: '优先保内容',
-                description: '解析视频是否优先保内容，true为优先保证上传将使用最低分辨率，false则使用自定义画质偏好',
-                defaultSelected: all.bilibili.videopriority,
-                isDisabled: !all.bilibili.switch
-              }),
               components.radio.group('videoQuality', {
                 label: '画质偏好',
                 description: '解析视频的分辨率偏好。',

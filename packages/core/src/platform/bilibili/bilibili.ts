@@ -137,7 +137,7 @@ export class Bilibili extends Base {
           videoList: videoDownloadUrlList
         }
 
-        if (this.islogin && Config.bilibili.videopriority === false) {
+        if (this.islogin && Config.bilibili.videoQuality > 64) {
           /** 提取出视频流信息对象，并排除清晰度重复的视频流 */
           const simplify = playUrlData.data.data.dash.video.filter((item: { id: number }, index: any, self: any[]) => {
             return self.findIndex((t: { id: any }) => {
@@ -175,8 +175,8 @@ export class Bilibili extends Base {
               CommentsData: commentsdata,
               CommentLength: Config.bilibili.realCommentCount ? Count(infoData.data.data.stat.reply) : String(commentsdata.length),
               share_url: 'https://b23.tv/' + infoData.data.data.bvid,
-              Clarity: Config.bilibili.videopriority === true ? nockData.data.accept_description[nockData.data.accept_description.length - 1] : playUrlData.data.data.accept_description[0],
-              VideoSize: Config.bilibili.videopriority === true ? (nockData.data.durl[0].size! / (1024 * 1024)).toFixed(2) : videoSize,
+              Clarity: Config.bilibili.videoQuality < 64 ? nockData.data.accept_description[nockData.data.accept_description.length - 1] : playUrlData.data.data.accept_description[0],
+              VideoSize: Config.bilibili.videoQuality < 64 ? (nockData.data.durl[0].size! / (1024 * 1024)).toFixed(2) : videoSize,
               ImageLength: 0,
               shareurl: 'https://b23.tv/' + infoData.data.data.bvid
             })
@@ -189,7 +189,7 @@ export class Bilibili extends Base {
             this.e.reply(`设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n` + '视频太大了，还是去B站看吧~', { reply: true })
           } else {
             await this.getvideo(
-              Config.bilibili.videopriority === true
+              Config.bilibili.videoQuality > 64
                 ? { playUrlData: nockData.data }
                 : { infoData: infoData.data, playUrlData: playUrlData.data })
           }
@@ -637,9 +637,6 @@ export class Bilibili extends Base {
 
   async getvideo ({ infoData, playUrlData }: { infoData?: BiliBangumiVideoInfo | BiliOneWork, playUrlData: BiliVideoPlayurlIsLogin | BiliBiliVideoPlayurlNoLogin | BiliBangumiVideoPlayurlIsLogin | BiliBangumiVideoPlayurlNoLogin }) {
     /** 获取视频 => FFmpeg合成 */
-    if (Config.bilibili.videopriority === true) {
-      this.islogin = false
-    }
     switch (this.islogin) {
       case true: {
         const bmp4 = await downloadFile(
