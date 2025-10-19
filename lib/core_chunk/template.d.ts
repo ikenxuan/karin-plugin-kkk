@@ -1307,7 +1307,7 @@ interface RenderRequest<T = any> {
         /** 插件版本 */
         pluginVersion: string;
         /** 发布类型 */
-        releaseType: string;
+        releaseType: 'Stable' | 'Preview';
         /** 驱动框架 */
         poweredBy: string;
     };
