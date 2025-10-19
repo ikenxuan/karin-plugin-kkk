@@ -97,6 +97,10 @@ export default defineConfig({
       output: {
         inlineDynamicImports: true,
         format: 'esm',
+        esModule: true,
+        generatedCode: {
+          preset: 'es2015'
+        },
         advancedChunks: {
           groups: [
             { name: 'vendor', test: /node_modules/ },
