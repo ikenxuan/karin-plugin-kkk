@@ -1,3 +1,4 @@
+import { Code } from '@heroui/react'
 import { CornerDownLeft, ExternalLink } from 'lucide-react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
@@ -19,7 +20,7 @@ import { DefaultLayout } from '../../layouts/DefaultLayout'
 export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'templateName'>> = React.memo((props) => {
   return (
     <DefaultLayout
-      {...props}
+      {...props}  
       style={{
         backgroundImage: `
           linear-gradient(to right, rgb(163 163 163 / 0.1) 2px, transparent 2px),
@@ -109,10 +110,14 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
                 {children}
               </blockquote>
             ),
-            code: ({ children, ...props }) => (
-              <code className="px-[0.6em] py-[0.3em] text-[1.65em] bg-default-200 rounded text-default-900 font-mono" {...props}>
+            code: ({ children }) => (
+              <Code
+                radius='lg'
+                color='warning'
+                className='inline align-text-bottom leading-[inherit] text-[0.8em] whitespace-normal break-all box-decoration-slice'
+              >
                 {children}
-              </code>
+              </Code>
             ),
             pre: ({ children, ...props }) => (
               <pre className="p-[1.8em] mb-[1.8em] bg-default-200 rounded overflow-x-auto font-mono" {...props}>

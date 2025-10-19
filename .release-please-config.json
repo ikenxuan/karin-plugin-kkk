@@ -10,7 +10,7 @@
     "packages/core": {
       "release-type": "node",
       "package-name": "karin-plugin-kkk",
-      "changelog-path": "packages/core/CHANGELOG.md",
+      "changelog-path": "CHANGELOG.md",
       "include-component-in-tag": false
     }
   },
