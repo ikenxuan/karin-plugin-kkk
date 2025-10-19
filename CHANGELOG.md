@@ -2,6 +2,26 @@
 
 # Changelog
 
+## [2.7.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.7.2...v2.7.3) (2025-10-19)
+
+
+### 🐛 错误修复
+
+* web.config 的组件颜色 ([2ac17e2](https://github.com/ikenxuan/karin-plugin-kkk/commit/2ac17e207f063f5d58455986cf158a0845e11ef8))
+
+
+### 🏗️ 构建系统
+
+* use isolatedDeclarations ([dd26f6d](https://github.com/ikenxuan/karin-plugin-kkk/commit/dd26f6d2e0487de22bad39bdb385f819ea3b0c50))
+* 怎么把中文都改成ASCII了 ([f799458](https://github.com/ikenxuan/karin-plugin-kkk/commit/f7994583e76ccb8ed61862a85f45b01c7808ecb0))
+* 构建工具全员迁移 Rolldown ([f9b41fa](https://github.com/ikenxuan/karin-plugin-kkk/commit/f9b41fa75c06524b5025011d9591ef74f3a11225))
+* 禁止代码压缩 ([f9b41fa](https://github.com/ikenxuan/karin-plugin-kkk/commit/f9b41fa75c06524b5025011d9591ef74f3a11225))
+
+
+### ⚙️ 配置变更
+
+* 默认配置都为最高请 ([dcac9bd](https://github.com/ikenxuan/karin-plugin-kkk/commit/dcac9bda8e19220c5edcc0f1d831ec23d44c69b5))
+
 ## [2.7.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.7.1...v2.7.2) (2025-10-19)
 
 
