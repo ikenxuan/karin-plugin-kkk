@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import { pipeline } from 'node:stream/promises'
 
 import { logger } from 'node-karin'
 import type {
@@ -8,7 +9,6 @@ import type {
   ResponseType
 } from 'node-karin/axios'
 import axios, { AxiosError } from 'node-karin/axios'
-import { pipeline } from 'stream/promises'
 
 import { NetworksConfigType } from '@/types'
 

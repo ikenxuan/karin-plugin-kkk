@@ -67,7 +67,12 @@ export const getChangelogImage = async (props: getChangelogImageOptions) => {
   }
   if (!changelog) return null
 
-  const forwardLogs = range(changelog, versionCore(props.localVersion), versionCore(props.remoteVersion))
+  const forwardLogs = range({
+    data: changelog,
+    startVersion: props.localVersion,
+    endVersion: versionCore(props.remoteVersion),
+    compare: 'semver'
+  })
   const img = await Render('other/changelog', {
     markdown: forwardLogs,
     Tip: props.Tip
