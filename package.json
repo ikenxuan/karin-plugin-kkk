@@ -19,13 +19,11 @@
   "type": "module",
   "exports": {
     ".": {
-      "default": "./lib/index.js"
-    },
-    "./template": {
       "types": "./lib/core_chunk/template.d.ts",
-      "default": "./lib/core_chunk/template.js"
+      "default": "./lib/index.js"
     }
   },
+  "types": "./lib/core_chunk/template.d.ts",
   "main": "lib/index.js",
   "files": [
     "config/",
@@ -37,7 +35,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "cross-env NODE_ENV=production vite build && tsup",
+    "build": "cross-env NODE_ENV=production vite build && tsdown",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
     "lint": "eslint . --fix",
     "pub": "npm publish --access public",
