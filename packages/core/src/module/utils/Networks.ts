@@ -110,6 +110,11 @@ export class Networks {
     let intervalId: NodeJS.Timeout | null = null
 
     try {
+      logger.debug('开始下载流', {
+        ...this.config,
+        responseType: 'stream',
+        signal: controller.signal
+      })
       const response = await this.axiosInstance({
         ...this.config,
         responseType: 'stream',

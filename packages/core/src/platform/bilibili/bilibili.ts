@@ -641,8 +641,10 @@ export class Bilibili extends Base {
 
   async getvideo ({ infoData, playUrlData }: { infoData?: BiliBangumiVideoInfo | BiliOneWork, playUrlData: BiliVideoPlayurlIsLogin | BiliBiliVideoPlayurlNoLogin | BiliBangumiVideoPlayurlIsLogin | BiliBangumiVideoPlayurlNoLogin }) {
     /** 获取视频 => FFmpeg合成 */
+    logger.debug('是否登录:', this.islogin)
     switch (this.islogin) {
       case true: {
+        logger.debug('视频 URL:', this.Type === 'one_video' ? playUrlData.data?.dash?.video[0].base_url : playUrlData.result.dash.video[0].base_url)
         const bmp4 = await downloadFile(
           this.Type === 'one_video' ? playUrlData.data?.dash?.video[0].base_url : playUrlData.result.dash.video[0].base_url,
           {
@@ -650,6 +652,7 @@ export class Bilibili extends Base {
             headers: this.headers
           }
         )
+        logger.debug('音频 URL:', this.Type === 'one_video' ? playUrlData.data?.dash?.audio[0].base_url : playUrlData.result.dash.audio[0].base_url)
         const bmp3 = await downloadFile(
           this.Type === 'one_video' ? playUrlData.data?.dash?.audio[0].base_url : playUrlData.result.dash.audio[0].base_url,
           {
@@ -692,6 +695,7 @@ export class Bilibili extends Base {
       }
       case false: {
         /** 没登录（没配置ck）情况下直接发直链，传直链在DownLoadVideo()处理 */
+        logger.debug('视频 URL:', playUrlData.durl[0].url)
         await downloadVideo(this.e, { video_url: playUrlData.durl[0].url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${this.downloadfilename}.mp4` } })
         break
       }
