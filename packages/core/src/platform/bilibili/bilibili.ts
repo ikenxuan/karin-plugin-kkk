@@ -137,7 +137,7 @@ export class Bilibili extends Base {
           videoList: videoDownloadUrlList
         }
 
-        if (this.islogin && Config.bilibili.videoQuality > 64) {
+        if (this.islogin && (Config.bilibili.videoQuality > 64 || Config.bilibili.videoQuality === 0)) {
           /** 提取出视频流信息对象，并排除清晰度重复的视频流 */
           const simplify = playUrlData.data.data.dash.video.filter((item: { id: number }, index: any, self: any[]) => {
             return self.findIndex((t: { id: any }) => {
@@ -175,8 +175,12 @@ export class Bilibili extends Base {
               CommentsData: commentsdata,
               CommentLength: Config.bilibili.realCommentCount ? Count(infoData.data.data.stat.reply) : String(commentsdata.length),
               share_url: 'https://b23.tv/' + infoData.data.data.bvid,
-              Clarity: Config.bilibili.videoQuality < 64 ? nockData.data.accept_description[nockData.data.accept_description.length - 1] : playUrlData.data.data.accept_description[0],
-              VideoSize: Config.bilibili.videoQuality < 64 ? (nockData.data.durl[0].size! / (1024 * 1024)).toFixed(2) : videoSize,
+              Clarity: Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64 ?
+                nockData.data.accept_description[nockData.data.accept_description.length - 1] : 
+                playUrlData.data.data.accept_description[0],
+              VideoSize: Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64 ? 
+                (nockData.data.durl[0].size! / (1024 * 1024)).toFixed(2) :
+                videoSize,
               ImageLength: 0,
               shareurl: 'https://b23.tv/' + infoData.data.data.bvid
             })
