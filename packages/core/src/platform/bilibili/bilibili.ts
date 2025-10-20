@@ -192,6 +192,9 @@ export class Bilibili extends Base {
           if ((Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit)) && !Config.upload.compress) {
             this.e.reply(`设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n` + '视频太大了，还是去B站看吧~', { reply: true })
           } else {
+            if (Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64) {
+              this.islogin = false
+            }
             await this.getvideo(
               Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64
                 ? { playUrlData: nockData.data }
