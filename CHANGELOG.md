@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.7.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.7.3...v2.7.4) (2025-10-20)
+
+
+### 🐛 错误修复
+
+* **bilibili:** 修复视频质量设置为0时的清晰度和大小判断逻辑 close [#193](https://github.com/ikenxuan/karin-plugin-kkk/issues/193) ([c29b44d](https://github.com/ikenxuan/karin-plugin-kkk/commit/c29b44d635aab3e7601649cfbcd688bd1c712a13))
+
+
+### ✅ 测试相关
+
+* test ([a2033e2](https://github.com/ikenxuan/karin-plugin-kkk/commit/a2033e2a5c0eec9c354de8bad35a74cbcfb92328))
+
 ## [2.7.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.7.2...v2.7.3) (2025-10-19)
 
 
