@@ -37,22 +37,29 @@ export class Networks {
         Object.entries(data.headers).map(([key, value]) => [key, String(value)])
       )
       : {}
+
+    // 合并默认头确保 UA 等始终存在
+    this.headers = {
+      ...Object.fromEntries(
+        Object.entries(baseHeaders ?? {}).map(([key, value]) => [key, String(value)])
+      ),
+      ...this.headers
+    }
+
     this.url = data.url ?? ''
     this.type = data.type ?? 'json'
     this.method = data.method ?? 'GET'
     this.body = data.body ?? null
     this.timeout = data.timeout ?? 15000
     this.filepath = data.filepath ?? ''
-    this.maxRetries = 0
+    this.maxRetries = data.maxRetries ?? 3
 
     // 创建axios实例
     this.axiosInstance = axios.create({
       timeout: this.timeout,
       headers: this.headers,
       maxRedirects: 5,
-      validateStatus: (status) => {
-        return (status >= 200 && status < 300) || status === 406 || (status >= 500)
-      }
+      validateStatus: () => true
     })
   }
 
@@ -84,96 +91,93 @@ export class Networks {
   async downloadStream (
     progressCallback: (downloadedBytes: number, totalBytes: number) => void,
     retryCount = 0): Promise<{ filepath: string; totalBytes: number }> {
-    // 创建一个中止控制器，用于在请求超时时中止请求
+    if (retryCount > 0 && this.maxRetries === 0) {
+      this.maxRetries = retryCount
+      retryCount = 0
+    }
+
+    // URL 早期校验
+    if (!this.url || !/^https?:\/\//i.test(this.url)) {
+      throw new Error(`Invalid URL: ${this.url || '(empty)'}`)
+    }
+    // 文件路径校验
+    if (!this.filepath) {
+      throw new Error('未指定文件保存路径: filepath 为空')
+    }
+
     const controller = new AbortController()
-    // 设置一个定时器，如果请求超过预定时间，则中止请求
     const timeoutId = setTimeout(() => controller.abort(), this.timeout)
+    let intervalId: NodeJS.Timeout | null = null
 
     try {
-      // 使用axios库发送HTTP请求，获取资源流
-      const response = await axios({
+      const response = await this.axiosInstance({
         ...this.config,
-        url: this.url,
         responseType: 'stream',
         signal: controller.signal
       })
 
-      // 清除中止请求的定时器
       clearTimeout(timeoutId)
 
-      // 检查HTTP响应状态码，如果状态码不在200到299之间，则抛出错误
-      if (!(response.status >= 200 && response.status < 300)) {
-        throw new Error(`无法获取 ${this.url}。状态: ${response.status} ${response.statusText}`)
+      // 解析内容长度
+      const rawContentLength = response.headers['content-length']
+      const totalBytes = Number.parseInt(rawContentLength ?? '-1', 10)
+      if (Number.isNaN(totalBytes)) {
+        throw new Error('无效的 content-length 响应头')
       }
 
-      // 解析响应头中的content-length，以获取资源的总字节大小
-      const totalBytes = parseInt(response.headers['content-length'] ?? '0', 10)
-      // 如果无法解析content-length，则抛出错误
-      if (isNaN(totalBytes)) {
-        throw new Error('无效的 content-length 头')
-      }
-
-      // 初始化已下载字节数和上次打印的进度百分比
       let downloadedBytes = 0
       let lastPrintedPercentage = -1
-
-      // 创建一个文件写入流，用于将下载的资源保存到本地文件系统
       const writer = fs.createWriteStream(this.filepath)
 
-      // 定义一个函数来打印下载进度
       const printProgress = () => {
-        const progressPercentage = Math.floor((downloadedBytes / totalBytes) * 100)
-        if (progressPercentage !== lastPrintedPercentage) {
+        if (totalBytes > 0) {
+          const progressPercentage = Math.floor((downloadedBytes / totalBytes) * 100)
+          if (progressPercentage !== lastPrintedPercentage) {
+            progressCallback(downloadedBytes, totalBytes)
+            lastPrintedPercentage = progressPercentage
+          }
+        } else {
+          // 不可预知大小时，也回调字节数（百分比省略）
           progressCallback(downloadedBytes, totalBytes)
-          lastPrintedPercentage = progressPercentage
         }
       }
 
-      // 根据资源大小决定进度更新的间隔时间
-      const interval = totalBytes < 10 * 1024 * 1024 ? 1000 : 500
-      // 设置一个定时器，定期调用printProgress函数来更新下载进度
-      const intervalId = setInterval(printProgress, interval)
+      const interval = totalBytes > 0 && totalBytes < 10 * 1024 * 1024 ? 1000 : 500
+      intervalId = setInterval(printProgress, interval)
 
-      // 定义一个函数来处理下载的数据块
-      const onData = (chunk: string | any[]) => {
-        downloadedBytes += chunk.length
+      const onData = (chunk: Buffer | string) => {
+        // chunk 可能是 Buffer 或 string（rare）；统一按长度累计
+        downloadedBytes += Buffer.isBuffer(chunk) ? chunk.length : Buffer.byteLength(chunk)
       }
 
-      // 在下载的数据流上绑定'data'事件监听器，处理下载的数据块
       response.data.on('data', onData)
 
-      // 使用pipeline函数将下载的数据流管道到文件写入流
-      await pipeline(
-        response.data,
-        writer
-      )
-      clearInterval(intervalId)
+      await pipeline(response.data, writer)
+
+      if (intervalId) clearInterval(intervalId)
       response.data.off('data', onData)
-      // 确保所有写入操作已完成
       writer.end()
 
-      // 返回包含文件路径和总字节数的对象
-      return { filepath: this.filepath, totalBytes }
+      return { filepath: this.filepath, totalBytes: totalBytes > 0 ? totalBytes : downloadedBytes }
     } catch (error) {
       clearTimeout(timeoutId)
+      if (intervalId) clearInterval(intervalId)
 
-      // 处理请求或下载过程中的错误
       if (error instanceof AxiosError) {
-        logger.error(`请求在 ${this.timeout / 1000} 秒后超时`)
+        logger.error(`请求在 ${this.timeout / 1000} 秒后超时或失败: ${error.message}`)
       } else {
         logger.error('下载失败:', error)
       }
 
-      // 如果重试次数小于最大重试次数，则等待一段时间后重试下载
-      if (retryCount < this.maxRetries) {
-        const delay = Math.min(Math.pow(2, retryCount) * 1000, 1000)
-        logger.warn(`正在重试下载... (${retryCount + 1}/${this.maxRetries})，将在 ${delay / 1000} 秒后重试`)
+      // 指数退避，1s 起，8s 封顶
+      const nextDelay = Math.max(1000, Math.min(2 ** retryCount * 1000, 8000))
 
-        await new Promise(resolve => setTimeout(resolve, delay))
+      if (retryCount < this.maxRetries) {
+        logger.warn(`正在重试下载... (${retryCount + 1}/${this.maxRetries})，将在 ${nextDelay / 1000} 秒后重试`)
+        await new Promise(resolve => setTimeout(resolve, nextDelay))
         return this.downloadStream(progressCallback, retryCount + 1)
       } else {
-        // 如果超过最大重试次数，则抛出错误
-        throw new Error(`在 ${this.maxRetries} 次尝试后下载失败: ${error}`)
+        throw new Error(`在 ${this.maxRetries} 次尝试后下载失败: ${error instanceof Error ? error.message : String(error)}`)
       }
     }
   }
@@ -203,25 +207,32 @@ export class Networks {
 
   /** 最终地址（跟随重定向） */
   async getLongLink (url = ''): Promise<string> {
-    let errorMsg = `获取链接重定向失败: ${this.url || url}`
+    const targetUrl = this.url || url
     try {
-      const response = await this.axiosInstance.head(this.url || url)
-      return response.request.res.responseUrl
+      // 早期校验
+      new URL(targetUrl)
+    } catch {
+      throw new Error(`Invalid URL: ${targetUrl || '(empty)'}`)
+    }
+
+    try {
+      const response = await this.axiosInstance.get(targetUrl)
+      const finalUrl =
+        (response.request as any)?.res?.responseUrl ??
+        (response.config as any)?.url ??
+        targetUrl
+      return finalUrl
     } catch (error) {
       const axiosError = error as AxiosError
-      if (axiosError.response) {
-        if (axiosError.response.status === 302) {
-          const redirectUrl = axiosError.response.headers.location
-          logger.info(`检测到302重定向，目标地址: ${redirectUrl}`)
-          return await this.getLongLink(redirectUrl)
-        } else if (axiosError.response.status === 403) { // 403 Forbidden
-          errorMsg = `403 Forbidden 禁止访问！${this.url || url}`
-          logger.error(errorMsg)
-          return errorMsg
-        }
+      if (axiosError.response?.status === 302 && axiosError.response.headers?.location) {
+        const redirectUrl = axiosError.response.headers.location
+        logger.info(`检测到302重定向，目标地址: ${redirectUrl}`)
+        return await this.getLongLink(redirectUrl)
       }
-      logger.error(errorMsg)
-      return errorMsg
+
+      const msg = `获取链接重定向失败: ${targetUrl} - ${axiosError.message}`
+      logger.error(msg)
+      throw new Error(msg)
     }
   }
 

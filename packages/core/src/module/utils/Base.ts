@@ -343,10 +343,11 @@ export const downloadFile = async (videoUrl: string, opt: downLoadFileOptions): 
 
   // 使用 networks 类进行文件下载，并通过回调函数实时更新下载进度
   const { filepath, totalBytes } = await new Networks({
-    url: videoUrl, // 视频地址
-    headers: opt.headers ?? baseHeaders, // 请求头
-    filepath: Common.tempDri.video + opt.title, // 文件保存路径
-    timeout: 30000 // 设置 30 秒超时
+    url: videoUrl, 
+    headers: opt.headers ?? baseHeaders,
+    filepath: Common.tempDri.video + opt.title,
+    timeout: 30000, 
+    maxRetries: 3 
   }).downloadStream((downloadedBytes, totalBytes) => {
     // 定义进度条长度及生成进度条字符串的函数
     const barLength = 45
