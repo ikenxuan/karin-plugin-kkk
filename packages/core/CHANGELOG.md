@@ -2,6 +2,21 @@
 
 # Changelog
 
+## [2.8.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.7.4...v2.8.0) (2025-10-20)
+
+
+### ✨ 新功能
+
+* add support for jingxuan.douyin.com URL pattern recognition ([#196](https://github.com/ikenxuan/karin-plugin-kkk/issues/196)) ([6ec76f9](https://github.com/ikenxuan/karin-plugin-kkk/commit/6ec76f9c3dec9f5bd5ec1adfad9d208a73ffb26b))
+
+
+### 🐛 错误修复
+
+* **bilibili:** 修复视频质量判断逻辑错误 ([addc63f](https://github.com/ikenxuan/karin-plugin-kkk/commit/addc63fed50a4f518aa4a4048de75c3ca68ff41e))
+* 增强鲁棒性 ([dd00e8f](https://github.com/ikenxuan/karin-plugin-kkk/commit/dd00e8fa90ae6015990a53845f8095a9a99d21f0))
+* 增强鲁棒性 x2 ([eaded46](https://github.com/ikenxuan/karin-plugin-kkk/commit/eaded4695f2b680a9a05ceec7b726dad08cd4c95))
+* 导出/template入口 ([2a86c9a](https://github.com/ikenxuan/karin-plugin-kkk/commit/2a86c9a11457e70ffeff1ddefbaac36f27f3a867))
+
 ## [2.7.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.7.3...v2.7.4) (2025-10-20)
 
 
