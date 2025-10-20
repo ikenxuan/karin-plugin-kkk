@@ -10,7 +10,7 @@ import { fetchKuaishouData, getKuaishouID, Kuaishou } from '@/platform/kuaishou'
 import { getXiaohongshuID, Xiaohongshu } from '@/platform/xiaohongshu'
 
 const reg = {
-  douyin: /^.*((www|v|jx|m)\.(douyin|iesdouyin)\.com|douyin\.com\/(video|note)).*/,
+  douyin: /^.*((www|v|jx|m|jingxuan)\.(douyin|iesdouyin)\.com|douyin\.com\/(video|note)).*/,
   bilibili: /(bilibili.com|b23.tv|t.bilibili.com|bili2233.cn|BV[a-zA-Z0-9]{10,})/,
   kuaishou: /^((.*)快手(.*)快手(.*)|(.*)v\.kuaishou(.*)|(.*)kuaishou\.com\/f\/[a-zA-Z0-9]+.*)$/,
   xiaohongshu: /(xiaohongshu\.com|xhslink\.com)/
