@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.8.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.8.0...v2.8.1) (2025-10-20)
+
+
+### 🐛 错误修复
+
+* 增强兼容性 ([f2b5809](https://github.com/ikenxuan/karin-plugin-kkk/commit/f2b580951f3c9afbfc276624af62ddfaeea82168))
+
 ## [2.8.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.7.4...v2.8.0) (2025-10-20)
 
 
