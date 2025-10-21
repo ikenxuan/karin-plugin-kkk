@@ -105,6 +105,60 @@ const VideoInfoHeader: React.FC<VideoInfoHeaderProps> = ({
  * @returns JSX元素
  */
 const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: boolean }> = ({ comment, isLast = false }) => {
+  const rawImageUrl = comment.commentimage || comment.sticker
+  const [resolvedImageUrl, setResolvedImageUrl] = React.useState<string | undefined>(rawImageUrl)
+  const heifWorkerRef = React.useRef<Worker | null>(null)
+
+  React.useEffect(() => {
+    setResolvedImageUrl(rawImageUrl)
+    return () => {
+      if (resolvedImageUrl && resolvedImageUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(resolvedImageUrl)
+      }
+    }
+  }, [rawImageUrl])
+
+  React.useEffect(() => {
+    if (!heifWorkerRef.current) {
+      // 以 ESM Worker 方式加载，适配 Vite
+      heifWorkerRef.current = new Worker(
+        new URL('../../../workers/heifWorker.js', import.meta.url),
+        { type: 'module' }
+      )
+    }
+    return () => {
+      heifWorkerRef.current?.terminate()
+      heifWorkerRef.current = null
+    }
+  }, [])
+
+  const convertHeifToJpeg = React.useCallback(async () => {
+    if (!rawImageUrl || !heifWorkerRef.current) return
+    const id = `${Date.now()}-${Math.random()}`
+    const worker = heifWorkerRef.current
+
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      const onMessage = (e: MessageEvent) => {
+        const data = e.data
+        if (data && data.id === id) {
+          worker.removeEventListener('message', onMessage)
+          if (data.error) reject(new Error(data.error))
+          else resolve(data.blob as Blob)
+        }
+      }
+      worker.addEventListener('message', onMessage)
+      worker.postMessage({ id, url: rawImageUrl, output: { type: 'image/jpeg', quality: 0.9 } })
+    }).catch(() => undefined as unknown as Blob)
+
+    if (blob) {
+      const url = URL.createObjectURL(blob)
+      setResolvedImageUrl((prev) => {
+        if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev)
+        return url
+      })
+    }
+  }, [rawImageUrl])
+
   return (
     <div className={clsx(
       'flex px-10 pt-10',
@@ -149,8 +203,9 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
           <div className='flex my-5 overflow-hidden shadow-md rounded-2xl w-[95%] flex-1'>
             <img
               className='object-contain w-full h-full rounded-2xl'
-              src={comment.commentimage || comment.sticker}
+              src={resolvedImageUrl}
               alt='评论图片'
+              onError={() => { convertHeifToJpeg() }}
             />
           </div>
         )}

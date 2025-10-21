@@ -1,7 +1,6 @@
 import { getDouyinData } from '@ikenxuan/amagi'
-import convert from 'heic-convert'
 
-import { Common, Networks } from '@/module/utils'
+import { Common } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
 
 /**
@@ -88,27 +87,6 @@ const processAtUsers = async (text: string, userIds: string[] | null): Promise<s
 }
 
 /**
- * 处理单个评论图片的HEIC转JPG
- * @param imageUrl 图片URL
- * @returns 处理后的图片URL
- */
-const processCommentImage = async (imageUrl: string | null): Promise<string | null> => {
-  if (!imageUrl) return null
-
-  const headers = await new Networks({ url: imageUrl, type: 'arraybuffer' }).getHeaders()
-  if (headers['content-type'] && headers['content-type'] === 'image/heic') {
-    const response = await new Networks({ url: imageUrl, type: 'arraybuffer' }).returnResult()
-    const jpegBuffer = await convert({
-      buffer: response.data,
-      format: 'JPEG'
-    })
-    const base64Image = Buffer.from(jpegBuffer).toString('base64')
-    return `data:image/jpeg;base64,${base64Image}`
-  }
-  return imageUrl
-}
-
-/**
  *
  * @param {*} data 完整的评论数据
  * @param {*} emojidata 处理过后的emoji列表
@@ -162,9 +140,6 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
     // 在循环中处理表情
     text = processCommentEmojis(text, emojidata)
 
-    // 在循环中处理图片HEIC转JPG
-    const processedImageUrl = await processCommentImage(imageurl)
-
     // 在循环中处理点赞数格式化
     if (digg_count > 10000) {
       digg_count = (digg_count / 10000).toFixed(1) + 'w'
@@ -199,7 +174,7 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
       digg_count,
       ip_label: ip,
       create_time: relativeTime,
-      commentimage: processedImageUrl,
+      commentimage: imageurl,
       label_type,
       sticker,
       status_label,

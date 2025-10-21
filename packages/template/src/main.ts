@@ -260,12 +260,13 @@ class ResourcePathManager {
    * 获取静态资源路径配置
    * @returns 静态资源路径配置对象
    */
-  getResourcePaths (): { cssDir: string; imageDir: string } {
+  getResourcePaths (): { cssDir: string; imageDir: string, resourcesDir: string } {
     switch (this.NODE_ENV) {
       case 'development':
         return {
           cssDir: path.join(path.dirname(this.packageDir), 'core', 'lib'),
-          imageDir: path.join(path.dirname(this.packageDir), 'core/resources/image')
+          imageDir: path.join(path.dirname(this.packageDir), 'core', 'resources', 'image'),
+          resourcesDir: path.join(path.dirname(this.packageDir), 'core', 'resources')
         }
 
       case 'production':
@@ -276,13 +277,15 @@ class ResourcePathManager {
             cssDir: fs.existsSync(path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'lib'))
               ? path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'lib')
               : path.join(this.packageDir, 'lib'),
-            imageDir: path.join(this.packageDir, 'resources', 'image')
+            imageDir: path.join(this.packageDir, 'resources', 'image'),
+            resourcesDir: path.join(this.packageDir, 'resources')
           }
         } else {
           // Standalone 模式
           return {
             cssDir: path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'lib'),
-            imageDir: path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'resources', 'image')
+            imageDir: path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'resources', 'image'),
+            resourcesDir: path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'resources')
           }
         }
     }
@@ -301,15 +304,14 @@ class HtmlWrapper {
 
   wrapContent (htmlContent: string, htmlFilePath: string, isDark: boolean = false): string {
     const htmlDir = path.dirname(htmlFilePath)
-    const { cssDir, imageDir } = this.resourceManager.getResourcePaths()
+    const { cssDir, imageDir, resourcesDir } = this.resourceManager.getResourcePaths()
 
-    const cssRelativePath = path.relative(htmlDir, cssDir).replace(/\\/g, '/')
-    const imageRelativePath = path.relative(htmlDir, imageDir).replace(/\\/g, '/')
-    const cssUrl = path.join(cssRelativePath, 'karin-plugin-kkk.css').replace(/\\/g, '/')
+    const cssUrl = path.join(path.relative(htmlDir, cssDir).replace(/\\/g, '/'), 'karin-plugin-kkk.css').replace(/\\/g, '/')
+    const jsUrl = path.join(path.relative(htmlDir, resourcesDir).replace(/\\/g, '/'), 'assets', 'heifWorker.js').replace(/\\/g, '/')
 
     const processedHtml = htmlContent.replace(
       /src="\/image\//g,
-      `src="${imageRelativePath}/`
+      `src="${path.relative(htmlDir, imageDir).replace(/\\/g, '/') }/`
     )
 
     return `
@@ -322,6 +324,64 @@ class HtmlWrapper {
     </head>
     <body class="${isDark ? 'dark' : ''}">
       ${processedHtml}
+      <script>
+      (function(){
+        var workerUrl = 'http://localhost:3780/api/kkk/worker';
+        var worker;
+        try {
+          worker = new Worker(workerUrl, { type: 'module' });
+        } catch (e) {
+          console.warn('[HEIF] Worker 初始化失败:', e);
+          return;
+        }
+
+        var isHeif = function (src) { return /\\.hei[cf](\\?.*)?$/i.test(src || ''); };
+
+        var convert = function(img, src) {
+          var id = Date.now() + '-' + Math.random();
+          var onMessage = function(e) {
+            var d = e.data || {};
+            if (d.id !== id) return;
+            worker.removeEventListener('message', onMessage);
+            if (d.blob) {
+              try {
+                var url = URL.createObjectURL(d.blob);
+                img.src = url;
+              } catch (err) {
+                console.warn('[HEIF] 设置图片失败:', err);
+              }
+            } else if (d.error) {
+              console.warn('[HEIF] 转换失败:', d.error);
+            }
+          };
+          worker.addEventListener('message', onMessage);
+          worker.postMessage({ id: id, url: src, output: { type: 'image/jpeg', quality: 0.9 } });
+        };
+
+        var handleImg = function(img) {
+          var src = img.currentSrc || img.src || '';
+          if (isHeif(src)) {
+            convert(img, src);
+          } else {
+            img.addEventListener('error', function() {
+              var s = img.currentSrc || img.src || '';
+              if (isHeif(s)) convert(img, s);
+            }, { once: true });
+          }
+        };
+
+        var scan = function() {
+          var list = document.querySelectorAll('img');
+          for (var i = 0; i < list.length; i++) handleImg(list[i]);
+        };
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', scan);
+        } else {
+          scan();
+        }
+      })();
+      </script>
     </body>
     </html>
     `

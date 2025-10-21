@@ -52,10 +52,9 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@types/connect-history-api-fallback": "^1.5.4",
     "@types/express": "5.0.3",
-    "@types/heic-convert": "^2.1.0",
     "connect-history-api-fallback": "^2.0.0",
-    "heic-convert": "^2.1.0",
     "http-proxy-middleware": "3.0.5",
+    "rollup-plugin-visualizer": "^6.0.5",
     "template": "workspace:*",
     "tsdown": "^0.15.8"
   },
@@ -67,6 +66,9 @@
     "registry": "https://registry.npmjs.org"
   },
   "karin": {
+    "engines": {
+      "karin": ">=1.12.2"
+    },
     "main": "src/index.ts",
     "apps": [
       "lib/apps"
@@ -85,5 +87,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2025-10-19T04:44:03.603Z"
+  "timestamp": "2025-10-21T05:47:18.132Z"
 }

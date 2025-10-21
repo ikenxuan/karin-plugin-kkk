@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url'
 import terser from '@rollup/plugin-terser'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react-swc'
+import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, type Plugin } from 'vite'
 
 // 在ES模块中模拟__dirname
@@ -80,6 +81,9 @@ export default defineConfig({
     __dirname: 'new URL(\'.\', import.meta.url).pathname',
     __filename: 'new URL(\'\', import.meta.url).pathname'
   },
+  worker: {
+    format: 'es'
+  },
   build: {
     target: 'node18',
     lib: {
@@ -93,7 +97,7 @@ export default defineConfig({
       external: [
         ...builtinModules,
         ...builtinModules.map((mod) => `node:${mod}`),
-        ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js', '/template', '/sqlite3'].map(p => `node-karin${p}`)
+        ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js', '/template', '/sqlite3', '/express'].map(p => `node-karin${p}`)
       ],
       output: {
         inlineDynamicImports: true,
@@ -150,6 +154,7 @@ export default defineConfig({
     }
   },
   plugins: [
+    visualizer(),
     terser({
       compress: false,
       mangle: false,

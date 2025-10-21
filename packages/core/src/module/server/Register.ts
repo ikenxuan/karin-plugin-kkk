@@ -10,7 +10,7 @@ import history from 'connect-history-api-fallback'
 import * as cors from 'cors'
 import express from 'express'
 import * as httpProxy from 'http-proxy-middleware'
-import { app as karinApp, authMiddleware } from 'node-karin'
+import { app as karinApp, authMiddleware, karinPathTemp } from 'node-karin'
 
 import { Root } from '../../root'
 import { Config } from '../utils/Config'
@@ -24,8 +24,12 @@ const proxyOptions: httpProxy.Options = {
   changeOrigin: true
 }
 server.use(cors.default())
-server.use('/', httpProxy.createProxyMiddleware(proxyOptions))
+// server.use('/', httpProxy.createProxyMiddleware(proxyOptions))
 // TODO: 后续将此反代放到 karin 中
+
+server.use('/api/kkk/debuggerHtml', express.static(path.join(karinPathTemp, 'html', 'karin-plugin-kkk', 'douyin')))
+server.use('/api/kkk/worker', express.static(path.join(Root.pluginPath, 'resources', 'assets', 'heifWorker.js')))
+
 server.listen(3780)
 
 const app = express.Router()
