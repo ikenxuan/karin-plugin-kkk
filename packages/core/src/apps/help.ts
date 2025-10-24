@@ -61,13 +61,13 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
         items: [
           {
             title: '#设置抖音推送 + 抖音号',
-            description: '在群聊中发送以对该群订阅该blogger的作品更新',
+            description: '在群聊中发送以对该群订阅该blogger的作品更新；也可使用「#设置抖音推送开启/关闭」来切换推送功能',
             icon: 'Bell',
             roles: Config.douyin.push.permission === 'all' ? ['member', 'master'] : ['master']
           },
           {
             title: '#设置B站推送 + UP主UID',
-            description: '在群聊中发送以对该群订阅该blogger的作品更新',
+            description: '在群聊中发送以对该群订阅该blogger的作品更新；也可使用「#设置B站推送开启/关闭」来切换推送功能',
             icon: 'Bell',
             roles: Config.bilibili.push.permission === 'all' ? ['member', 'master'] : ['master']
           }
@@ -82,18 +82,6 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
         title: '#kkk设置推送机器人 + Bot ID',
         description: '一键更换推送机器人',
         icon: 'Bot',
-        roles: ['master']
-      },
-      {
-        title: '#kkk设置抖音推送开启/关闭',
-        description: '开启或关闭抖音推送功能（需要重启后生效）',
-        icon: 'ToggleRight',
-        roles: ['master']
-      },
-      {
-        title: '#kkk设置B站推送开启/关闭',
-        description: '开启或关闭B站推送功能（需要重启后生效）',
-        icon: 'ToggleRight',
         roles: ['master']
       },
       {

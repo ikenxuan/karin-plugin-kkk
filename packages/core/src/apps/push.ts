@@ -39,8 +39,20 @@ const handleForcePush = wrapWithErrorHandler(async (e) => {
 
 // 包装设置抖音推送命令
 const handleSetDouyinPush = wrapWithErrorHandler(async (e) => {
+  const query = e.msg.replace(/^#设置抖音推送/, '').trim()
+  
+  // 检查是否是开启/关闭命令
+  if (query === '开启' || query === '关闭') {
+    const enable = query === '开启'
+    Config.Modify('douyin', 'push.switch', enable)
+    await e.reply(`抖音推送已${enable ? '开启' : '关闭'}，${enable ? '需要重启后生效' : '将在下次重启后停止推送'}`)
+    logger.info(`抖音推送已${enable ? '开启' : '关闭'}`)
+    return true
+  }
+  
+  // 原有的订阅逻辑
   const data = await getDouyinData('搜索数据', Config.cookies.douyin, { 
-    query: e.msg.replace(/^#设置抖音推送/, ''), 
+    query, 
     typeMode: 'strict' 
   })
   await new DouYinpush(e).setting(data.data)
@@ -53,11 +65,23 @@ const handleSetDouyinPush = wrapWithErrorHandler(async (e) => {
 
 // 包装设置B站推送命令
 const handleSetBilibiliPush = wrapWithErrorHandler(async (e) => {
+  const query = e.msg.replace(/^#设置[bB]站推送/, '').replace(/^(?:[Uu][Ii][Dd]:)?/, '').trim()
+  
+  // 检查是否是开启/关闭命令
+  if (query === '开启' || query === '关闭') {
+    const enable = query === '开启'
+    Config.Modify('bilibili', 'push.switch', enable)
+    await e.reply(`B站推送已${enable ? '开启' : '关闭'}，${enable ? '需要重启后生效' : '将在下次重启后停止推送'}`)
+    logger.info(`B站推送已${enable ? '开启' : '关闭'}`)
+    return true
+  }
+  
+  // 原有的订阅逻辑
   if (!Config.cookies.bilibili) {
     await e.reply('\n请先配置B站Cookie', { at: true })
     return true
   }
-  const match = /^#设置[bB]站推送(?:UID:)?(\d+)$/.exec(e.msg)
+  const match = /^(\d+)$/.exec(query)
   if (match && match[1]) {
     const data = await getBilibiliData('用户主页数据', Config.cookies.bilibili, { 
       host_mid: Number(match[1]), 
@@ -129,32 +153,6 @@ const handleChangeBotID = wrapWithErrorHandler(async (e) => {
   return true
 }, {
   businessName: '设置推送机器人'
-})
-
-// 包装抖音推送开关命令
-const handleToggleDouyinPush = wrapWithErrorHandler(async (e) => {
-  const msg = e.msg.trim()
-  const enable = msg.includes('开启')
-  
-  Config.Modify('douyin', 'push.switch', enable)
-  await e.reply(`抖音推送已${enable ? '开启' : '关闭'}，${enable ? '需要重启后生效' : '将在下次重启后停止推送'}`)
-  logger.info(`抖音推送已${enable ? '开启' : '关闭'}`)
-  return true
-}, {
-  businessName: '抖音推送开关'
-})
-
-// 包装B站推送开关命令
-const handleToggleBilibiliPush = wrapWithErrorHandler(async (e) => {
-  const msg = e.msg.trim()
-  const enable = msg.includes('开启')
-  
-  Config.Modify('bilibili', 'push.switch', enable)
-  await e.reply(`B站推送已${enable ? '开启' : '关闭'}，${enable ? '需要重启后生效' : '将在下次重启后停止推送'}`)
-  logger.info(`B站推送已${enable ? '开启' : '关闭'}`)
-  return true
-}, {
-  businessName: 'B站推送开关'
 })
 
 // 包装测试推送命令
@@ -246,16 +244,12 @@ export const forcePush = karin.command(/#(抖音|B站)(全部)?强制推送/, ha
 
 export const setdyPush = karin.command(/^#设置抖音推送/, handleSetDouyinPush, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.douyin.push.permission, dsbAdapter: ['qqbot'] })
 
-export const setbiliPush = karin.command(/^#设置[bB]站推送(?:[Uu][Ii][Dd]:)?(\d+)$/, handleSetBilibiliPush, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.bilibili.push.permission, dsbAdapter: ['qqbot'] })
+export const setbiliPush = karin.command(/^#设置[bB]站推送/, handleSetBilibiliPush, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.bilibili.push.permission, dsbAdapter: ['qqbot'] })
 
 export const bilibiliPushList = karin.command(/^#?[bB]站推送列表$/, handleBilibiliPushList, { name: 'kkk-推送功能-列表', event: 'message.group' })
 
 export const douyinPushList = karin.command(/^#?抖音推送列表$/, handleDouyinPushList, { name: 'kkk-推送功能-列表', event: 'message.group' })
 
 export const changeBotID = karin.command(/^#kkk设置推送机器人/, handleChangeBotID, { name: 'kkk-推送功能-设置', perm: 'master' })
-
-export const toggleDouyinPush = karin.command(/^#kkk设置抖音推送(开启|关闭)$/, handleToggleDouyinPush, { name: 'kkk-推送功能-开关', perm: 'master' })
-
-export const toggleBilibiliPush = karin.command(/^#kkk设置B站推送(开启|关闭)$/, handleToggleBilibiliPush, { name: 'kkk-推送功能-开关', perm: 'master' })
 
 export const testDouyinPush = karin.command(/^#测试抖音推送\s*(https?:\/\/[^\s]+)?/, handleTestDouyinPush, { name: 'kkk-推送功能-测试', event: 'message.group', perm: Config.douyin.push.permission, dsbAdapter: ['qqbot'] })
