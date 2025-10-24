@@ -85,6 +85,18 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
         roles: ['master']
       },
       {
+        title: '#kkk设置抖音推送开启/关闭',
+        description: '开启或关闭抖音推送功能（需要重启后生效）',
+        icon: 'ToggleRight',
+        roles: ['master']
+      },
+      {
+        title: '#kkk设置B站推送开启/关闭',
+        description: '开启或关闭B站推送功能（需要重启后生效）',
+        icon: 'ToggleRight',
+        roles: ['master']
+      },
+      {
         title: '#B站登录',
         description: '使用哔哩哔哩APP扫码登录获取 Cookies',
         icon: 'LogIn',
