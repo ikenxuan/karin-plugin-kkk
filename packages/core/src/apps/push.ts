@@ -131,6 +131,32 @@ const handleChangeBotID = wrapWithErrorHandler(async (e) => {
   businessName: '设置推送机器人'
 })
 
+// 包装抖音推送开关命令
+const handleToggleDouyinPush = wrapWithErrorHandler(async (e) => {
+  const msg = e.msg.trim()
+  const enable = msg.includes('开启')
+  
+  Config.Modify('douyin', 'push.switch', enable)
+  await e.reply(`抖音推送已${enable ? '开启' : '关闭'}，${enable ? '需要重启后生效' : '将在下次重启后停止推送'}`)
+  logger.info(`抖音推送已${enable ? '开启' : '关闭'}`)
+  return true
+}, {
+  businessName: '抖音推送开关'
+})
+
+// 包装B站推送开关命令
+const handleToggleBilibiliPush = wrapWithErrorHandler(async (e) => {
+  const msg = e.msg.trim()
+  const enable = msg.includes('开启')
+  
+  Config.Modify('bilibili', 'push.switch', enable)
+  await e.reply(`B站推送已${enable ? '开启' : '关闭'}，${enable ? '需要重启后生效' : '将在下次重启后停止推送'}`)
+  logger.info(`B站推送已${enable ? '开启' : '关闭'}`)
+  return true
+}, {
+  businessName: 'B站推送开关'
+})
+
 // 包装测试推送命令
 const handleTestDouyinPush = wrapWithErrorHandler(async (e) => {
   const url = String(e.msg.match(/(http|https):\/\/.*\.(douyin|iesdouyin)\.com\/[^ ]+/g))
@@ -227,5 +253,9 @@ export const bilibiliPushList = karin.command(/^#?[bB]站推送列表$/, handleB
 export const douyinPushList = karin.command(/^#?抖音推送列表$/, handleDouyinPushList, { name: 'kkk-推送功能-列表', event: 'message.group' })
 
 export const changeBotID = karin.command(/^#kkk设置推送机器人/, handleChangeBotID, { name: 'kkk-推送功能-设置', perm: 'master' })
+
+export const toggleDouyinPush = karin.command(/^#kkk设置抖音推送(开启|关闭)$/, handleToggleDouyinPush, { name: 'kkk-推送功能-开关', perm: 'master' })
+
+export const toggleBilibiliPush = karin.command(/^#kkk设置B站推送(开启|关闭)$/, handleToggleBilibiliPush, { name: 'kkk-推送功能-开关', perm: 'master' })
 
 export const testDouyinPush = karin.command(/^#测试抖音推送\s*(https?:\/\/[^\s]+)?/, handleTestDouyinPush, { name: 'kkk-推送功能-测试', event: 'message.group', perm: Config.douyin.push.permission, dsbAdapter: ['qqbot'] })
