@@ -692,7 +692,7 @@ export class Bilibilipush extends Base {
         existingItem.group_id.push(`${groupId}:${botId}`)
 
         await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${data.data.card.name}\nUID：${host_mid}`)
-        if (Config.bilibili.push.switch === false) await this.e.reply('请发送「#kkk设置B站推送开启」以进行推送')
+        if (Config.bilibili.push.switch === false) await this.e.reply('请发送「#设置B站推送开启」以进行推送')
 
         logger.info(`\n设置成功！${data.data.card.name}\nUID：${host_mid}`)
       }
@@ -714,7 +714,7 @@ export class Bilibilipush extends Base {
       })
 
       await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${data.data.card.name}\nUID：${host_mid}`)
-      if (Config.bilibili.push.switch === false) await this.e.reply('请发送「#kkk设置B站推送开启」以进行推送')
+      if (Config.bilibili.push.switch === false) await this.e.reply('请发送「#设置B站推送开启」以进行推送')
     }
 
     // 更新配置文件
