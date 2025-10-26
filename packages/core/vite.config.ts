@@ -119,12 +119,6 @@ export default defineConfig({
           ) {
             return 'web.config.js'
           }
-          if (
-            chunkInfo.name === 'template' ||
-            chunkInfo.facadeModuleId?.replace(/\\/g, '/').endsWith('/src/export/template.ts')
-          ) {
-            return 'template.js'
-          }
           if (chunkInfo.facadeModuleId?.replace(/\\/g, '/').includes('src/apps')) {
             return `apps/${chunkInfo.name}.js`
           }

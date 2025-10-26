@@ -24,11 +24,17 @@
     },
     "./template": {
       "types": "./lib/core_chunk/template.d.ts",
-      "default": "./lib/index.js"
+      "import": "./lib/core_chunk/template.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "template": [
+        "lib/core_chunk/template.d.ts"
+      ]
     }
   },
   "types": "./lib/core_chunk/template.d.ts",
-  "main": "lib/index.js",
   "files": [
     "config/",
     "lib/",
@@ -67,6 +73,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "karin": {
+    "engines": ">=1.12.2",
     "main": "src/index.ts",
     "apps": [
       "lib/apps"
