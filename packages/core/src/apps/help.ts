@@ -61,13 +61,13 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
         items: [
           {
             title: '#设置抖音推送 + 抖音号',
-            description: '在群聊中发送以对该群订阅该blogger的作品更新',
+            description: '在群聊中发送以对该群订阅该抖音博主的作品更新',
             icon: 'Bell',
             roles: Config.douyin.push.permission === 'all' ? ['member', 'master'] : ['master']
           },
           {
             title: '#设置B站推送 + UP主UID',
-            description: '在群聊中发送以对该群订阅该blogger的作品更新',
+            description: '在群聊中发送以对该群订阅该B站UP主的稿件/动态更新',
             icon: 'Bell',
             roles: Config.bilibili.push.permission === 'all' ? ['member', 'master'] : ['master']
           }
