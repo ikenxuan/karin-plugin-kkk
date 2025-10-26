@@ -46,6 +46,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
         className={clsx(
           'w-[1440px]',
           'bg-default-50 text-default-900',
+          'font-[HarmonyOSHans-Regular]',
           className,
           useDarkTheme
         )}
