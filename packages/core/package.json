@@ -19,7 +19,6 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./lib/core_chunk/template.d.ts",
       "default": "./lib/index.js"
     },
     "./template": {
@@ -30,11 +29,10 @@
   "typesVersions": {
     "*": {
       "template": [
-        "lib/core_chunk/template.d.ts"
+        "./lib/core_chunk/template.d.ts"
       ]
     }
   },
-  "types": "./lib/core_chunk/template.d.ts",
   "files": [
     "config/",
     "lib/",

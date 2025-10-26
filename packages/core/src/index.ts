@@ -4,7 +4,6 @@ import { logger, mkdirSync } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
 
 import { Common, Root } from '@/module'
-export * from 'template'
 
 // ----------------- DATABASE INIT -----------------
 const { initAllDatabases } = await import('@/module/db')
