@@ -55,7 +55,8 @@ export const Render = async <P extends DynamicRenderPath> (
       pluginName: 'kkk',
       pluginVersion: Root.pluginVersion,
       releaseType: /^\d+\.\d+\.\d+$/.test(Root.pluginVersion) ? 'Stable' : 'Preview',
-      poweredBy: 'Karin'
+      poweredBy: 'Karin',
+      frameworkVersion: Root.karinVersion
     },
     data: {
       ...data,

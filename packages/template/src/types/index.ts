@@ -20,6 +20,8 @@ export interface RenderRequest<T = Record<string, unknown>> {
     releaseType: 'Stable' | 'Preview'
     /** 驱动框架 */
     poweredBy: string
+    /** 框架版本 */
+    frameworkVersion: string
   }
   /** 渲染数据 */
   data: T & {

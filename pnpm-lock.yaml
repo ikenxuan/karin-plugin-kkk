@@ -190,6 +190,9 @@ importers:
       js-beautify:
         specifier: ^1.15.4
         version: 1.15.4
+      qrcode:
+        specifier: ^1.5.4
+        version: 1.5.4
       react-markdown:
         specifier: ^10.1.0
         version: 10.1.0(@types/react@19.2.2)(react@19.2.0)
@@ -215,6 +218,9 @@ importers:
       '@types/js-beautify':
         specifier: ^1.14.3
         version: 1.14.3
+      '@types/qrcode':
+        specifier: ^1.5.5
+        version: 1.5.5
       '@types/react':
         specifier: 19.2.2
         version: 19.2.2
