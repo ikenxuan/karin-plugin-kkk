@@ -1,8 +1,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import dedent from 'dedent'
+import beautify from 'js-beautify'
 import React from 'react'
-import { renderToString } from 'react-dom/server'
+import { renderToStaticMarkup } from 'react-dom/server'
 
 import type { DataTypeMap, RenderRequest, RenderResponse, TypedRenderRequest } from './types'
 import { ComponentAutoRegistry } from './utils/ComponentAutoRegistry'
@@ -415,7 +417,7 @@ class HtmlWrapper {
       `src="${imageRelativePath}/`
     )
 
-    return `
+    return dedent`
     <!DOCTYPE html>
     <html lang="zh-CN">
     <head>
@@ -505,9 +507,15 @@ class SSRRender {
       // 渲染时插件（可包裹或替换组件）
       await this.pluginContainer.runDuring(ctx)
 
-      const htmlContent = renderToString(ctx.state.component ?? component)
+      const htmlContent = renderToStaticMarkup(ctx.state.component ?? component)
 
-      ctx.state.html = htmlContent
+      const formattedHtml = beautify.html(htmlContent, {
+        indent_size: 2,
+        preserve_newlines: false,
+        wrap_attributes: 'auto'
+      })
+
+      ctx.state.html = formattedHtml
 
       // 渲染后插件（可修改 HTML）
       await this.pluginContainer.runAfter(ctx)
@@ -519,7 +527,7 @@ class SSRRender {
 
       // 包装并写入
       const fullHtml = this.htmlWrapper.wrapContent(
-        ctx.state.html ?? htmlContent,
+        ctx.state.html ?? formattedHtml,
         filePath,
         request.data.useDarkTheme ?? false
       )
