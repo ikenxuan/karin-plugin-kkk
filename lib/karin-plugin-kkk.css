@@ -7881,6 +7881,10 @@
     vertical-align: text-bottom;
   }
 
+  .font-\[HarmonyOSHans-Regular\] {
+    font-family: HarmonyOSHans-Regular;
+  }
+
   .font-mono {
     font-family: var(--font-mono);
   }
@@ -8560,6 +8564,16 @@
     }
   }
 
+  .text-success\/90 {
+    color: hsl(var(--heroui-success) / 1);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .text-success\/90 {
+      color: color-mix(in oklab, hsl(var(--heroui-success) / 1) 90%, transparent);
+    }
+  }
+
   .text-transparent {
     color: #0000;
   }
@@ -8909,6 +8923,10 @@
 
   .opacity-80 {
     opacity: .8;
+  }
+
+  .opacity-90 {
+    opacity: .9;
   }
 
   .opacity-100 {

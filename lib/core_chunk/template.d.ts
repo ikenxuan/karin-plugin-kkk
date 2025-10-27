@@ -1,4 +1,7 @@
+import React$1 from "react";
+
 //#region ../template/src/types/platforms/douyin/comment.d.ts
+
 /**
 * 抖音评论组件属性接口
 */
@@ -1313,7 +1316,7 @@ interface ChangelogProps extends BaseComponentProps {
 /**
 * 渲染请求参数接口
 */
-interface RenderRequest<T = any> {
+interface RenderRequest<T = Record<string, unknown>> {
   /** 模板类型 */
   templateType: "douyin" | "bilibili" | "kuaishou" | "other" | "apiError";
   /** 模板名称 */
@@ -1332,6 +1335,8 @@ interface RenderRequest<T = any> {
     releaseType: "Stable" | "Preview";
     /** 驱动框架 */
     poweredBy: string;
+    /** 框架版本 */
+    frameworkVersion: string;
   };
   /** 渲染数据 */
   data: T & {
@@ -1356,7 +1361,7 @@ interface RenderResponse {
 * 组件属性基础接口 - 泛型T为子组件的具体数据类型
 * @template T 子组件的数据类型
 */
-interface BaseComponentProps<T = Record<string, any>> extends Pick<TypedRenderRequest<keyof TemplateDataTypeMap>, "data" | "version" | "scale"> {
+interface BaseComponentProps<T = Record<string, any>> extends Pick<TypedRenderRequest<keyof DataTypeMap>, "data" | "version" | "scale"> {
   /** 渲染数据 - 子组件的具体参数 */
   data: {
     /** 是否使用深色主题 */
@@ -1423,7 +1428,7 @@ type ExtractDataTypeFromPath<P extends string> = P extends keyof PathToDataTypeM
 /**
 * 模板类型到数据类型的映射接口
 */
-interface TemplateDataTypeMap {
+interface DataTypeMap {
   /** 抖音平台数据类型 */
   douyin: DouyinCommentProps["data"] | DouyinDynamicProps["data"] | DouyinLiveProps["data"] | DouyinMusicInfoProps["data"];
   /** B站平台数据类型 */
@@ -1437,20 +1442,172 @@ interface TemplateDataTypeMap {
 * 渲染请求接口
 * @template K 模板类型键
 */
-interface TypedRenderRequest<K$1 extends keyof TemplateDataTypeMap> extends Omit<RenderRequest, "templateType" | "data"> {
+interface TypedRenderRequest<K$1 extends keyof DataTypeMap> extends Omit<RenderRequest, "templateType" | "data"> {
   /** 模板类型 */
   templateType: K$1;
   /** 渲染数据 */
-  data: TemplateDataTypeMap[K$1];
+  data: DataTypeMap[K$1];
 }
 //#endregion
 //#region ../template/src/main.d.ts
 /**
-* SSR预渲染组件为HTML的具体实现
-* @param request 渲染请求参数
-* @param outputDir 输出目录路径
-* @returns 渲染结果Promise
+* 插件执行时机
+* - pre: 在渲染前执行
+* - normal: 在渲染时执行
+* - post: 在渲染后执行
 */
-declare const reactServerRender: <K extends keyof TemplateDataTypeMap>(request: RenderRequest<TemplateDataTypeMap[K]>, outputDir: string) => Promise<RenderResponse>;
+type PluginEnforce = "pre" | "normal" | "post";
+/**
+* 渲染状态接口
+* 用于在插件之间传递和修改渲染状态
+*/
+interface RenderState {
+  /** 传递给组件的额外属性 */
+  props: Record<string, unknown>;
+  /** React 组件实例 */
+  component?: React$1.ReactElement | null;
+  /** 渲染后的 HTML 字符串 */
+  html?: string;
+}
+/**
+* 插件上下文接口
+* 提供插件执行时所需的所有上下文信息
+* @template T 渲染数据类型
+*/
+interface PluginContext<T extends Record<string, unknown> = Record<string, unknown>> {
+  /** 渲染请求对象 */
+  request: RenderRequest<T>;
+  /** 输出目录路径 */
+  outputDir: string;
+  /** 资源路径管理器实例 */
+  resourceManager: ResourcePathManager;
+  /** 当前渲染状态 */
+  state: RenderState;
+}
+/**
+* 模板插件接口
+* 定义插件的生命周期钩子和配置
+* @template T 渲染数据类型
+*/
+interface TemplatePlugin<T extends Record<string, unknown> = Record<string, unknown>> {
+  /** 插件名称，用于标识和调试 */
+  name: string;
+  /** 插件执行时机，默认为 'normal' */
+  enforce?: PluginEnforce;
+  /** 插件应用条件，返回 true 时插件生效 */
+  apply?: (request: RenderRequest<T>) => boolean;
+  /** 渲染前钩子，用于准备数据和属性 */
+  beforeRender?: (ctx: PluginContext<T>) => Promise<void> | void;
+  /** 渲染时钩子，可以包装或替换组件 */
+  render?: (ctx: PluginContext<T>) => Promise<void> | void;
+  /** 渲染后钩子，可以修改最终的 HTML */
+  afterRender?: (ctx: PluginContext<T>) => Promise<void> | void;
+}
+/**
+* 简化的插件类型，下游使用时无需手动指定泛型
+* 自动使用 Record<string, unknown> 作为数据类型
+*/
+type Plugin = TemplatePlugin<Record<string, unknown>>;
+/**
+* 插件工厂函数类型
+* 用于创建可配置的插件实例
+* @template T 插件配置类型
+*/
+type PluginFactory<T = Record<string, unknown>> = (options?: T) => Plugin;
+/**
+* 资源路径管理器类
+* 负责管理不同环境下的资源路径配置
+*/
+declare class ResourcePathManager {
+  private packageDir;
+  private NODE_ENV;
+  constructor();
+  /**
+  * 获取包目录路径
+  * @returns 包目录的绝对路径
+  */
+  private getPackageDir;
+  /**
+  * 查找开发环境目录
+  * @param cwd 当前工作目录
+  * @returns 开发环境目录路径
+  */
+  private findDevelopmentDir;
+  /**
+  * 通过 import.meta.url 获取 npm 包的安装目录
+  * @returns npm 包的安装目录路径
+  */
+  private getPackageDirFromImportMeta;
+  /**
+  * 从 pnpm 路径中提取插件目录
+  * @param pnpmPath pnpm 的符号链接路径
+  * @returns 插件目录路径，如果无法提取则返回 null
+  */
+  private extractPluginDirFromPnpmPath;
+  /**
+  * 通过扫描当前工作目录查找插件目录
+  * @returns 插件目录路径，如果找不到则返回 null
+  */
+  private findPluginDirByScanning;
+  /**
+  * 在指定目录中查找包含 karin-plugin-kkk 的插件目录
+  * @param pluginsDir 插件目录路径
+  * @returns 找到的插件目录路径，如果找不到则返回 null
+  */
+  private findKarinPluginInDir;
+  /**
+  * 检测当前是否运行在插件模式
+  * @returns 如果是插件模式返回 true，否则返回 false
+  */
+  private isPluginMode;
+  /**
+  * 获取静态资源路径配置
+  * @returns 静态资源路径配置对象
+  */
+  getResourcePaths(): {
+    cssDir: string;
+    imageDir: string;
+  };
+}
+/**
+* 渲染器配置选项接口
+* @template K 模板类型键
+*/
+interface ReactServerRenderOptions<K$1 extends keyof DataTypeMap> {
+  /** 渲染请求对象 */
+  request: RenderRequest<DataTypeMap[K$1]>;
+  /** 输出目录路径 */
+  outputDir: string;
+  /** 插件列表 */
+  plugins?: Plugin[];
+}
+/**
+* SSR 预渲染组件为 HTML 的具体实现
+* 
+* @template K 模板类型键，用于类型推断
+* @param options 渲染配置选项
+* @returns 渲染结果 Promise
+* 
+* # Example
+* ```typescript
+* // 基础使用
+* const result = await reactServerRender({
+*   request: {
+*     templateType: 'douyin',
+*     templateName: 'videoInfo',
+*     data: { share_url: 'https://example.com' }
+*   },
+*   outputDir: './output'
+* })
+* 
+* // 使用插件
+* const result = await reactServerRender({
+*   request: renderRequest,
+*   outputDir: './output',
+*   plugins: [customPlugin()]
+* })
+* ```
+*/
+declare const reactServerRender: <K extends keyof DataTypeMap>(options: ReactServerRenderOptions<K>) => Promise<RenderResponse>;
 //#endregion
-export { BaseComponentProps, DynamicRenderPath, ExtractDataTypeFromPath, RenderRequest, RenderResponse, type TemplateDataTypeMap, type TypedRenderRequest, reactServerRender as default, reactServerRender };
+export { BaseComponentProps, type DataTypeMap, DynamicRenderPath, ExtractDataTypeFromPath, type Plugin, type PluginContext, type PluginFactory, type ReactServerRenderOptions, RenderRequest, RenderResponse, type TypedRenderRequest, reactServerRender as default, reactServerRender };

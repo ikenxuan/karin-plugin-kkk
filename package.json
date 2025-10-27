@@ -51,6 +51,9 @@
     "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../template/src/dev/mock-server.ts\" --include \"../template/src/main.ts\" src/app.ts --trace-deprecation"
   },
+  "dependencies": {
+    "@types/react": "^19.2.2"
+  },
   "engines": {
     "node": ">=18.0.0"
   },
@@ -78,5 +81,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2025-10-19T04:44:03.603Z"
+  "timestamp": "2025-10-27T06:42:28.584Z"
 }
