@@ -303,7 +303,7 @@ export const App: React.FC = () => {
   }
   
   return (
-    <div className='overflow-hidden h-screen bg-gradient-to-br from-blue-50 to-indigo-100'>
+    <div className='overflow-hidden h-screen bg-gradient-to-br from-blue-50 to-indigo-100 font-[HarmonyOSHans-Regular]'>
       {/* 顶部导航 */}
       <div className='flex-shrink-0 h-20 bg-white border-b border-gray-200 shadow-sm'>
         <div className='flex justify-between items-center px-4 h-full'>

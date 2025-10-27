@@ -1,7 +1,7 @@
 /**
  * 渲染请求参数接口
  */
-export interface RenderRequest<T = any> {
+export interface RenderRequest<T = Record<string, unknown>> {
   /** 模板类型 */
   templateType: 'douyin' | 'bilibili' | 'kuaishou' | 'other' | 'apiError'
   /** 模板名称 */
@@ -46,7 +46,7 @@ export interface RenderResponse {
  * 组件属性基础接口 - 泛型T为子组件的具体数据类型
  * @template T 子组件的数据类型
  */
-export interface BaseComponentProps<T = Record<string, any>> extends Pick<TypedRenderRequest<keyof TemplateDataTypeMap>, 'data' | 'version' | 'scale'> {
+export interface BaseComponentProps<T = Record<string, any>> extends Pick<TypedRenderRequest<keyof DataTypeMap>, 'data' | 'version' | 'scale'> {
   /** 渲染数据 - 子组件的具体参数 */
   data: {
     /** 是否使用深色主题 */
@@ -149,7 +149,7 @@ export type ExtractDataTypeFromPath<P extends string> = P extends keyof PathToDa
 /**
  * 模板类型到数据类型的映射接口
  */
-export interface TemplateDataTypeMap {
+export interface DataTypeMap {
   /** 抖音平台数据类型 */
   douyin: import('./platforms/douyin').DouyinCommentProps['data'] | import('./platforms/douyin').DouyinDynamicProps['data'] | import('./platforms/douyin').DouyinLiveProps['data'] | import('./platforms/douyin').DouyinMusicInfoProps['data']
   /** B站平台数据类型 */
@@ -164,9 +164,9 @@ export interface TemplateDataTypeMap {
  * 渲染请求接口
  * @template K 模板类型键
  */
-export interface TypedRenderRequest<K extends keyof TemplateDataTypeMap> extends Omit<RenderRequest, 'templateType' | 'data'> {
+export interface TypedRenderRequest<K extends keyof DataTypeMap> extends Omit<RenderRequest, 'templateType' | 'data'> {
   /** 模板类型 */
   templateType: K
   /** 渲染数据 */
-  data: TemplateDataTypeMap[K]
+  data: DataTypeMap[K]
 }

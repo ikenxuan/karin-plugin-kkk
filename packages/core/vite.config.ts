@@ -76,10 +76,6 @@ const copyTemplateAssetsPlugin = (): Plugin => {
 }
 
 export default defineConfig({
-  define: {
-    __dirname: 'new URL(\'.\', import.meta.url).pathname',
-    __filename: 'new URL(\'\', import.meta.url).pathname'
-  },
   build: {
     target: 'node18',
     lib: {
@@ -90,6 +86,10 @@ export default defineConfig({
     outDir: 'lib',
     rolldownOptions: {
       platform: 'node',
+      define: {
+        __dirname: 'new URL(\'.\', import.meta.url).pathname',
+        __filename: 'new URL(\'\', import.meta.url).pathname'
+      },
       external: [
         ...builtinModules,
         ...builtinModules.map((mod) => `node:${mod}`),
