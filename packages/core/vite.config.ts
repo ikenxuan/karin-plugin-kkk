@@ -76,10 +76,6 @@ const copyTemplateAssetsPlugin = (): Plugin => {
 }
 
 export default defineConfig({
-  define: {
-    __dirname: 'new URL(\'.\', import.meta.url).pathname',
-    __filename: 'new URL(\'\', import.meta.url).pathname'
-  },
   build: {
     target: 'node18',
     lib: {
@@ -90,10 +86,19 @@ export default defineConfig({
     outDir: 'lib',
     rolldownOptions: {
       platform: 'node',
+      define: {
+        __dirname: 'new URL(\'.\', import.meta.url).pathname',
+        __filename: 'new URL(\'\', import.meta.url).pathname'
+      },
       external: [
         ...builtinModules,
         ...builtinModules.map((mod) => `node:${mod}`),
-        ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js', '/template', '/sqlite3'].map(p => `node-karin${p}`)
+        ...[
+          '', '/schedule', '/redis', '/ws', '/node-schedule', 
+          '/moment/locale/*', '/app', '/start', '/dir', '/art-template', 
+          '/chokidar', '/moment', '/express', '/root', '/lodash', '/yaml', 
+          '/axios', '/log4js', '/template', '/sqlite3'
+        ].map(p => `node-karin${p}`)
       ],
       output: {
         inlineDynamicImports: true,

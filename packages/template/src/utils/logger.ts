@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import path from 'node:path'
 
 import { Chalk, type ChalkInstance } from '@ikenxuan/amagi/chalk'
@@ -211,7 +212,6 @@ class CustomLogger {
         while (currentDir !== path.dirname(currentDir)) {
           currentDir = path.dirname(currentDir)
           try {
-            const fs = require('fs')
             if (fs.existsSync(path.join(currentDir, 'pnpm-workspace.yaml')) ||
                 fs.existsSync(path.join(currentDir, 'lerna.json')) ||
                 fs.existsSync(path.join(currentDir, 'rush.json')) ||
@@ -308,7 +308,7 @@ class CustomLogger {
    * @param message 日志消息
    * @param args 额外参数
    */
-  public debug (message: any, ...args: any[]) {
+  public debug (message: any, ...args: any[]): void {
     this.log(LogLevel.DEBUG, 'DEBU', this.cyan, message, ...args)
   }
 
@@ -317,7 +317,7 @@ class CustomLogger {
    * @param message 日志消息
    * @param args 额外参数
    */
-  public info (message: any, ...args: any[]) {
+  public info (message: any, ...args: any[]): void {
     this.log(LogLevel.INFO, 'INFO', this.green, message, ...args)
   }
 
@@ -326,7 +326,7 @@ class CustomLogger {
    * @param message 日志消息
    * @param args 额外参数
    */
-  public warn (message: any, ...args: any[]) {
+  public warn (message: any, ...args: any[]): void {
     this.log(LogLevel.WARN, 'WARN', this.yellow, message, ...args)
   }
 
@@ -335,7 +335,7 @@ class CustomLogger {
    * @param message 日志消息
    * @param args 额外参数
    */
-  public error (message: any, ...args: any[]) {
+  public error (message: any, ...args: any[]): void {
     this.log(LogLevel.ERROR, 'ERRO', this.red, message, ...args)
   }
 
@@ -344,11 +344,11 @@ class CustomLogger {
    * @param message 日志消息
    * @param args 额外参数
    */
-  public mark (message: any, ...args: any[]) {
+  public mark (message: any, ...args: any[]): void {
     this.log(LogLevel.MARK, 'MARK', this.gray, message, ...args)
   }
 }
 
-const logger = new CustomLogger()
+const logger: CustomLogger = new CustomLogger()
 
 export { logger }

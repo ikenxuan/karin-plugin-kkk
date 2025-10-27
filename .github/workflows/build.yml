@@ -422,18 +422,61 @@ jobs:
       - name: 🏷️ 生成版本标识
         id: version-gen
         run: |
-          # 1) 取基础版本，增加回退与校验
-          BASE_VERSION="${{ needs.version-release.outputs.core_version }}"
-          PKG_VERSION=$(node -p "require('./package.json').version" 2>/dev/null || echo "")
-          if ! echo "$BASE_VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' >/dev/null; then
-            BASE_VERSION="$PKG_VERSION"
-          fi
-          if ! echo "$BASE_VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' >/dev/null; then
+          # 1) 获取最新的Git标签版本作为基准
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -n "$LAST_TAG" ]; then
+            # 移除v前缀并提取版本号
+            LAST_TAG_VERSION=${LAST_TAG#v}
+            if echo "$LAST_TAG_VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' >/dev/null; then
+              BASE_VERSION="$LAST_TAG_VERSION"
+            else
+              BASE_VERSION="0.0.0"
+            fi
+          else
             BASE_VERSION="0.0.0"
           fi
 
-          # 2) 基于最近提交判断版本提升类型（BREAKING -> major, feat -> minor, fix/perf -> patch）
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          # 2) 获取release-please输出的版本作为参考
+          RELEASE_VERSION="${{ needs.version-release.outputs.core_version }}"
+          PKG_VERSION=$(node -p "require('./package.json').version" 2>/dev/null || echo "")
+          
+          # 3) 选择最高的版本作为基准（确保不会倒退）
+          compare_versions() {
+            local v1=$1 v2=$2
+            local IFS=.
+            local i ver1=($v1) ver2=($v2)
+            for ((i=0; i<3; i++)); do
+              if [[ ${ver1[i]:-0} -gt ${ver2[i]:-0} ]]; then
+                return 1  # v1 > v2
+              elif [[ ${ver1[i]:-0} -lt ${ver2[i]:-0} ]]; then
+                return 2  # v1 < v2
+              fi
+            done
+            return 0  # v1 == v2
+          }
+          
+          # 选择最高版本作为基准
+          FINAL_BASE="$BASE_VERSION"
+          if [ -n "$RELEASE_VERSION" ] && echo "$RELEASE_VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' >/dev/null; then
+            compare_versions "$FINAL_BASE" "$RELEASE_VERSION"
+            case $? in
+              2) FINAL_BASE="$RELEASE_VERSION" ;;  # RELEASE_VERSION更高
+            esac
+          fi
+          if [ -n "$PKG_VERSION" ] && echo "$PKG_VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' >/dev/null; then
+            compare_versions "$FINAL_BASE" "$PKG_VERSION"
+            case $? in
+              2) FINAL_BASE="$PKG_VERSION" ;;  # PKG_VERSION更高
+            esac
+          fi
+          
+          echo "🏷️ 基准版本选择："
+          echo "  - Git标签版本: $BASE_VERSION"
+          echo "  - Release版本: $RELEASE_VERSION"
+          echo "  - Package版本: $PKG_VERSION"
+          echo "  - 最终基准: $FINAL_BASE"
+
+          # 4) 基于提交信息判断版本提升类型
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             COMMITS=$(git log --no-merges --pretty=%s HEAD ^origin/main 2>/dev/null || echo "")
           else
@@ -444,18 +487,27 @@ jobs:
             fi
           fi
 
+          echo "📝 分析提交信息："
+          echo "$COMMITS" | head -5
+
           BUMP="none"
-          echo "$COMMITS" | grep -E 'BREAKING CHANGE|^.*!:' >/dev/null && BUMP="major"
-          if [ "$BUMP" = "none" ]; then
-            echo "$COMMITS" | grep -E '^feat(\(.+\))?:' >/dev/null && BUMP="minor"
-          fi
-          if [ "$BUMP" = "none" ]; then
-            echo "$COMMITS" | grep -E '^fix(\(.+\))?:|^perf(\(.+\))?:' >/dev/null && BUMP="patch"
+          # BREAKING CHANGE -> major
+          if echo "$COMMITS" | grep -E 'BREAKING CHANGE|^.*!:' >/dev/null; then
+            BUMP="major"
+          # feat -> minor
+          elif echo "$COMMITS" | grep -E '^feat(\(.+\))?:' >/dev/null; then
+            BUMP="minor"
+          # fix, perf, refactor -> patch
+          elif echo "$COMMITS" | grep -E '^(fix|perf|refactor)(\(.+\))?:' >/dev/null; then
+            BUMP="patch"
           fi
 
-          MAJOR=$(echo "$BASE_VERSION" | cut -d. -f1)
-          MINOR=$(echo "$BASE_VERSION" | cut -d. -f2)
-          PATCH=$(echo "$BASE_VERSION" | cut -d. -f3)
+          echo "🔄 版本提升类型: $BUMP"
+
+          # 5) 计算新版本号
+          MAJOR=$(echo "$FINAL_BASE" | cut -d. -f1)
+          MINOR=$(echo "$FINAL_BASE" | cut -d. -f2)
+          PATCH=$(echo "$FINAL_BASE" | cut -d. -f3)
           [ -z "$MAJOR" ] && MAJOR=0
           [ -z "$MINOR" ] && MINOR=0
           [ -z "$PATCH" ] && PATCH=0
@@ -464,14 +516,19 @@ jobs:
             major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
             minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
             patch) PATCH=$((PATCH + 1)) ;;
-            *) ;;
+            *) 
+              # 如果没有匹配的提交类型，至少提升patch版本（避免版本倒退）
+              PATCH=$((PATCH + 1))
+              ;;
           esac
           BASE_NEXT="${MAJOR}.${MINOR}.${PATCH}"
+
+          echo "📦 计算后的基础版本: $BASE_NEXT"
 
           COMMIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo 0)
           TIMESTAMP=$(date +%s)
 
-          # 3) 根据事件类型拼接预发布后缀
+          # 6) 根据事件类型拼接预发布后缀
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             if [[ "${{ github.head_ref }}" == release-please--branches--* ]]; then
               TAG="${{ needs.version-release.outputs.release_tag_name }}"
@@ -497,6 +554,7 @@ jobs:
             NEW_VERSION="${BASE_NEXT}-dev.${BRANCH_NAME}.${{ needs.unified-build.outputs.short_commit_hash }}"
           fi
 
+          echo "🎯 最终生成版本: $NEW_VERSION"
           npm version "$NEW_VERSION" --no-git-tag-version
           echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
 

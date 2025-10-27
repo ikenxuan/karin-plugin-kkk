@@ -4,9 +4,10 @@ import { PlatformType } from '../types/platforms'
 
 export const version = {
   pluginName: 'kkk',
-  pluginVersion: '2.0.0',
+  pluginVersion: '2.x.x',
   releaseType: 'Stable',
-  poweredBy: 'Karin'
+  poweredBy: 'Karin',
+  frameworkVersion: '1.12.3'
 }
 
 /**
