@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import path from 'node:path'
 
 import { Chalk, type ChalkInstance } from '@ikenxuan/amagi/chalk'
@@ -211,7 +212,6 @@ class CustomLogger {
         while (currentDir !== path.dirname(currentDir)) {
           currentDir = path.dirname(currentDir)
           try {
-            const fs = require('fs')
             if (fs.existsSync(path.join(currentDir, 'pnpm-workspace.yaml')) ||
                 fs.existsSync(path.join(currentDir, 'lerna.json')) ||
                 fs.existsSync(path.join(currentDir, 'rush.json')) ||
