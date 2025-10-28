@@ -2,6 +2,19 @@
 
 # Changelog
 
+## [2.9.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.9.0...v2.9.1) (2025-10-28)
+
+
+### 🐛 错误修复
+
+* **networks:** Optimize URL validation with HEAD request ([66f6933](https://github.com/ikenxuan/karin-plugin-kkk/commit/66f6933ae20a8854d1d9e847aaa655052b296a13))
+* **render:** Add dynamic plugin name support in version metadata ([106f070](https://github.com/ikenxuan/karin-plugin-kkk/commit/106f0703f80bfff90fe06d90ca8e70011fbdf546))
+
+
+### 💄 UI 优化
+
+* **bilibili:** Enhance dynamic rendering and image handling ([4059404](https://github.com/ikenxuan/karin-plugin-kkk/commit/405940411b3384cf58ee5e8ab1f1904d7cef7915))
+
 ## [2.9.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.8.0...v2.9.0) (2025-10-28)
 
 
