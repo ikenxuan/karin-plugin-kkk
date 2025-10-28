@@ -106,3 +106,57 @@ export const EnhancedImage: React.FC<EnhancedImageProps> = ({
     />
   )
 }
+
+/**
+ * 使用图片代理服务处理 URL
+ * 这里使用 images.weserv.nl 作为代理服务
+ */
+const proxyImageUrl = (url: string): string => {
+  if (!url || !url.startsWith('http')) return url
+
+  // 使用 images.weserv.nl 代理服务
+  // 这是一个免费的图片代理服务，可以绕过防盗链
+  return `https://images.weserv.nl/?url=${encodeURIComponent(url)}`
+}
+
+/**
+ * 处理 HTML 中的图片 URL，包括 img 标签和 CSS background-image
+ */
+const processHtmlImages = (html: string): string => {
+  let processed = html
+
+  // 处理 CSS background-image 中的 URL
+  processed = processed.replace(
+    /background-image:\s*url\(['"]?(https?:\/\/[^'")\s]+)['"]?\)/gi,
+    (match, url) => {
+      const proxiedUrl = proxyImageUrl(url)
+      return `background-image: url('${proxiedUrl}')`
+    }
+  )
+
+  // 处理 img 标签的 src 属性
+  processed = processed.replace(
+    /<img([^>]*?)src=['"]?(https?:\/\/[^'">\s]+)['"]?([^>]*?)>/gi,
+    (match, before, url, after) => {
+      const proxiedUrl = proxyImageUrl(url)
+      return `<img${before}src="${proxiedUrl}"${after} referrerpolicy="no-referrer" crossorigin="anonymous">`
+    }
+  )
+
+  return processed
+}
+
+/**
+ * 装饰卡片组件
+ * 用于渲染后端传递的 HTML 内容，并自动处理其中 img 标签和背景图片的防盗链
+ */
+export const DecorationCard: React.FC<{ html: string }> = ({ html }) => {
+  const processedHtml = processHtmlImages(html)
+
+  return (
+    <div
+      className='font-bilifont'
+      dangerouslySetInnerHTML={{ __html: processedHtml }}
+    />
+  )
+}

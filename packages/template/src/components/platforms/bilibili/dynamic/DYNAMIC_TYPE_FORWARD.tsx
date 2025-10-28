@@ -13,7 +13,7 @@ import type {
   OriginalContentWord
 } from '../../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
-import { CommentText, EnhancedImage } from '../shared'
+import { CommentText, DecorationCard, EnhancedImage } from '../shared'
 
 /**
  * B站转发动态用户信息组件
@@ -65,33 +65,35 @@ const OriginalUserInfo: React.FC<{
   decoration_card?: string
 }> = (props) => {
   return (
-    <div className='flex gap-10 items-center pt-5 pb-10 pl-10'>
-      <div className='relative flex-shrink-0'>
-        <EnhancedImage
-          src={props.avatar_url}
-          alt='转发用户头像'
-          className='rounded-full shadow-medium w-30 h-30'
-        />
-        {props.frame && (
+    <div className='flex justify-between items-center pt-5 pb-10 pl-10 pr-0'>
+      <div className='flex gap-10 items-center min-w-0'>
+        <div className='relative flex-shrink-0'>
           <EnhancedImage
-            src={props.frame}
-            alt='转发用户头像框'
-            className='absolute inset-0 transform scale-180'
+            src={props.avatar_url}
+            alt='转发用户头像'
+            className='rounded-full shadow-medium w-30 h-30'
           />
-        )}
-      </div>
-      <div className='flex flex-col gap-4 text-7xl'>
-        <div className='text-5xl font-normal select-text text-foreground'>
-          <span dangerouslySetInnerHTML={{ __html: props.username }} />
+          {props.frame && (
+            <EnhancedImage
+              src={props.frame}
+              alt='转发用户头像框'
+              className='absolute inset-0 transform scale-180'
+            />
+          )}
         </div>
-        <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-foreground-500'>
-          <Clock size={32} className='text-time' />
-          {props.create_time}
+        <div className='flex flex-col gap-4 text-7xl'>
+          <div className='text-5xl font-normal select-text text-foreground'>
+            <span dangerouslySetInnerHTML={{ __html: props.username }} />
+          </div>
+          <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-foreground-500'>
+            <Clock size={32} className='text-time' />
+            {props.create_time}
+          </div>
         </div>
       </div>
       {props.decoration_card && (
-        <div className='ml-39'>
-          <div className='font-bilifont' dangerouslySetInnerHTML={{ __html: props.decoration_card }} />
+        <div className='flex-shrink-0'>
+          <DecorationCard html={props.decoration_card} />
         </div>
       )}
     </div>
