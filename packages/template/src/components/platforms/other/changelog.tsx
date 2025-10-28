@@ -31,10 +31,11 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
     >
       <div className='relative px-20 pt-5 pb-0 w-full max-w-none prose prose-lg prose-invert from-default-50 to-default-100'>
 
-        <div className="inline-block relative mt-20">
+        {props.data.Tip && (<div className="inline-block relative mt-20">
           <div className="absolute inset-0 bg-black rounded-2xl opacity-50 blur-xl translate-y-6 -z-10"></div>
           <img className="block relative rounded-2xl" src="/image/banner.png" alt="横幅" />
         </div>
+        )}
 
 
         {props.data.Tip && (
