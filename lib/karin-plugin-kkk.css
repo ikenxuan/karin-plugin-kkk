@@ -3604,6 +3604,7 @@
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
     --font-weight-black: 900;
     --tracking-normal: 0em;
     --tracking-wide: .025em;
@@ -4460,6 +4461,14 @@
 
   .my-5 {
     margin-block: calc(var(--spacing) * 5);
+  }
+
+  .my-6 {
+    margin-block: calc(var(--spacing) * 6);
+  }
+
+  .my-8 {
+    margin-block: calc(var(--spacing) * 8);
   }
 
   .my-16 {
@@ -6047,6 +6056,10 @@
     scroll-padding-block: calc(var(--spacing) * 6);
   }
 
+  .list-inside {
+    list-style-position: inside;
+  }
+
   .list-decimal {
     list-style-type: decimal;
   }
@@ -6205,6 +6218,10 @@
 
   .gap-20 {
     gap: calc(var(--spacing) * 20);
+  }
+
+  .gap-24 {
+    gap: calc(var(--spacing) * 24);
   }
 
   .gap-25 {
@@ -6672,6 +6689,11 @@
     border-left-width: 4px;
   }
 
+  .border-l-8 {
+    border-left-style: var(--tw-border-style);
+    border-left-width: 8px;
+  }
+
   .\!border-none {
     --tw-border-style: none !important;
     border-style: none !important;
@@ -6755,6 +6777,10 @@
 
   .border-foreground {
     border-color: hsl(var(--heroui-foreground) / 1);
+  }
+
+  .border-foreground-300 {
+    border-color: hsl(var(--heroui-foreground-300) / 1);
   }
 
   .border-foreground-400 {
@@ -7801,6 +7827,10 @@
     padding-left: calc(var(--spacing) * 1);
   }
 
+  .pl-4 {
+    padding-left: calc(var(--spacing) * 4);
+  }
+
   .pl-6 {
     padding-left: calc(var(--spacing) * 6);
   }
@@ -7855,6 +7885,10 @@
 
   .text-end {
     text-align: end;
+  }
+
+  .text-justify {
+    text-align: justify;
   }
 
   .text-left {
@@ -8024,12 +8058,24 @@
     font-size: 26px;
   }
 
+  .text-\[32px\] {
+    font-size: 32px;
+  }
+
   .text-\[34px\] {
     font-size: 34px;
   }
 
   .text-\[35px\] {
     font-size: 35px;
+  }
+
+  .text-\[36px\] {
+    font-size: 36px;
+  }
+
+  .text-\[38px\] {
+    font-size: 38px;
   }
 
   .text-\[40px\] {
@@ -8044,6 +8090,10 @@
     font-size: 45px;
   }
 
+  .text-\[48px\] {
+    font-size: 48px;
+  }
+
   .text-\[50px\] {
     font-size: 50px;
   }
@@ -8052,8 +8102,16 @@
     font-size: 52px;
   }
 
+  .text-\[56px\] {
+    font-size: 56px;
+  }
+
   .text-\[60px\] {
     font-size: 60px;
+  }
+
+  .text-\[64px\] {
+    font-size: 64px;
   }
 
   .text-\[65px\] {
@@ -8062,6 +8120,10 @@
 
   .text-\[70px\] {
     font-size: 70px;
+  }
+
+  .text-\[72px\] {
+    font-size: 72px;
   }
 
   .text-\[80px\] {
@@ -8087,6 +8149,11 @@
     line-height: 1.2;
   }
 
+  .leading-\[1\.4\] {
+    --tw-leading: 1.4;
+    line-height: 1.4;
+  }
+
   .leading-\[1\.5\] {
     --tw-leading: 1.5;
     line-height: 1.5;
@@ -8095,6 +8162,11 @@
   .leading-\[1\.6\] {
     --tw-leading: 1.6;
     line-height: 1.6;
+  }
+
+  .leading-\[1\.7\] {
+    --tw-leading: 1.7;
+    line-height: 1.7;
   }
 
   .leading-\[1\.15\] {
@@ -8149,6 +8221,11 @@
   .font-bold {
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
+  }
+
+  .font-extrabold {
+    --tw-font-weight: var(--font-weight-extrabold);
+    font-weight: var(--font-weight-extrabold);
   }
 
   .font-extralight {
@@ -8624,9 +8701,17 @@
     text-transform: uppercase;
   }
 
+  .italic {
+    font-style: italic;
+  }
+
   .tabular-nums {
     --tw-numeric-spacing: tabular-nums;
     font-variant-numeric: var(--tw-ordinal, ) var(--tw-slashed-zero, ) var(--tw-numeric-figure, ) var(--tw-numeric-spacing, ) var(--tw-numeric-fraction, );
+  }
+
+  .line-through {
+    text-decoration-line: line-through;
   }
 
   .no-underline {
