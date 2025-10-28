@@ -10,3 +10,6 @@
 *.d.ts linguist-vendored
 *.css linguist-vendored
 *.html linguist-vendored
+*.bat linguist-vendored
+*.sh linguist-vendored
+*.cmd linguist-vendored
