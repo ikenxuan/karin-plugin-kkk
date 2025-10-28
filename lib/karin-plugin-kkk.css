@@ -4313,6 +4313,10 @@
     left: 37.5%;
   }
 
+  .-z-10 {
+    z-index: calc(10 * -1);
+  }
+
   .-z-30 {
     z-index: calc(30 * -1);
   }
@@ -4557,10 +4561,6 @@
 
   .mt-20 {
     margin-top: calc(var(--spacing) * 20);
-  }
-
-  .mt-30 {
-    margin-top: calc(var(--spacing) * 30);
   }
 
   .mt-\[30px\] {
@@ -5877,6 +5877,11 @@
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
 
+  .translate-y-6 {
+    --tw-translate-y: calc(var(--spacing) * 6);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+
   .translate-y-\[17\%\] {
     --tw-translate-y: 17%;
     translate: var(--tw-translate-x) var(--tw-translate-y);
@@ -6983,6 +6988,10 @@
     .bg-background\/80 {
       background-color: color-mix(in oklab, hsl(var(--heroui-background) / 1) 80%, transparent);
     }
+  }
+
+  .bg-black {
+    background-color: #000;
   }
 
   .bg-black\/10 {
@@ -9236,6 +9245,11 @@
 
   .blur-lg {
     --tw-blur: blur(var(--blur-lg));
+    filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
+  }
+
+  .blur-xl {
+    --tw-blur: blur(var(--blur-xl));
     filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
   }
 
