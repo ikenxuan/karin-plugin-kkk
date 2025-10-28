@@ -75,6 +75,7 @@ type BilibiliComponentIds =
   | 'dynamic/DYNAMIC_TYPE_FORWARD'
   | 'dynamic/DYNAMIC_TYPE_LIVE_RCMD'
   | 'dynamic/DYNAMIC_TYPE_WORD'
+  | 'dynamic/DYNAMIC_TYPE_ARTICLE'
 
 /**
  * 快手平台组件ID
@@ -124,6 +125,7 @@ interface PathToDataTypeMap {
   'bilibili/dynamic/DYNAMIC_TYPE_AV': import('./platforms/bilibili/dynamic/video').BilibiliVideoDynamicProps['data']
   'bilibili/dynamic/DYNAMIC_TYPE_FORWARD': import('./platforms/bilibili/dynamic/forward').BilibiliForwardDynamicProps['data']
   'bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD': import('./platforms/bilibili/dynamic/live').BilibiliLiveDynamicProps['data']
+  'bilibili/dynamic/DYNAMIC_TYPE_ARTICLE': import('./platforms/bilibili/dynamic/article').BilibiliArticleDynamicProps['data']
   'bilibili/dynamic/DYNAMIC_TYPE_WORD': import('./platforms/bilibili/dynamic/normal').BilibiliDynamicProps['data']
 
   // 快手相关路径

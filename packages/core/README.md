@@ -1,5 +1,7 @@
 # karin-plugin-kkk
 
+[![pkg.pr.new](https://pkg.pr.new/badge/ikenxuan/karin-plugin-kkk)](https://pkg.pr.new/~/ikenxuan/karin-plugin-kkk)
+
 🦄 **_Karin 的「抖音」「B 站」视频解析/动态推送插件。提供对 Bot 的视频解析和动态推送功能，通过接口获取数据并渲染图片返回_**
 
 ## ⬇️ 安装

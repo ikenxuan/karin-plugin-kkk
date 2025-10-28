@@ -60,6 +60,8 @@ interface EnhancedImageProps {
   placeholder?: string
   /** 是否为圆形 */
   isCircular?: boolean
+  /** 内联样式 */
+  style?: React.CSSProperties
 }
 
 /**

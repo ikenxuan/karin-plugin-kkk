@@ -1,6 +1,14 @@
 import fs from 'node:fs'
 
-import { ApiResponse, BiliUserDynamic, BiliUserProfile, BiliVideoPlayurlIsLogin, DynamicType, getBilibiliData, MajorType } from '@ikenxuan/amagi'
+import { 
+  ApiResponse, 
+  BiliUserDynamic,
+  BiliUserProfile,
+  BiliVideoPlayurlIsLogin,
+  DynamicType, 
+  getBilibiliData, 
+  MajorType
+} from '@ikenxuan/amagi'
 import type {
   AdapterType,
   ImageElement,
@@ -37,8 +45,6 @@ import {
 } from '@/platform/bilibili'
 import type { bilibiliPushItem } from '@/types/config/pushlist'
 
-/** 已支持推送的动态类型 */
-export { DynamicType } from '@ikenxuan/amagi'
 
 // type DataItem = BiliUserDynamic['data']['items'] extends Array<infer T> ? T : never
 
@@ -275,6 +281,17 @@ export class Bilibilipush extends Base {
           case DynamicType.FORWARD: {
             const text = replacetext(br(data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.text), data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.rich_text_nodes)
             let param = {}
+            /** 富文本节点：查看图片 */
+            const imgList = []
+            if (!data[dynamicId].Dynamic_Data.modules.module_dynamic.desc) {
+              for (const richTxtItem of data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.rich_text_nodes) {
+                if (richTxtItem.type === 'RICH_TEXT_NODE_TYPE_VIEW_PICTURE') {
+                  for (const pic of richTxtItem.pics) {
+                    imgList.push(pic.src)
+                  }
+                }
+              }
+            }
             switch (data[dynamicId].Dynamic_Data.orig.type) {
               case DynamicType.AV: {
                 param = {
@@ -356,11 +373,51 @@ export class Bilibilipush extends Base {
               dynamicTYPE: '转发动态推送',
               decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decorate),
               render_time: Common.getCurrentTime(),
-              original_content: { [data[dynamicId].Dynamic_Data.orig.type]: param }
+              original_content: { [data[dynamicId].Dynamic_Data.orig.type]: param },
+              imgList: imgList.length > 0 ? imgList : null
             })
             break
           }
+          /** 文章/专栏动态 */
+          case DynamicType.ARTICLE: {
+            const articleInfoBase = await this.amagi.getBilibiliData('专栏文章基本信息', { id: data[dynamicId].Dynamic_Data.basic.rid_str, typeMode: 'strict' })
+            const articleInfo = await this.amagi.getBilibiliData('专栏正文内容', { id: data[dynamicId].Dynamic_Data.rid_str, typeMode: 'strict' })
 
+            // 提取专栏基本信息
+            const articleData = articleInfoBase.data.data
+            // 提取专栏正文内容
+            const articleContent = articleInfo.data.data
+
+            // 构建渲染数据
+            const img = await Render('bilibili/dynamic/DYNAMIC_TYPE_ARTICLE',
+              {
+                // 用户信息
+                username: checkvip(data[dynamicId].Dynamic_Data.orig.modules.module_author),
+                avatar_url: data[dynamicId].Dynamic_Data.orig.modules.module_author.face,
+                frame: data[dynamicId].Dynamic_Data.orig.modules.module_author.pendant.image,
+                create_time: Common.convertTimestampToDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
+
+                // 专栏内容信息
+                title: articleData.title,
+                summary: articleData.summary,
+                banner_url: articleData.banner_url || (articleData.image_urls && articleData.image_urls[0]) || '',
+                categories: articleData.categories || [],
+                words: articleData.words || 0,
+
+                // 专栏正文内容
+                opus: articleContent.opus || null,
+
+                // 统计信息
+                stats: articleData.stats,
+                render_time: Common.getCurrentTime(),
+                // 分享链接
+                share_url: `https://www.bilibili.com/read/cv${articleData.id}`,
+                dynamicTYPE: '专栏动态解析'
+              }
+            )
+            this.e.reply(img)
+            break
+          }
           /** 未处理的动态类型 */
           default: {
             skip = true

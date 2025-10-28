@@ -29,7 +29,7 @@ const handleDouyin = wrapWithErrorHandler(async (e) => {
 // 包装B站处理函数
 const handleBilibili = wrapWithErrorHandler(async (e) => {
   e.msg = e.msg.replace(/\\/g, '') // 移除消息中的反斜杠
-  const urlRegex = /(https?:\/\/(?:www\.bilibili\.com|m\.bilibili\.com|t\.bilibili\.com|b23\.tv|bili2233\.cn)\/[a-zA-Z0-9_\-.~:\/?#[\]@!$&'()*+,;=]+)/
+  const urlRegex = /(https?:\/\/(?:(?:www\.|m\.|t\.)?bilibili\.com|b23\.tv|bili2233\.cn)\/[a-zA-Z0-9_\-.~:\/?#[\]@!$&'()*+,;=]+)/
   const bvRegex = /^BV[1-9a-zA-Z]{10}$/
   let url: string | null = null
   const urlMatch = e.msg.match(urlRegex)

@@ -169,6 +169,14 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
         exportName: 'BilibiliLiveDynamic'
       },
       {
+        id: 'dynamic/DYNAMIC_TYPE_ARTICLE',
+        name: '专栏动态',
+        description: 'B站专栏动态展示模板',
+        enabled: true,
+        componentPath: 'platforms/bilibili/dynamic/DYNAMIC_TYPE_ARTICLE',
+        exportName: 'BilibiliArticleDynamic'
+      },
+      {
         id: 'dynamic/DYNAMIC_TYPE_WORD',
         name: '纯文字动态',
         description: 'B站纯文字动态展示模板',

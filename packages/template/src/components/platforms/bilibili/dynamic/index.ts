@@ -1,3 +1,5 @@
+export { BilibiliArticleDynamic } from './DYNAMIC_TYPE_ARTICLE'
+export { default as ArticleDynamic } from './DYNAMIC_TYPE_ARTICLE'
 export { BilibiliVideoDynamic } from './DYNAMIC_TYPE_AV'
 export { default as VideoDynamic } from './DYNAMIC_TYPE_AV'
 export { BilibiliDrawDynamic } from './DYNAMIC_TYPE_DRAW'

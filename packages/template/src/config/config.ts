@@ -165,6 +165,12 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string'
             })
+          case 'dynamic/DYNAMIC_TYPE_ARTICLE':
+            return createComponentConfig(baseComponent, {
+              lazyComponent: () => import('../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_ARTICLE').then(module => ({
+                default: module.BilibiliArticleDynamic
+              }))
+            })
           case 'videoInfo':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
