@@ -52,6 +52,7 @@ export const Render = async <P extends DynamicRenderPath> (
     scale: Math.min(2, Math.max(0.5, Number(Config.app.renderScale) / 100)),
     useDarkTheme: Common.useDarkTheme(),
     version: Config.app.RemoveWatermark ? undefined : {
+      plugin: 'karin-plugin',
       pluginName: 'kkk',
       pluginVersion: Root.pluginVersion,
       releaseType: /^\d+\.\d+\.\d+$/.test(Root.pluginVersion) ? 'Stable' : 'Preview',

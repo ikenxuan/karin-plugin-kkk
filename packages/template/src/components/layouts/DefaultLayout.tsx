@@ -75,7 +75,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                 <div className='flex flex-col items-start opacity-90'>
                   <div className='flex items-center mb-1 space-x-2 text-sm font-bold uppercase text-default-900'>
                     {/* <Code strokeWidth={3} className="w-4 h-4" /> */}
-                    <span>karin-plugin</span>
+                    <span>{version.plugin}</span>
                   </div>
                   <span className='text-5xl font-black'>{version.pluginName}</span>
                 </div>

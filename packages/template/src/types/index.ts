@@ -12,6 +12,8 @@ export interface RenderRequest<T = Record<string, unknown>> {
   useDarkTheme?: boolean
   /** 版本信息 */
   version?: {
+    /** 框架插件 */
+    plugin: string
     /** 插件名称 */
     pluginName: string
     /** 插件版本 */

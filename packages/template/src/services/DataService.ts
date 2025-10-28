@@ -3,6 +3,7 @@ import axios from 'axios'
 import { PlatformType } from '../types/platforms'
 
 export const version = {
+  plugin: 'karin-plugin',
   pluginName: 'kkk',
   pluginVersion: '2.x.x',
   releaseType: 'Stable',
