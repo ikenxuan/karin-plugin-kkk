@@ -221,7 +221,11 @@ export class Networks {
     }
 
     try {
-      const response = await this.axiosInstance.get(targetUrl)
+      // 使用 HEAD 请求只获取响应头，避免下载整个视频流
+      const response = await this.axiosInstance.head(targetUrl, {
+        maxRedirects: 5,
+        validateStatus: (status) => status >= 200 && status < 400
+      })
       const finalUrl =
         (response.request as any)?.res?.responseUrl ??
         (response.config as any)?.url ??
