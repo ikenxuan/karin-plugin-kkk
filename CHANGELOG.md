@@ -2,6 +2,33 @@
 
 # Changelog
 
+## [2.9.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.8.0...v2.9.0) (2025-10-28)
+
+
+### ✨ 新功能
+
+* **bilibili:** 添加专栏动态解析支持 ([6ef5ae5](https://github.com/ikenxuan/karin-plugin-kkk/commit/6ef5ae518787b9001d63fdc663fcc54207ff42a1))
+
+
+### 🐛 错误修复
+
+* /template导出类型消失 ([ae1d93b](https://github.com/ikenxuan/karin-plugin-kkk/commit/ae1d93b2607c428c911a7cf9c2ec8374bd1bc2d5))
+* 1 ([df0b0e0](https://github.com/ikenxuan/karin-plugin-kkk/commit/df0b0e092d826b476d6fef0efd84ad5a5751716f))
+* **components:** 有更新提示才显示横幅 ([e8fe533](https://github.com/ikenxuan/karin-plugin-kkk/commit/e8fe53333b61f8bcca79b6ba332a29b1079fdcfa))
+* 增强兼容性 ([f2b5809](https://github.com/ikenxuan/karin-plugin-kkk/commit/f2b580951f3c9afbfc276624af62ddfaeea82168))
+* 集成推送开关功能到现有设置命令中 close [#201](https://github.com/ikenxuan/karin-plugin-kkk/issues/201) ([#202](https://github.com/ikenxuan/karin-plugin-kkk/issues/202)) ([8637c51](https://github.com/ikenxuan/karin-plugin-kkk/commit/8637c515aeb4ae40ce524f1e71bffb26ed8e06ca))
+
+
+### 🎨 代码样式
+
+* add banner image ([7c45fb7](https://github.com/ikenxuan/karin-plugin-kkk/commit/7c45fb796de8e539b3815d88cf09ee655e1ccfa8))
+* **layout:** 为默认布局添加 HarmonyOS 字体样式 ([d2e433e](https://github.com/ikenxuan/karin-plugin-kkk/commit/d2e433ea9da0aa981e132ff522638d7e3c8edbff))
+
+
+### ♻️ 代码重构
+
+* **core:** 重构渲染系统并添加插件支持 ([#203](https://github.com/ikenxuan/karin-plugin-kkk/issues/203)) ([dcfd84a](https://github.com/ikenxuan/karin-plugin-kkk/commit/dcfd84a7a4186cfe30fc7f531fb0af37313c3180))
+
 ## [2.8.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.7.4...v2.8.0) (2025-10-20)
 
 
