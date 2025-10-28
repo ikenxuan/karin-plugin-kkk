@@ -4787,10 +4787,6 @@
     margin-left: calc(var(--spacing) * 15);
   }
 
-  .ml-39 {
-    margin-left: calc(var(--spacing) * 39);
-  }
-
   .ml-\[10px\] {
     margin-left: 10px;
   }
@@ -7766,6 +7762,10 @@
 
   .pt-\[60px\] {
     padding-top: 60px;
+  }
+
+  .pr-0 {
+    padding-right: calc(var(--spacing) * 0);
   }
 
   .pr-0\.5 {
