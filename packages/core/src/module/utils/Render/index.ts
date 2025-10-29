@@ -2,11 +2,11 @@ import pathModule from 'node:path'
 
 import type { ImageElement } from 'node-karin'
 import { karinPathHtml, render, segment } from 'node-karin'
-import type { 
+import type {
   DataTypeMap,
   DynamicRenderPath,
   ExtractDataTypeFromPath,
-  TypedRenderRequest 
+  TypedRenderRequest
 } from 'template'
 import reactServerRender from 'template'
 
@@ -80,7 +80,7 @@ export const Render = async <P extends DynamicRenderPath> (
   }).catch(err => {
     throw new Error(`SSR渲染失败: ${err.message || '未知错误'}`)
   })
-    
+
   // 截图渲染
   const renderResult = await render.render({
     name: `${Root.pluginName}/${templateType}/${templateName}`,

@@ -37,27 +37,6 @@ const processCommentHTML = (htmlContent: string): string => {
   )
 }
 
-interface CommentTextProps {
-  /** HTML内容 */
-  content: string
-  /** CSS类名 */
-  className?: string
-  /** 内联样式 */
-  style?: React.CSSProperties
-}
-
-const CommentText: React.FC<CommentTextProps> = ({ content, className, style }) => {
-  const processedContent = processCommentHTML(content)
-
-  return (
-    <div
-      className={className}
-      style={style}
-      dangerouslySetInnerHTML={{ __html: processedContent }}
-    />
-  )
-}
-
 const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
   src,
   alt,
@@ -203,9 +182,9 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
   isLast = false
 }) => {
   return (
-     
+
     <div className={clsx(
-      'flex relative px-10 py-10 max-w-full', 
+      'flex relative px-10 py-10 max-w-full',
       { 'pb-0': isLast }
     )}>
       {/* 用户头像区域 */}
@@ -240,10 +219,10 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
               className='[&>span]:inline-block [&>span]:leading-[1.2] [&>svg]:inline-block [&>svg]:w-[100px] [&>svg]:h-[100px] [&>svg]:align-middle [&>svg]:flex-shrink-0'
               dangerouslySetInnerHTML={{ __html: comment.uname }}
             />
-            
+
             {/* 等级图标 */}
             {comment.level !== undefined && comment.level >= 0 && comment.level <= 7 && (
-              <img 
+              <img
                 src={`/image/bilibili/level/lv${comment.level}.svg`}
                 alt={`等级${comment.level}`}
                 className='inline-block flex-shrink-0 w-24 h-24 align-middle'
@@ -275,17 +254,15 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
         </div>
 
         {/* 评论文本 */}
-        <div className='text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-foreground mb-[20px] select-text' style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
-          {comment.isTop && (
-            <span className='inline-flex justify-center items-center relative border-4 border-[#006A9E] rounded-xl text-[#006A9E] text-5xl px-2 py-1 leading-none mr-2 align-baseline'>
-              置顶
-            </span>
-          )}
-          <CommentText
-            content={comment.message}
-            className='inline [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
-          />
-        </div>
+        <div
+          className='text-[60px] tracking-[0.5px] leading-[1.6] text-foreground mb-[20px] select-text [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
+          style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
+          dangerouslySetInnerHTML={{
+            __html: (comment.isTop
+              ? '<span class="inline-flex justify-center items-center relative border-4 border-[#006A9E] rounded-xl text-[#006A9E] text-5xl px-2 py-1 leading-none mr-2 align-baseline">置顶</span>'
+              : '') + processCommentHTML(comment.message)
+          }}
+        />
 
         {/* 评论图片 */}
         {(comment.img_src || comment.sticker) && (
