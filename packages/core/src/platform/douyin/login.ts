@@ -25,28 +25,11 @@ export const douyinLogin = async (e: Message) => {
     const { browser } = await launch({
       headless: true,
       args: [
-        '--disable-blink-features=AutomationControlled', // 禁用自动化控制
-        '--mute-audio',
+        '--disable-blink-features=AutomationControlled',
         '--no-sandbox',
-        '--disable-web-security',
-        '--disable-dev-shm-usage', // Linux 共享内存优化
-        '--disable-gpu', // 禁用 GPU 加速
-        '--disable-software-rasterizer',
-        '--disable-extensions',
-        '--disable-background-networking',
-        '--disable-background-timer-throttling',
-        '--disable-backgrounding-occluded-windows',
-        '--disable-breakpad',
-        '--disable-component-extensions-with-background-pages',
-        '--disable-features=TranslateUI,BlinkGenPropertyTrees',
-        '--disable-ipc-flooding-protection',
-        '--disable-renderer-backgrounding',
-        '--enable-features=NetworkService,NetworkServiceInProcess',
-        '--force-color-profile=srgb',
-        '--hide-scrollbars',
-        '--metrics-recording-only',
-        '--no-first-run',
-        '--disable-setuid-sandbox'
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage', // Linux 必需
+        '--mute-audio'
       ],
       ignoreDefaultArgs: ['--enable-automation']
     })

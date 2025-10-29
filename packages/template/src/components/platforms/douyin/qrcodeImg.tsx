@@ -21,7 +21,7 @@ export const DouyinQrcodeImg: React.FC<DouyinQrcodeImgProps> = React.memo((props
   return (
     <DefaultLayout 
       {...props}
-      className='!bg-[#FFFFFF]'
+      className='!bg-[#FFFFFF] dark:!bg-default-50'
     >
       <div className='p-4 px-12 pt-24'>
         {/* 顶部标题与提示 */}
