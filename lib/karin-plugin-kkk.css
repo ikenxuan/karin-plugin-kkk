@@ -6932,6 +6932,10 @@
     border-left-color: #0000;
   }
 
+  .\!bg-\[\#FFFFFF\] {
+    background-color: #fff !important;
+  }
+
   .\!bg-danger-50 {
     background-color: hsl(var(--heroui-danger-50) / 1) !important;
   }
@@ -14338,6 +14342,10 @@
 
   .dark\:border-warning-100:is(.dark *) {
     border-color: hsl(var(--heroui-warning-100) / 1);
+  }
+
+  .dark\:\!bg-default-50:is(.dark *) {
+    background-color: hsl(var(--heroui-default-50) / 1) !important;
   }
 
   .dark\:bg-background:is(.dark *), .dark\:bg-background\/20:is(.dark *) {

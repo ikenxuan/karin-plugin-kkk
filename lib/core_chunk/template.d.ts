@@ -316,6 +316,17 @@ interface DouyinVideoInfoProps {
   useDarkTheme?: boolean;
 }
 //#endregion
+//#region ../template/src/types/platforms/douyin/index.d.ts
+/** 抖音二维码登录组件属性 */
+interface DouyinQrcodeImgProps {
+  data: {
+    /** 二维码数据URL */
+    qrCodeDataUrl?: string;
+  };
+  /** 是否使用深色主题 */
+  useDarkTheme?: boolean;
+}
+//#endregion
 //#region ../template/src/types/platforms/bilibili/bangumi.d.ts
 /**
 * 徽章信息接口
@@ -1464,7 +1475,7 @@ interface BaseComponentProps<T = Record<string, any>> extends Pick<TypedRenderRe
 /**
 * 抖音平台组件ID
 */
-type DouyinComponentIds = "comment" | "dynamic" | "live" | "musicinfo" | "user_profile" | "userlist" | "videoInfo";
+type DouyinComponentIds = "comment" | "dynamic" | "live" | "musicinfo" | "user_profile" | "userlist" | "videoInfo" | "qrcodeImg";
 /**
 * B站平台组件ID
 */
@@ -1496,6 +1507,7 @@ interface PathToDataTypeMap {
   "douyin/user_profile": any;
   "douyin/userlist": DouyinUserListProps["data"];
   "douyin/videoInfo": DouyinVideoInfoProps["data"];
+  "douyin/qrcodeImg": DouyinQrcodeImgProps["data"];
   "bilibili/comment": BilibiliCommentProps["data"];
   "bilibili/userlist": BilibiliUserListProps["data"];
   "bilibili/bangumi": BilibiliBangumiProps["data"];
@@ -1524,7 +1536,7 @@ type ExtractDataTypeFromPath<P extends string> = P extends keyof PathToDataTypeM
 */
 interface DataTypeMap {
   /** 抖音平台数据类型 */
-  douyin: DouyinCommentProps["data"] | DouyinDynamicProps["data"] | DouyinLiveProps["data"] | DouyinMusicInfoProps["data"];
+  douyin: DouyinCommentProps["data"] | DouyinDynamicProps["data"] | DouyinLiveProps["data"] | DouyinMusicInfoProps["data"] | DouyinQrcodeImgProps["data"];
   /** B站平台数据类型 */
   bilibili: BilibiliCommentProps["data"] | BilibiliForwardDynamicProps["data"];
   /** 快手平台数据类型 */
