@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import { platform } from 'node:os'
 import path from 'node:path'
 
 import { launch } from '@karinjs/puppeteer'
@@ -40,10 +41,18 @@ export const douyinLogin = async (e: Message) => {
     // await pageTest.goto('https://bot.sannysoft.com')
     // await pageTest.screenshot({ path: 'testresult.png', fullPage: true })
 
+    // 根据当前系统平台选择操作系统类型
+    const getOperatingSystem = (): 'windows' | 'macos' | 'linux' => {
+      const os = platform()
+      if (os === 'win32') return 'windows'
+      if (os === 'darwin') return 'macos'
+      return 'linux'
+    }
+
     const page = await newInjectedPage(browser, {
       fingerprintOptions: {
         devices: ['desktop'],
-        operatingSystems: ['windows']
+        operatingSystems: [getOperatingSystem()]
       }
     }) as Awaited<ReturnType<Awaited<ReturnType<typeof launch>>['browser']['newPage']>>
     await injector.attachFingerprintToPuppeteer(page, fingerprint)
