@@ -229,6 +229,7 @@ const waitQrcode = async (page: Awaited<ReturnType<Awaited<ReturnType<typeof lau
   } catch {
     // 可能遇到验证码了，截个图
     await page.screenshot({ path: path.join(karinPathTemp, Root.pluginName, 'DouyinLoginQrcodeError.png'), fullPage: true })
+    throw new Error('加载超时了，或者遇到验证码了。。。')
   }
   logger.debug('二维码加载完成')
   // 减少等待时间，二维码已经加载完成
