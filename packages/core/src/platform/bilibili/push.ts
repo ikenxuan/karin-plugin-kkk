@@ -405,7 +405,8 @@ export class Bilibilipush extends Base {
                 words: articleData.words || 0,
 
                 // 专栏正文内容
-                opus: articleContent.opus || null,
+                opus: articleContent.opus || undefined,
+                content: articleContent.content || undefined,
 
                 // 统计信息
                 stats: articleData.stats,
