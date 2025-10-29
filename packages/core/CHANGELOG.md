@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.9.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.9.1...v2.9.2) (2025-10-29)
+
+
+### 🐛 错误修复
+
+* **bilibili:** Enhance comment rendering and add sample data ([53620a1](https://github.com/ikenxuan/karin-plugin-kkk/commit/53620a1fffe20c1588fcfc3775fdb03d74cdd573))
+
+
+### 💄 UI 优化
+
+* **image:** Update banner image to WebP format ([ac41ecd](https://github.com/ikenxuan/karin-plugin-kkk/commit/ac41ecd8806bbe4e439b800632942282edec319b))
+
 ## [2.9.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.9.0...v2.9.1) (2025-10-28)
 
 
