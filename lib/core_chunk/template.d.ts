@@ -614,8 +614,10 @@ interface BilibiliArticleDynamicProps extends BaseComponentProps {
       /** 转发动态 */
       dynamic: number;
     };
+    /** 专栏正文的html字符串 */
+    content?: string;
     /** 专栏结构化内容 */
-    opus: {
+    opus?: {
       content: {
         paragraphs: Array<{
           para_type: number;
@@ -682,6 +684,8 @@ interface OriginalContentAV {
 * 原始内容图文类型接口
 */
 interface OriginalContentDraw {
+  /** 标题 */
+  title?: string;
   /** 用户头像URL */
   avatar_url: string;
   /** 头像框 */
