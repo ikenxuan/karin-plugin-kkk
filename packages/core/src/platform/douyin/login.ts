@@ -72,27 +72,7 @@ export const douyinLogin = async (e: Message) => {
       }
     }) as Awaited<ReturnType<Awaited<ReturnType<typeof launch>>['browser']['newPage']>>
     await injector.attachFingerprintToPuppeteer(page, fingerprint)
-
-    // 阻止加载不必要的资源以加快页面加载
-    await page.setRequestInterception(true)
-    page.on('request', (request) => {
-      const resourceType = request.resourceType()
-      const url = request.url()
-
-      // 阻止图片、字体、媒体等非必要资源，但保留二维码相关请求
-      if (['image', 'font', 'media', 'stylesheet'].includes(resourceType) &&
-        !url.includes('qrcode') &&
-        !url.includes('passport')) {
-        request.abort()
-      } else {
-        request.continue()
-      }
-    })
-
-    await page.goto('https://www.douyin.com', {
-      timeout: 120000,
-      waitUntil: 'domcontentloaded' // 改为 domcontentloaded 而不是等待所有资源
-    })
+    await page.goto('https://www.douyin.com', { timeout: 120000 })
 
     const timeout = new Promise((_resolve) => setTimeout(async () => {
       await browser.close() // 超时后关闭浏览器
