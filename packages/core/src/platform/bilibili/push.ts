@@ -381,7 +381,7 @@ export class Bilibilipush extends Base {
           /** 文章/专栏动态 */
           case DynamicType.ARTICLE: {
             const articleInfoBase = await this.amagi.getBilibiliData('专栏文章基本信息', { id: data[dynamicId].Dynamic_Data.basic.rid_str, typeMode: 'strict' })
-            const articleInfo = await this.amagi.getBilibiliData('专栏正文内容', { id: data[dynamicId].Dynamic_Data.rid_str, typeMode: 'strict' })
+            const articleInfo = await this.amagi.getBilibiliData('专栏正文内容', { id: data[dynamicId].Dynamic_Data.basic.rid_str, typeMode: 'strict' })
 
             // 提取专栏基本信息
             const articleData = articleInfoBase.data.data
@@ -389,13 +389,13 @@ export class Bilibilipush extends Base {
             const articleContent = articleInfo.data.data
 
             // 构建渲染数据
-            const img = await Render('bilibili/dynamic/DYNAMIC_TYPE_ARTICLE',
+            img = await Render('bilibili/dynamic/DYNAMIC_TYPE_ARTICLE',
               {
                 // 用户信息
-                username: checkvip(data[dynamicId].Dynamic_Data.orig.modules.module_author),
-                avatar_url: data[dynamicId].Dynamic_Data.orig.modules.module_author.face,
-                frame: data[dynamicId].Dynamic_Data.orig.modules.module_author.pendant.image,
-                create_time: Common.convertTimestampToDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
+                username: checkvip( data[dynamicId].Dynamic_Data.modules.module_author),
+                avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
+                frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
+                create_time: Common.convertTimestampToDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
 
                 // 专栏内容信息
                 title: articleData.title,
@@ -412,10 +412,9 @@ export class Bilibilipush extends Base {
                 render_time: Common.getCurrentTime(),
                 // 分享链接
                 share_url: `https://www.bilibili.com/read/cv${articleData.id}`,
-                dynamicTYPE: '专栏动态解析'
+                dynamicTYPE: '专栏动态推送'
               }
             )
-            this.e.reply(img)
             break
           }
           /** 未处理的动态类型 */

@@ -52,8 +52,10 @@ export interface BilibiliArticleDynamicProps extends BaseComponentProps {
       /** 转发动态 */
       dynamic: number
     }
+    /** 专栏正文的html字符串 */
+    content?: string
     /** 专栏结构化内容 */
-    opus: {
+    opus?: {
       content: {
         paragraphs: Array<{
           para_type: number

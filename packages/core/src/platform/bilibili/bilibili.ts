@@ -630,8 +630,9 @@ export class Bilibili extends Base {
                 categories: articleData.categories || [],
                 words: articleData.words || 0,
                 
-                // 专栏正文内容
-                opus: articleContent.opus || null,
+                // 专栏正文内容 - 优先使用opus，否则使用content
+                opus: articleContent.opus || undefined,
+                content: articleContent.content || undefined,
                 
                 // 统计信息
                 stats: articleData.stats,

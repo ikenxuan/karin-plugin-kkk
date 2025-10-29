@@ -34,28 +34,28 @@ const renderTextNode = (node: any, nodeIndex: number): React.ReactNode => {
   if (node.node_type !== 1 || !node.word) return null
 
   const { words, style = {}, font_level = 'regular', font_size = 17, color } = node.word
-  
+
   // 构建样式类名 - 优先处理style中的样式
   const classNames: string[] = []
-  
+
   // 根据font_size动态调整文字大小
   const fontSize = Math.max(32, font_size * 2.5) // 最小32px，按比例放大
-  
+
   // 处理字体粗细 - style.bold 优先于 font_level
   if (style.bold) {
     classNames.push('font-bold')
   } else {
     classNames.push(getFontLevelClass(font_level))
   }
-  
+
   if (style.italic) {
     classNames.push('italic')
   }
-  
+
   if (style.strike) {
     classNames.push('line-through')
   }
-  
+
   // 处理文字对齐
   if (style.align) {
     switch (style.align) {
@@ -72,18 +72,18 @@ const renderTextNode = (node: any, nodeIndex: number): React.ReactNode => {
         classNames.push('text-left')
     }
   }
-  
+
   // 处理块级引用
   if (style.blockquote) {
     classNames.push('border-l-4', 'border-foreground-300', 'pl-4', 'italic', 'text-foreground-600')
   }
-  
+
   // 处理标题级别
   if (style.header) {
     const headerLevel = Math.min(Math.max(1, style.header), 6)
     const headerSizes = {
       1: 'text-[72px] font-bold',
-      2: 'text-[64px] font-bold', 
+      2: 'text-[64px] font-bold',
       3: 'text-[56px] font-semibold',
       4: 'text-[48px] font-semibold',
       5: 'text-[40px] font-medium',
@@ -91,7 +91,7 @@ const renderTextNode = (node: any, nodeIndex: number): React.ReactNode => {
     }
     classNames.push(headerSizes[headerLevel as keyof typeof headerSizes])
   }
-  
+
   // 处理列表
   if (style.list) {
     if (style.list === 'bullet') {
@@ -100,28 +100,28 @@ const renderTextNode = (node: any, nodeIndex: number): React.ReactNode => {
       classNames.push('list-decimal', 'list-inside')
     }
   }
-  
+
   // 处理自定义类名
   if (style.class) {
     classNames.push(style.class)
   }
-  
+
   const inlineStyle: React.CSSProperties = {
     fontSize: `${fontSize}px`
   }
-  
+
   // 处理颜色 - 优先使用node.word.color，其次是style.color
   if (color) {
     inlineStyle.color = color
   } else if (style.color) {
     inlineStyle.color = style.color
   }
-  
+
   // 处理链接
   if (style.link) {
     return (
-      <a 
-        key={nodeIndex} 
+      <a
+        key={nodeIndex}
         href={style.link}
         className={`${classNames.join(' ')} text-primary hover:text-primary-600 underline cursor-pointer`}
         style={inlineStyle}
@@ -132,7 +132,7 @@ const renderTextNode = (node: any, nodeIndex: number): React.ReactNode => {
       </a>
     )
   }
-  
+
   // 处理标题元素
   if (style.header) {
     const HeaderTag = `h${Math.min(Math.max(1, style.header), 6)}` as keyof JSX.IntrinsicElements
@@ -142,7 +142,7 @@ const renderTextNode = (node: any, nodeIndex: number): React.ReactNode => {
       </HeaderTag>
     )
   }
-  
+
   // 处理块级引用
   if (style.blockquote) {
     return (
@@ -151,7 +151,7 @@ const renderTextNode = (node: any, nodeIndex: number): React.ReactNode => {
       </blockquote>
     )
   }
-  
+
   // 处理列表项
   if (style.list) {
     const ListTag = style.list === 'ordered' ? 'ol' : 'ul'
@@ -161,7 +161,7 @@ const renderTextNode = (node: any, nodeIndex: number): React.ReactNode => {
       </ListTag>
     )
   }
-  
+
   return (
     <span key={nodeIndex} className={classNames.join(' ')} style={inlineStyle}>
       {words}
@@ -180,7 +180,7 @@ const renderParagraphContent = (paragraph: any, paragraphIndex: number): React.R
       if (!text?.nodes) return null
       return (
         <p key={paragraphIndex} className="mb-10 leading-[1.7]">
-          {text.nodes.map((node: any, nodeIndex: number) => 
+          {text.nodes.map((node: any, nodeIndex: number) =>
             renderTextNode(node, nodeIndex)
           )}
         </p>
@@ -190,7 +190,7 @@ const renderParagraphContent = (paragraph: any, paragraphIndex: number): React.R
       if (!text?.nodes) return null
       return (
         <blockquote key={paragraphIndex} className="pl-6 my-8 border-l-8 border-default-400 text-foreground-700 leading-[1.7]">
-          {text.nodes.map((node: any, nodeIndex: number) => 
+          {text.nodes.map((node: any, nodeIndex: number) =>
             renderTextNode(node, nodeIndex)
           )}
         </blockquote>
@@ -225,12 +225,101 @@ const parseOpusContent = (opus: any): React.ReactNode => {
       return null
     }
 
-    return opus.content.paragraphs.map((paragraph: any, index: number) => 
+    return opus.content.paragraphs.map((paragraph: any, index: number) =>
       renderParagraphContent(paragraph, index)
     )
   } catch (error) {
     console.error('解析结构化专栏内容失败:', error)
     return null
+  }
+}
+
+/**
+ * 清理和转换HTML内容，移除B站的class并应用自定义样式
+ */
+const sanitizeHtmlContent = (htmlString: string): string => {
+  try {
+    // 创建临时DOM来解析HTML
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(htmlString, 'text/html')
+
+    // 递归处理所有元素
+    const processElement = (element: Element): void => {
+      // 移除所有class属性
+      element.removeAttribute('class')
+
+      // 根据标签类型添加自定义样式
+      const tagName = element.tagName.toLowerCase()
+
+      switch (tagName) {
+        case 'h1':
+          element.setAttribute('class', 'text-[72px] font-bold mb-10 leading-[1.4]')
+          break
+        case 'h2':
+          element.setAttribute('class', 'text-[64px] font-bold mb-10 leading-[1.4]')
+          break
+        case 'h3':
+          element.setAttribute('class', 'text-[56px] font-semibold mb-8 leading-[1.4]')
+          break
+        case 'h4':
+          element.setAttribute('class', 'text-[48px] font-semibold mb-8 leading-[1.4]')
+          break
+        case 'h5':
+          element.setAttribute('class', 'text-[40px] font-medium mb-6 leading-[1.4]')
+          break
+        case 'h6':
+          element.setAttribute('class', 'text-[36px] font-medium mb-6 leading-[1.4]')
+          break
+        case 'p':
+          element.setAttribute('class', 'mb-10 leading-[1.7] text-[42px]')
+          break
+        case 'blockquote':
+          element.setAttribute('class', 'pl-6 my-8 border-l-8 border-default-400 text-foreground-700 leading-[1.7] text-[42px]')
+          break
+        case 'ul':
+          element.setAttribute('class', 'list-disc list-inside mb-8 text-[42px] leading-[1.7]')
+          break
+        case 'ol':
+          element.setAttribute('class', 'list-decimal list-inside mb-8 text-[42px] leading-[1.7]')
+          break
+        case 'li':
+          element.setAttribute('class', 'mb-4')
+          break
+        case 'a':
+          element.setAttribute('class', 'text-primary hover:text-primary-600 underline cursor-pointer')
+          element.setAttribute('target', '_blank')
+          element.setAttribute('rel', 'noopener noreferrer')
+          break
+        case 'img':
+          element.setAttribute('class', 'w-full rounded-4xl my-6')
+          break
+        case 'strong':
+        case 'b':
+          element.setAttribute('class', 'font-bold')
+          break
+        case 'em':
+        case 'i':
+          element.setAttribute('class', 'italic')
+          break
+        case 'code':
+          element.setAttribute('class', 'px-2 py-1 bg-default-100 rounded text-[38px] font-mono')
+          break
+        case 'pre':
+          element.setAttribute('class', 'p-6 bg-default-100 rounded-2xl overflow-x-auto my-6')
+          break
+      }
+
+      // 递归处理子元素
+      Array.from(element.children).forEach(child => processElement(child))
+    }
+
+    // 处理body中的所有元素
+    Array.from(doc.body.children).forEach(child => processElement(child))
+
+    return doc.body.innerHTML
+  } catch (error) {
+    console.error('清理HTML内容失败:', error)
+    return htmlString
   }
 }
 
@@ -285,6 +374,14 @@ const BilibiliArticleContent: React.FC<BilibiliArticleDynamicProps> = React.memo
     return null
   }, [props.data.opus])
 
+  // 处理HTML字符串内容
+  const sanitizedHtmlContent = React.useMemo(() => {
+    if (props.data.content && typeof props.data.content === 'string') {
+      return sanitizeHtmlContent(props.data.content)
+    }
+    return null
+  }, [props.data.content])
+
   return (
     <div className='flex flex-col px-20 w-full leading-relaxed'>
       {/* 专栏标题 */}
@@ -315,11 +412,19 @@ const BilibiliArticleContent: React.FC<BilibiliArticleDynamicProps> = React.memo
         </div>
       )}
 
-      {/* 专栏正文内容 */}
+      {/* 专栏正文内容 - 结构化数据 */}
       {articleContentElements && (
         <div className='flex-col items-center mb-8 select-text'>
           {articleContentElements}
         </div>
+      )}
+
+      {/* 专栏正文内容 - HTML字符串 */}
+      {sanitizedHtmlContent && (
+        <div
+          className='flex-col items-center mb-8 select-text'
+          dangerouslySetInnerHTML={{ __html: sanitizedHtmlContent }}
+        />
       )}
     </div>
   )
@@ -331,7 +436,7 @@ const BilibiliArticleContent: React.FC<BilibiliArticleDynamicProps> = React.memo
 const BilibiliArticleStatus: React.FC<BilibiliArticleDynamicProps> = React.memo((props) => {
   return (
     <div className='flex flex-col gap-12 px-20 py-16'>
-      {/* 互动数据 */}  
+      {/* 互动数据 */}
       <div className='flex gap-24 items-center'>
         <div className='flex gap-3 items-center text-[42px] text-like'>
           <Heart size={32} />
@@ -349,7 +454,7 @@ const BilibiliArticleStatus: React.FC<BilibiliArticleDynamicProps> = React.memo(
           <span className='text-[36px] text-foreground-600'>分享</span>
         </div>
       </div>
-      
+
       {/* 专栏统计信息 */}
       <div className='flex gap-20 items-center text-[36px] text-default-700'>
         <div className='flex gap-2 items-center'>
@@ -385,21 +490,21 @@ const BilibiliArticleFooter: React.FC<BilibiliArticleDynamicProps> = React.memo(
             src='/image/bilibili/bilibili-light.png'
             alt='B站Logo'
             className='w-80 h-auto'
-          />  
+          />
         </div>
-        
+
         {/* 发布时间和渲染时间 */}
         <div className='flex flex-col gap-2 text-[32px] text-default-500'>
           <div>发布于 {props.data.create_time}</div>
           <div>图片渲染于 {props.data.render_time}</div>
         </div>
-            
+
         {/* 提示文字 */}
         <span className='text-[36px] text-default-600 font-medium'>
           长按识别二维码即可查看全文
         </span>
       </div>
-      
+
       {/* 右侧信息 */}
       <div className='flex flex-col items-center gap-4 text-[32px]'>
         <div className='p-3 rounded-sm border-8 border-dashed border-default-300'>
@@ -417,7 +522,7 @@ const BilibiliArticleFooter: React.FC<BilibiliArticleDynamicProps> = React.memo(
               </div>
             )}
         </div>
-        
+
         {/* 专栏动态标识 */}
         <div className='text-[38px] font-semibold text-default-700'>
           {props.data.dynamicTYPE}
