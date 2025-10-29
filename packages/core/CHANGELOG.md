@@ -2,6 +2,19 @@
 
 # Changelog
 
+## [2.9.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.9.2...v2.9.3) (2025-10-29)
+
+
+### 🐛 错误修复
+
+* **bilibili:** Enhance article dynamic rendering and data handling ([705cdbc](https://github.com/ikenxuan/karin-plugin-kkk/commit/705cdbc3c4312a12a08541d0578dd849a16dad3d))
+* **bilibili:** Enhance forward dynamic rendering with title support ([83f9d78](https://github.com/ikenxuan/karin-plugin-kkk/commit/83f9d78b994fd34b1373b4d8230908375115954d))
+* **bilibili:** Enhance image proxy handling in shared component ([491ace8](https://github.com/ikenxuan/karin-plugin-kkk/commit/491ace8a14f0432274a4a757183ec489bb246225))
+* douyin login ([#59](https://github.com/ikenxuan/karin-plugin-kkk/issues/59)) ([b92cc71](https://github.com/ikenxuan/karin-plugin-kkk/commit/b92cc7160396887b71523e5ca99ebf3792292084))
+* 哎呀 ([e100401](https://github.com/ikenxuan/karin-plugin-kkk/commit/e1004018677cddaa6ea1d36b909e495272427e6a))
+* 细优 ([b841b63](https://github.com/ikenxuan/karin-plugin-kkk/commit/b841b63d648a267822a6ae5eb973baf8bef8bc43))
+* 细优 ([fa53e77](https://github.com/ikenxuan/karin-plugin-kkk/commit/fa53e770d8b3b78068206ae799bad4f4fcd0abf3))
+
 ## [2.9.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.9.1...v2.9.2) (2025-10-29)
 
 
