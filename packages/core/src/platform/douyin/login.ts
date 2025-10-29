@@ -217,7 +217,7 @@ const waitQrcode = async (page: Awaited<ReturnType<Awaited<ReturnType<typeof lau
     await page.waitForSelector(qrCodeSelector, { timeout: 10000 })
   } catch {
     // 可能遇到验证码了，截个图
-    await page.screenshot({ path: path.join(karinPathTemp, Root.pluginName, 'DouyinLoginQrcodeError.png') })
+    await page.screenshot({ path: path.join(karinPathTemp, Root.pluginName, 'DouyinLoginQrcodeError.png'), fullPage: true })
   }
   logger.debug('二维码加载完成')
   await new Promise(resolve => setTimeout(resolve, 5000))
