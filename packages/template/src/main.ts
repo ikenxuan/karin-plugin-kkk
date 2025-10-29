@@ -1,8 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import dedent from 'dedent'
-import beautify from 'js-beautify'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 
@@ -417,7 +415,7 @@ class HtmlWrapper {
       `src="${imageRelativePath}/`
     )
 
-    return dedent`
+    return `
     <!DOCTYPE html>
     <html lang="zh-CN">
     <head>
@@ -509,13 +507,7 @@ class SSRRender {
 
       const htmlContent = renderToStaticMarkup(ctx.state.component ?? component)
 
-      const formattedHtml = beautify.html(htmlContent, {
-        indent_size: 2,
-        preserve_newlines: false,
-        wrap_attributes: 'auto'
-      })
-
-      ctx.state.html = formattedHtml
+      ctx.state.html = htmlContent
 
       // 渲染后插件（可修改 HTML）
       await this.pluginContainer.runAfter(ctx)
@@ -527,7 +519,7 @@ class SSRRender {
 
       // 包装并写入
       const fullHtml = this.htmlWrapper.wrapContent(
-        ctx.state.html ?? formattedHtml,
+        ctx.state.html ?? htmlContent,
         filePath,
         request.data.useDarkTheme ?? false
       )
