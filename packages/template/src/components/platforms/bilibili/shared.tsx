@@ -10,11 +10,19 @@ export const processCommentHTML = (htmlContent: string): string => {
     return ''
   }
 
+  let processed = htmlContent
+
   // 使用正则表达式匹配所有img标签并添加防盗链属性
-  return htmlContent.replace(
+  processed = processed.replace(
     /<img([^>]*?)>/gi,
     '<img$1 referrerpolicy="no-referrer" crossorigin="anonymous">'
   )
+
+  // 替换不可见的分隔符字符 ¨ (U+00A8) 为更明显的点 • (U+2022)
+  // ·  •  ●  -
+  processed = processed.replace(/¨/g, '•')
+
+  return processed
 }
 
 /**

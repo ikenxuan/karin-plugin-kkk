@@ -154,6 +154,9 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
 
       <div className='py-4'>
         <div className='text-5xl leading-relaxed text-foreground'>
+          {content.title && (
+            <span className='text-6xl font-bold'>{content.title}</span>
+          )}
           <CommentText
             className={clsx(
               'text-[50px] tracking-[0.5px] leading-[1.5] whitespace-pre-wrap text-foreground select-text',

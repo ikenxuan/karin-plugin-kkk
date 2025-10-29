@@ -313,6 +313,7 @@ export class Bilibilipush extends Base {
                 const dynamicCARD = await getBilibiliData('动态卡片数据', Config.cookies.bilibili, { dynamic_id: data[dynamicId].Dynamic_Data.orig.id_str, typeMode: 'strict' })
                 const cardData = JSON.parse(dynamicCARD.data.data.card.card)
                 param = {
+                  title: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major?.opus?.title ?? null,
                   username: checkvip(data[dynamicId].Dynamic_Data.orig.modules.module_author),
                   create_time: Common.convertTimestampToDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
                   avatar_url: data[dynamicId].Dynamic_Data.orig.modules.module_author.face,

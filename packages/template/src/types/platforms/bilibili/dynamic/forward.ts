@@ -30,6 +30,8 @@ export interface OriginalContentAV {
  * 原始内容图文类型接口
  */
 export interface OriginalContentDraw {
+  /** 标题 */
+  title?: string
   /** 用户头像URL */
   avatar_url: string
   /** 头像框 */

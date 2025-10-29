@@ -465,6 +465,7 @@ export class Bilibili extends Base {
                 const dynamicCARD2 = await this.amagi.getBilibiliData('动态卡片数据', { dynamic_id: dynamicInfo.data.data.item.orig.id_str, typeMode: 'strict' })
                 const cardData = JSON.parse(dynamicCARD2.data.data.card.card)
                 data = {
+                  title: dynamicInfo.data.data.item.orig.modules.module_dynamic.major?.opus?.title ?? null,
                   username: checkvip(dynamicInfo.data.data.item.orig.modules.module_author),
                   create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
                   avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
