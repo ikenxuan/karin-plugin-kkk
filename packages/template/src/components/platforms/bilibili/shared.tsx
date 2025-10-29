@@ -105,7 +105,7 @@ export const EnhancedImage: React.FC<EnhancedImageProps> = ({
 
   return (
     <img
-      src={proxyImageUrl(src)}
+      src={src}
       alt={alt}
       className={className}
       onError={handleError}
