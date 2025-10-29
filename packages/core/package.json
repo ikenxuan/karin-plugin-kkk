@@ -1,0 +1,99 @@
+{
+  "name": "karin-plugin-kkk",
+  "version": "2.9.2",
+  "description": "Karin 的「抖音」「B 站」视频解析/动态推送插件",
+  "keywords": [
+    "karin-plugin",
+    "karin"
+  ],
+  "homepage": "https://github.com/ikenxuan/karin-plugin-kkk",
+  "bugs": {
+    "url": "https://github.com/ikenxuan/karin-plugin-kkk/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ikenxuan/karin-plugin-kkk.git"
+  },
+  "license": "GPL-3.0-only",
+  "author": "ikenxuan",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./template": {
+      "types": "./lib/core_chunk/template.d.ts",
+      "import": "./lib/core_chunk/template.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "template": [
+        "./lib/core_chunk/template.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "config/",
+    "lib/",
+    "resources/",
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "cross-env NODE_ENV=production vite build && tsdown",
+    "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
+    "lint": "eslint . --fix",
+    "pub": "npm publish --access public",
+    "sort": "sort-package-json",
+    "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
+    "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../template/src/dev/mock-server.ts\" --include \"../template/src/main.ts\" src/app.ts --trace-deprecation"
+  },
+  "dependencies": {
+    "@types/react": "^19.2.2"
+  },
+  "devDependencies": {
+    "@karinjs/plugin-puppeteer": "1.0.20",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@types/connect-history-api-fallback": "^1.5.4",
+    "@types/express": "5.0.3",
+    "@types/heic-convert": "^2.1.0",
+    "@types/qrcode": "^1.5.5",
+    "connect-history-api-fallback": "^2.0.0",
+    "heic-convert": "^2.1.0",
+    "http-proxy-middleware": "3.0.5",
+    "qrcode": "^1.5.4",
+    "template": "workspace:*",
+    "tsdown": "^0.15.8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "karin": {
+    "engines": ">=1.12.2",
+    "main": "src/index.ts",
+    "apps": [
+      "lib/apps"
+    ],
+    "ts-apps": [
+      "src/apps"
+    ],
+    "static": [
+      "resources"
+    ],
+    "files": [
+      "config",
+      "data",
+      "resources"
+    ],
+    "web": "./lib/web.config.js",
+    "ts-web": "./src/web.config.ts"
+  },
+  "timestamp": "2025-10-29T04:49:47.487Z"
+}

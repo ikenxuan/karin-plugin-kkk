@@ -1,0 +1,113 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "node",
+  "include-component-in-tag": true,
+  "commit-search-depth": 50,
+  "tag-separator": "-",
+  "separate-pull-requests": true,
+  "pull-request-title-pattern": "chore${scope}: release ${component} ${version}",
+  "packages": {
+    "packages/core": {
+      "release-type": "node",
+      "package-name": "karin-plugin-kkk",
+      "changelog-path": "CHANGELOG.md",
+      "include-component-in-tag": false
+    }
+  },
+  "changelog-sections": [
+    {
+      "type": "feat",
+      "section": "✨ 新功能",
+      "hidden": false
+    },
+    {
+      "type": "fix",
+      "section": "🐛 错误修复",
+      "hidden": false
+    },
+    {
+      "type": "perf",
+      "section": "⚡️ 性能优化",
+      "hidden": false
+    },
+    {
+      "type": "revert",
+      "section": "⏪️ 回退提交",
+      "hidden": false
+    },
+    {
+      "type": "docs",
+      "section": "📝 文档更新",
+      "hidden": false
+    },
+    {
+      "type": "style",
+      "section": "💄 UI 优化",
+      "hidden": false
+    },
+    {
+      "type": "chore",
+      "section": "🧰 其他更新",
+      "hidden": false
+    },
+    {
+      "type": "refactor",
+      "section": "♻️ 代码重构",
+      "hidden": false
+    },
+    {
+      "type": "test",
+      "section": "✅ 测试相关",
+      "hidden": false
+    },
+    {
+      "type": "deps",
+      "section": "📦 依赖更新"
+    },
+    {
+      "type": "build",
+      "section": "🏗️ 构建系统",
+      "hidden": false
+    },
+    {
+      "type": "ci",
+      "section": "🎡 持续集成",
+      "hidden": false
+    },
+    {
+      "type": "sec",
+      "section": "🔒 安全修复",
+      "hidden": false
+    },
+    {
+      "type": "i18n",
+      "section": "🌐 国际化",
+      "hidden": false
+    },
+    {
+      "type": "ui",
+      "section": "💄 UI 优化",
+      "hidden": false
+    },
+    {
+      "type": "lint",
+      "section": "🧹 Lint/代码格式",
+      "hidden": false
+    },
+    {
+      "type": "types",
+      "section": "📐 类型定义",
+      "hidden": false
+    },
+    {
+      "type": "config",
+      "section": "⚙️ 配置变更",
+      "hidden": false
+    },
+    {
+      "type": "db",
+      "section": "🗃️ 数据库迁移",
+      "hidden": false
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+publicHoistPattern:
+  - "*sqlite3*"
+  - "*express*"
+packages:
+  - packages/*
+onlyBuiltDependencies:
+  - "@swc/core"
+  - esbuild

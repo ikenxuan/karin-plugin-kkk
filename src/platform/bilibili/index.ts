@@ -1,6 +1,0 @@
-export * from './bilibili'
-export * from './comments'
-export * from './genParams'
-export * from './getID'
-export * from './login'
-export * from './push'

@@ -1,0 +1,662 @@
+import fs from 'node:fs'
+
+import { type DyEmojiList } from '@ikenxuan/amagi'
+import type { Elements, Message, SendMessage } from 'node-karin'
+import { common, logger, mkdirSync, segment } from 'node-karin'
+
+import {
+  Base,
+  baseHeaders,
+  Common,
+  Count,
+  downloadFile,
+  downloadVideo,
+  fileInfo,
+  mergeFile,
+  Networks,
+  Render
+} from '@/module/utils'
+import { Config } from '@/module/utils/Config'
+import { douyinComments } from '@/platform/douyin'
+import { DouyinDataTypes, DouyinIdData } from '@/types'
+
+let mp4size = ''
+let img
+export type dyVideo = {
+  FPS: number
+  HDR_bit: string
+  HDR_type: string
+  bit_rate: number
+  format: string
+  gear_name: string
+  is_bytevc1: number
+  is_h265: number
+  play_addr: {
+    data_size: number
+    file_cs: string
+    file_hash: string
+    height: number
+    uri: string
+    url_key: string
+    url_list: string[]
+    width: number
+  }
+  quality_type: number
+  video_extra: string
+}
+export class DouYin extends Base {
+  e: Message
+  type: DouyinDataTypes[keyof DouyinDataTypes]
+  is_mp4: boolean | undefined
+  is_slides: boolean
+  get botadapter (): string {
+    return this.e.bot?.adapter?.name
+  }
+
+  constructor (e: Message, iddata: DouyinIdData) {
+    super(e)
+    this.e = e
+    this.type = iddata?.type
+    this.is_mp4 = iddata?.is_mp4
+    this.is_slides = false
+  }
+
+  async RESOURCES (data: DouyinIdData) {
+    Config.app.EmojiReply && !this.e.isPrivate && await this.e.bot.setMsgReaction(this.e.contact, this.e.messageId, Config.app.EmojiReplyID, true)
+    if (Config.douyin.tip) this.e.reply('检测到抖音链接，开始解析')
+    switch (this.type) {
+      case 'one_work': {
+        const VideoData = await this.amagi.getDouyinData('聚合解析', {
+          aweme_id: data.aweme_id,
+          typeMode: 'strict'
+        })
+        const CommentsData = await this.amagi.getDouyinData('评论数据', {
+          aweme_id: data.aweme_id,
+          number: Config.douyin.numcomment,
+          typeMode: 'strict'
+        })
+        this.is_slides = VideoData.data.aweme_detail.is_slides === true
+        let g_video_url = ''
+        let g_title
+
+        /** 图集 */
+        let imagenum = 0
+        const image_res = []
+        if (this.is_mp4 === false) {
+          switch (true) {
+            // 图集
+            case this.is_slides === false && VideoData.data.aweme_detail.images !== null: {
+              const image_data = []
+              const imageres = []
+              let image_url = ''
+              // 使用可选链和空值合并操作符确保安全访问
+              const images = VideoData.data.aweme_detail.images ?? []
+              for (const [index, imageItem] of images.entries()) {
+                // 获取图片地址，优先使用第三个URL，其次使用第二个URL
+                image_url = imageItem.url_list[2] || imageItem.url_list[1]
+
+                // 处理标题，去除特殊字符
+                const title = VideoData.data.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:*?"<>|\r\n]/g, ' ')
+                g_title = title
+
+                imageres.push(segment.image(image_url))
+                imagenum++
+
+                if (Config.app.removeCache === false) {
+                  mkdirSync(`${Common.tempDri.images}${g_title}`)
+                  const path = `${Common.tempDri.images}${g_title}/${index + 1}.png`
+                  await new Networks({ url: image_url, type: 'arraybuffer' }).getData().then((data) => fs.promises.writeFile(path, Buffer.from(data)))
+                }
+              }
+              const res = common.makeForward(imageres, this.e.sender.userId, this.e.sender.nick)
+              image_data.push(res)
+              image_res.push(image_data)
+              if (imageres.length === 1) {
+                await this.e.reply(segment.image(image_url))
+              } else {
+                await this.e.bot.sendForwardMsg(this.e.contact, res, {
+                  source: '图片合集',
+                  summary: `查看${res.length}张图片消息`,
+                  prompt: '抖音图集解析结果',
+                  news: [{ text: '点击查看解析结果' }]
+                })
+              }
+              break
+            }
+            // 合辑
+            case VideoData.data.aweme_detail.is_slides === true && VideoData.data.aweme_detail.images !== null: {
+              const images: Elements[] = []
+              const temp: fileInfo[] = []
+              /** BGM */
+              const liveimgbgm = await downloadFile(
+                VideoData.data.aweme_detail.music.play_url.uri,
+                {
+                  title: `Douyin_tmp_A_${Date.now()}.mp3`,
+                  headers: this.headers
+                }
+              )
+              temp.push(liveimgbgm)
+              const images1 = VideoData.data.aweme_detail.images ?? []
+              if (!images1.length) {
+                logger.debug('未获取到合辑的图片数据')
+              }
+              for (const item of images1) {
+                imagenum++
+                // 静态图片，clip_type为2
+                if (item.clip_type === 2) {
+                  images.push(segment.image((item.url_list[0])))
+                  continue
+                }
+                /** 动图 */
+                const liveimg = await downloadFile(
+                  `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`,
+                  {
+                    title: `Douyin_tmp_V_${Date.now()}.mp4`,
+                    headers: this.headers
+                  }
+                )
+
+                if (liveimg.filepath) {
+                  const resolvefilepath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
+                  await mergeFile('视频*3 + 音频', {
+                    path: liveimg.filepath,
+                    path2: liveimgbgm.filepath,
+                    resultPath: resolvefilepath,
+                    callback: async (success: boolean, resultPath: string): Promise<boolean> => {
+                      if (success) {
+                        const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
+                        fs.renameSync(resultPath, filePath)
+                        logger.mark(`视频文件重命名完成: ${resultPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
+                        logger.mark('正在尝试删除缓存文件')
+                        await Common.removeFile(liveimg.filepath, true)
+                        temp.push({ filepath: filePath, totalBytes: 0 })
+                        images.push(segment.video('file://' + filePath))
+                        return true
+                      } else {
+                        await Common.removeFile(liveimg.filepath, true)
+                        return true
+                      }
+                    }
+                  })
+                }
+              }
+              const Element = common.makeForward(images, this.e.sender.userId, this.e.sender.nick)
+              try {
+                await this.e.bot.sendForwardMsg(this.e.contact, Element, {
+                  source: '合辑内容',
+                  summary: `查看${Element.length}张图片/视频消息`,
+                  prompt: '抖音合辑解析结果',
+                  news: [{ text: '点击查看解析结果' }]
+                })
+              } catch (error) {
+                await this.e.reply(JSON.stringify(error, null, 2))
+              } finally {
+                for (const item of temp) {
+                  await Common.removeFile(item.filepath, true)
+                }
+              }
+              break
+            }
+          }
+        }
+
+        /** 背景音乐 */
+        if (VideoData.data.aweme_detail.music) {
+          const music = VideoData.data.aweme_detail.music
+          const music_url = music.play_url.uri // BGM link
+          if (this.is_mp4 === false && Config.app.removeCache === false && music_url !== undefined) {
+            try {
+              const path = Common.tempDri.images + `${g_title}/BGM.mp3`
+              await new Networks({ url: music_url, type: 'arraybuffer' }).getData().then((data) => fs.promises.writeFile(path, Buffer.from(data)))
+            } catch (error) {
+              console.log(error)
+            }
+          }
+          const haspath = music_url && this.is_mp4 === false && music_url !== undefined
+          haspath && await this.e.reply(segment.record(music_url, false))
+        }
+
+        /** 视频 */
+        let FPS
+        const sendvideofile = true
+        if (this.is_mp4) {
+          // 视频地址特殊判断：play_addr_h264、play_addr、
+          const video = VideoData.data.aweme_detail.video
+          FPS = video.bit_rate[0].FPS // FPS
+
+          logger.debug(`开始排除不符合条件的视频分辨率；\n
+              共拥有${logger.yellow(video.bit_rate.length)}个视频源\n
+              视频ID：${logger.green(VideoData.data.aweme_detail.aweme_id)}\n
+              分享链接：${logger.green(VideoData.data.aweme_detail.share_url)}
+              `)
+          video.bit_rate = douyinProcessVideos(
+            video.bit_rate,
+            Config.douyin.videoQuality,
+            Config.douyin.maxAutoVideoSize
+          )
+          g_video_url = await new Networks({
+            url: video.bit_rate[0].play_addr.url_list[2],
+            headers: {
+              ...this.headers,
+              Referer: video.bit_rate[0].play_addr.url_list[0]
+            }
+          }).getLongLink()
+          const title = VideoData.data.aweme_detail.preview_title.substring(0, 80).replace(/[\\/:*?"<>|\r\n]/g, ' ') // video title
+          g_title = title
+          mp4size = (video.bit_rate[0].play_addr.data_size / (1024 * 1024)).toFixed(2)
+        }
+
+        if (Config.douyin.sendContent.includes('info')) {
+          if (Config.douyin.videoInfoMode === 'text') {
+            // 构建回复内容数组
+            const replyContent: SendMessage = []
+            const { digg_count, share_count, collect_count, comment_count, recommend_count } = VideoData.data.aweme_detail.statistics
+            const contentMap = {
+              cover: segment.image(this.is_mp4 ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] : VideoData.data.aweme_detail.images![0].url_list[0]),
+              title: segment.text(`\n📺 标题: ${VideoData.data.aweme_detail.desc}\n`),
+              author: segment.text(`\n👤 作者: ${VideoData.data.aweme_detail.author.nickname}\n`),
+              stats: segment.text(formatVideoStats(digg_count, share_count, collect_count, comment_count, recommend_count))
+            }
+            // 重新排序
+            const fixedOrder: (keyof typeof contentMap)[] = ['cover', 'title', 'author', 'stats']
+            fixedOrder.forEach(item => {
+              if (Config.douyin.displayContent.includes(item) && contentMap[item]) {
+                replyContent.push(contentMap[item])
+              }
+            })
+            if (replyContent.length > 0) {
+              this.e.reply(replyContent)
+            }
+          } else {
+            // 渲染为图片
+            const videoInfoImg = await Render('douyin/videoInfo',
+              {
+                desc: VideoData.data.aweme_detail.desc,
+                statistics: VideoData.data.aweme_detail.statistics,
+                aweme_id: VideoData.data.aweme_detail.aweme_id,
+                author: {
+                  name: VideoData.data.aweme_detail.author.nickname,
+                  avatar: VideoData.data.aweme_detail.author.avatar_thumb.url_list[0],
+                  short_id: VideoData.data.aweme_detail.author.unique_id === '' ? VideoData.data.aweme_detail.author.short_id : VideoData.data.aweme_detail.author.unique_id
+                },
+                image_url: this.is_mp4 ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] : VideoData.data.aweme_detail.images![0].url_list[0],
+                create_time: VideoData.data.aweme_detail.create_time
+              }
+            )
+            this.e.reply(videoInfoImg)
+          }
+        }
+
+        if (Config.douyin.sendContent.includes('comment')) {
+          const EmojiData = await this.amagi.getDouyinData('Emoji数据', { typeMode: 'strict' })
+          const list = Emoji(EmojiData.data)
+          const commentsArray = await douyinComments(CommentsData, list)
+          if (!commentsArray.jsonArray.length) {
+            await this.e.reply('这个作品没有评论 ~')
+          } else {
+            const img = await Render('douyin/comment',
+              {
+                Type: this.is_mp4 ? '视频' : this.is_slides ? '合辑' : '图集',
+                CommentsData: commentsArray,
+                CommentLength: Config.douyin.realCommentCount ? VideoData.data.aweme_detail.statistics.comment_count : commentsArray.jsonArray?.length ?? 0,
+                share_url: this.is_mp4
+                  ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${VideoData.data.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`
+                  : VideoData.data.aweme_detail.share_url,
+                VideoSize: mp4size,
+                VideoFPS: FPS,
+                ImageLength: imagenum
+              }
+            )
+            await this.e.reply(img)
+          }
+        }
+        /** 发送视频 */
+        sendvideofile && this.is_mp4 && Config.douyin.sendContent.includes('video') && await downloadVideo(
+          this.e,
+          {
+            video_url: g_video_url,
+            title: {
+              timestampTitle: `tmp_${Date.now()}.mp4`,
+              originTitle: `${g_title}.mp4`
+            },
+            headers: {
+              ...baseHeaders,
+              Referer: g_video_url
+            }
+          },
+          {
+            message_id: this.e.messageId
+          }
+        )
+        return true
+      }
+
+      case 'user_dynamic': {  
+        // const UserVideoListData = await this.amagi.getDouyinData('用户主页视频列表数据', {
+        //   sec_uid: data.sec_uid,
+        //   typeMode: 'strict'
+        // })
+
+        // const veoarray = []
+        // veoarray.unshift('------------------------------ | ---------------------------- |\n')
+        // veoarray.unshift('标题                           | 分享二维码                    |\n')
+        // const forwardmsg = []
+        // for (const i of UserVideoListData.data.aweme_list) {
+        //   const title = i.desc
+        //   const cover = i.share_url
+        //   veoarray.push(`${title}       | ![img](${await QRCode.toDataURL(cover, {
+        //     errorCorrectionLevel: 'H',
+        //     type: 'image/png',
+        //     color: {
+        //       light: '#ffffff00',
+        //       dark: Common.useDarkTheme() ? '#FFFFFF' : '#000000'
+        //     }
+        //   })})    |\n`)
+        //   forwardmsg.push(segment.text(`作品标题: ${title}\n分享链接: ${cover}`))
+        // }
+        // const matext = markdown(veoarray.join(''), {})
+        // const htmlpath = `${karinPathRoot}/temp/html/${Root.pluginName}/douyin/user_worklist.html`
+        // fs.writeFileSync(htmlpath, matext, 'utf8')
+        // const img = await render.renderHtml(htmlpath)
+        // await this.e.reply(segment.image(img))
+        // const Element2 = common.makeForward(forwardmsg, this.e.sender.userId, this.e.sender.nick)
+        // await this.e.bot.sendForwardMsg(this.e.contact, Element2)
+        return true
+      }
+      case 'music_work': {
+        const MusicData = await this.amagi.getDouyinData('音乐数据', {
+          music_id: data.music_id,
+          typeMode: 'strict'
+        })
+        const sec_uid = MusicData.data.music_info.sec_uid
+        const UserData = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
+        // if (UserData.data.status_code === 2) {
+        //   const new_UserData.data = await getDouyinData('搜索数据', Config.cookies.douyin, { query: data.music_info.author })
+        //   if (new_UserData.data.data[0].type === 4 && new_UserData.data.data[0].card_unique_name === 'user') {
+        //     UserData.data = { user: new_UserData.data.data[0].user_list[0].user_info }
+        //   }
+        //   const search_data = new_UserData.data
+        // }
+        if (!MusicData.data.music_info.play_url) {
+          await this.e.reply('解析错误！该音乐抖音未提供下载链接，无法下载', { reply: true })
+          return true
+        }
+        img = await Render('douyin/musicinfo',
+          {
+            image_url: MusicData.data.music_info.cover_hd.url_list[0],
+            desc: MusicData.data.music_info.title,
+            music_id: MusicData.data.music_info.id.toString(),
+            create_time: Time(0),
+            user_count: Count(MusicData.data.music_info.user_count),
+            avater_url: MusicData.data.music_info.avatar_large?.url_list[0] || UserData.data.user.avatar_larger.url_list[0],
+            fans: UserData.data.user.mplatform_followers_count || UserData.data.user.follower_count,
+            following_count: UserData.data.user.following_count,
+            total_favorited: UserData.data.user.total_favorited,
+            user_shortid: UserData.data.user.unique_id === '' ? UserData.data.user.short_id : UserData.data.user.unique_id,
+            share_url: MusicData.data.music_info.play_url.uri,
+            username: MusicData.data.music_info?.original_musician_display_name || MusicData.data.music_info.owner_nickname === '' ? MusicData.data.music_info.author : MusicData.data.music_info.owner_nickname
+          }
+        )
+        await this.e.reply(
+          [
+            ...img,
+            `\n正在上传 ${MusicData.data.music_info.title}\n`,
+            `作曲: ${MusicData.data.music_info.original_musician_display_name || MusicData.data.music_info.owner_nickname === '' ? MusicData.data.music_info.author : MusicData.data.music_info.owner_nickname}\n`,
+            `music_id: ${MusicData.data.music_info.id}`
+          ]
+        )
+        await this.e.reply(segment.record(MusicData.data.music_info.play_url.uri, false))
+        return true
+      }
+      case 'live_room_detail': {
+        const UserInfoData = await this.amagi.getDouyinData('用户主页数据', {
+          sec_uid: data.sec_uid,
+          typeMode: 'strict'
+        })
+        if (UserInfoData.data.user.live_status === 1) {
+          // 直播中
+          const live_data = await this.amagi.getDouyinData('直播间信息数据', { sec_uid: UserInfoData.data.user.sec_uid, typeMode: 'strict' })
+          const room_data = JSON.parse(UserInfoData.data.user.room_data)
+          const img = await Render('douyin/live',
+            {
+              image_url: live_data.data.data[0].cover?.url_list[0],
+              text: live_data.data.data[0].title,
+              liveinf: `${live_data.data.partition_road_map.partition.title} | 房间号: ${room_data.owner.web_rid}`,
+              在线观众: Count(Number(live_data.data.data[0].room_view_stats?.display_value)),
+              总观看次数: Count(Number(live_data.data.data[0].stats?.total_user_str)),
+              username: UserInfoData.data.user.nickname,
+              avater_url: UserInfoData.data.user.avatar_larger.url_list[0],
+              fans: Count(UserInfoData.data.user.follower_count),
+              share_url: 'https://live.douyin.com/' + room_data.owner.web_rid,
+              dynamicTYPE: '直播间信息'
+            }
+          )
+          await this.e.reply(img)
+        } else {
+          this.e.reply(`「${UserInfoData.data.user.nickname}」\n未开播，正在休息中~`)
+        }
+        return true
+      }
+      default:
+        break
+    }
+  }
+}
+
+export function douyinProcessVideos (videos: dyVideo[], videoQuality: string, maxAutoVideoSize?: number): dyVideo[] {
+  // 首先过滤掉所有 format 为 'dash' 的视频
+  const mp4Videos = videos.filter(video => video.format !== 'dash')
+  
+  if (mp4Videos.length === 0) {
+    logger.warn('没有找到可用的 mp4 格式视频')
+    return videos.slice(0, 1) // 返回第一个视频作为备选
+  }
+
+  logger.debug(`过滤后剩余 ${mp4Videos.length} 个 mp4 格式视频`)
+
+  // 定义画质等级映射，根据 gear_name 判断画质
+  const getQualityLevel = (gearName: string): string => {
+    // 4K 画质
+    if (gearName.includes('lowest_4') || gearName.includes('2160')) return '4k'
+    // 2K/1440p 画质  
+    if (gearName.includes('1440') || gearName.includes('2k')) return '2k'
+    // 1080p 画质
+    if (gearName.includes('1080')) return '1080p'
+    // 720p 画质
+    if (gearName.includes('720')) return '720p'
+    // 540p 画质
+    if (gearName.includes('540')) return '540p'
+    // 默认返回 540p
+    return '540p'
+  }
+
+  // 按画质分组，并在每组内按文件大小排序（大的在前）
+  const videosByQuality = new Map<string, dyVideo[]>()
+  
+  mp4Videos.forEach(video => {
+    const quality = getQualityLevel(video.gear_name)
+    if (!videosByQuality.has(quality)) {
+      videosByQuality.set(quality, [])
+    }
+    videosByQuality.get(quality)!.push(video)
+  })
+
+  // 对每个画质组内的视频按文件大小排序（大的在前）
+  videosByQuality.forEach((videos) => {
+    videos.sort((a, b) => b.play_addr.data_size - a.play_addr.data_size)
+  })
+
+  // 如果是自动模式
+  if (videoQuality === 'adapt') {
+    const sizeLimitBytes = (maxAutoVideoSize || Config.upload.filelimit) * 1024 * 1024
+    
+    // 按画质优先级排序：4k > 2k > 1080p > 720p > 540p
+    const qualityPriority = ['4k', '2k', '1080p', '720p', '540p']
+    
+    for (const quality of qualityPriority) {
+      const qualityVideos = videosByQuality.get(quality)
+      if (qualityVideos && qualityVideos.length > 0) {
+        // 选择该画质下文件大小最大但不超过限制的视频
+        const suitableVideo = qualityVideos.find(video => video.play_addr.data_size <= sizeLimitBytes)
+        if (suitableVideo) {
+          logger.debug(`自动选择画质: ${quality}, 文件大小: ${(suitableVideo.play_addr.data_size / (1024 * 1024)).toFixed(2)}MB`)
+          return [suitableVideo]
+        }
+      }
+    }
+    
+    // 如果没有找到符合大小限制的视频，选择最小的视频
+    let smallestVideo = mp4Videos[0]
+    mp4Videos.forEach(video => {
+      if (video.play_addr.data_size < smallestVideo.play_addr.data_size) {
+        smallestVideo = video
+      }
+    })
+    logger.debug(`未找到符合大小限制的视频，选择最小视频: ${(smallestVideo.play_addr.data_size / (1024 * 1024)).toFixed(2)}MB`)
+    return [smallestVideo]
+  }
+
+  // 固定画质模式
+  const targetQuality = videoQuality
+  const targetVideos = videosByQuality.get(targetQuality)
+  
+  if (targetVideos && targetVideos.length > 0) {
+    // 选择该画质下文件大小最大的视频
+    logger.debug(`选择固定画质: ${targetQuality}, 文件大小: ${(targetVideos[0].play_addr.data_size / (1024 * 1024)).toFixed(2)}MB`)
+    return [targetVideos[0]]
+  }
+
+  // 如果没有找到目标画质，选择最接近的画质
+  const qualityPriority = ['4k', '2k', '1080p', '720p', '540p']
+  const targetIndex = qualityPriority.indexOf(targetQuality)
+  
+  // 先尝试向下找（更低画质）
+  for (let i = targetIndex + 1; i < qualityPriority.length; i++) {
+    const fallbackVideos = videosByQuality.get(qualityPriority[i])
+    if (fallbackVideos && fallbackVideos.length > 0) {
+      logger.debug(`目标画质 ${targetQuality} 不可用，降级到: ${qualityPriority[i]}`)
+      return [fallbackVideos[0]]
+    }
+  }
+  
+  // 再尝试向上找（更高画质）
+  for (let i = targetIndex - 1; i >= 0; i--) {
+    const fallbackVideos = videosByQuality.get(qualityPriority[i])
+    if (fallbackVideos && fallbackVideos.length > 0) {
+      logger.debug(`目标画质 ${targetQuality} 不可用，升级到: ${qualityPriority[i]}`)
+      return [fallbackVideos[0]]
+    }
+  }
+
+  // 如果都没找到，返回第一个可用视频
+  logger.warn('未找到任何匹配的画质，返回默认视频')
+  return [mp4Videos[0]]
+}
+
+/**
+ * 传递整数，返回x小时后的时间
+ * @param {number} delay
+ * @returns
+ */
+function Time (delay: number): string {
+  const currentDate = new Date()
+  currentDate.setHours(currentDate.getHours() + delay)
+
+  const year = currentDate.getFullYear().toString()
+  const month = (currentDate.getMonth() + 1).toString()
+  const day = String(currentDate.getDate()).padStart(2, '0')
+  const hours = String(currentDate.getHours()).padStart(2, '0')
+  const minutes = String(currentDate.getMinutes()).padStart(2, '0')
+  const seconds = String(currentDate.getSeconds()).padStart(2, '0')
+
+  return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`
+}
+
+export const Emoji = (data: DyEmojiList) => {
+  const ListArray = []
+
+  for (const i of data.emoji_list) {
+    const display_name = i.display_name
+    const url = i.emoji_url.url_list[0]
+
+    const Objject = {
+      name: display_name,
+      url
+    }
+    ListArray.push(Objject)
+  }
+  return ListArray
+}
+
+/**
+ * 格式化视频统计信息为三行，每行两个数据项，并保持对齐
+ */
+const formatVideoStats = (digg_count: number, share_count: number, collect_count: number, comment_count: number, recommend_count: number ): string => {
+  // 计算每个数据项的文本
+  const diggText = `❤ 点赞: ${Count(digg_count)}`
+  const shareText = `🔄 转发: ${Count(share_count)}`
+  const collectText = `⭐ 收藏: ${Count(collect_count)}`
+  const commentText = `💬 评论: ${Count(comment_count)}`
+  const recommendText = `👍 推荐: ${Count(recommend_count)}`
+
+  // 找出第一列中最长的项的长度
+  const firstColItems = [diggText, shareText]
+  const maxFirstColLength = Math.max(...firstColItems.map(item => getStringDisplayWidth(item)))
+
+  // 构建三行文本，确保第二列对齐
+  const line1 = alignTwoColumns(diggText, shareText, maxFirstColLength)
+  const line2 = alignTwoColumns(collectText, commentText, maxFirstColLength)
+  const line3 = alignTwoColumns(recommendText, '', maxFirstColLength)
+
+  return `${line1}\n${line2}\n${line3}`
+}
+
+/**
+ * 对齐两列文本
+ */
+const alignTwoColumns = (col1: string, col2: string, targetLength: number): string => {
+  // 计算需要添加的空格数量
+  const col1Width = getStringDisplayWidth(col1)
+  const spacesNeeded = targetLength - col1Width + 5 // 5是两列之间的固定间距
+
+  // 添加空格使两列对齐
+  return col1 + ' '.repeat(spacesNeeded) + col2
+}
+
+/**
+ * 获取字符串在显示时的实际宽度
+ * 考虑到不同字符的显示宽度不同（如中文、emoji等）
+ */
+const getStringDisplayWidth = (str: string): number => {
+  let width = 0
+  for (let i = 0; i < str.length; i++) {
+    const code = str.codePointAt(i)
+    if (!code) continue
+
+    // 处理emoji和特殊Unicode字符
+    if (code > 0xFFFF) {
+      width += 2 // emoji通常占用2个字符宽度
+      i++ // 跳过代理对的后半部分
+    } else if ( // 处理中文字符和其他全角字符
+      (code >= 0x3000 && code <= 0x9FFF) || // 中文字符范围
+      (code >= 0xFF00 && code <= 0xFFEF) || // 全角ASCII、全角标点
+      code === 0x2026 || // 省略号
+      code === 0x2014 || // 破折号
+      (code >= 0x2E80 && code <= 0x2EFF) || // CJK部首补充
+      (code >= 0x3000 && code <= 0x303F) || // CJK符号和标点
+      (code >= 0x31C0 && code <= 0x31EF) || // CJK笔画
+      (code >= 0x3200 && code <= 0x32FF) || // 封闭式CJK字母和月份
+      (code >= 0x3300 && code <= 0x33FF) || // CJK兼容
+      (code >= 0xAC00 && code <= 0xD7AF) || // 朝鲜文音节
+      (code >= 0xF900 && code <= 0xFAFF) || // CJK兼容表意文字
+      (code >= 0xFE30 && code <= 0xFE4F) // CJK兼容形式
+    ) {
+      width += 2
+    } else if (code === 0x200D || (code >= 0xFE00 && code <= 0xFE0F) || (code >= 0x1F3FB && code <= 0x1F3FF)) { // emoji修饰符和连接符
+      width += 0 // 这些字符不增加宽度，它们是修饰符
+    } else { // 普通ASCII字符
+      width += 1
+    }
+  }
+  return width
+}

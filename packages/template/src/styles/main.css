@@ -1,0 +1,301 @@
+@import './font.css';
+@import '../../public/font/bilifont/font.css';
+@import "tailwindcss";
+@import 'highlight.js/styles/github.css';
+@import 'highlight.js/styles/github-dark.css';
+@plugin './hero.ts';
+/* Note: You may need to change the path to fit your project structure */
+@source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+@source '../**/*.{js,ts,jsx,tsx,html}';
+@custom-variant dark (&:is(.dark *));
+
+.hljs {
+  @import 'highlight.js/styles/github.css';
+}
+.dark .hljs {
+  @import 'highlight.js/styles/github-dark.css';
+}
+
+/* 全局主题变量 */
+:root {
+  /* 平台颜色变量 */
+  --qq-blue: #12b7f5;
+  --wechat-green: #07c160;
+  --telegram-blue: #0088cc;
+  --discord-purple: #5865f2;
+  --douyin-primary: #fe2c55;
+  --douyin-secondary: #25f4ee;
+  --bilibili-primary: #00a1d6;
+  --bilibili-secondary: #fb7299;
+
+  /* 新增语义化主题色 - 基于功能和图标含义 */
+  /* 互动相关颜色 */
+  --heroui-like: #ff6b6b;
+  /* 点赞/喜欢 - 温暖的红色 */
+  --heroui-comment: #4dabf7;
+  /* 评论 - 友好的蓝色 */
+  --heroui-share: #51cf66;
+  /* 分享 - 积极的绿色 */
+  --heroui-view: #845ef7;
+  /* 观看/浏览 - 紫色 */
+  --heroui-follow: #ff8cc8;
+  /* 关注/粉丝 - 粉色 */
+
+  /* 状态相关颜色 */
+  --heroui-live: #ff6b35;
+  /* 直播 - 橙红色 */
+  --heroui-time: #868e96;
+  /* 时间 - 中性灰色 */
+  --heroui-tag: #ffd43b;
+  /* 标签/分类 - 黄色 */
+  --heroui-badge: #9775fa;
+  /* 徽章 - 紫色 */
+
+  /* 平台特色颜色增强 */
+  --heroui-bilibili-pink: #fb7299;
+  --heroui-douyin-cyan: #25f4ee;
+  --heroui-vip-gold: #ffb700;
+}
+
+/* 全局主题工具类 */
+@layer utilities {
+
+  /* 主题背景和文本 */
+  .theme-bg {
+    background-color: var(--theme-bg);
+  }
+
+  .theme-text {
+    color: var(--theme-text);
+  }
+
+  .theme-text-muted {
+    color: var(--theme-text-muted);
+  }
+
+  .theme-border {
+    border-color: var(--theme-border);
+  }
+
+  .theme-surface {
+    background-color: var(--theme-surface);
+  }
+
+  /* 平台颜色工具类 */
+  .qq-blue {
+    color: var(--qq-blue);
+  }
+
+  .bg-qq-blue {
+    background-color: var(--qq-blue);
+  }
+
+  .wechat-green {
+    color: var(--wechat-green);
+  }
+
+  .bg-wechat-green {
+    background-color: var(--wechat-green);
+  }
+
+  .telegram-blue {
+    color: var(--telegram-blue);
+  }
+
+  .bg-telegram-blue {
+    background-color: var(--telegram-blue);
+  }
+
+  .discord-purple {
+    color: var(--discord-purple);
+  }
+
+  .bg-discord-purple {
+    background-color: var(--discord-purple);
+  }
+
+  .douyin-primary {
+    color: var(--douyin-primary);
+  }
+
+  .bg-douyin-primary {
+    background-color: var(--douyin-primary);
+  }
+
+  .douyin-secondary {
+    color: var(--douyin-secondary);
+  }
+
+  .bg-douyin-secondary {
+    background-color: var(--douyin-secondary);
+  }
+
+  .bilibili-primary {
+    color: var(--bilibili-primary);
+  }
+
+  .bg-bilibili-primary {
+    background-color: var(--bilibili-primary);
+  }
+
+  .bilibili-secondary {
+    color: var(--bilibili-secondary);
+  }
+
+  .bg-bilibili-secondary {
+    background-color: var(--bilibili-secondary);
+  }
+
+  /* 新增语义化颜色工具类 */
+  /* 互动相关 */
+  .text-like {
+    color: var(--heroui-like);
+  }
+
+  .bg-like {
+    background-color: var(--heroui-like);
+  }
+
+  .text-comment {
+    color: var(--heroui-comment);
+  }
+
+  .bg-comment {
+    background-color: var(--heroui-comment);
+  }
+
+  .text-share {
+    color: var(--heroui-share);
+  }
+
+  .bg-share {
+    background-color: var(--heroui-share);
+  }
+
+  .text-view {
+    color: var(--heroui-view);
+  }
+
+  .bg-view {
+    background-color: var(--heroui-view);
+  }
+
+  .text-follow {
+    color: var(--heroui-follow);
+  }
+
+  .bg-follow {
+    background-color: var(--heroui-follow);
+  }
+
+  /* 状态相关 */
+  .text-live {
+    color: var(--heroui-live);
+  }
+
+  .bg-live {
+    background-color: var(--heroui-live);
+  }
+
+  .text-time {
+    color: var(--heroui-time);
+  }
+
+  .bg-time {
+    background-color: var(--heroui-time);
+  }
+
+  .text-tag {
+    color: var(--heroui-tag);
+  }
+
+  .bg-tag {
+    background-color: var(--heroui-tag);
+  }
+
+  .text-badge {
+    color: var(--heroui-badge);
+  }
+
+  .bg-badge {
+    background-color: var(--heroui-badge);
+  }
+
+  /* 平台特色颜色 */
+  .text-bilibili-pink {
+    color: var(--heroui-bilibili-pink);
+  }
+
+  .bg-bilibili-pink {
+    background-color: var(--heroui-bilibili-pink);
+  }
+
+  .text-douyin-cyan {
+    color: var(--heroui-douyin-cyan);
+  }
+
+  .bg-douyin-cyan {
+    background-color: var(--heroui-douyin-cyan);
+  }
+
+  .text-vip-gold {
+    color: var(--heroui-vip-gold);
+  }
+
+  .bg-vip-gold {
+    background-color: var(--heroui-vip-gold);
+  }
+}
+
+/* 基础样式 */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: HarmonyOSHans-Regular, bilifont, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    line-height: 1.6;
+    color: var(--theme-text);
+    background-color: var(--theme-bg);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    transition: color 0.3s ease, background-color 0.3s ease;
+  }
+
+  /* 滚动条样式 */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--theme-surface);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--theme-border);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--theme-text-muted);
+  }
+
+  /* 选择文本样式 */
+  ::selection {
+    background-color: var(--theme-text-muted);
+    color: var(--theme-bg);
+  }
+
+  /* 焦点样式 */
+  :focus-visible {
+    outline: 2px solid var(--theme-text);
+    outline-offset: 2px;
+  }
+}

@@ -1,5 +1,0 @@
-export * from './comments'
-export * from './douyin'
-export * from './getID'
-export * from './login'
-export * from './push'

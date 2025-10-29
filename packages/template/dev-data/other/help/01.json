@@ -1,0 +1,48 @@
+{
+  "title": "KKK插件帮助页面",
+  "menu": [
+    {
+      "title": "常用功能",
+      "items": [
+        {
+          "title": "「#解析」「#kkk解析」",
+          "description": "在解析功能关闭的情况下，可对引用消息进行解析",
+          "icon": "Sparkles"
+        }
+      ]
+    },
+    {
+      "title": "推送相关",
+      "items": [],
+      "subGroups": [
+        {
+          "title": "在群聊中再发送一次即可取消订阅",
+          "items": [
+            {
+              "title": "#设置抖音推送 + 抖音号",
+              "description": "在群聊中发送以对该群订阅该blogger的作品更新",
+              "icon": "Bell"
+            },
+            {
+              "title": "#设置B站推送 + UP主UID",
+              "description": "在群聊中发送以对该群订阅该blogger的作品更新",
+              "icon": "Bell"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "其他",
+      "items": [
+        {
+          "title": "「#kkk更新日志」「#kkk更新」「#kkk更新预览版」",
+          "description": "字面意思~",
+          "icon": "RefreshCw"
+        }
+      ]
+    }
+  ],
+  "role": "member",
+  "useDarkTheme": true
+}
