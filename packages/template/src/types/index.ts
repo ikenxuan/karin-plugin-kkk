@@ -61,7 +61,7 @@ export interface BaseComponentProps<T = Record<string, any>> extends Pick<TypedR
 /**
  * 抖音平台组件ID
  */
-type DouyinComponentIds = 'comment' | 'dynamic' | 'live' | 'musicinfo' | 'user_profile' | 'userlist' | 'videoInfo'
+type DouyinComponentIds = 'comment' | 'dynamic' | 'live' | 'musicinfo' | 'user_profile' | 'userlist' | 'videoInfo' | 'qrcodeImg'
 
 /**
  * B站平台组件ID
@@ -116,6 +116,7 @@ interface PathToDataTypeMap {
   'douyin/user_profile': any // 暂未启用
   'douyin/userlist': import('./platforms/douyin').DouyinUserListProps['data']
   'douyin/videoInfo': import('./platforms/douyin').DouyinVideoInfoProps['data']
+  'douyin/qrcodeImg': import('./platforms/douyin').DouyinQrcodeImgProps['data']
 
   // B站相关路径
   'bilibili/comment': import('./platforms/bilibili').BilibiliCommentProps['data']
@@ -136,7 +137,7 @@ interface PathToDataTypeMap {
   // 小红书相关路径
   'xiaohongshu/noteInfo': import('./platforms/xiaohongshu').XiaohongshuNoteInfoProps['data']
   'xiaohongshu/comment': import('./platforms/xiaohongshu').XiaohongshuCommentProps['data']
-  
+
   // 其他平台路径
   'other/help': import('./help').HelpProps['data']
   'other/handlerError': import('./ohter/handlerError').ApiErrorProps['data']
@@ -157,7 +158,7 @@ export type ExtractDataTypeFromPath<P extends string> = P extends keyof PathToDa
  */
 export interface DataTypeMap {
   /** 抖音平台数据类型 */
-  douyin: import('./platforms/douyin').DouyinCommentProps['data'] | import('./platforms/douyin').DouyinDynamicProps['data'] | import('./platforms/douyin').DouyinLiveProps['data'] | import('./platforms/douyin').DouyinMusicInfoProps['data']
+  douyin: import('./platforms/douyin').DouyinCommentProps['data'] | import('./platforms/douyin').DouyinDynamicProps['data'] | import('./platforms/douyin').DouyinLiveProps['data'] | import('./platforms/douyin').DouyinMusicInfoProps['data'] | import('./platforms/douyin').DouyinQrcodeImgProps['data']
   /** B站平台数据类型 */
   bilibili: import('./platforms/bilibili').BilibiliCommentProps['data'] | import('./platforms/bilibili/dynamic/forward').BilibiliForwardDynamicProps['data']
   /** 快手平台数据类型 */

@@ -21,11 +21,12 @@
     "web": "pnpm --filter web run dev"
   },
   "dependencies": {
-    "@ikenxuan/amagi": "^4.4.8",
-    "@karinjs/md-html": "^1.1.6",
-    "@karinjs/puppeteer": "^2.0.5",
+    "@ikenxuan/amagi": "5.7.0",
+    "@tailwindcss/vite": "4.1.14",
+    "@vitejs/plugin-react-swc": "4.1.0",
+    "clsx": "^2.1.1",
     "cors": "^2.8.5",
-    "lucide-react": "0.546.0",
+    "lucide-react": "0.548.0",
     "node-karin": "1.12.2",
     "react": "19.2.0",
     "react-dom": "19.2.0",

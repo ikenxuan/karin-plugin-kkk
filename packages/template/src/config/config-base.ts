@@ -103,6 +103,14 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
         enabled: true,
         componentPath: 'platforms/douyin/videoInfo',
         exportName: 'DouyinVideoInfo'
+      },
+      {
+        id: 'qrcodeImg',
+        name: '登录二维码',
+        description: '抖音登录二维码展示模板',
+        enabled: true,
+        componentPath: 'platforms/douyin/qrcodeImg',
+        exportName: 'DouyinQrcodeImg'
       }
     ]
   },

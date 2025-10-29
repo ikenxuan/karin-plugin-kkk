@@ -52,10 +52,14 @@
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../template/src/dev/mock-server.ts\" --include \"../template/src/main.ts\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
-    "@types/react": "^19.2.2"
+    "@types/react": "^19.2.2",
+    "fingerprint-generator": "^2.1.75",
+    "fingerprint-injector": "^2.1.75"
   },
   "devDependencies": {
     "@karinjs/plugin-puppeteer": "1.0.20",
+    "@karinjs/puppeteer": "^2.0.5",
+    "@karinjs/puppeteer-types": "^0.0.6",
     "@rollup/plugin-terser": "^0.4.4",
     "@types/connect-history-api-fallback": "^1.5.4",
     "@types/express": "5.0.3",
@@ -95,5 +99,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2025-10-29T04:49:47.487Z"
+  "timestamp": "2025-10-29T09:53:20.517Z"
 }

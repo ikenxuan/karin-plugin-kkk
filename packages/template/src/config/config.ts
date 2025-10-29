@@ -102,6 +102,12 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
                 default: module.DouyinVideoInfo
               }))
             })
+          case 'qrcodeImg':
+            return createComponentConfig(baseComponent, {
+              lazyComponent: () => import('../components/platforms/douyin/qrcodeImg').then(module => ({
+                default: module.DouyinQrcodeImg
+              }))
+            })
           default:
             return createComponentConfig(baseComponent)
         }
