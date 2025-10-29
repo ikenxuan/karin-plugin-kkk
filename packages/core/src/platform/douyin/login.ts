@@ -88,7 +88,7 @@ export const douyinLogin = async (e: Message) => {
 
     // 激进地拦截资源，只保留必要的 HTML、JS 和二维码图片
     await page.setRequestInterception(true)
-    page.on('request', (request) => {
+    page.on('request', async (request) => {
       const resourceType = request.resourceType()
       const url = request.url()
 
@@ -98,17 +98,20 @@ export const douyinLogin = async (e: Message) => {
       }
 
       // 阻止明确不需要的资源
-      if (
-        resourceType === 'media' || // 视频/音频
+      const shouldBlock =
+        resourceType === 'media' || // 视频/音频（Puppeteer 已识别的媒体类型）
         resourceType === 'font' || // 字体
         resourceType === 'stylesheet' || // CSS
-        url.includes('.mp4') ||
-        url.includes('.webm') ||
-        url.includes('.m3u8') ||
-        url.includes('/video/') ||
-        url.includes('/aweme/') || // 抖音视频相关
-        (resourceType === 'image' && !url.includes('qrcode') && !url.includes('data:image') && (url.includes('.jpg') || url.includes('.jpeg') || url.includes('.webp'))) // 阻止大图片但保留二维码
-      ) {
+        // 通过 URL 特征识别视频
+        /\.(mp4|webm|m3u8|flv|avi|mov|wmv|mkv)(\?|$)/i.test(url) || // 视频文件扩展名
+        url.includes('/aweme/') || // 抖音视频相关路径
+        url.includes('/video/') || // 通用视频路径
+        url.includes('v.douyin.com') || // 抖音视频域名
+        // 阻止大图片但保留二维码
+        (resourceType === 'image' && !url.includes('qrcode') && !url.includes('data:image') &&
+          (url.includes('.jpg') || url.includes('.jpeg') || url.includes('.webp')))
+
+      if (shouldBlock) {
         if (url.includes('passport') || url.includes('login') || url.includes('qrconnect')) {
           logger.warn(`[拦截] 登录相关请求被拦截: ${url}`)
         }
@@ -137,19 +140,16 @@ export const douyinLogin = async (e: Message) => {
         unobserve () { }
         disconnect () { }
       } as any
-
-      // 不要禁用 requestAnimationFrame，因为登录轮询可能依赖它
     })
 
-    // 访问首页但激进拦截资源
+    // 访问首页
     await page.goto('https://www.douyin.com', { timeout: 120000, waitUntil: 'domcontentloaded' })
-
-    // 不要清理 DOM，避免破坏登录轮询逻辑
 
     let timeoutId: NodeJS.Timeout | undefined
     const timeout = new Promise((_resolve) => {
       timeoutId = setTimeout(async () => {
         logger.warn('登录超时，关闭浏览器')
+        await e.reply('登录超时，我也不知道该怎么办了~')
         await browser.close()
       }, 120000)
     })
