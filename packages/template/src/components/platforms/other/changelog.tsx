@@ -33,7 +33,7 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
 
         {props.data.Tip && (<div className="inline-block relative mt-20">
           <div className="absolute inset-0 bg-black rounded-2xl opacity-50 blur-xl translate-y-6 -z-10"></div>
-          <img className="block relative rounded-2xl" src="/image/banner.png" alt="横幅" />
+          <img className="block relative rounded-2xl" src="/image/banner.webp" alt="横幅" />
         </div>
         )}
 
