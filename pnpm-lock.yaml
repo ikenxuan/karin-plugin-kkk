@@ -99,6 +99,12 @@ importers:
       '@types/react':
         specifier: ^19.2.2
         version: 19.2.2
+      fingerprint-generator:
+        specifier: ^2.1.75
+        version: 2.1.75
+      fingerprint-injector:
+        specifier: ^2.1.75
+        version: 2.1.75(playwright@1.56.1)
     devDependencies:
       '@karinjs/plugin-puppeteer':
         specifier: 1.0.20
@@ -127,12 +133,6 @@ importers:
       connect-history-api-fallback:
         specifier: ^2.0.0
         version: 2.0.0
-      fingerprint-generator:
-        specifier: ^2.1.75
-        version: 2.1.75
-      fingerprint-injector:
-        specifier: ^2.1.75
-        version: 2.1.75(playwright@1.56.1)
       heic-convert:
         specifier: ^2.1.0
         version: 2.1.0
