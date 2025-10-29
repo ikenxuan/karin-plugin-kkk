@@ -149,6 +149,7 @@ export const douyinLogin = async (e: Message) => {
     const timeout = new Promise((_resolve) => {
       timeoutId = setTimeout(async () => {
         logger.warn('登录超时，关闭浏览器')
+        await page.screenshot({ path: path.join(karinPathTemp, Root.pluginName, 'DouyinLoginQrcodeError.png'), fullPage: true })
         await e.reply('登录超时，我也不知道该怎么办了~')
         await browser.close()
       }, 120000)
