@@ -23,14 +23,30 @@ export const douyinLogin = async (e: Message) => {
     const injector = new FingerprintInjector()
 
     const { browser } = await launch({
-      headless: platform() === 'win32' ? true : false,
+      headless: true,
       args: [
         '--disable-blink-features=AutomationControlled', // 禁用自动化控制
-        // '--window-position=-10000,-10000', // 将窗口移到屏幕外
-        // '--start-minimized', // 启动时最小化
         '--mute-audio',
         '--no-sandbox',
-        '--disable-web-security'
+        '--disable-web-security',
+        '--disable-dev-shm-usage', // Linux 共享内存优化
+        '--disable-gpu', // 禁用 GPU 加速
+        '--disable-software-rasterizer',
+        '--disable-extensions',
+        '--disable-background-networking',
+        '--disable-background-timer-throttling',
+        '--disable-backgrounding-occluded-windows',
+        '--disable-breakpad',
+        '--disable-component-extensions-with-background-pages',
+        '--disable-features=TranslateUI,BlinkGenPropertyTrees',
+        '--disable-ipc-flooding-protection',
+        '--disable-renderer-backgrounding',
+        '--enable-features=NetworkService,NetworkServiceInProcess',
+        '--force-color-profile=srgb',
+        '--hide-scrollbars',
+        '--metrics-recording-only',
+        '--no-first-run',
+        '--disable-setuid-sandbox'
       ],
       ignoreDefaultArgs: ['--enable-automation']
     })
@@ -56,7 +72,27 @@ export const douyinLogin = async (e: Message) => {
       }
     }) as Awaited<ReturnType<Awaited<ReturnType<typeof launch>>['browser']['newPage']>>
     await injector.attachFingerprintToPuppeteer(page, fingerprint)
-    await page.goto('https://www.douyin.com', { timeout: 120000 })
+
+    // 阻止加载不必要的资源以加快页面加载
+    await page.setRequestInterception(true)
+    page.on('request', (request) => {
+      const resourceType = request.resourceType()
+      const url = request.url()
+
+      // 阻止图片、字体、媒体等非必要资源，但保留二维码相关请求
+      if (['image', 'font', 'media', 'stylesheet'].includes(resourceType) &&
+        !url.includes('qrcode') &&
+        !url.includes('passport')) {
+        request.abort()
+      } else {
+        request.continue()
+      }
+    })
+
+    await page.goto('https://www.douyin.com', {
+      timeout: 120000,
+      waitUntil: 'domcontentloaded' // 改为 domcontentloaded 而不是等待所有资源
+    })
 
     const timeout = new Promise((_resolve) => setTimeout(async () => {
       await browser.close() // 超时后关闭浏览器
@@ -220,7 +256,8 @@ const waitQrcode = async (page: Awaited<ReturnType<Awaited<ReturnType<typeof lau
     await page.screenshot({ path: path.join(karinPathTemp, Root.pluginName, 'DouyinLoginQrcodeError.png'), fullPage: true })
   }
   logger.debug('二维码加载完成')
-  await new Promise(resolve => setTimeout(resolve, 5000))
+  // 减少等待时间，二维码已经加载完成
+  await new Promise(resolve => setTimeout(resolve, 1000))
   const images = await page.$$eval('img', (imgs) => {
     return imgs.map(img => ({
       src: img.src,
