@@ -26,10 +26,22 @@ export const douyinLogin = async (e: Message) => {
       headless: true,
       args: [
         '--disable-blink-features=AutomationControlled',
-        '--no-sandbox',
         '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage', // Linux 必需
-        '--mute-audio'
+        '--mute-audio',
+        '--window-size=800,600', // 设置窗口大小
+        '--disable-gpu', // 禁用 GPU 硬件加速
+        '--no-sandbox', // 关闭 Chrome 的沙盒模式
+        '--disable-setuid-sandbox', // 进一步禁用 setuid 沙盒机制，通常和 --no-sandbox 配合使用，避免权限问题
+        '--no-zygote', // 关闭 Chrome 的 zygote 进程，减少进程开销，优化资源使用
+        '--disable-extensions', // 禁用扩展
+        '--disable-dev-shm-usage', // 禁用 /dev/shm（共享内存）用作临时存储，改用磁盘存储
+        '--disable-background-networking', // 禁用后台网络请求
+        '--disable-sync', // 禁用 Chrome 的同步功能
+        '--disable-crash-reporter', // 禁用崩溃报告
+        '--disable-translate', // 禁用翻译
+        '--disable-notifications', // 禁用通知
+        '--disable-device-discovery-notifications', // 禁用设备发现通知
+        '--disable-accelerated-2d-canvas' // 禁用 2D 画布的硬件加速
       ],
       ignoreDefaultArgs: ['--enable-automation']
     })
@@ -213,7 +225,7 @@ export const douyinLogin = async (e: Message) => {
 const waitQrcode = async (page: Awaited<ReturnType<Awaited<ReturnType<typeof launch>>['browser']['newPage']>>) => {
   const qrCodeSelector = 'img[aria-label="二维码"]'
   try {
-    await page.waitForSelector(qrCodeSelector, { timeout: 10000 })
+    await page.waitForSelector(qrCodeSelector, { timeout: 60000 })
   } catch {
     // 可能遇到验证码了，截个图
     await page.screenshot({ path: path.join(karinPathTemp, Root.pluginName, 'DouyinLoginQrcodeError.png'), fullPage: true })
