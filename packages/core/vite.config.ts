@@ -94,11 +94,14 @@ export default defineConfig({
         ...builtinModules,
         ...builtinModules.map((mod) => `node:${mod}`),
         ...[
-          '', '/schedule', '/redis', '/ws', '/node-schedule', 
-          '/moment/locale/*', '/app', '/start', '/dir', '/art-template', 
-          '/chokidar', '/moment', '/express', '/root', '/lodash', '/yaml', 
+          '', '/schedule', '/redis', '/ws', '/node-schedule',
+          '/moment/locale/*', '/app', '/start', '/dir', '/art-template',
+          '/chokidar', '/moment', '/express', '/root', '/lodash', '/yaml',
           '/axios', '/log4js', '/template', '/sqlite3'
-        ].map(p => `node-karin${p}`)
+        ].map(p => `node-karin${p}`),
+        'fingerprint-generator',
+        'fingerprint-injector',
+        '@karinjs/puppeteer'
       ],
       output: {
         inlineDynamicImports: true,

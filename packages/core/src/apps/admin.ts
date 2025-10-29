@@ -6,6 +6,7 @@ import karin, { logger } from 'node-karin'
 import { Common } from '@/module'
 import { Config } from '@/module/utils/Config'
 import { bilibiliLogin } from '@/platform'
+import { douyinLogin } from '@/platform/douyin/login'
 
 export const task = Config.app.removeCache && karin.task('[kkk-视频缓存自动删除]', '0 0 4 * * *', async () => {
   try {
@@ -24,10 +25,10 @@ export const biLogin = karin.command(/^#?(kkk)?\s*B站\s*(扫码)?\s*登录$/i, 
 }, { perm: Config.bilibili.loginPerm, name: 'kkk-ck管理' })
 
 export const dylogin = karin.command(/^#?(kkk)?抖音(扫码)?登录$/, async (e) => {
-  await e.reply('暂时不可用')
-  return true
-  // await douyinLogin(e)
+  // await e.reply('暂时不可用')
   // return true
+  await douyinLogin(e)
+  return true
 }, { perm: Config.douyin.loginPerm, name: 'kkk-ck管理' })
 
 export const setdyck = karin.command(/^#?(kkk)?s*设置抖音ck$/i, async (e) => {
