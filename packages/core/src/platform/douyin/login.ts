@@ -23,7 +23,7 @@ export const douyinLogin = async (e: Message) => {
     const injector = new FingerprintInjector()
 
     const { browser } = await launch({
-      headless: true,
+      headless: platform() === 'win32' ? true : false,
       args: [
         '--disable-blink-features=AutomationControlled', // 禁用自动化控制
         // '--window-position=-10000,-10000', // 将窗口移到屏幕外
@@ -41,7 +41,7 @@ export const douyinLogin = async (e: Message) => {
     // await pageTest.goto('https://bot.sannysoft.com')
     // await pageTest.screenshot({ path: 'testresult.png', fullPage: true })
 
-    // 根据当前系统平台选择操作系统类型
+    /** 根据当前系统平台选择操作系统类型 */
     const getOperatingSystem = (): 'windows' | 'macos' | 'linux' => {
       const os = platform()
       if (os === 'win32') return 'windows'
