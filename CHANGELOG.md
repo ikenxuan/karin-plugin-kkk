@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.9.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.9.3...v2.9.4) (2025-10-30)
+
+
+### 🐛 错误修复
+
+* 1 ([9699c16](https://github.com/ikenxuan/karin-plugin-kkk/commit/9699c167fd3c22e45e4f9e9945e995eb08188893))
+* 1 ([c773f8c](https://github.com/ikenxuan/karin-plugin-kkk/commit/c773f8c8906a72e0414b7323705f86fb88bff396))
+* **bilibili:** Enhance article dynamic rendering with image extraction ([6bd2541](https://github.com/ikenxuan/karin-plugin-kkk/commit/6bd254128623651f5318d1a296d2a97d912765c8))
+* **douyin:** Enhance login flow and error handling for Douyin QR code authentication ([32c2a88](https://github.com/ikenxuan/karin-plugin-kkk/commit/32c2a884604b1be65282462819dec0c65ba9c0a7))
+* **xiaohongshu:** Improve comment rendering and text processing ([456667c](https://github.com/ikenxuan/karin-plugin-kkk/commit/456667c7e1f58d0142bc27fdcd426fbb64dd03e3))
+* 适配av号的稿件 ([ceb4ade](https://github.com/ikenxuan/karin-plugin-kkk/commit/ceb4ade90ba676ec3cd99d34c1c868ff6aaf1396))
+
 ## [2.9.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.9.2...v2.9.3) (2025-10-29)
 
 
