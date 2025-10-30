@@ -10,6 +10,19 @@ import { karin, karinPathTemp, logger, Message } from 'node-karin'
 import { Common, Render, Root } from '@/module'
 import { Config } from '@/module/utils/Config'
 
+/**
+ * 截图函数
+ */
+const safeScreenshot = async (page: Awaited<ReturnType<Awaited<ReturnType<typeof launch>>['browser']['newPage']>>, screenshotPath: string) => {
+  try {
+    await page.screenshot({
+      path: screenshotPath
+    })
+    logger.debug(`截图已保存: ${screenshotPath}`)
+  } catch (error) {
+    logger.warn('截图失败（已忽略）:', error)
+  }
+}
 
 export const douyinLogin = async (e: Message) => {
   const msg_id: string[] = []
@@ -25,6 +38,7 @@ export const douyinLogin = async (e: Message) => {
     const { browser } = await launch({
       headless: true,
       downloadBrowser: 'chrome-headless-shell',
+      protocolTimeout: 60000,
       args: [
         '--disable-blink-features=AutomationControlled', // 禁用自动化控制特征，避免网站检测到自动化工具
         '--mute-audio', // 静音处理，防止页面播放音频
@@ -159,7 +173,7 @@ export const douyinLogin = async (e: Message) => {
     } catch (error: any) {
       if (error.message === 'QR_CODE_TIMEOUT') {
         logger.warn('获取二维码超时')
-        await page.screenshot({ path: path.join(karinPathTemp, Root.pluginName, 'DouyinLoginQrcodeError.png'), fullPage: true })
+        await safeScreenshot(page, path.join(karinPathTemp, Root.pluginName, 'DouyinLoginQrcodeError.png'))
         await e.reply('获取二维码超时，请稍后重试', { reply: true })
       } else {
         logger.error('获取二维码失败:', error)
@@ -502,7 +516,7 @@ const waitQrcode = async (page: Awaited<ReturnType<Awaited<ReturnType<typeof lau
     await page.waitForSelector(qrCodeSelector, { timeout: 60000 })
   } catch {
     // 可能遇到验证码了，截个图
-    await page.screenshot({ path: path.join(karinPathTemp, Root.pluginName, 'DouyinLoginQrcodeError.png'), fullPage: true })
+    await safeScreenshot(page, path.join(karinPathTemp, Root.pluginName, 'DouyinLoginQrcodeError.png'))
     throw new Error('加载超时了，或者遇到验证码了。。。')
   }
   logger.debug('二维码加载完成')
