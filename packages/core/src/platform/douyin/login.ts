@@ -486,12 +486,7 @@ export const douyinLogin = async (e: Message) => {
     }
   } catch (error: any) {
     logger.error(error)
-    if (error.message.includes('npx playwright install')) {
-      await e.reply('首次使用，正在初始化 puppeteer 环境，请稍等片刻...')
-      await e.reply(`请确保已正确安装 puppeteer 依赖，请再次发送「${e.msg}」`)
-    } else {
-      await e.reply('浏览器环境初始化失败，请查看控制台错误日志', { reply: true })
-    }
+    await e.reply('浏览器环境初始化失败，请查看控制台错误日志', { reply: true })
   }
   return true
 }
