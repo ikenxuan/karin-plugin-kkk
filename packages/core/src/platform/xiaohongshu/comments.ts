@@ -19,7 +19,8 @@ const processCommentEmojis = (text: string, emojiData: any): string => {
       // 使用正则表达式进行全局替换，确保特殊字符被正确转义
       const escapedName = emoji.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
       const regex = new RegExp(escapedName, 'g')
-      processedText = processedText.replace(regex, `<img src="${emoji.url}" alt="${emoji.name}" />`)
+      // 不在 alt 中包含表情名称，避免嵌套问题
+      processedText = processedText.replace(regex, `<img src="${emoji.url}" alt="" />`)
     }
   }
 
@@ -63,8 +64,8 @@ const processAtUsers = (text: string, atUsers: any[], useDarkTheme: boolean = fa
       const escapedNickname = atUser.nickname.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
       const regex = new RegExp(`@${escapedNickname}`, 'g')
 
-      const spanClass = useDarkTheme ? 'text-[#c7daef]' : 'text-[#13386c]'
-      processedText = processedText.replace(regex, `<span class="${spanClass}">@${atUser.nickname}</span>`)
+      const color = useDarkTheme ? '#c7daef' : '#13386c'
+      processedText = processedText.replace(regex, `<span style="color: ${color};">@${atUser.nickname}</span>`)
     }
   }
 
@@ -169,6 +170,11 @@ export async function xiaohongshuComments (data: any, emojiData: any, useDarkThe
 
   // 处理文本格式、表情包和@用户
   for (const comment of comments) {
+    // 确保 content 是字符串
+    if (typeof comment.content !== 'string') {
+      comment.content = String(comment.content || '')
+    }
+
     // 处理换行符和空格
     comment.content = comment.content.replace(/\n/g, '<br>').replace(/ {2,}/g, (match: string) => '&nbsp;'.repeat(match.length))
 
@@ -186,6 +192,11 @@ export async function xiaohongshuComments (data: any, emojiData: any, useDarkThe
     // 处理子评论
     if (comment.sub_comments && Array.isArray(comment.sub_comments)) {
       for (const subComment of comment.sub_comments) {
+        // 确保 content 是字符串
+        if (typeof subComment.content !== 'string') {
+          subComment.content = String(subComment.content || '')
+        }
+
         // 处理换行符和空格
         subComment.content = subComment.content.replace(/\n/g, '<br>').replace(/ {2,}/g, (match: string) => '&nbsp;'.repeat(match.length))
 
