@@ -2,6 +2,7 @@ import fs from 'node:fs'
 
 import {
   ApiResponse,
+  ArticleContent,
   BiliBangumiVideoInfo,
   BiliBangumiVideoPlayurlIsLogin,
   BiliBangumiVideoPlayurlNoLogin,
@@ -17,6 +18,7 @@ import {
 import karin, {
   common,
   ElementTypes,
+  ImageElement,
   logger,
   Message,
   segment,
@@ -328,7 +330,12 @@ export class Bilibili extends Base {
               if (imgArray.length === 1) this.e.reply(imgArray[0])
               if (imgArray.length > 1) {
                 const forwardMsg = common.makeForward(imgArray, this.e.userId, this.e.sender.nick)
-                await this.e.bot.sendForwardMsg(this.e.contact, forwardMsg)
+                await this.e.bot.sendForwardMsg(this.e.contact, forwardMsg, {
+                  source: '图片合集',
+                  summary: `查看${imgArray.length}张图片消息`,
+                  prompt: 'B站图文动态解析结果',
+                  news: [{ text: '点击查看解析结果' }]
+                })
               }
               this.e.reply(img)
             }
@@ -614,7 +621,25 @@ export class Bilibili extends Base {
             const articleData = articleInfoBase.data.data
             // 提取专栏正文内容
             const articleContent = articleInfo.data.data
+
+            // 提取所有图片
+            const messageElements: ImageElement[] = []
+            const articleImages = extractArticleImages(articleContent)
+            for (const item of articleImages) {
+              messageElements.push(segment.image(item))
+            }
             
+            if (messageElements.length === 1) this.e.reply(messageElements[0])
+            if (messageElements.length > 1) {
+              const forwardMsg = common.makeForward(messageElements, this.e.userId, this.e.sender.nick)
+              this.e.bot.sendForwardMsg(this.e.contact, forwardMsg, {
+                source: '图片合集',
+                summary: `查看${messageElements.length}张图片消息`,
+                prompt: 'B站专栏动态解析结果',
+                news: [{ text: '点击查看解析结果' }]
+              })
+            }
+
             // 构建渲染数据
             const img = await Render('bilibili/dynamic/DYNAMIC_TYPE_ARTICLE',
               {
@@ -634,12 +659,11 @@ export class Bilibili extends Base {
                 // 专栏正文内容 - 优先使用opus，否则使用content
                 opus: articleContent.opus || undefined,
                 content: articleContent.content || undefined,
-                
                 // 统计信息
                 stats: articleData.stats,
                 render_time: Common.getCurrentTime(),
                 // 分享链接
-                share_url: `https://www.bilibili.com/read/cv${articleData.id}`,
+                share_url: articleContent.dyn_id_str ? `https://www.bilibili.com/opus/${articleContent.dyn_id_str}` : `https://www.bilibili.com/read/cv${articleContent.id}`,
                 dynamicTYPE: '专栏动态解析'
               }
             )
@@ -1104,4 +1128,46 @@ const getStringDisplayWidth = (str: string): number => {
     }
   }
   return width
+}
+
+/**
+ * 提取专栏中的所有图片URL
+ * @param content 
+ * @returns 
+ */
+export const extractArticleImages = (content: ArticleContent['data']): string[] => {
+  const images: string[] = []
+
+  // 处理 opus 格式（结构化数据）
+  if (content.opus?.content?.paragraphs) {
+    for (const paragraph of content.opus.content.paragraphs) {
+      // para_type === 2 表示图片段落
+      if (paragraph.para_type === 2 && paragraph.pic?.pics) {
+        for (const pic of paragraph.pic.pics) {
+          if (pic.url) {
+            // 确保使用 https 协议
+            const url = pic.url.startsWith('//') ? `https:${pic.url}` : pic.url
+            images.push(url)
+          }
+        }
+      }
+    }
+  }
+
+  // 处理 content 格式（HTML字符串）
+  if (content.content && typeof content.content === 'string') {
+    // 使用正则提取所有 img 标签的 src
+    const imgRegex = /<img[^>]+src="([^"]+)"/gi
+    let match
+    while ((match = imgRegex.exec(content.content)) !== null) {
+      let url = match[1]
+      // 修复协议
+      if (url.startsWith('//')) {
+        url = `https:${url}`
+      }
+      images.push(url)
+    }
+  }
+
+  return images
 }

@@ -239,84 +239,122 @@ const parseOpusContent = (opus: any): React.ReactNode => {
  */
 const sanitizeHtmlContent = (htmlString: string): string => {
   try {
-    // 创建临时DOM来解析HTML
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(htmlString, 'text/html')
+    let processed = htmlString
 
-    // 递归处理所有元素
-    const processElement = (element: Element): void => {
-      // 移除所有class属性
-      element.removeAttribute('class')
-
-      // 根据标签类型添加自定义样式
-      const tagName = element.tagName.toLowerCase()
-
-      switch (tagName) {
-        case 'h1':
-          element.setAttribute('class', 'text-[72px] font-bold mb-10 leading-[1.4]')
-          break
-        case 'h2':
-          element.setAttribute('class', 'text-[64px] font-bold mb-10 leading-[1.4]')
-          break
-        case 'h3':
-          element.setAttribute('class', 'text-[56px] font-semibold mb-8 leading-[1.4]')
-          break
-        case 'h4':
-          element.setAttribute('class', 'text-[48px] font-semibold mb-8 leading-[1.4]')
-          break
-        case 'h5':
-          element.setAttribute('class', 'text-[40px] font-medium mb-6 leading-[1.4]')
-          break
-        case 'h6':
-          element.setAttribute('class', 'text-[36px] font-medium mb-6 leading-[1.4]')
-          break
-        case 'p':
-          element.setAttribute('class', 'mb-10 leading-[1.7] text-[42px]')
-          break
-        case 'blockquote':
-          element.setAttribute('class', 'pl-6 my-8 border-l-8 border-default-400 text-foreground-700 leading-[1.7] text-[42px]')
-          break
-        case 'ul':
-          element.setAttribute('class', 'list-disc list-inside mb-8 text-[42px] leading-[1.7]')
-          break
-        case 'ol':
-          element.setAttribute('class', 'list-decimal list-inside mb-8 text-[42px] leading-[1.7]')
-          break
-        case 'li':
-          element.setAttribute('class', 'mb-4')
-          break
-        case 'a':
-          element.setAttribute('class', 'text-primary hover:text-primary-600 underline cursor-pointer')
-          element.setAttribute('target', '_blank')
-          element.setAttribute('rel', 'noopener noreferrer')
-          break
-        case 'img':
-          element.setAttribute('class', 'w-full rounded-4xl my-6')
-          break
-        case 'strong':
-        case 'b':
-          element.setAttribute('class', 'font-bold')
-          break
-        case 'em':
-        case 'i':
-          element.setAttribute('class', 'italic')
-          break
-        case 'code':
-          element.setAttribute('class', 'px-2 py-1 bg-default-100 rounded text-[38px] font-mono')
-          break
-        case 'pre':
-          element.setAttribute('class', 'p-6 bg-default-100 rounded-2xl overflow-x-auto my-6')
-          break
-      }
-
-      // 递归处理子元素
-      Array.from(element.children).forEach(child => processElement(child))
+    // Step 1: 先处理 B站的颜色类，转换为内联样式
+    const colorMap: Record<string, string> = {
+      'color-pink-01': '#FF6699',
+      'color-pink-02': '#FF85C0',
+      'color-pink-03': '#FFA0D0',
+      'color-pink-04': '#FFB8E0',
+      'color-blue-01': '#00A1D6',
+      'color-blue-02': '#00B5E5',
+      'color-blue-03': '#33C5F3',
+      'color-purple-01': '#9B59B6',
+      'color-yellow-01': '#FFC107',
+      'color-orange-01': '#FF6600',
+      'color-red-01': '#FF0000',
+      'color-green-01': '#00C853'
     }
 
-    // 处理body中的所有元素
-    Array.from(doc.body.children).forEach(child => processElement(child))
+    // 将颜色类转换为内联样式
+    Object.entries(colorMap).forEach(([className, color]) => {
+      // 处理 class="color-xxx"
+      processed = processed.replace(
+        new RegExp(`class="${className}"`, 'gi'),
+        `style="color: ${color}"`
+      )
+      // 处理 class="xxx color-xxx"
+      processed = processed.replace(
+        new RegExp(`class="([^"]*?)\\s*${className}\\s*([^"]*?)"`, 'gi'),
+        (match, before, after) => {
+          const otherClasses = `${before} ${after}`.trim()
+          if (otherClasses) {
+            return `class="${otherClasses}" style="color: ${color}"`
+          }
+          return `style="color: ${color}"`
+        }
+      )
+    })
 
-    return doc.body.innerHTML
+    // Step 2: 移除 contenteditable 和剩余的 class 属性
+    processed = processed.replace(/\s+contenteditable="[^"]*"/gi, '')
+    processed = processed.replace(/\s+contenteditable='[^']*'/gi, '')
+    processed = processed.replace(/\s+contenteditable(?=\s|>)/gi, '')
+    processed = processed.replace(/\s+class="[^"]*"/gi, '')
+    processed = processed.replace(/\s+class='[^']*'/gi, '')
+
+    // Step 3: 修复图片协议 (// -> https://)
+    processed = processed.replace(/src="\/\//gi, 'src="https://')
+
+    // Step 4: 为标签添加样式类 - 使用函数来保留原有属性
+    const addClassToTag = (html: string, tagName: string, className: string, extraAttrs: string = ''): string => {
+      // 匹配有属性的标签 - 将 class 放在最后，避免覆盖其他属性
+      html = html.replace(
+        new RegExp(`<${tagName}\\s+([^>]*?)>`, 'gi'),
+        (match, attrs) => {
+          const extra = extraAttrs ? extraAttrs + ' ' : ''
+          return `<${tagName} ${extra}${attrs} class="${className}">`
+        }
+      )
+      // 匹配无属性的标签
+      html = html.replace(
+        new RegExp(`<${tagName}>`, 'gi'),
+        `<${tagName}${extraAttrs ? ' ' + extraAttrs : ''} class="${className}">`
+      )
+      return html
+    }
+
+    // 图片 - 添加防盗链
+    processed = addClassToTag(processed, 'img', 'w-full rounded-4xl', 'referrerpolicy="no-referrer" crossorigin="anonymous"')
+
+    // figure 和 figcaption
+    processed = addClassToTag(processed, 'figure', 'my-8 w-full')
+    processed = addClassToTag(processed, 'figcaption', 'text-center text-[36px] text-foreground-600 mt-4')
+
+    // 标题
+    processed = addClassToTag(processed, 'h1', 'text-[72px] font-bold mb-10 leading-[1.4]')
+    processed = addClassToTag(processed, 'h2', 'text-[64px] font-bold mb-10 leading-[1.4]')
+    processed = addClassToTag(processed, 'h3', 'text-[56px] font-semibold mb-8 leading-[1.4]')
+    processed = addClassToTag(processed, 'h4', 'text-[48px] font-semibold mb-8 leading-[1.4]')
+    processed = addClassToTag(processed, 'h5', 'text-[40px] font-medium mb-6 leading-[1.4]')
+    processed = addClassToTag(processed, 'h6', 'text-[36px] font-medium mb-6 leading-[1.4]')
+
+    // 段落
+    processed = addClassToTag(processed, 'p', 'mb-10 leading-[1.7] text-[42px]')
+
+    // 引用
+    processed = addClassToTag(processed, 'blockquote', 'pl-6 my-8 border-l-8 border-default-400 text-foreground-700 leading-[1.7] text-[42px]')
+
+    // 列表
+    processed = addClassToTag(processed, 'ul', 'list-disc list-inside mb-8 text-[42px] leading-[1.7]')
+    processed = addClassToTag(processed, 'ol', 'list-decimal list-inside mb-8 text-[42px] leading-[1.7]')
+    processed = addClassToTag(processed, 'li', 'mb-4')
+
+    // 加粗和斜体
+    processed = addClassToTag(processed, 'strong', 'font-bold')
+    processed = addClassToTag(processed, 'b', 'font-bold')
+    processed = addClassToTag(processed, 'em', 'italic')
+    processed = addClassToTag(processed, 'i', 'italic')
+
+    // 链接
+    processed = addClassToTag(processed, 'a', 'text-primary hover:text-primary-600 underline', 'target="_blank" rel="noopener noreferrer"')
+
+    // 代码
+    processed = addClassToTag(processed, 'code', 'px-2 py-1 bg-default-100 rounded text-[38px] font-mono')
+    processed = addClassToTag(processed, 'pre', 'p-6 bg-default-100 rounded-2xl overflow-x-auto my-6')
+
+    // 表格
+    processed = addClassToTag(processed, 'table', 'w-full border-collapse my-8 text-[38px]')
+    processed = addClassToTag(processed, 'thead', 'bg-default-100')
+    processed = addClassToTag(processed, 'tr', 'border-b border-default-200')
+    processed = addClassToTag(processed, 'th', 'p-4 text-left font-semibold')
+    processed = addClassToTag(processed, 'td', 'p-4')
+
+    // 分隔线
+    processed = addClassToTag(processed, 'hr', 'my-8 border-default-300')
+
+    return processed
   } catch (error) {
     console.error('清理HTML内容失败:', error)
     return htmlString

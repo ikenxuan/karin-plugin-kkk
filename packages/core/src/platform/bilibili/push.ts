@@ -39,6 +39,7 @@ import { Config } from '@/module/utils/Config'
 import {
   bilibiliProcessVideos,
   cover,
+  extractArticleImages,
   generateDecorationCard,
   getvideosize,
   replacetext
@@ -413,7 +414,7 @@ export class Bilibilipush extends Base {
                 stats: articleData.stats,
                 render_time: Common.getCurrentTime(),
                 // 分享链接
-                share_url: `https://www.bilibili.com/read/cv${articleData.id}`,
+                share_url: articleContent.dyn_id_str ? `https://www.bilibili.com/opus/${articleContent.dyn_id_str}` : `https://www.bilibili.com/read/cv${articleContent.id}`,
                 dynamicTYPE: '专栏动态推送'
               }
             )
@@ -551,8 +552,34 @@ export class Bilibilipush extends Base {
                   imgArray.push(segment.image(img2.src ?? img2.url))
                 }
                 const forwardMsg = common.makeForward(imgArray, botId, bot.account.name)
-                bot.sendForwardMsg(karin.contactFriend(botId), forwardMsg)
+                bot.sendForwardMsg(karin.contactFriend(botId), forwardMsg, {
+                  source: '图片合集',
+                  summary: `查看${imgArray.length}张图片消息`,
+                  prompt: 'B站图文动态解析结果',
+                  news: [{ text: '点击查看解析结果' }]
+                })
                 break
+              }
+              case 'DYNAMIC_TYPE_ARTICLE': {
+                const articleInfo = await this.amagi.getBilibiliData('专栏正文内容', { id: data[dynamicId].Dynamic_Data.basic.rid_str, typeMode: 'strict' })
+                // 提取所有图片
+                const messageElements: ImageElement[] = []
+                const articleImages = extractArticleImages(articleInfo.data.data)
+                for (const item of articleImages) {
+                  messageElements.push(segment.image(item))
+                }
+
+                if (messageElements.length === 1) this.e.reply(messageElements[0])
+                if (messageElements.length > 1) {
+                  const forwardMsg = common.makeForward(messageElements, this.e.userId, this.e.sender.nick)
+                  bot.sendForwardMsg(karin.contactFriend(botId), forwardMsg, {
+                    source: '图片合集',
+                    summary: `查看${messageElements.length}张图片消息`,
+                    prompt: 'B站专栏动态解析结果',
+                    news: [{ text: '点击查看解析结果' }]
+                  })
+                }
+
               }
             }
           }
