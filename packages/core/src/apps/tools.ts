@@ -1,4 +1,3 @@
-// 顶部模块导入
 import karin, { logger } from 'node-karin'
 
 import { Common } from '@/module'
@@ -11,7 +10,7 @@ import { getXiaohongshuID, Xiaohongshu } from '@/platform/xiaohongshu'
 
 const reg = {
   douyin: /^.*((www|v|jx|m|jingxuan)\.(douyin|iesdouyin)\.com|douyin\.com\/(video|note)).*/,
-  bilibili: /(bilibili.com|b23.tv|t.bilibili.com|bili2233.cn|BV[a-zA-Z0-9]{10,})/,
+  bilibili: /(bilibili.com|b23.tv|t.bilibili.com|bili2233.cn|BV[a-zA-Z0-9]{10,}|av\d+)/i,
   kuaishou: /^((.*)快手(.*)快手(.*)|(.*)v\.kuaishou(.*)|(.*)kuaishou\.com\/f\/[a-zA-Z0-9]+.*)$/,
   xiaohongshu: /(xiaohongshu\.com|xhslink\.com)/
 }
@@ -31,6 +30,7 @@ const handleBilibili = wrapWithErrorHandler(async (e) => {
   e.msg = e.msg.replace(/\\/g, '') // 移除消息中的反斜杠
   const urlRegex = /(https?:\/\/(?:(?:www\.|m\.|t\.)?bilibili\.com|b23\.tv|bili2233\.cn)\/[a-zA-Z0-9_\-.~:\/?#[\]@!$&'()*+,;=]+)/
   const bvRegex = /^BV[1-9a-zA-Z]{10}$/
+  const avRegex = /^av\d+$/i
   let url: string | null = null
   const urlMatch = e.msg.match(urlRegex)
 
@@ -38,9 +38,11 @@ const handleBilibili = wrapWithErrorHandler(async (e) => {
     url = urlMatch[0]
   } else if (bvRegex.test(e.msg)) {
     url = `https://www.bilibili.com/video/${e.msg}`
+  } else if (avRegex.test(e.msg)) {
+    url = `https://www.bilibili.com/video/${e.msg}`
   }
   if (!url) {
-    logger.warn(`未能在消息中找到有效的B站分享链接或BV号: ${e.msg}`)
+    logger.warn(`未能在消息中找到有效的B站分享链接、BV号或AV号: ${e.msg}`)
     return true
   }
   const iddata = await getBilibiliID(url)

@@ -1,3 +1,4 @@
+import amagi from '@ikenxuan/amagi'
 import { logger } from 'node-karin'
 import axios from 'node-karin/axios'
 
@@ -64,9 +65,17 @@ export async function getBilibiliID (url: string) {
     }
     case /(video\/|video-)([A-Za-z0-9]+)/.test(longLink): {
       const bvideoMatch = /video\/([A-Za-z0-9]+)|bvid=([A-Za-z0-9]+)/.exec(longLink)
+      let bvid = bvideoMatch ? bvideoMatch[1] || bvideoMatch[2] : undefined
+
+      if (bvid && bvid.toLowerCase().startsWith('av')) {
+        const avid = parseInt(bvid.replace(/^av/i, ''))
+        const convertResult = await amagi.bilibili.api.convertAvToBv({ avid, typeMode: 'strict' })
+        bvid = convertResult.data.data.bvid
+      }
+
       result = {
         type: 'one_video',
-        bvid: bvideoMatch ? bvideoMatch[1] || bvideoMatch[2] : undefined,
+        bvid,
         ...(pValue !== undefined && { p: pValue })
       }
       break
@@ -118,5 +127,6 @@ export async function getBilibiliID (url: string) {
       break
   }
 
+  console.log(result)
   return result
 }
