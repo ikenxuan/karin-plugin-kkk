@@ -57,8 +57,7 @@
     "fingerprint-injector": "^2.1.75"
   },
   "devDependencies": {
-    "@karinjs/plugin-puppeteer": "1.0.20",
-    "@karinjs/puppeteer": "^2.0.5",
+    "@karinjs/plugin-puppeteer": "1.0.21",
     "@karinjs/puppeteer-types": "^0.0.6",
     "@rollup/plugin-terser": "^0.4.4",
     "@types/connect-history-api-fallback": "^1.5.4",
@@ -99,5 +98,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2025-10-30T02:20:14.005Z"
+  "timestamp": "2025-10-30T04:21:36.659Z"
 }

@@ -127,9 +127,9 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                   </div>
                 </div>
               </div>
-              
+
               <div className='w-1 h-14 opacity-90 bg-default-900' />
-              
+
               <div className='flex items-end space-x-8'>
                 <GlowImage
                   src="/image/vite.svg"
@@ -158,7 +158,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
               </div>
             </div>
           </div>
-        ) : ( <div className='h-24'></div> )
+        ) : (<div className='h-24'></div>)
         }
       </div>
     </HeroUIProvider>

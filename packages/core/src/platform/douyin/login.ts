@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import { platform } from 'node:os'
 import path from 'node:path'
 
-import { launch } from '@karinjs/puppeteer'
+import { launch } from '@karinjs/plugin-puppeteer'
 import { FingerprintGenerator } from 'fingerprint-generator'
 import { FingerprintInjector, newInjectedPage } from 'fingerprint-injector'
 import { karin, karinPathTemp, logger, Message } from 'node-karin'
@@ -145,63 +145,80 @@ export const douyinLogin = async (e: Message) => {
     // 访问首页
     await page.goto('https://www.douyin.com', { timeout: 120000, waitUntil: 'domcontentloaded' })
 
-    let timeoutId: NodeJS.Timeout | undefined
-    const timeout = new Promise((_resolve) => {
-      timeoutId = setTimeout(async () => {
-        logger.warn('登录超时，关闭浏览器')
+    // 阶段1: 获取二维码 (60秒超时)
+    let qrCodeBase64: string
+    try {
+      logger.mark('开始等待二维码加载...')
+      qrCodeBase64 = await Promise.race([
+        waitQrcode(page),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('QR_CODE_TIMEOUT')), 60000)
+        )
+      ])
+      logger.mark('二维码获取成功')
+    } catch (error: any) {
+      if (error.message === 'QR_CODE_TIMEOUT') {
+        logger.warn('获取二维码超时')
         await page.screenshot({ path: path.join(karinPathTemp, Root.pluginName, 'DouyinLoginQrcodeError.png'), fullPage: true })
-        await e.reply('登录超时，我也不知道该怎么办了~')
-        await browser.close()
-      }, 120000)
-    })
+        await e.reply('获取二维码超时，请稍后重试', { reply: true })
+      } else {
+        logger.error('获取二维码失败:', error)
+        await e.reply('获取二维码失败，请查看控制台日志', { reply: true })
+      }
+      await browser.close()
+      return true
+    }
 
-    const qrCodePromise = (async () => {
-      let gcInterval: NodeJS.Timeout | undefined
-      try {
-        // 获取 img 的 src 属性内容
-        logger.mark('开始等待二维码加载...')
-        const qrCodeBase64 = await waitQrcode(page)
-        logger.mark('二维码获取成功')
+    // 渲染并发送二维码
+    let gcInterval: NodeJS.Timeout | undefined
+    try {
+      const loginQRcode = await Render('douyin/qrcodeImg', { qrCodeDataUrl: qrCodeBase64 })
 
-        const loginQRcode = await Render('douyin/qrcodeImg', { qrCodeDataUrl: qrCodeBase64 })
+      const base64Data = loginQRcode[0]?.file
+      if (!base64Data) {
+        throw new Error('生成二维码图片失败')
+      }
 
-        const base64Data = loginQRcode[0]?.file
-        if (!base64Data) {
-          throw new Error('生成二维码图片失败')
+      const cleanBase64 = base64Data.replace(/^base64:\/\//, '')
+      const buffer = Buffer.from(cleanBase64, 'base64')
+
+      fs.writeFileSync(`${Common.tempDri.default}DouyinLoginQrcode.png`, buffer)
+
+      const message2 = await e.reply(loginQRcode, { reply: true })
+      logger.debug('二维码图片消息ID:', message2.messageId)
+      msg_id.push(message2.messageId)
+
+      // 定期触发垃圾回收以释放内存
+      gcInterval = setInterval(async () => {
+        try {
+          await page.evaluate(() => {
+            // 尝试触发浏览器的垃圾回收
+            if ((window as any).gc) {
+              (window as any).gc()
+            }
+          })
+        } catch {
+          // 忽略错误
         }
+      }, 10000) // 每 10 秒清理一次
 
-        const cleanBase64 = base64Data.replace(/^base64:\/\//, '')
-        const buffer = Buffer.from(cleanBase64, 'base64')
+      logger.mark('开始等待用户扫码登录...')
 
-        fs.writeFileSync(`${Common.tempDri.default}DouyinLoginQrcode.png`, buffer)
-
-        const message2 = await e.reply(loginQRcode, { reply: true })
-        msg_id.push(message2.messageId)
-
-        // 定期触发垃圾回收以释放内存
-        gcInterval = setInterval(async () => {
-          try {
-            await page.evaluate(() => {
-              // 尝试触发浏览器的垃圾回收
-              if ((window as any).gc) {
-                (window as any).gc()
-              }
-            })
-          } catch {
-            // 忽略错误
-          }
-        }, 10000) // 每 10 秒清理一次
-
-        logger.mark('开始等待用户扫码登录...')
-
-        await new Promise(resolve => {
-          const timer = setTimeout(() => {
-            logger.warn('登录超时')
-            clearInterval(gcInterval)
+      // 阶段2: 等待用户扫码 (120秒超时，因为消息只能撤回2分钟)
+      const loginResult = await Promise.race([
+        new Promise<boolean>((resolve) => {
+          // 120秒后主动撤回二维码消息并结束
+          const timer = setTimeout(async () => {
+            logger.warn('扫码登录超时（2分钟），撤回二维码消息')
+            // 撤回二维码消息
+            await Promise.all(msg_id.map(async (id) => {
+              await e.bot.recallMsg(e.contact, id)
+            }))
             resolve(false)
           }, 120 * 1000)
 
           let secondVerifyHandled = false
+          let scannedHandled = false
           let responseCount = 0
 
           // 监听所有响应以调试
@@ -237,7 +254,6 @@ export const douyinLogin = async (e: Message) => {
 
                 if (hasSidGuard) {
                   clearTimeout(timer)
-                  clearInterval(gcInterval)
                   logger.mark('检测到 sid_guard，登录成功')
 
                   // 保存 cookie
@@ -251,16 +267,11 @@ export const douyinLogin = async (e: Message) => {
                   await e.reply('登录成功！用户登录凭证已保存至cookies.yaml', { reply: true })
 
                   // 批量撤回之前的消息
-                  try {
-                    await Promise.all(msg_id.map(async (id) => {
-                      await e.bot.recallMsg(e.contact, id)
-                    }))
-                  } catch (error) {
-                    logger.warn('撤回消息失败:', error)
-                  }
+                  await Promise.all(msg_id.map(async (id) => {
+                    await e.bot.recallMsg(e.contact, id)
+                  }))
 
                   logger.mark('关闭浏览器...')
-                  clearTimeout(timeoutId) // 清除超时定时器
                   await browser.close()
                   logger.mark('浏览器已关闭')
                   resolve(true)
@@ -273,10 +284,26 @@ export const douyinLogin = async (e: Message) => {
 
                 logger.debug(`二维码状态：${jsonResponse.data?.status}, error_code: ${jsonResponse.data?.error_code}`)
 
+                // 检查二维码是否已被扫描（只处理一次）
+                if (jsonResponse.data?.status === 'scanned' && !scannedHandled) {
+                  scannedHandled = true
+                  logger.mark('检测到二维码已被扫描')
+                  // 撤回二维码消息
+                  await Promise.all(msg_id.map(async (id) => {
+                    await e.bot.recallMsg(e.contact, id)
+                  }))
+                  // 清空消息ID列表，避免重复撤回
+                  msg_id.length = 0
+                  // 发送授权提示
+                  const authMsg = await e.reply('此二维码已被扫描，请在手机上授权以登录', { reply: true })
+                  msg_id.push(authMsg.messageId)
+                }
+
                 // 检查是否需要二次验证
                 if (jsonResponse.data?.error_code === 2046 && !secondVerifyHandled) {
                   secondVerifyHandled = true
                   logger.mark('检测到需要二次验证')
+                  clearTimeout(timer) // 清除扫码超时，进入2FA阶段
 
                   // 使用立即执行的异步函数，不阻塞响应监听
                   ; (async () => {
@@ -308,24 +335,130 @@ export const douyinLogin = async (e: Message) => {
                       const tipMsg = await e.reply('此次验证需要进行 2FA\n6 位数的验证码已发送至扫码设备绑定的手机号\n请在 60 秒内发送此验证码以通过 2FA', { reply: true })
                       msg_id.push(tipMsg.messageId)
 
-                      // 等待用户输入验证码
-                      const ctx = await karin.ctx(e, { reply: true })
+                      // 验证码验证逻辑（最多2次机会）
+                      let verifyAttempts = 0
+                      const maxAttempts = 2
+                      let verifySuccess = false
 
-                      // 输入验证码
-                      await page.type(inputSelector, ctx.msg)
+                      while (verifyAttempts < maxAttempts && !verifySuccess) {
+                        verifyAttempts++
+                        logger.debug(`验证码输入尝试 ${verifyAttempts}/${maxAttempts}`)
 
-                      // 点击"验证"按钮
-                      await page.evaluate(() => {
-                        const elements = Array.from(document.querySelectorAll('*'))
-                        const verifyBtn = elements.find(el => el.textContent?.trim() === '验证')
-                        if (verifyBtn) {
-                          (verifyBtn as HTMLElement).click()
+                        // 阶段3: 等待用户输入2FA验证码 (60秒超时)
+                        const ctx = await Promise.race([
+                          karin.ctx(e, { reply: true }),
+                          new Promise<never>((_, reject) =>
+                            setTimeout(() => reject(new Error('2FA_TIMEOUT')), 60000)
+                          )
+                        ]).catch(async (error) => {
+                          if (error.message === '2FA_TIMEOUT') {
+                            logger.warn('2FA验证码输入超时')
+                            clearTimeout(timer)
+                            if (gcInterval) clearInterval(gcInterval)
+                            await browser.close()
+                            // 撤回所有之前的消息
+                            await Promise.all(msg_id.map(async (id) => {
+                              await e.bot.recallMsg(e.contact, id)
+                            }))
+                            await e.reply('验证码验证码输入超时，登录失败', { reply: true })
+                            resolve(true) // 返回true表示已处理完成
+                          }
+                          throw error
+                        })
+
+                        if (!ctx) return
+
+                        // 清空输入框
+                        await page.evaluate((selector) => {
+                          const input = document.querySelector(selector) as HTMLInputElement
+                          if (input) input.value = ''
+                        }, inputSelector)
+
+                        // 输入验证码
+                        await page.type(inputSelector, ctx.msg)
+
+                        // 监听验证码验证接口
+                        const validatePromise = new Promise<boolean>((resolveValidate) => {
+                          const validateHandler = async (resp: any) => {
+                            if (resp.url().includes('validate_code')) {
+                              try {
+                                const validateBody = await resp.text()
+                                const validateJson = JSON.parse(validateBody)
+                                logger.debug('验证码验证响应:', validateJson)
+
+                                if (validateJson.data?.error_code === 1202) {
+                                  // 验证码错误
+                                  logger.warn('验证码错误')
+                                  page.off('response', validateHandler)
+                                  resolveValidate(false)
+                                } else if (validateJson.message === 'success' || !validateJson.data?.error_code) {
+                                  // 验证成功
+                                  logger.mark('验证码验证成功')
+                                  page.off('response', validateHandler)
+                                  resolveValidate(true)
+                                }
+                              } catch (err) {
+                                logger.debug('解析验证响应失败:', err)
+                              }
+                            }
+                          }
+                          page.on('response', validateHandler)
+
+                          // 5秒超时
+                          setTimeout(() => {
+                            page.off('response', validateHandler)
+                            resolveValidate(false)
+                          }, 5000)
+                        })
+
+                        // 点击"验证"按钮
+                        await page.evaluate(() => {
+                          const elements = Array.from(document.querySelectorAll('*'))
+                          const verifyBtn = elements.find(el => el.textContent?.trim() === '验证')
+                          if (verifyBtn) {
+                            (verifyBtn as HTMLElement).click()
+                          }
+                        })
+
+                        logger.mark('已提交验证码，等待验证结果...')
+
+                        // 等待验证结果
+                        verifySuccess = await validatePromise
+
+                        if (!verifySuccess && verifyAttempts < maxAttempts) {
+                          // 还有重试机会
+                          const retryMsg = await e.reply('验证码错误，请重新发送正确的 6 位数验证码（剩余机会：1次）', { reply: true })
+                          msg_id.push(retryMsg.messageId)
+                        } else if (!verifySuccess && verifyAttempts >= maxAttempts) {
+                          // 没有机会了
+                          logger.warn('验证码错误次数过多，登录失败')
+                          clearTimeout(timer)
+                          if (gcInterval) clearInterval(gcInterval)
+                          await browser.close()
+                          // 撤回所有之前的消息
+                          await Promise.all(msg_id.map(async (id) => {
+                            await e.bot.recallMsg(e.contact, id)
+                          }))
+                          await e.reply('验证码错误，登录失败', { reply: true })
+                          resolve(true) // 返回true表示已处理完成，避免外层再次处理
+                          return
                         }
-                      })
+                      }
 
-                      logger.mark('已提交验证码，等待验证结果...')
-                    } catch (error) {
-                      logger.error('二次验证处理失败:', error)
+                      if (verifySuccess) {
+                        logger.mark('2FA验证通过，等待最终登录确认...')
+                      }
+                    } catch (err) {
+                      logger.error('二次验证处理失败:', err)
+                      clearTimeout(timer)
+                      if (gcInterval) clearInterval(gcInterval)
+                      await browser.close()
+                      // 撤回所有之前的消息
+                      await Promise.all(msg_id.map(async (id) => {
+                        await e.bot.recallMsg(e.contact, id)
+                      }))
+                      await e.reply('二次验证处理失败，登录失败', { reply: true })
+                      resolve(true) // 返回true表示已处理完成
                     }
                   })()
                 }
@@ -335,21 +468,22 @@ export const douyinLogin = async (e: Message) => {
             }
           })
         })
-      } catch (error) {
-        if (gcInterval) clearInterval(gcInterval)
-        if (timeoutId) clearTimeout(timeoutId) // 清除超时定时器
-        await browser.close()
-        // 批量撤回
-        await Promise.all(msg_id.map(async (id) => {
-          await e.bot.recallMsg(e.contact, id)
-        }))
-        await e.reply('登录超时！二维码已失效！', { reply: true })
-        logger.error(error)
-      }
-    })()
+      ])
 
-    // 同时等待二维码加载和超时事件，先完成的先执行
-    await Promise.race([qrCodePromise, timeout])
+      if (gcInterval) clearInterval(gcInterval)
+
+      if (!loginResult) {
+        logger.warn('登录超时或失败')
+        await browser.close()
+        await e.reply('登录超时！二维码已失效！', { reply: true })
+        return true
+      }
+    } catch (err) {
+      logger.error('登录流程出错:', err)
+      if (gcInterval) clearInterval(gcInterval)
+      await browser.close()
+      await e.reply('登录过程出错，请查看控制台日志', { reply: true })
+    }
   } catch (error: any) {
     logger.error(error)
     if (error.message.includes('npx playwright install')) {

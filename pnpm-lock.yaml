@@ -107,11 +107,8 @@ importers:
         version: 2.1.75(playwright@1.56.1)
     devDependencies:
       '@karinjs/plugin-puppeteer':
-        specifier: 1.0.20
-        version: 1.0.20
-      '@karinjs/puppeteer':
-        specifier: ^2.0.5
-        version: 2.2.4
+        specifier: 1.0.21
+        version: 1.0.21
       '@karinjs/puppeteer-types':
         specifier: ^0.0.6
         version: 0.0.6
@@ -1811,8 +1808,8 @@ packages:
   '@karinjs/node-schedule@1.0.0':
     resolution: {integrity: sha512-dHhYKcprM/5DQhVX/CFZGsJcNhbfUuE14zFuNunvzU5WdX+mqnpPpOAOaHdKMOLJunaq6zMdBHDYNw/NgEBQyg==}
 
-  '@karinjs/plugin-puppeteer@1.0.20':
-    resolution: {integrity: sha512-R60UR4mob016T5p/mERTjW5BYRVk2QQwLPa93bn0vNZIZgW7nFRMqcn+GnPXNPdaSsZdkK77QGWKjhvF1Zzsxw==}
+  '@karinjs/plugin-puppeteer@1.0.21':
+    resolution: {integrity: sha512-WyzIzZ0fgbUgU9xT36UzTBDHplq16WXRyqCMNd8CZbTNCuzbrx1WMg8q1AmSCn5rNovMCS56IucexenXm3DmyA==}
 
   '@karinjs/puppeteer-types@0.0.6':
     resolution: {integrity: sha512-dmzq6/WobZj6xIzRcu6w0YUf5pMAgtGXdq9gd0lSXn0Zhj+rNX37cpvLVpYgvGRTr7FPF+c1xLXwbRvalbfK+g==}
@@ -11372,7 +11369,7 @@ snapshots:
 
   '@karinjs/node-schedule@1.0.0': {}
 
-  '@karinjs/plugin-puppeteer@1.0.20':
+  '@karinjs/plugin-puppeteer@1.0.21':
     dependencies:
       '@karinjs/puppeteer': 2.2.4
 
