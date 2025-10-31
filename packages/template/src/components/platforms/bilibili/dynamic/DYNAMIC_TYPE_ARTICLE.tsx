@@ -414,7 +414,9 @@ const BilibiliArticleContent: React.FC<BilibiliArticleDynamicProps> = React.memo
 
   // 处理HTML字符串内容
   const sanitizedHtmlContent = React.useMemo(() => {
-    if (props.data.content && typeof props.data.content === 'string') {
+    const isJson = (() => { try { return typeof props.data.content === 'string' && !!JSON.parse(props.data.content) } catch { return false } })()
+    
+    if (props.data.content && typeof props.data.content === 'string' && !isJson) {
       return sanitizeHtmlContent(props.data.content)
     }
     return null
