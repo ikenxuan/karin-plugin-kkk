@@ -6,7 +6,7 @@ import {
   BiliBangumiVideoInfo,
   BiliBangumiVideoPlayurlIsLogin,
   BiliBangumiVideoPlayurlNoLogin,
-  bilibiliApiUrls, 
+  bilibiliApiUrls,
   BiliBiliVideoPlayurlNoLogin,
   BiliDynamicCard,
   BiliDynamicInfo,
@@ -180,9 +180,9 @@ export class Bilibili extends Base {
               CommentLength: Config.bilibili.realCommentCount ? Count(infoData.data.data.stat.reply) : String(commentsdata.length),
               share_url: 'https://b23.tv/' + infoData.data.data.bvid,
               Clarity: Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64 ?
-                nockData.data.accept_description[nockData.data.accept_description.length - 1] : 
+                nockData.data.accept_description[nockData.data.accept_description.length - 1] :
                 playUrlData.data.data.accept_description[0],
-              VideoSize: Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64 ? 
+              VideoSize: Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64 ?
                 (nockData.data.durl[0].size! / (1024 * 1024)).toFixed(2) :
                 videoSize,
               ImageLength: 0,
@@ -553,7 +553,7 @@ export class Bilibili extends Base {
                   CommentsData: bilibiliComments(commentsData.data, dynamicInfo.data.data.item.modules.module_author.mid.toString()),
                   CommentLength: String((
                     bilibiliComments(commentsData.data, dynamicInfo.data.data.item.modules.module_author.mid.toString())?.length) ?
-                    bilibiliComments(commentsData.data, dynamicInfo.data.data.item.modules.module_author.mid.toString()).length : 
+                    bilibiliComments(commentsData.data, dynamicInfo.data.data.item.modules.module_author.mid.toString()).length :
                     0
                   ),
                   share_url: 'https://www.bilibili.com/video/' + bvid,
@@ -616,7 +616,7 @@ export class Bilibili extends Base {
           case DynamicType.ARTICLE: {
             const articleInfoBase = await this.amagi.getBilibiliData('专栏文章基本信息', { id: dynamicInfo.data.data.item.basic.rid_str, typeMode: 'strict' })
             const articleInfo = await this.amagi.getBilibiliData('专栏正文内容', { id: dynamicInfo.data.data.item.basic.rid_str, typeMode: 'strict' })
-                        
+
             // 提取专栏基本信息
             const articleData = articleInfoBase.data.data
             // 提取专栏正文内容
@@ -628,7 +628,7 @@ export class Bilibili extends Base {
             for (const item of articleImages) {
               messageElements.push(segment.image(item))
             }
-            
+
             if (messageElements.length === 1) this.e.reply(messageElements[0])
             if (messageElements.length > 1) {
               const forwardMsg = common.makeForward(messageElements, this.e.userId, this.e.sender.nick)
@@ -648,14 +648,14 @@ export class Bilibili extends Base {
                 avatar_url: userProfileData.data.data.card.face,
                 frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
                 create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.modules.module_author.pub_ts),
-                
+
                 // 专栏内容信息
                 title: articleData.title,
                 summary: articleData.summary,
                 banner_url: articleData.banner_url || (articleData.image_urls && articleData.image_urls[0]) || '',
                 categories: articleData.categories || [],
                 words: articleData.words || 0,
-                
+
                 // 专栏正文内容 - 优先使用opus，否则使用content
                 opus: articleContent.opus || undefined,
                 content: articleContent.content || undefined,

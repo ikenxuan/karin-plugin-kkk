@@ -1,3 +1,6 @@
+import { BiliWorkComments } from '@ikenxuan/amagi'
+import { CommentItem } from 'template/types/platforms/bilibili'
+
 import { Common } from '@/module'
 import { Config } from '@/module/utils/Config'
 
@@ -7,11 +10,11 @@ import { Config } from '@/module/utils/Config'
  * @param host_mid UP主的ID
  * @returns 处理后的评论数据数组
  */
-export function bilibiliComments (commentsData: any, host_mid: string) {
+export function bilibiliComments (commentsData: BiliWorkComments, host_mid: string): CommentItem[] | [] {
   if (!commentsData) return []
   let jsonArray: any[] = []
   if (commentsData.code === 404) {
-    return null
+    return []
   }
 
   // 处理置顶评论
@@ -37,6 +40,7 @@ export function bilibiliComments (commentsData: any, host_mid: string) {
         : null
     const members = topReply.content.members
     const isUP = topReply.mid_str === host_mid
+    const fanCard = extractFanCard(topReply.member)
 
     const obj = {
       id: 0,
@@ -54,7 +58,8 @@ export function bilibiliComments (commentsData: any, host_mid: string) {
       icon_big_vip: vipstatus === 1 ? 'https://i0.hdslb.com/bfs/seed/jinkela/short/user-avatar/big-vip.svg' : null,
       members,
       isTop: true,
-      isUP
+      isUP,
+      fanCard
     }
 
     jsonArray.push(obj)
@@ -82,6 +87,51 @@ export function bilibiliComments (commentsData: any, host_mid: string) {
         : null
     const members = reply.content.members
     const isUP = reply.mid_str === host_mid
+    const fanCard = extractFanCard(reply.member)
+
+    // 处理二级评论
+    const subReplies = []
+    if (reply.replies && Array.isArray(reply.replies)) {
+      for (const subReply of reply.replies) {
+        const subCtime = getRelativeTimeFromTimestamp(subReply.ctime)
+        const subEmote = subReply.content.emote
+        let subMessage = subReply.content.message
+        if (subMessage && subEmote) subMessage = emoteToUrl(subMessage, subEmote)
+        const subAvatar = subReply.member.avatar
+        const subFrame = subReply.member.pendant.image
+        const subUname = checkvip(subReply.member)
+        const subLevel = subReply.member.level_info.current_level
+        const subVipstatus = subReply.member.vip.vipStatus
+        const subLike = subReply.like
+        const subLocation = subReply.reply_control?.location?.replace('IP属地：', '') ?? ''
+        const subImgSrc =
+          subReply.content &&
+            subReply.content.pictures &&
+            subReply.content.pictures.length > 0
+            ? subReply.content.pictures[0].img_src
+            : null
+        const subMembers = subReply.content.members
+        const subIsUP = subReply.mid_str === host_mid
+        const subFanCard = extractFanCard(subReply.member)
+
+        subReplies.push({
+          ctime: subCtime,
+          message: subMessage,
+          avatar: subAvatar,
+          frame: subFrame,
+          uname: subUname,
+          level: subLevel,
+          vipstatus: subVipstatus,
+          img_src: subImgSrc,
+          location: subLocation,
+          like: subLike,
+          icon_big_vip: subVipstatus === 1 ? 'https://i0.hdslb.com/bfs/seed/jinkela/short/user-avatar/big-vip.svg' : null,
+          members: subMembers,
+          isUP: subIsUP,
+          fanCard: subFanCard
+        })
+      }
+    }
 
     const obj = {
       id: i + 1,
@@ -99,7 +149,9 @@ export function bilibiliComments (commentsData: any, host_mid: string) {
       icon_big_vip: vipstatus === 1 ? 'https://i0.hdslb.com/bfs/seed/jinkela/short/user-avatar/big-vip.svg' : null,
       members,
       isTop: false,
-      isUP
+      isUP,
+      replies: subReplies,
+      fanCard
     }
 
     jsonArray.push(obj)
@@ -118,6 +170,14 @@ export function bilibiliComments (commentsData: any, host_mid: string) {
     if (i.like > 10000) {
       i.like = (i.like / 10000).toFixed(1) + 'w'
     }
+    // 处理二级评论的点赞数
+    if (i.replies && Array.isArray(i.replies)) {
+      for (const subReply of i.replies) {
+        if (subReply.like > 10000) {
+          subReply.like = (subReply.like / 10000).toFixed(1) + 'w'
+        }
+      }
+    }
   }
   jsonArray = space(jsonArray)
 
@@ -134,13 +194,27 @@ export function bilibiliComments (commentsData: any, host_mid: string) {
 
     // 更新评论内容为处理后的文本
     comment.message = originalText
+
+    // 处理二级评论中被艾特的用户
+    if (comment.replies && Array.isArray(comment.replies)) {
+      for (const subReply of comment.replies) {
+        let subOriginalText = subReply.message
+        if (subReply.members && subReply.members.length > 0) {
+          for (const member of subReply.members) {
+            const regex = new RegExp(`@${member.uname}`, 'g')
+            subOriginalText = subOriginalText.replace(regex, `<span style="color: ${Common.useDarkTheme() ? '#58B0D5' : '#006A9E'};">@${member.uname}</span>`)
+          }
+        }
+        subReply.message = subOriginalText
+      }
+    }
   }
 
   let res
   res = br(jsonArray)
   res = [...res.filter((c: any) => c.isTop), ...res.filter((c: any) => !c.isTop)].slice(0, Config.bilibili.numcomment)
 
-  return res as any
+  return res as CommentItem[]
 }
 
 /** 检查评论是否带表情，是则添加img标签 */
@@ -176,6 +250,15 @@ function br (data: any) {
 
     message = message?.replace(/\n/g, '<br>')
     data[i].message = message
+
+    // 处理二级评论的换行符
+    if (data[i].replies && Array.isArray(data[i].replies)) {
+      for (const subReply of data[i].replies) {
+        if (subReply.message) {
+          subReply.message = subReply.message.replace(/\n/g, '<br>')
+        }
+      }
+    }
   }
   return data
 }
@@ -212,4 +295,43 @@ function getRelativeTimeFromTimestamp (timestamp: number) {
     const day = date.getDate().toString().padStart(2, '0')
     return year + '-' + month + '-' + day
   }
+}
+
+/** 提取粉丝卡片信息 */
+function extractFanCard (member: any) {
+  if (
+    // 确保属性存在且是对象类型（排除 null，因为 typeof null 会返回 'object'）
+    member.user_sailing_v2 &&
+    typeof member.user_sailing_v2 === 'object' &&
+    // 排除空对象（判断是否有自有属性）
+    Object.keys(member.user_sailing_v2).length > 0
+  ) { 
+
+    const cardBg = member.user_sailing_v2.card_bg
+    const fan = cardBg.fan
+
+    if (!fan || !fan.is_fan) {
+      return null
+    }
+
+    // 构建渐变色
+    let gradientStyle = ''
+    if (fan.color_format && fan.color_format.colors && fan.color_format.gradients) {
+      const colors = fan.color_format.colors
+      const gradients = fan.color_format.gradients
+      const colorStops = colors.map((color: string, index: number) => `${color} ${gradients[index]}%`).join(', ')
+      gradientStyle = `linear-gradient(135deg, ${colorStops})`
+    } else if (fan.color) {
+      gradientStyle = fan.color
+    }
+
+    return {
+      image: cardBg.image ?? null,
+      numPrefix: fan.num_prefix || '',
+      numDesc: fan.num_desc || '',
+      gradientStyle
+    }
+  }
+
+  return null
 }

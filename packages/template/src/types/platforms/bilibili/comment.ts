@@ -30,6 +30,54 @@ export interface BilibiliCommentProps extends BaseComponentProps {
 }
 
 /**
+ * 粉丝卡片信息接口
+ */
+export interface FanCardInfo {
+  /** 卡片背景图片 */
+  image: string | null
+  /** 序号前缀 */
+  numPrefix: string
+  /** 序号描述 */
+  numDesc: string
+  /** 渐变色样式 */
+  gradientStyle: string
+}
+
+/**
+ * B站二级评论项数据接口
+ */
+export interface SubCommentItem {
+  /** 用户头像URL */
+  avatar: string
+  /** 用户昵称 */
+  uname: string
+  /** 用户等级 */
+  level: number
+  /** 头像框 */
+  frame?: string
+  /** 评论内容 */
+  message: string
+  /** 评论图片 */
+  img_src?: string | null
+  /** 创建时间 */
+  ctime: string
+  /** IP标签/地理位置 */
+  location: string
+  /** 点赞数 */
+  like: string | number
+  /** 是否为UP主评论 */
+  isUP: boolean
+  /** VIP状态 */
+  vipstatus?: number
+  /** 大会员图标 */
+  icon_big_vip?: string | null
+  /** 被艾特的用户 */
+  members?: any[]
+  /** 粉丝卡片信息 */
+  fanCard?: FanCardInfo | null
+}
+
+/**
  * B站评论项数据接口
  */
 export interface CommentItem {
@@ -49,6 +97,8 @@ export interface CommentItem {
   message: string
   /** 评论图片 */
   img_src?: string
+  /** VIP状态 */
+  vipstatus?: number
   /** 贴纸 */
   sticker?: string
   /** 创建时间 */
@@ -63,30 +113,8 @@ export interface CommentItem {
   isTop: boolean
   /** 是否为UP主评论 */
   isUP: boolean
-}
-
-/**
- * 视频信息头部组件属性接口
- */
-export interface VideoInfoHeaderProps {
-  /** 作品类型 */
-  type: string
-  /** 评论数量 */
-  commentLength: string
-  /** 视频大小 */
-  videoSize?: string
-  /** 视频画质 */
-  clarity?: string
-  /** 图片数量 */
-  imageLength?: number
-}
-
-/**
- * 评论项组件属性接口
- */
-export interface CommentItemComponentProps {
-  /** 评论数据 */
-  comment: CommentItem
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
+  /** 二级评论列表 */
+  replies?: SubCommentItem[]
+  /** 粉丝卡片信息 */
+  fanCard?: FanCardInfo | null
 }
