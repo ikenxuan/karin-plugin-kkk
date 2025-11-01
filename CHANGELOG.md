@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.10.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.10.0...v2.10.1) (2025-11-01)
+
+
+### 🐛 错误修复
+
+* Cannot read properties ofundefined (reading'fan') ([6512c4e](https://github.com/ikenxuan/karin-plugin-kkk/commit/6512c4ec7fb200849d15c6abdc88768b28689ad9))
+
 ## [2.10.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.9.5...v2.10.0) (2025-11-01)
 
 
