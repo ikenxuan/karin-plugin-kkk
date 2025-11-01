@@ -72,7 +72,7 @@ export class Bilibili extends Base {
     this.headers!.Cookie = Config.cookies.bilibili
   }
 
-  async RESOURCES (iddata: BilibiliId): Promise<boolean | undefined> {
+  async BilibiliHandler (iddata: BilibiliId): Promise<boolean | undefined> {
     Config.app.EmojiReply && await this.e.bot.setMsgReaction(this.e.contact, this.e.messageId, Config.app.EmojiReplyID, true)
     Config.bilibili.tip && await this.e.reply('检测到B站链接，开始解析')
     switch (this.Type) {

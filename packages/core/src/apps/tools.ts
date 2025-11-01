@@ -19,7 +19,7 @@ const reg = {
 const handleDouyin = wrapWithErrorHandler(async (e) => {
   const url = String(e.msg.match(/(http|https):\/\/.*\.(douyin|iesdouyin)\.com\/[^ ]+/g))
   const iddata = await getDouyinID(e, url)
-  await new DouYin(e, iddata).RESOURCES(iddata)
+  await new DouYin(e, iddata).DouyinHandler(iddata)
   return true
 }, {
   businessName: '抖音视频解析'
@@ -46,7 +46,7 @@ const handleBilibili = wrapWithErrorHandler(async (e) => {
     return true
   }
   const iddata = await getBilibiliID(url)
-  await new Bilibili(e, iddata).RESOURCES(iddata)
+  await new Bilibili(e, iddata).BilibiliHandler(iddata)
   return true
 }, {
   businessName: 'B站视频解析'
@@ -57,7 +57,7 @@ const handleKuaishou = wrapWithErrorHandler(async (e) => {
   const kuaishouUrl = e.msg.replaceAll('\\', '').match(/(https:\/\/v\.kuaishou\.com\/\w+|https:\/\/www\.kuaishou\.com\/f\/[a-zA-Z0-9]+)/g)
   const iddata = await getKuaishouID(String(kuaishouUrl))
   const WorkData = await fetchKuaishouData(iddata.type, iddata)
-  await new Kuaishou(e, iddata).RESOURCES(WorkData)
+  await new Kuaishou(e, iddata).KuaishouHandler(WorkData)
 }, {
   businessName: '快手视频解析'
 })
@@ -72,7 +72,7 @@ const handleXiaohongshu = wrapWithErrorHandler(async (e) => {
     return true
   }
   const iddata = await getXiaohongshuID(url)
-  await new Xiaohongshu(e, iddata).RESOURCES(iddata)
+  await new Xiaohongshu(e, iddata).XiaohongshuHandler(iddata)
   return true
 }, {
   businessName: '小红书视频解析'

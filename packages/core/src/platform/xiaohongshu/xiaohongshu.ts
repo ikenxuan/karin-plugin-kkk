@@ -36,7 +36,7 @@ export class Xiaohongshu extends Base {
     this.type = iddata?.type
   }
 
-  async RESOURCES (data: XiaohongshuIdData) {
+  async XiaohongshuHandler (data: XiaohongshuIdData) {
     Config.app.EmojiReply && !this.e.isPrivate && await this.e.bot.setMsgReaction(this.e.contact, this.e.messageId, Config.app.EmojiReplyID, true)
     Config.xiaohongshu.tip && await this.e.reply('检测到小红书链接，开始解析')
     const NoteData = await this.amagi.getXiaohongshuData('单个笔记数据', {

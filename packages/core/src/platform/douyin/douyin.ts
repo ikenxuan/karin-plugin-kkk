@@ -61,7 +61,7 @@ export class DouYin extends Base {
     this.is_slides = false
   }
 
-  async RESOURCES (data: DouyinIdData) {
+  async DouyinHandler (data: DouyinIdData) {
     Config.app.EmojiReply && !this.e.isPrivate && await this.e.bot.setMsgReaction(this.e.contact, this.e.messageId, Config.app.EmojiReplyID, true)
     if (Config.douyin.tip) this.e.reply('检测到抖音链接，开始解析')
     switch (this.type) {
