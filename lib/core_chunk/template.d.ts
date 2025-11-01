@@ -230,26 +230,31 @@ interface DouyinUserListProps extends BaseComponentProps {
   data: {
     /** 是否使用深色主题 */
     useDarkTheme?: boolean;
+    /** 群组信息 */
+    groupInfo: {
+      /** 群号 */
+      groupId: string;
+      /** 群名称 */
+      groupName: string;
+    };
     /** 用户列表数据 */
-    renderOpt: DouyinUserItem[];
+    renderOpt: {
+      /** 用户头像图片URL */
+      avatar_img: string;
+      /** 用户名 */
+      username: string;
+      /** 抖音短ID */
+      short_id: string;
+      /** 粉丝数 */
+      fans: string;
+      /** 获赞总数 */
+      total_favorited: string;
+      /** 关注数 */
+      following_count: string;
+      /** 全局推送开关状态 */
+      switch: boolean;
+    }[];
   };
-}
-/**
-* 抖音用户项数据接口
-*/
-interface DouyinUserItem {
-  /** 用户头像图片URL */
-  avatar_img: string;
-  /** 用户名 */
-  username: string;
-  /** 抖音短ID */
-  short_id: string;
-  /** 粉丝数 */
-  fans: string;
-  /** 获赞总数 */
-  total_favorited: string;
-  /** 关注数 */
-  following_count: string;
 }
 //#endregion
 //#region ../template/src/types/platforms/douyin/videoInfo.d.ts
@@ -526,6 +531,52 @@ interface BilibiliCommentProps extends BaseComponentProps {
   qrCodeDataUrl?: string;
 }
 /**
+* 粉丝卡片信息接口
+*/
+interface FanCardInfo {
+  /** 卡片背景图片 */
+  image: string | null;
+  /** 序号前缀 */
+  numPrefix: string;
+  /** 序号描述 */
+  numDesc: string;
+  /** 渐变色样式 */
+  gradientStyle: string;
+}
+/**
+* B站二级评论项数据接口
+*/
+interface SubCommentItem {
+  /** 用户头像URL */
+  avatar: string;
+  /** 用户昵称 */
+  uname: string;
+  /** 用户等级 */
+  level: number;
+  /** 头像框 */
+  frame?: string;
+  /** 评论内容 */
+  message: string;
+  /** 评论图片 */
+  img_src?: string | null;
+  /** 创建时间 */
+  ctime: string;
+  /** IP标签/地理位置 */
+  location: string;
+  /** 点赞数 */
+  like: string | number;
+  /** 是否为UP主评论 */
+  isUP: boolean;
+  /** VIP状态 */
+  vipstatus?: number;
+  /** 大会员图标 */
+  icon_big_vip?: string | null;
+  /** 被艾特的用户 */
+  members?: any[];
+  /** 粉丝卡片信息 */
+  fanCard?: FanCardInfo | null;
+}
+/**
 * B站评论项数据接口
 */
 interface CommentItem {
@@ -545,6 +596,8 @@ interface CommentItem {
   message: string;
   /** 评论图片 */
   img_src?: string;
+  /** VIP状态 */
+  vipstatus?: number;
   /** 贴纸 */
   sticker?: string;
   /** 创建时间 */
@@ -559,6 +612,10 @@ interface CommentItem {
   isTop: boolean;
   /** 是否为UP主评论 */
   isUP: boolean;
+  /** 二级评论列表 */
+  replies?: SubCommentItem[];
+  /** 粉丝卡片信息 */
+  fanCard?: FanCardInfo | null;
 }
 //#endregion
 //#region ../template/src/types/platforms/bilibili/dynamic/article.d.ts
@@ -965,26 +1022,31 @@ interface BilibiliUserListProps extends BaseComponentProps {
   data: {
     /** 是否使用深色主题 */
     useDarkTheme?: boolean;
+    /** 群组信息 */
+    groupInfo: {
+      /** 群号 */
+      groupId: string;
+      /** 群名称 */
+      groupName: string;
+    };
     /** 用户列表数据 */
-    renderOpt: BilibiliUserItem[];
+    renderOpt: {
+      /** 用户头像图片URL */
+      avatar_img: string;
+      /** 用户名 */
+      username: string;
+      /** 用户UID */
+      host_mid: string;
+      /** 粉丝数 */
+      fans: string;
+      /** 获赞总数 */
+      total_favorited: string;
+      /** 关注数 */
+      following_count: string;
+      /** 全局推送开关状态 */
+      switch: boolean;
+    }[];
   };
-}
-/**
-* B站用户项数据接口
-*/
-interface BilibiliUserItem {
-  /** 用户头像图片URL */
-  avatar_img: string;
-  /** 用户名 */
-  username: string;
-  /** 用户UID */
-  host_mid: string;
-  /** 粉丝数 */
-  fans: string;
-  /** 获赞总数 */
-  total_favorited: string;
-  /** 关注数 */
-  following_count: string;
 }
 //#endregion
 //#region ../template/src/types/platforms/bilibili/videoInfo.d.ts
@@ -1393,12 +1455,12 @@ interface ApiErrorProps extends BaseComponentProps {
     timestamp: string;
     /** 收集到的日志信息 */
     logs?: string | string[];
-    /** 触发命令 - 新增字段 */
+    /** 触发命令 */
     triggerCommand?: string;
-    /** 分享链接 - 新增字段 */
-    share_url?: string;
-    /** 是否使用暗色主题 - 新增字段 */
-    useDarkTheme?: boolean;
+    /** 框架版本 */
+    frameworkVersion: string;
+    /** 插件版本 */
+    pluginVersion: string;
   };
   /** 分享链接 */
   qrCodeDataUrl: string;
