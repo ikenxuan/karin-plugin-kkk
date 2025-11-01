@@ -50,7 +50,7 @@ export const setbilick = karin.command(/^#?(kkk)?s*设置s*(B站)ck$/i, async (e
 }, { perm: 'master', name: 'kkk-ck管理', event: 'message.friend' })
 
 // 文件删除工具
-async function removeAllFiles (dir: string): Promise<void> {
+export const removeAllFiles = async (dir: string): Promise<void> => { 
   const files = await fs.promises.readdir(dir)
   for (const file of files) {
     const filePath = path.join(dir, file)

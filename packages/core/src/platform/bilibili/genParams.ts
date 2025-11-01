@@ -7,7 +7,7 @@ import { Config } from '@/module/utils/Config'
  * @param apiURL 请求地址
  * @returns
  */
-export async function genParams (apiURL: string): Promise<string> {
+export const genParams = async (apiURL: string): Promise<string> => {
   if (Config.cookies.bilibili === '' || Config.cookies.bilibili === null) return '&platform=html5'
   const loginInfo = await getBilibiliData('登录基本信息', Config.cookies.bilibili)
   const genSign = await wbi_sign(apiURL, Config.cookies.bilibili)
@@ -20,7 +20,7 @@ export async function genParams (apiURL: string): Promise<string> {
   } else return `&qn=${qn[3]}&fnval=16`
 }
 
-export async function checkCk (): Promise<{ Status: 'isLogin' | '!isLogin', isVIP: boolean }> {
+export const checkCk = async (): Promise<{ Status: 'isLogin' | '!isLogin', isVIP: boolean }> => {
   if (Config.cookies.bilibili === '' || Config.cookies.bilibili === null) return { Status: '!isLogin', isVIP: false }
   const loginInfo = await getBilibiliData('登录基本信息', Config.cookies.bilibili)
   let isVIP

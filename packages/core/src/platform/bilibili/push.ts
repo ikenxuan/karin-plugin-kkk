@@ -936,7 +936,7 @@ export class Bilibilipush extends Base {
  * @param data 需要进行换行符替换的字符串。
  * @returns 替换后的字符串，其中的换行符\n被<br>替换。
  */
-function br (data: string): string {
+const br = (data: string): string => {  
   // 使用正则表达式将所有换行符替换为<br>
   return (data = data.replace(/\n/g, '<br>'))
 }
@@ -946,7 +946,7 @@ function br (data: string): string {
  * @param member 成员对象，需要包含vip属性，该属性应包含vipStatus和nickname_color（可选）。
  * @returns 返回成员名称的HTML标签字符串，VIP成员将显示为特定颜色，非VIP成员显示为默认颜色。
  */
-function checkvip (member: BiliUserProfile['data']['card'] | BiliUserDynamic['data']['items'][number]['orig']['modules']['module_author']): string {
+const checkvip = (member: BiliUserProfile['data']['card'] | BiliUserDynamic['data']['items'][number]['orig']['modules']['module_author']): string => {  
   // 根据VIP状态选择不同的颜色显示成员名称
   return member.vip.status === 1
     ? `<span style="color: ${member.vip.nickname_color ?? '#FB7299'}; font-weight: 700;">${member.name}</span>`
@@ -958,7 +958,7 @@ function checkvip (member: BiliUserProfile['data']['card'] | BiliUserDynamic['da
  * @param data 表情数据的数组，每个元素包含一个表情包的信息。
  * @returns 返回一个对象数组，每个对象包含text(表情名称)和url(表情图片地址)属性。
  */
-function extractEmojisData (data: any[]) {
+const extractEmojisData = (data: any[]) => {
   const emojisData: { text: string; url: string }[] = []
 
   // 遍历data数组中的每个表情包

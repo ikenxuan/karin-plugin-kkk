@@ -158,11 +158,11 @@ export class Xiaohongshu extends Base {
  * @param maxAutoVideoSize 自动模式下的最大文件大小（MB）
  * @returns 选择的视频流
  */
-export function xiaohongshuProcessVideos (
+export const xiaohongshuProcessVideos = (
   streamData: any,
   videoQuality: string,
   maxAutoVideoSize?: number
-): XhsVideoStream | null {
+): XhsVideoStream | null => {
   if (!streamData) {
     logger.warn('没有找到视频流数据')
     return null

@@ -10,7 +10,7 @@ import { Config } from '@/module/utils/Config'
  * @param host_mid UP主的ID
  * @returns 处理后的评论数据数组
  */
-export function bilibiliComments (commentsData: BiliWorkComments, host_mid: string): CommentItem[] | [] {
+export const bilibiliComments = (commentsData: BiliWorkComments, host_mid: string): CommentItem[] | [] => {
   if (!commentsData) return []
   let jsonArray: any[] = []
   if (commentsData.code === 404) {
@@ -234,7 +234,7 @@ const emoteToUrl = (message: any, emote: any) => {
 }
 
 /** 替换空格 */
-function space (data: any) {
+const space = (data: any) => {
   for (const i in data) {
     if (data[i].message) {
       data[i].message = data[i].message.replace(/ /g, ' ') // 替换空格
@@ -244,7 +244,7 @@ function space (data: any) {
 }
 
 /** 换行符转<br> */
-function br (data: any) {
+const br = (data: any) => {
   for (const i in data) {
     let message = data[i].message
 
@@ -264,14 +264,14 @@ function br (data: any) {
 }
 
 /** 检查是否大会员 */
-function checkvip (member: any) {
+const checkvip = (member: any) => {
   return member.vip.vipStatus === 1
     ? `<span style="color: ${member.vip.nickname_color ?? '#FB7299'}; font-weight: 700;">${member.uname}</span>`
     : `<span style="color: #888">${member.uname}</span>`
 }
 
 /** 返回创建时间 */
-function getRelativeTimeFromTimestamp (timestamp: number) {
+const getRelativeTimeFromTimestamp = (timestamp: number) => {
   const now = Math.floor(Date.now() / 1000) // 当前时间的时间戳
   const differenceInSeconds = now - timestamp
 
@@ -298,14 +298,15 @@ function getRelativeTimeFromTimestamp (timestamp: number) {
 }
 
 /** 提取粉丝卡片信息 */
-function extractFanCard (member: any) {
+const extractFanCard = (member: any) => {
   if (
     // 确保属性存在且是对象类型（排除 null，因为 typeof null 会返回 'object'）
     member.user_sailing_v2 &&
     typeof member.user_sailing_v2 === 'object' &&
     // 排除空对象（判断是否有自有属性）
     Object.keys(member.user_sailing_v2).length > 0
-  ) { 
+  ) {
+    if (!member.user_sailing_v2.card_bg) return null
 
     const cardBg = member.user_sailing_v2.card_bg
     const fan = cardBg.fan

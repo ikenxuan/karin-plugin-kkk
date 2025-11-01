@@ -105,7 +105,7 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
   }
 ]
 
-function buildMenuForRole (role: Role) {
+const buildMenuForRole = (role: Role) => {
   const filterItems = (items: RoleItem[] = []) =>
     items.filter(i => !i.roles || i.roles.includes(role))
       .map(({ title, description, icon }) => ({ title, description, icon }))

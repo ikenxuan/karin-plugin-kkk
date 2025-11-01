@@ -776,17 +776,17 @@ export class Bilibili extends Base {
   }
 }
 
-function checkvip (member: any) {
+const checkvip = (member: any) => {
   return member.vip.status === 1
     ? `<span style="color: ${member.vip.nickname_color ?? '#FB7299'}; font-weight: 700;">${member.name}</span>`
     : `<span style="color: ${Common.useDarkTheme() ? '#e9e9e9' : '#313131'}; font-weight: 700;">${member.name}</span>`
 }
 
-function br (data: string) {
+const br = (data: string) => {
   return (data = data.replace(/\n/g, '<br>'))
 }
 
-export function replacetext (text: string, rich_text_nodes: any[]) {
+export const replacetext = (text: string, rich_text_nodes: any[]) => {
   for (const tag of rich_text_nodes) {
     // 对正则表达式中的特殊字符进行转义
     const escapedText = tag.orig_text.replace(/([.*+?^${}()|[\]\\])/g, '\\$1').replace(/\n/g, '\\n')
@@ -886,7 +886,7 @@ export const generateDecorationCard = (decorate: any) => {
     : '<div></div>'
 }
 
-function mapping_table (type: any): number {
+const mapping_table = (type: any): number => {
   const Array: Record<string, string[]> = {
     1: ['DYNAMIC_TYPE_AV', 'DYNAMIC_TYPE_PGC', 'DYNAMIC_TYPE_UGC_SEASON'],
     11: ['DYNAMIC_TYPE_DRAW'],

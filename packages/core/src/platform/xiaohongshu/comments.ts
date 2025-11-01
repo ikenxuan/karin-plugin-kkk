@@ -77,7 +77,7 @@ const processAtUsers = (text: string, atUsers: any[], useDarkTheme: boolean = fa
  * @param timestamp 时间戳（毫秒）
  * @returns 相对时间字符串
  */
-function getRelativeTimeFromTimestamp (timestamp: number): string {
+export const getRelativeTimeFromTimestamp = (timestamp: number): string => {
   const now = Date.now()
   const differenceInSeconds = Math.floor((now - timestamp) / 1000)
 
@@ -110,7 +110,7 @@ function getRelativeTimeFromTimestamp (timestamp: number): string {
  * @param useDarkTheme 是否使用深色主题
  * @returns 处理后的评论数组
  */
-export async function xiaohongshuComments (data: any, emojiData: any, useDarkTheme: boolean = false): Promise<any[]> {
+export const xiaohongshuComments = async (data: any, emojiData: any, useDarkTheme: boolean = false): Promise<any[]> => {
   if (!data.data || !data.data.comments || data.data.comments.length === 0) {
     return []
   }

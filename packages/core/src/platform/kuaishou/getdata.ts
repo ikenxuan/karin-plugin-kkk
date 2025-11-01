@@ -3,10 +3,10 @@ import Client, { type KuaishouDataOptionsMap } from '@ikenxuan/amagi'
 import { Config } from '@/module/utils/Config'
 import { KuaishouDataTypes } from '@/types'
 
-export async function fetchKuaishouData<T extends keyof KuaishouDataTypes> (
+export const fetchKuaishouData = async <T extends keyof KuaishouDataTypes> (
   type: T,
   opt?: any
-) {
+) => {
   const client = Client({
     cookies: { kuaishou: Config.cookies.kuaishou },
     request: {

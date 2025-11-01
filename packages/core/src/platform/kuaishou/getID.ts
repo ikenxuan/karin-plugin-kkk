@@ -14,7 +14,7 @@ export interface ExtendedKuaishouOptionsType {
  * @param log 输出日志，默认true
  * @returns
  */
-export async function getKuaishouID (url: string, log = true) {
+export const getKuaishouID = async (url: string, log = true) => {
   const longLink = await new Networks({ url }).getLongLink()
   let result = {} as ExtendedKuaishouOptionsType
   switch (true) {

@@ -443,7 +443,7 @@ export class DouYin extends Base {
   }
 }
 
-export function douyinProcessVideos (videos: dyVideo[], videoQuality: string, maxAutoVideoSize?: number): dyVideo[] {
+export const douyinProcessVideos = (videos: dyVideo[], videoQuality: string, maxAutoVideoSize?: number): dyVideo[] => {
   // 首先过滤掉所有 format 为 'dash' 的视频
   const mp4Videos = videos.filter(video => video.format !== 'dash')
   
@@ -558,7 +558,7 @@ export function douyinProcessVideos (videos: dyVideo[], videoQuality: string, ma
  * @param {number} delay
  * @returns
  */
-function Time (delay: number): string {
+export const Time = (delay: number): string => {
   const currentDate = new Date()
   currentDate.setHours(currentDate.getHours() + delay)
 

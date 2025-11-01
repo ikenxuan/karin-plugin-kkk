@@ -10,7 +10,7 @@ export interface XiaohongshuIdData {
  * - 典型长链接: https://www.xiaohongshu.com/explore/<note_id>
  * - 短链: https://xhslink.com/<code>（会重定向到长链接）
  */
-export async function getXiaohongshuID (url: string, log = true): Promise<XiaohongshuIdData> {
+export const getXiaohongshuID = async (url: string, log = true): Promise<XiaohongshuIdData> => {
   const resp = await axios.get(url, {
     headers: {
       'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'

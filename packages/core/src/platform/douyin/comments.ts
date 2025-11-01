@@ -114,7 +114,7 @@ const processCommentImage = async (imageUrl: string | null): Promise<string | nu
  * @param {*} emojidata 处理过后的emoji列表
  * @returns obj
  */
-export async function douyinComments (data: any, emojidata: any): Promise<any> {
+export const douyinComments = async (data: any, emojidata: any): Promise<any> => {
   let jsonArray: any[] = []
   if (data.data.comments === null) return []
 
@@ -235,7 +235,7 @@ export async function douyinComments (data: any, emojidata: any): Promise<any> {
   return CommentData
 }
 
-function getRelativeTimeFromTimestamp (timestamp: number) {
+const getRelativeTimeFromTimestamp = (timestamp: number) => {
   const now = Math.floor(Date.now() / 1000) // 当前时间的时间戳
   const differenceInSeconds = now - timestamp
 

@@ -351,7 +351,7 @@ export const downloadFile = async (videoUrl: string, opt: downLoadFileOptions): 
   }).downloadStream((downloadedBytes, totalBytes) => {
     // 定义进度条长度及生成进度条字符串的函数
     const barLength = 45
-    function generateProgressBar (progressPercentage: number) {
+    const generateProgressBar = (progressPercentage: number) => {
       const filledLength = Math.floor((progressPercentage / 100) * barLength)
       let progress = ''
       progress += '\u2588'.repeat(filledLength)

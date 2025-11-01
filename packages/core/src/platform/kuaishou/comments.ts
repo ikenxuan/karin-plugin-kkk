@@ -6,7 +6,7 @@ import { Config } from '@/module/utils/Config'
  * @param {*} emojidata 处理过后的emoji列表
  * @returns obj
  */
-export async function kuaishouComments (data: any, emojidata: any) {
+export const kuaishouComments = async (data: any, emojidata: any) => {
   let jsonArray = []
   for (const i of data.data.visionCommentList.rootComments) {
     const cid = i.commentId
@@ -65,7 +65,7 @@ export async function kuaishouComments (data: any, emojidata: any) {
   return jsonArray.slice(0, Math.min(jsonArray.length, Config.kuaishou.numcomment))
 }
 
-function getRelativeTimeFromTimestamp (timestamp: number) {
+const getRelativeTimeFromTimestamp = (timestamp: number) => {
   // 快手是毫秒（ms）
   const timestampInSeconds = Math.floor(timestamp / 1000)
   const now = Math.floor(Date.now() / 1000)
@@ -98,7 +98,7 @@ function getRelativeTimeFromTimestamp (timestamp: number) {
  * @param data 评论数据
  * @returns
  */
-function br (data: any) {
+export const br = (data: any) => {
   for (const i of data) {
     let text = i.text
     text = text.replace(/\n/g, '<br>')
@@ -112,7 +112,7 @@ function br (data: any) {
  * @param data 评论数据
  * @returns
  */
-function handling_at (data: any) {
+export const handling_at = (data: any) => {
   for (const i of data) {
     let text = i.text
 

@@ -17,7 +17,7 @@ export interface DouyinIdData {
  * @param log 输出日志，默认true
  * @returns
  */
-export async function getDouyinID (event: Message, url: string, log = true): Promise<DouyinIdData> {
+export const getDouyinID = async (event: Message, url: string, log = true): Promise<DouyinIdData> => {
   const resp = await axios.get(url, {
     headers: {
       'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'

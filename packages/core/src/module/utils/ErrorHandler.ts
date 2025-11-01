@@ -22,7 +22,7 @@ type ErrorHandlerOptions = {
  * @param pushlist 推送配置列表
  * @returns 机器人ID配置
  */
-function statBotId(pushlist: any) {
+const statBotId = (pushlist: any) => {
   const douyin = pushlist.douyin?.[0]?.group_id?.[0]?.split(':')?.[1] || ''
   const bilibili = pushlist.bilibili?.[0]?.group_id?.[0]?.split(':')?.[1] || ''
   return {

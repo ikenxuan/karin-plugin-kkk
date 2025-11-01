@@ -14,7 +14,7 @@ export interface BilibiliId {
  * @param {string} url 分享连接
  * @returns
  */
-export async function getBilibiliID (url: string) {
+export const getBilibiliID = async (url: string) => {
   const resp = await axios.get(url, {
     headers: {
       'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
