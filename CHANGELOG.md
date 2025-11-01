@@ -2,6 +2,29 @@
 
 # Changelog
 
+## [2.10.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.9.5...v2.10.0) (2025-11-01)
+
+
+### ✨ 新功能
+
+* **bilibili:** 支持部分评论的二级评论渲染 ([7c2af66](https://github.com/ikenxuan/karin-plugin-kkk/commit/7c2af66a259b5a461124b746b3d98436191c9ac5))
+
+
+### 🐛 错误修复
+
+* 修复专栏动态推送this.e.reply未定义 ([a8610a1](https://github.com/ikenxuan/karin-plugin-kkk/commit/a8610a165ff05d6a43294f64ae141a70eb55b8d6))
+
+
+### 💄 UI 优化
+
+* **error-handler:** 更新错误日志组件UI ([b8506c5](https://github.com/ikenxuan/karin-plugin-kkk/commit/b8506c5f2b33c84627c55b5b9c0883d68f30e21e))
+* **platforms:** 推送列表组件改为两栏布局，添加开关显示 ([05171b8](https://github.com/ikenxuan/karin-plugin-kkk/commit/05171b8562d40d9f2bd7ae3b993295d039618fb8))
+
+
+### 🧰 其他更新
+
+* 更新一些方法名 ([a8610a1](https://github.com/ikenxuan/karin-plugin-kkk/commit/a8610a165ff05d6a43294f64ae141a70eb55b8d6))
+
 ## [2.9.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.9.4...v2.9.5) (2025-10-31)
 
 
