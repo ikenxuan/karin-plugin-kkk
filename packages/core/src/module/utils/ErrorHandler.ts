@@ -2,7 +2,7 @@ import util from 'node:util'
 
 import karin, { config, logger, type Message, segment } from 'node-karin'
 
-import { Render } from '@/module'
+import { Render, Root } from '@/module'
 
 import { Config } from './Config'
 import { LogCollector } from './LogCollector'
@@ -142,7 +142,8 @@ const handleBusinessError = async (
     timestamp: new Date().toISOString(),
     logs: logs,
     triggerCommand: triggerCommand,
-    share_url: triggerCommand
+    frameworkVersion: Root.karinVersion,
+    pluginVersion: Root.pluginVersion
   })
 
   // 发送给触发者

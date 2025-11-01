@@ -56,12 +56,12 @@ export interface ApiErrorProps extends BaseComponentProps {
     timestamp: string
     /** 收集到的日志信息 */
     logs?: string | string[]
-    /** 触发命令 - 新增字段 */
+    /** 触发命令 */
     triggerCommand?: string
-    /** 分享链接 - 新增字段 */
-    share_url?: string
-    /** 是否使用暗色主题 - 新增字段 */
-    useDarkTheme?: boolean
+    /** 框架版本 */
+    frameworkVersion: string
+    /** 插件版本 */
+    pluginVersion: string
   }
   /** 分享链接 */
   qrCodeDataUrl: string
