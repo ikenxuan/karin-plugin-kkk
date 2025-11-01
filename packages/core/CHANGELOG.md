@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.9.6](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.9.5...v2.9.6) (2025-11-01)
+
+
+### 🐛 错误修复
+
+* 修复专栏动态推送this.e.reply未定义 ([a8610a1](https://github.com/ikenxuan/karin-plugin-kkk/commit/a8610a165ff05d6a43294f64ae141a70eb55b8d6))
+
+
+### 🧰 其他更新
+
+* 更新一些方法名 ([a8610a1](https://github.com/ikenxuan/karin-plugin-kkk/commit/a8610a165ff05d6a43294f64ae141a70eb55b8d6))
+
 ## [2.9.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.9.4...v2.9.5) (2025-10-31)
 
 
