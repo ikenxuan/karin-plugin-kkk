@@ -1,7 +1,7 @@
 import type { ApiResponse, DySearchInfo, DyUserInfo, DyUserLiveVideos } from '@ikenxuan/amagi'
 import type { AdapterType, ImageElement, Message } from 'node-karin'
 import karin, { common, logger, segment } from 'node-karin'
-import { DouyinUserItem } from 'template/types/platforms/douyin'
+import { DouyinUserListProps } from 'template/types/platforms/douyin'
 
 import {
   Base,
@@ -535,11 +535,15 @@ export class DouYinpush extends Base {
       return
     }
 
-    const renderOpt: DouyinUserItem[] = []
+    const renderOpt: DouyinUserListProps['data']['renderOpt'] = []
 
     for (const subscription of subscriptions) {
       const sec_uid = subscription.sec_uid
       const userInfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
+
+      // 查找配置文件中对应的全局开关状态
+      const configItem = Config.pushlist.douyin?.find((item: douyinPushItem) => item.sec_uid === sec_uid)
+      const switchStatus = configItem?.switch !== false // 默认为 true
 
       renderOpt.push({
         avatar_img: userInfo.data.user.avatar_larger.url_list[0],
@@ -547,10 +551,17 @@ export class DouYinpush extends Base {
         short_id: userInfo.data.user.unique_id === '' ? userInfo.data.user.short_id : userInfo.data.user.unique_id,
         fans: this.count(userInfo.data.user.follower_count),
         total_favorited: this.count(userInfo.data.user.total_favorited),
-        following_count: this.count(userInfo.data.user.following_count)
+        following_count: this.count(userInfo.data.user.following_count),
+        switch: switchStatus
       })
     }
-    const img = await Render('douyin/userlist', { renderOpt })
+    const img = await Render('douyin/userlist', {
+      renderOpt,
+      groupInfo: {
+        groupId: groupInfo.groupId || '',
+        groupName: groupInfo.groupName || ''
+      }
+    })
     await this.e.reply(img)
   }
 

@@ -1,197 +1,27 @@
 {
   "renderOpt": [
     {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_3875b603fda759e8a9ef2c92ccb5cca2.jpeg?from=2956013662",
-      "username": "柠好不好",
-      "short_id": "Senaka",
-      "fans": "238.8万",
-      "total_favorited": "10209.4万",
-      "following_count": "219"
+      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_5c0c342a89f6ce58ccd71b497a37a53e.jpeg?from=2956013662",
+      "username": "呼叫网管",
+      "short_id": "HJWG",
+      "fans": "1200.3万",
+      "total_favorited": "63612.3万",
+      "following_count": "387",
+      "switch": true
     },
     {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_2bddf27d60c4a4a66ff5f71c715eadd5.jpeg?from=2956013662",
-      "username": "小圆不会w",
-      "short_id": "xiaoyuan337",
-      "fans": "70.0万",
-      "total_favorited": "1339.6万",
-      "following_count": "142"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_e2975032f0dc1e909f4882b8435e87ce.jpeg?from=2956013662",
-      "username": "小白兔奶糖ovo",
-      "short_id": "xiaonaitang0819",
-      "fans": "261.5万",
-      "total_favorited": "8292.9万",
-      "following_count": "337"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_ebb4e3448baac2609f61557db6627ecb.jpeg?from=2956013662",
-      "username": "清许",
-      "short_id": "21220546459",
-      "fans": "99.8万",
-      "total_favorited": "1778.1万",
-      "following_count": "99"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_3187e2cd7ce72881dd437790547cc9fd.jpeg?from=2956013662",
-      "username": "六二二同学",
-      "short_id": "six622",
-      "fans": "270.0万",
-      "total_favorited": "5294.1万",
-      "following_count": "338"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-i-0813c001_o8iAZ0ADgeEeACDA8kN29OgAJDEnbAnnISInac.jpeg?from=2956013662",
-      "username": "光月定大青蛙",
-      "short_id": "guangyueding",
-      "fans": "56.7万",
-      "total_favorited": "727.3万",
-      "following_count": "583"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-i-0813c001_oQAvy02ZA1AdpDHHBZE5AgaA0I3gi7cAIjPNi.jpeg?from=2956013662",
-      "username": "houdini练习生",
-      "short_id": "houdinii",
-      "fans": "9.7万",
-      "total_favorited": "203.0万",
-      "following_count": "1"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_f9ab803c099089870d60d5aa658b5ae1.jpeg?from=2956013662",
-      "username": "欢哆哆",
-      "short_id": "hddnbkls",
-      "fans": "17.4万",
-      "total_favorited": "376.7万",
-      "following_count": "252"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-i-23auat310x_48a508473f2e440c8b0a138075056d8a.jpeg?from=2956013662",
-      "username": "永劫无间官方",
-      "short_id": "YJWJGF",
-      "fans": "330.9万",
-      "total_favorited": "5349.3万",
-      "following_count": "23"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_877dbccee1bb602b0397e5ccb56f37b4.jpeg?from=2956013662",
-      "username": "困不",
-      "short_id": "20783407799",
-      "fans": "19.8万",
-      "total_favorited": "231.4万",
-      "following_count": "1"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_384cb2fce2242d5a5c57ee251ec10fe3.jpeg?from=2956013662",
-      "username": "聪明羊羊",
-      "short_id": "70236159047",
-      "fans": "438.4万",
-      "total_favorited": "14066.2万",
-      "following_count": "83"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-i-0813c000-ce_ogfsJ8vAEAEiAUwj4KBXezI1xEA2zOe6JiOACj.jpeg?from=2956013662",
-      "username": "墨染青漓MoLi",
-      "short_id": "Poi_MoLi",
-      "fans": "1516",
-      "total_favorited": "1670",
-      "following_count": "9"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_ccb2268c7d5607f553f1c5d218ea94c8.jpeg?from=2956013662",
-      "username": "不困",
-      "short_id": "LANGAOAO",
-      "fans": "267.5万",
-      "total_favorited": "8286.3万",
-      "following_count": "348"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-i-0813c001_owYA4CDHVYnA9agDleAj8NAAbSCADlQAe4ITUQ.jpeg?from=2956013662",
-      "username": "一根华仔",
-      "short_id": "h1347989106",
-      "fans": "693.9万",
-      "total_favorited": "20520.5万",
-      "following_count": "1875"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-i-0813_oUS92pEF7AHe0JCdA7zuWCgIDfA0FAApVCAmKQ.jpeg?from=2956013662",
-      "username": "番鼠鉴赏家",
-      "short_id": "45654337959",
-      "fans": "121.8万",
-      "total_favorited": "2740.0万",
-      "following_count": "3"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_951cf3fb5c10f57285bbb293d0957c21.jpeg?from=2956013662",
-      "username": "路怡",
-      "short_id": "luyi200212",
-      "fans": "1081.4万",
-      "total_favorited": "39557.1万",
-      "following_count": "220"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_1ae17202911ab7dd305c6bae2915d45e.jpeg?from=2956013662",
-      "username": "掉了颗兔牙",
-      "short_id": "toyatoto",
-      "fans": "70.6万",
-      "total_favorited": "1530.2万",
-      "following_count": "540"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-i-0813_o4IAgEeekcOQ0eB7ngTN9ALDgAjG3KABAkM8cE.jpeg?from=2956013662",
-      "username": "喵喵没有脾气",
-      "short_id": "87344900530",
-      "fans": "21.3万",
-      "total_favorited": "1616.9万",
-      "following_count": "75"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_48476ec85157ba8a21afb42c2e32b212.jpeg?from=2956013662",
-      "username": "偷偷狗totogo",
-      "short_id": "41019149379",
-      "fans": "23.0万",
-      "total_favorited": "426.7万",
-      "following_count": "212"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_b1ffa33283edb631ecb47d89429eadab.jpeg?from=2956013662",
-      "username": "吉吉哈乌",
-      "short_id": "43915674955",
-      "fans": "76.9万",
-      "total_favorited": "2361.4万",
-      "following_count": "333"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_23d2eb4ac55f3e49e15ea4dde4516d89.jpeg?from=2956013662",
-      "username": "仓裴",
-      "short_id": "lp533488",
-      "fans": "41.0万",
-      "total_favorited": "1304.9万",
-      "following_count": "180"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_9e78add5a07ff4364f175d90a095208f.jpeg?from=2956013662",
-      "username": "筠jun",
-      "short_id": "yujun0729",
-      "fans": "129.5万",
-      "total_favorited": "3970.0万",
-      "following_count": "242"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-i-0813_os5AZGSgQA0fHyADeCBII78AfIG2AALzbkIAae.jpeg?from=2956013662",
-      "username": "呼吸菌QAQ",
-      "short_id": "FreebreathQAQ",
-      "fans": "84.8万",
-      "total_favorited": "2177.9万",
-      "following_count": "61"
-    },
-    {
-      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_1e21f009c3b14ecd9e6a99afed28730f.jpeg?from=2956013662",
-      "username": "小可☆",
-      "short_id": "KeEkz",
-      "fans": "95.5万",
-      "total_favorited": "1512.2万",
-      "following_count": "96"
+      "avatar_img": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-avt-0015_a8cf976fa76120a291a9aacb9c4439f8.jpeg?from=2956013662",
+      "username": "影视飓风",
+      "short_id": "superslow",
+      "fans": "870.5万",
+      "total_favorited": "6618.5万",
+      "following_count": "62",
+      "switch": true
     }
   ],
-  "useDarkTheme": false
+  "groupInfo": {
+    "groupId": "114514",
+    "groupName": "测试4"
+  },
+  "useDarkTheme": true
 }

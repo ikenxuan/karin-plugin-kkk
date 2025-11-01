@@ -1,141 +1,27 @@
 {
   "renderOpt": [
     {
-      "avatar_img": "https://i0.hdslb.com/bfs/face/c1733474892caa45952b2c09a89323157df7129a.jpg",
-      "username": "影视飓风",
-      "host_mid": "946974",
-      "fans": "1201.2万",
-      "total_favorited": "8734.3万",
-      "following_count": "655"
-    },
-    {
-      "avatar_img": "https://i2.hdslb.com/bfs/face/eafd73061a55531503353e7ecf8ff9c184d52241.jpg",
-      "username": "利维坦mY",
-      "host_mid": "7946432",
-      "fans": "178.4万",
-      "total_favorited": "2106.3万",
-      "following_count": "294"
-    },
-    {
-      "avatar_img": "https://i0.hdslb.com/bfs/face/9119a68543494017db53a2567d3e96734c3a6639.jpg",
-      "username": "知危编辑部",
-      "host_mid": "12638031",
-      "fans": "61.6万",
-      "total_favorited": "163.9万",
-      "following_count": "53"
-    },
-    {
-      "avatar_img": "https://i0.hdslb.com/bfs/face/229599e175faafa1855c0f103d512e8b469b5aad.jpg",
-      "username": "差评君",
-      "host_mid": "19319172",
-      "fans": "320.9万",
-      "total_favorited": "2056.1万",
-      "following_count": "214"
-    },
-    {
-      "avatar_img": "https://i0.hdslb.com/bfs/face/229039e01206142f58dea684f6ee8db543a4b351.jpg",
-      "username": "王者荣耀",
-      "host_mid": "57863910",
-      "fans": "1018.8万",
-      "total_favorited": "7111.5万",
-      "following_count": "459"
+      "avatar_img": "https://i2.hdslb.com/bfs/face/3b03b2b538b15a64deac382fe574a869dda3c238.jpg",
+      "username": "神椿音乐站",
+      "host_mid": "1741301",
+      "fans": "11.5万",
+      "total_favorited": "382.3万",
+      "following_count": "633",
+      "switch": true
     },
     {
       "avatar_img": "https://i0.hdslb.com/bfs/face/77e84ffdb2533ebb79de43d75f3cc87801054566.jpg",
       "username": "网易第五人格手游",
       "host_mid": "211005705",
-      "fans": "435.9万",
-      "total_favorited": "6344.7万",
-      "following_count": "520"
-    },
-    {
-      "avatar_img": "https://i2.hdslb.com/bfs/face/f60273dcdcb184b5317d17bda7164f6238cba171.jpg",
-      "username": "韭菜实验室",
-      "host_mid": "329519036",
-      "fans": "225.1万",
-      "total_favorited": "1410.1万",
-      "following_count": "68"
-    },
-    {
-      "avatar_img": "https://i0.hdslb.com/bfs/face/1d146ecc95b96b66d8f698d87a602eb67aeb8af9.jpg",
-      "username": "Coser小烨清",
-      "host_mid": "348830160",
-      "fans": "60.8万",
-      "total_favorited": "910.9万",
-      "following_count": "169"
-    },
-    {
-      "avatar_img": "https://i0.hdslb.com/bfs/face/35ce8ca063124d4dda5c211039d0eb67eae3c797.jpg",
-      "username": "星瞳_Official",
-      "host_mid": "401315430",
-      "fans": "103.4万",
-      "total_favorited": "1261.4万",
-      "following_count": "67"
-    },
-    {
-      "avatar_img": "https://i2.hdslb.com/bfs/face/853c4a846793dfbdafd8f16a40d6d8065bdb7c6f.jpg",
-      "username": "原神",
-      "host_mid": "401742377",
-      "fans": "2016.9万",
-      "total_favorited": "24911.4万",
-      "following_count": "60"
-    },
-    {
-      "avatar_img": "https://i1.hdslb.com/bfs/face/9a2c23800387d9c871f3b5dd3620dc1c3c50d2f9.jpg",
-      "username": "亿点点不一样",
-      "host_mid": "407054668",
-      "fans": "517.0万",
-      "total_favorited": "2527.9万",
-      "following_count": "58"
-    },
-    {
-      "avatar_img": "https://i0.hdslb.com/bfs/face/3c975d44586143dd0eb4b121a3437bc8cc696610.jpg",
-      "username": "火影忍者手游情报君",
-      "host_mid": "441897078",
-      "fans": "273.6万",
-      "total_favorited": "2478.9万",
-      "following_count": "84"
-    },
-    {
-      "avatar_img": "https://i1.hdslb.com/bfs/face/cf895b86c955e4ce62b28b3c2bb5bbc77f9fd410.jpg",
-      "username": "小Lin说",
-      "host_mid": "520819684",
-      "fans": "652.1万",
-      "total_favorited": "1483.8万",
-      "following_count": "70"
-    },
-    {
-      "avatar_img": "https://i2.hdslb.com/bfs/face/57b6e8c16b909a49bfc8d8394d946f908cabe728.jpg",
-      "username": "崩坏星穹铁道",
-      "host_mid": "1340190821",
-      "fans": "1151.4万",
-      "total_favorited": "11931.3万",
-      "following_count": "19"
-    },
-    {
-      "avatar_img": "https://i0.hdslb.com/bfs/face/f013e3aacdc4e3254a476648e1cec3f39b7df097.jpg",
-      "username": "绝区零",
-      "host_mid": "1636034895",
-      "fans": "756.6万",
-      "total_favorited": "5116.5万",
-      "following_count": "16"
-    },
-    {
-      "avatar_img": "https://i2.hdslb.com/bfs/face/0abd6b9df304334a9388e968740b5b9b7d1a84be.jpg",
-      "username": "鸣潮",
-      "host_mid": "1955897084",
-      "fans": "446.4万",
-      "total_favorited": "2484.9万",
-      "following_count": "11"
-    },
-    {
-      "avatar_img": "https://i0.hdslb.com/bfs/face/743a3f7ad3437c36d539dd7d20361cd433dc2560.jpg",
-      "username": "长安游者阿光",
-      "host_mid": "3493264516712760",
-      "fans": "9921",
-      "total_favorited": "29.9万",
-      "following_count": "32"
+      "fans": "440.1万",
+      "total_favorited": "6452.1万",
+      "following_count": "520",
+      "switch": true
     }
   ],
-  "useDarkTheme": false
+  "groupInfo": {
+    "groupId": "114514",
+    "groupName": "测试4"
+  },
+  "useDarkTheme": true
 }

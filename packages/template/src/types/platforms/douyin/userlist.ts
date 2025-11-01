@@ -8,37 +8,29 @@ export interface DouyinUserListProps extends BaseComponentProps {
   data: {
     /** 是否使用深色主题 */
     useDarkTheme?: boolean
+    /** 群组信息 */
+    groupInfo: {
+      /** 群号 */
+      groupId: string
+      /** 群名称 */
+      groupName: string
+    }
     /** 用户列表数据 */
-    renderOpt: DouyinUserItem[]
+    renderOpt: {
+      /** 用户头像图片URL */
+      avatar_img: string
+      /** 用户名 */
+      username: string
+      /** 抖音短ID */
+      short_id: string
+      /** 粉丝数 */
+      fans: string
+      /** 获赞总数 */
+      total_favorited: string
+      /** 关注数 */
+      following_count: string
+      /** 全局推送开关状态 */
+      switch: boolean
+    }[]
   }
-}
-
-/**
- * 抖音用户项数据接口
- */
-export interface DouyinUserItem {
-  /** 用户头像图片URL */
-  avatar_img: string
-  /** 用户名 */
-  username: string
-  /** 抖音短ID */
-  short_id: string
-  /** 粉丝数 */
-  fans: string
-  /** 获赞总数 */
-  total_favorited: string
-  /** 关注数 */
-  following_count: string
-}
-
-/**
- * 抖音用户项组件属性接口
- */
-export interface DouyinUserItemProps {
-  /** 用户数据 */
-  user: DouyinUserItem
-  /** 索引 */
-  index: number
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
 }

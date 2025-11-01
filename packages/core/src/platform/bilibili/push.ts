@@ -20,7 +20,7 @@ import karin, {
   logger,
   segment
 } from 'node-karin'
-import { BilibiliUserItem } from 'template/types/platforms/bilibili'
+import { BilibiliUserListProps } from 'template/types/platforms/bilibili'
 
 import {
   Base,
@@ -898,12 +898,16 @@ export class Bilibilipush extends Base {
     }
 
     /** 用户的今日动态列表 */
-    const renderOpt: BilibiliUserItem[] = []
-
+    const renderOpt: BilibiliUserListProps['data']['renderOpt'] = []
+    
     // 获取所有订阅UP主的信息
     for (const subscription of subscriptions) {
       const host_mid = subscription.host_mid
       const userInfo = await this.amagi.getBilibiliData('用户主页数据', { host_mid, typeMode: 'strict' })
+
+      // 查找配置文件中对应的全局开关状态
+      const configItem = Config.pushlist.bilibili?.find((item: bilibiliPushItem) => item.host_mid === host_mid)
+      const switchStatus = configItem?.switch !== false // 默认为 true
 
       renderOpt.push({
         avatar_img: userInfo.data.data.card.face,
@@ -911,11 +915,18 @@ export class Bilibilipush extends Base {
         host_mid: userInfo.data.data.card.mid,
         fans: Count(userInfo.data.data.follower),
         total_favorited: Count(userInfo.data.data.like_num),
-        following_count: Count(userInfo.data.data.card.attention)
+        following_count: Count(userInfo.data.data.card.attention),
+        switch: switchStatus
       })
     }
 
-    const img = await Render('bilibili/userlist', { renderOpt })
+    const img = await Render('bilibili/userlist', { 
+      renderOpt,
+      groupInfo: {
+        groupId: groupInfo.groupId || '',
+        groupName: groupInfo.groupName || ''
+      }
+    })
     await this.e.reply(img)
   }
 }
