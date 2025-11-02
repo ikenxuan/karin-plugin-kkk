@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import tailwindcss from '@tailwindcss/vite'
 import { isTauri } from '@tauri-apps/api/core'
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import viteImagemin from 'vite-plugin-imagemin'
 import mkcert from 'vite-plugin-mkcert'

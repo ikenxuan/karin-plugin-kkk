@@ -4,7 +4,7 @@ import path, { resolve } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 
 import tailwindcss from '@tailwindcss/vite'
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
 import { mockApiPlugin } from './src/dev/vite-mock-plugin'

@@ -23,7 +23,7 @@
   "dependencies": {
     "@ikenxuan/amagi": "5.8.0",
     "@tailwindcss/vite": "4.1.14",
-    "@vitejs/plugin-react-swc": "4.1.0",
+    "@vitejs/plugin-react": "5.1.0",
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
     "lucide-react": "0.552.0",
