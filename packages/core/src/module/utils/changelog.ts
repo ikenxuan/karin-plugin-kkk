@@ -1,7 +1,12 @@
+import fs from 'node:fs'
+
 import { range } from 'node-karin'
 import axios from 'node-karin/axios'
+import { ChangelogProps } from 'template/types/ohter/changelog'
 
 import { baseHeaders, Render, Root } from '@/module'
+
+import { formatBuildTime, getBuildMetadata } from './build-metadata'
 
 /**
  * 规范化为 x.x.x（剔除 v 前缀、预发布、构建标识）
@@ -17,15 +22,37 @@ const versionCore = (v: string): string => {
 }
 
 /**
- * 获取变更日志图片选项
+ * 获取远程构建元数据
+ * @param version 远程版本号
+ * @returns 构建元数据对象，如果获取失败则返回 null
  */
-export type getChangelogImageOptions = {
-  /** 本地版本字符串 */
-  localVersion: string, 
-  /** 远程版本字符串 */
-  remoteVersion: string
-  /** 渲染的变更日志图片是否包含提示 */
-  Tip?: boolean
+const getRemoteBuildMetadata = async (version: string) => {
+  const urls = [
+    // 国内镜像（优先）
+    `https://jsd.onmicrosoft.cn/npm/${Root.pluginName}@${version}/lib/build-metadata.json`,
+    `https://npm.onmicrosoft.cn/${Root.pluginName}@${version}/lib/build-metadata.json`,
+    // 海外源
+    `https://cdn.jsdelivr.net/npm/${Root.pluginName}@${version}/lib/build-metadata.json`,
+    `https://fastly.jsdelivr.net/npm/${Root.pluginName}@${version}/lib/build-metadata.json`,
+    `https://unpkg.com/${Root.pluginName}@${version}/lib/build-metadata.json`
+  ]
+
+  const requests = urls.map((url) =>
+    axios.get(url, { timeout: 10000, headers: baseHeaders })
+      .then((res) => {
+        if (res.data && typeof res.data === 'object') {
+          return res.data
+        }
+        throw new Error('Invalid metadata')
+      })
+  )
+
+  try {
+    const metadata = await Promise.any(requests)
+    return metadata
+  } catch {
+    return null
+  }
 }
 
 /**
@@ -33,49 +60,81 @@ export type getChangelogImageOptions = {
  * @param props 获取变更日志图片选项
  * @returns 变更日志图片base64字符串
  */
-export const getChangelogImage = async (props: getChangelogImageOptions) => {
-  const urls = [
-    // 国内镜像（优先）
-    `https://jsd.onmicrosoft.cn/npm/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
-    `https://npm.onmicrosoft.cn/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
-    // 国内代理
-    `https://jsd.onmicrosoft.cn/npm/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
-    `https://npm.onmicrosoft.cn/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
-    // 海外源
-    `https://cdn.jsdelivr.net/npm/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
-    `https://fastly.jsdelivr.net/npm/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
-    `https://unpkg.com/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
-    // GitHub Raw 代理
-    `https://jiashu.1win.eu.org/https://raw.githubusercontent.com/ikenxuan/karin-plugin-kkk/v${props.remoteVersion}/packages/core/CHANGELOG.md`
-  ]
-
-  // 并发竞速
+export const getChangelogImage = async (props: Omit<ChangelogProps['data'], 'markdown'>) => {
   let changelog = ''
-  const requests = urls.map((url) =>
-    axios.get(url, { timeout: 10000, headers: baseHeaders })
-      .then((res) => {
-        if (typeof res.data === 'string' && res.data.length > 0) {
-          return res.data as string
-        }
-        throw new Error('Invalid changelog content')
-      })
-  )
-  try {
-    changelog = await Promise.any(requests)
-  } catch {
-    return null
-  }
-  if (!changelog) return null
+  let buildTime: string | undefined
 
-  const forwardLogs = range({
-    data: changelog,
-    startVersion: props.localVersion,
-    endVersion: versionCore(props.remoteVersion),
-    compare: 'semver'
-  })
+  if (props.Tip) {
+    const urls = [
+      // 国内镜像（优先）
+      `https://jsd.onmicrosoft.cn/npm/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
+      `https://npm.onmicrosoft.cn/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
+      // 国内代理
+      `https://jsd.onmicrosoft.cn/npm/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
+      `https://npm.onmicrosoft.cn/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
+      // 海外源
+      `https://cdn.jsdelivr.net/npm/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
+      `https://fastly.jsdelivr.net/npm/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
+      `https://unpkg.com/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
+      // GitHub Raw 代理
+      `https://jiashu.1win.eu.org/https://raw.githubusercontent.com/ikenxuan/karin-plugin-kkk/v${props.remoteVersion}/packages/core/CHANGELOG.md`
+    ]
+
+    // 并发竞速获取 CHANGELOG
+    const requests = urls.map((url) =>
+      axios.get(url, { timeout: 10000, headers: baseHeaders })
+        .then((res) => {
+          if (typeof res.data === 'string' && res.data.length > 0) {
+            return res.data as string
+          }
+          throw new Error('Invalid changelog content')
+        })
+    )
+    try {
+      changelog = await Promise.any(requests)
+    } catch {
+      return null
+    }
+    if (!changelog) return null
+
+    // 获取远程构建元数据
+    const remoteMeta = await getRemoteBuildMetadata(props.remoteVersion)
+    if (remoteMeta?.buildTime) {
+      buildTime = formatBuildTime(remoteMeta.buildTime)
+    }
+
+    changelog = range({
+      data: changelog,
+      startVersion: props.localVersion,
+      endVersion: versionCore(props.remoteVersion),
+      compare: 'semver'
+    })
+  } else {
+    try {
+      changelog = fs.readFileSync(Root.pluginPath + '/CHANGELOG.md', 'utf8')
+      changelog = range({
+        data: changelog,
+        startVersion: props.localVersion,
+        endVersion: versionCore(props.localVersion),
+        compare: 'semver'
+      })
+    } catch {
+      return null
+    }
+
+    // 获取本地构建元数据
+    const localMeta = getBuildMetadata()
+    if (localMeta?.buildTime) {
+      buildTime = formatBuildTime(localMeta.buildTime)
+    }
+  }
+
   const img = await Render('other/changelog', {
-    markdown: forwardLogs,
-    Tip: props.Tip
+    markdown: changelog,
+    Tip: props.Tip,
+    localVersion: props.localVersion,
+    remoteVersion: props.remoteVersion,
+    buildTime
   })
   return img || null
 }

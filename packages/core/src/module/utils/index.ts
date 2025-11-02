@@ -1,5 +1,6 @@
 export * from '../../root'
 export * from './Base'
+export * from './build-metadata'
 export * from './Common'
 export * from './FFmpeg'
 export * from './Networks'

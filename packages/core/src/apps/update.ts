@@ -148,10 +148,10 @@ export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, async (e: Message
     return
   }
 
-  const ChangeLogImg = await getChangelogImage({ 
+  const ChangeLogImg = await getChangelogImage({
     localVersion: Root.pluginVersion, 
     remoteVersion: upd.remote, 
-    Tip: false 
+    Tip: false
   })
   if (ChangeLogImg) {
     await e.reply([segment.text(`${Root.pluginName} 的更新日志：`), ...ChangeLogImg], { reply: true })

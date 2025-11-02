@@ -1,8 +1,9 @@
 import { AlertCircle, Clock, FileText, Terminal } from 'lucide-react'
 import React from 'react'
-import { FaBug } from 'react-icons/fa6'
+import { FaBug, FaCodeBranch, FaCube, FaLayerGroup } from 'react-icons/fa6'
+import { MdAccessTime } from 'react-icons/md'
 
-import { type ApiErrorProps, type BusinessError, PLATFORM_CONFIG } from '../../../types/ohter/handlerError'
+import { type ApiErrorProps, type BusinessError } from '../../../types/ohter/handlerError'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
@@ -122,8 +123,7 @@ const ErrorHeader: React.FC<{
   method: string
   timestamp: string
   businessName?: string
-}> = ({ platform, method, timestamp, businessName }) => {
-  const platformConfig = PLATFORM_CONFIG[platform as keyof typeof PLATFORM_CONFIG] || PLATFORM_CONFIG.unknown
+}> = ({ method, timestamp, businessName }) => {
   const displayMethod = businessName || method
 
   return (
@@ -138,10 +138,6 @@ const ErrorHeader: React.FC<{
             <div className='flex items-center gap-4 mb-4'>
               <span className='text-5xl font-semibold text-danger'>
                 {displayMethod}
-              </span>
-              <span className='text-3xl text-default-400'>·</span>
-              <span className='text-3xl text-default-500'>
-                {platformConfig.displayName}
               </span>
             </div>
             <div className='flex items-center gap-3 text-default-400'>
@@ -310,22 +306,47 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
         {/* 版本信息和底部提示 */}
         <div className='w-full max-w-[1440px] mx-auto px-20 py-16 space-y-8'>
           {/* 版本信息 */}
-          <div className='flex items-center gap-8 text-default-400 text-3xl'>
-            <span>框架版本：<span className='font-bold text-foreground'>{frameworkVersion}</span></span>
-            <span>·</span>
-            <span>插件版本：<span className='font-bold text-foreground'>{pluginVersion}</span></span>
+          <div className='space-y-4'>
+            {/* 第一行：框架版本和插件版本 */}
+            <div className='flex items-center gap-8 text-3xl'>
+              <div className='flex items-center gap-3 text-default-400'>
+                <FaLayerGroup className='w-7 h-7 text-primary' />
+                <span>框架版本：<span className='font-bold text-foreground'>{frameworkVersion}</span></span>
+              </div>
+              <span className='text-default-300'>·</span>
+              <div className='flex items-center gap-3 text-default-400'>
+                <FaCube className='w-7 h-7 text-success' />
+                <span>插件版本：<span className='font-bold text-foreground'>{pluginVersion}</span></span>
+              </div>
+            </div>
+
+            {/* 第二行：编译时间 */}
+            {data.buildTime && (
+              <div className='flex items-center gap-3 text-3xl text-default-400'>
+                <MdAccessTime className='w-7 h-7 text-warning' />
+                <span>编译于：<span className='font-bold text-foreground'>{data.buildTime}</span></span>
+              </div>
+            )}
+
+            {/* 第三行：Commit ID */}
+            {data.commitHash && (
+              <div className='flex items-center gap-3 text-3xl text-default-400'>
+                <FaCodeBranch className='w-7 h-7 text-secondary' />
+                <span>Commit：<span className='font-mono font-bold text-foreground'>{data.commitHash}</span></span>
+              </div>
+            )}
           </div>
 
           {/* 底部提示 */}
-          <div className='border-l-2 border-primary pl-8'>
-            <p className='text-3xl text-default-600 leading-relaxed'>
+          <div className='border-l-2 text-default-400 border-primary pl-8'>
+            <p className='text-3xl leading-relaxed'>
               遇到问题了？请将<span className='text-primary font-semibold'>完整的错误截图</span>发送给开发者，这将帮助我们快速定位并解决问题。您可以通过以下方式联系：
             </p>
             <div className='mt-6 space-y-3'>
-              <p className='text-3xl text-default-500'>
+              <p className='text-3xl'>
                 · 提交 <span className='text-primary font-semibold'>GitHub Issues</span>
               </p>
-              <p className='text-3xl text-default-500'>
+              <p className='text-3xl'>
                 · 加入 QQ 群：<span className='text-primary font-semibold font-mono'>795874649</span>
               </p>
             </div>

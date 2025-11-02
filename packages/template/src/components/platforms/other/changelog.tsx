@@ -20,7 +20,7 @@ import { DefaultLayout } from '../../layouts/DefaultLayout'
 export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'templateName'>> = React.memo((props) => {
   return (
     <DefaultLayout
-      {...props}  
+      {...props}
       style={{
         backgroundImage: `
           linear-gradient(to right, rgb(163 163 163 / 0.1) 2px, transparent 2px),
@@ -31,24 +31,48 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
     >
       <div className='relative px-20 pt-5 pb-0 w-full max-w-none prose prose-lg prose-invert from-default-50 to-default-100'>
 
-        {props.data.Tip && (<div className="inline-block relative mt-20">
-          <div className="absolute inset-0 bg-black rounded-2xl opacity-50 blur-xl translate-y-6 -z-10"></div>
-          <img className="block relative rounded-2xl" src="/image/banner.webp" alt="横幅" />
-        </div>
-        )}
+        {props.data.Tip === true ? (
+          <>
+            <div className="relative inline-block mt-20">
+              {/* Banner 背景阴影 */}
+              <div className="absolute inset-0 bg-black rounded-2xl opacity-50 blur-xl translate-y-6 -z-10"></div>
+              
+              {/* Banner 图片 */}
+              <img className="block relative rounded-2xl" src="/image/banner.webp" alt="横幅" />
+              
+              {/* 版本信息叠加 */}
+              <div className='absolute inset-0 flex flex-col left-50 bottom-50 items-center justify-center'>
+                <span className='text-9xl font-bold opacity-10'>
+                  v{props.data.remoteVersion}
+                </span>
+              </div>
+            </div>
 
-
-        {props.data.Tip && (
-          <div className='pb-10 mt-20 text-5xl leading-relaxed text-center'>
-            引用回复此消息包含
-            <span className='text-7xl'>「</span>
-            <GlowText className='text-7xl font-bold text-warning' blurRadius={20} glowStrength={2} scale={1.2}>
-              更新
-            </GlowText>
-            <span className='text-7xl'>」</span>
-            字眼，即可开始更新
-          </div>
-        )}
+            {/* 更新提示 */}
+            <div className='py-16 pb-4 text-5xl leading-relaxed text-center'>
+              引用回复此消息包含
+              <span className='text-7xl'>「</span>
+              <GlowText className='text-7xl font-bold text-warning' blurRadius={20} glowStrength={2} scale={1.2}>
+                更新
+              </GlowText>
+              <span className='text-7xl'>」</span>
+              字眼，即可开始更新
+            </div>
+            {props.data.buildTime && (
+              <div className='flex gap-4 opacity-50'>
+                <div className='text-4xl ml-17'>
+                  更新频道:
+                  <span className='text-warning-200 font-bold'> 正式版</span>
+                </div>
+                <div className='text-4xl ml-15'>
+                  编译于:
+                  <span className='text-warning-200 font-bold'> {props.data.buildTime}</span>
+                </div>
+              </div>
+              
+            )}
+          </>
+        ) : null}
         <ReactMarkdown
           remarkPlugins={[remarkGfm, remarkBreaks]}
           rehypePlugins={[rehypeHighlight, rehypeRaw]}
@@ -60,7 +84,7 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
             ),
             h2: ({ children, ...props }) => (
               <div className="relative mt-20 mb-5">
-                <div 
+                <div
                   className="absolute -top-13 left-0 text-[11em] font-black text-default-200/50 select-none pointer-events-none uppercase leading-none"
                   aria-hidden="true"
                 >
@@ -75,7 +99,7 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
             h3: ({ children, ...props }) => (
               <h3 className="flex items-baseline gap-3 text-[3.3em] font-semibold mb-6 text-default-900" {...props}>
                 {children}
-                <CornerDownLeft strokeWidth={2.5} className="w-[1em] h-[1em] text-default-200" /> 
+                <CornerDownLeft strokeWidth={2.5} className="w-[1em] h-[1em] text-default-200" />
               </h3>
             ),
             h4: ({ children, ...props }) => (

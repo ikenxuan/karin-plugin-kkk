@@ -2,7 +2,7 @@ import util from 'node:util'
 
 import karin, { config, logger, type Message, segment } from 'node-karin'
 
-import { Render, Root } from '@/module'
+import { formatBuildTime, getBuildMetadata, Render, Root } from '@/module'
 
 import { Config } from './Config'
 import { LogCollector } from './LogCollector'
@@ -127,6 +127,7 @@ const handleBusinessError = async (
 ) => {
   // 获取触发命令信息
   const triggerCommand = event?.msg || '未知命令或处于非消息环境'
+  const buildMetadata = getBuildMetadata()
 
   // 生成错误报告图片
   const img = await Render('other/handlerError', {
@@ -143,7 +144,9 @@ const handleBusinessError = async (
     logs: logs,
     triggerCommand: triggerCommand,
     frameworkVersion: Root.karinVersion,
-    pluginVersion: Root.pluginVersion
+    pluginVersion: Root.pluginVersion,
+    buildTime: buildMetadata?.buildTime ? formatBuildTime(buildMetadata.buildTime) : undefined,
+    commitHash: buildMetadata?.commitHash
   })
 
   // 发送给触发者

@@ -1,8 +1,7 @@
-import fs from 'node:fs'
-
-import karin, { config, logs } from 'node-karin'
+import karin, { config } from 'node-karin'
 
 import { Render, Root } from '@/module'
+import { getChangelogImage } from '@/module/utils/changelog'
 import { Config } from '@/module/utils/Config'
 
 
@@ -138,13 +137,16 @@ export const help = karin.command(/^#?kkk帮助$/, async (e) => {
 }, { name: 'kkk-帮助' })
 
 export const version = karin.command(/^#?kkk(版本|更新日志)$/, async (e) => {
-  const changelogContent = fs.readFileSync(Root.pluginPath + '/CHANGELOG.md', 'utf8')
-  const forwardLogs = logs(Root.pluginVersion, changelogContent, 10, false)
-
-  const img = await Render('other/changelog', {
-    markdown: forwardLogs,
+  const img = await getChangelogImage({
+    localVersion: Root.pluginVersion,
+    remoteVersion: Root.pluginVersion,
     Tip: false
   })
-  e.reply(img)
+  
+  if (img) {
+    e.reply(img)
+  } else {
+    e.reply('获取更新日志失败')
+  }
   return true
 }, { name: 'kkk-版本' })

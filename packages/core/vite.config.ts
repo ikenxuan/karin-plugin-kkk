@@ -6,7 +6,9 @@ import { fileURLToPath } from 'node:url'
 import terser from '@rollup/plugin-terser'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import { defineConfig, type Plugin } from 'vite'
+import { defineConfig } from 'vite'
+
+import { copyTemplateAssetsPlugin, generateBuildMetadataPlugin } from './vite.plugin'
 
 // 在ES模块中模拟__dirname
 const __filename = fileURLToPath(import.meta.url)
@@ -23,57 +25,6 @@ const getFiles = (dir: string) => {
 }
 
 getFiles('src/apps')
-
-/**
- * 递归复制目录
- * @param sourceDir 源目录路径
- * @param targetDir 目标目录路径
- */
-const copyDirectory = (sourceDir: string, targetDir: string) => {
-  if (!fs.existsSync(sourceDir)) {
-    console.warn('⚠️ 源目录不存在:', sourceDir)
-    return
-  }
-
-  if (!fs.existsSync(targetDir)) {
-    fs.mkdirSync(targetDir, { recursive: true })
-  }
-
-  const files = fs.readdirSync(sourceDir)
-
-  files.forEach(file => {
-    const sourcePath = resolve(sourceDir, file)
-    const targetPath = resolve(targetDir, file)
-
-    if (fs.statSync(sourcePath).isDirectory()) {
-      copyDirectory(sourcePath, targetPath)
-    } else {
-      fs.copyFileSync(sourcePath, targetPath)
-    }
-  })
-}
-
-/**
- * 复制 template 静态资源的 Vite 插件
- * @description 在构建时将 template 包的静态资源复制到 core 包的 resources 目录
- */
-const copyTemplateAssetsPlugin = (): Plugin => {
-  return {
-    name: 'copy-template-assets',
-    writeBundle () {
-      // 复制 template 包的静态资源
-      const SourceDir = resolve(__dirname, '../template/public')
-      const TargetDir = resolve(__dirname, 'resources')
-
-      console.log('🔍 开始复制 template 静态资源...')
-      console.log('📁 源目录:', SourceDir)
-      console.log('📁 目标目录:', TargetDir)
-
-      copyDirectory(SourceDir, TargetDir)
-      console.log('✅ template 静态资源已复制到:', TargetDir)
-    }
-  }
-}
 
 export default defineConfig({
   build: {
@@ -161,6 +112,7 @@ export default defineConfig({
     }),
     react(),
     tailwindcss(),
-    copyTemplateAssetsPlugin()
+    generateBuildMetadataPlugin(__dirname),
+    copyTemplateAssetsPlugin(__dirname)
   ]
 })
