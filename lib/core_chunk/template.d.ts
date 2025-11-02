@@ -1461,6 +1461,10 @@ interface ApiErrorProps extends BaseComponentProps {
     frameworkVersion: string;
     /** 插件版本 */
     pluginVersion: string;
+    /** 构建时间 */
+    buildTime?: string;
+    /** Commit ID */
+    commitHash?: string;
   };
   /** 分享链接 */
   qrCodeDataUrl: string;
@@ -1477,6 +1481,12 @@ interface ChangelogProps extends BaseComponentProps {
     Tip?: boolean;
     /** 后端传入的 Markdown 源码 */
     markdown: string;
+    /** 本地版本号 */
+    localVersion: string;
+    /** 远程版本号 */
+    remoteVersion: string;
+    /** 构建时间 */
+    buildTime?: string;
   };
 }
 //#endregion
