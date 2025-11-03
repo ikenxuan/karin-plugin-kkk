@@ -2,6 +2,23 @@
 
 # Changelog
 
+## [2.10.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.10.1...v2.10.2) (2025-11-02)
+
+
+### 🐛 错误修复
+
+* 改炸了 ([6a4bc50](https://github.com/ikenxuan/karin-plugin-kkk/commit/6a4bc50424c69fc86ac4a608bfe04089c6999bcf))
+
+
+### 💄 UI 优化
+
+* 错误日志和更新日志实验性添加构建元数据 ([336097a](https://github.com/ikenxuan/karin-plugin-kkk/commit/336097a408be77d2cb7a356cc5cfd49191b7b752))
+
+
+### 🏗️ 构建系统
+
+* 改用oxc ([6904f61](https://github.com/ikenxuan/karin-plugin-kkk/commit/6904f6141248deca7c65461cb5edcad01925b6dc))
+
 ## [2.10.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.10.0...v2.10.1) (2025-11-01)
 
 
