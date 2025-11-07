@@ -571,7 +571,7 @@ export class Bilibilipush extends Base {
 
                 if (messageElements.length === 1) bot.sendMsg(Contact, messageElements)
                 if (messageElements.length > 1) {
-                  const forwardMsg = common.makeForward(messageElements, this.e.userId, this.e.sender.nick)
+                  const forwardMsg = common.makeForward(messageElements, botId, bot.account.name)
                   bot.sendForwardMsg(Contact, forwardMsg, {
                     source: '图片合集',
                     summary: `查看${messageElements.length}张图片消息`,
