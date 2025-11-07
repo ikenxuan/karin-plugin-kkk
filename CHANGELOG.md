@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.10.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.10.2...v2.10.3) (2025-11-07)
+
+
+### 🐛 错误修复
+
+* null pointer error in article dynamic push for scheduled tasks ([#213](https://github.com/ikenxuan/karin-plugin-kkk/issues/213)) ([66e032f](https://github.com/ikenxuan/karin-plugin-kkk/commit/66e032f811ee83d2898c83854bcb1bfe3f8f796c))
+
 ## [2.10.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.10.1...v2.10.2) (2025-11-02)
 
 
