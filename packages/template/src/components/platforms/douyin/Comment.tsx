@@ -1,12 +1,10 @@
 import clsx from 'clsx'
 import { Heart, MessageCircle, QrCode } from 'lucide-react'
-import React, { useMemo } from 'react'
+import React from 'react'
 
+import type { QRCodeSectionProps } from '../../../types'
 import type {
-  CommentItemComponentProps,
-  DouyinCommentProps,
-  QRCodeSectionProps,
-  VideoInfoHeaderProps
+  DouyinCommentProps
 } from '../../../types/platforms/douyin'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
@@ -41,21 +39,13 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
  * @param props 组件属性
  * @returns JSX元素
  */
-const VideoInfoHeader: React.FC<VideoInfoHeaderProps> = ({
-  type,
-  commentLength,
-  videoSize,
-  videoFPS,
-  imageLength,
-  qrCodeDataUrl,
-  useDarkTheme
-}) => {
+const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'> & { qrCodeDataUrl: string }> = (props) => {
   return (
     <div className='flex justify-between items-center max-w-[1200px] mx-auto p-5'>
       <div className='mt-2.5 flex flex-col -ml-10'>
         <div className='absolute top-0 left-0 transform translate-x-[9%] translate-y-[17%] w-[650px] h-[300px]'>
           <img
-            src={useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
+            src={props.useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
             alt='抖音Logo'
             className='object-contain pb-10 w-full h-full'
             onError={(e) => {
@@ -70,30 +60,30 @@ const VideoInfoHeader: React.FC<VideoInfoHeaderProps> = ({
         </div>
         <div className='mt-[250px] space-y-2 text-foreground-500'>
           <div className='flex items-center p-2.5 tracking-[6px] text-[45px] text-left select-text'>
-            作品类型：{type}
+            作品类型：{props.Type}
           </div>
           <div className='flex items-center p-2.5 tracking-[6px] text-[45px] text-left select-text'>
-            评论数量：{commentLength}条
+            评论数量：{props.CommentLength}条
           </div>
-          {type === '视频' && (
+          {props.Type === '视频' && (
             <>
               <div className='flex items-center p-2.5 tracking-[6px] text-[45px] text-left select-text'>
-                视频大小：{videoSize}MB
+                视频大小：{props.VideoSize}MB
               </div>
               <div className='flex items-center p-2.5 tracking-[6px] text-[45px] text-left select-text'>
-                视频帧率：{videoFPS}Hz
+                视频帧率：{props.VideoFPS}Hz
               </div>
             </>
           )}
-          {(type === '图集' || type === '合辑') && (
+          {(props.Type === '图集' || props.Type === '合辑') && (
             <div className='flex items-center p-2.5 tracking-[6px] text-[45px] text-left select-text'>
-              图片数量：{imageLength}张
+              图片数量：{props.ImageLength}张
             </div>
           )}
         </div>
       </div>
       <QRCodeSection
-        qrCodeDataUrl={qrCodeDataUrl}
+        qrCodeDataUrl={props.qrCodeDataUrl}
       />
     </div>
   )
@@ -104,15 +94,15 @@ const VideoInfoHeader: React.FC<VideoInfoHeaderProps> = ({
  * @param props 组件属性
  * @returns JSX元素
  */
-const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: boolean }> = ({ comment, isLast = false }) => {
+const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData']['jsonArray'][number] & { isLast?: boolean }> = (props) => {
   return (
     <div className={clsx(
       'flex px-10 pt-10',
-      { 'pb-0': isLast, 'pb-10': !isLast }
+      { 'pb-0': props.isLast, 'pb-10': !props.isLast }
     )}>
       {/* 用户头像 */}
       <img
-        src={comment.userimageurl}
+        src={props.userimageurl}
         className='mb-12.5 w-[187.5px] h-[187.5px] rounded-full mr-8 object-cover shadow-lg'
         alt='用户头像'
       />
@@ -121,15 +111,15 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
       <div className='flex-1'>
         {/* 用户信息 */}
         <div className='mb-12.5 text-5xl text-foreground-600 relative flex items-center select-text'>
-          <span className='font-medium'>{comment.nickname}</span>
-          {comment.label_type === 1 && (
+          <span className='font-medium'>{props.nickname}</span>
+          {props.label_type === 1 && (
             <div className='inline-block px-4 py-3 rounded-xl ml-3 text-4xl bg-[#fe2c55] text-white'>
               作者
             </div>
           )}
-          {comment.status_label && (
+          {props.status_label && (
             <div className='inline-block px-4 py-3 ml-3 text-4xl rounded-xl bg-content3 text-foreground-700'>
-              {comment.status_label}
+              {props.status_label}
             </div>
           )}
         </div>
@@ -137,7 +127,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
         {/* 评论文本 */}
         <div
           className='text-6xl text-foreground leading-relaxed mb-2 whitespace-pre-wrap select-text [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
-          dangerouslySetInnerHTML={{ __html: comment.text }}
+          dangerouslySetInnerHTML={{ __html: props.text }}
           style={{
             wordBreak: 'break-word',
             overflowWrap: 'break-word'
@@ -145,11 +135,11 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
         />
 
         {/* 评论图片 */}
-        {(comment.commentimage || comment.sticker) && (
+        {(props.commentimage || props.sticker) && (
           <div className='flex my-5 overflow-hidden shadow-md rounded-2xl w-[95%] flex-1'>
             <img
               className='object-contain w-full h-full rounded-2xl'
-              src={comment.commentimage || comment.sticker}
+              src={props.commentimage || props.sticker}
               alt='评论图片'
             />
           </div>
@@ -158,12 +148,12 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
         {/* 底部信息和操作区域 */}
         <div className='flex justify-between items-center mt-6 text-foreground-500'>
           <div className='flex items-center space-x-6 select-text'>
-            <span className='text-5xl'>{comment.create_time}</span>
-            <span className='text-5xl'>{comment.ip_label}</span>
-            {comment.reply_comment_total > 0
+            <span className='text-5xl'>{props.create_time}</span>
+            <span className='text-5xl'>{props.ip_label}</span>
+            {props.reply_comment_total > 0
               ? (
                 <span className='text-5xl text-foreground-600'>
-                  共{comment.reply_comment_total}条回复
+                  共{props.reply_comment_total}条回复
                 </span>
               )
               : (
@@ -175,7 +165,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
             {/* 点赞按钮 */}
             <div className='flex items-center space-x-2 transition-colors cursor-pointer'>
               <Heart size={60} className='text-foreground-500' />
-              <span className='text-5xl select-text'>{comment.digg_count}</span>
+              <span className='text-5xl select-text'>{props.digg_count}</span>
             </div>
 
             {/* 回复按钮 */}
@@ -186,32 +176,32 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
         </div>
 
         {/* 二级评论 */}
-        {comment.replyComment && Object.keys(comment.replyComment).length > 0 && (
+        {props.replyComment && Object.keys(props.replyComment).length > 0 && (
           <div className='pl-6 mt-20'>
             <div className='py-4'>
               <div className='flex items-start space-x-4'>
                 <img
-                  src={comment.replyComment.userimageurl}
+                  src={props.replyComment.userimageurl}
                   className='object-cover mr-8 rounded-full w-26 h-26'
                   alt='用户头像'
                 />
                 <div className='flex-1'>
                   <div className='flex items-center mb-2 space-x-2'>
-                    <span className='text-5xl font-medium text-foreground-600'>{comment.replyComment.nickname}</span>
-                    {comment.replyComment.label_text !== '' && (
+                    <span className='text-5xl font-medium text-foreground-600'>{props.replyComment.nickname}</span>
+                    {props.replyComment.label_text !== '' && (
                       <div className={clsx(
                         'inline-block px-4 py-2 ml-2 text-3xl rounded-xl', 
-                        comment.replyComment.label_text === '作者' ?
+                        props.replyComment.label_text === '作者' ?
                           'bg-[#fe2c55] text-white' :
                           'bg-default-100 text-default-500'
                       )}>
-                        {comment.replyComment.label_text}
+                        {props.replyComment.label_text}
                       </div>
                     )}
                   </div>
                   <div
                     className='text-6xl text-foreground leading-relaxed mb-2 mt-8  select-text [&_img]:mb-2 [&_img]:inline [&_img]:h-[1.2em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.5em] [&_span]:inline'
-                    dangerouslySetInnerHTML={{ __html: comment.replyComment.text }}
+                    dangerouslySetInnerHTML={{ __html: props.replyComment.text }}
                     style={{
                       wordBreak: 'break-word',
                       overflowWrap: 'break-word'
@@ -219,12 +209,12 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
                   />
                   <div className='flex justify-between items-center mt-10 text-foreground-500'>
                     <div className='flex items-center space-x-4'>
-                      <span className='text-5xl'>{comment.replyComment.create_time}</span>
-                      <span className='text-5xl'>{comment.replyComment.ip_label}</span>
+                      <span className='text-5xl'>{props.replyComment.create_time}</span>
+                      <span className='text-5xl'>{props.replyComment.ip_label}</span>
                     </div>
                     <div className='flex items-center space-x-2'>
                       <Heart size={60} className='text-foreground-500' />
-                      <span className='text-5xl'>{comment.replyComment.digg_count}</span>
+                      <span className='text-5xl'>{props.replyComment.digg_count}</span>
                     </div>
                   </div>
                 </div>
@@ -234,7 +224,7 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
         )}
 
         {/* 分割线 */}
-        {comment.replyComment && Object.keys(comment.replyComment).length > 0 && (
+        {props.replyComment && Object.keys(props.replyComment).length > 0 && (
           <div className='mx-auto mt-4 border-b-1 border-divider'></div>
         )}
       </div>
@@ -248,53 +238,24 @@ const CommentItemComponent: React.FC<CommentItemComponentProps & { isLast?: bool
  * @returns JSX元素
  */
 export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | 'templateName'>> = React.memo((props) => {
-  const processedData = useMemo(() => {
-    if (!props.data) {
-      return {
-        commentsArray: [],
-        type: '未知',
-        commentLength: 0,
-        videoSize: undefined,
-        videoFPS: undefined,
-        imageLength: undefined,
-        useDarkTheme: false
-      }
-    }
-
-    return {
-      commentsArray: props.data.CommentsData?.jsonArray || [],
-      type: props.data.Type || '未知',
-      commentLength: props.data.CommentLength || 0,
-      videoSize: props.data.VideoSize,
-      videoFPS: props.data.VideoFPS,
-      imageLength: props.data.ImageLength,
-      useDarkTheme: props.data.useDarkTheme || false
-    }
-  }, [props.data])
 
   return (
     <DefaultLayout {...props}>
       <div className='p-5'>
         {/* 视频信息头部 */}
         <VideoInfoHeader
-          type={processedData.type}
-          commentLength={processedData.commentLength}
-          videoSize={processedData.videoSize}
-          videoFPS={processedData.videoFPS}
-          imageLength={processedData.imageLength}
-          qrCodeDataUrl={props.qrCodeDataUrl || ''}
-          useDarkTheme={processedData.useDarkTheme}
+          {...props.data}
+          qrCodeDataUrl={props.qrCodeDataUrl}
         />
 
         {/* 评论列表 */}
         <div className='overflow-auto mx-auto max-w-full'>
-          {processedData.commentsArray.length > 0
+          {props.data.CommentsData.jsonArray.length > 0
             ? (
-              processedData.commentsArray.map((comment, index) => (
-                <CommentItemComponent 
-                  key={index} 
-                  comment={comment} 
-                  isLast={index === processedData.commentsArray.length - 1}
+              props.data.CommentsData.jsonArray.map((comment, index) => (
+                <CommentItemComponent
+                  {...comment}
+                  isLast={index === props.data.CommentsData.jsonArray.length - 1}
                 />
               ))
             )
