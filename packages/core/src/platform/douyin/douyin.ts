@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import { type DyEmojiList, DyImageAlbumWork, DySlidesWork, DyVideoWork } from '@ikenxuan/amagi'
+import { type DyEmojiList, DyVideoWork } from '@ikenxuan/amagi'
 import type { Elements, Message, SendMessage } from 'node-karin'
 import { common, logger, mkdirSync, segment } from 'node-karin'
 
@@ -219,10 +219,11 @@ export class DouYin extends Base {
         /** 视频 */
         let FPS
         const sendvideofile = true
-        let video: (DyVideoWork | DyImageAlbumWork | DySlidesWork)['aweme_detail']['video'] | null = null
+        type VideoType = DyVideoWork['aweme_detail']['video']
+        let video: VideoType | null = null
         if (this.is_mp4) {
           // 视频地址特殊判断：play_addr_h264、play_addr、
-          video = VideoData.data.aweme_detail.video
+          video = VideoData.data.aweme_detail.video as VideoType
           FPS = video.bit_rate[0].FPS // FPS
 
           logger.debug(`开始排除不符合条件的视频分辨率；\n
@@ -316,7 +317,7 @@ export class DouYin extends Base {
                 ImageLength: imagenum,
                 Region: VideoData.data.aweme_detail.region,
                 suggestWrod: suggest,
-                Resolution: this.is_mp4 && video ? `${video.play_addr.width} x ${video.play_addr.height}` : null
+                Resolution: this.is_mp4 && video ? `${video.bit_rate[0].play_addr.width} x ${video.bit_rate[0].play_addr.height}` : null
               }
             )
             const messageElements = []
