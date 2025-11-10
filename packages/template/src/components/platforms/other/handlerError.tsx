@@ -251,14 +251,14 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
   const businessError = isBusinessError ? error as BusinessError : null
 
   // 生成随机分布的小图标位置
-  const bugPositions = React.useMemo(() => generateBugPositions(25), [])
+  const bugPositions = React.useMemo(() => generateBugPositions(50), [])
 
   return (
     <DefaultLayout {...props}>
       {/* 背景装饰 Bug 图标 */}
       <div className='fixed inset-0 overflow-hidden pointer-events-none' style={{ zIndex: 0 }}>
         {/* 主要大图标 */}
-        <FaBug
+        {/* <FaBug
           className='absolute text-danger/10'
           style={{
             width: '50vw',
@@ -267,7 +267,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
             left: '50%',
             transform: 'translateX(-50%) rotate(45deg)'
           }}
-        />
+        /> */}
 
         {/* 随机分布的小图标 */}
         {bugPositions.map((pos, index) => (
