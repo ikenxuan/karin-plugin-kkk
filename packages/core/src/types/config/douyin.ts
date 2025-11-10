@@ -15,6 +15,9 @@ export interface douyinConfig {
   /** 评论图是否显示真实评论数量，关闭则显示解析到的评论数量 */
   realCommentCount: boolean
 
+  /** 是否收集评论区的图片 */
+  commentImageCollection: boolean
+  
   /** 视频画质偏好设置，'adapt' 为自动根据「maxAutoVideoSize」大小选择，其他为固定画质 */
   videoQuality: 'adapt' | '540p' | '720p' | '1080p' | '2k' | '4k'
 

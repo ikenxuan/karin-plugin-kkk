@@ -115,9 +115,10 @@ const processCommentImage = async (imageUrl: string | null): Promise<string | nu
  * @param {*} emojidata 处理过后的emoji列表
  * @returns obj
  */
-export const douyinComments = async (data: any, emojidata: any): Promise<any> => {
+export const douyinComments = async (data: any, emojidata: any) => {
   let jsonArray: any[] = []
-  if (data.data.comments === null) return []
+  let imageUrls: string[] = []
+  if (data.data.comments === null) return { CommentsData: [], image_url: [] }
   let id = 1
   for (const comment of data.data.comments) {
     const cid = comment.cid
@@ -164,6 +165,16 @@ export const douyinComments = async (data: any, emojidata: any): Promise<any> =>
 
     // 在循环中处理图片HEIC转JPG
     const processedImageUrl = await processCommentImage(imageurl)
+
+    // 收集评论图片
+    if (processedImageUrl) {
+      imageUrls.push(processedImageUrl.startsWith('data:image/jpeg;base64,') ? `base64://${processedImageUrl.replace('data:image/jpeg;base64,', '')}` : processedImageUrl)
+    }
+
+    // 收集表情包图片
+    if (sticker) {
+      imageUrls.push(sticker)
+    }
 
     // 在循环中处理点赞数格式化
     if (digg_count > 10000) {
@@ -237,7 +248,10 @@ export const douyinComments = async (data: any, emojidata: any): Promise<any> =>
     jsonArray.unshift(commentTypeOne)
   }
 
-  return jsonArray
+  return {
+    CommentsData: jsonArray,
+    image_url: imageUrls
+  }
 }
 
 const getRelativeTimeFromTimestamp = (timestamp: number) => {

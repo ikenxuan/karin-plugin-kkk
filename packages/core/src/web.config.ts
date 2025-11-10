@@ -291,6 +291,12 @@ export const webConfig = defineConfig({
                 rules: [{ min: 1 }],
                 isDisabled: !all.douyin.sendContent.includes('comment') || !all.douyin.switch
               }),
+              components.switch.create('commentImageCollection', {
+                label: '是否收集评论区的图片',
+                description: '开启后将收集评论区的图片，以合并转发的形式返回',
+                defaultSelected: all.douyin.commentImageCollection,
+                isDisabled: !all.douyin.sendContent.includes('comment') || !all.douyin.switch
+              }),
               components.switch.create('realCommentCount', {
                 label: '显示真实评论数量',
                 description: '评论图是否显示真实评论数量，关闭则显示解析到的评论数量',

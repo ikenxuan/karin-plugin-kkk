@@ -290,8 +290,8 @@ export class DouYin extends Base {
         if (Config.douyin.sendContent.includes('comment')) {
           const EmojiData = await this.amagi.getDouyinData('Emoji数据', { typeMode: 'strict' })
           const list = Emoji(EmojiData.data)
-          const commentsArray = await douyinComments(CommentsData, list)
-          if (!commentsArray.length) {
+          const douyinCommentsRes = await douyinComments(CommentsData, list)
+          if (!douyinCommentsRes.CommentsData.length) {
             await this.e.reply('这个作品没有评论 ~')
           } else {
             const suggest: string[] = []
@@ -305,8 +305,8 @@ export class DouYin extends Base {
             const img = await Render('douyin/comment',
               {
                 Type: this.is_mp4 ? '视频' : this.is_slides ? '合辑' : '图集',
-                CommentsData: commentsArray,
-                CommentLength: Config.douyin.realCommentCount ? VideoData.data.aweme_detail.statistics.comment_count : commentsArray?.length ?? 0,
+                CommentsData: douyinCommentsRes.CommentsData,
+                CommentLength: Config.douyin.realCommentCount ? VideoData.data.aweme_detail.statistics.comment_count : douyinCommentsRes.CommentsData.length ?? 0,
                 share_url: this.is_mp4
                   ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${VideoData.data.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`
                   : VideoData.data.aweme_detail.share_url,
@@ -317,7 +317,20 @@ export class DouYin extends Base {
                 suggestWrod: suggest
               }
             )
-            await this.e.reply(img)
+            const messageElements = []
+            if (Config.douyin.commentImageCollection && douyinCommentsRes.image_url.length > 0) {
+              for (const v of douyinCommentsRes.image_url) {
+                messageElements.push(segment.image(v))
+              }
+              const res = common.makeForward(messageElements, this.e.sender.userId, this.e.sender.nick)
+              this.e.bot.sendForwardMsg(this.e.contact, res, {
+                source: '评论图片收集',
+                summary: `查看${messageElements.length}张图片`,
+                prompt: '抖音评论解析结果',
+                news: [{ text: '点击查看解析结果' }]
+              })
+            }
+            this.e.reply(img)
           }
         }
         /** 发送视频 */
