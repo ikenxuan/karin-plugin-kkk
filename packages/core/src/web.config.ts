@@ -198,7 +198,7 @@ export const webConfig = defineConfig({
               components.input.number('EmojiReplyID', {
                 label: '表情 ID',
                 isDisabled: !all.app.EmojiReply,
-                description: '详情查看：https://github.com/NapNeko/NapCatQQ/blob/main/src/core/external/face_config.json 的 QCid 字段',
+                description: '详情查看：https://koishi.js.org/QFace/#/qqnt 中调试信息的 emojiId 字段，Emoji则是 qcid ',
                 defaultValue: all.app.EmojiReplyID.toString(),
                 rules: [
                   { min: 0, max: 1145141919810 }

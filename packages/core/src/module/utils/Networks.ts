@@ -87,6 +87,7 @@ export class Networks {
    *
    * 此函数通过axios库发送HTTP请求，下载指定URL的资源，并将下载的资源流保存到本地文件系统中
    * 它还提供了一个回调函数来报告下载进度，并在下载失败时根据配置自动重试
+   * 支持断点续传，重试时从上次中断位置继续下载
    */
   async downloadStream (
     progressCallback: (downloadedBytes: number, totalBytes: number) => void,
@@ -110,29 +111,64 @@ export class Networks {
     let intervalId: NodeJS.Timeout | null = null
 
     try {
-      logger.debug('开始下载流', {
+      // 检查是否存在部分下载的文件（断点续传）
+      let startByte = 0
+      if (fs.existsSync(this.filepath)) {
+        const stats = fs.statSync(this.filepath)
+        startByte = stats.size
+        logger.debug(`检测到部分下载文件，从 ${startByte} 字节处继续下载`)
+      }
+
+      // 构建请求配置，支持 Range 头
+      const requestConfig: AxiosRequestConfig = {
         ...this.config,
         responseType: 'stream',
-        signal: controller.signal
-      })
-      const response = await this.axiosInstance({
-        ...this.config,
-        responseType: 'stream',
-        signal: controller.signal
-      })
+        signal: controller.signal,
+        headers: {
+          ...this.config.headers
+        }
+      }
+
+      // 如果是断点续传，添加 Range 头
+      if (startByte > 0) {
+        requestConfig.headers = {
+          ...requestConfig.headers,
+          Range: `bytes=${startByte}-`
+        }
+      }
+
+      logger.debug('开始下载流', requestConfig)
+      const response = await this.axiosInstance(requestConfig)
 
       clearTimeout(timeoutId)
 
+      // 检查服务器是否支持断点续传
+      const supportsRange = response.status === 206
+      if (startByte > 0 && !supportsRange) {
+        logger.warn('服务器不支持断点续传，将重新下载整个文件')
+        // 删除部分文件，重新下载
+        if (fs.existsSync(this.filepath)) {
+          fs.unlinkSync(this.filepath)
+        }
+        startByte = 0
+      }
+
       // 解析内容长度
       const rawContentLength = response.headers['content-length']
-      const totalBytes = Number.parseInt(rawContentLength ?? '-1', 10)
-      if (Number.isNaN(totalBytes)) {
+      const contentLength = Number.parseInt(rawContentLength ?? '-1', 10)
+      if (Number.isNaN(contentLength)) {
         throw new Error('无效的 content-length 响应头')
       }
 
-      let downloadedBytes = 0
+      // 计算总字节数
+      const totalBytes = supportsRange ? startByte + contentLength : contentLength
+      let downloadedBytes = startByte
       let lastPrintedPercentage = -1
-      const writer = fs.createWriteStream(this.filepath)
+
+      // 根据是否断点续传选择写入模式
+      const writer = fs.createWriteStream(this.filepath, {
+        flags: startByte > 0 ? 'a' : 'w'
+      })
 
       const printProgress = () => {
         if (totalBytes > 0) {
@@ -182,6 +218,15 @@ export class Networks {
         await new Promise(resolve => setTimeout(resolve, nextDelay))
         return this.downloadStream(progressCallback, retryCount + 1)
       } else {
+        // 最终失败时清理部分下载的文件
+        if (fs.existsSync(this.filepath)) {
+          try {
+            fs.unlinkSync(this.filepath)
+            logger.debug('已清理部分下载的文件')
+          } catch (cleanupError) {
+            logger.warn('清理部分下载文件失败:', cleanupError)
+          }
+        }
         throw new Error(`在 ${this.maxRetries} 次尝试后下载失败: ${error instanceof Error ? error.message : String(error)}`)
       }
     }
