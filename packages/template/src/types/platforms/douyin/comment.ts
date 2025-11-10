@@ -22,6 +22,8 @@ export interface DouyinCommentProps extends BaseComponentProps {
     Region: string
     /** 相关搜索（大家都在搜） */
     suggestWrod: string[]
+    /** 视频分辨率 */
+    Resolution: string | null
     /** 分享链接 */
     share_url: string
     /** 评论数据列表 */

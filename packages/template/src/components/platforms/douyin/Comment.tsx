@@ -19,7 +19,7 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
 }) => {
   return (
     <div className='flex flex-col items-center'>
-      <div className='flex justify-center items-center rounded-2xl w-[390px] h-[390px] shadow-medium p-4'>
+      <div className='flex justify-center items-center w-[400px] h-[400px] p-4'>
         {qrCodeDataUrl
           ? (
             <img src={qrCodeDataUrl} alt='二维码' className='object-contain w-full h-full rounded-lg' />
@@ -46,21 +46,32 @@ const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'>
       <div className='flex justify-between items-start gap-16'>
         {/* 左侧信息区域 */}
         <div className='flex-1 flex flex-col'>
-          {/* Logo 区域 */}
-          <div className='mb-12 h-[180px] flex items-center'>
-            <img
-              src={props.useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
-              alt='抖音Logo'
-              className='object-contain h-full w-auto max-w-[500px]'
-              onError={(e) => {
-                const target = e.target as HTMLImageElement
-                target.style.display = 'none'
-                const parent = target.parentElement
-                if (parent) {
-                  parent.innerHTML = '<div class="flex items-center h-full text-6xl font-bold text-foreground-600">抖音</div>'
-                }
-              }}
-            />
+          {/* Logo 和分辨率区域 */}
+          <div className='mb-12'>
+            {/* Logo */}
+            <div className='h-[180px] flex items-center'>
+              <img
+                src={props.useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
+                alt='抖音Logo'
+                className='object-contain h-full w-auto max-w-[500px]'
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement
+                  target.style.display = 'none'
+                  const parent = target.parentElement
+                  if (parent) {
+                    parent.innerHTML = '<div class="flex items-center h-full text-6xl font-bold text-foreground-600">抖音</div>'
+                  }
+                }}
+              />
+              {/* 分辨率信息 - 仅视频类型显示 */}
+              {props.Type === '视频' && props.Resolution && (
+                <div className='flex flex-col gap-2 px-8 py-4 rounded-3xl bg-default-100/50 w-fit ml-8'>
+                  <span className='text-[42px] text-foreground-400'>分辨率（px）</span>
+                  <span className='text-[48px] font-medium text-foreground-600'>{props.Resolution}</span>
+                </div>
+              )}
+            </div>
+
           </div>
 
           {/* 信息列表 */}
@@ -73,11 +84,7 @@ const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'>
               <span className='text-foreground-400 mr-4'>评论</span>
               <span className='font-medium text-foreground-600'>{props.CommentLength}条</span>
             </div>
-            <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text'>
-              <span className='text-foreground-400 mr-4'>区域</span>
-              <span className='font-medium text-foreground-600'>{props.Region}</span>
-            </div>
-            {props.Type === '视频' && (
+            {props.Type === '视频' ? (
               <>
                 <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text'>
                   <span className='text-foreground-400 mr-4'>大小</span>
@@ -88,15 +95,17 @@ const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'>
                   <span className='font-medium text-foreground-600'>{props.VideoFPS}Hz</span>
                 </div>
               </>
-            )}
-            {(props.Type === '图集' || props.Type === '合辑') && (
-              <div>
+            ) : (
+              <>
+                <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text'>
+                  <span className='text-foreground-400 mr-4'>区域</span>
+                  <span className='font-medium text-foreground-600'>{props.Region}</span>
+                </div>
                 <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text'>
                   <span className='text-foreground-400 mr-4'>数量</span>
                   <span className='font-medium text-foreground-600'>{props.ImageLength}张</span>
                 </div>
-                
-              </div>
+              </>
             )}
           </div>
         </div>
@@ -162,7 +171,7 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
 
         {/* 评论图片 */}
         {(props.commentimage || props.sticker) && (
-          <div className='my-6 overflow-hidden shadow-lg rounded-2xl max-w-[600px]'>
+          <div className='my-6 overflow-hidden shadow-lg rounded-2xl max-w-[800px]'>
             <img
               className='object-contain w-full h-auto rounded-2xl'
               src={props.commentimage || props.sticker}
