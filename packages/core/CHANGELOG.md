@@ -2,6 +2,29 @@
 
 # Changelog
 
+## [2.11.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.10.3...v2.11.0) (2025-11-10)
+
+
+### ✨ 新功能
+
+* **douyin:** 添加新的配置选项 `commentImageCollection` 以控制评论区图片收集 ([4f98c4d](https://github.com/ikenxuan/karin-plugin-kkk/commit/4f98c4ddc6d74d7d2a650d9dad3090216c8c791c))
+* **networks:** 实验性添加断点传续（AI写的 ([1247564](https://github.com/ikenxuan/karin-plugin-kkk/commit/1247564b354aa8acb45d506af43b4abe7f7105d5))
+
+
+### 🐛 错误修复
+
+* **changelog:** Correct version comparison in changelog generation ([9b13b37](https://github.com/ikenxuan/karin-plugin-kkk/commit/9b13b37db88ece04ac207c350ab9b443dc2b6c99))
+* **douyin:** 改进评论处理和UI ([b8716d2](https://github.com/ikenxuan/karin-plugin-kkk/commit/b8716d2eaae0f1b3952a526f8f22875f5664daf0))
+* **download:** 改进下载进度条的计算和处理 ([3445e6d](https://github.com/ikenxuan/karin-plugin-kkk/commit/3445e6df9d03f8b44bb0d7ea4f182470ddf6e239))
+* 爆炸了 ([06deaf8](https://github.com/ikenxuan/karin-plugin-kkk/commit/06deaf868904827a634743d33e6ec72c82dc41b4))
+* 细节优化 ([0795b63](https://github.com/ikenxuan/karin-plugin-kkk/commit/0795b635bcc45a0298a5ecffb427a6bfc02b4c61))
+
+
+### 💄 UI 优化
+
+* **douyin:** 评论图增加视频分辨率 ([7608346](https://github.com/ikenxuan/karin-plugin-kkk/commit/760834657cd71407d0edac0144497275c60c4981))
+* 错误页面移除大BUG虫子 ([901a66e](https://github.com/ikenxuan/karin-plugin-kkk/commit/901a66e80af0b68247dc11ba8f26812fb27514b1))
+
 ## [2.10.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.10.2...v2.10.3) (2025-11-07)
 
 
