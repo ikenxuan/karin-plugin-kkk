@@ -115,7 +115,7 @@ export const getChangelogImage = async (props: Omit<ChangelogProps['data'], 'mar
       changelog = range({
         data: changelog,
         startVersion: props.localVersion,
-        endVersion: versionCore(props.localVersion),
+        endVersion: versionCore(props.remoteVersion),
         compare: 'semver'
       })
     } catch {
