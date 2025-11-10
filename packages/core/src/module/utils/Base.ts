@@ -352,15 +352,14 @@ export const downloadFile = async (videoUrl: string, opt: downLoadFileOptions): 
     // 定义进度条长度及生成进度条字符串的函数
     const barLength = 45
     const generateProgressBar = (progressPercentage: number) => {
-      const filledLength = Math.floor((progressPercentage / 100) * barLength)
-      let progress = ''
-      progress += '\u2588'.repeat(filledLength)
-      progress += '\u2591'.repeat(Math.max(0, barLength - filledLength - 1))
-      return `[${progress}]`
+      const clampedPercentage = Math.min(100, Math.max(0, progressPercentage))
+      const filledLength = Math.floor((clampedPercentage / 100) * barLength)
+      const emptyLength = Math.max(0, barLength - filledLength)
+      return `[${ '\u2588'.repeat(filledLength)}${'\u2591'.repeat(emptyLength)}]`
     }
 
     // 计算当前下载进度百分比
-    const progressPercentage = (downloadedBytes / totalBytes) * 100
+    const progressPercentage = totalBytes > 0 ? Math.min(100, (downloadedBytes / totalBytes) * 100) : 0
 
     // 计算动态 RGB 颜色
     const red = Math.floor(255 - (255 * progressPercentage) / 100) // 红色分量随进度减少
