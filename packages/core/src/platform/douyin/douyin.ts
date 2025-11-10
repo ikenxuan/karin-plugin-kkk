@@ -291,20 +291,30 @@ export class DouYin extends Base {
           const EmojiData = await this.amagi.getDouyinData('Emoji数据', { typeMode: 'strict' })
           const list = Emoji(EmojiData.data)
           const commentsArray = await douyinComments(CommentsData, list)
-          if (!commentsArray.jsonArray.length) {
+          if (!commentsArray.length) {
             await this.e.reply('这个作品没有评论 ~')
           } else {
+            const suggest: string[] = []
+            for (const item of VideoData.data.aweme_detail.suggest_words.suggest_words) {
+              if (item.words && item.scene === 'comment_top_rec') {
+                for (const v of item.words) {
+                  v.word && suggest.push(v.word)
+                }
+              }
+            }
             const img = await Render('douyin/comment',
               {
                 Type: this.is_mp4 ? '视频' : this.is_slides ? '合辑' : '图集',
                 CommentsData: commentsArray,
-                CommentLength: Config.douyin.realCommentCount ? VideoData.data.aweme_detail.statistics.comment_count : commentsArray.jsonArray?.length ?? 0,
+                CommentLength: Config.douyin.realCommentCount ? VideoData.data.aweme_detail.statistics.comment_count : commentsArray?.length ?? 0,
                 share_url: this.is_mp4
                   ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${VideoData.data.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`
                   : VideoData.data.aweme_detail.share_url,
                 VideoSize: mp4size,
                 VideoFPS: FPS,
-                ImageLength: imagenum
+                ImageLength: imagenum,
+                Region: VideoData.data.aweme_detail.region,
+                suggestWrod: suggest
               }
             )
             await this.e.reply(img)

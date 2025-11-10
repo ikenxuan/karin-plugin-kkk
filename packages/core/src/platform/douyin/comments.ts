@@ -72,15 +72,16 @@ const processAtUsers = async (text: string, userIds: string[] | null): Promise<s
     return text
   }
 
+  const atColor = Common.useDarkTheme() ? '#face15' : '#04498d'
   let processedText = text
   for (const secUid of userIds) {
     const UserInfoData = await getDouyinData('用户主页数据', Config.cookies.douyin, { sec_uid: secUid, typeMode: 'strict' })
     if (UserInfoData.data.user.sec_uid === secUid) {
-      /** 这里评论只要生成了艾特，如果艾特的人改了昵称，评论也不会变，所以可能会出现有些艾特没有正确上颜色，因为接口没有提供历史昵称 */
+      /** 这里评论只要生成了艾特，如果被艾特的人改了昵称，评论也不会变，所以可能会出现有些艾特没有正确上颜色，因为接口没有提供历史昵称 */
       const regex = new RegExp(`@${UserInfoData.data.user.nickname?.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')}`, 'g')
 
       processedText = processedText.replace(regex, match => {
-        return `<span class="${Common.useDarkTheme() ? 'dark-mode handling_at' : 'handling_at'}">${match}</span>`
+        return `<span style="color: ${atColor};">${match}</span>`
       })
     }
   }
@@ -117,7 +118,6 @@ const processCommentImage = async (imageUrl: string | null): Promise<string | nu
 export const douyinComments = async (data: any, emojidata: any): Promise<any> => {
   let jsonArray: any[] = []
   if (data.data.comments === null) return []
-
   let id = 1
   for (const comment of data.data.comments) {
     const cid = comment.cid
@@ -140,7 +140,7 @@ export const douyinComments = async (data: any, emojidata: any): Promise<any> =>
     const status_label = comment.label_list?.[0]?.text ?? null
     const userintextlongid =
       comment.text_extra && comment.text_extra[0] && comment.text_extra[0].sec_uid
-        ? comment.text_extra[0].sec_uid && comment.text_extra.map((extra: { sec_uid: string }) => extra.sec_uid)
+        ? comment.text_extra.map((extra: { sec_uid: string }) => extra.sec_uid)
         : null
     const search_text =
       comment.text_extra && comment.text_extra[0] && comment.text_extra[0].search_text
@@ -177,13 +177,21 @@ export const douyinComments = async (data: any, emojidata: any): Promise<any> =>
       number: 2
     }, Config.cookies.douyin)
 
+    let replyText = ''
+    if (replyComment.data.comments.length > 0) {
+      const replyUserintextlongid =
+        replyComment.data.comments[0].text_extra && replyComment.data.comments[0].text_extra[0] && replyComment.data.comments[0].text_extra[0].sec_uid
+          ? replyComment.data.comments[0].text_extra.map(extra => extra.sec_uid!)
+          : null
+      replyText = await processAtUsers(replyComment.data.comments[0].text, replyUserintextlongid)
+    }
     const commentObj = {
       id: id++,
       replyComment: replyComment.data.comments.length > 0 ? {
         create_time: getRelativeTimeFromTimestamp(replyComment.data.comments[0].create_time),
         nickname: replyComment.data.comments[0].user.nickname,
         userimageurl: replyComment.data.comments[0].user.avatar_thumb.url_list[0],
-        text: processCommentEmojis(replyComment.data.comments[0].text, emojidata),
+        text: processCommentEmojis(replyText, emojidata),
         digg_count: replyComment.data.comments[0].digg_count > 10000
           ? (replyComment.data.comments[0].digg_count / 10000).toFixed(1) + 'w'
           : replyComment.data.comments[0].digg_count,
@@ -205,7 +213,8 @@ export const douyinComments = async (data: any, emojidata: any): Promise<any> =>
       status_label,
       is_At_user_id: userintextlongid,
       search_text,
-      reply_comment_total
+      reply_comment_total,
+      is_author_digged: comment.is_author_digged ?? false
     }
     jsonArray.push(commentObj)
   }
@@ -228,11 +237,7 @@ export const douyinComments = async (data: any, emojidata: any): Promise<any> =>
     jsonArray.unshift(commentTypeOne)
   }
 
-  const CommentData = {
-    jsonArray
-  }
-
-  return CommentData
+  return jsonArray
 }
 
 const getRelativeTimeFromTimestamp = (timestamp: number) => {
