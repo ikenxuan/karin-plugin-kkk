@@ -2,6 +2,14 @@
 
 # Changelog
 
+## [2.11.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.11.1...v2.11.2) (2025-11-11)
+
+
+### 💄 UI 优化
+
+* **bilibili:** 同步评论图头部样式 ([5c808ff](https://github.com/ikenxuan/karin-plugin-kkk/commit/5c808ffed74ef9cde952ce81eeeabc143fbf7c3c))
+* **error-handler:** Enhance error reporting with adapter information and improved UI ([ffbd3e5](https://github.com/ikenxuan/karin-plugin-kkk/commit/ffbd3e5c929e9d6c362312626acccd4332d52058))
+
 ## [2.11.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.11.0...v2.11.1) (2025-11-11)
 
 
