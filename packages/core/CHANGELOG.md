@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.11.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.11.0...v2.11.1) (2025-11-11)
+
+
+### 🐛 错误修复
+
+* **download:** 下载视频连接被重置时使用断点传续进行retry ([ad0525c](https://github.com/ikenxuan/karin-plugin-kkk/commit/ad0525c275c48fa991fdafebde0442ab744623b2))
+
+
+### 🔒 安全修复
+
+* **networks:** 给抛出错误日志进行脱敏处理 ([68a9521](https://github.com/ikenxuan/karin-plugin-kkk/commit/68a95210db34cbef67d690a13631c374464bb841))
+
 ## [2.11.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.10.3...v2.11.0) (2025-11-10)
 
 
