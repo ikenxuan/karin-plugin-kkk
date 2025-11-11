@@ -12,7 +12,56 @@ import axios, { AxiosError } from 'node-karin/axios'
 
 import { NetworksConfigType } from '@/types'
 
-type HeadersObject = Record<string, string>
+/**
+ * 脱敏处理IP地址
+ * @param text 包含IP的文本
+ * @returns 脱敏后的文本
+ */
+const sanitizeIP = (text: string): string => {
+  if (!text) return text
+  
+  // IPv4 脱敏: 192.168.1.1 -> 192.168.*.*
+  text = text.replace(/\b(\d{1,3}\.\d{1,3})\.\d{1,3}\.\d{1,3}\b/g, '$1.*.*')
+  
+  // IPv6 脱敏: 2001:0db8:85a3::8a2e:0370:7334 -> 2001:0db8:****
+  text = text.replace(/\b([0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}):[0-9a-fA-F:]+\b/g, '$1:****')
+  
+  return text
+}
+
+/**
+ * 脱敏处理敏感请求头信息
+ * @param headers 原始请求头
+ * @returns 脱敏后的请求头
+ */
+const sanitizeHeaders = (headers: Record<string, string> | AxiosRequestConfig['headers']): Record<string, string> => {
+  if (!headers) return {}
+  
+  const sanitized: Record<string, string> = {}
+  // 需要完全隐藏的敏感字段
+  const sensitiveKeys = ['cookie', 'cookies', 'authorization', 'x-api-key', 'api-key', 'token']
+  // 需要进行IP脱敏的字段
+  const ipSensitiveKeys = ['x-forwarded-for', 'x-real-ip', 'x-client-ip', 'x-originating-ip']
+  
+  for (const [key, value] of Object.entries(headers)) {
+    const lowerKey = key.toLowerCase()
+    
+    // 完全隐藏敏感信息
+    if (sensitiveKeys.some(sk => lowerKey.includes(sk))) {
+      sanitized[key] = '[敏感信息......]'
+    } 
+    // 对IP相关的header进行IP脱敏
+    else if (ipSensitiveKeys.some(sk => lowerKey.includes(sk))) {
+      sanitized[key] = sanitizeIP(String(value))
+    } 
+    // 其他header保持原样
+    else {
+      sanitized[key] = String(value)
+    }
+  }
+  
+  return sanitized
+}
 
 export const baseHeaders: AxiosRequestConfig['headers'] = {
   Accept: '*/*',
@@ -23,7 +72,7 @@ export const baseHeaders: AxiosRequestConfig['headers'] = {
 export class Networks {
   private url: string
   private method: string
-  private headers: HeadersObject
+  private headers: Record<string, string>
   private type: ResponseType
   private body?: any
   private axiosInstance: AxiosInstance
@@ -99,7 +148,8 @@ export class Networks {
 
     // URL 早期校验
     if (!this.url || !/^https?:\/\//i.test(this.url)) {
-      throw new Error(`Invalid URL: ${this.url || '(empty)'}`)
+      const sanitized = sanitizeHeaders(this.headers)
+      throw new Error(`Invalid URL: ${this.url || '(empty)'}, Headers: ${JSON.stringify(sanitized)}`)
     }
     // 文件路径校验
     if (!this.filepath) {
@@ -157,7 +207,8 @@ export class Networks {
       const rawContentLength = response.headers['content-length']
       const contentLength = Number.parseInt(rawContentLength ?? '-1', 10)
       if (Number.isNaN(contentLength)) {
-        throw new Error('无效的 content-length 响应头')
+        const sanitized = sanitizeHeaders(this.headers)
+        throw new Error(`无效的 content-length 响应头, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`)
       }
 
       // 计算总字节数
@@ -205,7 +256,8 @@ export class Networks {
       if (intervalId) clearInterval(intervalId)
 
       if (error instanceof AxiosError) {
-        logger.error(`请求在 ${this.timeout / 1000} 秒后超时或失败: ${error.message}`)
+        const sanitized = sanitizeHeaders(this.headers)
+        logger.error(`请求在 ${this.timeout / 1000} 秒后超时或失败: ${error.message}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`)
       } else {
         logger.error('下载失败:', error)
       }
@@ -227,7 +279,9 @@ export class Networks {
             logger.warn('清理部分下载文件失败:', cleanupError)
           }
         }
-        throw new Error(`在 ${this.maxRetries} 次尝试后下载失败: ${error instanceof Error ? error.message : String(error)}`)
+        const sanitized = sanitizeHeaders(this.headers)
+        const errorMsg = error instanceof Error ? error.message : String(error)
+        throw new Error(`在 ${this.maxRetries} 次尝试后下载失败: ${errorMsg}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`)
       }
     }
   }
@@ -262,7 +316,8 @@ export class Networks {
       // 早期校验
       new URL(targetUrl)
     } catch {
-      throw new Error(`Invalid URL: ${targetUrl || '(empty)'}`)
+      const sanitized = sanitizeHeaders(this.headers)
+      throw new Error(`Invalid URL: ${targetUrl || '(empty)'}, Headers: ${JSON.stringify(sanitized)}`)
     }
 
     try {
@@ -284,7 +339,8 @@ export class Networks {
         return await this.getLongLink(redirectUrl)
       }
 
-      const msg = `获取链接重定向失败: ${targetUrl} - ${axiosError.message}`
+      const sanitized = sanitizeHeaders(this.headers)
+      const msg = `获取链接重定向失败: ${targetUrl} - ${axiosError.message}, Headers: ${JSON.stringify(sanitized)}`
       logger.error(msg)
       throw new Error(msg)
     }
@@ -302,7 +358,8 @@ export class Networks {
       return response.headers.location as string
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        logger.error(`获取 ${this.url} 重定向地址失败，接口响应状态码: ${error.response?.status}`)
+        const sanitized = sanitizeHeaders(this.headers)
+        logger.error(`获取 ${this.url} 重定向地址失败，接口响应状态码: ${error.response?.status}, Headers: ${JSON.stringify(sanitized)}`)
         throw new Error(error.stack)
       }
     }
@@ -322,7 +379,9 @@ export class Networks {
       return result.data
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        throw new Error(error.stack ?? error.message)
+        const sanitized = sanitizeHeaders(this.headers)
+        const errorMsg = `${error.stack ?? error.message}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`
+        throw new Error(errorMsg)
       }
       return false
     }
@@ -345,6 +404,12 @@ export class Networks {
       })
       return response.headers
     } catch (error) {
+      if (error instanceof AxiosError) {
+        const sanitized = sanitizeHeaders(this.headers)
+        const errorMsg = `获取响应头失败: ${error.stack ?? error.message}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`
+        logger.error(errorMsg)
+        throw new Error(errorMsg)
+      }
       logger.error(error)
       throw error
     }
@@ -362,6 +427,12 @@ export class Networks {
       })
       return response.headers
     } catch (error) {
+      if (error instanceof AxiosError) {
+        const sanitized = sanitizeHeaders(this.headers)
+        const errorMsg = `获取完整响应头失败: ${error.stack ?? error.message}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`
+        logger.error(errorMsg)
+        throw new Error(errorMsg)
+      }
       logger.error(error)
       throw error
     }
