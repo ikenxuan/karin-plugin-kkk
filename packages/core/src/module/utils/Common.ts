@@ -8,6 +8,7 @@ import { karinPathTemp } from 'node-karin/root'
 import { Config } from '@/module/utils/Config'
 
 import { Root } from '../../root'
+import { Count } from '..'
 
 /** 常用工具合集 */
 class Tools {
@@ -303,10 +304,24 @@ class Tools {
    * @returns 格式化后的字符串
    */
   count (num: number) {
-    if (num > 10000) {
-      return (num / 10000).toFixed(1) + '万'
+    return Count(num)
+  }
+
+  /**
+   * 格式化文件大小
+   * @param sizeInMB 文件大小（MB）
+   * @returns 格式化后的文件大小字符串（带单位）
+   */
+  formatFileSize (sizeInMB: number | string): string {
+    const size = typeof sizeInMB === 'string' ? parseFloat(sizeInMB) : sizeInMB
+    
+    if (size < 1024) {
+      return `${size.toFixed(2)}MB`
+    } else if (size < 1024 * 1024) {
+      return `${(size / 1024).toFixed(2)}GB`
+    } else {
+      return `${(size / (1024 * 1024)).toFixed(2)}TB`
     }
-    return num.toString()
   }
 }
 

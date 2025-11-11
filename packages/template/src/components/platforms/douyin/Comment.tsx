@@ -269,6 +269,7 @@ export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | '
   return (
     <DefaultLayout {...props}>
       <div className='p-5'>
+        <div className='h-20'></div>
         {/* 视频信息头部 */}
         <VideoInfoHeader
           {...props.data}

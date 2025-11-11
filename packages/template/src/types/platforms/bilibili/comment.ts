@@ -22,11 +22,13 @@ export interface BilibiliCommentProps extends BaseComponentProps {
     shareurl: string
     /** 分享URL */
     share_url: string
+    /** 视频分辨率 */
+    Resolution: string | null
     /** 评论数据 */
     CommentsData: CommentItem[]
   }
   /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string
+  qrCodeDataUrl: string
 }
 
 /**

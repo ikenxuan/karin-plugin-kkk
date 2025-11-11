@@ -183,10 +183,12 @@ export class Bilibili extends Base {
                 nockData.data.accept_description[nockData.data.accept_description.length - 1] :
                 playUrlData.data.data.accept_description[0],
               VideoSize: Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64 ?
-                (nockData.data.durl[0].size! / (1024 * 1024)).toFixed(2) :
-                videoSize,
+                Common.formatFileSize((nockData.data.durl[0].size! / (1024 * 1024)).toFixed(2)) :
+                Common.formatFileSize(videoSize),
               ImageLength: 0,
-              shareurl: 'https://b23.tv/' + infoData.data.data.bvid
+              shareurl: 'https://b23.tv/' + infoData.data.data.bvid,
+              Resolution: Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64 ?
+                null : `${playUrlData.data.data.dash.video[0].width} x ${playUrlData.data.data.dash.video[0].height}`
             })
             this.e.reply(img)
           }
@@ -325,7 +327,8 @@ export class Bilibili extends Base {
                 CommentLength: String(commentsdata?.length ?? 0),
                 share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
                 ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? 0,
-                shareurl: '动态分享链接'
+                shareurl: '动态分享链接',
+                Resolution: null
               })
               if (imgArray.length === 1) this.e.reply(imgArray[0])
               if (imgArray.length > 1) {
@@ -558,7 +561,8 @@ export class Bilibili extends Base {
                   ),
                   share_url: 'https://www.bilibili.com/video/' + bvid,
                   ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? 0,
-                  shareurl: '动态分享链接'
+                  shareurl: '动态分享链接',
+                  Resolution: null
                 })
               )
 

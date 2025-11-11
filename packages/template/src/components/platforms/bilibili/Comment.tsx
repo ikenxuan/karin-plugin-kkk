@@ -1,6 +1,6 @@
 import clsx from 'clsx'
-import { ThumbsDown, ThumbsUp } from 'lucide-react'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { ThumbsUp } from 'lucide-react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import type {
   BilibiliCommentProps,
@@ -83,52 +83,19 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
 const QRCodeSection: React.FC<QRCodeSectionProps> = ({
   qrCodeDataUrl
 }) => {
-  const qrCodeRef = useRef<HTMLDivElement>(null)
-
   return (
-    <div className='flex flex-col items-center -mr-10'>
-      <div
-        ref={qrCodeRef}
-        className='flex justify-center items-center mt-20 w-120 h-120'
-      >
+    <div className='flex flex-col items-center'>
+      <div className='flex justify-center items-center w-[400px] h-[400px] p-4'>
         {qrCodeDataUrl
           ? (
-            <img
-              src={qrCodeDataUrl}
-              alt='二维码'
-              className='object-contain w-full h-full select-text'
-            />
+            <img src={qrCodeDataUrl} alt='二维码' className='object-contain w-full h-full rounded-lg' />
           )
           : (
-            <div className='flex justify-center items-center w-full h-full text-6xl select-text text-foreground-400'>
-              二维码占位符
+            <div className='flex flex-col justify-center items-center text-foreground-400'>
+              <span className='text-lg'>二维码生成失败</span>
             </div>
           )}
       </div>
-    </div>
-  )
-}
-
-/**
- * 信息项组件
- * @param label 标签文本
- * @param value 值内容
- * @param unit 单位（可选）
- * @returns JSX元素
- */
-interface InfoItemProps {
-  /** 标签文本 */
-  label: string
-  /** 值内容 */
-  value: string | number
-  /** 单位文本 */
-  unit?: string
-}
-
-const InfoItem: React.FC<InfoItemProps> = ({ label, value, unit }) => {
-  return (
-    <div className='text-[45px] p-2.5 tracking-[6px] text-left break-all text-foreground-600 select-text'>
-      {label}：{value}{unit}
     </div>
   )
 }
@@ -138,29 +105,76 @@ const InfoItem: React.FC<InfoItemProps> = ({ label, value, unit }) => {
  * @param props 组件属性
  * @returns JSX元素
  */
-const VideoInfoHeader: React.FC<BilibiliCommentProps> = (props) => {
+const VideoInfoHeader: React.FC<Omit<BilibiliCommentProps['data'], 'CommentsData'> & { qrCodeDataUrl: string }> = (props) => {
   return (
-    <div className='flex flex-col mt-2.5 -ml-10'>
-      {/* B站Logo占位符 */}
-      <div className='w-[580px] h-auto mb-5'>
-        <div className='text-8xl font-bold text-primary'>
-          <img src='/image/bilibili/bilibili.png' alt='B站Logo' className='select-text' />
+    <div className='max-w-[1400px] mx-auto px-10 py-8'>
+      <div className='flex justify-between items-start gap-16'>
+        {/* 左侧信息区域 */}
+        <div className='flex-1 flex flex-col'>
+          {/* Logo 和分辨率区域 */}
+          <div className='mb-12'>
+            {/* Logo */}
+            <div className='h-[180px] flex items-center'>
+              <img
+                src='/image/bilibili/bilibili.png'
+                alt='B站Logo'
+                className='object-contain h-full w-auto max-w-[450px]'
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement
+                  target.style.display = 'none'
+                  const parent = target.parentElement
+                  if (parent) {
+                    parent.innerHTML = '<div class="flex items-center h-full text-6xl font-bold text-foreground-600">哔哩哔哩</div>'
+                  }
+                }}
+              />
+              {/* 分辨率信息 - 仅视频类型显示 */}
+              {props.Type === '视频' && props.Resolution && (
+                <div className='flex flex-col gap-2 px-8 py-4 rounded-3xl bg-default-100/50 w-fit ml-12'>
+                  <span className='text-[42px] text-foreground-400'>分辨率（px）</span>
+                  <span className='text-[48px] font-medium text-foreground-600'>{props.Resolution}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 信息列表 */}
+          <div className='grid grid-cols-2 gap-x-16 gap-y-6 pl-2'>
+            <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text whitespace-nowrap'>
+              <span className='text-foreground-400 mr-4 flex-shrink-0'>类型</span>
+              <span className='font-medium text-foreground-600'>{props.Type}</span>
+            </div>
+            <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text whitespace-nowrap'>
+              <span className='text-foreground-400 mr-4 flex-shrink-0'>评论</span>
+              <span className='font-medium text-foreground-600'>{props.CommentLength}条</span>
+            </div>
+            {props.Type === '视频' ? (
+              <>
+                <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text whitespace-nowrap'>
+                  <span className='text-foreground-400 mr-4 flex-shrink-0'>大小</span>
+                  <span className='font-medium text-foreground-600'>{props.VideoSize}</span>
+                </div>
+                <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text whitespace-nowrap'>
+                  <span className='text-foreground-400 mr-4 flex-shrink-0'>画质</span>
+                  <span className='font-medium text-foreground-600'>{props.Clarity}</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text whitespace-nowrap'>
+                  <span className='text-foreground-400 mr-4 flex-shrink-0'>图片</span>
+                  <span className='font-medium text-foreground-600'>{props.ImageLength}张</span>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* 右侧二维码区域 */}
+        <div className='flex-shrink-0'>
+          <QRCodeSection qrCodeDataUrl={props.qrCodeDataUrl} />
         </div>
       </div>
-
-      <InfoItem label='作品类型' value={props.data.Type} />
-      <InfoItem label='评论数量' value={props.data.CommentLength} unit='条' />
-
-      {props.data.Type === '视频' && (
-        <>
-          {props.data.VideoSize && (
-            <InfoItem label='视频大小' value={props.data.VideoSize} unit='MB' />
-          )}
-          {props.data.Clarity && (
-            <InfoItem label='视频画质' value={props.data.Clarity} />
-          )}
-        </>
-      )}
     </div>
   )
 }
@@ -341,9 +355,6 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
               <ThumbsUp className='w-[60px] h-[60px] text-foreground-500' />
               <span className='text-[45px] text-foreground-500 select-text'>{props.like}</span>
             </div>
-            <div className='flex items-center gap-[15px]'>
-              <ThumbsDown className='w-[60px] h-[60px] text-foreground-500' />
-            </div>
           </div>
         </div>
 
@@ -480,9 +491,6 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
                           <ThumbsUp className='w-[60px] h-[60px] text-foreground-500' />
                           <span className='text-[45px] text-foreground-500 select-text'>{subReply.like}</span>
                         </div>
-                        <div className='flex items-center gap-[15px]'>
-                          <ThumbsDown className='w-[60px] h-[60px] text-foreground-500' />
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -506,10 +514,10 @@ export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType'
         VideoSize: undefined,
         Clarity: undefined,
         ImageLength: undefined,
+        Resolution: null,
         shareurl: '',
         share_url: '',
-        CommentsData: [],
-        host_mid: 0
+        CommentsData: []
       }
     }
 
@@ -520,6 +528,7 @@ export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType'
       VideoSize: props.data.VideoSize,
       Clarity: props.data.Clarity,
       ImageLength: props.data.ImageLength,
+      Resolution: props.data.Resolution,
       shareurl: props.data.shareurl || '',
       share_url: props.data.share_url || '',
       CommentsData: props.data.CommentsData || []
@@ -528,34 +537,34 @@ export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType'
 
   return (
     <DefaultLayout {...props}>
-      {/* 视频信息和二维码区域 */}
-      <div className='flex justify-between items-center max-w-[1200px] mx-auto p-5'>
-        <VideoInfoHeader {...props} />
-
-        <QRCodeSection
-          shareurl={processedData.shareurl || processedData.share_url}
+      <div className='p-5'>
+        <div className='h-20'></div>
+        {/* 视频信息头部 */}
+        <VideoInfoHeader
+          {...processedData}
           qrCodeDataUrl={props.qrCodeDataUrl}
-          useDarkTheme={processedData.useDarkTheme}
         />
-      </div>
 
-      {/* 评论列表 */}
-      <div className='mx-0 max-w-full'>
-        {processedData.CommentsData.length > 0
-          ? (
-            processedData.CommentsData.map((comment, index) => (
-              <CommentItemComponent
-                key={index}
-                isLast={index === processedData.CommentsData.length - 1}
-                {...comment}
-              />
-            ))
-          )
-          : (
-            <div className='py-10 text-center select-text text-foreground-500'>
-              暂无评论数据
-            </div>
-          )}
+        {/* 评论列表 */}
+        <div className='mt-8 overflow-hidden'>
+          {processedData.CommentsData.length > 0
+            ? (
+              processedData.CommentsData.map((comment, index) => (
+                <CommentItemComponent
+                  key={index}
+                  isLast={index === processedData.CommentsData.length - 1}
+                  {...comment}
+                />
+              ))
+            )
+            : (
+              <div className='flex justify-center items-center py-20 text-foreground-400'>
+                <div className='text-center'>
+                  <p className='text-xl'>暂无评论数据</p>
+                </div>
+              </div>
+            )}
+        </div>
       </div>
     </DefaultLayout>
   )

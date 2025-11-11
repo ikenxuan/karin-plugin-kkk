@@ -2,12 +2,8 @@
  * 二维码组件属性接口
  */
 export interface QRCodeSectionProps {
-  /** 分享链接 */
-  shareurl: string
   /** 二维码数据URL */
   qrCodeDataUrl?: string
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
 }
 
 
