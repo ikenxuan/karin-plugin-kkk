@@ -39,6 +39,22 @@ export interface PlatformConfig {
 }
 
 /**
+ * 适配器信息接口
+ */
+export interface AdapterInfo {
+  /** 适配器名称 */
+  name: string
+  /** 适配器版本 */
+  version: string
+  /** 平台名称 */
+  platform: string
+  /** 协议名称 */
+  protocol: string
+  /** 标准协议 */
+  standard?: string
+}
+
+/**
  * API错误组件属性接口
  */
 export interface ApiErrorProps extends BaseComponentProps {
@@ -66,6 +82,8 @@ export interface ApiErrorProps extends BaseComponentProps {
     buildTime?: string
     /** Commit ID */
     commitHash?: string
+    /** 适配器信息 */
+    adapterInfo?: AdapterInfo
   }
   /** 分享链接 */
   qrCodeDataUrl: string

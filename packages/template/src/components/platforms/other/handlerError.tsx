@@ -1,4 +1,5 @@
-import { AlertCircle, Clock, FileText, Terminal } from 'lucide-react'
+import { Chip } from '@heroui/react'
+import { AlertCircle, Clock, FileText, Plug2, Terminal } from 'lucide-react'
 import React from 'react'
 import { FaBug, FaCodeBranch, FaCube, FaLayerGroup } from 'react-icons/fa6'
 import { MdAccessTime } from 'react-icons/md'
@@ -130,29 +131,34 @@ const ErrorHeader: React.FC<{
     <div className='w-full max-w-[1440px] mx-auto px-20 py-20'>
       <div className='border-l-4 border-danger pl-12'>
         <div className='flex items-start gap-6 mb-10'>
-          <AlertCircle className='w-16 h-16 text-danger mt-2' />
+          {/* <AlertCircle className='w-16 h-16 text-danger mt-2' /> */}
+          <img className='w-30 h-auto' src="image/流泪.png" />
           <div className='flex-1'>
             <h1 className='text-8xl font-bold text-foreground mb-6'>
-              执行失败
+              哎呀！出错了
             </h1>
-            <div className='flex items-center gap-4 mb-4'>
+            <div className='flex items-center gap-4 mb-8'>
               <span className='text-5xl font-semibold text-danger'>
                 {displayMethod}
               </span>
             </div>
-            <div className='flex items-center gap-3 text-default-400'>
-              <Clock className='w-8 h-8' />
-              <span className='text-3xl font-medium'>
-                {new Date(timestamp).toLocaleString('zh-CN', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit',
-                  hour12: false
-                })}
-              </span>
+            {/* 触发时间 */}
+            <div className='mt-2'>
+              <div className='text-3xl text-default-400 mb-2'>触发时间</div>
+              <div className='flex items-center gap-3'>
+                <Clock className='w-10 h-10 text-warning' />
+                <span className='text-4xl font-bold text-foreground'>
+                  {new Date(timestamp).toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                  })}
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -246,7 +252,7 @@ const BusinessErrorDetails: React.FC<{
  */
 export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templateName'>> = (props) => {
   const { data } = props
-  const { type, platform, error, method, timestamp, logs, triggerCommand, frameworkVersion, pluginVersion } = data
+  const { type, platform, error, method, timestamp, logs, triggerCommand, frameworkVersion, pluginVersion, adapterInfo } = data
   const isBusinessError = type === 'business_error'
   const businessError = isBusinessError ? error as BusinessError : null
 
@@ -305,36 +311,65 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
 
         {/* 版本信息和底部提示 */}
         <div className='w-full max-w-[1440px] mx-auto px-20 py-16 space-y-8'>
-          {/* 版本信息 */}
-          <div className='space-y-4'>
-            {/* 第一行：框架版本和插件版本 */}
-            <div className='flex items-center gap-8 text-3xl'>
-              <div className='flex items-center gap-3 text-default-400'>
-                <FaLayerGroup className='w-7 h-7 text-primary' />
-                <span>框架版本：<span className='font-bold text-foreground'>{frameworkVersion}</span></span>
+          {/* 版本信息 - 重点突出 */}
+          <div className='space-y-5'>
+            {/* 框架版本和插件版本 */}
+            <div className='flex items-center gap-12'>
+              <div className='flex items-center gap-4'>
+                <FaLayerGroup className='w-9 h-9 text-primary' />
+                <div>
+                  <div className='text-2xl text-default-400'>框架版本</div>
+                  <div className='text-4xl font-bold text-foreground'>{frameworkVersion}</div>
+                </div>
               </div>
-              <span className='text-default-300'>·</span>
-              <div className='flex items-center gap-3 text-default-400'>
-                <FaCube className='w-7 h-7 text-success' />
-                <span>插件版本：<span className='font-bold text-foreground'>{pluginVersion}</span></span>
+
+              <div className='flex items-center gap-4'>
+                <FaCube className='w-9 h-9 text-success' />
+                <div>
+                  <div className='text-2xl text-default-400'>插件版本</div>
+                  <div className='text-4xl font-bold text-foreground'>{pluginVersion}</div>
+                </div>
               </div>
             </div>
 
-            {/* 第二行：编译时间 */}
-            {data.buildTime && (
-              <div className='flex items-center gap-3 text-3xl text-default-400'>
-                <MdAccessTime className='w-7 h-7 text-warning' />
-                <span>编译于：<span className='font-bold text-foreground'>{data.buildTime}</span></span>
+            {/* 适配器信息 */}
+            {adapterInfo && (
+              <div className='flex items-center gap-4'>
+                <Plug2 className='w-9 h-9 text-secondary' />
+                <div>
+                  <div className='text-2xl text-default-400'>适配器</div>
+                  <div className='text-4xl font-bold text-foreground'>
+                    <span className='relative inline-block pr-24'>
+                      {adapterInfo.name}
+                      <Chip 
+                        color='secondary' 
+                        variant='flat' 
+                        size='lg'
+                        className='absolute bottom-5 left-70 ml-2 align-super scale-120'
+                      >
+                        <span className='font-bold'>v{adapterInfo.version}</span>
+                      </Chip>
+                    </span>
+                  </div>
+                </div>
               </div>
             )}
 
-            {/* 第三行：Commit ID */}
-            {data.commitHash && (
-              <div className='flex items-center gap-3 text-3xl text-default-400'>
-                <FaCodeBranch className='w-7 h-7 text-secondary' />
-                <span>Commit：<span className='font-mono font-bold text-foreground'>{data.commitHash}</span></span>
-              </div>
-            )}
+            {/* 次要信息 - 弱化显示 */}
+            <div className='pt-3 border-t border-default-200 space-y-2'>
+              {data.buildTime && (
+                <div className='flex items-center gap-2 text-2xl text-default-400'>
+                  <MdAccessTime className='w-5 h-5' />
+                  <span>插件编译于 {data.buildTime}</span>
+                </div>
+              )}
+              {data.commitHash && (
+                <div className='flex items-center gap-2 text-2xl text-default-400'>
+                  <FaCodeBranch className='w-5 h-5' />
+                  <span className='font-mono'>Commit {data.commitHash}</span>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* 底部提示 */}

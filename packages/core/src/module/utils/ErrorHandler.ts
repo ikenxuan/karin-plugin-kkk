@@ -131,6 +131,15 @@ const handleBusinessError = async (
     const triggerCommand = event?.msg || '未知命令或处于非消息环境'
     const buildMetadata = getBuildMetadata()
 
+    // 获取适配器信息
+    const adapterInfo = event?.bot?.adapter ? {
+      name: event.bot.adapter.name,
+      version: event.bot.adapter.version,
+      platform: event.bot.adapter.platform,
+      protocol: event.bot.adapter.protocol,
+      standard: event.bot.adapter.standard
+    } : undefined
+
     // 生成错误报告图片
     logger.debug('[ErrorHandler] 正在渲染错误页面...')
     const img = await Render('other/handlerError', {
@@ -149,7 +158,8 @@ const handleBusinessError = async (
       frameworkVersion: Root.karinVersion,
       pluginVersion: Root.pluginVersion,
       buildTime: buildMetadata?.buildTime ? formatBuildTime(buildMetadata.buildTime) : undefined,
-      commitHash: buildMetadata?.commitHash
+      commitHash: buildMetadata?.commitHash,
+      adapterInfo: adapterInfo
     })
     
     logger.debug('[ErrorHandler] 错误页面渲染完成')
