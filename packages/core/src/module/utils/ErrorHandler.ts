@@ -97,11 +97,10 @@ export const wrapWithErrorHandler = <T extends (...args: any[]) => Promise<any>>
       // 获取收集到的日志
       const collectedLogs = logCollector.getFormattedLogs()
       
-      if (!Config.app.errorLogSendTo) {
-        throw error
+      // 只有配置了发送目标才处理错误
+      if (Config.app.errorLogSendTo && Config.app.errorLogSendTo.length > 0) {
+        await handleBusinessError(error as Error, options, collectedLogs, args[0] as Message)
       }
-      
-      await handleBusinessError(error as Error, options, collectedLogs, args[0] as Message)
       
       // 重新抛出错误
       throw error
@@ -125,91 +124,110 @@ const handleBusinessError = async (
   logs: string,
   event?: Message
 ) => {
-  // 获取触发命令信息
-  const triggerCommand = event?.msg || '未知命令或处于非消息环境'
-  const buildMetadata = getBuildMetadata()
+  try {
+    logger.debug(`[ErrorHandler] 开始处理业务错误: ${options.businessName}`)
+    
+    // 获取触发命令信息
+    const triggerCommand = event?.msg || '未知命令或处于非消息环境'
+    const buildMetadata = getBuildMetadata()
 
-  // 生成错误报告图片
-  const img = await Render('other/handlerError', {
-    type: 'business_error',
-    platform: 'system',
-    error: {
-      message: error.message,
-      name: error.name,
-      stack: util.format(error),
-      businessName: options.businessName
-    },
-    method: options.businessName,
-    timestamp: new Date().toISOString(),
-    logs: logs,
-    triggerCommand: triggerCommand,
-    frameworkVersion: Root.karinVersion,
-    pluginVersion: Root.pluginVersion,
-    buildTime: buildMetadata?.buildTime ? formatBuildTime(buildMetadata.buildTime) : undefined,
-    commitHash: buildMetadata?.commitHash
-  })
+    // 生成错误报告图片
+    logger.debug('[ErrorHandler] 正在渲染错误页面...')
+    const img = await Render('other/handlerError', {
+      type: 'business_error',
+      platform: 'system',
+      error: {
+        message: error.message,
+        name: error.name,
+        stack: util.format(error),
+        businessName: options.businessName
+      },
+      method: options.businessName,
+      timestamp: new Date().toISOString(),
+      logs: logs,
+      triggerCommand: triggerCommand,
+      frameworkVersion: Root.karinVersion,
+      pluginVersion: Root.pluginVersion,
+      buildTime: buildMetadata?.buildTime ? formatBuildTime(buildMetadata.buildTime) : undefined,
+      commitHash: buildMetadata?.commitHash
+    })
+    
+    logger.debug('[ErrorHandler] 错误页面渲染完成')
 
-  // 发送给触发者
-  if (event && Config.app.errorLogSendTo.some(item => item === 'trigger')) {
-    try {
-      event.reply(img)
-    } catch (replyError) {
-      logger.error(`发送错误消息给用户失败: ${replyError}`)
-    }
-  }
-
-  // 发送给主人
-  if (Config.app.errorLogSendTo.some(item => item === 'master')) {
-    try {
-      const botId = statBotId(Config.pushlist)
-      const list = config.master()
-      let master = list[0]
-      if (master === 'console') {
-        master = list[1]
+    // 发送给触发者
+    if (event && Config.app.errorLogSendTo.some(item => item === 'trigger')) {
+      try {
+        logger.debug('[ErrorHandler] 正在发送错误消息给触发者...')
+        await event.reply(img)
+        logger.debug('[ErrorHandler] 错误消息已发送给触发者')
+      } catch (replyError) {
+        logger.error(`[ErrorHandler] 发送错误消息给用户失败: ${replyError}`)
       }
+    }
 
-      // 选择一个可用的机器人ID
-      const selectedBotId = botId.douyin.botId || botId.bilibili.botId || ''
-
-      // 判断是否为推送任务（没有event或者businessName包含"推送"）
-      const isPushTask = !event || options.businessName.includes('推送')
-
-      if (selectedBotId && master) {
-        if (isPushTask) {
-          await karin.sendMaster(
-            selectedBotId,
-            master,
-            [
-              segment.text(`${options.businessName} 任务执行出错！\n请即时解决以消除警告`),
-              ...img
-            ]
-          )
-        } else {
-          const Adapter = karin.getBot(selectedBotId)
-          const groupID = event && 'groupId' in event ? event.groupId : ''
-          const groupInfo = await Adapter?.getGroupInfo(groupID)
-
-          await karin.sendMaster(
-            selectedBotId,
-            master,
-            [
-              segment.text(`群：${groupInfo?.groupName || '未知'}(${groupID})\n${options.businessName} 任务执行出错！\n请即时解决以消除警告`),
-              ...img
-            ]
-          )
+    // 发送给主人
+    if (Config.app.errorLogSendTo.some(item => item === 'master')) {
+      try {
+        logger.debug('[ErrorHandler] 正在发送错误消息给主人...')
+        const botId = statBotId(Config.pushlist)
+        const list = config.master()
+        let master = list[0]
+        if (master === 'console') {
+          master = list[1]
         }
-      }
-    } catch (masterError) {
-      logger.error(`发送错误消息给主人失败: ${masterError}`)
-    }
-  }
 
-  // 执行自定义错误处理
-  if (options.customErrorHandler) {
-    try {
-      await options.customErrorHandler(error, logs)
-    } catch (customError) {
-      logger.error(`自定义错误处理失败: ${customError}`)
+        // 选择一个可用的机器人ID
+        const selectedBotId = botId.douyin.botId || botId.bilibili.botId || ''
+
+        // 判断是否为推送任务（没有event或者businessName包含"推送"）
+        const isPushTask = !event || options.businessName.includes('推送')
+
+        if (selectedBotId && master) {
+          if (isPushTask) {
+            await karin.sendMaster(
+              selectedBotId,
+              master,
+              [
+                segment.text(`${options.businessName} 任务执行出错！\n请即时解决以消除警告`),
+                ...img
+              ]
+            )
+          } else {
+            const Adapter = karin.getBot(selectedBotId)
+            const groupID = event && 'groupId' in event ? event.groupId : ''
+            const groupInfo = await Adapter?.getGroupInfo(groupID)
+
+            await karin.sendMaster(
+              selectedBotId,
+              master,
+              [
+                segment.text(`群：${groupInfo?.groupName || '未知'}(${groupID})\n${options.businessName} 任务执行出错！\n请即时解决以消除警告`),
+                ...img
+              ]
+            )
+          }
+          logger.debug('[ErrorHandler] 错误消息已发送给主人')
+        } else {
+          logger.warn(`[ErrorHandler] 无法发送给主人: selectedBotId=${selectedBotId}, master=${master}`)
+        }
+      } catch (masterError) {
+        logger.error(`[ErrorHandler] 发送错误消息给主人失败: ${masterError}`)
+      }
     }
+
+    // 执行自定义错误处理
+    if (options.customErrorHandler) {
+      try {
+        logger.debug('[ErrorHandler] 执行自定义错误处理...')
+        await options.customErrorHandler(error, logs)
+      } catch (customError) {
+        logger.error(`[ErrorHandler] 自定义错误处理失败: ${customError}`)
+      }
+    }
+    
+    logger.debug('[ErrorHandler] 业务错误处理完成')
+  } catch (handlerError) {
+    logger.error(`[ErrorHandler] 错误处理器本身发生错误: ${handlerError}`)
+    logger.error(`[ErrorHandler] 原始错误: ${error.message}`)
   }
 }

@@ -341,53 +341,67 @@ export const downloadFile = async (videoUrl: string, opt: downLoadFileOptions): 
   // 记录开始时间
   const startTime = Date.now()
 
-  // 使用 networks 类进行文件下载，并通过回调函数实时更新下载进度
-  const { filepath, totalBytes } = await new Networks({
-    url: videoUrl, 
-    headers: opt.headers ?? baseHeaders,
-    filepath: Common.tempDri.video + opt.title,
-    timeout: 30000, 
-    maxRetries: 3 
-  }).downloadStream((downloadedBytes, totalBytes) => {
+  try {
+    // 使用 networks 类进行文件下载，并通过回调函数实时更新下载进度
+    const { filepath, totalBytes } = await new Networks({
+      url: videoUrl, 
+      headers: opt.headers ?? baseHeaders,
+      filepath: Common.tempDri.video + opt.title,
+      timeout: 30000, 
+      maxRetries: 3 
+    }).downloadStream((downloadedBytes, totalBytes) => {
     // 定义进度条长度及生成进度条字符串的函数
-    const barLength = 45
-    const generateProgressBar = (progressPercentage: number) => {
-      const clampedPercentage = Math.min(100, Math.max(0, progressPercentage))
-      const filledLength = Math.floor((clampedPercentage / 100) * barLength)
-      const emptyLength = Math.max(0, barLength - filledLength)
-      return `[${ '\u2588'.repeat(filledLength)}${'\u2591'.repeat(emptyLength)}]`
+      const barLength = 45
+      const generateProgressBar = (progressPercentage: number) => {
+        const clampedPercentage = Math.min(100, Math.max(0, progressPercentage))
+        const filledLength = Math.floor((clampedPercentage / 100) * barLength)
+        const emptyLength = Math.max(0, barLength - filledLength)
+        return `[${ '\u2588'.repeat(filledLength)}${'\u2591'.repeat(emptyLength)}]`
+      }
+
+      // 计算当前下载进度百分比
+      const progressPercentage = totalBytes > 0 ? Math.min(100, (downloadedBytes / totalBytes) * 100) : 0
+
+      // 计算动态 RGB 颜色
+      const red = Math.floor(255 - (255 * progressPercentage) / 100) // 红色分量随进度减少
+      const coloredPercentage = logger.chalk.rgb(red, 255, 0)(`${progressPercentage.toFixed(1)}%`)
+
+      // 计算下载速度（MB/s）
+      const elapsedTime = (Date.now() - startTime) / 1000
+      const speed = downloadedBytes / elapsedTime
+      const formattedSpeed = (speed / 1048576).toFixed(1) + ' MB/s'
+
+      // 计算剩余时间
+      const remainingBytes = totalBytes - downloadedBytes // 剩余字节数
+      const remainingTime = remainingBytes / speed // 剩余时间（秒）
+      const formattedRemainingTime = remainingTime > 60
+        ? `${Math.floor(remainingTime / 60)}min ${Math.floor(remainingTime % 60)}s`
+        : `${remainingTime.toFixed(0)}s`
+
+      // 计算已下载和总下载的文件大小（MB）
+      const downloadedSizeMB = (downloadedBytes / 1048576).toFixed(1)
+      const totalSizeMB = (totalBytes / 1048576).toFixed(1)
+
+      // 打印下载进度、速度和剩余时间
+      console.log(
+        `⬇️  ${opt.title} ${generateProgressBar(progressPercentage)} ${coloredPercentage} ${downloadedSizeMB}/${totalSizeMB} MB | ${formattedSpeed} 剩余: ${formattedRemainingTime}\r`
+      )
+    })
+
+    return { filepath, totalBytes }
+  } catch (error) {
+    // 检查是否为网络环境变化导致的错误
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    const isNetworkChangeError = /ECONNRESET|ETIMEDOUT|ECONNABORTED|aborted|timeout|network|连接被重置|连接超时|连接中止/i.test(errorMessage)
+    
+    if (isNetworkChangeError) {
+      logger.error('下载失败，可能是由于网络环境变化（如代理切换、VPN切换）导致')
+      logger.error(`文件: ${opt.title}`)
+      logger.error(`错误详情: ${errorMessage}`)
     }
-
-    // 计算当前下载进度百分比
-    const progressPercentage = totalBytes > 0 ? Math.min(100, (downloadedBytes / totalBytes) * 100) : 0
-
-    // 计算动态 RGB 颜色
-    const red = Math.floor(255 - (255 * progressPercentage) / 100) // 红色分量随进度减少
-    const coloredPercentage = logger.chalk.rgb(red, 255, 0)(`${progressPercentage.toFixed(1)}%`)
-
-    // 计算下载速度（MB/s）
-    const elapsedTime = (Date.now() - startTime) / 1000
-    const speed = downloadedBytes / elapsedTime
-    const formattedSpeed = (speed / 1048576).toFixed(1) + ' MB/s'
-
-    // 计算剩余时间
-    const remainingBytes = totalBytes - downloadedBytes // 剩余字节数
-    const remainingTime = remainingBytes / speed // 剩余时间（秒）
-    const formattedRemainingTime = remainingTime > 60
-      ? `${Math.floor(remainingTime / 60)}min ${Math.floor(remainingTime % 60)}s`
-      : `${remainingTime.toFixed(0)}s`
-
-    // 计算已下载和总下载的文件大小（MB）
-    const downloadedSizeMB = (downloadedBytes / 1048576).toFixed(1)
-    const totalSizeMB = (totalBytes / 1048576).toFixed(1)
-
-    // 打印下载进度、速度和剩余时间
-    console.log(
-      `⬇️  ${opt.title} ${generateProgressBar(progressPercentage)} ${coloredPercentage} ${downloadedSizeMB}/${totalSizeMB} MB | ${formattedSpeed} 剩余: ${formattedRemainingTime}\r`
-    )
-  }, 3)
-
-  return { filepath, totalBytes }
+    
+    throw error
+  }
 }
 
 /**

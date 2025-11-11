@@ -13,6 +13,66 @@ import axios, { AxiosError } from 'node-karin/axios'
 import { NetworksConfigType } from '@/types'
 
 /**
+ * 错误代码到中文描述的映射
+ */
+const ERROR_CODE_MAP: Record<string, string> = {
+  // 网络连接错误
+  ECONNRESET: '连接被重置',
+  ECONNREFUSED: '连接被拒绝',
+  ECONNABORTED: '连接中止',
+  ETIMEDOUT: '连接超时',
+  ENETUNREACH: '网络不可达',
+  EHOSTUNREACH: '主机不可达',
+  ENOTFOUND: 'DNS解析失败',
+  EPIPE: '管道破裂',
+  EAI_AGAIN: 'DNS临时失败',
+  
+  // Axios 特定错误代码
+  ERR_BAD_OPTION_VALUE: '无效的配置选项值',
+  ERR_BAD_OPTION: '无效的配置选项',
+  ERR_NETWORK: '网络错误',
+  ERR_DEPRECATED: '使用了已弃用的功能',
+  ERR_BAD_RESPONSE: '无效的响应',
+  ERR_BAD_REQUEST: '无效的请求',
+  ERR_CANCELED: '请求被取消',
+  ERR_NOT_SUPPORT: '不支持的功能',
+  ERR_INVALID_URL: '无效的URL',
+  
+  // HTTP 状态码相关
+  EHTTP: 'HTTP错误',
+  
+  // 其他常见错误
+  EACCES: '权限不足',
+  ENOENT: '文件或目录不存在',
+  EMFILE: '打开的文件过多',
+  ENOSPC: '磁盘空间不足'
+}
+
+/**
+ * 获取错误的中英文描述
+ * @param error 错误对象
+ * @returns 格式化的错误描述
+ */
+const getErrorDescription = (error: any): string => {
+  // 获取错误代码
+  const code = error?.code || (error instanceof AxiosError ? error.code : null)
+  
+  // 获取错误消息
+  const message = error?.message || String(error)
+  
+  if (code && ERROR_CODE_MAP[code]) {
+    // 有映射的错误代码，显示中英文
+    return `${ERROR_CODE_MAP[code]} (${code}): ${message}`
+  } else if (code) {
+    // 有错误代码但没有映射
+    return `错误代码 ${code}: ${message}`
+  } else {
+    // 没有错误代码，只显示消息
+    return message
+  }
+}
+
+/**
  * 脱敏处理IP地址
  * @param text 包含IP的文本
  * @returns 脱敏后的文本
@@ -128,6 +188,57 @@ export class Networks {
   }
 
   /**
+   * 判断错误是否为可恢复的网络错误（适合断点续传）
+   * @param error 错误对象
+   * @returns 是否为可恢复错误
+   */
+  private isRecoverableNetworkError (error: any): boolean {
+    // 可恢复的错误代码列表
+    const recoverableErrorCodes = [
+      'ECONNRESET', // 连接被重置（代理切换、网络切换）
+      'ETIMEDOUT', // 连接超时
+      'ECONNREFUSED', // 连接被拒绝
+      'ENOTFOUND', // DNS解析失败
+      'ENETUNREACH', // 网络不可达
+      'EHOSTUNREACH', // 主机不可达
+      'EPIPE', // 管道破裂
+      'EAI_AGAIN', // DNS临时失败
+      'ECONNABORTED' // 连接中止
+    ]
+
+    // 检查错误代码
+    if (error?.code && recoverableErrorCodes.includes(error.code)) {
+      return true
+    }
+
+    // 检查 AxiosError 的特定情况
+    if (error instanceof AxiosError) {
+      // 检查是否为网络错误
+      if (error.code && recoverableErrorCodes.includes(error.code)) {
+        return true
+      }
+      
+      // 检查错误消息中是否包含可恢复的关键词
+      const recoverableKeywords = ['aborted', 'timeout', 'network', 'ECONNRESET', 'socket hang up']
+      const errorMessage = error.message?.toLowerCase() || ''
+      if (recoverableKeywords.some(keyword => errorMessage.includes(keyword.toLowerCase()))) {
+        return true
+      }
+    }
+
+    // 检查普通 Error 对象
+    if (error instanceof Error) {
+      const errorMessage = error.message?.toLowerCase() || ''
+      const recoverableKeywords = ['aborted', 'timeout', 'network', 'ECONNRESET', 'socket hang up']
+      if (recoverableKeywords.some(keyword => errorMessage.includes(keyword.toLowerCase()))) {
+        return true
+      }
+    }
+
+    return false
+  }
+
+  /**
    * 异步下载流方法
    *
    * @param progressCallback 下载进度回调函数，接收已下载字节数和总字节数作为参数
@@ -141,10 +252,8 @@ export class Networks {
   async downloadStream (
     progressCallback: (downloadedBytes: number, totalBytes: number) => void,
     retryCount = 0): Promise<{ filepath: string; totalBytes: number }> {
-    if (retryCount > 0 && this.maxRetries === 0) {
-      this.maxRetries = retryCount
-      retryCount = 0
-    }
+    // 注意：retryCount 参数用于内部递归重试，外部调用时应使用默认值 0
+    // maxRetries 在构造函数中设置，控制最大重试次数
 
     // URL 早期校验
     if (!this.url || !/^https?:\/\//i.test(this.url)) {
@@ -255,33 +364,54 @@ export class Networks {
       clearTimeout(timeoutId)
       if (intervalId) clearInterval(intervalId)
 
+      // 判断是否为可恢复的网络错误（适合断点续传）
+      const isRecoverableError = this.isRecoverableNetworkError(error)
+      
+      const errorDesc = getErrorDescription(error)
+      
       if (error instanceof AxiosError) {
         const sanitized = sanitizeHeaders(this.headers)
-        logger.error(`请求在 ${this.timeout / 1000} 秒后超时或失败: ${error.message}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`)
+        logger.error(`请求在 ${this.timeout / 1000} 秒后超时或失败: ${errorDesc}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`)
       } else {
-        logger.error('下载失败:', error)
+        logger.error(`下载失败: ${errorDesc}`)
       }
 
       // 指数退避，1s 起，8s 封顶
       const nextDelay = Math.max(1000, Math.min(2 ** retryCount * 1000, 8000))
 
       if (retryCount < this.maxRetries) {
-        logger.warn(`正在重试下载... (${retryCount + 1}/${this.maxRetries})，将在 ${nextDelay / 1000} 秒后重试`)
+        if (isRecoverableError && fs.existsSync(this.filepath)) {
+          const stats = fs.statSync(this.filepath)
+          logger.warn(`检测到可恢复的网络错误，保留已下载的 ${(stats.size / 1048576).toFixed(2)} MB 数据`)
+          logger.warn(`正在重试下载... (${retryCount + 1}/${this.maxRetries})，将在 ${nextDelay / 1000} 秒后使用断点续传重试`)
+        } else {
+          logger.warn(`正在重试下载... (${retryCount + 1}/${this.maxRetries})，将在 ${nextDelay / 1000} 秒后重试`)
+        }
         await new Promise(resolve => setTimeout(resolve, nextDelay))
         return this.downloadStream(progressCallback, retryCount + 1)
       } else {
-        // 最终失败时清理部分下载的文件
+        // 最终失败时的处理
         if (fs.existsSync(this.filepath)) {
-          try {
-            fs.unlinkSync(this.filepath)
-            logger.debug('已清理部分下载的文件')
-          } catch (cleanupError) {
-            logger.warn('清理部分下载文件失败:', cleanupError)
+          const stats = fs.statSync(this.filepath)
+          
+          // 如果是可恢复错误且已下载了部分数据，保留文件供用户手动恢复
+          if (isRecoverableError && stats.size > 0) {
+            logger.warn(`下载失败但保留了部分文件 (${(stats.size / 1048576).toFixed(2)} MB): ${this.filepath}`)
+            logger.warn('这可能是由于网络环境变化（如代理切换、VPN切换）导致的，文件已保留供后续恢复')
+          } else {
+            // 非可恢复错误，清理部分文件
+            try {
+              fs.unlinkSync(this.filepath)
+              logger.debug('已清理部分下载的文件')
+            } catch (cleanupError) {
+              logger.warn('清理部分下载文件失败:', cleanupError)
+            }
           }
         }
+        
         const sanitized = sanitizeHeaders(this.headers)
-        const errorMsg = error instanceof Error ? error.message : String(error)
-        throw new Error(`在 ${this.maxRetries} 次尝试后下载失败: ${errorMsg}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`)
+        const errorDesc = getErrorDescription(error)
+        throw new Error(`在 ${this.maxRetries} 次尝试后下载失败: ${errorDesc}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`)
       }
     }
   }
@@ -289,9 +419,6 @@ export class Networks {
   async getfetch (): Promise<AxiosResponse | boolean> {
     try {
       const result = await this.returnResult()
-      if (result.status === 504) {
-        return result
-      }
       return result
     } catch (error) {
       logger.info(error)
@@ -340,7 +467,8 @@ export class Networks {
       }
 
       const sanitized = sanitizeHeaders(this.headers)
-      const msg = `获取链接重定向失败: ${targetUrl} - ${axiosError.message}, Headers: ${JSON.stringify(sanitized)}`
+      const errorDesc = getErrorDescription(axiosError)
+      const msg = `获取链接重定向失败: ${targetUrl} - ${errorDesc}, Headers: ${JSON.stringify(sanitized)}`
       logger.error(msg)
       throw new Error(msg)
     }
@@ -380,7 +508,8 @@ export class Networks {
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         const sanitized = sanitizeHeaders(this.headers)
-        const errorMsg = `${error.stack ?? error.message}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`
+        const errorDesc = getErrorDescription(error)
+        const errorMsg = `${errorDesc}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`
         throw new Error(errorMsg)
       }
       return false
@@ -406,7 +535,8 @@ export class Networks {
     } catch (error) {
       if (error instanceof AxiosError) {
         const sanitized = sanitizeHeaders(this.headers)
-        const errorMsg = `获取响应头失败: ${error.stack ?? error.message}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`
+        const errorDesc = getErrorDescription(error)
+        const errorMsg = `获取响应头失败: ${errorDesc}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`
         logger.error(errorMsg)
         throw new Error(errorMsg)
       }
@@ -429,7 +559,8 @@ export class Networks {
     } catch (error) {
       if (error instanceof AxiosError) {
         const sanitized = sanitizeHeaders(this.headers)
-        const errorMsg = `获取完整响应头失败: ${error.stack ?? error.message}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`
+        const errorDesc = getErrorDescription(error)
+        const errorMsg = `获取完整响应头失败: ${errorDesc}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`
         logger.error(errorMsg)
         throw new Error(errorMsg)
       }
