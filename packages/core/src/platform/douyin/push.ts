@@ -304,6 +304,11 @@ export class DouYinpush extends Base {
         // 如果没有订阅群组，跳过该用户
         if (targets.length === 0) continue
 
+        // special_state 特殊状态
+        if (userinfo.data.user.special_state_info.special_state === 1 && userinfo.data.user.user_deleted === true) {
+          logger.warn(`${item.remark}（${sec_uid}）${userinfo.data.user.special_state_info.title}`)
+          continue
+        }
         // 处理视频列表
         if (videolist.data.aweme_list.length > 0) {
           for (const aweme of videolist.data.aweme_list) {
