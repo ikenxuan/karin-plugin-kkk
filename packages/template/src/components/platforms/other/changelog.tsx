@@ -42,7 +42,7 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
               
               {/* 版本信息叠加 */}
               <div className='absolute inset-0 flex flex-col left-50 bottom-50 items-center justify-center'>
-                <span className='text-9xl font-bold opacity-10'>
+                <span className='text-9xl font-bold opacity-10 text-white'>
                   v{props.data.remoteVersion}
                 </span>
               </div>
