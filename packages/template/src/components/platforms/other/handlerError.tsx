@@ -1,4 +1,4 @@
-import { Chip } from '@heroui/react'
+import { Chip, Code } from '@heroui/react'
 import { AlertCircle, Clock, FileText, Plug2, Terminal } from 'lucide-react'
 import React from 'react'
 import { FaBug, FaCodeBranch, FaCube, FaLayerGroup } from 'react-icons/fa6'
@@ -188,7 +188,7 @@ const BusinessErrorDetails: React.FC<{
               触发命令
             </h3>
             <div className='font-bold p-10 rounded-lg'>
-              <pre className='text-3xl leading-relaxed whitespace-pre-wrap break-all select-text text-foreground font-mono'>
+              <pre className='text-3xl leading-relaxed whitespace-pre-wrap break-all select-text font-[HarmonyOSHans-Regular]'>
                 {triggerCommand}
               </pre>
             </div>
@@ -366,23 +366,65 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
               {data.commitHash && (
                 <div className='flex items-center gap-2 text-2xl text-default-400'>
                   <FaCodeBranch className='w-5 h-5' />
-                  <span className='font-mono'>Commit {data.commitHash}</span>
+                  <span>Commit {data.commitHash}</span>
                 </div>
               )}
             </div>
           </div>
 
           {/* 底部提示 */}
-          <div className='border-l-2 text-default-400 border-primary pl-8'>
-            <p className='text-3xl leading-relaxed'>
-              遇到问题了？请将<span className='text-primary font-semibold'>完整的错误截图</span>发送给开发者，这将帮助我们快速定位并解决问题。您可以通过以下方式联系：
+          <div className='border-l-2 text-default-400 border-warning pl-8'>
+            <p className='text-3xl leading-relaxed mb-6'>
+              遇到问题了？为了帮助开发者快速定位并解决问题，请提供以下信息：
             </p>
-            <div className='mt-6 space-y-3'>
-              <p className='text-3xl'>
-                · 提交 <span className='text-primary font-semibold'>GitHub Issues</span>
+            <div className='space-y-4 mb-8'>
+              <div className='flex items-start gap-3'>
+                <span className='text-warning font-bold text-3xl'>1.</span>
+                <p className='text-3xl leading-relaxed flex-1'>
+                  <span className='text-warning font-semibold'>完整的错误截图</span>（包含本页面所有内容）
+                </p>
+              </div>
+              <div className='flex items-start gap-3'>
+                <span className='text-warning font-bold text-3xl'>2.</span>
+                <p className='text-3xl leading-relaxed flex-1'>
+                  <span className='text-warning font-semibold'>
+                    DEBUG 等级的完整日志
+                  </span>
+                  {' '}- 当前页面显示的日志是自动捕获的，可能不包含关键的调试信息。请在配置文件中将日志等级设置为{' '}
+                  <Code 
+                    color='warning'
+                    size='lg'
+                    radius='md'
+                    className='font-mono inline-flex items-center mx-1 -translate-y-[6px]'
+                  >
+                    DEBUG
+                  </Code>
+                  {' '}，重现问题后提供完整日志
+                </p>
+              </div>
+              <div className='flex items-start gap-3'>
+                <span className='text-warning font-bold text-3xl'>3.</span>
+                <p className='text-3xl leading-relaxed flex-1'>
+                  <span className='text-warning font-semibold'>问题复现步骤</span> - 详细描述触发错误的操作流程
+                </p>
+              </div>
+            </div>
+            <div className='border-t border-default-200 pt-6'>
+              <p className='text-3xl leading-relaxed mb-4'>
+                您可以通过以下方式联系我们：
               </p>
-              <p className='text-3xl'>
-                · 加入 QQ 群：<span className='text-primary font-semibold font-mono'>795874649</span>
+              <div className='space-y-3'>
+                <p className='text-3xl'>
+                  · 提交 <span className='text-primary font-semibold'>GitHub Issues</span>（推荐）
+                </p>
+                <p className='text-3xl'>
+                  · 加入 QQ 群：<span className='text-primary font-semibold'>795874649</span>
+                </p>
+              </div>
+            </div>
+            <div className='mt-6 p-6 bg-warning/10 rounded-lg border border-warning/30'>
+              <p className='text-2xl text-warning-700 leading-relaxed'>
+                💡 提示：仅凭此页面的信息可能无法完全定位错误根源，DEBUG 日志能提供更详细的执行流程和变量状态，大大提高问题解决效率。
               </p>
             </div>
           </div>
