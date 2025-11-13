@@ -132,10 +132,10 @@ const ErrorHeader: React.FC<{
       <div className='border-l-4 border-danger pl-12'>
         <div className='flex items-start gap-6 mb-10'>
           {/* <AlertCircle className='w-16 h-16 text-danger mt-2' /> */}
-          <img className='w-30 h-auto' src="image/流泪.png" />
+          <img className='w-30 h-auto' src="/image/流泪.png" />
           <div className='flex-1'>
             <h1 className='text-8xl font-bold text-foreground mb-6'>
-              哎呀！出错了
+              哎呀！出错了 ~
             </h1>
             <div className='flex items-center gap-4 mb-8'>
               <span className='text-5xl font-semibold text-danger'>
@@ -213,7 +213,7 @@ const BusinessErrorDetails: React.FC<{
           <div className='border-l-2 border-default-200 pl-8'>
             <h3 className='flex items-center gap-3 mb-6 text-3xl font-medium text-foreground'>
               <FileText className='w-8 h-8' />
-              执行日志
+              调用解析库
             </h3>
             <div className='p-8 rounded-lg border border-default-200'>
               <div className='space-y-4'>
