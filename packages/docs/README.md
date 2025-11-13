@@ -2,7 +2,7 @@
 home: true
 icon: house
 title: 项目主页
-heroImage: /logo.svg
+heroImage: /logo.png
 bgImage: https://theme-hope-assets.vuejs.press/bg/6-light.svg
 bgImageDark: https://theme-hope-assets.vuejs.press/bg/6-dark.svg
 bgImageStyle:

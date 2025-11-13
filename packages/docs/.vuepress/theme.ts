@@ -9,7 +9,7 @@ export default hopeTheme({
     name: "ikenxuan",
     url: "https://github.com/ikenxuan",
   },
-  logo: "/logo.svg",
+  logo: "/logo.png",
   repo: "ikenxuan/karin-plugin-kkk",
   docsDir: "packages/docs",
   footer: "GPL-3.0 · © ikenxuan",

@@ -9,6 +9,7 @@ export default sidebar({
       prefix: "guide/",
       children: [
         "quick-start",
+        "features",
         "install",
         "configuration",
         "usage",
@@ -30,6 +31,7 @@ export default sidebar({
   "/guide/": [
     "",
     "quick-start",
+    "features",
     "install",
     "configuration",
     "usage",

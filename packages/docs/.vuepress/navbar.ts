@@ -8,6 +8,7 @@ export default navbar([
     prefix: "/guide/",
     children: [
       { text: "快速开始", link: "quick-start" },
+      { text: "功能详解", link: "features" },
       { text: "安装", link: "install" },
       { text: "配置", link: "configuration" },
       { text: "使用", link: "usage" },
