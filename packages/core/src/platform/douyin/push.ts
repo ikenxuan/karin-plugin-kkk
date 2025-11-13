@@ -305,7 +305,7 @@ export class DouYinpush extends Base {
         if (targets.length === 0) continue
 
         // special_state 特殊状态
-        if (userinfo.data.user.special_state_info.special_state === 1 && userinfo.data.user.user_deleted === true) {
+        if (userinfo.data.user?.special_state_info?.special_state === 1 && userinfo.data.user?.user_deleted === true) {
           logger.warn(`${item.remark}（${sec_uid}）${userinfo.data.user.special_state_info.title}`)
           continue
         }
