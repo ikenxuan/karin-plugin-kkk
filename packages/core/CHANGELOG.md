@@ -2,6 +2,19 @@
 
 # Changelog
 
+## [2.11.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.11.2...v2.11.3) (2025-11-13)
+
+
+### 🐛 错误修复
+
+* 提高兼容性 ([c147834](https://github.com/ikenxuan/karin-plugin-kkk/commit/c147834ddd43fd027e5621b689773a15d90b6f36))
+
+
+### 💄 UI 优化
+
+* **error-handler:** Enhance error page with new crying emoji and text refinements ([618e437](https://github.com/ikenxuan/karin-plugin-kkk/commit/618e437f43f73fb456547aff98cfd220a822863d))
+* 更新提示浅色模式下不显示新版本号 ([435a21e](https://github.com/ikenxuan/karin-plugin-kkk/commit/435a21e879677fc6c0d5b22dab02db12e81c1e9e))
+
 ## [2.11.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.11.1...v2.11.2) (2025-11-11)
 
 
