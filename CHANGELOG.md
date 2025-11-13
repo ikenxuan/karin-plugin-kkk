@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.11.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.11.3...v2.11.4) (2025-11-13)
+
+
+### 🐛 错误修复
+
+* **douyin:** 处理账号的特殊状态 ([025d707](https://github.com/ikenxuan/karin-plugin-kkk/commit/025d707817416d943d773eeca255a2202327ce81))
+
+
+### 💄 UI 优化
+
+* **ui:** 将JetBrains Mono字体添加到项目资源中 ([b371a09](https://github.com/ikenxuan/karin-plugin-kkk/commit/b371a09dafea399215789de2d7cd6660390fb8b2))
+
 ## [2.11.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.11.2...v2.11.3) (2025-11-13)
 
 
