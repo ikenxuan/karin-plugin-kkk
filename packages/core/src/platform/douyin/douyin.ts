@@ -297,10 +297,12 @@ export class DouYin extends Base {
             await this.e.reply('这个作品没有评论 ~')
           } else {
             const suggest: string[] = []
-            for (const item of VideoData.data.aweme_detail.suggest_words.suggest_words) {
-              if (item.words && item.scene === 'comment_top_rec') {
-                for (const v of item.words) {
-                  v.word && suggest.push(v.word)
+            if (VideoData.data.aweme_detail?.suggest_words?.suggest_words) {
+              for (const item of VideoData.data.aweme_detail.suggest_words.suggest_words) {
+                if (item.words && item.scene === 'comment_top_rec') {
+                  for (const v of item.words) {
+                    v.word && suggest.push(v.word)
+                  }
                 }
               }
             }
