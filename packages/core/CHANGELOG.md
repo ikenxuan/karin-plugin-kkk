@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.11.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.11.4...v2.11.5) (2025-11-13)
+
+
+### 🐛 错误修复
+
+* **douyin:** Handle special user states with optional chaining ([713a07e](https://github.com/ikenxuan/karin-plugin-kkk/commit/713a07ea2a89b4aab7711eec04d80078c21bdb67))
+
 ## [2.11.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.11.3...v2.11.4) (2025-11-13)
 
 
