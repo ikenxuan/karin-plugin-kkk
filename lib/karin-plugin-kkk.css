@@ -6982,14 +6982,8 @@
     border-color: hsl(var(--heroui-default-500) / 1);
   }
 
-  .border-divider, .border-divider\/30 {
+  .border-divider {
     border-color: hsl(var(--heroui-divider) / .15);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .border-divider\/30 {
-      border-color: color-mix(in oklab, hsl(var(--heroui-divider) / .15) 30%, transparent);
-    }
   }
 
   .border-foreground {
@@ -7918,10 +7912,6 @@
 
   .py-5 {
     padding-block: calc(var(--spacing) * 5);
-  }
-
-  .py-6 {
-    padding-block: calc(var(--spacing) * 6);
   }
 
   .py-8 {
