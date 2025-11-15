@@ -208,7 +208,9 @@ export const douyinComments = async (data: any, emojidata: any) => {
           : replyComment.data.comments[0].digg_count,
         ip_label: replyComment.data.comments[0].ip_label,
         text_extra: replyComment.data.comments[0].text_extra,
-        label_text: replyComment.data.comments[0].label_text
+        label_text: replyComment.data.comments[0].label_text,
+        // @ts-ignore
+        image_list: replyComment.data.comments[0].image_list && replyComment.data.comments[0].image_list[0] && replyComment.data.comments[0].image_list[0].origin_url && [replyComment.data.comments[0].image_list[0].origin_url.url_list[0]]
       } : {},
       cid,
       aweme_id,

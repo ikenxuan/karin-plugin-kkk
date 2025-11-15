@@ -95,4 +95,6 @@ export interface DouyinSubComment {
   text_extra: any[]
   /** 标签文本 */
   label_text: string
+  /** 评论图片 */
+  image_list: string[] | null
 }

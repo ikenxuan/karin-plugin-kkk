@@ -43,9 +43,9 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
 const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'> & { qrCodeDataUrl: string }> = (props) => {
   return (
     <div className='max-w-[1400px] mx-auto px-10 py-8'>
-      <div className='flex justify-between items-start gap-16'>
+      <div className='flex gap-16 justify-between items-start'>
         {/* 左侧信息区域 */}
-        <div className='flex-1 flex flex-col'>
+        <div className='flex flex-col flex-1'>
           {/* Logo 和分辨率区域 */}
           <div className='mb-12'>
             {/* Logo */}
@@ -65,7 +65,7 @@ const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'>
               />
               {/* 分辨率信息 - 仅视频类型显示 */}
               {props.Type === '视频' && props.Resolution && (
-                <div className='flex flex-col gap-2 px-8 py-4 rounded-3xl bg-default-100/50 w-fit ml-8'>
+                <div className='flex flex-col gap-2 px-8 py-4 ml-8 rounded-3xl bg-default-100/50 w-fit'>
                   <span className='text-[42px] text-foreground-400'>分辨率（px）</span>
                   <span className='text-[48px] font-medium text-foreground-600'>{props.Resolution}</span>
                 </div>
@@ -75,34 +75,34 @@ const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'>
           </div>
 
           {/* 信息列表 */}
-          <div className='grid grid-cols-2 gap-x-16 gap-y-6 pl-2'>
+          <div className='grid grid-cols-2 gap-y-6 gap-x-16 pl-2'>
             <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text'>
-              <span className='text-foreground-400 mr-4'>类型</span>
+              <span className='mr-4 text-foreground-400'>类型</span>
               <span className='font-medium text-foreground-600'>{props.Type}</span>
             </div>
             <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text'>
-              <span className='text-foreground-400 mr-4'>评论</span>
+              <span className='mr-4 text-foreground-400'>评论</span>
               <span className='font-medium text-foreground-600'>{props.CommentLength}条</span>
             </div>
             {props.Type === '视频' ? (
               <>
                 <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text'>
-                  <span className='text-foreground-400 mr-4'>大小</span>
+                  <span className='mr-4 text-foreground-400'>大小</span>
                   <span className='font-medium text-foreground-600'>{props.VideoSize}MB</span>
                 </div>
                 <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text'>
-                  <span className='text-foreground-400 mr-4'>帧率</span>
+                  <span className='mr-4 text-foreground-400'>帧率</span>
                   <span className='font-medium text-foreground-600'>{props.VideoFPS}Hz</span>
                 </div>
               </>
             ) : (
               <>
                 <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text'>
-                  <span className='text-foreground-400 mr-4'>区域</span>
+                  <span className='mr-4 text-foreground-400'>区域</span>
                   <span className='font-medium text-foreground-600'>{props.Region}</span>
                 </div>
                 <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text'>
-                  <span className='text-foreground-400 mr-4'>数量</span>
+                  <span className='mr-4 text-foreground-400'>数量</span>
                   <span className='font-medium text-foreground-600'>{props.ImageLength}张</span>
                 </div>
               </>
@@ -140,20 +140,20 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
       {/* 评论内容 */}
       <div className='flex-1 min-w-0'>
         {/* 用户信息 */}
-        <div className='mb-6 text-6xl text-foreground-600 flex items-center gap-7 flex-wrap select-text'>
+        <div className='flex flex-wrap gap-7 items-center mb-6 text-6xl select-text text-foreground-600'>
           <span className='font-medium'>{props.nickname}</span>
           {props.label_type === 1 && (
             <div className='inline-flex items-center px-4 py-2 rounded-xl text-4xl bg-[#fe2c55] text-white'>
               作者
             </div>
           )}
-          {props.is_author_digged && (
+          {props.is_author_digged && props.status_label !== '作者赞过' && (
             <div className='inline-flex items-center px-4 py-2 text-4xl font-light rounded-xl bg-content2 text-foreground-700'>
               作者赞过
             </div>
           )}
           {props.status_label && (
-            <div className='inline-flex items-center px-4 py-2 text-4xl rounded-xl font-light bg-content2 text-foreground-700'>
+            <div className='inline-flex items-center px-4 py-2 text-4xl font-light rounded-xl bg-content2 text-foreground-700'>
               {props.status_label}
             </div>
           )}
@@ -182,7 +182,7 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
 
         {/* 底部信息和操作区域 */}
         <div className='flex justify-between items-center mt-8 text-foreground-500'>
-          <div className='flex items-center gap-6 select-text flex-wrap'>
+          <div className='flex flex-wrap gap-6 items-center select-text'>
             <span className='text-5xl'>{props.create_time}</span>
             <span className='text-5xl'>{props.ip_label}</span>
             {props.reply_comment_total > 0 && (
@@ -192,9 +192,9 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
             )}
           </div>
 
-          <div className='flex items-center gap-8 flex-shrink-0'>
+          <div className='flex flex-shrink-0 gap-8 items-center'>
             {/* 点赞按钮 */}
-            <div className='flex items-center gap-3 transition-colors cursor-pointer'>
+            <div className='flex gap-3 items-center transition-colors cursor-pointer'>
               <Heart size={60} className='text-foreground-500' />
               <span className='text-5xl select-text'>{props.digg_count}</span>
             </div>
@@ -203,15 +203,15 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
 
         {/* 二级评论 */}
         {props.replyComment && Object.keys(props.replyComment).length > 0 && (
-          <div className='mt-10 pl-8 pt-8 border-t border-divider/30'>
-            <div className='flex items-start gap-6'>
+          <div className='pt-8 pl-8 mt-10'>
+            <div className='flex gap-6 items-start'>
               <img
                 src={props.replyComment.userimageurl}
                 className='object-cover rounded-full w-[120px] h-[120px] flex-shrink-0'
                 alt='用户头像'
               />
               <div className='flex-1 min-w-0'>
-                <div className='flex items-center gap-3 mb-6'>
+                <div className='flex gap-3 items-center mb-6'>
                   <span className='text-6xl font-medium text-foreground-600'>{props.replyComment.nickname}</span>
                   {props.replyComment.label_text !== '' && (
                     <div className={clsx(
@@ -232,12 +232,22 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
                     overflowWrap: 'break-word'
                   }}
                 />
+                {props.replyComment.image_list && props.replyComment.image_list.length > 0 &&
+                  props.replyComment.image_list.filter(Boolean).map((img, idx) => (
+                    <div key={idx} className='my-6 overflow-hidden shadow-lg rounded-2xl max-w-[800px]'>
+                      <img
+                        className='object-contain w-full h-auto rounded-2xl'
+                        src={img}
+                        alt='评论图片'
+                      />
+                    </div>
+                  ))}
                 <div className='flex justify-between items-center mt-8 text-foreground-500'>
-                  <div className='flex items-center gap-6 select-text flex-wrap'>
+                  <div className='flex flex-wrap gap-6 items-center select-text'>
                     <span className='text-5xl'>{props.replyComment.create_time}</span>
                     <span className='text-5xl'>{props.replyComment.ip_label}</span>
                   </div>
-                  <div className='flex items-center gap-3 flex-shrink-0'>
+                  <div className='flex flex-shrink-0 gap-3 items-center'>
                     <Heart size={60} className='text-foreground-500' />
                     <span className='text-5xl'>{props.replyComment.digg_count}</span>
                   </div>
@@ -279,7 +289,7 @@ export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | '
         {/* 推荐搜索词 */}
         {randomSuggestWord && (
           <div className='mx-auto my-20 mb-5 ml-10'>
-            <div className='flex items-center gap-3 px-6 py-4 rounded-2xl'>
+            <div className='flex gap-3 items-center px-6 py-4 rounded-2xl'>
               <span className='text-5xl text-default-500'>大家都在搜：</span>
               <span className='relative text-5xl text-[#04498d] dark:text-[#face15]'>
                 {randomSuggestWord}
@@ -290,8 +300,8 @@ export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | '
         )}
         {/* {randomSuggestWord && (
           <div className='mx-auto my-20 ml-10'>
-            <div className='flex items-center gap-10 px-6 py-4 rounded-2xl'>
-              <span className='text-5xl text-default-500 font-bold'>相关搜索</span>
+            <div className='flex gap-10 items-center px-6 py-4 rounded-2xl'>
+              <span className='text-5xl font-bold text-default-500'>相关搜索</span>
               <span className='flex gap-2 bg-default-100 py-5 px-5 rounded-3xl relative text-5xl text-[#04498d] dark:text-[#face15]'>
                 <IoSearch size={50} />
                 {randomSuggestWord}
@@ -302,7 +312,7 @@ export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | '
         )} */}
 
         {/* 评论列表 */}
-        <div className='mt-8 overflow-hidden'>
+        <div className='overflow-hidden mt-8'>
           {props.data.CommentsData.length > 0
             ? (
               <>
