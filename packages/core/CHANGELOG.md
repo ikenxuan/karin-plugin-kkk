@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.11.6](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.11.5...v2.11.6) (2025-11-15)
+
+
+### 🐛 错误修复
+
+* **douyin:** 二级评论图片支持并优化样式 ([4101f88](https://github.com/ikenxuan/karin-plugin-kkk/commit/4101f888d3fae2c64b9d9cb155533c7119e39fe9))
+
 ## [2.11.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.11.4...v2.11.5) (2025-11-13)
 
 
