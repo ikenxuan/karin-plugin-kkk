@@ -1,12 +1,14 @@
 import fs from 'node:fs'
 
-import Client from '@ikenxuan/amagi'
 import karin, { type Contact, logger, Message, segment } from 'node-karin'
 import type { AxiosHeaders, AxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'node-karin/axios'
 
 import { baseHeaders, Common, mergeFile, Networks } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
 import type { pushlistConfig } from '@/types/config/pushlist'
+
+import { AmagiBase } from './amagiClient'
+
 type uploadFileOptions = {
   /** 是否使用群文件上传 */
   useGroupFile?: boolean
@@ -81,46 +83,25 @@ export type downLoadFileOptions = {
    */
   headers?: (RawAxiosRequestHeaders & MethodsHeaders) | AxiosHeaders
 }
-export class Base {
+
+/**
+ * 基础基类
+ * @remarks 提供事件上下文与通用请求头，继承自 `AmagiBase` 以复用 Amagi 客户端。
+ */
+export class Base extends AmagiBase {
+  /** 事件对象 */
   e: Message
+  /** 请求头 */
   headers: AxiosRequestConfig['headers']
-  amagi: ReturnType<typeof Client>
+
+  /**
+   * 构造函数：初始化事件与请求头
+   * @param e 消息事件对象
+   */
   constructor (e: Message) {
+    super()
     this.e = e
     this.headers = baseHeaders
-    const client = Client({
-      cookies: {
-        douyin: Config.cookies.douyin,
-        bilibili: Config.cookies.bilibili,
-        kuaishou: Config.cookies.kuaishou,
-        xiaohongshu: Config.cookies.xiaohongshu
-      },
-      request: {
-        timeout: Config.request.timeout,
-        headers: { 'User-Agent': Config.request['User-Agent'] },
-        proxy: Config.request.proxy?.switch ? Config.request.proxy : false
-      }
-    })
-
-    // 使用Proxy包装amagi客户端
-    this.amagi = new Proxy(client, {
-      get (target: ReturnType<typeof Client>, prop: keyof ReturnType<typeof Client>) {
-        const method = target[prop]
-        if (typeof method === 'function') {
-          return async (...args: any[]) => {
-            const result = await Function.prototype.apply.call(method, target, args)
-
-            // 返回值检查逻辑
-            if (!result) {
-              logger.warn(`Amagi API调用 (${String(prop)}) 返回了空值`)
-              return result
-            }
-            return result
-          }
-        }
-        return method
-      }
-    })
   }
 }
 

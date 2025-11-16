@@ -1,13 +1,12 @@
 import fs from 'node:fs'
 
 import { 
-  ApiResponse, 
   BiliUserDynamic,
   BiliUserProfile,
   BiliVideoPlayurlIsLogin,
   DynamicType, 
-  getBilibiliData, 
-  MajorType
+  MajorType,
+  Result 
 } from '@ikenxuan/amagi'
 import type {
   AdapterType,
@@ -35,6 +34,7 @@ import {
   Render,
   uploadFile
 } from '@/module'
+import { getBilibiliData } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import {
   bilibiliProcessVideos,
@@ -222,14 +222,14 @@ export class Bilibilipush extends Base {
           case DynamicType.AV: {
             if (data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.type === 'MAJOR_TYPE_ARCHIVE') {
               const bvid = data[dynamicId].Dynamic_Data?.modules.module_dynamic.major?.archive?.bvid ?? ''
-              const INFODATA = await getBilibiliData('单个视频作品数据', '', { bvid, typeMode: 'strict' })
+              const INFODATA = await getBilibiliData('单个视频作品数据', { bvid, typeMode: 'strict' })
 
               /** 特殊字段，只有番剧和影视才会有，如果是该类型视频，默认不发送 */
               if (INFODATA.data.data.redirect_url) {
                 send_video = false
                 logger.debug(`UP主：${INFODATA.data.data.owner.name} 的该动态类型为${logger.yellow('番剧或影视')}，默认跳过不下载，直达：${logger.green(INFODATA.data.data.redirect_url)}`)
               } else {
-                // const noCkData = await getBilibiliData('单个视频下载信息数据', '', { avid: Number(aid), cid: INFODATA.data.data.cid, typeMode: 'strict' })
+                // const noCkData = await getBilibiliData('单个视频下载信息数据', { avid: Number(aid), cid: INFODATA.data.data.cid, typeMode: 'strict' })
               }
               img = await Render('bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {
@@ -311,7 +311,7 @@ export class Bilibilipush extends Base {
                 break
               }
               case DynamicType.DRAW: {
-                const dynamicCARD = await getBilibiliData('动态卡片数据', Config.cookies.bilibili, { dynamic_id: data[dynamicId].Dynamic_Data.orig.id_str, typeMode: 'strict' })
+                const dynamicCARD = await getBilibiliData('动态卡片数据', { dynamic_id: data[dynamicId].Dynamic_Data.orig.id_str, typeMode: 'strict' })
                 const cardData = JSON.parse(dynamicCARD.data.data.card.card)
                 param = {
                   title: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major?.opus?.title ?? null,
@@ -450,7 +450,7 @@ export class Bilibilipush extends Base {
                     avid: dycrad.aid,
                     cid: dycrad.cid,
                     typeMode: 'strict'
-                  }) as ApiResponse<BiliVideoPlayurlIsLogin>
+                  }) as Result<BiliVideoPlayurlIsLogin>
                   /** 提取出视频流信息对象，并排除清晰度重复的视频流 */
                   const simplify = playUrlData.data.data.dash.video.filter((item, index: any, self: any[]) => {
                     return self.findIndex((t: { id: any }) => {

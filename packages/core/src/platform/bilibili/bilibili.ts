@@ -1,7 +1,6 @@
 import fs from 'node:fs'
 
 import {
-  ApiResponse,
   ArticleContent,
   BiliBangumiVideoInfo,
   BiliBangumiVideoPlayurlIsLogin,
@@ -13,7 +12,7 @@ import {
   BiliOneWork,
   BiliVideoPlayurlIsLogin,
   DynamicType,
-  getBilibiliData
+  Result 
 } from '@ikenxuan/amagi'
 import karin, {
   common,
@@ -37,6 +36,7 @@ import {
   Render,
   uploadFile
 } from '@/module/utils'
+import { getBilibiliData } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import {
   bilibiliComments,
@@ -82,7 +82,7 @@ export class Bilibili extends Base {
           avid: infoData.data.data.aid,
           cid: iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid,
           typeMode: 'strict'
-        }) as ApiResponse<BiliVideoPlayurlIsLogin>
+        }) as Result<BiliVideoPlayurlIsLogin>
         // const playUrl = bilibiliApiUrls.视频流信息({ avid: infoData.data.aid, cid: infoData.data.cid })
         this.islogin = (await checkCk()).Status === 'isLogin'
 
@@ -94,7 +94,7 @@ export class Bilibili extends Base {
             cid: iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid
           }) + '&platform=html5',
           headers: this.headers
-        }).getData() as ApiResponse<BiliBiliVideoPlayurlNoLogin>
+        }).getData() as Result<BiliBiliVideoPlayurlNoLogin>
 
         // 如果配置项不存在或长度为0，则不显示任何内容
         if (Config.bilibili.sendContent.some(content => content === 'info')) {
@@ -547,7 +547,7 @@ export class Bilibili extends Base {
           case DynamicType.AV: {
             if (dynamicInfo.data.data.item.modules.module_dynamic.major.type === 'MAJOR_TYPE_ARCHIVE') {
               const bvid = dynamicInfo.data.data.item.modules.module_dynamic.major.archive.bvid
-              const INFODATA = await getBilibiliData('单个视频作品数据', '', { bvid, typeMode: 'strict' })
+              const INFODATA = await getBilibiliData('单个视频作品数据', { bvid, typeMode: 'strict' })
               const dycrad = dynamicInfoCard.data.data.card && dynamicInfoCard.data.data.card.card && JSON.parse(dynamicInfoCard.data.data.card.card)
 
               commentsData && Config.bilibili.sendContent.some(item => item === 'comment') && this.e.reply(
@@ -597,7 +597,7 @@ export class Bilibili extends Base {
           }
           /** 直播动态 */
           case DynamicType.LIVE_RCMD: {
-            const userINFO = await getBilibiliData('用户主页数据', '', { host_mid: dynamicInfo.data.data.item.modules.module_author.mid, typeMode: 'strict' })
+            const userINFO = await getBilibiliData('用户主页数据', { host_mid: dynamicInfo.data.data.item.modules.module_author.mid, typeMode: 'strict' })
             img = await Render('bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
               {
                 image_url: dynamicCARD.live_play_info.cover,

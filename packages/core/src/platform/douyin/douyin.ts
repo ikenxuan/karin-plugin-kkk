@@ -281,7 +281,7 @@ export class DouYin extends Base {
                   avatar: VideoData.data.aweme_detail.author.avatar_thumb.url_list[0],
                   short_id: VideoData.data.aweme_detail.author.unique_id === '' ? VideoData.data.aweme_detail.author.short_id : VideoData.data.aweme_detail.author.unique_id
                 },
-                image_url: this.is_mp4 ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] : VideoData.data.aweme_detail.images![0].url_list[0],
+                image_url: this.is_mp4 ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] : VideoData.data.aweme_detail.images![0].url_list![0],
                 create_time: VideoData.data.aweme_detail.create_time
               }
             )
@@ -443,8 +443,20 @@ export class DouYin extends Base {
         })
         if (UserInfoData.data.user.live_status === 1) {
           // 直播中
-          const live_data = await this.amagi.getDouyinData('直播间信息数据', { sec_uid: UserInfoData.data.user.sec_uid, typeMode: 'strict' })
+          if (!UserInfoData.data.user?.live_status || UserInfoData.data.user.live_status !== 1) {
+            logger.error((UserInfoData?.data?.user?.nickname ?? '用户') + '当前未在直播')
+          }
+          if (!UserInfoData.data.user.room_data) {
+            logger.error('未获取到直播间信息！')
+          }
+
           const room_data = JSON.parse(UserInfoData.data.user.room_data)
+          const live_data = await this.amagi.getDouyinData('直播间信息数据', {
+            room_id: UserInfoData.data.user.room_id_str,
+            web_rid: room_data.owner.web_rid,
+            typeMode: 'strict'
+          })
+
           const img = await Render('douyin/live',
             {
               image_url: live_data.data.data[0].cover?.url_list[0],

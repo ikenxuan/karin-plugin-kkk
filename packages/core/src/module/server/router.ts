@@ -1,7 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import Client from '@ikenxuan/amagi'
 import type { RequestHandler } from 'express'
 import {
   createBadRequestResponse,
@@ -14,7 +13,7 @@ import axios from 'node-karin/axios'
 import template from 'node-karin/template'
 
 import { Common, Root } from '@/module/utils'
-import { Config } from '@/module/utils/Config'
+import { getBilibiliData, getDouyinData, getKuaishouData } from '@/module/utils/amagiClient'
 
 /** 专门负责传输视频文件流 */
 export const videoStreamRouter: RequestHandler = (req, res) => {
@@ -188,12 +187,6 @@ export const getLongLinkRouter: RequestHandler = async (req, res) => {
  * @param res 响应对象
  */
 export const getDouyinDataRouter: RequestHandler = async (req, res) => {
-  const amagi = Client({
-    cookies: {
-      douyin: Config.cookies.douyin
-    }
-  })
-
   try {
     const { dataType, params } = req.body
 
@@ -202,7 +195,7 @@ export const getDouyinDataRouter: RequestHandler = async (req, res) => {
     }
 
     // 直接调用amagi库获取原始数据
-    const rawData = await amagi.getDouyinData(dataType, {
+    const rawData = await getDouyinData(dataType, {
       ...params,
       typeMode: 'strict'
     })
@@ -230,12 +223,6 @@ export const getDouyinDataRouter: RequestHandler = async (req, res) => {
  * @param res 响应对象
  */
 export const getBilibiliDataRouter: RequestHandler = async (req, res) => {
-  const amagi = Client({
-    cookies: {
-      bilibili: Config.cookies.bilibili
-    }
-  })
-
   try {
     const { dataType, params } = req.body
 
@@ -244,7 +231,7 @@ export const getBilibiliDataRouter: RequestHandler = async (req, res) => {
     }
 
     // 直接调用amagi库获取原始数据
-    const rawData = await amagi.getBilibiliData(dataType, {
+    const rawData = await getBilibiliData(dataType, {
       ...params,
       typeMode: 'strict'
     })
@@ -272,12 +259,6 @@ export const getBilibiliDataRouter: RequestHandler = async (req, res) => {
  * @param res 响应对象
  */
 export const getKuaishouDataRouter: RequestHandler = async (req, res) => {
-  const amagi = Client({
-    cookies: {
-      kuaishou: Config.cookies.kuaishou
-    }
-  })
-
   try {
     const { dataType, params } = req.body
 
@@ -286,7 +267,7 @@ export const getKuaishouDataRouter: RequestHandler = async (req, res) => {
     }
 
     // 直接调用amagi库获取原始数据
-    const rawData = await amagi.getKuaishouData(dataType, {
+    const rawData = await getKuaishouData(dataType, {
       ...params,
       typeMode: 'strict'
     })

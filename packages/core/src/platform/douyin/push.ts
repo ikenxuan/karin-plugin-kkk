@@ -1,4 +1,4 @@
-import type { ApiResponse, DySearchInfo, DyUserInfo, DyUserLiveVideos } from '@ikenxuan/amagi'
+import type { DySearchInfo, DyUserInfo, DyUserLiveVideos, Result } from '@ikenxuan/amagi'
 import type { AdapterType, ImageElement, Message } from 'node-karin'
 import karin, { common, logger, segment } from 'node-karin'
 import { DouyinUserListProps } from 'template/types/platforms/douyin'
@@ -31,9 +31,9 @@ export type DouyinPushItem = {
   /** 作品详情信息 */
   Detail_Data: {
     /** 博主主页信息 */
-    user_info: ApiResponse<DyUserInfo>
+    user_info: Result<DyUserInfo>
     liveStatus?: { liveStatus: 'open' | 'close', isChanged: boolean, isliving: boolean }
-    live_data?: ApiResponse<DyUserLiveVideos>
+    live_data?: Result<DyUserLiveVideos>
     [key: string]: any
   }
   /** 博主头像url */
@@ -366,7 +366,21 @@ export class DouYinpush extends Base {
         const liveStatus = await douyinDB.getLiveStatus(sec_uid)
 
         if (userinfo.data.user.live_status === 1) {
-          const liveInfo = await this.amagi.getDouyinData('直播间信息数据', { sec_uid: userinfo.data.user.sec_uid, typeMode: 'strict' })
+          const UserInfoData = await this.amagi.getDouyinData('用户主页数据', { sec_uid: userinfo.data.user.sec_uid, typeMode: 'strict' })
+
+          if (!UserInfoData.data.user?.live_status || UserInfoData.data.user.live_status !== 1) {
+            logger.error((UserInfoData?.data?.user?.nickname ?? '用户') + '当前未在直播')
+          }
+          if (!UserInfoData.data.user.room_data) {
+            logger.error('未获取到直播间信息！')
+          }
+
+          const room_data = JSON.parse(UserInfoData.data.user.room_data)
+          const liveInfo = await this.amagi.getDouyinData('直播间信息数据', { 
+            room_id: UserInfoData.data.user.room_id_str, 
+            web_rid: room_data.owner.web_rid,
+            typeMode: 'strict' 
+          })
 
           // 如果之前没有直播，现在开播了，需要推送
           if (!liveStatus.living) {

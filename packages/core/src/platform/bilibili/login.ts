@@ -1,10 +1,11 @@
 import fs from 'node:fs'
 
-import { ApiResponse, BiliCheckQrcode, getBilibiliData } from '@ikenxuan/amagi'
+import { BiliCheckQrcode, Result } from '@ikenxuan/amagi'
 import type { Message } from 'node-karin'
 import { common } from 'node-karin'
 
 import { Common, Render } from '@/module/utils'
+import { getBilibiliData } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 
 /** B站登录 */
@@ -39,7 +40,7 @@ export const bilibiliLogin = async (e: Message) => {
     }))
   }
 
-  const handleLoginSuccess = async (responseData: ApiResponse<BiliCheckQrcode>) => {
+  const handleLoginSuccess = async (responseData: Result<BiliCheckQrcode>) => {
     const setCookieHeader = responseData.data.data.headers['set-cookie']
 
     let cookieString: string

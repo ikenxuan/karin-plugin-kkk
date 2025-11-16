@@ -1,4 +1,3 @@
-import { getBilibiliData, getDouyinData } from '@ikenxuan/amagi'
 import type { RequestHandler } from 'express'
 import {
   createBadRequestResponse,
@@ -9,7 +8,7 @@ import {
 } from 'node-karin'
 
 import { getBilibiliDB, getDouyinDB } from '@/module/db'
-import { Config } from '@/module/utils/Config'
+import { getBilibiliData, getDouyinData } from '@/module/utils/amagiClient'
 
 /**
  * 内容项接口定义
@@ -183,8 +182,7 @@ export const getAuthorsRouter: RequestHandler = async (req, res) => {
           try {
             const userProfile = await getDouyinData(
               '用户主页数据',
-              { sec_uid: subscription.douyinUser.sec_uid, typeMode: 'strict' },
-              Config.cookies.douyin
+              { sec_uid: subscription.douyinUser.sec_uid, typeMode: 'strict' }
             )
 
             return {
@@ -235,8 +233,7 @@ export const getAuthorsRouter: RequestHandler = async (req, res) => {
           try {
             const userProfile = await getBilibiliData(
               '用户主页数据',
-              { host_mid: subscription.bilibiliUser.host_mid, typeMode: 'strict' },
-              Config.cookies.bilibili
+              { host_mid: subscription.bilibiliUser.host_mid, typeMode: 'strict' }
             )
 
             return {
@@ -313,7 +310,7 @@ export const getDouyinContentRouter: RequestHandler = async (req, res) => {
       if (cache.douyinUser) {
         authorName = cache.douyinUser.remark || cache.douyinUser.short_id || cache.douyinUser.sec_uid
       }
-      const userProfile = await getDouyinData('用户主页数据', { sec_uid: cache.douyinUser.sec_uid, typeMode: 'strict' }, Config.cookies.douyin)
+      const userProfile = await getDouyinData('用户主页数据', { sec_uid: cache.douyinUser.sec_uid, typeMode: 'strict' })
 
       return {
         id: cache.aweme_id,
@@ -373,7 +370,7 @@ export const getBilibiliContentRouter: RequestHandler = async (req, res) => {
       if (cache.bilibiliUser) {
         authorName = cache.bilibiliUser.remark || cache.host_mid.toString()
       }
-      const userProfile = await getBilibiliData('用户主页数据', { host_mid: cache.host_mid, typeMode: 'strict' }, Config.cookies.bilibili)
+      const userProfile = await getBilibiliData('用户主页数据', { host_mid: cache.host_mid, typeMode: 'strict' })
 
       return {
         id: cache.dynamic_id,
