@@ -144,7 +144,6 @@ export class Bilibilipush extends Base {
         const userINFO = await this.amagi.getBilibiliData('用户主页数据', { host_mid: data[dynamicId].host_mid, typeMode: 'strict' })
         let emojiDATA = await this.amagi.getBilibiliData('Emoji数据') as any
         emojiDATA = extractEmojisData(emojiDATA.data.data.packages)
-
         switch (data[dynamicId].dynamic_type) {
           /** 处理图文动态 */
           case DynamicType.DRAW: {
@@ -613,6 +612,7 @@ export class Bilibilipush extends Base {
         if (dynamic_list.data.data.items.length > 0) {
           // 遍历接口返回的视频列表
           for (const dynamic of dynamic_list.data.data.items) {
+            logger.debug(`[Bilibili 推送] 开始处理 ${item.host_mid} 的动态列表`)
             const now = Date.now()
             // 获取动态发布时间戳(毫秒)
             const createTime = dynamic.modules.module_author.pub_ts * 1000
@@ -625,7 +625,7 @@ export class Bilibilipush extends Base {
             const timeDiffHours = Math.round((timeDifference / 1000 / 60 / 60) * 100) / 100 // 保留2位小数
 
             // 条件判断，以下任何一项成立都将进行推送：如果是置顶且发布时间在一天内 || 如果是置顶作品且有新的群组且发布时间在一天内 || 如果有新的群组且发布时间在一天内
-            logger.debug(`
+            logger.trace(`
               前期获取该动态基本信息：
               UP主：${dynamic.modules.module_author.name}
               动态ID：${dynamic.id_str}
@@ -639,8 +639,8 @@ export class Bilibilipush extends Base {
 
             if ((is_top && timeDifference < 86400000) || (timeDifference < 86400000)) {
               shouldPush = true
-              logger.debug(logger.green(`根据以上判断，shoulPush 为 true，将对该动态纳入当天推送列表：https://t.bilibili.com/${dynamic.id_str}\n`))
-            } else logger.debug(logger.yellow(`根据以上判断，shoulPush 为 false，跳过该动态：https://t.bilibili.com/${dynamic.id_str}\n`))
+              logger.trace(logger.green(`根据以上判断，shoulPush 为 true，将对该动态纳入当天推送列表：https://t.bilibili.com/${dynamic.id_str}\n`))
+            } else logger.trace(logger.yellow(`根据以上判断，shoulPush 为 false，跳过该动态：https://t.bilibili.com/${dynamic.id_str}\n`))
             // 如果 shouldPush 为 true，或该作品距现在的时间差小于一天，则将该动态添加到 willbepushlist 中
             if (timeDifference < 86400000 || shouldPush) {
               // 将群组ID和机器人ID分离

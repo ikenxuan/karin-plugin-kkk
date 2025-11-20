@@ -17,6 +17,14 @@ const reg = {
 
 // 包装抖音处理函数
 const handleDouyin = wrapWithErrorHandler(async (e) => {
+  // logger.debug('debug')
+  // logger.trace('trace')
+  // logger.info('info')
+  // logger.warn('warn')
+  // logger.mark('mark')
+  // logger.error('error')
+  // logger.fatal('ftatal')
+
   const url = String(e.msg.match(/(http|https):\/\/.*\.(douyin|iesdouyin)\.com\/[^ ]+/g))
   const iddata = await getDouyinID(e, url)
   await new DouYin(e, iddata).DouyinHandler(iddata)

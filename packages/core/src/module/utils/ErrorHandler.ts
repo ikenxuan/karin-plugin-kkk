@@ -1,11 +1,11 @@
 import util from 'node:util'
 
 import karin, { config, logger, type Message, segment } from 'node-karin'
+import { ApiErrorProps } from 'template/types/ohter/handlerError'
 
 import { formatBuildTime, getBuildMetadata, Render, Root } from '@/module'
 
 import { Config } from './Config'
-import { LogCollector } from './LogCollector'
 
 /**
  * 错误处理装饰器选项
@@ -14,7 +14,61 @@ type ErrorHandlerOptions = {
   /** 业务名称，用于错误报告 */
   businessName: string
   /** 自定义错误处理函数 */
-  customErrorHandler?: (error: Error, logs: string) => Promise<void>
+  customErrorHandler?: (error: Error, logs: ApiErrorProps['data']['logs']) => Promise<void>
+}
+
+/**
+ * 解析日志字符串为结构化对象
+ * @param logs 原始日志字符串数组
+ * @returns 结构化日志对象数组（过滤掉 TRAC 等级）
+ */
+const parseLogsToStructured = (logs: string[]) => {
+  // 移除 ^ 和 $ 锚点，使用 dotall 模式匹配多行内容
+  const logRegex = /\[(\d{2}:\d{2}:\d{2}\.\d{3})\]\[([A-Z]{4})\]\s(.+)/s
+  
+  return logs
+    .map(log => {
+      const match = log.match(logRegex)
+      if (match) {
+        return {
+          timestamp: match[1],
+          level: match[2] as 'TRAC' | 'DEBU' | 'MARK' | 'INFO' | 'ERRO' | 'WARN' | 'FATA',
+          message: match[3],
+          raw: log
+        }
+      }
+      // 如果无法解析，返回默认格式
+      return {
+        timestamp: '',
+        level: 'INFO' as const,
+        message: log,
+        raw: log
+      }
+    })
+    .filter(log => log.level !== 'TRAC') // 过滤掉 TRAC 等级的日志
+}
+
+/**
+ * 函数式错误处理包装器
+ * @param fn 要包装的函数
+ * @param options 错误处理选项
+ * @returns 包装后的函数
+ */
+export const wrapWithErrorHandler = <T extends (...args: any[]) => Promise<any>> (
+  fn: T,
+  options: ErrorHandlerOptions
+): T => {
+  return (async (...args: any[]) => {
+    return await logger.runContext(async () => {
+      return await fn(...args)
+        .catch(async (error) => {
+          const result = logger.getContextLogs()
+          const structuredLogs = parseLogsToStructured(result)
+          await handleBusinessError(error as Error, options, structuredLogs, args[0] as Message)
+          return error
+        })
+    })
+  }) as T
 }
 
 /**
@@ -32,86 +86,6 @@ const statBotId = (pushlist: any) => {
 }
 
 /**
- * 通用错误处理装饰器
- * @param options 错误处理选项
- * @returns 装饰器函数
- */
-export const withErrorHandler = (options: ErrorHandlerOptions) => {
-  return <T extends (...args: any[]) => Promise<any>>(
-    descriptor: TypedPropertyDescriptor<T>
-  ) => {
-    const originalMethod = descriptor.value!
-    
-    descriptor.value = async function (this: any, ...args: any[]) {
-      const logCollector = new LogCollector()
-      
-      try {
-        // 开始收集日志
-        logCollector.startCollecting()
-        
-        // 执行原始方法
-        const result = await originalMethod.apply(this, args)
-        
-        return result
-      } catch (error) {
-        // 获取收集到的日志
-        const collectedLogs = logCollector.getFormattedLogs()
-        
-        // 处理错误
-        await handleBusinessError(error as Error, options, collectedLogs, args[0] as Message)
-        
-        // 重新抛出错误
-        throw error
-      } finally {
-        // 停止日志收集
-        logCollector.stopCollecting()
-      }
-    } as T
-    
-    return descriptor
-  }
-}
-
-/**
- * 函数式错误处理包装器
- * @param fn 要包装的函数
- * @param options 错误处理选项
- * @returns 包装后的函数
- */
-export const wrapWithErrorHandler = <T extends (...args: any[]) => Promise<any>>(
-  fn: T,
-  options: ErrorHandlerOptions
-): T => {
-  return (async (...args: any[]) => {
-    const logCollector = new LogCollector()
-    
-    try {
-      // 开始收集日志
-      logCollector.startCollecting()
-      
-      // 执行原始函数
-      const result = await fn(...args)
-      
-      return result
-    } catch (error) {
-      // 获取收集到的日志
-      const collectedLogs = logCollector.getFormattedLogs()
-      
-      // 只有配置了发送目标才处理错误
-      if (Config.app.errorLogSendTo && Config.app.errorLogSendTo.length > 0) {
-        await handleBusinessError(error as Error, options, collectedLogs, args[0] as Message)
-      }
-      
-      // 重新抛出错误
-      throw error
-    } finally {
-      // 停止日志收集
-      logCollector.stopCollecting()
-    }
-  }) as T
-}
-
-/**
  * 处理业务错误的核心函数
  * @param error 错误对象
  * @param options 错误处理选项
@@ -121,12 +95,12 @@ export const wrapWithErrorHandler = <T extends (...args: any[]) => Promise<any>>
 const handleBusinessError = async (
   error: Error,
   options: ErrorHandlerOptions,
-  logs: string,
+  logs: ApiErrorProps['data']['logs'],
   event?: Message
 ) => {
   try {
     logger.debug(`[ErrorHandler] 开始处理业务错误: ${options.businessName}`)
-    
+
     // 获取触发命令信息
     const triggerCommand = event?.msg || '未知命令或处于非消息环境'
     const buildMetadata = getBuildMetadata()
@@ -161,7 +135,7 @@ const handleBusinessError = async (
       commitHash: buildMetadata?.commitHash,
       adapterInfo: adapterInfo
     })
-    
+
     logger.debug('[ErrorHandler] 错误页面渲染完成')
 
     // 发送给触发者
@@ -234,7 +208,7 @@ const handleBusinessError = async (
         logger.error(`[ErrorHandler] 自定义错误处理失败: ${customError}`)
       }
     }
-    
+
     logger.debug('[ErrorHandler] 业务错误处理完成')
   } catch (handlerError) {
     logger.error(`[ErrorHandler] 错误处理器本身发生错误: ${handlerError}`)

@@ -312,7 +312,7 @@ export class DouYinpush extends Base {
         // 处理视频列表
         if (videolist.data.aweme_list.length > 0) {
           for (const aweme of videolist.data.aweme_list) {
-            logger.debug(`开始处理作品：${aweme.aweme_id}`)
+            logger.debug(`[抖音推送] 开始处理 ${aweme.aweme_id} 的作品列表`)
             const now = Date.now()
             const createTime = aweme.create_time * 1000
             const timeDifference = now - createTime // 时间差，单位毫秒
@@ -322,7 +322,7 @@ export class DouYinpush extends Base {
             const timeDiffSeconds = Math.round(timeDifference / 1000)
             const timeDiffHours = Math.round((timeDifference / 1000 / 60 / 60) * 100) / 100 // 保留2位小数
 
-            logger.debug(`
+            logger.trace(`
               前期获取该作品基本信息：
               作者：${aweme.author.nickname}
               作品ID：${aweme.aweme_id}

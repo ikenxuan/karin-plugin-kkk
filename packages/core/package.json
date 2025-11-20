@@ -22,14 +22,14 @@
       "default": "./lib/index.js"
     },
     "./template": {
-      "types": "./lib/core_chunk/template.d.ts",
+      "types": "./lib/core_chunk/template.d.mts",
       "import": "./lib/core_chunk/template.js"
     }
   },
   "typesVersions": {
     "*": {
       "template": [
-        "./lib/core_chunk/template.d.ts"
+        "./lib/core_chunk/template.d.mts"
       ]
     }
   },
@@ -69,7 +69,7 @@
     "http-proxy-middleware": "3.0.5",
     "qrcode": "^1.5.4",
     "template": "workspace:*",
-    "tsdown": "^0.15.8"
+    "tsdown": "^0.16.5"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -98,5 +98,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2025-11-15T10:01:04.440Z"
+  "timestamp": "2025-11-20T06:24:36.228Z"
 }

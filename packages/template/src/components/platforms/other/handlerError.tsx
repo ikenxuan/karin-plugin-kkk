@@ -4,7 +4,7 @@ import React from 'react'
 import { FaBug, FaCodeBranch, FaCube, FaLayerGroup } from 'react-icons/fa6'
 import { MdAccessTime } from 'react-icons/md'
 
-import { type ApiErrorProps, type BusinessError } from '../../../types/ohter/handlerError'
+import { type ApiErrorProps, type BusinessError, type LogEntry, type LogLevel } from '../../../types/ohter/handlerError'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
@@ -40,77 +40,49 @@ const generateBugPositions = (count: number) => {
 }
 
 /**
- * 解析ANSI颜色代码并转换为内联样式，保留换行符和空格格式
- * @param text 包含ANSI颜色代码的文本
- * @returns 解析后的JSX元素数组
+ * 获取日志等级对应的颜色
+ * @param level 日志等级
+ * @returns 颜色值
  */
-const parseAnsiColors = (text: string): React.ReactNode[] => {
-  // ANSI颜色代码映射 - 使用实际颜色值而非Tailwind类
-  const colorMap: { [key: string]: string } = {
-    '30': '#000000',
-    '31': '#f31260', // danger
-    '32': '#17c964', // success
-    '33': '#f5a524', // warning
-    '34': '#006FEE', // primary
-    '35': '#7828c8', // secondary
-    '36': '#45d4ff',
-    '37': '#d4d4d8',
-    '90': '#a1a1aa',
-    '91': '#ff6090',
-    '92': '#7ee7b7',
-    '93': '#fbbf24',
-    '94': '#3b9eff',
-    '95': '#a855f7',
-    '96': '#67e8f9',
-    '97': '#f4f4f5'
-  }
-
-  const ansiRegex = /\u001b\[(\d+)m/g
-  const parts: React.ReactNode[] = []
-  let lastIndex = 0
-  let currentColor = ''
-  let match
-
-  while ((match = ansiRegex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      const textPart = text.slice(lastIndex, match.index)
-      const formattedText = textPart.replace(/\\n/g, '\n')
-      if (currentColor) {
-        parts.push(
-          <span key={`${lastIndex}-${match.index}`} style={{ color: currentColor }}>
-            {formattedText}
-          </span>
-        )
-      } else {
-        parts.push(formattedText)
-      }
-    }
-
-    const colorCode = match[1]
-    if (colorCode === '39' || colorCode === '0') {
-      currentColor = ''
-    } else if (colorMap[colorCode]) {
-      currentColor = colorMap[colorCode]
-    }
-
-    lastIndex = ansiRegex.lastIndex
-  }
-
-  if (lastIndex < text.length) {
-    const remainingText = text.slice(lastIndex)
-    const formattedText = remainingText.replace(/\\n/g, '\n')
-    if (currentColor) {
-      parts.push(
-        <span key={`${lastIndex}-end`} style={{ color: currentColor }}>
-          {formattedText}
-        </span>
-      )
-    } else {
-      parts.push(formattedText)
+const getLogLevelColors = (level: LogLevel): { primary: string; secondary: string; bg: string } => {
+  const colorMap: Record<LogLevel, { primary: string; secondary: string; bg: string }> = {
+    'TRAC': { 
+      primary: '#71717a', 
+      secondary: '#a1a1aa',
+      bg: 'rgba(113, 113, 122, 0.08)'
+    },
+    'DEBU': { 
+      primary: '#0ea5e9', 
+      secondary: '#7dd3fc',
+      bg: 'rgba(14, 165, 233, 0.08)'
+    },
+    'MARK': { 
+      primary: '#7c3aed', 
+      secondary: '#a78bfa',
+      bg: 'rgba(124, 58, 237, 0.08)'
+    },
+    'INFO': { 
+      primary: '#059669', 
+      secondary: '#34d399',
+      bg: 'rgba(5, 150, 105, 0.08)'
+    },
+    'WARN': { 
+      primary: '#d97706', 
+      secondary: '#fbbf24',
+      bg: 'rgba(217, 119, 6, 0.08)'
+    },
+    'ERRO': { 
+      primary: '#dc2626', 
+      secondary: '#f87171',
+      bg: 'rgba(220, 38, 38, 0.08)'
+    },
+    'FATA': { 
+      primary: '#991b1b', 
+      secondary: '#dc2626',
+      bg: 'rgba(153, 27, 27, 0.08)'
     }
   }
-
-  return parts.length > 0 ? parts : [text.replace(/\\n/g, '\n')]
+  return colorMap[level] || { primary: '#71717a', secondary: '#a1a1aa', bg: 'rgba(113, 113, 122, 0.08)' }
 }
 
 /**
@@ -174,7 +146,7 @@ const ErrorHeader: React.FC<{
  */
 const BusinessErrorDetails: React.FC<{
   error: BusinessError
-  logs?: string | string[]
+  logs?: LogEntry[]
   triggerCommand?: string
 }> = ({ error, logs, triggerCommand }) => {
   return (
@@ -209,34 +181,44 @@ const BusinessErrorDetails: React.FC<{
         </div>
 
         {/* 相关日志 */}
-        {logs && (typeof logs === 'string' ? logs.length > 0 : logs.length > 0) && (
+        {logs && logs.length > 0 && (
           <div className='border-l-2 border-default-200 pl-8'>
-            <h3 className='flex items-center gap-3 mb-6 text-3xl font-medium text-foreground'>
+            <h3 className='flex items-center gap-3 mb-4 text-3xl font-medium text-foreground'>
               <FileText className='w-8 h-8' />
-              调用解析库
+              相关执行日志
             </h3>
-            <div className='p-8 rounded-lg border border-default-200'>
-              <div className='space-y-4'>
-                {typeof logs === 'string' ? (
-                  logs.split('\n\n').map((logSection, index) => {
-                    const parsedLog = parseAnsiColors(logSection)
-                    return (
-                      <div key={index} className='font-mono text-xl leading-relaxed whitespace-pre-wrap break-all select-text'>
-                        {parsedLog.length > 0 ? parsedLog : logSection}
-                      </div>
-                    )
-                  })
-                ) : (
-                  logs.map((log, index) => {
-                    const parsedLog = parseAnsiColors(log)
-                    return (
-                      <div key={index} className='font-mono text-xl leading-relaxed whitespace-pre-wrap break-all select-text'>
-                        {parsedLog.length > 0 ? parsedLog : log}
-                      </div>
-                    )
-                  })
-                )}
-              </div>
+            <div className='space-y-2'>
+              {logs.map((log, index) => {
+                const colors = getLogLevelColors(log.level)
+                return (
+                  <div 
+                    key={index} 
+                    className='font-mono text-xl leading-snug whitespace-pre-wrap break-all select-text px-4 py-3 rounded-lg backdrop-blur-sm border'
+                    style={{
+                      borderLeft: `4px solid ${colors.primary}`,
+                      borderColor: `${colors.primary}20`,
+                      backgroundColor: colors.bg
+                    }}
+                  >
+                    <div className='flex items-center gap-3 mb-1.5'>
+                      <span 
+                        className='inline-flex items-center justify-center px-3 py-1 rounded-md font-black text-white text-sm tracking-widest uppercase'
+                        style={{ 
+                          backgroundColor: colors.primary
+                        }}
+                      >
+                        {log.level}
+                      </span>
+                      <span className='text-default-400 text-base font-medium'>
+                        {log.timestamp}
+                      </span>
+                    </div>
+                    <div className='text-foreground/90'>
+                      {log.message}
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         )}

@@ -2,15 +2,68 @@
   "type": "business_error",
   "platform": "system",
   "error": {
-    "message": "Cannot read properties of undefined (reading 'aweme_detail')",
-    "name": "TypeError",
-    "stack": "TypeError: Cannot read properties of undefined (reading 'aweme_detail')\n    at DouYin.RESOURCES (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\platform\\douyin\\douyin.ts:78:41)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async wrapWithErrorHandler.businessName (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\apps\\tools.ts:20:3)\n    at async Object.fnc (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\module\\utils\\ErrorHandler.ts:97:22)\n    at async groupsCmd (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@1.10.23\\node_modules\\node-karin\\dist\\index.mjs:14167:26)\n    at async groupsDeal (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@1.10.23\\node_modules\\node-karin\\dist\\index.mjs:14135:24)",
+    "message": "抖音数据获取失败",
+    "name": "Error",
+    "stack": "Error: 抖音数据获取失败\n    at Proxy.<anonymous> (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\module\\utils\\amagiClient.ts:51:27)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async DouYin.DouyinHandler (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\platform\\douyin\\douyin.ts:69:27)\n    at async wrapWithErrorHandler.businessName (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\apps\\tools.ts:30:3)\n    at async <anonymous> (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\module\\utils\\ErrorHandler.ts:60:14)\n    at async Object.fnc (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\module\\utils\\ErrorHandler.ts:59:12)\n    at async groupsCmd (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@https+++pkg.pr.new+node-karin@d4dbcba\\node_modules\\node-karin\\dist\\index.mjs:14505:26)\n    at async groupsDeal (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@https+++pkg.pr.new+node-karin@d4dbcba\\node_modules\\node-karin\\dist\\index.mjs:14473:24) {\n  code: 500,\n  error: {\n    errorDescription: '获取响应数据失败！接口返回内容为空，你的抖音ck可能已经失效！',\n    requestType: '聚合解析',\n    requestUrl: 'https://www.douyin.com/aweme/v1/web/aweme/detail/?device_platform=webapp&aid=6383&channel=channel_pc_web&pc_client_type=1&cookie_enabled=true&browser_language=zh-CN&browser_platform=Win32&browser_name=Chrome&browser_version=138.0.0.0&browser_online=true&engine_name=Blink&engine_version=138.0.0.0&os_name=Windows&os_version=10&cpu_core_num=16&device_memory=8&platform=PC&downlink=10&effective_type=4g&msToken=4upZlahSM0SiLOoKzXZOBTWJbA5rNxpfw6OHhH0I9XTd6HtJfzJkWHjh2qjOBYCCrJl0Oz8R9YK1ILj781qlqyyIYb3jRLzhwOuKuDV3vqBbyDLZjyrUIh2SqIW2cfAT95wkBZfF1sPGzcXoWcaWISEYyC0EChwLfAf8BZ4gp1OVrQYS3g13KgA8&verifyFp=verify_mi6zd9i1_ZQq6FpIN_a4zF_4hYq_Bwbt_vPyqGkqqq1dD&fp=verify_mi6zd9i1_ZQq6FpIN_a4zF_4hYq_Bwbt_vPyqGkqqq1dD&aweme_id=7574489193649409322&update_version_code=170400&version_code=190500&version_name=19.5.0&screen_width=2328&screen_height=1310&round_trip_time=150&webid=7351848354471872041&a_bogus=EfRhMR0DmEVigDW65vKLfY3q61a3YQqD0trEMD2fDx3tyg39HMPw9exod/iv22fjiT/QIeYjy4hbT3ohrQ2y8qwf9W0L/25gsDSkKl12so0j53inCLf/E0iE5hsAtFH8svr4iKi8owICSYyhldAJ5kIlO62-zo0/96g='\n  }\n}",
     "businessName": "抖音视频解析"
   },
   "method": "抖音视频解析",
-  "timestamp": "2025-09-17T13:58:55.228Z",
-  "logs": "[2025-09-17 13:58:55] [amagi] [WARN] \n      获取响应数据失败！原因：\u001b[33m接口返回内容为空，你的抖音ck可能已经失效！\u001b[39m\n      请求类型：「聚合解析」\n      请求URL：https://www.douyin.com/aweme/v1/web/aweme/detail/?device_platform=webapp&aid=6383&channel=channel_pc_web&pc_client_type=1&cookie_enabled=true&browser_language=zh-CN&browser_platform=Win32&browser_name=Chrome&browser_version=138.0.0.0&browser_online=true&engine_name=Blink&engine_version=138.0.0.0&os_name=Windows&os_version=10&cpu_core_num=16&device_memory=8&platform=PC&downlink=10&effective_type=4g&msToken=ERRYfX61HY9pEoaKRnscUQYQ7cRKnUT7VAQ8G6oitgFqfv9YiAguExgkUJWzLQShJpDRH9mN7WtOIt5BUMaGi2N18iFZX8CLUtOYYesdRyvrrJL02ZZ1&verifyFp=verify_mfo1qezy_V3uNTJfx_p63u_4Znd_ADc8_PBMDhoSCpwOx&fp=verify_mfo1qezy_V3uNTJfx_p63u_4Znd_ADc8_PBMDhoSCpwOx&aweme_id=7550278098907548974&update_version_code=170400&version_code=190500&version_name=19.5.0&screen_width=2328&screen_height=1310&round_trip_time=150&webid=7351848354471872041&a_bogus=OXWhMRz6diIPvDW65U/LfY3q6lZ3YQoB0trEMD2fld3t5y39HMYn9exojQ0vYaWji4/sIeYjy4hbT3ohrQ2y8qwf9W0L/25gsDSkKl12so0j53inCLf/E0iE5hsAtFH8svr4iKi8owICSYyhldAJ5kIlO62-zo0/9-f=\n      \n\n[2025-09-17 13:58:55] [amagi] [WARN] \n      获取响应数据失败！原因：\u001b[33m接口返回内容为空，你的抖音ck可能已经失效！\u001b[39m\n      请求类型：「评论数据」\n      请求URL：https://www.douyin.com/aweme/v1/web/comment/list/?device_platform=webapp&aid=6383&channel=channel_pc_web&pc_client_type=1&cookie_enabled=true&browser_language=zh-CN&browser_platform=Win32&browser_name=Chrome&browser_version=138.0.0.0&browser_online=true&engine_name=Blink&engine_version=138.0.0.0&os_name=Windows&os_version=10&cpu_core_num=16&device_memory=8&platform=PC&downlink=10&effective_type=4g&msToken=bxDk72z7YY2zYcQ9H0tyVVB5swSeahveADBgNOqRGD8wOFR15QpqTQWJokIWUKomtPjwoJLcz6BzF7YFlIdTHNQFWFkgQYxSTfpGNmTqNWbmvpnHGb79&verifyFp=verify_mfo1qezy_V3uNTJfx_p63u_4Znd_ADc8_PBMDhoSCpwOx&fp=verify_mfo1qezy_V3uNTJfx_p63u_4Znd_ADc8_PBMDhoSCpwOx&aweme_id=7550278098907548974&cursor=0&count=5&item_type=0&insert_ids=&whale_cut_token=&cut_version=1&rcFT=&version_code=170400&version_name=17.4.0&screen_width=1552&screen_height=970&round_trip_time=50&a_bogus=mXRM/dLfDkdpvD665U/LfY3q6513YQoB0trEMD2fEd3t5y39HMOo9exojQ0vYnfji4/sIeYjy4hbT3ohrQ2y8qwf9W0L/25gsDSkKl12so0j53inCLf/E0iE5hsAtFH8svr4iKi8owICSYyhldAJ5kIlO62-zo0/9vu=\n      ",
-  "triggerCommand": "4.84 这个视频不错👍复制打开抖音👀广州地铁VS深圳地铁，线网强度对比 # 广州地铁 ... https://v.douyin.com/bkz7EpeBRnA/ Zmq:/ f@B.tR 08/14",
+  "timestamp": "2025-11-20T05:18:56.417Z",
+  "logs": [
+    {
+      "timestamp": "13:18:28.968",
+      "level": "DEBU",
+      "message": "debug",
+      "raw": "[13:18:28.968][DEBU] debug"
+    },
+    {
+      "timestamp": "13:18:28.968",
+      "level": "TRAC",
+      "message": "trace",
+      "raw": "[13:18:28.968][TRAC] trace"
+    },
+    {
+      "timestamp": "13:18:28.968",
+      "level": "INFO",
+      "message": "info",
+      "raw": "[13:18:28.968][INFO] info"
+    },
+    {
+      "timestamp": "13:18:28.968",
+      "level": "WARN",
+      "message": "warn",
+      "raw": "[13:18:28.968][WARN] warn"
+    },
+    {
+      "timestamp": "13:18:28.968",
+      "level": "MARK",
+      "message": "mark",
+      "raw": "[13:18:28.968][MARK] mark"
+    },
+    {
+      "timestamp": "13:18:28.968",
+      "level": "ERRO",
+      "message": "error",
+      "raw": "[13:18:28.968][ERRO] error"
+    },
+    {
+      "timestamp": "13:18:28.969",
+      "level": "FATA",
+      "message": "ftatal",
+      "raw": "[13:18:28.969][FATA] ftatal"
+    }
+  ],
+  "triggerCommand": "9.76 04/08 rre:/ a@A.TY 月之三版本怎么成为了愚人众执行官团建？ # 原神空月之歌# 提瓦特冒险札记 # 原神月之三版本前瞻直播 # 原神少女 # 杜林  https://v.douyin.com/U0khwy304_8/ 复制此链接，打开Dou音搜索，直接观看视频！",
   "frameworkVersion": "1.12.2",
-  "pluginVersion": "2.8.0-beta.114514"
+  "pluginVersion": "2.11.6",
+  "buildTime": "2025年11月20日 11:35",
+  "commitHash": "3eb5649203b63abf3efe3efdfed40b92fc9406c5",
+  "adapterInfo": {
+    "name": "NapCat.Onebot",
+    "version": "v4.9.70",
+    "platform": "qq",
+    "protocol": "napcat",
+    "standard": "onebot11"
+  },
+  "useDarkTheme": false
 }
