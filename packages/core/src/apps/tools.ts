@@ -25,6 +25,7 @@ const handleDouyin = wrapWithErrorHandler(async (e) => {
   // logger.error('error')
   // logger.fatal('ftatal')
 
+  // throw Error('泥嚎')
   const url = String(e.msg.match(/(http|https):\/\/.*\.(douyin|iesdouyin)\.com\/[^ ]+/g))
   const iddata = await getDouyinID(e, url)
   await new DouYin(e, iddata).DouyinHandler(iddata)

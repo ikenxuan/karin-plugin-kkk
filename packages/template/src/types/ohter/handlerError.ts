@@ -103,6 +103,8 @@ export interface ApiErrorProps extends BaseComponentProps {
     commitHash?: string
     /** 适配器信息 */
     adapterInfo?: AdapterInfo
+    /** Amagi 库版本 */
+    amagiVersion?: string
   }
   /** 分享链接 */
   qrCodeDataUrl: string

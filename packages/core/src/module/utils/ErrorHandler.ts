@@ -1,5 +1,6 @@
 import util from 'node:util'
 
+import amagi from '@ikenxuan/amagi'
 import karin, { config, logger, type Message, segment } from 'node-karin'
 import { ApiErrorProps } from 'template/types/ohter/handlerError'
 
@@ -141,7 +142,8 @@ const handleBusinessError = async (
       pluginVersion: Root.pluginVersion,
       buildTime: buildMetadata?.buildTime ? formatBuildTime(buildMetadata.buildTime) : undefined,
       commitHash: buildMetadata?.commitHash,
-      adapterInfo: adapterInfo
+      adapterInfo: adapterInfo,
+      amagiVersion: amagi.version
     })
 
     logger.debug('[ErrorHandler] 错误页面渲染完成')
@@ -161,18 +163,25 @@ const handleBusinessError = async (
     if (Config.app.errorLogSendTo.some(item => item === 'master')) {
       try {
         logger.debug('[ErrorHandler] 正在发送错误消息给主人...')
-        const botId = statBotId(Config.pushlist)
         const list = config.master()
         let master = list[0]
         if (master === 'console') {
           master = list[1]
         }
 
-        // 选择一个可用的机器人ID
-        const selectedBotId = botId.douyin.botId || botId.bilibili.botId || ''
+        // 判断是否为推送任务
+        const isPushTask = (event && Object.keys(event).length === 0) || options.businessName.includes('推送')
 
-        // 判断是否为推送任务（没有event或者businessName包含"推送"）
-        const isPushTask = !event || options.businessName.includes('推送')
+        // 选择一个可用的机器人ID
+        let selectedBotId = ''
+        if (isPushTask) {
+          // 推送任务场景：从推送列表中查找可用的机器人
+          const botId = statBotId(Config.pushlist)
+          selectedBotId = botId.douyin.botId || botId.bilibili.botId || ''
+        } else {
+          // 消息场景：直接使用event中的机器人ID
+          selectedBotId = event?.bot?.selfId || ''
+        }
 
         if (selectedBotId && master) {
           if (isPushTask) {

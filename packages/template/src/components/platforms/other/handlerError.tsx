@@ -2,7 +2,7 @@ import { Chip } from '@heroui/react'
 import AnsiToHtml from 'ansi-to-html'
 import { AlertCircle, Clock, FileText, Plug2, Terminal } from 'lucide-react'
 import React from 'react'
-import { FaBug, FaCodeBranch, FaCube, FaLayerGroup } from 'react-icons/fa6'
+import { FaBug, FaCodeBranch } from 'react-icons/fa6'
 import { MdAccessTime } from 'react-icons/md'
 
 import { type ApiErrorProps, type BusinessError, type LogEntry, type LogLevel } from '../../../types/ohter/handlerError'
@@ -121,6 +121,36 @@ const getLogLevelTheme = (level: LogLevel): {
 }
 
 /**
+ * 适配器协议实现 Logo 配置映射
+ */
+const ADAPTER_LOGO_MAP: Record<string, string> = {
+  napcat: '/image/other/handlerError/napcat.webp',
+  lagrange: '/image/other/handlerError/lagrange.webp',
+  chronocat: '/image/other/handlerError/chronocat.svg',
+  llonebot: '/image/other/handlerError/llonebot.webp',
+  lltwobot: '/image/other/handlerError/llonebot.webp',
+  conwechat: '/image/other/handlerError/conwechat.webp',
+  gocq: '/image/other/handlerError/gocq-http.webp'
+}
+
+/**
+ * 根据适配器名称获取对应的 Logo 元素
+ * @param adapterName 适配器名称
+ * @returns Logo React 元素
+ */
+const getAdapterLogo = (adapterName: string): React.ReactNode => {
+  const nameLower = adapterName.toLowerCase()
+  
+  for (const [key, logoPath] of Object.entries(ADAPTER_LOGO_MAP)) {
+    if (nameLower.includes(key)) {
+      return <img src={logoPath} className='w-10 h-auto' alt={adapterName} />
+    }
+  }
+  
+  return <Plug2 className='w-9 h-9 text-secondary' />
+}
+
+/**
  * 错误头部组件
  * @param props 组件属性
  * @returns JSX元素
@@ -139,7 +169,7 @@ const ErrorHeader: React.FC<{
       <div className='border-l-4 border-danger pl-12'>
         <div className='flex items-start gap-6 mb-10'>
           {/* <AlertCircle className='w-16 h-16 text-danger mt-2' /> */}
-          <img className='w-30 h-auto' src="/image/流泪.png" />
+          <img className='w-30 h-auto' src="/image/other/handlerError/流泪.png" />
           <div className='flex-1'>
             <h1 className='text-8xl font-bold text-foreground mb-6'>
               哎呀！出错了 ~
@@ -229,11 +259,17 @@ const BusinessErrorDetails: React.FC<{
                 return (
                   <div 
                     key={index} 
-                    className={`relative rounded-lg border border-l-4 ${theme.bgClass} ${theme.borderClass}`}
+                    className={`relative rounded-lg border border-l-4 backdrop-blur-xs ${theme.bgClass} ${theme.borderClass}`}
                   >
-                    <div className='flex items-start gap-4 p-5'>
-                      {/* 左侧 */}
-                      <div className='flex-1 min-w-0 space-y-2'>
+                    {/* 日志等级 */}
+                    <div className='absolute top-3 right-3 pointer-events-none z-10'>
+                      <span className={`font-black text-6xl tracking-tight uppercase opacity-15 ${theme.textClass}`}>
+                        {log.level}
+                      </span>
+                    </div>
+
+                    <div className='p-5'>
+                      <div className='space-y-2'>
                         {/* 时间戳 */}
                         <div className='flex items-center gap-2'>
                           <Clock size={22} className={`flex-shrink-0 mb-1 ${theme.iconClass}`} />
@@ -247,13 +283,6 @@ const BusinessErrorDetails: React.FC<{
                           className='font-mono text-xl leading-relaxed whitespace-pre-wrap break-all select-text text-foreground'
                           dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(log.message) }}
                         />
-                      </div>
-
-                      {/* 右侧 */}
-                      <div className='flex-shrink-0 flex items-center'>
-                        <span className={`font-black text-6xl tracking-tight uppercase opacity-15 ${theme.textClass}`}>
-                          {log.level}
-                        </span>
                       </div>
                     </div>
                   </div>
@@ -274,7 +303,7 @@ const BusinessErrorDetails: React.FC<{
  */
 export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templateName'>> = (props) => {
   const { data } = props
-  const { type, platform, error, method, timestamp, logs, triggerCommand, frameworkVersion, pluginVersion, adapterInfo } = data
+  const { type, platform, error, method, timestamp, logs, triggerCommand, frameworkVersion, pluginVersion, adapterInfo, amagiVersion } = data
   const isBusinessError = type === 'business_error'
   const businessError = isBusinessError ? error as BusinessError : null
 
@@ -335,10 +364,13 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
         <div className='w-full max-w-[1440px] mx-auto px-20 py-16 space-y-8'>
           {/* 版本信息 - 重点突出 */}
           <div className='space-y-5'>
-            {/* 框架版本和插件版本 */}
-            <div className='flex items-center gap-12'>
+            {/* 框架版本、插件版本和 Amagi 版本 */}
+            <div className='flex items-center gap-12 flex-wrap'>
               <div className='flex items-center gap-4'>
-                <FaLayerGroup className='w-9 h-9 text-primary' />
+                <img
+                  src="/image/frame-logo.png"
+                  className='w-10 h-10'
+                />
                 <div>
                   <div className='text-2xl text-default-400'>框架版本</div>
                   <div className='text-4xl font-bold text-foreground'>{frameworkVersion}</div>
@@ -346,33 +378,47 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
               </div>
 
               <div className='flex items-center gap-4'>
-                <FaCube className='w-9 h-9 text-success' />
+                <img
+                  src="/image/logo.png"
+                  className='w-10 h-10'
+                />
                 <div>
                   <div className='text-2xl text-default-400'>插件版本</div>
                   <div className='text-4xl font-bold text-foreground'>{pluginVersion}</div>
                 </div>
               </div>
+
+              {amagiVersion && (
+                <div className='flex items-center gap-4'>
+                  <img 
+                    src="/image/other/handlerError/cxk.png"
+                    alt="泥干嘛哈哈哎呦~"
+                    className='w-11 h-10'
+                  />
+                  <div>
+                    <div className='text-2xl text-default-400'>解析库版本</div>
+                    <div className='text-4xl font-bold text-foreground'>{amagiVersion}</div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* 适配器信息 */}
             {adapterInfo && (
               <div className='flex items-center gap-4'>
-                <Plug2 className='w-9 h-9 text-secondary' />
+                {getAdapterLogo(adapterInfo.name)}
                 <div>
-                  <div className='text-2xl text-default-400'>适配器</div>
-                  <div className='text-4xl font-bold text-foreground'>
-                    <span className='relative inline-block pr-24'>
-                      {adapterInfo.name}
-                      <Chip 
-                        color='secondary' 
-                        variant='flat' 
-                        size='lg'
-                        className='absolute bottom-5 left-70 ml-2 align-super scale-120'
-                      >
-                        <span className='font-bold'>v{adapterInfo.version}</span>
-                      </Chip>
-                    </span>
+                  <div className='text-2xl text-default-400 inline-flex items-center gap-2'>
+                    <span>适配器名称</span>
+                    <Chip 
+                      color='secondary' 
+                      variant='flat' 
+                      size='md'
+                    >
+                      <span className='font-bold'>{adapterInfo.version.startsWith('v') ? adapterInfo.version : `v${adapterInfo.version}`}</span>
+                    </Chip>
                   </div>
+                  <div className='text-4xl font-bold text-foreground'>{adapterInfo.name}</div>
                 </div>
               </div>
             )}

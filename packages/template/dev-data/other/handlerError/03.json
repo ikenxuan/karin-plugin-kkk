@@ -2,17 +2,56 @@
   "type": "business_error",
   "platform": "system",
   "error": {
-    "stack": "测试",
-    "businessName": "B站视频解析"
+    "message": "泥嚎",
+    "name": "Error",
+    "stack": "Error: 泥嚎\n    at wrapWithErrorHandler.businessName (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\apps\\tools.ts:28:9)\n    at <anonymous> (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\module\\utils\\ErrorHandler.ts:64:20)\n    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n    at Object.run (file:///D:/GitHub/karin-plugin-kkk/node_modules/.pnpm/@karinjs+log4js@1.5.2/node_modules/@karinjs/log4js/dist/index.mjs:3273:30)\n    at Object.fnc (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\module\\utils\\ErrorHandler.ts:68:28)\n    at groupsCmd (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@https+++pkg.pr.new+node-karin@4b03a21\\node_modules\\node-karin\\dist\\index.mjs:14505:39)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async groupsDeal (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@https+++pkg.pr.new+node-karin@4b03a21\\node_modules\\node-karin\\dist\\index.mjs:14473:24)",
+    "businessName": "抖音视频解析"
   },
-  "method": "B站视频解析",
-  "timestamp": "2025-11-11T14:55:36.906Z",
-  "logs": "",
-  "triggerCommand": "av115286988625960",
+  "method": "抖音视频解析",
+  "timestamp": "2025-11-20T16:34:38.657Z",
+  "logs": [
+    {
+      "timestamp": "00:34:35.376",
+      "level": "DEBU",
+      "message": "debug",
+      "raw": "[00:34:35.376][DEBU] debug"
+    },
+    {
+      "timestamp": "00:34:35.376",
+      "level": "INFO",
+      "message": "info",
+      "raw": "[00:34:35.376][INFO] info"
+    },
+    {
+      "timestamp": "00:34:35.376",
+      "level": "WARN",
+      "message": "warn",
+      "raw": "[00:34:35.376][WARN] warn"
+    },
+    {
+      "timestamp": "00:34:35.377",
+      "level": "MARK",
+      "message": "mark",
+      "raw": "[00:34:35.377][MARK] mark"
+    },
+    {
+      "timestamp": "00:34:35.377",
+      "level": "ERRO",
+      "message": "error",
+      "raw": "[00:34:35.377][ERRO] error"
+    },
+    {
+      "timestamp": "00:34:35.377",
+      "level": "FATA",
+      "message": "ftatal",
+      "raw": "[00:34:35.377][FATA] ftatal"
+    }
+  ],
+  "triggerCommand": "7.48 E@H.vF 10/09 qRX:/ 壁咚流琴 自用新目押方法成功率极高 # 原神空月之歌# 和我一起玩原神吧# 原神挪德卡莱# 奈芙尔 # 原神剧情解析  https://v.douyin.com/jKmsd2rbchQ/ 复制此链接，打开Dou音搜索，直接观看视频！",
   "frameworkVersion": "1.12.2",
-  "pluginVersion": "2.11.1",
-  "buildTime": "2025年11月11日 22:40",
-  "commitHash": "7a69caa7ff42d375735810c20ff058e04ba41a6a",
+  "pluginVersion": "2.11.6",
+  "buildTime": "2025年11月20日 23:37",
+  "commitHash": "0e8396092395437031effe65a42741b8afcf83af",
   "adapterInfo": {
     "name": "NapCat.Onebot",
     "version": "4.9.25",
@@ -20,5 +59,6 @@
     "protocol": "napcat",
     "standard": "onebot11"
   },
+  "amagiVersion": "5.8.1",
   "useDarkTheme": false
 }

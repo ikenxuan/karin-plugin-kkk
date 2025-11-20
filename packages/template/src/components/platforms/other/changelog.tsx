@@ -38,7 +38,7 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
               <div className="absolute inset-0 bg-black rounded-2xl opacity-50 blur-xl translate-y-6 -z-10"></div>
               
               {/* Banner 图片 */}
-              <img className="block relative rounded-2xl" src="/image/banner.webp" alt="横幅" />
+              <img className="block relative rounded-2xl" src="/image/other/changelog/banner.webp" alt="横幅" />
               
               {/* 版本信息叠加 */}
               <div className='absolute inset-0 flex flex-col left-50 bottom-50 items-center justify-center'>

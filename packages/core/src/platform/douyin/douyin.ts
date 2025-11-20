@@ -356,8 +356,7 @@ export class DouYin extends Base {
             message_id: this.e.messageId
           }
         )
-        throw Error('泥嚎')
-        // return true
+        return true
       }
 
       case 'user_dynamic': {  
