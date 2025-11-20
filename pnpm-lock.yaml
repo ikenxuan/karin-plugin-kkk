@@ -30,8 +30,8 @@ importers:
         specifier: 0.554.0
         version: 0.554.0(react@19.2.0)
       node-karin:
-        specifier: https://pkg.pr.new/node-karin@d4dbcba
-        version: https://pkg.pr.new/node-karin@d4dbcba
+        specifier: https://pkg.pr.new/node-karin@4b03a21
+        version: https://pkg.pr.new/node-karin@4b03a21
       react:
         specifier: 19.2.0
         version: 19.2.0
@@ -178,6 +178,9 @@ importers:
       '@shopify/draggable':
         specifier: ^1.1.4
         version: 1.1.4
+      ansi-to-html:
+        specifier: ^0.7.2
+        version: 0.7.2
       axios:
         specifier: 1.12.2
         version: 1.12.2(debug@4.4.3)
@@ -2002,8 +2005,8 @@ packages:
     resolution: {integrity: sha512-/35rg9EV6vIhVwG3GmQl5Bmm8/l2hooAWbizsaPawj2aBu+koioz8/Ser6wEPUkr8mEwPBMJ/R7ax94tiU5LOg==}
     engines: {node: '>=18'}
 
-  '@karinjs/log4js@1.5.1':
-    resolution: {integrity: sha512-MGKgCAIeJOyQdhRqvusyCCzGPGC3cloEC/V+3ZOxZBxfbuTwZh+yiOqz7r2ZVUPEpXkzV5OtKaoZ9yb7cKQ1GQ==}
+  '@karinjs/log4js@1.5.2':
+    resolution: {integrity: sha512-HMZmIYqHqL3fMkppNYWZ1TH1kPtHLZOuBwlsd/Mgr+Z2moaWbDQGm3EgO7u7gEIlckiWgj/apUs4WH8KfwlWfQ==}
     engines: {node: '>=18'}
 
   '@karinjs/moment@1.1.5':
@@ -4730,6 +4733,11 @@ packages:
   ansi-styles@6.2.3:
     resolution: {integrity: sha512-4Dj6M28JB+oAH8kFkTLUo+a2jwOFkuqb3yucU0CANcRRUbxS0cP0nZYCGjcc3BNXwRIsUVmDGgzawme7zvJHvg==}
     engines: {node: '>=12'}
+
+  ansi-to-html@0.7.2:
+    resolution: {integrity: sha512-v6MqmEpNlxF+POuyhKkidusCHWWkaLcGRURzivcU3I9tv7k4JVhFcnukrM5Rlk2rUywdZuzYAZ+kbZqWCnfN3g==}
+    engines: {node: '>=8.0.0'}
+    hasBin: true
 
   ansis@4.2.0:
     resolution: {integrity: sha512-HqZ5rWlFjGiV0tDm3UxxgNRqsOTniqoKZu0pIAfh7TZQMGuZK+hH0drySty0si0QXj1ieop4+SkSfPZBPPkHig==}
@@ -7497,8 +7505,8 @@ packages:
   node-addon-api@7.1.1:
     resolution: {integrity: sha512-5m3bsyrjFWE1xf7nz7YXdN4udnVtXK6/Yfgn5qnahL6bCkf2yKt4k3nuTKAtT4r3IG8JNR2ncsIMdZuAzJjHQQ==}
 
-  node-karin@https://pkg.pr.new/node-karin@d4dbcba:
-    resolution: {tarball: https://pkg.pr.new/node-karin@d4dbcba}
+  node-karin@https://pkg.pr.new/node-karin@4b03a21:
+    resolution: {tarball: https://pkg.pr.new/node-karin@4b03a21}
     version: 1.12.2
     engines: {node: '>=18'}
     hasBin: true
@@ -11811,7 +11819,7 @@ snapshots:
 
   '@karinjs/log4js@1.1.4': {}
 
-  '@karinjs/log4js@1.5.1': {}
+  '@karinjs/log4js@1.5.2': {}
 
   '@karinjs/moment@1.1.5': {}
 
@@ -14925,6 +14933,10 @@ snapshots:
       color-convert: 2.0.1
 
   ansi-styles@6.2.3: {}
+
+  ansi-to-html@0.7.2:
+    dependencies:
+      entities: 2.2.0
 
   ansis@4.2.0: {}
 
@@ -18125,7 +18137,7 @@ snapshots:
 
   node-addon-api@7.1.1: {}
 
-  node-karin@https://pkg.pr.new/node-karin@d4dbcba:
+  node-karin@https://pkg.pr.new/node-karin@4b03a21:
     dependencies:
       art-template: '@karinjs/art-template@1.1.0'
       axios: '@karinjs/axios@1.2.0'
@@ -18133,7 +18145,7 @@ snapshots:
       chokidar: 4.0.3
       express: '@karinjs/express@1.0.3'
       lodash: '@karinjs/lodash@1.1.1'
-      log4js: '@karinjs/log4js@1.5.1'
+      log4js: '@karinjs/log4js@1.5.2'
       moment: '@karinjs/moment@1.1.5'
       node-schedule: '@karinjs/node-schedule@1.0.0'
       redis: '@karinjs/redis@1.1.3'

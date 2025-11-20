@@ -1,4 +1,5 @@
-import { Chip, Code } from '@heroui/react'
+import { Chip } from '@heroui/react'
+import AnsiToHtml from 'ansi-to-html'
 import { AlertCircle, Clock, FileText, Plug2, Terminal } from 'lucide-react'
 import React from 'react'
 import { FaBug, FaCodeBranch, FaCube, FaLayerGroup } from 'react-icons/fa6'
@@ -6,6 +7,23 @@ import { MdAccessTime } from 'react-icons/md'
 
 import { type ApiErrorProps, type BusinessError, type LogEntry, type LogLevel } from '../../../types/ohter/handlerError'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
+
+/**
+ * ANSI 转 HTML 转换器实例
+ */
+const ansiConverter = new AnsiToHtml({
+  fg: 'text-default-900',
+  newline: false,
+  escapeXML: true,
+  stream: false
+})
+
+/**
+ * 将 ANSI 颜色代码转换为 HTML
+ */
+const convertAnsiToHtml = (text: string): string => {
+  return ansiConverter.toHtml(text)
+}
 
 /**
  * 使用种子生成伪随机数（确保每次渲染一致）
@@ -40,49 +58,66 @@ const generateBugPositions = (count: number) => {
 }
 
 /**
- * 获取日志等级对应的颜色
+ * 获取日志等级对应的主题色类名
  * @param level 日志等级
- * @returns 颜色值
+ * @returns 主题色类名配置
  */
-const getLogLevelColors = (level: LogLevel): { primary: string; secondary: string; bg: string } => {
-  const colorMap: Record<LogLevel, { primary: string; secondary: string; bg: string }> = {
+const getLogLevelTheme = (level: LogLevel): { 
+  bgClass: string
+  borderClass: string
+  textClass: string
+  iconClass: string
+} => {
+  const themeMap: Record<LogLevel, { 
+    bgClass: string
+    borderClass: string
+    textClass: string
+    iconClass: string
+  }> = {
     'TRAC': { 
-      primary: '#71717a', 
-      secondary: '#a1a1aa',
-      bg: 'rgba(113, 113, 122, 0.08)'
+      bgClass: 'bg-default/10',
+      borderClass: 'border-default/30 border-l-default',
+      textClass: 'text-default-600',
+      iconClass: 'text-default-500'
     },
     'DEBU': { 
-      primary: '#0ea5e9', 
-      secondary: '#7dd3fc',
-      bg: 'rgba(14, 165, 233, 0.08)'
+      bgClass: 'bg-primary/10',
+      borderClass: 'border-primary/30 border-l-primary',
+      textClass: 'text-primary-600',
+      iconClass: 'text-primary'
     },
     'MARK': { 
-      primary: '#7c3aed', 
-      secondary: '#a78bfa',
-      bg: 'rgba(124, 58, 237, 0.08)'
+      bgClass: 'bg-secondary/10',
+      borderClass: 'border-secondary/30 border-l-secondary',
+      textClass: 'text-secondary-600',
+      iconClass: 'text-secondary'
     },
     'INFO': { 
-      primary: '#059669', 
-      secondary: '#34d399',
-      bg: 'rgba(5, 150, 105, 0.08)'
+      bgClass: 'bg-success/10',
+      borderClass: 'border-success/30 border-l-success',
+      textClass: 'text-success-600',
+      iconClass: 'text-success'
     },
     'WARN': { 
-      primary: '#d97706', 
-      secondary: '#fbbf24',
-      bg: 'rgba(217, 119, 6, 0.08)'
+      bgClass: 'bg-warning/10',
+      borderClass: 'border-warning/30 border-l-warning',
+      textClass: 'text-warning-600',
+      iconClass: 'text-warning'
     },
     'ERRO': { 
-      primary: '#dc2626', 
-      secondary: '#f87171',
-      bg: 'rgba(220, 38, 38, 0.08)'
+      bgClass: 'bg-danger/10',
+      borderClass: 'border-danger/30 border-l-danger',
+      textClass: 'text-danger-600',
+      iconClass: 'text-danger'
     },
     'FATA': { 
-      primary: '#991b1b', 
-      secondary: '#dc2626',
-      bg: 'rgba(153, 27, 27, 0.08)'
+      bgClass: 'bg-danger/15',
+      borderClass: 'border-danger/40 border-l-danger',
+      textClass: 'text-danger-700',
+      iconClass: 'text-danger-700'
     }
   }
-  return colorMap[level] || { primary: '#71717a', secondary: '#a1a1aa', bg: 'rgba(113, 113, 122, 0.08)' }
+  return themeMap[level] || themeMap['TRAC']
 }
 
 /**
@@ -160,9 +195,10 @@ const BusinessErrorDetails: React.FC<{
               触发命令
             </h3>
             <div className='font-bold p-10 rounded-lg'>
-              <pre className='text-3xl leading-relaxed whitespace-pre-wrap break-all select-text font-[HarmonyOSHans-Regular]'>
-                {triggerCommand}
-              </pre>
+              <pre 
+                className='text-3xl leading-relaxed whitespace-pre-wrap break-all select-text font-[HarmonyOSHans-Regular]'
+                dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(triggerCommand) }}
+              />
             </div>
           </div>
         )}
@@ -183,38 +219,42 @@ const BusinessErrorDetails: React.FC<{
         {/* 相关日志 */}
         {logs && logs.length > 0 && (
           <div className='border-l-2 border-default-200 pl-8'>
-            <h3 className='flex items-center gap-3 mb-4 text-3xl font-medium text-foreground'>
+            <h3 className='flex items-center gap-3 mb-6 text-3xl font-medium text-foreground'>
               <FileText className='w-8 h-8' />
               相关执行日志
             </h3>
-            <div className='space-y-2'>
+            <div className='space-y-3'>
               {logs.map((log, index) => {
-                const colors = getLogLevelColors(log.level)
+                const theme = getLogLevelTheme(log.level)
                 return (
                   <div 
                     key={index} 
-                    className='font-mono text-xl leading-snug whitespace-pre-wrap break-all select-text px-4 py-3 rounded-lg backdrop-blur-sm border'
-                    style={{
-                      borderLeft: `4px solid ${colors.primary}`,
-                      borderColor: `${colors.primary}20`,
-                      backgroundColor: colors.bg
-                    }}
+                    className={`relative rounded-lg border border-l-4 ${theme.bgClass} ${theme.borderClass}`}
                   >
-                    <div className='flex items-center gap-3 mb-1.5'>
-                      <span 
-                        className='inline-flex items-center justify-center px-3 py-1 rounded-md font-black text-white text-sm tracking-widest uppercase'
-                        style={{ 
-                          backgroundColor: colors.primary
-                        }}
-                      >
-                        {log.level}
-                      </span>
-                      <span className='text-default-400 text-base font-medium'>
-                        {log.timestamp}
-                      </span>
-                    </div>
-                    <div className='text-foreground/90'>
-                      {log.message}
+                    <div className='flex items-start gap-4 p-5'>
+                      {/* 左侧 */}
+                      <div className='flex-1 min-w-0 space-y-2'>
+                        {/* 时间戳 */}
+                        <div className='flex items-center gap-2'>
+                          <Clock size={22} className={`flex-shrink-0 mb-1 ${theme.iconClass}`} />
+                          <span className={`text-xl font-mono font-semibold ${theme.textClass}`}>
+                            {log.timestamp}
+                          </span>
+                        </div>
+
+                        {/* 日志消息 */}
+                        <div 
+                          className='font-mono text-xl leading-relaxed whitespace-pre-wrap break-all select-text text-foreground'
+                          dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(log.message) }}
+                        />
+                      </div>
+
+                      {/* 右侧 */}
+                      <div className='flex-shrink-0 flex items-center'>
+                        <span className={`font-black text-6xl tracking-tight uppercase opacity-15 ${theme.textClass}`}>
+                          {log.level}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 )
@@ -355,45 +395,27 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
           </div>
 
           {/* 底部提示 */}
-          <div className='border-l-2 text-default-400 border-warning pl-8'>
-            <p className='text-3xl leading-relaxed mb-6'>
-              遇到问题了？为了帮助开发者快速定位并解决问题，请提供以下信息：
+          <div className='border-l-2 text-default-400 border-primary pl-8'>
+            <p className='text-3xl leading-relaxed mb-6 text-foreground'>
+              需要帮助？请提供以下信息以便开发者快速定位问题：
             </p>
             <div className='space-y-4 mb-8'>
-              <div className='flex items-start gap-3'>
-                <span className='text-warning font-bold text-3xl'>1.</span>
+              <div className='flex items-baseline gap-3'>
+                <span className='text-primary font-bold text-3xl flex-shrink-0'>1.</span>
                 <p className='text-3xl leading-relaxed flex-1'>
-                  <span className='text-warning font-semibold'>完整的错误截图</span>（包含本页面所有内容）
+                  <span className='text-primary font-semibold'>完整的错误截图</span> - 包含本页面所有内容（错误堆栈、执行日志、版本信息等）
                 </p>
               </div>
-              <div className='flex items-start gap-3'>
-                <span className='text-warning font-bold text-3xl'>2.</span>
+              <div className='flex items-baseline gap-3'>
+                <span className='text-primary font-bold text-3xl flex-shrink-0'>2.</span>
                 <p className='text-3xl leading-relaxed flex-1'>
-                  <span className='text-warning font-semibold'>
-                    DEBUG 等级的完整日志
-                  </span>
-                  {' '}- 当前页面显示的日志是自动捕获的，可能不包含关键的调试信息。请在配置文件中将日志等级设置为{' '}
-                  <Code 
-                    color='warning'
-                    size='lg'
-                    radius='md'
-                    className='font-mono inline-flex items-center mx-1 -translate-y-[6px]'
-                  >
-                    DEBUG
-                  </Code>
-                  {' '}，重现问题后提供完整日志
-                </p>
-              </div>
-              <div className='flex items-start gap-3'>
-                <span className='text-warning font-bold text-3xl'>3.</span>
-                <p className='text-3xl leading-relaxed flex-1'>
-                  <span className='text-warning font-semibold'>问题复现步骤</span> - 详细描述触发错误的操作流程
+                  <span className='text-primary font-semibold'>问题复现步骤</span> - 详细描述触发错误的操作流程和环境信息
                 </p>
               </div>
             </div>
             <div className='border-t border-default-200 pt-6'>
-              <p className='text-3xl leading-relaxed mb-4'>
-                您可以通过以下方式联系我们：
+              <p className='text-3xl leading-relaxed mb-4 text-foreground'>
+                联系方式：
               </p>
               <div className='space-y-3'>
                 <p className='text-3xl'>
@@ -403,11 +425,6 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
                   · 加入 QQ 群：<span className='text-primary font-semibold'>795874649</span>
                 </p>
               </div>
-            </div>
-            <div className='mt-6 p-6 bg-warning/10 rounded-lg border border-warning/30'>
-              <p className='text-2xl text-warning-700 leading-relaxed'>
-                💡 提示：仅凭此页面的信息可能无法完全定位错误根源，DEBUG 日志能提供更详细的执行流程和变量状态，大大提高问题解决效率。
-              </p>
             </div>
           </div>
         </div>

@@ -22,7 +22,7 @@ type ErrorHandlerOptions = {
  * @param logs 原始日志字符串数组
  * @returns 结构化日志对象数组（过滤掉 TRAC 等级）
  */
-const parseLogsToStructured = (logs: string[]) => {
+const parseLogsToStructured = (logs: string[]): ApiErrorProps['data']['logs'] => {
   // 移除 ^ 和 $ 锚点，使用 dotall 模式匹配多行内容
   const logRegex = /\[(\d{2}:\d{2}:\d{2}\.\d{3})\]\[([A-Z]{4})\]\s(.+)/s
   
@@ -57,18 +57,26 @@ const parseLogsToStructured = (logs: string[]) => {
 export const wrapWithErrorHandler = <T extends (...args: any[]) => Promise<any>> (
   fn: T,
   options: ErrorHandlerOptions
-): T => {
-  return (async (...args: any[]) => {
-    return await logger.runContext(async () => {
+) => {
+  return async (...args: Parameters<T>): Promise<Awaited<ReturnType<T>>> => {
+    const context = logger.runContext(async () => {
       return await fn(...args)
-        .catch(async (error) => {
-          const result = logger.getContextLogs()
-          const structuredLogs = parseLogsToStructured(result)
-          await handleBusinessError(error as Error, options, structuredLogs, args[0] as Message)
-          return error
-        })
     })
-  }) as T
+    
+    try {
+      return await context.run()
+    } catch (error) {
+      await new Promise(resolve => setTimeout(resolve, 100))
+      const result = context.logs()
+      /** 格式化日志 */
+      const structuredLogs = parseLogsToStructured(result)
+      await handleBusinessError(error as Error, options, structuredLogs, args[0] as Message)
+      throw error
+    } finally {
+      // 任务结束后销毁上下文收集器
+      context.destroy()
+    }
+  }
 }
 
 /**
