@@ -133,7 +133,7 @@ const handleBusinessError = async (
       },
       method: options.businessName,
       timestamp: new Date().toISOString(),
-      logs: logs,
+      logs: logs && logs.reverse(),
       triggerCommand: triggerCommand,
       frameworkVersion: Root.karinVersion,
       pluginVersion: Root.pluginVersion,

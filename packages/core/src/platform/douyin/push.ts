@@ -291,6 +291,7 @@ export class DouYinpush extends Base {
       /** 过滤掉不启用的订阅项 */
       const filteredUserList = userList.filter(item => item.switch !== false)
       for (const item of filteredUserList) {
+        common.sleep(2000)
         const sec_uid = item.sec_uid
         logger.debug(`开始获取用户：${item.remark}（${sec_uid}）的主页作品列表`)
         const videolist = await this.amagi.getDouyinData('用户主页视频列表数据', { sec_uid, typeMode: 'strict' })
