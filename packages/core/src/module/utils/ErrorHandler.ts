@@ -60,15 +60,15 @@ export const wrapWithErrorHandler = <T extends (...args: any[]) => Promise<any>>
   options: ErrorHandlerOptions
 ) => {
   return async (...args: Parameters<T>): Promise<Awaited<ReturnType<T>>> => {
-    const context = await logger.runContext(async () => {
+    const ctx = logger.runContext(async () => {
       return await fn(...args)
     })
     
     try {
-      return await context.run()
+      return await ctx.run()
     } catch (error) {
       await new Promise(resolve => setTimeout(resolve, 100))
-      const result = context.logs()
+      const result = ctx.logs()
       /** 格式化日志 */
       const structuredLogs = parseLogsToStructured(result)
       await handleBusinessError(error as Error, options, structuredLogs, args[0] as Message)
