@@ -8,7 +8,8 @@ export const version = {
   pluginVersion: '2.x.x',
   releaseType: 'Stable',
   poweredBy: 'Karin',
-  frameworkVersion: '1.12.3'
+  frameworkVersion: '1.12.3',
+  hasUpdate: true
 }
 
 /**

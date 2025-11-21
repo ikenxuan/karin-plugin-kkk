@@ -46,6 +46,22 @@ export const Render = async <P extends DynamicRenderPath> (
 
   const outputDir = pathModule.join(karinPathHtml, Root.pluginName, templateType)
 
+  // 检查是否有可用更新
+  let hasUpdate = false
+  if (!Config.app.RemoveWatermark) {
+    try {
+      const { db } = await import('node-karin')
+      const UPDATE_LOCK_KEY = 'kkk:update:lock'
+      const lockedVersion = await db.get(UPDATE_LOCK_KEY)
+      if (typeof lockedVersion === 'string' && lockedVersion.length > 0) {
+        // 如果数据库中有锁定的版本号，说明有可用更新
+        hasUpdate = true
+      }
+    } catch {
+      // 忽略错误，默认无更新
+    }
+  }
+
   const renderRequest: TypedRenderRequest<keyof DataTypeMap> = {
     templateType: templateType as TypedRenderRequest<keyof DataTypeMap>['templateType'],
     templateName,
@@ -57,7 +73,8 @@ export const Render = async <P extends DynamicRenderPath> (
       pluginVersion: Root.pluginVersion,
       releaseType: /^\d+\.\d+\.\d+$/.test(Root.pluginVersion) ? 'Stable' : 'Preview',
       poweredBy: 'Karin',
-      frameworkVersion: Root.karinVersion
+      frameworkVersion: Root.karinVersion,
+      hasUpdate
     },
     data: {
       ...data,

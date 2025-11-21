@@ -1,6 +1,6 @@
 import { HeroUIProvider } from '@heroui/react'
 import clsx from 'clsx'
-import { AlertTriangle, CheckCircle, Code, Info, Zap } from 'lucide-react'
+import { AlertTriangle, CheckCircle, CircleFadingArrowUp, Code, Info, Zap } from 'lucide-react'
 import React from 'react'
 
 import type { BaseComponentProps, RenderRequest } from '../../types'
@@ -61,10 +61,10 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
         {children}
         {version ? (
           <div className='pt-32 pb-20 text-default-800'>
-            {/* 上行：插件信息和版本信息 */}
-            <div className='flex relative justify-center items-center mb-12 space-x-8'>
+            {/* 版本信息：插件、框架、构建工具 */}
+            <div className='flex relative justify-center items-center space-x-8'>
+              {/* 插件信息 */}
               <div className='flex items-end space-x-8'>
-                {/* logo */}
                 <GlowImage
                   src="/image/logo.png"
                   alt="logo"
@@ -74,39 +74,37 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                 />
                 <div className='flex flex-col items-start opacity-90'>
                   <div className='flex items-center mb-1 space-x-2 text-sm font-bold uppercase text-default-900'>
-                    {/* <Code strokeWidth={3} className="w-4 h-4" /> */}
                     <span>{version.plugin}</span>
                   </div>
                   <span className='text-5xl font-black'>{version.pluginName}</span>
                 </div>
               </div>
+
               <div className='flex flex-col items-start opacity-90'>
                 <div className='flex items-center mb-1 space-x-2 text-sm font-bold tracking-widest uppercase text-default-900'>
-                  {version.releaseType === 'Stable' ? (
-                    <CheckCircle strokeWidth={3} className="w-4 h-4 text-success/90" />
-                  ) : version.releaseType === 'Preview' ? (
-                    <AlertTriangle strokeWidth={3} className="w-4 h-4 text-warning" />
-                  ) : (
-                    <Info strokeWidth={3} className="w-4 h-4" />
-                  )}
-                  {version.releaseType === 'Stable' ? (
-                    <span className='text-success/90'>{version.releaseType}</span>
-                  ) : (
-                    <span className='text-warning'>{version.releaseType}</span>
-                  )}
+                  {version.hasUpdate && <CircleFadingArrowUp strokeWidth={3} className="w-4 h-4 text-success" />}
+                  {!version.hasUpdate && version.releaseType === 'Stable' && <CheckCircle strokeWidth={3} className="w-4 h-4" />}
+                  {!version.hasUpdate && version.releaseType === 'Preview' && <AlertTriangle strokeWidth={3} className="w-4 h-4 text-warning" />}
+                  {!version.hasUpdate && version.releaseType !== 'Stable' && version.releaseType !== 'Preview' && <Info strokeWidth={3} className="w-4 h-4" />}
+                  <span className={clsx(
+                    version.hasUpdate && 'text-success',
+                    !version.hasUpdate && version.releaseType === 'Preview' && 'text-warning'
+                  )}>
+                    {version.hasUpdate ? '有可用更新' : version.releaseType}
+                  </span>
                 </div>
-                <div className='text-5xl font-bold tracking-wide'>
-                  {version.releaseType === 'Stable' ? (
-                    <span className='text-success/90'>v{version.pluginVersion}</span>
-                  ) : (
-                    <span className='text-warning'>v{version.pluginVersion}</span>
-                  )}
-                </div>
+                <span className={clsx(
+                  'text-5xl font-bold tracking-wide',
+                  version.hasUpdate && 'text-success',
+                  !version.hasUpdate && version.releaseType === 'Preview' && 'text-warning'
+                )}>
+                  v{version.pluginVersion}
+                </span>
               </div>
-            </div>
 
-            {/* 下行：驱动框架和Vite构建工具 */}
-            <div className='flex relative justify-center items-center space-x-8'>
+              <div className='w-1 h-14 opacity-90 bg-default-900' />
+
+              {/* 框架信息 */}
               <div className='flex items-end space-x-8'>
                 <GlowImage
                   src="/image/frame-logo.png"
@@ -115,7 +113,6 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                   glowStrength={1}
                   blurRadius={40}
                 />
-                {/* <img src="/image/frame-logo.png" className='self-center w-auto h-18' /> */}
                 <div className='flex flex-col items-start'>
                   <div className='flex items-center mb-1 space-x-2 text-sm font-bold tracking-widest uppercase text-default-900'>
                     <Zap strokeWidth={3} className="w-4 h-4 opacity-90" />
@@ -128,34 +125,36 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                 </div>
               </div>
 
-              <div className='w-1 h-14 opacity-90 bg-default-900' />
+              {/* 构建工具信息 */}
+              {version.releaseType === 'Stable' && (
+                <>
+                  <div className='w-1 h-14 opacity-90 bg-default-900' />
 
-              <div className='flex items-end space-x-8'>
-                <GlowImage
-                  src="/image/vite.svg"
-                  alt="logo"
-                  imgClassName="w-auto h-18"
-                  glowStrength={1}
-                  blurRadius={20}
-                />
-
-                {/* <img src="/image/vite.svg" className='self-center w-auto h-16' /> */}
-                <div className='flex flex-col items-start opacity-90'>
-                  <div className='flex items-center mb-1 space-x-2 text-sm font-bold tracking-widest uppercase text-default-900'>
-                    <Code strokeWidth={3} className="w-4 h-4" />
-                    <span>Built with</span>
+                  <div className='flex items-end space-x-8'>
                     <GlowImage
-                      src="/image/rolldown.svg"
+                      src="/image/vite.svg"
                       alt="logo"
-                      imgClassName="w-5 h-5"
-                      glowStrength={3}
-                      blurRadius={10}
+                      imgClassName="w-auto h-18"
+                      glowStrength={1}
+                      blurRadius={20}
                     />
-                    {/* <img src="/image/rolldown.svg" className='w-5 h-5' /> */}
+                    <div className='flex flex-col items-start opacity-90'>
+                      <div className='flex items-center mb-1 space-x-2 text-sm font-bold tracking-widest uppercase text-default-900'>
+                        <Code strokeWidth={3} className="w-4 h-4" />
+                        <span>Built with</span>
+                        <GlowImage
+                          src="/image/rolldown.svg"
+                          alt="logo"
+                          imgClassName="w-5 h-5"
+                          glowStrength={3}
+                          blurRadius={10}
+                        />
+                      </div>
+                      <span className='text-5xl font-black'>Rolldown-Vite</span>
+                    </div>
                   </div>
-                  <span className='text-5xl font-black'>Rolldown-Vite</span>
-                </div>
-              </div>
+                </>
+              )}
             </div>
           </div>
         ) : (<div className='h-24'></div>)

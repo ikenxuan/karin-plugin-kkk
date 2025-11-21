@@ -39,7 +39,10 @@ export class AmagiBase {
             const result = await Function.prototype.apply.call(method, target, args)
 
             const isResultType = (val: any): val is Result<any> => {
-              return val && typeof val === 'object' && 'success' in val && typeof (val as any).success === 'boolean' && 'code' in val && 'message' in val
+              if (!val || typeof val !== 'object') return false
+              if (!('success' in val) || typeof val.success !== 'boolean') return false
+              if (!('code' in val) || !('message' in val)) return false
+              return true
             }
 
             if (isResultType(result)) {

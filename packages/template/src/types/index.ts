@@ -34,6 +34,8 @@ export interface RenderRequest<T = Record<string, unknown>> {
     poweredBy: string
     /** 框架版本 */
     frameworkVersion: string
+    /** 是否有可用更新 */
+    hasUpdate?: boolean
   }
   /** 渲染数据 */
   data: T & {
