@@ -84,24 +84,16 @@ export class AmagiBase {
 }
 
 /** 获取已初始化的解析库实例 */
-const getAmagiClient = (): ReturnType<typeof Client> => new AmagiBase().amagi
+const amagiClient = new AmagiBase().amagi
 
 /** 获取B站数据 */
-export const getBilibiliData: ReturnType<typeof Client>['getBilibiliData'] = (
-  ...args: Parameters<ReturnType<typeof Client>['getBilibiliData']>
-) => getAmagiClient().getBilibiliData(...args)
+export const getBilibiliData = amagiClient.getBilibiliData.bind(amagiClient)
 
 /** 获取抖音数据 */
-export const getDouyinData: ReturnType<typeof Client>['getDouyinData'] = (
-  ...args: Parameters<ReturnType<typeof Client>['getDouyinData']>
-) => getAmagiClient().getDouyinData(...args)
+export const getDouyinData = amagiClient.getDouyinData.bind(amagiClient)
 
 /** 获取快手数据 */
-export const getKuaishouData: ReturnType<typeof Client>['getKuaishouData'] = (
-  ...args: Parameters<ReturnType<typeof Client>['getKuaishouData']>
-) => getAmagiClient().getKuaishouData(...args)
+export const getKuaishouData = amagiClient.getKuaishouData.bind(amagiClient)
 
 /** 获取小红书数据 */
-export const getXiaohongshuData: ReturnType<typeof Client>['getXiaohongshuData'] = (
-  ...args: Parameters<ReturnType<typeof Client>['getXiaohongshuData']>
-) => getAmagiClient().getXiaohongshuData(...args)
+export const getXiaohongshuData = amagiClient.getXiaohongshuData.bind(amagiClient)
