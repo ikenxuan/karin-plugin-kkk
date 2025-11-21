@@ -1,3 +1,5 @@
+import util from 'node:util'
+
 import Client, { type Result } from '@ikenxuan/amagi'
 
 import { Config } from './Config'
@@ -50,11 +52,25 @@ export class AmagiBase {
                 return result
               }
 
+              // 构建详细的错误消息
               const errMessage = result.message || (result.error as any)?.amagiMessage || '请求失败'
-              const err = new Error(errMessage)
-              ;(err as any).code = result.code
-              ;(err as any).error = result.error
-              throw err
+              
+              // 使用 util.inspect 格式化完整的错误信息（带 ANSI 颜色）
+              const errorDetails = util.inspect(
+                {
+                  code: result.code,
+                  message: errMessage,
+                  error: result.error
+                },
+                {
+                  depth: null,
+                  colors: true,
+                  compact: false,
+                  breakLength: 80
+                }
+              )
+              
+              throw new Error(errorDetails)
             }
 
             return result

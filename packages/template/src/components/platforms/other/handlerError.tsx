@@ -1,5 +1,4 @@
 import { Chip } from '@heroui/react'
-import AnsiToHtml from 'ansi-to-html'
 import { AlertCircle, Clock, FileText, Plug2, Terminal } from 'lucide-react'
 import React from 'react'
 import { FaBug, FaCodeBranch } from 'react-icons/fa6'
@@ -9,20 +8,97 @@ import { type ApiErrorProps, type BusinessError, type LogEntry, type LogLevel } 
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
- * ANSI 转 HTML 转换器实例
+ * ANSI 颜色代码到 Tailwind 类名的映射
  */
-const ansiConverter = new AnsiToHtml({
-  fg: 'text-default-900',
-  newline: false,
-  escapeXML: true,
-  stream: false
-})
+const ansiColorMap: Record<number, string> = {
+  30: 'text-default-900', // black
+  31: 'text-danger', // red
+  32: 'text-success', // green
+  33: 'text-warning', // yellow
+  34: 'text-primary', // blue
+  35: 'text-secondary', // magenta
+  36: 'text-default-600', // cyan
+  37: 'text-default-500', // white
+  90: 'text-default-600', // bright black
+  91: 'text-danger', // bright red
+  92: 'text-success', // bright green
+  93: 'text-warning', // bright yellow
+  94: 'text-primary', // bright blue
+  95: 'text-secondary', // bright magenta
+  96: 'text-default-500', // bright cyan
+  97: 'text-default-200' // bright white
+}
 
 /**
- * 将 ANSI 颜色代码转换为 HTML
+ * 将 ANSI 颜色代码转换为带 Tailwind 类的 HTML
  */
 const convertAnsiToHtml = (text: string): string => {
-  return ansiConverter.toHtml(text)
+  // 匹配 ANSI 转义序列
+  const ansiRegex = /\x1b\[([0-9;]+)m/g
+  let result = ''
+  let lastIndex = 0
+  let currentClasses: string[] = []
+  let match
+
+  // 转义 HTML 特殊字符
+  const escapeHtml = (str: string) => {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
+  }
+
+  while ((match = ansiRegex.exec(text)) !== null) {
+    // 添加前面的文本
+    if (match.index > lastIndex) {
+      const textContent = text.substring(lastIndex, match.index)
+      if (currentClasses.length > 0) {
+        result += `<span class="${currentClasses.join(' ')}">${escapeHtml(textContent)}</span>`
+      } else {
+        result += escapeHtml(textContent)
+      }
+    }
+
+    // 解析 ANSI 代码
+    const codes = match[1].split(';').map(Number)
+    
+    for (const code of codes) {
+      if (code === 0 || code === 39 || code === 49) {
+        // 0: 重置所有样式
+        // 39: 重置前景色
+        // 49: 重置背景色
+        currentClasses = currentClasses.filter(c => !c.startsWith('text-') && !c.startsWith('bg-'))
+      } else if (code === 1) {
+        // 粗体
+        if (!currentClasses.includes('font-bold')) {
+          currentClasses.push('font-bold')
+        }
+      } else if (code === 22) {
+        // 取消粗体
+        currentClasses = currentClasses.filter(c => c !== 'font-bold')
+      } else if (ansiColorMap[code]) {
+        // 移除之前的颜色类
+        currentClasses = currentClasses.filter(c => !c.startsWith('text-'))
+        currentClasses.push(ansiColorMap[code])
+      }
+    }
+
+    lastIndex = ansiRegex.lastIndex
+  }
+
+  // 添加剩余的文本
+  if (lastIndex < text.length) {
+    const textContent = text.substring(lastIndex)
+    if (currentClasses.length > 0) {
+      result += `<span class="${currentClasses.join(' ')}">${escapeHtml(textContent)}</span>`
+    } else {
+      result += escapeHtml(textContent)
+    }
+  }
+
+  return result
 }
 
 /**
@@ -240,9 +316,10 @@ const BusinessErrorDetails: React.FC<{
             错误堆栈
           </h3>
           <div className='bg-danger/5 p-8 rounded-lg border border-danger/20'>
-            <pre className='text-xl leading-relaxed whitespace-pre-wrap break-all select-text text-danger-700 font-mono'>
-              {String(error.stack || '')}
-            </pre>
+            <pre 
+              className='text-xl leading-relaxed whitespace-pre-wrap break-all select-text font-mono'
+              dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(String(error.stack || '')) }}
+            />
           </div>
         </div>
 

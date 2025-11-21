@@ -1,0 +1,27 @@
+{
+  "type": "business_error",
+  "platform": "system",
+  "error": {
+    "message": "获取动态列表失败: Error: {\n  code: \u001b[33m500\u001b[39m,\n  message: \u001b[32m'B站数据获取失败'\u001b[39m,\n  error: {\n    errorDescription: \u001b[32m'触发B站风控策略，请求被拦截！可能原因：请求频率过高、Cookie失效、缺少必要请求头'\u001b[39m,\n    requestType: \u001b[32m'用户主页动态列表数据'\u001b[39m,\n    requestUrl: \u001b[32m'https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space?host_mid=3546776462166987&features=itemOpusStyle,listOnlyfans,opusBigCover,onlyfansVote,forwardListHidden,decorationCard,commentsNewVersion,onlyfansAssetsV2,ugcDelete,onlyfansQaCard&wts=1763725976&w_rid=b1fc0f9d6026a74493012b62088ebe16'\u001b[39m\n  }\n}",
+    "name": "Error",
+    "stack": "Error: 获取动态列表失败: Error: {\n  code: \u001b[33m500\u001b[39m,\n  message: \u001b[32m'B站数据获取失败'\u001b[39m,\n  error: {\n    errorDescription: \u001b[32m'触发B站风控策略，请求被拦截！可能原因：请求频率过高、Cookie失效、缺少必要请求头'\u001b[39m,\n    requestType: \u001b[32m'用户主页动态列表数据'\u001b[39m,\n    requestUrl: \u001b[32m'https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space?host_mid=3546776462166987&features=itemOpusStyle,listOnlyfans,opusBigCover,onlyfansVote,forwardListHidden,decorationCard,commentsNewVersion,onlyfansAssetsV2,ugcDelete,onlyfansQaCard&wts=1763725976&w_rid=b1fc0f9d6026a74493012b62088ebe16'\u001b[39m\n  }\n}\n    at Bilibilipush.getDynamicList (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\platform\\bilibili\\push.ts:671:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Bilibilipush.action (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\platform\\bilibili\\push.ts:101:18)\n    at async wrapWithErrorHandler.businessName (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\apps\\push.ts:32:5)\n    at async <anonymous> (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\module\\utils\\ErrorHandler.ts:64:14)\n    at async Object.fnc (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\module\\utils\\ErrorHandler.ts:68:14)\n    at async groupsCmd (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@https+++pkg.pr.new+node-karin@4dd9b47\\node_modules\\node-karin\\dist\\index.mjs:14505:26)\n    at async groupsDeal (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@https+++pkg.pr.new+node-karin@4dd9b47\\node_modules\\node-karin\\dist\\index.mjs:14473:24)",
+    "businessName": "强制推送"
+  },
+  "method": "强制推送",
+  "timestamp": "2025-11-21T11:52:56.097Z",
+  "logs": [],
+  "triggerCommand": "#B站强制推送",
+  "frameworkVersion": "1.12.2",
+  "pluginVersion": "2.11.6",
+  "buildTime": "2025年11月21日 18:12",
+  "commitHash": "b15c85af1c2a6c6f7356416a038787dc4c34e79e",
+  "adapterInfo": {
+    "name": "NapCat.Onebot",
+    "version": "v4.9.70",
+    "platform": "qq",
+    "protocol": "napcat",
+    "standard": "onebot11"
+  },
+  "amagiVersion": "5.9.1",
+  "useDarkTheme": false
+}
