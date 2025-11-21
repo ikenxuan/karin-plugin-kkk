@@ -445,11 +445,26 @@ export class DouYinpush extends Base {
     const botId = this.e.selfId
 
     try {
-      let index = 0
-      while (data.data[index].card_unique_name !== 'user') {
-        index++
+      // 获取用户输入的抖音号
+      const inputDouyinId = this.e.msg.replace(/^#设置抖音推送/, '').trim()
+      
+      // 在用户列表中查找匹配的用户
+      let matchedUser = null
+      for (const userItem of data.user_list) {
+        const currentDouyinId = userItem.user_info.unique_id === '' ? userItem.user_info.short_id : userItem.user_info.unique_id
+        if (currentDouyinId === inputDouyinId) {
+          matchedUser = userItem.user_info
+          break
+        }
       }
-      const sec_uid = data.data[index].user_list[0].user_info.sec_uid
+      
+      // 如果没找到匹配的用户，抛出错误
+      if (!matchedUser) {
+        throw new Error(`未找到抖音号为 ${inputDouyinId} 的用户`)
+      }
+      
+      // 使用匹配到的用户的 sec_uid 进行下一步请求
+      const sec_uid = matchedUser.sec_uid
       const UserInfoData = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
 
       /** 处理抖音号 */
