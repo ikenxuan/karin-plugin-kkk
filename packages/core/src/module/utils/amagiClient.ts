@@ -55,7 +55,7 @@ export class AmagiBase {
               // 构建详细的错误消息
               const errMessage = result.message || (result.error as any)?.amagiMessage || '请求失败'
               
-              // 使用 util.inspect 格式化完整的错误信息（带 ANSI 颜色）
+              // 使用 util.inspect 格式化完整的错误信息
               const errorDetails = util.inspect(
                 {
                   code: result.code,
