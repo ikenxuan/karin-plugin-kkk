@@ -608,7 +608,7 @@ export class Bilibilipush extends Base {
       /** 过滤掉不启用的订阅项 */
       const filteredUserList = userList.filter(item => item.switch !== false)
       for (const item of filteredUserList) {
-        await common.sleep(10000)
+        await common.sleep(2000)
         logger.debug(`[Bilibili 推送] 开始获取UP: ${item.remark}（${item.host_mid}） 的动态列表`)
         const dynamic_list = await this.amagi.getBilibiliData('用户主页动态列表数据', { host_mid: item.host_mid, typeMode: 'strict' })
         if (dynamic_list.data.data.items.length > 0) {
