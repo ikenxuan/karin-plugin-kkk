@@ -60,7 +60,7 @@ export const wrapWithErrorHandler = <T extends (...args: any[]) => Promise<any>>
   options: ErrorHandlerOptions
 ) => {
   return async (...args: Parameters<T>): Promise<Awaited<ReturnType<T>>> => {
-    const context = logger.runContext(async () => {
+    const context = await logger.runContext(async () => {
       return await fn(...args)
     })
     
@@ -73,9 +73,6 @@ export const wrapWithErrorHandler = <T extends (...args: any[]) => Promise<any>>
       const structuredLogs = parseLogsToStructured(result)
       await handleBusinessError(error as Error, options, structuredLogs, args[0] as Message)
       throw error
-    } finally {
-      // 任务结束后销毁上下文收集器
-      context.destroy()
     }
   }
 }
