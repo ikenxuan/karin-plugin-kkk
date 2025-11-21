@@ -12,8 +12,8 @@ importers:
   .:
     dependencies:
       '@ikenxuan/amagi':
-        specifier: https://pkg.pr.new/@ikenxuan/amagi@e409864
-        version: https://pkg.pr.new/@ikenxuan/amagi@e409864
+        specifier: https://pkg.pr.new/@ikenxuan/amagi@0d825e9
+        version: https://pkg.pr.new/@ikenxuan/amagi@0d825e9
       '@tailwindcss/vite':
         specifier: 4.1.14
         version: 4.1.14(rolldown-vite@7.1.17(@types/node@24.7.1)(esbuild@0.25.12)(jiti@2.6.1)(sass-embedded@1.93.3)(sass@1.93.3)(terser@5.44.0)(tsx@4.20.6)(yaml@2.7.0))
@@ -1916,9 +1916,9 @@ packages:
   '@ikenxuan/amagi@5.0.3':
     resolution: {integrity: sha512-ygQueMhfKI5174q8PNWU4eS0gvoe5mSfuOiOONjZ47De/Mlkb/E8h9N0FBA5jJW7zi9xoLMJgSMd6aqvzOTNlA==}
 
-  '@ikenxuan/amagi@https://pkg.pr.new/@ikenxuan/amagi@e409864':
-    resolution: {tarball: https://pkg.pr.new/@ikenxuan/amagi@e409864}
-    version: 5.9.20251121-e409864
+  '@ikenxuan/amagi@https://pkg.pr.new/@ikenxuan/amagi@0d825e9':
+    resolution: {tarball: https://pkg.pr.new/@ikenxuan/amagi@0d825e9}
+    version: 5.9.20251121-0d825e9
 
   '@ikenxuan/xhshow-ts@1.0.0':
     resolution: {integrity: sha512-zhxfzX4+LIcHaCjcleq0YCcAHcsNdCiR8f8NqmaRXqmTEerYV9rmPTGkZPlnU80X/UFR0SKIdLLqLvtOJnnsDQ==}
@@ -11717,7 +11717,7 @@ snapshots:
       pino-pretty: 13.1.2
       zod: 3.25.76
 
-  '@ikenxuan/amagi@https://pkg.pr.new/@ikenxuan/amagi@e409864':
+  '@ikenxuan/amagi@https://pkg.pr.new/@ikenxuan/amagi@0d825e9':
     dependencies:
       '@ikenxuan/xhshow-ts': 1.0.0
       axios: 1.12.2(debug@4.4.3)
