@@ -22,14 +22,14 @@
       "default": "./lib/index.js"
     },
     "./template": {
-      "types": "./lib/core_chunk/template.d.ts",
+      "types": "./lib/core_chunk/template.d.mts",
       "import": "./lib/core_chunk/template.js"
     }
   },
   "typesVersions": {
     "*": {
       "template": [
-        "./lib/core_chunk/template.d.ts"
+        "./lib/core_chunk/template.d.mts"
       ]
     }
   },
@@ -83,5 +83,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2025-11-15T10:01:04.440Z"
+  "timestamp": "2025-11-21T12:12:48.743Z"
 }
