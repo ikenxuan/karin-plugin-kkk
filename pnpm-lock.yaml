@@ -12,8 +12,8 @@ importers:
   .:
     dependencies:
       '@ikenxuan/amagi':
-        specifier: https://pkg.pr.new/@ikenxuan/amagi@392a65f
-        version: https://pkg.pr.new/@ikenxuan/amagi@392a65f
+        specifier: 5.10.0
+        version: 5.10.0
       '@tailwindcss/vite':
         specifier: 4.1.14
         version: 4.1.14(rolldown-vite@7.1.17(@types/node@24.7.1)(esbuild@0.25.12)(jiti@2.6.1)(sass-embedded@1.93.3)(sass@1.93.3)(terser@5.44.0)(tsx@4.20.6)(yaml@2.7.0))
@@ -30,8 +30,8 @@ importers:
         specifier: 0.554.0
         version: 0.554.0(react@19.2.0)
       node-karin:
-        specifier: https://pkg.pr.new/node-karin@4dd9b47
-        version: https://pkg.pr.new/node-karin@4dd9b47
+        specifier: 1.13.0
+        version: 1.13.0
       react:
         specifier: 19.2.0
         version: 19.2.0
@@ -1916,9 +1916,8 @@ packages:
   '@ikenxuan/amagi@5.0.3':
     resolution: {integrity: sha512-ygQueMhfKI5174q8PNWU4eS0gvoe5mSfuOiOONjZ47De/Mlkb/E8h9N0FBA5jJW7zi9xoLMJgSMd6aqvzOTNlA==}
 
-  '@ikenxuan/amagi@https://pkg.pr.new/@ikenxuan/amagi@392a65f':
-    resolution: {tarball: https://pkg.pr.new/@ikenxuan/amagi@392a65f}
-    version: 5.9.20251121-392a65f
+  '@ikenxuan/amagi@5.10.0':
+    resolution: {integrity: sha512-oNv/UrZm7Tv+aGWNnx+O8JHBME58PHldG/QUIAlo8w4B25yOEGVBkDRKGMUgTnUrIRUDcVG70RZEF1UKPZMEDw==}
 
   '@ikenxuan/xhshow-ts@1.0.0':
     resolution: {integrity: sha512-zhxfzX4+LIcHaCjcleq0YCcAHcsNdCiR8f8NqmaRXqmTEerYV9rmPTGkZPlnU80X/UFR0SKIdLLqLvtOJnnsDQ==}
@@ -7506,9 +7505,8 @@ packages:
   node-addon-api@7.1.1:
     resolution: {integrity: sha512-5m3bsyrjFWE1xf7nz7YXdN4udnVtXK6/Yfgn5qnahL6bCkf2yKt4k3nuTKAtT4r3IG8JNR2ncsIMdZuAzJjHQQ==}
 
-  node-karin@https://pkg.pr.new/node-karin@4dd9b47:
-    resolution: {tarball: https://pkg.pr.new/node-karin@4dd9b47}
-    version: 1.12.2
+  node-karin@1.13.0:
+    resolution: {integrity: sha512-rwtd09Ch2DtZUETIEbgRcnfSIWCcWSbSI5uyrEv6xDf82sIZstUk6v11FXi4RzuXvjsY2BFxtjiDHrRQHfTa+w==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -11717,7 +11715,7 @@ snapshots:
       pino-pretty: 13.1.2
       zod: 3.25.76
 
-  '@ikenxuan/amagi@https://pkg.pr.new/@ikenxuan/amagi@392a65f':
+  '@ikenxuan/amagi@5.10.0':
     dependencies:
       '@ikenxuan/xhshow-ts': 1.0.0
       axios: 1.12.2(debug@4.4.3)
@@ -18138,7 +18136,7 @@ snapshots:
 
   node-addon-api@7.1.1: {}
 
-  node-karin@https://pkg.pr.new/node-karin@4dd9b47:
+  node-karin@1.13.0:
     dependencies:
       art-template: '@karinjs/art-template@1.1.0'
       axios: '@karinjs/axios@1.2.0'
