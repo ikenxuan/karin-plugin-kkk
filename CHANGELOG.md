@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.12.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.11.6...v2.12.0) (2025-11-22)
+
+
+### ✨ 新功能
+
+* 捕获所有日志 [@sj817](https://github.com/sj817) ([#225](https://github.com/ikenxuan/karin-plugin-kkk/issues/225)) ([cf925f9](https://github.com/ikenxuan/karin-plugin-kkk/commit/cf925f9aca9d8ff242cc035f1c48bff7510ccd33))
+
+
+### ♻️ 代码重构
+
+* **core:** 重构amagi客户端调用方式，提取为独立模块 ([3eb5649](https://github.com/ikenxuan/karin-plugin-kkk/commit/3eb5649203b63abf3efe3efdfed40b92fc9406c5))
+
 ## [2.11.6](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.11.5...v2.11.6) (2025-11-15)
 
 
