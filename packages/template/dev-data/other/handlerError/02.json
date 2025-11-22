@@ -2,18 +2,74 @@
   "type": "business_error",
   "platform": "system",
   "error": {
-    "message": "Cannot read properties of undefined (reading 'aweme_detail')",
-    "name": "TypeError",
-    "stack": "TypeError: Cannot read properties of undefined (reading 'aweme_detail')\n    at DouYin.DouyinHandler (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\platform\\douyin\\douyin.ts:78:41)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async wrapWithErrorHandler.businessName (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\apps\\tools.ts:22:3)\n    at async Object.fnc (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\module\\utils\\ErrorHandler.ts:93:22)\n    at async groupsCmd (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@1.12.2\\node_modules\\node-karin\\dist\\index.mjs:14377:26)\n    at async groupsDeal (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@1.12.2\\node_modules\\node-karin\\dist\\index.mjs:14345:24)",
+    "message": "测试",
+    "name": "Error",
+    "stack": "Error: 测试\n    at DouYin.DouyinHandler (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\platform\\douyin\\douyin.ts:359:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async wrapWithErrorHandler.businessName (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\apps\\tools.ts:30:3)\n    at async <anonymous> (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\module\\utils\\ErrorHandler.ts:63:14)\n    at async Object.fnc (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\module\\utils\\ErrorHandler.ts:62:12)\n    at async groupsCmd (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@https+++pkg.pr.new+node-karin@d4dbcba\\node_modules\\node-karin\\dist\\index.mjs:14505:26)\n    at async groupsDeal (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@https+++pkg.pr.new+node-karin@d4dbcba\\node_modules\\node-karin\\dist\\index.mjs:14473:24)",
     "businessName": "抖音视频解析"
   },
   "method": "抖音视频解析",
-  "timestamp": "2025-11-02T15:34:57.746Z",
-  "logs": "[2025-11-02 15:34:57] [amagi] [WARN] \n      获取响应数据失败！原因：\u001b[33m接口返回内容为空，你的抖音ck可能已经失效！\u001b[39m\n      请求类型：「聚合解析」\n      请求URL：https://www.douyin.com/aweme/v1/web/aweme/detail/?device_platform=webapp&aid=6383&channel=channel_pc_web&pc_client_type=1&cookie_enabled=true&browser_language=zh-CN&browser_platform=Win32&browser_name=Chrome&browser_version=138.0.0.0&browser_online=true&engine_name=Blink&engine_version=138.0.0.0&os_name=Windows&os_version=10&cpu_core_num=16&device_memory=8&platform=PC&downlink=10&effective_type=4g&msToken=V7QTgtM0v1IPvZ0j94nMID3ASz8bI8LyKHMaiB2MiTAT2enCxl3i3OQNJpTzBKboPCaQGqoUVjVrvHJDSLAdzMjdfCtxzD8rgoNbGzlNXBoECpu4riomWbDv2pDyJ3hGzGxmUXPf0TfsJfKo9B7Ox5oVFDP3wnnfXI1ikw3fP0CSVEq1NOnrUL3X&verifyFp=verify_mhhvgw2b_5EQtHJ9w_G4QD_4AS9_8o5V_qi32PFk3wWiB&fp=verify_mhhvgw2b_5EQtHJ9w_G4QD_4AS9_8o5V_qi32PFk3wWiB&aweme_id=7568023460564438969&update_version_code=170400&version_code=190500&version_name=19.5.0&screen_width=2328&screen_height=1310&round_trip_time=150&webid=7351848354471872041&a_bogus=Oy8ZBDuXdDdkfVWg5W2LfY3q6I33YQw20trEMD2fon3tGg39HMP19exoyoGvBhLjiT/QIeYjy4hbT3ohrQ2y8qwf9W0L/25gsDSkKl12so0j53inCLf/E0iE5hsAtFH8svr4iKi8owICSYyhldAJ5kIlO62-zo0/9Wy=\n      \n\n[2025-11-02 15:34:57] [amagi] [WARN] \n      获取响应数据失败！原因：\u001b[33m接口返回内容为空，你的抖音ck可能已经失效！\u001b[39m\n      请求类型：「评论数据」\n      请求URL：https://www.douyin.com/aweme/v1/web/comment/list/?device_platform=webapp&aid=6383&channel=channel_pc_web&pc_client_type=1&cookie_enabled=true&browser_language=zh-CN&browser_platform=Win32&browser_name=Chrome&browser_version=138.0.0.0&browser_online=true&engine_name=Blink&engine_version=138.0.0.0&os_name=Windows&os_version=10&cpu_core_num=16&device_memory=8&platform=PC&downlink=10&effective_type=4g&msToken=Cut3yBZefWO6y9HKZSJFcvSX4CeOitFEdnAZYogdM8b2PKROMTz1skhHdBKt4DhLHEjYyj2vGsskMTDmauHGEAJBumDKNwXi15YQt12VqSF2HNA2GHpEyqd5YtSAYqmPnuinaxMXSwuocsNgTkAXq2LcLkC5v03gXmrpxQIxxurXbGracDTYDGpO&verifyFp=verify_mhhvgw2b_5EQtHJ9w_G4QD_4AS9_8o5V_qi32PFk3wWiB&fp=verify_mhhvgw2b_5EQtHJ9w_G4QD_4AS9_8o5V_qi32PFk3wWiB&aweme_id=7568023460564438969&cursor=0&count=2&item_type=0&insert_ids=&whale_cut_token=&cut_version=1&rcFT=&version_code=170400&version_name=17.4.0&screen_width=1552&screen_height=970&round_trip_time=50&a_bogus=DymMBfhDDifpvDWD5W2LfY3q6Up3YQw20trEMD2fJV3tG639HMTx9exoyoGvBADjiT/QIeYjy4hbT3ohrQ2y8qwf9W0L/25gsDSkKl12so0j53inCLf/E0iE5hsAtFH8svr4iKi8owICSYyhldAJ5kIlO62-zo0/9Vu=\n      ",
-  "triggerCommand": "1.51 U@Y.MW MjC:/ 12/15 难度6 41秒再次拿下幽境全球第一，给外国友人一点小小的震撼 # 原神  https://v.douyin.com/IkEYMugASz8/ 复制此链接，打开Dou音搜索，直接观看视频！",
+  "timestamp": "2025-11-20T11:53:40.312Z",
+  "logs": [
+    {
+      "timestamp": "19:53:23.883",
+      "level": "INFO",
+      "message": "[@karinjs/plugin-puppeteer][douyin_comment_1763639601853.html] 截图完成 大小: \u001b[32m4.50 MB\u001b[39m 耗时: \u001b[32m2026\u001b[39m ms",
+      "raw": "[19:53:23.883][INFO] [@karinjs/plugin-puppeteer][douyin_comment_1763639601853.html] 截图完成 大小: \u001b[32m4.50 MB\u001b[39m 耗时: \u001b[32m2026\u001b[39m ms"
+    },
+    {
+      "timestamp": "19:53:23.888",
+      "level": "INFO",
+      "message": "\u001b[38;2;134;142;204m[Bot:462433564]\u001b[39m \u001b[32mSend Group 608506114: \u001b[39m[image:base64://...]",
+      "raw": "[19:53:23.888][INFO] \u001b[38;2;134;142;204m[Bot:462433564]\u001b[39m \u001b[32mSend Group 608506114: \u001b[39m[image:base64://...]"
+    },
+    {
+      "timestamp": "19:53:24.029",
+      "level": "DEBU",
+      "message": "开始下载流 {\n  url: 'https://v5-se-zjyh-daily-a.douyinvod.com/c8a7e6d8692606d3119f164d959e7df6/691f0f3b/video/tos/cn/tos-cn-ve-15c000-ce/oQWAPdeQi9IedObkArQE2meXH8oi8MDcTM4GAf/?a=1128&ch=0&cr=0&dr=0&er=0&cd=0%7C0%7C0%7C0&cv=1&br=4467&bt=4467&cs=2&ds=10&ft=ahz4iQQqUYqfJEZWo0OW_EklpPiXYzS2kVJEFsxYaCPD-Ipz&mime_type=video_mp4&qs=15&rc=Mzc7ODxoN2Y8Njg5Z2k1aUBpM3gzcXQ5cnFyNzMzbGkzNUBjNDQzNTFiXy4xNjJeL2NeYSNwc3BuMmRra2JhLS1kLTRzcw%3D%3D&btag=c0000e00090000&cquery=100y&dy_q=1763639569&feature_id=10cf95ef75b4f3e7eac623e4ea0ea691&l=202511201952498031A9D4752D256DD4B9',\n  method: 'GET',\n  headers: {\n    Accept: '*/*',\n    'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',\n    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0',\n    Referer: 'https://v5-se-zjyh-daily-a.douyinvod.com/c8a7e6d8692606d3119f164d959e7df6/691f0f3b/video/tos/cn/tos-cn-ve-15c000-ce/oQWAPdeQi9IedObkArQE2meXH8oi8MDcTM4GAf/?a=1128&ch=0&cr=0&dr=0&er=0&cd=0%7C0%7C0%7C0&cv=1&br=4467&bt=4467&cs=2&ds=10&ft=ahz4iQQqUYqfJEZWo0OW_EklpPiXYzS2kVJEFsxYaCPD-Ipz&mime_type=video_mp4&qs=15&rc=Mzc7ODxoN2Y8Njg5Z2k1aUBpM3gzcXQ5cnFyNzMzbGkzNUBjNDQzNTFiXy4xNjJeL2NeYSNwc3BuMmRra2JhLS1kLTRzcw%3D%3D&btag=c0000e00090000&cquery=100y&dy_q=1763639569&feature_id=10cf95ef75b4f3e7eac623e4ea0ea691&l=202511201952498031A9D4752D256DD4B9'\n  },\n  responseType: 'stream',\n  signal: AbortSignal { aborted: false }\n}",
+      "raw": "[19:53:24.029][DEBU] 开始下载流 {\n  url: 'https://v5-se-zjyh-daily-a.douyinvod.com/c8a7e6d8692606d3119f164d959e7df6/691f0f3b/video/tos/cn/tos-cn-ve-15c000-ce/oQWAPdeQi9IedObkArQE2meXH8oi8MDcTM4GAf/?a=1128&ch=0&cr=0&dr=0&er=0&cd=0%7C0%7C0%7C0&cv=1&br=4467&bt=4467&cs=2&ds=10&ft=ahz4iQQqUYqfJEZWo0OW_EklpPiXYzS2kVJEFsxYaCPD-Ipz&mime_type=video_mp4&qs=15&rc=Mzc7ODxoN2Y8Njg5Z2k1aUBpM3gzcXQ5cnFyNzMzbGkzNUBjNDQzNTFiXy4xNjJeL2NeYSNwc3BuMmRra2JhLS1kLTRzcw%3D%3D&btag=c0000e00090000&cquery=100y&dy_q=1763639569&feature_id=10cf95ef75b4f3e7eac623e4ea0ea691&l=202511201952498031A9D4752D256DD4B9',\n  method: 'GET',\n  headers: {\n    Accept: '*/*',\n    'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',\n    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0',\n    Referer: 'https://v5-se-zjyh-daily-a.douyinvod.com/c8a7e6d8692606d3119f164d959e7df6/691f0f3b/video/tos/cn/tos-cn-ve-15c000-ce/oQWAPdeQi9IedObkArQE2meXH8oi8MDcTM4GAf/?a=1128&ch=0&cr=0&dr=0&er=0&cd=0%7C0%7C0%7C0&cv=1&br=4467&bt=4467&cs=2&ds=10&ft=ahz4iQQqUYqfJEZWo0OW_EklpPiXYzS2kVJEFsxYaCPD-Ipz&mime_type=video_mp4&qs=15&rc=Mzc7ODxoN2Y8Njg5Z2k1aUBpM3gzcXQ5cnFyNzMzbGkzNUBjNDQzNTFiXy4xNjJeL2NeYSNwc3BuMmRra2JhLS1kLTRzcw%3D%3D&btag=c0000e00090000&cquery=100y&dy_q=1763639569&feature_id=10cf95ef75b4f3e7eac623e4ea0ea691&l=202511201952498031A9D4752D256DD4B9'\n  },\n  responseType: 'stream',\n  signal: AbortSignal { aborted: false }\n}"
+    },
+    {
+      "timestamp": "19:53:26.905",
+      "level": "MARK",
+      "message": "已开启视频文件 base64转换 正在进行\u001b[33mbase64转换中\u001b[39m...",
+      "raw": "[19:53:26.905][MARK] 已开启视频文件 base64转换 正在进行\u001b[33mbase64转换中\u001b[39m..."
+    },
+    {
+      "timestamp": "19:53:26.906",
+      "level": "MARK",
+      "message": "\u001b[34m被动消息:\u001b[39m 视频大小: 14.3MB 正在通过\u001b[33me.reply\u001b[39m回复...",
+      "raw": "[19:53:26.906][MARK] \u001b[34m被动消息:\u001b[39m 视频大小: 14.3MB 正在通过\u001b[33me.reply\u001b[39m回复..."
+    },
+    {
+      "timestamp": "19:53:26.910",
+      "level": "INFO",
+      "message": "\u001b[38;2;134;142;204m[Bot:462433564]\u001b[39m \u001b[32mSend Group 608506114: \u001b[39m[video:base64://...]",
+      "raw": "[19:53:26.910][INFO] \u001b[38;2;134;142;204m[Bot:462433564]\u001b[39m \u001b[32mSend Group 608506114: \u001b[39m[video:base64://...]"
+    },
+    {
+      "timestamp": "19:53:40.309",
+      "level": "MARK",
+      "message": "临时预览地址：http://localhost:7777/api/kkk/video/tmp_1763639603890.mp4",
+      "raw": "[19:53:40.309][MARK] 临时预览地址：http://localhost:7777/api/kkk/video/tmp_1763639603890.mp4"
+    },
+    {
+      "timestamp": "19:53:40.311",
+      "level": "INFO",
+      "message": "文件 D:/GitHub/karin-plugin-kkk/packages/core/@karinjs/temp/karin-plugin-kkk/kkkdownload/video/tmp_1763639603890.mp4 将在 10 分钟后删除",
+      "raw": "[19:53:40.311][INFO] 文件 D:/GitHub/karin-plugin-kkk/packages/core/@karinjs/temp/karin-plugin-kkk/kkkdownload/video/tmp_1763639603890.mp4 将在 10 分钟后删除"
+    }
+  ],
+  "triggerCommand": "1.28 N@J.Vy 09/12 YZZ:/ 君莫问归期 # 经幡 # 手机摄影 # 拍出电影感 # 青年创作者扶持计划 # 小米15pro  https://v.douyin.com/pZneQ2Nqq_I/ 复制此链接，打开Dou音搜索，直接观看视频！",
   "frameworkVersion": "1.12.2",
-  "pluginVersion": "2.9.4",
-  "buildTime": "2025年11月02日 23:21",
-  "commitHash": "6904f6141248deca7c65461cb5edcad01925b6dc",
-  "useDarkTheme": true
+  "pluginVersion": "2.11.6",
+  "buildTime": "2025年11月20日 14:14",
+  "commitHash": "3eb5649203b63abf3efe3efdfed40b92fc9406c5",
+  "adapterInfo": {
+    "name": "NapCat.Onebot",
+    "version": "v4.9.70",
+    "platform": "qq",
+    "protocol": "napcat",
+    "standard": "onebot11"
+  },
+  "useDarkTheme": false
 }

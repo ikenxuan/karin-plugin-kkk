@@ -53,6 +53,7 @@ const handleSetDouyinPush = wrapWithErrorHandler(async (e) => {
   // 原有的订阅逻辑
   const data = await getDouyinData('搜索数据', {
     query, 
+    type: '用户',
     typeMode: 'strict' 
   })
   await new DouYinpush(e).setting(data.data)

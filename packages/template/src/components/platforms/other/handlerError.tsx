@@ -1,11 +1,105 @@
-import { Chip, Code } from '@heroui/react'
+import { Chip } from '@heroui/react'
 import { AlertCircle, Clock, FileText, Plug2, Terminal } from 'lucide-react'
 import React from 'react'
-import { FaBug, FaCodeBranch, FaCube, FaLayerGroup } from 'react-icons/fa6'
+import { FaBug, FaCodeBranch } from 'react-icons/fa6'
 import { MdAccessTime } from 'react-icons/md'
 
-import { type ApiErrorProps, type BusinessError } from '../../../types/ohter/handlerError'
+import { type ApiErrorProps, type BusinessError, type LogEntry, type LogLevel } from '../../../types/ohter/handlerError'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
+
+/**
+ * ANSI 颜色代码到 Tailwind 类名的映射
+ */
+const ansiColorMap: Record<number, string> = {
+  30: 'text-default-900', // black
+  31: 'text-danger', // red
+  32: 'text-success', // green
+  33: 'text-warning', // yellow
+  34: 'text-primary', // blue
+  35: 'text-secondary', // magenta
+  36: 'text-default-600', // cyan
+  37: 'text-default-500', // white
+  90: 'text-default-600', // bright black
+  91: 'text-danger', // bright red
+  92: 'text-success', // bright green
+  93: 'text-warning', // bright yellow
+  94: 'text-primary', // bright blue
+  95: 'text-secondary', // bright magenta
+  96: 'text-default-500', // bright cyan
+  97: 'text-default-200' // bright white
+}
+
+/**
+ * 将 ANSI 颜色代码转换为带 Tailwind 类的 HTML
+ */
+const convertAnsiToHtml = (text: string): string => {
+  // 匹配 ANSI 转义序列
+  const ansiRegex = /\x1b\[([0-9;]+)m/g
+  let result = ''
+  let lastIndex = 0
+  let currentClasses: string[] = []
+  let match
+
+  // 转义 HTML 特殊字符
+  const escapeHtml = (str: string) => {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
+  }
+
+  while ((match = ansiRegex.exec(text)) !== null) {
+    // 添加前面的文本
+    if (match.index > lastIndex) {
+      const textContent = text.substring(lastIndex, match.index)
+      if (currentClasses.length > 0) {
+        result += `<span class="${currentClasses.join(' ')}">${escapeHtml(textContent)}</span>`
+      } else {
+        result += escapeHtml(textContent)
+      }
+    }
+
+    // 解析 ANSI 代码
+    const codes = match[1].split(';').map(Number)
+    
+    for (const code of codes) {
+      if (code === 0 || code === 39 || code === 49) {
+        // 0: 重置所有样式
+        // 39: 重置前景色
+        // 49: 重置背景色
+        currentClasses = currentClasses.filter(c => !c.startsWith('text-') && !c.startsWith('bg-'))
+      } else if (code === 1) {
+        // 粗体
+        if (!currentClasses.includes('font-bold')) {
+          currentClasses.push('font-bold')
+        }
+      } else if (code === 22) {
+        // 取消粗体
+        currentClasses = currentClasses.filter(c => c !== 'font-bold')
+      } else if (ansiColorMap[code]) {
+        // 移除之前的颜色类
+        currentClasses = currentClasses.filter(c => !c.startsWith('text-'))
+        currentClasses.push(ansiColorMap[code])
+      }
+    }
+
+    lastIndex = ansiRegex.lastIndex
+  }
+
+  // 添加剩余的文本
+  if (lastIndex < text.length) {
+    const textContent = text.substring(lastIndex)
+    if (currentClasses.length > 0) {
+      result += `<span class="${currentClasses.join(' ')}">${escapeHtml(textContent)}</span>`
+    } else {
+      result += escapeHtml(textContent)
+    }
+  }
+
+  return result
+}
 
 /**
  * 使用种子生成伪随机数（确保每次渲染一致）
@@ -40,77 +134,96 @@ const generateBugPositions = (count: number) => {
 }
 
 /**
- * 解析ANSI颜色代码并转换为内联样式，保留换行符和空格格式
- * @param text 包含ANSI颜色代码的文本
- * @returns 解析后的JSX元素数组
+ * 获取日志等级对应的主题色类名
+ * @param level 日志等级
+ * @returns 主题色类名配置
  */
-const parseAnsiColors = (text: string): React.ReactNode[] => {
-  // ANSI颜色代码映射 - 使用实际颜色值而非Tailwind类
-  const colorMap: { [key: string]: string } = {
-    '30': '#000000',
-    '31': '#f31260', // danger
-    '32': '#17c964', // success
-    '33': '#f5a524', // warning
-    '34': '#006FEE', // primary
-    '35': '#7828c8', // secondary
-    '36': '#45d4ff',
-    '37': '#d4d4d8',
-    '90': '#a1a1aa',
-    '91': '#ff6090',
-    '92': '#7ee7b7',
-    '93': '#fbbf24',
-    '94': '#3b9eff',
-    '95': '#a855f7',
-    '96': '#67e8f9',
-    '97': '#f4f4f5'
-  }
-
-  const ansiRegex = /\u001b\[(\d+)m/g
-  const parts: React.ReactNode[] = []
-  let lastIndex = 0
-  let currentColor = ''
-  let match
-
-  while ((match = ansiRegex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      const textPart = text.slice(lastIndex, match.index)
-      const formattedText = textPart.replace(/\\n/g, '\n')
-      if (currentColor) {
-        parts.push(
-          <span key={`${lastIndex}-${match.index}`} style={{ color: currentColor }}>
-            {formattedText}
-          </span>
-        )
-      } else {
-        parts.push(formattedText)
-      }
-    }
-
-    const colorCode = match[1]
-    if (colorCode === '39' || colorCode === '0') {
-      currentColor = ''
-    } else if (colorMap[colorCode]) {
-      currentColor = colorMap[colorCode]
-    }
-
-    lastIndex = ansiRegex.lastIndex
-  }
-
-  if (lastIndex < text.length) {
-    const remainingText = text.slice(lastIndex)
-    const formattedText = remainingText.replace(/\\n/g, '\n')
-    if (currentColor) {
-      parts.push(
-        <span key={`${lastIndex}-end`} style={{ color: currentColor }}>
-          {formattedText}
-        </span>
-      )
-    } else {
-      parts.push(formattedText)
+const getLogLevelTheme = (level: LogLevel): { 
+  bgClass: string
+  borderClass: string
+  textClass: string
+  iconClass: string
+} => {
+  const themeMap: Record<LogLevel, { 
+    bgClass: string
+    borderClass: string
+    textClass: string
+    iconClass: string
+  }> = {
+    'TRAC': { 
+      bgClass: 'bg-default/10',
+      borderClass: 'border-default/30 border-l-default',
+      textClass: 'text-default-600',
+      iconClass: 'text-default-500'
+    },
+    'DEBU': { 
+      bgClass: 'bg-primary/10',
+      borderClass: 'border-primary/30 border-l-primary',
+      textClass: 'text-primary-600',
+      iconClass: 'text-primary'
+    },
+    'MARK': { 
+      bgClass: 'bg-secondary/10',
+      borderClass: 'border-secondary/30 border-l-secondary',
+      textClass: 'text-secondary-600',
+      iconClass: 'text-secondary'
+    },
+    'INFO': { 
+      bgClass: 'bg-success/10',
+      borderClass: 'border-success/30 border-l-success',
+      textClass: 'text-success-600',
+      iconClass: 'text-success'
+    },
+    'WARN': { 
+      bgClass: 'bg-warning/10',
+      borderClass: 'border-warning/30 border-l-warning',
+      textClass: 'text-warning-600',
+      iconClass: 'text-warning'
+    },
+    'ERRO': { 
+      bgClass: 'bg-danger/10',
+      borderClass: 'border-danger/30 border-l-danger',
+      textClass: 'text-danger-600',
+      iconClass: 'text-danger'
+    },
+    'FATA': { 
+      bgClass: 'bg-danger/15',
+      borderClass: 'border-danger/40 border-l-danger',
+      textClass: 'text-danger-700',
+      iconClass: 'text-danger-700'
     }
   }
+  return themeMap[level] || themeMap['TRAC']
+}
 
-  return parts.length > 0 ? parts : [text.replace(/\\n/g, '\n')]
+/**
+ * 适配器协议实现 Logo 配置映射
+ */
+const ADAPTER_LOGO_MAP: Record<string, string> = {
+  napcat: '/image/other/handlerError/napcat.webp',
+  lagrange: '/image/other/handlerError/lagrange.webp',
+  chronocat: '/image/other/handlerError/chronocat.svg',
+  llonebot: '/image/other/handlerError/llonebot.webp',
+  lltwobot: '/image/other/handlerError/llonebot.webp',
+  conwechat: '/image/other/handlerError/conwechat.webp',
+  gocq: '/image/other/handlerError/gocq-http.webp'
+}
+
+/**
+ * 根据适配器名称获取对应的 Logo 元素
+ * @param adapterName 适配器名称
+ * @returns Logo React 元素
+ */
+const getAdapterLogo = (adapterName: string): React.ReactNode => {
+  const nameLower = adapterName.toLowerCase()
+  
+  for (const [key, logoPath] of Object.entries(ADAPTER_LOGO_MAP)) {
+    if (nameLower.includes(key)) {
+      return <img src={logoPath} className='w-10 h-auto' alt={adapterName} />
+    }
+  }
+  
+  return <Plug2 className='w-9 h-9 text-secondary' />
 }
 
 /**
@@ -132,7 +245,7 @@ const ErrorHeader: React.FC<{
       <div className='border-l-4 border-danger pl-12'>
         <div className='flex items-start gap-6 mb-10'>
           {/* <AlertCircle className='w-16 h-16 text-danger mt-2' /> */}
-          <img className='w-30 h-auto' src="/image/流泪.png" />
+          <img className='w-30 h-auto' src="/image/other/handlerError/流泪.png" />
           <div className='flex-1'>
             <h1 className='text-8xl font-bold text-foreground mb-6'>
               哎呀！出错了 ~
@@ -174,7 +287,7 @@ const ErrorHeader: React.FC<{
  */
 const BusinessErrorDetails: React.FC<{
   error: BusinessError
-  logs?: string | string[]
+  logs?: LogEntry[]
   triggerCommand?: string
 }> = ({ error, logs, triggerCommand }) => {
   return (
@@ -188,9 +301,10 @@ const BusinessErrorDetails: React.FC<{
               触发命令
             </h3>
             <div className='font-bold p-10 rounded-lg'>
-              <pre className='text-3xl leading-relaxed whitespace-pre-wrap break-all select-text font-[HarmonyOSHans-Regular]'>
-                {triggerCommand}
-              </pre>
+              <pre 
+                className='text-3xl leading-relaxed whitespace-pre-wrap break-all select-text font-[HarmonyOSHans-Regular]'
+                dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(triggerCommand) }}
+              />
             </div>
           </div>
         )}
@@ -202,41 +316,55 @@ const BusinessErrorDetails: React.FC<{
             错误堆栈
           </h3>
           <div className='bg-danger/5 p-8 rounded-lg border border-danger/20'>
-            <pre className='text-xl leading-relaxed whitespace-pre-wrap break-all select-text text-danger-700 font-mono'>
-              {String(error.stack || '')}
-            </pre>
+            <pre 
+              className='text-xl leading-relaxed whitespace-pre-wrap break-all select-text font-mono'
+              dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(String(error.stack || '')) }}
+            />
           </div>
         </div>
 
         {/* 相关日志 */}
-        {logs && (typeof logs === 'string' ? logs.length > 0 : logs.length > 0) && (
+        {logs && logs.length > 0 && (
           <div className='border-l-2 border-default-200 pl-8'>
             <h3 className='flex items-center gap-3 mb-6 text-3xl font-medium text-foreground'>
               <FileText className='w-8 h-8' />
-              调用解析库
+              相关执行日志
             </h3>
-            <div className='p-8 rounded-lg border border-default-200'>
-              <div className='space-y-4'>
-                {typeof logs === 'string' ? (
-                  logs.split('\n\n').map((logSection, index) => {
-                    const parsedLog = parseAnsiColors(logSection)
-                    return (
-                      <div key={index} className='font-mono text-xl leading-relaxed whitespace-pre-wrap break-all select-text'>
-                        {parsedLog.length > 0 ? parsedLog : logSection}
+            <div className='space-y-3'>
+              {logs.map((log, index) => {
+                const theme = getLogLevelTheme(log.level)
+                return (
+                  <div 
+                    key={index} 
+                    className={`relative rounded-lg border border-l-4 backdrop-blur-xs ${theme.bgClass} ${theme.borderClass}`}
+                  >
+                    {/* 日志等级 */}
+                    <div className='absolute top-3 right-3 pointer-events-none z-10'>
+                      <span className={`font-black text-6xl tracking-tight uppercase opacity-15 ${theme.textClass}`}>
+                        {log.level}
+                      </span>
+                    </div>
+
+                    <div className='p-5'>
+                      <div className='space-y-2'>
+                        {/* 时间戳 */}
+                        <div className='flex items-center gap-2'>
+                          <Clock size={22} className={`flex-shrink-0 mb-1 ${theme.iconClass}`} />
+                          <span className={`text-xl font-mono font-semibold ${theme.textClass}`}>
+                            {log.timestamp}
+                          </span>
+                        </div>
+
+                        {/* 日志消息 */}
+                        <div 
+                          className='font-mono text-xl leading-relaxed whitespace-pre-wrap break-all select-text text-foreground'
+                          dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(log.message) }}
+                        />
                       </div>
-                    )
-                  })
-                ) : (
-                  logs.map((log, index) => {
-                    const parsedLog = parseAnsiColors(log)
-                    return (
-                      <div key={index} className='font-mono text-xl leading-relaxed whitespace-pre-wrap break-all select-text'>
-                        {parsedLog.length > 0 ? parsedLog : log}
-                      </div>
-                    )
-                  })
-                )}
-              </div>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         )}
@@ -252,7 +380,7 @@ const BusinessErrorDetails: React.FC<{
  */
 export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templateName'>> = (props) => {
   const { data } = props
-  const { type, platform, error, method, timestamp, logs, triggerCommand, frameworkVersion, pluginVersion, adapterInfo } = data
+  const { type, platform, error, method, timestamp, logs, triggerCommand, frameworkVersion, pluginVersion, adapterInfo, amagiVersion } = data
   const isBusinessError = type === 'business_error'
   const businessError = isBusinessError ? error as BusinessError : null
 
@@ -313,10 +441,13 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
         <div className='w-full max-w-[1440px] mx-auto px-20 py-16 space-y-8'>
           {/* 版本信息 - 重点突出 */}
           <div className='space-y-5'>
-            {/* 框架版本和插件版本 */}
-            <div className='flex items-center gap-12'>
+            {/* 框架版本、插件版本和 Amagi 版本 */}
+            <div className='flex items-center gap-12 flex-wrap'>
               <div className='flex items-center gap-4'>
-                <FaLayerGroup className='w-9 h-9 text-primary' />
+                <img
+                  src="/image/frame-logo.png"
+                  className='w-10 h-10'
+                />
                 <div>
                   <div className='text-2xl text-default-400'>框架版本</div>
                   <div className='text-4xl font-bold text-foreground'>{frameworkVersion}</div>
@@ -324,33 +455,47 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
               </div>
 
               <div className='flex items-center gap-4'>
-                <FaCube className='w-9 h-9 text-success' />
+                <img
+                  src="/image/logo.png"
+                  className='w-10 h-10'
+                />
                 <div>
                   <div className='text-2xl text-default-400'>插件版本</div>
                   <div className='text-4xl font-bold text-foreground'>{pluginVersion}</div>
                 </div>
               </div>
+
+              {amagiVersion && (
+                <div className='flex items-center gap-4'>
+                  <img 
+                    src="/image/other/handlerError/cxk.png"
+                    alt="泥干嘛哈哈哎呦~"
+                    className='w-11 h-10'
+                  />
+                  <div>
+                    <div className='text-2xl text-default-400'>解析库版本</div>
+                    <div className='text-4xl font-bold text-foreground'>{amagiVersion}</div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* 适配器信息 */}
             {adapterInfo && (
               <div className='flex items-center gap-4'>
-                <Plug2 className='w-9 h-9 text-secondary' />
+                {getAdapterLogo(adapterInfo.name)}
                 <div>
-                  <div className='text-2xl text-default-400'>适配器</div>
-                  <div className='text-4xl font-bold text-foreground'>
-                    <span className='relative inline-block pr-24'>
-                      {adapterInfo.name}
-                      <Chip 
-                        color='secondary' 
-                        variant='flat' 
-                        size='lg'
-                        className='absolute bottom-5 left-70 ml-2 align-super scale-120'
-                      >
-                        <span className='font-bold'>v{adapterInfo.version}</span>
-                      </Chip>
-                    </span>
+                  <div className='text-2xl text-default-400 inline-flex items-center gap-2'>
+                    <span>适配器名称</span>
+                    <Chip 
+                      color='secondary' 
+                      variant='flat' 
+                      size='md'
+                    >
+                      <span className='font-bold'>{adapterInfo.version.startsWith('v') ? adapterInfo.version : `v${adapterInfo.version}`}</span>
+                    </Chip>
                   </div>
+                  <div className='text-4xl font-bold text-foreground'>{adapterInfo.name}</div>
                 </div>
               </div>
             )}
@@ -373,45 +518,27 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
           </div>
 
           {/* 底部提示 */}
-          <div className='border-l-2 text-default-400 border-warning pl-8'>
-            <p className='text-3xl leading-relaxed mb-6'>
-              遇到问题了？为了帮助开发者快速定位并解决问题，请提供以下信息：
+          <div className='border-l-2 text-default-400 border-primary pl-8'>
+            <p className='text-3xl leading-relaxed mb-6 text-foreground'>
+              需要帮助？请提供以下信息以便开发者快速定位问题：
             </p>
             <div className='space-y-4 mb-8'>
-              <div className='flex items-start gap-3'>
-                <span className='text-warning font-bold text-3xl'>1.</span>
+              <div className='flex items-baseline gap-3'>
+                <span className='text-primary font-bold text-3xl flex-shrink-0'>1.</span>
                 <p className='text-3xl leading-relaxed flex-1'>
-                  <span className='text-warning font-semibold'>完整的错误截图</span>（包含本页面所有内容）
+                  <span className='text-primary font-semibold'>完整的错误截图</span> - 包含本页面所有内容（错误堆栈、执行日志、版本信息等）
                 </p>
               </div>
-              <div className='flex items-start gap-3'>
-                <span className='text-warning font-bold text-3xl'>2.</span>
+              <div className='flex items-baseline gap-3'>
+                <span className='text-primary font-bold text-3xl flex-shrink-0'>2.</span>
                 <p className='text-3xl leading-relaxed flex-1'>
-                  <span className='text-warning font-semibold'>
-                    DEBUG 等级的完整日志
-                  </span>
-                  {' '}- 当前页面显示的日志是自动捕获的，可能不包含关键的调试信息。请在配置文件中将日志等级设置为{' '}
-                  <Code 
-                    color='warning'
-                    size='lg'
-                    radius='md'
-                    className='font-mono inline-flex items-center mx-1 -translate-y-[6px]'
-                  >
-                    DEBUG
-                  </Code>
-                  {' '}，重现问题后提供完整日志
-                </p>
-              </div>
-              <div className='flex items-start gap-3'>
-                <span className='text-warning font-bold text-3xl'>3.</span>
-                <p className='text-3xl leading-relaxed flex-1'>
-                  <span className='text-warning font-semibold'>问题复现步骤</span> - 详细描述触发错误的操作流程
+                  <span className='text-primary font-semibold'>问题复现步骤</span> - 详细描述触发错误的操作流程和环境信息
                 </p>
               </div>
             </div>
             <div className='border-t border-default-200 pt-6'>
-              <p className='text-3xl leading-relaxed mb-4'>
-                您可以通过以下方式联系我们：
+              <p className='text-3xl leading-relaxed mb-4 text-foreground'>
+                联系方式：
               </p>
               <div className='space-y-3'>
                 <p className='text-3xl'>
@@ -421,11 +548,6 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
                   · 加入 QQ 群：<span className='text-primary font-semibold'>795874649</span>
                 </p>
               </div>
-            </div>
-            <div className='mt-6 p-6 bg-warning/10 rounded-lg border border-warning/30'>
-              <p className='text-2xl text-warning-700 leading-relaxed'>
-                💡 提示：仅凭此页面的信息可能无法完全定位错误根源，DEBUG 日志能提供更详细的执行流程和变量状态，大大提高问题解决效率。
-              </p>
             </div>
           </div>
         </div>

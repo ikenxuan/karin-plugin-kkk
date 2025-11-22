@@ -2,13 +2,56 @@
   "type": "business_error",
   "platform": "system",
   "error": {
-    "message": "Cannot read properties of undefined (reading 'aweme_detail')",
-    "name": "TypeError",
-    "stack": "TypeError: Cannot read properties of undefined (reading 'aweme_detail')\n    at DouYin.RESOURCES (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\platform\\douyin\\douyin.ts:81:41)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async wrapWithErrorHandler.businessName (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\apps\\tools.ts:20:3)\n    at async Object.fnc (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\module\\utils\\ErrorHandler.ts:191:22)\n    at async groupsCmd (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@1.10.22\\node_modules\\node-karin\\dist\\index.mjs:14167:26)\n    at async groupsDeal (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@1.10.22\\node_modules\\node-karin\\dist\\index.mjs:14135:24)",
-    "businessName": "抖音视频解析"
+    "message": "test",
+    "name": "Error",
+    "stack": "Error: test\n    at Bilibilipush.getdata (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\platform\\bilibili\\push.ts:142:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Bilibilipush.action (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\platform\\bilibili\\push.ts:109:14)\n    at async wrapWithErrorHandler.businessName (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\apps\\push.ts:32:5)\n    at async <anonymous> (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\module\\utils\\ErrorHandler.ts:63:14)\n    at async Object.fnc (D:\\GitHub\\karin-plugin-kkk\\packages\\core\\src\\module\\utils\\ErrorHandler.ts:62:12)\n    at async groupsCmd (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@https+++pkg.pr.new+node-karin@d4dbcba\\node_modules\\node-karin\\dist\\index.mjs:14505:26)\n    at async groupsDeal (D:\\GitHub\\karin-plugin-kkk\\node_modules\\.pnpm\\node-karin@https+++pkg.pr.new+node-karin@d4dbcba\\node_modules\\node-karin\\dist\\index.mjs:14473:24)",
+    "businessName": "强制推送"
   },
-  "method": "抖音视频解析",
-  "timestamp": "2025-09-15T06:34:51.465Z",
-  "logs": "[2025-09-15T06:34:51.378Z] [amagi] [WARN] \n      获取响应数据失败！原因：\u001b[33m接口返回内容为空，你的抖音ck可能已经失效！\u001b[39m\n      请求类型：「聚合解析」\n      请求URL：https://www.douyin.com/aweme/v1/web/aweme/detail/?device_platform=webapp&aid=6383&channel=channel_pc_web&pc_client_type=1&cookie_enabled=true&browser_language=zh-CN&browser_platform=Win32&browser_name=Chrome&browser_version=138.0.0.0&browser_online=true&engine_name=Blink&engine_version=138.0.0.0&os_name=Windows&os_version=10&cpu_core_num=16&device_memory=8&platform=PC&downlink=10&effective_type=4g&msToken=npSGuuKE5pazJlMHTrzkBChl1oh86DRobCY7uRQ5hABYOP66RRuuQRE4rtQzcRIfToIk7ramPw7JV1xlY9OZhcVDCul54OzTDGM97Ve36brHcY7znH76&verifyFp=verify_mfkqwxk4_AjFfTmhz_niGJ_4B3i_Bdr8_Fmvg7ecGE04L&fp=verify_mfkqwxk4_AjFfTmhz_niGJ_4B3i_Bdr8_Fmvg7ecGE04L&aweme_id=7549805025456688411&update_version_code=170400&version_code=190500&version_name=19.5.0&screen_width=2328&screen_height=1310&round_trip_time=150&webid=7351848354471872041&a_bogus=Qym0/R8XDiDkhV6k5WxLfY3q6633YQwo0trEMD2fGx3tPL39HMY89exo9yGv4YSji4/sIeYjy4hbT3ohrQ2y8qwf9W0L/25gsDSkKl12so0j53inCLf/E0iE5hsAtFH8svr4iKi8owICSYyhldAJ5kIlO62-zo0/94y=\n      \n\n[2025-09-15T06:34:51.464Z] [amagi] [WARN] \n      获取响应数据失败！原因：\u001b[33m接口返回内容为空，你的抖音ck可能已经失效！\u001b[39m\n      请求类型：「评论数据」\n      请求URL：https://www.douyin.com/aweme/v1/web/comment/list/?device_platform=webapp&aid=6383&channel=channel_pc_web&pc_client_type=1&cookie_enabled=true&browser_language=zh-CN&browser_platform=Win32&browser_name=Chrome&browser_version=138.0.0.0&browser_online=true&engine_name=Blink&engine_version=138.0.0.0&os_name=Windows&os_version=10&cpu_core_num=16&device_memory=8&platform=PC&downlink=10&effective_type=4g&msToken=LH8guPwbofeydGL8dV5omdjYPYCMEbc8s6VlNVIcOcEjSqUF1pb5FsIsuIAd9LfyKz4RA3aZBdjjOyKHdtaj6GHc0ocQ93LdTUaA6PyQg521CyPAzskq&verifyFp=verify_mfkqwxk4_AjFfTmhz_niGJ_4B3i_Bdr8_Fmvg7ecGE04L&fp=verify_mfkqwxk4_AjFfTmhz_niGJ_4B3i_Bdr8_Fmvg7ecGE04L&aweme_id=7549805025456688411&cursor=0&count=5&item_type=0&insert_ids=&whale_cut_token=&cut_version=1&rcFT=&version_code=170400&version_name=17.4.0&screen_width=1552&screen_height=970&round_trip_time=50&a_bogus=mvm0/fLkdi2PhD6h5WxLfY3q6XM3YQwo0trEMD2ftV3tPL39HMTH9exo9yGv4Ffji4/sIeYjy4hbT3ohrQ2y8qwf9W0L/25gsDSkKl12so0j53inCLf/E0iE5hsAtFH8svr4iKi8owICSYyhldAJ5kIlO62-zo0/94L=\n      ",
+  "method": "强制推送",
+  "timestamp": "2025-11-20T05:34:04.579Z",
+  "logs": [
+    {
+      "timestamp": "13:34:04.489",
+      "level": "MARK",
+      "message": "\n        \u001b[34m开始处理并渲染B站动态图片\u001b[39m\n        \u001b[36mUP\u001b[39m: \u001b[32m网易第五人格手游\u001b[39m\n        \u001b[36m动态id\u001b[39m：\u001b[33m1137182788089282564\u001b[39m\n        \u001b[36m访问地址\u001b[39m：\u001b[32mhttps://t.bilibili.com/1137182788089282564\u001b[39m",
+      "raw": "[13:34:04.489][MARK] \n        \u001b[34m开始处理并渲染B站动态图片\u001b[39m\n        \u001b[36mUP\u001b[39m: \u001b[32m网易第五人格手游\u001b[39m\n        \u001b[36m动态id\u001b[39m：\u001b[33m1137182788089282564\u001b[39m\n        \u001b[36m访问地址\u001b[39m：\u001b[32mhttps://t.bilibili.com/1137182788089282564\u001b[39m"
+    },
+    {
+      "timestamp": "13:34:04.490",
+      "level": "DEBU",
+      "message": "检查动态是否需要过滤：https://t.bilibili.com/1137182788089282564",
+      "raw": "[13:34:04.490][DEBU] 检查动态是否需要过滤：https://t.bilibili.com/1137182788089282564"
+    },
+    {
+      "timestamp": "13:34:04.491",
+      "level": "DEBU",
+      "message": "\n      获取用户网易第五人格手游（211005705）的过滤配置：\n      过滤模式：blacklist\n      过滤词：\n      过滤标签：\n      ",
+      "raw": "[13:34:04.491][DEBU] \n      获取用户网易第五人格手游（211005705）的过滤配置：\n      过滤模式：blacklist\n      过滤词：\n      过滤标签：\n      "
+    },
+    {
+      "timestamp": "13:34:04.491",
+      "level": "DEBU",
+      "message": "\n      提取主动态的文本和标签：\n      文本：\n      标签：[]\n      ",
+      "raw": "[13:34:04.491][DEBU] \n      提取主动态的文本和标签：\n      文本：\n      标签：[]\n      "
+    },
+    {
+      "timestamp": "13:34:04.492",
+      "level": "DEBU",
+      "message": "\n    UP主UID：211005705\n    检查内容：\n    检查标签：\n    命中词：[]\n    命中标签：[]\n    过滤模式：blacklist\n    是否过滤：\u001b[32mfalse\u001b[39m\n    动态地址：\u001b[32mhttps://t.bilibili.com/1137182788089282564\u001b[39m\n    动态类型：DYNAMIC_TYPE_DRAW\n    ",
+      "raw": "[13:34:04.492][DEBU] \n    UP主UID：211005705\n    检查内容：\n    检查标签：\n    命中词：[]\n    命中标签：[]\n    过滤模式：blacklist\n    是否过滤：\u001b[32mfalse\u001b[39m\n    动态地址：\u001b[32mhttps://t.bilibili.com/1137182788089282564\u001b[39m\n    动态类型：DYNAMIC_TYPE_DRAW\n    "
+    }
+  ],
+  "triggerCommand": "#B站全部强制推送",
+  "frameworkVersion": "1.12.2",
+  "pluginVersion": "2.11.6",
+  "buildTime": "2025年11月20日 13:22",
+  "commitHash": "3eb5649203b63abf3efe3efdfed40b92fc9406c5",
+  "adapterInfo": {
+    "name": "NapCat.Onebot",
+    "version": "v4.9.70",
+    "platform": "qq",
+    "protocol": "napcat",
+    "standard": "onebot11"
+  },
   "useDarkTheme": false
 }

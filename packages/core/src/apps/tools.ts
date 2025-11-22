@@ -9,14 +9,23 @@ import { fetchKuaishouData, getKuaishouID, Kuaishou } from '@/platform/kuaishou'
 import { getXiaohongshuID, Xiaohongshu } from '@/platform/xiaohongshu'
 
 const reg = {
-  douyin: /^.*((www|v|jx|m|jingxuan)\.(douyin|iesdouyin)\.com|douyin\.com\/(video|note)).*/,
+  douyin: /((www|v|jx|m|jingxuan)\.(douyin|iesdouyin)\.com|douyin\.com\/(video|note))/,
   bilibili: /(bilibili.com|b23.tv|t.bilibili.com|bili2233.cn|BV[a-zA-Z0-9]{10,}|av\d+)/i,
-  kuaishou: /^((.*)快手(.*)快手(.*)|(.*)v\.kuaishou(.*)|(.*)kuaishou\.com\/f\/[a-zA-Z0-9]+.*)$/,
+  kuaishou: /(快手.*快手|v\.kuaishou|kuaishou\.com\/f\/[a-zA-Z0-9]+)/,
   xiaohongshu: /(xiaohongshu\.com|xhslink\.com)/
 }
 
 // 包装抖音处理函数
 const handleDouyin = wrapWithErrorHandler(async (e) => {
+  // logger.debug('debug')
+  // logger.trace('trace')
+  // logger.info('info')
+  // logger.warn('warn')
+  // logger.mark('mark')
+  // logger.error('error')
+  // logger.fatal('ftatal')
+
+  // throw Error('泥嚎')
   const url = String(e.msg.match(/(http|https):\/\/.*\.(douyin|iesdouyin)\.com\/[^ ]+/g))
   const iddata = await getDouyinID(e, url)
   await new DouYin(e, iddata).DouyinHandler(iddata)

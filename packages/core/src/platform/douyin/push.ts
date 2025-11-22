@@ -291,6 +291,7 @@ export class DouYinpush extends Base {
       /** 过滤掉不启用的订阅项 */
       const filteredUserList = userList.filter(item => item.switch !== false)
       for (const item of filteredUserList) {
+        await common.sleep(2000)
         const sec_uid = item.sec_uid
         logger.debug(`开始获取用户：${item.remark}（${sec_uid}）的主页作品列表`)
         const videolist = await this.amagi.getDouyinData('用户主页视频列表数据', { sec_uid, typeMode: 'strict' })
@@ -312,7 +313,6 @@ export class DouYinpush extends Base {
         // 处理视频列表
         if (videolist.data.aweme_list.length > 0) {
           for (const aweme of videolist.data.aweme_list) {
-            logger.debug(`开始处理作品：${aweme.aweme_id}`)
             const now = Date.now()
             const createTime = aweme.create_time * 1000
             const timeDifference = now - createTime // 时间差，单位毫秒
@@ -322,7 +322,7 @@ export class DouYinpush extends Base {
             const timeDiffSeconds = Math.round(timeDifference / 1000)
             const timeDiffHours = Math.round((timeDifference / 1000 / 60 / 60) * 100) / 100 // 保留2位小数
 
-            logger.debug(`
+            logger.trace(`
               前期获取该作品基本信息：
               作者：${aweme.author.nickname}
               作品ID：${aweme.aweme_id}
@@ -445,11 +445,26 @@ export class DouYinpush extends Base {
     const botId = this.e.selfId
 
     try {
-      let index = 0
-      while (data.data[index].card_unique_name !== 'user') {
-        index++
+      // 获取用户输入的抖音号
+      const inputDouyinId = this.e.msg.replace(/^#设置抖音推送/, '').trim()
+      
+      // 在用户列表中查找匹配的用户
+      let matchedUser = null
+      for (const userItem of data.user_list) {
+        const currentDouyinId = userItem.user_info.unique_id === '' ? userItem.user_info.short_id : userItem.user_info.unique_id
+        if (currentDouyinId === inputDouyinId) {
+          matchedUser = userItem.user_info
+          break
+        }
       }
-      const sec_uid = data.data[index].user_list[0].user_info.sec_uid
+      
+      // 如果没找到匹配的用户，抛出错误
+      if (!matchedUser) {
+        throw new Error(`未找到抖音号为 ${inputDouyinId} 的用户`)
+      }
+      
+      // 使用匹配到的用户的 sec_uid 进行下一步请求
+      const sec_uid = matchedUser.sec_uid
       const UserInfoData = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
 
       /** 处理抖音号 */

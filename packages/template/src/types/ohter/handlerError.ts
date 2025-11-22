@@ -39,6 +39,25 @@ export interface PlatformConfig {
 }
 
 /**
+ * 日志等级类型
+ */
+export type LogLevel = 'TRAC' | 'DEBU' | 'MARK' | 'INFO' | 'ERRO' | 'WARN' | 'FATA'
+
+/**
+ * 日志条目接口
+ */
+export interface LogEntry {
+  /** 时间戳 */
+  timestamp: string
+  /** 日志等级 */
+  level: LogLevel
+  /** 日志内容 */
+  message: string
+  /** 原始日志字符串 */
+  raw: string
+}
+
+/**
  * 适配器信息接口
  */
 export interface AdapterInfo {
@@ -71,7 +90,7 @@ export interface ApiErrorProps extends BaseComponentProps {
     /** 错误发生时间 */
     timestamp: string
     /** 收集到的日志信息 */
-    logs?: string | string[]
+    logs?: LogEntry[]
     /** 触发命令 */
     triggerCommand?: string
     /** 框架版本 */
@@ -84,6 +103,8 @@ export interface ApiErrorProps extends BaseComponentProps {
     commitHash?: string
     /** 适配器信息 */
     adapterInfo?: AdapterInfo
+    /** Amagi 库版本 */
+    amagiVersion?: string
   }
   /** 分享链接 */
   qrCodeDataUrl: string
@@ -135,8 +156,8 @@ export interface HandlerErrorProps {
   method: string
   /** 时间戳 */
   timestamp: string
-  /** 相关日志，可以是字符串或字符串数组 */
-  logs?: string | string[]
+  /** 相关日志 */
+  logs?: LogEntry[]
   /** 触发命令 - 新增字段 */
   triggerCommand?: string
   /** 分享链接 - 新增字段 */
