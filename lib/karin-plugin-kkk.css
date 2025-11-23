@@ -15258,70 +15258,6 @@
     background-color: var(--theme-surface);
   }
 
-  .qq-blue {
-    color: var(--qq-blue);
-  }
-
-  .bg-qq-blue {
-    background-color: var(--qq-blue);
-  }
-
-  .wechat-green {
-    color: var(--wechat-green);
-  }
-
-  .bg-wechat-green {
-    background-color: var(--wechat-green);
-  }
-
-  .telegram-blue {
-    color: var(--telegram-blue);
-  }
-
-  .bg-telegram-blue {
-    background-color: var(--telegram-blue);
-  }
-
-  .discord-purple {
-    color: var(--discord-purple);
-  }
-
-  .bg-discord-purple {
-    background-color: var(--discord-purple);
-  }
-
-  .douyin-primary {
-    color: var(--douyin-primary);
-  }
-
-  .bg-douyin-primary {
-    background-color: var(--douyin-primary);
-  }
-
-  .douyin-secondary {
-    color: var(--douyin-secondary);
-  }
-
-  .bg-douyin-secondary {
-    background-color: var(--douyin-secondary);
-  }
-
-  .bilibili-primary {
-    color: var(--bilibili-primary);
-  }
-
-  .bg-bilibili-primary {
-    background-color: var(--bilibili-primary);
-  }
-
-  .bilibili-secondary {
-    color: var(--bilibili-secondary);
-  }
-
-  .bg-bilibili-secondary {
-    background-color: var(--bilibili-secondary);
-  }
-
   .text-like {
     color: var(--heroui-like);
   }
@@ -15648,14 +15584,6 @@ code.hljs {
 }
 
 :root {
-  --qq-blue: #12b7f5;
-  --wechat-green: #07c160;
-  --telegram-blue: #08c;
-  --discord-purple: #5865f2;
-  --douyin-primary: #fe2c55;
-  --douyin-secondary: #25f4ee;
-  --bilibili-primary: #00a1d6;
-  --bilibili-secondary: #fb7299;
   --heroui-like: #ff6b6b;
   --heroui-comment: #4dabf7;
   --heroui-share: #51cf66;
