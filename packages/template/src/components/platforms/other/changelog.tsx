@@ -3,9 +3,6 @@ import { CornerDownLeft, ExternalLink } from 'lucide-react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
-import rehypeRaw from 'rehype-raw'
-import remarkBreaks from 'remark-breaks'
-import remarkGfm from 'remark-gfm'
 
 import { GlowText } from '../../../components/common/GlowImage'
 import type { ChangelogProps } from '../../../types/ohter/changelog'
@@ -74,8 +71,7 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
           </>
         ) : null}
         <ReactMarkdown
-          remarkPlugins={[remarkGfm, remarkBreaks]}
-          rehypePlugins={[rehypeHighlight, rehypeRaw]}
+          rehypePlugins={[rehypeHighlight]}
           components={{
             h1: ({ children, ...props }) => (
               <h1 className="text-[5.28em] font-semibold mb-8 pb-2 border-b-2 border-default-400 text-default-900" {...props}>

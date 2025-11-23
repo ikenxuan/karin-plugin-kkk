@@ -68,7 +68,7 @@ export const InspectorToggle: React.FC<InspectorToggleProps> = ({ active, onTogg
       <Button
         size='sm'
         variant='flat'
-        color={isActive ? 'secondary' : 'default'}
+        color={isActive ? 'default' : 'success'}
         startContent={<MdOutlineSearch className='w-4 h-4' />}
         onPress={handleToggle}
       >

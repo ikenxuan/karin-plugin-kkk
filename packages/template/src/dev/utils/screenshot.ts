@@ -42,7 +42,6 @@ export const captureScreenshot = async (options: ScreenshotOptions): Promise<Scr
 
     // 使用 SnapDOM 进行截图
     const result = await snapdom(element, {
-      backgroundColor: '#ffffff',
       // 明确设置宽度为 1440px
       width: 1440,
       // 保留外部 transform（包括 scale）
@@ -52,7 +51,9 @@ export const captureScreenshot = async (options: ScreenshotOptions): Promise<Scr
       // 快速模式关闭以获得更好质量
       fast: false,
       // 显示占位符
-      placeholders: true
+      placeholders: true,
+      // 输出类型为 PNG
+      type: 'png'
     })
 
     console.log('截图完成')

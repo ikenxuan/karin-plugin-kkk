@@ -24,17 +24,6 @@
 
 /* 全局主题变量 */
 :root {
-  /* 平台颜色变量 */
-  --qq-blue: #12b7f5;
-  --wechat-green: #07c160;
-  --telegram-blue: #0088cc;
-  --discord-purple: #5865f2;
-  --douyin-primary: #fe2c55;
-  --douyin-secondary: #25f4ee;
-  --bilibili-primary: #00a1d6;
-  --bilibili-secondary: #fb7299;
-
-  /* 新增语义化主题色 - 基于功能和图标含义 */
   /* 互动相关颜色 */
   --heroui-like: #ff6b6b;
   /* 点赞/喜欢 - 温暖的红色 */
@@ -85,71 +74,6 @@
 
   .theme-surface {
     background-color: var(--theme-surface);
-  }
-
-  /* 平台颜色工具类 */
-  .qq-blue {
-    color: var(--qq-blue);
-  }
-
-  .bg-qq-blue {
-    background-color: var(--qq-blue);
-  }
-
-  .wechat-green {
-    color: var(--wechat-green);
-  }
-
-  .bg-wechat-green {
-    background-color: var(--wechat-green);
-  }
-
-  .telegram-blue {
-    color: var(--telegram-blue);
-  }
-
-  .bg-telegram-blue {
-    background-color: var(--telegram-blue);
-  }
-
-  .discord-purple {
-    color: var(--discord-purple);
-  }
-
-  .bg-discord-purple {
-    background-color: var(--discord-purple);
-  }
-
-  .douyin-primary {
-    color: var(--douyin-primary);
-  }
-
-  .bg-douyin-primary {
-    background-color: var(--douyin-primary);
-  }
-
-  .douyin-secondary {
-    color: var(--douyin-secondary);
-  }
-
-  .bg-douyin-secondary {
-    background-color: var(--douyin-secondary);
-  }
-
-  .bilibili-primary {
-    color: var(--bilibili-primary);
-  }
-
-  .bg-bilibili-primary {
-    background-color: var(--bilibili-primary);
-  }
-
-  .bilibili-secondary {
-    color: var(--bilibili-secondary);
-  }
-
-  .bg-bilibili-secondary {
-    background-color: var(--bilibili-secondary);
   }
 
   /* 新增语义化颜色工具类 */
