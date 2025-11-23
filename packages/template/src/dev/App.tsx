@@ -1,16 +1,14 @@
-import { Button, Chip } from '@heroui/react'
-import { Camera, Palette, RefreshCw, Save } from 'lucide-react'
+import { Button, Chip, Switch } from '@heroui/react'
+import { Camera, Palette } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 
-// 使用新的配置系统
 import { getEnabledComponents } from '../config/config'
 import { DataService } from '../services/DataService'
 import { PlatformType } from '../types/platforms'
-import { JsonEditor } from './components/JsonEditor'
+import { DataFileSelector } from './components/DataFileSelector'
 import { PlatformSelector } from './components/PlatformSelector'
 import { PreviewPanel } from './components/PreviewPanel'
-import { QuickSettings } from './components/QuickSettings'
 
 /**
  * URL参数接口
@@ -97,13 +95,12 @@ export const App: React.FC = () => {
   const [templateData, setTemplateData] = useState<any>(null)
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
   const [scale, setScale] = useState(0.5)
-  const [isLoading, setIsLoading] = useState(false)
   const [availableDataFiles, setAvailableDataFiles] = useState<string[]>([])
   const [selectedDataFile, setSelectedDataFile] = useState<string>(urlParams.dataFile || 'default.json')
   const [isCapturing, setIsCapturing] = useState(false)
 
   const dataService = DataService.getInstance()
-  const previewPanelRef = useRef<any>(null)
+  const previewPanelRef = useRef<{ captureScreenshot: () => Promise<void>; fitToCanvas: () => void }>(null)
 
 
   // 监听浏览器前进后退按钮
@@ -182,7 +179,6 @@ export const App: React.FC = () => {
    * 加载模板数据
    */
   const loadData = async (filename?: string) => {
-    setIsLoading(true)
     try {
       // 加载模板数据
       const data = await dataService.getTemplateData(
@@ -210,47 +206,22 @@ export const App: React.FC = () => {
       } catch (defaultError) {
         console.error('加载默认数据也失败:', defaultError)
       }
-    } finally {
-      setIsLoading(false)
     }
   }
 
   /**
-   * 保存数据
+   * 处理主题切换
+   * @param checked 是否深色主题
    */
-  const saveData = async () => {
-    if (!templateData) return
-
-    setIsLoading(true)
-    try {
-      await dataService.saveTemplateData(
-        selectedPlatform,
-        selectedTemplate,
-        templateData,
-        selectedDataFile
-      )
-      console.log('数据保存成功')
-    } catch (error) {
-      console.error('保存数据失败:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  /**
-   * 处理字段变更
-   * @param field 字段名
-   * @param value 新值
-   */
-  const handleFieldChange = async (field: string, value: any) => {
+  const handleThemeChange = async (checked: boolean) => {
     if (templateData) {
-      const newData = { ...templateData, [field]: value }
+      const newData = { ...templateData, useDarkTheme: checked }
       setTemplateData(newData)
 
-      // 如果是主题变更且有分享链接，重新生成二维码
-      if (field === 'useDarkTheme' && newData.share_url) {
+      // 如果有分享链接，重新生成二维码
+      if (newData.share_url) {
         try {
-          const qrDataUrl = await dataService.generateQRCode(newData.share_url, value)
+          const qrDataUrl = await dataService.generateQRCode(newData.share_url, checked)
           setQrCodeDataUrl(qrDataUrl)
         } catch (error) {
           console.error('重新生成二维码失败:', error)
@@ -271,12 +242,12 @@ export const App: React.FC = () => {
   /**
    * 保存新数据文件
    * @param filename 文件名
-   * @param data 数据
+   * @param jsonData JSON 数据
    */
-  const handleSaveNewDataFile = async (filename: string, data: any) => {
+  const handleSaveNewDataFile = async (filename: string, jsonData: any) => {
     try {
       const fullFilename = filename.endsWith('.json') ? filename : `${filename}.json`
-      await dataService.saveTemplateData(selectedPlatform, selectedTemplate, data, fullFilename)
+      await dataService.saveTemplateData(selectedPlatform, selectedTemplate, jsonData, fullFilename)
       await loadAvailableFiles()
       setSelectedDataFile(fullFilename)
       console.log('新数据文件保存成功')
@@ -305,8 +276,8 @@ export const App: React.FC = () => {
   return (
     <div className='overflow-hidden h-screen bg-gradient-to-br from-blue-50 to-indigo-100 font-[HarmonyOSHans-Regular]'>
       {/* 顶部导航 */}
-      <div className='flex-shrink-0 h-20 bg-white border-b border-gray-200 shadow-sm'>
-        <div className='flex justify-between items-center px-4 h-full'>
+      <div className='flex-shrink-0 h-16 bg-white border-b border-gray-200 shadow-sm'>
+        <div className='flex justify-between items-center px-6 h-full'>
           <div className='flex gap-4 items-center'>
             <div className='flex gap-2 items-center'>
               <Palette className='flex-shrink-0 w-6 h-6 text-blue-600' />
@@ -320,53 +291,24 @@ export const App: React.FC = () => {
                 {selectedDataFile.replace('.json', '')}
               </Chip>
             )}
-            {/* 显示当前路径信息 */}
             <Chip color='default' variant='flat' size='sm'>
               {selectedPlatform}/{selectedTemplate.includes('/') ? selectedTemplate.split('/').join(' → ') : selectedTemplate}
             </Chip>
           </div>
           <div className='flex flex-shrink-0 gap-2 items-center'>
-            <Button
-              color='success'
-              variant='flat'
-              startContent={<RefreshCw className='w-4 h-4' />}
-              onPress={() => loadData()}
-              isLoading={isLoading}
-              size='sm'
-            >
-              重新加载
-            </Button>
-            <Button
-              color='secondary'
-              variant='flat'
-              startContent={<Camera className='w-4 h-4' />}
-              onPress={handleCapture}
-              isLoading={isCapturing}
-              size='sm'
-            >
-              截图
-            </Button>
-            <Button
-              color='primary'
-              startContent={<Save className='w-4 h-4' />}
-              onPress={saveData}
-              isLoading={isLoading}
-              size='sm'
-            >
-              保存数据
-            </Button>
+            {/* 截图按钮已移至画布工具栏 */}
           </div>
         </div>
       </div>
 
       {/* 主要内容区域 */}
-      <div className='h-[calc(100vh-5rem)] overflow-hidden'>
+      <div className='h-[calc(100vh-4rem)] overflow-hidden'>
         <PanelGroup direction='horizontal' className='h-full'>
           {/* 左侧控制面板 */}
           <Panel
-            defaultSize={30}
+            defaultSize={28}
             minSize={20}
-            maxSize={50}
+            maxSize={40}
             className='bg-white border-r border-gray-200'
           >
             <div className='overflow-y-auto h-full scrollbar-hide'>
@@ -381,23 +323,9 @@ export const App: React.FC = () => {
                   />
                 </div>
 
-                {/* 快速设置 */}
+                {/* 数据文件选择器 */}
                 <div className='flex-shrink-0'>
-                  <QuickSettings
-                    platform={selectedPlatform}
-                    templateId={selectedTemplate}
-                    data={templateData}
-                    onChange={handleFieldChange}
-                  />
-                </div>
-
-                {/* JSON编辑器 */}
-                <div className='flex-shrink-0'>
-                  <JsonEditor
-                    data={templateData}
-                    onChange={setTemplateData}
-                    platform={selectedPlatform}
-                    templateId={selectedTemplate}
+                  <DataFileSelector
                     availableDataFiles={availableDataFiles}
                     selectedDataFile={selectedDataFile}
                     onDataFileChange={handleDataFileChange}
@@ -415,20 +343,90 @@ export const App: React.FC = () => {
 
           {/* 右侧预览面板 */}
           <Panel
-            defaultSize={70}
-            minSize={50}
+            defaultSize={72}
+            minSize={60}
             className='bg-gray-50'
           >
-            <div className='overflow-hidden h-full'>
-              <PreviewPanel
-                ref={previewPanelRef}
-                platform={selectedPlatform}
-                templateId={selectedTemplate}
-                data={templateData}
-                qrCodeDataUrl={qrCodeDataUrl}
-                scale={scale}
-                onScaleChange={setScale}
-              />
+            <div className='flex flex-col h-full'>
+              {/* 画布工具栏 */}
+              <div className='flex-shrink-0 px-6 py-3 bg-white border-b border-gray-200'>
+                <div className='flex items-center gap-4'>
+                  {/* 主题切换开关 */}
+                  <div className='flex gap-2 items-center'>
+                    <Switch
+                      isSelected={templateData?.useDarkTheme || false}
+                      onValueChange={handleThemeChange}
+                      size='sm'
+                      color='primary'
+                    />
+                    <span className='text-sm font-medium text-gray-700'>深色主题</span>
+                  </div>
+
+                  {/* 分隔线 */}
+                  <div className='w-px h-6 bg-gray-300' />
+
+                  {/* 截图按钮 */}
+                  <Button
+                    size='sm'
+                    color='secondary'
+                    variant='flat'
+                    startContent={<Camera className='w-4 h-4' />}
+                    onPress={handleCapture}
+                    isLoading={isCapturing}
+                  >
+                    截图
+                  </Button>
+
+                  {/* 分隔线 */}
+                  <div className='w-px h-6 bg-gray-300' />
+
+                  {/* 适应画布按钮 */}
+                  <Button
+                    size='sm'
+                    variant='flat'
+                    onPress={() => {
+                      if (previewPanelRef.current?.fitToCanvas) {
+                        previewPanelRef.current.fitToCanvas()
+                      }
+                    }}
+                  >
+                    适应画布
+                  </Button>
+
+                  {/* 分隔线 */}
+                  <div className='w-px h-6 bg-gray-300' />
+
+                  {/* 缩放进度条 */}
+                  <div className='flex gap-2 items-center'>
+                    <span className='text-xs text-gray-500 whitespace-nowrap'>缩放:</span>
+                    <input
+                      type='range'
+                      min='10'
+                      max='500'
+                      step='1'
+                      value={scale * 100}
+                      onChange={(e) => setScale(Number(e.target.value) / 100)}
+                      className='w-64 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary'
+                    />
+                    <span className='text-xs font-medium text-gray-700 tabular-nums min-w-[50px] text-right'>
+                      {Math.round(scale * 100)}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 预览画布 */}
+              <div className='flex-1 overflow-hidden'>
+                <PreviewPanel
+                  ref={previewPanelRef}
+                  platform={selectedPlatform}
+                  templateId={selectedTemplate}
+                  data={templateData}
+                  qrCodeDataUrl={qrCodeDataUrl}
+                  scale={scale}
+                  onScaleChange={setScale}
+                />
+              </div>
             </div>
           </Panel>
         </PanelGroup>

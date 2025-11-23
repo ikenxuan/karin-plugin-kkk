@@ -1,9 +1,9 @@
-import { Button, Card, CardBody, CardHeader, Kbd, Slider } from '@heroui/react'
-import html2canvas from 'html2canvas-pro'
-import { Download, Eye, Maximize2, Minimize2 } from 'lucide-react'
+import { addToast, Button, Card, CardBody, CardHeader, Kbd } from '@heroui/react'
+import { Copy, Download, Eye, X } from 'lucide-react'
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 
 import { PlatformType } from '../../types/platforms'
+import { captureScreenshot as captureScreenshotUtil } from '../utils/screenshot'
 import { ComponentRenderer } from './ComponentRenderer'
 
 /**
@@ -70,6 +70,8 @@ interface ScrollBarDragState {
 export interface PreviewPanelRef {
   /** 截图方法 */
   captureScreenshot: () => Promise<void>
+  /** 适应画布方法 */
+  fitToCanvas: () => void
 }
 
 /**
@@ -128,6 +130,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
 
   // 截图
   const [isCapturing, setIsCapturing] = useState(false)
+  const [screenshotResult, setScreenshotResult] = useState<{ blob: Blob; download: () => void; copyToClipboard: () => Promise<void> } | null>(null)
   const componentRendererRef = useRef<HTMLDivElement>(null)
 
   /**
@@ -228,61 +231,6 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
     checkBounds()
   }, [checkBounds])
 
-  /**
-   * 滚动条拖拽开始处理
-   */
-  const handleScrollBarMouseDown = useCallback(
-    (type: 'horizontal' | 'vertical', e: React.MouseEvent) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      if (!previewContainerRef.current || !previewContentRef.current) return
-
-      const container = previewContainerRef.current.getBoundingClientRect()
-      const contentWidth = 1440 * scale
-      const contentHeight = previewContentRef.current.scrollHeight * scale
-
-      // 计算当前内容位置和溢出情况
-      const contentLeft = container.width / 2 + panOffset.x - contentWidth / 2
-      const contentTop = container.height / 2 + panOffset.y - contentHeight / 2
-      const contentRight = contentLeft + contentWidth
-      const contentBottom = contentTop + contentHeight
-
-      let initialState: ScrollBarDragState
-
-      if (type === 'horizontal') {
-        const leftOverflow = Math.max(0, -contentLeft)
-        const rightOverflow = Math.max(0, contentRight - container.width)
-        const maxOverflow = leftOverflow + rightOverflow
-
-        initialState = {
-          type: 'horizontal',
-          initialMousePos: e.clientX - container.left,
-          initialComponentPos: panOffset.x,
-          initialOverflow: leftOverflow,
-          maxOverflow,
-          trackSize: container.width
-        }
-      } else {
-        const topOverflow = Math.max(0, -contentTop)
-        const bottomOverflow = Math.max(0, contentBottom - container.height)
-        const maxOverflow = topOverflow + bottomOverflow
-
-        initialState = {
-          type: 'vertical',
-          initialMousePos: e.clientY - container.top,
-          initialComponentPos: panOffset.y,
-          initialOverflow: topOverflow,
-          maxOverflow,
-          trackSize: container.height
-        }
-      }
-
-      setIsScrollbarDragging(true)
-      setScrollbarDragState(initialState)
-    },
-    [scale, panOffset]
-  )
 
   /**
    * 键盘事件处理
@@ -383,21 +331,6 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
     [isAltPressed, scale, zoomAtPoint, scrollBars.vertical.show, updateScrollBarsImmediate]
   )
 
-  /**
-   * 滑块缩放变化处理
-   */
-  const handleSliderChange = useCallback((value: number | number[]) => {
-    const newScale = Array.isArray(value) ? value[0] : value
-    onScaleChange(newScale / 100)
-    // 立即更新滚动条
-    updateScrollBarsImmediate()
-  }, [onScaleChange, updateScrollBarsImmediate])
-
-  useCallback((targetScale: number) => {
-    onScaleChange(targetScale)
-    // 立即更新滚动条
-    updateScrollBarsImmediate()
-  }, [onScaleChange, updateScrollBarsImmediate])
 
   /**
    * 适应画布大小 - 计算Y轴填满画布的缩放比例
@@ -429,10 +362,20 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   }, [onScaleChange, updateScrollBarsImmediate])
 
   /**
-   * 鼠标按下事件处理
+   * 全局鼠标按下事件处理 - 只在按住 Space 时才处理
    */
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (isSpacePressed && e.button === 0) {
+  const handleGlobalMouseDown = useCallback((e: MouseEvent) => {
+    // 只在按住 Space 键且鼠标在容器内时才启用拖拽
+    if (!isSpacePressed || !previewContainerRef.current) {
+      return
+    }
+    
+    const container = previewContainerRef.current
+    const rect = container.getBoundingClientRect()
+    const isInside = e.clientX >= rect.left && e.clientX <= rect.right &&
+                     e.clientY >= rect.top && e.clientY <= rect.bottom
+    
+    if (isInside && e.button === 0) {
       e.preventDefault()
       setIsDragging(true)
       setDragStart({ x: e.clientX - panOffset.x, y: e.clientY - panOffset.y })
@@ -538,6 +481,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
     window.addEventListener('keyup', handleKeyUp)
     window.addEventListener('blur', handleWindowBlur)
     window.addEventListener('focus', handleWindowFocus)
+    window.addEventListener('mousedown', handleGlobalMouseDown)
     window.addEventListener('mousemove', handleMouseMove)
     window.addEventListener('mouseup', handleMouseUp)
 
@@ -551,6 +495,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
       window.removeEventListener('keyup', handleKeyUp)
       window.removeEventListener('blur', handleWindowBlur)
       window.removeEventListener('focus', handleWindowFocus)
+      window.removeEventListener('mousedown', handleGlobalMouseDown)
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', handleMouseUp)
 
@@ -563,7 +508,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
         clearTimeout(updateTimeoutRef.current)
       }
     }
-  }, [handleKeyDown, handleKeyUp, handleWindowBlur, handleWindowFocus, handleMouseMove, handleMouseUp, handleWheel])
+  }, [handleKeyDown, handleKeyUp, handleWindowBlur, handleWindowFocus, handleGlobalMouseDown, handleMouseMove, handleMouseUp, handleWheel])
 
   /**
    * 监听缩放和位移变化，立即更新滚动条
@@ -646,8 +591,18 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
    */
   const getCursorStyle = () => {
     if (isScrollbarDragging) return 'grabbing'
-    if (isSpacePressed) return isDragging ? 'grabbing' : 'grab'
-    return 'default'
+    if (isDragging) return 'grabbing'
+    if (isSpacePressed) return 'grab'
+    return 'auto'
+  }
+  
+  /**
+   * 获取用户选择样式
+   */
+  const getUserSelectStyle = () => {
+    // 只有在实际拖拽时才禁用文本选择
+    if (isDragging || isScrollbarDragging) return 'none'
+    return 'auto'
   }
 
   /**
@@ -657,331 +612,85 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
     if (!previewContentRef.current || isCapturing) return
 
     setIsCapturing(true)
+    setScreenshotResult(null)
 
     try {
-      console.log('开始截图...')
-      console.log('当前缩放比例:', scale)
-      console.log('当前位移:', panOffset)
-
-      const element = previewContentRef.current
-    
-      // 临时移除 transform，获取原始尺寸
-      const originalTransform = element.style.transform
-      const originalTransition = element.style.transition
-    
-      // 暂时重置样式以获取真实内容尺寸
-      element.style.transform = 'none'
-      element.style.transition = 'none'
-      element.style.left = '0'
-      element.style.top = '0'
-      element.style.position = 'relative'
-    
-      // 等待样式应用
-      await new Promise(resolve => setTimeout(resolve, 100))
-    
-      // 获取内容的真实尺寸（无缩放状态下）
-      const rect = element.getBoundingClientRect()
-      const actualWidth = element.scrollWidth || rect.width
-      const actualHeight = element.scrollHeight || rect.height
-    
-      console.log(`真实内容尺寸: ${actualWidth}x${actualHeight}`)
-    
-      // 目标尺寸就是真实尺寸，不需要强制改变
-      const targetWidth = actualWidth
-      const targetHeight = actualHeight
-    
-      console.log(`目标截图尺寸: ${targetWidth}x${targetHeight}`)
-
-      // 预处理外链图片
-      const processImages = async (element: HTMLElement) => {
-        const images = element.querySelectorAll('img')
-        const imagePromises: Promise<void>[] = []
-
-        images.forEach(img => {
-          const src = img.src
-          if (src && (src.startsWith('http://') || src.startsWith('https://')) && !src.includes(window.location.origin)) {
-            const promise = new Promise<void>((resolve) => {
-              const canvas = document.createElement('canvas')
-              const ctx = canvas.getContext('2d')
-              const tempImg = new Image()
-              tempImg.crossOrigin = 'anonymous'
-
-              tempImg.onload = () => {
-                canvas.width = tempImg.width
-                canvas.height = tempImg.height
-                ctx?.drawImage(tempImg, 0, 0)
-
-                try {
-                  const dataUrl = canvas.toDataURL('image/png')
-                  img.setAttribute('data-original-src', src)
-                  img.src = dataUrl
-                  console.log('外链图片转换成功:', src)
-                } catch (e) {
-                  console.warn('外链图片转换失败:', src, e)
-                }
-                resolve()
-              }
-
-              tempImg.onerror = () => {
-                console.warn('外链图片加载失败:', src)
-                resolve()
-              }
-
-              tempImg.src = src + (src.includes('?') ? '&' : '?') + '_t=' + Date.now()
-            })
-
-            imagePromises.push(promise)
-          }
-        })
-
-        await Promise.all(imagePromises)
-      }
-
-      // 预处理图片
-      await processImages(element)
-      await new Promise(resolve => setTimeout(resolve, 300))
-
-      // html2canvas配置
-      const canvas = await html2canvas(element, {
-        backgroundColor: '#ffffff',
-        width: targetWidth,
-        height: targetHeight,
-        scale: 1, // 固定scale
-        useCORS: true,
-        allowTaint: true,
-        foreignObjectRendering: false,
-        logging: true,
-        removeContainer: true,
-        imageTimeout: 15000,
-      
-        ignoreElements: (element) => {
-        // 只忽略脚本和不必要的元素
-          if (['SCRIPT', 'NOSCRIPT'].includes(element.tagName)) {
-            return true
-          }
-          return false
-        },
-
-        onclone: (clonedDoc) => {
-          console.log('开始处理克隆文档...')
-  
-          // 1. 复制所有样式表和CSS变量
-          const originalStyleSheets = Array.from(document.styleSheets)
-          originalStyleSheets.forEach((styleSheet, index) => {
-            try {
-              const newStyle = clonedDoc.createElement('style')
-              newStyle.type = 'text/css'
-  
-              let cssText = ''
-              try {
-                const rules = Array.from(styleSheet.cssRules || styleSheet.rules || [])
-                cssText = rules.map(rule => rule.cssText).join('\n')
-              } catch (e) {
-                console.warn(`无法访问样式表 ${index}:`, e)
-                if (styleSheet.href) {
-                  const linkElement = clonedDoc.createElement('link')
-                  linkElement.rel = 'stylesheet'
-                  linkElement.href = styleSheet.href
-                  clonedDoc.head.appendChild(linkElement)
-                  return
-                }
-              }
-  
-              if (cssText) {
-                newStyle.textContent = cssText
-                clonedDoc.head.appendChild(newStyle)
-              }
-            } catch (e) {
-              console.warn('复制样式表失败:', e)
-            }
-          })
-  
-          // 2. 复制现有样式元素
-          const originalStyles = document.querySelectorAll('style, link[rel="stylesheet"]')
-          originalStyles.forEach(styleElement => {
-            try {
-              const clonedStyle = styleElement.cloneNode(true) as HTMLElement
-              clonedDoc.head.appendChild(clonedStyle)
-            } catch (e) {
-              console.warn('复制样式元素失败:', e)
-            }
-          })
-  
-          // 3. 添加CSS变量到克隆文档
-          const rootStyle = clonedDoc.createElement('style')
-          rootStyle.textContent = `
-            :root {
-              --qq-blue: #12b7f5;
-              --wechat-green: #07c160;
-              --telegram-blue: #0088cc;
-              --discord-purple: #5865f2;
-              --douyin-primary: #fe2c55;
-              --douyin-secondary: #25f4ee;
-              --bilibili-primary: #00a1d6;
-              --bilibili-secondary: #fb7299;
-              --heroui-like: #ff6b6b;
-              --heroui-comment: #4dabf7;
-              --heroui-share: #51cf66;
-              --heroui-view: #845ef7;
-              --heroui-follow: #ff8cc8;
-              --heroui-live: #ff6b35;
-              --heroui-time: #868e96;
-              --heroui-tag: #ffd43b;
-              --heroui-badge: #9775fa;
-              --heroui-bilibili-pink: #fb7299;
-              --heroui-douyin-cyan: #25f4ee;
-              --heroui-vip-gold: #ffb700;
-            }
-          `
-          clonedDoc.head.appendChild(rootStyle)
-  
-          // 4. 确保克隆元素布局正确
-          const clonedElement = clonedDoc.body.querySelector('[data-html2canvas-clone]') || 
-                           clonedDoc.body.firstElementChild as HTMLElement
-  
-          if (clonedElement instanceof HTMLElement) {
-            // 重置所有可能影响布局的样式
-            clonedElement.style.position = 'static'
-            clonedElement.style.left = 'auto'
-            clonedElement.style.top = 'auto'
-            clonedElement.style.transform = 'none'
-            clonedElement.style.margin = '0'
-            clonedElement.style.padding = '0'
-            clonedElement.style.width = 'auto'
-            clonedElement.style.height = 'auto'
-            clonedElement.style.maxWidth = 'none'
-            clonedElement.style.maxHeight = 'none'
-            clonedElement.style.overflow = 'visible'
-            clonedElement.style.display = 'block'
-          }
-  
-          // 5. 样式处理
-          const inlineComputedStyles = (el: Element, originalEl: Element) => {
-            if (el instanceof HTMLElement && originalEl instanceof HTMLElement) {
-              const computedStyle = window.getComputedStyle(originalEl)
-              const currentTransform = computedStyle.transform
-              
-              // 内联所有重要的计算样式
-              const importantStyles = [
-                'color', 'backgroundColor', 'fontSize', 'fontFamily', 'fontWeight',
-                'lineHeight', 'textAlign', 'padding', 'margin', 'border',
-                'borderRadius', 'boxShadow', 'opacity', 'zIndex', 'display',
-                'flexDirection', 'justifyContent', 'alignItems', 'gap'
-              ]
-              
-              importantStyles.forEach(prop => {
-                const value = computedStyle.getPropertyValue(prop)
-                if (value && value !== 'initial' && value !== 'inherit') {
-                  el.style.setProperty(prop, value, 'important')
-                }
-              })
-              
-              // 处理transform
-              const hasUsefulTransform = currentTransform && 
-                currentTransform !== 'none' && 
-                !currentTransform.includes('translate')
-              
-              if (hasUsefulTransform) {
-                let preservedTransform = currentTransform
-                  .replace(/translate[XYZ]?\([^)]*\)/g, '')
-                  .replace(/matrix\([^)]*\)/g, '')
-                  .replace(/\s+/g, ' ')
-                  .trim()
-                
-                if (preservedTransform && preservedTransform !== 'none') {
-                  el.style.setProperty('transform', preservedTransform, 'important')
-                  el.style.setProperty('transform-origin', computedStyle.transformOrigin, 'important')
-                  console.log(`内联transform: ${preservedTransform}`)
-                }
-              }
-              
-              // 处理定位
-              const position = computedStyle.position
-              if (position === 'absolute' || position === 'fixed') {
-                el.style.setProperty('position', 'relative', 'important')
-                el.style.removeProperty('left')
-                el.style.removeProperty('top')
-                el.style.removeProperty('right')
-                el.style.removeProperty('bottom')
-              }
-            }
-          }
-  
-          // 6. 递归处理所有元素
-          const processAllElements = (clonedEl: Element, originalEl: Element) => {
-            inlineComputedStyles(clonedEl, originalEl)
-            
-            const clonedChildren = Array.from(clonedEl.children)
-            const originalChildren = Array.from(originalEl.children)
-            
-            clonedChildren.forEach((clonedChild, index) => {
-              const originalChild = originalChildren[index]
-              if (originalChild) {
-                processAllElements(clonedChild, originalChild)
-              }
-            })
-          }
-  
-          // 开始处理
-          if (clonedElement) {
-            processAllElements(clonedElement, element)
-          }
-  
-          // 7. 恢复外链图片
-          const images = clonedDoc.querySelectorAll('img')
-          images.forEach(img => {
-            const originalSrc = img.getAttribute('data-original-src')
-            if (originalSrc) {
-              img.src = originalSrc
-              img.removeAttribute('data-original-src')
-            }
-          })
-  
-          console.log('克隆文档处理完成')
-        }
+      const result = await captureScreenshotUtil({
+        element: previewContentRef.current,
+        scale,
+        panOffset
       })
-
-      // 恢复原始样式
-      element.style.transform = originalTransform
-      element.style.transition = originalTransition
-      element.style.left = '50%'
-      element.style.top = '50%'
-      element.style.position = 'absolute'
-
-      console.log(`生成的画布尺寸: ${canvas.width}x${canvas.height}`)
-
-      // 下载图片
-      const link = document.createElement('a')
-      link.download = `screenshot-${Date.now()}.png`
-      link.href = canvas.toDataURL('image/png', 1.0)
-      link.click()
-
-      console.log('截图完成')
-
+      setScreenshotResult(result)
     } catch (error) {
       console.error('截图失败:', error)
-      alert('截图失败，请重试')
-    
-      // 确保恢复原始样式
-      if (previewContentRef.current) {
-        const element = previewContentRef.current
-        element.style.left = '50%'
-        element.style.top = '50%'
-        element.style.position = 'absolute'
-        element.style.transform = `translate(-50%, -50%) translate(${panOffset.x}px, ${panOffset.y}px) scale(${scale})`
-      }
+      addToast({
+        radius: 'lg',
+        variant: 'flat',
+        title: '截图失败',
+        description: '请重试或检查浏览器控制台',
+        color: 'danger',
+        timeout: 3000
+      })
     } finally {
       setIsCapturing(false)
     }
   }, [scale, panOffset, isCapturing])
+
+  /**
+   * 处理下载
+   */
+  const handleDownload = useCallback(() => {
+    if (screenshotResult) {
+      screenshotResult.download()
+      addToast({
+        radius: 'lg',
+        variant: 'flat',
+        title: '下载成功',
+        description: '截图已保存到本地',
+        color: 'success',
+        timeout: 3000
+      })
+      setScreenshotResult(null)
+    }
+  }, [screenshotResult])
+
+  /**
+   * 处理复制到剪贴板
+   */
+  const handleCopyToClipboard = useCallback(async () => {
+    if (screenshotResult) {
+      try {
+        await screenshotResult.copyToClipboard()
+        addToast({
+          radius: 'lg',
+          variant: 'flat',
+          title: '复制成功',
+          description: '截图已复制到剪贴板',
+          color: 'success',
+          timeout: 3000
+        })
+        setScreenshotResult(null)
+      } catch {
+        addToast({
+          radius: 'lg',
+          variant: 'flat',
+          title: '复制失败',
+          description: '请检查浏览器权限或重试',
+          color: 'danger',
+          timeout: 3000
+        })
+      }
+    }
+  }, [screenshotResult])
 
   
   /**
    * 暴露给父组件的方法
    */
   useImperativeHandle(ref, () => ({
-    captureScreenshot
-  }), [captureScreenshot])
+    captureScreenshot,
+    fitToCanvas: handleFitToCanvas
+  }), [captureScreenshot, handleFitToCanvas])
     
   return (
     <Card className='flex flex-col h-full'>
@@ -990,55 +699,44 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
           <div className='flex gap-2 items-center'>
             <Eye className='w-4 h-4' />
             <span className='text-sm font-medium'>
-              {platform} - {templateId}
+              预览画布
             </span>
             {isCapturing && (
               <span className='text-xs text-blue-600 animate-pulse'>
                 正在截图...
               </span>
             )}
-          </div>
-          <div className='flex gap-3 items-center'>
-            {/* 缩放滑块和显示 */}
-            <div className='flex gap-2 items-center'>
-              <span className='text-xs whitespace-nowrap text-default-500'>缩放:</span>
-              <Slider
-                size='sm'
-                step={1}
-                minValue={10}
-                maxValue={300}
-                value={[scale * 100]}
-                onChange={handleSliderChange}
-                className='flex-shrink-0 w-32'
-                aria-label='缩放比例滑块'
-              />
-              <div className='flex gap-1 items-center'>
-                <span className='text-xs font-medium tabular-nums'>{Math.round(scale * 100)}%</span>
+            {screenshotResult && (
+              <div className='flex gap-2 items-center'>
+                <Button
+                  size='sm'
+                  color='primary'
+                  variant='flat'
+                  startContent={<Download className='w-4 h-4' />}
+                  onPress={handleDownload}
+                >
+                  下载
+                </Button>
+                <Button
+                  size='sm'
+                  color='success'
+                  variant='flat'
+                  startContent={<Copy className='w-4 h-4' />}
+                  onPress={handleCopyToClipboard}
+                >
+                  复制到剪贴板
+                </Button>
+                <Button
+                  size='sm'
+                  color='default'
+                  variant='flat'
+                  isIconOnly
+                  onPress={() => setScreenshotResult(null)}
+                >
+                  <X className='w-4 h-4' />
+                </Button>
               </div>
-            </div>
-
-            {/* 适应画布按钮 */}
-            <div className='flex gap-1'>
-              <Button
-                size='sm'
-                variant='ghost'
-                onClick={handleFitToCanvas}
-                className='flex-shrink-0 px-2 text-xs'
-                startContent={<Minimize2 className='w-3 h-3' />}
-              >
-                适应
-              </Button>
-            </div>
-
-            {/* 功能按钮组 */}
-            <div className='flex gap-1'>
-              <Button size='sm' variant='ghost'>
-                <Download className='w-4 h-4' />
-              </Button>
-              <Button size='sm' variant='ghost'>
-                <Maximize2 className='w-4 h-4' />
-              </Button>
-            </div>
+            )}
           </div>
         </div>
       </CardHeader>
@@ -1059,12 +757,45 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
           </div>
         </div>
 
+        {/* 调试状态面板 - 右下角 */}
+        <div className='flex flex-col absolute right-4 bottom-4 z-10 p-4 gap-1.5 text-sm bg-default-0/50 backdrop-blur-sm rounded-tl-3xl'>
+          <div className='font-semibold mb-1'>调试状态</div>
+          <div className='flex gap-1 items-center'>
+            <Kbd className='bg-default-0' keys={['space']}>Space</Kbd>
+            <span className={isSpacePressed ? 'text-success' : 'text-default-500'}>
+              {isSpacePressed ? '已按下' : '未按下'}
+            </span>
+          </div>
+          <div className='flex gap-1 items-center'>
+            <Kbd className='bg-default-0' keys={['alt']}>Alt</Kbd>
+            <span className={isAltPressed ? 'text-success' : 'text-default-500'}>
+              {isAltPressed ? '已按下' : '未按下'}
+            </span>
+          </div>
+          <div className='flex gap-1 items-center'>
+            <span>拖拽:</span>
+            <span className={isDragging ? 'text-success font-semibold' : 'text-default-500'}>
+              {isDragging ? '进行中' : '未激活'}
+            </span>
+          </div>
+          <div className='flex gap-1 items-center'>
+            <span>光标:</span>
+            <span className='text-primary'>{getCursorStyle()}</span>
+          </div>
+          <div className='flex gap-1 items-center'>
+            <span>选择:</span>
+            <span className='text-primary'>{getUserSelectStyle()}</span>
+          </div>
+        </div>
+
         {/* 预览容器 */}
         <div
           ref={previewContainerRef}
           className='overflow-hidden relative w-full h-full bg-default-0'
-          style={{ cursor: getCursorStyle() }}
-          onMouseDown={handleMouseDown}
+          style={{ 
+            cursor: getCursorStyle(),
+            userSelect: getUserSelectStyle() as any
+          }}
         >
           {/* 网格背景 */}
           <div
@@ -1074,7 +805,8 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
                 linear-gradient(rgba(0,0,0,0.25) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0,0,0,0.25) 1px, transparent 1px)
               `,
-              backgroundSize: '20px 20px'
+              backgroundSize: '20px 20px',
+              pointerEvents: 'none'
             }}
           />
 
@@ -1088,10 +820,19 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
               transform: `translate(-50%, -50%) translate(${panOffset.x}px, ${panOffset.y}px) scale(${scale})`,
               transformOrigin: 'center',
               transition: dragEasing ? 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'transform 0.1s ease-out',
-              width: '1440px'
+              width: '1440px',
+              pointerEvents: 'auto'
             }}
           >
-            <div ref={componentRendererRef} className={data?.useDarkTheme ? 'dark' : ''}>
+            <div 
+              ref={componentRendererRef} 
+              className={data?.useDarkTheme ? 'dark' : ''}
+              style={{
+                userSelect: 'text',
+                WebkitUserSelect: 'text',
+                cursor: 'auto'
+              }}
+            >
               <ComponentRenderer
                 platform={platform}
                 templateId={templateId}
@@ -1102,59 +843,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
             
           </div>
 
-          {/* 水平滚动条 */}
-          {scrollBars.horizontal.show && (
-            <div
-              className='absolute right-2 bottom-2 left-2 h-3 rounded-full border shadow-sm backdrop-blur-sm bg-black/10 border-white/20'
-              style={{
-                background: 'linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(240,240,240,0.9))',
-                boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.1)'
-              }}
-            >
-              <div
-                className={`absolute top-0.5 h-2 rounded-full transition-all ${isScrollbarDragging && scrollbarDragState?.type === 'horizontal'
-                  ? 'bg-blue-500 shadow-md'
-                  : 'bg-default-60 hover:bg-default-70'
-                }`}
-                style={{
-                  left: `${scrollBars.horizontal.position}%`,
-                  width: `${scrollBars.horizontal.size}%`,
-                  background: isScrollbarDragging && scrollbarDragState?.type === 'horizontal'
-                    ? 'linear-gradient(to bottom, #3b82f6, #2563eb)'
-                    : 'linear-gradient(to bottom, #6b7280, #4b5563)',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3)'
-                }}
-                onMouseDown={(e) => handleScrollBarMouseDown('horizontal', e)}
-              />
-            </div>
-          )}
-
-          {/* 垂直滚动条 */}
-          {scrollBars.vertical.show && (
-            <div
-              className='absolute top-2 right-2 bottom-2 w-3 rounded-full shadow-sm backdrop-blur-sm bg-black/10 border-white/20'
-              style={{
-                background: 'linear-gradient(to right, rgba(255,255,255,0.8), rgba(240,240,240,0.9))',
-                boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.1)'
-              }}
-            >
-              <div
-                className={`absolute left-0.5 w-2 rounded-full transition-all ${isScrollbarDragging && scrollbarDragState?.type === 'vertical'
-                  ? 'bg-blue-500 shadow-md'
-                  : 'bg-default-60 hover:bg-default-70'
-                }`}
-                style={{
-                  top: `${scrollBars.vertical.position}%`,
-                  height: `${scrollBars.vertical.size}%`,
-                  background: isScrollbarDragging && scrollbarDragState?.type === 'vertical'
-                    ? 'linear-gradient(to right, #3b82f6, #2563eb)'
-                    : 'linear-gradient(to right, #6b7280, #4b5563)',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3)'
-                }}
-                onMouseDown={(e) => handleScrollBarMouseDown('vertical', e)}
-              />
-            </div>
-          )}
+          {/* 滚动条已隐藏，但保留滚动功能 */}
         </div>
       </CardBody>
     </Card>

@@ -1,4 +1,4 @@
-import { Card, CardBody, CardHeader, Chip, Radio, RadioGroup } from '@heroui/react'
+import { Card, CardBody, CardHeader } from '@heroui/react'
 import { Settings } from 'lucide-react'
 import React from 'react'
 
@@ -39,74 +39,85 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
         </div>
       </CardHeader>
       <CardBody className='pt-0 space-y-3'>
-        {/* 平台选择 - 使用RadioGroup */}
+        {/* 平台选择 - 响应式网格布局 */}
         <div>
-          <label className='block mb-1 font-medium text-md text-gray-70'>选择平台</label>
-          <RadioGroup
-            value={selectedPlatform}
-            onValueChange={(value) => {
-              const platform = value as PlatformType
-              onPlatformChange(platform)
-              // 自动选择第一个启用的组件
-              const firstComponent = getEnabledComponents(platform)[0]
-              if (firstComponent) {
-                onTemplateChange(firstComponent.id)
-              }
+          <label className='block mb-2 font-medium text-sm text-gray-700'>选择平台</label>
+          <div 
+            className='grid gap-2'
+            style={{
+              gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))'
             }}
-            orientation='horizontal'
-            className='flex flex-wrap gap-2'
-            size='sm'
           >
             {componentConfigs.map(config => (
-              <Radio
+              <label
                 key={config.type}
-                value={config.type}
-                className='flex-shrink-0'
-                size='sm'
+                className={`
+                  flex items-center justify-start cursor-pointer rounded-lg gap-2 px-3 py-2.5 min-h-[52px]
+                  border-2 transition-all duration-150 active:scale-[0.98]
+                  ${selectedPlatform === config.type 
+                ? 'border-primary bg-blue-50 shadow-sm' 
+                : 'border-gray-200 bg-white hover:bg-gray-50'
+              }
+                `}
+                onClick={() => {
+                  onPlatformChange(config.type)
+                  const firstComponent = getEnabledComponents(config.type)[0]
+                  if (firstComponent) {
+                    onTemplateChange(firstComponent.id)
+                  }
+                }}
               >
-                <div className='flex gap-1 items-center text-lg'>
-                  <span>{config.name}</span>
-                </div>
-              </Radio>
+                <input
+                  type='radio'
+                  name='platform'
+                  value={config.type}
+                  checked={selectedPlatform === config.type}
+                  onChange={() => {}}
+                  className='w-4 h-4 text-primary flex-shrink-0'
+                />
+                <span className='text-sm font-medium flex-1 leading-snug break-words'>{config.name}</span>
+              </label>
             ))}
-          </RadioGroup>
+          </div>
         </div>
 
-        {/* 组件选择 - 隐藏滚动条但保留滚动功能，全宽选项 */}
+        {/* 组件选择 */}
         <div>
-          <label className='block mb-1 font-medium text-md text-gray-70'>选择组件</label>
-          <div className='overflow-y-scroll max-h-32 scrollbar-hide'>
-            <RadioGroup
-              value={selectedTemplate}
-              onValueChange={onTemplateChange}
-              className='space-y-1'
-              size='sm'
+          <label className='block mb-2 font-medium text-sm text-gray-700'>选择组件</label>
+          <div className='overflow-y-auto max-h-64 scrollbar-hide'>
+            <div 
+              className='grid gap-2'
+              style={{
+                gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))'
+              }}
             >
-              {currentPlatformConfig?.components.map(component => (
-                <Radio
-                  key={component.id}
-                  value={component.id}
-                  className='w-full'
-                  classNames={{
-                    base: 'inline-flex w-full max-w-full bg-content1 m-0 active:scale-[0.98] transition-all duration-150 items-center justify-start cursor-pointer rounded-lg gap-2 p-2 border-2 border-transparent data-[selected=true]:border-primary',
-                    wrapper: 'flex-shrink-0',
-                    labelWrapper: 'flex-1 ml-1'
-                  }}
-                  size='sm'
-                >
-                  <div className='flex justify-between items-center w-full'>
-                    <span className='font-medium text-md'>{component.name}</span>
-                    <div className='flex gap-1 items-center'>
-                      {!component.enabled && (
-                        <Chip size='sm' color='warning' variant='flat' className='h-4 text-xs'>
-                          开发中
-                        </Chip>
-                      )}
-                    </div>
-                  </div>
-                </Radio>
-              ))}
-            </RadioGroup>
+              {currentPlatformConfig?.components
+                .filter(component => component.enabled)
+                .map(component => (
+                  <label
+                    key={component.id}
+                    className={`
+                      flex items-center justify-start cursor-pointer rounded-lg gap-2 px-3 py-2.5 min-h-[52px]
+                      border-2 transition-all duration-150 active:scale-[0.98]
+                      ${selectedTemplate === component.id 
+                    ? 'border-primary bg-blue-50 shadow-sm' 
+                    : 'border-gray-200 bg-white hover:bg-gray-50'
+                  }
+                    `}
+                    onClick={() => onTemplateChange(component.id)}
+                  >
+                    <input
+                      type='radio'
+                      name='template'
+                      value={component.id}
+                      checked={selectedTemplate === component.id}
+                      onChange={() => {}}
+                      className='w-4 h-4 text-primary flex-shrink-0'
+                    />
+                    <span className='text-sm font-medium flex-1 leading-snug break-words'>{component.name}</span>
+                  </label>
+                ))}
+            </div>
           </div>
         </div>
       </CardBody>
