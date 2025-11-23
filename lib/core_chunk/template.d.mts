@@ -3,15 +3,15 @@ import React$1 from "react";
 //#region ../template/src/types/platforms/douyin/comment.d.ts
 
 /**
-* 抖音评论组件属性接口
-*/
+ * 抖音评论组件属性接口
+ */
 interface DouyinCommentProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
     /** 是否使用深色主题 */
     useDarkTheme?: boolean;
     /** 作品类型：视频/图集/合辑 */
-    Type: "视频" | "图集" | "合辑";
+    Type: '视频' | '图集' | '合辑';
     /** 评论数量 */
     CommentLength: number;
     /** 视频大小(MB) */
@@ -77,8 +77,8 @@ interface DouyinCommentProps extends BaseComponentProps {
   qrCodeDataUrl: string;
 }
 /**
-* 抖音子评论数据接口
-*/
+ * 抖音子评论数据接口
+ */
 interface DouyinSubComment {
   /** 创建时间 */
   create_time: string;
@@ -102,8 +102,8 @@ interface DouyinSubComment {
 //#endregion
 //#region ../template/src/types/platforms/douyin/dynamic.d.ts
 /**
-* 抖音动态组件属性接口
-*/
+ * 抖音动态组件属性接口
+ */
 interface DouyinDynamicProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
@@ -155,8 +155,8 @@ interface DouyinDynamicProps extends BaseComponentProps {
 //#endregion
 //#region ../template/src/types/platforms/douyin/live.d.ts
 /**
-* 抖音直播组件属性接口
-*/
+ * 抖音直播组件属性接口
+ */
 interface DouyinLiveProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
@@ -189,8 +189,8 @@ interface DouyinLiveProps extends BaseComponentProps {
 //#endregion
 //#region ../template/src/types/platforms/douyin/musicinfo.d.ts
 /**
-* 抖音音乐信息组件属性接口
-*/
+ * 抖音音乐信息组件属性接口
+ */
 interface DouyinMusicInfoProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
@@ -227,8 +227,8 @@ interface DouyinMusicInfoProps extends BaseComponentProps {
 //#endregion
 //#region ../template/src/types/platforms/douyin/userlist.d.ts
 /**
-* 抖音用户列表组件属性接口
-*/
+ * 抖音用户列表组件属性接口
+ */
 interface DouyinUserListProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
@@ -263,8 +263,8 @@ interface DouyinUserListProps extends BaseComponentProps {
 //#endregion
 //#region ../template/src/types/platforms/douyin/videoInfo.d.ts
 /**
-* 抖音视频统计信息接口
-*/
+ * 抖音视频统计信息接口
+ */
 interface DouyinVideoStatistics {
   /** 点赞数 */
   admire_count: number;
@@ -284,8 +284,8 @@ interface DouyinVideoStatistics {
   share_count: number;
 }
 /**
-* 抖音作者信息接口
-*/
+ * 抖音作者信息接口
+ */
 interface DouyinAuthor {
   /** 作者名称 */
   name: string;
@@ -295,8 +295,8 @@ interface DouyinAuthor {
   short_id: string;
 }
 /**
-* 抖音视频信息数据接口
-*/
+ * 抖音视频信息数据接口
+ */
 interface DouyinVideoInfoData {
   /** 视频描述 */
   desc: string;
@@ -312,8 +312,8 @@ interface DouyinVideoInfoData {
   create_time: number;
 }
 /**
-* 抖音视频信息组件属性接口
-*/
+ * 抖音视频信息组件属性接口
+ */
 interface DouyinVideoInfoProps {
   /** 模板类型 */
   templateType: string;
@@ -338,8 +338,8 @@ interface DouyinQrcodeImgProps {
 //#endregion
 //#region ../template/src/types/platforms/bilibili/bangumi.d.ts
 /**
-* 徽章信息接口
-*/
+ * 徽章信息接口
+ */
 interface BangumiBilibiliEpisodeBadgeInfo {
   /** 背景颜色 */
   bg_color: string;
@@ -349,8 +349,8 @@ interface BangumiBilibiliEpisodeBadgeInfo {
   text: string;
 }
 /**
-* 番剧剧集信息接口
-*/
+ * 番剧剧集信息接口
+ */
 interface BangumiBilibiliEpisode {
   /** 剧集封面图片URL */
   cover: string;
@@ -368,8 +368,8 @@ interface BangumiBilibiliEpisode {
   badge_info: BangumiBilibiliEpisodeBadgeInfo;
 }
 /**
-* 番剧最新剧集信息接口
-*/
+ * 番剧最新剧集信息接口
+ */
 interface BangumiBilibiliNewEP {
   /** 剧集描述 */
   desc: string;
@@ -381,8 +381,8 @@ interface BangumiBilibiliNewEP {
   title: string;
 }
 /**
-* 番剧统计数据接口
-*/
+ * 番剧统计数据接口
+ */
 interface BangumiBilibiliStat {
   /** 硬币数 */
   coins: number;
@@ -406,8 +406,8 @@ interface BangumiBilibiliStat {
   vt: number;
 }
 /**
-* UP主挂件信息接口
-*/
+ * UP主挂件信息接口
+ */
 interface BangumiBilibiliPendant {
   /** 挂件图片URL */
   image: string;
@@ -417,8 +417,8 @@ interface BangumiBilibiliPendant {
   pid: number;
 }
 /**
-* UP主VIP标签信息接口
-*/
+ * UP主VIP标签信息接口
+ */
 interface BangumiBilibiliVipLabel {
   /** 背景颜色 */
   bg_color: string;
@@ -432,8 +432,8 @@ interface BangumiBilibiliVipLabel {
   text_color: string;
 }
 /**
-* UP主信息接口
-*/
+ * UP主信息接口
+ */
 interface BangumiBilibiliUPInfo {
   /** 头像URL */
   avatar: string;
@@ -463,8 +463,8 @@ interface BangumiBilibiliUPInfo {
   vip_type: number;
 }
 /**
-* B站番剧组件数据接口
-*/
+ * B站番剧组件数据接口
+ */
 interface BangumiBilibiliData {
   /** 主封面图片URL */
   mainCover: string;
@@ -496,8 +496,8 @@ interface BangumiBilibiliData {
   length: number;
 }
 /**
-* B站番剧组件属性接口
-*/
+ * B站番剧组件属性接口
+ */
 interface BilibiliBangumiProps extends BaseComponentProps {
   /** 番剧数据 */
   data: BangumiBilibiliData;
@@ -507,15 +507,15 @@ interface BilibiliBangumiProps extends BaseComponentProps {
 //#endregion
 //#region ../template/src/types/platforms/bilibili/comment.d.ts
 /**
-* B站评论组件属性接口
-*/
+ * B站评论组件属性接口
+ */
 interface BilibiliCommentProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
     /** 是否使用深色主题 */
     useDarkTheme?: boolean;
     /** 作品类型：视频/图集/动态 */
-    Type: "视频" | "动态";
+    Type: '视频' | '动态';
     /** 评论数量 */
     CommentLength: string;
     /** 视频大小(MB) */
@@ -537,8 +537,8 @@ interface BilibiliCommentProps extends BaseComponentProps {
   qrCodeDataUrl: string;
 }
 /**
-* 粉丝卡片信息接口
-*/
+ * 粉丝卡片信息接口
+ */
 interface FanCardInfo {
   /** 卡片背景图片 */
   image: string | null;
@@ -550,8 +550,8 @@ interface FanCardInfo {
   gradientStyle: string;
 }
 /**
-* B站二级评论项数据接口
-*/
+ * B站二级评论项数据接口
+ */
 interface SubCommentItem {
   /** 用户头像URL */
   avatar: string;
@@ -583,8 +583,8 @@ interface SubCommentItem {
   fanCard?: FanCardInfo | null;
 }
 /**
-* B站评论项数据接口
-*/
+ * B站评论项数据接口
+ */
 interface CommentItem {
   /** 用户头像URL */
   avatar: string;
@@ -626,8 +626,8 @@ interface CommentItem {
 //#endregion
 //#region ../template/src/types/platforms/bilibili/dynamic/article.d.ts
 /**
-* B站专栏动态组件属性接口
-*/
+ * B站专栏动态组件属性接口
+ */
 interface BilibiliArticleDynamicProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
@@ -719,8 +719,8 @@ interface BilibiliArticleDynamicProps extends BaseComponentProps {
 //#endregion
 //#region ../template/src/types/platforms/bilibili/dynamic/forward.d.ts
 /**
-* 原始内容AV类型接口
-*/
+ * 原始内容AV类型接口
+ */
 interface OriginalContentAV {
   /** 用户头像URL */
   avatar_url: string;
@@ -744,8 +744,8 @@ interface OriginalContentAV {
   title: string;
 }
 /**
-* 原始内容图文类型接口
-*/
+ * 原始内容图文类型接口
+ */
 interface OriginalContentDraw {
   /** 标题 */
   title?: string;
@@ -767,8 +767,8 @@ interface OriginalContentDraw {
   }>;
 }
 /**
-* 原始内容文字类型接口
-*/
+ * 原始内容文字类型接口
+ */
 interface OriginalContentWord {
   /** 用户头像URL */
   avatar_url: string;
@@ -784,8 +784,8 @@ interface OriginalContentWord {
   text: string;
 }
 /**
-* 原始内容直播推荐类型接口
-*/
+ * 原始内容直播推荐类型接口
+ */
 interface OriginalContentLiveRcmd {
   /** 用户头像URL */
   avatar_url: string;
@@ -809,8 +809,8 @@ interface OriginalContentLiveRcmd {
   title: string;
 }
 /**
-* 转发动态原始内容Props接口
-*/
+ * 转发动态原始内容Props接口
+ */
 interface BilibiliForwardOriginalContentProps {
   /** 原始内容 */
   original_content: {
@@ -825,8 +825,8 @@ interface BilibiliForwardOriginalContentProps {
   };
 }
 /**
-* B站转发动态组件属性接口
-*/
+ * B站转发动态组件属性接口
+ */
 interface BilibiliForwardDynamicProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
@@ -845,7 +845,7 @@ interface BilibiliForwardDynamicProps extends BaseComponentProps {
     /** 动态文本内容 */
     text: string;
     /** 原始内容 */
-    original_content: BilibiliForwardOriginalContentProps["original_content"];
+    original_content: BilibiliForwardOriginalContentProps['original_content'];
     /** 点赞数 */
     dianzan: string | number;
     /** 评论数 */
@@ -875,8 +875,8 @@ interface BilibiliForwardDynamicProps extends BaseComponentProps {
 //#endregion
 //#region ../template/src/types/platforms/bilibili/dynamic/live.d.ts
 /**
-* B站直播动态组件属性接口
-*/
+ * B站直播动态组件属性接口
+ */
 interface BilibiliLiveDynamicProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
@@ -911,8 +911,8 @@ interface BilibiliLiveDynamicProps extends BaseComponentProps {
 //#endregion
 //#region ../template/src/types/platforms/bilibili/dynamic/normal.d.ts
 /**
-* B站普通动态组件属性接口
-*/
+ * B站普通动态组件属性接口
+ */
 interface BilibiliDynamicProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
@@ -963,8 +963,8 @@ interface BilibiliDynamicProps extends BaseComponentProps {
 //#endregion
 //#region ../template/src/types/platforms/bilibili/dynamic/video.d.ts
 /**
-* B站视频动态组件属性接口
-*/
+ * B站视频动态组件属性接口
+ */
 interface BilibiliVideoDynamicProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
@@ -1021,8 +1021,8 @@ interface BilibiliVideoDynamicProps extends BaseComponentProps {
 //#endregion
 //#region ../template/src/types/platforms/bilibili/userlist.d.ts
 /**
-* B站用户列表组件属性接口
-*/
+ * B站用户列表组件属性接口
+ */
 interface BilibiliUserListProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
@@ -1057,8 +1057,8 @@ interface BilibiliUserListProps extends BaseComponentProps {
 //#endregion
 //#region ../template/src/types/platforms/bilibili/videoInfo.d.ts
 /**
-* B站视频统计数据接口
-*/
+ * B站视频统计数据接口
+ */
 interface BilibiliVideoStat {
   /** 视频AV号 */
   aid: number;
@@ -1088,8 +1088,8 @@ interface BilibiliVideoStat {
   vt: number;
 }
 /**
-* B站视频UP主信息接口
-*/
+ * B站视频UP主信息接口
+ */
 interface BilibiliVideoOwner {
   /** UP主用户ID */
   mid: number;
@@ -1099,8 +1099,8 @@ interface BilibiliVideoOwner {
   face: string;
 }
 /**
-* B站视频信息数据接口
-*/
+ * B站视频信息数据接口
+ */
 interface BilibiliVideoInfoData {
   /** 分享链接 */
   share_url: string;
@@ -1122,8 +1122,8 @@ interface BilibiliVideoInfoData {
   useDarkTheme?: boolean;
 }
 /**
-* B站视频信息组件属性接口
-*/
+ * B站视频信息组件属性接口
+ */
 interface BilibiliVideoInfoProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: BilibiliVideoInfoData;
@@ -1146,15 +1146,15 @@ interface BilibiliQrcodeImgProps {
 //#endregion
 //#region ../template/src/types/platforms/kuaishou/comment.d.ts
 /**
-* 快手评论组件属性接口
-*/
+ * 快手评论组件属性接口
+ */
 interface KuaishouCommentProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
     /** 是否使用深色主题 */
     useDarkTheme?: boolean;
     /** 作品类型：视频/图集 */
-    Type: "视频" | "图集";
+    Type: '视频' | '图集';
     /** 评论数量 */
     CommentLength: number;
     /** 视频大小(MB) */
@@ -1176,8 +1176,8 @@ interface KuaishouCommentProps extends BaseComponentProps {
   qrCodeDataUrl: string;
 }
 /**
-* 快手评论项数据接口
-*/
+ * 快手评论项数据接口
+ */
 interface KuaishouCommentItem {
   /** 评论ID */
   cid: string;
@@ -1205,15 +1205,15 @@ interface KuaishouCommentItem {
 //#endregion
 //#region ../template/src/types/platforms/xiaohongshu/comment.d.ts
 /**
-* 小红书评论组件属性接口
-*/
+ * 小红书评论组件属性接口
+ */
 interface XiaohongshuCommentProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
     /** 是否使用深色主题 */
     useDarkTheme?: boolean;
     /** 笔记类型：图文/视频 */
-    Type: "图文" | "视频";
+    Type: '图文' | '视频';
     /** 评论数量 */
     CommentLength: number;
     /** 图片数量 */
@@ -1227,8 +1227,8 @@ interface XiaohongshuCommentProps extends BaseComponentProps {
   qrCodeDataUrl: string;
 }
 /**
-* 小红书评论项数据接口
-*/
+ * 小红书评论项数据接口
+ */
 interface XiaohongshuCommentItem {
   /** 评论ID */
   id: string;
@@ -1274,8 +1274,8 @@ interface XiaohongshuCommentItem {
   status: number;
 }
 /**
-* 小红书子评论数据接口
-*/
+ * 小红书子评论数据接口
+ */
 interface XiaohongshuSubComment {
   /** 子评论ID */
   id: string;
@@ -1320,8 +1320,8 @@ interface XiaohongshuSubComment {
 //#endregion
 //#region ../template/src/types/platforms/xiaohongshu/noteInfo.d.ts
 /**
-* 小红书笔记统计信息接口
-*/
+ * 小红书笔记统计信息接口
+ */
 interface XiaohongshuNoteStatistics {
   /** 分享数 */
   share_count: string | number;
@@ -1341,8 +1341,8 @@ interface XiaohongshuNoteStatistics {
   comment_count: string | number;
 }
 /**
-* 小红书作者信息接口
-*/
+ * 小红书作者信息接口
+ */
 interface XiaohongshuAuthor {
   /** xsec_token */
   xsec_token?: string;
@@ -1354,8 +1354,8 @@ interface XiaohongshuAuthor {
   avatar: string;
 }
 /**
-* 小红书笔记信息数据接口
-*/
+ * 小红书笔记信息数据接口
+ */
 interface XiaohongshuNoteInfoData {
   /** 笔记标题 */
   title: string;
@@ -1377,8 +1377,8 @@ interface XiaohongshuNoteInfoData {
   useDarkTheme?: boolean;
 }
 /**
-* 小红书笔记信息组件属性接口
-*/
+ * 小红书笔记信息组件属性接口
+ */
 interface XiaohongshuNoteInfoProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: XiaohongshuNoteInfoData;
@@ -1386,8 +1386,8 @@ interface XiaohongshuNoteInfoProps extends BaseComponentProps {
 //#endregion
 //#region ../template/src/types/help.d.ts
 /**
-* 帮助页面组件属性接口
-*/
+ * 帮助页面组件属性接口
+ */
 interface HelpProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
@@ -1396,14 +1396,14 @@ interface HelpProps extends BaseComponentProps {
     /** 页面标题 */
     title?: string;
     /** 角色：主人/普通 */
-    role?: "master" | "member";
+    role?: 'master' | 'member';
     /** 菜单数据：按角色筛选后的分组 */
     menu?: MenuGroup[];
   };
 }
 /**
-* 菜单项接口
-*/
+ * 菜单项接口
+ */
 interface MenuItem {
   /** 菜单项标题 */
   title: string;
@@ -1413,8 +1413,8 @@ interface MenuItem {
   icon?: string;
 }
 /**
-* 菜单分组接口
-*/
+ * 菜单分组接口
+ */
 interface MenuGroup {
   /** 分组标题 */
   title: string;
@@ -1431,8 +1431,8 @@ interface MenuGroup {
 //#endregion
 //#region ../template/src/types/ohter/handlerError.d.ts
 /**
-* 业务错误类型
-*/
+ * 业务错误类型
+ */
 interface BusinessError {
   /** 错误消息 */
   message: string;
@@ -1444,12 +1444,12 @@ interface BusinessError {
   businessName: string;
 }
 /**
-* 日志等级类型
-*/
-type LogLevel = "TRAC" | "DEBU" | "MARK" | "INFO" | "ERRO" | "WARN" | "FATA";
+ * 日志等级类型
+ */
+type LogLevel = 'TRAC' | 'DEBU' | 'MARK' | 'INFO' | 'ERRO' | 'WARN' | 'FATA';
 /**
-* 日志条目接口
-*/
+ * 日志条目接口
+ */
 interface LogEntry {
   /** 时间戳 */
   timestamp: string;
@@ -1461,8 +1461,8 @@ interface LogEntry {
   raw: string;
 }
 /**
-* 适配器信息接口
-*/
+ * 适配器信息接口
+ */
 interface AdapterInfo {
   /** 适配器名称 */
   name: string;
@@ -1476,15 +1476,15 @@ interface AdapterInfo {
   standard?: string;
 }
 /**
-* API错误组件属性接口
-*/
+ * API错误组件属性接口
+ */
 interface ApiErrorProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
     /** 错误类型 */
-    type: "business_error";
+    type: 'business_error';
     /** 平台名称 */
-    platform: "douyin" | "bilibili" | "kuaishou" | "system" | "unknown";
+    platform: 'douyin' | 'bilibili' | 'kuaishou' | 'system' | 'unknown';
     /** 错误信息 */
     error: BusinessError;
     /** 调用的方法名 */
@@ -1514,8 +1514,8 @@ interface ApiErrorProps extends BaseComponentProps {
 //#endregion
 //#region ../template/src/types/ohter/changelog.d.ts
 /**
-* 更新日志组件属性接口
-*/
+ * 更新日志组件属性接口
+ */
 interface ChangelogProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
@@ -1534,8 +1534,8 @@ interface ChangelogProps extends BaseComponentProps {
 //#endregion
 //#region ../template/src/types/index.d.ts
 /**
-* 二维码区域组件属性接口
-*/
+ * 二维码区域组件属性接口
+ */
 interface QRCodeSectionProps {
   /** 预生成的二维码数据URL */
   qrCodeDataUrl: string;
@@ -1543,11 +1543,11 @@ interface QRCodeSectionProps {
   useDarkTheme?: boolean;
 }
 /**
-* 渲染请求参数接口
-*/
+ * 渲染请求参数接口
+ */
 interface RenderRequest<T = Record<string, unknown>> {
   /** 模板类型 */
-  templateType: "douyin" | "bilibili" | "kuaishou" | "other" | "apiError";
+  templateType: 'douyin' | 'bilibili' | 'kuaishou' | 'other' | 'apiError';
   /** 模板名称 */
   templateName: string;
   /** 缩放比例 */
@@ -1563,7 +1563,7 @@ interface RenderRequest<T = Record<string, unknown>> {
     /** 插件版本 */
     pluginVersion: string;
     /** 发布类型 */
-    releaseType: "Stable" | "Preview";
+    releaseType: 'Stable' | 'Preview';
     /** 驱动框架 */
     poweredBy: string;
     /** 框架版本 */
@@ -1580,8 +1580,8 @@ interface RenderRequest<T = Record<string, unknown>> {
   };
 }
 /**
-* 渲染响应结果接口
-*/
+ * 渲染响应结果接口
+ */
 interface RenderResponse {
   /** 是否成功 */
   success: boolean;
@@ -1591,10 +1591,10 @@ interface RenderResponse {
   error?: string;
 }
 /**
-* 组件属性基础接口 - 泛型T为子组件的具体数据类型
-* @template T 子组件的数据类型
-*/
-interface BaseComponentProps<T = Record<string, any>> extends Pick<TypedRenderRequest<keyof DataTypeMap>, "data" | "version" | "scale"> {
+ * 组件属性基础接口 - 泛型T为子组件的具体数据类型
+ * @template T 子组件的数据类型
+ */
+interface BaseComponentProps<T = Record<string, any>> extends Pick<TypedRenderRequest<keyof DataTypeMap>, 'data' | 'version' | 'scale'> {
   /** 渲染数据 - 子组件的具体参数 */
   data: {
     /** 是否使用深色主题 */
@@ -1602,82 +1602,82 @@ interface BaseComponentProps<T = Record<string, any>> extends Pick<TypedRenderRe
   } & T;
 }
 /**
-* 抖音平台组件ID
-*/
-type DouyinComponentIds = "comment" | "dynamic" | "live" | "musicinfo" | "user_profile" | "userlist" | "videoInfo" | "qrcodeImg";
+ * 抖音平台组件ID
+ */
+type DouyinComponentIds = 'comment' | 'dynamic' | 'live' | 'musicinfo' | 'user_profile' | 'userlist' | 'videoInfo' | 'qrcodeImg';
 /**
-* B站平台组件ID
-*/
-type BilibiliComponentIds = "comment" | "userlist" | "bangumi" | "videoInfo" | "qrcodeImg" | "dynamic/DYNAMIC_TYPE_DRAW" | "dynamic/DYNAMIC_TYPE_AV" | "dynamic/DYNAMIC_TYPE_FORWARD" | "dynamic/DYNAMIC_TYPE_LIVE_RCMD" | "dynamic/DYNAMIC_TYPE_WORD" | "dynamic/DYNAMIC_TYPE_ARTICLE";
+ * B站平台组件ID
+ */
+type BilibiliComponentIds = 'comment' | 'userlist' | 'bangumi' | 'videoInfo' | 'qrcodeImg' | 'dynamic/DYNAMIC_TYPE_DRAW' | 'dynamic/DYNAMIC_TYPE_AV' | 'dynamic/DYNAMIC_TYPE_FORWARD' | 'dynamic/DYNAMIC_TYPE_LIVE_RCMD' | 'dynamic/DYNAMIC_TYPE_WORD' | 'dynamic/DYNAMIC_TYPE_ARTICLE';
 /**
-* 快手平台组件ID
-*/
-type KuaishouComponentIds = "comment";
+ * 快手平台组件ID
+ */
+type KuaishouComponentIds = 'comment';
 /**
-* 小红书平台组件ID
-*/
-type XiaohongshuComponentIds = "noteInfo" | "comment";
+ * 小红书平台组件ID
+ */
+type XiaohongshuComponentIds = 'noteInfo' | 'comment';
 /**
-* 其他平台组件ID
-*/
-type OtherComponentIds = "help" | "handlerError" | "changelog";
+ * 其他平台组件ID
+ */
+type OtherComponentIds = 'help' | 'handlerError' | 'changelog';
 /**
-* 路径类型
-*/
+ * 路径类型
+ */
 type DynamicRenderPath = `douyin/${DouyinComponentIds}` | `bilibili/${BilibiliComponentIds}` | `kuaishou/${KuaishouComponentIds}` | `xiaohongshu/${XiaohongshuComponentIds}` | `other/${OtherComponentIds}`;
 /**
-* 路径到数据类型的精确映射接口
-*/
+ * 路径到数据类型的精确映射接口
+ */
 interface PathToDataTypeMap {
-  "douyin/comment": DouyinCommentProps["data"];
-  "douyin/dynamic": DouyinDynamicProps["data"];
-  "douyin/live": DouyinLiveProps["data"];
-  "douyin/musicinfo": DouyinMusicInfoProps["data"];
-  "douyin/user_profile": any;
-  "douyin/userlist": DouyinUserListProps["data"];
-  "douyin/videoInfo": DouyinVideoInfoProps["data"];
-  "douyin/qrcodeImg": DouyinQrcodeImgProps["data"];
-  "bilibili/comment": BilibiliCommentProps["data"];
-  "bilibili/userlist": BilibiliUserListProps["data"];
-  "bilibili/bangumi": BilibiliBangumiProps["data"];
-  "bilibili/videoInfo": BilibiliVideoInfoProps["data"];
-  "bilibili/qrcodeImg": BilibiliQrcodeImgProps["data"];
-  "bilibili/dynamic/DYNAMIC_TYPE_DRAW": BilibiliDynamicProps["data"];
-  "bilibili/dynamic/DYNAMIC_TYPE_AV": BilibiliVideoDynamicProps["data"];
-  "bilibili/dynamic/DYNAMIC_TYPE_FORWARD": BilibiliForwardDynamicProps["data"];
-  "bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD": BilibiliLiveDynamicProps["data"];
-  "bilibili/dynamic/DYNAMIC_TYPE_ARTICLE": BilibiliArticleDynamicProps["data"];
-  "bilibili/dynamic/DYNAMIC_TYPE_WORD": BilibiliDynamicProps["data"];
-  "kuaishou/comment": KuaishouCommentProps["data"];
-  "xiaohongshu/noteInfo": XiaohongshuNoteInfoProps["data"];
-  "xiaohongshu/comment": XiaohongshuCommentProps["data"];
-  "other/help": HelpProps["data"];
-  "other/handlerError": ApiErrorProps["data"];
-  "other/changelog": ChangelogProps["data"];
+  'douyin/comment': DouyinCommentProps['data'];
+  'douyin/dynamic': DouyinDynamicProps['data'];
+  'douyin/live': DouyinLiveProps['data'];
+  'douyin/musicinfo': DouyinMusicInfoProps['data'];
+  'douyin/user_profile': any;
+  'douyin/userlist': DouyinUserListProps['data'];
+  'douyin/videoInfo': DouyinVideoInfoProps['data'];
+  'douyin/qrcodeImg': DouyinQrcodeImgProps['data'];
+  'bilibili/comment': BilibiliCommentProps['data'];
+  'bilibili/userlist': BilibiliUserListProps['data'];
+  'bilibili/bangumi': BilibiliBangumiProps['data'];
+  'bilibili/videoInfo': BilibiliVideoInfoProps['data'];
+  'bilibili/qrcodeImg': BilibiliQrcodeImgProps['data'];
+  'bilibili/dynamic/DYNAMIC_TYPE_DRAW': BilibiliDynamicProps['data'];
+  'bilibili/dynamic/DYNAMIC_TYPE_AV': BilibiliVideoDynamicProps['data'];
+  'bilibili/dynamic/DYNAMIC_TYPE_FORWARD': BilibiliForwardDynamicProps['data'];
+  'bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD': BilibiliLiveDynamicProps['data'];
+  'bilibili/dynamic/DYNAMIC_TYPE_ARTICLE': BilibiliArticleDynamicProps['data'];
+  'bilibili/dynamic/DYNAMIC_TYPE_WORD': BilibiliDynamicProps['data'];
+  'kuaishou/comment': KuaishouCommentProps['data'];
+  'xiaohongshu/noteInfo': XiaohongshuNoteInfoProps['data'];
+  'xiaohongshu/comment': XiaohongshuCommentProps['data'];
+  'other/help': HelpProps['data'];
+  'other/handlerError': ApiErrorProps['data'];
+  'other/changelog': ChangelogProps['data'];
 }
 /**
-* 从路径字符串中提取数据类型的工具类型
-* @template P 路径字符串
-*/
+ * 从路径字符串中提取数据类型的工具类型
+ * @template P 路径字符串
+ */
 type ExtractDataTypeFromPath<P extends string> = P extends keyof PathToDataTypeMap ? PathToDataTypeMap[P] : Record<string, any>;
 /**
-* 模板类型到数据类型的映射接口
-*/
+ * 模板类型到数据类型的映射接口
+ */
 interface DataTypeMap {
   /** 抖音平台数据类型 */
-  douyin: DouyinCommentProps["data"] | DouyinDynamicProps["data"] | DouyinLiveProps["data"] | DouyinMusicInfoProps["data"] | DouyinQrcodeImgProps["data"];
+  douyin: DouyinCommentProps['data'] | DouyinDynamicProps['data'] | DouyinLiveProps['data'] | DouyinMusicInfoProps['data'] | DouyinQrcodeImgProps['data'];
   /** B站平台数据类型 */
-  bilibili: BilibiliCommentProps["data"] | BilibiliForwardDynamicProps["data"];
+  bilibili: BilibiliCommentProps['data'] | BilibiliForwardDynamicProps['data'];
   /** 快手平台数据类型 */
-  kuaishou: KuaishouCommentProps["data"];
+  kuaishou: KuaishouCommentProps['data'];
   /** 其他类型数据 */
-  other: HelpProps["data"];
+  other: HelpProps['data'];
 }
 /**
-* 渲染请求接口
-* @template K 模板类型键
-*/
-interface TypedRenderRequest<K extends keyof DataTypeMap> extends Omit<RenderRequest, "templateType" | "data"> {
+ * 渲染请求接口
+ * @template K 模板类型键
+ */
+interface TypedRenderRequest<K extends keyof DataTypeMap> extends Omit<RenderRequest, 'templateType' | 'data'> {
   /** 模板类型 */
   templateType: K;
   /** 渲染数据 */
@@ -1686,16 +1686,16 @@ interface TypedRenderRequest<K extends keyof DataTypeMap> extends Omit<RenderReq
 //#endregion
 //#region ../template/src/main.d.ts
 /**
-* 插件执行时机
-* - pre: 在渲染前执行
-* - normal: 在渲染时执行
-* - post: 在渲染后执行
-*/
-type PluginEnforce = "pre" | "normal" | "post";
+ * 插件执行时机
+ * - pre: 在渲染前执行
+ * - normal: 在渲染时执行
+ * - post: 在渲染后执行
+ */
+type PluginEnforce = 'pre' | 'normal' | 'post';
 /**
-* 渲染状态接口
-* 用于在插件之间传递和修改渲染状态
-*/
+ * 渲染状态接口
+ * 用于在插件之间传递和修改渲染状态
+ */
 interface RenderState {
   /** 传递给组件的额外属性 */
   props: Record<string, unknown>;
@@ -1705,10 +1705,10 @@ interface RenderState {
   html?: string;
 }
 /**
-* 插件上下文接口
-* 提供插件执行时所需的所有上下文信息
-* @template T 渲染数据类型
-*/
+ * 插件上下文接口
+ * 提供插件执行时所需的所有上下文信息
+ * @template T 渲染数据类型
+ */
 interface PluginContext<T extends Record<string, unknown> = Record<string, unknown>> {
   /** 渲染请求对象 */
   request: RenderRequest<T>;
@@ -1720,10 +1720,10 @@ interface PluginContext<T extends Record<string, unknown> = Record<string, unkno
   state: RenderState;
 }
 /**
-* 模板插件接口
-* 定义插件的生命周期钩子和配置
-* @template T 渲染数据类型
-*/
+ * 模板插件接口
+ * 定义插件的生命周期钩子和配置
+ * @template T 渲染数据类型
+ */
 interface TemplatePlugin<T extends Record<string, unknown> = Record<string, unknown>> {
   /** 插件名称，用于标识和调试 */
   name: string;
@@ -1739,75 +1739,75 @@ interface TemplatePlugin<T extends Record<string, unknown> = Record<string, unkn
   afterRender?: (ctx: PluginContext<T>) => Promise<void> | void;
 }
 /**
-* 简化的插件类型，下游使用时无需手动指定泛型
-* 自动使用 Record<string, unknown> 作为数据类型
-*/
+ * 简化的插件类型，下游使用时无需手动指定泛型
+ * 自动使用 Record<string, unknown> 作为数据类型
+ */
 type Plugin = TemplatePlugin<Record<string, unknown>>;
 /**
-* 插件工厂函数类型
-* 用于创建可配置的插件实例
-* @template T 插件配置类型
-*/
+ * 插件工厂函数类型
+ * 用于创建可配置的插件实例
+ * @template T 插件配置类型
+ */
 type PluginFactory<T = Record<string, unknown>> = (options?: T) => Plugin;
 /**
-* 资源路径管理器类
-* 负责管理不同环境下的资源路径配置
-*/
+ * 资源路径管理器类
+ * 负责管理不同环境下的资源路径配置
+ */
 declare class ResourcePathManager {
   private packageDir;
   private NODE_ENV;
   constructor();
   /**
-  * 获取包目录路径
-  * @returns 包目录的绝对路径
-  */
+   * 获取包目录路径
+   * @returns 包目录的绝对路径
+   */
   private getPackageDir;
   /**
-  * 查找开发环境目录
-  * @param cwd 当前工作目录
-  * @returns 开发环境目录路径
-  */
+   * 查找开发环境目录
+   * @param cwd 当前工作目录
+   * @returns 开发环境目录路径
+   */
   private findDevelopmentDir;
   /**
-  * 通过 import.meta.url 获取 npm 包的安装目录
-  * @returns npm 包的安装目录路径
-  */
+   * 通过 import.meta.url 获取 npm 包的安装目录
+   * @returns npm 包的安装目录路径
+   */
   private getPackageDirFromImportMeta;
   /**
-  * 从 pnpm 路径中提取插件目录
-  * @param pnpmPath pnpm 的符号链接路径
-  * @returns 插件目录路径，如果无法提取则返回 null
-  */
+   * 从 pnpm 路径中提取插件目录
+   * @param pnpmPath pnpm 的符号链接路径
+   * @returns 插件目录路径，如果无法提取则返回 null
+   */
   private extractPluginDirFromPnpmPath;
   /**
-  * 通过扫描当前工作目录查找插件目录
-  * @returns 插件目录路径，如果找不到则返回 null
-  */
+   * 通过扫描当前工作目录查找插件目录
+   * @returns 插件目录路径，如果找不到则返回 null
+   */
   private findPluginDirByScanning;
   /**
-  * 在指定目录中查找包含 karin-plugin-kkk 的插件目录
-  * @param pluginsDir 插件目录路径
-  * @returns 找到的插件目录路径，如果找不到则返回 null
-  */
+   * 在指定目录中查找包含 karin-plugin-kkk 的插件目录
+   * @param pluginsDir 插件目录路径
+   * @returns 找到的插件目录路径，如果找不到则返回 null
+   */
   private findKarinPluginInDir;
   /**
-  * 检测当前是否运行在插件模式
-  * @returns 如果是插件模式返回 true，否则返回 false
-  */
+   * 检测当前是否运行在插件模式
+   * @returns 如果是插件模式返回 true，否则返回 false
+   */
   private isPluginMode;
   /**
-  * 获取静态资源路径配置
-  * @returns 静态资源路径配置对象
-  */
+   * 获取静态资源路径配置
+   * @returns 静态资源路径配置对象
+   */
   getResourcePaths(): {
     cssDir: string;
     imageDir: string;
   };
 }
 /**
-* 渲染器配置选项接口
-* @template K 模板类型键
-*/
+ * 渲染器配置选项接口
+ * @template K 模板类型键
+ */
 interface ReactServerRenderOptions<K extends keyof DataTypeMap> {
   /** 渲染请求对象 */
   request: RenderRequest<DataTypeMap[K]>;
@@ -1817,32 +1817,32 @@ interface ReactServerRenderOptions<K extends keyof DataTypeMap> {
   plugins?: Plugin[];
 }
 /**
-* SSR 预渲染组件为 HTML 的具体实现
-* 
-* @template K 模板类型键，用于类型推断
-* @param options 渲染配置选项
-* @returns 渲染结果 Promise
-* 
-* # Example
-* ```typescript
-* // 基础使用
-* const result = await reactServerRender({
-*   request: {
-*     templateType: 'douyin',
-*     templateName: 'videoInfo',
-*     data: { share_url: 'https://example.com' }
-*   },
-*   outputDir: './output'
-* })
-* 
-* // 使用插件
-* const result = await reactServerRender({
-*   request: renderRequest,
-*   outputDir: './output',
-*   plugins: [customPlugin()]
-* })
-* ```
-*/
+ * SSR 预渲染组件为 HTML 的具体实现
+ *
+ * @template K 模板类型键，用于类型推断
+ * @param options 渲染配置选项
+ * @returns 渲染结果 Promise
+ *
+ * # Example
+ * ```typescript
+ * // 基础使用
+ * const result = await reactServerRender({
+ *   request: {
+ *     templateType: 'douyin',
+ *     templateName: 'videoInfo',
+ *     data: { share_url: 'https://example.com' }
+ *   },
+ *   outputDir: './output'
+ * })
+ *
+ * // 使用插件
+ * const result = await reactServerRender({
+ *   request: renderRequest,
+ *   outputDir: './output',
+ *   plugins: [customPlugin()]
+ * })
+ * ```
+ */
 declare const reactServerRender: <K extends keyof DataTypeMap>(options: ReactServerRenderOptions<K>) => Promise<RenderResponse>;
 //#endregion
 export { BaseComponentProps, type DataTypeMap, DynamicRenderPath, ExtractDataTypeFromPath, type Plugin, type PluginContext, type PluginFactory, QRCodeSectionProps, type ReactServerRenderOptions, RenderRequest, RenderResponse, type TypedRenderRequest, reactServerRender as default, reactServerRender };
