@@ -1,12 +1,14 @@
 import { Button, Chip, Switch } from '@heroui/react'
 import { Camera, Palette } from 'lucide-react'
-import React, { useEffect, useRef, useState } from 'react'
+import React from 'react'
+import { MdFitScreen } from 'react-icons/md'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 
 import { getEnabledComponents } from '../config/config'
 import { DataService } from '../services/DataService'
 import { PlatformType } from '../types/platforms'
 import { DataFileSelector } from './components/DataFileSelector'
+import { InspectorToggle } from './components/InspectorToggle'
 import { PlatformSelector } from './components/PlatformSelector'
 import { PreviewPanel } from './components/PreviewPanel'
 
@@ -80,9 +82,17 @@ const getDefaultTemplate = (platform: PlatformType): string => {
 }
 
 /**
+ * App 组件属性
+ */
+interface AppProps {
+  inspectorActive: boolean
+  onInspectorToggle: (active: boolean) => void
+}
+
+/**
  * 开发环境主应用组件
  */
-export const App: React.FC = () => {
+export const App: React.FC<AppProps> = ({ inspectorActive, onInspectorToggle }) => {
   // 从URL参数初始化状态
   const urlParams = parseURLParams()
   const initialPlatform = urlParams.platform || PlatformType.DOUYIN
@@ -90,21 +100,21 @@ export const App: React.FC = () => {
     ? urlParams.template
     : getDefaultTemplate(initialPlatform)
 
-  const [selectedPlatform, setSelectedPlatform] = useState<PlatformType>(initialPlatform)
-  const [selectedTemplate, setSelectedTemplate] = useState<string>(initialTemplate)
-  const [templateData, setTemplateData] = useState<any>(null)
-  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
-  const [scale, setScale] = useState(0.5)
-  const [availableDataFiles, setAvailableDataFiles] = useState<string[]>([])
-  const [selectedDataFile, setSelectedDataFile] = useState<string>(urlParams.dataFile || 'default.json')
-  const [isCapturing, setIsCapturing] = useState(false)
+  const [selectedPlatform, setSelectedPlatform] = React.useState<PlatformType>(initialPlatform)
+  const [selectedTemplate, setSelectedTemplate] = React.useState<string>(initialTemplate)
+  const [templateData, setTemplateData] = React.useState<any>(null)
+  const [qrCodeDataUrl, setQrCodeDataUrl] = React.useState<string>('')
+  const [scale, setScale] = React.useState(0.5)
+  const [availableDataFiles, setAvailableDataFiles] = React.useState<string[]>([])
+  const [selectedDataFile, setSelectedDataFile] = React.useState<string>(urlParams.dataFile || 'default.json')
+  const [isCapturing, setIsCapturing] = React.useState(false)
 
   const dataService = DataService.getInstance()
-  const previewPanelRef = useRef<{ captureScreenshot: () => Promise<void>; fitToCanvas: () => void }>(null)
+  const previewPanelRef = React.useRef<{ captureScreenshot: () => Promise<void>; fitToCanvas: () => void }>(null)
 
 
   // 监听浏览器前进后退按钮
-  useEffect(() => {
+  React.useEffect(() => {
     const handlePopState = () => {
       const params = parseURLParams()
       if (params.platform && params.template) {
@@ -123,12 +133,12 @@ export const App: React.FC = () => {
   }, [])
 
   // 当平台、模板或数据文件状态变化时更新URL
-  useEffect(() => {
+  React.useEffect(() => {
     updateURLParams(selectedPlatform, selectedTemplate, selectedDataFile !== 'default.json' ? selectedDataFile : undefined)
   }, [selectedPlatform, selectedTemplate, selectedDataFile])
 
   // 加载数据
-  useEffect(() => {
+  React.useEffect(() => {
     loadData()
     loadAvailableFiles()
   }, [selectedPlatform, selectedTemplate])
@@ -380,10 +390,17 @@ export const App: React.FC = () => {
                   {/* 分隔线 */}
                   <div className='w-px h-6 bg-gray-300' />
 
+                  {/* Inspector 检查元素按钮 */}
+                  <InspectorToggle active={inspectorActive} onToggle={onInspectorToggle} />
+
+                  {/* 分隔线 */}
+                  <div className='w-px h-6 bg-gray-300' />
+
                   {/* 适应画布按钮 */}
                   <Button
                     size='sm'
                     variant='flat'
+                    startContent={<MdFitScreen className='w-4 h-4' />}
                     onPress={() => {
                       if (previewPanelRef.current?.fitToCanvas) {
                         previewPanelRef.current.fitToCanvas()
@@ -392,7 +409,6 @@ export const App: React.FC = () => {
                   >
                     适应画布
                   </Button>
-
                   {/* 分隔线 */}
                   <div className='w-px h-6 bg-gray-300' />
 

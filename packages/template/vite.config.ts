@@ -3,9 +3,11 @@ import { builtinModules } from 'node:module'
 import path, { resolve } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 
+import { inspectorServer } from '@react-dev-inspector/vite-plugin'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
+import checker from 'vite-plugin-checker'
 
 import { mockApiPlugin } from './src/dev/vite-mock-plugin'
 
@@ -44,7 +46,13 @@ export default defineConfig(({ command }) => {
   // 基础配置
   const baseConfig = {
     plugins: [
-      react(),
+      react({
+        babel: {
+          plugins: [
+            '@react-dev-inspector/babel-plugin'
+          ]
+        }
+      }),
       tailwindcss()
     ],
     resolve: {
@@ -60,7 +68,15 @@ export default defineConfig(({ command }) => {
       ...baseConfig,
       plugins: [
         ...baseConfig.plugins,
-        mockApiPlugin()
+        mockApiPlugin(),
+        /**
+         * react-dev-inspector server config for vite
+         */
+        inspectorServer(),
+        checker({
+          // e.g. use TypeScript check
+          typescript: true
+        })
       ],
       root: path.resolve(__dirname, './src/dev'),
       publicDir: path.resolve(__dirname, './public'),

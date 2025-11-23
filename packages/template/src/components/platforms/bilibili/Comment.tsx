@@ -361,8 +361,8 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
         {/* 二级评论 */}
         {props.replies && props.replies.length > 0 && (
           <div className='mt-10'>
-            {props.replies.map((subReply, _index) => (
-              <div>
+            {props.replies.map((subReply, index) => (
+              <div key={index}>
                 <div className='flex items-start space-x-4'>
                   {/* 二级评论头像区域 */}
                   <div className='relative mr-[33.75px] flex-shrink-0 w-40 h-40 flex items-center justify-center'>
