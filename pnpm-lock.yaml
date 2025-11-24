@@ -183,13 +183,16 @@ importers:
         version: 0.7.2
       axios:
         specifier: 1.12.2
-        version: 1.12.2
+        version: 1.12.2(debug@4.4.3)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
       framer-motion:
         specifier: 12.23.22
         version: 12.23.22(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      gsap:
+        specifier: ^3.13.0
+        version: 3.13.0
       highlight.js:
         specifier: ^11.11.1
         version: 11.11.1
@@ -211,7 +214,7 @@ importers:
     devDependencies:
       '@react-dev-inspector/vite-plugin':
         specifier: ^2.0.1
-        version: 2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0)
+        version: 2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12))
       '@types/express':
         specifier: 5.0.3
         version: 5.0.3
@@ -235,19 +238,19 @@ importers:
         version: 10.1.0
       react-dev-inspector:
         specifier: ^2.0.1
-        version: 2.0.1(@types/react@19.2.2)(eslint@9.37.0(jiti@2.6.1))(react@19.2.0)(typescript@5.9.3)(webpack@5.103.0)
+        version: 2.0.1(@types/react@19.2.2)(eslint@9.37.0(jiti@2.6.1))(react@19.2.0)(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12))
       react-scan:
         specifier: ^0.4.3
         version: 0.4.3(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react-router-dom@7.9.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-router@7.9.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)(rollup@4.53.2)
       vite-plugin-checker:
         specifier: ^0.11.0
-        version: 0.11.0(eslint@9.37.0(jiti@2.6.1))(meow@13.2.0)(optionator@0.9.4)(typescript@5.9.3)
+        version: 0.11.0(eslint@9.37.0(jiti@2.6.1))(meow@13.2.0)(optionator@0.9.4)(rolldown-vite@7.1.17(@types/node@24.7.1)(esbuild@0.25.12)(jiti@2.6.1)(sass-embedded@1.93.3)(sass@1.93.3)(terser@5.44.0)(tsx@4.20.6)(yaml@2.7.0))(typescript@5.9.3)
       vite-plugin-static-copy:
         specifier: 3.1.3
-        version: 3.1.3
+        version: 3.1.3(rolldown-vite@7.1.17(@types/node@24.7.1)(esbuild@0.25.12)(jiti@2.6.1)(sass-embedded@1.93.3)(sass@1.93.3)(terser@5.44.0)(tsx@4.20.6)(yaml@2.7.0))
       vite-plugin-svgr:
         specifier: ^4.5.0
-        version: 4.5.0(rollup@4.53.2)(typescript@5.9.3)
+        version: 4.5.0(rolldown-vite@7.1.17(@types/node@24.7.1)(esbuild@0.25.12)(jiti@2.6.1)(sass-embedded@1.93.3)(sass@1.93.3)(terser@5.44.0)(tsx@4.20.6)(yaml@2.7.0))(rollup@4.53.2)(typescript@5.9.3)
 
   packages/web:
     dependencies:
@@ -6459,6 +6462,9 @@ packages:
   gray-matter@4.0.3:
     resolution: {integrity: sha512-5v6yZd4JK3eMI3FqqCouswVqwugaA9r4dNZB1wwcmrD02QkV5H0y7XBQW8QwQqEaZY1pM9aqORSORhJRdNK44Q==}
     engines: {node: '>=6.0'}
+
+  gsap@3.13.0:
+    resolution: {integrity: sha512-QL7MJ2WMjm1PHWsoFrAQH/J8wUeqZvMtHO58qdekHpCfhvhSL4gSiz6vJf5EeMP0LOn3ZCprL2ki/gjED8ghVw==}
 
   gzip-size@6.0.0:
     resolution: {integrity: sha512-ax7ZYomf6jqPTQ4+XCpUGyXKHk5WweS+e05MBO4/y3WJ5RkmPXNKvX+bx1behVILVwr6JSQvZAku021CHPXG3Q==}
@@ -13420,9 +13426,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@react-dev-inspector/middleware@2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0)':
+  '@react-dev-inspector/middleware@2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12))':
     dependencies:
-      react-dev-utils: 12.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0)
+      react-dev-utils: 12.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12))
     transitivePeerDependencies:
       - eslint
       - supports-color
@@ -13430,10 +13436,10 @@ snapshots:
       - vue-template-compiler
       - webpack
 
-  '@react-dev-inspector/umi3-plugin@2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0)':
+  '@react-dev-inspector/umi3-plugin@2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12))':
     dependencies:
       '@react-dev-inspector/babel-plugin': 2.0.1
-      '@react-dev-inspector/middleware': 2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0)
+      '@react-dev-inspector/middleware': 2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12))
     transitivePeerDependencies:
       - eslint
       - supports-color
@@ -13441,10 +13447,10 @@ snapshots:
       - vue-template-compiler
       - webpack
 
-  '@react-dev-inspector/umi4-plugin@2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0)':
+  '@react-dev-inspector/umi4-plugin@2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12))':
     dependencies:
       '@react-dev-inspector/babel-plugin': 2.0.1
-      '@react-dev-inspector/middleware': 2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0)
+      '@react-dev-inspector/middleware': 2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12))
     transitivePeerDependencies:
       - eslint
       - supports-color
@@ -13452,9 +13458,9 @@ snapshots:
       - vue-template-compiler
       - webpack
 
-  '@react-dev-inspector/vite-plugin@2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0)':
+  '@react-dev-inspector/vite-plugin@2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12))':
     dependencies:
-      '@react-dev-inspector/middleware': 2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0)
+      '@react-dev-inspector/middleware': 2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12))
     transitivePeerDependencies:
       - eslint
       - supports-color
@@ -15499,14 +15505,6 @@ snapshots:
     dependencies:
       possible-typed-array-names: 1.1.0
 
-  axios@1.12.2:
-    dependencies:
-      follow-redirects: 1.15.11
-      form-data: 4.0.4
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-
   axios@1.12.2(debug@4.4.3):
     dependencies:
       follow-redirects: 1.15.11(debug@4.4.3)
@@ -16922,8 +16920,6 @@ snapshots:
 
   flatted@3.3.3: {}
 
-  follow-redirects@1.15.11: {}
-
   follow-redirects@1.15.11(debug@4.4.3):
     optionalDependencies:
       debug: 4.4.3
@@ -16937,7 +16933,7 @@ snapshots:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
 
-  fork-ts-checker-webpack-plugin@6.5.3(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0):
+  fork-ts-checker-webpack-plugin@6.5.3(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12)):
     dependencies:
       '@babel/code-frame': 7.27.1
       '@types/json-schema': 7.0.15
@@ -16953,7 +16949,7 @@ snapshots:
       semver: 7.7.3
       tapable: 1.1.3
       typescript: 5.9.3
-      webpack: 5.103.0
+      webpack: 5.103.0(esbuild@0.25.12)
     optionalDependencies:
       eslint: 9.37.0(jiti@2.6.1)
 
@@ -17240,6 +17236,8 @@ snapshots:
       kind-of: 6.0.3
       section-matter: 1.0.0
       strip-bom-string: 1.0.0
+
+  gsap@3.13.0: {}
 
   gzip-size@6.0.0:
     dependencies:
@@ -17829,7 +17827,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 24.10.1
+      '@types/node': 24.7.1
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -19109,18 +19107,18 @@ snapshots:
     dependencies:
       safe-buffer: 5.2.1
 
-  react-dev-inspector@2.0.1(@types/react@19.2.2)(eslint@9.37.0(jiti@2.6.1))(react@19.2.0)(typescript@5.9.3)(webpack@5.103.0):
+  react-dev-inspector@2.0.1(@types/react@19.2.2)(eslint@9.37.0(jiti@2.6.1))(react@19.2.0)(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12)):
     dependencies:
       '@react-dev-inspector/babel-plugin': 2.0.1
-      '@react-dev-inspector/middleware': 2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0)
-      '@react-dev-inspector/umi3-plugin': 2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0)
-      '@react-dev-inspector/umi4-plugin': 2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0)
-      '@react-dev-inspector/vite-plugin': 2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0)
+      '@react-dev-inspector/middleware': 2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12))
+      '@react-dev-inspector/umi3-plugin': 2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12))
+      '@react-dev-inspector/umi4-plugin': 2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12))
+      '@react-dev-inspector/vite-plugin': 2.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12))
       '@types/react-reconciler': 0.28.9(@types/react@19.2.2)
       hotkeys-js: 3.13.15
       picocolors: 1.0.0
       react: 19.2.0
-      react-dev-utils: 12.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0)
+      react-dev-utils: 12.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12))
     transitivePeerDependencies:
       - '@types/react'
       - eslint
@@ -19129,7 +19127,7 @@ snapshots:
       - vue-template-compiler
       - webpack
 
-  react-dev-utils@12.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0):
+  react-dev-utils@12.0.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12)):
     dependencies:
       '@babel/code-frame': 7.27.1
       address: 1.2.2
@@ -19140,7 +19138,7 @@ snapshots:
       escape-string-regexp: 4.0.0
       filesize: 8.0.7
       find-up: 5.0.0
-      fork-ts-checker-webpack-plugin: 6.5.3(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0)
+      fork-ts-checker-webpack-plugin: 6.5.3(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)(webpack@5.103.0(esbuild@0.25.12))
       global-modules: 2.0.0
       globby: 11.1.0
       gzip-size: 6.0.0
@@ -19155,7 +19153,7 @@ snapshots:
       shell-quote: 1.8.3
       strip-ansi: 6.0.1
       text-table: 0.2.0
-      webpack: 5.103.0
+      webpack: 5.103.0(esbuild@0.25.12)
     optionalDependencies:
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -20286,14 +20284,16 @@ snapshots:
       type-fest: 0.16.0
       unique-string: 2.0.0
 
-  terser-webpack-plugin@5.3.14(webpack@5.103.0):
+  terser-webpack-plugin@5.3.14(esbuild@0.25.12)(webpack@5.103.0(esbuild@0.25.12)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       jest-worker: 27.5.1
       schema-utils: 4.3.3
       serialize-javascript: 6.0.2
       terser: 5.44.0
-      webpack: 5.103.0
+      webpack: 5.103.0(esbuild@0.25.12)
+    optionalDependencies:
+      esbuild: 0.25.12
 
   terser@5.44.0:
     dependencies:
@@ -20652,7 +20652,7 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  vite-plugin-checker@0.11.0(eslint@9.37.0(jiti@2.6.1))(meow@13.2.0)(optionator@0.9.4)(typescript@5.9.3):
+  vite-plugin-checker@0.11.0(eslint@9.37.0(jiti@2.6.1))(meow@13.2.0)(optionator@0.9.4)(rolldown-vite@7.1.17(@types/node@24.7.1)(esbuild@0.25.12)(jiti@2.6.1)(sass-embedded@1.93.3)(sass@1.93.3)(terser@5.44.0)(tsx@4.20.6)(yaml@2.7.0))(typescript@5.9.3):
     dependencies:
       '@babel/code-frame': 7.27.1
       chokidar: 4.0.3
@@ -20661,6 +20661,7 @@ snapshots:
       picomatch: 4.0.3
       tiny-invariant: 1.3.3
       tinyglobby: 0.2.15
+      vite: rolldown-vite@7.1.17(@types/node@24.7.1)(esbuild@0.25.12)(jiti@2.6.1)(sass-embedded@1.93.3)(sass@1.93.3)(terser@5.44.0)(tsx@4.20.6)(yaml@2.7.0)
       vscode-uri: 3.1.0
     optionalDependencies:
       eslint: 9.37.0(jiti@2.6.1)
@@ -20722,19 +20723,21 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vite-plugin-static-copy@3.1.3:
+  vite-plugin-static-copy@3.1.3(rolldown-vite@7.1.17(@types/node@24.7.1)(esbuild@0.25.12)(jiti@2.6.1)(sass-embedded@1.93.3)(sass@1.93.3)(terser@5.44.0)(tsx@4.20.6)(yaml@2.7.0)):
     dependencies:
       chokidar: 3.6.0
       fs-extra: 11.3.2
       p-map: 7.0.3
       picocolors: 1.1.1
       tinyglobby: 0.2.15
+      vite: rolldown-vite@7.1.17(@types/node@24.7.1)(esbuild@0.25.12)(jiti@2.6.1)(sass-embedded@1.93.3)(sass@1.93.3)(terser@5.44.0)(tsx@4.20.6)(yaml@2.7.0)
 
-  vite-plugin-svgr@4.5.0(rollup@4.53.2)(typescript@5.9.3):
+  vite-plugin-svgr@4.5.0(rolldown-vite@7.1.17(@types/node@24.7.1)(esbuild@0.25.12)(jiti@2.6.1)(sass-embedded@1.93.3)(sass@1.93.3)(terser@5.44.0)(tsx@4.20.6)(yaml@2.7.0))(rollup@4.53.2)(typescript@5.9.3):
     dependencies:
       '@rollup/pluginutils': 5.3.0(rollup@4.53.2)
       '@svgr/core': 8.1.0(typescript@5.9.3)
       '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.9.3))
+      vite: rolldown-vite@7.1.17(@types/node@24.7.1)(esbuild@0.25.12)(jiti@2.6.1)(sass-embedded@1.93.3)(sass@1.93.3)(terser@5.44.0)(tsx@4.20.6)(yaml@2.7.0)
     transitivePeerDependencies:
       - rollup
       - supports-color
@@ -20904,7 +20907,7 @@ snapshots:
   webpack-virtual-modules@0.6.2:
     optional: true
 
-  webpack@5.103.0:
+  webpack@5.103.0(esbuild@0.25.12):
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.8
@@ -20928,7 +20931,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 4.3.3
       tapable: 2.3.0
-      terser-webpack-plugin: 5.3.14(webpack@5.103.0)
+      terser-webpack-plugin: 5.3.14(esbuild@0.25.12)(webpack@5.103.0(esbuild@0.25.12))
       watchpack: 2.4.4
       webpack-sources: 3.3.3
     transitivePeerDependencies:

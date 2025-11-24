@@ -41,6 +41,7 @@
     "axios": "1.12.2",
     "clsx": "^2.1.1",
     "framer-motion": "12.23.22",
+    "gsap": "^3.13.0",
     "highlight.js": "^11.11.1",
     "qrcode": "^1.5.4",
     "react-icons": "^5.5.0",

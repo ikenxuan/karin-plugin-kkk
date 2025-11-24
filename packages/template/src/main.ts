@@ -2,10 +2,11 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import React from 'react'
-import { renderToStaticMarkup } from 'react-dom/server'
+import { renderToString } from 'react-dom/server'
 
 import type { DataTypeMap, RenderRequest, RenderResponse, TypedRenderRequest } from './types'
 import { ComponentAutoRegistry } from './utils/ComponentAutoRegistry'
+import { DevDataManager } from './utils/DevDataManager'
 import { logger } from './utils/logger'
 
 /**
@@ -180,7 +181,7 @@ class ComponentRendererFactory {
     // 处理嵌套模板名称（如 dynamic/DYNAMIC_TYPE_DRAW）
     if (templateName.includes('/')) {
       const subType = templateName.split('/')[1]
-      ;(props as Record<string, unknown>).subType = subType
+        ; (props as Record<string, unknown>).subType = subType
     }
 
     return React.createElement(registryItem.component, props)
@@ -242,28 +243,28 @@ class ResourcePathManager {
   private getPackageDirFromImportMeta (): string {
     try {
       const currentModuleUrl = import.meta.url
-      
+
       // 转换为文件路径
       const currentModulePath = new URL(currentModuleUrl).pathname
-      const normalizedPath = process.platform === 'win32' 
-        ? currentModulePath.slice(1) 
+      const normalizedPath = process.platform === 'win32'
+        ? currentModulePath.slice(1)
         : currentModulePath
-      
+
       const pluginDir = this.extractPluginDirFromPnpmPath(normalizedPath)
       if (pluginDir) {
         logger.debug('从 pnpm 路径提取的插件目录:', pluginDir)
         return pluginDir
       }
-      
+
       const fallbackDir = this.findPluginDirByScanning()
       if (fallbackDir) {
         logger.debug('通过扫描找到的插件目录:', fallbackDir)
         return fallbackDir
       }
-      
+
       logger.debug(logger.yellow('无法找到插件目录，使用当前项目工作目录'))
       return process.cwd()
-      
+
     } catch (error) {
       logger.error('获取 import.meta.url 失败:', error)
       return process.cwd()
@@ -278,16 +279,16 @@ class ResourcePathManager {
   private extractPluginDirFromPnpmPath (pnpmPath: string): string | null {
     const pnpmIndex = pnpmPath.indexOf('.pnpm')
     if (pnpmIndex === -1) return null
-    
+
     const projectRoot = pnpmPath.substring(0, pnpmIndex - '/node_modules/'.length)
     logger.debug('从 pnpm 路径提取的项目根目录:', projectRoot)
-    
+
     const pluginsDir = path.join(projectRoot, 'plugins')
     if (!fs.existsSync(pluginsDir)) {
       logger.debug('plugins 目录不存在:', pluginsDir)
       return null
     }
-    
+
     return this.findKarinPluginInDir(pluginsDir)
   }
 
@@ -298,12 +299,12 @@ class ResourcePathManager {
   private findPluginDirByScanning (): string | null {
     const cwd = process.cwd()
     const pluginsDir = path.join(cwd, 'plugins')
-    
+
     if (!fs.existsSync(pluginsDir)) {
       logger.debug('当前工作目录下没有 plugins 目录')
       return null
     }
-    
+
     return this.findKarinPluginInDir(pluginsDir)
   }
 
@@ -316,11 +317,11 @@ class ResourcePathManager {
     try {
       const pluginDirs = fs.readdirSync(pluginsDir, { withFileTypes: true })
         .filter(dirent => dirent.isDirectory())
-      
+
       for (const pluginDir of pluginDirs) {
         const pluginPath = path.join(pluginsDir, pluginDir.name)
         const karinPluginPath = path.join(pluginPath, 'node_modules', 'karin-plugin-kkk')
-        
+
         if (fs.existsSync(karinPluginPath)) {
           logger.debug('找到包含 karin-plugin-kkk 的插件目录:', pluginPath)
           return pluginPath
@@ -329,7 +330,7 @@ class ResourcePathManager {
     } catch (error) {
       logger.debug('扫描插件目录失败:', error)
     }
-    
+
     return null
   }
 
@@ -340,13 +341,13 @@ class ResourcePathManager {
   private isPluginMode (): boolean {
     // 检测方法1：检查路径中是否包含 plugins 目录
     const hasPluginsInPath = this.packageDir.includes('plugins')
-    
+
     // 检测方法2：检查是否存在插件特有的 resources 目录
     const pluginResourcesExists = fs.existsSync(path.join(this.packageDir, 'resources'))
-    
+
     // 检测方法3：检查是否存在 node_modules/karin-plugin-kkk
     const npmPackageExists = fs.existsSync(path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk'))
-    
+
     return hasPluginsInPath && pluginResourcesExists && npmPackageExists
   }
 
@@ -443,7 +444,7 @@ class SSRRender {
   private htmlWrapper: HtmlWrapper
   private pluginContainer: PluginContainer
 
-  constructor(plugins: Plugin[] = []) {
+  constructor (plugins: Plugin[] = []) {
     this.resourceManager = new ResourcePathManager()
     this.htmlWrapper = new HtmlWrapper(this.resourceManager)
     this.outputDir = ''
@@ -505,7 +506,7 @@ class SSRRender {
       // 渲染时插件（可包裹或替换组件）
       await this.pluginContainer.runDuring(ctx)
 
-      const htmlContent = renderToStaticMarkup(ctx.state.component ?? component)
+      const htmlContent = renderToString(ctx.state.component ?? component)
 
       ctx.state.html = htmlContent
 
@@ -550,10 +551,10 @@ class SSRRender {
   /**
    * 启动服务
    */
-  public async start(): Promise<void> {
+  public async start (): Promise<void> {
     // 确保组件已初始化
     await ComponentAutoRegistry.initialize()
-    
+
     const stats = ComponentAutoRegistry.getStats()
     logger.debug(`📁 HTML输出目录: ${this.outputDir}`)
     logger.debug(`🎨 CSS文件状态: ${this.cssContent ? '已加载' : '未加载'}`)
@@ -612,12 +613,12 @@ interface ReactServerRenderOptions<K extends keyof DataTypeMap> {
  * })
  * ```
  */
-const reactServerRender = async <K extends keyof DataTypeMap>(
+const reactServerRender = async <K extends keyof DataTypeMap> (
   options: ReactServerRenderOptions<K>
 ): Promise<RenderResponse> => {
-  const { 
-    request, 
-    outputDir, 
+  const {
+    request,
+    outputDir,
     plugins = []
   } = options
 
@@ -628,15 +629,25 @@ const reactServerRender = async <K extends keyof DataTypeMap>(
 
   // 初始化组件注册表
   await ComponentAutoRegistry.initialize()
-  
+
   // 创建临时渲染器实例
   const tempServer = new SSRRender(plugins)
   tempServer['outputDir'] = outputDir
 
-  return await tempServer.render(request)
+  const result = await tempServer.render(request)
+
+  if (result.success) {
+    DevDataManager.saveRenderData(
+      request.templateType,
+      request.templateName,
+      request.data
+    )
+  }
+
+  return result
 }
 
-export type { 
+export type {
   DataTypeMap,
   Plugin,
   PluginContext,

@@ -1,6 +1,7 @@
 import { addToast, Button, Card, CardBody, CardHeader, Kbd } from '@heroui/react'
+import gsap from 'gsap'
 import { Copy, Download, Eye, X } from 'lucide-react'
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 
 import { PlatformType } from '../../types/platforms'
 import { captureScreenshot as captureScreenshotUtil } from '../utils/screenshot'
@@ -16,12 +17,16 @@ interface PreviewPanelProps {
   templateId: string
   /** 数据 */
   data: any
+  /** 加载错误 */
+  loadError: Error | null
   /** 二维码数据URL */
   qrCodeDataUrl: string
   /** 缩放比例 */
   scale: number
   /** 缩放变化回调 */
   onScaleChange: (scale: number) => void
+  /** 组件加载完成回调 */
+  onComponentLoadComplete?: () => void
 }
 
 /**
@@ -101,9 +106,11 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   platform,
   templateId,
   data,
+  loadError,
   qrCodeDataUrl,
   scale,
-  onScaleChange
+  onScaleChange,
+  onComponentLoadComplete
 }, ref) => {
   // 键盘状态
   const [isSpacePressed, setIsSpacePressed] = useState(false)
@@ -335,6 +342,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   /**
    * 适应画布大小 - 计算Y轴填满画布的缩放比例
    * 根据容器高度和内容高度自动计算最佳缩放比例
+   * 使用 GSAP 添加平滑的缓动动画
    */
   const handleFitToCanvas = useCallback(() => {
     if (!previewContainerRef.current || !previewContentRef.current) return
@@ -352,14 +360,33 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
     // 限制缩放范围在0.1到3之间
     const clampedScale = Math.max(0.1, Math.min(3, fitScale))
 
-    onScaleChange(clampedScale)
+    // 使用 GSAP 创建平滑的缩放和位移动画
+    const currentScale = scale
+    const currentOffset = { ...panOffset }
 
-    // 重置位移到中心位置
-    setPanOffset({ x: 0, y: 0 })
+    // 创建一个临时对象用于动画
+    const animationTarget = {
+      scale: currentScale,
+      x: currentOffset.x,
+      y: currentOffset.y
+    }
 
-    // 立即更新滚动条
-    updateScrollBarsImmediate()
-  }, [onScaleChange, updateScrollBarsImmediate])
+    gsap.to(animationTarget, {
+      scale: clampedScale,
+      x: 0,
+      y: 0,
+      duration: 0.8,
+      ease: 'expo.out',
+      onUpdate: () => {
+        onScaleChange(animationTarget.scale)
+        setPanOffset({ x: animationTarget.x, y: animationTarget.y })
+      },
+      onComplete: () => {
+        // 动画完成后更新滚动条
+        updateScrollBarsImmediate()
+      }
+    })
+  }, [scale, panOffset, onScaleChange, updateScrollBarsImmediate])
 
   /**
    * 全局鼠标按下事件处理 - 只在按住 Space 时才处理
@@ -514,8 +541,8 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
    * 监听缩放和位移变化，立即更新滚动条
    */
   useEffect(() => {
-    updateScrollBarsImmediate()
-  }, [scale, panOffset.x, panOffset.y, updateScrollBarsImmediate])
+    checkBounds()
+  }, [checkBounds])
 
   /**
    * 组件挂载后初始化滚动条状态
@@ -604,6 +631,31 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
     if (isDragging || isScrollbarDragging) return 'none'
     return 'auto'
   }
+
+  /**
+   * 预览内容的样式对象（使用 useMemo 避免每次都重新创建）
+   */
+  const previewContentStyle = useMemo(() => ({
+    left: '50%',
+    top: '50%',
+    transform: `translate(-50%, -50%) translate(${panOffset.x}px, ${panOffset.y}px) scale(${scale})`,
+    transformOrigin: 'center',
+    transition: dragEasing ? 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'transform 0.1s ease-out',
+    width: '1440px',
+    pointerEvents: 'auto'
+  } as React.CSSProperties), [panOffset.x, panOffset.y, scale, dragEasing])
+
+  /**
+   * ComponentRenderer 的 props（使用 useMemo 避免每次都重新创建）
+   */
+  const componentRendererProps = useMemo(() => ({
+    platform,
+    templateId,
+    data,
+    qrCodeDataUrl,
+    loadError,
+    onLoadComplete: onComponentLoadComplete
+  }), [platform, templateId, data, qrCodeDataUrl, loadError, onComponentLoadComplete])
 
   /**
    * 截图功能
@@ -814,15 +866,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
           <div
             ref={previewContentRef}
             className='absolute'
-            style={{
-              left: '50%',
-              top: '50%',
-              transform: `translate(-50%, -50%) translate(${panOffset.x}px, ${panOffset.y}px) scale(${scale})`,
-              transformOrigin: 'center',
-              transition: dragEasing ? 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'transform 0.1s ease-out',
-              width: '1440px',
-              pointerEvents: 'auto'
-            }}
+            style={previewContentStyle}
           >
             <div 
               ref={componentRendererRef} 
@@ -834,10 +878,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
               }}
             >
               <ComponentRenderer
-                platform={platform}
-                templateId={templateId}
-                data={data}
-                qrCodeDataUrl={qrCodeDataUrl}
+                {...componentRendererProps}
               />
             </div>
             

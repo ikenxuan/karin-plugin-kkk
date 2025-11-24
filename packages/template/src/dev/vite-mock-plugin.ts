@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, unlinkSync, watch, writeFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -98,7 +98,18 @@ export function mockApiPlugin (): Plugin {
       function getAvailableDataFiles (platform: PlatformType, templateId: string): string[] {
         const dir = getTemplateDataDir(platform, templateId)
         try {
-          return readdirSync(dir).filter(file => file.endsWith('.json'))
+          const allFiles = readdirSync(dir)
+          const jsonFiles = allFiles.filter(file => file.endsWith('.json') && file !== 'versions.json')
+
+          // 分离 default.json 和其他文件
+          const defaultFile = jsonFiles.find(f => f === 'default.json')
+          const otherFiles = jsonFiles.filter(f => f !== 'default.json')
+
+          // 对其他文件按时间倒序排列（新的在前）
+          otherFiles.sort((a, b) => b.localeCompare(a))
+
+          // default.json 始终在最前面
+          return defaultFile ? ['default.json', ...otherFiles] : otherFiles
         } catch {
           return []
         }
@@ -120,6 +131,43 @@ export function mockApiPlugin (): Plugin {
           })
         })
       }
+
+      /**
+       * 监听 dev-data 目录的文件变化
+       * 当有新文件被创建或修改时，通知前端进行热更新
+       */
+      function setupFileWatcher () {
+        if (!existsSync(dataDir)) {
+          return
+        }
+
+        try {
+          const watcher = watch(dataDir, { recursive: true }, (eventType, filename) => {
+            if (filename && (eventType === 'change' || eventType === 'rename')) {
+              // 只处理 JSON 文件
+              if (filename.endsWith('.json')) {
+                // 通过 Vite HMR 通知前端数据已更新
+                server.ws.send({
+                  type: 'custom',
+                  event: 'dev-data-updated',
+                  data: {
+                    file: filename,
+                    timestamp: Date.now()
+                  }
+                })
+              }
+            }
+          })
+
+            // 保存 watcher 引用以便后续可能的清理
+            ; (server as any).__devDataWatcher = watcher
+        } catch {
+          // 文件监听错误不影响 API 正常运行
+        }
+      }
+
+      // 启动文件监听
+      setupFileWatcher()
 
       // API 路由处理 - 使用与原 mock-server.ts 相同的路由匹配逻辑
       server.middlewares.use('/api', async (req, res, next) => {
@@ -324,7 +372,6 @@ export function mockApiPlugin (): Plugin {
       })
 
       console.log('🚀 Mock API 中间件已集成到 Vite 开发服务器')
-      console.log(`📁 数据文件存储在: ${dataDir}`)
     }
   }
 }

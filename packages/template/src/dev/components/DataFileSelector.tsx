@@ -1,6 +1,6 @@
 import { Button, Card, CardBody, CardHeader, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, Textarea, useDisclosure } from '@heroui/react'
 import { FileText, Plus } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 interface DataFileSelectorProps {
   /** 可用的数据文件列表 */
@@ -11,6 +11,8 @@ interface DataFileSelectorProps {
   onDataFileChange: (filename: string) => void
   /** 保存新数据文件回调 */
   onSaveNewDataFile: (filename: string, jsonData: any) => void
+  /** 刷新数据文件列表的回调 */
+  onRefreshFiles?: () => void
 }
 
 /**
@@ -20,12 +22,40 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
   availableDataFiles,
   selectedDataFile,
   onDataFileChange,
-  onSaveNewDataFile
+  onSaveNewDataFile,
+  onRefreshFiles
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [newFileName, setNewFileName] = useState('')
   const [jsonContent, setJsonContent] = useState('{\n  \n}')
   const [jsonError, setJsonError] = useState('')
+
+  /**
+   * 监听 WebSocket 事件，自动刷新文件列表
+   */
+  useEffect(() => {
+    const handleMessage = (event: Event) => {
+      const messageEvent = event as CustomEvent
+      if (messageEvent.detail?.type === 'custom' && messageEvent.detail?.event === 'dev-data-updated') {
+        // 数据文件已更新，刷新文件列表
+        onRefreshFiles?.()
+      }
+    }
+
+    // 监听 Vite HMR 事件
+    if (import.meta.hot) {
+      import.meta.hot.on('dev-data-updated', () => {
+        onRefreshFiles?.()
+      })
+    }
+
+    // 备用：监听通用消息事件
+    window.addEventListener('message', handleMessage)
+
+    return () => {
+      window.removeEventListener('message', handleMessage)
+    }
+  }, [onRefreshFiles])
 
   /**
    * 验证并保存新文件
@@ -61,6 +91,13 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
   const handleJsonChange = (value: string) => {
     setJsonContent(value)
     setJsonError('')
+  }
+
+  /**
+   * 格式化文件名显示（移除 .json 后缀）
+   */
+  const formatFileName = (filename: string) => {
+    return filename.replace('.json', '')
   }
 
   return (
@@ -100,7 +137,7 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
                   key={filename}
                   className='text-gray-900 data-[hover=true]:bg-gray-100 data-[selected=true]:bg-blue-50'
                 >
-                  {filename.replace('.json', '')}
+                  {formatFileName(filename)}
                 </SelectItem>
               ))}
             </Select>
