@@ -636,7 +636,7 @@ const reactServerRender = async <K extends keyof DataTypeMap> (
 
   const result = await tempServer.render(request)
 
-  if (result.success) {
+  if (result.success && process.env.NODE_ENV === 'development') {
     DevDataManager.saveRenderData(
       request.templateType,
       request.templateName,

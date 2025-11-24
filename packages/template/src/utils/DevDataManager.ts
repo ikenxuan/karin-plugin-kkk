@@ -4,8 +4,17 @@ import { fileURLToPath } from 'node:url'
 
 import { logger } from './logger'
 
-const __dirname = fileURLToPath(new URL('..', import.meta.url))
-const devDataDir = path.resolve(__dirname, '../dev-data')
+let devDataDir: string
+try {
+  if (process.env.NODE_ENV === 'development') {
+    const __dirname = fileURLToPath(new URL('..', import.meta.url))
+    devDataDir = path.resolve(__dirname, '../dev-data')
+  } else {
+    devDataDir = ''
+  }
+} catch {
+  devDataDir = ''
+}
 
 // 保留的最大版本数
 const MAX_VERSIONS_PER_TEMPLATE = 10
@@ -57,6 +66,9 @@ export class DevDataManager {
    * @returns 完整的目录路径
    */
   static getTemplateDataDir (platform: string, templateName: string): string {
+    if (!devDataDir) {
+      throw new Error('karin-plugin-kkk 仅在环境变量 NODE_ENV 为 production 时可用')
+    }
     const sanitizedTemplateName = templateName.replace(/\//g, '_')
     const dir = path.join(devDataDir, platform, sanitizedTemplateName)
     this.ensureDir(dir)
