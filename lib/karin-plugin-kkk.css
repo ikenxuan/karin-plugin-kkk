@@ -5592,10 +5592,6 @@
     width: calc(var(--spacing) * 54);
   }
 
-  .w-64 {
-    width: calc(var(--spacing) * 64);
-  }
-
   .w-80 {
     width: calc(var(--spacing) * 80);
   }
@@ -5766,6 +5762,10 @@
 
   .max-w-5xl {
     max-width: var(--container-5xl);
+  }
+
+  .max-w-96 {
+    max-width: calc(var(--spacing) * 96);
   }
 
   .max-w-\[270px\] {
@@ -9185,10 +9185,6 @@
 
   .placeholder-gray-500::placeholder {
     color: var(--color-gray-500);
-  }
-
-  .accent-primary {
-    accent-color: hsl(var(--heroui-primary) / 1);
   }
 
   .dark {
