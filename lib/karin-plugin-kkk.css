@@ -4322,6 +4322,10 @@
     top: calc(var(--spacing) * 3);
   }
 
+  .top-4 {
+    top: calc(var(--spacing) * 4);
+  }
+
   .top-\[5\%\] {
     top: 5%;
   }
@@ -4448,6 +4452,10 @@
 
   .left-1\/2 {
     left: 50%;
+  }
+
+  .left-4 {
+    left: calc(var(--spacing) * 4);
   }
 
   .left-12 {
@@ -4676,6 +4684,10 @@
     margin-inline-end: calc(var(--spacing) * 4);
   }
 
+  .-mt-170 {
+    margin-top: calc(var(--spacing) * -170);
+  }
+
   .mt-0\.5 {
     margin-top: calc(var(--spacing) * .5);
   }
@@ -4724,12 +4736,20 @@
     margin-top: calc(var(--spacing) * 20);
   }
 
+  .mt-35 {
+    margin-top: calc(var(--spacing) * 35);
+  }
+
   .mt-\[30px\] {
     margin-top: 30px;
   }
 
   .mt-\[37\.5px\] {
     margin-top: 37.5px;
+  }
+
+  .mt-auto {
+    margin-top: auto;
   }
 
   .-mr-2 {
@@ -4872,6 +4892,10 @@
     margin-bottom: calc(var(--spacing) * 20);
   }
 
+  .mb-30 {
+    margin-bottom: calc(var(--spacing) * 30);
+  }
+
   .mb-\[1\.8em\] {
     margin-bottom: 1.8em;
   }
@@ -4966,6 +4990,13 @@
 
   .line-clamp-2 {
     -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     display: -webkit-box;
     overflow: hidden;
@@ -5572,6 +5603,10 @@
     width: calc(var(--spacing) * 40);
   }
 
+  .w-45 {
+    width: calc(var(--spacing) * 45);
+  }
+
   .w-48 {
     width: calc(var(--spacing) * 48);
   }
@@ -5758,6 +5793,10 @@
 
   .max-w-5xl {
     max-width: var(--container-5xl);
+  }
+
+  .max-w-80 {
+    max-width: calc(var(--spacing) * 80);
   }
 
   .max-w-96 {
@@ -7386,6 +7425,16 @@
     }
   }
 
+  .bg-default-100\/60 {
+    background-color: hsl(var(--heroui-default-100) / 1);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-default-100\/60 {
+      background-color: color-mix(in oklab, hsl(var(--heroui-default-100) / 1) 60%, transparent);
+    }
+  }
+
   .bg-default-200, .bg-default-200\/60 {
     background-color: hsl(var(--heroui-default-200) / 1);
   }
@@ -7660,6 +7709,24 @@
     background-color: #fff;
   }
 
+  .bg-white\/50 {
+    background-color: oklab(100% 0 5.96046e-8 / .5);
+  }
+
+  .bg-linear-to-b {
+    --tw-gradient-position: to bottom;
+  }
+
+  @supports (background-image: linear-gradient(in lab, red, red)) {
+    .bg-linear-to-b {
+      --tw-gradient-position: to bottom in oklab;
+    }
+  }
+
+  .bg-linear-to-b {
+    background-image: linear-gradient(var(--tw-gradient-stops));
+  }
+
   .bg-gradient-to-b {
     --tw-gradient-position: to bottom in oklab;
     background-image: linear-gradient(var(--tw-gradient-stops));
@@ -7733,6 +7800,21 @@
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
 
+  .via-default-50\/40 {
+    --tw-gradient-via: hsl(var(--heroui-default-50) / 1);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .via-default-50\/40 {
+      --tw-gradient-via: color-mix(in oklab, hsl(var(--heroui-default-50) / 1) 40%, transparent);
+    }
+  }
+
+  .via-default-50\/40 {
+    --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-via-stops);
+  }
+
   .via-transparent {
     --tw-gradient-via: transparent;
     --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
@@ -7751,6 +7833,11 @@
 
   .to-default {
     --tw-gradient-to: hsl(var(--heroui-default) / 1);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+
+  .to-default-50 {
+    --tw-gradient-to: hsl(var(--heroui-default-50) / 1);
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
 
@@ -8182,6 +8269,10 @@
 
   .pb-4 {
     padding-bottom: calc(var(--spacing) * 4);
+  }
+
+  .pb-8 {
+    padding-bottom: calc(var(--spacing) * 8);
   }
 
   .pb-10 {

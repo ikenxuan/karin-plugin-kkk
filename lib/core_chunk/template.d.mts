@@ -336,6 +336,65 @@ interface DouyinQrcodeImgProps {
   useDarkTheme?: boolean;
 }
 //#endregion
+//#region ../template/src/types/UserVideoList.d.ts
+/**
+ * 用户视频列表页面的数据类型定义
+ */
+interface VideoListItem {
+  /** 视频ID */
+  aweme_id: string;
+  /** 视频标题/描述 */
+  title: string;
+  /** 视频封面URL */
+  cover: string;
+  /** 视频时长（秒） */
+  duration: number;
+  /** 视频宽度 */
+  width: number;
+  /** 视频高度 */
+  height: number;
+  /** 创建时间戳 */
+  create_time: number;
+  /** 统计数据 */
+  statistics: {
+    like_count: number;
+    comment_count: number;
+    share_count: number;
+    collect_count: number;
+    play_count: number;
+  };
+  /** 是否为视频(true)还是图集(false) */
+  is_video: boolean;
+  /** 背景音乐信息 */
+  music?: {
+    title: string;
+    author: string;
+    cover: string;
+  };
+}
+interface UserVideoListData {
+  /** 用户基本信息 */
+  user: {
+    head_image: string | null;
+    nickname: string;
+    short_id: string;
+    avatar: string;
+    signature: string;
+    follower_count: number;
+    following_count: number;
+    total_favorited: number;
+    verified: boolean;
+    ip_location: string;
+  };
+  /** 视频列表 */
+  videos: VideoListItem[];
+}
+interface DouyinUserVideoListProps {
+  data: UserVideoListData & {
+    useDarkTheme?: boolean;
+  };
+}
+//#endregion
 //#region ../template/src/types/platforms/bilibili/bangumi.d.ts
 /**
  * 徽章信息接口
@@ -1604,7 +1663,7 @@ interface BaseComponentProps<T = Record<string, any>> extends Pick<TypedRenderRe
 /**
  * 抖音平台组件ID
  */
-type DouyinComponentIds = 'comment' | 'dynamic' | 'live' | 'musicinfo' | 'user_profile' | 'userlist' | 'videoInfo' | 'qrcodeImg';
+type DouyinComponentIds = 'comment' | 'dynamic' | 'live' | 'musicinfo' | 'user_profile' | 'userlist' | 'videoInfo' | 'user_videolist' | 'qrcodeImg';
 /**
  * B站平台组件ID
  */
@@ -1633,7 +1692,7 @@ interface PathToDataTypeMap {
   'douyin/dynamic': DouyinDynamicProps['data'];
   'douyin/live': DouyinLiveProps['data'];
   'douyin/musicinfo': DouyinMusicInfoProps['data'];
-  'douyin/user_profile': any;
+  'douyin/user_profile': DouyinUserVideoListProps['data'];
   'douyin/userlist': DouyinUserListProps['data'];
   'douyin/videoInfo': DouyinVideoInfoProps['data'];
   'douyin/qrcodeImg': DouyinQrcodeImgProps['data'];
@@ -1845,4 +1904,4 @@ interface ReactServerRenderOptions<K extends keyof DataTypeMap> {
  */
 declare const reactServerRender: <K extends keyof DataTypeMap>(options: ReactServerRenderOptions<K>) => Promise<RenderResponse>;
 //#endregion
-export { BaseComponentProps, type DataTypeMap, DynamicRenderPath, ExtractDataTypeFromPath, type Plugin, type PluginContext, type PluginFactory, QRCodeSectionProps, type ReactServerRenderOptions, RenderRequest, RenderResponse, type TypedRenderRequest, reactServerRender as default, reactServerRender };
+export { BaseComponentProps, type DataTypeMap, DouyinUserVideoListProps, DynamicRenderPath, ExtractDataTypeFromPath, type Plugin, type PluginContext, type PluginFactory, QRCodeSectionProps, type ReactServerRenderOptions, RenderRequest, RenderResponse, type TypedRenderRequest, UserVideoListData, VideoListItem, reactServerRender as default, reactServerRender };
