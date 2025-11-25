@@ -85,7 +85,10 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
             })
           case 'user_profile':
             return createComponentConfig(baseComponent, {
-              validateData: (data) => data && typeof data.share_url === 'string'
+              lazyComponent: () => import('../components/platforms/douyin/UserVideoList').then(module => ({
+                default: module.DouyinUserVideoList
+              }))
+
             })
           case 'userlist':
             return createComponentConfig(baseComponent, {

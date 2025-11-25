@@ -1,3 +1,5 @@
+export * from './UserVideoList'
+
 /**
  * 二维码区域组件属性接口
  */
@@ -73,7 +75,7 @@ export interface BaseComponentProps<T = Record<string, any>> extends Pick<TypedR
 /**
  * 抖音平台组件ID
  */
-type DouyinComponentIds = 'comment' | 'dynamic' | 'live' | 'musicinfo' | 'user_profile' | 'userlist' | 'videoInfo' | 'qrcodeImg'
+type DouyinComponentIds = 'comment' | 'dynamic' | 'live' | 'musicinfo' | 'user_profile' | 'userlist' | 'videoInfo' | 'user_videolist' | 'qrcodeImg'
 
 /**
  * B站平台组件ID
@@ -125,7 +127,7 @@ interface PathToDataTypeMap {
   'douyin/dynamic': import('./platforms/douyin').DouyinDynamicProps['data']
   'douyin/live': import('./platforms/douyin').DouyinLiveProps['data']
   'douyin/musicinfo': import('./platforms/douyin').DouyinMusicInfoProps['data']
-  'douyin/user_profile': any // 暂未启用
+  'douyin/user_profile': import('./UserVideoList').DouyinUserVideoListProps['data']
   'douyin/userlist': import('./platforms/douyin').DouyinUserListProps['data']
   'douyin/videoInfo': import('./platforms/douyin').DouyinVideoInfoProps['data']
   'douyin/qrcodeImg': import('./platforms/douyin').DouyinQrcodeImgProps['data']

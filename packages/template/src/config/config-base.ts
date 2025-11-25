@@ -84,7 +84,7 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
         id: 'user_profile',
         name: '用户主页',
         description: '抖音用户主页信息模板',
-        enabled: false,
+        enabled: true,
         componentPath: 'platforms/douyin/UserProfile',
         exportName: 'DouyinUserProfile'
       },

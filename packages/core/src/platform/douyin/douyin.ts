@@ -359,36 +359,78 @@ export class DouYin extends Base {
         return true
       }
 
-      case 'user_dynamic': {  
-        // const UserVideoListData = await this.amagi.getDouyinData('用户主页视频列表数据', {
-        //   sec_uid: data.sec_uid,
-        //   typeMode: 'strict'
-        // })
+      case 'user_dynamic': {
+        const rawData = await this.amagi.getDouyinData('用户主页视频列表数据', {
+          sec_uid: data.sec_uid,
+          typeMode: 'strict'
+        })
+        const userProfileData = await this.amagi.getDouyinData('用户主页数据', {
+          sec_uid: data.sec_uid,
+          typeMode: 'strict'
+        })
 
-        // const veoarray = []
-        // veoarray.unshift('------------------------------ | ---------------------------- |\n')
-        // veoarray.unshift('标题                           | 分享二维码                    |\n')
-        // const forwardmsg = []
-        // for (const i of UserVideoListData.data.aweme_list) {
-        //   const title = i.desc
-        //   const cover = i.share_url
-        //   veoarray.push(`${title}       | ![img](${await QRCode.toDataURL(cover, {
-        //     errorCorrectionLevel: 'H',
-        //     type: 'image/png',
-        //     color: {
-        //       light: '#ffffff00',
-        //       dark: Common.useDarkTheme() ? '#FFFFFF' : '#000000'
-        //     }
-        //   })})    |\n`)
-        //   forwardmsg.push(segment.text(`作品标题: ${title}\n分享链接: ${cover}`))
-        // }
-        // const matext = markdown(veoarray.join(''), {})
-        // const htmlpath = `${karinPathRoot}/temp/html/${Root.pluginName}/douyin/user_worklist.html`
-        // fs.writeFileSync(htmlpath, matext, 'utf8')
-        // const img = await render.renderHtml(htmlpath)
-        // await this.e.reply(segment.image(img))
-        // const Element2 = common.makeForward(forwardmsg, this.e.sender.userId, this.e.sender.nick)
-        // await this.e.bot.sendForwardMsg(this.e.contact, Element2)
+        const user = userProfileData.data.user
+
+        // 转换视频列表数据
+        const videos = rawData.data.aweme_list.map((aweme: any) => {
+          const isVideo = aweme.aweme_type === 0 || aweme.media_type === 0
+
+          // 获取视频封面
+          let cover = ''
+          if (isVideo && aweme.video?.cover) {
+            cover = aweme.video.cover.url_list?.[0] || ''
+          } else if (isVideo && aweme.video?.dynamic_cover) {
+            cover = aweme.video.dynamic_cover.url_list?.[0] || ''
+          } else if (!isVideo && aweme.images && aweme.images.length > 0) {
+            cover = aweme.images[0].url_list?.[0] || ''
+          } else {
+            cover = aweme.share_info?.share_url || ''
+          }
+
+          return {
+            aweme_id: aweme.aweme_id,
+            title: aweme.desc || aweme.item_title || '无标题',
+            cover,
+            duration: aweme.video?.duration || 0,
+            width: aweme.video?.width || 1080,
+            height: aweme.video?.height || 1920,
+            create_time: aweme.create_time,
+            statistics: {
+              like_count: aweme.statistics?.digg_count || 0,
+              comment_count: aweme.statistics?.comment_count || 0,
+              share_count: aweme.statistics?.share_count || 0,
+              collect_count: aweme.statistics?.collect_count || 0,
+              play_count: aweme.statistics?.play_count || 0
+            },
+            is_video: isVideo,
+            music: aweme.music
+              ? {
+                title: aweme.music.title || '',
+                author: aweme.music.author || '',
+                cover: aweme.music.cover_thumb?.url_list?.[0] || ''
+              }
+              : undefined
+          }
+        })
+
+        // 渲染视频列表页面
+        const img = await Render('douyin/user_profile', {
+          user: {
+            head_image: user.cover_and_head_image_info.profile_cover_list.length > 0 ? user.cover_and_head_image_info.profile_cover_list[0].cover_url?.url_list[0] || null : null,
+            nickname: user.nickname,
+            short_id: user.unique_id === '' ? user.short_id : user.unique_id,
+            avatar: user.avatar_larger?.url_list?.[0] || user.avatar_thumb?.url_list?.[0] || '',
+            signature: user.signature,
+            follower_count: user.follower_count,
+            following_count: user.following_count,
+            total_favorited: user.total_favorited,
+            verified: !!user.custom_verify || !!user.enterprise_verify_reason,
+            ip_location: user.ip_location
+          },
+          videos
+        })
+
+        this.e.reply(img)
         return true
       }
       case 'music_work': {
@@ -486,7 +528,7 @@ export class DouYin extends Base {
 export const douyinProcessVideos = (videos: dyVideo[], videoQuality: string, maxAutoVideoSize?: number): dyVideo[] => {
   // 首先过滤掉所有 format 为 'dash' 的视频
   const mp4Videos = videos.filter(video => video.format !== 'dash')
-  
+
   if (mp4Videos.length === 0) {
     logger.warn('没有找到可用的 mp4 格式视频')
     return videos.slice(0, 1) // 返回第一个视频作为备选
@@ -512,7 +554,7 @@ export const douyinProcessVideos = (videos: dyVideo[], videoQuality: string, max
 
   // 按画质分组，并在每组内按文件大小排序（大的在前）
   const videosByQuality = new Map<string, dyVideo[]>()
-  
+
   mp4Videos.forEach(video => {
     const quality = getQualityLevel(video.gear_name)
     if (!videosByQuality.has(quality)) {
@@ -529,10 +571,10 @@ export const douyinProcessVideos = (videos: dyVideo[], videoQuality: string, max
   // 如果是自动模式
   if (videoQuality === 'adapt') {
     const sizeLimitBytes = (maxAutoVideoSize || Config.upload.filelimit) * 1024 * 1024
-    
+
     // 按画质优先级排序：4k > 2k > 1080p > 720p > 540p
     const qualityPriority = ['4k', '2k', '1080p', '720p', '540p']
-    
+
     for (const quality of qualityPriority) {
       const qualityVideos = videosByQuality.get(quality)
       if (qualityVideos && qualityVideos.length > 0) {
@@ -544,7 +586,7 @@ export const douyinProcessVideos = (videos: dyVideo[], videoQuality: string, max
         }
       }
     }
-    
+
     // 如果没有找到符合大小限制的视频，选择最小的视频
     let smallestVideo = mp4Videos[0]
     mp4Videos.forEach(video => {
@@ -559,7 +601,7 @@ export const douyinProcessVideos = (videos: dyVideo[], videoQuality: string, max
   // 固定画质模式
   const targetQuality = videoQuality
   const targetVideos = videosByQuality.get(targetQuality)
-  
+
   if (targetVideos && targetVideos.length > 0) {
     // 选择该画质下文件大小最大的视频
     logger.debug(`选择固定画质: ${targetQuality}, 文件大小: ${(targetVideos[0].play_addr.data_size / (1024 * 1024)).toFixed(2)}MB`)
@@ -569,7 +611,7 @@ export const douyinProcessVideos = (videos: dyVideo[], videoQuality: string, max
   // 如果没有找到目标画质，选择最接近的画质
   const qualityPriority = ['4k', '2k', '1080p', '720p', '540p']
   const targetIndex = qualityPriority.indexOf(targetQuality)
-  
+
   // 先尝试向下找（更低画质）
   for (let i = targetIndex + 1; i < qualityPriority.length; i++) {
     const fallbackVideos = videosByQuality.get(qualityPriority[i])
@@ -578,7 +620,7 @@ export const douyinProcessVideos = (videos: dyVideo[], videoQuality: string, max
       return [fallbackVideos[0]]
     }
   }
-  
+
   // 再尝试向上找（更高画质）
   for (let i = targetIndex - 1; i >= 0; i--) {
     const fallbackVideos = videosByQuality.get(qualityPriority[i])
@@ -631,7 +673,7 @@ export const Emoji = (data: DyEmojiList) => {
 /**
  * 格式化视频统计信息为三行，每行两个数据项，并保持对齐
  */
-const formatVideoStats = (digg_count: number, share_count: number, collect_count: number, comment_count: number, recommend_count: number ): string => {
+const formatVideoStats = (digg_count: number, share_count: number, collect_count: number, comment_count: number, recommend_count: number): string => {
   // 计算每个数据项的文本
   const diggText = `❤ 点赞: ${Count(digg_count)}`
   const shareText = `🔄 转发: ${Count(share_count)}`

@@ -111,7 +111,7 @@ const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'>
         </div>
 
         {/* 右侧二维码区域 */}
-        <div className='flex-shrink-0'>
+        <div className='shrink-0'>
           <QRCodeSection qrCodeDataUrl={props.qrCodeDataUrl} />
         </div>
       </div>
@@ -133,7 +133,7 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
       {/* 用户头像 */}
       <img
         src={props.userimageurl}
-        className='w-[180px] h-[180px] rounded-full object-cover shadow-lg mr-8 flex-shrink-0'
+        className='w-[180px] h-[180px] rounded-full object-cover shadow-lg mr-8 shrink-0'
         alt='用户头像'
       />
 
@@ -192,7 +192,7 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
             )}
           </div>
 
-          <div className='flex flex-shrink-0 gap-8 items-center'>
+          <div className='flex shrink-0 gap-8 items-center'>
             {/* 点赞按钮 */}
             <div className='flex gap-3 items-center transition-colors cursor-pointer'>
               <Heart size={60} className='text-foreground-500' />
@@ -207,7 +207,7 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
             <div className='flex gap-6 items-start'>
               <img
                 src={props.replyComment.userimageurl}
-                className='object-cover rounded-full w-[120px] h-[120px] flex-shrink-0'
+                className='object-cover rounded-full w-[120px] h-[120px] shrink-0'
                 alt='用户头像'
               />
               <div className='flex-1 min-w-0'>
@@ -247,7 +247,7 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
                     <span className='text-5xl'>{props.replyComment.create_time}</span>
                     <span className='text-5xl'>{props.replyComment.ip_label}</span>
                   </div>
-                  <div className='flex flex-shrink-0 gap-3 items-center'>
+                  <div className='flex shrink-0 gap-3 items-center'>
                     <Heart size={60} className='text-foreground-500' />
                     <span className='text-5xl'>{props.replyComment.digg_count}</span>
                   </div>
