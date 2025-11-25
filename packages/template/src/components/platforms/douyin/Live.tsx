@@ -146,11 +146,12 @@ export const DouyinLive: React.FC<Omit<DouyinLiveProps, 'templateType' | 'templa
             {/* 用户信息和Logo */}
             <div className='flex flex-col ml-[45px]'>
               <div className='flex flex-col justify-start items-start'>
-                <div className={`w-[130%] h-[245px] mb-[52px] bg-cover bg-center bg-fixed ${
-                  props.data.useDarkTheme 
-                    ? 'bg-[url(/image/douyin/dylogo-light.svg)]' 
-                    : 'bg-[url(/image/douyin/dylogo-dark.svg)]'
-                }`} />
+                <div 
+                  className='w-[130%] h-[245px] mb-[52px] bg-cover bg-center bg-fixed'
+                  style={{
+                    backgroundImage: `url(/image/douyin/${props.data.useDarkTheme ? 'dylogo-light' : 'dylogo-dark'}.svg)`
+                  }}
+                />
                 <div className='flex flex-col items-start'>
                   <div className='text-[50px] tracking-[10px] text-foreground select-text'>
                     抖音 记录美好生活
