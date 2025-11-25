@@ -75,11 +75,11 @@ const UserInfoSection: React.FC<DouyinLiveUserInfoProps> = ({
 const QRCodeSection: React.FC<DouyinLiveQRCodeProps> = ({ qrCodeDataUrl }) => {
   return (
     <div className='flex flex-col-reverse items-center mt-[30px] mr-5'>
-      <div className='flex items-center gap-2 text-[50px] ml-[10px] text-right mr-[10px] text-foreground select-text'>
+      <div className='flex items-center gap-2 text-[50px] ml-2.5 text-right mr-2.5 text-foreground select-text'>
         <QrCode className='w-12 h-12' />
         <span>直播分享链接</span>
       </div>
-      <div className='p-[10px] rounded-[2%] border-[7px] border-dashed border-default-300'>
+      <div className='p-2.5 rounded-[2%] border-[7px] border-dashed border-default-300'>
         <img
           src={qrCodeDataUrl}
           alt='二维码'
@@ -105,15 +105,15 @@ export const DouyinLive: React.FC<Omit<DouyinLiveProps, 'templateType' | 'templa
 
       {/* 信息区域 */}
       <div className='flex flex-col px-20'>
-        <div className='h-[10px]' />
-        <div className='text-[65px] items-center tracking-[1.5px] relative break-words font-bold text-foreground select-text'>
+        <div className='h-2.5' />
+        <div className='text-[65px] items-center tracking-[1.5px] relative wrap-break-word font-bold text-foreground select-text'>
           {props.data.text}
         </div>
-        <div className='h-[10px]' />
-        <div className='text-[45px] items-center tracking-[1.5px] relative break-words text-default-500 select-text'>
+        <div className='h-2.5' />
+        <div className='text-[45px] items-center tracking-[1.5px] relative wrap-break-word text-default-500 select-text'>
           {props.data.liveinf}
         </div>
-        <div className='flex items-center gap-6 text-[45px] tracking-[1.5px] relative break-words text-default-500 select-text'>
+        <div className='flex items-center gap-6 text-[45px] tracking-[1.5px] relative wrap-break-word text-default-500 select-text'>
           <div className='flex gap-2 items-center'>
             <Eye className='w-11 h-11 text-view' />
             <span>观看总人数{props.data.总观看次数}</span>
