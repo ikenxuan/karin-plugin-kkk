@@ -1,4 +1,6 @@
-import QRCode from 'qrcode'
+import nodeCanvas from 'canvas'
+import { JSDOM } from 'jsdom'
+import QRCodeStyling from 'qr-code-styling'
 import type { Plugin } from 'template'
 
 /**
@@ -13,20 +15,50 @@ export const createQrCodePlugin = (): Plugin => {
     enforce: 'pre',
     async beforeRender (ctx) {
       const data = ctx.request.data || {}
-      const isDark = Boolean(data.useDarkTheme)
+      const useDarkTheme = Boolean(data.useDarkTheme)
 
       const toDataUrl = async (url: string): Promise<string> => {
-        const svg = await QRCode.toString(url, {
+        const qrCode = new QRCodeStyling({
+          jsdom: JSDOM,
+          nodeCanvas,
           type: 'svg',
-          width: 600,
-          errorCorrectionLevel: 'L',
-          color: {
-            dark: isDark ? '#C3C3C3' : '#3A3A3A',
-            light: isDark ? '#18181B' : '#FAFAFA'
+          shape: 'square',
+          width: 1200,
+          height: 1200,
+          data: url,
+          margin: 0,
+          qrOptions: {
+            typeNumber: 0,
+            mode: 'Byte',
+            errorCorrectionLevel: 'L'
           },
-          margin: 0
+          imageOptions: {
+            hideBackgroundDots: false,
+            imageSize: 0.4,
+            margin: 0
+          },
+          dotsOptions: {
+            type: 'rounded',
+            color: useDarkTheme ? '#C3C3C3' : '#3A3A3A',
+            roundSize: false
+          },
+          backgroundOptions: {
+            color: useDarkTheme ? '#18181B' : '#FAFAFA'
+          },
+          cornersSquareOptions: {
+            type: 'extra-rounded',
+            color: useDarkTheme ? '#C3C3C3' : '#3A3A3A'
+          },
+          cornersDotOptions: {
+            color: useDarkTheme ? '#C3C3C3' : '#3A3A3A'
+          }
         })
-        return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`
+
+        const buffer = await qrCode.getRawData('svg')
+        if (!buffer) {
+          throw new Error('Failed to generate QR code')
+        }
+        return `data:image/svg+xml;base64,${buffer.toString('base64')}`
       }
 
       const props = ctx.state.props || {}

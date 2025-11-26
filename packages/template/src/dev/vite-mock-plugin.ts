@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, unlinkSync,
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import QRCode from 'qrcode'
+import QRCodeStyling from 'qr-code-styling'
 import type { Plugin } from 'vite'
 
 import { baseComponentConfigs } from '../config/config-base'
@@ -336,18 +336,47 @@ export function mockApiPlugin (): Plugin {
             const useDarkTheme = urlParams.get('useDarkTheme') === 'true'
 
             try {
-              const qrCodeSvg = await QRCode.toString(targetUrl, {
-                type: 'svg',
-                width: 600,
-                errorCorrectionLevel: 'L',
-                color: {
-                  dark: useDarkTheme ? '#C3C3C3' : '#3A3A3A',
-                  light: useDarkTheme ? '#18181B' : '#FAFAFA'
-                },
-                margin: 0
-              })
+              const { JSDOM } = await import('jsdom')
+              const nodeCanvas = await import('canvas')
 
-              const dataUrl = `data:image/svg+xml;base64,${Buffer.from(qrCodeSvg).toString('base64')}`
+              const qrCode = new QRCodeStyling({
+                jsdom: JSDOM,
+                nodeCanvas,
+                type: 'svg',
+                shape: 'square',
+                width: 1200,
+                height: 1200,
+                data: targetUrl,
+                margin: 0,
+                qrOptions: {
+                  typeNumber: 0,
+                  mode: 'Byte',
+                  errorCorrectionLevel: 'L'
+                },
+                imageOptions: {
+                  hideBackgroundDots: false,
+                  imageSize: 0.4,
+                  margin: 0
+                },
+                dotsOptions: {
+                  type: 'rounded',
+                  color: useDarkTheme ? '#C3C3C3' : '#3A3A3A',  
+                  roundSize: false
+                },
+                backgroundOptions: {
+                  color: useDarkTheme ? '#18181B' : '#FAFAFA'
+                },
+                cornersSquareOptions: {
+                  type: 'extra-rounded',
+                  color: useDarkTheme ? '#C3C3C3' : '#3A3A3A'
+                },
+                cornersDotOptions: {
+                  color: useDarkTheme ? '#C3C3C3' : '#3A3A3A'
+                }
+              })
+              const buffer = await qrCode.getRawData('svg')
+
+              const dataUrl = buffer && `data:image/svg+xml;base64,${buffer.toString('base64')}`
               res.setHeader('Content-Type', 'application/json')
               res.end(JSON.stringify({ dataUrl }))
             } catch (error) {

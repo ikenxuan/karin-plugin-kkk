@@ -326,7 +326,7 @@ export const DouyinDynamic: React.FC<Omit<DouyinDynamicProps, 'templateType' | '
                   <img
                     src={qrCodeDataUrl}
                     alt='二维码'
-                    className='h-auto w-70 rounded-2xl'
+                    className='h-auto w-75 rounded-2xl'
                   />
                 )
                 : (

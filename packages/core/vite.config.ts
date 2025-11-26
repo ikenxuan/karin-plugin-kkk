@@ -47,7 +47,8 @@ export default defineConfig({
         ...[/^node-karin/],
         'fingerprint-generator',
         'fingerprint-injector',
-        '@karinjs/plugin-puppeteer'
+        '@karinjs/plugin-puppeteer',
+        'jsdom'
       ],
       output: {
         inlineDynamicImports: true,
