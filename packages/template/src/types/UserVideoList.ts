@@ -5,16 +5,14 @@
 export interface VideoListItem {
   /** 视频ID */
   aweme_id: string
+  /** 是否置顶 */
+  is_top: boolean
   /** 视频标题/描述 */
   title: string
   /** 视频封面URL */
   cover: string
   /** 视频时长（秒） */
   duration: number
-  /** 视频宽度 */
-  width: number
-  /** 视频高度 */
-  height: number
   /** 创建时间戳 */
   create_time: number
   /** 统计数据 */
@@ -23,7 +21,6 @@ export interface VideoListItem {
     comment_count: number
     share_count: number
     collect_count: number
-    play_count: number
   }
   /** 是否为视频(true)还是图集(false) */
   is_video: boolean
@@ -31,7 +28,6 @@ export interface VideoListItem {
   music?: {
     title: string
     author: string
-    cover: string
   }
 }
 

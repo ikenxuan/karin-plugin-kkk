@@ -3,6 +3,7 @@ import fs from 'node:fs'
 import { type DyEmojiList, DyVideoWork } from '@ikenxuan/amagi'
 import type { Elements, Message, SendMessage } from 'node-karin'
 import { common, logger, mkdirSync, segment } from 'node-karin'
+import { UserVideoListData } from 'template'
 
 import {
   Base,
@@ -372,42 +373,27 @@ export class DouYin extends Base {
         const user = userProfileData.data.user
 
         // 转换视频列表数据
-        const videos = rawData.data.aweme_list.map((aweme: any) => {
+        const videos: UserVideoListData['videos'] = rawData.data.aweme_list.map(aweme => {
           const isVideo = aweme.aweme_type === 0 || aweme.media_type === 0
-
-          // 获取视频封面
-          let cover = ''
-          if (isVideo && aweme.video?.cover) {
-            cover = aweme.video.cover.url_list?.[0] || ''
-          } else if (isVideo && aweme.video?.dynamic_cover) {
-            cover = aweme.video.dynamic_cover.url_list?.[0] || ''
-          } else if (!isVideo && aweme.images && aweme.images.length > 0) {
-            cover = aweme.images[0].url_list?.[0] || ''
-          } else {
-            cover = aweme.share_info?.share_url || ''
-          }
 
           return {
             aweme_id: aweme.aweme_id,
+            is_top: aweme.is_top === 1,
             title: aweme.desc || aweme.item_title || '无标题',
-            cover,
+            cover: aweme.video.cover.url_list[0],
             duration: aweme.video?.duration || 0,
-            width: aweme.video?.width || 1080,
-            height: aweme.video?.height || 1920,
             create_time: aweme.create_time,
             statistics: {
-              like_count: aweme.statistics?.digg_count || 0,
-              comment_count: aweme.statistics?.comment_count || 0,
-              share_count: aweme.statistics?.share_count || 0,
-              collect_count: aweme.statistics?.collect_count || 0,
-              play_count: aweme.statistics?.play_count || 0
+              like_count: aweme.statistics.digg_count,
+              comment_count: aweme.statistics.comment_count,
+              share_count: aweme.statistics.share_count,
+              collect_count: aweme.statistics.collect_count
             },
             is_video: isVideo,
             music: aweme.music
               ? {
                 title: aweme.music.title || '',
-                author: aweme.music.author || '',
-                cover: aweme.music.cover_thumb?.url_list?.[0] || ''
+                author: aweme.music.author || ''
               }
               : undefined
           }
@@ -427,7 +413,7 @@ export class DouYin extends Base {
             verified: !!user.custom_verify || !!user.enterprise_verify_reason,
             ip_location: user.ip_location
           },
-          videos
+          videos: videos.slice(0, 16)
         })
 
         this.e.reply(img)

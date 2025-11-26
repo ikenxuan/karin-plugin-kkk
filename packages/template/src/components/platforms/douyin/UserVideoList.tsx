@@ -1,7 +1,9 @@
 import { formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import React from 'react'
-import { BiSolidComment, BiSolidLike, BiSolidRightArrow, BiSolidStar } from 'react-icons/bi'
+import { AiFillHeart, AiFillStar } from 'react-icons/ai'
+import { FaCommentDots } from 'react-icons/fa6'
+import { RiShareForwardFill } from 'react-icons/ri'
 
 import type { DouyinUserVideoListProps } from '../../../types/UserVideoList'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
@@ -51,8 +53,15 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
         />
 
         {/* 视频/图集标签 */}
-        <div className="absolute top-4 right-4 px-6 py-4 rounded-2xl text-4xl bg-white/50 text-black backdrop-blur-xs shadow-lg">
-          {video.is_video ? '视频' : '图集'}
+        <div className="absolute top-4 right-4 flex flex-col gap-2">
+          <div className="px-6 py-4 rounded-2xl text-4xl bg-white/50 text-black backdrop-blur-xs shadow-lg">
+            {video.is_video ? '视频' : '图集'}
+          </div>
+          {video.is_top && (
+            <div className="px-6 py-4 rounded-2xl text-4xl bg-warning-500 text-black backdrop-blur-xs shadow-lg">
+              置顶
+            </div>
+          )}
         </div>
 
         {/* 时长标签（仅视频显示） */}
@@ -93,20 +102,20 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
         <div className={titleLineCount < 2 ? 'mt-auto' : ''}>
           <div className="grid grid-cols-2 gap-3 text-3xl">
             <div className="flex items-center gap-2 text-default-600">
-              <BiSolidLike size={34} />
+              <AiFillHeart size={34} />
               <span>{formatCount(video.statistics.like_count)}</span>
             </div>
             <div className="flex items-center gap-2 text-default-600">
-              <BiSolidComment size={34} />
+              <FaCommentDots size={34} />
               <span>{formatCount(video.statistics.comment_count)}</span>
             </div>
             <div className="flex items-center gap-2 text-default-600">
-              <BiSolidStar size={34} />
+              <AiFillStar size={34} />
               <span>{formatCount(video.statistics.collect_count)}</span>
             </div>
             <div className="flex items-center gap-2 text-default-600">
-              <BiSolidRightArrow size={34} />
-              <span>{formatCount(video.statistics.play_count)}</span>
+              <RiShareForwardFill size={34} />
+              <span>{formatCount(video.statistics.share_count)}</span>
             </div>
           </div>
         </div>
