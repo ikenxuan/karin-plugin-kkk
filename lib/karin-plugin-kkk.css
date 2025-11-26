@@ -7685,6 +7685,10 @@
     background-color: hsl(var(--heroui-warning-400) / 1);
   }
 
+  .bg-warning-500 {
+    background-color: hsl(var(--heroui-warning-500) / 1);
+  }
+
   .bg-warning\/10 {
     background-color: hsl(var(--heroui-warning) / 1);
   }
