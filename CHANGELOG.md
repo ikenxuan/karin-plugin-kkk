@@ -2,6 +2,33 @@
 
 # Changelog
 
+## [2.13.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.12.0...v2.13.0) (2025-11-26)
+
+
+### ✨ 新功能
+
+* **douyin:** Refactor user video list data structure and UI components ([5a891db](https://github.com/ikenxuan/karin-plugin-kkk/commit/5a891db84510c84a42bb377d51c42b530809fedf))
+* 抖音用户主页视频列表图片。 ([30a8cfb](https://github.com/ikenxuan/karin-plugin-kkk/commit/30a8cfb749ba2e761b4d2f48a47920814126acb1))
+
+
+### 🐛 错误修复
+
+* 。 ([d13dd5f](https://github.com/ikenxuan/karin-plugin-kkk/commit/d13dd5face0e21e3f2b186ded25a15634c8c4023))
+* 1 ([807bf47](https://github.com/ikenxuan/karin-plugin-kkk/commit/807bf47a6b8fc9fd0797d0c6edf3819e6bac4b98))
+* boom ([88d7878](https://github.com/ikenxuan/karin-plugin-kkk/commit/88d7878eb791efd6c4278d51e5a074f7f66c61c3))
+* Contact ([ff1a3e8](https://github.com/ikenxuan/karin-plugin-kkk/commit/ff1a3e8417a51bbd1a4dc99c81df26cb04a91ce7))
+* Refactor code structure for improved readability and maintainability ([0924b29](https://github.com/ikenxuan/karin-plugin-kkk/commit/0924b291a30a559332d7baa4f73ef56bbc0ca3ad))
+* template，提升开发体验 ([a0a3429](https://github.com/ikenxuan/karin-plugin-kkk/commit/a0a342950dd154d8990fd17501f23863cb392a99))
+* template，提升开发体验 ([cb099eb](https://github.com/ikenxuan/karin-plugin-kkk/commit/cb099eb1c391fd81c33bfa94ede42c0ed0a87a59))
+* template，提升开发体验 ([8b776e3](https://github.com/ikenxuan/karin-plugin-kkk/commit/8b776e3a9c0960348433bc94494c203ece23ef64))
+* 提升开发体验 ([379e6ad](https://github.com/ikenxuan/karin-plugin-kkk/commit/379e6ad4c1d38f5c92cd22072ebc555c58bb6a5e))
+* 还是让tsc来生成types吧。。。 ([26bef73](https://github.com/ikenxuan/karin-plugin-kkk/commit/26bef73042bdfbd5892ad3fc2457930d45d16dad))
+
+
+### ♻️ 代码重构
+
+* **template:** 重构模板开发面板 ([de40f5f](https://github.com/ikenxuan/karin-plugin-kkk/commit/de40f5f78a992fd8c022220d81959db87c24d9d9))
+
 ## [2.12.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.11.6...v2.12.0) (2025-11-22)
 
 
