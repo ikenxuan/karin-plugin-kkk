@@ -185,11 +185,6 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
           <div className='flex flex-wrap gap-6 items-center select-text'>
             <span className='text-5xl'>{props.create_time}</span>
             <span className='text-5xl'>{props.ip_label}</span>
-            {props.reply_comment_total > 0 && (
-              <span className='text-5xl text-foreground-600'>
-                共{props.reply_comment_total}条回复
-              </span>
-            )}
           </div>
 
           <div className='flex shrink-0 gap-8 items-center'>

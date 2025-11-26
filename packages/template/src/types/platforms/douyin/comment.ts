@@ -52,8 +52,6 @@ export interface DouyinCommentProps extends BaseComponentProps {
       create_time: string
       /** IP标签 */
       ip_label: string
-      /** 回复评论总数 */
-      reply_comment_total: number
       /** 点赞数 */
       digg_count: number | string
       /** 搜索文本 */

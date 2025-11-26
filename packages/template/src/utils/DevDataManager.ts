@@ -69,8 +69,7 @@ export class DevDataManager {
     if (!devDataDir) {
       throw new Error('karin-plugin-kkk 仅在环境变量 NODE_ENV 为 production 时可用')
     }
-    const sanitizedTemplateName = templateName.replace(/\//g, '_')
-    const dir = path.join(devDataDir, platform, sanitizedTemplateName)
+    const dir = path.join(devDataDir, platform, templateName)
     this.ensureDir(dir)
     return dir
   }

@@ -1,9 +1,8 @@
-import { Bookmark, Clock, Eye, Hash, Heart, MessageCircle, QrCode, Share2, Users } from 'lucide-react'
+import { Bookmark, Clock, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
 import React from 'react'
 
 import type {
   DouyinDynamicProps,
-  DouyinDynamicQRCodeProps,
   DouyinDynamicUserInfoProps
 } from '../../../types/platforms/douyin'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
@@ -114,75 +113,71 @@ const UserInfoSection: React.FC<DouyinDynamicUserInfoProps & { coCreatorCount?: 
   coCreatorCount
 }) => {
   return (
-    <div className='flex flex-col pl-16'>
-      <div className='flex items-center mb-6'>
-        <div className='flex justify-center items-center mr-7 bg-white rounded-full w-54 h-54'>
-          <img
-            src={avater_url}
-            alt='头像'
-            className='rounded-full w-51 h-51 shadow-large'
-          />
+    <div className='flex flex-col gap-12'>
+      {/* 头像和用户名/抖音号 */}
+      <div className='flex gap-12 items-start'>
+        {/* 头像 */}
+        <div className='relative shrink-0'>
+          <div className='flex justify-center items-center bg-white rounded-full w-35 h-35'>
+            <img
+              src={avater_url}
+              alt='头像'
+              className='rounded-full w-33 h-33 shadow-large'
+            />
+          </div>
         </div>
-        <div className='flex flex-col flex-1 min-w-0'>
-          <span className='text-[80px] font-bold text-foreground-700 select-text break-words leading-tight max-w-full'>
-            @{username}
-          </span>
-          {coCreatorCount && coCreatorCount > 0 && (
-            <div className='gap-2 mt-3 inline-flex items-center rounded-[20px] bg-foreground-200 text-foreground-700 px-6 py-3 self-start'>
-              <Users className='w-8 h-8' />
-              <span className='text-[34px] leading-none select-text text-foreground-700'>{coCreatorCount}人共创</span>
+        
+        {/* 用户名和抖音号 - 纵向排列 */}
+        <div className='flex flex-col gap-5'>
+          <div className='flex flex-col gap-3'>
+            <div className='text-7xl font-bold select-text text-foreground'>
+              @{username}
             </div>
-          )}
+            {coCreatorCount && coCreatorCount > 0 && (
+              <div className='gap-2 inline-flex items-center rounded-2xl bg-foreground-200 text-foreground-700 px-6 py-3 self-start'>
+                <Users className='w-7 h-7' />
+                <span className='text-3xl leading-none select-text text-foreground-700'>{coCreatorCount}人共创</span>
+              </div>
+            )}
+          </div>
+          <div className='flex gap-2 items-center text-4xl text-default-500'>
+            <Hash size={32} className='text-default-400' />
+            <span className='select-text'>抖音号: {douyinId}</span>
+          </div>
         </div>
       </div>
-      <div
-        className='flex flex-col text-[35px] mt-6 space-y-1 text-foreground-600 select-text' 
-        style={{ letterSpacing: '2.5px' }}
-      >
-        <div className='flex gap-2 items-center'>
-          <Hash className='w-8 h-8' />
-          <span>抖音号: {douyinId}</span>
+      
+      {/* 用户统计信息 */}
+      <div className='text-3xl flex gap-6 items-center text-default-600'>
+        <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+          <div className='flex gap-1 items-center'>
+            <Heart size={28} className='text-like' />
+            <span className='text-default-400'>获赞</span>
+          </div>
+          <div className='w-full h-px bg-default-300' />
+          <span className='select-text font-medium text-4xl'>{likes}</span>
         </div>
-        <div className='flex gap-2 items-center'>
-          <Heart className='w-8 h-8 text-like' />
-          <span>获赞: {likes}</span>
+        <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+          <div className='flex gap-1 items-center'>
+            <Eye size={28} className='text-view' />
+            <span className='text-default-400'>关注</span>
+          </div>
+          <div className='w-full h-px bg-default-300' />
+          <span className='select-text font-medium text-4xl'>{following}</span>
         </div>
-        <div className='flex gap-2 items-center'>
-          <Eye className='w-8 h-8 text-view' />
-          <span>关注: {following}</span>
-        </div>
-        <div className='flex gap-2 items-center'>
-          <Users className='w-8 h-8 text-follow' />
-          <span>粉丝: {followers}</span>
+        <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+          <div className='flex gap-1 items-center'>
+            <Users size={28} className='text-primary' />
+            <span className='text-default-400'>粉丝</span>
+          </div>
+          <div className='w-full h-px bg-default-300' />
+          <span className='select-text font-medium text-4xl'>{followers}</span>
         </div>
       </div>
     </div>
   )
 }
 
-/**
- * 二维码组件
- * @param props 组件属性
- * @returns JSX元素
- */
-// 组件：QRCodeSection
-const QRCodeSection: React.FC<DouyinDynamicQRCodeProps> = ({ qrCodeDataUrl }) => {
-  return (
-    <div className='flex flex-col items-center w-[420px] mr-18'>
-      <div className='p-2.5 rounded-sm border-[7px] border-dashed border-divider'>
-        <img
-          src={qrCodeDataUrl}
-          alt='二维码'
-          className='w-[350px] h-[350px]'
-        />
-      </div>
-      <div className='flex items-center gap-3 text-[40px] text-foreground-500 mt-5 select-text'>
-        <QrCode className='w-10 h-10' />
-        <span className='whitespace-nowrap'>作品直链：永久有效</span>
-      </div>
-    </div>
-  )
-}
 
 /** 共创者信息 */
 const CoCreatorsInfo: React.FC<{
@@ -232,7 +227,7 @@ const CoCreatorsInfo: React.FC<{
           return (
             <div
               key={`${c.nickname || 'creator'}-${idx}`}
-              className='flex flex-col items-center min-w-[152px] w-[152px] flex-shrink-0'
+              className='flex flex-col items-center min-w-[152px] w-[152px] shrink-0'
             >
               <div className='flex justify-center items-center bg-white rounded-full w-38 h-38'>
                 <img
@@ -252,7 +247,7 @@ const CoCreatorsInfo: React.FC<{
         })}
 
         {items.length > visibleCount && (
-          <div className='flex flex-col items-center min-w-[152px] w-[152px] flex-shrink-0'>
+          <div className='flex flex-col items-center min-w-[152px] w-[152px] shrink-0'>
             <div className='flex justify-center items-center rounded-full bg-default-200 w-38 h-38'>
               <span className='text-[42px] leading-none text-foreground-500'>···</span>
             </div>
@@ -310,23 +305,36 @@ export const DouyinDynamic: React.FC<Omit<DouyinDynamicProps, 'templateType' | '
             <CoCreatorsInfo info={data.cooperation_info} />
           </div>
 
-          <div className='flex justify-between items-start'>
-            <div className='flex flex-col gap-8 items-start w-[960px]'>
-              <UserInfoSection
-                avater_url={data.avater_url}
-                username={data.username}
-                douyinId={data.抖音号}
-                likes={data.获赞}
-                following={data.关注}
-                followers={data.粉丝}
-                useDarkTheme={data.useDarkTheme}
-                coCreatorCount={coCreatorCount}
-              />
-            </div>
-            <QRCodeSection
-              qrCodeDataUrl={qrCodeDataUrl}
+          {/* 底部信息区域 */}
+          <div className='flex justify-between items-start px-20 pb-20'>
+            {/* 左侧：用户信息 */}
+            <UserInfoSection
+              avater_url={data.avater_url}
+              username={data.username}
+              douyinId={data.抖音号}
+              likes={data.获赞}
+              following={data.关注}
+              followers={data.粉丝}
               useDarkTheme={data.useDarkTheme}
+              coCreatorCount={coCreatorCount}
             />
+
+            {/* 右侧：二维码 */}
+            <div className='flex flex-col items-center gap-4'>
+              {qrCodeDataUrl
+                ? (
+                  <img
+                    src={qrCodeDataUrl}
+                    alt='二维码'
+                    className='h-auto w-70 rounded-2xl'
+                  />
+                )
+                : (
+                  <div className='flex justify-center items-center rounded-2xl bg-default-100 w-100 h-100'>
+                    <span className='text-default-400'>二维码</span>
+                  </div>
+                )}
+            </div>
           </div>
         </div>
       </div>

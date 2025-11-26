@@ -1,3 +1,4 @@
+import { format, fromUnixTime } from 'date-fns'
 import karin, { logger } from 'node-karin'
 
 import { Common, Networks, Render } from '@/module'
@@ -180,7 +181,7 @@ const handleTestDouyinPush = wrapWithErrorHandler(async (e) => {
     pinglun: Common.count(workInfo.data.aweme_detail.statistics.comment_count),
     share: Common.count(workInfo.data.aweme_detail.statistics.share_count),
     shouchang: Common.count(workInfo.data.aweme_detail.statistics.collect_count),
-    create_time: Common.convertTimestampToDateTime(workInfo.data.aweme_detail.create_time),
+    create_time: format(fromUnixTime(workInfo.data.aweme_detail.create_time), 'yyyy-MM-dd HH:mm'),
     avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userProfile.data.user.avatar_larger.uri,
     share_url: Config.douyin.push.shareType === 'web' ? realUrl : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${workInfo.data.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`,
     username: workInfo.data.aweme_detail.author.nickname,
@@ -253,4 +254,4 @@ export const douyinPushList = karin.command(/^#?抖音推送列表$/, handleDouy
 
 export const changeBotID = karin.command(/^#kkk设置推送机器人/, handleChangeBotID, { name: 'kkk-推送功能-设置', perm: 'master' })
 
-export const testDouyinPush = karin.command(/^#测试抖音推送\s*(https?:\/\/[^\s]+)?/, handleTestDouyinPush, { name: 'kkk-推送功能-测试', event: 'message.group', perm: Config.douyin.push.permission, dsbAdapter: ['qqbot'] })
+export const testDouyinPush = karin.command(/^#测试抖音推送\s*(https?:\/\/[^\s]+)?/, handleTestDouyinPush, { name: 'kkk-推送功能-测试', event: 'message.group', perm: Config.douyin.push.permission, dsbAdapter: ['qqbot'], priority: -Infinity - 1 })

@@ -1,4 +1,5 @@
 import type { DySearchInfo, DyUserInfo, DyUserLiveVideos, Result } from '@ikenxuan/amagi'
+import { format, fromUnixTime } from 'date-fns'
 import type { AdapterType, ImageElement, Message } from 'node-karin'
 import karin, { common, logger, segment } from 'node-karin'
 import { DouyinUserListProps } from 'template/types/platforms/douyin'
@@ -7,7 +8,6 @@ import {
   Base,
   baseHeaders,
   cleanOldDynamicCache,
-  Common,
   douyinDB,
   downLoadFileOptions,
   downloadVideo,
@@ -158,7 +158,7 @@ export class DouYinpush extends Base {
             pinglun: this.count(Detail_Data.statistics.comment_count),
             share: this.count(Detail_Data.statistics.share_count),
             shouchang: this.count(Detail_Data.statistics.collect_count),
-            create_time: Common.convertTimestampToDateTime(pushItem.create_time / 1000),
+            create_time: format(fromUnixTime(pushItem.create_time / 1000), 'yyyy-MM-dd HH:mm'),
             avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
             share_url: Config.douyin.push.shareType === 'web' ? realUrl : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`,
             username: Detail_Data.author.nickname,
@@ -313,30 +313,29 @@ export class DouYinpush extends Base {
         // 处理视频列表
         if (videolist.data.aweme_list.length > 0) {
           for (const aweme of videolist.data.aweme_list) {
-            const now = Date.now()
-            const createTime = aweme.create_time * 1000
-            const timeDifference = now - createTime // 时间差，单位毫秒
+            const nowSeconds = Math.floor(Date.now() / 1000) // 当前时间戳（秒）
+            const createTime = aweme.create_time // 发布时间戳（秒）
+            const timeDifference = nowSeconds - createTime // 时间差（秒）
             const is_top = aweme.is_top === 1 // 是否为置顶
             let shouldPush = false
 
-            const timeDiffSeconds = Math.round(timeDifference / 1000)
-            const timeDiffHours = Math.round((timeDifference / 1000 / 60 / 60) * 100) / 100 // 保留2位小数
+            const timeDiffHours = Math.round((timeDifference / 3600) * 100) / 100 // 保留2位小数
 
             logger.trace(`
               前期获取该作品基本信息：
               作者：${aweme.author.nickname}
               作品ID：${aweme.aweme_id}
-              发布时间：${Common.convertTimestampToDateTime(aweme.create_time)}
-              发布时间戳（s）：${aweme.create_time}
-              当前时间戳（ms）：${now}
-              时间差（ms）：${timeDifference} ms (${timeDiffSeconds}s) (${timeDiffHours}h)
+              发布时间：${format(fromUnixTime(aweme.create_time), 'yyyy-MM-dd HH:mm')}
+              发布时间戳（s）：${createTime}
+              当前时间戳（s）：${nowSeconds}
+              时间差（s）：${timeDifference}s (${timeDiffHours}h)
               是否置顶：${is_top}
               是否处于开播：${userinfo.data.user?.live_status === 1 ? logger.green('true') : logger.red('false')}
-              是否在一天内：${timeDifference < 86400000 ? logger.green('true') : logger.red('false')}
+              是否在一天内：${timeDifference < 86400 ? logger.green('true') : logger.red('false')}
               `)
 
-            // 判断是否需要推送
-            if ((is_top && timeDifference < 86400000) || (timeDifference < 86400000 && !is_top)) {
+            // 判断是否需要推送（86400秒 = 1天）
+            if ((is_top && timeDifference < 86400) || (timeDifference < 86400 && !is_top)) {
               // 检查是否已经推送过
               const alreadyPushed = await this.checkIfAlreadyPushed(aweme.aweme_id, sec_uid, targets.map(t => t.groupId))
 
@@ -349,7 +348,7 @@ export class DouYinpush extends Base {
               willbepushlist[aweme.aweme_id] = {
                 remark: item.remark,
                 sec_uid,
-                create_time: aweme.create_time * 1000,
+                create_time: aweme.create_time, // 保持秒级时间戳
                 targets,
                 Detail_Data: {
                   ...aweme,

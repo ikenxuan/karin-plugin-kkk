@@ -173,55 +173,15 @@ class Tools {
   }
 
   /**
- * 将时间戳转换为日期时间字符串
- * @param timestamp 时间戳
- * @returns 格式为YYYY-MM-DD HH:MM的日期时间字符串
- */
-  convertTimestampToDateTime (timestamp: number): string {
-    // 创建一个Date对象，时间戳乘以1000是为了转换为毫秒
-    const date = new Date(timestamp * 1000)
-    const year = date.getFullYear() // 获取年份
-    const month = String(date.getMonth() + 1).padStart(2, '0') // 获取月份，确保两位数显示
-    const day = String(date.getDate()).padStart(2, '0') // 获取日，确保两位数显示
-    const hours = String(date.getHours()).padStart(2, '0') // 获取小时，确保两位数显示
-    const minutes = String(date.getMinutes()).padStart(2, '0') // 获取分钟，确保两位数显示
-    // 返回格式化后的日期时间字符串
-    return `${year}-${month}-${day} ${hours}:${minutes}`
-  }
-
-  /**
- * 获取当前时间：年-月-日 时:分:秒
- * @returns
- */
-  getCurrentTime () {
-    // 创建一个Date对象以获取当前时间
-    const now = new Date()
-    // 获取年、月、日、时、分、秒
-    const year = now.getFullYear()
-    const month = now.getMonth() + 1 // month 是 number 类型
-    const day = now.getDate()
-    const hour = now.getHours()
-    const minute = now.getMinutes()
-    const second = now.getSeconds()
-
-    const formattedMonth = month < 10 ? '0' + month : '' + month
-    const formattedDay = day < 10 ? '0' + day : '' + day
-    const formattedHour = hour < 10 ? '0' + hour : '' + hour
-    const formattedMinute = minute < 10 ? '0' + minute : '' + minute
-    const formattedSecond = second < 10 ? '0' + second : '' + second
-    return `${year}-${formattedMonth}-${formattedDay} ${formattedHour}:${formattedMinute}:${formattedSecond}`
-  }
-
-  /**
- * 评论图、推送图是否使用深色模式
- * @returns
- */
+   * 评论图、推送图是否使用深色模式
+   * @returns
+   */
   useDarkTheme (): boolean {
     let dark = true
     const configTheme = Config.app.Theme
     if (configTheme === 0) { // 自动
-      const date = new Date().getHours()
-      if (date >= 6 && date < 18) {
+      const currentHour = new Date().getHours()
+      if (currentHour >= 6 && currentHour < 18) {
         dark = false
       }
     } else if (configTheme === 1) {
@@ -230,31 +190,6 @@ class Tools {
       dark = true
     }
     return dark
-  }
-
-  /**
- * 传入一个时间戳（单位：毫秒），返回距离当前时间的相对的时间字符串
- * @param timestamp 时间戳
- * @returns 距离这个时间戳过去的多久的字符串
- */
-  timeSince (timestamp: number): string {
-    const now = Date.now()
-    const elapsed = now - timestamp
-
-    const seconds = Math.floor(elapsed / 1000)
-    const minutes = Math.floor(seconds / 60)
-    const hours = Math.floor(minutes / 60)
-
-    const remainingSeconds = seconds % 60
-    const remainingMinutes = minutes % 60
-
-    if (hours > 0) {
-      return `${hours}小时${remainingMinutes}分钟${remainingSeconds}秒`
-    } else if (minutes > 0) {
-      return `${minutes}分钟${remainingSeconds}秒`
-    } else {
-      return `${seconds}秒`
-    }
   }
 
   /**

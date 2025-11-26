@@ -72,9 +72,9 @@ const BilibiliVideoDynamicContent: React.FC<BilibiliVideoDynamicContentProps> = 
       {/* 视频信息 */}
       <div className='flex flex-col w-full leading-relaxed px-21'>
         {/* 视频标题 */}
-        <div className='relative items-center text-8xl font-bold tracking-wider break-words text-foreground'>
+        <div className='relative items-center text-8xl font-bold tracking-wider wrap-break-word text-foreground'>
           <CommentText
-            className='text-[80px] font-bold tracking-[1.5px] leading-[1.5] whitespace-pre-wrap text-foreground select-text'
+            className='text-[80px] font-bold tracking-[1.5px] leading-normal whitespace-pre-wrap text-foreground select-text'
             content={props.text}
             style={{
               wordBreak: 'break-word',
@@ -89,7 +89,7 @@ const BilibiliVideoDynamicContent: React.FC<BilibiliVideoDynamicContentProps> = 
         {/* 视频描述 */}
         <div className='text-6xl text-default-500'>
           <CommentText
-            className='text-[60px] leading-[1.5] whitespace-pre-wrap text-default-500 select-text'
+            className='text-[60px] leading-normal whitespace-pre-wrap text-default-500 select-text'
             content={props.desc}
             style={{
               wordBreak: 'break-word',
@@ -165,83 +165,87 @@ const BilibiliVideoDynamicFooter: React.FC<BilibiliVideoDynamicFooterProps> = (p
   return (
     <>
       {/* 间距 */}
-      <div className='h-25' />
-
-      {/* 右上角类型标识 */}
-      <div className='relative z-0 mr-20 -mb-11 text-7xl text-right select-text text-default-500'>
-        哔哩哔哩{props.dynamicTYPE}
-      </div>
+      <div className='h-15' />
 
       {/* 底部信息区域 */}
-      <div className='flex flex-col h-full'>
-        <div className='flex justify-between items-center h-auto pt-25'>
-          {/* 用户信息 */}
-          <div className='flex flex-col items-center pl-12' style={{ padding: '0 0 0 50px' }}>
-            <div className='flex gap-8 items-center'>
-              <div className='relative'>
+      <div className='flex justify-between items-start px-20 pb-20'>
+        {/* 左侧：用户信息 */}
+        <div className='flex flex-col gap-12'>
+          {/* 头像和用户名/UID */}
+          <div className='flex gap-12 items-start'>
+            {/* 头像 */}
+            <div className='relative shrink-0'>
+              <EnhancedImage
+                src={props.avatar_url}
+                alt='头像'
+                className='rounded-full shadow-medium w-35 h-auto'
+                isCircular
+              />
+              {props.frame && (
                 <EnhancedImage
-                  src={props.avatar_url}
-                  alt='头像'
-                  className='rounded-full shadow-medium w-50 h-50'
-                  isCircular
+                  src={props.frame}
+                  alt='头像框'
+                  className='absolute inset-0 transform scale-180'
                 />
-                {props.frame && (
-                  <EnhancedImage
-                    src={props.frame}
-                    alt='头像框'
-                    className='absolute inset-0 transform scale-180'
-                  />
-                )}
-              </div>
-              <div className='flex flex-col'>
-                <div className='text-7xl font-bold select-text text-foreground'>
-                  <span dangerouslySetInnerHTML={{ __html: props.username }} />
-                </div>
-              </div>
+              )}
             </div>
-
-            {/* 用户统计信息 */}
-            <div className='flex flex-col gap-4 items-start pt-10 w-full text-4xl tracking-wider text-default-600'>
-              <div className='flex gap-2 items-center'>
+            
+            {/* 用户名和UID - 纵向排列 */}
+            <div className='flex flex-col gap-5'>
+              <div className='text-7xl font-bold select-text text-foreground'>
+                <span dangerouslySetInnerHTML={{ __html: props.username }} />
+              </div>
+              <div className='flex gap-2 items-center text-4xl text-default-500'>
                 <Hash size={32} className='text-default-400' />
                 <span className='select-text'>UID: {props.user_shortid}</span>
               </div>
-              <div className='flex gap-2 items-center'>
-                <Heart size={32} className='text-like' />
-                <span className='select-text'>获赞: {props.total_favorited}</span>
-              </div>
-              <div className='flex gap-2 items-center'>
-                <Eye size={32} className='text-default-400 text-view' />
-                <span className='select-text'>关注: {props.following_count}</span>
-              </div>
-              <div className='flex gap-2 items-center'>
-                <Users size={32} className='text-primary' />
-                <span className='select-text'>粉丝: {props.fans}</span>
-              </div>
             </div>
           </div>
+          
+          {/* 用户统计信息 */}
+          <div className='text-3xl flex gap-6 items-center text-default-600'>
+            <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+              <div className='flex gap-1 items-center'>
+                <Heart size={28} className='text-like' />
+                <span className='text-default-400'>获赞</span>
+              </div>
+              <div className='w-full h-px bg-default-300' />
+              <span className='select-text font-medium text-4xl'>{props.total_favorited}</span>
+            </div>
+            <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+              <div className='flex gap-1 items-center'>
+                <Eye size={28} className='text-view' />
+                <span className='text-default-400'>关注</span>
+              </div>
+              <div className='w-full h-px bg-default-300' />
+              <span className='select-text font-medium text-4xl'>{props.following_count}</span>
+            </div>
+            <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+              <div className='flex gap-1 items-center'>
+                <Users size={28} className='text-primary' />
+                <span className='text-default-400'>粉丝</span>
+              </div>
+              <div className='w-full h-px bg-default-300' />
+              <span className='select-text font-medium text-4xl'>{props.fans}</span>
+            </div>
+          </div>
+        </div>
 
-          {/* 二维码区域 */}
-          <div className='flex flex-col-reverse items-center -mb-12 mr-19'>
-            <div className='mt-5 ml-3 text-5xl text-right select-text text-default-600'>
-              动态分享链接
-            </div>
-            <div className='p-3 rounded-sm border-8 border-dashed border-default-300'>
-              {props.qrCodeDataUrl
-                ? (
-                  <img
-                    src={props.qrCodeDataUrl}
-                    alt='二维码'
-                    className='h-auto w-88'
-                  />
-                )
-                : (
-                  <div className='flex justify-center items-center rounded bg-default-100 w-88 h-88'>
-                    <span className='text-default-400'>二维码</span>
-                  </div>
-                )}
-            </div>
-          </div>
+        {/* 右侧：二维码 */}
+        <div className='flex flex-col items-center gap-4'>
+          {props.qrCodeDataUrl
+            ? (
+              <img
+                src={props.qrCodeDataUrl}
+                alt='二维码'
+                className='h-auto w-80 rounded-xl'
+              />
+            )
+            : (
+              <div className='flex justify-center items-center rounded-xl bg-default-100 w-100 h-100'>
+                <span className='text-default-400'>二维码</span>
+              </div>
+            )}
         </div>
       </div>
     </>

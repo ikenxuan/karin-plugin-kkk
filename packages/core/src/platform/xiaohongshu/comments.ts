@@ -1,3 +1,6 @@
+import { differenceInSeconds, format, formatDistanceToNow } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
+
 import { Config } from '@/module/utils/Config'
 
 /**
@@ -73,34 +76,29 @@ const processAtUsers = (text: string, atUsers: any[], useDarkTheme: boolean = fa
 }
 
 /**
- * 格式化时间戳为相对时间
+ * 将时间戳转换为相对时间字符串
  * @param timestamp 时间戳（毫秒）
  * @returns 相对时间字符串
  */
 export const getRelativeTimeFromTimestamp = (timestamp: number): string => {
-  const now = Date.now()
-  const differenceInSeconds = Math.floor((now - timestamp) / 1000)
+  const commentDate = new Date(timestamp)
+  const diffSeconds = differenceInSeconds(new Date(), commentDate)
 
-  if (differenceInSeconds < 30) {
+  // 30秒内显示"刚刚"
+  if (diffSeconds < 30) {
     return '刚刚'
-  } else if (differenceInSeconds < 60) {
-    return differenceInSeconds + '秒前'
-  } else if (differenceInSeconds < 3600) {
-    return Math.floor(differenceInSeconds / 60) + '分钟前'
-  } else if (differenceInSeconds < 86400) {
-    return Math.floor(differenceInSeconds / 3600) + '小时前'
-  } else if (differenceInSeconds < 2592000) {
-    return Math.floor(differenceInSeconds / 86400) + '天前'
-  } else if (differenceInSeconds < 7776000) {
-    // 三个月的秒数
-    return Math.floor(differenceInSeconds / 2592000) + '个月前'
-  } else {
-    const date = new Date(timestamp)
-    const year = date.getFullYear()
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const day = date.getDate().toString().padStart(2, '0')
-    return year + '-' + month + '-' + day
   }
+  
+  // 三个月内使用相对时间
+  if (diffSeconds < 7776000) {
+    return formatDistanceToNow(commentDate, { 
+      locale: zhCN, 
+      addSuffix: true 
+    })
+  }
+  
+  // 超过三个月，显示具体日期
+  return format(commentDate, 'yyyy-MM-dd')
 }
 
 /**

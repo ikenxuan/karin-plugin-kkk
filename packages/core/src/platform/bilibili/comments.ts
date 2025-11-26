@@ -1,4 +1,6 @@
 import { BiliWorkComments } from '@ikenxuan/amagi'
+import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
 import { CommentItem } from 'template/types/platforms/bilibili'
 
 import { Common } from '@/module'
@@ -270,31 +272,30 @@ const checkvip = (member: any) => {
     : `<span style="color: #888">${member.uname}</span>`
 }
 
-/** 返回创建时间 */
-const getRelativeTimeFromTimestamp = (timestamp: number) => {
-  const now = Math.floor(Date.now() / 1000) // 当前时间的时间戳
-  const differenceInSeconds = now - timestamp
+/**
+ * 将时间戳转换为相对时间字符串
+ * @param timestamp 时间戳（秒）
+ * @returns 相对时间字符串
+ */
+const getRelativeTimeFromTimestamp = (timestamp: number): string => {
+  const commentDate = fromUnixTime(timestamp)
+  const diffSeconds = differenceInSeconds(new Date(), commentDate)
 
-  if (differenceInSeconds < 30) {
+  // 30秒内显示"刚刚"
+  if (diffSeconds < 30) {
     return '刚刚'
-  } else if (differenceInSeconds < 60) {
-    return differenceInSeconds + '秒前'
-  } else if (differenceInSeconds < 3600) {
-    return Math.floor(differenceInSeconds / 60) + '分钟前'
-  } else if (differenceInSeconds < 86400) {
-    return Math.floor(differenceInSeconds / 3600) + '小时前'
-  } else if (differenceInSeconds < 2592000) {
-    return Math.floor(differenceInSeconds / 86400) + '天前'
-  } else if (differenceInSeconds < 7776000) {
-    // 三个月的秒数
-    return Math.floor(differenceInSeconds / 2592000) + '个月前'
-  } else {
-    const date = new Date(timestamp * 1000) // 将时间戳转换为毫秒
-    const year = date.getFullYear()
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const day = date.getDate().toString().padStart(2, '0')
-    return year + '-' + month + '-' + day
   }
+  
+  // 三个月内使用相对时间
+  if (diffSeconds < 7776000) {
+    return formatDistanceToNow(commentDate, { 
+      locale: zhCN, 
+      addSuffix: true 
+    })
+  }
+  
+  // 超过三个月，显示具体日期
+  return format(commentDate, 'yyyy-MM-dd')
 }
 
 /** 提取粉丝卡片信息 */

@@ -14,6 +14,7 @@ import {
   DynamicType,
   Result 
 } from '@ikenxuan/amagi'
+import { format, fromUnixTime } from 'date-fns'
 import karin, {
   common,
   ElementTypes,
@@ -377,7 +378,7 @@ export class Bilibili extends Base {
               total_favorited: Count(userProfileData.data.data.like_num),
               following_count: Count(userProfileData.data.data.card.attention),
               decoration_card: generateDecorationCard(dynamicInfo.data.data.item.modules.module_author.decoration_card),
-              render_time: Common.getCurrentTime(),
+              render_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
               dynamicTYPE: '图文动态',
               imageLayout: Config.bilibili.imageLayout
             }))
@@ -465,7 +466,7 @@ export class Bilibili extends Base {
                   view: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.stat.view,
                   play: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.stat.play,
                   cover: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.cover,
-                  create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
+                  create_time: format(fromUnixTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
                   decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decoration_card),
                   frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image
                 }
@@ -477,7 +478,7 @@ export class Bilibili extends Base {
                 data = {
                   title: dynamicInfo.data.data.item.orig.modules.module_dynamic.major?.opus?.title ?? null,
                   username: checkvip(dynamicInfo.data.data.item.orig.modules.module_author),
-                  create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
+                  create_time: format(fromUnixTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
                   avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
                   text: replacetext(br(dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.text), dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes),
                   image_url: cardData.item.pictures && cover(cardData.item.pictures),
@@ -489,7 +490,7 @@ export class Bilibili extends Base {
               case DynamicType.WORD: {
                 data = {
                   username: checkvip(dynamicInfo.data.data.item.orig.modules.module_author),
-                  create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
+                  create_time: format(fromUnixTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
                   avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
                   text: replacetext(br(dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.text), dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes),
                   decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decoration_card),
@@ -501,7 +502,7 @@ export class Bilibili extends Base {
                 const liveData = JSON.parse(dynamicInfo.data.data.item.orig.modules.module_dynamic.major.live_rcmd.content)
                 data = {
                   username: checkvip(dynamicInfo.data.data.item.orig.modules.module_author),
-                  create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
+                  create_time: format(fromUnixTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
                   avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
                   decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decoration_card),
                   frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image,
@@ -537,7 +538,7 @@ export class Bilibili extends Base {
                 following_count: Count(userProfileData.data.data.card.attention),
                 dynamicTYPE: '转发动态解析',
                 decoration_card: generateDecorationCard(dynamicInfo.data.data.item.modules.module_author.decorate),
-                render_time: Common.getCurrentTime(),
+                render_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
                 original_content: { [dynamicInfo.data.data.item.orig.type]: data }
               })
             )
@@ -577,7 +578,7 @@ export class Bilibili extends Base {
                   view: Count(dycrad.stat.view),
                   coin: Count(dycrad.stat.coin),
                   duration_text: dynamicInfo.data.data.item.modules.module_dynamic.major.archive.duration_text,
-                  create_time: Common.convertTimestampToDateTime(INFODATA.data.data.ctime),
+                  create_time: format(fromUnixTime(INFODATA.data.data.ctime), 'yyyy-MM-dd HH:mm'),
                   avatar_url: INFODATA.data.data.owner.face,
                   frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
                   share_url: 'https://www.bilibili.com/video/' + bvid,
@@ -586,7 +587,7 @@ export class Bilibili extends Base {
                   user_shortid: userProfileData.data.data.card.mid,
                   total_favorited: Count(userProfileData.data.data.like_num),
                   following_count: Count(userProfileData.data.data.card.attention),
-                  render_time: Common.getCurrentTime(),
+                  render_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
                   dynamicTYPE: '视频动态',
                   dynamic_id: dynamicInfo.data.data.item.id_str
                 }
@@ -607,8 +608,8 @@ export class Bilibili extends Base {
                 avatar_url: userINFO.data.data.card.face,
                 frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
                 fans: Count(userINFO.data.data.follower),
-                create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.modules.module_author.pub_ts),
-                now_time: Common.getCurrentTime(),
+                create_time: format(fromUnixTime(dynamicInfo.data.data.item.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
+                now_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
                 share_url: 'https://live.bilibili.com/' + dynamicCARD.live_play_info.room_id,
                 dynamicTYPE: '直播动态'
               }
@@ -651,7 +652,7 @@ export class Bilibili extends Base {
                 username: checkvip(userProfileData.data.data.card),
                 avatar_url: userProfileData.data.data.card.face,
                 frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
-                create_time: Common.convertTimestampToDateTime(dynamicInfo.data.data.item.modules.module_author.pub_ts),
+                create_time: format(fromUnixTime(dynamicInfo.data.data.item.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
 
                 // 专栏内容信息
                 title: articleData.title,
@@ -665,7 +666,7 @@ export class Bilibili extends Base {
                 content: articleContent.content || undefined,
                 // 统计信息
                 stats: articleData.stats,
-                render_time: Common.getCurrentTime(),
+                render_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
                 // 分享链接
                 share_url: articleContent.dyn_id_str ? `https://www.bilibili.com/opus/${articleContent.dyn_id_str}` : `https://www.bilibili.com/read/cv${articleContent.id}`,
                 dynamicTYPE: '专栏动态解析'
@@ -701,7 +702,7 @@ export class Bilibili extends Base {
             frame: userProfileData.data.data.card.pendant.image,
             fans: Count(userProfileData.data.data.card.fans),
             create_time: liveInfo.data.data.live_time === '-62170012800' ? '获取失败' : liveInfo.data.data.live_time,
-            now_time: Common.getCurrentTime(),
+            now_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
             share_url: 'https://live.bilibili.com/' + liveInfo.data.data.room_id,
             dynamicTYPE: '直播'
           }
