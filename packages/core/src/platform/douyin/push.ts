@@ -261,7 +261,7 @@ export class DouYinpush extends Base {
                 }
                 const bot = karin.getBot(botId) as AdapterType
                 const forwardMsg = common.makeForward(imageres, botId, bot.account.name)
-                await bot.sendForwardMsg(karin.contactFriend(botId), forwardMsg)
+                await bot.sendForwardMsg(Contact, forwardMsg)
               }
             }
           }
