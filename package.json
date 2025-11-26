@@ -54,7 +54,8 @@
   "dependencies": {
     "@types/react": "^19.2.2",
     "fingerprint-generator": "^2.1.75",
-    "fingerprint-injector": "^2.1.75"
+    "fingerprint-injector": "^2.1.75",
+    "jsdom": "^27.2.0"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -83,5 +84,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2025-11-26T12:46:28.016Z"
+  "timestamp": "2025-11-26T14:07:57.396Z"
 }
