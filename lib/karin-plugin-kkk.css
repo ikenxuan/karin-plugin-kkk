@@ -5203,6 +5203,10 @@
     height: calc(var(--spacing) * 32);
   }
 
+  .h-33 {
+    height: calc(var(--spacing) * 33);
+  }
+
   .h-35 {
     height: calc(var(--spacing) * 35);
   }
@@ -5227,14 +5231,6 @@
     height: calc(var(--spacing) * 50);
   }
 
-  .h-51 {
-    height: calc(var(--spacing) * 51);
-  }
-
-  .h-54 {
-    height: calc(var(--spacing) * 54);
-  }
-
   .h-64 {
     height: calc(var(--spacing) * 64);
   }
@@ -5245,6 +5241,10 @@
 
   .h-95 {
     height: calc(var(--spacing) * 95);
+  }
+
+  .h-100 {
+    height: calc(var(--spacing) * 100);
   }
 
   .h-110 {
@@ -5587,6 +5587,10 @@
     width: calc(var(--spacing) * 32);
   }
 
+  .w-33 {
+    width: calc(var(--spacing) * 33);
+  }
+
   .w-35 {
     width: calc(var(--spacing) * 35);
   }
@@ -5615,12 +5619,8 @@
     width: calc(var(--spacing) * 50);
   }
 
-  .w-51 {
-    width: calc(var(--spacing) * 51);
-  }
-
-  .w-54 {
-    width: calc(var(--spacing) * 54);
+  .w-70 {
+    width: calc(var(--spacing) * 70);
   }
 
   .w-80 {
@@ -5629,6 +5629,10 @@
 
   .w-88 {
     width: calc(var(--spacing) * 88);
+  }
+
+  .w-100 {
+    width: calc(var(--spacing) * 100);
   }
 
   .w-110 {
@@ -5719,20 +5723,12 @@
     width: 400px;
   }
 
-  .w-\[420px\] {
-    width: 420px;
-  }
-
   .w-\[600px\] {
     width: 600px;
   }
 
   .w-\[650px\] {
     width: 650px;
-  }
-
-  .w-\[960px\] {
-    width: 960px;
   }
 
   .w-\[1440px\] {
@@ -6670,10 +6666,6 @@
 
   .rounded-\[10px\] {
     border-radius: 10px;
-  }
-
-  .rounded-\[20px\] {
-    border-radius: 20px;
   }
 
   .rounded-\[25px\] {
@@ -7731,6 +7723,20 @@
     background-image: linear-gradient(var(--tw-gradient-stops));
   }
 
+  .bg-linear-to-t {
+    --tw-gradient-position: to top;
+  }
+
+  @supports (background-image: linear-gradient(in lab, red, red)) {
+    .bg-linear-to-t {
+      --tw-gradient-position: to top in oklab;
+    }
+  }
+
+  .bg-linear-to-t {
+    background-image: linear-gradient(var(--tw-gradient-stops));
+  }
+
   .bg-gradient-to-b {
     --tw-gradient-position: to bottom in oklab;
     background-image: linear-gradient(var(--tw-gradient-stops));
@@ -8545,10 +8551,6 @@
 
   .text-\[32px\] {
     font-size: 32px;
-  }
-
-  .text-\[34px\] {
-    font-size: 34px;
   }
 
   .text-\[35px\] {
@@ -15231,7 +15233,7 @@
     display: inline;
   }
 
-  .\[\&_svg\]\:\!mb-4 svg {
+  .\[\&_svg\]\:mb-4\! svg {
     margin-bottom: calc(var(--spacing) * 4) !important;
   }
 

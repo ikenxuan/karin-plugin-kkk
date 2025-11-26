@@ -64,7 +64,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "karin": {
-    "engines": ">=1.12.2",
+    "engines": ">=1.13.0",
     "main": "src/index.ts",
     "apps": [
       "lib/apps"
@@ -83,5 +83,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2025-11-26T08:26:45.829Z"
+  "timestamp": "2025-11-26T12:46:28.016Z"
 }
