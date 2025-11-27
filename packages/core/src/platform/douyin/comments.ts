@@ -1,6 +1,7 @@
 import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import convert from 'heic-convert'
+import { DouyinCommentProps } from 'template/types/platforms/douyin'
 
 import { Common, Networks } from '@/module/utils'
 import { getDouyinData } from '@/module/utils/amagiClient'
@@ -190,29 +191,41 @@ export const douyinComments = async (data: any, emojidata: any) => {
     })
 
     let replyText = ''
+    let replyImageList: string[] | null = null
     if (replyComment.data.comments.length > 0) {
+      const firstReplyComment = replyComment.data.comments[0] as any
       const replyUserintextlongid =
-        replyComment.data.comments[0].text_extra && replyComment.data.comments[0].text_extra[0] && replyComment.data.comments[0].text_extra[0].sec_uid
-          ? replyComment.data.comments[0].text_extra.map(extra => extra.sec_uid!)
+        firstReplyComment.text_extra && firstReplyComment.text_extra[0] && firstReplyComment.text_extra[0].sec_uid
+          ? firstReplyComment.text_extra.map((extra: any) => extra.sec_uid!)
           : null
-      replyText = await processAtUsers(replyComment.data.comments[0].text, replyUserintextlongid)
+      replyText = await processAtUsers(firstReplyComment.text, replyUserintextlongid)
+      
+      // 处理回复评论的图片列表
+      const replyImageUrl = firstReplyComment.image_list?.[0]?.origin_url?.url_list?.[0]
+      const replyStickerUrl = firstReplyComment.sticker?.animate_url?.url_list?.[0]
+      
+      if (replyImageUrl) {
+        replyImageList = [replyImageUrl]
+      } else if (replyStickerUrl) {
+        replyImageList = [replyStickerUrl]
+      }
     }
-    const commentObj = {
+    const firstReplyComment = replyComment.data.comments.length > 0 ? replyComment.data.comments[0] as any : null
+    const commentObj: DouyinCommentProps['data']['CommentsData'][number] = {
       id: id++,
-      replyComment: replyComment.data.comments.length > 0 ? {
-        create_time: getRelativeTimeFromTimestamp(replyComment.data.comments[0].create_time),
-        nickname: replyComment.data.comments[0].user.nickname,
-        userimageurl: replyComment.data.comments[0].user.avatar_thumb.url_list[0],
+      replyComment: firstReplyComment ? {
+        create_time: getRelativeTimeFromTimestamp(firstReplyComment.create_time),
+        nickname: firstReplyComment.user.nickname,
+        userimageurl: firstReplyComment.user.avatar_thumb.url_list[0],
         text: processCommentEmojis(replyText, emojidata),
-        digg_count: replyComment.data.comments[0].digg_count > 10000
-          ? (replyComment.data.comments[0].digg_count / 10000).toFixed(1) + 'w'
-          : replyComment.data.comments[0].digg_count,
-        ip_label: replyComment.data.comments[0].ip_label,
-        text_extra: replyComment.data.comments[0].text_extra,
-        label_text: replyComment.data.comments[0].label_text,
-        // @ts-ignore
-        image_list: replyComment.data.comments[0].image_list && replyComment.data.comments[0].image_list[0] && replyComment.data.comments[0].image_list[0].origin_url && [replyComment.data.comments[0].image_list[0].origin_url.url_list[0]]
-      } : {},
+        digg_count: firstReplyComment.digg_count > 10000
+          ? (firstReplyComment.digg_count / 10000).toFixed(1) + 'w'
+          : firstReplyComment.digg_count,
+        ip_label: firstReplyComment.ip_label,
+        text_extra: firstReplyComment.text_extra,
+        label_text: firstReplyComment.label_text,
+        image_list: replyImageList
+      } : undefined,
       cid,
       aweme_id,
       nickname,
@@ -221,10 +234,10 @@ export const douyinComments = async (data: any, emojidata: any) => {
       digg_count,
       ip_label: ip,
       create_time: relativeTime,
-      commentimage: processedImageUrl,
+      commentimage: processedImageUrl ?? undefined,
       label_type,
-      sticker,
-      status_label,
+      sticker: sticker ?? undefined,
+      status_label: status_label ?? undefined,
       is_At_user_id: userintextlongid,
       search_text,
       is_author_digged: comment.is_author_digged ?? false
