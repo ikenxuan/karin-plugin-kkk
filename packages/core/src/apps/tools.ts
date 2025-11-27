@@ -9,7 +9,7 @@ import { fetchKuaishouData, getKuaishouID, Kuaishou } from '@/platform/kuaishou'
 import { getXiaohongshuID, Xiaohongshu } from '@/platform/xiaohongshu'
 
 const reg = {
-  douyin: /((www|v|jx|m|jingxuan)\.(douyin|iesdouyin)\.com|douyin\.com\/(video|note))/,
+  douyin: /(https?:\/\/)?(www|v|jx|m|jingxuan)\.(douyin|iesdouyin)\.com/i,
   bilibili: /(bilibili\.com|b23\.tv|t\.bilibili\.com|bili2233\.cn|\bBV[1-9a-zA-Z]{10}\b|\bav\d+\b)/i,
   kuaishou: /(快手.*快手|v\.kuaishou\.com|kuaishou\.com)/,
   xiaohongshu: /(xiaohongshu\.com|xhslink\.com)/
@@ -21,7 +21,12 @@ const handleDouyin = wrapWithErrorHandler(async (e) => {
     return false
   }
   
-  const url = String(e.msg.match(/(http|https):\/\/.*\.(douyin|iesdouyin)\.com\/[^ ]+/g))
+  const urlMatch = e.msg.match(/(https?:\/\/[^\s]*\.(douyin|iesdouyin)\.com[^\s]*)/gi)
+  if (!urlMatch) {
+    logger.warn(`未能在消息中找到有效的抖音链接: ${e.msg}`)
+    return true
+  }
+  const url = String(urlMatch[0])
   const iddata = await getDouyinID(e, url)
   await new DouYin(e, iddata).DouyinHandler(iddata)
   return true
