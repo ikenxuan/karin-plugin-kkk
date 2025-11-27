@@ -1,4 +1,3 @@
-import nodeCanvas from 'canvas'
 import { JSDOM } from 'jsdom'
 import QRCodeStyling from 'qr-code-styling'
 import type { Plugin } from 'template'
@@ -20,11 +19,10 @@ export const createQrCodePlugin = (): Plugin => {
       const toDataUrl = async (url: string): Promise<string> => {
         const qrCode = new QRCodeStyling({
           jsdom: JSDOM,
-          nodeCanvas,
           type: 'svg',
           shape: 'square',
-          width: 1200,
-          height: 1200,
+          width: 2000,
+          height: 2000,
           data: url,
           margin: 0,
           qrOptions: {
@@ -43,7 +41,7 @@ export const createQrCodePlugin = (): Plugin => {
             roundSize: false
           },
           backgroundOptions: {
-            color: useDarkTheme ? '#18181B' : '#FAFAFA'
+            color: 'transparent'
           },
           cornersSquareOptions: {
             type: 'extra-rounded',
@@ -69,14 +67,12 @@ export const createQrCodePlugin = (): Plugin => {
         props.qrCodeDataUrl = undefined
       }
 
-      for (const field of ['share_url']) {
-        const value = (data as Record<string, unknown>)[field]
-        if (typeof value === 'string' && value.length > 0) {
-          const dataUrl = await toDataUrl(value)
-            ; (props.qrCodes as Record<string, string>)[field] = dataUrl
-          if (!props.qrCodeDataUrl) {
-            props.qrCodeDataUrl = dataUrl
-          }
+      if (typeof data.share_url === 'string' && data.share_url.length > 0) {
+        const dataUrl = await toDataUrl(data.share_url)
+        const qrCodes = props.qrCodes as Record<string, string>
+        qrCodes.share_url = dataUrl
+        if (!props.qrCodeDataUrl) {
+          props.qrCodeDataUrl = dataUrl
         }
       }
 

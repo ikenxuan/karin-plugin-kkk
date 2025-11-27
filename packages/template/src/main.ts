@@ -195,10 +195,12 @@ class ComponentRendererFactory {
 class ResourcePathManager {
   private packageDir: string
   private NODE_ENV: string
+  private static initialized = false
 
   constructor () {
     this.NODE_ENV = process.env.NODE_ENV || 'production'
     this.packageDir = this.getPackageDir()
+    ResourcePathManager.initialized = true
   }
 
   /**
@@ -228,7 +230,9 @@ class ResourcePathManager {
     while (currentDir !== path.dirname(currentDir)) {
       const renderDir = path.join(currentDir, 'render')
       if (fs.existsSync(renderDir)) {
-        logger.debug('开发模式：找到 render 目录:', renderDir)
+        if (!ResourcePathManager.initialized) {
+          logger.debug('开发模式：找到 render 目录:', renderDir)
+        }
         return currentDir
       }
       currentDir = path.dirname(currentDir)
@@ -252,17 +256,23 @@ class ResourcePathManager {
 
       const pluginDir = this.extractPluginDirFromPnpmPath(normalizedPath)
       if (pluginDir) {
-        logger.debug('从 pnpm 路径提取的插件目录:', pluginDir)
+        if (!ResourcePathManager.initialized) {
+          logger.debug('从 pnpm 路径提取的插件目录:', pluginDir)
+        }
         return pluginDir
       }
 
       const fallbackDir = this.findPluginDirByScanning()
       if (fallbackDir) {
-        logger.debug('通过扫描找到的插件目录:', fallbackDir)
+        if (!ResourcePathManager.initialized) {
+          logger.debug('通过扫描找到的插件目录:', fallbackDir)
+        }
         return fallbackDir
       }
 
-      logger.debug(logger.yellow('无法找到插件目录，使用当前项目工作目录'))
+      if (!ResourcePathManager.initialized) {
+        logger.debug(logger.yellow('无法找到插件目录，使用当前项目工作目录'))
+      }
       return process.cwd()
 
     } catch (error) {
@@ -281,11 +291,15 @@ class ResourcePathManager {
     if (pnpmIndex === -1) return null
 
     const projectRoot = pnpmPath.substring(0, pnpmIndex - '/node_modules/'.length)
-    logger.debug('从 pnpm 路径提取的项目根目录:', projectRoot)
+    if (!ResourcePathManager.initialized) {
+      logger.debug('从 pnpm 路径提取的项目根目录:', projectRoot)
+    }
 
     const pluginsDir = path.join(projectRoot, 'plugins')
     if (!fs.existsSync(pluginsDir)) {
-      logger.debug('plugins 目录不存在:', pluginsDir)
+      if (!ResourcePathManager.initialized) {
+        logger.debug('plugins 目录不存在:', pluginsDir)
+      }
       return null
     }
 
@@ -301,7 +315,9 @@ class ResourcePathManager {
     const pluginsDir = path.join(cwd, 'plugins')
 
     if (!fs.existsSync(pluginsDir)) {
-      logger.debug('当前工作目录下没有 plugins 目录')
+      if (!ResourcePathManager.initialized) {
+        logger.debug('当前工作目录下没有 plugins 目录')
+      }
       return null
     }
 
@@ -323,12 +339,16 @@ class ResourcePathManager {
         const karinPluginPath = path.join(pluginPath, 'node_modules', 'karin-plugin-kkk')
 
         if (fs.existsSync(karinPluginPath)) {
-          logger.debug('找到包含 karin-plugin-kkk 的插件目录:', pluginPath)
+          if (!ResourcePathManager.initialized) {
+            logger.debug('找到包含 karin-plugin-kkk 的插件目录:', pluginPath)
+          }
           return pluginPath
         }
       }
     } catch (error) {
-      logger.debug('扫描插件目录失败:', error)
+      if (!ResourcePathManager.initialized) {
+        logger.debug('扫描插件目录失败:', error)
+      }
     }
 
     return null
@@ -483,7 +503,7 @@ class SSRRender {
    */
   private async renderComponent<T extends Record<string, unknown>> (request: RenderRequest<T>): Promise<RenderResponse> {
     try {
-      logger.debug('[SSR]开始渲染组件，预设模板:', `${logger.yellow(`${request.templateType}/`)}${request.templateName}`)
+      logger.debug('[SSR] 开始渲染组件，预设模板:', `${logger.yellow(`${request.templateType}/`)}${request.templateName}`)
 
       const ctx: PluginContext<T> = {
         request,

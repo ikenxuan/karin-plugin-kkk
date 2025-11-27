@@ -87,7 +87,7 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
                 alt={props.data.desc}
                 className="object-cover w-full h-full"
               />
-              <div className="absolute inset-0 bg-gradient-to-t to-transparent from-black/30" />
+              <div className="absolute inset-0 bg-linear-to-t to-transparent from-black/30" />
             </div>
 
             {/* 卡片头部 */}

@@ -108,6 +108,11 @@
       "type": "db",
       "section": "🗃️ 数据库迁移",
       "hidden": false
+    },
+    {
+      "type": "opt",
+      "section": "✨ 细节优化",
+      "hidden": false
     }
   ]
 }

@@ -69,9 +69,9 @@ const BilibiliLiveDynamicContent: React.FC<BilibiliLiveDynamicContentProps> = (p
         <div className='h-3' />
 
         {/* 直播标题 */}
-        <div className='relative items-center text-8xl font-bold tracking-wider break-words text-foreground'>
+        <div className='relative items-center text-8xl font-bold tracking-wider wrap-break-word text-foreground'>
           <CommentText
-            className='text-[65px] font-bold tracking-[1.5px] leading-[1.5] whitespace-pre-wrap text-foreground select-text'
+            className='text-[65px] font-bold tracking-[1.5px] leading-normal whitespace-pre-wrap text-foreground select-text'
             content={props.text}
             style={{
               wordBreak: 'break-word',

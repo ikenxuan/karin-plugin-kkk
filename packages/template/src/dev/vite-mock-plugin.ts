@@ -337,15 +337,13 @@ export function mockApiPlugin (): Plugin {
 
             try {
               const { JSDOM } = await import('jsdom')
-              const nodeCanvas = await import('canvas')
 
               const qrCode = new QRCodeStyling({
                 jsdom: JSDOM,
-                nodeCanvas,
                 type: 'svg',
                 shape: 'square',
-                width: 1200,
-                height: 1200,
+                width: 2000,
+                height: 2000,
                 data: targetUrl,
                 margin: 0,
                 qrOptions: {
@@ -364,7 +362,7 @@ export function mockApiPlugin (): Plugin {
                   roundSize: false
                 },
                 backgroundOptions: {
-                  color: useDarkTheme ? '#18181B' : '#FAFAFA'
+                  color: 'transparent'
                 },
                 cornersSquareOptions: {
                   type: 'extra-rounded',
