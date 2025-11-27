@@ -43,7 +43,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "cross-env NODE_ENV=production vite build && tsdown",
+    "build": "cross-env NODE_ENV=production vite build && tsdown && vitest run",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
     "lint": "eslint . --fix",
     "pub": "npm publish --access public",
