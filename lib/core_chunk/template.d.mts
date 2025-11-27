@@ -765,6 +765,14 @@ interface BilibiliArticleDynamicProps extends BaseComponentProps {
     dynamicTYPE: string;
     /** 分享链接 */
     share_url: string;
+    /** 用户短ID */
+    user_shortid: string | number;
+    /** 获赞总数 */
+    total_favorited: string | number;
+    /** 关注数 */
+    following_count: string | number;
+    /** 粉丝数 */
+    fans: string | number;
   };
   /** 预生成的二维码数据URL */
   qrCodeDataUrl?: string;

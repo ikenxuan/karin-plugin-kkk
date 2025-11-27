@@ -5623,10 +5623,6 @@
     width: calc(var(--spacing) * 75);
   }
 
-  .w-80 {
-    width: calc(var(--spacing) * 80);
-  }
-
   .w-88 {
     width: calc(var(--spacing) * 88);
   }
@@ -6127,6 +6123,13 @@
     --tw-scale-x: 160%;
     --tw-scale-y: 160%;
     --tw-scale-z: 160%;
+    scale: var(--tw-scale-x) var(--tw-scale-y);
+  }
+
+  .scale-175 {
+    --tw-scale-x: 175%;
+    --tw-scale-y: 175%;
+    --tw-scale-z: 175%;
     scale: var(--tw-scale-x) var(--tw-scale-y);
   }
 
