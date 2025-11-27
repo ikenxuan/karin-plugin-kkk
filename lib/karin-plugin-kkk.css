@@ -4034,34 +4034,6 @@
     transition: color .3s, background-color .3s;
   }
 
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: var(--theme-surface);
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: var(--theme-border);
-    border-radius: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--theme-text-muted);
-  }
-
-  ::selection {
-    background-color: var(--theme-text-muted);
-    color: var(--theme-bg);
-  }
-
-  :focus-visible {
-    outline: 2px solid var(--theme-text);
-    outline-offset: 2px;
-  }
-
   :root, [data-theme] {
     color: hsl(var(--heroui-foreground));
     background-color: hsl(var(--heroui-background));
@@ -7722,6 +7694,20 @@
     background-image: linear-gradient(var(--tw-gradient-stops));
   }
 
+  .bg-linear-to-br {
+    --tw-gradient-position: to bottom right;
+  }
+
+  @supports (background-image: linear-gradient(in lab, red, red)) {
+    .bg-linear-to-br {
+      --tw-gradient-position: to bottom right in oklab;
+    }
+  }
+
+  .bg-linear-to-br {
+    background-image: linear-gradient(var(--tw-gradient-stops));
+  }
+
   .bg-linear-to-t {
     --tw-gradient-position: to top;
   }
@@ -7738,11 +7724,6 @@
 
   .bg-gradient-to-b {
     --tw-gradient-position: to bottom in oklab;
-    background-image: linear-gradient(var(--tw-gradient-stops));
-  }
-
-  .bg-gradient-to-br {
-    --tw-gradient-position: to bottom right in oklab;
     background-image: linear-gradient(var(--tw-gradient-stops));
   }
 
@@ -12130,10 +12111,6 @@
     }
   }
 
-  .focus\:border-blue-500:focus {
-    border-color: #006fee;
-  }
-
   .focus\:bg-danger-400\/50:focus {
     background-color: hsl(var(--heroui-danger-400) / 1);
   }
@@ -12201,20 +12178,6 @@
   .focus\:shadow-xs:focus {
     --tw-shadow: 0 1px 2px 0 var(--tw-shadow-color, #0000000d);
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
-  }
-
-  .focus\:ring-1:focus {
-    --tw-ring-shadow: var(--tw-ring-inset, ) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
-    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
-  }
-
-  .focus\:ring-blue-500:focus {
-    --tw-ring-color: #006fee;
-  }
-
-  .focus\:outline-none:focus {
-    --tw-outline-style: none;
-    outline-style: none;
   }
 
   .focus-visible\:z-10:focus-visible {
@@ -15403,30 +15366,6 @@
 
   .bg-badge {
     background-color: var(--heroui-badge);
-  }
-
-  .text-bilibili-pink {
-    color: var(--heroui-bilibili-pink);
-  }
-
-  .bg-bilibili-pink {
-    background-color: var(--heroui-bilibili-pink);
-  }
-
-  .text-douyin-cyan {
-    color: var(--heroui-douyin-cyan);
-  }
-
-  .bg-douyin-cyan {
-    background-color: var(--heroui-douyin-cyan);
-  }
-
-  .text-vip-gold {
-    color: var(--heroui-vip-gold);
-  }
-
-  .bg-vip-gold {
-    background-color: var(--heroui-vip-gold);
   }
 }
 
