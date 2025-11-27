@@ -36,7 +36,7 @@
     "@heroui/react": "2.8.5",
     "@heroui/system": "2.4.23",
     "@heroui/theme": "2.4.23",
-    "@zumer/snapdom": "^2.0.0",
+    "@zumer/snapdom": "^2.0.1",
     "ansi-to-html": "^0.7.2",
     "axios": "1.13.2",
     "clsx": "^2.1.1",
@@ -50,11 +50,11 @@
   },
   "devDependencies": {
     "@react-dev-inspector/vite-plugin": "^2.0.1",
-    "@types/express": "5.0.3",
+    "@types/express": "5.0.5",
     "@types/js-beautify": "^1.14.3",
     "@types/jsdom": "^27.0.0",
-    "@types/react": "19.2.2",
-    "@types/react-dom": "19.2.1",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
     "concurrently": "^9.2.1",
     "cross-env": "10.1.0",
     "jsdom": "^27.2.0",
@@ -62,8 +62,7 @@
     "react-dev-inspector": "^2.0.1",
     "react-scan": "^0.4.3",
     "vite-plugin-checker": "^0.11.0",
-    "vite-plugin-static-copy": "3.1.3",
+    "vite-plugin-static-copy": "3.1.4",
     "vite-plugin-svgr": "^4.5.0"
-  },
-  "timestamp": "2025-10-15T19:55:51.104Z"
+  }
 }
