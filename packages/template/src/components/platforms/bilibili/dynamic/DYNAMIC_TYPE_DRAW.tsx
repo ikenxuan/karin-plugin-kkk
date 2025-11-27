@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { Clock, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
 import React from 'react'
+import { LuFullscreen } from 'react-icons/lu'
 
 import type {
   BilibiliDynamicContentProps,
@@ -205,8 +206,8 @@ const BilibiliDynamicStatus: React.FC<BilibiliDynamicStatusProps> = (props) => {
         </div>
       </div>
       <div className='flex gap-2 items-center text-5xl font-light tracking-normal select-text text-foreground-600'>
-        <Clock size={48} className='text-time' />
-        图片生成时间: {props.render_time}
+        <LuFullscreen size={48} className='text-time' />  
+        图片生成于: {props.render_time}
       </div>
       <div className='h-3' />
     </div>

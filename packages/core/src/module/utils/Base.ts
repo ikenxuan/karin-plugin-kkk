@@ -169,7 +169,9 @@ export const statBotId = (pushList: pushlistConfig): { douyin: PlatformBotStats,
 
 /** 过万整除 */
 export const Count = (count: number): string => {
-  if (count > 10000) {
+  if (count >= 100000000) {
+    return (count / 100000000).toFixed(1) + '亿'
+  } else if (count >= 10000) {
     return (count / 10000).toFixed(1) + '万'
   } else {
     return count?.toString() ?? '无法获取'

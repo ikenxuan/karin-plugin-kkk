@@ -1,5 +1,6 @@
-import { Clock, Hash, Heart, Music, QrCode, UserPlus, Users } from 'lucide-react'
+import { Hash, Heart, Music, QrCode, UserPlus, Users } from 'lucide-react'
 import React from 'react'
+import { LuFullscreen } from 'react-icons/lu'
 
 import type {
   DouyinMusicInfoProps,
@@ -80,8 +81,8 @@ const MusicInfoSection: React.FC<MusicInfoProps & { desc: string }> = ({
         </div>
       </div>
       <div className='flex items-center gap-2 text-[45px] text-default-500 font-light select-text'>
-        <Clock className='w-11 h-11 text-time' />
-        <span>图片生成于{createTime}</span>
+        <LuFullscreen className='w-11 h-11 text-time' />
+        <span>图片生成于: {createTime}</span>
       </div>
     </div>
   )

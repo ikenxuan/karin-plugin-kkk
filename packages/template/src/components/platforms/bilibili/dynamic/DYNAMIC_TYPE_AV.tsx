@@ -1,5 +1,7 @@
+import { format } from 'date-fns'
 import { Clock, Coins, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
 import React from 'react'
+import { LuFullscreen } from 'react-icons/lu'
 
 import type {
   BilibiliVideoDynamicContentProps,
@@ -144,6 +146,10 @@ const BilibiliVideoDynamicContent: React.FC<BilibiliVideoDynamicContentProps> = 
             <div className='flex gap-3 items-center whitespace-nowrap'>
               <Clock size={32} className='text-time' />
               <span className='select-text'>发布于{props.create_time}</span>
+            </div>
+            <div className='flex gap-3 items-center whitespace-nowrap'>
+              <LuFullscreen size={32} className='text-time' />
+              <span>图片生成于: {format(new Date(), 'yyyy-MM-dd HH:mm:ss')}</span>
             </div>
             <div className='flex gap-3 items-center'>
               <Hash size={32} className='text-default-400' />

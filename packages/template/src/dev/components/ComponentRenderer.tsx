@@ -100,7 +100,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
       <div className='flex justify-center items-center h-full text-default-900'>
         <div className='text-center max-w-2xl px-4'>
           <div className='text-lg font-semibold mb-2 text-red-600'>数据加载失败</div>
-          <div className='text-sm text-default-600 break-words'>
+          <div className='text-sm text-default-600 wrap-break-word'>
             {loadError.message}
           </div>
         </div>

@@ -1,5 +1,7 @@
+import { format } from 'date-fns'
 import { Bookmark, Clock, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
 import React from 'react'
+import { LuFullscreen } from 'react-icons/lu'
 
 import type {
   DouyinDynamicProps,
@@ -92,7 +94,11 @@ const InfoSection: React.FC<{
       </div>
       <div className='flex items-center gap-2 text-[45px] text-foreground-500 font-light select-text'>
         <Clock className='w-11 h-11 text-time' />
-        <span>发布于{createTime}</span>
+        <span>发布于: {createTime}</span>
+      </div>
+      <div className='flex items-center gap-2 text-[45px] text-foreground-500 font-light select-text'>
+        <LuFullscreen className='w-11 h-11 text-time text-time' />
+        <span>图片生成于: {format(new Date(), 'yyyy-MM-dd HH:mm:ss')}</span>
       </div>
     </div>
   )
@@ -109,8 +115,7 @@ const UserInfoSection: React.FC<DouyinDynamicUserInfoProps & { coCreatorCount?: 
   douyinId,
   likes,
   following,
-  followers,
-  coCreatorCount
+  followers
 }) => {
   return (
     <div className='flex flex-col gap-12'>
@@ -129,16 +134,8 @@ const UserInfoSection: React.FC<DouyinDynamicUserInfoProps & { coCreatorCount?: 
         
         {/* 用户名和抖音号 - 纵向排列 */}
         <div className='flex flex-col gap-5'>
-          <div className='flex flex-col gap-3'>
-            <div className='text-7xl font-bold select-text text-foreground'>
-              @{username}
-            </div>
-            {coCreatorCount && coCreatorCount > 0 && (
-              <div className='gap-2 inline-flex items-center rounded-2xl bg-foreground-200 text-foreground-700 px-6 py-3 self-start'>
-                <Users className='w-7 h-7' />
-                <span className='text-3xl leading-none select-text text-foreground-700'>{coCreatorCount}人共创</span>
-              </div>
-            )}
+          <div className='text-7xl font-bold select-text text-foreground'>
+            @{username}
           </div>
           <div className='flex gap-2 items-center text-4xl text-default-500'>
             <Hash size={32} className='text-default-400' />
@@ -302,6 +299,14 @@ export const DouyinDynamic: React.FC<Omit<DouyinDynamicProps, 'templateType' | '
 
         <div className='flex flex-col gap-10 px-0 pt-25'>
           <div className='w-full'>
+            {coCreatorCount && coCreatorCount > 0 && (
+              <div className='px-16 pb-8'>
+                <div className='gap-2 inline-flex items-center rounded-2xl bg-foreground-200 text-foreground-700 px-6 py-3'>
+                  <Users className='w-7 h-7' />
+                  <span className='text-3xl font-medium leading-none select-text text-foreground-700'>{coCreatorCount}人共创</span>
+                </div>
+              </div>
+            )}
             <CoCreatorsInfo info={data.cooperation_info} />
           </div>
 
