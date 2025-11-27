@@ -459,41 +459,16 @@ class HtmlWrapper {
  */
 class SSRRender {
   private outputDir: string
-  private cssContent: string = ''
   private resourceManager: ResourcePathManager
   private htmlWrapper: HtmlWrapper
   private pluginContainer: PluginContainer
 
-  constructor (plugins: Plugin[] = []) {
+  constructor (options: { plugins?: Plugin[], outputDir: string }) {
+    const { plugins = [], outputDir } = options
     this.resourceManager = new ResourcePathManager()
     this.htmlWrapper = new HtmlWrapper(this.resourceManager)
-    this.outputDir = ''
+    this.outputDir = outputDir
     this.pluginContainer = new PluginContainer(plugins)
-    this.loadCssContent()
-  }
-
-  /**
-   * 加载 CSS 内容到内存中
-   */
-  private loadCssContent (): void {
-    try {
-      const { cssDir } = this.resourceManager.getResourcePaths()
-      const cssPath = path.join(cssDir, 'karin-plugin-kkk.css')
-
-      if (fs.existsSync(cssPath)) {
-        this.cssContent = fs.readFileSync(cssPath, 'utf-8')
-      } else {
-        logger.warn('⚠️ CSS文件未找到:', cssPath)
-        // 尝试后备路径
-        const fallbackPath = path.join(this.resourceManager['packageDir'], 'dist/css/main.css')
-        if (fs.existsSync(fallbackPath)) {
-          this.cssContent = fs.readFileSync(fallbackPath, 'utf-8')
-          logger.debug('✅ 从后备路径加载CSS:', fallbackPath)
-        }
-      }
-    } catch (error) {
-      logger.error('❌ 加载CSS内容失败:', error)
-    }
   }
 
   /**
@@ -501,7 +476,7 @@ class SSRRender {
    * @param request 渲染请求参数
    * @returns 渲染结果
    */
-  private async renderComponent<T extends Record<string, unknown>> (request: RenderRequest<T>): Promise<RenderResponse> {
+  public async render<T extends Record<string, unknown>> (request: RenderRequest<T>): Promise<RenderResponse> {
     try {
       logger.debug('[SSR] 开始渲染组件，预设模板:', `${logger.yellow(`${request.templateType}/`)}${request.templateName}`)
 
@@ -559,37 +534,6 @@ class SSRRender {
         error: error instanceof Error ? error.message : String(error)
       }
     }
-  }
-
-  /**
-   * 重新加载 CSS 内容（用于开发时热更新）
-   */
-  public reloadCss (): void {
-    this.loadCssContent()
-  }
-
-  /**
-   * 启动服务
-   */
-  public async start (): Promise<void> {
-    // 确保组件已初始化
-    await ComponentAutoRegistry.initialize()
-
-    const stats = ComponentAutoRegistry.getStats()
-    logger.debug(`📁 HTML输出目录: ${this.outputDir}`)
-    logger.debug(`🎨 CSS文件状态: ${this.cssContent ? '已加载' : '未加载'}`)
-    logger.debug(`📦 已注册组件总数: ${stats.total}`)
-    logger.debug('📊 各平台组件数量:', stats.byPlatform)
-    logger.debug(`🔧 已注册组件: ${ComponentAutoRegistry.getAllKeys().join(', ')}`)
-  }
-
-  /**
-   * 渲染组件
-   * @param request 渲染请求参数
-   * @returns 渲染结果
-   */
-  public async render<T extends Record<string, unknown>> (request: RenderRequest<T>): Promise<RenderResponse> {
-    return this.renderComponent(request)
   }
 }
 
@@ -650,11 +594,10 @@ const reactServerRender = async <K extends keyof DataTypeMap> (
   // 初始化组件注册表
   await ComponentAutoRegistry.initialize()
 
-  // 创建临时渲染器实例
-  const tempServer = new SSRRender(plugins)
-  tempServer['outputDir'] = outputDir
+  // 创建渲染器实例
+  const renderClient = new SSRRender({ plugins, outputDir })
 
-  const result = await tempServer.render(request)
+  const result = await renderClient.render(request)
 
   if (result.success && process.env.NODE_ENV === 'development') {
     DevDataManager.saveRenderData(

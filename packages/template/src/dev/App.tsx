@@ -364,13 +364,13 @@ export const App: React.FC<AppProps> = ({ inspectorActive, onInspectorToggle }) 
   }, [selectedPlatform, selectedTemplate, selectedDataFile])
   
   return (
-    <div className='overflow-hidden h-screen bg-gradient-to-br from-blue-50 to-indigo-100 font-[HarmonyOSHans-Regular]'>
+    <div className='overflow-hidden h-screen bg-linear-to-br from-blue-50 to-indigo-100 font-[HarmonyOSHans-Regular]'>
       {/* 顶部导航 */}
-      <div className='flex-shrink-0 h-16 bg-white border-b border-gray-200 shadow-sm'>
+      <div className='shrink-0 h-16 bg-white border-b border-gray-200 shadow-sm'>
         <div className='flex justify-between items-center px-6 h-full'>
           <div className='flex gap-4 items-center'>
             <div className='flex gap-2 items-center'>
-              <Palette className='flex-shrink-0 w-6 h-6 text-blue-600' />
+              <Palette className='shrink-0 w-6 h-6 text-blue-600' />
               <h1 className='text-xl font-bold text-gray-900 whitespace-nowrap'>Template 开发</h1>
             </div>
             {selectedDataFile && (
@@ -382,7 +382,7 @@ export const App: React.FC<AppProps> = ({ inspectorActive, onInspectorToggle }) 
               {selectedPlatform}/{selectedTemplate.includes('/') ? selectedTemplate.split('/').join(' → ') : selectedTemplate}
             </Chip>
           </div>
-          <div className='flex flex-shrink-0 gap-2 items-center'>
+          <div className='flex shrink-0 gap-2 items-center'>
             {/* 截图按钮已移至画布工具栏 */}
           </div>
         </div>
@@ -401,7 +401,7 @@ export const App: React.FC<AppProps> = ({ inspectorActive, onInspectorToggle }) 
             <div className='overflow-y-auto h-full scrollbar-hide'>
               <div className='p-4 space-y-4'>
                 {/* 平台与模板选择 */}
-                <div className='flex-shrink-0'>
+                <div className='shrink-0'>
                   <PlatformSelector
                     selectedPlatform={selectedPlatform}
                     selectedTemplate={selectedTemplate}
@@ -411,7 +411,7 @@ export const App: React.FC<AppProps> = ({ inspectorActive, onInspectorToggle }) 
                 </div>
 
                 {/* 数据文件选择器 */}
-                <div className='flex-shrink-0'>
+                <div className='shrink-0'>
                   <DataFileSelector
                     availableDataFiles={availableDataFiles}
                     selectedDataFile={selectedDataFile}
@@ -437,7 +437,7 @@ export const App: React.FC<AppProps> = ({ inspectorActive, onInspectorToggle }) 
           >
             <div className='flex flex-col h-full'>
               {/* 画布工具栏 */}
-              <div className='flex-shrink-0 px-6 py-3 bg-white border-b border-gray-200'>
+              <div className='shrink-0 px-6 py-3 bg-white border-b border-gray-200'>
                 <div className='flex items-center gap-4'>
                   {/* 主题切换开关 */}
                   <div className='flex gap-2 items-center'>

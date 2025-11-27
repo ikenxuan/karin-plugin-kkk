@@ -150,31 +150,6 @@
   .bg-badge {
     background-color: var(--heroui-badge);
   }
-
-  /* 平台特色颜色 */
-  .text-bilibili-pink {
-    color: var(--heroui-bilibili-pink);
-  }
-
-  .bg-bilibili-pink {
-    background-color: var(--heroui-bilibili-pink);
-  }
-
-  .text-douyin-cyan {
-    color: var(--heroui-douyin-cyan);
-  }
-
-  .bg-douyin-cyan {
-    background-color: var(--heroui-douyin-cyan);
-  }
-
-  .text-vip-gold {
-    color: var(--heroui-vip-gold);
-  }
-
-  .bg-vip-gold {
-    background-color: var(--heroui-vip-gold);
-  }
 }
 
 /* 基础样式 */
@@ -196,36 +171,5 @@
     padding: 0;
     min-height: 100vh;
     transition: color 0.3s ease, background-color 0.3s ease;
-  }
-
-  /* 滚动条样式 */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: var(--theme-surface);
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: var(--theme-border);
-    border-radius: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--theme-text-muted);
-  }
-
-  /* 选择文本样式 */
-  ::selection {
-    background-color: var(--theme-text-muted);
-    color: var(--theme-bg);
-  }
-
-  /* 焦点样式 */
-  :focus-visible {
-    outline: 2px solid var(--theme-text);
-    outline-offset: 2px;
   }
 }

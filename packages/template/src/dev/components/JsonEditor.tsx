@@ -1,5 +1,5 @@
 import { Button, Card, CardBody, CardHeader, Select, SelectItem, Textarea } from '@heroui/react'
-import { Code, Copy, Download, Plus, Upload } from 'lucide-react'
+import { Code, Copy, Download, Upload } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 
 interface JsonEditorProps {
@@ -36,14 +36,11 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   templateId,
   availableDataFiles = [],
   selectedDataFile,
-  onDataFileChange,
-  onSaveNewDataFile
+  onDataFileChange
 }) => {
   const [jsonText, setJsonText] = useState<string>('')
   const [error, setError] = useState<string>('')
   const [isFormatted, setIsFormatted] = useState(true)
-  const [newFileName, setNewFileName] = useState<string>('')
-  const [showNewFileInput, setShowNewFileInput] = useState(false)
 
   // 同步数据到JSON文本
   useEffect(() => {
@@ -174,23 +171,12 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
     URL.revokeObjectURL(url)
   }
 
-  /**
-   * 保存新数据文件
-   */
-  const saveNewFile = () => {
-    if (newFileName && onSaveNewDataFile && data) {
-      onSaveNewDataFile(newFileName, data)
-      setNewFileName('')
-      setShowNewFileInput(false)
-    }
-  }
-
   return (
     <Card className='w-full'>
-      <CardHeader className='flex-shrink-0'>
+      <CardHeader className='shrink-0'>
         <div className='flex flex-col gap-2 w-full'>
           <div className='flex gap-2 items-center'>
-            <Code className='flex-shrink-0 w-5 h-5' />
+            <Code className='shrink-0 w-5 h-5' />
             <h3 className='text-lg font-semibold whitespace-nowrap'>JSON数据编辑</h3>
           </div>
           <div className='flex flex-wrap gap-1 items-center'>
@@ -273,47 +259,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
                   </SelectItem>
                 ))}
               </Select>
-              <Button
-                size='sm'
-                variant='flat'
-                startContent={<Plus className='w-3 h-3' />}
-                onPress={() => setShowNewFileInput(true)}
-                isDisabled={readonly}
-              >
-                新建
-              </Button>
             </div>
-
-            {/* 新建文件输入框 */}
-            {showNewFileInput && (
-              <div className='flex gap-2 items-center'>
-                <input
-                  type='text'
-                  placeholder='输入文件名'
-                  value={newFileName}
-                  onChange={(e) => setNewFileName(e.target.value)}
-                  className='flex-1 px-3 py-2 text-sm placeholder-gray-500 text-gray-900 bg-white rounded-md border border-gray-300 focus:border-blue-500 focus:outline-none'
-                />
-                <Button
-                  size='sm'
-                  color='primary'
-                  onPress={saveNewFile}
-                  isDisabled={!newFileName}
-                >
-                  保存
-                </Button>
-                <Button
-                  size='sm'
-                  variant='flat'
-                  onPress={() => {
-                    setShowNewFileInput(false)
-                    setNewFileName('')
-                  }}
-                >
-                  取消
-                </Button>
-              </div>
-            )}
           </div>
         )}
 
