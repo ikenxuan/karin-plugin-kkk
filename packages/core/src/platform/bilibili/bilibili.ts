@@ -331,17 +331,18 @@ export class Bilibili extends Base {
                 shareurl: '动态分享链接',
                 Resolution: null
               })
-              if (imgArray.length === 1) this.e.reply(imgArray[0])
-              if (imgArray.length > 1) {
-                const forwardMsg = common.makeForward(imgArray, this.e.userId, this.e.sender.nick)
-                await this.e.bot.sendForwardMsg(this.e.contact, forwardMsg, {
-                  source: '图片合集',
-                  summary: `查看${imgArray.length}张图片消息`,
-                  prompt: 'B站图文动态解析结果',
-                  news: [{ text: '点击查看解析结果' }]
-                })
-              }
               this.e.reply(img)
+            }
+
+            if (imgArray.length === 1) this.e.reply(imgArray[0])
+            if (imgArray.length > 1) {
+              const forwardMsg = common.makeForward(imgArray, this.e.userId, this.e.sender.nick)
+              await this.e.bot.sendForwardMsg(this.e.contact, forwardMsg, {
+                source: '图片合集',
+                summary: `查看${imgArray.length}张图片消息`,
+                prompt: 'B站图文动态解析结果',
+                news: [{ text: '点击查看解析结果' }]
+              })
             }
 
             const dynamicCARD = JSON.parse(dynamicInfoCard.data.data.card.card)
