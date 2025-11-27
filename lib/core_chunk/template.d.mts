@@ -1809,6 +1809,7 @@ type PluginFactory<T = Record<string, unknown>> = (options?: T) => Plugin;
 declare class ResourcePathManager {
   private packageDir;
   private NODE_ENV;
+  private static initialized;
   constructor();
   /**
    * 获取包目录路径
