@@ -1,4 +1,4 @@
-import { JSDOM } from 'jsdom'
+import { Window } from 'happy-dom'
 import QRCodeStyling from 'qr-code-styling'
 import type { Plugin } from 'template'
 
@@ -18,7 +18,8 @@ export const createQrCodePlugin = (): Plugin => {
 
       const toDataUrl = async (url: string): Promise<string> => {
         const qrCode = new QRCodeStyling({
-          jsdom: JSDOM,
+          // @ts-ignore
+          jsdom: Window,
           type: 'svg',
           shape: 'square',
           width: 2000,

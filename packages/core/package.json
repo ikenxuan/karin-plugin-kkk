@@ -54,8 +54,7 @@
   "dependencies": {
     "@types/react": "^19.2.7",
     "fingerprint-generator": "^2.1.77",
-    "fingerprint-injector": "^2.1.77",
-    "jsdom": "^27.2.0"
+    "fingerprint-injector": "^2.1.77"
   },
   "devDependencies": {
     "@karinjs/plugin-puppeteer": "1.0.21",
@@ -64,9 +63,9 @@
     "@types/connect-history-api-fallback": "^1.5.4",
     "@types/express": "5.0.5",
     "@types/heic-convert": "^2.1.0",
-    "@types/jsdom": "^27.0.0",
     "connect-history-api-fallback": "^2.0.0",
     "date-fns": "^4.1.0",
+    "happy-dom": "^20.0.10",
     "heic-convert": "^2.1.0",
     "http-proxy-middleware": "3.0.5",
     "qr-code-styling": "^1.9.2",
