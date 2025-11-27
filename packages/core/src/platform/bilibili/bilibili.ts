@@ -669,7 +669,13 @@ export class Bilibili extends Base {
                 render_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
                 // 分享链接
                 share_url: articleContent.dyn_id_str ? `https://www.bilibili.com/opus/${articleContent.dyn_id_str}` : `https://www.bilibili.com/read/cv${articleContent.id}`,
-                dynamicTYPE: '专栏动态解析'
+                dynamicTYPE: '专栏动态解析',
+                
+                // 用户统计信息
+                user_shortid: userProfileData.data.data.card.mid,
+                total_favorited: Count(userProfileData.data.data.like_num),
+                following_count: Count(userProfileData.data.data.card.friend),
+                fans: Count(userProfileData.data.data.card.fans)
               }
             )
             this.e.reply(img)

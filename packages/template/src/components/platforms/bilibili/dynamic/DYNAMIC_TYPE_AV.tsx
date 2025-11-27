@@ -244,7 +244,7 @@ const BilibiliVideoDynamicFooter: React.FC<BilibiliVideoDynamicFooterProps> = (p
               <img
                 src={props.qrCodeDataUrl}
                 alt='二维码'
-                className='h-auto w-80 rounded-xl'
+                className='h-auto w-75 rounded-xl'
               />
             )
             : (

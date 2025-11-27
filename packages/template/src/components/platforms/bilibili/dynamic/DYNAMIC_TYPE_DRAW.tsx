@@ -289,7 +289,7 @@ const BilibiliDynamicFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
             <img
               src={props.qrCodeDataUrl}
               alt='二维码'
-              className='h-auto w-80 rounded-2xl'
+              className='h-auto w-75 rounded-2xl'
             />
           )
           : (

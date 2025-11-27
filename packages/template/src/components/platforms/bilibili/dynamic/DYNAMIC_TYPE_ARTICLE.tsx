@@ -1,4 +1,4 @@
-import { BookOpen, Clock, Eye, Heart, MessageCircle, Share2 } from 'lucide-react'
+import { BookOpen, Clock, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
 import React, { type JSX } from 'react'
 
 import type { BilibiliArticleDynamicProps } from '../../../../types/platforms/bilibili/dynamic/article'
@@ -522,51 +522,84 @@ const BilibiliArticleStatus: React.FC<BilibiliArticleDynamicProps> = React.memo(
  */
 const BilibiliArticleFooter: React.FC<BilibiliArticleDynamicProps> = React.memo((props) => {
   return (
-    <div className='flex justify-between items-end px-20 py-12'>
-      <div className='flex flex-col gap-6'>
-        {/* B站Logo */}
-        <div className='flex items-center'>
-          <img
-            src='/image/bilibili/bilibili-light.png'
-            alt='B站Logo'
-            className='w-80 h-auto'
-          />
+    <div className='flex justify-between items-start px-20 pb-20'>
+      {/* 左侧：用户信息 */}
+      <div className='flex flex-col gap-12'>
+        {/* 头像和用户名/UID */}
+        <div className='flex gap-12 items-start'>
+          {/* 头像 */}
+          <div className='relative shrink-0'>
+            <EnhancedImage
+              src={props.data.avatar_url}
+              alt='头像'
+              className='rounded-full shadow-medium w-35 h-auto'
+              isCircular
+            />
+            {props.data.frame && (
+              <EnhancedImage
+                src={props.data.frame}
+                alt='头像框'
+                className='absolute inset-0 transform scale-175'
+              />
+            )}
+          </div>
+          
+          {/* 用户名和UID - 纵向排列 */}
+          <div className='flex flex-col gap-5'>
+            <div className='text-7xl font-bold select-text text-foreground'>
+              <span dangerouslySetInnerHTML={{ __html: props.data.username }} />
+            </div>
+            <div className='flex gap-2 items-center text-4xl text-default-500'>
+              <Hash size={32} className='text-default-400' />
+              <span className='select-text'>UID: {props.data.user_shortid}</span>
+            </div>
+          </div>
         </div>
-
-        {/* 发布时间和渲染时间 */}
-        <div className='flex flex-col gap-2 text-[32px] text-default-500'>
-          <div>发布于 {props.data.create_time}</div>
-          <div>图片渲染于 {props.data.render_time}</div>
+        
+        {/* 用户统计信息 */}
+        <div className='text-3xl flex gap-6 items-center text-default-600'>
+          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+            <div className='flex gap-1 items-center'>
+              <Heart size={28} className='text-like' />
+              <span className='text-default-400'>获赞</span>
+            </div>
+            <div className='w-full h-px bg-default-300' />
+            <span className='select-text font-medium text-4xl'>{props.data.total_favorited}</span>
+          </div>
+          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+            <div className='flex gap-1 items-center'>
+              <Eye size={28} className='text-view' />
+              <span className='text-default-400'>关注</span>
+            </div>
+            <div className='w-full h-px bg-default-300' />
+            <span className='select-text font-medium text-4xl'>{props.data.following_count}</span>
+          </div>
+          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+            <div className='flex gap-1 items-center'>
+              <Users size={28} className='text-primary' />
+              <span className='text-default-400'>粉丝</span>
+            </div>
+            <div className='w-full h-px bg-default-300' />
+            <span className='select-text font-medium text-4xl'>{props.data.fans}</span>
+          </div>
         </div>
-
-        {/* 提示文字 */}
-        <span className='text-[36px] text-default-600 font-medium'>
-          长按识别二维码即可查看全文
-        </span>
       </div>
 
-      {/* 右侧信息 */}
-      <div className='flex flex-col items-center gap-4 text-[32px]'>
-        <div className='p-3 rounded-sm border-8 border-dashed border-default-300'>
-          {props.qrCodeDataUrl
-            ? (
-              <img
-                src={props.qrCodeDataUrl}
-                alt='二维码'
-                className='h-auto w-88'
-              />
-            )
-            : (
-              <div className='flex justify-center items-center rounded bg-default-100 w-88 h-88'>
-                <span className='text-default-400'>二维码</span>
-              </div>
-            )}
-        </div>
-
-        {/* 专栏动态标识 */}
-        <div className='text-[38px] font-semibold text-default-700'>
-          {props.data.dynamicTYPE}
-        </div>
+      {/* 右侧：二维码 */}
+      <div className='flex flex-col items-center gap-4'>
+        {props.qrCodeDataUrl
+          ? (
+            <img
+              src={props.qrCodeDataUrl}
+              alt='二维码'
+              className='h-auto w-75 rounded-2xl'
+            />
+          )
+          : (
+            <div className='flex justify-center items-center rounded-2xl bg-default-100 w-100 h-100'>
+              <span className='text-default-400'>二维码</span>
+            </div>
+          )}
       </div>
     </div>
   )
