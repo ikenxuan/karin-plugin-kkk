@@ -52,9 +52,9 @@
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../template/src/dev/mock-server.ts\" --include \"../template/src/main.ts\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
-    "@types/react": "^19.2.2",
-    "fingerprint-generator": "^2.1.75",
-    "fingerprint-injector": "^2.1.75",
+    "@types/react": "^19.2.7",
+    "fingerprint-generator": "^2.1.77",
+    "fingerprint-injector": "^2.1.77",
     "jsdom": "^27.2.0"
   },
   "engines": {
@@ -84,5 +84,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2025-11-27T00:28:03.629Z"
+  "timestamp": "2025-11-27T00:49:07.964Z"
 }
