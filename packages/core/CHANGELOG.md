@@ -2,6 +2,61 @@
 
 # Changelog
 
+## [2.14.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.13.0...v2.14.0) (2025-11-28)
+
+
+### ✨ 新功能
+
+* **douyin:** 新增配置 `liveImageMergeMode` ,可选择合辑中live图的bgm合并方式。 ([26d16e2](https://github.com/ikenxuan/karin-plugin-kkk/commit/26d16e2f55f51961ef25aa28e78d0fe8ad9a9727))
+
+
+### 🐛 错误修复
+
+* 1 ([ee5742d](https://github.com/ikenxuan/karin-plugin-kkk/commit/ee5742dc539160e4a5d7540fbaf8793e4c2b949f))
+* **bilibili:** adjust image reply order in dynamic parsing ([c4569be](https://github.com/ikenxuan/karin-plugin-kkk/commit/c4569becd21a269cf1c6833a0ff6c1e26a3855b7))
+* create_time ([97c6db9](https://github.com/ikenxuan/karin-plugin-kkk/commit/97c6db99d818034a5ef17c233d205e2f4bc4aa32))
+* **error-handler:** improve error stack formatting and ANSI color parsing ([5f8b6b4](https://github.com/ikenxuan/karin-plugin-kkk/commit/5f8b6b490faca860c53d7da1dbab2fe8144b57c0))
+* reg ([9181b9c](https://github.com/ikenxuan/karin-plugin-kkk/commit/9181b9caca5a90765329b5c283bc7ca691e90397))
+* 抖音二级评论表情包获取失败 ([3412bfc](https://github.com/ikenxuan/karin-plugin-kkk/commit/3412bfcfbc15ffcd10213cd1be821b466b44b8c4))
+
+
+### 💄 UI 优化
+
+* 同步UI ([809d904](https://github.com/ikenxuan/karin-plugin-kkk/commit/809d904d785ab1412a3e0e72f0c4ec86f6d44779))
+* 细优 ([c3595b9](https://github.com/ikenxuan/karin-plugin-kkk/commit/c3595b9d3f114a2859b8f69795af8affe792c943))
+* 细优 ([30f9f1d](https://github.com/ikenxuan/karin-plugin-kkk/commit/30f9f1ddfd2e914e3c780abf95deb42ac0b3dba6))
+* 细优 ([f68caf0](https://github.com/ikenxuan/karin-plugin-kkk/commit/f68caf086a2e48b21d4d6dcda9784cf8b0a0e1ca))
+* 细优 ([6264d81](https://github.com/ikenxuan/karin-plugin-kkk/commit/6264d8144d275185311d90b16a33bee448445edd))
+
+
+### ♻️ 代码重构
+
+* **douyin:** rename push video quality config parameters ([b39b728](https://github.com/ikenxuan/karin-plugin-kkk/commit/b39b728ccbeb6fb249cbcfa7468d5072b62ae2d4))
+* **error-handler:** replace static error emoji with dynamic QFace emoji ([f388a82](https://github.com/ikenxuan/karin-plugin-kkk/commit/f388a82050543d35a4a2ccde4f413ced434cf8fb))
+* 重构FFmpeg逻辑 ([26d16e2](https://github.com/ikenxuan/karin-plugin-kkk/commit/26d16e2f55f51961ef25aa28e78d0fe8ad9a9727))
+
+
+### ✅ 测试相关
+
+* add vitest ([e6eb207](https://github.com/ikenxuan/karin-plugin-kkk/commit/e6eb207ff9c01b0b086d34a6f1676b6d3ac7de73))
+* 添加屎山 包体积+++ ([1db256f](https://github.com/ikenxuan/karin-plugin-kkk/commit/1db256f4c132e5ad1ebf29bbf221c727d44fea13))
+* 用happy-dom替换jsdom ([ead6e9d](https://github.com/ikenxuan/karin-plugin-kkk/commit/ead6e9dcc469a758147a960973feb125635efe6a))
+
+
+### 📦 依赖更新
+
+* amagi update to 5.11.1 ([5933141](https://github.com/ikenxuan/karin-plugin-kkk/commit/5933141b52a5e103ada7e1054a165614e60df741))
+* rm ansi-to-html ([56462f6](https://github.com/ikenxuan/karin-plugin-kkk/commit/56462f641538b3d40b4e123060ccf08736687afa))
+* 更新 ([f27af3b](https://github.com/ikenxuan/karin-plugin-kkk/commit/f27af3b53bfcf3f67c168ddfcb21975da0ed217a))
+
+
+### ✨ 细节优化
+
+* 优化屎山 ([e3ece3f](https://github.com/ikenxuan/karin-plugin-kkk/commit/e3ece3fc45e3ce6c7e0162a83e64d05fc792dbb5))
+* 优化模板开发 ([ff0ee9c](https://github.com/ikenxuan/karin-plugin-kkk/commit/ff0ee9c7f74f4f46ada2e3b5431aa5a5121e92e1))
+* 更多镜像源。 ([9058450](https://github.com/ikenxuan/karin-plugin-kkk/commit/9058450f4c6ec92e2332a2e3e852cfe4e4c411b1))
+* 细优 ([65fbd6b](https://github.com/ikenxuan/karin-plugin-kkk/commit/65fbd6b910c01e1e8d0919297bcd802982835acd))
+
 ## [2.13.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.12.0...v2.13.0) (2025-11-26)
 
 
