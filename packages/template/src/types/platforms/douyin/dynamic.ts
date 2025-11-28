@@ -51,33 +51,3 @@ export interface DouyinDynamicProps extends BaseComponentProps {
   /** 预生成的二维码数据URL */
   qrCodeDataUrl: string
 }
-
-/**
- * 抖音动态用户信息组件属性接口
- */
-export interface DouyinDynamicUserInfoProps {
-  /** 用户头像URL */
-  avater_url: string
-  /** 用户名 */
-  username: string
-  /** 抖音号 */
-  douyinId: string
-  /** 获赞数 */
-  likes: string
-  /** 关注数 */
-  following: string
-  /** 粉丝数 */
-  followers: string
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
-}
-
-/**
- * 抖音动态二维码组件属性接口
- */
-export interface DouyinDynamicQRCodeProps {
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
-}

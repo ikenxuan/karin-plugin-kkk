@@ -4,8 +4,7 @@ import React from 'react'
 import { LuFullscreen } from 'react-icons/lu'
 
 import type {
-  DouyinDynamicProps,
-  DouyinDynamicUserInfoProps
+  DouyinDynamicProps
 } from '../../../types/platforms/douyin'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
@@ -55,46 +54,38 @@ const CoverSection: React.FC<{ imageUrl: string }> = ({ imageUrl }) => {
  * @param props 组件属性
  * @returns JSX元素
  */
-const InfoSection: React.FC<{
-  desc: string
-  dianzan: string
-  pinglun: string
-  shouchang: string
-  share: string
-  createTime: string
-  useDarkTheme?: boolean
-}> = ({ desc, dianzan, pinglun, shouchang, share, createTime }) => {
+const InfoSection: React.FC<DouyinDynamicProps> = (props) => {
   return (
     <div className='flex flex-col px-16 py-5'>
       <div
         className='text-[70px] font-bold leading-relaxed mb-9 text-foreground select-text'
         style={{ letterSpacing: '1.5px', wordWrap: 'break-word' }}
-        dangerouslySetInnerHTML={{ __html: desc }}
+        dangerouslySetInnerHTML={{ __html: props.data.desc }}
       />
       <div className='flex items-center gap-6 text-[45px] text-foreground-500 font-light mb-2.5 select-text'>
         <div className='flex gap-2 items-center'>
           <Heart className='w-11 h-11 text-like' />
-          <span>{dianzan}点赞</span>
+          <span>{props.data.dianzan}点赞</span>
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
           <MessageCircle className='w-11 h-11 text-comment' />
-          <span>{pinglun}评论</span>
+          <span>{props.data.pinglun}评论</span>
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
           <Bookmark className='w-11 h-11' />
-          <span>{shouchang}收藏</span>
+          <span>{props.data.shouchang}收藏</span>
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
           <Share2 className='w-11 h-11 text-success' />
-          <span>{share}分享</span>
+          <span>{props.data.share}分享</span>
         </div>
       </div>
       <div className='flex items-center gap-2 text-[45px] text-foreground-500 font-light select-text'>
         <Clock className='w-11 h-11 text-time' />
-        <span>发布于: {createTime}</span>
+        <span>发布于: {props.data.create_time}</span>
       </div>
       <div className='flex items-center gap-2 text-[45px] text-foreground-500 font-light select-text'>
         <LuFullscreen className='w-11 h-11 text-time text-time' />
@@ -109,14 +100,7 @@ const InfoSection: React.FC<{
  * @param props 组件属性
  * @returns JSX元素
  */
-const UserInfoSection: React.FC<DouyinDynamicUserInfoProps & { coCreatorCount?: number }> = ({
-  avater_url,
-  username,
-  douyinId,
-  likes,
-  following,
-  followers
-}) => {
+const UserInfoSection: React.FC<DouyinDynamicProps & { coCreatorCount?: number }> = (props) => {
   return (
     <div className='flex flex-col gap-12'>
       {/* 头像和用户名/抖音号 */}
@@ -125,7 +109,7 @@ const UserInfoSection: React.FC<DouyinDynamicUserInfoProps & { coCreatorCount?: 
         <div className='relative shrink-0'>
           <div className='flex justify-center items-center bg-white rounded-full w-35 h-35'>
             <img
-              src={avater_url}
+              src={props.data.avater_url}
               alt='头像'
               className='rounded-full w-33 h-33 shadow-large'
             />
@@ -135,11 +119,11 @@ const UserInfoSection: React.FC<DouyinDynamicUserInfoProps & { coCreatorCount?: 
         {/* 用户名和抖音号 - 纵向排列 */}
         <div className='flex flex-col gap-5'>
           <div className='text-7xl font-bold select-text text-foreground'>
-            @{username}
+            @{props.data.username}
           </div>
           <div className='flex gap-2 items-center text-4xl text-default-500'>
             <Hash size={32} className='text-default-400' />
-            <span className='select-text'>抖音号: {douyinId}</span>
+            <span className='select-text'>抖音号: {props.data.抖音号}</span>
           </div>
         </div>
       </div>
@@ -152,7 +136,7 @@ const UserInfoSection: React.FC<DouyinDynamicUserInfoProps & { coCreatorCount?: 
             <span className='text-default-400'>获赞</span>
           </div>
           <div className='w-full h-px bg-default-300' />
-          <span className='select-text font-medium text-4xl'>{likes}</span>
+          <span className='select-text font-medium text-4xl'>{props.data.获赞}</span>
         </div>
         <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
           <div className='flex gap-1 items-center'>
@@ -160,7 +144,7 @@ const UserInfoSection: React.FC<DouyinDynamicUserInfoProps & { coCreatorCount?: 
             <span className='text-default-400'>关注</span>
           </div>
           <div className='w-full h-px bg-default-300' />
-          <span className='select-text font-medium text-4xl'>{following}</span>
+          <span className='select-text font-medium text-4xl'>{props.data.关注}</span>
         </div>
         <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
           <div className='flex gap-1 items-center'>
@@ -168,7 +152,7 @@ const UserInfoSection: React.FC<DouyinDynamicUserInfoProps & { coCreatorCount?: 
             <span className='text-default-400'>粉丝</span>
           </div>
           <div className='w-full h-px bg-default-300' />
-          <span className='select-text font-medium text-4xl'>{followers}</span>
+          <span className='select-text font-medium text-4xl'>{props.data.粉丝}</span>
         </div>
       </div>
     </div>
@@ -268,33 +252,24 @@ const CoCreatorsInfo: React.FC<{
  * @returns JSX元素
  */
 export const DouyinDynamic: React.FC<Omit<DouyinDynamicProps, 'templateType' | 'templateName'>> = (props) => {
-  const { data, qrCodeDataUrl } = props
   const coCreatorCount =
-    data.cooperation_info?.co_creator_nums ??
-    (data.cooperation_info?.co_creators?.length ?? undefined)
+    props.data.cooperation_info?.co_creator_nums ??
+    (props.data.cooperation_info?.co_creators?.length ?? undefined)
 
   return (
     <DefaultLayout {...props}>
       <div>
         {/* 头部Logo */}
         <div className='h-[60px]' />
-        <DouyinHeader useDarkTheme={data.useDarkTheme} />
+        <DouyinHeader useDarkTheme={props.data.useDarkTheme} />
         <div className='h-[60px]' />
 
         {/* 封面 */}
-        <CoverSection imageUrl={data.image_url} />
+        <CoverSection imageUrl={props.data.image_url} />
         <div className='h-[20px]' />
 
         {/* 作品信息 */}
-        <InfoSection
-          desc={data.desc}
-          dianzan={data.dianzan}
-          pinglun={data.pinglun}
-          shouchang={data.shouchang}
-          share={data.share}
-          createTime={data.create_time}
-          useDarkTheme={data.useDarkTheme}
-        />
+        <InfoSection {...props} />
         <div className='h-[100px]' />
 
         <div className='flex flex-col gap-10 px-0 pt-25'>
@@ -307,29 +282,20 @@ export const DouyinDynamic: React.FC<Omit<DouyinDynamicProps, 'templateType' | '
                 </div>
               </div>
             )}
-            <CoCreatorsInfo info={data.cooperation_info} />
+            <CoCreatorsInfo info={props.data.cooperation_info} />
           </div>
 
           {/* 底部信息区域 */}
           <div className='flex justify-between items-start px-20 pb-20'>
             {/* 左侧：用户信息 */}
-            <UserInfoSection
-              avater_url={data.avater_url}
-              username={data.username}
-              douyinId={data.抖音号}
-              likes={data.获赞}
-              following={data.关注}
-              followers={data.粉丝}
-              useDarkTheme={data.useDarkTheme}
-              coCreatorCount={coCreatorCount}
-            />
+            <UserInfoSection {...props} />
 
             {/* 右侧：二维码 */}
             <div className='flex flex-col items-center gap-4'>
-              {qrCodeDataUrl
+              {props.qrCodeDataUrl
                 ? (
                   <img
-                    src={qrCodeDataUrl}
+                    src={props.qrCodeDataUrl}
                     alt='二维码'
                     className='h-auto w-75 rounded-xl'
                   />
