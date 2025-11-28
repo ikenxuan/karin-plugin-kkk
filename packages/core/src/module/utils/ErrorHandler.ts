@@ -138,7 +138,9 @@ const handleBusinessError = async (
           customInspect: true
         })
           // 将隐藏属性标记为特殊代码 \x1b[90;2m，前端根据深浅色模式处理
-          .replace(/\x1b\[90m/g, '\x1b[90;2m'),
+          .replace(/\x1b\[90m/g, '\x1b[90;2m')
+          // 将绿色替换为红色
+          .replace(/\x1b\[32m/g, '\x1b[31m'),
         businessName: options.businessName
       },
       method: options.businessName,

@@ -17,7 +17,7 @@ const ansiColorMap: Record<number, string> = {
   33: 'text-warning', // yellow
   34: 'text-primary', // blue
   35: 'text-secondary', // magenta
-  36: 'text-default-600', // cyan
+  36: 'text-cyan-600', // cyan
   37: 'text-default-500', // white
   90: 'text-default-600', // bright black
   91: 'text-danger', // bright red
@@ -115,7 +115,7 @@ const convertAnsiToHtml = (text: string): string => {
         // 隐藏属性：浅色模式用浅灰，深色模式用深灰
         currentStyles.classes = currentStyles.classes.filter(c => !c.startsWith('text-'))
         currentStyles.inlineColor = undefined
-        currentStyles.classes.push('text-default-500')
+        currentStyles.classes.push('text-default-400')
         i++ // 跳过 2
       } else if (code === 0 || code === 39 || code === 49) {
         // 重置样式
@@ -298,8 +298,8 @@ const ErrorHeader: React.FC<{
   const displayMethod = businessName || method
   const errorEmojiUrl = React.useMemo(() => {
     // 部分表情使用 {num}.png 格式，其他使用 {num}_0.png 格式
-    const withoutSuffix = [343, 1, 342, 312, 325] // 使用 {num}.png 格式的表情
-    const nums = [461, 1, 5, 343, 344, 349, 390, 391, 386, 325, 367, 342, 385, 374, 379, 382, 312]
+    const withoutSuffix = [343, 1, 342, 312, 325, 349, 357, 107, 100, 106] // 使用 {num}.png 格式的表情
+    const nums = [461, 1, 5, 343, 344, 349, 390, 391, 386, 325, 367, 342, 385, 374, 379, 382, 312, 372, 461, 363, 357, 326, 107, 100, 106]
     const num = nums[Math.floor(Math.random() * nums.length)]
     const suffix = withoutSuffix.includes(num) ? '' : '_0'
     return `https://koishi.js.org/QFace/assets/qq_emoji/${num}/png/${num}${suffix}.png`
@@ -307,26 +307,65 @@ const ErrorHeader: React.FC<{
 
   const errorTitle = React.useMemo(() => {
     const titles = [
-      '哎呀！出错了 ~',
-      '糟糕，翻车了！',
-      '呜呜，坏掉了',
-      '完蛋，炸了！',
-      '噢不，崩了！',
-      '寄！出问题了',
-      '啊这...报错了',
-      '坏了，寄了！',
-      '程序罢工了！',
-      '呃...出bug了'
+      '哎呀！出错啦~',
+      '糟糕...翻车！',
+      '呜呜，坏掉惹',
+      '完蛋，炸啦！',
+      '噢不～崩溃！',
+      '寄！有问题',
+      '啊这...报错',
+      '坏！直接寄',
+      '程序罢工～',
+      '呃...有bug',
+      '代码摆烂...',
+      '又双叒叕错！',
+      '这波是bug',
+      '系统开小差',
+      '出点小状况',
+      '程序打盹中',
+      '代码迷路～',
+      '逻辑卡住啦',
+      '程序摸鱼～',
+      '系统抽风！',
+      '代码绕晕啦',
+      '程序溜号～',
+      '出亿点问题',
+      '卡bug啦！',
+      '系统走神～',
+      '代码翻车！',
+      '程序掉链子',
+      '逻辑打结～',
+      '系统迷糊？',
+      '程序开小差',
+      '代码打盹～',
+      '系统短路！',
+      '程序懵圈～',
+      '逻辑跑偏啦',
+      '代码闹脾气',
+      '系统发呆...',
+      '程序断片！',
+      '代码晕车～',
+      '系统宕机！',
+      '程序神游～',
+      '逻辑崩盘！',
+      '代码抛锚啦',
+      '系统卡顿...',
+      '程序断线！',
+      '代码跑飞啦',
+      '系统错乱！',
+      '程序死机！',
+      '逻辑混乱～',
+      '代码出岔！'
     ]
     return titles[Math.floor(Math.random() * titles.length)]
   }, [])
 
   return (
-    <div className='w-full max-w-[1440px] mx-auto px-20 py-20'>
+    <div className='mx-auto px-20 py-20'>
       <div className='border-l-4 border-danger pl-12'>
         <div className='flex items-start gap-6 mb-10'>
           {/* <AlertCircle className='w-16 h-16 text-danger mt-2' /> */}
-          <img className='w-40 h-auto' src={errorEmojiUrl} />
+          <img className='w-60 h-auto' src={errorEmojiUrl} />
           <div className='flex-1'>
             <h1 className='text-8xl font-bold text-foreground mb-6'>
               {errorTitle}
