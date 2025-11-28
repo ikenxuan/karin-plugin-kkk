@@ -296,13 +296,21 @@ const ErrorHeader: React.FC<{
   businessName?: string
 }> = ({ method, timestamp, businessName }) => {
   const displayMethod = businessName || method
+  const errorEmojiUrl = React.useMemo(() => {
+    // 部分表情使用 {num}.png 格式，其他使用 {num}_0.png 格式
+    const withoutSuffix = [343, 1, 342, 312, 325] // 使用 {num}.png 格式的表情
+    const nums = [461, 1, 5, 343, 344, 349, 390, 391, 386, 325, 367, 342, 385, 374, 379, 382, 312]
+    const num = nums[Math.floor(Math.random() * nums.length)]
+    const suffix = withoutSuffix.includes(num) ? '' : '_0'
+    return `https://koishi.js.org/QFace/assets/qq_emoji/${num}/png/${num}${suffix}.png`
+  }, [])
 
   return (
     <div className='w-full max-w-[1440px] mx-auto px-20 py-20'>
       <div className='border-l-4 border-danger pl-12'>
         <div className='flex items-start gap-6 mb-10'>
           {/* <AlertCircle className='w-16 h-16 text-danger mt-2' /> */}
-          <img className='w-30 h-auto' src="/image/other/handlerError/流泪.png" />
+          <img className='w-40 h-auto' src={errorEmojiUrl} />
           <div className='flex-1'>
             <h1 className='text-8xl font-bold text-foreground mb-6'>
               哎呀！出错了 ~
