@@ -88,16 +88,16 @@ const handleXiaohongshu = wrapWithErrorHandler(async (e) => {
 })
 
 // 包装引用解析函数
-const handlePrefix = wrapWithErrorHandler(async (e) => {
+const handlePrefix = wrapWithErrorHandler(async (e, next) => {
   e.msg = await Common.getReplyMessage(e)
   if (reg.douyin.test(e.msg)) {
-    return await handleDouyin(e)
+    return await handleDouyin(e, next)
   } else if (reg.bilibili.test(e.msg)) {
-    return await handleBilibili(e)
+    return await handleBilibili(e, next)
   } else if (reg.kuaishou.test(e.msg)) {
-    return await handleKuaishou(e)
+    return await handleKuaishou(e, next)
   } else if (reg.xiaohongshu.test(e.msg)) {
-    return await handleXiaohongshu(e)
+    return await handleXiaohongshu(e, next)
   }
 }, {
   businessName: '引用解析'

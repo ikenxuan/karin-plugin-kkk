@@ -55,15 +55,15 @@ const parseLogsToStructured = (logs: string[]): ApiErrorProps['data']['logs'] =>
  * @param options 错误处理选项
  * @returns 包装后的函数
  */
-export const wrapWithErrorHandler = <T extends (...args: any[]) => Promise<any>> (
-  fn: T,
+export const wrapWithErrorHandler = <R> (
+  fn: (e: Message, next: () => unknown) => R | Promise<R>,
   options: ErrorHandlerOptions
 ) => {
-  return async (...args: Parameters<T>): Promise<Awaited<ReturnType<T>>> => {
+  return async (e: Message, next: () => unknown): Promise<R> => {
     const ctx = logger.runContext(async () => {
-      return await fn(...args)
+      return await fn(e, next)
     })
-    
+
     try {
       return await ctx.run()
     } catch (error) {
@@ -71,7 +71,7 @@ export const wrapWithErrorHandler = <T extends (...args: any[]) => Promise<any>>
       const result = ctx.logs()
       /** 格式化日志 */
       const structuredLogs = parseLogsToStructured(result)
-      await handleBusinessError(error as Error, options, structuredLogs, args[0] as Message)
+      await handleBusinessError(error as Error, options, structuredLogs, e)
       throw error
     }
   }
@@ -128,7 +128,17 @@ const handleBusinessError = async (
       error: {
         message: error.message,
         name: error.name,
-        stack: util.format(error),
+        stack: util.inspect(error, {
+          depth: 10,
+          colors: true,
+          maxArrayLength: 100,
+          maxStringLength: 10000,
+          breakLength: 120,
+          showHidden: true,
+          customInspect: true
+        })
+          // 将隐藏属性标记为特殊代码 \x1b[90;2m，前端根据深浅色模式处理
+          .replace(/\x1b\[90m/g, '\x1b[90;2m'),
         businessName: options.businessName
       },
       method: options.businessName,

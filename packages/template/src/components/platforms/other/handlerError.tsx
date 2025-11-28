@@ -30,14 +30,46 @@ const ansiColorMap: Record<number, string> = {
 }
 
 /**
+ * 将 256 色码转换为 CSS 颜色
+ * @param colorCode 256 色码 (0-255)
+ * @returns CSS 颜色值
+ */
+const ansi256ToColor = (colorCode: number): string => {
+  // 标准 16 色 (0-15)
+  const standardColors = [
+    '#000000', '#800000', '#008000', '#808000', '#000080', '#800080', '#008080', '#c0c0c0',
+    '#808080', '#ff0000', '#00ff00', '#ffff00', '#0000ff', '#ff00ff', '#00ffff', '#ffffff'
+  ]
+  
+  if (colorCode < 16) {
+    return standardColors[colorCode]
+  }
+  
+  // 216 色立方体 (16-231)
+  if (colorCode < 232) {
+    const index = colorCode - 16
+    const r = Math.floor(index / 36)
+    const g = Math.floor((index % 36) / 6)
+    const b = index % 6
+    const toHex = (v: number) => (v === 0 ? 0 : 55 + v * 40).toString(16).padStart(2, '0')
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+  }
+  
+  // 灰度 (232-255)
+  const gray = (colorCode - 232) * 10 + 8
+  const hex = gray.toString(16).padStart(2, '0')
+  return `#${hex}${hex}${hex}`
+}
+
+/**
  * 将 ANSI 颜色代码转换为带 Tailwind 类的 HTML
  */
 const convertAnsiToHtml = (text: string): string => {
-  // 匹配 ANSI 转义序列
+  // 匹配 ANSI 转义序列（支持基础色和 256 色）
   const ansiRegex = /\x1b\[([0-9;]+)m/g
   let result = ''
   let lastIndex = 0
-  let currentClasses: string[] = []
+  let currentStyles: { classes: string[], inlineColor?: string } = { classes: [] }
   let match
 
   // 转义 HTML 特殊字符
@@ -50,39 +82,68 @@ const convertAnsiToHtml = (text: string): string => {
       .replace(/'/g, '&#039;')
   }
 
+  // 生成 span 标签
+  const makeSpan = (content: string) => {
+    const hasClass = currentStyles.classes.length > 0
+    const hasInline = currentStyles.inlineColor
+    
+    if (!hasClass && !hasInline) {
+      return escapeHtml(content)
+    }
+    
+    const classAttr = hasClass ? ` class="${currentStyles.classes.join(' ')}"` : ''
+    const styleAttr = hasInline ? ` style="color: ${currentStyles.inlineColor}"` : ''
+    return `<span${classAttr}${styleAttr}>${escapeHtml(content)}</span>`
+  }
+
   while ((match = ansiRegex.exec(text)) !== null) {
     // 添加前面的文本
     if (match.index > lastIndex) {
       const textContent = text.substring(lastIndex, match.index)
-      if (currentClasses.length > 0) {
-        result += `<span class="${currentClasses.join(' ')}">${escapeHtml(textContent)}</span>`
-      } else {
-        result += escapeHtml(textContent)
-      }
+      result += makeSpan(textContent)
     }
 
     // 解析 ANSI 代码
     const codes = match[1].split(';').map(Number)
     
-    for (const code of codes) {
-      if (code === 0 || code === 39 || code === 49) {
-        // 0: 重置所有样式
-        // 39: 重置前景色
-        // 49: 重置背景色
-        currentClasses = currentClasses.filter(c => !c.startsWith('text-') && !c.startsWith('bg-'))
+    let i = 0
+    while (i < codes.length) {
+      const code = codes[i]
+      
+      // 检测隐藏属性标记: \x1b[90;2m (90 和 2 组合)
+      if (code === 90 && codes[i + 1] === 2) {
+        // 隐藏属性：浅色模式用浅灰，深色模式用深灰
+        currentStyles.classes = currentStyles.classes.filter(c => !c.startsWith('text-'))
+        currentStyles.inlineColor = undefined
+        currentStyles.classes.push('text-default-500')
+        i++ // 跳过 2
+      } else if (code === 0 || code === 39 || code === 49) {
+        // 重置样式
+        currentStyles.classes = currentStyles.classes.filter(c => !c.startsWith('text-') && !c.startsWith('bg-') && !c.startsWith('dark:'))
+        currentStyles.inlineColor = undefined
       } else if (code === 1) {
         // 粗体
-        if (!currentClasses.includes('font-bold')) {
-          currentClasses.push('font-bold')
+        if (!currentStyles.classes.includes('font-bold')) {
+          currentStyles.classes.push('font-bold')
         }
       } else if (code === 22) {
         // 取消粗体
-        currentClasses = currentClasses.filter(c => c !== 'font-bold')
+        currentStyles.classes = currentStyles.classes.filter(c => c !== 'font-bold')
+      } else if (code === 38 && codes[i + 1] === 5) {
+        // 256 色前景色: \x1b[38;5;XXXm
+        const colorCode = codes[i + 2]
+        if (colorCode !== undefined) {
+          currentStyles.classes = currentStyles.classes.filter(c => !c.startsWith('text-') && !c.startsWith('dark:'))
+          currentStyles.inlineColor = ansi256ToColor(colorCode)
+          i += 2 // 跳过 5 和颜色码
+        }
       } else if (ansiColorMap[code]) {
-        // 移除之前的颜色类
-        currentClasses = currentClasses.filter(c => !c.startsWith('text-'))
-        currentClasses.push(ansiColorMap[code])
+        // 基础 16 色
+        currentStyles.classes = currentStyles.classes.filter(c => !c.startsWith('text-') && !c.startsWith('dark:'))
+        currentStyles.inlineColor = undefined
+        currentStyles.classes.push(ansiColorMap[code])
       }
+      i++
     }
 
     lastIndex = ansiRegex.lastIndex
@@ -91,11 +152,7 @@ const convertAnsiToHtml = (text: string): string => {
   // 添加剩余的文本
   if (lastIndex < text.length) {
     const textContent = text.substring(lastIndex)
-    if (currentClasses.length > 0) {
-      result += `<span class="${currentClasses.join(' ')}">${escapeHtml(textContent)}</span>`
-    } else {
-      result += escapeHtml(textContent)
-    }
+    result += makeSpan(textContent)
   }
 
   return result
@@ -349,7 +406,7 @@ const BusinessErrorDetails: React.FC<{
                       <div className='space-y-2'>
                         {/* 时间戳 */}
                         <div className='flex items-center gap-2'>
-                          <Clock size={22} className={`flex-shrink-0 mb-1 ${theme.iconClass}`} />
+                          <Clock size={22} className={`shrink-0 mb-1 ${theme.iconClass}`} />
                           <span className={`text-xl font-mono font-semibold ${theme.textClass}`}>
                             {log.timestamp}
                           </span>
@@ -524,13 +581,13 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
             </p>
             <div className='space-y-4 mb-8'>
               <div className='flex items-baseline gap-3'>
-                <span className='text-primary font-bold text-3xl flex-shrink-0'>1.</span>
+                <span className='text-primary font-bold text-3xl shrink-0'>1.</span>
                 <p className='text-3xl leading-relaxed flex-1'>
                   <span className='text-primary font-semibold'>完整的错误截图</span> - 包含本页面所有内容（错误堆栈、执行日志、版本信息等）
                 </p>
               </div>
               <div className='flex items-baseline gap-3'>
-                <span className='text-primary font-bold text-3xl flex-shrink-0'>2.</span>
+                <span className='text-primary font-bold text-3xl shrink-0'>2.</span>
                 <p className='text-3xl leading-relaxed flex-1'>
                   <span className='text-primary font-semibold'>问题复现步骤</span> - 详细描述触发错误的操作流程和环境信息
                 </p>
