@@ -7466,10 +7466,6 @@
     background-color: hsl(var(--heroui-foreground-100) / 1);
   }
 
-  .bg-foreground-200 {
-    background-color: hsl(var(--heroui-foreground-200) / 1);
-  }
-
   .bg-foreground-400 {
     background-color: hsl(var(--heroui-foreground-400) / 1);
   }
