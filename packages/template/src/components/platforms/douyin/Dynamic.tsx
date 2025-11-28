@@ -226,11 +226,11 @@ const CoCreatorsInfo: React.FC<{
               key={`${c.nickname || 'creator'}-${idx}`}
               className='flex flex-col items-center min-w-[152px] w-[152px] shrink-0'
             >
-              <div className='flex justify-center items-center bg-white rounded-full w-38 h-38'>
+              <div className='flex justify-center items-center bg-white rounded-full w-30 h-30'>
                 <img
                   src={avatar}
                   alt='共创者头像'
-                  className='object-cover w-36 h-36 rounded-full'
+                  className='object-cover w-28 h-auto rounded-full'
                 />
               </div>
               <div className='overflow-hidden mt-6 w-full text-3xl font-medium leading-tight text-center truncate whitespace-nowrap select-text text-foreground-700'>
@@ -301,7 +301,7 @@ export const DouyinDynamic: React.FC<Omit<DouyinDynamicProps, 'templateType' | '
           <div className='w-full'>
             {coCreatorCount && coCreatorCount > 0 && (
               <div className='px-16 pb-8'>
-                <div className='gap-2 inline-flex items-center rounded-2xl bg-foreground-200 text-foreground-700 px-6 py-3'>
+                <div className='gap-2 inline-flex items-center rounded-2xl bg-default-100 text-foreground-700 px-6 py-3'>
                   <Users className='w-7 h-7' />
                   <span className='text-3xl font-medium leading-none select-text text-foreground-700'>{coCreatorCount}人共创</span>
                 </div>
