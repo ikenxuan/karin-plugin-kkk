@@ -102,9 +102,6 @@ importers:
       '@types/react':
         specifier: ^19.2.7
         version: 19.2.7
-      fingerprint-generator:
-        specifier: ^2.1.77
-        version: 2.1.77
       fingerprint-injector:
         specifier: ^2.1.77
         version: 2.1.77(playwright@1.56.1)

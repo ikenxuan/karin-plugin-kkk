@@ -3,8 +3,7 @@ import { platform } from 'node:os'
 import path from 'node:path'
 
 import { launch } from '@karinjs/plugin-puppeteer'
-import { FingerprintGenerator } from 'fingerprint-generator'
-import { FingerprintInjector, newInjectedPage } from 'fingerprint-injector'
+import { newInjectedPage } from 'fingerprint-injector'
 import { karin, karinPathTemp, logger, Message } from 'node-karin'
 
 import { Common, Render, Root } from '@/module'
@@ -27,14 +26,6 @@ const safeScreenshot = async (page: Awaited<ReturnType<Awaited<ReturnType<typeof
 export const douyinLogin = async (e: Message) => {
   const msg_id: string[] = []
   try {
-    const fingerprint = new FingerprintGenerator({
-      browsers: [{
-        name: 'chrome',
-        minVersion: 141
-      }]
-    }).getFingerprint()
-    const injector = new FingerprintInjector()
-
     const { browser } = await launch({
       headless: true,
       downloadBrowser: 'chrome-headless-shell',
@@ -98,7 +89,6 @@ export const douyinLogin = async (e: Message) => {
         operatingSystems: [getOperatingSystem()]
       }
     }) as Awaited<ReturnType<Awaited<ReturnType<typeof launch>>['browser']['newPage']>>
-    await injector.attachFingerprintToPuppeteer(page, fingerprint)
 
     // 激进地拦截资源，只保留必要的 HTML、JS 和二维码图片
     await page.setRequestInterception(true)

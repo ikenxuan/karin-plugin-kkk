@@ -45,7 +45,6 @@ export default defineConfig({
         ...builtinModules,
         ...builtinModules.map((mod) => `node:${mod}`),
         ...[/^node-karin/],
-        'fingerprint-generator',
         'fingerprint-injector',
         '@karinjs/plugin-puppeteer'
       ],
