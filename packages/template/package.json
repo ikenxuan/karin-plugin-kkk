@@ -37,7 +37,6 @@
     "@heroui/system": "2.4.23",
     "@heroui/theme": "2.4.23",
     "@zumer/snapdom": "^2.0.1",
-    "ansi-to-html": "^0.7.2",
     "axios": "1.13.2",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
