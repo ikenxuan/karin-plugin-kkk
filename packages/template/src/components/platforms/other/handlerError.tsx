@@ -305,6 +305,22 @@ const ErrorHeader: React.FC<{
     return `https://koishi.js.org/QFace/assets/qq_emoji/${num}/png/${num}${suffix}.png`
   }, [])
 
+  const errorTitle = React.useMemo(() => {
+    const titles = [
+      '哎呀！出错了 ~',
+      '糟糕，翻车了！',
+      '呜呜，坏掉了',
+      '完蛋，炸了！',
+      '噢不，崩了！',
+      '寄！出问题了',
+      '啊这...报错了',
+      '坏了，寄了！',
+      '程序罢工了！',
+      '呃...出bug了'
+    ]
+    return titles[Math.floor(Math.random() * titles.length)]
+  }, [])
+
   return (
     <div className='w-full max-w-[1440px] mx-auto px-20 py-20'>
       <div className='border-l-4 border-danger pl-12'>
@@ -313,7 +329,7 @@ const ErrorHeader: React.FC<{
           <img className='w-40 h-auto' src={errorEmojiUrl} />
           <div className='flex-1'>
             <h1 className='text-8xl font-bold text-foreground mb-6'>
-              哎呀！出错了 ~
+              {errorTitle}
             </h1>
             <div className='flex items-center gap-4 mb-8'>
               <span className='text-5xl font-semibold text-danger'>
@@ -503,9 +519,9 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
         />
 
         {/* 版本信息和底部提示 */}
-        <div className='w-full max-w-[1440px] mx-auto px-20 py-16 space-y-8'>
+        <div className='w-full mx-auto px-20 py-16 space-y-8'>
           {/* 版本信息 - 重点突出 */}
-          <div className='space-y-5'>
+          <div className='space-y-5 tracking-widest'>
             {/* 框架版本、插件版本和 Amagi 版本 */}
             <div className='flex items-center gap-12 flex-wrap'>
               <div className='flex items-center gap-4'>
