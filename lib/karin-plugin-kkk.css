@@ -5591,6 +5591,10 @@
     width: calc(var(--spacing) * 50);
   }
 
+  .w-60 {
+    width: calc(var(--spacing) * 60);
+  }
+
   .w-75 {
     width: calc(var(--spacing) * 75);
   }
@@ -8834,6 +8838,10 @@
 
   .text-current {
     color: currentColor;
+  }
+
+  .text-cyan-600 {
+    color: #06b7db;
   }
 
   .text-danger {
