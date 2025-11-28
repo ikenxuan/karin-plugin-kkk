@@ -10,10 +10,13 @@ import {
   baseHeaders,
   Common,
   Count,
+  createLiveImageContext,
   downloadFile,
   downloadVideo,
   fileInfo,
-  mergeFile,
+  type LiveImageMergeContext,
+  mergeLiveImageContinuous,
+  mergeLiveImageIndependent,
   Networks,
   Render
 } from '@/module/utils'
@@ -141,6 +144,14 @@ export class DouYin extends Base {
               if (!images1.length) {
                 logger.debug('未获取到合辑的图片数据')
               }
+
+              // 获取合并模式配置
+              const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
+              let bgmContext: LiveImageMergeContext | null = null
+              if (mergeMode === 'continuous') {
+                bgmContext = await createLiveImageContext(liveimgbgm.filepath)
+              }
+
               for (const item of images1) {
                 imagenum++
                 // 静态图片，clip_type为2
@@ -158,27 +169,36 @@ export class DouYin extends Base {
                 )
 
                 if (liveimg.filepath) {
-                  const resolvefilepath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
-                  await mergeFile('视频*3 + 音频', {
-                    path: liveimg.filepath,
-                    path2: liveimgbgm.filepath,
-                    resultPath: resolvefilepath,
-                    callback: async (success: boolean, resultPath: string): Promise<boolean> => {
-                      if (success) {
-                        const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
-                        fs.renameSync(resultPath, filePath)
-                        logger.mark(`视频文件重命名完成: ${resultPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
-                        logger.mark('正在尝试删除缓存文件')
-                        await Common.removeFile(liveimg.filepath, true)
-                        temp.push({ filepath: filePath, totalBytes: 0 })
-                        images.push(segment.video('file://' + filePath))
-                        return true
-                      } else {
-                        await Common.removeFile(liveimg.filepath, true)
-                        return true
-                      }
-                    }
-                  })
+                  const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
+                  let success: boolean
+
+                  if (mergeMode === 'continuous' && bgmContext) {
+                    // 连续模式：BGM 从上次位置继续
+                    const result = await mergeLiveImageContinuous(
+                      { videoPath: liveimg.filepath, outputPath, loopCount: 3 },
+                      bgmContext
+                    )
+                    success = result.success
+                    bgmContext = result.context
+                  } else {
+                    // 独立模式：每张图都从 BGM 开头开始
+                    success = await mergeLiveImageIndependent(
+                      { videoPath: liveimg.filepath, outputPath, loopCount: 3 },
+                      liveimgbgm.filepath
+                    )
+                  }
+
+                  if (success) {
+                    const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
+                    fs.renameSync(outputPath, filePath)
+                    logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
+                    logger.mark('正在尝试删除缓存文件')
+                    await Common.removeFile(liveimg.filepath, true)
+                    temp.push({ filepath: filePath, totalBytes: 0 })
+                    images.push(segment.video('file://' + filePath))
+                  } else {
+                    await Common.removeFile(liveimg.filepath, true)
+                  }
                 }
               }
               const Element = common.makeForward(images, this.e.sender.userId, this.e.sender.nick)

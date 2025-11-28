@@ -31,7 +31,7 @@ import {
   Count,
   downloadFile,
   downLoadFileOptions,
-  mergeFile,
+  mergeVideoAudio,
   Render,
   uploadFile
 } from '@/module'
@@ -394,10 +394,14 @@ export class Bilibilipush extends Base {
             img = await Render('bilibili/dynamic/DYNAMIC_TYPE_ARTICLE',
               {
                 // 用户信息
-                username: checkvip( data[dynamicId].Dynamic_Data.modules.module_author),
+                username: checkvip(data[dynamicId].Dynamic_Data.modules.module_author),
                 avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
                 frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
                 create_time: format(fromUnixTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
+                user_shortid: data[dynamicId].host_mid,
+                fans: Count(userINFO.data.data.follower),
+                total_favorited: Count(userINFO.data.data.like_num),
+                following_count: Count(userINFO.data.data.card.attention),
 
                 // 专栏内容信息
                 title: articleData.title,
@@ -499,45 +503,39 @@ export class Bilibilipush extends Base {
                   )
 
                   if (mp4File.filepath && mp3File.filepath) {
-                    await mergeFile('二合一（视频 + 音频）', {
-                      path: mp4File.filepath,
-                      path2: mp3File.filepath,
-                      resultPath: Common.tempDri.video + `Bil_Result_${infoData.data.data.bvid}.mp4`,
+                    const resultPath = Common.tempDri.video + `Bil_Result_${infoData.data.data.bvid}.mp4`
+                    const success = await mergeVideoAudio(mp4File.filepath, mp3File.filepath, resultPath)
 
-                      callback: async (success: boolean, resultPath: string): Promise<boolean> => {
-                        if (success) {
-                          const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
-                          fs.renameSync(resultPath, filePath)
-                          logger.mark(`视频文件重命名完成: ${resultPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
-                          logger.mark('正在尝试删除缓存文件')
-                          await Common.removeFile(mp4File.filepath, true)
-                          await Common.removeFile(mp3File.filepath, true)
+                    if (success) {
+                      const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
+                      fs.renameSync(resultPath, filePath)
+                      logger.mark(`视频文件重命名完成: ${resultPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
+                      logger.mark('正在尝试删除缓存文件')
+                      await Common.removeFile(mp4File.filepath, true)
+                      await Common.removeFile(mp3File.filepath, true)
 
-                          const stats = fs.statSync(filePath)
-                          const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
-                          if (fileSizeInMB > Config.upload.groupfilevalue) {
-                            // 使用文件上传
-                            return await uploadFile(
-                              this.e,
-                              { filepath: filePath, totalBytes: fileSizeInMB, originTitle: `${infoData.data.data.desc.substring(0, 50).replace(/[\\/:\\*\\?"<>\\|\r\n\s]/g, ' ')}` },
-                              '',
-                              { useGroupFile: true, active: true, activeOption: { group_id: groupId, uin: botId } })
-                          } else {
-                            /** 因为本地合成，没有视频直链 */
-                            return await uploadFile(
-                              this.e,
-                              { filepath: filePath, totalBytes: fileSizeInMB },
-                              '',
-                              { active: true, activeOption: { group_id: groupId, uin: botId } }
-                            )
-                          }
-                        } else {
-                          await Common.removeFile(mp4File.filepath, true)
-                          await Common.removeFile(mp3File.filepath, true)
-                          return true
-                        }
+                      const stats = fs.statSync(filePath)
+                      const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
+                      if (fileSizeInMB > Config.upload.groupfilevalue) {
+                        // 使用文件上传
+                        await uploadFile(
+                          this.e,
+                          { filepath: filePath, totalBytes: fileSizeInMB, originTitle: `${infoData.data.data.desc.substring(0, 50).replace(/[\\/:\\*\\?"<>\\|\r\n\s]/g, ' ')}` },
+                          '',
+                          { useGroupFile: true, active: true, activeOption: { group_id: groupId, uin: botId } })
+                      } else {
+                        /** 因为本地合成，没有视频直链 */
+                        await uploadFile(
+                          this.e,
+                          { filepath: filePath, totalBytes: fileSizeInMB },
+                          '',
+                          { active: true, activeOption: { group_id: groupId, uin: botId } }
+                        )
                       }
-                    })
+                    } else {
+                      await Common.removeFile(mp4File.filepath, true)
+                      await Common.removeFile(mp3File.filepath, true)
+                    }
                   }
                 }
                 break

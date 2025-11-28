@@ -19,6 +19,11 @@ realCommentCount: false
 # 是否收集评论区的图片
 commentImageCollection: true
 
+# 合辑 Live 图 BGM 合并模式
+# - 'continuous': 连续模式，BGM 接续播放
+# - 'independent': 独立模式，每张图 BGM 从头开始
+liveImageMergeMode: continuous
+
 # 根据「视频拦截阈值」自动选择合适的分辨率，关闭后默认选择最大分辨率进行下载
 autoResolution: true
 

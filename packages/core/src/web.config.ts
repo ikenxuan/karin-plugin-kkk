@@ -297,6 +297,24 @@ export const webConfig = defineConfig({
                 defaultSelected: all.douyin.commentImageCollection,
                 isDisabled: !all.douyin.sendContent.includes('comment') || !all.douyin.switch
               }),
+              components.radio.group('liveImageMergeMode', {
+                label: '合辑 Live 图 BGM 合并方式',
+                orientation: 'horizontal',
+                defaultValue: all.douyin.liveImageMergeMode.toString(),
+                isDisabled: !all.douyin.switch,
+                radio: [
+                  components.radio.create('liveImageMergeMode:radio-1', {
+                    label: '连续',
+                    value: 'continuous',
+                    description: 'BGM 接续播放，结束后自动循环'
+                  }),
+                  components.radio.create('liveImageMergeMode:radio-2', {
+                    label: '独立',
+                    value: 'independent',
+                    description: '每张图 BGM 从头开始'
+                  })
+                ]
+              }),
               components.switch.create('realCommentCount', {
                 label: '显示真实评论数量',
                 description: '评论图是否显示真实评论数量，关闭则显示解析到的评论数量',
@@ -310,7 +328,7 @@ export const webConfig = defineConfig({
                 defaultValue: all.douyin.videoQuality.toString(),
                 isDisabled: !all.douyin.switch,
                 radio: [
-                  components.radio.create('videoQuality:radio-1', {
+                  components.radio.create('videoQuality:parse:radio-1', {
                     label: '自动选择',
                     value: 'adapt',
                     description: '根据「视频体积上限（MB）」自动选择分辨率进行下载'

@@ -17,6 +17,12 @@ export interface douyinConfig {
 
   /** 是否收集评论区的图片 */
   commentImageCollection: boolean
+
+  /** 合辑 Live 图 BGM 合并模式
+   * - 'continuous': 连续模式，BGM 接续播放
+   * - 'independent': 独立模式，每张图 BGM 从头开始
+   */
+  liveImageMergeMode: 'continuous' | 'independent'
   
   /** 视频画质偏好设置，'adapt' 为自动根据「maxAutoVideoSize」大小选择，其他为固定画质 */
   videoQuality: 'adapt' | '540p' | '720p' | '1080p' | '2k' | '4k'

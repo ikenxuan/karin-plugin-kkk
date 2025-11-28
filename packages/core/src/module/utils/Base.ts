@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import karin, { type Contact, logger, Message, segment } from 'node-karin'
 import type { AxiosHeaders, AxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'node-karin/axios'
 
-import { baseHeaders, Common, mergeFile, Networks } from '@/module/utils'
+import { baseHeaders, Common, compressVideo, getMediaDuration, Networks } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
 import type { pushlistConfig } from '@/types/config/pushlist'
 
@@ -203,7 +203,7 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
 
   // 判断是否需要压缩后再上传
   if (Config.upload.compress && (file.totalBytes > Config.upload.compresstrigger)) {
-    const Duration = await mergeFile('获取指定视频文件时长', { path: file.filepath })
+    const Duration = await getMediaDuration(file.filepath)
     logger.warn(logger.yellow(`视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.upload.compresstrigger} MB），正在进行压缩至${Config.upload.compressvalue} MB...`))
     const message = [
       segment.text(`视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.upload.compresstrigger} MB），正在进行压缩至${Config.upload.compressvalue} MB...`),
@@ -215,7 +215,9 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
     const targetBitrate = Common.calculateBitrate(Config.upload.compresstrigger, Duration) * 0.75
     // 执行压缩
     const startTime = Date.now()
-    file.filepath = await mergeFile('压缩视频', { path: file.filepath, targetBitrate, resultPath: `${Common.tempDri.video}tmp_${Date.now()}.mp4` })
+    const outputPath = `${Common.tempDri.video}tmp_${Date.now()}.mp4`
+    await compressVideo({ inputPath: file.filepath, outputPath, targetBitrate })
+    file.filepath = outputPath
     const endTime = Date.now()
     // 再次检查大小
     newFileSize = await Common.getVideoFileSize(file.filepath)

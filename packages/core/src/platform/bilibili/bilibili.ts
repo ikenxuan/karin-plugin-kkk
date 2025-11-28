@@ -32,7 +32,7 @@ import {
   Count,
   downloadFile,
   downloadVideo,
-  mergeFile,
+  mergeVideoAudio,
   Networks,
   Render,
   uploadFile
@@ -744,35 +744,30 @@ export class Bilibili extends Base {
           }
         )
         if (bmp4.filepath && bmp3.filepath) {
-          await mergeFile('二合一（视频 + 音频）', {
-            path: bmp4.filepath,
-            path2: bmp3.filepath,
-            resultPath: Common.tempDri.video + `Bil_Result_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.mp4`,
-            callback: async (success: boolean, resultPath: string): Promise<boolean> => {
-              if (success) {
-                const filePath = Common.tempDri.video + `${Config.app.removeCache ? 'tmp_' + Date.now() : this.downloadfilename}.mp4`
-                fs.renameSync(resultPath, filePath)
-                logger.mark(`视频文件重命名完成: ${resultPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
-                logger.mark('正在尝试删除缓存文件')
-                await Common.removeFile(bmp4.filepath, true)
-                await Common.removeFile(bmp3.filepath, true)
+          const resultPath = Common.tempDri.video + `Bil_Result_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.mp4`
+          const success = await mergeVideoAudio(bmp4.filepath, bmp3.filepath, resultPath)
 
-                const stats = fs.statSync(filePath)
-                const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
-                if (fileSizeInMB > Config.upload.groupfilevalue) {
-                  // 使用文件上传
-                  return await uploadFile(this.e, { filepath: filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '', { useGroupFile: true })
-                } else {
-                  /** 因为本地合成，没有视频直链 */
-                  return await uploadFile(this.e, { filepath: filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '')
-                }
-              } else {
-                await Common.removeFile(bmp4.filepath, true)
-                await Common.removeFile(bmp3.filepath, true)
-                return true
-              }
+          if (success) {
+            const filePath = Common.tempDri.video + `${Config.app.removeCache ? 'tmp_' + Date.now() : this.downloadfilename}.mp4`
+            fs.renameSync(resultPath, filePath)
+            logger.mark(`视频文件重命名完成: ${resultPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
+            logger.mark('正在尝试删除缓存文件')
+            await Common.removeFile(bmp4.filepath, true)
+            await Common.removeFile(bmp3.filepath, true)
+
+            const stats = fs.statSync(filePath)
+            const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
+            if (fileSizeInMB > Config.upload.groupfilevalue) {
+              // 使用文件上传
+              await uploadFile(this.e, { filepath: filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '', { useGroupFile: true })
+            } else {
+              /** 因为本地合成，没有视频直链 */
+              await uploadFile(this.e, { filepath: filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '')
             }
-          })
+          } else {
+            await Common.removeFile(bmp4.filepath, true)
+            await Common.removeFile(bmp3.filepath, true)
+          }
         }
         break
       }
