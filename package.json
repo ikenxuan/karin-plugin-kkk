@@ -17,12 +17,15 @@
     "prepare": "husky",
     "sort": "pnpm -r sort",
     "template": "pnpm --filter template run dev",
+    "docs": "pnpm --filter docs run dev",
     "watch": "pnpm --filter karin-plugin-kkk run watch",
     "web": "pnpm --filter web run dev"
   },
   "dependencies": {
-    "@ikenxuan/amagi": "5.11.1",
+    "@ikenxuan/amagi": "file:../amagi",
     "@tailwindcss/vite": "4.1.17",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "5.1.1",
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
@@ -51,10 +54,5 @@
     "typescript": "5.9.3",
     "vite": "npm:rolldown-vite@^7.2.8",
     "vitest": "^4.0.14"
-  },
-  "pnpm": {
-    "overrides": {
-      "vite": "npm:rolldown-vite"
-    }
   }
 }
