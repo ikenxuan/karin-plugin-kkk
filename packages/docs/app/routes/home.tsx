@@ -2,8 +2,6 @@ import type { Route } from './+types/home';
 import { HomeLayout } from 'fumadocs-ui/layouts/home';
 import { Link } from 'react-router';
 import { baseOptions } from '@/lib/layout.shared';
-import { useEffect, useRef, useState } from 'react';
-import gsap from 'gsap';
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -39,58 +37,11 @@ function PlatformBadge({ name, supported }: { name: string; supported: boolean }
   );
 }
 
-function AnimatedBackground() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isMounted || !containerRef.current) return;
-    
-    const blobs = containerRef.current.querySelectorAll('.blob');
-    
-    blobs.forEach((blob, index) => {
-      // 随机初始位置偏移
-      gsap.set(blob, {
-        x: gsap.utils.random(-50, 50),
-        y: gsap.utils.random(-50, 50),
-      });
-
-      // 创建无限循环动画
-      gsap.to(blob, {
-        x: gsap.utils.random(-100, 100),
-        y: gsap.utils.random(-80, 80),
-        scale: gsap.utils.random(0.8, 1.2),
-        duration: gsap.utils.random(2, 3),
-        ease: 'sine.inOut',
-        repeat: -1,
-        yoyo: true,
-        delay: index * 0.3,
-      });
-    });
-
-    return () => {
-      blobs.forEach(blob => gsap.killTweensOf(blob));
-    };
-  }, [isMounted]);
-
-  return (
-    <div ref={containerRef} className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-      <div className="blob absolute top-[5%] left-[15%] w-[500px] h-[500px] rounded-full bg-blue-500/15 blur-3xl" />
-      <div className="blob absolute top-[30%] -right-[5%] w-[450px] h-[450px] rounded-full bg-purple-500/15 blur-3xl" />
-      <div className="blob absolute -bottom-[5%] -left-[5%] w-[400px] h-[400px] rounded-full bg-cyan-500/10 blur-3xl" />
-      <div className="blob absolute bottom-[20%] right-[20%] w-[420px] h-[420px] rounded-full bg-pink-500/10 blur-3xl" />
-    </div>
-  );
-}
 
 export default function Home() {
   return (
     <HomeLayout {...baseOptions()}>
-      <AnimatedBackground />
 
       <div className="flex flex-col min-h-[calc(100vh-4rem)]">
         {/* Hero Section */}
@@ -294,7 +245,7 @@ export default function Home() {
             </p>
             <div className="flex justify-center">
               <Link
-                to="/geetest"
+                to="/geetest?v=3"
                 className="group p-6 rounded-2xl border border-fd-border/50 bg-fd-card/50 backdrop-blur-sm hover:border-fd-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-fd-primary/5 max-w-sm w-full"
               >
                 <div className="mb-4 text-fd-primary">

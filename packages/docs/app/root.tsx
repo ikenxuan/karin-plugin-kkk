@@ -10,6 +10,7 @@ import { RootProvider } from 'fumadocs-ui/provider/react-router';
 import type { Route } from './+types/root';
 import './styles/app.css';
 import SearchDialog from '@/components/search';
+import { AnimatedBackground } from '@/components/AnimatedBackground';
 
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -36,6 +37,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <script src="/gt4.js" />
       </head>
       <body className="flex flex-col min-h-screen">
+        <AnimatedBackground />
         <RootProvider search={{ SearchDialog }}>{children}</RootProvider>
         <ScrollRestoration />
         <Scripts />
