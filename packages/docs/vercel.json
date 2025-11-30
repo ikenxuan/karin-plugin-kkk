@@ -1,3 +1,5 @@
 {
-  "framework": "react-router"
+  "buildCommand": "pnpm build",
+  "outputDirectory": "build/client",
+  "framework": null
 }
