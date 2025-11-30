@@ -1,0 +1,59 @@
+---
+title: 获取 Cookies
+description: 如何获取各平台的 Cookies
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+
+<Callout type="info">
+Cookies 仅用于请求平台官方 API，不会上传到任何第三方。
+</Callout>
+
+## 方式一：扫码登录（推荐）
+
+在群聊中发送：
+
+```
+#抖音登录
+#B站登录
+```
+
+使用对应 APP 扫码即可自动保存 Cookies。
+
+## 方式二：浏览器获取
+
+1. 打开浏览器，访问对应平台并登录
+2. 按 F12 打开开发者工具
+3. 切换到 Network（网络）标签
+4. 刷新页面，找到任意请求
+5. 在请求头中复制 Cookie 值
+
+<Accordions>
+<Accordion title="图文教程">
+
+![获取Cookie教程](../../assets/cases/intro/pic1.jpg)
+
+</Accordion>
+</Accordions>
+
+## 方式三：移动端获取
+
+使用 [Via 浏览器](https://res.viayoo.com/v1/via-release-cn.apk) 访问平台网页版并登录：
+
+- 抖音：www.douyin.com
+- B站：www.bilibili.com
+- 快手：www.kuaishou.com
+
+登录后点击 **左上角菜单** → **查看 Cookies** → **复制文本**
+
+## 配置方式
+
+通过 Karin WebUI 配置，或编辑配置文件：
+
+```yaml title="cookies.yaml"
+douyin: 你的抖音Cookie
+bilibili: 你的B站Cookie
+kuaishou: 你的快手Cookie
+xiaohongshu: 你的小红书Cookie
+```

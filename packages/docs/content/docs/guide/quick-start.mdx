@@ -1,0 +1,69 @@
+---
+title: 快速开始
+description: 安装并配置 karin-plugin-kkk
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Steps, Step } from 'fumadocs-ui/components/steps';
+
+## 安装
+
+<Steps>
+<Step>
+
+### 环境要求
+
+- Node.js >= 21
+- pnpm >= 9
+- Karin >= 1.13.0
+
+</Step>
+<Step>
+
+### 安装插件
+
+推荐通过 Karin WebUI 插件市场安装，或使用命令：
+
+```bash
+pnpm add karin-plugin-kkk@latest -w
+```
+
+</Step>
+<Step>
+
+### 配置 Cookies
+
+在 Karin WebUI → 插件配置 → karin-plugin-kkk 中填写各平台的 Cookies。
+
+<Callout type="info">
+Cookies 用于请求平台 API，不配置也能使用基础功能，但部分高级功能（如高画质视频、推送）需要登录态。
+</Callout>
+
+</Step>
+</Steps>
+
+## 基本使用
+
+发送包含平台链接的消息，插件会自动解析：
+
+- 抖音：`v.douyin.com/*`、`www.douyin.com/*`
+- B站：`b23.tv/*`、`www.bilibili.com/*`
+- 快手：`v.kuaishou.com/*`
+- 小红书：`xhslink.com/*`、`www.xiaohongshu.com/*`
+
+## 常用命令
+
+| 命令 | 功能 |
+|-----|------|
+| `#解析` | 手动解析引用消息中的链接 |
+| `#抖音推送列表` | 查看当前群的抖音订阅 |
+| `#B站推送列表` | 查看当前群的B站订阅 |
+| `#设置抖音推送 + 抖音号` | 订阅/取消抖音博主 |
+| `#设置B站推送 + UID` | 订阅/取消B站UP主 |
+| `#抖音登录` / `#B站登录` | 扫码登录获取 Cookies |
+| `#kkk帮助` | 查看帮助信息 |
+
+## 反馈渠道
+
+- QQ 群：[795874649](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=S8y6baEcSkO6TEO5kEdfgmJhz79Oxdw5&authKey=ficWQytHGz3KIv5i0HpGbEeMBpABBXfjEMYRzo3ZwMV%2B0Y5mq8cC0Yxbczfa904H&noverify=0&group_code=795874649)
+- GitHub：[提交 Issue](https://github.com/ikenxuan/karin-plugin-kkk/issues/new/choose)
