@@ -7,6 +7,7 @@ import * as MdxConfig from './source.config';
 
 // add other Fumadocs deps as needed
 const FumadocsDeps = ['fumadocs-core', 'fumadocs-ui']
+const SSRNoExternal: (string | RegExp)[] = [/^@lobehub\/.*/]
 
 export default defineConfig({
   plugins: [
@@ -30,8 +31,12 @@ export default defineConfig({
   resolve: {
     noExternal: FumadocsDeps,
   },
+  ssr: {
+    noExternal: SSRNoExternal,
+  },
   optimizeDeps: {
     exclude: FumadocsDeps,
+    include: ['@lobehub/icons', '@lobehub/ui'],
   },
 
 });

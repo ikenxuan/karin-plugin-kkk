@@ -13,6 +13,7 @@
     "@fumadocs/cli": "1.1.0",
     "@heroui/react": "2.8.5",
     "@heroui/theme": "2.4.23",
+    "@lobehub/icons": "^2.43.1",
     "@orama/orama": "^3.1.16",
     "@react-router/node": "^7.9.5",
     "class-variance-authority": "^0.7.1",
@@ -23,6 +24,7 @@
     "gsap": "^3.12.7",
     "isbot": "^5.1.32",
     "mermaid": "^11.12.1",
+    "react-icons": "^5.5.0",
     "react-router": "^7.9.5",
     "tailwind-merge": "^3.4.0",
     "twoslash": "^0.3.4"
