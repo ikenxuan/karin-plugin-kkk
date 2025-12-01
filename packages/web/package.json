@@ -57,7 +57,7 @@
     "workbox-window": "^7.3.0"
   },
   "devDependencies": {
-    "@tauri-apps/api": "^2.8.0",
+    "@tauri-apps/api": "~2.8.0",
     "@tauri-apps/cli": "^2.8.4",
     "@types/crypto-js": "^4.2.2",
     "@types/react": "^19.2.2",
