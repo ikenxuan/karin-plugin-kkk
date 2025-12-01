@@ -10,6 +10,7 @@ import {
 import { source } from '@/lib/source';
 import type * as PageTree from 'fumadocs-core/page-tree';
 import defaultMdxComponents from 'fumadocs-ui/mdx';
+import { ImageZoom } from 'fumadocs-ui/components/image-zoom';
 import * as Twoslash from 'fumadocs-twoslash/ui';
 import { Mermaid } from '@/components/Mermaid';
 import browserCollections from 'fumadocs-mdx:collections/browser';
@@ -57,12 +58,13 @@ const clientLoader = browserCollections.docs.createClientLoader({
         <DocsDescription>{frontmatter.description}</DocsDescription>
         <PageActions />
         <DocsBody>
-          <Mdx components={{ ...defaultMdxComponents, ...Twoslash, Mermaid }} />
+          <Mdx components={{ ...defaultMdxComponents, ...Twoslash, Mermaid, img: (props) => <ImageZoom {...(props as any)} /> }} />
         </DocsBody>
       </DocsPage>
     );
   },
 });
+
 
 export default function Page({ loaderData }: Route.ComponentProps) {
   const { tree, path, slugs } = loaderData;
