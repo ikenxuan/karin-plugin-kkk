@@ -26,7 +26,7 @@ export function useGeetest3() {
       const timestamp = Date.now()
       const endpoint = CAPTCHA_TYPE_MAP[captchaType]
 
-      const response = await fetch(`https://www.geetest.com/demo/gt/${endpoint}?t=${timestamp}`)
+      const response = await fetch(`/api/geetest/${endpoint}?t=${timestamp}`)
       const data = await response.json()
 
       setGt(data.gt)

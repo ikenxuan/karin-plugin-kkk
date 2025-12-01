@@ -8,21 +8,22 @@
   "type": "module",
   "scripts": {
     "build": "pnpm run build:core && pnpm run build:web",
+    "build:all": "pnpm -r build",
     "build:core": "pnpm --filter karin-plugin-kkk run build",
-    "build:docs": "pnpm --filter docs run docs:build",
+    "build:docs": "pnpm --filter docs run build",
     "build:template": "pnpm --filter template run build",
     "build:web": "pnpm --filter web run build",
     "dev": "pnpm --filter karin-plugin-kkk run dev",
+    "docs": "pnpm --filter docs run dev",
     "lint": "pnpm -r run lint",
     "prepare": "husky",
     "sort": "pnpm -r sort",
     "template": "pnpm --filter template run dev",
-    "docs": "pnpm --filter docs run dev",
     "watch": "pnpm --filter karin-plugin-kkk run watch",
     "web": "pnpm --filter web run dev"
   },
   "dependencies": {
-    "@ikenxuan/amagi": "https://pkg.pr.new/@ikenxuan/amagi@0e44c31",
+    "@ikenxuan/amagi": "https://pkg.pr.new/@ikenxuan/amagi@b523fa1",
     "@tailwindcss/vite": "4.1.17",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
@@ -51,8 +52,6 @@
     "husky": "^9.1.7",
     "sort-package-json": "^3.4.0",
     "tsx": "4.20.6",
-    "typescript": "5.9.3",
-    "vite": "npm:rolldown-vite@^7.2.8",
-    "vitest": "^4.0.14"
+    "typescript": "5.9.3"
   }
 }

@@ -27,7 +27,7 @@
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production vite build",
-    "dev": "vite",
+    "dev": "vite dev",
     "lint": "eslint . --fix",
     "preview": "vite preview",
     "sort": "sort-package-json"
@@ -60,6 +60,7 @@
     "qr-code-styling": "^1.9.2",
     "react-dev-inspector": "^2.0.1",
     "react-scan": "^0.4.3",
+    "vite": "npm:rolldown-vite@^7.2.8",
     "vite-plugin-checker": "^0.11.0",
     "vite-plugin-static-copy": "3.1.4",
     "vite-plugin-svgr": "^4.5.0"

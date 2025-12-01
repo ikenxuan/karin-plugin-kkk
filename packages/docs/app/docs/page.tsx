@@ -1,4 +1,5 @@
 import type { Route } from './+types/page';
+import { createContext, useContext } from 'react';
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import {
   DocsBody,
@@ -9,8 +10,11 @@ import {
 import { source } from '@/lib/source';
 import type * as PageTree from 'fumadocs-core/page-tree';
 import defaultMdxComponents from 'fumadocs-ui/mdx';
+import * as Twoslash from 'fumadocs-twoslash/ui';
+import { Mermaid } from '@/components/Mermaid';
 import browserCollections from 'fumadocs-mdx:collections/browser';
 import { baseOptions } from '@/lib/layout.shared';
+import { LLMCopyButton, ViewOptions } from '../../components/page-actions';
 
 export async function loader({ params }: Route.LoaderArgs) {
   const slugs = params['*'].split('/').filter((v) => v.length > 0);
@@ -20,7 +24,27 @@ export async function loader({ params }: Route.LoaderArgs) {
   return {
     path: page.path,
     tree: source.getPageTree(),
+    slugs: params['*'],
   };
+}
+
+const SlugsContext = createContext<string>('');
+
+function PageActions() {
+  const slugs = useContext(SlugsContext);
+  // 首页 slugs 为空，对应 index.mdx
+  const filePath = slugs || 'index';
+  // 直接使用 llms.mdx 路由，避免 redirect 问题
+  const markdownUrl = `/llms.mdx${slugs ? `/${slugs}` : ''}`;
+  return (
+    <div className="flex flex-row gap-2 items-center border-b pt-2 pb-6">
+      <LLMCopyButton markdownUrl={markdownUrl} />
+      <ViewOptions
+        markdownUrl={markdownUrl}
+        githubUrl={`https://github.com/ikenxuan/karin-plugin-kkk/blob/main/packages/docs/content/docs/${filePath}.mdx`}
+      />
+    </div>
+  );
 }
 
 const clientLoader = browserCollections.docs.createClientLoader({
@@ -31,8 +55,9 @@ const clientLoader = browserCollections.docs.createClientLoader({
         <meta name="description" content={frontmatter.description} />
         <DocsTitle>{frontmatter.title}</DocsTitle>
         <DocsDescription>{frontmatter.description}</DocsDescription>
+        <PageActions />
         <DocsBody>
-          <Mdx components={{ ...defaultMdxComponents }} />
+          <Mdx components={{ ...defaultMdxComponents, ...Twoslash, Mermaid }} />
         </DocsBody>
       </DocsPage>
     );
@@ -40,12 +65,14 @@ const clientLoader = browserCollections.docs.createClientLoader({
 });
 
 export default function Page({ loaderData }: Route.ComponentProps) {
-  const { tree, path } = loaderData;
+  const { tree, path, slugs } = loaderData;
   const Content = clientLoader.getComponent(path);
 
   return (
-    <DocsLayout {...baseOptions()} tree={tree as PageTree.Root}>
-      <Content />
-    </DocsLayout>
+    <SlugsContext.Provider value={slugs}>
+      <DocsLayout {...baseOptions()} tree={tree as PageTree.Root}>
+        <Content />
+      </DocsLayout>
+    </SlugsContext.Provider>
   );
 }

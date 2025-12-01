@@ -236,32 +236,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Tools Section */}
-        <section className="px-4 py-16">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-4">实用工具</h2>
-            <p className="text-fd-muted-foreground text-center mb-8">
-              解决使用过程中的常见问题
-            </p>
-            <div className="flex justify-center">
-              <Link
-                to="/geetest?v=3"
-                className="group p-6 rounded-2xl border border-fd-border/50 bg-fd-card/50 backdrop-blur-sm hover:border-fd-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-fd-primary/5 max-w-sm w-full"
-              >
-                <div className="mb-4 text-fd-primary">
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                </div>
-                <h3 className="font-semibold text-lg mb-2">极验验证器</h3>
-                <p className="text-fd-muted-foreground text-sm leading-relaxed">
-                  B站解析遇到 -352 风控时，使用此工具手动完成验证
-                </p>
-              </Link>
-            </div>
-          </div>
-        </section>
-
         {/* CTA Section */}
         <section className="px-4 py-20">
           <div className="max-w-2xl mx-auto text-center">

@@ -133,7 +133,9 @@ export default defineConfig(({ command, mode }) => {
     ].filter(Boolean),
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src')
+        '@': path.resolve(__dirname, './src'),
+        // 修复 vite-plugin-pwa 虚拟模块无法解析 react 的问题
+        'react': path.resolve(__dirname, 'node_modules/react')
       }
     },
     define: {

@@ -1,6 +1,6 @@
 import { reactRouter } from '@react-router/dev/vite';
 import tailwindcss from '@tailwindcss/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, type PluginOption } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import mdx from 'fumadocs-mdx/vite';
 import * as MdxConfig from './source.config';
@@ -11,14 +11,21 @@ const FumadocsDeps = ['fumadocs-core', 'fumadocs-ui']
 export default defineConfig({
   plugins: [
     mdx(MdxConfig),
-    tailwindcss(),
+    tailwindcss() as PluginOption,
     reactRouter(),
     tsconfigPaths({
       root: __dirname,
     }),
   ],
   server: {
-    port: 5176
+    port: 5175,
+    proxy: {
+      '/api/geetest': {
+        target: 'https://www.geetest.com/demo/gt',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/geetest/, ''),
+      },
+    },
   },
   resolve: {
     noExternal: FumadocsDeps,

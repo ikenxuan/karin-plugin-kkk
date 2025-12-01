@@ -1,0 +1,68 @@
+---
+title: 现代化模板渲染
+description: 基于前端框架的模板开发方案
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+告别 art-template！本插件采用 **React + TailwindCSS** 构建模板，搭配内置的可视化开发面板，让模板开发变得轻松愉快。
+
+## 传统方案 vs 前端框架
+
+Karin 生态中的插件普遍还在用 `art-template + HTML + 手写 CSS`：
+
+<Callout type="warn">
+**传统调试有多痛苦？** 改一行代码 → 等 art-template 编译 → 生成文件 → 打开浏览器 → 手动刷新 → 检查元素... 每次都要走一遍，谁用谁知道 😅
+</Callout>
+
+| 维度 | art-template | 前端框架 |
+|-----|-------------|---------|
+| 调试方式 | 编译生成文件 → 浏览器打开 | 内置渲染器，所见即所得 |
+| 修改反馈 | 改完等编译、手动刷新 | 热更新，秒级生效 |
+| 代码组织 | HTML/CSS/JS 散落各处 | 组件内聚，清清爽爽 |
+| 样式管理 | 手写 CSS，类名打架 | 原子化 CSS，告别冲突 |
+| 代码复用 | include 凑合用 | 组件化 + props，优雅复用 |
+| 类型安全 | 没有，跑起来才知道错 | TypeScript 护航，编译期拦截 |
+
+## 核心优势
+
+### 🔧 可维护性拉满
+
+这是我们选择前端框架的**头号理由**：
+
+- **组件化**：删掉组件，相关代码一起消失，不留垃圾
+- **TailwindCSS**：样式就在元素上，CSS 文件？不需要了
+- **TypeScript**：自动补全、类型检查、重构追踪，IDE 帮你干活
+- **结构清晰**：组件树一目了然，新人也能快速上手
+
+### ⚡ 内置可视化开发面板
+
+传统方案要开浏览器调试，每次改动都得等 art-template 慢慢编译。我们直接内置了**渲染器面板**，`pnpm dev` 走起：
+
+- **实时预览**：改代码，看效果，一气呵成
+- **数据管理**：多份测试数据随意切换，还能自动同步运行时数据
+- **主题切换**：深色浅色一键切，不用改代码
+- **元素检查**：点哪跳哪，直达源码
+- **缩放截图**：放大看细节，一键导出图片
+
+{/* TODO: 添加开发面板截图到 content/assets/image/template-dev-panel.png */}
+
+### 🌐 站在巨人肩膀上
+
+前端生态有多香？图标库、组件库、动画库... **一行 import 搞定**，不用重复造轮子。
+
+## 工作原理
+
+<Mermaid chart={`
+flowchart LR
+    A[React 组件] --> B[Vite 构建 SSR]
+    B --> C[reactServerRender]
+    C --> D[HTML 文件]
+    D --> E[Puppeteer 截图]
+`} />
+
+开发时 Vite 热更新，构建后输出 SSR 代码。运行时调用渲染函数生成 HTML，交给 Puppeteer 截图搞定。
+
+<Callout type="info">
+SSR 直出完整 HTML，Puppeteer 不用等 JS 跑完，渲染嗖嗖快。
+</Callout>

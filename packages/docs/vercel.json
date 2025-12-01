@@ -2,5 +2,11 @@
   "buildCommand": "pnpm build",
   "outputDirectory": "build/client",
   "framework": "react-router",
-  "regions": ["iad1"]
+  "regions": ["iad1"],
+  "rewrites": [
+    {
+      "source": "/api/geetest/:path*",
+      "destination": "https://www.geetest.com/demo/gt/:path*"
+    }
+  ]
 }

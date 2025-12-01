@@ -10,9 +10,11 @@ import { RootProvider } from 'fumadocs-ui/provider/react-router';
 import type { Route } from './+types/root';
 import './styles/app.css';
 import SearchDialog from '@/components/search';
-import { AnimatedBackground } from '@/components/AnimatedBackground';
+import { rewritePath } from 'fumadocs-core/negotiation';
+
 
 export const links: Route.LinksFunction = () => [
+  { rel: 'icon', type: 'image/png', href: '/logo.png' },
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
   {
     rel: 'preconnect',
@@ -37,7 +39,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <script src="/gt4.js" />
       </head>
       <body className="flex flex-col min-h-screen">
-        <AnimatedBackground />
         <RootProvider search={{ SearchDialog }}>{children}</RootProvider>
         <ScrollRestoration />
         <Scripts />
@@ -78,3 +79,19 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     </main>
   );
 }
+
+
+const { rewrite: rewriteLLM } = rewritePath(
+  '/docs{/*path}.mdx',
+  '/llms.mdx{/*path}',
+)
+const serverMiddleware: Route.MiddlewareFunction = async (
+  { request },
+  next,
+) => {
+  const url = new URL(request.url)
+  const path = rewriteLLM(url.pathname)
+  if (path) return Response.redirect(new URL(path, url))
+  return next()
+}
+export const middleware = [serverMiddleware]
