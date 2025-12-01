@@ -1,4 +1,5 @@
 import '@/module/server/Register'
+import '@/platform/bilibili/riskControl'
 
 import { logger, mkdirSync } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'

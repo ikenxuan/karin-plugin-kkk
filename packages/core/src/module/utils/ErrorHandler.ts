@@ -9,9 +9,9 @@ import { formatBuildTime, getBuildMetadata, Render, Root } from '@/module'
 import { Config } from './Config'
 
 /**
- * 错误处理装饰器选项
+ * 错误处理选项
  */
-type ErrorHandlerOptions = {
+export type ErrorHandlerOptions = {
   /** 业务名称，用于错误报告 */
   businessName: string
   /** 自定义错误处理函数 */
@@ -19,14 +19,44 @@ type ErrorHandlerOptions = {
 }
 
 /**
- * 解析日志字符串为结构化对象
- * @param logs 原始日志字符串数组
- * @returns 结构化日志对象数组（过滤掉 TRAC 等级）
+ * 错误处理上下文
  */
+export interface ErrorContext {
+  error: Error
+  options: ErrorHandlerOptions
+  logs: ApiErrorProps['data']['logs']
+  event?: Message
+  buildMetadata: ReturnType<typeof getBuildMetadata>
+  adapterInfo?: ApiErrorProps['data']['adapterInfo']
+}
+
+/**
+ * 特殊错误处理策略接口
+ */
+export interface ErrorStrategy {
+  /** 策略名称 */
+  name: string
+  /** 判断是否匹配该策略 */
+  match: (ctx: ErrorContext) => boolean
+  /** 处理错误，返回 'handled' 表示已完全处理，'continue' 继续默认处理 */
+  handle: (ctx: ErrorContext) => Promise<'handled' | 'continue'>
+}
+
+// ==================== 策略注册 ====================
+
+const strategies: ErrorStrategy[] = []
+
+/** 注册错误处理策略 */
+export const registerErrorStrategy = (strategy: ErrorStrategy) => {
+  strategies.push(strategy)
+  logger.debug(`[ErrorHandler] 注册策略: ${strategy.name}`)
+}
+
+// ==================== 工具函数 ====================
+
+/** 解析日志字符串为结构化对象 */
 const parseLogsToStructured = (logs: string[]): ApiErrorProps['data']['logs'] => {
-  // 移除 ^ 和 $ 锚点，使用 dotall 模式匹配多行内容
   const logRegex = /\[(\d{2}:\d{2}:\d{2}\.\d{3})\]\[([A-Z]{4})\]\s(.+)/s
-  
   return logs
     .map(log => {
       const match = log.match(logRegex)
@@ -38,206 +68,184 @@ const parseLogsToStructured = (logs: string[]): ApiErrorProps['data']['logs'] =>
           raw: log
         }
       }
-      // 如果无法解析，返回默认格式
-      return {
-        timestamp: '',
-        level: 'INFO' as const,
-        message: log,
-        raw: log
-      }
+      return { timestamp: '', level: 'INFO' as const, message: log, raw: log }
     })
-    .filter(log => log.level !== 'TRAC') // 过滤掉 TRAC 等级的日志
+    .filter(log => log.level !== 'TRAC')
 }
 
-/**
- * 函数式错误处理包装器
- * @param fn 要包装的函数
- * @param options 错误处理选项
- * @returns 包装后的函数
- */
-export const wrapWithErrorHandler = <R> (
-  fn: (e: Message, next: () => unknown) => R | Promise<R>,
-  options: ErrorHandlerOptions
-) => {
-  return async (e: Message, next: () => unknown): Promise<R> => {
-    const ctx = logger.runContext(async () => {
-      return await fn(e, next)
-    })
-
-    try {
-      return await ctx.run()
-    } catch (error) {
-      await new Promise(resolve => setTimeout(resolve, 100))
-      const result = ctx.logs()
-      /** 格式化日志 */
-      const structuredLogs = parseLogsToStructured(result)
-      await handleBusinessError(error as Error, options, structuredLogs, e)
-      throw error
-    }
-  }
-}
-
-/**
- * 获取推送配置中的机器人ID
- * @param pushlist 推送配置列表
- * @returns 机器人ID配置
- */
+/** 获取推送配置中的机器人ID */
 const statBotId = (pushlist: any) => {
   const douyin = pushlist.douyin?.[0]?.group_id?.[0]?.split(':')?.[1] || ''
   const bilibili = pushlist.bilibili?.[0]?.group_id?.[0]?.split(':')?.[1] || ''
-  return {
-    douyin: { botId: douyin },
-    bilibili: { botId: bilibili }
+  return { douyin: { botId: douyin }, bilibili: { botId: bilibili } }
+}
+
+/** 渲染错误图片的选项 */
+export interface RenderErrorOptions {
+  platform?: ApiErrorProps['data']['platform']
+  errorName?: string
+  errorMessage?: string
+  stack?: string
+  isVerification?: boolean
+  verificationUrl?: string
+  share_url?: string
+}
+
+/** 渲染错误图片（供策略使用） */
+export const renderErrorImage = async (ctx: ErrorContext, opts: RenderErrorOptions = {}) => {
+  const { error, options, logs, event, buildMetadata, adapterInfo } = ctx
+
+  return Render('other/handlerError', {
+    type: 'business_error',
+    platform: opts.platform || 'system',
+    error: {
+      message: opts.errorMessage || error.message,
+      name: opts.errorName || error.name,
+      stack: opts.stack || util.inspect(error, { depth: 10, colors: true, breakLength: 120, showHidden: true })
+        .replace(/\x1b\[90m/g, '\x1b[90;2m')
+        .replace(/\x1b\[32m/g, '\x1b[31m'),
+      businessName: options.businessName
+    },
+    method: options.businessName,
+    timestamp: new Date().toISOString(),
+    logs: logs?.slice().reverse(),
+    triggerCommand: event?.msg || '未知命令或处于非消息环境',
+    frameworkVersion: Root.karinVersion,
+    pluginVersion: Root.pluginVersion,
+    buildTime: buildMetadata?.buildTime ? formatBuildTime(buildMetadata.buildTime) : undefined,
+    commitHash: buildMetadata?.commitHash,
+    adapterInfo,
+    amagiVersion: amagi.version,
+    isVerification: opts.isVerification,
+    verificationUrl: opts.verificationUrl,
+    share_url: opts.share_url
+  })
+}
+
+/** 发送错误图片给主人（供策略使用） */
+export const sendErrorToMaster = async (
+  ctx: ErrorContext,
+  img: Awaited<ReturnType<typeof renderErrorImage>>,
+  customPrefix?: string
+) => {
+  const { options, event } = ctx
+
+  if (!Config.app.errorLogSendTo.some(item => item === 'master')) return
+
+  const list = config.master()
+  const master = list[0] === 'console' ? list[1] : list[0]
+  const isPushTask = (event && Object.keys(event).length === 0) || options.businessName.includes('推送')
+  const botId = isPushTask
+    ? (statBotId(Config.pushlist).douyin.botId || statBotId(Config.pushlist).bilibili.botId)
+    : event?.bot?.selfId
+
+  if (!botId || !master) return
+
+  try {
+    const prefix = customPrefix || (isPushTask
+      ? `${options.businessName} 任务执行出错！\n请即时解决以消除警告`
+      : `群：${(await karin.getBot(botId)?.getGroupInfo(event && 'groupId' in event ? event.groupId : ''))?.groupName || '未知'}(${event && 'groupId' in event ? event.groupId : ''})\n${options.businessName} 任务执行出错！\n请即时解决以消除警告`)
+    await karin.sendMaster(botId, master, [segment.text(prefix), ...img])
+  } catch (err) {
+    logger.error(`[ErrorHandler] 发送错误消息给主人失败: ${err}`)
   }
 }
 
-/**
- * 处理业务错误的核心函数
- * @param error 错误对象
- * @param options 错误处理选项
- * @param logs 收集到的日志
- * @param event 消息事件对象
- */
+// ==================== 核心错误处理 ====================
+
+/** 处理业务错误的核心函数 */
 const handleBusinessError = async (
   error: Error,
   options: ErrorHandlerOptions,
   logs: ApiErrorProps['data']['logs'],
   event?: Message
-) => {
+): Promise<'handled' | undefined> => {
   try {
     logger.debug(`[ErrorHandler] 开始处理业务错误: ${options.businessName}`)
 
-    // 获取触发命令信息
-    const triggerCommand = event?.msg || '未知命令或处于非消息环境'
     const buildMetadata = getBuildMetadata()
+    const adapterInfo = event?.bot?.adapter
+      ? {
+        name: event.bot.adapter.name,
+        version: event.bot.adapter.version,
+        platform: event.bot.adapter.platform,
+        protocol: event.bot.adapter.protocol,
+        standard: event.bot.adapter.standard
+      }
+      : undefined
 
-    // 获取适配器信息
-    const adapterInfo = event?.bot?.adapter ? {
-      name: event.bot.adapter.name,
-      version: event.bot.adapter.version,
-      platform: event.bot.adapter.platform,
-      protocol: event.bot.adapter.protocol,
-      standard: event.bot.adapter.standard
-    } : undefined
+    const ctx: ErrorContext = { error, options, logs, event, buildMetadata, adapterInfo }
 
-    // 生成错误报告图片
-    logger.debug('[ErrorHandler] 正在渲染错误页面...')
-    const img = await Render('other/handlerError', {
-      type: 'business_error',
-      platform: 'system',
-      error: {
-        message: error.message,
-        name: error.name,
-        stack: util.inspect(error, {
-          depth: 10,
-          colors: true,
-          maxArrayLength: 100,
-          maxStringLength: 10000,
-          breakLength: 120,
-          showHidden: true,
-          customInspect: true
-        })
-          // 将隐藏属性标记为特殊代码 \x1b[90;2m，前端根据深浅色模式处理
-          .replace(/\x1b\[90m/g, '\x1b[90;2m')
-          // 将绿色替换为红色
-          .replace(/\x1b\[32m/g, '\x1b[31m'),
-        businessName: options.businessName
-      },
-      method: options.businessName,
-      timestamp: new Date().toISOString(),
-      logs: logs && logs.reverse(),
-      triggerCommand: triggerCommand,
-      frameworkVersion: Root.karinVersion,
-      pluginVersion: Root.pluginVersion,
-      buildTime: buildMetadata?.buildTime ? formatBuildTime(buildMetadata.buildTime) : undefined,
-      commitHash: buildMetadata?.commitHash,
-      adapterInfo: adapterInfo,
-      amagiVersion: amagi.version
-    })
+    // 遍历策略，找到匹配的进行处理
+    for (const strategy of strategies) {
+      if (strategy.match(ctx)) {
+        logger.debug(`[ErrorHandler] 匹配策略: ${strategy.name}`)
+        const result = await strategy.handle(ctx)
+        if (result === 'handled') return 'handled'
+      }
+    }
 
-    logger.debug('[ErrorHandler] 错误页面渲染完成')
+    // 默认错误处理
+    const img = await renderErrorImage(ctx)
 
     // 发送给触发者
     if (event && Config.app.errorLogSendTo.some(item => item === 'trigger')) {
       try {
-        logger.debug('[ErrorHandler] 正在发送错误消息给触发者...')
         await event.reply(img)
-        logger.debug('[ErrorHandler] 错误消息已发送给触发者')
-      } catch (replyError) {
-        logger.error(`[ErrorHandler] 发送错误消息给用户失败: ${replyError}`)
+      } catch (err) {
+        logger.error(`[ErrorHandler] 发送错误消息给用户失败: ${err}`)
       }
     }
 
     // 发送给主人
     if (Config.app.errorLogSendTo.some(item => item === 'master')) {
-      try {
-        logger.debug('[ErrorHandler] 正在发送错误消息给主人...')
-        const list = config.master()
-        let master = list[0]
-        if (master === 'console') {
-          master = list[1]
-        }
+      const list = config.master()
+      const master = list[0] === 'console' ? list[1] : list[0]
+      const isPushTask = (event && Object.keys(event).length === 0) || options.businessName.includes('推送')
+      const botId = isPushTask
+        ? (statBotId(Config.pushlist).douyin.botId || statBotId(Config.pushlist).bilibili.botId)
+        : event?.bot?.selfId
 
-        // 判断是否为推送任务
-        const isPushTask = (event && Object.keys(event).length === 0) || options.businessName.includes('推送')
-
-        // 选择一个可用的机器人ID
-        let selectedBotId = ''
-        if (isPushTask) {
-          // 推送任务场景：从推送列表中查找可用的机器人
-          const botId = statBotId(Config.pushlist)
-          selectedBotId = botId.douyin.botId || botId.bilibili.botId || ''
-        } else {
-          // 消息场景：直接使用event中的机器人ID
-          selectedBotId = event?.bot?.selfId || ''
-        }
-
-        if (selectedBotId && master) {
-          if (isPushTask) {
-            await karin.sendMaster(
-              selectedBotId,
-              master,
-              [
-                segment.text(`${options.businessName} 任务执行出错！\n请即时解决以消除警告`),
-                ...img
-              ]
-            )
-          } else {
-            const Adapter = karin.getBot(selectedBotId)
-            const groupID = event && 'groupId' in event ? event.groupId : ''
-            const groupInfo = await Adapter?.getGroupInfo(groupID)
-
-            await karin.sendMaster(
-              selectedBotId,
-              master,
-              [
-                segment.text(`群：${groupInfo?.groupName || '未知'}(${groupID})\n${options.businessName} 任务执行出错！\n请即时解决以消除警告`),
-                ...img
-              ]
-            )
-          }
-          logger.debug('[ErrorHandler] 错误消息已发送给主人')
-        } else {
-          logger.warn(`[ErrorHandler] 无法发送给主人: selectedBotId=${selectedBotId}, master=${master}`)
-        }
-      } catch (masterError) {
-        logger.error(`[ErrorHandler] 发送错误消息给主人失败: ${masterError}`)
+      if (botId && master) {
+        const prefix = isPushTask
+          ? `${options.businessName} 任务执行出错！\n请即时解决以消除警告`
+          : `群：${(await karin.getBot(botId)?.getGroupInfo(event && 'groupId' in event ? event.groupId : ''))?.groupName || '未知'}(${event && 'groupId' in event ? event.groupId : ''})\n${options.businessName} 任务执行出错！\n请即时解决以消除警告`
+        await karin.sendMaster(botId, master, [segment.text(prefix), ...img])
       }
     }
 
-    // 执行自定义错误处理
+    // 自定义错误处理
     if (options.customErrorHandler) {
       try {
-        logger.debug('[ErrorHandler] 执行自定义错误处理...')
         await options.customErrorHandler(error, logs)
-      } catch (customError) {
-        logger.error(`[ErrorHandler] 自定义错误处理失败: ${customError}`)
+      } catch (err) {
+        logger.error(`[ErrorHandler] 自定义错误处理失败: ${err}`)
       }
     }
-
-    logger.debug('[ErrorHandler] 业务错误处理完成')
   } catch (handlerError) {
     logger.error(`[ErrorHandler] 错误处理器本身发生错误: ${handlerError}`)
-    logger.error(`[ErrorHandler] 原始错误: ${error.message}`)
+  }
+  return undefined
+}
+
+// ==================== 导出 ====================
+
+/** 函数式错误处理包装器 */
+export const wrapWithErrorHandler = <R>(
+  fn: (e: Message, next: () => unknown) => R | Promise<R>,
+  options: ErrorHandlerOptions
+) => {
+  return async (e: Message, next: () => unknown): Promise<R> => {
+    const ctx = logger.runContext(async () => fn(e, next))
+
+    try {
+      return await ctx.run()
+    } catch (error) {
+      await new Promise(resolve => setTimeout(resolve, 100))
+      const structuredLogs = parseLogsToStructured(ctx.logs())
+      const result = await handleBusinessError(error as Error, options, structuredLogs, e)
+      if (result === 'handled') return undefined as R
+      throw error
+    }
   }
 }

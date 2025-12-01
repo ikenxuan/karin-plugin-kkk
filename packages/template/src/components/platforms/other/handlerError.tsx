@@ -1,5 +1,5 @@
 import { Chip } from '@heroui/react'
-import { AlertCircle, Clock, FileText, Plug2, Terminal } from 'lucide-react'
+import { AlertCircle, Clock, FileText, Plug2, QrCode, Terminal } from 'lucide-react'
 import React from 'react'
 import { FaBug, FaCodeBranch } from 'react-icons/fa6'
 import { MdAccessTime } from 'react-icons/md'
@@ -402,6 +402,58 @@ const ErrorHeader: React.FC<{
 }
 
 /**
+ * 验证二维码组件
+ * @param props 组件属性
+ * @returns JSX元素
+ */
+const VerificationQrCode: React.FC<{
+  qrCodeDataUrl?: string
+  verificationUrl?: string
+}> = ({ qrCodeDataUrl, verificationUrl }) => {
+  if (!qrCodeDataUrl) return null
+
+  return (
+    <div className='w-full max-w-[1440px] mx-auto px-20 py-8'>
+      <div className='border-l-4 border-warning pl-8'>
+        <h3 className='flex items-center gap-3 mb-6 text-4xl font-medium text-foreground'>
+          <QrCode className='w-10 h-10 text-warning' />
+          人机验证
+        </h3>
+        <div className='bg-warning/10 p-8 rounded-lg border border-warning/30'>
+          <div className='flex items-center gap-12'>
+            {/* 二维码 */}
+            <div className='shrink-0'>
+              <img 
+                src={qrCodeDataUrl} 
+                alt='验证二维码' 
+                className='w-90 h-auto'
+              />
+            </div>
+            {/* 说明文字 */}
+            <div className='flex-1 space-y-4'>
+              <p className='text-4xl font-bold text-warning'>请扫描二维码完成验证</p>
+              <p className='text-3xl text-default-500'>请在 120 秒内完成以下步骤</p>
+              <div className='space-y-3 text-3xl text-foreground'>
+                <p>1. 使用手机扫描左侧二维码</p>
+                <p>2. 在网页中完成人机验证</p>
+                <p>3. 将验证结果发送至此对话</p>
+              </div>
+              {verificationUrl && (
+                <div className='mt-6 p-4 bg-default/20 rounded-lg'>
+                  <p className='text-2xl text-default-500 break-all'>
+                    {verificationUrl}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/**
  * 业务错误详情组件
  * @param props 组件属性
  * @returns JSX元素
@@ -500,8 +552,8 @@ const BusinessErrorDetails: React.FC<{
  * @returns JSX元素
  */
 export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templateName'>> = (props) => {
-  const { data } = props
-  const { type, platform, error, method, timestamp, logs, triggerCommand, frameworkVersion, pluginVersion, adapterInfo, amagiVersion } = data
+  const { data, qrCodeDataUrl } = props
+  const { type, platform, error, method, timestamp, logs, triggerCommand, frameworkVersion, pluginVersion, adapterInfo, amagiVersion, isVerification, verificationUrl } = data
   const isBusinessError = type === 'business_error'
   const businessError = isBusinessError ? error as BusinessError : null
 
@@ -551,6 +603,14 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
           timestamp={timestamp}
           businessName={businessError?.businessName}
         />
+
+        {/* 验证二维码区域 - 仅在验证流程时显示 */}
+        {isVerification && (
+          <VerificationQrCode 
+            qrCodeDataUrl={qrCodeDataUrl} 
+            verificationUrl={verificationUrl}
+          />
+        )}
 
         <BusinessErrorDetails
           error={businessError!}

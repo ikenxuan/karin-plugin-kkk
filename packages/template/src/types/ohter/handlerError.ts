@@ -105,9 +105,15 @@ export interface ApiErrorProps extends BaseComponentProps {
     adapterInfo?: AdapterInfo
     /** Amagi 库版本 */
     amagiVersion?: string
+    /** 是否为验证流程 */
+    isVerification?: boolean
+    /** 验证链接 */
+    verificationUrl?: string
+    /** 分享链接（用于生成二维码） */
+    share_url?: string
   }
-  /** 分享链接 */
-  qrCodeDataUrl: string
+  /** 分享链接二维码 */
+  qrCodeDataUrl?: string
 }
 
 /**

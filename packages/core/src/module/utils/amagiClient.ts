@@ -4,6 +4,23 @@ import Client, { type Result } from '@ikenxuan/amagi'
 
 import { Config } from './Config'
 
+/**
+ * Amagi 错误类，携带原始响应数据
+ */
+export class AmagiError extends Error {
+  code: number
+  data: any
+  rawError: any
+
+  constructor (code: number, message: string, data: any, rawError: any) {
+    super(message)
+    this.name = 'AmagiError'
+    this.code = code
+    this.data = data
+    this.rawError = rawError
+  }
+}
+
 /** 解析库基类 */
 export class AmagiBase {
   /** 解析库实例 */
@@ -40,9 +57,9 @@ export class AmagiBase {
           return async (...args: any[]) => {
             const result = await Function.prototype.apply.call(method, target, args)
 
-            const isResultType = (val: any): val is Result<any> => {
+            const isResultType = (val: unknown): val is Result<any> => {
               if (!val || typeof val !== 'object') return false
-              if (!('success' in val) || typeof val.success !== 'boolean') return false
+              if (!('success' in val) || typeof (val as any).success !== 'boolean') return false
               if (!('code' in val) || !('message' in val)) return false
               return true
             }
@@ -54,23 +71,13 @@ export class AmagiBase {
 
               // 构建详细的错误消息
               const errMessage = result.message || (result.error as any)?.amagiMessage || '请求失败'
-              
-              // 使用 util.inspect 格式化完整的错误信息
               const errorDetails = util.inspect(
-                {
-                  code: result.code,
-                  message: errMessage,
-                  error: result.error
-                },
-                {
-                  depth: null,
-                  colors: true,
-                  compact: false,
-                  breakLength: 80
-                }
+                { code: result.code, data: result.data, message: errMessage, error: result.error },
+                { depth: 10, colors: true, compact: false, breakLength: 120, showHidden: true }
               )
-              
-              throw new Error(errorDetails)
+
+              const err = new AmagiError(result.code, errorDetails, result.data, result.error)
+              throw err
             }
 
             return result
