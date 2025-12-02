@@ -1,6 +1,0 @@
-# Cloudflare Pages 重定向规则
-# API 代理重定向
-/api/geetest/* https://www.geetest.com/demo/gt/:splat 200
-
-# SPA 回退规则 - 所有未匹配的路由返回 index.html
-/* /index.html 200
