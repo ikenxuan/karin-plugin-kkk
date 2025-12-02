@@ -4,7 +4,6 @@ import { defineConfig, type PluginOption } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import mdx from 'fumadocs-mdx/vite';
 import * as MdxConfig from './source.config';
-import netlifyReactRouter from "@netlify/vite-plugin-react-router";
 
 // add other Fumadocs deps as needed
 const FumadocsDeps = ['fumadocs-core', 'fumadocs-ui']
@@ -17,8 +16,7 @@ export default defineConfig({
     reactRouter(),
     tsconfigPaths({
       root: __dirname,
-    }),
-    netlifyReactRouter(),
+    })
   ],
   build: {
     sourcemap: false,

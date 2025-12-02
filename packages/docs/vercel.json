@@ -1,6 +1,6 @@
 {
   "buildCommand": "pnpm build",
-  "outputDirectory": "build/server",
+  "outputDirectory": "build/client",
   "framework": "react-router",
   "regions": ["iad1"],
   "rewrites": [
