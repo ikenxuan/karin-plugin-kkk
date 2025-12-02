@@ -1,7 +1,3 @@
-[build]
-  command = "pnpm run build"
-  publish = "build/client"
-
 [build.environment]
   NODE_OPTIONS = "--max-old-space-size=4096"
   NODE_VERSION = "20"
