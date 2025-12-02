@@ -1,5 +1,6 @@
 [build]
-  command = "react-router build"
+  base = "packages/docs"
+  command = "pnpm run build"
   publish = "build/client"
 
 [build.environment]
