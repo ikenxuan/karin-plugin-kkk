@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.15.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.15.0...v2.15.1) (2025-12-02)
+
+
+### 🐛 错误修复
+
+* 删除测试命令 ([cf18e81](https://github.com/ikenxuan/karin-plugin-kkk/commit/cf18e81e8bcae6db48b6504d10b9c9b4262aad85))
+
 ## [2.15.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.14.0...v2.15.0) (2025-12-02)
 
 
