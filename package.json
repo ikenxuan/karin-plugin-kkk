@@ -37,21 +37,21 @@
     "tailwindcss": "4.1.17"
   },
   "devDependencies": {
-    "@eslint/js": "9.37.0",
-    "@stylistic/eslint-plugin": "5.4.0",
-    "@tailwindcss/cli": "4.1.14",
+    "@eslint/js": "9.39.1",
+    "@stylistic/eslint-plugin": "5.6.1",
+    "@tailwindcss/cli": "4.1.17",
     "@types/cors": "2.8.19",
-    "@types/node": "24.7.1",
-    "@typescript-eslint/eslint-plugin": "8.46.0",
-    "@typescript-eslint/parser": "8.46.0",
+    "@types/node": "24.10.1",
+    "@typescript-eslint/eslint-plugin": "8.48.0",
+    "@typescript-eslint/parser": "8.48.0",
     "cross-env": "10.1.0",
-    "eslint": "9.37.0",
-    "eslint-plugin-react-hooks": "7.0.0",
-    "eslint-plugin-react-refresh": "0.4.23",
+    "eslint": "9.39.1",
+    "eslint-plugin-react-hooks": "7.0.1",
+    "eslint-plugin-react-refresh": "0.4.24",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "husky": "^9.1.7",
-    "sort-package-json": "^3.4.0",
-    "tsx": "4.20.6",
+    "sort-package-json": "^3.5.0",
+    "tsx": "4.21.0",
     "typescript": "5.9.3"
   }
 }
