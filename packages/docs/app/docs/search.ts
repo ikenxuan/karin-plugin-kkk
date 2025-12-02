@@ -5,6 +5,6 @@ const server = createFromSource(source, {
   language: 'english',
 });
 
-export async function loader() {
-  return server.staticGET();
+export async function loader () {
+  return server.staticGET()
 }
