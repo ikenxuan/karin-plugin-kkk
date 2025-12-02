@@ -5,7 +5,7 @@
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",
-    "start": "react-router-serve ./build/server/index.js",
+    "start": "react-router-serve ./build/server/server.js",
     "preview": "pnpm start",
     "types:check": "react-router typegen && fumadocs-mdx && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
@@ -32,6 +32,7 @@
     "twoslash": "^0.3.4"
   },
   "devDependencies": {
+    "@netlify/vite-plugin": "^2.7.14",
     "@netlify/vite-plugin-react-router": "^2.1.2",
     "@react-router/dev": "^7.9.0",
     "@react-router/serve": "^7.9.6",

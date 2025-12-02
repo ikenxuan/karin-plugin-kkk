@@ -27,3 +27,6 @@ node_modules/
 packages/docs/.vuepress/.cache/
 packages/docs/.vuepress/.temp/
 packages/docs/.vuepress/dist/
+
+# Local Netlify folder
+.netlify
