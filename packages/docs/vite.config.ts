@@ -18,6 +18,18 @@ export default defineConfig({
       root: __dirname,
     }),
   ],
+  build: {
+    sourcemap: false,
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // 忽略 sourcemap 相关警告
+        if (warning.message.includes("Can't resolve original location of error")) {
+          return;
+        }
+        warn(warning);
+      },
+    },
+  },
   server: {
     port: 5175,
     proxy: {
