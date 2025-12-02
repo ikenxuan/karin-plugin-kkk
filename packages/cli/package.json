@@ -1,0 +1,21 @@
+{
+  "name": "@kkk/cli",
+  "version": "1.0.0",
+  "description": "karin-plugin-kkk build CLI tool",
+  "type": "module",
+  "bin": {
+    "kkk": "./dist/index.mjs"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch"
+  },
+  "dependencies": {
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "tsdown": "^0.16.8",
+    "typescript": "5.9.3"
+  }
+}

@@ -120,22 +120,21 @@ export default defineConfig(({ command, mode }) => {
           ]
         },
         includeAssets: ['favicon/*.png', 'favicon/*.ico', 'favicon/*.svg'],
-        // 开发模式下禁用 PWA
+        // 开发模式下完全禁用 PWA
         disable: isDev,
-        // 支持 HTTP 协议
-        devOptions: {
-          enabled: true,
-          navigateFallback: '/kkk/index.html'
-        },
-        injectRegister: 'auto',
+        injectRegister: isDev ? false : 'auto',
         strategies: 'generateSW'
       })
     ].filter(Boolean),
+    optimizeDeps: {
+      include: ['workbox-window']
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
         // 修复 vite-plugin-pwa 虚拟模块无法解析 react 的问题
-        'react': path.resolve(__dirname, 'node_modules/react')
+        'react': path.resolve(__dirname, 'node_modules/react'),
+        'workbox-window': path.resolve(__dirname, 'node_modules/workbox-window')
       }
     },
     define: {
@@ -156,9 +155,8 @@ export default defineConfig(({ command, mode }) => {
       // 设置chunk大小警告阈值
       chunkSizeWarningLimit: 1000,
       sourcemap: isDev || !!process.env.TAURI_ENV_DEBUG,
-      rollupOptions: {
-        platform: 'browser',
-        external: ['workbox-window']
+      rolldownOptions: {
+        platform: 'browser'
       }
     },
     clearScreen: false,

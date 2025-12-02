@@ -36,7 +36,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: FumadocsDeps,
-    include: ['@lobehub/icons', '@lobehub/ui'],
+    include: ['@lobehub/icons'],
   },
 
 });

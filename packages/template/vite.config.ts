@@ -135,7 +135,7 @@ export default defineConfig(({ command }) => {
       },
       outDir: 'dist',
       cssCodeSplit: false,
-      rollupOptions: {
+      rolldownOptions: {
         external: [
           'cors',
           ...builtinModules,

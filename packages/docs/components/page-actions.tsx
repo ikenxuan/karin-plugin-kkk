@@ -16,7 +16,7 @@ import {
   PopoverTrigger,
 } from 'fumadocs-ui/components/ui/popover';
 import { cva } from 'class-variance-authority';
-import { Github, Claude, OpenAI, Grok, Gemini } from '@lobehub/icons';
+import { Github, Claude, OpenAI, Grok } from '@lobehub/icons';
 
 const cache = new Map<string, string>();
 
@@ -64,7 +64,7 @@ export function LLMCopyButton({
       onClick={onClick}
     >
       {checked ? <Check /> : <Copy />}
-      Copy Markdown
+      复制 Markdown
     </button>
   );
 }
@@ -96,14 +96,14 @@ export function ViewOptions({
 
     return [
       {
-        title: 'Open in GitHub',
+        title: '在 GitHub 中打开',
         href: githubUrl,
         icon: (
           <Github />
         ),
       },
       {
-        title: 'Open in Scira AI',
+        title: '在 Scira AI 中打开',
         href: `https://scira.ai/?${new URLSearchParams({
           q,
         })}`,
@@ -167,7 +167,7 @@ export function ViewOptions({
         ),
       },
       {
-        title: 'Open in ChatGPT',
+        title: '在 ChatGPT 中打开',
         href: `https://chatgpt.com/?${new URLSearchParams({
           hints: 'search',
           q,
@@ -177,14 +177,14 @@ export function ViewOptions({
         ),
       },
       {
-        title: 'Open in Claude',
+        title: '在 Claude 中打开',
         href: `https://claude.ai/new?${new URLSearchParams({
           q,
         })}`,
         icon: <Claude.Color />,
       },
       {
-        title: 'Open in Grok',
+        title: '在 Grok 中打开',
         href: `https://grok.com/?${new URLSearchParams({
           q,
         })}`,
@@ -193,7 +193,7 @@ export function ViewOptions({
         ),
       },
       {
-        title: 'Open in T3 Chat',
+        title: '在 T3 Chat 中打开',
         href: `https://t3.chat/new?${new URLSearchParams({
           q,
         })}`,
@@ -213,7 +213,7 @@ export function ViewOptions({
           }),
         )}
       >
-        Open
+        打开
         <ChevronDown className="size-3.5 text-fd-muted-foreground" />
       </PopoverTrigger>
       <PopoverContent className="flex flex-col">
