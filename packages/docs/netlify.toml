@@ -1,16 +1,7 @@
 [build]
-  command = "pnpm run build"
+  command = "react-router build"
   publish = "build/client"
 
 [build.environment]
   NODE_OPTIONS = "--max-old-space-size=8192"
   NODE_VERSION = "20"
-
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/server"
-  status = 200
-  conditions = {Role = ["admin"]}
-
-[functions]
-  directory = "build/server"
