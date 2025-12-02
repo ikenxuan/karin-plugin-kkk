@@ -2,6 +2,40 @@
 
 # Changelog
 
+## [2.15.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.14.0...v2.15.0) (2025-12-02)
+
+
+### ✨ 新功能
+
+* **core:** add bilibili risk control verification and error handling improvements ([9b2f327](https://github.com/ikenxuan/karin-plugin-kkk/commit/9b2f32775a7155203d915a79d0a826b4b4e99c2d))
+
+
+### 🐛 错误修复
+
+* lock ([11dac86](https://github.com/ikenxuan/karin-plugin-kkk/commit/11dac86404409444b95478150e8db3b31acf1288))
+
+
+### 📝 文档更新
+
+* lock 2 ([152ea7e](https://github.com/ikenxuan/karin-plugin-kkk/commit/152ea7e72d57e50a56322072628cf727b6a88a21))
+* 更新文档 ([1d24c2d](https://github.com/ikenxuan/karin-plugin-kkk/commit/1d24c2dfd337eaedddd4ad0d7396bc02ab6bce2d))
+
+
+### 🧰 其他更新
+
+* fix build ([b868497](https://github.com/ikenxuan/karin-plugin-kkk/commit/b868497536cc70e2370772dfc6c4f27d7c4a74c8))
+* Readme ([d707e61](https://github.com/ikenxuan/karin-plugin-kkk/commit/d707e6184374a665db2bd60e227ddb12804e41c0))
+
+
+### ♻️ 代码重构
+
+* **douyin:** remove fingerprint-generator dependency ([0c4fb12](https://github.com/ikenxuan/karin-plugin-kkk/commit/0c4fb12269efa46f66cc73e8581eb26e50d457a6))
+
+
+### 📦 依赖更新
+
+* update ([96d2ddd](https://github.com/ikenxuan/karin-plugin-kkk/commit/96d2ddd97e87d8e6755e7601f82f30f707a7cca6))
+
 ## [2.14.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.13.0...v2.14.0) (2025-11-28)
 
 
