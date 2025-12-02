@@ -1,6 +1,6 @@
 {
-  "name": "karin-plugin-kkk",
-  "version": "1.0.0",
+  "name": "@karin-plugin-kkk/root",
+  "version": "0.0.0",
   "description": "",
   "keywords": [],
   "license": "GPL-3.0-only",
