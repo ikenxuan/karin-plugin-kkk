@@ -28,6 +28,7 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production vite build",
     "dev": "vite dev",
+    "dev:new": "kkt dev",
     "lint": "eslint . --fix",
     "preview": "vite preview",
     "sort": "sort-package-json"
@@ -48,6 +49,7 @@
     "rehype-highlight": "^7.0.2"
   },
   "devDependencies": {
+    "karin-plugin-kkk-template": "workspace:*",
     "@react-dev-inspector/vite-plugin": "^2.0.1",
     "@types/express": "5.0.6",
     "@types/js-beautify": "^1.14.3",

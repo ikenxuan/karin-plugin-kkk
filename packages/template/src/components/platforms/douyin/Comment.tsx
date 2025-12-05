@@ -187,7 +187,7 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
             <span className='text-5xl'>{props.ip_label}</span>
           </div>
 
-          <div className='flex shrink-0 gap-8 items-center'>
+          <div className='flex gap-8 items-center shrink-0'>
             {/* 点赞按钮 */}
             <div className='flex gap-3 items-center transition-colors cursor-pointer'>
               <Heart size={60} className='text-foreground-500' />
@@ -242,7 +242,7 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
                     <span className='text-5xl'>{props.replyComment.create_time}</span>
                     <span className='text-5xl'>{props.replyComment.ip_label}</span>
                   </div>
-                  <div className='flex shrink-0 gap-3 items-center'>
+                  <div className='flex gap-3 items-center shrink-0'>
                     <Heart size={60} className='text-foreground-500' />
                     <span className='text-5xl'>{props.replyComment.digg_count}</span>
                   </div>
@@ -308,7 +308,7 @@ export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | '
 
         {/* 评论列表 */}
         <div className='overflow-hidden mt-8'>
-          {props.data.CommentsData.length > 0
+          {props.data.CommentsData?.length > 0
             ? (
               <>
                 {props.data.CommentsData.map((comment, index) => (

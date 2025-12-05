@@ -1,0 +1,7 @@
+{
+  "message": "Hello from mock data!",
+  "user": {
+    "name": "Test User",
+    "id": 12345
+  }
+}

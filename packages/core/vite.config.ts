@@ -7,6 +7,7 @@ import terser from '@rollup/plugin-terser'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 import { copyTemplateAssetsPlugin, generateBuildMetadataPlugin } from './vite.plugin'
 
@@ -105,6 +106,7 @@ export default defineConfig({
       }
     }),
     react(),
+    tsconfigPaths(),
     tailwindcss(),
     generateBuildMetadataPlugin(__dirname),
     copyTemplateAssetsPlugin(__dirname)

@@ -5,8 +5,8 @@
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",
-    "start": "react-router-serve ./build/server/server.js",
-    "preview": "pnpm start",
+    "start": "react-router-serve build/server/index.js",
+    "preview": "serve build/client -l 3000",
     "types:check": "react-router typegen && fumadocs-mdx && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
   },
@@ -40,6 +40,7 @@
     "react-router-devtools": "^6.0.0",
     "serve": "^14.2.5",
     "vite": "^7.2.6",
+    "vite-node": "^3.2.4",
     "vite-tsconfig-paths": "^5.1.4"
   }
 }

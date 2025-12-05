@@ -27,7 +27,6 @@ const formatDuration = (milliseconds: number): string => {
   const secs = seconds % 60
   return `${mins}:${secs.toString().padStart(2, '0')}`
 }
-
 /**
  * 单个视频卡片组件
  */
@@ -43,22 +42,22 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
   }, [video.title])
 
   return (
-    <div className="bg-default-100 rounded-3xl overflow-hidden flex flex-col h-full">
+    <div className="flex overflow-hidden flex-col h-full rounded-3xl bg-default-100">
       {/* 视频封面 - 固定 3:4 比例 */}
-      <div className="relative bg-default-900 overflow-hidden" style={{ aspectRatio: '3 / 4' }}>
+      <div className="overflow-hidden relative bg-default-900" style={{ aspectRatio: '3 / 4' }}>
         <img
           src={video.cover}
           alt={video.title}
-          className="w-full h-full object-cover"
+          className="object-cover w-full h-full"
         />
 
         {/* 视频/图集标签 */}
-        <div className="absolute top-4 right-4 flex flex-col gap-2">
-          <div className="px-6 py-4 rounded-2xl text-4xl bg-white/50 text-black backdrop-blur-xs shadow-lg">
+        <div className="flex absolute top-4 right-4 flex-col gap-2">
+          <div className="px-6 py-4 text-4xl text-black rounded-2xl shadow-lg bg-white/50 backdrop-blur-xs">
             {video.is_video ? '视频' : '图集'}
           </div>
           {video.is_top && (
-            <div className="px-6 py-4 rounded-2xl text-4xl bg-warning-500 text-black backdrop-blur-xs shadow-lg">
+            <div className="px-6 py-4 text-4xl text-black rounded-2xl shadow-lg bg-warning-500 backdrop-blur-xs">
               置顶
             </div>
           )}
@@ -66,32 +65,32 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
 
         {/* 时长标签（仅视频显示） */}
         {video.is_video && (
-          <div className="absolute bottom-4 right-4 px-8 py-3 rounded-2xl text-4xl bg-white/50 text-black backdrop-blur-xs shadow-lg">
+          <div className="absolute right-4 bottom-4 px-8 py-3 text-4xl text-black rounded-2xl shadow-lg bg-white/50 backdrop-blur-xs">
             {formatDuration(video.duration)}
           </div>
         )}
 
         {/* 背景音乐图标 */}
         {video.music && (
-          <div className="absolute bottom-4 left-4 flex items-center gap-2 px-6 py-3 rounded-2xl text-xl bg-white/50 text-black backdrop-blur-xs shadow-lg">
+          <div className="flex absolute bottom-4 left-4 gap-2 items-center px-6 py-3 text-xl text-black rounded-2xl shadow-lg bg-white/50 backdrop-blur-xs">
             <span>♫</span>
-            <span className="max-w-80 truncate">{video.music.title}</span>
+            <span className="truncate max-w-80">{video.music.title}</span>
           </div>
         )}
       </div>
 
       {/* 视频信息 */}
-      <div className="p-4 px-8 pb-8 flex flex-col flex-1">
+      <div className="flex flex-col flex-1 p-4 px-8 pb-8">
         {/* 标题 */}
         <h3
           ref={titleRef}
-          className="text-4xl font-semibold text-default-900 line-clamp-2 my-2"
+          className="my-2 text-4xl font-semibold text-default-900 line-clamp-2"
         >
           {video.title || '无标题'}
         </h3>
 
         {/* 发布时间 */}
-        <p className="text-3xl text-default-600 mb-8">
+        <p className="mb-8 text-3xl text-default-600">
           {formatDistanceToNow(new Date(video.create_time * 1000), {
             locale: zhCN,
             addSuffix: true
@@ -101,19 +100,19 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
         {/* 统计数据 - 根据标题行数自动调整位置 */}
         <div className={titleLineCount < 2 ? 'mt-auto' : ''}>
           <div className="grid grid-cols-2 gap-3 text-3xl">
-            <div className="flex items-center gap-2 text-default-600">
+            <div className="flex gap-2 items-center text-default-600">
               <AiFillHeart size={34} />
               <span>{formatCount(video.statistics.like_count)}</span>
             </div>
-            <div className="flex items-center gap-2 text-default-600">
+            <div className="flex gap-2 items-center text-default-600">
               <FaCommentDots size={34} />
               <span>{formatCount(video.statistics.comment_count)}</span>
             </div>
-            <div className="flex items-center gap-2 text-default-600">
+            <div className="flex gap-2 items-center text-default-600">
               <AiFillStar size={34} />
               <span>{formatCount(video.statistics.collect_count)}</span>
             </div>
-            <div className="flex items-center gap-2 text-default-600">
+            <div className="flex gap-2 items-center text-default-600">
               <RiShareForwardFill size={34} />
               <span>{formatCount(video.statistics.share_count)}</span>
             </div>
@@ -133,15 +132,15 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
     <DefaultLayout {...prpos}>
       {/* 头部背景图片 - 占满宽度 */}
       {prpos.data.user.head_image && (
-        <div className="relative w-full overflow-hidden">
+        <div className="overflow-hidden relative w-full">
           <img
             src={prpos.data.user.head_image}
             alt="头部背景"
-            className="w-full h-auto object-cover"
+            className="object-cover w-full h-auto"
           />
           {/* 渐变遮罩 - 从图片渐变到 bg-default-50 */}
           <div
-            className="absolute inset-0 bg-linear-to-b from-transparent via-default-50/40 to-default-50"
+            className="absolute inset-0 from-transparent bg-linear-to-b via-default-50/40 to-default-50"
           />
         </div>
       )}
@@ -151,16 +150,16 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
           {/* 用户信息头部 */}
           <div className={`bg-default-100/60 backdrop-blur-xl mb-30 rounded-4xl p-10 relative ${prpos.data.user.head_image ? '-mt-170' : 'mt-35'}`}>
             {/* 上部分：头像、名称、抖音号、IP、用户统计 */}
-            <div className="flex items-start gap-8 pb-8 border-b border-default-200 mb-8">
+            <div className="flex gap-8 items-start pb-8 mb-8 border-b border-default-200">
               {/* 用户头像 */}
               <img
                 src={prpos.data.user.avatar}
                 alt={prpos.data.user.nickname}
-                className="w-45 h-auto rounded-2xl object-cover shrink-0"
+                className="object-cover h-auto rounded-2xl w-45 shrink-0"
               />
               {/* 用户信息 */}
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex gap-3 items-center mb-4">
                   <h1 className="text-6xl font-bold text-default-900">{prpos.data.user.nickname}</h1>
                   {prpos.data.user.verified && <span className="text-4xl text-primary-500">✓</span>}
                 </div>
@@ -175,15 +174,15 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
                 <div className="flex gap-8 text-3xl">
                   <div>
                     <span className="text-default-500">关注</span>
-                    <span className="font-medium text-4xl text-default-900"> {formatCount(prpos.data.user.following_count)}</span>
+                    <span className="text-4xl font-medium text-default-900"> {formatCount(prpos.data.user.following_count)}</span>
                   </div>
                   <div>
                     <span className="text-default-500">粉丝</span>
-                    <span className="font-medium text-4xl text-default-900"> {formatCount(prpos.data.user.follower_count)}</span>
+                    <span className="text-4xl font-medium text-default-900"> {formatCount(prpos.data.user.follower_count)}</span>
                   </div>
                   <div>
                     <span className="text-default-500">获赞</span>
-                    <span className="font-medium text-4xl  text-default-900"> {formatCount(prpos.data.user.total_favorited)}</span>
+                    <span className="text-4xl font-medium text-default-900"> {formatCount(prpos.data.user.total_favorited)}</span>
                   </div>
                 </div>
               </div>
@@ -205,7 +204,7 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
               </div>
             </>
           ) : (
-            <div className="text-center py-20">
+            <div className="py-20 text-center">
               <p className="text-[32px] text-default-500">暂无视频内容</p>
             </div>
           )}
@@ -214,3 +213,5 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
     </DefaultLayout>
   )
 }
+
+export default DouyinUserVideoList

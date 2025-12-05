@@ -52,8 +52,12 @@
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../template/src/dev/mock-server.ts\" --include \"../template/src/main.ts\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
+    "@arco-design/web-react": "^2.66.8",
+    "@chakra-ui/react": "^3.30.0",
+    "@emotion/react": "^11.14.0",
     "@types/react": "^19.2.7",
-    "fingerprint-injector": "^2.1.78"
+    "fingerprint-injector": "^2.1.78",
+    "next-themes": "^0.4.6"
   },
   "devDependencies": {
     "@karinjs/plugin-puppeteer": "1.0.21",
@@ -68,10 +72,12 @@
     "happy-dom": "^20.0.11",
     "heic-convert": "^2.1.0",
     "http-proxy-middleware": "3.0.5",
+    "karin-plugin-kkk-template": "workspace:*",
     "qr-code-styling": "^1.9.2",
     "template": "workspace:*",
     "tsdown": "^0.16.8",
     "vite": "npm:rolldown-vite@^7.2.9",
+    "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.0.14"
   },
   "engines": {
@@ -101,5 +107,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2025-12-02T01:59:55.726Z"
+  "timestamp": "2025-12-05T04:40:23.007Z"
 }
