@@ -252,7 +252,7 @@ export default function Home() {
               </Link>
               <a
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-fd-border/50 bg-fd-background/60 backdrop-blur-sm hover:bg-fd-accent/60 transition-colors font-medium"
-                href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=S8y6baEcSkO6TEO5kEdfgmJhz79Oxdw5&authKey=ficWQytHGz3KIv5i0HpGbEeMBpABBXfjEMYRzo3ZwMV%2B0Y5mq8cC0Yxbczfa904H&noverify=0&group_code=795874649"
+                href="https://qm.qq.com/q/DgLbCERYVG"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -270,8 +270,8 @@ export default function Home() {
               <a href="https://github.com/ikenxuan/karin-plugin-kkk" target="_blank" rel="noopener noreferrer" className="hover:text-fd-foreground transition-colors">
                 GitHub
               </a>
-              <a href="https://afdian.com/a/ikenxuan" target="_blank" rel="noopener noreferrer" className="hover:text-fd-foreground transition-colors">
-                爱发电
+              <a href="docs/guide/afdian" className="hover:text-fd-foreground transition-colors">
+                支持
               </a>
             </div>
           </div>

@@ -9,6 +9,12 @@
 @source '../**/*.{js,ts,jsx,tsx,html}';
 @custom-variant dark (&:is(.dark *));
 
+/* 修复 Tailwind CSS 4 preflight 重置粗体样式的问题 */
+strong,
+b {
+  font-weight: 600;
+}
+
 /* 极验验证码弹窗样式 */
 .geetest_holder {
   width: 100% !important;
