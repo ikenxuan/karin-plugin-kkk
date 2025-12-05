@@ -13,7 +13,7 @@ import { Steps, Step } from 'fumadocs-ui/components/steps';
 
 ### 环境要求
 
-- Node.js >= 21
+- Node.js >= 22
 - pnpm >= 9
 - Karin >= 1.13.0
 
@@ -44,12 +44,12 @@ Cookies 用于请求平台 API，不配置也能使用基础功能，但部分�
 
 ## 基本使用
 
-发送包含平台链接的消息，插件会自动解析：
+启动后会群聊监听消息，发送包含平台链接的消息，插件成功匹配以下链接后自动解析：
 
-- 抖音：`v.douyin.com/*`、`www.douyin.com/*`
-- B站：`b23.tv/*`、`www.bilibili.com/*`
-- 快手：`v.kuaishou.com/*`
-- 小红书：`xhslink.com/*`、`www.xiaohongshu.com/*`
+- 抖音：支持 `douyin.com` 与 `iesdouyin.com` 及其子域名 (`www`, `v`, `jx`, `m`, `jingxuan`)
+- B站：支持 `bilibili.com`, `b23.tv`, `t.bilibili.com`, `bili2233.cn`，以及纯 **BV号** (`BV...`) 和 **av号** (`av...`)
+- 快手：支持 `kuaishou.com`, `v.kuaishou.com`，以及APP分享的文本格式（如 `快手...快手`）
+- 小红书：支持 `xiaohongshu.com`, `xhslink.com`
 
 ## 常用命令
 
@@ -65,5 +65,5 @@ Cookies 用于请求平台 API，不配置也能使用基础功能，但部分�
 
 ## 反馈渠道
 
-- QQ 群：[795874649](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=S8y6baEcSkO6TEO5kEdfgmJhz79Oxdw5&authKey=ficWQytHGz3KIv5i0HpGbEeMBpABBXfjEMYRzo3ZwMV%2B0Y5mq8cC0Yxbczfa904H&noverify=0&group_code=795874649)
+- QQ 群：[795874649](https://qm.qq.com/q/DgLbCERYVG)
 - GitHub：[提交 Issue](https://github.com/ikenxuan/karin-plugin-kkk/issues/new/choose)
