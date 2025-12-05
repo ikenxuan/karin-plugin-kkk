@@ -15,17 +15,53 @@ import * as Twoslash from 'fumadocs-twoslash/ui';
 import { Mermaid } from '@/components/Mermaid';
 import browserCollections from 'fumadocs-mdx:collections/browser';
 import { baseOptions } from '@/lib/layout.shared';
+import { DocsFooter, type DocsFooterProps } from '@/components/DocsFooter';
 import { LLMCopyButton, ViewOptions } from '../../components/page-actions';
+
+interface NavItem {
+  name: string;
+  description?: string;
+  url: string;
+}
+
+function getNavItems(tree: PageTree.Root, currentPath: string): DocsFooterProps {
+  const pages: NavItem[] = [];
+  
+  function flattenTree(nodes: PageTree.Node[]) {
+    for (const node of nodes) {
+      if (node.type === 'page') {
+        pages.push({ 
+          name: typeof node.name === 'string' ? node.name : String(node.name), 
+          url: node.url, 
+          description: typeof node.description === 'string' ? node.description : undefined 
+        });
+      } else if (node.type === 'folder' && node.children) {
+        flattenTree(node.children);
+      }
+    }
+  }
+  flattenTree(tree.children);
+  
+  const currentIndex = pages.findIndex((p) => p.url === currentPath);
+  return {
+    prev: currentIndex > 0 ? pages[currentIndex - 1] : undefined,
+    next: currentIndex < pages.length - 1 ? pages[currentIndex + 1] : undefined,
+  };
+}
 
 export async function loader({ params }: Route.LoaderArgs) {
   const slugs = params['*'].split('/').filter((v) => v.length > 0);
   const page = source.getPage(slugs);
   if (!page) throw new Response('Not found', { status: 404 });
 
+  const tree = source.getPageTree();
+  const navItems = getNavItems(tree, page.url);
+
   return {
     path: page.path,
-    tree: source.getPageTree(),
+    tree,
     slugs: params['*'],
+    navItems,
   };
 }
 
@@ -48,10 +84,13 @@ function PageActions() {
   );
 }
 
+const NavContext = createContext<DocsFooterProps>({});
+
 const clientLoader = browserCollections.docs.createClientLoader({
   component({ toc, default: Mdx, frontmatter }) {
+    const navItems = useContext(NavContext);
     return (
-      <DocsPage toc={toc}>
+      <DocsPage toc={toc} footer={{ component: <DocsFooter {...navItems} /> }}>
         <title>{frontmatter.title}</title>
         <meta name="description" content={frontmatter.description} />
         <DocsTitle>{frontmatter.title}</DocsTitle>
@@ -67,14 +106,16 @@ const clientLoader = browserCollections.docs.createClientLoader({
 
 
 export default function Page({ loaderData }: Route.ComponentProps) {
-  const { tree, path, slugs } = loaderData;
+  const { tree, path, slugs, navItems } = loaderData;
   const Content = clientLoader.getComponent(path);
 
   return (
     <SlugsContext.Provider value={slugs}>
-      <DocsLayout {...baseOptions()} tree={tree as PageTree.Root}>
-        <Content />
-      </DocsLayout>
+      <NavContext.Provider value={navItems}>
+        <DocsLayout {...baseOptions()} tree={tree as PageTree.Root}>
+          <Content />
+        </DocsLayout>
+      </NavContext.Provider>
     </SlugsContext.Provider>
   );
 }
