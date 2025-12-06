@@ -1,0 +1,63 @@
+---
+title: 配置说明
+description: 推荐使用 WebUI 进行配置
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Steps, Step } from 'fumadocs-ui/components/steps';
+import { Cards, Card } from 'fumadocs-ui/components/card';
+
+## 推荐配置方式
+
+本插件配置项多达近百项，涵盖各平台解析规则、推送策略、渲染参数等。为降低使用门槛并减少格式错误，**强烈推荐**通过 **Karin WebUI** 进行可视化配置。
+
+<Callout type="warn" title="不推荐手动修改配置文件">
+手动编辑配置文件极易出错，且部分配置存在联动关系，手动修改可能导致未知的异常。
+</Callout>
+
+<Callout type="info" title="未来计划">
+未来版本计划**逐步弃用可读写的 YAML 配置文件**，转而采用数据库存储用户配置，届时手动修改将不再生效。
+</Callout>
+
+## 如何进入配置页面
+
+<Steps>
+<Step>
+
+### 启动 Karin
+
+确保 Karin 框架已正常运行。
+
+</Step>
+<Step>
+
+### 访问 WebUI 控制台
+
+在浏览器中打开 Karin WebUI 地址。
+
+</Step>
+<Step>
+
+### 导航至插件配置
+
+依次点击：**插件管理** → **插件配置** → **karin-plugin-kkk**
+
+</Step>
+</Steps>
+
+## 遇到问题？
+
+如果遇到修改配置后不生效，或有任何配置相关的疑问，请通过以下渠道反馈：
+
+<Cards>
+  <Card 
+    title="QQ 群" 
+    description="795874649 - 实时交流与反馈"
+    href="https://qm.qq.com/q/DgLbCERYVG"
+  />
+  <Card 
+    title="GitHub Issue" 
+    description="提交问题或功能建议"
+    href="https://github.com/ikenxuan/karin-plugin-kkk/issues/new/choose"
+  />
+</Cards>

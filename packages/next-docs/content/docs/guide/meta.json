@@ -1,0 +1,17 @@
+{
+  "title": "指南",
+  "pages": [
+    "---入门---",
+    "quick-start",
+    "configuration",
+    "usage",
+    "---进阶---",
+    "ck",
+    "---特性---",
+    "react-template",
+    "error-handler",
+    "---其他---",
+    "faq",
+    "afdian"
+  ]
+}

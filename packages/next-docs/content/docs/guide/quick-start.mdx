@@ -1,0 +1,80 @@
+---
+title: 快速开始
+description: 安装并配置 karin-plugin-kkk
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Steps, Step } from 'fumadocs-ui/components/steps';
+import { Cards, Card } from 'fumadocs-ui/components/card';
+
+## 安装
+
+<Steps>
+<Step>
+
+### 环境要求
+
+- Node.js >= 22
+- pnpm >= 9
+- Karin >= 1.13.0
+
+</Step>
+<Step>
+
+### 安装插件
+
+推荐通过 Karin WebUI 插件市场安装，或使用命令：
+
+```bash
+pnpm add karin-plugin-kkk@latest -w
+```
+
+</Step>
+<Step>
+
+### 配置 Cookies
+
+在 Karin WebUI → 插件配置 → karin-plugin-kkk 中填写各平台的 Cookies。
+
+<Callout type="info">
+Cookies 用于请求平台 API，不配置也能使用基础功能，但部分高级功能（如高画质视频、推送）需要登录态。
+</Callout>
+
+</Step>
+</Steps>
+
+## 基本使用
+
+启动后会监听群聊消息，发送包含平台链接的消息，插件成功匹配以下链接后自动解析：
+
+- 抖音：支持 `douyin.com` 与 `iesdouyin.com` 及其子域名 (`www`, `v`, `jx`, `m`, `jingxuan`)
+- B站：支持 `bilibili.com`, `b23.tv`, `t.bilibili.com`, `bili2233.cn`，以及纯 **BV号** (`BV...`) 和 **av号** (`av...`)
+- 快手：支持 `kuaishou.com`, `v.kuaishou.com`，以及APP分享的文本格式（如 `快手...快手`）
+- 小红书：支持 `xiaohongshu.com`, `xhslink.com`
+
+## 常用命令
+
+| 命令 | 功能 |
+|-----|------|
+| `#解析` | 手动解析引用消息中的链接 |
+| `#抖音推送列表` | 查看当前群的抖音订阅 |
+| `#B站推送列表` | 查看当前群的B站订阅 |
+| `#设置抖音推送 + 抖音号` | 订阅/取消抖音博主 |
+| `#设置B站推送 + UID` | 订阅/取消B站UP主 |
+| `#抖音登录` / `#B站登录` | 扫码登录获取 Cookies |
+| `#kkk帮助` | 查看帮助信息 |
+
+## 反馈渠道
+
+<Cards>
+  <Card 
+    title="QQ 群" 
+    description="795874649 - 实时交流与反馈"
+    href="https://qm.qq.com/q/DgLbCERYVG"
+  />
+  <Card 
+    title="GitHub Issue" 
+    description="提交问题或功能建议"
+    href="https://github.com/ikenxuan/karin-plugin-kkk/issues/new/choose"
+  />
+</Cards>
