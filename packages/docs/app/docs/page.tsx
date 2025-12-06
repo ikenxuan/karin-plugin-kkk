@@ -16,7 +16,7 @@ import { Mermaid } from '@/components/Mermaid';
 import browserCollections from 'fumadocs-mdx:collections/browser';
 import { baseOptions } from '@/lib/layout.shared';
 import { DocsFooter, type DocsFooterProps } from '@/components/DocsFooter';
-import { LLMCopyButton, ViewOptions } from '../../components/page-actions';
+import { LLMCopyButton, ViewOptions } from '@/components/page-actions';
 
 interface NavItem {
   name: string;
