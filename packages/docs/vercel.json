@@ -1,6 +1,6 @@
 {
-  "framework": "react-router",
-  "regions": ["iad1"],
+  "buildCommand": "pnpm build",
+  "outputDirectory": "build/client",
   "rewrites": [
     {
       "source": "/api/geetest/:path*",
