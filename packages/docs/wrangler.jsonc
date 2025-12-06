@@ -11,7 +11,7 @@
 	"services": [
 		{
 			"binding": "WORKER_SELF_REFERENCE",
-			"service": "docs"
+			"service": "karin-plugin-kkk"
 		}
 	],
 	"images": {
