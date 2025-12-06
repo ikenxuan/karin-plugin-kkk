@@ -5,7 +5,7 @@
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",
-    "start": "react-router-serve ./build/server/server.js",
+    "start": "react-router-serve ./build/server/index.js",
     "preview": "pnpm start",
     "types:check": "react-router typegen && fumadocs-mdx && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
