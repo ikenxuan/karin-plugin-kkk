@@ -6,8 +6,15 @@ import mdx from 'fumadocs-mdx/vite';
 import * as MdxConfig from './source.config';
 
 // add other Fumadocs deps as needed
-const FumadocsDeps = ['fumadocs-core', 'fumadocs-ui']
-const SSRNoExternal: (string | RegExp)[] = [/^@lobehub\/.*/]
+const FumadocsDeps = ['fumadocs-core', 'fumadocs-ui', 'fumadocs-mdx']
+const SSRNoExternal: (string | RegExp)[] = [
+  /^@lobehub\/.*/,
+  /^@heroui\/.*/,
+  /^@radix-ui\/.*/,
+  /^fumadocs-.*/,
+  'framer-motion',
+  'motion',
+]
 
 export default defineConfig({
   plugins: [

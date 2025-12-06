@@ -1,5 +1,4 @@
 {
-  "buildCommand": "pnpm build",
   "framework": "react-router",
   "regions": ["iad1"],
   "rewrites": [
