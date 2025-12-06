@@ -5,6 +5,12 @@ description: 赞助与支持
 
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 import { SponsorList } from '../../../app/components/sponsor-list';
+import { Meteors } from '../../../app/components/ui/meteors';
+
+{/* 流星效果 - 覆盖整个页面前景 */}
+<div style={{ position: 'fixed', inset: 0, zIndex: 9999, pointerEvents: 'none', overflow: 'hidden' }}>
+  <Meteors number={50} />
+</div>
 
 如果本项目对你有帮助，欢迎前往 [GitHub](https://github.com/ikenxuan/karin-plugin-kkk) 给个 ⭐ **Star**～
 

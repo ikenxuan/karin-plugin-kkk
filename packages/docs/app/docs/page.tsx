@@ -14,6 +14,7 @@ import { ImageZoom } from 'fumadocs-ui/components/image-zoom';
 import * as Twoslash from 'fumadocs-twoslash/ui';
 import { Mermaid } from '@/components/Mermaid';
 import { LinkPreview } from '@/components/ui/link-preview';
+import { Meteors } from '@/components/ui/meteors';
 import browserCollections from 'fumadocs-mdx:collections/browser';
 import { baseOptions } from '@/lib/layout.shared';
 import { DocsFooter, type DocsFooterProps } from '@/components/DocsFooter';
@@ -98,7 +99,7 @@ const clientLoader = browserCollections.docs.createClientLoader({
         <DocsDescription>{frontmatter.description}</DocsDescription>
         <PageActions />
         <DocsBody>
-          <Mdx components={{ ...defaultMdxComponents, ...Twoslash, Mermaid, LinkPreview, img: (props) => <ImageZoom {...(props as any)} /> }} />
+          <Mdx components={{ ...defaultMdxComponents, ...Twoslash, Mermaid, LinkPreview, Meteors, img: (props) => <ImageZoom {...(props as any)} /> }} />
         </DocsBody>
       </DocsPage>
     );

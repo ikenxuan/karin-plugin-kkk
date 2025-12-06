@@ -254,12 +254,18 @@ importers:
       react-router:
         specifier: ^7.9.6
         version: 7.9.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      rough-notation:
+        specifier: ^0.5.1
+        version: 0.5.1
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
       tailwindcss:
         specifier: 4.1.17
         version: 4.1.17
+      tw-animate-css:
+        specifier: 1.4.0
+        version: 1.4.0
       twoslash:
         specifier: ^0.3.4
         version: 0.3.4(typescript@5.9.3)
@@ -11273,6 +11279,9 @@ packages:
     resolution: {integrity: sha512-w8GmOxZfBmKknvdXU1sdM9NHcoQejwF/4mNgj2JuEEdRaHwwF12K7e9eXn1nLZ07ad+du76mkVsyeb2rKGllsA==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
+
+  rough-notation@0.5.1:
+    resolution: {integrity: sha512-ITHofTzm13cWFVfoGsh/4c/k2Mg8geKgBCwex71UZLnNuw403tCRjYPQ68jSAd37DMbZIePXPjDgY0XdZi9HPw==}
 
   roughjs@4.6.6:
     resolution: {integrity: sha512-ZUz/69+SYpFN/g/lUlo2FXcIjRkSu3nDarreVdGGndHEBJ6cXPdKguS8JGxwj5HA5xIbVKSmLgr5b3AWxtRfvQ==}
@@ -26164,6 +26173,8 @@ snapshots:
       '@rollup/rollup-win32-x64-gnu': 4.53.3
       '@rollup/rollup-win32-x64-msvc': 4.53.3
       fsevents: 2.3.3
+
+  rough-notation@0.5.1: {}
 
   roughjs@4.6.6:
     dependencies:
