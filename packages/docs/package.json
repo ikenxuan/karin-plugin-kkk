@@ -49,6 +49,7 @@
     "@react-router/dev": "^7.9.0",
     "@react-router/serve": "^7.9.6",
     "@types/mdx": "^2.0.13",
+    "@vercel/react-router": "^1.2.4",
     "react-router-devtools": "^6.0.0",
     "serve": "^14.2.5",
     "vite": "^7.2.6",
