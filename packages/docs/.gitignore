@@ -1,11 +1,26 @@
-.DS_Store
-/node_modules/
+# deps
+/node_modules
 
-# React Router
-/.react-router/
-/build/
+# generated content
 .source
 
-# Local Netlify folder
-.netlify
+# test & build
+/coverage
+/.next/
+/out/
+/build
+*.tsbuildinfo
+
+# misc
+.DS_Store
+*.pem
+/.pnp
+.pnp.js
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# others
+.env*.local
 .vercel
+next-env.d.ts
