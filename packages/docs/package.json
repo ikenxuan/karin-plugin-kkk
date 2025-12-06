@@ -9,12 +9,17 @@
     "start": "next start",
     "types:check": "fumadocs-mdx && tsc --noEmit",
     "postinstall": "fumadocs-mdx",
-    "lint": "eslint"
+    "lint": "eslint",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
     "@heroui/react": "2.8.5",
     "@heroui/theme": "2.4.23",
     "@lobehub/icons": "^2.43.1",
+    "@opennextjs/cloudflare": "^1.14.4",
     "@orama/orama": "^3.1.16",
     "@radix-ui/react-hover-card": "^1.1.15",
     "class-variance-authority": "^0.7.1",
@@ -37,13 +42,14 @@
     "twoslash": "^0.3.4"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.3",
     "@tailwindcss/postcss": "^4.1.16",
     "@types/mdx": "^2.0.13",
     "@types/node": "^24.10.0",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
-    "postcss": "^8.5.6",
     "eslint-config-next": "^16.0.2",
-    "@eslint/eslintrc": "^3.3.3"
+    "postcss": "^8.5.6",
+    "wrangler": "^4.53.0"
   }
 }

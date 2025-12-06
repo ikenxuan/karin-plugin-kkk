@@ -16,7 +16,7 @@
     "dev": "pnpm --filter karin-plugin-kkk run dev",
     "docs": "pnpm --filter docs run dev",
     "lint": "pnpm -r run lint",
-    "prepare": "husky",
+    "prepare": "husky && pnpm sort",
     "sort": "pnpm -r sort",
     "template": "pnpm --filter template run dev",
     "watch": "pnpm --filter karin-plugin-kkk run watch",
