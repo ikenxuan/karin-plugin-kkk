@@ -1,4 +1,5 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
+import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler';
 
 export function baseOptions(): BaseLayoutProps {
   return {
@@ -12,5 +13,8 @@ export function baseOptions(): BaseLayoutProps {
         external: true,
       },
     ],
+    themeSwitch: {
+      component: <AnimatedThemeToggler />,
+    },
   };
 }

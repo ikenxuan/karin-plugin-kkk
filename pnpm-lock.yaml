@@ -194,6 +194,9 @@ importers:
       '@orama/orama':
         specifier: ^3.1.16
         version: 3.1.16
+      '@radix-ui/react-hover-card':
+        specifier: ^1.1.15
+        version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@react-router/node':
         specifier: ^7.9.6
         version: 7.9.6(react-router@7.9.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(typescript@5.9.3)
@@ -242,6 +245,9 @@ importers:
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      qss:
+        specifier: ^3.0.0
+        version: 3.0.0
       react-icons:
         specifier: ^5.5.0
         version: 5.5.0(react@19.2.0)
@@ -10423,6 +10429,10 @@ packages:
   qs@6.13.0:
     resolution: {integrity: sha512-+38qI9SOr8tfZ4QmJNplMUxqjbe7LKvvZgWdExBOmd+egZTtjLB67Gu0HRX3u/XOq7UU2Nx6nsjvS16Z9uwfpg==}
     engines: {node: '>=0.6'}
+
+  qss@3.0.0:
+    resolution: {integrity: sha512-ZHoCB3M/3Voev64zhLLUOKDtaEdJ/lymsJJ7R3KBusVZ2ovNiIB7XOq3Xh6V1a8O+Vho+g2B5YElq9zW7D8aQw==}
+    engines: {node: '>=4'}
 
   quansync@0.2.11:
     resolution: {integrity: sha512-AifT7QEbW9Nri4tAwR5M/uzpBuqfZf+zwaEM/QkzEjj7NBuFD2rBuy0K3dE+8wltbezDV7JMA0WfnCPYRSYbXA==}
@@ -24975,6 +24985,8 @@ snapshots:
   qs@6.13.0:
     dependencies:
       side-channel: 1.1.0
+
+  qss@3.0.0: {}
 
   quansync@0.2.11: {}
 

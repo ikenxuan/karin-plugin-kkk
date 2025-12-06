@@ -17,7 +17,7 @@ export const AuroraBackground = ({
     <main>
       <div
         className={cn(
-          "flex relative flex-col w-full h-screen overflow-hidden transition-bg bg-zinc-50 text-slate-950 dark:bg-zinc-900",
+          "flex relative flex-col w-full h-screen overflow-hidden transition-bg bg-fd-background text-fd-foreground",
           className,
         )}
         {...props}
