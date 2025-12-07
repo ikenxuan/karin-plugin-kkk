@@ -5,22 +5,22 @@ description: karin-plugin-kkk 文档
 
 import { Cards, Card } from 'fumadocs-ui/components/card';
 
-karin-plugin-kkk 是 Karin 机器人的多平台内容解析与推送插件。
+`karin-plugin-kkk` 是基于 <LinkPreview url="https://github.com/KarinJS/Karin" className="font-bold text-fd-primary hover:underline">Karin</LinkPreview> 框架开发的功能插件。
+
+## 核心业务
+
+本插件专注于**多平台短视频/图文内容的解析与推送**，旨在为群聊提供极致的媒体分享体验。
+
+通过监听并解析用户发送的分享链接，插件会自动提取视频、图集及评论区热评，并使用精美的 React 模板渲染为图片发送，让群友无需跳转 APP 即可浏览完整内容。
 
 ## 支持平台
 
-| 平台 | 解析 | 评论 | 推送 | 扫码登录 |
+| 平台 | 解析能力 | 评论区渲染 | 动态推送 | 扫码登录 |
 |-----|:---:|:---:|:---:|:---:|
-| 抖音 | ✓ | ✓ | ✓ | ✓ |
-| B站 | ✓ | ✓ | ✓ | ✓ |
-| 快手 | ✓ | ✓ | — | — |
-| 小红书 | ✓ | ✓ | — | — |
-
-## 核心功能
-
-- **内容解析**：自动识别链接，返回视频信息、评论截图、视频文件
-- **动态推送**：订阅创作者，定时推送新动态到群聊
-- **精美渲染**：React 模板渲染，支持主题切换
+| **抖音** | ✓ | ✓ | ✓ | ✓ |
+| **B站** | ✓ | ✓ | ✓ | ✓ |
+| **快手** | ✓ | ✓ | — | — |
+| **小红书** | ✓ | ✓ | — | — |
 
 <Cards>
   <Card title="快速开始" href="/docs/guide/quick-start" />

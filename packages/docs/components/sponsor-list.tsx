@@ -1,29 +1,29 @@
 interface Sponsor {
-  name: string
-  amount: number
-  note?: string
+  name: string;
+  amount: number;
+  note?: string;
 }
 
 const sponsors: Sponsor[] = [
-  { name: '止语语', amount: 25.00 },
-  { name: '流月e', amount: 50.00 },
-  { name: '流月e', amount: 50.00 },
-  { name: '小什', amount: 50.00 },
-  { name: '小什', amount: 3.00 },
-  { name: '雾里', amount: 5.00 },
-  { name: '止语语', amount: 25.60 },
-  { name: '雾里', amount: 5.20 },
-  { name: '雾里', amount: 5.20 },
-  { name: '雾里', amount: 5.20 },
-]
+  { name: '止语语', amount: 25.0 },
+  { name: '流月e', amount: 50.0 },
+  { name: '流月e', amount: 50.0 },
+  { name: '小什', amount: 50.0 },
+  { name: '小什', amount: 3.0 },
+  { name: '雾里', amount: 5.0 },
+  { name: '止语语', amount: 25.6 },
+  { name: '雾里', amount: 5.2 },
+  { name: '雾里', amount: 5.2 },
+  { name: '雾里', amount: 5.2 },
+];
 
 function mergeSponsors(list: Sponsor[]) {
-  const map = new Map<string, { amount: number; notes: string[] }>()
+  const map = new Map<string, { amount: number; notes: string[] }>();
   for (const s of list) {
-    const existing = map.get(s.name) || { amount: 0, notes: [] }
-    existing.amount += s.amount
-    if (s.note) existing.notes.push(s.note)
-    map.set(s.name, existing)
+    const existing = map.get(s.name) || { amount: 0, notes: [] };
+    existing.amount += s.amount;
+    if (s.note) existing.notes.push(s.note);
+    map.set(s.name, existing);
   }
   return Array.from(map.entries())
     .map(([name, { amount, notes }]) => ({
@@ -31,11 +31,11 @@ function mergeSponsors(list: Sponsor[]) {
       amount,
       note: notes.filter(Boolean).join('、'),
     }))
-    .sort((a, b) => b.amount - a.amount)
+    .sort((a, b) => b.amount - a.amount);
 }
 
 export function SponsorList() {
-  const merged = mergeSponsors(sponsors)
+  const merged = mergeSponsors(sponsors);
 
   return (
     <div className="my-4 overflow-hidden rounded-lg border">
@@ -58,5 +58,5 @@ export function SponsorList() {
         </tbody>
       </table>
     </div>
-  )
+  );
 }

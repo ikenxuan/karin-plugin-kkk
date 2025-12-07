@@ -1,139 +1,63 @@
 ---
 title: 配置说明
-description: 各项配置详解
+description: 推荐使用 WebUI 进行配置
 ---
 
-import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
 import { Callout } from 'fumadocs-ui/components/callout';
+import { Steps, Step } from 'fumadocs-ui/components/steps';
+import { Cards, Card } from 'fumadocs-ui/components/card';
 
-配置文件位于插件数据目录，推荐通过 Karin WebUI 可视化修改。
+## 推荐配置方式
 
-## 通用配置
+本插件配置项多达近百项，涵盖各平台解析规则、推送策略、渲染参数等。为降低使用门槛并减少格式错误，**强烈推荐**通过 **Karin WebUI** 进行可视化配置。
 
-```yaml title="app.yaml"
-# 渲染精度 50~200，建议 100
-renderScale: 100
-
-# 主题：0 自动、1 浅色、2 深色
-Theme: 0
-
-# 表情回应
-EmojiReply: true
-
-# Web 页面鉴权
-webAuth: true
-```
-
-## 平台配置
-
-<Tabs items={['抖音', 'B站', '快手', '小红书']}>
-<Tab value="抖音">
-
-```yaml title="douyin.yaml"
-switch: true          # 解析开关
-tip: false            # 解析提示
-
-# 发送内容：info(信息) / comment(评论) / video(视频)
-sendContent:
-  - info
-  - comment
-  - video
-
-numcomment: 5         # 评论数量
-videoQuality: '4k'    # 画质：adapt / 540p / 720p / 1080p / 2k / 4k
-maxAutoVideoSize: 50  # 自动画质时的体积上限(MB)
-videoInfoMode: image  # 信息模式：text / image
-```
-
-**推送配置：**
-```yaml
-push:
-  switch: true
-  permission: master  # 权限：all / admin / master
-  cron: '*/10 * * * *'  # 每10分钟检查一次
-  parsedynamic: false   # 推送时是否解析作品
-```
-
-</Tab>
-<Tab value="B站">
-
-```yaml title="bilibili.yaml"
-switch: true
-tip: false
-
-sendContent:
-  - info
-  - video
-  - comment
-
-numcomment: 5
-# 画质：0 自动 / 64 720P / 80 1080P / 120 4K / 127 8K
-videoQuality: 127
-maxAutoVideoSize: 50
-imageLayout: auto     # 图片布局：vertical / waterfall / grid / auto
-videoInfoMode: image
-```
-
-**推送配置：**
-```yaml
-push:
-  switch: true
-  permission: master
-  cron: '*/10 * * * *'
-  parsedynamic: false
-  pushVideoQuality: 0
-```
-
-</Tab>
-<Tab value="快手">
-
-```yaml title="kuaishou.yaml"
-switch: true
-tip: false
-comment: true
-numcomment: 5
-```
-
-</Tab>
-<Tab value="小红书">
-
-```yaml title="xiaohongshu.yaml"
-switch: true
-tip: true
-
-# 发送内容：info / comment / image / video
-sendContent:
-  - info
-  - comment
-  - image
-  - video
-
-numcomment: 10
-videoQuality: '4k'
-maxAutoVideoSize: 50
-```
-
-</Tab>
-</Tabs>
-
-## 推送列表
-
-使用命令 `#设置抖音推送 + 抖音号` 或 `#设置B站推送 + UID` 配置，也可手动编辑：
-
-```yaml title="pushlist.yaml"
-douyin:
-  - short_id: "yuanshen_mihoyo"  # 抖音号
-    group_id:
-      - "群号:机器人账号"
-    remark: "原神官方"
-
-bilibili:
-  - host_mid: 401742377  # UP主UID
-    group_id:
-      - "群号:机器人账号"
-    remark: "某UP主"
-```
-
-<Callout type="info">
-再次发送相同的订阅命令即可取消订阅。
+<Callout type="warn" title="不推荐手动修改配置文件">
+手动编辑配置文件极易出错，且部分配置存在联动关系，手动修改可能导致未知的异常。
 </Callout>
+
+<Callout type="info" title="未来计划">
+未来版本计划**逐步弃用可读写的 YAML 配置文件**，转而采用数据库存储用户配置，届时手动修改将不再生效。
+</Callout>
+
+## 如何进入配置页面
+
+<Steps>
+<Step>
+
+### 启动 Karin
+
+确保 Karin 框架已正常运行。
+
+</Step>
+<Step>
+
+### 访问 WebUI 控制台
+
+在浏览器中打开 Karin WebUI 地址。
+
+</Step>
+<Step>
+
+### 导航至插件配置
+
+依次点击：**插件管理** → **插件配置** → **karin-plugin-kkk**
+
+</Step>
+</Steps>
+
+## 遇到问题？
+
+如果遇到修改配置后不生效，或有任何配置相关的疑问，请通过以下渠道反馈：
+
+<Cards>
+  <Card 
+    title="QQ 群" 
+    description="795874649 - 实时交流与反馈"
+    href="https://qm.qq.com/q/DgLbCERYVG"
+  />
+  <Card 
+    title="GitHub Issue" 
+    description="提交问题或功能建议"
+    href="https://github.com/ikenxuan/karin-plugin-kkk/issues/new/choose"
+  />
+</Cards>

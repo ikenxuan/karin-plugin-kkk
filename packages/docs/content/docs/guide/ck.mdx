@@ -12,6 +12,8 @@ Cookies 仅用于请求平台官方 API，不会上传到任何第三方。
 
 ## 方式一：扫码登录（推荐）
 
+扫码登录暂时只支持抖音与B站。
+
 在群聊中发送：
 
 ```
@@ -24,13 +26,13 @@ Cookies 仅用于请求平台官方 API，不会上传到任何第三方。
 ## 方式二：浏览器获取
 
 1. 打开浏览器，访问对应平台并登录
-2. 按 F12 打开开发者工具
+2. 按 F12 打开开发者工具（不同浏览器打开方式不同，如 Chrome 和 Edge 按 F12 或右键点击页面选择“检查”）
 3. 切换到 Network（网络）标签
 4. 刷新页面，找到任意请求
 5. 在请求头中复制 Cookie 值
 
 <Accordions>
-<Accordion title="图文教程">
+<Accordion title="图文教程（Chrome）">
 
 ![获取Cookie教程](../../assets/cases/intro/pic1.jpg)
 
@@ -39,11 +41,11 @@ Cookies 仅用于请求平台官方 API，不会上传到任何第三方。
 
 ## 方式三：移动端获取
 
-使用 [Via 浏览器](https://res.viayoo.com/v1/via-release-cn.apk) 访问平台网页版并登录：
+使用 <LinkPreview url="https://viayoo.com/zh-cn" className="font-medium text-fd-primary hover:underline">Via 浏览器</LinkPreview>  访问平台网页版并登录：
 
-- 抖音：www.douyin.com
-- B站：www.bilibili.com
-- 快手：www.kuaishou.com
+- 抖音：<LinkPreview url="https://www.douyin.com" className="font-medium text-fd-primary hover:underline">www.douyin.com</LinkPreview>
+- B站：<LinkPreview url="https://www.bilibili.com" className="font-medium text-fd-primary hover:underline">www.bilibili.com</LinkPreview>
+- 快手：<LinkPreview url="https://www.kuaishou.com" className="font-medium text-fd-primary hover:underline">www.kuaishou.com</LinkPreview>
 
 登录后点击 **左上角菜单** → **查看 Cookies** → **复制文本**
 
