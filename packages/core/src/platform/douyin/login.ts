@@ -2,17 +2,21 @@ import fs from 'node:fs'
 import { platform } from 'node:os'
 import path from 'node:path'
 
-import { launch } from '@karinjs/plugin-puppeteer'
+import { snapka } from '@snapka/puppeteer'
 import { newInjectedPage } from 'fingerprint-injector'
 import { karin, karinPathTemp, logger, Message } from 'node-karin'
 
 import { Common, Render, Root } from '@/module'
 import { Config } from '@/module/utils/Config'
 
+type Page = Awaited<ReturnType<Awaited<Awaited<ReturnType<typeof snapka.launch>>['browser']['newPage']>>>
+
 /**
  * 截图函数
+ * @param page Puppeteer 页面对象
+ * @param screenshotPath 截图保存路径
  */
-const safeScreenshot = async (page: Awaited<ReturnType<Awaited<ReturnType<typeof launch>>['browser']['newPage']>>, screenshotPath: string) => {
+const safeScreenshot = async (page: Page, screenshotPath: string) => {
   try {
     await page.screenshot({
       path: screenshotPath
@@ -26,9 +30,8 @@ const safeScreenshot = async (page: Awaited<ReturnType<Awaited<ReturnType<typeof
 export const douyinLogin = async (e: Message) => {
   const msg_id: string[] = []
   try {
-    const { browser } = await launch({
-      headless: true,
-      downloadBrowser: 'chrome-headless-shell',
+    const puppeteer = await snapka.launch({
+      headless: 'new',
       protocolTimeout: 60000,
       args: [
         '--disable-blink-features=AutomationControlled', // 禁用自动化控制特征，避免网站检测到自动化工具
@@ -83,12 +86,12 @@ export const douyinLogin = async (e: Message) => {
       return 'linux'
     }
 
-    const page = await newInjectedPage(browser, {
+    const page = await newInjectedPage(puppeteer.browser, {
       fingerprintOptions: {
         devices: ['desktop'],
         operatingSystems: [getOperatingSystem()]
       }
-    }) as Awaited<ReturnType<Awaited<ReturnType<typeof launch>>['browser']['newPage']>>
+    }) as Page
 
     // 激进地拦截资源，只保留必要的 HTML、JS 和二维码图片
     await page.setRequestInterception(true)
@@ -169,7 +172,7 @@ export const douyinLogin = async (e: Message) => {
         logger.error('获取二维码失败:', error)
         await e.reply('获取二维码失败，请查看控制台日志', { reply: true })
       }
-      await browser.close()
+      await puppeteer.browser.close()
       return true
     }
 
@@ -262,7 +265,7 @@ export const douyinLogin = async (e: Message) => {
 
                   // 保存 cookie
                   logger.debug('开始获取 cookies...')
-                  const cookies = await browser.cookies()
+                  const cookies = await puppeteer.browser.cookies()
                   logger.debug(`获取到 ${cookies.length} 个 cookies`)
                   const cookieString = cookies.map(cookie => `${cookie.name}=${cookie.value}`).join('; ')
                   logger.debug('开始保存 cookies...')
@@ -276,7 +279,7 @@ export const douyinLogin = async (e: Message) => {
                   }))
 
                   logger.mark('关闭浏览器...')
-                  await browser.close()
+                  await puppeteer.browser.close()
                   logger.mark('浏览器已关闭')
                   resolve(true)
                   return
@@ -359,7 +362,7 @@ export const douyinLogin = async (e: Message) => {
                             logger.warn('2FA验证码输入超时')
                             clearTimeout(timer)
                             if (gcInterval) clearInterval(gcInterval)
-                            await browser.close()
+                            await puppeteer.browser.close()
                             // 撤回所有之前的消息
                             await Promise.all(msg_id.map(async (id) => {
                               await e.bot.recallMsg(e.contact, id)
@@ -438,7 +441,7 @@ export const douyinLogin = async (e: Message) => {
                           logger.warn('验证码错误次数过多，登录失败')
                           clearTimeout(timer)
                           if (gcInterval) clearInterval(gcInterval)
-                          await browser.close()
+                          await puppeteer.browser.close()
                           // 撤回所有之前的消息
                           await Promise.all(msg_id.map(async (id) => {
                             await e.bot.recallMsg(e.contact, id)
@@ -456,7 +459,7 @@ export const douyinLogin = async (e: Message) => {
                       logger.error('二次验证处理失败:', err)
                       clearTimeout(timer)
                       if (gcInterval) clearInterval(gcInterval)
-                      await browser.close()
+                      await puppeteer.browser.close()
                       // 撤回所有之前的消息
                       await Promise.all(msg_id.map(async (id) => {
                         await e.bot.recallMsg(e.contact, id)
@@ -478,14 +481,14 @@ export const douyinLogin = async (e: Message) => {
 
       if (!loginResult) {
         logger.warn('登录超时或失败')
-        await browser.close()
+        await puppeteer.browser.close()
         await e.reply('登录超时！二维码已失效！', { reply: true })
         return true
       }
     } catch (err) {
       logger.error('登录流程出错:', err)
       if (gcInterval) clearInterval(gcInterval)
-      await browser.close()
+      await puppeteer.browser.close()
       await e.reply('登录过程出错，请查看控制台日志', { reply: true })
     }
   } catch (error: any) {
@@ -500,7 +503,7 @@ export const douyinLogin = async (e: Message) => {
  * @param page puppeteer的页面对象
  * @returns 二维码的base64数据
  */
-const waitQrcode = async (page: Awaited<ReturnType<Awaited<ReturnType<typeof launch>>['browser']['newPage']>>) => {
+const waitQrcode = async (page: Page) => {
   const qrCodeSelector = 'img[aria-label="二维码"]'
   try {
     await page.waitForSelector(qrCodeSelector, { timeout: 60000 })
