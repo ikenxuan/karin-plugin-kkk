@@ -11,6 +11,7 @@
     "build:all": "kkk build core docs template web",
     "build:core": "kkk build core",
     "build:docs": "kkk build docs",
+    "deno:build:docs": "kkk build docs",
     "build:template": "kkk build template",
     "build:web": "kkk build web",
     "dev": "pnpm --filter karin-plugin-kkk run dev",
