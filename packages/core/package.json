@@ -56,11 +56,12 @@
     "fingerprint-injector": "^2.1.78"
   },
   "devDependencies": {
+    "@karinjs/plugin-puppeteer": "^1.1.2",
     "@rollup/plugin-terser": "^0.4.4",
+    "@snapka/puppeteer": "^0.1.5",
     "@types/connect-history-api-fallback": "^1.5.4",
     "@types/express": "5.0.6",
     "@types/heic-convert": "^2.1.0",
-    "@snapka/puppeteer": "^0.1.5",
     "connect-history-api-fallback": "^2.0.0",
     "cookie": "^1.1.1",
     "date-fns": "^4.1.0",
@@ -69,7 +70,7 @@
     "http-proxy-middleware": "3.0.5",
     "qr-code-styling": "^1.9.2",
     "template": "workspace:*",
-    "tsdown": "^0.16.8",
+    "tsdown": "^0.17.0",
     "vite": "npm:rolldown-vite@^7.2.9",
     "vitest": "^4.0.14"
   },
