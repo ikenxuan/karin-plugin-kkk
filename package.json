@@ -55,6 +55,9 @@
     "@types/react": "^19.2.7",
     "fingerprint-injector": "^2.1.78"
   },
+  "peerDependencies": {
+    "@snapka/puppeteer": "*"
+  },
   "engines": {
     "node": ">=18.0.0"
   },
