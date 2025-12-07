@@ -2,6 +2,20 @@
 
 # Changelog
 
+## [2.15.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.15.1...v2.15.2) (2025-12-07)
+
+
+### 🐛 错误修复
+
+* 更新小红书算法v4.86.0 ([d133a54](https://github.com/ikenxuan/karin-plugin-kkk/commit/d133a54b37b3cecb81ae6b92e72d48dc95629e12))
+* 更新状态判断失误 ([0598334](https://github.com/ikenxuan/karin-plugin-kkk/commit/0598334cd281e040a7dba7d8349ccd6c0ce3f2d9))
+* 迁移到@snapka/puppeteer ([#232](https://github.com/ikenxuan/karin-plugin-kkk/issues/232)) ([848926b](https://github.com/ikenxuan/karin-plugin-kkk/commit/848926bb4463149847d0f40e0bb0e5c4d2f0bc64))
+
+
+### 📝 文档更新
+
+* readme ([bdb3468](https://github.com/ikenxuan/karin-plugin-kkk/commit/bdb3468d67bef7df4c81ebbbd400f00ae4b87a31))
+
 ## [2.15.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.15.0...v2.15.1) (2025-12-02)
 
 
