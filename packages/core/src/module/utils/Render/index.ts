@@ -51,11 +51,12 @@ export const Render = async <P extends DynamicRenderPath> (
   if (!Config.app.RemoveWatermark) {
     try {
       const { db } = await import('node-karin')
+      const { isSemverGreater } = await import('../semver')
       const UPDATE_LOCK_KEY = 'kkk:update:lock'
       const lockedVersion = await db.get(UPDATE_LOCK_KEY)
       if (typeof lockedVersion === 'string' && lockedVersion.length > 0) {
-        // 如果数据库中有锁定的版本号，说明有可用更新
-        hasUpdate = true
+        // 锁定版本必须严格大于当前版本才认为有可用更新
+        hasUpdate = isSemverGreater(lockedVersion, Root.pluginVersion)
       }
     } catch {
       // 忽略错误，默认无更新
