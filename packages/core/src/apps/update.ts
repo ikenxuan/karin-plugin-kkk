@@ -101,6 +101,7 @@ export const kkkUpdate = hooks.message.friend(async (e, next) => {
     const msgId = (await db.get(UPDATE_MSGID_KEY)) as string
     if (e.replyId === msgId) {
       try {
+        e.reply('开始更新 karin-plugin-kkk ...', { reply: true })
         const upd = await checkPkgUpdate(Root.pluginName, { compare: 'semver' })
         if (upd.status === 'yes') {
           const result = await updatePkg(Root.pluginName)
@@ -116,15 +117,15 @@ export const kkkUpdate = hooks.message.friend(async (e, next) => {
             }
             await restart(e.selfId, e.contact, e.messageId)
           } else {
-            await e.reply(`${Root.pluginName} 更新失败: ${result.data ?? '更新执行失败'}`)
+            e.reply(`${Root.pluginName} 更新失败: ${result.data ?? '更新执行失败'}`)
           }
         } else if (upd.status === 'no') {
-          await e.reply('未检测到可更新版本。')
+          e.reply('未检测到可更新版本。')
         } else {
-          await e.reply(`${Root.pluginName} 更新失败: ${upd.error?.message ?? String(upd.error)}`)
+          e.reply(`${Root.pluginName} 更新失败: ${upd.error?.message ?? String(upd.error)}`)
         }
       } catch (error: any) {
-        await e.reply(`${Root.pluginName} 更新失败: ${error.message}`)
+        e.reply(`${Root.pluginName} 更新失败: ${error.message}`)
       }
     }
   }
@@ -134,17 +135,17 @@ export const kkkUpdate = hooks.message.friend(async (e, next) => {
 export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, async (e: Message) => {
   const upd = await checkPkgUpdate(Root.pluginName, { compare: 'semver' })
   if (upd.status === 'error') {
-    await e.reply(`获取远程版本失败：${upd.error?.message ?? String(upd.error)}`)
+    e.reply(`获取远程版本失败：${upd.error?.message ?? String(upd.error)}`)
     return
   }
   if (upd.status === 'no') {
-    await e.reply(`当前已是最新版本：${upd.local}`, { reply: true })
+    e.reply(`当前已是最新版本：${upd.local}`, { reply: true })
     return
   }
 
   // 防守性校验：远程必须严格大于本地，否则视为无更新
   if (upd.status === 'yes' && !isSemverGreater(upd.remote, upd.local)) {
-    await e.reply(`当前已是最新或预览版本：${upd.local}`, { reply: true })
+    e.reply(`当前已是最新或预览版本：${upd.local}`, { reply: true })
     return
   }
 
@@ -155,9 +156,9 @@ export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, async (e: Message
     isRemote: true
   })
   if (ChangeLogImg) {
-    await e.reply([segment.text(`${Root.pluginName} 的更新日志：`), ...ChangeLogImg], { reply: true })
+    e.reply([segment.text(`${Root.pluginName} 的更新日志：`), ...ChangeLogImg], { reply: true })
   } else {
-    await e.reply('获取更新日志失败，更新进程继续......', { reply: true })
+    e.reply('获取更新日志失败，更新进程继续......', { reply: true })
   }
 
   // 执行更新并重启
@@ -173,12 +174,12 @@ export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, async (e: Message
           await db.del(UPDATE_LOCK_KEY)
         } catch { }
       }
-      await restart(e.selfId, e.contact, e.messageId)
+      await restart(e.selfId, e.contact, msgResult.messageId)
     } else {
-      await e.reply(`${Root.pluginName} 更新失败: ${result.data ?? '更新执行失败'}`)
+      e.reply(`${Root.pluginName} 更新失败: ${result.data ?? '更新执行失败'}`)
     }
   } catch (error: any) {
-    await e.reply(`${Root.pluginName} 更新失败: ${error.message}`)
+    e.reply(`${Root.pluginName} 更新失败: ${error.message}`)
   }
 }, { name: 'kkk-更新' })
 
@@ -188,7 +189,7 @@ export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, async (e: Message
 //   return Handler(e)
 // })
 
-export const update = karin.task('kkk-更新检测', '*/10 * * * *', Handler, {
+export const update = karin.task('kkk-更新检测', '*/5 * * * *', Handler, {
   name: 'kkk-更新检测',
   log: false
 })
