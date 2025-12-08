@@ -57,14 +57,15 @@ const getRemoteBuildMetadata = async (version: string) => {
 
 /**
  * 获取变更日志图片
- * @param props 获取变更日志图片选项
+ * @param props - 获取变更日志图片选项
+ * @param props.isRemote - 是否强制获取远程变更日志
  * @returns 变更日志图片base64字符串
  */
-export const getChangelogImage = async (props: Omit<ChangelogProps['data'], 'markdown'>) => {
+export const getChangelogImage = async (props: Omit<ChangelogProps['data'], 'markdown'> & { isRemote?: boolean }) => {
   let changelog = ''
   let buildTime: string | undefined
 
-  if (props.Tip) {
+  if (props.Tip || props.isRemote) {
     const urls = [
       // 国内代理
       `https://jsd.onmicrosoft.cn/npm/${Root.pluginName}@${props.remoteVersion}/CHANGELOG.md`,
