@@ -116,7 +116,7 @@ importers:
   packages/core:
     dependencies:
       '@types/react':
-        specifier: ^19.2.7
+        specifier: '*'
         version: 19.2.7
       fingerprint-injector:
         specifier: ^2.1.78

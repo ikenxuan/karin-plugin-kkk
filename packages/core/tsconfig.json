@@ -7,6 +7,7 @@
     "outDir": "./lib",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@/*": [
@@ -17,9 +18,6 @@
       ],
       "template/*": [
         "../template/src/*"
-      ],
-      "@karinjs/puppeteer": [
-        "node_modules/@karinjs/puppeteer-types"
       ],
     },
     "jsx": "react",
