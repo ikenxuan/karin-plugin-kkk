@@ -1,5 +1,6 @@
 {
   "recommendations": [
+    "ririd.packages",
     // === 代码质量和格式化 ===
     "dbaeumer.vscode-eslint",
     "usernamehw.errorlens",

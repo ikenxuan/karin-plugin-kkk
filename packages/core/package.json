@@ -52,7 +52,6 @@
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../template/src/dev/mock-server.ts\" --include \"../template/src/main.ts\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
-    "@types/react": "^19.2.7",
     "fingerprint-injector": "^2.1.78"
   },
   "devDependencies": {
@@ -75,7 +74,7 @@
     "vitest": "^4.0.14"
   },
   "peerDependencies": {
-    "@snapka/puppeteer": "*"
+    "@types/react": "*"
   },
   "engines": {
     "node": ">=18.0.0"

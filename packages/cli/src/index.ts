@@ -1,11 +1,8 @@
 #!/usr/bin/env node
-import { spawn } from 'node:child_process'
+import { spawn, execSync } from 'node:child_process'
+import { statSync, readdirSync } from 'node:fs'
+import { join } from 'node:path'
 import pc from 'picocolors'
-
-interface BuildTarget {
-  name: string
-  command: string[]
-}
 
 const TARGETS: Record<string, string[]> = {
   core: ['pnpm', '--filter', 'karin-plugin-kkk', 'run', 'build'],
@@ -102,12 +99,96 @@ async function main() {
   console.log(pc.bold('='.repeat(50)))
 
   if (allSuccess) {
+    // 如果构建了 core，统计 npm 包大小
+    if (targets.includes('core')) {
+      await printCorePackageSize()
+    }
     console.log(pc.bold(pc.green('\n🎉 所有包构建成功！')))
     process.exit(0)
   } else {
     console.log(pc.bold(pc.red('\n💥 构建失败！')))
     process.exit(1)
   }
+}
+
+function formatSize(bytes: number): string {
+  if (bytes < 1024) return bytes + ' B'
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB'
+  return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
+}
+
+function getDirSize(dir: string): number {
+  let size = 0
+  try {
+    const entries = readdirSync(dir, { withFileTypes: true })
+    for (const entry of entries) {
+      const fullPath = join(dir, entry.name)
+      if (entry.isDirectory()) {
+        size += getDirSize(fullPath)
+      } else if (entry.isFile()) {
+        size += statSync(fullPath).size
+      }
+    }
+  } catch {
+    // 目录不存在或无法访问
+  }
+  return size
+}
+
+function getFileSize(filePath: string): number {
+  try {
+    return statSync(filePath).size
+  } catch {
+    return 0
+  }
+}
+
+async function printCorePackageSize() {
+  const coreDir = 'packages/core'
+  
+  // 根据 package.json 的 files 字段统计
+  const files = ['config/', 'lib/', 'resources/', 'LICENSE', 'package.json', 'README.md', 'CHANGELOG.md']
+  
+  let totalSize = 0
+  const details: Array<{ name: string; size: number }> = []
+  
+  for (const file of files) {
+    const fullPath = join(coreDir, file)
+    let size = 0
+    if (file.endsWith('/')) {
+      size = getDirSize(fullPath)
+    } else {
+      size = getFileSize(fullPath)
+    }
+    if (size > 0) {
+      details.push({ name: file, size })
+      totalSize += size
+    }
+  }
+  
+  console.log('\n' + pc.bold('='.repeat(50)))
+  console.log(pc.bold(pc.cyan('📦 core 包发布大小统计:')))
+  details.forEach(d => {
+    console.log(`  ${d.name.padEnd(20)} ${formatSize(d.size)}`)
+  })
+  console.log(pc.bold(`\n  未压缩总大小: ${formatSize(totalSize)}`))
+  
+  // 使用 npm pack --dry-run 获取压缩后大小
+  try {
+    const output = execSync('npm pack --dry-run --json 2>&1', { 
+      cwd: coreDir, 
+      encoding: 'utf-8' 
+    })
+    const packInfo = JSON.parse(output)
+    if (Array.isArray(packInfo) && packInfo[0]?.size) {
+      console.log(pc.bold(pc.green(`  压缩后大小:   ${formatSize(packInfo[0].size)}`)))
+    }
+  } catch {
+    // 如果 npm pack 失败，尝试估算 gzip 压缩率（约 30%）
+    const estimatedSize = Math.round(totalSize * 0.3)
+    console.log(pc.bold(pc.yellow(`  预估压缩大小: ~${formatSize(estimatedSize)}`)))
+  }
+  console.log(pc.bold('='.repeat(50)))
 }
 
 main()

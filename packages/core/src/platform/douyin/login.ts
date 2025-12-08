@@ -9,7 +9,7 @@ import { karin, karinPathTemp, logger, Message } from 'node-karin'
 import { Common, Render, Root } from '@/module'
 import { Config } from '@/module/utils/Config'
 
-type Page = Awaited<ReturnType<Awaited<Awaited<ReturnType<typeof snapka.launch>>['browser']['newPage']>>>
+type Page = Awaited<ReturnType<Awaited<ReturnType<typeof snapka.launch>>['browser']['newPage']>>
 
 /**
  * 截图函数
