@@ -1,4 +1,3 @@
-import type { RequestHandler } from 'express'
 import {
   createBadRequestResponse,
   createServerErrorResponse,
@@ -6,6 +5,7 @@ import {
   getBot,
   logger
 } from 'node-karin'
+import type { RequestHandler } from 'node-karin/express'
 
 import { getBilibiliDB, getDouyinDB } from '@/module/db'
 import { getBilibiliData, getDouyinData } from '@/module/utils/amagiClient'

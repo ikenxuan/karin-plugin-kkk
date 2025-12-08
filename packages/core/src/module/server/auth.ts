@@ -1,7 +1,7 @@
 import crypto from 'node:crypto'
 
-import { RequestHandler } from 'express'
 import { createBadRequestResponse, createServerErrorResponse, logger } from 'node-karin'
+import { RequestHandler } from 'node-karin/express'
 
 /**
  * Base64解码

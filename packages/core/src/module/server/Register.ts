@@ -8,9 +8,9 @@ import Client, {
   logMiddleware } from '@ikenxuan/amagi'
 import history from 'connect-history-api-fallback'
 import * as cors from 'cors'
-import express from 'express'
 import * as httpProxy from 'http-proxy-middleware'
 import { app as karinApp, authMiddleware } from 'node-karin'
+import express from 'node-karin/express'
 
 import { Root } from '../../root'
 import { Config } from '../utils/Config'
@@ -92,7 +92,7 @@ staticRouter.use(
       }
     ],
     disableDotRule: true
-  })
+  }) as httpProxy.RequestHandler
 )
 
 staticRouter.use(express.static(path.join(Root.pluginPath, 'lib', 'web_chunk'), {

@@ -1,7 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import type { RequestHandler } from 'express'
 import {
   createBadRequestResponse,
   createNotFoundResponse,
@@ -10,6 +9,7 @@ import {
   logger
 } from 'node-karin'
 import axios from 'node-karin/axios'
+import type { RequestHandler } from 'node-karin/express'
 import template from 'node-karin/template'
 
 import { Common, Root } from '@/module/utils'

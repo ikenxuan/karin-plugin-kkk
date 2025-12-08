@@ -224,6 +224,7 @@ const handleBusinessError = async (
     }
   } catch (handlerError) {
     logger.error(`[ErrorHandler] 错误处理器本身发生错误: ${handlerError}`)
+    throw handlerError
   }
   return undefined
 }
@@ -232,10 +233,10 @@ const handleBusinessError = async (
 
 /** 函数式错误处理包装器 */
 export const wrapWithErrorHandler = <R>(
-  fn: (e: Message, next: () => unknown) => R | Promise<R>,
+  fn: (e: Message, next?: () => unknown) => R | Promise<R>,
   options: ErrorHandlerOptions
 ) => {
-  return async (e: Message, next: () => unknown): Promise<R> => {
+  return async (e: Message, next?: () => unknown): Promise<R> => {
     const ctx = logger.runContext(async () => fn(e, next))
 
     try {
