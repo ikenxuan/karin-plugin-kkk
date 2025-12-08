@@ -2,6 +2,10 @@
 
 # karin-plugin-kkk
 
+[![npm](https://img.shields.io/npm/v/karin-plugin-kkk?style=flat&logo=npm)](https://www.npmjs.com/package/karin-plugin-kkk)
+[![npm downloads](https://img.shields.io/npm/dw/karin-plugin-kkk?style=flat&logo=npm)](https://www.npmjs.com/package/karin-plugin-kkk)
+[![GitHub stars](https://img.shields.io/github/stars/ikenxuan/karin-plugin-kkk?style=flat&logo=github)](https://github.com/ikenxuan/karin-plugin-kkk)
+[![GitHub issues](https://img.shields.io/github/issues/ikenxuan/karin-plugin-kkk?style=flat&logo=github)](https://github.com/ikenxuan/karin-plugin-kkk/issues)
 [![pkg.pr.new](https://pkg.pr.new/badge/ikenxuan/karin-plugin-kkk)](https://pkg.pr.new/~/ikenxuan/karin-plugin-kkk)
 
 _Karin 的「抖音」「B 站」视频解析/动态推送插件_
@@ -31,14 +35,14 @@ pnpm add karin-plugin-kkk@latest -w
 
 ## Link
 
-| 文档 | [![Vercel](https://img.shields.io/badge/docs%20on-Vercel-black)](https://karin-plugin-kkk-docs.vercel.app) | [![Netlify](https://img.shields.io/badge/docs%20on-Netlify-00C7B7)](https://karin-plugin-kkk-docs.netlify.app) |
+| 文档 | [![Vercel](https://img.shields.io/badge/托管于-Vercel-000000?style=flat&logo=vercel&logoColor=white)](https://karin-plugin-kkk-docs.vercel.app) | [![Netlify](https://img.shields.io/badge/托管于-Netlify-00C7B7?style=flat&logo=netlify&logoColor=white)](https://karin-plugin-kkk-docs.netlify.app) |
 |:-:|:-:|:-:|
-| QQ 群 | [![QQ Group](https://img.shields.io/badge/QQ%20Group-795874649-blue)](https://qm.qq.com/q/DgLbCERYVG) | |
+| QQ 群 | [![QQ](https://img.shields.io/badge/Group-795874649-12B7F5?style=flat&logo=qq)](https://qm.qq.com/q/DgLbCERYVG) | |
 | DeepWiki | [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ikenxuan/karin-plugin-kkk) | |
 
 ## Thanks
 
-- [Karin](https://github.com/Karinjs/Karin) - Bot 框架
+- [Karin](https://github.com/Karinjs/Karin) - 即时通讯 Bot 框架
 - [amagi](https://github.com/ikenxuan/amagi) - 接口文档与加密参数算法
 
 ## Contributors
