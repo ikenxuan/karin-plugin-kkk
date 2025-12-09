@@ -1541,6 +1541,10 @@
     height: calc(var(--spacing) * 16);
   }
 
+  .h-17 {
+    height: calc(var(--spacing) * 17);
+  }
+
   .h-18 {
     height: calc(var(--spacing) * 18);
   }
@@ -1927,6 +1931,10 @@
 
   .w-16 {
     width: calc(var(--spacing) * 16);
+  }
+
+  .w-17 {
+    width: calc(var(--spacing) * 17);
   }
 
   .w-18 {
@@ -5057,11 +5065,6 @@
   .leading-\[32px\] {
     --tw-leading: 32px;
     line-height: 32px;
-  }
-
-  .leading-\[inherit\] {
-    --tw-leading: inherit;
-    line-height: inherit;
   }
 
   .leading-none {
