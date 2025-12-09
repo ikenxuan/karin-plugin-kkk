@@ -1,18 +1,14 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler';
+import { KKKLogo } from '@/components/kkk-logo';
 
 export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
-      title: 'karin-plugin-kkk',
+      title: <KKKLogo />,
+      // children: <GitHubLink />,
+      transparentMode: 'always'
     },
-    links: [
-      {
-        text: 'GitHub',
-        url: 'https://github.com/ikenxuan/karin-plugin-kkk',
-        external: true,
-      },
-    ],
     themeSwitch: {
       component: <AnimatedThemeToggler />,
     },

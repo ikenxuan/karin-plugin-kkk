@@ -276,7 +276,7 @@ const getAdapterLogo = (adapterName: string): React.ReactNode => {
   
   for (const [key, logoPath] of Object.entries(ADAPTER_LOGO_MAP)) {
     if (nameLower.includes(key)) {
-      return <img src={logoPath} className='w-10 h-auto' alt={adapterName} />
+      return <img src={logoPath} className='h-auto w-17' alt={adapterName} />
     }
   }
   
@@ -362,24 +362,24 @@ const ErrorHeader: React.FC<{
   }, [])
 
   return (
-    <div className='mx-auto px-20 py-20'>
-      <div className='border-l-4 border-danger pl-12'>
-        <div className='flex items-start gap-6 mb-10'>
-          {/* <AlertCircle className='w-16 h-16 text-danger mt-2' /> */}
+    <div className='px-20 py-20 mx-auto'>
+      <div className='pl-12 border-l-4 border-danger'>
+        <div className='flex gap-6 items-start mb-10'>
+          {/* <AlertCircle className='mt-2 w-16 h-16 text-danger' /> */}
           <img className='w-60 h-auto' src={errorEmojiUrl} />
           <div className='flex-1'>
-            <h1 className='text-8xl font-bold text-foreground mb-6'>
+            <h1 className='mb-6 text-8xl font-bold text-foreground'>
               {errorTitle}
             </h1>
-            <div className='flex items-center gap-4 mb-8'>
+            <div className='flex gap-4 items-center mb-8'>
               <span className='text-5xl font-semibold text-danger'>
                 {displayMethod}
               </span>
             </div>
             {/* 触发时间 */}
             <div className='mt-2'>
-              <div className='text-3xl text-default-400 mb-2'>触发时间</div>
-              <div className='flex items-center gap-3'>
+              <div className='mb-2 text-3xl text-default-400'>触发时间</div>
+              <div className='flex gap-3 items-center'>
                 <Clock className='w-10 h-10 text-warning' />
                 <span className='text-4xl font-bold text-foreground'>
                   {new Date(timestamp).toLocaleString('zh-CN', {
@@ -414,19 +414,19 @@ const VerificationQrCode: React.FC<{
 
   return (
     <div className='w-full max-w-[1440px] mx-auto px-20 py-8'>
-      <div className='border-l-4 border-warning pl-8'>
-        <h3 className='flex items-center gap-3 mb-6 text-4xl font-medium text-foreground'>
+      <div className='pl-8 border-l-4 border-warning'>
+        <h3 className='flex gap-3 items-center mb-6 text-4xl font-medium text-foreground'>
           <QrCode className='w-10 h-10 text-warning' />
           人机验证
         </h3>
-        <div className='bg-warning/10 p-8 rounded-lg border border-warning/30'>
-          <div className='flex items-center gap-12'>
+        <div className='p-8 rounded-lg border bg-warning/10 border-warning/30'>
+          <div className='flex gap-12 items-center'>
             {/* 二维码 */}
             <div className='shrink-0'>
               <img 
                 src={qrCodeDataUrl} 
                 alt='验证二维码' 
-                className='w-90 h-auto'
+                className='h-auto w-90'
               />
             </div>
             {/* 说明文字 */}
@@ -439,8 +439,8 @@ const VerificationQrCode: React.FC<{
                 <p>3. 将验证结果发送至此对话</p>
               </div>
               {verificationUrl && (
-                <div className='mt-6 p-4 bg-default/20 rounded-lg'>
-                  <p className='text-2xl text-default-500 break-all'>
+                <div className='p-4 mt-6 rounded-lg bg-default/20'>
+                  <p className='text-2xl break-all text-default-500'>
                     {verificationUrl}
                   </p>
                 </div>
@@ -468,12 +468,12 @@ const BusinessErrorDetails: React.FC<{
       <div className='space-y-12'>
         {/* 触发命令信息 */}
         {triggerCommand && (
-          <div className='border-l-2 border-default-200 pl-8'>
-            <h3 className='flex items-center gap-3 mb-8 text-4xl font-medium text-foreground'>
+          <div className='pl-8 border-l-2 border-default-200'>
+            <h3 className='flex gap-3 items-center mb-8 text-4xl font-medium text-foreground'>
               <Terminal className='w-10 h-10' />
               触发命令
             </h3>
-            <div className='font-bold p-10 rounded-lg'>
+            <div className='p-10 font-bold rounded-lg'>
               <pre 
                 className='text-3xl leading-relaxed whitespace-pre-wrap break-all select-text font-[HarmonyOSHans-Regular]'
                 dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(triggerCommand) }}
@@ -483,14 +483,14 @@ const BusinessErrorDetails: React.FC<{
         )}
 
         {/* 调用栈信息 */}
-        <div className='border-l-2 border-danger pl-8'>
-          <h3 className='flex items-center gap-3 mb-6 text-3xl font-medium text-foreground'>
+        <div className='pl-8 border-l-2 border-danger'>
+          <h3 className='flex gap-3 items-center mb-6 text-3xl font-medium text-foreground'>
             <AlertCircle className='w-8 h-8' />
             错误堆栈
           </h3>
-          <div className='bg-danger/5 p-8 rounded-lg border border-danger/20'>
+          <div className='p-8 rounded-lg border bg-danger/5 border-danger/20'>
             <pre 
-              className='text-xl leading-relaxed whitespace-pre-wrap break-all select-text font-mono'
+              className='font-mono text-xl leading-relaxed whitespace-pre-wrap break-all select-text'
               dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(String(error.stack || '')) }}
             />
           </div>
@@ -498,8 +498,8 @@ const BusinessErrorDetails: React.FC<{
 
         {/* 相关日志 */}
         {logs && logs.length > 0 && (
-          <div className='border-l-2 border-default-200 pl-8'>
-            <h3 className='flex items-center gap-3 mb-6 text-3xl font-medium text-foreground'>
+          <div className='pl-8 border-l-2 border-default-200'>
+            <h3 className='flex gap-3 items-center mb-6 text-3xl font-medium text-foreground'>
               <FileText className='w-8 h-8' />
               相关执行日志
             </h3>
@@ -512,7 +512,7 @@ const BusinessErrorDetails: React.FC<{
                     className={`relative rounded-lg border border-l-4 backdrop-blur-xs ${theme.bgClass} ${theme.borderClass}`}
                   >
                     {/* 日志等级 */}
-                    <div className='absolute top-3 right-3 pointer-events-none z-10'>
+                    <div className='absolute top-3 right-3 z-10 pointer-events-none'>
                       <span className={`font-black text-6xl tracking-tight uppercase opacity-15 ${theme.textClass}`}>
                         {log.level}
                       </span>
@@ -521,7 +521,7 @@ const BusinessErrorDetails: React.FC<{
                     <div className='p-5'>
                       <div className='space-y-2'>
                         {/* 时间戳 */}
-                        <div className='flex items-center gap-2'>
+                        <div className='flex gap-2 items-center'>
                           <Clock size={22} className={`shrink-0 mb-1 ${theme.iconClass}`} />
                           <span className={`text-xl font-mono font-semibold ${theme.textClass}`}>
                             {log.timestamp}
@@ -563,7 +563,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
   return (
     <DefaultLayout {...props}>
       {/* 背景装饰 Bug 图标 */}
-      <div className='fixed inset-0 overflow-hidden pointer-events-none' style={{ zIndex: 0 }}>
+      <div className='overflow-hidden fixed inset-0 pointer-events-none' style={{ zIndex: 0 }}>
         {/* 主要大图标 */}
         {/* <FaBug
           className='absolute text-danger/10'
@@ -619,15 +619,15 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
         />
 
         {/* 版本信息和底部提示 */}
-        <div className='w-full mx-auto px-20 py-16 space-y-8'>
+        <div className='px-20 py-16 mx-auto space-y-8 w-full'>
           {/* 版本信息 - 重点突出 */}
           <div className='space-y-5 tracking-widest'>
             {/* 框架版本、插件版本和 Amagi 版本 */}
-            <div className='flex items-center gap-12 flex-wrap'>
-              <div className='flex items-center gap-4'>
+            <div className='flex flex-wrap gap-12 items-center'>
+              <div className='flex gap-4 items-center'>
                 <img
                   src="/image/frame-logo.png"
-                  className='w-10 h-10'
+                  className='h-auto w-17'
                 />
                 <div>
                   <div className='text-2xl text-default-400'>框架版本</div>
@@ -635,11 +635,28 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
                 </div>
               </div>
 
-              <div className='flex items-center gap-4'>
-                <img
-                  src="/image/logo.png"
-                  className='w-10 h-10'
-                />
+              <div className='flex gap-4 items-center'>
+                <svg
+                  id="_图层_2"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 230 221"
+                  className="h-auto w-17"
+                >
+                  <path
+                    id="_1"
+                    d="M132.75,87.37l-53.72-53.37c-4.66-4.63-1.38-12.58,5.18-12.58h115.13c6.57,0,9.84,7.95,5.18,12.58l-53.72,53.37c-4.99,4.96-13.06,4.96-18.05,0Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    id="_2"
+                    d="M28.49,186.89l.03-51.42c-.02-6.57,7.92-9.87,12.56-5.23l57.02,57.02c4.64,4.64,1.34,12.41-5.23,12.39h-51.42c-7.04-.02-12.94-5.72-12.96-12.76Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M41.54,23.68l163.04,163.05c4.78,4.78,1.39,12.95-5.36,12.94h-47.88c-9.69,0-18.99-3.86-25.84-10.71L39.3,102.75c-6.85-6.85-10.7-16.15-10.7-25.84V29.04c0-6.76,8.16-10.14,12.94-5.36Z"
+                    fill="currentColor"
+                  />
+                </svg>
                 <div>
                   <div className='text-2xl text-default-400'>插件版本</div>
                   <div className='text-4xl font-bold text-foreground'>{pluginVersion}</div>
@@ -647,11 +664,11 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
               </div>
 
               {amagiVersion && (
-                <div className='flex items-center gap-4'>
+                <div className='flex gap-4 items-center'>
                   <img 
                     src="/image/other/handlerError/cxk.png"
                     alt="泥干嘛哈哈哎呦~"
-                    className='w-11 h-10'
+                    className='w-18 h-17'
                   />
                   <div>
                     <div className='text-2xl text-default-400'>解析库版本</div>
@@ -663,10 +680,10 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
 
             {/* 适配器信息 */}
             {adapterInfo && (
-              <div className='flex items-center gap-4'>
+              <div className='flex gap-4 items-center'>
                 {getAdapterLogo(adapterInfo.name)}
                 <div>
-                  <div className='text-2xl text-default-400 inline-flex items-center gap-2'>
+                  <div className='inline-flex gap-2 items-center text-2xl text-default-400'>
                     <span>适配器名称</span>
                     <Chip 
                       color='secondary' 
@@ -682,15 +699,15 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
             )}
 
             {/* 次要信息 - 弱化显示 */}
-            <div className='pt-3 border-t border-default-200 space-y-2'>
+            <div className='pt-3 space-y-2 border-t border-default-200'>
               {data.buildTime && (
-                <div className='flex items-center gap-2 text-2xl text-default-400'>
+                <div className='flex gap-2 items-center text-2xl text-default-400'>
                   <MdAccessTime className='w-5 h-5' />
                   <span>插件编译于 {data.buildTime}</span>
                 </div>
               )}
               {data.commitHash && (
-                <div className='flex items-center gap-2 text-2xl text-default-400'>
+                <div className='flex gap-2 items-center text-2xl text-default-400'>
                   <FaCodeBranch className='w-5 h-5' />
                   <span>Commit {data.commitHash}</span>
                 </div>
@@ -699,34 +716,34 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
           </div>
 
           {/* 底部提示 */}
-          <div className='border-l-2 text-default-400 border-primary pl-8'>
-            <p className='text-3xl leading-relaxed mb-6 text-foreground'>
+          <div className='pl-8 border-l-2 text-default-400 border-primary'>
+            <p className='mb-6 text-3xl leading-relaxed text-foreground'>
               需要帮助？请提供以下信息以便开发者快速定位问题：
             </p>
-            <div className='space-y-4 mb-8'>
-              <div className='flex items-baseline gap-3'>
-                <span className='text-primary font-bold text-3xl shrink-0'>1.</span>
-                <p className='text-3xl leading-relaxed flex-1'>
-                  <span className='text-primary font-semibold'>完整的错误截图</span> - 包含本页面所有内容（错误堆栈、执行日志、版本信息等）
+            <div className='mb-8 space-y-4'>
+              <div className='flex gap-3 items-baseline'>
+                <span className='text-3xl font-bold text-primary shrink-0'>1.</span>
+                <p className='flex-1 text-3xl leading-relaxed'>
+                  <span className='font-semibold text-primary'>完整的错误截图</span> - 包含本页面所有内容（错误堆栈、执行日志、版本信息等）
                 </p>
               </div>
-              <div className='flex items-baseline gap-3'>
-                <span className='text-primary font-bold text-3xl shrink-0'>2.</span>
-                <p className='text-3xl leading-relaxed flex-1'>
-                  <span className='text-primary font-semibold'>问题复现步骤</span> - 详细描述触发错误的操作流程和环境信息
+              <div className='flex gap-3 items-baseline'>
+                <span className='text-3xl font-bold text-primary shrink-0'>2.</span>
+                <p className='flex-1 text-3xl leading-relaxed'>
+                  <span className='font-semibold text-primary'>问题复现步骤</span> - 详细描述触发错误的操作流程和环境信息
                 </p>
               </div>
             </div>
-            <div className='border-t border-default-200 pt-6'>
-              <p className='text-3xl leading-relaxed mb-4 text-foreground'>
+            <div className='pt-6 border-t border-default-200'>
+              <p className='mb-4 text-3xl leading-relaxed text-foreground'>
                 联系方式：
               </p>
               <div className='space-y-3'>
                 <p className='text-3xl'>
-                  · 提交 <span className='text-primary font-semibold'>GitHub Issues</span>（推荐）
+                  · 提交 <span className='font-semibold text-primary'>GitHub Issues</span>（推荐）
                 </p>
                 <p className='text-3xl'>
-                  · 加入 QQ 群：<span className='text-primary font-semibold'>795874649</span>
+                  · 加入 QQ 群：<span className='font-semibold text-primary'>795874649</span>
                 </p>
               </div>
             </div>

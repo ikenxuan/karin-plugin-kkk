@@ -11,8 +11,7 @@ export const TextHoverEffect = ({
   automatic?: boolean;
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [maskPosition, setMaskPosition] = useState({ cx: "50%", cy: "50%" });
-  const [animationComplete, setAnimationComplete] = useState(false);
+  const [maskPosition, setMaskPosition] = useState({ cx: "-50%", cy: "-50%" });
 
   const uniqueId = useId();
   const gradientId = `textGradient-${uniqueId}`;
@@ -90,26 +89,23 @@ export const TextHoverEffect = ({
         style={{ fontSize: `${fontSize}px` }}
         initial={{ strokeDashoffset: 1000, strokeDasharray: 1000 }}
         animate={{ strokeDashoffset: 0, strokeDasharray: 1000 }}
-        transition={{ duration: 4, ease: "easeInOut" }}
-        onAnimationComplete={() => setAnimationComplete(true)}
+        transition={{ duration: 2.5, ease: "easeInOut" }}
       >
         {text}
       </motion.text>
-      {animationComplete && (
-        <text
-          x="50%"
-          y="50%"
-          textAnchor="middle"
-          dominantBaseline="middle"
-          stroke={`url(#${gradientId})`}
-          strokeWidth={strokeWidth}
-          mask={`url(#${textMaskId})`}
-          className="fill-transparent font-[helvetica] font-bold"
-          style={{ fontSize: `${fontSize}px` }}
-        >
-          {text}
-        </text>
-      )}
+      <text
+        x="50%"
+        y="50%"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        stroke={`url(#${gradientId})`}
+        strokeWidth={strokeWidth}
+        mask={`url(#${textMaskId})`}
+        className="fill-transparent font-[helvetica] font-bold"
+        style={{ fontSize: `${fontSize}px` }}
+      >
+        {text}
+      </text>
     </svg>
   );
 };

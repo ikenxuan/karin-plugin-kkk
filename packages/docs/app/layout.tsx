@@ -16,7 +16,10 @@ export const metadata: Metadata = {
   },
   description: '多平台短视频/图文内容解析与推送 - 抖音/B站/快手/小红书',
   icons: {
-    icon: '/logo.png',
+    icon: [
+      { url: '/icon-light.svg', media: '(prefers-color-scheme: light)' },
+      { url: '/icon-dark.svg', media: '(prefers-color-scheme: dark)' },
+    ],
   },
 };
 

@@ -30,7 +30,7 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
 
         {props.data.Tip === true ? (
           <>
-            <div className="relative inline-block mt-20">
+            <div className="inline-block relative mt-20">
               {/* Banner 背景阴影 */}
               <div className="absolute inset-0 bg-black rounded-2xl opacity-50 blur-xl translate-y-6 -z-10"></div>
               
@@ -38,8 +38,8 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
               <img className="block relative rounded-2xl" src="/image/other/changelog/banner.webp" alt="横幅" />
               
               {/* 版本信息叠加 */}
-              <div className='absolute inset-0 flex flex-col left-50 bottom-50 items-center justify-center'>
-                <span className='text-9xl font-bold opacity-10 text-white'>
+              <div className='flex absolute inset-0 flex-col justify-center items-center left-50 bottom-50'>
+                <span className='text-9xl font-bold text-white opacity-10'>
                   v{props.data.remoteVersion}
                 </span>
               </div>
@@ -59,11 +59,11 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
               <div className='flex gap-4 opacity-50'>
                 <div className='text-4xl ml-17'>
                   更新频道:
-                  <span className='text-warning-200 font-bold'> 正式版</span>
+                  <span className='font-bold text-warning-200'> 正式版</span>
                 </div>
                 <div className='text-4xl ml-15'>
                   编译于:
-                  <span className='text-warning-200 font-bold'> {props.data.buildTime}</span>
+                  <span className='font-bold text-warning-200'> {props.data.buildTime}</span>
                 </div>
               </div>
               
@@ -142,7 +142,7 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
               <Code
                 radius='lg'
                 color='warning'
-                className='inline align-text-bottom leading-[inherit] text-[0.8em] whitespace-normal break-all box-decoration-slice'
+                className='inline align-text-bottom leading-inherit text-[0.8em] whitespace-normal break-all box-decoration-slice'
               >
                 {children}
               </Code>

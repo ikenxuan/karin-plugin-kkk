@@ -4,14 +4,16 @@ import {
   DocsDescription,
   DocsPage,
   DocsTitle,
-} from 'fumadocs-ui/layouts/docs/page';
+} from 'fumadocs-ui/layouts/notebook/page';
 import { notFound } from 'next/navigation';
 import { getMDXComponents } from '@/mdx-components';
 import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
 import { DocsFooter } from '@/components/DocsFooter';
 import { LLMCopyButton, ViewOptions } from '@/components/page-actions';
+import { TocCopyUrl, TocBottomLinks } from '@/components/toc-extras';
 import type * as PageTree from 'fumadocs-core/page-tree';
+import { PageLastUpdate } from 'fumadocs-ui/page';
 
 interface PageProps {
   params: Promise<{ slug?: string[] }>;
@@ -56,7 +58,7 @@ function getNavItems(tree: PageTree.Root, currentPath: string): DocsFooterProps 
 function PageActions({ pageUrl, filePath }: { pageUrl: string; filePath: string }) {
   const markdownUrl = `${pageUrl}.mdx`;
   return (
-    <div className="flex flex-row gap-2 items-center border-b pt-2 pb-6">
+    <div className="flex flex-row gap-2 items-center pt-2 pb-6 border-b">
       <LLMCopyButton markdownUrl={markdownUrl} />
       <ViewOptions
         markdownUrl={markdownUrl}
@@ -71,7 +73,7 @@ export default async function Page(props: PageProps) {
   const page = source.getPage(params.slug);
   if (!page) notFound();
 
-  const { body: MDX, toc } = await page.data.load();
+  const { body: MDX, toc, lastModified } = await page.data.load();
   const tree = source.pageTree;
   const navItems = getNavItems(tree, page.url);
   const filePath = params.slug?.join('/') || 'index';
@@ -79,6 +81,11 @@ export default async function Page(props: PageProps) {
   return (
     <DocsPage
       toc={toc}
+      tableOfContent={{ 
+        style: 'clerk',
+        header: <TocCopyUrl />,
+        footer: <TocBottomLinks />
+      }}
       full={page.data.full}
       footer={{ component: <DocsFooter {...navItems} /> }}
     >
@@ -91,6 +98,11 @@ export default async function Page(props: PageProps) {
             a: createRelativeLink(source, page),
           })}
         />
+        {lastModified && (
+           <div className="pt-8 mt-8 border-t">
+               <PageLastUpdate date={new Date(lastModified)} />
+           </div>
+        )}
       </DocsBody>
     </DocsPage>
   );

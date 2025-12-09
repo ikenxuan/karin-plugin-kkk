@@ -10,29 +10,29 @@ import { LinkPreview } from "./ui/link-preview";
 
 export function HeroSection() {
   return (
-    <div className="h-svh w-full flex flex-col relative overflow-hidden">
+    <div className="flex overflow-hidden relative flex-col w-full h-svh">
       <div className="absolute inset-x-0 top-0 z-0 pointer-events-none">
         <div className="w-screen">
           <TextHoverEffect text="KKK" />
         </div>
       </div>
 
-      <div className="flex flex-1 relative z-10 flex-col items-center justify-center px-4">
-        <div className="relative h-12 md:h-20 w-full max-w-4xl mb-8">
+      <div className="flex relative z-10 flex-col flex-1 justify-center items-center px-4">
+        <div className="relative mb-8 w-full max-w-4xl h-12 md:h-20">
           <MorphingText
             texts={["karin-plugin-kkk", "视频解析", "动态推送", "评论渲染"]}
-            className="text-fd-foreground text-4xl md:text-6xl"
+            className="text-4xl text-fd-foreground md:text-6xl"
           />
         </div>
 
-        <p className="text-lg md:text-xl text-center text-fd-muted-foreground max-w-2xl mb-12">
+        <p className="mb-12 max-w-2xl text-lg text-center md:text-xl text-fd-muted-foreground">
           基于{" "}
           <LinkPreview url="https://karinjs.com" className="cursor-pointer">
             <Highlighter action="underline" color="#FFD700" strokeWidth={2}>
               Karin
             </Highlighter>
           </LinkPreview>
-          {" "}框架的视频解析与动态推送插件
+          {" "}的视频解析与动态推送插件
         </p>
 
         <div className="flex flex-wrap gap-4 justify-center">
@@ -50,7 +50,7 @@ export function HeroSection() {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
-                  阅读文档
+                  快速开始
                 </span>
               </NoiseBackground>
             </Link>

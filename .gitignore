@@ -12,7 +12,6 @@ lerna-debug.log*
 
 # 编辑器配置
 /.idea/
-/.vscode/
 
 # 临时文件
 logs/
@@ -25,9 +24,3 @@ node_modules/
 napcat.quick.bat
 
 node_modules/
-packages/docs/.vuepress/.cache/
-packages/docs/.vuepress/.temp/
-packages/docs/.vuepress/dist/
-
-# Local Netlify folder
-.netlify

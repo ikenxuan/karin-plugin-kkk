@@ -65,13 +65,30 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
             <div className='flex relative justify-center items-center space-x-8'>
               {/* 插件信息 */}
               <div className='flex items-end space-x-8'>
-                <GlowImage
-                  src="/image/logo.png"
-                  alt="logo"
-                  imgClassName="w-auto h-18"
-                  glowStrength={1}
-                  blurRadius={50}
-                />
+                <GlowImage glowStrength={1} blurRadius={20}>
+                  <svg
+                    id="114514"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 230 221"
+                    className="w-auto h-18"
+                  >
+                    <path
+                      id="_1"
+                      d="M132.75,87.37l-53.72-53.37c-4.66-4.63-1.38-12.58,5.18-12.58h115.13c6.57,0,9.84,7.95,5.18,12.58l-53.72,53.37c-4.99,4.96-13.06,4.96-18.05,0Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      id="_2"
+                      d="M28.49,186.89l.03-51.42c-.02-6.57,7.92-9.87,12.56-5.23l57.02,57.02c4.64,4.64,1.34,12.41-5.23,12.39h-51.42c-7.04-.02-12.94-5.72-12.96-12.76Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M41.54,23.68l163.04,163.05c4.78,4.78,1.39,12.95-5.36,12.94h-47.88c-9.69,0-18.99-3.86-25.84-10.71L39.3,102.75c-6.85-6.85-10.7-16.15-10.7-25.84V29.04c0-6.76,8.16-10.14,12.94-5.36Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </GlowImage>
+
                 <div className='flex flex-col items-start opacity-90'>
                   <div className='flex items-center mb-1 space-x-2 text-sm font-bold uppercase text-default-900'>
                     <span>{version.plugin}</span>
@@ -116,7 +133,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                 <div className='flex flex-col items-start'>
                   <div className='flex items-center mb-1 space-x-2 text-sm font-bold tracking-widest uppercase text-default-900'>
                     <Zap strokeWidth={3} className="w-4 h-4 opacity-90" />
-                    <span className='opacity-90'>Is Driven By</span>
+                    <span className='opacity-90'>Power By</span>
                   </div>
                   <div className='flex items-end space-x-2'>
                     <span className='text-5xl font-black leading-none opacity-90'>{version.poweredBy}</span>

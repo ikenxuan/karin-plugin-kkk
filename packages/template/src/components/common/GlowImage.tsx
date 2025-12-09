@@ -6,7 +6,9 @@ import React from 'react'
  */
 type GlowImageProps = {
   /** 图片源地址（支持本地路径或外链 URL） */
-  src: string
+  src?: string
+  /** 子元素（SVG 或其他 ReactNode），若存在则忽略 src */
+  children?: React.ReactNode
   /** 图片的替代文本（无障碍与加载失败时显示） */
   alt?: string
   /** 外层容器的类名（用于布局/定位） */
@@ -38,6 +40,7 @@ type GlowImageProps = {
 
 export const GlowImage: React.FC<GlowImageProps> = ({
   src,
+  children,
   alt,
   className,
   imgClassName,
@@ -51,7 +54,7 @@ export const GlowImage: React.FC<GlowImageProps> = ({
   const [shadowColor, setShadowColor] = React.useState<string>('rgba(255,255,255,0.5)')
 
   React.useEffect(() => {
-    if (mode !== 'dominant-shadow') return
+    if (mode !== 'dominant-shadow' || !src) return
     const img = new Image()
     if (crossOrigin) img.crossOrigin = crossOrigin
     img.src = src
@@ -85,6 +88,33 @@ export const GlowImage: React.FC<GlowImageProps> = ({
       }
     }
   }, [mode, src, glowStrength, crossOrigin])
+
+  if (children) {
+    return (
+      <div className={className} style={{ position: 'relative', display: 'inline-block' }}>
+        <div
+          aria-hidden="true"
+          className={imgClassName}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            transform: `scale(${scale})`,
+            filter: `blur(${blurRadius}px) saturate(1.2)`,
+            opacity: glowStrength,
+            pointerEvents: 'none',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          {children}
+        </div>
+        <div className={imgClassName} style={{ position: 'relative' }}>
+          {children}
+        </div>
+      </div>
+    )
+  }
 
   if (mode === 'dominant-shadow') {
     return (
