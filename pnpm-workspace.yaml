@@ -1,8 +1,22 @@
-publicHoistPattern:
-  - "*sqlite3*"
-  - "*express*"
 packages:
   - packages/*
+
 onlyBuiltDependencies:
-  - "@swc/core"
+  - '@heroui/shared-utils'
+  - '@karinjs/sqlite3-cjs'
+  - '@parcel/watcher'
+  - '@swc/core'
+  - cwebp-bin
   - esbuild
+  - gifsicle
+  - javascript-obfuscator
+  - jpegtran-bin
+  - mozjpeg
+  - optipng-bin
+  - pngquant-bin
+  - sharp
+  - unrs-resolver
+
+publicHoistPattern:
+  - '*sqlite3*'
+  - '*express*'
