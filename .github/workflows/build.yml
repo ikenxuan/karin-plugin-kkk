@@ -563,7 +563,7 @@ jobs:
       - name: 🚀 发布预览包
         id: publish_pkg
         run: |
-          npm ci
+          pnpm install --no-frozen-lockfile
           npx --yes pkg-pr-new publish --json output.json --comment=off --compact --packageManager=pnpm > pkg-output.txt 2>&1
           
           ACTUAL_INSTALL_URL=$(grep -oE 'https://pkg\.pr\.new/[^[:space:]`]+' pkg-output.txt | head -n 1 || echo "")
