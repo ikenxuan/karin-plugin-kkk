@@ -279,7 +279,6 @@ jobs:
         id: publish-to-npm
         uses: JS-DevTools/npm-publish@v3
         with:
-          token: ${{ secrets.NPM_TOKEN }}
           registry: https://registry.npmjs.org/
           access: public
           provenance: true
@@ -564,7 +563,8 @@ jobs:
       - name: 🚀 发布预览包
         id: publish_pkg
         run: |
-          npx pkg-pr-new publish --json output.json --comment=update --compact --packageManager=pnpm > pkg-output.txt 2>&1
+          npm ci
+          npx --yes pkg-pr-new publish --json output.json --comment=off --compact --packageManager=pnpm > pkg-output.txt 2>&1
           
           ACTUAL_INSTALL_URL=$(grep -oE 'https://pkg\.pr\.new/[^[:space:]`]+' pkg-output.txt | head -n 1 || echo "")
           
@@ -657,6 +657,9 @@ jobs:
 
       - name: 📦 安装依赖
         run: pnpm install
+
+      - name: ⏫ 升级 npm 版本
+        run: npm install -g npm@latest
 
       - name: 🔄 同步版本号到桌面应用配置
         id: sync-desktop-version
