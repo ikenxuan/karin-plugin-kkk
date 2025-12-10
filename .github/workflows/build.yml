@@ -569,6 +569,10 @@ jobs:
           ACTUAL_INSTALL_URL=$(grep -oE 'https://pkg\.pr\.new/[^[:space:]`]+' pkg-output.txt | head -n 1 || echo "")
           
           if [ ! -z "$ACTUAL_INSTALL_URL" ]; then
+            # 尝试提取短链接格式 (package@sha)
+            if [[ "$ACTUAL_INSTALL_URL" =~ https://pkg\.pr\.new/[^/]+/[^/]+/([^/]+@.+) ]]; then
+              ACTUAL_INSTALL_URL="https://pkg.pr.new/${BASH_REMATCH[1]}"
+            fi
             PNPM_INSTALL_CMD="pnpm add ${ACTUAL_INSTALL_URL} -w"
           else
             PNPM_INSTALL_CMD="未找到安装命令"
