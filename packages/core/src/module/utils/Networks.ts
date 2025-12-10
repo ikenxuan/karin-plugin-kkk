@@ -13,6 +13,14 @@ import axios, { AxiosError } from 'node-karin/axios'
 import { NetworksConfigType } from '@/types'
 
 /**
+ * 扩展 AxiosRequestConfig 以支持内部重试计数和跳过重试
+ */
+interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+  __retryCount?: number
+  skipRetry?: boolean
+}
+
+/**
  * 错误代码到中文描述的映射
  */
 const ERROR_CODE_MAP: Record<string, string> = {
@@ -26,7 +34,7 @@ const ERROR_CODE_MAP: Record<string, string> = {
   ENOTFOUND: 'DNS解析失败',
   EPIPE: '管道破裂',
   EAI_AGAIN: 'DNS临时失败',
-  
+
   // Axios 特定错误代码
   ERR_BAD_OPTION_VALUE: '无效的配置选项值',
   ERR_BAD_OPTION: '无效的配置选项',
@@ -37,10 +45,10 @@ const ERROR_CODE_MAP: Record<string, string> = {
   ERR_CANCELED: '请求被取消',
   ERR_NOT_SUPPORT: '不支持的功能',
   ERR_INVALID_URL: '无效的URL',
-  
+
   // HTTP 状态码相关
   EHTTP: 'HTTP错误',
-  
+
   // 其他常见错误
   EACCES: '权限不足',
   ENOENT: '文件或目录不存在',
@@ -56,10 +64,10 @@ const ERROR_CODE_MAP: Record<string, string> = {
 const getErrorDescription = (error: any): string => {
   // 获取错误代码
   const code = error?.code || (error instanceof AxiosError ? error.code : null)
-  
+
   // 获取错误消息
   const message = error?.message || String(error)
-  
+
   if (code && ERROR_CODE_MAP[code]) {
     // 有映射的错误代码，显示中英文
     return `${ERROR_CODE_MAP[code]} (${code}): ${message}`
@@ -79,13 +87,13 @@ const getErrorDescription = (error: any): string => {
  */
 const sanitizeIP = (text: string): string => {
   if (!text) return text
-  
+
   // IPv4 脱敏: 192.168.1.1 -> 192.168.*.*
   text = text.replace(/\b(\d{1,3}\.\d{1,3})\.\d{1,3}\.\d{1,3}\b/g, '$1.*.*')
-  
+
   // IPv6 脱敏: 2001:0db8:85a3::8a2e:0370:7334 -> 2001:0db8:****
   text = text.replace(/\b([0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}):[0-9a-fA-F:]+\b/g, '$1:****')
-  
+
   return text
 }
 
@@ -96,30 +104,30 @@ const sanitizeIP = (text: string): string => {
  */
 const sanitizeHeaders = (headers: Record<string, string> | AxiosRequestConfig['headers']): Record<string, string> => {
   if (!headers) return {}
-  
+
   const sanitized: Record<string, string> = {}
   // 需要完全隐藏的敏感字段
   const sensitiveKeys = ['cookie', 'cookies', 'authorization', 'x-api-key', 'api-key', 'token']
   // 需要进行IP脱敏的字段
   const ipSensitiveKeys = ['x-forwarded-for', 'x-real-ip', 'x-client-ip', 'x-originating-ip']
-  
+
   for (const [key, value] of Object.entries(headers)) {
     const lowerKey = key.toLowerCase()
-    
+
     // 完全隐藏敏感信息
     if (sensitiveKeys.some(sk => lowerKey.includes(sk))) {
       sanitized[key] = '[敏感信息......]'
-    } 
+    }
     // 对IP相关的header进行IP脱敏
     else if (ipSensitiveKeys.some(sk => lowerKey.includes(sk))) {
       sanitized[key] = sanitizeIP(String(value))
-    } 
+    }
     // 其他header保持原样
     else {
       sanitized[key] = String(value)
     }
   }
-  
+
   return sanitized
 }
 
@@ -138,8 +146,18 @@ export class Networks {
   private axiosInstance: AxiosInstance
   private timeout: number
   private filepath: string
+  /** 最大重试次数，默认为 3 */
   private maxRetries: number
 
+  /**
+   * 创建网络请求实例
+   * 
+   * @remarks
+   * 实例会自动处理可恢复的网络错误（如连接超时、重置等），并进行指数退避重试。
+   * 默认重试 3 次，可通过 `maxRetries` 配置。
+   * 
+   * @param data - 配置对象
+   */
   constructor (data: NetworksConfigType) {
     this.headers = data.headers
       ? Object.fromEntries(
@@ -169,6 +187,41 @@ export class Networks {
       headers: this.headers,
       maxRedirects: 5,
       validateStatus: () => true
+    })
+
+    // 添加响应拦截器处理重试
+    this.axiosInstance.interceptors.response.use(undefined, async (error) => {
+      const config = error.config as CustomAxiosRequestConfig
+      // 如果没有配置或设置了 skipRetry，则直接抛出错误
+      if (!config || config.skipRetry) {
+        return Promise.reject(error)
+      }
+
+      // 初始化重试计数
+      config.__retryCount = config.__retryCount || 0
+
+      // 检查是否达到最大重试次数
+      if (config.__retryCount >= this.maxRetries) {
+        return Promise.reject(error)
+      }
+
+      // 检查是否为可恢复的错误
+      if (!this.isRecoverableNetworkError(error)) {
+        return Promise.reject(error)
+      }
+
+      // 增加重试计数
+      config.__retryCount += 1
+
+      // 计算指数退避延迟
+      const nextDelay = Math.max(1000, Math.min(2 ** (config.__retryCount - 1) * 1000, 8000))
+      logger.warn(`请求失败，正在重试... (${config.__retryCount}/${this.maxRetries})，将在 ${nextDelay / 1000} 秒后重试`)
+
+      // 等待延迟
+      await new Promise(resolve => setTimeout(resolve, nextDelay))
+
+      // 重试请求
+      return this.axiosInstance(config)
     })
   }
 
@@ -217,7 +270,7 @@ export class Networks {
       if (error.code && recoverableErrorCodes.includes(error.code)) {
         return true
       }
-      
+
       // 检查错误消息中是否包含可恢复的关键词
       const recoverableKeywords = ['aborted', 'timeout', 'network', 'ECONNRESET', 'socket hang up']
       const errorMessage = error.message?.toLowerCase() || ''
@@ -279,13 +332,14 @@ export class Networks {
       }
 
       // 构建请求配置，支持 Range 头
-      const requestConfig: AxiosRequestConfig = {
+      const requestConfig: CustomAxiosRequestConfig = {
         ...this.config,
         responseType: 'stream',
         signal: controller.signal,
         headers: {
           ...this.config.headers
-        }
+        },
+        skipRetry: true // 禁用拦截器重试，使用内部逻辑处理断点续传
       }
 
       // 如果是断点续传，添加 Range 头
@@ -296,7 +350,12 @@ export class Networks {
         }
       }
 
-      logger.debug('开始下载流', requestConfig)
+      // 脱敏打印配置
+      const logConfig = {
+        ...requestConfig,
+        headers: sanitizeHeaders(requestConfig.headers)
+      }
+      logger.debug('开始下载流', logConfig)
       const response = await this.axiosInstance(requestConfig)
 
       clearTimeout(timeoutId)
@@ -366,9 +425,9 @@ export class Networks {
 
       // 判断是否为可恢复的网络错误（适合断点续传）
       const isRecoverableError = this.isRecoverableNetworkError(error)
-      
+
       const errorDesc = getErrorDescription(error)
-      
+
       if (error instanceof AxiosError) {
         const sanitized = sanitizeHeaders(this.headers)
         logger.error(`请求在 ${this.timeout / 1000} 秒后超时或失败: ${errorDesc}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`)
@@ -393,7 +452,7 @@ export class Networks {
         // 最终失败时的处理
         if (fs.existsSync(this.filepath)) {
           const stats = fs.statSync(this.filepath)
-          
+
           // 如果是可恢复错误且已下载了部分数据，保留文件供用户手动恢复
           if (isRecoverableError && stats.size > 0) {
             logger.warn(`下载失败但保留了部分文件 (${(stats.size / 1048576).toFixed(2)} MB): ${this.filepath}`)
@@ -408,7 +467,7 @@ export class Networks {
             }
           }
         }
-        
+
         const sanitized = sanitizeHeaders(this.headers)
         const errorDesc = getErrorDescription(error)
         throw new Error(`在 ${this.maxRetries} 次尝试后下载失败: ${errorDesc}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`)
