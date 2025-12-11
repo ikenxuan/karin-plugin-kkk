@@ -5,4 +5,7 @@ services:
   plan: starter
   buildCommand: pnpm install; pnpm build:docs
   startCommand: pnpm --filter docs run start
-  autoDeploy: true
+  autoDeploy: false
+  envVars:
+  - key: NODE_ENV
+    value: production
