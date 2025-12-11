@@ -1,0 +1,142 @@
+---
+title: 贡献指南
+description: 欢迎参与 karin-plugin-kkk 的开发与贡献
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Steps, Step } from 'fumadocs-ui/components/steps';
+
+# 贡献指南
+
+感谢你对 **karin-plugin-kkk** 感兴趣！我们需要你的帮助来让这个项目变得更好。
+
+无论是修复 Bug、添加新功能，还是改进文档，我们都非常欢迎。
+
+## 准备工作
+
+在开始之前，请确保你的开发环境满足以下要求：
+
+- **[Node.js](https://nodejs.org/)**: >= 22
+- **[pnpm](https://pnpm.io/)**: >= 9
+- **[Git](https://git-scm.com/)**: 版本控制工具
+
+## 项目结构
+
+本项目采用 **[Monorepo](https://monorepo.tools/)** 结构，主要包含以下部分：
+
+- `packages/core`: 核心插件代码 (`karin-plugin-kkk`)，包含主要业务逻辑。
+- `packages/template`: [React](https://react.dev/) SSR 渲染器，生成 HTML 文件。
+- `packages/amagi`: 接口库 (**[Git Submodule](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E5%AD%90%E6%A8%A1%E5%9D%97)**)，处理各平台的 API 请求与签名。
+- `packages/docs`: 文档站点，基于 [Next.js](https://nextjs.org/) 和 [Fumadocs](https://fumadocs.vercel.app/)。
+
+<Callout type="warn">
+`packages/amagi` 是一个 **Git 子模块**。如果你需要修改 API 相关的逻辑（如签名算法），请**不要直接修改该目录**。你需要前往 [amagi 仓库](https://github.com/ikenxuan/amagi) 提交 Pull Request。
+</Callout>
+
+## 开发流程
+
+<Steps>
+<Step>
+
+### Fork 本仓库
+
+点击项目主页右上角的 [**Fork**](https://github.com/ikenxuan/karin-plugin-kkk/fork) 按钮，将仓库 Fork 到你的 GitHub 账户下。
+
+</Step>
+<Step>
+
+### 克隆仓库
+
+将你 Fork 后的仓库克隆到本地。由于项目包含子模块，克隆时需要初始化子模块：
+
+```bash
+# 替换为你的 GitHub 用户名
+git clone --recursive https://github.com/你的用户名/karin-plugin-kkk.git
+
+# 或者如果你已经克隆了仓库但没有子模块
+git submodule update --init --recursive
+```
+
+</Step>
+<Step>
+
+### 安装依赖
+
+使用 pnpm 安装所有依赖：
+
+```bash
+pnpm install
+```
+
+</Step>
+<Step>
+
+### 启动开发环境
+
+根据你要修改的内容，启动相应的开发环境：
+
+- **开发插件核心 (`packages/core`)**:
+  ```bash
+  pnpm watch
+  ```
+
+- **开发模板 (`packages/template`)**:
+  ```bash
+  pnpm template
+  ```
+
+- **预览文档 (`packages/docs`)**:
+  ```bash
+  pnpm docs
+  ```
+
+</Step>
+<Step>
+
+### 提交代码
+
+我们遵循 [Conventional Commits](https://www.conventionalcommits.org/zh-hans/v1.0.0/) 规范。
+
+提交信息的格式如下：
+
+```
+<type>(<scope>): <subject>
+```
+
+例如：
+- `feat(core): 支持解析新的分享链接`
+- `fix(template): 修复动态卡片样式错乱`
+- `docs: 更新贡献指南`
+
+</Step>
+<Step>
+
+### 提交 Pull Request
+
+1. 推送到你的 Fork 仓库：
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+2. 在 GitHub 上向原仓库提交 Pull Request。
+
+</Step>
+</Steps>
+
+## 常见问题
+
+### 如何更新子模块？
+
+如果你发现 `packages/amagi` 落后于上游，可以使用以下命令更新：
+
+```bash
+git submodule update --remote
+```
+
+### 遇到 TypeScript 类型错误？
+
+尝试重新构建整个项目或重新安装依赖：
+
+```bash
+pnpm install
+pnpm build
+```
