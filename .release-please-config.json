@@ -113,6 +113,11 @@
       "type": "opt",
       "section": "✨ 细节优化",
       "hidden": false
+    },
+    {
+      "type": "amagi",
+      "section": "🧩 解析库更新",
+      "hidden": false
     }
   ]
 }
