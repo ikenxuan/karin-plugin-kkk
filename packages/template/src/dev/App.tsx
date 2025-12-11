@@ -1,5 +1,5 @@
 import { Button, Chip, Slider, Switch } from '@heroui/react'
-import { Camera, Palette } from 'lucide-react'
+import { Camera, Palette, RefreshCw } from 'lucide-react'
 import React from 'react'
 import { MdFitScreen } from 'react-icons/md'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
@@ -11,6 +11,7 @@ import { DataFileSelector } from './components/DataFileSelector'
 import { InspectorToggle } from './components/InspectorToggle'
 import { PlatformSelector } from './components/PlatformSelector'
 import { PreviewPanel } from './components/PreviewPanel'
+import { ScreenshotPreviewModal } from './components/ScreenshotPreviewModal'
 
 /**
  * URL参数接口
@@ -109,9 +110,23 @@ export const App: React.FC<AppProps> = ({ inspectorActive, onInspectorToggle }) 
   const [availableDataFiles, setAvailableDataFiles] = React.useState<string[]>([])
   const [selectedDataFile, setSelectedDataFile] = React.useState<string>(urlParams.dataFile || 'default.json')
   const [isCapturing, setIsCapturing] = React.useState(false)
+  const [showHints, setShowHints] = React.useState(() => {
+    const saved = localStorage.getItem('dev-show-hints')
+    return saved !== null ? saved === 'true' : true
+  })
+  const [screenshotResult, setScreenshotResult] = React.useState<{ blob: Blob; download: () => void; copyToClipboard: () => Promise<void> } | null>(null)
+  const [isScreenshotModalOpen, setIsScreenshotModalOpen] = React.useState(false)
+
+  // 保存设置到 localStorage
+  React.useEffect(() => {
+    localStorage.setItem('dev-show-hints', String(showHints))
+  }, [showHints])
 
   const dataService = DataService.getInstance()
-  const previewPanelRef = React.useRef<{ captureScreenshot: () => Promise<void>; fitToCanvas: () => void }>(null)
+  const previewPanelRef = React.useRef<{ 
+    captureScreenshot: () => Promise<{ blob: Blob; download: () => void; copyToClipboard: () => Promise<void> } | null>; 
+    fitToCanvas: () => void 
+  }>(null)
 
 
   // 监听浏览器前进后退按钮
@@ -285,7 +300,11 @@ export const App: React.FC<AppProps> = ({ inspectorActive, onInspectorToggle }) 
     try {
       // 通过 ref 调用 PreviewPanel 的截图方法
       if (previewPanelRef.current) {
-        await previewPanelRef.current.captureScreenshot()
+        const result = await previewPanelRef.current.captureScreenshot()
+        if (result) {
+          setScreenshotResult(result)
+          setIsScreenshotModalOpen(true)
+        }
       }
     } catch (error) {
       console.error('截图失败:', error)
@@ -366,11 +385,11 @@ export const App: React.FC<AppProps> = ({ inspectorActive, onInspectorToggle }) 
   return (
     <div className='overflow-hidden h-screen bg-linear-to-br from-blue-50 to-indigo-100 font-[HarmonyOSHans-Regular]'>
       {/* 顶部导航 */}
-      <div className='shrink-0 h-16 bg-white border-b border-gray-200 shadow-sm'>
+      <div className='h-16 bg-white border-b border-gray-200 shadow-sm shrink-0'>
         <div className='flex justify-between items-center px-6 h-full'>
           <div className='flex gap-4 items-center'>
             <div className='flex gap-2 items-center'>
-              <Palette className='shrink-0 w-6 h-6 text-blue-600' />
+              <Palette className='w-6 h-6 text-blue-600 shrink-0' />
               <h1 className='text-xl font-bold text-gray-900 whitespace-nowrap'>Template 开发</h1>
             </div>
             {selectedDataFile && (
@@ -382,8 +401,20 @@ export const App: React.FC<AppProps> = ({ inspectorActive, onInspectorToggle }) 
               {selectedPlatform}/{selectedTemplate.includes('/') ? selectedTemplate.split('/').join(' → ') : selectedTemplate}
             </Chip>
           </div>
-          <div className='flex shrink-0 gap-2 items-center'>
-            {/* 截图按钮已移至画布工具栏 */}
+          <div className='flex gap-2 items-center shrink-0'>
+            {/* Inspector 检查元素按钮 */}
+            <InspectorToggle active={inspectorActive} onToggle={onInspectorToggle} />
+
+            {/* 提示开关 */}
+            <div className='flex gap-2 items-center'>
+              <Switch
+                isSelected={showHints}
+                onValueChange={setShowHints}
+                size='sm'
+                color='secondary'
+              />
+              <span className='text-sm font-medium text-gray-700'>提示</span>
+            </div>
           </div>
         </div>
       </div>
@@ -437,8 +468,22 @@ export const App: React.FC<AppProps> = ({ inspectorActive, onInspectorToggle }) 
           >
             <div className='flex flex-col h-full'>
               {/* 画布工具栏 */}
-              <div className='shrink-0 px-6 py-3 bg-white border-b border-gray-200'>
-                <div className='flex items-center gap-4'>
+              <div className='px-6 py-3 bg-white border-b border-gray-200 shrink-0'>
+                <div className='flex gap-4 items-center'>
+                  {/* 重载组件按钮 */}
+                  <Button
+                    size='sm'
+                    color='primary'
+                    variant='flat'
+                    startContent={<RefreshCw className='w-4 h-4' />}
+                    onPress={() => loadData(selectedDataFile)}
+                  >
+                    重载
+                  </Button>
+
+                  {/* 分隔线 */}
+                  <div className='w-px h-6 bg-gray-300' />
+
                   {/* 主题切换开关 */}
                   <div className='flex gap-2 items-center'>
                     <Switch
@@ -468,12 +513,6 @@ export const App: React.FC<AppProps> = ({ inspectorActive, onInspectorToggle }) 
                   {/* 分隔线 */}
                   <div className='w-px h-6 bg-gray-300' />
 
-                  {/* Inspector 检查元素按钮 */}
-                  <InspectorToggle active={inspectorActive} onToggle={onInspectorToggle} />
-
-                  {/* 分隔线 */}
-                  <div className='w-px h-6 bg-gray-300' />
-
                   {/* 适应画布按钮 */}
                   <Button
                     size='sm'
@@ -491,7 +530,7 @@ export const App: React.FC<AppProps> = ({ inspectorActive, onInspectorToggle }) 
                   <div className='w-px h-6 bg-gray-300' />
 
                   {/* 缩放进度条 */}
-                  <div className='flex gap-2 items-center flex-1 max-w-96'>
+                  <div className='flex flex-1 gap-2 items-center max-w-96'>
                     <span className='text-xs text-gray-500 whitespace-nowrap'>缩放:</span>
                     <Slider
                       aria-label='缩放比例'
@@ -517,7 +556,7 @@ export const App: React.FC<AppProps> = ({ inspectorActive, onInspectorToggle }) 
               </div>
 
               {/* 预览画布 */}
-              <div className='flex-1 overflow-hidden'>
+              <div className='overflow-hidden flex-1'>
                 <PreviewPanel
                   ref={previewPanelRef}
                   platform={selectedPlatform}
@@ -528,12 +567,19 @@ export const App: React.FC<AppProps> = ({ inspectorActive, onInspectorToggle }) 
                   scale={scale}
                   onScaleChange={setScale}
                   onComponentLoadComplete={handleComponentLoadComplete}
+                  showShortcuts={showHints}
+                  showDebugInfo={showHints}
                 />
               </div>
             </div>
           </Panel>
         </PanelGroup>
       </div>
+      <ScreenshotPreviewModal
+        isOpen={isScreenshotModalOpen}
+        onClose={() => setIsScreenshotModalOpen(false)}
+        screenshotResult={screenshotResult}
+      />
     </div>
   )
 }

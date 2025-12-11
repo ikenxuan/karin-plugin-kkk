@@ -41,7 +41,7 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
       <CardBody className='pt-0 space-y-3'>
         {/* 平台选择 - 响应式网格布局 */}
         <div>
-          <label className='block mb-2 font-medium text-sm text-gray-700'>选择平台</label>
+          <label className='block mb-2 text-sm font-medium text-gray-700'>选择平台</label>
           <div 
             className='grid gap-2'
             style={{
@@ -73,9 +73,9 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
                   value={config.type}
                   checked={selectedPlatform === config.type}
                   onChange={() => {}}
-                  className='w-4 h-4 text-primary flex-shrink-0'
+                  className='w-4 h-4 text-primary shrink-0'
                 />
-                <span className='text-sm font-medium flex-1 leading-snug break-words'>{config.name}</span>
+                <span className='flex-1 text-sm font-medium leading-snug wrap-break-word'>{config.name}</span>
               </label>
             ))}
           </div>
@@ -83,7 +83,7 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
 
         {/* 组件选择 */}
         <div>
-          <label className='block mb-2 font-medium text-sm text-gray-700'>选择组件</label>
+          <label className='block mb-2 text-sm font-medium text-gray-700'>选择组件</label>
           <div className='overflow-y-auto max-h-64 scrollbar-hide'>
             <div 
               className='grid gap-2'
@@ -112,9 +112,9 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
                       value={component.id}
                       checked={selectedTemplate === component.id}
                       onChange={() => {}}
-                      className='w-4 h-4 text-primary flex-shrink-0'
+                      className='w-4 h-4 text-primary shrink-0'
                     />
-                    <span className='text-sm font-medium flex-1 leading-snug break-words'>{component.name}</span>
+                    <span className='flex-1 text-sm font-medium leading-snug wrap-break-word'>{component.name}</span>
                   </label>
                 ))}
             </div>

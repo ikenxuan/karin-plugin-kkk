@@ -1,6 +1,6 @@
-import { addToast, Button, Card, CardBody, CardHeader, Kbd } from '@heroui/react'
+import { addToast, Card, CardBody, CardHeader, Kbd } from '@heroui/react'
 import gsap from 'gsap'
-import { Copy, Download, Eye, X } from 'lucide-react'
+import { Eye } from 'lucide-react'
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 
 import { PlatformType } from '../../types/platforms'
@@ -27,6 +27,10 @@ interface PreviewPanelProps {
   onScaleChange: (scale: number) => void
   /** 组件加载完成回调 */
   onComponentLoadComplete?: () => void
+  /** 是否显示快捷键提示 */
+  showShortcuts?: boolean
+  /** 是否显示调试信息 */
+  showDebugInfo?: boolean
 }
 
 /**
@@ -74,7 +78,7 @@ interface ScrollBarDragState {
  */
 export interface PreviewPanelRef {
   /** 截图方法 */
-  captureScreenshot: () => Promise<void>
+  captureScreenshot: () => Promise<{ blob: Blob; download: () => void; copyToClipboard: () => Promise<void> } | null>
   /** 适应画布方法 */
   fitToCanvas: () => void
 }
@@ -110,7 +114,9 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   qrCodeDataUrl,
   scale,
   onScaleChange,
-  onComponentLoadComplete
+  onComponentLoadComplete,
+  showShortcuts = true,
+  showDebugInfo = true
 }, ref) => {
   // 键盘状态
   const [isSpacePressed, setIsSpacePressed] = useState(false)
@@ -137,7 +143,6 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
 
   // 截图
   const [isCapturing, setIsCapturing] = useState(false)
-  const [screenshotResult, setScreenshotResult] = useState<{ blob: Blob; download: () => void; copyToClipboard: () => Promise<void> } | null>(null)
   const componentRendererRef = useRef<HTMLDivElement>(null)
 
   /**
@@ -314,7 +319,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
         // Alt + 滚轮：缩放
         e.preventDefault()
         const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1
-        const newScale = Math.max(0.1, Math.min(3, scale * zoomFactor))
+        const newScale = Math.max(0.1, Math.min(5, scale * zoomFactor))
         zoomAtPoint(newScale, e.clientX, e.clientY)
       } else {
         // 普通滚轮：Y轴滚动（仅在有垂直滚动条时）
@@ -661,10 +666,9 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
    * 截图功能
    */
   const captureScreenshot = useCallback(async () => {
-    if (!previewContentRef.current || isCapturing) return
+    if (!previewContentRef.current || isCapturing) return null
 
     setIsCapturing(true)
-    setScreenshotResult(null)
 
     try {
       const result = await captureScreenshotUtil({
@@ -672,7 +676,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
         scale,
         panOffset
       })
-      setScreenshotResult(result)
+      return result
     } catch (error) {
       console.error('截图失败:', error)
       addToast({
@@ -683,57 +687,11 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
         color: 'danger',
         timeout: 3000
       })
+      return null
     } finally {
       setIsCapturing(false)
     }
   }, [scale, panOffset, isCapturing])
-
-  /**
-   * 处理下载
-   */
-  const handleDownload = useCallback(() => {
-    if (screenshotResult) {
-      screenshotResult.download()
-      addToast({
-        radius: 'lg',
-        variant: 'flat',
-        title: '下载成功',
-        description: '截图已保存到本地',
-        color: 'success',
-        timeout: 3000
-      })
-      setScreenshotResult(null)
-    }
-  }, [screenshotResult])
-
-  /**
-   * 处理复制到剪贴板
-   */
-  const handleCopyToClipboard = useCallback(async () => {
-    if (screenshotResult) {
-      try {
-        await screenshotResult.copyToClipboard()
-        addToast({
-          radius: 'lg',
-          variant: 'flat',
-          title: '复制成功',
-          description: '截图已复制到剪贴板',
-          color: 'success',
-          timeout: 3000
-        })
-        setScreenshotResult(null)
-      } catch {
-        addToast({
-          radius: 'lg',
-          variant: 'flat',
-          title: '复制失败',
-          description: '请检查浏览器权限或重试',
-          color: 'danger',
-          timeout: 3000
-        })
-      }
-    }
-  }, [screenshotResult])
 
   
   /**
@@ -746,7 +704,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
     
   return (
     <Card className='flex flex-col h-full'>
-      <CardHeader className='flex-shrink-0 pb-2'>
+      <CardHeader className='pb-2 shrink-0'>
         <div className='flex justify-between items-center w-full'>
           <div className='flex gap-2 items-center'>
             <Eye className='w-4 h-4' />
@@ -758,87 +716,60 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
                 正在截图...
               </span>
             )}
-            {screenshotResult && (
-              <div className='flex gap-2 items-center'>
-                <Button
-                  size='sm'
-                  color='primary'
-                  variant='flat'
-                  startContent={<Download className='w-4 h-4' />}
-                  onPress={handleDownload}
-                >
-                  下载
-                </Button>
-                <Button
-                  size='sm'
-                  color='success'
-                  variant='flat'
-                  startContent={<Copy className='w-4 h-4' />}
-                  onPress={handleCopyToClipboard}
-                >
-                  复制到剪贴板
-                </Button>
-                <Button
-                  size='sm'
-                  color='default'
-                  variant='flat'
-                  isIconOnly
-                  onPress={() => setScreenshotResult(null)}
-                >
-                  <X className='w-4 h-4' />
-                </Button>
-              </div>
-            )}
           </div>
         </div>
       </CardHeader>
 
       <CardBody className='overflow-hidden relative flex-1 p-0'>
         {/* 快捷键提示 */}
-        <div className='flex flex-col absolute p-4 z-10 gap-1.5 text-sm bg-default-0/50 backdrop-blur-sm rounded-br-3xl'>
-          <div className='flex gap-1 items-center'>
-            <Kbd className='bg-default-0' keys={['space']}>Space</Kbd>
-            <span>+ 拖拽移动</span>
+        {showShortcuts && (
+          <div className='flex flex-col absolute p-4 z-10 gap-1.5 text-sm bg-default-0/50 backdrop-blur-sm rounded-br-3xl'>
+            <div className='flex gap-1 items-center'>
+              <Kbd className='bg-default-0' keys={['space']}>Space</Kbd>
+              <span>+ 拖拽移动</span>
+            </div>
+            <div className='flex gap-1 items-center'>
+              <Kbd className='bg-default-0' keys={['alt']}>Alt</Kbd>
+              <span>+ 滚轮缩放</span>
+            </div>
+            <div className='flex gap-1 items-center'>
+              <span>滚轮 Y 轴滚动</span>
+            </div>
           </div>
-          <div className='flex gap-1 items-center'>
-            <Kbd className='bg-default-0' keys={['alt']}>Alt</Kbd>
-            <span>+ 滚轮缩放</span>
-          </div>
-          <div className='flex gap-1 items-center'>
-            <span>滚轮 Y 轴滚动</span>
-          </div>
-        </div>
+        )}
 
         {/* 调试状态面板 - 右下角 */}
-        <div className='flex flex-col absolute right-4 bottom-4 z-10 p-4 gap-1.5 text-sm bg-default-0/50 backdrop-blur-sm rounded-tl-3xl'>
-          <div className='font-semibold mb-1'>调试状态</div>
-          <div className='flex gap-1 items-center'>
-            <Kbd className='bg-default-0' keys={['space']}>Space</Kbd>
-            <span className={isSpacePressed ? 'text-success' : 'text-default-500'}>
-              {isSpacePressed ? '已按下' : '未按下'}
-            </span>
+        {showDebugInfo && (
+          <div className='flex flex-col absolute right-4 bottom-4 z-10 p-4 gap-1.5 text-sm bg-default-0/50 backdrop-blur-sm rounded-tl-3xl'>
+            <div className='mb-1 font-semibold'>调试状态</div>
+            <div className='flex gap-1 items-center'>
+              <Kbd className='bg-default-0' keys={['space']}>Space</Kbd>
+              <span className={isSpacePressed ? 'text-success' : 'text-default-500'}>
+                {isSpacePressed ? '已按下' : '未按下'}
+              </span>
+            </div>
+            <div className='flex gap-1 items-center'>
+              <Kbd className='bg-default-0' keys={['alt']}>Alt</Kbd>
+              <span className={isAltPressed ? 'text-success' : 'text-default-500'}>
+                {isAltPressed ? '已按下' : '未按下'}
+              </span>
+            </div>
+            <div className='flex gap-1 items-center'>
+              <span>拖拽:</span>
+              <span className={isDragging ? 'font-semibold text-success' : 'text-default-500'}>
+                {isDragging ? '进行中' : '未激活'}
+              </span>
+            </div>
+            <div className='flex gap-1 items-center'>
+              <span>光标:</span>
+              <span className='text-primary'>{getCursorStyle()}</span>
+            </div>
+            <div className='flex gap-1 items-center'>
+              <span>选择:</span>
+              <span className='text-primary'>{getUserSelectStyle()}</span>
+            </div>
           </div>
-          <div className='flex gap-1 items-center'>
-            <Kbd className='bg-default-0' keys={['alt']}>Alt</Kbd>
-            <span className={isAltPressed ? 'text-success' : 'text-default-500'}>
-              {isAltPressed ? '已按下' : '未按下'}
-            </span>
-          </div>
-          <div className='flex gap-1 items-center'>
-            <span>拖拽:</span>
-            <span className={isDragging ? 'text-success font-semibold' : 'text-default-500'}>
-              {isDragging ? '进行中' : '未激活'}
-            </span>
-          </div>
-          <div className='flex gap-1 items-center'>
-            <span>光标:</span>
-            <span className='text-primary'>{getCursorStyle()}</span>
-          </div>
-          <div className='flex gap-1 items-center'>
-            <span>选择:</span>
-            <span className='text-primary'>{getUserSelectStyle()}</span>
-          </div>
-        </div>
+        )}
 
         {/* 预览容器 */}
         <div
