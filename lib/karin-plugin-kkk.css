@@ -1697,6 +1697,10 @@
     height: 60px;
   }
 
+  .h-\[60vh\] {
+    height: 60vh;
+  }
+
   .h-\[90px\] {
     height: 90px;
   }
@@ -2665,6 +2669,10 @@
 
   .cursor-grab {
     cursor: grab;
+  }
+
+  .cursor-move {
+    cursor: move;
   }
 
   .cursor-not-allowed {
@@ -3979,6 +3987,16 @@
 
   .bg-gray-50 {
     background-color: var(--color-gray-50);
+  }
+
+  .bg-gray-50\/50 {
+    background-color: #f9fafb80;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-gray-50\/50 {
+      background-color: color-mix(in oklab, var(--color-gray-50) 50%, transparent);
+    }
   }
 
   .bg-gray-100 {
@@ -6470,6 +6488,11 @@
   .\!duration-500 {
     --tw-duration: .5s !important;
     transition-duration: .5s !important;
+  }
+
+  .duration-75 {
+    --tw-duration: 75ms;
+    transition-duration: 75ms;
   }
 
   .duration-150 {
