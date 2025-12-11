@@ -16,7 +16,7 @@ import type * as PageTree from 'fumadocs-core/page-tree';
 import { PageLastUpdate } from 'fumadocs-ui/page';
 
 interface PageProps {
-  params: Promise<{ slug?: string[] }>;
+  params: Promise<{ slug?: string[]; lang: string }>;
 }
 
 interface NavItem {
@@ -70,11 +70,11 @@ function PageActions({ pageUrl, filePath }: { pageUrl: string; filePath: string 
 
 export default async function Page(props: PageProps) {
   const params = await props.params;
-  const page = source.getPage(params.slug);
+  const page = source.getPage(params.slug, params.lang);
   if (!page) notFound();
 
   const { body: MDX, toc, lastModified } = await page.data.load();
-  const tree = source.pageTree;
+  const tree = source.pageTree[params.lang];
   const navItems = getNavItems(tree, page.url);
   const filePath = params.slug?.join('/') || 'index';
 
@@ -87,7 +87,7 @@ export default async function Page(props: PageProps) {
         footer: <TocBottomLinks />
       }}
       full={page.data.full}
-      footer={{ component: <DocsFooter {...navItems} /> }}
+      footer={{ component: <DocsFooter {...navItems} lang={params.lang} /> }}
     >
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
@@ -116,7 +116,7 @@ export async function generateMetadata(
   props: PageProps,
 ): Promise<Metadata> {
   const params = await props.params;
-  const page = source.getPage(params.slug);
+  const page = source.getPage(params.slug, params.lang);
   if (!page) notFound();
 
   return {

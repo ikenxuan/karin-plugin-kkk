@@ -5,16 +5,23 @@ import { KKKLogo } from '@/components/kkk-logo'
 import { GitHubLink } from '@/components/github-link'
 import { SidebarBanner } from '@/components/sidebar-banner'
 
-export default function Layout ({ children }: LayoutProps<'/docs'>) {
+export default async function Layout ({ 
+  children, 
+  params 
+}: { 
+  children: React.ReactNode;
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
   return (
     <DocsLayout
-      tree={source.pageTree} 
-      {...baseOptions()}
+      tree={source.pageTree[lang]} 
+      {...baseOptions(lang)}
       sidebar={{
         banner: <SidebarBanner />
       }}
       nav={{
-        ...baseOptions().nav,
+        ...baseOptions(lang).nav,
         children: (
           <div className="flex gap-3 items-center mr-2 md:mr-0 in-[aside]:hidden">
             <GitHubLink />

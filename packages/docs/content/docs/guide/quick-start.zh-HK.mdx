@@ -1,0 +1,68 @@
+---
+title: 快速開始
+description: 安裝並配置 karin-plugin-kkk
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Steps, Step } from 'fumadocs-ui/components/steps';
+import { Cards, Card } from 'fumadocs-ui/components/card';
+
+## 安裝
+
+<Steps>
+<Step>
+
+### 環境要求
+
+- Node.js >= 22
+- pnpm >= 9
+- Karin >= 1.13.0
+
+</Step>
+<Step>
+
+### 安裝插件
+
+推薦通过 Karin WebUI 插件市場安裝，或使用命令：
+
+```bash
+pnpm add karin-plugin-kkk@latest -w
+```
+
+</Step>
+<Step>
+
+### 配置 Cookies
+
+在 Karin WebUI → 插件配置 → karin-plugin-kkk 中填寫各平台嘅 Cookies。
+
+<Callout type="info">
+Cookies 用於請求平台 API，唔配置都能使用基礎功能，但部分高級功能（如高畫質影片、推送）需要登錄態。
+</Callout>
+
+</Step>
+</Steps>
+
+## 基本使用
+
+啟動後會監聽群傾偈消息，發送包含平台連結嘅消息，插件成功匹配以下連結後自動解析：
+
+- 抖音：支持 `douyin.com` 與 `iesdouyin.com` 及其子域名 (`www`, `v`, `jx`, `m`, `jingxuan`)
+- B站：支持 `bilibili.com`, `b23.tv`, `t.bilibili.com`, `bili2233.cn`，以及純 **BV號** (`BV...`) 同 **av號** (`av...`)
+- 快手：支持 `kuaishou.com`, `v.kuaishou.com`，以及APP分享嘅文本格式（如 `快手...快手`）
+- 小紅書：支持 `xiaohongshu.com`, `xhslink.com`
+
+## 反饋渠道
+
+<Cards>
+  <Card 
+    title="QQ 群" 
+    description="795874649 - 實時交流與反饋"
+    href="https://qm.qq.com/q/DgLbCERYVG"
+  />
+  <Card 
+    title="GitHub Issue" 
+    description="提交問題或功能建議"
+    href="https://github.com/ikenxuan/karin-plugin-kkk/issues/new/choose"
+  />
+</Cards>

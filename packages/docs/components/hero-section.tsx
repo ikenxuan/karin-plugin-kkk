@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { TextHoverEffect } from "./ui/text-hover-effect";
 import { NoiseBackground } from "./ui/noise-background";
 import { SparklesText } from "./ui/sparkles-text";
@@ -9,6 +10,8 @@ import { Highlighter } from "./ui/highlighter";
 import { LinkPreview } from "./ui/link-preview";
 
 export function HeroSection() {
+  const { lang } = useParams();
+  
   return (
     <div className="flex overflow-hidden relative flex-col w-full h-svh">
       <div className="absolute inset-x-0 top-0 z-0 pointer-events-none">
@@ -39,7 +42,7 @@ export function HeroSection() {
           <SparklesText className="p-4 -m-4" sparklesCount={10} colors={{ first: "#9E7AFF", second: "#FE8BBB" }}>
             <Link
               className="inline-flex overflow-hidden relative p-px h-12 rounded-full focus:outline-none focus:ring-2 focus:ring-fd-ring focus:ring-offset-2"
-              href="/docs"
+              href={`/${lang}/docs`}
             >
               <NoiseBackground
                 containerClassName="w-full h-full rounded-full flex items-center justify-center bg-transparent dark:bg-transparent"

@@ -1,0 +1,72 @@
+---
+title: 錯誤處理機制
+description: 自動錯誤捕獲與可視化反饋系統
+---
+
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+
+命令執行出錯時，自動捕獲異常並渲染錯誤圖片反饋畀用戶。
+
+## 架構概覽
+
+<Mermaid chart={`
+flowchart LR
+    A[命令觸發] --> B[wrapWithErrorHandler]
+    B --> C[logger.runContext]
+    C --> D[業務邏輯]
+    D -->|異常| E[捕獲 + 日誌收集]
+    E --> F[渲染錯誤圖片]
+`} />
+
+## 機制特性
+
+### 錯誤處理包裝器
+
+用 `wrapWithErrorHandler` 包裝命令處理函數，出錯時自動渲染錯誤圖片：
+
+```ts twoslash
+// @noErrors
+import karin, { type Message } from 'node-karin'
+// ---cut-start---
+interface ErrorHandlerOptions { businessName: string }
+declare function wrapWithErrorHandler(
+  fn: (e: Message, next: () => unknown) => Promise<boolean>,
+  options: ErrorHandlerOptions
+): (e: Message, next: () => unknown) => Promise<boolean>
+// ---cut-end---
+
+const handler = wrapWithErrorHandler(
+  async (e) => {
+    // 業務邏輯，異常會被自動捕獲
+    return true
+  },
+  { businessName: '功能名稱' }
+)
+
+karin.command(/^#命令$/, handler)
+```
+
+### 上下文日誌追蹤
+
+基於 [@karinjs/log4js](https://github.com/KarinJS/esmify/tree/main/packages/log4js) 嘅 `runContext` API，自動收集執行期間嘅所有日誌，方便排查問題。
+
+```ts twoslash
+// @noErrors
+import { logger } from 'node-karin'
+
+const ctx = logger.runContext(async () => { /* 業務邏輯 */ })
+await ctx.run()
+const logs = ctx.logs()  // 獲取執行期間嘅日誌
+```
+
+## 錯誤圖片示例
+
+<Accordions>
+<Accordion title="查看錯誤日誌圖片">
+
+![錯誤日誌圖片](../../assets/cases/x/10.jpg)
+
+</Accordion>
+</Accordions>
+
+圖片包含：錯誤類型、調用棧、業務名稱、觸發命令、執行日誌、版本信息。

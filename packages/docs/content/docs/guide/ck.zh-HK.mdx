@@ -1,0 +1,61 @@
+---
+title: 獲取 Cookies
+description: 如何獲取各平台嘅 Cookies
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+
+<Callout type="info">
+Cookies 僅用於請求平台官方 API，唔會上傳到任何第三方。
+</Callout>
+
+## 方式一：掃碼登錄（推薦）
+
+掃碼登錄暫時只支持抖音同B站。
+
+在群傾偈中發送：
+
+```
+#抖音登录
+#B站登录
+```
+
+使用對應 APP 掃碼即可自動保存 Cookies。
+
+## 方式二：瀏覽器獲取
+
+1. 打開瀏覽器，訪問對應平台並登錄
+2. 按 F12 打開開發者工具（不同瀏覽器打開方式不同，如 Chrome 同 Edge 按 F12 或右鍵點擊頁面選擇“檢查”）
+3. 切換到 Network（網絡）標籤
+4. 刷新頁面，搵到任意請求
+5. 在請求頭中複製 Cookie 值
+
+<Accordions>
+<Accordion title="圖文教程（Chrome）">
+
+![獲取Cookie教程](../../assets/cases/intro/pic1.jpg)
+
+</Accordion>
+</Accordions>
+
+## 方式三：移動端獲取
+
+使用 <LinkPreview url="https://viayoo.com/zh-cn" className="font-medium text-fd-primary hover:underline">Via 瀏覽器</LinkPreview>  訪問平台網頁版並登錄：
+
+- 抖音：<LinkPreview url="https://www.douyin.com" className="font-medium text-fd-primary hover:underline">www.douyin.com</LinkPreview>
+- B站：<LinkPreview url="https://www.bilibili.com" className="font-medium text-fd-primary hover:underline">www.bilibili.com</LinkPreview>
+- 快手：<LinkPreview url="https://www.kuaishou.com" className="font-medium text-fd-primary hover:underline">www.kuaishou.com</LinkPreview>
+
+登錄後點擊 **左上角菜單** → **查看 Cookies** → **複製文本**
+
+## 配置方式
+
+通过 Karin WebUI 配置，或編輯配置文件：
+
+```yaml title="cookies.yaml"
+douyin: 你嘅抖音Cookie
+bilibili: 你嘅B站Cookie
+kuaishou: 你嘅快手Cookie
+xiaohongshu: 你嘅小紅書Cookie
+```

@@ -1,0 +1,78 @@
+---
+title: 常見問題
+description: FAQ
+---
+
+import { Accordions, Accordion } from 'fumadocs-ui/components/accordion';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+<Accordions>
+
+<Accordion title="解析失敗或返回空？">
+
+1. 檢查 Cookies 是否有效（可嘗試重新掃碼登錄）
+2. 檢查網絡是否正常
+3. 部分內容可能需要登錄態才能獲取
+
+</Accordion>
+
+<Accordion title="B站解析遇到 -352 錯誤？">
+
+這是 B站嘅風控機制，需要手動完成極驗驗證。
+
+<Callout type="info">
+使用 <LinkPreview url="/zh-HK/geetest" className="font-bold text-fd-primary hover:underline">極驗驗證器</LinkPreview> 工具手動完成驗證，驗證成功後結果會自動複製。
+</Callout>
+
+**使用步驟：**
+1. 打開 <LinkPreview url="/zh-HK/geetest" className="font-bold text-fd-primary hover:underline">極驗驗證器</LinkPreview>
+2. 輸入錯誤信息中嘅 `gt` 同 `challenge` 值
+3. 點擊「生成驗證碼」完成驗證
+4. 驗證結果會自動複製，重新觸發解析即可
+
+</Accordion>
+
+<Accordion title="影片太大發唔出去？">
+
+- 使用自動畫質模式：`videoQuality: adapt`（抖音/小紅書）或 `videoQuality: 0`（B站）
+- 調低 `maxAutoVideoSize` 值
+- 或直接設置較低畫質如 `720p`
+
+</Accordion>
+
+<Accordion title="推送唔生效？">
+
+1. 確認 `push.switch` 已開啟
+2. 檢查 `pushlist.yaml` 中 `group_id` 格式：`群號:機器人帳號`
+3. 確保機器人在目標群中
+4. 查看日誌是否有報錯
+
+</Accordion>
+
+<Accordion title="Web 頁面提示需要鑑權？">
+
+配置中 `webAuth: true` 時需要驗證身份，可設為 `false` 關閉鑑權。
+
+</Accordion>
+
+<Accordion title="如何手動觸發推送？">
+
+```
+#抖音强制推送    → 當前群
+#B站强制推送     → 當前群
+```
+
+</Accordion>
+
+<Accordion title="支持邊啲平台？">
+
+| 平台 | 解析 | 評論 | 推送 | 掃碼登錄 |
+|-----|:---:|:---:|:---:|:---:|
+| 抖音 | ✓ | ✓ | ✓ | ✓ |
+| B站 | ✓ | ✓ | ✓ | ✓ |
+| 快手 | ✓ | ✓ | — | — |
+| 小紅書 | ✓ | ✓ | — | — |
+
+</Accordion>
+
+</Accordions>

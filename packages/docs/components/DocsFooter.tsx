@@ -12,6 +12,7 @@ interface NavItem {
 export interface DocsFooterProps {
   prev?: NavItem;
   next?: NavItem;
+  lang?: string;
 }
 
 function NavCard({ item, direction }: { item: NavItem; direction: 'prev' | 'next' }) {
@@ -35,7 +36,7 @@ function NavCard({ item, direction }: { item: NavItem; direction: 'prev' | 'next
   );
 }
 
-export function DocsFooter({ prev, next }: DocsFooterProps) {
+export function DocsFooter({ prev, next, lang }: DocsFooterProps) {
   return (
     <>
       {(prev || next) && (
@@ -44,7 +45,7 @@ export function DocsFooter({ prev, next }: DocsFooterProps) {
           {next && <NavCard item={next} direction="next" />}
         </div>
       )}
-      <Footer />
+      <Footer lang={lang} />
     </>
   );
 }
