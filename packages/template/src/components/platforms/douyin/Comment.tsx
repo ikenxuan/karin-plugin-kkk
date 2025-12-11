@@ -1,11 +1,12 @@
 import clsx from 'clsx'
-import { Heart, QrCode } from 'lucide-react'
+import { CircleEllipsis, Heart, Play, QrCode } from 'lucide-react'
 import React from 'react'
 import { IoSearch } from 'react-icons/io5'
 
 import type { QRCodeSectionProps } from '../../../types'
 import type {
-  DouyinCommentProps
+  DouyinCommentProps,
+  DouyinSubComment
 } from '../../../types/platforms/douyin'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
@@ -119,136 +120,391 @@ const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'>
   )
 }
 
-/**
- * 单个评论组件
- * @param props 组件属性
- * @returns JSX元素
- */
-const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][number] & { isLast?: boolean }> = (props) => {
-  return (
-    <div className={clsx(
-      'flex px-10 pt-10',
-      { 'pb-0': props.isLast, 'pb-15': !props.isLast }
-    )}>
-      {/* 用户头像 */}
-      <img
-        src={props.userimageurl}
-        className='w-[180px] h-[180px] rounded-full object-cover shadow-lg mr-8 shrink-0'
-        alt='用户头像'
-      />
+interface ReplyNode extends DouyinSubComment {
+  children: ReplyNode[]
+  hiddenCount?: number
+}
 
-      {/* 评论内容 */}
-      <div className='flex-1 min-w-0'>
-        {/* 用户信息 */}
-        <div className='flex flex-wrap gap-7 items-center mb-6 text-6xl select-text text-foreground-600'>
-          <span className='font-medium'>{props.nickname}</span>
-          {props.label_type === 1 && (
-            <div className='inline-flex items-center px-4 py-2 rounded-xl text-4xl bg-[#fe2c55] text-white'>
-              作者
-            </div>
-          )}
-          {props.is_author_digged && props.status_label !== '作者赞过' && (
-            <div className='inline-flex items-center px-4 py-2 text-4xl font-light rounded-xl bg-content2 text-foreground-700'>
-              作者赞过
-            </div>
-          )}
-          {props.status_label && (
-            <div className='inline-flex items-center px-4 py-2 text-4xl font-light rounded-xl bg-content2 text-foreground-700'>
-              {props.status_label}
-            </div>
-          )}
-        </div>
+const organizeReplies = (replies: DouyinSubComment[], rootCid: string, maxDepth: number = 6): ReplyNode[] => {
+  const map = new Map<string, ReplyNode>()
+  const roots: ReplyNode[] = []
 
-        {/* 评论文本 */}
-        <div
-          className='text-6xl text-foreground leading-[1.6] mb-6 whitespace-pre-wrap select-text [&_img]:mb-2 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
-          dangerouslySetInnerHTML={{ __html: props.text }}
-          style={{
-            wordBreak: 'break-word',
-            overflowWrap: 'break-word'
-          }}
-        />
+  // 第一遍：创建节点
+  replies.forEach(r => {
+    map.set(r.cid, { ...r, children: [] })
+  })
 
-        {/* 评论图片 */}
-        {(props.commentimage || props.sticker) && (
-          <div className='my-6 overflow-hidden shadow-lg rounded-2xl max-w-[800px]'>
-            <img
-              className='object-contain w-full h-auto rounded-2xl'
-              src={props.commentimage || props.sticker}
-              alt='评论图片'
-            />
-          </div>
-        )}
+  // 第二遍：构建树
+  replies.forEach(r => {
+    const node = map.get(r.cid)!
+    const parentId = r.reply_to_reply_id
+    if (parentId && map.has(parentId) && parentId !== rootCid && parentId !== '0') {
+      map.get(parentId)!.children.push(node)
+    } else {
+      roots.push(node)
+    }
+  })
 
-        {/* 底部信息和操作区域 */}
-        <div className='flex justify-between items-center mt-8 text-foreground-500'>
-          <div className='flex flex-wrap gap-6 items-center select-text'>
-            <span className='text-5xl'>{props.create_time}</span>
-            <span className='text-5xl'>{props.ip_label}</span>
-          </div>
+  // 计算深度并修剪树的函数
+  const pruneTree = (nodes: ReplyNode[], currentDepth: number): ReplyNode[] => {
+    if (currentDepth > maxDepth) {
+      const count = nodes.length + nodes.reduce((acc, node) => acc + countChildren(node), 0)
+      if (count > 0) {
+        return [{
+          cid: `more-${Date.now()}-${Math.random()}`,
+          text: '',
+          digg_count: 0,
+          create_time: '',
+          nickname: '',
+          userimageurl: '',
+          ip_label: '',
+          text_extra: [],
+          label_text: '',
+          image_list: null,
+          reply_to_reply_id: '',
+          reply_to_username: '',
+          children: [],
+          hiddenCount: count
+        }]
+      }
+      return []
+    }
 
-          <div className='flex shrink-0 gap-8 items-center'>
-            {/* 点赞按钮 */}
-            <div className='flex gap-3 items-center transition-colors cursor-pointer'>
-              <Heart size={60} className='text-foreground-500' />
-              <span className='text-5xl select-text'>{props.digg_count}</span>
-            </div>
-          </div>
-        </div>
+    return nodes.map(node => {
+      node.children = pruneTree(node.children, currentDepth + 1)
+      return node
+    })
+  }
 
-        {/* 二级评论 */}
-        {props.replyComment && Object.keys(props.replyComment).length > 0 && (
-          <div className='pt-8 pl-8 mt-10'>
-            <div className='flex gap-6 items-start'>
-              <img
-                src={props.replyComment.userimageurl}
-                className='object-cover rounded-full w-[120px] h-[120px] shrink-0'
-                alt='用户头像'
+  const countChildren = (node: ReplyNode): number => {
+    return node.children.length + node.children.reduce((acc, child) => acc + countChildren(child), 0)
+  }
+
+  return pruneTree(roots, 1)
+}
+
+const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: boolean; maxDepth?: number }> = ({ reply, depth = 0, isLast, maxDepth = 6 }) => {
+  const nicknameLength = reply.nickname.length
+  const replyToLength = reply.reply_to_username?.length || 0
+  const isNicknameLonger = nicknameLength >= replyToLength
+
+  if (reply.hiddenCount) {
+    return (
+      <div className='flex relative flex-col mb-6'>
+        {/* 
+        外部网格：处理缩进和树连接
+        第1列：父级线程线（脊柱） + 连接到此评论的线（曲线）
+        第2列：评论本身
+      */}
+        <div className='grid grid-cols-[100px_minmax(0,1fr)] relative'>
+          {/* 第1列：树连接区域 */}
+          <div className='flex relative justify-center'>
+            {/* 1. 脊柱：来自父级的垂直线 */}
+            {/* 如果不是最后一个子节点则穿过 */}
+            {!isLast && (
+              <div className='absolute top-0 bottom-0 left-1/2 w-0.5 bg-default-300 -ml-px'></div>
+            )}
+
+            {/* 脊柱延伸用于边距间隙 */}
+            {/* 连接到下一个兄弟节点的 mb-6 间隙 */}
+            {!isLast && (
+              <div className='absolute -bottom-6 left-1/2 w-0.5 h-6 bg-default-300 -ml-px'></div>
+            )}
+
+            {/* 2. 曲线：L形连接到当前评论 */}
+            <svg className='absolute top-0 left-0 w-full h-[50px] pointer-events-none overflow-visible z-0 text-default-300'>
+              <path
+                d='M 50 0 V 15 Q 50 50 85 50 H 90'
+                fill='none'
+                stroke='currentColor'
+                strokeWidth='2'
+                strokeLinecap='round'
               />
-              <div className='flex-1 min-w-0'>
-                <div className='flex gap-3 items-center mb-6'>
-                  <span className='text-6xl font-medium text-foreground-600'>{props.replyComment.nickname}</span>
-                  {props.replyComment.label_text !== '' && (
-                    <div className={clsx(
-                      'inline-flex items-center px-4 py-2 text-4xl rounded-xl', 
-                      props.replyComment.label_text === '作者' ?
-                        'bg-[#fe2c55] text-white' :
-                        'bg-default-100 text-default-500'
+            </svg>
+          </div>
+
+          {/* 第2列：显示更多文本 */}
+          <div className='flex flex-col mt-6 min-w-0'>
+            <div className='flex items-center h-[50px]'>
+              <div className='flex items-center text-foreground-500'>
+                <CircleEllipsis size={45} className='mr-5' />
+                <span className='text-4xl font-medium tracking-wide'>
+                  另外 {reply.hiddenCount} 条回复
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className='flex relative flex-col'>
+      {/* 
+        外部网格：处理缩进和树连接
+        第1列：父级线程线（脊柱） + 连接到此评论的线（曲线）
+        第2列：评论本身
+      */}
+      <div className='grid grid-cols-[100px_minmax(0,1fr)] relative'>
+        {/* 第1列：树连接区域 */}
+        <div className='flex relative justify-center'>
+          {/* 1. 脊柱：来自父级的垂直线 */}
+          {/* 如果不是最后一个子节点则穿过 */}
+          {!isLast && (
+            <div className='absolute top-0 bottom-0 left-1/2 w-0.5 bg-default-300 -ml-px'></div>
+          )}
+
+          {/* 脊柱延伸用于边距间隙 */}
+          {/* 连接到下一个兄弟节点的 mb-6 间隙 */}
+          {!isLast && (
+            <div className='absolute -bottom-6 left-1/2 w-0.5 h-6 bg-default-300 -ml-px'></div>
+          )}
+          
+          {/* 2. 曲线：L形连接到当前评论 */}
+          <svg className='absolute top-0 left-0 w-full h-[50px] pointer-events-none overflow-visible z-0 text-default-300'>
+            <path
+              d='M 50 0 V 15 Q 50 50 85 50 H 90'
+              fill='none'
+              stroke='currentColor'
+              strokeWidth='2'
+              strokeLinecap='round'
+            />
+          </svg>
+        </div>
+
+        {/* 第2列：评论主体（六宫格） */}
+        <div className='flex flex-col min-w-0'>
+          
+          {/* 内部网格：头像 | 内容 */}
+          <div className='grid grid-cols-[100px_minmax(0,1fr)] relative'>
+            
+            {/* 内部第1列：头像 & 子线程线 */}
+            {/* 添加 h-full 以确保其拉伸以匹配内容高度 */}
+            <div className='flex relative flex-col items-center h-full'>
+              {/* 头像 - 固定高度 */}
+              <div className='w-[100px] h-[100px] shrink-0 z-10 relative'>
+                <img
+                  src={reply.userimageurl}
+                  className='object-cover rounded-full w-[100px] h-[100px] bg-background'
+                  alt='用户头像'
+                />
+              </div>
+               
+              {/* 子线程线 - 从头像下方开始并延伸到此单元格底部 */}
+              {reply.children.length > 0 && (
+                <div className='w-0.5 bg-default-300 h-full grow mt-3 rounded-t-full'></div>
+              )}
+            </div>
+
+            {/* 内部第2列：头部、内容、操作 */}
+            <div className='flex flex-col pb-8 pl-3 min-w-0'>
+              {/* 第1行：头部 */}
+              <div className='flex flex-nowrap items-center h-[100px] content-center w-full overflow-hidden'>
+                <span className={clsx(
+                  'mr-2 text-5xl font-medium text-foreground-700',
+                  isNicknameLonger ? 'min-w-0 truncate shrink' : 'shrink-0'
+                )}>
+                  {reply.nickname}
+                </span>
+                {reply.label_text !== '' && (
+                  <div className={clsx(
+                    'inline-flex shrink-0 items-center px-3 py-1 text-3xl rounded-lg mr-2',
+                    reply.label_text === '作者' ?
+                      'bg-[#fe2c55] text-white' :
+                      'bg-default-100 text-default-500'
+                  )}>
+                    {reply.label_text}
+                  </div>
+                )}
+                {reply.reply_to_username && (
+                  <div className={clsx(
+                    'flex items-center',
+                    !isNicknameLonger ? 'overflow-hidden min-w-0 shrink' : 'shrink-0'
+                  )}>
+                    <Play size={35} className='mr-3.5 mx-1 text-foreground-400 shrink-0' fill='currentColor' />
+                    <span className={clsx(
+                      'text-5xl font-medium text-foreground-700',
+                      !isNicknameLonger && 'truncate'
                     )}>
-                      {props.replyComment.label_text}
-                    </div>
-                  )}
-                </div>
+                      {reply.reply_to_username}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* 第2行：内容 */}
+              <div className='py-2'>
                 <div
-                  className='text-6xl text-foreground leading-[1.6] mb-6 select-text [&_img]:mb-2 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em] [&_span]:inline'
-                  dangerouslySetInnerHTML={{ __html: props.replyComment.text }}
+                  className='text-5xl text-foreground leading-normal whitespace-pre-wrap select-text [&_img]:mb-2 [&_img]:inline [&_img]:h-[1.3em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
+                  dangerouslySetInnerHTML={{ __html: reply.text }}
                   style={{
                     wordBreak: 'break-word',
                     overflowWrap: 'break-word'
                   }}
                 />
-                {props.replyComment.image_list && props.replyComment.image_list.length > 0 &&
-                  props.replyComment.image_list.filter(Boolean).map((img, idx) => (
-                    <div key={idx} className='my-6 overflow-hidden shadow-lg rounded-2xl max-w-[800px]'>
+                
+                {reply.image_list && reply.image_list.length > 0 &&
+                  reply.image_list.filter(Boolean).map((img, idx) => (
+                    <div key={idx} className='my-4 overflow-hidden shadow-sm rounded-xl max-w-[600px]'>
                       <img
-                        className='object-contain w-full h-auto rounded-2xl'
+                        className='object-contain w-full h-auto rounded-xl'
                         src={img}
                         alt='评论图片'
                       />
                     </div>
                   ))}
-                <div className='flex justify-between items-center mt-8 text-foreground-500'>
-                  <div className='flex flex-wrap gap-6 items-center select-text'>
-                    <span className='text-5xl'>{props.replyComment.create_time}</span>
-                    <span className='text-5xl'>{props.replyComment.ip_label}</span>
+              </div>
+
+              {/* 第3行：操作 */}
+              <div className='pb-4'>
+                <div className='flex gap-6 items-center text-foreground-500'>
+                  <div className='flex gap-2 items-center'>
+                    <Heart size={40} className='text-foreground-500' />
+                    <span className='text-4xl'>{reply.digg_count}</span>
                   </div>
-                  <div className='flex shrink-0 gap-3 items-center'>
-                    <Heart size={60} className='text-foreground-500' />
-                    <span className='text-5xl'>{props.replyComment.digg_count}</span>
-                  </div>
+                  <span className='text-4xl'>{reply.ip_label}</span>
+                  <span className='ml-2 text-4xl'>{reply.create_time}</span>
                 </div>
               </div>
             </div>
+          </div>
+           
+          {/* 子容器 - 递归 */}
+          {reply.children.length > 0 && (
+            <div className='flex relative flex-col'>
+              <div>
+                {reply.children.map((child, index) => (
+                  <ReplyItemComponent 
+                    key={child.cid} 
+                    reply={child} 
+                    depth={depth + 1} 
+                    isLast={index === reply.children.length - 1} 
+                    maxDepth={maxDepth}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * 单个评论组件
+ * @param props 组件属性
+ * @returns JSX元素
+ * @description Root comment component
+ */
+const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][number] & { isLast?: boolean; maxDepth?: number }> = (props) => {
+  return (
+    <div className={clsx(
+      'flex flex-col px-6 pt-8',
+      { 'pb-0': props.isLast, 'pb-10': !props.isLast }
+    )}>
+      {/* 根网格 - 单列主体（根节点没有连接列） */}
+      <div className='flex flex-col min-w-0'>
+        
+        {/* 内部网格：头像 | 内容 */}
+        <div className='grid grid-cols-[140px_minmax(0,1fr)] relative'>
+          
+          {/* 内部第1列：头像 & 子线程线 */}
+          <div className='flex relative flex-col items-center'>
+            {/* 头像 - 根节点更大 */}
+            <div className='w-[140px] h-[140px] shrink-0 z-10 relative'>
+              <img
+                src={props.userimageurl}
+                className='w-[140px] h-[140px] rounded-full object-cover shadow-md bg-background'
+                alt='用户头像'
+              />
+            </div>
+            
+            {/* 子线程线 */}
+            {props.replyComment && props.replyComment.length > 0 && (
+              <div className='w-0.5 bg-default-300 h-full grow mt-4 rounded-t-full'></div>
+            )}
+          </div>
+
+          {/* 内部第2列：内容 */}
+          <div className='flex flex-col pb-4 pl-4 min-w-0'>
+            {/* 头部 */}
+            <div className='flex flex-wrap gap-4 items-center mb-3 text-5xl select-text text-foreground-700 min-h-[140px] content-center'>
+              <span className='font-medium'>{props.nickname}</span>
+              {props.label_type === 1 && (
+                <div className='inline-flex items-center px-3 py-1 rounded-lg text-3xl bg-[#fe2c55] text-white'>
+                  作者
+                </div>
+              )}
+              {props.is_author_digged && props.status_label !== '作者赞过' && (
+                <div className='inline-flex items-center px-3 py-1 text-3xl font-light rounded-lg bg-content2 text-foreground-700'>
+                  作者赞过
+                </div>
+              )}
+              {props.status_label && (
+                <div className='inline-flex items-center px-3 py-1 text-3xl font-light rounded-lg bg-content2 text-foreground-700'>
+                  {props.status_label}
+                </div>
+              )}
+            </div>
+
+            <div
+              className='text-5xl text-foreground leading-normal mb-4 whitespace-pre-wrap select-text [&_img]:mb-2 [&_img]:inline [&_img]:h-[1.3em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
+              dangerouslySetInnerHTML={{ __html: props.text }}
+              style={{
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word'
+              }}
+            />
+
+            {/* 评论图片 */}
+            {(props.commentimage || props.sticker) && (
+              <div className='my-6 overflow-hidden shadow-sm rounded-2xl max-w-[800px]'>
+                <img
+                  className='object-contain w-full h-auto rounded-2xl'
+                  src={props.commentimage || props.sticker}
+                  alt='评论图片'
+                />
+              </div>
+            )}
+
+            <div className='flex justify-between items-center mt-3 text-foreground-500'>
+              <div className='flex gap-6 items-center shrink-0'>
+                <div className='flex gap-2 items-center transition-colors cursor-pointer'>
+                  <Heart size={44} className='text-foreground-500' />
+                  <span className='text-4xl select-text'>{props.digg_count}</span>
+                </div>
+                <span className='text-4xl'>{props.ip_label}</span>
+                <span className='ml-2 text-4xl'>{props.create_time}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 回复容器 */}
+        {/* 
+           根缩进调整：
+           根头像列为 140px。中心点为 70px。
+           子外部列为 100px。中心点为 50px。
+           
+           我们需要子中心点（50px）与根中心点（70px）对齐。
+           所以我们需要将子元素向右推 20px。
+           
+           容器上使用 pl-5。
+        */}
+        {props.replyComment && props.replyComment.length > 0 && (
+          <div className='flex relative flex-col mt-8 ml-5'>
+            <div className='absolute -top-8 left-[50px] w-0.5 h-8 bg-default-300 -ml-px'></div>
+            {organizeReplies(props.replyComment, props.cid || '', props.maxDepth).map((reply, index, arr) => (
+              <ReplyItemComponent 
+                key={reply.cid} 
+                reply={reply} 
+                depth={1} 
+                isLast={index === arr.length - 1} 
+                maxDepth={props.maxDepth}
+              />
+            ))}
           </div>
         )}
       </div>
@@ -316,6 +572,7 @@ export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | '
                     key={comment.cid || index}
                     {...comment}
                     isLast={index === props.data.CommentsData.length - 1}
+                    maxDepth={props.data.maxDepth}
                   />
                 ))}
               </>

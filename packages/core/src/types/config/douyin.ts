@@ -12,6 +12,12 @@ export interface douyinConfig {
   /** 抖音评论数量，范围1 ~ x 条 */
   numcomment: number
 
+  /** 次级评论请求数量，范围1 ~ x 条，最高尽量 8 条左右，当前逻辑不仅无法判断请求的来的评论的嵌套深度，而且「subCommentDepth」会限制嵌套深度，超过深度的评论会被截断 */
+  subCommentLimit: number
+
+  /** 次级评论嵌套深度，范围1 ~ 6 层 */
+  subCommentDepth: number
+
   /** 评论图是否显示真实评论数量，关闭则显示解析到的评论数量 */
   realCommentCount: boolean
 
@@ -23,7 +29,7 @@ export interface douyinConfig {
    * - 'independent': 独立模式，每张图 BGM 从头开始
    */
   liveImageMergeMode: 'continuous' | 'independent'
-  
+
   /** 视频画质偏好设置，'adapt' 为自动根据「maxAutoVideoSize」大小选择，其他为固定画质 */
   videoQuality: 'adapt' | '540p' | '720p' | '1080p' | '2k' | '4k'
 

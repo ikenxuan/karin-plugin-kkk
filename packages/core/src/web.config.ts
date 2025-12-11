@@ -291,6 +291,20 @@ export const webConfig = defineConfig({
                 rules: [{ min: 1 }],
                 isDisabled: !all.douyin.sendContent.includes('comment') || !all.douyin.switch
               }),
+              components.input.number('subCommentLimit', {
+                label: '次级评论解析数量',
+                description: '次级评论解析数量，当前逻辑不仅无法判断请求的来的评论的嵌套深度，而且「次级评论解析深度」会限制嵌套深度，超过深度的评论会被截断',
+                defaultValue: all.douyin.subCommentLimit.toString(),
+                rules: [{ min: 1, max: 20 }],
+                isDisabled: !all.douyin.sendContent.includes('comment') || !all.douyin.switch
+              }),
+              components.input.number('subCommentDepth', {
+                label: '次级评论解析深度',
+                description: '次级评论解析深度',
+                defaultValue: all.douyin.subCommentDepth.toString(),
+                rules: [{ min: 1, max: 6, error: '嵌套深度最高只有 6 层，超过 6 层的评论会被强制截断' }],
+                isDisabled: !all.douyin.sendContent.includes('comment') || !all.douyin.switch
+              }),
               components.switch.create('commentImageCollection', {
                 label: '是否收集评论区的图片',
                 description: '开启后将收集评论区的图片，以合并转发的形式返回',

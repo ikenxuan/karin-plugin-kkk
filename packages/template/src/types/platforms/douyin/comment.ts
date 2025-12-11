@@ -64,10 +64,12 @@ export interface DouyinCommentProps extends BaseComponentProps {
       /** 是否@用户ID */
       is_At_user_id?: any
       /** 回复评论数据 */
-      replyComment?: DouyinSubComment
+      replyComment?: DouyinSubComment[]
       /** 作者是否点赞 */
       is_author_digged?: boolean
     }>
+    /** 最大嵌套层级 */
+    maxDepth?: number
   }
   /** 预生成的二维码数据URL */
   qrCodeDataUrl: string
@@ -95,4 +97,10 @@ export interface DouyinSubComment {
   label_text: string
   /** 评论图片 */
   image_list: string[] | null
+  /** 评论ID */
+  cid: string
+  /** 回复的评论ID */
+  reply_to_reply_id: string
+  /** 回复的用户昵称 */
+  reply_to_username: string
 }

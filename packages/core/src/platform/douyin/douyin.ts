@@ -340,7 +340,8 @@ export class DouYin extends Base {
                 ImageLength: imagenum,
                 Region: VideoData.data.aweme_detail.region,
                 suggestWrod: suggest,
-                Resolution: this.is_mp4 && video ? `${video.bit_rate[0].play_addr.width} x ${video.bit_rate[0].play_addr.height}` : null
+                Resolution: this.is_mp4 && video ? `${video.bit_rate[0].play_addr.width} x ${video.bit_rate[0].play_addr.height}` : null,
+                maxDepth: Config.douyin.subCommentDepth
               }
             )
             const messageElements = []

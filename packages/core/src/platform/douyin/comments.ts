@@ -5,6 +5,7 @@ import { DouyinCommentProps } from 'template/types/platforms/douyin'
 
 import { Common, Networks } from '@/module/utils'
 import { getDouyinData } from '@/module/utils/amagiClient'
+import { Config } from '@/module/utils/Config'
 
 
 /**
@@ -187,45 +188,59 @@ export const douyinComments = async (data: any, emojidata: any) => {
       aweme_id,
       comment_id: cid,
       typeMode: 'strict',
-      number: 2
+      number: Config.douyin.subCommentLimit
     })
 
-    let replyText = ''
-    let replyImageList: string[] | null = null
-    if (replyComment.data.comments.length > 0) {
-      const firstReplyComment = replyComment.data.comments[0] as any
-      const replyUserintextlongid =
-        firstReplyComment.text_extra && firstReplyComment.text_extra[0] && firstReplyComment.text_extra[0].sec_uid
-          ? firstReplyComment.text_extra.map((extra: any) => extra.sec_uid!)
-          : null
-      replyText = await processAtUsers(firstReplyComment.text, replyUserintextlongid)
-      
-      // 处理回复评论的图片列表
-      const replyImageUrl = firstReplyComment.image_list?.[0]?.origin_url?.url_list?.[0]
-      const replyStickerUrl = firstReplyComment.sticker?.animate_url?.url_list?.[0]
-      
-      if (replyImageUrl) {
-        replyImageList = [replyImageUrl]
-      } else if (replyStickerUrl) {
-        replyImageList = [replyStickerUrl]
+    const replyCommentsList: any[] = []
+
+    if (replyComment.data.comments && replyComment.data.comments.length > 0) {
+      for (const reply of replyComment.data.comments) {
+        const replyItem = reply as any
+        const replyUserintextlongid =
+          replyItem.text_extra && replyItem.text_extra[0] && replyItem.text_extra[0].sec_uid
+            ? replyItem.text_extra.map((extra: any) => extra.sec_uid!)
+            : null
+
+        const processedReplyText = await processAtUsers(replyItem.text, replyUserintextlongid)
+
+        // 处理回复评论的图片列表
+        const replyImageUrl = replyItem.image_list?.[0]?.origin_url?.url_list?.[0]
+        const replyStickerUrl = replyItem.sticker?.animate_url?.url_list?.[0]
+
+        let replyImageList: string[] | null = null
+        if (replyImageUrl) {
+          const processedReplyImage = await processCommentImage(replyImageUrl)
+          if (processedReplyImage) {
+            replyImageList = [processedReplyImage]
+            imageUrls.push(processedReplyImage.startsWith('data:image/jpeg;base64,') ? `base64://${processedReplyImage.replace('data:image/jpeg;base64,', '')}` : processedReplyImage)
+          }
+        } else if (replyStickerUrl) {
+          replyImageList = [replyStickerUrl]
+          imageUrls.push(replyStickerUrl)
+        }
+
+        replyCommentsList.push({
+          create_time: getRelativeTimeFromTimestamp(replyItem.create_time),
+          nickname: replyItem.user.nickname,
+          userimageurl: replyItem.user.avatar_thumb.url_list[0],
+          text: processCommentEmojis(processedReplyText, emojidata),
+          digg_count: replyItem.digg_count > 10000
+            ? (replyItem.digg_count / 10000).toFixed(1) + 'w'
+            : replyItem.digg_count,
+          ip_label: replyItem.ip_label,
+          text_extra: replyItem.text_extra,
+          label_text: replyItem.label_text,
+          image_list: replyImageList,
+          cid: replyItem.cid,
+          reply_to_reply_id: replyItem.reply_to_reply_id,
+          reply_to_username: replyItem.reply_to_username
+        })
       }
     }
-    const firstReplyComment = replyComment.data.comments.length > 0 ? replyComment.data.comments[0] as any : null
+
     const commentObj: DouyinCommentProps['data']['CommentsData'][number] = {
       id: id++,
-      replyComment: firstReplyComment ? {
-        create_time: getRelativeTimeFromTimestamp(firstReplyComment.create_time),
-        nickname: firstReplyComment.user.nickname,
-        userimageurl: firstReplyComment.user.avatar_thumb.url_list[0],
-        text: processCommentEmojis(replyText, emojidata),
-        digg_count: firstReplyComment.digg_count > 10000
-          ? (firstReplyComment.digg_count / 10000).toFixed(1) + 'w'
-          : firstReplyComment.digg_count,
-        ip_label: firstReplyComment.ip_label,
-        text_extra: firstReplyComment.text_extra,
-        label_text: firstReplyComment.label_text,
-        image_list: replyImageList
-      } : undefined,
+      replyComment: replyCommentsList.length > 0 ? replyCommentsList : undefined,
       cid,
       aweme_id,
       nickname,
@@ -282,15 +297,15 @@ const getRelativeTimeFromTimestamp = (timestamp: number): string => {
   if (diffSeconds < 30) {
     return '刚刚'
   }
-  
+
   // 三个月内使用相对时间
   if (diffSeconds < 7776000) {
-    return formatDistanceToNow(commentDate, { 
-      locale: zhCN, 
-      addSuffix: true 
+    return formatDistanceToNow(commentDate, {
+      locale: zhCN,
+      addSuffix: true
     })
   }
-  
+
   // 超过三个月，显示具体日期
   return format(commentDate, 'yyyy-MM-dd')
 }
