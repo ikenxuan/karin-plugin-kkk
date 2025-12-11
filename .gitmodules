@@ -1,0 +1,3 @@
+[submodule "packages/amagi"]
+	path = packages/amagi
+	url = https://github.com/ikenxuan/amagi

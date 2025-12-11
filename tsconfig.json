@@ -2,6 +2,7 @@
   "files": [],
   "references": [
     { "path": "./packages/template" },
-    { "path": "./packages/core" }
+    { "path": "./packages/core" },
+    { "path": "./packages/amagi" }
   ]
 }

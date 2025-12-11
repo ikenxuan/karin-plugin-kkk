@@ -19,6 +19,15 @@
       "template/*": [
         "../template/src/*"
       ],
+      "@ikenxuan/amagi": [
+        "../amagi/src/index.ts"
+      ],
+      "@ikenxuan/amagi/*": [
+        "../amagi/src/*"
+      ],
+      "amagi/*": [
+        "../amagi/src/*"
+      ]
     },
     "jsx": "react",
     "declaration": true,
@@ -49,6 +58,9 @@
   "references": [
     {
       "path": "../template"
+    },
+    {
+      "path": "../amagi"
     }
   ],
   "exclude": [
