@@ -13,6 +13,12 @@ sendContent:
 # 抖音评论数量，范围 1 ~ x 条
 numcomment: 5
 
+# 次级评论请求数量，范围1 ~ x 条，最高尽量 8 条左右，当前逻辑不仅无法判断请求的来的评论的嵌套深度，而且「subCommentDepth」会限制嵌套深度，超过深度的评论会被截断
+subCommentLimit: 5
+
+# 次级评论嵌套深度，范围1 ~ 6 层
+subCommentDepth: 3
+
 # 评论图是否显示真实评论数量，关闭则显示解析到的评论数量
 realCommentCount: false
 
