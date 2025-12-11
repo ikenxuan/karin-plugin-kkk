@@ -1,4 +1,3 @@
-import net from 'node:net'
 import path from 'node:path'
 
 import Client, {
@@ -11,7 +10,7 @@ import Client, {
 import history from 'connect-history-api-fallback'
 import * as cors from 'cors'
 import * as httpProxy from 'http-proxy-middleware'
-import { app as karinApp, authMiddleware } from 'node-karin'
+import { app as karinApp, authMiddleware, checkPort } from 'node-karin'
 import express from 'node-karin/express'
 
 import { Root } from '../../root'
@@ -29,35 +28,11 @@ server.use(cors.default())
 server.use('/', httpProxy.createProxyMiddleware(proxyOptions))
 // TODO: 后续将此反代放到 karin 中
 
-/**
- * 检测端口是否被占用
- * @param port - 端口号
- * @returns Promise<boolean> 如果端口被占用返回 true，否则返回 false
- */
-const isPortOccupied = (port: number): Promise<boolean> => {
-  return new Promise((resolve) => {
-    const server = net.createServer()
-    server.once('error', (err: any) => {
-      if (err.code === 'EADDRINUSE') {
-        resolve(true)
-      } else {
-        resolve(false)
-      }
-    })
-    server.once('listening', () => {
-      server.close()
-      resolve(false)
-    })
-    server.listen(port)
-  })
-}
-
-isPortOccupied(3780).then((isOccupied) => {
-  if (isOccupied) {
-    amagiLog.error('端口 3780 被占用，代理服务器将不会启动。')
-    return
+checkPort(3780).then((isOpen) => {
+  if (isOpen) {
+    return server.listen(3780)
   }
-  server.listen(3780)
+  return amagiLog.error('端口 3780 被占用，字体代理服务器将不会启动。')
 })
 
 const app = express.Router()
