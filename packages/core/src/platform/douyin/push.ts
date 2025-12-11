@@ -129,7 +129,7 @@ export class DouYinpush extends Base {
         if (pushItem.living && 'room_data' in pushItem.Detail_Data && Detail_Data.live_data) {
           // 处理直播推送
           img = await Render('douyin/live', {
-            image_url: Detail_Data.live_data.data.data.data[0]?.cover!.url_list[0] ?? Detail_Data.live_data.data.data.qrcode_url,
+            image_url: Detail_Data.live_data.data.data.data[0]?.cover?.url_list[0] ?? Detail_Data.live_data.data.data.qrcode_url,
             text: Detail_Data.live_data.data.data.data[0]?.title ?? '',
             liveinf: `${Detail_Data.live_data.data.data.partition_road_map?.partition?.title ?? Detail_Data.live_data.data.data.data[0]?.title ?? '获取失败'} | 房间号: ${Detail_Data.room_data.owner.web_rid}`,
             在线观众: Detail_Data.live_data.data.data.data.length > 0 ? this.count(Detail_Data.live_data.data.data.data[0].room_view_stats!.display_value) : '：语音直播不支持',
@@ -375,10 +375,10 @@ export class DouYinpush extends Base {
           }
 
           const room_data = JSON.parse(UserInfoData.data.user.room_data)
-          const liveInfo = await this.amagi.getDouyinData('直播间信息数据', { 
-            room_id: UserInfoData.data.user.room_id_str, 
+          const liveInfo = await this.amagi.getDouyinData('直播间信息数据', {
+            room_id: UserInfoData.data.user.room_id_str,
             web_rid: room_data.owner.web_rid,
-            typeMode: 'strict' 
+            typeMode: 'strict'
           })
 
           // 如果之前没有直播，现在开播了，需要推送
@@ -446,7 +446,7 @@ export class DouYinpush extends Base {
     try {
       // 获取用户输入的抖音号
       const inputDouyinId = this.e.msg.replace(/^#设置抖音推送/, '').trim()
-      
+
       // 在用户列表中查找匹配的用户
       let matchedUser = null
       for (const userItem of data.user_list) {
@@ -456,12 +456,12 @@ export class DouYinpush extends Base {
           break
         }
       }
-      
+
       // 如果没找到匹配的用户，抛出错误
       if (!matchedUser) {
         throw new Error(`未找到抖音号为 ${inputDouyinId} 的用户`)
       }
-      
+
       // 使用匹配到的用户的 sec_uid 进行下一步请求
       const sec_uid = matchedUser.sec_uid
       const UserInfoData = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
