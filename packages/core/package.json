@@ -55,6 +55,7 @@
     "fingerprint-injector": "^2.1.78"
   },
   "devDependencies": {
+    "@ikenxuan/amagi": "workspace:*",
     "@karinjs/plugin-puppeteer": "^1.1.2",
     "@rollup/plugin-terser": "^0.4.4",
     "@snapka/puppeteer": "^0.1.5",

@@ -23,7 +23,13 @@ export default defineConfig({
       paths: {
         '@/*': ['./src/*'],
         'template': ['../template/src/index.ts'],
-        'template/*': ['../template/src/*']
+        'template/*': ['../template/src/*'],
+        '@ikenxuan/amagi/chalk': ['../amagi/src/exports/chalk.ts'],
+        '@ikenxuan/amagi/axios': ['../amagi/src/exports/axios.ts'],
+        '@ikenxuan/amagi/express': ['../amagi/src/exports/express.ts'],
+        '@ikenxuan/amagi/log4js': ['../amagi/src/exports/log4js.ts'],
+        '@ikenxuan/amagi': ['../amagi/src/index.ts'],
+        'amagi/*': ['../amagi/src/*']
       },
       skipLibCheck: true,
       forceConsistentCasingInFileNames: true,

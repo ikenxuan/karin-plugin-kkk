@@ -93,7 +93,13 @@ export default defineConfig({
     conditions: ['node'],
     alias: {
       '@': resolve(__dirname, './src'),
-      template: resolve(__dirname, '../template/src/client.ts')
+      template: resolve(__dirname, '../template/src/client.ts'),
+      '@ikenxuan/amagi/chalk': resolve(__dirname, '../amagi/src/exports/chalk.ts'),
+      '@ikenxuan/amagi/axios': resolve(__dirname, '../amagi/src/exports/axios.ts'),
+      '@ikenxuan/amagi/express': resolve(__dirname, '../amagi/src/exports/express.ts'),
+      '@ikenxuan/amagi/log4js': resolve(__dirname, '../amagi/src/exports/log4js.ts'),
+      '@ikenxuan/amagi': resolve(__dirname, '../amagi/src/index.ts'),
+      amagi: resolve(__dirname, '../amagi/src')
     }
   },
   plugins: [
