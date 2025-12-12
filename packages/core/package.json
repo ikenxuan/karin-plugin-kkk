@@ -85,7 +85,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "karin": {
-    "engines": ">=1.13.8",
+    "engines": ">=1.14.0",
     "main": "src/index.ts",
     "apps": [
       "lib/apps"
