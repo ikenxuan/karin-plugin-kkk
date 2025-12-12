@@ -1607,6 +1607,16 @@ interface ChangelogProps extends BaseComponentProps {
   };
 }
 //#endregion
+//#region ../template/src/types/ohter/VersionWarningProps.d.ts
+interface VersionWarningProps extends BaseComponentProps {
+  data: {
+    /** 插件构建时的 karin 版本 */
+    requireVersion: string;
+    /** 当前运行的 karin 版本 */
+    currentVersion: string;
+  };
+}
+//#endregion
 //#region ../template/src/types/index.d.ts
 /**
  * 二维码区域组件属性接口
@@ -1695,7 +1705,7 @@ type XiaohongshuComponentIds = 'noteInfo' | 'comment';
 /**
  * 其他平台组件ID
  */
-type OtherComponentIds = 'help' | 'handlerError' | 'changelog';
+type OtherComponentIds = 'help' | 'handlerError' | 'changelog' | 'version_warning';
 /**
  * 路径类型
  */
@@ -1729,6 +1739,7 @@ interface PathToDataTypeMap {
   'other/help': HelpProps['data'];
   'other/handlerError': ApiErrorProps['data'];
   'other/changelog': ChangelogProps['data'];
+  'other/version_warning': VersionWarningProps['data'];
 }
 /**
  * 从路径字符串中提取数据类型的工具类型
