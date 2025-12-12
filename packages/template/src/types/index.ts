@@ -106,7 +106,7 @@ type XiaohongshuComponentIds = 'noteInfo' | 'comment'
 /**
  * 其他平台组件ID
  */
-type OtherComponentIds = 'help' | 'handlerError' | 'changelog'
+type OtherComponentIds = 'help' | 'handlerError' | 'changelog' | 'version_warning'
 
 /**
  * 路径类型
@@ -156,6 +156,7 @@ interface PathToDataTypeMap {
   'other/help': import('./help').HelpProps['data']
   'other/handlerError': import('./ohter/handlerError').ApiErrorProps['data']
   'other/changelog': import('./ohter/changelog').ChangelogProps['data']
+  'other/version_warning': import('./ohter/VersionWarningProps').VersionWarningProps['data']
 }
 
 /**

@@ -8,7 +8,7 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
-import { copyTemplateAssetsPlugin, generateBuildMetadataPlugin } from './vite.plugin'
+import { copyTemplateAssetsPlugin, generateBuildMetadataPlugin, getKarinVersion } from './vite.plugin'
 
 // 在ES模块中模拟__dirname
 const __filename = fileURLToPath(import.meta.url)
@@ -26,10 +26,13 @@ const getFiles = (dir: string) => {
 
 getFiles('src/apps')
 
+const karinVersion = getKarinVersion(__dirname)
+
 export default defineConfig({
   define: {
     __dirname: 'new URL(\'.\', import.meta.url).pathname',
-    __filename: 'new URL(\'\', import.meta.url).pathname'
+    __filename: 'new URL(\'\', import.meta.url).pathname',
+    __REQUIRE_KARIN_VERSION__: JSON.stringify(karinVersion)
   },
   build: {
     target: 'node18',

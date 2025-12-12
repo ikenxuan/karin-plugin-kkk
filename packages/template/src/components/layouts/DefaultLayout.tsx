@@ -65,7 +65,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
             <div className='flex relative justify-center items-center space-x-8'>
               {/* 插件信息 */}
               <div className='flex items-end space-x-8'>
-                <GlowImage glowStrength={1} blurRadius={20}>
+                <GlowImage glowStrength={useDarkTheme ? 1 : 0} blurRadius={20}>
                   <svg
                     id="114514"
                     xmlns="http://www.w3.org/2000/svg"
@@ -127,7 +127,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                   src="/image/frame-logo.png"
                   alt="logo"
                   imgClassName="w-auto h-18"
-                  glowStrength={1}
+                  glowStrength={useDarkTheme ? 1 : 0}
                   blurRadius={40}
                 />
                 <div className='flex flex-col items-start'>
@@ -152,7 +152,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                       src="/image/vite.svg"
                       alt="logo"
                       imgClassName="w-auto h-18"
-                      glowStrength={1}
+                      glowStrength={useDarkTheme ? 1 : 0}
                       blurRadius={20}
                     />
                     <div className='flex flex-col items-start opacity-90'>
@@ -163,7 +163,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                           src="/image/rolldown.svg"
                           alt="logo"
                           imgClassName="w-5 h-5"
-                          glowStrength={3}
+                          glowStrength={useDarkTheme ? 3 : 0}
                           blurRadius={10}
                         />
                       </div>

@@ -258,6 +258,12 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
                 default: module.Changelog
               }))
             })
+          case 'version_warning':
+            return createComponentConfig(baseComponent, {
+              lazyComponent: () => import('../components/platforms/other/VersionWarning').then(module => ({
+                default: module.VersionWarning
+              }))
+            })
           default:
             return createComponentConfig(baseComponent)
         }

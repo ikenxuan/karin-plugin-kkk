@@ -39,7 +39,7 @@ const MenuItemComponent: React.FC<{
       lightInfluenceRange={0.3}
     >
       <div className="flex flex-row gap-6 p-8 rounded-3xl backdrop-blur-sm bg-background">
-        <div className="flex-shrink-0 pt-1">
+        <div className="pt-1 shrink-0">
           <GlowIcon
             Icon={Icon}
             iconProps={{

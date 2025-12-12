@@ -28,12 +28,18 @@ server.use(cors.default())
 server.use('/', httpProxy.createProxyMiddleware(proxyOptions))
 // TODO: 后续将此反代放到 karin 中
 
-checkPort(3780).then((isOpen) => {
-  if (isOpen) {
-    return server.listen(3780)
-  }
-  return amagiLog.error('端口 3780 被占用，字体代理服务器将不会启动。')
-})
+if (process.env.NODE_ENV !== 'test') {
+  checkPort(3780).then((isOpen) => {
+    if (isOpen) {
+      const s = server.listen(3780)
+      s.on('error', (err) => {
+        amagiLog.error(`[karin-plugin-kkk] 字体代理服务器启动失败: ${err.message}`)
+      })
+      return s
+    }
+    return amagiLog.error('端口 3780 被占用，字体代理服务器将不会启动。')
+  })
+}
 
 const app = express.Router()
 app.use(express.json())

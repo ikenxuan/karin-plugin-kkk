@@ -33,8 +33,8 @@ importers:
         specifier: 0.556.0
         version: 0.556.0(react@19.2.1)
       node-karin:
-        specifier: 1.13.8
-        version: 1.13.8
+        specifier: ^1.14.0
+        version: 1.14.0
       react:
         specifier: 19.2.1
         version: 19.2.1
@@ -366,7 +366,7 @@ importers:
         version: 2.0.1
       axios:
         specifier: 1.13.2
-        version: 1.13.2
+        version: 1.13.2(debug@4.4.3)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -8958,8 +8958,8 @@ packages:
   node-addon-api@7.1.1:
     resolution: {integrity: sha512-5m3bsyrjFWE1xf7nz7YXdN4udnVtXK6/Yfgn5qnahL6bCkf2yKt4k3nuTKAtT4r3IG8JNR2ncsIMdZuAzJjHQQ==}
 
-  node-karin@1.13.8:
-    resolution: {integrity: sha512-Yx1f/zR+fYDa3aTB0nhms+Go/1+JVz8u0pm21KMfkJaK2cPZiU8TAYTbU5hPOJStKwBM24NxnH28qiGWVSS8YQ==}
+  node-karin@1.14.0:
+    resolution: {integrity: sha512-sHzX9pifu9qH4/cX677J1kSN7OOVDPkjJtkHeO4A6tTPU9j+F4Rb+9f/RMTRljk+yLYME7M+WqpqTHvpsEc4vg==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -18227,14 +18227,6 @@ snapshots:
 
   axe-core@4.11.0: {}
 
-  axios@1.13.2:
-    dependencies:
-      follow-redirects: 1.15.11
-      form-data: 4.0.5
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-
   axios@1.13.2(debug@4.4.3):
     dependencies:
       follow-redirects: 1.15.11(debug@4.4.3)
@@ -20283,8 +20275,6 @@ snapshots:
   flat@5.0.2: {}
 
   flatted@3.3.3: {}
-
-  follow-redirects@1.15.11: {}
 
   follow-redirects@1.15.11(debug@4.4.3):
     optionalDependencies:
@@ -22535,7 +22525,7 @@ snapshots:
 
   node-addon-api@7.1.1: {}
 
-  node-karin@1.13.8:
+  node-karin@1.14.0:
     dependencies:
       art-template: '@karinjs/art-template@1.1.0'
       axios: '@karinjs/axios@1.13.2'

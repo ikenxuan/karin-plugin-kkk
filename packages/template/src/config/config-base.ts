@@ -279,6 +279,14 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
         enabled: true,
         componentPath: 'platforms/other/changelog',
         exportName: 'changelog'
+      },
+      {
+        id: 'version_warning',
+        name: '版本警告',
+        description: '版本不兼容警告页面',
+        enabled: true,
+        componentPath: 'platforms/other/VersionWarning',
+        exportName: 'VersionWarning'
       }
     ]
   }

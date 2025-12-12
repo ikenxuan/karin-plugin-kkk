@@ -1,26 +1,65 @@
-import '@/module/server/Register'
-import '@/platform/bilibili/riskControl'
+import type { AdapterType, ImageElement, SendMessage } from 'node-karin'
+import karin, { BOT_CONNECT, config, logger } from 'node-karin'
 
-import { logger, mkdirSync } from 'node-karin'
-import { karinPathBase } from 'node-karin/root'
+import { Root } from '@/module'
+import { isSemverGreater } from '@/module/utils/semver'
 
-import { Common, Root } from '@/module'
+declare const __REQUIRE_KARIN_VERSION__: string
 
-// ----------------- DATABASE INIT -----------------
-const { initAllDatabases } = await import('@/module/db')
-await initAllDatabases().catch((err) => {
-  logger.error(`[karin-plugin-kkk] 数据库初始化失败: ${err.message}`)
-})
+// ----------------- VERSION CHECK -----------------
+const requireVersion = __REQUIRE_KARIN_VERSION__
+// const requireVersion = '1.14514.1'
+if (process.env.NODE_ENV !== 'development' && isSemverGreater(requireVersion, Root.karinVersion)) {
+  const msg = `[karin-plugin-kkk] 插件构建时的 karin 版本 (${requireVersion}) 高于当前运行版本 (${Root.karinVersion})，可能会出现兼容性问题！`
+  logger.warn(msg)
 
-// ------------------- MAIN INIT -------------------
-mkdirSync(`${karinPathBase}/${Root.pluginName}/data`)
-mkdirSync(Common.tempDri.images)
-mkdirSync(Common.tempDri.video)
+  /** 已发送通知的 Bot ID 和主人 ID 组合，格式：`${botId}:${master}` */
+  const notifiedSet = new Set<string>()
 
-console.log('')
-console.log('-------------------------- karin-plugin-kkk --------------------------')
-logger.info(`${logger.violet(`[插件:v${Root.pluginVersion}]`)} ${logger.green(Root.pluginName)} 初始化完成~`)
-logger.info(`${logger.violet('[server]')} ${logger.yellow('外部解析页面:')} ${logger.green(`http://127.0.0.1:${process.env.HTTP_PORT!}/kkk/`)}`)
-logger.info(`${logger.violet('[server]')} ${logger.yellow('推送历史管理:')} ${logger.green(`http://127.0.0.1:${process.env.HTTP_PORT!}/kkk/database`)}`)
-console.log('-------------------------- karin-plugin-kkk --------------------------')
-console.log('')
+  karin.on(BOT_CONNECT, async (bot: AdapterType) => {
+    // 增加延迟，确保 bot 完全初始化
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    const masters = config.master()
+    const botId = bot.selfId
+
+    logger.info(`[karin-plugin-kkk] 监测到 Bot 连接: ${botId}, 准备发送版本警告`)
+
+    // 生成警告图片
+    let warningImage: ImageElement[] | null = null
+    try {
+      const { Render } = await import('@/module/utils/Render')
+      warningImage = await Render('other/version_warning', {
+        requireVersion,
+        currentVersion: Root.karinVersion
+      })
+    } catch (error) {
+      logger.error(`[karin-plugin-kkk] 生成版本警告图片失败: ${error}`)
+    }
+
+    for (const master of masters) {
+      if (master === 'console') {
+        logger.warn(`[${botId}] ${msg}`)
+        continue
+      }
+
+      const key = `${botId}:${master}`
+      if (notifiedSet.has(key)) continue
+
+      try {
+        const elements: SendMessage = []
+        if (warningImage) {
+          elements.push(...warningImage)
+        }
+
+        await karin.sendMaster(botId, master, elements)
+        notifiedSet.add(key)
+        logger.info(`[karin-plugin-kkk] 已发送版本警告给主人: ${master} (via ${botId})`)
+      } catch (error) {
+        logger.error(`[karin-plugin-kkk] 发送版本警告给主人 (${master}) 失败: ${error}`)
+      }
+    }
+  })
+}
+
+// ----------------- MAIN ENTRY -----------------
+await import('./setup')
