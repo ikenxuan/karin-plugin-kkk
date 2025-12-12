@@ -270,20 +270,37 @@ jobs:
         (github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production') ||
         inputs.force_npm_publish == true
       )
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - name: 📥 下载构建产物
         uses: actions/download-artifact@v4
         with:
           name: production-build
-          path: ./
+          path: packages/core
+
+      - name: 🟢 配置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - name: ⏫ 升级 npm 版本
+        run: npm install -g npm@latest
 
       - name: 🚀 发布到 NPM 官方源
         id: publish-to-npm
-        uses: JS-DevTools/npm-publish@v3
-        with:
-          registry: https://registry.npmjs.org/
-          access: public
-          provenance: true
+        working-directory: packages/core
+        run: |
+          pnpm publish --no-git-checks --provenance
+          
+          echo "name=$(npm pkg get name | tr -d '"')" >> $GITHUB_OUTPUT
+          echo "version=$(npm pkg get version | tr -d '"')" >> $GITHUB_OUTPUT
 
       - name: 📊 生成发布报告
         run: |
@@ -314,7 +331,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: production-build
-          path: ./
+          path: packages/core
 
       - name: 🟢 配置 Node.js 环境
         uses: actions/setup-node@v4
@@ -323,6 +340,7 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
 
       - name: ✏️ 修改包名 (添加 Scope)
+        working-directory: packages/core
         run: |
           # 读取原始包名
           ORIGINAL_NAME=$(node -p "require('./package.json').name")
@@ -343,6 +361,7 @@ jobs:
           "
 
       - name: 🚀 发布到 GitHub Packages
+        working-directory: packages/core
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -350,8 +369,8 @@ jobs:
       - name: 📊 生成发布报告
         run: |
           echo "## 📦 GitHub Packages 发布成功" >> $GITHUB_STEP_SUMMARY
-          PKG_NAME=$(node -p "require('./package.json').name")
-          VERSION=$(node -p "require('./package.json').version")
+          PKG_NAME=$(node -p "require('./packages/core/package.json').name")
+          VERSION=$(node -p "require('./packages/core/package.json').version")
           
           echo "- **包名:** \`$PKG_NAME\`" >> $GITHUB_STEP_SUMMARY
           echo "- **版本:** \`$VERSION\`" >> $GITHUB_STEP_SUMMARY
@@ -490,10 +509,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: preview-build
-          path: ./
+          path: packages/core
 
       - name: 🏷️ 生成版本标识
         id: version-gen
+        working-directory: packages/core
         run: |
           # 1) 获取最新的Git标签版本作为基准
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
@@ -632,10 +652,12 @@ jobs:
           echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: 🧹 清理开发依赖
+        working-directory: packages/core
         run: pnpm pkg delete devDependencies
 
       - name: 🚀 发布预览包
         id: publish_pkg
+        working-directory: packages/core
         run: |
           pnpm install --no-frozen-lockfile
           npx --yes pkg-pr-new publish --json output.json --comment=off --compact --packageManager=pnpm > pkg-output.txt 2>&1
