@@ -10,8 +10,10 @@ import type { Plugin } from 'vite'
 const getGitCommitInfo = () => {
   try {
     const { execSync } = require('node:child_process')
-    const commitHash = execSync('git rev-parse HEAD').toString().trim()
-    const shortCommitHash = execSync('git rev-parse --short HEAD').toString().trim()
+    // 确保在 git 仓库根目录下执行
+    const gitRoot = execSync('git rev-parse --show-toplevel').toString().trim()
+    const commitHash = execSync('git rev-parse HEAD', { cwd: gitRoot }).toString().trim()
+    const shortCommitHash = execSync('git rev-parse --short HEAD', { cwd: gitRoot }).toString().trim()
     return {
       commitHash,
       shortCommitHash

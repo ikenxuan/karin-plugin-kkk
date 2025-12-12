@@ -31,7 +31,7 @@
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
     "lucide-react": "0.556.0",
-    "node-karin": "1.13.0",
+    "node-karin": "1.13.8",
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "tailwindcss": "4.1.17"
@@ -53,6 +53,7 @@
     "husky": "^9.1.7",
     "sort-package-json": "^3.5.0",
     "tsx": "4.21.0",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "typescript-eslint": "^8.49.0"
   }
 }
