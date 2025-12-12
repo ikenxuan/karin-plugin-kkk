@@ -2,8 +2,7 @@
 import '../styles/main.css'
 
 import { ToastProvider } from '@heroui/react'
-import React, { useState } from 'react'
-import { Inspector } from 'react-dev-inspector'
+import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { scan } from 'react-scan'
 
@@ -17,20 +16,10 @@ if (import.meta.env.MODE === 'development') {
   }
 }
 const Root = () => {
-  const [inspectorActive, setInspectorActive] = useState(false)
-
   return (
     <React.StrictMode>
       <ToastProvider placement='top-center' />
-      <Inspector
-        keys={['control', 'shift', 'alt', 'c']}
-        active={inspectorActive}
-        onActiveChange={setInspectorActive}
-      />
-      <App
-        inspectorActive={inspectorActive}
-        onInspectorToggle={setInspectorActive}
-      />
+      <App />
     </React.StrictMode>
   )
 }

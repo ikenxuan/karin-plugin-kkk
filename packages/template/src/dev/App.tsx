@@ -8,7 +8,6 @@ import { getEnabledComponents } from '../config/config'
 import { DataService } from '../services/DataService'
 import { PlatformType } from '../types/platforms'
 import { DataFileSelector } from './components/DataFileSelector'
-import { InspectorToggle } from './components/InspectorToggle'
 import { PlatformSelector } from './components/PlatformSelector'
 import { PreviewPanel } from './components/PreviewPanel'
 import { ScreenshotPreviewModal } from './components/ScreenshotPreviewModal'
@@ -83,17 +82,9 @@ const getDefaultTemplate = (platform: PlatformType): string => {
 }
 
 /**
- * App 组件属性
- */
-interface AppProps {
-  inspectorActive: boolean
-  onInspectorToggle: (active: boolean) => void
-}
-
-/**
  * 开发环境主应用组件
  */
-export const App: React.FC<AppProps> = ({ inspectorActive, onInspectorToggle }) => {
+export const App: React.FC = () => {
   // 从URL参数初始化状态
   const urlParams = parseURLParams()
   const initialPlatform = urlParams.platform || PlatformType.DOUYIN
@@ -402,9 +393,6 @@ export const App: React.FC<AppProps> = ({ inspectorActive, onInspectorToggle }) 
             </Chip>
           </div>
           <div className='flex gap-2 items-center shrink-0'>
-            {/* Inspector 检查元素按钮 */}
-            <InspectorToggle active={inspectorActive} onToggle={onInspectorToggle} />
-
             {/* 提示开关 */}
             <div className='flex gap-2 items-center'>
               <Switch
