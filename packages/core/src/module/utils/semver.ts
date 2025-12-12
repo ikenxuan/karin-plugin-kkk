@@ -5,6 +5,8 @@
  * @returns 如果远程版本大于本地版本则返回true，否则返回false
  */
 export const isSemverGreater = (remote: string, local: string): boolean => {
+  if (!remote || !local) return false
+
   const parse = (v: string) => {
     v = v.trim()
     if (v.startsWith('v') || v.startsWith('V')) v = v.slice(1)
