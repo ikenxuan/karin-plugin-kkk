@@ -342,7 +342,7 @@ interface DouyinQrcodeImgProps {
   useDarkTheme?: boolean;
 }
 //#endregion
-//#region ../template/src/types/UserVideoList.d.ts
+//#region ../template/src/types/platforms/douyin/UserVideoList.d.ts
 /**
  * 用户视频列表页面的数据类型定义
  */
@@ -1453,7 +1453,7 @@ interface XiaohongshuNoteInfoProps extends BaseComponentProps {
   data: XiaohongshuNoteInfoData;
 }
 //#endregion
-//#region ../template/src/types/help.d.ts
+//#region ../template/src/types/platforms/ohter/help.d.ts
 /**
  * 帮助页面组件属性接口
  */
@@ -1498,7 +1498,7 @@ interface MenuGroup {
   }[];
 }
 //#endregion
-//#region ../template/src/types/ohter/handlerError.d.ts
+//#region ../template/src/types/platforms/ohter/handlerError.d.ts
 /**
  * 业务错误类型
  */
@@ -1587,7 +1587,7 @@ interface ApiErrorProps extends BaseComponentProps {
   qrCodeDataUrl?: string;
 }
 //#endregion
-//#region ../template/src/types/ohter/changelog.d.ts
+//#region ../template/src/types/platforms/ohter/changelog.d.ts
 /**
  * 更新日志组件属性接口
  */
@@ -1607,7 +1607,7 @@ interface ChangelogProps extends BaseComponentProps {
   };
 }
 //#endregion
-//#region ../template/src/types/ohter/VersionWarningProps.d.ts
+//#region ../template/src/types/platforms/ohter/VersionWarningProps.d.ts
 interface VersionWarningProps extends BaseComponentProps {
   data: {
     /** 插件构建时的 karin 版本 */
@@ -1932,4 +1932,4 @@ interface ReactServerRenderOptions<K extends keyof DataTypeMap> {
  */
 declare const reactServerRender: <K extends keyof DataTypeMap>(options: ReactServerRenderOptions<K>) => Promise<RenderResponse>;
 //#endregion
-export { BaseComponentProps, type DataTypeMap, DouyinUserVideoListProps, DynamicRenderPath, ExtractDataTypeFromPath, type Plugin, type PluginContext, type PluginFactory, QRCodeSectionProps, type ReactServerRenderOptions, RenderRequest, RenderResponse, type TypedRenderRequest, UserVideoListData, VideoListItem, reactServerRender as default, reactServerRender };
+export { BaseComponentProps, type DataTypeMap, DynamicRenderPath, ExtractDataTypeFromPath, type Plugin, type PluginContext, type PluginFactory, QRCodeSectionProps, type ReactServerRenderOptions, RenderRequest, RenderResponse, type TypedRenderRequest, reactServerRender as default, reactServerRender };
