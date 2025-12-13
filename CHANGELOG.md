@@ -2,6 +2,61 @@
 
 # Changelog
 
+## [2.16.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.15.2...v2.16.0) (2025-12-13)
+
+
+### ✨ 新功能
+
+* **core:** 新增启动时版本检查（beta） ([a76b2c0](https://github.com/ikenxuan/karin-plugin-kkk/commit/a76b2c0252533cbb686e47bad46248dc34c3758c))
+* **抖音:** 添加次级评论解析功能并优化评论展示 ([13aa2da](https://github.com/ikenxuan/karin-plugin-kkk/commit/13aa2dab7f2ffc214ef7314a0578b3278368478f))
+* 更新node-karin依赖至1.13.8版本 ([e9fdf3e](https://github.com/ikenxuan/karin-plugin-kkk/commit/e9fdf3ec23b26cc9dfa3139cb786cfc7c49992cf))
+
+
+### 🐛 错误修复
+
+* **build-metadata:** 确保git命令在仓库根目录执行 ([e9fdf3e](https://github.com/ikenxuan/karin-plugin-kkk/commit/e9fdf3ec23b26cc9dfa3139cb786cfc7c49992cf))
+* types，throw handlerError Error ([e74a98f](https://github.com/ikenxuan/karin-plugin-kkk/commit/e74a98f0f2a675b3faace42b531a4c54e9ffbb91))
+* 手动更新获取不到更新日志 ([c4a9cdb](https://github.com/ikenxuan/karin-plugin-kkk/commit/c4a9cdb4878f7801f82f9323a0cf8c8fe08cd935))
+* 抖音直播推送刚开播获取不到直播封面的边缘情况 ([55ff549](https://github.com/ikenxuan/karin-plugin-kkk/commit/55ff54929c4e83d10148488042ce8e01b8ebb508))
+
+
+### 📝 文档更新
+
+* **docs:** 更新文档站点UI与功能，新增暗黑模式支持与响应式设计 ([b2a6e11](https://github.com/ikenxuan/karin-plugin-kkk/commit/b2a6e11526d4285fa4bb45846dab2b825dc5245a))
+* readme ([93393e8](https://github.com/ikenxuan/karin-plugin-kkk/commit/93393e89a94300692c3a9a3eda09ed1c60dcba5e))
+
+
+### 🧰 其他更新
+
+* build ci/cd ([8fde15c](https://github.com/ikenxuan/karin-plugin-kkk/commit/8fde15c00e0cc0219f0ac5a7c9c7074cd899c8cb))
+* karin版本最低1.14.0 ([2c08cf5](https://github.com/ikenxuan/karin-plugin-kkk/commit/2c08cf5ab2dabebb3b7a3694120fc3326349be85))
+* 优化模板开发面板，优化开发体验 ([ff98038](https://github.com/ikenxuan/karin-plugin-kkk/commit/ff98038a78e7ec7edb6495704a280584eefc98f2))
+* 工作区子模块？ ([72500e1](https://github.com/ikenxuan/karin-plugin-kkk/commit/72500e118594a3226cb9e4b38afa183fffe3c5e2))
+* 改炸了 ([52ba955](https://github.com/ikenxuan/karin-plugin-kkk/commit/52ba95560fe5dd81fd505009ff6e5d4c37df7cb2))
+* 无关紧要的更新 ([3d32c07](https://github.com/ikenxuan/karin-plugin-kkk/commit/3d32c0778c4b48332f8430714579ce6331b81558))
+* 添加typescript-eslint开发依赖 ([e9fdf3e](https://github.com/ikenxuan/karin-plugin-kkk/commit/e9fdf3ec23b26cc9dfa3139cb786cfc7c49992cf))
+* 细优模板开发面板 ([52744a5](https://github.com/ikenxuan/karin-plugin-kkk/commit/52744a52a930a63925052b9552d376f1346bbe00))
+
+
+### ♻️ 代码重构
+
+* **logger:** 重构日志模块使用node-karin/log4js替代自定义实现 ([e9fdf3e](https://github.com/ikenxuan/karin-plugin-kkk/commit/e9fdf3ec23b26cc9dfa3139cb786cfc7c49992cf))
+
+
+### 📦 依赖更新
+
+* update ([b143293](https://github.com/ikenxuan/karin-plugin-kkk/commit/b143293ac7b8cce5a08a3a2ac9a3f1c232f27d06))
+
+
+### ✨ 细节优化
+
+* boom ([2277156](https://github.com/ikenxuan/karin-plugin-kkk/commit/22771568f6a04e9f983a9322741d7c7d49716951))
+* use checkPort ([3c04494](https://github.com/ikenxuan/karin-plugin-kkk/commit/3c044945170e0107a6caaeb400de6b29c1761376))
+* 优化更新流程 ([118443f](https://github.com/ikenxuan/karin-plugin-kkk/commit/118443f671aa096d9225509b32a1597cf2e6edc7))
+* 兼容性提高 ([eefd8e6](https://github.com/ikenxuan/karin-plugin-kkk/commit/eefd8e67ab3b309b5799f9cce0bad155eec6a4a2))
+* 兼容性提高 ([790d7be](https://github.com/ikenxuan/karin-plugin-kkk/commit/790d7be05af91641fe4d3780476a6140cbe960fb))
+* 脱敏打印 ([7d63492](https://github.com/ikenxuan/karin-plugin-kkk/commit/7d634920f8e5f7fe818997d8d87176a59ee7a04d))
+
 ## [2.15.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.15.1...v2.15.2) (2025-12-07)
 
 
