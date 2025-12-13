@@ -7,7 +7,7 @@ import { isSemverGreater } from '@/module/utils/semver'
 declare const __REQUIRE_KARIN_VERSION__: string
 
 // ----------------- VERSION CHECK -----------------
-const requireVersion = __REQUIRE_KARIN_VERSION__
+const requireVersion = typeof __REQUIRE_KARIN_VERSION__ !== 'undefined' ? __REQUIRE_KARIN_VERSION__ : '1.1145.14'
 // const requireVersion = '1.14514.1'
 if (process.env.NODE_ENV !== 'development' && isSemverGreater(requireVersion, Root.karinVersion)) {
   const msg = `[karin-plugin-kkk] 插件构建时的 karin 版本 (${requireVersion}) 高于当前运行版本 (${Root.karinVersion})，可能会出现兼容性问题！`
