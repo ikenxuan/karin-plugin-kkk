@@ -1,17 +1,10 @@
 import { Chip } from '@heroui/react'
 import React from 'react'
 
-import type { BaseComponentProps } from '@/types'
-
+import type { VersionWarningProps } from '../../../types/platforms/ohter/VersionWarningProps'
 import { GlowImage } from '../../common/GlowImage'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
-export interface VersionWarningProps extends BaseComponentProps {
-  /** 插件构建时的 karin 版本 */
-  requireVersion: string
-  /** 当前运行的 karin 版本 */
-  currentVersion: string
-}
 
 export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
   const isDark = props.data.useDarkTheme
