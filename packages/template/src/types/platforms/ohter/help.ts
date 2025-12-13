@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from './index'
+import type { BaseComponentProps } from '../../index'
 
 /**
  * 帮助页面组件属性接口

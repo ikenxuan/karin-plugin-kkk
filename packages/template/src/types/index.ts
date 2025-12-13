@@ -1,5 +1,3 @@
-export * from './UserVideoList'
-
 /**
  * 二维码区域组件属性接口
  */
@@ -127,7 +125,7 @@ interface PathToDataTypeMap {
   'douyin/dynamic': import('./platforms/douyin').DouyinDynamicProps['data']
   'douyin/live': import('./platforms/douyin').DouyinLiveProps['data']
   'douyin/musicinfo': import('./platforms/douyin').DouyinMusicInfoProps['data']
-  'douyin/user_profile': import('./UserVideoList').DouyinUserVideoListProps['data']
+  'douyin/user_profile': import('./platforms/douyin/UserVideoList').DouyinUserVideoListProps['data']
   'douyin/userlist': import('./platforms/douyin').DouyinUserListProps['data']
   'douyin/videoInfo': import('./platforms/douyin').DouyinVideoInfoProps['data']
   'douyin/qrcodeImg': import('./platforms/douyin').DouyinQrcodeImgProps['data']
@@ -153,10 +151,10 @@ interface PathToDataTypeMap {
   'xiaohongshu/comment': import('./platforms/xiaohongshu').XiaohongshuCommentProps['data']
 
   // 其他平台路径
-  'other/help': import('./help').HelpProps['data']
-  'other/handlerError': import('./ohter/handlerError').ApiErrorProps['data']
-  'other/changelog': import('./ohter/changelog').ChangelogProps['data']
-  'other/version_warning': import('./ohter/VersionWarningProps').VersionWarningProps['data']
+  'other/help': import('./platforms/ohter/help').HelpProps['data']
+  'other/handlerError': import('./platforms/ohter/handlerError').ApiErrorProps['data']
+  'other/changelog': import('./platforms/ohter/changelog').ChangelogProps['data']
+  'other/version_warning': import('./platforms/ohter/VersionWarningProps').VersionWarningProps['data']
 }
 
 /**
@@ -179,7 +177,7 @@ export interface DataTypeMap {
   /** 快手平台数据类型 */
   kuaishou: import('./platforms/kuaishou').KuaishouCommentProps['data']
   /** 其他类型数据 */
-  other: import('./help').HelpProps['data']
+  other: import('./platforms/ohter/help').HelpProps['data']
 }
 
 /**

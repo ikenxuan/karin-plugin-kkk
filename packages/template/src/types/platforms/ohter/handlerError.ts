@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '../index'
+import type { BaseComponentProps } from '../../index'
 
 /**
  * 业务错误类型

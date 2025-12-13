@@ -4,7 +4,7 @@ import React from 'react'
 import { FaBug, FaCodeBranch } from 'react-icons/fa6'
 import { MdAccessTime } from 'react-icons/md'
 
-import { type ApiErrorProps, type BusinessError, type LogEntry, type LogLevel } from '../../../types/ohter/handlerError'
+import type { ApiErrorProps, BusinessError, LogEntry, LogLevel } from '../../../types/platforms/ohter/handlerError'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**

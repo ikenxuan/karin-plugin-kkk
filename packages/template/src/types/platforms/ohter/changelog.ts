@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '..'
+import type { BaseComponentProps } from '../../index'
 
 /**
  * 更新日志组件属性接口

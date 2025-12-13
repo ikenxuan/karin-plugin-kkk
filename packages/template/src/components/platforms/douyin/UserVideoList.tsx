@@ -5,7 +5,7 @@ import { AiFillHeart, AiFillStar } from 'react-icons/ai'
 import { FaCommentDots } from 'react-icons/fa6'
 import { RiShareForwardFill } from 'react-icons/ri'
 
-import type { DouyinUserVideoListProps } from '../../../types/UserVideoList'
+import type { DouyinUserVideoListProps } from '../../../types/platforms/douyin/UserVideoList'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**

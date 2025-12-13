@@ -1,4 +1,4 @@
-import type { BaseComponentProps } from '..'
+import type { BaseComponentProps } from '../../index'
 
 export interface VersionWarningProps extends BaseComponentProps {
   data: {

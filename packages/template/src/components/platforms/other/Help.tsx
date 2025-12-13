@@ -1,7 +1,7 @@
 import { Bell, Bot, HelpCircle, Link, List, LogIn, RefreshCw, Send, Sparkles } from 'lucide-react'
 import React from 'react'
 
-import type { HelpProps, MenuGroup } from '../../../types/help'
+import type { HelpProps, MenuGroup } from '../../../types/platforms/ohter/help'
 import { GlowIcon, SmartGlowBorder } from '../../common/GlowImage'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
