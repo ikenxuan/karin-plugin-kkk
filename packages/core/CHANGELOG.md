@@ -2,6 +2,19 @@
 
 # Changelog
 
+## [2.16.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.16.0...v2.16.1) (2025-12-13)
+
+
+### 💄 UI 优化
+
+* 重新设计了版本警告组件喵 ([1febb14](https://github.com/ikenxuan/karin-plugin-kkk/commit/1febb1425843f1165906df752037a420f4693f9e))
+
+
+### 🧰 其他更新
+
+* types ([3d69522](https://github.com/ikenxuan/karin-plugin-kkk/commit/3d6952226062489a55f31a0d9f370eadbf1dcbdf))
+* 更新类型文件路径 ([51205dc](https://github.com/ikenxuan/karin-plugin-kkk/commit/51205dc850090502c57dc5335aa162b127967c20))
+
 ## [2.16.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.15.2...v2.16.0) (2025-12-13)
 
 
