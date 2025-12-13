@@ -2,7 +2,7 @@ import util from 'node:util'
 
 import amagi from '@ikenxuan/amagi'
 import karin, { config, logger, type Message, segment } from 'node-karin'
-import { ApiErrorProps } from 'template/types/ohter/handlerError'
+import { ApiErrorProps } from 'template/types/platforms/ohter/handlerError'
 
 import { formatBuildTime, getBuildMetadata, Render, Root } from '@/module'
 
@@ -232,7 +232,7 @@ const handleBusinessError = async (
 // ==================== 导出 ====================
 
 /** 函数式错误处理包装器 */
-export const wrapWithErrorHandler = <R>(
+export const wrapWithErrorHandler = <R> (
   fn: (e: Message, next?: () => unknown) => R | Promise<R>,
   options: ErrorHandlerOptions
 ) => {

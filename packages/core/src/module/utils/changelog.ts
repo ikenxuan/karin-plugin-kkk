@@ -2,7 +2,7 @@ import fs from 'node:fs'
 
 import { range } from 'node-karin'
 import axios from 'node-karin/axios'
-import { ChangelogProps } from 'template/types/ohter/changelog'
+import { ChangelogProps } from 'template/types/platforms/ohter/changelog'
 
 import { baseHeaders, Render, Root } from '@/module'
 

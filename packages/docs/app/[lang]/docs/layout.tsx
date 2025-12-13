@@ -4,6 +4,8 @@ import { baseOptions } from '@/lib/layout.shared'
 import { KKKLogo } from '@/components/kkk-logo'
 import { GitHubLink } from '@/components/github-link'
 import { SidebarBanner } from '@/components/sidebar-banner'
+import { ChangelogDropdown } from '@/components/changelog-dropdown'
+import { getChangelog } from '@/lib/changelog'
 
 export default async function Layout ({ 
   children, 
@@ -13,6 +15,9 @@ export default async function Layout ({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
+  const changelogData = await getChangelog();
+  const latestVersion = changelogData.v2.latest || 'v2.x.x';
+
   return (
     <DocsLayout
       tree={source.pageTree[lang]} 
@@ -24,6 +29,7 @@ export default async function Layout ({
         ...baseOptions(lang).nav,
         children: (
           <div className="flex gap-3 items-center mr-2 md:mr-0 in-[aside]:hidden">
+            <ChangelogDropdown latestVersion={latestVersion} />
             <GitHubLink />
           </div>
         ),
