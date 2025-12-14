@@ -39,6 +39,7 @@ import {
 } from '@/module/utils'
 import { getBilibiliData } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
+import { burnDanmaku, type DanmakuElem, mergeAndBurn } from '@/module/utils/Danmaku'
 import {
   bilibiliComments,
   BilibiliId,
@@ -202,10 +203,22 @@ export class Bilibili extends Base {
             if (Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64) {
               this.islogin = false
             }
+            // 获取弹幕数据
+            let danmakuList: DanmakuElem[] = []
+            if (Config.bilibili.burnDanmaku) {
+              try {
+                const cid = iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid
+                const danmakuResult = await this.amagi.getBilibiliData('实时弹幕', { cid, typeMode: 'strict' })
+                danmakuList = danmakuResult.data?.data?.elems || []
+                logger.debug(`获取到 ${danmakuList.length} 条弹幕`)
+              } catch (err) {
+                logger.warn('获取弹幕失败，将不烧录弹幕', err)
+              }
+            }
             await this.getvideo(
               Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64
-                ? { playUrlData: nockData.data }
-                : { infoData: infoData.data, playUrlData: playUrlData.data })
+                ? { playUrlData: nockData.data, danmakuList }
+                : { infoData: infoData.data, playUrlData: playUrlData.data, danmakuList })
           }
         }
         break
@@ -722,7 +735,7 @@ export class Bilibili extends Base {
     }
   }
 
-  async getvideo ({ infoData, playUrlData }: { infoData?: BiliBangumiVideoInfo | BiliOneWork, playUrlData: BiliVideoPlayurlIsLogin | BiliBiliVideoPlayurlNoLogin | BiliBangumiVideoPlayurlIsLogin | BiliBangumiVideoPlayurlNoLogin }) {
+  async getvideo ({ infoData, playUrlData, danmakuList = [] }: { infoData?: BiliBangumiVideoInfo | BiliOneWork, playUrlData: BiliVideoPlayurlIsLogin | BiliBiliVideoPlayurlNoLogin | BiliBangumiVideoPlayurlIsLogin | BiliBangumiVideoPlayurlNoLogin, danmakuList?: DanmakuElem[] }) {
     /** 获取视频 => FFmpeg合成 */
     logger.debug('是否登录:', this.islogin)
     switch (this.islogin) {
@@ -744,8 +757,19 @@ export class Bilibili extends Base {
           }
         )
         if (bmp4.filepath && bmp3.filepath) {
+          // 根据是否有弹幕数据选择合成方式
+          const hasDanmaku = Config.bilibili.burnDanmaku && danmakuList.length > 0
           const resultPath = Common.tempDri.video + `Bil_Result_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.mp4`
-          const success = await mergeVideoAudio(bmp4.filepath, bmp3.filepath, resultPath)
+          let success: boolean
+          if (hasDanmaku) {
+            logger.debug(`开始合成视频并烧录 ${danmakuList.length} 条弹幕...`)
+            success = await mergeAndBurn(bmp4.filepath, bmp3.filepath, danmakuList, resultPath, {
+              danmakuArea: Config.bilibili.danmakuArea,
+              verticalMode: Config.bilibili.verticalMode
+            })
+          } else {
+            success = await mergeVideoAudio(bmp4.filepath, bmp3.filepath, resultPath)
+          }
 
           if (success) {
             const filePath = Common.tempDri.video + `${Config.app.removeCache ? 'tmp_' + Date.now() : this.downloadfilename}.mp4`
@@ -774,7 +798,37 @@ export class Bilibili extends Base {
       case false: {
         /** 没登录（没配置ck）情况下直接发直链，传直链在DownLoadVideo()处理 */
         logger.debug('视频 URL:', playUrlData.durl[0].url)
-        await downloadVideo(this.e, { video_url: playUrlData.durl[0].url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${this.downloadfilename}.mp4` } })
+        // 如果需要烧录弹幕，先下载视频再烧录
+        if (Config.bilibili.burnDanmaku && danmakuList.length > 0) {
+          const videoFile = await downloadFile(playUrlData.durl[0].url, {
+            title: `Bil_V_tmp_${Date.now()}.mp4`,
+            headers: this.headers
+          })
+          if (videoFile.filepath) {
+            const resultPath = Common.tempDri.video + `Bil_Result_${Date.now()}.mp4`
+            logger.mark(`开始烧录 ${danmakuList.length} 条弹幕...`)
+            const success = await burnDanmaku(videoFile.filepath, danmakuList, resultPath, {
+              danmakuArea: Config.bilibili.danmakuArea,
+              verticalMode: Config.bilibili.verticalMode
+            })
+            if (success) {
+              const filePath = Common.tempDri.video + `${Config.app.removeCache ? 'tmp_' + Date.now() : this.downloadfilename}.mp4`
+              fs.renameSync(resultPath, filePath)
+              await Common.removeFile(videoFile.filepath, true)
+              const stats = fs.statSync(filePath)
+              const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
+              if (fileSizeInMB > Config.upload.groupfilevalue) {
+                await uploadFile(this.e, { filepath: filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '', { useGroupFile: true })
+              } else {
+                await uploadFile(this.e, { filepath: filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '')
+              }
+            } else {
+              await Common.removeFile(videoFile.filepath, true)
+            }
+          }
+        } else {
+          await downloadVideo(this.e, { video_url: playUrlData.durl[0].url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${this.downloadfilename}.mp4` } })
+        }
         break
       }
       default:

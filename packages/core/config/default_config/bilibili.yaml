@@ -54,6 +54,20 @@ videoInfoMode: image
 # 评论解析前显示的内容，可选值：'cover'(封面)、'title'(标题)、'author'(作者)、'stats'(视频统计信息)、'desc'(简介)，数组为空则不显示任何内容
 displayContent: ['cover', 'title', 'author', 'stats', 'desc']
 
+# 是否将弹幕烧录到视频中
+burnDanmaku: false
+
+# 弹幕显示区域
+#  - 0.25: 1/4 屏（顶部 25%）
+#  - 0.5: 半屏（顶部 50%）
+#  - 0.75: 3/4 屏（顶部 75%）
+#  - 1: 全屏（100%）
+danmakuArea: 0.5
+
+# 横屏视频转竖屏模式
+# 开启后，横屏视频（如 16:9）会转为竖屏（如 9:16），视频居中，上下黑边区域用于显示弹幕
+verticalMode: false
+
 # B站推送相关配置
 push: 
   # 推送开关，开启后需重启；使用「#设置B站推送 + 用户UID」配置推送列表

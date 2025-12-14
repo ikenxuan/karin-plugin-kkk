@@ -789,6 +789,47 @@ export const webConfig = defineConfig({
                   })
                 ]
               }),
+              components.switch.create('burnDanmaku', {
+                label: '弹幕烧录',
+                description: '是否将弹幕烧录到视频中，此功能对配置过低的服务器极度不友好，实现逻辑相当于剪视频，视频分辨率越大，占用内存、CPU等资源就越大，请谨慎开启。',
+                defaultSelected: all.bilibili.burnDanmaku,
+                isDisabled: !all.bilibili.switch
+              }),
+              components.radio.group('danmakuArea', {
+                label: '弹幕显示区域',
+                description: '弹幕在视频中的显示范围，此配置会受「弹幕显示区域」影响',
+                orientation: 'horizontal',
+                defaultValue: all.bilibili.danmakuArea.toString(),
+                isDisabled: !all.bilibili.switch || !all.bilibili.burnDanmaku,
+                radio: [
+                  components.radio.create('danmakuArea:radio-1', {
+                    label: '1/4 屏',
+                    value: '0.25',
+                    description: '顶部 25%'
+                  }),
+                  components.radio.create('danmakuArea:radio-2', {
+                    label: '半屏',
+                    value: '0.5',
+                    description: '顶部 50%'
+                  }),
+                  components.radio.create('danmakuArea:radio-3', {
+                    label: '3/4 屏',
+                    value: '0.75',
+                    description: '顶部 75%'
+                  }),
+                  components.radio.create('danmakuArea:radio-4', {
+                    label: '全屏',
+                    value: '1',
+                    description: '100%'
+                  })
+                ]
+              }),
+              components.switch.create('verticalMode', {
+                label: '横屏转竖屏',
+                description: '横屏视频（16:9）转为竖屏（9:16），视频居中，拓展上下黑边用于显示弹幕。',
+                defaultSelected: all.bilibili.verticalMode,
+                isDisabled: !all.bilibili.switch || !all.bilibili.burnDanmaku
+              }),
               components.divider.create('divider-bilibili-1', {
                 description: 'B站推送相关',
                 descPosition: 20
