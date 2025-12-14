@@ -791,13 +791,13 @@ export const webConfig = defineConfig({
               }),
               components.switch.create('burnDanmaku', {
                 label: '弹幕烧录',
-                description: '是否将弹幕烧录到视频中，此功能对配置过低的服务器极度不友好，实现逻辑相当于剪视频，视频分辨率越大，占用内存、CPU等资源就越大，请谨慎开启。',
+                description: '将弹幕硬编码到视频画面中。开启后视频需要重新编码，耗时较长，高分辨率视频会占用较多资源',
                 defaultSelected: all.bilibili.burnDanmaku,
                 isDisabled: !all.bilibili.switch
               }),
               components.radio.group('danmakuArea', {
-                label: '弹幕显示区域',
-                description: '弹幕在视频中的显示范围，此配置会受「弹幕显示区域」影响',
+                label: '弹幕区域',
+                description: '限制弹幕的显示范围，避免遮挡视频主体内容',
                 orientation: 'horizontal',
                 defaultValue: all.bilibili.danmakuArea.toString(),
                 isDisabled: !all.bilibili.switch || !all.bilibili.burnDanmaku,
@@ -805,30 +805,48 @@ export const webConfig = defineConfig({
                   components.radio.create('danmakuArea:radio-1', {
                     label: '1/4 屏',
                     value: '0.25',
-                    description: '顶部 25%'
+                    description: '仅顶部区域'
                   }),
                   components.radio.create('danmakuArea:radio-2', {
                     label: '半屏',
                     value: '0.5',
-                    description: '顶部 50%'
+                    description: '上半部分（推荐）'
                   }),
                   components.radio.create('danmakuArea:radio-3', {
                     label: '3/4 屏',
                     value: '0.75',
-                    description: '顶部 75%'
+                    description: '大部分区域'
                   }),
                   components.radio.create('danmakuArea:radio-4', {
                     label: '全屏',
                     value: '1',
-                    description: '100%'
+                    description: '铺满整个画面'
                   })
                 ]
               }),
-              components.switch.create('verticalMode', {
-                label: '横屏转竖屏',
-                description: '横屏视频（16:9）转为竖屏（9:16），视频居中，拓展上下黑边用于显示弹幕。',
-                defaultSelected: all.bilibili.verticalMode,
-                isDisabled: !all.bilibili.switch || !all.bilibili.burnDanmaku
+              components.radio.group('verticalMode', {
+                label: '竖屏适配',
+                description: '模拟手机端竖屏观看体验，视频居中显示，上下黑边区域用于展示弹幕',
+                orientation: 'horizontal',
+                defaultValue: all.bilibili.verticalMode,
+                isDisabled: !all.bilibili.switch || !all.bilibili.burnDanmaku,
+                radio: [
+                  components.radio.create('verticalMode:radio-1', {
+                    label: '关闭',
+                    value: 'off',
+                    description: '保持原始比例，不做转换'
+                  }),
+                  components.radio.create('verticalMode:radio-2', {
+                    label: '智能',
+                    value: 'standard',
+                    description: '仅对 16:9、21:9 等常见宽屏比例生效'
+                  }),
+                  components.radio.create('verticalMode:radio-3', {
+                    label: '强制 9:16',
+                    value: 'force',
+                    description: '所有视频统一转为 9:16 竖屏，弹幕大小一致'
+                  })
+                ]
               }),
               components.divider.create('divider-bilibili-1', {
                 description: 'B站推送相关',

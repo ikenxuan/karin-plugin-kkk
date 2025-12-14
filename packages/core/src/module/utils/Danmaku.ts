@@ -25,12 +25,15 @@ export interface DanmakuElem {
   content: string
 }
 
+/** 横屏转竖屏模式 */
+export type VerticalMode = 'off' | 'standard' | 'force'
+
 /** 弹幕烧录配置 */
 export interface DanmakuOptions {
   /** 弹幕显示区域比例（0.25/0.5/0.75/1） */
   danmakuArea?: number
-  /** 横屏转竖屏 */
-  verticalMode?: boolean
+  /** 横屏转竖屏模式 */
+  verticalMode?: VerticalMode
   /** 滚动时间（秒） */
   scrollTime?: number
   /** 透明度（0-255） */
@@ -340,38 +343,67 @@ interface CanvasInfo {
 }
 
 /** 计算画布尺寸 */
-function calcCanvas (origW: number, origH: number, verticalMode: boolean): CanvasInfo {
-  if (verticalMode && isLandscape(origW, origH)) {
-    const ratio = origW / origH
+function calcCanvas (origW: number, origH: number, verticalMode: VerticalMode): CanvasInfo {
+  // 关闭模式：保持原比例
+  if (verticalMode === 'off') {
+    return { width: origW, height: origH, offsetY: 0, isVertical: false }
+  }
 
-    // 16:9 或 21:9 等宽屏比例，用高度作为新宽度，避免分辨率过大
-    // 16:9 ≈ 1.78, 21:9 ≈ 2.33
-    if (ratio >= 1.7) {
-      // 新宽度 = 原高度，新高度 = 原宽度（旋转90度的效果）
-      // 例如 3840x2160 -> 2160x3840
+  const ratio = origW / origH
+  const isWide = isLandscape(origW, origH)
+
+  // 强制模式：任意比例都转为 9:16
+  if (verticalMode === 'force') {
+    const targetRatio = 16 / 9 // 9:16 竖屏
+
+    if (isWide) {
+      // 横屏视频：用原高度作为新宽度
       const newW = origH
-      const newH = origW
-      // 视频缩放后居中放置
+      const newH = Math.round(newW * targetRatio)
       const scaledH = Math.round(newW / ratio) // 视频缩放后的高度
       const offsetY = Math.round((newH - scaledH) / 2)
+      logger.debug(`[Danmaku] 强制模式(横屏): ${origW}x${origH} -> ${newW}x${newH}, 视频高度=${scaledH}, offsetY=${offsetY}`)
       return {
         width: newW,
         height: newH,
         offsetY,
         isVertical: true,
-        scale: newW / origW // 需要缩放视频
-      } as CanvasInfo
-    }
-
-    // 其他比例保持原逻辑
-    const newH = Math.round((origW * origW) / origH)
-    return {
-      width: origW,
-      height: newH,
-      offsetY: Math.round((newH - origH) / 2),
-      isVertical: true
+        scale: newW / origW
+      }
+    } else {
+      // 竖屏/正方形视频：用原宽度，按 9:16 计算高度
+      const newW = origW
+      const newH = Math.round(newW * targetRatio)
+      // 视频保持原尺寸居中
+      const offsetY = Math.round((newH - origH) / 2)
+      logger.debug(`[Danmaku] 强制模式(竖屏): ${origW}x${origH} -> ${newW}x${newH}, offsetY=${offsetY}`)
+      return {
+        width: newW,
+        height: newH,
+        offsetY: Math.max(0, offsetY),
+        isVertical: true,
+        scale: 1 // 不缩放
+      }
     }
   }
+
+  // 标准模式：仅处理横屏且 ratio >= 1.7 的视频
+  if (isWide && ratio >= 1.7) {
+    const newW = origH
+    const newH = origW
+    const scaledH = Math.round(newW / ratio)
+    const offsetY = Math.round((newH - scaledH) / 2)
+    logger.debug(`[Danmaku] 标准模式: ${origW}x${origH} -> ${newW}x${newH}, offsetY=${offsetY}`)
+    return {
+      width: newW,
+      height: newH,
+      offsetY,
+      isVertical: true,
+      scale: newW / origW
+    }
+  }
+
+  // 标准模式下非宽屏比例，不处理
   return { width: origW, height: origH, offsetY: 0, isVertical: false }
 }
 
@@ -379,10 +411,11 @@ function calcCanvas (origW: number, origH: number, verticalMode: boolean): Canva
 function buildFilter (canvas: CanvasInfo, assPath: string): string {
   const escaped = escapeWinPath(assPath)
   if (canvas.isVertical) {
-    if (canvas.scale && canvas.scale < 1) {
-      // 宽屏转竖屏：先缩放视频，再填充黑边，最后烧字幕
+    if (canvas.scale && canvas.scale !== 1 && canvas.scale < 1) {
+      // 横屏转竖屏：先缩放视频，再填充黑边，最后烧字幕
       return `scale=${canvas.width}:-1,pad=${canvas.width}:${canvas.height}:0:${canvas.offsetY}:black,subtitles='${escaped}'`
     }
+    // 竖屏或不需要缩放：直接填充黑边
     return `pad=${canvas.width}:${canvas.height}:0:${canvas.offsetY}:black,subtitles='${escaped}'`
   }
   return `subtitles='${escaped}'`
@@ -397,7 +430,7 @@ export async function burnDanmaku (
   outputPath: string,
   options: DanmakuOptions = {}
 ): Promise<boolean> {
-  const { removeSource = false, verticalMode = false } = options
+  const { removeSource = false, verticalMode = 'off' } = options
 
   const resolution = await getResolution(videoPath)
   const frameRate = await getFrameRate(videoPath)
@@ -443,7 +476,7 @@ export async function mergeAndBurn (
   outputPath: string,
   options: DanmakuOptions = {}
 ): Promise<boolean> {
-  const { removeSource = false, verticalMode = false } = options
+  const { removeSource = false, verticalMode = 'off' } = options
 
   // 检查文件是否存在
   if (!fs.existsSync(videoPath)) {
