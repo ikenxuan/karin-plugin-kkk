@@ -23,7 +23,9 @@ export default async function Layout ({
       tree={source.pageTree[lang]} 
       {...baseOptions(lang)}
       sidebar={{
-        banner: <SidebarBanner />
+        banner: <SidebarBanner />,
+        defaultOpenLevel: 5,
+        collapsible: false
       }}
       nav={{
         ...baseOptions(lang).nav,

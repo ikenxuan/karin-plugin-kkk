@@ -2,7 +2,9 @@
   "title": "文檔",
   "pages": [
     "index",
-    "...guide",
-    "...cases"
+    "guide",
+    "features",
+    "advanced",
+    "other"
   ]
 }

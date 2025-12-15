@@ -1,0 +1,222 @@
+---
+title: 現代化模板渲染
+description: 基於 React 與 TailwindCSS 嘅模板開發方案
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+本插件嘅核心目標係解決傳統模板引擎在**長期維護**上嘅痛點。通過採用 **React + TailwindCSS** 技術棧，將現代前端嘅工程化能力引入圖片生成領域，實現咗**極高嘅可維護性**。
+
+<Callout type="warn" title="傳統方案嘅維護陷阱">
+隨著項目迭代，基於 `art-template` 嘅模板往往會陷入維護泥潭：
+- **邏輯黑洞**：業務邏輯混雜在 HTML 模板中，難以閱讀同剝離。
+- **樣式衝突**：全局 CSS 類名隨著時間推移不斷堆積，修改一個樣式可能導致多處崩壞。
+- **重構風險**：缺乏類型檢查，修改字段名就像在"排雷"，只能祈禱運行時唔出錯。
+</Callout>
+
+## 方案對比
+
+### 傳統方案 (art-template)
+
+<Callout type="error" title="開發痛點">
+- **調試低效**：修改代碼 -> 編譯生成 -> 瀏覽器刷新，反饋鏈路極長。
+- **工程缺失**：缺乏 Source Map 導致報錯定位難；全局 CSS 易引發樣式衝突。
+- **維護困難**：邏輯與視圖耦合嚴重，缺乏 TypeScript 類型支持，重構風險高。
+- **交互受限**：僅能實現靜態渲染，難以處理複雜嘅動態佈局邏輯。
+- **資源割裂**：圖片、字體等靜態資源引用路徑處理繁瑣，缺乏統一嘅打包優化。
+</Callout>
+
+### 現代方案 (React)
+
+<Callout type="info" title="核心優勢">
+- **極致體驗**：內置可視化面板，支持 HMR 熱更新，毫秒級反饋。
+- **架構先進**：組件化開發實現高內聚低耦合；TailwindCSS 解決樣式衝突。
+- **生態豐富**：背靠 React 龐大生態，海量組件庫與工具庫即插即用。
+- **邏輯復用**：利用 Hooks 輕鬆復用狀態邏輯，輕鬆應對複雜數據處理。
+- **構建優化**：依託 Vite 強大嘅構建能力，自動處理資源壓縮、路徑別名等。
+</Callout>
+
+### 綜合對比表
+
+| 特性 | art-template | React + Tailwind |
+| :--- | :--- | :--- |
+| **核心理念** | 字符串拼接模板 | **組件化視圖構建** |
+| **樣式方案** | 全局 CSS (易衝突) | **TailwindCSS (原子化)** |
+| **數據流** | 弱類型，隱式傳遞 | **TypeScript 強類型 props** |
+| **調試體驗** | 盲寫，手動刷新 | **可視化面板，實時預覽** |
+| **渲染機制** | 運行時編譯 HTML | **構建時預編譯 SSR** |
+
+## 架構優勢
+
+本方案用**現代前端工程化思維**重構咗靜態圖片嘅生成方式，核心優勢體現在三個方面：
+
+**組件化構建**：摒棄 `art-template` 簡陋嘅 `include` 語法，React 組件允許將複雜畫面拆解為獨立單元。每個組件獨立管理樣式與邏輯，基礎組件可在不同模板間無縫復用。
+
+**原子化樣式**：TailwindCSS 徹底告別 `style.css` 幾千行嘅噩夢。樣式直接作用於 DOM 元素，不存在類名覆蓋問題；構建時自動剔除未使用的樣式，生成嘅 HTML 體積更小。
+
+**類型安全**：從數據獲取到圖片渲染，全鏈路 TypeScript 類型護航。編寫模板時 IDE 自動提示數據結構，後端字段變更時前端立即報錯，避免線上"圖片渲染失敗"。
+
+## 開發輔助
+
+雖然最終產物係靜態圖片，但內置咗**可視化開發面板** (`pnpm dev`) 來提升開發效率：
+
+- **實時預覽**：修改組件代碼，瀏覽器右側即時刷新渲染結果。
+- **數據Mock**：可配置多套 JSON 數據，輕鬆測試文本超長、頭像缺失等邊緣情況。
+- **快速調試**：無需啟動整個 Bot，僅需瀏覽器即可完成模板開發。
+
+## 生態復用
+
+得益於 React 標準，可以直接引入成熟嘅庫來豐富**靜態畫面**嘅表現力：
+
+- **排版佈局**：引入現代化嘅 UI 組件庫，快速構建精美嘅卡片、列表。
+- **數據可視化**：使用專業圖表庫將複雜數據渲染為統計圖表。
+- **矢量圖標**：引入海量 SVG 圖標庫，支持任意縮放不失真。
+
+## 工作原理
+
+<Mermaid chart={`
+flowchart TB
+    subgraph Development [開發階段]
+        direction LR
+        A[React 組件源碼] -- HMR 熱更新 --> B[可視化開發面板]
+        B -- 實時預覽 --> C[開發者]
+    end
+
+    subgraph Build [構建階段]
+        direction LR
+        D[Vite 構建] -- 編譯 --> E[SSR Bundle]
+    end
+
+    subgraph Runtime [運行時]
+        direction LR
+        F[插件邏輯] -- 數據 --> G[SSR 渲染引擎]
+        E -- 組件 --> G
+        G -- 生成 --> H[完整 HTML]
+        H -- Karin render 截圖 --> I[最終圖片]
+    end
+
+    Development -.-> Build
+    Build -.-> Runtime
+`} />
+
+1.  **開發階段**：利用 **Vite** 提供秒級啟動與毫秒級熱更新，在可視化面板中實時調試 UI。
+2.  **構建階段**：將 React 組件編譯為優化嘅服務端渲染 (SSR) 包，不依賴瀏覽器 JS 執行。
+3.  **運行階段**：
+    *   插件接收數據，調用渲染函數。
+    *   React SSR 引擎將組件渲染為**純靜態 HTML**。
+    *   Karin 框架接管 HTML，調用 Puppeteer 進行截圖並發送。
+
+<Callout type="info" title="性能優化">
+SSR 直接輸出包含完整樣式與內容嘅 HTML，Puppeteer 打開頁面後**無需等待 JavaScript 加載與執行**即可立即截圖，顯著降低咗渲染耗時與內存佔用。
+</Callout>
+
+
+## SSR 渲染引擎
+
+core 包通過 `Render` 函數調用 template 子包嘅 `reactServerRender`，實現咗插件邏輯與模板渲染嘅解耦。
+
+<Mermaid chart={`
+flowchart TB
+    subgraph Entry [入口層]
+        A1[reactServerRender 函數]
+        A2[解析 options 參數]
+        A3[request: RenderRequest]
+        A4[outputDir: 輸出目錄]
+        A5[plugins: 插件數組]
+    end
+
+    subgraph Init [初始化階段]
+        B1[檢查輸出目錄是否存在]
+        B2[不存在則遞歸創建 mkdir]
+        B3[ComponentAutoRegistry.initialize]
+        B4[掃描 componentConfigs 配置]
+        B5[按平台分組註冊組件]
+        B6[懶加載組件模塊 lazyComponent]
+        B7[綁定數據驗證函數 validateData]
+        B8[存入 Map 註冊表]
+    end
+
+    subgraph SSRRender [SSRRender 實例]
+        C1[創建 ResourcePathManager]
+        C2[檢測運行環境 dev/prod]
+        C3[解析包目錄路徑]
+        C4[處理 pnpm 符號鏈接]
+        C5[創建 HtmlWrapper]
+        C6[創建 PluginContainer]
+        C7[按 enforce 排序 pre/normal/post]
+    end
+
+    subgraph RenderFlow [渲染流程]
+        D1[構建 PluginContext 上下文]
+        D2[初始化 RenderState]
+        D3[state.props 額外屬性]
+        D4[state.component 組件實例]
+        D5[state.html 渲染結果]
+        
+        E1[runBefore 執行前置插件]
+        E2[遍歷插件檢查 apply 條件]
+        E3[調用 beforeRender 鉤子]
+        E4[插件注入 props 如二維碼]
+        
+        F1[ComponentRendererFactory]
+        F2[從註冊表查找組件 get]
+        F3[執行 validateData 驗證]
+        F4[合併 data + version + scale + extraProps]
+        F5[處理嵌套路徑提取 subType]
+        F6[React.createElement 創建實例]
+        
+        G1[runDuring 執行渲染插件]
+        G2[可包裝或替換組件]
+        
+        H1[renderToString 核心渲染]
+        H2[React 組件轉 HTML 字符串]
+        
+        I1[runAfter 執行後置插件]
+        I2[可修改最終 HTML]
+    end
+
+    subgraph Output [輸出階段]
+        J1[生成安全文件名]
+        J2[替換路徑分隔符]
+        J3[添加時間戳防衝突]
+        J4[HtmlWrapper.wrapContent]
+        J5[計算 CSS 相對路徑]
+        J6[計算圖片相對路徑]
+        J7[替換圖片 src 路徑]
+        J8[注入 DOCTYPE 和 meta]
+        J9[注入 CSS link 標籤]
+        J10[設置 body 主題類名]
+        J11[fs.writeFileSync 寫入]
+        J12[返回 htmlPath 路徑]
+    end
+
+    A1 --> A2
+    A2 --> A3 & A4 & A5
+    A3 & A4 & A5 --> B1
+    B1 --> B2 --> B3
+    B3 --> B4 --> B5 --> B6 --> B7 --> B8
+    B8 --> C1
+    C1 --> C2 --> C3 --> C4
+    C4 --> C5 --> C6 --> C7
+    C7 --> D1
+    D1 --> D2 --> D3 & D4 & D5
+    D3 --> E1
+    E1 --> E2 --> E3 --> E4
+    E4 --> F1
+    F1 --> F2 --> F3 --> F4 --> F5 --> F6
+    F6 --> G1 --> G2
+    G2 --> H1 --> H2
+    H2 --> I1 --> I2
+    I2 --> J1
+    J1 --> J2 --> J3 --> J4
+    J4 --> J5 & J6
+    J5 & J6 --> J7 --> J8 --> J9 --> J10 --> J11 --> J12
+`} />
+
+**入口與初始化**：`reactServerRender` 接收渲染請求、輸出目錄和插件數組，首先確保輸出目錄存在，然後通過 `ComponentAutoRegistry` 掃描配置文件，按平台分組懶加載組件模塊並綁定數據驗證函數，最終存入 Map 註冊表。
+
+**SSRRender 實例化**：創建 `ResourcePathManager` 檢測運行環境（開發/生產），解析包目錄路徑並處理 pnpm 符號鏈接；創建 `HtmlWrapper` 負責 HTML 包裝；創建 `PluginContainer` 並按 `enforce` 字段（pre → normal → post）對插件排序。
+
+**渲染流程**：構建 `PluginContext` 上下文和 `RenderState` 狀態對象 → 執行 `runBefore` 前置插件（如二維碼生成）注入額外 props → `ComponentRendererFactory` 從註冊表查找組件、驗證數據、合併 props、處理嵌套路徑、調用 `React.createElement` → 執行 `runDuring` 渲染插件（可包裝組件）→ 調用 `renderToString` 將 React 組件轉為 HTML 字符串 → 執行 `runAfter` 後置插件（可修改 HTML）。
+
+**輸出階段**：生成帶時間戳的安全文件名 → `HtmlWrapper.wrapContent` 計算 CSS 和圖片的相對路徑、替換圖片 src、注入 DOCTYPE/meta/CSS link/主題類名 → 寫入文件系統 → 返回 HTML 文件路徑供 Karin 框架截圖。
