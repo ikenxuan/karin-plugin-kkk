@@ -217,7 +217,10 @@ export function generateASS (
   const fontScale = height / 1080
   const fontSize = Math.round(25 * fontScale)
   const trackH = Math.round(30 * fontScale)
-  const trackCount = Math.floor(areaHeight / trackH)
+  // 滚动弹幕轨道数量：需要预留一个字体高度的空间，避免最后一条轨道超出区域
+  const trackCount = Math.max(1, Math.floor((areaHeight - fontSize) / trackH))
+  // 顶部/底部固定弹幕的轨道数量（最多占屏幕 1/4，最少 3 条）
+  const fixedTrackCount = Math.max(3, Math.min(Math.floor(height / 4 / trackH), 8))
   const minGap = Math.round(10 * fontScale)
   const alpha = (255 - opacity).toString(16).padStart(2, '0').toUpperCase()
 
@@ -241,8 +244,9 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
   // 轨道状态
   const scrollTracks: (TrackInfo | null)[] = Array(trackCount).fill(null)
-  const topTracks: number[] = Array(trackCount).fill(0)
-  const bottomTracks: number[] = Array(trackCount).fill(0)
+  // 顶部/底部固定弹幕使用独立的轨道数量
+  const topTracks: number[] = Array(fixedTrackCount).fill(0)
+  const bottomTracks: number[] = Array(fixedTrackCount).fill(0)
 
   // 碰撞检测
   const calcDistance = (last: TrackInfo, startTime: number, duration: number, textWidth: number): number => {
@@ -274,30 +278,32 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     const sizeTag = dmFontSize !== fontSize ? `{\\fs${dmFontSize}}` : ''
 
     if (dm.mode === 4) {
-      // 底部弹幕
+      // 底部弹幕：从画布底部往上排列，使用独立的固定轨道
       const duration = 4000
       const endTime = startTime + duration
       let idx = bottomTracks.findIndex(t => t <= startTime)
       if (idx === -1) {
-        if (danmakuArea >= 0.75) {
-          idx = Math.floor(Math.random() * bottomTracks.length)
-        } else continue
+        // 轨道已满，随机覆盖一条
+        idx = Math.floor(Math.random() * bottomTracks.length)
       }
       bottomTracks[idx] = endTime
-      const y = areaHeight - (idx + 1) * trackH
-      ass += `Dialogue: 0,${toASSTime(startTime)},${toASSTime(endTime)},Bottom,,0,0,0,,{\\an8}${colorTag}${sizeTag}{\\pos(${width / 2},${y})}${content}\n`
+      // 使用 \an2（底部居中对齐），Y 坐标从画布底部往上计算
+      // idx=0 时在最底部，idx 越大越往上
+      const bottomMargin = Math.round(10 * fontScale) // 底部边距
+      const y = height - bottomMargin - idx * trackH
+      ass += `Dialogue: 0,${toASSTime(startTime)},${toASSTime(endTime)},Bottom,,0,0,0,,{\\an2}${colorTag}${sizeTag}{\\pos(${width / 2},${y})}${content}\n`
     } else if (dm.mode === 5) {
-      // 顶部弹幕
+      // 顶部弹幕：使用独立的固定轨道
       const duration = 4000
       const endTime = startTime + duration
       let idx = topTracks.findIndex(t => t <= startTime)
       if (idx === -1) {
-        if (danmakuArea >= 0.75) {
-          idx = Math.floor(Math.random() * topTracks.length)
-        } else continue
+        // 轨道已满，随机覆盖一条
+        idx = Math.floor(Math.random() * topTracks.length)
       }
       topTracks[idx] = endTime
-      const y = (idx + 1) * trackH
+      const topMargin = Math.round(10 * fontScale) // 顶部边距
+      const y = topMargin + (idx + 1) * trackH
       ass += `Dialogue: 0,${toASSTime(startTime)},${toASSTime(endTime)},Top,,0,0,0,,{\\an8}${colorTag}${sizeTag}{\\pos(${width / 2},${y})}${content}\n`
     } else {
       // 滚动弹幕
@@ -342,6 +348,9 @@ interface CanvasInfo {
   scale?: number
 }
 
+/** 最大输出宽度（4K 竖屏宽度上限） */
+const MAX_OUTPUT_WIDTH = 2160
+
 /** 计算画布尺寸 */
 function calcCanvas (origW: number, origH: number, verticalMode: VerticalMode): CanvasInfo {
   // 关闭模式：保持原比例
@@ -357,8 +366,8 @@ function calcCanvas (origW: number, origH: number, verticalMode: VerticalMode): 
     const targetRatio = 16 / 9 // 9:16 竖屏
 
     if (isWide) {
-      // 横屏视频：用原高度作为新宽度
-      const newW = origH
+      // 横屏视频：用原高度作为新宽度，但不超过 MAX_OUTPUT_WIDTH
+      let newW = Math.min(origH, MAX_OUTPUT_WIDTH)
       const newH = Math.round(newW * targetRatio)
       const scaledH = Math.round(newW / ratio) // 视频缩放后的高度
       const offsetY = Math.round((newH - scaledH) / 2)
@@ -371,26 +380,30 @@ function calcCanvas (origW: number, origH: number, verticalMode: VerticalMode): 
         scale: newW / origW
       }
     } else {
-      // 竖屏/正方形视频：用原宽度，按 9:16 计算高度
-      const newW = origW
+      // 竖屏/正方形视频：用原宽度，按 9:16 计算高度，但宽度不超过 MAX_OUTPUT_WIDTH
+      let newW = Math.min(origW, MAX_OUTPUT_WIDTH)
+      const scaleRatio = newW / origW
+      const scaledOrigH = Math.round(origH * scaleRatio)
       const newH = Math.round(newW * targetRatio)
-      // 视频保持原尺寸居中
-      const offsetY = Math.round((newH - origH) / 2)
+      // 视频缩放后居中
+      const offsetY = Math.round((newH - scaledOrigH) / 2)
       logger.debug(`[Danmaku] 强制模式(竖屏): ${origW}x${origH} -> ${newW}x${newH}, offsetY=${offsetY}`)
       return {
         width: newW,
         height: newH,
         offsetY: Math.max(0, offsetY),
         isVertical: true,
-        scale: 1 // 不缩放
+        scale: scaleRatio
       }
     }
   }
 
   // 标准模式：仅处理横屏且 ratio >= 1.7 的视频
   if (isWide && ratio >= 1.7) {
-    const newW = origH
-    const newH = origW
+    // 宽度不超过 MAX_OUTPUT_WIDTH
+    const newW = Math.min(origH, MAX_OUTPUT_WIDTH)
+    const scaleRatio = newW / origH
+    const newH = Math.round(origW * scaleRatio)
     const scaledH = Math.round(newW / ratio)
     const offsetY = Math.round((newH - scaledH) / 2)
     logger.debug(`[Danmaku] 标准模式: ${origW}x${origH} -> ${newW}x${newH}, offsetY=${offsetY}`)
@@ -412,10 +425,10 @@ function buildFilter (canvas: CanvasInfo, assPath: string): string {
   const escaped = escapeWinPath(assPath)
   if (canvas.isVertical) {
     if (canvas.scale && canvas.scale !== 1 && canvas.scale < 1) {
-      // 横屏转竖屏：先缩放视频，再填充黑边，最后烧字幕
+      // 需要缩放：先缩放视频，再填充黑边，最后烧字幕
       return `scale=${canvas.width}:-1,pad=${canvas.width}:${canvas.height}:0:${canvas.offsetY}:black,subtitles='${escaped}'`
     }
-    // 竖屏或不需要缩放：直接填充黑边
+    // 不需要缩放：直接填充黑边
     return `pad=${canvas.width}:${canvas.height}:0:${canvas.offsetY}:black,subtitles='${escaped}'`
   }
   return `subtitles='${escaped}'`
