@@ -208,9 +208,20 @@ export class Bilibili extends Base {
             if (Config.bilibili.burnDanmaku) {
               try {
                 const cid = iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid
-                const danmakuResult = await this.amagi.getBilibiliData('实时弹幕', { cid, typeMode: 'strict' })
-                danmakuList = danmakuResult.data?.data?.elems || []
-                logger.debug(`获取到 ${danmakuList.length} 条弹幕`)
+                // 获取视频时长（秒），计算需要获取的弹幕分段数（每6分钟一段）
+                const duration = iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.duration ?? infoData.data.data.duration) : infoData.data.data.duration
+                const segmentCount = Math.ceil(duration / 360) // 360秒 = 6分钟
+                logger.debug(`视频时长: ${duration}秒, 需要获取 ${segmentCount} 个弹幕分段`)
+
+                // 并行获取所有分段的弹幕
+                const danmakuPromises = Array.from({ length: segmentCount }, (_, i) =>
+                  this.amagi.getBilibiliData('实时弹幕', { cid, segment_index: i + 1, typeMode: 'strict' })
+                    .then(res => res.data?.data?.elems || [])
+                    .catch(() => [] as DanmakuElem[])
+                )
+                const danmakuSegments = await Promise.all(danmakuPromises)
+                danmakuList = danmakuSegments.flat()
+                logger.debug(`获取到 ${danmakuList.length} 条弹幕（${segmentCount} 个分段）`)
               } catch (err) {
                 logger.warn('获取弹幕失败，将不烧录弹幕', err)
               }
@@ -765,7 +776,8 @@ export class Bilibili extends Base {
             logger.debug(`开始合成视频并烧录 ${danmakuList.length} 条弹幕...`)
             success = await mergeAndBurn(bmp4.filepath, bmp3.filepath, danmakuList, resultPath, {
               danmakuArea: Config.bilibili.danmakuArea,
-              verticalMode: Config.bilibili.verticalMode
+              verticalMode: Config.bilibili.verticalMode,
+              videoCodec: Config.bilibili.videoCodec
             })
           } else {
             success = await mergeVideoAudio(bmp4.filepath, bmp3.filepath, resultPath)
@@ -809,7 +821,8 @@ export class Bilibili extends Base {
             logger.mark(`开始烧录 ${danmakuList.length} 条弹幕...`)
             const success = await burnDanmaku(videoFile.filepath, danmakuList, resultPath, {
               danmakuArea: Config.bilibili.danmakuArea,
-              verticalMode: Config.bilibili.verticalMode
+              verticalMode: Config.bilibili.verticalMode,
+              videoCodec: Config.bilibili.videoCodec
             })
             if (success) {
               const filePath = Common.tempDri.video + `${Config.app.removeCache ? 'tmp_' + Date.now() : this.downloadfilename}.mp4`

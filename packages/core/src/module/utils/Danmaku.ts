@@ -28,6 +28,9 @@ export interface DanmakuElem {
 /** 横屏转竖屏模式 */
 export type VerticalMode = 'off' | 'standard' | 'force'
 
+/** 视频编码格式 */
+export type VideoCodec = 'h264' | 'h265' | 'av1'
+
 /** 弹幕烧录配置 */
 export interface DanmakuOptions {
   /** 弹幕显示区域比例（0.25/0.5/0.75/1） */
@@ -42,24 +45,36 @@ export interface DanmakuOptions {
   fontName?: string
   /** 删除源文件 */
   removeSource?: boolean
+  /** 视频编码格式（默认 h265） */
+  videoCodec?: VideoCodec
 }
 
 // ==================== 编码器检测 ====================
 
-/** H.265 编码器优先级 */
-const HEVC_ENCODERS = ['hevc_nvenc', 'hevc_qsv', 'hevc_amf', 'libx265'] as const
-type HevcEncoder = (typeof HEVC_ENCODERS)[number]
+/** 各编码格式的硬件编码器优先级 */
+const ENCODER_PRIORITY: Record<VideoCodec, readonly string[]> = {
+  h264: ['h264_nvenc', 'h264_qsv', 'h264_amf', 'libx264'],
+  h265: ['hevc_nvenc', 'hevc_qsv', 'hevc_amf', 'libx265'],
+  av1: ['av1_nvenc', 'av1_qsv', 'av1_amf', 'libsvtav1', 'libaom-av1']
+} as const
 
-/** 缓存检测结果 */
-let cachedEncoder: HevcEncoder | null = null
+/** 各编码格式的软件回退编码器 */
+const SOFTWARE_FALLBACK: Record<VideoCodec, string> = {
+  h264: 'libx264',
+  h265: 'libx265',
+  av1: 'libsvtav1'
+}
 
-/** 检测可用的 H.265 硬件编码器 */
-async function detectHevcEncoder (): Promise<HevcEncoder> {
-  if (cachedEncoder) return cachedEncoder
+/** 缓存检测结果（按编码格式） */
+const cachedEncoders: Partial<Record<VideoCodec, string>> = {}
 
-  logger.debug('[Danmaku] 开始检测 H.265 编码器...')
+/** 检测可用的硬件编码器 */
+async function detectEncoder (codec: VideoCodec): Promise<string> {
+  if (cachedEncoders[codec]) return cachedEncoders[codec]!
 
-  for (const encoder of HEVC_ENCODERS) {
+  logger.debug(`[Danmaku] 开始检测 ${codec.toUpperCase()} 编码器...`)
+
+  for (const encoder of ENCODER_PRIORITY[codec]) {
     logger.debug(`[Danmaku] 测试编码器: ${encoder}`)
     try {
       // NVENC 最小支持 256x256，用 320x240 测试
@@ -68,35 +83,121 @@ async function detectHevcEncoder (): Promise<HevcEncoder> {
       )
       logger.debug(`[Danmaku] ${encoder} 测试结果: status=${result.status}`)
       if (result.status) {
-        cachedEncoder = encoder
-        logger.info(`[Danmaku] 使用 H.265 编码器: ${encoder}`)
+        cachedEncoders[codec] = encoder
+        logger.info(`[Danmaku] 使用 ${codec.toUpperCase()} 编码器: ${encoder}`)
         return encoder
       }
     } catch (e) {
-      // 编码器不可用，继续尝试下一个
       logger.debug(`[Danmaku] 编码器 ${encoder} 测试异常: ${e}`)
     }
   }
 
-  cachedEncoder = 'libx265'
-  logger.info('[Danmaku] 回退到软件编码器: libx265')
-  return 'libx265'
+  const fallback = SOFTWARE_FALLBACK[codec]
+  cachedEncoders[codec] = fallback
+  logger.info(`[Danmaku] 回退到软件编码器: ${fallback}`)
+  return fallback
 }
 
-/** 获取编码器参数 */
-function getEncoderParams (encoder: HevcEncoder): string {
+/** 获取视频码率（kbps） */
+async function getVideoBitrate (path: string): Promise<number> {
+  // 优先使用文件大小和时长计算码率（最准确，因为 DASH 片段的元数据可能不准确）
+  try {
+    const fileSize = fs.statSync(path).size // 字节
+    const { stdout } = await ffprobe(`-v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${path}"`)
+    const duration = parseFloat(stdout.trim())
+    if (duration > 0 && fileSize > 0) {
+      const kbps = Math.round((fileSize * 8) / duration / 1000)
+      logger.debug(`[Danmaku] 通过文件大小计算码率: ${kbps}kbps (文件: ${(fileSize / 1024 / 1024).toFixed(2)}MB, 时长: ${duration.toFixed(2)}s)`)
+      return kbps
+    }
+  } catch (e) {
+    logger.debug(`[Danmaku] 通过文件大小计算码率失败: ${e}`)
+  }
+
+  // 备用方法：从流信息读取码率
+  try {
+    const { stdout } = await ffprobe(`-v error -select_streams v:0 -show_entries stream=bit_rate -of default=noprint_wrappers=1:nokey=1 "${path}"`)
+    const bitrate = parseInt(stdout.trim())
+    if (bitrate > 0) {
+      const kbps = Math.round(bitrate / 1000)
+      logger.debug(`[Danmaku] 从流信息读取码率: ${kbps}kbps`)
+      return kbps
+    }
+  } catch {
+    logger.debug('[Danmaku] ffprobe 读取流码率失败')
+  }
+
+  // 备用方法：从格式信息读取码率
+  try {
+    const { stdout } = await ffprobe(`-v error -show_entries format=bit_rate -of default=noprint_wrappers=1:nokey=1 "${path}"`)
+    const bitrate = parseInt(stdout.trim())
+    if (bitrate > 0) {
+      const kbps = Math.round(bitrate / 1000)
+      logger.debug(`[Danmaku] 从格式信息读取码率: ${kbps}kbps`)
+      return kbps
+    }
+  } catch {
+    logger.debug('[Danmaku] ffprobe 读取格式码率失败')
+  }
+
+  logger.warn('[Danmaku] 无法获取视频码率，将使用 CRF 模式')
+  return 0
+}
+
+/** 获取编码器参数（支持目标码率） */
+function getEncoderParams (encoder: string, targetBitrate?: number): string {
   const threads = Math.max(1, Math.floor(os.cpus().length / 2))
 
-  switch (encoder) {
-    case 'hevc_nvenc':
-      return '-c:v hevc_nvenc -preset p4 -cq 28 -b:v 0'
-    case 'hevc_qsv':
-      return '-c:v hevc_qsv -preset medium -global_quality 28'
-    case 'hevc_amf':
-      return '-c:v hevc_amf -quality balanced -qp_i 28 -qp_p 28'
-    default:
-      return `-c:v libx265 -crf 28 -preset medium -threads ${threads}`
+  // 如果有目标码率，使用 VBR 模式，允许复杂画面使用更高码率
+  if (targetBitrate && targetBitrate > 0) {
+    const bitrateK = `${targetBitrate}k`
+    const maxrate = `${Math.round(targetBitrate * 2)}k` // 最大码率为目标的 2 倍，保证复杂画面质量
+    const bufsize = `${Math.round(targetBitrate * 4)}k` // 缓冲区为目标的 4 倍
+
+    // H.264 编码器（VBR 模式）
+    if (encoder === 'h264_nvenc') return `-c:v h264_nvenc -preset p4 -rc vbr -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize}`
+    if (encoder === 'h264_qsv') return `-c:v h264_qsv -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize}`
+    if (encoder === 'h264_amf') return `-c:v h264_amf -quality balanced -rc vbr_peak -b:v ${bitrateK} -maxrate ${maxrate}`
+    if (encoder === 'libx264') return `-c:v libx264 -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize} -threads ${threads}`
+
+    // H.265 编码器（VBR 模式）
+    if (encoder === 'hevc_nvenc') return `-c:v hevc_nvenc -preset p4 -rc vbr -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize}`
+    if (encoder === 'hevc_qsv') return `-c:v hevc_qsv -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize}`
+    if (encoder === 'hevc_amf') return `-c:v hevc_amf -quality balanced -rc vbr_peak -b:v ${bitrateK} -maxrate ${maxrate}`
+    if (encoder === 'libx265') return `-c:v libx265 -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize} -threads ${threads}`
+
+    // AV1 编码器（VBR 模式）
+    if (encoder === 'av1_nvenc') return `-c:v av1_nvenc -preset p4 -rc vbr -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize}`
+    if (encoder === 'av1_qsv') return `-c:v av1_qsv -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize}`
+    if (encoder === 'av1_amf') return `-c:v av1_amf -quality balanced -rc vbr_peak -b:v ${bitrateK} -maxrate ${maxrate}`
+    if (encoder === 'libsvtav1') return `-c:v libsvtav1 -preset 6 -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize} -threads ${threads}`
+    if (encoder === 'libaom-av1') return `-c:v libaom-av1 -cpu-used 4 -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize} -threads ${threads}`
+
+    return `-c:v libx265 -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize} -threads ${threads}`
   }
+
+  // 无目标码率时使用 CRF/CQ 模式
+  // H.264 编码器（CRF 23 是视觉无损的推荐值）
+  if (encoder === 'h264_nvenc') return '-c:v h264_nvenc -preset p4 -rc vbr -cq 23'
+  if (encoder === 'h264_qsv') return '-c:v h264_qsv -preset medium -global_quality 23'
+  if (encoder === 'h264_amf') return '-c:v h264_amf -quality balanced -rc cqp -qp_i 23 -qp_p 23'
+  if (encoder === 'libx264') return `-c:v libx264 -crf 23 -preset medium -threads ${threads}`
+
+  // H.265 编码器（CRF 28 是默认推荐值）
+  if (encoder === 'hevc_nvenc') return '-c:v hevc_nvenc -preset p4 -rc vbr -cq 28'
+  if (encoder === 'hevc_qsv') return '-c:v hevc_qsv -preset medium -global_quality 28'
+  if (encoder === 'hevc_amf') return '-c:v hevc_amf -quality balanced -rc cqp -qp_i 28 -qp_p 28'
+  if (encoder === 'libx265') return `-c:v libx265 -crf 28 -preset medium -threads ${threads}`
+
+  // AV1 编码器（CRF 30 是推荐值，AV1 压缩效率更高）
+  if (encoder === 'av1_nvenc') return '-c:v av1_nvenc -preset p4 -rc vbr -cq 30'
+  if (encoder === 'av1_qsv') return '-c:v av1_qsv -preset medium -global_quality 30'
+  if (encoder === 'av1_amf') return '-c:v av1_amf -quality balanced -rc cqp -qp_i 30 -qp_p 30'
+  if (encoder === 'libsvtav1') return `-c:v libsvtav1 -crf 30 -preset 6 -threads ${threads}`
+  if (encoder === 'libaom-av1') return `-c:v libaom-av1 -crf 30 -cpu-used 4 -threads ${threads}`
+
+  // 默认回退到 libx265
+  return `-c:v libx265 -crf 28 -preset medium -threads ${threads}`
 }
 
 // ==================== 内部工具函数 ====================
@@ -213,14 +314,18 @@ export function generateASS (
   } = options
 
   // 计算参数
-  const areaHeight = Math.floor(height * danmakuArea)
   const fontScale = height / 1080
   const fontSize = Math.round(25 * fontScale)
   const trackH = Math.round(30 * fontScale)
+  const topMargin = Math.round(10 * fontScale) // 顶部边距
+  const bottomMargin = Math.round(10 * fontScale) // 底部边距
+
+  // 弹幕区域高度（去除上下边距）
+  const areaHeight = Math.floor(height * danmakuArea) - topMargin - bottomMargin
   // 滚动弹幕轨道数量：需要预留一个字体高度的空间，避免最后一条轨道超出区域
   const trackCount = Math.max(1, Math.floor((areaHeight - fontSize) / trackH))
-  // 顶部/底部固定弹幕的轨道数量（最多占屏幕 1/4，最少 3 条）
-  const fixedTrackCount = Math.max(3, Math.min(Math.floor(height / 4 / trackH), 8))
+  // 顶部/底部固定弹幕的轨道数量：与滚动弹幕共用相同的轨道数
+  const fixedTrackCount = trackCount
   const minGap = Math.round(10 * fontScale)
   const alpha = (255 - opacity).toString(16).padStart(2, '0').toUpperCase()
 
@@ -278,7 +383,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     const sizeTag = dmFontSize !== fontSize ? `{\\fs${dmFontSize}}` : ''
 
     if (dm.mode === 4) {
-      // 底部弹幕：从画布底部往上排列，使用独立的固定轨道
+      // 底部弹幕：从画布底部往上排列
       const duration = 4000
       const endTime = startTime + duration
       let idx = bottomTracks.findIndex(t => t <= startTime)
@@ -288,12 +393,11 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
       }
       bottomTracks[idx] = endTime
       // 使用 \an2（底部居中对齐），Y 坐标从画布底部往上计算
-      // idx=0 时在最底部，idx 越大越往上
-      const bottomMargin = Math.round(10 * fontScale) // 底部边距
+      // idx=0 时在最底部（y = height - bottomMargin），idx 越大越往上
       const y = height - bottomMargin - idx * trackH
       ass += `Dialogue: 0,${toASSTime(startTime)},${toASSTime(endTime)},Bottom,,0,0,0,,{\\an2}${colorTag}${sizeTag}{\\pos(${width / 2},${y})}${content}\n`
     } else if (dm.mode === 5) {
-      // 顶部弹幕：使用独立的固定轨道
+      // 顶部弹幕：从画布顶部往下排列
       const duration = 4000
       const endTime = startTime + duration
       let idx = topTracks.findIndex(t => t <= startTime)
@@ -302,8 +406,9 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         idx = Math.floor(Math.random() * topTracks.length)
       }
       topTracks[idx] = endTime
-      const topMargin = Math.round(10 * fontScale) // 顶部边距
-      const y = topMargin + (idx + 1) * trackH
+      // 使用 \an8（顶部居中对齐），Y 坐标从画布顶部往下计算
+      // idx=0 时在最顶部，idx 越大越往下
+      const y = topMargin + idx * trackH + fontSize
       ass += `Dialogue: 0,${toASSTime(startTime)},${toASSTime(endTime)},Top,,0,0,0,,{\\an8}${colorTag}${sizeTag}{\\pos(${width / 2},${y})}${content}\n`
     } else {
       // 滚动弹幕
@@ -443,26 +548,28 @@ export async function burnDanmaku (
   outputPath: string,
   options: DanmakuOptions = {}
 ): Promise<boolean> {
-  const { removeSource = false, verticalMode = 'off' } = options
+  const { removeSource = false, verticalMode = 'off', videoCodec = 'h265' } = options
 
   const resolution = await getResolution(videoPath)
   const frameRate = await getFrameRate(videoPath)
+  const sourceBitrate = await getVideoBitrate(videoPath)
   const canvas = calcCanvas(resolution.width, resolution.height, verticalMode)
 
   if (canvas.isVertical) {
     logger.debug(`竖屏模式: ${resolution.width}x${resolution.height} -> ${canvas.width}x${canvas.height}`)
   }
+  logger.debug(`[Danmaku] 原视频码率: ${sourceBitrate}kbps`)
 
   // 生成 ASS
   const assContent = generateASS(danmakuList, canvas.width, canvas.height, options)
   const assPath = videoPath.replace(/\.[^.]+$/, '_danmaku.ass')
   fs.writeFileSync(assPath, assContent, 'utf-8')
-  logger.mark(`弹幕字幕已生成: ${assPath}`)
+  logger.debug(`弹幕字幕已生成: ${assPath}`)
 
-  // 编码
+  // 编码（使用原视频码率作为目标码率）
   const filter = buildFilter(canvas, assPath)
-  const encoder = await detectHevcEncoder()
-  const encoderParams = getEncoderParams(encoder)
+  const encoder = await detectEncoder(videoCodec)
+  const encoderParams = getEncoderParams(encoder, sourceBitrate)
   const result = await ffmpeg(
     `-y -i "${videoPath}" -vf "${filter}" -r ${frameRate} ${encoderParams} -c:a copy "${outputPath}"`
   )
@@ -489,7 +596,7 @@ export async function mergeAndBurn (
   outputPath: string,
   options: DanmakuOptions = {}
 ): Promise<boolean> {
-  const { removeSource = false, verticalMode = 'off' } = options
+  const { removeSource = false, verticalMode = 'off', videoCodec = 'h265' } = options
 
   // 检查文件是否存在
   if (!fs.existsSync(videoPath)) {
@@ -508,28 +615,30 @@ export async function mergeAndBurn (
 
   const resolution = await getResolution(videoPath)
   const frameRate = await getFrameRate(videoPath)
+  const sourceBitrate = await getVideoBitrate(videoPath)
   const canvas = calcCanvas(resolution.width, resolution.height, verticalMode)
 
   if (canvas.isVertical) {
     logger.debug(`竖屏模式: ${resolution.width}x${resolution.height} -> ${canvas.width}x${canvas.height}`)
   }
-  logger.debug(`分辨率: ${canvas.width}x${canvas.height}, 帧率: ${frameRate}fps`)
+  logger.debug(`分辨率: ${canvas.width}x${canvas.height}, 帧率: ${frameRate}fps, 原视频码率: ${sourceBitrate}kbps`)
 
   // 生成 ASS
   const assContent = generateASS(danmakuList, canvas.width, canvas.height, options)
   const assPath = videoPath.replace(/\.[^.]+$/, '_danmaku.ass')
   fs.writeFileSync(assPath, assContent, 'utf-8')
-  logger.mark(`弹幕字幕已生成: ${assPath}，共 ${danmakuList.length} 条`)
+  logger.debug(`弹幕字幕已生成: ${assPath}，共 ${danmakuList.length} 条`)
 
   // 编码（B站音频实际是 m4a 格式，需要 -f mp4 指定格式）
+  // 使用原视频码率作为目标码率，保持文件大小接近原始
   const filter = buildFilter(canvas, assPath)
-  const encoder = await detectHevcEncoder()
-  const encoderParams = getEncoderParams(encoder)
+  const encoder = await detectEncoder(videoCodec)
+  const encoderParams = getEncoderParams(encoder, sourceBitrate)
   const result = await ffmpeg(
     `-y -i "${videoPath}" -i "${audioPath}" -f mp4 -vf "${filter}" -r ${frameRate} ${encoderParams} -c:a aac -b:a 192k "${outputPath}"`
   )
 
-  Common.removeFile(assPath)
+  Common.removeFile(assPath, true)
 
   if (result.status) {
     logger.mark(`视频合成+弹幕烧录成功: ${outputPath}`)

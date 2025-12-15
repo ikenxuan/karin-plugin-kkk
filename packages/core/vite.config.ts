@@ -14,6 +14,9 @@ import { copyTemplateAssetsPlugin, generateBuildMetadataPlugin, getKarinVersion 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
+// 读取 amagi 的版本号
+const amagiPkg = JSON.parse(fs.readFileSync(resolve(__dirname, '../amagi/package.json'), 'utf-8'))
+
 const entry: string[] = ['src/index.ts', 'src/root.ts', 'src/web.config.ts', 'src/export/template.ts']
 
 const getFiles = (dir: string) => {
@@ -32,7 +35,8 @@ export default defineConfig({
   define: {
     __dirname: 'new URL(\'.\', import.meta.url).pathname',
     __filename: 'new URL(\'\', import.meta.url).pathname',
-    __REQUIRE_KARIN_VERSION__: JSON.stringify(karinVersion)
+    __REQUIRE_KARIN_VERSION__: JSON.stringify(karinVersion),
+    __VERSION__: JSON.stringify(amagiPkg.version)
   },
   build: {
     target: 'node18',

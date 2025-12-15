@@ -69,6 +69,13 @@ export interface bilibiliConfig {
    */
   verticalMode: 'off' | 'standard' | 'force'
 
+  /** 视频编码格式
+   * - 'h264': 兼容性最好，支持几乎所有设备
+   * - 'h265': 压缩率更高，近几年设备支持良好（默认）
+   * - 'av1': 最新编码格式，压缩率最高，但编码较慢
+   */
+  videoCodec: 'h264' | 'h265' | 'av1'
+
   /** B站推送相关配置 */
   push: {
     /** 推送开关，开启后需重启；使用「#设置B站推送 + 用户UID」配置推送列表 */

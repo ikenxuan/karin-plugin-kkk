@@ -848,6 +848,30 @@ export const webConfig = defineConfig({
                   })
                 ]
               }),
+              components.radio.group('videoCodec', {
+                label: '视频编码格式',
+                description: '弹幕烧录时使用的视频编码格式，会自动检测硬件加速',
+                orientation: 'horizontal',
+                defaultValue: all.bilibili.videoCodec,
+                isDisabled: !all.bilibili.switch || !all.bilibili.burnDanmaku,
+                radio: [
+                  components.radio.create('videoCodec:radio-1', {
+                    label: 'H.264',
+                    value: 'h264',
+                    description: '兼容性最好，支持几乎所有设备'
+                  }),
+                  components.radio.create('videoCodec:radio-2', {
+                    label: 'H.265',
+                    value: 'h265',
+                    description: '压缩率更高，近几年设备支持良好（推荐）'
+                  }),
+                  components.radio.create('videoCodec:radio-3', {
+                    label: 'AV1',
+                    value: 'av1',
+                    description: '最新编码格式，压缩率最高，但编码较慢'
+                  })
+                ]
+              }),
               components.divider.create('divider-bilibili-1', {
                 description: 'B站推送相关',
                 descPosition: 20
