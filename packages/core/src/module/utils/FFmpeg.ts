@@ -186,12 +186,18 @@ export async function batchMergeLiveImages (
 }
 
 // ==================== 兼容导出（弹幕相关） ====================
-// 从 Danmaku 模块重新导出，保持向后兼容
+// 从各平台弹幕模块重新导出，保持向后兼容
 
 export {
-  burnDanmaku as burnDanmakuToVideo,
-  type DanmakuOptions as DanmakuBurnOptions,
-  type DanmakuElem,
-  generateASS as danmakuToASS,
-  mergeAndBurn as mergeAndBurnDanmaku
-} from './Danmaku'
+  type BiliDanmakuElem,
+  type BiliDanmakuOptions as DanmakuBurnOptions,
+  burnBiliDanmaku as burnDanmakuToVideo,
+  generateBiliASS as danmakuToASS,
+  mergeAndBurnBili as mergeAndBurnDanmaku
+} from '@/platform/bilibili/danmaku'
+
+export {
+  type DouyinDanmakuElem,
+  type DouyinDanmakuOptions,
+  burnDouyinDanmaku
+} from '@/platform/douyin/danmaku'

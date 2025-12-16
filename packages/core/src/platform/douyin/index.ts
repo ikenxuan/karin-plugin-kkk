@@ -1,4 +1,5 @@
 export * from './comments'
+export * from './danmaku'
 export * from './douyin'
 export * from './getID'
 // export * from './login.ts.bak'

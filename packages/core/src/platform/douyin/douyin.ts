@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import { type DyEmojiList, DyVideoWork } from '@ikenxuan/amagi'
 import type { Elements, Message, SendMessage } from 'node-karin'
 import { common, logger, mkdirSync, segment } from 'node-karin'
-import { UserVideoListData } from 'template'
+import { UserVideoListData } from 'template/types/platforms/douyin/UserVideoList'
 
 import {
   Base,
@@ -22,6 +22,7 @@ import {
 } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
 import { douyinComments } from '@/platform/douyin'
+import { burnDouyinDanmaku, type DouyinDanmakuElem } from '@/platform/douyin/danmaku'
 import { DouyinDataTypes, DouyinIdData } from '@/types'
 
 let mp4size = ''
@@ -361,23 +362,78 @@ export class DouYin extends Base {
           }
         }
         /** 发送视频 */
-        sendvideofile && this.is_mp4 && Config.douyin.sendContent.includes('video') && await downloadVideo(
-          this.e,
-          {
-            video_url: g_video_url,
-            title: {
-              timestampTitle: `tmp_${Date.now()}.mp4`,
-              originTitle: `${g_title}.mp4`
-            },
-            headers: {
-              ...baseHeaders,
-              Referer: g_video_url
+        if (sendvideofile && this.is_mp4 && Config.douyin.sendContent.includes('video')) {
+          // 获取弹幕数据（如果开启弹幕烧录）
+          let danmakuList: DouyinDanmakuElem[] = []
+          if (Config.douyin.burnDanmaku && video) {
+            try {
+              const duration = video.duration // 视频时长（毫秒）
+              logger.debug(`[抖音] 视频时长: ${duration}ms, 开始获取弹幕数据`)
+              const danmakuData = await this.amagi.getDouyinData('弹幕数据', {
+                aweme_id: data.aweme_id,
+                duration,
+                typeMode: 'strict'
+              })
+              if (danmakuData.data?.danmaku_list) {
+                danmakuList = danmakuData.data.danmaku_list
+                logger.debug(`[抖音] 获取到 ${danmakuList.length} 条弹幕`)
+              }
+            } catch (err) {
+              logger.warn('[抖音] 获取弹幕失败，将不烧录弹幕', err)
             }
-          },
-          {
-            message_id: this.e.messageId
           }
-        )
+
+          // 如果需要烧录弹幕，先下载视频再烧录
+          if (Config.douyin.burnDanmaku && danmakuList.length > 0) {
+            const videoFile = await downloadFile(g_video_url, {
+              title: `Douyin_V_tmp_${Date.now()}.mp4`,
+              headers: { ...baseHeaders, Referer: g_video_url }
+            })
+            if (videoFile.filepath) {
+              const resultPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
+              logger.mark(`[抖音] 开始烧录 ${danmakuList.length} 条弹幕...`)
+              const success = await burnDouyinDanmaku(videoFile.filepath, danmakuList, resultPath, {
+                danmakuArea: Config.douyin.danmakuArea,
+                verticalMode: Config.douyin.verticalMode,
+                videoCodec: Config.douyin.videoCodec
+              })
+              if (success) {
+                const filePath = Common.tempDri.video + `${Config.app.removeCache ? 'tmp_' + Date.now() : g_title}.mp4`
+                fs.renameSync(resultPath, filePath)
+                await Common.removeFile(videoFile.filepath, true)
+                const stats = fs.statSync(filePath)
+                const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
+                const { uploadFile } = await import('@/module/utils')
+                if (fileSizeInMB > Config.upload.groupfilevalue) {
+                  await uploadFile(this.e, { filepath: filePath, totalBytes: fileSizeInMB, originTitle: g_title || '' }, '', { useGroupFile: true })
+                } else {
+                  await uploadFile(this.e, { filepath: filePath, totalBytes: fileSizeInMB, originTitle: g_title || '' }, '')
+                }
+              } else {
+                await Common.removeFile(videoFile.filepath, true)
+              }
+            }
+          } else {
+            // 不烧录弹幕，直接下载发送
+            await downloadVideo(
+              this.e,
+              {
+                video_url: g_video_url,
+                title: {
+                  timestampTitle: `tmp_${Date.now()}.mp4`,
+                  originTitle: `${g_title}.mp4`
+                },
+                headers: {
+                  ...baseHeaders,
+                  Referer: g_video_url
+                }
+              },
+              {
+                message_id: this.e.messageId
+              }
+            )
+          }
+        }
         return true
       }
 

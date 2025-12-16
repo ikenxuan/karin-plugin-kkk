@@ -39,13 +39,17 @@ import {
 } from '@/module/utils'
 import { getBilibiliData } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
-import { burnDanmaku, type DanmakuElem, mergeAndBurn } from '@/module/utils/Danmaku'
 import {
   bilibiliComments,
   BilibiliId,
   checkCk,
   genParams
 } from '@/platform/bilibili'
+import {
+  type BiliDanmakuElem,
+  burnBiliDanmaku,
+  mergeAndBurnBili
+} from '@/platform/bilibili/danmaku'
 import { BilibiliDataTypes } from '@/types'
 
 let img: ElementTypes[]
@@ -204,7 +208,7 @@ export class Bilibili extends Base {
               this.islogin = false
             }
             // 获取弹幕数据
-            let danmakuList: DanmakuElem[] = []
+            let danmakuList: BiliDanmakuElem[] = []
             if (Config.bilibili.burnDanmaku) {
               try {
                 const cid = iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid
@@ -217,7 +221,7 @@ export class Bilibili extends Base {
                 const danmakuPromises = Array.from({ length: segmentCount }, (_, i) =>
                   this.amagi.getBilibiliData('实时弹幕', { cid, segment_index: i + 1, typeMode: 'strict' })
                     .then(res => res.data?.data?.elems || [])
-                    .catch(() => [] as DanmakuElem[])
+                    .catch(() => [] as BiliDanmakuElem[])
                 )
                 const danmakuSegments = await Promise.all(danmakuPromises)
                 danmakuList = danmakuSegments.flat()
@@ -746,7 +750,7 @@ export class Bilibili extends Base {
     }
   }
 
-  async getvideo ({ infoData, playUrlData, danmakuList = [] }: { infoData?: BiliBangumiVideoInfo | BiliOneWork, playUrlData: BiliVideoPlayurlIsLogin | BiliBiliVideoPlayurlNoLogin | BiliBangumiVideoPlayurlIsLogin | BiliBangumiVideoPlayurlNoLogin, danmakuList?: DanmakuElem[] }) {
+  async getvideo ({ infoData, playUrlData, danmakuList = [] }: { infoData?: BiliBangumiVideoInfo | BiliOneWork, playUrlData: BiliVideoPlayurlIsLogin | BiliBiliVideoPlayurlNoLogin | BiliBangumiVideoPlayurlIsLogin | BiliBangumiVideoPlayurlNoLogin, danmakuList?: BiliDanmakuElem[] }) {
     /** 获取视频 => FFmpeg合成 */
     logger.debug('是否登录:', this.islogin)
     switch (this.islogin) {
@@ -774,7 +778,7 @@ export class Bilibili extends Base {
           let success: boolean
           if (hasDanmaku) {
             logger.debug(`开始合成视频并烧录 ${danmakuList.length} 条弹幕...`)
-            success = await mergeAndBurn(bmp4.filepath, bmp3.filepath, danmakuList, resultPath, {
+            success = await mergeAndBurnBili(bmp4.filepath, bmp3.filepath, danmakuList, resultPath, {
               danmakuArea: Config.bilibili.danmakuArea,
               verticalMode: Config.bilibili.verticalMode,
               videoCodec: Config.bilibili.videoCodec
@@ -819,7 +823,7 @@ export class Bilibili extends Base {
           if (videoFile.filepath) {
             const resultPath = Common.tempDri.video + `Bil_Result_${Date.now()}.mp4`
             logger.mark(`开始烧录 ${danmakuList.length} 条弹幕...`)
-            const success = await burnDanmaku(videoFile.filepath, danmakuList, resultPath, {
+            const success = await burnBiliDanmaku(videoFile.filepath, danmakuList, resultPath, {
               danmakuArea: Config.bilibili.danmakuArea,
               verticalMode: Config.bilibili.verticalMode,
               videoCodec: Config.bilibili.videoCodec

@@ -1,5 +1,6 @@
 export * from './bilibili'
 export * from './comments'
+export * from './danmaku'
 export * from './genParams'
 export * from './getID'
 export * from './login'

@@ -444,6 +444,86 @@ export const webConfig = defineConfig({
                   })
                 ]
               }),
+              components.divider.create('divider-dy-danmaku', {
+                description: '弹幕烧录相关',
+                descPosition: 20
+              }),
+              components.switch.create('burnDanmaku', {
+                label: '弹幕烧录',
+                description: '将弹幕硬编码到视频画面中。开启后视频需要重新编码，耗时较长',
+                defaultSelected: all.douyin.burnDanmaku,
+                isDisabled: !all.douyin.switch
+              }),
+              components.radio.group('danmakuArea', {
+                label: '弹幕显示区域',
+                description: '限制弹幕范围，避免遮挡视频主体',
+                orientation: 'horizontal',
+                defaultValue: all.douyin.danmakuArea.toString(),
+                isDisabled: !all.douyin.switch || !all.douyin.burnDanmaku,
+                radio: [
+                  components.radio.create('danmakuArea:radio-1', {
+                    label: '1/4 屏',
+                    value: '0.25'
+                  }),
+                  components.radio.create('danmakuArea:radio-2', {
+                    label: '半屏',
+                    value: '0.5'
+                  }),
+                  components.radio.create('danmakuArea:radio-3', {
+                    label: '3/4 屏',
+                    value: '0.75'
+                  }),
+                  components.radio.create('danmakuArea:radio-4', {
+                    label: '全屏',
+                    value: '1'
+                  })
+                ]
+              }),
+              components.radio.group('verticalMode', {
+                label: '竖屏适配',
+                description: '针对横屏视频，模拟手机端竖屏观看体验，视频居中显示，上下黑边区域用于展示弹幕',
+                orientation: 'horizontal',
+                defaultValue: all.douyin.verticalMode,
+                isDisabled: !all.douyin.switch || !all.douyin.burnDanmaku,
+                radio: [
+                  components.radio.create('verticalMode:radio-1', {
+                    label: '关闭',
+                    value: 'off',
+                    description: '保持原始比例，不做转换'
+                  }),
+                  components.radio.create('verticalMode:radio-2', {
+                    label: '智能',
+                    value: 'standard',
+                    description: '仅对宽高比 ≥1.7 的横屏视频生效'
+                  }),
+                  components.radio.create('verticalMode:radio-3', {
+                    label: '强制 9:16',
+                    value: 'force',
+                    description: '所有视频统一转为竖屏'
+                  })
+                ]
+              }),
+              components.radio.group('videoCodec', {
+                label: '视频编码格式',
+                description: '烧录弹幕后的视频编码格式',
+                orientation: 'horizontal',
+                defaultValue: all.douyin.videoCodec,
+                isDisabled: !all.douyin.switch || !all.douyin.burnDanmaku,
+                radio: [
+                  components.radio.create('videoCodec:radio-1', {
+                    label: 'H.264',
+                    value: 'h264'
+                  }),
+                  components.radio.create('videoCodec:radio-2', {
+                    label: 'H.265',
+                    value: 'h265'
+                  }),
+                  components.radio.create('videoCodec:radio-3', {
+                    label: 'AV1',
+                    value: 'av1'
+                  })
+                ]
+              }),
               components.divider.create('divider-dy-1', {
                 description: '抖音推送相关',
                 descPosition: 20
