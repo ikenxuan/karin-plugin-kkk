@@ -35,10 +35,24 @@ pnpm add karin-plugin-kkk@latest -w
 
 ## Link
 
-| 文档 | [![Vercel](https://img.shields.io/badge/托管于-Vercel-000000?style=flat&logo=vercel&logoColor=white)](https://karin-plugin-kkk-docs.vercel.app) | [![Netlify](https://img.shields.io/badge/托管于-Netlify-00C7B7?style=flat&logo=netlify&logoColor=white)](https://karin-plugin-kkk-docs.netlify.app) |
-|:-:|:-:|:-:|
-| QQ 群 | [![QQ](https://img.shields.io/badge/Group-795874649-12B7F5?style=flat&logo=qq)](https://qm.qq.com/q/DgLbCERYVG) | |
-| DeepWiki | [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ikenxuan/karin-plugin-kkk) | |
+<div align="center">
+
+**📖 文档（国内）**
+
+[![KarinJS](https://img.shields.io/badge/kkk.karinjs.com-FF6B6B?style=for-the-badge&logo=bookstack&logoColor=white)](https://kkk.karinjs.com)
+[![QWQO](https://img.shields.io/badge/kkk.qwqo.cn-845EF7?style=for-the-badge&logo=bookstack&logoColor=white)](https://kkk.qwqo.cn)
+
+**📖 文档（海外）**
+
+[![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://karin-plugin-kkk-docs.vercel.app)
+[![Netlify](https://img.shields.io/badge/Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://karin-plugin-kkk-docs.netlify.app)
+
+**💬 交流**
+
+[![QQ Group](https://img.shields.io/badge/QQ_群-795874649-12B7F5?style=for-the-badge&logo=qq&logoColor=white)](https://qm.qq.com/q/DgLbCERYVG)
+[![Ask DeepWiki](https://img.shields.io/badge/DeepWiki-Ask_AI-6366F1?style=for-the-badge&logo=openai&logoColor=white)](https://deepwiki.com/ikenxuan/karin-plugin-kkk)
+
+</div>
 
 ## Thanks
 
