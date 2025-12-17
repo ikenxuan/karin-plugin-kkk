@@ -4,39 +4,119 @@ description: 将弹幕硬编码到视频中
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
-import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
+<Callout type="info">
+将在 **v2.17.0** 版本中发布！
+</Callout>
 <Callout type="warn">
-该功能暂未正式发布，将在 **v2.17.0** 版本中支持。
+**性能警告**：弹幕烧录需要对视频进行完整的重新编码，这是一个非常消耗资源的操作。
+
+- **硬件编码**：如果你的运行环境支持硬件加速（如 NVIDIA 显卡 + 正确安装的驱动），处理速度会很快，一般几秒到几十秒即可完成。
+- **软件编码**：如果没有可用的硬件编码器，将回退到 CPU 软编码。此时处理一个几分钟的视频可能需要数分钟甚至更久，期间会占用大量 CPU 资源，**在服务器/云主机上使用可能导致资源耗尽或被限流**。
+
+建议在开启此功能前，先确认你的运行环境是否支持硬件加速。
 </Callout>
 
-本插件支持将视频弹幕**硬编码（烧录）**到视频画面中，生成带弹幕的 MP4 视频文件。目前仅支持 **B站**，未来计划支持更多平台。
+将视频弹幕**硬编码**到画面中，生成可直接分享的带弹幕视频。目前支持 **B站** 和 **抖音** 平台。
 
-## 核心技术
+## 支持平台
 
-插件内置了强大的弹幕处理模块，核心能力包括：
+| 平台 | 弹幕类型 | 说明 |
+|------|---------|------|
+| B站 | 滚动、顶部、底部 | 支持彩色弹幕、多种字号 |
+| 抖音 | 滚动 | 仅支持纯文字弹幕 |
 
-### ASS 字幕渲染
-使用标准 ASS 字幕格式进行渲染，高度还原播放器体验：
-- **滚动弹幕**：Mode 1/2/3，自动计算轨道，支持智能防碰撞算法。
-- **固定弹幕**：Mode 4 (底部) / Mode 5 (顶部)，自动堆叠。
-- **样式还原**：支持弹幕颜色、字体大小、不透明度调节。
+## 效果预览
 
-### 智能竖屏适配
-针对移动端竖屏观看场景，提供了智能的画面处理策略：
-- **标准模式** (Standard)：仅对宽屏视频（宽高比 >= 1.7）进行适配，自动缩放并填充黑边。
-- **强制模式** (Force)：将所有视频强制转换为 9:16 竖屏格式。
-  - 横屏视频：保持比例缩放，上下填充黑边。
-  - 竖屏视频：保持比例缩放，左右填充黑边。
-- **关闭** (Off)：保持原始视频比例。
+<Accordions>
+  <Accordion title="B站弹幕烧录效果">
+    <video controls width="100%" style={{ maxHeight: '1000px' }}>
+      <source src="/bilibili-danmaku-demo.mp4" type="video/mp4" />
+    </video>
+  </Accordion>
+  <Accordion title="抖音弹幕烧录效果">
+    <video controls width="100%" style={{ maxHeight: '1000px' }}>
+      <source src="/douyin-danmaku-demo.mp4" type="video/mp4" />
+    </video>
+  </Accordion>
+</Accordions>
 
-### 硬件加速与画质控制
-- **硬件编码**：自动检测并使用 NVIDIA (NVENC)、Intel (QSV)、AMD (AMF) 硬件编码器，大幅提升处理速度。
-- **智能码率**：自动分析源视频码率，在转码时尽可能匹配原画质，避免过度压缩或体积膨胀。
-- **多编码格式**：支持 H.264、H.265 (HEVC)、AV1 编码格式。
+## 使用方式
 
-## 配置说明
+开启弹幕烧录后，发送视频链接时会自动获取弹幕并烧录到视频中。整个过程全自动，无需额外操作。
 
-本功能涉及多个配置项（如弹幕区域、竖屏模式、编码格式等），为确保配置正确，**请直接在 Karin WebUI 的 Bilibili 配置页面进行设置**。
+处理流程：
+1. 解析视频链接，获取视频和弹幕数据
+2. 生成 ASS 字幕文件（自动计算轨道、防碰撞）
+3. 使用 FFmpeg 将弹幕烧录到视频
+4. 发送带弹幕的视频文件
 
-WebUI 提供了直观的可视化界面和详细的选项说明，能够帮助你快速调整到最佳效果。
+## 竖屏适配
+
+针对手机竖屏观看场景，提供三种画面处理模式：
+
+- **关闭**：保持原始比例
+- **标准模式**：仅对宽屏视频（16:9 及以上）进行竖屏适配
+- **强制模式**：所有视频强制转为 9:16 竖屏
+
+## 硬件加速
+
+弹幕烧录需要对视频进行重新编码，这是一个计算密集型任务。使用硬件加速可以大幅提升处理速度。
+
+插件会自动检测可用的硬件编码器，优先使用硬件加速，无可用硬件时自动回退到软件编码（CPU）。
+
+### 支持的硬件编码器
+
+| 显卡 | 编码器 | 要求 |
+|------|--------|------|
+| NVIDIA | NVENC | GTX 600 系列及以上，需安装显卡驱动 |
+| Intel | QSV | 6 代酷睿及以上核显，需安装核显驱动 |
+| AMD | AMF | RX 400 系列及以上，需安装显卡驱动 |
+
+### 驱动安装
+
+<Callout type="warn">
+作者开发只测试了开发环境下的 Nvidia 显卡，Intel 与 AMD 平台下未进行测试。
+</Callout>
+<Callout type="info">
+大多数情况下，只要你的电脑能正常显示画面，驱动就已经装好了。如果硬件加速不生效，可以尝试更新驱动。
+</Callout>
+
+<Accordions>
+  <Accordion title="NVIDIA 显卡">
+    前往 NVIDIA 官网下载并安装最新驱动：
+    
+    <LinkPreview url="https://www.nvidia.cn/drivers/lookup/" className="font-medium text-fd-primary hover:underline">www.nvidia.cn/drivers/lookup</LinkPreview>
+    
+    安装完成后重启电脑即可。
+  </Accordion>
+  <Accordion title="Intel 核显">
+    前往 Intel 官网下载并安装核显驱动：
+    
+    <LinkPreview url="https://www.intel.cn/content/www/cn/zh/download-center/home.html" className="font-medium text-fd-primary hover:underline">Intel 下载中心</LinkPreview>
+    
+    或使用 Intel 驱动程序和支持助理自动检测安装：
+    
+    <LinkPreview url="https://www.intel.cn/content/www/cn/zh/support/detect.html" className="font-medium text-fd-primary hover:underline">Intel 驱动程序和支持助理</LinkPreview>
+  </Accordion>
+  <Accordion title="AMD 显卡">
+    前往 AMD 官网下载并安装最新驱动：
+    
+    <LinkPreview url="https://www.amd.com/zh-cn/support/download/drivers.html" className="font-medium text-fd-primary hover:underline">AMD 驱动下载</LinkPreview>
+    
+    安装完成后重启电脑即可。
+  </Accordion>
+</Accordions>
+
+### 软件编码
+
+如果没有独立显卡或核显不支持，插件会自动使用 CPU 进行软件编码。软件编码速度较慢，但兼容性最好。
+
+- H.264 → libx264
+- H.265 → libx265
+- AV1 → libsvtav1
+
+## 配置
+
+在 Karin WebUI 的对应平台配置页面开启和调整弹幕烧录选项。

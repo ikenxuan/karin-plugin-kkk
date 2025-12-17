@@ -104,7 +104,7 @@ export const LinkPreview = ({
       </span>
       <HoverCardPrimitive.Root openDelay={50} closeDelay={100} onOpenChange={(open) => setOpen(open)}>
         <HoverCardPrimitive.Trigger asChild onMouseMove={handleMouseMove}>
-          <a href={url} className={cn("text-black dark:text-white cursor-pointer", className)}>
+          <a href={url} className={cn("text-black dark:text-white cursor-pointer", className)} {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
             {textContent}
           </a>
         </HoverCardPrimitive.Trigger>
@@ -119,7 +119,7 @@ export const LinkPreview = ({
                   className="shadow-xl rounded-xl"
                   style={{ x: translateX }}
                 >
-                  <a href={url} className="block p-1 bg-white dark:text-black border-2 border-transparent shadow rounded-xl hover:border-neutral-200 dark:hover:border-neutral-800" style={{ fontSize: 0 }}>
+                  <a href={url} className="block p-1 bg-white dark:text-black border-2 border-transparent shadow rounded-xl hover:border-neutral-200 dark:hover:border-neutral-800" style={{ fontSize: 0 }} {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
                     <img src={isStatic ? imageSrc : src} width={width} height={height} className="rounded-lg" alt="preview image" />
                   </a>
                 </motion.div>
