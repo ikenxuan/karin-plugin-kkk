@@ -5,6 +5,7 @@ import { DocsPage, DocsBody, DocsTitle } from 'fumadocs-ui/page';
 import { source } from '@/lib/source';
 import { baseOptions } from '@/lib/layout.shared';
 import { SidebarBanner } from '@/components/sidebar-banner';
+import { SidebarFooter } from '@/components/sidebar-footer';
 import { KKKLogo } from '@/components/kkk-logo';
 import { ChangelogDropdown } from '@/components/changelog-dropdown';
 import { GitHubLink } from '@/components/github-link';
@@ -48,13 +49,16 @@ export default async function ChangelogPage({
       tree={source.pageTree[lang]}
       {...baseOptions(lang)}
       sidebar={{
-        banner: <SidebarBanner />
+        banner: <SidebarBanner />,
+        footer: <SidebarFooter latestVersion={latestVersion} currentVersion={currentVersion} />
       }}
       nav={{
         ...baseOptions(lang).nav,
         children: (
           <div className="flex gap-3 items-center mr-2 md:mr-0 in-[aside]:hidden">
-            <ChangelogDropdown latestVersion={latestVersion} currentVersion={currentVersion} />
+            <div className="hidden md:block">
+              <ChangelogDropdown latestVersion={latestVersion} currentVersion={currentVersion} />
+            </div>
             <GitHubLink />
           </div>
         ),

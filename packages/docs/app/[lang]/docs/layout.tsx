@@ -4,6 +4,7 @@ import { baseOptions } from '@/lib/layout.shared'
 import { KKKLogo } from '@/components/kkk-logo'
 import { GitHubLink } from '@/components/github-link'
 import { SidebarBanner } from '@/components/sidebar-banner'
+import { SidebarFooter } from '@/components/sidebar-footer'
 import { ChangelogDropdown } from '@/components/changelog-dropdown'
 import { getChangelog } from '@/lib/changelog'
 
@@ -24,6 +25,7 @@ export default async function Layout ({
       {...baseOptions(lang)}
       sidebar={{
         banner: <SidebarBanner />,
+        footer: <SidebarFooter latestVersion={latestVersion} />,
         defaultOpenLevel: 5,
         collapsible: false
       }}
@@ -31,7 +33,9 @@ export default async function Layout ({
         ...baseOptions(lang).nav,
         children: (
           <div className="flex gap-3 items-center mr-2 md:mr-0 in-[aside]:hidden">
-            <ChangelogDropdown latestVersion={latestVersion} />
+            <div className="hidden md:block">
+              <ChangelogDropdown latestVersion={latestVersion} />
+            </div>
             <GitHubLink />
           </div>
         ),

@@ -169,6 +169,16 @@ b {
   }
 }
 
+/* 移动端侧边栏 footer 按钮间距 */
+@media (max-width: 767px) {
+  aside [class*="border-t"][class*="flex-row"][class*="justify-end"] > * {
+    margin-left: 2rem;
+  }
+  aside [class*="border-t"][class*="flex-row"][class*="justify-end"] > *:first-child {
+    margin-left: 0;
+  }
+}
+
 @theme inline {
   --animate-aurora: aurora 60s linear infinite;
 

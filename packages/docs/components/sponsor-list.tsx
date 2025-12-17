@@ -38,7 +38,7 @@ export function SponsorList() {
   const merged = mergeSponsors(sponsors);
 
   return (
-    <div className="my-4 overflow-hidden rounded-lg border">
+    <div className="my-4 overflow-hidden rounded-lg">
       <table className="w-full text-sm">
         <thead className="bg-fd-muted/50">
           <tr>

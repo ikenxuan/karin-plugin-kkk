@@ -5,12 +5,12 @@ import { ChevronDown } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/cn';
 
-interface ChangelogDropdownProps {
+interface SidebarFooterProps {
   latestVersion?: string;
   currentVersion?: string;
 }
 
-export function ChangelogDropdown({ latestVersion = 'v2.x.x', currentVersion = 'v2' }: ChangelogDropdownProps) {
+export function SidebarFooter({ latestVersion = 'v2.x.x', currentVersion = 'v2' }: SidebarFooterProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -25,7 +25,7 @@ export function ChangelogDropdown({ latestVersion = 'v2.x.x', currentVersion = '
   }, []);
 
   return (
-    <div className="relative" ref={containerRef}>
+    <div className="md:hidden relative" ref={containerRef}>
       <button
         onClick={() => setOpen(!open)}
         className="inline-flex items-center gap-1.5 text-fd-muted-foreground text-sm p-1.5 hover:bg-fd-accent hover:text-fd-accent-foreground rounded-md transition-colors"
@@ -35,7 +35,7 @@ export function ChangelogDropdown({ latestVersion = 'v2.x.x', currentVersion = '
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 min-w-32 rounded-lg border bg-fd-popover p-1 text-fd-popover-foreground shadow-md z-50">
+        <div className="absolute bottom-full right-0 mb-1 min-w-28 rounded-lg border bg-fd-popover p-1 text-fd-popover-foreground shadow-md z-50">
           <p className="mb-1 p-1.5 text-xs font-medium text-fd-muted-foreground">
             更新日志
           </p>
