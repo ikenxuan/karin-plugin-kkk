@@ -112,10 +112,12 @@ async function getVideoBitrate (path: string): Promise<number> {
 function getEncoderParams (encoder: string, targetBitrate?: number): string {
   const threads = Math.max(1, Math.floor(os.cpus().length / 2))
 
+  // 抖音视频码率通常较高，保持原码率以避免画质损失
+  // 使用 1.5x maxrate 和 3x bufsize 给予更多码率空间
   if (targetBitrate && targetBitrate > 0) {
     const bitrateK = `${targetBitrate}k`
-    const maxrate = `${Math.round(targetBitrate * 2)}k`
-    const bufsize = `${Math.round(targetBitrate * 4)}k`
+    const maxrate = `${Math.round(targetBitrate * 1.5)}k`
+    const bufsize = `${Math.round(targetBitrate * 3)}k`
 
     if (encoder === 'h264_nvenc') return `-c:v h264_nvenc -preset p4 -rc vbr -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize}`
     if (encoder === 'h264_qsv') return `-c:v h264_qsv -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize}`
@@ -133,20 +135,21 @@ function getEncoderParams (encoder: string, targetBitrate?: number): string {
     return `-c:v libx265 -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize} -threads ${threads}`
   }
 
-  if (encoder === 'h264_nvenc') return '-c:v h264_nvenc -preset p4 -rc vbr -cq 23'
-  if (encoder === 'h264_qsv') return '-c:v h264_qsv -preset medium -global_quality 23'
-  if (encoder === 'h264_amf') return '-c:v h264_amf -quality balanced -rc cqp -qp_i 23 -qp_p 23'
-  if (encoder === 'libx264') return `-c:v libx264 -crf 23 -preset medium -threads ${threads}`
-  if (encoder === 'hevc_nvenc') return '-c:v hevc_nvenc -preset p4 -rc vbr -cq 28'
-  if (encoder === 'hevc_qsv') return '-c:v hevc_qsv -preset medium -global_quality 28'
-  if (encoder === 'hevc_amf') return '-c:v hevc_amf -quality balanced -rc cqp -qp_i 28 -qp_p 28'
-  if (encoder === 'libx265') return `-c:v libx265 -crf 28 -preset medium -threads ${threads}`
-  if (encoder === 'av1_nvenc') return '-c:v av1_nvenc -preset p4 -rc vbr -cq 30'
-  if (encoder === 'av1_qsv') return '-c:v av1_qsv -preset medium -global_quality 30'
-  if (encoder === 'av1_amf') return '-c:v av1_amf -quality balanced -rc cqp -qp_i 30 -qp_p 30'
-  if (encoder === 'libsvtav1') return `-c:v libsvtav1 -crf 30 -preset 6 -threads ${threads}`
-  if (encoder === 'libaom-av1') return `-c:v libaom-av1 -crf 30 -cpu-used 4 -threads ${threads}`
-  return `-c:v libx265 -crf 28 -preset medium -threads ${threads}`
+  // 无码率时使用更低的 CRF/CQ 值以保证画质（数值越低画质越好）
+  if (encoder === 'h264_nvenc') return '-c:v h264_nvenc -preset p4 -rc vbr -cq 20'
+  if (encoder === 'h264_qsv') return '-c:v h264_qsv -preset medium -global_quality 20'
+  if (encoder === 'h264_amf') return '-c:v h264_amf -quality balanced -rc cqp -qp_i 20 -qp_p 20'
+  if (encoder === 'libx264') return `-c:v libx264 -crf 20 -preset medium -threads ${threads}`
+  if (encoder === 'hevc_nvenc') return '-c:v hevc_nvenc -preset p4 -rc vbr -cq 24'
+  if (encoder === 'hevc_qsv') return '-c:v hevc_qsv -preset medium -global_quality 24'
+  if (encoder === 'hevc_amf') return '-c:v hevc_amf -quality balanced -rc cqp -qp_i 24 -qp_p 24'
+  if (encoder === 'libx265') return `-c:v libx265 -crf 24 -preset medium -threads ${threads}`
+  if (encoder === 'av1_nvenc') return '-c:v av1_nvenc -preset p4 -rc vbr -cq 26'
+  if (encoder === 'av1_qsv') return '-c:v av1_qsv -preset medium -global_quality 26'
+  if (encoder === 'av1_amf') return '-c:v av1_amf -quality balanced -rc cqp -qp_i 26 -qp_p 26'
+  if (encoder === 'libsvtav1') return `-c:v libsvtav1 -crf 26 -preset 6 -threads ${threads}`
+  if (encoder === 'libaom-av1') return `-c:v libaom-av1 -crf 26 -cpu-used 4 -threads ${threads}`
+  return `-c:v libx265 -crf 24 -preset medium -threads ${threads}`
 }
 
 // ==================== 内部工具函数 ====================
@@ -234,11 +237,11 @@ export function generateDouyinASS (
     danmakuArea = 0.5
   } = options
 
-  // 抖音竖屏视频以宽度为基准缩放（竖屏宽度通常为1080）
-  // 这样在1080宽度下字体为38px，更适合竖屏阅读
-  const fontScale = width / 1080
-  const fontSize = Math.round(38 * fontScale)
-  const trackH = Math.round(45 * fontScale)
+  // 抖音视频以高度为基准缩放，与B站保持一致
+  // 竖屏视频高度通常较大，这样能保证字体在各种分辨率下都清晰可读
+  const fontScale = height / 1080
+  const fontSize = Math.round(32 * fontScale)
+  const trackH = Math.round(38 * fontScale)
   const topMargin = Math.round(20 * fontScale)
 
   const areaHeight = Math.floor(height * danmakuArea) - topMargin
@@ -425,7 +428,7 @@ export async function burnDouyinDanmaku (
     `-y -i "${videoPath}" -vf "${filter}" -r ${frameRate} ${encoderParams} -c:a copy "${outputPath}"`
   )
 
-  Common.removeFile(assPath)
+  Common.removeFile(assPath, true)
 
   if (result.status) {
     logger.mark(`[DouyinDanmaku] 弹幕烧录成功: ${outputPath}`)
