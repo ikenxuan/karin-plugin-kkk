@@ -246,7 +246,7 @@ export class DouYin extends Base {
         if (this.is_mp4) {
           // 视频地址特殊判断：play_addr_h264、play_addr、
           video = VideoData.data.aweme_detail.video as VideoType
-          FPS = video.bit_rate[0].FPS // FPS
+          FPS = video.bit_rate[0]?.FPS ?? '获取失败' // FPS
 
           logger.debug(`开始排除不符合条件的视频分辨率；\n
               共拥有${logger.yellow(video.bit_rate.length)}个视频源\n

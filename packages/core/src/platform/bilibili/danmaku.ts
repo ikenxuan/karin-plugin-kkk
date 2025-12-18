@@ -347,16 +347,31 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         if (t && t.startTime + t.duration <= startTime) scrollTracks[i] = null
       }
 
+      // 找最佳轨道：优先复用同一轨道，只有放不下才换轨道
+      // 这样可以避免"阶梯"效果，让同时发送的弹幕尽量在同一水平线
       let bestIdx = -1
-      let maxDist = -Infinity
+      let bestDist = -Infinity
+
+      // 第一轮：找能放下的轨道中，距离最小但仍 >= 0 的（紧凑排列）
       for (let i = 0; i < scrollTracks.length; i++) {
         const t = scrollTracks[i]
-        if (!t) { bestIdx = i; maxDist = Infinity; break }
+        if (!t) {
+          // 空轨道优先级最低，只有没有其他选择时才用
+          if (bestIdx === -1) bestIdx = i
+          continue
+        }
         const d = calcDistance(t, startTime, duration, textWidth)
-        if (d > maxDist) { maxDist = d; bestIdx = i }
+        if (d >= 0) {
+          // 选择距离最小的可用轨道（紧凑排列，但不重叠）
+          if (bestDist < 0 || d < bestDist) {
+            bestDist = d
+            bestIdx = i
+          }
+        }
       }
 
-      if (maxDist < 0) continue
+      // 如果没找到可用轨道（所有轨道都会重叠），跳过这条弹幕
+      if (bestIdx === -1 || (bestDist < 0 && scrollTracks[bestIdx] !== null)) continue
 
       scrollTracks[bestIdx] = { startTime, duration, textWidth }
       const y = (bestIdx + 1) * trackH
@@ -461,7 +476,7 @@ export async function burnBiliDanmaku (
     `-y -i "${videoPath}" -vf "${filter}" -r ${frameRate} ${encoderParams} -c:a copy "${outputPath}"`
   )
 
-  Common.removeFile(assPath)
+  Common.removeFile(assPath, true)
 
   if (result.status) {
     logger.mark(`[BiliDanmaku] 弹幕烧录成功: ${outputPath}`)

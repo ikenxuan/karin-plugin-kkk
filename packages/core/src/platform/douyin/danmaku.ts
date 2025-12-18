@@ -90,7 +90,9 @@ async function detectEncoder (codec: VideoCodec): Promise<string> {
   return fallback
 }
 
+/** 获取视频平均码率（kbps） */
 async function getVideoBitrate (path: string): Promise<number> {
+  // 用文件大小和时长计算平均码率，这是最准确的方式
   try {
     const fileSize = fs.statSync(path).size
     const { stdout } = await ffprobe(`-v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${path}"`)
@@ -100,6 +102,7 @@ async function getVideoBitrate (path: string): Promise<number> {
     }
   } catch { /* ignore */ }
 
+  // 尝试从流信息获取
   try {
     const { stdout } = await ffprobe(`-v error -select_streams v:0 -show_entries stream=bit_rate -of default=noprint_wrappers=1:nokey=1 "${path}"`)
     const bitrate = parseInt(stdout.trim())
@@ -109,15 +112,19 @@ async function getVideoBitrate (path: string): Promise<number> {
   return 0
 }
 
+/**
+ * 获取编码器参数
+ */
 function getEncoderParams (encoder: string, targetBitrate?: number): string {
   const threads = Math.max(1, Math.floor(os.cpus().length / 2))
 
-  // 抖音视频码率通常较高，保持原码率以避免画质损失
-  // 使用 1.5x maxrate 和 3x bufsize 给予更多码率空间
+  // 有码率时用目标码率模式
+  // 二次编码会损失画质，目标码率设为原视频的 1.4 倍补偿，确保输出更清晰
   if (targetBitrate && targetBitrate > 0) {
-    const bitrateK = `${targetBitrate}k`
-    const maxrate = `${Math.round(targetBitrate * 1.5)}k`
-    const bufsize = `${Math.round(targetBitrate * 3)}k`
+    const adjustedBitrate = Math.round(targetBitrate * 1.4)
+    const bitrateK = `${adjustedBitrate}k`
+    const maxrate = `${Math.round(adjustedBitrate * 2.5)}k`
+    const bufsize = `${Math.round(adjustedBitrate * 4)}k`
 
     if (encoder === 'h264_nvenc') return `-c:v h264_nvenc -preset p4 -rc vbr -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize}`
     if (encoder === 'h264_qsv') return `-c:v h264_qsv -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize}`
@@ -135,21 +142,21 @@ function getEncoderParams (encoder: string, targetBitrate?: number): string {
     return `-c:v libx265 -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize} -threads ${threads}`
   }
 
-  // 无码率时使用更低的 CRF/CQ 值以保证画质（数值越低画质越好）
-  if (encoder === 'h264_nvenc') return '-c:v h264_nvenc -preset p4 -rc vbr -cq 20'
-  if (encoder === 'h264_qsv') return '-c:v h264_qsv -preset medium -global_quality 20'
-  if (encoder === 'h264_amf') return '-c:v h264_amf -quality balanced -rc cqp -qp_i 20 -qp_p 20'
-  if (encoder === 'libx264') return `-c:v libx264 -crf 20 -preset medium -threads ${threads}`
-  if (encoder === 'hevc_nvenc') return '-c:v hevc_nvenc -preset p4 -rc vbr -cq 24'
-  if (encoder === 'hevc_qsv') return '-c:v hevc_qsv -preset medium -global_quality 24'
-  if (encoder === 'hevc_amf') return '-c:v hevc_amf -quality balanced -rc cqp -qp_i 24 -qp_p 24'
-  if (encoder === 'libx265') return `-c:v libx265 -crf 24 -preset medium -threads ${threads}`
-  if (encoder === 'av1_nvenc') return '-c:v av1_nvenc -preset p4 -rc vbr -cq 26'
-  if (encoder === 'av1_qsv') return '-c:v av1_qsv -preset medium -global_quality 26'
-  if (encoder === 'av1_amf') return '-c:v av1_amf -quality balanced -rc cqp -qp_i 26 -qp_p 26'
-  if (encoder === 'libsvtav1') return `-c:v libsvtav1 -crf 26 -preset 6 -threads ${threads}`
-  if (encoder === 'libaom-av1') return `-c:v libaom-av1 -crf 26 -cpu-used 4 -threads ${threads}`
-  return `-c:v libx265 -crf 24 -preset medium -threads ${threads}`
+  // 无码率时用 CRF/CQ 兜底
+  if (encoder === 'h264_nvenc') return '-c:v h264_nvenc -preset p4 -rc vbr -cq 23'
+  if (encoder === 'h264_qsv') return '-c:v h264_qsv -preset medium -global_quality 23'
+  if (encoder === 'h264_amf') return '-c:v h264_amf -quality balanced -rc cqp -qp_i 23 -qp_p 23'
+  if (encoder === 'libx264') return `-c:v libx264 -crf 23 -preset medium -threads ${threads}`
+  if (encoder === 'hevc_nvenc') return '-c:v hevc_nvenc -preset p4 -rc vbr -cq 28'
+  if (encoder === 'hevc_qsv') return '-c:v hevc_qsv -preset medium -global_quality 28'
+  if (encoder === 'hevc_amf') return '-c:v hevc_amf -quality balanced -rc cqp -qp_i 28 -qp_p 28'
+  if (encoder === 'libx265') return `-c:v libx265 -crf 28 -preset medium -threads ${threads}`
+  if (encoder === 'av1_nvenc') return '-c:v av1_nvenc -preset p4 -rc vbr -cq 30'
+  if (encoder === 'av1_qsv') return '-c:v av1_qsv -preset medium -global_quality 30'
+  if (encoder === 'av1_amf') return '-c:v av1_amf -quality balanced -rc cqp -qp_i 30 -qp_p 30'
+  if (encoder === 'libsvtav1') return `-c:v libsvtav1 -crf 30 -preset 6 -threads ${threads}`
+  if (encoder === 'libaom-av1') return `-c:v libaom-av1 -crf 30 -cpu-used 4 -threads ${threads}`
+  return `-c:v libx265 -crf 28 -preset medium -threads ${threads}`
 }
 
 // ==================== 内部工具函数 ====================
@@ -237,12 +244,10 @@ export function generateDouyinASS (
     danmakuArea = 0.5
   } = options
 
-  // 抖音视频以高度为基准缩放，与B站保持一致
-  // 竖屏视频高度通常较大，这样能保证字体在各种分辨率下都清晰可读
   const fontScale = height / 1080
   const fontSize = Math.round(32 * fontScale)
   const trackH = Math.round(38 * fontScale)
-  const topMargin = Math.round(20 * fontScale)
+  const topMargin = Math.round(5 * fontScale)
 
   const areaHeight = Math.floor(height * danmakuArea) - topMargin
   const trackCount = Math.max(1, Math.floor((areaHeight - fontSize) / trackH))
@@ -298,20 +303,34 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
       if (t && t.startTime + t.duration <= startTime) scrollTracks[i] = null
     }
 
-    // 找最佳轨道
+    // 找最佳轨道：优先复用同一轨道，只有放不下才换轨道
+    // 这样可以避免"阶梯"效果，让同时发送的弹幕尽量在同一水平线
     let bestIdx = -1
-    let maxDist = -Infinity
+    let bestDist = -Infinity
+
+    // 第一轮：找能放下的轨道中，距离最小但仍 >= 0 的（紧凑排列）
     for (let i = 0; i < scrollTracks.length; i++) {
       const t = scrollTracks[i]
-      if (!t) { bestIdx = i; maxDist = Infinity; break }
+      if (!t) {
+        // 空轨道优先级最低，只有没有其他选择时才用
+        if (bestIdx === -1) bestIdx = i
+        continue
+      }
       const d = calcDistance(t, startTime, duration, textWidth)
-      if (d > maxDist) { maxDist = d; bestIdx = i }
+      if (d >= 0) {
+        // 选择距离最小的可用轨道（紧凑排列，但不重叠）
+        if (bestDist < 0 || d < bestDist) {
+          bestDist = d
+          bestIdx = i
+        }
+      }
     }
 
-    if (maxDist < 0) continue
+    // 如果没找到可用轨道（所有轨道都会重叠），跳过这条弹幕
+    if (bestIdx === -1 || (bestDist < 0 && scrollTracks[bestIdx] !== null)) continue
 
     scrollTracks[bestIdx] = { startTime, duration, textWidth }
-    const y = topMargin + (bestIdx + 1) * trackH
+    const y = topMargin + bestIdx * trackH + fontSize
     ass += `Dialogue: 0,${toASSTime(startTime)},${toASSTime(endTime)},Scroll,,0,0,0,,{\\an7}{\\move(${width},${y},${-textWidth},${y})}${content}\n`
   }
 
@@ -420,7 +439,7 @@ export async function burnDouyinDanmaku (
   fs.writeFileSync(assPath, assContent, 'utf-8')
   logger.debug(`[DouyinDanmaku] 弹幕字幕已生成: ${assPath}，共 ${danmakuList.length} 条`)
 
-  // 编码
+  // 编码（使用原视频码率作为目标）
   const filter = buildFilter(canvas, assPath)
   const encoder = await detectEncoder(videoCodec)
   const encoderParams = getEncoderParams(encoder, sourceBitrate)
