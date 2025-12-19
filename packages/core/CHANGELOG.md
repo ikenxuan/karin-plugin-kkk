@@ -2,6 +2,43 @@
 
 # Changelog
 
+## [2.17.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.16.0...v2.17.0) (2025-12-19)
+
+
+### ✨ 新功能
+
+* **bilibili:** 实验性添加弹幕烧录到视频功能，实现B站APP端看体验 ([5925663](https://github.com/ikenxuan/karin-plugin-kkk/commit/5925663b26007e62c4c35f328bc45843950e686b))
+* **danmaku:** Add multi-codec video encoding support with bitrate detection ([998668b](https://github.com/ikenxuan/karin-plugin-kkk/commit/998668bb02ab4459f158b438d0cf1c1994213528))
+* 抖音弹幕烧录 ([3c0a39d](https://github.com/ikenxuan/karin-plugin-kkk/commit/3c0a39dd1d2928a334c562694c3760230865d6d8))
+
+
+### 📝 文档更新
+
+* readme ([2e54130](https://github.com/ikenxuan/karin-plugin-kkk/commit/2e5413008b78c7d3766ac2c3e66ecb6c321ad181))
+* 添加更变日志 ([c6fba37](https://github.com/ikenxuan/karin-plugin-kkk/commit/c6fba3777b36fdbce6c7ef6a49ea05a005582494))
+* 添加硬编码弹幕文档说明 ([deba5e8](https://github.com/ikenxuan/karin-plugin-kkk/commit/deba5e844037d241c02328e98aa1aa0b843f5919))
+
+
+### 💄 UI 优化
+
+* 重新设计了版本警告组件喵 ([1febb14](https://github.com/ikenxuan/karin-plugin-kkk/commit/1febb1425843f1165906df752037a420f4693f9e))
+
+
+### 🧰 其他更新
+
+* types ([3d69522](https://github.com/ikenxuan/karin-plugin-kkk/commit/3d6952226062489a55f31a0d9f370eadbf1dcbdf))
+* 更新类型文件路径 ([51205dc](https://github.com/ikenxuan/karin-plugin-kkk/commit/51205dc850090502c57dc5335aa162b127967c20))
+
+
+### ✨ 细节优化
+
+* **bilibili:** 优化配置 ([e3fac48](https://github.com/ikenxuan/karin-plugin-kkk/commit/e3fac482c08e13420b8ff2d7ec9aff899cb41f0a))
+* web.config ([fa23243](https://github.com/ikenxuan/karin-plugin-kkk/commit/fa232437168774f0197ab7ec1b837c9731d05831))
+* 可选三档弹幕字号 ([4f901ab](https://github.com/ikenxuan/karin-plugin-kkk/commit/4f901abb5134013cbc1cbeb9c2447828d6d10b01))
+* 更新滚动弹幕算法 ([a1f54e3](https://github.com/ikenxuan/karin-plugin-kkk/commit/a1f54e33e8e984962d0e291e03460140236f4882))
+* 细优抖音弹幕字体 ([399489a](https://github.com/ikenxuan/karin-plugin-kkk/commit/399489a8afaf803131ac4be95d3c15cc5c22dde2))
+* 轨道计算、码率计算 ([6254423](https://github.com/ikenxuan/karin-plugin-kkk/commit/62544237aefde87ac856840bab7c392e0dade4de))
+
 ## [2.16.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.15.2...v2.16.0) (2025-12-13)
 
 
