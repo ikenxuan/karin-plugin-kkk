@@ -277,6 +277,27 @@ export const BilibiliWeb = (all: ConfigType) => {
                 })
               ]
             }),
+            components.radio.group('danmakuFontSize', {
+              label: '弹幕字号',
+              description: '弹幕文字大小',
+              orientation: 'horizontal',
+              defaultValue: all.bilibili.danmakuFontSize,
+              isDisabled: !all.bilibili.switch || !all.bilibili.burnDanmaku,
+              radio: [
+                components.radio.create('danmakuFontSize:radio-1', {
+                  label: '小',
+                  value: 'small'
+                }),
+                components.radio.create('danmakuFontSize:radio-2', {
+                  label: '中',
+                  value: 'medium'
+                }),
+                components.radio.create('danmakuFontSize:radio-3', {
+                  label: '大',
+                  value: 'large'
+                })
+              ]
+            }),
             components.radio.group('verticalMode', {
               label: '竖屏适配',
               description: '模拟手机端竖屏观看体验，视频居中显示，上下黑边区域用于展示弹幕',

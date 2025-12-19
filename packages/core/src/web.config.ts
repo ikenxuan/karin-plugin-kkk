@@ -58,7 +58,7 @@ export const webConfig = defineConfig({
           components.accordion.createItem('cfg:cookies', {
             title: 'Cookies 相关',
             className: 'ml-4 mr-4',
-            subtitle: '建议配置，否则大部分功能无法使用',
+            subtitle: '建议配置，否则大部分功能无法使用，此部分修改后需重启方可生效！',
             children: [
               components.input.string('douyin', {
                 label: '抖音',

@@ -62,6 +62,13 @@ export interface bilibiliConfig {
    */
   danmakuArea: 0.25 | 0.5 | 0.75 | 1
 
+  /** 弹幕字号
+   * - 'small': 小号
+   * - 'medium': 中号（推荐）
+   * - 'large': 大号
+   */
+  danmakuFontSize: 'small' | 'medium' | 'large'
+
   /** 竖屏适配模式（模拟手机端竖屏观看体验）
    * - 'off': 关闭，保持原始视频比例
    * - 'standard': 智能模式，仅对 16:9、21:9 等常见宽屏比例生效

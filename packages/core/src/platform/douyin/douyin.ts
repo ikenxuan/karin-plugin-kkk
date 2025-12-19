@@ -395,7 +395,8 @@ export class DouYin extends Base {
               const success = await burnDouyinDanmaku(videoFile.filepath, danmakuList, resultPath, {
                 danmakuArea: Config.douyin.danmakuArea,
                 verticalMode: Config.douyin.verticalMode,
-                videoCodec: Config.douyin.videoCodec
+                videoCodec: Config.douyin.videoCodec,
+                danmakuFontSize: Config.douyin.danmakuFontSize
               })
               if (success) {
                 const filePath = Common.tempDri.video + `${Config.app.removeCache ? 'tmp_' + Date.now() : g_title}.mp4`

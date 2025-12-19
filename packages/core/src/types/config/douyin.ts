@@ -58,6 +58,13 @@ export interface douyinConfig {
    */
   danmakuArea: 0.25 | 0.5 | 0.75 | 1
 
+  /** 弹幕字号
+   * - 'small': 小号
+   * - 'medium': 中号（推荐）
+   * - 'large': 大号
+   */
+  danmakuFontSize: 'small' | 'medium' | 'large'
+
   /** 横屏转竖屏模式（针对横屏视频）
    * - 'off': 关闭，保持原始比例
    * - 'standard': 智能模式，仅对宽高比 ≥1.7 的横屏视频转竖屏

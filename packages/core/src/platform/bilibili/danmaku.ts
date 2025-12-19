@@ -31,6 +31,9 @@ export type VerticalMode = 'off' | 'standard' | 'force'
 /** 视频编码格式 */
 export type VideoCodec = 'h264' | 'h265' | 'av1'
 
+/** 弹幕字号 */
+export type DanmakuFontSize = 'small' | 'medium' | 'large'
+
 /** B站弹幕烧录配置 */
 export interface BiliDanmakuOptions {
   /** 弹幕显示区域比例（0.25/0.5/0.75/1） */
@@ -47,6 +50,8 @@ export interface BiliDanmakuOptions {
   removeSource?: boolean
   /** 视频编码格式（默认 h265） */
   videoCodec?: VideoCodec
+  /** 弹幕字号（默认 medium） */
+  danmakuFontSize?: DanmakuFontSize
 }
 
 // ==================== 编码器检测 ====================
@@ -246,6 +251,13 @@ interface TrackInfo {
   textWidth: number
 }
 
+/** 字号配置映射 */
+const FONT_SIZE_MAP: Record<DanmakuFontSize, { base: number; trackH: number }> = {
+  small: { base: 25, trackH: 30 },
+  medium: { base: 32, trackH: 38 },
+  large: { base: 40, trackH: 46 }
+}
+
 /**
  * 生成B站弹幕 ASS 字幕内容
  */
@@ -259,12 +271,14 @@ export function generateBiliASS (
     scrollTime = 8,
     opacity = 180,
     fontName = 'Microsoft YaHei',
-    danmakuArea = 0.5
+    danmakuArea = 0.5,
+    danmakuFontSize = 'medium'
   } = options
 
   const fontScale = height / 1080
-  const fontSize = Math.round(25 * fontScale)
-  const trackH = Math.round(30 * fontScale)
+  const sizeConfig = FONT_SIZE_MAP[danmakuFontSize]
+  const fontSize = Math.round(sizeConfig.base * fontScale)
+  const trackH = Math.round(sizeConfig.trackH * fontScale)
   const topMargin = Math.round(10 * fontScale)
   const bottomMargin = Math.round(10 * fontScale)
 
@@ -316,7 +330,9 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     if (dm.mode > 5 || !dm.content.trim()) continue
 
     const startTime = dm.progress
-    const dmFontSize = Math.round((dm.fontsize || 25) * fontScale)
+    // 根据弹幕自带字号(18小/25标准/36大)相对于标准字号(25)的比例，缩放配置的基准字号
+    const dmSizeRatio = (dm.fontsize || 25) / 25
+    const dmFontSize = Math.round(fontSize * dmSizeRatio)
     const textWidth = estimateWidth(dm.content, dmFontSize)
     const content = escapeASS(dm.content)
     const colorTag = dm.color !== 16777215 ? `{\\c&H${toASSColor(dm.color)}&}` : ''

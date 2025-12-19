@@ -61,6 +61,12 @@ burnDanmaku: false
 # - 1: 全屏，铺满整个画面
 danmakuArea: 0.5
 
+# 弹幕字号
+# - 'small': 小号
+# - 'medium': 中号（推荐）
+# - 'large': 大号
+danmakuFontSize: 'medium'
+
 # 横屏转竖屏模式（针对横屏视频，抖音大多是竖屏，此选项主要用于横屏视频）
 # - 'off': 关闭，保持原始比例
 # - 'standard': 智能模式，仅对宽高比 ≥1.7 的横屏视频转竖屏

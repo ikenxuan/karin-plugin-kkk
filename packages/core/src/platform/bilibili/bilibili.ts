@@ -781,7 +781,8 @@ export class Bilibili extends Base {
             success = await mergeAndBurnBili(bmp4.filepath, bmp3.filepath, danmakuList, resultPath, {
               danmakuArea: Config.bilibili.danmakuArea,
               verticalMode: Config.bilibili.verticalMode,
-              videoCodec: Config.bilibili.videoCodec
+              videoCodec: Config.bilibili.videoCodec,
+              danmakuFontSize: Config.bilibili.danmakuFontSize
             })
           } else {
             success = await mergeVideoAudio(bmp4.filepath, bmp3.filepath, resultPath)
@@ -826,7 +827,8 @@ export class Bilibili extends Base {
             const success = await burnBiliDanmaku(videoFile.filepath, danmakuList, resultPath, {
               danmakuArea: Config.bilibili.danmakuArea,
               verticalMode: Config.bilibili.verticalMode,
-              videoCodec: Config.bilibili.videoCodec
+              videoCodec: Config.bilibili.videoCodec,
+              danmakuFontSize: Config.bilibili.danmakuFontSize
             })
             if (success) {
               const filePath = Common.tempDri.video + `${Config.app.removeCache ? 'tmp_' + Date.now() : this.downloadfilename}.mp4`

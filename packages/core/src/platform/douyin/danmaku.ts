@@ -32,6 +32,9 @@ export type VideoCodec = 'h264' | 'h265' | 'av1'
 /** 横屏转竖屏模式 */
 export type VerticalMode = 'off' | 'standard' | 'force'
 
+/** 弹幕字号 */
+export type DanmakuFontSize = 'small' | 'medium' | 'large'
+
 /** 抖音弹幕烧录配置 */
 export interface DouyinDanmakuOptions {
   /** 弹幕显示区域比例（0.25/0.5/0.75/1） */
@@ -48,6 +51,8 @@ export interface DouyinDanmakuOptions {
   removeSource?: boolean
   /** 视频编码格式（默认 h265） */
   videoCodec?: VideoCodec
+  /** 弹幕字号（默认 medium） */
+  danmakuFontSize?: DanmakuFontSize
 }
 
 // ==================== 编码器检测 ====================
@@ -231,6 +236,13 @@ interface TrackInfo {
  * 生成抖音弹幕 ASS 字幕内容
  * 抖音弹幕只有滚动弹幕，没有顶部/底部固定弹幕
  */
+/** 字号配置映射 */
+const FONT_SIZE_MAP: Record<DanmakuFontSize, { base: number; trackH: number }> = {
+  small: { base: 25, trackH: 30 },
+  medium: { base: 32, trackH: 38 },
+  large: { base: 40, trackH: 46 }
+}
+
 export function generateDouyinASS (
   danmakuList: DouyinDanmakuElem[],
   width: number,
@@ -241,12 +253,14 @@ export function generateDouyinASS (
     scrollTime = 8,
     opacity = 180,
     fontName = 'Microsoft YaHei',
-    danmakuArea = 0.5
+    danmakuArea = 0.5,
+    danmakuFontSize = 'medium'
   } = options
 
   const fontScale = height / 1080
-  const fontSize = Math.round(32 * fontScale)
-  const trackH = Math.round(38 * fontScale)
+  const sizeConfig = FONT_SIZE_MAP[danmakuFontSize]
+  const fontSize = Math.round(sizeConfig.base * fontScale)
+  const trackH = Math.round(sizeConfig.trackH * fontScale)
   const topMargin = Math.round(5 * fontScale)
 
   const areaHeight = Math.floor(height * danmakuArea) - topMargin
