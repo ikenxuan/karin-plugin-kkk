@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import { logger } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
-import sqlite3 from 'node-karin/sqlite3'
+import sqlite3, { sqlite3 as sqlite3Types } from 'node-karin/sqlite3'
 
 import { Root } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
@@ -122,7 +122,7 @@ interface FilterTag {
 
 /** 数据库操作类 */
 export class DouyinDBBase {
-  private db!: sqlite3.Database
+  private db!: sqlite3Types['Database']
   private dbPath: string
 
   constructor () {

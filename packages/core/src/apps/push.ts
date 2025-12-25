@@ -41,7 +41,7 @@ const handleForcePush = wrapWithErrorHandler(async (e) => {
 // 包装设置抖音推送命令
 const handleSetDouyinPush = wrapWithErrorHandler(async (e) => {
   const query = e.msg.replace(/^#设置抖音推送/, '').trim()
-  
+
   // 检查是否是开启/关闭命令
   if (query === '开启' || query === '关闭') {
     const enable = query === '开启'
@@ -50,25 +50,25 @@ const handleSetDouyinPush = wrapWithErrorHandler(async (e) => {
     logger.info(`抖音推送已${enable ? '开启' : '关闭'}`)
     return true
   }
-  
+
   // 原有的订阅逻辑
   const data = await getDouyinData('搜索数据', {
-    query, 
+    query,
     type: '用户',
-    typeMode: 'strict' 
+    typeMode: 'strict'
   })
   await new DouYinpush(e).setting(data.data)
   return true
 }, {
   businessName: '设置抖音推送'
-  
-  
+
+
 })
 
 // 包装设置B站推送命令
 const handleSetBilibiliPush = wrapWithErrorHandler(async (e) => {
   const query = e.msg.replace(/^#设置[bB]站推送/, '').replace(/^(?:[Uu][Ii][Dd]:)?/, '').trim()
-  
+
   // 检查是否是开启/关闭命令
   if (query === '开启' || query === '关闭') {
     const enable = query === '开启'
@@ -77,7 +77,7 @@ const handleSetBilibiliPush = wrapWithErrorHandler(async (e) => {
     logger.info(`B站推送已${enable ? '开启' : '关闭'}`)
     return true
   }
-  
+
   // 原有的订阅逻辑
   if (!Config.cookies.bilibili) {
     await e.reply('\n请先配置B站Cookie', { at: true })
@@ -85,9 +85,9 @@ const handleSetBilibiliPush = wrapWithErrorHandler(async (e) => {
   }
   const match = /^(\d+)$/.exec(query)
   if (match && match[1]) {
-    const data = await getBilibiliData('用户主页数据', { 
-      host_mid: Number(match[1]), 
-      typeMode: 'strict' 
+    const data = await getBilibiliData('用户主页数据', {
+      host_mid: Number(match[1]),
+      typeMode: 'strict'
     })
     await new Bilibilipush(e).setting(data.data)
   }
@@ -112,7 +112,7 @@ const handleDouyinPushList = wrapWithErrorHandler(async (e) => {
 // 包装设置机器人ID命令
 const handleChangeBotID = wrapWithErrorHandler(async (e) => {
   const newBotId = e.msg.replace(/^#kkk设置推送机器人/, '')
-  
+
   // 更新抖音配置和数据库
   const newDouyinlist = Config.pushlist.douyin.map(item => {
     const modifiedGroupIds = item.group_id.map(groupId => {
@@ -130,7 +130,7 @@ const handleChangeBotID = wrapWithErrorHandler(async (e) => {
       group_id: modifiedGroupIds
     }
   })
-  
+
   // 更新B站配置和数据库
   const newBilibililist = Config.pushlist.bilibili.map(item => {
     const modifiedGroupIds = item.group_id.map(groupId => {
@@ -148,7 +148,7 @@ const handleChangeBotID = wrapWithErrorHandler(async (e) => {
       group_id: modifiedGroupIds
     }
   })
-  
+
   Config.Modify('pushlist', 'douyin', newDouyinlist)
   Config.Modify('pushlist', 'bilibili', newBilibililist)
   await e.reply('推送机器人已修改为' + newBotId)
@@ -238,9 +238,9 @@ const handleTestDouyinPush = wrapWithErrorHandler(async (e) => {
 })
 
 // 注册任务和命令
-export const douyinPush = Config.douyin.push.switch && karin.task('抖音推送', Config.douyin.push.cron, handleDouyinPush, { log: Config.douyin.push.log })
+export const douyinPush = Config.douyin.push.switch && karin.task('抖音推送', Config.douyin.push.cron, handleDouyinPush, { log: Config.douyin.push.log, type: 'skip' })
 
-export const bilibiliPush = Config.bilibili.push.switch && karin.task('B站推送', Config.bilibili.push.cron, handleBilibiliPush, { log: Config.bilibili.push.log })
+export const bilibiliPush = Config.bilibili.push.switch && karin.task('B站推送', Config.bilibili.push.cron, handleBilibiliPush, { log: Config.bilibili.push.log, type: 'skip' })
 
 export const forcePush = karin.command(/#(抖音|B站)(全部)?强制推送/, handleForcePush, { name: '𝑪𝒊𝒂𝒍𝒍𝒐～(∠・ω< )⌒★', perm: 'master', event: 'message.group' })
 

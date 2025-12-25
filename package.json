@@ -31,7 +31,7 @@
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
     "lucide-react": "0.556.0",
-    "node-karin": "^1.14.0",
+    "node-karin": "1.14.1",
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "tailwindcss": "4.1.17"

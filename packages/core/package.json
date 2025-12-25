@@ -58,7 +58,6 @@
     "@ikenxuan/amagi": "workspace:*",
     "@karinjs/plugin-puppeteer": "^1.1.2",
     "@rollup/plugin-terser": "^0.4.4",
-    "@snapka/puppeteer": "^0.1.6",
     "@types/connect-history-api-fallback": "^1.5.4",
     "@types/express": "5.0.6",
     "@types/heic-convert": "^2.1.0",
@@ -75,6 +74,7 @@
     "vitest": "^4.0.15"
   },
   "peerDependencies": {
+    "@snapka/puppeteer": "^0.1.6",
     "@types/react": "*"
   },
   "engines": {
@@ -104,5 +104,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2025-12-13T13:57:14.464Z"
+  "timestamp": "2025-12-25T06:46:49.644Z"
 }

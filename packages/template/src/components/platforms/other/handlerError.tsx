@@ -671,7 +671,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
                     className='w-18 h-17'
                   />
                   <div>
-                    <div className='text-2xl text-default-400'>解析库版本</div>
+                    <div className='text-2xl text-default-400'>接口库版本</div>
                     <div className='text-4xl font-bold text-foreground'>{amagiVersion}</div>
                   </div>
                 </div>
