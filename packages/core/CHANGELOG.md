@@ -2,6 +2,30 @@
 
 # Changelog
 
+## [2.17.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.17.0...v2.17.1) (2025-12-25)
+
+
+### 🐛 错误修复
+
+* 提高兼容性 close [#237](https://github.com/ikenxuan/karin-plugin-kkk/issues/237) ([4d06880](https://github.com/ikenxuan/karin-plugin-kkk/commit/4d0688011380beec9c8f71fad294af84ae8eb13a))
+
+
+### 📝 文档更新
+
+* readme ([1866817](https://github.com/ikenxuan/karin-plugin-kkk/commit/1866817e7f91bd686754e412b9578c4223949144))
+
+
+### 📦 依赖更新
+
+* peerDependencies ([734e8d7](https://github.com/ikenxuan/karin-plugin-kkk/commit/734e8d7b86db22c97fee2380b51652106a968ef0))
+* peerDependencies ([c93b686](https://github.com/ikenxuan/karin-plugin-kkk/commit/c93b686c7489190b9c4a30ca132fd3f39afa125a))
+
+
+### ✨ 细节优化
+
+* 增加 `#弹幕解析` ([177017b](https://github.com/ikenxuan/karin-plugin-kkk/commit/177017b3396fe85dd79392ebf1e10e48e2c10ad0))
+* 添加弹幕清晰度配置 ([2fc794c](https://github.com/ikenxuan/karin-plugin-kkk/commit/2fc794c3bd0c0509461b58cb44f63d86f1069e82))
+
 ## [2.17.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.16.0...v2.17.0) (2025-12-19)
 
 
