@@ -54,16 +54,19 @@ export class DouYin extends Base {
   type: DouyinDataTypes[keyof DouyinDataTypes]
   is_mp4: boolean | undefined
   is_slides: boolean
+  /** 强制烧录弹幕（用于 #弹幕解析 命令） */
+  forceBurnDanmaku: boolean
   get botadapter (): string {
     return this.e.bot?.adapter?.name
   }
 
-  constructor (e: Message, iddata: DouyinIdData) {
+  constructor (e: Message, iddata: DouyinIdData, options?: { forceBurnDanmaku?: boolean }) {
     super(e)
     this.e = e
     this.type = iddata?.type
     this.is_mp4 = iddata?.is_mp4
     this.is_slides = false
+    this.forceBurnDanmaku = options?.forceBurnDanmaku ?? false
   }
 
   async DouyinHandler (data: DouyinIdData) {
@@ -365,7 +368,7 @@ export class DouYin extends Base {
         if (sendvideofile && this.is_mp4 && Config.douyin.sendContent.includes('video')) {
           // 获取弹幕数据（如果开启弹幕烧录）
           let danmakuList: DouyinDanmakuElem[] = []
-          if (Config.douyin.burnDanmaku && video) {
+          if ((this.forceBurnDanmaku || Config.douyin.burnDanmaku) && video) {
             try {
               const duration = video.duration // 视频时长（毫秒）
               logger.debug(`[抖音] 视频时长: ${duration}ms, 开始获取弹幕数据`)
@@ -384,7 +387,7 @@ export class DouYin extends Base {
           }
 
           // 如果需要烧录弹幕，先下载视频再烧录
-          if (Config.douyin.burnDanmaku && danmakuList.length > 0) {
+          if ((this.forceBurnDanmaku || Config.douyin.burnDanmaku) && danmakuList.length > 0) {
             const videoFile = await downloadFile(g_video_url, {
               title: `Douyin_V_tmp_${Date.now()}.mp4`,
               headers: { ...baseHeaders, Referer: g_video_url }

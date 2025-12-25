@@ -63,17 +63,20 @@ export class Bilibili extends Base {
   Type: BilibiliDataTypes[keyof BilibiliDataTypes]
   islogin: boolean
   downloadfilename: string
+  /** 强制烧录弹幕（用于 #弹幕解析 命令） */
+  forceBurnDanmaku: boolean
   get botadapter (): string {
     return this.e.bot?.adapter?.name
   }
 
-  constructor (e: Message, data: any) {
+  constructor (e: Message, data: any, options?: { forceBurnDanmaku?: boolean }) {
     super(e)
     this.e = e
     this.isVIP = false
     this.Type = data?.type
     this.islogin = data?.USER?.STATUS === 'isLogin'
     this.downloadfilename = ''
+    this.forceBurnDanmaku = options?.forceBurnDanmaku ?? false
     this.headers!.Referer = 'https://api.bilibili.com/'
     this.headers!.Cookie = Config.cookies.bilibili
   }
@@ -209,7 +212,7 @@ export class Bilibili extends Base {
             }
             // 获取弹幕数据
             let danmakuList: BiliDanmakuElem[] = []
-            if (Config.bilibili.burnDanmaku) {
+            if (this.forceBurnDanmaku || Config.bilibili.burnDanmaku) {
               try {
                 const cid = iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid
                 // 获取视频时长（秒），计算需要获取的弹幕分段数（每6分钟一段）
@@ -773,7 +776,7 @@ export class Bilibili extends Base {
         )
         if (bmp4.filepath && bmp3.filepath) {
           // 根据是否有弹幕数据选择合成方式
-          const hasDanmaku = Config.bilibili.burnDanmaku && danmakuList.length > 0
+          const hasDanmaku = (this.forceBurnDanmaku || Config.bilibili.burnDanmaku) && danmakuList.length > 0
           const resultPath = Common.tempDri.video + `Bil_Result_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.mp4`
           let success: boolean
           if (hasDanmaku) {
@@ -817,7 +820,7 @@ export class Bilibili extends Base {
         /** 没登录（没配置ck）情况下直接发直链，传直链在DownLoadVideo()处理 */
         logger.debug('视频 URL:', playUrlData.durl[0].url)
         // 如果需要烧录弹幕，先下载视频再烧录
-        if (Config.bilibili.burnDanmaku && danmakuList.length > 0) {
+        if ((this.forceBurnDanmaku || Config.bilibili.burnDanmaku) && danmakuList.length > 0) {
           const videoFile = await downloadFile(playUrlData.durl[0].url, {
             title: `Bil_V_tmp_${Date.now()}.mp4`,
             headers: this.headers

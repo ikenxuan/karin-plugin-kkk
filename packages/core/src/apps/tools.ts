@@ -20,7 +20,10 @@ const handleDouyin = wrapWithErrorHandler(async (e) => {
   if (e.msg.startsWith('#测试')) {
     return false
   }
-  
+
+  // 判断是否为弹幕解析（通过 #弹幕解析 命令触发）
+  const forceBurnDanmaku = /^#?弹幕解析/.test(e.msg)
+
   const urlMatch = e.msg.match(/(https?:\/\/[^\s]*\.(douyin|iesdouyin)\.com[^\s]*)/gi)
   if (!urlMatch) {
     logger.warn(`未能在消息中找到有效的抖音链接: ${e.msg}`)
@@ -28,7 +31,7 @@ const handleDouyin = wrapWithErrorHandler(async (e) => {
   }
   const url = String(urlMatch[0])
   const iddata = await getDouyinID(e, url)
-  await new DouYin(e, iddata).DouyinHandler(iddata)
+  await new DouYin(e, iddata, { forceBurnDanmaku }).DouyinHandler(iddata)
   return true
 }, {
   businessName: '抖音视频解析'
@@ -37,6 +40,10 @@ const handleDouyin = wrapWithErrorHandler(async (e) => {
 // 包装B站处理函数
 const handleBilibili = wrapWithErrorHandler(async (e) => {
   e.msg = e.msg.replace(/\\/g, '') // 移除消息中的反斜杠
+
+  // 判断是否为弹幕解析（通过 #弹幕解析 命令触发）
+  const forceBurnDanmaku = /^#?弹幕解析/.test(e.msg)
+
   const urlRegex = /(https?:\/\/(?:(?:www\.|m\.|t\.)?bilibili\.com|b23\.tv|bili2233\.cn)\/[a-zA-Z0-9_\-.~:\/?#[\]@!$&'()*+,;=]+)/
   const bvRegex = /^BV[1-9a-zA-Z]{10}$/
   const avRegex = /^av\d+$/i
@@ -55,7 +62,7 @@ const handleBilibili = wrapWithErrorHandler(async (e) => {
     return true
   }
   const iddata = await getBilibiliID(url)
-  await new Bilibili(e, iddata).BilibiliHandler(iddata)
+  await new Bilibili(e, iddata, { forceBurnDanmaku }).BilibiliHandler(iddata)
   return true
 }, {
   businessName: 'B站视频解析'
@@ -87,9 +94,14 @@ const handleXiaohongshu = wrapWithErrorHandler(async (e) => {
   businessName: '小红书视频解析'
 })
 
-// 包装引用解析函数
+// 包装引用解析函数（支持 #解析 和 #弹幕解析）
 const handlePrefix = wrapWithErrorHandler(async (e, next) => {
+  const originalMsg = e.msg
   e.msg = await Common.getReplyMessage(e)
+  // 保留原始命令前缀，用于判断是否为弹幕解析
+  if (/^#?弹幕解析/.test(originalMsg)) {
+    e.msg = '#弹幕解析 ' + e.msg
+  }
   if (reg.douyin.test(e.msg)) {
     return await handleDouyin(e, next)
   } else if (reg.bilibili.test(e.msg)) {
@@ -124,7 +136,7 @@ const xiaohongshu = karin.command(reg.xiaohongshu, handleXiaohongshu, {
   priority: Config.app.videoTool ? -Infinity : 800
 })
 
-export const prefix = karin.command(/^#?(解析|kkk解析)/, handlePrefix, {
+export const prefix = karin.command(/^#?(解析|kkk解析|弹幕解析)/, handlePrefix, {
   name: 'kkk-视频功能-引用解析'
 })
 
