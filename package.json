@@ -55,6 +55,7 @@
     "fingerprint-injector": "^2.1.78"
   },
   "peerDependencies": {
+    "@snapka/puppeteer": "^0.1.6",
     "@types/react": "*"
   },
   "engines": {
@@ -84,5 +85,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2025-12-13T13:57:14.464Z"
+  "timestamp": "2025-12-25T06:46:49.644Z"
 }
