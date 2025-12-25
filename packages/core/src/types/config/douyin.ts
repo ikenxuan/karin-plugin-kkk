@@ -65,6 +65,9 @@ export interface douyinConfig {
    */
   danmakuFontSize: 'small' | 'medium' | 'large'
 
+  /** 弹幕透明度（0-100，0为完全透明，100为完全不透明） */
+  danmakuOpacity: number
+
   /** 横屏转竖屏模式（针对横屏视频）
    * - 'off': 关闭，保持原始比例
    * - 'standard': 智能模式，仅对宽高比 ≥1.7 的横屏视频转竖屏

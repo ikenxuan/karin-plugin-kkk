@@ -396,7 +396,8 @@ export class DouYin extends Base {
                 danmakuArea: Config.douyin.danmakuArea,
                 verticalMode: Config.douyin.verticalMode,
                 videoCodec: Config.douyin.videoCodec,
-                danmakuFontSize: Config.douyin.danmakuFontSize
+                danmakuFontSize: Config.douyin.danmakuFontSize,
+                danmakuOpacity: Config.douyin.danmakuOpacity
               })
               if (success) {
                 const filePath = Common.tempDri.video + `${Config.app.removeCache ? 'tmp_' + Date.now() : g_title}.mp4`

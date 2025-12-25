@@ -69,6 +69,9 @@ export interface bilibiliConfig {
    */
   danmakuFontSize: 'small' | 'medium' | 'large'
 
+  /** 弹幕透明度（0-100，0为完全透明，100为完全不透明） */
+  danmakuOpacity: number
+
   /** 竖屏适配模式（模拟手机端竖屏观看体验）
    * - 'off': 关闭，保持原始视频比例
    * - 'standard': 智能模式，仅对 16:9、21:9 等常见宽屏比例生效

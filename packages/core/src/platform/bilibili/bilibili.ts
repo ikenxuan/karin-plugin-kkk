@@ -782,7 +782,8 @@ export class Bilibili extends Base {
               danmakuArea: Config.bilibili.danmakuArea,
               verticalMode: Config.bilibili.verticalMode,
               videoCodec: Config.bilibili.videoCodec,
-              danmakuFontSize: Config.bilibili.danmakuFontSize
+              danmakuFontSize: Config.bilibili.danmakuFontSize,
+              danmakuOpacity: Config.bilibili.danmakuOpacity
             })
           } else {
             success = await mergeVideoAudio(bmp4.filepath, bmp3.filepath, resultPath)
@@ -828,7 +829,8 @@ export class Bilibili extends Base {
               danmakuArea: Config.bilibili.danmakuArea,
               verticalMode: Config.bilibili.verticalMode,
               videoCodec: Config.bilibili.videoCodec,
-              danmakuFontSize: Config.bilibili.danmakuFontSize
+              danmakuFontSize: Config.bilibili.danmakuFontSize,
+              danmakuOpacity: Config.bilibili.danmakuOpacity
             })
             if (success) {
               const filePath = Common.tempDri.video + `${Config.app.removeCache ? 'tmp_' + Date.now() : this.downloadfilename}.mp4`

@@ -277,6 +277,13 @@ export const DouyinWeb = (all: ConfigType) => {
                 })
               ]
             }),
+            components.input.number('danmakuOpacity', {
+              label: '弹幕透明度',
+              description: '0为完全透明，100为完全不透明，推荐70',
+              defaultValue: all.douyin.danmakuOpacity.toString(),
+              isDisabled: !all.douyin.switch || !all.douyin.burnDanmaku,
+              rules: [{ min: 0, max: 100 }]
+            }),
             components.radio.group('verticalMode', {
               label: '竖屏适配',
               description: '针对横屏视频，模拟手机端竖屏观看体验，视频居中显示，上下黑边区域用于展示弹幕',

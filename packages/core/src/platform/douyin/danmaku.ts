@@ -43,8 +43,8 @@ export interface DouyinDanmakuOptions {
   verticalMode?: VerticalMode
   /** 滚动时间（秒） */
   scrollTime?: number
-  /** 透明度（0-255） */
-  opacity?: number
+  /** 透明度（0-100，0为完全透明，100为完全不透明） */
+  danmakuOpacity?: number
   /** 字体 */
   fontName?: string
   /** 删除源文件 */
@@ -251,7 +251,7 @@ export function generateDouyinASS (
 ): string {
   const {
     scrollTime = 8,
-    opacity = 180,
+    danmakuOpacity = 70,
     fontName = 'Microsoft YaHei',
     danmakuArea = 0.5,
     danmakuFontSize = 'medium'
@@ -266,7 +266,8 @@ export function generateDouyinASS (
   const areaHeight = Math.floor(height * danmakuArea) - topMargin
   const trackCount = Math.max(1, Math.floor((areaHeight - fontSize) / trackH))
   const minGap = Math.round(15 * fontScale)
-  const alpha = (255 - opacity).toString(16).padStart(2, '0').toUpperCase()
+  // 将 0-100 的透明度转换为 ASS 的 alpha 值（0-255，0为不透明，255为完全透明）
+  const alpha = Math.round((100 - Math.max(0, Math.min(100, danmakuOpacity))) * 2.55).toString(16).padStart(2, '0').toUpperCase()
 
   let ass = `[Script Info]
 Title: Douyin Danmaku
