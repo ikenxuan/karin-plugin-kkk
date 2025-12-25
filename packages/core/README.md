@@ -2,50 +2,29 @@
 
 # karin-plugin-kkk
 
-[![npm](https://img.shields.io/npm/v/karin-plugin-kkk?style=flat&logo=npm)](https://www.npmjs.com/package/karin-plugin-kkk)
-[![npm downloads](https://img.shields.io/npm/dw/karin-plugin-kkk?style=flat&logo=npm)](https://www.npmjs.com/package/karin-plugin-kkk)
-[![GitHub stars](https://img.shields.io/github/stars/ikenxuan/karin-plugin-kkk?style=flat&logo=github)](https://github.com/ikenxuan/karin-plugin-kkk)
-[![GitHub issues](https://img.shields.io/github/issues/ikenxuan/karin-plugin-kkk?style=flat&logo=github)](https://github.com/ikenxuan/karin-plugin-kkk/issues)
+[![npm](https://img.shields.io/npm/v/karin-plugin-kkk?style=flat-square&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/karin-plugin-kkk)
+[![downloads](https://img.shields.io/npm/dw/karin-plugin-kkk?style=flat-square&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/karin-plugin-kkk)
+[![stars](https://img.shields.io/github/stars/ikenxuan/karin-plugin-kkk?style=flat-square&logo=github)](https://github.com/ikenxuan/karin-plugin-kkk)
+[![license](https://img.shields.io/github/license/ikenxuan/karin-plugin-kkk?style=flat-square)](./LICENSE)
 [![pkg.pr.new](https://pkg.pr.new/badge/ikenxuan/karin-plugin-kkk)](https://pkg.pr.new/~/ikenxuan/karin-plugin-kkk)
 
-_Karin 的「抖音」「B 站」视频解析/动态推送插件_
+Karin 的多平台短视频 & 图文内容解析推送插件，为群聊打造极致的媒体分享体验
 
-> 提供对 Bot 的视频解析和动态推送功能，通过接口获取数据并渲染图片返回
+自动识别分享链接 · 智能提取视频/图集/热评 · 精美的模板渲染 · 无需跳转即可浏览
 
-</div>
+**开箱即用** · 配置 Cookie 即刻启程
 
 ---
 
-## Feature
-
-- **视频解析** - 自动解析抖音、B站、快手、小红书链接
-- **动态推送** - 订阅博主/UP主，自动推送最新动态
-- **扫码登录** - 支持扫码获取平台 Cookies
-- **WebUI 配置** - 通过 Karin WebUI 轻松管理插件
-
-## Quick Start
-
-推荐通过 **Karin WebUI 插件市场** 安装，或使用命令：
-
-```sh
-pnpm add karin-plugin-kkk@latest -w
-```
-
-> 首次使用请务必查看文档了解配置方法
-
-## Link
-
-<div align="center">
-
-**📖 文档（国内）**
-
-[![KarinJS](https://img.shields.io/badge/kkk.karinjs.com-FF6B6B?style=for-the-badge&logo=bookstack&logoColor=white)](https://kkk.karinjs.com)
-[![QWQO](https://img.shields.io/badge/kkk.qwqo.cn-845EF7?style=for-the-badge&logo=bookstack&logoColor=white)](https://kkk.qwqo.cn)
-
-**📖 文档（海外）**
+**📖 文档**
 
 [![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://karin-plugin-kkk-docs.vercel.app)
 [![Netlify](https://img.shields.io/badge/Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://karin-plugin-kkk-docs.netlify.app)
+
+**📖 文档（中国大陆）**
+
+[![KarinJS](https://img.shields.io/badge/kkk.karinjs.com-FF6B6B?style=for-the-badge&logo=bookstack&logoColor=white)](https://kkk.karinjs.com)
+[![QWQO](https://img.shields.io/badge/kkk.qwqo.cn-845EF7?style=for-the-badge&logo=bookstack&logoColor=white)](https://kkk.qwqo.cn)
 
 **💬 交流**
 
@@ -56,7 +35,7 @@ pnpm add karin-plugin-kkk@latest -w
 
 ## Thanks
 
-- [Karin](https://github.com/Karinjs/Karin) - 即时通讯 Bot 框架
+- [Karin](https://github.com/Karinjs/Karin) - 即时通讯应用机器人框架
 - [amagi](https://github.com/ikenxuan/amagi) - 接口文档与加密参数算法
 
 ## Contributors
