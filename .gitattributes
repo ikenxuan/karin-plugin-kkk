@@ -1,8 +1,6 @@
-# Ignore everything from language stats by default
 * linguist-vendored
 
-# Include TypeScript files in language stats
-*.ts linguist-vendored=false
-*.tsx linguist-vendored=false
-*.ts linguist-detectable
-*.tsx linguist-detectable
+*.ts linguist-vendored=false linguist-detectable
+*.tsx linguist-vendored=false linguist-detectable
+
+*.js linguist-vendored
