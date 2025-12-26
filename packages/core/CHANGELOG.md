@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.17.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.17.1...v2.17.2) (2025-12-26)
+
+
+### 💄 UI 优化
+
+* 抖音封面组件 ([e9fd321](https://github.com/ikenxuan/karin-plugin-kkk/commit/e9fd32193e6021059254980937b6c7fb25135b18))
+
 ## [2.17.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.17.0...v2.17.1) (2025-12-25)
 
 
