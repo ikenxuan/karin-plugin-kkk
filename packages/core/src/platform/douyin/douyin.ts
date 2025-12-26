@@ -295,6 +295,10 @@ export class DouYin extends Base {
               this.e.reply(replyContent)
             }
           } else {
+            const userProfile = await this.amagi.getDouyinData('用户主页数据', {
+              sec_uid: VideoData.data.aweme_detail.author.sec_uid,
+              typeMode: 'strict'
+            })
             // 渲染为图片
             const videoInfoImg = await Render('douyin/videoInfo',
               {
@@ -306,8 +310,36 @@ export class DouYin extends Base {
                   avatar: VideoData.data.aweme_detail.author.avatar_thumb.url_list[0],
                   short_id: VideoData.data.aweme_detail.author.unique_id === '' ? VideoData.data.aweme_detail.author.short_id : VideoData.data.aweme_detail.author.unique_id
                 },
+                user_profile: userProfile.success ? {
+                  ip_location: userProfile.data.user.ip_location,
+                  follower_count: userProfile.data.user.follower_count,
+                  total_favorited: userProfile.data.user.total_favorited,
+                  aweme_count: userProfile.data.user.aweme_count,
+                  gender: userProfile.data.user.gender ?? 0,
+                  user_age: userProfile.data.user.user_age ?? 0
+                } : undefined,
                 image_url: this.is_mp4 ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] : VideoData.data.aweme_detail.images![0].url_list![0],
-                create_time: VideoData.data.aweme_detail.create_time
+                cover_size: this.is_mp4
+                  ? (VideoData.data.aweme_detail.video.cover ? {
+                    width: VideoData.data.aweme_detail.video.cover_original_scale.width,
+                    height: VideoData.data.aweme_detail.video.cover_original_scale.height
+                  } : undefined)
+                  : (VideoData.data.aweme_detail.images?.[0] ? {
+                    width: VideoData.data.aweme_detail.images[0].width,
+                    height: VideoData.data.aweme_detail.images[0].height
+                  } : undefined),
+                create_time: VideoData.data.aweme_detail.create_time,
+                music: VideoData.data.aweme_detail.music ? {
+                  author: VideoData.data.aweme_detail.music.author,
+                  title: VideoData.data.aweme_detail.music.title,
+                  cover: VideoData.data.aweme_detail.music.cover_hd?.url_list[0] ?? VideoData.data.aweme_detail.music.cover_large?.url_list[0]
+                } : undefined,
+                video: this.is_mp4 ? {
+                  duration: VideoData.data.aweme_detail.video.duration,
+                  width: VideoData.data.aweme_detail.video.width,
+                  height: VideoData.data.aweme_detail.video.height,
+                  ratio: VideoData.data.aweme_detail.video.ratio
+                } : undefined
               }
             )
             this.e.reply(videoInfoImg)

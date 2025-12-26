@@ -1,224 +1,206 @@
-import { Button, Chip } from '@heroui/react'
-import { ExternalLink, Eye, Heart, MessageCircle, Share2, Star, TrendingUp } from 'lucide-react'
+import { Clock, Heart, MessageCircle, Plus, Share2, Star } from 'lucide-react'
 import React, { useMemo } from 'react'
 
 import { DefaultLayout } from '../../../components/layouts/DefaultLayout'
 import type { DouyinVideoInfoProps } from '../../../types/platforms/douyin/videoInfo'
 
-/**
- * 格式化数字显示
- * @param num 数字
- * @returns 格式化后的字符串
- */
+/** 默认音乐封面 */
+const DEFAULT_MUSIC_COVER = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmUyYzU1Ii8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMjVmNGVlIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9InVybCgjZykiLz48L3N2Zz4='
+
 const formatNumber = (num: number): string => {
-  if (num >= 10000) {
-    return `${(num / 10000).toFixed(1)}万`
-  }
+  if (num >= 100000000) return `${(num / 100000000).toFixed(1)}B`
+  if (num >= 10000) return `${(num / 10000).toFixed(1)}W`
   return num.toLocaleString()
 }
 
-/**
- * 格式化时间戳为可读日期
- * @param timestamp 时间戳
- * @returns 格式化后的日期字符串
- */
 const formatDate = (timestamp: number): string => {
-  return new Date(timestamp * 1000).toLocaleDateString('zh-CN', {
+  return new Date(timestamp * 1000).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric'
-  })
+  }).toUpperCase()
 }
 
-/**
- * 统计项组件
- * @param props 组件属性
- * @returns JSX元素
- */
-const StatItem: React.FC<{
-  /** 图标 */
-  icon: React.ReactNode
-  /** 数值 */
-  value: number
-  /** 标签 */
+const formatDuration = (ms: number): string => {
+  const seconds = Math.floor(ms / 1000)
+  const m = Math.floor(seconds / 60)
+  const s = seconds % 60
+  return `${m}:${s.toString().padStart(2, '0')}`
+}
+
+const StatBlock: React.FC<{
   label: string
-  /** 图标颜色 */
-  iconColor?: string
-}> = React.memo(({ icon, value, label, iconColor = 'text-foreground-500' }) => (
-  <div className="flex gap-4 items-center">
-    <div className={iconColor}>{icon}</div>
-    <span className="font-bold text-foreground-900">{formatNumber(value)}</span>
-    <span className="text-foreground-500">{label}</span>
+  value: number
+  icon: React.ReactNode
+}> = ({ label, value, icon }) => (
+  <div className="flex flex-col gap-1 items-center">
+    <div className="p-4 mb-1 rounded-full bg-default-100">
+      {icon}
+    </div>
+    <span className="font-mono text-4xl font-bold tracking-tighter">{formatNumber(value)}</span>
+    <span className="text-sm font-bold tracking-widest uppercase opacity-40">{label}</span>
   </div>
-))
+)
 
-StatItem.displayName = 'StatItem'
-
-/**
- * 抖音视频信息组件
- * @param props 组件属性
- * @returns JSX元素
- */
 export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType' | 'templateName'>> = React.memo(
   (props) => {
-    /** 格式化的发布日期 */
     const formattedDate = useMemo(() => formatDate(props.data.create_time), [props.data.create_time])
+    const duration = useMemo(() => props.data.video ? formatDuration(props.data.video.duration) : null, [props.data.video])
+    const mainTag = useMemo(() => 'DOUYIN', [])
+    const musicCover = useMemo(() => props.data.music?.cover || DEFAULT_MUSIC_COVER, [props.data.music?.cover])
+    const featureText = useMemo(() => props.data.video?.ratio?.toUpperCase() || 'VIDEO', [props.data.video])
 
-    /** 统计数据配置 */
-    const statsData = useMemo(
-      () => [
-        { icon: <Heart size={48} />, value: props.data.statistics.digg_count, label: '点赞', iconColor: 'text-like' },
-        { icon: <MessageCircle size={48} />, value: props.data.statistics.comment_count, label: '评论', iconColor: 'text-comment' },
-        { icon: <Star size={48} />, value: props.data.statistics.collect_count, label: '收藏', iconColor: 'text-yellow-500' },
-        { icon: <Share2 size={48} />, value: props.data.statistics.share_count, label: '分享', iconColor: 'text-view' }
-      ],
-      [props.data.statistics]
-    )
+    const { coverStyle, blurLayerStyle, contentStyle } = useMemo(() => {
+      const gradientHeight = 250
+      const overlapHeight = 120
+      
+      return {
+        coverStyle: {
+          width: '100%',
+          height: 'auto',
+          display: 'block',
+          maskImage: `linear-gradient(to bottom, 
+            black 0%, 
+            black calc(100% - ${gradientHeight}px), 
+            rgba(0,0,0,0.8) calc(100% - ${gradientHeight * 0.7}px),
+            rgba(0,0,0,0.5) calc(100% - ${gradientHeight * 0.4}px),
+            rgba(0,0,0,0.2) calc(100% - ${gradientHeight * 0.15}px),
+            transparent 100%
+          )`,
+          WebkitMaskImage: `linear-gradient(to bottom, 
+            black 0%, 
+            black calc(100% - ${gradientHeight}px), 
+            rgba(0,0,0,0.8) calc(100% - ${gradientHeight * 0.7}px),
+            rgba(0,0,0,0.5) calc(100% - ${gradientHeight * 0.4}px),
+            rgba(0,0,0,0.2) calc(100% - ${gradientHeight * 0.15}px),
+            transparent 100%
+          )`
+        },
+        blurLayerStyle: {
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover' as const,
+          maskImage: 'linear-gradient(to bottom, black 0%, black 20%, transparent 50%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 20%, transparent 50%)'
+        },
+        contentStyle: {
+          marginTop: `-${overlapHeight}px`
+        }
+      }
+    }, [])
 
     return (
       <DefaultLayout {...props}>
-        <div>
-          {/* 主卡片 */}
-          <div className="overflow-hidden transition-all">
-            {/* 视频封面 */}
-            <div className="overflow-hidden relative">
-              <img
-                src={props.data.image_url}
-                alt={props.data.desc}
-                className="object-cover w-full h-full"
-              />
-              <div className="absolute inset-0 bg-linear-to-t to-transparent from-black/30" />
-            </div>
-
-            {/* 卡片头部 */}
-            <div className="p-20 pb-36">
-              {/* 视频描述 */}
-              <h1 className="mb-8 text-7xl font-bold leading-tight text-foreground-900">{props.data.desc}</h1>
-              {/* 发布日期 */}
-              <p className="mb-6 text-4xl text-foreground-500">{formattedDate}</p>
-            </div>
-
-            {/* 卡片内容 */}
-            <div className="px-16">
-              <div className="grid grid-cols-2 text-5xl gap-18">
-                {statsData.map((stat, index) => (
-                  <StatItem
-                    key={index}
-                    icon={stat.icon}
-                    value={stat.value}
-                    label={stat.label}
-                    iconColor={stat.iconColor}
-                  />
-                ))}
-              </div>
-
-              <div className="h-18"></div>
-
-              {/* 附加统计信息 */}
-              <div className="flex justify-between items-center mb-8 text-5xl text-foreground-500">
-                <div className="flex gap-16 items-center">
-                  <div className="flex gap-2 items-center">
-                    <TrendingUp size={48} />
-                    <span className="font-medium">{formatNumber(props.data.statistics?.recommend_count ?? 0)}</span>
-                    <span className="text-4xl">推荐</span>
+        <div className="overflow-hidden relative w-full font-sans bg-default-50 text-default-900">
+          {/* 顶部信息栏 */}
+          <div className="flex absolute top-0 left-0 z-40 justify-between items-start p-16 w-full mix-blend-screen text-default-500">
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-6 items-center">
+                <span className="px-6 py-2 text-3xl font-bold tracking-wider uppercase rounded-full border backdrop-blur-sm border-default-500">
+                  {featureText}
+                </span>
+                {duration && (
+                  <div className="flex gap-3 items-center font-mono text-3xl font-medium">
+                    <Clock size={40} />
+                    <span>{duration}</span>
                   </div>
-                  {props.data.statistics.play_count > 0 && (
-                    <div className="flex gap-2 items-center">
-                      <Eye size={48} />
-                      <span className="font-medium">{formatNumber(props.data.statistics.play_count)}</span>
-                      <span className="text-4xl">播放</span>
-                    </div>
+                )}
+              </div>
+              <div className="pr-8 pb-4 mt-6 text-9xl italic font-black tracking-tighter bg-clip-text from-default-900 bg-linear-to-r to-default-500">
+                {mainTag}
+              </div>
+            </div>
+            <div className="flex flex-col gap-4 items-end">
+              <span className="font-mono text-5xl font-bold">{formattedDate}</span>
+            </div>
+          </div>
+
+          {/* 封面层 */}
+          <div className="relative z-20 w-full">
+            <img src={props.data.image_url} alt="Main Content" style={coverStyle} />
+            <div className="overflow-hidden absolute top-0 left-0 w-full h-full pointer-events-none -z-10">
+              <img src={props.data.image_url} alt="Atmosphere" className="blur-3xl saturate-150 opacity-95 scale-[1.02]" style={blurLayerStyle} />
+            </div>
+          </div>
+
+          {/* 内容层 */}
+          <div className="flex relative z-30 flex-col gap-12 p-16 pb-10 w-full" style={contentStyle}>
+            {/* 描述文案 */}
+            <div className="relative">
+              {/* <span className="absolute -left-10 -top-35 text-[150px] z-1 text-default-300 select-none leading-none">"</span> */}
+              <h2 className="text-6xl font-bold leading-snug overflow-hidden text-justify text-default-900">
+                {props.data.desc}
+              </h2>
+            </div>
+            
+            {/* 音乐胶囊 */}
+            {props.data.music && (
+              <div className="flex flex-row-reverse gap-8 items-center self-end mb-4 text-right">
+                {/* 封面容器 */}
+                <div className="relative w-24 h-24">
+                  <img 
+                    src={musicCover} 
+                    alt="" 
+                    className="absolute inset-0 w-full h-full object-cover rounded-full blur-xl scale-120 opacity-60"
+                  />
+                  <div className="relative w-full h-full rounded-full overflow-hidden shadow-lg">
+                    <img src={musicCover} alt="Music Cover" className="w-full h-full object-cover" />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1 items-end">
+                  <span className="text-4xl font-bold line-clamp-1 max-w-[800px] text-default-900">
+                    {props.data.music.title}
+                  </span>
+                  <span className="text-3xl font-medium text-default-500">
+                    {props.data.music.author}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* 作者卡片 */}
+            <div className="flex gap-8 items-center py-8 my-4 border-t border-b border-default-200">
+              <div className="relative">
+                <img src={props.data.author.avatar} alt={props.data.author.name} className="object-cover w-32 h-auto rounded-full border-5 border-white" />
+                <div className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 bg-danger text-white p-1.5 rounded-full">
+                  <Plus size={26} strokeWidth={3} />
+                </div>
+              </div>
+              <div className="flex flex-col gap-4">
+                <div className="flex gap-4 items-center">
+                  <span className="text-5xl font-bold max-w-[600px] truncate">{props.data.author.name}</span>
+                  {props.data.user_profile?.ip_location && (
+                    <span className="px-3 py-1 text-2xl font-medium rounded-full border backdrop-blur-sm bg-default-100 border-default-200 text-default-500">
+                      {props.data.user_profile.ip_location.replace('IP属地：', '')}
+                    </span>
                   )}
                 </div>
-                <div className="transform-gpu scale-[2.5] origin-right mb-8">
-                  <Chip color="primary" variant="flat" size="lg" radius="sm">
-                    作品ID：{props.data.aweme_id}
-                  </Chip>
+                <div className="flex flex-wrap gap-y-2 gap-x-6 items-center font-mono text-3xl text-default-400">
+                  <span>抖音号: {props.data.author.short_id}</span>
+                  {props.data.user_profile && (
+                    <>
+                      <span>•</span>
+                      <span>{formatNumber(props.data.user_profile.follower_count)} 粉丝</span>
+                      <span>•</span>
+                      <span>{formatNumber(props.data.user_profile.total_favorited)} 获赞</span>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
 
-            <div className="h-18" />
-            <div className="h-0.5 bg-default-300" />
-
-            {/* 卡片底部 */}
-            <div className="flex justify-between items-center px-16 py-12 pb-0">
-              {/* 作者信息 */}
-              <div className="flex gap-8 items-center">
-                <img
-                  src={props.data.author.avatar}
-                  alt={props.data.author.name}
-                  className="object-cover w-48 h-48 rounded-full"
-                />
-                <div className="flex flex-col gap-6">
-                  <p className="text-6xl font-semibold text-foreground-900">{props.data.author.name}</p>
-                  <p className="text-5xl text-foreground-500">抖音号: {props.data.author.short_id}</p>
+            {/* 底部数据栏 */}
+            <div className="grid grid-cols-4 gap-8 mt-4">
+              <StatBlock label="LIKES" value={props.data.statistics.digg_count} icon={<Heart size={48} className="text-default-900" />} />
+              <div className="flex flex-col gap-1 items-center">
+                <div className="p-5 mb-1 rounded-full bg-default-100">
+                  <MessageCircle size={42} className="text-default-900" />
                 </div>
+                <span className="font-mono text-4xl font-bold tracking-tighter">{formatNumber(props.data.statistics.comment_count)}</span>
+                <span className="text-sm font-bold tracking-widest uppercase opacity-40">COMMENTS</span>
               </div>
-              <div className="transform-gpu scale-[3.5] origin-right">
-                <Button 
-                  size="sm" 
-                  className='bg-default-800 dark:bg-default-100'
-                >
-                  <div className='flex items-center'>
-                    {/* 图标 - 使用多层叠加创造故障效果 */}
-                    <div className="relative mr-1">
-                      {/* 青色阴影层 */}
-                      <ExternalLink 
-                        className="absolute w-4 h-4" 
-                        style={{ 
-                          transform: 'translate(-0.5px, -0.5px)',
-                          color: '#00e6f6'
-                        }}
-                      />
-                      {/* 红色阴影层 */}
-                      <ExternalLink 
-                        className="absolute w-4 h-4" 
-                        style={{ 
-                          transform: 'translate(0.5px, 0.5px)',
-                          color: '#ff013c'
-                        }}
-                      />
-                      {/* 主图标层 - 白色 */}
-                      <ExternalLink 
-                        className="relative w-4 h-4" 
-                        style={{ color: 'white' }}
-                      />
-                    </div>
-                    
-                    {/* 文字 - 使用多层叠加创造故障效果 */}
-                    <div className="relative">
-                      {/* 青色阴影层 */}
-                      <span 
-                        className="absolute"
-                        style={{ 
-                          transform: 'translate(-0.5px, -0.5px)',
-                          color: '#00e6f6'
-                        }}
-                      >
-                        观看
-                      </span>
-                      {/* 红色阴影层 */}
-                      <span 
-                        className="absolute"
-                        style={{ 
-                          transform: 'translate(0.5px, 0.5px)',
-                          color: '#ff013c'
-                        }}
-                      >
-                        观看
-                      </span>
-                      {/* 主文字层 - 白色 */}
-                      <span 
-                        className="relative"
-                        style={{ color: 'white' }}
-                      >
-                        观看
-                      </span>
-                    </div>
-                  </div>
-                </Button>
-              </div>
+              <StatBlock label="FAVORITES" value={props.data.statistics.collect_count} icon={<Star size={48} className="text-default-900" />} />
+              <StatBlock label="SHARES" value={props.data.statistics.share_count} icon={<Share2 size={48} className="text-default-900 pr-2" />} />
             </div>
           </div>
         </div>
@@ -228,5 +210,4 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
 )
 
 DouyinVideoInfo.displayName = 'DouyinVideoInfo'
-
 export default DouyinVideoInfo

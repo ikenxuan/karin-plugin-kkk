@@ -48,7 +48,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
           'bg-default-50 text-default-900',
           'font-[HarmonyOSHans-Regular]',
           className,
-          useDarkTheme
+          { 'dark': useDarkTheme }
         )}
         id='container'
         style={{
