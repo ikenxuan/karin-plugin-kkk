@@ -160,6 +160,7 @@
     --blur-md: 12px;
     --blur-lg: 16px;
     --blur-xl: 24px;
+    --blur-3xl: 64px;
     --aspect-video: 16 / 9;
     --default-transition-duration: .15s;
     --default-transition-timing-function: cubic-bezier(.4, 0, .2, 1);
@@ -673,6 +674,10 @@
     top: calc(var(--spacing) * -13);
   }
 
+  .-top-35 {
+    top: calc(var(--spacing) * -35);
+  }
+
   .-top-\[270px\] {
     top: -270px;
   }
@@ -793,6 +798,10 @@
     bottom: calc(var(--spacing) * -1);
   }
 
+  .-bottom-3\.5 {
+    bottom: calc(var(--spacing) * -3.5);
+  }
+
   .-bottom-6 {
     bottom: calc(var(--spacing) * -6);
   }
@@ -853,6 +862,10 @@
     left: calc(var(--spacing) * -2);
   }
 
+  .-left-10 {
+    left: calc(var(--spacing) * -10);
+  }
+
   .-left-\[180px\] {
     left: -180px;
   }
@@ -907,6 +920,10 @@
 
   .z-0 {
     z-index: 0;
+  }
+
+  .z-1 {
+    z-index: 1;
   }
 
   .z-10 {
@@ -1425,6 +1442,13 @@
 
   .box-content {
     box-sizing: content-box;
+  }
+
+  .line-clamp-1 {
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    overflow: hidden;
   }
 
   .line-clamp-2 {
@@ -2663,6 +2687,10 @@
     scale: var(--tw-scale-x) var(--tw-scale-y);
   }
 
+  .scale-\[1\.02\] {
+    scale: 1.02;
+  }
+
   .scale-\[2\.5\] {
     scale: 2.5;
   }
@@ -3172,6 +3200,10 @@
     align-self: center;
   }
 
+  .self-end {
+    align-self: flex-end;
+  }
+
   .truncate {
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -3407,6 +3439,11 @@
   .border-4 {
     border-style: var(--tw-border-style);
     border-width: 4px;
+  }
+
+  .border-5 {
+    border-style: var(--tw-border-style);
+    border-width: 5px;
   }
 
   .border-8 {
@@ -3760,6 +3797,10 @@
     }
   }
 
+  .border-white {
+    border-color: #fff;
+  }
+
   .border-x-transparent {
     border-inline-color: #0000;
   }
@@ -3836,10 +3877,6 @@
     border-left-color: hsl(var(--heroui-warning) / 1);
   }
 
-  .\!bg-\[\#FFFFFF\] {
-    background-color: #fff !important;
-  }
-
   .\!bg-danger-50 {
     background-color: hsl(var(--heroui-danger-50) / 1) !important;
   }
@@ -3854,6 +3891,10 @@
 
   .bg-\[\#FF6699\] {
     background-color: #f69;
+  }
+
+  .bg-\[\#FFFFFF\]\! {
+    background-color: #fff !important;
   }
 
   .bg-\[\#fe2c55\] {
@@ -4332,6 +4373,20 @@
     background-image: linear-gradient(var(--tw-gradient-stops));
   }
 
+  .bg-linear-to-r {
+    --tw-gradient-position: to right;
+  }
+
+  @supports (background-image: linear-gradient(in lab, red, red)) {
+    .bg-linear-to-r {
+      --tw-gradient-position: to right in oklab;
+    }
+  }
+
+  .bg-linear-to-r {
+    background-image: linear-gradient(var(--tw-gradient-stops));
+  }
+
   .bg-linear-to-t {
     --tw-gradient-position: to top;
   }
@@ -4409,6 +4464,11 @@
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
 
+  .from-default-900 {
+    --tw-gradient-from: hsl(var(--heroui-default-900) / 1);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+
   .from-transparent {
     --tw-gradient-from: transparent;
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
@@ -4457,6 +4517,11 @@
 
   .to-default-100 {
     --tw-gradient-to: hsl(var(--heroui-default-100) / 1);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+
+  .to-default-500 {
+    --tw-gradient-to: hsl(var(--heroui-default-500) / 1);
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
 
@@ -4569,6 +4634,10 @@
     padding: calc(var(--spacing) * 1);
   }
 
+  .p-1\.5 {
+    padding: calc(var(--spacing) * 1.5);
+  }
+
   .p-2 {
     padding: calc(var(--spacing) * 2);
   }
@@ -4607,6 +4676,10 @@
 
   .p-12 {
     padding: calc(var(--spacing) * 12);
+  }
+
+  .p-16 {
+    padding: calc(var(--spacing) * 16);
   }
 
   .p-20 {
@@ -4855,6 +4928,10 @@
 
   .pr-2 {
     padding-right: calc(var(--spacing) * 2);
+  }
+
+  .pr-8 {
+    padding-right: calc(var(--spacing) * 8);
   }
 
   .pr-20 {
@@ -5243,6 +5320,10 @@
 
   .text-\[120px\] {
     font-size: 120px;
+  }
+
+  .text-\[150px\] {
+    font-size: 150px;
   }
 
   .text-\[180px\] {
@@ -6198,6 +6279,10 @@
     opacity: .9;
   }
 
+  .opacity-95 {
+    opacity: .95;
+  }
+
   .opacity-100 {
     opacity: 1;
   }
@@ -6216,6 +6301,10 @@
 
   .opacity-disabled {
     opacity: var(--heroui-disabled-opacity);
+  }
+
+  .mix-blend-screen {
+    mix-blend-mode: screen;
   }
 
   .\!shadow-none {
@@ -6419,6 +6508,11 @@
 
   .blur {
     --tw-blur: blur(8px);
+    filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
+  }
+
+  .blur-3xl {
+    --tw-blur: blur(var(--blur-3xl));
     filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
   }
 
@@ -11540,10 +11634,6 @@
     border-color: hsl(var(--heroui-warning-100) / 1);
   }
 
-  .dark\:\!bg-default-50:is(.dark *) {
-    background-color: hsl(var(--heroui-default-50) / 1) !important;
-  }
-
   .dark\:bg-background:is(.dark *), .dark\:bg-background\/20:is(.dark *) {
     background-color: hsl(var(--heroui-background) / 1);
   }
@@ -11574,6 +11664,10 @@
 
   .dark\:bg-default:is(.dark *) {
     background-color: hsl(var(--heroui-default) / 1);
+  }
+
+  .dark\:bg-default-50\!:is(.dark *) {
+    background-color: hsl(var(--heroui-default-50) / 1) !important;
   }
 
   .dark\:bg-default-50\/50:is(.dark *) {
