@@ -1041,6 +1041,14 @@ export class DouyinDBBase {
       }) => {
         const { groupId, sec_uid, aweme_id } = conditions
 
+        // 优先处理 aweme_id + groupId 的精确删除（单条记录）
+        if (aweme_id && groupId) {
+          const result = await this.runQuery(
+            'DELETE FROM AwemeCaches WHERE aweme_id = ? AND groupId = ?',
+            [aweme_id, groupId]
+          )
+          return { affected: result.changes }
+        }
         if (groupId && sec_uid) {
           const result = await this.runQuery(
             'DELETE FROM AwemeCaches WHERE groupId = ? AND sec_uid = ?',

@@ -99,7 +99,16 @@ export class Bilibilipush extends Base {
       logger.info(`已清理 ${deletedCount} 条过期的B站动态缓存记录`)
     }
 
-    const data = await this.getDynamicList(Config.pushlist.bilibili)
+    // 获取已注册的 bot 列表，过滤未注册的 bot
+    const registeredBotIds = karin.getAllBotID()
+    const filteredPushList = this.filterPushListByRegisteredBots(Config.pushlist.bilibili, registeredBotIds)
+
+    if (filteredPushList.length === 0) {
+      logger.warn('没有已注册的 bot 可用于B站推送')
+      return true
+    }
+
+    const data = await this.getDynamicList(filteredPushList)
     const pushdata = await this.excludeAlreadyPushed(data.willbepushlist)
 
     if (Object.keys(pushdata).length === 0) return true
@@ -109,6 +118,43 @@ export class Bilibilipush extends Base {
     } else {
       return await this.getdata(pushdata)
     }
+  }
+
+  /**
+   * 根据已注册的 bot 列表过滤推送配置
+   * @param pushList 原始推送配置列表
+   * @param registeredBotIds 已注册的 bot ID 列表
+   * @returns 过滤后的推送配置列表
+   */
+  private filterPushListByRegisteredBots (pushList: bilibiliPushItem[], registeredBotIds: string[]): bilibiliPushItem[] {
+    if (!pushList || pushList.length === 0) return []
+
+    const registeredSet = new Set(registeredBotIds)
+    const filteredList: bilibiliPushItem[] = []
+
+    for (const item of pushList) {
+      // 过滤 group_id 中未注册的 bot
+      const filteredGroupIds = item.group_id.filter(groupWithBot => {
+        const botId = groupWithBot.split(':')[1]
+        const isRegistered = registeredSet.has(botId)
+        if (!isRegistered) {
+          logger.debug(`Bot ${botId} 未注册，跳过群组 ${groupWithBot.split(':')[0]} 的推送`)
+        }
+        return isRegistered
+      })
+
+      // 如果过滤后还有有效的群组，则保留该订阅项
+      if (filteredGroupIds.length > 0) {
+        filteredList.push({
+          ...item,
+          group_id: filteredGroupIds
+        })
+      } else {
+        logger.debug(`UP主 ${item.remark ?? item.host_mid} 的所有推送目标 bot 均未注册，跳过`)
+      }
+    }
+
+    return filteredList
   }
 
   /**
@@ -662,7 +708,6 @@ export class Bilibilipush extends Base {
             }
           }
         } else {
-          logger.error(`「${item.remark}」的动态列表数量为零！`)
         }
       }
     } catch (error) {

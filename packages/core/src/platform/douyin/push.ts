@@ -84,12 +84,58 @@ export class DouYinpush extends Base {
     // 检查备注信息
     if (await this.checkremark()) return true
 
-    const data = await this.getDynamicList(Config.pushlist.douyin)
+    // 获取已注册的 bot 列表，过滤未注册的 bot
+    const registeredBotIds = karin.getAllBotID()
+    const filteredPushList = this.filterPushListByRegisteredBots(Config.pushlist.douyin, registeredBotIds)
+
+    if (filteredPushList.length === 0) {
+      logger.warn('没有已注册的 bot 可用于抖音推送')
+      return true
+    }
+
+    const data = await this.getDynamicList(filteredPushList)
 
     if (Object.keys(data).length === 0) return true
 
     if (this.force) return await this.forcepush(data)
     else return await this.getdata(data)
+  }
+
+  /**
+   * 根据已注册的 bot 列表过滤推送配置
+   * @param pushList 原始推送配置列表
+   * @param registeredBotIds 已注册的 bot ID 列表
+   * @returns 过滤后的推送配置列表
+   */
+  private filterPushListByRegisteredBots (pushList: douyinPushItem[], registeredBotIds: string[]): douyinPushItem[] {
+    if (!pushList || pushList.length === 0) return []
+
+    const registeredSet = new Set(registeredBotIds)
+    const filteredList: douyinPushItem[] = []
+
+    for (const item of pushList) {
+      // 过滤 group_id 中未注册的 bot
+      const filteredGroupIds = item.group_id.filter(groupWithBot => {
+        const botId = groupWithBot.split(':')[1]
+        const isRegistered = registeredSet.has(botId)
+        if (!isRegistered) {
+          logger.debug(`Bot ${botId} 未注册，跳过群组 ${groupWithBot.split(':')[0]} 的推送`)
+        }
+        return isRegistered
+      })
+
+      // 如果过滤后还有有效的群组，则保留该订阅项
+      if (filteredGroupIds.length > 0) {
+        filteredList.push({
+          ...item,
+          group_id: filteredGroupIds
+        })
+      } else {
+        logger.debug(`用户 ${item.remark ?? item.sec_uid} 的所有推送目标 bot 均未注册，跳过`)
+      }
+    }
+
+    return filteredList
   }
 
   /**

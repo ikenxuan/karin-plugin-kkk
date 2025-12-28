@@ -114,12 +114,40 @@ export const getGroupsRouter: RequestHandler = async (req, res) => {
 
       // 只有有订阅的群组才返回
       if (douyinSubscriptions.length > 0 || bilibiliSubscriptions.length > 0) {
-        const bot = getBot(group.botId)!
-        const groupInfo = await bot.getGroupInfo(group.id)
-        const groupAvatarUrl = await bot.getGroupAvatarUrl(group.id)
+        const bot = getBot(group.botId)
+        // 增加对 bot 连接状态的检查
+        if (!bot) {
+          logger.warn(`Bot ${group.botId} not found or not connected for group ${group.id}`)
+          // Bot 不在线时，依然返回基础信息，但使用默认值
+          groupList.push({
+            id: group.id,
+            name: `群组${group.id} (Bot离线)`,
+            avatar: '', // 无法获取头像
+            botId: group.botId,
+            subscriptionCount: {
+              douyin: douyinSubscriptions.length,
+              bilibili: bilibiliSubscriptions.length
+            }
+          })
+          continue
+        }
+
+        let groupName = `群组${group.id}`
+        let groupAvatarUrl = ''
+
+        try {
+          const groupInfo = await bot.getGroupInfo(group.id)
+          if (groupInfo) {
+            groupName = groupInfo.groupName || groupName
+          }
+          groupAvatarUrl = await bot.getGroupAvatarUrl(group.id) || ''
+        } catch (e) {
+          logger.warn(`Failed to fetch group info for ${group.id}:`, e)
+        }
+
         groupList.push({
           id: group.id,
-          name: groupInfo.groupName || `群组${group.id}`,
+          name: groupName,
           avatar: groupAvatarUrl,
           botId: group.botId,
           subscriptionCount: {
@@ -307,17 +335,24 @@ export const getDouyinContentRouter: RequestHandler = async (req, res) => {
     const contentList: ContentItem[] = await Promise.all(caches.map(async cache => {
       // 确保获取到正确的作者信息
       let authorName = cache.sec_uid
+      let avatarUrl = ''
+      
       if (cache.douyinUser) {
         authorName = cache.douyinUser.remark || cache.douyinUser.short_id || cache.douyinUser.sec_uid
+        try {
+          const userProfile = await getDouyinData('用户主页数据', { sec_uid: cache.douyinUser.sec_uid, typeMode: 'strict' })
+          avatarUrl = userProfile.data?.user?.avatar_larger?.url_list[0] || ''
+        } catch {
+          // 获取用户头像失败，使用空字符串
+        }
       }
-      const userProfile = await getDouyinData('用户主页数据', { sec_uid: cache.douyinUser.sec_uid, typeMode: 'strict' })
 
       return {
         id: cache.aweme_id,
         platform: 'douyin' as const,
         title: `抖音作品 ${cache.aweme_id}`,
         author: authorName,
-        avatar: userProfile.data?.user?.avatar_larger?.url_list[0] || '',
+        avatar: avatarUrl,
         publishTime: cache.createdAt.toISOString(),
         thumbnail: '',
         type: 'video' as const,
@@ -408,6 +443,13 @@ export const addDouyinContentRouter: RequestHandler = async (req, res) => {
     }
 
     const douyinDB = await getDouyinDB()
+    
+    // 检查用户是否存在于数据库中（以 sec_uid 为准）
+    const user = await douyinDB.getDouyinUser(authorId)
+    if (!user) {
+      return createBadRequestResponse(res, '该作者未在订阅列表中，请先添加订阅')
+    }
+
     await douyinDB.addAwemeCache(contentId, authorId, groupId)
 
     return createSuccessResponse(res, { message: '添加成功' })
@@ -432,6 +474,13 @@ export const addBilibiliContentRouter: RequestHandler = async (req, res) => {
 
     const bilibiliDB = await getBilibiliDB()
     const host_mid = parseInt(authorId)
+    
+    // 检查用户是否存在于数据库中（以 host_mid 为准）
+    const user = await bilibiliDB.getBilibiliUser(host_mid)
+    if (!user) {
+      return createBadRequestResponse(res, '该UP主未在订阅列表中，请先添加订阅')
+    }
+
     await bilibiliDB.addDynamicCache(contentId, host_mid, groupId, 'manual')
 
     return createSuccessResponse(res, { message: '添加成功' })
@@ -443,6 +492,7 @@ export const addBilibiliContentRouter: RequestHandler = async (req, res) => {
 
 /**
  * 删除内容的路由处理器
+ * 只删除指定群组中的内容，不影响其他群组
  * @param req 请求对象
  * @param res 响应对象
  */
@@ -454,15 +504,25 @@ export const deleteContentRouter: RequestHandler = async (req, res) => {
       return createBadRequestResponse(res, '请提供内容ID、平台类型和群组ID')
     }
 
+    let affected = 0
+
     if (platform === 'douyin') {
       const douyinDB = await getDouyinDB()
-      await douyinDB.awemeCacheRepository.delete({ aweme_id: id, groupId })
+      // 使用 aweme_id + groupId 精确删除，只删除该群组的记录
+      const result = await douyinDB.awemeCacheRepository.delete({ aweme_id: id, groupId })
+      affected = result.affected
     } else if (platform === 'bilibili') {
       const bilibiliDB = await getBilibiliDB()
-      await bilibiliDB.dynamicCacheRepository.delete({ dynamic_id: id, groupId })
+      // 使用 dynamic_id + groupId 精确删除，只删除该群组的记录
+      const result = await bilibiliDB.dynamicCacheRepository.delete({ dynamic_id: id, groupId })
+      affected = result.affected
     }
 
-    return createSuccessResponse(res, { message: '删除成功' })
+    if (affected === 0) {
+      return createBadRequestResponse(res, '未找到要删除的内容')
+    }
+
+    return createSuccessResponse(res, { message: '删除成功', affected })
   } catch (error) {
     logger.error('删除内容失败:', error)
     return createServerErrorResponse(res, '删除内容失败')

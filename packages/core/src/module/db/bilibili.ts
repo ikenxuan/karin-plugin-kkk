@@ -328,6 +328,16 @@ export class BilibiliDBBase {
   }
 
   /**
+   * 获取B站用户记录
+   * @param host_mid B站用户UID
+   * @returns 返回用户信息，如果不存在则返回null
+   */
+  async getBilibiliUser (host_mid: number): Promise<BilibiliUser | null> {
+    const user = await this.getQuery<BilibiliUser>('SELECT * FROM BilibiliUsers WHERE host_mid = ?', [host_mid])
+    return user || null
+  }
+
+  /**
    * 获取或创建B站用户记录
    * @param host_mid B站用户UID
    * @param remark UP主昵称
@@ -1057,6 +1067,14 @@ export class BilibiliDBBase {
       }) => {
         const { groupId, host_mid, dynamic_id } = conditions
 
+        // 优先处理 dynamic_id + groupId 的精确删除（单条记录）
+        if (dynamic_id && groupId) {
+          const result = await this.runQuery(
+            'DELETE FROM DynamicCaches WHERE dynamic_id = ? AND groupId = ?',
+            [dynamic_id, groupId]
+          )
+          return { affected: result.changes }
+        }
         if (groupId && host_mid) {
           const result = await this.runQuery(
             'DELETE FROM DynamicCaches WHERE groupId = ? AND host_mid = ?',
