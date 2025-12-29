@@ -104,7 +104,7 @@ type XiaohongshuComponentIds = 'noteInfo' | 'comment'
 /**
  * 其他平台组件ID
  */
-type OtherComponentIds = 'help' | 'handlerError' | 'changelog' | 'version_warning'
+type OtherComponentIds = 'help' | 'handlerError' | 'changelog' | 'version_warning' | 'qrlogin'
 
 /**
  * 路径类型
@@ -155,6 +155,7 @@ interface PathToDataTypeMap {
   'other/handlerError': import('./platforms/ohter/handlerError').ApiErrorProps['data']
   'other/changelog': import('./platforms/ohter/changelog').ChangelogProps['data']
   'other/version_warning': import('./platforms/ohter/VersionWarningProps').VersionWarningProps['data']
+  'other/qrlogin': import('./platforms/ohter/qrlogin').QrLoginProps['data']
 }
 
 /**

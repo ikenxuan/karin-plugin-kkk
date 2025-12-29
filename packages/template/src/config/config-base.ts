@@ -287,6 +287,14 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
         enabled: true,
         componentPath: 'platforms/other/VersionWarning',
         exportName: 'VersionWarning'
+      },
+      {
+        id: 'qrlogin',
+        name: 'APP扫码登录',
+        description: 'APP扫码登录二维码页面',
+        enabled: true,
+        componentPath: 'platforms/other/qrlogin',
+        exportName: 'QrLogin'
       }
     ]
   }

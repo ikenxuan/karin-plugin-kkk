@@ -264,6 +264,12 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
                 default: module.VersionWarning
               }))
             })
+          case 'qrlogin':
+            return createComponentConfig(baseComponent, {
+              lazyComponent: () => import('../components/platforms/other/qrlogin').then(module => ({
+                default: module.QrLogin
+              }))
+            })
           default:
             return createComponentConfig(baseComponent)
         }
