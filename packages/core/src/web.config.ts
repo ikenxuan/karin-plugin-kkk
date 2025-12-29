@@ -11,6 +11,38 @@ import { KuaishouWeb } from '@/platform/kuaishou/web.config'
 import { XiaohongshuWeb } from '@/platform/xiaohongshu/web.config'
 import { type ConfigType } from '@/types'
 
+/**
+ * 获取本机局域网 IP 地址
+ * 优先返回常见局域网网段的 IP（192.168.x.x, 10.x.x.x, 172.16-31.x.x）
+ */
+function getLocalIP(): string {
+  const interfaces = os.networkInterfaces()
+  const candidates: string[] = []
+
+  for (const name of Object.keys(interfaces)) {
+    const netInterface = interfaces[name]
+    if (!netInterface) continue
+    for (const net of netInterface) {
+      if (net.family === 'IPv4' && !net.internal) {
+        candidates.push(net.address)
+      }
+    }
+  }
+
+  // 优先选择常见局域网网段
+  const preferredIP = candidates.find(ip => {
+    if (ip.startsWith('192.168.')) return true
+    if (ip.startsWith('10.')) return true
+    if (ip.startsWith('172.')) {
+      const second = parseInt(ip.split('.')[1], 10)
+      if (second >= 16 && second <= 31) return true
+    }
+    return false
+  })
+
+  return preferredIP || candidates[0] || '127.0.0.1'
+}
+
 /** 基础配置的类型 */
 type BaseConfigType = {
   [key in keyof Omit<ConfigType, 'pushlist'>]: ConfigType[key]
@@ -262,6 +294,37 @@ export const webConfig = defineConfig({
                     value: 'trigger'
                   })
                 ]
+              }),
+              components.divider.create('divider-app-qrlogin', {
+                description: '我的小玩具配置',
+                descPosition: 20
+              }),
+              components.radio.group('qrLoginAddrType', {
+                label: '扫码登录地址类型',
+                description: '生成登录二维码时使用的服务器地址',
+                orientation: 'horizontal',
+                defaultValue: all.app.qrLoginAddrType || 'lan',
+                radio: [
+                  components.radio.create('qrLoginAddrType-lan', {
+                    label: `局域网（${getLocalIP()}）`,
+                    description: '适用于手机和服务器在同一局域网',
+                    value: 'lan'
+                  }),
+                  components.radio.create('qrLoginAddrType-external', {
+                    label: '外部地址',
+                    description: '适用于远程访问，需手动配置',
+                    value: 'external'
+                  })
+                ]
+              }),
+              components.input.string('qrLoginExternalAddr', {
+                label: '外部访问地址',
+                type: 'text',
+                description: '公网 IP 或域名，如：123.45.67.89 或 example.com',
+                defaultValue: all.app.qrLoginExternalAddr || '',
+                placeholder: '请输入公网 IP 或域名',
+                isDisabled: all.app.qrLoginAddrType !== 'external',
+                isRequired: false
               })
             ]
           })

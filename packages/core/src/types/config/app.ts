@@ -50,4 +50,10 @@ export interface appConfig {
 
   /** 分页渲染时，每页的高度，经测试最佳每页高度为12000px，默认12000px */
   multiPageHeight: number
+
+  /** 扫码登录时使用的地址类型，可选值：'lan'（局域网IP）、'external'（外部地址） */
+  qrLoginAddrType: 'lan' | 'external'
+
+  /** 外部访问地址（当 qrLoginAddrType 为 'external' 时使用，可以是公网IP或域名） */
+  qrLoginExternalAddr: string
 }

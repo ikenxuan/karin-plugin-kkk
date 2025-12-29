@@ -1,7 +1,8 @@
 import os from 'node:os'
 
-import karin from 'node-karin'
+import karin, { logger } from 'node-karin'
 
+import { Config } from '@/module/utils/Config'
 import { Render } from '@/module/utils/Render'
 
 /**
@@ -40,6 +41,67 @@ function getLocalIP(): string {
 }
 
 /**
+ * 获取公网 IP 地址
+ * 通过多个公共 API 尝试获取
+ */
+async function getPublicIP(): Promise<string | null> {
+  const apis = [
+    '4.ipw.cn',
+    'https://api.ipify.org',
+    'https://icanhazip.com',
+    'https://ifconfig.me/ip',
+    'https://api.ip.sb/ip'
+  ]
+
+  for (const api of apis) {
+    try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 5000)
+      
+      const response = await fetch(api, { signal: controller.signal })
+      clearTimeout(timeout)
+      
+      if (response.ok) {
+        const ip = (await response.text()).trim()
+        // 验证是否为有效的 IPv4 地址
+        if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(ip)) {
+          return ip
+        }
+      }
+    } catch {
+      // 继续尝试下一个 API
+    }
+  }
+  
+  return null
+}
+
+/**
+ * 根据配置获取服务器地址
+ */
+async function getHostByConfig(): Promise<string> {
+  const addrType = Config.app.qrLoginAddrType || 'lan'
+  
+  if (addrType === 'external') {
+    const externalAddr = Config.app.qrLoginExternalAddr
+    if (externalAddr && externalAddr.trim()) {
+      return externalAddr.trim()
+    }
+    // 如果配置了外部地址但未填写，尝试自动获取公网 IP
+    logger.debug('[APP扫码登录] 未配置外部地址，正在尝试获取公网 IP...')
+    const publicIP = await getPublicIP()
+    if (publicIP) {
+      logger.debug(`[APP扫码登录] 获取到公网 IP: ${publicIP}`)
+      return publicIP
+    }
+    logger.warn('[APP扫码登录] 无法获取公网 IP，回退到局域网 IP')
+    return getLocalIP()
+  }
+  
+  return getLocalIP()
+}
+
+/**
  * 生成登录二维码（仅私发给主人）
  */
 export const qrLogin = karin.command(/^#?(kkk)?登录$/i, async (e) => {
@@ -58,7 +120,7 @@ export const qrLogin = karin.command(/^#?(kkk)?登录$/i, async (e) => {
 
   const port = process.env.HTTP_PORT || '7777'
   const authKey = process.env.HTTP_AUTH_KEY || ''
-  const ip = getLocalIP()
+  const host = await getHostByConfig()
   const protocol = 'http'
 
   if (!authKey) {
@@ -69,12 +131,12 @@ export const qrLogin = karin.command(/^#?(kkk)?登录$/i, async (e) => {
   // 构建二维码数据（JSON 格式，包含服务器信息）
   const qrData = JSON.stringify({
     protocol,
-    host: ip,
+    host,
     port,
     authKey
   })
 
-  const serverUrl = `${protocol}://${ip}:${port}`
+  const serverUrl = `${protocol}://${host}:${port}`
 
   try {
     // 使用模板系统渲染二维码图片
@@ -95,4 +157,4 @@ export const qrLogin = karin.command(/^#?(kkk)?登录$/i, async (e) => {
   }
 
   return true
-}, { perm: 'master', name: 'kkk-扫码登录' })
+}, { perm: 'master', name: 'kkk-APP扫码登录' })
