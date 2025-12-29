@@ -238,9 +238,9 @@ const handleTestDouyinPush = wrapWithErrorHandler(async (e) => {
 })
 
 // 注册任务和命令
-export const douyinPush = Config.douyin.push.switch && karin.task('抖音推送', Config.douyin.push.cron, handleDouyinPush, { log: Config.douyin.push.log, type: 'skip' })
+export const douyinPush = Config.douyin.push.switch && karin.task('抖音推送', Config.douyin.push.cron, handleDouyinPush, { log: true, type: 'skip' })
 
-export const bilibiliPush = Config.bilibili.push.switch && karin.task('B站推送', Config.bilibili.push.cron, handleBilibiliPush, { log: Config.bilibili.push.log, type: 'skip' })
+export const bilibiliPush = Config.bilibili.push.switch && karin.task('B站推送', Config.bilibili.push.cron, handleBilibiliPush, { log: true, type: 'skip' })
 
 export const forcePush = karin.command(/#(抖音|B站)(全部)?强制推送/, handleForcePush, { name: '𝑪𝒊𝒂𝒍𝒍𝒐～(∠・ω< )⌒★', perm: 'master', event: 'message.group' })
 

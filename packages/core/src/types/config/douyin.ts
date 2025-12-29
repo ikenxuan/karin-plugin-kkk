@@ -92,8 +92,6 @@ export interface douyinConfig {
     cron: string
     /** 推送时是否一同解析该作品 */
     parsedynamic: boolean,
-    /** 是否打印日志 */
-    log: boolean
     /** 分享链接二维码的类型，web为跳转到抖音网页，download为视频下载直链 */
     shareType: 'web' | 'download'
     /** 推送解析时视频画质偏好设置，'adapt' 为自动根据「maxAutoVideoSize」大小选择，其他为固定画质 */

@@ -383,13 +383,6 @@ export const DouyinWeb = (all: ConfigType) => {
               color: 'warning',
               isDisabled: !all.douyin.push.switch
             }),
-            components.switch.create('push:log', {
-              label: '推送日志',
-              description: '是否打印推送日志（修改后需重启）',
-              defaultSelected: all.douyin.push.log,
-              color: 'warning',
-              isDisabled: !all.douyin.push.switch
-            }),
             components.radio.group('push:shareType', {
               label: '推送图二维码的类型',
               orientation: 'horizontal',

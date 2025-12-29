@@ -407,13 +407,6 @@ export const BilibiliWeb = (all: ConfigType) => {
               color: 'warning',
               isDisabled: !all.bilibili.push.switch
             }),
-            components.switch.create('push:log', {
-              label: '推送日志',
-              description: '是否打印推送日志（修改后需重启）',
-              defaultSelected: all.bilibili.push.log,
-              color: 'warning',
-              isDisabled: !all.bilibili.push.switch
-            }),
             components.radio.group('push:pushVideoQuality', {
               label: '解析视频动态时的画质偏好',
               description: '「作品解析」开启时生效，仅对视频动态有效',

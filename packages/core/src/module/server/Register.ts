@@ -16,7 +16,7 @@ import express from 'node-karin/express'
 import { Root } from '../../root'
 import { Config } from '../utils/Config'
 import { signatureVerificationMiddleware } from './auth'
-import { addBilibiliContentRouter, addDouyinContentRouter, deleteContentRouter, getAuthorsRouter, getBilibiliContentRouter, getDouyinContentRouter, getGroupsRouter } from './content-router'
+import { addBilibiliContentRouter, addDouyinContentRouter, deleteContentRouter, getAuthorsRouter, getBilibiliContentRouter, getDouyinContentRouter, getGroupsRouter, verifyBilibiliCaptchaRouter } from './content-router'
 import { getBilibiliDataRouter, getDouyinDataRouter, getKuaishouDataRouter, getLongLinkRouter, getVideoRouter, videoStreamRouter } from './router'
 
 const server = express()
@@ -79,6 +79,7 @@ app.get('/authors', authMiddleware, signatureVerificationMiddleware, getAuthorsR
 app.post('/content/douyin', authMiddleware, signatureVerificationMiddleware, addDouyinContentRouter)
 app.post('/content/bilibili', authMiddleware, signatureVerificationMiddleware, addBilibiliContentRouter)
 app.post('/content/delete', authMiddleware, signatureVerificationMiddleware, deleteContentRouter)
+app.post('/bilibili/verify', authMiddleware, signatureVerificationMiddleware, verifyBilibiliCaptchaRouter)
 
 const staticRouter = express.Router()
 
