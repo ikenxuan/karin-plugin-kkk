@@ -7,6 +7,7 @@ onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@swc/core'
   - cwebp-bin
+  - dtrace-provider
   - esbuild
   - gifsicle
   - javascript-obfuscator
