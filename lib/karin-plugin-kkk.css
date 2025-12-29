@@ -678,6 +678,10 @@
     top: calc(var(--spacing) * -35);
   }
 
+  .-top-\[200px\] {
+    top: -200px;
+  }
+
   .-top-\[270px\] {
     top: -270px;
   }
@@ -710,12 +714,24 @@
     top: calc(var(--spacing) * 4);
   }
 
+  .top-12 {
+    top: calc(var(--spacing) * 12);
+  }
+
   .top-\[5\%\] {
     top: 5%;
   }
 
   .top-\[10\%\] {
     top: 10%;
+  }
+
+  .top-\[60px\] {
+    top: 60px;
+  }
+
+  .top-\[300px\] {
+    top: 300px;
   }
 
   .top-\[450px\] {
@@ -750,6 +766,10 @@
     right: -90px;
   }
 
+  .-right-\[150px\] {
+    right: -150px;
+  }
+
   .-right-px {
     right: -1px;
   }
@@ -778,6 +798,10 @@
     right: calc(var(--spacing) * 8);
   }
 
+  .right-12 {
+    right: calc(var(--spacing) * 12);
+  }
+
   .right-16 {
     right: calc(var(--spacing) * 16);
   }
@@ -788,6 +812,10 @@
 
   .right-\[10\%\] {
     right: 10%;
+  }
+
+  .right-\[40px\] {
+    right: 40px;
   }
 
   .right-\[72px\] {
@@ -804,6 +832,10 @@
 
   .-bottom-6 {
     bottom: calc(var(--spacing) * -6);
+  }
+
+  .-bottom-\[100px\] {
+    bottom: -100px;
   }
 
   .-bottom-\[180px\] {
@@ -870,6 +902,10 @@
     left: -180px;
   }
 
+  .-left-\[200px\] {
+    left: -200px;
+  }
+
   .left-0 {
     left: calc(var(--spacing) * 0);
   }
@@ -900,6 +936,10 @@
 
   .left-\[50px\] {
     left: 50px;
+  }
+
+  .left-\[100px\] {
+    left: 100px;
   }
 
   .left-\[180px\] {
@@ -1814,12 +1854,24 @@
     height: 350px;
   }
 
+  .h-\[380px\] {
+    height: 380px;
+  }
+
   .h-\[400px\] {
     height: 400px;
   }
 
+  .h-\[500px\] {
+    height: 500px;
+  }
+
   .h-\[600px\] {
     height: 600px;
+  }
+
+  .h-\[700px\] {
+    height: 700px;
   }
 
   .h-\[900px\] {
@@ -2238,6 +2290,10 @@
     width: 350px;
   }
 
+  .w-\[380px\] {
+    width: 380px;
+  }
+
   .w-\[400px\] {
     width: 400px;
   }
@@ -2248,6 +2304,14 @@
 
   .w-\[650px\] {
     width: 650px;
+  }
+
+  .w-\[700px\] {
+    width: 700px;
+  }
+
+  .w-\[800px\] {
+    width: 800px;
   }
 
   .w-\[900px\] {
@@ -2707,6 +2771,10 @@
     rotate: -10deg;
   }
 
+  .-rotate-15 {
+    rotate: -15deg;
+  }
+
   .-rotate-20 {
     rotate: -20deg;
   }
@@ -2717,6 +2785,10 @@
 
   .rotate-15 {
     rotate: 15deg;
+  }
+
+  .rotate-20 {
+    rotate: 20deg;
   }
 
   .rotate-45 {
@@ -5238,8 +5310,24 @@
     font-size: 11em;
   }
 
+  .text-\[14px\] {
+    font-size: 14px;
+  }
+
+  .text-\[18px\] {
+    font-size: 18px;
+  }
+
+  .text-\[20px\] {
+    font-size: 20px;
+  }
+
   .text-\[22px\] {
     font-size: 22px;
+  }
+
+  .text-\[24px\] {
+    font-size: 24px;
   }
 
   .text-\[28px\] {
@@ -5320,6 +5408,10 @@
 
   .text-\[120px\] {
     font-size: 120px;
+  }
+
+  .text-\[140px\] {
+    font-size: 140px;
   }
 
   .text-\[150px\] {
@@ -6295,6 +6387,10 @@
     opacity: .03;
   }
 
+  .opacity-\[0\.04\] {
+    opacity: .04;
+  }
+
   .opacity-\[value\] {
     opacity: value;
   }
@@ -6521,8 +6617,23 @@
     filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
   }
 
+  .blur-\[100px\] {
+    --tw-blur: blur(100px);
+    filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
+  }
+
   .blur-\[108px\] {
     --tw-blur: blur(108px);
+    filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
+  }
+
+  .blur-\[110px\] {
+    --tw-blur: blur(110px);
+    filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
+  }
+
+  .blur-\[120px\] {
+    --tw-blur: blur(120px);
     filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
   }
 

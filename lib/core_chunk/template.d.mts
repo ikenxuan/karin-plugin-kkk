@@ -1654,6 +1654,23 @@ interface VersionWarningProps extends BaseComponentProps {
   currentVersion: string;
 }
 //#endregion
+//#region ../template/src/types/platforms/ohter/qrlogin.d.ts
+/** APP 扫码登录组件属性 */
+interface QrLoginProps {
+  data: {
+    /** 服务器地址 */
+    serverUrl: string;
+    /** 分享链接（用于生成二维码） */
+    share_url: string;
+    /** 是否使用深色主题 */
+    useDarkTheme?: boolean;
+  };
+  /** 二维码数据URL（由 createQrCodePlugin 自动生成，作为顶级 prop） */
+  qrCodeDataUrl?: string;
+  /** 是否使用深色主题 */
+  useDarkTheme?: boolean;
+}
+//#endregion
 //#region ../template/src/types/index.d.ts
 /**
  * 二维码区域组件属性接口
@@ -1742,7 +1759,7 @@ type XiaohongshuComponentIds = 'noteInfo' | 'comment';
 /**
  * 其他平台组件ID
  */
-type OtherComponentIds = 'help' | 'handlerError' | 'changelog' | 'version_warning';
+type OtherComponentIds = 'help' | 'handlerError' | 'changelog' | 'version_warning' | 'qrlogin';
 /**
  * 路径类型
  */
@@ -1777,6 +1794,7 @@ interface PathToDataTypeMap {
   'other/handlerError': ApiErrorProps['data'];
   'other/changelog': ChangelogProps['data'];
   'other/version_warning': VersionWarningProps['data'];
+  'other/qrlogin': QrLoginProps['data'];
 }
 /**
  * 从路径字符串中提取数据类型的工具类型
