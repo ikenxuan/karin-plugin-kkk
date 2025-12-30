@@ -12,6 +12,7 @@ lerna-debug.log*
 
 # 编辑器配置
 /.idea/
+/.kiro/
 
 # 临时文件
 logs/
@@ -24,3 +25,6 @@ node_modules/
 napcat.quick.bat
 
 node_modules/
+
+# 玩具
+packages/next-web/

@@ -44,5 +44,7 @@
   "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
   "typescript.format.insertSpaceAfterConstructor": true,
   "javascript.format.insertSpaceAfterConstructor": true,
-  "typescript.autoClosingTags": false
+  "typescript.autoClosingTags": false,
+  "java.configuration.updateBuildConfiguration": "disabled",
+  "java.compile.nullAnalysis.mode": "disabled"
 }

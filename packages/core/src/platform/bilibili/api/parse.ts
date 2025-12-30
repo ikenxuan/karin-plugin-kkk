@@ -238,16 +238,19 @@ const parseComments = (
 
 /**
  * 获取动态评论类型
+ * 参考 mapping_table 函数的映射关系
  */
 const getDynamicCommentType = (dynamicType: DynamicType): number => {
   switch (dynamicType) {
     case DynamicType.AV:
       return 1
     case DynamicType.DRAW:
-    case DynamicType.WORD:
-    case DynamicType.FORWARD:
+      return 11
     case DynamicType.ARTICLE:
+      return 12
     case DynamicType.LIVE_RCMD:
+    case DynamicType.FORWARD:
+    case DynamicType.WORD:
     default:
       return 17
   }
@@ -543,6 +546,56 @@ export const parseVideo: RequestHandler = async (req, res) => {
 }
 
 /**
+ * 解析B站动态（返回原始数据）
+ * POST /api/kkk/v1/platforms/bilibili/parse/dynamic/raw
+ * Body: { dynamic_id: string }
+ * 
+ * 返回原始 API 数据，前端自行处理不同动态类型
+ * 注意：不获取评论数据，减少请求开销
+ */
+export const parseDynamicRaw: RequestHandler = async (req, res) => {
+  try {
+    const { dynamic_id } = req.body as { dynamic_id?: string }
+    
+    if (!dynamic_id) {
+      return createBadRequestResponse(res, '请提供动态ID (dynamic_id)')
+    }
+    
+    // 获取动态详情
+    const dynamicInfoResponse = await getBilibiliData('动态详情数据', { dynamic_id, typeMode: 'strict' })
+    const dynamicInfo = dynamicInfoResponse.data as BiliDynamicInfoUnion
+    
+    // 并行获取动态卡片和用户主页数据
+    const [dynamicCardResponse, userProfileResponse] = await Promise.all([
+      getBilibiliData('动态卡片数据', { 
+        dynamic_id: dynamicInfo.data.item.id_str, 
+        typeMode: 'strict' 
+      }),
+      getBilibiliData('用户主页数据', { 
+        host_mid: dynamicInfo.data.item.modules.module_author.mid, 
+        typeMode: 'strict' 
+      })
+    ])
+    
+    const dynamicCard = (dynamicCardResponse.data as BiliDynamicCard).data
+    
+    // 返回原始数据（不包含评论）
+    return createSuccessResponse(res, {
+      dynamicInfo: dynamicInfo.data,
+      dynamicCard: dynamicCard,
+      userProfile: userProfileResponse.data.data,
+      comments: null,
+      emoji: null
+    })
+  } catch (error) {
+    const err = error as Error
+    if (await handleBilibiliRiskControl(err, res)) return
+    logger.error('[BilibiliAPI] 解析动态失败:', err)
+    return createServerErrorResponse(res, `解析失败: ${err.message}`)
+  }
+}
+
+/**
  * 解析B站动态
  * POST /api/kkk/v1/platforms/bilibili/parse/dynamic
  * Body: { dynamic_id: string }
@@ -620,40 +673,5 @@ export const parseDynamic: RequestHandler = async (req, res) => {
     if (await handleBilibiliRiskControl(err, res)) return
     logger.error('[BilibiliAPI] 解析动态失败:', err)
     return createServerErrorResponse(res, `解析失败: ${err.message}`)
-  }
-}
-
-/**
- * 获取用户信息
- * GET /api/kkk/v1/platforms/bilibili/user?host_mid=xxx
- */
-export const getUserInfo: RequestHandler = async (req, res) => {
-  try {
-    const { host_mid } = req.query as { host_mid?: string }
-    
-    if (!host_mid) {
-      return createBadRequestResponse(res, '请提供用户ID (host_mid)')
-    }
-    
-    const userResponse = await getBilibiliData('用户主页数据', { 
-      host_mid: parseInt(host_mid), 
-      typeMode: 'strict' 
-    })
-    const userData = userResponse.data.data.card
-    
-    return createSuccessResponse(res, {
-      id: userData.mid?.toString(),
-      name: userData.name,
-      avatar: userData.face || '',
-      signature: userData.sign || '',
-      followerCount: userData.fans || 0,
-      followingCount: userData.attention || 0,
-      level: userData.level_info?.current_level || 0
-    })
-  } catch (error) {
-    const err = error as Error
-    if (await handleBilibiliRiskControl(err, res)) return
-    logger.error('[BilibiliAPI] 获取用户信息失败:', err)
-    return createServerErrorResponse(res, `获取用户信息失败: ${err.message}`)
   }
 }

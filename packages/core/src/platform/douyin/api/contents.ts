@@ -126,12 +126,13 @@ export const addContent: RequestHandler = async (req, res) => {
 
 /**
  * 删除抖音内容
- * DELETE /api/v1/platforms/douyin/contents/:id?groupId=xxx
+ * POST /api/kkk/v1/platforms/douyin/contents/:id/delete
+ * Body: { groupId: string }
  */
 export const deleteContent: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params
-    const { groupId } = req.query
+    const { groupId } = req.body
 
     if (!id || !groupId) {
       return createBadRequestResponse(res, '请提供内容ID和群组ID')

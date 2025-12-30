@@ -282,33 +282,3 @@ export const parseWork: RequestHandler = async (req, res) => {
     return createServerErrorResponse(res, `解析失败: ${error.message}`)
   }
 }
-
-/**
- * 获取用户信息
- * GET /api/v1/platforms/douyin/user?sec_uid=xxx
- */
-export const getUserInfo: RequestHandler = async (req, res) => {
-  try {
-    const { sec_uid } = req.query
-    
-    if (!sec_uid || typeof sec_uid !== 'string') {
-      return createBadRequestResponse(res, '请提供用户ID (sec_uid)')
-    }
-    
-    const userResponse = await getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
-    const userData = userResponse.data.user
-    
-    return createSuccessResponse(res, {
-      id: userData.sec_uid,
-      name: userData.nickname,
-      avatar: userData.avatar_larger?.url_list?.[0] || '',
-      signature: userData.signature || '',
-      followerCount: userData.follower_count || 0,
-      followingCount: userData.following_count || 0,
-      totalFavorited: userData.total_favorited || 0
-    })
-  } catch (error: any) {
-    logger.error('[DouyinAPI] 获取用户信息失败:', error)
-    return createServerErrorResponse(res, `获取用户信息失败: ${error.message}`)
-  }
-}
