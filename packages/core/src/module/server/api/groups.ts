@@ -18,6 +18,7 @@ export interface GroupInfo {
   id: string
   name: string
   botId: string
+  botAvatar: string
   avatar: string
   isOnline: boolean
   subscriptionCount: {
@@ -68,6 +69,7 @@ export const getGroups: RequestHandler = async (_req, res) => {
         
         let groupName = group.id
         let groupAvatarUrl = ''
+        let botAvatarUrl = ''
         let isOnline = true
 
         if (!bot) {
@@ -79,6 +81,7 @@ export const getGroups: RequestHandler = async (_req, res) => {
               groupName = groupInfo.groupName || groupName
             }
             groupAvatarUrl = await bot.getGroupAvatarUrl(group.id) || ''
+            botAvatarUrl = await bot.getAvatarUrl(group.botId) || ''
           } catch (e) {
             logger.warn(`[GroupsAPI] 获取群组信息失败 ${group.id}:`, e)
           }
@@ -89,6 +92,7 @@ export const getGroups: RequestHandler = async (_req, res) => {
           name: groupName,
           avatar: groupAvatarUrl,
           botId: group.botId,
+          botAvatar: botAvatarUrl,
           isOnline,
           subscriptionCount: {
             douyin: douyinSubscriptions.length,
