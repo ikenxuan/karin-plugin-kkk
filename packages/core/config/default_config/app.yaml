@@ -34,6 +34,9 @@ EmojiReply: true
 # 表情 ID，详情查看：https://github.com/NapNeko/NapCatQQ/blob/main/src/core/external/face_config.json
 EmojiReplyID: 128064
 
+# 忽略表情回应失败，开启后表情回应失败时不会抛出错误，程序会继续执行
+EmojiReplyIgnoreError: true
+
 # web解析页面是否启用鉴权
 webAuth: true
 

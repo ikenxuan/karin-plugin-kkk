@@ -125,6 +125,13 @@ export const appConfigSchema: SectionSchema = {
       rules: [{ min: 0, max: 1145141919810 }]
     },
     {
+      key: 'EmojiReplyIgnoreError',
+      type: 'switch',
+      label: '忽略表情回应失败',
+      disabled: $not('EmojiReply'),
+      description: '开启后表情回应失败时不会抛出错误，程序会继续执行'
+    },
+    {
       key: 'webAuth',
       type: 'switch',
       label: '插件 web 鉴权',

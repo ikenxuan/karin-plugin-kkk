@@ -274,6 +274,12 @@ export const webConfig = defineConfig({
                   { min: 0, max: 1145141919810 }
                 ]
               }),
+              components.switch.create('EmojiReplyIgnoreError', {
+                label: '忽略表情回应失败',
+                description: '开启后表情回应失败时不会抛出错误，程序会继续执行',
+                defaultSelected: all.app.EmojiReplyIgnoreError,
+                isDisabled: !all.app.EmojiReply
+              }),
               components.switch.create('webAuth', {
                 label: '插件 web 鉴权',
                 description: '开启后，访问插件自带的 web 页面需要拥有 Karin 的 HTTP 鉴权密钥才能访问。修改后重启生效',

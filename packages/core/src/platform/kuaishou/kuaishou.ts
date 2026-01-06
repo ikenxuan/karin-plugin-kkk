@@ -16,7 +16,13 @@ export class Kuaishou extends Base {
   }
 
   async KuaishouHandler (data: any) {
-    Config.app.EmojiReply && await this.e.bot.setMsgReaction(this.e.contact, this.e.messageId, Config.app.EmojiReplyID, true)
+    if (Config.app.EmojiReply) {
+      try {
+        await this.e.bot.setMsgReaction(this.e.contact, this.e.messageId, Config.app.EmojiReplyID, true)
+      } catch (err) {
+        if (!Config.app.EmojiReplyIgnoreError) throw err
+      }
+    }
     if (data.VideoData.data.data.visionVideoDetail.status !== 1) {
       await this.e.reply('不支持解析的视频')
       return true

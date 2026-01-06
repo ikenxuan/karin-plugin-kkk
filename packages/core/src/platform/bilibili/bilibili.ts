@@ -82,7 +82,13 @@ export class Bilibili extends Base {
   }
 
   async BilibiliHandler (iddata: BilibiliId): Promise<boolean | undefined> {
-    Config.app.EmojiReply && await this.e.bot.setMsgReaction(this.e.contact, this.e.messageId, Config.app.EmojiReplyID, true)
+    if (Config.app.EmojiReply) {
+      try {
+        await this.e.bot.setMsgReaction(this.e.contact, this.e.messageId, Config.app.EmojiReplyID, true)
+      } catch (err) {
+        if (!Config.app.EmojiReplyIgnoreError) throw err
+      }
+    }
     Config.bilibili.tip && await this.e.reply('检测到B站链接，开始解析')
     switch (this.Type) {
       case 'one_video': {

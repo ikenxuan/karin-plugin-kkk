@@ -39,6 +39,9 @@ export interface appConfig {
    */
   EmojiReplyID: number
 
+  /** 忽略表情回应失败，开启后表情回应失败时不会抛出错误 */
+  EmojiReplyIgnoreError: boolean
+
   /** web解析页面是否启用鉴权 */
   webAuth: boolean
 
