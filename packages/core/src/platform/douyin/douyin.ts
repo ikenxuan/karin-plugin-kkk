@@ -74,11 +74,11 @@ export class DouYin extends Base {
     if (Config.douyin.tip) this.e.reply('检测到抖音链接，开始解析')
     switch (this.type) {
       case 'one_work': {
-        const VideoData = await this.amagi.getDouyinData('聚合解析', {
+        const VideoData = await this.amagi.douyin.fetcher.parseWork({
           aweme_id: data.aweme_id,
           typeMode: 'strict'
         })
-        const CommentsData = await this.amagi.getDouyinData('评论数据', {
+        const CommentsData = await this.amagi.douyin.fetcher.fetchWorkComments({
           aweme_id: data.aweme_id,
           number: Config.douyin.numcomment,
           typeMode: 'strict'
@@ -295,7 +295,7 @@ export class DouYin extends Base {
               this.e.reply(replyContent)
             }
           } else {
-            const userProfile = await this.amagi.getDouyinData('用户主页数据', {
+            const userProfile = await this.amagi.douyin.fetcher.fetchUserProfile({
               sec_uid: VideoData.data.aweme_detail.author.sec_uid,
               typeMode: 'strict'
             })
@@ -347,7 +347,7 @@ export class DouYin extends Base {
         }
 
         if (Config.douyin.sendContent.includes('comment')) {
-          const EmojiData = await this.amagi.getDouyinData('Emoji数据', { typeMode: 'strict' })
+          const EmojiData = await this.amagi.douyin.fetcher.fetchEmojiList({ typeMode: 'loose' })
           const list = Emoji(EmojiData.data)
           const douyinCommentsRes = await douyinComments(CommentsData, list)
           if (!douyinCommentsRes.CommentsData.length) {
@@ -404,7 +404,7 @@ export class DouYin extends Base {
             try {
               const duration = video.duration // 视频时长（毫秒）
               logger.debug(`[抖音] 视频时长: ${duration}ms, 开始获取弹幕数据`)
-              const danmakuData = await this.amagi.getDouyinData('弹幕数据', {
+              const danmakuData = await this.amagi.douyin.fetcher.fetchDanmakuList({
                 aweme_id: data.aweme_id,
                 duration,
                 typeMode: 'strict'
@@ -475,11 +475,11 @@ export class DouYin extends Base {
       }
 
       case 'user_dynamic': {
-        const rawData = await this.amagi.getDouyinData('用户主页视频列表数据', {
+        const rawData = await this.amagi.douyin.fetcher.fetchUserVideoList({
           sec_uid: data.sec_uid,
           typeMode: 'strict'
         })
-        const userProfileData = await this.amagi.getDouyinData('用户主页数据', {
+        const userProfileData = await this.amagi.douyin.fetcher.fetchUserProfile({
           sec_uid: data.sec_uid,
           typeMode: 'strict'
         })
@@ -534,12 +534,12 @@ export class DouYin extends Base {
         return true
       }
       case 'music_work': {
-        const MusicData = await this.amagi.getDouyinData('音乐数据', {
+        const MusicData = await this.amagi.douyin.fetcher.fetchMusicInfo({
           music_id: data.music_id,
           typeMode: 'strict'
         })
         const sec_uid = MusicData.data.music_info.sec_uid
-        const UserData = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
+        const UserData = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid, typeMode: 'strict' })
         // if (UserData.data.status_code === 2) {
         //   const new_UserData.data = await getDouyinData('搜索数据', Config.cookies.douyin, { query: data.music_info.author })
         //   if (new_UserData.data.data[0].type === 4 && new_UserData.data.data[0].card_unique_name === 'user') {
@@ -579,7 +579,7 @@ export class DouYin extends Base {
         return true
       }
       case 'live_room_detail': {
-        const UserInfoData = await this.amagi.getDouyinData('用户主页数据', {
+        const UserInfoData = await this.amagi.douyin.fetcher.fetchUserProfile({
           sec_uid: data.sec_uid,
           typeMode: 'strict'
         })
@@ -593,7 +593,7 @@ export class DouYin extends Base {
           }
 
           const room_data = JSON.parse(UserInfoData.data.user.room_data)
-          const live_data = await this.amagi.getDouyinData('直播间信息数据', {
+          const live_data = await this.amagi.douyin.fetcher.fetchLiveRoomInfo({
             room_id: UserInfoData.data.user.room_id_str,
             web_rid: room_data.owner.web_rid,
             typeMode: 'strict'

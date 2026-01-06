@@ -25,7 +25,7 @@ import {
 } from 'node-karin'
 import type { RequestHandler } from 'node-karin/express'
 
-import { getBilibiliData } from '@/module/utils/amagiClient'
+import { bilibiliFetcher } from '@/module/utils/amagiClient'
 
 import { handleBilibiliRiskControl } from './risk-control'
 
@@ -489,14 +489,14 @@ export const parseVideo: RequestHandler = async (req, res) => {
     }
     
     // 获取视频信息
-    const infoResponse = await getBilibiliData('单个视频作品数据', { 
+    const infoResponse = await bilibiliFetcher.fetchVideoInfo({ 
       bvid: bvid || '', 
       typeMode: 'strict' 
     })
     const videoDetail = (infoResponse.data as BiliOneWork).data
     
     // 获取下载信息
-    const streamResponse = await getBilibiliData('单个视频下载信息数据', {
+    const streamResponse = await bilibiliFetcher.fetchVideoStreamUrl({
       avid: videoDetail.aid,
       cid: videoDetail.cid,
       typeMode: 'strict'
@@ -505,8 +505,8 @@ export const parseVideo: RequestHandler = async (req, res) => {
     
     // 获取评论和表情
     const [commentsResponse, emojiResponse] = await Promise.all([
-      getBilibiliData('评论数据', { oid: videoDetail.aid.toString(), type: 1, number: 50, typeMode: 'strict' }),
-      getBilibiliData('Emoji数据', { typeMode: 'strict' })
+      bilibiliFetcher.fetchComments({ oid: videoDetail.aid.toString(), type: 1, number: 50, typeMode: 'strict' }),
+      bilibiliFetcher.fetchEmojiList({ typeMode: 'strict' })
     ])
     
     const commentsData = (commentsResponse.data as BiliWorkComments).data
@@ -562,16 +562,16 @@ export const parseDynamicRaw: RequestHandler = async (req, res) => {
     }
     
     // 获取动态详情
-    const dynamicInfoResponse = await getBilibiliData('动态详情数据', { dynamic_id, typeMode: 'strict' })
+    const dynamicInfoResponse = await bilibiliFetcher.fetchDynamicDetail({ dynamic_id, typeMode: 'strict' })
     const dynamicInfo = dynamicInfoResponse.data as BiliDynamicInfoUnion
     
     // 并行获取动态卡片和用户主页数据
     const [dynamicCardResponse, userProfileResponse] = await Promise.all([
-      getBilibiliData('动态卡片数据', { 
+      bilibiliFetcher.fetchDynamicCard({ 
         dynamic_id: dynamicInfo.data.item.id_str, 
         typeMode: 'strict' 
       }),
-      getBilibiliData('用户主页数据', { 
+      bilibiliFetcher.fetchUserCard({ 
         host_mid: dynamicInfo.data.item.modules.module_author.mid, 
         typeMode: 'strict' 
       })
@@ -609,11 +609,11 @@ export const parseDynamic: RequestHandler = async (req, res) => {
     }
     
     // 获取动态详情
-    const dynamicInfoResponse = await getBilibiliData('动态详情数据', { dynamic_id, typeMode: 'strict' })
+    const dynamicInfoResponse = await bilibiliFetcher.fetchDynamicDetail({ dynamic_id, typeMode: 'strict' })
     const dynamicInfo = dynamicInfoResponse.data as BiliDynamicInfoUnion
     
     // 获取动态卡片
-    const dynamicCardResponse = await getBilibiliData('动态卡片数据', { 
+    const dynamicCardResponse = await bilibiliFetcher.fetchDynamicCard({ 
       dynamic_id: dynamicInfo.data.item.id_str, 
       typeMode: 'strict' 
     })
@@ -633,13 +633,12 @@ export const parseDynamic: RequestHandler = async (req, res) => {
     if (itemType !== DynamicType.LIVE_RCMD) {
       try {
         const [commentsResponse, emojiResponse] = await Promise.all([
-          getBilibiliData('评论数据', {
+          bilibiliFetcher.fetchComments({
             type: getDynamicCommentType(itemType),
             oid: getDynamicOid(dynamicInfo, dynamicCard),
-            number: 50,
             typeMode: 'strict'
           }),
-          getBilibiliData('Emoji数据', { typeMode: 'strict' })
+          bilibiliFetcher.fetchEmojiList({ typeMode: 'strict' })
         ])
         
         const commentsData = (commentsResponse.data as BiliWorkComments).data

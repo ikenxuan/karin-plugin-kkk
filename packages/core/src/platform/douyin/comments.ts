@@ -4,7 +4,7 @@ import convert from 'heic-convert'
 import { DouyinCommentProps } from 'template/types/platforms/douyin'
 
 import { Common, Networks } from '@/module/utils'
-import { getDouyinData } from '@/module/utils/amagiClient'
+import { douyinFetcher } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 
 
@@ -79,7 +79,7 @@ const processAtUsers = async (text: string, userIds: string[] | null): Promise<s
   const atColor = Common.useDarkTheme() ? '#face15' : '#04498d'
   let processedText = text
   for (const secUid of userIds) {
-    const UserInfoData = await getDouyinData('用户主页数据', { sec_uid: secUid, typeMode: 'strict' })
+    const UserInfoData = await douyinFetcher.fetchUserProfile({ sec_uid: secUid, typeMode: 'strict' })
     if (UserInfoData.data.user.sec_uid === secUid) {
       /** 这里评论只要生成了艾特，如果被艾特的人改了昵称，评论也不会变，所以可能会出现有些艾特没有正确上颜色，因为接口没有提供历史昵称 */
       const regex = new RegExp(`@${UserInfoData.data.user.nickname?.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')}`, 'g')
@@ -184,7 +184,7 @@ export const douyinComments = async (data: any, emojidata: any) => {
       digg_count = (digg_count / 10000).toFixed(1) + 'w'
     }
 
-    const replyComment = await getDouyinData('指定评论回复数据', {
+    const replyComment = await douyinFetcher.fetchCommentReplies({
       aweme_id,
       comment_id: cid,
       typeMode: 'strict',

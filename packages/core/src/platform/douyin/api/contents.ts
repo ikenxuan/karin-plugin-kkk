@@ -10,7 +10,7 @@ import {
 import type { RequestHandler } from 'node-karin/express'
 
 import { getDouyinDB } from '@/module/db'
-import { getDouyinData } from '@/module/utils/amagiClient'
+import { douyinFetcher } from '@/module/utils/amagiClient'
 
 /**
  * 抖音内容项接口
@@ -57,7 +57,7 @@ export const getContents: RequestHandler = async (req, res) => {
       const batch = uniqueSecUids.slice(i, i + 5)
       await Promise.all(batch.map(async (secUid) => {
         try {
-          const userProfile = await getDouyinData('用户主页数据', { 
+          const userProfile = await douyinFetcher.fetchUserProfile({ 
             sec_uid: secUid, 
             typeMode: 'strict' 
           })

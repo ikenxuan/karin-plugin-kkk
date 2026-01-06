@@ -3,7 +3,7 @@ import karin, { logger } from 'node-karin'
 
 import { Common, Networks, Render } from '@/module'
 import { bilibiliDB, douyinDB } from '@/module/db'
-import { getBilibiliData, getDouyinData } from '@/module/utils/amagiClient'
+import { bilibiliFetcher, douyinFetcher } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { Bilibilipush, DouYinpush, getDouyinID } from '@/platform'
@@ -52,9 +52,9 @@ const handleSetDouyinPush = wrapWithErrorHandler(async (e) => {
   }
 
   // 原有的订阅逻辑
-  const data = await getDouyinData('搜索数据', {
+  const data = await douyinFetcher.searchContent({
     query,
-    type: '用户',
+    type: 'user',
     typeMode: 'strict'
   })
   await new DouYinpush(e).setting(data.data)
@@ -85,7 +85,7 @@ const handleSetBilibiliPush = wrapWithErrorHandler(async (e) => {
   }
   const match = /^(\d+)$/.exec(query)
   if (match && match[1]) {
-    const data = await getBilibiliData('用户主页数据', {
+    const data = await bilibiliFetcher.fetchUserCard({
       host_mid: Number(match[1]),
       typeMode: 'strict'
     })
@@ -161,8 +161,8 @@ const handleChangeBotID = wrapWithErrorHandler(async (e) => {
 const handleTestDouyinPush = wrapWithErrorHandler(async (e) => {
   const url = String(e.msg.match(/(http|https):\/\/.*\.(douyin|iesdouyin)\.com\/[^ ]+/g))
   const iddata = await getDouyinID(e, url)
-  const workInfo = await getDouyinData('聚合解析', { aweme_id: iddata.aweme_id, typeMode: 'strict' })
-  const userProfile = await getDouyinData('用户主页数据', { sec_uid: workInfo.data.aweme_detail.author.sec_uid, typeMode: 'strict' })
+  const workInfo = await douyinFetcher.parseWork({ aweme_id: iddata.aweme_id, typeMode: 'strict' })
+  const userProfile = await douyinFetcher.fetchUserProfile({ sec_uid: workInfo.data.aweme_detail.author.sec_uid, typeMode: 'strict' })
 
   const realUrl = Config.douyin.push.shareType === 'web' && await new Networks({
     url: workInfo.data.aweme_detail.share_url,

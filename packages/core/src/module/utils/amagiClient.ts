@@ -93,14 +93,15 @@ export class AmagiBase {
 /** 获取已初始化的解析库实例 */
 const amagiClient = new AmagiBase().amagi
 
-/** 获取B站数据 */
-export const getBilibiliData = amagiClient.getBilibiliData.bind(amagiClient)
 
-/** 获取抖音数据 */
-export const getDouyinData = amagiClient.getDouyinData.bind(amagiClient)
+/** B站 Fetcher 实例 */
+export const bilibiliFetcher = amagiClient.bilibili.fetcher
 
-/** 获取快手数据 */
-export const getKuaishouData = amagiClient.getKuaishouData.bind(amagiClient)
+/** 抖音 Fetcher 实例 */
+export const douyinFetcher = amagiClient.douyin.fetcher
 
-/** 获取小红书数据 */
-export const getXiaohongshuData = amagiClient.getXiaohongshuData.bind(amagiClient)
+/** 快手 Fetcher 实例 */
+export const kuaishouFetcher = amagiClient.kuaishou.fetcher
+
+/** 小红书 Fetcher 实例 */
+export const xiaohongshuFetcher = amagiClient.xiaohongshu.fetcher

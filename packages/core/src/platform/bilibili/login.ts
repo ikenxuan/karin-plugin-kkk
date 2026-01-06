@@ -5,13 +5,13 @@ import type { Message } from 'node-karin'
 import { common } from 'node-karin'
 
 import { Common, Render } from '@/module/utils'
-import { getBilibiliData } from '@/module/utils/amagiClient'
+import { bilibiliFetcher } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 
 /** B站登录 */
 export const bilibiliLogin = async (e: Message) => {
   /** 申请二维码 */
-  const qrcodeurl = await getBilibiliData('申请二维码', { typeMode: 'strict' })
+  const qrcodeurl = await bilibiliFetcher.requestLoginQrcode({ typeMode: 'strict' })
   const qrimg = await Render('bilibili/qrcodeImg', { share_url: qrcodeurl.data.data.url })
 
   const base64Data = qrimg[0]?.file
@@ -87,7 +87,7 @@ export const bilibiliLogin = async (e: Message) => {
 
   while (true) {
     try {
-      const qrcodeStatusData = await getBilibiliData('二维码状态', { qrcode_key, typeMode: 'strict' })
+      const qrcodeStatusData = await bilibiliFetcher.checkQrcodeStatus({ qrcode_key, typeMode: 'strict' })
       const statusCode = qrcodeStatusData.data.data.data.code
 
       switch (statusCode) {

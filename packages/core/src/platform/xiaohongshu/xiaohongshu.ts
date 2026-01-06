@@ -39,12 +39,12 @@ export class Xiaohongshu extends Base {
   async XiaohongshuHandler (data: XiaohongshuIdData) {
     Config.app.EmojiReply && !this.e.isPrivate && await this.e.bot.setMsgReaction(this.e.contact, this.e.messageId, Config.app.EmojiReplyID, true)
     Config.xiaohongshu.tip && await this.e.reply('检测到小红书链接，开始解析')
-    const NoteData = await this.amagi.getXiaohongshuData('单个笔记数据', {
+    const NoteData = await this.amagi.xiaohongshu.fetcher.fetchNoteDetail({
       typeMode: 'strict',
       note_id: data.note_id,
       xsec_token: data.xsec_token
     })
-    const EmojiList = await this.amagi.getXiaohongshuData('表情列表', { typeMode: 'strict' })
+    const EmojiList = await this.amagi.xiaohongshu.fetcher.fetchEmojiList({ typeMode: 'strict' })
     const formattedEmojis = XiaohongshuEmoji(EmojiList)
 
     // 笔记信息
@@ -69,7 +69,7 @@ export class Xiaohongshu extends Base {
 
     // 评论列表
     if (Config.xiaohongshu.sendContent.some(item => item === 'comment')) {
-      const CommentData = await this.amagi.getXiaohongshuData('评论数据', {
+      const CommentData = await this.amagi.xiaohongshu.fetcher.fetchNoteComments({
         typeMode: 'strict',
         note_id: data.note_id,
         xsec_token: data.xsec_token

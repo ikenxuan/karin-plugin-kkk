@@ -2,7 +2,7 @@ import util from 'node:util'
 
 import karin, { logger, segment } from 'node-karin'
 
-import { AmagiError, getBilibiliData } from '@/module/utils/amagiClient'
+import { AmagiError, bilibiliFetcher } from '@/module/utils/amagiClient'
 import { type ErrorStrategy, registerErrorStrategy, renderErrorImage, sendErrorToMaster } from '@/module/utils/ErrorHandler'
 
 /**
@@ -25,7 +25,7 @@ export const bilibiliRiskControlStrategy: ErrorStrategy = {
     logger.info('[BilibiliRiskControl] 检测到B站风控(-352)，开始申请验证码...')
 
     // 申请验证码
-    const verification = await getBilibiliData('从_v_voucher_申请_captcha', {
+    const verification = await bilibiliFetcher.requestCaptchaFromVoucher({
       v_voucher: amagiError.data.data.v_voucher,
       typeMode: 'strict'
     })
@@ -69,7 +69,7 @@ export const bilibiliRiskControlStrategy: ErrorStrategy = {
     }
 
     try {
-      const verifyResult = await getBilibiliData('验证验证码结果', {
+      const verifyResult = await bilibiliFetcher.validateCaptchaResult({
         challenge: geetest.challenge,
         token,
         validate,

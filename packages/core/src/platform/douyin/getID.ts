@@ -61,6 +61,15 @@ export const getDouyinID = async (event: Message, url: string, log = true): Prom
       }
       break
     }
+    case /modal_id=(\d+)/.test(longLink): {
+      const modalMatch = /modal_id=(\d+)/.exec(longLink)
+      result = {
+        type: 'one_work',
+        aweme_id: modalMatch ? modalMatch[1] : undefined,
+        is_mp4: true
+      }
+      break
+    }
     case /https:\/\/(?:www\.douyin\.com|www\.iesdouyin\.com)\/share\/user\/(\S+)/.test(longLink): {
       const userMatch = /user\/([a-zA-Z0-9_-]+)/.exec(longLink)
       result = {

@@ -9,7 +9,7 @@ import {
 } from 'node-karin'
 import type { RequestHandler } from 'node-karin/express'
 
-import { AmagiError, getBilibiliData } from '@/module/utils/amagiClient'
+import { AmagiError, bilibiliFetcher } from '@/module/utils/amagiClient'
 
 /**
  * 风控验证数据接口
@@ -90,7 +90,7 @@ export const handleBilibiliRiskControl = async (
 
   try {
     logger.info(`[BilibiliAPI] 检测到风控(${error.code})，申请验证码...`)
-    const verification = await getBilibiliData('从_v_voucher_申请_captcha', {
+    const verification = await bilibiliFetcher.requestCaptchaFromVoucher({
       v_voucher,
       typeMode: 'strict'
     })
@@ -132,7 +132,7 @@ export const verifyCaptcha: RequestHandler = async (req, res) => {
 
     logger.info('[BilibiliAPI] 提交风控验证结果...')
 
-    const verifyResult = await getBilibiliData('验证验证码结果', {
+    const verifyResult = await bilibiliFetcher.validateCaptchaResult({
       challenge,
       token,
       validate,

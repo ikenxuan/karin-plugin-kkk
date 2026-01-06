@@ -1,6 +1,6 @@
 import { type KuaishouDataOptionsMap } from '@ikenxuan/amagi'
 
-import { getKuaishouData } from '@/module/utils/amagiClient'
+import { kuaishouFetcher } from '@/module/utils/amagiClient'
 import { KuaishouDataTypes } from '@/types'
 
 export const fetchKuaishouData = async <T extends keyof KuaishouDataTypes> (
@@ -9,30 +9,26 @@ export const fetchKuaishouData = async <T extends keyof KuaishouDataTypes> (
 ) => {
   switch (type) {
     case 'one_work': {
-      const VideoData = await getKuaishouData('单个视频作品数据', {
+      const VideoData = await kuaishouFetcher.fetchVideoWork({
         photoId: (opt as KuaishouDataOptionsMap['单个视频作品数据']['opt']).photoId,
         typeMode: 'strict'
       })
-      const CommentsData = await getKuaishouData('评论数据', {
+      const CommentsData = await kuaishouFetcher.fetchWorkComments({
         photoId: (opt as KuaishouDataOptionsMap['评论数据']['opt']).photoId,
         typeMode: 'strict'
       })
-      const EmojiData = await getKuaishouData('Emoji数据', {
-        typeMode: 'strict'
-      })
+      const EmojiData = await kuaishouFetcher.fetchEmojiList({ typeMode: 'strict' })
       return { VideoData, CommentsData, EmojiData }
     }
     case 'work_comments': {
-      const CommentsData = await getKuaishouData('评论数据', {
+      const CommentsData = await kuaishouFetcher.fetchWorkComments({
         photoId: (opt as KuaishouDataOptionsMap['评论数据']['opt']).photoId,
         typeMode: 'strict'
       })
       return CommentsData.data
     }
     case 'emoji_list': {
-      const EmojiData = await getKuaishouData('Emoji数据', {
-        typeMode: 'strict'
-      })
+      const EmojiData = await kuaishouFetcher.fetchEmojiList({ typeMode: 'strict' })
       return EmojiData
     }
     default: {

@@ -340,8 +340,8 @@ export class DouYinpush extends Base {
         await common.sleep(2000)
         const sec_uid = item.sec_uid
         logger.debug(`开始获取用户：${item.remark}（${sec_uid}）的主页作品列表`)
-        const videolist = await this.amagi.getDouyinData('用户主页视频列表数据', { sec_uid, typeMode: 'strict' })
-        const userinfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
+        const videolist = await this.amagi.douyin.fetcher.fetchUserVideoList({ sec_uid, typeMode: 'strict' })
+        const userinfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid, typeMode: 'strict' })
 
         const targets = item.group_id.map(groupWithBot => {
           const [groupId, botId] = groupWithBot.split(':')
@@ -411,7 +411,7 @@ export class DouYinpush extends Base {
         const liveStatus = await douyinDB.getLiveStatus(sec_uid)
 
         if (userinfo.data.user.live_status === 1) {
-          const UserInfoData = await this.amagi.getDouyinData('用户主页数据', { sec_uid: userinfo.data.user.sec_uid, typeMode: 'strict' })
+          const UserInfoData = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid: userinfo.data.user.sec_uid, typeMode: 'strict' })
 
           if (!UserInfoData.data.user?.live_status || UserInfoData.data.user.live_status !== 1) {
             logger.error((UserInfoData?.data?.user?.nickname ?? '用户') + '当前未在直播')
@@ -421,7 +421,7 @@ export class DouYinpush extends Base {
           }
 
           const room_data = JSON.parse(UserInfoData.data.user.room_data)
-          const liveInfo = await this.amagi.getDouyinData('直播间信息数据', {
+          const liveInfo = await this.amagi.douyin.fetcher.fetchLiveRoomInfo({
             room_id: UserInfoData.data.user.room_id_str,
             web_rid: room_data.owner.web_rid,
             typeMode: 'strict'
@@ -510,7 +510,7 @@ export class DouYinpush extends Base {
 
       // 使用匹配到的用户的 sec_uid 进行下一步请求
       const sec_uid = matchedUser.sec_uid
-      const UserInfoData = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
+      const UserInfoData = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid, typeMode: 'strict' })
 
       /** 处理抖音号 */
       let user_shortid
@@ -618,7 +618,7 @@ export class DouYinpush extends Base {
 
     for (const subscription of subscriptions) {
       const sec_uid = subscription.sec_uid
-      const userInfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid, typeMode: 'strict' })
+      const userInfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid, typeMode: 'strict' })
 
       // 查找配置文件中对应的全局开关状态
       const configItem = Config.pushlist.douyin?.find((item: douyinPushItem) => item.sec_uid === sec_uid)
@@ -707,7 +707,7 @@ export class DouYinpush extends Base {
     if (updateList.length > 0) {
       for (const i of updateList) {
         // 从外部数据源获取用户备注信息
-        const userinfo = await this.amagi.getDouyinData('用户主页数据', { sec_uid: i.sec_uid, typeMode: 'strict' })
+        const userinfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid: i.sec_uid, typeMode: 'strict' })
         const remark = userinfo.data.user.nickname
 
         // 在配置文件中找到对应的用户，并更新其备注信息

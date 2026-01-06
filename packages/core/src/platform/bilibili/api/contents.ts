@@ -10,7 +10,7 @@ import {
 import type { RequestHandler } from 'node-karin/express'
 
 import { getBilibiliDB } from '@/module/db'
-import { AmagiError, getBilibiliData } from '@/module/utils/amagiClient'
+import { AmagiError, bilibiliFetcher } from '@/module/utils/amagiClient'
 
 /**
  * B站内容项接口
@@ -62,7 +62,7 @@ export const getContents: RequestHandler = async (req, res) => {
       }
       
       try {
-        const userProfile = await getBilibiliData('用户主页数据', { 
+        const userProfile = await bilibiliFetcher.fetchUserCard({ 
           host_mid: mid, 
           typeMode: 'strict' 
         })

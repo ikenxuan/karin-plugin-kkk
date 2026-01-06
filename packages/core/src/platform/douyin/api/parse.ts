@@ -16,7 +16,7 @@ import {
 } from 'node-karin'
 import type { RequestHandler } from 'node-karin/express'
 
-import { getDouyinData } from '@/module/utils/amagiClient'
+import { douyinFetcher } from '@/module/utils/amagiClient'
 
 /**
  * 合辑项目类型
@@ -189,9 +189,9 @@ export const parseWork: RequestHandler = async (req, res) => {
     
     // 并发获取作品数据、评论数据、表情数据
     const [workResponse, commentsResponse, emojiResponse] = await Promise.all([
-      getDouyinData('聚合解析', { aweme_id, typeMode: 'strict' }),
-      getDouyinData('评论数据', { aweme_id, typeMode: 'strict' }),
-      getDouyinData('Emoji数据', { typeMode: 'strict' })
+      douyinFetcher.parseWork({ aweme_id, typeMode: 'strict' }),
+      douyinFetcher.fetchWorkComments({ aweme_id, typeMode: 'strict' }),
+      douyinFetcher.fetchEmojiList({ typeMode: 'strict' })
     ])
     
     const awemeDetail = (workResponse.data as DyVideoWork | DyImageAlbumWork | DySlidesWork).aweme_detail

@@ -2,7 +2,7 @@
  * 配置 Schema API
  * 提供配置项元数据接口，供移动 APP 动态渲染配置界面
  */
-import type { Request, Response } from 'express'
+import type { Request, Response } from 'node-karin/express'
 
 import { getConfigSchema, getModuleSchema } from '@/module/config'
 

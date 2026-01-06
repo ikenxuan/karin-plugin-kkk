@@ -11,7 +11,7 @@ import {
 } from 'node-karin'
 import type { RequestHandler } from 'node-karin/express'
 
-import { getBilibiliData } from '@/module/utils/amagiClient'
+import { bilibiliFetcher } from '@/module/utils/amagiClient'
 
 import { handleBilibiliRiskControl } from './risk-control'
 
@@ -115,7 +115,7 @@ export const getVideoPlayUrl: RequestHandler = async (req, res) => {
     const pageNum = p ? parseInt(p, 10) : 1
     
     // 获取视频基本信息
-    const infoResponse = await getBilibiliData('单个视频作品数据', { 
+    const infoResponse = await bilibiliFetcher.fetchVideoInfo({ 
       bvid, 
       typeMode: 'strict' 
     })
@@ -127,7 +127,7 @@ export const getVideoPlayUrl: RequestHandler = async (req, res) => {
       : videoInfo.cid
     
     // 获取视频流信息（登录状态下获取高清流）
-    const playUrlResponse = await getBilibiliData('单个视频下载信息数据', {
+    const playUrlResponse = await bilibiliFetcher.fetchVideoStreamUrl({
       avid: videoInfo.aid,
       cid: cid as number,
       typeMode: 'strict'
