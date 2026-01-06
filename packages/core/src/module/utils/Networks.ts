@@ -506,31 +506,56 @@ export class Networks {
       throw new Error(`Invalid URL: ${targetUrl || '(empty)'}, Headers: ${JSON.stringify(sanitized)}`)
     }
 
-    try {
-      // 使用 HEAD 请求只获取响应头，避免下载整个视频流
-      const response = await this.axiosInstance.head(targetUrl, {
-        maxRedirects: 5,
-        validateStatus: (status) => status >= 200 && status < 400
-      })
-      const finalUrl =
-        (response.request as any)?.res?.responseUrl ??
-        (response.config as any)?.url ??
-        targetUrl
-      return finalUrl
-    } catch (error) {
-      const axiosError = error as AxiosError
-      if (axiosError.response?.status === 302 && axiosError.response.headers?.location) {
-        const redirectUrl = axiosError.response.headers.location
-        logger.info(`检测到302重定向，目标地址: ${redirectUrl}`)
-        return await this.getLongLink(redirectUrl)
-      }
+    // 先尝试 HEAD 请求，失败则 fallback 到 GET
+    const methods = ['head', 'get'] as const
+    let lastError: Error | null = null
 
-      const sanitized = sanitizeHeaders(this.headers)
-      const errorDesc = getErrorDescription(axiosError)
-      const msg = `获取链接重定向失败: ${targetUrl} - ${errorDesc}, Headers: ${JSON.stringify(sanitized)}`
-      logger.error(msg)
-      throw new Error(msg)
+    for (const method of methods) {
+      try {
+        const response = await this.axiosInstance.request({
+          url: targetUrl,
+          method,
+          maxRedirects: 5,
+          validateStatus: (status) => status >= 200 && status < 400,
+          // GET 请求时只请求 0 字节，避免下载整个文件
+          headers: method === 'get' ? { ...this.headers, Range: 'bytes=0-0' } : this.headers,
+          // 跳过重试，避免重复尝试
+          skipRetry: true
+        } as CustomAxiosRequestConfig)
+
+        const finalUrl =
+          (response.request as any)?.res?.responseUrl ??
+          (response.config as any)?.url ??
+          targetUrl
+        return finalUrl
+      } catch (error) {
+        const axiosError = error as AxiosError
+
+        // 处理 302 重定向
+        if (axiosError.response?.status === 302 && axiosError.response.headers?.location) {
+          const redirectUrl = axiosError.response.headers.location
+          logger.info(`检测到302重定向，目标地址: ${redirectUrl}`)
+          return await this.getLongLink(redirectUrl)
+        }
+
+        // HEAD 失败时记录并尝试 GET
+        if (method === 'head') {
+          logger.debug(`HEAD 请求失败 (${axiosError.code || axiosError.message})，尝试 GET 请求`)
+          lastError = axiosError
+          continue
+        }
+
+        // GET 也失败了，抛出错误
+        lastError = axiosError
+      }
     }
+
+    // 所有方法都失败
+    const sanitized = sanitizeHeaders(this.headers)
+    const errorDesc = getErrorDescription(lastError)
+    const msg = `获取链接重定向失败: ${targetUrl} - ${errorDesc}, Headers: ${JSON.stringify(sanitized)}`
+    logger.error(msg)
+    throw new Error(msg)
   }
 
   /** 获取首个302链接 */
