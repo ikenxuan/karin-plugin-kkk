@@ -1,10 +1,10 @@
 {
   "version": "2.17.1",
-  "buildTime": "2026-01-01T19:15:27.365Z",
-  "buildTimestamp": 1767294927365,
+  "buildTime": "2026-01-06T18:11:10.357Z",
+  "buildTimestamp": 1767723070358,
   "name": "karin-plugin-kkk",
   "description": "Karin 的「抖音」「B 站」视频解析/动态推送插件",
   "homepage": "https://github.com/ikenxuan/karin-plugin-kkk",
-  "commitHash": "defc1ea2a7e52a086d602f8246b645ffa2a9b2ae",
-  "shortCommitHash": "defc1ea2"
+  "commitHash": "1dc5dbc450a34a42310871c1733c938b7e2b11f0",
+  "shortCommitHash": "1dc5dbc4"
 }
