@@ -1,37 +1,88 @@
 name: 🚀 功能请求
 description: 提议一个新的功能或改进
-title: "[🚀 Feature Request] "
+title: "Feature: "
 labels: ["enhancement"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 感谢你提交功能建议！
+        
+        > ⚠️ **请务必修改上方标题**，简要描述你想要的功能（例如：`Feature: 支持解析 xxx 平台`）
+        > 
+        > 标题格式不正确的 issue 可能会被直接关闭
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 提交前检查
+      description: 请确认以下事项
+      options:
+        - label: 我已经搜索过现有的 Issues，确认没有重复的功能请求
+          required: true
+        - label: 我已经修改了上方的标题，填写了具体的功能描述
+          required: true
+
+  - type: input
+    id: title-summary
+    attributes:
+      label: 功能简述
+      description: 用一句话概括你想要的功能
+      placeholder: 例如：支持解析 xxx 平台的视频
+    validations:
+      required: true
+
   - type: textarea
     id: feature-description
     attributes:
       label: 功能描述
-      description: 清晰、简洁地描述你提议的新功能或改进。
-      placeholder: 请描述你提议的功能...
+      description: 清晰、简洁地描述你提议的新功能或改进
+      placeholder: 请详细描述你提议的功能...
     validations:
       required: true
+
   - type: textarea
     id: use-case
     attributes:
       label: 使用场景
-      description: 描述在什么场景下需要这个功能，以及它如何帮助用户。
-      placeholder: 请描述使用场景...
+      description: 描述在什么场景下需要这个功能，以及它如何帮助用户
+      placeholder: |
+        例如：
+        - 当我想要 xxx 的时候...
+        - 这个功能可以帮助用户...
     validations:
-      required: false
+      required: true
+
   - type: textarea
     id: expected-behavior
     attributes:
       label: 期望行为
-      description: 详细描述你期望这个功能如何工作。
-      placeholder: 请描述期望的行为...
+      description: 详细描述你期望这个功能如何工作
+      placeholder: |
+        例如：
+        1. 用户发送 xxx 链接
+        2. 机器人自动识别并解析
+        3. 返回 xxx 内容
     validations:
       required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 优先级建议
+      description: 你认为这个功能的重要程度
+      options:
+        - 低 - 锦上添花
+        - 中 - 有用但不紧急
+        - 高 - 非常需要
+    validations:
+      required: false
+
   - type: textarea
     id: additional-info
     attributes:
       label: 附加信息
-      description: 提供任何其他相关信息，如设计草图、伪代码或示例代码等。
+      description: 提供任何其他相关信息，如参考链接、设计草图、示例等
       placeholder: 请提供附加信息...
     validations:
       required: false

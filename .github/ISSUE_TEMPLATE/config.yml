@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 讨论区
+    url: https://github.com/ikenxuan/karin-plugin-kkk/discussions
+    about: 有问题想讨论？欢迎到讨论区交流
+  - name: 📖 文档
+    url: https://karin-plugin-kkk-docs.vercel.app
+    about: 查看项目文档和使用说明

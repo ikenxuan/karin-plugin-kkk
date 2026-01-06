@@ -1,57 +1,125 @@
 name: 🐛 Bug 报告
 description: 报告项目中的错误或问题
-title: "[🐛 Bug] "
+title: "Bug: "
 labels: ["bug"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 感谢你提交 Bug 报告！
+        
+        > ⚠️ **请务必修改上方标题**，简要描述你遇到的问题（例如：`Bug: 解析抖音视频时报错`）
+        > 
+        > 标题格式不正确的 issue 可能会被直接关闭
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 提交前检查
+      description: 请确认以下事项
+      options:
+        - label: 我已经搜索过现有的 Issues，确认没有重复的问题
+          required: true
+        - label: 我已经修改了上方的标题，填写了具体的问题描述
+          required: true
+        - label: 我使用的是最新版本的插件
+          required: true
+
+  - type: input
+    id: title-summary
+    attributes:
+      label: 问题简述
+      description: 用一句话概括你遇到的问题（这将帮助我们快速定位）
+      placeholder: 例如：解析 B 站视频时提示 Cookie 失效
+    validations:
+      required: true
+
   - type: textarea
     id: describe-the-bug
     attributes:
       label: 问题描述
-      description: 清晰、简洁地描述你遇到的问题。
-      placeholder: 请描述你遇到的问题...
+      description: 清晰、简洁地描述你遇到的问题
+      placeholder: 请详细描述你遇到的问题...
     validations:
       required: true
+
   - type: textarea
     id: reproduce-steps
     attributes:
       label: 复现步骤
-      description: 列出复现该问题的步骤。
+      description: 列出复现该问题的步骤
       placeholder: |
-        1. ...
-        2. ...
-        3. ...
-        4. ...
+        1. 发送链接 xxx
+        2. 等待解析
+        3. 出现错误 xxx
     validations:
       required: true
+
   - type: textarea
     id: expected-behavior
     attributes:
       label: 预期行为
-      description: 描述你期望发生的行为。
+      description: 描述你期望发生的行为
       placeholder: 请描述你期望的行为...
     validations:
-      required: false
+      required: true
+
   - type: textarea
     id: screenshots
     attributes:
       label: 错误日志或截图
-      description: 错误日志以帮助解释你的问题，也能帮助我更快定位问题所在。
-      placeholder: 请上传截图...
+      description: |
+        请提供完整的错误日志或截图，这能帮助我更快定位问题
+        - 日志请使用代码块包裹
+        - 截图请直接粘贴
+      placeholder: 请粘贴错误日志或上传截图...
     validations:
       required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 相关平台
+      description: 这个问题涉及哪个平台？
+      options:
+        - 抖音
+        - B站
+        - 快手
+        - 小红书
+        - 推送功能
+        - 其他/不确定
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: 插件版本
+      description: 你所使用的插件版本（可通过 `#kkk版本` 查看）
+      placeholder: 例如：1.0.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: adapter
+    attributes:
+      label: 使用的适配器
+      description: 你使用的是什么适配器连接机器人？
+      options:
+        - ICQQ
+        - NapCat
+        - LLOneBot
+        - Lagrange
+        - Koishi
+        - 其他
+    validations:
+      required: true
+
   - type: input
     id: os
     attributes:
       label: 操作系统
-      description: 你遇到问题时使用的操作系统。
-      placeholder: 例如：Windows 11、Ubuntu 24
+      description: 你的服务器/电脑操作系统
+      placeholder: 例如：Windows 11、Ubuntu 24.04、Debian 12
     validations:
       required: false
-  - type: input
-    id: version
-    attributes:
-      label: 版本
-      description: 你所使用的版本。
-      placeholder: 例如：1.0.0
-    validations:
-      required: true

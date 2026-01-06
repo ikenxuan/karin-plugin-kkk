@@ -7,6 +7,73 @@ on:
     types: [labeled, opened, edited]
 
 jobs:
+  # Issue 格式验证
+  validate-issue:
+    if: github.event_name == 'issues' && github.event.action == 'opened'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check issue title
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const title = issue.title;
+            const body = issue.body || '';
+            
+            const problems = [];
+            
+            // 检查标题是否只有前缀没有实际内容
+            const bugPrefixOnly = /^Bug:\s*$/i.test(title);
+            const featurePrefixOnly = /^Feature:\s*$/i.test(title);
+            const emptyTitle = title.trim().length === 0;
+            const tooShort = title.replace(/^(Bug|Feature):\s*/i, '').trim().length < 5;
+            
+            if (emptyTitle || bugPrefixOnly || featurePrefixOnly) {
+              problems.push('❌ **标题为空**：请在标题中简要描述你的问题或建议');
+            } else if (tooShort) {
+              problems.push('⚠️ **标题过短**：请提供更具体的标题描述（至少 5 个字符）');
+            }
+            
+            // 检查是否填写了问题简述
+            const hasSummary = body.includes('### 问题简述') || body.includes('### 功能简述');
+            const summaryMatch = body.match(/### (?:问题|功能)简述\s*\n\s*(.+?)(?:\n|$)/);
+            if (hasSummary && (!summaryMatch || summaryMatch[1].trim().length < 5)) {
+              problems.push('⚠️ **简述过短**：请在「问题简述」或「功能简述」中提供更详细的描述');
+            }
+            
+            if (problems.length > 0) {
+              const warningBody = `
+            你好 @${issue.user.login}，感谢你提交 Issue！
+            
+            但是我们发现了一些格式问题：
+            
+            ${problems.join('\n')}
+            
+            ---
+            
+            📝 **请编辑此 Issue**，补充以上信息后我们会尽快处理。
+            
+            > 💡 提示：一个好的标题应该简洁明了地描述问题，例如：
+            > - \`Bug: 解析抖音视频时提示 Cookie 失效\`
+            > - \`Feature: 支持解析微博视频\`
+            `;
+              
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: warningBody
+              });
+              
+              // 添加 needs-info 标签
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: ['needs-info']
+              });
+            }
+
   # 标签回复
   label-greetings:
     if: github.event_name == 'issues' && github.event.action == 'labeled'
@@ -44,4 +111,4 @@ jobs:
           show-footer: false
           show-mentioned: true
           since-days: 730
-          exclude-labels: 'duplicate,invalid'
+          exclude-labels: 'duplicate,invalid,needs-info'
