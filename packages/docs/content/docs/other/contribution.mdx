@@ -5,6 +5,7 @@ description: 欢迎参与 karin-plugin-kkk 的开发与贡献
 
 import { Callout } from 'fumadocs-ui/components/callout';
 import { Steps, Step } from 'fumadocs-ui/components/steps';
+import { Mermaid } from '@/components/Mermaid';
 
 # 贡献指南
 
@@ -32,6 +33,144 @@ import { Steps, Step } from 'fumadocs-ui/components/steps';
 <Callout type="warn">
 `packages/amagi` 是一个 **Git 子模块**。如果你需要修改 API 相关的逻辑（如签名算法），请**不要直接修改该目录**。你需要前往 [amagi 仓库](https://github.com/ikenxuan/amagi) 提交 Pull Request。
 </Callout>
+
+## 架构说明
+
+### 插件在 Karin 中的位置
+
+`karin-plugin-kkk` 是 Karin 框架的一个功能插件，遵循 Karin 的插件规范开发。
+
+<Mermaid chart={`
+flowchart TB
+    subgraph Karin["Karin 框架"]
+        direction TB
+        Core["Karin Core"]
+        EventBus["事件总线"]
+        PluginLoader["插件加载器"]
+        Adapters["适配器层"]
+    end
+
+    subgraph Adapters
+        ICQQ["ICQQ"]
+        NapCat["NapCat"]
+        LLOneBot["LLOneBot"]
+        Lagrange["Lagrange"]
+        Others["..."]
+    end
+
+    subgraph Plugin["karin-plugin-kkk"]
+        direction TB
+        Apps["Apps 命令层"]
+        Platform["Platform 平台层"]
+        Module["Module 工具层"]
+        Amagi["Amagi 解析库"]
+    end
+
+    QQ["QQ / 其他 IM"] <--> Adapters
+    Adapters <--> Core
+    Core <--> EventBus
+    EventBus <--> PluginLoader
+    PluginLoader --> Plugin
+    Apps --> Platform
+    Platform --> Module
+    Platform --> Amagi
+`} />
+
+### 消息处理流程
+
+当用户在群聊中发送包含平台链接的消息时，插件的处理流程如下：
+
+<Mermaid chart={`
+sequenceDiagram
+    participant User as 用户
+    participant QQ as QQ客户端
+    participant Adapter as 适配器
+    participant Karin as Karin Core
+    participant Plugin as karin-plugin-kkk
+    participant Platform as 平台API
+    participant Render as 渲染器
+
+    User->>QQ: 发送分享链接
+    QQ->>Adapter: 消息上报
+    Adapter->>Karin: 标准化消息
+    Karin->>Plugin: 触发命令匹配
+    
+    Plugin->>Plugin: 解析链接获取ID
+    Plugin->>Platform: 请求作品数据
+    Platform-->>Plugin: 返回视频/图文数据
+    Plugin->>Platform: 请求评论数据
+    Platform-->>Plugin: 返回评论列表
+    
+    Plugin->>Render: 渲染评论图片
+    Render-->>Plugin: 返回图片
+    
+    Plugin->>Karin: 发送消息
+    Karin->>Adapter: 转发消息
+    Adapter->>QQ: 发送到群聊
+    QQ->>User: 展示解析结果
+`} />
+
+### 核心模块说明
+
+**Apps 命令层** - 负责注册 Karin 命令，监听消息并分发到对应的平台处理器。
+
+```
+src/apps/
+├── tools.ts      # 视频解析命令（抖音/B站/快手/小红书）
+├── push.ts       # 动态推送任务
+├── qrlogin.ts    # 扫码登录功能
+├── admin.ts      # 管理员命令
+├── help.ts       # 帮助信息
+└── update.ts     # 插件更新
+```
+
+**Platform 平台层** - 每个平台独立封装，包含链接解析、数据获取、评论处理等。
+
+```
+src/platform/
+├── douyin/       # 抖音
+├── bilibili/     # B站
+├── kuaishou/     # 快手
+└── xiaohongshu/  # 小红书
+```
+
+**Module 工具层** - 提供配置管理、数据库操作、API 服务、网络请求等通用功能。
+
+```
+src/module/
+├── config/       # 配置管理
+├── db/           # 数据库操作
+├── server/       # API 服务
+└── utils/        # 工具函数
+```
+
+### 数据流向
+
+<Mermaid chart={`
+flowchart LR
+    subgraph Input["输入"]
+        Link["分享链接"]
+    end
+
+    subgraph Process["处理"]
+        Parse["链接解析"]
+        Fetch["数据获取"]
+        Transform["数据转换"]
+    end
+
+    subgraph Output["输出"]
+        Video["视频文件"]
+        Image["评论图片"]
+        Info["作品信息"]
+    end
+
+    Link --> Parse
+    Parse --> Fetch
+    Fetch --> Transform
+    Transform --> Video
+    Transform --> Image
+    Transform --> Info
+`} />
 
 ## 开发流程
 
