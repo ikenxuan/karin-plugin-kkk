@@ -26,21 +26,21 @@ export interface DouyinDanmakuElem {
   digg_count?: number
 }
 
-/** 视频编码格式 */
-export type VideoCodec = 'h264' | 'h265' | 'av1'
+/** 抖音视频编码格式 */
+export type DouyinVideoCodec = 'h264' | 'h265' | 'av1'
 
-/** 横屏转竖屏模式 */
-export type VerticalMode = 'off' | 'standard' | 'force'
+/** 抖音横屏转竖屏模式 */
+export type DouyinVerticalMode = 'off' | 'standard' | 'force'
 
-/** 弹幕字号 */
-export type DanmakuFontSize = 'small' | 'medium' | 'large'
+/** 抖音弹幕字号 */
+export type DouyinDanmakuFontSize = 'small' | 'medium' | 'large'
 
 /** 抖音弹幕烧录配置 */
 export interface DouyinDanmakuOptions {
   /** 弹幕显示区域比例（0.25/0.5/0.75/1） */
   danmakuArea?: number
   /** 横屏转竖屏模式 */
-  verticalMode?: VerticalMode
+  verticalMode?: DouyinVerticalMode
   /** 滚动时间（秒） */
   scrollTime?: number
   /** 透明度（0-100，0为完全透明，100为完全不透明） */
@@ -50,28 +50,28 @@ export interface DouyinDanmakuOptions {
   /** 删除源文件 */
   removeSource?: boolean
   /** 视频编码格式（默认 h265） */
-  videoCodec?: VideoCodec
+  videoCodec?: DouyinVideoCodec
   /** 弹幕字号（默认 medium） */
-  danmakuFontSize?: DanmakuFontSize
+  danmakuFontSize?: DouyinDanmakuFontSize
 }
 
 // ==================== 编码器检测 ====================
 
-const ENCODER_PRIORITY: Record<VideoCodec, readonly string[]> = {
+const ENCODER_PRIORITY: Record<DouyinVideoCodec, readonly string[]> = {
   h264: ['h264_nvenc', 'h264_qsv', 'h264_amf', 'libx264'],
   h265: ['hevc_nvenc', 'hevc_qsv', 'hevc_amf', 'libx265'],
   av1: ['av1_nvenc', 'av1_qsv', 'av1_amf', 'libsvtav1', 'libaom-av1']
 } as const
 
-const SOFTWARE_FALLBACK: Record<VideoCodec, string> = {
+const SOFTWARE_FALLBACK: Record<DouyinVideoCodec, string> = {
   h264: 'libx264',
   h265: 'libx265',
   av1: 'libsvtav1'
 }
 
-const cachedEncoders: Partial<Record<VideoCodec, string>> = {}
+const cachedEncoders: Partial<Record<DouyinVideoCodec, string>> = {}
 
-async function detectEncoder (codec: VideoCodec): Promise<string> {
+async function detectEncoder (codec: DouyinVideoCodec): Promise<string> {
   if (cachedEncoders[codec]) return cachedEncoders[codec]!
 
   logger.debug(`[DouyinDanmaku] 开始检测 ${codec.toUpperCase()} 编码器...`)
@@ -193,7 +193,7 @@ const isLandscape = (w: number, h: number) => w > h
 
 // ==================== FFprobe 工具 ====================
 
-export async function getResolution (path: string): Promise<{ width: number; height: number }> {
+export async function getDouyinResolution (path: string): Promise<{ width: number; height: number }> {
   try {
     const { stdout } = await ffprobe(`-v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "${path}"`)
     const [w, h] = stdout.trim().split('x').map(Number)
@@ -208,7 +208,7 @@ export async function getResolution (path: string): Promise<{ width: number; hei
   return { width: 1080, height: 1920 } // 抖音默认竖屏
 }
 
-export async function getFrameRate (path: string): Promise<number> {
+export async function getDouyinFrameRate (path: string): Promise<number> {
   try {
     const { stdout } = await ffprobe(`-v error -select_streams v:0 -show_entries stream=r_frame_rate -of default=noprint_wrappers=1:nokey=1 "${path}"`)
     const [num, den] = stdout.trim().split('/').map(Number)
@@ -237,7 +237,7 @@ interface TrackInfo {
  * 抖音弹幕只有滚动弹幕，没有顶部/底部固定弹幕
  */
 /** 字号配置映射 */
-const FONT_SIZE_MAP: Record<DanmakuFontSize, { base: number; trackH: number }> = {
+const FONT_SIZE_MAP: Record<DouyinDanmakuFontSize, { base: number; trackH: number }> = {
   small: { base: 25, trackH: 30 },
   medium: { base: 32, trackH: 38 },
   large: { base: 40, trackH: 46 }
@@ -368,7 +368,7 @@ const MAX_OUTPUT_WIDTH = 2160
  * 计算画布尺寸（竖屏适配）
  * 抖音视频大多是竖屏，但也可能有横屏视频需要转竖屏
  */
-function calcCanvas (origW: number, origH: number, verticalMode: VerticalMode): CanvasInfo {
+function calcCanvas (origW: number, origH: number, verticalMode: DouyinVerticalMode): CanvasInfo {
   if (verticalMode === 'off') {
     return { width: origW, height: origH, offsetY: 0, isVertical: false }
   }
@@ -438,8 +438,8 @@ export async function burnDouyinDanmaku (
     return false
   }
 
-  const resolution = await getResolution(videoPath)
-  const frameRate = await getFrameRate(videoPath)
+  const resolution = await getDouyinResolution(videoPath)
+  const frameRate = await getDouyinFrameRate(videoPath)
   const sourceBitrate = await getVideoBitrate(videoPath)
   const canvas = calcCanvas(resolution.width, resolution.height, verticalMode)
 

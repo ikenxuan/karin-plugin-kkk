@@ -10,11 +10,11 @@ export const fetchKuaishouData = async <T extends keyof KuaishouDataTypes> (
   switch (type) {
     case 'one_work': {
       const VideoData = await kuaishouFetcher.fetchVideoWork({
-        photoId: (opt as KuaishouDataOptionsMap['单个视频作品数据']['opt']).photoId,
+        photoId: (opt as KuaishouDataOptionsMap['videoWork']['opt']).photoId,
         typeMode: 'strict'
       })
       const CommentsData = await kuaishouFetcher.fetchWorkComments({
-        photoId: (opt as KuaishouDataOptionsMap['评论数据']['opt']).photoId,
+        photoId: (opt as KuaishouDataOptionsMap['comments']['opt']).photoId,
         typeMode: 'strict'
       })
       const EmojiData = await kuaishouFetcher.fetchEmojiList({ typeMode: 'strict' })
@@ -22,7 +22,7 @@ export const fetchKuaishouData = async <T extends keyof KuaishouDataTypes> (
     }
     case 'work_comments': {
       const CommentsData = await kuaishouFetcher.fetchWorkComments({
-        photoId: (opt as KuaishouDataOptionsMap['评论数据']['opt']).photoId,
+        photoId: (opt as KuaishouDataOptionsMap['comments']['opt']).photoId,
         typeMode: 'strict'
       })
       return CommentsData.data

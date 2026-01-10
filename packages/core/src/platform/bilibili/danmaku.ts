@@ -25,21 +25,21 @@ export interface BiliDanmakuElem {
   content: string
 }
 
-/** 横屏转竖屏模式 */
-export type VerticalMode = 'off' | 'standard' | 'force'
+/** B站横屏转竖屏模式 */
+export type BiliVerticalMode = 'off' | 'standard' | 'force'
 
-/** 视频编码格式 */
-export type VideoCodec = 'h264' | 'h265' | 'av1'
+/** B站视频编码格式 */
+export type BiliVideoCodec = 'h264' | 'h265' | 'av1'
 
-/** 弹幕字号 */
-export type DanmakuFontSize = 'small' | 'medium' | 'large'
+/** B站弹幕字号 */
+export type BiliDanmakuFontSize = 'small' | 'medium' | 'large'
 
 /** B站弹幕烧录配置 */
 export interface BiliDanmakuOptions {
   /** 弹幕显示区域比例（0.25/0.5/0.75/1） */
   danmakuArea?: number
   /** 横屏转竖屏模式 */
-  verticalMode?: VerticalMode
+  verticalMode?: BiliVerticalMode
   /** 滚动时间（秒） */
   scrollTime?: number
   /** 透明度（0-100，0为完全透明，100为完全不透明） */
@@ -49,32 +49,32 @@ export interface BiliDanmakuOptions {
   /** 删除源文件 */
   removeSource?: boolean
   /** 视频编码格式（默认 h265） */
-  videoCodec?: VideoCodec
+  videoCodec?: BiliVideoCodec
   /** 弹幕字号（默认 medium） */
-  danmakuFontSize?: DanmakuFontSize
+  danmakuFontSize?: BiliDanmakuFontSize
 }
 
 // ==================== 编码器检测 ====================
 
 /** 各编码格式的硬件编码器优先级 */
-const ENCODER_PRIORITY: Record<VideoCodec, readonly string[]> = {
+const ENCODER_PRIORITY: Record<BiliVideoCodec, readonly string[]> = {
   h264: ['h264_nvenc', 'h264_qsv', 'h264_amf', 'libx264'],
   h265: ['hevc_nvenc', 'hevc_qsv', 'hevc_amf', 'libx265'],
   av1: ['av1_nvenc', 'av1_qsv', 'av1_amf', 'libsvtav1', 'libaom-av1']
 } as const
 
 /** 各编码格式的软件回退编码器 */
-const SOFTWARE_FALLBACK: Record<VideoCodec, string> = {
+const SOFTWARE_FALLBACK: Record<BiliVideoCodec, string> = {
   h264: 'libx264',
   h265: 'libx265',
   av1: 'libsvtav1'
 }
 
 /** 缓存检测结果（按编码格式） */
-const cachedEncoders: Partial<Record<VideoCodec, string>> = {}
+const cachedEncoders: Partial<Record<BiliVideoCodec, string>> = {}
 
 /** 检测可用的硬件编码器 */
-async function detectEncoder (codec: VideoCodec): Promise<string> {
+async function detectEncoder (codec: BiliVideoCodec): Promise<string> {
   if (cachedEncoders[codec]) return cachedEncoders[codec]!
 
   logger.debug(`[BiliDanmaku] 开始检测 ${codec.toUpperCase()} 编码器...`)
@@ -210,7 +210,7 @@ const isLandscape = (w: number, h: number) => w > h
 
 // ==================== FFprobe 工具 ====================
 
-export async function getResolution (path: string): Promise<{ width: number; height: number }> {
+export async function getBiliResolution (path: string): Promise<{ width: number; height: number }> {
   try {
     const { stdout } = await ffprobe(`-v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "${path}"`)
     const [w, h] = stdout.trim().split('x').map(Number)
@@ -225,7 +225,7 @@ export async function getResolution (path: string): Promise<{ width: number; hei
   return { width: 1920, height: 1080 }
 }
 
-export async function getFrameRate (path: string): Promise<number> {
+export async function getBiliFrameRate (path: string): Promise<number> {
   try {
     const { stdout } = await ffprobe(`-v error -select_streams v:0 -show_entries stream=r_frame_rate -of default=noprint_wrappers=1:nokey=1 "${path}"`)
     const [num, den] = stdout.trim().split('/').map(Number)
@@ -252,7 +252,7 @@ interface TrackInfo {
 }
 
 /** 字号配置映射 */
-const FONT_SIZE_MAP: Record<DanmakuFontSize, { base: number; trackH: number }> = {
+const FONT_SIZE_MAP: Record<BiliDanmakuFontSize, { base: number; trackH: number }> = {
   small: { base: 25, trackH: 30 },
   medium: { base: 32, trackH: 38 },
   large: { base: 40, trackH: 46 }
@@ -411,7 +411,7 @@ interface CanvasInfo {
 
 const MAX_OUTPUT_WIDTH = 2160
 
-function calcCanvas (origW: number, origH: number, verticalMode: VerticalMode): CanvasInfo {
+function calcCanvas (origW: number, origH: number, verticalMode: BiliVerticalMode): CanvasInfo {
   if (verticalMode === 'off') {
     return { width: origW, height: origH, offsetY: 0, isVertical: false }
   }
@@ -472,8 +472,8 @@ export async function burnBiliDanmaku (
 ): Promise<boolean> {
   const { removeSource = false, verticalMode = 'off', videoCodec = 'h265' } = options
 
-  const resolution = await getResolution(videoPath)
-  const frameRate = await getFrameRate(videoPath)
+  const resolution = await getBiliResolution(videoPath)
+  const frameRate = await getBiliFrameRate(videoPath)
   const sourceBitrate = await getVideoBitrate(videoPath)
   const canvas = calcCanvas(resolution.width, resolution.height, verticalMode)
 
@@ -526,8 +526,8 @@ export async function mergeAndBurnBili (
     return false
   }
 
-  const resolution = await getResolution(videoPath)
-  const frameRate = await getFrameRate(videoPath)
+  const resolution = await getBiliResolution(videoPath)
+  const frameRate = await getBiliFrameRate(videoPath)
   const sourceBitrate = await getVideoBitrate(videoPath)
   const canvas = calcCanvas(resolution.width, resolution.height, verticalMode)
 

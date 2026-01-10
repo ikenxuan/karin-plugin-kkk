@@ -2,14 +2,12 @@ import path from 'node:path'
 
 import Client, {
   createBilibiliRoutes,
-  createDouyinRoutes,
-  logger as amagiLog,
-  logMiddleware
+  createDouyinRoutes
 } from '@ikenxuan/amagi'
 import history from 'connect-history-api-fallback'
 import * as cors from 'cors'
 import * as httpProxy from 'http-proxy-middleware'
-import { app as karinApp, checkPort } from 'node-karin'
+import { app as karinApp, checkPort, logger } from 'node-karin'
 import express from 'node-karin/express'
 
 import { Root } from '../../root'
@@ -31,11 +29,11 @@ if (process.env.NODE_ENV !== 'test') {
     if (isOpen) {
       const s = server.listen(3780)
       s.on('error', (err) => {
-        amagiLog.error(`[karin-plugin-kkk] 字体代理服务器启动失败: ${err.message}`)
+        logger.error(`[karin-plugin-kkk] 字体代理服务器启动失败: ${err.message}`)
       })
       return s
     }
-    return amagiLog.error('端口 3780 被占用，字体代理服务器将不会启动。')
+    return logger.error('端口 3780 被占用，字体代理服务器将不会启动。')
   })
 }
 
@@ -45,10 +43,8 @@ app.use(express.urlencoded({ extended: true }))
 
 
 if (Config.app.APIServer && Config.app.APIServerMount) {
-  app.use(logMiddleware(['/api/bilibili', '/api/douyin']))
   app.use('/amagi/api/bilibili', createBilibiliRoutes(Config.cookies.bilibili))
   app.use('/amagi/api/douyin', createDouyinRoutes(Config.cookies.douyin))
-  amagiLog.mark(`Amagi server listening on ${amagiLog.green('http://localhost:')}${amagiLog.green(process.env.HTTP_PORT!)} API docs: ${amagiLog.yellow('https://amagi.apifox.cn')}`)
 } else if (Config.app.APIServer) {
   const amagiServer = new Client({
     cookies: {

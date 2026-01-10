@@ -69,7 +69,7 @@ export const getBilibiliID = async (url: string) => {
 
       if (bvid && bvid.toLowerCase().startsWith('av')) {
         const avid = parseInt(bvid.replace(/^av/i, ''))
-        const convertResult = await amagi.bilibili.api.convertAvToBv({ avid, typeMode: 'strict' })
+        const convertResult = await amagi.bilibiliFetcher.convertAvToBv({ avid, typeMode: 'strict' })
         bvid = convertResult.data.data.bvid
       }
 

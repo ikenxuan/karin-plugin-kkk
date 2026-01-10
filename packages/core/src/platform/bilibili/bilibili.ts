@@ -104,7 +104,7 @@ export class Bilibili extends Base {
         this.downloadfilename = infoData.data.data.title.substring(0, 50).replace(/[\\/:*?"<>|\r\n\s]/g, ' ')
 
         const nockData = await new Networks({
-          url: bilibiliApiUrls.视频流信息({
+          url: bilibiliApiUrls.getVideoStream({
             avid: infoData.data.data.aid,
             cid: iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid
           }) + '&platform=html5',
@@ -297,7 +297,7 @@ export class Bilibili extends Base {
           this.e.reply('匹配内容失败，请重新发送链接再次解析')
           return true
         }
-        const bangumidataBASEURL = bilibiliApiUrls.番剧视频流信息({
+        const bangumidataBASEURL = bilibiliApiUrls.getBangumiStream({
           cid: videoInfo.data.result.episodes[Number(Episode) - 1].cid,
           ep_id: videoInfo.data.result.episodes[Number(Episode) - 1].ep_id.toString()
         })
