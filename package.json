@@ -16,7 +16,7 @@
     "dev": "pnpm --filter karin-plugin-kkk run dev",
     "docs": "pnpm --filter docs run dev",
     "lint": "pnpm -r run lint",
-    "prepare": "husky && pnpm sort",
+    "prepare": "husky",
     "sort": "pnpm -r sort",
     "template": "pnpm --filter template run dev",
     "watch": "pnpm --filter karin-plugin-kkk run watch",
@@ -32,9 +32,15 @@
     "cors": "^2.8.5",
     "lucide-react": "0.556.0",
     "node-karin": "1.14.1",
-    "react": "19.2.1",
-    "react-dom": "19.2.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
     "tailwindcss": "4.1.17"
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    }
   },
   "devDependencies": {
     "@eslint/js": "9.39.1",

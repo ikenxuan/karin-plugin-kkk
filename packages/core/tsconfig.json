@@ -20,13 +20,13 @@
         "../template/src/*"
       ],
       "@ikenxuan/amagi": [
-        "../amagi/src/index.ts"
+        "../amagi/packages/core/src/index.ts"
       ],
       "@ikenxuan/amagi/*": [
-        "../amagi/src/*"
+        "../amagi/packages/core/src/*"
       ],
       "amagi/*": [
-        "../amagi/src/*"
+        "../amagi/packages/core/src/*"
       ]
     },
     "jsx": "react",
@@ -60,7 +60,7 @@
       "path": "../template"
     },
     {
-      "path": "../amagi"
+      "path": "../amagi/packages/core"
     }
   ],
   "exclude": [
