@@ -228,6 +228,15 @@ export class Bilibilipush extends Base {
                 decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decoration_card),
                 render_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
                 imageLayout: Config.bilibili.imageLayout,
+                reserve: data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve
+                  ? {
+                    title: data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.title,
+                    desc1: data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.desc1.text,
+                    desc2: data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.desc2.text,
+                    desc3: data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.desc3?.text,
+                    buttonText: data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.button.uncheck.text
+                  }
+                  : undefined,
                 dynamicTYPE: '图文动态推送'
               }
             )

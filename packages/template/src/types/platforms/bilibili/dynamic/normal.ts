@@ -44,6 +44,8 @@ export interface BilibiliDynamicProps extends BaseComponentProps {
     share_url: string
     /** 图片布局方式 */
     imageLayout: string
+    /** 预约信息 */
+    reserve?: BilibiliReserveData
   }
   /** 预生成的二维码数据URL */
   qrCodeDataUrl?: string
@@ -68,6 +70,22 @@ export interface BilibiliDynamicUserInfoProps {
 }
 
 /**
+ * B站预约卡片数据接口
+ */
+export interface BilibiliReserveData {
+  /** 预约标题 */
+  title: string
+  /** 时间信息 */
+  desc1: string
+  /** 预约人数 */
+  desc2: string
+  /** 预约奖励信息（可选） */
+  desc3?: string
+  /** 按钮文本 */
+  buttonText: string
+}
+
+/**
  * B站动态内容组件属性接口
  */
 export interface BilibiliDynamicContentProps {
@@ -79,6 +97,8 @@ export interface BilibiliDynamicContentProps {
   useDarkTheme?: boolean
   /** 图片布局方式 */
   imageLayout: string
+  /** 预约信息 */
+  reserve?: BilibiliReserveData
 }
 
 /**

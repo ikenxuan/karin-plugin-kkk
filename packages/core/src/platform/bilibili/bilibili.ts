@@ -418,7 +418,16 @@ export class Bilibili extends Base {
               decoration_card: generateDecorationCard(dynamicInfo.data.data.item.modules.module_author.decoration_card),
               render_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
               dynamicTYPE: '图文动态',
-              imageLayout: Config.bilibili.imageLayout
+              imageLayout: Config.bilibili.imageLayout,
+              reserve: dynamicInfo.data.data.item.modules.module_dynamic.additional?.reserve
+                ? {
+                  title: dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.title,
+                  desc1: dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.desc1.text,
+                  desc2: dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.desc2.text,
+                  desc3: dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.desc3?.text,
+                  buttonText: dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.button.uncheck.text
+                }
+                : undefined
             }))
             break
           }

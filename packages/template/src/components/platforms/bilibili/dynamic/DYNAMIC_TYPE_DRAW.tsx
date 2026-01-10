@@ -1,5 +1,6 @@
+import { Button } from '@heroui/react'
 import clsx from 'clsx'
-import { Clock, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
+import { Bell, Clock, Eye, Gift, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
 import React from 'react'
 import { LuFullscreen } from 'react-icons/lu'
 
@@ -48,6 +49,55 @@ const BilibiliDynamicUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
           <div dangerouslySetInnerHTML={{ __html: props.decoration_card }} />
         </div>
       )}
+    </div>
+  )
+}
+
+/**
+ * B站预约卡片组件
+ */
+const BilibiliReserveCard: React.FC<{ reserve: BilibiliDynamicContentProps['reserve'] }> = ({ reserve }) => {
+  if (!reserve) return null
+
+  return (
+    <div className='px-20 pb-20'>
+      <div className='overflow-hidden rounded-2xl bg-default-100 shadow-medium'>
+        <div className='flex gap-8 justify-between items-center px-10 py-10'>
+          {/* 左侧内容 */}
+          <div className='flex flex-col gap-4 flex-1'>
+            {/* 标题 */}
+            <div className='text-5xl font-medium text-foreground select-text leading-tight'>
+              {reserve.title}
+            </div>
+            
+            {/* 时间和人数信息 */}
+            <div className='flex gap-8 items-center text-4xl text-foreground-500'>
+              <span className='select-text'>{reserve.desc1}</span>
+              <span className='select-text'>{reserve.desc2}</span>
+            </div>
+
+            {/* 预约奖励信息 */}
+            {reserve.desc3 && (
+              <div className='flex gap-2 items-center text-4xl select-text leading-none' style={{ color: '#fb7299' }}>
+                <Gift size={40} className='shrink-0' />
+                <span className='line-clamp-1'>{reserve.desc3}</span>
+              </div>
+            )}
+          </div>
+
+          {/* 右侧按钮 */}
+          <div className='shrink-0'>
+            <Button
+              startContent={<Bell className='scale-180 mr-4' />}
+              className='text-5xl font-medium text-white px-10 py-6 h-auto min-w-0'
+              style={{ backgroundColor: '#fb7299' }}
+              radius='md'
+            >
+              {reserve.buttonText}
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -178,6 +228,13 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
           {/* 底部间距 */}
           {(layoutType === 'waterfall' || layoutType === 'grid') && <div className='h-18' />}
         </div>
+      )}
+
+      {/* 预约卡片 - 放在图片底部 */}
+      {props.reserve && (
+        <>
+          <BilibiliReserveCard reserve={props.reserve} />
+        </>
       )}
     </>
   )
@@ -329,6 +386,7 @@ export const BilibiliDrawDynamic: React.FC<Omit<BilibiliDynamicProps, 'templateT
           text={props.data.text}
           image_url={props.data.image_url}
           imageLayout={props.data.imageLayout}
+          reserve={props.data.reserve}
         />
 
         {/* 动态状态 */}
