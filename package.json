@@ -44,8 +44,10 @@
   ],
   "scripts": {
     "build": "cross-env NODE_ENV=production vite build && tsdown && vitest run",
+    "build:check": "tsc --noEmit && pnpm build",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
     "lint": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
     "pub": "npm publish --access public",
     "sort": "sort-package-json",
     "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
