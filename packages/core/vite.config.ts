@@ -15,7 +15,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 // 读取 amagi 的版本号
-const amagiPkg = JSON.parse(fs.readFileSync(resolve(__dirname, '../amagi/package.json'), 'utf-8'))
+const amagiPkg = JSON.parse(fs.readFileSync(resolve(__dirname, '../amagi/packages/core/package.json'), 'utf-8'))
 
 const entry: string[] = ['src/index.ts', 'src/root.ts', 'src/web.config.ts', 'src/export/template.ts']
 
@@ -102,12 +102,11 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, './src'),
       template: resolve(__dirname, '../template/src/client.ts'),
-      '@ikenxuan/amagi/chalk': resolve(__dirname, '../amagi/src/exports/chalk.ts'),
-      '@ikenxuan/amagi/axios': resolve(__dirname, '../amagi/src/exports/axios.ts'),
-      '@ikenxuan/amagi/express': resolve(__dirname, '../amagi/src/exports/express.ts'),
-      '@ikenxuan/amagi/log4js': resolve(__dirname, '../amagi/src/exports/log4js.ts'),
-      '@ikenxuan/amagi': resolve(__dirname, '../amagi/src/index.ts'),
-      amagi: resolve(__dirname, '../amagi/src')
+      '@ikenxuan/amagi/chalk': resolve(__dirname, '../amagi/packages/core/src/exports/chalk.ts'),
+      '@ikenxuan/amagi/axios': resolve(__dirname, '../amagi/packages/core/src/exports/axios.ts'),
+      '@ikenxuan/amagi/express': resolve(__dirname, '../amagi/packages/core/src/exports/express.ts'),
+      '@ikenxuan/amagi': resolve(__dirname, '../amagi/packages/core/src/index.ts'),
+      amagi: resolve(__dirname, '../amagi/packages/core/src')
     }
   },
   plugins: [
