@@ -61,17 +61,17 @@ const BilibiliReserveCard: React.FC<{ reserve: BilibiliDynamicContentProps['rese
 
   return (
     <div className='px-20 pb-20'>
-      <div className='overflow-hidden rounded-2xl bg-default-100 shadow-medium'>
+      <div className='overflow-hidden rounded-2xl bg-default-100'>
         <div className='flex gap-8 justify-between items-center px-10 py-10'>
           {/* 左侧内容 */}
           <div className='flex flex-col gap-4 flex-1'>
             {/* 标题 */}
-            <div className='text-5xl font-medium text-foreground select-text leading-tight'>
+            <div className='text-5xl font-normal text-foreground select-text leading-tight'>
               {reserve.title}
             </div>
             
             {/* 时间和人数信息 */}
-            <div className='flex gap-8 items-center text-4xl text-foreground-500'>
+            <div className='flex gap-8 items-center font-light text-4xl text-foreground-500'>
               <span className='select-text'>{reserve.desc1}</span>
               <span className='select-text'>{reserve.desc2}</span>
             </div>
@@ -88,9 +88,12 @@ const BilibiliReserveCard: React.FC<{ reserve: BilibiliDynamicContentProps['rese
           {/* 右侧按钮 */}
           <div className='shrink-0'>
             <Button
-              startContent={<Bell className='scale-180 mr-4' />}
-              className='text-5xl font-medium text-white px-10 py-6 h-auto min-w-0'
-              style={{ backgroundColor: '#fb7299' }}
+              startContent={reserve.buttonText !== '已结束' ? <Bell className='scale-180 mr-4' /> : undefined}
+              className={`text-5xl font-normal px-8 py-5 h-auto min-w-0 ${
+                reserve.buttonText === '已结束'
+                  ? 'bg-default/70 text-default-400'
+                  : 'bg-[#fb7299] text-white'
+              }`}
               radius='md'
             >
               {reserve.buttonText}
@@ -137,7 +140,7 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
             className={clsx(
               'text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-foreground mb-[20px] select-text',
               '[&_svg]:inline [&_svg]:mb-4!',
-              '[&_img]:mb-3 [&_img]:inline [&_img]:mx-1'
+              '[&_img]:inline [&_img]:mx-1 [&_img]:align-text-bottom'
             )}
             content={props.text}
             style={{

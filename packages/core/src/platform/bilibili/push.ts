@@ -234,7 +234,10 @@ export class Bilibilipush extends Base {
                     desc1: data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.desc1.text,
                     desc2: data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.desc2.text,
                     desc3: data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.desc3?.text,
-                    buttonText: data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.button.uncheck.text
+                    // 1: 直播预约；2: 视频预约
+                    buttonText: data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.button.type === 1 ?
+                      data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.button.jump_style.text :
+                      data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.button.uncheck.text
                   }
                   : undefined,
                 dynamicTYPE: '图文动态推送'

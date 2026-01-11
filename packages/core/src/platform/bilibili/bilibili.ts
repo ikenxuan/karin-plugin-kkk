@@ -425,7 +425,10 @@ export class Bilibili extends Base {
                   desc1: dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.desc1.text,
                   desc2: dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.desc2.text,
                   desc3: dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.desc3?.text,
-                  buttonText: dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.button.uncheck.text
+                  // 1: 直播预约；2: 视频预约
+                  buttonText: dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.button.type === 1 ?
+                    dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.button.jump_style.text : 
+                    dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.button.uncheck.text
                 }
                 : undefined
             }))
