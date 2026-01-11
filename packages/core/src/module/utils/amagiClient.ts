@@ -48,45 +48,57 @@ export class AmagiBase {
     })
   }
 
-  /** 包装解析库实例 */
+  /** 包装解析库实例，递归代理所有嵌套对象的方法 */
   protected wrapAmagiClient = (client: ReturnType<typeof Client>): ReturnType<typeof Client> => {
-    const proxy = new Proxy(client, {
-      get (target: ReturnType<typeof Client>, prop: keyof ReturnType<typeof Client>) {
-        const method = target[prop]
-        if (typeof method === 'function') {
-          return async (...args: any[]) => {
-            const result = await Function.prototype.apply.call(method, target, args)
 
-            const isResultType = (val: unknown): val is Result<any> => {
-              if (!val || typeof val !== 'object') return false
-              if (!('success' in val) || typeof (val as any).success !== 'boolean') return false
-              if (!('code' in val) || !('message' in val)) return false
-              return true
-            }
+    const createProxy = (target: any): any => {
+      return new Proxy(target, {
+        get (obj: any, prop: string | symbol) {
+          const value = obj[prop]
 
-            if (isResultType(result)) {
-              if (result.success === true) {
-                return result
+          // 如果是对象（非 null），递归代理
+          if (value && typeof value === 'object' && !Array.isArray(value)) {
+            return createProxy(value)
+          }
+
+          // 如果是函数，包装它以检查返回值
+          if (typeof value === 'function') {
+            return async (...args: any[]) => {
+              const result = await value.apply(obj, args)
+
+              const isResultType = (val: unknown): val is Result<any> => {
+                if (!val || typeof val !== 'object') return false
+                if (!('success' in val) || typeof (val as any).success !== 'boolean') return false
+                if (!('code' in val) || !('message' in val)) return false
+                return true
               }
 
-              // 构建详细的错误消息
-              const errMessage = result.message || (result.error as any)?.amagiMessage || '请求失败'
-              const errorDetails = util.inspect(
-                { code: result.code, data: result.data, message: errMessage, error: result.error },
-                { depth: 10, colors: true, compact: false, breakLength: 120, showHidden: true }
-              )
+              if (isResultType(result)) {
+                if (result.success === true) {
+                  return result
+                }
 
-              const err = new AmagiError(result.code, errorDetails, result.data, result.error)
-              throw err
+                // 构建详细的错误消息
+                const errMessage = result.message || (result.error as any)?.amagiMessage || '请求失败'
+                const errorDetails = util.inspect(
+                  { code: result.code, data: result.data, message: errMessage, error: result.error },
+                  { depth: 10, colors: true, compact: false, breakLength: 120, showHidden: true }
+                )
+
+                const err = new AmagiError(result.code, errorDetails, result.data, result.error)
+                throw err
+              }
+
+              return result
             }
-
-            return result
           }
+
+          return value
         }
-        return method
-      }
-    })
-    return proxy
+      })
+    }
+
+    return createProxy(client)
   }
 }
 

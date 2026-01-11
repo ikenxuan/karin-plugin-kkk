@@ -153,6 +153,14 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
         exportName: 'BilibiliDrawDynamic'
       },
       {
+        id: 'dynamic/DYNAMIC_TYPE_WORD',
+        name: '纯文动态',
+        description: 'B站纯文动态展示模板',
+        enabled: true,
+        componentPath: 'platforms/bilibili/dynamic/DYNAMIC_TYPE_WORD',
+        exportName: 'BilibiliWordDynamic'
+      },
+      {
         id: 'dynamic/DYNAMIC_TYPE_AV',
         name: '视频动态',
         description: 'B站视频动态展示模板',

@@ -419,74 +419,52 @@ export class Bilibili extends Base {
               render_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
               dynamicTYPE: '图文动态',
               imageLayout: Config.bilibili.imageLayout,
-              reserve: dynamicInfo.data.data.item.modules.module_dynamic.additional?.reserve
-                ? {
-                  title: dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.title,
-                  desc1: dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.desc1.text,
-                  desc2: dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.desc2.text,
-                  desc3: dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.desc3?.text,
-                  // 1: 直播预约；2: 视频预约
-                  buttonText: dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.button.type === 1 ?
-                    dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.button.jump_style.text : 
-                    dynamicInfo.data.data.item.modules.module_dynamic.additional.reserve.button.uncheck.text
-                }
-                : undefined
+              additional: parseAdditionalCard(dynamicInfo.data.data.item.modules.module_dynamic.additional)
             }))
             break
           }
           /** 纯文 */
-          // case DynamicType.WORD: {
-          //   const text = replacetext(br(dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text), dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.rich_text_nodes)
+          case DynamicType.WORD: {
+            // 处理话题
+            if ('topic' in dynamicInfo.data.data.item.modules.module_dynamic && dynamicInfo.data.data.item.modules.module_dynamic.topic !== null) {
+              const name = (dynamicInfo.data.data.item.modules.module_dynamic.topic as { name: string }).name
+              dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.rich_text_nodes.unshift({
+                orig_text: name,
+                jump_url: '',
+                text: name,
+                type: 'topic'
+              })
+              dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text = `${name}\n\n` + dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text
+            }
 
-          //   if (dynamicInfo.data.data.item.modules.module_dynamic.additional) {
-          //     switch (dynamicInfo.data.data.item.modules.module_dynamic.additional.type) {
-          //       // TODO: 动态中的额外卡片元素，
-          //       // see: https://github.com/SocialSisterYi/bilibili-API-collect/blob/afc4349247ff7d59ac16dfe6eec8ff2b766a74f0/docs/dynamic/all.md
-          //       // find: data.items[n].modules.module_dynamic.additional
-          //       case AdditionalType.RESERVE: {
-          //         break
-          //       }
-          //       case AdditionalType.COMMON:
-          //       case AdditionalType.GOODS:
-          //       case AdditionalType.VOTE:
-          //       case AdditionalType.UGC:
-          //       case AdditionalType.MATCH:
-          //       case AdditionalType.UPOWER_LOTTERY:
-          //       default: {
-          //         break
-          //       }
-          //     }
-          //   }
-          //   this.e.reply(
-          //     await Render('bilibili/dynamic/DYNAMIC_TYPE_WORD', {
-          //       text,
-          //       dianzan: Count(dynamicInfo.data.data.item.modules.module_stat.like.count),
-          //       pinglun: Count(dynamicInfo.data.data.item.modules.module_stat.comment.count),
-          //       share: Count(dynamicInfo.data.data.item.modules.module_stat.forward.count),
-          //       create_time: dynamicInfo.data.data.item.modules.module_author.pub_time,
-          //       avatar_url: dynamicInfo.data.data.item.modules.module_author.face,
-          //       frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
-          //       share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
-          //       username: checkvip(dynamicInfo.data.data.card ?? userProfileData.data.data.card),
-          //       fans: Count(dynamicInfo.data.data.follower),
-          //       user_shortid: dynamicInfo.data.data.item.modules.module_author.mid,
-          //       total_favorited: Count(userProfileData.data.data.like_num),
-          //       following_count: Count(userProfileData.data.data.card.attention),
-          //       dynamicTYPE: '纯文动态'
-          //     })
-          //   )
-          //   commentsData && this.e.reply(
-          //     await Render('bilibili/comment', {
-          //       Type: '动态',
-          //       CommentsData: bilibiliComments(commentsData.data),
-          //       CommentLength: String((bilibiliComments(commentsData.data)?.length) ? bilibiliComments(commentsData.data).length : 0),
-          //       share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
-          //       ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? '动态中没有附带图片',
-          //       shareurl: '动态分享链接'
-          //     })
-          //   )
-          //   break
-          // }
+            const text = replacetext(
+              br(dynamicInfo.data.data.item.modules.module_dynamic.major.opus?.summary?.text ?? ''),
+              dynamicInfo.data.data.item.modules.module_dynamic.major.opus?.summary?.rich_text_nodes ?? []
+            )
+
+            this.e.reply(
+              await Render('bilibili/dynamic/DYNAMIC_TYPE_WORD', {
+                text,
+                dianzan: Count(dynamicInfo.data.data.item.modules.module_stat.like.count),
+                pinglun: Count(dynamicInfo.data.data.item.modules.module_stat.comment.count),
+                share: Count(dynamicInfo.data.data.item.modules.module_stat.forward.count),
+                create_time: dynamicInfo.data.data.item.modules.module_author.pub_time,
+                avatar_url: dynamicInfo.data.data.item.modules.module_author.face,
+                frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
+                share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
+                username: checkvip(userProfileData.data.data.card),
+                fans: Count(userProfileData.data.data.follower),
+                user_shortid: dynamicInfo.data.data.item.modules.module_author.mid,
+                total_favorited: Count(userProfileData.data.data.like_num),
+                following_count: Count(userProfileData.data.data.card.attention),
+                decoration_card: generateDecorationCard(dynamicInfo.data.data.item.modules.module_author.decoration_card),
+                render_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+                dynamicTYPE: '纯文动态',
+                additional: parseAdditionalCard(dynamicInfo.data.data.item.modules.module_dynamic.additional)
+              })
+            )
+            break
+          }
           /** 转发动态 */
           case DynamicType.FORWARD: {
             const text = replacetext(
@@ -987,6 +965,113 @@ export const generateDecorationCard = (decorate: any) => {
   return decorate
     ? `<div style="display: flex; width: 500px; height: 150px; background-position: center; background-attachment: fixed; background-repeat: no-repeat; background-size: contain; align-items: center; justify-content: flex-end; background-image: url('${decorate.card_url}')">${generateGradientStyle(decorate.fan?.color_format?.colors, decorate.fan.num_str || decorate.fan.num_desc)}</div>`
     : '<div></div>'
+}
+
+/**
+ * 处理B站动态中的相关内容卡片（additional）
+ * @param additional 动态中的 additional 字段
+ * @returns 处理后的卡片数据，如果不支持则返回 undefined
+ * @see https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/dynamic/all.md
+ */
+export const parseAdditionalCard = (additional: any) => {
+  if (!additional) return undefined
+
+  switch (additional.type) {
+    // 预约卡片（直播预约/视频预约）
+    case 'ADDITIONAL_TYPE_RESERVE': {
+      const reserve = additional.reserve
+      if (!reserve) return undefined
+
+      // button.type: 1-直播预约 2-视频预约
+      let buttonText = ''
+      if (reserve.button.type === 1) {
+        // 直播预约：使用 jump_style.text（如"去观看"、"已结束"）
+        buttonText = reserve.button.jump_style?.text ?? '预约'
+      } else {
+        // 视频预约：使用 uncheck.text（如"预约"）或 check.text（如"已预约"）
+        buttonText = reserve.button.uncheck?.text ?? reserve.button.check?.text ?? '预约'
+      }
+
+      return {
+        type: 'ADDITIONAL_TYPE_RESERVE' as const,
+        reserve: {
+          title: reserve.title,
+          desc1: reserve.desc1?.text ?? '',
+          desc2: reserve.desc2?.text ?? '',
+          desc3: reserve.desc3?.text,
+          buttonText
+        }
+      }
+    }
+
+    // 投票卡片
+    case 'ADDITIONAL_TYPE_VOTE': {
+      const vote = additional.vote
+      if (!vote) return undefined
+
+      return {
+        type: 'ADDITIONAL_TYPE_VOTE' as const,
+        vote: {
+          title: vote.title,
+          desc: vote.desc,
+          status: vote.status
+        }
+      }
+    }
+
+    // 通用卡片（游戏、活动等）
+    case 'ADDITIONAL_TYPE_COMMON': {
+      if (!additional.common) return undefined
+
+      return {
+        type: 'ADDITIONAL_TYPE_COMMON' as const,
+        common: {
+          cover: additional.common.cover,
+          title: additional.common.title,
+          desc1: additional.common.desc1,
+          desc2: additional.common.desc2,
+          button_text: additional.common.button?.jump_style?.text,
+          head_text: additional.common.head_text,
+          sub_type: additional.common.sub_type
+        }
+      }
+    }
+
+    // 视频跳转卡片（UGC）
+    case 'ADDITIONAL_TYPE_UGC': {
+      const ugc = additional.ugc
+      if (!ugc) return undefined
+
+      return {
+        type: 'ADDITIONAL_TYPE_UGC' as const,
+        ugc: {
+          cover: ugc.cover,
+          title: ugc.title,
+          duration: ugc.duration,
+          play: ugc.stat?.play ?? ugc.desc_second?.split(' ')[0]?.replace('观看', '播放') ?? '',
+          danmaku: ugc.stat?.danmaku ?? ugc.desc_second?.split(' ')[1]?.replace('弹幕', '') ?? ''
+        }
+      }
+    }
+
+    // 商品卡片
+    case 'ADDITIONAL_TYPE_GOODS': {
+      // TODO: 商品卡片暂未实现
+      logger.error('商品卡片暂未实现，请将这次解析的内容反馈给开发者进行适配！')
+      return undefined
+    }
+
+    // 充电专属抽奖
+    case 'ADDITIONAL_TYPE_UPOWER_LOTTERY': {
+      // TODO: 充电专属抽奖暂未实现
+      logger.error('充电专属抽奖暂未实现，请将这次解析的内容反馈给开发者进行适配！')
+      return undefined
+    }
+
+    default:
+      logger.error('此卡片内容暂未实现，请将这次解析的内容反馈给开发者进行适配！')
+      return undefined
+  }
 }
 
 const mapping_table = (type: any): number => {

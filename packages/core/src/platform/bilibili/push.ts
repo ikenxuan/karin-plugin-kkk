@@ -43,6 +43,7 @@ import {
   extractArticleImages,
   generateDecorationCard,
   getvideosize,
+  parseAdditionalCard,
   replacetext
 } from '@/platform/bilibili'
 import type { bilibiliPushItem } from '@/types/config/pushlist'
@@ -207,7 +208,6 @@ export class Bilibilipush extends Base {
             img = await Render('bilibili/dynamic/DYNAMIC_TYPE_DRAW',
               {
                 image_url: dycrad.item.pictures && cover(dycrad.item.pictures),
-                // TIP: 2025/08/20, 动态卡片数据中，图文动态的描述文本在 major.opus.summary 中
                 text: replacetext(
                   br(
                     data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.summary?.text ?? ''),
@@ -228,54 +228,52 @@ export class Bilibilipush extends Base {
                 decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decoration_card),
                 render_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
                 imageLayout: Config.bilibili.imageLayout,
-                reserve: data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve
-                  ? {
-                    title: data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.title,
-                    desc1: data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.desc1.text,
-                    desc2: data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.desc2.text,
-                    desc3: data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.desc3?.text,
-                    // 1: 直播预约；2: 视频预约
-                    buttonText: data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.button.type === 1 ?
-                      data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.button.jump_style.text :
-                      data[dynamicId].Dynamic_Data.modules.module_dynamic.additional?.reserve.button.uncheck.text
-                  }
-                  : undefined,
+                additional: parseAdditionalCard(data[dynamicId].Dynamic_Data.modules.module_dynamic.additional),
                 dynamicTYPE: '图文动态推送'
               }
             )
             break
           }
           /** 处理纯文动态 */
-          // case DynamicType.WORD: {
-          //   let text = replacetext(data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.text, data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.rich_text_nodes)
-          //   for (const item of emojiDATA) {
-          //     if (text.includes(item.text)) {
-          //       if (text.includes('[') && text.includes(']')) {
-          //         text = text.replace(/\[[^\]]*\]/g, `<img src="${item.url}"/>`).replace(/\\/g, '')
-          //       }
-          //       text += '&#160'
-          //     }
-          //   }
-          //   img = await Render('bilibili/dynamic/DYNAMIC_TYPE_WORD',
-          //     {
-          //       text: br(text),
-          //       dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
-          //       pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
-          //       share: Count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
-          //       create_time: format(fromUnixTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
-          //       avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
-          //       frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
-          //       share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
-          //       username: checkvip(userINFO.data.data.card ?? userINFO.data.data.card),
-          //       fans: Count(userINFO.data.data.follower),
-          //       user_shortid: data[dynamicId].host_mid,
-          //       total_favorited: Count(userINFO.data.data.like_num),
-          //       following_count: Count(userINFO.data.data.card.attention),
-          //       dynamicTYPE: '纯文动态推送'
-          //     }
-          //   )
-          //   break
-          // }
+          case DynamicType.WORD: {
+            // 处理话题
+            if (data[dynamicId].Dynamic_Data.modules.module_dynamic.topic !== null) {
+              const name = data[dynamicId].Dynamic_Data.modules.module_dynamic.topic!.name
+              data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus.summary.rich_text_nodes.unshift({
+                orig_text: name,
+                text: name,
+                type: 'topic',
+                rid: data[dynamicId].Dynamic_Data.modules.module_dynamic.topic!.id.toString()
+              })
+              data[dynamicId].Dynamic_Data.modules.module_dynamic.major!.opus.summary.text = `${name}\n\n` + data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.summary?.text
+            }
+
+            const text = replacetext(
+              br(data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.summary?.text ?? ''),
+              data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.summary?.rich_text_nodes ?? []
+            )
+
+            img = await Render('bilibili/dynamic/DYNAMIC_TYPE_WORD', {
+              text,
+              dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
+              pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
+              share: Count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
+              create_time: format(fromUnixTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
+              avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
+              frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
+              share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
+              username: checkvip(userINFO.data.data.card),
+              fans: Count(userINFO.data.data.follower),
+              user_shortid: data[dynamicId].host_mid,
+              total_favorited: Count(userINFO.data.data.like_num),
+              following_count: Count(userINFO.data.data.card.attention),
+              decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decoration_card),
+              render_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+              additional: parseAdditionalCard(data[dynamicId].Dynamic_Data.modules.module_dynamic.additional),
+              dynamicTYPE: '纯文动态推送'
+            })
+            break
+          }
           /** 处理视频动态 */
           case DynamicType.AV: {
             if (data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.type === 'MAJOR_TYPE_ARCHIVE') {

@@ -141,7 +141,7 @@ interface PathToDataTypeMap {
   'bilibili/dynamic/DYNAMIC_TYPE_FORWARD': import('./platforms/bilibili/dynamic/forward').BilibiliForwardDynamicProps['data']
   'bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD': import('./platforms/bilibili/dynamic/live').BilibiliLiveDynamicProps['data']
   'bilibili/dynamic/DYNAMIC_TYPE_ARTICLE': import('./platforms/bilibili/dynamic/article').BilibiliArticleDynamicProps['data']
-  'bilibili/dynamic/DYNAMIC_TYPE_WORD': import('./platforms/bilibili/dynamic/normal').BilibiliDynamicProps['data']
+  'bilibili/dynamic/DYNAMIC_TYPE_WORD': import('./platforms/bilibili/dynamic/normal').BilibiliWordDynamicProps['data']
 
   // 快手相关路径
   'kuaishou/comment': import('./platforms/kuaishou').KuaishouCommentProps['data']

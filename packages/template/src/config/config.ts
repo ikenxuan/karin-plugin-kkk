@@ -149,6 +149,13 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
                 default: module.BilibiliDrawDynamic
               }))
             })
+          case 'dynamic/DYNAMIC_TYPE_WORD':
+            return createComponentConfig(baseComponent, {
+              validateData: (data) => data && typeof data.share_url === 'string',
+              lazyComponent: () => import('../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_WORD').then(module => ({
+                default: module.BilibiliWordDynamic
+              }))
+            })
           case 'dynamic/DYNAMIC_TYPE_AV':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
