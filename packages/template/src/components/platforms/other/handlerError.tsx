@@ -1,261 +1,106 @@
 import { Chip } from '@heroui/react'
 import { AlertCircle, Clock, FileText, Plug2, QrCode, Terminal } from 'lucide-react'
 import React from 'react'
-import { FaBug, FaCodeBranch } from 'react-icons/fa6'
+import { FaCodeBranch } from 'react-icons/fa6'
 import { MdAccessTime } from 'react-icons/md'
 
-import type { ApiErrorProps, BusinessError, LogEntry, LogLevel } from '../../../types/platforms/ohter/handlerError'
+import type { ApiErrorProps, BusinessError, LogLevel } from '../../../types/platforms/ohter/handlerError'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
+import { getRandomErrorTitle } from './errorTitles'
 
 /**
- * ANSI 颜色代码到 Tailwind 类名的映射
+ * ANSI 颜色代码映射
  */
 const ansiColorMap: Record<number, string> = {
-  30: 'text-default-900', // black
-  31: 'text-danger', // red
-  32: 'text-success', // green
-  33: 'text-warning', // yellow
-  34: 'text-primary', // blue
-  35: 'text-secondary', // magenta
-  36: 'text-cyan-600', // cyan
-  37: 'text-default-500', // white
-  90: 'text-default-600', // bright black
-  91: 'text-danger', // bright red
-  92: 'text-success', // bright green
-  93: 'text-warning', // bright yellow
-  94: 'text-primary', // bright blue
-  95: 'text-secondary', // bright magenta
-  96: 'text-default-500', // bright cyan
-  97: 'text-default-200' // bright white
+  30: 'text-default-900', 31: 'text-danger', 32: 'text-success', 33: 'text-warning',
+  34: 'text-primary', 35: 'text-secondary', 36: 'text-cyan-600', 37: 'text-default-500',
+  90: 'text-default-600', 91: 'text-danger', 92: 'text-success', 93: 'text-warning',
+  94: 'text-primary', 95: 'text-secondary', 96: 'text-default-500', 97: 'text-default-200'
 }
 
-/**
- * 将 256 色码转换为 CSS 颜色
- * @param colorCode 256 色码 (0-255)
- * @returns CSS 颜色值
- */
 const ansi256ToColor = (colorCode: number): string => {
-  // 标准 16 色 (0-15)
   const standardColors = [
     '#000000', '#800000', '#008000', '#808000', '#000080', '#800080', '#008080', '#c0c0c0',
     '#808080', '#ff0000', '#00ff00', '#ffff00', '#0000ff', '#ff00ff', '#00ffff', '#ffffff'
   ]
-  
-  if (colorCode < 16) {
-    return standardColors[colorCode]
-  }
-  
-  // 216 色立方体 (16-231)
+  if (colorCode < 16) return standardColors[colorCode]
   if (colorCode < 232) {
     const index = colorCode - 16
-    const r = Math.floor(index / 36)
-    const g = Math.floor((index % 36) / 6)
-    const b = index % 6
+    const r = Math.floor(index / 36), g = Math.floor((index % 36) / 6), b = index % 6
     const toHex = (v: number) => (v === 0 ? 0 : 55 + v * 40).toString(16).padStart(2, '0')
     return `#${toHex(r)}${toHex(g)}${toHex(b)}`
   }
-  
-  // 灰度 (232-255)
   const gray = (colorCode - 232) * 10 + 8
   const hex = gray.toString(16).padStart(2, '0')
   return `#${hex}${hex}${hex}`
 }
 
-/**
- * 将 ANSI 颜色代码转换为带 Tailwind 类的 HTML
- */
 const convertAnsiToHtml = (text: string): string => {
-  // 匹配 ANSI 转义序列（支持基础色和 256 色）
   const ansiRegex = /\x1b\[([0-9;]+)m/g
-  let result = ''
-  let lastIndex = 0
+  let result = '', lastIndex = 0
   let currentStyles: { classes: string[], inlineColor?: string } = { classes: [] }
   let match
 
-  // 转义 HTML 特殊字符
-  const escapeHtml = (str: string) => {
-    return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;')
-  }
-
-  // 生成 span 标签
+  const escapeHtml = (str: string) => str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;')
   const makeSpan = (content: string) => {
-    const hasClass = currentStyles.classes.length > 0
-    const hasInline = currentStyles.inlineColor
-    
-    if (!hasClass && !hasInline) {
-      return escapeHtml(content)
-    }
-    
+    const hasClass = currentStyles.classes.length > 0, hasInline = currentStyles.inlineColor
+    if (!hasClass && !hasInline) return escapeHtml(content)
     const classAttr = hasClass ? ` class="${currentStyles.classes.join(' ')}"` : ''
     const styleAttr = hasInline ? ` style="color: ${currentStyles.inlineColor}"` : ''
     return `<span${classAttr}${styleAttr}>${escapeHtml(content)}</span>`
   }
 
   while ((match = ansiRegex.exec(text)) !== null) {
-    // 添加前面的文本
-    if (match.index > lastIndex) {
-      const textContent = text.substring(lastIndex, match.index)
-      result += makeSpan(textContent)
-    }
-
-    // 解析 ANSI 代码
+    if (match.index > lastIndex) result += makeSpan(text.substring(lastIndex, match.index))
     const codes = match[1].split(';').map(Number)
-    
     let i = 0
     while (i < codes.length) {
       const code = codes[i]
-      
-      // 检测隐藏属性标记: \x1b[90;2m (90 和 2 组合)
       if (code === 90 && codes[i + 1] === 2) {
-        // 隐藏属性：浅色模式用浅灰，深色模式用深灰
         currentStyles.classes = currentStyles.classes.filter(c => !c.startsWith('text-'))
         currentStyles.inlineColor = undefined
         currentStyles.classes.push('text-default-400')
-        i++ // 跳过 2
+        i++
       } else if (code === 0 || code === 39 || code === 49) {
-        // 重置样式
         currentStyles.classes = currentStyles.classes.filter(c => !c.startsWith('text-') && !c.startsWith('bg-') && !c.startsWith('dark:'))
         currentStyles.inlineColor = undefined
       } else if (code === 1) {
-        // 粗体
-        if (!currentStyles.classes.includes('font-bold')) {
-          currentStyles.classes.push('font-bold')
-        }
+        if (!currentStyles.classes.includes('font-bold')) currentStyles.classes.push('font-bold')
       } else if (code === 22) {
-        // 取消粗体
         currentStyles.classes = currentStyles.classes.filter(c => c !== 'font-bold')
       } else if (code === 38 && codes[i + 1] === 5) {
-        // 256 色前景色: \x1b[38;5;XXXm
         const colorCode = codes[i + 2]
         if (colorCode !== undefined) {
           currentStyles.classes = currentStyles.classes.filter(c => !c.startsWith('text-') && !c.startsWith('dark:'))
           currentStyles.inlineColor = ansi256ToColor(colorCode)
-          i += 2 // 跳过 5 和颜色码
+          i += 2
         }
       } else if (ansiColorMap[code]) {
-        // 基础 16 色
         currentStyles.classes = currentStyles.classes.filter(c => !c.startsWith('text-') && !c.startsWith('dark:'))
         currentStyles.inlineColor = undefined
         currentStyles.classes.push(ansiColorMap[code])
       }
       i++
     }
-
     lastIndex = ansiRegex.lastIndex
   }
-
-  // 添加剩余的文本
-  if (lastIndex < text.length) {
-    const textContent = text.substring(lastIndex)
-    result += makeSpan(textContent)
-  }
-
+  if (lastIndex < text.length) result += makeSpan(text.substring(lastIndex))
   return result
 }
 
-/**
- * 使用种子生成伪随机数（确保每次渲染一致）
- */
-const seededRandom = (seed: number) => {
-  let value = seed
-  return () => {
-    value = (value * 9301 + 49297) % 233280
-    return value / 233280
-  }
-}
-
-/**
- * 生成随机分布的 Bug 图标位置
- */
-const generateBugPositions = (count: number) => {
-  const seed = Date.now() + Math.random() * 10000
-  const random = seededRandom(seed)
-  const positions = []
-
-  for (let i = 0; i < count; i++) {
-    positions.push({
-      top: `${random() * 100}%`,
-      left: `${random() * 100}%`,
-      size: 50 + random() * 30, // 50-80px
-      rotation: random() * 360 - 180, // -180 到 180 度
-      opacity: 10 + random() * 10 // 10-20 的透明度
-    })
-  }
-
-  return positions
-}
-
-/**
- * 获取日志等级对应的主题色类名
- * @param level 日志等级
- * @returns 主题色类名配置
- */
-const getLogLevelTheme = (level: LogLevel): { 
-  bgClass: string
-  borderClass: string
-  textClass: string
-  iconClass: string
-} => {
-  const themeMap: Record<LogLevel, { 
-    bgClass: string
-    borderClass: string
-    textClass: string
-    iconClass: string
-  }> = {
-    'TRAC': { 
-      bgClass: 'bg-default/10',
-      borderClass: 'border-default/30 border-l-default',
-      textClass: 'text-default-600',
-      iconClass: 'text-default-500'
-    },
-    'DEBU': { 
-      bgClass: 'bg-primary/10',
-      borderClass: 'border-primary/30 border-l-primary',
-      textClass: 'text-primary-600',
-      iconClass: 'text-primary'
-    },
-    'MARK': { 
-      bgClass: 'bg-secondary/10',
-      borderClass: 'border-secondary/30 border-l-secondary',
-      textClass: 'text-secondary-600',
-      iconClass: 'text-secondary'
-    },
-    'INFO': { 
-      bgClass: 'bg-success/10',
-      borderClass: 'border-success/30 border-l-success',
-      textClass: 'text-success-600',
-      iconClass: 'text-success'
-    },
-    'WARN': { 
-      bgClass: 'bg-warning/10',
-      borderClass: 'border-warning/30 border-l-warning',
-      textClass: 'text-warning-600',
-      iconClass: 'text-warning'
-    },
-    'ERRO': { 
-      bgClass: 'bg-danger/10',
-      borderClass: 'border-danger/30 border-l-danger',
-      textClass: 'text-danger-600',
-      iconClass: 'text-danger'
-    },
-    'FATA': { 
-      bgClass: 'bg-danger/15',
-      borderClass: 'border-danger/40 border-l-danger',
-      textClass: 'text-danger-700',
-      iconClass: 'text-danger-700'
-    }
+const getLogLevelTheme = (level: LogLevel, isDark: boolean): { bgClass: string; borderClass: string; textClass: string; iconClass: string } => {
+  const themeMap: Record<LogLevel, { bgClass: string; borderClass: string; textClass: string; iconClass: string }> = {
+    'TRAC': { bgClass: isDark ? 'bg-default/10' : 'bg-default/5', borderClass: 'border-default/20', textClass: isDark ? 'text-default-400' : 'text-default-500', iconClass: 'text-default-400' },
+    'DEBU': { bgClass: isDark ? 'bg-primary/15' : 'bg-primary/5', borderClass: 'border-primary/25', textClass: 'text-primary', iconClass: 'text-primary' },
+    'MARK': { bgClass: isDark ? 'bg-secondary/15' : 'bg-secondary/5', borderClass: 'border-secondary/25', textClass: 'text-secondary', iconClass: 'text-secondary' },
+    'INFO': { bgClass: isDark ? 'bg-success/15' : 'bg-success/5', borderClass: 'border-success/25', textClass: 'text-success', iconClass: 'text-success' },
+    'WARN': { bgClass: isDark ? 'bg-warning/15' : 'bg-warning/5', borderClass: 'border-warning/25', textClass: 'text-warning', iconClass: 'text-warning' },
+    'ERRO': { bgClass: isDark ? 'bg-danger/15' : 'bg-danger/5', borderClass: 'border-danger/25', textClass: 'text-danger', iconClass: 'text-danger' },
+    'FATA': { bgClass: isDark ? 'bg-danger/20' : 'bg-danger/10', borderClass: 'border-danger/35', textClass: 'text-danger', iconClass: 'text-danger' }
   }
   return themeMap[level] || themeMap['TRAC']
 }
 
-/**
- * 适配器协议实现 Logo 配置映射
- */
 const ADAPTER_LOGO_MAP: Record<string, string> = {
   napcat: '/image/other/handlerError/napcat.webp',
   lagrange: '/image/other/handlerError/lagrange.webp',
@@ -266,486 +111,329 @@ const ADAPTER_LOGO_MAP: Record<string, string> = {
   gocq: '/image/other/handlerError/gocq-http.webp'
 }
 
-/**
- * 根据适配器名称获取对应的 Logo 元素
- * @param adapterName 适配器名称
- * @returns Logo React 元素
- */
 const getAdapterLogo = (adapterName: string): React.ReactNode => {
   const nameLower = adapterName.toLowerCase()
-  
   for (const [key, logoPath] of Object.entries(ADAPTER_LOGO_MAP)) {
-    if (nameLower.includes(key)) {
-      return <img src={logoPath} className='h-auto w-17' alt={adapterName} />
-    }
+    if (nameLower.includes(key)) return <img src={logoPath} className='h-16 w-auto' alt={adapterName} />
   }
-  
-  return <Plug2 className='w-9 h-9 text-secondary' />
+  return <Plug2 className='w-14 h-14 text-default-400' />
 }
 
 /**
- * 错误头部组件
- * @param props 组件属性
- * @returns JSX元素
+ * API错误显示组件 - 手机端 Apple 风格
  */
-const ErrorHeader: React.FC<{
-  type: 'api_error' | 'internal_error' | 'business_error'
-  platform: string
-  method: string
-  timestamp: string
-  businessName?: string
-}> = ({ method, timestamp, businessName }) => {
-  const displayMethod = businessName || method
-  const errorEmojiUrl = React.useMemo(() => {
-    // 部分表情使用 {num}.png 格式，其他使用 {num}_0.png 格式
-    const withoutSuffix = [343, 1, 342, 312, 325, 349, 357, 107, 100, 106] // 使用 {num}.png 格式的表情
-    const nums = [461, 1, 5, 343, 344, 349, 390, 391, 386, 325, 367, 342, 385, 374, 379, 382, 312, 372, 461, 363, 357, 326, 107, 100, 106]
-    const num = nums[Math.floor(Math.random() * nums.length)]
-    const suffix = withoutSuffix.includes(num) ? '' : '_0'
-    return `https://koishi.js.org/QFace/assets/qq_emoji/${num}/png/${num}${suffix}.png`
-  }, [])
+export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templateName'>> = (props) => {
+  const { data, qrCodeDataUrl } = props
+  const isDark = data.useDarkTheme === true
+  const isBusinessError = data.type === 'business_error'
+  const businessError = isBusinessError ? data.error as BusinessError : null
+  const displayMethod = businessError?.businessName || data.method
+  const errorTitle = React.useMemo(() => getRandomErrorTitle(), [])
 
-  const errorTitle = React.useMemo(() => {
-    const titles = [
-      '哎呀！出错啦~',
-      '糟糕，翻车了！',
-      '呜呜，坏掉惹',
-      '完蛋，炸了！',
-      '噢不～崩溃了！',
-      '寄！出问题了',
-      '啊这...报错了',
-      '坏了！直接寄',
-      '发布罢工声明！',
-      '呃...有bug',
-      '摆烂宣言ing',
-      '又双叒叕出错！',
-      '这波是bug啊',
-      '开小差去了～',
-      '出了点小状况',
-      '困了，先打盹',
-      '代码迷路ing',
-      '逻辑卡住啦！',
-      '摸鱼时被抓了',
-      '抽什么风啊！',
-      '头好晕啊...',
-      '偷偷溜号中～',
-      '出了亿点问题',
-      '卡bug啦！',
-      '走神时被抓了',
-      '事故现场！',
-      '链子断掉了',
-      '逻辑打结ing',
-      '有点迷糊了？',
-      '偷懒时被抓了',
-      '困了先zzZ',
-      '脑子短路了！',
-      '脑子懵掉了',
-      '方向跑偏啦！',
-      '又闹脾气了！',
-      '发呆ing...',
-      '记忆断片了！',
-      '有点晕车ing',
-      '系统宕机了！',
-      '灵魂神游中～',
-      '直接崩盘了！',
-      '半路抛锚啦！',
-      '卡住动不了...',
-      '信号断线了！',
-      '思绪跑飞啦！',
-      '全都乱套了！',
-      '这下彻底寄了',
-      '逻辑乱成一团',
-      '中途出岔子了',
-      '故障报告！'
-    ]
-    return titles[Math.floor(Math.random() * titles.length)]
-  }, [])
+  // 631 配色 - 红/珊瑚色系
+  const bgColor = isDark ? '#0f0a0a' : '#faf5f5'
+  const primaryColor = isDark ? '#f87171' : '#dc2626'
+  const secondaryColor = isDark ? '#fca5a5' : '#b91c1c'
+  const mutedColor = isDark ? 'rgba(248,113,113,0.7)' : '#991b1b'
+  const accentColor = isDark ? '#fecaca' : '#7f1d1d'
 
   return (
-    <div className='px-20 py-20 mx-auto'>
-      <div className='pl-12 border-l-4 border-danger'>
-        <div className='flex gap-6 items-start mb-10'>
-          {/* <AlertCircle className='mt-2 w-16 h-16 text-danger' /> */}
-          <img className='w-60 h-auto' src={errorEmojiUrl} />
-          <div className='flex-1'>
-            <h1 className='mb-6 text-8xl font-bold text-foreground'>
-              {errorTitle}
-            </h1>
-            <div className='flex gap-4 items-center mb-8'>
-              <span className='text-5xl font-semibold text-danger'>
-                {displayMethod}
-              </span>
+    <DefaultLayout
+      {...props}
+      version={undefined}
+      className='relative overflow-hidden'
+      style={{ backgroundColor: bgColor, width: '1440px', minHeight: '1800px' }}
+    >
+      {/* 弥散光背景 - 深浅模式完全适配 */}
+      <div className='absolute inset-0 pointer-events-none'>
+        {/* 左上主光斑 */}
+        <div
+          className='absolute rounded-full w-[1200px] h-[1400px] -top-[300px] -left-[200px] blur-[120px] -rotate-15'
+          style={{
+            background: isDark
+              ? 'radial-gradient(ellipse at 40% 40%, rgba(220,38,38,0.35) 0%, rgba(185,28,28,0.18) 50%, transparent 100%)'
+              : 'radial-gradient(ellipse at 40% 40%, rgba(248,113,113,0.45) 0%, rgba(252,165,165,0.22) 50%, transparent 100%)'
+          }}
+        />
+        {/* 右侧光斑 */}
+        <div
+          className='absolute rounded-full w-[900px] h-[1000px] top-[400px] -right-[100px] blur-[100px] rotate-20'
+          style={{
+            background: isDark
+              ? 'radial-gradient(ellipse at 50% 50%, rgba(127,29,29,0.3) 0%, rgba(69,10,10,0.15) 50%, transparent 100%)'
+              : 'radial-gradient(ellipse at 50% 50%, rgba(254,202,202,0.4) 0%, rgba(254,226,226,0.2) 50%, transparent 100%)'
+          }}
+        />
+        {/* 底部光斑 */}
+        <div
+          className='absolute rounded-full w-[1000px] h-[800px] -bottom-[200px] left-[200px] blur-[140px] -rotate-10'
+          style={{
+            background: isDark
+              ? 'radial-gradient(ellipse at 50% 60%, rgba(153,27,27,0.3) 0%, rgba(127,29,29,0.15) 50%, transparent 100%)'
+              : 'radial-gradient(ellipse at 50% 60%, rgba(252,165,165,0.35) 0%, rgba(254,202,202,0.18) 50%, transparent 100%)'
+          }}
+        />
+      </div>
+
+      {/* 单色噪点层 - 明显颗粒感 */}
+      <div className='absolute inset-0 pointer-events-none' style={{ opacity: isDark ? 0.12 : 0.18 }}>
+        <svg className='w-full h-full' xmlns='http://www.w3.org/2000/svg'>
+          <filter id='errorPixelNoise' x='0%' y='0%' width='100%' height='100%'>
+            <feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='1' stitchTiles='stitch' result='noise' />
+            <feColorMatrix type='saturate' values='0' result='gray' />
+            <feComponentTransfer>
+              <feFuncR type='discrete' tableValues='0 1' />
+              <feFuncG type='discrete' tableValues='0 1' />
+              <feFuncB type='discrete' tableValues='0 1' />
+            </feComponentTransfer>
+          </filter>
+          <rect width='100%' height='100%' filter='url(#errorPixelNoise)' />
+        </svg>
+      </div>
+
+      {/* 背景大字装饰 */}
+      <div className='absolute bottom-[80px] right-[60px] pointer-events-none select-none opacity-[0.03]'>
+        <span className='text-[180px] font-black tracking-tighter leading-none block text-right' style={{ color: isDark ? '#fff' : '#7f1d1d' }}>
+          ERROR
+        </span>
+      </div>
+
+      {/* 内容层 - 手机端大字体大间距 */}
+      <div className='relative z-10 flex flex-col h-full p-16'>
+        {/* 顶部状态栏 */}
+        <div className='flex items-center justify-between mb-14'>
+          <div className='flex items-center gap-5'>
+            <div className='w-5 h-5 rounded-full' style={{ backgroundColor: primaryColor }} />
+            <span className='text-2xl font-medium tracking-[0.3em] uppercase' style={{ color: mutedColor }}>
+              Runtime Exception
+            </span>
+          </div>
+          <span className='text-2xl' style={{ color: mutedColor }}>
+            {new Date(data.timestamp).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}
+          </span>
+        </div>
+
+        {/* 主标题 - 手机端超大字 */}
+        <div className='mb-20'>
+          <h1 className='text-[120px] font-black leading-none tracking-tight mb-10' style={{ color: accentColor }}>
+            {errorTitle}
+          </h1>
+          <p className='text-5xl font-semibold' style={{ color: primaryColor }}>{displayMethod}</p>
+        </div>
+
+        {/* 验证二维码 */}
+        {data.isVerification && qrCodeDataUrl && (
+          <div
+            className='mb-16 p-12 rounded-[40px]'
+            style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.6)' }}
+          >
+            <div className='flex items-center gap-6 mb-10'>
+              <QrCode className='w-10 h-10 text-warning' />
+              <span className='text-3xl font-semibold' style={{ color: accentColor }}>人机验证</span>
             </div>
-            {/* 触发时间 */}
-            <div className='mt-2'>
-              <div className='mb-2 text-3xl text-default-400'>触发时间</div>
-              <div className='flex gap-3 items-center'>
-                <Clock className='w-10 h-10 text-warning' />
-                <span className='text-4xl font-bold text-foreground'>
-                  {new Date(timestamp).toLocaleString('zh-CN', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    hour12: false
-                  })}
-                </span>
+            <div className='flex gap-16 items-center'>
+              <img src={qrCodeDataUrl} alt='验证二维码' className='w-64 h-64 rounded-3xl' />
+              <div className='space-y-6'>
+                <p className='text-3xl' style={{ color: secondaryColor }}>请在 120 秒内完成验证</p>
+                <ol className='space-y-4 text-2xl' style={{ color: mutedColor }}>
+                  <li>1. 使用手机扫描二维码</li>
+                  <li>2. 在网页中完成人机验证</li>
+                  <li>3. 将验证结果发送至此对话</li>
+                </ol>
+                {data.verificationUrl && <p className='text-xl break-all mt-8' style={{ color: mutedColor }}>{data.verificationUrl}</p>}
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+        )}
 
-/**
- * 验证二维码组件
- * @param props 组件属性
- * @returns JSX元素
- */
-const VerificationQrCode: React.FC<{
-  qrCodeDataUrl?: string
-  verificationUrl?: string
-}> = ({ qrCodeDataUrl, verificationUrl }) => {
-  if (!qrCodeDataUrl) return null
-
-  return (
-    <div className='w-full max-w-[1440px] mx-auto px-20 py-8'>
-      <div className='pl-8 border-l-4 border-warning'>
-        <h3 className='flex gap-3 items-center mb-6 text-4xl font-medium text-foreground'>
-          <QrCode className='w-10 h-10 text-warning' />
-          人机验证
-        </h3>
-        <div className='p-8 rounded-lg border bg-warning/10 border-warning/30'>
-          <div className='flex gap-12 items-center'>
-            {/* 二维码 */}
-            <div className='shrink-0'>
-              <img 
-                src={qrCodeDataUrl} 
-                alt='验证二维码' 
-                className='h-auto w-90'
-              />
+        {/* 触发命令 */}
+        {data.triggerCommand && (
+          <div className='mb-14'>
+            <div className='flex items-center gap-5 mb-6'>
+              <Terminal className='w-9 h-9' style={{ color: mutedColor }} />
+              <span className='text-xl font-semibold tracking-[0.2em] uppercase' style={{ color: mutedColor }}>Trigger Command</span>
             </div>
-            {/* 说明文字 */}
-            <div className='flex-1 space-y-4'>
-              <p className='text-4xl font-bold text-warning'>请扫描二维码完成验证</p>
-              <p className='text-3xl text-default-500'>请在 120 秒内完成以下步骤</p>
-              <div className='space-y-3 text-3xl text-foreground'>
-                <p>1. 使用手机扫描左侧二维码</p>
-                <p>2. 在网页中完成人机验证</p>
-                <p>3. 将验证结果发送至此对话</p>
-              </div>
-              {verificationUrl && (
-                <div className='p-4 mt-6 rounded-lg bg-default/20'>
-                  <p className='text-2xl break-all text-default-500'>
-                    {verificationUrl}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/**
- * 业务错误详情组件
- * @param props 组件属性
- * @returns JSX元素
- */
-const BusinessErrorDetails: React.FC<{
-  error: BusinessError
-  logs?: LogEntry[]
-  triggerCommand?: string
-}> = ({ error, logs, triggerCommand }) => {
-  return (
-    <div className='w-full max-w-[1440px] mx-auto px-20 py-8'>
-      <div className='space-y-12'>
-        {/* 触发命令信息 */}
-        {triggerCommand && (
-          <div className='pl-8 border-l-2 border-default-200'>
-            <h3 className='flex gap-3 items-center mb-8 text-4xl font-medium text-foreground'>
-              <Terminal className='w-10 h-10' />
-              触发命令
-            </h3>
-            <div className='p-10 font-bold rounded-lg'>
-              <pre 
-                className='text-3xl leading-relaxed whitespace-pre-wrap break-all select-text font-[HarmonyOSHans-Regular]'
-                dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(triggerCommand) }}
+            <div
+              className='p-10 rounded-[36px]'
+              style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)' }}
+            >
+              <pre
+                className='text-3xl leading-relaxed whitespace-pre-wrap break-all font-mono'
+                style={{ color: accentColor }}
+                dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(data.triggerCommand) }}
               />
             </div>
           </div>
         )}
 
-        {/* 调用栈信息 */}
-        <div className='pl-8 border-l-2 border-danger'>
-          <h3 className='flex gap-3 items-center mb-6 text-3xl font-medium text-foreground'>
-            <AlertCircle className='w-8 h-8' />
-            错误堆栈
-          </h3>
-          <div className='p-8 rounded-lg border bg-danger/5 border-danger/20'>
-            <pre 
-              className='font-mono text-xl leading-relaxed whitespace-pre-wrap break-all select-text'
-              dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(String(error.stack || '')) }}
+        {/* 错误堆栈 */}
+        <div className='mb-14'>
+          <div className='flex items-center gap-5 mb-6'>
+            <AlertCircle className='w-9 h-9' style={{ color: primaryColor }} />
+            <span className='text-xl font-semibold tracking-[0.2em] uppercase' style={{ color: mutedColor }}>Stack Trace</span>
+          </div>
+          <div
+            className='p-10 rounded-[36px]'
+            style={{
+              backgroundColor: isDark ? 'rgba(220,38,38,0.1)' : 'rgba(254,202,202,0.4)',
+              border: `1px solid ${isDark ? 'rgba(248,113,113,0.2)' : 'rgba(252,165,165,0.5)'}`
+            }}
+          >
+            <pre
+              className='text-2xl leading-relaxed whitespace-pre-wrap break-all font-mono'
+              style={{ color: isDark ? 'rgba(255,255,255,0.85)' : 'rgba(127,29,29,0.9)' }}
+              dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(String(businessError?.stack || data.error?.stack || '')) }}
             />
           </div>
         </div>
 
-        {/* 相关日志 */}
-        {logs && logs.length > 0 && (
-          <div className='pl-8 border-l-2 border-default-200'>
-            <h3 className='flex gap-3 items-center mb-6 text-3xl font-medium text-foreground'>
-              <FileText className='w-8 h-8' />
-              相关执行日志
-            </h3>
-            <div className='space-y-3'>
-              {logs.map((log, index) => {
-                const theme = getLogLevelTheme(log.level)
+        {/* 执行日志 */}
+        {data.logs && data.logs.length > 0 && (
+          <div className='mb-14'>
+            <div className='flex items-center gap-5 mb-6'>
+              <FileText className='w-9 h-9' style={{ color: mutedColor }} />
+              <span className='text-xl font-semibold tracking-[0.2em] uppercase' style={{ color: mutedColor }}>Execution Logs</span>
+            </div>
+            <div className='space-y-6'>
+              {data.logs.map((log, index) => {
+                const theme = getLogLevelTheme(log.level, isDark)
+                // 日志等级半透明颜色
+                const levelColor = theme.textClass.includes('danger') ? (isDark ? 'rgba(248,113,113,0.1)' : 'rgba(220,38,38,0.07)') :
+                  theme.textClass.includes('warning') ? (isDark ? 'rgba(251,191,36,0.1)' : 'rgba(245,158,11,0.07)') :
+                    theme.textClass.includes('success') ? (isDark ? 'rgba(34,197,94,0.1)' : 'rgba(22,163,74,0.07)') :
+                      theme.textClass.includes('primary') ? (isDark ? 'rgba(59,130,246,0.1)' : 'rgba(37,99,235,0.07)') :
+                        theme.textClass.includes('secondary') ? (isDark ? 'rgba(168,85,247,0.1)' : 'rgba(147,51,234,0.07)') :
+                          (isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)')
+                // 边框颜色
+                const borderColor = theme.textClass.includes('danger') ? (isDark ? 'rgba(248,113,113,0.3)' : 'rgba(220,38,38,0.2)') :
+                  theme.textClass.includes('warning') ? (isDark ? 'rgba(251,191,36,0.3)' : 'rgba(245,158,11,0.2)') :
+                    theme.textClass.includes('success') ? (isDark ? 'rgba(34,197,94,0.3)' : 'rgba(22,163,74,0.2)') :
+                      theme.textClass.includes('primary') ? (isDark ? 'rgba(59,130,246,0.3)' : 'rgba(37,99,235,0.2)') :
+                        theme.textClass.includes('secondary') ? (isDark ? 'rgba(168,85,247,0.3)' : 'rgba(147,51,234,0.2)') :
+                          (isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)')
+                
                 return (
-                  <div 
+                  <fieldset 
                     key={index} 
-                    className={`relative rounded-lg border border-l-4 backdrop-blur-xs ${theme.bgClass} ${theme.borderClass}`}
+                    className={`relative rounded-3xl ${theme.bgClass} border-2 p-6`}
+                    style={{ borderColor }}
                   >
-                    {/* 日志等级 */}
-                    <div className='absolute top-3 right-3 z-10 pointer-events-none'>
-                      <span className={`font-black text-6xl tracking-tight uppercase opacity-15 ${theme.textClass}`}>
+                    {/* 时间戳 - legend 自动切割边框 */}
+                    <legend className='flex items-center gap-2 ml-4'>
+                      {/* 左侧圆角装饰 */}
+                      <span 
+                        className='w-3 h-3 rounded-full -mr-1.5'
+                        style={{ backgroundColor: borderColor }}
+                      />
+                      <span className='flex items-center gap-2 px-3'>
+                        <Clock size={18} className={theme.iconClass} />
+                        <span className={`text-xl font-mono font-medium ${theme.textClass}`}>{log.timestamp}</span>
+                      </span>
+                      {/* 右侧圆角装饰 */}
+                      <span 
+                        className='w-3 h-3 rounded-full -ml-1.5'
+                        style={{ backgroundColor: borderColor }}
+                      />
+                    </legend>
+                    
+                    {/* 日志等级 - 右下角大字半透明 */}
+                    <div className='absolute bottom-2 right-6 pointer-events-none'>
+                      <span className='text-[56px] font-black uppercase leading-none tracking-tight' style={{ color: levelColor }}>
                         {log.level}
                       </span>
                     </div>
-
-                    <div className='p-5'>
-                      <div className='space-y-2'>
-                        {/* 时间戳 */}
-                        <div className='flex gap-2 items-center'>
-                          <Clock size={22} className={`shrink-0 mb-1 ${theme.iconClass}`} />
-                          <span className={`text-xl font-mono font-semibold ${theme.textClass}`}>
-                            {log.timestamp}
-                          </span>
-                        </div>
-
-                        {/* 日志消息 */}
-                        <div 
-                          className='font-mono text-xl leading-relaxed whitespace-pre-wrap break-all select-text text-foreground'
-                          dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(log.message) }}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                    
+                    {/* 日志内容 */}
+                    <div
+                      className='relative z-1 text-2xl font-mono whitespace-pre-wrap break-all leading-relaxed'
+                      style={{ color: isDark ? 'rgba(255,255,255,0.88)' : 'rgba(0,0,0,0.82)' }}
+                      dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(log.message) }}
+                    />
+                  </fieldset>
                 )
               })}
             </div>
           </div>
         )}
-      </div>
-    </div>
-  )
-}
 
-/**
- * API错误显示组件
- * @param props 组件属性
- * @returns JSX元素
- */
-export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templateName'>> = (props) => {
-  const { data, qrCodeDataUrl } = props
-  const { type, platform, error, method, timestamp, logs, triggerCommand, frameworkVersion, pluginVersion, adapterInfo, amagiVersion, isVerification, verificationUrl } = data
-  const isBusinessError = type === 'business_error'
-  const businessError = isBusinessError ? error as BusinessError : null
-
-  // 生成随机分布的小图标位置
-  const bugPositions = React.useMemo(() => generateBugPositions(50), [])
-
-  return (
-    <DefaultLayout {...props}>
-      {/* 背景装饰 Bug 图标 */}
-      <div className='overflow-hidden fixed inset-0 pointer-events-none' style={{ zIndex: 0 }}>
-        {/* 主要大图标 */}
-        {/* <FaBug
-          className='absolute text-danger/10'
-          style={{
-            width: '50vw',
-            height: '50vw',
-            top: '10%',
-            left: '50%',
-            transform: 'translateX(-50%) rotate(45deg)'
-          }}
-        /> */}
-
-        {/* 随机分布的小图标 */}
-        {bugPositions.map((pos, index) => (
-          <FaBug
-            key={index}
-            className='absolute'
-            style={{
-              width: `${pos.size}px`,
-              height: `${pos.size}px`,
-              top: pos.top,
-              left: pos.left,
-              transform: `rotate(${pos.rotation}deg)`,
-              color: `rgba(243, 18, 96, ${pos.opacity / 100})`
-            }}
-          />
-        ))}
-      </div>
-
-      <div className='relative' style={{ zIndex: 1 }}>
-        <div className='h-[60px]' />
-
-        <ErrorHeader
-          type={type}
-          platform={platform}
-          method={method}
-          timestamp={timestamp}
-          businessName={businessError?.businessName}
-        />
-
-        {/* 验证二维码区域 - 仅在验证流程时显示 */}
-        {isVerification && (
-          <VerificationQrCode 
-            qrCodeDataUrl={qrCodeDataUrl} 
-            verificationUrl={verificationUrl}
-          />
-        )}
-
-        <BusinessErrorDetails
-          error={businessError!}
-          logs={logs}
-          triggerCommand={triggerCommand}
-        />
-
-        {/* 版本信息和底部提示 */}
-        <div className='px-20 py-16 mx-auto space-y-8 w-full'>
-          {/* 版本信息 - 重点突出 */}
-          <div className='space-y-5 tracking-widest'>
-            {/* 框架版本、插件版本和 Amagi 版本 */}
-            <div className='flex flex-wrap gap-12 items-center'>
-              <div className='flex gap-4 items-center'>
-                <img
-                  src="/image/frame-logo.png"
-                  className='h-auto w-17'
-                />
-                <div>
-                  <div className='text-2xl text-default-400'>框架版本</div>
-                  <div className='text-4xl font-bold text-foreground'>{frameworkVersion}</div>
-                </div>
+        {/* 底部版本信息 */}
+        <div
+          className='mt-auto pt-12'
+          style={{ borderTop: `2px solid ${isDark ? 'rgba(248,113,113,0.15)' : 'rgba(252,165,165,0.3)'}` }}
+        >
+          {/* 版本信息网格 */}
+          <div className='grid grid-cols-2 gap-10 mb-12'>
+            <div className='flex items-center gap-6'>
+              <img src='/image/frame-logo.png' className='h-16 w-auto' alt='Framework' />
+              <div>
+                <p className='text-xl' style={{ color: mutedColor }}>Framework</p>
+                <p className='text-3xl font-bold' style={{ color: accentColor }}>{data.frameworkVersion}</p>
               </div>
-
-              <div className='flex gap-4 items-center'>
-                <svg
-                  id="_图层_2"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 230 221"
-                  className="h-auto w-17"
-                >
-                  <path
-                    id="_1"
-                    d="M132.75,87.37l-53.72-53.37c-4.66-4.63-1.38-12.58,5.18-12.58h115.13c6.57,0,9.84,7.95,5.18,12.58l-53.72,53.37c-4.99,4.96-13.06,4.96-18.05,0Z"
-                    fill="currentColor"
-                  />
-                  <path
-                    id="_2"
-                    d="M28.49,186.89l.03-51.42c-.02-6.57,7.92-9.87,12.56-5.23l57.02,57.02c4.64,4.64,1.34,12.41-5.23,12.39h-51.42c-7.04-.02-12.94-5.72-12.96-12.76Z"
-                    fill="currentColor"
-                  />
-                  <path
-                    d="M41.54,23.68l163.04,163.05c4.78,4.78,1.39,12.95-5.36,12.94h-47.88c-9.69,0-18.99-3.86-25.84-10.71L39.3,102.75c-6.85-6.85-10.7-16.15-10.7-25.84V29.04c0-6.76,8.16-10.14,12.94-5.36Z"
-                    fill="currentColor"
-                  />
-                </svg>
-                <div>
-                  <div className='text-2xl text-default-400'>插件版本</div>
-                  <div className='text-4xl font-bold text-foreground'>{pluginVersion}</div>
-                </div>
-              </div>
-
-              {amagiVersion && (
-                <div className='flex gap-4 items-center'>
-                  <img 
-                    src="/image/other/handlerError/cxk.png"
-                    alt="泥干嘛哈哈哎呦~"
-                    className='w-18 h-17'
-                  />
-                  <div>
-                    <div className='text-2xl text-default-400'>接口库版本</div>
-                    <div className='text-4xl font-bold text-foreground'>{amagiVersion}</div>
-                  </div>
-                </div>
-              )}
             </div>
 
-            {/* 适配器信息 */}
-            {adapterInfo && (
-              <div className='flex gap-4 items-center'>
-                {getAdapterLogo(adapterInfo.name)}
+            <div className='flex items-center gap-6'>
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 230 221' className='h-16 w-auto' style={{ color: accentColor }}>
+                <path d='M132.75,87.37l-53.72-53.37c-4.66-4.63-1.38-12.58,5.18-12.58h115.13c6.57,0,9.84,7.95,5.18,12.58l-53.72,53.37c-4.99,4.96-13.06,4.96-18.05,0Z' fill='currentColor' />
+                <path d='M28.49,186.89l.03-51.42c-.02-6.57,7.92-9.87,12.56-5.23l57.02,57.02c4.64,4.64,1.34,12.41-5.23,12.39h-51.42c-7.04-.02-12.94-5.72-12.96-12.76Z' fill='currentColor' />
+                <path d='M41.54,23.68l163.04,163.05c4.78,4.78,1.39,12.95-5.36,12.94h-47.88c-9.69,0-18.99-3.86-25.84-10.71L39.3,102.75c-6.85-6.85-10.7-16.15-10.7-25.84V29.04c0-6.76,8.16-10.14,12.94-5.36Z' fill='currentColor' />
+              </svg>
+              <div>
+                <p className='text-xl' style={{ color: mutedColor }}>Plugin</p>
+                <p className='text-3xl font-bold' style={{ color: accentColor }}>{data.pluginVersion}</p>
+              </div>
+            </div>
+
+            {data.amagiVersion && (
+              <div className='flex items-center gap-6'>
+                <img src='/image/other/handlerError/cxk.png' alt='Amagi' className='w-16 h-16' />
                 <div>
-                  <div className='inline-flex gap-2 items-center text-2xl text-default-400'>
-                    <span>适配器名称</span>
-                    <Chip 
-                      color='secondary' 
-                      variant='flat' 
-                      size='md'
-                    >
-                      <span className='font-bold'>{adapterInfo.version.startsWith('v') ? adapterInfo.version : `v${adapterInfo.version}`}</span>
-                    </Chip>
-                  </div>
-                  <div className='text-4xl font-bold text-foreground'>{adapterInfo.name}</div>
+                  <p className='text-xl' style={{ color: mutedColor }}>API Library</p>
+                  <p className='text-3xl font-bold' style={{ color: accentColor }}>{data.amagiVersion}</p>
                 </div>
               </div>
             )}
 
-            {/* 次要信息 - 弱化显示 */}
-            <div className='pt-3 space-y-2 border-t border-default-200'>
-              {data.buildTime && (
-                <div className='flex gap-2 items-center text-2xl text-default-400'>
-                  <MdAccessTime className='w-5 h-5' />
-                  <span>插件编译于 {data.buildTime}</span>
+            {data.adapterInfo && (
+              <div className='flex items-center gap-6'>
+                {getAdapterLogo(data.adapterInfo.name)}
+                <div>
+                  <p className='text-xl' style={{ color: mutedColor }}>Adapter</p>
+                  <div className='flex items-center gap-4'>
+                    <p className='text-3xl font-bold' style={{ color: accentColor }}>{data.adapterInfo.name}</p>
+                    <Chip size='lg' variant='flat' className='h-8 text-lg'>{data.adapterInfo.version.startsWith('v') ? data.adapterInfo.version : `v${data.adapterInfo.version}`}</Chip>
+                  </div>
                 </div>
-              )}
-              {data.commitHash && (
-                <div className='flex gap-2 items-center text-2xl text-default-400'>
-                  <FaCodeBranch className='w-5 h-5' />
-                  <span>Commit {data.commitHash}</span>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
-          {/* 底部提示 */}
-          <div className='pl-8 border-l-2 text-default-400 border-primary'>
-            <p className='mb-6 text-3xl leading-relaxed text-foreground'>
-              需要帮助？请提供以下信息以便开发者快速定位问题：
-            </p>
-            <div className='mb-8 space-y-4'>
-              <div className='flex gap-3 items-baseline'>
-                <span className='text-3xl font-bold text-primary shrink-0'>1.</span>
-                <p className='flex-1 text-3xl leading-relaxed'>
-                  <span className='font-semibold text-primary'>完整的错误截图</span> - 包含本页面所有内容（错误堆栈、执行日志、版本信息等）
-                </p>
+          {/* 次要信息 */}
+          <div className='flex items-center gap-10 text-xl mb-12' style={{ color: mutedColor }}>
+            {data.buildTime && (
+              <div className='flex items-center gap-3'>
+                <MdAccessTime className='w-6 h-6' />
+                <span>Built {data.buildTime}</span>
               </div>
-              <div className='flex gap-3 items-baseline'>
-                <span className='text-3xl font-bold text-primary shrink-0'>2.</span>
-                <p className='flex-1 text-3xl leading-relaxed'>
-                  <span className='font-semibold text-primary'>问题复现步骤</span> - 详细描述触发错误的操作流程和环境信息
-                </p>
+            )}
+            {data.commitHash && (
+              <div className='flex items-center gap-3'>
+                <FaCodeBranch className='w-6 h-6' />
+                <span>Commit {data.commitHash}</span>
               </div>
-            </div>
-            <div className='pt-6 border-t border-default-200'>
-              <p className='mb-4 text-3xl leading-relaxed text-foreground'>
-                联系方式：
-              </p>
-              <div className='space-y-3'>
-                <p className='text-3xl'>
-                  · 提交 <span className='font-semibold text-primary'>GitHub Issues</span>（推荐）
-                </p>
-                <p className='text-3xl'>
-                  · 加入 QQ 群：<span className='font-semibold text-primary'>795874649</span>
-                </p>
-              </div>
+            )}
+          </div>
+
+          {/* 帮助提示 */}
+          <div
+            className='p-10 rounded-[36px]'
+            style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)' }}
+          >
+            <p className='text-3xl font-semibold mb-5' style={{ color: accentColor }}>需要帮助？</p>
+            <p className='text-2xl mb-8' style={{ color: secondaryColor }}>请提供完整的错误截图和问题复现步骤</p>
+            <div className='flex items-center gap-10 text-2xl'>
+              <span style={{ color: secondaryColor }}>GitHub Issues</span>
+              <span style={{ color: mutedColor }}>·</span>
+              <span style={{ color: secondaryColor }}>QQ 群: <span className='font-bold' style={{ color: primaryColor }}>795874649</span></span>
             </div>
           </div>
         </div>

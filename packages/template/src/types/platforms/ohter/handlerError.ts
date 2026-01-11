@@ -79,6 +79,8 @@ export interface AdapterInfo {
 export interface ApiErrorProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
+    /** 是否使用深色主题 */
+    useDarkTheme?: boolean
     /** 错误类型 */
     type: 'business_error'
     /** 平台名称 */
