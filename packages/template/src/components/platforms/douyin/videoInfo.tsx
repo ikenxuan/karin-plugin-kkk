@@ -62,16 +62,16 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
         <div className="relative w-full overflow-hidden text-white font-sans">
           <div className="relative z-10">
             {/* 顶部 */}
-            <div className="flex items-center justify-between px-16 pt-20 pb-16">
+            <div className="flex items-center justify-between px-16 pt-20 pb-16 gap-12">
               {/* 作者 */}
-              <div className="flex items-center gap-10">
+              <div className="flex items-center gap-10 min-w-0 shrink">
                 <img
                   src={props.data.author.avatar}
                   alt={props.data.author.name}
-                  className="w-36 h-36 rounded-full object-cover ring-4 ring-white/10"
+                  className="w-36 h-36 rounded-full object-cover ring-4 ring-white/10 shrink-0"
                 />
-                <div className="flex flex-col gap-8">
-                  <span className="text-6xl text-white font-bold">
+                <div className="flex flex-col gap-4 min-w-0">
+                  <span className="text-6xl text-white font-bold leading-tight line-clamp-2">
                     {props.data.author.name}
                   </span>
                   <div className="flex items-center gap-4 text-4xl text-white/50">
@@ -89,7 +89,7 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
               </div>
 
               {/* 数据统计 */}
-              <div className="flex items-center gap-14">
+              <div className="flex items-center gap-14 shrink-0">
                 <StatItem icon={<Heart size={48} />} value={props.data.statistics.digg_count} />
                 <StatItem icon={<MessageCircle size={48} />} value={props.data.statistics.comment_count} />
                 <StatItem icon={<Star size={48} />} value={props.data.statistics.collect_count} />
@@ -162,7 +162,7 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
 const StatItem: React.FC<{ icon: React.ReactNode; value: number }> = ({ icon, value }) => (
   <div className="flex flex-col items-center gap-3">
     <div className="text-white/60">{icon}</div>
-    <span className="text-4xl font-bold text-white/90 tabular-nums">
+    <span className="text-4xl font-bold text-white/90 tabular-nums whitespace-nowrap">
       {formatNumber(value)}
     </span>
   </div>
