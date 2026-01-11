@@ -2,6 +2,47 @@
 
 # Changelog
 
+## [2.18.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.17.1...v2.18.0) (2026-01-11)
+
+
+### ✨ 新功能
+
+* **bilibili:** 支持更多相关内容卡片 [#241](https://github.com/ikenxuan/karin-plugin-kkk/issues/241) ([ef4c307](https://github.com/ikenxuan/karin-plugin-kkk/commit/ef4c30794177e034da7067be9abfc176c16f97c5))
+
+
+### 🐛 错误修复
+
+* add忽略表情回应失败配置项 [#240](https://github.com/ikenxuan/karin-plugin-kkk/issues/240) ([2101174](https://github.com/ikenxuan/karin-plugin-kkk/commit/21011749775f6258ccfbcd0ec976223261d51cd8))
+* 更新、适配接口库新版本 ([1dc5dbc](https://github.com/ikenxuan/karin-plugin-kkk/commit/1dc5dbc450a34a42310871c1733c938b7e2b11f0))
+
+
+### 💄 UI 优化
+
+* close [#241](https://github.com/ikenxuan/karin-plugin-kkk/issues/241) ([bb1cf25](https://github.com/ikenxuan/karin-plugin-kkk/commit/bb1cf25eec7abdc0e226368355fd7329e8b515be))
+* 优化错误日志 ([a9adb66](https://github.com/ikenxuan/karin-plugin-kkk/commit/a9adb66fed97f43ae2692b9bc58ab116fc524c12))
+* 图文动态添加直播预约卡片 [#241](https://github.com/ikenxuan/karin-plugin-kkk/issues/241) ([a368670](https://github.com/ikenxuan/karin-plugin-kkk/commit/a3686705320ceff30f0f6f903ff9b932fc768e64))
+* 抖音封面组件 ([e9fd321](https://github.com/ikenxuan/karin-plugin-kkk/commit/e9fd32193e6021059254980937b6c7fb25135b18))
+
+
+### 📦 依赖更新
+
+* 接口库版本 ([5d2a2e1](https://github.com/ikenxuan/karin-plugin-kkk/commit/5d2a2e129e22e7a0bd7d71ad600c052a8e64d835))
+
+
+### ✨ 细节优化
+
+* 兼容性提高 ([f9e6019](https://github.com/ikenxuan/karin-plugin-kkk/commit/f9e601963564d05c19c1a978210cdf0a46d5cb2f))
+* 即使变成小猫咪 还是没办法和你一起玩吗 ([754ae27](https://github.com/ikenxuan/karin-plugin-kkk/commit/754ae278e00808c87438e69c792ed6cf1340d0d0))
+* 嘿嘿嘿 贤者我是小猫咪 ([10781ec](https://github.com/ikenxuan/karin-plugin-kkk/commit/10781ec26e052f829430418193d234f95bfda497))
+* 细优 ([defc1ea](https://github.com/ikenxuan/karin-plugin-kkk/commit/defc1ea2a7e52a086d602f8246b645ffa2a9b2ae))
+* 细优 ([358c994](https://github.com/ikenxuan/karin-plugin-kkk/commit/358c994bacc7916da4764216ea90fd5a694a382a))
+* 细优 ([0ef737c](https://github.com/ikenxuan/karin-plugin-kkk/commit/0ef737c86525d8ecc21b686513bb6f1341a3a1dd))
+* 细优 ([d3e2b6f](https://github.com/ikenxuan/karin-plugin-kkk/commit/d3e2b6f59fb00c369c95b3112735dc739d738424))
+* 细优 ([c3df010](https://github.com/ikenxuan/karin-plugin-kkk/commit/c3df010444ba14019aefddcf0d390f39225a3091))
+* 细优 ([62d7a68](https://github.com/ikenxuan/karin-plugin-kkk/commit/62d7a6868b86af021c594bc74a54dbae83d2d080))
+* 细优 ([16e355d](https://github.com/ikenxuan/karin-plugin-kkk/commit/16e355da61156577ecc2beedb0bc2363523e4982))
+* 细优 ([fe7c277](https://github.com/ikenxuan/karin-plugin-kkk/commit/fe7c2774b8cbf33012825534cbae87507c85a819))
+
 ## [2.17.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.17.0...v2.17.1) (2025-12-25)
 
 
