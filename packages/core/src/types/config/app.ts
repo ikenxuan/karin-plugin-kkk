@@ -42,9 +42,6 @@ export interface appConfig {
   /** 忽略表情回应失败，开启后表情回应失败时不会抛出错误 */
   EmojiReplyIgnoreError: boolean
 
-  /** web解析页面是否启用鉴权 */
-  webAuth: boolean
-
   /** 遇到错误时谁会收到错误日志？可选值：'master'（除console'外的第一个主人）、'trigger'（触发者） */
   errorLogSendTo: ['master' | 'trigger']
 

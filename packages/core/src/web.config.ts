@@ -280,11 +280,6 @@ export const webConfig = defineConfig({
                 defaultSelected: all.app.EmojiReplyIgnoreError,
                 isDisabled: !all.app.EmojiReply
               }),
-              components.switch.create('webAuth', {
-                label: '插件 web 鉴权',
-                description: '开启后，访问插件自带的 web 页面需要拥有 Karin 的 HTTP 鉴权密钥才能访问。修改后重启生效',
-                defaultSelected: all.app.webAuth
-              }),
               components.checkbox.group('errorLogSendTo', {
                 label: '错误日志',
                 description: '遇到错误时谁会收到错误日志。注：推送任务只可发送给主人。',

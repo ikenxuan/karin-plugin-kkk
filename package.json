@@ -7,20 +7,18 @@
   "author": "ikenxuan",
   "type": "module",
   "scripts": {
-    "build": "kkk build core web",
-    "build:all": "kkk build core docs template web",
+    "build": "kkk build core",
+    "build:all": "kkk build core docs template",
     "build:core": "kkk build core",
     "build:docs": "kkk build docs",
     "build:template": "kkk build template",
-    "build:web": "kkk build web",
     "dev": "pnpm --filter karin-plugin-kkk run dev",
     "docs": "pnpm --filter docs run dev",
     "lint": "pnpm -r run lint",
     "prepare": "husky",
     "sort": "pnpm -r sort",
     "template": "pnpm --filter template run dev",
-    "watch": "pnpm --filter karin-plugin-kkk run watch",
-    "web": "pnpm --filter web run dev"
+    "watch": "pnpm --filter karin-plugin-kkk run watch"
   },
   "dependencies": {
     "@ikenxuan/amagi": "workspace:*",

@@ -1,7 +1,4 @@
 {
-  "rust-analyzer.linkedProjects": [
-    "./packages/web/src-tauri/Cargo.toml"
-  ],
   "tailwindCSS.experimental.classRegex": [
     [
       "([\"'`][^\"'`]*.*?[\"'`])",
