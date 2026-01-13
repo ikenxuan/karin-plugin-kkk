@@ -430,7 +430,7 @@
     min-height: 100vh;
     margin: 0;
     padding: 0;
-    font-family: HarmonyOSHans-Regular, bilifont, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: HarmonyOSHans-Regular, bilifont, -apple-system, BlinkMacSystemFont, PingFang SC, Microsoft YaHei, Noto Sans SC, Hiragino Sans GB, WenQuanYi Micro Hei, Segoe UI, Roboto, sans-serif;
     line-height: 1.6;
     transition: color .3s, background-color .3s;
   }
