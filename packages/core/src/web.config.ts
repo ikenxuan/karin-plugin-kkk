@@ -282,7 +282,7 @@ export const webConfig = defineConfig({
               }),
               components.checkbox.group('errorLogSendTo', {
                 label: '错误日志',
-                description: '遇到错误时谁会收到错误日志。注：推送任务只可发送给主人。',
+                description: '遇到错误时谁会收到错误日志。注：推送任务只可发送给主人。「第一个主人」与「所有主人」互斥。',
                 orientation: 'horizontal',
                 defaultValue: all.app.errorLogSendTo,
                 checkbox: [
@@ -291,6 +291,10 @@ export const webConfig = defineConfig({
                     value: 'master'
                   }),
                   components.checkbox.create('errorLogSendTo:checkbox:2', {
+                    label: '所有主人（排除console）',
+                    value: 'allMasters'
+                  }),
+                  components.checkbox.create('errorLogSendTo:checkbox:3', {
                     label: '触发者（不支持私聊）',
                     value: 'trigger'
                   })

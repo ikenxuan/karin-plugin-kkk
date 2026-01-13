@@ -135,10 +135,11 @@ export const appConfigSchema: SectionSchema = {
       key: 'errorLogSendTo',
       type: 'checkbox',
       label: '错误日志',
-      description: '遇到错误时谁会收到错误日志。注：推送任务只可发送给主人。',
+      description: '遇到错误时谁会收到错误日志。注：推送任务只可发送给主人。「第一个主人」与「所有主人」互斥。',
       orientation: 'horizontal',
       options: [
         { label: '除\'console\'外的第一个主人', value: 'master' },
+        { label: '所有主人（排除console）', value: 'allMasters' },
         { label: '触发者（不支持私聊）', value: 'trigger' }
       ]
     },

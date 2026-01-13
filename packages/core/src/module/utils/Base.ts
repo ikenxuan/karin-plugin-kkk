@@ -342,7 +342,7 @@ export const downloadFile = async (videoUrl: string, opt: downLoadFileOptions): 
       headers: opt.headers ?? baseHeaders,
       filepath: Common.tempDri.video + opt.title,
       timeout: 60000, // 增加超时时间
-      maxRetries: 5, // 增加重试次数
+      maxRetries: 3, // 增加重试次数
       throttle: throttleConfig
     }).downloadStream((downloadedBytes, totalBytes) => {
     // 定义进度条长度及生成进度条字符串的函数

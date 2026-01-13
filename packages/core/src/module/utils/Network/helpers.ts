@@ -41,7 +41,7 @@ export const sanitizeIP = (text: string): string => {
 /**
  * 脱敏处理敏感请求头信息
  * @param headers 原始请求头
- * @returns 脱敏后的请求头
+ * @returns 脱敏后的请求头（敏感字段直接删除）
  */
 export const sanitizeHeaders = (
   headers: Record<string, string> | AxiosRequestConfig['headers']
@@ -55,13 +55,16 @@ export const sanitizeHeaders = (
   for (const [key, value] of Object.entries(headers)) {
     const lowerKey = key.toLowerCase()
 
+    // 敏感字段直接跳过，不添加到结果中
     if (sensitiveKeys.some(sk => lowerKey.includes(sk))) {
-      sanitized[key] = '[敏感信息......]'
-    } else if (ipSensitiveKeys.some(sk => lowerKey.includes(sk))) {
-      sanitized[key] = sanitizeIP(String(value))
-    } else {
-      sanitized[key] = String(value)
+      continue
     }
+    // IP 相关字段也直接跳过
+    if (ipSensitiveKeys.some(sk => lowerKey.includes(sk))) {
+      continue
+    }
+    // 其他字段保留
+    sanitized[key] = String(value)
   }
 
   return sanitized

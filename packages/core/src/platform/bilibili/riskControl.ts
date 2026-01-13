@@ -3,7 +3,13 @@ import util from 'node:util'
 import karin, { logger, segment } from 'node-karin'
 
 import { AmagiError, bilibiliFetcher } from '@/module/utils/amagiClient'
-import { type ErrorStrategy, registerErrorStrategy, renderErrorImage, sendErrorToMaster } from '@/module/utils/ErrorHandler'
+import {
+  type ErrorStrategy,
+  registerErrorStrategy,
+  renderErrorImage,
+  sendErrorToAllMasters,
+  sendErrorToMaster
+} from '@/module/utils/ErrorHandler'
 
 /**
  * B站风控验证策略
@@ -55,8 +61,9 @@ export const bilibiliRiskControlStrategy: ErrorStrategy = {
     // 发送给触发者
     await event.reply([segment.text('检测到B站风控，请在「120 秒内」扫描二维码完成验证后发送验证结果\n'), ...img])
 
-    // 发送给主人
+    // 发送给主人（单个或所有）
     await sendErrorToMaster(ctx, img)
+    await sendErrorToAllMasters(ctx, img)
 
     const resultCtx = await karin.ctx(event)
     const params = new URLSearchParams(resultCtx.msg)
