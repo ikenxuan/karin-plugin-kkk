@@ -22,4 +22,16 @@ export interface uploadConfig {
 
   /** 群文件上传阈值，当文件大小超过该值时将使用群文件上传，单位：MB，「使用群文件上传」开启后才会生效 */
   groupfilevalue: number
+
+  /** 下载限速开关，开启后会限制下载速度，避免触发服务器风控导致连接被重置 */
+  downloadThrottle: boolean
+
+  /** 下载速度限制，单位：MB/s，0 表示不限速。建议设置为 5-20 之间，过高可能触发风控 */
+  downloadMaxSpeed: number
+
+  /** 断流自动降速，当检测到连接被重置时自动降低下载速度 */
+  downloadAutoReduce: boolean
+
+  /** 最低下载速度，单位：MB/s，自动降速时不会低于此值 */
+  downloadMinSpeed: number
 }

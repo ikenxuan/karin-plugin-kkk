@@ -326,14 +326,24 @@ export const downloadFile = async (videoUrl: string, opt: downLoadFileOptions): 
   // 记录开始时间
   const startTime = Date.now()
 
+  // 从配置中读取限速设置
+  const uploadConfig = Config.upload
+  const throttleConfig = {
+    enabled: uploadConfig.downloadThrottle ?? false,
+    maxSpeed: (uploadConfig.downloadMaxSpeed ?? 10) * 1024 * 1024, // MB/s -> bytes/s
+    autoReduceRatio: uploadConfig.downloadAutoReduce ? 0.6 : 1, // 降速比例
+    minSpeed: (uploadConfig.downloadMinSpeed ?? 1) * 1024 * 1024 // MB/s -> bytes/s
+  }
+
   try {
     // 使用 networks 类进行文件下载，并通过回调函数实时更新下载进度
     const { filepath, totalBytes } = await new Networks({
       url: videoUrl, 
       headers: opt.headers ?? baseHeaders,
       filepath: Common.tempDri.video + opt.title,
-      timeout: 30000, 
-      maxRetries: 3 
+      timeout: 60000, // 增加超时时间
+      maxRetries: 5, // 增加重试次数
+      throttle: throttleConfig
     }).downloadStream((downloadedBytes, totalBytes) => {
     // 定义进度条长度及生成进度条字符串的函数
       const barLength = 45
@@ -375,14 +385,18 @@ export const downloadFile = async (videoUrl: string, opt: downLoadFileOptions): 
 
     return { filepath, totalBytes }
   } catch (error) {
-    // 检查是否为网络环境变化导致的错误
+    // 检查是否为网络环境变化或服务器风控导致的错误
     const errorMessage = error instanceof Error ? error.message : String(error)
     const isNetworkChangeError = /ECONNRESET|ETIMEDOUT|ECONNABORTED|aborted|timeout|network|连接被重置|连接超时|连接中止/i.test(errorMessage)
     
     if (isNetworkChangeError) {
-      logger.error('下载失败，可能是由于网络环境变化（如代理切换、VPN切换）导致')
+      logger.error('下载失败，可能是由于网络环境变化（如代理切换、VPN切换）或服务器风控导致')
       logger.error(`文件: ${opt.title}`)
       logger.error(`错误详情: ${errorMessage}`)
+      
+      if (!uploadConfig.downloadThrottle) {
+        logger.error('提示: 如果频繁出现此错误，建议在配置中开启「下载限速」功能')
+      }
     }
     
     throw error

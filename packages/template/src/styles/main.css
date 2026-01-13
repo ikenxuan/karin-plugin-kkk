@@ -161,7 +161,7 @@
   }
 
   body {
-    font-family: HarmonyOSHans-Regular, bilifont, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    font-family: HarmonyOSHans-Regular, bilifont, -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', 'Hiragino Sans GB', 'WenQuanYi Micro Hei', 'Segoe UI', 'Roboto', sans-serif;
     line-height: 1.6;
     color: var(--theme-text);
     background-color: var(--theme-bg);

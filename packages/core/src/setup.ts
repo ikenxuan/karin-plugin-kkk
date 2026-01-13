@@ -17,8 +17,4 @@ mkdirSync(`${karinPathBase}/${Root.pluginName}/data`)
 mkdirSync(Common.tempDri.images)
 mkdirSync(Common.tempDri.video)
 
-console.log('')
-console.log('-------------------------- karin-plugin-kkk --------------------------')
 logger.info(`${logger.violet(`[插件:v${Root.pluginVersion}]`)} ${logger.green(Root.pluginName)} 初始化完成~`)
-console.log('-------------------------- karin-plugin-kkk --------------------------')
-console.log('')

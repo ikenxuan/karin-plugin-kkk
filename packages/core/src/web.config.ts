@@ -336,12 +336,12 @@ export const webConfig = defineConfig({
       ...KuaishouWeb(all),
       ...XiaohongshuWeb(all),
       components.accordion.create('upload', {
-        label: '视频文件上传相关',
+        label: '视频上传和下载相关',
         children: [
           components.accordion.createItem('cfg:upload', {
-            title: '上传相关',
+            title: '上传和下载相关',
             className: 'ml-4 mr-4',
-            subtitle: '此处为上传相关的用户偏好设置',
+            subtitle: '此处为视频上传和下载相关的用户偏好设置',
             children: [
               components.divider.create('divider-upload-method', {
                 description: '发送方式配置',
@@ -404,6 +404,35 @@ export const webConfig = defineConfig({
                 defaultValue: all.upload.compressvalue.toString(),
                 rules: [{ min: 1 }],
                 isDisabled: !all.upload.compress
+              }),
+              components.divider.create('divider-upload-throttle', {
+                description: '下载限速配置',
+                descPosition: 20
+              }),
+              components.switch.create('downloadThrottle', {
+                label: '下载限速',
+                description: '开启后会限制下载速度，避免触发服务器风控导致连接被重置（ECONNRESET）。如果下载时经常报错"连接被重置"，建议开启',
+                defaultSelected: all.upload.downloadThrottle
+              }),
+              components.input.number('downloadMaxSpeed', {
+                label: '最大下载速度',
+                description: '单位：MB/s，建议设置为 5-20 之间。设置过高可能触发风控，设置过低会影响下载体验',
+                defaultValue: all.upload.downloadMaxSpeed.toString(),
+                rules: [{ min: 1, max: 1000, error: '请输入一个范围在 1 到 1000 之间的数字' }],
+                isDisabled: !all.upload.downloadThrottle
+              }),
+              components.switch.create('downloadAutoReduce', {
+                label: '断流自动降速',
+                description: '当检测到连接被重置时自动降低下载速度，每次断流后速度会降低到当前的 60%',
+                defaultSelected: all.upload.downloadAutoReduce,
+                isDisabled: !all.upload.downloadThrottle
+              }),
+              components.input.number('downloadMinSpeed', {
+                label: '最低下载速度',
+                description: '单位：MB/s，自动降速时不会低于此值',
+                defaultValue: all.upload.downloadMinSpeed.toString(),
+                rules: [{ min: 0.1, max: 100, error: '请输入一个范围在 0.1 到 100 之间的数字' }],
+                isDisabled: !all.upload.downloadThrottle || !all.upload.downloadAutoReduce
               })
             ]
           })

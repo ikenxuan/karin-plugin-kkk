@@ -1,13 +1,13 @@
 /**
- * 上传配置 Schema
+ * 上传和下载配置 Schema
  */
 import type { SectionSchema } from './schema'
 import { $not, $or, $var } from './schema'
 
 export const uploadConfigSchema: SectionSchema = {
   key: 'upload',
-  title: '上传相关',
-  subtitle: '此处为上传相关的用户偏好设置',
+  title: '上传和下载相关',
+  subtitle: '此处为视频上传和下载相关的用户偏好设置',
   fields: [
     { type: 'divider', title: '发送方式配置' },
     {
@@ -73,6 +73,38 @@ export const uploadConfigSchema: SectionSchema = {
       description: '单位：MB，若视频文件大小大于「压缩触发阈值」的值，则会进行压缩至该值（±5%），「压缩视频」开启后才会生效',
       disabled: $not('compress'),
       rules: [{ min: 1 }]
+    },
+    { type: 'divider', title: '下载限速配置' },
+    {
+      key: 'downloadThrottle',
+      type: 'switch',
+      label: '下载限速',
+      description: '开启后会限制下载速度，避免触发服务器风控导致连接被重置（ECONNRESET）。如果下载时经常报错"连接被重置"，建议开启'
+    },
+    {
+      key: 'downloadMaxSpeed',
+      type: 'input',
+      inputType: 'number',
+      label: '最大下载速度',
+      description: '单位：MB/s，建议设置为 5-20 之间。设置过高可能触发风控，设置过低会影响下载体验',
+      disabled: $not('downloadThrottle'),
+      rules: [{ min: 1, max: 1000, error: '请输入一个范围在 1 到 1000 之间的数字' }]
+    },
+    {
+      key: 'downloadAutoReduce',
+      type: 'switch',
+      label: '断流自动降速',
+      description: '当检测到连接被重置时自动降低下载速度，每次断流后速度会降低到当前的 60%',
+      disabled: $not('downloadThrottle')
+    },
+    {
+      key: 'downloadMinSpeed',
+      type: 'input',
+      inputType: 'number',
+      label: '最低下载速度',
+      description: '单位：MB/s，自动降速时不会低于此值',
+      disabled: $or($not('downloadThrottle'), $not('downloadAutoReduce')),
+      rules: [{ min: 0.1, max: 100, error: '请输入一个范围在 0.1 到 100 之间的数字' }]
     }
   ]
 }
