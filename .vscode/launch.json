@@ -7,17 +7,6 @@
     {
       "type": "chrome",
       "request": "launch",
-      "name": "Test Web",
-      "url": "https://localhost:5173",
-      "webRoot": "${workspaceFolder}/packages/web",
-      "sourceMaps": true,
-      "sourceMapPathOverrides": {
-        "/*": "${workspaceFolder}/packages/web/*"
-      }
-    },
-    {
-      "type": "chrome",
-      "request": "launch",
       "name": "Test Template",
       "url": "http://localhost:5174",
       "webRoot": "${workspaceFolder}/packages/template/*",

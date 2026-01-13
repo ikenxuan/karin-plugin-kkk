@@ -63,7 +63,6 @@
     "@types/connect-history-api-fallback": "^1.5.4",
     "@types/express": "5.0.6",
     "@types/heic-convert": "^2.1.0",
-    "connect-history-api-fallback": "^2.0.0",
     "cookie": "^1.1.1",
     "date-fns": "^4.1.0",
     "happy-dom": "^20.0.11",

@@ -1,16 +1,13 @@
-import path from 'node:path'
-
 import Client, {
   createBilibiliRoutes,
   createDouyinRoutes
 } from '@ikenxuan/amagi'
-import history from 'connect-history-api-fallback'
+// import history from 'connect-history-api-fallback'
 import * as cors from 'cors'
 import * as httpProxy from 'http-proxy-middleware'
 import { app as karinApp, checkPort, logger } from 'node-karin'
 import express from 'node-karin/express'
 
-import { Root } from '../../root'
 import { Config } from '../utils/Config'
 import { apiRouter } from './api'
 import { getVideoRouter, videoStreamRouter } from './router'
@@ -62,38 +59,38 @@ app.get('/video/:filename', getVideoRouter)
 // v1 API 路由
 app.use('/v1', apiRouter)
 
-const staticRouter = express.Router()
+// const staticRouter = express.Router()
 
-staticRouter.use(express.static(path.join(Root.pluginPath, 'lib', 'web_chunk'), {
-  redirect: false,
-  // 添加静态资源的缓存控制
-  setHeaders: (res, path) => {
-    if (path.endsWith('.html')) {
-      res.setHeader('Cache-Control', 'no-cache')
-    } else {
-      res.setHeader('Cache-Control', 'public, max-age=31536000')
-    }
-  }
-}))
+// staticRouter.use(express.static(path.join(Root.pluginPath, 'lib', 'web_chunk'), {
+//   redirect: false,
+//   // 添加静态资源的缓存控制
+//   setHeaders: (res, path) => {
+//     if (path.endsWith('.html')) {
+//       res.setHeader('Cache-Control', 'no-cache')
+//     } else {
+//       res.setHeader('Cache-Control', 'public, max-age=31536000')
+//     }
+//   }
+// }))
 
 // 处理 SPA 路由（history fallback）
-staticRouter.use(
-  history({
-    htmlAcceptHeaders: ['text/html', 'application/xhtml+xml'],
-    rewrites: [
-      {
-        from: /^\/kkk\/(?!.*\.[a-zA-Z0-9]+$).*$/,
-        to: '/kkk/index.html'
-      }
-    ],
-    disableDotRule: true
-  }) as httpProxy.RequestHandler
-)
+// staticRouter.use(
+//   history({
+//     htmlAcceptHeaders: ['text/html', 'application/xhtml+xml'],
+//     rewrites: [
+//       {
+//         from: /^\/kkk\/(?!.*\.[a-zA-Z0-9]+$).*$/,
+//         to: '/kkk/index.html'
+//       }
+//     ],
+//     disableDotRule: true
+//   }) as httpProxy.RequestHandler
+// )
 
-staticRouter.use(express.static(path.join(Root.pluginPath, 'lib', 'web_chunk'), {
-  redirect: false
-}))
+// staticRouter.use(express.static(path.join(Root.pluginPath, 'lib', 'web_chunk'), {
+//   redirect: false
+// }))
 
 /** 将子路由挂载到主路由上 */
-karinApp.use('/kkk', staticRouter)
+// karinApp.use('/kkk', staticRouter)
 karinApp.use('/api/kkk', app)
