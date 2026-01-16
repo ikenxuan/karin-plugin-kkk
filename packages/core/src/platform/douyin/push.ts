@@ -184,8 +184,7 @@ export class DouYinpush extends Base {
             avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
             fans: this.count(Detail_Data.user_info.data.user.follower_count),
             share_url: 'https://live.douyin.com/' + Detail_Data.room_data.owner.web_rid,
-            dynamicTYPE: '直播动态推送',
-            useDarkTheme: true
+            dynamicTYPE: '直播动态推送'
           })
         } else {
           // 处理普通作品推送
@@ -252,8 +251,7 @@ export class DouYinpush extends Base {
                 co_creator_nums: teamCount,
                 co_creators
               }
-            })(),
-            useDarkTheme: true
+            })()
           })
         }
       }
@@ -641,8 +639,7 @@ export class DouYinpush extends Base {
       groupInfo: {
         groupId: groupInfo.groupId || '',
         groupName: groupInfo.groupName || ''
-      },
-      useDarkTheme: true
+      }
     })
     await this.e.reply(img)
   }
