@@ -4,6 +4,7 @@ import path, { resolve } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 
 import tailwindcss from '@tailwindcss/vite'
+import { DevTools } from '@vitejs/devtools'
 import react from '@vitejs/plugin-react'
 import { codeInspectorPlugin } from 'code-inspector-plugin'
 import { defineConfig } from 'vite'
@@ -46,6 +47,7 @@ export default defineConfig(({ command }) => {
   // 基础配置
   const baseConfig = {
     plugins: [
+      DevTools(),
       react(),
       tailwindcss()
     ],

@@ -12,8 +12,9 @@ lerna-debug.log*
 
 # 编辑器配置
 /.idea/
-/.kiro/
 /.shared/
+/.kiro/
+/.trae/
 
 # 临时文件
 logs/

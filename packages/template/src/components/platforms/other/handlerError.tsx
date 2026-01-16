@@ -192,28 +192,124 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
       </div>
 
       {/* 背景大字装饰 */}
-      <div className='absolute bottom-[80px] right-[60px] pointer-events-none select-none opacity-[0.03]'>
+      <div className='absolute bottom-20 right-[60px] pointer-events-none select-none opacity-[0.03]'>
         <span className='text-[180px] font-black tracking-tighter leading-none block text-right' style={{ color: isDark ? '#fff' : '#7f1d1d' }}>
           ERROR
         </span>
       </div>
 
-      {/* 内容层 - 手机端大字体大间距 */}
+      {/* 四周装饰性图形点缀 */}
+      <div className='absolute inset-0 pointer-events-none overflow-hidden z-0'>
+
+        {/* 右上角：实心方块阵列 */}
+        <div className='absolute top-10 right-10 grid grid-cols-2 gap-3 opacity-20'>
+          <div className='w-4 h-4' style={{ backgroundColor: primaryColor }} />
+          <div className='w-4 h-4' style={{ backgroundColor: secondaryColor }} />
+          <div className='w-4 h-4' style={{ backgroundColor: secondaryColor }} />
+          <div className='w-4 h-4' style={{ backgroundColor: primaryColor }} />
+        </div>
+
+        {/* 左下角：对角线条纹 */}
+        <div className='absolute bottom-0 left-0 w-[500px] h-[500px] opacity-[0.06] pointer-events-none' 
+          style={{ 
+            backgroundImage: `repeating-linear-gradient(45deg, ${primaryColor}, ${primaryColor} 4px, transparent 2px, transparent 12px)`,
+            maskImage: 'linear-gradient(to top right, black, transparent 70%)',
+            WebkitMaskImage: 'linear-gradient(to top right, black, transparent 70%)'
+          }} 
+        />
+
+        {/* 右下角：同心圆弧 */}
+        <div className='absolute -bottom-20 -right-20 w-[600px] h-[600px] opacity-10 pointer-events-none'>
+          <div className='absolute bottom-0 right-0 w-full h-full border-40 rounded-full' style={{ borderColor: primaryColor }} />
+          <div className='absolute bottom-20 right-20 w-[calc(100%-160px)] h-[calc(100%-160px)] border-20 rounded-full' style={{ borderColor: secondaryColor }} />
+          <div className='absolute bottom-[140px] right-[140px] w-[calc(100%-280px)] h-[calc(100%-280px)] border-10 rounded-full' style={{ borderColor: mutedColor }} />
+        </div>
+      </div>
+
+      {/* 内容层 */}
       <div className='relative z-10 flex flex-col h-full p-16'>
         {/* 顶部状态栏 */}
         <div className='flex items-center justify-between mb-14'>
-          <div className='flex items-center gap-5'>
-            <div className='w-5 h-5 rounded-full' style={{ backgroundColor: primaryColor }} />
-            <span className='text-2xl font-medium tracking-[0.3em] uppercase' style={{ color: mutedColor }}>
-              Runtime Exception
-            </span>
+          {/* 优化后的左侧状态标签 */}
+          <div className='flex items-center'>
+            {/* 左侧装饰竖条 */}
+            <div 
+              className='h-16 w-3 mr-4 opacity-80' 
+              style={{ 
+                backgroundColor: primaryColor,
+                backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.2) 2px, rgba(0,0,0,0.2) 4px)'
+              }} 
+            />
+            
+            {/* 主标签容器 */}
+            <div 
+              className='relative px-8 py-3 backdrop-blur-md'
+              style={{ 
+                backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`
+              }}
+            >
+              {/* 四角装饰钉 */}
+              <div className='absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2' style={{ borderColor: primaryColor }} />
+              <div className='absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2' style={{ borderColor: primaryColor }} />
+              <div className='absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2' style={{ borderColor: primaryColor }} />
+              <div className='absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2' style={{ borderColor: primaryColor }} />
+
+              <div className='flex items-center gap-6'>
+                {/* 状态指示器 */}
+                <div className='flex flex-col items-center justify-center border-r pr-6' style={{ borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
+                  <div 
+                    className='w-4 h-4 rounded-full shadow-[0_0_15px_currentColor] animate-pulse' 
+                    style={{ backgroundColor: primaryColor, color: primaryColor }} 
+                  />
+                  <span className='text-[10px] font-mono mt-2 tracking-wider opacity-50' style={{ color: mutedColor }}>ERR.01</span>
+                </div>
+
+                {/* 文字信息 */}
+                <div className='flex flex-col'>
+                  <span className='text-xs font-mono font-bold tracking-[0.4em] uppercase mb-1 opacity-50' style={{ color: secondaryColor }}>
+                    System Alert
+                  </span>
+                  <span className='text-2xl font-black tracking-[0.25em] uppercase' style={{ color: primaryColor }}>
+                    Runtime Exception
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-          <span className='text-2xl' style={{ color: mutedColor }}>
-            {new Date(data.timestamp).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}
-          </span>
+          {/* 优化后的时间显示模块 */}
+          <div className='flex items-center gap-8 pr-12'>
+            {/* 装饰线条组 */}
+            <div className='flex flex-col gap-1 items-end opacity-40'>
+              <div className='w-16 h-0.5' style={{ backgroundColor: primaryColor }} />
+              <div className='w-8 h-0.5' style={{ backgroundColor: secondaryColor }} />
+            </div>
+
+            {/* 时间数字显示 */}
+            <div className='text-right'>
+              <div className='flex items-center justify-end gap-3 mb-1'>
+                <span className='text-xs font-black tracking-[0.3em] uppercase opacity-60' style={{ color: mutedColor }}>System Time</span>
+                <span className='w-2 h-2 rounded-full animate-pulse' style={{ backgroundColor: primaryColor }} />
+              </div>
+              <div className='font-mono text-5xl font-black tracking-widest leading-none' style={{ color: mutedColor }}>
+                {new Date(data.timestamp).toLocaleTimeString('en-GB', { hour12: false })}
+              </div>
+            </div>
+
+            {/* 分割线 */}
+            <div className='h-12 w-0.5 opacity-20' style={{ backgroundColor: mutedColor }} />
+
+            {/* 日期显示 */}
+            <div className='text-right'>
+              <div className='text-xs font-black tracking-[0.3em] uppercase opacity-60 mb-1' style={{ color: mutedColor }}>Date</div>
+              <div className='font-mono text-3xl font-bold tracking-widest' style={{ color: secondaryColor }}>
+                {new Date(data.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' }).replace('/', '.')}
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* 主标题 - 手机端超大字 */}
+        {/* 主标题 */}
         <div className='mb-20'>
           <h1 className='text-[120px] font-black leading-none tracking-tight mb-10' style={{ color: accentColor }}>
             {errorTitle}
@@ -318,7 +414,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
                     className={`relative rounded-3xl ${theme.bgClass} border-2 p-6`}
                     style={{ borderColor }}
                   >
-                    {/* 时间戳 - legend 自动切割边框 */}
+                    {/* 时间戳 */}
                     <legend className='flex items-center gap-2 ml-4'>
                       {/* 左侧圆角装饰 */}
                       <span 
@@ -336,7 +432,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
                       />
                     </legend>
                     
-                    {/* 日志等级 - 右下角大字半透明 */}
+                    {/* 日志等级 */}
                     <div className='absolute bottom-2 right-6 pointer-events-none'>
                       <span className='text-[56px] font-black uppercase leading-none tracking-tight' style={{ color: levelColor }}>
                         {log.level}

@@ -2,7 +2,6 @@ import { HeroUIProvider } from '@heroui/react'
 import clsx from 'clsx'
 import { AlertTriangle, CheckCircle, CircleFadingArrowUp, Info, Zap } from 'lucide-react'
 import React from 'react'
-import { TbPackageImport } from 'react-icons/tb'
 
 import type { BaseComponentProps, RenderRequest } from '../../types'
 import { GlowImage } from '../common/GlowImage'
@@ -150,11 +149,11 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                 <>
                   <div className='w-1 h-14 opacity-90 bg-default-900' />
 
-                  <div className='flex flex-col items-center space-y-4'>
+                  <div className='flex flex-col items-start space-y-4'>
                     <div className='flex items-end space-x-2'>
-                      <TbPackageImport className="w-4 h-4 text-warning" />
+                      {/* <TbPackageImport className="w-4 h-4 text-warning" /> */}
                       <GlowImage glowStrength={useDarkTheme ? 1 : 0} blurRadius={6}>
-                        <RolldownLogo className="w-auto h-3.5" />
+                        <RolldownLogo className="w-auto h-4" />
                       </GlowImage>
                     </div>
                     <GlowImage glowStrength={useDarkTheme ? 1 : 0} blurRadius={12}>

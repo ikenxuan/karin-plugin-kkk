@@ -144,14 +144,14 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
                     v{props.data.currentVersion}
                   </span>
                   <div
-                    className="absolute top-1/2 -left-2 -right-2 h-[6px] -rotate-3 rounded-full"
+                    className="absolute top-1/2 -left-2 -right-2 h-1.5 -rotate-3 rounded-full"
                     style={{ backgroundColor: primaryColor }}
                   />
                 </div>
               </div>
 
               {/* 分隔线 */}
-              <div className="w-[2px] rounded-full mx-10" style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.2)' : 'rgba(180,83,9,0.15)' }} />
+              <div className="w-0.5 rounded-full mx-10" style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.2)' : 'rgba(180,83,9,0.15)' }} />
 
               {/* 需要版本 */}
               <div className="flex-1">
@@ -175,7 +175,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
             </div>
 
             {/* 分隔线 */}
-            <div className="h-[2px] rounded-full mb-10" style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.2)' : 'rgba(180,83,9,0.15)' }} />
+            <div className="h-0.5 rounded-full mb-10" style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.2)' : 'rgba(180,83,9,0.15)' }} />
 
             {/* 升级命令 */}
             <div>
