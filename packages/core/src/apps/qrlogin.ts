@@ -9,7 +9,7 @@ import { Render } from '@/module/utils/Render'
  * 获取本机局域网 IP 地址
  * 优先返回常见局域网网段的 IP（192.168.x.x, 10.x.x.x, 172.16-31.x.x）
  */
-function getLocalIP(): string {
+function getLocalIP (): string {
   const interfaces = os.networkInterfaces()
   const candidates: string[] = []
 
@@ -44,7 +44,7 @@ function getLocalIP(): string {
  * 获取公网 IP 地址
  * 通过多个公共 API 尝试获取
  */
-async function getPublicIP(): Promise<string | null> {
+async function getPublicIP (): Promise<string | null> {
   const apis = [
     '4.ipw.cn',
     'https://api.ipify.org',
@@ -57,10 +57,10 @@ async function getPublicIP(): Promise<string | null> {
     try {
       const controller = new AbortController()
       const timeout = setTimeout(() => controller.abort(), 5000)
-      
+
       const response = await fetch(api, { signal: controller.signal })
       clearTimeout(timeout)
-      
+
       if (response.ok) {
         const ip = (await response.text()).trim()
         // 验证是否为有效的 IPv4 地址
@@ -72,16 +72,16 @@ async function getPublicIP(): Promise<string | null> {
       // 继续尝试下一个 API
     }
   }
-  
+
   return null
 }
 
 /**
  * 根据配置获取服务器地址
  */
-async function getHostByConfig(): Promise<string> {
+async function getHostByConfig (): Promise<string> {
   const addrType = Config.app.qrLoginAddrType || 'lan'
-  
+
   if (addrType === 'external') {
     const externalAddr = Config.app.qrLoginExternalAddr
     if (externalAddr && externalAddr.trim()) {
@@ -97,7 +97,7 @@ async function getHostByConfig(): Promise<string> {
     logger.warn('[APP扫码登录] 无法获取公网 IP，回退到局域网 IP')
     return getLocalIP()
   }
-  
+
   return getLocalIP()
 }
 
@@ -147,7 +147,7 @@ export const qrLogin = karin.command(/^#?(kkk)?登录$/i, async (e) => {
 
     // 私发给触发命令的用户
     await karin.sendMaster(e.selfId, userId, images)
-    
+
     // 如果是群聊触发，提示已私发
     if (e.isGroup) {
       await e.reply('登录二维码已私聊发送，请查收~')

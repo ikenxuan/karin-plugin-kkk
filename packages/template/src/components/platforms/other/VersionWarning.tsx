@@ -1,7 +1,7 @@
 import { Chip } from '@heroui/react'
 import React from 'react'
 
-import type { VersionWarningProps } from '../../../types/platforms/ohter/VersionWarningProps'
+import type { VersionWarningProps } from '../../../types/platforms/other/VersionWarningProps'
 import { GlowImage } from '../../common/GlowImage'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 

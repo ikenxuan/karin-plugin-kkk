@@ -1,7 +1,7 @@
 import { QrCode, Smartphone } from 'lucide-react'
 import React from 'react'
 
-import type { QrLoginProps } from '../../../types/platforms/ohter'
+import type { QrLoginProps } from '../../../types/platforms/other'
 import { GlowImage } from '../../common/GlowImage'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
@@ -273,7 +273,7 @@ export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName
       </div>
 
       {/* 背景大字装饰 */}
-      <div className='absolute top-[80px] right-[70px] pointer-events-none select-none opacity-[0.04]'>
+      <div className='absolute top-20 right-[70px] pointer-events-none select-none opacity-[0.04]'>
         <span
           className='text-[140px] font-black tracking-tighter leading-none block text-right'
           style={{ color: isDark ? '#fff' : '#4f46e5' }}
@@ -326,7 +326,7 @@ export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName
         {/* 中间二维码区域 */}
         <div className='flex-1 flex flex-col justify-center items-center'>
           {qrCodeDataUrl ? (
-            <div className='flex justify-center items-center w-[320px] h-[320px]'>
+            <div className='flex justify-center items-center w-[320px] h-80'>
               <img
                 src={qrCodeDataUrl}
                 alt='登录二维码'
@@ -334,7 +334,7 @@ export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName
               />
             </div>
           ) : (
-            <div className='flex flex-col gap-4 justify-center items-center w-[320px] h-[320px]'>
+            <div className='flex flex-col gap-4 justify-center items-center w-[320px] h-80'>
               <QrCode className='w-16 h-16 text-default-300' />
               <span className='text-lg text-default-400'>二维码生成中...</span>
             </div>
@@ -342,11 +342,11 @@ export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName
 
           {/* 扫码提示 */}
           <div className='mt-6 flex items-center gap-3'>
-            <div className='w-12 h-[2px] rounded-full' style={{ background: `linear-gradient(90deg, transparent, ${mutedColor})` }} />
+            <div className='w-12 h-0.5 rounded-full' style={{ background: `linear-gradient(90deg, transparent, ${mutedColor})` }} />
             <span className='text-[18px] font-medium' style={{ color: mutedColor }}>
               打开 APP 扫一扫
             </span>
-            <div className='w-12 h-[2px] rounded-full' style={{ background: `linear-gradient(90deg, ${mutedColor}, transparent)` }} />
+            <div className='w-12 h-0.5 rounded-full' style={{ background: `linear-gradient(90deg, ${mutedColor}, transparent)` }} />
           </div>
         </div>
 

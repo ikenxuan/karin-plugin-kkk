@@ -62,7 +62,7 @@ export interface RenderResponse {
  * 组件属性基础接口 - 泛型T为子组件的具体数据类型
  * @template T 子组件的数据类型
  */
-export interface BaseComponentProps<T = Record<string, any>> extends Pick<TypedRenderRequest<keyof DataTypeMap>, 'data' | 'version' | 'scale'> {
+export interface BaseComponentProps<T = Record<string, any>> extends Pick<RenderRequest, 'version' | 'scale'> {
   /** 渲染数据 - 子组件的具体参数 */
   data: {
     /** 是否使用深色主题 */
@@ -151,11 +151,11 @@ interface PathToDataTypeMap {
   'xiaohongshu/comment': import('./platforms/xiaohongshu').XiaohongshuCommentProps['data']
 
   // 其他平台路径
-  'other/help': import('./platforms/ohter/help').HelpProps['data']
-  'other/handlerError': import('./platforms/ohter/handlerError').ApiErrorProps['data']
-  'other/changelog': import('./platforms/ohter/changelog').ChangelogProps['data']
-  'other/version_warning': import('./platforms/ohter/VersionWarningProps').VersionWarningProps['data']
-  'other/qrlogin': import('./platforms/ohter/qrlogin').QrLoginProps['data']
+  'other/help': import('./platforms/other/help').HelpProps['data']
+  'other/handlerError': import('./platforms/other/handlerError').ApiErrorProps['data']
+  'other/changelog': import('./platforms/other/changelog').ChangelogProps['data']
+  'other/version_warning': import('./platforms/other/VersionWarningProps').VersionWarningProps['data']
+  'other/qrlogin': import('./platforms/other/qrlogin').QrLoginProps['data']
 }
 
 /**
@@ -178,7 +178,7 @@ export interface DataTypeMap {
   /** 快手平台数据类型 */
   kuaishou: import('./platforms/kuaishou').KuaishouCommentProps['data']
   /** 其他类型数据 */
-  other: import('./platforms/ohter/help').HelpProps['data']
+  other: import('./platforms/other/help').HelpProps['data']
 }
 
 /**

@@ -542,7 +542,7 @@ export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | '
           <div className='mx-auto my-20 mb-5 ml-10'>
             <div className='flex gap-3 items-center px-6 py-4 rounded-2xl'>
               <span className='text-5xl text-default-500'>大家都在搜：</span>
-              <span className='relative text-5xl text-[#04498d] dark:text-[#face15]'>
+              <span className='relative text-5xl text-primary'>
                 {randomSuggestWord}
                 <IoSearch size={32} className='absolute -top-2 -right-8' />
               </span>

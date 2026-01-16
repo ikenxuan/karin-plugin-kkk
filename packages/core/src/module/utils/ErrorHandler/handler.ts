@@ -1,5 +1,5 @@
 import { logger, type Message } from 'node-karin'
-import type { ApiErrorProps } from 'template/types/platforms/ohter/handlerError'
+import type { ApiErrorProps } from 'template/types/platforms/other/handlerError'
 
 import { getBuildMetadata } from '@/module'
 

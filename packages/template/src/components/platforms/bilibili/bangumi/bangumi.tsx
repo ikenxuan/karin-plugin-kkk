@@ -65,7 +65,7 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
   return (
     <div className='overflow-hidden relative rounded-6xl'>
       <div className='flex relative z-10 gap-25 p-25'>
-        <div className='flex flex-col flex-shrink-0 gap-20'>
+        <div className='flex flex-col shrink-0 gap-20'>
           {/* 封面 */}
           <div className='overflow-hidden rounded-4xl w-120 h-160'>
             <EnhancedImage
@@ -357,7 +357,7 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliData> = (props) => {
 
           return (
             <div key={episode.bvid} className='flex gap-15'>
-              <div className='flex flex-col flex-shrink-0 items-center w-20'>
+              <div className='flex flex-col shrink-0 items-center w-20'>
                 {isFirstOfDate ? (
                   // 日期节点
                   <>  
@@ -395,7 +395,7 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliData> = (props) => {
                 {/* UP主信息和第x集 */}
                 <div className='flex justify-between items-center mb-10'>
                   {/* UP主信息 */}
-                  <div className='flex flex-shrink-0 gap-8 items-center'>
+                  <div className='flex shrink-0 gap-8 items-center'>
                     <div className='relative'>
                       <EnhancedImage 
                         className='w-32 h-32 rounded-full select-text'
@@ -413,7 +413,7 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliData> = (props) => {
                   </div>
                   
                   {/* 第x集标题 */}
-                  <div className='flex-shrink-0 pr-20'>
+                  <div className='shrink-0 pr-20'>
                     <div className='text-5xl font-semibold select-text text-foreground-600'>
                       第{actualEpisodeNumber}集
                     </div>
@@ -423,8 +423,8 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliData> = (props) => {
                 <div className='overflow-hidden shadow-large bg-content1 rounded-4xl'>
                   <div className='flex gap-12 p-12'>
                     {/* 剧集封面 */}
-                    <div className='relative flex-shrink-0'>
-                      <div className='overflow-hidden relative h-64 rounded-3xl w-112'>
+                    <div className='relative shrink-0'>
+                      <div className='overflow-hidden relative h-64 rounded-3xl w-md'>
                         <EnhancedImage
                           src={episode.cover}
                           alt={`第${actualEpisodeNumber}集 ${episode.long_title}`}

@@ -14,6 +14,11 @@ export interface HelpProps extends BaseComponentProps {
     role?: 'master' | 'member'
     /** 菜单数据：按角色筛选后的分组 */
     menu?: MenuGroup[]
+    /** 简单的列表数据 (用于 Help.tsx 渲染) */
+    list: {
+      title: string
+      description: string
+    }[]
   }
 }
 

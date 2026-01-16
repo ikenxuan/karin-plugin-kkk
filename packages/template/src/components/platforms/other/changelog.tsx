@@ -5,7 +5,7 @@ import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 
 import { GlowText } from '../../../components/common/GlowImage'
-import type { ChangelogProps } from '../../../types/platforms/ohter/changelog'
+import type { ChangelogProps } from '../../../types/platforms/other/changelog'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 

@@ -1,4 +1,4 @@
-import type { ApiErrorProps } from 'template/types/platforms/ohter/handlerError'
+import type { ApiErrorProps } from 'template/types/platforms/other/handlerError'
 
 import { Config } from '../Config'
 

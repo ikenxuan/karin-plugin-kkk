@@ -97,8 +97,8 @@ export const EnhancedImage: React.FC<EnhancedImageProps> = ({
 
   if (!src || hasError) {
     return (
-      <div className={`${className} ${isCircular ? 'rounded-full' : 'rounded-md'} bg-gray-200 dark:bg-gray-700 flex items-center justify-center`}>
-        <span className='text-sm text-gray-400'>{placeholder || alt}</span>
+      <div className={`${className} ${isCircular ? 'rounded-full' : 'rounded-md'} bg-content2 flex items-center justify-center`}>
+        <span className='text-sm text-default-400'>{placeholder || alt}</span>
       </div>
     )
   }

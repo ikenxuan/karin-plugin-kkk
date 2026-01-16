@@ -11,7 +11,7 @@ import {
   RiSparkling2Fill 
 } from 'react-icons/ri'
 
-import type { HelpProps, MenuGroup, MenuItem } from '../../../types/platforms/ohter/help'
+import type { HelpProps, MenuGroup, MenuItem } from '../../../types/platforms/other/help'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**

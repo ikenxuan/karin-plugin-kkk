@@ -250,7 +250,7 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
           case 'help':
             return createComponentConfig(baseComponent, {
               lazyComponent: () => import('../components/platforms/other/Help').then(module => ({
-                default: module.Help
+                default: module.default
               }))
             })
           case 'handlerError':

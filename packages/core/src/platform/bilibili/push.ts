@@ -1,12 +1,12 @@
 import fs from 'node:fs'
 
-import { 
+import {
   BiliUserDynamic,
   BiliUserProfile,
   BiliVideoPlayurlIsLogin,
-  DynamicType, 
+  DynamicType,
   MajorType,
-  Result 
+  Result
 } from '@ikenxuan/amagi'
 import { format, fromUnixTime } from 'date-fns'
 import type {
@@ -341,6 +341,7 @@ export class Bilibilipush extends Base {
             /** 富文本节点：查看图片 */
             const imgList = []
             if (!data[dynamicId].Dynamic_Data.modules.module_dynamic.desc) {
+              // @ts-ignore
               for (const richTxtItem of data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.rich_text_nodes) {
                 if (richTxtItem.type === 'RICH_TEXT_NODE_TYPE_VIEW_PICTURE') {
                   for (const pic of richTxtItem.pics) {
@@ -598,9 +599,9 @@ export class Bilibilipush extends Base {
               }
               case 'DYNAMIC_TYPE_DRAW': {
                 const imgArray: ImageElement[] = []
-                for (const img2 of 
-                  data[dynamicId].Dynamic_Data.modules.module_dynamic.major && 
-                  data[dynamicId].Dynamic_Data.modules.module_dynamic?.major?.draw?.items || 
+                for (const img2 of
+                  data[dynamicId].Dynamic_Data.modules.module_dynamic.major &&
+                  data[dynamicId].Dynamic_Data.modules.module_dynamic?.major?.draw?.items ||
                   data[dynamicId].Dynamic_Data.modules.module_dynamic?.major?.opus.pics
                 ) {
                   imgArray.push(segment.image(img2.src ?? img2.url))
@@ -952,7 +953,7 @@ export class Bilibilipush extends Base {
 
     /** 用户的今日动态列表 */
     const renderOpt: BilibiliUserListProps['data']['renderOpt'] = []
-    
+
     // 获取所有订阅UP主的信息
     for (const subscription of subscriptions) {
       const host_mid = subscription.host_mid
@@ -973,7 +974,7 @@ export class Bilibilipush extends Base {
       })
     }
 
-    const img = await Render('bilibili/userlist', { 
+    const img = await Render('bilibili/userlist', {
       renderOpt,
       groupInfo: {
         groupId: groupInfo.groupId || '',
@@ -989,7 +990,7 @@ export class Bilibilipush extends Base {
  * @param data 需要进行换行符替换的字符串。
  * @returns 替换后的字符串，其中的换行符\n被<br>替换。
  */
-const br = (data: string): string => {  
+const br = (data: string): string => {
   // 使用正则表达式将所有换行符替换为<br>
   return (data = data.replace(/\n/g, '<br>'))
 }
@@ -999,7 +1000,7 @@ const br = (data: string): string => {
  * @param member 成员对象，需要包含vip属性，该属性应包含vipStatus和nickname_color（可选）。
  * @returns 返回成员名称的HTML标签字符串，VIP成员将显示为特定颜色，非VIP成员显示为默认颜色。
  */
-const checkvip = (member: BiliUserProfile['data']['card'] | BiliUserDynamic['data']['items'][number]['orig']['modules']['module_author']): string => {  
+const checkvip = (member: BiliUserProfile['data']['card'] | BiliUserDynamic['data']['items'][number]['orig']['modules']['module_author']): string => {
   // 根据VIP状态选择不同的颜色显示成员名称
   return member.vip.status === 1
     ? `<span style="color: ${member.vip.nickname_color ?? '#FB7299'}; font-weight: 700;">${member.name}</span>`

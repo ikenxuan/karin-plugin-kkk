@@ -128,9 +128,25 @@ export const help = karin.command(/^#?kkk帮助$/, async (e) => {
   const role: Role = isMaster ? 'master' : 'member'
   const menu = buildMenuForRole(role)
 
+  // 将 menu 转换为 list 供前端渲染
+  const list = menu.flatMap(group => {
+    const groupItems = group.items.map(item => ({
+      title: item.title,
+      description: item.description
+    }))
+    const subItems = group.subGroups?.flatMap(sg =>
+      sg.items.map(item => ({
+        title: item.title,
+        description: item.description
+      }))
+    ) || []
+    return [...groupItems, ...subItems]
+  })
+
   const img = await Render('other/help', {
     title: 'KKK插件帮助页面',
     menu,
+    list,
     role
   })
   await e.reply(img)

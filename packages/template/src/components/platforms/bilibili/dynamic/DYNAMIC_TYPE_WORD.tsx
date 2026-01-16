@@ -64,7 +64,7 @@ const BilibiliWordContent: React.FC<BilibiliWordContentProps> = (props) => {
         <div className='relative items-center text-5xl tracking-wider wrap-break-word text-foreground'>
           <CommentText
             className={clsx(
-              'text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-foreground mb-[20px] select-text',
+              'text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-foreground mb-5 select-text',
               '[&_svg]:inline [&_svg]:mb-4!',
               '[&_img]:inline [&_img]:mx-1 [&_img]:align-bottom [&_img]:relative [&_img]:-top-2'
             )}

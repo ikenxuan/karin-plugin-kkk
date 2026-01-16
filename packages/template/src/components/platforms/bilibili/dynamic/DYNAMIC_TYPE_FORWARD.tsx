@@ -278,7 +278,7 @@ const BilibiliForwardContent: React.FC<BilibiliForwardDynamicProps['data']> = (p
         <div className='relative items-center text-5xl tracking-wider wrap-break-word text-foreground'>
           <CommentText
             className={clsx(
-              'text-[65px] tracking-[1.5px] leading-normal whitespace-pre-wrap text-foreground mb-[20px] select-text',
+              'text-[65px] tracking-[1.5px] leading-normal whitespace-pre-wrap text-foreground mb-5 select-text',
               '[&_svg]:inline [&_svg]:mb-4!',
               '[&_img]:mb-3 [&_img]:inline [&_img]:mx-1'
             )}
