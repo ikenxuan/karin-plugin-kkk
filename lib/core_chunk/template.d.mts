@@ -1615,7 +1615,7 @@ interface XiaohongshuNoteInfoProps extends BaseComponentProps {
   data: XiaohongshuNoteInfoData;
 }
 //#endregion
-//#region ../template/src/types/platforms/ohter/help.d.ts
+//#region ../template/src/types/platforms/other/help.d.ts
 /**
  * 帮助页面组件属性接口
  */
@@ -1630,6 +1630,11 @@ interface HelpProps extends BaseComponentProps {
     role?: 'master' | 'member';
     /** 菜单数据：按角色筛选后的分组 */
     menu?: MenuGroup[];
+    /** 简单的列表数据 (用于 Help.tsx 渲染) */
+    list: {
+      title: string;
+      description: string;
+    }[];
   };
 }
 /**
@@ -1660,7 +1665,7 @@ interface MenuGroup {
   }[];
 }
 //#endregion
-//#region ../template/src/types/platforms/ohter/handlerError.d.ts
+//#region ../template/src/types/platforms/other/handlerError.d.ts
 /**
  * 业务错误类型
  */
@@ -1751,7 +1756,7 @@ interface ApiErrorProps extends BaseComponentProps {
   qrCodeDataUrl?: string;
 }
 //#endregion
-//#region ../template/src/types/platforms/ohter/changelog.d.ts
+//#region ../template/src/types/platforms/other/changelog.d.ts
 /**
  * 更新日志组件属性接口
  */
@@ -1771,7 +1776,7 @@ interface ChangelogProps extends BaseComponentProps {
   };
 }
 //#endregion
-//#region ../template/src/types/platforms/ohter/VersionWarningProps.d.ts
+//#region ../template/src/types/platforms/other/VersionWarningProps.d.ts
 interface VersionWarningProps extends BaseComponentProps {
   /** 插件构建时的 karin 版本 */
   requireVersion: string;
@@ -1779,7 +1784,7 @@ interface VersionWarningProps extends BaseComponentProps {
   currentVersion: string;
 }
 //#endregion
-//#region ../template/src/types/platforms/ohter/qrlogin.d.ts
+//#region ../template/src/types/platforms/other/qrlogin.d.ts
 /** APP 扫码登录组件属性 */
 interface QrLoginProps {
   data: {
@@ -1858,7 +1863,7 @@ interface RenderResponse {
  * 组件属性基础接口 - 泛型T为子组件的具体数据类型
  * @template T 子组件的数据类型
  */
-interface BaseComponentProps<T = Record<string, any>> extends Pick<TypedRenderRequest<keyof DataTypeMap>, 'data' | 'version' | 'scale'> {
+interface BaseComponentProps<T = Record<string, any>> extends Pick<RenderRequest, 'version' | 'scale'> {
   /** 渲染数据 - 子组件的具体参数 */
   data: {
     /** 是否使用深色主题 */
