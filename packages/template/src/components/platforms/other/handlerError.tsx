@@ -148,7 +148,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
       <div className='absolute inset-0 pointer-events-none'>
         {/* 左上主光斑 */}
         <div
-          className='absolute rounded-full w-[1200px] h-[1400px] -top-[300px] -left-[200px] blur-[120px] -rotate-15'
+          className='absolute rounded-full w-300 h-350 -top-75 -left-50 blur-[120px] -rotate-15'
           style={{
             background: isDark
               ? 'radial-gradient(ellipse at 40% 40%, rgba(220,38,38,0.35) 0%, rgba(185,28,28,0.18) 50%, transparent 100%)'
@@ -157,7 +157,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
         />
         {/* 右侧光斑 */}
         <div
-          className='absolute rounded-full w-[900px] h-[1000px] top-[400px] -right-[100px] blur-[100px] rotate-20'
+          className='absolute rounded-full w-225 h-250 top-100 -right-25 blur-[100px] rotate-20'
           style={{
             background: isDark
               ? 'radial-gradient(ellipse at 50% 50%, rgba(127,29,29,0.3) 0%, rgba(69,10,10,0.15) 50%, transparent 100%)'
@@ -166,7 +166,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
         />
         {/* 底部光斑 */}
         <div
-          className='absolute rounded-full w-[1000px] h-[800px] -bottom-[200px] left-[200px] blur-[140px] -rotate-10'
+          className='absolute rounded-full w-250 h-200 -bottom-50 left-50 blur-[140px] -rotate-10'
           style={{
             background: isDark
               ? 'radial-gradient(ellipse at 50% 60%, rgba(153,27,27,0.3) 0%, rgba(127,29,29,0.15) 50%, transparent 100%)'
@@ -192,7 +192,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
       </div>
 
       {/* 背景大字装饰 */}
-      <div className='absolute bottom-20 right-[60px] pointer-events-none select-none opacity-[0.03]'>
+      <div className='absolute bottom-20 right-15 pointer-events-none select-none opacity-[0.03]'>
         <span className='text-[180px] font-black tracking-tighter leading-none block text-right' style={{ color: isDark ? '#fff' : '#7f1d1d' }}>
           ERROR
         </span>
@@ -210,7 +210,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
         </div>
 
         {/* 左下角：对角线条纹 */}
-        <div className='absolute bottom-0 left-0 w-[500px] h-[500px] opacity-[0.06] pointer-events-none' 
+        <div className='absolute bottom-0 left-0 w-125 h-125 opacity-[0.06] pointer-events-none' 
           style={{ 
             backgroundImage: `repeating-linear-gradient(45deg, ${primaryColor}, ${primaryColor} 4px, transparent 2px, transparent 12px)`,
             maskImage: 'linear-gradient(to top right, black, transparent 70%)',
@@ -219,10 +219,10 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
         />
 
         {/* 右下角：同心圆弧 */}
-        <div className='absolute -bottom-20 -right-20 w-[600px] h-[600px] opacity-10 pointer-events-none'>
+        <div className='absolute -bottom-20 -right-20 w-150 h-150 opacity-10 pointer-events-none'>
           <div className='absolute bottom-0 right-0 w-full h-full border-40 rounded-full' style={{ borderColor: primaryColor }} />
           <div className='absolute bottom-20 right-20 w-[calc(100%-160px)] h-[calc(100%-160px)] border-20 rounded-full' style={{ borderColor: secondaryColor }} />
-          <div className='absolute bottom-[140px] right-[140px] w-[calc(100%-280px)] h-[calc(100%-280px)] border-10 rounded-full' style={{ borderColor: mutedColor }} />
+          <div className='absolute bottom-35 right-35 w-[calc(100%-280px)] h-[calc(100%-280px)] border-10 rounded-full' style={{ borderColor: mutedColor }} />
         </div>
       </div>
 

@@ -163,19 +163,19 @@ export const Help: React.FC<Omit<HelpProps, 'templateType' | 'templateName'>> = 
       {/* 1. 弥散光背景层 */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div
-          className="absolute rounded-full w-[1260px] h-[1440px] -top-[270px] -left-[180px] blur-[128px] -rotate-20"
+          className="absolute rounded-full w-315 h-360 -top-67.5 -left-45 blur-[128px] -rotate-20"
           style={{
             background: `radial-gradient(ellipse at 40% 40%, ${glowColors.primary} 0%, transparent 70%)`
           }}
         />
         <div
-          className="absolute rounded-full w-[900px] h-[1080px] top-[450px] -right-[90px] blur-[108px] rotate-15"
+          className="absolute rounded-full w-225 h-270 top-112.5 -right-22.5 blur-[108px] rotate-15"
           style={{
             background: `radial-gradient(ellipse at 50% 50%, ${glowColors.secondary} 0%, transparent 70%)`
           }}
         />
         <div
-          className="absolute rounded-full w-[1080px] h-[900px] -bottom-[180px] left-[180px] blur-[128px] -rotate-10"
+          className="absolute rounded-full w-270 h-225 -bottom-45 left-45 blur-[128px] -rotate-10"
           style={{
             background: `radial-gradient(ellipse at 50% 60%, ${glowColors.accent} 0%, transparent 70%)`
           }}
@@ -199,7 +199,7 @@ export const Help: React.FC<Omit<HelpProps, 'templateType' | 'templateName'>> = 
       </div>
 
       {/* 3. 背景大字装饰 */}
-      <div className="absolute top-[120px] right-[60px] pointer-events-none select-none opacity-[0.03] z-0">
+      <div className="absolute top-30 right-15 pointer-events-none select-none opacity-[0.03] z-0">
         <span
           className="text-[200px] font-black tracking-tighter leading-none block text-right text-black dark:text-white"
           style={{ 
@@ -245,7 +245,7 @@ export const Help: React.FC<Omit<HelpProps, 'templateType' | 'templateName'>> = 
         {/* 底部装饰 */}
         <div className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none">
           {/* 左下角装饰条纹 */}
-          <div className="absolute bottom-0 left-0 w-130 h-[400px] opacity-[0.04]"
+          <div className="absolute bottom-0 left-0 w-130 h-100 opacity-[0.04]"
             style={{
               background: `repeating-linear-gradient(45deg, ${isDark ? '#fff' : '#000'}, ${isDark ? '#fff' : '#000'} 5px, transparent 2px, transparent 10px)`
             }}
@@ -256,7 +256,7 @@ export const Help: React.FC<Omit<HelpProps, 'templateType' | 'templateName'>> = 
       </div>
 
       {/* 5. 主要内容区域 */}
-      <div className="relative z-10 p-[72px] flex flex-col min-h-[calc(100vh-200px)]">
+      <div className="relative z-10 p-18 flex flex-col min-h-[calc(100vh-200px)]">
         
         {/* 头部区域 */}
         <div className="flex justify-between items-end mb-24 border-b-4 border-slate-900/10 dark:border-white/10 pb-8">

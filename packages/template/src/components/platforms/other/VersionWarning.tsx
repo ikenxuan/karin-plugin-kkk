@@ -25,7 +25,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
       {/* 弥散光背景 */}
       <div className="absolute inset-0 pointer-events-none">
         <div
-          className="absolute rounded-full w-[1260px] h-[1440px] -top-[270px] -left-[180px] blur-[108px] -rotate-20"
+          className="absolute rounded-full w-315 h-360 -top-67.5 -left-45 blur-[108px] -rotate-20"
           style={{
             background: isDark
               ? 'radial-gradient(ellipse at 40% 40%, rgba(194,65,12,0.4) 0%, rgba(154,52,18,0.2) 50%, transparent 100%)'
@@ -33,7 +33,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
           }}
         />
         <div
-          className="absolute rounded-full w-[900px] h-[1080px] top-[450px] -right-[90px] blur-[90px] rotate-15"
+          className="absolute rounded-full w-225 h-270 top-112.5 -right-22.5 blur-[90px] rotate-15"
           style={{
             background: isDark
               ? 'radial-gradient(ellipse at 50% 50%, rgba(68,44,21,0.35) 0%, rgba(41,26,13,0.18) 50%, transparent 100%)'
@@ -41,7 +41,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
           }}
         />
         <div
-          className="absolute rounded-full w-[1080px] h-[900px] -bottom-[180px] left-[180px] blur-[126px] -rotate-10"
+          className="absolute rounded-full w-270 h-225 -bottom-45 left-45 blur-[126px] -rotate-10"
           style={{
             background: isDark
               ? 'radial-gradient(ellipse at 50% 60%, rgba(180,83,9,0.35) 0%, rgba(146,64,14,0.18) 50%, transparent 100%)'
@@ -72,7 +72,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
       </div>
 
       {/* 背景大字 */}
-      <div className="absolute bottom-[100px] right-[72px] pointer-events-none select-none opacity-[0.03]">
+      <div className="absolute bottom-25 right-18 pointer-events-none select-none opacity-[0.03]">
         <span
           className="text-[200px] font-black tracking-tighter leading-none block text-right"
           style={{ color: isDark ? '#fff' : '#78350f' }}
@@ -88,7 +88,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
       </div>
 
       {/* 内容层 */}
-      <div className="relative z-10 flex flex-col justify-between h-full p-[72px]">
+      <div className="relative z-10 flex flex-col justify-between h-full p-18">
         {/* 顶部 */}
         <div className="flex justify-between items-start">
           <div className="flex flex-col gap-12">
@@ -219,7 +219,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
 
           {/* 右下角 */}
           <div className="flex items-end space-x-7">
-            <div className="flex flex-col items-end justify-end h-[100px]">
+            <div className="flex flex-col items-end justify-end h-25">
               <span className="text-[22px] font-bold tracking-widest uppercase" style={{ color: mutedColor }}>
                 KARIN-PLUGIN
               </span>

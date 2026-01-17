@@ -16,7 +16,7 @@ import { DefaultLayout } from '../../layouts/DefaultLayout'
 const DouyinHeader: React.FC<{ useDarkTheme?: boolean }> = ({ useDarkTheme }) => {
   return (
     <div className='flex items-center px-12 py-15'>
-      <div className='w-[39%] h-[200px] bg-cover bg-center bg-fixed'>
+      <div className='w-[39%] h-50 bg-cover bg-center bg-fixed'>
         <img
           src={useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
           alt='抖音Logo'
@@ -208,7 +208,7 @@ const CoCreatorsInfo: React.FC<{
           return (
             <div
               key={`${c.nickname || 'creator'}-${idx}`}
-              className='flex flex-col items-center min-w-[152px] w-[152px] shrink-0'
+              className='flex flex-col items-center min-w-38 w-38 shrink-0'
             >
               <div className='flex justify-center items-center bg-white rounded-full w-30 h-30'>
                 <img
@@ -228,7 +228,7 @@ const CoCreatorsInfo: React.FC<{
         })}
 
         {items.length > visibleCount && (
-          <div className='flex flex-col items-center min-w-[152px] w-[152px] shrink-0'>
+          <div className='flex flex-col items-center min-w-38 w-38 shrink-0'>
             <div className='flex justify-center items-center rounded-full bg-default-200 w-38 h-38'>
               <span className='text-[42px] leading-none text-foreground-500'>···</span>
             </div>
@@ -260,17 +260,17 @@ export const DouyinDynamic: React.FC<Omit<DouyinDynamicProps, 'templateType' | '
     <DefaultLayout {...props}>
       <div>
         {/* 头部Logo */}
-        <div className='h-[60px]' />
+        <div className='h-15' />
         <DouyinHeader useDarkTheme={props.data.useDarkTheme} />
-        <div className='h-[60px]' />
+        <div className='h-15' />
 
         {/* 封面 */}
         <CoverSection imageUrl={props.data.image_url} />
-        <div className='h-[20px]' />
+        <div className='h-5' />
 
         {/* 作品信息 */}
         <InfoSection {...props} />
-        <div className='h-[100px]' />
+        <div className='h-25' />
 
         <div className='flex flex-col gap-10 px-0 pt-25'>
           <div className='w-full'>

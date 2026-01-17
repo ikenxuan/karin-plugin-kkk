@@ -44,16 +44,16 @@ const UserInfoSection: React.FC<DouyinLiveUserInfoProps> = ({
       <img
         src={avater_url}
         alt='头像'
-        className='mr-[15px] rounded-full h-auto w-[130px] select-text'
+        className='mr-3.75 rounded-full h-auto w-32.5 select-text'
       />
       <div className='flex flex-col items-start'>
-        <div className='flex flex-row items-center mb-[5px]'>
+        <div className='flex flex-row items-center mb-1.25'>
           <div className='text-[60px] text-foreground select-text'>
             <span>{username}</span>
           </div>
           <div className='w-4' />
           <img
-            className='w-[170px] h-auto select-text'
+            className='w-42.5 h-auto select-text'
             src='/image/douyin/抖音-直播中.png'
             alt='直播中'
           />
@@ -74,7 +74,7 @@ const UserInfoSection: React.FC<DouyinLiveUserInfoProps> = ({
  */
 const QRCodeSection: React.FC<DouyinLiveQRCodeProps> = ({ qrCodeDataUrl }) => {
   return (
-    <div className='flex flex-col-reverse items-center mt-[30px] mr-5'>
+    <div className='flex flex-col-reverse items-center mt-7.5 mr-5'>
       <div className='flex items-center gap-2 text-[50px] ml-2.5 text-right mr-2.5 text-foreground select-text'>
         <QrCode className='w-12 h-12' />
         <span>直播分享链接</span>
@@ -83,7 +83,7 @@ const QRCodeSection: React.FC<DouyinLiveQRCodeProps> = ({ qrCodeDataUrl }) => {
         <img
           src={qrCodeDataUrl}
           alt='二维码'
-          className='w-[350px] select-text'
+          className='w-87.5 select-text'
         />
       </div>
     </div>
@@ -134,20 +134,20 @@ export const DouyinLive: React.FC<Omit<DouyinLiveProps, 'templateType' | 'templa
           useDarkTheme={props.data.useDarkTheme}
         />
 
-        <div className='h-[120px]' />
+        <div className='h-30' />
 
         {/* 底部区域 */}
         <div className='flex flex-col w-auto h-full'>
-          <div className='w-inherit text-[70px] text-right mr-5 -mb-[45px] z-[-1] text-foreground select-text'>
+          <div className='w-inherit text-[70px] text-right mr-5 -mb-11.25 z-[-1] text-foreground select-text'>
             抖音{props.data.dynamicTYPE}
           </div>
 
-          <div className='h-auto flex justify-between pt-[60px] items-center'>
+          <div className='h-auto flex justify-between pt-15 items-center'>
             {/* 用户信息和Logo */}
-            <div className='flex flex-col ml-[45px]'>
+            <div className='flex flex-col ml-11.25'>
               <div className='flex flex-col justify-start items-start'>
                 <div 
-                  className='w-[130%] h-[245px] mb-[52px] bg-cover bg-center bg-fixed'
+                  className='w-[130%] h-61.25 mb-13 bg-cover bg-center bg-fixed'
                   style={{
                     backgroundImage: `url(/image/douyin/${props.data.useDarkTheme ? 'dylogo-light' : 'dylogo-dark'}.svg)`
                   }}

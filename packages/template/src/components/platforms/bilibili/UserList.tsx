@@ -145,13 +145,13 @@ const BilibiliUserList: React.FC<BilibiliUserListProps> = (props) => {
       {/* 1. 弥散光背景层 - 极简单色系 */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div
-          className="absolute rounded-full w-[1400px] h-[1400px] -top-[500px] -left-[400px] blur-[150px] opacity-20 dark:opacity-10"
+          className="absolute rounded-full w-350 h-350 -top-125 -left-100 blur-[150px] opacity-20 dark:opacity-10"
           style={{
             background: `radial-gradient(circle, ${primaryColor} 0%, transparent 70%)`
           }}
         />
         <div
-          className="absolute rounded-full w-[1200px] h-[1200px] top-[100px] -right-[400px] blur-[140px] opacity-15 dark:opacity-10"
+          className="absolute rounded-full w-300 h-300 top-25 -right-100 blur-[140px] opacity-15 dark:opacity-10"
           style={{
             background: `radial-gradient(circle, ${secondaryColor} 0%, transparent 70%)`
           }}

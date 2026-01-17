@@ -538,7 +538,7 @@ export const App: React.FC = () => {
                       }}
                       className='flex-1'
                     />
-                    <span className='text-xs font-medium text-gray-700 tabular-nums min-w-[50px] text-right'>
+                    <span className='text-xs font-medium text-gray-700 tabular-nums min-w-12.5 text-right'>
                       {Math.round(scale * 100)}%
                     </span>
                   </div>

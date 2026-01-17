@@ -85,7 +85,7 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
 }) => {
   return (
     <div className='flex flex-col items-center'>
-      <div className='flex justify-center items-center w-[400px] h-[400px] p-4'>
+      <div className='flex justify-center items-center w-100 h-100 p-4'>
         {qrCodeDataUrl
           ? (
             <img src={qrCodeDataUrl} alt='二维码' className='object-contain w-full h-full rounded-lg' />
@@ -107,18 +107,18 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
  */
 const VideoInfoHeader: React.FC<Omit<BilibiliCommentProps['data'], 'CommentsData'> & { qrCodeDataUrl: string }> = (props) => {
   return (
-    <div className='max-w-[1400px] mx-auto px-10 py-8'>
+    <div className='max-w-350 mx-auto px-10 py-8'>
       <div className='flex gap-16 justify-between items-start'>
         {/* 左侧信息区域 */}
         <div className='flex flex-col flex-1'>
           {/* Logo 和分辨率区域 */}
           <div className='mb-12'>
             {/* Logo */}
-            <div className='h-[180px] flex items-center'>
+            <div className='h-45 flex items-center'>
               <img
                 src='/image/bilibili/bilibili.png'
                 alt='B站Logo'
-                className='object-contain h-full w-auto max-w-[450px]'
+                className='object-contain h-full w-auto max-w-112.5'
                 onError={(e) => {
                   const target = e.target as HTMLImageElement
                   target.style.display = 'none'
@@ -230,11 +230,11 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
       {/* 评论内容区域 */}
       <div className='flex-1 min-w-0'>
         {/* 用户信息 */}
-        <div className='flex items-start gap-2.5 mb-[15px] text-[50px] relative'>
+        <div className='flex items-start gap-2.5 mb-3.75 text-[50px] relative'>
           {/* 用户名区域  */}
           <div className='shrink-0 flex items-center gap-2 leading-[1.2] text-foreground-700 font-bold select-text'>
             <div
-              className='[&>span]:inline-block [&>span]:leading-[1.2] [&>svg]:inline-block [&>svg]:w-[100px] [&>svg]:h-[100px] [&>svg]:align-middle [&>svg]:shrink-0'
+              className='[&>span]:inline-block [&>span]:leading-[1.2] [&>svg]:inline-block [&>svg]:w-25 [&>svg]:h-25 [&>svg]:align-middle [&>svg]:shrink-0'
               dangerouslySetInnerHTML={{ __html: props.uname }}
             />
 
@@ -258,7 +258,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
 
           {/* 粉丝卡片 - 绝对定位在右侧，不会被挤出 */}
           {props.fanCard && props.fanCard.image && (
-            <div className='absolute -top-10 right-0 h-[180px] z-10 pointer-events-none'>
+            <div className='absolute -top-10 right-0 h-45 z-10 pointer-events-none'>
               <div className='inline-block relative h-full'>
                 <img
                   src={props.fanCard.image}
@@ -350,9 +350,9 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
             </div>
           </div>
 
-          <div className='flex items-center gap-[75px] ml-auto'>
-            <div className='flex items-center gap-[15px]'>
-              <ThumbsUp className='w-[60px] h-[60px] text-foreground-500' />
+          <div className='flex items-center gap-18.75 ml-auto'>
+            <div className='flex items-center gap-3.75'>
+              <ThumbsUp className='w-15 h-15 text-foreground-500' />
               <span className='text-[45px] text-foreground-500 select-text'>{props.like}</span>
             </div>
           </div>
@@ -397,7 +397,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
                   {/* 二级评论内容 */}
                   <div className='flex-1'>
                     {/* 用户信息 */}
-                    <div className='flex items-start gap-2.5 mb-[15px] text-[50px] relative overflow-visible'>
+                    <div className='flex items-start gap-2.5 mb-3.75 text-[50px] relative overflow-visible'>
                       <div className='shrink-0 flex items-center gap-2 leading-[1.2] text-foreground-700 font-bold select-text'>
                         <div
                           className='[&>span]:inline-block [&>span]:leading-[1.2]'
@@ -421,7 +421,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
 
                       {/* 二级评论粉丝卡片 */}
                       {subReply.fanCard && subReply.fanCard.image && (
-                        <div className='absolute -top-10 right-0 h-[180px] z-10 pointer-events-none'>
+                        <div className='absolute -top-10 right-0 h-45 z-10 pointer-events-none'>
                           <div className='inline-block relative h-full'>
                             <img
                               src={subReply.fanCard.image}
@@ -486,9 +486,9 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
                         </div>
                       </div>
 
-                      <div className='flex items-center gap-[75px] ml-auto'>
-                        <div className='flex items-center gap-[15px]'>
-                          <ThumbsUp className='w-[60px] h-[60px] text-foreground-500' />
+                      <div className='flex items-center gap-18.75 ml-auto'>
+                        <div className='flex items-center gap-3.75'>
+                          <ThumbsUp className='w-15 h-15 text-foreground-500' />
                           <span className='text-[45px] text-foreground-500 select-text'>{subReply.like}</span>
                         </div>
                       </div>

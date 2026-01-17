@@ -51,7 +51,7 @@ const NoteInfoHeader: React.FC<XiaohongshuNoteInfoHeaderProps> = ({
   qrCodeDataUrl
 }) => {
   return (
-    <div className='flex justify-between items-center max-w-[1200px] mx-auto p-5'>
+    <div className='flex justify-between items-center max-w-300 mx-auto p-5'>
       <div className='flex flex-col justify-center items-start'>
         {/* Logo 图片区域 */}
         <div className='flex justify-start items-center'>

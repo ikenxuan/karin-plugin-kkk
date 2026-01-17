@@ -19,7 +19,7 @@ import { DefaultLayout } from '../../layouts/DefaultLayout'
 const DouyinHeader: React.FC<{ useDarkTheme?: boolean }> = ({ useDarkTheme }) => {
   return (
     <div className='flex items-center px-12 py-15'>
-      <div className='w-[39%] h-[200px] bg-cover bg-center bg-fixed'>
+      <div className='w-[39%] h-50 bg-cover bg-center bg-fixed'>
         <img
           src={useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
           alt='抖音Logo'
@@ -107,7 +107,7 @@ const MusicAuthorInfoSection: React.FC<MusicAuthorInfoProps> = ({
         <img
           src={avatarUrl}
           alt='头像'
-          className='w-[200px] h-[200px] rounded-full mr-7 shadow-large select-text'
+          className='w-50 h-50 rounded-full mr-7 shadow-large select-text'
         />
         <div className='flex flex-col'>
           <span className='text-[80px] font-bold text-foreground select-text'>
@@ -156,7 +156,7 @@ const MusicQRCodeSection: React.FC<MusicQRCodeProps> = ({ qrCodeDataUrl }) => {
         <img
           src={qrCodeDataUrl}
           alt='二维码'
-          className='w-[350px] h-[350px] select-text'
+          className='w-87.5 h-87.5 select-text'
         />
       </div>
     </div>
@@ -182,7 +182,7 @@ export const DouyinMusicInfo: React.FC<Omit<DouyinMusicInfoProps, 'templateType'
           description={data.desc}
           useDarkTheme={data.useDarkTheme}
         />
-        <div className='h-[90px]' />
+        <div className='h-22.5' />
 
         {/* 音乐信息 */}
         <MusicInfoSection
@@ -192,7 +192,7 @@ export const DouyinMusicInfo: React.FC<Omit<DouyinMusicInfoProps, 'templateType'
           createTime={data.create_time}
           useDarkTheme={data.useDarkTheme}
         />
-        <div className='h-[100px]' />
+        <div className='h-25' />
 
         {/* 底部文字 */}
         <div className='text-[70px] text-right mr-21 -mb-11 z-[-1] text-default-500 select-text'>

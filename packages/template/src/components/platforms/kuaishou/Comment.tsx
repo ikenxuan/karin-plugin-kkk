@@ -21,7 +21,7 @@ const KuaishouQRCodeSection: React.FC<KuaishouQRCodeSectionProps> = ({
 }) => {
   return (
     <div className='flex flex-col items-center -mr-10'>
-      <div className='mt-20 flex items-center justify-center w-[600px] h-[600px] bg-content1 rounded-lg shadow-medium'>
+      <div className='mt-20 flex items-center justify-center w-150 h-150 bg-content1 rounded-lg shadow-medium'>
         {qrCodeDataUrl
           ? (
             <img src={qrCodeDataUrl} alt='二维码' className='object-contain w-full h-full' />
@@ -58,13 +58,13 @@ const KuaishouVideoInfoHeader: React.FC<KuaishouVideoInfoHeaderProps> = ({
   imageLength
 }) => {
   return (
-    <div className='flex justify-between items-center max-w-[1200px] mx-auto p-5'>
+    <div className='flex justify-between items-center max-w-300 mx-auto p-5'>
       <div className='mt-2.5 flex flex-col -ml-11'>
         <div className='mb-5'>
           <img
             src='/image/kuaishou/logo.png'
             alt='快手Logo'
-            className='w-[650px] h-auto'
+            className='w-162.5 h-auto'
             onError={(e) => {
               const target = e.target as HTMLImageElement
               target.style.display = 'none'
@@ -220,7 +220,7 @@ export const KuaishouComment: React.FC<Omit<KuaishouCommentProps, 'templateType'
     <DefaultLayout {...props}>
       <div className='p-5'>
         {/* 视频信息头部 */}
-        <div className='flex justify-between items-center max-w-[1200px] mx-auto p-5'>
+        <div className='flex justify-between items-center max-w-300 mx-auto p-5'>
           <KuaishouVideoInfoHeader
             type={processedData.type}
             commentLength={processedData.commentLength}

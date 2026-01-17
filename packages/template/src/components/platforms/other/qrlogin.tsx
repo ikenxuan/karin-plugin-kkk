@@ -226,7 +226,7 @@ export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName
       <div className='absolute inset-0 pointer-events-none'>
         {/* 左上角主光斑 */}
         <div
-          className='absolute rounded-full w-[800px] h-[900px] -top-[200px] -left-[200px] blur-[120px] -rotate-15'
+          className='absolute rounded-full w-200 h-225 -top-50 -left-50 blur-[120px] -rotate-15'
           style={{
             background: isDark
               ? 'radial-gradient(ellipse at 30% 30%, rgba(99,102,241,0.5) 0%, rgba(139,92,246,0.25) 50%, transparent 100%)'
@@ -235,7 +235,7 @@ export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName
         />
         {/* 右侧中间光斑 */}
         <div
-          className='absolute rounded-full w-[600px] h-[700px] top-[300px] -right-[150px] blur-[100px] rotate-20'
+          className='absolute rounded-full w-150 h-175 top-75 -right-37.5 blur-[100px] rotate-20'
           style={{
             background: isDark
               ? 'radial-gradient(ellipse at 50% 50%, rgba(167,139,250,0.4) 0%, rgba(196,181,253,0.2) 50%, transparent 100%)'
@@ -244,7 +244,7 @@ export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName
         />
         {/* 底部光斑 */}
         <div
-          className='absolute rounded-full w-[700px] h-[500px] -bottom-[100px] left-[100px] blur-[110px] -rotate-10'
+          className='absolute rounded-full w-175 h-125 -bottom-25 left-25 blur-[110px] -rotate-10'
           style={{
             background: isDark
               ? 'radial-gradient(ellipse at 50% 60%, rgba(124,58,237,0.35) 0%, rgba(99,102,241,0.18) 50%, transparent 100%)'
@@ -273,7 +273,7 @@ export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName
       </div>
 
       {/* 背景大字装饰 */}
-      <div className='absolute top-20 right-[70px] pointer-events-none select-none opacity-[0.04]'>
+      <div className='absolute top-20 right-17.5 pointer-events-none select-none opacity-[0.04]'>
         <span
           className='text-[140px] font-black tracking-tighter leading-none block text-right'
           style={{ color: isDark ? '#fff' : '#4f46e5' }}

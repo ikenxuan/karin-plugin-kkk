@@ -52,7 +52,7 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
               <label
                 key={config.type}
                 className={`
-                  flex items-center justify-start cursor-pointer rounded-lg gap-2 px-3 py-2.5 min-h-[52px]
+                  flex items-center justify-start cursor-pointer rounded-lg gap-2 px-3 py-2.5 min-h-13
                   border-2 transition-all duration-150 active:scale-[0.98]
                   ${selectedPlatform === config.type 
                 ? 'border-primary bg-blue-50 shadow-sm' 
@@ -97,7 +97,7 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
                   <label
                     key={component.id}
                     className={`
-                      flex items-center justify-start cursor-pointer rounded-lg gap-2 px-3 py-2.5 min-h-[52px]
+                      flex items-center justify-start cursor-pointer rounded-lg gap-2 px-3 py-2.5 min-h-13
                       border-2 transition-all duration-150 active:scale-[0.98]
                       ${selectedTemplate === component.id 
                     ? 'border-primary bg-blue-50 shadow-sm' 

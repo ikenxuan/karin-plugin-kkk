@@ -136,7 +136,7 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
                       />
                     </div>
                     <div className="flex flex-col gap-3 pr-4">
-                      <span className="text-4xl font-semibold text-white max-w-[600px] truncate">
+                      <span className="text-4xl font-semibold text-white max-w-150 truncate">
                         {props.data.music.title}
                       </span>
                       <span className="text-3xl text-white/50">

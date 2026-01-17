@@ -20,7 +20,7 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
 }) => {
   return (
     <div className='flex flex-col items-center'>
-      <div className='flex justify-center items-center w-[400px] h-[400px] p-4'>
+      <div className='flex justify-center items-center w-100 h-100 p-4'>
         {qrCodeDataUrl
           ? (
             <img src={qrCodeDataUrl} alt='二维码' className='object-contain w-full h-full rounded-lg' />
@@ -43,18 +43,18 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
  */
 const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'> & { qrCodeDataUrl: string }> = (props) => {
   return (
-    <div className='max-w-[1400px] mx-auto px-10 py-8'>
+    <div className='max-w-350 mx-auto px-10 py-8'>
       <div className='flex gap-16 justify-between items-start'>
         {/* 左侧信息区域 */}
         <div className='flex flex-col flex-1'>
           {/* Logo 和分辨率区域 */}
           <div className='mb-12'>
             {/* Logo */}
-            <div className='h-[180px] flex items-center'>
+            <div className='h-45 flex items-center'>
               <img
                 src={props.useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
                 alt='抖音Logo'
-                className='object-contain h-full w-auto max-w-[500px]'
+                className='object-contain h-full w-auto max-w-125'
                 onError={(e) => {
                   const target = e.target as HTMLImageElement
                   target.style.display = 'none'
@@ -212,7 +212,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
             )}
 
             {/* 2. 曲线：L形连接到当前评论 */}
-            <svg className='absolute top-0 left-0 w-full h-[50px] pointer-events-none overflow-visible z-0 text-default-300'>
+            <svg className='absolute top-0 left-0 w-full h-12.5 pointer-events-none overflow-visible z-0 text-default-300'>
               <path
                 d='M 50 0 V 15 Q 50 50 85 50 H 90'
                 fill='none'
@@ -225,7 +225,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
 
           {/* 第2列：显示更多文本 */}
           <div className='flex flex-col mt-6 min-w-0'>
-            <div className='flex items-center h-[50px]'>
+            <div className='flex items-center h-12.5'>
               <div className='flex items-center text-foreground-500'>
                 <CircleEllipsis size={45} className='mr-5' />
                 <span className='text-4xl font-medium tracking-wide'>
@@ -262,7 +262,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
           )}
           
           {/* 2. 曲线：L形连接到当前评论 */}
-          <svg className='absolute top-0 left-0 w-full h-[50px] pointer-events-none overflow-visible z-0 text-default-300'>
+          <svg className='absolute top-0 left-0 w-full h-12.5 pointer-events-none overflow-visible z-0 text-default-300'>
             <path
               d='M 50 0 V 15 Q 50 50 85 50 H 90'
               fill='none'
@@ -283,10 +283,10 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
             {/* 添加 h-full 以确保其拉伸以匹配内容高度 */}
             <div className='flex relative flex-col items-center h-full'>
               {/* 头像 - 固定高度 */}
-              <div className='w-[100px] h-[100px] shrink-0 z-10 relative'>
+              <div className='w-25 h-25 shrink-0 z-10 relative'>
                 <img
                   src={reply.userimageurl}
-                  className='object-cover rounded-full w-[100px] h-[100px] bg-background'
+                  className='object-cover rounded-full w-25 h-25 bg-background'
                   alt='用户头像'
                 />
               </div>
@@ -300,7 +300,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
             {/* 内部第2列：头部、内容、操作 */}
             <div className='flex flex-col pb-8 pl-3 min-w-0'>
               {/* 第1行：头部 */}
-              <div className='flex flex-nowrap items-center h-[100px] content-center w-full overflow-hidden'>
+              <div className='flex flex-nowrap items-center h-25 content-center w-full overflow-hidden'>
                 <span className={clsx(
                   'mr-2 text-5xl font-medium text-foreground-700',
                   isNicknameLonger ? 'min-w-0 truncate shrink' : 'shrink-0'
@@ -346,7 +346,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
                 
                 {reply.image_list && reply.image_list.length > 0 &&
                   reply.image_list.filter(Boolean).map((img, idx) => (
-                    <div key={idx} className='my-4 overflow-hidden shadow-sm rounded-xl max-w-[600px]'>
+                    <div key={idx} className='my-4 overflow-hidden shadow-sm rounded-xl max-w-150'>
                       <img
                         className='object-contain w-full h-auto rounded-xl'
                         src={img}
@@ -413,10 +413,10 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
           {/* 内部第1列：头像 & 子线程线 */}
           <div className='flex relative flex-col items-center'>
             {/* 头像 - 根节点更大 */}
-            <div className='w-[140px] h-[140px] shrink-0 z-10 relative'>
+            <div className='w-35 h-35 shrink-0 z-10 relative'>
               <img
                 src={props.userimageurl}
-                className='w-[140px] h-[140px] rounded-full object-cover shadow-md bg-background'
+                className='w-35 h-35 rounded-full object-cover shadow-md bg-background'
                 alt='用户头像'
               />
             </div>
@@ -430,7 +430,7 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
           {/* 内部第2列：内容 */}
           <div className='flex flex-col pb-4 pl-4 min-w-0'>
             {/* 头部 */}
-            <div className='flex flex-wrap gap-4 items-center mb-3 text-5xl select-text text-foreground-700 min-h-[140px] content-center'>
+            <div className='flex flex-wrap gap-4 items-center mb-3 text-5xl select-text text-foreground-700 min-h-35 content-center'>
               <span className='font-medium'>{props.nickname}</span>
               {props.label_type === 1 && (
                 <div className='inline-flex items-center px-3 py-1 rounded-lg text-3xl bg-[#fe2c55] text-white'>
@@ -460,7 +460,7 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
 
             {/* 评论图片 */}
             {(props.commentimage || props.sticker) && (
-              <div className='my-6 overflow-hidden shadow-sm rounded-2xl max-w-[800px]'>
+              <div className='my-6 overflow-hidden shadow-sm rounded-2xl max-w-200'>
                 <img
                   className='object-contain w-full h-auto rounded-2xl'
                   src={props.commentimage || props.sticker}
@@ -495,7 +495,7 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
         */}
         {props.replyComment && props.replyComment.length > 0 && (
           <div className='flex relative flex-col mt-8 ml-5'>
-            <div className='absolute -top-8 left-[50px] w-0.5 h-8 bg-default-300 -ml-px'></div>
+            <div className='absolute -top-8 left-12.5 w-0.5 h-8 bg-default-300 -ml-px'></div>
             {organizeReplies(props.replyComment, props.cid || '', props.maxDepth).map((reply, index, arr) => (
               <ReplyItemComponent 
                 key={reply.cid} 
