@@ -1,5 +1,5 @@
-import { Card, CardBody, CardHeader, Select, SelectItem } from '@heroui/react'
-import { FileText } from 'lucide-react'
+import { Button, Card, CardBody, CardHeader, Select, SelectItem } from '@heroui/react'
+import { Edit, FileText } from 'lucide-react'
 import React, { useEffect } from 'react'
 
 interface DataFileSelectorProps {
@@ -13,6 +13,8 @@ interface DataFileSelectorProps {
   onSaveNewDataFile: (filename: string, jsonData: any) => void
   /** 刷新数据文件列表的回调 */
   onRefreshFiles?: () => void
+  /** 编辑当前数据回调 */
+  onEdit?: () => void
 }
 
 /**
@@ -22,7 +24,8 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
   availableDataFiles,
   selectedDataFile,
   onDataFileChange,
-  onRefreshFiles
+  onRefreshFiles,
+  onEdit
 }) => {
 
   /**
@@ -100,6 +103,17 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
                 </SelectItem>
               ))}
             </Select>
+            <Button
+              isIconOnly
+              color="primary"
+              variant="flat"
+              onPress={onEdit}
+              size="lg"
+              className="h-12 w-12 min-w-12 rounded-medium z-10 relative"
+              title="编辑当前数据"
+            >
+              <Edit className="w-5 h-5" />
+            </Button>
           </div>
         </CardBody>
       </Card>

@@ -8,6 +8,7 @@ import { getEnabledComponents } from '../config/config'
 import { DataService } from '../services/DataService'
 import { PlatformType } from '../types/platforms'
 import { DataFileSelector } from './components/DataFileSelector'
+import { MockDataEditorModal } from './components/MockDataEditorModal'
 import { PlatformSelector } from './components/PlatformSelector'
 import { PreviewPanel } from './components/PreviewPanel'
 import { ScreenshotPreviewModal } from './components/ScreenshotPreviewModal'
@@ -107,6 +108,7 @@ export const App: React.FC = () => {
   })
   const [screenshotResult, setScreenshotResult] = React.useState<{ blob: Blob; download: () => void; copyToClipboard: () => Promise<void> } | null>(null)
   const [isScreenshotModalOpen, setIsScreenshotModalOpen] = React.useState(false)
+  const [isEditorOpen, setIsEditorOpen] = React.useState(false)
 
   // 保存设置到 localStorage
   React.useEffect(() => {
@@ -284,6 +286,21 @@ export const App: React.FC = () => {
   }
 
   /**
+   * 保存当前数据文件
+   * @param data JSON 数据
+   */
+  const handleSaveCurrentData = async (data: any) => {
+    try {
+      await dataService.saveTemplateData(selectedPlatform, selectedTemplate, data, selectedDataFile)
+      // 不需要手动重载，HMR 会处理
+      console.log('数据保存成功')
+    } catch (error) {
+      console.error('保存数据失败:', error)
+      throw error
+    }
+  }
+
+  /**
    * 处理截图
    */
   const handleCapture = async () => {
@@ -393,7 +410,6 @@ export const App: React.FC = () => {
             </Chip>
           </div>
           <div className='flex gap-2 items-center shrink-0'>
-            {/* 提示开关 */}
             <div className='flex gap-2 items-center'>
               <Switch
                 isSelected={showHints}
@@ -441,6 +457,7 @@ export const App: React.FC = () => {
                   onDataFileChange={handleDataFileChange}
                   onSaveNewDataFile={handleSaveNewDataFile}
                   onRefreshFiles={loadAvailableFiles}
+                  onEdit={() => setIsEditorOpen(true)}
                 />
               </div>
             </div>
@@ -569,6 +586,17 @@ export const App: React.FC = () => {
         isOpen={isScreenshotModalOpen}
         onClose={() => setIsScreenshotModalOpen(false)}
         screenshotResult={screenshotResult}
+      />
+      <MockDataEditorModal
+        isOpen={isEditorOpen}
+        onClose={() => setIsEditorOpen(false)}
+        data={templateData}
+        onSave={handleSaveCurrentData}
+        platform={selectedPlatform}
+        templateId={selectedTemplate}
+        availableDataFiles={availableDataFiles}
+        selectedDataFile={selectedDataFile}
+        onDataFileChange={handleDataFileChange}
       />
     </div>
   )

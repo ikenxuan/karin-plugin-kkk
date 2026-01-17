@@ -36,6 +36,7 @@
     "@heroui/react": "2.8.7",
     "@heroui/system": "2.4.25",
     "@heroui/theme": "2.4.25",
+    "@monaco-editor/react": "^4.7.0",
     "@zumer/snapdom": "^2.0.1",
     "axios": "1.13.2",
     "clsx": "^2.1.1",

@@ -1,6 +1,7 @@
-import { Button, Card, CardBody, CardHeader, Select, SelectItem, Textarea } from '@heroui/react'
+import { Button, Select, SelectItem } from '@heroui/react'
+import Editor from '@monaco-editor/react'
 import { Code, Copy, Download, Upload } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 interface JsonEditorProps {
   /** 当前数据 */
@@ -41,9 +42,17 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   const [jsonText, setJsonText] = useState<string>('')
   const [error, setError] = useState<string>('')
   const [isFormatted, setIsFormatted] = useState(true)
+  // 使用 useRef 跟踪内部变更，防止外部数据更新导致的光标跳动和输入重置
+  const isInternalChange = useRef<boolean>(false)
 
   // 同步数据到JSON文本
   useEffect(() => {
+    // 如果是内部变更（用户输入），跳过本次同步
+    if (isInternalChange.current) {
+      isInternalChange.current = false
+      return
+    }
+
     if (data) {
       setJsonText(JSON.stringify(data, null, isFormatted ? 2 : 0))
       setError('')
@@ -74,6 +83,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
           .replace(/:\s+/g, ': ')
 
         // 使用Function构造器安全地解析JavaScript对象
+        // 注意：仅在开发环境工具中使用，生产环境需谨慎
         const result = new Function('return ' + cleanText)()
         return result
       } catch {
@@ -86,11 +96,14 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
    * 处理JSON数据变更
    * @param value 新的JSON文本
    */
-  const handleJsonChange = (value: string) => {
-    setJsonText(value)
+  const handleJsonChange = (value: string | undefined) => {
+    const text = value || ''
+    setJsonText(text)
     try {
-      const newData = parseJavaScriptObject(value)
+      const newData = parseJavaScriptObject(text)
       setError('')
+      // 标记为内部变更，防止 useEffect 再次覆盖
+      isInternalChange.current = true
       onChange(newData)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'JSON格式错误')
@@ -172,63 +185,67 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   }
 
   return (
-    <Card className='w-full'>
-      <CardHeader className='shrink-0'>
+    <div className='w-full h-full flex flex-col bg-white'>
+      <div className='shrink-0 p-4 border-b border-gray-200'>
         <div className='flex flex-col gap-2 w-full'>
-          <div className='flex gap-2 items-center'>
-            <Code className='shrink-0 w-5 h-5' />
-            <h3 className='text-lg font-semibold whitespace-nowrap'>JSON数据编辑</h3>
-          </div>
-          <div className='flex flex-wrap gap-1 items-center'>
-            <Button
-              size='sm'
-              variant='flat'
-              onPress={formatJson}
-              isDisabled={readonly}
-            >
-              格式化
-            </Button>
-            <Button
-              size='sm'
-              variant='flat'
-              onPress={compressJson}
-              isDisabled={readonly}
-            >
-              压缩
-            </Button>
-            <Button
-              size='sm'
-              variant='flat'
-              startContent={<Copy className='w-3 h-3' />}
-              onPress={copyToClipboard}
-            >
-              复制
-            </Button>
-            <Button
-              size='sm'
-              variant='flat'
-              startContent={<Upload className='w-3 h-3' />}
-              onPress={importJson}
-              isDisabled={readonly}
-            >
-              导入
-            </Button>
-            <Button
-              size='sm'
-              variant='flat'
-              startContent={<Download className='w-3 h-3' />}
-              onPress={exportJson}
-            >
-              导出
-            </Button>
+          <div className='flex gap-2 items-center justify-between'>
+            <div className='flex gap-2 items-center'>
+              <Code className='shrink-0 w-5 h-5 text-gray-500' />
+              <h3 className='text-lg font-semibold whitespace-nowrap'>JSON 编辑器</h3>
+              {error && <span className='text-sm text-danger ml-2'>{error}</span>}
+            </div>
+            <div className='flex flex-wrap gap-1 items-center'>
+              <Button
+                size='sm'
+                variant='light'
+                onPress={formatJson}
+                isDisabled={readonly}
+              >
+                格式化
+              </Button>
+              <Button
+                size='sm'
+                variant='light'
+                onPress={compressJson}
+                isDisabled={readonly}
+              >
+                压缩
+              </Button>
+              <Button
+                size='sm'
+                variant='light'
+                startContent={<Copy className='w-3 h-3' />}
+                onPress={copyToClipboard}
+              >
+                复制
+              </Button>
+              <Button
+                size='sm'
+                variant='light'
+                startContent={<Upload className='w-3 h-3' />}
+                onPress={importJson}
+                isDisabled={readonly}
+              >
+                导入
+              </Button>
+              <Button
+                size='sm'
+                variant='light'
+                startContent={<Download className='w-3 h-3' />}
+                onPress={exportJson}
+              >
+                导出
+              </Button>
+            </div>
           </div>
         </div>
-      </CardHeader>
-      <CardBody className='space-y-4'>
-        {/* 数据文件选择器 - 修复颜色问题 */}
+      </div>
+      
+      <div className='flex-1 flex flex-col overflow-hidden'>
+        {/* 数据文件选择器 */}
         {availableDataFiles.length > 0 && (
-          <div className='space-y-2'>
-            <div className='flex gap-2 items-center'>
+          <div className='px-4 py-2 border-b border-gray-100 bg-gray-50/50 shrink-0'>
+            <div className='flex gap-2 items-center max-w-md'>
               <Select
                 label='选择数据文件'
                 placeholder='选择预设数据'
@@ -263,23 +280,33 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
           </div>
         )}
 
-        <Textarea
-          value={jsonText}
-          onValueChange={handleJsonChange}
-          variant='bordered'
-          minRows={15}
-          maxRows={25}
-          className='font-mono text-sm'
-          placeholder='在此粘贴或编辑您的JSON数据...\n支持JavaScript对象字面量格式'
-          description={error || '支持标准JSON和JavaScript对象字面量格式，可手动调整输入框大小'}
-          color={error ? 'danger' : 'default'}
-          isReadOnly={readonly}
-          classNames={{
-            input: 'bg-white text-gray-900 placeholder-gray-500',
-            inputWrapper: 'bg-white border-gray-300 data-[hover=true]:border-gray-400'
+        <div 
+          className='flex-1 w-full relative min-h-0'
+          onKeyDown={(e) => {
+            // 防止 Modal 捕获 Enter 键
+            if (e.key === 'Enter') {
+              e.stopPropagation()
+            }
           }}
-        />
-      </CardBody>
-    </Card>
+        >
+          <Editor
+            height="100%"
+            defaultLanguage="json"
+            value={jsonText}
+            onChange={handleJsonChange}
+            options={{
+              minimap: { enabled: false },
+              fontSize: 14,
+              formatOnPaste: true,
+              formatOnType: true,
+              readOnly: readonly,
+              scrollBeyondLastLine: false,
+              automaticLayout: true,
+              padding: { top: 16, bottom: 16 }
+            }}
+          />
+        </div>
+      </div>
+    </div>
   )
 }
