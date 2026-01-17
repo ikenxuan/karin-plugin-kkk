@@ -46,7 +46,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
     <HeroUIProvider>
       <div
         className={clsx(
-          'w-[1440px]',
+          'w-360',
           'bg-default-50 text-default-900',
           'font-[HarmonyOSHans-Regular]',
           className,

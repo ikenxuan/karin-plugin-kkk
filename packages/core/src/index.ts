@@ -37,10 +37,7 @@ if (process.env.NODE_ENV !== 'development' && isSemverGreater(requireVersion, Ro
     }
 
     for (const master of masters) {
-      if (master === 'console') {
-        logger.warn(`[${botId}] ${msg}`)
-        continue
-      }
+      if (master === 'console') continue
 
       const key = `${botId}:${master}`
       if (notifiedSet.has(key)) continue

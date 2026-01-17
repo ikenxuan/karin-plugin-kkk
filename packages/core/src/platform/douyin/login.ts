@@ -4,7 +4,9 @@ import path from 'node:path'
 
 import { snapka } from '@snapka/puppeteer'
 import { newInjectedPage } from 'fingerprint-injector'
+import jsQR from 'jsqr'
 import { karin, karinPathTemp, logger, Message } from 'node-karin'
+import { PNG } from 'pngjs'
 
 import { Common, Render, Root } from '@/module'
 import { Config } from '@/module/utils/Config'
@@ -153,10 +155,10 @@ export const douyinLogin = async (e: Message) => {
     await page.goto('https://www.douyin.com', { timeout: 120000, waitUntil: 'domcontentloaded' })
 
     // 阶段1: 获取二维码 (60秒超时)
-    let qrCodeBase64: string
+    let qrCodeData: { url: string | null; originalImage: string }
     try {
       logger.mark('开始等待二维码加载...')
-      qrCodeBase64 = await Promise.race([
+      qrCodeData = await Promise.race([
         waitQrcode(page),
         new Promise<never>((_, reject) =>
           setTimeout(() => reject(new Error('QR_CODE_TIMEOUT')), 60000)
@@ -179,7 +181,12 @@ export const douyinLogin = async (e: Message) => {
     // 渲染并发送二维码
     let gcInterval: NodeJS.Timeout | undefined
     try {
-      const loginQRcode = await Render('douyin/qrcodeImg', { qrCodeDataUrl: qrCodeBase64 })
+      // 根据解码结果选择传递方式
+      const renderData = qrCodeData.url 
+        ? { share_url: qrCodeData.url } // 解码成功，传递URL让插件生成自定义二维码
+        : { qrCodeDataUrl: qrCodeData.originalImage } // 解码失败，直接使用原始图片
+      
+      const loginQRcode = await Render('douyin/qrcodeImg', renderData)
 
       const base64Data = loginQRcode[0]?.file
       if (!base64Data) {
@@ -501,30 +508,59 @@ export const douyinLogin = async (e: Message) => {
 /**
  * 等待二维码出现并获取二维码信息
  * @param page puppeteer的页面对象
- * @returns 二维码的base64数据
+ * @returns 包含解码URL和原始图片的对象
  */
-const waitQrcode = async (page: Page) => {
+const waitQrcode = async (page: Page): Promise<{ url: string | null; originalImage: string }> => {
   const qrCodeSelector = 'img[aria-label="二维码"]'
   try {
     await page.waitForSelector(qrCodeSelector, { timeout: 60000 })
   } catch {
-    // 可能遇到验证码了，截个图
     await safeScreenshot(page, path.join(karinPathTemp, Root.pluginName, 'DouyinLoginQrcodeError.png'))
     throw new Error('加载超时了，或者遇到验证码了。。。')
   }
   logger.debug('二维码加载完成')
-  // 减少等待时间，二维码已经加载完成
   await new Promise(resolve => setTimeout(resolve, 1000))
+  
+  // 获取原始二维码图片的 src
   const images = await page.$$eval('img', (imgs) => {
     return imgs.map(img => ({
       src: img.src,
       ariaLabel: img.getAttribute('aria-label')
     }))
   })
-
   const qrCodeImages = images.filter(img => img.ariaLabel === '二维码')
   if (qrCodeImages.length === 0) {
     throw new Error('未找到二维码')
   }
-  return qrCodeImages[0].src
+  const originalImage = qrCodeImages[0].src
+  
+  // 直接从原始 src 下载图片进行解码
+  try {
+    let imageBuffer: Buffer
+    
+    if (originalImage.startsWith('data:image')) {
+      // base64 图片
+      const base64Data = originalImage.split(',')[1]
+      imageBuffer = Buffer.from(base64Data, 'base64')
+    } else {
+      // URL 图片，需要下载
+      const response = await fetch(originalImage)
+      imageBuffer = Buffer.from(await response.arrayBuffer())
+    }
+    
+    // 使用 pngjs 解析图片
+    const png = PNG.sync.read(imageBuffer)
+    const code = jsQR(Uint8ClampedArray.from(png.data), png.width, png.height)
+    
+    if (code && code.data) {
+      logger.mark('二维码解码成功:', code.data)
+      return { url: code.data, originalImage }
+    }
+  } catch (error) {
+    logger.warn('二维码解码失败:', error)
+  }
+
+  // 解码失败，返回 null 和原图
+  logger.warn('解码失败，将使用原始二维码图片')
+  return { url: null, originalImage }
 }

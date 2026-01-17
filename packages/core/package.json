@@ -63,11 +63,14 @@
     "@types/connect-history-api-fallback": "^1.5.4",
     "@types/express": "5.0.6",
     "@types/heic-convert": "^2.1.0",
+    "@types/pngjs": "^6.0.5",
     "cookie": "^1.1.1",
     "date-fns": "^4.1.0",
     "happy-dom": "^20.3.1",
     "heic-convert": "^2.1.0",
     "http-proxy-middleware": "3.0.5",
+    "jsqr": "^1.4.0",
+    "pngjs": "^7.0.0",
     "qr-code-styling": "^1.9.2",
     "template": "workspace:*",
     "tsdown": "^0.19.0",
@@ -104,5 +107,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-01-17T06:39:29.979Z"
+  "timestamp": "2026-01-17T14:35:08.306Z"
 }
