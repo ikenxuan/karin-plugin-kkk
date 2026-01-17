@@ -1,9 +1,10 @@
-import { Clock, QrCode, Shield } from 'lucide-react'
+import { AlertTriangle, ScanLine, User } from 'lucide-react'
 import React from 'react'
+import { RiArrowRightFill } from 'react-icons/ri'
+import { SiBilibili } from 'react-icons/si'
 
 import type { BilibiliQrcodeImgProps } from '../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
-import { EnhancedImage } from './shared'  
 
 /**
  * B站二维码登录组件
@@ -11,86 +12,159 @@ import { EnhancedImage } from './shared'
  * @returns JSX元素
  */
 export const BilibiliQrcodeImg: React.FC<BilibiliQrcodeImgProps> = React.memo((props) => {
-  const { data, qrCodeDataUrl } = props
-  const { share_url } = data
+  const isDark = props.data?.useDarkTheme ?? false
+  const { qrCodeDataUrl } = props
+
+  const theme = {
+    bg: isDark ? '#000000' : '#FFFFFF',
+    text: isDark ? '#FFFFFF' : '#000000',
+    subText: isDark ? '#888888' : '#666666',
+    accent: '#FF6699', // B站粉
+    // 双色弥散
+    gradientTL: '#FF6699', // 左上 B站粉
+    gradientBR: '#00AEEC' // 右下 B站蓝
+  }
 
   const disclaimer = [
-    '免责声明:',
     '您将通过扫码完成获取哔哩哔哩网页端的用户登录凭证（ck），该ck将用于请求哔哩哔哩WEB API接口。',
     '本BOT不会上传任何有关你的信息到第三方，所配置的 ck 只会用于请求官方 API 接口。',
     '我方仅提供视频解析及相关哔哩哔哩内容服务,若您的账号封禁、被盗等处罚与我方无关。',
     '害怕风险请勿扫码 ~'
-  ].join('\n')
+  ]
 
   return (
-    <DefaultLayout {...props}>
-      <div className='p-4 px-12 pt-24'>
-        {/* 顶部标题与提示 */}
-        <div className='flex flex-col gap-6 items-center text-center'>
-          <div className='flex gap-4 items-center'>
-            <QrCode className='w-12 h-12 text-foreground-600' />
-            <h1 className='text-6xl font-bold text-foreground'>B站扫码登录</h1>
-          </div>
+    <DefaultLayout
+      {...props}
+      className="relative overflow-hidden font-sans"
+      style={{
+        background: theme.bg,
+        color: theme.text
+      }}
+    >
+      {/* 1. 弥散模糊效果 */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* 右上角主光辉 */}
+        <div 
+          className="absolute top-[-40%] right-[-50%] w-400 h-600 rounded-full blur-[200px] opacity-25"
+          style={{ background: theme.gradientBR }}
+        />
+        {/* 左下角氛围光 */}
+        <div 
+          className="absolute bottom-[-40%] left-[-50%] w-400 h-600 rounded-full blur-[200px] opacity-25"
+          style={{ background: theme.gradientTL }}
+        />
+      </div>
 
-          <div className='flex gap-3 items-center text-3xl text-default-600'>
-            <Clock className='w-8 h-8' />
-            <span>请在120秒内通过哔哩哔哩APP扫码进行登录</span>
-          </div>
-        </div>
+      {/* 2. 单色噪点层 */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ opacity: isDark ? 0.16 : 0.2 }}
+      >
+        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+          <filter id="pixelNoise" x="0%" y="0%" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch" result="noise" />
+            <feColorMatrix type="saturate" values="0" result="gray" />
+            <feComponentTransfer>
+              <feFuncR type="discrete" tableValues="0 1" />
+              <feFuncG type="discrete" tableValues="0 1" />
+              <feFuncB type="discrete" tableValues="0 1" />
+            </feComponentTransfer>
+          </filter>
+          <rect width="100%" height="100%" filter="url(#pixelNoise)" />
+        </svg>
+      </div>
 
-        <div className='h-12' />
-
-        {/* 二维码区域 */}
-        <div className='flex flex-col items-center'>
-          <div className='flex overflow-hidden flex-col justify-center items-center p-12'>
-            {qrCodeDataUrl ? (
-              <div className='flex justify-center items-center w-120 h-120'>
-                <EnhancedImage
-                  src={qrCodeDataUrl}
-                  alt='登录二维码'
-                  className='object-contain w-full h-full'
-                />
+      <div className="relative z-10 flex flex-col items-center justify-center h-full py-40 px-24 space-y-32">
+        
+        {/* 标题区 */}
+        <div className="text-center space-y-12">
+          {/* Title */}
+          <h1 className="text-8xl font-bold tracking-tight">
+            <span 
+              className="bg-clip-text text-transparent"
+              style={{
+                backgroundImage: `linear-gradient(to right, ${theme.text}, ${theme.subText})`
+              }}
+            >
+              B站扫码登录
+            </span>
+          </h1>
+          
+          {/* 操作步骤 */}
+          <div className="flex items-start justify-center gap-10 opacity-90" style={{ color: theme.text }}>
+            {/* Step 1 */}
+            <div className="flex flex-col items-center gap-4">
+              <div className="p-5 rounded-3xl bg-default-100/50 backdrop-blur-md">
+                <SiBilibili className="w-16 h-16" style={{ color: theme.accent }} />
               </div>
-            ) : (
-              <div className='flex flex-col gap-4 justify-center items-center w-120 h-120'>
-                <QrCode className='w-16 h-16 text-default-500' />
-                <span className='text-2xl text-default-500'>未提供二维码图片</span>
+              <span className="text-[28px] font-medium tracking-wide">打开哔哩哔哩</span>
+            </div>
+            <RiArrowRightFill className="w-10 h-10 mt-8 opacity-40" />
+            {/* Step 2 */}
+            <div className="flex flex-col items-center gap-4">
+              <div className="p-5 rounded-3xl bg-default-100/50 backdrop-blur-md">
+                <User className="w-16 h-16" />
               </div>
-            )}
-
-            {/* share_url 展示 */}
-            <div className='mt-8 w-full'>
-              <div className='text-3xl font-medium text-foreground-600'>链接（share_url）</div>
-              <pre className='overflow-auto p-6 mt-3 text-2xl leading-relaxed whitespace-pre-wrap break-all rounded-2xl select-text bg-content2 text-foreground-700'>
-                {share_url}
-              </pre>
+              <span className="text-[28px] font-medium tracking-wide">点击我的</span>
+            </div>
+            <RiArrowRightFill className="w-10 h-10 mt-8 opacity-40" />
+            {/* Step 3 */}
+            <div className="flex flex-col items-center gap-4">
+              <div className="p-5 rounded-3xl bg-default-100/50 backdrop-blur-md">
+                <ScanLine className="w-16 h-16" />
+              </div>
+              <span className="text-[28px] font-medium tracking-wide">右上角扫一扫</span>
             </div>
           </div>
         </div>
 
-        <div className='h-10' />
+        {/* 二维码 */}
+        <div className="relative group">
+          <div 
+            className="relative p-4"
+            style={{ 
+              width: '800px',
+              height: '800px'
+            }}
+          >
+            {qrCodeDataUrl ? (
+              <img
+                src={qrCodeDataUrl}
+                alt="QR Code"
+                className="w-full h-full object-contain"
+              />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center gap-8">
+                <div className="w-24 h-24 border-4 border-gray-200 rounded-full animate-spin" style={{ borderTopColor: theme.accent }} />
+                <span className="text-3xl text-default-500">未提供二维码图片</span>
+              </div>
+            )}
+          </div>
 
-        {/* 免责声明 */}
-        <div className='p-8 rounded-3xl border-2 shadow-lg bg-warning-50 border-warning-200'>
-          <h3 className='flex gap-4 items-center mb-6 text-4xl font-semibold text-warning-700'>
-            <Shield className='w-10 h-10 text-warning-600' />
-            注意事项与免责声明
-          </h3> 
-          <div className='space-y-4'>
-            {disclaimer.split('\n').map((line, index) => (
-              <p 
-                key={index} 
-                className={`text-2xl leading-relaxed ${
-                  index === 0 
-                    ? 'font-semibold text-warning-700'
-                    : 'text-foreground-600'
-                }`}
-              >
-                {line}
-              </p>
-            ))}
+          {/* 倒计时 */}
+          <div className="absolute -bottom-24 left-0 right-0 text-center">
+            <p className="text-[28px] font-medium tracking-wide flex items-center justify-center gap-3" style={{ color: theme.subText }}>
+              <span className="h-6 w-1.5 rounded-full shadow-[0_0_8px_rgba(255,102,153,0.8)]" style={{ backgroundColor: theme.accent }}></span>
+              此二维码 120 秒内有效，请及时扫码登录。
+            </p>
           </div>
         </div>
+
+        {/* 底部信息 */}
+        <div className="w-full max-w-4xl pt-20">
+          <div className="flex flex-col items-center space-y-6 text-center">
+            <div className="flex items-center justify-center w-16 h-16 mb-2">
+              <AlertTriangle className="w-16 h-16" style={{ color: theme.text }} strokeWidth={1.5} />
+            </div>
+            <h3 className="text-[40px] font-bold" style={{ color: theme.text }}>免责声明</h3>
+            <div className="text-[24px] leading-relaxed opacity-60 space-y-2 max-w-3xl" style={{ color: theme.text }}>
+              {disclaimer.map((line, index) => (
+                <p key={index}>{line}</p>
+              ))}
+            </div>
+          </div>
+        </div>
+
       </div>
     </DefaultLayout>
   )
