@@ -155,10 +155,6 @@ export const Help: React.FC<Omit<HelpProps, 'templateType' | 'templateName'>> = 
     <DefaultLayout 
       {...props}
       className="relative overflow-hidden bg-slate-50 dark:bg-[#09090b]"
-      style={{ 
-        minHeight: '100vh',
-        width: '1440px'
-      }}
     >
       {/* 1. 弥散光背景层 */}
       <div className="absolute inset-0 pointer-events-none z-0">

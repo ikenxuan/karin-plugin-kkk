@@ -430,6 +430,12 @@ class HtmlWrapper {
     const imageRelativePath = path.relative(htmlDir, imageDir).replace(/\\/g, '/')
     const cssUrl = path.join(cssRelativePath, 'karin-plugin-kkk.css').replace(/\\/g, '/')
 
+    // 处理字体路径
+    const fontDir = path.join(path.dirname(imageDir), 'font')
+    const fontRelativePath = path.relative(htmlDir, fontDir).replace(/\\/g, '/')
+    const bilifontUrl = path.join(fontRelativePath, 'bilifont/font.css').replace(/\\/g, '/')
+    const monoFontUrl = path.join(fontRelativePath, 'mono/font.css').replace(/\\/g, '/')
+
     // 处理图片路径
     const processedHtml = htmlContent.replace(
       /src="\/image\//g,
@@ -442,6 +448,8 @@ class HtmlWrapper {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width">
+      <link rel="stylesheet" href="${bilifontUrl}">
+      <link rel="stylesheet" href="${monoFontUrl}">
       <link rel="stylesheet" href="${cssUrl}">
     </head>
     <body class="${isDark ? 'dark' : ''}">

@@ -95,7 +95,7 @@ export const BilibiliQrcodeImg: React.FC<BilibiliQrcodeImgProps> = React.memo((p
             {/* Step 1 */}
             <div className="flex flex-col items-center gap-4">
               <div className="p-5 rounded-3xl bg-default-100/50 backdrop-blur-md">
-                <SiBilibili className="w-16 h-16" style={{ color: theme.accent }} />
+                <SiBilibili className="w-16 h-16" />
               </div>
               <span className="text-[28px] font-medium tracking-wide">打开哔哩哔哩</span>
             </div>
