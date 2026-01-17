@@ -39,7 +39,7 @@ export default defineConfig({
     __VERSION__: JSON.stringify(amagiPkg.version)
   },
   build: {
-    target: 'node18',
+    target: 'node22',
     lib: {
       formats: ['es'],
       entry

@@ -22,22 +22,23 @@
   },
   "dependencies": {
     "@ikenxuan/amagi": "workspace:*",
-    "@tailwindcss/vite": "4.1.17",
-    "@types/react": "^19.2.7",
+    "@tailwindcss/vite": "4.1.18",
+    "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "5.1.1",
+    "@vitejs/plugin-react": "5.1.2",
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
-    "lucide-react": "0.556.0",
+    "lucide-react": "0.562.0",
     "node-karin": "1.14.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "tailwindcss": "4.1.17"
+    "tailwindcss": "4.1.18"
   },
   "pnpm": {
     "overrides": {
       "react": "$react",
-      "react-dom": "$react-dom"
+      "react-dom": "$react-dom",
+      "vite": "$vite"
     }
   },
   "devDependencies": {
@@ -59,6 +60,7 @@
     "sort-package-json": "^3.5.0",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "^8.49.0"
+    "typescript-eslint": "^8.49.0",
+    "vite": "npm:rolldown-vite@^7.3.1"
   }
 }

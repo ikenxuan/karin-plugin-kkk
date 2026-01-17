@@ -2,7 +2,7 @@ import { Button, Chip, Slider, Switch } from '@heroui/react'
 import { Camera, Palette, RefreshCw } from 'lucide-react'
 import React from 'react'
 import { MdFitScreen } from 'react-icons/md'
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
+import { Group, Panel, Separator } from 'react-resizable-panels'
 
 import { getEnabledComponents } from '../config/config'
 import { DataService } from '../services/DataService'
@@ -408,53 +408,55 @@ export const App: React.FC = () => {
       </div>
 
       {/* 主要内容区域 */}
-      <div className='h-[calc(100vh-4rem)] overflow-hidden'>
-        <PanelGroup direction='horizontal' className='h-full'>
+      <div className='h-[calc(100vh-4rem)] w-full overflow-hidden'>
+        <Group 
+          orientation='horizontal' 
+          className='h-full w-full'
+          style={{ display: 'flex' }}
+        >
           {/* 左侧控制面板 */}
           <Panel
-            defaultSize={28}
-            minSize={20}
-            maxSize={40}
+            defaultSize="28%"
+            minSize="15%"
+            maxSize="40%"
+            id='sidebar'
             className='bg-white border-r border-gray-200'
           >
-            <div className='overflow-y-auto h-full scrollbar-hide'>
-              <div className='p-4 space-y-4'>
-                {/* 平台与模板选择 */}
-                <div className='shrink-0'>
-                  <PlatformSelector
-                    selectedPlatform={selectedPlatform}
-                    selectedTemplate={selectedTemplate}
-                    onPlatformChange={handlePlatformChange}
-                    onTemplateChange={handleTemplateChange}
-                  />
-                </div>
+            <div className='overflow-y-auto h-full scrollbar-hide p-4 space-y-4'>
+              {/* 平台与模板选择 */}
+              <div className='shrink-0'>
+                <PlatformSelector
+                  selectedPlatform={selectedPlatform}
+                  selectedTemplate={selectedTemplate}
+                  onPlatformChange={handlePlatformChange}
+                  onTemplateChange={handleTemplateChange}
+                />
+              </div>
 
-                {/* 数据文件选择器 */}
-                <div className='shrink-0'>
-                  <DataFileSelector
-                    availableDataFiles={availableDataFiles}
-                    selectedDataFile={selectedDataFile}
-                    onDataFileChange={handleDataFileChange}
-                    onSaveNewDataFile={handleSaveNewDataFile}
-                    onRefreshFiles={loadAvailableFiles}
-                  />
-                </div>
+              {/* 数据文件选择器 */}
+              <div className='shrink-0'>
+                <DataFileSelector
+                  availableDataFiles={availableDataFiles}
+                  selectedDataFile={selectedDataFile}
+                  onDataFileChange={handleDataFileChange}
+                  onSaveNewDataFile={handleSaveNewDataFile}
+                  onRefreshFiles={loadAvailableFiles}
+                />
               </div>
             </div>
           </Panel>
 
           {/* 可调整大小的分隔条 */}
-          <PanelResizeHandle className='flex justify-center items-center w-2 bg-gray-100 transition-colors duration-200 hover:bg-gray-200 cursor-col-resize group'>
-            <div className='w-1 h-8 bg-gray-300 rounded-full transition-colors duration-200 group-hover:bg-gray-400' />
-          </PanelResizeHandle>
+          <Separator className='w-2 bg-gray-100 transition-colors duration-200 hover:bg-gray-200 cursor-col-resize' />
 
           {/* 右侧预览面板 */}
           <Panel
-            defaultSize={72}
-            minSize={60}
+            defaultSize="72%"
+            minSize="60%"
+            id='preview'
             className='bg-gray-50'
           >
-            <div className='flex flex-col h-full'>
+            <div className='flex flex-col h-full w-full'>
               {/* 画布工具栏 */}
               <div className='px-6 py-3 bg-white border-b border-gray-200 shrink-0'>
                 <div className='flex gap-4 items-center'>
@@ -561,7 +563,7 @@ export const App: React.FC = () => {
               </div>
             </div>
           </Panel>
-        </PanelGroup>
+        </Group>
       </div>
       <ScreenshotPreviewModal
         isOpen={isScreenshotModalOpen}
