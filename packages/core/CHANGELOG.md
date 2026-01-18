@@ -2,6 +2,36 @@
 
 # Changelog
 
+## [2.18.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.18.0...v2.18.1) (2026-01-17)
+
+
+### 💄 UI 优化
+
+* 重写B站扫码登录 ([91e5367](https://github.com/ikenxuan/karin-plugin-kkk/commit/91e53672f53c744d9321d9f443b2616e4b485551))
+* 重写帮助 ([6cad16b](https://github.com/ikenxuan/karin-plugin-kkk/commit/6cad16b45a1173356dd73bfdcbabbb83581e44e0))
+* 重写抖音扫码登录 ([9a262b7](https://github.com/ikenxuan/karin-plugin-kkk/commit/9a262b7e0f6a7db916a47461d7f9a826c74eeeb9))
+* 重写推送列表 ([74e3a7f](https://github.com/ikenxuan/karin-plugin-kkk/commit/74e3a7f74206496014632801459f6215e85dc12f))
+
+
+### 🧰 其他更新
+
+* **template:dev:** 添加 Monaco 编辑器支持并实现 Mock 数据编辑功能 ([f0c60ae](https://github.com/ikenxuan/karin-plugin-kkk/commit/f0c60ae5c5b88da1b879983a1f511e8cf5b2bce7))
+* 兼容性提高 ([f0c7dca](https://github.com/ikenxuan/karin-plugin-kkk/commit/f0c7dcac9e1e23e1a71cd890d2763fbc72601957))
+
+
+### 📦 依赖更新
+
+* update ([91a284d](https://github.com/ikenxuan/karin-plugin-kkk/commit/91a284d0e563811050783177840bbcc972ea0391))
+
+
+### ✨ 细节优化
+
+* 1 ([4c00277](https://github.com/ikenxuan/karin-plugin-kkk/commit/4c0027755c03c1cd39a6278dae07bbca550548fe))
+* className rename ([19bcffb](https://github.com/ikenxuan/karin-plugin-kkk/commit/19bcffbb4bbb21a56783652c346e9073a0b63765))
+* 兼容性提高 ([7a3b433](https://github.com/ikenxuan/karin-plugin-kkk/commit/7a3b433fcf72f051b58af2f8affd5a81f03ab214))
+* 移除重复资源 ([162846a](https://github.com/ikenxuan/karin-plugin-kkk/commit/162846ac1a5f5cad24bd94177a5144f61e8ccd83))
+* 错误日志支持发送给所有主人 ([f9b5fcc](https://github.com/ikenxuan/karin-plugin-kkk/commit/f9b5fcc3445dd2391c5b883d8f894304950b55b6))
+
 ## [2.18.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.17.1...v2.18.0) (2026-01-13)
 
 
