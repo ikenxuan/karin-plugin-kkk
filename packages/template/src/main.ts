@@ -451,6 +451,23 @@ class HtmlWrapper {
       <link rel="stylesheet" href="${bilifontUrl}">
       <link rel="stylesheet" href="${monoFontUrl}">
       <link rel="stylesheet" href="${cssUrl}">
+      <style>
+        html, body {
+          margin: 0;
+          padding: 0;
+          background: transparent !important;
+        }
+        body {
+          display: flex;
+          align-items: flex-start;
+          justify-content: flex-start;
+        }
+        #container {
+          border-radius: 3rem;
+          overflow: hidden;
+          background-clip: padding-box;
+        }
+      </style>
     </head>
     <body class="${isDark ? 'dark' : ''}">
       ${processedHtml}

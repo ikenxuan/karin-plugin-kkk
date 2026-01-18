@@ -110,7 +110,8 @@ export const Render = async <P extends DynamicRenderPath> (
     pageGotoParams: {
       waitUntil: 'load',
       timeout: Config.app.RenderWaitTime * 1000
-    }
+    },
+    omitBackground: true
   })
 
   // 转换为 ImageElement 数组
