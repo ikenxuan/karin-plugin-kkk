@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.18.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.18.1...v2.18.2) (2026-01-18)
+
+
+### 🧰 其他更新
+
+* 重写模板开发面板布局，支持面板主题和子组件主题各自独立 ([48f9002](https://github.com/ikenxuan/karin-plugin-kkk/commit/48f9002bfbaee69b3f3ce6b3d971b63f11ee53dc))
+
 ## [2.18.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.18.0...v2.18.1) (2026-01-17)
 
 
