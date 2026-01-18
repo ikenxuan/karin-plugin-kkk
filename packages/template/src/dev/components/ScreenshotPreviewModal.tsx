@@ -10,12 +10,14 @@ interface ScreenshotPreviewModalProps {
     download: () => void
     copyToClipboard: () => Promise<void>
   } | null
+  isDarkMode?: boolean
 }
 
 export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
   isOpen,
   onClose,
-  screenshotResult
+  screenshotResult,
+  isDarkMode = false
 }) => {
   const [scale, setScale] = useState(1)
   const [position, setPosition] = useState({ x: 0, y: 0 })
@@ -148,17 +150,22 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
       size="5xl"
       backdrop="blur"
       scrollBehavior="inside"
+      classNames={{
+        backdrop: 'bg-overlay/50 backdrop-blur-sm',
+        wrapper: 'items-center justify-center',
+        base: `bg-content1 border border-divider rounded-2xl ${isDarkMode ? 'dark' : ''}`
+      }}
     >
-      <ModalContent>
+      <ModalContent className={isDarkMode ? 'dark' : ''}>
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1">
-              截图预览
+            <ModalHeader className="flex flex-col gap-1 border-b border-divider bg-content1">
+              <span className="text-lg font-semibold text-foreground">截图预览</span>
             </ModalHeader>
-            <ModalBody className="overflow-hidden">
+            <ModalBody className="overflow-hidden bg-content1">
               <div 
                 ref={containerRef}
-                className="flex justify-center items-center w-full h-[60vh] bg-gray-50/50 rounded-lg border border-dashed border-gray-200 overflow-hidden cursor-move relative"
+                className="flex justify-center items-center w-full h-[60vh] bg-background rounded-lg border border-dashed border-divider overflow-hidden cursor-move relative"
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
@@ -168,7 +175,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
                   ref={imageRef}
                   src={imageUrl}
                   alt="Screenshot Preview"
-                  className="object-contain max-w-none shadow-sm transition-transform duration-75"
+                  className="object-contain max-w-none shadow-lg transition-transform duration-75"
                   style={{
                     transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
                     cursor: isDragging ? 'grabbing' : 'grab'
@@ -176,43 +183,46 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
                   draggable={false}
                 />
                 
-                <div className="absolute right-4 bottom-4 px-2 py-1 text-xs text-white rounded pointer-events-none bg-black/50">
+                <div className="absolute right-4 bottom-4 px-3 py-1.5 text-xs font-semibold text-foreground rounded-lg pointer-events-none bg-default-100/90 backdrop-blur-sm border border-divider">
                   {Math.round(scale * 100)}%
                 </div>
               </div>
             </ModalBody>
-            <ModalFooter>
-              <div className="flex-1 text-xs text-gray-500">
+            <ModalFooter className="border-t border-divider bg-content1">
+              <div className="flex-1 text-xs text-foreground-500 font-medium">
                 滚轮缩放 • 拖拽移动
               </div>
               <Button
-                color="primary"
-                variant="light"
+                variant="flat"
                 onPress={handleFitToCanvas}
                 startContent={<Maximize className="w-4 h-4" />}
+                className="transition-colors duration-200 cursor-pointer"
               >
                 适应画布
               </Button>
               <Button 
-                color="danger" 
-                variant="light" 
+                color="danger"
+                variant="flat" 
                 onPress={onClose}
                 startContent={<X className="w-4 h-4" />}
+                className="transition-colors duration-200 cursor-pointer"
               >
                 关闭
               </Button>
               <Button 
-                color="primary" 
+                color="primary"
                 variant="flat" 
                 onPress={handleCopy}
                 startContent={<Copy className="w-4 h-4" />}
+                className="transition-colors duration-200 cursor-pointer"
               >
                 复制
               </Button>
               <Button 
-                color="success" 
+                color="success"
                 onPress={handleDownload}
                 startContent={<Download className="w-4 h-4" />}
+                className="transition-colors duration-200 cursor-pointer"
               >
                 下载
               </Button>

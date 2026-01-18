@@ -1,5 +1,4 @@
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/react'
-import { Save, X } from 'lucide-react'
+import { Modal, ModalBody, ModalContent } from '@heroui/react'
 import React, { useEffect, useState } from 'react'
 
 import { JsonEditor } from './JsonEditor'
@@ -14,6 +13,7 @@ interface MockDataEditorModalProps {
   availableDataFiles: string[]
   selectedDataFile: string
   onDataFileChange: (filename: string) => void
+  isDarkMode?: boolean
 }
 
 /**
@@ -28,7 +28,8 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
   templateId,
   availableDataFiles,
   selectedDataFile,
-  onDataFileChange
+  onDataFileChange,
+  isDarkMode = false
 }) => {
   const [currentData, setCurrentData] = useState<any>(initialData)
   const [isSaving, setIsSaving] = useState(false)
@@ -59,53 +60,31 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
       size="5xl"
       scrollBehavior="inside"
       isDismissable={true}
-      hideCloseButton={false}
+      classNames={{
+        backdrop: 'bg-overlay/50 backdrop-blur-sm',
+        wrapper: 'items-center justify-center',
+        base: `bg-content1 border border-divider rounded-2xl ${isDarkMode ? 'dark' : ''}`
+      }}
     >
-      <ModalContent className="h-[90vh]">
+      <ModalContent className={`h-[90vh] ${isDarkMode ? 'dark' : ''}`}>
         {() => (
-          <>
-            <ModalHeader className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
-              <span className="text-xl font-bold">编辑 Mock 数据</span>
-              <Button
-                isIconOnly
-                variant="light"
-                onPress={onClose}
-                size="sm"
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </ModalHeader>
-            <ModalBody className="p-0 overflow-hidden">
-              <div className="h-full w-full">
-                <JsonEditor
-                  data={currentData}
-                  onChange={setCurrentData}
-                  platform={platform}
-                  templateId={templateId}
-                  availableDataFiles={availableDataFiles}
-                  selectedDataFile={selectedDataFile}
-                  onDataFileChange={onDataFileChange}
-                />
-              </div>
-            </ModalBody>
-            <ModalFooter className="px-6 py-4 border-t border-gray-200">
-              <Button
-                variant="flat"
-                color="default"
-                onPress={onClose}
-              >
-                取消
-              </Button>
-              <Button
-                color="primary"
-                onPress={handleSave}
-                isLoading={isSaving}
-                startContent={<Save className="w-4 h-4" />}
-              >
-                保存并重载
-              </Button>
-            </ModalFooter>
-          </>
+          <ModalBody className="p-0 overflow-hidden bg-content1">
+            <div className="h-full w-full">
+              <JsonEditor
+                data={currentData}
+                onChange={setCurrentData}
+                platform={platform}
+                templateId={templateId}
+                availableDataFiles={availableDataFiles}
+                selectedDataFile={selectedDataFile}
+                onDataFileChange={onDataFileChange}
+                isDarkMode={isDarkMode}
+                onSave={handleSave}
+                onCancel={onClose}
+                isSaving={isSaving}
+              />
+            </div>
+          </ModalBody>
         )}
       </ModalContent>
     </Modal>

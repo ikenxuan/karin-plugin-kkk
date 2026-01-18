@@ -1,4 +1,4 @@
-import { Button, Chip, Slider, Switch } from '@heroui/react'
+import { Slider, Tooltip } from '@heroui/react'
 import { Camera, Palette, RefreshCw } from 'lucide-react'
 import React from 'react'
 import { MdFitScreen } from 'react-icons/md'
@@ -109,11 +109,20 @@ export const App: React.FC = () => {
   const [screenshotResult, setScreenshotResult] = React.useState<{ blob: Blob; download: () => void; copyToClipboard: () => Promise<void> } | null>(null)
   const [isScreenshotModalOpen, setIsScreenshotModalOpen] = React.useState(false)
   const [isEditorOpen, setIsEditorOpen] = React.useState(false)
+  const [isDarkMode, setIsDarkMode] = React.useState(() => {
+    const saved = localStorage.getItem('dev-panel-dark-mode')
+    return saved !== null ? saved === 'true' : false
+  })
 
   // 保存设置到 localStorage
   React.useEffect(() => {
     localStorage.setItem('dev-show-hints', String(showHints))
   }, [showHints])
+
+  // 保存深色模式设置
+  React.useEffect(() => {
+    localStorage.setItem('dev-panel-dark-mode', String(isDarkMode))
+  }, [isDarkMode])
 
   const dataService = DataService.getInstance()
   const previewPanelRef = React.useRef<{ 
@@ -391,201 +400,271 @@ export const App: React.FC = () => {
   }, [selectedPlatform, selectedTemplate, selectedDataFile])
   
   return (
-    <div className='overflow-hidden h-screen bg-linear-to-br from-blue-50 to-indigo-100 font-[HarmonyOSHans-Regular]'>
-      {/* 顶部导航 */}
-      <div className='h-16 bg-white border-b border-gray-200 shadow-sm shrink-0'>
-        <div className='flex justify-between items-center px-6 h-full'>
-          <div className='flex gap-4 items-center'>
-            <div className='flex gap-2 items-center'>
-              <Palette className='w-6 h-6 text-blue-600 shrink-0' />
-              <h1 className='text-xl font-bold text-gray-900 whitespace-nowrap'>Template 开发</h1>
-            </div>
-            {selectedDataFile && (
-              <Chip color='secondary' variant='flat' size='sm'>
-                {selectedDataFile.replace('.json', '')}
-              </Chip>
-            )}
-            <Chip color='default' variant='flat' size='sm'>
-              {selectedPlatform}/{selectedTemplate.includes('/') ? selectedTemplate.split('/').join(' → ') : selectedTemplate}
-            </Chip>
-          </div>
-          <div className='flex gap-2 items-center shrink-0'>
-            <div className='flex gap-2 items-center'>
-              <Switch
-                isSelected={showHints}
-                onValueChange={setShowHints}
-                size='sm'
-                color='secondary'
-              />
-              <span className='text-sm font-medium text-gray-700'>提示</span>
+    <>
+      <div className='flex h-screen bg-background'>
+        {/* 左侧垂直工具栏 - 64px */}
+        <div className={`w-16 bg-content1/95 backdrop-blur-xl shrink-0 flex flex-col items-center py-4 gap-2 border-r border-divider ${isDarkMode ? 'dark' : ''}`}>
+          {/* Logo 区域 */}
+          <div className='flex flex-col items-center gap-3 pb-3'>
+            <div className='p-2 rounded-xl bg-linear-to-br from-primary/20 to-primary/5 shadow-sm'>
+              <Palette className='w-6 h-6 text-primary' />
             </div>
           </div>
+        
+          <div className='w-10 h-px bg-divider/60' />
+        
+          {/* 操作区域 */}
+          <div className='flex flex-col items-center gap-2 py-2'>
+            <Tooltip content='重载组件' placement='right' delay={300}>
+              <button
+                onClick={() => loadData(selectedDataFile)}
+                className='p-2.5 rounded-xl hover:bg-default-100 active:scale-95 transition-all duration-200 group'
+              >
+                <RefreshCw className='w-5 h-5 text-foreground-600 group-hover:text-primary transition-colors' />
+              </button>
+            </Tooltip>
+          </div>
+        
+          <div className='w-10 h-px bg-divider/60' />
+        
+          {/* 设置区域 */}
+          <div className='flex flex-col items-center gap-2 py-2'>
+            <Tooltip content={showHints ? '隐藏提示' : '显示提示'} placement='right' delay={300}>
+              <button
+                onClick={() => setShowHints(!showHints)}
+                className={`p-2.5 rounded-xl active:scale-95 transition-all duration-200 ${
+                  showHints 
+                    ? 'bg-primary/15 text-primary shadow-sm' 
+                    : 'hover:bg-default-100 text-foreground-600'
+                }`}
+              >
+                <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
+                </svg>
+              </button>
+            </Tooltip>
+        
+            <Tooltip content={isDarkMode ? '切换浅色面板' : '切换深色面板'} placement='right' delay={300}>
+              <button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className='p-2.5 rounded-xl hover:bg-default-100 active:scale-95 transition-all duration-200 group'
+              >
+                {isDarkMode ? (
+                  <svg className='w-5 h-5 text-foreground-600 group-hover:text-warning transition-colors' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' />
+                  </svg>
+                ) : (
+                  <svg className='w-5 h-5 text-foreground-600 group-hover:text-primary transition-colors' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' />
+                  </svg>
+                )}
+              </button>
+            </Tooltip>
+          </div>
+        
+          <div className='flex-1' />
         </div>
-      </div>
 
-      {/* 主要内容区域 */}
-      <div className='h-[calc(100vh-4rem)] w-full overflow-hidden'>
-        <Group 
-          orientation='horizontal' 
-          className='h-full w-full'
-          style={{ display: 'flex' }}
-        >
-          {/* 左侧控制面板 */}
-          <Panel
-            defaultSize="28%"
-            minSize="15%"
-            maxSize="40%"
-            id='sidebar'
-            className='bg-white border-r border-gray-200'
-          >
-            <div className='overflow-y-auto h-full scrollbar-hide p-4 space-y-4'>
-              {/* 平台与模板选择 */}
-              <div className='shrink-0'>
-                <PlatformSelector
-                  selectedPlatform={selectedPlatform}
-                  selectedTemplate={selectedTemplate}
-                  onPlatformChange={handlePlatformChange}
-                  onTemplateChange={handleTemplateChange}
-                />
-              </div>
 
-              {/* 数据文件选择器 */}
-              <div className='shrink-0'>
-                <DataFileSelector
-                  availableDataFiles={availableDataFiles}
-                  selectedDataFile={selectedDataFile}
-                  onDataFileChange={handleDataFileChange}
-                  onSaveNewDataFile={handleSaveNewDataFile}
-                  onRefreshFiles={loadAvailableFiles}
-                  onEdit={() => setIsEditorOpen(true)}
-                />
-              </div>
-            </div>
-          </Panel>
-
-          {/* 可调整大小的分隔条 */}
-          <Separator className='w-2 bg-gray-100 transition-colors duration-200 hover:bg-gray-200 cursor-col-resize' />
-
-          {/* 右侧预览面板 */}
-          <Panel
-            defaultSize="72%"
-            minSize="60%"
-            id='preview'
-            className='bg-gray-50'
-          >
-            <div className='flex flex-col h-full w-full'>
-              {/* 画布工具栏 */}
-              <div className='px-6 py-3 bg-white border-b border-gray-200 shrink-0'>
-                <div className='flex gap-4 items-center'>
-                  {/* 重载组件按钮 */}
-                  <Button
-                    size='sm'
-                    color='primary'
-                    variant='flat'
-                    startContent={<RefreshCw className='w-4 h-4' />}
-                    onPress={() => loadData(selectedDataFile)}
-                  >
-                    重载
-                  </Button>
-
-                  {/* 分隔线 */}
-                  <div className='w-px h-6 bg-gray-300' />
-
-                  {/* 主题切换开关 */}
-                  <div className='flex gap-2 items-center'>
-                    <Switch
-                      isSelected={templateData?.useDarkTheme || false}
-                      onValueChange={handleThemeChange}
-                      size='sm'
-                      color='primary'
-                    />
-                    <span className='text-sm font-medium text-gray-700'>深色主题</span>
-                  </div>
-
-                  {/* 分隔线 */}
-                  <div className='w-px h-6 bg-gray-300' />
-
-                  {/* 截图按钮 */}
-                  <Button
-                    size='sm'
-                    color='secondary'
-                    variant='flat'
-                    startContent={<Camera className='w-4 h-4' />}
-                    onPress={handleCapture}
-                    isLoading={isCapturing}
-                  >
-                    截图
-                  </Button>
-
-                  {/* 分隔线 */}
-                  <div className='w-px h-6 bg-gray-300' />
-
-                  {/* 适应画布按钮 */}
-                  <Button
-                    size='sm'
-                    variant='flat'
-                    startContent={<MdFitScreen className='w-4 h-4' />}
-                    onPress={() => {
-                      if (previewPanelRef.current?.fitToCanvas) {
-                        previewPanelRef.current.fitToCanvas()
-                      }
-                    }}
-                  >
-                    适应画布
-                  </Button>
-                  {/* 分隔线 */}
-                  <div className='w-px h-6 bg-gray-300' />
-
-                  {/* 缩放进度条 */}
-                  <div className='flex flex-1 gap-2 items-center max-w-96'>
-                    <span className='text-xs text-gray-500 whitespace-nowrap'>缩放:</span>
-                    <Slider
-                      aria-label='缩放比例'
-                      size='md'
-                      color='success'
-                      step={1}
-                      maxValue={500}
-                      minValue={10}
-                      showOutline={true}
-                      value={scale * 100}
-                      onChange={(value) => {
-                        // 如果 value 是数组，取第一个元素
-                        const scaleValue = Array.isArray(value) ? value[0] : value
-                        setScale(scaleValue / 100)
-                      }}
-                      className='flex-1'
-                    />
-                    <span className='text-xs font-medium text-gray-700 tabular-nums min-w-12.5 text-right'>
-                      {Math.round(scale * 100)}%
-                    </span>
+        {/* 主要内容区域 */}
+        <div className='flex-1 flex overflow-hidden'>
+          <Group orientation='horizontal' className='h-full w-full'>
+            {/* 左侧控制面板 */}
+            <Panel defaultSize='20%' minSize='15%' maxSize='40%' id='sidebar'>
+              <div className={`overflow-y-auto h-full scrollbar-hide bg-content1/95 backdrop-blur-xl border-r border-divider ${isDarkMode ? 'dark' : ''}`}>
+                {/* 头部状态卡片 */}
+                <div className='sticky top-0 z-10 bg-linear-to-b from-content1 via-content1 to-content1/80 backdrop-blur-xl border-b border-divider/60 p-4 pb-3'>
+                  <div className='flex flex-col gap-3'>
+                    {/* 数据文件标签 */}
+                    {selectedDataFile && (
+                      <div className='bg-default-100 rounded-lg p-3 border border-divider'>
+                        <div className='flex items-center gap-2.5'>
+                          <div className='p-1.5 bg-primary/10 rounded-lg'>
+                            <svg className='w-4 h-4 text-primary' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
+                            </svg>
+                          </div>
+                          <div className='flex-1 min-w-0'>
+                            <div className='text-[10px] font-medium text-foreground-500 uppercase tracking-wider mb-0.5'>
+                              数据文件
+                            </div>
+                            <div className='text-sm font-semibold text-foreground truncate'>
+                              {selectedDataFile.replace('.json', '')}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* 平台/模板路径 */}
+                    <div className='bg-default-50/80 rounded-xl p-2.5 border border-default-200/50'>
+                      <div className='flex items-center gap-1 flex-wrap'>
+                        {/* 平台图标 */}
+                        <div className='p-1 bg-default-100 rounded-md'>
+                          <svg className='w-3.5 h-3.5 text-default-600' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01' />
+                          </svg>
+                        </div>
+                        
+                        {/* 平台名称 */}
+                        <span className='text-xs font-semibold text-default-700 px-1.5'>
+                          {selectedPlatform}
+                        </span>
+                        
+                        {/* 分隔符 */}
+                        <svg className='w-3 h-3 text-default-400' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
+                        </svg>
+                        
+                        {/* 模板路径 */}
+                        {selectedTemplate.split('/').map((part, index, array) => (
+                          <React.Fragment key={index}>
+                            <span 
+                              className={`text-xs font-medium px-1.5 py-0.5 rounded-md transition-colors ${
+                                index === array.length - 1 
+                                  ? 'bg-primary/15 text-primary font-semibold' 
+                                  : 'text-default-600'
+                              }`}
+                            >
+                              {part}
+                            </span>
+                            {index < array.length - 1 && (
+                              <svg className='w-2.5 h-2.5 text-default-300' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
+                              </svg>
+                            )}
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
+                
+                {/* 内容区域 */}
+                <div className='p-4 space-y-4'>
+              
+                  <PlatformSelector
+                    selectedPlatform={selectedPlatform}
+                    selectedTemplate={selectedTemplate}
+                    onPlatformChange={handlePlatformChange}
+                    onTemplateChange={handleTemplateChange}
+                  />
+                
+                  <div className='w-full h-px bg-divider/60' />
+                
+                  <DataFileSelector
+                    availableDataFiles={availableDataFiles}
+                    selectedDataFile={selectedDataFile}
+                    onDataFileChange={handleDataFileChange}
+                    onSaveNewDataFile={handleSaveNewDataFile}
+                    onRefreshFiles={loadAvailableFiles}
+                    onEdit={() => setIsEditorOpen(true)}
+                    isDarkMode={isDarkMode}
+                  />
+                </div>
+              </div>
+            </Panel>
+
+            <Separator />
+
+            {/* 中间垂直工具栏 */}
+            <div className={`w-16 bg-content1/95 backdrop-blur-xl shrink-0 flex flex-col items-center py-4 gap-2 border-r border-divider ${isDarkMode ? 'dark' : ''}`}>
+              {/* 工具区域 */}
+              <div className='flex flex-col items-center gap-2 py-2'>
+                <Tooltip content='截图' placement='right' delay={300}>
+                  <button
+                    onClick={handleCapture}
+                    disabled={isCapturing}
+                    className='p-2.5 rounded-xl hover:bg-default-100 active:scale-95 transition-all duration-200 group disabled:opacity-50 disabled:cursor-not-allowed'
+                  >
+                    <Camera className='w-5 h-5 text-foreground-600 group-hover:text-success transition-colors' />
+                  </button>
+                </Tooltip>
+            
+                <Tooltip content='适应画布' placement='right' delay={300}>
+                  <button
+                    onClick={() => previewPanelRef.current?.fitToCanvas()}
+                    className='p-2.5 rounded-xl hover:bg-default-100 active:scale-95 transition-all duration-200 group'
+                  >
+                    <MdFitScreen className='w-5 h-5 text-foreground-600 group-hover:text-primary transition-colors' />
+                  </button>
+                </Tooltip>
+              </div>
+            
+              <div className='w-10 h-px bg-divider/60' />
+            
+              {/* 主题区域 */}
+              <div className='flex flex-col items-center gap-2 py-2'>
+                <Tooltip content={templateData?.useDarkTheme ? '组件浅色模式' : '组件深色模式'} placement='right' delay={300}>
+                  <button
+                    onClick={() => handleThemeChange(!templateData?.useDarkTheme)}
+                    className={`p-2.5 rounded-xl active:scale-95 transition-all duration-200 ${
+                      templateData?.useDarkTheme
+                        ? 'bg-primary/15 text-primary shadow-sm'
+                        : 'hover:bg-default-100 text-foreground-600'
+                    }`}
+                  >
+                    {templateData?.useDarkTheme ? (
+                      <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' />
+                      </svg>
+                    ) : (
+                      <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' />
+                      </svg>
+                    )}
+                  </button>
+                </Tooltip>
               </div>
 
-              {/* 预览画布 */}
-              <div className='overflow-hidden flex-1'>
-                <PreviewPanel
-                  ref={previewPanelRef}
-                  platform={selectedPlatform}
-                  templateId={selectedTemplate}
-                  data={templateData}
-                  loadError={loadError}
-                  qrCodeDataUrl={qrCodeDataUrl}
-                  scale={scale}
-                  onScaleChange={setScale}
-                  onComponentLoadComplete={handleComponentLoadComplete}
-                  showShortcuts={showHints}
-                  showDebugInfo={showHints}
-                />
+              <div className='w-10 h-px bg-divider/60' />
+
+              {/* 缩放控制区域 */}
+              <div className='flex flex-col items-center gap-3 py-4'>
+                <span className='text-xs font-semibold text-foreground-600 tabular-nums bg-default-100 px-2 py-1 rounded-lg'>
+                  {Math.round(scale * 100)}%
+                </span>
+                <div className='h-84 flex items-center'>
+                  <Slider
+                    orientation='vertical'
+                    size='sm'
+                    color='primary'
+                    step={1}
+                    maxValue={500}
+                    minValue={10}
+                    value={scale * 100}
+                    onChange={(value) => setScale((Array.isArray(value) ? value[0] : value) / 100)}
+                    className='h-full'
+                  />
+                </div>
               </div>
             </div>
-          </Panel>
-        </Group>
+
+            {/* 预览面板 */}
+            <Panel defaultSize='80%' minSize='60%' id='preview'>
+              <PreviewPanel
+                ref={previewPanelRef}
+                platform={selectedPlatform}
+                templateId={selectedTemplate}
+                data={templateData}
+                loadError={loadError}
+                qrCodeDataUrl={qrCodeDataUrl}
+                scale={scale}
+                onScaleChange={setScale}
+                onComponentLoadComplete={handleComponentLoadComplete}
+                showShortcuts={showHints}
+                showDebugInfo={showHints}
+                isPanelDarkMode={isDarkMode}
+              />
+            </Panel>
+          </Group>
+        </div>
       </div>
       <ScreenshotPreviewModal
         isOpen={isScreenshotModalOpen}
         onClose={() => setIsScreenshotModalOpen(false)}
         screenshotResult={screenshotResult}
+        isDarkMode={isDarkMode}
       />
       <MockDataEditorModal
         isOpen={isEditorOpen}
@@ -597,7 +676,8 @@ export const App: React.FC = () => {
         availableDataFiles={availableDataFiles}
         selectedDataFile={selectedDataFile}
         onDataFileChange={handleDataFileChange}
+        isDarkMode={isDarkMode}
       />
-    </div>
+    </>
   )
 }

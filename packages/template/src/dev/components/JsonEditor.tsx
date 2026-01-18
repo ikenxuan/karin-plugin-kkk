@@ -1,6 +1,6 @@
-import { Button, Select, SelectItem } from '@heroui/react'
+import { Button, Card, CardBody, Select, SelectItem, Tooltip } from '@heroui/react'
 import Editor from '@monaco-editor/react'
-import { Code, Copy, Download, Upload } from 'lucide-react'
+import { Code, Copy, Download, FileJson, Save, Upload, X } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 
 interface JsonEditorProps {
@@ -22,6 +22,14 @@ interface JsonEditorProps {
   onDataFileChange?: (filename: string) => void
   /** 保存新数据文件回调 */
   onSaveNewDataFile?: (filename: string, data: any) => void
+  /** 是否深色模式 */
+  isDarkMode?: boolean
+  /** 保存回调（用于 Modal 模式） */
+  onSave?: () => void
+  /** 取消回调（用于 Modal 模式） */
+  onCancel?: () => void
+  /** 是否正在保存 */
+  isSaving?: boolean
 }
 
 /**
@@ -37,13 +45,58 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   templateId,
   availableDataFiles = [],
   selectedDataFile,
-  onDataFileChange
+  onDataFileChange,
+  isDarkMode = false,
+  onSave,
+  onCancel,
+  isSaving = false
 }) => {
   const [jsonText, setJsonText] = useState<string>('')
   const [error, setError] = useState<string>('')
   const [isFormatted, setIsFormatted] = useState(true)
   // 使用 useRef 跟踪内部变更，防止外部数据更新导致的光标跳动和输入重置
   const isInternalChange = useRef<boolean>(false)
+
+  // 配置 Monaco Editor 的 JSON 语法高亮
+  const handleEditorWillMount = (monaco: any) => {
+    // 深色主题
+    monaco.editor.defineTheme('json-dark', {
+      base: 'vs-dark',
+      inherit: true,
+      rules: [
+        { token: 'string.key.json', foreground: '9CDCFE' }, // 键名 - 青色
+        { token: 'string.value.json', foreground: 'CE9178' }, // 字符串值 - 橙色
+        { token: 'number.json', foreground: 'B5CEA8' }, // 数字 - 浅绿
+        { token: 'keyword.json', foreground: '569CD6' }, // true/false/null - 蓝色
+        { token: 'delimiter.bracket.json', foreground: 'FFD700' }, // 括号 - 金色
+        { token: 'delimiter.colon.json', foreground: 'D4D4D4' }, // 冒号 - 灰色
+        { token: 'delimiter.comma.json', foreground: 'D4D4D4' } // 逗号 - 灰色
+      ],
+      colors: {
+        'editor.background': '#1E1E1E'
+      }
+    })
+
+    // 浅色主题
+    monaco.editor.defineTheme('json-light', {
+      base: 'vs',
+      inherit: true,
+      rules: [
+        { token: 'string.key.json', foreground: '001080' }, // 键名 - 深蓝
+        { token: 'string.value.json', foreground: 'A31515' }, // 字符串值 - 红色
+        { token: 'number.json', foreground: '098658' }, // 数字 - 深绿
+        { token: 'keyword.json', foreground: '0000FF' }, // true/false/null - 蓝色
+        { token: 'delimiter.bracket.json', foreground: '000000' }, // 括号 - 黑色
+        { token: 'delimiter.colon.json', foreground: '000000' }, // 冒号 - 黑色
+        { token: 'delimiter.comma.json', foreground: '000000' } // 逗号 - 黑色
+      ],
+      colors: {
+        'editor.background': '#FFFFFF'
+      }
+    })
+  }
+
+  const editorTheme = isDarkMode ? 'json-dark' : 'json-light'
 
   // 同步数据到JSON文本
   useEffect(() => {
@@ -72,7 +125,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
       // JSON解析失败，尝试解析JavaScript对象字面量
       try {
         const cleanText = text
-          .replace(/`([^`]*)`/g, (match, content) => {
+          .replace(/`([^`]*)`/g, (_match, content) => {
             return `"${content.trim()}"`
           })
           // 标准化属性名（处理没有引号的属性名）
@@ -185,128 +238,196 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   }
 
   return (
-    <div className='w-full h-full flex flex-col bg-white'>
-      <div className='shrink-0 p-4 border-b border-gray-200'>
-        <div className='flex flex-col gap-2 w-full'>
-          <div className='flex gap-2 items-center justify-between'>
-            <div className='flex gap-2 items-center'>
-              <Code className='shrink-0 w-5 h-5 text-gray-500' />
-              <h3 className='text-lg font-semibold whitespace-nowrap'>JSON 编辑器</h3>
-              {error && <span className='text-sm text-danger ml-2'>{error}</span>}
+    <div className='w-full h-full flex flex-col gap-2 p-3 bg-background'>
+      {/* 编辑器卡片 */}
+      <Card className='flex-1 shadow-sm overflow-hidden'>
+        <CardBody className='p-0 overflow-hidden flex flex-col'>
+          {/* 单行工具栏 */}
+          <div className='shrink-0 flex items-center justify-between gap-3 px-4 py-2.5 border-b border-divider'>
+            {/* 左侧：标题 + 操作按钮 */}
+            <div className='flex items-center gap-3'>
+              <div className='flex items-center gap-2'>
+                <Code className='w-4 h-4 text-primary' />
+                <h3 className='text-sm font-semibold text-foreground'>JSON 编辑器</h3>
+              </div>
+              
+              <div className='w-px h-5 bg-divider' />
+              
+              <div className='flex gap-1.5'>
+                <Button
+                  size='sm'
+                  variant='flat'
+                  color='primary'
+                  onPress={formatJson}
+                  isDisabled={readonly}
+                  className='h-7 px-3 text-xs'
+                >
+                  格式化
+                </Button>
+                <Button
+                  size='sm'
+                  variant='flat'
+                  color='secondary'
+                  onPress={compressJson}
+                  isDisabled={readonly}
+                  className='h-7 px-3 text-xs'
+                >
+                  压缩
+                </Button>
+              </div>
             </div>
-            <div className='flex flex-wrap gap-1 items-center'>
-              <Button
-                size='sm'
-                variant='light'
-                onPress={formatJson}
-                isDisabled={readonly}
-              >
-                格式化
-              </Button>
-              <Button
-                size='sm'
-                variant='light'
-                onPress={compressJson}
-                isDisabled={readonly}
-              >
-                压缩
-              </Button>
-              <Button
-                size='sm'
-                variant='light'
-                startContent={<Copy className='w-3 h-3' />}
-                onPress={copyToClipboard}
-              >
-                复制
-              </Button>
-              <Button
-                size='sm'
-                variant='light'
-                startContent={<Upload className='w-3 h-3' />}
-                onPress={importJson}
-                isDisabled={readonly}
-              >
-                导入
-              </Button>
-              <Button
-                size='sm'
-                variant='light'
-                startContent={<Download className='w-3 h-3' />}
-                onPress={exportJson}
-              >
-                导出
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div className='flex-1 flex flex-col overflow-hidden'>
-        {/* 数据文件选择器 */}
-        {availableDataFiles.length > 0 && (
-          <div className='px-4 py-2 border-b border-gray-100 bg-gray-50/50 shrink-0'>
-            <div className='flex gap-2 items-center max-w-md'>
-              <Select
-                label='选择数据文件'
-                placeholder='选择预设数据'
-                selectedKeys={selectedDataFile ? [selectedDataFile] : []}
-                onSelectionChange={(keys) => {
-                  const key = Array.from(keys)[0] as string
-                  if (key && onDataFileChange) {
-                    onDataFileChange(key)
-                  }
-                }}
-                className='flex-1'
-                size='sm'
-                variant='bordered'
-                color='default'
-                classNames={{
-                  trigger: 'bg-white border-gray-300 text-gray-900 data-[hover=true]:border-gray-400',
-                  value: 'text-gray-900',
-                  listbox: 'bg-white',
-                  popoverContent: 'bg-white border border-gray-200'
-                }}
-              >
-                {availableDataFiles.map((filename) => (
-                  <SelectItem
-                    key={filename}
-                    className='text-gray-900 data-[hover=true]:bg-gray-100 data-[selected=true]:bg-blue-50'
+            
+            {/* 右侧：文件选择 + 工具按钮 + 保存/取消（Modal 模式） */}
+            <div className='flex items-center gap-2'>
+              {/* 数据文件选择器 */}
+              {availableDataFiles.length > 0 && (
+                <>
+                  <div className='flex items-center gap-2'>
+                    <FileJson className='w-3.5 h-3.5 text-warning' />
+                    <Select
+                      placeholder='选择数据文件'
+                      selectedKeys={selectedDataFile ? [selectedDataFile] : []}
+                      onSelectionChange={(keys) => {
+                        const key = Array.from(keys)[0] as string
+                        if (key && onDataFileChange) {
+                          onDataFileChange(key)
+                        }
+                      }}
+                      size='sm'
+                      variant='bordered'
+                      className='w-60'
+                      classNames={{
+                        trigger: 'h-7 min-h-7',
+                        value: 'text-foreground'
+                      }}
+                      popoverProps={{
+                        classNames: {
+                          content: isDarkMode ? 'dark bg-content1' : 'bg-content1'
+                        }
+                      }}
+                    >
+                      {availableDataFiles.map((filename) => (
+                        <SelectItem key={filename} className='text-foreground'>
+                          {filename.replace('.json', '')}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                  </div>
+                  
+                  <div className='w-px h-5 bg-divider' />
+                </>
+              )}
+              
+              <div className='flex gap-1.5'>
+                <Tooltip content='复制到剪贴板' placement='bottom' delay={300}>
+                  <Button
+                    size='sm'
+                    variant='bordered'
+                    isIconOnly
+                    onPress={copyToClipboard}
+                    className='h-7 w-7'
                   >
-                    {filename.replace('.json', '')}
-                  </SelectItem>
-                ))}
-              </Select>
+                    <Copy className='w-3.5 h-3.5' />
+                  </Button>
+                </Tooltip>
+                <Tooltip content='导入 JSON 文件' placement='bottom' delay={300}>
+                  <Button
+                    size='sm'
+                    variant='bordered'
+                    isIconOnly
+                    onPress={importJson}
+                    isDisabled={readonly}
+                    className='h-7 w-7'
+                  >
+                    <Upload className='w-3.5 h-3.5' />
+                  </Button>
+                </Tooltip>
+                <Tooltip content='导出 JSON 文件' placement='bottom' delay={300}>
+                  <Button
+                    size='sm'
+                    variant='bordered'
+                    isIconOnly
+                    onPress={exportJson}
+                    className='h-7 w-7'
+                  >
+                    <Download className='w-3.5 h-3.5' />
+                  </Button>
+                </Tooltip>
+              </div>
+              
+              {/* Modal 模式的保存/取消按钮 */}
+              {onSave && onCancel && (
+                <>
+                  <div className='w-px h-5 bg-divider' />
+                  <div className='flex gap-1.5'>
+                    <Button
+                      size='sm'
+                      variant='flat'
+                      onPress={onCancel}
+                      className='h-7 px-3 text-xs'
+                      startContent={<X className='w-3.5 h-3.5' />}
+                    >
+                      取消
+                    </Button>
+                    <Button
+                      size='sm'
+                      color='primary'
+                      onPress={onSave}
+                      isLoading={isSaving}
+                      className='h-7 px-3 text-xs'
+                      startContent={<Save className='w-3.5 h-3.5' />}
+                    >
+                      保存并重载
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
-        )}
 
-        <div 
-          className='flex-1 w-full relative min-h-0'
-          onKeyDown={(e) => {
-            // 防止 Modal 捕获 Enter 键
-            if (e.key === 'Enter') {
-              e.stopPropagation()
-            }
-          }}
-        >
-          <Editor
-            height="100%"
-            defaultLanguage="json"
-            value={jsonText}
-            onChange={handleJsonChange}
-            options={{
-              minimap: { enabled: false },
-              fontSize: 14,
-              formatOnPaste: true,
-              formatOnType: true,
-              readOnly: readonly,
-              scrollBeyondLastLine: false,
-              automaticLayout: true,
-              padding: { top: 16, bottom: 16 }
+          {/* 错误提示条 */}
+          {error && (
+            <div className='shrink-0 px-4 py-2 bg-danger-50 border-b border-danger-200'>
+              <div className='flex items-center gap-2'>
+                <svg className='w-4 h-4 text-danger shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
+                </svg>
+                <span className='text-xs text-danger'>{error}</span>
+              </div>
+            </div>
+          )}
+
+          {/* 编辑器 */}
+          <div 
+            className='flex-1 w-full relative overflow-hidden'
+            onKeyDown={(e) => {
+              // 防止 Modal 捕获 Enter 键
+              if (e.key === 'Enter') {
+                e.stopPropagation()
+              }
             }}
-          />
-        </div>
-      </div>
+          >
+            <Editor
+              height="100%"
+              defaultLanguage="json"
+              value={jsonText}
+              onChange={handleJsonChange}
+              theme={editorTheme}
+              beforeMount={handleEditorWillMount}
+              options={{
+                minimap: { enabled: false },
+                fontSize: 14,
+                formatOnPaste: true,
+                formatOnType: true,
+                readOnly: readonly,
+                scrollBeyondLastLine: false,
+                automaticLayout: true,
+                padding: { top: 16, bottom: 16 }
+              }}
+            />
+          </div>
+        </CardBody>
+      </Card>
     </div>
   )
 }

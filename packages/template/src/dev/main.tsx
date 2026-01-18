@@ -15,6 +15,7 @@ if (import.meta.env.MODE === 'development') {
     })
   }
 }
+
 const Root = () => {
   return (
     <React.StrictMode>

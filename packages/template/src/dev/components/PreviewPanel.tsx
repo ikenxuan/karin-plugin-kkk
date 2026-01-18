@@ -1,6 +1,5 @@
-import { addToast, Card, CardBody, CardHeader, Kbd } from '@heroui/react'
+import { addToast, Kbd } from '@heroui/react'
 import gsap from 'gsap'
-import { Eye } from 'lucide-react'
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 
 import { PlatformType } from '../../types/platforms'
@@ -31,6 +30,8 @@ interface PreviewPanelProps {
   showShortcuts?: boolean
   /** 是否显示调试信息 */
   showDebugInfo?: boolean
+  /** 面板是否为深色模式 */
+  isPanelDarkMode?: boolean
 }
 
 /**
@@ -116,7 +117,8 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   onScaleChange,
   onComponentLoadComplete,
   showShortcuts = true,
-  showDebugInfo = true
+  showDebugInfo = true,
+  isPanelDarkMode = false
 }, ref) => {
   // 键盘状态
   const [isSpacePressed, setIsSpacePressed] = useState(false)
@@ -703,122 +705,105 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   }), [captureScreenshot, handleFitToCanvas])
     
   return (
-    <Card className='flex flex-col h-full'>
-      <CardHeader className='pb-2 shrink-0'>
-        <div className='flex justify-between items-center w-full'>
-          <div className='flex gap-2 items-center'>
-            <Eye className='w-4 h-4' />
-            <span className='text-sm font-medium'>
-              预览画布
+    <div className='flex flex-col h-full'>
+      {/* 快捷键提示 */}
+      {showShortcuts && (
+        <div className='flex flex-col absolute p-4 z-10 gap-1.5 text-sm bg-default-0/50 backdrop-blur-sm rounded-br-3xl'>
+          <div className='flex gap-1 items-center'>
+            <Kbd className='bg-default-0' keys={['space']}>Space</Kbd>
+            <span>+ 拖拽移动</span>
+          </div>
+          <div className='flex gap-1 items-center'>
+            <Kbd className='bg-default-0' keys={['alt']}>Alt</Kbd>
+            <span>+ 滚轮缩放</span>
+          </div>
+          <div className='flex gap-1 items-center'>
+            <span>滚轮 Y 轴滚动</span>
+          </div>
+        </div>
+      )}
+
+      {/* 调试状态面板 - 右下角 */}
+      {showDebugInfo && (
+        <div className='flex flex-col absolute right-4 bottom-4 z-10 p-4 gap-1.5 text-sm bg-default-0/50 backdrop-blur-sm rounded-tl-3xl'>
+          <div className='mb-1 font-semibold'>调试状态</div>
+          <div className='flex gap-1 items-center'>
+            <Kbd className='bg-default-0' keys={['space']}>Space</Kbd>
+            <span className={isSpacePressed ? 'text-success' : 'text-default-500'}>
+              {isSpacePressed ? '已按下' : '未按下'}
             </span>
-            {isCapturing && (
-              <span className='text-xs text-blue-600 animate-pulse'>
-                正在截图...
-              </span>
-            )}
+          </div>
+          <div className='flex gap-1 items-center'>
+            <Kbd className='bg-default-0' keys={['alt']}>Alt</Kbd>
+            <span className={isAltPressed ? 'text-success' : 'text-default-500'}>
+              {isAltPressed ? '已按下' : '未按下'}
+            </span>
+          </div>
+          <div className='flex gap-1 items-center'>
+            <span>拖拽:</span>
+            <span className={isDragging ? 'font-semibold text-success' : 'text-default-500'}>
+              {isDragging ? '进行中' : '未激活'}
+            </span>
+          </div>
+          <div className='flex gap-1 items-center'>
+            <span>光标:</span>
+            <span className='text-primary'>{getCursorStyle()}</span>
+          </div>
+          <div className='flex gap-1 items-center'>
+            <span>选择:</span>
+            <span className='text-primary'>{getUserSelectStyle()}</span>
           </div>
         </div>
-      </CardHeader>
+      )}
 
-      <CardBody className='overflow-hidden relative flex-1 p-0'>
-        {/* 快捷键提示 */}
-        {showShortcuts && (
-          <div className='flex flex-col absolute p-4 z-10 gap-1.5 text-sm bg-default-0/50 backdrop-blur-sm rounded-br-3xl'>
-            <div className='flex gap-1 items-center'>
-              <Kbd className='bg-default-0' keys={['space']}>Space</Kbd>
-              <span>+ 拖拽移动</span>
-            </div>
-            <div className='flex gap-1 items-center'>
-              <Kbd className='bg-default-0' keys={['alt']}>Alt</Kbd>
-              <span>+ 滚轮缩放</span>
-            </div>
-            <div className='flex gap-1 items-center'>
-              <span>滚轮 Y 轴滚动</span>
-            </div>
-          </div>
-        )}
-
-        {/* 调试状态面板 - 右下角 */}
-        {showDebugInfo && (
-          <div className='flex flex-col absolute right-4 bottom-4 z-10 p-4 gap-1.5 text-sm bg-default-0/50 backdrop-blur-sm rounded-tl-3xl'>
-            <div className='mb-1 font-semibold'>调试状态</div>
-            <div className='flex gap-1 items-center'>
-              <Kbd className='bg-default-0' keys={['space']}>Space</Kbd>
-              <span className={isSpacePressed ? 'text-success' : 'text-default-500'}>
-                {isSpacePressed ? '已按下' : '未按下'}
-              </span>
-            </div>
-            <div className='flex gap-1 items-center'>
-              <Kbd className='bg-default-0' keys={['alt']}>Alt</Kbd>
-              <span className={isAltPressed ? 'text-success' : 'text-default-500'}>
-                {isAltPressed ? '已按下' : '未按下'}
-              </span>
-            </div>
-            <div className='flex gap-1 items-center'>
-              <span>拖拽:</span>
-              <span className={isDragging ? 'font-semibold text-success' : 'text-default-500'}>
-                {isDragging ? '进行中' : '未激活'}
-              </span>
-            </div>
-            <div className='flex gap-1 items-center'>
-              <span>光标:</span>
-              <span className='text-primary'>{getCursorStyle()}</span>
-            </div>
-            <div className='flex gap-1 items-center'>
-              <span>选择:</span>
-              <span className='text-primary'>{getUserSelectStyle()}</span>
-            </div>
-          </div>
-        )}
-
-        {/* 预览容器 */}
+      {/* 预览容器 */}
+      <div
+        ref={previewContainerRef}
+        className={`overflow-hidden relative w-full h-full ${isPanelDarkMode ? 'bg-default-900' : 'bg-default-100'}`}
+        style={{ 
+          cursor: getCursorStyle(),
+          userSelect: getUserSelectStyle() as any
+        }}
+      >
+        {/* 网格背景 */}
+        {/* 网格背景 - 使用主题色 */}
         <div
-          ref={previewContainerRef}
-          className='overflow-hidden relative w-full h-full bg-default-0'
-          style={{ 
-            cursor: getCursorStyle(),
-            userSelect: getUserSelectStyle() as any
+          className={'absolute inset-0 opacity-50'}
+          style={{
+            backgroundImage: isPanelDarkMode
+              ? `repeating-linear-gradient(0deg, hsl(var(--heroui-default-50) / 0.3) 0px, transparent 1px, transparent 20px),
+                 repeating-linear-gradient(90deg, hsl(var(--heroui-default-50) / 0.3) 0px, transparent 1px, transparent 20px)`
+              : `repeating-linear-gradient(0deg, hsl(var(--heroui-default-900) / 0.5) 0px, transparent 1px, transparent 20px),
+                 repeating-linear-gradient(90deg, hsl(var(--heroui-default-900) / 0.5) 0px, transparent 1px, transparent 20px)`,
+            pointerEvents: 'none'
           }}
+        />
+
+        {/* 实际渲染的组件 */}
+        <div
+          ref={previewContentRef}
+          className='absolute'
+          style={previewContentStyle}
         >
-          {/* 网格背景 */}
-          <div
-            className='absolute inset-0 opacity-30'
+          <div 
+            ref={componentRendererRef} 
+            className={`${data?.useDarkTheme ? 'dark' : ''} rounded-4xl overflow-hidden shadow-2xl`}
             style={{
-              backgroundImage: `
-                linear-gradient(rgba(0,0,0,0.25) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,0,0,0.25) 1px, transparent 1px)
-              `,
-              backgroundSize: '20px 20px',
-              pointerEvents: 'none'
+              userSelect: 'text',
+              WebkitUserSelect: 'text',
+              cursor: 'auto'
             }}
-          />
-
-          {/* 实际渲染的组件 */}
-          <div
-            ref={previewContentRef}
-            className='absolute'
-            style={previewContentStyle}
           >
-            <div 
-              ref={componentRendererRef} 
-              className={data?.useDarkTheme ? 'dark' : ''}
-              style={{
-                userSelect: 'text',
-                WebkitUserSelect: 'text',
-                cursor: 'auto'
-              }}
-            >
-              <ComponentRenderer
-                {...componentRendererProps}
-              />
-            </div>
-            
+            <ComponentRenderer
+              {...componentRendererProps}
+            />
           </div>
-
-          {/* 滚动条已隐藏，但保留滚动功能 */}
+          
         </div>
-      </CardBody>
-    </Card>
+
+        {/* 滚动条已隐藏，但保留滚动功能 */}
+      </div>
+    </div>
   )
 })
 

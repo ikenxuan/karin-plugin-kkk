@@ -15,6 +15,8 @@ interface DataFileSelectorProps {
   onRefreshFiles?: () => void
   /** 编辑当前数据回调 */
   onEdit?: () => void
+  /** 是否深色模式 */
+  isDarkMode?: boolean
 }
 
 /**
@@ -25,7 +27,8 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
   selectedDataFile,
   onDataFileChange,
   onRefreshFiles,
-  onEdit
+  onEdit,
+  isDarkMode = false
 }) => {
 
   /**
@@ -64,16 +67,16 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
 
   return (
     <>
-      <Card className='w-full'>
-        <CardHeader className='pb-2'>
+      <Card className='w-full bg-content2/60 backdrop-blur-md border border-divider shadow-sm' shadow='none'>
+        <CardHeader className='pb-2 pt-2.5'>
           <div className='flex gap-2 items-center'>
-            <FileText className='w-4 h-4' />
-            <h3 className='text-lg font-semibold'>数据文件</h3>
+            <FileText className='w-4 h-4 text-foreground-600' />
+            <h3 className='text-sm font-semibold text-foreground'>数据文件</h3>
           </div>
         </CardHeader>
-        <CardBody className='pt-0 space-y-3'>
+        <CardBody className='pt-0 space-y-2.5 px-3 pb-3'>
           {/* 文件选择器 */}
-          <div className='flex gap-2 items-end'>
+          <div className='flex flex-col gap-2.5'>
             <Select
               label='选择数据文件'
               placeholder='选择预设数据'
@@ -88,31 +91,32 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
               size='sm'
               variant='bordered'
               classNames={{
-                trigger: 'bg-white border-gray-300 text-gray-900 data-[hover=true]:border-gray-400',
-                value: 'text-gray-900',
-                listbox: 'bg-white',
-                popoverContent: 'bg-white border border-gray-200'
+                label: 'text-xs font-semibold text-foreground-500 uppercase tracking-wide',
+                trigger: 'bg-content3/50 border-divider hover:border-default-300 hover:bg-content3 transition-colors duration-200',
+                value: 'text-sm text-foreground font-medium'
+              }}
+              popoverProps={{
+                classNames: {
+                  content: isDarkMode ? 'dark bg-content1' : 'bg-content1'
+                }
               }}
             >
               {availableDataFiles.map((filename) => (
-                <SelectItem
-                  key={filename}
-                  className='text-gray-900 data-[hover=true]:bg-gray-100 data-[selected=true]:bg-blue-50'
-                >
+                <SelectItem key={filename} className='text-foreground'>
                   {formatFileName(filename)}
                 </SelectItem>
               ))}
             </Select>
             <Button
-              isIconOnly
               color="primary"
               variant="flat"
               onPress={onEdit}
-              size="lg"
-              className="h-12 w-12 min-w-12 rounded-medium z-10 relative"
+              size="sm"
+              startContent={<Edit className="w-3.5 h-3.5" />}
+              className="w-full transition-colors duration-200 cursor-pointer"
               title="编辑当前数据"
             >
-              <Edit className="w-5 h-5" />
+              编辑数据
             </Button>
           </div>
         </CardBody>

@@ -1,6 +1,6 @@
 packages:
   - packages/*
-  - packages/amagi/packages/*
+  - packages/amagi/packages/core
   - '!packages/next-web'
 
 onlyBuiltDependencies:

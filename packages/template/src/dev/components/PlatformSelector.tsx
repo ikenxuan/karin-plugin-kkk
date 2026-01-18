@@ -31,32 +31,27 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
   const currentPlatformConfig = getPlatformConfig(selectedPlatform)
 
   return (
-    <Card className='w-full'>
-      <CardHeader className="pb-2">
+    <Card className='w-full bg-content1/60 backdrop-blur-md border border-divider shadow-sm' shadow='none'>
+      <CardHeader className="pb-2 pt-2.5">
         <div className='flex gap-2 items-center'>
-          <Settings className='w-4 h-4' />
-          <h3 className='text-lg font-semibold'>平台与组件</h3>
+          <Settings className='w-4 h-4 text-foreground-600' />
+          <h3 className='text-sm font-semibold text-foreground'>平台与组件</h3>
         </div>
       </CardHeader>
-      <CardBody className='pt-0 space-y-3'>
-        {/* 平台选择 - 响应式网格布局 */}
+      <CardBody className='pt-0 space-y-3 px-3 pb-3'>
+        {/* 平台选择 */}
         <div>
-          <label className='block mb-2 text-sm font-medium text-gray-700'>选择平台</label>
-          <div 
-            className='grid gap-2'
-            style={{
-              gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))'
-            }}
-          >
+          <label className='block mb-2 px-1 text-xs font-semibold text-foreground-500 uppercase tracking-wide'>平台</label>
+          <div className='grid grid-cols-2 gap-2'>
             {componentConfigs.map(config => (
               <label
                 key={config.type}
                 className={`
-                  flex items-center justify-start cursor-pointer rounded-lg gap-2 px-3 py-2.5 min-h-13
-                  border-2 transition-all duration-150 active:scale-[0.98]
+                  flex items-center justify-start cursor-pointer rounded-lg gap-2 px-3 py-2
+                  border transition-all duration-200
                   ${selectedPlatform === config.type 
-                ? 'border-primary bg-blue-50 shadow-sm' 
-                : 'border-gray-200 bg-white hover:bg-gray-50'
+                ? 'border-primary bg-primary/10 shadow-sm' 
+                : 'border-divider bg-content3/50 hover:bg-content3 hover:border-default-300'
               }
                 `}
                 onClick={() => {
@@ -73,9 +68,9 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
                   value={config.type}
                   checked={selectedPlatform === config.type}
                   onChange={() => {}}
-                  className='w-4 h-4 text-primary shrink-0'
+                  className='w-3.5 h-3.5 text-primary shrink-0 cursor-pointer'
                 />
-                <span className='flex-1 text-sm font-medium leading-snug wrap-break-word'>{config.name}</span>
+                <span className='flex-1 text-sm font-medium leading-tight text-foreground'>{config.name}</span>
               </label>
             ))}
           </div>
@@ -83,25 +78,20 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
 
         {/* 组件选择 */}
         <div>
-          <label className='block mb-2 text-sm font-medium text-gray-700'>选择组件</label>
-          <div className='overflow-y-auto max-h-64 scrollbar-hide'>
-            <div 
-              className='grid gap-2'
-              style={{
-                gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))'
-              }}
-            >
+          <label className='block mb-2 px-1 text-xs font-semibold text-foreground-500 uppercase tracking-wide'>组件</label>
+          <div className='overflow-y-auto max-h-[calc(100vh-450px)] scrollbar-hide'>
+            <div className='grid grid-cols-2 gap-2'>
               {currentPlatformConfig?.components
                 .filter(component => component.enabled)
                 .map(component => (
                   <label
                     key={component.id}
                     className={`
-                      flex items-center justify-start cursor-pointer rounded-lg gap-2 px-3 py-2.5 min-h-13
-                      border-2 transition-all duration-150 active:scale-[0.98]
+                      flex items-center justify-start cursor-pointer rounded-lg gap-2 px-3 py-2
+                      border transition-all duration-200
                       ${selectedTemplate === component.id 
-                    ? 'border-primary bg-blue-50 shadow-sm' 
-                    : 'border-gray-200 bg-white hover:bg-gray-50'
+                    ? 'border-primary bg-primary/10 shadow-sm' 
+                    : 'border-divider bg-content3/50 hover:bg-content3 hover:border-default-300'
                   }
                     `}
                     onClick={() => onTemplateChange(component.id)}
@@ -112,9 +102,9 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
                       value={component.id}
                       checked={selectedTemplate === component.id}
                       onChange={() => {}}
-                      className='w-4 h-4 text-primary shrink-0'
+                      className='w-3.5 h-3.5 text-primary shrink-0 cursor-pointer'
                     />
-                    <span className='flex-1 text-sm font-medium leading-snug wrap-break-word'>{component.name}</span>
+                    <span className='flex-1 text-sm font-medium leading-tight text-foreground'>{component.name}</span>
                   </label>
                 ))}
             </div>
