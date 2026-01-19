@@ -36,13 +36,49 @@ export const captureScreenshot = async (options: ScreenshotOptions): Promise<Scr
   console.log('开始使用 SnapDOM 截图...')
 
   try {
+    // 找到实际要截图的内容元素（.shadow-2xl 容器）
+    const actualContent = element.querySelector('.shadow-2xl') as HTMLElement
+    const targetElement = actualContent || element
+    
     // 获取元素实际尺寸
-    const rect = element.getBoundingClientRect()
-    console.log(`元素尺寸: ${rect.width}x${rect.height}`)
+    const rect = targetElement.getBoundingClientRect()
+    console.log(`截图目标尺寸: ${rect.width}x${rect.height}`)
+
+    // 临时处理空元素，防止 snapdom 忽略它们的高度
+    const emptyElements: Array<{ 
+      element: HTMLElement
+      originalHTML: string
+      computedHeight: string
+    }> = []
+    
+    const allElements = targetElement.querySelectorAll('*')
+    allElements.forEach((el) => {
+      const htmlEl = el as HTMLElement
+      
+      // 检查是否是空元素（没有子元素且没有文本内容）
+      if (htmlEl.children.length === 0 && !htmlEl.textContent?.trim()) {
+        const computedStyle = window.getComputedStyle(htmlEl)
+        const height = computedStyle.height
+        
+        // 如果元素有明确的高度（不是 auto 或 0px）
+        if (height && height !== 'auto' && height !== '0px') {
+          emptyElements.push({
+            element: htmlEl,
+            originalHTML: htmlEl.innerHTML,
+            computedHeight: height
+          })
+          
+          // 添加一个透明的占位元素，保持高度
+          htmlEl.innerHTML = `<div style="height: ${height}; width: 100%; opacity: 0; pointer-events: none;"></div>`
+        }
+      }
+    })
+
+    console.log(`处理了 ${emptyElements.length} 个空元素`)
 
     // 使用 SnapDOM 进行截图
-    const result = await snapdom(element, {
-      // 明确设置宽度为 1440px
+    const result = await snapdom(targetElement, {
+      // 使用元素的实际宽度
       width: 1440,
       // 保留外部 transform（包括 scale）
       outerTransforms: false,
@@ -54,6 +90,11 @@ export const captureScreenshot = async (options: ScreenshotOptions): Promise<Scr
       placeholders: true,
       // 输出类型为 PNG
       type: 'png'
+    })
+
+    // 恢复空元素的原始内容
+    emptyElements.forEach(({ element, originalHTML }) => {
+      element.innerHTML = originalHTML
     })
 
     console.log('截图完成')

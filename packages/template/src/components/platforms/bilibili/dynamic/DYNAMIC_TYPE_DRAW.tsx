@@ -11,7 +11,7 @@ import type {
   BilibiliDynamicUserInfoProps
 } from '../../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
-import { CommentText, EnhancedImage } from '../shared'
+import { CommentText, DecorationCard, EnhancedImage } from '../shared'
 import { BilibiliAdditionalCard } from './AdditionalCard'
 
 /**
@@ -46,7 +46,7 @@ const BilibiliDynamicUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
       </div>
       {props.decoration_card && (
         <div className='pl-40'>
-          <div dangerouslySetInnerHTML={{ __html: props.decoration_card }} />
+          <DecorationCard html={props.decoration_card} />
         </div>
       )}
     </div>

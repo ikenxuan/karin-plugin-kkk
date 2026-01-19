@@ -1,5 +1,4 @@
-import { Slider, Tooltip } from '@heroui/react'
-import { Camera, Palette, RefreshCw } from 'lucide-react'
+import { Camera, RefreshCw } from 'lucide-react'
 import React from 'react'
 import { MdFitScreen } from 'react-icons/md'
 import { Group, Panel, Separator } from 'react-resizable-panels'
@@ -102,10 +101,7 @@ export const App: React.FC = () => {
   const [availableDataFiles, setAvailableDataFiles] = React.useState<string[]>([])
   const [selectedDataFile, setSelectedDataFile] = React.useState<string>(urlParams.dataFile || 'default.json')
   const [isCapturing, setIsCapturing] = React.useState(false)
-  const [showHints, setShowHints] = React.useState(() => {
-    const saved = localStorage.getItem('dev-show-hints')
-    return saved !== null ? saved === 'true' : true
-  })
+
   const [screenshotResult, setScreenshotResult] = React.useState<{ blob: Blob; download: () => void; copyToClipboard: () => Promise<void> } | null>(null)
   const [isScreenshotModalOpen, setIsScreenshotModalOpen] = React.useState(false)
   const [isEditorOpen, setIsEditorOpen] = React.useState(false)
@@ -113,11 +109,6 @@ export const App: React.FC = () => {
     const saved = localStorage.getItem('dev-panel-dark-mode')
     return saved !== null ? saved === 'true' : false
   })
-
-  // 保存设置到 localStorage
-  React.useEffect(() => {
-    localStorage.setItem('dev-show-hints', String(showHints))
-  }, [showHints])
 
   // 保存深色模式设置
   React.useEffect(() => {
@@ -402,67 +393,71 @@ export const App: React.FC = () => {
   return (
     <>
       <div className='flex h-screen bg-background'>
-        {/* 左侧垂直工具栏 - 64px */}
-        <div className={`w-16 bg-content1/95 backdrop-blur-xl shrink-0 flex flex-col items-center py-4 gap-2 border-r border-divider ${isDarkMode ? 'dark' : ''}`}>
+        {/* 左侧垂直工具栏 */}
+        <div 
+          className={`w-16 bg-content1/95 backdrop-blur-xl shrink-0 flex flex-col items-center py-6 border-r border-divider ${isDarkMode ? 'dark' : ''}`}
+        >
           {/* Logo 区域 */}
-          <div className='flex flex-col items-center gap-3 pb-3'>
-            <div className='p-2 rounded-xl bg-linear-to-br from-primary/20 to-primary/5 shadow-sm'>
-              <Palette className='w-6 h-6 text-primary' />
-            </div>
+          <div className='flex flex-col items-center gap-2 mb-6'>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 230 221"
+              className="w-10 h-10 text-foreground"
+            >
+              <path
+                d="M132.75,87.37l-53.72-53.37c-4.66-4.63-1.38-12.58,5.18-12.58h115.13c6.57,0,9.84,7.95,5.18,12.58l-53.72,53.37c-4.99,4.96-13.06,4.96-18.05,0Z"
+                fill="currentColor"
+              />
+              <path
+                d="M28.49,186.89l.03-51.42c-.02-6.57,7.92-9.87,12.56-5.23l57.02,57.02c4.64,4.64,1.34,12.41-5.23,12.39h-51.42c-7.04-.02-12.94-5.72-12.96-12.76Z"
+                fill="currentColor"
+              />
+              <path
+                d="M41.54,23.68l163.04,163.05c4.78,4.78,1.39,12.95-5.36,12.94h-47.88c-9.69,0-18.99-3.86-25.84-10.71L39.3,102.75c-6.85-6.85-10.7-16.15-10.7-25.84V29.04c0-6.76,8.16-10.14,12.94-5.36Z"
+                fill="currentColor"
+              />
+            </svg>
           </div>
         
-          <div className='w-10 h-px bg-divider/60' />
-        
-          {/* 操作区域 */}
-          <div className='flex flex-col items-center gap-2 py-2'>
-            <Tooltip content='重载组件' placement='right' delay={300}>
-              <button
-                onClick={() => loadData(selectedDataFile)}
-                className='p-2.5 rounded-xl hover:bg-default-100 active:scale-95 transition-all duration-200 group'
-              >
-                <RefreshCw className='w-5 h-5 text-foreground-600 group-hover:text-primary transition-colors' />
-              </button>
-            </Tooltip>
-          </div>
-        
-          <div className='w-10 h-px bg-divider/60' />
-        
-          {/* 设置区域 */}
-          <div className='flex flex-col items-center gap-2 py-2'>
-            <Tooltip content={showHints ? '隐藏提示' : '显示提示'} placement='right' delay={300}>
-              <button
-                onClick={() => setShowHints(!showHints)}
-                className={`p-2.5 rounded-xl active:scale-95 transition-all duration-200 ${
-                  showHints 
-                    ? 'bg-primary/15 text-primary shadow-sm' 
-                    : 'hover:bg-default-100 text-foreground-600'
-                }`}
-              >
-                <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
+          <div className='w-10 h-px bg-divider mb-6' />
+
+          {/* 面板深色模式切换 */}
+          <div className='flex flex-col items-center gap-2 mb-4'>
+            <button
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className='p-2 active:scale-95 transition-all duration-200 group'
+            >
+              {isDarkMode ? (
+                <svg className='w-6 h-6 text-foreground-400 group-hover:text-warning transition-colors' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' />
                 </svg>
-              </button>
-            </Tooltip>
-        
-            <Tooltip content={isDarkMode ? '切换浅色面板' : '切换深色面板'} placement='right' delay={300}>
-              <button
-                onClick={() => setIsDarkMode(!isDarkMode)}
-                className='p-2.5 rounded-xl hover:bg-default-100 active:scale-95 transition-all duration-200 group'
-              >
-                {isDarkMode ? (
-                  <svg className='w-5 h-5 text-foreground-600 group-hover:text-warning transition-colors' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' />
-                  </svg>
-                ) : (
-                  <svg className='w-5 h-5 text-foreground-600 group-hover:text-primary transition-colors' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' />
-                  </svg>
-                )}
-              </button>
-            </Tooltip>
+              ) : (
+                <svg className='w-6 h-6 text-foreground-400 group-hover:text-primary transition-colors' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' />
+                </svg>
+              )}
+            </button>
+            <span className='text-xs font-medium text-foreground-500'>面板</span>
           </div>
         
+          {/* 占位 */}
           <div className='flex-1' />
+
+          {/* GitHub 链接 */}
+          <div className='flex flex-col items-center gap-2'>
+            <a
+              href='https://github.com/ikenxuan/karin-plugin-kkk'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='p-2 active:scale-95 transition-all duration-200 group'
+              title='GitHub 仓库'
+            >
+              <svg className='w-6 h-6 text-foreground-400 group-hover:text-foreground-600 transition-colors' viewBox='0 0 24 24' fill='currentColor'>
+                <path d='M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z' />
+              </svg>
+            </a>
+            <span className='text-[9px] font-medium text-foreground-500 text-center leading-tight'>GitHub</span>
+          </div>
         </div>
 
 
@@ -568,75 +563,66 @@ export const App: React.FC = () => {
             <Separator />
 
             {/* 中间垂直工具栏 */}
-            <div className={`w-16 bg-content1/95 backdrop-blur-xl shrink-0 flex flex-col items-center py-4 gap-2 border-r border-divider ${isDarkMode ? 'dark' : ''}`}>
+            <div className={`w-16 bg-content1/95 backdrop-blur-xl shrink-0 flex flex-col items-center py-8 gap-6 border-r border-divider ${isDarkMode ? 'dark' : ''}`}>
               {/* 工具区域 */}
-              <div className='flex flex-col items-center gap-2 py-2'>
-                <Tooltip content='截图' placement='right' delay={300}>
+              <div className='flex flex-col items-center gap-6'>
+                {/* 重载组件按钮 */}
+                <div className='flex flex-col items-center gap-2'>
+                  <button
+                    onClick={() => loadData(selectedDataFile)}
+                    className='p-2 active:scale-95 transition-all duration-200 group'
+                  >
+                    <RefreshCw className='w-6 h-6 text-foreground-400 group-hover:text-primary transition-colors' />
+                  </button>
+                  <span className='text-xs font-medium text-foreground-500'>重载</span>
+                </div>
+
+                {/* 截图按钮 */}
+                <div className='flex flex-col items-center gap-2'>
                   <button
                     onClick={handleCapture}
                     disabled={isCapturing}
-                    className='p-2.5 rounded-xl hover:bg-default-100 active:scale-95 transition-all duration-200 group disabled:opacity-50 disabled:cursor-not-allowed'
+                    className='p-2 active:scale-95 transition-all duration-200 group disabled:opacity-50 disabled:cursor-not-allowed'
                   >
-                    <Camera className='w-5 h-5 text-foreground-600 group-hover:text-success transition-colors' />
+                    <Camera className='w-6 h-6 text-foreground-400 group-hover:text-success transition-colors' />
                   </button>
-                </Tooltip>
+                  <span className='text-xs font-medium text-foreground-500'>截图</span>
+                </div>
             
-                <Tooltip content='适应画布' placement='right' delay={300}>
+                {/* 适应画布按钮 */}
+                <div className='flex flex-col items-center gap-2'>
                   <button
                     onClick={() => previewPanelRef.current?.fitToCanvas()}
-                    className='p-2.5 rounded-xl hover:bg-default-100 active:scale-95 transition-all duration-200 group'
+                    className='p-2 active:scale-95 transition-all duration-200 group'
                   >
-                    <MdFitScreen className='w-5 h-5 text-foreground-600 group-hover:text-primary transition-colors' />
+                    <MdFitScreen className='w-6 h-6 text-foreground-400 group-hover:text-primary transition-colors' />
                   </button>
-                </Tooltip>
-              </div>
-            
-              <div className='w-10 h-px bg-divider/60' />
-            
-              {/* 主题区域 */}
-              <div className='flex flex-col items-center gap-2 py-2'>
-                <Tooltip content={templateData?.useDarkTheme ? '组件浅色模式' : '组件深色模式'} placement='right' delay={300}>
-                  <button
-                    onClick={() => handleThemeChange(!templateData?.useDarkTheme)}
-                    className={`p-2.5 rounded-xl active:scale-95 transition-all duration-200 ${
-                      templateData?.useDarkTheme
-                        ? 'bg-primary/15 text-primary shadow-sm'
-                        : 'hover:bg-default-100 text-foreground-600'
-                    }`}
-                  >
-                    {templateData?.useDarkTheme ? (
-                      <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' />
-                      </svg>
-                    ) : (
-                      <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' />
-                      </svg>
-                    )}
-                  </button>
-                </Tooltip>
-              </div>
-
-              <div className='w-10 h-px bg-divider/60' />
-
-              {/* 缩放控制区域 */}
-              <div className='flex flex-col items-center gap-3 py-4'>
-                <span className='text-xs font-semibold text-foreground-600 tabular-nums bg-default-100 px-2 py-1 rounded-lg'>
-                  {Math.round(scale * 100)}%
-                </span>
-                <div className='h-84 flex items-center'>
-                  <Slider
-                    orientation='vertical'
-                    size='sm'
-                    color='primary'
-                    step={1}
-                    maxValue={500}
-                    minValue={10}
-                    value={scale * 100}
-                    onChange={(value) => setScale((Array.isArray(value) ? value[0] : value) / 100)}
-                    className='h-full'
-                  />
+                  <span className='text-xs font-medium text-foreground-500'>适应</span>
                 </div>
+              </div>
+            
+              {/* 分隔线 */}
+              <div className='w-12 h-px bg-divider' />
+            
+              {/* 主题切换 */}
+              <div className='flex flex-col items-center gap-2'>
+                <button
+                  onClick={() => handleThemeChange(!templateData?.useDarkTheme)}
+                  className='p-2 active:scale-95 transition-all duration-200 group'
+                >
+                  {templateData?.useDarkTheme ? (
+                    <svg className='w-6 h-6 text-primary group-hover:text-primary/80 transition-colors' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' />
+                    </svg>
+                  ) : (
+                    <svg className='w-6 h-6 text-foreground-400 group-hover:text-foreground-600 transition-colors' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' />
+                    </svg>
+                  )}
+                </button>
+                <span className='text-xs font-medium text-foreground-500'>
+                  {templateData?.useDarkTheme ? '浅色' : '深色'}
+                </span>
               </div>
             </div>
 
@@ -652,8 +638,6 @@ export const App: React.FC = () => {
                 scale={scale}
                 onScaleChange={setScale}
                 onComponentLoadComplete={handleComponentLoadComplete}
-                showShortcuts={showHints}
-                showDebugInfo={showHints}
                 isPanelDarkMode={isDarkMode}
               />
             </Panel>

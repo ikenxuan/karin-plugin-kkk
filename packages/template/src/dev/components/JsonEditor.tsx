@@ -285,6 +285,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
                   <div className='flex items-center gap-2'>
                     <FileJson className='w-3.5 h-3.5 text-warning' />
                     <Select
+                      aria-label="选择数据文件"
                       placeholder='选择数据文件'
                       selectedKeys={selectedDataFile ? [selectedDataFile] : []}
                       onSelectionChange={(keys) => {
@@ -422,7 +423,8 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
                 readOnly: readonly,
                 scrollBeyondLastLine: false,
                 automaticLayout: true,
-                padding: { top: 16, bottom: 16 }
+                padding: { top: 16, bottom: 16 },
+                ariaLabel: 'JSON 编辑器'
               }}
             />
           </div>

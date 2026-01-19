@@ -4,7 +4,7 @@ import path, { resolve } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 
 import tailwindcss from '@tailwindcss/vite'
-import { DevTools } from '@vitejs/devtools'
+// import { DevTools } from '@vitejs/devtools'
 import reactSwc from '@vitejs/plugin-react-swc'
 import { codeInspectorPlugin } from 'code-inspector-plugin'
 import { defineConfig } from 'vite'
@@ -47,10 +47,17 @@ export default defineConfig(({ command }) => {
   // 基础配置
   const baseConfig = {
     plugins: [
-      DevTools(),
+      // DevTools 仅在需要时启用，避免 Vue 警告
+      // DevTools(),
       codeInspectorPlugin({
         bundler: 'vite',
-        showSwitch: true
+        showSwitch: true,
+        hotKeys: ['shiftKey', 'altKey'],
+        exclude: [
+          // 排除左侧工具栏和中间工具栏，避免被检查器检测
+          /App\.tsx.*左侧垂直工具栏/,
+          /App\.tsx.*中间垂直工具栏/
+        ]
       }),
       reactSwc({
         devTarget: 'es2022'
@@ -82,7 +89,11 @@ export default defineConfig(({ command }) => {
         port: 5174
       },
       define: {
-        __DEV__: true
+        __DEV__: true,
+        // Vue feature flags (消除警告)
+        __VUE_OPTIONS_API__: true,
+        __VUE_PROD_DEVTOOLS__: false,
+        __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false
       },
       build: {
         sourcemap: true

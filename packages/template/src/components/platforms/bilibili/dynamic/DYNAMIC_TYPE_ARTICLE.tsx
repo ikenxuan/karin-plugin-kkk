@@ -3,7 +3,7 @@ import React, { type JSX } from 'react'
 
 import type { BilibiliArticleDynamicProps } from '../../../../types/platforms/bilibili/dynamic/article'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
-import { CommentText, EnhancedImage } from '../shared'
+import { CommentText, DecorationCard, EnhancedImage } from '../shared'
 
 /**
  * 获取字体级别对应的样式类名
@@ -393,7 +393,7 @@ const BilibiliArticleUserInfo: React.FC<BilibiliArticleDynamicProps> = React.mem
       </div>
       {props.data.decoration_card && (
         <div className='pl-40'>
-          <div dangerouslySetInnerHTML={{ __html: props.data.decoration_card.card_url }} />
+          <DecorationCard html={props.data.decoration_card.card_url} />
         </div>
       )}
     </div>

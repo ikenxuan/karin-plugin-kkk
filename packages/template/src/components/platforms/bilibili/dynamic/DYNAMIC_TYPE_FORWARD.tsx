@@ -48,7 +48,7 @@ const BilibiliForwardUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
       </div>
       {props.decoration_card && (
         <div className='pl-40'>
-          <div dangerouslySetInnerHTML={{ __html: props.decoration_card }} />
+          <DecorationCard html={props.decoration_card} />
         </div>
       )}
     </div>

@@ -468,6 +468,9 @@ importers:
       react-resizable-panels:
         specifier: ^4.4.1
         version: 4.4.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react-zoom-pan-pinch:
+        specifier: ^3.7.0
+        version: 3.7.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       rehype-highlight:
         specifier: ^7.0.2
         version: 7.0.2
