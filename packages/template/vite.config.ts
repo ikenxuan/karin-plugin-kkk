@@ -5,7 +5,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 import tailwindcss from '@tailwindcss/vite'
 import { DevTools } from '@vitejs/devtools'
-import react from '@vitejs/plugin-react'
+import reactSwc from '@vitejs/plugin-react-swc'
 import { codeInspectorPlugin } from 'code-inspector-plugin'
 import { defineConfig } from 'vite'
 import checker from 'vite-plugin-checker'
@@ -48,7 +48,13 @@ export default defineConfig(({ command }) => {
   const baseConfig = {
     plugins: [
       DevTools(),
-      react(),
+      codeInspectorPlugin({
+        bundler: 'vite',
+        showSwitch: true
+      }),
+      reactSwc({
+        devTarget: 'es2022'
+      }),
       tailwindcss()
     ],
     resolve: {
@@ -68,10 +74,6 @@ export default defineConfig(({ command }) => {
         checker({
           // e.g. use TypeScript check
           typescript: true
-        }),
-        codeInspectorPlugin({
-          bundler: 'vite',
-          showSwitch: true
         })
       ],
       root: path.resolve(__dirname, './src/dev'),

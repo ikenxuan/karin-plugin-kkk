@@ -648,7 +648,6 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
     transform: `translate(-50%, -50%) translate(${panOffset.x}px, ${panOffset.y}px) scale(${scale})`,
     transformOrigin: 'center',
     transition: dragEasing ? 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'transform 0.1s ease-out',
-    width: '1440px',
     pointerEvents: 'auto'
   } as React.CSSProperties), [panOffset.x, panOffset.y, scale, dragEasing])
 
@@ -787,7 +786,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
         >
           <div 
             ref={componentRendererRef} 
-            className={`${data?.useDarkTheme ? 'dark' : ''} rounded-4xl overflow-hidden shadow-2xl`}
+            className={`${data?.useDarkTheme ? 'dark' : ''}`}
             style={{
               userSelect: 'text',
               WebkitUserSelect: 'text',

@@ -1,3 +1,4 @@
+import { Spinner } from '@heroui/react'
 import React from 'react'
 
 import { getComponentConfig } from '../../config/config'
@@ -43,11 +44,16 @@ class ComponentErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className='flex justify-center items-center h-full text-default-50'>
-          <div className='text-center'>
-            <div className='text-lg font-semibold mb-2'>数据加载中...</div>
-            <div className='text-sm'>
-              {this.state.error?.message}
+        <div className="flex justify-center items-center min-h-screen p-8">
+          <div className="w-full max-w-[600px] rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
+            <div className="text-7xl text-warning">
+              ⚡
+            </div>
+            <div className="text-2xl font-semibold text-warning">
+              组件渲染错误
+            </div>
+            <div className="text-base text-center text-default-500 wrap-break-word">
+              {this.state.error?.message || '未知错误'}
             </div>
           </div>
         </div>
@@ -72,13 +78,18 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
   onLoadComplete
 }) => {
   /**
-   * 渲染加载中状态
+   * 渲染优雅的加载状态
    * @param message 加载消息
    * @returns JSX元素
    */
   const renderLoading = (message: string) => (
-    <div className='flex justify-center items-center h-full text-default-900'>
-      {message}
+    <div className="flex justify-center items-center min-h-screen p-8">
+      <div className="w-full max-w-[600px] rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
+        <Spinner size="lg" color="primary" />
+        <p className="text-2xl font-medium text-foreground">
+          {message}
+        </p>
+      </div>
     </div>
   )
 
@@ -89,18 +100,33 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
    * @returns JSX元素
    */
   const renderInDevelopment = (type: string, name: string) => (
-    <div className='flex justify-center items-center h-full text-6xl text-default-50'>
-      {type} {name} 开发中...
+    <div className="flex justify-center items-center min-h-screen p-8">
+      <div className="w-full max-w-[600px] rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
+        <div className="text-7xl text-default-400">
+          🚧
+        </div>
+        <p className="text-2xl font-semibold text-foreground">
+          {type} {name} 开发中
+        </p>
+        <p className="text-lg text-default-500">
+          敬请期待
+        </p>
+      </div>
     </div>
   )
 
   // 如果有加载错误，显示错误信息
   if (loadError) {
     return (
-      <div className='flex justify-center items-center h-full text-default-900'>
-        <div className='text-center max-w-2xl px-4'>
-          <div className='text-lg font-semibold mb-2 text-red-600'>数据加载失败</div>
-          <div className='text-sm text-default-600 wrap-break-word'>
+      <div className="flex justify-center items-center min-h-screen p-8">
+        <div className="w-full max-w-[600px] rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
+          <div className="text-7xl text-danger">
+            ⚠️
+          </div>
+          <div className="text-2xl font-semibold text-danger">
+            数据加载失败
+          </div>
+          <div className="text-base text-center text-default-500 wrap-break-word">
             {loadError.message}
           </div>
         </div>
@@ -229,12 +255,19 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
   return (
     <ComponentErrorBoundary>
       <React.Suspense fallback={
-        <div className='flex justify-center items-center h-full text-6xl text-default-900'>
-          加载{componentConfig.name}组件中...
+        <div className="flex justify-center items-center min-h-screen p-8">
+          <div className="w-full max-w-[600px] rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
+            <Spinner size="lg" color="primary" />
+            <p className="text-2xl font-medium text-foreground">
+              加载 {componentConfig.name} 组件中
+            </p>
+          </div>
         </div>
       }>
         <ComponentWrapper>
-          <LazyComponent {...commonProps} />
+          <div className="shadow-2xl rounded-[3rem] overflow-hidden">
+            <LazyComponent {...commonProps} />
+          </div>
         </ComponentWrapper>
       </React.Suspense>
     </ComponentErrorBoundary>
