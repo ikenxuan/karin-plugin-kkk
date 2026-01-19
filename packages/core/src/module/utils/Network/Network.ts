@@ -158,7 +158,13 @@ export class Network {
   }
 
   /** 获取最终地址（跟随重定向） */
-  async getLongLink (url = ''): Promise<string> {
+  async getLongLink (url = '', depth = 0): Promise<string> {
+    const MAX_REDIRECTS = 10
+    
+    if (depth > MAX_REDIRECTS) {
+      throw new Error(`重定向次数超过限制 (${MAX_REDIRECTS})`)
+    }
+
     const targetUrl = this.url || url
     try {
       new URL(targetUrl)
@@ -189,10 +195,22 @@ export class Network {
       } catch (error) {
         const axiosError = error as AxiosError
 
-        if (axiosError.response?.status === 302 && axiosError.response.headers?.location) {
-          const redirectUrl = axiosError.response.headers.location
-          logger.info(`检测到302重定向，目标地址: ${redirectUrl}`)
-          return await this.getLongLink(redirectUrl)
+        // 处理所有重定向状态码
+        const redirectStatuses = [301, 302, 303, 307, 308]
+        if (
+          axiosError.response?.status && 
+          redirectStatuses.includes(axiosError.response.status) &&
+          axiosError.response.headers?.location
+        ) {
+          const location = axiosError.response.headers.location
+          
+          // 处理相对路径重定向
+          const redirectUrl = location.startsWith('http') 
+            ? location 
+            : new URL(location, targetUrl).href
+          
+          logger.info(`检测到${axiosError.response.status}重定向 (深度: ${depth + 1}), 目标: ${redirectUrl}`)
+          return await this.getLongLink(redirectUrl, depth + 1)
         }
 
         if (method === 'head') {

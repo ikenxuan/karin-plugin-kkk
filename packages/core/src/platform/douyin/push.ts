@@ -274,6 +274,7 @@ export class DouYinpush extends Base {
 
             // 是否一同解析该新作品？
             if (Config.douyin.push.parsedynamic && status.message_id) {
+              logger.debug(`开始解析作品，类型为：${iddata.is_mp4 ? '视频' : '图集'}`)
               // 如果新作品是视频
               if (iddata.is_mp4) {
                 try {
@@ -286,6 +287,7 @@ export class DouYinpush extends Base {
                     分享链接：${logger.green(Detail_Data.share_url)}
                     `)
                   const videoObj = douyinProcessVideos(Detail_Data.video.bit_rate, Config.douyin.videoQuality)
+                  logger.debug('获取精确下载地址')
                   downloadUrl = await new Networks({
                     url: videoObj[0].play_addr.url_list[0],
                     headers: douyinBaseHeaders
