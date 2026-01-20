@@ -8,7 +8,6 @@ import {
   MajorType,
   Result
 } from '@ikenxuan/amagi'
-import { format, fromUnixTime } from 'date-fns'
 import type {
   AdapterType,
   ImageElement,
@@ -44,7 +43,8 @@ import {
   generateDecorationCard,
   getvideosize,
   parseAdditionalCard,
-  replacetext
+  replacetext,
+  TimeFormatter
 } from '@/platform/bilibili'
 import type { bilibiliPushItem } from '@/types/config/pushlist'
 
@@ -216,7 +216,7 @@ export class Bilibilipush extends Base {
                 dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
                 pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
                 share: Count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
-                create_time: format(fromUnixTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
+                create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
                 avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
                 frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
                 share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
@@ -226,7 +226,7 @@ export class Bilibilipush extends Base {
                 total_favorited: Count(userINFO.data.data.like_num),
                 following_count: Count(userINFO.data.data.card.attention),
                 decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decoration_card),
-                render_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+                render_time: TimeFormatter.now(),
                 imageLayout: Config.bilibili.imageLayout,
                 additional: parseAdditionalCard(data[dynamicId].Dynamic_Data.modules.module_dynamic.additional),
                 dynamicTYPE: '图文动态推送'
@@ -258,7 +258,7 @@ export class Bilibilipush extends Base {
               dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
               pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
               share: Count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
-              create_time: format(fromUnixTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
+              create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
               avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
               frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
               share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
@@ -268,7 +268,7 @@ export class Bilibilipush extends Base {
               total_favorited: Count(userINFO.data.data.like_num),
               following_count: Count(userINFO.data.data.card.attention),
               decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decoration_card),
-              render_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+              render_time: TimeFormatter.now(),
               additional: parseAdditionalCard(data[dynamicId].Dynamic_Data.modules.module_dynamic.additional),
               dynamicTYPE: '纯文动态推送'
             })
@@ -298,7 +298,7 @@ export class Bilibilipush extends Base {
                   view: Count(dycrad.stat.view),
                   coin: Count(dycrad.stat.coin),
                   duration_text: data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.archive?.duration_text ?? '0:00',
-                  create_time: format(fromUnixTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
+                  create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
                   avatar_url: INFODATA.data.data.owner.face,
                   frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
                   share_url: 'https://www.bilibili.com/video/' + bvid,
@@ -307,7 +307,7 @@ export class Bilibilipush extends Base {
                   user_shortid: data[dynamicId].host_mid,
                   total_favorited: Count(userINFO.data.data.like_num),
                   following_count: Count(userINFO.data.data.card.attention),
-                  render_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+                  render_time: TimeFormatter.now(),
                   dynamicTYPE: '视频动态推送',
                   dynamic_id: dynamicId
                 }
@@ -326,8 +326,8 @@ export class Bilibilipush extends Base {
                 avatar_url: userINFO.data.data.card.face,
                 frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
                 fans: Count(userINFO.data.data.follower),
-                create_time: format(fromUnixTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
-                now_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+                create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
+                now_time: TimeFormatter.now(),
                 share_url: 'https://live.bilibili.com/' + dycrad.live_play_info.room_id,
                 dynamicTYPE: '直播动态推送'
               }
@@ -361,7 +361,7 @@ export class Bilibilipush extends Base {
                   danmaku: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.archive?.stat.danmaku,
                   play: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.archive?.stat.play,
                   cover: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.archive?.cover,
-                  create_time: format(fromUnixTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
+                  create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
                   decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.orig.modules.module_author.decoration_card),
                   frame: data[dynamicId].Dynamic_Data.orig.modules.module_author.pendant.image
                 }
@@ -373,7 +373,7 @@ export class Bilibilipush extends Base {
                 param = {
                   title: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major?.opus?.title ?? null,
                   username: checkvip(data[dynamicId].Dynamic_Data.orig.modules.module_author),
-                  create_time: format(fromUnixTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
+                  create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
                   avatar_url: data[dynamicId].Dynamic_Data.orig.modules.module_author.face,
                   text: replacetext(br(data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.opus.summary.text), data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes),
                   image_url: cardData.item.pictures && cover(cardData.item.pictures),
@@ -385,7 +385,7 @@ export class Bilibilipush extends Base {
               case DynamicType.WORD: {
                 param = {
                   username: checkvip(data[dynamicId].Dynamic_Data.orig.modules.module_author),
-                  create_time: format(fromUnixTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
+                  create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
                   avatar_url: data[dynamicId].Dynamic_Data.orig.modules.module_author.face,
                   text: replacetext(br(data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.opus.summary.text), data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes),
                   decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.orig.modules.module_author.decoration_card),
@@ -397,7 +397,7 @@ export class Bilibilipush extends Base {
                 const liveData = JSON.parse(data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.live_rcmd.content)
                 param = {
                   username: checkvip(data[dynamicId].Dynamic_Data.orig.modules.module_author),
-                  create_time: format(fromUnixTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
+                  create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
                   avatar_url: data[dynamicId].Dynamic_Data.orig.modules.module_author.face,
                   decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.orig.modules.module_author.decoration_card),
                   frame: data[dynamicId].Dynamic_Data.orig.modules.module_author.pendant.image,
@@ -420,7 +420,7 @@ export class Bilibilipush extends Base {
               dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
               pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
               share: Count(data[dynamicId].Dynamic_Data.modules.module_stat.forward.count),
-              create_time: data[dynamicId].Dynamic_Data.modules.module_author.pub_time,
+              create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
               avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
               frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
               share_url: 'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str,
@@ -431,7 +431,7 @@ export class Bilibilipush extends Base {
               following_count: Count(userINFO.data.data.card.attention),
               dynamicTYPE: '转发动态推送',
               decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decorate),
-              render_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+              render_time: TimeFormatter.now(),
               original_content: { [data[dynamicId].Dynamic_Data.orig.type]: param },
               imgList: imgList.length > 0 ? imgList : null
             })
@@ -454,7 +454,7 @@ export class Bilibilipush extends Base {
                 username: checkvip(data[dynamicId].Dynamic_Data.modules.module_author),
                 avatar_url: data[dynamicId].Dynamic_Data.modules.module_author.face,
                 frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
-                create_time: format(fromUnixTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts), 'yyyy-MM-dd HH:mm'),
+                create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
                 user_shortid: data[dynamicId].host_mid,
                 fans: Count(userINFO.data.data.follower),
                 total_favorited: Count(userINFO.data.data.like_num),
@@ -473,7 +473,7 @@ export class Bilibilipush extends Base {
 
                 // 统计信息
                 stats: articleData.stats,
-                render_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+                render_time: TimeFormatter.now(),
                 // 分享链接
                 share_url: articleContent.dyn_id_str ? `https://www.bilibili.com/opus/${articleContent.dyn_id_str}` : `https://www.bilibili.com/read/cv${articleContent.id}`,
                 dynamicTYPE: '专栏动态推送'
@@ -684,7 +684,7 @@ export class Bilibilipush extends Base {
               前期获取该动态基本信息：
               UP主：${dynamic.modules.module_author.name}
               动态ID：${dynamic.id_str}
-              发布时间：${format(fromUnixTime(createTime), 'yyyy-MM-dd HH:mm')}
+              发布时间：${TimeFormatter.toDateTime(createTime)}
               发布时间戳（s）：${createTime}
               当前时间戳（s）：${nowSeconds}
               时间差（s）：${timeDifference}s (${timeDiffHours}h)
