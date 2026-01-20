@@ -103,6 +103,8 @@
     --text-xs--line-height: calc(1 / .75);
     --text-sm: .875rem;
     --text-sm--line-height: calc(1.25 / .875);
+    --text-base: 1rem;
+    --text-base--line-height: calc(1.5 / 1);
     --text-lg: 1.125rem;
     --text-lg--line-height: calc(1.75 / 1.125);
     --text-xl: 1.25rem;
@@ -1471,10 +1473,6 @@
     margin-bottom: calc(var(--spacing) * 0);
   }
 
-  .mb-0\.5 {
-    margin-bottom: calc(var(--spacing) * .5);
-  }
-
   .mb-1 {
     margin-bottom: calc(var(--spacing) * 1);
   }
@@ -1933,10 +1931,6 @@
     height: calc(var(--spacing) * 80);
   }
 
-  .h-84 {
-    height: calc(var(--spacing) * 84);
-  }
-
   .h-87\.5 {
     height: calc(var(--spacing) * 87.5);
   }
@@ -2029,10 +2023,6 @@
     height: 50%;
   }
 
-  .h-\[60vh\] {
-    height: 60vh;
-  }
-
   .h-\[90vh\] {
     height: 90vh;
   }
@@ -2081,6 +2071,10 @@
     height: 100%;
   }
 
+  .h-full\! {
+    height: 100% !important;
+  }
+
   .h-px {
     height: 1px;
   }
@@ -2123,6 +2117,10 @@
 
   .max-h-\[64rem\] {
     max-height: 64rem;
+  }
+
+  .max-h-\[95vh\] {
+    max-height: 95vh;
   }
 
   .max-h-\[calc\(100\%_-_8rem\)\] {
@@ -2525,6 +2523,10 @@
     width: 100%;
   }
 
+  .w-full\! {
+    width: 100% !important;
+  }
+
   .w-max {
     width: max-content;
   }
@@ -2591,6 +2593,10 @@
 
   .max-w-\[270px\] {
     max-width: 270px;
+  }
+
+  .max-w-\[600px\] {
+    max-width: 600px;
   }
 
   .max-w-\[640px\] {
@@ -3032,10 +3038,6 @@
 
   .cursor-grab {
     cursor: grab;
-  }
-
-  .cursor-move {
-    cursor: move;
   }
 
   .cursor-not-allowed {
@@ -3524,6 +3526,10 @@
     border-radius: 2%;
   }
 
+  .rounded-\[3rem\] {
+    border-radius: 3rem;
+  }
+
   .rounded-\[10px\] {
     border-radius: 10px;
   }
@@ -3640,10 +3646,6 @@
     border-bottom-left-radius: 0;
   }
 
-  .rounded-tl-3xl {
-    border-top-left-radius: var(--radius-3xl);
-  }
-
   .rounded-r-none {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
@@ -3667,10 +3669,6 @@
   .rounded-b-small {
     border-bottom-right-radius: var(--heroui-radius-small);
     border-bottom-left-radius: var(--heroui-radius-small);
-  }
-
-  .rounded-br-3xl {
-    border-bottom-right-radius: var(--radius-3xl);
   }
 
   .border {
@@ -4814,20 +4812,6 @@
     background-image: linear-gradient(var(--tw-gradient-stops));
   }
 
-  .bg-linear-to-br {
-    --tw-gradient-position: to bottom right;
-  }
-
-  @supports (background-image: linear-gradient(in lab, red, red)) {
-    .bg-linear-to-br {
-      --tw-gradient-position: to bottom right in oklab;
-    }
-  }
-
-  .bg-linear-to-br {
-    background-image: linear-gradient(var(--tw-gradient-stops));
-  }
-
   .bg-linear-to-r {
     --tw-gradient-position: to right;
   }
@@ -4924,20 +4908,6 @@
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
 
-  .from-primary\/20 {
-    --tw-gradient-from: hsl(var(--heroui-primary) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .from-primary\/20 {
-      --tw-gradient-from: color-mix(in oklab, hsl(var(--heroui-primary) / 1) 20%, transparent);
-    }
-  }
-
-  .from-primary\/20 {
-    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
-  }
-
   .from-transparent {
     --tw-gradient-from: transparent;
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
@@ -5027,20 +4997,6 @@
 
   .to-primary {
     --tw-gradient-to: hsl(var(--heroui-primary) / 1);
-    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
-  }
-
-  .to-primary\/5 {
-    --tw-gradient-to: hsl(var(--heroui-primary) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .to-primary\/5 {
-      --tw-gradient-to: color-mix(in oklab, hsl(var(--heroui-primary) / 1) 5%, transparent);
-    }
-  }
-
-  .to-primary\/5 {
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
 
@@ -5141,10 +5097,6 @@
 
   .p-1 {
     padding: calc(var(--spacing) * 1);
-  }
-
-  .p-1\.5 {
-    padding: calc(var(--spacing) * 1.5);
   }
 
   .p-2 {
@@ -5313,6 +5265,10 @@
 
   .py-5 {
     padding-block: calc(var(--spacing) * 5);
+  }
+
+  .py-6 {
+    padding-block: calc(var(--spacing) * 6);
   }
 
   .py-8 {
@@ -5667,6 +5623,11 @@
     line-height: var(--tw-leading, var(--text-9xl--line-height));
   }
 
+  .text-base {
+    font-size: var(--text-base);
+    line-height: var(--tw-leading, var(--text-base--line-height));
+  }
+
   .text-large {
     font-size: var(--heroui-font-size-large);
     line-height: var(--heroui-line-height-large);
@@ -5757,6 +5718,10 @@
 
   .text-\[5rem\] {
     font-size: 5rem;
+  }
+
+  .text-\[9px\] {
+    font-size: 9px;
   }
 
   .text-\[10px\] {
@@ -6192,10 +6157,6 @@
     color: hsl(var(--heroui-default) / 1);
   }
 
-  .text-default-50 {
-    color: hsl(var(--heroui-default-50) / 1);
-  }
-
   .text-default-100 {
     color: hsl(var(--heroui-default-100) / 1);
   }
@@ -6324,10 +6285,6 @@
 
   .text-red-500 {
     color: #f31260;
-  }
-
-  .text-red-600 {
-    color: #c20e4d;
   }
 
   .text-secondary {
@@ -7393,11 +7350,6 @@
     transition-duration: .5s !important;
   }
 
-  .duration-75 {
-    --tw-duration: 75ms;
-    transition-duration: 75ms;
-  }
-
   .duration-150 {
     --tw-duration: .15s;
     transition-duration: .15s;
@@ -7538,8 +7490,18 @@
       color: currentColor;
     }
 
-    .group-hover\:text-primary:is(:where(.group):hover *) {
+    .group-hover\:text-foreground-600:is(:where(.group):hover *) {
+      color: hsl(var(--heroui-foreground-600) / 1);
+    }
+
+    .group-hover\:text-primary:is(:where(.group):hover *), .group-hover\:text-primary\/80:is(:where(.group):hover *) {
       color: hsl(var(--heroui-primary) / 1);
+    }
+
+    @supports (color: color-mix(in lab, red, red)) {
+      .group-hover\:text-primary\/80:is(:where(.group):hover *) {
+        color: color-mix(in oklab, hsl(var(--heroui-primary) / 1) 80%, transparent);
+      }
     }
 
     .group-hover\:text-success:is(:where(.group):hover *) {
