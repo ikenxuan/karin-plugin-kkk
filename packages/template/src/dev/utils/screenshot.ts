@@ -1,4 +1,5 @@
 /// <reference lib="dom" />
+import { Watermark } from '@pansy/watermark'
 import { snapdom } from '@zumer/snapdom'
 
 /**
@@ -11,6 +12,8 @@ export interface ScreenshotOptions {
   scale: number
   /** 当前位移 */
   panOffset: { x: number; y: number }
+  /** 是否为深色模式 */
+  isDarkMode?: boolean
 }
 
 /**
@@ -31,7 +34,7 @@ export interface ScreenshotResult {
  * @returns Promise<ScreenshotResult>
  */
 export const captureScreenshot = async (options: ScreenshotOptions): Promise<ScreenshotResult> => {
-  const { element } = options
+  const { element, isDarkMode = false } = options
 
   console.log('开始使用 SnapDOM 截图...')
 
@@ -43,6 +46,22 @@ export const captureScreenshot = async (options: ScreenshotOptions): Promise<Scr
     // 获取元素实际尺寸
     const rect = targetElement.getBoundingClientRect()
     console.log(`截图目标尺寸: ${rect.width}x${rect.height}`)
+
+    // 创建水印实例
+    const watermarkInstance = new Watermark({
+      container: targetElement,
+      text: '开发中内容，实际内容请以正式发布为准',
+      width: 800,
+      height: 600,
+      fontSize: 36,
+      fontColor: isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)',
+      fontWeight: 'bold',
+      opacity: 0.1,
+      mode: 'interval'
+    })
+    
+    // 等待水印渲染完成
+    await new Promise(resolve => setTimeout(resolve, 200))
 
     // 临时处理空元素，防止 snapdom 忽略它们的高度
     const emptyElements: Array<{ 
@@ -96,6 +115,9 @@ export const captureScreenshot = async (options: ScreenshotOptions): Promise<Scr
     emptyElements.forEach(({ element, originalHTML }) => {
       element.innerHTML = originalHTML
     })
+
+    // 销毁水印
+    watermarkInstance.destroy()
 
     console.log('截图完成')
 

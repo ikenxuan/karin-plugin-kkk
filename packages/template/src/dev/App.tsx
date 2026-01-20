@@ -1,6 +1,8 @@
 import { Camera, RefreshCw } from 'lucide-react'
 import React from 'react'
+import { FaGithub } from 'react-icons/fa'
 import { MdFitScreen } from 'react-icons/md'
+import { MdDashboard } from 'react-icons/md'
 import { Group, Panel, Separator } from 'react-resizable-panels'
 
 import { getEnabledComponents } from '../config/config'
@@ -145,6 +147,37 @@ export const App: React.FC = () => {
   React.useEffect(() => {
     updateURLParams(selectedPlatform, selectedTemplate, selectedDataFile !== 'default.json' ? selectedDataFile : undefined)
   }, [selectedPlatform, selectedTemplate, selectedDataFile])
+
+  // 全局屏蔽空格键，防止误触开关
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 屏蔽空格键，除非在输入框、文本域等可编辑元素中
+      if (e.code === 'Space' || e.key === ' ') {
+        const target = e.target as HTMLElement
+        
+        // 检查是否在可编辑元素中
+        const isEditable = 
+          target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable
+        
+        // 检查是否在 Monaco Editor 中
+        const isInMonaco = target.closest('.monaco-editor') !== null
+        
+        if (!isEditable && !isInMonaco) {
+          e.preventDefault()
+          e.stopPropagation()
+        }
+      }
+    }
+
+    // 在捕获阶段拦截，优先级最高
+    document.addEventListener('keydown', handleKeyDown, true)
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, true)
+    }
+  }, [])
 
   /**
    * 处理平台变更
@@ -452,53 +485,28 @@ export const App: React.FC = () => {
               className='p-2 active:scale-95 transition-all duration-200 group'
               title='GitHub 仓库'
             >
-              <svg className='w-6 h-6 text-foreground-400 group-hover:text-foreground-600 transition-colors' viewBox='0 0 24 24' fill='currentColor'>
-                <path d='M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z' />
-              </svg>
+              <FaGithub className='w-6 h-6 text-foreground-400 group-hover:text-foreground-600 transition-colors' />
             </a>
             <span className='text-[9px] font-medium text-foreground-500 text-center leading-tight'>GitHub</span>
           </div>
         </div>
 
 
-        {/* 主要内容区域 */}
+        {/* 菜单二 */}
         <div className='flex-1 flex overflow-hidden'>
           <Group orientation='horizontal' className='h-full w-full'>
             {/* 左侧控制面板 */}
             <Panel defaultSize='20%' minSize='15%' maxSize='40%' id='sidebar'>
               <div className={`overflow-y-auto h-full scrollbar-hide bg-content1/95 backdrop-blur-xl border-r border-divider ${isDarkMode ? 'dark' : ''}`}>
                 {/* 头部状态卡片 */}
-                <div className='sticky top-0 z-10 bg-linear-to-b from-content1 via-content1 to-content1/80 backdrop-blur-xl border-b border-divider/60 p-4 pb-3'>
+                <div className='sticky top-0 z-10 from-content1 via-content1 to-content1/80 border-b border-divider/60 p-4 pb-3'>
                   <div className='flex flex-col gap-3'>
-                    {/* 数据文件标签 */}
-                    {selectedDataFile && (
-                      <div className='bg-default-100 rounded-lg p-3 border border-divider'>
-                        <div className='flex items-center gap-2.5'>
-                          <div className='p-1.5 bg-primary/10 rounded-lg'>
-                            <svg className='w-4 h-4 text-primary' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
-                            </svg>
-                          </div>
-                          <div className='flex-1 min-w-0'>
-                            <div className='text-[10px] font-medium text-foreground-500 uppercase tracking-wider mb-0.5'>
-                              数据文件
-                            </div>
-                            <div className='text-sm font-semibold text-foreground truncate'>
-                              {selectedDataFile.replace('.json', '')}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    
                     {/* 平台/模板路径 */}
                     <div className='bg-default-50/80 rounded-xl p-2.5 border border-default-200/50'>
                       <div className='flex items-center gap-1 flex-wrap'>
                         {/* 平台图标 */}
                         <div className='p-1 bg-default-100 rounded-md'>
-                          <svg className='w-3.5 h-3.5 text-default-600' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01' />
-                          </svg>
+                          <MdDashboard className='w-3.5 h-3.5 text-default-600' />
                         </div>
                         
                         {/* 平台名称 */}
@@ -562,7 +570,7 @@ export const App: React.FC = () => {
 
             <Separator />
 
-            {/* 中间垂直工具栏 */}
+            {/* 第三菜单栏 */}
             <div className={`w-16 bg-content1/95 backdrop-blur-xl shrink-0 flex flex-col items-center py-8 gap-6 border-r border-divider ${isDarkMode ? 'dark' : ''}`}>
               {/* 工具区域 */}
               <div className='flex flex-col items-center gap-6'>

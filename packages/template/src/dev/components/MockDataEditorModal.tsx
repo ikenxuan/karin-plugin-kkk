@@ -1,4 +1,4 @@
-import { Modal, ModalBody, ModalContent } from '@heroui/react'
+import { Modal, ModalContent } from '@heroui/react'
 import React, { useEffect, useState } from 'react'
 
 import { JsonEditor } from './JsonEditor'
@@ -58,8 +58,8 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       size="5xl"
-      scrollBehavior="inside"
       isDismissable={true}
+      hideCloseButton={true}
       classNames={{
         backdrop: 'bg-overlay/50 backdrop-blur-sm',
         wrapper: 'items-center justify-center',
@@ -67,25 +67,19 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
       }}
     >
       <ModalContent className={`h-[90vh] ${isDarkMode ? 'dark' : ''}`}>
-        {() => (
-          <ModalBody className="p-0 overflow-hidden bg-content1">
-            <div className="h-full w-full">
-              <JsonEditor
-                data={currentData}
-                onChange={setCurrentData}
-                platform={platform}
-                templateId={templateId}
-                availableDataFiles={availableDataFiles}
-                selectedDataFile={selectedDataFile}
-                onDataFileChange={onDataFileChange}
-                isDarkMode={isDarkMode}
-                onSave={handleSave}
-                onCancel={onClose}
-                isSaving={isSaving}
-              />
-            </div>
-          </ModalBody>
-        )}
+        <JsonEditor
+          data={currentData}
+          onChange={setCurrentData}
+          platform={platform}
+          templateId={templateId}
+          availableDataFiles={availableDataFiles}
+          selectedDataFile={selectedDataFile}
+          onDataFileChange={onDataFileChange}
+          isDarkMode={isDarkMode}
+          onSave={handleSave}
+          onCancel={onClose}
+          isSaving={isSaving}
+        />
       </ModalContent>
     </Modal>
   )

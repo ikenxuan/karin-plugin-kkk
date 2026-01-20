@@ -1,6 +1,7 @@
-import { addToast, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/react'
+import { addToast, Button, Modal, ModalBody, ModalContent, ModalFooter } from '@heroui/react'
 import { Copy, Download, Maximize, X } from 'lucide-react'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 
 interface ScreenshotPreviewModalProps {
   isOpen: boolean
@@ -20,20 +21,8 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
   isDarkMode = false
 }) => {
   const [scale, setScale] = useState(1)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
-  const [isDragging, setIsDragging] = useState(false)
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
-  
+  const transformWrapperRef = useRef<any>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const imageRef = useRef<HTMLImageElement>(null)
-
-  // Reset state when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      setScale(1)
-      setPosition({ x: 0, y: 0 })
-    }
-  }, [isOpen])
 
   const imageUrl = React.useMemo(() => {
     if (!screenshotResult) return ''
@@ -48,43 +37,93 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
     }
   }, [imageUrl])
 
-  // 使用非被动事件监听器来解决 passive event listener warning
+  /**
+   * 适应画布大小 - 重置到初始状态
+   */
+  const handleFitToCanvas = useCallback(() => {
+    if (!transformWrapperRef.current) return
+    
+    const transformInstance = transformWrapperRef.current
+    
+    // 重置到初始状态：居中，缩放为1
+    transformInstance.resetTransform(300, 'easeOut')
+  }, [])
+
+  /**
+   * 监听双击事件，调用适应画布
+   */
   useEffect(() => {
+    if (!isOpen) return
+    
+    // 延迟获取容器，确保 TransformWrapper 已经初始化
+    const timer = setTimeout(() => {
+      const container = transformWrapperRef.current?.instance?.wrapperComponent
+      if (!container) return
+
+      const handleDoubleClick = (e: MouseEvent) => {
+        e.preventDefault()
+        handleFitToCanvas()
+      }
+
+      container.addEventListener('dblclick', handleDoubleClick)
+      
+      return () => {
+        container.removeEventListener('dblclick', handleDoubleClick)
+      }
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [isOpen, handleFitToCanvas])
+
+  /**
+   * 在容器上监听滚轮事件，转发给 TransformWrapper
+   */
+  useEffect(() => {
+    if (!isOpen) return
+    
     const container = containerRef.current
     if (!container) return
 
-    const onWheel = (e: WheelEvent) => {
+    const handleWheel = (e: WheelEvent) => {
+      // 阻止默认滚动
       e.preventDefault()
       e.stopPropagation()
       
+      // 获取 transform 实例
+      const instance = transformWrapperRef.current?.instance
+      if (!instance) return
+
+      // 计算缩放增量
+      const delta = -e.deltaY * 0.001 // 缩放因子
+      const scaleFactor = 1 + delta
+      const newScale = Math.min(
+        Math.max(instance.transformState.scale * scaleFactor, 0.1),
+        5
+      )
+
+      // 获取鼠标相对于容器的位置
       const rect = container.getBoundingClientRect()
       const mouseX = e.clientX - rect.left
       const mouseY = e.clientY - rect.top
 
-      // 计算鼠标相对于图片中心的偏移量
-      const centerX = rect.width / 2
-      const centerY = rect.height / 2
+      // 计算缩放中心点
+      const { positionX, positionY, scale } = instance.transformState
+      const scaleDiff = newScale - scale
       
-      // 当前鼠标在图片坐标系中的位置
-      const mouseImageX = (mouseX - centerX - position.x) / scale
-      const mouseImageY = (mouseY - centerY - position.y) / scale
+      // 以鼠标位置为中心缩放
+      const newPositionX = positionX - (mouseX - positionX) * (scaleDiff / scale)
+      const newPositionY = positionY - (mouseY - positionY) * (scaleDiff / scale)
 
-      const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1
-      const newScale = Math.max(0.1, Math.min(5, scale * zoomFactor))
-      
-      const newX = mouseX - centerX - mouseImageX * newScale
-      const newY = mouseY - centerY - mouseImageY * newScale
-
-      setScale(newScale)
-      setPosition({ x: newX, y: newY })
+      // 应用变换
+      instance.setTransformState(newScale, newPositionX, newPositionY)
     }
 
-    container.addEventListener('wheel', onWheel, { passive: false })
+    container.addEventListener('wheel', handleWheel, { passive: false })
 
     return () => {
-      container.removeEventListener('wheel', onWheel)
+      container.removeEventListener('wheel', handleWheel)
     }
-  }, [scale, position, screenshotResult])
+  }, [isOpen])
 
   if (!screenshotResult) return null
 
@@ -119,78 +158,102 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
     }
   }
 
-  const handleFitToCanvas = () => {
-    setScale(1)
-    setPosition({ x: 0, y: 0 })
-  }
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault()
-    setIsDragging(true)
-    setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y })
-  }
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return
-    e.preventDefault()
-    setPosition({
-      x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y
-    })
-  }
-
-  const handleMouseUp = () => {
-    setIsDragging(false)
-  }
-
   return (
     <Modal 
       isOpen={isOpen} 
       onClose={onClose} 
       size="5xl"
       backdrop="blur"
-      scrollBehavior="inside"
+      hideCloseButton={true}
       classNames={{
         backdrop: 'bg-overlay/50 backdrop-blur-sm',
         wrapper: 'items-center justify-center',
-        base: `bg-content1 border border-divider rounded-2xl ${isDarkMode ? 'dark' : ''}`
+        base: `border border-divider rounded-2xl ${isDarkMode ? 'dark bg-content1' : 'bg-content1'}`
       }}
     >
-      <ModalContent className={isDarkMode ? 'dark' : ''}>
+      <ModalContent className={`${isDarkMode ? 'dark' : ''} flex flex-col max-h-[95vh]`}>
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1 border-b border-divider bg-content1">
-              <span className="text-lg font-semibold text-foreground">截图预览</span>
-            </ModalHeader>
-            <ModalBody className="overflow-hidden bg-content1">
+            <ModalBody className="overflow-hidden flex-1 p-4" style={{ backgroundColor: isDarkMode ? '#18181b' : '#f4f4f5' }}>
               <div 
                 ref={containerRef}
-                className="flex justify-center items-center w-full h-[60vh] bg-background rounded-lg border border-dashed border-divider overflow-hidden cursor-move relative"
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
+                className="overflow-hidden relative w-full h-full rounded-lg border border-dashed border-divider"
+                style={{ backgroundColor: isDarkMode ? '#18181b' : '#f4f4f5' }}
               >
-                <img
-                  ref={imageRef}
-                  src={imageUrl}
-                  alt="Screenshot Preview"
-                  className="object-contain max-w-none shadow-lg transition-transform duration-75"
+                {/* 网格背景 */}
+                <div
+                  className='absolute inset-0 opacity-50 pointer-events-none'
                   style={{
-                    transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
-                    cursor: isDragging ? 'grabbing' : 'grab'
+                    backgroundImage: isDarkMode
+                      ? `repeating-linear-gradient(0deg, rgba(244, 244, 245, 0.3) 0px, transparent 1px, transparent 20px),
+                         repeating-linear-gradient(90deg, rgba(244, 244, 245, 0.3) 0px, transparent 1px, transparent 20px)`
+                      : `repeating-linear-gradient(0deg, rgba(24, 24, 27, 0.5) 0px, transparent 1px, transparent 20px),
+                         repeating-linear-gradient(90deg, rgba(24, 24, 27, 0.5) 0px, transparent 1px, transparent 20px)`
                   }}
-                  draggable={false}
                 />
-                
+                {/* react-zoom-pan-pinch 包装器 */}
+                <div style={{ 
+                  width: '100%', 
+                  height: '100%',
+                  position: 'relative'
+                }}>
+                  <TransformWrapper
+                    ref={transformWrapperRef}
+                    initialScale={1}
+                    minScale={0.1}
+                    maxScale={5}
+                    centerOnInit
+                    limitToBounds={false}
+                    disablePadding={true}
+                    wheel={{
+                      step: 0.02,
+                      disabled: true // 禁用库自带的滚轮处理，使用我们自定义的
+                    }}
+                    panning={{
+                      velocityDisabled: false,
+                      disabled: false
+                    }}
+                    doubleClick={{
+                      disabled: true
+                    }}
+                    onTransformed={(ref) => {
+                      if (ref.state.scale !== scale) {
+                        setScale(ref.state.scale)
+                      }
+                    }}
+                  >
+                    <TransformComponent
+                      wrapperClass="w-full! h-full!"
+                      contentClass="w-full! h-full! flex items-center justify-center"
+                      contentStyle={{
+                        transition: 'transform 0.3s ease-out',
+                        willChange: 'transform'
+                      }}
+                    >
+                      <img
+                        src={imageUrl}
+                        alt="Screenshot Preview"
+                        className="object-contain"
+                        draggable={false}
+                        style={{
+                          userSelect: 'none',
+                          WebkitUserSelect: 'none',
+                          filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.25))'
+                        }}
+                      />
+                    </TransformComponent>
+                  </TransformWrapper>
+                </div>
+
+                {/* 缩放比例显示 */}
                 <div className="absolute right-4 bottom-4 px-3 py-1.5 text-xs font-semibold text-foreground rounded-lg pointer-events-none bg-default-100/90 backdrop-blur-sm border border-divider">
                   {Math.round(scale * 100)}%
                 </div>
               </div>
             </ModalBody>
-            <ModalFooter className="border-t border-divider bg-content1">
+            <ModalFooter className="border-t border-divider shrink-0" style={{ backgroundColor: isDarkMode ? 'hsl(var(--heroui-content1))' : 'hsl(var(--heroui-content1))' }}>
               <div className="flex-1 text-xs text-foreground-500 font-medium">
-                滚轮缩放 • 拖拽移动
+                滚轮缩放 • 拖拽移动 • 双击适应
               </div>
               <Button
                 variant="flat"

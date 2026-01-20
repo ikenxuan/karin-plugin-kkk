@@ -87,13 +87,18 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
       // 获取当前的 transform 状态
       const transformState = transformWrapperRef.current?.instance?.transformState
       
+      // 检测当前内容是否为深色模式
+      const contentElement = previewContentRef.current
+      const isDarkMode = contentElement.classList.contains('dark') || data?.useDarkTheme
+      
       const result = await captureScreenshotUtil({
         element: previewContentRef.current,
         scale: transformState?.scale || scale,
         panOffset: {
           x: transformState?.positionX || 0,
           y: transformState?.positionY || 0
-        }
+        },
+        isDarkMode
       })
       return result
     } catch (error) {
@@ -110,7 +115,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
     } finally {
       setIsCapturing(false)
     }
-  }, [scale, isCapturing])
+  }, [scale, isCapturing, data])
 
   /**
    * 适应画布大小 - 计算合适的缩放比例以完整显示组件
@@ -179,28 +184,89 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   }, [handleFitToCanvas])
 
   /**
-   * 监听 Ctrl 键，控制拖拽和文本选择
+   * 监听 Ctrl/Alt 键，控制文本选择
+   * 按住 Ctrl 或 Alt 时启用文本选择，但不干扰组合键
    */
   useEffect(() => {
+    let isCtrlDown = false
+    let isAltDown = false
+    let hasOtherKeyPressed = false
+    let timeoutId: number | null = null
+    
     const handleKeyDown = (e: KeyboardEvent) => {
       // 防止在输入框中触发
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
         return
       }
       
-      if (e.key === 'Control' && !isCtrlPressed) {
-        setIsCtrlPressed(true)
+      if (e.key === 'Control') {
+        isCtrlDown = true
+        hasOtherKeyPressed = false
+        // 短延迟启用文本选择，给组合键一个机会
+        timeoutId = window.setTimeout(() => {
+          if ((isCtrlDown || isAltDown) && !hasOtherKeyPressed) {
+            setIsCtrlPressed(true)
+          }
+        }, 10)
+      } else if (e.key === 'Alt') {
+        // 阻止 Alt 键的默认行为（Windows 菜单栏激活）
+        e.preventDefault()
+        isAltDown = true
+        hasOtherKeyPressed = false
+        // 短延迟启用文本选择，给组合键一个机会
+        timeoutId = window.setTimeout(() => {
+          if ((isCtrlDown || isAltDown) && !hasOtherKeyPressed) {
+            setIsCtrlPressed(true)
+          }
+        }, 10)
+      } else if ((isCtrlDown || isAltDown) && e.key !== 'Control' && e.key !== 'Alt') {
+        // 如果按下了其他键盘按键（如 Ctrl+1 或 Alt+1），标记为组合键
+        hasOtherKeyPressed = true
+        setIsCtrlPressed(false)
+        if (timeoutId !== null) {
+          clearTimeout(timeoutId)
+          timeoutId = null
+        }
       }
     }
 
     const handleKeyUp = (e: KeyboardEvent) => {
       if (e.key === 'Control') {
-        setIsCtrlPressed(false)
+        isCtrlDown = false
+        // 如果 Alt 也没按，取消文本选择
+        if (!isAltDown) {
+          hasOtherKeyPressed = false
+          setIsCtrlPressed(false)
+          if (timeoutId !== null) {
+            clearTimeout(timeoutId)
+            timeoutId = null
+          }
+        }
+      } else if (e.key === 'Alt') {
+        // 阻止 Alt 键的默认行为
+        e.preventDefault()
+        isAltDown = false
+        // 如果 Ctrl 也没按，取消文本选择
+        if (!isCtrlDown) {
+          hasOtherKeyPressed = false
+          setIsCtrlPressed(false)
+          if (timeoutId !== null) {
+            clearTimeout(timeoutId)
+            timeoutId = null
+          }
+        }
       }
     }
 
     const handleBlur = () => {
+      isCtrlDown = false
+      isAltDown = false
+      hasOtherKeyPressed = false
       setIsCtrlPressed(false)
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId)
+        timeoutId = null
+      }
     }
 
     window.addEventListener('keydown', handleKeyDown)
@@ -211,8 +277,11 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
       window.removeEventListener('blur', handleBlur)
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId)
+      }
     }
-  }, [isCtrlPressed])
+  }, [])
 
   /**
    * 在容器上监听滚轮事件，转发给 TransformWrapper
