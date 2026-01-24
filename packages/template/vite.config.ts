@@ -43,6 +43,28 @@ const copyDirectory = (sourceDir: string, targetDir: string) => {
   })
 }
 
+/**
+ * 字体代理插件
+ * 开发环境下将 http://localhost:3780 替换为空字符串，以便通过 Vite 代理转发
+ */
+const fontProxyPlugin = () => {
+  return {
+    name: 'font-proxy-plugin',
+    enforce: 'pre' as const,
+    transform (code: string, id: string) {
+      // 只要是 CSS 文件，或者内容中包含目标字符串，就尝试替换
+      // 忽略 query 参数，例如 font.css?direct
+      const cleanId = id.split('?')[0]
+      if (
+        (cleanId.endsWith('.css') || cleanId.endsWith('.scss') || cleanId.endsWith('.less')) &&
+        code.includes('http://localhost:3780')
+      ) {
+        return code.replace(/http:\/\/localhost:3780/g, '')
+      }
+    }
+  }
+}
+
 export default defineConfig(({ command }) => {
   // 基础配置
   const baseConfig = {
@@ -78,6 +100,7 @@ export default defineConfig(({ command }) => {
       plugins: [
         ...baseConfig.plugins,
         mockApiPlugin(),
+        fontProxyPlugin(),
         checker({
           // e.g. use TypeScript check
           typescript: true
@@ -86,7 +109,17 @@ export default defineConfig(({ command }) => {
       root: path.resolve(__dirname, './src/dev'),
       publicDir: path.resolve(__dirname, './public'),
       server: {
-        port: 5174
+        port: 5174,
+        proxy: {
+          '/config/commonResource/font': {
+            target: 'https://developer.huawei.com',
+            changeOrigin: true,
+            secure: false,
+            headers: {
+              'Referer': 'https://developer.huawei.com/'
+            }
+          }
+        }
       },
       define: {
         __DEV__: true,

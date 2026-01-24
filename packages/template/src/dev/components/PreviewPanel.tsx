@@ -62,6 +62,10 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   
   // Ctrl 键状态
   const [isCtrlPressed, setIsCtrlPressed] = useState(false)
+  
+  // 缩放提示显示状态
+  const [showScaleIndicator, setShowScaleIndicator] = useState(false)
+  const scaleIndicatorTimeoutRef = useRef<number | null>(null)
 
   /**
    * ComponentRenderer 的 props
@@ -131,14 +135,25 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
     
     // 查找实际的内容元素（ComponentRenderer 内部的 div）
     const actualContent = contentWrapper.querySelector('.shadow-2xl') as HTMLElement
-    if (!actualContent) return
+    if (!actualContent) {
+      // 如果找不到 .shadow-2xl 元素，使用 contentWrapper 本身
+      console.warn('未找到 .shadow-2xl 元素，使用 contentWrapper')
+      return
+    }
     
     // 获取容器尺寸
     const containerRect = container.getBoundingClientRect()
     
     // 获取内容的实际尺寸
-    const contentWidth = actualContent.scrollWidth
-    const contentHeight = actualContent.scrollHeight
+    const contentRect = actualContent.getBoundingClientRect()
+    const contentWidth = Math.max(actualContent.scrollWidth, contentRect.width)
+    const contentHeight = Math.max(actualContent.scrollHeight, contentRect.height)
+    
+    // 验证尺寸是否有效
+    if (contentWidth <= 0 || contentHeight <= 0) {
+      console.warn('内容尺寸无效:', { contentWidth, contentHeight })
+      return
+    }
     
     // 预留边距
     const padding = 40
@@ -151,7 +166,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
     
     // 取较小的缩放比例，确保内容完整显示
     const fitScale = Math.min(scaleX, scaleY, 5) // 不超过最大缩放
-    const finalScale = Math.max(0.1, fitScale) // 不低于最小缩放
+    const finalScale = Math.max(0.01, fitScale) // 不低于最小缩放
     
     // 计算缩放后内容的尺寸
     const scaledWidth = contentWidth * finalScale
@@ -302,7 +317,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
       const delta = -e.deltaY * 0.001 // 缩放因子
       const scaleFactor = 1 + delta
       const newScale = Math.min(
-        Math.max(instance.transformState.scale * scaleFactor, 0.1),
+        Math.max(instance.transformState.scale * scaleFactor, 0.01),
         5
       )
 
@@ -321,12 +336,28 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
 
       // 应用变换
       instance.setTransformState(newScale, newPositionX, newPositionY)
+      
+      // 显示缩放提示
+      setShowScaleIndicator(true)
+      
+      // 清除之前的定时器
+      if (scaleIndicatorTimeoutRef.current !== null) {
+        clearTimeout(scaleIndicatorTimeoutRef.current)
+      }
+      
+      // 1秒后隐藏提示
+      scaleIndicatorTimeoutRef.current = window.setTimeout(() => {
+        setShowScaleIndicator(false)
+      }, 1000)
     }
 
     container.addEventListener('wheel', handleWheel, { passive: false })
 
     return () => {
       container.removeEventListener('wheel', handleWheel)
+      if (scaleIndicatorTimeoutRef.current !== null) {
+        clearTimeout(scaleIndicatorTimeoutRef.current)
+      }
     }
   }, [])
 
@@ -380,6 +411,21 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
           height: '100%',
           position: 'relative'
         }}>
+          {/* 缩放比例显示 - 左上角 */}
+          <div 
+            className="absolute left-4 top-4 px-3 py-1.5 text-xs font-semibold rounded-lg pointer-events-none backdrop-blur-sm border z-50"
+            style={{
+              opacity: showScaleIndicator ? 1 : 0,
+              transform: showScaleIndicator ? 'translateY(0)' : 'translateY(-10px)',
+              transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              backgroundColor: isPanelDarkMode ? 'rgba(39, 39, 42, 0.9)' : 'rgba(244, 244, 245, 0.9)',
+              borderColor: isPanelDarkMode ? 'rgba(63, 63, 70, 1)' : 'rgba(228, 228, 231, 1)',
+              color: isPanelDarkMode ? 'rgba(250, 250, 250, 1)' : 'rgba(24, 24, 27, 1)'
+            }}
+          >
+            {Math.round(scale * 100)}%
+          </div>
+          
           {/* Ctrl 模式下的选择覆盖层 */}
           {isCtrlPressed && (
             <div
@@ -401,7 +447,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
           <TransformWrapper
             ref={transformWrapperRef}
             initialScale={1}
-            minScale={0.1}
+            minScale={0.01}
             maxScale={5}
             centerOnInit
             limitToBounds={false}
@@ -436,8 +482,8 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
                 ref={previewContentRef}
                 className={`${data?.useDarkTheme ? 'dark' : ''}`}
                 style={{
-                  userSelect: 'text',
-                  WebkitUserSelect: 'text',
+                  userSelect: isCtrlPressed ? 'text' : 'none',
+                  WebkitUserSelect: isCtrlPressed ? 'text' : 'none',
                   cursor: isCtrlPressed ? 'text' : 'grab',
                   pointerEvents: 'auto'
                 }}

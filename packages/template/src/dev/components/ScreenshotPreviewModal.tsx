@@ -23,6 +23,10 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
   const [scale, setScale] = useState(1)
   const transformWrapperRef = useRef<any>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  
+  // 缩放提示显示状态
+  const [showScaleIndicator, setShowScaleIndicator] = useState(false)
+  const scaleIndicatorTimeoutRef = useRef<number | null>(null)
 
   const imageUrl = React.useMemo(() => {
     if (!screenshotResult) return ''
@@ -97,7 +101,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
       const delta = -e.deltaY * 0.001 // 缩放因子
       const scaleFactor = 1 + delta
       const newScale = Math.min(
-        Math.max(instance.transformState.scale * scaleFactor, 0.1),
+        Math.max(instance.transformState.scale * scaleFactor, 0.01),
         5
       )
 
@@ -116,12 +120,28 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
 
       // 应用变换
       instance.setTransformState(newScale, newPositionX, newPositionY)
+      
+      // 显示缩放提示
+      setShowScaleIndicator(true)
+      
+      // 清除之前的定时器
+      if (scaleIndicatorTimeoutRef.current !== null) {
+        clearTimeout(scaleIndicatorTimeoutRef.current)
+      }
+      
+      // 1秒后隐藏提示
+      scaleIndicatorTimeoutRef.current = window.setTimeout(() => {
+        setShowScaleIndicator(false)
+      }, 1000)
     }
 
     container.addEventListener('wheel', handleWheel, { passive: false })
 
     return () => {
       container.removeEventListener('wheel', handleWheel)
+      if (scaleIndicatorTimeoutRef.current !== null) {
+        clearTimeout(scaleIndicatorTimeoutRef.current)
+      }
     }
   }, [isOpen])
 
@@ -191,6 +211,22 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
                          repeating-linear-gradient(90deg, rgba(24, 24, 27, 0.5) 0px, transparent 1px, transparent 20px)`
                   }}
                 />
+                
+                {/* 缩放比例显示 - 左上角 */}
+                <div 
+                  className="absolute left-4 top-4 px-3 py-1.5 text-xs font-semibold rounded-lg pointer-events-none backdrop-blur-sm border z-50"
+                  style={{
+                    opacity: showScaleIndicator ? 1 : 0,
+                    transform: showScaleIndicator ? 'translateY(0)' : 'translateY(-10px)',
+                    transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    backgroundColor: isDarkMode ? 'rgba(39, 39, 42, 0.9)' : 'rgba(244, 244, 245, 0.9)',
+                    borderColor: isDarkMode ? 'rgba(63, 63, 70, 1)' : 'rgba(228, 228, 231, 1)',
+                    color: isDarkMode ? 'rgba(250, 250, 250, 1)' : 'rgba(24, 24, 27, 1)'
+                  }}
+                >
+                  {Math.round(scale * 100)}%
+                </div>
+                
                 {/* react-zoom-pan-pinch 包装器 */}
                 <div style={{ 
                   width: '100%', 
@@ -200,7 +236,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
                   <TransformWrapper
                     ref={transformWrapperRef}
                     initialScale={1}
-                    minScale={0.1}
+                    minScale={0.01}
                     maxScale={5}
                     centerOnInit
                     limitToBounds={false}
@@ -243,11 +279,6 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
                       />
                     </TransformComponent>
                   </TransformWrapper>
-                </div>
-
-                {/* 缩放比例显示 */}
-                <div className="absolute right-4 bottom-4 px-3 py-1.5 text-xs font-semibold text-foreground rounded-lg pointer-events-none bg-default-100/90 backdrop-blur-sm border border-divider">
-                  {Math.round(scale * 100)}%
                 </div>
               </div>
             </ModalBody>

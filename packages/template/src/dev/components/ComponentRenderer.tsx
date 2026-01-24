@@ -1,4 +1,5 @@
 import { Spinner } from '@heroui/react'
+import { AlertTriangle, Info, Zap } from 'lucide-react'
 import React from 'react'
 
 import { getComponentConfig } from '../../config/config'
@@ -117,17 +118,136 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
 
   // 如果有加载错误，显示错误信息
   if (loadError) {
+    const isDark = data?.useDarkTheme === true
+    const bgColor = isDark ? '#0a0a0f' : '#fafafa'
+
     return (
-      <div className="flex justify-center items-center min-h-screen p-8">
-        <div className="w-full max-w-[600px] rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
-          <div className="text-7xl text-danger">
-            ⚠️
+      <div className="shadow-2xl rounded-[3rem] overflow-hidden">
+        <div 
+          className="relative flex flex-col"
+          style={{
+            cursor: 'inherit',
+            userSelect: 'inherit',
+            WebkitUserSelect: 'inherit',
+            width: '1440px',
+            minHeight: '2000px',
+            backgroundColor: bgColor,
+            padding: '80px 60px'
+          }}
+        >
+          {/* 弥散光背景 */}
+          <div className='absolute inset-0 pointer-events-none'>
+            <div
+              className='absolute rounded-full w-300 h-350 -top-75 -left-50 blur-[120px] -rotate-15'
+              style={{
+                background: isDark
+                  ? 'radial-gradient(ellipse at 40% 40%, rgba(245,158,11,0.35) 0%, rgba(251,191,36,0.18) 50%, transparent 100%)'
+                  : 'radial-gradient(ellipse at 40% 40%, rgba(249,115,22,0.45) 0%, rgba(251,146,60,0.22) 50%, transparent 100%)'
+              }}
+            />
+            <div
+              className='absolute rounded-full w-225 h-250 top-150 -right-25 blur-[100px] rotate-20'
+              style={{
+                background: isDark
+                  ? 'radial-gradient(ellipse at 50% 50%, rgba(202,138,4,0.3) 0%, rgba(161,98,7,0.15) 50%, transparent 100%)'
+                  : 'radial-gradient(ellipse at 50% 50%, rgba(254,215,170,0.4) 0%, rgba(254,237,213,0.2) 50%, transparent 100%)'
+              }}
+            />
+            <div
+              className='absolute rounded-full w-250 h-200 -bottom-50 left-100 blur-[140px] -rotate-10'
+              style={{
+                background: isDark
+                  ? 'radial-gradient(ellipse at 50% 60%, rgba(217,119,6,0.3) 0%, rgba(180,83,9,0.15) 50%, transparent 100%)'
+                  : 'radial-gradient(ellipse at 50% 60%, rgba(251,146,60,0.35) 0%, rgba(253,186,116,0.18) 50%, transparent 100%)'
+              }}
+            />
           </div>
-          <div className="text-2xl font-semibold text-danger">
-            数据加载失败
+
+          {/* 单色噪点层 */}
+          <div className='absolute inset-0 pointer-events-none' style={{ opacity: isDark ? 0.12 : 0.18 }}>
+            <svg className='w-full h-full' xmlns='http://www.w3.org/2000/svg'>
+              <filter id='dataErrorNoise' x='0%' y='0%' width='100%' height='100%'>
+                <feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='1' stitchTiles='stitch' result='noise' />
+                <feColorMatrix type='saturate' values='0' result='gray' />
+                <feComponentTransfer>
+                  <feFuncR type='discrete' tableValues='0 1' />
+                  <feFuncG type='discrete' tableValues='0 1' />
+                  <feFuncB type='discrete' tableValues='0 1' />
+                </feComponentTransfer>
+              </filter>
+              <rect width='100%' height='100%' filter='url(#dataErrorNoise)' />
+            </svg>
           </div>
-          <div className="text-base text-center text-default-500 wrap-break-word">
-            {loadError.message}
+
+          {/* 内容区域 */}
+          <div className="relative z-10 flex flex-col h-full justify-between">
+            {/* 顶部标题 */}
+            <div className="flex items-center gap-10 mb-20">
+              <div className="flex items-center justify-center w-36 h-36 bg-white/10 backdrop-blur-sm rounded-[40px]">
+                <AlertTriangle className="w-20 h-20 text-white" strokeWidth={2.5} />
+              </div>
+              <div className="flex flex-col">
+                <div className="text-8xl font-black text-white mb-4 drop-shadow-lg">
+                  数据加载失败
+                </div>
+                <div className="text-4xl text-white/80 font-semibold drop-shadow">
+                  Data Loading Error
+                </div>
+              </div>
+            </div>
+
+            {/* 使用提示 */}
+            <div className="mb-16">
+              <div className="flex items-center gap-4 mb-6">
+                <Info className="w-7 h-7 text-white" strokeWidth={2.5} />
+                <div className="text-2xl font-bold text-white uppercase tracking-wider">
+                  使用提示
+                </div>
+              </div>
+              <div 
+                className="text-3xl font-medium text-white bg-black/20 backdrop-blur-sm rounded-[40px] px-12 py-10 leading-relaxed"
+              >
+                此组件需要先进行一次作品解析或调用对应功能才能生成数据。请确保已正确配置数据源并完成初始化操作。
+              </div>
+            </div>
+
+            {/* 错误信息 */}
+            <div className="mb-16">
+              <div className="flex items-center gap-4 mb-6">
+                <AlertTriangle className="w-7 h-7 text-white" strokeWidth={2.5} />
+                <div className="text-2xl font-bold text-white uppercase tracking-wider">
+                  错误信息
+                </div>
+              </div>
+              <div 
+                className="text-3xl font-semibold text-white bg-black/20 backdrop-blur-sm rounded-[40px] px-12 py-10"
+                style={{ wordBreak: 'break-word' }}
+              >
+                {loadError.message}
+              </div>
+            </div>
+
+            {/* 错误堆栈 */}
+            {loadError.stack && (
+              <div className="flex-1 flex flex-col">
+                <div className="flex items-center gap-4 mb-6">
+                  <Zap className="w-7 h-7 text-white" strokeWidth={2.5} />
+                  <div className="text-2xl font-bold text-white uppercase tracking-wider">
+                    堆栈跟踪
+                  </div>
+                </div>
+                <div 
+                  className="flex-1 text-xl font-mono text-white/90 bg-black/30 backdrop-blur-sm rounded-[40px] px-12 py-10 overflow-auto"
+                  style={{ 
+                    wordBreak: 'break-all',
+                    whiteSpace: 'pre-wrap',
+                    minHeight: '400px'
+                  }}
+                >
+                  {loadError.stack}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
