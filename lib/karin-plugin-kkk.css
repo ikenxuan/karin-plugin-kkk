@@ -150,6 +150,7 @@
     --radius-3xl: 1.5rem;
     --radius-4xl: 2rem;
     --drop-shadow-sm: 0 1px 2px #00000026;
+    --drop-shadow-lg: 0 4px 4px #00000026;
     --ease-in: cubic-bezier(.4, 0, 1, 1);
     --ease-out: cubic-bezier(0, 0, .2, 1);
     --animate-spin: spin 1s linear infinite;
@@ -754,6 +755,10 @@
     top: calc(var(--spacing) * 112.5);
   }
 
+  .top-150 {
+    top: calc(var(--spacing) * 150);
+  }
+
   .top-\[-40\%\] {
     top: -40%;
   }
@@ -1036,6 +1041,10 @@
 
   .left-50 {
     left: calc(var(--spacing) * 50);
+  }
+
+  .left-100 {
+    left: calc(var(--spacing) * 100);
   }
 
   .left-\[-50\%\] {
@@ -4277,6 +4286,14 @@
     background-color: #000;
   }
 
+  .bg-black\/20 {
+    background-color: oklab(0% none none / .2);
+  }
+
+  .bg-black\/30 {
+    background-color: oklab(0% none none / .3);
+  }
+
   .bg-black\/50 {
     background-color: oklab(0% none none / .5);
   }
@@ -4444,16 +4461,6 @@
   @supports (color: color-mix(in lab, red, red)) {
     .bg-default-100\/60 {
       background-color: color-mix(in oklab, hsl(var(--heroui-default-100) / 1) 60%, transparent);
-    }
-  }
-
-  .bg-default-100\/90 {
-    background-color: hsl(var(--heroui-default-100) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .bg-default-100\/90 {
-      background-color: color-mix(in oklab, hsl(var(--heroui-default-100) / 1) 90%, transparent);
     }
   }
 
@@ -4797,6 +4804,10 @@
 
   .bg-white {
     background-color: #fff;
+  }
+
+  .bg-white\/10 {
+    background-color: oklab(100% 0 5.96046e-8 / .1);
   }
 
   .bg-white\/20 {
@@ -6405,6 +6416,10 @@
     color: oklab(100% 0 5.96046e-8 / .6);
   }
 
+  .text-white\/80 {
+    color: oklab(100% 0 5.96046e-8 / .8);
+  }
+
   .text-white\/90 {
     color: oklab(100% 0 5.96046e-8 / .9);
   }
@@ -7089,6 +7104,12 @@
   .drop-shadow {
     --tw-drop-shadow-size: drop-shadow(0 1px 2px var(--tw-drop-shadow-color, #0000001a)) drop-shadow(0 1px 1px var(--tw-drop-shadow-color, #0000000f));
     --tw-drop-shadow: drop-shadow(0 1px 2px #0000001a) drop-shadow(0 1px 1px #0000000f);
+    filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
+  }
+
+  .drop-shadow-lg {
+    --tw-drop-shadow-size: drop-shadow(0 4px 4px var(--tw-drop-shadow-color, #00000026));
+    --tw-drop-shadow: drop-shadow(var(--drop-shadow-lg));
     filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
   }
 
