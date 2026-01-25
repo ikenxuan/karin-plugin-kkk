@@ -63,6 +63,9 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   // Ctrl 键状态
   const [isCtrlPressed, setIsCtrlPressed] = useState(false)
   
+  // 拖拽状态
+  const [isPanning, setIsPanning] = useState(false)
+  
   // 缩放提示显示状态
   const [showScaleIndicator, setShowScaleIndicator] = useState(false)
   const scaleIndicatorTimeoutRef = useRef<number | null>(null)
@@ -379,6 +382,32 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   }, [isCtrlPressed])
 
   /**
+   * 监听拖拽状态，更新鼠标指针
+   */
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const handleMouseDown = () => {
+      if (!isCtrlPressed) {
+        setIsPanning(true)
+      }
+    }
+
+    const handleMouseUp = () => {
+      setIsPanning(false)
+    }
+
+    container.addEventListener('mousedown', handleMouseDown)
+    window.addEventListener('mouseup', handleMouseUp)
+
+    return () => {
+      container.removeEventListener('mousedown', handleMouseDown)
+      window.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [isCtrlPressed])
+
+  /**
    * 暴露给父组件的方法
    */
   useImperativeHandle(ref, () => ({
@@ -484,7 +513,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
                 style={{
                   userSelect: isCtrlPressed ? 'text' : 'none',
                   WebkitUserSelect: isCtrlPressed ? 'text' : 'none',
-                  cursor: isCtrlPressed ? 'text' : 'grab',
+                  cursor: isCtrlPressed ? 'text' : (isPanning ? 'grabbing' : 'grab'),
                   pointerEvents: 'auto'
                 }}
               >
