@@ -2,6 +2,23 @@
 
 # Changelog
 
+## [2.18.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.18.2...v2.18.3) (2026-01-27)
+
+
+### 🐛 错误修复
+
+* 重定向兼容性提高 ([5c7ea05](https://github.com/ikenxuan/karin-plugin-kkk/commit/5c7ea05bfbefb8c03947be3b8b505582c589f422))
+
+
+### 🧰 其他更新
+
+* template:dev 优化开发体验 ([c90caac](https://github.com/ikenxuan/karin-plugin-kkk/commit/c90caaca734a30b7a2d1ed447994f15844abb8a4))
+* template:dev 兼容性提高 ([4ac290e](https://github.com/ikenxuan/karin-plugin-kkk/commit/4ac290ead15d46ac4f359cc06fb7605205cc553b))
+* 细优 ([0af9293](https://github.com/ikenxuan/karin-plugin-kkk/commit/0af9293bf7d8b9acf38c06104a8ccef36e00b03e))
+* 细优 ([5fef1ba](https://github.com/ikenxuan/karin-plugin-kkk/commit/5fef1baf2555b97bc6a2aa04a56971edb590e445))
+* 细优 ([16273a2](https://github.com/ikenxuan/karin-plugin-kkk/commit/16273a280cedb07aa8487143304ad66fcde76655))
+* 重写组件开发面板中子组件的缩放和拖拽逻辑。 ([74c7ea8](https://github.com/ikenxuan/karin-plugin-kkk/commit/74c7ea8bf5e507f66e7c50ab23a69ce0269dd5c3))
+
 ## [2.18.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.18.1...v2.18.2) (2026-01-18)
 
 
