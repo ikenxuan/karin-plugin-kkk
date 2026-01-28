@@ -652,7 +652,6 @@ jobs:
         id: publish_pkg
         working-directory: packages/core
         run: |
-          pnpm install --no-frozen-lockfile --config.strict-peer-dependencies=false
           npx --yes pkg-pr-new publish --json output.json --comment=off --compact --packageManager=pnpm > pkg-output.txt 2>&1
           
           ACTUAL_INSTALL_URL=$(grep -oE 'https://pkg\.pr\.new/[^[:space:]`]+' pkg-output.txt | head -n 1 || echo "")
