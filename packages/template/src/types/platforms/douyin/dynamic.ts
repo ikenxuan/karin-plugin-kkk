@@ -36,6 +36,8 @@ export interface DouyinDynamicProps extends BaseComponentProps {
     粉丝: string
     /** 分享链接 */
     share_url: string
+    /** 动态类型 */
+    dynamicTYPE?: string
     /** 合作信息 */
     cooperation_info?: {
       co_creator_nums: number

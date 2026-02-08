@@ -24,10 +24,7 @@ interface ComponentRendererProps {
 /**
  * 错误边界
  */
-class ComponentErrorBoundary extends React.Component<
-  { children: React.ReactNode; onError?: (error: Error) => void },
-  { hasError: boolean; error: Error | null }
-> {
+class ComponentErrorBoundary extends React.Component<{ children: React.ReactNode; onError?: (error: Error) => void }, { hasError: boolean; error: Error | null }> {
   constructor(props: any) {
     super(props)
     this.state = { hasError: false, error: null }
@@ -46,16 +43,10 @@ class ComponentErrorBoundary extends React.Component<
     if (this.state.hasError) {
       return (
         <div className="flex justify-center items-center min-h-screen p-8">
-          <div className="w-full max-w-[600px] rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
-            <div className="text-7xl text-warning">
-              ⚡
-            </div>
-            <div className="text-2xl font-semibold text-warning">
-              组件渲染错误
-            </div>
-            <div className="text-base text-center text-default-500 wrap-break-word">
-              {this.state.error?.message || '未知错误'}
-            </div>
+          <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
+            <div className="text-7xl text-warning">⚡</div>
+            <div className="text-2xl font-semibold text-warning">组件渲染错误</div>
+            <div className="text-base text-center text-default-500 wrap-break-word">{this.state.error?.message || '未知错误'}</div>
           </div>
         </div>
       )
@@ -70,14 +61,7 @@ class ComponentErrorBoundary extends React.Component<
  * @param props 组件属性
  * @returns JSX元素
  */
-const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
-  platform,
-  templateId,
-  data,
-  qrCodeDataUrl,
-  loadError,
-  onLoadComplete
-}) => {
+const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, templateId, data, qrCodeDataUrl, loadError, onLoadComplete }) => {
   /**
    * 渲染优雅的加载状态
    * @param message 加载消息
@@ -85,11 +69,9 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
    */
   const renderLoading = (message: string) => (
     <div className="flex justify-center items-center min-h-screen p-8">
-      <div className="w-full max-w-[600px] rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
+      <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
         <Spinner size="lg" color="primary" />
-        <p className="text-2xl font-medium text-foreground">
-          {message}
-        </p>
+        <p className="text-2xl font-medium text-foreground">{message}</p>
       </div>
     </div>
   )
@@ -102,16 +84,12 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
    */
   const renderInDevelopment = (type: string, name: string) => (
     <div className="flex justify-center items-center min-h-screen p-8">
-      <div className="w-full max-w-[600px] rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
-        <div className="text-7xl text-default-400">
-          🚧
-        </div>
+      <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
+        <div className="text-7xl text-default-400">🚧</div>
         <p className="text-2xl font-semibold text-foreground">
           {type} {name} 开发中
         </p>
-        <p className="text-lg text-default-500">
-          敬请期待
-        </p>
+        <p className="text-lg text-default-500">敬请期待</p>
       </div>
     </div>
   )
@@ -123,7 +101,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
 
     return (
       <div className="shadow-2xl rounded-[3rem] overflow-hidden">
-        <div 
+        <div
           className="relative flex flex-col"
           style={{
             cursor: 'inherit',
@@ -136,9 +114,9 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
           }}
         >
           {/* 弥散光背景 */}
-          <div className='absolute inset-0 pointer-events-none'>
+          <div className="absolute inset-0 pointer-events-none">
             <div
-              className='absolute rounded-full w-300 h-350 -top-75 -left-50 blur-[120px] -rotate-15'
+              className="absolute rounded-full w-300 h-350 -top-75 -left-50 blur-[120px] -rotate-15"
               style={{
                 background: isDark
                   ? 'radial-gradient(ellipse at 40% 40%, rgba(245,158,11,0.35) 0%, rgba(251,191,36,0.18) 50%, transparent 100%)'
@@ -146,7 +124,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
               }}
             />
             <div
-              className='absolute rounded-full w-225 h-250 top-150 -right-25 blur-[100px] rotate-20'
+              className="absolute rounded-full w-225 h-250 top-150 -right-25 blur-[100px] rotate-20"
               style={{
                 background: isDark
                   ? 'radial-gradient(ellipse at 50% 50%, rgba(202,138,4,0.3) 0%, rgba(161,98,7,0.15) 50%, transparent 100%)'
@@ -154,7 +132,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
               }}
             />
             <div
-              className='absolute rounded-full w-250 h-200 -bottom-50 left-100 blur-[140px] -rotate-10'
+              className="absolute rounded-full w-250 h-200 -bottom-50 left-100 blur-[140px] -rotate-10"
               style={{
                 background: isDark
                   ? 'radial-gradient(ellipse at 50% 60%, rgba(217,119,6,0.3) 0%, rgba(180,83,9,0.15) 50%, transparent 100%)'
@@ -164,18 +142,18 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
           </div>
 
           {/* 单色噪点层 */}
-          <div className='absolute inset-0 pointer-events-none' style={{ opacity: isDark ? 0.12 : 0.18 }}>
-            <svg className='w-full h-full' xmlns='http://www.w3.org/2000/svg'>
-              <filter id='dataErrorNoise' x='0%' y='0%' width='100%' height='100%'>
-                <feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='1' stitchTiles='stitch' result='noise' />
-                <feColorMatrix type='saturate' values='0' result='gray' />
+          <div className="absolute inset-0 pointer-events-none" style={{ opacity: isDark ? 0.12 : 0.18 }}>
+            <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+              <filter id="dataErrorNoise" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch" result="noise" />
+                <feColorMatrix type="saturate" values="0" result="gray" />
                 <feComponentTransfer>
-                  <feFuncR type='discrete' tableValues='0 1' />
-                  <feFuncG type='discrete' tableValues='0 1' />
-                  <feFuncB type='discrete' tableValues='0 1' />
+                  <feFuncR type="discrete" tableValues="0 1" />
+                  <feFuncG type="discrete" tableValues="0 1" />
+                  <feFuncB type="discrete" tableValues="0 1" />
                 </feComponentTransfer>
               </filter>
-              <rect width='100%' height='100%' filter='url(#dataErrorNoise)' />
+              <rect width="100%" height="100%" filter="url(#dataErrorNoise)" />
             </svg>
           </div>
 
@@ -187,12 +165,8 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
                 <AlertTriangle className="w-20 h-20 text-white" strokeWidth={2.5} />
               </div>
               <div className="flex flex-col">
-                <div className="text-8xl font-black text-white mb-4 drop-shadow-lg">
-                  数据加载失败
-                </div>
-                <div className="text-4xl text-white/80 font-semibold drop-shadow">
-                  Data Loading Error
-                </div>
+                <div className="text-8xl font-black text-white mb-4 drop-shadow-lg">数据加载失败</div>
+                <div className="text-4xl text-white/80 font-semibold drop-shadow">Data Loading Error</div>
               </div>
             </div>
 
@@ -200,13 +174,9 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
             <div className="mb-16">
               <div className="flex items-center gap-4 mb-6">
                 <Info className="w-7 h-7 text-white" strokeWidth={2.5} />
-                <div className="text-2xl font-bold text-white uppercase tracking-wider">
-                  使用提示
-                </div>
+                <div className="text-2xl font-bold text-white uppercase tracking-wider">使用提示</div>
               </div>
-              <div 
-                className="text-3xl font-medium text-white bg-black/20 backdrop-blur-sm rounded-[40px] px-12 py-10 leading-relaxed"
-              >
+              <div className="text-3xl font-medium text-white bg-black/20 backdrop-blur-sm rounded-[40px] px-12 py-10 leading-relaxed">
                 此组件需要先进行一次作品解析或调用对应功能才能生成数据。请确保已正确配置数据源并完成初始化操作。
               </div>
             </div>
@@ -215,14 +185,9 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
             <div className="mb-16">
               <div className="flex items-center gap-4 mb-6">
                 <AlertTriangle className="w-7 h-7 text-white" strokeWidth={2.5} />
-                <div className="text-2xl font-bold text-white uppercase tracking-wider">
-                  错误信息
-                </div>
+                <div className="text-2xl font-bold text-white uppercase tracking-wider">错误信息</div>
               </div>
-              <div 
-                className="text-3xl font-semibold text-white bg-black/20 backdrop-blur-sm rounded-[40px] px-12 py-10"
-                style={{ wordBreak: 'break-word' }}
-              >
+              <div className="text-3xl font-semibold text-white bg-black/20 backdrop-blur-sm rounded-[40px] px-12 py-10" style={{ wordBreak: 'break-word' }}>
                 {loadError.message}
               </div>
             </div>
@@ -232,13 +197,11 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
               <div className="flex-1 flex flex-col">
                 <div className="flex items-center gap-4 mb-6">
                   <Zap className="w-7 h-7 text-white" strokeWidth={2.5} />
-                  <div className="text-2xl font-bold text-white uppercase tracking-wider">
-                    堆栈跟踪
-                  </div>
+                  <div className="text-2xl font-bold text-white uppercase tracking-wider">堆栈跟踪</div>
                 </div>
-                <div 
+                <div
                   className="flex-1 text-xl font-mono text-white/90 bg-black/30 backdrop-blur-sm rounded-[40px] px-12 py-10 overflow-auto"
-                  style={{ 
+                  style={{
                     wordBreak: 'break-all',
                     whiteSpace: 'pre-wrap',
                     minHeight: '400px'
@@ -301,10 +264,9 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
        * 模拟 Puppeteer 的 waitUntil: 'load' 行为
        */
       const waitForResourcesLoaded = async () => {
-
         // 1. 等待 document.readyState === 'complete'
         if (document.readyState !== 'complete') {
-          await new Promise(resolve => {
+          await new Promise((resolve) => {
             window.addEventListener('load', resolve, { once: true })
           })
         }
@@ -313,7 +275,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
         const container = wrapperRef.current
         if (container) {
           const images = container.querySelectorAll('img')
-          
+
           const imagePromises = Array.from(images).map((img) => {
             if (img.complete && img.naturalHeight !== 0) {
               return Promise.resolve()
@@ -339,17 +301,19 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
         if (document.fonts && document.fonts.ready) {
           await Promise.race([
             document.fonts.ready,
-            new Promise(resolve => setTimeout(resolve, 3000)) // 3秒超时
+            new Promise((resolve) => setTimeout(resolve, 3000)) // 3秒超时
           ])
         }
 
         // 4. 额外等待一帧，确保布局完成
-        await new Promise(resolve => requestAnimationFrame(() => {
-          requestAnimationFrame(resolve)
-        }))
+        await new Promise((resolve) =>
+          requestAnimationFrame(() => {
+            requestAnimationFrame(resolve)
+          })
+        )
 
         // 5. 最后延迟一点，确保所有动画和渲染完成
-        await new Promise(resolve => setTimeout(resolve, 100))
+        await new Promise((resolve) => setTimeout(resolve, 100))
 
         // 触发加载完成回调
         onLoadComplete?.()
@@ -357,7 +321,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
 
       // 延迟执行，确保组件已经挂载到 DOM
       const timeoutId = setTimeout(() => {
-        waitForResourcesLoaded().catch(err => {
+        waitForResourcesLoaded().catch((err) => {
           console.warn('等待资源加载失败:', err)
           // 即使失败也触发回调
           onLoadComplete?.()
@@ -374,16 +338,16 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
 
   return (
     <ComponentErrorBoundary>
-      <React.Suspense fallback={
-        <div className="flex justify-center items-center min-h-screen p-8">
-          <div className="w-full max-w-[600px] rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
-            <Spinner size="lg" color="primary" />
-            <p className="text-2xl font-medium text-foreground">
-              加载 {componentConfig.name} 组件中
-            </p>
+      <React.Suspense
+        fallback={
+          <div className="flex justify-center items-center min-h-screen p-8">
+            <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
+              <Spinner size="lg" color="primary" />
+              <p className="text-2xl font-medium text-foreground">加载 {componentConfig.name} 组件中</p>
+            </div>
           </div>
-        </div>
-      }>
+        }
+      >
         <ComponentWrapper>
           <div className="shadow-2xl rounded-[3rem] overflow-hidden">
             <LazyComponent {...commonProps} />

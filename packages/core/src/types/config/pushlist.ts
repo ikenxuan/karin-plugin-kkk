@@ -1,3 +1,6 @@
+/** 推送内容类型 */
+export type DouyinPushType = 'post' | 'favorite' | 'recommend' | 'live'
+
 /** 定义推送列表项的接口 */
 export type douyinPushItem = {
   /** 是否启用 */
@@ -10,6 +13,8 @@ export type douyinPushItem = {
   group_id: string[]
   /** 博主或UP主的名字信息，可不填 */
   remark: string
+  /** 推送类型：作品列表、喜欢列表、推荐列表、直播，默认为作品列表 */
+  pushTypes?: DouyinPushType[]
   /** 黑名单：命中不推送；白名单：命中才推送 */
   filterMode?: 'blacklist' | 'whitelist'
   /** 指定关键词 */

@@ -62,7 +62,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
       >
         {children}
         {version ? (
-          <div className='pt-32 pb-20 text-default-800'>
+          <div className='relative z-50 pt-32 pb-20 text-default-800'>
             {/* 版本信息：插件、框架、构建工具 */}
             <div className='flex relative justify-center items-center space-x-8'>
               {/* 插件信息 */}

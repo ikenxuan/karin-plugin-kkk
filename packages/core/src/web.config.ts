@@ -602,6 +602,38 @@ export const webConfig = defineConfig({
                 isRequired: false,
                 description: '博主的抖音名称'
               }),
+              components.divider.create('push:douyin:divider-pushTypes', {
+                description: '推送类型配置',
+                descPosition: 20
+              }),
+              components.checkbox.group('pushTypes', {
+                label: '推送类型',
+                description: '选择要推送的内容类型，可多选',
+                orientation: 'horizontal',
+                color: 'warning',
+                checkbox: [
+                  components.checkbox.create('pushTypes:checkbox:post', {
+                    label: '作品列表',
+                    description: '推送博主发布的作品',
+                    value: 'post'
+                  }),
+                  components.checkbox.create('pushTypes:checkbox:favorite', {
+                    label: '喜欢列表',
+                    description: '推送博主喜欢的作品',
+                    value: 'favorite'
+                  }),
+                  components.checkbox.create('pushTypes:checkbox:recommend', {
+                    label: '推荐列表',
+                    description: '推送博主的推荐作品',
+                    value: 'recommend'
+                  }),
+                  components.checkbox.create('pushTypes:checkbox:live', {
+                    label: '直播',
+                    description: '推送博主开播通知',
+                    value: 'live'
+                  })
+                ]
+              }),
               components.divider.create('push:douyin:divider-1', {
                 description: '过滤系统',
                 descPosition: 20

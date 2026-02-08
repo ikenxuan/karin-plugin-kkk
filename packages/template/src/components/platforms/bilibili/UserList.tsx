@@ -63,7 +63,7 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
             className={`absolute -bottom-1 -right-1 px-3 py-1 rounded-full border-2 border-background flex items-center gap-1.5 shadow-md ${
               props.switch 
                 ? 'bg-success text-white' 
-                : 'bg-default-500 text-default-100'
+                : 'bg-danger-500 text-default-100'
             }`}
           >
             <div className={`w-1.5 h-1.5 rounded-full ${props.switch ? 'bg-white' : 'bg-default-300'}`} />

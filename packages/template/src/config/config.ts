@@ -69,6 +69,20 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
                 default: module.DouyinDynamic
               }))
             })
+          case 'favorite-list':
+            return createComponentConfig(baseComponent, {
+              validateData: (data) => data && typeof data.share_url === 'string',
+              lazyComponent: () => import('../components/platforms/douyin/FavoriteList').then(module => ({
+                default: module.DouyinFavoriteList
+              }))
+            })
+          case 'recommend-list':
+            return createComponentConfig(baseComponent, {
+              validateData: (data) => data && typeof data.share_url === 'string',
+              lazyComponent: () => import('../components/platforms/douyin/RecommendList').then(module => ({
+                default: module.DouyinRecommendList
+              }))
+            })
           case 'live':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',

@@ -13,7 +13,9 @@ export interface DouyinQrcodeImgProps extends BaseComponentProps<{
 
 export * from './comment'
 export * from './dynamic'
+export * from './favorite-list'
 export * from './live'
 export * from './musicinfo'
+export * from './recommend-list'
 export * from './userlist'
 export * from './videoInfo'

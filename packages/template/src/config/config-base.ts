@@ -58,16 +58,32 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
       },
       {
         id: 'dynamic',
-        name: '动态作品',
-        description: '抖音动态作品展示模板',
+        name: '作品列表',
+        description: '抖音作品列表推送模板',
         enabled: true,
         componentPath: 'platforms/douyin/Dynamic',
         exportName: 'DouyinDynamic'
       },
       {
+        id: 'favorite-list',
+        name: '喜欢列表',
+        description: '抖音喜欢列表推送模板',
+        enabled: true,
+        componentPath: 'platforms/douyin/FavoriteList',
+        exportName: 'DouyinFavoriteList'
+      },
+      {
+        id: 'recommend-list',
+        name: '推荐列表',
+        description: '抖音推荐列表推送模板',
+        enabled: true,
+        componentPath: 'platforms/douyin/RecommendList',
+        exportName: 'DouyinRecommendList'
+      },
+      {
         id: 'live',
-        name: '直播间',
-        description: '抖音直播间信息模板',
+        name: '直播状态',
+        description: '抖音直播状态推送模板',
         enabled: true,
         componentPath: 'platforms/douyin/Live',
         exportName: 'DouyinLive'

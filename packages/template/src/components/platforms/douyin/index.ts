@@ -1,5 +1,7 @@
 export { DouyinComment } from './Comment'
 export { DouyinDynamic } from './Dynamic'
+export { DouyinFavoriteList } from './FavoriteList'
 export { DouyinLive } from './Live'
 export { DouyinQrcodeImg } from './qrcodeImg'
+export { DouyinRecommendList } from './RecommendList'
 export { DouyinUserVideoList } from './UserVideoList'
