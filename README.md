@@ -8,7 +8,7 @@
 [![license](https://img.shields.io/github/license/ikenxuan/karin-plugin-kkk?style=flat-square)](./LICENSE)
 [![pkg.pr.new](https://pkg.pr.new/badge/ikenxuan/karin-plugin-kkk)](https://pkg.pr.new/~/ikenxuan/karin-plugin-kkk)
 
-Karin 的多平台短视频 & 图文内容解析推送插件，为群聊打造极致的媒体分享体验
+Karin 的多平台短视频 & 图文内容解析推送插件，为群聊打造一流的媒体分享体验和动态推送
 
 自动识别分享链接 · 智能提取视频/图集/热评 · 精美的模板渲染 · 无需跳转即可浏览
 

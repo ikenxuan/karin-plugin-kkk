@@ -101,7 +101,7 @@ export const DouyinFavoriteList: React.FC<DouyinFavoriteListProps> = (props) => 
                   <path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6-4.8-6 4.8 2.4-7.2-6-4.8h7.6z" />
                 </svg>
               </span>
-              <div className="px-6 py-6 pt-0 rounded-full text-3xl text-default-500">
+              <div className="px-6 py-6 pt-0 rounded-full text-3xl text-default-500 font-mono">
                 @{props.data.liker_douyin_id}
               </div>
               

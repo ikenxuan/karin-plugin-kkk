@@ -3,6 +3,7 @@
   "pages": [
     "error-handler",
     "danmaku-burning",
-    "comment-rendering"
+    "comment-rendering",
+    "push-logic"
   ]
 }
