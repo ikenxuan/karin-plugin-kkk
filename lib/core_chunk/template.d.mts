@@ -95,7 +95,8 @@ interface DouyinDynamicProps extends BaseComponentProps {
     获赞: string; /** 关注数 */
     关注: string; /** 粉丝数 */
     粉丝: string; /** 分享链接 */
-    share_url: string; /** 合作信息 */
+    share_url: string; /** 动态类型 */
+    dynamicTYPE?: string; /** 合作信息 */
     cooperation_info?: {
       co_creator_nums: number;
       co_creators: Array<{
@@ -106,6 +107,35 @@ interface DouyinDynamicProps extends BaseComponentProps {
         role_title: string;
       }>;
     };
+  };
+  /** 预生成的二维码数据URL */
+  qrCodeDataUrl: string;
+}
+//#endregion
+//#region ../template/src/types/platforms/douyin/favorite-list.d.ts
+/**
+ * 抖音喜欢列表组件属性接口
+ * 用于展示"谁喜欢了谁的作品"
+ */
+interface DouyinFavoriteListProps extends BaseComponentProps {
+  /** 渲染请求数据 */
+  data: {
+    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 作品封面图片URL */
+    image_url: string; /** 作品描述内容 */
+    desc: string; /** 点赞数 */
+    dianzan: string; /** 评论数 */
+    pinglun: string; /** 收藏数 */
+    shouchang: string; /** 分享数 */
+    share: string; /** 推荐数 */
+    tuijian: string; /** 作品创建时间 */
+    create_time: string; /** 点赞者（订阅者）用户名 */
+    liker_username: string; /** 点赞者头像URL */
+    liker_avatar: string; /** 点赞者抖音号 */
+    liker_douyin_id: string; /** 作品作者用户名 */
+    author_username: string; /** 作品作者头像URL */
+    author_avatar: string; /** 作品作者抖音号 */
+    author_douyin_id: string; /** 分享链接 */
+    share_url: string;
   };
   /** 预生成的二维码数据URL */
   qrCodeDataUrl: string;
@@ -159,6 +189,34 @@ interface DouyinMusicInfoProps extends BaseComponentProps {
   qrCodeDataUrl: string;
 }
 //#endregion
+//#region ../template/src/types/platforms/douyin/recommend-list.d.ts
+/**
+ * 抖音推荐列表组件属性接口
+ */
+interface DouyinRecommendListProps extends BaseComponentProps {
+  /** 渲染请求数据 */
+  data: {
+    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 图片URL */
+    image_url: string; /** 描述内容 */
+    desc: string; /** 点赞数 */
+    dianzan: string; /** 评论数 */
+    pinglun: string; /** 收藏数 */
+    shouchang: string; /** 推荐数 */
+    tuijian: string; /** 分享数 */
+    share: string; /** 创建时间 */
+    create_time: string; /** 推荐者（订阅者）用户名 */
+    recommender_username: string; /** 推荐者头像URL */
+    recommender_avatar: string; /** 推荐者抖音号 */
+    recommender_douyin_id: string; /** 作品作者用户名 */
+    author_username: string; /** 作品作者头像URL */
+    author_avatar: string; /** 作品作者抖音号 */
+    author_douyin_id: string; /** 分享链接 */
+    share_url: string;
+  };
+  /** 预生成的二维码数据URL */
+  qrCodeDataUrl: string;
+}
+//#endregion
 //#region ../template/src/types/platforms/douyin/userlist.d.ts
 /**
  * 抖音用户列表组件属性接口
@@ -178,7 +236,8 @@ interface DouyinUserListProps extends BaseComponentProps {
       fans: string; /** 获赞总数 */
       total_favorited: string; /** 关注数 */
       following_count: string; /** 全局推送开关状态 */
-      switch: boolean;
+      switch: boolean; /** 推送类型列表 */
+      pushTypes: string[];
     }[];
   };
 }
@@ -1583,7 +1642,7 @@ interface BaseComponentProps<T = Record<string, any>> extends Pick<RenderRequest
 /**
  * 抖音平台组件ID
  */
-type DouyinComponentIds = 'comment' | 'dynamic' | 'live' | 'musicinfo' | 'user_profile' | 'userlist' | 'videoInfo' | 'user_videolist' | 'qrcodeImg';
+type DouyinComponentIds = 'comment' | 'dynamic' | 'favorite-list' | 'live' | 'musicinfo' | 'recommend-list' | 'user_profile' | 'userlist' | 'videoInfo' | 'user_videolist' | 'qrcodeImg';
 /**
  * B站平台组件ID
  */
@@ -1610,8 +1669,10 @@ type DynamicRenderPath = `douyin/${DouyinComponentIds}` | `bilibili/${BilibiliCo
 interface PathToDataTypeMap {
   'douyin/comment': DouyinCommentProps['data'];
   'douyin/dynamic': DouyinDynamicProps['data'];
+  'douyin/favorite-list': DouyinFavoriteListProps['data'];
   'douyin/live': DouyinLiveProps['data'];
   'douyin/musicinfo': DouyinMusicInfoProps['data'];
+  'douyin/recommend-list': DouyinRecommendListProps['data'];
   'douyin/user_profile': DouyinUserVideoListProps['data'];
   'douyin/userlist': DouyinUserListProps['data'];
   'douyin/videoInfo': DouyinVideoInfoProps['data'];
@@ -1646,7 +1707,7 @@ type ExtractDataTypeFromPath<P extends string> = P extends keyof PathToDataTypeM
  */
 interface DataTypeMap {
   /** 抖音平台数据类型 */
-  douyin: DouyinCommentProps['data'] | DouyinDynamicProps['data'] | DouyinLiveProps['data'] | DouyinMusicInfoProps['data'] | DouyinQrcodeImgProps['data'];
+  douyin: DouyinCommentProps['data'] | DouyinDynamicProps['data'] | DouyinFavoriteListProps['data'] | DouyinLiveProps['data'] | DouyinMusicInfoProps['data'] | DouyinQrcodeImgProps['data'] | DouyinRecommendListProps['data'];
   /** B站平台数据类型 */
   bilibili: BilibiliCommentProps['data'] | BilibiliForwardDynamicProps['data'];
   /** 快手平台数据类型 */
