@@ -100,9 +100,9 @@ export class DouYinpush extends Base {
     for (const item of pushList) {
       // 检查并补全 pushTypes 字段
       if (!item.pushTypes || item.pushTypes.length === 0) {
-        item.pushTypes = ['post', 'live'] // 默认推送作品列表和直播
+        item.pushTypes = ['post', 'live', 'favorite', 'recommend']
         hasChanges = true
-        logger.info(`为用户 ${item.remark ?? item.sec_uid} 自动补全推送类型：作品列表、直播`)
+        logger.info(`为用户 ${item.remark ?? item.sec_uid} 自动补全推送类型：作品列表、直播、收藏、推荐`)
       }
 
       // 检查并补全 switch 字段
@@ -617,7 +617,7 @@ export class DouYinpush extends Base {
           
           // 确保 pushTypes 字段存在，如果不存在则添加默认值
           if (!existingItem.pushTypes || existingItem.pushTypes.length === 0) {
-            existingItem.pushTypes = ['post', 'live']
+            existingItem.pushTypes = ['post', 'live', 'favorite', 'recommend']
           }
 
           // 同时在数据库中添加订阅
@@ -637,7 +637,7 @@ export class DouYinpush extends Base {
           group_id: [`${groupId}:${botId}`],
           remark: UserInfoData.data.user.nickname,
           short_id: user_shortid,
-          pushTypes: ['post', 'live'] // 默认勾选作品推送和直播推送
+          pushTypes: ['post', 'live', 'favorite', 'recommend']
         })
 
         // 同时在数据库中添加订阅
@@ -645,9 +645,9 @@ export class DouYinpush extends Base {
           await douyinDB.subscribeDouyinUser(groupId, botId, sec_uid, user_shortid, UserInfoData.data.user.nickname)
         }
 
-        await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}\n默认推送：作品列表、直播`)
+        await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}`)
         if (Config.douyin.push.switch === false) await this.e.reply('请发送「#设置抖音推送开启」以进行推送')
-        logger.info(`\n设置成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.data.user.sec_uid}\n默认推送类型：作品列表、直播`)
+        logger.info(`\n设置成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.data.user.sec_uid}`)
       }
 
       // 保存配置到文件
