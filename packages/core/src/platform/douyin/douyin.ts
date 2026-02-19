@@ -142,8 +142,16 @@ export class DouYin extends Base {
               const images: Elements[] = []
               const temp: fileInfo[] = []
               /** BGM */
+              let mp3Path = ''
+              // 该声音由于版权原因在当前地区不可用
+              if (VideoData.data.aweme_detail.music.play_url.uri === '') {
+                const extraData = JSON.parse(VideoData.data.aweme_detail.music.extra)
+                mp3Path = extraData.original_song_url
+              } else {
+                mp3Path = VideoData.data.aweme_detail.music.play_url.uri
+              }
               const liveimgbgm = await downloadFile(
-                VideoData.data.aweme_detail.music.play_url.uri,
+                mp3Path,
                 {
                   title: `Douyin_tmp_A_${Date.now()}.mp3`,
                   headers: this.headers
@@ -234,7 +242,14 @@ export class DouYin extends Base {
         /** 背景音乐 */
         if (VideoData.data.aweme_detail.music) {
           const music = VideoData.data.aweme_detail.music
-          const music_url = music.play_url.uri // BGM link
+          let music_url = ''
+          // 该声音由于版权原因在当前地区不可用
+          if (music.play_url.uri === '') {
+            const extraData = JSON.parse(music.extra)
+            music_url = extraData.original_song_url
+          } else {
+            music_url = music.play_url.uri
+          }
           if (this.is_mp4 === false && Config.app.removeCache === false && music_url !== undefined) {
             try {
               const path = Common.tempDri.images + `${g_title}/BGM.mp3`
