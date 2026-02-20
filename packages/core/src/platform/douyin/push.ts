@@ -868,7 +868,7 @@ export class DouYinpush extends Base {
           
           // 确保 pushTypes 字段存在，如果不存在则添加默认值
           if (!existingItem.pushTypes || existingItem.pushTypes.length === 0) {
-            existingItem.pushTypes = ['post', 'live', 'favorite', 'recommend']
+            existingItem.pushTypes = ['post', 'live']
           }
 
           // 同时在数据库中添加订阅
@@ -888,7 +888,7 @@ export class DouYinpush extends Base {
           group_id: [`${groupId}:${botId}`],
           remark: UserInfoData.data.user.nickname,
           short_id: user_shortid,
-          pushTypes: ['post', 'live', 'favorite', 'recommend']
+          pushTypes: ['post', 'live']
         })
 
         // 同时在数据库中添加订阅
