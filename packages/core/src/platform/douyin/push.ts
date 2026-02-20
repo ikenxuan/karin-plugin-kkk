@@ -503,28 +503,144 @@ export class DouYinpush extends Base {
                       await Common.removeFile(item.filepath, true)
                     }
                   }
-                } else {
+                } else if (Detail_Data.images) {
                   // 普通图集处理逻辑
-                  const imageres: ImageElement[] = []
-                  let image_url
-                  for (const item of Detail_Data.images) {
-                    image_url = item.url_list[2] ?? item.url_list[1] // 图片地址
-                    imageres.push(segment.image(image_url))
-                  }
-                  const bot = karin.getBot(botId) as AdapterType
+                  // 检查是否包含 live 图（clip_type !== 2）
+                  const hasLiveImage = Detail_Data.images.some((item: any) => item.clip_type !== 2)
                   
-                  if (imageres.length === 1) {
-                    // 单张图片直接发送
-                    await bot.sendMsg(Contact, [segment.image(image_url)])
+                  if (hasLiveImage) {
+                    // 包含 live 图，需要特殊处理
+                    const processedImages: any[] = []
+                    const temp: fileInfo[] = []
+                    
+                    /** 下载 BGM */
+                    let mp3Path = ''
+                    if (Detail_Data.music.play_url.uri === '') {
+                      const extraData = JSON.parse(Detail_Data.music.extra)
+                      mp3Path = extraData.original_song_url
+                    } else {
+                      mp3Path = Detail_Data.music.play_url.uri
+                    }
+                    
+                    const liveimgbgm = await downloadFile(
+                      mp3Path,
+                      {
+                        title: `Douyin_tmp_A_${Date.now()}.mp3`,
+                        headers: douyinBaseHeaders
+                      }
+                    )
+                    temp.push(liveimgbgm)
+                    
+                    // 获取合并模式配置
+                    const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
+                    let bgmContext: any = null
+                    if (mergeMode === 'continuous') {
+                      const { createLiveImageContext } = await import('@/module/utils')
+                      bgmContext = await createLiveImageContext(liveimgbgm.filepath)
+                    }
+                    
+                    for (const item of Detail_Data.images) {
+                      // 静态图片，clip_type为2
+                      if (item.clip_type === 2) {
+                        const image_url = item.url_list[2] ?? item.url_list[1]
+                        processedImages.push(segment.image(image_url))
+                        continue
+                      }
+                      
+                      /** live 图 */
+                      const liveimg = await downloadFile(
+                        `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`,
+                        {
+                          title: `Douyin_tmp_V_${Date.now()}.mp4`,
+                          headers: douyinBaseHeaders
+                        }
+                      )
+                      
+                      if (liveimg.filepath) {
+                        const { Common, mergeLiveImageContinuous, mergeLiveImageIndependent } = await import('@/module/utils')
+                        const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
+                        let success: boolean
+                        
+                        // clip_type === 4 是短片，不需要重放，loopCount = 1
+                        // 其他类型（如 clip_type === 5 的 livePhoto）需要三次重放
+                        const loopCount = item.clip_type === 4 ? 1 : 3
+                        
+                        if (mergeMode === 'continuous' && bgmContext) {
+                          // 连续模式：BGM 从上次位置继续
+                          const result = await mergeLiveImageContinuous(
+                            { videoPath: liveimg.filepath, outputPath, loopCount },
+                            bgmContext
+                          )
+                          success = result.success
+                          bgmContext = result.context
+                        } else {
+                          // 独立模式：每张图都从 BGM 开头开始
+                          success = await mergeLiveImageIndependent(
+                            { videoPath: liveimg.filepath, outputPath, loopCount },
+                            liveimgbgm.filepath
+                          )
+                        }
+                        
+                        if (success) {
+                          const fs = await import('node:fs')
+                          const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
+                          fs.default.renameSync(outputPath, filePath)
+                          logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
+                          logger.mark('正在尝试删除缓存文件')
+                          await Common.removeFile(liveimg.filepath, true)
+                          temp.push({ filepath: filePath, totalBytes: 0 })
+                          processedImages.push(segment.video('file://' + filePath))
+                          
+                          // clip_type === 5 是 livePhoto，添加封面静态图
+                          if (item.clip_type === 5 && item.url_list?.[0]) {
+                            processedImages.push(segment.image(item.url_list[0]))
+                          }
+                        } else {
+                          await Common.removeFile(liveimg.filepath, true)
+                        }
+                      }
+                    }
+                    
+                    const bot = karin.getBot(botId) as AdapterType
+                    const Element = common.makeForward(processedImages, botId, bot.account.name)
+                    try {
+                      await bot.sendForwardMsg(Contact, Element, {
+                        source: '图集内容',
+                        summary: `查看${Element.length}张图片/视频消息`,
+                        prompt: '抖音图集解析结果',
+                        news: [{ text: '点击查看解析结果' }]
+                      })
+                    } catch (error) {
+                      logger.error(`发送图集失败: ${error}`)
+                    } finally {
+                      for (const item of temp) {
+                        const { Common } = await import('@/module/utils')
+                        await Common.removeFile(item.filepath, true)
+                      }
+                    }
                   } else {
-                    // 多张图片使用合并转发
-                    const forwardMsg = common.makeForward(imageres, botId, bot.account.name)
-                    await bot.sendForwardMsg(Contact, forwardMsg, {
-                      source: '图片合集',
-                      summary: `查看${forwardMsg.length}张图片消息`,
-                      prompt: '抖音图集解析结果',
-                      news: [{ text: '点击查看解析结果' }]
-                    })
+                    // 纯静态图集
+                    const imageres: ImageElement[] = []
+                    let image_url
+                    for (const item of Detail_Data.images) {
+                      image_url = item.url_list[2] ?? item.url_list[1] // 图片地址
+                      imageres.push(segment.image(image_url))
+                    }
+                    const bot = karin.getBot(botId) as AdapterType
+                    
+                    if (imageres.length === 1) {
+                      // 单张图片直接发送
+                      await bot.sendMsg(Contact, [segment.image(image_url)])
+                    } else {
+                      // 多张图片使用合并转发
+                      const forwardMsg = common.makeForward(imageres, botId, bot.account.name)
+                      await bot.sendForwardMsg(Contact, forwardMsg, {
+                        source: '图片合集',
+                        summary: `查看${forwardMsg.length}张图片消息`,
+                        prompt: '抖音图集解析结果',
+                        news: [{ text: '点击查看解析结果' }]
+                      })
+                    }
                   }
                 }
               }
