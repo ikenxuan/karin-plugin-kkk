@@ -229,10 +229,11 @@ export class DouyinDBBase {
 
       // 创建群组表
       `CREATE TABLE IF NOT EXISTS Groups (
-        id TEXT PRIMARY KEY,
+        id TEXT NOT NULL,
         botId TEXT NOT NULL,
         createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
         updatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id, botId),
         FOREIGN KEY (botId) REFERENCES Bots(id)
       )`,
 
