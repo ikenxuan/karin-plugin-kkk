@@ -2,6 +2,30 @@
 
 # Changelog
 
+## [2.19.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.18.3...v2.19.0) (2026-02-20)
+
+
+### ✨ 新功能
+
+* **抖音:** 实现订阅用户的点赞推操作送和推荐操作推送 [#248](https://github.com/ikenxuan/karin-plugin-kkk/issues/248) ([135ff58](https://github.com/ikenxuan/karin-plugin-kkk/commit/135ff58386c90ee544306ad4d63e7e5706ed1eef))
+
+
+### 🐛 错误修复
+
+* **抖音:** 该声音由于版权原因在当前地区不可用 ([12926b2](https://github.com/ikenxuan/karin-plugin-kkk/commit/12926b2d13bce6cc13a551535be4d7d68ba7e03d))
+
+
+### 📝 文档更新
+
+* update ([0870998](https://github.com/ikenxuan/karin-plugin-kkk/commit/087099825321e35f92d6280079250b1510ee9544))
+
+
+### ✨ 细节优化
+
+* 1 ([dd0727f](https://github.com/ikenxuan/karin-plugin-kkk/commit/dd0727fde5b6d4c4453617ad9ff89928ff3aa6ee))
+* 兼容性提高 ([0767d60](https://github.com/ikenxuan/karin-plugin-kkk/commit/0767d60e23c1ddaf81a909496961606fa2055a94))
+* **抖音:** 合辑解析将封面图也放进合并转发消息中 ([4b4f04b](https://github.com/ikenxuan/karin-plugin-kkk/commit/4b4f04b509293adb1bd94de86a278af02e2fafdb))
+
 ## [2.18.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.18.2...v2.18.3) (2026-01-27)
 
 
