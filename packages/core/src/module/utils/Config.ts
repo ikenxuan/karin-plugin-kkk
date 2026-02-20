@@ -47,6 +47,18 @@ class Cfg {
       list.forEach((file) => watch(file, (_old, _now) => {
         // logger.info('旧数据:', old);
         // logger.info('新数据:', now);
+        
+        // 检查是否是 cookies 或 request 配置文件变化
+        const fileName = path.basename(file, '.yaml')
+        if (fileName === 'cookies' || fileName === 'request') {
+          logger.debug(`[Config] 检测到 ${fileName} 配置变化，正在重载 Amagi Client...`)
+          // 动态导入避免循环依赖
+          import('../utils/amagiClient').then(({ reloadAmagiConfig }) => {
+            reloadAmagiConfig()
+          }).catch((error) => {
+            logger.error(`[Config] 重载 Amagi Client 失败: ${error}`)
+          })
+        }
       }))
     }, 2000)
 

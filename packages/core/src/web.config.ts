@@ -1,6 +1,6 @@
 import os from 'node:os'
 
-import { components, defineConfig } from 'node-karin'
+import { components, defineConfig, logger } from 'node-karin'
 import _ from 'node-karin/lodash'
 
 import { Root } from '@/module'
@@ -90,7 +90,7 @@ export const webConfig = defineConfig({
           components.accordion.createItem('cfg:cookies', {
             title: 'Cookies 相关',
             className: 'ml-4 mr-4',
-            subtitle: '建议配置，否则大部分功能无法使用，此部分修改后需重启方可生效！',
+            subtitle: '建议配置，否则大部分功能无法使用',
             children: [
               components.input.string('douyin', {
                 label: '抖音',
@@ -104,7 +104,7 @@ export const webConfig = defineConfig({
               components.input.string('bilibili', {
                 label: 'B站',
                 type: 'text',
-                description: '请输入你的B站Cookies，不输入则无法使用B站相关功能噢',
+                description: '请输入你的B站Cookies，不输入部分功能将受限噢',
                 defaultValue: all.cookies.bilibili,
                 placeholder: '',
                 rules: undefined,
@@ -793,6 +793,7 @@ export const webConfig = defineConfig({
 
     let success = false
     let isChange = false
+    let needReloadAmagi = false
 
     for (const key of Object.keys(mergeCfg) as Array<keyof ConfigType>) {
       const configValue = mergeCfg[key]
@@ -806,12 +807,26 @@ export const webConfig = defineConfig({
           const modifySuccess = await Config.ModifyPro(key, configValue)
           if (modifySuccess) {
             success = true
+            // 检查是否需要重载 Amagi Client
+            if (key === 'cookies' || key === 'request') {
+              needReloadAmagi = true
+            }
           }
         }
       }
     }
 
     await Config.syncConfigToDatabase()
+
+    // 如果 cookies 或 request 配置有变化，重载 Amagi Client
+    if (needReloadAmagi) {
+      try {
+        const { reloadAmagiConfig } = await import('@/module/utils/amagiClient')
+        reloadAmagiConfig()
+      } catch (error) {
+        logger.error(`[WebConfig] 重载 Amagi Client 失败: ${error}`)
+      }
+    }
 
     return {
       mergeCfg,

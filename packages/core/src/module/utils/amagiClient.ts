@@ -1,6 +1,7 @@
 import util from 'node:util'
 
 import Client, { type Result } from '@ikenxuan/amagi'
+import { logger } from 'node-karin'
 
 import { Config } from './Config'
 
@@ -46,6 +47,37 @@ export class AmagiBase {
         proxy: Config.request.proxy?.switch ? Config.request.proxy : false
       }
     })
+  }
+
+  /**
+   * 重载配置 - 重新创建 Amagi Client 实例
+   * 当配置文件中的 cookies 或 request 配置更新后，调用此方法使新配置生效
+   */
+  reloadConfig () {
+    logger.debug('[AmagiClient] 检测到配置变化，正在重载...')
+    
+    // 记录旧配置（用于调试）
+    const oldCookies = {
+      douyin: Config.cookies.douyin?.substring(0, 20) + '...',
+      bilibili: Config.cookies.bilibili?.substring(0, 20) + '...',
+      kuaishou: Config.cookies.kuaishou?.substring(0, 20) + '...',
+      xiaohongshu: Config.cookies.xiaohongshu?.substring(0, 20) + '...'
+    }
+    
+    // 重新创建客户端实例
+    const client = this.createAmagiClient()
+    this.amagi = this.wrapAmagiClient(client)
+    
+    // 记录新配置（用于调试）
+    const newCookies = {
+      douyin: Config.cookies.douyin?.substring(0, 20) + '...',
+      bilibili: Config.cookies.bilibili?.substring(0, 20) + '...',
+      kuaishou: Config.cookies.kuaishou?.substring(0, 20) + '...',
+      xiaohongshu: Config.cookies.xiaohongshu?.substring(0, 20) + '...'
+    }
+    
+    logger.debug('[AmagiClient] 配置重载完成')
+    logger.debug(`[AmagiClient] Cookie 变化对比:\n${util.inspect({ 旧配置: oldCookies, 新配置: newCookies }, { colors: true, depth: 2 })}`)
   }
 
   /** 包装解析库实例，递归代理所有嵌套对象的方法 */
@@ -102,9 +134,25 @@ export class AmagiBase {
   }
 }
 
-/** 获取已初始化的解析库实例 */
-const amagiClient = new AmagiBase().amagi
+/** 获取已初始化的解析库实例（单例） */
+const amagiClientInstance = new AmagiBase()
 
+/** 导出 Amagi Client 实例 */
+const amagiClient = amagiClientInstance.amagi
+
+/**
+ * 重载 Amagi 配置
+ * 当 cookies 或 request 配置更新后调用此方法，使新配置立即生效
+ * @example
+ * ```typescript
+ * // 更新配置后
+ * await Config.Modify('cookies', 'douyin', newCookie)
+ * reloadAmagiConfig() // 重载配置
+ * ```
+ */
+export const reloadAmagiConfig = () => {
+  amagiClientInstance.reloadConfig()
+}
 
 /** B站 Fetcher 实例 */
 export const bilibiliFetcher = amagiClient.bilibili.fetcher
