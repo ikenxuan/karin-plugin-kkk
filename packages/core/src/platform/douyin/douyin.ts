@@ -177,7 +177,7 @@ export class DouYin extends Base {
                   images.push(segment.image((item.url_list[0])))
                   continue
                 }
-                /** 动图 */
+                /** 动图/短片 */
                 const liveimg = await downloadFile(
                   `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`,
                   {
@@ -189,11 +189,15 @@ export class DouYin extends Base {
                 if (liveimg.filepath) {
                   const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
                   let success: boolean
+                  
+                  // clip_type === 4 是短片，不需要重放，loopCount = 1
+                  // 其他类型（如 clip_type === 5 的 livePhoto）需要三次重放
+                  const loopCount = item.clip_type === 4 ? 1 : 3
 
                   if (mergeMode === 'continuous' && bgmContext) {
                     // 连续模式：BGM 从上次位置继续
                     const result = await mergeLiveImageContinuous(
-                      { videoPath: liveimg.filepath, outputPath, loopCount: 3 },
+                      { videoPath: liveimg.filepath, outputPath, loopCount },
                       bgmContext
                     )
                     success = result.success
@@ -201,7 +205,7 @@ export class DouYin extends Base {
                   } else {
                     // 独立模式：每张图都从 BGM 开头开始
                     success = await mergeLiveImageIndependent(
-                      { videoPath: liveimg.filepath, outputPath, loopCount: 3 },
+                      { videoPath: liveimg.filepath, outputPath, loopCount },
                       liveimgbgm.filepath
                     )
                   }
@@ -214,6 +218,11 @@ export class DouYin extends Base {
                     await Common.removeFile(liveimg.filepath, true)
                     temp.push({ filepath: filePath, totalBytes: 0 })
                     images.push(segment.video('file://' + filePath))
+                    
+                    // clip_type === 4和5 是 短片和livePhoto，添加封面静态图
+                    if (item.clip_type === 5 && item.url_list?.[0]) {
+                      images.push(segment.image(item.url_list[0]))
+                    }
                   } else {
                     await Common.removeFile(liveimg.filepath, true)
                   }

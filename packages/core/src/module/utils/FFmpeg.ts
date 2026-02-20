@@ -190,14 +190,12 @@ export async function batchMergeLiveImages (
 
 export {
   type BiliDanmakuElem,
-  type BiliDanmakuOptions as DanmakuBurnOptions,
   burnBiliDanmaku as burnDanmakuToVideo,
+  type BiliDanmakuOptions as DanmakuBurnOptions,
   generateBiliASS as danmakuToASS,
   mergeAndBurnBili as mergeAndBurnDanmaku
 } from '@/platform/bilibili/danmaku'
-
 export {
+  burnDouyinDanmaku,
   type DouyinDanmakuElem,
-  type DouyinDanmakuOptions,
-  burnDouyinDanmaku
-} from '@/platform/douyin/danmaku'
+  type DouyinDanmakuOptions } from '@/platform/douyin/danmaku'
