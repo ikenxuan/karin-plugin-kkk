@@ -2,6 +2,25 @@
 
 # Changelog
 
+## [2.19.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.19.0...v2.19.1) (2026-02-21)
+
+
+### 🐛 错误修复
+
+* db init ([167baf4](https://github.com/ikenxuan/karin-plugin-kkk/commit/167baf4af8ff6a64eca8609cb89195b58ab7aa34))
+* **douyin:** improve type safety and filtering in comments parsing, close [#251](https://github.com/ikenxuan/karin-plugin-kkk/issues/251) ([740d31b](https://github.com/ikenxuan/karin-plugin-kkk/commit/740d31b2dfbe70f0ffda11635091a9444abcee7e))
+
+
+### 💄 UI 优化
+
+* **douyin:** 弱化评论中昵称的颜色 ([401574a](https://github.com/ikenxuan/karin-plugin-kkk/commit/401574a534ab582a30e82cab65dd48ef6a8a42d0))
+
+
+### ✨ 细节优化
+
+* 优化接口库CK传递，修改ck后不再需要重启。 ([fc05e32](https://github.com/ikenxuan/karin-plugin-kkk/commit/fc05e32ad8ce13c7f43d9b8067e3248c405d7672))
+* **抖音:** 订阅时默认关闭喜欢和推荐推送 ([b71f790](https://github.com/ikenxuan/karin-plugin-kkk/commit/b71f7900aba35b48da136af27c3056ca65debbf9))
+
 ## [2.19.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.18.3...v2.19.0) (2026-02-20)
 
 
