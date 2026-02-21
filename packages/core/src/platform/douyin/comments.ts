@@ -195,16 +195,16 @@ export const douyinComments = async (data: any, emojidata: any) => {
 
     if (replyComment.data.comments && replyComment.data.comments.length > 0) {
       for (const reply of replyComment.data.comments) {
-        const replyItem = reply as any
+        const replyItem = reply
         const replyUserintextlongid =
           replyItem.text_extra && replyItem.text_extra[0] && replyItem.text_extra[0].sec_uid
-            ? replyItem.text_extra.map((extra: any) => extra.sec_uid!)
+            ? replyItem.text_extra.filter(extra => extra.sec_uid).map((extra: any) => extra.sec_uid!)
             : null
 
         const processedReplyText = await processAtUsers(replyItem.text, replyUserintextlongid)
 
         // 处理回复评论的图片列表
-        const replyImageUrl = replyItem.image_list?.[0]?.origin_url?.url_list?.[0]
+        const replyImageUrl = (replyItem as any).image_list?.[0]?.origin_url?.url_list?.[0]
         const replyStickerUrl = replyItem.sticker?.animate_url?.url_list?.[0]
 
         let replyImageList: string[] | null = null
