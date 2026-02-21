@@ -302,7 +302,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
               {/* 第1行：头部 */}
               <div className='flex flex-nowrap items-center h-25 content-center w-full overflow-hidden'>
                 <span className={clsx(
-                  'mr-2 text-5xl font-medium text-foreground-700',
+                  'mr-2 text-5xl font-medium text-foreground-500',
                   isNicknameLonger ? 'min-w-0 truncate shrink' : 'shrink-0'
                 )}>
                   {reply.nickname}
@@ -322,9 +322,9 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
                     'flex items-center',
                     !isNicknameLonger ? 'overflow-hidden min-w-0 shrink' : 'shrink-0'
                   )}>
-                    <Play size={35} className='mr-3.5 mx-1 text-foreground-400 shrink-0' fill='currentColor' />
+                    <Play size={35} className='mr-3.5 mx-1 text-foreground-300 shrink-0' fill='currentColor' />
                     <span className={clsx(
-                      'text-5xl font-medium text-foreground-700',
+                      'text-5xl font-medium text-foreground-500',
                       !isNicknameLonger && 'truncate'
                     )}>
                       {reply.reply_to_username}
@@ -430,8 +430,8 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
           {/* 内部第2列：内容 */}
           <div className='flex flex-col pb-4 pl-4 min-w-0'>
             {/* 头部 */}
-            <div className='flex flex-wrap gap-4 items-center mb-3 text-5xl select-text text-foreground-700 min-h-35 content-center'>
-              <span className='font-medium'>{props.nickname}</span>
+            <div className='flex flex-wrap gap-4 items-center mb-3 text-5xl select-text min-h-35 content-center'>
+              <span className='font-medium text-foreground-500'>{props.nickname}</span>
               {props.label_type === 1 && (
                 <div className='inline-flex items-center px-3 py-1 rounded-lg text-3xl bg-[#fe2c55] text-white'>
                   作者
