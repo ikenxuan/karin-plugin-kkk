@@ -32,8 +32,8 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
         roles: ['member', 'master']
       },
       {
-        title: '「#解析」「#kkk解析」',
-        description: '在解析功能关闭的情况下，可对引用消息进行解析',
+        title: '「#解析」「#kkk解析」「#弹幕解析」',
+        description: '在解析功能关闭的情况下，可对引用消息进行解析；弹幕解析仅使用于「抖音」「哔哩哔哩」',
         icon: 'Sparkles',
         roles: ['member', 'master']
       }

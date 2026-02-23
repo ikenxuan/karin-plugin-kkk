@@ -263,8 +263,8 @@ importers:
   packages/core:
     dependencies:
       '@snapka/puppeteer':
-        specifier: '>=0.1.5 <0.2.0'
-        version: 0.1.7
+        specifier: '>=0.1.5 <0.3.0'
+        version: 0.2.2
       '@types/react':
         specifier: '*'
         version: 19.2.9
@@ -276,8 +276,8 @@ importers:
         specifier: workspace:*
         version: link:../amagi/packages/core
       '@karinjs/plugin-puppeteer':
-        specifier: ^1.1.2
-        version: 1.1.2
+        specifier: ^2.0.1
+        version: 2.0.1
       '@rollup/plugin-terser':
         specifier: ^0.4.4
         version: 0.4.4(rollup@4.56.0)
@@ -2182,8 +2182,8 @@ packages:
     resolution: {integrity: sha512-zkTx9gSPg4I0LwaDdLJLA2i1Wz3dn/0g236u07GvHHiVZXfG0CqTf2+rGtTYXE1LPdilcLkwuAPt9C9SIhcFIQ==}
     engines: {node: '>=18'}
 
-  '@karinjs/plugin-puppeteer@1.1.2':
-    resolution: {integrity: sha512-eRz3dUREYj/eY8l6r7aJCDUlJpe1kWDIRzPDj6Mk5fFkks4x9t3kajrU9tEi9RMyGciW1SPBAJ5Bcse0AKLAcg==}
+  '@karinjs/plugin-puppeteer@2.0.1':
+    resolution: {integrity: sha512-i9VsVYB/K2dC4WWOxaBz8Wsu1pRAO/ev62M2BEoSybIhMNoplVoobTsRS6gyc9GW8Ne1tXODIBPC2+Jf4uLcgA==}
 
   '@karinjs/redis@1.1.3':
     resolution: {integrity: sha512-Keo+1pJxvddTqBF4BE7AnZqvbBRXZ4QaZa8uJCKngmQ303TV3M0x0gHuKBfDNXQAkiHylw09a3YAzj68sh/Dhw==}
@@ -4263,33 +4263,22 @@ packages:
     resolution: {integrity: sha512-t09vSN3MdfsyCHoFcTRCH/iUtG7OJ0CsjzB8cjAmKc/va/kIgeDI/TxsigdncE/4be734m0cvIYwNaV4i2XqAw==}
     engines: {node: '>=10'}
 
-  '@snapka/browser-finder@0.1.4':
-    resolution: {integrity: sha512-PToJctMSQnnKCEsqyBIK4kHR/EGlm8CzgufqgM8xFjwWyDjTbx3pR5LNZSyzinmkMujx9dGXrmOJc9wl6e9iTg==}
+  '@snapka/browser-finder@0.1.8':
+    resolution: {integrity: sha512-5vYiMeqFt8rs/yCLn+1OQTeawth9xONRuJPbZtle8prMuvu+rHMnGcrtucbZG35AwKIsosKJYe8mDkLjJ2aCZQ==}
 
-  '@snapka/browser-finder@0.1.5':
-    resolution: {integrity: sha512-pvzbEuDUbrzv+wBAJx+KpfiQmB+6Z9vFgWdvmIGHU9xRM/qtBSP2PBbJiZ8haaE+FMPYlJpS848YhYRcaumF5Q==}
-
-  '@snapka/browsers@0.1.3':
-    resolution: {integrity: sha512-+GrqM5o7142dMU0p3aEMVoE9Tp/oI9o18dKPXcRLZ0w5fq1TAA7ZGvSxxOawrwhmk47Y6CEfAgqoP9wpiQm8jw==}
+  '@snapka/browsers@0.2.2':
+    resolution: {integrity: sha512-5rjF6yn2+Azy+qqtsO2lt9jb7XFiNjGRiQZi7rao8gcID3dk0MoqFTg7LgB2VkBXZ1UO8V3I9zsNpr4sZSYp7w==}
     engines: {node: '>=18'}
     hasBin: true
 
-  '@snapka/browsers@0.1.4':
-    resolution: {integrity: sha512-N4FQfrErL6i5lG6JG/a/Z0VIUh13FeTds7MhfHN8LKmfa3TdjaYdnegGcMqtBDhZVBz4aDOamscSYorSlJFJXg==}
-    engines: {node: '>=18'}
-    hasBin: true
+  '@snapka/puppeteer-core@0.1.4':
+    resolution: {integrity: sha512-DFvZfpBOfdbHOZ2K+YGUuZLwgcDiyKE+2A7OI4T7EieiDF7RT2n/rUIyQI5UR/J16240sGXhhs+4sp8oTSIzMQ==}
 
-  '@snapka/puppeteer-core@0.1.3':
-    resolution: {integrity: sha512-nhocIw1Hw9DB7zKO3czq7EHFKerE8Pgs/xtL1LKSMknHcWZV8ux+B4ZFYY/eZRmimjSa10kbuYuurLZyi0LZ1w==}
+  '@snapka/puppeteer@0.2.2':
+    resolution: {integrity: sha512-41xDHraR81A1npvJrqxe5/wE5ztvrMBNJTMJtmoSgVPES1/2B3G4OTqLwroXXkMjzJHEOxNe6laf7gG5A2EZGw==}
 
-  '@snapka/puppeteer@0.1.5':
-    resolution: {integrity: sha512-fGKTV1DiiA5/1U/UKKXKLulAJRe3svM3VHSND57d4d0nlkW0H7OKka0DsRSnThhtnf6d4hZ8ZyE4qcZGZirpTw==}
-
-  '@snapka/puppeteer@0.1.7':
-    resolution: {integrity: sha512-6wTha6j9U+rVU/fn6I+Aep2iODUfWqdTNMHp9hpxK3qNZdwKFryqxabGNBi4M6FvXC++seFIre0pDPP07yx35Q==}
-
-  '@snapka/types@0.1.2':
-    resolution: {integrity: sha512-oXFFnciHooMXhuGoyEHO2JFheoLPRUuW3rGkDTi+qMsG4T16I3lBpEpjPVcQDla23oAO0I44+RQWT1jkXWrZMg==}
+  '@snapka/types@0.1.3':
+    resolution: {integrity: sha512-wkcsAAO6lSsdC7okIRJLKI/U/WW/sF4LRo8ML7cyAq0zO8lULnDlMyQ5DrdPr7JO/0tz0BSw1ErwOWgo3csIYQ==}
 
   '@splinetool/runtime@0.9.526':
     resolution: {integrity: sha512-qznHbXA5aKwDbCgESAothCNm1IeEZcmNWG145p5aXj4w5uoqR1TZ9qkTHTKLTsUbHeitCwdhzmRqan1kxboLgQ==}
@@ -12139,9 +12128,9 @@ snapshots:
 
   '@karinjs/node-schedule@1.1.2': {}
 
-  '@karinjs/plugin-puppeteer@1.1.2':
+  '@karinjs/plugin-puppeteer@2.0.1':
     dependencies:
-      '@snapka/puppeteer': 0.1.5
+      '@snapka/puppeteer': 0.2.2
 
   '@karinjs/redis@1.1.3': {}
 
@@ -14485,37 +14474,23 @@ snapshots:
 
   '@sindresorhus/is@4.6.0': {}
 
-  '@snapka/browser-finder@0.1.4':
+  '@snapka/browser-finder@0.1.8':
     dependencies:
-      '@snapka/browsers': 0.1.3
+      '@snapka/browsers': 0.2.2
 
-  '@snapka/browser-finder@0.1.5':
+  '@snapka/browsers@0.2.2': {}
+
+  '@snapka/puppeteer-core@0.1.4': {}
+
+  '@snapka/puppeteer@0.2.2':
     dependencies:
-      '@snapka/browsers': 0.1.4
-
-  '@snapka/browsers@0.1.3': {}
-
-  '@snapka/browsers@0.1.4': {}
-
-  '@snapka/puppeteer-core@0.1.3': {}
-
-  '@snapka/puppeteer@0.1.5':
-    dependencies:
-      '@snapka/browser-finder': 0.1.4
-      '@snapka/browsers': 0.1.3
-      '@snapka/puppeteer-core': 0.1.3
-      '@snapka/types': 0.1.2
+      '@snapka/browser-finder': 0.1.8
+      '@snapka/browsers': 0.2.2
+      '@snapka/puppeteer-core': 0.1.4
+      '@snapka/types': 0.1.3
       p-limit: 7.2.0
 
-  '@snapka/puppeteer@0.1.7':
-    dependencies:
-      '@snapka/browser-finder': 0.1.5
-      '@snapka/browsers': 0.1.4
-      '@snapka/puppeteer-core': 0.1.3
-      '@snapka/types': 0.1.2
-      p-limit: 7.2.0
-
-  '@snapka/types@0.1.2': {}
+  '@snapka/types@0.1.3': {}
 
   '@splinetool/runtime@0.9.526':
     dependencies:

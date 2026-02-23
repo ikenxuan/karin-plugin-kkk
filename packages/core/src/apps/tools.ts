@@ -1,6 +1,6 @@
 import karin, { logger } from 'node-karin'
 
-import { Common } from '@/module'
+import { Common, downloadVideo } from '@/module'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { Bilibili, getBilibiliID } from '@/platform/bilibili'
@@ -10,6 +10,7 @@ import { getXiaohongshuID, Xiaohongshu } from '@/platform/xiaohongshu'
 
 const reg = {
   douyin: /(https?:\/\/)?(www|v|jx|m|jingxuan)\.(douyin|iesdouyin)\.com/i,
+  douyinCDN: /https:\/\/aweme\.snssdk\.com\/aweme\/v1\/play/i, // 抖音 CDN 下载链接
   bilibili: /(bilibili\.com|b23\.tv|t\.bilibili\.com|bili2233\.cn|\bBV[1-9a-zA-Z]{10}\b|\bav\d+\b)/i,
   kuaishou: /(快手.*快手|v\.kuaishou\.com|kuaishou\.com)/,
   xiaohongshu: /(xiaohongshu\.com|xhslink\.com)/
@@ -98,11 +99,29 @@ const handleXiaohongshu = wrapWithErrorHandler(async (e) => {
 const handlePrefix = wrapWithErrorHandler(async (e, next) => {
   const originalMsg = e.msg
   e.msg = await Common.getReplyMessage(e)
+  
   // 保留原始命令前缀，用于判断是否为弹幕解析
   if (/^#?弹幕解析/.test(originalMsg)) {
     e.msg = '#弹幕解析 ' + e.msg
   }
-  if (reg.douyin.test(e.msg)) {
+  
+  // 检查是否是抖音 CDN 下载链接（推送配置中渲染的二维码）
+  if (reg.douyinCDN.test(e.msg)) {
+    // 这是一个 CDN 下载链接，需要直接下载而不是解析
+    logger.debug('检测到抖音 CDN 下载链接，直接下载视频')
+    const videoIdMatch = e.msg.match(/video_id=([^&]+)/)
+    const videoId = videoIdMatch ? videoIdMatch[1] : Date.now().toString()
+    
+    await downloadVideo(e, {
+      video_url: e.msg,
+      title: { 
+        timestampTitle: `tmp_${Date.now()}.mp4`, 
+        originTitle: `抖音视频_${videoId}.mp4` 
+      }
+    })
+    return true
+  } else if (reg.douyin.test(e.msg)) {
+    // 正常的抖音分享链接
     return await handleDouyin(e, next)
   } else if (reg.bilibili.test(e.msg)) {
     return await handleBilibili(e, next)

@@ -6,6 +6,7 @@ import type { Response } from 'node-karin/express'
 import { karinPathTemp } from 'node-karin/root'
 
 import { Config } from '@/module/utils/Config'
+import { QRCodeScanner } from '@/module/utils/QRCodeScanner'
 
 import { Root } from '../../root'
 import { Count } from '..'
@@ -48,6 +49,23 @@ class Tools {
           return v.text
         } else if (v.type === 'json') {
           return v.data
+        } else if (v.type === 'image') {
+          // 如果是图片类型，尝试识别二维码
+          try {
+            logger.debug('检测到引用消息为图片，尝试识别二维码...')
+            const imageUrl = v.file
+            if (imageUrl) {
+              const qrContent = await QRCodeScanner.scanFromUrl(imageUrl)
+              if (qrContent && QRCodeScanner.isSupportedPlatform(qrContent)) {
+                logger.debug(`从图片二维码中识别到支持的平台链接: ${qrContent}`)
+                return qrContent
+              } else if (qrContent) {
+                logger.debug(`识别到二维码内容但不是支持的平台: ${qrContent}`)
+              }
+            }
+          } catch (error) {
+            logger.error('识别图片二维码时发生错误:', error)
+          }
         }
       }
     }
