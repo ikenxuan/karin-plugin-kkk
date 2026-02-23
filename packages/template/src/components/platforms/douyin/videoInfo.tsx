@@ -59,7 +59,7 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
           <div className="absolute inset-0 bg-black/50" />
         </div>
 
-        <div className="relative w-full overflow-hidden text-white font-sans">
+        <div className="relative w-full overflow-hidden text-white">
           <div className="relative z-10">
             {/* 顶部 */}
             <div className="flex items-center justify-between px-16 pt-20 pb-16 gap-12">
@@ -113,7 +113,7 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
               <div className="flex items-center justify-between mb-10">
                 {/* 时长 */}
                 {duration ? (
-                  <div className="px-6 py-4 rounded-2xl bg-white/20 backdrop-blur-2xl border border-white/30 shadow-lg text-white text-3xl font-semibold tracking-wider">
+                  <div className="px-6 py-4 rounded-2xl bg-white/20 backdrop-blur-2xl border border-white/30 shadow-lg text-white text-3xl tracking-wider">
                     {duration}
                   </div>
                 ) : <div />}
@@ -162,7 +162,7 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
 const StatItem: React.FC<{ icon: React.ReactNode; value: number }> = ({ icon, value }) => (
   <div className="flex flex-col items-center gap-3">
     <div className="text-white/60">{icon}</div>
-    <span className="text-4xl font-bold text-white/90 tabular-nums whitespace-nowrap">
+    <span className="text-4xl text-white/90 tabular-nums whitespace-nowrap">
       {formatNumber(value)}
     </span>
   </div>

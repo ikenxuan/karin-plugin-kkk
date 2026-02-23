@@ -479,7 +479,7 @@ export class DouYin extends Base {
                   gender: userProfile.data.user.gender ?? 0,
                   user_age: userProfile.data.user.user_age ?? 0
                 } : undefined,
-                image_url: this.is_mp4 ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] : VideoData.data.aweme_detail.images![0].url_list![0],
+                image_url: this.is_mp4 ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover_original_scale.url_list[0] : VideoData.data.aweme_detail.images![0].url_list![0],
                 cover_size: this.is_mp4
                   ? (VideoData.data.aweme_detail.video.cover ? {
                     width: VideoData.data.aweme_detail.video.cover_original_scale.width,
