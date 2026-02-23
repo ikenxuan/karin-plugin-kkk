@@ -231,7 +231,7 @@ export class DouYinpush extends Base {
             const authorUserInfo = 'author_user_info' in Detail_Data ? Detail_Data.author_user_info : undefined
             
             img = await Render('douyin/favorite-list', {
-              image_url: iddata.is_mp4 ? Detail_Data.video.animated_cover?.url_list[0] ?? Detail_Data.video.cover_original_scale.url_list[0] ?? Detail_Data.video.cover.url_list[0] : Detail_Data.images[0].url_list[0],
+              image_url: iddata.is_mp4 ? Detail_Data.video.animated_cover?.url_list[0] ?? Detail_Data.video.cover_original_scale?.url_list[0] ?? Detail_Data.video.cover.url_list[0] : Detail_Data.images[0].url_list[0],
               desc: this.desc(Detail_Data, Detail_Data.desc),
               dianzan: this.count(Detail_Data.statistics.digg_count),
               pinglun: this.count(Detail_Data.statistics.comment_count),
@@ -255,7 +255,7 @@ export class DouYinpush extends Base {
             const authorUserInfo = 'author_user_info' in Detail_Data ? Detail_Data.author_user_info : undefined
 
             img = await Render('douyin/recommend-list', {
-              image_url: iddata.is_mp4 ? Detail_Data.video.animated_cover?.url_list[0] ?? Detail_Data.video.cover_original_scale.url_list[0] ?? Detail_Data.video.cover.url_list[0] : Detail_Data.images[0].url_list[0],
+              image_url: iddata.is_mp4 ? Detail_Data.video.animated_cover?.url_list[0] ?? Detail_Data.video.cover_original_scale?.url_list[0] ?? Detail_Data.video.cover.url_list[0] : Detail_Data.images[0].url_list[0],
               desc: this.desc(Detail_Data, Detail_Data.desc),
               dianzan: this.count(Detail_Data.statistics.digg_count),
               pinglun: this.count(Detail_Data.statistics.comment_count),

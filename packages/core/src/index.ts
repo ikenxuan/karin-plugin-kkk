@@ -17,10 +17,14 @@ if (process.env.NODE_ENV !== 'development' && isSemverGreater(requireVersion, Ro
   const notifiedSet = new Set<string>()
 
   karin.on(BOT_CONNECT, async (bot: AdapterType) => {
+    const botId = bot.selfId
+    
+    // 跳过 console Bot
+    if (botId === 'console') return
+    
     // 增加延迟，确保 bot 完全初始化
     await new Promise(resolve => setTimeout(resolve, 2000))
     const masters = config.master()
-    const botId = bot.selfId
 
     logger.info(`[karin-plugin-kkk] 监测到 Bot 连接: ${botId}, 准备发送版本警告`)
 
