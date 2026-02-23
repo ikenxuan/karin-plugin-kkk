@@ -426,8 +426,8 @@ export class DouYinpush extends Base {
                   }
                   
                   for (const item of images1) {
-                    // 静态图片，clip_type为2
-                    if (item.clip_type === 2) {
+                    // 静态图片，clip_type为2或undefined
+                    if (item.clip_type === 2 || item.clip_type === undefined) {
                       images.push(segment.image(item.url_list[0]))
                       continue
                     }

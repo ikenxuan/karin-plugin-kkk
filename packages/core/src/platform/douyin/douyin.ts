@@ -149,8 +149,8 @@ export class DouYin extends Base {
                 for (const [index, imageItem] of images.entries()) {
                   imagenum++
                   
-                  // 静态图片，clip_type为2
-                  if (imageItem.clip_type === 2) {
+                  // 静态图片，clip_type为2或undefined
+                  if (imageItem.clip_type === 2 || imageItem.clip_type === undefined) {
                     image_url = imageItem.url_list[2] || imageItem.url_list[1]
                     processedImages.push(segment.image(image_url))
                     
