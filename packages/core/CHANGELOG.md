@@ -2,6 +2,19 @@
 
 # Changelog
 
+## [2.20.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.20.0...v2.20.1) (2026-02-23)
+
+
+### 🐛 错误修复
+
+* 抖音图集解析中，图片类型识别错误 ([3a1d57d](https://github.com/ikenxuan/karin-plugin-kkk/commit/3a1d57d7e7f7c68ed3cdae813d0a83b5bfc4fbb9))
+* 获取封面图空指针错误 ([d8434c7](https://github.com/ikenxuan/karin-plugin-kkk/commit/d8434c746ee11671656bda17ddb754d2aa2a6422))
+
+
+### ✨ 细节优化
+
+* 兼容性提高 ([3ea0cf7](https://github.com/ikenxuan/karin-plugin-kkk/commit/3ea0cf7706bdef6a3d3ef0e121c0991782162728))
+
 ## [2.20.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.19.1...v2.20.0) (2026-02-23)
 
 
