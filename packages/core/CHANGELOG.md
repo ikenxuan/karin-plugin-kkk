@@ -2,6 +2,24 @@
 
 # Changelog
 
+## [2.20.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.19.1...v2.20.0) (2026-02-23)
+
+
+### ✨ 新功能
+
+* **core:** 引用解析支持识别图片中的二维码进行解析 ([82e7878](https://github.com/ikenxuan/karin-plugin-kkk/commit/82e78788a53332b605a5fc5280d824eefc81b0f2))
+
+
+### 💄 UI 优化
+
+* **douyin:** 视频信息的字体优化 ([3d39d6c](https://github.com/ikenxuan/karin-plugin-kkk/commit/3d39d6c86dd7ced63d948e08e8ff3b6c8165bd3e))
+
+
+### ✨ 细节优化
+
+* 提高二维码识别兼容性 ([28ead9d](https://github.com/ikenxuan/karin-plugin-kkk/commit/28ead9da322af913e0defa1ac0f7118f44e9edb1))
+* 细优 ([1f45d0b](https://github.com/ikenxuan/karin-plugin-kkk/commit/1f45d0b81c9dfd906e1be227ddbe799ec26377e4))
+
 ## [2.19.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.19.0...v2.19.1) (2026-02-21)
 
 
