@@ -47,8 +47,8 @@ export default async function Layout({
   return (
     <html lang={lang} className={inter.className} suppressHydrationWarning>
       <head>
-        <Script src="/gt3.js" strategy="beforeInteractive" />
-        <Script src="/gt4.js" strategy="beforeInteractive" />
+        <Script src="https://static.geetest.com/static/js/gt.0.5.0.js" strategy="beforeInteractive" />
+        <Script src="https://static.geetest.com/v4/gt4.js" strategy="beforeInteractive" />
       </head>
       <body className="flex flex-col min-h-screen">
         <RootProvider search={{ SearchDialog }} i18n={provider(lang)}>
