@@ -4,11 +4,9 @@ import path from 'node:path'
 
 import { snapka } from '@snapka/puppeteer'
 import { newInjectedPage } from 'fingerprint-injector'
-import jsQR from 'jsqr'
 import { karin, karinPathTemp, logger, Message } from 'node-karin'
-import { PNG } from 'pngjs'
 
-import { Common, Render, Root } from '@/module'
+import { Common, QRCodeScanner, Render, Root } from '@/module'
 import { Config } from '@/module/utils/Config'
 
 type Page = Awaited<ReturnType<Awaited<ReturnType<typeof snapka.launch>>['browser']['newPage']>>
@@ -548,13 +546,12 @@ const waitQrcode = async (page: Page): Promise<{ url: string | null; originalIma
       imageBuffer = Buffer.from(await response.arrayBuffer())
     }
     
-    // 使用 pngjs 解析图片
-    const png = PNG.sync.read(imageBuffer)
-    const code = jsQR(Uint8ClampedArray.from(png.data), png.width, png.height)
+    // 使用 QRCodeScanner 解析二维码
+    const qrContent = QRCodeScanner.scanFromBuffer(imageBuffer)
     
-    if (code && code.data) {
-      logger.mark('二维码解码成功:', code.data)
-      return { url: code.data, originalImage }
+    if (qrContent) {
+      logger.mark('二维码解码成功:', qrContent)
+      return { url: qrContent, originalImage }
     }
   } catch (error) {
     logger.warn('二维码解码失败:', error)

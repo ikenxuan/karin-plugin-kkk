@@ -28,8 +28,8 @@
     "@vitejs/plugin-react": "5.1.2",
     "clsx": "^2.1.1",
     "cors": "^2.8.6",
-    "lucide-react": "0.563.0",
-    "node-karin": "1.14.1",
+    "lucide-react": "0.575.0",
+    "node-karin": "1.14.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "tailwindcss": "4.1.18"
