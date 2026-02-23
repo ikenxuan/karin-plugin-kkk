@@ -54,6 +54,7 @@
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../template/src/dev/mock-server.ts\" --include \"../template/src/main.ts\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
+    "@napi-rs/image": "^1.12.0",
     "fingerprint-injector": "^2.1.79"
   },
   "peerDependencies": {
