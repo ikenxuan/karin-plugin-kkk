@@ -20,7 +20,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
       {...props}
       version={undefined}
       className="relative overflow-hidden"
-      style={{ backgroundColor: bgColor, height: '2100px' }}
+      style={{ backgroundColor: bgColor, height: '2450px' }}
     >
       {/* 弥散光背景 */}
       <div className="absolute inset-0 pointer-events-none">
@@ -96,7 +96,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
               karin-plugin-kkk
             </p>
             <h1 className="text-[180px] font-black leading-none" style={{ color: accentColor }}>
-              请升级
+              请升级你的
             </h1>
             <h1 className="text-[120px] font-black leading-none" style={{ color: accentColor }}>
               <span className="font-mono">node-karin</span>
@@ -158,7 +158,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
                 <div className="flex items-center space-x-3 mb-4">
                   <div className="w-4 h-4 rounded-full" style={{ backgroundColor: accentColor }} />
                   <span className="text-[28px] font-medium" style={{ color: mutedColor }}>
-                    需要的版本
+                    需要/建议的版本
                   </span>
                   <Chip
                     className="text-lg font-bold"
@@ -177,25 +177,104 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
             {/* 分隔线 */}
             <div className="h-0.5 rounded-full mb-10" style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.2)' : 'rgba(180,83,9,0.15)' }} />
 
-            {/* 升级命令 */}
-            <div>
-              <div className="flex items-center space-x-4 mb-4">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke={mutedColor} strokeWidth="2">
-                  <path d="M4 17l6-6-6-6M12 19h8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <span className="text-[22px] font-medium" style={{ color: mutedColor }}>
-                  根目录下执行以下命令以升级
-                </span>
+            {/* 更新方案 */}
+            <div className="space-y-20">
+              {/* 方案一：Web UI */}
+              <div>
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-lg" style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}>
+                    <span className="text-[28px] font-black" style={{ color: accentColor }}>1</span>
+                  </div>
+                  <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={mutedColor} strokeWidth="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M9 3v18M3 9h18M3 15h18" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <span className="text-[32px] font-bold" style={{ color: mutedColor }}>
+                    Web 控制台更新
+                  </span>
+                  <Chip
+                    className="text-[20px] font-semibold px-4"
+                    style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.2)' : 'rgba(194,65,12,0.15)', color: accentColor }}
+                    size="lg"
+                  >
+                    推荐
+                  </Chip>
+                </div>
+                <div className="ml-14 space-y-4">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-3 h-3 rounded-full mt-3 flex-shrink-0" style={{ backgroundColor: mutedColor }} />
+                    <span className="text-[28px] leading-relaxed" style={{ color: secondaryColor }}>
+                      访问 Karin Web 控制台首页，查看 Karin 版本信息
+                    </span>
+                  </div>
+                  <div className="flex items-start space-x-4">
+                    <div className="w-3 h-3 rounded-full mt-3 flex-shrink-0" style={{ backgroundColor: mutedColor }} />
+                    <span className="text-[28px] leading-relaxed" style={{ color: secondaryColor }}>
+                      当有新版本时会高亮提示，点击查看更新日志
+                    </span>
+                  </div>
+                  <div className="flex items-start space-x-4">
+                    <div className="w-3 h-3 rounded-full mt-3 flex-shrink-0" style={{ backgroundColor: mutedColor }} />
+                    <span className="text-[28px] leading-relaxed" style={{ color: secondaryColor }}>
+                      点击「更新」按钮，系统将自动完成更新并重启
+                    </span>
+                  </div>
+                </div>
               </div>
-              <code className="text-[40px] font-mono font-bold" style={{ color: accentColor }}>
-                pnpm add node-karin@{props.data.requireVersion} -w
-              </code>
+
+              {/* 方案二：命令行 */}
+              <div>
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-lg" style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}>
+                    <span className="text-[28px] font-black" style={{ color: accentColor }}>2</span>
+                  </div>
+                  <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={mutedColor} strokeWidth="2">
+                    <path d="M4 17l6-6-6-6M12 19h8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <span className="text-[32px] font-bold" style={{ color: mutedColor }}>
+                    命令行更新
+                  </span>
+                </div>
+                <div className="ml-14 space-y-4">
+                  <p className="text-[28px]" style={{ color: secondaryColor }}>
+                    在 Karin 根目录下执行以下命令
+                  </p>
+                  <div
+                    className="rounded-xl p-6"
+                    style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.7)' }}
+                  >
+                    <code className="text-[40px] font-mono font-bold block" style={{ color: accentColor }}>
+                      pnpm add node-karin@{props.data.requireVersion} -w
+                    </code>
+                  </div>
+                  <p className="text-[28px] opacity-80" style={{ color: secondaryColor }}>
+                    更新完成后手动重启 Karin 即可
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {/* 简短说明 */}
-            <p className="text-[28px] mt-10 opacity-70" style={{ color: secondaryColor }}>
-              插件基于较新版本开发，低版本运行可能存在兼容问题
-            </p>
+            {/* 分隔线 */}
+            <div className="h-0.5 rounded-full my-10" style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.2)' : 'rgba(180,83,9,0.15)' }} />
+
+            {/* 重要提示 */}
+            <div
+              className="rounded-2xl p-6 flex items-start space-x-5"
+              style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.08)' : 'rgba(194,65,12,0.08)' }}
+            >
+              <svg className="w-10 h-10 mt-1 flex-shrink-0" viewBox="0 0 24 24" fill={accentColor}>
+                <path d="M12 2L22 20H2L12 2Z" />
+                <path d="M12 9v4M12 17h.01" stroke={bgColor} strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              <div className="flex-1">
+                <p className="text-[28px] font-semibold mb-2" style={{ color: accentColor }}>
+                  版本兼容性提示
+                </p>
+                <p className="text-[26px] leading-relaxed" style={{ color: secondaryColor }}>
+                  当前插件版本基于 <span className="font-bold font-mono" style={{ color: accentColor }}>node-karin v{props.data.requireVersion}</span> 开发，低版本运行时可能出现功能异常或兼容性问题，请及时更新以获得最佳体验
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
