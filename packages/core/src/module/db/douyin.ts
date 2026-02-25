@@ -194,7 +194,6 @@ export class DouyinDBBase {
             createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
             updatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (sec_uid) REFERENCES DouyinUsers(sec_uid),
-            FOREIGN KEY (groupId) REFERENCES Groups(id),
             UNIQUE(aweme_id, sec_uid, groupId, pushType)
           )
         `)
@@ -208,6 +207,47 @@ export class DouyinDBBase {
         await this.runQuery('DROP TABLE AwemeCaches_old')
         
         logger.info('[DouyinDB] AwemeCaches 表迁移完成')
+      }
+      
+      // 检查并修复外键约束问题
+      try {
+        // 尝试获取表结构
+        const tableInfo = await this.allQuery<{ sql: string }>(
+          'SELECT sql FROM sqlite_master WHERE type=\'table\' AND name=\'AwemeCaches\''
+        )
+        
+        if (tableInfo.length > 0 && tableInfo[0].sql.includes('FOREIGN KEY (groupId) REFERENCES Groups(id)')) {
+          logger.info('[DouyinDB] 检测到 AwemeCaches 表存在错误的外键约束，开始修复...')
+          
+          // 重建表以移除错误的外键约束
+          await this.runQuery('ALTER TABLE AwemeCaches RENAME TO AwemeCaches_old')
+          
+          await this.runQuery(`
+            CREATE TABLE IF NOT EXISTS AwemeCaches (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              aweme_id TEXT NOT NULL,
+              sec_uid TEXT NOT NULL,
+              groupId TEXT NOT NULL,
+              pushType TEXT DEFAULT 'post',
+              createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+              updatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+              FOREIGN KEY (sec_uid) REFERENCES DouyinUsers(sec_uid),
+              UNIQUE(aweme_id, sec_uid, groupId, pushType)
+            )
+          `)
+          
+          await this.runQuery(`
+            INSERT INTO AwemeCaches (id, aweme_id, sec_uid, groupId, pushType, createdAt, updatedAt)
+            SELECT id, aweme_id, sec_uid, groupId, pushType, createdAt, updatedAt
+            FROM AwemeCaches_old
+          `)
+          
+          await this.runQuery('DROP TABLE AwemeCaches_old')
+          
+          logger.info('[DouyinDB] AwemeCaches 表外键约束修复完成')
+        }
+      } catch (error) {
+        logger.debug('[DouyinDB] 外键约束检查/修复跳过:', error)
       }
     } catch (error) {
       logger.error('[DouyinDB] 数据库迁移失败:', error)
@@ -269,7 +309,6 @@ export class DouyinDBBase {
         createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
         updatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (sec_uid) REFERENCES DouyinUsers(sec_uid),
-        FOREIGN KEY (groupId) REFERENCES Groups(id),
         UNIQUE(aweme_id, sec_uid, groupId, pushType)
       )`,
 
@@ -505,6 +544,29 @@ export class DouyinDBBase {
       'DELETE FROM AwemeCaches WHERE groupId = ? AND sec_uid = ?',
       [groupId, sec_uid]
     )
+
+    // 检查该用户是否还有其他群组订阅
+    const remainingSubscriptions = await this.getQuery<{ count: number }>(
+      'SELECT COUNT(*) as count FROM GroupUserSubscriptions WHERE sec_uid = ?',
+      [sec_uid]
+    )
+
+    // 如果没有任何群组订阅该用户，删除用户记录及相关数据
+    if (remainingSubscriptions && remainingSubscriptions.count === 0) {
+      logger.info(`[DouyinDB] 用户 ${sec_uid} 已无任何群组订阅，清理相关数据`)
+      
+      // 删除用户记录
+      await this.runQuery('DELETE FROM DouyinUsers WHERE sec_uid = ?', [sec_uid])
+      
+      // 删除过滤词
+      await this.runQuery('DELETE FROM FilterWords WHERE sec_uid = ?', [sec_uid])
+      
+      // 删除过滤标签
+      await this.runQuery('DELETE FROM FilterTags WHERE sec_uid = ?', [sec_uid])
+      
+      // 删除所有相关的作品缓存（所有群组的）
+      await this.runQuery('DELETE FROM AwemeCaches WHERE sec_uid = ?', [sec_uid])
+    }
 
     return result.changes > 0
   }

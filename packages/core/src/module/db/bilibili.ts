@@ -420,6 +420,29 @@ export class BilibiliDBBase {
       [groupId, host_mid]
     )
 
+    // 检查该用户是否还有其他群组订阅
+    const remainingSubscriptions = await this.getQuery<{ count: number }>(
+      'SELECT COUNT(*) as count FROM GroupUserSubscriptions WHERE host_mid = ?',
+      [host_mid]
+    )
+
+    // 如果没有任何群组订阅该用户，删除用户记录及相关数据
+    if (remainingSubscriptions && remainingSubscriptions.count === 0) {
+      logger.info(`[BilibiliDB] 用户 ${host_mid} 已无任何群组订阅，清理相关数据`)
+      
+      // 删除用户记录
+      await this.runQuery('DELETE FROM BilibiliUsers WHERE host_mid = ?', [host_mid])
+      
+      // 删除过滤词
+      await this.runQuery('DELETE FROM FilterWords WHERE host_mid = ?', [host_mid])
+      
+      // 删除过滤标签
+      await this.runQuery('DELETE FROM FilterTags WHERE host_mid = ?', [host_mid])
+      
+      // 删除所有相关的动态缓存（所有群组的）
+      await this.runQuery('DELETE FROM DynamicCaches WHERE host_mid = ?', [host_mid])
+    }
+
     return result.changes > 0
   }
 
