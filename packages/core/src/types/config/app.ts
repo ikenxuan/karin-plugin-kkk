@@ -35,7 +35,7 @@ export interface appConfig {
 
   /**
    * 表情 ID
-   * @see https://github.com/NapNeko/NapCatQQ/blob/main/src/core/external/face_config.json
+   * @see https://github.com/NapNeko/NapCatQQ/blob/main/packages/napcat-core/external/face_config.json
    */
   EmojiReplyID: number
 
