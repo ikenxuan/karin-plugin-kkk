@@ -2,6 +2,28 @@
 
 # Changelog
 
+## [2.20.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.20.1...v2.20.2) (2026-02-25)
+
+
+### 🐛 错误修复
+
+* **抖音:** 没有bgm导致解析错误 ([b8af209](https://github.com/ikenxuan/karin-plugin-kkk/commit/b8af2096e658c9ecca7122062cd6df8b9ea12e74))
+
+
+### 🧰 其他更新
+
+* 移除未使用依赖 ([b79194b](https://github.com/ikenxuan/karin-plugin-kkk/commit/b79194b5d57240a408d1e70937d4cf1e5094d6ea))
+
+
+### 🗃️ 数据库迁移
+
+* 优化删除逻辑 ([8208e66](https://github.com/ikenxuan/karin-plugin-kkk/commit/8208e66f345d4edb9fe4f945f7dea2fc2bfe752f))
+
+
+### 💯 细节优化
+
+* 表情回应功能占位 ([c96377e](https://github.com/ikenxuan/karin-plugin-kkk/commit/c96377e9aeed57285f273300e9a1566bf1ebbf18))
+
 ## [2.20.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.20.0...v2.20.1) (2026-02-23)
 
 
