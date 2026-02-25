@@ -15,11 +15,12 @@ import {
   downloadVideo,
   fileInfo,
   type LiveImageMergeContext,
+  loopVideo,
   mergeLiveImageContinuous,
   mergeLiveImageIndependent,
   Networks,
-  Render
-} from '@/module/utils'
+  Render,
+  uploadFile } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
 import { douyinComments } from '@/platform/douyin'
 import { burnDouyinDanmaku, type DouyinDanmakuElem } from '@/platform/douyin/danmaku'
@@ -121,29 +122,33 @@ export class DouYin extends Base {
                 const title = VideoData.data.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:*?"<>|\r\n]/g, ' ')
                 g_title = title
                 
-                /** 下载 BGM */
-                let mp3Path = ''
-                if (VideoData.data.aweme_detail.music.play_url.uri === '') {
-                  const extraData = JSON.parse(VideoData.data.aweme_detail.music.extra)
-                  mp3Path = extraData.original_song_url
-                } else {
-                  mp3Path = VideoData.data.aweme_detail.music.play_url.uri
-                }
-                
-                const liveimgbgm = await downloadFile(
-                  mp3Path,
-                  {
-                    title: `Douyin_tmp_A_${Date.now()}.mp3`,
-                    headers: this.headers
-                  }
-                )
-                temp.push(liveimgbgm)
-                
-                // 获取合并模式配置
-                const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
+                /** 下载 BGM（如果存在） */
+                let liveimgbgm: fileInfo | null = null
                 let bgmContext: LiveImageMergeContext | null = null
-                if (mergeMode === 'continuous') {
-                  bgmContext = await createLiveImageContext(liveimgbgm.filepath)
+                const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
+                
+                if (VideoData.data.aweme_detail.music) {
+                  let mp3Path = ''
+                  if (VideoData.data.aweme_detail.music.play_url.uri === '') {
+                    const extraData = JSON.parse(VideoData.data.aweme_detail.music.extra)
+                    mp3Path = extraData.original_song_url
+                  } else {
+                    mp3Path = VideoData.data.aweme_detail.music.play_url.uri
+                  }
+                  
+                  liveimgbgm = await downloadFile(
+                    mp3Path,
+                    {
+                      title: `Douyin_tmp_A_${Date.now()}.mp3`,
+                      headers: this.headers
+                    }
+                  )
+                  temp.push(liveimgbgm)
+                  
+                  // 获取合并模式配置
+                  if (mergeMode === 'continuous') {
+                    bgmContext = await createLiveImageContext(liveimgbgm.filepath)
+                  }
                 }
                 
                 for (const [index, imageItem] of images.entries()) {
@@ -179,7 +184,17 @@ export class DouYin extends Base {
                     // 其他类型（如 clip_type === 5 的 livePhoto）需要三次重放
                     const loopCount = imageItem.clip_type === 4 ? 1 : 3
                     
-                    if (mergeMode === 'continuous' && bgmContext) {
+                    // 如果没有 BGM，直接重放视频
+                    if (!liveimgbgm) {
+                      if (loopCount > 1) {
+                        // 需要重放，使用 ffmpeg 重放视频
+                        success = await loopVideo(liveimg.filepath, outputPath, loopCount)
+                      } else {
+                        // 不需要重放，直接使用原视频
+                        fs.renameSync(liveimg.filepath, outputPath)
+                        success = true
+                      }
+                    } else if (mergeMode === 'continuous' && bgmContext) {
                       // 连续模式：BGM 从上次位置继续
                       const result = await mergeLiveImageContinuous(
                         { videoPath: liveimg.filepath, outputPath, loopCount },
@@ -272,39 +287,46 @@ export class DouYin extends Base {
             case VideoData.data.aweme_detail.is_slides === true && VideoData.data.aweme_detail.images !== null: {
               const images: Elements[] = []
               const temp: fileInfo[] = []
-              /** BGM */
-              let mp3Path = ''
-              // 该声音由于版权原因在当前地区不可用
-              if (VideoData.data.aweme_detail.music.play_url.uri === '') {
-                const extraData = JSON.parse(VideoData.data.aweme_detail.music.extra)
-                mp3Path = extraData.original_song_url
-              } else {
-                mp3Path = VideoData.data.aweme_detail.music.play_url.uri
-              }
-              const liveimgbgm = await downloadFile(
-                mp3Path,
-                {
-                  title: `Douyin_tmp_A_${Date.now()}.mp3`,
-                  headers: this.headers
+              
+              /** 下载 BGM（如果存在） */
+              let liveimgbgm: fileInfo | null = null
+              let bgmContext: LiveImageMergeContext | null = null
+              const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
+              
+              if (VideoData.data.aweme_detail.music) {
+                let mp3Path = ''
+                // 该声音由于版权原因在当前地区不可用
+                if (VideoData.data.aweme_detail.music.play_url.uri === '') {
+                  const extraData = JSON.parse(VideoData.data.aweme_detail.music.extra)
+                  mp3Path = extraData.original_song_url
+                } else {
+                  mp3Path = VideoData.data.aweme_detail.music.play_url.uri
                 }
-              )
-              temp.push(liveimgbgm)
+                
+                liveimgbgm = await downloadFile(
+                  mp3Path,
+                  {
+                    title: `Douyin_tmp_A_${Date.now()}.mp3`,
+                    headers: this.headers
+                  }
+                )
+                temp.push(liveimgbgm)
+                
+                // 获取合并模式配置
+                if (mergeMode === 'continuous') {
+                  bgmContext = await createLiveImageContext(liveimgbgm.filepath)
+                }
+              }
+              
               const images1 = VideoData.data.aweme_detail.images ?? []
               if (!images1.length) {
                 logger.debug('未获取到合辑的图片数据')
               }
 
-              // 获取合并模式配置
-              const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
-              let bgmContext: LiveImageMergeContext | null = null
-              if (mergeMode === 'continuous') {
-                bgmContext = await createLiveImageContext(liveimgbgm.filepath)
-              }
-
               for (const item of images1) {
                 imagenum++
-                // 静态图片，clip_type为2
-                if (item.clip_type === 2) {
+                // 静态图片，clip_type为2或undefined
+                if (item.clip_type === 2 || item.clip_type === undefined) {
                   images.push(segment.image((item.url_list[0])))
                   continue
                 }
@@ -325,7 +347,17 @@ export class DouYin extends Base {
                   // 其他类型（如 clip_type === 5 的 livePhoto）需要三次重放
                   const loopCount = item.clip_type === 4 ? 1 : 3
 
-                  if (mergeMode === 'continuous' && bgmContext) {
+                  // 如果没有 BGM，直接重放视频
+                  if (!liveimgbgm) {
+                    if (loopCount > 1) {
+                      // 需要重放，使用 ffmpeg 重放视频
+                      success = await loopVideo(liveimg.filepath, outputPath, loopCount)
+                    } else {
+                      // 不需要重放，直接使用原视频
+                      fs.renameSync(liveimg.filepath, outputPath)
+                      success = true
+                    }
+                  } else if (mergeMode === 'continuous' && bgmContext) {
                     // 连续模式：BGM 从上次位置继续
                     const result = await mergeLiveImageContinuous(
                       { videoPath: liveimg.filepath, outputPath, loopCount },
@@ -601,7 +633,6 @@ export class DouYin extends Base {
                 await Common.removeFile(videoFile.filepath, true)
                 const stats = fs.statSync(filePath)
                 const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
-                const { uploadFile } = await import('@/module/utils')
                 if (fileSizeInMB > Config.upload.groupfilevalue) {
                   await uploadFile(this.e, { filepath: filePath, totalBytes: fileSizeInMB, originTitle: g_title || '' }, '', { useGroupFile: true })
                 } else {

@@ -1,6 +1,5 @@
-/**
- * FFmpeg 通用工具模块
- */
+import fs from 'node:fs'
+
 import { ffmpeg, ffprobe, logger } from 'node-karin'
 
 import { Common } from '@/module/utils'
@@ -11,6 +10,29 @@ import { Common } from '@/module/utils'
 export async function getMediaDuration (path: string): Promise<number> {
   const { stdout } = await ffprobe(`-v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${path}"`)
   return parseFloat(parseFloat(stdout.trim()).toFixed(2))
+}
+
+/** 重放视频（不添加 BGM） */
+export async function loopVideo (
+  inputPath: string,
+  outputPath: string,
+  loopCount: number
+): Promise<boolean> {
+  if (loopCount <= 1) {
+    fs.copyFileSync(inputPath, outputPath)
+    return true
+  }
+
+  const result = await ffmpeg(
+    `-y -stream_loop ${loopCount - 1} -i "${inputPath}" -c copy "${outputPath}"`
+  )
+
+  if (result.status) {
+    logger.mark(`视频重放成功: ${outputPath}`)
+  } else {
+    logger.error('视频重放失败', result)
+  }
+  return result.status
 }
 
 // ==================== 视频合并 ====================

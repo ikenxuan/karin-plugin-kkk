@@ -1,3 +1,5 @@
+import fs from 'node:fs'
+
 import type { DySearchInfo } from '@ikenxuan/amagi'
 import { format, fromUnixTime } from 'date-fns'
 import type { AdapterType, ImageElement, Message } from 'node-karin'
@@ -8,11 +10,16 @@ import {
   Base,
   baseHeaders,
   cleanOldDynamicCache,
+  Common,
+  createLiveImageContext,
   douyinDB,
   downloadFile,
   downLoadFileOptions,
   downloadVideo,
   fileInfo,
+  loopVideo,
+  mergeLiveImageContinuous,
+  mergeLiveImageIndependent,
   Networks,
   Render
 } from '@/module'
@@ -342,58 +349,62 @@ export class DouYinpush extends Base {
 
       // 遍历目标群组，并发送消息
       for (const target of pushItem.targets) {
-        try {
-          let status = { message_id: '' }
-          const { groupId, botId } = target
+        let status = { message_id: '' }
+        const { groupId, botId } = target
 
-          if (!skip) {
-            const Contact = karin.contactGroup(groupId)
-            // 发送消息
-            status = await karin.sendMsg(botId, Contact, img ? [...img] : [])
+        if (!skip) {
+          const Contact = karin.contactGroup(groupId)
+          // 发送消息
+          status = await karin.sendMsg(botId, Contact, img ? [...img] : [])
 
-            // 如果是直播推送，更新直播状态
-            if (pushItem.pushType === 'live' && 'room_data' in pushItem.Detail_Data && status.message_id) {
-              await douyinDB.updateLiveStatus(pushItem.sec_uid, true)
-            }
+          // 如果是直播推送，更新直播状态
+          if (pushItem.pushType === 'live' && 'room_data' in pushItem.Detail_Data && status.message_id) {
+            await douyinDB.updateLiveStatus(pushItem.sec_uid, true)
+          }
 
-            // 是否一同解析该新作品？
-            if (Config.douyin.push.parsedynamic && status.message_id) {
-              logger.debug(`开始解析作品，类型为：${iddata.is_mp4 ? '视频' : '图集'}`)
-              // 如果新作品是视频
-              if (iddata.is_mp4) {
-                try {
-                  /** 默认视频下载地址 */
-                  let downloadUrl = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
-                  // 根据配置文件自动选择分辨率
-                  logger.debug(`开始排除不符合条件的视频分辨率；\n
+          // 是否一同解析该新作品？
+          if (Config.douyin.push.parsedynamic && status.message_id) {
+            logger.debug(`开始解析作品，类型为：${iddata.is_mp4 ? '视频' : '图集'}`)
+            // 如果新作品是视频
+            if (iddata.is_mp4) {
+              try {
+                /** 默认视频下载地址 */
+                let downloadUrl = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
+                // 根据配置文件自动选择分辨率
+                logger.debug(`开始排除不符合条件的视频分辨率；\n
                     共拥有${logger.yellow(Detail_Data.video.bit_rate.length)}个视频源\n
                     视频ID：${logger.green(Detail_Data.aweme_id)}\n
                     分享链接：${logger.green(Detail_Data.share_url)}
                     `)
-                  const videoObj = douyinProcessVideos(Detail_Data.video.bit_rate, Config.douyin.videoQuality)
-                  logger.debug('获取精确下载地址')
-                  downloadUrl = await new Networks({
-                    url: videoObj[0].play_addr.url_list[0],
-                    headers: douyinBaseHeaders
-                  }).getLongLink()
-                  // 下载视频
-                  await downloadVideo(this.e, {
-                    video_url: downloadUrl,
-                    title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${Detail_Data.desc}.mp4` }
-                  }, { active: true, activeOption: { uin: botId, group_id: groupId } })
-                } catch (error) {
-                  throw new Error(`下载视频失败: ${error}`)
-                }
-              } else if (!iddata.is_mp4 && iddata.type === 'one_work') { // 如果新作品是图集或合辑
-                // 判断是否为合辑（is_slides）
-                const isSlides = Detail_Data.is_slides === true
+                const videoObj = douyinProcessVideos(Detail_Data.video.bit_rate, Config.douyin.videoQuality)
+                logger.debug('获取精确下载地址')
+                downloadUrl = await new Networks({
+                  url: videoObj[0].play_addr.url_list[0],
+                  headers: douyinBaseHeaders
+                }).getLongLink()
+                // 下载视频
+                await downloadVideo(this.e, {
+                  video_url: downloadUrl,
+                  title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${Detail_Data.desc}.mp4` }
+                }, { active: true, activeOption: { uin: botId, group_id: groupId } })
+              } catch (error) {
+                throw new Error(`下载视频失败: ${error}`)
+              }
+            } else if (!iddata.is_mp4 && iddata.type === 'one_work') { // 如果新作品是图集或合辑
+              // 判断是否为合辑（is_slides）
+              const isSlides = Detail_Data.is_slides === true
                 
-                if (isSlides && Detail_Data.images) {
-                  // 合辑处理逻辑
-                  const images: any[] = []
-                  const temp: fileInfo[] = []
+              if (isSlides && Detail_Data.images) {
+                // 合辑处理逻辑
+                const images: any[] = []
+                const temp: fileInfo[] = []
                   
-                  /** BGM */
+                /** 下载 BGM（如果存在） */
+                let liveimgbgm: fileInfo | null = null
+                let bgmContext: any = null
+                const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
+                
+                if (Detail_Data.music) {
                   let mp3Path = ''
                   // 该声音由于版权原因在当前地区不可用
                   if (Detail_Data.music.play_url.uri === '') {
@@ -403,7 +414,7 @@ export class DouYinpush extends Base {
                     mp3Path = Detail_Data.music.play_url.uri
                   }
                   
-                  const liveimgbgm = await downloadFile(
+                  liveimgbgm = await downloadFile(
                     mp3Path,
                     {
                       title: `Douyin_tmp_A_${Date.now()}.mp3`,
@@ -412,27 +423,150 @@ export class DouYinpush extends Base {
                   )
                   temp.push(liveimgbgm)
                   
-                  const images1 = Detail_Data.images ?? []
-                  if (!images1.length) {
-                    logger.debug('未获取到合辑的图片数据')
-                  }
-                  
                   // 获取合并模式配置
-                  const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
-                  let bgmContext: any = null
                   if (mergeMode === 'continuous') {
-                    const { createLiveImageContext } = await import('@/module/utils')
                     bgmContext = await createLiveImageContext(liveimgbgm.filepath)
                   }
+                }
                   
-                  for (const item of images1) {
-                    // 静态图片，clip_type为2或undefined
-                    if (item.clip_type === 2 || item.clip_type === undefined) {
-                      images.push(segment.image(item.url_list[0]))
-                      continue
+                const images1 = Detail_Data.images ?? []
+                if (!images1.length) {
+                  logger.debug('未获取到合辑的图片数据')
+                }
+                  
+                for (const item of images1) {
+                  // 静态图片，clip_type为2或undefined
+                  if (item.clip_type === 2 || item.clip_type === undefined) {
+                    images.push(segment.image(item.url_list[0]))
+                    continue
+                  }
+                    
+                  /** 动图/短片 */
+                  const liveimg = await downloadFile(
+                    `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`,
+                    {
+                      title: `Douyin_tmp_V_${Date.now()}.mp4`,
+                      headers: douyinBaseHeaders
+                    }
+                  )
+                    
+                  if (liveimg.filepath) {
+                    const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
+                    let success: boolean
+                      
+                    // clip_type === 4 是短片，不需要重放，loopCount = 1
+                    // 其他类型（如 clip_type === 5 的 livePhoto）需要三次重放
+                    const loopCount = item.clip_type === 4 ? 1 : 3
+                      
+                    // 如果没有 BGM，直接重放视频
+                    if (!liveimgbgm) {
+                      if (loopCount > 1) {
+                        // 需要重放，使用 ffmpeg 重放视频
+                        success = await loopVideo(liveimg.filepath, outputPath, loopCount)
+                      } else {
+                        // 不需要重放，直接使用原视频
+                        fs.renameSync(liveimg.filepath, outputPath)
+                        success = true
+                      }
+                    } else if (mergeMode === 'continuous' && bgmContext) {
+                      // 连续模式：BGM 从上次位置继续
+                      const result = await mergeLiveImageContinuous(
+                        { videoPath: liveimg.filepath, outputPath, loopCount },
+                        bgmContext
+                      )
+                      success = result.success
+                      bgmContext = result.context
+                    } else {
+                      // 独立模式：每张图都从 BGM 开头开始
+                      success = await mergeLiveImageIndependent(
+                        { videoPath: liveimg.filepath, outputPath, loopCount },
+                        liveimgbgm.filepath
+                      )
+                    }
+                      
+                    if (success) {
+                      const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
+                      fs.renameSync(outputPath, filePath)
+                      logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
+                      logger.mark('正在尝试删除缓存文件')
+                      await Common.removeFile(liveimg.filepath, true)
+                      temp.push({ filepath: filePath, totalBytes: 0 })
+                      images.push(segment.video('file://' + filePath))
+                        
+                      // clip_type === 5 是 livePhoto，添加封面静态图
+                      if (item.clip_type === 5 && item.url_list?.[0]) {
+                        images.push(segment.image(item.url_list[0]))
+                      }
+                    } else {
+                      await Common.removeFile(liveimg.filepath, true)
+                    }
+                  }
+                }
+                  
+                const bot = karin.getBot(botId) as AdapterType
+                const Element = common.makeForward(images, botId, bot.account.name)
+                try {
+                  await bot.sendForwardMsg(Contact, Element, {
+                    source: '合辑内容',
+                    summary: `查看${Element.length}张图片/视频消息`,
+                    prompt: '抖音合辑解析结果',
+                    news: [{ text: '点击查看解析结果' }]
+                  })
+                } catch (error) {
+                  logger.error(`发送合辑失败: ${error}`)
+                } finally {
+                  for (const item of temp) {
+                    await Common.removeFile(item.filepath, true)
+                  }
+                }
+              } else if (Detail_Data.images) {
+                // 普通图集处理逻辑
+                // 检查是否包含 live 图（clip_type !== 2 且 clip_type !== undefined）
+                const hasLiveImage = Detail_Data.images.some((item: any) => item.clip_type !== 2 && item.clip_type !== undefined)
+                  
+                if (hasLiveImage) {
+                  // 包含 live 图，需要特殊处理
+                  const processedImages: any[] = []
+                  const temp: fileInfo[] = []
+                    
+                  /** 下载 BGM（如果存在） */
+                  let liveimgbgm: fileInfo | null = null
+                  let bgmContext: any = null
+                  const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
+                  
+                  if (Detail_Data.music) {
+                    let mp3Path = ''
+                    if (Detail_Data.music.play_url.uri === '') {
+                      const extraData = JSON.parse(Detail_Data.music.extra)
+                      mp3Path = extraData.original_song_url
+                    } else {
+                      mp3Path = Detail_Data.music.play_url.uri
                     }
                     
-                    /** 动图/短片 */
+                    liveimgbgm = await downloadFile(
+                      mp3Path,
+                      {
+                        title: `Douyin_tmp_A_${Date.now()}.mp3`,
+                        headers: douyinBaseHeaders
+                      }
+                    )
+                    temp.push(liveimgbgm)
+                    
+                    // 获取合并模式配置
+                    if (mergeMode === 'continuous') {
+                      bgmContext = await createLiveImageContext(liveimgbgm.filepath)
+                    }
+                  }
+                    
+                  for (const item of Detail_Data.images) {
+                    // 静态图片，clip_type为2或undefined
+                    if (item.clip_type === 2 || item.clip_type === undefined) {
+                      const image_url = item.url_list[2] ?? item.url_list[1]
+                      processedImages.push(segment.image(image_url))
+                      continue
+                    }
+                      
+                    /** live 图 */
                     const liveimg = await downloadFile(
                       `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`,
                       {
@@ -440,17 +574,26 @@ export class DouYinpush extends Base {
                         headers: douyinBaseHeaders
                       }
                     )
-                    
+                      
                     if (liveimg.filepath) {
-                      const { Common, mergeLiveImageContinuous, mergeLiveImageIndependent } = await import('@/module/utils')
                       const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
                       let success: boolean
-                      
+                        
                       // clip_type === 4 是短片，不需要重放，loopCount = 1
                       // 其他类型（如 clip_type === 5 的 livePhoto）需要三次重放
                       const loopCount = item.clip_type === 4 ? 1 : 3
-                      
-                      if (mergeMode === 'continuous' && bgmContext) {
+                        
+                      // 如果没有 BGM，直接重放视频
+                      if (!liveimgbgm) {
+                        if (loopCount > 1) {
+                          // 需要重放，使用 ffmpeg 重放视频
+                          success = await loopVideo(liveimg.filepath, outputPath, loopCount)
+                        } else {
+                          // 不需要重放，直接使用原视频
+                          fs.renameSync(liveimg.filepath, outputPath)
+                          success = true
+                        }
+                      } else if (mergeMode === 'continuous' && bgmContext) {
                         // 连续模式：BGM 从上次位置继续
                         const result = await mergeLiveImageContinuous(
                           { videoPath: liveimg.filepath, outputPath, loopCount },
@@ -465,195 +608,74 @@ export class DouYinpush extends Base {
                           liveimgbgm.filepath
                         )
                       }
-                      
+                        
                       if (success) {
-                        const fs = await import('node:fs')
                         const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
-                        fs.default.renameSync(outputPath, filePath)
+                        fs.renameSync(outputPath, filePath)
                         logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
                         logger.mark('正在尝试删除缓存文件')
                         await Common.removeFile(liveimg.filepath, true)
                         temp.push({ filepath: filePath, totalBytes: 0 })
-                        images.push(segment.video('file://' + filePath))
-                        
+                        processedImages.push(segment.video('file://' + filePath))
+                          
                         // clip_type === 5 是 livePhoto，添加封面静态图
                         if (item.clip_type === 5 && item.url_list?.[0]) {
-                          images.push(segment.image(item.url_list[0]))
+                          processedImages.push(segment.image(item.url_list[0]))
                         }
                       } else {
                         await Common.removeFile(liveimg.filepath, true)
                       }
                     }
                   }
-                  
+                    
                   const bot = karin.getBot(botId) as AdapterType
-                  const Element = common.makeForward(images, botId, bot.account.name)
+                  const Element = common.makeForward(processedImages, botId, bot.account.name)
                   try {
                     await bot.sendForwardMsg(Contact, Element, {
-                      source: '合辑内容',
+                      source: '图集内容',
                       summary: `查看${Element.length}张图片/视频消息`,
-                      prompt: '抖音合辑解析结果',
+                      prompt: '抖音图集解析结果',
                       news: [{ text: '点击查看解析结果' }]
                     })
                   } catch (error) {
-                    logger.error(`发送合辑失败: ${error}`)
+                    logger.error(`发送图集失败: ${error}`)
                   } finally {
                     for (const item of temp) {
-                      const { Common } = await import('@/module/utils')
                       await Common.removeFile(item.filepath, true)
                     }
                   }
-                } else if (Detail_Data.images) {
-                  // 普通图集处理逻辑
-                  // 检查是否包含 live 图（clip_type !== 2）
-                  const hasLiveImage = Detail_Data.images.some((item: any) => item.clip_type !== 2)
-                  
-                  if (hasLiveImage) {
-                    // 包含 live 图，需要特殊处理
-                    const processedImages: any[] = []
-                    const temp: fileInfo[] = []
+                } else {
+                  // 纯静态图集
+                  const imageres: ImageElement[] = []
+                  let image_url
+                  for (const item of Detail_Data.images) {
+                    image_url = item.url_list[2] ?? item.url_list[1] // 图片地址
+                    imageres.push(segment.image(image_url))
+                  }
+                  const bot = karin.getBot(botId) as AdapterType
                     
-                    /** 下载 BGM */
-                    let mp3Path = ''
-                    if (Detail_Data.music.play_url.uri === '') {
-                      const extraData = JSON.parse(Detail_Data.music.extra)
-                      mp3Path = extraData.original_song_url
-                    } else {
-                      mp3Path = Detail_Data.music.play_url.uri
-                    }
-                    
-                    const liveimgbgm = await downloadFile(
-                      mp3Path,
-                      {
-                        title: `Douyin_tmp_A_${Date.now()}.mp3`,
-                        headers: douyinBaseHeaders
-                      }
-                    )
-                    temp.push(liveimgbgm)
-                    
-                    // 获取合并模式配置
-                    const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
-                    let bgmContext: any = null
-                    if (mergeMode === 'continuous') {
-                      const { createLiveImageContext } = await import('@/module/utils')
-                      bgmContext = await createLiveImageContext(liveimgbgm.filepath)
-                    }
-                    
-                    for (const item of Detail_Data.images) {
-                      // 静态图片，clip_type为2
-                      if (item.clip_type === 2) {
-                        const image_url = item.url_list[2] ?? item.url_list[1]
-                        processedImages.push(segment.image(image_url))
-                        continue
-                      }
-                      
-                      /** live 图 */
-                      const liveimg = await downloadFile(
-                        `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`,
-                        {
-                          title: `Douyin_tmp_V_${Date.now()}.mp4`,
-                          headers: douyinBaseHeaders
-                        }
-                      )
-                      
-                      if (liveimg.filepath) {
-                        const { Common, mergeLiveImageContinuous, mergeLiveImageIndependent } = await import('@/module/utils')
-                        const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
-                        let success: boolean
-                        
-                        // clip_type === 4 是短片，不需要重放，loopCount = 1
-                        // 其他类型（如 clip_type === 5 的 livePhoto）需要三次重放
-                        const loopCount = item.clip_type === 4 ? 1 : 3
-                        
-                        if (mergeMode === 'continuous' && bgmContext) {
-                          // 连续模式：BGM 从上次位置继续
-                          const result = await mergeLiveImageContinuous(
-                            { videoPath: liveimg.filepath, outputPath, loopCount },
-                            bgmContext
-                          )
-                          success = result.success
-                          bgmContext = result.context
-                        } else {
-                          // 独立模式：每张图都从 BGM 开头开始
-                          success = await mergeLiveImageIndependent(
-                            { videoPath: liveimg.filepath, outputPath, loopCount },
-                            liveimgbgm.filepath
-                          )
-                        }
-                        
-                        if (success) {
-                          const fs = await import('node:fs')
-                          const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
-                          fs.default.renameSync(outputPath, filePath)
-                          logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
-                          logger.mark('正在尝试删除缓存文件')
-                          await Common.removeFile(liveimg.filepath, true)
-                          temp.push({ filepath: filePath, totalBytes: 0 })
-                          processedImages.push(segment.video('file://' + filePath))
-                          
-                          // clip_type === 5 是 livePhoto，添加封面静态图
-                          if (item.clip_type === 5 && item.url_list?.[0]) {
-                            processedImages.push(segment.image(item.url_list[0]))
-                          }
-                        } else {
-                          await Common.removeFile(liveimg.filepath, true)
-                        }
-                      }
-                    }
-                    
-                    const bot = karin.getBot(botId) as AdapterType
-                    const Element = common.makeForward(processedImages, botId, bot.account.name)
-                    try {
-                      await bot.sendForwardMsg(Contact, Element, {
-                        source: '图集内容',
-                        summary: `查看${Element.length}张图片/视频消息`,
-                        prompt: '抖音图集解析结果',
-                        news: [{ text: '点击查看解析结果' }]
-                      })
-                    } catch (error) {
-                      logger.error(`发送图集失败: ${error}`)
-                    } finally {
-                      for (const item of temp) {
-                        const { Common } = await import('@/module/utils')
-                        await Common.removeFile(item.filepath, true)
-                      }
-                    }
+                  if (imageres.length === 1) {
+                    // 单张图片直接发送
+                    await bot.sendMsg(Contact, [segment.image(image_url)])
                   } else {
-                    // 纯静态图集
-                    const imageres: ImageElement[] = []
-                    let image_url
-                    for (const item of Detail_Data.images) {
-                      image_url = item.url_list[2] ?? item.url_list[1] // 图片地址
-                      imageres.push(segment.image(image_url))
-                    }
-                    const bot = karin.getBot(botId) as AdapterType
-                    
-                    if (imageres.length === 1) {
-                      // 单张图片直接发送
-                      await bot.sendMsg(Contact, [segment.image(image_url)])
-                    } else {
-                      // 多张图片使用合并转发
-                      const forwardMsg = common.makeForward(imageres, botId, bot.account.name)
-                      await bot.sendForwardMsg(Contact, forwardMsg, {
-                        source: '图片合集',
-                        summary: `查看${forwardMsg.length}张图片消息`,
-                        prompt: '抖音图集解析结果',
-                        news: [{ text: '点击查看解析结果' }]
-                      })
-                    }
+                    // 多张图片使用合并转发
+                    const forwardMsg = common.makeForward(imageres, botId, bot.account.name)
+                    await bot.sendForwardMsg(Contact, forwardMsg, {
+                      source: '图片合集',
+                      summary: `查看${forwardMsg.length}张图片消息`,
+                      prompt: '抖音图集解析结果',
+                      news: [{ text: '点击查看解析结果' }]
+                    })
                   }
                 }
               }
             }
           }
+        }
 
-          // 添加作品缓存（直播不需要缓存aweme_id）
-          if (skip || (pushItem.pushType !== 'live' && status.message_id)) {
-            await douyinDB.addAwemeCache(actualAwemeId, pushItem.sec_uid, groupId, pushItem.pushType)
-          }
-
-        } catch (error) {
-          throw new Error(`${error}`)
+        // 添加作品缓存（直播不需要缓存aweme_id）
+        if (skip || (pushItem.pushType !== 'live' && status.message_id)) {
+          await douyinDB.addAwemeCache(actualAwemeId, pushItem.sec_uid, groupId, pushItem.pushType)
         }
       }
     }
