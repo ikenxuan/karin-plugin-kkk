@@ -2,6 +2,7 @@ import { logger, type Message } from 'node-karin'
 import type { ApiErrorProps } from 'template/types/platforms/other/handlerError'
 
 import { getBuildMetadata } from '@/module'
+import { EmojiReactionManager } from '@/module/utils/EmojiReaction'
 
 import { renderErrorImage } from './render'
 import { sendErrorToAllMasters, sendErrorToMaster, sendErrorToTrigger } from './sender'
@@ -54,7 +55,14 @@ export const handleBusinessError = async (
       }
       : undefined
 
-    const ctx: ErrorContext = { error, options, logs, event, buildMetadata, adapterInfo }
+    const ctx: ErrorContext = { 
+      error, 
+      options, 
+      logs, 
+      event, 
+      buildMetadata, 
+      adapterInfo
+    }
 
     // 遍历策略，找到匹配的进行处理
     for (const strategy of getStrategies()) {
@@ -102,34 +110,43 @@ export const handleBusinessError = async (
  *
  * @remarks
  * 使用 `logger.runContext` 收集执行期间的日志，
- * 捕获错误后自动调用 {@link handleBusinessError} 处理
- *
- * @example
- * ```ts
- * const handler = wrapWithErrorHandler(
- *   async (e) => {
- *     // 业务逻辑
- *     return await parseVideo(e.msg)
- *   },
- *   { businessName: '视频解析' }
- * )
- *
- * // 在 karin 插件中使用
- * export const videoParser = karin.command(/^#解析/, handler)
- * ```
+ * 自动管理表情回复的完整生命周期：
+ * - 开始时添加"处理中"表情
+ * - 成功时替换为"完成"表情
+ * - 失败时清除所有表情并添加"失败"表情
  */
 export const wrapWithErrorHandler = <R> (
   fn: (e: Message, next?: () => unknown) => R | Promise<R>,
   options: ErrorHandlerOptions
 ) => {
   return async (e: Message, next?: () => unknown): Promise<R> => {
+    // 拥有事件对象才能对消息进行回应表情，定时任务中e是undefined
+    const emojiManager = e ? new EmojiReactionManager(e) : undefined
+    if (emojiManager) {
+      await emojiManager.add('PROCESSING')
+    }
+    
     const ctx = logger.runContext(async () => fn(e, next))
 
     try {
-      return await ctx.run()
+      const result = await ctx.run()
+      
+      // 成功完成，替换为"完成"表情
+      if (emojiManager) {
+        await emojiManager.replace('PROCESSING', 'SUCCESS')
+      }
+      
+      return result
     } catch (error) {
+      // 失败，清除所有表情并添加"失败"表情
+      if (emojiManager) {
+        await emojiManager.clearAll()
+        await emojiManager.add('ERROR')
+      }
+      
       await new Promise(resolve => setTimeout(resolve, 100))
       const structuredLogs = parseLogsToStructured(ctx.logs())
+      
       const result = await handleBusinessError(error as Error, options, structuredLogs, e)
       if (result === 'handled') return undefined as R
       throw error

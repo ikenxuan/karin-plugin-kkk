@@ -265,21 +265,6 @@ export const webConfig = defineConfig({
                 description: '在解析任务开始时添加表情回应，若适配器不支持需要关闭',
                 defaultSelected: all.app.EmojiReply
               }),
-              components.input.number('EmojiReplyID', {
-                label: '表情 ID',
-                isDisabled: !all.app.EmojiReply,
-                description: '详情查看：https://koishi.js.org/QFace/#/qqnt 中调试信息的 emojiId 字段，Emoji则是 qcid ',
-                defaultValue: all.app.EmojiReplyID.toString(),
-                rules: [
-                  { min: 0, max: 1145141919810 }
-                ]
-              }),
-              components.switch.create('EmojiReplyIgnoreError', {
-                label: '忽略表情回应失败',
-                description: '开启后表情回应失败时不会抛出错误，程序会继续执行',
-                defaultSelected: all.app.EmojiReplyIgnoreError,
-                isDisabled: !all.app.EmojiReply
-              }),
               components.checkbox.group('errorLogSendTo', {
                 label: '错误日志',
                 description: '遇到错误时谁会收到错误日志。注：推送任务只可发送给主人。「第一个主人」与「所有主人」互斥。',

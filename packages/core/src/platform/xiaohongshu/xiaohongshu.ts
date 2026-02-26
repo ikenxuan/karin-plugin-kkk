@@ -37,13 +37,7 @@ export class Xiaohongshu extends Base {
   }
 
   async XiaohongshuHandler (data: XiaohongshuIdData) {
-    if (Config.app.EmojiReply && !this.e.isPrivate) {
-      try {
-        await this.e.bot.setMsgReaction(this.e.contact, this.e.messageId, Config.app.EmojiReplyID, true)
-      } catch (err) {
-        if (!Config.app.EmojiReplyIgnoreError) throw err
-      }
-    }
+    await this.emojiManager.add(128064)
     Config.xiaohongshu.tip && await this.e.reply('检测到小红书链接，开始解析')
     const NoteData = await this.amagi.xiaohongshu.fetcher.fetchNoteDetail({
       typeMode: 'strict',

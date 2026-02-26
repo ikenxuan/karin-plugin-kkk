@@ -59,6 +59,7 @@
   },
   "devDependencies": {
     "@ikenxuan/amagi": "workspace:*",
+    "@karinjs/plugin-adapter-discordbot": "https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@c4dfbe6",
     "@karinjs/plugin-puppeteer": "^2.0.1",
     "@rollup/plugin-terser": "^0.4.4",
     "@types/express": "5.0.6",

@@ -5,6 +5,7 @@ import type { AxiosHeaders, AxiosRequestConfig, Method, RawAxiosRequestHeaders }
 
 import { baseHeaders, Common, compressVideo, getMediaDuration, Networks } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
+import { EmojiReactionManager } from '@/module/utils/EmojiReaction'
 import type { pushlistConfig } from '@/types/config/pushlist'
 
 import { AmagiBase } from './amagiClient'
@@ -93,6 +94,8 @@ export class Base extends AmagiBase {
   e: Message
   /** 请求头 */
   headers: AxiosRequestConfig['headers']
+  /** 表情回复管理器 */
+  emojiManager: EmojiReactionManager
 
   /**
    * 构造函数：初始化事件与请求头
@@ -102,6 +105,7 @@ export class Base extends AmagiBase {
     super()
     this.e = e
     this.headers = baseHeaders
+    this.emojiManager = new EmojiReactionManager(e)
   }
 }
 

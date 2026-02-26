@@ -33,14 +33,14 @@ export interface appConfig {
   /** 表情回应，若适配器不支持需要关闭 */
   EmojiReply: boolean
 
-  /**
-   * 表情 ID
-   * @see https://github.com/NapNeko/NapCatQQ/blob/main/packages/napcat-core/external/face_config.json
-   */
-  EmojiReplyID: number
+  // /**
+  //  * 表情 ID
+  //  * @see https://github.com/NapNeko/NapCatQQ/blob/main/packages/napcat-core/external/face_config.json
+  //  */
+  // EmojiReplyID: number
 
-  /** 忽略表情回应失败，开启后表情回应失败时不会抛出错误 */
-  EmojiReplyIgnoreError: boolean
+  // /** 忽略表情回应失败，开启后表情回应失败时不会抛出错误 */
+  // EmojiReplyIgnoreError: boolean
 
   /** 遇到错误时谁会收到错误日志？可选值：'master'（除'console'外的第一个主人）、'allMasters'（所有主人，排除console）、'trigger'（触发者） */
   errorLogSendTo: Array<'master' | 'allMasters' | 'trigger'>
