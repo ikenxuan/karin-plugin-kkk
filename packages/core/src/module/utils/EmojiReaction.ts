@@ -35,12 +35,12 @@ const PLATFORM_EMOJI_IDS = {
     ERROR: 'TELEGRAM_ERROR_PLACEHOLDER'
   },
   discord: {
-    /** 处理中 - 占位符 */
-    PROCESSING: '👀',
-    /** 成功完成 - 占位符 */
-    SUCCESS: 'DISCORD_SUCCESS_PLACEHOLDER',
-    /** 失败 - 占位符 */
-    ERROR: 'DISCORD_ERROR_PLACEHOLDER'
+    /** 处理中 */
+    PROCESSING: '🧠',
+    /** 成功完成 */
+    SUCCESS: '✅',
+    /** 失败 */
+    ERROR: '❌'
   },
   koko: {
     /** 处理中 - 占位符 */
