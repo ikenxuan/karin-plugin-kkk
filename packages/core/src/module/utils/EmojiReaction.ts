@@ -11,14 +11,18 @@ import { Config } from './Config'
  */
 const PLATFORM_EMOJI_IDS = {
   qq: {
+    /** 已读/注意：https://koishi.js.org/QFace/#/qqnt/%F0%9F%91%80 */
+    EYES: 128064,
     /** 处理中：https://koishi.js.org/QFace/#/qqnt/366 */
     PROCESSING: 366,
-    /** 成功完成：https://koishi.js.org/QFace/#/qqnt/370 */
-    SUCCESS: 370,
+    /** 成功完成：https://koishi.js.org/QFace/#/qqnt/389 */
+    SUCCESS: 389,
     /** 失败：https://koishi.js.org/QFace/#/qqnt/379 */
     ERROR: 379
   },
   wechat: {
+    /** 已读/注意 - 占位符 */
+    EYES: 'WECHAT_EYES_PLACEHOLDER',
     /** 处理中 - 占位符 */
     PROCESSING: 'WECHAT_PROCESSING_PLACEHOLDER',
     /** 成功完成 - 占位符 */
@@ -27,6 +31,8 @@ const PLATFORM_EMOJI_IDS = {
     ERROR: 'WECHAT_ERROR_PLACEHOLDER'
   },
   telegram: {
+    /** 已读/注意 - 占位符 */
+    EYES: 'TELEGRAM_EYES_PLACEHOLDER',
     /** 处理中 - 占位符 */
     PROCESSING: 'TELEGRAM_PROCESSING_PLACEHOLDER',
     /** 成功完成 - 占位符 */
@@ -35,14 +41,18 @@ const PLATFORM_EMOJI_IDS = {
     ERROR: 'TELEGRAM_ERROR_PLACEHOLDER'
   },
   discord: {
+    /** 已读/注意 */
+    EYES: '👀',
     /** 处理中 */
-    PROCESSING: '🧠',
+    PROCESSING: '⏳',
     /** 成功完成 */
     SUCCESS: '✅',
     /** 失败 */
     ERROR: '❌'
   },
   koko: {
+    /** 已读/注意 - 占位符 */
+    EYES: 'KOKO_EYES_PLACEHOLDER',
     /** 处理中 - 占位符 */
     PROCESSING: 'KOKO_PROCESSING_PLACEHOLDER',
     /** 成功完成 - 占位符 */
@@ -51,6 +61,8 @@ const PLATFORM_EMOJI_IDS = {
     ERROR: 'KOKO_ERROR_PLACEHOLDER'
   },
   other: {
+    /** 已读/注意 - 占位符 */
+    EYES: 'OTHER_EYES_PLACEHOLDER',
     /** 处理中 - 占位符 */
     PROCESSING: 'OTHER_PROCESSING_PLACEHOLDER',
     /** 成功完成 - 占位符 */
@@ -63,7 +75,7 @@ const PLATFORM_EMOJI_IDS = {
 /**
  * 表情类型
  */
-export type EmojiType = 'PROCESSING' | 'SUCCESS' | 'ERROR'
+export type EmojiType = 'EYES' | 'PROCESSING' | 'SUCCESS' | 'ERROR'
 
 /**
  * 根据平台和表情类型获取表情 ID
@@ -141,7 +153,7 @@ export class EmojiReactionManager {
    * @returns 实际的表情 ID
    */
   private normalizeEmojiId (emojiId: string | number | EmojiType): string | number {
-    return typeof emojiId === 'string' && ['PROCESSING', 'SUCCESS', 'ERROR'].includes(emojiId)
+    return typeof emojiId === 'string' && ['EYES', 'PROCESSING', 'SUCCESS', 'ERROR'].includes(emojiId)
       ? this.getPlatformEmojiId(emojiId as EmojiType)
       : emojiId
   }
@@ -175,14 +187,20 @@ export class EmojiReactionManager {
   }
 
   /**
-   * 替换表情（移除旧的，添加新的）
+   * 替换表情（先添加新的，等待指定时间后移除旧的）
    * @param oldEmojiId 旧表情ID 或表情类型
    * @param newEmojiId 新表情ID 或表情类型
+   * @param delayMs 添加新表情后等待多少毫秒再移除旧表情，默认 2000ms
    * @returns 是否成功
    */
-  async replace (oldEmojiId: string | number | EmojiType, newEmojiId: string | number | EmojiType): Promise<boolean> {
+  async replace (oldEmojiId: string | number | EmojiType, newEmojiId: string | number | EmojiType, delayMs: number = 2000): Promise<boolean> {
+    // 先添加新表情
+    const addSuccess = await this.add(newEmojiId)
+    // 等待指定时间
+    await new Promise(resolve => setTimeout(resolve, delayMs))
+    // 再移除旧表情
     await this.remove(oldEmojiId)
-    return await this.add(newEmojiId)
+    return addSuccess
   }
 
   /**

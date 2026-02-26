@@ -123,7 +123,10 @@ export const wrapWithErrorHandler = <R> (
     // 拥有事件对象才能对消息进行回应表情，定时任务中e是undefined
     const emojiManager = e ? new EmojiReactionManager(e) : undefined
     if (emojiManager) {
-      await emojiManager.add('PROCESSING')
+      await emojiManager.add('EYES')
+      setTimeout(() => {
+        emojiManager.add('PROCESSING').catch(() => {})
+      }, 1500)
     }
     
     const ctx = logger.runContext(async () => fn(e, next))
