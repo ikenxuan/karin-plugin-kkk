@@ -282,8 +282,8 @@ importers:
         specifier: workspace:*
         version: link:../amagi/packages/core
       '@karinjs/plugin-adapter-discordbot':
-        specifier: https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@dc88591
-        version: https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@dc88591
+        specifier: https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687
+        version: https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687
       '@karinjs/plugin-puppeteer':
         specifier: ^2.0.1
         version: 2.0.1
@@ -2242,9 +2242,9 @@ packages:
     resolution: {integrity: sha512-zkTx9gSPg4I0LwaDdLJLA2i1Wz3dn/0g236u07GvHHiVZXfG0CqTf2+rGtTYXE1LPdilcLkwuAPt9C9SIhcFIQ==}
     engines: {node: '>=18'}
 
-  '@karinjs/plugin-adapter-discordbot@https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@dc88591':
-    resolution: {tarball: https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@dc88591}
-    version: 1.1.0-beta.33.930
+  '@karinjs/plugin-adapter-discordbot@https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687':
+    resolution: {integrity: sha512-tYhHb/G4PprmhU/TX+R2vGubm1GNzjFEEKiQKj/b7m+czQRNYssDF+KBo6RJOSJnCfaaTFj9lBSf6q+xtWOYFw==, tarball: https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687}
+    version: 1.1.0-beta.37.566
 
   '@karinjs/plugin-puppeteer@2.0.1':
     resolution: {integrity: sha512-i9VsVYB/K2dC4WWOxaBz8Wsu1pRAO/ev62M2BEoSybIhMNoplVoobTsRS6gyc9GW8Ne1tXODIBPC2+Jf4uLcgA==}
@@ -12621,13 +12621,11 @@ snapshots:
 
   '@karinjs/node-schedule@1.1.2': {}
 
-  '@karinjs/plugin-adapter-discordbot@https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@dc88591':
+  '@karinjs/plugin-adapter-discordbot@https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687':
     dependencies:
       discord.js: 14.25.1
-      https-proxy-agent: 7.0.6
     transitivePeerDependencies:
       - bufferutil
-      - supports-color
       - utf-8-validate
 
   '@karinjs/plugin-puppeteer@2.0.1':

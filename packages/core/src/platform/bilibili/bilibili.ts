@@ -84,7 +84,6 @@ export class Bilibili extends Base {
   }
 
   async BilibiliHandler (iddata: BilibiliId): Promise<boolean | undefined> {
-    await this.emojiManager.add(128064)
     Config.bilibili.tip && await this.e.reply('检测到B站链接，开始解析')
     switch (this.Type) {
       case 'one_video': {
@@ -591,6 +590,27 @@ export class Bilibili extends Base {
                 })
               )
 
+              // 处理共创者信息
+              let staff = undefined
+              if (INFODATA.data.data.staff && Array.isArray(INFODATA.data.data.staff)) {
+                const currentMid = dynamicInfo.data.data.item.modules.module_author.mid
+                // 提取共创者信息
+                staff = INFODATA.data.data.staff.map((member: any) => ({
+                  mid: member.mid,
+                  title: member.title,
+                  name: member.name,
+                  face: member.face,
+                  follower: member.follower
+                }))
+                
+                // 如果当前动态发布者是共创者之一，将其排到最前面
+                const currentUserIndex = staff.findIndex((member: any) => member.mid === currentMid)
+                if (currentUserIndex > 0) {
+                  const currentUser = staff.splice(currentUserIndex, 1)[0]
+                  staff.unshift(currentUser)
+                }
+              }
+
               img = await Render('bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {
                   image_url: INFODATA.data.data.pic,
@@ -603,7 +623,7 @@ export class Bilibili extends Base {
                   coin: Count(dycrad.stat.coin),
                   duration_text: dynamicInfo.data.data.item.modules.module_dynamic.major.archive.duration_text,
                   create_time: TimeFormatter.toDateTime(INFODATA.data.data.ctime),
-                  avatar_url: INFODATA.data.data.owner.face,
+                  avatar_url: userProfileData.data.data.card.face,
                   frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
                   share_url: 'https://www.bilibili.com/video/' + bvid,
                   username: checkvip(userProfileData.data.data.card),
@@ -613,7 +633,8 @@ export class Bilibili extends Base {
                   following_count: Count(userProfileData.data.data.card.attention),
                   render_time: TimeFormatter.now(),
                   dynamicTYPE: '视频动态',
-                  dynamic_id: dynamicInfo.data.data.item.id_str
+                  dynamic_id: dynamicInfo.data.data.item.id_str,
+                  staff
                 }
               )
               this.e.reply(img)

@@ -3,20 +3,14 @@ import { Clock, Coins, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lu
 import React from 'react'
 import { LuFullscreen } from 'react-icons/lu'
 
-import type {
-  BilibiliVideoDynamicContentProps,
-  BilibiliVideoDynamicFooterProps,
-  BilibiliVideoDynamicHeaderProps,
-  BilibiliVideoDynamicProps
-} from '../../../../types/platforms/bilibili'
+import type { BilibiliVideoDynamicProps } from '../../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { CommentText, EnhancedImage } from '../shared'
 
 /**
  * B站视频动态头部组件
- * @param props - 头部组件属性
  */
-const BilibiliVideoDynamicHeader: React.FC<BilibiliVideoDynamicHeaderProps> = () => {
+const BilibiliVideoDynamicHeader: React.FC = () => {
   return (
     <>
       {/* 间距 */}
@@ -42,18 +36,17 @@ const BilibiliVideoDynamicHeader: React.FC<BilibiliVideoDynamicHeaderProps> = ()
 
 /**
  * B站视频动态内容组件
- * @param props - 内容组件属性
  */
-const BilibiliVideoDynamicContent: React.FC<BilibiliVideoDynamicContentProps> = (props) => {
+const BilibiliVideoDynamicContent: React.FC<Omit<BilibiliVideoDynamicProps, 'templateType' | 'templateName'>> = (props) => {
   return (
     <>
       {/* 视频封面 */}
-      {props.image_url && (
+      {props.data.image_url && (
         <>
           <div className='flex flex-col items-center'>
             <div className='flex overflow-hidden relative flex-col flex-1 items-center w-11/12 rounded-3xl shadow-large'>
               <EnhancedImage
-                src={props.image_url}
+                src={props.data.image_url}
                 alt='封面'
                 className='object-contain w-full h-full rounded-3xl'
               />
@@ -77,7 +70,7 @@ const BilibiliVideoDynamicContent: React.FC<BilibiliVideoDynamicContentProps> = 
         <div className='relative items-center text-8xl font-bold tracking-wider wrap-break-word text-foreground'>
           <CommentText
             className='text-[80px] font-bold tracking-[1.5px] leading-normal whitespace-pre-wrap text-foreground select-text'
-            content={props.text}
+            content={props.data.text}
             style={{
               wordBreak: 'break-word',
               overflowWrap: 'break-word'
@@ -92,7 +85,7 @@ const BilibiliVideoDynamicContent: React.FC<BilibiliVideoDynamicContentProps> = 
         <div className='text-6xl text-default-500'>
           <CommentText
             className='text-[60px] leading-normal whitespace-pre-wrap text-default-500 select-text'
-            content={props.desc}
+            content={props.data.desc}
             style={{
               wordBreak: 'break-word',
               overflowWrap: 'break-word'
@@ -109,34 +102,34 @@ const BilibiliVideoDynamicContent: React.FC<BilibiliVideoDynamicContentProps> = 
             <div className='flex gap-12 items-center text-5xl font-light tracking-normal'>
               <div className='flex gap-3 items-center'>
                 <Heart size={48} className='text-like' />
-                <span className='select-text'>{props.dianzan}点赞</span>
+                <span className='select-text'>{props.data.dianzan}点赞</span>
               </div>
 
               <div className='flex gap-3 items-center'>
                 <MessageCircle size={48} className='text-comment' />
-                <span className='select-text'>{props.pinglun}评论</span>
+                <span className='select-text'>{props.data.pinglun}评论</span>
               </div>
 
               <div className='flex gap-3 items-center'>
                 <Share2 size={48} className='text-success' />
-                <span className='select-text'>{props.share}分享</span>
+                <span className='select-text'>{props.data.share}分享</span>
               </div>
             </div>
 
             <div className='flex gap-12 items-center text-5xl font-light tracking-normal'>
               <div className='flex gap-3 items-center'>
                 <Coins size={48} className='text-warning' />
-                <span className='select-text'>{props.coin}硬币</span>
+                <span className='select-text'>{props.data.coin}硬币</span>
               </div>
 
               <div className='flex gap-3 items-center'>
                 <Eye size={48} className='text-default-400 text-view' />
-                <span className='select-text'>{props.view}浏览</span>
+                <span className='select-text'>{props.data.view}浏览</span>
               </div>
 
               <div className='flex gap-3 items-center text-5xl font-light tracking-normal'>
                 <Clock size={48} className='text-time' />
-                <span className='select-text'>视频时长: {props.duration_text}</span>
+                <span className='select-text'>视频时长: {props.data.duration_text}</span>
               </div>
             </div>
           </div>
@@ -145,7 +138,7 @@ const BilibiliVideoDynamicContent: React.FC<BilibiliVideoDynamicContentProps> = 
           <div className='flex flex-col gap-4 text-4xl font-light'>
             <div className='flex gap-3 items-center whitespace-nowrap'>
               <Clock size={32} className='text-time' />
-              <span className='select-text'>发布于{props.create_time}</span>
+              <span className='select-text'>发布于{props.data.create_time}</span>
             </div>
             <div className='flex gap-3 items-center whitespace-nowrap'>
               <LuFullscreen size={32} className='text-time' />
@@ -153,7 +146,7 @@ const BilibiliVideoDynamicContent: React.FC<BilibiliVideoDynamicContentProps> = 
             </div>
             <div className='flex gap-3 items-center'>
               <Hash size={32} className='text-default-400' />
-              <span className='select-text'>动态ID: {props.dynamic_id}</span>
+              <span className='select-text'>动态ID: {props.data.dynamic_id}</span>
             </div>
           </div>
         </div>
@@ -165,11 +158,87 @@ const BilibiliVideoDynamicContent: React.FC<BilibiliVideoDynamicContentProps> = 
 
 /**
  * B站视频动态底部信息组件
- * @param props - 底部组件属性
  */
-const BilibiliVideoDynamicFooter: React.FC<BilibiliVideoDynamicFooterProps> = (props) => {
+const BilibiliVideoDynamicFooter: React.FC<Omit<BilibiliVideoDynamicProps, 'templateType' | 'templateName'>> = (props) => {
+  // 过滤掉底部已显示的用户，避免重复
+  const otherStaff = props.data.staff?.filter(member => member.mid !== Number(props.data.user_shortid)) || []
+  
+  // 查找当前用户在共创中的职位
+  const currentUserRole = props.data.staff?.find(member => member.mid === Number(props.data.user_shortid))?.title
+
+  // 响应式计算可显示的共创者数量
+  const listRef = React.useRef<HTMLDivElement>(null)
+  const [visibleCount, setVisibleCount] = React.useState(otherStaff.length)
+
+  React.useEffect(() => {
+    const calc = () => {
+      const el = listRef.current
+      if (!el || otherStaff.length === 0) return
+      const containerWidth = el.offsetWidth
+
+      // 每项实际宽度约168px（头像w-42），间距gap-8=32px
+      const ITEM_W = 168
+      const GAP = 32
+
+      const capacity = Math.floor(containerWidth / (ITEM_W + GAP))
+      const needEllipsis = otherStaff.length > capacity
+      const nextVisible = needEllipsis ? Math.max(0, capacity - 1) : otherStaff.length
+      setVisibleCount(nextVisible)
+    }
+
+    calc()
+    window.addEventListener('resize', calc)
+    return () => window.removeEventListener('resize', calc)
+  }, [otherStaff.length])
+
   return (
     <>
+      {/* 共创者信息 - 放在底部区域上方 */}
+      {otherStaff.length > 0 && (
+        <div className='flex flex-col px-20 w-full'>
+          <div
+            ref={listRef}
+            className='flex overflow-hidden gap-8 py-1 w-full'
+          >
+            {otherStaff.slice(0, visibleCount).map((member) => (
+              <div
+                key={member.mid}
+                className='flex flex-col items-center min-w-42 w-42 shrink-0'
+              >
+                <div className='flex justify-center items-center bg-white rounded-full w-30 h-30'>
+                  <EnhancedImage
+                    src={member.face}
+                    alt={member.name}
+                    className='object-cover w-28 h-28 rounded-full'
+                    isCircular
+                  />
+                </div>
+                <div className='overflow-hidden mt-6 w-full text-3xl font-medium leading-tight text-center truncate whitespace-nowrap select-text text-foreground'>
+                  {member.name}
+                </div>
+                <div className='overflow-hidden mt-2 w-full text-3xl leading-tight text-center truncate whitespace-nowrap select-text text-default-500'>
+                  {member.title}
+                </div>
+              </div>
+            ))}
+
+            {otherStaff.length > visibleCount && (
+              <div className='flex flex-col items-center min-w-42 w-42 shrink-0'>
+                <div className='flex justify-center items-center rounded-full bg-default-200 w-30 h-30'>
+                  <span className='text-[42px] leading-none text-default-500'>···</span>
+                </div>
+                <div className='overflow-hidden mt-6 w-full text-3xl font-medium leading-tight text-center truncate whitespace-nowrap select-text text-foreground'>
+                  还有{otherStaff.length - visibleCount}人
+                </div>
+                <div className='overflow-hidden mt-2 w-full text-3xl leading-tight text-center truncate whitespace-nowrap select-text text-default-500'>
+                  共创
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* 间距 */}
       <div className='h-15' />
 
@@ -182,14 +251,14 @@ const BilibiliVideoDynamicFooter: React.FC<BilibiliVideoDynamicFooterProps> = (p
             {/* 头像 */}
             <div className='relative shrink-0'>
               <EnhancedImage
-                src={props.avatar_url}
+                src={props.data.avatar_url}
                 alt='头像'
                 className='rounded-full shadow-medium w-35 h-auto'
                 isCircular
               />
-              {props.frame && (
+              {props.data.frame && (
                 <EnhancedImage
-                  src={props.frame}
+                  src={props.data.frame}
                   alt='头像框'
                   className='absolute inset-0 transform scale-180'
                 />
@@ -199,11 +268,16 @@ const BilibiliVideoDynamicFooter: React.FC<BilibiliVideoDynamicFooterProps> = (p
             {/* 用户名和UID - 纵向排列 */}
             <div className='flex flex-col gap-5'>
               <div className='text-7xl font-bold select-text text-foreground'>
-                <span dangerouslySetInnerHTML={{ __html: props.username }} />
+                <span dangerouslySetInnerHTML={{ __html: props.data.username }} />
               </div>
               <div className='flex gap-2 items-center text-4xl text-default-500'>
-                <Hash size={32} className='text-default-400' />
-                <span className='select-text'>UID: {props.user_shortid}</span>
+                <Hash size={32} />
+                <span>UID: {props.data.user_shortid}</span>
+                {currentUserRole && (
+                  <span className='ml-5 px-3 py-1 rounded-xl bg-default-200 text-3xl'>
+                    {currentUserRole}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -216,7 +290,7 @@ const BilibiliVideoDynamicFooter: React.FC<BilibiliVideoDynamicFooterProps> = (p
                 <span className='text-default-400'>获赞</span>
               </div>
               <div className='w-full h-px bg-default-300' />
-              <span className='select-text font-medium text-4xl'>{props.total_favorited}</span>
+              <span className='select-text font-medium text-4xl'>{props.data.total_favorited}</span>
             </div>
             <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
               <div className='flex gap-1 items-center'>
@@ -224,7 +298,7 @@ const BilibiliVideoDynamicFooter: React.FC<BilibiliVideoDynamicFooterProps> = (p
                 <span className='text-default-400'>关注</span>
               </div>
               <div className='w-full h-px bg-default-300' />
-              <span className='select-text font-medium text-4xl'>{props.following_count}</span>
+              <span className='select-text font-medium text-4xl'>{props.data.following_count}</span>
             </div>
             <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
               <div className='flex gap-1 items-center'>
@@ -232,7 +306,7 @@ const BilibiliVideoDynamicFooter: React.FC<BilibiliVideoDynamicFooterProps> = (p
                 <span className='text-default-400'>粉丝</span>
               </div>
               <div className='w-full h-px bg-default-300' />
-              <span className='select-text font-medium text-4xl'>{props.fans}</span>
+              <span className='select-text font-medium text-4xl'>{props.data.fans}</span>
             </div>
           </div>
         </div>
@@ -260,7 +334,6 @@ const BilibiliVideoDynamicFooter: React.FC<BilibiliVideoDynamicFooterProps> = (p
 
 /**
  * B站视频动态组件
- * @param props - 视频动态组件属性
  */
 export const BilibiliVideoDynamic: React.FC<Omit<BilibiliVideoDynamicProps, 'templateType' | 'templateName'>> = React.memo((props) => {
   return (
@@ -270,33 +343,10 @@ export const BilibiliVideoDynamic: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
         <BilibiliVideoDynamicHeader />
 
         {/* 内容区域 */}
-        <BilibiliVideoDynamicContent
-          text={props.data.text}
-          desc={props.data.desc}
-          image_url={props.data.image_url}
-          dianzan={props.data.dianzan}
-          pinglun={props.data.pinglun}
-          share={props.data.share}
-          coin={props.data.coin}
-          view={props.data.view}
-          duration_text={props.data.duration_text}
-          create_time={props.data.create_time}
-          dynamic_id={props.data.dynamic_id}
-        />
+        <BilibiliVideoDynamicContent {...props} />
 
         {/* 底部区域 */}
-        <BilibiliVideoDynamicFooter
-          avatar_url={props.data.avatar_url}
-          frame={props.data.frame}
-          username={props.data.username}
-          user_shortid={props.data.user_shortid}
-          total_favorited={props.data.total_favorited}
-          following_count={props.data.following_count}
-          fans={props.data.fans}
-          dynamicTYPE={props.data.dynamicTYPE}
-          share_url={props.data.share_url}
-          qrCodeDataUrl={props.qrCodeDataUrl}
-        />
+        <BilibiliVideoDynamicFooter {...props} />
       </div>
     </DefaultLayout>
   )

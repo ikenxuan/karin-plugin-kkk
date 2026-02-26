@@ -287,6 +287,28 @@ export class Bilibilipush extends Base {
               } else {
                 // const noCkData = await getBilibiliData('单个视频下载信息数据', { avid: Number(aid), cid: INFODATA.data.data.cid, typeMode: 'strict' })
               }
+
+              // 处理共创者信息
+              let staff = undefined
+              if (INFODATA.data.data.staff && Array.isArray(INFODATA.data.data.staff)) {
+                const currentMid = data[dynamicId].host_mid
+                // 提取共创者信息
+                staff = INFODATA.data.data.staff.map((member: any) => ({
+                  mid: member.mid,
+                  title: member.title,
+                  name: member.name,
+                  face: member.face,
+                  follower: member.follower
+                }))
+                
+                // 如果当前动态发布者是共创者之一，将其排到最前面
+                const currentUserIndex = staff.findIndex((member: any) => member.mid === currentMid)
+                if (currentUserIndex > 0) {
+                  const currentUser = staff.splice(currentUserIndex, 1)[0]
+                  staff.unshift(currentUser)
+                }
+              }
+
               img = await Render('bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {
                   image_url: INFODATA.data.data.pic,
@@ -299,7 +321,7 @@ export class Bilibilipush extends Base {
                   coin: Count(dycrad.stat.coin),
                   duration_text: data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.archive?.duration_text ?? '0:00',
                   create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
-                  avatar_url: INFODATA.data.data.owner.face,
+                  avatar_url: userINFO.data.data.card.face,
                   frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
                   share_url: 'https://www.bilibili.com/video/' + bvid,
                   username: checkvip(userINFO.data.data.card),
@@ -309,7 +331,8 @@ export class Bilibilipush extends Base {
                   following_count: Count(userINFO.data.data.card.attention),
                   render_time: TimeFormatter.now(),
                   dynamicTYPE: '视频动态推送',
-                  dynamic_id: dynamicId
+                  dynamic_id: dynamicId,
+                  staff
                 }
               )
             }
