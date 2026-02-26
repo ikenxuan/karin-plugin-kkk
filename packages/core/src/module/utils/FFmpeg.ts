@@ -6,6 +6,24 @@ import { Common } from '@/module/utils'
 
 // ==================== 媒体信息 ====================
 
+/** 
+ * 修复 m4s 文件为标准 MP4 格式
+ * B站的 DASH 流使用 m4s 格式，缺少 moov atom，需要转换
+ */
+export async function fixM4sFile (
+  inputPath: string,
+  outputPath: string
+): Promise<boolean> {
+  // 使用 -c copy 直接复制流，只重新封装容器
+  const result = await ffmpeg(`-y -i "${inputPath}" -c copy -movflags +faststart "${outputPath}"`)
+  if (result.status) {
+    logger.debug(`m4s 文件修复成功: ${outputPath}`)
+  } else {
+    logger.error('m4s 文件修复失败', result)
+  }
+  return result.status
+}
+
 /** 获取媒体时长（秒） */
 export async function getMediaDuration (path: string): Promise<number> {
   const { stdout } = await ffprobe(`-v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${path}"`)

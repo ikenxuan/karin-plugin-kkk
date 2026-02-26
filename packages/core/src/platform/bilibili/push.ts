@@ -73,7 +73,7 @@ export type BilibiliPushItem = {
 type WillBePushList = Record<string, BilibiliPushItem>
 const bilibiliBaseHeaders: downLoadFileOptions['headers'] = {
   ...baseHeaders,
-  Referer: 'https://api.bilibili.com/',
+  Referer: 'https://www.bilibili.com',
   Cookie: Config.cookies.bilibili
 }
 

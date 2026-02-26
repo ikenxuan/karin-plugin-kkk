@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import { Transform } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
 
 import { logger } from 'node-karin'
@@ -118,6 +119,48 @@ export class Downloader {
       const response = await this.axiosInstance(requestConfig)
       clearTimeout(timeoutId)
 
+      // 检查 HTTP 状态码
+      // 416 Range Not Satisfiable
+      if (response.status === 416) {
+        logger.warn('服务器返回 416，文件可能已下载完成，验证文件大小...')
+        
+        if (fs.existsSync(this.filepath)) {
+          const stats = fs.statSync(this.filepath)
+          logger.debug(`当前文件大小: ${formatBytes(stats.size)}`)
+          
+          // 如果文件大小合理（大于 1KB），认为下载完成
+          if (stats.size > 1024) {
+            logger.debug('文件大小合理，认为下载已完成')
+            return {
+              filepath: this.filepath,
+              totalBytes: stats.size
+            }
+          } else {
+            // 文件太小，删除并重新下载
+            logger.warn('文件太小，删除并重新下载')
+            fs.unlinkSync(this.filepath)
+            return this.download(progressCallback, retryCount + 1)
+          }
+        }
+      }
+      
+      if (response.status !== 200 && response.status !== 206) {
+        logger.error(`下载失败: HTTP ${response.status}, URL: ${this.url}`)
+        logger.error(`响应头: ${JSON.stringify(response.headers)}`)
+        
+        // 如果响应体很小，可能是错误信息，尝试读取
+        if (response.headers['content-length'] && parseInt(response.headers['content-length']) < 10240) {
+          let errorBody = ''
+          response.data.on('data', (chunk: Buffer) => {
+            errorBody += chunk.toString()
+          })
+          await new Promise(resolve => setTimeout(resolve, 100))
+          logger.error(`响应内容: ${errorBody}`)
+        }
+        
+        throw new Error(`HTTP ${response.status}: ${this.url}`)
+      }
+
       // 检查服务器是否支持断点续传
       const supportsRange = response.status === 206
       if (startByte > 0 && !supportsRange) {
@@ -161,25 +204,61 @@ export class Downloader {
       const interval = totalBytes > 0 && totalBytes < 10 * 1024 * 1024 ? 1000 : 500
       intervalId = setInterval(printProgress, interval)
 
-      // 数据计数
-      const onData = (chunk: Buffer | string) => {
-        downloadedBytes += Buffer.isBuffer(chunk) ? chunk.length : Buffer.byteLength(chunk)
-      }
-
-      response.data.on('data', onData)
+      // 创建计数流
+      const counterStream = new Transform({
+        transform(chunk, encoding, callback) {
+          downloadedBytes += chunk.length
+          callback(null, chunk)
+        }
+      })
 
       // 根据配置决定是否使用限速流
       if (this.throttleConfig.enabled) {
         throttleStream = new ThrottleStream(this.currentSpeed)
         logger.debug(`启用限速下载: ${formatBytes(this.currentSpeed)}/s`)
-        await pipeline(response.data, throttleStream, writer)
+        await pipeline(response.data, throttleStream, counterStream, writer)
       } else {
-        await pipeline(response.data, writer)
+        await pipeline(response.data, counterStream, writer)
       }
 
       if (intervalId) clearInterval(intervalId)
-      response.data.off('data', onData)
-      writer.end()
+      
+      // pipeline 已经等待所有流完成，包括 writer 的 finish 事件
+      logger.debug('文件下载并写入完成')
+      
+      // 验证文件大小
+      if (fs.existsSync(this.filepath)) {
+        const stats = fs.statSync(this.filepath)
+        const actualSize = stats.size
+        const expectedSize = totalBytes > 0 ? totalBytes : downloadedBytes
+        
+        // 检查文件是否太小（可能是错误响应）
+        if (actualSize < 1024 && expectedSize < 1024) {
+          logger.error(`下载的文件异常小 (${formatBytes(actualSize)})，可能是错误响应`)
+          
+          // 尝试读取文件内容
+          try {
+            const content = fs.readFileSync(this.filepath, 'utf-8')
+            logger.error(`文件内容: ${content}`)
+          } catch {
+            logger.error('无法读取文件内容（可能是二进制文件）')
+          }
+          
+          throw new Error(`下载的文件异常小: ${formatBytes(actualSize)}，可能是错误响应或链接失效`)
+        }
+        
+        if (actualSize < expectedSize) {
+          logger.warn(`文件大小不匹配: 实际 ${formatBytes(actualSize)}, 预期 ${formatBytes(expectedSize)}`)
+          logger.warn(`差异: ${formatBytes(expectedSize - actualSize)} (${((expectedSize - actualSize) / expectedSize * 100).toFixed(2)}%)`)
+          
+          // 如果差异小于 1%，可能是正常的元数据差异，否则认为下载不完整
+          if ((expectedSize - actualSize) / expectedSize > 0.01) {
+            throw new Error(`文件下载不完整: 实际 ${formatBytes(actualSize)}, 预期 ${formatBytes(expectedSize)}`)
+          }
+        } else {
+          logger.debug(`文件大小验证通过: ${formatBytes(actualSize)}`)
+        }
+      }
 
       // 下载成功，重置连续重置计数
       this.consecutiveResets = 0

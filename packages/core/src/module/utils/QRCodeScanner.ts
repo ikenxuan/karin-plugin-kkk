@@ -219,21 +219,23 @@ export class QRCodeScanner {
       const dataSizeMB = (width * height * 4 / 1024 / 1024).toFixed(2)
       logger.debug(`图片数据: ${width}x${height}, 内存占用: ${dataSizeMB}MB`)
 
-      // 策略1: 如果图片不是特别大，直接全图识别
-      if (width <= 2048 && height <= 2048) {
-        logger.debug('图片尺寸适中，使用全图识别策略')
+      // 策略1: 优先尝试全图识别（仅对小图片）
+      if (width <= 1024 && height <= 1024) {
+        logger.debug('图片尺寸较小，使用全图识别策略')
         const result = this.tryRecognizeInRegion(imageData, '全图')
         if (result) return result
       }
 
-      // 策略2: 对于超长图片，分块扫描
-      logger.debug(`图片尺寸较大 (${width}x${height})，使用分块扫描策略`)
+      // 策略2: 分块扫描（适用于所有图片）
+      logger.debug(`使用分块扫描策略 (${width}x${height})`)
       
       // 定义扫描区域（优先扫描常见的二维码位置）
       const scanRegions: Array<{ name: string; x: number; y: number; w: number; h: number }> = []
 
-      // 块大小
-      const blockSize = 1024
+      // 块大小 - 动态调整
+      const blockSize = Math.min(800, Math.floor(Math.max(width, height) * 0.6))
+      const blockW = Math.min(blockSize, width)
+      const blockH = Math.min(blockSize, height)
 
       // 1. 四个角（二维码最常出现的位置）
       logger.debug('添加四角扫描区域')
@@ -242,102 +244,113 @@ export class QRCodeScanner {
         name: '左上角', 
         x: 0, 
         y: 0, 
-        w: Math.min(blockSize, width), 
-        h: Math.min(blockSize, height) 
+        w: blockW, 
+        h: blockH 
       })
       // 右上角
-      if (width > blockSize) {
-        scanRegions.push({ 
-          name: '右上角', 
-          x: width - Math.min(blockSize, width), 
-          y: 0, 
-          w: Math.min(blockSize, width), 
-          h: Math.min(blockSize, height) 
-        })
-      }
+      scanRegions.push({ 
+        name: '右上角', 
+        x: Math.max(0, width - blockW), 
+        y: 0, 
+        w: blockW, 
+        h: blockH 
+      })
       // 左下角
-      if (height > blockSize) {
-        scanRegions.push({ 
-          name: '左下角', 
-          x: 0, 
-          y: height - Math.min(blockSize, height), 
-          w: Math.min(blockSize, width), 
-          h: Math.min(blockSize, height) 
-        })
-      }
+      scanRegions.push({ 
+        name: '左下角', 
+        x: 0, 
+        y: Math.max(0, height - blockH), 
+        w: blockW, 
+        h: blockH 
+      })
       // 右下角
-      if (width > blockSize && height > blockSize) {
-        scanRegions.push({ 
-          name: '右下角', 
-          x: width - Math.min(blockSize, width), 
-          y: height - Math.min(blockSize, height), 
-          w: Math.min(blockSize, width), 
-          h: Math.min(blockSize, height) 
-        })
-      }
+      scanRegions.push({ 
+        name: '右下角', 
+        x: Math.max(0, width - blockW), 
+        y: Math.max(0, height - blockH), 
+        w: blockW, 
+        h: blockH 
+      })
 
       // 2. 顶部和底部中间
-      if (width > blockSize * 2) {
+      if (width > blockW * 1.5) {
         logger.debug('添加顶部/底部中间扫描区域')
         scanRegions.push({ 
           name: '顶部中', 
-          x: Math.floor((width - blockSize) / 2), 
+          x: Math.floor((width - blockW) / 2), 
           y: 0, 
-          w: blockSize, 
-          h: Math.min(blockSize, height) 
+          w: blockW, 
+          h: blockH 
         })
-        if (height > blockSize) {
+        if (height > blockH * 1.5) {
           scanRegions.push({ 
             name: '底部中', 
-            x: Math.floor((width - blockSize) / 2), 
-            y: height - blockSize, 
-            w: blockSize, 
-            h: blockSize 
+            x: Math.floor((width - blockW) / 2), 
+            y: Math.max(0, height - blockH), 
+            w: blockW, 
+            h: blockH 
           })
         }
       }
 
       // 3. 左右中间
-      if (height > blockSize * 2) {
+      if (height > blockH * 1.5) {
         logger.debug('添加左右中间扫描区域')
-        const middleY = Math.floor((height - blockSize) / 2)
+        const middleY = Math.floor((height - blockH) / 2)
         scanRegions.push({ 
           name: '左中', 
           x: 0, 
           y: middleY, 
-          w: Math.min(blockSize, width), 
-          h: blockSize 
+          w: blockW, 
+          h: blockH 
         })
-        if (width > blockSize) {
+        if (width > blockW * 1.5) {
           scanRegions.push({ 
             name: '右中', 
-            x: width - blockSize, 
+            x: Math.max(0, width - blockW), 
             y: middleY, 
-            w: blockSize, 
-            h: blockSize 
+            w: blockW, 
+            h: blockH 
           })
         }
       }
 
-      // 4. 滑动窗口扫描（如果前面都没找到）
-      logger.debug('添加滑动窗口扫描区域')
-      const step = Math.floor(blockSize / 2)
-      let slidingWindowCount = 0
-      for (let y = 0; y < height - blockSize; y += step) {
+      // 4. 中心区域
+      if (width > blockW && height > blockH) {
+        logger.debug('添加中心区域')
         scanRegions.push({ 
-          name: `滑动窗口-${Math.floor(y / step)}`, 
-          x: 0, 
-          y, 
-          w: Math.min(blockSize, width), 
-          h: blockSize 
+          name: '中心', 
+          x: Math.floor((width - blockW) / 2), 
+          y: Math.floor((height - blockH) / 2), 
+          w: blockW, 
+          h: blockH 
         })
-        slidingWindowCount++
-        
-        // 限制扫描区域数量，避免太慢
-        if (scanRegions.length > 30) {
-          logger.debug(`滑动窗口数量达到上限，停止添加 (已添加 ${slidingWindowCount} 个)`)
-          break
+      }
+
+      // 5. 滑动窗口扫描（如果前面都没找到）
+      logger.debug('添加滑动窗口扫描区域')
+      const step = Math.floor(blockSize * 0.6)
+      let slidingWindowCount = 0
+      
+      // 垂直和水平滑动
+      for (let y = 0; y <= height - blockH; y += step) {
+        for (let x = 0; x <= width - blockW; x += step) {
+          scanRegions.push({ 
+            name: `滑动-${slidingWindowCount}`, 
+            x, 
+            y, 
+            w: blockW, 
+            h: blockH 
+          })
+          slidingWindowCount++
+          
+          // 限制扫描区域数量
+          if (scanRegions.length > 40) {
+            logger.debug(`滑动窗口数量达到上限，停止添加 (已添加 ${slidingWindowCount} 个)`)
+            break
+          }
         }
+        if (scanRegions.length > 40) break
       }
 
       logger.debug(`共生成 ${scanRegions.length} 个扫描区域，开始逐个扫描`)

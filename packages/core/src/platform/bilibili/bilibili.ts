@@ -33,6 +33,7 @@ import {
   Count,
   downloadFile,
   downloadVideo,
+  fixM4sFile,
   mergeVideoAudio,
   Networks,
   Render,
@@ -750,21 +751,53 @@ export class Bilibili extends Base {
     switch (this.islogin) {
       case true: {
         logger.debug('视频 URL:', this.Type === 'one_video' ? playUrlData.data?.dash?.video[0].base_url : playUrlData.result.dash.video[0].base_url)
-        const bmp4 = await downloadFile(
+        
+        // B站 CDN 需要正确的 Referer
+        const downloadHeaders = {
+          ...this.headers,
+          Referer: 'https://www.bilibili.com'
+        }
+        
+        const bmp4Raw = await downloadFile(
           this.Type === 'one_video' ? playUrlData.data?.dash?.video[0].base_url : playUrlData.result.dash.video[0].base_url,
           {
-            title: `Bil_V_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.mp4`,
-            headers: this.headers
+            title: `Bil_V_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.m4s`,
+            headers: downloadHeaders
           }
         )
+        
+        // 修复 m4s 文件为标准 MP4
+        const videoPath = Common.tempDri.video + `Bil_V_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.mp4`
+        const videoFixed = await fixM4sFile(bmp4Raw.filepath, videoPath)
+        if (!videoFixed) {
+          logger.error('视频文件修复失败')
+          return false
+        }
+        // 删除原始 m4s 文件
+        await Common.removeFile(bmp4Raw.filepath, true)
+        
         logger.debug('音频 URL:', this.Type === 'one_video' ? playUrlData.data?.dash?.audio[0].base_url : playUrlData.result.dash.audio[0].base_url)
-        const bmp3 = await downloadFile(
+        const bmp3Raw = await downloadFile(
           this.Type === 'one_video' ? playUrlData.data?.dash?.audio[0].base_url : playUrlData.result.dash.audio[0].base_url,
           {
-            title: `Bil_A_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.mp3`,
-            headers: this.headers
+            title: `Bil_A_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.m4s`,
+            headers: downloadHeaders
           }
         )
+        
+        // 修复音频 m4s 文件为 m4a（AAC 音频不能直接转为 MP3 容器）
+        const audioPath = Common.tempDri.video + `Bil_A_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.m4a`
+        const audioFixed = await fixM4sFile(bmp3Raw.filepath, audioPath)
+        if (!audioFixed) {
+          logger.error('音频文件修复失败')
+          return false
+        }
+        // 删除原始 m4s 文件
+        await Common.removeFile(bmp3Raw.filepath, true)
+        
+        const bmp4 = { filepath: videoPath, totalBytes: bmp4Raw.totalBytes }
+        const bmp3 = { filepath: audioPath, totalBytes: bmp3Raw.totalBytes }
+        
         if (bmp4.filepath && bmp3.filepath) {
           // 根据是否有弹幕数据选择合成方式
           const hasDanmaku = (this.forceBurnDanmaku || Config.bilibili.burnDanmaku) && danmakuList.length > 0
