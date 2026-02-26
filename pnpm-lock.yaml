@@ -180,8 +180,8 @@ importers:
   packages/amagi/packages/core:
     dependencies:
       '@ikenxuan/xhshow-ts':
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: ^1.0.6
+        version: 1.0.6
       axios:
         specifier: ^1.13.2
         version: 1.13.2
@@ -2020,8 +2020,8 @@ packages:
   '@iconify/utils@3.1.0':
     resolution: {integrity: sha512-Zlzem1ZXhI1iHeeERabLNzBHdOa4VhQbqAcOQaMKuTuyZCpwKbC2R4Dd0Zo3g9EAc+Y4fiarO8HIHRAth7+skw==}
 
-  '@ikenxuan/xhshow-ts@1.0.1':
-    resolution: {integrity: sha512-gmrbOrsjLKJiISpsrVgoo8Pwz8m9osBwW61bofuzY/7KkKfZvn8Io+N7/U8n/31u0giK+Da3+ppjFBkShxb70g==}
+  '@ikenxuan/xhshow-ts@1.0.6':
+    resolution: {integrity: sha512-2Qo2tWzU6grC7bsTwohnp9KJA9wqDTAb2bbhaBOqBdAlM44zp9qlSAe2+UTYqDZaxrpne8SCT11biizVUJuosQ==}
 
   '@img/colour@1.0.0':
     resolution: {integrity: sha512-A5P/LfWGFSl6nsckYtjw9da+19jB8hkJ6ACTGcDfEJ0aE+l2n2El7dsVM7UVHZQ9s2lmYMWlrS21YLy2IR1LUw==}
@@ -12459,7 +12459,7 @@ snapshots:
       '@iconify/types': 2.0.0
       mlly: 1.8.0
 
-  '@ikenxuan/xhshow-ts@1.0.1':
+  '@ikenxuan/xhshow-ts@1.0.6':
     dependencies:
       zod: 4.3.5
 
