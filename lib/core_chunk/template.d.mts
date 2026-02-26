@@ -1084,7 +1084,14 @@ interface BilibiliVideoDynamicProps extends BaseComponentProps {
     fans: string | number; /** 动态类型 */
     dynamicTYPE: string; /** 分享链接 */
     share_url: string; /** 动态ID */
-    dynamic_id: string;
+    dynamic_id: string; /** 共创者列表 (可选) */
+    staff?: Array<{
+      /** 用户ID */mid: number; /** 职位标题 (UP主/参演) */
+      title: string; /** 用户名 */
+      name: string; /** 头像URL */
+      face: string; /** 粉丝数 */
+      follower: number;
+    }>;
   };
   /** 预生成的二维码数据URL */
   qrCodeDataUrl?: string;

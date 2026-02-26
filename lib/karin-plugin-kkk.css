@@ -2415,6 +2415,10 @@
     width: calc(var(--spacing) * 40);
   }
 
+  .w-42 {
+    width: calc(var(--spacing) * 42);
+  }
+
   .w-42\.5 {
     width: calc(var(--spacing) * 42.5);
   }
@@ -2789,6 +2793,10 @@
 
   .min-w-40 {
     min-width: calc(var(--spacing) * 40);
+  }
+
+  .min-w-42 {
+    min-width: calc(var(--spacing) * 42);
   }
 
   .min-w-\[200px\] {
