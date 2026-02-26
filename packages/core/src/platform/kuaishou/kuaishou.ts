@@ -16,7 +16,6 @@ export class Kuaishou extends Base {
   }
 
   async KuaishouHandler (data: any) {
-    await this.emojiManager.add(128064)
     if (data.VideoData.data.data.visionVideoDetail.status !== 1) {
       await this.e.reply('不支持解析的视频')
       return true

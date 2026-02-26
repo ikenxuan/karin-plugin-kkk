@@ -37,7 +37,6 @@ export class Xiaohongshu extends Base {
   }
 
   async XiaohongshuHandler (data: XiaohongshuIdData) {
-    await this.emojiManager.add(128064)
     Config.xiaohongshu.tip && await this.e.reply('检测到小红书链接，开始解析')
     const NoteData = await this.amagi.xiaohongshu.fetcher.fetchNoteDetail({
       typeMode: 'strict',
