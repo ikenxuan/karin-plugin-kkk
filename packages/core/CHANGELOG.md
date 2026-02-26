@@ -2,6 +2,31 @@
 
 # Changelog
 
+## [2.20.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.20.2...v2.20.3) (2026-02-26)
+
+
+### 🐛 错误修复
+
+* **bilibili:** 共创视频动态中，UP主头像错误 close [#256](https://github.com/ikenxuan/karin-plugin-kkk/issues/256) ([1c76932](https://github.com/ikenxuan/karin-plugin-kkk/commit/1c769322d527211e6686c9e0f290bccaebe74c83))
+
+
+### 💄 UI 优化
+
+* 优化版本警告组件 ([608d4f9](https://github.com/ikenxuan/karin-plugin-kkk/commit/608d4f958ada8210b36f122b69e8ceeed1af20e8))
+
+
+### 🧰 其他更新
+
+* update ([9799c18](https://github.com/ikenxuan/karin-plugin-kkk/commit/9799c183969516240c9a132c0759385e394d162c))
+* 删除过时代码 ([291d24a](https://github.com/ikenxuan/karin-plugin-kkk/commit/291d24a5544874c1b6ea5685b5be9f84bb62ffb8))
+
+
+### 💯 细节优化
+
+* 优化表情回应逻辑 ([d23a6e7](https://github.com/ikenxuan/karin-plugin-kkk/commit/d23a6e7e3dc43d4275f464dbd6fbb02053714f3e))
+* 兼容性提高 ([bcc6b71](https://github.com/ikenxuan/karin-plugin-kkk/commit/bcc6b71da6b7f85be5ec31c6d229c8fd2144a28a))
+* 重构表情回应功能实现 ([dee0357](https://github.com/ikenxuan/karin-plugin-kkk/commit/dee0357fadebcf00aeffa8d0c1e8f30a0124011b))
+
 ## [2.20.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.20.1...v2.20.2) (2026-02-25)
 
 
