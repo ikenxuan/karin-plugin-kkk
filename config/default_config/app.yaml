@@ -28,14 +28,8 @@ RemoveWatermark: false
 # 渲染图片的等待时间，单位：秒。传递 0 可禁用等待（Linux系统必须大于0）
 RenderWaitTime: 60
 
-# 表情回应，若适配器不支持需要关闭
+# 表情回应，若适配器或对应平台不支持需要关闭
 EmojiReply: true
-
-# 表情 ID，详情查看：https://github.com/NapNeko/NapCatQQ/blob/main/src/core/external/face_config.json
-EmojiReplyID: 128064
-
-# 忽略表情回应失败，开启后表情回应失败时不会抛出错误，程序会继续执行
-EmojiReplyIgnoreError: true
 
 # 遇到错误时谁会收到错误日志？可选值：'master'（除'console'外的第一个主人）、'allMasters'（所有主人，排除console）、'trigger'（触发者）
 errorLogSendTo: 
