@@ -136,7 +136,9 @@ export const wrapWithErrorHandler = <R> (
       
       // 成功完成，替换为"完成"表情
       if (emojiManager) {
-        await emojiManager.replace('PROCESSING', 'SUCCESS')
+        setTimeout(() => {
+          emojiManager.replace('PROCESSING', 'SUCCESS').catch(() => { })
+        }, 1500)
       }
       
       return result

@@ -196,9 +196,11 @@ class ResourcePathManager {
   private packageDir: string
   private NODE_ENV: string
   private static initialized = false
+  private isDevelopment: boolean
 
   constructor () {
     this.NODE_ENV = process.env.NODE_ENV || 'production'
+    this.isDevelopment = this.NODE_ENV === 'development'
     this.packageDir = this.getPackageDir()
     ResourcePathManager.initialized = true
   }
@@ -210,22 +212,25 @@ class ResourcePathManager {
   private getPackageDir (): string {
     const cwd = process.cwd()
 
-    switch (this.NODE_ENV) {
-      case 'development':
-        return this.findDevelopmentDir(cwd)
-
-      case 'production':
-      default:
-        return this.getPackageDirFromImportMeta()
+    // 优先尝试从 import.meta.url 获取路径（适用于所有环境）
+    const metaDir = this.getPackageDirFromImportMeta()
+    
+    // 如果是开发环境，尝试查找开发目录
+    if (this.isDevelopment) {
+      const devDir = this.findDevelopmentDir(cwd)
+      // 如果找到了开发目录，使用它；否则使用 meta 路径
+      return devDir || metaDir
     }
+
+    return metaDir
   }
 
   /**
    * 查找开发环境目录
    * @param cwd 当前工作目录
-   * @returns 开发环境目录路径
+   * @returns 开发环境目录路径，如果找不到返回 null
    */
-  private findDevelopmentDir (cwd: string): string {
+  private findDevelopmentDir (cwd: string): string | null {
     let currentDir = cwd
     while (currentDir !== path.dirname(currentDir)) {
       const renderDir = path.join(currentDir, 'render')
@@ -237,7 +242,11 @@ class ResourcePathManager {
       }
       currentDir = path.dirname(currentDir)
     }
-    return path.join(path.dirname(cwd), 'render')
+    
+    if (!ResourcePathManager.initialized) {
+      logger.debug('开发模式：未找到 render 目录，将使用生产模式路径')
+    }
+    return null
   }
 
   /**
@@ -373,34 +382,165 @@ class ResourcePathManager {
 
   /**
    * 获取静态资源路径配置
+   * 统一处理开发和生产环境的资源路径
    * @returns 静态资源路径配置对象
    */
   getResourcePaths (): { cssDir: string; imageDir: string } {
-    switch (this.NODE_ENV) {
-      case 'development':
-        return {
-          cssDir: path.join(path.dirname(this.packageDir), 'core', 'lib'),
-          imageDir: path.join(path.dirname(this.packageDir), 'core/resources/image')
+    // 尝试多个可能的路径位置
+    const possiblePaths = this.getPossibleResourcePaths()
+    
+    // 查找第一个存在的 CSS 目录
+    let cssDir = ''
+    for (const cssPath of possiblePaths.cssPaths) {
+      if (fs.existsSync(cssPath)) {
+        cssDir = cssPath
+        if (!ResourcePathManager.initialized) {
+          logger.debug('找到 CSS 目录:', cssDir)
         }
-
-      case 'production':
-      default:
-        if (this.isPluginMode()) {
-          // 插件模式
-          return {
-            cssDir: fs.existsSync(path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'lib'))
-              ? path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'lib')
-              : path.join(this.packageDir, 'lib'),
-            imageDir: path.join(this.packageDir, 'resources', 'image')
-          }
-        } else {
-          // 独立模式
-          return {
-            cssDir: path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'lib'),
-            imageDir: path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'resources', 'image')
-          }
-        }
+        break
+      }
     }
+    
+    // 查找第一个存在的图片目录
+    let imageDir = ''
+    for (const imagePath of possiblePaths.imagePaths) {
+      if (fs.existsSync(imagePath)) {
+        imageDir = imagePath
+        if (!ResourcePathManager.initialized) {
+          logger.debug('找到图片目录:', imageDir)
+        }
+        break
+      }
+    }
+    
+    // 如果都没找到，使用默认路径（第一个）
+    if (!cssDir) {
+      cssDir = possiblePaths.cssPaths[0]
+      if (!ResourcePathManager.initialized) {
+        logger.warn('未找到 CSS 目录，使用默认路径:', cssDir)
+      }
+    }
+    
+    if (!imageDir) {
+      imageDir = possiblePaths.imagePaths[0]
+      if (!ResourcePathManager.initialized) {
+        logger.warn('未找到图片目录，使用默认路径:', imageDir)
+      }
+    }
+    
+    return { cssDir, imageDir }
+  }
+
+  /**
+   * 获取所有可能的资源路径
+   * @returns 可能的 CSS 和图片路径列表
+   */
+  private getPossibleResourcePaths (): { cssPaths: string[]; imagePaths: string[] } {
+    const cssPaths: string[] = []
+    const imagePaths: string[] = []
+    
+    // 1. 优先尝试从当前模块路径向上查找 karin-plugin-kkk 包
+    const karinPluginPath = this.findKarinPluginKkkPackage()
+    if (karinPluginPath) {
+      cssPaths.push(path.join(karinPluginPath, 'lib'))
+      imagePaths.push(path.join(karinPluginPath, 'resources', 'image'))
+    }
+    
+    // 2. 开发环境 monorepo 结构路径
+    if (this.isDevelopment) {
+      const parentDir = path.dirname(this.packageDir)
+      cssPaths.push(
+        path.join(parentDir, 'core', 'lib'),
+        path.join(this.packageDir, '../core/lib')
+      )
+      imagePaths.push(
+        path.join(parentDir, 'core', 'resources', 'image'),
+        path.join(this.packageDir, '../core/resources/image')
+      )
+    }
+    
+    // 3. 插件模式路径
+    if (this.isPluginMode()) {
+      cssPaths.push(
+        path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'lib'),
+        path.join(this.packageDir, 'lib')
+      )
+      imagePaths.push(
+        path.join(this.packageDir, 'resources', 'image')
+      )
+    }
+    
+    // 4. 独立模式路径
+    cssPaths.push(
+      path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'lib'),
+      path.join(this.packageDir, 'lib'),
+      path.join(this.packageDir, 'dist')
+    )
+    imagePaths.push(
+      path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'resources', 'image'),
+      path.join(this.packageDir, 'resources', 'image'),
+      path.join(this.packageDir, 'public', 'image')
+    )
+    
+    return { cssPaths, imagePaths }
+  }
+
+  /**
+   * 从当前模块路径向上查找 karin-plugin-kkk 包
+   * @returns karin-plugin-kkk 包的路径，如果找不到返回 null
+   */
+  private findKarinPluginKkkPackage (): string | null {
+    try {
+      // 从当前模块路径开始向上查找
+      const currentModuleUrl = import.meta.url
+      const currentModulePath = new URL(currentModuleUrl).pathname
+      const normalizedPath = process.platform === 'win32'
+        ? currentModulePath.slice(1)
+        : currentModulePath
+      
+      let currentDir = path.dirname(normalizedPath)
+      
+      // 向上查找，最多查找 10 层
+      for (let i = 0; i < 10; i++) {
+        // 检查当前目录是否是 karin-plugin-kkk 包
+        const packageJsonPath = path.join(currentDir, 'package.json')
+        if (fs.existsSync(packageJsonPath)) {
+          try {
+            const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
+            if (packageJson.name === 'karin-plugin-kkk') {
+              if (!ResourcePathManager.initialized) {
+                logger.debug('找到 karin-plugin-kkk 包:', currentDir)
+              }
+              return currentDir
+            }
+          } catch {
+            // 忽略 JSON 解析错误
+          }
+        }
+        
+        // 检查 node_modules 中是否有 karin-plugin-kkk
+        const nodeModulesPath = path.join(currentDir, 'node_modules', 'karin-plugin-kkk')
+        if (fs.existsSync(nodeModulesPath)) {
+          const packageJsonPath = path.join(nodeModulesPath, 'package.json')
+          if (fs.existsSync(packageJsonPath)) {
+            if (!ResourcePathManager.initialized) {
+              logger.debug('在 node_modules 中找到 karin-plugin-kkk:', nodeModulesPath)
+            }
+            return nodeModulesPath
+          }
+        }
+        
+        const parentDir = path.dirname(currentDir)
+        if (parentDir === currentDir) break
+        currentDir = parentDir
+      }
+    } catch (error) {
+      if (!ResourcePathManager.initialized) {
+        logger.debug('查找 karin-plugin-kkk 包失败:', error)
+      }
+    }
+    
+    return null
   }
 }
 
@@ -426,8 +566,11 @@ class HtmlWrapper {
     const htmlDir = path.dirname(htmlFilePath)
     const { cssDir, imageDir } = this.resourceManager.getResourcePaths()
 
+    // 计算相对路径
     const cssRelativePath = path.relative(htmlDir, cssDir).replace(/\\/g, '/')
     const imageRelativePath = path.relative(htmlDir, imageDir).replace(/\\/g, '/')
+    
+    // CSS 文件路径
     const cssUrl = path.join(cssRelativePath, 'karin-plugin-kkk.css').replace(/\\/g, '/')
 
     // 处理字体路径
@@ -436,11 +579,14 @@ class HtmlWrapper {
     const bilifontUrl = path.join(fontRelativePath, 'bilifont/font.css').replace(/\\/g, '/')
     const monoFontUrl = path.join(fontRelativePath, 'mono/font.css').replace(/\\/g, '/')
 
-    // 处理图片路径
-    const processedHtml = htmlContent.replace(
-      /src="\/image\//g,
-      `src="${imageRelativePath}/`
-    )
+    // 处理图片路径 - 替换所有可能的图片路径格式
+    let processedHtml = htmlContent
+      // 处理 /image/ 开头的路径
+      .replace(/src="\/image\//g, `src="${imageRelativePath}/`)
+      // 处理 src="/image/ 的情况
+      .replace(/src='\/image\//g, `src='${imageRelativePath}/`)
+      // 处理可能的绝对路径
+      .replace(/src="image\//g, `src="${imageRelativePath}/`)
 
     return `
     <!DOCTYPE html>
@@ -624,7 +770,8 @@ const reactServerRender = async <K extends keyof DataTypeMap> (
 
   const result = await renderClient.render(request)
 
-  if (result.success && process.env.NODE_ENV === 'development') {
+  // 在开发环境下保存渲染数据（用于调试）
+  if (process.env.NODE_ENV === 'development') {
     DevDataManager.saveRenderData(
       request.templateType,
       request.templateName,

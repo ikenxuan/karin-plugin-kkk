@@ -67,7 +67,9 @@ export class DevDataManager {
    */
   static getTemplateDataDir (platform: string, templateName: string): string {
     if (!devDataDir) {
-      throw new Error('karin-plugin-kkk 仅在环境变量 NODE_ENV 为 production 时可用')
+      // 在非开发环境下，返回一个临时目录路径，但不抛出错误
+      logger.debug('DevDataManager: 当前不在开发环境，数据保存功能将被禁用')
+      return ''
     }
     const dir = path.join(devDataDir, platform, templateName)
     this.ensureDir(dir)
@@ -179,6 +181,10 @@ export class DevDataManager {
 
     try {
       const dir = this.getTemplateDataDir(platform, templateName)
+      // 如果目录为空（非开发环境），直接返回
+      if (!dir) {
+        return false
+      }
       const defaultFilePath = path.join(dir, 'default.json')
 
       // 读取当前版本记录
