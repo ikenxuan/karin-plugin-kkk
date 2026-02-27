@@ -10,36 +10,31 @@ export const cookiesConfigSchema: SectionSchema = {
   fields: [
     {
       key: 'douyin',
-      type: 'input',
-      inputType: 'text',
+      type: 'text',
       label: '抖音',
       description: '请输入你的抖音Cookies，不输入则无法使用抖音相关功能噢',
       placeholder: ''
     },
     {
       key: 'bilibili',
-      type: 'input',
-      inputType: 'text',
+      type: 'text',
       label: 'B站',
       description: '请输入你的B站Cookies，不输入部分功能将受限噢',
       placeholder: ''
     },
     {
       key: 'kuaishou',
-      type: 'input',
-      inputType: 'text',
+      type: 'text',
       label: '快手',
       description: '请输入你的快手Cookies，不输入则无法使用快手相关功能噢',
       placeholder: ''
     },
     {
       key: 'xiaohongshu',
-      type: 'input',
-      inputType: 'text',
+      type: 'text',
       label: '小红书',
       description: '请输入你的小红书Cookies，不输入则无法使用小红书相关功能噢',
       placeholder: ''
     }
   ]
 }
-
