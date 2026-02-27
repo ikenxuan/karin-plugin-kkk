@@ -116,22 +116,6 @@ export const appConfigSchema: SectionSchema = {
       description: '在解析任务开始时添加表情回应，若适配器不支持需要关闭'
     },
     {
-      key: 'EmojiReplyID',
-      type: 'input',
-      inputType: 'number',
-      label: '表情 ID',
-      disabled: $not('EmojiReply'),
-      description: '详情查看：https://koishi.js.org/QFace/#/qqnt 中调试信息的 emojiId 字段，Emoji则是 qcid',
-      rules: [{ min: 0, max: 1145141919810 }]
-    },
-    {
-      key: 'EmojiReplyIgnoreError',
-      type: 'switch',
-      label: '忽略表情回应失败',
-      disabled: $not('EmojiReply'),
-      description: '开启后表情回应失败时不会抛出错误，程序会继续执行'
-    },
-    {
       key: 'errorLogSendTo',
       type: 'checkbox',
       label: '错误日志',
