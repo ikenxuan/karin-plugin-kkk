@@ -1806,6 +1806,7 @@ declare class ResourcePathManager {
   private packageDir;
   private NODE_ENV;
   private static initialized;
+  private isDevelopment;
   constructor();
   /**
    * 获取包目录路径
@@ -1815,7 +1816,7 @@ declare class ResourcePathManager {
   /**
    * 查找开发环境目录
    * @param cwd 当前工作目录
-   * @returns 开发环境目录路径
+   * @returns 开发环境目录路径，如果找不到返回 null
    */
   private findDevelopmentDir;
   /**
@@ -1847,12 +1848,23 @@ declare class ResourcePathManager {
   private isPluginMode;
   /**
    * 获取静态资源路径配置
+   * 统一处理开发和生产环境的资源路径
    * @returns 静态资源路径配置对象
    */
   getResourcePaths(): {
     cssDir: string;
     imageDir: string;
   };
+  /**
+   * 获取所有可能的资源路径
+   * @returns 可能的 CSS 和图片路径列表
+   */
+  private getPossibleResourcePaths;
+  /**
+   * 从当前模块路径向上查找 karin-plugin-kkk 包
+   * @returns karin-plugin-kkk 包的路径，如果找不到返回 null
+   */
+  private findKarinPluginKkkPackage;
 }
 /**
  * 渲染器配置选项接口
