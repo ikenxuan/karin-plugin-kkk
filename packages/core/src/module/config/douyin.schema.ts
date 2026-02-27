@@ -94,7 +94,7 @@ export const douyinConfigSchema: SectionSchema = {
       label: '画质偏好',
       description: '解析视频的分辨率偏好。',
       orientation: 'horizontal',
-      disabled: $or($not('switch'), $not($includes('sendContent', 'video'))),
+      disabled: $not('switch'),
       options: [
         { label: '自动选择', value: 'adapt', description: '根据「视频体积上限（MB）」自动选择分辨率进行下载' },
         { label: '标清 540p', value: '540p' },
@@ -110,7 +110,7 @@ export const douyinConfigSchema: SectionSchema = {
       inputType: 'number',
       label: '视频体积上限（MB）',
       description: '根据该值自动选择分辨率进行下载。仅在「画质偏好」 为 "自动选择" 时生效',
-      disabled: $or($not('switch'), $not($includes('sendContent', 'video')), $ne('videoQuality', 'adapt')),
+      disabled: $or($not('switch'), $ne('videoQuality', 'adapt')),
       rules: [{ min: 1, max: 20000 }]
     },
     {

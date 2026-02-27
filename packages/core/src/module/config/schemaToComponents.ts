@@ -10,6 +10,23 @@ import type { ConfigType } from '@/types'
 import type { CheckboxFieldSchema, ConditionExpression, DividerSchema, FieldSchema, InputFieldSchema, RadioFieldSchema, SectionSchema, SwitchFieldSchema } from './schema'
 
 /**
+ * 获取嵌套字段的值
+ */
+function getNestedValue(obj: Record<string, unknown> | undefined, path: string): unknown {
+  if (!obj) return undefined
+  const keys = path.split('.')
+  let value: unknown = obj
+  for (const key of keys) {
+    if (value && typeof value === 'object' && key in value) {
+      value = (value as Record<string, unknown>)[key]
+    } else {
+      return undefined
+    }
+  }
+  return value
+}
+
+/**
  * 将条件表达式转换为实际的布尔值
  * @param condition 条件表达式
  * @param config 配置对象
@@ -17,20 +34,15 @@ import type { CheckboxFieldSchema, ConditionExpression, DividerSchema, FieldSche
  */
 function evaluateCondition(
   condition: ConditionExpression | undefined,
-  config: any,
-  sectionKey: string
+  config: ConfigType,
+  sectionKey: keyof ConfigType
 ): boolean {
   if (!condition) return false
 
-  const sectionConfig = config[sectionKey]
+  const sectionConfig = config[sectionKey] as Record<string, unknown> | undefined
 
-  const getValue = (field: string): any => {
-    const keys = field.split('.')
-    let value = sectionConfig
-    for (const key of keys) {
-      value = value?.[key]
-    }
-    return value
+  const getValue = (field: string): unknown => {
+    return getNestedValue(sectionConfig, field)
   }
 
   switch (condition.type) {
@@ -47,10 +59,10 @@ function evaluateCondition(
       switch (condition.operator) {
         case '===': return left === right
         case '!==': return left !== right
-        case '>': return left > right
-        case '<': return left < right
-        case '>=': return left >= right
-        case '<=': return left <= right
+        case '>': return (left as number) > (right as number)
+        case '<': return (left as number) < (right as number)
+        case '>=': return (left as number) >= (right as number)
+        case '<=': return (left as number) <= (right as number)
         default: return false
       }
     }
@@ -79,10 +91,10 @@ function evaluateCondition(
  */
 function fieldToComponent(
   field: FieldSchema & { key: string },
-  config: any,
-  sectionKey: string,
+  config: ConfigType,
+  sectionKey: keyof ConfigType,
   componentId: string
-): any {
+): ReturnType<typeof components.switch.create> | ReturnType<typeof components.input.string> | ReturnType<typeof components.input.number> | ReturnType<typeof components.radio.group> | ReturnType<typeof components.checkbox.group> | null {
   const isDisabled = evaluateCondition(field.disabled, config, sectionKey)
   const baseProps = {
     label: field.label,
@@ -91,18 +103,20 @@ function fieldToComponent(
     color: field.color
   }
 
+  const sectionConfig = config[sectionKey] as Record<string, unknown> | undefined
+
   switch (field.type) {
     case 'switch': {
       const switchField = field as SwitchFieldSchema & { key: string }
       return components.switch.create(componentId, {
         ...baseProps,
-        defaultSelected: config[sectionKey]?.[switchField.key]
+        defaultSelected: getNestedValue(sectionConfig, switchField.key) as boolean | undefined
       })
     }
 
     case 'input': {
       const inputField = field as InputFieldSchema & { key: string }
-      const value = config[sectionKey]?.[inputField.key]
+      const value = getNestedValue(sectionConfig, inputField.key)
 
       if (inputField.inputType === 'number') {
         return components.input.number(componentId, {
@@ -119,7 +133,7 @@ function fieldToComponent(
         return components.input.string(componentId, {
           ...baseProps,
           type: inputField.inputType || 'text',
-          defaultValue: value || '',
+          defaultValue: (value as string | undefined) || '',
           placeholder: inputField.placeholder,
           isRequired: field.required,
           rules: inputField.rules?.map(rule => ({
@@ -134,12 +148,12 @@ function fieldToComponent(
 
     case 'radio': {
       const radioField = field as RadioFieldSchema & { key: string }
-      const value = config[sectionKey]?.[radioField.key]
+      const value = getNestedValue(sectionConfig, radioField.key)
 
       return components.radio.group(componentId, {
         ...baseProps,
         orientation: radioField.orientation || 'vertical',
-        defaultValue: typeof value === 'number' ? value.toString() : value,
+        defaultValue: typeof value === 'number' ? value.toString() : (value as string | undefined),
         radio: radioField.options.map((opt, idx) =>
           components.radio.create(`${componentId}:radio-${idx + 1}`, {
             label: opt.label,
@@ -152,12 +166,12 @@ function fieldToComponent(
 
     case 'checkbox': {
       const checkboxField = field as CheckboxFieldSchema & { key: string }
-      const value = config[sectionKey]?.[checkboxField.key]
+      const value = getNestedValue(sectionConfig, checkboxField.key)
 
       return components.checkbox.group(componentId, {
         ...baseProps,
         orientation: checkboxField.orientation || 'vertical',
-        defaultValue: value || [],
+        defaultValue: (value as string[] | undefined) || [],
         checkbox: checkboxField.options.map((opt, idx) =>
           components.checkbox.create(`${componentId}:checkbox:${idx + 1}`, {
             label: opt.label,
@@ -180,8 +194,8 @@ export function sectionToAccordionItem(
   schema: SectionSchema,
   config: ConfigType,
   accordionId: string = `cfg:${schema.key}`
-): any {
-  const children: any[] = []
+): ReturnType<typeof components.accordion.createItem> {
+  const children: Array<ReturnType<typeof components.divider.create> | NonNullable<ReturnType<typeof fieldToComponent>>> = []
 
   for (const field of schema.fields) {
     if (field.type === 'divider') {
@@ -194,8 +208,9 @@ export function sectionToAccordionItem(
       )
     } else {
       const fieldWithKey = field as FieldSchema & { key: string }
-      const componentId = fieldWithKey.key
-      const component = fieldToComponent(fieldWithKey, config, schema.key, componentId)
+      // 将嵌套字段的点号替换为冒号，以符合前端组件的命名规范
+      const componentId = fieldWithKey.key.replace(/\./g, ':')
+      const component = fieldToComponent(fieldWithKey, config, schema.key as keyof ConfigType, componentId)
       if (component) {
         children.push(component)
       }
@@ -217,7 +232,7 @@ export function sectionToAccordion(
   schema: SectionSchema,
   config: ConfigType,
   label?: string
-): any {
+): ReturnType<typeof components.accordion.create> {
   return components.accordion.create(schema.key, {
     label: label || schema.title,
     children: [sectionToAccordionItem(schema, config)]

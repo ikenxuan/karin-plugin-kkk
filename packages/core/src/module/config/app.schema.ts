@@ -6,6 +6,38 @@ import os from 'node:os'
 import type { SectionSchema } from './schema'
 import { $ne, $not, $or, $var } from './schema'
 
+/**
+ * 获取本机局域网 IP 地址
+ * 优先返回常见局域网网段的 IP（192.168.x.x, 10.x.x.x, 172.16-31.x.x）
+ */
+function getLocalIP(): string {
+  const interfaces = os.networkInterfaces()
+  const candidates: string[] = []
+
+  for (const name of Object.keys(interfaces)) {
+    const netInterface = interfaces[name]
+    if (!netInterface) continue
+    for (const net of netInterface) {
+      if (net.family === 'IPv4' && !net.internal) {
+        candidates.push(net.address)
+      }
+    }
+  }
+
+  // 优先选择常见局域网网段
+  const preferredIP = candidates.find(ip => {
+    if (ip.startsWith('192.168.')) return true
+    if (ip.startsWith('10.')) return true
+    if (ip.startsWith('172.')) {
+      const second = parseInt(ip.split('.')[1], 10)
+      if (second >= 16 && second <= 31) return true
+    }
+    return false
+  })
+
+  return preferredIP || candidates[0] || '127.0.0.1'
+}
+
 export const appConfigSchema: SectionSchema = {
   key: 'app',
   title: '插件应用相关',
@@ -135,7 +167,7 @@ export const appConfigSchema: SectionSchema = {
       description: '生成登录二维码时使用的服务器地址',
       orientation: 'horizontal',
       options: [
-        { label: '局域网', value: 'lan', description: '适用于手机和服务器在同一局域网' },
+        { label: `局域网（${getLocalIP()}）`, value: 'lan', description: '适用于手机和服务器在同一局域网' },
         { label: '外部地址', value: 'external', description: '适用于远程访问，需手动配置' }
       ]
     },
