@@ -528,7 +528,10 @@ const processFrontendData = (data: newConfigType): ConfigType => {
       }
 
       if (propValue !== undefined && propValue !== null) {
-        const keys = prop.split(':')
+        // 去掉模块前缀（如果存在）
+        // 例如：'bilibili:push:switch' -> 'push:switch'
+        const propWithoutPrefix = prop.startsWith(`${key}:`) ? prop.slice(key.length + 1) : prop
+        const keys = propWithoutPrefix.split(':')
         setNestedProperty(configObj, keys, propValue)
         hasValidData = true
       }

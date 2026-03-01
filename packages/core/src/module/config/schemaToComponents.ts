@@ -187,9 +187,11 @@ function fieldToComponent(
       ...rest,
       isDisabled,
       defaultValue: typeof value === 'number' ? value.toString() : (value as string | undefined),
-      radio: radio.map((opt) => {
+      radio: radio.map((opt, index) => {
         const { key: optKey, ...optRest } = opt
-        return components.radio.create(optKey, optRest)
+        // 为 radio 选项添加模块前缀和索引，确保唯一性
+        const uniqueOptKey = `${componentId}:radio-${index + 1}`
+        return components.radio.create(uniqueOptKey, optRest)
       })
     })
   }
@@ -203,9 +205,11 @@ function fieldToComponent(
       ...rest,
       isDisabled,
       defaultValue: (value as string[] | undefined) || [],
-      checkbox: checkbox.map((opt) => {
+      checkbox: checkbox.map((opt, index) => {
         const { key: optKey, ...optRest } = opt
-        return components.checkbox.create(optKey, optRest)
+        // 为 checkbox 选项添加模块前缀和索引，确保唯一性
+        const uniqueOptKey = `${componentId}:checkbox-${index + 1}`
+        return components.checkbox.create(uniqueOptKey, optRest)
       })
     })
   }
@@ -230,7 +234,8 @@ export function sectionToAccordionItem(
       )
     } else if ('key' in field) {
       // 将嵌套字段的点号替换为冒号，以符合前端组件的命名规范
-      const componentId = field.key.replace(/\./g, ':')
+      // 并添加模块前缀，确保不同模块的相同字段名不会产生重复的 key
+      const componentId = `${schema.key}:${field.key.replace(/\./g, ':')}`
       const component = fieldToComponent(field, config, schema.key as keyof ConfigType, componentId)
       if (component) {
         children.push(component)
