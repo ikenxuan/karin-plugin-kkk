@@ -14,12 +14,6 @@ export const kuaishouConfigSchema: SectionSchema = {
       label: '解析开关',
       description: '快手解析开关，此开关为单独开关'
     },
-    {
-      key: 'tip',
-      label: '解析提示',
-      description: '快手解析提示，发送提示信息："检测到快手链接，开始解析"',
-      disabled: $not('switch')
-    },
     { description: '评论详情设置', descPosition: 20 },
     {
       key: 'comment',

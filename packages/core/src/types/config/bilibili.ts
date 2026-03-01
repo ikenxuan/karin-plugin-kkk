@@ -3,9 +3,6 @@ export interface bilibiliConfig {
   /** B站解析开关，单独开关，受「总开关」影响 */
   switch: boolean
 
-  /** B站解析提示，发送提示信息："检测到B站链接，开始解析" */
-  tip: boolean
-
   /** 解析时发送的内容，可选值：'info'(视频信息)、'comment'(评论图片)、'video'(视频文件) */
   sendContent: ['info' | 'comment' | 'video']
 

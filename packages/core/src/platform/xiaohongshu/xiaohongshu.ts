@@ -37,7 +37,7 @@ export class Xiaohongshu extends Base {
   }
 
   async XiaohongshuHandler (data: XiaohongshuIdData) {
-    Config.xiaohongshu.tip && await this.e.reply('检测到小红书链接，开始解析')
+    Config.app.parseTip && await this.e.reply('检测到小红书链接，开始解析')
     const NoteData = await this.amagi.xiaohongshu.fetcher.fetchNoteDetail({
       typeMode: 'strict',
       note_id: data.note_id,

@@ -6,7 +6,7 @@ import type { SectionSchema } from './schema'
 export const cookiesConfigSchema: SectionSchema = {
   key: 'cookies',
   title: 'Cookies 相关',
-  subtitle: '建议配置，否则大部分功能无法使用',
+  subtitle: '建议配置，否则大部分功能无法使用，配置教程请查看：https://karin-plugin-kkk-docs.vercel.app/zh-CN/docs/advanced/ck',
   fields: [
     {
       key: 'douyin',

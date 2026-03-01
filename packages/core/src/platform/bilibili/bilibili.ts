@@ -85,7 +85,7 @@ export class Bilibili extends Base {
   }
 
   async BilibiliHandler (iddata: BilibiliId): Promise<boolean | undefined> {
-    Config.bilibili.tip && await this.e.reply('检测到B站链接，开始解析')
+    Config.app.parseTip && await this.e.reply('检测到B站链接，开始解析')
     switch (this.Type) {
       case 'one_video': {
         const infoData = await this.amagi.bilibili.fetcher.fetchVideoInfo({ bvid: iddata.bvid, typeMode: 'strict' })

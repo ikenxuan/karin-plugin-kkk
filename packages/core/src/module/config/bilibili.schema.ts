@@ -15,12 +15,6 @@ export const bilibiliConfigSchema: SectionSchema = {
       description: 'B站解析开关，此开关为单独开关'
     },
     {
-      key: 'tip',
-      label: '解析提示',
-      description: 'B站解析提示，发送提示信息："检测到B站链接，开始解析"',
-      disabled: $not('switch')
-    },
-    {
       key: 'sendContent',
       label: '解析时发送的内容',
       description: '若什么都不选，可能不会返回任何解析结果',

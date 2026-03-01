@@ -75,7 +75,7 @@ export class DouYin extends Base {
   }
 
   async DouyinHandler (data: DouyinIdData) {
-    if (Config.douyin.tip) this.e.reply('检测到抖音链接，开始解析')
+    Config.app.parseTip && this.e.reply('检测到抖音链接，开始解析')
     switch (this.type) {
       case 'one_work': {
         const VideoData = await this.amagi.douyin.fetcher.parseWork({

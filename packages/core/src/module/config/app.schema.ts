@@ -140,14 +140,19 @@ export const appConfigSchema: SectionSchema = {
       description: '在解析任务开始时添加表情回应，若适配器不支持需要关闭'
     },
     {
+      key: 'parseTip',
+      label: '解析提示',
+      description: '发送提示信息："检测到xxx链接，开始解析"'
+    },
+    {
       key: 'errorLogSendTo',
       label: '错误日志',
       description: '遇到错误时谁会收到错误日志。注：推送任务只可发送给主人。「第一个主人」与「所有主人」互斥。',
       orientation: 'horizontal',
       checkbox: [
-        { key: 'errorLogSendTo:checkbox:1', label: '除\'console\'外的第一个主人', value: 'master' },
-        { key: 'errorLogSendTo:checkbox:2', label: '所有主人（排除console）', value: 'allMasters' },
-        { key: 'errorLogSendTo:checkbox:3', label: '触发者（不支持私聊）', value: 'trigger' }
+        { key: 'errorLogSendTo:checkbox:1', label: '第一个主人', value: 'master' },
+        { key: 'errorLogSendTo:checkbox:2', label: '所有主人', value: 'allMasters' },
+        { key: 'errorLogSendTo:checkbox:3', label: '触发者的群聊', value: 'trigger' }
       ]
     },
     { description: '我的小玩具配置', descPosition: 20 },
