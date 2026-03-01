@@ -1,6 +1,7 @@
 import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
-import convert from 'heic-convert'
+import decode from 'heic-decode'
+import jpeg from 'jpeg-js'
 import { DouyinCommentProps } from 'template/types/platforms/douyin'
 
 import { Common, Networks } from '@/module/utils'
@@ -103,10 +104,18 @@ const processCommentImage = async (imageUrl: string | null): Promise<string | nu
   const headers = await new Networks({ url: imageUrl, type: 'arraybuffer' }).getHeaders()
   if (headers['content-type'] && headers['content-type'] === 'image/heic') {
     const response = await new Networks({ url: imageUrl, type: 'arraybuffer' }).returnResult()
-    const jpegBuffer = await convert({
-      buffer: response.data,
-      format: 'JPEG'
-    })
+    
+    // 使用 heic-decode 解码 HEIC 图片
+    const decoded = await decode({ buffer: response.data })
+    
+    // 使用 jpeg-js 将 RGBA 数据编码为 JPEG
+    const jpegImageData = {
+      data: Buffer.from(decoded.data),
+      width: decoded.width,
+      height: decoded.height
+    }
+    const jpegBuffer = jpeg.encode(jpegImageData, 90).data
+    
     const base64Image = Buffer.from(jpegBuffer).toString('base64')
     return `data:image/jpeg;base64,${base64Image}`
   }

@@ -1,10 +1,22 @@
-import { Transformer } from '@napi-rs/image'
+import decode from 'heic-decode'
+import jpeg from 'jpeg-js'
 import jsQR from 'jsqr'
 import { logger } from 'node-karin'
 import axios from 'node-karin/axios'
+import { PNG } from 'pngjs'
 
 /**
  * 二维码扫描工具类
+ * 
+ * 使用纯 JavaScript 实现，无需任何 native 模块依赖
+ * 
+ * 支持的图片格式：
+ * - PNG (使用 pngjs)
+ * - JPEG/JPG (使用 jpeg-js)
+ * - HEIC/HEIF (使用 heic-decode，基于 WASM)
+ * 
+ * 注意：所有图片解码库均为纯 JavaScript/WASM 实现，
+ * 不依赖任何 native 模块，可在任何平台上运行
  */
 export class QRCodeScanner {
   /**
@@ -150,51 +162,148 @@ export class QRCodeScanner {
   }
 
   /**
+   * 检测图片格式
+   * @param buffer 图片 Buffer
+   * @returns 图片格式或 null
+   */
+  private static detectImageFormat(buffer: Buffer): string | null {
+    // PNG: 89 50 4E 47 0D 0A 1A 0A
+    if (buffer.length >= 8 && 
+        buffer[0] === 0x89 && buffer[1] === 0x50 && 
+        buffer[2] === 0x4E && buffer[3] === 0x47) {
+      return 'png'
+    }
+    
+    // JPEG: FF D8 FF
+    if (buffer.length >= 3 && 
+        buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF) {
+      return 'jpeg'
+    }
+    
+    // HEIC/HEIF: ftyp box at offset 4
+    if (buffer.length >= 12) {
+      const ftyp = buffer.toString('ascii', 4, 8)
+      if (ftyp === 'ftyp') {
+        const brand = buffer.toString('ascii', 8, 12)
+        if (brand === 'heic' || brand === 'heix' || brand === 'hevc' || 
+            brand === 'hevx' || brand === 'mif1' || brand === 'msf1') {
+          return 'heic'
+        }
+      }
+    }
+    
+    // GIF: 47 49 46 38
+    if (buffer.length >= 6 && 
+        buffer[0] === 0x47 && buffer[1] === 0x49 && 
+        buffer[2] === 0x46 && buffer[3] === 0x38) {
+      return 'gif'
+    }
+    
+    // BMP: 42 4D
+    if (buffer.length >= 2 && 
+        buffer[0] === 0x42 && buffer[1] === 0x4D) {
+      return 'bmp'
+    }
+    
+    // WebP: RIFF....WEBP
+    if (buffer.length >= 12 && 
+        buffer[0] === 0x52 && buffer[1] === 0x49 && 
+        buffer[2] === 0x46 && buffer[3] === 0x46 &&
+        buffer[8] === 0x57 && buffer[9] === 0x45 && 
+        buffer[10] === 0x42 && buffer[11] === 0x50) {
+      return 'webp'
+    }
+    
+    return null
+  }
+
+  /**
+   * 解析 PNG 图片
+   * @param buffer 图片 Buffer
+   * @returns 图片数据或 null
+   */
+  private static parsePNG(buffer: Buffer): { width: number; height: number; data: Uint8ClampedArray } | null {
+    try {
+      const png = PNG.sync.read(buffer)
+      logger.debug(`PNG 解析成功: ${png.width}x${png.height}`)
+      return {
+        width: png.width,
+        height: png.height,
+        data: Uint8ClampedArray.from(png.data)
+      }
+    } catch (err) {
+      logger.warn('PNG 解析失败:', err)
+      return null
+    }
+  }
+
+  /**
+   * 解析 JPEG 图片
+   * @param buffer 图片 Buffer
+   * @returns 图片数据或 null
+   */
+  private static parseJPEG(buffer: Buffer): { width: number; height: number; data: Uint8ClampedArray } | null {
+    try {
+      const decoded = jpeg.decode(buffer, { useTArray: true })
+      logger.debug(`JPEG 解析成功: ${decoded.width}x${decoded.height}`)
+      return {
+        width: decoded.width,
+        height: decoded.height,
+        data: Uint8ClampedArray.from(decoded.data)
+      }
+    } catch (err) {
+      logger.warn('JPEG 解析失败:', err)
+      return null
+    }
+  }
+
+  /**
+   * 解析 HEIC/HEIF 图片
+   * @param buffer 图片 Buffer
+   * @returns 图片数据或 null
+   */
+  private static async parseHEIC(buffer: Buffer): Promise<{ width: number; height: number; data: Uint8ClampedArray } | null> {
+    try {
+      const decoded = await decode({ buffer })
+      logger.debug(`HEIC 解析成功: ${decoded.width}x${decoded.height}`)
+      return {
+        width: decoded.width,
+        height: decoded.height,
+        data: Uint8ClampedArray.from(decoded.data)
+      }
+    } catch (err) {
+      logger.warn('HEIC 解析失败:', err)
+      return null
+    }
+  }
+
+  /**
    * 解析图片 Buffer 为像素数据
    * @param buffer 图片 Buffer
    * @returns 图片数据或 null
    */
-  private static parseImageBuffer(
+  private static async parseImageBuffer(
     buffer: Buffer
-  ): { width: number; height: number; data: Uint8ClampedArray } | null {
+  ): Promise<{ width: number; height: number; data: Uint8ClampedArray } | null> {
     try {
-      const transformer = new Transformer(buffer)
-      const metadata = transformer.metadataSync()
-      const width = metadata.width
-      const height = metadata.height
+      const format = this.detectImageFormat(buffer)
+      logger.debug(`检测到图片格式: ${format || '未知'}`)
       
-      // 获取原始 RGBA 像素数据
-      const rawPixels = transformer.rawPixelsSync()
-      
-      logger.debug(`图片解析成功: ${width}x${height}, 格式: ${metadata.format}`)
-      logger.debug(`原始像素数据长度: ${rawPixels.length}, 预期长度(RGBA): ${width * height * 4}`)
-      
-      // 检查数据长度，判断是 RGB 还是 RGBA
-      const expectedRGBA = width * height * 4
-      const expectedRGB = width * height * 3
-      
-      if (rawPixels.length === expectedRGB) {
-        // RGB 格式，需要转换为 RGBA
-        logger.debug('检测到 RGB 格式，转换为 RGBA')
-        const rgbaData = new Uint8ClampedArray(expectedRGBA)
-        for (let i = 0, j = 0; i < rawPixels.length; i += 3, j += 4) {
-          rgbaData[j] = rawPixels[i] // R
-          rgbaData[j + 1] = rawPixels[i + 1] // G
-          rgbaData[j + 2] = rawPixels[i + 2] // B
-          rgbaData[j + 3] = 255 // A (不透明)
-        }
-        return { width, height, data: rgbaData }
-      } else if (rawPixels.length === expectedRGBA) {
-        // RGBA 格式，直接使用
-        logger.debug('检测到 RGBA 格式')
-        return {
-          width,
-          height,
-          data: Uint8ClampedArray.from(rawPixels)
-        }
-      } else {
-        logger.warn(`像素数据长度不匹配: ${rawPixels.length}, 预期 RGB: ${expectedRGB}, RGBA: ${expectedRGBA}`)
+      if (!format) {
+        logger.warn('无法识别图片格式')
         return null
+      }
+
+      switch (format) {
+        case 'png':
+          return this.parsePNG(buffer)
+        case 'jpeg':
+          return this.parseJPEG(buffer)
+        case 'heic':
+          return await this.parseHEIC(buffer)
+        default:
+          logger.warn(`不支持的图片格式: ${format}`)
+          return null
       }
     } catch (err) {
       logger.warn('图片解析失败:', err)
@@ -207,10 +316,10 @@ export class QRCodeScanner {
    * @param buffer 图片 Buffer
    * @returns 二维码内容，如果没有识别到则返回 null
    */
-  static scanFromBuffer(buffer: Buffer): string | null {
+  static async scanFromBuffer(buffer: Buffer): Promise<string | null> {
     try {
       // 解析图片
-      const imageData = this.parseImageBuffer(buffer)
+      const imageData = await this.parseImageBuffer(buffer)
       if (!imageData) {
         return null
       }
