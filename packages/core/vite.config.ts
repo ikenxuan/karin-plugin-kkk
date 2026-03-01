@@ -102,9 +102,6 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, './src'),
       template: resolve(__dirname, '../template/src/client.ts'),
-      '@ikenxuan/amagi/chalk': resolve(__dirname, '../amagi/packages/core/src/exports/chalk.ts'),
-      '@ikenxuan/amagi/axios': resolve(__dirname, '../amagi/packages/core/src/exports/axios.ts'),
-      '@ikenxuan/amagi/express': resolve(__dirname, '../amagi/packages/core/src/exports/express.ts'),
       '@ikenxuan/amagi': resolve(__dirname, '../amagi/packages/core/src/index.ts'),
       amagi: resolve(__dirname, '../amagi/packages/core/src')
     }
