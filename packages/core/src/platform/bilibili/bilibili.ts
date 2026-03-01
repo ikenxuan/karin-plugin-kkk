@@ -36,6 +36,7 @@ import {
   fixM4sFile,
   mergeVideoAudio,
   Networks,
+  processImageUrl,
   Render,
   uploadFile
 } from '@/module/utils'
@@ -112,8 +113,9 @@ export class Bilibili extends Base {
             // 构建回复内容数组
             const replyContent: SendMessage = []
             const { coin, like, share, view, favorite, danmaku } = infoData.data.data.stat
+            const coverUrl = await processImageUrl(infoData.data.data.pic, infoData.data.data.title)
             const contentMap = {
-              cover: segment.image(infoData.data.data.pic),
+              cover: segment.image(coverUrl),
               title: segment.text(`\n📺 标题: ${infoData.data.data.title}\n`),
               author: segment.text(`\n👤 作者: ${infoData.data.data.owner.name}\n`),
               stats: segment.text(formatVideoStats(view, danmaku, like, coin, share, favorite)),
@@ -346,9 +348,11 @@ export class Bilibili extends Base {
           /** 图文、纯图 */
           case DynamicType.DRAW: {
             const imgArray = []
-            for (const img of dynamicInfo.data.data.item.modules.module_dynamic.major.opus.pics) {
+            const title = dynamicInfo.data.data.item.modules.module_dynamic.major.opus.title || 'bilibili_dynamic'
+            for (const [index, img] of dynamicInfo.data.data.item.modules.module_dynamic.major.opus.pics.entries()) {
               if (img.url) {
-                imgArray.push(segment.image(img.url))
+                const imageUrl = await processImageUrl(img.url, title, index)
+                imgArray.push(segment.image(imageUrl))
               }
             }
 
@@ -675,8 +679,10 @@ export class Bilibili extends Base {
             // 提取所有图片
             const messageElements: ImageElement[] = []
             const articleImages = extractArticleImages(articleContent)
-            for (const item of articleImages) {
-              messageElements.push(segment.image(item))
+            const title = articleData.title || 'bilibili_article'
+            for (const [index, item] of articleImages.entries()) {
+              const imageUrl = await processImageUrl(item, title, index)
+              messageElements.push(segment.image(imageUrl))
             }
 
             if (messageElements.length === 1) this.e.reply(messageElements[0])

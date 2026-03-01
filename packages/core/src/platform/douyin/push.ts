@@ -21,6 +21,7 @@ import {
   mergeLiveImageContinuous,
   mergeLiveImageIndependent,
   Networks,
+  processImageUrl,
   Render
 } from '@/module'
 import { Config } from '@/module/utils/Config'
@@ -434,10 +435,11 @@ export class DouYinpush extends Base {
                   logger.debug('未获取到合辑的图片数据')
                 }
                   
-                for (const item of images1) {
+                for (const [index, item] of images1.entries()) {
                   // 静态图片，clip_type为2或undefined
                   if (item.clip_type === 2 || item.clip_type === undefined) {
-                    images.push(segment.image(item.url_list[0]))
+                    const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
+                    images.push(segment.image(imageUrl))
                     continue
                   }
                     
@@ -495,7 +497,8 @@ export class DouYinpush extends Base {
                         
                       // clip_type === 5 是 livePhoto，添加封面静态图
                       if (item.clip_type === 5 && item.url_list?.[0]) {
-                        images.push(segment.image(item.url_list[0]))
+                        const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
+                        images.push(segment.image(imageUrl))
                       }
                     } else {
                       await Common.removeFile(liveimg.filepath, true)
@@ -558,11 +561,12 @@ export class DouYinpush extends Base {
                     }
                   }
                     
-                  for (const item of Detail_Data.images) {
+                  for (const [index, item] of Detail_Data.images.entries()) {
                     // 静态图片，clip_type为2或undefined
                     if (item.clip_type === 2 || item.clip_type === undefined) {
                       const image_url = item.url_list[2] ?? item.url_list[1]
-                      processedImages.push(segment.image(image_url))
+                      const imageUrl = await processImageUrl(image_url, Detail_Data.desc, index)
+                      processedImages.push(segment.image(imageUrl))
                       continue
                     }
                       
@@ -620,7 +624,8 @@ export class DouYinpush extends Base {
                           
                         // clip_type === 5 是 livePhoto，添加封面静态图
                         if (item.clip_type === 5 && item.url_list?.[0]) {
-                          processedImages.push(segment.image(item.url_list[0]))
+                          const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
+                          processedImages.push(segment.image(imageUrl))
                         }
                       } else {
                         await Common.removeFile(liveimg.filepath, true)
@@ -648,15 +653,17 @@ export class DouYinpush extends Base {
                   // 纯静态图集
                   const imageres: ImageElement[] = []
                   let image_url
-                  for (const item of Detail_Data.images) {
+                  for (const [index, item] of Detail_Data.images.entries()) {
                     image_url = item.url_list[2] ?? item.url_list[1] // 图片地址
-                    imageres.push(segment.image(image_url))
+                    const imageUrl = await processImageUrl(image_url, Detail_Data.desc, index)
+                    imageres.push(segment.image(imageUrl))
                   }
                   const bot = karin.getBot(botId) as AdapterType
                     
                   if (imageres.length === 1) {
                     // 单张图片直接发送
-                    await bot.sendMsg(Contact, [segment.image(image_url)])
+                    const imageUrl = await processImageUrl(image_url, Detail_Data.desc)
+                    await bot.sendMsg(Contact, [segment.image(imageUrl)])
                   } else {
                     // 多张图片使用合并转发
                     const forwardMsg = common.makeForward(imageres, botId, bot.account.name)

@@ -19,6 +19,7 @@ import {
   mergeLiveImageContinuous,
   mergeLiveImageIndependent,
   Networks,
+  processImageUrl,
   Render,
   uploadFile } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
@@ -150,7 +151,8 @@ export class DouYin extends Base {
                   // 静态图片，clip_type为2或undefined
                   if (imageItem.clip_type === 2 || imageItem.clip_type === undefined) {
                     image_url = imageItem.url_list[2] || imageItem.url_list[1]
-                    processedImages.push(segment.image(image_url))
+                    const imageUrl = await processImageUrl(image_url, g_title, index)
+                    processedImages.push(segment.image(imageUrl))
                     
                     if (Config.app.removeCache === false) {
                       mkdirSync(`${Common.tempDri.images}${g_title}`)
@@ -214,7 +216,8 @@ export class DouYin extends Base {
                       
                       // clip_type === 5 是 livePhoto，添加封面静态图
                       if (imageItem.clip_type === 5 && imageItem.url_list?.[0]) {
-                        processedImages.push(segment.image(imageItem.url_list[0]))
+                        const imageUrl = await processImageUrl(imageItem.url_list[0], g_title, index)
+                        processedImages.push(segment.image(imageUrl))
                       }
                     } else {
                       await Common.removeFile(liveimg.filepath, true)
@@ -251,7 +254,8 @@ export class DouYin extends Base {
                   const title = VideoData.data.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:*?"<>|\r\n]/g, ' ')
                   g_title = title
 
-                  imageres.push(segment.image(image_url))
+                  const imageUrl = await processImageUrl(image_url, g_title, index)
+                  imageres.push(segment.image(imageUrl))
                   imagenum++
 
                   if (Config.app.removeCache === false) {
@@ -264,7 +268,8 @@ export class DouYin extends Base {
                 image_data.push(res)
                 image_res.push(image_data)
                 if (imageres.length === 1) {
-                  await this.e.reply(segment.image(image_url))
+                  const imageUrl = await processImageUrl(image_url, g_title)
+                  await this.e.reply(segment.image(imageUrl))
                 } else {
                   await this.e.bot.sendForwardMsg(this.e.contact, res, {
                     source: '图片合集',
@@ -316,11 +321,12 @@ export class DouYin extends Base {
                 logger.debug('未获取到合辑的图片数据')
               }
 
-              for (const item of images1) {
+              for (const [index, item] of images1.entries()) {
                 imagenum++
                 // 静态图片，clip_type为2或undefined
                 if (item.clip_type === 2 || item.clip_type === undefined) {
-                  images.push(segment.image((item.url_list[0])))
+                  const imageUrl = await processImageUrl(item.url_list[0], g_title, index)
+                  images.push(segment.image(imageUrl))
                   continue
                 }
                 /** 动图/短片 */
@@ -377,7 +383,8 @@ export class DouYin extends Base {
                     
                     // clip_type === 4和5 是 短片和livePhoto，添加封面静态图
                     if (item.clip_type === 5 && item.url_list?.[0]) {
-                      images.push(segment.image(item.url_list[0]))
+                      const imageUrl = await processImageUrl(item.url_list[0], g_title, index)
+                      images.push(segment.image(imageUrl))
                     }
                   } else {
                     await Common.removeFile(liveimg.filepath, true)
@@ -464,8 +471,10 @@ export class DouYin extends Base {
             // 构建回复内容数组
             const replyContent: SendMessage = []
             const { digg_count, share_count, collect_count, comment_count, recommend_count } = VideoData.data.aweme_detail.statistics
+            const coverImageUrl = this.is_mp4 ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] : VideoData.data.aweme_detail.images![0].url_list[0]
+            const coverUrl = await processImageUrl(coverImageUrl, VideoData.data.aweme_detail.desc)
             const contentMap = {
-              cover: segment.image(this.is_mp4 ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] : VideoData.data.aweme_detail.images![0].url_list[0]),
+              cover: segment.image(coverUrl),
               title: segment.text(`\n📺 标题: ${VideoData.data.aweme_detail.desc}\n`),
               author: segment.text(`\n👤 作者: ${VideoData.data.aweme_detail.author.nickname}\n`),
               stats: segment.text(formatVideoStats(digg_count, share_count, collect_count, comment_count, recommend_count))
@@ -568,8 +577,9 @@ export class DouYin extends Base {
             )
             const messageElements = []
             if (Config.douyin.commentImageCollection && douyinCommentsRes.image_url.length > 0) {
-              for (const v of douyinCommentsRes.image_url) {
-                messageElements.push(segment.image(v))
+              for (const [index, v] of douyinCommentsRes.image_url.entries()) {
+                const imageUrl = await processImageUrl(v, VideoData.data.aweme_detail.desc, index)
+                messageElements.push(segment.image(imageUrl))
               }
               const res = common.makeForward(messageElements, this.e.sender.userId, this.e.sender.nick)
               this.e.bot.sendForwardMsg(this.e.contact, res, {

@@ -1,7 +1,7 @@
 import { common, ImageElement, type Message, segment } from 'node-karin'
 import { logger } from 'node-karin'
 
-import { Base, baseHeaders, downloadVideo, Render } from '@/module'
+import { Base, baseHeaders, downloadVideo, processImageUrl, Render } from '@/module'
 import { Config } from '@/module/utils/Config'
 
 import { xiaohongshuComments } from './comments'
@@ -96,12 +96,15 @@ export class Xiaohongshu extends Base {
     // 图片笔记
     if (!NoteData.data.data.items[0].note_card!.video && Config.xiaohongshu.sendContent.includes('image')) {
       const Imgs: ImageElement[] = []
-      for (const item of NoteData.data.data.items[0].note_card!.image_list) {
-        Imgs.push(segment.image(item.url_default))
+      const title = NoteData.data.data.items[0].note_card!.title
+      for (const [index, item] of NoteData.data.data.items[0].note_card!.image_list.entries()) {
+        const imageUrl = await processImageUrl(item.url_default, title, index)
+        Imgs.push(segment.image(imageUrl))
       }
       const res = common.makeForward(Imgs, this.e.sender.userId, this.e.sender.nick)
       if (NoteData.data.data.items[0].note_card!.image_list.length === 1) {
-        await this.e.reply(segment.image(NoteData.data.data.items[0].note_card!.image_list[0].url_default))
+        const imageUrl = await processImageUrl(NoteData.data.data.items[0].note_card!.image_list[0].url_default, title)
+        await this.e.reply(segment.image(imageUrl))
       } else {
         await this.e.bot.sendForwardMsg(this.e.contact, res, {
           source: '图片合集',

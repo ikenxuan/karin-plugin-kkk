@@ -11,8 +11,11 @@ export {
   getErrorDescription,
   isRecoverableNetworkError,
   isThrottlingError,
+  sanitizeFilename,
   sanitizeHeaders
 } from './helpers'
+export type { ImageDownloadResult } from './ImageDownloader'
+export { ImageDownloader } from './ImageDownloader'
 export { Network } from './Network'
 // 为了向后兼容，同时导出 Networks 别名
 export { Network as Networks } from './Network'

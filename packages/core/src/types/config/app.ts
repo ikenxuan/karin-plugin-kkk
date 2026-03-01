@@ -9,6 +9,9 @@ export interface appConfig {
   /** 缓存自动删除，非必要不修改！ */
   removeCache: boolean
 
+  /** 发送图片时由插件本地下载后使用 file 协议传递，而非直接传递 HTTP 链接给上游下载 */
+  downloadImageLocally: boolean
+
   /** 渲染精度，可选值50~200，建议100。设置高精度会提高图片的精细度，过高可能会影响渲染与发送速度 */
   renderScale: number
 

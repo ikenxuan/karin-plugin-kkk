@@ -31,6 +31,7 @@ import {
   downloadFile,
   downLoadFileOptions,
   mergeVideoAudio,
+  processImageUrl,
   Render,
   uploadFile
 } from '@/module'
@@ -622,12 +623,13 @@ export class Bilibilipush extends Base {
               }
               case 'DYNAMIC_TYPE_DRAW': {
                 const imgArray: ImageElement[] = []
-                for (const img2 of
-                  data[dynamicId].Dynamic_Data.modules.module_dynamic.major &&
+                const title = data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.title || 'bilibili_dynamic'
+                const images = data[dynamicId].Dynamic_Data.modules.module_dynamic.major &&
                   data[dynamicId].Dynamic_Data.modules.module_dynamic?.major?.draw?.items ||
                   data[dynamicId].Dynamic_Data.modules.module_dynamic?.major?.opus.pics
-                ) {
-                  imgArray.push(segment.image(img2.src ?? img2.url))
+                for (const [index, img2] of images.entries()) {
+                  const imageUrl = await processImageUrl(img2.src ?? img2.url, title, index)
+                  imgArray.push(segment.image(imageUrl))
                 }
                 const forwardMsg = common.makeForward(imgArray, botId, bot.account.name)
                 bot.sendForwardMsg(Contact, forwardMsg, {
@@ -643,8 +645,10 @@ export class Bilibilipush extends Base {
                 // 提取所有图片
                 const messageElements: ImageElement[] = []
                 const articleImages = extractArticleImages(articleInfo.data.data)
-                for (const item of articleImages) {
-                  messageElements.push(segment.image(item))
+                const title = articleInfo.data.data.title || 'bilibili_article'
+                for (const [index, item] of articleImages.entries()) {
+                  const imageUrl = await processImageUrl(item, title, index)
+                  messageElements.push(segment.image(imageUrl))
                 }
 
                 if (messageElements.length === 1) bot.sendMsg(Contact, messageElements)

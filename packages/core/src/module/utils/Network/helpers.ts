@@ -150,3 +150,18 @@ export const formatBytes = (bytes: number): string => {
   if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
 }
+
+/**
+ * 清理文件名，移除不安全字符
+ * @param filename 原始文件名
+ * @returns 安全的文件名
+ */
+export const sanitizeFilename = (filename: string): string => {
+  // 移除或替换不安全的字符
+  return filename
+    .replace(/[<>:"/\\|?*\x00-\x1f]/g, '_') // 替换非法字符
+    .replace(/^\.+/, '') // 移除开头的点
+    .replace(/\.+$/, '') // 移除结尾的点
+    .replace(/\s+/g, '_') // 替换空格为下划线
+    .substring(0, 200) // 限制长度
+}
