@@ -10,13 +10,14 @@ import { Config } from '@/module/utils/Config'
  * 处理Bilibili评论数据
  * @param commentsData 原始评论数据
  * @param host_mid UP主的ID
- * @returns 处理后的评论数据数组
+ * @returns 处理后的评论数据数组和图片URL数组
  */
-export const bilibiliComments = (commentsData: BiliWorkComments, host_mid: string): CommentItem[] | [] => {
-  if (!commentsData) return []
+export const bilibiliComments = (commentsData: BiliWorkComments, host_mid: string): { comments: CommentItem[] | [], image_urls: string[] } => {
+  if (!commentsData) return { comments: [], image_urls: [] }
   let jsonArray: any[] = []
+  const image_urls: string[] = []
   if (commentsData.code === 404) {
-    return []
+    return { comments: [], image_urls: [] }
   }
 
   // 处理置顶评论
@@ -40,6 +41,16 @@ export const bilibiliComments = (commentsData: BiliWorkComments, host_mid: strin
         topReply.content.pictures.length > 0
         ? topReply.content.pictures[0].img_src
         : null
+    
+    // 收集评论中的所有图片
+    if (topReply.content && topReply.content.pictures && topReply.content.pictures.length > 0) {
+      for (const picture of topReply.content.pictures) {
+        if (picture.img_src) {
+          image_urls.push(picture.img_src)
+        }
+      }
+    }
+    
     const members = topReply.content.members
     const isUP = topReply.mid_str === host_mid
     const fanCard = extractFanCard(topReply.member)
@@ -87,6 +98,16 @@ export const bilibiliComments = (commentsData: BiliWorkComments, host_mid: strin
         reply.content.pictures.length > 0
         ? reply.content.pictures[0].img_src
         : null
+    
+    // 收集评论中的所有图片
+    if (reply.content && reply.content.pictures && reply.content.pictures.length > 0) {
+      for (const picture of reply.content.pictures) {
+        if (picture.img_src) {
+          image_urls.push(picture.img_src)
+        }
+      }
+    }
+    
     const members = reply.content.members
     const isUP = reply.mid_str === host_mid
     const fanCard = extractFanCard(reply.member)
@@ -112,6 +133,16 @@ export const bilibiliComments = (commentsData: BiliWorkComments, host_mid: strin
             subReply.content.pictures.length > 0
             ? subReply.content.pictures[0].img_src
             : null
+        
+        // 收集二级评论中的所有图片
+        if (subReply.content && subReply.content.pictures && subReply.content.pictures.length > 0) {
+          for (const picture of subReply.content.pictures) {
+            if (picture.img_src) {
+              image_urls.push(picture.img_src)
+            }
+          }
+        }
+        
         const subMembers = subReply.content.members
         const subIsUP = subReply.mid_str === host_mid
         const subFanCard = extractFanCard(subReply.member)
@@ -216,7 +247,7 @@ export const bilibiliComments = (commentsData: BiliWorkComments, host_mid: strin
   res = br(jsonArray)
   res = [...res.filter((c: any) => c.isTop), ...res.filter((c: any) => !c.isTop)].slice(0, Config.bilibili.numcomment)
 
-  return res as CommentItem[]
+  return { comments: res as CommentItem[], image_urls }
 }
 
 /** 检查评论是否带表情，是则添加img标签 */

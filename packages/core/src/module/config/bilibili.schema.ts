@@ -46,6 +46,12 @@ export const bilibiliConfigSchema: SectionSchema = {
       description: '评论图是否显示真实评论数量，关闭则显示解析到的评论数量',
       disabled: $or($not('switch'), $not($includes('sendContent', 'comment')))
     },
+    {
+      key: 'commentImageCollection',
+      label: '是否收集评论区的图片',
+      description: '开启后将收集评论区的图片，以合并转发的形式返回',
+      disabled: $or($not('switch'), $not($includes('sendContent', 'comment')))
+    },
     { description: '渲染与画质设置', descPosition: 20 },
     {
       key: 'imageLayout',

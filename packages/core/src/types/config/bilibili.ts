@@ -15,6 +15,9 @@ export interface bilibiliConfig {
   /** 评论图是否显示真实评论数量，关闭则显示解析到的评论数量 */
   realCommentCount: boolean
 
+  /** 是否收集评论区的图片 */
+  commentImageCollection: boolean
+
   /** 视频画质偏好设置，0 为自动根据大小选择，其他为固定画质
    * - 0: 自动根据大小选择
    * - 6: 240P 极速 (仅MP4格式支持)
