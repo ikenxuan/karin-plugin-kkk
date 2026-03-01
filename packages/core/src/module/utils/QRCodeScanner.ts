@@ -123,6 +123,135 @@ export class QRCodeScanner {
   }
 
   /**
+   * 二值化处理（用于提高小二维码识别率）
+   * @param imageData 图片数据
+   * @param threshold 阈值（0-255），默认自动计算
+   * @returns 二值化后的图片数据
+   */
+  private static binarize(
+    imageData: { width: number; height: number; data: Uint8ClampedArray },
+    threshold?: number
+  ): { width: number; height: number; data: Uint8ClampedArray } {
+    const { width, height, data } = imageData
+    const newData = new Uint8ClampedArray(data.length)
+
+    // 如果没有指定阈值，使用 Otsu 方法自动计算
+    if (threshold === undefined) {
+      // 计算灰度直方图
+      const histogram = new Array(256).fill(0)
+      for (let i = 0; i < data.length; i += 4) {
+        const gray = Math.floor(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2])
+        histogram[gray]++
+      }
+
+      // Otsu 方法计算最佳阈值
+      const total = width * height
+      let sum = 0
+      for (let i = 0; i < 256; i++) {
+        sum += i * histogram[i]
+      }
+
+      let sumB = 0
+      let wB = 0
+      let wF = 0
+      let maxVariance = 0
+      threshold = 0
+
+      for (let t = 0; t < 256; t++) {
+        wB += histogram[t]
+        if (wB === 0) continue
+
+        wF = total - wB
+        if (wF === 0) break
+
+        sumB += t * histogram[t]
+        const mB = sumB / wB
+        const mF = (sum - sumB) / wF
+        const variance = wB * wF * (mB - mF) * (mB - mF)
+
+        if (variance > maxVariance) {
+          maxVariance = variance
+          threshold = t
+        }
+      }
+    }
+
+    // 应用阈值
+    for (let i = 0; i < data.length; i += 4) {
+      const gray = Math.floor(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2])
+      const binary = gray > threshold ? 255 : 0
+      
+      newData[i] = binary // R
+      newData[i + 1] = binary // G
+      newData[i + 2] = binary // B
+      newData[i + 3] = data[i + 3] // A
+    }
+
+    return { width, height, data: newData }
+  }
+
+  /**
+   * 锐化处理（增强边缘）
+   * @param imageData 图片数据
+   * @returns 锐化后的图片数据
+   */
+  private static sharpen(
+    imageData: { width: number; height: number; data: Uint8ClampedArray }
+  ): { width: number; height: number; data: Uint8ClampedArray } {
+    const { width, height, data } = imageData
+    const newData = new Uint8ClampedArray(data.length)
+
+    // 锐化卷积核
+    const kernel = [
+      0, -1, 0,
+      -1, 5, -1,
+      0, -1, 0
+    ]
+
+    for (let y = 1; y < height - 1; y++) {
+      for (let x = 1; x < width - 1; x++) {
+        let r = 0, g = 0, b = 0
+
+        for (let ky = -1; ky <= 1; ky++) {
+          for (let kx = -1; kx <= 1; kx++) {
+            const idx = ((y + ky) * width + (x + kx)) * 4
+            const k = kernel[(ky + 1) * 3 + (kx + 1)]
+            r += data[idx] * k
+            g += data[idx + 1] * k
+            b += data[idx + 2] * k
+          }
+        }
+
+        const idx = (y * width + x) * 4
+        newData[idx] = Math.max(0, Math.min(255, r))
+        newData[idx + 1] = Math.max(0, Math.min(255, g))
+        newData[idx + 2] = Math.max(0, Math.min(255, b))
+        newData[idx + 3] = data[idx + 3]
+      }
+    }
+
+    // 复制边缘像素
+    for (let x = 0; x < width; x++) {
+      const topIdx = x * 4
+      const bottomIdx = ((height - 1) * width + x) * 4
+      for (let c = 0; c < 4; c++) {
+        newData[topIdx + c] = data[topIdx + c]
+        newData[bottomIdx + c] = data[bottomIdx + c]
+      }
+    }
+    for (let y = 0; y < height; y++) {
+      const leftIdx = y * width * 4
+      const rightIdx = (y * width + width - 1) * 4
+      for (let c = 0; c < 4; c++) {
+        newData[leftIdx + c] = data[leftIdx + c]
+        newData[rightIdx + c] = data[rightIdx + c]
+      }
+    }
+
+    return { width, height, data: newData }
+  }
+
+  /**
    * 在图片区域中尝试识别二维码
    * @param imageData 图片数据
    * @param regionName 区域名称（用于日志）
@@ -133,16 +262,32 @@ export class QRCodeScanner {
     regionName: string
   ): string | null {
     const strategies = [
-      { name: '默认', enhance: false, options: undefined },
-      { name: '增强对比度', enhance: true, options: undefined },
-      { name: 'attemptBoth', enhance: false, options: { inversionAttempts: 'attemptBoth' as const } },
-      { name: '增强+attemptBoth', enhance: true, options: { inversionAttempts: 'attemptBoth' as const } }
+      { name: '默认', enhance: false, binarize: false, sharpen: false, options: undefined },
+      { name: '二值化', enhance: false, binarize: true, sharpen: false, options: undefined },
+      { name: '锐化', enhance: false, binarize: false, sharpen: true, options: undefined },
+      { name: '增强对比度', enhance: true, binarize: false, sharpen: false, options: undefined },
+      { name: '增强+二值化', enhance: true, binarize: true, sharpen: false, options: undefined },
+      { name: '锐化+二值化', enhance: false, binarize: true, sharpen: true, options: undefined },
+      { name: 'attemptBoth', enhance: false, binarize: false, sharpen: false, options: { inversionAttempts: 'attemptBoth' as const } },
+      { name: '二值化+attemptBoth', enhance: false, binarize: true, sharpen: false, options: { inversionAttempts: 'attemptBoth' as const } }
     ]
 
     for (const strategy of strategies) {
       try {
         logger.debug(`  尝试策略: ${strategy.name}`)
-        const processedData = strategy.enhance ? this.enhanceContrast(imageData) : imageData
+        let processedData = imageData
+        
+        // 应用预处理
+        if (strategy.sharpen) {
+          processedData = this.sharpen(processedData)
+        }
+        if (strategy.enhance) {
+          processedData = this.enhanceContrast(processedData)
+        }
+        if (strategy.binarize) {
+          processedData = this.binarize(processedData)
+        }
+        
         const code = jsQR(processedData.data, processedData.width, processedData.height, strategy.options)
         
         if (code && code.data) {
@@ -341,125 +486,164 @@ export class QRCodeScanner {
       // 定义扫描区域（优先扫描常见的二维码位置）
       const scanRegions: Array<{ name: string; x: number; y: number; w: number; h: number }> = []
 
-      // 块大小 - 动态调整
-      const blockSize = Math.min(800, Math.floor(Math.max(width, height) * 0.6))
-      const blockW = Math.min(blockSize, width)
-      const blockH = Math.min(blockSize, height)
+      // 多种块大小 - 用于识别不同尺寸的二维码
+      const smallBlock = Math.min(400, Math.floor(Math.min(width, height) * 0.3)) // 小块，用于小二维码
+      const mediumBlock = Math.min(600, Math.floor(Math.min(width, height) * 0.5)) // 中块
+      const largeBlock = Math.min(800, Math.floor(Math.max(width, height) * 0.6)) // 大块
 
-      // 1. 四个角（二维码最常出现的位置）
-      logger.debug('添加四角扫描区域')
-      // 左上角
+      // 1. 四个角 - 使用小块优先扫描（二维码最常出现的位置，且通常较小）
+      logger.debug('添加四角小块扫描区域（优先）')
+      // 左上角 - 小块
       scanRegions.push({ 
-        name: '左上角', 
+        name: '左上角-小', 
+        x: 0, 
+        y: 0, 
+        w: Math.min(smallBlock, width), 
+        h: Math.min(smallBlock, height) 
+      })
+      // 右上角 - 小块（紧贴右边缘）
+      scanRegions.push({ 
+        name: '右上角-小', 
+        x: Math.max(0, width - smallBlock), 
+        y: 0, 
+        w: Math.min(smallBlock, width), 
+        h: Math.min(smallBlock, height) 
+      })
+      // 左下角 - 小块
+      scanRegions.push({ 
+        name: '左下角-小', 
+        x: 0, 
+        y: Math.max(0, height - smallBlock), 
+        w: Math.min(smallBlock, width), 
+        h: Math.min(smallBlock, height) 
+      })
+      // 右下角 - 小块
+      scanRegions.push({ 
+        name: '右下角-小', 
+        x: Math.max(0, width - smallBlock), 
+        y: Math.max(0, height - smallBlock), 
+        w: Math.min(smallBlock, width), 
+        h: Math.min(smallBlock, height) 
+      })
+
+      // 2. 四个角 - 中等块
+      logger.debug('添加四角中块扫描区域')
+      scanRegions.push({ 
+        name: '左上角-中', 
+        x: 0, 
+        y: 0, 
+        w: Math.min(mediumBlock, width), 
+        h: Math.min(mediumBlock, height) 
+      })
+      scanRegions.push({ 
+        name: '右上角-中', 
+        x: Math.max(0, width - mediumBlock), 
+        y: 0, 
+        w: Math.min(mediumBlock, width), 
+        h: Math.min(mediumBlock, height) 
+      })
+      scanRegions.push({ 
+        name: '左下角-中', 
+        x: 0, 
+        y: Math.max(0, height - mediumBlock), 
+        w: Math.min(mediumBlock, width), 
+        h: Math.min(mediumBlock, height) 
+      })
+      scanRegions.push({ 
+        name: '右下角-中', 
+        x: Math.max(0, width - mediumBlock), 
+        y: Math.max(0, height - mediumBlock), 
+        w: Math.min(mediumBlock, width), 
+        h: Math.min(mediumBlock, height) 
+      })
+
+      // 3. 四个角 - 大块（作为后备）
+      logger.debug('添加四角大块扫描区域')
+      const blockW = Math.min(largeBlock, width)
+      const blockH = Math.min(largeBlock, height)
+      
+      scanRegions.push({ 
+        name: '左上角-大', 
         x: 0, 
         y: 0, 
         w: blockW, 
         h: blockH 
       })
-      // 右上角
       scanRegions.push({ 
-        name: '右上角', 
+        name: '右上角-大', 
         x: Math.max(0, width - blockW), 
         y: 0, 
         w: blockW, 
         h: blockH 
       })
-      // 左下角
       scanRegions.push({ 
-        name: '左下角', 
+        name: '左下角-大', 
         x: 0, 
         y: Math.max(0, height - blockH), 
         w: blockW, 
         h: blockH 
       })
-      // 右下角
       scanRegions.push({ 
-        name: '右下角', 
+        name: '右下角-大', 
         x: Math.max(0, width - blockW), 
         y: Math.max(0, height - blockH), 
         w: blockW, 
         h: blockH 
       })
 
-      // 2. 顶部和底部中间
-      if (width > blockW * 1.5) {
+      // 4. 顶部和底部中间
+      if (width > mediumBlock * 1.5) {
         logger.debug('添加顶部/底部中间扫描区域')
         scanRegions.push({ 
-          name: '顶部中', 
-          x: Math.floor((width - blockW) / 2), 
+          name: '顶部中-小', 
+          x: Math.floor((width - smallBlock) / 2), 
           y: 0, 
-          w: blockW, 
-          h: blockH 
+          w: Math.min(smallBlock, width), 
+          h: Math.min(smallBlock, height) 
         })
-        if (height > blockH * 1.5) {
+        if (height > mediumBlock * 1.5) {
           scanRegions.push({ 
-            name: '底部中', 
-            x: Math.floor((width - blockW) / 2), 
-            y: Math.max(0, height - blockH), 
-            w: blockW, 
-            h: blockH 
+            name: '底部中-小', 
+            x: Math.floor((width - smallBlock) / 2), 
+            y: Math.max(0, height - smallBlock), 
+            w: Math.min(smallBlock, width), 
+            h: Math.min(smallBlock, height) 
           })
         }
       }
 
-      // 3. 左右中间
-      if (height > blockH * 1.5) {
+      // 5. 左右中间
+      if (height > mediumBlock * 1.5) {
         logger.debug('添加左右中间扫描区域')
-        const middleY = Math.floor((height - blockH) / 2)
+        const middleY = Math.floor((height - smallBlock) / 2)
         scanRegions.push({ 
-          name: '左中', 
+          name: '左中-小', 
           x: 0, 
           y: middleY, 
-          w: blockW, 
-          h: blockH 
+          w: Math.min(smallBlock, width), 
+          h: Math.min(smallBlock, height) 
         })
-        if (width > blockW * 1.5) {
+        if (width > mediumBlock * 1.5) {
           scanRegions.push({ 
-            name: '右中', 
-            x: Math.max(0, width - blockW), 
+            name: '右中-小', 
+            x: Math.max(0, width - smallBlock), 
             y: middleY, 
-            w: blockW, 
-            h: blockH 
+            w: Math.min(smallBlock, width), 
+            h: Math.min(smallBlock, height) 
           })
         }
       }
 
-      // 4. 中心区域
-      if (width > blockW && height > blockH) {
+      // 6. 中心区域
+      if (width > mediumBlock && height > mediumBlock) {
         logger.debug('添加中心区域')
         scanRegions.push({ 
-          name: '中心', 
-          x: Math.floor((width - blockW) / 2), 
-          y: Math.floor((height - blockH) / 2), 
-          w: blockW, 
-          h: blockH 
+          name: '中心-小', 
+          x: Math.floor((width - smallBlock) / 2), 
+          y: Math.floor((height - smallBlock) / 2), 
+          w: Math.min(smallBlock, width), 
+          h: Math.min(smallBlock, height) 
         })
-      }
-
-      // 5. 滑动窗口扫描（如果前面都没找到）
-      logger.debug('添加滑动窗口扫描区域')
-      const step = Math.floor(blockSize * 0.6)
-      let slidingWindowCount = 0
-      
-      // 垂直和水平滑动
-      for (let y = 0; y <= height - blockH; y += step) {
-        for (let x = 0; x <= width - blockW; x += step) {
-          scanRegions.push({ 
-            name: `滑动-${slidingWindowCount}`, 
-            x, 
-            y, 
-            w: blockW, 
-            h: blockH 
-          })
-          slidingWindowCount++
-          
-          // 限制扫描区域数量
-          if (scanRegions.length > 40) {
-            logger.debug(`滑动窗口数量达到上限，停止添加 (已添加 ${slidingWindowCount} 个)`)
-            break
-          }
-        }
-        if (scanRegions.length > 40) break
       }
 
       logger.debug(`共生成 ${scanRegions.length} 个扫描区域，开始逐个扫描`)
