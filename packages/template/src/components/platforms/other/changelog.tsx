@@ -46,148 +46,184 @@ export const Changelog: React.FC<Omit<ChangelogProps, 'templateType' | 'template
             </div>
 
             {/* 更新提示 */}
-            <div className='py-16 pb-4 text-5xl leading-relaxed text-center'>
-              引用回复此消息包含
-              <span className='text-7xl'>「</span>
-              <GlowText className='text-7xl font-bold text-warning' blurRadius={20} glowStrength={2} scale={1.2}>
-                更新
-              </GlowText>
-              <span className='text-7xl'>」</span>
-              字眼，即可开始更新
-            </div>
-            {props.data.buildTime && (
-              <div className='flex gap-4 opacity-50'>
-                <div className='text-4xl ml-17'>
-                  更新频道:
-                  <span className='font-bold text-warning-200'> 正式版</span>
-                </div>
-                <div className='text-4xl ml-15'>
-                  编译于:
-                  <span className='font-bold text-warning-200'> {props.data.buildTime}</span>
-                </div>
+            <div className='py-12 pb-6'>
+              <div className='text-4xl leading-relaxed text-center mb-8 opacity-50 text-default-600'>
+                以下任意方式均可更新
               </div>
               
-            )}
+              <div className='flex flex-col gap-6 text-[2.8em] leading-relaxed text-default-700'>
+                <div className='flex items-center gap-5'>
+                  <span className='text-warning text-[1.2em]'>•</span>
+                  <span>引用回复此消息包含</span>
+                  <GlowText className='inline-block text-[1.15em] font-bold text-warning' blurRadius={15} glowStrength={2} scale={1.1}>
+                    更新
+                  </GlowText>
+                  <span>字眼</span>
+                </div>
+                
+                <div className='flex items-center gap-5'>
+                  <span className='text-warning text-[1.2em]'>•</span>
+                  <span>Karin 的</span>
+                  <GlowText blurRadius={10} glowStrength={1.5} scale={1.05}>
+                    <Code radius='lg' color='warning' className='text-[0.9em]'>WebUI</Code>
+                  </GlowText>
+                  <span>→</span>
+                  <GlowText blurRadius={10} glowStrength={1.5} scale={1.05}>
+                    <Code radius='lg' color='warning' className='text-[0.9em]'>插件管理</Code>
+                  </GlowText>
+                  <span>→</span>
+                  <GlowText blurRadius={10} glowStrength={1.5} scale={1.05}>
+                    <Code radius='lg' color='warning' className='text-[0.9em]'>已安装</Code>
+                  </GlowText>
+                </div>
+                
+                <div className='flex items-center gap-5'>
+                  <span className='text-warning text-[1.2em]'>•</span>
+                  <span>Karin 目录运行</span>
+                  <GlowText blurRadius={10} glowStrength={1.5} scale={1.05}>
+                    <Code radius='lg' color='warning' className='text-[0.85em] whitespace-nowrap'>
+                      pnpm add karin-plugin-kkk@{props.data.remoteVersion} -w
+                    </Code>
+                  </GlowText>
+                </div>
+              </div>
+            </div>
           </>
         ) : null}
-        <ReactMarkdown
-          rehypePlugins={[rehypeHighlight]}
-          components={{
-            h1: ({ children, ...props }) => (
-              <h1 className="text-[5.28em] font-semibold mb-8 pb-2 border-b-2 border-default-400 text-default-900" {...props}>
-                {children}
-              </h1>
-            ),
-            h2: ({ children, ...props }) => (
-              <div className="relative mt-20 mb-5">
-                <div
-                  className="absolute -top-13 left-0 text-[11em] font-black text-default-200/50 select-none pointer-events-none uppercase leading-none"
-                  aria-hidden="true"
-                >
-                  {typeof children === 'string' ? children : 'H2'}
+        <div className='changelog-content'>
+          <ReactMarkdown
+            rehypePlugins={[rehypeHighlight]}
+            components={{
+              h1: ({ children, ...props }) => (
+                <h1 className="text-[5.28em] font-semibold mb-8 pb-2 border-b-2 border-default-400 text-default-900" {...props}>
+                  {children}
+                </h1>
+              ),
+              h2: ({ children, ...props }) => (
+                <div className="relative mt-20 mb-5">
+                  <div
+                    className="absolute -top-13 left-0 text-[11em] font-black text-default-200/50 select-none pointer-events-none uppercase leading-none"
+                    aria-hidden="true"
+                  >
+                    {typeof children === 'string' ? children : 'H2'}
+                  </div>
+                  <h2 className="ml-15 relative z-10 text-[3.8em] pb-2  text-default-900 font-medium" {...props}>
+                    {children}
+                  </h2>
+                  <div className='w-full border-b border-default-400' />
                 </div>
-                <h2 className="ml-15 relative z-10 text-[3.8em] pb-2  text-default-900 font-medium" {...props}>
+              ),
+              h3: ({ children, ...props }) => (
+                <h3 className="flex items-baseline gap-3 text-[3.3em] font-semibold mb-6 text-default-900" {...props}>
                   {children}
-                </h2>
-                <div className='w-full border-b border-default-400' />
-              </div>
-            ),
-            h3: ({ children, ...props }) => (
-              <h3 className="flex items-baseline gap-3 text-[3.3em] font-semibold mb-6 text-default-900" {...props}>
-                {children}
-                <CornerDownLeft strokeWidth={2.5} className="w-[1em] h-[1em] text-default-200" />
-              </h3>
-            ),
-            h4: ({ children, ...props }) => (
-              <h4 className="text-[2.64em] font-semibold mb-5 text-default-900" {...props}>
-                {children}
-              </h4>
-            ),
-            h5: ({ children, ...props }) => (
-              <h5 className="text-[2.38em] font-semibold mb-5 text-default-900" {...props}>
-                {children}
-              </h5>
-            ),
-            h6: ({ children, ...props }) => (
-              <h6 className="text-[2.11em] font-semibold mb-4 text-default-600" {...props}>
-                {children}
-              </h6>
-            ),
-            p: ({ children, ...props }) => (
-              <p className="text-[2.64em] leading-[1.75] mb-[2.64em] text-default-900" {...props}>
-                {children}
-              </p>
-            ),
-            ul: ({ children, ...props }) => (
-              <ul className="pl-[5em] mb-[2em] list-disc text-default-900" {...props}>
-                {children}
-              </ul>
-            ),
-            ol: ({ children, ...props }) => (
-              <ol className="pl-[3.6em] mb-[1.8em] list-decimal text-default-900" {...props}>
-                {children}
-              </ol>
-            ),
-            li: ({ children, ...props }) => (
-              <li className="text-[2.6em] leading-[1.6] text-default-900" {...props}>
-                {children}
-              </li>
-            ),
-            blockquote: ({ children, ...props }) => (
-              <blockquote className="border-l-4 border-default-500 pl-[1.8em] py-[0.9em] mb-[1.8em] text-default-700 bg-default-100" {...props}>
-                {children}
-              </blockquote>
-            ),
-            code: ({ children }) => (
-              <Code
-                radius='lg'
-                color='warning'
-                className='inline align-text-bottom leading-inherit text-[0.8em] whitespace-normal break-all box-decoration-slice'
-              >
-                {children}
-              </Code>
-            ),
-            pre: ({ children, ...props }) => (
-              <pre className="p-[1.8em] mb-[1.8em] bg-default-200 rounded overflow-x-auto font-mono" {...props}>
-                {children}
-              </pre>
-            ),
-            a: ({ children, href, ...props }) => (
-              <a
-                className="inline-flex gap-3 items-baseline cursor-pointer text-warning hover:underline"
-                onClick={(e) => e.preventDefault()}
-                {...props}
-              >
-                <GlowText blurRadius={10} glowStrength={3} scale={1.2}>
+                  <CornerDownLeft strokeWidth={2.5} className="w-[1em] h-[1em] text-default-200" />
+                </h3>
+              ),
+              h4: ({ children, ...props }) => (
+                <h4 className="text-[2.64em] font-semibold mb-5 text-default-900" {...props}>
                   {children}
-                </GlowText>
-                <GlowText blurRadius={10} glowStrength={3} scale={1.2}>
-                  <ExternalLink className="w-[1.1em] h-[1.1em] -mb-[0.1em]" />
-                </GlowText>
-              </a>
-            ),
-            img: ({ ...props }) => (
-              <img className="max-w-full h-auto rounded" {...props} />
-            ),
-            table: ({ children, ...props }) => (
-              <table className="w-full border-collapse mb-[1.8em] text-default-900" {...props}>
-                {children}
-              </table>
-            ),
-            th: ({ children, ...props }) => (
-              <th className="px-5 py-3 font-semibold text-left border text-default-900 bg-default-200 border-default-400" {...props}>
-                {children}
-              </th>
-            ),
-            td: ({ children, ...props }) => (
-              <td className="px-5 py-3 border text-default-900 border-default-400" {...props}>
-                {children}
-              </td>
-            )
-          }}
-        >
-          {props.data?.markdown ?? ''}
-        </ReactMarkdown>
+                </h4>
+              ),
+              h5: ({ children, ...props }) => (
+                <h5 className="text-[2.38em] font-semibold mb-5 text-default-900" {...props}>
+                  {children}
+                </h5>
+              ),
+              h6: ({ children, ...props }) => (
+                <h6 className="text-[2.11em] font-semibold mb-4 text-default-600" {...props}>
+                  {children}
+                </h6>
+              ),
+              p: ({ children, ...props }) => (
+                <p className="text-[2.64em] leading-[1.75] mb-[2.64em] text-default-900" {...props}>
+                  {children}
+                </p>
+              ),
+              ul: ({ children, ...props }) => (
+                <ul className="pl-[5em] mb-[2em] list-disc text-default-900" {...props}>
+                  {children}
+                </ul>
+              ),
+              ol: ({ children, ...props }) => (
+                <ol className="pl-[3.6em] mb-[1.8em] list-decimal text-default-900" {...props}>
+                  {children}
+                </ol>
+              ),
+              li: ({ children, ...props }) => (
+                <li className="text-[2.6em] leading-[1.6] text-default-900" {...props}>
+                  {children}
+                </li>
+              ),
+              blockquote: ({ children, ...props }) => (
+                <blockquote className="border-l-4 border-default-500 pl-[1.8em] py-[0.9em] mb-[1.8em] text-default-700 bg-default-100" {...props}>
+                  {children}
+                </blockquote>
+              ),
+              code: ({ children }) => (
+                <Code
+                  radius='lg'
+                  color='warning'
+                  className='inline align-text-bottom leading-inherit text-[0.8em] whitespace-normal break-all box-decoration-slice'
+                >
+                  {children}
+                </Code>
+              ),
+              pre: ({ children, ...props }) => (
+                <pre className="p-[1.8em] mb-[1.8em] bg-default-200 rounded overflow-x-auto font-mono" {...props}>
+                  {children}
+                </pre>
+              ),
+              a: ({ children, href, ...props }) => (
+                <a
+                  className="inline-flex gap-3 items-baseline cursor-pointer text-warning hover:underline"
+                  onClick={(e) => e.preventDefault()}
+                  {...props}
+                >
+                  <GlowText blurRadius={10} glowStrength={3} scale={1.2}>
+                    {children}
+                  </GlowText>
+                  <GlowText blurRadius={10} glowStrength={3} scale={1.2}>
+                    <ExternalLink className="w-[1.1em] h-[1.1em] -mb-[0.1em]" />
+                  </GlowText>
+                </a>
+              ),
+              img: ({ ...props }) => (
+                <img className="max-w-full h-auto rounded" {...props} />
+              ),
+              table: ({ children, ...props }) => (
+                <table className="w-full border-collapse mb-[1.8em] text-default-900" {...props}>
+                  {children}
+                </table>
+              ),
+              th: ({ children, ...props }) => (
+                <th className="px-5 py-3 font-semibold text-left border text-default-900 bg-default-200 border-default-400" {...props}>
+                  {children}
+                </th>
+              ),
+              td: ({ children, ...props }) => (
+                <td className="px-5 py-3 border text-default-900 border-default-400" {...props}>
+                  {children}
+                </td>
+              )
+            }}
+          >
+            {props.data?.markdown ?? ''}
+          </ReactMarkdown>
+        </div>
+
+        {/* 底部信息 */}
+        {props.data.Tip === true && props.data.buildTime && (
+          <div className='flex gap-8 justify-center py-12 mt-16 border-t-2 border-default-300 opacity-60'>
+            <div className='text-4xl'>
+              更新频道:
+              <span className='font-bold text-warning-200'> 正式版</span>
+            </div>
+            <div className='text-4xl'>
+              编译于:
+              <span className='font-bold text-warning-200'> {props.data.buildTime}</span>
+            </div>
+          </div>
+        )}
       </div>
     </DefaultLayout>
   )
