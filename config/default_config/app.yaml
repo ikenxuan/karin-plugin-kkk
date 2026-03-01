@@ -34,6 +34,9 @@ RenderWaitTime: 60
 # 表情回应，若适配器或对应平台不支持需要关闭
 EmojiReply: true
 
+# 解析提示，发送提示信息："检测到xxx链接，开始解析"
+parseTip: false
+
 # 遇到错误时谁会收到错误日志？可选值：'master'（除'console'外的第一个主人）、'allMasters'（所有主人，排除console）、'trigger'（触发者）
 errorLogSendTo: 
   - master
