@@ -15,6 +15,11 @@ export interface BilibiliId {
  * @returns
  */
 export const getBilibiliID = async (url: string) => {
+  // 如果是专栏链接且带有 opus_fallback 参数，先去掉参数让它自然重定向
+  if (/\/read\/cv\d+/.test(url) && url.includes('opus_fallback')) {
+    url = url.split('?')[0]
+  }
+  
   const resp = await axios.get(url, {
     headers: {
       'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
@@ -42,6 +47,14 @@ export const getBilibiliID = async (url: string) => {
       result = {
         type: 'dynamic_info',
         dynamic_id: dynamic_id ? dynamic_id[1] : undefined
+      }
+      break
+    }
+    case /\/read\/cv(\d+)/.test(longLink): {
+      const cvMatch = /\/read\/cv(\d+)/.exec(longLink)
+      result = {
+        type: 'dynamic_info',
+        dynamic_id: cvMatch ? cvMatch[1] : undefined
       }
       break
     }
