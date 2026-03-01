@@ -508,7 +508,7 @@ export class Bilibilipush extends Base {
           /** 未处理的动态类型 */
           default: {
             skip = true
-            logger.warn(`UP主：${data[dynamicId].remark}「${data[dynamicId].dynamic_type}」动态类型的暂未支持推送\n动态地址：${'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str}`)
+            logger.warn(`UP主：${data[dynamicId].remark}「${data[dynamicId].dynamic_type}」动态类型的暂未支持推送\n动态地址：${'https://t.bilibili.com/' + data[dynamicId].Dynamic_Data.id_str}\n可通过 https://github.com/ikenxuan/karin-plugin-kkk/issues/new/choose 提交反馈`)
             break
           }
         }

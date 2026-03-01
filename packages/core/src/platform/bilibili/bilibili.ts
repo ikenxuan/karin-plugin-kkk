@@ -372,37 +372,6 @@ export class Bilibili extends Base {
               }
             }
 
-            if (Config.bilibili.sendContent.some(content => content === 'comment') && commentsData) {
-              const { comments: commentsdata, image_urls } = bilibiliComments(commentsData.data, dynamicInfo.data.data.item.modules.module_author.mid.toString())
-              
-              // 收集评论区图片
-              const messageElements = []
-              if (Config.bilibili.commentImageCollection && image_urls.length > 0) {
-                for (const [index, v] of image_urls.entries()) {
-                  const imageUrl = await processImageUrl(v, title, index)
-                  messageElements.push(segment.image(imageUrl))
-                }
-                const res = common.makeForward(messageElements, this.e.sender.userId, this.e.sender.nick)
-                this.e.bot.sendForwardMsg(this.e.contact, res, {
-                  source: '评论图片收集',
-                  summary: `查看${messageElements.length}张图片`,
-                  prompt: 'B站评论解析结果',
-                  news: [{ text: '点击查看解析结果' }]
-                })
-              }
-              
-              img = await Render('bilibili/comment', {
-                Type: '动态',
-                CommentsData: commentsdata,
-                CommentLength: String(commentsdata?.length ?? 0),
-                share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
-                ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? 0,
-                shareurl: '动态分享链接',
-                Resolution: null
-              })
-              this.e.reply(img)
-            }
-
             if (imgArray.length === 1) this.e.reply(imgArray[0])
             if (imgArray.length > 1) {
               const forwardMsg = common.makeForward(imgArray, this.e.userId, this.e.sender.nick)
@@ -611,39 +580,6 @@ export class Bilibili extends Base {
               const INFODATA = await bilibiliFetcher.fetchVideoInfo({ bvid, typeMode: 'strict' })
               const dycrad = dynamicInfoCard.data.data.card && dynamicInfoCard.data.data.card.card && JSON.parse(dynamicInfoCard.data.data.card.card)
 
-              if (commentsData && Config.bilibili.sendContent.some(item => item === 'comment')) {
-                const { comments: commentsdata, image_urls } = bilibiliComments(commentsData.data, dynamicInfo.data.data.item.modules.module_author.mid.toString())
-                
-                // 收集评论区图片
-                const messageElements = []
-                if (Config.bilibili.commentImageCollection && image_urls.length > 0) {
-                  const title = dynamicInfo.data.data.item.modules.module_dynamic.major.archive.title || 'bilibili_dynamic'
-                  for (const [index, v] of image_urls.entries()) {
-                    const imageUrl = await processImageUrl(v, title, index)
-                    messageElements.push(segment.image(imageUrl))
-                  }
-                  const res = common.makeForward(messageElements, this.e.sender.userId, this.e.sender.nick)
-                  this.e.bot.sendForwardMsg(this.e.contact, res, {
-                    source: '评论图片收集',
-                    summary: `查看${messageElements.length}张图片`,
-                    prompt: 'B站评论解析结果',
-                    news: [{ text: '点击查看解析结果' }]
-                  })
-                }
-                
-                this.e.reply(
-                  await Render('bilibili/comment', {
-                    Type: '动态',
-                    CommentsData: commentsdata,
-                    CommentLength: String(commentsdata?.length ?? 0),
-                    share_url: 'https://www.bilibili.com/video/' + bvid,
-                    ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? 0,
-                    shareurl: '动态分享链接',
-                    Resolution: null
-                  })
-                )
-              }
-
               // 处理共创者信息
               let staff = undefined
               if (INFODATA.data.data.staff && Array.isArray(INFODATA.data.data.staff)) {
@@ -784,10 +720,58 @@ export class Bilibili extends Base {
           }
           default: {
             const unknownItem = dynamicInfo.data.data.item as any
-            this.e.reply(`该动态类型「${unknownItem.type}」暂未支持解析`)
+            this.e.reply(`该动态类型「${unknownItem.type}」暂未支持解析，可通过 https://github.com/ikenxuan/karin-plugin-kkk/issues/new/choose 提交反馈`)
             break
           }
         }
+        
+        // 统一处理评论（直播动态除外）
+        if (Config.bilibili.sendContent.some(content => content === 'comment') && commentsData && dynamicInfo.data.data.item.type !== DynamicType.LIVE_RCMD) {
+          const { comments: commentsdata, image_urls } = bilibiliComments(commentsData.data, dynamicInfo.data.data.item.modules.module_author.mid.toString())
+          
+          if (commentsdata && commentsdata.length > 0) {
+            // 收集评论区图片
+            if (Config.bilibili.commentImageCollection && image_urls.length > 0) {
+              const messageElements = []
+              // 获取动态标题用于图片命名
+              let title = 'bilibili_dynamic'
+              if (dynamicInfo.data.data.item.type === DynamicType.DRAW) {
+                title = dynamicInfo.data.data.item.modules.module_dynamic.major.opus.title || 'bilibili_dynamic'
+              } else if (dynamicInfo.data.data.item.type === DynamicType.AV) {
+                title = dynamicInfo.data.data.item.modules.module_dynamic.major.archive.title || 'bilibili_dynamic'
+              }
+              
+              for (const [index, v] of image_urls.entries()) {
+                const imageUrl = await processImageUrl(v, title, index)
+                messageElements.push(segment.image(imageUrl))
+              }
+              const res = common.makeForward(messageElements, this.e.sender.userId, this.e.sender.nick)
+              this.e.bot.sendForwardMsg(this.e.contact, res, {
+                source: '评论图片收集',
+                summary: `查看${messageElements.length}张图片`,
+                prompt: 'B站评论解析结果',
+                news: [{ text: '点击查看解析结果' }]
+              })
+            }
+            
+            // 渲染评论图
+            const img = await Render('bilibili/comment', {
+              Type: '动态',
+              CommentsData: commentsdata,
+              CommentLength: String(commentsdata.length),
+              share_url: dynamicInfo.data.data.item.type === DynamicType.AV 
+                ? `https://www.bilibili.com/video/${dynamicInfo.data.data.item.modules.module_dynamic.major.archive.bvid}`
+                : `https://t.bilibili.com/${dynamicInfo.data.data.item.id_str}`,
+              ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? 0,
+              shareurl: '动态分享链接',
+              Resolution: null
+            })
+            this.e.reply(img)
+          } else {
+            this.e.reply('这条动态暂时还没有评论~')
+          }
+        }
+        
         break
       }
       case 'live_room_detail': {
