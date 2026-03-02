@@ -59,8 +59,8 @@ export interface SubCommentItem {
   frame?: string
   /** 评论内容 */
   message: string
-  /** 评论图片 */
-  img_src?: string | null
+  /** 评论所有图片 */
+  pictures: string[]
   /** 创建时间 */
   ctime: string
   /** IP标签/地理位置 */
@@ -97,8 +97,8 @@ export interface CommentItem {
   status_label?: string | null
   /** 评论内容 */
   message: string
-  /** 评论图片 */
-  img_src?: string
+  /** 评论所有图片 */
+  pictures: string[]
   /** VIP状态 */
   vipstatus?: number
   /** 贴纸 */

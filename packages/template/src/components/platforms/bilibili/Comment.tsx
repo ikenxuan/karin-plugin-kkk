@@ -9,6 +9,26 @@ import type {
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
+ * 置顶标签组件
+ */
+const TopBadge: React.FC = () => {
+  return (
+    <span 
+      className={clsx(
+        'inline-flex justify-center items-center',
+        'px-4 py-2 mr-4 mb-1 rounded-xl',
+        'text-[45px] font-light leading-none',
+        'align-baseline',
+        'bg-[#ffedf5] text-[#ff799e]',
+        'dark:bg-[#321b26] dark:text-[#cb5775]'
+      )}
+    >
+      置顶
+    </span>
+  )
+}
+
+/**
  * 带有加载状态的图片组件
  * @param props 图片组件属性
  * @returns JSX元素
@@ -312,24 +332,49 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
 
         {/* 评论文本 */}
         <div
-          className='text-[60px] tracking-[0.5px] leading-[1.6] text-foreground mb-5 select-text [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
+          className='items-center text-[60px] tracking-[0.5px] leading-[1.6] text-foreground mb-5 select-text [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em] flex flex-wrap'
           style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
-          dangerouslySetInnerHTML={{
-            __html: (props.isTop
-              ? '<span class="inline-flex justify-center items-center relative border-4 border-[#006A9E] rounded-xl text-[#006A9E] text-5xl px-2 py-1 leading-none mr-2 align-baseline">置顶</span>'
-              : '') + processCommentHTML(props.message)
-          }}
-        />
+        >
+          {props.isTop && <TopBadge />}
+          <span dangerouslySetInnerHTML={{ __html: processCommentHTML(props.message) }} />
+        </div>
 
         {/* 评论图片 */}
-        {(props.img_src || props.sticker) && (
-          <div className='flex my-5 overflow-hidden rounded-[25px] w-[95%] shadow-large'>
-            <ImageWithSkeleton
-              src={props.img_src || props.sticker || 'IMAGE_PLACEHOLDER'}
-              alt='评论图片'
-              className='rounded-[25px] object-contain w-full h-full'
-              placeholder='评论图片'
-            />
+        {props.pictures && props.pictures.length > 0 && (
+          <div className='flex gap-5 my-5 w-[95%]'>
+            {props.pictures.length === 1 ? (
+              // 只有一张图片时，完整显示
+              <div className='overflow-hidden rounded-[25px] shadow-large w-full'>
+                <ImageWithSkeleton
+                  src={props.pictures[0]}
+                  alt='评论图片'
+                  className='rounded-[25px] object-contain w-full h-full'
+                  placeholder='评论图片'
+                />
+              </div>
+            ) : (
+              // 多张图片时，显示两张正方形缩略图
+              props.pictures.slice(0, 2).map((picUrl, idx) => (
+                <div key={idx} className='relative overflow-hidden rounded-[25px] shadow-large flex-1 aspect-square'>
+                  <ImageWithSkeleton
+                    src={picUrl}
+                    alt={`评论图片${idx + 1}`}
+                    className='rounded-[25px] object-cover w-full h-full'
+                    placeholder='评论图片'
+                  />
+                  {/* 如果是第二张图且总数超过2张，显示+x标志 */}
+                  {idx === 1 && props.pictures.length > 2 && (
+                    <div className='absolute bottom-3 right-3'>
+                      {/* 悬浮按钮背景 */}
+                      <div className='flex items-center justify-center bg-black px-4 py-3 rounded-2xl opacity-80 backdrop-blur-sm'>
+                        {/* +x 文字 */}
+                        <span className='text-white text-4xl font-bold leading-none'>+ {props.pictures.length - 2}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
           </div>
         )}
 
@@ -467,14 +512,46 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
                     />
 
                     {/* 二级评论图片 */}
-                    {subReply.img_src && (
-                      <div className='flex my-5 overflow-hidden rounded-[25px] w-[95%] shadow-large'>
-                        <ImageWithSkeleton
-                          src={subReply.img_src}
-                          alt='评论图片'
-                          className='rounded-[25px] object-contain w-full h-full'
-                          placeholder='评论图片'
-                        />
+                    {subReply.pictures && subReply.pictures.length > 0 && (
+                      <div className='flex gap-5 my-5 w-[95%]'>
+                        {subReply.pictures.length === 1 ? (
+                          // 只有一张图片时，完整显示
+                          <div className='overflow-hidden rounded-[25px] shadow-large w-full'>
+                            <ImageWithSkeleton
+                              src={subReply.pictures[0]}
+                              alt='评论图片'
+                              className='rounded-[25px] object-contain w-full h-full'
+                              placeholder='评论图片'
+                            />
+                          </div>
+                        ) : (
+                          // 多张图片时，显示两张正方形缩略图
+                          subReply.pictures.slice(0, 2).map((picUrl, idx) => (
+                            <div key={idx} className='relative overflow-hidden rounded-[25px] shadow-large flex-1 aspect-square'>
+                              <ImageWithSkeleton
+                                src={picUrl}
+                                alt={`评论图片${idx + 1}`}
+                                className='rounded-[25px] object-cover w-full h-full'
+                                placeholder='评论图片'
+                              />
+                              {/* 如果是第二张图且总数超过2张，显示+x标志 */}
+                              {idx === 1 && subReply.pictures.length > 2 && (
+                                <div className='absolute bottom-10 right-10'>
+                                  {/* 悬浮按钮背景 */}
+                                  <div 
+                                    className='flex items-center justify-center px-8 py-6 rounded-[18px] shadow-xl'
+                                    style={{
+                                      backgroundColor: 'rgba(0, 0, 0, 0.7)'
+                                    }}
+                                  >
+                                    {/* +x 文字 */}
+                                    <span className='text-white text-[60px] font-bold leading-none'>+{subReply.pictures.length - 2}</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ))
+                        )}
                       </div>
                     )}
 

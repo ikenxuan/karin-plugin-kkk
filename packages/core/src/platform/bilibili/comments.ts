@@ -35,25 +35,73 @@ export const bilibiliComments = (commentsData: BiliWorkComments, host_mid: strin
     const like = topReply.like
     const replylength = topReply.rcount
     const location = topReply.reply_control?.location?.replace('IP属地：', '') ?? ''
-    const img_src =
-      topReply.content &&
-        topReply.content.pictures &&
-        topReply.content.pictures.length > 0
-        ? topReply.content.pictures[0].img_src
-        : null
     
     // 收集评论中的所有图片
+    const pictures = []
     if (topReply.content && topReply.content.pictures && topReply.content.pictures.length > 0) {
       for (const picture of topReply.content.pictures) {
         if (picture.img_src) {
+          pictures.push(picture.img_src)
           image_urls.push(picture.img_src)
         }
       }
     }
-    
+        
     const members = topReply.content.members
     const isUP = topReply.mid_str === host_mid
     const fanCard = extractFanCard(topReply.member)
+
+    // 处理置顶评论的二级评论
+    const subReplies = []
+    if (topReply.replies && Array.isArray(topReply.replies)) {
+      for (const subReply of topReply.replies) {
+        if (!subReply.content || !subReply.member) continue
+        
+        const subCtime = getRelativeTimeFromTimestamp(subReply.ctime || 0)
+        const subEmote = subReply.content.emote
+        let subMessage = subReply.content.message || ''
+        if (subMessage && subEmote) subMessage = emoteToUrl(subMessage, subEmote)
+        const subAvatar = subReply.member.avatar || ''
+        const subFrame = subReply.member.pendant?.image || ''
+        const subUname = checkvip(subReply.member)
+        const subLevel = subReply.member.level_info?.current_level || 0
+        const subVipstatus = subReply.member.vip?.vipStatus || 0
+        const subLike = subReply.like || 0
+        const subLocation = subReply.reply_control?.location?.replace('IP属地：', '') ?? ''
+        
+        // 收集二级评论中的所有图片
+        const subPictures = []
+        if (subReply.content.pictures && subReply.content.pictures.length > 0) {
+          for (const picture of subReply.content.pictures) {
+            if (picture.img_src) {
+              subPictures.push(picture.img_src)
+              image_urls.push(picture.img_src)
+            }
+          }
+        }
+        
+        const subMembers = subReply.content.members || []
+        const subIsUP = subReply.mid_str === host_mid
+        const subFanCard = extractFanCard(subReply.member)
+
+        subReplies.push({
+          ctime: subCtime,
+          message: subMessage,
+          avatar: subAvatar,
+          frame: subFrame,
+          uname: subUname,
+          level: subLevel,
+          vipstatus: subVipstatus,
+          pictures: subPictures,
+          location: subLocation,
+          like: subLike,
+          icon_big_vip: subVipstatus === 1 ? 'https://i0.hdslb.com/bfs/seed/jinkela/short/user-avatar/big-vip.svg' : null,
+          members: subMembers,
+          isUP: subIsUP,
+          fanCard: subFanCard
+        })
+      }
+    }
 
     const obj = {
       id: 0,
@@ -64,7 +112,7 @@ export const bilibiliComments = (commentsData: BiliWorkComments, host_mid: strin
       uname,
       level,
       vipstatus,
-      img_src,
+      pictures,
       replylength,
       location,
       like,
@@ -72,7 +120,8 @@ export const bilibiliComments = (commentsData: BiliWorkComments, host_mid: strin
       members,
       isTop: true,
       isUP,
-      fanCard
+      fanCard,
+      replies: subReplies
     }
 
     jsonArray.push(obj)
@@ -92,22 +141,18 @@ export const bilibiliComments = (commentsData: BiliWorkComments, host_mid: strin
     const like = reply.like
     const replylength = reply.rcount
     const location = reply.reply_control?.location?.replace('IP属地：', '') ?? ''
-    const img_src =
-      reply.content &&
-        reply.content.pictures &&
-        reply.content.pictures.length > 0
-        ? reply.content.pictures[0].img_src
-        : null
     
     // 收集评论中的所有图片
+    const pictures = []
     if (reply.content && reply.content.pictures && reply.content.pictures.length > 0) {
       for (const picture of reply.content.pictures) {
         if (picture.img_src) {
+          pictures.push(picture.img_src)
           image_urls.push(picture.img_src)
         }
       }
     }
-    
+        
     const members = reply.content.members
     const isUP = reply.mid_str === host_mid
     const fanCard = extractFanCard(reply.member)
@@ -116,34 +161,32 @@ export const bilibiliComments = (commentsData: BiliWorkComments, host_mid: strin
     const subReplies = []
     if (reply.replies && Array.isArray(reply.replies)) {
       for (const subReply of reply.replies) {
-        const subCtime = getRelativeTimeFromTimestamp(subReply.ctime)
+        if (!subReply.content || !subReply.member) continue
+        
+        const subCtime = getRelativeTimeFromTimestamp(subReply.ctime || 0)
         const subEmote = subReply.content.emote
-        let subMessage = subReply.content.message
+        let subMessage = subReply.content.message || ''
         if (subMessage && subEmote) subMessage = emoteToUrl(subMessage, subEmote)
-        const subAvatar = subReply.member.avatar
-        const subFrame = subReply.member.pendant.image
+        const subAvatar = subReply.member.avatar || ''
+        const subFrame = subReply.member.pendant?.image || ''
         const subUname = checkvip(subReply.member)
-        const subLevel = subReply.member.level_info.current_level
-        const subVipstatus = subReply.member.vip.vipStatus
-        const subLike = subReply.like
+        const subLevel = subReply.member.level_info?.current_level || 0
+        const subVipstatus = subReply.member.vip?.vipStatus || 0
+        const subLike = subReply.like || 0
         const subLocation = subReply.reply_control?.location?.replace('IP属地：', '') ?? ''
-        const subImgSrc =
-          subReply.content &&
-            subReply.content.pictures &&
-            subReply.content.pictures.length > 0
-            ? subReply.content.pictures[0].img_src
-            : null
         
         // 收集二级评论中的所有图片
-        if (subReply.content && subReply.content.pictures && subReply.content.pictures.length > 0) {
+        const subPictures = []
+        if (subReply.content.pictures && subReply.content.pictures.length > 0) {
           for (const picture of subReply.content.pictures) {
             if (picture.img_src) {
+              subPictures.push(picture.img_src)
               image_urls.push(picture.img_src)
             }
           }
         }
         
-        const subMembers = subReply.content.members
+        const subMembers = subReply.content.members || []
         const subIsUP = subReply.mid_str === host_mid
         const subFanCard = extractFanCard(subReply.member)
 
@@ -155,7 +198,7 @@ export const bilibiliComments = (commentsData: BiliWorkComments, host_mid: strin
           uname: subUname,
           level: subLevel,
           vipstatus: subVipstatus,
-          img_src: subImgSrc,
+          pictures: subPictures,
           location: subLocation,
           like: subLike,
           icon_big_vip: subVipstatus === 1 ? 'https://i0.hdslb.com/bfs/seed/jinkela/short/user-avatar/big-vip.svg' : null,
@@ -175,7 +218,7 @@ export const bilibiliComments = (commentsData: BiliWorkComments, host_mid: strin
       uname,
       level,
       vipstatus,
-      img_src,
+      pictures,
       replylength,
       location,
       like,
