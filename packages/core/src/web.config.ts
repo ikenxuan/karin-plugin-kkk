@@ -15,7 +15,7 @@ import { type ConfigType } from '@/types'
  * 获取本机局域网 IP 地址
  * 优先返回常见局域网网段的 IP（192.168.x.x, 10.x.x.x, 172.16-31.x.x）
  */
-function getLocalIP(): string {
+function getLocalIP (): string {
   const interfaces = os.networkInterfaces()
   const candidates: string[] = []
 
@@ -1001,10 +1001,7 @@ const processFrontendData = (data: newConfigType): ConfigType => {
       }
 
       if (propValue !== undefined && propValue !== null) {
-        // 去掉模块前缀（如果存在）
-        // 例如：'bilibili:push:switch' -> 'push:switch'
-        const propWithoutPrefix = prop.startsWith(`${key}:`) ? prop.slice(key.length + 1) : prop
-        const keys = propWithoutPrefix.split(':')
+        const keys = prop.split(':')
         setNestedProperty(configObj, keys, propValue)
         hasValidData = true
       }
