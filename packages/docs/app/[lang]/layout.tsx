@@ -11,17 +11,65 @@ const inter = Inter({
   subsets: ['latin'],
 });
 
+export const siteInfo = {
+  name: 'karin-plugin-kkk',
+  description: '多平台短视频/图文内容解析与推送',
+  url: 'https://kkk.karinjs.com',
+  image: 'https://kkk.karinjs.com/og-image.png',
+};
+
 export const metadata: Metadata = {
   title: {
     default: 'karin-plugin-kkk 文档',
     template: '%s | karin-plugin-kkk',
   },
-  description: '多平台短视频/图文内容解析与推送 - 抖音/B站/快手/小红书',
+  description: '多平台短视频/图文内容解析与推送 - 支持抖音/B站/快手/小红书等平台内容采集、解析与自动化推送',
+  keywords: ['短视频解析', '内容推送', '抖音解析', 'B站解析', '小红书解析', '快手解析', '自动化推送', 'karin'],
+  metadataBase: new URL('https://kkk.karinjs.com'),
+  openGraph: {
+    type: 'website',
+    locale: 'zh_CN',
+    siteName: 'karin-plugin-kkk',
+    title: 'karin-plugin-kkk 文档',
+    description: '多平台短视频/图文内容解析与推送',
+    images: [
+      {
+        url: 'https://kkk.karinjs.com/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'karin-plugin-kkk',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'karin-plugin-kkk 文档',
+    description: '多平台短视频/图文内容解析与推送',
+    images: ['https://kkk.karinjs.com/og-image.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   icons: {
     icon: [
       { url: '/icon-light.svg', media: '(prefers-color-scheme: light)' },
       { url: '/icon-dark.svg', media: '(prefers-color-scheme: dark)' },
     ],
+  },
+  alternates: {
+    canonical: 'https://kkk.karinjs.com',
+    languages: {
+      'zh-CN': 'https://kkk.karinjs.com/zh-CN',
+      'zh-HK': 'https://kkk.karinjs.com/zh-HK',
+    },
   },
 };
 

@@ -1,0 +1,13 @@
+# karin-plugin-kkk Robots.txt
+User-agent: *
+Allow: /
+
+Sitemap: https://kkk.karinjs.com/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 10
+
+# Disallow private/admin paths
+Disallow: /api/
+Disallow: /_next/
+Disallow: /search
