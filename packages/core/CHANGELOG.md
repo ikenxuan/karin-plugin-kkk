@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.21.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.21.0...v2.21.1) (2026-03-02)
+
+
+### 🐛 错误修复
+
+* 在线图片的上传方式配置 ([5d80aa5](https://github.com/ikenxuan/karin-plugin-kkk/commit/5d80aa571095e3851daa7120c724b75b38df83e7))
+
 ## [2.21.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.20.3...v2.21.0) (2026-03-02)
 
 
