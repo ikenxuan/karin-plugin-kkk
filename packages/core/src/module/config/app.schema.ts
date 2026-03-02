@@ -18,12 +18,6 @@ export const appConfigSchema: SectionSchema = {
       label: '缓存删除',
       description: '下载的视频缓存自动删除，非必要不修改！'
     },
-    {
-      key: 'downloadImageLocally',
-      type: 'switch',
-      label: '本地下载图片',
-      description: '发送图片时由插件本地下载后使用 file 协议传递，而非直接传递 HTTP 链接给上游下载'
-    },
     { type: 'divider', title: '解析优先级设置' },
     {
       key: 'videoTool',

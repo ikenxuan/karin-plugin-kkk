@@ -111,9 +111,10 @@ export const handleBusinessError = async (
  * @remarks
  * 使用 `logger.runContext` 收集执行期间的日志，
  * 自动管理表情回复的完整生命周期：
- * - 开始时添加"处理中"表情
- * - 成功时替换为"完成"表情
- * - 失败时清除所有表情并添加"失败"表情
+ * - 开始时添加"已读"表情
+ * - 1.5秒后添加"处理中"表情
+ * - 成功时1.5秒后替换为"完成"表情
+ * - 失败时立即移除"处理中"表情并添加"失败"表情
  */
 export const wrapWithErrorHandler = <R> (
   fn: (e: Message, next?: () => unknown) => R | Promise<R>,
@@ -122,9 +123,12 @@ export const wrapWithErrorHandler = <R> (
   return async (e: Message, next?: () => unknown): Promise<R> => {
     // 拥有事件对象才能对消息进行回应表情，定时任务中e是undefined
     const emojiManager = e ? new EmojiReactionManager(e) : undefined
+    let processingTimer: NodeJS.Timeout | null = null
+    let successTimer: NodeJS.Timeout | null = null
+    
     if (emojiManager) {
       await emojiManager.add('EYES')
-      setTimeout(() => {
+      processingTimer = setTimeout(() => {
         emojiManager.add('PROCESSING').catch(() => {})
       }, 1500)
     }
@@ -136,16 +140,23 @@ export const wrapWithErrorHandler = <R> (
       
       // 成功完成，替换为"完成"表情
       if (emojiManager) {
-        setTimeout(() => {
+        successTimer = setTimeout(() => {
           emojiManager.replace('PROCESSING', 'SUCCESS').catch(() => { })
         }, 1500)
       }
       
       return result
     } catch (error) {
-      // 失败，清除所有表情并添加"失败"表情
+      // 失败时，取消所有待执行的定时器
+      if (processingTimer) clearTimeout(processingTimer)
+      if (successTimer) clearTimeout(successTimer)
+      
+      // 失败时，只移除"处理中"表情（如果已添加），保留"已读"表情，然后添加"失败"表情
       if (emojiManager) {
-        await emojiManager.clearAll()
+        const processingEmojiId = emojiManager['getPlatformEmojiId']('PROCESSING')
+        if (emojiManager.has(processingEmojiId)) {
+          await emojiManager.remove('PROCESSING')
+        }
         await emojiManager.add('ERROR')
       }
       

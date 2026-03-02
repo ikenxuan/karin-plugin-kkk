@@ -270,7 +270,7 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
       await event.reply('视频文件上传失败' + JSON.stringify(error, null, 2))
     }
     logger.error('视频文件上传错误,' + String(error))
-    return false
+    throw error // 重新抛出错误，让 wrapWithErrorHandler 能够捕获
   } finally {
     const filePath = file.filepath
     logger.mark(`临时预览地址：http://localhost:${process.env.HTTP_PORT!}/api/kkk/video/${encodeURIComponent(filePath.split('/').pop() ?? '')}`)

@@ -28,6 +28,8 @@ export interface ImageDownloadResult {
 export class ImageDownloader {
   private axiosInstance: AxiosInstance
   private tempDir: string
+  private readonly maxRetries: number = 3
+  private readonly retryDelay: number = 1000 // 初始重试延迟（毫秒）
 
   /**
    * 创建图片下载管理器实例
@@ -45,36 +47,89 @@ export class ImageDownloader {
   }
 
   /**
-   * 处理图片 URL，根据配置决定是否下载
+   * 处理图片 URL，根据配置决定返回格式
    * @param imageUrl - 图片 URL
    * @param title - 作品标题（用于文件命名）
    * @param index - 图片索引（用于多图场景）
-   * @returns 处理后的图片路径或原始 URL
+   * @returns 处理后的图片路径（HTTP URL / file:// 协议 / base64://）
    */
   async processImage(
     imageUrl: string,
     title?: string,
     index?: number
   ): Promise<string> {
-    // 如果未启用本地下载，直接返回原始 URL
-    if (!Config.app.downloadImageLocally) {
-      return imageUrl
-    }
+    const mode = Config.upload.imageSendMode
 
-    try {
-      const result = await this.downloadImage(imageUrl, title, index)
-      
-      // 如果需要自动删除，设置延迟删除任务
-      if (result.shouldDelete) {
-        this.scheduleDelete(result.filePath)
-      }
+    switch (mode) {
+      case 'base64':
+        // base64 模式：下载并转换为 base64
+        try {
+          return await this.downloadAndConvertToBase64(imageUrl)
+        } catch (error) {
+          logger.error(`图片转换 base64 失败，回退到原始 URL: ${imageUrl}`, error)
+          return imageUrl
+        }
 
-      return result.filePath
-    } catch (error) {
-      logger.error(`图片下载失败，回退到原始 URL: ${imageUrl}`, error)
-      return imageUrl
+      case 'file':
+        // file 协议模式：下载到本地并返回 file:// 协议
+        try {
+          const result = await this.downloadImage(imageUrl, title, index)
+          
+          // 如果需要自动删除，设置延迟删除任务
+          if (result.shouldDelete) {
+            this.scheduleDelete(result.filePath)
+          }
+
+          return result.filePath
+        } catch (error) {
+          logger.error(`图片下载失败，回退到原始 URL: ${imageUrl}`, error)
+          return imageUrl
+        }
+
+      case 'url':
+      default:
+        // URL 模式：直接返回原始 HTTP URL
+        return imageUrl
     }
   }
+
+  /**
+   * 下载图片并转换为 base64
+   * @param imageUrl - 图片 URL
+   * @returns base64 格式的图片数据
+   */
+  private async downloadAndConvertToBase64(imageUrl: string): Promise<string> {
+    // 生成临时文件名
+    const filename = this.generateFilename(imageUrl)
+    const filePath = path.join(this.tempDir, filename)
+
+    try {
+      // 下载图片到本地（带重试）
+      const response = await this.downloadWithRetry(imageUrl)
+
+      // 保存到本地
+      fs.writeFileSync(filePath, response.data)
+
+      // 从本地文件读取并转换为 base64
+      const fileBuffer = fs.readFileSync(filePath)
+      const base64 = fileBuffer.toString('base64')
+
+      logger.debug(`图片已下载并转换为 base64: ${imageUrl.substring(0, 50)}...`)
+
+      return `base64://${base64}`
+    } finally {
+      // 如果配置了自动删除缓存，立即删除临时文件
+      if (Config.app.removeCache && fs.existsSync(filePath)) {
+        try {
+          fs.unlinkSync(filePath)
+          logger.debug(`临时文件已删除: ${filePath}`)
+        } catch (error) {
+          logger.error(`删除临时文件失败: ${filePath}`, error)
+        }
+      }
+    }
+  }
+
 
   /**
    * 下载图片到本地
@@ -92,11 +147,8 @@ export class ImageDownloader {
     const filename = this.generateFilename(imageUrl, title, index)
     const filePath = path.join(this.tempDir, filename)
 
-    // 下载图片
-    const response = await this.axiosInstance.get(imageUrl, {
-      responseType: 'arraybuffer',
-      timeout: 30000
-    })
+    // 下载图片（带重试）
+    const response = await this.downloadWithRetry(imageUrl)
 
     // 保存到本地
     fs.writeFileSync(filePath, response.data)
@@ -108,6 +160,55 @@ export class ImageDownloader {
       shouldDelete: true
     }
   }
+
+  /**
+   * 带重试机制的图片下载
+   * @param imageUrl - 图片 URL
+   * @param retryCount - 当前重试次数
+   * @returns Axios 响应
+   */
+  private async downloadWithRetry(
+    imageUrl: string,
+    retryCount: number = 0
+  ): Promise<any> {
+    try {
+      const response = await this.axiosInstance.get(imageUrl, {
+        responseType: 'arraybuffer',
+        timeout: 30000
+      })
+
+      if (retryCount > 0) {
+        logger.info(`图片下载成功（重试 ${retryCount} 次后）: ${imageUrl.substring(0, 50)}...`)
+      }
+
+      return response
+    } catch (error) {
+      if (retryCount < this.maxRetries) {
+        const delay = this.retryDelay * Math.pow(2, retryCount) // 指数退避
+        logger.warn(
+          `图片下载失败，${delay}ms 后进行第 ${retryCount + 1}/${this.maxRetries} 次重试: ${imageUrl.substring(0, 50)}...`,
+          error
+        )
+
+        // 等待后重试
+        await this.sleep(delay)
+        return this.downloadWithRetry(imageUrl, retryCount + 1)
+      }
+
+      // 重试次数用尽，抛出错误
+      logger.error(`图片下载失败，已重试 ${this.maxRetries} 次: ${imageUrl}`, error)
+      throw error
+    }
+  }
+
+  /**
+   * 延迟函数
+   * @param ms - 延迟毫秒数
+   */
+  private sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms))
+  }
+
 
   /**
    * 生成文件名

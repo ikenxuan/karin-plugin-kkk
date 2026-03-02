@@ -23,6 +23,14 @@ export interface uploadConfig {
   /** 群文件上传阈值，当文件大小超过该值时将使用群文件上传，单位：MB，「使用群文件上传」开启后才会生效 */
   groupfilevalue: number
 
+  /** 
+   * 网络图片发送方式
+   * - 'url': 直接传递 HTTP 链接给上游下载（可能因上游网络问题导致下载超时）
+   * - 'file': 下载到本地使用 file 协议发送（需 Karin 与协议端在同一系统）
+   * - 'base64': 下载后转换为 base64 发送（传输数据增大约 1/3，不在同一网络环境可能导致额外带宽成本）
+   */
+  imageSendMode: 'url' | 'file' | 'base64'
+
   /** 下载限速开关，开启后会限制下载速度，避免触发服务器风控导致连接被重置 */
   downloadThrottle: boolean
 

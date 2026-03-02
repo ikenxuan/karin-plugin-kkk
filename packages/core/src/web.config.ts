@@ -360,6 +360,28 @@ export const webConfig = defineConfig({
                 rules: [{ min: 1 }],
                 isDisabled: !all.upload.usegroupfile || all.upload.sendbase64
               }),
+              components.radio.group('imageSendMode', {
+                label: '网络图片发送方式',
+                orientation: 'vertical',
+                defaultValue: all.upload.imageSendMode,
+                radio: [
+                  components.radio.create('imageSendMode:radio-1', {
+                    label: 'URL 链接（直接传递）',
+                    description: '直接传递 HTTP 链接给上游下载，可能因上游网络问题导致下载超时',
+                    value: 'url'
+                  }),
+                  components.radio.create('imageSendMode:radio-2', {
+                    label: 'File 协议（本地文件）',
+                    description: '下载到本地后使用 file 协议发送，需 Karin 与协议端在同一系统',
+                    value: 'file'
+                  }),
+                  components.radio.create('imageSendMode:radio-3', {
+                    label: 'Base64（编码传输）',
+                    description: '下载后转换为 base64 发送，传输数据增大约 1/3，不在同一网络环境可能导致额外带宽成本',
+                    value: 'base64'
+                  })
+                ]
+              }),
               components.divider.create('divider-upload-limit', {
                 description: '上传拦截配置',
                 descPosition: 20

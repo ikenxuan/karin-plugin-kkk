@@ -33,6 +33,17 @@ export const uploadConfigSchema: SectionSchema = {
       disabled: $or($not('usegroupfile'), $var('sendbase64')),
       rules: [{ min: 1 }]
     },
+    {
+      key: 'imageSendMode',
+      type: 'radio',
+      label: '网络图片发送方式',
+      description: '选择发送网络图片的方式：\n• URL - 直接传递链接给上游（可能因上游网络问题超时）\n• File - 下载后用 file 协议发送（需 Karin 与协议端同系统）\n• Base64 - 转 base64 发送（传输数据增大 1/3，不在同一网络环境可能导致额外带宽成本）',
+      options: [
+        { label: 'URL 链接（直接传递）', value: 'url' },
+        { label: 'File 协议（本地文件）', value: 'file' },
+        { label: 'Base64（编码传输）', value: 'base64' }
+      ]
+    },
     { type: 'divider', title: '上传拦截配置' },
     {
       key: 'usefilelimit',
