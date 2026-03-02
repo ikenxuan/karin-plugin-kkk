@@ -2,6 +2,50 @@
 
 # Changelog
 
+## [2.21.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.20.3...v2.21.0) (2026-03-02)
+
+
+### ✨ 新功能
+
+* (core): 新增配置支持将网络图片由插件进行下载发送（默认关闭），可避免上游下载图片超时导致的发送失败而抛出错误 ([d30ee88](https://github.com/ikenxuan/karin-plugin-kkk/commit/d30ee88f60af299802208bdc422116d42190cafc))
+* **bilibili:** B站评论图片收集 ([10ceed0](https://github.com/ikenxuan/karin-plugin-kkk/commit/10ceed0f711fdb46b2c408eaddbdc1283413c4b0))
+
+
+### 🐛 错误修复
+
+* **bilibili:** 修复专栏链接带查询参数时解析失败 ([fd24333](https://github.com/ikenxuan/karin-plugin-kkk/commit/fd243338c0d4f6e8a6b3abce8a766854049f01c0))
+* **bilibili:** 动态解析只有图文/纯图和视频动态才能解析评论的问题 ([e557f13](https://github.com/ikenxuan/karin-plugin-kkk/commit/e557f1384b6ed9cb108d366c3de79412a6ba6183))
+* web.config ([c6dcb5c](https://github.com/ikenxuan/karin-plugin-kkk/commit/c6dcb5c185eb580d7fefda8dd2c70e951df73923))
+* web.config 重复的 key ([b606a3f](https://github.com/ikenxuan/karin-plugin-kkk/commit/b606a3f9280144084564e2d8c6cd757cb3dd7824))
+* 兼容性提高 ([c28dd31](https://github.com/ikenxuan/karin-plugin-kkk/commit/c28dd3126a45c5105dbb56735183f325b0a750f4))
+
+
+### 💄 UI 优化
+
+* **bilibili:** 优化评论图片显示 ([227a7a9](https://github.com/ikenxuan/karin-plugin-kkk/commit/227a7a94a38f84242bbf33519daf9cfb2fb14deb))
+* 优化更新日志提示的说明 ([d1d0a65](https://github.com/ikenxuan/karin-plugin-kkk/commit/d1d0a65d5a34a8a4ed30df3b97fd1e8630a3aa4a))
+
+
+### ♻️ 代码重构
+
+* **core:** 替换 native 图片处理库为纯 JS 实现 ([c38b422](https://github.com/ikenxuan/karin-plugin-kkk/commit/c38b422a8466e73c75bfceaea7099da8fc2073f6))
+* web.config 尝试使用一套数据源 ([#258](https://github.com/ikenxuan/karin-plugin-kkk/issues/258)) ([da5f65b](https://github.com/ikenxuan/karin-plugin-kkk/commit/da5f65b4bff21137143cc753c6334e1890181b39))
+
+
+### 📦 依赖更新
+
+* update ([4019070](https://github.com/ikenxuan/karin-plugin-kkk/commit/401907079b797d88feceb052338b297b66cb393a))
+
+
+### ⚙️ 配置变更
+
+* 各平台的解析提示迁移到 '插件应用相关' 类目中 ([9fc38ee](https://github.com/ikenxuan/karin-plugin-kkk/commit/9fc38ee2c149dbf981ecc72925380b57999db05a))
+
+
+### 💯 细节优化
+
+* 提高对二维码识别的成功率 ([2f19165](https://github.com/ikenxuan/karin-plugin-kkk/commit/2f191654b086add48245a687007d642331049297))
+
 ## [2.20.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.20.2...v2.20.3) (2026-02-26)
 
 
