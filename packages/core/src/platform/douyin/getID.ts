@@ -3,10 +3,14 @@ import axios from 'node-karin/axios'
 
 import type { DouyinDataTypes } from '@/types'
 
+import { DouyinWorkMainType } from './workType'
+
 export interface DouyinIdData {
   type: DouyinDataTypes[keyof DouyinDataTypes]
-  /** 该作品是否为视频 */
+  /** 该作品是否为视频（已废弃，使用 work_type） */
   is_mp4?: boolean
+  /** 作品主类型 */
+  work_type?: DouyinWorkMainType
   [key: string]: any
 }
 
@@ -21,9 +25,11 @@ export const getDouyinID = async (event: Message, url: string, log = true): Prom
   const resp = await axios.get(url, {
     headers: {
       'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
-    }
+    },
+    maxRedirects: 10 // 确保跟随所有重定向
   })
-  const longLink = resp.request.res.responseUrl
+  // 使用 responseUrl 或 request.res.responseUrl 获取最终 URL
+  const longLink = resp.request?.res?.responseUrl || resp.request?.responseURL || url
   let result = {} as DouyinIdData
   switch (true) {
     case longLink.includes('webcast.amemv.com'):
@@ -43,21 +49,17 @@ export const getDouyinID = async (event: Message, url: string, log = true): Prom
       break
     }
 
-    case /video\/(\d+)/.test(longLink): {
-      const videoMatch = /video\/(\d+)/.exec(longLink)
-      result = {
-        type: 'one_work',
-        aweme_id: videoMatch ? videoMatch[1] : undefined,
-        is_mp4: true
-      }
-      break
-    }
+    case /video\/(\d+)/.test(longLink):
+    case /article\/(\d+)/.test(longLink):
     case /note\/(\d+)/.test(longLink): {
-      const noteMatch = /note\/(\d+)/.exec(longLink)
+      // 统一处理 video/article/note 类型，不在这里判断具体类型
+      // 因为抖音会先重定向到 /video/ 再通过 JS 跳转到 /article/
+      // 具体类型由后续 API 返回的 aweme_type 字段决定
+      const match = /(?:video|article|note)\/(\d+)/.exec(longLink)
       result = {
         type: 'one_work',
-        aweme_id: noteMatch ? noteMatch[1] : undefined,
-        is_mp4: false
+        aweme_id: match ? match[1] : undefined
+        // 暂不设置 is_mp4 和 work_type，由后续 API 数据决定
       }
       break
     }
@@ -66,7 +68,8 @@ export const getDouyinID = async (event: Message, url: string, log = true): Prom
       result = {
         type: 'one_work',
         aweme_id: modalMatch ? modalMatch[1] : undefined,
-        is_mp4: true
+        is_mp4: true,
+        work_type: DouyinWorkMainType.VIDEO
       }
       break
     }

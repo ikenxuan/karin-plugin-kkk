@@ -65,6 +65,30 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
         exportName: 'DouyinDynamic'
       },
       {
+        id: 'video-work',
+        name: '视频作品',
+        description: '抖音视频作品推送模板',
+        enabled: true,
+        componentPath: 'platforms/douyin/VideoWork',
+        exportName: 'DouyinVideoWork'
+      },
+      {
+        id: 'image-work',
+        name: '图文作品',
+        description: '抖音图文作品推送模板',
+        enabled: true,
+        componentPath: 'platforms/douyin/ImageWork',
+        exportName: 'DouyinImageWork'
+      },
+      {
+        id: 'article-work',
+        name: '文章作品',
+        description: '抖音文章作品推送模板',
+        enabled: true,
+        componentPath: 'platforms/douyin/ArticleWork',
+        exportName: 'DouyinArticleWork'
+      },
+      {
         id: 'favorite-list',
         name: '喜欢列表',
         description: '抖音喜欢列表推送模板',

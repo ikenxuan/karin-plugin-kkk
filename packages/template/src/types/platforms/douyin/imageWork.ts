@@ -1,0 +1,55 @@
+import type { BaseComponentProps } from '../../index'
+
+/**
+ * 抖音图文作品组件属性接口
+ */
+export interface DouyinImageWorkProps extends BaseComponentProps {
+  /** 渲染请求数据 */
+  data: {
+    /** 是否使用深色主题 */
+    useDarkTheme?: boolean
+    /** 图文封面URL */
+    image_url: string
+    /** 描述内容 */
+    desc: string
+    /** 点赞数 */
+    dianzan: string
+    /** 评论数 */
+    pinglun: string
+    /** 收藏数 */
+    shouchang: string
+    /** 分享数 */
+    share: string
+    /** 创建时间 */
+    create_time: string
+    /** 用户头像URL */
+    avater_url: string
+    /** 用户名 */
+    username: string
+    /** 抖音号 */
+    抖音号: string
+    /** 获赞数 */
+    获赞: string
+    /** 关注数 */
+    关注: string
+    /** 粉丝数 */
+    粉丝: string
+    /** 分享链接 */
+    share_url: string
+    /** 动态类型 */
+    dynamicTYPE?: string
+    /** 合作信息 */
+    cooperation_info?: {
+      co_creator_nums: number
+      co_creators: Array<{
+        avatar_thumb: {
+          url_list: string[]
+        }
+        nickname: string
+        role_title: string
+      }>
+    }
+  }
+  /** 预生成的二维码数据URL */
+  qrCodeDataUrl: string
+}

@@ -26,6 +26,7 @@ import {
 } from '@/module'
 import { Config } from '@/module/utils/Config'
 import { DouyinIdData, douyinProcessVideos, getDouyinID } from '@/platform/douyin'
+import { getWorkCoverUrl, getWorkTypeInfo } from '@/platform/douyin/workType'
 import type { douyinPushItem } from '@/types/config/pushlist'
 
 import { processFavoriteList } from './push/favorite'
@@ -238,8 +239,12 @@ export class DouYinpush extends Base {
             // 获取作者用户信息（如果有的话）
             const authorUserInfo = 'author_user_info' in Detail_Data ? Detail_Data.author_user_info : undefined
             
+            // 获取作品类型信息和封面
+            const workTypeInfo = getWorkTypeInfo(Detail_Data as any)
+            const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data as any)
+            
             img = await Render('douyin/favorite-list', {
-              image_url: iddata.is_mp4 ? Detail_Data.video.animated_cover?.url_list[0] ?? Detail_Data.video.cover_original_scale?.url_list[0] ?? Detail_Data.video.cover.url_list[0] : Detail_Data.images[0].url_list[0],
+              image_url: coverUrl,
               desc: this.desc(Detail_Data, Detail_Data.desc),
               dianzan: this.count(Detail_Data.statistics.digg_count),
               pinglun: this.count(Detail_Data.statistics.comment_count),
@@ -262,8 +267,12 @@ export class DouYinpush extends Base {
             // 获取作者用户信息（如果有的话）
             const authorUserInfo = 'author_user_info' in Detail_Data ? Detail_Data.author_user_info : undefined
 
+            // 获取作品类型信息和封面
+            const workTypeInfo = getWorkTypeInfo(Detail_Data as any)
+            const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data as any)
+
             img = await Render('douyin/recommend-list', {
-              image_url: iddata.is_mp4 ? Detail_Data.video.animated_cover?.url_list[0] ?? Detail_Data.video.cover_original_scale?.url_list[0] ?? Detail_Data.video.cover.url_list[0] : Detail_Data.images[0].url_list[0],
+              image_url: coverUrl,
               desc: this.desc(Detail_Data, Detail_Data.desc),
               dianzan: this.count(Detail_Data.statistics.digg_count),
               pinglun: this.count(Detail_Data.statistics.comment_count),
@@ -286,64 +295,108 @@ export class DouYinpush extends Base {
           } else {
             // 作品列表模板（post）
             const dynamicTypeLabel = '作品动态推送'
-          
-            img = await Render('douyin/dynamic', {
-              image_url: iddata.is_mp4 ? Detail_Data.video.animated_cover?.url_list[0] ?? Detail_Data.video.cover.url_list[0] : Detail_Data.images[0].url_list[0],
-              desc: this.desc(Detail_Data, Detail_Data.desc),
-              dianzan: this.count(Detail_Data.statistics.digg_count),
-              pinglun: this.count(Detail_Data.statistics.comment_count),
-              share: this.count(Detail_Data.statistics.share_count),
-              shouchang: this.count(Detail_Data.statistics.collect_count),
-              create_time: format(fromUnixTime(pushItem.create_time), 'yyyy-MM-dd HH:mm'),
-              avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
-              share_url: Config.douyin.push.shareType === 'web' ? realUrl : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`,
-              username: Detail_Data.author.nickname,
-              抖音号: Detail_Data.user_info.data.user.unique_id === '' ? Detail_Data.user_info.data.user.short_id : Detail_Data.user_info.data.user.unique_id,
-              粉丝: this.count(Detail_Data.user_info.data.user.follower_count),
-              获赞: this.count(Detail_Data.user_info.data.user.total_favorited),
-              关注: this.count(Detail_Data.user_info.data.user.following_count),
-              dynamicTYPE: dynamicTypeLabel,
-              cooperation_info: (() => {
-                const raw = Detail_Data.cooperation_info
-                if (!raw) return undefined
+            
+            // 获取作品类型信息
+            const workTypeInfo = getWorkTypeInfo(Detail_Data as any)
+            
+            // 获取封面 URL
+            const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data as any)
+            
+            // 如果是文章类型，使用文章模板
+            if (workTypeInfo.isArticle) {
+              // 解析文章内容
+              const content = JSON.parse(Detail_Data.article_info.article_content)
+              const fe_data = JSON.parse(Detail_Data.article_info.fe_data)
+              
+              img = await Render('douyin/article-work', {
+                title: Detail_Data.article_info.article_title,
+                markdown: content.markdown,
+                images: fe_data.image_list || [],
+                read_time: fe_data.read_time || 0,
+                
+                // 互动数据
+                dianzan: this.count(Detail_Data.statistics.digg_count),
+                pinglun: this.count(Detail_Data.statistics.comment_count),
+                shouchang: this.count(Detail_Data.statistics.collect_count),
+                share: this.count(Detail_Data.statistics.share_count),
+                
+                // 时间信息
+                create_time: format(fromUnixTime(pushItem.create_time), 'yyyy-MM-dd HH:mm'),
+                
+                // 用户信息
+                avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
+                username: Detail_Data.author.nickname,
+                抖音号: Detail_Data.user_info.data.user.unique_id === '' ? Detail_Data.user_info.data.user.short_id : Detail_Data.user_info.data.user.unique_id,
+                获赞: this.count(Detail_Data.user_info.data.user.total_favorited),
+                关注: this.count(Detail_Data.user_info.data.user.following_count),
+                粉丝: this.count(Detail_Data.user_info.data.user.follower_count),
+                
+                // 分享链接
+                share_url: Detail_Data.share_url,
+                
+                // 主题
+                useDarkTheme: false
+              })
+            } else {
+              // 视频或图文作品
+              img = await Render(workTypeInfo.templatePath, {
+                image_url: coverUrl,
+                desc: this.desc(Detail_Data, Detail_Data.desc),
+                dianzan: this.count(Detail_Data.statistics.digg_count),
+                pinglun: this.count(Detail_Data.statistics.comment_count),
+                share: this.count(Detail_Data.statistics.share_count),
+                shouchang: this.count(Detail_Data.statistics.collect_count),
+                create_time: format(fromUnixTime(pushItem.create_time), 'yyyy-MM-dd HH:mm'),
+                avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
+                share_url: Config.douyin.push.shareType === 'web' ? realUrl : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`,
+                username: Detail_Data.author.nickname,
+                抖音号: Detail_Data.user_info.data.user.unique_id === '' ? Detail_Data.user_info.data.user.short_id : Detail_Data.user_info.data.user.unique_id,
+                粉丝: this.count(Detail_Data.user_info.data.user.follower_count),
+                获赞: this.count(Detail_Data.user_info.data.user.total_favorited),
+                关注: this.count(Detail_Data.user_info.data.user.following_count),
+                dynamicTYPE: dynamicTypeLabel,
+                cooperation_info: (() => {
+                  const raw = Detail_Data.cooperation_info
+                  if (!raw) return undefined
 
-                const rawCreators = Array.isArray(raw.co_creators) ? raw.co_creators : []
+                  const rawCreators = Array.isArray(raw.co_creators) ? raw.co_creators : []
 
-                // 作者标识，用于对比是否在共创列表中
-                const author = Detail_Data.author
-                const authorUid = author?.uid
-                const authorSecUid = author?.sec_uid
-                const authorNickname = author?.nickname
+                  // 作者标识，用于对比是否在共创列表中
+                  const author = Detail_Data.author
+                  const authorUid = author?.uid
+                  const authorSecUid = author?.sec_uid
+                  const authorNickname = author?.nickname
 
-                const authorInCreators = rawCreators.some((c: { uid: string; sec_uid: string; nickname: string }) =>
-                  (authorUid && c.uid && c.uid === authorUid) ||
-                  (authorSecUid && c.sec_uid && c.sec_uid === authorSecUid) ||
-                  (authorNickname && c.nickname && c.nickname === authorNickname)
-                )
+                  const authorInCreators = rawCreators.some((c: { uid: string; sec_uid: string; nickname: string }) =>
+                    (authorUid && c.uid && c.uid === authorUid) ||
+                    (authorSecUid && c.sec_uid && c.sec_uid === authorSecUid) ||
+                    (authorNickname && c.nickname && c.nickname === authorNickname)
+                  )
 
-                // 只保留：头像链接一条、名字、职位（兼容现有组件的 avatar_thumb 结构）
-                const co_creators = rawCreators.map((c: { avatar_thumb: { url_list: (string | undefined)[]; uri: any }; nickname: any; role_title: any }) => {
-                  const firstUrl =
-                    c.avatar_thumb?.url_list?.[0] ??
-                    (c.avatar_thumb?.uri ? `https://p3.douyinpic.com/${c.avatar_thumb.uri}` : undefined)
+                  // 只保留：头像链接一条、名字、职位（兼容现有组件的 avatar_thumb 结构）
+                  const co_creators = rawCreators.map((c: { avatar_thumb: { url_list: (string | undefined)[]; uri: any }; nickname: any; role_title: any }) => {
+                    const firstUrl =
+                      c.avatar_thumb?.url_list?.[0] ??
+                      (c.avatar_thumb?.uri ? `https://p3.douyinpic.com/${c.avatar_thumb.uri}` : undefined)
+
+                    return {
+                      avatar_thumb: firstUrl ? { url_list: [firstUrl] } : undefined,
+                      nickname: c.nickname,
+                      role_title: c.role_title
+                    }
+                  })
+
+                  // 基础人数取接口给的 co_creator_nums 与列表长度的较大值
+                  const baseCount = Math.max(Number(raw.co_creator_nums || 0), co_creators.length)
+                  const teamCount = baseCount + (authorInCreators ? 0 : 1)
 
                   return {
-                    avatar_thumb: firstUrl ? { url_list: [firstUrl] } : undefined,
-                    nickname: c.nickname,
-                    role_title: c.role_title
+                    co_creator_nums: teamCount,
+                    co_creators
                   }
-                })
-
-                // 基础人数取接口给的 co_creator_nums 与列表长度的较大值
-                const baseCount = Math.max(Number(raw.co_creator_nums || 0), co_creators.length)
-                const teamCount = baseCount + (authorInCreators ? 0 : 1)
-
-                return {
-                  co_creator_nums: teamCount,
-                  co_creators
-                }
-              })()
-            })
+                })()
+              })
+            }
           }
         }
       }

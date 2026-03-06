@@ -73,7 +73,7 @@ export interface BaseComponentProps<T = Record<string, any>> extends Pick<Render
 /**
  * 抖音平台组件ID
  */
-type DouyinComponentIds = 'comment' | 'dynamic' | 'favorite-list' | 'live' | 'musicinfo' | 'recommend-list' | 'user_profile' | 'userlist' | 'videoInfo' | 'user_videolist' | 'qrcodeImg'
+type DouyinComponentIds = 'article-work' | 'comment' | 'dynamic' | 'favorite-list' | 'image-work' | 'live' | 'musicinfo' | 'recommend-list' | 'user_profile' | 'userlist' | 'video-work' | 'videoInfo' | 'user_videolist' | 'qrcodeImg'
 
 /**
  * B站平台组件ID
@@ -124,11 +124,14 @@ interface PathToDataTypeMap {
   'douyin/comment': import('./platforms/douyin').DouyinCommentProps['data']
   'douyin/dynamic': import('./platforms/douyin').DouyinDynamicProps['data']
   'douyin/favorite-list': import('./platforms/douyin').DouyinFavoriteListProps['data']
+  'douyin/image-work': import('./platforms/douyin').DouyinImageWorkProps['data']
+  'douyin/article-work': import('./platforms/douyin').DouyinArticleWorkProps['data']
   'douyin/live': import('./platforms/douyin').DouyinLiveProps['data']
   'douyin/musicinfo': import('./platforms/douyin').DouyinMusicInfoProps['data']
   'douyin/recommend-list': import('./platforms/douyin').DouyinRecommendListProps['data']
   'douyin/user_profile': import('./platforms/douyin/UserVideoList').DouyinUserVideoListProps['data']
   'douyin/userlist': import('./platforms/douyin').DouyinUserListProps['data']
+  'douyin/video-work': import('./platforms/douyin').DouyinVideoWorkProps['data']
   'douyin/videoInfo': import('./platforms/douyin').DouyinVideoInfoProps['data']
   'douyin/qrcodeImg': import('./platforms/douyin').DouyinQrcodeImgProps['data']
 

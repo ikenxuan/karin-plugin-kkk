@@ -1,6 +1,8 @@
 import fs from 'node:fs'
 
-import { type DyEmojiList, DyVideoWork } from '@ikenxuan/amagi'
+import { ArticleWork, type DyEmojiList, DyVideoWork } from '@ikenxuan/amagi'
+import { Result } from '@ikenxuan/amagi'
+import { format, fromUnixTime } from 'date-fns'
 import type { Elements, Message, SendMessage } from 'node-karin'
 import { common, logger, mkdirSync, segment } from 'node-karin'
 import { UserVideoListData } from 'template/types/platforms/douyin/UserVideoList'
@@ -74,6 +76,50 @@ export class DouYin extends Base {
     this.hasProcessedLiveImage = false
   }
 
+  /**
+   * 处理文章类型作品
+   */
+  async handleArticleWork (VideoData: Result<ArticleWork>, _data: DouyinIdData) {
+    const aweme = VideoData.data.aweme_detail
+    const content = JSON.parse(aweme.article_info.article_content)
+    const fe_data = JSON.parse(aweme.article_info.fe_data)
+    
+    logger.debug('文章数据提取完成')
+    logger.debug(`文章标题: ${aweme.article_info.article_title}`)
+    logger.debug(`图片数量: ${fe_data.image_list?.length || 0}`)
+    
+    // 渲染文章作品
+    const img = await Render('douyin/article-work', {
+      title: aweme.article_info.article_title,
+      markdown: content.markdown,
+      images: fe_data.image_list || [],
+      read_time: fe_data.read_time || 0,
+      
+      // 互动数据
+      dianzan: Count(aweme.statistics.digg_count),
+      pinglun: Count(aweme.statistics.comment_count),
+      shouchang: Count(aweme.statistics.collect_count),
+      share: Count(aweme.statistics.share_count),
+      
+      // 时间信息
+      create_time: format(fromUnixTime(aweme.create_time), 'yyyy-MM-dd HH:mm'),
+      
+      // 用户信息
+      avater_url: aweme.author.avatar_thumb.url_list[0],
+      username: aweme.author.nickname,
+      抖音号: aweme.author.unique_id || aweme.author.short_id,
+      获赞: Count(aweme.author.total_favorited),
+      关注: Count(aweme.author.following_count),
+      粉丝: Count(aweme.author.follower_count),
+      
+      // 分享链接
+      share_url: `https://www.douyin.com/article/${aweme.aweme_id}`
+    })
+    
+    await this.e.reply(img)
+    return true
+  }
+
   async DouyinHandler (data: DouyinIdData) {
     Config.app.parseTip && this.e.reply('检测到抖音链接，开始解析')
     switch (this.type) {
@@ -82,6 +128,18 @@ export class DouYin extends Base {
           aweme_id: data.aweme_id,
           typeMode: 'strict'
         })
+        
+        // 根据 API 返回的数据判断作品类型，而不是依赖 URL
+        // aweme_type: 0=视频, 68=图集, 163=文章
+        const aweme_type = VideoData.data.aweme_detail.aweme_type
+        const isArticle = aweme_type === 163
+        const isVideo = aweme_type === 0
+        
+        // 更新 is_mp4 状态（如果初始未设置）
+        if (this.is_mp4 === undefined) {
+          this.is_mp4 = isVideo
+        }
+        
         const CommentsData = await this.amagi.douyin.fetcher.fetchWorkComments({
           aweme_id: data.aweme_id,
           number: Config.douyin.numcomment,
@@ -94,7 +152,7 @@ export class DouYin extends Base {
         /** 图集 */
         let imagenum = 0
         const image_res = []
-        if (this.is_mp4 === false) {
+        if (this.is_mp4 === false && !isArticle) {
           switch (true) {
             // 图集
             case this.is_slides === false && VideoData.data.aweme_detail.images !== null: {
@@ -430,7 +488,8 @@ export class DouYin extends Base {
               console.log(error)
             }
           }
-          const haspath = music_url && this.is_mp4 === false && music_url !== undefined && !this.hasProcessedLiveImage
+          // 图集、合辑、文章都发送BGM
+          const haspath = music_url && (this.is_mp4 === false || isArticle) && music_url !== undefined && !this.hasProcessedLiveImage
           haspath && await this.e.reply(segment.record(music_url, false))
         }
 
@@ -471,7 +530,11 @@ export class DouYin extends Base {
             // 构建回复内容数组
             const replyContent: SendMessage = []
             const { digg_count, share_count, collect_count, comment_count, recommend_count } = VideoData.data.aweme_detail.statistics
-            const coverImageUrl = this.is_mp4 ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] : VideoData.data.aweme_detail.images![0].url_list[0]
+            const coverImageUrl = isArticle 
+              ? VideoData.data.aweme_detail.video.origin_cover.url_list[0]
+              : this.is_mp4 
+                ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] 
+                : VideoData.data.aweme_detail.images![0].url_list[0]
             const coverUrl = await processImageUrl(coverImageUrl, VideoData.data.aweme_detail.desc)
             const contentMap = {
               cover: segment.image(coverUrl),
@@ -497,7 +560,7 @@ export class DouYin extends Base {
             // 渲染为图片
             const videoInfoImg = await Render('douyin/videoInfo',
               {
-                desc: VideoData.data.aweme_detail.desc,
+                desc: isArticle ? VideoData.data.aweme_detail.preview_title : VideoData.data.aweme_detail.desc,
                 statistics: VideoData.data.aweme_detail.statistics,
                 aweme_id: VideoData.data.aweme_detail.aweme_id,
                 author: {
@@ -513,16 +576,25 @@ export class DouYin extends Base {
                   gender: userProfile.data.user.gender ?? 0,
                   user_age: userProfile.data.user.user_age ?? 0
                 } : undefined,
-                image_url: this.is_mp4 ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover_original_scale?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] : VideoData.data.aweme_detail.images![0].url_list![0],
-                cover_size: this.is_mp4
-                  ? (VideoData.data.aweme_detail.video.cover ? {
-                    width: VideoData.data.aweme_detail.video.cover_original_scale.width,
-                    height: VideoData.data.aweme_detail.video.cover_original_scale.height
+                image_url: isArticle 
+                  ? VideoData.data.aweme_detail.video.origin_cover.url_list[0]
+                  : this.is_mp4 
+                    ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover_original_scale?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] 
+                    : VideoData.data.aweme_detail.images![0].url_list![0],
+                cover_size: isArticle
+                  ? (VideoData.data.aweme_detail.video.origin_cover ? {
+                    width: VideoData.data.aweme_detail.video.origin_cover.width,
+                    height: VideoData.data.aweme_detail.video.origin_cover.height
                   } : undefined)
-                  : (VideoData.data.aweme_detail.images?.[0] ? {
-                    width: VideoData.data.aweme_detail.images[0].width,
-                    height: VideoData.data.aweme_detail.images[0].height
-                  } : undefined),
+                  : this.is_mp4
+                    ? (VideoData.data.aweme_detail.video.cover ? {
+                      width: VideoData.data.aweme_detail.video.cover_original_scale.width,
+                      height: VideoData.data.aweme_detail.video.cover_original_scale.height
+                    } : undefined)
+                    : (VideoData.data.aweme_detail.images?.[0] ? {
+                      width: VideoData.data.aweme_detail.images[0].width,
+                      height: VideoData.data.aweme_detail.images[0].height
+                    } : undefined),
                 create_time: VideoData.data.aweme_detail.create_time,
                 music: VideoData.data.aweme_detail.music ? {
                   author: VideoData.data.aweme_detail.music.author,
@@ -539,6 +611,11 @@ export class DouYin extends Base {
             )
             this.e.reply(videoInfoImg)
           }
+        }
+
+        /** 处理文章类型作品 */
+        if (isArticle) {
+          await this.handleArticleWork(VideoData as Result<ArticleWork>, data)
         }
 
         if (Config.douyin.sendContent.includes('comment')) {
@@ -560,7 +637,7 @@ export class DouYin extends Base {
             }
             const img = await Render('douyin/comment',
               {
-                Type: this.is_mp4 ? '视频' : this.is_slides ? '合辑' : '图集',
+                Type: isArticle ? '文章' : this.is_mp4 ? '视频' : this.is_slides ? '合辑' : '图集',
                 CommentsData: douyinCommentsRes.CommentsData,
                 CommentLength: Config.douyin.realCommentCount ? VideoData.data.aweme_detail.statistics.comment_count : douyinCommentsRes.CommentsData.length ?? 0,
                 share_url: this.is_mp4
@@ -592,8 +669,9 @@ export class DouYin extends Base {
             this.e.reply(img)
           }
         }
+        
         /** 发送视频 */
-        if (sendvideofile && this.is_mp4 && Config.douyin.sendContent.includes('video')) {
+        if (sendvideofile && this.is_mp4 && !isArticle && Config.douyin.sendContent.includes('video')) {
           // 获取弹幕数据（如果开启弹幕烧录）
           let danmakuList: DouyinDanmakuElem[] = []
           if ((this.forceBurnDanmaku || Config.douyin.burnDanmaku) && video) {

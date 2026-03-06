@@ -8,8 +8,8 @@ export interface DouyinCommentProps extends BaseComponentProps {
   data: {
     /** 是否使用深色主题 */
     useDarkTheme?: boolean
-    /** 作品类型：视频/图集/合辑 */
-    Type: '视频' | '图集' | '合辑'
+    /** 作品类型：视频/图集/合辑/文章 */
+    Type: '视频' | '图集' | '合辑' | '文章'
     /** 评论数量 */
     CommentLength: number
     /** 视频大小(MB) */

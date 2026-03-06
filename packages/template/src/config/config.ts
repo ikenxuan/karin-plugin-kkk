@@ -69,6 +69,27 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
                 default: module.DouyinDynamic
               }))
             })
+          case 'video-work':
+            return createComponentConfig(baseComponent, {
+              validateData: (data) => data && typeof data.share_url === 'string',
+              lazyComponent: () => import('../components/platforms/douyin/VideoWork').then(module => ({
+                default: module.DouyinVideoWork
+              }))
+            })
+          case 'image-work':
+            return createComponentConfig(baseComponent, {
+              validateData: (data) => data && typeof data.share_url === 'string',
+              lazyComponent: () => import('../components/platforms/douyin/ImageWork').then(module => ({
+                default: module.DouyinImageWork
+              }))
+            })
+          case 'article-work':
+            return createComponentConfig(baseComponent, {
+              validateData: (data) => data && typeof data.share_url === 'string',
+              lazyComponent: () => import('../components/platforms/douyin/ArticleWork').then(module => ({
+                default: module.DouyinArticleWork
+              }))
+            })
           case 'favorite-list':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',

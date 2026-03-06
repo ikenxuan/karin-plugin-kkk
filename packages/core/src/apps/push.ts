@@ -7,6 +7,7 @@ import { bilibiliFetcher, douyinFetcher } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { Bilibilipush, DouYinpush, getDouyinID } from '@/platform'
+import { getWorkCoverUrl, getWorkTypeInfo } from '@/platform/douyin/workType'
 
 // 包装抖音推送任务
 const handleDouyinPush = wrapWithErrorHandler(async () => {
@@ -174,8 +175,53 @@ const handleTestDouyinPush = wrapWithErrorHandler(async (e) => {
     }
   }).getLocation()
 
-  const img = await Render('douyin/dynamic', {
-    image_url: iddata.is_mp4 ? workInfo.data.aweme_detail.video.animated_cover?.url_list[0] ?? workInfo.data.aweme_detail.video.cover.url_list[0] : workInfo.data.aweme_detail.images![0].url_list[0],
+  // 获取作品类型信息
+  const workTypeInfo = getWorkTypeInfo(workInfo.data.aweme_detail)
+  
+  // 获取封面 URL
+  const coverUrl = getWorkCoverUrl(workTypeInfo, workInfo.data.aweme_detail as any)
+
+  // 如果是文章类型，使用文章模板
+  if (workTypeInfo.isArticle) {
+    const content = JSON.parse(workInfo.data.aweme_detail.article_info.article_content)
+    const fe_data = JSON.parse(workInfo.data.aweme_detail.article_info.fe_data)
+    
+    const img = await Render('douyin/article-work', {
+      title: workInfo.data.aweme_detail.article_info.article_title,
+      markdown: content.markdown,
+      images: fe_data.image_list || [],
+      read_time: fe_data.read_time || 0,
+      
+      // 互动数据
+      dianzan: Common.count(workInfo.data.aweme_detail.statistics.digg_count),
+      pinglun: Common.count(workInfo.data.aweme_detail.statistics.comment_count),
+      shouchang: Common.count(workInfo.data.aweme_detail.statistics.collect_count),
+      share: Common.count(workInfo.data.aweme_detail.statistics.share_count),
+      
+      // 时间信息
+      create_time: format(fromUnixTime(workInfo.data.aweme_detail.create_time), 'yyyy-MM-dd HH:mm'),
+      
+      // 用户信息
+      avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userProfile.data.user.avatar_larger.uri,
+      username: workInfo.data.aweme_detail.author.nickname,
+      抖音号: userProfile.data.user.unique_id === '' ? userProfile.data.user.short_id : userProfile.data.user.unique_id,
+      获赞: Common.count(userProfile.data.user.total_favorited),
+      关注: Common.count(userProfile.data.user.following_count),
+      粉丝: Common.count(userProfile.data.user.follower_count),
+      
+      // 分享链接
+      share_url: workInfo.data.aweme_detail.share_url,
+      
+      // 主题
+      useDarkTheme: false
+    })
+    
+    e.reply(img)
+    return true
+  }
+
+  const img = await Render(workTypeInfo.templatePath, {
+    image_url: coverUrl,
     desc: workInfo.data.aweme_detail.desc,
     dianzan: Common.count(workInfo.data.aweme_detail.statistics.digg_count),
     pinglun: Common.count(workInfo.data.aweme_detail.statistics.comment_count),
