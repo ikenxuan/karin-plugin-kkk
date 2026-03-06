@@ -18,6 +18,8 @@ export interface BilibiliDynamicProps extends BaseComponentProps {
     create_time: string
     /** 装饰卡片 */
     decoration_card?: string
+    /** 图文动态标题 */
+    title?: string
     /** 动态文本内容 */
     text: string
     /** 图片URL数组 */
@@ -153,6 +155,8 @@ export interface BilibiliAdditionalData {
  * B站动态内容组件属性接口
  */
 export interface BilibiliDynamicContentProps {
+  /** 图文动态标题 */
+  title?: string
   /** 动态文本内容 */
   text: string
   /** 图片URL数组 */

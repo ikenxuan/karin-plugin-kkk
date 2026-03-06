@@ -83,6 +83,15 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
     <>
       {/* 文本内容 */}
       <div className='flex flex-col px-20 w-full leading-relaxed'>
+        {/* 标题 */}
+        {props.title && (
+          <div className='mb-8'>
+            <h2 className='text-[72px] font-bold leading-[1.4] text-foreground select-text'>
+              {props.title}
+            </h2>
+          </div>
+        )}
+        
         <div className='relative items-center text-5xl tracking-wider wrap-break-word text-foreground'>
           <CommentText
             className={clsx(
@@ -332,6 +341,7 @@ export const BilibiliDrawDynamic: React.FC<Omit<BilibiliDynamicProps, 'templateT
 
         {/* 动态内容 */}
         <BilibiliDynamicContent
+          title={props.data.title}
           text={props.data.text}
           image_url={props.data.image_url}
           imageLayout={props.data.imageLayout}

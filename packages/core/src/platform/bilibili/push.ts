@@ -209,6 +209,7 @@ export class Bilibilipush extends Base {
             img = await Render('bilibili/dynamic/DYNAMIC_TYPE_DRAW',
               {
                 image_url: dycrad.item.pictures && cover(dycrad.item.pictures),
+                title: data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.title ?? undefined,
                 text: replacetext(
                   br(
                     data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.summary?.text ?? ''),

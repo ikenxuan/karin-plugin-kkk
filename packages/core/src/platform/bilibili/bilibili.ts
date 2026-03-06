@@ -398,6 +398,7 @@ export class Bilibili extends Base {
             this.e.reply(await Render('bilibili/dynamic/DYNAMIC_TYPE_DRAW', {
               image_url: dynamicCARD.item.pictures && cover(dynamicCARD.item.pictures),
               // TIP: 2025/08/20, 动态卡片数据中，图文动态的描述文本在 major.opus.summary 中
+              title: dynamicInfo.data.data.item.modules.module_dynamic.major.opus.title ?? undefined, 
               text: dynamicInfo.data.data.item.modules.module_dynamic.major
                 ? replacetext(
                   br(dynamicInfo.data.data.item.modules.module_dynamic.major.opus?.summary?.text ?? ''),
