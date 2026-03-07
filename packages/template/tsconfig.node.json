@@ -23,6 +23,7 @@
   },
   "include": [
     "vite.config.ts",
+    "eslint.config.ts",
     "tailwind.config.js",
     "src/dev/**/*.ts",
     "src/config/config-base.ts",

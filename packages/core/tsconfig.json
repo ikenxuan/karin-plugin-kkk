@@ -51,7 +51,7 @@
   "include": [
     "src/**/*.ts",
     "vite.plugin/**/*.ts",
-    "eslint.config.js",
+    "eslint.config.ts",
     "vite.config.ts",
   ],
   "references": [

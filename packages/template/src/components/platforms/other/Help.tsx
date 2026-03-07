@@ -1,6 +1,8 @@
 import React from 'react'
 import { 
+  RiBarChartFill,
   RiBellFill, 
+  RiLineChartFill,
   RiLinkM, 
   RiListCheck2, 
   RiLoginCircleFill, 
@@ -8,10 +10,7 @@ import {
   RiRefreshLine, 
   RiRobot2Fill, 
   RiSendPlaneFill, 
-  RiSparkling2Fill,
-  RiBarChartFill,
-  RiLineChartFill
-} from 'react-icons/ri'
+  RiSparkling2Fill } from 'react-icons/ri'
 
 import type { HelpProps, MenuGroup, MenuItem } from '../../../types/platforms/other/help'
 import { DefaultLayout } from '../../layouts/DefaultLayout'

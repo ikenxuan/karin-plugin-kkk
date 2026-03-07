@@ -1,26 +1,28 @@
 import stylistic from '@stylistic/eslint-plugin'
-import parserTs from '@typescript-eslint/parser'
 import typescriptEslint from '@typescript-eslint/eslint-plugin'
+import parserTs from '@typescript-eslint/parser'
+import type { Linter } from 'eslint'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
 
-export default [
+const config: Linter.Config[] = [
   {
-    ignores:  [
-      'node_modules', 
-      'temp', 
-      'logs', 
-      'data', 
-      'lib', 
-      'dist', 
-      'resources/**/*.js'
+    ignores: [
+      'src-tauri/**',
+      'dist/**',
+      'dev-data/**',
+      'node_modules/**'
     ]
   },
   {
     files: ['**/*.{ts,tsx}'],
     plugins: {
-      '@stylistic': stylistic,
-      '@typescript-eslint': typescriptEslint,
-      'simple-import-sort': simpleImportSort
+      '@stylistic': stylistic as any,
+      '@typescript-eslint': typescriptEslint as any,
+      'simple-import-sort': simpleImportSort as any,
+      'react-hooks': reactHooks as any,
+      'react-refresh': reactRefresh as any
     },
     languageOptions: {
       parser: parserTs,
@@ -66,6 +68,18 @@ export default [
       '@stylistic/quotes': ['error', 'single'], // 使用单引号
       '@stylistic/indent': ['error', 2], // 使用2个空格缩进
       '@stylistic/no-multi-spaces': 'error', // 禁止多个空格
+
+      // JSX 格式化规则
+      '@stylistic/jsx-curly-spacing': ['error', { when: 'never' }], // JSX花括号内无空格
+      '@stylistic/jsx-equals-spacing': ['error', 'never'], // JSX等号周围无空格
+      '@stylistic/jsx-tag-spacing': ['error', {
+        closingSlash: 'never',
+        beforeSelfClosing: 'always',
+        afterOpening: 'never',
+        beforeClosing: 'never'
+      }]
     }
   }
 ]
+
+export default config
