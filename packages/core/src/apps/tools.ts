@@ -1,6 +1,7 @@
 import karin, { logger } from 'node-karin'
 
 import { Common, downloadVideo } from '@/module'
+import { getStatisticsDB } from '@/module/db'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { Bilibili, getBilibiliID } from '@/platform/bilibili'
@@ -33,6 +34,19 @@ const handleDouyin = wrapWithErrorHandler(async (e) => {
   const url = String(urlMatch[0])
   const iddata = await getDouyinID(e, url)
   await new DouYin(e, iddata, { forceBurnDanmaku }).DouyinHandler(iddata)
+  
+  // 记录解析统计
+  const groupId = e.isGroup ? (e.contact?.peer || '') : ''
+  const userId = e.userId || ''
+  if (groupId && userId) {
+    try {
+      const statisticsDB = await getStatisticsDB()
+      await statisticsDB.recordParse(groupId, userId, 'douyin')
+    } catch (error) {
+      logger.debug('[统计] 记录抖音解析统计失败:', error)
+    }
+  }
+  
   return true
 }, {
   businessName: '抖音视频解析'
@@ -64,6 +78,19 @@ const handleBilibili = wrapWithErrorHandler(async (e) => {
   }
   const iddata = await getBilibiliID(url)
   await new Bilibili(e, iddata, { forceBurnDanmaku }).BilibiliHandler(iddata)
+  
+  // 记录解析统计
+  const groupId = e.isGroup ? (e.contact?.peer || '') : ''
+  const userId = e.userId || ''
+  if (groupId && userId) {
+    try {
+      const statisticsDB = await getStatisticsDB()
+      await statisticsDB.recordParse(groupId, userId, 'bilibili')
+    } catch (error) {
+      logger.debug('[统计] 记录B站解析统计失败:', error)
+    }
+  }
+  
   return true
 }, {
   businessName: 'B站视频解析'
@@ -75,6 +102,18 @@ const handleKuaishou = wrapWithErrorHandler(async (e) => {
   const iddata = await getKuaishouID(String(kuaishouUrl))
   const WorkData = await fetchKuaishouData(iddata.type, iddata)
   await new Kuaishou(e, iddata).KuaishouHandler(WorkData)
+  
+  // 记录解析统计
+  const groupId = e.isGroup ? (e.contact?.peer || '') : ''
+  const userId = e.userId || ''
+  if (groupId && userId) {
+    try {
+      const statisticsDB = await getStatisticsDB()
+      await statisticsDB.recordParse(groupId, userId, 'kuaishou')
+    } catch (error) {
+      logger.debug('[统计] 记录快手解析统计失败:', error)
+    }
+  }
 }, {
   businessName: '快手视频解析'
 })
@@ -90,6 +129,19 @@ const handleXiaohongshu = wrapWithErrorHandler(async (e) => {
   }
   const iddata = await getXiaohongshuID(url)
   await new Xiaohongshu(e, iddata).XiaohongshuHandler(iddata)
+  
+  // 记录解析统计
+  const groupId = e.isGroup ? (e.contact?.peer || '') : ''
+  const userId = e.userId || ''
+  if (groupId && userId) {
+    try {
+      const statisticsDB = await getStatisticsDB()
+      await statisticsDB.recordParse(groupId, userId, 'xiaohongshu')
+    } catch (error) {
+      logger.debug('[统计] 记录小红书解析统计失败:', error)
+    }
+  }
+  
   return true
 }, {
   businessName: '小红书视频解析'

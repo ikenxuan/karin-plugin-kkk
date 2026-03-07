@@ -48,7 +48,8 @@
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^4.7.0",
     "react-zoom-pan-pinch": "^3.7.0",
-    "rehype-highlight": "^7.0.2"
+    "rehype-highlight": "^7.0.2",
+    "victory": "^37.3.6"
   },
   "devDependencies": {
     "@types/express": "5.0.6",

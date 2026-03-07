@@ -345,6 +345,30 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
         exportName: 'QrLogin'
       }
     ]
+  },
+  {
+    type: PlatformType.STATISTICS,
+    name: '统计',
+    icon: '📊',
+    color: 'success',
+    components: [
+      {
+        id: 'group',
+        name: '群组统计',
+        description: '群组解析统计页面',
+        enabled: true,
+        componentPath: 'platforms/other/GroupStatistics',
+        exportName: 'GroupStatistics'
+      },
+      {
+        id: 'global',
+        name: '全局统计',
+        description: '全局解析统计页面',
+        enabled: true,
+        componentPath: 'platforms/other/GlobalStatistics',
+        exportName: 'GlobalStatistics'
+      }
+    ]
   }
 ]
 

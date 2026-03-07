@@ -7,7 +7,8 @@ export enum PlatformType {
   KUAISHOU = 'kuaishou',
   XIAOHONGSHU = 'xiaohongshu',
   HELP = 'help',
-  OTHER = 'other'
+  OTHER = 'other',
+  STATISTICS = 'statistics'
 }
 /**
  * 模板基础接口

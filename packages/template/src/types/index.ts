@@ -107,6 +107,11 @@ type XiaohongshuComponentIds = 'noteInfo' | 'comment'
 type OtherComponentIds = 'help' | 'handlerError' | 'changelog' | 'version_warning' | 'qrlogin'
 
 /**
+ * 统计平台组件ID
+ */
+type StatisticsComponentIds = 'group' | 'global'
+
+/**
  * 路径类型
  */
 export type DynamicRenderPath =
@@ -115,6 +120,7 @@ export type DynamicRenderPath =
   | `kuaishou/${KuaishouComponentIds}`
   | `xiaohongshu/${XiaohongshuComponentIds}`
   | `other/${OtherComponentIds}`
+  | `statistics/${StatisticsComponentIds}`
 
 /**
  * 路径到数据类型的精确映射接口
@@ -161,6 +167,10 @@ interface PathToDataTypeMap {
   'other/changelog': import('./platforms/other/changelog').ChangelogProps['data']
   'other/version_warning': import('./platforms/other/VersionWarningProps').VersionWarningProps['data']
   'other/qrlogin': import('./platforms/other/qrlogin').QrLoginProps['data']
+  
+  // 统计相关路径
+  'statistics/group': import('./platforms/other/statistics').GroupStatisticsProps['data']
+  'statistics/global': import('./platforms/other/statistics').GlobalStatisticsProps['data']
 }
 
 /**

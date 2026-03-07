@@ -1,8 +1,10 @@
 import { BilibiliDBBase } from './bilibili'
 import { DouyinDBBase } from './douyin'
+import { StatisticsDBBase } from './statistics'
 
 export * from './bilibili'
 export * from './douyin'
+export * from './statistics'
 
 /** 抖音数据库实例 */
 let douyinDB: DouyinDBBase | null = null
@@ -11,6 +13,10 @@ let douyinInitializing = false
 /** B站数据库实例 */
 let bilibiliDB: BilibiliDBBase | null = null
 let bilibiliInitializing = false
+
+/** 统计数据库实例 */
+let statisticsDB: StatisticsDBBase | null = null
+let statisticsInitializing = false
 
 /**
  * 获取或初始化 DouyinDB 实例（单例模式）
@@ -59,24 +65,49 @@ export const getBilibiliDB = async (): Promise<BilibiliDBBase> => {
 }
 
 /**
+ * 获取或初始化 StatisticsDB 实例（单例模式）
+ * @returns StatisticsDB实例
+ */
+export const getStatisticsDB = async (): Promise<StatisticsDBBase> => {
+  if (statisticsDB) {
+    return statisticsDB
+  }
+
+  if (statisticsInitializing) {
+    await new Promise(resolve => setTimeout(resolve, 100))
+    return statisticsDB!
+  }
+
+  statisticsInitializing = true
+  try {
+    statisticsDB = await new StatisticsDBBase().init()
+    return statisticsDB
+  } finally {
+    statisticsInitializing = false
+  }
+}
+
+/**
  * 初始化所有数据库
  * @returns 初始化后的数据库实例
  */
 export const initAllDatabases = async () => {
-  const [douyin, bilibili] = await Promise.all([
+  const [douyin, bilibili, statistics] = await Promise.all([
     getDouyinDB(),
-    getBilibiliDB()
+    getBilibiliDB(),
+    getStatisticsDB()
   ])
 
-  return { douyinDB: douyin, bilibiliDB: bilibili }
+  return { douyinDB: douyin, bilibiliDB: bilibili, statisticsDB: statistics }
 }
 
 // 导出数据库实例（延迟初始化）
 export const douyinDBInstance = await getDouyinDB()
 export const bilibiliDBInstance = await getBilibiliDB()
+export const statisticsDBInstance = await getStatisticsDB()
 
 // 为了保持向后兼容性，保留原有的导出名称
-export { bilibiliDBInstance as bilibiliDB, douyinDBInstance as douyinDB }
+export { bilibiliDBInstance as bilibiliDB, douyinDBInstance as douyinDB, statisticsDBInstance as statisticsDB }
 
 /**
  * 清理旧的动态缓存记录

@@ -318,6 +318,27 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
       })
       break
 
+    case PlatformType.STATISTICS:
+      platform.components = basePlatform.components.map(baseComponent => {
+        switch (baseComponent.id) {
+          case 'group':
+            return createComponentConfig(baseComponent, {
+              lazyComponent: () => import('../components/platforms/other/GroupStatistics').then(module => ({
+                default: module.GroupStatistics
+              }))
+            })
+          case 'global':
+            return createComponentConfig(baseComponent, {
+              lazyComponent: () => import('../components/platforms/other/GlobalStatistics').then(module => ({
+                default: module.GlobalStatistics
+              }))
+            })
+          default:
+            return createComponentConfig(baseComponent)
+        }
+      })
+      break
+
     default:
       platform.components = basePlatform.components.map(baseComponent =>
         createComponentConfig(baseComponent)

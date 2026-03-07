@@ -36,6 +36,18 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
         description: '在解析功能关闭的情况下，可对引用消息进行解析；弹幕解析仅使用于「抖音」「哔哩哔哩」',
         icon: 'Sparkles',
         roles: ['member', 'master']
+      },
+      {
+        title: '#kkk解析统计',
+        description: '查看当前群组的解析统计数据，包括各平台解析次数、使用用户数等',
+        icon: 'BarChart',
+        roles: ['member', 'master']
+      },
+      {
+        title: '#kkk解析总统计',
+        description: '查看全局解析统计数据，包括所有群组的解析情况、趋势分析和群组排行',
+        icon: 'TrendingUp',
+        roles: ['master']
       }
     ]
   },

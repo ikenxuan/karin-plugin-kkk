@@ -8,7 +8,9 @@ import {
   RiRefreshLine, 
   RiRobot2Fill, 
   RiSendPlaneFill, 
-  RiSparkling2Fill 
+  RiSparkling2Fill,
+  RiBarChartFill,
+  RiLineChartFill
 } from 'react-icons/ri'
 
 import type { HelpProps, MenuGroup, MenuItem } from '../../../types/platforms/other/help'
@@ -25,7 +27,9 @@ const ICON_MAP = {
   Bell: RiBellFill,
   LogIn: RiLoginCircleFill,
   Bot: RiRobot2Fill,
-  RefreshCw: RiRefreshLine
+  RefreshCw: RiRefreshLine,
+  BarChart: RiBarChartFill,
+  TrendingUp: RiLineChartFill
 } as const
 
 /**
