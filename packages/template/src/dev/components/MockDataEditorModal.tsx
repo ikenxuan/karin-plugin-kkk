@@ -41,6 +41,32 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
     }
   }, [isOpen, initialData])
 
+  // 监听 Ctrl+S 快捷键，拦截浏览器默认保存行为
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 检查是否按下 Ctrl+S (Windows/Linux) 或 Cmd+S (Mac)
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        // 阻止浏览器默认的保存页面行为
+        e.preventDefault()
+        e.stopPropagation()
+        
+        // 触发保存并重载
+        if (!isSaving) {
+          handleSave()
+        }
+      }
+    }
+
+    // 在捕获阶段监听，确保能够拦截事件
+    document.addEventListener('keydown', handleKeyDown, true)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, true)
+    }
+  }, [isOpen, isSaving, currentData])
+
   const handleSave = async () => {
     try {
       setIsSaving(true)
