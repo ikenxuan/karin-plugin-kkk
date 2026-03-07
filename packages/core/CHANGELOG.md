@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.22.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.21.1...v2.22.0) (2026-03-07)
+
+
+### ✨ 新功能
+
+* **douyin:** 初步支持解析文章作品 ([d8b9243](https://github.com/ikenxuan/karin-plugin-kkk/commit/d8b92435d35e56693ceb37f18c451ef51ef86bee))
+
+
+### 💯 细节优化
+
+* **bilibili:** 解析图文动态时添加标题 close [#260](https://github.com/ikenxuan/karin-plugin-kkk/issues/260) ([2d61705](https://github.com/ikenxuan/karin-plugin-kkk/commit/2d617051aab57c92c9f06d81b5e45b338555fa5b))
+
 ## [2.21.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.21.0...v2.21.1) (2026-03-02)
 
 
