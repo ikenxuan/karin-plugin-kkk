@@ -1,5 +1,47 @@
 import React$1 from "react";
 
+//#region ../template/src/types/platforms/douyin/articleWork.d.ts
+/**
+ * 文章图片信息
+ */
+interface ArticleImage {
+  /** AI高清图片URL */
+  ai_high_image_url: string;
+  /** 高清图片URL */
+  high_image_url: string;
+  /** Markdown图片URL */
+  markdown_url: string;
+  /** 原始图片URL */
+  origin_image_url: string;
+}
+/**
+ * 抖音文章作品组件属性接口
+ */
+interface DouyinArticleWorkProps extends BaseComponentProps {
+  /** 渲染请求数据 */
+  data: {
+    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 文章标题 */
+    title: string; /** 文章Markdown内容 */
+    markdown: string; /** 文章图片列表 */
+    images: ArticleImage[]; /** 阅读时间(分钟) */
+    read_time: number; /** 点赞数 */
+    dianzan: string; /** 评论数 */
+    pinglun: string; /** 收藏数 */
+    shouchang: string; /** 分享数 */
+    share: string; /** 创建时间 */
+    create_time: string; /** 用户头像URL */
+    avater_url: string; /** 用户名 */
+    username: string; /** 抖音号 */
+    抖音号: string; /** 获赞数 */
+    获赞: string; /** 关注数 */
+    关注: string; /** 粉丝数 */
+    粉丝: string; /** 分享链接 */
+    share_url: string;
+  };
+  /** 预生成的二维码数据URL */
+  qrCodeDataUrl: string;
+}
+//#endregion
 //#region ../template/src/types/platforms/douyin/comment.d.ts
 /**
  * 抖音评论组件属性接口
@@ -7,8 +49,8 @@ import React$1 from "react";
 interface DouyinCommentProps extends BaseComponentProps {
   /** 渲染请求数据 */
   data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 作品类型：视频/图集/合辑 */
-    Type: '视频' | '图集' | '合辑'; /** 评论数量 */
+    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 作品类型：视频/图集/合辑/文章 */
+    Type: '视频' | '图集' | '合辑' | '文章'; /** 评论数量 */
     CommentLength: number; /** 视频大小(MB) */
     VideoSize?: string; /** 视频帧率(Hz) */
     VideoFPS?: number; /** 图片数量 */
@@ -136,6 +178,44 @@ interface DouyinFavoriteListProps extends BaseComponentProps {
     author_avatar: string; /** 作品作者抖音号 */
     author_douyin_id: string; /** 分享链接 */
     share_url: string;
+  };
+  /** 预生成的二维码数据URL */
+  qrCodeDataUrl: string;
+}
+//#endregion
+//#region ../template/src/types/platforms/douyin/imageWork.d.ts
+/**
+ * 抖音图文作品组件属性接口
+ */
+interface DouyinImageWorkProps extends BaseComponentProps {
+  /** 渲染请求数据 */
+  data: {
+    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 图文封面URL */
+    image_url: string; /** 描述内容 */
+    desc: string; /** 点赞数 */
+    dianzan: string; /** 评论数 */
+    pinglun: string; /** 收藏数 */
+    shouchang: string; /** 分享数 */
+    share: string; /** 创建时间 */
+    create_time: string; /** 用户头像URL */
+    avater_url: string; /** 用户名 */
+    username: string; /** 抖音号 */
+    抖音号: string; /** 获赞数 */
+    获赞: string; /** 关注数 */
+    关注: string; /** 粉丝数 */
+    粉丝: string; /** 分享链接 */
+    share_url: string; /** 动态类型 */
+    dynamicTYPE?: string; /** 合作信息 */
+    cooperation_info?: {
+      co_creator_nums: number;
+      co_creators: Array<{
+        avatar_thumb: {
+          url_list: string[];
+        };
+        nickname: string;
+        role_title: string;
+      }>;
+    };
   };
   /** 预生成的二维码数据URL */
   qrCodeDataUrl: string;
@@ -343,6 +423,44 @@ interface DouyinVideoInfoProps {
   data: DouyinVideoInfoData;
   /** 是否使用深色主题 */
   useDarkTheme?: boolean;
+}
+//#endregion
+//#region ../template/src/types/platforms/douyin/videoWork.d.ts
+/**
+ * 抖音视频作品组件属性接口
+ */
+interface DouyinVideoWorkProps extends BaseComponentProps {
+  /** 渲染请求数据 */
+  data: {
+    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 视频封面URL */
+    image_url: string; /** 描述内容 */
+    desc: string; /** 点赞数 */
+    dianzan: string; /** 评论数 */
+    pinglun: string; /** 收藏数 */
+    shouchang: string; /** 分享数 */
+    share: string; /** 创建时间 */
+    create_time: string; /** 用户头像URL */
+    avater_url: string; /** 用户名 */
+    username: string; /** 抖音号 */
+    抖音号: string; /** 获赞数 */
+    获赞: string; /** 关注数 */
+    关注: string; /** 粉丝数 */
+    粉丝: string; /** 分享链接 */
+    share_url: string; /** 动态类型 */
+    dynamicTYPE?: string; /** 合作信息 */
+    cooperation_info?: {
+      co_creator_nums: number;
+      co_creators: Array<{
+        avatar_thumb: {
+          url_list: string[];
+        };
+        nickname: string;
+        role_title: string;
+      }>;
+    };
+  };
+  /** 预生成的二维码数据URL */
+  qrCodeDataUrl: string;
 }
 //#endregion
 //#region ../template/src/types/platforms/douyin/index.d.ts
@@ -930,7 +1048,8 @@ interface BilibiliDynamicProps extends BaseComponentProps {
     frame?: string; /** 用户名 */
     username: string; /** 动态创建时间 */
     create_time: string; /** 装饰卡片 */
-    decoration_card?: string; /** 动态文本内容 */
+    decoration_card?: string; /** 图文动态标题 */
+    title?: string; /** 动态文本内容 */
     text: string; /** 图片URL数组 */
     image_url: Array<{
       image_src: string;
@@ -1649,7 +1768,7 @@ interface BaseComponentProps<T = Record<string, any>> extends Pick<RenderRequest
 /**
  * 抖音平台组件ID
  */
-type DouyinComponentIds = 'comment' | 'dynamic' | 'favorite-list' | 'live' | 'musicinfo' | 'recommend-list' | 'user_profile' | 'userlist' | 'videoInfo' | 'user_videolist' | 'qrcodeImg';
+type DouyinComponentIds = 'article-work' | 'comment' | 'dynamic' | 'favorite-list' | 'image-work' | 'live' | 'musicinfo' | 'recommend-list' | 'user_profile' | 'userlist' | 'video-work' | 'videoInfo' | 'user_videolist' | 'qrcodeImg';
 /**
  * B站平台组件ID
  */
@@ -1677,11 +1796,14 @@ interface PathToDataTypeMap {
   'douyin/comment': DouyinCommentProps['data'];
   'douyin/dynamic': DouyinDynamicProps['data'];
   'douyin/favorite-list': DouyinFavoriteListProps['data'];
+  'douyin/image-work': DouyinImageWorkProps['data'];
+  'douyin/article-work': DouyinArticleWorkProps['data'];
   'douyin/live': DouyinLiveProps['data'];
   'douyin/musicinfo': DouyinMusicInfoProps['data'];
   'douyin/recommend-list': DouyinRecommendListProps['data'];
   'douyin/user_profile': DouyinUserVideoListProps['data'];
   'douyin/userlist': DouyinUserListProps['data'];
+  'douyin/video-work': DouyinVideoWorkProps['data'];
   'douyin/videoInfo': DouyinVideoInfoProps['data'];
   'douyin/qrcodeImg': DouyinQrcodeImgProps['data'];
   'bilibili/comment': BilibiliCommentProps['data'];

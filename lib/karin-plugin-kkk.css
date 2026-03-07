@@ -6713,6 +6713,10 @@
     color: hsl(var(--heroui-foreground-700) / 1);
   }
 
+  .text-foreground-800 {
+    color: hsl(var(--heroui-foreground-800) / 1);
+  }
+
   .text-foreground-900 {
     color: hsl(var(--heroui-foreground-900) / 1);
   }
