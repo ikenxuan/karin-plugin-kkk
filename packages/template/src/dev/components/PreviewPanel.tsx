@@ -4,6 +4,7 @@ import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 
 import { PlatformType } from '../../types/platforms'
 import { captureScreenshot as captureScreenshotUtil } from '../utils/screenshot'
+import { getWatermarkEnabled } from '../utils/watermarkConfig'
 import { ComponentRenderer } from './ComponentRenderer'
 
 /**
@@ -28,6 +29,8 @@ interface PreviewPanelProps {
   onComponentLoadComplete?: () => void
   /** 面板是否为深色模式 */
   isPanelDarkMode?: boolean
+  /** 是否启用版本信息 */
+  versionEnabled?: boolean
 }
 
 /**
@@ -35,7 +38,7 @@ interface PreviewPanelProps {
  */
 export interface PreviewPanelRef {
   /** 截图方法 */
-  captureScreenshot: () => Promise<{ blob: Blob; download: () => void; copyToClipboard: () => Promise<void> } | null>
+  captureScreenshot: (tempDarkMode?: boolean) => Promise<{ blob: Blob; download: () => void; copyToClipboard: () => Promise<void> } | null>
   /** 适应画布方法 */
   fitToCanvas: () => void
 }
@@ -52,7 +55,8 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   scale,
   onScaleChange,
   onComponentLoadComplete,
-  isPanelDarkMode = false
+  isPanelDarkMode = false,
+  versionEnabled = true
 }, ref) => {
   // 截图相关
   const [isCapturing, setIsCapturing] = useState(false)
@@ -79,13 +83,15 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
     data,
     qrCodeDataUrl,
     loadError,
-    onLoadComplete: onComponentLoadComplete
-  }), [platform, templateId, data, qrCodeDataUrl, loadError, onComponentLoadComplete])
+    onLoadComplete: onComponentLoadComplete,
+    versionEnabled
+  }), [platform, templateId, data, qrCodeDataUrl, loadError, onComponentLoadComplete, versionEnabled])
 
   /**
    * 截图功能
+   * @param tempDarkMode 临时深色模式（可选）
    */
-  const captureScreenshot = useCallback(async () => {
+  const captureScreenshot = useCallback(async (tempDarkMode?: boolean) => {
     if (!previewContentRef.current || isCapturing) return null
 
     setIsCapturing(true)
@@ -96,7 +102,37 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
       
       // 检测当前内容是否为深色模式
       const contentElement = previewContentRef.current
-      const isDarkMode = contentElement.classList.contains('dark') || data?.useDarkTheme
+      let isDarkMode = contentElement.classList.contains('dark') || data?.useDarkTheme
+      
+      // 如果提供了临时深色模式，临时修改 DOM
+      let needsRestore = false
+      let originalClassList: string[] = []
+      
+      if (tempDarkMode !== undefined && tempDarkMode !== isDarkMode) {
+        // 找到实际的内容容器
+        const container = contentElement.querySelector('#container') as HTMLElement
+        if (container) {
+          // 保存原始 class
+          originalClassList = Array.from(container.classList)
+          
+          // 临时修改 class
+          if (tempDarkMode) {
+            container.classList.add('dark')
+          } else {
+            container.classList.remove('dark')
+          }
+          
+          isDarkMode = tempDarkMode
+          needsRestore = true
+          
+          // 等待一帧，确保样式应用
+          await new Promise(resolve => requestAnimationFrame(resolve))
+          await new Promise(resolve => setTimeout(resolve, 50))
+        }
+      }
+      
+      // 获取水印配置
+      const enableWatermark = getWatermarkEnabled()
       
       const result = await captureScreenshotUtil({
         element: previewContentRef.current,
@@ -105,8 +141,18 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
           x: transformState?.positionX || 0,
           y: transformState?.positionY || 0
         },
-        isDarkMode
+        isDarkMode,
+        enableWatermark
       })
+      
+      // 恢复原始 class
+      if (needsRestore) {
+        const container = contentElement.querySelector('#container') as HTMLElement
+        if (container) {
+          container.className = originalClassList.join(' ')
+        }
+      }
+      
       return result
     } catch (error) {
       console.error('截图失败:', error)

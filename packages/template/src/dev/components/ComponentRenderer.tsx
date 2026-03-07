@@ -19,6 +19,8 @@ interface ComponentRendererProps {
   loadError?: Error | null
   /** 组件加载完成回调 */
   onLoadComplete?: () => void
+  /** 是否启用版本信息 */
+  versionEnabled?: boolean
 }
 
 /**
@@ -61,7 +63,7 @@ class ComponentErrorBoundary extends React.Component<{ children: React.ReactNode
  * @param props 组件属性
  * @returns JSX元素
  */
-const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, templateId, data, qrCodeDataUrl, loadError, onLoadComplete }) => {
+const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, templateId, data, qrCodeDataUrl, loadError, onLoadComplete, versionEnabled = true }) => {
   /**
    * 渲染优雅的加载状态
    * @param message 加载消息
@@ -247,7 +249,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
   const commonProps = {
     data,
     qrCodeDataUrl,
-    version,
+    version: versionEnabled ? version : undefined,
     scale: 1
   }
 

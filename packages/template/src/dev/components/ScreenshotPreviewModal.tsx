@@ -1,7 +1,9 @@
-import { addToast, Button, Modal, ModalBody, ModalContent, ModalFooter } from '@heroui/react'
-import { Copy, Download, Maximize, X } from 'lucide-react'
+import { addToast, Button, Modal, ModalBody, ModalContent, ModalFooter, Switch } from '@heroui/react'
+import { Camera, Copy, Download, Maximize, Moon, Sun, X } from 'lucide-react'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
+
+import { getWatermarkEnabled, setWatermarkEnabled } from '../utils/watermarkConfig'
 
 interface ScreenshotPreviewModalProps {
   isOpen: boolean
@@ -12,13 +14,22 @@ interface ScreenshotPreviewModalProps {
     copyToClipboard: () => Promise<void>
   } | null
   isDarkMode?: boolean
+  /** 重新截图的回调函数，可以传入临时的深色模式设置 */
+  onRetakeScreenshot?: (tempDarkMode?: boolean) => Promise<void>
+  /** 是否正在截图 */
+  isCapturing?: boolean
+  /** 当前组件的深色模式状态 */
+  componentDarkMode?: boolean
 }
 
 export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
   isOpen,
   onClose,
   screenshotResult,
-  isDarkMode = false
+  isDarkMode = false,
+  onRetakeScreenshot,
+  isCapturing = false,
+  componentDarkMode = false
 }) => {
   const [scale, setScale] = useState(1)
   const transformWrapperRef = useRef<any>(null)
@@ -27,6 +38,28 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
   // 缩放提示显示状态
   const [showScaleIndicator, setShowScaleIndicator] = useState(false)
   const scaleIndicatorTimeoutRef = useRef<number | null>(null)
+  
+  // 水印开关状态
+  const [watermarkEnabled, setWatermarkEnabledState] = useState(() => getWatermarkEnabled())
+  
+  // 临时深色模式状态（仅在模态窗中生效）
+  const [tempDarkMode, setTempDarkMode] = useState(componentDarkMode)
+  
+  // 当模态窗打开时，重置临时深色模式为组件的当前状态
+  useEffect(() => {
+    if (isOpen) {
+      setTempDarkMode(componentDarkMode)
+    }
+  }, [isOpen, componentDarkMode])
+  
+  // 当截图完成后，保持临时深色模式状态不变
+  // 只在模态窗关闭时才重置
+  useEffect(() => {
+    if (!isOpen) {
+      // 模态窗关闭时重置状态
+      setTempDarkMode(componentDarkMode)
+    }
+  }, [isOpen, componentDarkMode])
 
   const imageUrl = React.useMemo(() => {
     if (!screenshotResult) return ''
@@ -177,6 +210,25 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
       })
     }
   }
+  
+  // 处理水印开关变化
+  const handleWatermarkChange = (checked: boolean) => {
+    setWatermarkEnabledState(checked)
+    setWatermarkEnabled(checked)
+  }
+  
+  // 处理临时深色模式切换
+  const handleTempDarkModeChange = (checked: boolean) => {
+    setTempDarkMode(checked)
+  }
+  
+  // 处理重新截图
+  const handleRetake = async () => {
+    if (onRetakeScreenshot && !isCapturing) {
+      // 传递临时深色模式设置
+      await onRetakeScreenshot(tempDarkMode)
+    }
+  }
 
   return (
     <Modal 
@@ -283,9 +335,52 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
               </div>
             </ModalBody>
             <ModalFooter className="border-t border-divider shrink-0" style={{ backgroundColor: isDarkMode ? 'hsl(var(--heroui-content1))' : 'hsl(var(--heroui-content1))' }}>
-              <div className="flex-1 text-xs text-foreground-500 font-medium">
-                滚轮缩放 • 拖拽移动 • 双击适应
+              <div className="flex flex-1 gap-4 items-center">
+                <div className="text-xs text-foreground-500 font-medium">
+                  滚轮缩放 • 拖拽移动 • 双击适应
+                </div>
+                <div className="flex items-center gap-3">
+                  {/* 水印开关 */}
+                  <Switch
+                    size="sm"
+                    isSelected={watermarkEnabled}
+                    onValueChange={handleWatermarkChange}
+                    classNames={{
+                      wrapper: 'group-data-[selected=true]:bg-primary'
+                    }}
+                  >
+                    <span className='text-xs font-medium text-foreground-600'>
+                      {watermarkEnabled ? '水印已启用' : '水印已关闭'}
+                    </span>
+                  </Switch>
+                  
+                  {/* 临时深色模式开关 */}
+                  <Switch
+                    size="sm"
+                    isSelected={tempDarkMode}
+                    onValueChange={handleTempDarkModeChange}
+                    classNames={{
+                      wrapper: 'group-data-[selected=true]:bg-secondary'
+                    }}
+                    startContent={<Sun className='w-3 h-3' />}
+                    endContent={<Moon className='w-3 h-3' />}
+                  >
+                    <span className='text-xs font-medium text-foreground-600'>
+                      {tempDarkMode ? '深色主题' : '浅色主题'}
+                    </span>
+                  </Switch>
+                </div>
               </div>
+              <Button
+                variant="flat"
+                onPress={handleRetake}
+                isDisabled={isCapturing || !onRetakeScreenshot}
+                isLoading={isCapturing}
+                startContent={!isCapturing && <Camera className="w-4 h-4" />}
+                className="transition-colors duration-200 cursor-pointer"
+              >
+                {isCapturing ? '截图中...' : '重新截图'}
+              </Button>
               <Button
                 variant="flat"
                 onPress={handleFitToCanvas}

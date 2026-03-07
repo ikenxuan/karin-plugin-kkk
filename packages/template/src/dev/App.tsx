@@ -1,8 +1,8 @@
 import { Camera, RefreshCw } from 'lucide-react'
 import React from 'react'
 import { FaGithub } from 'react-icons/fa'
-import { MdFitScreen } from 'react-icons/md'
-import { MdDashboard } from 'react-icons/md'
+import { LuInfo } from 'react-icons/lu'
+import { MdDashboard, MdFitScreen, MdInfoOutline } from 'react-icons/md'
 import { Group, Panel, Separator } from 'react-resizable-panels'
 
 import { getEnabledComponents } from '../config/config'
@@ -13,6 +13,7 @@ import { MockDataEditorModal } from './components/MockDataEditorModal'
 import { PlatformSelector } from './components/PlatformSelector'
 import { PreviewPanel } from './components/PreviewPanel'
 import { ScreenshotPreviewModal } from './components/ScreenshotPreviewModal'
+import { getVersionEnabled, toggleVersionEnabled } from './utils/versionConfig'
 
 /**
  * URL参数接口
@@ -111,15 +112,24 @@ export const App: React.FC = () => {
     const saved = localStorage.getItem('dev-panel-dark-mode')
     return saved !== null ? saved === 'true' : false
   })
+  
+  // 版本信息开关状态
+  const [versionEnabled, setVersionEnabled] = React.useState(() => getVersionEnabled())
 
   // 保存深色模式设置
   React.useEffect(() => {
     localStorage.setItem('dev-panel-dark-mode', String(isDarkMode))
   }, [isDarkMode])
+  
+  // 切换版本信息开关
+  const handleToggleVersion = () => {
+    const newValue = toggleVersionEnabled()
+    setVersionEnabled(newValue)
+  }
 
   const dataService = DataService.getInstance()
   const previewPanelRef = React.useRef<{ 
-    captureScreenshot: () => Promise<{ blob: Blob; download: () => void; copyToClipboard: () => Promise<void> } | null>; 
+    captureScreenshot: (tempDarkMode?: boolean) => Promise<{ blob: Blob; download: () => void; copyToClipboard: () => Promise<void> } | null>; 
     fitToCanvas: () => void 
   }>(null)
 
@@ -335,13 +345,14 @@ export const App: React.FC = () => {
 
   /**
    * 处理截图
+   * @param tempDarkMode 临时深色模式（可选，仅在重新截图时使用）
    */
-  const handleCapture = async () => {
+  const handleCapture = async (tempDarkMode?: boolean) => {
     setIsCapturing(true)
     try {
-      // 通过 ref 调用 PreviewPanel 的截图方法
+      // 通过 ref 调用 PreviewPanel 的截图方法，传递临时深色模式
       if (previewPanelRef.current) {
-        const result = await previewPanelRef.current.captureScreenshot()
+        const result = await previewPanelRef.current.captureScreenshot(tempDarkMode)
         if (result) {
           setScreenshotResult(result)
           setIsScreenshotModalOpen(true)
@@ -588,13 +599,31 @@ export const App: React.FC = () => {
                 {/* 截图按钮 */}
                 <div className='flex flex-col items-center gap-2'>
                   <button
-                    onClick={handleCapture}
+                    onClick={() => handleCapture()}
                     disabled={isCapturing}
                     className='p-2 active:scale-95 transition-all duration-200 group disabled:opacity-50 disabled:cursor-not-allowed'
                   >
                     <Camera className='w-6 h-6 text-foreground-400 group-hover:text-success transition-colors' />
                   </button>
                   <span className='text-xs font-medium text-foreground-500'>截图</span>
+                </div>
+                
+                {/* 版本信息开关按钮 */}
+                <div className='flex flex-col items-center gap-2'>
+                  <button
+                    onClick={handleToggleVersion}
+                    className='p-2 active:scale-95 transition-all duration-200 group'
+                    title={versionEnabled ? '点击隐藏版本信息' : '点击显示版本信息'}
+                  >
+                    {versionEnabled ? (
+                      <LuInfo className='w-6 h-6 text-foreground-400 group-hover:text-primary transition-colors' />
+                    ) : (
+                      <MdInfoOutline className='w-6 h-6 text-foreground-400 group-hover:text-warning transition-colors' />
+                    )}
+                  </button>
+                  <span className='text-xs font-medium text-foreground-500'>
+                    {versionEnabled ? '版本' : '无版'}
+                  </span>
                 </div>
             
                 {/* 适应画布按钮 */}
@@ -647,6 +676,7 @@ export const App: React.FC = () => {
                 onScaleChange={setScale}
                 onComponentLoadComplete={handleComponentLoadComplete}
                 isPanelDarkMode={isDarkMode}
+                versionEnabled={versionEnabled}
               />
             </Panel>
           </Group>
@@ -657,6 +687,9 @@ export const App: React.FC = () => {
         onClose={() => setIsScreenshotModalOpen(false)}
         screenshotResult={screenshotResult}
         isDarkMode={isDarkMode}
+        onRetakeScreenshot={handleCapture}
+        isCapturing={isCapturing}
+        componentDarkMode={templateData?.useDarkTheme || false}
       />
       <MockDataEditorModal
         isOpen={isEditorOpen}
