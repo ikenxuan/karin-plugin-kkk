@@ -13,7 +13,7 @@ export function HeroSection() {
   const { lang } = useParams();
   
   return (
-    <div className="flex overflow-hidden relative flex-col w-full h-svh">
+    <div className="flex overflow-hidden relative flex-col w-full min-h-svh">
       <div className="absolute inset-x-0 top-0 z-0 pointer-events-none">
         <div className="w-screen">
           <TextHoverEffect text="KKK" />

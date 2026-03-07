@@ -1,4 +1,5 @@
 import { HeroSection } from '@/components/hero-section';
+import { UIMockupsSection } from '@/components/ui-mockups-section';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -7,5 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  return <HeroSection />;
+  return (
+    <>
+      <HeroSection />
+      <UIMockupsSection />
+    </>
+  );
 }
