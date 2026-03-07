@@ -75,10 +75,10 @@ export const groupStatistics = karin.command(/^#?kkk解析统计$/, async (e) =>
 }, { name: 'kkk-解析统计' })
 
 /**
- * #kkk解析总统计 命令
+ * #kkk全局解析统计 命令
  * 获取整个插件的全局解析统计数据
  */
-export const globalStatistics = karin.command(/^#?kkk解析总统计$/, async (e) => {
+export const globalStatistics = karin.command(/^#?kkk全局解析统计$/, async (e) => {
   try {
     // 获取统计数据库实例
     const statisticsDB = await getStatisticsDB()
@@ -116,7 +116,7 @@ export const globalStatistics = karin.command(/^#?kkk解析总统计$/, async (e
     await e.reply(img)
     return true
   } catch (error) {
-    await e.reply(`获取解析总统计失败：${error}`)
+    await e.reply(`获取全局解析统计失败：${error}`)
     return true
   }
-}, { name: 'kkk-解析总统计' })
+}, { name: 'kkk-全局解析统计', perm: 'master' })

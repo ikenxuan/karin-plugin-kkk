@@ -287,7 +287,7 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
             </span>
           </div>
           <h1 className="text-[8rem] font-black leading-none tracking-tighter text-default-900/90 mb-6">
-            解析总统计
+            全局解析统计
           </h1>
           <div className="text-5xl font-bold text-default-600/80">
             全局数据概览

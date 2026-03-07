@@ -44,7 +44,7 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
         roles: ['member', 'master']
       },
       {
-        title: '#kkk解析总统计',
+        title: '#kkk全局解析统计',
         description: '查看全局解析统计数据，包括所有群组的解析情况、趋势分析和群组排行',
         icon: 'TrendingUp',
         roles: ['master']
