@@ -1706,6 +1706,59 @@ interface QrLoginProps {
   useDarkTheme?: boolean;
 }
 //#endregion
+//#region ../template/src/types/platforms/other/statistics.d.ts
+/**
+ * 群组解析统计数据接口
+ */
+interface GroupStatisticsProps extends BaseComponentProps {
+  data: {
+    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 群组ID */
+    groupId: string; /** 群组名称 */
+    groupName?: string; /** 群组人数 */
+    groupMemberCount?: number; /** 群组头像 */
+    groupAvatar?: string; /** 群组总解析次数 */
+    groupTotalParses: number; /** 群组唯一用户数 */
+    groupUniqueUsers: number; /** 各平台解析数据 */
+    platformData: {
+      douyin: number;
+      bilibili: number;
+      kuaishou: number;
+      xiaohongshu: number;
+    }; /** 全局总群组数 */
+    globalTotalGroups: number; /** 全局总解析次数 */
+    globalTotalParses: number;
+  };
+}
+/**
+ * 全局解析统计数据接口
+ */
+interface GlobalStatisticsProps extends BaseComponentProps {
+  data: {
+    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 所有统计数据 */
+    allStats: Array<{
+      id: number;
+      groupId: string;
+      userId: string;
+      platform: 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu';
+      parseCount: number;
+      createdAt: string;
+      updatedAt: string;
+    }>; /** 历史数据（最近30天） */
+    historyData: Array<{
+      date: string;
+      totalParses: number;
+      douyin: number;
+      bilibili: number;
+      kuaishou: number;
+      xiaohongshu: number;
+    }>; /** 群组信息映射 */
+    groupInfoMap: Record<string, {
+      groupName?: string;
+      groupAvatar?: string;
+    }>;
+  };
+}
+//#endregion
 //#region ../template/src/types/index.d.ts
 /**
  * 二维码区域组件属性接口
@@ -1786,9 +1839,13 @@ type XiaohongshuComponentIds = 'noteInfo' | 'comment';
  */
 type OtherComponentIds = 'help' | 'handlerError' | 'changelog' | 'version_warning' | 'qrlogin';
 /**
+ * 统计平台组件ID
+ */
+type StatisticsComponentIds = 'group' | 'global';
+/**
  * 路径类型
  */
-type DynamicRenderPath = `douyin/${DouyinComponentIds}` | `bilibili/${BilibiliComponentIds}` | `kuaishou/${KuaishouComponentIds}` | `xiaohongshu/${XiaohongshuComponentIds}` | `other/${OtherComponentIds}`;
+type DynamicRenderPath = `douyin/${DouyinComponentIds}` | `bilibili/${BilibiliComponentIds}` | `kuaishou/${KuaishouComponentIds}` | `xiaohongshu/${XiaohongshuComponentIds}` | `other/${OtherComponentIds}` | `statistics/${StatisticsComponentIds}`;
 /**
  * 路径到数据类型的精确映射接口
  */
@@ -1825,6 +1882,8 @@ interface PathToDataTypeMap {
   'other/changelog': ChangelogProps['data'];
   'other/version_warning': VersionWarningProps['data'];
   'other/qrlogin': QrLoginProps['data'];
+  'statistics/group': GroupStatisticsProps['data'];
+  'statistics/global': GlobalStatisticsProps['data'];
 }
 /**
  * 从路径字符串中提取数据类型的工具类型
