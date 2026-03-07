@@ -628,6 +628,7 @@ export class Bilibilipush extends Base {
                 const images = data[dynamicId].Dynamic_Data.modules.module_dynamic.major &&
                   data[dynamicId].Dynamic_Data.modules.module_dynamic?.major?.draw?.items ||
                   data[dynamicId].Dynamic_Data.modules.module_dynamic?.major?.opus.pics
+                if (images.length === 0) break
                 for (const [index, img2] of images.entries()) {
                   const imageUrl = await processImageUrl(img2.src ?? img2.url, title, index)
                   imgArray.push(segment.image(imageUrl))
