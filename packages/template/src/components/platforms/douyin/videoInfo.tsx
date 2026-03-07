@@ -48,7 +48,7 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
     }), [])
 
     return (
-      <DefaultLayout {...props} className="dark relative">
+      <DefaultLayout {...props} className="relative">
         {/* 全局背景氛围层 */}
         <div className="absolute inset-0 overflow-hidden -z-10">
           <img
@@ -56,10 +56,10 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
             alt=""
             className="w-full h-full object-cover scale-150 blur-[120px] saturate-[1.8] opacity-50"
           />
-          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 bg-linear-to-b from-default-50/70 via-default-50/50 to-default-50/70 dark:from-black/40 dark:via-black/30 dark:to-black/40" />
         </div>
 
-        <div className="relative w-full overflow-hidden text-white">
+        <div className="relative w-full overflow-hidden text-default-900">
           <div className="relative z-10">
             {/* 顶部 */}
             <div className="flex items-center justify-between px-16 pt-20 pb-16 gap-12">
@@ -68,13 +68,13 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
                 <img
                   src={props.data.author.avatar}
                   alt={props.data.author.name}
-                  className="w-36 h-36 rounded-full object-cover ring-4 ring-white/10 shrink-0"
+                  className="w-36 h-36 rounded-full object-cover ring-4 ring-default-300 shrink-0"
                 />
                 <div className="flex flex-col gap-4 min-w-0">
-                  <span className="text-6xl text-white font-bold leading-tight line-clamp-2">
+                  <span className="text-6xl text-default-900 font-bold leading-tight line-clamp-2">
                     {props.data.author.name}
                   </span>
-                  <div className="flex items-center gap-4 text-4xl text-white/50">
+                  <div className="flex items-center gap-4 text-4xl text-default-600">
                     {props.data.user_profile?.follower_count !== undefined && (
                       <span>{formatNumber(props.data.user_profile.follower_count)} 粉丝</span>
                     )}
@@ -113,14 +113,14 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
               <div className="flex items-center justify-between mb-10">
                 {/* 时长 */}
                 {duration ? (
-                  <div className="px-6 py-4 rounded-2xl bg-white/20 backdrop-blur-2xl border border-white/30 shadow-lg text-white text-3xl tracking-wider">
+                  <div className="px-6 py-4 rounded-2xl bg-default-200/90 dark:bg-default-900/70 backdrop-blur-2xl border border-default-300 shadow-lg text-default-900 text-3xl tracking-wider">
                     {duration}
                   </div>
                 ) : <div />}
 
                 {/* BGM */}
                 {props.data.music && (
-                  <div className="flex items-center gap-6 p-4 rounded-3xl bg-white/20 backdrop-blur-2xl border border-white/30 shadow-lg overflow-hidden">
+                  <div className="flex items-center gap-6 p-4 rounded-3xl bg-default-200/90 dark:bg-default-900/70 backdrop-blur-2xl border border-default-300 shadow-lg overflow-hidden">
                     <div className="relative w-24 h-24">
                       {/* 底层 */}
                       <img
@@ -136,10 +136,10 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
                       />
                     </div>
                     <div className="flex flex-col gap-3 pr-4">
-                      <span className="text-4xl font-semibold text-white max-w-150 truncate">
+                      <span className="text-4xl font-semibold text-default-900 max-w-150 truncate">
                         {props.data.music.title}
                       </span>
-                      <span className="text-3xl text-white/50">
+                      <span className="text-3xl text-default-800">
                         {props.data.music.author}
                       </span>
                     </div>
@@ -148,7 +148,7 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
               </div>
 
               {/* 标题 */}
-              <h1 className="w-full text-6xl font-bold leading-relaxed tracking-wide text-white text-center">
+              <h1 className="w-full text-6xl font-bold leading-relaxed tracking-wide text-default-900 text-center">
                 {props.data.desc || '无标题'}
               </h1>
             </div>
@@ -161,8 +161,8 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
 
 const StatItem: React.FC<{ icon: React.ReactNode; value: number }> = ({ icon, value }) => (
   <div className="flex flex-col items-center gap-3">
-    <div className="text-white/60">{icon}</div>
-    <span className="text-4xl text-white/90 tabular-nums whitespace-nowrap">
+    <div className="text-default-600">{icon}</div>
+    <span className="text-4xl text-default-900 tabular-nums whitespace-nowrap">
       {formatNumber(value)}
     </span>
   </div>

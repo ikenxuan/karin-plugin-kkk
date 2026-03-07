@@ -579,7 +579,7 @@ export class DouYin extends Base {
                 image_url: isArticle 
                   ? VideoData.data.aweme_detail.video.origin_cover.url_list[0]
                   : this.is_mp4 
-                    ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover_original_scale?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] 
+                    ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.dynamic_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover_original_scale?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] 
                     : VideoData.data.aweme_detail.images![0].url_list![0],
                 cover_size: isArticle
                   ? (VideoData.data.aweme_detail.video.origin_cover ? {
