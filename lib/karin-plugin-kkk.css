@@ -4838,7 +4838,17 @@
     }
   }
 
-  .bg-default-200, .bg-default-200\/30 {
+  .bg-default-200, .bg-default-200\/20 {
+    background-color: hsl(var(--heroui-default-200) / 1);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-default-200\/20 {
+      background-color: color-mix(in oklab, hsl(var(--heroui-default-200) / 1) 20%, transparent);
+    }
+  }
+
+  .bg-default-200\/30 {
     background-color: hsl(var(--heroui-default-200) / 1);
   }
 
@@ -4855,16 +4865,6 @@
   @supports (color: color-mix(in lab, red, red)) {
     .bg-default-200\/60 {
       background-color: color-mix(in oklab, hsl(var(--heroui-default-200) / 1) 60%, transparent);
-    }
-  }
-
-  .bg-default-200\/90 {
-    background-color: hsl(var(--heroui-default-200) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .bg-default-200\/90 {
-      background-color: color-mix(in oklab, hsl(var(--heroui-default-200) / 1) 90%, transparent);
     }
   }
 
@@ -13150,16 +13150,6 @@
   @supports (color: color-mix(in lab, red, red)) {
     .dark\:bg-default-100\/10:is(.dark *) {
       background-color: color-mix(in oklab, hsl(var(--heroui-default-100) / 1) 10%, transparent);
-    }
-  }
-
-  .dark\:bg-default-900\/70:is(.dark *) {
-    background-color: hsl(var(--heroui-default-900) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-default-900\/70:is(.dark *) {
-      background-color: color-mix(in oklab, hsl(var(--heroui-default-900) / 1) 70%, transparent);
     }
   }
 
