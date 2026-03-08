@@ -2,6 +2,31 @@
 
 # Changelog
 
+## [2.23.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.22.0...v2.23.0) (2026-03-07)
+
+
+### ✨ 新功能
+
+* 添加#kkk解析统计、#kkk解析总统计 ([65fe700](https://github.com/ikenxuan/karin-plugin-kkk/commit/65fe70040b69030c0c6866ac9ed771ffaeaef69b))
+
+
+### 🐛 错误修复
+
+* **bilibili:** 推送时图文动态解析图片数量为0的情况 ([e942a10](https://github.com/ikenxuan/karin-plugin-kkk/commit/e942a10a53e9e96f619addcacc9df7cfe14a7e20))
+
+
+### 💄 UI 优化
+
+* **douyin:** 视频信息支持浅色模式 ([f0c3863](https://github.com/ikenxuan/karin-plugin-kkk/commit/f0c3863e503c550a3e57fe1103f36f26a55049b6))
+
+
+### 🧰 其他更新
+
+* eslint config ([9845c45](https://github.com/ikenxuan/karin-plugin-kkk/commit/9845c45d5a20470ac70432651977de0c927b9264))
+* 优化模板开发体验 ([86baf86](https://github.com/ikenxuan/karin-plugin-kkk/commit/86baf86e0cf33129921cbddd6e1cd71a9a3127c1))
+* 优化模板开发体验。 ([e557d3a](https://github.com/ikenxuan/karin-plugin-kkk/commit/e557d3ada9f890e9bc060bd8b9921747cf2ab7e5))
+* 优化说明 ([92cb96d](https://github.com/ikenxuan/karin-plugin-kkk/commit/92cb96d71717730987f8f8d5e52efdf35659290a))
+
 ## [2.22.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.21.1...v2.22.0) (2026-03-07)
 
 
