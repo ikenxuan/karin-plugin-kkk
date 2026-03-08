@@ -1,6 +1,6 @@
 import React from 'react'
 import { RiTrophyFill } from 'react-icons/ri'
-import { VictoryAxis, VictoryChart, VictoryLabel, VictoryLine, VictoryScatter, VictoryTheme } from 'victory'
+import { VictoryAxis, VictoryChart, VictoryLabel, VictoryLine, VictoryPie, VictoryScatter, VictoryTheme } from 'victory'
 
 import type { GlobalStatisticsProps } from '../../../types/platforms/other/statistics'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
@@ -476,58 +476,88 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
           </div>
         )}
 
-        {/* 平台详情 */}
+        {/* 平台详情 - 饼图 */}
         <div className="mb-40">
           <div className="flex items-center gap-8 mb-16">
             <div className="w-5 h-24 rounded-full bg-violet-500" />
             <div className="flex flex-col">
-              <h2 className="text-[5rem] font-black tracking-tight leading-none text-slate-900 dark:text-white">
+              <h2 className="text-[5rem] font-black tracking-tight leading-none text-default-900/90">
                 平台详情
               </h2>
-              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-slate-400 dark:text-slate-500 mt-2">
+              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-default-500/70 mt-2">
                 PLATFORMS
               </span>
             </div>
           </div>
 
-          <div className="space-y-18">
-            {Object.entries(platformStats).map(([platform, count]) => {
-              const maxCount = Math.max(...Object.values(platformStats))
-              const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0
-              const config = platformConfig[platform as keyof typeof platformConfig]
+          <div className="flex flex-col items-center gap-20">
+            {/* 饼图 */}
+            <div className="relative w-full h-200 flex items-center justify-center">
+              <svg width="1200" height="1000" viewBox="0 0 1200 1000">
+                <VictoryPie
+                  standalone={false}
+                  width={1200}
+                  height={1000}
+                  data={Object.entries(platformStats).map(([platform, count]) => {
+                    const config = platformConfig[platform as keyof typeof platformConfig]
+                    const total = Object.values(platformStats).reduce((sum, c) => sum + c, 0)
+                    const percentage = total > 0 ? ((count / total) * 100).toFixed(0) : '0'
+                    return {
+                      x: config.name,
+                      y: count,
+                      label: `${config.name} ${percentage}%\n${formatNumber(count)}次`,
+                      fill: config.color
+                    }
+                  })}
+                  innerRadius={220}
+                  radius={320}
+                  padAngle={3}
+                  colorScale={Object.keys(platformStats).map(
+                    platform => platformConfig[platform as keyof typeof platformConfig].color
+                  )}
+                  style={{
+                    labels: {
+                      fontSize: 40,
+                      fontFamily: 'HarmonyOSHans-Regular',
+                      fontWeight: 'bold',
+                      fill: useDarkTheme ? '#fff' : '#000'
+                    }
+                  }}
+                  labelRadius={400}
+                />
+              </svg>
+            </div>
 
-              return (
-                <div key={platform} className="relative">
-                  <div className="flex items-center gap-8 mb-6">
-                    <img
-                      src={config.logo}
-                      alt={config.name}
-                      className="h-24 w-auto object-contain"
+            {/* 图例 */}
+            <div className="w-full grid grid-cols-2 gap-x-16 gap-y-8">
+              {Object.entries(platformStats).map(([platform, count]) => {
+                if (count === 0) return null
+                const config = platformConfig[platform as keyof typeof platformConfig]
+                const total = Object.values(platformStats).reduce((sum, c) => sum + c, 0)
+                const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : '0.0'
+
+                return (
+                  <div key={platform} className="flex items-center gap-8">
+                    <div
+                      className="w-14 h-14 rounded-lg shrink-0"
+                      style={{ backgroundColor: config.color }}
                     />
                     <div className="flex-1">
                       <div className="text-4xl font-bold text-default-900/90 mb-2">
                         {config.name}
                       </div>
-                      <div className="text-2xl text-default-600/80">
+                      <div className="text-2xl text-default-600/80 mb-2">
                         {config.nameEn}
                       </div>
-                    </div>
-                    <div className="text-[5rem] font-black text-default-900/90">
-                      {formatWithCommas(count)}
+                      <div className="text-3xl text-default-600/80">
+                        <span className="font-black text-default-900/90">{formatWithCommas(count)}</span> 次
+                        <span className="text-2xl ml-2">({percentage}%)</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="relative h-18 bg-default-200/30 rounded-full overflow-hidden">
-                    <div
-                      className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
-                      style={{
-                        width: `${percentage}%`,
-                        backgroundColor: config.color
-                      }}
-                    />
-                  </div>
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
           </div>
         </div>
 
