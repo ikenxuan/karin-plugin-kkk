@@ -113,14 +113,14 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
               <div className="flex items-center justify-between mb-10">
                 {/* 时长 */}
                 {duration ? (
-                  <div className="px-6 py-4 rounded-2xl bg-default-200/90 dark:bg-default-900/70 backdrop-blur-2xl border border-default-300 shadow-lg text-default-900 text-3xl tracking-wider">
+                  <div className="px-6 py-4 rounded-2xl bg-default-200/20 backdrop-blur-2xl border border-default-300 shadow-lg text-default-900 text-3xl tracking-wider">
                     {duration}
                   </div>
                 ) : <div />}
 
                 {/* BGM */}
                 {props.data.music && (
-                  <div className="flex items-center gap-6 p-4 rounded-3xl bg-default-200/90 dark:bg-default-900/70 backdrop-blur-2xl border border-default-300 shadow-lg overflow-hidden">
+                  <div className="flex items-center gap-6 p-4 rounded-3xl bg-default-200/20 backdrop-blur-2xl border border-default-300 shadow-lg overflow-hidden">
                     <div className="relative w-24 h-24">
                       {/* 底层 */}
                       <img
