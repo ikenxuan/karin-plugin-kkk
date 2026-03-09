@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.23.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.23.0...v2.23.1) (2026-03-09)
+
+
+### 🐛 错误修复
+
+* 抖音登录二维码加载不出来 ([6d966ec](https://github.com/ikenxuan/karin-plugin-kkk/commit/6d966ec6446f2f29d07912e55bfd229e0c8b9932))
+
+
+### 💄 UI 优化
+
+* **douyin:** 视频信息显示优化 ([c9cb1da](https://github.com/ikenxuan/karin-plugin-kkk/commit/c9cb1da6430ab975ea1bc64c0a08325f203cbf5a))
+
 ## [2.23.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.22.0...v2.23.0) (2026-03-07)
 
 
