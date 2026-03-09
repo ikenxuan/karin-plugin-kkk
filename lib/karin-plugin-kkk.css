@@ -1585,10 +1585,6 @@
     margin-bottom: calc(var(--spacing) * 0);
   }
 
-  .mb-0\.5 {
-    margin-bottom: calc(var(--spacing) * .5);
-  }
-
   .mb-1 {
     margin-bottom: calc(var(--spacing) * 1);
   }
@@ -4176,17 +4172,7 @@
     border-color: hsl(var(--heroui-default-100) / 1);
   }
 
-  .border-default-200, .border-default-200\/20 {
-    border-color: hsl(var(--heroui-default-200) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .border-default-200\/20 {
-      border-color: color-mix(in oklab, hsl(var(--heroui-default-200) / 1) 20%, transparent);
-    }
-  }
-
-  .border-default-200\/30 {
+  .border-default-200, .border-default-200\/30 {
     border-color: hsl(var(--heroui-default-200) / 1);
   }
 
@@ -4654,13 +4640,13 @@
     }
   }
 
-  .bg-content2, .bg-content2\/20 {
+  .bg-content2, .bg-content2\/30 {
     background-color: hsl(var(--heroui-content2) / 1);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .bg-content2\/20 {
-      background-color: color-mix(in oklab, hsl(var(--heroui-content2) / 1) 20%, transparent);
+    .bg-content2\/30 {
+      background-color: color-mix(in oklab, hsl(var(--heroui-content2) / 1) 30%, transparent);
     }
   }
 
@@ -4845,16 +4831,6 @@
   @supports (color: color-mix(in lab, red, red)) {
     .bg-default-200\/20 {
       background-color: color-mix(in oklab, hsl(var(--heroui-default-200) / 1) 20%, transparent);
-    }
-  }
-
-  .bg-default-200\/30 {
-    background-color: hsl(var(--heroui-default-200) / 1);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .bg-default-200\/30 {
-      background-color: color-mix(in oklab, hsl(var(--heroui-default-200) / 1) 30%, transparent);
     }
   }
 
@@ -7056,10 +7032,6 @@
     .text-secondary\/80 {
       color: color-mix(in oklab, hsl(var(--heroui-secondary) / 1) 80%, transparent);
     }
-  }
-
-  .text-slate-400 {
-    color: var(--color-slate-400);
   }
 
   .text-slate-500 {
@@ -13247,10 +13219,6 @@
 
   .dark\:text-slate-400:is(.dark *) {
     color: var(--color-slate-400);
-  }
-
-  .dark\:text-slate-500:is(.dark *) {
-    color: var(--color-slate-500);
   }
 
   .dark\:text-success:is(.dark *) {
