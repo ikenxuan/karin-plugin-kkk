@@ -409,7 +409,7 @@ export class QRCodeScanner {
    */
   private static async parseHEIC(buffer: Buffer): Promise<{ width: number; height: number; data: Uint8ClampedArray } | null> {
     try {
-      const decoded = await decode({ buffer })
+      const decoded = await decode({ buffer: buffer.buffer })
       logger.debug(`HEIC 解析成功: ${decoded.width}x${decoded.height}`)
       return {
         width: decoded.width,

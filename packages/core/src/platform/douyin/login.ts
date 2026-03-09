@@ -180,10 +180,10 @@ export const douyinLogin = async (e: Message) => {
     let gcInterval: NodeJS.Timeout | undefined
     try {
       // 根据解码结果选择传递方式
-      const renderData = qrCodeData.url 
+      const renderData = qrCodeData.url
         ? { share_url: qrCodeData.url } // 解码成功，传递URL让插件生成自定义二维码
         : { qrCodeDataUrl: qrCodeData.originalImage } // 解码失败，直接使用原始图片
-      
+
       const loginQRcode = await Render('douyin/qrcodeImg', renderData)
 
       const base64Data = loginQRcode[0]?.file
@@ -518,7 +518,7 @@ const waitQrcode = async (page: Page): Promise<{ url: string | null; originalIma
   }
   logger.debug('二维码加载完成')
   await new Promise(resolve => setTimeout(resolve, 1000))
-  
+
   // 获取原始二维码图片的 src
   const images = await page.$$eval('img', (imgs) => {
     return imgs.map(img => ({
@@ -531,11 +531,11 @@ const waitQrcode = async (page: Page): Promise<{ url: string | null; originalIma
     throw new Error('未找到二维码')
   }
   const originalImage = qrCodeImages[0].src
-  
+
   // 直接从原始 src 下载图片进行解码
   try {
     let imageBuffer: Buffer
-    
+
     if (originalImage.startsWith('data:image')) {
       // base64 图片
       const base64Data = originalImage.split(',')[1]
@@ -545,10 +545,10 @@ const waitQrcode = async (page: Page): Promise<{ url: string | null; originalIma
       const response = await fetch(originalImage)
       imageBuffer = Buffer.from(await response.arrayBuffer())
     }
-    
+
     // 使用 QRCodeScanner 解析二维码
-    const qrContent = QRCodeScanner.scanFromBuffer(imageBuffer)
-    
+    const qrContent = await QRCodeScanner.scanFromBuffer(imageBuffer)
+
     if (qrContent) {
       logger.mark('二维码解码成功:', qrContent)
       return { url: qrContent, originalImage }
