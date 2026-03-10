@@ -34,6 +34,9 @@ EmojiReply: true
 # 解析提示，发送提示信息："检测到xxx链接，开始解析"
 parseTip: false
 
+# 是否伪造合并转发消息，开启后使用触发者身份展示转发
+fakeForward: false
+
 # 遇到错误时谁会收到错误日志？可选值：'master'（除'console'外的第一个主人）、'allMasters'（所有主人，排除console）、'trigger'（触发者）
 errorLogSendTo: 
   - master
