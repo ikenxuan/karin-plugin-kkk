@@ -1,5 +1,7 @@
-# 发送视频经本插件转换为base64格式后再发送，适合Karin与机器人不在同一网络环境下开启
-sendbase64: false
+# 本地视频发送方式，可选值：file / base64
+# file: 使用 file 协议发送本地视频（需 Karin 与协议端在同一系统）
+# base64: 转换为 base64 后发送（传输数据量增大约 30%，不在同一网络环境可能导致额外带宽成本，适合 karin 和协议端不在同一网络环境）
+videoSendMode: file
 
 # 视频上传拦截，开启后会根据解析的视频文件大小判断是否需要上传
 usefilelimit: false
@@ -17,6 +19,7 @@ compresstrigger: 80
 compressvalue: 30
 
 # 使用文件上传，开启后会将视频文件上传到群文件中，私聊也行
+# 与「videoSendMode: base64」互斥（群文件上传仅支持 file 协议）
 usegroupfile: false
 
 # 群文件上传阈值，当文件大小超过该值时将使用群文件上传，单位：MB，「使用群文件上传」开启后才会生效
@@ -25,7 +28,7 @@ groupfilevalue: 100
 # 网络图片发送方式，可选值：url / file / base64
 # url: 直接传递 HTTP 链接给上游下载（可能因上游网络问题导致下载超时）
 # file: 下载到本地使用 file 协议发送（需 Karin 与协议端在同一系统）
-# base64: 下载后转换为 base64 发送（传输数据增大约 1/3，不在同一网络环境可能导致额外带宽成本）
+# base64: 下载后转换为 base64 发送（传输数据量增大约 30%，不在同一网络环境可能导致额外带宽成本）
 imageSendMode: url
 
 # 下载限速开关，开启后会限制下载速度，避免触发服务器风控导致连接被重置（ECONNRESET）
