@@ -56,7 +56,6 @@ export type dyVideo = {
 export class DouYin extends Base {
   e: Message
   type: DouyinDataTypes[keyof DouyinDataTypes]
-  is_mp4: boolean | undefined
   is_slides: boolean
   /** 强制烧录弹幕（用于 #弹幕解析 命令） */
   forceBurnDanmaku: boolean
@@ -70,7 +69,6 @@ export class DouYin extends Base {
     super(e)
     this.e = e
     this.type = iddata?.type
-    this.is_mp4 = iddata?.is_mp4
     this.is_slides = false
     this.forceBurnDanmaku = options?.forceBurnDanmaku ?? false
     this.hasProcessedLiveImage = false
@@ -135,11 +133,6 @@ export class DouYin extends Base {
         const isArticle = aweme_type === 163
         const isVideo = aweme_type === 0
         
-        // 更新 is_mp4 状态（如果初始未设置）
-        if (this.is_mp4 === undefined) {
-          this.is_mp4 = isVideo
-        }
-        
         const CommentsData = await this.amagi.douyin.fetcher.fetchWorkComments({
           aweme_id: data.aweme_id,
           number: Config.douyin.numcomment,
@@ -152,7 +145,7 @@ export class DouYin extends Base {
         /** 图集 */
         let imagenum = 0
         const image_res = []
-        if (this.is_mp4 === false && !isArticle) {
+        if (!isVideo && !isArticle) {
           switch (true) {
             // 图集
             case this.is_slides === false && VideoData.data.aweme_detail.images !== null: {
@@ -480,7 +473,7 @@ export class DouYin extends Base {
           } else {
             music_url = music.play_url.uri
           }
-          if (this.is_mp4 === false && Config.app.removeCache === false && music_url !== undefined) {
+          if (!isVideo && Config.app.removeCache === false && music_url !== undefined) {
             try {
               const path = Common.tempDri.images + `${g_title}/BGM.mp3`
               await new Networks({ url: music_url, type: 'arraybuffer' }).getData().then((data) => fs.promises.writeFile(path, Buffer.from(data)))
@@ -489,7 +482,7 @@ export class DouYin extends Base {
             }
           }
           // 图集、合辑、文章都发送BGM
-          const haspath = music_url && (this.is_mp4 === false || isArticle) && music_url !== undefined && !this.hasProcessedLiveImage
+          const haspath = music_url && !isVideo && music_url !== undefined && !this.hasProcessedLiveImage
           haspath && await this.e.reply(segment.record(music_url, false))
         }
 
@@ -498,7 +491,7 @@ export class DouYin extends Base {
         const sendvideofile = true
         type VideoType = DyVideoWork['aweme_detail']['video']
         let video: VideoType | null = null
-        if (this.is_mp4) {
+        if (isVideo) {
           // 视频地址特殊判断：play_addr_h264、play_addr、
           video = VideoData.data.aweme_detail.video as VideoType
           FPS = video.bit_rate[0]?.FPS ?? '获取失败' // FPS
@@ -532,7 +525,7 @@ export class DouYin extends Base {
             const { digg_count, share_count, collect_count, comment_count, recommend_count } = VideoData.data.aweme_detail.statistics
             const coverImageUrl = isArticle 
               ? VideoData.data.aweme_detail.video.origin_cover.url_list[0]
-              : this.is_mp4 
+              : isVideo
                 ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] 
                 : VideoData.data.aweme_detail.images![0].url_list[0]
             const coverUrl = await processImageUrl(coverImageUrl, VideoData.data.aweme_detail.desc)
@@ -578,7 +571,7 @@ export class DouYin extends Base {
                 } : undefined,
                 image_url: isArticle 
                   ? VideoData.data.aweme_detail.video.origin_cover.url_list[0]
-                  : this.is_mp4 
+                  : isVideo
                     ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.dynamic_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover_original_scale?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] 
                     : VideoData.data.aweme_detail.images![0].url_list![0],
                 cover_size: isArticle
@@ -586,7 +579,7 @@ export class DouYin extends Base {
                     width: VideoData.data.aweme_detail.video.origin_cover.width,
                     height: VideoData.data.aweme_detail.video.origin_cover.height
                   } : undefined)
-                  : this.is_mp4
+                  : isVideo
                     ? (VideoData.data.aweme_detail.video.cover ? {
                       width: VideoData.data.aweme_detail.video.cover_original_scale.width,
                       height: VideoData.data.aweme_detail.video.cover_original_scale.height
@@ -601,7 +594,7 @@ export class DouYin extends Base {
                   title: VideoData.data.aweme_detail.music.title,
                   cover: VideoData.data.aweme_detail.music.cover_hd?.url_list[0] ?? VideoData.data.aweme_detail.music.cover_large?.url_list[0]
                 } : undefined,
-                video: this.is_mp4 ? {
+                video: isVideo ? {
                   duration: VideoData.data.aweme_detail.video.duration,
                   width: VideoData.data.aweme_detail.video.width,
                   height: VideoData.data.aweme_detail.video.height,
@@ -637,10 +630,10 @@ export class DouYin extends Base {
             }
             const img = await Render('douyin/comment',
               {
-                Type: isArticle ? '文章' : this.is_mp4 ? '视频' : this.is_slides ? '合辑' : '图集',
+                Type: isArticle ? '文章' : isVideo ? '视频' : this.is_slides ? '合辑' : '图集',
                 CommentsData: douyinCommentsRes.CommentsData,
                 CommentLength: Config.douyin.realCommentCount ? VideoData.data.aweme_detail.statistics.comment_count : douyinCommentsRes.CommentsData.length ?? 0,
-                share_url: this.is_mp4
+                share_url: isVideo
                   ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${VideoData.data.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`
                   : VideoData.data.aweme_detail.share_url,
                 VideoSize: mp4size,
@@ -648,7 +641,7 @@ export class DouYin extends Base {
                 ImageLength: imagenum,
                 Region: VideoData.data.aweme_detail.region,
                 suggestWrod: suggest,
-                Resolution: this.is_mp4 && video ? `${video.bit_rate[0].play_addr.width} x ${video.bit_rate[0].play_addr.height}` : null,
+                Resolution: isVideo && video ? `${video.bit_rate[0].play_addr.width} x ${video.bit_rate[0].play_addr.height}` : null,
                 maxDepth: Config.douyin.subCommentDepth
               }
             )
@@ -671,7 +664,7 @@ export class DouYin extends Base {
         }
         
         /** 发送视频 */
-        if (sendvideofile && this.is_mp4 && !isArticle && Config.douyin.sendContent.includes('video')) {
+        if (sendvideofile && isVideo && !isArticle && Config.douyin.sendContent.includes('video')) {
           // 获取弹幕数据（如果开启弹幕烧录）
           let danmakuList: DouyinDanmakuElem[] = []
           if ((this.forceBurnDanmaku || Config.douyin.burnDanmaku) && video) {

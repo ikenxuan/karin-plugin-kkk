@@ -26,7 +26,7 @@ import {
 } from '@/module'
 import { Config } from '@/module/utils/Config'
 import { DouyinIdData, douyinProcessVideos, getDouyinID } from '@/platform/douyin'
-import { getWorkCoverUrl, getWorkTypeInfo } from '@/platform/douyin/workType'
+import { getWorkCoverUrl, getWorkTypeDisplayName, getWorkTypeInfo } from '@/platform/douyin/workType'
 import type { douyinPushItem } from '@/types/config/pushlist'
 
 import { processFavoriteList } from './push/favorite'
@@ -200,7 +200,7 @@ export class DouYinpush extends Base {
       const skip = await skipDynamic(pushItem)
       skip && logger.warn(`作品 https://www.douyin.com/video/${actualAwemeId} 已被处理，跳过`)
       let img: ImageElement[] = []
-      let iddata: DouyinIdData = { is_mp4: true, type: 'one_work' }
+      let iddata: DouyinIdData = { type: 'one_work' }
 
       if (!skip) {
         iddata = await getDouyinID(this.e, Detail_Data.share_url ?? 'https://live.douyin.com/' + Detail_Data.room_data?.owner.web_rid, false)
@@ -438,9 +438,10 @@ export class DouYinpush extends Base {
 
           // 是否一同解析该新作品？
           if (Config.douyin.push.parsedynamic && status.message_id) {
-            logger.debug(`开始解析作品，类型为：${iddata.is_mp4 ? '视频' : '图集'}`)
+            const workTypeInfo = getWorkTypeInfo(Detail_Data as any)
+            logger.debug(`开始解析作品，类型为：${getWorkTypeDisplayName(workTypeInfo)}`)
             // 如果新作品是视频
-            if (iddata.is_mp4) {
+            if (workTypeInfo.isVideo) {
               try {
                 /** 默认视频下载地址 */
                 let downloadUrl = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
@@ -464,7 +465,7 @@ export class DouYinpush extends Base {
               } catch (error) {
                 throw new Error(`下载视频失败: ${error}`)
               }
-            } else if (!iddata.is_mp4 && iddata.type === 'one_work') { // 如果新作品是图集或合辑
+            } else if (workTypeInfo.isImage && iddata.type === 'one_work') { // 如果新作品是图集或合辑
               // 判断是否为合辑（is_slides）
               const isSlides = Detail_Data.is_slides === true
 
