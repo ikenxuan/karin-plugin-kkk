@@ -2,6 +2,29 @@
 
 # Changelog
 
+## [2.24.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.23.2...v2.24.0) (2026-03-10)
+
+
+### ✨ 新功能
+
+* **app:** 添加伪造合并转发消息配置选项 ([4bb4d03](https://github.com/ikenxuan/karin-plugin-kkk/commit/4bb4d03de119b844e13524a34a9d8bb2f5702a90))
+* **bilibili/douyin:** 实现 Live Photo 效果视频合成并统一处理逻辑 ([56f90b6](https://github.com/ikenxuan/karin-plugin-kkk/commit/56f90b609d80eaa57aaaaa6d5fb755515fe03474))
+
+
+### 🐛 错误修复
+
+* **抖音:** 直播推送会触发作品解析 ([a9c13b8](https://github.com/ikenxuan/karin-plugin-kkk/commit/a9c13b8eca8851a19fe01a16c418cef98ccad98b))
+
+
+### 🧰 其他更新
+
+* 细优 ([24eb64f](https://github.com/ikenxuan/karin-plugin-kkk/commit/24eb64f1f79d56b1ed169283cc19a8c439eb6d09))
+
+
+### ⚙️ 配置变更
+
+* **upload:** 重构视频发送配置，用 videoSendMode 替换 sendbase64 ([bc367fd](https://github.com/ikenxuan/karin-plugin-kkk/commit/bc367fd0e512b95a96f8a7a8c647ee6c43a9ea74))
+
 ## [2.23.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.23.1...v2.23.2) (2026-03-10)
 
 
