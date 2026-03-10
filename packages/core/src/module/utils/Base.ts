@@ -82,6 +82,8 @@ export type downLoadFileOptions = {
    * @default {}
    */
   headers?: (RawAxiosRequestHeaders & MethodsHeaders) | AxiosHeaders
+  /** 文件保存路径 */
+  filepath?: string
 }
 
 /**
@@ -340,7 +342,7 @@ export const downloadFile = async (videoUrl: string, opt: downLoadFileOptions): 
     const { filepath, totalBytes } = await new Networks({
       url: videoUrl, 
       headers: opt.headers ?? baseHeaders,
-      filepath: Common.tempDri.video + opt.title,
+      filepath: opt.filepath ?? Common.tempDri.video + opt.title,
       timeout: 60000, // 增加超时时间
       maxRetries: 3, // 增加重试次数
       throttle: throttleConfig
@@ -379,7 +381,7 @@ export const downloadFile = async (videoUrl: string, opt: downLoadFileOptions): 
 
       // 打印下载进度、速度和剩余时间
       console.log(
-        `⬇️  ${opt.title} ${generateProgressBar(progressPercentage)} ${coloredPercentage} ${downloadedSizeMB}/${totalSizeMB} MB | ${formattedSpeed} 剩余: ${formattedRemainingTime}\r`
+        `⬇️  ${opt.title ?? (opt.filepath && opt.filepath.split('/').pop()) ?? '未知文件'} ${generateProgressBar(progressPercentage)} ${coloredPercentage} ${downloadedSizeMB}/${totalSizeMB} MB | ${formattedSpeed} 剩余: ${formattedRemainingTime}\r`
       )
     })
 

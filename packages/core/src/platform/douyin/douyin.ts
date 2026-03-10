@@ -12,14 +12,11 @@ import {
   baseHeaders,
   Common,
   Count,
-  createLiveImageContext,
   downloadFile,
   downloadVideo,
   fileInfo,
-  type LiveImageMergeContext,
-  loopVideo,
-  mergeLiveImageContinuous,
-  mergeLiveImageIndependent,
+  type LiveImageMergeOptions,
+  loopVideoWithTransition,
   Networks,
   processImageUrl,
   Render,
@@ -169,7 +166,7 @@ export class DouYin extends Base {
                 
                 /** 下载 BGM（如果存在） */
                 let liveimgbgm: fileInfo | null = null
-                let bgmContext: LiveImageMergeContext | null = null
+                let bgmContext: LiveImageMergeOptions['context'] | null = null
                 const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
                 
                 if (VideoData.data.aweme_detail.music) {
@@ -189,11 +186,6 @@ export class DouYin extends Base {
                     }
                   )
                   temp.push(liveimgbgm)
-                  
-                  // 获取合并模式配置
-                  if (mergeMode === 'continuous') {
-                    bgmContext = await createLiveImageContext(liveimgbgm.filepath)
-                  }
                 }
                 
                 for (const [index, imageItem] of images.entries()) {
@@ -224,36 +216,31 @@ export class DouYin extends Base {
                   
                   if (liveimg.filepath) {
                     const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
-                    let success: boolean
-                    
-                    // clip_type === 4 是短片，不需要重放，loopCount = 1
-                    // 其他类型（如 clip_type === 5 的 livePhoto）需要三次重放
                     const loopCount = imageItem.clip_type === 4 ? 1 : 3
-                    
-                    // 如果没有 BGM，直接重放视频
-                    if (!liveimgbgm) {
-                      if (loopCount > 1) {
-                        // 需要重放，使用 ffmpeg 重放视频
-                        success = await loopVideo(liveimg.filepath, outputPath, loopCount)
-                      } else {
-                        // 不需要重放，直接使用原视频
-                        fs.renameSync(liveimg.filepath, outputPath)
-                        success = true
-                      }
-                    } else if (mergeMode === 'continuous' && bgmContext) {
-                      // 连续模式：BGM 从上次位置继续
-                      const result = await mergeLiveImageContinuous(
-                        { videoPath: liveimg.filepath, outputPath, loopCount },
-                        bgmContext
-                      )
-                      success = result.success
+                    let staticImgPath = ''
+                    if (imageItem.url_list?.[0]) {
+                      const staticImg = await downloadFile(imageItem.url_list[0], {
+                        title: `Douyin_static_${Date.now()}_${index}.jpg`,
+                        headers: this.headers,
+                        filepath: Common.tempDri.images + `Douyin_static_${Date.now()}_${index}.jpg`
+                      })
+                      staticImgPath = staticImg.filepath ?? ''
+                    }
+                    const transitionEnabled = loopCount > 1 && Boolean(staticImgPath)
+                    const safeStaticPath = staticImgPath || liveimg.filepath
+                    const result = await loopVideoWithTransition({
+                      inputPath: liveimg.filepath,
+                      outputPath,
+                      loopCount,
+                      staticImagePath: safeStaticPath,
+                      transitionEnabled,
+                      bgmPath: liveimgbgm?.filepath,
+                      mergeMode,
+                      context: bgmContext ?? undefined
+                    })
+                    const success = result.success
+                    if (mergeMode === 'continuous' && result.context) {
                       bgmContext = result.context
-                    } else {
-                      // 独立模式：每张图都从 BGM 开头开始
-                      success = await mergeLiveImageIndependent(
-                        { videoPath: liveimg.filepath, outputPath, loopCount },
-                        liveimgbgm.filepath
-                      )
                     }
                     
                     if (success) {
@@ -285,8 +272,6 @@ export class DouYin extends Base {
                     prompt: '抖音图集解析结果',
                     news: [{ text: '点击查看解析结果' }]
                   })
-                } catch (error) {
-                  await this.e.reply(JSON.stringify(error, null, 2))
                 } finally {
                   for (const item of temp) {
                     await Common.removeFile(item.filepath, true)
@@ -339,7 +324,7 @@ export class DouYin extends Base {
               
               /** 下载 BGM（如果存在） */
               let liveimgbgm: fileInfo | null = null
-              let bgmContext: LiveImageMergeContext | null = null
+              let bgmContext: LiveImageMergeOptions['context'] | null = null
               const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
               
               if (VideoData.data.aweme_detail.music) {
@@ -360,11 +345,6 @@ export class DouYin extends Base {
                   }
                 )
                 temp.push(liveimgbgm)
-                
-                // 获取合并模式配置
-                if (mergeMode === 'continuous') {
-                  bgmContext = await createLiveImageContext(liveimgbgm.filepath)
-                }
               }
               
               const images1 = VideoData.data.aweme_detail.images ?? []
@@ -381,7 +361,7 @@ export class DouYin extends Base {
                   continue
                 }
                 /** 动图/短片 */
-                const liveimg = await downloadFile(
+                const livePhoto = await downloadFile(
                   `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`,
                   {
                     title: `Douyin_tmp_V_${Date.now()}.mp4`,
@@ -389,38 +369,33 @@ export class DouYin extends Base {
                   }
                 )
 
-                if (liveimg.filepath) {
+                if (livePhoto.filepath) {
                   const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
-                  let success: boolean
-                  
-                  // clip_type === 4 是短片，不需要重放，loopCount = 1
-                  // 其他类型（如 clip_type === 5 的 livePhoto）需要三次重放
                   const loopCount = item.clip_type === 4 ? 1 : 3
-
-                  // 如果没有 BGM，直接重放视频
-                  if (!liveimgbgm) {
-                    if (loopCount > 1) {
-                      // 需要重放，使用 ffmpeg 重放视频
-                      success = await loopVideo(liveimg.filepath, outputPath, loopCount)
-                    } else {
-                      // 不需要重放，直接使用原视频
-                      fs.renameSync(liveimg.filepath, outputPath)
-                      success = true
-                    }
-                  } else if (mergeMode === 'continuous' && bgmContext) {
-                    // 连续模式：BGM 从上次位置继续
-                    const result = await mergeLiveImageContinuous(
-                      { videoPath: liveimg.filepath, outputPath, loopCount },
-                      bgmContext
-                    )
-                    success = result.success
+                  let staticImgPath = ''
+                  if (item.url_list?.[0]) {
+                    const staticImg = await downloadFile(item.url_list[0], {
+                      title: `Douyin_static_${Date.now()}_${index}.jpg`,
+                      headers: this.headers,
+                      filepath: Common.tempDri.images + `Douyin_static_${Date.now()}_${index}.jpg`
+                    })
+                    staticImgPath = staticImg.filepath ?? ''
+                  }
+                  const transitionEnabled = loopCount > 1 && Boolean(staticImgPath)
+                  const safeStaticPath = staticImgPath || livePhoto.filepath
+                  const result = await loopVideoWithTransition({
+                    inputPath: livePhoto.filepath,
+                    outputPath,
+                    loopCount,
+                    staticImagePath: safeStaticPath,
+                    transitionEnabled,
+                    bgmPath: liveimgbgm?.filepath,
+                    mergeMode,
+                    context: bgmContext ?? undefined
+                  })
+                  const success = result.success
+                  if (mergeMode === 'continuous' && result.context) {
                     bgmContext = result.context
-                  } else {
-                    // 独立模式：每张图都从 BGM 开头开始
-                    success = await mergeLiveImageIndependent(
-                      { videoPath: liveimg.filepath, outputPath, loopCount },
-                      liveimgbgm.filepath
-                    )
                   }
 
                   if (success) {
@@ -428,7 +403,7 @@ export class DouYin extends Base {
                     fs.renameSync(outputPath, filePath)
                     logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
                     logger.mark('正在尝试删除缓存文件')
-                    await Common.removeFile(liveimg.filepath, true)
+                    await Common.removeFile(livePhoto.filepath, true)
                     temp.push({ filepath: filePath, totalBytes: 0 })
                     images.push(segment.video('file://' + filePath))
                     
@@ -438,7 +413,7 @@ export class DouYin extends Base {
                       images.push(segment.image(imageUrl))
                     }
                   } else {
-                    await Common.removeFile(liveimg.filepath, true)
+                    await Common.removeFile(livePhoto.filepath, true)
                   }
                 }
               }
@@ -450,8 +425,6 @@ export class DouYin extends Base {
                   prompt: '抖音合辑解析结果',
                   news: [{ text: '点击查看解析结果' }]
                 })
-              } catch (error) {
-                await this.e.reply(JSON.stringify(error, null, 2))
               } finally {
                 for (const item of temp) {
                   await Common.removeFile(item.filepath, true)
@@ -652,7 +625,7 @@ export class DouYin extends Base {
                 messageElements.push(segment.image(imageUrl))
               }
               const res = common.makeForward(messageElements, this.e.sender.userId, this.e.sender.nick)
-              this.e.bot.sendForwardMsg(this.e.contact, res, {
+              await this.e.bot.sendForwardMsg(this.e.contact, res, {
                 source: '评论图片收集',
                 summary: `查看${messageElements.length}张图片`,
                 prompt: '抖音评论解析结果',

@@ -11,15 +11,12 @@ import {
   baseHeaders,
   cleanOldDynamicCache,
   Common,
-  createLiveImageContext,
   douyinDB,
   downloadFile,
   downLoadFileOptions,
   downloadVideo,
   fileInfo,
-  loopVideo,
-  mergeLiveImageContinuous,
-  mergeLiveImageIndependent,
+  loopVideoWithTransition,
   Networks,
   processImageUrl,
   Render
@@ -497,11 +494,6 @@ export class DouYinpush extends Base {
                     }
                   )
                   temp.push(liveimgbgm)
-
-                  // 获取合并模式配置
-                  if (mergeMode === 'continuous') {
-                    bgmContext = await createLiveImageContext(liveimgbgm.filepath)
-                  }
                 }
 
                 const images1 = Detail_Data.images ?? []
@@ -528,36 +520,31 @@ export class DouYinpush extends Base {
 
                   if (liveimg.filepath) {
                     const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
-                    let success: boolean
-
-                    // clip_type === 4 是短片，不需要重放，loopCount = 1
-                    // 其他类型（如 clip_type === 5 的 livePhoto）需要三次重放
                     const loopCount = item.clip_type === 4 ? 1 : 3
-
-                    // 如果没有 BGM，直接重放视频
-                    if (!liveimgbgm) {
-                      if (loopCount > 1) {
-                        // 需要重放，使用 ffmpeg 重放视频
-                        success = await loopVideo(liveimg.filepath, outputPath, loopCount)
-                      } else {
-                        // 不需要重放，直接使用原视频
-                        fs.renameSync(liveimg.filepath, outputPath)
-                        success = true
-                      }
-                    } else if (mergeMode === 'continuous' && bgmContext) {
-                      // 连续模式：BGM 从上次位置继续
-                      const result = await mergeLiveImageContinuous(
-                        { videoPath: liveimg.filepath, outputPath, loopCount },
-                        bgmContext
-                      )
-                      success = result.success
+                    let staticImgPath = ''
+                    if (item.url_list?.[0]) {
+                      const staticImg = await downloadFile(item.url_list[0], {
+                        title: `Douyin_static_${Date.now()}_${index}.jpg`,
+                        headers: douyinBaseHeaders,
+                        filepath: Common.tempDri.images + `Douyin_static_${Date.now()}_${index}.jpg`
+                      })
+                      staticImgPath = staticImg.filepath ?? ''
+                    }
+                    const transitionEnabled = loopCount > 1 && Boolean(staticImgPath)
+                    const safeStaticPath = staticImgPath || liveimg.filepath
+                    const result = await loopVideoWithTransition({
+                      inputPath: liveimg.filepath,
+                      outputPath,
+                      loopCount,
+                      staticImagePath: safeStaticPath,
+                      transitionEnabled,
+                      bgmPath: liveimgbgm?.filepath,
+                      mergeMode,
+                      context: bgmContext ?? undefined
+                    })
+                    const success = result.success
+                    if (mergeMode === 'continuous' && result.context) {
                       bgmContext = result.context
-                    } else {
-                      // 独立模式：每张图都从 BGM 开头开始
-                      success = await mergeLiveImageIndependent(
-                        { videoPath: liveimg.filepath, outputPath, loopCount },
-                        liveimgbgm.filepath
-                      )
                     }
 
                     if (success) {
@@ -628,11 +615,6 @@ export class DouYinpush extends Base {
                       }
                     )
                     temp.push(liveimgbgm)
-
-                    // 获取合并模式配置
-                    if (mergeMode === 'continuous') {
-                      bgmContext = await createLiveImageContext(liveimgbgm.filepath)
-                    }
                   }
 
                   for (const [index, item] of Detail_Data.images.entries()) {
@@ -655,36 +637,31 @@ export class DouYinpush extends Base {
 
                     if (liveimg.filepath) {
                       const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
-                      let success: boolean
-
-                      // clip_type === 4 是短片，不需要重放，loopCount = 1
-                      // 其他类型（如 clip_type === 5 的 livePhoto）需要三次重放
                       const loopCount = item.clip_type === 4 ? 1 : 3
-
-                      // 如果没有 BGM，直接重放视频
-                      if (!liveimgbgm) {
-                        if (loopCount > 1) {
-                          // 需要重放，使用 ffmpeg 重放视频
-                          success = await loopVideo(liveimg.filepath, outputPath, loopCount)
-                        } else {
-                          // 不需要重放，直接使用原视频
-                          fs.renameSync(liveimg.filepath, outputPath)
-                          success = true
-                        }
-                      } else if (mergeMode === 'continuous' && bgmContext) {
-                        // 连续模式：BGM 从上次位置继续
-                        const result = await mergeLiveImageContinuous(
-                          { videoPath: liveimg.filepath, outputPath, loopCount },
-                          bgmContext
-                        )
-                        success = result.success
+                      let staticImgPath = ''
+                      if (item.url_list?.[0]) {
+                        const staticImg = await downloadFile(item.url_list[0], {
+                          title: `Douyin_static_${Date.now()}_${index}.jpg`,
+                          headers: douyinBaseHeaders,
+                          filepath: Common.tempDri.images + `Douyin_static_${Date.now()}_${index}.jpg`
+                        })
+                        staticImgPath = staticImg.filepath ?? ''
+                      }
+                      const transitionEnabled = loopCount > 1 && Boolean(staticImgPath)
+                      const safeStaticPath = staticImgPath || liveimg.filepath
+                      const result = await loopVideoWithTransition({
+                        inputPath: liveimg.filepath,
+                        outputPath,
+                        loopCount,
+                        staticImagePath: safeStaticPath,
+                        transitionEnabled,
+                        bgmPath: liveimgbgm?.filepath,
+                        mergeMode,
+                        context: bgmContext ?? undefined
+                      })
+                      const success = result.success
+                      if (mergeMode === 'continuous' && result.context) {
                         bgmContext = result.context
-                      } else {
-                        // 独立模式：每张图都从 BGM 开头开始
-                        success = await mergeLiveImageIndependent(
-                          { videoPath: liveimg.filepath, outputPath, loopCount },
-                          liveimgbgm.filepath
-                        )
                       }
 
                       if (success) {

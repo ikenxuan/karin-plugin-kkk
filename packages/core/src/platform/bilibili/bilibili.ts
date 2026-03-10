@@ -33,7 +33,9 @@ import {
   Count,
   downloadFile,
   downloadVideo,
+  fileInfo,
   fixM4sFile,
+  loopVideoWithTransition,
   mergeVideoAudio,
   Networks,
   processImageUrl,
@@ -194,7 +196,7 @@ export class Bilibili extends Base {
                 messageElements.push(segment.image(imageUrl))
               }
               const res = common.makeForward(messageElements, this.e.sender.userId, this.e.sender.nick)
-              this.e.bot.sendForwardMsg(this.e.contact, res, {
+              await this.e.bot.sendForwardMsg(this.e.contact, res, {
                 source: '评论图片收集',
                 summary: `查看${messageElements.length}张图片`,
                 prompt: 'B站评论解析结果',
@@ -364,23 +366,86 @@ export class Bilibili extends Base {
           /** 图文、纯图 */
           case DynamicType.DRAW: {
             const imgArray = []
+            const temp: fileInfo[] = []
             const title = dynamicInfo.data.data.item.modules.module_dynamic.major.opus.title || 'bilibili_dynamic'
             for (const [index, img] of dynamicInfo.data.data.item.modules.module_dynamic.major.opus.pics.entries()) {
               if (img.url) {
-                const imageUrl = await processImageUrl(img.url, title, index)
-                imgArray.push(segment.image(imageUrl))
+                // Check if this is a live image with live_url
+                if (img.live_url) {
+                  // Process live image similar to douyin
+                  const livePhoto = await downloadFile(img.live_url, {
+                    title: `Bilibili_tmp_V_${Date.now()}_${index}.mp4`,
+                    headers: baseHeaders
+                  })
+                  
+                  if (livePhoto.filepath) {
+                    const outputPath = Common.tempDri.video + `Bilibili_Live_${Date.now()}_${index}.mp4`
+                    let success: boolean
+                    
+                    // 下载原图用于静态显示
+                    const staticImg = await downloadFile(img.url, {
+                      title: `Bilibili_static_${Date.now()}_${index}.jpg`,
+                      headers: baseHeaders,
+                      filepath: Common.tempDri.images + `Bilibili_static_${Date.now()}_${index}.jpg`
+                    })
+                    
+                    // Loop the live image 3 times with Live Photo effect
+                    const loopCount = 3
+                    if (!staticImg.filepath) {
+                      await Common.removeFile(livePhoto.filepath, true)
+                      continue
+                    }
+
+                    const result = await loopVideoWithTransition({
+                      inputPath: livePhoto.filepath,
+                      outputPath,
+                      loopCount,
+                      staticImagePath: staticImg.filepath,
+                      transitionEnabled: loopCount > 1
+                    })
+                    success = result.success
+
+
+                    if (success) {
+                      const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
+                      fs.renameSync(outputPath, filePath)
+                      logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
+                      logger.mark('正在尝试删除缓存文件')
+                      await Common.removeFile(livePhoto.filepath, true)
+                      temp.push({ filepath: filePath, totalBytes: 0 })
+                      // Add the looped video to the array
+                      imgArray.push(segment.video(filePath))
+                      
+                      // Also add the static image (img.url) below the video
+                      const imageUrl = await processImageUrl(img.url, title, index)
+                      imgArray.push(segment.image(imageUrl))
+                    } else {
+                      await Common.removeFile(livePhoto.filepath, true)
+                    }
+                  }
+                } else {
+                  // Regular static image
+                  const imageUrl = await processImageUrl(img.url, title, index)
+                  imgArray.push(segment.image(imageUrl))
+                }
               }
             }
 
             if (imgArray.length === 1) this.e.reply(imgArray[0])
             if (imgArray.length > 1) {
               const forwardMsg = common.makeForward(imgArray, this.e.userId, this.e.sender.nick)
-              await this.e.bot.sendForwardMsg(this.e.contact, forwardMsg, {
-                source: '图片合集',
-                summary: `查看${imgArray.length}张图片消息`,
-                prompt: 'B站图文动态解析结果',
-                news: [{ text: '点击查看解析结果' }]
-              })
+              try {
+                await this.e.bot.sendForwardMsg(this.e.contact, forwardMsg, {
+                  source: '图片合集',
+                  summary: `查看${imgArray.length}张图片消息`,
+                  prompt: 'B站图文动态解析结果',
+                  news: [{ text: '点击查看解析结果' }]
+                })
+              } finally {
+                for (const item of temp) {
+                  await Common.removeFile(item.filepath, true)
+                }
+              }
             }
 
             const dynamicCARD = JSON.parse(dynamicInfoCard.data.data.card.card)
@@ -675,7 +740,7 @@ export class Bilibili extends Base {
             if (messageElements.length === 1) this.e.reply(messageElements[0])
             if (messageElements.length > 1) {
               const forwardMsg = common.makeForward(messageElements, this.e.userId, this.e.sender.nick)
-              this.e.bot.sendForwardMsg(this.e.contact, forwardMsg, {
+              await this.e.bot.sendForwardMsg(this.e.contact, forwardMsg, {
                 source: '图片合集',
                 summary: `查看${messageElements.length}张图片消息`,
                 prompt: 'B站专栏动态解析结果',
@@ -747,7 +812,7 @@ export class Bilibili extends Base {
                 messageElements.push(segment.image(imageUrl))
               }
               const res = common.makeForward(messageElements, this.e.sender.userId, this.e.sender.nick)
-              this.e.bot.sendForwardMsg(this.e.contact, res, {
+              await this.e.bot.sendForwardMsg(this.e.contact, res, {
                 source: '评论图片收集',
                 summary: `查看${messageElements.length}张图片`,
                 prompt: 'B站评论解析结果',

@@ -30,6 +30,8 @@ import {
   Count,
   downloadFile,
   downLoadFileOptions,
+  fileInfo,
+  loopVideoWithTransition,
   mergeVideoAudio,
   processImageUrl,
   Render,
@@ -623,23 +625,76 @@ export class Bilibilipush extends Base {
                 break
               }
               case 'DYNAMIC_TYPE_DRAW': {
-                const imgArray: ImageElement[] = []
+                const imgArray = []
+                const temp: fileInfo[] = []
                 const title = data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.title || 'bilibili_dynamic'
                 const images = data[dynamicId].Dynamic_Data.modules.module_dynamic.major &&
                   data[dynamicId].Dynamic_Data.modules.module_dynamic?.major?.draw?.items ||
                   data[dynamicId].Dynamic_Data.modules.module_dynamic?.major?.opus.pics
                 if (images.length === 0) break
                 for (const [index, img2] of images.entries()) {
-                  const imageUrl = await processImageUrl(img2.src ?? img2.url, title, index)
-                  imgArray.push(segment.image(imageUrl))
+                  const imageSrc = img2.src ?? img2.url
+                  if (img2.live_url && imageSrc) {
+                    const livePhoto = await downloadFile(img2.live_url, {
+                      title: `Bilibili_tmp_V_${Date.now()}_${index}.mp4`,
+                      headers: bilibiliBaseHeaders
+                    })
+
+                    if (livePhoto.filepath) {
+                      const outputPath = Common.tempDri.video + `Bilibili_Live_${Date.now()}_${index}.mp4`
+                      const staticImg = await downloadFile(imageSrc, {
+                        title: `Bilibili_static_${Date.now()}_${index}.jpg`,
+                        headers: bilibiliBaseHeaders,
+                        filepath: Common.tempDri.images + `Bilibili_static_${Date.now()}_${index}.jpg`
+                      })
+                      const loopCount = 3
+                      if (!staticImg.filepath) {
+                        await Common.removeFile(livePhoto.filepath, true)
+                        continue
+                      }
+                      const result = await loopVideoWithTransition({
+                        inputPath: livePhoto.filepath,
+                        outputPath,
+                        loopCount,
+                        staticImagePath: staticImg.filepath,
+                        transitionEnabled: loopCount > 1
+                      })
+                      const success = result.success
+
+                      if (success) {
+                        const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
+                        fs.renameSync(outputPath, filePath)
+                        logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
+                        logger.mark('正在尝试删除缓存文件')
+                        await Common.removeFile(staticImg.filepath, true)
+                        temp.push({ filepath: filePath, totalBytes: 0 })
+
+                        imgArray.push(segment.video(filePath))
+                        const imageUrl = await processImageUrl(imageSrc, title, index)
+                        imgArray.push(segment.image(imageUrl))
+                        continue
+                      }
+                      await Common.removeFile(livePhoto.filepath, true)
+                    }
+                  }
+                  if (imageSrc) {
+                    const imageUrl = await processImageUrl(imageSrc, title, index)
+                    imgArray.push(segment.image(imageUrl))
+                  }
                 }
                 const forwardMsg = common.makeForward(imgArray, botId, bot.account.name)
-                bot.sendForwardMsg(Contact, forwardMsg, {
-                  source: '图片合集',
-                  summary: `查看${imgArray.length}张图片消息`,
-                  prompt: 'B站图文动态解析结果',
-                  news: [{ text: '点击查看解析结果' }]
-                })
+                try {
+                  await bot.sendForwardMsg(Contact, forwardMsg, {
+                    source: '图片合集',
+                    summary: `查看${imgArray.length}张图片消息`,
+                    prompt: 'B站图文动态解析结果',
+                    news: [{ text: '点击查看解析结果' }]
+                  })
+                } finally {
+                  for (const item of temp) {
+                    await Common.removeFile(item.filepath, true)
+                  }
+                }
                 break
               }
               case 'DYNAMIC_TYPE_ARTICLE': {
@@ -656,7 +711,7 @@ export class Bilibilipush extends Base {
                 if (messageElements.length === 1) bot.sendMsg(Contact, messageElements)
                 if (messageElements.length > 1) {
                   const forwardMsg = common.makeForward(messageElements, botId, bot.account.name)
-                  bot.sendForwardMsg(Contact, forwardMsg, {
+                  await bot.sendForwardMsg(Contact, forwardMsg, {
                     source: '图片合集',
                     summary: `查看${messageElements.length}张图片消息`,
                     prompt: 'B站专栏动态解析结果',
