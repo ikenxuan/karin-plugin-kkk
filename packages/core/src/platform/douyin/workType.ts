@@ -45,12 +45,14 @@ export interface DouyinWorkTypeInfo {
   isImage: boolean
   /** 是否为文章 */
   isArticle: boolean
+  /** 是否为直播 */
+  isLive: boolean
   /** 是否为图集 */
   isGallery: boolean
   /** 是否为合辑 */
   isCollection: boolean
   /** 模板路径 */
-  templatePath: 'douyin/video-work' | 'douyin/image-work' | 'douyin/article-work'
+  templatePath: 'douyin/video-work' | 'douyin/image-work' | 'douyin/article-work' | 'douyin/live'
 }
 
 /**
@@ -75,7 +77,22 @@ export function getWorkTypeInfo(data: {
   video?: any
   is_slides?: boolean
   article_info?: any
+  live_data?: any
 }): DouyinWorkTypeInfo {
+  // 直播类型（有 live_data 对象）
+  if (data.live_data) {
+    return {
+      mainType: DouyinWorkMainType.LIVE,
+      isVideo: false,
+      isImage: false,
+      isArticle: false,
+      isLive: true,
+      isGallery: false,
+      isCollection: false,
+      templatePath: 'douyin/live'
+    }
+  }
+
   // 文章类型（aweme_type === 163）
   if (data.aweme_type === 163 || data.article_info) {
     return {
@@ -83,6 +100,7 @@ export function getWorkTypeInfo(data: {
       isVideo: false,
       isImage: false,
       isArticle: true,
+      isLive: false,
       isGallery: false,
       isCollection: false,
       templatePath: 'douyin/article-work'
@@ -101,6 +119,7 @@ export function getWorkTypeInfo(data: {
       isVideo: false,
       isImage: true,
       isArticle: false,
+      isLive: false,
       isGallery: subType === DouyinImageSubType.GALLERY,
       isCollection: subType === DouyinImageSubType.COLLECTION,
       templatePath: 'douyin/image-work'
@@ -113,6 +132,7 @@ export function getWorkTypeInfo(data: {
     isVideo: true,
     isImage: false,
     isArticle: false,
+    isLive: false,
     isGallery: false,
     isCollection: false,
     templatePath: 'douyin/video-work'
@@ -172,6 +192,7 @@ export function getWorkTypeDisplayName(workTypeInfo: DouyinWorkTypeInfo): string
   if (workTypeInfo.isGallery) return '图集'
   if (workTypeInfo.isCollection) return '合辑'
   if (workTypeInfo.isArticle) return '文章'
+  if (workTypeInfo.isLive) return '直播'
   return '未知'
 }
 
