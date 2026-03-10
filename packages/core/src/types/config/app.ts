@@ -36,6 +36,9 @@ export interface appConfig {
   /** 解析提示，发送提示信息："检测到xxx链接，开始解析" */
   parseTip: boolean
 
+  /** 是否伪造合并转发消息，开启后使用触发者身份展示转发 */
+  fakeForward: boolean
+
   // /**
   //  * 表情 ID
   //  * @see https://github.com/NapNeko/NapCatQQ/blob/main/packages/napcat-core/external/face_config.json

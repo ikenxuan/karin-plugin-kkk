@@ -101,7 +101,11 @@ export class Xiaohongshu extends Base {
         const imageUrl = await processImageUrl(item.url_default, title, index)
         Imgs.push(segment.image(imageUrl))
       }
-      const res = common.makeForward(Imgs, this.e.sender.userId, this.e.sender.nick)
+      const res = common.makeForward(
+        Imgs,
+        Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
+        Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
+      )
       if (NoteData.data.data.items[0].note_card!.image_list.length === 1) {
         const imageUrl = await processImageUrl(NoteData.data.data.items[0].note_card!.image_list[0].url_default, title)
         await this.e.reply(segment.image(imageUrl))

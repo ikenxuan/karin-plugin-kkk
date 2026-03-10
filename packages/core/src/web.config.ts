@@ -270,6 +270,11 @@ export const webConfig = defineConfig({
                 description: '发送提示信息："检测到xxx链接，开始解析"',
                 defaultSelected: all.app.parseTip
               }),
+              components.switch.create('fakeForward', {
+                label: '伪造合并转发消息',
+                description: '开启后合并转发将使用触发者身份展示；关闭后使用机器人身份展示',
+                defaultSelected: all.app.fakeForward
+              }),
               components.checkbox.group('errorLogSendTo', {
                 label: '错误日志',
                 description: '遇到错误时谁会收到错误日志。注：推送任务只可发送给主人。「第一个主人」与「所有主人」互斥。',

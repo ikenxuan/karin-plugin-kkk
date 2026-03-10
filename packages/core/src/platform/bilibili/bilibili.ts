@@ -195,7 +195,11 @@ export class Bilibili extends Base {
                 const imageUrl = await processImageUrl(v, infoData.data.data.title, index)
                 messageElements.push(segment.image(imageUrl))
               }
-              const res = common.makeForward(messageElements, this.e.sender.userId, this.e.sender.nick)
+              const res = common.makeForward(
+                messageElements,
+                Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
+                Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
+              )
               await this.e.bot.sendForwardMsg(this.e.contact, res, {
                 source: '评论图片收集',
                 summary: `查看${messageElements.length}张图片`,
@@ -435,7 +439,11 @@ export class Bilibili extends Base {
 
             if (imgArray.length === 1) this.e.reply(imgArray[0])
             if (imgArray.length > 1) {
-              const forwardMsg = common.makeForward(imgArray, this.e.userId, this.e.sender.nick)
+              const forwardMsg = common.makeForward(
+                imgArray,
+                Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
+                Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
+              )
               try {
                 await this.e.bot.sendForwardMsg(this.e.contact, forwardMsg, {
                   source: '图片合集',
@@ -741,7 +749,11 @@ export class Bilibili extends Base {
 
             if (messageElements.length === 1) this.e.reply(messageElements[0])
             if (messageElements.length > 1) {
-              const forwardMsg = common.makeForward(messageElements, this.e.userId, this.e.sender.nick)
+              const forwardMsg = common.makeForward(
+                messageElements,
+                Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
+                Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
+              )
               await this.e.bot.sendForwardMsg(this.e.contact, forwardMsg, {
                 source: '图片合集',
                 summary: `查看${messageElements.length}张图片消息`,
@@ -813,7 +825,11 @@ export class Bilibili extends Base {
                 const imageUrl = await processImageUrl(v, title, index)
                 messageElements.push(segment.image(imageUrl))
               }
-              const res = common.makeForward(messageElements, this.e.sender.userId, this.e.sender.nick)
+              const res = common.makeForward(
+                messageElements,
+                Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
+                Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
+              )
               await this.e.bot.sendForwardMsg(this.e.contact, res, {
                 source: '评论图片收集',
                 summary: `查看${messageElements.length}张图片`,

@@ -267,7 +267,11 @@ export class DouYin extends Base {
                 }
                 
                 // 使用合并转发发送
-                const Element = common.makeForward(processedImages, this.e.sender.userId, this.e.sender.nick)
+                const Element = common.makeForward(
+                  processedImages,
+                  Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
+                  Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
+                )
                 try {
                   await this.e.bot.sendForwardMsg(this.e.contact, Element, {
                     source: '图集内容',
@@ -303,7 +307,11 @@ export class DouYin extends Base {
                     await new Networks({ url: image_url, type: 'arraybuffer' }).getData().then((data) => fs.promises.writeFile(path, Buffer.from(data)))
                   }
                 }
-                const res = common.makeForward(imageres, this.e.sender.userId, this.e.sender.nick)
+                const res = common.makeForward(
+                  imageres,
+                  Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
+                  Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
+                )
                 image_data.push(res)
                 image_res.push(image_data)
                 if (imageres.length === 1) {
@@ -423,7 +431,11 @@ export class DouYin extends Base {
                   }
                 }
               }
-              const Element = common.makeForward(images, this.e.sender.userId, this.e.sender.nick)
+              const Element = common.makeForward(
+                images,
+                Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
+                Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
+              )
               try {
                 await this.e.bot.sendForwardMsg(this.e.contact, Element, {
                   source: '合辑内容',
@@ -630,7 +642,11 @@ export class DouYin extends Base {
                 const imageUrl = await processImageUrl(v, VideoData.data.aweme_detail.desc, index)
                 messageElements.push(segment.image(imageUrl))
               }
-              const res = common.makeForward(messageElements, this.e.sender.userId, this.e.sender.nick)
+              const res = common.makeForward(
+                messageElements,
+                Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
+                Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
+              )
               await this.e.bot.sendForwardMsg(this.e.contact, res, {
                 source: '评论图片收集',
                 summary: `查看${messageElements.length}张图片`,

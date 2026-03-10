@@ -122,6 +122,12 @@ export const appConfigSchema: SectionSchema = {
       description: '发送提示信息："检测到xxx链接，开始解析"'
     },
     {
+      key: 'fakeForward',
+      type: 'switch',
+      label: '伪造合并转发消息',
+      description: '开启后合并转发将使用触发者身份展示；关闭后使用机器人身份展示'
+    },
+    {
       key: 'errorLogSendTo',
       type: 'checkbox',
       label: '错误日志',
