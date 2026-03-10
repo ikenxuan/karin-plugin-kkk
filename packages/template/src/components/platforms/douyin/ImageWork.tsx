@@ -192,7 +192,7 @@ const CoCreatorsInfo: React.FC<{
         style={{ scrollbarWidth: 'thin' }}
       >
         {items.slice(0, visibleCount).map((c, idx) => {
-          const avatar = c.avatar_thumb?.url_list[0]
+          const avatar = c.avatar_url
           return (
             <div
               key={`${c.nickname || 'creator'}-${idx}`}

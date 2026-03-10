@@ -42,9 +42,7 @@ export interface DouyinImageWorkProps extends BaseComponentProps {
     cooperation_info?: {
       co_creator_nums: number
       co_creators: Array<{
-        avatar_thumb: {
-          url_list: string[]
-        }
+        avatar_url?: string
         nickname: string
         role_title: string
       }>

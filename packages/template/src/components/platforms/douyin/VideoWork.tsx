@@ -112,8 +112,11 @@ const UserInfoSection: React.FC<DouyinVideoWorkProps> = (props) => {
             @{props.data.username}
           </div>
           <div className='flex gap-2 items-center text-4xl text-default-500'>
-            <Hash size={32} className='text-default-400' />
+            <Hash size={32} />
             <span className='select-text'>抖音号: {props.data.抖音号}</span>
+            {props.data.cooperation_info?.subscriber_role && (
+              <span className='ml-5 px-3 py-1 rounded-xl bg-default-200 text-3xl'>{props.data.cooperation_info.subscriber_role}</span>
+            )}
           </div>
         </div>
       </div>
@@ -154,8 +157,9 @@ const UserInfoSection: React.FC<DouyinVideoWorkProps> = (props) => {
  */
 const CoCreatorsInfo: React.FC<{
   info?: DouyinVideoWorkProps['data']['cooperation_info']
-}> = ({ info }) => {
-  const creators = info?.co_creators ?? []
+  subscriberNickname?: string
+}> = ({ info, subscriberNickname }) => {
+  const creators = (info?.co_creators ?? []).filter(c => !subscriberNickname || c.nickname !== subscriberNickname)
   if (creators.length === 0) return null
 
   const items = creators.slice(0, 50)
@@ -192,11 +196,11 @@ const CoCreatorsInfo: React.FC<{
         style={{ scrollbarWidth: 'thin' }}
       >
         {items.slice(0, visibleCount).map((c, idx) => {
-          const avatar = c.avatar_thumb?.url_list[0]
+          const avatar = c.avatar_url
           return (
             <div
               key={`${c.nickname || 'creator'}-${idx}`}
-              className='flex flex-col items-center min-w-38 w-38 shrink-0'
+              className='flex flex-col items-center min-w-42 w-42 shrink-0'
             >
               <div className='flex justify-center items-center bg-white rounded-full w-30 h-30'>
                 <img
@@ -205,7 +209,7 @@ const CoCreatorsInfo: React.FC<{
                   className='object-cover w-28 h-auto rounded-full'
                 />
               </div>
-              <div className='overflow-hidden mt-6 w-full text-3xl font-medium leading-tight text-center truncate whitespace-nowrap select-text text-foreground-700'>
+              <div className='overflow-hidden mt-6 w-full text-3xl font-medium leading-tight text-center truncate whitespace-nowrap select-text text-foreground'>
                 {c.nickname || '未提供'}
               </div>
               <div className='overflow-hidden mt-2 w-full text-3xl leading-tight text-center truncate whitespace-nowrap select-text text-foreground-600'>
@@ -217,7 +221,7 @@ const CoCreatorsInfo: React.FC<{
 
         {items.length > visibleCount && (
           <div className='flex flex-col items-center min-w-38 w-38 shrink-0'>
-            <div className='flex justify-center items-center rounded-full bg-default-200 w-38 h-38'>
+            <div className='flex justify-center items-center rounded-full bg-default-200 w-30 h-30'>
               <span className='text-[42px] leading-none text-foreground-500'>···</span>
             </div>
             <div className='overflow-hidden mt-6 w-full text-3xl font-medium leading-tight text-center truncate whitespace-nowrap select-text text-foreground-700'>
@@ -267,7 +271,7 @@ export const DouyinVideoWork: React.FC<Omit<DouyinVideoWorkProps, 'templateType'
                 </div>
               </div>
             )}
-            <CoCreatorsInfo info={props.data.cooperation_info} />
+            <CoCreatorsInfo info={props.data.cooperation_info} subscriberNickname={props.data.username} />
           </div>
 
           {/* 底部信息区域 */}

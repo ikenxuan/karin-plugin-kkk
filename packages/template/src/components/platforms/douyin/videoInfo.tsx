@@ -57,6 +57,37 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
             className="w-full h-full object-cover scale-150 blur-[120px] saturate-[1.8] opacity-50"
           />
           <div className="absolute inset-0 bg-linear-to-b from-default-50/70 via-default-50/50 to-default-50/70 dark:from-black/40 dark:via-black/30 dark:to-black/40" />
+          
+          {/* 杂色纹理层 */}
+          <div className="absolute inset-0 pointer-events-none opacity-[0.35] mix-blend-overlay dark:mix-blend-soft-light">
+            <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <filter id="douyinNoise">
+                  <feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="3" stitchTiles="stitch" />
+                  <feColorMatrix type="saturate" values="0" />
+                  <feComponentTransfer>
+                    <feFuncR type="discrete" tableValues="0 1" />
+                    <feFuncG type="discrete" tableValues="0 1" />
+                    <feFuncB type="discrete" tableValues="0 1" />
+                  </feComponentTransfer>
+                  <feComponentTransfer>
+                    <feFuncA type="linear" slope="2" intercept="-0.5" />
+                  </feComponentTransfer>
+                </filter>
+                <mask id="noiseMask">
+                  <linearGradient id="noiseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="white" stopOpacity="1" />
+                    <stop offset="15%" stopColor="white" stopOpacity="0.6" />
+                    <stop offset="50%" stopColor="white" stopOpacity="0.15" />
+                    <stop offset="85%" stopColor="white" stopOpacity="0.6" />
+                    <stop offset="100%" stopColor="white" stopOpacity="1" />
+                  </linearGradient>
+                  <rect width="100%" height="100%" fill="url(#noiseGradient)" />
+                </mask>
+              </defs>
+              <rect width="100%" height="100%" filter="url(#douyinNoise)" mask="url(#noiseMask)" fill="white" />
+            </svg>
+          </div>
         </div>
 
         <div className="relative w-full overflow-hidden text-default-900">

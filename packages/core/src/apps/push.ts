@@ -177,7 +177,7 @@ const handleTestDouyinPush = wrapWithErrorHandler(async (e) => {
 
   // 获取作品类型信息
   const workTypeInfo = getWorkTypeInfo(workInfo.data.aweme_detail)
-  
+
   // 获取封面 URL
   const coverUrl = getWorkCoverUrl(workTypeInfo, workInfo.data.aweme_detail as any)
 
@@ -185,22 +185,22 @@ const handleTestDouyinPush = wrapWithErrorHandler(async (e) => {
   if (workTypeInfo.isArticle) {
     const content = JSON.parse(workInfo.data.aweme_detail.article_info.article_content)
     const fe_data = JSON.parse(workInfo.data.aweme_detail.article_info.fe_data)
-    
+
     const img = await Render('douyin/article-work', {
       title: workInfo.data.aweme_detail.article_info.article_title,
       markdown: content.markdown,
       images: fe_data.image_list || [],
       read_time: fe_data.read_time || 0,
-      
+
       // 互动数据
       dianzan: Common.count(workInfo.data.aweme_detail.statistics.digg_count),
       pinglun: Common.count(workInfo.data.aweme_detail.statistics.comment_count),
       shouchang: Common.count(workInfo.data.aweme_detail.statistics.collect_count),
       share: Common.count(workInfo.data.aweme_detail.statistics.share_count),
-      
+
       // 时间信息
       create_time: format(fromUnixTime(workInfo.data.aweme_detail.create_time), 'yyyy-MM-dd HH:mm'),
-      
+
       // 用户信息
       avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userProfile.data.user.avatar_larger.uri,
       username: workInfo.data.aweme_detail.author.nickname,
@@ -208,14 +208,14 @@ const handleTestDouyinPush = wrapWithErrorHandler(async (e) => {
       获赞: Common.count(userProfile.data.user.total_favorited),
       关注: Common.count(userProfile.data.user.following_count),
       粉丝: Common.count(userProfile.data.user.follower_count),
-      
+
       // 分享链接
       share_url: workInfo.data.aweme_detail.share_url,
-      
+
       // 主题
       useDarkTheme: false
     })
-    
+
     e.reply(img)
     return true
   }
@@ -253,14 +253,14 @@ const handleTestDouyinPush = wrapWithErrorHandler(async (e) => {
         (authorNickname && c.nickname && c.nickname === authorNickname)
       )
 
-      // 只保留：头像链接一条、名字、职位（兼容现有组件的 avatar_thumb 结构）
+      // 只保留：头像链接一条、名字、职位（使用 avatar_url 字段）
       const co_creators = rawCreators.map((c: { avatar_thumb: { url_list: (string | undefined)[]; uri: any }; nickname: any; role_title: any }) => {
         const firstUrl =
           c.avatar_thumb?.url_list?.[0] ??
           (c.avatar_thumb?.uri ? `https://p3.douyinpic.com/${c.avatar_thumb.uri}` : undefined)
 
         return {
-          avatar_thumb: firstUrl ? { url_list: [firstUrl] } : undefined,
+          avatar_url: firstUrl,
           nickname: c.nickname,
           role_title: c.role_title
         }

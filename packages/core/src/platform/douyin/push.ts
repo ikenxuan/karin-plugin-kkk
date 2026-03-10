@@ -185,10 +185,10 @@ export class DouYinpush extends Base {
     for (const awemeId in data) {
       const pushItem = data[awemeId]
       const actualAwemeId = awemeId.replace(/^(post|favorite|recommend|live)_/, '') // 移除推送类型前缀
-      const pushTypeLabel = pushItem.pushType === 'post' ? '作品列表' : 
-        pushItem.pushType === 'favorite' ? '喜欢列表' : 
+      const pushTypeLabel = pushItem.pushType === 'post' ? '作品列表' :
+        pushItem.pushType === 'favorite' ? '喜欢列表' :
           pushItem.pushType === 'recommend' ? '推荐列表' : '直播'
-      
+
       logger.mark(`
         ${logger.blue('开始处理并渲染抖音动态图片')}
         ${logger.blue('博主')}: ${logger.green(pushItem.remark)} 
@@ -232,17 +232,17 @@ export class DouYinpush extends Base {
               Connection: 'keep-alive'
             }
           }).getLocation()
-          
+
           // 根据推送类型选择不同的渲染模板和数据
           if (pushItem.pushType === 'favorite') {
             // 喜欢列表模板：需要显示"谁喜欢了谁的作品"
             // 获取作者用户信息（如果有的话）
             const authorUserInfo = 'author_user_info' in Detail_Data ? Detail_Data.author_user_info : undefined
-            
+
             // 获取作品类型信息和封面
             const workTypeInfo = getWorkTypeInfo(Detail_Data as any)
             const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data as any)
-            
+
             img = await Render('douyin/favorite-list', {
               image_url: coverUrl,
               desc: this.desc(Detail_Data, Detail_Data.desc),
@@ -280,7 +280,7 @@ export class DouYinpush extends Base {
               shouchang: this.count(Detail_Data.statistics.collect_count),
               tuijian: this.count(Detail_Data.statistics.recommend_count),
               create_time: format(fromUnixTime(pushItem.create_time), 'yyyy-MM-dd HH:mm'),
-              
+
               // 推荐者信息（订阅者）
               recommender_username: pushItem.remark,
               recommender_avatar: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
@@ -295,34 +295,34 @@ export class DouYinpush extends Base {
           } else {
             // 作品列表模板（post）
             const dynamicTypeLabel = '作品动态推送'
-            
+
             // 获取作品类型信息
             const workTypeInfo = getWorkTypeInfo(Detail_Data as any)
-            
+
             // 获取封面 URL
             const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data as any)
-            
+
             // 如果是文章类型，使用文章模板
             if (workTypeInfo.isArticle) {
               // 解析文章内容
               const content = JSON.parse(Detail_Data.article_info.article_content)
               const fe_data = JSON.parse(Detail_Data.article_info.fe_data)
-              
+
               img = await Render('douyin/article-work', {
                 title: Detail_Data.article_info.article_title,
                 markdown: content.markdown,
                 images: fe_data.image_list || [],
                 read_time: fe_data.read_time || 0,
-                
+
                 // 互动数据
                 dianzan: this.count(Detail_Data.statistics.digg_count),
                 pinglun: this.count(Detail_Data.statistics.comment_count),
                 shouchang: this.count(Detail_Data.statistics.collect_count),
                 share: this.count(Detail_Data.statistics.share_count),
-                
+
                 // 时间信息
                 create_time: format(fromUnixTime(pushItem.create_time), 'yyyy-MM-dd HH:mm'),
-                
+
                 // 用户信息
                 avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
                 username: Detail_Data.author.nickname,
@@ -330,10 +330,10 @@ export class DouYinpush extends Base {
                 获赞: this.count(Detail_Data.user_info.data.user.total_favorited),
                 关注: this.count(Detail_Data.user_info.data.user.following_count),
                 粉丝: this.count(Detail_Data.user_info.data.user.follower_count),
-                
+
                 // 分享链接
                 share_url: Detail_Data.share_url,
-                
+
                 // 主题
                 useDarkTheme: false
               })
@@ -349,7 +349,7 @@ export class DouYinpush extends Base {
                 create_time: format(fromUnixTime(pushItem.create_time), 'yyyy-MM-dd HH:mm'),
                 avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
                 share_url: Config.douyin.push.shareType === 'web' ? realUrl : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`,
-                username: Detail_Data.author.nickname,
+                username: Detail_Data.user_info.data.user.nickname,
                 抖音号: Detail_Data.user_info.data.user.unique_id === '' ? Detail_Data.user_info.data.user.short_id : Detail_Data.user_info.data.user.unique_id,
                 粉丝: this.count(Detail_Data.user_info.data.user.follower_count),
                 获赞: this.count(Detail_Data.user_info.data.user.total_favorited),
@@ -361,38 +361,58 @@ export class DouYinpush extends Base {
 
                   const rawCreators = Array.isArray(raw.co_creators) ? raw.co_creators : []
 
-                  // 作者标识，用于对比是否在共创列表中
-                  const author = Detail_Data.author
-                  const authorUid = author?.uid
-                  const authorSecUid = author?.sec_uid
-                  const authorNickname = author?.nickname
+                  // 订阅者信息（user_info）
+                  const subscriberUid = Detail_Data.user_info.data.user.uid
+                  const subscriberSecUid = Detail_Data.user_info.data.user.sec_uid
 
-                  const authorInCreators = rawCreators.some((c: { uid: string; sec_uid: string; nickname: string }) =>
-                    (authorUid && c.uid && c.uid === authorUid) ||
-                    (authorSecUid && c.sec_uid && c.sec_uid === authorSecUid) ||
-                    (authorNickname && c.nickname && c.nickname === authorNickname)
+                  // 查找订阅者在共创列表中的职位
+                  const subscriberInCreators = rawCreators.find((c: { uid: string; sec_uid: string }) =>
+                    (subscriberUid && c.uid && c.uid === subscriberUid) ||
+                    (subscriberSecUid && c.sec_uid && c.sec_uid === subscriberSecUid)
                   )
 
-                  // 只保留：头像链接一条、名字、职位（兼容现有组件的 avatar_thumb 结构）
-                  const co_creators = rawCreators.map((c: { avatar_thumb: { url_list: (string | undefined)[]; uri: any }; nickname: any; role_title: any }) => {
-                    const firstUrl =
-                      c.avatar_thumb?.url_list?.[0] ??
+                  // 简化共创者信息：只保留头像链接、名字、职位（使用 avatar_url）
+                  const co_creators = rawCreators.map((c: {
+                    avatar_thumb: { url_list: (string | undefined)[]; uri: any }
+                    nickname: any
+                    role_title: any
+                  }) => {
+                    const avatarUrl = c.avatar_thumb?.url_list?.[0] ??
                       (c.avatar_thumb?.uri ? `https://p3.douyinpic.com/${c.avatar_thumb.uri}` : undefined)
 
                     return {
-                      avatar_thumb: firstUrl ? { url_list: [firstUrl] } : undefined,
+                      avatar_url: avatarUrl,
                       nickname: c.nickname,
                       role_title: c.role_title
                     }
                   })
 
-                  // 基础人数取接口给的 co_creator_nums 与列表长度的较大值
-                  const baseCount = Math.max(Number(raw.co_creator_nums || 0), co_creators.length)
-                  const teamCount = baseCount + (authorInCreators ? 0 : 1)
+                  if (
+                    Detail_Data.author &&
+                    !rawCreators.some((c: { uid: string; sec_uid: string; nickname: string }) =>
+                      (Detail_Data.author?.uid && c.uid && c.uid === Detail_Data.author.uid) ||
+                      (Detail_Data.author?.sec_uid && c.sec_uid && c.sec_uid === Detail_Data.author.sec_uid) ||
+                      (Detail_Data.author?.nickname && c.nickname && c.nickname === Detail_Data.author.nickname)
+                    )
+                  ) {
+                    co_creators.unshift({
+                      avatar_url: Detail_Data.author.avatar_thumb?.url_list?.[0] ??
+                        (Detail_Data.author.avatar_thumb?.uri ? `https://p3.douyinpic.com/${Detail_Data.author.avatar_thumb.uri}` : undefined),
+                      nickname: Detail_Data.author.nickname,
+                      role_title: '作者'
+                    })
+                  }
 
                   return {
-                    co_creator_nums: teamCount,
-                    co_creators
+                    co_creator_nums: Math.max(Number(raw.co_creator_nums || 0), co_creators.length),
+                    co_creators,
+                    subscriber_role: subscriberInCreators?.role_title ?? (
+                      (subscriberUid && Detail_Data.author?.uid && subscriberUid === Detail_Data.author.uid) ||
+                      (subscriberSecUid && Detail_Data.author?.sec_uid && subscriberSecUid === Detail_Data.author.sec_uid) ||
+                      (Detail_Data.user_info.data.user.nickname && Detail_Data.author?.nickname && Detail_Data.user_info.data.user.nickname === Detail_Data.author.nickname)
+                        ? '作者'
+                        : undefined
+                    )
                   }
                 })()
               })
@@ -447,17 +467,17 @@ export class DouYinpush extends Base {
             } else if (!iddata.is_mp4 && iddata.type === 'one_work') { // 如果新作品是图集或合辑
               // 判断是否为合辑（is_slides）
               const isSlides = Detail_Data.is_slides === true
-                
+
               if (isSlides && Detail_Data.images) {
                 // 合辑处理逻辑
                 const images: any[] = []
                 const temp: fileInfo[] = []
-                  
+
                 /** 下载 BGM（如果存在） */
                 let liveimgbgm: fileInfo | null = null
                 let bgmContext: any = null
                 const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
-                
+
                 if (Detail_Data.music) {
                   let mp3Path = ''
                   // 该声音由于版权原因在当前地区不可用
@@ -467,7 +487,7 @@ export class DouYinpush extends Base {
                   } else {
                     mp3Path = Detail_Data.music.play_url.uri
                   }
-                  
+
                   liveimgbgm = await downloadFile(
                     mp3Path,
                     {
@@ -476,18 +496,18 @@ export class DouYinpush extends Base {
                     }
                   )
                   temp.push(liveimgbgm)
-                  
+
                   // 获取合并模式配置
                   if (mergeMode === 'continuous') {
                     bgmContext = await createLiveImageContext(liveimgbgm.filepath)
                   }
                 }
-                  
+
                 const images1 = Detail_Data.images ?? []
                 if (!images1.length) {
                   logger.debug('未获取到合辑的图片数据')
                 }
-                  
+
                 for (const [index, item] of images1.entries()) {
                   // 静态图片，clip_type为2或undefined
                   if (item.clip_type === 2 || item.clip_type === undefined) {
@@ -495,7 +515,7 @@ export class DouYinpush extends Base {
                     images.push(segment.image(imageUrl))
                     continue
                   }
-                    
+
                   /** 动图/短片 */
                   const liveimg = await downloadFile(
                     `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`,
@@ -504,15 +524,15 @@ export class DouYinpush extends Base {
                       headers: douyinBaseHeaders
                     }
                   )
-                    
+
                   if (liveimg.filepath) {
                     const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
                     let success: boolean
-                      
+
                     // clip_type === 4 是短片，不需要重放，loopCount = 1
                     // 其他类型（如 clip_type === 5 的 livePhoto）需要三次重放
                     const loopCount = item.clip_type === 4 ? 1 : 3
-                      
+
                     // 如果没有 BGM，直接重放视频
                     if (!liveimgbgm) {
                       if (loopCount > 1) {
@@ -538,7 +558,7 @@ export class DouYinpush extends Base {
                         liveimgbgm.filepath
                       )
                     }
-                      
+
                     if (success) {
                       const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
                       fs.renameSync(outputPath, filePath)
@@ -547,7 +567,7 @@ export class DouYinpush extends Base {
                       await Common.removeFile(liveimg.filepath, true)
                       temp.push({ filepath: filePath, totalBytes: 0 })
                       images.push(segment.video('file://' + filePath))
-                        
+
                       // clip_type === 5 是 livePhoto，添加封面静态图
                       if (item.clip_type === 5 && item.url_list?.[0]) {
                         const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
@@ -558,7 +578,7 @@ export class DouYinpush extends Base {
                     }
                   }
                 }
-                  
+
                 const bot = karin.getBot(botId) as AdapterType
                 const Element = common.makeForward(images, botId, bot.account.name)
                 try {
@@ -579,17 +599,17 @@ export class DouYinpush extends Base {
                 // 普通图集处理逻辑
                 // 检查是否包含 live 图（clip_type !== 2 且 clip_type !== undefined）
                 const hasLiveImage = Detail_Data.images.some((item: any) => item.clip_type !== 2 && item.clip_type !== undefined)
-                  
+
                 if (hasLiveImage) {
                   // 包含 live 图，需要特殊处理
                   const processedImages: any[] = []
                   const temp: fileInfo[] = []
-                    
+
                   /** 下载 BGM（如果存在） */
                   let liveimgbgm: fileInfo | null = null
                   let bgmContext: any = null
                   const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
-                  
+
                   if (Detail_Data.music) {
                     let mp3Path = ''
                     if (Detail_Data.music.play_url.uri === '') {
@@ -598,7 +618,7 @@ export class DouYinpush extends Base {
                     } else {
                       mp3Path = Detail_Data.music.play_url.uri
                     }
-                    
+
                     liveimgbgm = await downloadFile(
                       mp3Path,
                       {
@@ -607,13 +627,13 @@ export class DouYinpush extends Base {
                       }
                     )
                     temp.push(liveimgbgm)
-                    
+
                     // 获取合并模式配置
                     if (mergeMode === 'continuous') {
                       bgmContext = await createLiveImageContext(liveimgbgm.filepath)
                     }
                   }
-                    
+
                   for (const [index, item] of Detail_Data.images.entries()) {
                     // 静态图片，clip_type为2或undefined
                     if (item.clip_type === 2 || item.clip_type === undefined) {
@@ -622,7 +642,7 @@ export class DouYinpush extends Base {
                       processedImages.push(segment.image(imageUrl))
                       continue
                     }
-                      
+
                     /** live 图 */
                     const liveimg = await downloadFile(
                       `https://aweme.snssdk.com/aweme/v1/play/?video_id=${item.video.play_addr_h264.uri}&ratio=1080p&line=0`,
@@ -631,15 +651,15 @@ export class DouYinpush extends Base {
                         headers: douyinBaseHeaders
                       }
                     )
-                      
+
                     if (liveimg.filepath) {
                       const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
                       let success: boolean
-                        
+
                       // clip_type === 4 是短片，不需要重放，loopCount = 1
                       // 其他类型（如 clip_type === 5 的 livePhoto）需要三次重放
                       const loopCount = item.clip_type === 4 ? 1 : 3
-                        
+
                       // 如果没有 BGM，直接重放视频
                       if (!liveimgbgm) {
                         if (loopCount > 1) {
@@ -665,7 +685,7 @@ export class DouYinpush extends Base {
                           liveimgbgm.filepath
                         )
                       }
-                        
+
                       if (success) {
                         const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
                         fs.renameSync(outputPath, filePath)
@@ -674,7 +694,7 @@ export class DouYinpush extends Base {
                         await Common.removeFile(liveimg.filepath, true)
                         temp.push({ filepath: filePath, totalBytes: 0 })
                         processedImages.push(segment.video('file://' + filePath))
-                          
+
                         // clip_type === 5 是 livePhoto，添加封面静态图
                         if (item.clip_type === 5 && item.url_list?.[0]) {
                           const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
@@ -685,7 +705,7 @@ export class DouYinpush extends Base {
                       }
                     }
                   }
-                    
+
                   const bot = karin.getBot(botId) as AdapterType
                   const Element = common.makeForward(processedImages, botId, bot.account.name)
                   try {
@@ -712,7 +732,7 @@ export class DouYinpush extends Base {
                     imageres.push(segment.image(imageUrl))
                   }
                   const bot = karin.getBot(botId) as AdapterType
-                    
+
                   if (imageres.length === 1) {
                     // 单张图片直接发送
                     const imageUrl = await processImageUrl(image_url, Detail_Data.desc)
@@ -757,9 +777,9 @@ export class DouYinpush extends Base {
         await common.sleep(2000)
         const sec_uid = item.sec_uid
         const pushTypes = item.pushTypes || ['post'] // 默认推送作品列表
-        
+
         logger.debug(`开始获取用户：${item.remark}（${sec_uid}）的内容，推送类型：${pushTypes.join(', ')}`)
-        
+
         const userinfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid, typeMode: 'strict' })
 
         const targets = item.group_id.map(groupWithBot => {
@@ -779,7 +799,7 @@ export class DouYinpush extends Base {
         // 遍历每种推送类型
         for (const pushType of pushTypes) {
           await common.sleep(1000)
-          
+
           // 处理直播推送
           if (pushType === 'live') {
             const liveItem = await processLiveStream(sec_uid, userinfo, item, targets, this.amagi)
@@ -788,10 +808,10 @@ export class DouYinpush extends Base {
             }
             continue
           }
-          
+
           let contentList: any[] = []
           let listName = ''
-          
+
           // 根据推送类型获取不同的列表
           switch (pushType) {
             case 'post':
@@ -829,7 +849,7 @@ export class DouYinpush extends Base {
                 pushItems = await processRecommendList(contentList, sec_uid, userinfo, item, targets, this.force)
                 break
             }
-            
+
             // 将返回的推送项添加到willbepushlist中
             for (const pushItem of pushItems) {
               const key = `${pushType}_${pushItem.Detail_Data.aweme_id}`
@@ -947,7 +967,7 @@ export class DouYinpush extends Base {
         } else {
           // 否则，将新的 group_id 添加到该 sec_uid 对应的数组中
           existingItem.group_id.push(`${groupId}:${botId}`)
-          
+
           // 确保 pushTypes 字段存在，如果不存在则添加默认值
           if (!existingItem.pushTypes || existingItem.pushTypes.length === 0) {
             existingItem.pushTypes = ['post', 'live']
