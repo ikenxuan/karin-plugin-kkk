@@ -7495,6 +7495,10 @@
     opacity: .08;
   }
 
+  .opacity-\[0\.35\] {
+    opacity: .35;
+  }
+
   .opacity-\[value\] {
     opacity: value;
   }
@@ -13247,6 +13251,10 @@
 
   .dark\:opacity-\[0\.12\]:is(.dark *) {
     opacity: .12;
+  }
+
+  .dark\:mix-blend-soft-light:is(.dark *) {
+    mix-blend-mode: soft-light;
   }
 
   .dark\:placeholder\:text-danger-500:is(.dark *)::placeholder {

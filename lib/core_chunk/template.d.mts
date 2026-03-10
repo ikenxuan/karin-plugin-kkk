@@ -142,9 +142,7 @@ interface DouyinDynamicProps extends BaseComponentProps {
     cooperation_info?: {
       co_creator_nums: number;
       co_creators: Array<{
-        avatar_thumb: {
-          url_list: string[];
-        };
+        avatar_url?: string;
         nickname: string;
         role_title: string;
       }>;
@@ -209,9 +207,7 @@ interface DouyinImageWorkProps extends BaseComponentProps {
     cooperation_info?: {
       co_creator_nums: number;
       co_creators: Array<{
-        avatar_thumb: {
-          url_list: string[];
-        };
+        avatar_url?: string;
         nickname: string;
         role_title: string;
       }>;
@@ -451,12 +447,11 @@ interface DouyinVideoWorkProps extends BaseComponentProps {
     cooperation_info?: {
       co_creator_nums: number;
       co_creators: Array<{
-        avatar_thumb: {
-          url_list: string[];
-        };
+        avatar_url?: string;
         nickname: string;
         role_title: string;
       }>;
+      subscriber_role?: string;
     };
   };
   /** 预生成的二维码数据URL */
