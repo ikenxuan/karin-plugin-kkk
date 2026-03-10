@@ -413,8 +413,10 @@ export class Bilibili extends Base {
                       logger.mark('正在尝试删除缓存文件')
                       await Common.removeFile(livePhoto.filepath, true)
                       temp.push({ filepath: filePath, totalBytes: 0 })
-                      // Add the looped video to the array
-                      imgArray.push(segment.video(filePath))
+                      const videoPath = Config.upload.videoSendMode === 'base64'
+                        ? `base64://${(fs.readFileSync(filePath)).toString('base64')}`
+                        : `file://${filePath}`
+                      imgArray.push(segment.video(videoPath))
                       
                       // Also add the static image (img.url) below the video
                       const imageUrl = await processImageUrl(img.url, title, index)

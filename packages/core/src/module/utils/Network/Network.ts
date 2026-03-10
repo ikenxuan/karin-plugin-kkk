@@ -92,7 +92,7 @@ export class Network {
       config.__retryCount += 1
 
       const nextDelay = Math.max(1000, Math.min(2 ** (config.__retryCount - 1) * 1000, 8000))
-      logger.warn(`请求失败，正在重试... (${config.__retryCount}/${this.maxRetries})，将在 ${nextDelay / 1000} 秒后重试`)
+      logger.warn(`[karin-plugin-kkk] axios 实例请求失败，正在重试... (${config.__retryCount}/${this.maxRetries})，将在 ${nextDelay / 1000} 秒后重试`)
 
       await new Promise(resolve => setTimeout(resolve, nextDelay))
       return this.axiosInstance(config)

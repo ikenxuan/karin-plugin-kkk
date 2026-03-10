@@ -668,8 +668,10 @@ export class Bilibilipush extends Base {
                         logger.mark('正在尝试删除缓存文件')
                         await Common.removeFile(staticImg.filepath, true)
                         temp.push({ filepath: filePath, totalBytes: 0 })
-
-                        imgArray.push(segment.video(filePath))
+                        const videoPath = Config.upload.videoSendMode === 'base64'
+                          ? `base64://${(fs.readFileSync(filePath)).toString('base64')}`
+                          : `file://${filePath}`
+                        imgArray.push(segment.video(videoPath))
                         const imageUrl = await processImageUrl(imageSrc, title, index)
                         imgArray.push(segment.image(imageUrl))
                         continue

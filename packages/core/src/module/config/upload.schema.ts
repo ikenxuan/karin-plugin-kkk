@@ -2,7 +2,7 @@
  * 上传和下载配置 Schema
  */
 import type { SectionSchema } from './schema'
-import { $not, $or, $var } from './schema'
+import { $eq, $not, $or, $var } from './schema'
 
 export const uploadConfigSchema: SectionSchema = {
   key: 'upload',
@@ -11,18 +11,22 @@ export const uploadConfigSchema: SectionSchema = {
   fields: [
     { type: 'divider', title: '发送方式配置' },
     {
-      key: 'sendbase64',
-      type: 'switch',
-      label: '转换Base64',
-      description: '发送视频经本插件转换为base64格式后再发送，适合Karin与机器人不在同一网络环境下开启。与「群文件上传」互斥。',
-      disabled: $var('usegroupfile')
+      key: 'videoSendMode',
+      type: 'radio',
+      label: '本地视频发送方式',
+      description: '选择发送本地视频的方式：\n• File - 使用 file 协议发送（需 Karin 与协议端同系统）\n• Base64 - 转 base64 发送（传输数据量增大 1/3，不在同一网络环境可能导致额外带宽成本，适合 karin 和协议端不在同一网络环境）',
+      disabled: $var('usegroupfile'),
+      options: [
+        { label: 'File 协议（本地文件）', value: 'file' },
+        { label: 'Base64（编码传输）', value: 'base64' }
+      ]
     },
     {
       key: 'usegroupfile',
       type: 'switch',
       label: '群文件上传',
-      description: '使用群文件上传，开启后会将视频文件上传到群文件中，需配置「群文件上传阈值」。与「转换Base64」互斥',
-      disabled: $var('sendbase64')
+      description: '使用群文件上传，开启后会将视频文件上传到群文件中，需配置「群文件上传阈值」。与「本地视频发送方式 = Base64」互斥。',
+      disabled: $eq('videoSendMode', 'base64')
     },
     {
       key: 'groupfilevalue',
@@ -30,14 +34,14 @@ export const uploadConfigSchema: SectionSchema = {
       inputType: 'number',
       label: '群文件上传阈值',
       description: '当文件大小超过该值时将使用群文件上传，单位：MB，「使用群文件上传」开启后才会生效',
-      disabled: $or($not('usegroupfile'), $var('sendbase64')),
+      disabled: $or($not('usegroupfile'), $eq('videoSendMode', 'base64')),
       rules: [{ min: 1 }]
     },
     {
       key: 'imageSendMode',
       type: 'radio',
       label: '网络图片发送方式',
-      description: '选择发送网络图片的方式：\n• URL - 直接传递链接给上游（可能因上游网络问题超时）\n• File - 下载后用 file 协议发送（需 Karin 与协议端同系统）\n• Base64 - 转 base64 发送（传输数据增大 1/3，不在同一网络环境可能导致额外带宽成本）',
+      description: '选择发送网络图片的方式：\n• URL - 直接传递链接给上游（可能因上游网络问题超时）\n• File - 下载后用 file 协议发送（需 Karin 与协议端同系统）\n• Base64 - 转 base64 发送（传输数据量增大 1/3，不在同一网络环境可能导致额外带宽成本）',
       options: [
         { label: 'URL 链接（直接传递）', value: 'url' },
         { label: 'File 协议（本地文件）', value: 'file' },

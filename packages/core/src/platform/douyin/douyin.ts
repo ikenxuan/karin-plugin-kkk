@@ -250,7 +250,10 @@ export class DouYin extends Base {
                       logger.mark('正在尝试删除缓存文件')
                       await Common.removeFile(liveimg.filepath, true)
                       temp.push({ filepath: filePath, totalBytes: 0 })
-                      processedImages.push(segment.video('file://' + filePath))
+                      const videoPath = Config.upload.videoSendMode === 'base64'
+                        ? `base64://${(fs.readFileSync(filePath)).toString('base64')}`
+                        : `file://${filePath}`
+                      processedImages.push(segment.video(videoPath))
                       
                       // clip_type === 5 是 livePhoto，添加封面静态图
                       if (imageItem.clip_type === 5 && imageItem.url_list?.[0]) {
@@ -405,7 +408,10 @@ export class DouYin extends Base {
                     logger.mark('正在尝试删除缓存文件')
                     await Common.removeFile(livePhoto.filepath, true)
                     temp.push({ filepath: filePath, totalBytes: 0 })
-                    images.push(segment.video('file://' + filePath))
+                    const videoPath = Config.upload.videoSendMode === 'base64'
+                      ? `base64://${(fs.readFileSync(filePath)).toString('base64')}`
+                      : `file://${filePath}`
+                    images.push(segment.video(videoPath))
                     
                     // clip_type === 4和5 是 短片和livePhoto，添加封面静态图
                     if (item.clip_type === 5 && item.url_list?.[0]) {

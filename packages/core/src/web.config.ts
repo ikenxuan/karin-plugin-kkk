@@ -341,24 +341,36 @@ export const webConfig = defineConfig({
                 description: '发送方式配置',
                 descPosition: 20
               }),
-              components.switch.create('sendbase64', {
-                label: '转换Base64',
-                description: '发送视频经本插件转换为base64格式后再发送，适合Karin与机器人不在同一网络环境下开启。与「群文件上传」互斥。',
-                defaultSelected: all.upload.sendbase64,
-                isDisabled: all.upload.usegroupfile
+              components.radio.group('videoSendMode', {
+                label: '本地视频发送方式',
+                orientation: 'vertical',
+                defaultValue: all.upload.videoSendMode,
+                isDisabled: all.upload.usegroupfile,
+                radio: [
+                  components.radio.create('videoSendMode:radio-1', {
+                    label: 'File 协议（本地文件）',
+                    description: '使用 file 协议发送本地视频，需 Karin 与协议端在同一系统',
+                    value: 'file'
+                  }),
+                  components.radio.create('videoSendMode:radio-2', {
+                    label: 'Base64（编码传输）',
+                    description: '将本地视频转换为 base64 发送，传输数据量增大约 30%，不在同一网络环境可能导致额外带宽成本，适合 karin 和协议端不在同一网络环境',
+                    value: 'base64'
+                  })
+                ]
               }),
               components.switch.create('usegroupfile', {
                 label: '群文件上传',
-                description: '使用群文件上传，开启后会将视频文件上传到群文件中，需配置「群文件上传阈值」。与「转换Base64」互斥',
+                description: '使用群文件上传，开启后会将视频文件上传到群文件中，需配置「群文件上传阈值」。与「本地视频发送方式 = Base64」互斥。',
                 defaultSelected: all.upload.usegroupfile,
-                isDisabled: all.upload.sendbase64
+                isDisabled: all.upload.videoSendMode === 'base64'
               }),
               components.input.number('groupfilevalue', {
                 label: '群文件上传阈值',
                 description: '当文件大小超过该值时将使用群文件上传，单位：MB，「使用群文件上传」开启后才会生效',
                 defaultValue: all.upload.groupfilevalue.toString(),
                 rules: [{ min: 1 }],
-                isDisabled: !all.upload.usegroupfile || all.upload.sendbase64
+                isDisabled: !all.upload.usegroupfile || all.upload.videoSendMode === 'base64'
               }),
               components.radio.group('imageSendMode', {
                 label: '网络图片发送方式',
@@ -377,7 +389,7 @@ export const webConfig = defineConfig({
                   }),
                   components.radio.create('imageSendMode:radio-3', {
                     label: 'Base64（编码传输）',
-                    description: '下载后转换为 base64 发送，传输数据增大约 1/3，不在同一网络环境可能导致额外带宽成本',
+                    description: '下载后转换为 base64 发送，传输数据量增大约 30%，不在同一网络环境可能导致额外带宽成本',
                     value: 'base64'
                   })
                 ]

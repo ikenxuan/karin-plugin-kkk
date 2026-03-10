@@ -237,9 +237,8 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
     options.useGroupFile = Config.upload.usegroupfile && (newFileSize > Config.upload.groupfilevalue)
   }
 
-  // 是否先转换为base64
-  if (Config.upload.sendbase64 && !options?.useGroupFile) {
-    const videoBuffer = await fs.promises.readFile(file.filepath)
+  if (Config.upload.videoSendMode === 'base64' && !options?.useGroupFile) {
+    const videoBuffer = fs.readFileSync(file.filepath)
     File = `base64://${videoBuffer.toString('base64')}`
     logger.mark(`已开启视频文件 base64转换 正在进行${logger.yellow('base64转换中')}...`)
   } else File = options?.useGroupFile ? file.filepath : `file://${file.filepath}`

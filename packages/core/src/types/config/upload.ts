@@ -1,6 +1,10 @@
 export interface uploadConfig {
-  /** 发送视频经本插件转换为base64格式后再发送，适合Karin与机器人不在同一网络环境下开启 */
-  sendbase64: boolean
+  /** 
+   * 本地视频发送方式
+   * - 'file': 使用 file 协议发送本地视频（需 Karin 与协议端在同一系统）
+   * - 'base64': 转换为 base64 后发送（传输数据量增大约 30%，不在同一网络环境可能导致额外带宽成本）
+   */
+  videoSendMode: 'file' | 'base64'
 
   /** 视频上传拦截，开启后会根据视频文件大小判断是否需要上传，需配置「视频拦截阈值」。 */
   usefilelimit: boolean
@@ -27,7 +31,7 @@ export interface uploadConfig {
    * 网络图片发送方式
    * - 'url': 直接传递 HTTP 链接给上游下载（可能因上游网络问题导致下载超时）
    * - 'file': 下载到本地使用 file 协议发送（需 Karin 与协议端在同一系统）
-   * - 'base64': 下载后转换为 base64 发送（传输数据增大约 1/3，不在同一网络环境可能导致额外带宽成本）
+   * - 'base64': 下载后转换为 base64 发送（传输数据量增大约 30%，不在同一网络环境可能导致额外带宽成本）
    */
   imageSendMode: 'url' | 'file' | 'base64'
 
