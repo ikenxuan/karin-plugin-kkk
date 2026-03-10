@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.23.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.23.1...v2.23.2) (2026-03-10)
+
+
+### 🐛 错误修复
+
+* **douyin:** 优化共创者信息显示并添加订阅者角色标识 ([bb16787](https://github.com/ikenxuan/karin-plugin-kkk/commit/bb167878719a5351ef0a30d97fa4331f88d39ff9))
+
+
+### ♻️ 代码重构
+
+* **douyin:** 重构作品类型判断逻辑 ([72b09c6](https://github.com/ikenxuan/karin-plugin-kkk/commit/72b09c6c98c90fec7b33bdacf3aa36d1bca0e707))
+
 ## [2.23.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.23.0...v2.23.1) (2026-03-09)
 
 
