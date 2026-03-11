@@ -1,0 +1,224 @@
+---
+title: 動態照片解析
+description: 動態照片無水印解析與跨平台兼容
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+
+插件支持解析動態照片（Motion Photo / Live Photo），並能夠無水印提取封面圖片同視頻，生成跨平台兼容嘅動態照片文件。
+
+## 平台兼容性
+
+| 平台 | 存儲方式 | 插件支持 | 說明 |
+|------|---------|:-------:|------|
+| **Google / Pixel** | 單文件（JPEG + MP4） | ✓ | 標準 Motion Photo 格式 |
+| **小米 HyperOS** | 單文件（JPEG + MP4） | ✓ | 兼容 Google 標準 + 小米擴展 |
+| **OPPO ColorOS** | 單文件（JPEG + MP4） | ✓ | 兼容 Google 標準 + OPPO 擴展 |
+| **華為/榮耀** | 單文件（JPEG + 標記） | ⚠️ | 理論支持，未經實測驗證 |
+| **iPhone** | 雙文件（HEIC + MOV） | ✗ | 獨立存儲，無法合成單文件 |
+| **vivo OriginOS** | 雙文件（JPG + MP4） | ✗ | 獨立存儲，無法合成單文件 |
+
+<Callout type="info">
+解析後嘅動態照片保存到相冊時，可被支持 Google Motion Photo 標準嘅設備同應用（如 Google Photos、部分原生相冊）正確識別並播放。
+</Callout>
+
+## 使用方式
+
+動態照片解析係自動觸發嘅，無需額外操作：
+
+1. 當解析到包含動態照片嘅作品/動態時
+2. 插件會自動提取封面圖片同視頻
+3. 根據配置嘅兼容模式生成動態照片文件
+4. 喺合併轉發消息中發送
+
+<Callout type="info">
+動態照片會以獨立文件嘅形式出現喺合併轉發消息中，保存到相冊後即可喺支持嘅設備上播放。
+</Callout>
+
+<Callout type="warn">
+**重要提示**：必須保存原圖先可以被設備正確識別為動態照片。如果保存壓縮圖，會丟失視頻數據，只能睇到靜態圖片。
+</Callout>
+
+## 配置選項
+
+插件提供咗 `livePhotoSystem` 配置項，用於指定生成嘅動態照片兼容系統。
+
+### 配置方式
+
+喺配置文件 `config/app.yaml` 中修改：
+
+```yaml
+# 當解析到作品/動態包含動態照片時，合併轉發消息里發送嘅動態照片靜態圖兼容系統
+# 可選值：'google'、'xiaomi'、'oppo'、'huawei_honor'
+livePhotoSystem: google
+```
+
+### 可選值說明
+
+| 值 | 說明 | 推薦場景 |
+|---|------|---------|
+| `google` | Google Photos 標準格式 | 默認選項，兼容性最廣 |
+| `xiaomi` | 小米 HyperOS 優化格式 | 主要使用小米設備嘅群傾偈 |
+| `oppo` | OPPO ColorOS 優化格式 | 主要使用 OPPO 設備嘅群傾偈 |
+| `huawei_honor` | 華為/榮耀格式 | 主要使用華為/榮耀設備嘅群傾偈 |
+
+<Callout type="info">
+如果唔確定選擇邊個，建議使用默認嘅 `google` 模式，佢具有最好嘅跨平台兼容性。
+</Callout>
+
+---
+
+## 實現原理
+
+### 文件結構
+
+動態照片本質上係將視頻數據附加到 JPEG 圖片文件末尾，並喺 JPEG 嘅 XMP 元數據中記錄視頻嘅位置同長度信息。
+
+```
+┌─────────────────────────────┐
+│   JPEG 圖片數據              │
+│   (SOI 0xFFD8 開始)         │
+├─────────────────────────────┤
+│   XMP 元數據 (APP1 段)       │
+│   - MotionPhoto 標記         │
+│   - 視頻長度                 │
+│   - 時間戳                   │
+├─────────────────────────────┤
+│   MP4 視頻數據               │
+│   (完整嘅 MP4 文件)          │
+└─────────────────────────────┘
+```
+
+### 關鍵技術
+
+#### 1. XMP 元數據注入
+
+插件使用 XMP（Extensible Metadata Platform）標準喺 JPEG 嘅 APP1 段中寫入 Motion Photo 元數據：
+
+```xml
+<x:xmpmeta xmlns:x="adobe:ns:meta/">
+  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <rdf:Description
+      xmlns:GCamera="http://ns.google.com/photos/1.0/camera/"
+      xmlns:Container="http://ns.google.com/photos/1.0/container/"
+      GCamera:MotionPhoto="1"
+      GCamera:MotionPhotoVersion="1"
+      GCamera:MotionPhotoPresentationTimestampUs="0">
+      <Container:Directory>
+        <rdf:Seq>
+          <rdf:li>
+            <Container:Item
+              Item:Mime="image/jpeg"
+              Item:Semantic="Primary"
+              Item:Length="0" />
+          </rdf:li>
+          <rdf:li>
+            <Container:Item
+              Item:Mime="video/mp4"
+              Item:Semantic="MotionPhoto"
+              Item:Length="視頻字節數" />
+          </rdf:li>
+        </rdf:Seq>
+      </Container:Directory>
+    </rdf:Description>
+  </rdf:RDF>
+</x:xmpmeta>
+```
+
+#### 2. EXIF 信息補全
+
+部分廠商（如小米、OPPO）要求 JPEG 必須包含特定嘅 EXIF 信息先可以正確識別。插件會自動檢測並補全必要嘅 EXIF 段：
+
+- 圖片寬度同高度
+- 廠商特定標記（如 OPPO 嘅 `OpCamera:MotionPhotoOwner`）
+
+#### 3. 廠商適配
+
+唔同廠商對 Motion Photo 嘅實現略有差異，插件提供咗四種兼容模式：
+
+<Accordions>
+  <Accordion title="Google 標準模式（默認）">
+    最通用嘅格式，兼容性最廣。使用 Google Photos 定義嘅標準 XMP 命名空間。
+    
+    **適用設備**：
+    - Google Pixel 系列
+    - 部分三星設備
+    - 支持 Google Photos 嘅第三方應用
+  </Accordion>
+  
+  <Accordion title="小米 HyperOS 模式">
+    喺 Google 標準基礎上添加小米特有嘅 XMP 擴展字段：
+    - `MiCamera:XMPMeta`：小米相冊識別標記
+    - `GCamera:MicroVideo`：兼容舊版小米設備
+    
+    **適用設備**：
+    - 小米 / Redmi / POCO 系列（HyperOS）
+  </Accordion>
+  
+  <Accordion title="OPPO ColorOS 模式">
+    喺 Google 標準基礎上添加 OPPO 特有嘅 XMP 擴展字段：
+    - `OpCamera:MotionPhotoOwner="oplus"`：OPPO 相冊識別標記
+    - `OpCamera:OLivePhotoVersion`：動態照片版本號
+    - `OpCamera:VideoLength`：視頻長度（字節）
+    
+    **適用設備**：
+    - OPPO / OnePlus / Realme 系列（ColorOS）
+  </Accordion>
+  
+  <Accordion title="華為/榮耀模式">
+    使用唔同嘅實現方式，喺文件末尾添加特殊標記而非 XMP 元數據：
+    ```
+    v2_f35              409:1000            LIVE_{timestamp}
+    ```
+    
+    **適用設備**：
+    - 華為 / 榮耀系列（HarmonyOS / MagicOS）
+    
+    <Callout type="warn">
+    此模式未經實測驗證，可能存在兼容性問題。
+    </Callout>
+  </Accordion>
+</Accordions>
+
+#### 4. 圖片格式轉換
+
+如果原始封面唔係 JPEG 格式（如 PNG、WebP），插件會自動使用 FFmpeg 轉換為 JPEG：
+
+```bash
+ffmpeg -i input.png -frames:v 1 -q:v 2 output.jpg
+```
+
+### 技術參考
+
+插件嘅動態照片實現參考咗以下開源項目同技術文檔：
+
+- [Motion Live Photo WebUI](https://blog.zzbd.org/motion-live-photo-webui) - 實現原理詳解
+- [flashlab/motion-live-photo](https://github.com/flashlab/motion-live-photo) - 開源實現參考
+- [Google Photos XMP Specification](https://developers.google.com/photos/library/guides/motion-photos) - Google 官方規範
+
+---
+
+## 常見問題
+
+<Accordions>
+  <Accordion title="點解我嘅設備無法識別動態照片？">
+    可能嘅原因：
+    
+    1. **未保存原圖**：必須保存原圖先可以保留視頻數據
+    2. **設備唔支持**：確認你嘅設備支持 Motion Photo 功能
+    3. **相冊應用唔支持**：嘗試使用 Google Photos 或系統原生相冊
+    4. **兼容模式唔匹配**：嘗試切換 `livePhotoSystem` 配置
+    5. **文件損壞**：檢查插件日誌，確認生成過程無錯誤
+  </Accordion>
+  
+  <Accordion title="iPhone 點解唔支持？">
+    iPhone 嘅 Live Photo 使用獨立嘅 HEIC 圖片同 MOV 視頻文件存儲，而非單文件格式。
+    
+    呢種存儲方式無法通過簡單嘅文件合併實現，需要特殊嘅文件系統支持。插件目前無法生成 iPhone 兼容嘅 Live Photo。
+  </Accordion>
+  
+  <Accordion title="生成嘅動態照片文件好大點算？">
+    動態照片文件大小 = 封面圖片大小 + 視頻大小，呢個係正常現象。
+  </Accordion>
+</Accordions>

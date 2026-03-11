@@ -1,13 +1,36 @@
 # karin-plugin-kkk Robots.txt
+# 多平台短视频解析与推送插件文档
+
 User-agent: *
 Allow: /
 
+# 主要 Sitemap
 Sitemap: https://kkk.karinjs.com/sitemap.xml
 
-# Crawl-delay for respectful crawling
-Crawl-delay: 10
+# 语言版本 Sitemap
+Sitemap: https://kkk.karinjs.com/zh-CN/sitemap.xml
+Sitemap: https://kkk.karinjs.com/zh-HK/sitemap.xml
 
-# Disallow private/admin paths
+# 爬虫延迟设置（礼貌爬取）
+Crawl-delay: 5
+
+# 禁止访问的路径
 Disallow: /api/
 Disallow: /_next/
 Disallow: /search
+Disallow: /*.json$
+
+# 允许搜索引擎索引的重要路径
+Allow: /zh-CN/docs/
+Allow: /zh-HK/docs/
+Allow: /docs/
+
+# 特定搜索引擎优化
+User-agent: Googlebot
+Crawl-delay: 2
+
+User-agent: Baiduspider
+Crawl-delay: 5
+
+User-agent: Sogou web spider
+Crawl-delay: 5

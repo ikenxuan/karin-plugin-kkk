@@ -8,6 +8,7 @@
     "dev": "next dev -p 5175",
     "postinstall": "fumadocs-mdx",
     "lint": "eslint",
+    "scan:mockups": "node scripts/scan-ui-mockups.mjs",
     "sort": "sort-package-json",
     "start": "next start",
     "types:check": "fumadocs-mdx && tsc --noEmit"

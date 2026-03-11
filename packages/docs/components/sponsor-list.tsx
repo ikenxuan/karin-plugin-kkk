@@ -15,6 +15,7 @@ const sponsors: Sponsor[] = [
   { name: '雾里', amount: 5.2 },
   { name: '雾里', amount: 5.2 },
   { name: '雾里', amount: 5.2 },
+  { name: '止语语', amount: 50 },
 ];
 
 function mergeSponsors(list: Sponsor[]) {

@@ -1,19 +1,26 @@
 "use client";
 import { useRef, useMemo, useState, useEffect } from "react";
 import { motion, useInView } from "motion/react";
+import { useTheme } from "next-themes";
 import Image from "next/image";
+import imageFiles from "@/lib/ui-mockups-data.json";
 
 interface MockupItem {
   id: string;
-  src: string; // 图片路径
+  baseName: string; // 基础名称（不含 -light/-dark 后缀）
+  hasLight: boolean;
+  hasDark: boolean;
 }
 
 export function UIMockupsSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.05 });
   const [isMobile, setIsMobile] = useState(false);
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -22,21 +29,65 @@ export function UIMockupsSection() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // 真实的截图数据
+  // 自动扫描并解析图片数据
   const mockups: MockupItem[] = useMemo(() => {
-    return [
-      { id: "bilibili-av", src: "/UI-example/bilibili-push-AV-dark.png" },
-      { id: "bilibili-draw", src: "/UI-example/bilibili-push-DRAW-dark.png" },
-      { id: "douyin-comments", src: "/UI-example/douyin-comments-light.png" },
-      { id: "douyin-favorite", src: "/UI-example/douyin-push-favorite-dark.png" },
-      { id: "douyin-recommend", src: "/UI-example/douyin-push-recommend-dark.png" },
-      { id: "douyin-video", src: "/UI-example/douyin-push-video-light.png" },
-      { id: "douyin-pushlist", src: "/UI-example/douyin-pushlist-ligth.png" },
-      { id: "douyin-videoinfo", src: "/UI-example/douyin-videoinfo-dark.png" },
-      { id: "other-errorlog", src: "/UI-example/other-errorlog-dark.png" },
-      { id: "other-help", src: "/UI-example/other-help-light.png" },
-    ];
+    // 解析图片，提取基础名称和主题变体
+    const mockupMap = new Map<string, MockupItem>();
+
+    imageFiles.forEach((filename) => {
+      const match = filename.match(/^(.+?)-(light|dark|ligth)\.png$/);
+      if (match) {
+        const baseName = match[1];
+        const theme = match[2] === "ligth" ? "light" : match[2]; // 修正拼写错误
+
+        if (!mockupMap.has(baseName)) {
+          mockupMap.set(baseName, {
+            id: baseName,
+            baseName,
+            hasLight: false,
+            hasDark: false,
+          });
+        }
+
+        const item = mockupMap.get(baseName)!;
+        if (theme === "light") {
+          item.hasLight = true;
+        } else if (theme === "dark") {
+          item.hasDark = true;
+        }
+      }
+    });
+
+    return Array.from(mockupMap.values());
   }, []);
+
+  // 根据当前主题获取图片路径（严格模式：只显示匹配主题的图片）
+  const getImageSrc = (mockup: MockupItem): string | null => {
+    const isDark = resolvedTheme === "dark";
+    
+    if (isDark) {
+      // 深色模式：只返回 dark 图片
+      if (mockup.hasDark) {
+        return `/UI-example/${mockup.baseName}-dark.png`;
+      }
+      return null; // 没有 dark 版本就不显示
+    } else {
+      // 浅色模式：只返回 light 图片
+      if (mockup.hasLight) {
+        // 处理拼写错误的情况
+        if (mockup.baseName === "douyin-pushlist") {
+          return `/UI-example/${mockup.baseName}-ligth.png`;
+        }
+        return `/UI-example/${mockup.baseName}-light.png`;
+      }
+      return null; // 没有 light 版本就不显示
+    }
+  };
+
+  // 根据当前主题过滤图片（不再过滤，显示所有图片）
+  const filteredMockups = useMemo(() => {
+    return mockups;
+  }, [mockups]);
 
   // 瀑布流算法：将图片分配到列中，保持各列高度尽量平衡
   const columns = useMemo(() => {
@@ -44,7 +95,7 @@ export function UIMockupsSection() {
     const cols: MockupItem[][] = Array.from({ length: columnCount }, () => []);
     const colHeights: number[] = Array(columnCount).fill(0);
 
-    mockups.forEach((mockup) => {
+    filteredMockups.forEach((mockup) => {
       // 找到当前高度最小的列
       const minHeightIndex = colHeights.indexOf(Math.min(...colHeights));
       cols[minHeightIndex].push(mockup);
@@ -53,10 +104,20 @@ export function UIMockupsSection() {
     });
 
     return cols;
-  }, [mockups]);
+  }, [filteredMockups]);
 
   const renderMockupCard = (mockup: MockupItem, columnIndex: number, itemIndex: number) => {
     const delay = (columnIndex * 0.05) + (itemIndex * 0.02);
+    // SSR 时使用实际存在的图片作为默认值
+    const defaultSrc = mockup.hasDark 
+      ? `/UI-example/${mockup.baseName}-dark.png`
+      : mockup.baseName === "douyin-pushlist"
+        ? `/UI-example/${mockup.baseName}-ligth.png`
+        : `/UI-example/${mockup.baseName}-light.png`;
+    const imageSrc = mounted ? getImageSrc(mockup) : defaultSrc;
+
+    // 如果当前主题没有对应的图片，不渲染
+    if (!imageSrc) return null;
 
     return (
       <motion.div
@@ -72,19 +133,32 @@ export function UIMockupsSection() {
       >
         <div className="relative overflow-hidden rounded-xl shadow-lg border border-fd-border/30 backdrop-blur-sm hover:shadow-2xl hover:scale-[1.02] transition-all duration-300">
           <Image
-            src={mockup.src}
+            src={imageSrc}
             alt={mockup.id}
             width={360}
             height={800}
             className="w-full h-auto"
             loading="lazy"
+            key={imageSrc} // 强制重新加载图片
+            unoptimized // 禁用 Next.js 图片优化以避免缓存问题
           />
         </div>
       </motion.div>
     );
   };
 
-  const renderMobileCarouselCard = (mockup: MockupItem, index: number) => {
+  const renderMobileCarouselCard = (mockup: MockupItem) => {
+    // SSR 时使用实际存在的图片作为默认值
+    const defaultSrc = mockup.hasDark 
+      ? `/UI-example/${mockup.baseName}-dark.png`
+      : mockup.baseName === "douyin-pushlist"
+        ? `/UI-example/${mockup.baseName}-ligth.png`
+        : `/UI-example/${mockup.baseName}-light.png`;
+    const imageSrc = mounted ? getImageSrc(mockup) : defaultSrc;
+
+    // 如果当前主题没有对应的图片，不渲染
+    if (!imageSrc) return null;
+
     return (
       <div
         key={mockup.id}
@@ -92,12 +166,14 @@ export function UIMockupsSection() {
       >
         <div className="relative overflow-hidden rounded-xl shadow-lg border border-fd-border/30 backdrop-blur-sm transition-all duration-300 w-[280px]">
           <Image
-            src={mockup.src}
+            src={imageSrc}
             alt={mockup.id}
             width={280}
             height={600}
             className="w-full h-auto"
             loading="lazy"
+            key={imageSrc} // 强制重新加载图片
+            unoptimized // 禁用 Next.js 图片优化以避免缓存问题
           />
         </div>
       </div>
@@ -117,10 +193,15 @@ export function UIMockupsSection() {
         className="mb-16 px-4 text-center"
       >
         <h2 className="mb-4 text-4xl font-bold md:text-5xl text-fd-foreground">
-          精美的界面设计
+          精雕细琢
         </h2>
-        <p className="max-w-2xl mx-auto text-lg md:text-xl text-fd-muted-foreground">
-          设计了 30+ 卡片组件，对应不同类型的作品、动态详情，每一个细节都经过精心打磨
+        <p className="max-w-2xl mx-auto text-base md:text-lg text-fd-muted-foreground">
+          精心设计了 30+ 款卡片组件，涵盖视频详情、动态推送、评论互动、用户信息等多种使用场景。
+          每个组件都经过反复打磨，提供深色与浅色双主题适配，确保在不同环境下都能呈现出色的视觉效果。
+          从布局到配色，从图标到文字，每一处细节都追求极致的用户体验。
+        </p>
+        <p className="mt-4 text-sm md:text-base text-fd-muted-foreground/80">
+          以下是部分 UI 样式展示，更多样式请在插件内慢慢探索
         </p>
       </motion.div>
 
@@ -132,12 +213,12 @@ export function UIMockupsSection() {
             className="flex overflow-x-auto overflow-y-hidden snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
           >
             <div className="flex gap-0 pl-[calc(50vw-140px)]">
-              {mockups.map((mockup, index) => (
+              {mockups.map((mockup) => (
                 <div
                   key={mockup.id}
                   className="snap-center"
                 >
-                  {renderMobileCarouselCard(mockup, index)}
+                  {renderMobileCarouselCard(mockup)}
                 </div>
               ))}
               <div className="shrink-0 w-[calc(50vw-140px)]" />

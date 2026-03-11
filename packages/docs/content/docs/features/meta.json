@@ -4,6 +4,7 @@
     "error-handler",
     "danmaku-burning",
     "comment-rendering",
+    "live-photo",
     "push-logic"
   ]
 }
