@@ -274,11 +274,15 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
     throw error // 重新抛出错误，让 wrapWithErrorHandler 能够捕获
   } finally {
     const filePath = file.filepath
+    Common.registerVideoPreview(filePath, Config.app.removeCache, 30 * 60 * 1000)
     logger.mark(`临时预览地址：http://localhost:${process.env.HTTP_PORT!}/api/kkk/video/${encodeURIComponent(filePath.split('/').pop() ?? '')}`)
-    Config.app.removeCache && logger.info(`文件 ${filePath} 将在 10 分钟后删除`)
+    Config.app.removeCache && logger.info(`文件 ${filePath} 将在 30 分钟后删除`)
     setTimeout(async () => {
-      await Common.removeFile(filePath)
-    }, 10 * 60 * 1000)
+      const removed = await Common.removeFile(filePath)
+      if (removed) {
+        Common.markVideoPreviewRemoved(filePath)
+      }
+    }, 30 * 60 * 1000)
   }
 }
 

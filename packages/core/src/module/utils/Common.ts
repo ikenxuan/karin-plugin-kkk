@@ -11,6 +11,15 @@ import { QRCodeScanner } from '@/module/utils/QRCodeScanner'
 import { Root } from '../../root'
 import { Count } from '..'
 
+type VideoPreviewInfo = {
+  filename: string
+  filePath: string
+  createdAt: number
+  expireAt?: number
+  removeCache: boolean
+  removedAt?: number
+}
+
 /** 常用工具合集 */
 class Tools {
   /**
@@ -24,6 +33,7 @@ class Tools {
     /** 图片缓存文件 */
     images: string
   }
+  private videoPreviewState: Map<string, VideoPreviewInfo>
 
   constructor () {
     this.tempDri = {
@@ -34,6 +44,7 @@ class Tools {
       /** 图片缓存文件 */
       images: `${karinPathTemp}/${Root.pluginName}/kkkdownload/images/`.replace(/\\/g, '/')
     }
+    this.videoPreviewState = new Map()
   }
 
   /**
@@ -188,6 +199,41 @@ class Tools {
       }
     }
     return true
+  }
+
+  registerVideoPreview (filePath: string, removeCache: boolean, ttlMs: number): VideoPreviewInfo {
+    const filename = path.basename(filePath)
+    const createdAt = Date.now()
+    const expireAt = removeCache ? createdAt + ttlMs : undefined
+    const info: VideoPreviewInfo = {
+      filename,
+      filePath,
+      createdAt,
+      expireAt,
+      removeCache
+    }
+    this.videoPreviewState.set(filename, info)
+    return info
+  }
+
+  getVideoPreview (filename: string): VideoPreviewInfo | null {
+    return this.videoPreviewState.get(filename) ?? null
+  }
+
+  markVideoPreviewRemoved (filePathOrFilename: string): VideoPreviewInfo | null {
+    const filename = filePathOrFilename.includes('/') || filePathOrFilename.includes('\\')
+      ? path.basename(filePathOrFilename)
+      : filePathOrFilename
+    const info = this.videoPreviewState.get(filename)
+    if (!info) {
+      return null
+    }
+    const updated: VideoPreviewInfo = {
+      ...info,
+      removedAt: Date.now()
+    }
+    this.videoPreviewState.set(filename, updated)
+    return updated
   }
 
   /**

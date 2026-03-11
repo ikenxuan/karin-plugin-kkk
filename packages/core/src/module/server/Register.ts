@@ -10,7 +10,7 @@ import express from 'node-karin/express'
 
 import { Config } from '../utils/Config'
 import { apiRouter } from './api'
-import { getVideoRouter, videoStreamRouter } from './router'
+import { getVideoRouter, videoPreviewEventsRouter, videoStreamRouter } from './router'
 
 const server = express()
 const proxyOptions: httpProxy.Options = {
@@ -55,6 +55,7 @@ if (Config.app.APIServer && Config.app.APIServerMount) {
 // 视频流服务
 app.get('/stream/:filename', videoStreamRouter)
 app.get('/video/:filename', getVideoRouter)
+app.get('/video/:filename/events', videoPreviewEventsRouter)
 
 // v1 API 路由
 app.use('/v1', apiRouter)

@@ -9,16 +9,22 @@ import {
   logger
 } from 'node-karin'
 import type { RequestHandler } from 'node-karin/express'
-import template from 'node-karin/template'
+import { renderVideoPreviewPage } from 'template'
 
-import { Common, Root } from '@/module/utils'
+import { Common } from '@/module/utils'
+import { Config } from '@/module/utils/Config'
 
 /**
  * 视频文件流传输
  * GET /api/kkk/stream/:filename
  */
 export const videoStreamRouter: RequestHandler = (req, res) => {
-  const filename = req.params.filename
+  const filenameParam = req.params.filename
+  const filename = Array.isArray(filenameParam) ? filenameParam[0] : filenameParam
+  if (!filename) {
+    createNotFoundResponse(res, '无效的文件名')
+    return
+  }
   const videoPath = Common.validateVideoRequest(filename, res)
 
   if (!videoPath) {
@@ -102,7 +108,12 @@ export const videoStreamRouter: RequestHandler = (req, res) => {
  * GET /api/kkk/video/:filename
  */
 export const getVideoRouter: RequestHandler = (req, res) => {
-  const filename = req.params.filename
+  const filenameParam = req.params.filename
+  const filename = Array.isArray(filenameParam) ? filenameParam[0] : filenameParam
+  if (!filename) {
+    createNotFoundResponse(res, '无效的文件名')
+    return
+  }
   const videoPath = Common.validateVideoRequest(filename, res)
 
   if (!videoPath) {
@@ -110,12 +121,74 @@ export const getVideoRouter: RequestHandler = (req, res) => {
   }
 
   const videoDataUrl = `/api/kkk/stream/${encodeURIComponent(filename)}`
-  const resPath = path.join(Root.pluginPath, '/resources') + '/'.replace(/\\/g, '/')
-  const htmlContent = template(path.join(resPath, 'template', 'videoView', 'index.html'), {
-    videoDataUrl,
-    filename
+  const previewInfo = Common.getVideoPreview(filename)
+  const removeCache = previewInfo?.removeCache ?? Config.app.removeCache
+  const createdAt = previewInfo?.createdAt ?? Date.now()
+  const expireAt = previewInfo?.expireAt ?? (removeCache ? createdAt + 10 * 60 * 1000 : undefined)
+  const htmlContent = renderVideoPreviewPage({
+    filename,
+    filePath: previewInfo?.filePath ?? videoPath,
+    videoUrl: videoDataUrl,
+    removeCache,
+    createdAt,
+    expireAt,
+    eventsUrl: `/api/kkk/video/${encodeURIComponent(filename)}/events`
   })
 
+  res.setHeader('Cache-Control', 'no-cache')
   res.setHeader('Content-Type', 'text/html; charset=utf-8')
   res.send(htmlContent)
+}
+
+export const videoPreviewEventsRouter: RequestHandler = (req, res) => {
+  const filenameParam = req.params.filename
+  const filename = Array.isArray(filenameParam) ? filenameParam[0] : filenameParam
+  if (!filename) {
+    createNotFoundResponse(res, '无效的文件名')
+    return
+  }
+  const safeName = path.basename(filename)
+  if (safeName !== filename || filename.includes('/') || filename.includes('\\')) {
+    createNotFoundResponse(res, '无效的文件名')
+    return
+  }
+
+  const previewInfo = Common.getVideoPreview(filename)
+  if (!previewInfo) {
+    createNotFoundResponse(res, '预览信息不存在')
+    return
+  }
+
+  res.setHeader('Content-Type', 'text/event-stream')
+  res.setHeader('Cache-Control', 'no-cache')
+  res.setHeader('Connection', 'keep-alive')
+  res.flushHeaders?.()
+
+  const sendPayload = () => {
+    const now = Date.now()
+    const remainingMs = previewInfo.expireAt ? Math.max(previewInfo.expireAt - now, 0) : null
+    const fileMissing = previewInfo.filePath ? !fs.existsSync(previewInfo.filePath) : false
+    const removed = Boolean(previewInfo.removedAt) || (previewInfo.removeCache && remainingMs === 0 && fileMissing)
+    if (removed && !previewInfo.removedAt) {
+      Common.markVideoPreviewRemoved(previewInfo.filename)
+    }
+    const payload = {
+      filename: previewInfo.filename,
+      filePath: previewInfo.filePath,
+      removeCache: previewInfo.removeCache,
+      createdAt: previewInfo.createdAt,
+      expireAt: previewInfo.expireAt,
+      remainingMs,
+      removed,
+      serverNow: now
+    }
+    res.write(`data: ${JSON.stringify(payload)}\n\n`)
+  }
+
+  sendPayload()
+  const timer = setInterval(sendPayload, 1000)
+
+  res.on('close', () => {
+    clearInterval(timer)
+  })
 }
