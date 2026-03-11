@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.25.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.25.0...v2.25.1) (2026-03-11)
+
+
+### 🧰 其他更新
+
+* 注释 ([d78adef](https://github.com/ikenxuan/karin-plugin-kkk/commit/d78adef61be62a7486a84a4be18e8b3f40ae1b7f))
+
+
+### ⚙️ 配置变更
+
+* 添加 Live Photo 静态图兼容系统配置 ([a8c5137](https://github.com/ikenxuan/karin-plugin-kkk/commit/a8c51374a697c111a0813e9f0eb939cdb9285597))
+
 ## [2.25.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.24.0...v2.25.0) (2026-03-11)
 
 
