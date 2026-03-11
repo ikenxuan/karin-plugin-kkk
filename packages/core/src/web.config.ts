@@ -229,6 +229,34 @@ export const webConfig = defineConfig({
                   { min: 1000, max: 20000, error: '请输入一个范围在 1000 到 20000 之间的数字' }
                 ]
               }),
+              components.divider.create('divider-app-live-photo', {
+                description: 'Live Photo 兼容设置',
+                descPosition: 20
+              }),
+              components.radio.group('livePhotoSystem', {
+                label: 'Live Photo 静态图兼容系统',
+                description: '当解析到作品/动态包含 Live Photo 时，合并转发里发送的 Live Photo 静态图按所选系统生成',
+                orientation: 'horizontal',
+                defaultValue: all.app.livePhotoSystem || 'google',
+                radio: [
+                  components.radio.create('livePhotoSystem-google', {
+                    label: 'Google',
+                    value: 'google'
+                  }),
+                  components.radio.create('livePhotoSystem-xiaomi', {
+                    label: '小米（HyperOS）',
+                    value: 'xiaomi'
+                  }),
+                  components.radio.create('livePhotoSystem-oppo', {
+                    label: 'OPPO（ColorOS）',
+                    value: 'oppo'
+                  }),
+                  components.radio.create('livePhotoSystem-huawei-honor', {
+                    label: '华为/荣耀（HarmonyOS/MagicOS）',
+                    value: 'huawei_honor'
+                  })
+                ]
+              }),
               components.divider.create('divider-app-api', {
                 description: 'API服务配置',
                 descPosition: 20

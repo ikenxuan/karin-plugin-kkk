@@ -86,6 +86,20 @@ export const appConfigSchema: SectionSchema = {
       disabled: $not('multiPageRender'),
       rules: [{ min: 1000, max: 20000, error: '请输入一个范围在 1000 到 20000 之间的数字' }]
     },
+    { type: 'divider', title: 'Live Photo 兼容设置' },
+    {
+      key: 'livePhotoSystem',
+      type: 'radio',
+      label: 'Live Photo 静态图兼容系统',
+      description: '当解析到作品/动态包含 Live Photo 时，合并转发里发送的 Live Photo 静态图按所选系统生成',
+      orientation: 'horizontal',
+      options: [
+        { label: 'Google', value: 'google' },
+        { label: '小米（HyperOS）', value: 'xiaomi' },
+        { label: 'OPPO（ColorOS）', value: 'oppo' },
+        { label: '华为/荣耀（HarmonyOS/MagicOS）', value: 'huawei_honor' }
+      ]
+    },
     { type: 'divider', title: 'API服务配置' },
     {
       key: 'APIServer',

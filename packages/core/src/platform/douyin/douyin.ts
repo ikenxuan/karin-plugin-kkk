@@ -21,7 +21,8 @@ import {
   Networks,
   processImageUrl,
   Render,
-  uploadFile } from '@/module/utils'
+  uploadFile 
+} from '@/module/utils'
 import { Config } from '@/module/utils/Config'
 import { douyinComments } from '@/platform/douyin'
 import { burnDouyinDanmaku, type DouyinDanmakuElem } from '@/platform/douyin/danmaku'
@@ -507,8 +508,9 @@ export class DouYin extends Base {
           }
           if (!isVideo && Config.app.removeCache === false && music_url !== undefined) {
             try {
-              const path = Common.tempDri.images + `${g_title}/BGM.mp3`
-              await new Networks({ url: music_url, type: 'arraybuffer' }).getData().then((data) => fs.promises.writeFile(path, Buffer.from(data)))
+              const title = g_title ?? VideoData.data.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:*?"<>|\r\n]/g, ' ')
+              const path = Common.tempDri.images + `${title}.mp3`
+              await downloadFile(music_url, { title, filepath: path })
             } catch (error) {
               console.log(error)
             }

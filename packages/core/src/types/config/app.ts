@@ -57,6 +57,9 @@ export interface appConfig {
   /** 分页渲染时，每页的高度，经测试最佳每页高度为12000px，默认12000px */
   multiPageHeight: number
 
+  /** 解析包含 Live Photo 作品时，发送的静态图兼容系统 */
+  livePhotoSystem: 'google' | 'xiaomi' | 'oppo' | 'huawei_honor'
+
   /** 扫码登录时使用的地址类型，可选值：'lan'（局域网IP）、'external'（外部地址） */
   qrLoginAddrType: 'lan' | 'external'
 
