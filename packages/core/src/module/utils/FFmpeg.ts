@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import path from 'node:path'
 
 import { ffmpeg, ffprobe, logger } from 'node-karin'
 
@@ -68,7 +69,7 @@ export async function loopVideo (
   )
 
   if (result.status) {
-    logger.mark(`视频重放成功: ${outputPath}`)
+    logger.debug(`视频重放成功: ${outputPath}`)
   } else {
     logger.error('视频重放失败', result)
   }
@@ -210,7 +211,7 @@ export const loopVideoWithTransition = async (
     )
 
     if (result.status) {
-      logger.mark(`Live Photo 效果视频重放成功: ${outputPath}`)
+      logger.debug(`Live Photo 效果视频重放成功: ${outputPath}`)
     } else {
       logger.error('Live Photo 效果视频重放失败', result)
     }
@@ -237,13 +238,166 @@ export const loopVideoWithTransition = async (
   )
 
   if (result.status) {
-    logger.mark(`Live Photo 效果视频重放成功: ${outputPath}`)
+    logger.debug(`Live Photo 效果视频重放成功: ${outputPath}`)
   } else {
     logger.error('Live Photo 效果视频重放失败', result)
   }
 
   return {
     success: result.status
+  }
+}
+
+const xmpHeaderBuffer = Buffer.from('http://ns.adobe.com/xap/1.0/\u0000', 'utf8')
+
+/**
+ * 判断是否为 JPEG 文件头
+ * @param fileBuffer 文件字节流
+ * @returns 是否为 JPEG
+ */
+const isJpegBuffer = (fileBuffer: Buffer): boolean => {
+  return fileBuffer.length > 2 && fileBuffer[0] === 0xFF && fileBuffer[1] === 0xD8
+}
+
+/**
+ * 构建 Motion Photo 所需 XMP 内容
+ * @param videoLength 视频字节长度
+ * @param presentationTimestampUs 主帧时间戳（微秒）
+ * @returns XMP 字符串
+ */
+const buildMotionPhotoXmp = (videoLength: number, presentationTimestampUs: number): string => {
+  const descriptionAttrs = [
+    'xmlns:GCamera="http://ns.google.com/photos/1.0/camera/"',
+    'xmlns:MiCamera="http://ns.xiaomi.com/photos/1.0/camera/"',
+    'xmlns:Container="http://ns.google.com/photos/1.0/container/"',
+    'xmlns:Item="http://ns.google.com/photos/1.0/container/item/"',
+    `GCamera:MotionPhoto="1" GCamera:MotionPhotoVersion="1" GCamera:MotionPhotoPresentationTimestampUs="${presentationTimestampUs}"`,
+    `GCamera:MicroVideo="1" GCamera:MicroVideoVersion="1" GCamera:MicroVideoOffset="${videoLength}"`,
+    `GCamera:MicroVideoPresentationTimestampUs="${presentationTimestampUs}"`,
+    'MiCamera:XMPMeta="&lt;?xml version=&apos;1.0&apos; encoding=&apos;UTF-8&apos; standalone=&apos;yes&apos; ?&gt;"',
+    'xmlns:OpCamera="http://ns.oplus.com/photos/1.0/camera/"',
+    `OpCamera:MotionPhotoPrimaryPresentationTimestampUs="${presentationTimestampUs}"`,
+    'OpCamera:MotionPhotoOwner="oplus"',
+    'OpCamera:OLivePhotoVersion="2"',
+    `OpCamera:VideoLength="${videoLength}"`
+  ]
+  return (
+    '<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 5.1.0-jc003">' +
+    '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">' +
+    '<rdf:Description rdf:about="" ' +
+    `${descriptionAttrs.join(' ')}>` +
+    '<Container:Directory><rdf:Seq>' +
+    '<rdf:li rdf:parseType="Resource"><Container:Item Item:Mime="image/jpeg" Item:Semantic="Primary" Item:Length="0" Item:Padding="0" /></rdf:li>' +
+    `<rdf:li rdf:parseType="Resource"><Container:Item Item:Mime="video/mp4" Item:Semantic="MotionPhoto" Item:Length="${videoLength}" Item:Padding="0" /></rdf:li>` +
+    '</rdf:Seq></Container:Directory>' +
+    '</rdf:Description>' +
+    '</rdf:RDF>' +
+    '</x:xmpmeta>'
+  )
+}
+
+/**
+ * 将 XMP 写入 JPEG APP1 段
+ * @param jpegBuffer JPEG 内容
+ * @param xmpPacket XMP 内容
+ * @returns 写入 XMP 后的 JPEG 内容
+ */
+const injectXmpToJpeg = (jpegBuffer: Buffer, xmpPacket: string): Buffer => {
+  if (!isJpegBuffer(jpegBuffer)) {
+    throw new Error('输入图片不是 JPEG 格式')
+  }
+
+  const xmpPayload = Buffer.concat([xmpHeaderBuffer, Buffer.from(xmpPacket, 'utf8')])
+  const app1Length = xmpPayload.length + 2
+  if (app1Length > 65535) {
+    throw new Error('XMP 数据过大，无法写入 JPEG APP1')
+  }
+
+  const app1Segment = Buffer.alloc(4)
+  app1Segment[0] = 0xFF
+  app1Segment[1] = 0xE1
+  app1Segment.writeUInt16BE(app1Length, 2)
+
+  return Buffer.concat([
+    jpegBuffer.subarray(0, 2),
+    app1Segment,
+    xmpPayload,
+    jpegBuffer.subarray(2)
+  ])
+}
+
+/**
+ * 读取图片并保证输出为 JPEG 字节流
+ * @param imagePath 图片路径
+ * @returns JPEG 字节流
+ */
+const readOrConvertToJpeg = async (imagePath: string): Promise<Buffer> => {
+  const sourceBuffer = fs.readFileSync(imagePath)
+  if (isJpegBuffer(sourceBuffer)) {
+    return sourceBuffer
+  }
+
+  const tempJpegPath = path.join(Common.tempDri.images, `MotionPhoto_${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`)
+  const result = await ffmpeg(`-y -i "${imagePath}" -frames:v 1 -q:v 2 "${tempJpegPath}"`)
+  if (!result.status) {
+    throw new Error(`图片转换 JPEG 失败: ${imagePath}`)
+  }
+
+  try {
+    return fs.readFileSync(tempJpegPath)
+  } finally {
+    fs.rmSync(tempJpegPath, { force: true })
+  }
+}
+
+/**
+ * Google Motion Photo 构建参数
+ */
+export interface GoogleMotionPhotoOptions {
+  /** 原图路径 */
+  imagePath: string
+  /** 视频路径 */
+  videoPath: string
+  /** 输出文件路径 */
+  outputPath: string
+  /** 主帧时间戳（微秒） */
+  presentationTimestampUs?: number
+}
+
+/**
+ * 生成 Google Motion Photo 文件（JPEG + MP4 trailer）
+ * @param options 构建参数
+ * @returns 是否生成成功
+ */
+export const buildGoogleMotionPhoto = async (options: GoogleMotionPhotoOptions): Promise<boolean> => {
+  const {
+    imagePath,
+    videoPath,
+    outputPath,
+    presentationTimestampUs
+  } = options
+
+  try {
+    const imageBuffer = await readOrConvertToJpeg(imagePath)
+    const videoBuffer = fs.readFileSync(videoPath)
+    let resolvedPresentationTimestampUs = presentationTimestampUs
+    if (resolvedPresentationTimestampUs === undefined || resolvedPresentationTimestampUs < 0) {
+      const videoDurationSeconds = await getMediaDuration(videoPath)
+      if (Number.isFinite(videoDurationSeconds) && videoDurationSeconds > 0) {
+        resolvedPresentationTimestampUs = Math.round(videoDurationSeconds * 500000)
+      } else {
+        resolvedPresentationTimestampUs = 1500000
+      }
+    }
+    const xmpPacket = buildMotionPhotoXmp(videoBuffer.length, resolvedPresentationTimestampUs)
+    const jpegWithXmp = injectXmpToJpeg(imageBuffer, xmpPacket)
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true })
+    fs.writeFileSync(outputPath, Buffer.concat([jpegWithXmp, videoBuffer]))
+    logger.debug(`Google Motion Photo 封面生成成功: ${outputPath}`)
+    return true
+  } catch (error) {
+    logger.error('Google Motion Photo 封面生成失败', error)
+    return false
   }
 }
 
@@ -257,7 +411,7 @@ export async function mergeVideoAudio (
 ): Promise<boolean> {
   const result = await ffmpeg(`-y -i "${videoPath}" -i "${audioPath}" -c copy "${resultPath}"`)
   if (result.status) {
-    logger.mark(`视频合成成功: ${resultPath}`)
+    logger.debug(`视频合成成功: ${resultPath}`)
   } else {
     logger.error('视频合成失败', result)
   }
@@ -296,7 +450,7 @@ export async function compressVideo (options: CompressVideoOptions): Promise<boo
   )
 
   if (result.status) {
-    logger.mark(`视频压缩成功: ${outputPath}`)
+    logger.debug(`视频压缩成功: ${outputPath}`)
     if (removeSource) Common.removeFile(inputPath)
   } else {
     logger.error(`视频压缩失败: ${inputPath}`, result)

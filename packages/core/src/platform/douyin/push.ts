@@ -9,6 +9,7 @@ import { DouyinUserListProps } from 'template/types/platforms/douyin'
 import {
   Base,
   baseHeaders,
+  buildGoogleMotionPhoto,
   cleanOldDynamicCache,
   Common,
   douyinDB,
@@ -528,6 +529,9 @@ export class DouYinpush extends Base {
                         headers: douyinBaseHeaders,
                         filepath: Common.tempDri.images + `Douyin_static_${Date.now()}_${index}.jpg`
                       })
+                      if (staticImg.filepath) {
+                        temp.push({ filepath: staticImg.filepath, totalBytes: 0 })
+                      }
                       staticImgPath = staticImg.filepath ?? ''
                     }
                     const transitionEnabled = loopCount > 1 && Boolean(staticImgPath)
@@ -551,8 +555,6 @@ export class DouYinpush extends Base {
                       const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
                       fs.renameSync(outputPath, filePath)
                       logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
-                      logger.mark('正在尝试删除缓存文件')
-                      await Common.removeFile(liveimg.filepath, true)
                       temp.push({ filepath: filePath, totalBytes: 0 })
                       const videoPath = Config.upload.videoSendMode === 'base64'
                         ? `base64://${(fs.readFileSync(filePath)).toString('base64')}`
@@ -561,9 +563,30 @@ export class DouYinpush extends Base {
 
                       // clip_type === 5 是 livePhoto，添加封面静态图
                       if (item.clip_type === 5 && item.url_list?.[0]) {
-                        const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
-                        images.push(segment.image(imageUrl))
+                        let hasPushedMotionPhotoCover = false
+                        if (staticImgPath) {
+                          const motionPhotoCoverPath = Common.tempDri.images + `MVIMG_${format(new Date(), 'yyyyMMdd_HHmmss_SSS')}_${index}.jpg`
+                          const motionPhotoCreated = await buildGoogleMotionPhoto({
+                            imagePath: staticImgPath,
+                            videoPath: liveimg.filepath,
+                            outputPath: motionPhotoCoverPath
+                          })
+                          if (motionPhotoCreated) {
+                            temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
+                            const motionPhotoCover = Config.upload.imageSendMode === 'base64'
+                              ? `base64://${(fs.readFileSync(motionPhotoCoverPath)).toString('base64')}`
+                              : `file://${motionPhotoCoverPath}`
+                            images.push(segment.image(motionPhotoCover))
+                            hasPushedMotionPhotoCover = true
+                          }
+                        }
+                        if (!hasPushedMotionPhotoCover) {
+                          const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
+                          images.push(segment.image(imageUrl))
+                        }
                       }
+                      logger.mark('正在尝试删除缓存文件')
+                      await Common.removeFile(liveimg.filepath, true)
                     } else {
                       await Common.removeFile(liveimg.filepath, true)
                     }
@@ -648,6 +671,9 @@ export class DouYinpush extends Base {
                           headers: douyinBaseHeaders,
                           filepath: Common.tempDri.images + `Douyin_static_${Date.now()}_${index}.jpg`
                         })
+                        if (staticImg.filepath) {
+                          temp.push({ filepath: staticImg.filepath, totalBytes: 0 })
+                        }
                         staticImgPath = staticImg.filepath ?? ''
                       }
                       const transitionEnabled = loopCount > 1 && Boolean(staticImgPath)
@@ -671,8 +697,6 @@ export class DouYinpush extends Base {
                         const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
                         fs.renameSync(outputPath, filePath)
                         logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
-                        logger.mark('正在尝试删除缓存文件')
-                        await Common.removeFile(liveimg.filepath, true)
                         temp.push({ filepath: filePath, totalBytes: 0 })
                         const videoPath = Config.upload.videoSendMode === 'base64'
                           ? `base64://${(fs.readFileSync(filePath)).toString('base64')}`
@@ -681,9 +705,30 @@ export class DouYinpush extends Base {
 
                         // clip_type === 5 是 livePhoto，添加封面静态图
                         if (item.clip_type === 5 && item.url_list?.[0]) {
-                          const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
-                          processedImages.push(segment.image(imageUrl))
+                          let hasPushedMotionPhotoCover = false
+                          if (staticImgPath) {
+                            const motionPhotoCoverPath = Common.tempDri.images + `MVIMG_${format(new Date(), 'yyyyMMdd_HHmmss_SSS')}_${index}.jpg`
+                            const motionPhotoCreated = await buildGoogleMotionPhoto({
+                              imagePath: staticImgPath,
+                              videoPath: liveimg.filepath,
+                              outputPath: motionPhotoCoverPath
+                            })
+                            if (motionPhotoCreated) {
+                              temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
+                              const motionPhotoCover = Config.upload.imageSendMode === 'base64'
+                                ? `base64://${(fs.readFileSync(motionPhotoCoverPath)).toString('base64')}`
+                                : `file://${motionPhotoCoverPath}`
+                              processedImages.push(segment.image(motionPhotoCover))
+                              hasPushedMotionPhotoCover = true
+                            }
+                          }
+                          if (!hasPushedMotionPhotoCover) {
+                            const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
+                            processedImages.push(segment.image(imageUrl))
+                          }
                         }
+                        logger.mark('正在尝试删除缓存文件')
+                        await Common.removeFile(liveimg.filepath, true)
                       } else {
                         await Common.removeFile(liveimg.filepath, true)
                       }

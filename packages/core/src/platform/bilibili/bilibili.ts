@@ -29,6 +29,7 @@ import karin, {
 import {
   Base,
   baseHeaders,
+  buildGoogleMotionPhoto,
   Common,
   Count,
   downloadFile,
@@ -392,6 +393,9 @@ export class Bilibili extends Base {
                       headers: baseHeaders,
                       filepath: Common.tempDri.images + `Bilibili_static_${Date.now()}_${index}.jpg`
                     })
+                    if (staticImg.filepath) {
+                      temp.push({ filepath: staticImg.filepath, totalBytes: 0 })
+                    }
                     
                     // Loop the live image 3 times with Live Photo effect
                     const loopCount = 3
@@ -414,17 +418,35 @@ export class Bilibili extends Base {
                       const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
                       fs.renameSync(outputPath, filePath)
                       logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
-                      logger.mark('正在尝试删除缓存文件')
-                      await Common.removeFile(livePhoto.filepath, true)
                       temp.push({ filepath: filePath, totalBytes: 0 })
                       const videoPath = Config.upload.videoSendMode === 'base64'
                         ? `base64://${(fs.readFileSync(filePath)).toString('base64')}`
                         : `file://${filePath}`
                       imgArray.push(segment.video(videoPath))
                       
-                      // Also add the static image (img.url) below the video
-                      const imageUrl = await processImageUrl(img.url, title, index)
-                      imgArray.push(segment.image(imageUrl))
+                      let hasPushedMotionPhotoCover = false
+                      if (staticImg.filepath) {
+                        const motionPhotoCoverPath = Common.tempDri.images + `MVIMG_${format(new Date(), 'yyyyMMdd_HHmmss_SSS')}_${index}.jpg`
+                        const motionPhotoCreated = await buildGoogleMotionPhoto({
+                          imagePath: staticImg.filepath,
+                          videoPath: livePhoto.filepath,
+                          outputPath: motionPhotoCoverPath
+                        })
+                        if (motionPhotoCreated) {
+                          temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
+                          const motionPhotoCover = Config.upload.imageSendMode === 'base64'
+                            ? `base64://${(fs.readFileSync(motionPhotoCoverPath)).toString('base64')}`
+                            : `file://${motionPhotoCoverPath}`
+                          imgArray.push(segment.image(motionPhotoCover))
+                          hasPushedMotionPhotoCover = true
+                        }
+                      }
+                      if (!hasPushedMotionPhotoCover) {
+                        const imageUrl = await processImageUrl(img.url, title, index)
+                        imgArray.push(segment.image(imageUrl))
+                      }
+                      logger.mark('正在尝试删除缓存文件')
+                      await Common.removeFile(livePhoto.filepath, true)
                     } else {
                       await Common.removeFile(livePhoto.filepath, true)
                     }
