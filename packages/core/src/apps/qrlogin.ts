@@ -3,6 +3,7 @@ import os from 'node:os'
 import karin, { logger } from 'node-karin'
 
 import { Config } from '@/module/utils/Config'
+import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { Render } from '@/module/utils/Render'
 
 /**
@@ -104,7 +105,7 @@ async function getHostByConfig (): Promise<string> {
 /**
  * 生成登录二维码（仅私发给主人）
  */
-export const qrLogin = karin.command(/^#?(kkk)?登录$/i, async (e) => {
+const handleQrLogin = wrapWithErrorHandler(async (e) => {
   const bot = karin.getBot(e.selfId)
   const userId = e.userId
 
@@ -138,23 +139,23 @@ export const qrLogin = karin.command(/^#?(kkk)?登录$/i, async (e) => {
 
   const serverUrl = `${protocol}://${host}:${port}`
 
-  try {
-    // 使用模板系统渲染二维码图片
-    const images = await Render('other/qrlogin', {
-      share_url: qrData,
-      serverUrl
-    })
+  // 使用模板系统渲染二维码图片
+  const images = await Render('other/qrlogin', {
+    share_url: qrData,
+    serverUrl
+  })
 
-    // 私发给触发命令的用户
-    await karin.sendMaster(e.selfId, userId, images)
+  // 私发给触发命令的用户
+  await karin.sendMaster(e.selfId, userId, images)
 
-    // 如果是群聊触发，提示已私发
-    if (e.isGroup) {
-      await e.reply('登录二维码已私聊发送，请查收~')
-    }
-  } catch (error) {
-    await e.reply('生成二维码失败: ' + (error instanceof Error ? error.message : String(error)))
+  // 如果是群聊触发，提示已私发
+  if (e.isGroup) {
+    await e.reply('登录二维码已私聊发送，请查收~')
   }
 
   return true
-}, { perm: 'master', name: 'kkk-APP扫码登录' })
+}, {
+  businessName: 'APP扫码登录'
+})
+
+export const qrLogin = karin.command(/^#?(kkk)?登录$/i, handleQrLogin, { perm: 'master', name: 'kkk-APP扫码登录' })

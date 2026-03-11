@@ -12,6 +12,7 @@ import karin, {
 
 import { Root } from '@/module'
 import { getChangelogImage } from '@/module/utils/changelog'
+import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { isSemverGreater } from '@/module/utils/semver'
 
 const UPDATE_LOCK_KEY = 'kkk:update:lock'
@@ -96,43 +97,45 @@ const Handler = async (e: Message) => {
   return true
 }
 
+const handleUpdateHook = wrapWithErrorHandler(async (e: Message) => {
+  e.reply('开始更新 karin-plugin-kkk ...', { reply: true })
+  const upd = await checkPkgUpdate(Root.pluginName, { compare: 'semver' })
+  if (upd.status === 'yes') {
+    const result = await updatePkg(Root.pluginName)
+    if (result.status === 'ok') {
+      const msgResult = await e.reply(
+        `${Root.pluginName} 更新成功！\n${result.local} -> ${result.remote}\n开始执行重启......`
+      )
+      if (msgResult.messageId) {
+        try {
+          await db.del(UPDATE_MSGID_KEY)
+          await db.del(UPDATE_LOCK_KEY)
+        } catch { }
+      }
+      await restart(e.selfId, e.contact, e.messageId)
+    } else {
+      e.reply(`${Root.pluginName} 更新失败: ${result.data ?? '更新执行失败'}`)
+    }
+  } else if (upd.status === 'no') {
+    e.reply('未检测到可更新版本。')
+  } else {
+    e.reply(`${Root.pluginName} 更新失败: ${upd.error?.message ?? String(upd.error)}`)
+  }
+}, {
+  businessName: '更新Hook'
+})
+
 export const kkkUpdate = hooks.message.friend(async (e, next) => {
   if (e.msg.includes('更新')) {
     const msgId = (await db.get(UPDATE_MSGID_KEY)) as string
     if (e.replyId === msgId) {
-      try {
-        e.reply('开始更新 karin-plugin-kkk ...', { reply: true })
-        const upd = await checkPkgUpdate(Root.pluginName, { compare: 'semver' })
-        if (upd.status === 'yes') {
-          const result = await updatePkg(Root.pluginName)
-          if (result.status === 'ok') {
-            const msgResult = await e.reply(
-              `${Root.pluginName} 更新成功！\n${result.local} -> ${result.remote}\n开始执行重启......`
-            )
-            if (msgResult.messageId) {
-              try {
-                await db.del(UPDATE_MSGID_KEY)
-                await db.del(UPDATE_LOCK_KEY)
-              } catch { }
-            }
-            await restart(e.selfId, e.contact, e.messageId)
-          } else {
-            e.reply(`${Root.pluginName} 更新失败: ${result.data ?? '更新执行失败'}`)
-          }
-        } else if (upd.status === 'no') {
-          e.reply('未检测到可更新版本。')
-        } else {
-          e.reply(`${Root.pluginName} 更新失败: ${upd.error?.message ?? String(upd.error)}`)
-        }
-      } catch (error: any) {
-        e.reply(`${Root.pluginName} 更新失败: ${error.message}`)
-      }
+      await handleUpdateHook(e)
     }
   }
   next()
 }, { priority: 100 })
 
-export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, async (e: Message) => {
+const handleKkkUpdate = wrapWithErrorHandler(async (e: Message) => {
   const upd = await checkPkgUpdate(Root.pluginName, { compare: 'semver' })
   if (upd.status === 'error') {
     e.reply(`获取远程版本失败：${upd.error?.message ?? String(upd.error)}`)
@@ -162,26 +165,26 @@ export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, async (e: Message
   }
 
   // 执行更新并重启
-  try {
-    const result = await updatePkg(Root.pluginName)
-    if (result.status === 'ok') {
-      const msgResult = await e.reply(
-        `${Root.pluginName} 更新成功！\n${result.local} -> ${result.remote}\n开始执行重启......`
-      )
-      if (msgResult.messageId) {
-        try {
-          await db.del(UPDATE_MSGID_KEY)
-          await db.del(UPDATE_LOCK_KEY)
-        } catch { }
-      }
-      await restart(e.selfId, e.contact, msgResult.messageId)
-    } else {
-      e.reply(`${Root.pluginName} 更新失败: ${result.data ?? '更新执行失败'}`)
+  const result = await updatePkg(Root.pluginName)
+  if (result.status === 'ok') {
+    const msgResult = await e.reply(
+      `${Root.pluginName} 更新成功！\n${result.local} -> ${result.remote}\n开始执行重启......`
+    )
+    if (msgResult.messageId) {
+      try {
+        await db.del(UPDATE_MSGID_KEY)
+        await db.del(UPDATE_LOCK_KEY)
+      } catch { }
     }
-  } catch (error: any) {
-    e.reply(`${Root.pluginName} 更新失败: ${error.message}`)
+    await restart(e.selfId, e.contact, msgResult.messageId)
+  } else {
+    e.reply(`${Root.pluginName} 更新失败: ${result.data ?? '更新执行失败'}`)
   }
-}, { name: 'kkk-更新' })
+}, {
+  businessName: 'KKK更新'
+})
+
+export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, handleKkkUpdate, { name: 'kkk-更新' })
 
 // export const kkkUpdateTest = karin.command('test', async (e: Message) => {
 //   await db.del(UPDATE_MSGID_KEY)

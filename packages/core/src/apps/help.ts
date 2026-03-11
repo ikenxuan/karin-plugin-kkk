@@ -4,6 +4,7 @@ import karin, { config, logs } from 'node-karin'
 
 import { Render, Root } from '@/module'
 import { Config } from '@/module/utils/Config'
+import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 
 
 type Role = 'master' | 'member'
@@ -134,7 +135,8 @@ const buildMenuForRole = (role: Role) => {
     .filter(g => (g.items.length > 0) || (g.subGroups && g.subGroups.length > 0))
 }
 
-export const help = karin.command(/^#?kkk帮助$/, async (e) => {
+// 包装帮助命令
+const handleHelp = wrapWithErrorHandler(async (e) => {
   const masters = config.master().filter(id => id !== 'console')
   const isMaster = !!e.sender && masters.includes(e.sender.userId)
   const role: Role = isMaster ? 'master' : 'member'
@@ -163,9 +165,12 @@ export const help = karin.command(/^#?kkk帮助$/, async (e) => {
   })
   await e.reply(img)
   return true
-}, { name: 'kkk-帮助' })
+}, {
+  businessName: 'KKK帮助'
+})
 
-export const version = karin.command(/^#?kkk(版本|更新日志)$/, async (e) => {
+// 包装版本命令
+const handleVersion = wrapWithErrorHandler(async (e) => {
   const changelogContent = fs.readFileSync(Root.pluginPath + '/CHANGELOG.md', 'utf8')
   const forwardLogs = logs({
     version: Root.pluginVersion,
@@ -181,4 +186,10 @@ export const version = karin.command(/^#?kkk(版本|更新日志)$/, async (e) =
   })
   e.reply(img)
   return true
-}, { name: 'kkk-版本' })
+}, {
+  businessName: 'KKK版本'
+})
+
+export const help = karin.command(/^#?kkk帮助$/, handleHelp, { name: 'kkk-帮助' })
+
+export const version = karin.command(/^#?kkk(版本|更新日志)$/, handleVersion, { name: 'kkk-版本' })
