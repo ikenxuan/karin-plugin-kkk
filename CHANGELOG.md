@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.25.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.24.0...v2.25.0) (2026-03-11)
+
+
+### ✨ 新功能
+
+* **core:** 解析动图作品时，实验性将合并转发消息中的静态图片魔改成 Google Motion 标准的 Live Photo ([5e789e3](https://github.com/ikenxuan/karin-plugin-kkk/commit/5e789e351eebfaca84e26c326ddf7c16e253a20f))
+
+
+### 🐛 错误修复
+
+* 取消注释 ([921bf95](https://github.com/ikenxuan/karin-plugin-kkk/commit/921bf95ad05d8ac17a2540ac9aa3014beed3b6e5))
+
 ## [2.24.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.23.2...v2.24.0) (2026-03-10)
 
 
