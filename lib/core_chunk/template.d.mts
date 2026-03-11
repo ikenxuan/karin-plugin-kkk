@@ -2082,5 +2082,15 @@ interface ReactServerRenderOptions<K extends keyof DataTypeMap> {
  * ```
  */
 declare const reactServerRender: <K extends keyof DataTypeMap>(options: ReactServerRenderOptions<K>) => Promise<RenderResponse>;
+type VideoPreviewRenderOptions = {
+  filename: string;
+  filePath: string;
+  videoUrl: string;
+  removeCache: boolean;
+  createdAt: number;
+  expireAt?: number;
+  eventsUrl?: string;
+};
+declare const renderVideoPreviewPage: (options: VideoPreviewRenderOptions) => string;
 //#endregion
-export { BaseComponentProps, type DataTypeMap, DynamicRenderPath, ExtractDataTypeFromPath, type Plugin, type PluginContext, type PluginFactory, QRCodeSectionProps, type ReactServerRenderOptions, RenderRequest, RenderResponse, type TypedRenderRequest, reactServerRender as default, reactServerRender };
+export { BaseComponentProps, type DataTypeMap, DynamicRenderPath, ExtractDataTypeFromPath, type Plugin, type PluginContext, type PluginFactory, QRCodeSectionProps, type ReactServerRenderOptions, RenderRequest, RenderResponse, type TypedRenderRequest, reactServerRender as default, reactServerRender, renderVideoPreviewPage };

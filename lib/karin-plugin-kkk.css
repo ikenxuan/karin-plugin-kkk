@@ -111,6 +111,7 @@
     --container-3xl: 48rem;
     --container-4xl: 56rem;
     --container-5xl: 64rem;
+    --container-6xl: 72rem;
     --text-xs: .75rem;
     --text-xs--line-height: calc(1 / .75);
     --text-sm: .875rem;
@@ -2255,6 +2256,10 @@
     max-height: 64rem;
   }
 
+  .max-h-\[86vh\] {
+    max-height: 86vh;
+  }
+
   .max-h-\[95vh\] {
     max-height: 95vh;
   }
@@ -2709,6 +2714,10 @@
 
   .max-w-5xl {
     max-width: var(--container-5xl);
+  }
+
+  .max-w-6xl {
+    max-width: var(--container-6xl);
   }
 
   .max-w-80 {
@@ -4458,6 +4467,10 @@
     border-color: #fff;
   }
 
+  .border-white\/50 {
+    border-color: oklab(100% 0 5.96046e-8 / .5);
+  }
+
   .border-x-transparent {
     border-inline-color: #0000;
   }
@@ -4528,6 +4541,10 @@
 
   .\!bg-transparent {
     background-color: #0000 !important;
+  }
+
+  .bg-\(--preview-bg\) {
+    background-color: var(--preview-bg);
   }
 
   .bg-\[\#FF2442\] {
@@ -4602,6 +4619,10 @@
 
   .bg-black\/30 {
     background-color: oklab(0% none none / .3);
+  }
+
+  .bg-black\/35 {
+    background-color: oklab(0% none none / .35);
   }
 
   .bg-black\/50 {
@@ -6674,6 +6695,10 @@
     color: hsl(var(--heroui-danger) / 1) !important;
   }
 
+  .text-\(--preview-fg\) {
+    color: var(--preview-fg);
+  }
+
   .text-\[\#04498d\] {
     color: #04498d;
   }
@@ -7844,6 +7869,11 @@
 
   .brightness-110 {
     --tw-brightness: brightness(110%);
+    filter: var(--tw-blur,  ) var(--tw-brightness,  ) var(--tw-contrast,  ) var(--tw-grayscale,  ) var(--tw-hue-rotate,  ) var(--tw-invert,  ) var(--tw-saturate,  ) var(--tw-sepia,  ) var(--tw-drop-shadow,  );
+  }
+
+  .contrast-125 {
+    --tw-contrast: contrast(125%);
     filter: var(--tw-blur,  ) var(--tw-brightness,  ) var(--tw-contrast,  ) var(--tw-grayscale,  ) var(--tw-hue-rotate,  ) var(--tw-invert,  ) var(--tw-saturate,  ) var(--tw-sepia,  ) var(--tw-drop-shadow,  );
   }
 
@@ -12901,6 +12931,10 @@
       width: auto;
     }
 
+    .sm\:flex-row {
+      flex-direction: row;
+    }
+
     .sm\:items-center {
       align-items: center;
     }
@@ -12913,8 +12947,16 @@
       align-items: flex-start;
     }
 
+    .sm\:justify-between {
+      justify-content: space-between;
+    }
+
     .sm\:px-0 {
       padding-inline: calc(var(--spacing) * 0);
+    }
+
+    .sm\:px-6 {
+      padding-inline: calc(var(--spacing) * 6);
     }
 
     .sm\:\[--scale-enter\:100\%\] {
