@@ -366,6 +366,7 @@ export interface GoogleMotionPhotoOptions {
 
 /**
  * 生成 Google Motion Photo 文件（JPEG + MP4 trailer）
+ * @see https://linux.do/t/topic/254195
  * @param options 构建参数
  * @returns 是否生成成功
  */

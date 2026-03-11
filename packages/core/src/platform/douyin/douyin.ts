@@ -266,7 +266,7 @@ export class DouYin extends Base {
                             outputPath: motionPhotoCoverPath
                           })
                           if (motionPhotoCreated) {
-                            // temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
+                            temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
                             const motionPhotoCover = Config.upload.imageSendMode === 'base64'
                               ? `base64://${(fs.readFileSync(motionPhotoCoverPath)).toString('base64')}`
                               : `file://${motionPhotoCoverPath}`
