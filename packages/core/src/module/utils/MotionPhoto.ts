@@ -1,3 +1,5 @@
+// 参考文章 https://blog.zzbd.org/motion-live-photo-webui
+// 参考项目 https://github.com/flashlab/motion-live-photo
 import fs from 'node:fs'
 import path from 'node:path'
 
