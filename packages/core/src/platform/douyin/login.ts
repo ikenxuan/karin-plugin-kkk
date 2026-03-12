@@ -272,6 +272,18 @@ export const douyinLogin = async (e: Message) => {
                 const cookies = await puppeteer.browser.cookies()
                 logger.debug(`获取到 ${cookies.length} 个 cookies`)
                 const cookieString = cookies.map(cookie => `${cookie.name}=${cookie.value}`).join('; ')
+                
+                // 检测关键 cookie 参数
+                const hasSessionidSs = cookies.some(cookie => cookie.name === 'sessionid_ss')
+                const hasTtwid = cookies.some(cookie => cookie.name === 'ttwid')
+                logger.mark(`Cookie 参数检测: sessionid_ss=${hasSessionidSs}, ttwid=${hasTtwid}`)
+                
+                if (!hasSessionidSs || !hasTtwid) {
+                  logger.warn('警告：缺少关键 cookie 参数！')
+                  if (!hasSessionidSs) logger.warn('  - 缺少 sessionid_ss')
+                  if (!hasTtwid) logger.warn('  - 缺少 ttwid')
+                }
+                
                 logger.debug('开始保存 cookies...')
                 Config.Modify('cookies', 'douyin', cookieString)
                 logger.debug('cookies 保存完成')
