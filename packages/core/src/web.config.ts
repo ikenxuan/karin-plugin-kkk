@@ -1,9 +1,10 @@
 import os from 'node:os'
 
-import { components, defineConfig, logger } from 'node-karin'
+import { components, defineConfig } from 'node-karin'
 import _ from 'node-karin/lodash'
 
 import { Root } from '@/module'
+import { reloadAmagiConfig } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import { BilibiliWeb } from '@/platform/bilibili/web.config'
 import { DouyinWeb } from '@/platform/douyin/web.config'
@@ -917,12 +918,7 @@ export const webConfig = defineConfig({
 
     // 如果 cookies 或 request 配置有变化，重载 Amagi Client
     if (needReloadAmagi) {
-      try {
-        const { reloadAmagiConfig } = await import('@/module/utils/amagiClient')
-        reloadAmagiConfig()
-      } catch (error) {
-        logger.error(`[WebConfig] 重载 Amagi Client 失败: ${error}`)
-      }
+      reloadAmagiConfig()
     }
 
     return {

@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import path from 'node:path'
 
 import { logger } from 'node-karin'
@@ -82,8 +83,7 @@ export class StatisticsDBBase {
       logger.debug('[StatisticsDB] 正在连接数据库...')
 
       // 创建数据库连接
-      const fs = await import('node:fs/promises')
-      await fs.mkdir(path.dirname(this.dbPath), { recursive: true })
+      fs.mkdirSync(path.dirname(this.dbPath), { recursive: true })
       this.db = new sqlite3.Database(this.dbPath)
 
       // 创建表结构

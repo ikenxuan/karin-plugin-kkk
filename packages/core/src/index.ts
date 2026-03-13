@@ -2,6 +2,7 @@ import type { AdapterType, ImageElement, SendMessage } from 'node-karin'
 import karin, { BOT_CONNECT, config, logger } from 'node-karin'
 
 import { Root } from '@/module'
+import { Render } from '@/module/utils/Render'
 import { isSemverGreater } from '@/module/utils/semver'
 
 declare const __REQUIRE_KARIN_VERSION__: string
@@ -31,7 +32,6 @@ if (process.env.NODE_ENV !== 'development' && isSemverGreater(requireVersion, Ro
     // 生成警告图片
     let warningImage: ImageElement[] | null = null
     try {
-      const { Render } = await import('@/module/utils/Render')
       warningImage = await Render('other/version_warning', {
         requireVersion,
         currentVersion: Root.karinVersion
@@ -63,4 +63,4 @@ if (process.env.NODE_ENV !== 'development' && isSemverGreater(requireVersion, Ro
 }
 
 // ----------------- MAIN ENTRY -----------------
-await import('./setup')
+import './setup'

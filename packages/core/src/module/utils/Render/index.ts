@@ -1,7 +1,7 @@
 import pathModule from 'node:path'
 
 import type { ImageElement } from 'node-karin'
-import { karinPathHtml, render, segment } from 'node-karin'
+import { db, karinPathHtml, render, segment } from 'node-karin'
 import type {
   DataTypeMap,
   DynamicRenderPath,
@@ -13,6 +13,7 @@ import reactServerRender from 'template'
 import { Common, Root } from '@/module'
 import { Config } from '@/module/utils/Config'
 
+import { isSemverGreater } from '../semver'
 import { createQrCodePlugin } from './plugins'
 
 
@@ -50,8 +51,6 @@ export const Render = async <P extends DynamicRenderPath> (
   let hasUpdate = false
   if (!Config.app.RemoveWatermark) {
     try {
-      const { db } = await import('node-karin')
-      const { isSemverGreater } = await import('../semver')
       const UPDATE_LOCK_KEY = 'kkk:update:lock'
       const lockedVersion = await db.get(UPDATE_LOCK_KEY)
       if (typeof lockedVersion === 'string' && lockedVersion.length > 0) {
