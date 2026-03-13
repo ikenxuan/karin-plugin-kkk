@@ -1,3 +1,4 @@
+// 参考文章 https://blog.0to1.cf/posts/cn-motion-photo-format
 // 参考文章 https://blog.zzbd.org/motion-live-photo-webui
 // 参考项目 https://github.com/flashlab/motion-live-photo
 import fs from 'node:fs'
