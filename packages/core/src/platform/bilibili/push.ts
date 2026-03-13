@@ -628,6 +628,7 @@ export class Bilibilipush extends Base {
               case 'DYNAMIC_TYPE_DRAW': {
                 const imgArray = []
                 const temp: fileInfo[] = []
+                let hasGeneratedLivePhoto = false // 标记是否生成了实况图
                 const title = data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.title || 'bilibili_dynamic'
                 const images = data[dynamicId].Dynamic_Data.modules.module_dynamic.major &&
                   data[dynamicId].Dynamic_Data.modules.module_dynamic?.major?.draw?.items ||
@@ -708,6 +709,8 @@ export class Bilibilipush extends Base {
                         if (!hasPushedMotionPhotoCover) {
                           const imageUrl = await processImageUrl(imageSrc, title, index)
                           imgArray.push(segment.image(imageUrl))
+                        } else {
+                          hasGeneratedLivePhoto = true // 标记已生成实况图
                         }
                       }
                       
@@ -721,6 +724,19 @@ export class Bilibilipush extends Base {
                     imgArray.push(segment.image(imageUrl))
                   }
                 }
+                
+                // 如果生成了实况图，添加提示文字
+                if (hasGeneratedLivePhoto) {
+                  const systemTips: Record<string, string> = {
+                    google: 'Google 相册',
+                    xiaomi: '小米相册（支持实况照片的任何版本）、Google 相册',
+                    oppo: 'OPPO 相册、小米相册（较新版本）、Google 相册',
+                    huawei_honor: '华为/荣耀相册（理论可行但未实测）'
+                  }
+                  const tip = systemTips[Config.app.livePhotoSystem] || 'Google 相册'
+                  imgArray.push(segment.text(`💡 提示：保存原图到 ${tip} 即可识别为实况图`))
+                }
+                
                 const forwardMsg = common.makeForward(imgArray, botId, bot.account.name)
                 try {
                   await bot.sendForwardMsg(Contact, forwardMsg, {

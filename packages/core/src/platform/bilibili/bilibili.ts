@@ -372,6 +372,7 @@ export class Bilibili extends Base {
           case DynamicType.DRAW: {
             const imgArray = []
             const temp: fileInfo[] = []
+            let hasGeneratedLivePhoto = false // 标记是否生成了实况图
             const title = dynamicInfo.data.data.item.modules.module_dynamic.major.opus.title || 'bilibili_dynamic'
             for (const [index, img] of dynamicInfo.data.data.item.modules.module_dynamic.major.opus.pics.entries()) {
               if (img.url) {
@@ -453,6 +454,8 @@ export class Bilibili extends Base {
                       if (!hasPushedMotionPhotoCover) {
                         const imageUrl = await processImageUrl(img.url, title, index)
                         imgArray.push(segment.image(imageUrl))
+                      } else {
+                        hasGeneratedLivePhoto = true // 标记已生成实况图
                       }
                     }
                     
@@ -465,6 +468,18 @@ export class Bilibili extends Base {
                   imgArray.push(segment.image(imageUrl))
                 }
               }
+            }
+
+            // 如果生成了实况图，添加提示文字
+            if (hasGeneratedLivePhoto) {
+              const systemTips: Record<string, string> = {
+                google: 'Google 相册',
+                xiaomi: '小米相册（支持实况照片的任何版本）、Google 相册',
+                oppo: 'OPPO 相册、小米相册（较新版本）、Google 相册',
+                huawei_honor: '华为/荣耀相册（理论可行但未实测）'
+              }
+              const tip = systemTips[Config.app.livePhotoSystem] || 'Google 相册'
+              imgArray.push(segment.text(`💡 提示：保存原图到 ${tip} 即可识别为实况图`))
             }
 
             if (imgArray.length === 1) this.e.reply(imgArray[0])

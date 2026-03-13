@@ -471,6 +471,7 @@ export class DouYinpush extends Base {
                 // 合辑处理逻辑
                 const images: any[] = []
                 const temp: fileInfo[] = []
+                let hasGeneratedLivePhoto = false // 标记是否生成了实况图
 
                 /** 下载 BGM（如果存在） */
                 let liveimgbgm: fileInfo | null = null
@@ -593,12 +594,26 @@ export class DouYinpush extends Base {
                       if (!hasPushedMotionPhotoCover) {
                         const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
                         images.push(segment.image(imageUrl))
+                      } else {
+                        hasGeneratedLivePhoto = true // 标记已生成实况图
                       }
                     }
                     
                     logger.mark('正在尝试删除缓存文件')
                     await Common.removeFile(liveimg.filepath, true)
                   }
+                }
+
+                // 如果生成了实况图，添加提示文字
+                if (hasGeneratedLivePhoto) {
+                  const systemTips: Record<string, string> = {
+                    google: 'Google 相册',
+                    xiaomi: '小米相册（支持实况照片的任何版本）、Google 相册',
+                    oppo: 'OPPO 相册、小米相册（较新版本）、Google 相册',
+                    huawei_honor: '华为/荣耀相册（理论可行但未实测）'
+                  }
+                  const tip = systemTips[Config.app.livePhotoSystem] || 'Google 相册'
+                  images.push(segment.text(`💡 提示：保存原图到 ${tip} 即可识别为实况图`))
                 }
 
                 const bot = karin.getBot(botId) as AdapterType
@@ -626,6 +641,7 @@ export class DouYinpush extends Base {
                   // 包含 live 图，需要特殊处理
                   const processedImages: any[] = []
                   const temp: fileInfo[] = []
+                  let hasGeneratedLivePhoto = false // 标记是否生成了实况图
 
                   /** 下载 BGM（如果存在） */
                   let liveimgbgm: fileInfo | null = null
@@ -743,12 +759,26 @@ export class DouYinpush extends Base {
                         if (!hasPushedMotionPhotoCover) {
                           const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
                           processedImages.push(segment.image(imageUrl))
+                        } else {
+                          hasGeneratedLivePhoto = true // 标记已生成实况图
                         }
                       }
                       
                       logger.mark('正在尝试删除缓存文件')
                       await Common.removeFile(liveimg.filepath, true)
                     }
+                  }
+
+                  // 如果生成了实况图，添加提示文字
+                  if (hasGeneratedLivePhoto) {
+                    const systemTips: Record<string, string> = {
+                      google: 'Google 相册',
+                      xiaomi: '小米相册（支持实况照片的任何版本）、Google 相册',
+                      oppo: 'OPPO 相册、小米相册（较新版本）、Google 相册',
+                      huawei_honor: '华为/荣耀相册（理论可行但未实测）'
+                    }
+                    const tip = systemTips[Config.app.livePhotoSystem] || 'Google 相册'
+                    processedImages.push(segment.text(`💡 提示：保存原图到 ${tip} 即可识别为实况图`))
                   }
 
                   const bot = karin.getBot(botId) as AdapterType
