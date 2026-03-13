@@ -2,6 +2,28 @@
 
 # Changelog
 
+## [2.25.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.25.1...v2.25.2) (2026-03-13)
+
+
+### 🧰 其他更新
+
+* 标记 ([8e84440](https://github.com/ikenxuan/karin-plugin-kkk/commit/8e844408389613d5c7a80cd8254b5237652c18d3))
+
+
+### ♻️ 代码重构
+
+* art-template，有缘再见 ([a99f41e](https://github.com/ikenxuan/karin-plugin-kkk/commit/a99f41e383635a83e765f7c67dd76746983d2f72))
+
+
+### ⚙️ 配置变更
+
+* 新增 `Live Photo 处理和发送方式` 配置 ([5cf4dd5](https://github.com/ikenxuan/karin-plugin-kkk/commit/5cf4dd5a1e7eb075ed3628f5446da61198e898ac))
+
+
+### 💯 细节优化
+
+* 给所有命令加上错误处理器 ([af57dc7](https://github.com/ikenxuan/karin-plugin-kkk/commit/af57dc78d3395794598f1230a2761954e9175481))
+
 ## [2.25.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.25.0...v2.25.1) (2026-03-11)
 
 
