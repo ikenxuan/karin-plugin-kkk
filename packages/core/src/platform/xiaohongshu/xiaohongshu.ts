@@ -40,6 +40,9 @@ export class Xiaohongshu extends Base {
   }
 
   async XiaohongshuHandler (data: XiaohongshuIdData) {
+    if (Config.cookies.xiaohongshu === '') {
+      throw new Error('我还没有小红书的 Cookies，暂时无法解析呢 ~')
+    }
     Config.app.parseTip && await this.e.reply('检测到小红书链接，开始解析')
     const NoteData = await this.amagi.xiaohongshu.fetcher.fetchNoteDetail({
       typeMode: 'strict',
