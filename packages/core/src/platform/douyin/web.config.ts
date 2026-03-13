@@ -88,7 +88,7 @@ export const DouyinWeb = (all: ConfigType) => {
               label: '合辑 Live 图 BGM 合并方式',
               orientation: 'horizontal',
               defaultValue: all.douyin.liveImageMergeMode.toString(),
-              isDisabled: !all.douyin.switch,
+              isDisabled: !all.douyin.switch || all.app.livePhotoMode === 'livephoto_only',
               radio: [
                 components.radio.create('liveImageMergeMode:radio-1', {
                   label: '连续',

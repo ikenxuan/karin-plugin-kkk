@@ -651,29 +651,43 @@ export class Bilibilipush extends Base {
                       if (staticImg.filepath) {
                         temp.push({ filepath: staticImg.filepath, totalBytes: 0 })
                       }
+                      
+                      // 根据 livePhotoMode 配置决定处理方式
+                      const livePhotoMode = Config.app.livePhotoMode ?? 'video_and_livephoto'
+                      const shouldGenerateVideo = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'video_only'
+                      const shouldGenerateLivePhoto = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'livephoto_only'
+                      
                       const loopCount = 3
                       if (!staticImg.filepath) {
                         await Common.removeFile(livePhoto.filepath, true)
                         continue
                       }
-                      const result = await loopVideoWithTransition({
-                        inputPath: livePhoto.filepath,
-                        outputPath,
-                        loopCount,
-                        staticImagePath: staticImg.filepath,
-                        transitionEnabled: loopCount > 1
-                      })
-                      const success = result.success
+                      
+                      // 生成视频
+                      if (shouldGenerateVideo) {
+                        const result = await loopVideoWithTransition({
+                          inputPath: livePhoto.filepath,
+                          outputPath,
+                          loopCount,
+                          staticImagePath: staticImg.filepath,
+                          transitionEnabled: loopCount > 1
+                        })
+                        const success = result.success
 
-                      if (success) {
-                        const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
-                        fs.renameSync(outputPath, filePath)
-                        logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
-                        temp.push({ filepath: filePath, totalBytes: 0 })
-                        const videoPath = Config.upload.videoSendMode === 'base64'
-                          ? `base64://${(fs.readFileSync(filePath)).toString('base64')}`
-                          : `file://${filePath}`
-                        imgArray.push(segment.video(videoPath))
+                        if (success) {
+                          const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
+                          fs.renameSync(outputPath, filePath)
+                          logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
+                          temp.push({ filepath: filePath, totalBytes: 0 })
+                          const videoPath = Config.upload.videoSendMode === 'base64'
+                            ? `base64://${(fs.readFileSync(filePath)).toString('base64')}`
+                            : `file://${filePath}`
+                          imgArray.push(segment.video(videoPath))
+                        }
+                      }
+                      
+                      // 生成实况图
+                      if (shouldGenerateLivePhoto) {
                         let hasPushedMotionPhotoCover = false
                         if (staticImg.filepath) {
                           const motionPhotoCoverPath = Common.tempDri.images + `MVIMG_${Date.now()}_${index}.jpg`
@@ -695,11 +709,11 @@ export class Bilibilipush extends Base {
                           const imageUrl = await processImageUrl(imageSrc, title, index)
                           imgArray.push(segment.image(imageUrl))
                         }
-                        logger.mark('正在尝试删除缓存文件')
-                        await Common.removeFile(livePhoto.filepath, true)
-                        continue
                       }
+                      
+                      logger.mark('正在尝试删除缓存文件')
                       await Common.removeFile(livePhoto.filepath, true)
+                      continue
                     }
                   }
                   if (imageSrc) {

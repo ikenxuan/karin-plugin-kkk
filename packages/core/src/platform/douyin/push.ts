@@ -534,62 +534,70 @@ export class DouYinpush extends Base {
                       }
                       staticImgPath = staticImg.filepath ?? ''
                     }
-                    const transitionEnabled = loopCount > 1 && Boolean(staticImgPath)
-                    const safeStaticPath = staticImgPath || liveimg.filepath
-                    const result = await loopVideoWithTransition({
-                      inputPath: liveimg.filepath,
-                      outputPath,
-                      loopCount,
-                      staticImagePath: safeStaticPath,
-                      transitionEnabled,
-                      bgmPath: liveimgbgm?.filepath,
-                      mergeMode,
-                      context: bgmContext ?? undefined
-                    })
-                    const success = result.success
-                    if (mergeMode === 'continuous' && result.context) {
-                      bgmContext = result.context
+                    
+                    // 根据 livePhotoMode 配置决定处理方式
+                    const livePhotoMode = Config.app.livePhotoMode ?? 'video_and_livephoto'
+                    const shouldGenerateVideo = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'video_only'
+                    const shouldGenerateLivePhoto = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'livephoto_only'
+                    
+                    // 生成视频
+                    if (shouldGenerateVideo) {
+                      const transitionEnabled = loopCount > 1 && Boolean(staticImgPath)
+                      const safeStaticPath = staticImgPath || liveimg.filepath
+                      const result = await loopVideoWithTransition({
+                        inputPath: liveimg.filepath,
+                        outputPath,
+                        loopCount,
+                        staticImagePath: safeStaticPath,
+                        transitionEnabled,
+                        bgmPath: liveimgbgm?.filepath,
+                        mergeMode,
+                        context: bgmContext ?? undefined
+                      })
+                      const success = result.success
+                      if (mergeMode === 'continuous' && result.context) {
+                        bgmContext = result.context
+                      }
+
+                      if (success) {
+                        const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
+                        fs.renameSync(outputPath, filePath)
+                        logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
+                        temp.push({ filepath: filePath, totalBytes: 0 })
+                        const videoPath = Config.upload.videoSendMode === 'base64'
+                          ? `base64://${(fs.readFileSync(filePath)).toString('base64')}`
+                          : `file://${filePath}`
+                        images.push(segment.video(videoPath))
+                      }
                     }
 
-                    if (success) {
-                      const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
-                      fs.renameSync(outputPath, filePath)
-                      logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
-                      temp.push({ filepath: filePath, totalBytes: 0 })
-                      const videoPath = Config.upload.videoSendMode === 'base64'
-                        ? `base64://${(fs.readFileSync(filePath)).toString('base64')}`
-                        : `file://${filePath}`
-                      images.push(segment.video(videoPath))
-
-                      // clip_type === 5 是 livePhoto，添加封面静态图
-                      if (item.clip_type === 5 && item.url_list?.[0]) {
-                        let hasPushedMotionPhotoCover = false
-                        if (staticImgPath) {
-                          const motionPhotoCoverPath = Common.tempDri.images + `MVIMG_${format(new Date(), 'yyyyMMdd_HHmmss_SSS')}_${index}.jpg`
-                          const motionPhotoCreated = await buildGoogleMotionPhoto({
-                            imagePath: staticImgPath,
-                            videoPath: liveimg.filepath,
-                            outputPath: motionPhotoCoverPath
-                          })
-                          if (motionPhotoCreated) {
-                            temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
-                            const motionPhotoCover = Config.upload.imageSendMode === 'base64'
-                              ? `base64://${(fs.readFileSync(motionPhotoCoverPath)).toString('base64')}`
-                              : `file://${motionPhotoCoverPath}`
-                            images.push(segment.image(motionPhotoCover))
-                            hasPushedMotionPhotoCover = true
-                          }
-                        }
-                        if (!hasPushedMotionPhotoCover) {
-                          const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
-                          images.push(segment.image(imageUrl))
+                    // 生成实况图（clip_type === 5 是 livePhoto）
+                    if (shouldGenerateLivePhoto && item.clip_type === 5 && item.url_list?.[0]) {
+                      let hasPushedMotionPhotoCover = false
+                      if (staticImgPath) {
+                        const motionPhotoCoverPath = Common.tempDri.images + `MVIMG_${format(new Date(), 'yyyyMMdd_HHmmss_SSS')}_${index}.jpg`
+                        const motionPhotoCreated = await buildGoogleMotionPhoto({
+                          imagePath: staticImgPath,
+                          videoPath: liveimg.filepath,
+                          outputPath: motionPhotoCoverPath
+                        })
+                        if (motionPhotoCreated) {
+                          temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
+                          const motionPhotoCover = Config.upload.imageSendMode === 'base64'
+                            ? `base64://${(fs.readFileSync(motionPhotoCoverPath)).toString('base64')}`
+                            : `file://${motionPhotoCoverPath}`
+                          images.push(segment.image(motionPhotoCover))
+                          hasPushedMotionPhotoCover = true
                         }
                       }
-                      logger.mark('正在尝试删除缓存文件')
-                      await Common.removeFile(liveimg.filepath, true)
-                    } else {
-                      await Common.removeFile(liveimg.filepath, true)
+                      if (!hasPushedMotionPhotoCover) {
+                        const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
+                        images.push(segment.image(imageUrl))
+                      }
                     }
+                    
+                    logger.mark('正在尝试删除缓存文件')
+                    await Common.removeFile(liveimg.filepath, true)
                   }
                 }
 
@@ -676,62 +684,70 @@ export class DouYinpush extends Base {
                         }
                         staticImgPath = staticImg.filepath ?? ''
                       }
-                      const transitionEnabled = loopCount > 1 && Boolean(staticImgPath)
-                      const safeStaticPath = staticImgPath || liveimg.filepath
-                      const result = await loopVideoWithTransition({
-                        inputPath: liveimg.filepath,
-                        outputPath,
-                        loopCount,
-                        staticImagePath: safeStaticPath,
-                        transitionEnabled,
-                        bgmPath: liveimgbgm?.filepath,
-                        mergeMode,
-                        context: bgmContext ?? undefined
-                      })
-                      const success = result.success
-                      if (mergeMode === 'continuous' && result.context) {
-                        bgmContext = result.context
+                      
+                      // 根据 livePhotoMode 配置决定处理方式
+                      const livePhotoMode = Config.app.livePhotoMode ?? 'video_and_livephoto'
+                      const shouldGenerateVideo = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'video_only'
+                      const shouldGenerateLivePhoto = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'livephoto_only'
+                      
+                      // 生成视频
+                      if (shouldGenerateVideo) {
+                        const transitionEnabled = loopCount > 1 && Boolean(staticImgPath)
+                        const safeStaticPath = staticImgPath || liveimg.filepath
+                        const result = await loopVideoWithTransition({
+                          inputPath: liveimg.filepath,
+                          outputPath,
+                          loopCount,
+                          staticImagePath: safeStaticPath,
+                          transitionEnabled,
+                          bgmPath: liveimgbgm?.filepath,
+                          mergeMode,
+                          context: bgmContext ?? undefined
+                        })
+                        const success = result.success
+                        if (mergeMode === 'continuous' && result.context) {
+                          bgmContext = result.context
+                        }
+
+                        if (success) {
+                          const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
+                          fs.renameSync(outputPath, filePath)
+                          logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
+                          temp.push({ filepath: filePath, totalBytes: 0 })
+                          const videoPath = Config.upload.videoSendMode === 'base64'
+                            ? `base64://${(fs.readFileSync(filePath)).toString('base64')}`
+                            : `file://${filePath}`
+                          processedImages.push(segment.video(videoPath))
+                        }
                       }
 
-                      if (success) {
-                        const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
-                        fs.renameSync(outputPath, filePath)
-                        logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
-                        temp.push({ filepath: filePath, totalBytes: 0 })
-                        const videoPath = Config.upload.videoSendMode === 'base64'
-                          ? `base64://${(fs.readFileSync(filePath)).toString('base64')}`
-                          : `file://${filePath}`
-                        processedImages.push(segment.video(videoPath))
-
-                        // clip_type === 5 是 livePhoto，添加封面静态图
-                        if (item.clip_type === 5 && item.url_list?.[0]) {
-                          let hasPushedMotionPhotoCover = false
-                          if (staticImgPath) {
-                            const motionPhotoCoverPath = Common.tempDri.images + `MVIMG_${format(new Date(), 'yyyyMMdd_HHmmss_SSS')}_${index}.jpg`
-                            const motionPhotoCreated = await buildGoogleMotionPhoto({
-                              imagePath: staticImgPath,
-                              videoPath: liveimg.filepath,
-                              outputPath: motionPhotoCoverPath
-                            })
-                            if (motionPhotoCreated) {
-                              temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
-                              const motionPhotoCover = Config.upload.imageSendMode === 'base64'
-                                ? `base64://${(fs.readFileSync(motionPhotoCoverPath)).toString('base64')}`
-                                : `file://${motionPhotoCoverPath}`
-                              processedImages.push(segment.image(motionPhotoCover))
-                              hasPushedMotionPhotoCover = true
-                            }
-                          }
-                          if (!hasPushedMotionPhotoCover) {
-                            const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
-                            processedImages.push(segment.image(imageUrl))
+                      // 生成实况图（clip_type === 5 是 livePhoto）
+                      if (shouldGenerateLivePhoto && item.clip_type === 5 && item.url_list?.[0]) {
+                        let hasPushedMotionPhotoCover = false
+                        if (staticImgPath) {
+                          const motionPhotoCoverPath = Common.tempDri.images + `MVIMG_${format(new Date(), 'yyyyMMdd_HHmmss_SSS')}_${index}.jpg`
+                          const motionPhotoCreated = await buildGoogleMotionPhoto({
+                            imagePath: staticImgPath,
+                            videoPath: liveimg.filepath,
+                            outputPath: motionPhotoCoverPath
+                          })
+                          if (motionPhotoCreated) {
+                            temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
+                            const motionPhotoCover = Config.upload.imageSendMode === 'base64'
+                              ? `base64://${(fs.readFileSync(motionPhotoCoverPath)).toString('base64')}`
+                              : `file://${motionPhotoCoverPath}`
+                            processedImages.push(segment.image(motionPhotoCover))
+                            hasPushedMotionPhotoCover = true
                           }
                         }
-                        logger.mark('正在尝试删除缓存文件')
-                        await Common.removeFile(liveimg.filepath, true)
-                      } else {
-                        await Common.removeFile(liveimg.filepath, true)
+                        if (!hasPushedMotionPhotoCover) {
+                          const imageUrl = await processImageUrl(item.url_list[0], Detail_Data.desc, index)
+                          processedImages.push(segment.image(imageUrl))
+                        }
                       }
+                      
+                      logger.mark('正在尝试删除缓存文件')
+                      await Common.removeFile(liveimg.filepath, true)
                     }
                   }
 

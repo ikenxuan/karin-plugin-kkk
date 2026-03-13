@@ -88,16 +88,29 @@ export const appConfigSchema: SectionSchema = {
     },
     { type: 'divider', title: 'Live Photo 兼容设置' },
     {
+      key: 'livePhotoMode',
+      type: 'radio',
+      label: 'Live Photo 处理和发送方式',
+      description: '解析遇到实况图时的处理和发送方式。注意：生成视频性能开销大，2C2G 服务器单张约需 20 秒',
+      orientation: 'horizontal',
+      options: [
+        { label: '视频 + 实况图', value: 'video_and_livephoto', description: '生成并发送仿 iPhone Live Photo 播放效果的视频（播放三次）+ 对应系统的实况图' },
+        { label: '仅视频', value: 'video_only', description: '仅生成并发送仿 iPhone Live Photo 播放效果的视频（播放三次）' },
+        { label: '仅实况图', value: 'livephoto_only', description: '仅生成并发送对应系统的实况图，性能开销小' }
+      ]
+    },
+    {
       key: 'livePhotoSystem',
       type: 'radio',
       label: 'Live Photo 静态图兼容系统',
-      description: '当解析到作品/动态包含 Live Photo 时，合并转发里发送的 Live Photo 静态图按所选系统生成',
+      description: '当解析到作品/动态包含 Live Photo 时，合并转发里发送的 Live Photo 静态图按所选系统生成。推荐 OPPO，兼容性最广',
       orientation: 'horizontal',
+      disabled: $ne('livePhotoMode', 'livephoto_only'),
       options: [
-        { label: 'Google', value: 'google' },
-        { label: '小米（HyperOS）', value: 'xiaomi' },
-        { label: 'OPPO（ColorOS）', value: 'oppo' },
-        { label: '华为/荣耀（HarmonyOS/MagicOS）', value: 'huawei_honor' }
+        { label: 'Google', value: 'google', description: 'Google Motion Photo 格式' },
+        { label: '小米（HyperOS）', value: 'xiaomi', description: '兼容小米（任何版本）和 Google，但无法被 OPPO 识别' },
+        { label: 'OPPO（ColorOS）', value: 'oppo', description: '推荐，兼容 OPPO、小米（较新版本）和 Google' },
+        { label: '华为/荣耀（HarmonyOS/MagicOS）', value: 'huawei_honor', description: '理论可行但未实测' }
       ]
     },
     { type: 'divider', title: 'API服务配置' },

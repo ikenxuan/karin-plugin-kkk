@@ -57,8 +57,21 @@ export interface appConfig {
   /** 分页渲染时，每页的高度，经测试最佳每页高度为12000px，默认12000px */
   multiPageHeight: number
 
-  /** 解析包含 Live Photo 作品时，发送的静态图兼容系统 */
+  /** 解析包含 Live Photo 作品时，发送的静态图兼容系统
+   * - 'google': Google Motion Photo 格式
+   * - 'xiaomi': 小米实况照片格式，兼容小米（支持实况照片的任何版本）和 Google，但无法被 OPPO 识别
+   * - 'oppo': OPPO 实况照片格式（推荐），兼容 OPPO、小米（较新版本）和 Google，兼容性最广
+   * - 'huawei_honor': 华为/荣耀实况照片格式（理论可行但未实测，作者无对应设备）
+   * 注：vivo（Origin OS）和 iPhone（iOS）需要独立的图片和同名视频文件，暂不支持
+   */
   livePhotoSystem: 'google' | 'xiaomi' | 'oppo' | 'huawei_honor'
+
+  /** 解析遇到实况图时的处理和发送方式
+   * - 'video_and_livephoto': 生成并发送仿 iPhone Live Photo 播放效果的视频（播放三次，性能开销大，2C2G 服务器约 20s/张）+ 对应系统的实况图
+   * - 'video_only': 仅生成并发送仿 iPhone Live Photo 播放效果的视频（播放三次，性能开销大，2C2G 服务器约 20s/张）
+   * - 'livephoto_only': 仅生成并发送对应系统的实况图
+   */
+  livePhotoMode: 'video_and_livephoto' | 'video_only' | 'livephoto_only'
 
   /** 扫码登录时使用的地址类型，可选值：'lan'（局域网IP）、'external'（外部地址） */
   qrLoginAddrType: 'lan' | 'external'

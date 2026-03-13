@@ -233,27 +233,67 @@ export const webConfig = defineConfig({
                 description: 'Live Photo 兼容设置',
                 descPosition: 20
               }),
+              components.radio.group('livePhotoMode', {
+                label: 'Live Photo 处理和发送方式',
+                description: '解析遇到实况图时的处理和发送方式。注意：生成视频性能开销大，2C2G 服务器单张约需 20 秒',
+                orientation: 'horizontal',
+                defaultValue: all.app.livePhotoMode || 'video_and_livephoto',
+                radio: [
+                  components.radio.create('livePhotoMode-video-and-livephoto', {
+                    label: '视频 + 实况图',
+                    description: '生成并发送仿 iPhone Live Photo 播放效果的视频（播放三次）+ 对应系统的实况图',
+                    value: 'video_and_livephoto'
+                  }),
+                  components.radio.create('livePhotoMode-video-only', {
+                    label: '仅视频',
+                    description: '仅生成并发送仿 iPhone Live Photo 播放效果的视频（播放三次）',
+                    value: 'video_only'
+                  }),
+                  components.radio.create('livePhotoMode-livephoto-only', {
+                    label: '仅实况图',
+                    description: '仅生成并发送对应系统的实况图，性能开销小',
+                    value: 'livephoto_only'
+                  })
+                ]
+              }),
               components.radio.group('livePhotoSystem', {
                 label: 'Live Photo 静态图兼容系统',
-                description: '当解析到作品/动态包含 Live Photo 时，合并转发里发送的 Live Photo 静态图按所选系统生成',
+                description: '当解析到作品/动态包含 Live Photo 时，合并转发里发送的 Live Photo 静态图按所选系统生成。推荐 OPPO，兼容性最广',
                 orientation: 'horizontal',
-                defaultValue: all.app.livePhotoSystem || 'google',
+                defaultValue: all.app.livePhotoSystem || 'oppo',
+                isDisabled: all.app.livePhotoMode === 'video_only',
                 radio: [
                   components.radio.create('livePhotoSystem-google', {
                     label: 'Google',
+                    description: 'Google Motion Photo 格式',
                     value: 'google'
                   }),
                   components.radio.create('livePhotoSystem-xiaomi', {
                     label: '小米（HyperOS）',
+                    description: '兼容小米（任何版本）和 Google，但无法被 OPPO 识别',
                     value: 'xiaomi'
                   }),
                   components.radio.create('livePhotoSystem-oppo', {
                     label: 'OPPO（ColorOS）',
+                    description: '推荐，兼容 OPPO、小米（较新版本）和 Google',
                     value: 'oppo'
                   }),
                   components.radio.create('livePhotoSystem-huawei-honor', {
                     label: '华为/荣耀（HarmonyOS/MagicOS）',
+                    description: '理论可行但未实测（作者无对应设备）',
                     value: 'huawei_honor'
+                  }),
+                  components.radio.create('livePhotoSystem-vivo', {
+                    label: 'vivo（Origin OS）',
+                    description: '需要独立的图片和同名视频文件，暂不支持',
+                    value: 'vivo',
+                    isDisabled: true
+                  }),
+                  components.radio.create('livePhotoSystem-iphone', {
+                    label: 'iPhone（iOS）',
+                    description: '需要独立的图片和同名视频文件，暂不支持',
+                    value: 'iphone',
+                    isDisabled: true
                   })
                 ]
               }),
