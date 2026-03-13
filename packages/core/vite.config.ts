@@ -9,6 +9,7 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
 import { copyTemplateAssetsPlugin, generateBuildMetadataPlugin, getKarinVersion } from './vite.plugin'
+import { injectStartTimerPlugin } from './vite.plugin/inject-start-timer'
 
 // 在ES模块中模拟__dirname
 const __filename = fileURLToPath(import.meta.url)
@@ -116,6 +117,7 @@ export default defineConfig({
     }),
     react(),
     tailwindcss(),
+    injectStartTimerPlugin(),
     generateBuildMetadataPlugin(__dirname),
     copyTemplateAssetsPlugin(__dirname)
   ]

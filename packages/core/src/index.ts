@@ -7,6 +7,16 @@ import { isSemverGreater } from '@/module/utils/semver'
 
 declare const __REQUIRE_KARIN_VERSION__: string
 
+/**
+ * 全局变量：插件加载起始时间
+ * 记录 main 入口设定的高精度时间戳，用于跨文件计算加载总耗时
+ */
+declare global {
+  var __kkkLoadStart: bigint | undefined
+}
+
+globalThis.__kkkLoadStart = process.hrtime.bigint()
+
 // ----------------- VERSION CHECK -----------------
 const requireVersion = typeof __REQUIRE_KARIN_VERSION__ !== 'undefined' ? __REQUIRE_KARIN_VERSION__ : '1.1145.14'
 // const requireVersion = '1.14514.1'
@@ -63,4 +73,5 @@ if (process.env.NODE_ENV !== 'development' && isSemverGreater(requireVersion, Ro
 }
 
 // ----------------- MAIN ENTRY -----------------
-import './setup'
+globalThis.__kkkLoadStart ??= process.hrtime.bigint()
+await import('./setup')
