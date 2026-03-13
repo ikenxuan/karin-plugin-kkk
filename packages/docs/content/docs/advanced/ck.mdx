@@ -23,10 +23,39 @@ Cookies 仅用于请求平台官方 API，不会上传到任何第三方。
 
 使用对应 APP 扫码即可自动保存 Cookies。
 
-## 方式二：浏览器获取
+## 方式二：浏览器插件获取（推荐）
+
+使用 Cookie Editor 浏览器插件快速获取 Cookies：
+
+### 安装插件
+
+- **Chrome 浏览器**：[Cookie Editor](https://chromewebstore.google.com/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm?hl=zh-CN&utm_source=ext_sidebar)
+- **Edge 浏览器**：在 Edge 扩展商店搜索 "Cookie Editor" 并安装
+
+### 使用步骤
 
 1. 打开浏览器，访问对应平台并登录
-2. 按 F12 打开开发者工具（不同浏览器打开方式不同，如 Chrome 和 Edge 按 F12 或右键点击页面选择“检查”）
+2. 点击浏览器工具栏中的 Cookie Editor 插件图标打开扩展
+3. 点击右下角的 "Export" 按钮（如图中标记 2）
+4. 选择 "Header String" 格式（如图中标记 3）
+5. 复制生成的完整 Cookie 字符串
+
+<Accordions>
+<Accordion title="Cookie Editor 插件使用教程">
+
+![Cookie Editor使用教程](/get_Cookies.png)
+
+</Accordion>
+</Accordions>
+
+<Callout type="info">
+请确保选择 "Header String" 格式，这样可以获取到完整的 Cookie 字符串形式。
+</Callout>
+
+## 方式三：浏览器开发者工具获取
+
+1. 打开浏览器，访问对应平台并登录
+2. 按 F12 打开开发者工具（不同浏览器打开方式不同，如 Chrome 和 Edge 按 F12 或右键点击页面选择"检查"）
 3. 切换到 Network（网络）标签
 4. 刷新页面，找到任意请求
 5. 在请求头中复制 Cookie 值
@@ -44,7 +73,7 @@ Cookies 仅用于请求平台官方 API，不会上传到任何第三方。
 </Accordion>
 </Accordions>
 
-## 方式三：移动端获取
+## 方式四：移动端获取
 
 使用 <LinkPreview url="https://viayoo.com/zh-cn" className="font-medium text-fd-primary hover:underline">Via 浏览器</LinkPreview>  访问平台网页版并登录：
 

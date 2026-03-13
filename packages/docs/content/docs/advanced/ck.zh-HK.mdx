@@ -23,10 +23,39 @@ Cookies 僅用於請求平台官方 API，唔會上傳到任何第三方。
 
 使用對應 APP 掃碼即可自動保存 Cookies。
 
-## 方式二：瀏覽器獲取
+## 方式二：瀏覽器插件獲取（推薦）
+
+使用 Cookie Editor 瀏覽器插件快速獲取 Cookies：
+
+### 安裝插件
+
+- **Chrome 瀏覽器**：[Cookie Editor](https://chromewebstore.google.com/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm?hl=zh-CN&utm_source=ext_sidebar)
+- **Edge 瀏覽器**：在 Edge 擴展商店搜索 "Cookie Editor" 並安裝
+
+### 使用步驟
 
 1. 打開瀏覽器，訪問對應平台並登錄
-2. 按 F12 打開開發者工具（不同瀏覽器打開方式不同，如 Chrome 同 Edge 按 F12 或右鍵點擊頁面選擇“檢查”）
+2. 點擊瀏覽器工具欄中嘅 Cookie Editor 插件圖標打開擴展
+3. 點擊右下角嘅 "Export" 按鈕（如圖中標記 2）
+4. 選擇 "Header String" 格式（如圖中標記 3）
+5. 複製生成嘅完整 Cookie 字符串
+
+<Accordions>
+<Accordion title="Cookie Editor 插件使用教程">
+
+![Cookie Editor使用教程](/get_Cookies.png)
+
+</Accordion>
+</Accordions>
+
+<Callout type="info">
+請確保選擇 "Header String" 格式，咁樣可以獲取到完整嘅 Cookie 字符串形式。
+</Callout>
+
+## 方式三：瀏覽器開發者工具獲取
+
+1. 打開瀏覽器，訪問對應平台並登錄
+2. 按 F12 打開開發者工具（不同瀏覽器打開方式不同，如 Chrome 同 Edge 按 F12 或右鍵點擊頁面選擇"檢查"）
 3. 切換到 Network（網絡）標籤
 4. 刷新頁面，搵到任意請求
 5. 在請求頭中複製 Cookie 值
@@ -44,7 +73,7 @@ Cookies 僅用於請求平台官方 API，唔會上傳到任何第三方。
 </Accordion>
 </Accordions>
 
-## 方式三：移動端獲取
+## 方式四：移動端獲取
 
 使用 <LinkPreview url="https://viayoo.com/zh-cn" className="font-medium text-fd-primary hover:underline">Via 瀏覽器</LinkPreview>  訪問平台網頁版並登錄：
 
