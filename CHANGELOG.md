@@ -2,6 +2,31 @@
 
 # Changelog
 
+## [2.26.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.25.2...v2.26.0) (2026-03-13)
+
+
+### ✨ 新功能
+
+* **小红书:** 笔记解析支持处理 Live Photo。处理HDR的元数据 ([cfe1ce5](https://github.com/ikenxuan/karin-plugin-kkk/commit/cfe1ce5472c45c21006efcf87a0122179c3ced85))
+
+
+### ⚡️ 性能优化
+
+* 移除部分动态导入 ([93bcc1b](https://github.com/ikenxuan/karin-plugin-kkk/commit/93bcc1badc613d53cc7e6a0aed62225a6da704b4))
+
+
+### 🧰 其他更新
+
+* 实况图的实现文件顶部添加参考文章 ([7dfedd2](https://github.com/ikenxuan/karin-plugin-kkk/commit/7dfedd28cb41847888ff7a7835e786c88996251e))
+* 控制台实验性新增插件加载时间（仅供参考） ([7104514](https://github.com/ikenxuan/karin-plugin-kkk/commit/71045141d7f2fca2327e0d240e17d638eb935238))
+* 控制台实验性新增插件加载时间（仅供参考） ([8be93d3](https://github.com/ikenxuan/karin-plugin-kkk/commit/8be93d3cd21518930218e5810c3eeb7f1a61199c))
+
+
+### 💯 细节优化
+
+* **小红书:** 没有ck的时候抛出对应的错误说明。 ([3054d9f](https://github.com/ikenxuan/karin-plugin-kkk/commit/3054d9f92c25b2300b259d93208a080ff69d321f))
+* 解析实况图时底部添加提示说明 ([677f3fc](https://github.com/ikenxuan/karin-plugin-kkk/commit/677f3fc5311bf267fc9e784b6366b0e972220773))
+
 ## [2.25.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.25.1...v2.25.2) (2026-03-13)
 
 
