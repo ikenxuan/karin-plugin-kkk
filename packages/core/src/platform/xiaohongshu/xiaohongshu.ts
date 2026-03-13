@@ -4,7 +4,7 @@ import { format } from 'date-fns'
 import { common, type Message, segment } from 'node-karin'
 import { logger } from 'node-karin'
 
-import { Base, baseHeaders, buildGoogleMotionPhoto, Common, downloadFile, downloadVideo, type LiveImageMergeOptions, loopVideoWithTransition, processImageUrl, Render } from '@/module'
+import { Base, baseHeaders, buildGoogleMotionPhoto, Common, downloadFile, type downLoadFileOptions, downloadVideo, type LiveImageMergeOptions, loopVideoWithTransition, processImageUrl, Render } from '@/module'
 import { Config } from '@/module/utils/Config'
 
 import { xiaohongshuComments } from './comments'
@@ -125,7 +125,11 @@ export class Xiaohongshu extends Base {
           const staticImg = await downloadFile(staticImageUrl, {
             title: `static_${Date.now()}_${index}.jpg`,
             filepath: staticImgTempPath,
-            headers: baseHeaders
+            headers: {
+              ...baseHeaders,
+              Referer: 'https://www.xiaohongshu.com',
+              Cookie: Config.cookies.xiaohongshu
+            } as downLoadFileOptions['headers']
           })
           
           let staticImgPath = ''
@@ -144,7 +148,8 @@ export class Xiaohongshu extends Base {
               filepath: livePhotoPath,
               headers: {
                 ...baseHeaders,
-                Referer: livePhotoVideo.master_url
+                Referer: 'https://www.xiaohongshu.com',
+                Cookie: Config.cookies.xiaohongshu
               }
             })
             
@@ -287,7 +292,8 @@ export class Xiaohongshu extends Base {
             },
             headers: {
               ...baseHeaders,
-              Referer: selectedVideo.master_url
+              Referer: 'https://www.xiaohongshu.com',
+              Cookie: Config.cookies.xiaohongshu
             }
           },
           {
