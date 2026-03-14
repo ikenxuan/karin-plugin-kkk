@@ -130,7 +130,7 @@ export class DouYin extends Base {
         // aweme_type: 0=视频, 68=图集, 163=文章
         const aweme_type = VideoData.data.aweme_detail.aweme_type
         const isArticle = aweme_type === 163
-        const isVideo = aweme_type === 0
+        const isVideo = aweme_type === 0 || aweme_type === 55
         
         const CommentsData = await this.amagi.douyin.fetcher.fetchWorkComments({
           aweme_id: data.aweme_id,
