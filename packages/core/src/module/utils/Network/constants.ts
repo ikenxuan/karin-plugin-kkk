@@ -1,4 +1,5 @@
 import type { AxiosRequestConfig } from 'node-karin/axios'
+import axios from 'node-karin/axios'
 
 /**
  * 错误代码到中文描述的映射
@@ -64,11 +65,69 @@ export const RECOVERABLE_KEYWORDS = [
 ]
 
 /**
+ * Chrome 版本数据地址
+ * @remarks
+ * 访问失败时将自动尝试代理站
+ */
+const CHROME_VERSIONS_URL = 'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json'
+/**
+ * 代理前缀
+ * @remarks
+ * 直接将目标地址拼接在此域名后面即可
+ */
+const PROXY_PREFIX = 'https://jiashu.1win.eu.org/'
+
+/**
+ * 构建浏览器 UA 字符串
+ * @param version - Chrome 版本号，例如 `146.0.7680.76`
+ * @returns UA 字符串
+ */
+const buildUserAgent = (version: string): string =>
+  `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${version} Safari/537.36 Edg/${version}`
+
+/**
+ * 获取最新稳定版 Chrome 版本号
+ * @param url - 版本源地址
+ * @param proxyPrefix - 代理前缀地址，当直连失败时使用
+ * @returns 成功返回版本号，失败返回 null
+ */
+const fetchLatestChromeVersion = async (url: string, proxyPrefix: string): Promise<string | null> => {
+  try {
+    const resp = await axios.get(url, { timeout: 15000 })
+    const version: unknown = (resp.data?.channels?.Stable?.version)
+    return typeof version === 'string' && version.length > 0 ? version : null
+  } catch {
+    try {
+      const resp = await axios.get(`${proxyPrefix}${url}`, { timeout: 15000 })
+      const version: unknown = (resp.data?.channels?.Stable?.version)
+      return typeof version === 'string' && version.length > 0 ? version : null
+    } catch {
+      return null
+    }
+  }
+}
+
+/**
+ * 默认 UA 字符串（降级兜底）
+ */
+const DEFAULT_UA =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0'
+
+/**
+ * 动态解析得到的 UA
+ * @remarks
+ * 优先使用「最新稳定版」Chrome 版本；失败时回退到内置 UA
+ */
+const RESOLVED_UA: string = await (async () => {
+  const latest = await fetchLatestChromeVersion(CHROME_VERSIONS_URL, PROXY_PREFIX)
+  return latest ? buildUserAgent(latest) : DEFAULT_UA
+})()
+
+/**
  * 默认请求头
  */
 export const BASE_HEADERS: AxiosRequestConfig['headers'] = {
   Accept: '*/*',
   'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
-  'User-Agent':
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0'
+  'User-Agent': RESOLVED_UA
 }
