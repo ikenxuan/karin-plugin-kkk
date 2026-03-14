@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.26.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.26.0...v2.26.1) (2026-03-14)
+
+
+### 🐛 错误修复
+
+* referer 错误 ([cd53fb7](https://github.com/ikenxuan/karin-plugin-kkk/commit/cd53fb7fc2e0a9759d904318b1cb7fdb86561c15))
+
+
+### 💯 细节优化
+
+* 自动获取最新浏览器版本 ([618244f](https://github.com/ikenxuan/karin-plugin-kkk/commit/618244fd32a3a917cadf35177e534782b2eafdbf))
+
 ## [2.26.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.25.2...v2.26.0) (2026-03-13)
 
 
