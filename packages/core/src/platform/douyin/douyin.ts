@@ -21,7 +21,7 @@ import {
   Networks,
   processImageUrl,
   Render,
-  uploadFile 
+  uploadFile
 } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
 import { douyinComments } from '@/platform/douyin'
@@ -80,27 +80,27 @@ export class DouYin extends Base {
     const aweme = VideoData.data.aweme_detail
     const content = JSON.parse(aweme.article_info.article_content)
     const fe_data = JSON.parse(aweme.article_info.fe_data)
-    
+
     logger.debug('文章数据提取完成')
     logger.debug(`文章标题: ${aweme.article_info.article_title}`)
     logger.debug(`图片数量: ${fe_data.image_list?.length || 0}`)
-    
+
     // 渲染文章作品
     const img = await Render('douyin/article-work', {
       title: aweme.article_info.article_title,
       markdown: content.markdown,
       images: fe_data.image_list || [],
       read_time: fe_data.read_time || 0,
-      
+
       // 互动数据
       dianzan: Count(aweme.statistics.digg_count),
       pinglun: Count(aweme.statistics.comment_count),
       shouchang: Count(aweme.statistics.collect_count),
       share: Count(aweme.statistics.share_count),
-      
+
       // 时间信息
       create_time: format(fromUnixTime(aweme.create_time), 'yyyy-MM-dd HH:mm'),
-      
+
       // 用户信息
       avater_url: aweme.author.avatar_thumb.url_list[0],
       username: aweme.author.nickname,
@@ -108,11 +108,11 @@ export class DouYin extends Base {
       获赞: Count(aweme.author.total_favorited),
       关注: Count(aweme.author.following_count),
       粉丝: Count(aweme.author.follower_count),
-      
+
       // 分享链接
       share_url: `https://www.douyin.com/article/${aweme.aweme_id}`
     })
-    
+
     await this.e.reply(img)
     return true
   }
@@ -125,13 +125,13 @@ export class DouYin extends Base {
           aweme_id: data.aweme_id,
           typeMode: 'strict'
         })
-        
+
         // 根据 API 返回的数据判断作品类型，而不是依赖 URL
         // aweme_type: 0=视频, 68=图集, 163=文章
         const aweme_type = VideoData.data.aweme_detail.aweme_type
         const isArticle = aweme_type === 163
         const isVideo = aweme_type === 0 || aweme_type === 55
-        
+
         const CommentsData = await this.amagi.douyin.fetcher.fetchWorkComments({
           aweme_id: data.aweme_id,
           number: Config.douyin.numcomment,
@@ -153,25 +153,25 @@ export class DouYin extends Base {
               let image_url = ''
               // 使用可选链和空值合并操作符确保安全访问
               const images = VideoData.data.aweme_detail.images ?? []
-              
+
               // 检查是否包含 live 图（clip_type !== 2）
-              const hasLiveImage = images.some(item => item.clip_type !== 2)
-              
+              const hasLiveImage = images.some(item => (item.clip_type ?? 2) !== 2)
+
               if (hasLiveImage) {
                 // 包含 live 图，需要特殊处理
                 const processedImages: Elements[] = []
                 const temp: fileInfo[] = []
                 let hasGeneratedLivePhoto = false // 标记是否生成了实况图
-                
+
                 // 设置标题
                 const title = VideoData.data.aweme_detail.preview_title.substring(0, 50).replace(/[\\/:*?"<>|\r\n]/g, ' ')
                 g_title = title
-                
+
                 /** 下载 BGM（如果存在） */
                 let liveimgbgm: fileInfo | null = null
                 let bgmContext: LiveImageMergeOptions['context'] | null = null
                 const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
-                
+
                 if (VideoData.data.aweme_detail.music) {
                   let mp3Path = ''
                   if (VideoData.data.aweme_detail.music.play_url.uri === '') {
@@ -180,7 +180,7 @@ export class DouYin extends Base {
                   } else {
                     mp3Path = VideoData.data.aweme_detail.music.play_url.uri
                   }
-                  
+
                   liveimgbgm = await downloadFile(
                     mp3Path,
                     {
@@ -190,16 +190,16 @@ export class DouYin extends Base {
                   )
                   temp.push(liveimgbgm)
                 }
-                
+
                 for (const [index, imageItem] of images.entries()) {
                   imagenum++
-                  
+
                   // 静态图片，clip_type为2或undefined
                   if (imageItem.clip_type === 2 || imageItem.clip_type === undefined) {
                     image_url = imageItem.url_list[2] || imageItem.url_list[1]
                     const imageUrl = await processImageUrl(image_url, g_title, index)
                     processedImages.push(segment.image(imageUrl))
-                    
+
                     if (Config.app.removeCache === false) {
                       mkdirSync(`${Common.tempDri.images}${g_title}`)
                       const path = `${Common.tempDri.images}${g_title}/${index + 1}.png`
@@ -207,7 +207,7 @@ export class DouYin extends Base {
                     }
                     continue
                   }
-                  
+
                   /** live 图 */
                   const liveimg = await downloadFile(
                     `https://aweme.snssdk.com/aweme/v1/play/?video_id=${imageItem.video.play_addr_h264.uri}&ratio=1080p&line=0`,
@@ -216,7 +216,7 @@ export class DouYin extends Base {
                       headers: this.headers
                     }
                   )
-                  
+
                   if (liveimg.filepath) {
                     const outputPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
                     const loopCount = imageItem.clip_type === 4 ? 1 : 3
@@ -230,12 +230,12 @@ export class DouYin extends Base {
                       temp.push({ filepath: staticImg.filepath, totalBytes: 0 })
                       staticImgPath = staticImg.filepath ?? ''
                     }
-                    
+
                     // 根据 livePhotoMode 配置决定处理方式
                     const livePhotoMode = Config.app.livePhotoMode ?? 'video_and_livephoto'
                     const shouldGenerateVideo = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'video_only'
                     const shouldGenerateLivePhoto = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'livephoto_only'
-                    
+
                     // 生成视频
                     if (shouldGenerateVideo) {
                       const transitionEnabled = loopCount > 1 && Boolean(staticImgPath)
@@ -254,7 +254,7 @@ export class DouYin extends Base {
                       if (mergeMode === 'continuous' && result.context) {
                         bgmContext = result.context
                       }
-                      
+
                       if (success) {
                         const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
                         fs.renameSync(outputPath, filePath)
@@ -266,7 +266,7 @@ export class DouYin extends Base {
                         processedImages.push(segment.video(videoPath))
                       }
                     }
-                    
+
                     // 生成实况图（clip_type === 5 是 livePhoto）
                     if (shouldGenerateLivePhoto && imageItem.clip_type === 5 && imageItem.url_list?.[0]) {
                       let hasPushedMotionPhotoCover = false
@@ -293,12 +293,12 @@ export class DouYin extends Base {
                         hasGeneratedLivePhoto = true // 标记已生成实况图
                       }
                     }
-                    
+
                     logger.mark('正在尝试删除缓存文件')
                     await Common.removeFile(liveimg.filepath, true)
                   }
                 }
-                
+
                 // 如果生成了实况图，添加提示文字
                 if (hasGeneratedLivePhoto) {
                   const systemTips: Record<string, string> = {
@@ -310,7 +310,7 @@ export class DouYin extends Base {
                   const tip = systemTips[Config.app.livePhotoSystem] || 'Google 相册'
                   processedImages.push(segment.text(`💡 提示：保存原图到 ${tip} 即可识别为实况图`))
                 }
-                
+
                 // 使用合并转发发送
                 const Element = common.makeForward(
                   processedImages,
@@ -329,7 +329,7 @@ export class DouYin extends Base {
                     await Common.removeFile(item.filepath, true)
                   }
                 }
-                
+
                 // 标记已处理 live 图，不需要单独发送音频
                 this.hasProcessedLiveImage = true
               } else {
@@ -378,12 +378,12 @@ export class DouYin extends Base {
               const images: Elements[] = []
               const temp: fileInfo[] = []
               let hasGeneratedLivePhoto = false // 标记是否生成了实况图
-              
+
               /** 下载 BGM（如果存在） */
               let liveimgbgm: fileInfo | null = null
               let bgmContext: LiveImageMergeOptions['context'] | null = null
               const mergeMode = Config.douyin.liveImageMergeMode ?? 'independent'
-              
+
               if (VideoData.data.aweme_detail.music) {
                 let mp3Path = ''
                 // 该声音由于版权原因在当前地区不可用
@@ -393,7 +393,7 @@ export class DouYin extends Base {
                 } else {
                   mp3Path = VideoData.data.aweme_detail.music.play_url.uri
                 }
-                
+
                 liveimgbgm = await downloadFile(
                   mp3Path,
                   {
@@ -403,7 +403,7 @@ export class DouYin extends Base {
                 )
                 temp.push(liveimgbgm)
               }
-              
+
               const images1 = VideoData.data.aweme_detail.images ?? []
               if (!images1.length) {
                 logger.debug('未获取到合辑的图片数据')
@@ -439,12 +439,12 @@ export class DouYin extends Base {
                     temp.push({ filepath: staticImg.filepath, totalBytes: 0 })
                     staticImgPath = staticImg.filepath ?? ''
                   }
-                  
+
                   // 根据 livePhotoMode 配置决定处理方式
                   const livePhotoMode = Config.app.livePhotoMode ?? 'video_and_livephoto'
                   const shouldGenerateVideo = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'video_only'
                   const shouldGenerateLivePhoto = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'livephoto_only'
-                  
+
                   // 生成视频
                   if (shouldGenerateVideo) {
                     const transitionEnabled = loopCount > 1 && Boolean(staticImgPath)
@@ -475,7 +475,7 @@ export class DouYin extends Base {
                       images.push(segment.video(videoPath))
                     }
                   }
-                  
+
                   // 生成实况图（clip_type === 4和5 是 短片和livePhoto）
                   if (shouldGenerateLivePhoto && item.clip_type === 5 && item.url_list?.[0]) {
                     let hasPushedMotionPhotoCover = false
@@ -502,12 +502,12 @@ export class DouYin extends Base {
                       hasGeneratedLivePhoto = true // 标记已生成实况图
                     }
                   }
-                  
+
                   logger.mark('正在尝试删除缓存文件')
                   await Common.removeFile(livePhoto.filepath, true)
                 }
               }
-              
+
               // 如果生成了实况图，添加提示文字
               if (hasGeneratedLivePhoto) {
                 const systemTips: Record<string, string> = {
@@ -519,7 +519,7 @@ export class DouYin extends Base {
                 const tip = systemTips[Config.app.livePhotoSystem] || 'Google 相册'
                 images.push(segment.text(`💡 提示：保存原图到 ${tip} 即可识别为实况图`))
               }
-              
+
               const Element = common.makeForward(
                 images,
                 Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
@@ -564,7 +564,17 @@ export class DouYin extends Base {
           }
           // 图集、合辑、文章都发送BGM
           const haspath = music_url && !isVideo && music_url !== undefined && !this.hasProcessedLiveImage
-          haspath && await this.e.reply(segment.record(music_url, false))
+          if (haspath) {
+            const audioFile = await downloadFile(music_url, {
+              title: `Douyin_BGM_${Date.now()}.mp3`,
+              headers: this.headers
+            })
+            if (audioFile.filepath) {
+              const audioBase64 = `base64://${fs.readFileSync(audioFile.filepath).toString('base64')}`
+              await this.e.reply(segment.record(audioBase64, false))
+              await Common.removeFile(audioFile.filepath, true)
+            }
+          }
         }
 
         /** 视频 */
@@ -604,10 +614,10 @@ export class DouYin extends Base {
             // 构建回复内容数组
             const replyContent: SendMessage = []
             const { digg_count, share_count, collect_count, comment_count, recommend_count } = VideoData.data.aweme_detail.statistics
-            const coverImageUrl = isArticle 
+            const coverImageUrl = isArticle
               ? VideoData.data.aweme_detail.video.origin_cover.url_list[0]
               : isVideo
-                ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] 
+                ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0]
                 : VideoData.data.aweme_detail.images![0].url_list[0]
             const coverUrl = await processImageUrl(coverImageUrl, VideoData.data.aweme_detail.desc)
             const contentMap = {
@@ -650,10 +660,10 @@ export class DouYin extends Base {
                   gender: userProfile.data.user.gender ?? 0,
                   user_age: userProfile.data.user.user_age ?? 0
                 } : undefined,
-                image_url: isArticle 
+                image_url: isArticle
                   ? VideoData.data.aweme_detail.video.origin_cover.url_list[0]
                   : isVideo
-                    ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.dynamic_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover_original_scale?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0] 
+                    ? VideoData.data.aweme_detail.video.animated_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.dynamic_cover?.url_list[0] ?? VideoData.data.aweme_detail.video.cover_original_scale?.url_list[0] ?? VideoData.data.aweme_detail.video.cover.url_list[0]
                     : VideoData.data.aweme_detail.images![0].url_list![0],
                 cover_size: isArticle
                   ? (VideoData.data.aweme_detail.video.origin_cover ? {
@@ -747,7 +757,7 @@ export class DouYin extends Base {
             this.e.reply(img)
           }
         }
-        
+
         /** 发送视频 */
         if (sendvideofile && isVideo && !isArticle && Config.douyin.sendContent.includes('video')) {
           // 获取弹幕数据（如果开启弹幕烧录）
@@ -926,7 +936,15 @@ export class DouYin extends Base {
             `music_id: ${MusicData.data.music_info.id}`
           ]
         )
-        await this.e.reply(segment.record(MusicData.data.music_info.play_url.uri, false))
+        const musicFile = await downloadFile(MusicData.data.music_info.play_url.uri, {
+          title: `Douyin_Music_${Date.now()}.mp3`,
+          headers: this.headers
+        })
+        if (musicFile.filepath) {
+          const musicBase64 = `base64://${fs.readFileSync(musicFile.filepath).toString('base64')}`
+          await this.e.reply(segment.record(musicBase64, false))
+          await Common.removeFile(musicFile.filepath, true)
+        }
         return true
       }
       case 'live_room_detail': {
