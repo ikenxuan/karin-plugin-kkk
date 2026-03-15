@@ -2,6 +2,20 @@
 
 # Changelog
 
+## [2.26.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.26.1...v2.26.2) (2026-03-15)
+
+
+### 🐛 错误修复
+
+* **bilibili:** 延迟加载动态评论数据以优化性能 ([78bfb24](https://github.com/ikenxuan/karin-plugin-kkk/commit/78bfb24626bc26db4f6a27fdf04e9b0764a18749))
+* **douyin:** aweme_type === 55 判断为视频 ([12e23d4](https://github.com/ikenxuan/karin-plugin-kkk/commit/12e23d4fcfce40ed0f8becf3561452760ae81cc5))
+* **douyin:** 修复 live 图检测逻辑，使用空值合并运算符确保 clip_type 判断安全 ([036f786](https://github.com/ikenxuan/karin-plugin-kkk/commit/036f7860ebfd3243217ef91d483b71c34db9d227))
+
+
+### 💯 细节优化
+
+* **douyin:** 将抖音音频文件下载处理统一为本地缓存后发送 base64 格式，提升兼容性 ([036f786](https://github.com/ikenxuan/karin-plugin-kkk/commit/036f7860ebfd3243217ef91d483b71c34db9d227))
+
 ## [2.26.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.26.0...v2.26.1) (2026-03-14)
 
 
