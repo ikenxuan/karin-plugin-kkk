@@ -12,7 +12,7 @@ import {
   BiliOneWork,
   BiliVideoPlayurlIsLogin,
   DynamicType,
-  Result 
+  Result
 } from '@ikenxuan/amagi'
 import { format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
@@ -208,7 +208,7 @@ export class Bilibili extends Base {
                 news: [{ text: '点击查看解析结果' }]
               })
             }
-            
+
             img = await Render('bilibili/comment', {
               Type: '视频',
               CommentsData: commentsdata,
@@ -358,12 +358,6 @@ export class Bilibili extends Base {
       case 'dynamic_info': {
         const dynamicInfo = await this.amagi.bilibili.fetcher.fetchDynamicDetail({ dynamic_id: iddata.dynamic_id, typeMode: 'strict' })
         const dynamicInfoCard = await this.amagi.bilibili.fetcher.fetchDynamicCard({ dynamic_id: dynamicInfo.data.data.item.id_str, typeMode: 'strict' })
-        const commentsData = dynamicInfo.data.data.item.type !== DynamicType.LIVE_RCMD && await this.amagi.bilibili.fetcher.fetchComments({
-          type: mapping_table(dynamicInfo.data.data.item.type),
-          oid: oid(dynamicInfo.data, dynamicInfoCard.data),
-          number: Config.bilibili.numcomment,
-          typeMode: 'strict'
-        })
         const dynamicCARD = JSON.parse(dynamicInfoCard.data.data.card.card)
         const userProfileData = await this.amagi.bilibili.fetcher.fetchUserCard({ host_mid: dynamicInfo.data.data.item.modules.module_author.mid, typeMode: 'strict' })
 
@@ -383,10 +377,10 @@ export class Bilibili extends Base {
                     title: `Bilibili_tmp_V_${Date.now()}_${index}.mp4`,
                     headers: baseHeaders
                   })
-                  
+
                   if (livePhoto.filepath) {
                     const outputPath = Common.tempDri.video + `Bilibili_Live_${Date.now()}_${index}.mp4`
-                    
+
                     // 下载原图用于静态显示
                     const staticImg = await downloadFile(img.url, {
                       title: `Bilibili_static_${Date.now()}_${index}.jpg`,
@@ -396,12 +390,12 @@ export class Bilibili extends Base {
                     if (staticImg.filepath) {
                       temp.push({ filepath: staticImg.filepath, totalBytes: 0 })
                     }
-                    
+
                     // 根据 livePhotoMode 配置决定处理方式
                     const livePhotoMode = Config.app.livePhotoMode ?? 'video_and_livephoto'
                     const shouldGenerateVideo = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'video_only'
                     const shouldGenerateLivePhoto = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'livephoto_only'
-                    
+
                     // Loop the live image 3 times with Live Photo effect
                     const loopCount = 3
                     if (!staticImg.filepath) {
@@ -431,7 +425,7 @@ export class Bilibili extends Base {
                         imgArray.push(segment.video(videoPath))
                       }
                     }
-                    
+
                     // 生成实况图
                     if (shouldGenerateLivePhoto) {
                       let hasPushedMotionPhotoCover = false
@@ -458,7 +452,7 @@ export class Bilibili extends Base {
                         hasGeneratedLivePhoto = true // 标记已生成实况图
                       }
                     }
-                    
+
                     logger.mark('正在尝试删除缓存文件')
                     await Common.removeFile(livePhoto.filepath, true)
                   }
@@ -518,7 +512,7 @@ export class Bilibili extends Base {
             this.e.reply(await Render('bilibili/dynamic/DYNAMIC_TYPE_DRAW', {
               image_url: dynamicCARD.item.pictures && cover(dynamicCARD.item.pictures),
               // TIP: 2025/08/20, 动态卡片数据中，图文动态的描述文本在 major.opus.summary 中
-              title: dynamicInfo.data.data.item.modules.module_dynamic.major.opus.title ?? undefined, 
+              title: dynamicInfo.data.data.item.modules.module_dynamic.major.opus.title ?? undefined,
               text: dynamicInfo.data.data.item.modules.module_dynamic.major
                 ? replacetext(
                   br(dynamicInfo.data.data.item.modules.module_dynamic.major.opus?.summary?.text ?? ''),
@@ -713,7 +707,7 @@ export class Bilibili extends Base {
                   face: member.face,
                   follower: member.follower
                 }))
-                
+
                 // 如果当前动态发布者是共创者之一，将其排到最前面
                 const currentUserIndex = staff.findIndex((member: any) => member.mid === currentMid)
                 if (currentUserIndex > 0) {
@@ -832,7 +826,7 @@ export class Bilibili extends Base {
                 // 分享链接
                 share_url: articleContent.dyn_id_str ? `https://www.bilibili.com/opus/${articleContent.dyn_id_str}` : `https://www.bilibili.com/read/cv${articleContent.id}`,
                 dynamicTYPE: '专栏动态解析',
-                
+
                 // 用户统计信息
                 user_shortid: userProfileData.data.data.card.mid,
                 total_favorited: Count(userProfileData.data.data.like_num),
@@ -849,11 +843,17 @@ export class Bilibili extends Base {
             break
           }
         }
-        
+
         // 统一处理评论（直播动态除外）
-        if (Config.bilibili.sendContent.some(content => content === 'comment') && commentsData && dynamicInfo.data.data.item.type !== DynamicType.LIVE_RCMD) {
+        if (Config.bilibili.sendContent.some(content => content === 'comment') && dynamicInfo.data.data.item.type !== DynamicType.LIVE_RCMD) {
+          const commentsData = await this.amagi.bilibili.fetcher.fetchComments({
+            type: mapping_table(dynamicInfo.data.data.item.type),
+            oid: oid(dynamicInfo.data, dynamicInfoCard.data),
+            number: Config.bilibili.numcomment,
+            typeMode: 'strict'
+          })
           const { comments: commentsdata, image_urls } = bilibiliComments(commentsData.data, dynamicInfo.data.data.item.modules.module_author.mid.toString())
-          
+
           if (commentsdata && commentsdata.length > 0) {
             // 收集评论区图片
             if (Config.bilibili.commentImageCollection && image_urls.length > 0) {
@@ -865,7 +865,7 @@ export class Bilibili extends Base {
               } else if (dynamicInfo.data.data.item.type === DynamicType.AV) {
                 title = dynamicInfo.data.data.item.modules.module_dynamic.major.archive.title || 'bilibili_dynamic'
               }
-              
+
               for (const [index, v] of image_urls.entries()) {
                 const imageUrl = await processImageUrl(v, title, index)
                 messageElements.push(segment.image(imageUrl))
@@ -882,13 +882,13 @@ export class Bilibili extends Base {
                 news: [{ text: '点击查看解析结果' }]
               })
             }
-            
+
             // 渲染评论图
             const img = await Render('bilibili/comment', {
               Type: '动态',
               CommentsData: commentsdata,
               CommentLength: String(commentsdata.length),
-              share_url: dynamicInfo.data.data.item.type === DynamicType.AV 
+              share_url: dynamicInfo.data.data.item.type === DynamicType.AV
                 ? `https://www.bilibili.com/video/${dynamicInfo.data.data.item.modules.module_dynamic.major.archive.bvid}`
                 : `https://t.bilibili.com/${dynamicInfo.data.data.item.id_str}`,
               ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? 0,
@@ -900,7 +900,7 @@ export class Bilibili extends Base {
             this.e.reply('这条动态暂时还没有评论~')
           }
         }
-        
+
         break
       }
       case 'live_room_detail': {
@@ -941,13 +941,13 @@ export class Bilibili extends Base {
     switch (this.islogin) {
       case true: {
         logger.debug('视频 URL:', this.Type === 'one_video' ? playUrlData.data?.dash?.video[0].base_url : playUrlData.result.dash.video[0].base_url)
-        
+
         // B站 CDN 需要正确的 Referer
         const downloadHeaders = {
           ...this.headers,
           Referer: 'https://www.bilibili.com'
         }
-        
+
         const bmp4Raw = await downloadFile(
           this.Type === 'one_video' ? playUrlData.data?.dash?.video[0].base_url : playUrlData.result.dash.video[0].base_url,
           {
@@ -955,7 +955,7 @@ export class Bilibili extends Base {
             headers: downloadHeaders
           }
         )
-        
+
         // 修复 m4s 文件为标准 MP4
         const videoPath = Common.tempDri.video + `Bil_V_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.mp4`
         const videoFixed = await fixM4sFile(bmp4Raw.filepath, videoPath)
@@ -965,7 +965,7 @@ export class Bilibili extends Base {
         }
         // 删除原始 m4s 文件
         await Common.removeFile(bmp4Raw.filepath, true)
-        
+
         logger.debug('音频 URL:', this.Type === 'one_video' ? playUrlData.data?.dash?.audio[0].base_url : playUrlData.result.dash.audio[0].base_url)
         const bmp3Raw = await downloadFile(
           this.Type === 'one_video' ? playUrlData.data?.dash?.audio[0].base_url : playUrlData.result.dash.audio[0].base_url,
@@ -974,7 +974,7 @@ export class Bilibili extends Base {
             headers: downloadHeaders
           }
         )
-        
+
         // 修复音频 m4s 文件为 m4a（AAC 音频不能直接转为 MP3 容器）
         const audioPath = Common.tempDri.video + `Bil_A_${this.Type === 'one_video' ? infoData && infoData.data.bvid : infoData && infoData.result.season_id}.m4a`
         const audioFixed = await fixM4sFile(bmp3Raw.filepath, audioPath)
@@ -984,10 +984,10 @@ export class Bilibili extends Base {
         }
         // 删除原始 m4s 文件
         await Common.removeFile(bmp3Raw.filepath, true)
-        
+
         const bmp4 = { filepath: videoPath, totalBytes: bmp4Raw.totalBytes }
         const bmp3 = { filepath: audioPath, totalBytes: bmp3Raw.totalBytes }
-        
+
         if (bmp4.filepath && bmp3.filepath) {
           // 根据是否有弹幕数据选择合成方式
           const hasDanmaku = (this.forceBurnDanmaku || Config.bilibili.burnDanmaku) && danmakuList.length > 0
@@ -1097,9 +1097,9 @@ export const TimeFormatter = {
   toRelative: (timestamp: number): string => {
     try {
       const date = fromUnixTime(timestamp)
-      return formatDistanceToNow(date, { 
-        addSuffix: true, 
-        locale: zhCN 
+      return formatDistanceToNow(date, {
+        addSuffix: true,
+        locale: zhCN
       })
     } catch (error) {
       logger.warn('相对时间格式化失败:', error)
