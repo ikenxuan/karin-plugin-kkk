@@ -8,7 +8,7 @@ body:
       value: |
         ## 感谢你提交功能建议！
         
-        > ⚠️ **请务必修改上方标题**，简要描述你想要的功能（例如：`Feature: 支持解析 xxx 平台`）
+        > ⚠️ **请务必修改上方标题**，简要描述你想要的功能（例如：`Feature: 支持处理解析 Live Photo`）
         > 
         > 标题格式不正确的 issue 可能会被直接关闭
 
@@ -28,7 +28,7 @@ body:
     attributes:
       label: 功能简述
       description: 用一句话概括你想要的功能
-      placeholder: 例如：支持解析 xxx 平台的视频
+      placeholder: 例如：支持解析各平台的 Live Photo
     validations:
       required: true
 
