@@ -106,16 +106,16 @@ export const douyinLogin = async (e: Message) => {
     // 阻止明确不需要的资源
     const shouldBlock =
       resourceType === 'media' || // 视频/音频（Puppeteer 已识别的媒体类型）
-        resourceType === 'font' || // 字体
-        resourceType === 'stylesheet' || // CSS
-        // 通过 URL 特征识别视频
-        /\.(mp4|webm|m3u8|flv|avi|mov|wmv|mkv)(\?|$)/i.test(url) || // 视频文件扩展名
-        url.includes('/aweme/') || // 抖音视频相关路径
-        url.includes('/video/') || // 通用视频路径
-        url.includes('v.douyin.com') || // 抖音视频域名
-        // 阻止大图片但保留二维码
-        (resourceType === 'image' && !url.includes('qrcode') && !url.includes('data:image') &&
-          (url.includes('.jpg') || url.includes('.jpeg') || url.includes('.webp')))
+      resourceType === 'font' || // 字体
+      resourceType === 'stylesheet' || // CSS
+      // 通过 URL 特征识别视频
+      /\.(mp4|webm|m3u8|flv|avi|mov|wmv|mkv)(\?|$)/i.test(url) || // 视频文件扩展名
+      url.includes('/aweme/') || // 抖音视频相关路径
+      url.includes('/video/') || // 通用视频路径
+      url.includes('v.douyin.com') || // 抖音视频域名
+      // 阻止大图片但保留二维码
+      (resourceType === 'image' && !url.includes('qrcode') && !url.includes('data:image') &&
+        (url.includes('.jpg') || url.includes('.jpeg') || url.includes('.webp')))
 
     if (shouldBlock) {
       if (url.includes('passport') || url.includes('login') || url.includes('qrconnect')) {
@@ -183,7 +183,7 @@ export const douyinLogin = async (e: Message) => {
       ? { share_url: qrCodeData.url } // 解码成功，传递URL让插件生成自定义二维码
       : { qrCodeDataUrl: qrCodeData.originalImage } // 解码失败，直接使用原始图片
 
-    const loginQRcode = await Render('douyin/qrcodeImg', renderData)
+    const loginQRcode = await Render(e, 'douyin/qrcodeImg', renderData)
 
     const base64Data = loginQRcode[0]?.file
     if (!base64Data) {
@@ -272,18 +272,18 @@ export const douyinLogin = async (e: Message) => {
                 const cookies = await puppeteer.browser.cookies()
                 logger.debug(`获取到 ${cookies.length} 个 cookies`)
                 const cookieString = cookies.map(cookie => `${cookie.name}=${cookie.value}`).join('; ')
-                
+
                 // 检测关键 cookie 参数
                 const hasSessionidSs = cookies.some(cookie => cookie.name === 'sessionid_ss')
                 const hasTtwid = cookies.some(cookie => cookie.name === 'ttwid')
                 logger.mark(`Cookie 参数检测: sessionid_ss=${hasSessionidSs}, ttwid=${hasTtwid}`)
-                
+
                 if (!hasSessionidSs || !hasTtwid) {
                   logger.warn('警告：缺少关键 cookie 参数！')
                   if (!hasSessionidSs) logger.warn('  - 缺少 sessionid_ss')
                   if (!hasTtwid) logger.warn('  - 缺少 ttwid')
                 }
-                
+
                 logger.debug('开始保存 cookies...')
                 Config.Modify('cookies', 'douyin', cookieString)
                 logger.debug('cookies 保存完成')

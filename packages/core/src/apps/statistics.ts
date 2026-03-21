@@ -11,7 +11,7 @@ import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 const handleGroupStatistics = wrapWithErrorHandler(async (e) => {
   // 获取群组ID
   const groupId = e.isGroup ? (e.contact?.peer || '') : ''
-  
+
   if (!groupId) {
     await e.reply('此命令仅支持在群聊中使用')
     return true
@@ -54,7 +54,7 @@ const handleGroupStatistics = wrapWithErrorHandler(async (e) => {
   }
 
   // 渲染统计图片
-  const img = await Render('statistics/group', {
+  const img = await Render(e, 'statistics/group', {
     groupId,
     groupName,
     groupMemberCount,
@@ -106,7 +106,7 @@ const handleGlobalStatistics = wrapWithErrorHandler(async (e) => {
   }
 
   // 渲染统计图片
-  const img = await Render('statistics/global', {
+  const img = await Render(e, 'statistics/global', {
     allStats,
     historyData: historyData.reverse(),
     groupInfoMap: Object.fromEntries(groupInfoMap)

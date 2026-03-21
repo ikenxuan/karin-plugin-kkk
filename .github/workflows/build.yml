@@ -167,6 +167,17 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: 'pnpm-lock.yaml'
 
+      - name: 🦀 配置 Rust 工具链
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: 📦 安装 wasm-pack
+        uses: jetli/wasm-pack-action@v0.4.0
+
+      - name: 🔧 预编译 watermark wasm 模块
+        run: pnpm --filter @kkk/watermark run build
+
       - name: 📦 安装依赖
         run: pnpm install
 

@@ -140,7 +140,7 @@ const handleQrLogin = wrapWithErrorHandler(async (e) => {
   const serverUrl = `${protocol}://${host}:${port}`
 
   // 使用模板系统渲染二维码图片
-  const images = await Render('other/qrlogin', {
+  const images = await Render(e, 'other/qrlogin', {
     share_url: qrData,
     serverUrl
   })

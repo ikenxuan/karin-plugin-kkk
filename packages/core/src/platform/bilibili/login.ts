@@ -12,7 +12,7 @@ import { Config } from '@/module/utils/Config'
 export const bilibiliLogin = async (e: Message) => {
   /** 申请二维码 */
   const qrcodeurl = await bilibiliFetcher.requestLoginQrcode({ typeMode: 'strict' })
-  const qrimg = await Render('bilibili/qrcodeImg', { share_url: qrcodeurl.data.data.url })
+  const qrimg = await Render(e, 'bilibili/qrcodeImg', { share_url: qrcodeurl.data.data.url })
 
   const base64Data = qrimg[0]?.file
   if (!base64Data) {

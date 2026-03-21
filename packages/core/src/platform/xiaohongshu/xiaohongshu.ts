@@ -54,7 +54,7 @@ export class Xiaohongshu extends Base {
 
     // 笔记信息
     if (Config.xiaohongshu.sendContent.some(item => item === 'info')) {
-      const noteInfoImg = await Render('xiaohongshu/noteInfo',
+      const noteInfoImg = await Render(this.e, 'xiaohongshu/noteInfo',
         {
           title: NoteData.data.data.items[0].note_card!.title,
           desc: processXiaohongshuEmojis(
@@ -86,7 +86,7 @@ export class Xiaohongshu extends Base {
         // 使用简化的评论处理函数，直接返回评论数组
         const processedComments = await xiaohongshuComments(CommentData.data, formattedEmojis)
 
-        const commentListImg = await Render('xiaohongshu/comment',
+        const commentListImg = await Render(this.e, 'xiaohongshu/comment',
           {
             Type: NoteData.data.data.items[0].note_card!.video ? '视频' : '图文',
             CommentsData: processedComments,

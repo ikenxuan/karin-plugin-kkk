@@ -86,13 +86,21 @@ export class Bilibilipush extends Base {
 
   constructor (e = {} as Message, force: boolean = false) {
     super(e)
-    if (this.e.bot?.adapter?.name === 'QQBot') {
-      e.reply('不支持QQBot，请使用其他适配器')
-      return
-    }
     this.force = force
   }
 
+  private injectBotToEventForRender (targets: Array<{ groupId: string, botId: string }>): void {
+    const targetBotId = targets.find(item => item.botId)?.botId
+    if (!targetBotId) return
+
+    const bot = karin.getBot(targetBotId) as AdapterType | undefined
+    if (!bot) return
+
+    const eventWithBot = this.e as Message & { bot?: AdapterType, selfId?: string }
+    eventWithBot.bot = bot
+    eventWithBot.selfId = eventWithBot.selfId ?? targetBotId
+  }
+  
   /**
    * 执行主要的操作流程
    */
@@ -191,6 +199,7 @@ export class Bilibilipush extends Base {
       let send_video = true; let img: ImageElement[] = []
       const dynamicCARDINFO = await this.amagi.bilibili.fetcher.fetchDynamicCard({ dynamic_id: dynamicId, typeMode: 'strict' })
       const dycrad = dynamicCARDINFO.data.data.card && dynamicCARDINFO.data.data.card.card && JSON.parse(dynamicCARDINFO.data.data.card.card)
+      this.injectBotToEventForRender(data[dynamicId].targets)
 
       if (!skip) {
         const userINFO = await this.amagi.bilibili.fetcher.fetchUserCard({ host_mid: data[dynamicId].host_mid, typeMode: 'strict' })
@@ -209,7 +218,7 @@ export class Bilibilipush extends Base {
               })
               data[dynamicId].Dynamic_Data.modules.module_dynamic.major!.opus.summary.text = `${name}\n\n` + data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.summary?.text
             }
-            img = await Render('bilibili/dynamic/DYNAMIC_TYPE_DRAW',
+            img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_DRAW',
               {
                 image_url: dycrad.item.pictures && cover(dycrad.item.pictures),
                 title: data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.title ?? undefined,
@@ -258,7 +267,7 @@ export class Bilibilipush extends Base {
               data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.summary?.rich_text_nodes ?? []
             )
 
-            img = await Render('bilibili/dynamic/DYNAMIC_TYPE_WORD', {
+            img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_WORD', {
               text,
               dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
               pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
@@ -305,7 +314,7 @@ export class Bilibilipush extends Base {
                   face: member.face,
                   follower: member.follower
                 }))
-                
+
                 // 如果当前动态发布者是共创者之一，将其排到最前面
                 const currentUserIndex = staff.findIndex((member: any) => member.mid === currentMid)
                 if (currentUserIndex > 0) {
@@ -314,7 +323,7 @@ export class Bilibilipush extends Base {
                 }
               }
 
-              img = await Render('bilibili/dynamic/DYNAMIC_TYPE_AV',
+              img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {
                   image_url: INFODATA.data.data.pic,
                   text: br(INFODATA.data.data.title),
@@ -345,7 +354,7 @@ export class Bilibilipush extends Base {
           }
           /** 处理直播动态 */
           case DynamicType.LIVE_RCMD: {
-            img = await Render('bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
+            img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
               {
                 image_url: dycrad.live_play_info.cover,
                 text: br(dycrad.live_play_info.title),
@@ -443,7 +452,7 @@ export class Bilibilipush extends Base {
                 break
               }
             }
-            img = await Render('bilibili/dynamic/DYNAMIC_TYPE_FORWARD', {
+            img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_FORWARD', {
               text,
               dianzan: Count(data[dynamicId].Dynamic_Data.modules.module_stat.like.count),
               pinglun: Count(data[dynamicId].Dynamic_Data.modules.module_stat.comment.count),
@@ -476,7 +485,7 @@ export class Bilibilipush extends Base {
             const articleContent = articleInfo.data.data
 
             // 构建渲染数据
-            img = await Render('bilibili/dynamic/DYNAMIC_TYPE_ARTICLE',
+            img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_ARTICLE',
               {
                 // 用户信息
                 username: checkvip(data[dynamicId].Dynamic_Data.modules.module_author),
@@ -652,18 +661,18 @@ export class Bilibilipush extends Base {
                       if (staticImg.filepath) {
                         temp.push({ filepath: staticImg.filepath, totalBytes: 0 })
                       }
-                      
+
                       // 根据 livePhotoMode 配置决定处理方式
                       const livePhotoMode = Config.app.livePhotoMode ?? 'video_and_livephoto'
                       const shouldGenerateVideo = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'video_only'
                       const shouldGenerateLivePhoto = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'livephoto_only'
-                      
+
                       const loopCount = 3
                       if (!staticImg.filepath) {
                         await Common.removeFile(livePhoto.filepath, true)
                         continue
                       }
-                      
+
                       // 生成视频
                       if (shouldGenerateVideo) {
                         const result = await loopVideoWithTransition({
@@ -686,7 +695,7 @@ export class Bilibilipush extends Base {
                           imgArray.push(segment.video(videoPath))
                         }
                       }
-                      
+
                       // 生成实况图
                       if (shouldGenerateLivePhoto) {
                         let hasPushedMotionPhotoCover = false
@@ -713,7 +722,7 @@ export class Bilibilipush extends Base {
                           hasGeneratedLivePhoto = true // 标记已生成实况图
                         }
                       }
-                      
+
                       logger.mark('正在尝试删除缓存文件')
                       await Common.removeFile(livePhoto.filepath, true)
                       continue
@@ -724,7 +733,7 @@ export class Bilibilipush extends Base {
                     imgArray.push(segment.image(imageUrl))
                   }
                 }
-                
+
                 // 如果生成了实况图，添加提示文字
                 if (hasGeneratedLivePhoto) {
                   const systemTips: Record<string, string> = {
@@ -736,7 +745,7 @@ export class Bilibilipush extends Base {
                   const tip = systemTips[Config.app.livePhotoSystem] || 'Google 相册'
                   imgArray.push(segment.text(`💡 提示：保存原图到 ${tip} 即可识别为实况图`))
                 }
-                
+
                 const forwardMsg = common.makeForward(imgArray, botId, bot.account.name)
                 try {
                   await bot.sendForwardMsg(Contact, forwardMsg, {
@@ -1113,7 +1122,7 @@ export class Bilibilipush extends Base {
       })
     }
 
-    const img = await Render('bilibili/userlist', {
+    const img = await Render(this.e, 'bilibili/userlist', {
       renderOpt,
       groupInfo: {
         groupId: groupInfo.groupId || '',

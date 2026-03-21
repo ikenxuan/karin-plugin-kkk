@@ -86,7 +86,7 @@ export class DouYin extends Base {
     logger.debug(`图片数量: ${fe_data.image_list?.length || 0}`)
 
     // 渲染文章作品
-    const img = await Render('douyin/article-work', {
+    const img = await Render(this.e, 'douyin/article-work', {
       title: aweme.article_info.article_title,
       markdown: content.markdown,
       images: fe_data.image_list || [],
@@ -642,7 +642,7 @@ export class DouYin extends Base {
               typeMode: 'strict'
             })
             // 渲染为图片
-            const videoInfoImg = await Render('douyin/videoInfo',
+            const videoInfoImg = await Render(this.e, 'douyin/videoInfo',
               {
                 desc: isArticle ? VideoData.data.aweme_detail.preview_title : VideoData.data.aweme_detail.desc,
                 statistics: VideoData.data.aweme_detail.statistics,
@@ -719,7 +719,7 @@ export class DouYin extends Base {
                 }
               }
             }
-            const img = await Render('douyin/comment',
+            const img = await Render(this.e, 'douyin/comment',
               {
                 Type: isArticle ? '文章' : isVideo ? '视频' : this.is_slides ? '合辑' : '图集',
                 CommentsData: douyinCommentsRes.CommentsData,
@@ -875,7 +875,7 @@ export class DouYin extends Base {
         })
 
         // 渲染视频列表页面
-        const img = await Render('douyin/user_profile', {
+        const img = await Render(this.e, 'douyin/user_profile', {
           user: {
             head_image: user.cover_and_head_image_info.profile_cover_list.length > 0 ? user.cover_and_head_image_info.profile_cover_list[0].cover_url?.url_list[0] || null : null,
             nickname: user.nickname,
@@ -912,7 +912,7 @@ export class DouYin extends Base {
           await this.e.reply('解析错误！该音乐抖音未提供下载链接，无法下载', { reply: true })
           return true
         }
-        img = await Render('douyin/musicinfo',
+        img = await Render(this.e, 'douyin/musicinfo',
           {
             image_url: MusicData.data.music_info.cover_hd.url_list[0],
             desc: MusicData.data.music_info.title,
@@ -968,7 +968,7 @@ export class DouYin extends Base {
             typeMode: 'strict'
           })
 
-          const img = await Render('douyin/live',
+          const img = await Render(this.e, 'douyin/live',
             {
               image_url: live_data.data.data[0].cover?.url_list[0],
               text: live_data.data.data[0].title,

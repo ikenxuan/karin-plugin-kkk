@@ -1,0 +1,29 @@
+[package]
+name = "dct_watermark"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[target.'cfg(windows)'.dependencies]
+chrono = "0.4.42"
+rfd = "0.17.2"
+serde_json = "1.0.145"
+windows = { version = "0.62.2", features = ["ApplicationModel_DataTransfer", "Storage", "Storage_Pickers", "Storage_Streams", "Graphics_Imaging", "Win32_Foundation", "Win32_System_DataExchange", "Win32_UI_Shell", "Win32_UI_WindowsAndMessaging", "Win32_UI_Controls", "Win32_UI_Input_KeyboardAndMouse"] }
+windows-core = "0.62.2"
+winio = { version = "0.11.0", default-features = false, features = ["winui"] }
+winui3 = { version = "0.3.8", package = "winio-winui3", features = ["UI_Xaml", "UI_Xaml_Controls", "UI_Xaml_Input", "UI_Xaml_Markup", "UI_Xaml_Media"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+image = { version = "0.25.10", default-features = false, features = ["png"] }
+wasm-bindgen = "0.2.105"
+
+[dependencies]
+md5 = "0.8.0"
+log = "0.4"
+env_logger = "0.11"
+
+[[bin]]
+name = "dct_watermark"
+path = "src/main.rs"

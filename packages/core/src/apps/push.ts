@@ -186,7 +186,7 @@ const handleTestDouyinPush = wrapWithErrorHandler(async (e) => {
     const content = JSON.parse(workInfo.data.aweme_detail.article_info.article_content)
     const fe_data = JSON.parse(workInfo.data.aweme_detail.article_info.fe_data)
 
-    const img = await Render('douyin/article-work', {
+    const img = await Render(e, 'douyin/article-work', {
       title: workInfo.data.aweme_detail.article_info.article_title,
       markdown: content.markdown,
       images: fe_data.image_list || [],
@@ -220,7 +220,7 @@ const handleTestDouyinPush = wrapWithErrorHandler(async (e) => {
     return true
   }
 
-  const img = await Render(workTypeInfo.templatePath, {
+  const img = await Render(e, workTypeInfo.templatePath, {
     image_url: coverUrl,
     desc: workInfo.data.aweme_detail.desc,
     dianzan: Common.count(workInfo.data.aweme_detail.statistics.digg_count),

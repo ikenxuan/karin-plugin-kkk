@@ -136,7 +136,7 @@ export class Bilibili extends Base {
             }
           } else {
             // 渲染为图片
-            const img = await Render('bilibili/videoInfo', {
+            const img = await Render(this.e, 'bilibili/videoInfo', {
               share_url: 'https://b23.tv/' + infoData.data.data.bvid,
               title: infoData.data.data.title,
               desc: infoData.data.data.desc,
@@ -209,7 +209,7 @@ export class Bilibili extends Base {
               })
             }
 
-            img = await Render('bilibili/comment', {
+            img = await Render(this.e, 'bilibili/comment', {
               Type: '视频',
               CommentsData: commentsdata,
               CommentLength: Config.bilibili.realCommentCount ? Count(infoData.data.data.stat.reply) : String(commentsdata.length),
@@ -284,7 +284,7 @@ export class Bilibili extends Base {
             badge_info: item.badge_info
           })
         }
-        img = await Render('bilibili/bangumi', {
+        img = await Render(this.e, 'bilibili/bangumi', {
           mainCover: videoInfo.data.result.cover,
           Actors: videoInfo.data.result.actors,
           Evaluate: videoInfo.data.result.evaluate,
@@ -509,7 +509,7 @@ export class Bilibili extends Base {
               })
               dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text = `${name}\n\n` + dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text
             }
-            this.e.reply(await Render('bilibili/dynamic/DYNAMIC_TYPE_DRAW', {
+            this.e.reply(await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_DRAW', {
               image_url: dynamicCARD.item.pictures && cover(dynamicCARD.item.pictures),
               // TIP: 2025/08/20, 动态卡片数据中，图文动态的描述文本在 major.opus.summary 中
               title: dynamicInfo.data.data.item.modules.module_dynamic.major.opus.title ?? undefined,
@@ -559,7 +559,7 @@ export class Bilibili extends Base {
             )
 
             this.e.reply(
-              await Render('bilibili/dynamic/DYNAMIC_TYPE_WORD', {
+              await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_WORD', {
                 text,
                 dianzan: Count(dynamicInfo.data.data.item.modules.module_stat.like.count),
                 pinglun: Count(dynamicInfo.data.data.item.modules.module_stat.comment.count),
@@ -665,7 +665,7 @@ export class Bilibili extends Base {
               }
             }
             this.e.reply(
-              await Render('bilibili/dynamic/DYNAMIC_TYPE_FORWARD', {
+              await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_FORWARD', {
                 text,
                 imgList: imgList.length > 0 ? imgList : null,
                 dianzan: Count(dynamicInfo.data.data.item.modules.module_stat.like.count),
@@ -716,7 +716,7 @@ export class Bilibili extends Base {
                 }
               }
 
-              img = await Render('bilibili/dynamic/DYNAMIC_TYPE_AV',
+              img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {
                   image_url: INFODATA.data.data.pic,
                   text: br(INFODATA.data.data.title),
@@ -749,7 +749,7 @@ export class Bilibili extends Base {
           /** 直播动态 */
           case DynamicType.LIVE_RCMD: {
             const userINFO = await bilibiliFetcher.fetchUserCard({ host_mid: dynamicInfo.data.data.item.modules.module_author.mid, typeMode: 'strict' })
-            img = await Render('bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
+            img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
               {
                 image_url: dynamicCARD.live_play_info.cover,
                 text: br(dynamicCARD.live_play_info.title),
@@ -802,7 +802,7 @@ export class Bilibili extends Base {
             }
 
             // 构建渲染数据
-            const img = await Render('bilibili/dynamic/DYNAMIC_TYPE_ARTICLE',
+            const img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_ARTICLE',
               {
                 // 用户信息
                 username: checkvip(userProfileData.data.data.card),
@@ -884,7 +884,7 @@ export class Bilibili extends Base {
             }
 
             // 渲染评论图
-            const img = await Render('bilibili/comment', {
+            const img = await Render(this.e, 'bilibili/comment', {
               Type: '动态',
               CommentsData: commentsdata,
               CommentLength: String(commentsdata.length),
@@ -912,7 +912,7 @@ export class Bilibili extends Base {
           this.e.reply(`「${userProfileData.data.data.card.name}」\n未开播，正在休息中~`)
           return true
         }
-        const img = await Render('bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
+        const img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
           {
             image_url: liveInfo.data.data.user_cover,
             text: br(liveInfo.data.data.title),

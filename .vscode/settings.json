@@ -43,5 +43,8 @@
   "javascript.format.insertSpaceAfterConstructor": true,
   "typescript.autoClosingTags": false,
   "java.configuration.updateBuildConfiguration": "disabled",
-  "java.compile.nullAnalysis.mode": "disabled"
+  "java.compile.nullAnalysis.mode": "disabled",
+  "rust-analyzer.linkedProjects": [
+    "packages/watermark/Cargo.toml"
+  ]
 }

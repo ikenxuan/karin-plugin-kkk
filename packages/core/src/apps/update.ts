@@ -67,7 +67,7 @@ const Handler = async (e: Message) => {
     await db.set(UPDATE_LOCK_KEY, upd.remote)
   } catch { }
 
-  const ChangeLogImg = await getChangelogImage({
+  const ChangeLogImg = await getChangelogImage(e, {
     localVersion: Root.pluginVersion,
     remoteVersion: upd.remote,
     Tip: true
@@ -152,7 +152,7 @@ const handleKkkUpdate = wrapWithErrorHandler(async (e: Message) => {
     return
   }
 
-  const ChangeLogImg = await getChangelogImage({
+  const ChangeLogImg = await getChangelogImage(e, {
     localVersion: Root.pluginVersion,
     remoteVersion: upd.remote,
     Tip: false,

@@ -290,6 +290,9 @@ importers:
       '@karinjs/plugin-puppeteer':
         specifier: ^2.0.2
         version: 2.0.2
+      '@kkk/watermark':
+        specifier: workspace:*
+        version: link:../watermark
       '@rollup/plugin-terser':
         specifier: ^0.4.4
         version: 0.4.4(rollup@4.56.0)
@@ -547,6 +550,8 @@ importers:
       vite-plugin-svgr:
         specifier: ^4.5.0
         version: 4.5.0(rollup@4.56.0)(typescript@5.9.3)(vite@7.3.1(@types/node@25.0.10)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
+
+  packages/watermark: {}
 
 packages:
 

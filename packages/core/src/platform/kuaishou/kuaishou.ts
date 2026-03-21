@@ -29,7 +29,7 @@ export class Kuaishou extends Base {
     const fileHeaders = await new Networks({ url: video_url, headers: this.headers }).getHeaders()
     const fileSizeContent = fileHeaders['content-range']?.match(/\/(\d+)/) ? parseInt(fileHeaders['content-range']?.match(/\/(\d+)/)[1], 10) : 0
     const fileSizeInMB = (fileSizeContent / (1024 * 1024)).toFixed(2)
-    const img = await Render('kuaishou/comment', {
+    const img = await Render(this.e, 'kuaishou/comment', {
       Type: '视频',
       viewCount: data.VideoData.data.data.visionVideoDetail.photo.viewCount,
       CommentsData,

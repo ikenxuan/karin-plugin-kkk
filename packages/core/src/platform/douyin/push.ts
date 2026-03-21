@@ -53,13 +53,21 @@ export class DouYinpush extends Base {
    */
   constructor (e = {} as Message, force: boolean = false) {
     super(e)
-    if (this.e.bot?.adapter?.name === 'QQBot') {
-      e.reply('不支持QQBot，请使用其他适配器')
-      return
-    }
     this.headers!.Referer = 'https://www.douyin.com'
     this.headers!.Cookie = Config.cookies.douyin
     this.force = force
+  }
+
+  private injectBotToEventForRender (targets: Array<{ groupId: string, botId: string }>): void {
+    const targetBotId = targets.find(item => item.botId)?.botId
+    if (!targetBotId) return
+
+    const bot = karin.getBot(targetBotId) as AdapterType | undefined
+    if (!bot) return
+
+    const eventWithBot = this.e as Message & { bot?: AdapterType, selfId?: string }
+    eventWithBot.bot = bot
+    eventWithBot.selfId = eventWithBot.selfId ?? targetBotId
   }
 
   /**
@@ -199,6 +207,7 @@ export class DouYinpush extends Base {
       skip && logger.warn(`作品 https://www.douyin.com/video/${actualAwemeId} 已被处理，跳过`)
       let img: ImageElement[] = []
       let iddata: DouyinIdData = { type: 'one_work' }
+      this.injectBotToEventForRender(pushItem.targets)
 
       if (!skip) {
         iddata = await getDouyinID(this.e, Detail_Data.share_url ?? 'https://live.douyin.com/' + Detail_Data.room_data?.owner.web_rid, false)
@@ -207,7 +216,7 @@ export class DouYinpush extends Base {
       if (!skip) {
         if (pushItem.pushType === 'live' && 'room_data' in pushItem.Detail_Data && Detail_Data.live_data) {
           // 处理直播推送
-          img = await Render('douyin/live', {
+          img = await Render(this.e, 'douyin/live', {
             image_url: Detail_Data.live_data.data.data.data[0]?.cover?.url_list[0] ?? Detail_Data.live_data.data.data.qrcode_url,
             text: Detail_Data.live_data.data.data.data[0]?.title ?? '',
             liveinf: `${Detail_Data.live_data.data.data.partition_road_map?.partition?.title ?? Detail_Data.live_data.data.data.data[0]?.title ?? '获取失败'} | 房间号: ${Detail_Data.room_data.owner.web_rid}`,
@@ -241,7 +250,7 @@ export class DouYinpush extends Base {
             const workTypeInfo = getWorkTypeInfo(Detail_Data as any)
             const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data as any)
 
-            img = await Render('douyin/favorite-list', {
+            img = await Render(this.e, 'douyin/favorite-list', {
               image_url: coverUrl,
               desc: this.desc(Detail_Data, Detail_Data.desc),
               dianzan: this.count(Detail_Data.statistics.digg_count),
@@ -269,7 +278,7 @@ export class DouYinpush extends Base {
             const workTypeInfo = getWorkTypeInfo(Detail_Data as any)
             const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data as any)
 
-            img = await Render('douyin/recommend-list', {
+            img = await Render(this.e, 'douyin/recommend-list', {
               image_url: coverUrl,
               desc: this.desc(Detail_Data, Detail_Data.desc),
               dianzan: this.count(Detail_Data.statistics.digg_count),
@@ -306,7 +315,8 @@ export class DouYinpush extends Base {
               const content = JSON.parse(Detail_Data.article_info.article_content)
               const fe_data = JSON.parse(Detail_Data.article_info.fe_data)
 
-              img = await Render('douyin/article-work', {
+              // 渲染文章模板
+              img = await Render(this.e, 'douyin/article-work', {
                 title: Detail_Data.article_info.article_title,
                 markdown: content.markdown,
                 images: fe_data.image_list || [],
@@ -337,7 +347,7 @@ export class DouYinpush extends Base {
               })
             } else {
               // 视频或图文作品
-              img = await Render(workTypeInfo.templatePath, {
+              img = await Render(this.e, workTypeInfo.templatePath, {
                 image_url: coverUrl,
                 desc: this.desc(Detail_Data, Detail_Data.desc),
                 dianzan: this.count(Detail_Data.statistics.digg_count),
@@ -1122,7 +1132,7 @@ export class DouYinpush extends Base {
         pushTypes
       })
     }
-    const img = await Render('douyin/userlist', {
+    const img = await Render(this.e, 'douyin/userlist', {
       renderOpt,
       groupInfo: {
         groupId: groupInfo.groupId || '',

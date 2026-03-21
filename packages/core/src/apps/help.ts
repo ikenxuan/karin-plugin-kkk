@@ -157,7 +157,7 @@ const handleHelp = wrapWithErrorHandler(async (e) => {
     return [...groupItems, ...subItems]
   })
 
-  const img = await Render('other/help', {
+  const img = await Render(e, 'other/help', {
     title: 'KKK插件帮助页面',
     menu,
     list,
@@ -178,7 +178,7 @@ const handleVersion = wrapWithErrorHandler(async (e) => {
     length: 10
   })
 
-  const img = await Render('other/changelog', {
+  const img = await Render(e, 'other/changelog', {
     markdown: forwardLogs,
     Tip: false,
     localVersion: '',

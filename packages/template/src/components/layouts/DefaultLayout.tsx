@@ -1,6 +1,5 @@
 import { HeroUIProvider } from '@heroui/react'
 import clsx from 'clsx'
-import { format } from 'date-fns'
 import { AlertTriangle, CheckCircle, CircleFadingArrowUp, Info, Zap } from 'lucide-react'
 import React from 'react'
 
@@ -166,20 +165,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
             </div>
           </div>
         ) : (
-          <div className='h-24 flex items-center justify-center px-4'>
-            <span
-              className='text-xl font-medium text-center leading-relaxed select-none opacity-5'
-              style={{
-                mixBlendMode: 'difference',
-                color: '#ffffff'
-              }}
-            >
-              {(() => {
-                const timestamp = format(new Date(), 'yyyy-MM-dd HH:mm:ss')
-                return `【法律声明】karin-plugin-kkk 软件作品的完整著作权及相关衍生权利均归作者ikenxuan所有，依据《GNU通用公共许可证第3版》（GPL-3.0）之规定授权公开发布。任何未遵守GPL-3.0协议条款的商业使用行为，均构成对本著作权的侵权行为。完整协议文本查阅地址：https://github.com/ikenxuan/karin-plugin-kkk?tab=GPL-3.0-1-ov-file | 溯源时间戳：${timestamp} | 移除本声明的行为，视为违反GPL-3.0协议约定，作者保留追究相关主体法律责任的权利。`
-              })()}
-            </span>
-          </div>
+          <div className='h-24' />
         )
         }
       </div>

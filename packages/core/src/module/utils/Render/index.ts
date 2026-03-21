@@ -1,6 +1,6 @@
 import pathModule from 'node:path'
 
-import type { ImageElement } from 'node-karin'
+import type { ImageElement, Message } from 'node-karin'
 import { db, karinPathHtml, render, segment } from 'node-karin'
 import type {
   DataTypeMap,
@@ -15,18 +15,20 @@ import { Config } from '@/module/utils/Config'
 
 import { isSemverGreater } from '../semver'
 import { createQrCodePlugin } from './plugins'
-
+import { embedWatermark } from './wasm'
 
 /**
  * 渲染函数
  * 将指定路径的模板渲染为图片元素数组
  * 
+ * @param event 消息事件对象，用于获取机器人账号信息
  * @template P 渲染路径，必须是有效的动态路径
  * @param path 渲染路径，格式为 "平台/组件ID" 或 "平台/分类/组件ID"
  * @param data 渲染数据，类型根据路径自动推断
  * @returns 渲染结果图片元素数组的 Promise
  */
 export const Render = async <P extends DynamicRenderPath> (
+  event: Message,
   path: P,
   data?: ExtractDataTypeFromPath<P>
 ): Promise<ImageElement[]> => {
@@ -115,12 +117,22 @@ export const Render = async <P extends DynamicRenderPath> (
 
   // 转换为 ImageElement 数组
   const ret: ImageElement[] = []
-  if (Array.isArray(renderResult)) {
-    for (const image of renderResult) {
-      ret.push(segment.image('base64://' + image))
-    }
-  } else {
-    ret.push(segment.image('base64://' + renderResult))
+  const images = Array.isArray(renderResult) ? renderResult : [renderResult]
+
+  for (const image of images) {
+    const imageBuffer = Buffer.from(image, 'base64')
+    const watermarkedBuffer = embedWatermark(imageBuffer, JSON.stringify({
+      ts: Date.now(),
+      pv: Root.pluginVersion,
+      account: `${event.bot.account.selfId}|${event.bot.account.name}`
+    }))
+    ret.push(
+      segment.image(
+        watermarkedBuffer
+          ? 'base64://' + watermarkedBuffer.toString('base64')
+          : 'base64://' + image
+      )
+    )
   }
 
   return ret

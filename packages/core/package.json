@@ -47,6 +47,7 @@
     "build:check": "tsc --noEmit && pnpm build",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
     "lint": "eslint . --fix",
+    "preinstall": "pnpm --filter @kkk/watermark run build",
     "typecheck": "tsc --noEmit",
     "pub": "npm publish --access public",
     "sort": "sort-package-json",
@@ -58,6 +59,7 @@
   },
   "devDependencies": {
     "@ikenxuan/amagi": "workspace:*",
+    "@kkk/watermark": "workspace:*",
     "@karinjs/plugin-adapter-discordbot": "https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687",
     "@karinjs/plugin-adapter-milky": "^1.1.9",
     "@karinjs/plugin-puppeteer": "^2.0.2",
@@ -109,5 +111,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-03-21T01:23:44.665Z"
+  "timestamp": "2026-03-21T14:03:59.159Z"
 }
