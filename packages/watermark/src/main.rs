@@ -3,8 +3,8 @@
 use std::path::PathBuf;
 use std::{ffi::OsString, os::windows::ffi::OsStringExt};
 
-use chrono::{Local, TimeZone};
 use dct_watermark::algorithm::dct_extract_from_rgba;
+use chrono::{Local, TimeZone};
 use serde_json::Value;
 use winio::prelude::*;
 use windows::Win32::Foundation::{HWND, LPARAM, LRESULT, WPARAM};

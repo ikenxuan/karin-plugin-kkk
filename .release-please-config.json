@@ -12,6 +12,12 @@
       "package-name": "karin-plugin-kkk",
       "changelog-path": "CHANGELOG.md",
       "include-component-in-tag": false
+    },
+    "packages/watermark": {
+      "release-type": "node",
+      "package-name": "@karin-plugin-kkk/watermark",
+      "changelog-path": "CHANGELOG.md",
+      "include-component-in-tag": true
     }
   },
   "changelog-sections": [

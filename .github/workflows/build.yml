@@ -59,6 +59,8 @@ jobs:
       releases_created: ${{ steps.release-please.outputs.releases_created || steps.manual-release.outputs.releases_created }}
       core_release_created: ${{ steps.release-please.outputs['packages/core--release_created'] || steps.manual-release.outputs.core_release_created }}
       core_tag_name: ${{ steps.release-please.outputs['packages/core--tag_name'] || steps.manual-release.outputs.core_tag_name }}
+      watermark_release_created: ${{ steps.release-please.outputs['packages/watermark--release_created'] }}
+      watermark_tag_name: ${{ steps.release-please.outputs['packages/watermark--tag_name'] }}
       core_version: ${{ steps.get-version-info.outputs.core_version }}
       should_upload_release: ${{ steps.get-version-info.outputs.should_upload_release }}
       release_tag_name: ${{ steps.get-version-info.outputs.release_tag_name }}
@@ -137,6 +139,137 @@ jobs:
           echo "core_version=$CORE_VERSION" >> $GITHUB_OUTPUT
           echo "📦 当前版本：$CORE_VERSION"
 
+  # 构建 watermark 多架构二进制
+  build-watermark-binaries:
+    runs-on: ${{ matrix.runner }}
+    needs: [version-release]
+    # if: needs.version-release.outputs.watermark_release_created == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+            label: win32-x64-msvc
+          - runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            label: linux-x64-gnu
+          - runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+            label: linux-arm64-gnu
+
+    steps:
+      - name: 📥 检出源代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: 🟢 配置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
+
+      - name: 📦 配置 PNPM 环境
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - name: 🦀 配置 Rust 环境
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: 📦 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 🔨 构建目标二进制
+        shell: bash
+        run: |
+          rm -f packages/watermark/*.node
+          pnpm --filter @karin-plugin-kkk/watermark exec napi build --platform --release --esm --target ${{ matrix.target }}
+
+      - name: 📦 准备二进制产物
+        shell: bash
+        run: |
+          mkdir -p watermark-artifacts
+          find packages/watermark -maxdepth 1 -name '*.node' -exec cp {} watermark-artifacts/ \;
+          ls -lah watermark-artifacts
+
+      - name: 📤 上传二进制产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: watermark-node-${{ matrix.label }}
+          path: watermark-artifacts/*.node
+          if-no-files-found: error
+
+  # 发布 watermark 主包与平台子包
+  publish-watermark:
+    runs-on: ubuntu-latest
+    needs: [version-release, build-watermark-binaries]
+    if: needs.version-release.outputs.watermark_release_created == 'true'
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: 📥 检出源代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: 🟢 配置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: 📦 配置 PNPM 环境
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - name: 📥 下载 watermark 二进制产物
+        uses: actions/download-artifact@v4
+        with:
+          pattern: watermark-node-*
+          path: packages/watermark/artifacts
+          merge-multiple: true
+
+      - name: 📦 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 🚀 发布 watermark 平台子包与主包
+        working-directory: packages/watermark
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          pnpm config set provenance true
+          pnpm config set registry https://registry.npmjs.org/
+          echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" >> ~/.npmrc
+
+          pnpm run create-npm-dirs
+          pnpm run artifacts
+
+          find npm -mindepth 1 -maxdepth 1 -type d | sort | while read -r pkgDir; do
+            if [ -f "$pkgDir/package.json" ]; then
+              (cd "$pkgDir" && pnpm publish --access public --no-git-checks --provenance)
+            fi
+          done
+
+          pnpm publish --access public --no-git-checks --provenance
+
+      - name: 📤 上传 watermark Release 附件
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            packages/watermark/artifacts/*.node
+          tag_name: ${{ needs.version-release.outputs.watermark_tag_name }}
+
   # 统一构建作业（仅核心包和Web应用）
   unified-build:
     runs-on: ubuntu-latest
@@ -166,17 +299,6 @@ jobs:
           node-version: 22
           cache: 'pnpm'
           cache-dependency-path: 'pnpm-lock.yaml'
-
-      - name: 🦀 配置 Rust 工具链
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-
-      - name: 📦 安装 wasm-pack
-        uses: jetli/wasm-pack-action@v0.4.0
-
-      - name: 🔧 预编译 watermark wasm 模块
-        run: pnpm --filter @kkk/watermark run build
 
       - name: 📦 安装依赖
         run: pnpm install

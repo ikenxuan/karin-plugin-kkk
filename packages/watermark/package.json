@@ -1,20 +1,38 @@
 {
-  "name": "@kkk/watermark",
+  "name": "@karin-plugin-kkk/watermark",
   "version": "0.1.0",
   "type": "module",
-  "main": "pkg/dct_watermark.js",
-  "types": "pkg/dct_watermark.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "napi": {
+    "binaryName": "dct_watermark",
+    "targets": [
+      "x86_64-pc-windows-msvc",
+      "x86_64-unknown-linux-gnu",
+      "aarch64-unknown-linux-gnu"
+    ]
+  },
   "exports": {
     ".": {
-      "import": "./pkg/dct_watermark.js",
-      "types": "./pkg/dct_watermark.d.ts"
+      "import": "./index.js",
+      "types": "./index.d.ts"
     }
   },
   "files": [
-    "pkg/"
+    "index.js",
+    "index.d.ts",
+    "*.node",
+    "npm"
   ],
   "scripts": {
-    "build": "wasm-pack build --target nodejs --out-dir pkg",
-    "gui": "cargo build --release"
+    "artifacts": "napi artifacts",
+    "build": "napi build --platform --release --esm",
+    "build:debug": "napi build --platform --esm",
+    "create-npm-dirs": "napi create-npm-dirs",
+    "gui": "cargo build --release --bin dct_watermark --features gui",
+    "prepublishOnly": "napi prepublish --no-gh-release"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^3.5.1"
   }
 }

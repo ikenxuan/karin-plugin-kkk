@@ -4,7 +4,6 @@ declare global {
 
 globalThis.__kkkLoadStart ??= process.hrtime.bigint()
 
-const main = './setup'
-await import(main)
+import('./setup')
 
 export { } 

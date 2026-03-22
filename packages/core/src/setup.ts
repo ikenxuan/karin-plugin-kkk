@@ -1,7 +1,7 @@
 import '@/module/server/Register'
 import '@/platform/bilibili/riskControl'
 
-import karin, { AdapterType, BOT_CONNECT, config, ImageElement, logger, mkdirSync, SendMessage } from 'node-karin'
+import karin, { AdapterType, BOT_CONNECT, config, ImageElement, logger, Message, mkdirSync, SendMessage } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
 
 import { Common, Render, Root } from '@/module'
@@ -35,18 +35,20 @@ if (process.env.NODE_ENV !== 'development' && isSemverGreater(requireVersion, Ro
 
     // 生成警告图片
     let warningImage: ImageElement[] | null = null
-    try {
-      warningImage = await Render('other/version_warning', {
-        requireVersion,
-        currentVersion: Root.karinVersion
-      })
-    } catch (error) {
-      logger.error(`[karin-plugin-kkk] 生成版本警告图片失败: ${error}`)
-    }
+
 
     for (const master of masters) {
       if (master === 'console') continue
 
+      try {
+        warningImage = await Render({ bot: karin.getBot(botId) } as Message, 'other/version_warning', {
+          requireVersion,
+          currentVersion: Root.karinVersion
+        })
+      } catch (error) {
+        logger.error(`[karin-plugin-kkk] 生成版本警告图片失败: ${error}`)
+      }
+    
       const key = `${botId}:${master}`
       if (notifiedSet.has(key)) continue
 

@@ -1,0 +1,17 @@
+{
+  "name": "@karin-plugin-kkk/watermark-linux-arm64-gnu",
+  "version": "0.1.0",
+  "cpu": [
+    "arm64"
+  ],
+  "main": "dct_watermark.linux-arm64-gnu.node",
+  "files": [
+    "dct_watermark.linux-arm64-gnu.node"
+  ],
+  "os": [
+    "linux"
+  ],
+  "libc": [
+    "glibc"
+  ]
+}
