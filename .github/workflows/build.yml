@@ -189,7 +189,8 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: 📦 安装依赖
-        run: pnpm --filter @karin-plugin-kkk/watermark... install --frozen-lockfile
+        working-directory: packages/watermark
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: 🔨 构建目标二进制
         shell: bash
@@ -247,7 +248,8 @@ jobs:
           merge-multiple: true
 
       - name: 📦 安装依赖
-        run: pnpm --filter @karin-plugin-kkk/watermark... install --frozen-lockfile
+        working-directory: packages/watermark
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: 🚀 发布 watermark 平台子包与主包
         working-directory: packages/watermark
