@@ -351,6 +351,7 @@ jobs:
         run: |
           cd packages/core
           pnpm pkg delete devDependencies
+          pnpm pkg delete scripts
           mkdir -p ${{ runner.temp }}/production/
           cp -r package.json README.md CHANGELOG.md LICENSE config resources lib ${{ runner.temp }}/production/
 
@@ -359,6 +360,7 @@ jobs:
         run: |
           cd packages/core
           pnpm pkg delete devDependencies
+          pnpm pkg delete scripts
           mkdir -p ${{ runner.temp }}/build-branch/
           cp -r package.json CHANGELOG.md README.md LICENSE resources config lib ${{ runner.temp }}/build-branch/
 
@@ -787,7 +789,9 @@ jobs:
 
       - name: 🧹 清理开发依赖
         working-directory: packages/core
-        run: pnpm pkg delete devDependencies
+        run: |
+          pnpm pkg delete devDependencies
+          pnpm pkg delete scripts 
 
       - name: 🚀 发布预览包
         id: publish_pkg
