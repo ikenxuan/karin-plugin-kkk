@@ -151,9 +151,6 @@ jobs:
           - runner: windows-latest
             target: x86_64-pc-windows-msvc
             label: win32-x64-msvc
-          - runner: macos-13
-            target: x86_64-apple-darwin
-            label: darwin-x64
           - runner: macos-latest
             target: aarch64-apple-darwin
             label: darwin-arm64
