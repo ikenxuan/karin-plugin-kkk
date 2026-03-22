@@ -46,62 +46,18 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: 📦 配置 PNPM 环境
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.15.9
-
-      - name: 🟢 配置 Node.js 环境
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: 'pnpm'
-          cache-dependency-path: 'pnpm-lock.yaml'
-
-      - name: 🦀 配置 Rust 环境
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-
-      - name: 📦 安装依赖
-        working-directory: packages/watermark
-        run: pnpm install --frozen-lockfile --ignore-scripts
-
       - name: 🔨 构建目标二进制
-        id: puniyu-build
-        continue-on-error: true
+        id: build
         uses: puniyu/napi-build-action@main
         with:
           target: ${{ matrix.target }}
           cwdDir: packages/watermark
 
-      - name: 📦 准备二进制产物（失败自动回退）
-        shell: bash
-        run: |
-          mkdir -p watermark-artifacts
-
-          OUTPUT_PATH='${{ steps.puniyu-build.outputs.output-path }}'
-          if [ "${{ steps.puniyu-build.outcome }}" = "success" ] && [ -n "$OUTPUT_PATH" ] && [ -e "$OUTPUT_PATH" ]; then
-            if [ -d "$OUTPUT_PATH" ]; then
-              find "$OUTPUT_PATH" -maxdepth 1 -name '*.node' -exec cp {} watermark-artifacts/ \;
-            else
-              cp "$OUTPUT_PATH" watermark-artifacts/
-            fi
-          fi
-
-          if [ -z "$(find watermark-artifacts -maxdepth 1 -name '*.node' -print -quit)" ]; then
-            rm -f packages/watermark/*.node
-            pnpm --filter @karin-plugin-kkk/watermark exec napi build --platform --release --esm --target ${{ matrix.target }}
-            find packages/watermark -maxdepth 1 -name '*.node' -exec cp {} watermark-artifacts/ \;
-          fi
-
-          ls -lah watermark-artifacts
-
       - name: 📤 上传二进制产物
         uses: actions/upload-artifact@v4
         with:
           name: watermark-node-${{ matrix.label }}
-          path: watermark-artifacts/*.node
+          path: ${{ steps.build.outputs.output-path }}
           if-no-files-found: error
 
   publish-watermark:
