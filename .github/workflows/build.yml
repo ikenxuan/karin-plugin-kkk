@@ -151,6 +151,12 @@ jobs:
           - runner: windows-latest
             target: x86_64-pc-windows-msvc
             label: win32-x64-msvc
+          - runner: macos-13
+            target: x86_64-apple-darwin
+            label: darwin-x64
+          - runner: macos-latest
+            target: aarch64-apple-darwin
+            label: darwin-arm64
           - runner: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             label: linux-x64-gnu
@@ -183,7 +189,7 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: 📦 安装依赖
-        run: pnpm install --frozen-lockfile
+        run: pnpm --filter @karin-plugin-kkk/watermark... install --frozen-lockfile
 
       - name: 🔨 构建目标二进制
         shell: bash
@@ -220,12 +226,12 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: � 配置 PNPM 环境
+      - name: 📦 配置 PNPM 环境
         uses: pnpm/action-setup@v4
         with:
           version: 9.15.9
 
-      - name: �🟢 配置 Node.js 环境
+      - name: 配置 Node.js 环境
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -241,7 +247,7 @@ jobs:
           merge-multiple: true
 
       - name: 📦 安装依赖
-        run: pnpm install --frozen-lockfile
+        run: pnpm --filter @karin-plugin-kkk/watermark... install --frozen-lockfile
 
       - name: 🚀 发布 watermark 平台子包与主包
         working-directory: packages/watermark
