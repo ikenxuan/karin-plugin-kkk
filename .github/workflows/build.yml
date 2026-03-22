@@ -142,7 +142,7 @@ jobs:
   # watermark 二进制构建与发布（复用工作流）
   build-watermark-and-publish:
     needs: [version-release]
-    if: needs.version-release.outputs.watermark_release_created == 'true'
+    # if: needs.version-release.outputs.watermark_release_created == 'true'
     uses: ./.github/workflows/build-npm-lib.yml
     with:
       watermark_tag_name: ${{ needs.version-release.outputs.watermark_tag_name }}
