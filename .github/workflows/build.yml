@@ -165,17 +165,17 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
+      - name: 📦 配置 PNPM 环境
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
       - name: 🟢 配置 Node.js 环境
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'pnpm'
           cache-dependency-path: 'pnpm-lock.yaml'
-
-      - name: 📦 配置 PNPM 环境
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.15.9
 
       - name: 🦀 配置 Rust 环境
         uses: dtolnay/rust-toolchain@stable
@@ -220,18 +220,18 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: 🟢 配置 Node.js 环境
+      - name: � 配置 PNPM 环境
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - name: �🟢 配置 Node.js 环境
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'pnpm'
           cache-dependency-path: 'pnpm-lock.yaml'
           registry-url: 'https://registry.npmjs.org'
-
-      - name: 📦 配置 PNPM 环境
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.15.9
 
       - name: 📥 下载 watermark 二进制产物
         uses: actions/download-artifact@v4
