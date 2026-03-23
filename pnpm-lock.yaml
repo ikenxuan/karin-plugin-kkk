@@ -281,7 +281,7 @@ importers:
       '@ikenxuan/amagi':
         specifier: workspace:*
         version: link:../amagi/packages/core
-      '@karin-plugin-kkk/watermark':
+      '@ikenxuan/watermark':
         specifier: workspace:*
         version: link:../watermark
       '@karinjs/plugin-adapter-discordbot':

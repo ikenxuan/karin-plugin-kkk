@@ -79,8 +79,8 @@ function requireNative() {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@karin-plugin-kkk/watermark-android-arm64')
-        const bindingPackageVersion = require('@karin-plugin-kkk/watermark-android-arm64/package.json').version
+        const binding = require('@ikenxuan/watermark-android-arm64')
+        const bindingPackageVersion = require('@ikenxuan/watermark-android-arm64/package.json').version
         if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -95,8 +95,8 @@ function requireNative() {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@karin-plugin-kkk/watermark-android-arm-eabi')
-        const bindingPackageVersion = require('@karin-plugin-kkk/watermark-android-arm-eabi/package.json').version
+        const binding = require('@ikenxuan/watermark-android-arm-eabi')
+        const bindingPackageVersion = require('@ikenxuan/watermark-android-arm-eabi/package.json').version
         if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -116,8 +116,8 @@ function requireNative() {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@karin-plugin-kkk/watermark-win32-x64-gnu')
-        const bindingPackageVersion = require('@karin-plugin-kkk/watermark-win32-x64-gnu/package.json').version
+        const binding = require('@ikenxuan/watermark-win32-x64-gnu')
+        const bindingPackageVersion = require('@ikenxuan/watermark-win32-x64-gnu/package.json').version
         if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -132,8 +132,8 @@ function requireNative() {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@karin-plugin-kkk/watermark-win32-x64-msvc')
-        const bindingPackageVersion = require('@karin-plugin-kkk/watermark-win32-x64-msvc/package.json').version
+        const binding = require('@ikenxuan/watermark-win32-x64-msvc')
+        const bindingPackageVersion = require('@ikenxuan/watermark-win32-x64-msvc/package.json').version
         if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -149,8 +149,8 @@ function requireNative() {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@karin-plugin-kkk/watermark-win32-ia32-msvc')
-        const bindingPackageVersion = require('@karin-plugin-kkk/watermark-win32-ia32-msvc/package.json').version
+        const binding = require('@ikenxuan/watermark-win32-ia32-msvc')
+        const bindingPackageVersion = require('@ikenxuan/watermark-win32-ia32-msvc/package.json').version
         if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -165,8 +165,8 @@ function requireNative() {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@karin-plugin-kkk/watermark-win32-arm64-msvc')
-        const bindingPackageVersion = require('@karin-plugin-kkk/watermark-win32-arm64-msvc/package.json').version
+        const binding = require('@ikenxuan/watermark-win32-arm64-msvc')
+        const bindingPackageVersion = require('@ikenxuan/watermark-win32-arm64-msvc/package.json').version
         if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -184,8 +184,8 @@ function requireNative() {
       loadErrors.push(e)
     }
     try {
-      const binding = require('@karin-plugin-kkk/watermark-darwin-universal')
-      const bindingPackageVersion = require('@karin-plugin-kkk/watermark-darwin-universal/package.json').version
+      const binding = require('@ikenxuan/watermark-darwin-universal')
+      const bindingPackageVersion = require('@ikenxuan/watermark-darwin-universal/package.json').version
       if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
         throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
       }
@@ -200,8 +200,8 @@ function requireNative() {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@karin-plugin-kkk/watermark-darwin-x64')
-        const bindingPackageVersion = require('@karin-plugin-kkk/watermark-darwin-x64/package.json').version
+        const binding = require('@ikenxuan/watermark-darwin-x64')
+        const bindingPackageVersion = require('@ikenxuan/watermark-darwin-x64/package.json').version
         if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -216,8 +216,8 @@ function requireNative() {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@karin-plugin-kkk/watermark-darwin-arm64')
-        const bindingPackageVersion = require('@karin-plugin-kkk/watermark-darwin-arm64/package.json').version
+        const binding = require('@ikenxuan/watermark-darwin-arm64')
+        const bindingPackageVersion = require('@ikenxuan/watermark-darwin-arm64/package.json').version
         if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -236,8 +236,8 @@ function requireNative() {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@karin-plugin-kkk/watermark-freebsd-x64')
-        const bindingPackageVersion = require('@karin-plugin-kkk/watermark-freebsd-x64/package.json').version
+        const binding = require('@ikenxuan/watermark-freebsd-x64')
+        const bindingPackageVersion = require('@ikenxuan/watermark-freebsd-x64/package.json').version
         if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -252,8 +252,8 @@ function requireNative() {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@karin-plugin-kkk/watermark-freebsd-arm64')
-        const bindingPackageVersion = require('@karin-plugin-kkk/watermark-freebsd-arm64/package.json').version
+        const binding = require('@ikenxuan/watermark-freebsd-arm64')
+        const bindingPackageVersion = require('@ikenxuan/watermark-freebsd-arm64/package.json').version
         if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -273,8 +273,8 @@ function requireNative() {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@karin-plugin-kkk/watermark-linux-x64-musl')
-          const bindingPackageVersion = require('@karin-plugin-kkk/watermark-linux-x64-musl/package.json').version
+          const binding = require('@ikenxuan/watermark-linux-x64-musl')
+          const bindingPackageVersion = require('@ikenxuan/watermark-linux-x64-musl/package.json').version
           if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -289,8 +289,8 @@ function requireNative() {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@karin-plugin-kkk/watermark-linux-x64-gnu')
-          const bindingPackageVersion = require('@karin-plugin-kkk/watermark-linux-x64-gnu/package.json').version
+          const binding = require('@ikenxuan/watermark-linux-x64-gnu')
+          const bindingPackageVersion = require('@ikenxuan/watermark-linux-x64-gnu/package.json').version
           if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -307,8 +307,8 @@ function requireNative() {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@karin-plugin-kkk/watermark-linux-arm64-musl')
-          const bindingPackageVersion = require('@karin-plugin-kkk/watermark-linux-arm64-musl/package.json').version
+          const binding = require('@ikenxuan/watermark-linux-arm64-musl')
+          const bindingPackageVersion = require('@ikenxuan/watermark-linux-arm64-musl/package.json').version
           if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -323,8 +323,8 @@ function requireNative() {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@karin-plugin-kkk/watermark-linux-arm64-gnu')
-          const bindingPackageVersion = require('@karin-plugin-kkk/watermark-linux-arm64-gnu/package.json').version
+          const binding = require('@ikenxuan/watermark-linux-arm64-gnu')
+          const bindingPackageVersion = require('@ikenxuan/watermark-linux-arm64-gnu/package.json').version
           if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -341,8 +341,8 @@ function requireNative() {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@karin-plugin-kkk/watermark-linux-arm-musleabihf')
-          const bindingPackageVersion = require('@karin-plugin-kkk/watermark-linux-arm-musleabihf/package.json').version
+          const binding = require('@ikenxuan/watermark-linux-arm-musleabihf')
+          const bindingPackageVersion = require('@ikenxuan/watermark-linux-arm-musleabihf/package.json').version
           if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -357,8 +357,8 @@ function requireNative() {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@karin-plugin-kkk/watermark-linux-arm-gnueabihf')
-          const bindingPackageVersion = require('@karin-plugin-kkk/watermark-linux-arm-gnueabihf/package.json').version
+          const binding = require('@ikenxuan/watermark-linux-arm-gnueabihf')
+          const bindingPackageVersion = require('@ikenxuan/watermark-linux-arm-gnueabihf/package.json').version
           if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -375,8 +375,8 @@ function requireNative() {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@karin-plugin-kkk/watermark-linux-loong64-musl')
-          const bindingPackageVersion = require('@karin-plugin-kkk/watermark-linux-loong64-musl/package.json').version
+          const binding = require('@ikenxuan/watermark-linux-loong64-musl')
+          const bindingPackageVersion = require('@ikenxuan/watermark-linux-loong64-musl/package.json').version
           if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -391,8 +391,8 @@ function requireNative() {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@karin-plugin-kkk/watermark-linux-loong64-gnu')
-          const bindingPackageVersion = require('@karin-plugin-kkk/watermark-linux-loong64-gnu/package.json').version
+          const binding = require('@ikenxuan/watermark-linux-loong64-gnu')
+          const bindingPackageVersion = require('@ikenxuan/watermark-linux-loong64-gnu/package.json').version
           if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -409,8 +409,8 @@ function requireNative() {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@karin-plugin-kkk/watermark-linux-riscv64-musl')
-          const bindingPackageVersion = require('@karin-plugin-kkk/watermark-linux-riscv64-musl/package.json').version
+          const binding = require('@ikenxuan/watermark-linux-riscv64-musl')
+          const bindingPackageVersion = require('@ikenxuan/watermark-linux-riscv64-musl/package.json').version
           if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -425,8 +425,8 @@ function requireNative() {
           loadErrors.push(e)
         }
         try {
-          const binding = require('@karin-plugin-kkk/watermark-linux-riscv64-gnu')
-          const bindingPackageVersion = require('@karin-plugin-kkk/watermark-linux-riscv64-gnu/package.json').version
+          const binding = require('@ikenxuan/watermark-linux-riscv64-gnu')
+          const bindingPackageVersion = require('@ikenxuan/watermark-linux-riscv64-gnu/package.json').version
           if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
             throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
@@ -442,8 +442,8 @@ function requireNative() {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@karin-plugin-kkk/watermark-linux-ppc64-gnu')
-        const bindingPackageVersion = require('@karin-plugin-kkk/watermark-linux-ppc64-gnu/package.json').version
+        const binding = require('@ikenxuan/watermark-linux-ppc64-gnu')
+        const bindingPackageVersion = require('@ikenxuan/watermark-linux-ppc64-gnu/package.json').version
         if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -458,8 +458,8 @@ function requireNative() {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@karin-plugin-kkk/watermark-linux-s390x-gnu')
-        const bindingPackageVersion = require('@karin-plugin-kkk/watermark-linux-s390x-gnu/package.json').version
+        const binding = require('@ikenxuan/watermark-linux-s390x-gnu')
+        const bindingPackageVersion = require('@ikenxuan/watermark-linux-s390x-gnu/package.json').version
         if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -478,8 +478,8 @@ function requireNative() {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@karin-plugin-kkk/watermark-openharmony-arm64')
-        const bindingPackageVersion = require('@karin-plugin-kkk/watermark-openharmony-arm64/package.json').version
+        const binding = require('@ikenxuan/watermark-openharmony-arm64')
+        const bindingPackageVersion = require('@ikenxuan/watermark-openharmony-arm64/package.json').version
         if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -494,8 +494,8 @@ function requireNative() {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@karin-plugin-kkk/watermark-openharmony-x64')
-        const bindingPackageVersion = require('@karin-plugin-kkk/watermark-openharmony-x64/package.json').version
+        const binding = require('@ikenxuan/watermark-openharmony-x64')
+        const bindingPackageVersion = require('@ikenxuan/watermark-openharmony-x64/package.json').version
         if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -510,8 +510,8 @@ function requireNative() {
         loadErrors.push(e)
       }
       try {
-        const binding = require('@karin-plugin-kkk/watermark-openharmony-arm')
-        const bindingPackageVersion = require('@karin-plugin-kkk/watermark-openharmony-arm/package.json').version
+        const binding = require('@ikenxuan/watermark-openharmony-arm')
+        const bindingPackageVersion = require('@ikenxuan/watermark-openharmony-arm/package.json').version
         if (bindingPackageVersion !== '0.1.0' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
           throw new Error(`Native binding package version mismatch, expected 0.1.0 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
@@ -542,7 +542,7 @@ if (!nativeBinding || process.env.NAPI_RS_FORCE_WASI) {
   }
   if (!nativeBinding || process.env.NAPI_RS_FORCE_WASI) {
     try {
-      wasiBinding = require('@karin-plugin-kkk/watermark-wasm32-wasi')
+      wasiBinding = require('@ikenxuan/watermark-wasm32-wasi')
       nativeBinding = wasiBinding
     } catch (err) {
       if (process.env.NAPI_RS_FORCE_WASI) {
