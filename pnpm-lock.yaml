@@ -269,8 +269,8 @@ importers:
   packages/core:
     dependencies:
       '@ikenxuan/watermark':
-        specifier: ^1.0.3
-        version: 1.0.3
+        specifier: ^1.0.4
+        version: 1.0.4
       '@snapka/puppeteer':
         specifier: '>=0.1.5 <0.3.0'
         version: 0.2.3
@@ -2051,30 +2051,30 @@ packages:
   '@iconify/utils@3.1.0':
     resolution: {integrity: sha512-Zlzem1ZXhI1iHeeERabLNzBHdOa4VhQbqAcOQaMKuTuyZCpwKbC2R4Dd0Zo3g9EAc+Y4fiarO8HIHRAth7+skw==}
 
-  '@ikenxuan/watermark-darwin-arm64@1.0.3':
-    resolution: {integrity: sha512-HhfElMAhCeac0pHSeubCRD4OpGuvmtSqpV3nZgEWYMNWPSFR1diJQpPG7OH56aHgICFJU+k22HN5YvITMYD36Q==}
+  '@ikenxuan/watermark-darwin-arm64@1.0.4':
+    resolution: {integrity: sha512-APTuIGldxI+PwKKesP2mikUHK5xDlmf+SepcJkp+b+evV5wVLq/wlkvGZT/Pb5T/ywMFHEKRTXY54yf41iOrFg==}
     cpu: [arm64]
     os: [darwin]
 
-  '@ikenxuan/watermark-linux-arm64-gnu@1.0.3':
-    resolution: {integrity: sha512-MWorUjqSl1tP1+YNXB1b3oZWekCPGAPpshTLdtVkww5v5ub9LyMVeKADs85o/hRuz309/MaEONkAL4qxceVwrA==}
+  '@ikenxuan/watermark-linux-arm64-gnu@1.0.4':
+    resolution: {integrity: sha512-9SqBVTA0f+vuaYaU6Ij/rkvkRtS+aZV53Ds9F4S1icxk/F8cGfOsdmBT1DLyLPRtlydNIrElu4DBYmTdijtR7A==}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@ikenxuan/watermark-linux-x64-gnu@1.0.3':
-    resolution: {integrity: sha512-YaZ2D7heHwh+MVTe6QIYMaXqMsIvkRhQFrh47Z2epoA9ea9+dG3alPfg3N53F1bv/6+GTKU9dcDCn3OUTf7Q/Q==}
+  '@ikenxuan/watermark-linux-x64-gnu@1.0.4':
+    resolution: {integrity: sha512-YkHRvA9uKsOkLpVGFOQCBTlh9qNQr05MT4rZBVmiK1dH6FOqtoAM0mRkSixDqymPlBEs6HdrEQykqXZu9/rR2Q==}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@ikenxuan/watermark-win32-x64-msvc@1.0.3':
-    resolution: {integrity: sha512-Y0yNHXvur30XDQato5c5YWI+cPDvpqfANN+DWpNZy8hDhWd3XGzB/0KGTDySTcnNXruNqfvL0ZEJQdJm6zVshg==}
+  '@ikenxuan/watermark-win32-x64-msvc@1.0.4':
+    resolution: {integrity: sha512-hksOpWALkx0HGgEmzTnn9BDwPzq5yEfEP9NnX39nNGl+UOaYFfIK3oAE4/yHvL8oJINhd2oEH61Y+IJU91R7EA==}
     cpu: [x64]
     os: [win32]
 
-  '@ikenxuan/watermark@1.0.3':
-    resolution: {integrity: sha512-2Yc5PioIxtGtW1lPz2My4AgOMcrQr+dgwuNrZbmBtG97NOkHO/eIfbmk3HVXsNOPnbEt7aIH1QofOUpiQU6QEg==}
+  '@ikenxuan/watermark@1.0.4':
+    resolution: {integrity: sha512-ZUu+wrbUBJ/l+nJFVGFHEsuUO+WBREQ6aa2u0o2oH/gKU8OJgAppAVF192Xw9Pjh3xeEXP0ImT6zUGeTTPrO0w==}
 
   '@ikenxuan/xhshow-ts@1.0.6':
     resolution: {integrity: sha512-2Qo2tWzU6grC7bsTwohnp9KJA9wqDTAb2bbhaBOqBdAlM44zp9qlSAe2+UTYqDZaxrpne8SCT11biizVUJuosQ==}
@@ -13308,24 +13308,24 @@ snapshots:
       '@iconify/types': 2.0.0
       mlly: 1.8.2
 
-  '@ikenxuan/watermark-darwin-arm64@1.0.3':
+  '@ikenxuan/watermark-darwin-arm64@1.0.4':
     optional: true
 
-  '@ikenxuan/watermark-linux-arm64-gnu@1.0.3':
+  '@ikenxuan/watermark-linux-arm64-gnu@1.0.4':
     optional: true
 
-  '@ikenxuan/watermark-linux-x64-gnu@1.0.3':
+  '@ikenxuan/watermark-linux-x64-gnu@1.0.4':
     optional: true
 
-  '@ikenxuan/watermark-win32-x64-msvc@1.0.3':
+  '@ikenxuan/watermark-win32-x64-msvc@1.0.4':
     optional: true
 
-  '@ikenxuan/watermark@1.0.3':
+  '@ikenxuan/watermark@1.0.4':
     optionalDependencies:
-      '@ikenxuan/watermark-darwin-arm64': 1.0.3
-      '@ikenxuan/watermark-linux-arm64-gnu': 1.0.3
-      '@ikenxuan/watermark-linux-x64-gnu': 1.0.3
-      '@ikenxuan/watermark-win32-x64-msvc': 1.0.3
+      '@ikenxuan/watermark-darwin-arm64': 1.0.4
+      '@ikenxuan/watermark-linux-arm64-gnu': 1.0.4
+      '@ikenxuan/watermark-linux-x64-gnu': 1.0.4
+      '@ikenxuan/watermark-win32-x64-msvc': 1.0.4
 
   '@ikenxuan/xhshow-ts@1.0.6':
     dependencies:

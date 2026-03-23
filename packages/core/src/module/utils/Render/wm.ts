@@ -12,9 +12,12 @@ export const embedWatermark = (
   pngBytes: Buffer | Uint8Array,
   watermarkText: string
 ): Buffer | null => {
+  // const start = Date.now()
   try {
     const input = pngBytes instanceof Buffer ? pngBytes : Buffer.from(pngBytes)
-    return embedWatermarkToPngBytes(input, watermarkText)
+    const result = embedWatermarkToPngBytes(input, watermarkText)
+    // logger.info(`嵌入隐水印耗时: ${Date.now() - start}ms`)
+    return result
   } catch (error) {
     logger.error('嵌入隐水印失败:', error)
     return null
