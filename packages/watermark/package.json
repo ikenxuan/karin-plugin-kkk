@@ -1,5 +1,5 @@
 {
-  "name": "@karin-plugin-kkk/watermark",
+  "name": "@ikenxuan/watermark",
   "version": "0.1.0",
   "type": "module",
   "main": "index.js",
