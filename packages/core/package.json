@@ -43,7 +43,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "pnpm typecheck && cross-env NODE_ENV=production vite build && tsdown && vitest run",
+    "build": "cross-env NODE_ENV=production vite build && tsdown && vitest run",
     "build:check": "tsc --noEmit && pnpm build",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
     "lint": "eslint . --fix",
