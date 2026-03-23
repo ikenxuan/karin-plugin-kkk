@@ -56,7 +56,8 @@ export default defineConfig({
         ...[/^node-karin/],
         ...[/^@karinjs\//],
         'fingerprint-injector',
-        '@snapka/puppeteer'
+        '@snapka/puppeteer',
+        '@ikenxuan/watermark'
       ],
       output: {
         // inlineDynamicImports: false,

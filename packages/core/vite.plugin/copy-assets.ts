@@ -52,30 +52,6 @@ export const copyTemplateAssetsPlugin = (rootDir: string): Plugin => {
 
       copyDirectory(SourceDir, TargetDir)
       console.log('✅ template 静态资源已复制到:', TargetDir)
-
-      // 2. 复制 watermark 编译产物 (*.node, index.js) 到 lib/core_chunk/watermark
-      const watermarkSourceDir = resolve(rootDir, '../watermark')
-      const watermarkTargetDir = resolve(rootDir, 'lib/core_chunk/watermark')
-
-      if (fs.existsSync(watermarkSourceDir)) {
-        if (!fs.existsSync(watermarkTargetDir)) {
-          fs.mkdirSync(watermarkTargetDir, { recursive: true })
-        }
-        
-        console.log('🔍 开始复制 watermark 原生模块...')
-        const files = fs.readdirSync(watermarkSourceDir)
-        let copied = 0
-        files.forEach(file => {
-          if (file.endsWith('.node') || file === 'index.js') {
-            fs.copyFileSync(
-              resolve(watermarkSourceDir, file),
-              resolve(watermarkTargetDir, file)
-            )
-            copied++
-          }
-        })
-        console.log(`✅ watermark 原生模块复制完成 (共 ${copied} 个文件) 到: ${watermarkTargetDir}`)
-      }
     }
   }
 }

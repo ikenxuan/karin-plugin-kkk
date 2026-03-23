@@ -118,6 +118,8 @@ jobs:
             fi
           done
 
+          # 主包的发布前必须跑 prepublishOnly 生成 optionalDependencies
+          pnpm run prepublishOnly
           pnpm publish --access public --no-git-checks
 
       - name: 📤 上传 watermark Release 附件

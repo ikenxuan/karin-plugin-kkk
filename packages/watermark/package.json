@@ -2,6 +2,10 @@
   "name": "@ikenxuan/watermark",
   "version": "0.1.0",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ikenxuan/karin-plugin-kkk"
+  },
   "main": "index.js",
   "types": "index.d.ts",
   "napi": {
@@ -35,5 +39,11 @@
   },
   "devDependencies": {
     "@napi-rs/cli": "^3.5.1"
+  },
+  "optionalDependencies": {
+    "@ikenxuan/watermark-win32-x64-msvc": "0.1.0",
+    "@ikenxuan/watermark-darwin-arm64": "0.1.0",
+    "@ikenxuan/watermark-linux-x64-gnu": "0.1.0",
+    "@ikenxuan/watermark-linux-arm64-gnu": "0.1.0"
   }
 }

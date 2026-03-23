@@ -55,6 +55,7 @@
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../template/src/dev/mock-server.ts\" --include \"../template/src/main.ts\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
+    "@ikenxuan/watermark": "workspace:*",
     "fingerprint-injector": "^2.1.81"
   },
   "devDependencies": {
@@ -62,7 +63,6 @@
     "@karinjs/plugin-adapter-discordbot": "https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687",
     "@karinjs/plugin-adapter-milky": "^1.1.9",
     "@karinjs/plugin-puppeteer": "^2.0.2",
-    "@ikenxuan/watermark": "workspace:*",
     "@rollup/plugin-terser": "^1.0.0",
     "@types/express": "5.0.6",
     "@types/heic-decode": "^1.1.3",
