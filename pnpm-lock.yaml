@@ -268,6 +268,9 @@ importers:
 
   packages/core:
     dependencies:
+      '@ikenxuan/watermark':
+        specifier: ^1.0.2
+        version: 1.0.2
       '@snapka/puppeteer':
         specifier: '>=0.1.5 <0.3.0'
         version: 0.2.3
@@ -281,9 +284,6 @@ importers:
       '@ikenxuan/amagi':
         specifier: workspace:*
         version: link:../amagi/packages/core
-      '@ikenxuan/watermark':
-        specifier: workspace:*
-        version: link:../watermark
       '@karinjs/plugin-adapter-discordbot':
         specifier: https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687
         version: https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687
@@ -2056,6 +2056,31 @@ packages:
 
   '@iconify/utils@3.1.0':
     resolution: {integrity: sha512-Zlzem1ZXhI1iHeeERabLNzBHdOa4VhQbqAcOQaMKuTuyZCpwKbC2R4Dd0Zo3g9EAc+Y4fiarO8HIHRAth7+skw==}
+
+  '@ikenxuan/watermark-darwin-arm64@1.0.2':
+    resolution: {integrity: sha512-ufDzn5jV65oHMSb+gLU8pBt4iau82Zv0nsFFC9u4KytNKzlzZ0c/hab99RsekoLYwqu1ffZYMirJa3IKYjqBww==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@ikenxuan/watermark-linux-arm64-gnu@1.0.2':
+    resolution: {integrity: sha512-nR7TnL7+fKhfBfkEWofMgYYlXNQ1ST84ZFKjCK6MMsGh4/3M/1popMGolp3csA87B1kj2RCtZ8mujFnur4GgpQ==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@ikenxuan/watermark-linux-x64-gnu@1.0.2':
+    resolution: {integrity: sha512-VqtzmnWRbMBY7H5b9IIs4597T4tFZJ5RD2E3dcjkZtPTA97vPM9Z/atwnWV8su86OOLbLUNTxc4rt5VpxaAEEA==}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@ikenxuan/watermark-win32-x64-msvc@1.0.2':
+    resolution: {integrity: sha512-fakmsF1GornM0SfAe4jIIvCKnYhNcCUh5QXfOl+9Vg2OUhO6YHlb6BEHxPoiEHHSD9RmH6TfbT6XnTSZH9Cv7w==}
+    cpu: [x64]
+    os: [win32]
+
+  '@ikenxuan/watermark@1.0.2':
+    resolution: {integrity: sha512-hh/lBsX3ZPab7YGQl3cbBGLM7OjhpZEOxwiTHfgXFOQF0034B4JKAMyfVFheJfPbOSWABnscCTtKltDTKmvRnA==}
 
   '@ikenxuan/xhshow-ts@1.0.6':
     resolution: {integrity: sha512-2Qo2tWzU6grC7bsTwohnp9KJA9wqDTAb2bbhaBOqBdAlM44zp9qlSAe2+UTYqDZaxrpne8SCT11biizVUJuosQ==}
@@ -13872,6 +13897,25 @@ snapshots:
       '@antfu/install-pkg': 1.1.0
       '@iconify/types': 2.0.0
       mlly: 1.8.2
+
+  '@ikenxuan/watermark-darwin-arm64@1.0.2':
+    optional: true
+
+  '@ikenxuan/watermark-linux-arm64-gnu@1.0.2':
+    optional: true
+
+  '@ikenxuan/watermark-linux-x64-gnu@1.0.2':
+    optional: true
+
+  '@ikenxuan/watermark-win32-x64-msvc@1.0.2':
+    optional: true
+
+  '@ikenxuan/watermark@1.0.2':
+    optionalDependencies:
+      '@ikenxuan/watermark-darwin-arm64': 1.0.2
+      '@ikenxuan/watermark-linux-arm64-gnu': 1.0.2
+      '@ikenxuan/watermark-linux-x64-gnu': 1.0.2
+      '@ikenxuan/watermark-win32-x64-msvc': 1.0.2
 
   '@ikenxuan/xhshow-ts@1.0.6':
     dependencies:

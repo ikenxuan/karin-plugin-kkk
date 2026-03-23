@@ -59,8 +59,6 @@ jobs:
       releases_created: ${{ steps.release-please.outputs.releases_created || steps.manual-release.outputs.releases_created }}
       core_release_created: ${{ steps.release-please.outputs['packages/core--release_created'] || steps.manual-release.outputs.core_release_created }}
       core_tag_name: ${{ steps.release-please.outputs['packages/core--tag_name'] || steps.manual-release.outputs.core_tag_name }}
-      watermark_release_created: ${{ steps.release-please.outputs['packages/watermark--release_created'] }}
-      watermark_tag_name: ${{ steps.release-please.outputs['packages/watermark--tag_name'] }}
       core_version: ${{ steps.get-version-info.outputs.core_version }}
       should_upload_release: ${{ steps.get-version-info.outputs.should_upload_release }}
       release_tag_name: ${{ steps.get-version-info.outputs.release_tag_name }}
@@ -138,15 +136,6 @@ jobs:
           
           echo "core_version=$CORE_VERSION" >> $GITHUB_OUTPUT
           echo "📦 当前版本：$CORE_VERSION"
-
-  # watermark 二进制构建与发布（复用工作流）
-  build-watermark-and-publish:
-    needs: [version-release]
-    # if: needs.version-release.outputs.watermark_release_created == 'true'
-    uses: ./.github/workflows/build-npm-lib.yml
-    with:
-      watermark_tag_name: ${{ needs.version-release.outputs.watermark_tag_name }}
-    secrets: inherit
 
   # 统一构建作业（仅核心包和Web应用）
   unified-build:
