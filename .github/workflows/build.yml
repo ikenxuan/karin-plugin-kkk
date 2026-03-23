@@ -168,7 +168,7 @@ jobs:
           cache-dependency-path: 'pnpm-lock.yaml'
 
       - name: 📦 安装依赖
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install
 
       - name: 🔨 执行完整项目构建
         run: |
