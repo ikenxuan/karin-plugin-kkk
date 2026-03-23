@@ -114,11 +114,11 @@ jobs:
 
           find npm -mindepth 1 -maxdepth 1 -type d | sort | while read -r pkgDir; do
             if [ -f "$pkgDir/package.json" ]; then
-              (cd "$pkgDir" && pnpm publish --access public --no-git-checks --provenance)
+              (cd "$pkgDir" && pnpm publish --access public)
             fi
           done
 
-          pnpm publish --access public --no-git-checks --provenance
+          pnpm publish --access public
 
       - name: 📤 上传 watermark Release 附件
         uses: softprops/action-gh-release@v2
