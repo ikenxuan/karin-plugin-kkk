@@ -121,7 +121,7 @@ export const Render = async <P extends DynamicRenderPath> (
 
   for (const image of images) {
     const imageBuffer = Buffer.from(image, 'base64')
-    const watermarkedBuffer = await embedWatermark(imageBuffer, JSON.stringify({
+    const watermarkedBuffer = embedWatermark(imageBuffer, JSON.stringify({
       ts: Date.now(),
       pv: Root.pluginVersion,
       account: `${event.bot.account.selfId}|${event.bot.account.name}`
