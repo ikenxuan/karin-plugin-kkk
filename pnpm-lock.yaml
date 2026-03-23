@@ -269,8 +269,8 @@ importers:
   packages/core:
     dependencies:
       '@ikenxuan/watermark':
-        specifier: ^1.0.4
-        version: 1.0.4
+        specifier: ^1.0.5
+        version: 1.0.5
       '@snapka/puppeteer':
         specifier: '>=0.1.5 <0.3.0'
         version: 0.2.3
@@ -358,7 +358,7 @@ importers:
         version: 2.4.26(tailwindcss@4.2.2)
       '@lobehub/icons':
         specifier: ^4.0.3
-        version: 4.12.0(@lobehub/ui@4.38.4)(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 4.12.0(@lobehub/ui@4.38.4)(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@orama/orama':
         specifier: ^3.1.18
         version: 3.1.18
@@ -2051,30 +2051,30 @@ packages:
   '@iconify/utils@3.1.0':
     resolution: {integrity: sha512-Zlzem1ZXhI1iHeeERabLNzBHdOa4VhQbqAcOQaMKuTuyZCpwKbC2R4Dd0Zo3g9EAc+Y4fiarO8HIHRAth7+skw==}
 
-  '@ikenxuan/watermark-darwin-arm64@1.0.4':
-    resolution: {integrity: sha512-APTuIGldxI+PwKKesP2mikUHK5xDlmf+SepcJkp+b+evV5wVLq/wlkvGZT/Pb5T/ywMFHEKRTXY54yf41iOrFg==}
+  '@ikenxuan/watermark-darwin-arm64@1.0.5':
+    resolution: {integrity: sha512-kEwXZQzJMwO3ZLR1ZuFbYzRs3H6QLaoseE5V4loNlaVz7XkhvsJVHhNVI3x/ylMCO7bNU53mA7AjEvJb72tjdA==}
     cpu: [arm64]
     os: [darwin]
 
-  '@ikenxuan/watermark-linux-arm64-gnu@1.0.4':
-    resolution: {integrity: sha512-9SqBVTA0f+vuaYaU6Ij/rkvkRtS+aZV53Ds9F4S1icxk/F8cGfOsdmBT1DLyLPRtlydNIrElu4DBYmTdijtR7A==}
+  '@ikenxuan/watermark-linux-arm64-gnu@1.0.5':
+    resolution: {integrity: sha512-BonPDLdr3Ob37b2ymL0IHKsPR9bq6d8aY4JoyZntU2x2epME2W4hZdspDti49NRB9vBm8ZlnpCqb/47Xn3fuZA==}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@ikenxuan/watermark-linux-x64-gnu@1.0.4':
-    resolution: {integrity: sha512-YkHRvA9uKsOkLpVGFOQCBTlh9qNQr05MT4rZBVmiK1dH6FOqtoAM0mRkSixDqymPlBEs6HdrEQykqXZu9/rR2Q==}
+  '@ikenxuan/watermark-linux-x64-gnu@1.0.5':
+    resolution: {integrity: sha512-iGYFui0xwXcvsyi+vNVNFxcyDCL3kqKOS20w4tSo15Xgjj2MCOU40CLv4rKCrta+Oc8VJGGyF4qtH4tqpdvwrA==}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@ikenxuan/watermark-win32-x64-msvc@1.0.4':
-    resolution: {integrity: sha512-hksOpWALkx0HGgEmzTnn9BDwPzq5yEfEP9NnX39nNGl+UOaYFfIK3oAE4/yHvL8oJINhd2oEH61Y+IJU91R7EA==}
+  '@ikenxuan/watermark-win32-x64-msvc@1.0.5':
+    resolution: {integrity: sha512-yAK+7HcLhMpAYAjXYO2XJjlbeP8Fl28/VY3DiUbIV1OZLYbqqPxSlBJDSbBfH/ua0BYrCpe4GkxTuWntROeSSQ==}
     cpu: [x64]
     os: [win32]
 
-  '@ikenxuan/watermark@1.0.4':
-    resolution: {integrity: sha512-ZUu+wrbUBJ/l+nJFVGFHEsuUO+WBREQ6aa2u0o2oH/gKU8OJgAppAVF192Xw9Pjh3xeEXP0ImT6zUGeTTPrO0w==}
+  '@ikenxuan/watermark@1.0.5':
+    resolution: {integrity: sha512-uT3/1oCGvvYgoTDRWd179E9FGVNkE4rUeh8Zjyq1Mdh+X/m0/4RnH/OOVKv3vJUeK36p/LroxGZbIvPEMrsugg==}
 
   '@ikenxuan/xhshow-ts@1.0.6':
     resolution: {integrity: sha512-2Qo2tWzU6grC7bsTwohnp9KJA9wqDTAb2bbhaBOqBdAlM44zp9qlSAe2+UTYqDZaxrpne8SCT11biizVUJuosQ==}
@@ -8676,6 +8676,10 @@ packages:
   lunr@2.3.9:
     resolution: {integrity: sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==}
 
+  luxon@3.7.2:
+    resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
+    engines: {node: '>=12'}
+
   magic-bytes.js@1.13.0:
     resolution: {integrity: sha512-afO2mnxW7GDTXMm5/AoN1WuOcdoKhtgXjIvHmobqTD1grNplhGdv3PFOyjCVmrnOZBIT/gD/koDKpYG+0mvHcg==}
 
@@ -13308,24 +13312,24 @@ snapshots:
       '@iconify/types': 2.0.0
       mlly: 1.8.2
 
-  '@ikenxuan/watermark-darwin-arm64@1.0.4':
+  '@ikenxuan/watermark-darwin-arm64@1.0.5':
     optional: true
 
-  '@ikenxuan/watermark-linux-arm64-gnu@1.0.4':
+  '@ikenxuan/watermark-linux-arm64-gnu@1.0.5':
     optional: true
 
-  '@ikenxuan/watermark-linux-x64-gnu@1.0.4':
+  '@ikenxuan/watermark-linux-x64-gnu@1.0.5':
     optional: true
 
-  '@ikenxuan/watermark-win32-x64-msvc@1.0.4':
+  '@ikenxuan/watermark-win32-x64-msvc@1.0.5':
     optional: true
 
-  '@ikenxuan/watermark@1.0.4':
+  '@ikenxuan/watermark@1.0.5':
     optionalDependencies:
-      '@ikenxuan/watermark-darwin-arm64': 1.0.4
-      '@ikenxuan/watermark-linux-arm64-gnu': 1.0.4
-      '@ikenxuan/watermark-linux-x64-gnu': 1.0.4
-      '@ikenxuan/watermark-win32-x64-msvc': 1.0.4
+      '@ikenxuan/watermark-darwin-arm64': 1.0.5
+      '@ikenxuan/watermark-linux-arm64-gnu': 1.0.5
+      '@ikenxuan/watermark-linux-x64-gnu': 1.0.5
+      '@ikenxuan/watermark-win32-x64-msvc': 1.0.5
 
   '@ikenxuan/xhshow-ts@1.0.6':
     dependencies:
@@ -13553,10 +13557,10 @@ snapshots:
 
   '@lobehub/emojilib@1.0.0': {}
 
-  '@lobehub/fluent-emoji@4.1.0(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@lobehub/fluent-emoji@4.1.0(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       '@lobehub/emojilib': 1.0.0
-      antd-style: 4.1.0(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      antd-style: 4.1.0(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       emoji-regex: 10.6.0
       es-toolkit: 1.45.1
       lucide-react: 0.562.0(react@19.2.4)
@@ -13568,11 +13572,11 @@ snapshots:
       - antd
       - supports-color
 
-  '@lobehub/icons@4.12.0(@lobehub/ui@4.38.4)(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@lobehub/icons@4.12.0(@lobehub/ui@4.38.4)(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
-      '@lobehub/ui': 4.38.4(@lobehub/fluent-emoji@4.1.0(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@lobehub/icons@4.12.0)(@types/mdast@4.0.4)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(micromark-util-types@2.0.2)(micromark@4.0.2)(motion@12.38.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vue@3.5.30(typescript@5.9.3))
-      antd: 6.3.3(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      antd-style: 4.1.0(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@lobehub/ui': 4.38.4(@lobehub/fluent-emoji@4.1.0(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@lobehub/icons@4.12.0)(@types/mdast@4.0.4)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(micromark-util-types@2.0.2)(micromark@4.0.2)(motion@12.38.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vue@3.5.30(typescript@5.9.3))
+      antd: 6.3.3(date-fns@4.1.0)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      antd-style: 4.1.0(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       lucide-react: 0.469.0(react@19.2.4)
       polished: 4.3.1
       react: 19.2.4
@@ -13581,7 +13585,7 @@ snapshots:
       - '@types/react'
       - supports-color
 
-  '@lobehub/ui@4.38.4(@lobehub/fluent-emoji@4.1.0(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@lobehub/icons@4.12.0)(@types/mdast@4.0.4)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(micromark-util-types@2.0.2)(micromark@4.0.2)(motion@12.38.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vue@3.5.30(typescript@5.9.3))':
+  '@lobehub/ui@4.38.4(@lobehub/fluent-emoji@4.1.0(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@lobehub/icons@4.12.0)(@types/mdast@4.0.4)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(micromark-util-types@2.0.2)(micromark@4.0.2)(motion@12.38.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vue@3.5.30(typescript@5.9.3))':
     dependencies:
       '@ant-design/cssinjs': 2.1.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@base-ui/react': 1.0.0(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -13594,8 +13598,8 @@ snapshots:
       '@emotion/is-prop-valid': 1.4.0
       '@floating-ui/react': 0.27.19(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@giscus/react': 3.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@lobehub/fluent-emoji': 4.1.0(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@lobehub/icons': 4.12.0(@lobehub/ui@4.38.4)(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@lobehub/fluent-emoji': 4.1.0(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@lobehub/icons': 4.12.0(@lobehub/ui@4.38.4)(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@mdx-js/mdx': 3.1.1
       '@mdx-js/react': 3.1.1(@types/react@19.2.14)(react@19.2.4)
       '@pierre/diffs': 1.1.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -13604,8 +13608,8 @@ snapshots:
       '@shikijs/transformers': 3.23.0
       '@splinetool/runtime': 0.9.526
       ahooks: 3.9.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      antd: 6.3.3(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      antd-style: 4.1.0(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      antd: 6.3.3(date-fns@4.1.0)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      antd-style: 4.1.0(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       chroma-js: 3.2.0
       class-variance-authority: 0.7.1
       clsx: 2.1.1
@@ -14546,7 +14550,7 @@ snapshots:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 
-  '@rc-component/picker@1.9.1(date-fns@4.1.0)(dayjs@1.11.20)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@rc-component/picker@1.9.1(date-fns@4.1.0)(dayjs@1.11.20)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       '@rc-component/overflow': 1.0.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@rc-component/resize-observer': 1.1.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -14558,6 +14562,7 @@ snapshots:
     optionalDependencies:
       date-fns: 4.1.0
       dayjs: 1.11.20
+      luxon: 3.7.2
 
   '@rc-component/portal@1.1.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
@@ -17984,7 +17989,7 @@ snapshots:
 
   ansis@4.2.0: {}
 
-  antd-style@4.1.0(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  antd-style@4.1.0(@types/react@19.2.14)(antd@6.3.3(date-fns@4.1.0)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       '@ant-design/cssinjs': 2.1.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@babel/runtime': 7.29.2
@@ -17993,7 +17998,7 @@ snapshots:
       '@emotion/react': 11.14.0(@types/react@19.2.14)(react@19.2.4)
       '@emotion/serialize': 1.3.3
       '@emotion/utils': 1.4.2
-      antd: 6.3.3(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      antd: 6.3.3(date-fns@4.1.0)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4
       use-merge-value: 1.2.0(react@19.2.4)
     transitivePeerDependencies:
@@ -18001,7 +18006,7 @@ snapshots:
       - react-dom
       - supports-color
 
-  antd@6.3.3(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  antd@6.3.3(date-fns@4.1.0)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       '@ant-design/colors': 8.0.1
       '@ant-design/cssinjs': 2.1.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -18027,7 +18032,7 @@ snapshots:
       '@rc-component/mutate-observer': 2.0.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@rc-component/notification': 1.2.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@rc-component/pagination': 1.2.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@rc-component/picker': 1.9.1(date-fns@4.1.0)(dayjs@1.11.20)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@rc-component/picker': 1.9.1(date-fns@4.1.0)(dayjs@1.11.20)(luxon@3.7.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@rc-component/progress': 1.0.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@rc-component/qrcode': 1.1.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@rc-component/rate': 1.0.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -21080,6 +21085,9 @@ snapshots:
       react: 19.2.4
 
   lunr@2.3.9: {}
+
+  luxon@3.7.2:
+    optional: true
 
   magic-bytes.js@1.13.0: {}
 

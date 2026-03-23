@@ -56,8 +56,8 @@ export const appConfigSchema: SectionSchema = {
     {
       key: 'RemoveWatermark',
       type: 'switch',
-      label: '移除水印',
-      description: '渲染的图片是否移除底部水印'
+      label: '移除版本信息',
+      description: '渲染的图片是否移除底部版本信息'
     },
     {
       key: 'RenderWaitTime',

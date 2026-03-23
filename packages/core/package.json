@@ -43,11 +43,10 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "cross-env NODE_ENV=production vite build && tsdown && vitest run",
+    "build": "pnpm typecheck && cross-env NODE_ENV=production vite build && tsdown && vitest run",
     "build:check": "tsc --noEmit && pnpm build",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
     "lint": "eslint . --fix",
-    "preinstall": "pnpm --filter @ikenxuan/watermark run build",
     "typecheck": "tsc --noEmit",
     "pub": "npm publish --access public",
     "sort": "sort-package-json",
@@ -55,7 +54,7 @@
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../template/src/dev/mock-server.ts\" --include \"../template/src/main.ts\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
-    "@ikenxuan/watermark": "^1.0.4",
+    "@ikenxuan/watermark": "^1.0.5",
     "fingerprint-injector": "^2.1.81"
   },
   "devDependencies": {

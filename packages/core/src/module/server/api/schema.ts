@@ -34,7 +34,7 @@ export const getFullSchema = async (_req: Request, res: Response) => {
 export const getModuleSchemaApi = async (req: Request, res: Response) => {
   try {
     const { module } = req.params
-    const schema = getModuleSchema(module)
+    const schema = getModuleSchema(Array.isArray(module) ? module[0] : module)
 
     if (!schema) {
       return res.status(404).json({
