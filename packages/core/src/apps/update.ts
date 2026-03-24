@@ -237,7 +237,7 @@ export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, handleKkkUpdate, 
 //   return Handler()
 // })
 
-export const update = karin.task('kkk-更新检测', '*/1 * * * *', Handler, {
+export const update = karin.task('kkk-更新检测', '*/3 * * * *', Handler, {
   name: 'kkk-更新检测',
   log: false
 })
