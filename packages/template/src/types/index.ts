@@ -187,7 +187,7 @@ export type ExtractDataTypeFromPath<P extends string> = P extends keyof PathToDa
  */
 export interface DataTypeMap {
   /** 抖音平台数据类型 */
-  douyin: import('./platforms/douyin').DouyinCommentProps['data'] | import('./platforms/douyin').DouyinDynamicProps['data'] | import('./platforms/douyin').DouyinFavoriteListProps['data'] | import('./platforms/douyin').DouyinLiveProps['data'] | import('./platforms/douyin').DouyinMusicInfoProps['data'] | import('./platforms/douyin').DouyinQrcodeImgProps['data'] | import('./platforms/douyin').DouyinRecommendListProps['data']
+  douyin: import('./platforms/douyin').DouyinCommentProps['data'] | import('./platforms/douyin').DouyinDynamicProps['data'] | import('./platforms/douyin').DouyinFavoriteListProps['data'] | import('./platforms/douyin').DouyinLiveProps['data'] | import('./platforms/douyin').DouyinMusicInfoProps['data'] | import('./platforms/douyin').DouyinQrcodeImgProps['data'] | import('./platforms/douyin').DouyinRecommendListProps['data'] | import('./platforms/douyin/UserVideoList').DouyinUserVideoListProps['data']
   /** B站平台数据类型 */
   bilibili: import('./platforms/bilibili').BilibiliCommentProps['data'] | import('./platforms/bilibili/dynamic/forward').BilibiliForwardDynamicProps['data']
   /** 快手平台数据类型 */

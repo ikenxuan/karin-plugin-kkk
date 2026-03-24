@@ -2,9 +2,11 @@
  * 用户视频列表页面的数据类型定义
  */
 
-export interface VideoListItem {
+export type VideoListItem = {
   /** 视频ID */
   aweme_id: string
+  /** 视频索引 */
+  index?: number
   /** 是否置顶 */
   is_top: boolean
   /** 视频标题/描述 */
@@ -31,7 +33,7 @@ export interface VideoListItem {
   }
 }
 
-export interface UserVideoListData {
+export type UserVideoListData = {
   /** 用户基本信息 */
   user: {
     head_image: string | null
@@ -47,6 +49,8 @@ export interface UserVideoListData {
   }
   /** 视频列表 */
   videos: VideoListItem[]
+  /** 超时秒数 */
+  timeoutSeconds?: number
 }
 
 export interface DouyinUserVideoListProps {

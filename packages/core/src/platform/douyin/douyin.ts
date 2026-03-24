@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import { ArticleWork, type DyEmojiList, DyVideoWork } from '@ikenxuan/amagi'
 import { Result } from '@ikenxuan/amagi'
 import { format, fromUnixTime } from 'date-fns'
-import type { Elements, Message, SendMessage } from 'node-karin'
+import karin, { type Elements, Message, SendMessage } from 'node-karin'
 import { common, logger, mkdirSync, segment } from 'node-karin'
 import { UserVideoListData } from 'template/types/platforms/douyin/UserVideoList'
 
@@ -848,7 +848,7 @@ export class DouYin extends Base {
         const user = userProfileData.data.user
 
         // 转换视频列表数据
-        const videos: UserVideoListData['videos'] = rawData.data.aweme_list.map(aweme => {
+        const videos: UserVideoListData['videos'] = rawData.data.aweme_list.map((aweme, index) => {
           const isVideo = aweme.aweme_type === 0 || aweme.media_type === 0
 
           return {
@@ -865,6 +865,7 @@ export class DouYin extends Base {
               collect_count: aweme.statistics.collect_count
             },
             is_video: isVideo,
+            index: index + 1,
             music: aweme.music
               ? {
                 title: aweme.music.title || '',
@@ -873,6 +874,9 @@ export class DouYin extends Base {
               : undefined
           }
         })
+
+        const displayVideos = videos.slice(0, 16)
+        const timeoutSeconds = 120
 
         // 渲染视频列表页面
         const img = await Render(this.e, 'douyin/user_profile', {
@@ -888,10 +892,25 @@ export class DouYin extends Base {
             verified: !!user.custom_verify || !!user.enterprise_verify_reason,
             ip_location: user.ip_location
           },
-          videos: videos.slice(0, 16)
+          videos: displayVideos,
+          timeoutSeconds
         })
 
-        this.e.reply(img)
+        await this.e.reply(img)
+
+        const context = await karin.ctx(this.e, { reply: true, time: timeoutSeconds })
+        if (context) {
+          const num = parseInt(context.msg.trim())
+          if (!isNaN(num) && num >= 1 && num <= displayVideos.length) {
+            const target = displayVideos[num - 1]
+            const targetData: DouyinIdData = {
+              type: 'one_work',
+              aweme_id: target.aweme_id
+            }
+            const dy = new DouYin(context, targetData)
+            await dy.DouyinHandler(targetData)
+          }
+        }
         return true
       }
       case 'music_work': {
