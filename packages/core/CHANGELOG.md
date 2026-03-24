@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.27.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.26.6...v2.27.0) (2026-03-24)
+
+
+### ✨ 新功能
+
+* **douyin:** 解析主页链接时，支持选择作品进行二次解析 ([b19c5b2](https://github.com/ikenxuan/karin-plugin-kkk/commit/b19c5b2ac6e55d808fba7544b85cbdf8463314fb))
+
 ## [2.26.6](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.26.5...v2.26.6) (2026-03-24)
 
 
