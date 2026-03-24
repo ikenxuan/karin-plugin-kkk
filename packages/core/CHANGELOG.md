@@ -2,6 +2,21 @@
 
 # Changelog
 
+## [2.26.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.26.2...v2.26.3) (2026-03-24)
+
+
+### 📝 文档更新
+
+* readme ([aa2a8bb](https://github.com/ikenxuan/karin-plugin-kkk/commit/aa2a8bb8aeadccaa2c0e90f56e9120b9bbe9143b))
+* update ([1daae3d](https://github.com/ikenxuan/karin-plugin-kkk/commit/1daae3d8fd876a97f7c29a9b001769de2136a90e))
+* update ([ca2ede4](https://github.com/ikenxuan/karin-plugin-kkk/commit/ca2ede4430b8e8bc149c3976ec83ae6924079a6f))
+
+
+### 🧰 其他更新
+
+* 细节优化 ([0ad42a3](https://github.com/ikenxuan/karin-plugin-kkk/commit/0ad42a3dcabbf79e99857ec64e626535ea1f331e))
+* 防倒卖 ([#274](https://github.com/ikenxuan/karin-plugin-kkk/issues/274)) ([4744bf8](https://github.com/ikenxuan/karin-plugin-kkk/commit/4744bf83c3989b1f6a31799dc7e68a1c7465321d))
+
 ## [2.26.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.26.1...v2.26.2) (2026-03-15)
 
 
