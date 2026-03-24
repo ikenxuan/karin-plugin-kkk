@@ -2,6 +2,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { Package } from 'node-karin'
+
 const resolvePluginRoot = (startUrl: string) => {
   let dir = path.dirname(startUrl)
   for (let i = 0; i < 8; i++) {
@@ -17,7 +19,7 @@ const resolvePluginRoot = (startUrl: string) => {
 }
 
 const pluginPath = resolvePluginRoot(fileURLToPath(import.meta.url))
-const pkg = JSON.parse(fs.readFileSync(path.join(pluginPath, 'package.json'), 'utf-8'))
+const pkg = JSON.parse(fs.readFileSync(path.join(pluginPath, 'package.json'), 'utf-8')) as Package
 
 export const Root: {
   /** 插件名字 */
@@ -28,9 +30,12 @@ export const Root: {
   pluginPath: string
   /** Karin版本 */
   karinVersion: string
+  /** 插件package.json */
+  pkg: Package
 } = {
   pluginName: pkg.name,
   pluginVersion: pkg.version,
   pluginPath,
-  karinVersion: process.env.KARIN_VERSION!
+  karinVersion: process.env.KARIN_VERSION!,
+  pkg
 }

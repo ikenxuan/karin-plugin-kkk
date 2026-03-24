@@ -39,13 +39,13 @@ export const handleBusinessError = async (
   error: Error,
   options: ErrorHandlerOptions,
   logs: ApiErrorProps['data']['logs'],
-  event?: Message
+  event: Message
 ): Promise<'handled' | undefined> => {
   try {
     logger.debug(`[ErrorHandler] 开始处理业务错误: ${options.businessName}`)
 
     const buildMetadata = getBuildMetadata()
-    const adapterInfo = event?.bot?.adapter
+    const adapterInfo = event.bot?.adapter
       ? {
         name: event.bot.adapter.name,
         version: event.bot.adapter.version,

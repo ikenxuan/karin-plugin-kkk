@@ -142,13 +142,13 @@ export const deleteContent: RequestHandler = async (req, res) => {
     const { id } = req.params
     const { groupId } = req.body
 
-    if (!id || !groupId) {
+    if ((!id || (Array.isArray(id) && !id[0])) || !groupId) {
       return createBadRequestResponse(res, '请提供内容ID和群组ID')
     }
 
     const bilibiliDB = await getBilibiliDB()
-    const result = await bilibiliDB.dynamicCacheRepository.delete({ 
-      dynamic_id: id, 
+    const result = await bilibiliDB.dynamicCacheRepository.delete({
+      dynamic_id: Array.isArray(id) ? id[0] : id,
       groupId: groupId as string 
     })
 

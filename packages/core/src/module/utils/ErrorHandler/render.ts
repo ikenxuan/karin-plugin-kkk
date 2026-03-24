@@ -30,7 +30,7 @@ import type { ErrorContext, RenderErrorOptions } from './types'
 export const renderErrorImage = async (ctx: ErrorContext, opts: RenderErrorOptions = {}) => {
   const { error, options, logs, event, buildMetadata, adapterInfo } = ctx
 
-  return Render('other/handlerError', {
+  return Render(event, 'other/handlerError', {
     type: 'business_error',
     platform: opts.platform || 'system',
     error: {

@@ -134,13 +134,13 @@ export const deleteContent: RequestHandler = async (req, res) => {
     const { id } = req.params
     const { groupId } = req.body
 
-    if (!id || !groupId) {
+    if ((!id || (Array.isArray(id) && !id[0])) || !groupId) {
       return createBadRequestResponse(res, '请提供内容ID和群组ID')
     }
 
     const douyinDB = await getDouyinDB()
-    const result = await douyinDB.awemeCacheRepository.delete({ 
-      aweme_id: id, 
+    const result = await douyinDB.awemeCacheRepository.delete({
+      aweme_id: Array.isArray(id) ? id[0] : id,
       groupId: groupId as string 
     })
 

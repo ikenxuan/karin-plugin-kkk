@@ -163,20 +163,9 @@ jobs:
       - name: 🟢 配置 Node.js 环境
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: 'pnpm'
           cache-dependency-path: 'pnpm-lock.yaml'
-
-      - name: 🦀 配置 Rust 工具链
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-
-      - name: 📦 安装 wasm-pack
-        uses: jetli/wasm-pack-action@v0.4.0
-
-      - name: 🔧 预编译 watermark wasm 模块
-        run: pnpm --filter @kkk/watermark run build
 
       - name: 📦 安装依赖
         run: pnpm install
@@ -221,6 +210,7 @@ jobs:
         run: |
           cd packages/core
           pnpm pkg delete devDependencies
+          pnpm pkg delete scripts
           mkdir -p ${{ runner.temp }}/production/
           cp -r package.json README.md CHANGELOG.md LICENSE config resources lib ${{ runner.temp }}/production/
 
@@ -229,6 +219,7 @@ jobs:
         run: |
           cd packages/core
           pnpm pkg delete devDependencies
+          pnpm pkg delete scripts
           mkdir -p ${{ runner.temp }}/build-branch/
           cp -r package.json CHANGELOG.md README.md LICENSE resources config lib ${{ runner.temp }}/build-branch/
 
@@ -287,7 +278,7 @@ jobs:
       - name: 🟢 配置 Node.js 环境
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
 
       - uses: pnpm/action-setup@v4
@@ -340,8 +331,11 @@ jobs:
       - name: 🟢 配置 Node.js 环境
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           registry-url: 'https://npm.pkg.github.com'
+
+      - name: ⏫ 升级 npm 版本
+        run: npm install -g npm@latest
 
       - name: ✏️ 修改包名 (添加 Scope)
         working-directory: packages/core
@@ -505,7 +499,7 @@ jobs:
       - name: 🟢 配置 Node.js 环境
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: 'pnpm'
           cache-dependency-path: 'pnpm-lock.yaml'
 
@@ -657,7 +651,9 @@ jobs:
 
       - name: 🧹 清理开发依赖
         working-directory: packages/core
-        run: pnpm pkg delete devDependencies
+        run: |
+          pnpm pkg delete devDependencies
+          pnpm pkg delete scripts 
 
       - name: 🚀 发布预览包
         id: publish_pkg

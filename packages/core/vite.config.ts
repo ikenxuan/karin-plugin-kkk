@@ -39,6 +39,7 @@ export default defineConfig({
     __REQUIRE_KARIN_VERSION__: JSON.stringify(karinVersion),
     __VERSION__: JSON.stringify(amagiPkg.version)
   },
+  assetsInclude: ['**/*.wasm'],
   build: {
     target: 'node22',
     lib: {
@@ -55,10 +56,11 @@ export default defineConfig({
         ...[/^node-karin/],
         ...[/^@karinjs\//],
         'fingerprint-injector',
-        '@snapka/puppeteer'
+        '@snapka/puppeteer',
+        '@ikenxuan/watermark'
       ],
       output: {
-        inlineDynamicImports: true,
+        // inlineDynamicImports: false,
         format: 'esm',
         esModule: true,
         generatedCode: {
@@ -67,7 +69,6 @@ export default defineConfig({
         advancedChunks: {
           groups: [
             { name: 'vendor', test: /node_modules/ },
-            { name: 'template', test: /src\/export\/template/ },
             { name: 'main', test: /src/ }
           ]
         },
