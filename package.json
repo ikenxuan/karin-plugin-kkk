@@ -43,7 +43,7 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
-    "@ikenxuan/watermark": "^1.0.5",
+    "@ikenxuan/watermark": "^1.0.6",
     "fingerprint-injector": "^2.1.81"
   },
   "peerDependencies": {
