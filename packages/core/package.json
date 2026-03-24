@@ -22,14 +22,14 @@
       "default": "./lib/index.js"
     },
     "./template": {
-      "types": "./lib/core_chunk/export/template.d.mts",
-      "import": "./lib/core_chunk/export/template.mjs"
+      "types": "./lib/core_chunk/template.d.mts",
+      "import": "./lib/core_chunk/template.mjs"
     }
   },
   "typesVersions": {
     "*": {
       "template": [
-        "./lib/core_chunk/export/template.d.mts"
+        "./lib/core_chunk/template.d.mts"
       ]
     }
   },
