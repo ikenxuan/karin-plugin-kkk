@@ -38,8 +38,8 @@ importers:
         specifier: 0.577.0
         version: 0.577.0(react@19.2.4)
       node-karin:
-        specifier: 1.14.4
-        version: 1.14.4
+        specifier: 1.15.0
+        version: 1.15.0
       react:
         specifier: 19.2.4
         version: 19.2.4
@@ -269,8 +269,8 @@ importers:
   packages/core:
     dependencies:
       '@ikenxuan/watermark':
-        specifier: ^1.0.5
-        version: 1.0.5
+        specifier: ^1.0.6
+        version: 1.0.6
       '@snapka/puppeteer':
         specifier: '>=0.1.5 <0.3.0'
         version: 0.2.3
@@ -2051,30 +2051,30 @@ packages:
   '@iconify/utils@3.1.0':
     resolution: {integrity: sha512-Zlzem1ZXhI1iHeeERabLNzBHdOa4VhQbqAcOQaMKuTuyZCpwKbC2R4Dd0Zo3g9EAc+Y4fiarO8HIHRAth7+skw==}
 
-  '@ikenxuan/watermark-darwin-arm64@1.0.5':
-    resolution: {integrity: sha512-kEwXZQzJMwO3ZLR1ZuFbYzRs3H6QLaoseE5V4loNlaVz7XkhvsJVHhNVI3x/ylMCO7bNU53mA7AjEvJb72tjdA==}
+  '@ikenxuan/watermark-darwin-arm64@1.0.6':
+    resolution: {integrity: sha512-6Ly76B0l8qIdTgoLQonhwK0BQLUwByd1ooGDm05m/uQEVnN6olxZ0okoy/o3Xhy546Mp+e5d7HYnc4baZoqc+w==}
     cpu: [arm64]
     os: [darwin]
 
-  '@ikenxuan/watermark-linux-arm64-gnu@1.0.5':
-    resolution: {integrity: sha512-BonPDLdr3Ob37b2ymL0IHKsPR9bq6d8aY4JoyZntU2x2epME2W4hZdspDti49NRB9vBm8ZlnpCqb/47Xn3fuZA==}
+  '@ikenxuan/watermark-linux-arm64-gnu@1.0.6':
+    resolution: {integrity: sha512-366thLpyIcjylX3j/WuzGMmECXs3c59QvfieM7ndZkg7M7BuoNMliqAjhV29DXz7dEcAXTR2lx6sT9sVg1U34Q==}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@ikenxuan/watermark-linux-x64-gnu@1.0.5':
-    resolution: {integrity: sha512-iGYFui0xwXcvsyi+vNVNFxcyDCL3kqKOS20w4tSo15Xgjj2MCOU40CLv4rKCrta+Oc8VJGGyF4qtH4tqpdvwrA==}
+  '@ikenxuan/watermark-linux-x64-gnu@1.0.6':
+    resolution: {integrity: sha512-6LkLyALY4pl/St8hl1q8clqtfwKFlsg7Gx/KhDqMyAbjTyu7pXPY6Q0WWB5N5ON+tIMQgv5Bv0RjdimYi6x9Fg==}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@ikenxuan/watermark-win32-x64-msvc@1.0.5':
-    resolution: {integrity: sha512-yAK+7HcLhMpAYAjXYO2XJjlbeP8Fl28/VY3DiUbIV1OZLYbqqPxSlBJDSbBfH/ua0BYrCpe4GkxTuWntROeSSQ==}
+  '@ikenxuan/watermark-win32-x64-msvc@1.0.6':
+    resolution: {integrity: sha512-mrR0iz2hR/HwlCZ9SlNLV9YzqBhvzy58YQr9nJafIft8ScT6HabRNRFqP8/2sM1U6+b3naPrnfkLRY13GsDRsQ==}
     cpu: [x64]
     os: [win32]
 
-  '@ikenxuan/watermark@1.0.5':
-    resolution: {integrity: sha512-uT3/1oCGvvYgoTDRWd179E9FGVNkE4rUeh8Zjyq1Mdh+X/m0/4RnH/OOVKv3vJUeK36p/LroxGZbIvPEMrsugg==}
+  '@ikenxuan/watermark@1.0.6':
+    resolution: {integrity: sha512-FEx7sOR8L11xfl1n+hmtVxgDVaC4nVsBQnDoQr2E3Jpi6wh9H17MjcTxf8uFyiXj+vudWBQcIWWEkkmfLq5Bow==}
 
   '@ikenxuan/xhshow-ts@1.0.6':
     resolution: {integrity: sha512-2Qo2tWzU6grC7bsTwohnp9KJA9wqDTAb2bbhaBOqBdAlM44zp9qlSAe2+UTYqDZaxrpne8SCT11biizVUJuosQ==}
@@ -9079,8 +9079,8 @@ packages:
   node-fetch-native@1.6.7:
     resolution: {integrity: sha512-g9yhqoedzIUm0nTnTqAQvueMPVOuIY16bqgAJJC8XOOubYFNwz6IER9qs0Gq2Xd0+CecCKFjtdDTMA4u4xG06Q==}
 
-  node-karin@1.14.4:
-    resolution: {integrity: sha512-TnAJPaYGSJqlufHgPH9cchmSx+7lzz5zZj2AaXbK4QguVx74wJ7VlMHadUKa5rZ2vQ7NA5ORD9mwG8gzZ4JEuQ==}
+  node-karin@1.15.0:
+    resolution: {integrity: sha512-WSC9ZkyLXTn2iTii0jYvHmzukIEuPLZmOtg/bC5oA7xeldEcyenVChEt7JZuN8TzDkarfp75s5cpdP3AeXSVbg==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -11586,7 +11586,7 @@ snapshots:
   '@code-inspector/core@1.4.5':
     dependencies:
       '@vue/compiler-dom': 3.5.30
-      chalk: 4.1.1
+      chalk: 4.1.2
       dotenv: 16.6.1
       launch-ide: 1.4.3
       portfinder: 1.0.38
@@ -13312,24 +13312,24 @@ snapshots:
       '@iconify/types': 2.0.0
       mlly: 1.8.2
 
-  '@ikenxuan/watermark-darwin-arm64@1.0.5':
+  '@ikenxuan/watermark-darwin-arm64@1.0.6':
     optional: true
 
-  '@ikenxuan/watermark-linux-arm64-gnu@1.0.5':
+  '@ikenxuan/watermark-linux-arm64-gnu@1.0.6':
     optional: true
 
-  '@ikenxuan/watermark-linux-x64-gnu@1.0.5':
+  '@ikenxuan/watermark-linux-x64-gnu@1.0.6':
     optional: true
 
-  '@ikenxuan/watermark-win32-x64-msvc@1.0.5':
+  '@ikenxuan/watermark-win32-x64-msvc@1.0.6':
     optional: true
 
-  '@ikenxuan/watermark@1.0.5':
+  '@ikenxuan/watermark@1.0.6':
     optionalDependencies:
-      '@ikenxuan/watermark-darwin-arm64': 1.0.5
-      '@ikenxuan/watermark-linux-arm64-gnu': 1.0.5
-      '@ikenxuan/watermark-linux-x64-gnu': 1.0.5
-      '@ikenxuan/watermark-win32-x64-msvc': 1.0.5
+      '@ikenxuan/watermark-darwin-arm64': 1.0.6
+      '@ikenxuan/watermark-linux-arm64-gnu': 1.0.6
+      '@ikenxuan/watermark-linux-x64-gnu': 1.0.6
+      '@ikenxuan/watermark-win32-x64-msvc': 1.0.6
 
   '@ikenxuan/xhshow-ts@1.0.6':
     dependencies:
@@ -20786,7 +20786,7 @@ snapshots:
 
   launch-ide@1.4.3:
     dependencies:
-      chalk: 4.1.1
+      chalk: 4.1.2
       dotenv: 16.6.1
 
   layout-base@1.0.2: {}
@@ -21783,7 +21783,7 @@ snapshots:
 
   node-fetch-native@1.6.7: {}
 
-  node-karin@1.14.4:
+  node-karin@1.15.0:
     dependencies:
       art-template: '@karinjs/art-template@1.1.0'
       axios: '@karinjs/axios@1.13.2'

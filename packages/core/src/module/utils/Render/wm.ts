@@ -48,8 +48,9 @@ export const embedWatermark = (
     const input = pngBytes instanceof Buffer ? pngBytes : Buffer.from(pngBytes)
     const result = embedWatermarkToPngBytes(input, watermarkText)
     const resultBuffer = result instanceof Buffer ? result : Buffer.from(result)
-    return resultBuffer
     // logger.info(`嵌入隐水印耗时: ${Date.now() - start}ms`)
+
+    return resultBuffer
   } catch (error) {
     logger.error('嵌入隐水印失败:', error)
     return null
