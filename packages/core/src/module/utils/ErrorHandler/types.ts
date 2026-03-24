@@ -36,9 +36,9 @@ export interface ErrorContext {
    */
   logs: ApiErrorProps['data']['logs']
   /**
-   * 消息事件对象（可选）
+   * 消息事件对象
    */
-  event?: Message
+  event: Message
   /**
    * 构建元数据
    */

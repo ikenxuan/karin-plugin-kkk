@@ -1,6 +1,3 @@
-import { copyFile, mkdir, unlink } from 'node:fs/promises'
-import path from 'node:path'
-
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
@@ -23,15 +20,5 @@ export default defineConfig({
       }
     }
   },
-  clean: false,
-  async onSuccess () {
-    const outDir = path.join(process.cwd(), 'lib', 'core_chunk')
-    const sourceDtsPath = path.join(outDir, 'template.d.mts')
-    const targetDtsPath = path.join(outDir, 'template.mts')
-
-    await mkdir(outDir, { recursive: true })
-
-    await copyFile(sourceDtsPath, targetDtsPath)
-    await unlink(sourceDtsPath).catch(() => {})
-  }
+  clean: false
 })
