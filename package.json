@@ -23,7 +23,7 @@
     },
     "./template": {
       "types": "./lib/core_chunk/template.d.mts",
-      "import": "./lib/core_chunk/template.js"
+      "import": "./lib/core_chunk/template.mjs"
     }
   },
   "typesVersions": {
@@ -42,18 +42,8 @@
     "README.md",
     "CHANGELOG.md"
   ],
-  "scripts": {
-    "build": "cross-env NODE_ENV=production vite build && tsdown && vitest run",
-    "build:check": "tsc --noEmit && pnpm build",
-    "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
-    "lint": "eslint . --fix",
-    "typecheck": "tsc --noEmit",
-    "pub": "npm publish --access public",
-    "sort": "sort-package-json",
-    "sync": "curl -X PUT \"https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs\"",
-    "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../template/src/dev/mock-server.ts\" --include \"../template/src/main.ts\" src/app.ts --trace-deprecation"
-  },
   "dependencies": {
+    "@ikenxuan/watermark": "^1.0.5",
     "fingerprint-injector": "^2.1.81"
   },
   "peerDependencies": {
@@ -87,5 +77,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-03-21T01:23:44.665Z"
+  "timestamp": "2026-03-22T14:25:05.008Z"
 }
