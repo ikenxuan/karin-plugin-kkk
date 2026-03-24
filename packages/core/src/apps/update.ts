@@ -3,7 +3,6 @@ import karin, {
   config,
   db,
   hooks,
-  logger,
   Message,
   restart,
   segment,
@@ -18,11 +17,17 @@ import { isSemverGreater } from '@/module/utils/semver'
 const UPDATE_LOCK_KEY = 'kkk:update:lock'
 const UPDATE_MSGID_KEY = 'kkk:update:msgId'
 
-const Handler = async (e: Message) => {
+/**
+ * 定时更新检测处理器
+ * 主动获取 Bot 列表与好友关系，匹配主人可用的 Bot，
+ * 渲染更新日志并私聊通知所有主人。
+ *
+ * @returns 是否继续后续任务
+ */
+const Handler = async () => {
   if (process.env.NODE_ENV === 'development') {
     return true
   }
-  logger.trace(e)
 
   let upd:
     | { status: 'yes'; local: string; remote: string }
@@ -67,31 +72,71 @@ const Handler = async (e: Message) => {
     await db.set(UPDATE_LOCK_KEY, upd.remote)
   } catch { }
 
-  const ChangeLogImg = await getChangelogImage(e, {
-    localVersion: Root.pluginVersion,
-    remoteVersion: upd.remote,
-    Tip: true
-  })
+  const masters = config.master().filter(id => id !== 'console')
+  if (masters.length === 0) return true
 
-  // 通知主人
-  const list = config.master()
-  let master = list[0]
-  if (master === 'console') {
-    master = list[1]
+  const botItems = karin.getAllBotList()
+    .filter(b => b.bot.account.name !== 'console')
+  if (botItems.length === 0) return true
+
+  // 预取好友列表（并发）
+  const friendsMap = new Map<string, Array<{ userId: string }>>()
+  await Promise.all(
+    botItems.map(async (item) => {
+      try {
+        const list = await item.bot.getFriendList()
+        friendsMap.set(item.bot.account.selfId, list || [])
+      } catch {
+        friendsMap.set(item.bot.account.selfId, [])
+      }
+    })
+  )
+
+  // 为每个主人选择可用 Bot（好友命中）
+  const masterToBot = new Map<string, typeof botItems[number]['bot']>()
+  for (const owner of masters) {
+    const matched = botItems.find(it => (friendsMap.get(it.bot.account.selfId) || []).some(f => f.userId === owner))
+    if (matched) {
+      masterToBot.set(owner, matched.bot)
+    }
   }
 
-  const botList = karin.getAllBotList()
-  if (ChangeLogImg) {
-    const msgResult = await karin.sendMaster(
-      botList[0].bot.account.name === 'console' ? botList[1].bot.account.selfId : botList[0].bot.account.selfId,
-      master,
-      [
+  // 分组渲染：每个 Bot 渲染一次
+  const botToImage = new Map<string, Array<ReturnType<typeof segment.image> | ReturnType<typeof segment.text>>>()
+  for (const item of botItems) {
+    // 仅在该 Bot 存在主人匹配时渲染
+    const hasOwners = Array.from(masterToBot.entries()).some(([, b]) => b.account.selfId === item.bot.account.selfId)
+    if (!hasOwners) continue
+    const img = await getChangelogImage({ bot: item.bot } as Message, {
+      localVersion: Root.pluginVersion,
+      remoteVersion: upd.remote,
+      Tip: true
+    })
+    if (img && img.length > 0) {
+      botToImage.set(item.bot.account.selfId, [
         segment.text('karin-plugin-kkk 有新的更新！'),
-        ...ChangeLogImg
-      ]
-    )
+        ...img
+      ])
+    }
+  }
+
+  // 依次私聊所有主人（存在好友命中的才发送）
+  let storedMsgId: string | undefined
+  for (const owner of masters) {
+    const bot = masterToBot.get(owner)
+    if (!bot) continue
+    const elements = botToImage.get(bot.account.selfId)
+    if (!elements) continue
+    const msg = await karin.sendMaster(bot.account.selfId, owner, elements)
+    if (!storedMsgId && msg?.messageId) {
+      storedMsgId = msg.messageId
+    }
+  }
+
+  // 记录首条提醒消息ID用于后续 Hook 的「更新」响应
+  if (storedMsgId) {
     try {
-      await db.set(UPDATE_MSGID_KEY, msgResult.messageId)
+      await db.set(UPDATE_MSGID_KEY, storedMsgId)
     } catch { }
   }
   return true
@@ -186,13 +231,13 @@ const handleKkkUpdate = wrapWithErrorHandler(async (e: Message) => {
 
 export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, handleKkkUpdate, { name: 'kkk-更新' })
 
-// export const kkkUpdateTest = karin.command('test', async (e: Message) => {
+// export const kkkUpdateTest = karin.command('test', async (_e: Message) => {
 //   await db.del(UPDATE_MSGID_KEY)
 //   await db.del(UPDATE_LOCK_KEY)
-//   return Handler(e)
+//   return Handler()
 // })
 
-export const update = karin.task('kkk-更新检测', '*/5 * * * *', Handler, {
+export const update = karin.task('kkk-更新检测', '*/1 * * * *', Handler, {
   name: 'kkk-更新检测',
   log: false
 })

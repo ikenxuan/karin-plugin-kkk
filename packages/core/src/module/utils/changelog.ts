@@ -57,13 +57,21 @@ const getRemoteBuildMetadata = async (version: string) => {
 
 /**
  * 获取变更日志图片
+ *
+ * @param ctx - 渲染上下文，可传入消息事件或 Bot 实例
  * @param props - 获取变更日志图片选项
  * @param props.isRemote - 是否强制获取远程变更日志
- * @returns 变更日志图片base64字符串
+ * @returns 变更日志图片元素数组（base64）
  */
-export const getChangelogImage = async (event: Message, props: Omit<ChangelogProps['data'], 'markdown'> & { isRemote?: boolean }) => {
+export const getChangelogImage = async (
+  ctx: Message,
+  props: Omit<ChangelogProps['data'], 'markdown'> & { isRemote?: boolean }
+) => {
   let changelog = ''
   let buildTime: string | undefined
+  const event = ('bot' in (ctx as any))
+    ? (ctx as Message)
+    : ({ bot: ctx } as unknown as Message)
 
   if (props.Tip || props.isRemote) {
     const urls = [
