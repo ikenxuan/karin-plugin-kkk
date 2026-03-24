@@ -318,6 +318,52 @@ interface DouyinUserListProps extends BaseComponentProps {
   };
 }
 //#endregion
+//#region ../template/src/types/platforms/douyin/UserVideoList.d.ts
+/**
+ * 用户视频列表页面的数据类型定义
+ */
+type VideoListItem = {
+  /** 视频ID */aweme_id: string; /** 视频索引 */
+  index?: number; /** 是否置顶 */
+  is_top: boolean; /** 视频标题/描述 */
+  title: string; /** 视频封面URL */
+  cover: string; /** 视频时长（秒） */
+  duration: number; /** 创建时间戳 */
+  create_time: number; /** 统计数据 */
+  statistics: {
+    like_count: number;
+    comment_count: number;
+    share_count: number;
+    collect_count: number;
+  }; /** 是否为视频(true)还是图集(false) */
+  is_video: boolean; /** 背景音乐信息 */
+  music?: {
+    title: string;
+    author: string;
+  };
+};
+type UserVideoListData = {
+  /** 用户基本信息 */user: {
+    head_image: string | null;
+    nickname: string;
+    short_id: string;
+    avatar: string;
+    signature: string;
+    follower_count: number;
+    following_count: number;
+    total_favorited: number;
+    verified: boolean;
+    ip_location: string;
+  }; /** 视频列表 */
+  videos: VideoListItem[]; /** 超时秒数 */
+  timeoutSeconds?: number;
+};
+interface DouyinUserVideoListProps {
+  data: UserVideoListData & {
+    useDarkTheme?: boolean;
+  };
+}
+//#endregion
 //#region ../template/src/types/platforms/douyin/videoInfo.d.ts
 /**
  * 抖音视频统计信息接口
@@ -466,61 +512,6 @@ interface DouyinQrcodeImgProps extends BaseComponentProps<{
 }> {
   /** 是否使用深色主题 */
   useDarkTheme?: boolean;
-}
-//#endregion
-//#region ../template/src/types/platforms/douyin/UserVideoList.d.ts
-/**
- * 用户视频列表页面的数据类型定义
- */
-interface VideoListItem {
-  /** 视频ID */
-  aweme_id: string;
-  /** 是否置顶 */
-  is_top: boolean;
-  /** 视频标题/描述 */
-  title: string;
-  /** 视频封面URL */
-  cover: string;
-  /** 视频时长（秒） */
-  duration: number;
-  /** 创建时间戳 */
-  create_time: number;
-  /** 统计数据 */
-  statistics: {
-    like_count: number;
-    comment_count: number;
-    share_count: number;
-    collect_count: number;
-  };
-  /** 是否为视频(true)还是图集(false) */
-  is_video: boolean;
-  /** 背景音乐信息 */
-  music?: {
-    title: string;
-    author: string;
-  };
-}
-interface UserVideoListData {
-  /** 用户基本信息 */
-  user: {
-    head_image: string | null;
-    nickname: string;
-    short_id: string;
-    avatar: string;
-    signature: string;
-    follower_count: number;
-    following_count: number;
-    total_favorited: number;
-    verified: boolean;
-    ip_location: string;
-  };
-  /** 视频列表 */
-  videos: VideoListItem[];
-}
-interface DouyinUserVideoListProps {
-  data: UserVideoListData & {
-    useDarkTheme?: boolean;
-  };
 }
 //#endregion
 //#region ../template/src/types/platforms/bilibili/bangumi.d.ts
@@ -1890,7 +1881,7 @@ type ExtractDataTypeFromPath<P extends string> = P extends keyof PathToDataTypeM
  */
 interface DataTypeMap {
   /** 抖音平台数据类型 */
-  douyin: DouyinCommentProps['data'] | DouyinDynamicProps['data'] | DouyinFavoriteListProps['data'] | DouyinLiveProps['data'] | DouyinMusicInfoProps['data'] | DouyinQrcodeImgProps['data'] | DouyinRecommendListProps['data'];
+  douyin: DouyinCommentProps['data'] | DouyinDynamicProps['data'] | DouyinFavoriteListProps['data'] | DouyinLiveProps['data'] | DouyinMusicInfoProps['data'] | DouyinQrcodeImgProps['data'] | DouyinRecommendListProps['data'] | DouyinUserVideoListProps['data'];
   /** B站平台数据类型 */
   bilibili: BilibiliCommentProps['data'] | BilibiliForwardDynamicProps['data'];
   /** 快手平台数据类型 */

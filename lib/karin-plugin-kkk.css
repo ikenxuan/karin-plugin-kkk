@@ -4467,6 +4467,10 @@
     border-color: #fff;
   }
 
+  .border-white\/10 {
+    border-color: oklab(100% 0 5.96046e-8 / .1);
+  }
+
   .border-white\/50 {
     border-color: oklab(100% 0 5.96046e-8 / .5);
   }
@@ -4623,6 +4627,10 @@
 
   .bg-black\/35 {
     background-color: oklab(0% none none / .35);
+  }
+
+  .bg-black\/40 {
+    background-color: oklab(0% none none / .4);
   }
 
   .bg-black\/50 {
