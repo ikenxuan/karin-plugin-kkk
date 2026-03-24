@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.26.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.26.4...v2.26.5) (2026-03-24)
+
+
+### 🐛 错误修复
+
+* 更新检测失败。 ([a91f4d7](https://github.com/ikenxuan/karin-plugin-kkk/commit/a91f4d79e5f41ab1e5661ad961bf9c3f62e51b1e))
+
 ## [2.26.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.26.3...v2.26.4) (2026-03-24)
 
 
