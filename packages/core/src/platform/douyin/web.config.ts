@@ -396,7 +396,7 @@ export const DouyinWeb = (all: ConfigType) => {
                 })
               ]
             }),
-            components.radio.group('pushvideoQuality', {
+            components.radio.group('push:pushVideoQuality', {
               label: '画质偏好',
               description: '推送解析时解析视频的分辨率偏好。',
               orientation: 'horizontal',
@@ -404,34 +404,34 @@ export const DouyinWeb = (all: ConfigType) => {
               isDisabled: !all.douyin.push.switch,
               color: 'warning',
               radio: [
-                components.radio.create('pushvideoQuality:radio-1', {
+                components.radio.create('push:pushVideoQuality:radio-1', {
                   label: '自动选择',
                   value: 'adapt',
                   description: '根据「视频体积上限（MB）」自动选择分辨率进行下载'
                 }),
-                components.radio.create('pushvideoQuality:radio-2', {
+                components.radio.create('push:pushVideoQuality:radio-2', {
                   label: '标清 540p',
                   value: '540p'
                 }),
-                components.radio.create('pushvideoQuality:radio-3', {
+                components.radio.create('push:pushVideoQuality:radio-3', {
                   label: '高清 720p',
                   value: '720p'
                 }),
-                components.radio.create('pushvideoQuality:radio-4', {
+                components.radio.create('push:pushVideoQuality:radio-4', {
                   label: '高清 1080p',
                   value: '1080p'
                 }),
-                components.radio.create('pushvideoQuality:radio-5', {
+                components.radio.create('push:pushVideoQuality:radio-5', {
                   label: '超清 2k',
                   value: '2k'
                 }),
-                components.radio.create('pushvideoQuality:radio-6', {
+                components.radio.create('push:pushVideoQuality:radio-6', {
                   label: '超清 4k',
                   value: '4k'
                 })
               ]
             }),
-            components.input.number('maxAutoVideoSize', {
+            components.input.number('push:pushMaxAutoVideoSize', {
               label: '视频体积上限（MB）',
               color: 'warning',
               description: '推送解析时根据该值自动选择分辨率进行下载。仅在「画质偏好」 为 "自动选择" 时生效',
