@@ -23,10 +23,10 @@ if (process.env.NODE_ENV !== 'development' && isSemverGreater(requireVersion, Ro
 
   karin.on(BOT_CONNECT, async (bot: AdapterType) => {
     const botId = bot.selfId
-    
+
     // 跳过 console Bot
     if (botId === 'console') return
-    
+
     // 增加延迟，确保 bot 完全初始化
     await new Promise(resolve => setTimeout(resolve, 2000))
     const masters = config.master()
@@ -48,7 +48,7 @@ if (process.env.NODE_ENV !== 'development' && isSemverGreater(requireVersion, Ro
       } catch (error) {
         logger.error(`[karin-plugin-kkk] 生成版本警告图片失败: ${error}`)
       }
-    
+
       const key = `${botId}:${master}`
       if (notifiedSet.has(key)) continue
 

@@ -115,6 +115,11 @@ type PlatformBotStats = {
   count: number
 }
 
+/**
+ * 统计每个平台使用最多的机器人ID和使用次数
+ * @param pushList - 推送列表配置
+ * @returns 
+ */
 export const statBotId = (pushList: pushlistConfig): { douyin: PlatformBotStats, bilibili: PlatformBotStats } => {
   const platformBotCount = {
     douyin: new Map<string, number>(),
@@ -343,20 +348,20 @@ export const downloadFile = async (videoUrl: string, opt: downLoadFileOptions): 
   try {
     // 使用 networks 类进行文件下载，并通过回调函数实时更新下载进度
     const { filepath, totalBytes } = await new Networks({
-      url: videoUrl, 
+      url: videoUrl,
       headers: opt.headers ?? baseHeaders,
       filepath: opt.filepath ?? Common.tempDri.video + opt.title,
       timeout: 60000, // 增加超时时间
       maxRetries: 3, // 增加重试次数
       throttle: throttleConfig
     }).downloadStream((downloadedBytes, totalBytes) => {
-    // 定义进度条长度及生成进度条字符串的函数
+      // 定义进度条长度及生成进度条字符串的函数
       const barLength = 45
       const generateProgressBar = (progressPercentage: number) => {
         const clampedPercentage = Math.min(100, Math.max(0, progressPercentage))
         const filledLength = Math.floor((clampedPercentage / 100) * barLength)
         const emptyLength = Math.max(0, barLength - filledLength)
-        return `[${ '\u2588'.repeat(filledLength)}${'\u2591'.repeat(emptyLength)}]`
+        return `[${'\u2588'.repeat(filledLength)}${'\u2591'.repeat(emptyLength)}]`
       }
 
       // 计算当前下载进度百分比
@@ -393,17 +398,17 @@ export const downloadFile = async (videoUrl: string, opt: downLoadFileOptions): 
     // 检查是否为网络环境变化或服务器风控导致的错误
     const errorMessage = error instanceof Error ? error.message : String(error)
     const isNetworkChangeError = /ECONNRESET|ETIMEDOUT|ECONNABORTED|aborted|timeout|network|连接被重置|连接超时|连接中止/i.test(errorMessage)
-    
+
     if (isNetworkChangeError) {
       logger.error('下载失败，可能是由于网络环境变化（如代理切换、VPN切换）或服务器风控导致')
       logger.error(`文件: ${opt.title}`)
       logger.error(`错误详情: ${errorMessage}`)
-      
+
       if (!uploadConfig.downloadThrottle) {
         logger.error('提示: 如果频繁出现此错误，建议在配置中开启「下载限速」功能')
       }
     }
-    
+
     throw error
   }
 }

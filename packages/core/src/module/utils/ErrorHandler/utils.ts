@@ -1,5 +1,8 @@
+import type { AdapterType, Message } from 'node-karin'
+import karin from 'node-karin'
 import type { ApiErrorProps } from 'template/types/platforms/other/handlerError'
 
+import { resolveUsableBot } from '../bot'
 import { Config } from '../Config'
 
 /**
@@ -70,4 +73,33 @@ export const isPushTask = (event: any, businessName: string): boolean => {
 export const getPushTaskBotId = (): string => {
   const ids = statBotId(Config.pushlist)
   return ids.douyin.botId || ids.bilibili.botId
+}
+
+/**
+ * 为推送任务注入机器人实例
+ *
+ * @param event - 消息事件对象
+ * @param businessName - 业务名称
+ * @returns 包含机器人实例的消息事件对象
+ */
+export const injectBotToEventForPushTask = async (
+  event: Message | undefined,
+  businessName: string
+): Promise<Message> => {
+  if (!isPushTask(event, businessName)) return event as Message
+  if (event?.bot) return event
+
+  const preferredBotId = typeof event?.selfId === 'string' ? event.selfId : getPushTaskBotId()
+  const bot = (preferredBotId
+    ? karin.getBot(preferredBotId)
+    : undefined) as AdapterType | undefined ?? await resolveUsableBot(preferredBotId)
+
+  if (!bot) {
+    throw new Error(`[ErrorHandler] push 任务缺少可用 bot 实例: ${businessName}`)
+  }
+
+  const normalizedEvent = (event ?? {}) as Message & { bot?: AdapterType, selfId?: string }
+  normalizedEvent.bot = bot
+  normalizedEvent.selfId = normalizedEvent.selfId ?? bot.account.selfId
+  return normalizedEvent
 }

@@ -46,5 +46,6 @@
   "java.compile.nullAnalysis.mode": "disabled",
   "rust-analyzer.linkedProjects": [
     "packages/watermark/Cargo.toml"
-  ]
+  ],
+  "chatgpt.openOnStartup": true
 }

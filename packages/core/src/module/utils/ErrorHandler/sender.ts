@@ -1,9 +1,10 @@
 import karin, { config, logger, segment } from 'node-karin'
 
+import { getReachableMasterBots } from '../bot'
 import { Config } from '../Config'
 import type { renderErrorImage } from './render'
 import type { ErrorContext } from './types'
-import { getPushTaskBotId, isPushTask } from './utils'
+import { isPushTask } from './utils'
 
 /**
  * 发送错误图片给触发者
@@ -26,7 +27,7 @@ export const sendErrorToTrigger = async (
   try {
     await event.reply(img)
   } catch (err) {
-    logger.error(`[ErrorHandler] 发送错误消息给用户失败: ${err}`)
+    logger.error(`[ErrorHandler] 发送错误消息给触发者失败: ${err}`)
   }
 }
 
@@ -56,16 +57,13 @@ export const sendErrorToMaster = async (
 
   if (!Config.app.errorLogSendTo.some(item => item === 'master')) return
 
-  const list = config.master()
-  const master = list[0] === 'console' ? list[1] : list[0]
   const isPush = isPushTask(event, options.businessName)
-  const botId = isPush ? getPushTaskBotId() : event?.bot?.selfId
-
-  if (!botId || !master) return
+  const target = await resolveSingleMasterTarget(event, isPush)
+  if (!target) return
 
   try {
-    const prefix = customPrefix || await buildErrorPrefix(ctx, isPush, botId)
-    await karin.sendMaster(botId, master, [segment.text(prefix), ...img])
+    const prefix = customPrefix || await buildErrorPrefix(ctx, isPush, target.botId)
+    await karin.sendMaster(target.botId, target.master, [segment.text(prefix), ...img])
   } catch (err) {
     logger.error(`[ErrorHandler] 发送错误消息给主人失败: ${err}`)
   }
@@ -98,43 +96,77 @@ export const sendErrorToAllMasters = async (
 
   if (!Config.app.errorLogSendTo.some(item => item === 'allMasters')) return
 
-  const masters = config.master().filter(m => m !== 'console')
-  if (masters.length === 0) return
-
   const isPush = isPushTask(event, options.businessName)
-  const botId = isPush ? getPushTaskBotId() : event?.bot?.selfId
+  const targets = await resolveAllMasterTargets(event, isPush)
+  if (targets.length === 0) return
 
-  if (!botId) return
-
-  const prefix = customPrefix || await buildErrorPrefix(ctx, isPush, botId)
-
-  // 已发送通知的主人 ID，避免重复发送
+  const prefix = customPrefix || await buildErrorPrefix(ctx, isPush, targets[0].botId)
   const notifiedSet = new Set<string>()
 
-  for (const master of masters) {
-    const key = `${botId}:${master}`
+  for (const target of targets) {
+    const key = `${target.botId}:${target.master}`
     if (notifiedSet.has(key)) continue
 
     try {
-      await karin.sendMaster(botId, master, [segment.text(prefix), ...img])
+      await karin.sendMaster(target.botId, target.master, [segment.text(prefix), ...img])
       notifiedSet.add(key)
-      logger.debug(`[ErrorHandler] 已发送错误消息给主人: ${master} (via ${botId})`)
+      logger.debug(`[ErrorHandler] 已发送错误消息给主人: ${target.master} (via ${target.botId})`)
     } catch (err) {
-      logger.error(`[ErrorHandler] 发送错误消息给主人 (${master}) 失败: ${err}`)
+      logger.error(`[ErrorHandler] 发送错误消息给主人 (${target.master}) 失败: ${err}`)
     }
   }
 }
 
 /**
- * 构建错误消息前缀
+ * 解析单个主人目标
  *
- * @param ctx - 错误处理上下文
+ * @param event - 错误事件上下文
  * @param isPush - 是否为推送任务
- * @param botId - 机器人 ID
- * @returns 格式化的消息前缀
  *
- * @internal
+ * @returns 
  */
+const resolveSingleMasterTarget = async (
+  event: ErrorContext['event'],
+  isPush: boolean
+): Promise<{ master: string, botId: string } | undefined> => {
+  if (isPush) {
+    const bindings = await getReachableMasterBots()
+    const matched = bindings[0]
+    if (!matched) return undefined
+    return {
+      master: matched.master,
+      botId: matched.bot.account.selfId
+    }
+  }
+
+  const master = config.master().find(item => item !== 'console')
+  const botId = event?.bot?.account.selfId ?? event?.selfId
+  if (!master || !botId) return undefined
+
+  return { master, botId }
+}
+
+const resolveAllMasterTargets = async (
+  event: ErrorContext['event'],
+  isPush: boolean
+): Promise<Array<{ master: string, botId: string }>> => {
+  const masters = config.master().filter(item => item !== 'console')
+  if (masters.length === 0) return []
+
+  if (isPush) {
+    const bindings = await getReachableMasterBots(masters)
+    return bindings.map(item => ({
+      master: item.master,
+      botId: item.bot.account.selfId
+    }))
+  }
+
+  const botId = event?.bot?.account.selfId ?? event?.selfId
+  if (!botId) return []
+
+  return masters.map(master => ({ master, botId }))
+}
+
 const buildErrorPrefix = async (
   ctx: ErrorContext,
   isPush: boolean,
@@ -143,12 +175,12 @@ const buildErrorPrefix = async (
   const { options, event } = ctx
 
   if (isPush) {
-    return `${options.businessName} 任务执行出错！\n请即时解决以消除警告`
+    return `${options.businessName} 任务执行出错\n请尽快解决以消除警告`
   }
 
   const groupId = event && 'groupId' in event ? event.groupId : ''
   const groupInfo = await karin.getBot(botId)?.getGroupInfo(groupId)
   const groupName = groupInfo?.groupName || '未知'
 
-  return `群：${groupName}(${groupId})\n${options.businessName} 任务执行出错！\n请即时解决以消除警告`
+  return `群：${groupName}(${groupId})\n${options.businessName} 任务执行出错\n请尽快解决以消除警告`
 }
