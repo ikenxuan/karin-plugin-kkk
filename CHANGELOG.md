@@ -2,6 +2,24 @@
 
 # Changelog
 
+## [2.27.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.27.0...v2.27.1) (2026-03-28)
+
+
+### 🐛 错误修复
+
+* web.config 配置取值错误 ([7dc06a7](https://github.com/ikenxuan/karin-plugin-kkk/commit/7dc06a7dc0886c7a053abcdbf3747acab4797a41))
+* 错误处理报错 TypeError: Cannot read properties of undefined (reading 'bot') ([277bad8](https://github.com/ikenxuan/karin-plugin-kkk/commit/277bad8afb33cfb4a166e043d86aed16fa5540fe))
+
+
+### 📝 文档更新
+
+* readme ([d97f1fe](https://github.com/ikenxuan/karin-plugin-kkk/commit/d97f1fef839f32439e6b98bb1e2e7d8cf82d6dad))
+
+
+### 💄 UI 优化
+
+* 重写更新日志样式为弥散渐变+高对比杂色 ([3bbc3da](https://github.com/ikenxuan/karin-plugin-kkk/commit/3bbc3dac2bce23d49edd0395120a3dc34be61258))
+
 ## [2.27.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.26.6...v2.27.0) (2026-03-24)
 
 
