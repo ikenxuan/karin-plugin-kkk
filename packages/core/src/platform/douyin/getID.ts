@@ -73,7 +73,7 @@ export const getDouyinID = async (event: Message, url: string, log = true): Prom
       }
       break
     }
-    case /https:\/\/(?:www\.douyin\.com|www\.iesdouyin\.com)\/share\/user\/(\S+)/.test(longLink): {
+    case /https:\/\/(?:www\.douyin\.com|www\.iesdouyin\.com)\/(?:share\/)?user\/(\S+)/.test(longLink): {
       const userMatch = /user\/([a-zA-Z0-9_-]+)/.exec(longLink)
       result = {
         type: 'user_dynamic',
