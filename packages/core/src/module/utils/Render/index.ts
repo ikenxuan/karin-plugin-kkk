@@ -154,7 +154,8 @@ export const Render = async <P extends DynamicRenderPath> (
     )
   }
 
-  logger.debug(`[Render] 图片处理完成，准备入队发送: ${JSON.stringify(imageStats)}`)
+  const statsText = imageStats.map((stat, i) => `  [${i + 1}] 类型: ${stat.type}, 大小: ${stat.sizeMb}MB, 尺寸: ${stat.dimensions}`).join('\n')
+  logger.debug(`[Render] 图片处理完成，准备入队发送:\n共 ${imageStats.length} 张图片:\n${statsText}`)
   return ret
 }
 
