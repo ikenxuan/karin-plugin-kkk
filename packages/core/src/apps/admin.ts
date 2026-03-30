@@ -12,11 +12,11 @@ import { douyinLogin } from '@/platform/douyin/login'
 // 包装缓存清理任务
 const handleCacheCleanup = wrapWithErrorHandler(async () => {
   const twoHoursAgo = Date.now() - 2 * 60 * 60 * 1000 // 2小时前的时间戳
-  
+
   // 清理视频缓存
   const videoDeleted = removeOldFiles(Common.tempDri.video, twoHoursAgo)
   logger.mark(`${Common.tempDri.video} 目录下已删除 ${videoDeleted} 个文件`)
-  
+
   // 如果启用了本地下载图片，也清理图片缓存目录
   if (Config.upload.imageSendMode === 'file') {
     const imageDeleted = removeOldFiles(Common.tempDri.images, twoHoursAgo)
@@ -26,7 +26,7 @@ const handleCacheCleanup = wrapWithErrorHandler(async () => {
   businessName: '缓存自动删除'
 })
 
-export const task = Config.app.removeCache && karin.task('[kkk-缓存自动删除]', '0 */4 * * *', handleCacheCleanup)
+export const task = Config.app.removeCache && karin.task('[kkk-缓存自动删除]', '*/30 * * * *', handleCacheCleanup)
 
 // 包装B站登录命令
 const handleBilibiliLogin = wrapWithErrorHandler(async (e) => {
@@ -55,33 +55,33 @@ export const dylogin = karin.command(/^#?(kkk)?抖音(扫码)?登录$/, handleDo
 // 删除指定时间之前的文件
 export const removeOldFiles = (dir: string, beforeTimestamp: number): number => {
   let deletedCount = 0
-  
+
   const files = fs.readdirSync(dir)
-  
+
   for (const file of files) {
     const filePath = path.join(dir, file)
     const stats = fs.statSync(filePath)
-    
+
     if (stats.isDirectory()) {
       // 递归处理子目录
       deletedCount += removeOldFiles(filePath, beforeTimestamp)
-      
+
       // 检查目录是否为空，如果为空则删除
       const remainingFiles = fs.readdirSync(filePath)
       if (remainingFiles.length === 0) {
         fs.rmdirSync(filePath)
       }
     } else {
-      // 检查文件的修改时间
-      const fileModifiedTime = stats.mtimeMs
-      
-      // 如果文件修改时间早于指定时间戳，则删除
-      if (fileModifiedTime < beforeTimestamp) {
+      // 检查文件的创建时间
+      const fileCreatedTime = stats.birthtimeMs
+
+      // 如果文件创建时间早于指定时间戳，则删除
+      if (fileCreatedTime < beforeTimestamp) {
         fs.unlinkSync(filePath)
         deletedCount++
       }
     }
   }
-  
+
   return deletedCount
 }
