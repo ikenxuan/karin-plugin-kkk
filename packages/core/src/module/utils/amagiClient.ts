@@ -5,6 +5,8 @@ import { logger } from 'node-karin'
 
 import { Config } from './Config'
 
+type AmagiClient = ReturnType<typeof Client>
+
 /**
  * Amagi 错误类，携带原始响应数据
  */
@@ -25,7 +27,7 @@ export class AmagiError extends Error {
 /** 解析库基类 */
 export class AmagiBase {
   /** 解析库实例 */
-  amagi: ReturnType<typeof Client>
+  amagi: AmagiClient
 
   constructor () {
     const client = this.createAmagiClient()
@@ -33,7 +35,7 @@ export class AmagiBase {
   }
 
   /** 创建解析库实例 */
-  protected createAmagiClient = (): ReturnType<typeof Client> => {
+  protected createAmagiClient = (): AmagiClient => {
     return Client({
       cookies: {
         douyin: Config.cookies.douyin,
@@ -81,7 +83,7 @@ export class AmagiBase {
   }
 
   /** 包装解析库实例，递归代理所有嵌套对象的方法 */
-  protected wrapAmagiClient = (client: ReturnType<typeof Client>): ReturnType<typeof Client> => {
+  protected wrapAmagiClient = (client: AmagiClient): AmagiClient => {
 
     const createProxy = (target: any): any => {
       return new Proxy(target, {
@@ -135,10 +137,29 @@ export class AmagiBase {
 }
 
 /** 获取已初始化的解析库实例（单例） */
+const createLiveProxy = <T extends object>(getter: () => T): T => {
+  return new Proxy({} as T, {
+    get (_target, prop: string | symbol) {
+      const current = getter()
+      const value = Reflect.get(current, prop)
+
+      if (typeof value === 'function') {
+        return value.bind(current)
+      }
+
+      if (value && typeof value === 'object') {
+        return createLiveProxy(() => Reflect.get(getter(), prop) as T)
+      }
+
+      return value
+    }
+  })
+}
+
 const amagiClientInstance = new AmagiBase()
 
 /** 导出 Amagi Client 实例 */
-const amagiClient = amagiClientInstance.amagi
+export const amagiClient = createLiveProxy(() => amagiClientInstance.amagi)
 
 /**
  * 重载 Amagi 配置
