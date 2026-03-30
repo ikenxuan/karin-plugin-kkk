@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.27.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.27.3...v2.27.4) (2026-03-30)
+
+
+### 🐛 错误修复
+
+* 图片生成爆了 ([bce9dfa](https://github.com/ikenxuan/karin-plugin-kkk/commit/bce9dfa8b10d70a5c9988e70739028cba78797a4))
+
 ## [2.27.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.27.2...v2.27.3) (2026-03-30)
 
 
