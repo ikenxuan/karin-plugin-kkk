@@ -52,6 +52,9 @@ importers:
         specifier: 4.2.1
         version: 4.2.1
     devDependencies:
+      '@eslint/eslintrc':
+        specifier: ^3.3.5
+        version: 3.3.5
       '@eslint/js':
         specifier: 10.0.1
         version: 10.0.1(eslint@9.39.1(jiti@2.6.1))
@@ -23765,7 +23768,7 @@ snapshots:
       tinyglobby: 0.2.15
     optionalDependencies:
       '@types/node': 25.5.0
-      '@vitejs/devtools': 0.1.11(@pnpm/logger@1001.0.1)(typescript@5.9.3)(vite@8.0.3)
+      '@vitejs/devtools': 0.1.11(@pnpm/logger@1001.0.1)(typescript@5.8.3)(vite@8.0.3)
       esbuild: 0.27.4
       fsevents: 2.3.3
       jiti: 2.6.1

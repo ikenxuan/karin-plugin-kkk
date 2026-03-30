@@ -44,6 +44,7 @@
     }
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "10.0.1",
     "@kkk/cli": "workspace:*",
     "@stylistic/eslint-plugin": "5.10.0",
