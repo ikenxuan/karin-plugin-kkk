@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import DOMPurify from 'dompurify'
 import { Clock, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
 import React from 'react'
 import { LuFullscreen } from 'react-icons/lu'
@@ -38,7 +37,7 @@ const BilibiliDynamicUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
       </div>
       <div className='flex flex-col gap-8 text-7xl'>
         <div className='text-6xl font-bold select-text text-foreground'>
-          <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(props.username) }} />
+          <span dangerouslySetInnerHTML={{ __html: props.username }} />
         </div>
         <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-foreground-500'>
           <Clock size={36} className='text-time' />
@@ -143,7 +142,7 @@ const BilibiliDynamicFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
           </div>
           <div className='flex flex-col gap-5'>
             <div className='text-7xl font-bold select-text text-foreground'>
-              <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(props.username) }} />
+              <span dangerouslySetInnerHTML={{ __html: props.username }} />
             </div>
             <div className='flex gap-2 items-center text-4xl text-default-500'>
               <Hash size={32} className='text-default-400' />

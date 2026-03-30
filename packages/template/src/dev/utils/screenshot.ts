@@ -1,7 +1,6 @@
 /// <reference lib="dom" />
 import { Watermark } from '@pansy/watermark'
 import { snapdom } from '@zumer/snapdom'
-import DOMPurify from 'dompurify'
 
 /**
  * 截图配置接口
@@ -94,7 +93,7 @@ export const captureScreenshot = async (options: ScreenshotOptions): Promise<Scr
           })
           
           // 添加一个透明的占位元素，保持高度
-          htmlEl.innerHTML = DOMPurify.sanitize(`<div style="height: ${height}; width: 100%; opacity: 0; pointer-events: none;"></div>`)
+          htmlEl.innerHTML = `<div style="height: ${height}; width: 100%; opacity: 0; pointer-events: none;"></div>`
         }
       }
     })
@@ -119,7 +118,7 @@ export const captureScreenshot = async (options: ScreenshotOptions): Promise<Scr
 
     // 恢复空元素的原始内容
     emptyElements.forEach(({ element, originalHTML }) => {
-      element.innerHTML = DOMPurify.sanitize(originalHTML)
+      element.innerHTML = originalHTML
     })
 
     // 销毁水印（如果存在）

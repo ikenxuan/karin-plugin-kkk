@@ -1,4 +1,3 @@
-import DOMPurify from 'dompurify'
 import { Heart, MessageCircle, QrCode } from 'lucide-react'
 import React from 'react'
 
@@ -135,7 +134,7 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
         {/* 评论文本 */}
         <div
           className='text-[60px] text-foreground leading-relaxed mb-2 whitespace-pre-wrap select-text [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em] [&_span]:inline'
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.content) }}
+          dangerouslySetInnerHTML={{ __html: comment.content }}
           style={{
             wordBreak: 'break-word',
             overflowWrap: 'break-word'
@@ -207,7 +206,7 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
                     </div>
                     <div
                       className='text-[45px] text-foreground leading-relaxed mb-2 select-text [&_img]:mb-2 [&_img]:inline [&_img]:h-[1.2em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.5em] [&_span]:inline'
-                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(subComment.content) }}
+                      dangerouslySetInnerHTML={{ __html: subComment.content }}
                       style={{
                         wordBreak: 'break-word',
                         overflowWrap: 'break-word'

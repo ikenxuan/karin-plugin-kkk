@@ -1,4 +1,3 @@
-import DOMPurify from 'dompurify'
 import React, { useState } from 'react'
 
 /**
@@ -50,7 +49,7 @@ export const CommentText: React.FC<CommentTextProps> = ({ content, className, st
     <div
       className={className}
       style={style}
-      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(processedContent) }}
+      dangerouslySetInnerHTML={{ __html: processedContent }}
     />
   )
 }
@@ -165,7 +164,7 @@ export const DecorationCard: React.FC<{ html: string }> = ({ html }) => {
   return (
     <div
       className='font-bilifont'
-      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(processedHtml) }}
+      dangerouslySetInnerHTML={{ __html: processedHtml }}
     />
   )
 }

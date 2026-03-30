@@ -1,4 +1,3 @@
-import DOMPurify from 'dompurify'
 import { Hash, Heart, Music, QrCode, UserPlus, Users } from 'lucide-react'
 import React from 'react'
 import { LuFullscreen } from 'react-icons/lu'
@@ -69,7 +68,7 @@ const MusicInfoSection: React.FC<MusicInfoProps & { desc: string }> = ({
       <div
         className='text-[70px] font-bold leading-relaxed mb-9 text-foreground select-text'
         style={{ letterSpacing: '1.5px', wordWrap: 'break-word' }}
-        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(desc) }}
+        dangerouslySetInnerHTML={{ __html: desc }}
       />
       <div className='flex flex-col gap-2 text-[45px] text-default-500 font-light mb-2.5'>
         <div className='flex gap-2 items-center select-text'>

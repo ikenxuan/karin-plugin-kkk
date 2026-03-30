@@ -68,6 +68,7 @@
     "@types/pngjs": "^6.0.5",
     "cookie": "^1.1.1",
     "date-fns": "^4.1.0",
+    "dompurify": "^3.3.3",
     "happy-dom": "^20.8.9",
     "heic-decode": "^2.1.0",
     "http-proxy-middleware": "3.0.5",
@@ -112,5 +113,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-03-30T17:45:20.998Z"
+  "timestamp": "2026-03-30T19:16:25.527Z"
 }

@@ -1,4 +1,3 @@
-import DOMPurify from 'dompurify'
 import { Heart, MessageCircle, QrCode } from 'lucide-react'
 import React, { useMemo } from 'react'
 
@@ -129,7 +128,7 @@ const KuaishouCommentItemComponent: React.FC<KuaishouCommentItemComponentProps &
         {/* 评论文本 */}
         <div
           className='text-[60px] text-foreground leading-relaxed mb-2 whitespace-pre-wrap [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em] select-text'
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.text) }}
+          dangerouslySetInnerHTML={{ __html: comment.text }}
           style={{
             wordBreak: 'break-word',
             overflowWrap: 'break-word'

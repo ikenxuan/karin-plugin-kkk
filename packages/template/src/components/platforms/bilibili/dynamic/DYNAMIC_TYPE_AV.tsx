@@ -1,5 +1,4 @@
 import { format } from 'date-fns'
-import DOMPurify from 'dompurify'
 import { Clock, Coins, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
 import React from 'react'
 import { LuFullscreen } from 'react-icons/lu'
@@ -269,7 +268,7 @@ const BilibiliVideoDynamicFooter: React.FC<Omit<BilibiliVideoDynamicProps, 'temp
             {/* 用户名和UID - 纵向排列 */}
             <div className='flex flex-col gap-5'>
               <div className='text-7xl font-bold select-text text-foreground'>
-                <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(props.data.username) }} />
+                <span dangerouslySetInnerHTML={{ __html: props.data.username }} />
               </div>
               <div className='flex gap-2 items-center text-4xl text-default-500'>
                 <Hash size={32} />

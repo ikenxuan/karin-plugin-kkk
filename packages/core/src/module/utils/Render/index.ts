@@ -14,7 +14,7 @@ import { Common, Root } from '@/module'
 import { Config } from '@/module/utils/Config'
 
 import { isSemverGreater } from '../semver'
-import { createQrCodePlugin } from './plugins'
+import { createQrCodePlugin, createSanitizeContentPlugin } from './plugins'
 import { embedWatermark } from './wm'
 
 type ImageMetadata = {
@@ -94,7 +94,8 @@ export const Render = async <P extends DynamicRenderPath> (
     request: renderRequest,
     outputDir,
     plugins: [
-      createQrCodePlugin()
+      createQrCodePlugin(),
+      createSanitizeContentPlugin()
     ]
   }).then(res => {
     if (!res.success || !res.htmlPath) {

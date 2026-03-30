@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import DOMPurify from 'dompurify'
 import { CircleEllipsis, Heart, Play, QrCode } from 'lucide-react'
 import React from 'react'
 import { IoSearch } from 'react-icons/io5'
@@ -338,7 +337,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
               <div className='py-2'>
                 <div
                   className='text-5xl text-foreground leading-normal whitespace-pre-wrap select-text [&_img]:mb-2 [&_img]:inline [&_img]:h-[1.3em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
-                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(reply.text) }}
+                  dangerouslySetInnerHTML={{ __html: reply.text }}
                   style={{
                     wordBreak: 'break-word',
                     overflowWrap: 'break-word'
@@ -452,7 +451,7 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
 
             <div
               className='text-5xl text-foreground leading-normal mb-4 whitespace-pre-wrap select-text [&_img]:mb-2 [&_img]:inline [&_img]:h-[1.3em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(props.text) }}
+              dangerouslySetInnerHTML={{ __html: props.text }}
               style={{
                 wordBreak: 'break-word',
                 overflowWrap: 'break-word'

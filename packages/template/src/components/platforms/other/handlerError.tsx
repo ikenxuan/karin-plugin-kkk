@@ -1,5 +1,4 @@
 import { Chip } from '@heroui/react'
-import DOMPurify from 'dompurify'
 import { AlertCircle, Clock, FileText, Plug2, QrCode, Terminal } from 'lucide-react'
 import React from 'react'
 import { FaCodeBranch } from 'react-icons/fa6'
@@ -357,7 +356,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
               <pre
                 className='text-3xl leading-relaxed whitespace-pre-wrap break-all font-mono'
                 style={{ color: accentColor }}
-                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertAnsiToHtml(data.triggerCommand)) }}
+                dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(data.triggerCommand) }}
               />
             </div>
           </div>
@@ -379,7 +378,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
             <pre
               className='text-2xl leading-relaxed whitespace-pre-wrap break-all font-mono'
               style={{ color: isDark ? 'rgba(255,255,255,0.85)' : 'rgba(127,29,29,0.9)' }}
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertAnsiToHtml(String(businessError?.stack || data.error?.stack || ''))) }}
+              dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(String(businessError?.stack || data.error?.stack || '')) }}
             />
           </div>
         </div>
@@ -444,7 +443,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
                     <div
                       className='relative z-1 text-2xl font-mono whitespace-pre-wrap break-all leading-relaxed'
                       style={{ color: isDark ? 'rgba(255,255,255,0.88)' : 'rgba(0,0,0,0.82)' }}
-                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertAnsiToHtml(log.message)) }}
+                      dangerouslySetInnerHTML={{ __html: convertAnsiToHtml(log.message) }}
                     />
                   </fieldset>
                 )
