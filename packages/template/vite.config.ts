@@ -5,7 +5,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 import tailwindcss from '@tailwindcss/vite'
 import { DevTools } from '@vitejs/devtools'
-import reactSwc from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
 import { codeInspectorPlugin } from 'code-inspector-plugin'
 import { defineConfig } from 'vite'
 import checker from 'vite-plugin-checker'
@@ -81,9 +81,7 @@ export default defineConfig(({ command }) => {
           /App\.tsx.*中间垂直工具栏/
         ]
       }),
-      reactSwc({
-        devTarget: 'es2022'
-      }),
+      react(),
       tailwindcss()
     ],
     resolve: {

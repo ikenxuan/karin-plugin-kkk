@@ -36,6 +36,8 @@
   },
   "pnpm": {
     "overrides": {
+      "eslint": "$eslint",
+      "typescript": "$typescript",
       "react": "$react",
       "react-dom": "$react-dom",
       "vite": "$vite"
