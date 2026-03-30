@@ -1,4 +1,5 @@
 import { format } from 'date-fns'
+import DOMPurify from 'dompurify'
 import { Quote } from 'lucide-react'
 import React from 'react'
 import { RiHeart3Fill, RiMessage3Fill, RiShareForwardFill, RiStarFill, RiThumbUpFill } from 'react-icons/ri'
@@ -181,7 +182,7 @@ export const DouyinRecommendList: React.FC<DouyinRecommendListProps> = (props) =
                   <Quote size={48} className="text-emerald-500/90 shrink-0 rotate-180 mt-2" />
                   <div 
                     className="text-white text-4xl font-medium leading-relaxed line-clamp-3 drop-shadow-lg tracking-wide"
-                    dangerouslySetInnerHTML={{ __html: props.data.desc || '分享视频' }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(props.data.desc) || '分享视频' }}
                   />
                 </div>
               </div>

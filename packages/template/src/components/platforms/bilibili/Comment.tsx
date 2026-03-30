@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import DOMPurify from 'dompurify'
 import { ThumbsUp } from 'lucide-react'
 import React, { useEffect, useMemo, useState } from 'react'
 
@@ -255,7 +256,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
           <div className='shrink-0 flex items-center gap-2 leading-[1.2] text-foreground-700 font-bold select-text'>
             <div
               className='[&>span]:inline-block [&>span]:leading-[1.2] [&>svg]:inline-block [&>svg]:w-25 [&>svg]:h-25 [&>svg]:align-middle [&>svg]:shrink-0'
-              dangerouslySetInnerHTML={{ __html: props.uname }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(props.uname) }}
             />
 
             {/* 等级图标 */}
@@ -336,7 +337,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
           style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
         >
           {props.isTop && <TopBadge />}
-          <span dangerouslySetInnerHTML={{ __html: processCommentHTML(props.message) }} />
+          <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(processCommentHTML(props.message)) }} />
         </div>
 
         {/* 评论图片 */}
@@ -446,7 +447,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
                       <div className='shrink-0 flex items-center gap-2 leading-[1.2] text-foreground-700 font-bold select-text'>
                         <div
                           className='[&>span]:inline-block [&>span]:leading-[1.2]'
-                          dangerouslySetInnerHTML={{ __html: subReply.uname }}
+                          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(subReply.uname) }}
                         />
                         {subReply.level !== undefined && subReply.level >= 0 && subReply.level <= 7 && (
                           <img
@@ -508,7 +509,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
                     <div
                       className='text-[60px] tracking-[0.5px] leading-[1.6] text-foreground mb-5 select-text [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
                       style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
-                      dangerouslySetInnerHTML={{ __html: processCommentHTML(subReply.message) }}
+                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(processCommentHTML(subReply.message)) }}
                     />
 
                     {/* 二级评论图片 */}

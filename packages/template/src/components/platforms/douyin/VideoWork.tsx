@@ -1,4 +1,5 @@
 import { format } from 'date-fns'
+import DOMPurify from 'dompurify'
 import { Bookmark, Clock, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
 import React from 'react'
 import { LuFullscreen } from 'react-icons/lu'
@@ -52,7 +53,7 @@ const InfoSection: React.FC<DouyinVideoWorkProps> = (props) => {
       <div
         className='text-[70px] font-bold leading-relaxed mb-9 text-foreground select-text'
         style={{ letterSpacing: '1.5px', wordWrap: 'break-word' }}
-        dangerouslySetInnerHTML={{ __html: props.data.desc }}
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(props.data.desc) }}
       />
       <div className='flex items-center gap-6 text-[45px] text-foreground-500 font-light mb-2.5 select-text'>
         <div className='flex gap-2 items-center'>

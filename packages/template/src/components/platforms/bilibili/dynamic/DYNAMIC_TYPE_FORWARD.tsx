@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import DOMPurify from 'dompurify'
 import { Clock, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
 import React from 'react'
 import { LuFullscreen } from 'react-icons/lu'
@@ -39,7 +40,7 @@ const BilibiliForwardUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
       </div>
       <div className='flex flex-col gap-8 text-7xl'>
         <div className='text-6xl font-bold select-text text-foreground'>
-          <span dangerouslySetInnerHTML={{ __html: props.username }} />
+          <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(props.username) }} />
         </div>
         <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-foreground-500'>
           <Clock size={36} className='text-time' />
@@ -84,7 +85,7 @@ const OriginalUserInfo: React.FC<{
         </div>
         <div className='flex flex-col gap-4 text-7xl'>
           <div className='text-5xl font-normal select-text text-foreground'>
-            <span dangerouslySetInnerHTML={{ __html: props.username }} />
+            <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(props.username) }} />
           </div>
           <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-foreground-500'>
             <Clock size={32} className='text-time' />
@@ -133,7 +134,7 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
       </div>
 
       <div className='pb-10 pl-8 text-6xl font-bold select-text leading-20 text-foreground'>
-        <span dangerouslySetInnerHTML={{ __html: content.title }} />
+        <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content.title) }} />
       </div>
     </div>
   )
@@ -261,7 +262,7 @@ const OriginalLiveRcmdContent: React.FC<{ content: OriginalContentLiveRcmd }> = 
       </div>
 
       <div className='pl-8 text-6xl font-bold select-text text-foreground'>
-        <span dangerouslySetInnerHTML={{ __html: content.title }} />
+        <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content.title) }} />
       </div>
     </div>
   )
@@ -389,7 +390,7 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
           {/* 用户名和UID - 纵向排列 */}
           <div className='flex flex-col gap-5'>
             <div className='text-7xl font-bold select-text text-foreground'>
-              <span dangerouslySetInnerHTML={{ __html: props.username }} />
+              <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(props.username) }} />
             </div>
             <div className='flex gap-2 items-center text-4xl text-default-500'>
               <Hash size={32} className='text-default-400' />

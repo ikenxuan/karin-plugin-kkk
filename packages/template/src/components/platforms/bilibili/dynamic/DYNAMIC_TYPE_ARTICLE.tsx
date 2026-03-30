@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify'
 import { BookOpen, Clock, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
 import React, { type JSX } from 'react'
 
@@ -384,7 +385,7 @@ const BilibiliArticleUserInfo: React.FC<BilibiliArticleDynamicProps> = React.mem
       </div>
       <div className='flex flex-col gap-8 text-7xl'>
         <div className='text-6xl font-bold select-text text-foreground'>
-          <span dangerouslySetInnerHTML={{ __html: props.data.username }} />
+          <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(props.data.username) }} />
         </div>
         <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-foreground-500'>
           <Clock size={36} className='text-time' />
@@ -463,7 +464,7 @@ const BilibiliArticleContent: React.FC<BilibiliArticleDynamicProps> = React.memo
       {sanitizedHtmlContent && (
         <div
           className='flex-col items-center mb-8 select-text'
-          dangerouslySetInnerHTML={{ __html: sanitizedHtmlContent }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(sanitizedHtmlContent) }}
         />
       )}
     </div>
@@ -547,7 +548,7 @@ const BilibiliArticleFooter: React.FC<BilibiliArticleDynamicProps> = React.memo(
           {/* 用户名和UID - 纵向排列 */}
           <div className='flex flex-col gap-5'>
             <div className='text-7xl font-bold select-text text-foreground'>
-              <span dangerouslySetInnerHTML={{ __html: props.data.username }} />
+              <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(props.data.username) }} />
             </div>
             <div className='flex gap-2 items-center text-4xl text-default-500'>
               <Hash size={32} className='text-default-400' />

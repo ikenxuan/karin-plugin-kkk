@@ -1,4 +1,5 @@
 import { Button, Chip } from '@heroui/react'
+import DOMPurify from 'dompurify'
 import { Calendar, ExternalLink, Heart, MapPin, MessageCircle, Share2, Star } from 'lucide-react'
 import React, { useMemo } from 'react'
 
@@ -100,7 +101,7 @@ export const XiaohongshuNoteInfo: React.FC<Omit<XiaohongshuNoteInfoProps, 'templ
               {/* 笔记描述 - 支持HTML渲染 */}
               <div
                 className='text-5xl text-foreground-700 leading-relaxed mb-8 whitespace-pre-wrap select-text [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
-                dangerouslySetInnerHTML={{ __html: props.data.desc }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(props.data.desc) }}
               />
               
               {/* 发布信息 */}
