@@ -24,6 +24,7 @@ import {
   uploadFile
 } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
+import { EmojiReactionManager, getEmojiId } from '@/module/utils/EmojiReaction'
 import { douyinComments } from '@/platform/douyin'
 import { burnDouyinDanmaku, type DouyinDanmakuElem } from '@/platform/douyin/danmaku'
 import { DouyinDataTypes, DouyinIdData } from '@/types'
@@ -898,17 +899,43 @@ export class DouYin extends Base {
 
         await this.e.reply(img)
 
-        const context = await karin.ctx(this.e, { reply: true, time: timeoutSeconds })
+        logger.debug(`已发送用户作品列表图片，等待用户选择视频（超时时间 ${timeoutSeconds} 秒）`)
+        const context = await karin.ctx(this.e, { reply: true, time: 10 })
         if (context) {
           const num = parseInt(context.msg.trim())
           if (!isNaN(num) && num >= 1 && num <= displayVideos.length) {
-            const target = displayVideos[num - 1]
-            const targetData: DouyinIdData = {
-              type: 'one_work',
-              aweme_id: target.aweme_id
+            const emojiManager = new EmojiReactionManager(context)
+            let processingTimer: NodeJS.Timeout | null = null
+            let successTimer: NodeJS.Timeout | null = null
+
+            await emojiManager.add('EYES')
+            processingTimer = setTimeout(() => {
+              emojiManager.add('PROCESSING').catch(() => { })
+            }, 1500)
+
+            try {
+              const target = displayVideos[num - 1]
+              const targetData: DouyinIdData = {
+                type: 'one_work',
+                aweme_id: target.aweme_id
+              }
+              const dy = new DouYin(context, targetData)
+              await dy.DouyinHandler(targetData)
+
+              successTimer = setTimeout(() => {
+                emojiManager.replace('PROCESSING', 'SUCCESS').catch(() => { })
+              }, 1500)
+            } catch (error) {
+              if (processingTimer) clearTimeout(processingTimer)
+              if (successTimer) clearTimeout(successTimer)
+
+              const processingEmojiId = getEmojiId(context, 'PROCESSING')
+              if (emojiManager.has(processingEmojiId)) {
+                await emojiManager.remove('PROCESSING')
+              }
+              await emojiManager.add('ERROR')
+              throw error
             }
-            const dy = new DouYin(context, targetData)
-            await dy.DouyinHandler(targetData)
           }
         }
         return true
