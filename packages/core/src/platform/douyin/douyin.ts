@@ -993,7 +993,7 @@ export class DouYin extends Base {
               text: live_data.data.data[0].title,
               liveinf: `${live_data.data.partition_road_map.partition.title} | 房间号: ${room_data.owner.web_rid}`,
               在线观众: Count(Number(live_data.data.data[0].room_view_stats?.display_value)),
-              总观看次数: Count(Number(live_data.data.data[0].stats?.total_user_str)),
+              总观看次数: live_data.data.data[0].stats?.total_user_str ? Count(Number(live_data.data.data[0].stats?.total_user_str)) : '刚开播无法获取',
               username: UserInfoData.data.user.nickname,
               avater_url: UserInfoData.data.user.avatar_larger.url_list[0],
               fans: Count(UserInfoData.data.user.follower_count),

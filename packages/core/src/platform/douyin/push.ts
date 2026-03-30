@@ -215,13 +215,14 @@ export class DouYinpush extends Base {
 
       if (!skip) {
         if (pushItem.pushType === 'live' && 'room_data' in pushItem.Detail_Data && Detail_Data.live_data) {
+          const hasData = Detail_Data.live_data.data && Detail_Data.live_data.data.data && Detail_Data.live_data.data.data.length > 0
           // 处理直播推送
           img = await Render(this.e, 'douyin/live', {
             image_url: Detail_Data.live_data.data.data.data[0]?.cover?.url_list[0] ?? Detail_Data.live_data.data.data.qrcode_url,
             text: Detail_Data.live_data.data.data.data[0]?.title ?? '',
             liveinf: `${Detail_Data.live_data.data.data.partition_road_map?.partition?.title ?? Detail_Data.live_data.data.data.data[0]?.title ?? '获取失败'} | 房间号: ${Detail_Data.room_data.owner.web_rid}`,
-            在线观众: Detail_Data.live_data.data.data.data.length > 0 && Detail_Data.live_data.data.data.data[0].room_view_stats?.display_value ? this.count(Detail_Data.live_data.data.data.data[0].room_view_stats.display_value) : '：语音直播或刚开播获取失败。',
-            总观看次数: Detail_Data.live_data.data.data.data.length > 0 ? this.count(Number(Detail_Data.live_data.data.data.data[0].stats!.total_user_str)) : '：语音直播不支持',
+            在线观众: hasData && Detail_Data.live_data.data.data.data[0].room_view_stats?.display_value ? this.count(Detail_Data.live_data.data.data.data[0].room_view_stats.display_value) : '：语音直播或刚开播获取失败。',
+            总观看次数: hasData ? (Detail_Data.live_data.data.data.data[0].stats?.total_user_str ? this.count(Number(Detail_Data.live_data.data.data.data[0].stats!.total_user_str)) : '刚开播无法获取') : '：语音直播不支持',
             username: Detail_Data.user_info.data.user.nickname,
             avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
             fans: this.count(Detail_Data.user_info.data.user.follower_count),
@@ -416,8 +417,8 @@ export class DouYinpush extends Base {
                     co_creators,
                     subscriber_role: subscriberInCreators?.role_title ?? (
                       (subscriberUid && Detail_Data.author?.uid && subscriberUid === Detail_Data.author.uid) ||
-                      (subscriberSecUid && Detail_Data.author?.sec_uid && subscriberSecUid === Detail_Data.author.sec_uid) ||
-                      (Detail_Data.user_info.data.user.nickname && Detail_Data.author?.nickname && Detail_Data.user_info.data.user.nickname === Detail_Data.author.nickname)
+                        (subscriberSecUid && Detail_Data.author?.sec_uid && subscriberSecUid === Detail_Data.author.sec_uid) ||
+                        (Detail_Data.user_info.data.user.nickname && Detail_Data.author?.nickname && Detail_Data.user_info.data.user.nickname === Detail_Data.author.nickname)
                         ? '作者'
                         : undefined
                     )
@@ -545,12 +546,12 @@ export class DouYinpush extends Base {
                       }
                       staticImgPath = staticImg.filepath ?? ''
                     }
-                    
+
                     // 根据 livePhotoMode 配置决定处理方式
                     const livePhotoMode = Config.app.livePhotoMode ?? 'video_and_livephoto'
                     const shouldGenerateVideo = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'video_only'
                     const shouldGenerateLivePhoto = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'livephoto_only'
-                    
+
                     // 生成视频
                     if (shouldGenerateVideo) {
                       const transitionEnabled = loopCount > 1 && Boolean(staticImgPath)
@@ -608,7 +609,7 @@ export class DouYinpush extends Base {
                         hasGeneratedLivePhoto = true // 标记已生成实况图
                       }
                     }
-                    
+
                     logger.mark('正在尝试删除缓存文件')
                     await Common.removeFile(liveimg.filepath, true)
                   }
@@ -710,12 +711,12 @@ export class DouYinpush extends Base {
                         }
                         staticImgPath = staticImg.filepath ?? ''
                       }
-                      
+
                       // 根据 livePhotoMode 配置决定处理方式
                       const livePhotoMode = Config.app.livePhotoMode ?? 'video_and_livephoto'
                       const shouldGenerateVideo = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'video_only'
                       const shouldGenerateLivePhoto = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'livephoto_only'
-                      
+
                       // 生成视频
                       if (shouldGenerateVideo) {
                         const transitionEnabled = loopCount > 1 && Boolean(staticImgPath)
@@ -773,7 +774,7 @@ export class DouYinpush extends Base {
                           hasGeneratedLivePhoto = true // 标记已生成实况图
                         }
                       }
-                      
+
                       logger.mark('正在尝试删除缓存文件')
                       await Common.removeFile(liveimg.filepath, true)
                     }
