@@ -40,8 +40,8 @@ importers:
         specifier: 0.577.0
         version: 0.577.0(react@19.2.4)
       node-karin:
-        specifier: 1.15.1
-        version: 1.15.1
+        specifier: 1.15.2
+        version: 1.15.2
       react:
         specifier: 19.2.4
         version: 19.2.4
@@ -8715,8 +8715,8 @@ packages:
   node-fetch-native@1.6.7:
     resolution: {integrity: sha512-g9yhqoedzIUm0nTnTqAQvueMPVOuIY16bqgAJJC8XOOubYFNwz6IER9qs0Gq2Xd0+CecCKFjtdDTMA4u4xG06Q==}
 
-  node-karin@1.15.1:
-    resolution: {integrity: sha512-c/US6ISTtPD27TUMCMDEeaUjVMvdfw24awY2EfPrBYW7LcRB4J3rr92r4ju2MSjGzHjOZCTxZbx94Y40oBc6oQ==}
+  node-karin@1.15.2:
+    resolution: {integrity: sha512-2ftOVsk1o25yRIk2fw+eSMNfH5plIqaNzZJlNpN8zHvwXTJLkt4H4yoJ/OdvZjTzgaZdrYbI7JGKxTQtIA2+HQ==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -21230,7 +21230,7 @@ snapshots:
 
   node-fetch-native@1.6.7: {}
 
-  node-karin@1.15.1:
+  node-karin@1.15.2:
     dependencies:
       art-template: '@karinjs/art-template@1.1.0'
       axios: '@karinjs/axios@1.13.2'
@@ -23768,7 +23768,7 @@ snapshots:
       tinyglobby: 0.2.15
     optionalDependencies:
       '@types/node': 25.5.0
-      '@vitejs/devtools': 0.1.11(@pnpm/logger@1001.0.1)(typescript@5.8.3)(vite@8.0.3)
+      '@vitejs/devtools': 0.1.11(@pnpm/logger@1001.0.1)(typescript@5.9.3)(vite@8.0.3)
       esbuild: 0.27.4
       fsevents: 2.3.3
       jiti: 2.6.1

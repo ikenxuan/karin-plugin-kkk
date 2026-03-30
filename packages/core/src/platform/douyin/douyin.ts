@@ -899,8 +899,15 @@ export class DouYin extends Base {
 
         await this.e.reply(img)
 
-        logger.debug(`已发送用户作品列表图片，等待用户选择视频（超时时间 ${timeoutSeconds} 秒）`)
-        const context = await karin.ctx(this.e, { reply: true, time: 10 })
+        logger.debug(`等待用户选择视频，开始计时，${timeoutSeconds}秒后终止等待...`)
+        const context = await karin.ctx(this.e, { 
+          throwOnTimeout: false, 
+          time: timeoutSeconds
+        })
+        if (!context) {
+          await this.e.reply(`${timeoutSeconds} 秒内没收到作品序号，已取消后续操作`)
+          return true
+        }
         if (context) {
           const num = parseInt(context.msg.trim())
           if (!isNaN(num) && num >= 1 && num <= displayVideos.length) {
