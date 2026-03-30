@@ -2,6 +2,43 @@
 
 # Changelog
 
+## [2.27.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.27.2...v2.27.3) (2026-03-30)
+
+
+### 🐛 错误修复
+
+* 修复缓存清理任务的定时设置，调整为每30分钟执行 ([a91c40a](https://github.com/ikenxuan/karin-plugin-kkk/commit/a91c40a3355403dcc2c8fdbf28b21aa95bc70116))
+* **抖音:** 直播推送刚开播推送失败 ([74c4ec8](https://github.com/ikenxuan/karin-plugin-kkk/commit/74c4ec8d17256b2a66c41de63c334d357b1fd091))
+
+
+### 🧰 其他更新
+
+* types ([1fa4287](https://github.com/ikenxuan/karin-plugin-kkk/commit/1fa42875ddaba6e68bf4d94d0daa8a9d7701549d))
+
+
+### ♻️ 代码重构
+
+* 优化渲染逻辑，生成的html文件使用内联样式。 ([3179719](https://github.com/ikenxuan/karin-plugin-kkk/commit/31797191f0549bde0e123ba3494a5e3274e18ddc))
+* 使用类型别名简化 AmagiClient 的定义和实例化 ([7c79db0](https://github.com/ikenxuan/karin-plugin-kkk/commit/7c79db049ad2cd6a79b3d4413517d6aa243148e3))
+
+
+### 📦 依赖更新
+
+* 更新 node-karin 依赖版本至 1.15.2 ([6bd62d1](https://github.com/ikenxuan/karin-plugin-kkk/commit/6bd62d10d604fd68e33d196340cdaf3326443641))
+* 更新依赖版本 ([c1d175e](https://github.com/ikenxuan/karin-plugin-kkk/commit/c1d175ef88a0285a8c8ff01a0236d698e2fa5d9a))
+* 更新依赖版本 ([fae1c53](https://github.com/ikenxuan/karin-plugin-kkk/commit/fae1c53de8eec8e344b268f352a56afeb6a2f166))
+
+
+### 🔒 安全修复
+
+* 添加 DOMPurify 以增强输入的安全性，防止 XSS 攻击 ([0118865](https://github.com/ikenxuan/karin-plugin-kkk/commit/0118865b141a71962c2fe4194c2891e74f9cafe4))
+
+
+### 💯 细节优化
+
+* html内联静态资源 ([dafd062](https://github.com/ikenxuan/karin-plugin-kkk/commit/dafd062a6c9fbc74693f7216153c55ba14fc5e47))
+* **抖音:** 二次解析添加表情反应管理以增强用户交互体验 ([4545172](https://github.com/ikenxuan/karin-plugin-kkk/commit/45451723f2aa0987bab936054ca69811e9eed568))
+
 ## [2.27.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.27.1...v2.27.2) (2026-03-29)
 
 
