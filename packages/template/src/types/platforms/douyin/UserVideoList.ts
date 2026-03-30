@@ -19,16 +19,22 @@ export type VideoListItem = {
   create_time: number
   /** 统计数据 */
   statistics: {
+    /** 点赞数 */
     like_count: number
+    /** 评论数 */
     comment_count: number
+    /** 分享数 */
     share_count: number
+    /** 收藏数 */
     collect_count: number
   }
   /** 是否为视频(true)还是图集(false) */
   is_video: boolean
   /** 背景音乐信息 */
   music?: {
+    /** 音乐标题 */
     title: string
+    /** 音乐作者 */
     author: string
   }
 }
@@ -36,16 +42,26 @@ export type VideoListItem = {
 export type UserVideoListData = {
   /** 用户基本信息 */
   user: {
+    /** 头像图片（可能为 null） */
     head_image: string | null
+    /** 用户昵称 */
     nickname: string
+    /** 抖音号 */
     short_id: string
+    /** 头像URL */
     avatar: string
+    /** 用户签名/简介 */
     signature: string
+    /** 粉丝数 */
     follower_count: number
+    /** 关注数 */
     following_count: number
+    /** 获赞总数 */
     total_favorited: number
-    verified: boolean,
-    ip_location: string,
+    /** 是否认证 */
+    verified: boolean
+    /** IP属地 */
+    ip_location: string
   }
   /** 视频列表 */
   videos: VideoListItem[]
