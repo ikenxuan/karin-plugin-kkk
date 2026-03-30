@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.27.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.27.1...v2.27.2) (2026-03-29)
+
+
+### 🐛 错误修复
+
+* 修正正则表达式以匹配抖音用户分享链接 ([7177a60](https://github.com/ikenxuan/karin-plugin-kkk/commit/7177a60a945fa8aa50a31775d83cdd4ea1824d26))
+
+
+### 🧰 其他更新
+
+* 增强日志输出，显示处理的图片统计信息 ([689b3c9](https://github.com/ikenxuan/karin-plugin-kkk/commit/689b3c9fbfdac5cf80453d8596c2822c2c34bd0f))
+
 ## [2.27.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.27.0...v2.27.1) (2026-03-28)
 
 
