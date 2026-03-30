@@ -60,15 +60,15 @@
   "devDependencies": {
     "@ikenxuan/amagi": "workspace:*",
     "@karinjs/plugin-adapter-discordbot": "https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687",
-    "@karinjs/plugin-adapter-milky": "^1.1.9",
-    "@karinjs/plugin-puppeteer": "^2.1.0",
+    "@karinjs/plugin-adapter-milky": "^1.2.0",
+    "@karinjs/plugin-puppeteer": "^2.3.1",
     "@rollup/plugin-terser": "^1.0.0",
     "@types/express": "5.0.6",
     "@types/heic-decode": "^1.1.3",
     "@types/pngjs": "^6.0.5",
     "cookie": "^1.1.1",
     "date-fns": "^4.1.0",
-    "happy-dom": "^20.7.0",
+    "happy-dom": "^20.8.9",
     "heic-decode": "^2.1.0",
     "http-proxy-middleware": "3.0.5",
     "jpeg-js": "^0.4.4",
@@ -76,10 +76,10 @@
     "pngjs": "^7.0.0",
     "qr-code-styling": "^1.9.2",
     "template": "workspace:*",
-    "tsdown": "^0.21.4",
+    "tsdown": "^0.21.5",
     "vite-plugin-top-level-await": "^1.6.0",
     "vite-plugin-wasm": "^3.6.0",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.2"
   },
   "peerDependencies": {
     "@snapka/puppeteer": ">=0.1.5 <0.3.0",
@@ -112,5 +112,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-03-28T17:50:03.892Z"
+  "timestamp": "2026-03-30T10:07:39.184Z"
 }

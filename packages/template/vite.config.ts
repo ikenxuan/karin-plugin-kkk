@@ -4,7 +4,7 @@ import path, { resolve } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 
 import tailwindcss from '@tailwindcss/vite'
-// import { DevTools } from '@vitejs/devtools'
+import { DevTools } from '@vitejs/devtools'
 import reactSwc from '@vitejs/plugin-react-swc'
 import { codeInspectorPlugin } from 'code-inspector-plugin'
 import { defineConfig } from 'vite'
@@ -99,6 +99,7 @@ export default defineConfig(({ command }) => {
       ...baseConfig,
       plugins: [
         ...baseConfig.plugins,
+        DevTools(),
         mockApiPlugin(),
         fontProxyPlugin(),
         checker({
@@ -129,7 +130,10 @@ export default defineConfig(({ command }) => {
         __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false
       },
       build: {
-        sourcemap: true
+        sourcemap: true,
+        rolldownOptions: {
+          devtools: {} // enable devtools mode
+        }
       }
     }
   }
