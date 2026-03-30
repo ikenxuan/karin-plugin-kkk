@@ -107,7 +107,7 @@ export const Render = async <P extends DynamicRenderPath> (
 
   // 截图渲染
   const renderResult = await render.render({
-    name: `${Root.pluginName}/${templateType}/${templateName}`,
+    name: `${Root.pluginName}/${templateType}`,
     file: result.htmlPath,
     multiPage: Config.app.multiPageRender ? Config.app.multiPageHeight : false,
     selector: '#container',

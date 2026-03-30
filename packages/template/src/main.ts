@@ -217,7 +217,7 @@ class ResourcePathManager {
 
     // 优先尝试从 import.meta.url 获取路径（适用于所有环境）
     const metaDir = this.getPackageDirFromImportMeta()
-    
+
     // 如果是开发环境，尝试查找开发目录
     if (this.isDevelopment) {
       const devDir = this.findDevelopmentDir(cwd)
@@ -245,7 +245,7 @@ class ResourcePathManager {
       }
       currentDir = path.dirname(currentDir)
     }
-    
+
     if (!ResourcePathManager.initialized) {
       logger.debug('开发模式：未找到 render 目录，将使用生产模式路径')
     }
@@ -391,7 +391,7 @@ class ResourcePathManager {
   getResourcePaths (): { cssDir: string; imageDir: string } {
     // 尝试多个可能的路径位置
     const possiblePaths = this.getPossibleResourcePaths()
-    
+
     // 查找第一个存在的 CSS 目录
     let cssDir = ''
     for (const cssPath of possiblePaths.cssPaths) {
@@ -403,7 +403,7 @@ class ResourcePathManager {
         break
       }
     }
-    
+
     // 查找第一个存在的图片目录
     let imageDir = ''
     for (const imagePath of possiblePaths.imagePaths) {
@@ -415,7 +415,7 @@ class ResourcePathManager {
         break
       }
     }
-    
+
     // 如果都没找到，使用默认路径（第一个）
     if (!cssDir) {
       cssDir = possiblePaths.cssPaths[0]
@@ -423,14 +423,14 @@ class ResourcePathManager {
         logger.warn('未找到 CSS 目录，使用默认路径:', cssDir)
       }
     }
-    
+
     if (!imageDir) {
       imageDir = possiblePaths.imagePaths[0]
       if (!ResourcePathManager.initialized) {
         logger.warn('未找到图片目录，使用默认路径:', imageDir)
       }
     }
-    
+
     return { cssDir, imageDir }
   }
 
@@ -441,14 +441,14 @@ class ResourcePathManager {
   private getPossibleResourcePaths (): { cssPaths: string[]; imagePaths: string[] } {
     const cssPaths: string[] = []
     const imagePaths: string[] = []
-    
+
     // 1. 优先尝试从当前模块路径向上查找 karin-plugin-kkk 包
     const karinPluginPath = this.findKarinPluginKkkPackage()
     if (karinPluginPath) {
       cssPaths.push(path.join(karinPluginPath, 'lib'))
       imagePaths.push(path.join(karinPluginPath, 'resources', 'image'))
     }
-    
+
     // 2. 开发环境 monorepo 结构路径
     if (this.isDevelopment) {
       const parentDir = path.dirname(this.packageDir)
@@ -461,7 +461,7 @@ class ResourcePathManager {
         path.join(this.packageDir, '../core/resources/image')
       )
     }
-    
+
     // 3. 插件模式路径
     if (this.isPluginMode()) {
       cssPaths.push(
@@ -472,7 +472,7 @@ class ResourcePathManager {
         path.join(this.packageDir, 'resources', 'image')
       )
     }
-    
+
     // 4. 独立模式路径
     cssPaths.push(
       path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'lib'),
@@ -484,7 +484,7 @@ class ResourcePathManager {
       path.join(this.packageDir, 'resources', 'image'),
       path.join(this.packageDir, 'public', 'image')
     )
-    
+
     return { cssPaths, imagePaths }
   }
 
@@ -500,9 +500,9 @@ class ResourcePathManager {
       const normalizedPath = process.platform === 'win32'
         ? currentModulePath.slice(1)
         : currentModulePath
-      
+
       let currentDir = path.dirname(normalizedPath)
-      
+
       // 向上查找，最多查找 10 层
       for (let i = 0; i < 10; i++) {
         // 检查当前目录是否是 karin-plugin-kkk 包
@@ -520,7 +520,7 @@ class ResourcePathManager {
             // 忽略 JSON 解析错误
           }
         }
-        
+
         // 检查 node_modules 中是否有 karin-plugin-kkk
         const nodeModulesPath = path.join(currentDir, 'node_modules', 'karin-plugin-kkk')
         if (fs.existsSync(nodeModulesPath)) {
@@ -532,7 +532,7 @@ class ResourcePathManager {
             return nodeModulesPath
           }
         }
-        
+
         const parentDir = path.dirname(currentDir)
         if (parentDir === currentDir) break
         currentDir = parentDir
@@ -542,7 +542,7 @@ class ResourcePathManager {
         logger.debug('查找 karin-plugin-kkk 包失败:', error)
       }
     }
-    
+
     return null
   }
 }
@@ -559,6 +559,64 @@ class HtmlWrapper {
   }
 
   /**
+   * 加载并处理CSS文件，将其中的相对资源路径转换为相对于HTML输出目录的路径
+   * @param cssFilePath CSS文件的完整路径
+   * @param htmlDir HTML文件的输出目录，用于计算相对路径
+   * @returns 处理后的CSS内容字符串
+   */
+  private loadInlineCss (cssFilePath: string, htmlDir: string): string {
+    if (!fs.existsSync(cssFilePath)) {
+      logger.warn('未找到 CSS 文件，跳过内联:', cssFilePath)
+      return ''
+    }
+
+    const cssDir = path.dirname(cssFilePath)
+    const cssContent = fs.readFileSync(cssFilePath, 'utf-8')
+
+    return cssContent.replace(
+      /url\((['"]?)(?!data:|https?:|file:|#)([^)'"]+)\1\)/g,
+      (_match, quote: string, assetPath: string) => {
+        const normalizedAssetPath = assetPath.trim()
+        if (!normalizedAssetPath || normalizedAssetPath.startsWith('/')) {
+          return `url(${quote}${normalizedAssetPath}${quote})`
+        }
+
+        const absoluteAssetPath = path.resolve(cssDir, normalizedAssetPath)
+        const relativeAssetPath = path.relative(htmlDir, absoluteAssetPath).replace(/\\/g, '/')
+        return `url(${quote}${relativeAssetPath}${quote})`
+      }
+    )
+  }
+
+  /**
+   * 收集并内联加载多个CSS样式文件的内容
+   * @param htmlFilePath HTML文件的路径，用于计算相对路径
+   * @param includeFonts 是否包含字体样式文件，默认为true
+   * @returns 合并后的CSS样式内容字符串
+   */
+  getInlineStyles (htmlFilePath: string, includeFonts: boolean = true): string {
+    const htmlDir = path.dirname(htmlFilePath)
+    const { cssDir, imageDir } = this.resourceManager.getResourcePaths()
+    const fontDir = path.join(path.dirname(imageDir), 'font')
+
+    const styleFiles = [
+      path.join(cssDir, 'karin-plugin-kkk.css')
+    ]
+
+    if (includeFonts) {
+      styleFiles.unshift(
+        path.join(fontDir, 'bilifont', 'font.css'),
+        path.join(fontDir, 'mono', 'font.css')
+      )
+    }
+
+    return styleFiles
+      .map(filePath => this.loadInlineCss(filePath, htmlDir))
+      .filter(Boolean)
+      .join('\n')
+  }
+
+  /**
    * 包装内容为完整的 HTML 文档
    * @param htmlContent 组件渲染后的 HTML 内容
    * @param htmlFilePath HTML 文件的输出路径
@@ -567,20 +625,11 @@ class HtmlWrapper {
    */
   wrapContent (htmlContent: string, htmlFilePath: string, isDark: boolean = false): string {
     const htmlDir = path.dirname(htmlFilePath)
-    const { cssDir, imageDir } = this.resourceManager.getResourcePaths()
+    const { imageDir } = this.resourceManager.getResourcePaths()
+    const inlineStyles = this.getInlineStyles(htmlFilePath)
 
     // 计算相对路径
-    const cssRelativePath = path.relative(htmlDir, cssDir).replace(/\\/g, '/')
     const imageRelativePath = path.relative(htmlDir, imageDir).replace(/\\/g, '/')
-    
-    // CSS 文件路径
-    const cssUrl = path.join(cssRelativePath, 'karin-plugin-kkk.css').replace(/\\/g, '/')
-
-    // 处理字体路径
-    const fontDir = path.join(path.dirname(imageDir), 'font')
-    const fontRelativePath = path.relative(htmlDir, fontDir).replace(/\\/g, '/')
-    const bilifontUrl = path.join(fontRelativePath, 'bilifont/font.css').replace(/\\/g, '/')
-    const monoFontUrl = path.join(fontRelativePath, 'mono/font.css').replace(/\\/g, '/')
 
     // 处理图片路径 - 替换所有可能的图片路径格式
     let processedHtml = htmlContent
@@ -597,9 +646,7 @@ class HtmlWrapper {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width">
-      <link rel="stylesheet" href="${bilifontUrl}">
-      <link rel="stylesheet" href="${monoFontUrl}">
-      <link rel="stylesheet" href="${cssUrl}">
+      <style>${inlineStyles}</style>
       <style>
         html, body {
           margin: 0;
@@ -826,9 +873,8 @@ export const renderVideoPreviewPage = (options: VideoPreviewRenderOptions): stri
   const appHtml = renderToString(React.createElement(VideoPreviewApp, { state }))
   const serializedState = escapeVideoPreviewJson(state)
   const resourceManager = new ResourcePathManager()
-  const { cssDir } = resourceManager.getResourcePaths()
-  const cssFilePath = path.join(cssDir, 'karin-plugin-kkk.css')
-  const cssContent = fs.existsSync(cssFilePath) ? fs.readFileSync(cssFilePath, 'utf-8') : ''
+  const htmlWrapper = new HtmlWrapper(resourceManager)
+  const cssContent = htmlWrapper.getInlineStyles(path.join(process.cwd(), 'video-preview.html'), false)
 
   return `<!DOCTYPE html>
 <html lang="zh-CN">
