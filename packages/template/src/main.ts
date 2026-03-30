@@ -558,13 +558,43 @@ class HtmlWrapper {
     this.resourceManager = resourceManager
   }
 
+  private getAssetMimeType (assetPath: string): string {
+    const ext = path.extname(assetPath).toLowerCase()
+
+    switch (ext) {
+      case '.woff2': return 'font/woff2'
+      case '.woff': return 'font/woff'
+      case '.ttf': return 'font/ttf'
+      case '.otf': return 'font/otf'
+      case '.eot': return 'application/vnd.ms-fontobject'
+      case '.svg': return 'image/svg+xml'
+      case '.png': return 'image/png'
+      case '.jpg':
+      case '.jpeg': return 'image/jpeg'
+      case '.gif': return 'image/gif'
+      case '.webp': return 'image/webp'
+      case '.avif': return 'image/avif'
+      default: return 'application/octet-stream'
+    }
+  }
+
+  private toDataUri (assetPath: string): string | null {
+    if (!fs.existsSync(assetPath)) {
+      logger.warn('未找到静态资源文件，跳过内联:', assetPath)
+      return null
+    }
+
+    const mimeType = this.getAssetMimeType(assetPath)
+    const fileBuffer = fs.readFileSync(assetPath)
+    return `data:${mimeType};base64,${fileBuffer.toString('base64')}`
+  }
+
   /**
-   * 加载并处理CSS文件，将其中的相对资源路径转换为相对于HTML输出目录的路径
+   * 加载并处理CSS文件，将其中的相对资源路径转换为内联 data URI
    * @param cssFilePath CSS文件的完整路径
-   * @param htmlDir HTML文件的输出目录，用于计算相对路径
    * @returns 处理后的CSS内容字符串
    */
-  private loadInlineCss (cssFilePath: string, htmlDir: string): string {
+  private loadInlineCss (cssFilePath: string): string {
     if (!fs.existsSync(cssFilePath)) {
       logger.warn('未找到 CSS 文件，跳过内联:', cssFilePath)
       return ''
@@ -582,8 +612,8 @@ class HtmlWrapper {
         }
 
         const absoluteAssetPath = path.resolve(cssDir, normalizedAssetPath)
-        const relativeAssetPath = path.relative(htmlDir, absoluteAssetPath).replace(/\\/g, '/')
-        return `url(${quote}${relativeAssetPath}${quote})`
+        const dataUri = this.toDataUri(absoluteAssetPath)
+        return dataUri ? `url(${quote}${dataUri}${quote})` : `url(${quote}${normalizedAssetPath}${quote})`
       }
     )
   }
@@ -594,8 +624,7 @@ class HtmlWrapper {
    * @param includeFonts 是否包含字体样式文件，默认为true
    * @returns 合并后的CSS样式内容字符串
    */
-  getInlineStyles (htmlFilePath: string, includeFonts: boolean = true): string {
-    const htmlDir = path.dirname(htmlFilePath)
+  getInlineStyles (_htmlFilePath: string, includeFonts: boolean = true): string {
     const { cssDir, imageDir } = this.resourceManager.getResourcePaths()
     const fontDir = path.join(path.dirname(imageDir), 'font')
 
@@ -611,7 +640,7 @@ class HtmlWrapper {
     }
 
     return styleFiles
-      .map(filePath => this.loadInlineCss(filePath, htmlDir))
+      .map(filePath => this.loadInlineCss(filePath))
       .filter(Boolean)
       .join('\n')
   }
