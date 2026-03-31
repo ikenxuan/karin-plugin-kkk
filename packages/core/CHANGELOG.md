@@ -2,6 +2,15 @@
 
 # Changelog
 
+## [2.27.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.27.4...v2.27.5) (2026-03-31)
+
+
+### 💄 UI 优化
+
+* 优化错误日志组件信息 ([108355b](https://github.com/ikenxuan/karin-plugin-kkk/commit/108355ba6af7f2e33e44f189637f924422a4cd84))
+* 更新日志添加版本落后数量显示功能 ([fa0d1eb](https://github.com/ikenxuan/karin-plugin-kkk/commit/fa0d1eb4cf40ba2e33fbcd38009b9cf2f9d46f20))
+* 更新版本警告组件，添加更新提示和安装说明 ([d2e2e20](https://github.com/ikenxuan/karin-plugin-kkk/commit/d2e2e205f809af59d584a981328a46916c8aea58))
+
 ## [2.27.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.27.3...v2.27.4) (2026-03-30)
 
 
