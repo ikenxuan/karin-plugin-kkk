@@ -4296,8 +4296,14 @@
     }
   }
 
-  .border-default-300 {
+  .border-default-300, .border-default-300\/70 {
     border-color: hsl(var(--heroui-default-300) / 1);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .border-default-300\/70 {
+      border-color: color-mix(in oklab, hsl(var(--heroui-default-300) / 1) 70%, transparent);
+    }
   }
 
   .border-default-400 {
@@ -4868,7 +4874,17 @@
     background-color: hsl(var(--heroui-default) / 1);
   }
 
-  .bg-default-50, .bg-default-50\/60 {
+  .bg-default-50, .bg-default-50\/50 {
+    background-color: hsl(var(--heroui-default-50) / 1);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-default-50\/50 {
+      background-color: color-mix(in oklab, hsl(var(--heroui-default-50) / 1) 50%, transparent);
+    }
+  }
+
+  .bg-default-50\/60 {
     background-color: hsl(var(--heroui-default-50) / 1);
   }
 
@@ -6387,6 +6403,10 @@
 
   .text-\[1\.15em\] {
     font-size: 1.15em;
+  }
+
+  .text-\[2\.2em\] {
+    font-size: 2.2em;
   }
 
   .text-\[2\.6em\] {

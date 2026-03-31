@@ -2000,7 +2000,8 @@ interface ChangelogProps extends BaseComponentProps {
     /** 是否包含更新提示 */Tip?: boolean; /** 后端传入的 Markdown 源码 */
     markdown: string; /** 本地版本号 */
     localVersion: string; /** 远程版本号 */
-    remoteVersion: string; /** 构建时间 */
+    remoteVersion: string; /** 落后的版本数量 */
+    lagVersionCount?: number; /** 构建时间 */
     buildTime?: string;
   };
 }
