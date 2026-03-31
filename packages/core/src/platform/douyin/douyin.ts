@@ -127,6 +127,9 @@ export class DouYin extends Base {
           typeMode: 'strict'
         })
 
+        if (VideoData.data.aweme_detail === null) {
+          throw new Error('获取作品详情失败，可能是因为该作品已被删除或设置为私密。')
+        }
         // 根据 API 返回的数据判断作品类型，而不是依赖 URL
         // aweme_type: 0=视频, 68=图集, 163=文章
         const aweme_type = VideoData.data.aweme_detail.aweme_type
