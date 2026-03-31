@@ -1,12 +1,13 @@
 import fs from 'node:fs'
 
-import { Message, range } from 'node-karin'
+import { Message, parseChangelog, range } from 'node-karin'
 import axios from 'node-karin/axios'
 import { ChangelogProps } from 'template/types/platforms/other/changelog'
 
 import { baseHeaders, Render, Root } from '@/module'
 
 import { formatBuildTime, getBuildMetadata } from './build-metadata'
+import { isSemverGreater } from './semver'
 
 /**
  * 规范化为 x.x.x（剔除 v 前缀、预发布、构建标识）
@@ -19,6 +20,24 @@ const versionCore = (v: string): string => {
   const [preBuild] = v.split('+', 2)
   const [core] = preBuild.split('-', 2)
   return core
+}
+
+const getLagVersionCount = (changelog: string, localVersion: string, remoteVersion: string): number => {
+  const local = versionCore(localVersion)
+  const remote = versionCore(remoteVersion)
+
+  if (!local || !remote || !isSemverGreater(remote, local)) return 0
+
+  const versions = Object.keys(parseChangelog(changelog))
+    .map(versionCore)
+    .filter(Boolean)
+
+  const uniqueVersions = [...new Set(versions)]
+  return uniqueVersions.filter((version) => {
+    const afterLocal = isSemverGreater(version, local)
+    const notAfterRemote = !isSemverGreater(version, remote)
+    return afterLocal && notAfterRemote
+  }).length
 }
 
 /**
@@ -69,6 +88,7 @@ export const getChangelogImage = async (
 ) => {
   let changelog = ''
   let buildTime: string | undefined
+  let lagVersionCount = 0
   const event = ('bot' in (ctx as any))
     ? (ctx as Message)
     : ({ bot: ctx } as unknown as Message)
@@ -113,6 +133,7 @@ export const getChangelogImage = async (
       return null
     }
     if (!changelog) return null
+    lagVersionCount = getLagVersionCount(changelog, props.localVersion, props.remoteVersion)
 
     // 获取远程构建元数据
     const remoteMeta = await getRemoteBuildMetadata(props.remoteVersion)
@@ -129,6 +150,7 @@ export const getChangelogImage = async (
   } else {
     try {
       changelog = fs.readFileSync(Root.pluginPath + '/CHANGELOG.md', 'utf8')
+      lagVersionCount = getLagVersionCount(changelog, props.localVersion, props.remoteVersion)
       changelog = range({
         data: changelog,
         startVersion: props.localVersion,
@@ -151,6 +173,7 @@ export const getChangelogImage = async (
     Tip: props.Tip,
     localVersion: props.localVersion,
     remoteVersion: props.remoteVersion,
+    lagVersionCount,
     buildTime
   })
   return img || null

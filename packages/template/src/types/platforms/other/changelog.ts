@@ -14,6 +14,8 @@ export interface ChangelogProps extends BaseComponentProps {
     localVersion: string,
     /** 远程版本号 */
     remoteVersion: string,
+    /** 落后的版本数量 */
+    lagVersionCount?: number,
     /** 构建时间 */
     buildTime?: string,
   }

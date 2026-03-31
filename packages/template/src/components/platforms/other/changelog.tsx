@@ -134,6 +134,13 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
                 以下任意方式均可更新
               </div>
               
+              <div className='mb-10 px-8 py-5 rounded-2xl border border-default-300/70 bg-default-50/50 text-default-700 text-[2.2em] flex items-center justify-center gap-6'>
+                <span>当前版本: v{props.data.localVersion}</span>
+                <span>→</span>
+                <span>最新版本: v{props.data.remoteVersion}</span>
+                <span>，共落后 {props.data.lagVersionCount ?? 0} 个版本</span>
+              </div>
+
               <div className='flex flex-col gap-6 text-[2.8em] leading-relaxed text-default-700'>
                 <div className='flex items-center gap-5'>
                   <span className='text-default-500 text-[1.2em]'>•</span>
