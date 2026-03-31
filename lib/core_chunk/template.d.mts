@@ -1,4 +1,12 @@
+/// <reference types="node" />
 import React$1 from "react";
+import { Agent, ClientRequest, ClientRequestArgs, IncomingMessage, OutgoingHttpHeaders, Server } from "http";
+import { EventEmitter } from "events";
+import { createConnection } from "net";
+import { SecureContextOptions } from "tls";
+import { Server as Server$1 } from "https";
+import { URL } from "url";
+import { ZlibOptions } from "zlib";
 
 //#region ../template/src/types/platforms/douyin/articleWork.d.ts
 /**
@@ -1581,6 +1589,345 @@ interface MenuGroup {
   }[];
 }
 //#endregion
+//#region ../../node_modules/.pnpm/@karinjs+ws@1.0.4/node_modules/@karinjs/ws/dist/index.d.ts
+// can not get all overload of BufferConstructor['from'], need to copy all it's first arguments here
+// https://github.com/microsoft/TypeScript/issues/32164
+type BufferLike = string | Buffer | DataView | number | ArrayBufferView | Uint8Array | ArrayBuffer | SharedArrayBuffer | Blob | readonly any[] | readonly number[] | {
+  valueOf(): ArrayBuffer;
+} | {
+  valueOf(): SharedArrayBuffer;
+} | {
+  valueOf(): Uint8Array;
+} | {
+  valueOf(): readonly number[];
+} | {
+  valueOf(): string;
+} | {
+  [Symbol.toPrimitive](hint: string): string;
+}; // WebSocket socket.
+declare class WebSocket extends EventEmitter {
+  /** The connection is not yet open. */
+  static readonly CONNECTING: 0;
+  /** The connection is open and ready to communicate. */
+  static readonly OPEN: 1;
+  /** The connection is in the process of closing. */
+  static readonly CLOSING: 2;
+  /** The connection is closed. */
+  static readonly CLOSED: 3;
+  binaryType: "nodebuffer" | "arraybuffer" | "fragments";
+  readonly bufferedAmount: number;
+  readonly extensions: string;
+  /** Indicates whether the websocket is paused */
+  readonly isPaused: boolean;
+  readonly protocol: string;
+  /** The current state of the connection */
+  readonly readyState: typeof WebSocket.CONNECTING | typeof WebSocket.OPEN | typeof WebSocket.CLOSING | typeof WebSocket.CLOSED;
+  readonly url: string;
+  /** The connection is not yet open. */
+  readonly CONNECTING: 0;
+  /** The connection is open and ready to communicate. */
+  readonly OPEN: 1;
+  /** The connection is in the process of closing. */
+  readonly CLOSING: 2;
+  /** The connection is closed. */
+  readonly CLOSED: 3;
+  onopen: ((event: WebSocket.Event) => void) | null;
+  onerror: ((event: WebSocket.ErrorEvent) => void) | null;
+  onclose: ((event: WebSocket.CloseEvent) => void) | null;
+  onmessage: ((event: WebSocket.MessageEvent) => void) | null;
+  constructor(address: null);
+  constructor(address: string | URL, options?: WebSocket.ClientOptions | ClientRequestArgs);
+  constructor(address: string | URL, protocols?: string | string[], options?: WebSocket.ClientOptions | ClientRequestArgs);
+  close(code?: number, data?: string | Buffer): void;
+  ping(data?: any, mask?: boolean, cb?: (err: Error) => void): void;
+  pong(data?: any, mask?: boolean, cb?: (err: Error) => void): void; // https://github.com/websockets/ws/issues/2076#issuecomment-1250354722
+  send(data: BufferLike, cb?: (err?: Error) => void): void;
+  send(data: BufferLike, options: {
+    mask?: boolean | undefined;
+    binary?: boolean | undefined;
+    compress?: boolean | undefined;
+    fin?: boolean | undefined;
+  }, cb?: (err?: Error) => void): void;
+  terminate(): void;
+  /**
+   * Pause the websocket causing it to stop emitting events. Some events can still be
+   * emitted after this is called, until all buffered data is consumed. This method
+   * is a noop if the ready state is `CONNECTING` or `CLOSED`.
+   */
+  pause(): void;
+  /**
+   * Make a paused socket resume emitting events. This method is a noop if the ready
+   * state is `CONNECTING` or `CLOSED`.
+   */
+  resume(): void; // HTML5 WebSocket events
+  addEventListener<K extends keyof WebSocket.WebSocketEventMap>(type: K, listener: ((event: WebSocket.WebSocketEventMap[K]) => void) | {
+    handleEvent(event: WebSocket.WebSocketEventMap[K]): void;
+  }, options?: WebSocket.EventListenerOptions): void;
+  removeEventListener<K extends keyof WebSocket.WebSocketEventMap>(type: K, listener: ((event: WebSocket.WebSocketEventMap[K]) => void) | {
+    handleEvent(event: WebSocket.WebSocketEventMap[K]): void;
+  }): void; // Events
+  on(event: "close", listener: (this: WebSocket, code: number, reason: Buffer) => void): this;
+  on(event: "error", listener: (this: WebSocket, error: Error) => void): this;
+  on(event: "upgrade", listener: (this: WebSocket, request: IncomingMessage) => void): this;
+  on(event: "message", listener: (this: WebSocket, data: WebSocket.RawData, isBinary: boolean) => void): this;
+  on(event: "open", listener: (this: WebSocket) => void): this;
+  on(event: "ping" | "pong", listener: (this: WebSocket, data: Buffer) => void): this;
+  on(event: "redirect", listener: (this: WebSocket, url: string, request: ClientRequest) => void): this;
+  on(event: "unexpected-response", listener: (this: WebSocket, request: ClientRequest, response: IncomingMessage) => void): this;
+  on(event: string | symbol, listener: (this: WebSocket, ...args: any[]) => void): this;
+  once(event: "close", listener: (this: WebSocket, code: number, reason: Buffer) => void): this;
+  once(event: "error", listener: (this: WebSocket, error: Error) => void): this;
+  once(event: "upgrade", listener: (this: WebSocket, request: IncomingMessage) => void): this;
+  once(event: "message", listener: (this: WebSocket, data: WebSocket.RawData, isBinary: boolean) => void): this;
+  once(event: "open", listener: (this: WebSocket) => void): this;
+  once(event: "ping" | "pong", listener: (this: WebSocket, data: Buffer) => void): this;
+  once(event: "redirect", listener: (this: WebSocket, url: string, request: ClientRequest) => void): this;
+  once(event: "unexpected-response", listener: (this: WebSocket, request: ClientRequest, response: IncomingMessage) => void): this;
+  once(event: string | symbol, listener: (this: WebSocket, ...args: any[]) => void): this;
+  off(event: "close", listener: (this: WebSocket, code: number, reason: Buffer) => void): this;
+  off(event: "error", listener: (this: WebSocket, error: Error) => void): this;
+  off(event: "upgrade", listener: (this: WebSocket, request: IncomingMessage) => void): this;
+  off(event: "message", listener: (this: WebSocket, data: WebSocket.RawData, isBinary: boolean) => void): this;
+  off(event: "open", listener: (this: WebSocket) => void): this;
+  off(event: "ping" | "pong", listener: (this: WebSocket, data: Buffer) => void): this;
+  off(event: "redirect", listener: (this: WebSocket, url: string, request: ClientRequest) => void): this;
+  off(event: "unexpected-response", listener: (this: WebSocket, request: ClientRequest, response: IncomingMessage) => void): this;
+  off(event: string | symbol, listener: (this: WebSocket, ...args: any[]) => void): this;
+  addListener(event: "close", listener: (code: number, reason: Buffer) => void): this;
+  addListener(event: "error", listener: (error: Error) => void): this;
+  addListener(event: "upgrade", listener: (request: IncomingMessage) => void): this;
+  addListener(event: "message", listener: (data: WebSocket.RawData, isBinary: boolean) => void): this;
+  addListener(event: "open", listener: () => void): this;
+  addListener(event: "ping" | "pong", listener: (data: Buffer) => void): this;
+  addListener(event: "redirect", listener: (url: string, request: ClientRequest) => void): this;
+  addListener(event: "unexpected-response", listener: (request: ClientRequest, response: IncomingMessage) => void): this;
+  addListener(event: string | symbol, listener: (...args: any[]) => void): this;
+  removeListener(event: "close", listener: (code: number, reason: Buffer) => void): this;
+  removeListener(event: "error", listener: (error: Error) => void): this;
+  removeListener(event: "upgrade", listener: (request: IncomingMessage) => void): this;
+  removeListener(event: "message", listener: (data: WebSocket.RawData, isBinary: boolean) => void): this;
+  removeListener(event: "open", listener: () => void): this;
+  removeListener(event: "ping" | "pong", listener: (data: Buffer) => void): this;
+  removeListener(event: "redirect", listener: (url: string, request: ClientRequest) => void): this;
+  removeListener(event: "unexpected-response", listener: (request: ClientRequest, response: IncomingMessage) => void): this;
+  removeListener(event: string | symbol, listener: (...args: any[]) => void): this;
+}
+declare namespace WebSocket {
+  /**
+   * Data represents the raw message payload received over the WebSocket.
+   */
+  type RawData = Buffer | ArrayBuffer | Buffer[];
+  /**
+   * Data represents the message payload received over the WebSocket.
+   */
+  type Data = string | Buffer | ArrayBuffer | Buffer[];
+  /**
+   * CertMeta represents the accepted types for certificate & key data.
+   */
+  type CertMeta = string | string[] | Buffer | Buffer[];
+  /**
+   * VerifyClientCallbackSync is a synchronous callback used to inspect the
+   * incoming message. The return value (boolean) of the function determines
+   * whether or not to accept the handshake.
+   */
+  type VerifyClientCallbackSync<Request extends IncomingMessage = IncomingMessage> = (info: {
+    origin: string;
+    secure: boolean;
+    req: Request;
+  }) => boolean;
+  /**
+   * VerifyClientCallbackAsync is an asynchronous callback used to inspect the
+   * incoming message. The return value (boolean) of the function determines
+   * whether or not to accept the handshake.
+   */
+  type VerifyClientCallbackAsync<Request extends IncomingMessage = IncomingMessage> = (info: {
+    origin: string;
+    secure: boolean;
+    req: Request;
+  }, callback: (res: boolean, code?: number, message?: string, headers?: OutgoingHttpHeaders) => void) => void;
+  /**
+   * FinishRequestCallback is a callback for last minute customization of the
+   * headers. If finishRequest is set, then it has the responsibility to call
+   * request.end() once it is done setting request headers.
+   */
+  type FinishRequestCallback = (request: ClientRequest, websocket: WebSocket) => void;
+  interface ClientOptions extends SecureContextOptions {
+    protocol?: string | undefined;
+    followRedirects?: boolean | undefined;
+    generateMask?(mask: Buffer): void;
+    handshakeTimeout?: number | undefined;
+    maxRedirects?: number | undefined;
+    perMessageDeflate?: boolean | PerMessageDeflateOptions | undefined;
+    localAddress?: string | undefined;
+    protocolVersion?: number | undefined;
+    headers?: {
+      [key: string]: string;
+    } | undefined;
+    origin?: string | undefined;
+    agent?: Agent | undefined;
+    host?: string | undefined;
+    family?: number | undefined;
+    checkServerIdentity?(servername: string, cert: CertMeta): boolean;
+    rejectUnauthorized?: boolean | undefined;
+    allowSynchronousEvents?: boolean | undefined;
+    autoPong?: boolean | undefined;
+    maxPayload?: number | undefined;
+    skipUTF8Validation?: boolean | undefined;
+    createConnection?: typeof createConnection | undefined;
+    finishRequest?: FinishRequestCallback | undefined;
+  }
+  interface PerMessageDeflateOptions {
+    serverNoContextTakeover?: boolean | undefined;
+    clientNoContextTakeover?: boolean | undefined;
+    serverMaxWindowBits?: number | undefined;
+    clientMaxWindowBits?: number | undefined;
+    zlibDeflateOptions?: {
+      flush?: number | undefined;
+      finishFlush?: number | undefined;
+      chunkSize?: number | undefined;
+      windowBits?: number | undefined;
+      level?: number | undefined;
+      memLevel?: number | undefined;
+      strategy?: number | undefined;
+      dictionary?: Buffer | Buffer[] | DataView | undefined;
+      info?: boolean | undefined;
+    } | undefined;
+    zlibInflateOptions?: ZlibOptions | undefined;
+    threshold?: number | undefined;
+    concurrencyLimit?: number | undefined;
+  }
+  interface Event {
+    type: string;
+    target: WebSocket;
+  }
+  interface ErrorEvent {
+    error: any;
+    message: string;
+    type: string;
+    target: WebSocket;
+  }
+  interface CloseEvent {
+    wasClean: boolean;
+    code: number;
+    reason: string;
+    type: string;
+    target: WebSocket;
+  }
+  interface MessageEvent {
+    data: Data;
+    type: string;
+    target: WebSocket;
+  }
+  interface WebSocketEventMap {
+    open: Event;
+    error: ErrorEvent;
+    close: CloseEvent;
+    message: MessageEvent;
+  }
+  interface EventListenerOptions {
+    once?: boolean | undefined;
+  }
+  interface ServerOptions<U extends typeof WebSocket = typeof WebSocket, V extends typeof IncomingMessage = typeof IncomingMessage> {
+    host?: string | undefined;
+    port?: number | undefined;
+    backlog?: number | undefined;
+    server?: Server<V> | Server$1<V> | undefined;
+    verifyClient?: VerifyClientCallbackAsync<InstanceType<V>> | VerifyClientCallbackSync<InstanceType<V>> | undefined;
+    handleProtocols?: (protocols: Set<string>, request: InstanceType<V>) => string | false;
+    path?: string | undefined;
+    noServer?: boolean | undefined;
+    allowSynchronousEvents?: boolean | undefined;
+    autoPong?: boolean | undefined;
+    clientTracking?: boolean | undefined;
+    perMessageDeflate?: boolean | PerMessageDeflateOptions | undefined;
+    maxPayload?: number | undefined;
+    skipUTF8Validation?: boolean | undefined;
+    WebSocket?: U | undefined;
+  }
+  interface AddressInfo {
+    address: string;
+    family: string;
+    port: number;
+  }
+}
+//#endregion
+//#region ../../node_modules/.pnpm/node-karin@1.15.2/node_modules/node-karin/dist/index.d.ts
+/**
+ * 适配器所属平台
+ * - `qq`: QQ
+ * - `wechat`: 微信
+ * - `telegram`: Telegram
+ * - `discord`: Discord
+ * - `koko`: 开黑吧
+ * - `other`: 其他
+ */
+type AdapterPlatform = 'qq' | 'wechat' | 'telegram' | 'discord' | 'koko' | 'other';
+/**
+ * 适配器所使用的标准接口协议
+ * - `onebot11`: OneBot v11 标准
+ * - `onebot12`: OneBot v12 标准
+ * - `oicq`: OICQ 标准
+ * - `icqq`: OICQ fork 标准
+ * - `other`: 其他标准
+ */
+type AdapterStandard = 'onebot11' | 'onebot12' | 'oicq' | 'icqq' | 'other';
+/**
+ * 适配器协议实现名称
+ * - `console`: 控制台
+ * - `qqbot`: https://bot.q.qq.com/wiki
+ * - `icqq`: https://github.com/icqqjs/icqq
+ * - `gocq-http`: https://docs.go-cqhttp.org/
+ * - `napcat`: https://napneko.github.io/zh-CN/
+ * - `oicq`: https://github.com/takayama-lily/oicq
+ * - `llonebot`: https://llonebot.github.io/zh-CN/
+ * - `conwechat`: https://justundertaker.github.io/ComWeChatBotClient/
+ * - `lagrange`: https://lagrangedev.github.io/Lagrange.Doc/Lagrange.OneBot/
+ */
+type AdapterProtocol = 'qqbot' | 'icqq' | 'gocq-http' | 'napcat' | 'oicq' | 'llonebot' | 'conwechat' | 'lagrange' | 'console' | 'other';
+/**
+ * 适配器通信方式
+ * - `http`: HTTP 通信
+ * - `webSocketServer`: WebSocket 服务端
+ * - `webSocketClient`: WebSocket 客户端
+ * - `grpc`: gRPC 通信
+ * - `other`: 其他通信方式
+ */
+type AdapterCommunication = 'http' | 'webSocketServer' | 'webSocketClient' | 'grpc' | 'other';
+/**
+ * 适配器基本信息
+ */
+interface AdapterInfo$1 {
+  /** 适配器索引 默认为-1 在注册适配器时会自动更改为对应的索引 */
+  index: number;
+  /** 适配器名称 如lagrange-onebot */
+  name: string;
+  /** 适配器版本 */
+  version: string;
+  /** 适配器平台 */
+  platform: AdapterPlatform;
+  /** 适配器使用的协议标准 如onebot11 */
+  standard: AdapterStandard;
+  /** 适配器协议实现 如gocq、napcat */
+  protocol: AdapterProtocol;
+  /** 适配器通信方式 */
+  communication: AdapterCommunication;
+  /**
+   * 适配器通信地址
+   * @example `http://127.0.0.1:7000`
+   * @example `ws://127.0.0.1:7000/ws`
+   * @example `grpc://127.0.0.1:7001`
+   * @example `internal://127.0.0.1`
+   */
+  address: string;
+  /** 连接时间 */
+  connectTime: number;
+  /** 鉴权秘钥 */
+  secret: string | null;
+}
+/**
+ * 适配器账号信息
+ */
+//#endregion
 //#region ../template/src/types/platforms/other/handlerError.d.ts
 /**
  * 业务错误类型
@@ -1615,18 +1962,7 @@ interface LogEntry {
 /**
  * 适配器信息接口
  */
-interface AdapterInfo {
-  /** 适配器名称 */
-  name: string;
-  /** 适配器版本 */
-  version: string;
-  /** 平台名称 */
-  platform: string;
-  /** 协议名称 */
-  protocol: string;
-  /** 标准协议 */
-  standard?: string;
-}
+type AdapterInfo = Omit<AdapterInfo$1, 'index' | 'secret' | 'connectTime' | 'address'>;
 /**
  * API错误组件属性接口
  */
@@ -1645,8 +1981,7 @@ interface ApiErrorProps extends BaseComponentProps {
     pluginVersion: string; /** 构建时间 */
     buildTime?: string; /** Commit ID */
     commitHash?: string; /** 适配器信息 */
-    adapterInfo?: AdapterInfo; /** Amagi 库版本 */
-    amagiVersion?: string; /** 是否为验证流程 */
+    adapterInfo?: AdapterInfo; /** 是否为验证流程 */
     isVerification?: boolean; /** 验证链接 */
     verificationUrl?: string; /** 分享链接（用于生成二维码） */
     share_url?: string;
