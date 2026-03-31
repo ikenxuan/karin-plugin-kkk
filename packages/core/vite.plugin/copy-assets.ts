@@ -50,6 +50,14 @@ export const copyTemplateAssetsPlugin = (rootDir: string): Plugin => {
       console.log('📁 源目录:', SourceDir)
       console.log('📁 目标目录:', TargetDir)
 
+      // 先删除原有目标文件夹
+      if (fs.existsSync(TargetDir)) {
+        console.log('🗑️ 删除原有目标目录:', TargetDir)
+        // recursive: true 递归删除文件夹；force: true 不存在也不抛错
+        fs.rmSync(TargetDir, { recursive: true, force: true })
+      }
+
+      // 再全新复制
       copyDirectory(SourceDir, TargetDir)
       console.log('✅ template 静态资源已复制到:', TargetDir)
     }

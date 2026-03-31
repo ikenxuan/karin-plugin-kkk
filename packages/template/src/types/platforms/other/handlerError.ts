@@ -1,3 +1,5 @@
+import type { AdapterInfo as KarinAdapterInfo } from 'node-karin'
+
 import type { BaseComponentProps } from '../../index'
 
 /**
@@ -60,18 +62,7 @@ export interface LogEntry {
 /**
  * 适配器信息接口
  */
-export interface AdapterInfo {
-  /** 适配器名称 */
-  name: string
-  /** 适配器版本 */
-  version: string
-  /** 平台名称 */
-  platform: string
-  /** 协议名称 */
-  protocol: string
-  /** 标准协议 */
-  standard?: string
-}
+export type AdapterInfo = Omit<KarinAdapterInfo, 'index' | 'secret' | 'connectTime' | 'address'> 
 
 /**
  * API错误组件属性接口
@@ -105,8 +96,6 @@ export interface ApiErrorProps extends BaseComponentProps {
     commitHash?: string
     /** 适配器信息 */
     adapterInfo?: AdapterInfo
-    /** Amagi 库版本 */
-    amagiVersion?: string
     /** 是否为验证流程 */
     isVerification?: boolean
     /** 验证链接 */

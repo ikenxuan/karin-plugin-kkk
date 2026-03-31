@@ -20,15 +20,7 @@ export const handleBusinessError = async (
     logger.debug(`[ErrorHandler] 开始处理业务错误: ${options.businessName}`)
 
     const buildMetadata = getBuildMetadata()
-    const adapterInfo = event.bot?.adapter
-      ? {
-        name: event.bot.adapter.name,
-        version: event.bot.adapter.version,
-        platform: event.bot.adapter.platform,
-        protocol: event.bot.adapter.protocol,
-        standard: event.bot.adapter.standard
-      }
-      : undefined
+    const adapterInfo = event.bot?.adapter ? event.bot.adapter : undefined
 
     const ctx: ErrorContext = {
       error,

@@ -66,6 +66,8 @@ export const bilibiliRiskControlStrategy: ErrorStrategy = {
     await sendErrorToAllMasters(ctx, img)
 
     const resultCtx = await karin.ctx(event)
+    if (!resultCtx) return 'continue'
+
     const params = new URLSearchParams(resultCtx.msg)
     const validate = params.get('validate')
     const seccode = params.get('seccode')

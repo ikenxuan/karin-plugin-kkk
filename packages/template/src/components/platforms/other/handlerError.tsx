@@ -1,7 +1,11 @@
 import { Chip } from '@heroui/react'
-import { AlertCircle, Clock, FileText, Plug2, QrCode, Terminal } from 'lucide-react'
+import { formatDistanceToNow, parse } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
+import _ from 'lodash'
+import { AlertCircle, Clock, FileText, QrCode, Terminal } from 'lucide-react'
 import React from 'react'
 import { FaCodeBranch } from 'react-icons/fa6'
+import { IoExtensionPuzzleOutline } from 'react-icons/io5'
 import { MdAccessTime } from 'react-icons/md'
 
 import type { ApiErrorProps, BusinessError, LogLevel } from '../../../types/platforms/other/handlerError'
@@ -114,10 +118,20 @@ const ADAPTER_LOGO_MAP: Record<string, string> = {
 const getAdapterLogo = (adapterName: string): React.ReactNode => {
   const nameLower = adapterName.toLowerCase()
   for (const [key, logoPath] of Object.entries(ADAPTER_LOGO_MAP)) {
-    if (nameLower.includes(key)) return <img src={logoPath} className='h-16 w-auto' alt={adapterName} />
+    if (nameLower.includes(key)) return <img src={logoPath} className='h-20 w-auto' alt={adapterName} />
   }
-  return <Plug2 className='w-14 h-14 text-default-400' />
+  return <IoExtensionPuzzleOutline className='w-16 h-auto text-danger-700/80' />
 }
+
+const SectionTitle: React.FC<{ icon: React.ReactNode; en: string; zh: string; color: string }> = ({ icon, en, zh, color }) => (
+  <div className='flex items-center gap-5 mb-6'>
+    {icon}
+    <div className='flex flex-col leading-tight'>
+      <span className='text-xl font-semibold tracking-[0.2em] uppercase' style={{ color }}>{en}</span>
+      <span className='text-base font-medium tracking-[0.08em] opacity-80' style={{ color }}>{zh}</span>
+    </div>
+  </div>
+)
 
 /**
  * API错误显示组件 - 手机端 Apple 风格
@@ -140,7 +154,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
   return (
     <DefaultLayout
       {...props}
-      version={undefined}
+      // version={undefined}
       className='relative overflow-hidden'
       style={{ backgroundColor: bgColor, width: '1440px', minHeight: '1800px' }}
     >
@@ -302,8 +316,8 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
             {/* 日期显示 */}
             <div className='text-right'>
               <div className='text-xs font-black tracking-[0.3em] uppercase opacity-60 mb-1' style={{ color: mutedColor }}>Date</div>
-              <div className='font-mono text-3xl font-bold tracking-widest' style={{ color: secondaryColor }}>
-                {new Date(data.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' }).replace('/', '.')}
+              <div className='font-mono text-3xl font-bold tracking-[0.2em]' style={{ color: secondaryColor }}>
+                {new Date(data.timestamp).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replaceAll('/', '-')}
               </div>
             </div>
           </div>
@@ -345,10 +359,12 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
         {/* 触发命令 */}
         {data.triggerCommand && (
           <div className='mb-14'>
-            <div className='flex items-center gap-5 mb-6'>
-              <Terminal className='w-9 h-9' style={{ color: mutedColor }} />
-              <span className='text-xl font-semibold tracking-[0.2em] uppercase' style={{ color: mutedColor }}>Trigger Command</span>
-            </div>
+            <SectionTitle
+              icon={<Terminal className='w-9 h-9' style={{ color: mutedColor }} />}
+              en='Trigger Command'
+              zh='触发命令'
+              color={mutedColor}
+            />
             <div
               className='p-10 rounded-[36px]'
               style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)' }}
@@ -364,10 +380,12 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
 
         {/* 错误堆栈 */}
         <div className='mb-14'>
-          <div className='flex items-center gap-5 mb-6'>
-            <AlertCircle className='w-9 h-9' style={{ color: primaryColor }} />
-            <span className='text-xl font-semibold tracking-[0.2em] uppercase' style={{ color: mutedColor }}>Stack Trace</span>
-          </div>
+          <SectionTitle
+            icon={<AlertCircle className='w-9 h-9' style={{ color: primaryColor }} />}
+            en='Stack Trace'
+            zh='错误堆栈'
+            color={mutedColor}
+          />
           <div
             className='p-10 rounded-[36px]'
             style={{
@@ -386,10 +404,12 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
         {/* 执行日志 */}
         {data.logs && data.logs.length > 0 && (
           <div className='mb-14'>
-            <div className='flex items-center gap-5 mb-6'>
-              <FileText className='w-9 h-9' style={{ color: mutedColor }} />
-              <span className='text-xl font-semibold tracking-[0.2em] uppercase' style={{ color: mutedColor }}>Execution Logs</span>
-            </div>
+            <SectionTitle
+              icon={<FileText className='w-9 h-9' style={{ color: mutedColor }} />}
+              en='Execution Logs'
+              zh='执行日志'
+              color={mutedColor}
+            />
             <div className='space-y-6'>
               {data.logs.map((log, index) => {
                 const theme = getLogLevelTheme(log.level, isDark)
@@ -462,7 +482,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
             <div className='flex items-center gap-6'>
               <img src='/image/frame-logo.png' className='h-16 w-auto' alt='Framework' />
               <div>
-                <p className='text-xl' style={{ color: mutedColor }}>Framework</p>
+                <p className='text-xl' style={{ color: mutedColor }}>Framework / 框架版本</p>
                 <p className='text-3xl font-bold' style={{ color: accentColor }}>{data.frameworkVersion}</p>
               </div>
             </div>
@@ -474,47 +494,109 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
                 <path d='M41.54,23.68l163.04,163.05c4.78,4.78,1.39,12.95-5.36,12.94h-47.88c-9.69,0-18.99-3.86-25.84-10.71L39.3,102.75c-6.85-6.85-10.7-16.15-10.7-25.84V29.04c0-6.76,8.16-10.14,12.94-5.36Z' fill='currentColor' />
               </svg>
               <div>
-                <p className='text-xl' style={{ color: mutedColor }}>Plugin</p>
+                <p className='text-xl' style={{ color: mutedColor }}>Plugin / 插件版本</p>
                 <p className='text-3xl font-bold' style={{ color: accentColor }}>{data.pluginVersion}</p>
               </div>
             </div>
 
-            {data.amagiVersion && (
-              <div className='flex items-center gap-6'>
-                <img src='/image/other/handlerError/cxk.png' alt='Amagi' className='w-16 h-16' />
-                <div>
-                  <p className='text-xl' style={{ color: mutedColor }}>API Library</p>
-                  <p className='text-3xl font-bold' style={{ color: accentColor }}>{data.amagiVersion}</p>
-                </div>
-              </div>
-            )}
-
             {data.adapterInfo && (
-              <div className='flex items-center gap-6'>
-                {getAdapterLogo(data.adapterInfo.name)}
-                <div>
-                  <p className='text-xl' style={{ color: mutedColor }}>Adapter</p>
-                  <div className='flex items-center gap-4'>
-                    <p className='text-3xl font-bold' style={{ color: accentColor }}>{data.adapterInfo.name}</p>
-                    <Chip size='lg' variant='flat' className='h-8 text-lg'>{data.adapterInfo.version.startsWith('v') ? data.adapterInfo.version : `v${data.adapterInfo.version}`}</Chip>
+              <div
+                className='col-span-2 p-8 rounded-3xl'
+                style={{
+                  backgroundColor: isDark ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.52)',
+                  border: `1px solid ${isDark ? 'rgba(248,113,113,0.22)' : 'rgba(220,38,38,0.14)'}`
+                }}
+              >
+                <div className='flex items-start justify-between gap-8 mb-6'>
+                  <div className='flex items-center gap-6 min-w-0'>
+                    {getAdapterLogo(data.adapterInfo.name)}
+                    <div className='min-w-0'>
+                      <p className='text-xl mb-1' style={{ color: mutedColor }}>Adapter / 适配器</p>
+                      <div className='flex items-center gap-4 flex-wrap'>
+                        <p className='text-3xl font-bold truncate' style={{ color: accentColor }}>{data.adapterInfo.name}</p>
+                        <Chip size='lg' variant='flat' color='danger' className='h-8 text-lg'>
+                          {data.adapterInfo.version.startsWith('v') ? data.adapterInfo.version : `v${data.adapterInfo.version}`}
+                        </Chip>
+                      </div>
+                    </div>
+                  </div>
+                  <p className='text-xl font-medium mb-4' style={{ color: mutedColor }}>事件信息来源</p>
+                </div>
+                <div className='grid grid-cols-4 gap-4 text-lg' style={{ color: secondaryColor }}>
+                  <div className='rounded-2xl px-4 py-3' style={{ backgroundColor: isDark ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.05)' }}>
+                    <p className='text-sm mb-1 opacity-75'>Platform / 对接平台</p>
+                    <p className='font-semibold break-all text-2xl'>{String(data.adapterInfo.platform)}</p>
+                  </div>
+                  <div className='rounded-2xl px-4 py-3 relative overflow-hidden' style={{ backgroundColor: isDark ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.05)' }}>
+                    <p className='text-sm mb-1 opacity-75'>Standard / 协议标准</p>
+                    <p className='font-semibold break-all text-2xl'>{_.upperFirst(_.camelCase(String(data.adapterInfo.standard)))}</p>
+                    {String(data.adapterInfo.standard).toLowerCase() === 'milky' && (
+                      <div className='absolute inset-0 pointer-events-none'>
+                        <img
+                          src='/image/other/handlerError/Milky.png'
+                          alt='Milky'
+                          className='absolute -right-2 -bottom-3 w-24 h-24 object-contain'
+                          style={{
+                            WebkitMaskImage: 'linear-gradient(to top left, transparent 0%, rgba(0,0,0,1) 60%)',
+                            maskImage: 'linear-gradient(to top left, transparent 0%, rgba(0,0,0,1) 60%)',
+                            opacity: 1
+                          }}
+                        />
+                      </div>
+                    )}
+                    {String(data.adapterInfo.standard).toLowerCase() === 'satori' && (
+                      <div className='absolute inset-0 pointer-events-none'>
+                        <img
+                          src='/image/other/handlerError/satori.png'
+                          alt='Satori'
+                          className='absolute -right-2 -bottom-3 w-24 h-24 object-contain'
+                          style={{
+                            WebkitMaskImage: 'linear-gradient(to top left, transparent 0%, rgba(0,0,0,1) 60%)',
+                            maskImage: 'linear-gradient(to top left, transparent 0%, rgba(0,0,0,1) 60%)',
+                            opacity: 1
+                          }}
+                        />
+                      </div>
+                    )}
+                    {String(data.adapterInfo.standard).includes('onebot') && (
+                      <div className='absolute inset-0 pointer-events-none'>
+                        <img
+                          src='/image/other/handlerError/onebot.png'
+                          alt='OneBot'
+                          className='absolute -right-2 -bottom-3 w-24 h-24 object-contain'
+                          style={{
+                            WebkitMaskImage: 'linear-gradient(to top left, transparent 0%, rgba(0,0,0,1) 60%)',
+                            maskImage: 'linear-gradient(to top left, transparent 0%, rgba(0,0,0,1) 60%)',
+                            opacity: 1
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <div className='rounded-2xl px-4 py-3' style={{ backgroundColor: isDark ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.05)' }}>
+                    <p className='text-sm mb-1 opacity-75'>Protocol / 协议实现</p>
+                    <p className='font-semibold break-all text-2xl'>{String(data.adapterInfo.protocol)}</p>
+                  </div>
+                  <div className='rounded-2xl px-4 py-3' style={{ backgroundColor: isDark ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.05)' }}>
+                    <p className='text-sm mb-1 opacity-75'>Communication / 通信方式</p>
+                    <p className='font-semibold break-all text-2xl'>{String(data.adapterInfo.communication)}</p>
                   </div>
                 </div>
               </div>
             )}
           </div>
-
           {/* 次要信息 */}
           <div className='flex items-center gap-10 text-xl mb-12' style={{ color: mutedColor }}>
             {data.buildTime && (
               <div className='flex items-center gap-3'>
                 <MdAccessTime className='w-6 h-6' />
-                <span>Built {data.buildTime}</span>
+                <span>Built Time: {data.buildTime} 距离 {formatDistanceToNow(parse(data.buildTime, 'yyyy年MM月dd日 HH:mm', new Date()), { locale: zhCN })}</span>
               </div>
             )}
             {data.commitHash && (
               <div className='flex items-center gap-3'>
                 <FaCodeBranch className='w-6 h-6' />
-                <span>Commit {data.commitHash}</span>
+                <span>Commit Hash: {data.commitHash}</span>
               </div>
             )}
           </div>
@@ -524,12 +606,45 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
             className='p-10 rounded-[36px]'
             style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)' }}
           >
-            <p className='text-3xl font-semibold mb-5' style={{ color: accentColor }}>需要帮助？</p>
-            <p className='text-2xl mb-8' style={{ color: secondaryColor }}>请提供完整的错误截图和问题复现步骤</p>
-            <div className='flex items-center gap-10 text-2xl'>
-              <span style={{ color: secondaryColor }}>GitHub Issues</span>
-              <span style={{ color: mutedColor }}>·</span>
-              <span style={{ color: secondaryColor }}>QQ 群: <span className='font-bold' style={{ color: primaryColor }}>795874649</span></span>
+            <div className='flex items-end justify-between mb-6'>
+              <div>
+                <p className='text-3xl font-semibold mb-2' style={{ color: accentColor }}>Need Help? / 需要帮助？</p>
+                <p className='text-2xl' style={{ color: secondaryColor }}>提交问题时请附上完整报错截图、复现步骤和环境版本信息。</p>
+              </div>
+              <span
+                className='text-xs font-black tracking-[0.2em] uppercase px-3 py-1 rounded-full'
+                style={{ color: primaryColor, backgroundColor: isDark ? 'rgba(248,113,113,0.12)' : 'rgba(220,38,38,0.08)' }}
+              >
+                Support
+              </span>
+            </div>
+            <div
+              className='grid grid-cols-2 gap-x-6 gap-y-6 text-2xl leading-relaxed py-6'
+              style={{
+                borderTop: `1px solid ${isDark ? 'rgba(248,113,113,0.2)' : 'rgba(220,38,38,0.12)'}`,
+                borderBottom: `1px solid ${isDark ? 'rgba(248,113,113,0.2)' : 'rgba(220,38,38,0.12)'}`
+              }}
+            >
+              <div>
+                <p className='font-semibold mb-1' style={{ color: accentColor }}>GitHub Issue</p>
+                <p className='text-xl break-all' style={{ color: secondaryColor }}>https://github.com/ikenxuan/karin-plugin-kkk/issues/new/choose</p>
+              </div>
+              <div>
+                <p className='font-semibold mb-1' style={{ color: accentColor }}>GitHub Repository</p>
+                <p className='text-xl break-all' style={{ color: secondaryColor }}>https://github.com/ikenxuan/karin-plugin-kkk</p>
+              </div>
+              <div>
+                <p className='font-semibold mb-1' style={{ color: accentColor }}>QQ 群</p>
+                <p className='text-xl' style={{ color: secondaryColor }}>795874649</p>
+              </div>
+              <div>
+                <p className='font-semibold mb-1' style={{ color: accentColor }}>附带信息</p>
+                <p className='text-xl' style={{ color: secondaryColor }}>此图片 + 触发命令</p>
+              </div>
+            </div>
+            <div className='flex items-center gap-4 mt-6 text-xl' style={{ color: mutedColor }}>
+              <span className='font-mono'>Tips:</span>
+              <span>信息越完整，定位越快。</span>
             </div>
           </div>
         </div>

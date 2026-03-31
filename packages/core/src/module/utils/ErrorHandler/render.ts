@@ -1,7 +1,5 @@
 import util from 'node:util'
 
-import amagi from '@ikenxuan/amagi'
-
 import { formatBuildTime, Render, Root } from '@/module'
 
 import type { ErrorContext, RenderErrorOptions } from './types'
@@ -50,7 +48,6 @@ export const renderErrorImage = async (ctx: ErrorContext, opts: RenderErrorOptio
     buildTime: buildMetadata?.buildTime ? formatBuildTime(buildMetadata.buildTime) : undefined,
     commitHash: buildMetadata?.commitHash,
     adapterInfo,
-    amagiVersion: amagi.version,
     isVerification: opts.isVerification,
     verificationUrl: opts.verificationUrl,
     share_url: opts.share_url
