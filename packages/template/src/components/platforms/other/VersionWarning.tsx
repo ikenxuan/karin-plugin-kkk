@@ -1,5 +1,7 @@
-import { Chip } from '@heroui/react'
+﻿import { Chip } from '@heroui/react'
+import clsx from 'clsx'
 import React from 'react'
+import { IoExtensionPuzzleOutline } from 'react-icons/io5'
 
 import type { VersionWarningProps } from '../../../types/platforms/other/VersionWarningProps'
 import { GlowImage } from '../../common/GlowImage'
@@ -202,37 +204,77 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
                 </div>
                 <div className="ml-14 space-y-4">
                   <div className="flex items-start space-x-4">
-                    <div className="w-3 h-3 rounded-full mt-3 flex-shrink-0" style={{ backgroundColor: mutedColor }} />
+                    <div className="w-3 h-3 rounded-full mt-3 shrink-0" style={{ backgroundColor: mutedColor }} />
                     <span className="text-[28px] leading-relaxed" style={{ color: secondaryColor }}>
                       访问 Karin Web 控制台首页，查看 Karin 版本信息
                     </span>
                   </div>
                   <div className="flex items-start space-x-4">
-                    <div className="w-3 h-3 rounded-full mt-3 flex-shrink-0" style={{ backgroundColor: mutedColor }} />
+                    <div className="w-3 h-3 rounded-full mt-3 shrink-0" style={{ backgroundColor: mutedColor }} />
                     <span className="text-[28px] leading-relaxed" style={{ color: secondaryColor }}>
                       当有新版本时会高亮提示，点击查看更新日志
                     </span>
                   </div>
                   <div className="flex items-start space-x-4">
-                    <div className="w-3 h-3 rounded-full mt-3 flex-shrink-0" style={{ backgroundColor: mutedColor }} />
+                    <div className="w-3 h-3 rounded-full mt-3 shrink-0" style={{ backgroundColor: mutedColor }} />
                     <span className="text-[28px] leading-relaxed" style={{ color: secondaryColor }}>
-                      点击「更新」按钮，系统将自动完成更新并重启
+                      点击<span className="font-mono font-black">「更新」</span>按钮，系统将自动完成更新并重启
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* 方案二：命令行 */}
+              {/* 方案二：安装 karin-plugin-basic */}
               <div>
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="flex items-center justify-center w-10 h-10 rounded-lg" style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}>
                     <span className="text-[28px] font-black" style={{ color: accentColor }}>2</span>
                   </div>
+                  <IoExtensionPuzzleOutline className={clsx('w-10 h-auto')} style={{ color: mutedColor }} />
+                  <span className="text-[32px] font-bold" style={{ color: mutedColor }}>
+                    使用 basic 插件命令更新
+                  </span>
+                  <Chip
+                    className="text-[20px] font-semibold px-4"
+                    style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.2)' : 'rgba(194,65,12,0.15)', color: accentColor }}
+                    size="lg"
+                  >
+                    推荐
+                  </Chip>
+                </div>
+                <div className="ml-14 space-y-4">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-3 h-3 rounded-full mt-3 shrink-0" style={{ backgroundColor: mutedColor }} />
+                    <span className="text-[28px] leading-relaxed" style={{ color: secondaryColor }}>
+                      插件市场搜索<span className="font-mono font-black">「karin-plugin-basic」</span>插件并安装
+                    </span>
+                  </div>
+                  <div className="flex items-start space-x-4">
+                    <div className="w-3 h-3 rounded-full mt-3 shrink-0" style={{ backgroundColor: mutedColor }} />
+                    <span className="text-[28px] leading-relaxed" style={{ color: secondaryColor }}>
+                      安装完成后发送 <span className="font-mono font-black">「#更新」</span>
+                    </span>
+                  </div>
+                  <div className="flex items-start space-x-4">
+                    <div className="w-3 h-3 rounded-full mt-3 shrink-0" style={{ backgroundColor: mutedColor }} />
+                    <span className="text-[28px] leading-relaxed" style={{ color: secondaryColor }}>
+                      插件会自动执行更新流程
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 方案三：命令行手动更新 */}
+              <div>
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-lg" style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}>
+                    <span className="text-[28px] font-black" style={{ color: accentColor }}>3</span>
+                  </div>
                   <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={mutedColor} strokeWidth="2">
                     <path d="M4 17l6-6-6-6M12 19h8" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   <span className="text-[32px] font-bold" style={{ color: mutedColor }}>
-                    命令行更新
+                    命令行手动更新
                   </span>
                 </div>
                 <div className="ml-14 space-y-4">
@@ -262,7 +304,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
               className="rounded-2xl p-6 flex items-start space-x-5"
               style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.08)' : 'rgba(194,65,12,0.08)' }}
             >
-              <svg className="w-10 h-10 mt-1 flex-shrink-0" viewBox="0 0 24 24" fill={accentColor}>
+              <svg className="w-10 h-10 mt-1 shrink-0" viewBox="0 0 24 24" fill={accentColor}>
                 <path d="M12 2L22 20H2L12 2Z" />
                 <path d="M12 9v4M12 17h.01" stroke={bgColor} strokeWidth="2" strokeLinecap="round" />
               </svg>
