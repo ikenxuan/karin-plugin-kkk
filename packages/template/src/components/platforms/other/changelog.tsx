@@ -144,7 +144,7 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
               <div className='flex flex-col gap-6 text-[2.8em] leading-relaxed text-default-700'>
                 <div className='flex items-center gap-5'>
                   <span className='text-default-500 text-[1.2em]'>•</span>
-                  <span>回复</span>
+                  <span>引用回复</span>
                   <span className='inline-block text-[1.15em] font-bold text-default-900'>
                     更新
                   </span>

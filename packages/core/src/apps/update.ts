@@ -157,7 +157,7 @@ const handleUpdateHook = wrapWithErrorHandler(async (e: Message) => {
           await db.del(UPDATE_LOCK_KEY)
         } catch { }
       }
-      await restart(e.selfId, e.contact, e.messageId)
+      await restart(e.selfId, e.contact, msgResult.messageId)
     } else {
       e.reply(`${Root.pluginName} 更新失败: ${result.data ?? '更新执行失败'}`)
     }
