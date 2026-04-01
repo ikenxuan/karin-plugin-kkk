@@ -902,18 +902,18 @@ export class DouYinpush extends Base {
           switch (pushType) {
             case 'post':
               listName = '作品列表'
-              const videolist = await this.amagi.douyin.fetcher.fetchUserVideoList({ sec_uid, number: 5, typeMode: 'strict' })
+              const videolist = await this.amagi.douyin.fetcher.fetchUserVideoList({ sec_uid, number: 15, typeMode: 'strict' })
               contentList = videolist.data.aweme_list || []
               break
             case 'favorite':
               listName = '喜欢列表'
-              const favoritelist = await this.amagi.douyin.fetcher.fetchUserFavoriteList({ sec_uid, number: 5, typeMode: 'strict' })
+              const favoritelist = await this.amagi.douyin.fetcher.fetchUserFavoriteList({ sec_uid, number: 15, typeMode: 'strict' })
               if (favoritelist.data.aweme_list.length === 0) logger.warn(`${item.remark}(${item.short_id}) 获取到的喜欢列表数量为零！此博主可能未公开他/她的喜欢列表`)
               contentList = favoritelist.data.aweme_list || []
               break
             case 'recommend':
               listName = '推荐列表'
-              const recommendlist = await this.amagi.douyin.fetcher.fetchUserRecommendList({ sec_uid, number: 5, typeMode: 'strict' })
+              const recommendlist = await this.amagi.douyin.fetcher.fetchUserRecommendList({ sec_uid, number: 15, typeMode: 'strict' })
               if (recommendlist.data.aweme_list.length === 0) logger.warn(`${item.remark}(${item.short_id}) 获取到的推荐列表数量为零！此博主可能未公开他/她的推荐列表`)
               contentList = recommendlist.data.aweme_list || []
               break
