@@ -15,18 +15,18 @@ const handleCacheCleanup = wrapWithErrorHandler(async () => {
 
   // 清理视频缓存
   const videoDeleted = removeOldFiles(Common.tempDri.video, twoHoursAgo)
-  logger.mark(`${Common.tempDri.video} 目录下已删除 ${videoDeleted} 个文件`)
+  logger.debug(`${Common.tempDri.video} 目录下已删除 ${videoDeleted} 个文件`)
 
   // 如果启用了本地下载图片，也清理图片缓存目录
   if (Config.upload.imageSendMode === 'file') {
     const imageDeleted = removeOldFiles(Common.tempDri.images, twoHoursAgo)
-    logger.mark(`${Common.tempDri.images} 目录下已删除 ${imageDeleted} 个文件`)
+    logger.debug(`${Common.tempDri.images} 目录下已删除 ${imageDeleted} 个文件`)
   }
 }, {
   businessName: '缓存自动删除'
 })
 
-export const task = Config.app.removeCache && karin.task('[kkk-缓存自动删除]', '*/30 * * * *', handleCacheCleanup)
+export const task = Config.app.removeCache && karin.task('[kkk-缓存自动删除]', '*/30 * * * *', handleCacheCleanup, { log: false })
 
 // 包装B站登录命令
 const handleBilibiliLogin = wrapWithErrorHandler(async (e) => {

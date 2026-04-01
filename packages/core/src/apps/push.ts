@@ -62,8 +62,6 @@ const handleSetDouyinPush = wrapWithErrorHandler(async (e) => {
   return true
 }, {
   businessName: '设置抖音推送'
-
-
 })
 
 // 包装设置B站推送命令
