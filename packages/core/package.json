@@ -77,7 +77,7 @@
     "pngjs": "^7.0.0",
     "qr-code-styling": "^1.9.2",
     "template": "workspace:*",
-    "tsdown": "^0.21.5",
+    "tsdown": "^0.21.7",
     "vite-plugin-top-level-await": "^1.6.0",
     "vite-plugin-wasm": "^3.6.0",
     "vitest": "^4.1.2"

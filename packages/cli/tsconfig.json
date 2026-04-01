@@ -3,7 +3,10 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "target": "ESNext",
+    "types": ["node"]
   },
   "include": ["src/**/*"]
 }

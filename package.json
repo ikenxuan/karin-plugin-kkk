@@ -15,6 +15,7 @@
     "dev": "pnpm --filter karin-plugin-kkk run dev",
     "docs": "pnpm --filter docs run dev",
     "lint": "pnpm -r run lint",
+    "postinstall": "pnpm --filter @kkk/cli run build",
     "prepare": "husky",
     "sort": "pnpm -r sort",
     "template": "pnpm --filter template run dev",
