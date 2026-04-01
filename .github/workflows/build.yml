@@ -170,6 +170,12 @@ jobs:
       - name: 📦 安装依赖
         run: pnpm install
 
+      - name: 📦 构建本地 CLI 工具 (@kkk/cli)
+        run: |
+          echo "开始构建 @kkk/cli..."
+          pnpm --filter @kkk/cli run build
+          echo "✅ @kkk/cli 构建完成"
+
       - name: 🔨 执行完整项目构建
         run: |
           echo "开始构建所有包..."
