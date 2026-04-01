@@ -2,6 +2,19 @@
 
 # Changelog
 
+## [2.27.6](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.27.5...v2.27.6) (2026-04-01)
+
+
+### 🐛 错误修复
+
+* **douyin:** 推送：短时间内发布多个作品无法被检索到导致作品被忽略的问题 ([961b2c6](https://github.com/ikenxuan/karin-plugin-kkk/commit/961b2c67afed02cd0782da16779c8c0d6cbc9e5c))
+* 添加作品详情获取失败的错误处理 ([529e818](https://github.com/ikenxuan/karin-plugin-kkk/commit/529e818a2d00adeb0a2cde42197af24e763d6aa0))
+
+
+### 💯 细节优化
+
+* 日志打印 ([b2d298a](https://github.com/ikenxuan/karin-plugin-kkk/commit/b2d298a7e760979407af403e43ef048d68704f99))
+
 ## [2.27.5](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.27.4...v2.27.5) (2026-03-31)
 
 
