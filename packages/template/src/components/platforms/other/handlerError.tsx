@@ -639,7 +639,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
               </div>
               <div>
                 <p className='font-semibold mb-1' style={{ color: accentColor }}>附带信息</p>
-                <p className='text-xl' style={{ color: secondaryColor }}>此图片 + 触发命令</p>
+                <p className='text-xl' style={{ color: secondaryColor }}>此图片 + 触发命令 + 对应配置（自行脱敏处理）</p>
               </div>
             </div>
             <div className='flex items-center gap-4 mt-6 text-xl' style={{ color: mutedColor }}>
