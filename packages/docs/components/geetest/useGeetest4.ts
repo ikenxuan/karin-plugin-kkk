@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useCallback } from 'react';
-import { addToast } from '@heroui/react';
+import { toast } from '@heroui/react';
 import type { Geetest4CaptchaObj, Geetest4Result } from './types';
 
 const TEST_CAPTCHA_ID = '54088bb07d2df3c46b79f80300b0abbe';
@@ -14,10 +14,8 @@ export function useGeetest4() {
 
   const handleGenerate = useCallback(() => {
     if (!captchaId.trim()) {
-      addToast({
-        title: '提示',
+      toast.warning('提示', {
         description: 'captcha_id 不能为空',
-        color: 'warning',
       });
       return;
     }
@@ -49,19 +47,15 @@ export function useGeetest4() {
             if (validateResult) {
               setResult(validateResult);
               setIsSuccess(true);
-              addToast({
-                title: '验证成功',
+              toast.success('验证成功', {
                 description: '你现在可以复制结果了',
-                color: 'success',
               });
             }
           })
           .onError((err) => {
             setIsLoading(false);
-            addToast({
-              title: '验证失败',
+            toast.danger('验证失败', {
               description: err.msg || '请重试',
-              color: 'danger',
             });
           })
           .onClose(() => {
@@ -73,18 +67,16 @@ export function useGeetest4() {
 
   const handleCopyResult = useCallback(() => {
     if (!result) {
-      addToast({
-        title: '提示',
+      toast.warning('提示', {
         description: '请先完成验证',
-        color: 'warning',
       });
       return;
     }
 
     const text = `lot_number=${result.lot_number}&captcha_output=${result.captcha_output}&pass_token=${result.pass_token}&gen_time=${result.gen_time}`;
     navigator.clipboard.writeText(text).then(
-      () => addToast({ title: '复制成功', color: 'success' }),
-      () => addToast({ title: '复制失败', color: 'danger' })
+      () => toast.success('复制成功'),
+      () => toast.danger('复制失败')
     );
   }, [result]);
 

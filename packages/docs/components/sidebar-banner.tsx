@@ -10,7 +10,7 @@ export function SidebarBanner() {
     <div className="flex flex-col gap-2.5 pb-2 w-full select-none group/container">
       {/* Main Card */}
       <div className="overflow-hidden relative w-full rounded-xl border transition-colors bg-linear-to-br from-purple-500/5 to-blue-500/5 dark:from-purple-500/10 dark:to-blue-500/10 border-border/40 hover:border-border/60">
-        <div className="flex flex-row items-stretch min-h-[110px]">
+        <div className="flex flex-row items-stretch min-h-27.5">
           
           {/* Left: Text Content (60%) */}
           <div className="flex z-10 flex-col gap-2 justify-center p-3 flex-3">
@@ -40,7 +40,7 @@ export function SidebarBanner() {
               <h2 className="text-[14px] font-bold leading-none tracking-tight text-foreground/90">
                 多平台媒体解析
               </h2>
-              <h3 className="text-[14px] font-bold leading-none tracking-tight text-transparent bg-clip-text bg-linear-to-r from-primary to-purple-500">
+              <h3 className="text-[14px] font-bold leading-none tracking-tight text-transparent bg-clip-text bg-linear-to-r to-purple-800 from-blue-400">
                 群聊分享体验升级
               </h3>
             </div>

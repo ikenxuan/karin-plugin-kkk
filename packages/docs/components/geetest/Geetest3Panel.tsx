@@ -1,15 +1,16 @@
 'use client';
 import { useEffect, useRef } from 'react';
 import {
-  Input,
-  Button,
-  Spinner,
-  Divider,
-  Select,
-  SelectItem,
   Accordion,
-  AccordionItem,
-  addToast,
+  Button,
+  Input,
+  Label,
+  ListBox,
+  Select,
+  Separator,
+  Spinner,
+  TextField,
+  toast,
 } from '@heroui/react';
 import gsap from 'gsap';
 import { useGeetest3, type CaptchaType } from './useGeetest3';
@@ -54,7 +55,7 @@ export function Geetest3Panel({ initialGt, initialChallenge }: Geetest3PanelProp
     if (validate && seccode) {
       const text = `validate=${validate}&seccode=${seccode}`;
       navigator.clipboard.writeText(text).then(
-        () => addToast({ title: '已自动复制到剪贴板', color: 'success' }),
+        () => toast.success('已自动复制到剪贴板'),
         () => {}
       );
 
@@ -70,99 +71,108 @@ export function Geetest3Panel({ initialGt, initialChallenge }: Geetest3PanelProp
 
   return (
     <div className="flex flex-col gap-5">
-      <Input
-        label="GT"
-        placeholder="请输入 gt 值（32位）"
-        value={gt}
-        onValueChange={setGt}
-        variant="bordered"
-        labelPlacement="outside"
-      />
+      <TextField>
+        <Label>GT</Label>
+        <Input
+          placeholder="请输入 gt 值（32位）"
+          value={gt}
+          onChange={(event) => setGt(event.target.value)}
+        />
+      </TextField>
 
-      <Input
-        label="CHALLENGE"
-        placeholder="请输入 challenge 值（32位）"
-        value={challenge}
-        onValueChange={setChallenge}
-        variant="bordered"
-        labelPlacement="outside"
-      />
+      <TextField>
+        <Label>CHALLENGE</Label>
+        <Input
+          placeholder="请输入 challenge 值（32位）"
+          value={challenge}
+          onChange={(event) => setChallenge(event.target.value)}
+        />
+      </TextField>
 
       {isLoading ? (
-        <div className="h-10 bg-default-100 rounded-medium flex items-center justify-center">
+        <div className="h-10 rounded-md bg-surface-secondary flex items-center justify-center">
           <Spinner size="sm" />
         </div>
       ) : isSuccess ? (
-        <Button color="success" className="w-full" onPress={handleReset}>
+        <Button variant="secondary" className="w-full text-success" onPress={handleReset}>
           验证成功（点击重置）
         </Button>
       ) : (
-        <Button color="primary" className="w-full" onPress={handleGenerate}>
+        <Button variant="primary" className="w-full" onPress={handleGenerate}>
           生成验证码
         </Button>
       )}
 
       {(validate || seccode) && (
         <div ref={resultRef}>
-          <Divider className="my-3" />
+          <Separator className="my-3" />
           <div className="flex flex-col gap-4">
             <p className="text-center text-sm font-medium text-foreground">验证结果</p>
 
-            <Input
-              label="VALIDATE"
-              value={validate}
-              isReadOnly
-              variant="bordered"
-              labelPlacement="outside"
-              classNames={{ input: 'font-mono' }}
-            />
+            <TextField>
+              <Label>VALIDATE</Label>
+              <Input value={validate} readOnly className="font-mono" />
+            </TextField>
 
-            <Input
-              label="SECCODE"
-              value={seccode}
-              isReadOnly
-              variant="bordered"
-              labelPlacement="outside"
-              classNames={{ input: 'font-mono' }}
-            />
+            <TextField>
+              <Label>SECCODE</Label>
+              <Input value={seccode} readOnly className="font-mono" />
+            </TextField>
 
-            <Button variant="bordered" onPress={handleCopyResult}>
+            <Button variant="outline" onPress={handleCopyResult}>
               手动复制
             </Button>
           </div>
         </div>
       )}
 
-      <Accordion isCompact variant="splitted">
-        <AccordionItem
-          key="test-tools"
-          aria-label="测试工具"
-          title={<span className="text-sm font-medium">测试工具</span>}
-          subtitle={<span className="text-xs text-default-400">在线获取测试参数</span>}
-          classNames={{ base: 'shadow-sm' }}
-        >
-          <div className="flex flex-col gap-4 pb-2">
-            <Select
-              label="验证类型"
-              selectedKeys={[captchaType]}
-              onSelectionChange={(keys: Set<React.Key> | 'all') => {
-                if (keys === 'all') return;
-                const selected = Array.from(keys)[0] as CaptchaType;
-                if (selected) setCaptchaType(selected);
-              }}
-              variant="bordered"
-              labelPlacement="outside"
-            >
-              {captchaTypes.map((type) => (
-                <SelectItem key={type.key}>{type.label}</SelectItem>
-              ))}
-            </Select>
+      <Accordion className="border border-border bg-surface shadow-sm" variant="surface">
+        <Accordion.Item id="test-tools">
+          <Accordion.Heading>
+            <Accordion.Trigger className="py-3">
+              <div className="flex flex-col items-start">
+                <span className="text-sm font-medium">测试工具</span>
+                <span className="text-xs text-muted">在线获取测试参数</span>
+              </div>
+              <Accordion.Indicator />
+            </Accordion.Trigger>
+          </Accordion.Heading>
+          <Accordion.Panel>
+            <Accordion.Body className="pb-2">
+              <div className="flex flex-col gap-4">
+                <Select
+                  value={captchaType}
+                  onChange={(key) => {
+                    if (typeof key === 'string') {
+                      setCaptchaType(key as CaptchaType);
+                    }
+                  }}
+                  placeholder="请选择验证类型"
+                >
+                  <Label>验证类型</Label>
+                  <Select.Trigger>
+                    <Select.Value />
+                    <Select.Indicator />
+                  </Select.Trigger>
+                  <Select.Popover>
+                    <ListBox>
+                      {captchaTypes.map((type) => (
+                        <ListBox.Item key={type.key} id={type.key} textValue={type.label}>
+                          {type.label}
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                      ))}
+                    </ListBox>
+                  </Select.Popover>
+                </Select>
 
-            <Button variant="bordered" color="primary" onPress={handleOnlineTest}>
-              获取测试参数
-            </Button>
-          </div>
-        </AccordionItem>
+                <Button variant="secondary" onPress={handleOnlineTest}>
+                  获取测试参数
+                </Button>
+              </div>
+            </Accordion.Body>
+          </Accordion.Panel>
+        </Accordion.Item>
       </Accordion>
     </div>
   );

@@ -1,11 +1,18 @@
 import { createMDX } from 'fumadocs-mdx/next'
 import type { NextConfig } from "next"
+import { codeInspectorPlugin } from 'code-inspector-plugin';
 
 const withMDX = createMDX()
 
 
 const config: NextConfig = {
   reactStrictMode: true,
+  turbopack: {
+    rules: codeInspectorPlugin({
+      bundler: 'turbopack',
+      showSwitch: true
+    }),
+  },
   async rewrites () {
     return [
       {

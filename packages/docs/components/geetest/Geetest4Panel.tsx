@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
-import { Input, Button, Spinner, Divider, addToast } from '@heroui/react';
+import { Button, Input, Label, Separator, Spinner, TextField, toast } from '@heroui/react';
 import gsap from 'gsap';
 import { useGeetest4 } from './useGeetest4';
 
@@ -29,7 +29,7 @@ export function Geetest4Panel({ initialCaptchaId }: Geetest4PanelProps) {
     if (result) {
       const text = `lot_number=${result.lot_number}&captcha_output=${result.captcha_output}&pass_token=${result.pass_token}&gen_time=${result.gen_time}`;
       navigator.clipboard.writeText(text).then(
-        () => addToast({ title: '已自动复制到剪贴板', color: 'success' }),
+        () => toast.success('已自动复制到剪贴板'),
         () => {}
       );
 
@@ -45,72 +45,56 @@ export function Geetest4Panel({ initialCaptchaId }: Geetest4PanelProps) {
 
   return (
     <div className="flex flex-col gap-5">
-      <Input
-        label="CAPTCHA_ID"
-        placeholder="请输入 captcha_id"
-        value={captchaId}
-        onValueChange={setCaptchaId}
-        variant="bordered"
-        labelPlacement="outside"
-      />
+      <TextField>
+        <Label>CAPTCHA_ID</Label>
+        <Input
+          placeholder="请输入 captcha_id"
+          value={captchaId}
+          onChange={(event) => setCaptchaId(event.target.value)}
+        />
+      </TextField>
 
       {isLoading ? (
-        <div className="h-10 bg-default-100 rounded-medium flex items-center justify-center">
+        <div className="h-10 rounded-md bg-surface-secondary flex items-center justify-center">
           <Spinner size="sm" />
         </div>
       ) : isSuccess ? (
-        <Button color="success" className="w-full" onPress={handleReset}>
+        <Button variant="secondary" className="w-full text-success" onPress={handleReset}>
           验证成功（点击重置）
         </Button>
       ) : (
-        <Button color="primary" className="w-full" onPress={handleGenerate}>
+        <Button variant="primary" className="w-full" onPress={handleGenerate}>
           生成验证码
         </Button>
       )}
 
       {result && (
         <div ref={resultRef}>
-          <Divider className="my-3" />
+          <Separator className="my-3" />
           <div className="flex flex-col gap-4">
             <p className="text-center text-sm font-medium text-foreground">验证结果</p>
 
-            <Input
-              label="LOT_NUMBER"
-              value={result.lot_number}
-              isReadOnly
-              variant="bordered"
-              labelPlacement="outside"
-              classNames={{ input: 'font-mono' }}
-            />
+            <TextField>
+              <Label>LOT_NUMBER</Label>
+              <Input value={result.lot_number} readOnly className="font-mono" />
+            </TextField>
 
-            <Input
-              label="CAPTCHA_OUTPUT"
-              value={result.captcha_output}
-              isReadOnly
-              variant="bordered"
-              labelPlacement="outside"
-              classNames={{ input: 'font-mono text-xs' }}
-            />
+            <TextField>
+              <Label>CAPTCHA_OUTPUT</Label>
+              <Input value={result.captcha_output} readOnly className="font-mono text-xs" />
+            </TextField>
 
-            <Input
-              label="PASS_TOKEN"
-              value={result.pass_token}
-              isReadOnly
-              variant="bordered"
-              labelPlacement="outside"
-              classNames={{ input: 'font-mono text-xs' }}
-            />
+            <TextField>
+              <Label>PASS_TOKEN</Label>
+              <Input value={result.pass_token} readOnly className="font-mono text-xs" />
+            </TextField>
 
-            <Input
-              label="GEN_TIME"
-              value={result.gen_time}
-              isReadOnly
-              variant="bordered"
-              labelPlacement="outside"
-              classNames={{ input: 'font-mono' }}
-            />
+            <TextField>
+              <Label>GEN_TIME</Label>
+              <Input value={result.gen_time} readOnly className="font-mono" />
+            </TextField>
 
-            <Button variant="bordered" onPress={handleCopyResult}>
+            <Button variant="outline" onPress={handleCopyResult}>
               手动复制
             </Button>
           </div>

@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useCallback } from 'react';
-import { addToast } from '@heroui/react';
+import { toast } from '@heroui/react';
 import type { Geetest3CaptchaObj } from './types';
 
 export type CaptchaType = 'fullpage' | 'slide' | 'click' | 'icon';
@@ -35,35 +35,27 @@ export function useGeetest3() {
       setIsSuccess(false);
       setValidate('');
       setSeccode('');
-      addToast({
-        title: '获取成功',
+      toast.success('获取成功', {
         description: '请点击生成验证码',
-        color: 'success',
       });
     } catch {
-      addToast({
-        title: '获取失败',
+      toast.danger('获取失败', {
         description: '无法获取测试参数，请手动输入',
-        color: 'danger',
       });
     }
   }, [captchaType]);
 
   const handleGenerate = useCallback(() => {
     if (!gt.trim() || !challenge.trim()) {
-      addToast({
-        title: '提示',
+      toast.warning('提示', {
         description: 'gt 和 challenge 不能为空',
-        color: 'warning',
       });
       return;
     }
 
     if (gt.length !== 32 || challenge.length !== 32) {
-      addToast({
-        title: '提示',
+      toast.warning('提示', {
         description: 'gt 或 challenge 长度错误（需要32位）',
-        color: 'warning',
       });
       return;
     }
@@ -96,20 +88,16 @@ export function useGeetest3() {
             setValidate(result.geetest_validate);
             setSeccode(result.geetest_seccode);
             setIsSuccess(true);
-            addToast({
-              title: '验证成功',
+            toast.success('验证成功', {
               description: '你现在可以复制结果了',
-              color: 'success',
             });
           }
         });
 
         captchaObj.onError((err) => {
           setIsLoading(false);
-          addToast({
-            title: '验证失败',
+          toast.danger('验证失败', {
             description: err.msg || '请重试',
-            color: 'danger',
           });
         });
       }
@@ -118,18 +106,16 @@ export function useGeetest3() {
 
   const handleCopyResult = useCallback(() => {
     if (!validate || !seccode) {
-      addToast({
-        title: '提示',
+      toast.warning('提示', {
         description: '请先完成验证',
-        color: 'warning',
       });
       return;
     }
 
     const text = `validate=${validate}&seccode=${seccode}`;
     navigator.clipboard.writeText(text).then(
-      () => addToast({ title: '复制成功', color: 'success' }),
-      () => addToast({ title: '复制失败', color: 'danger' })
+      () => toast.success('复制成功'),
+      () => toast.danger('复制失败')
     );
   }, [validate, seccode]);
 

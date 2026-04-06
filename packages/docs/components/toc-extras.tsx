@@ -20,13 +20,11 @@ export function TocCopyUrl() {
     <div className="pb-4">
         <Button
           size="sm"
-          variant="flat"
-          color={copied ? "success" : "default"}
-          startContent={copied ? <Check size={14} /> : <LinkIcon size={14} />}
+          variant={copied ? 'primary' : 'secondary'}
           onPress={handleCopy}
           className="w-full font-medium bg-fd-secondary hover:bg-fd-accent text-fd-secondary-foreground"
-          suppressHydrationWarning
         >
+          {copied ? <Check size={14} /> : <LinkIcon size={14} />}
           {copied ? '已复制链接' : '复制此页链接'}
         </Button>
     </div>
