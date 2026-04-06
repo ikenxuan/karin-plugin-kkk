@@ -23,7 +23,7 @@ export default async function Layout({
     ...homeOptions.nav,
     title: <KKKLogo />,
     children: (
-      <div className="flex gap-2 items-center ml-4">
+      <div className="flex gap-2 items-center ml-8">
         <ChangelogDropdown latestVersion={latestVersion} />
       </div>
     ),

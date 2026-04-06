@@ -32,7 +32,7 @@ export default async function Layout ({
       nav={{
         ...baseOptions(lang).nav,
         children: (
-          <div className="flex gap-3 items-center mr-2 md:mr-0 in-[aside]:hidden">
+          <div className="ml-4 flex gap-3 items-center mr-2 md:mr-0 in-[aside]:hidden">
             <div className="hidden md:block">
               <ChangelogDropdown latestVersion={latestVersion} />
             </div>

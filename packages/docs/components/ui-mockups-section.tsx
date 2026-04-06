@@ -164,7 +164,7 @@ export function UIMockupsSection() {
         key={mockup.id}
         className="shrink-0 px-4"
       >
-        <div className="relative overflow-hidden rounded-xl shadow-lg border border-fd-border/30 backdrop-blur-sm transition-all duration-300 w-[280px]">
+        <div className="relative overflow-hidden rounded-xl shadow-lg border border-fd-border/30 backdrop-blur-sm transition-all duration-300 w-70">
           <Image
             src={imageSrc}
             alt={mockup.id}
@@ -259,8 +259,8 @@ export function UIMockupsSection() {
 
           {/* 背景装饰光晕 */}
           <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
-            <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-fd-primary/8 rounded-full blur-3xl" />
-            <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-fd-accent/8 rounded-full blur-3xl" />
+            <div className="absolute top-1/4 left-1/4 w-150 h-150 bg-fd-primary/8 rounded-full blur-3xl" />
+            <div className="absolute bottom-1/4 right-1/4 w-150 h-150 bg-fd-accent/8 rounded-full blur-3xl" />
           </div>
         </div>
       )}

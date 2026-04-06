@@ -30,13 +30,7 @@ export function ChangelogViewer({ items }: ChangelogViewerProps) {
                 ),
                 h2: ({ children, ...props }) => (
                   <div className="relative mt-10 mb-4 group">
-                    <div
-                      className="absolute left-0 -top-8 text-7xl font-black leading-none uppercase pointer-events-none select-none text-default-200/60"
-                      aria-hidden="true"
-                    >
-                      {typeof children === 'string' ? children : 'H2'}
-                    </div>
-                    <h2 className="relative z-10 pb-2 text-3xl font-medium border-b border-fd-border text-fd-foreground" {...props}>
+                    <h2 className="relative pb-2 text-3xl font-medium border-b border-fd-border text-fd-foreground" {...props}>
                       {children}
                     </h2>
                   </div>

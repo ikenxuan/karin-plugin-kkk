@@ -1,22 +1,28 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Tabs } from "@heroui/react";
 import { Moon, Sun } from "lucide-react";
+import { useCallback, useEffect, useRef, useState, type Key } from "react";
 import { cn } from "@/lib/cn";
 
 type Theme = "system" | "inverse";
+type ResolvedTheme = "light" | "dark";
 
 interface AnimatedThemeTogglerProps {
   duration?: number;
   className?: string;
 }
 
-function getSystemTheme(): "light" | "dark" {
+const getSystemTheme = (): ResolvedTheme => {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
+};
 
-function getInverseSystemTheme(): "light" | "dark" {
+const getInverseSystemTheme = (): ResolvedTheme => {
   return getSystemTheme() === "dark" ? "light" : "dark";
-}
+};
+
+const getThemeByResolvedTheme = (resolvedTheme: ResolvedTheme): Theme => {
+  return getSystemTheme() === resolvedTheme ? "system" : "inverse";
+};
 
 interface ViewTransition {
   ready: Promise<void>;
@@ -27,7 +33,7 @@ interface ViewTransition {
 export const AnimatedThemeToggler = ({ className, duration = 400 }: AnimatedThemeTogglerProps) => {
   const [mounted, setMounted] = useState(false);
   const [isDark, setIsDark] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const pendingRef = useRef(false);
 
   const applyTheme = useCallback((t: Theme) => {
@@ -54,11 +60,9 @@ export const AnimatedThemeToggler = ({ className, duration = 400 }: AnimatedThem
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, [applyTheme]);
 
-  const toggleTheme = useCallback(() => {
-    // 从 localStorage 读取当前真实状态
-    const currentTheme = localStorage.getItem("theme") as Theme | null;
-    const newTheme: Theme = currentTheme === "inverse" ? "system" : "inverse";
-
+  const switchTheme = useCallback(
+    (nextResolvedTheme: ResolvedTheme) => {
+      const newTheme = getThemeByResolvedTheme(nextResolvedTheme);
     const doSwitch = () => {
       localStorage.setItem("theme", newTheme);
       applyTheme(newTheme);
@@ -108,53 +112,54 @@ export const AnimatedThemeToggler = ({ className, duration = 400 }: AnimatedThem
     transition.finished.finally(() => {
       pendingRef.current = false;
     });
-  }, [duration, applyTheme]);
+    },
+    [duration, applyTheme]
+  );
 
-  // 服务端渲染时使用固定样式，避免水合错误
+  const handleSelectionChange = useCallback(
+    (key: Key) => {
+      const resolvedTheme = String(key) === "dark" ? "dark" : "light";
+      if ((resolvedTheme === "dark") === isDark) return;
+      switchTheme(resolvedTheme);
+    },
+    [isDark, switchTheme]
+  );
+
   if (!mounted) {
     return (
-      <div
-        className={cn(
-          "inline-flex items-center rounded-full border p-0.5 text-fd-muted-foreground border-fd-border bg-fd-secondary cursor-pointer",
-          className
-        )}
-      >
-        <span className="inline-flex items-center justify-center rounded-full p-1.5 transition-all text-fd-muted-foreground">
-          <Sun className="size-4" />
-        </span>
-        <span className="inline-flex items-center justify-center rounded-full p-1.5 transition-all text-fd-muted-foreground">
-          <Moon className="size-4" />
-        </span>
+      <div className={cn("inline-flex items-center", className)}>
+        <Tabs selectedKey="light">
+          <Tabs.ListContainer>
+            <Tabs.List aria-label="主题切换" className="inline-flex rounded-full gap-2 border border-fd-border bg-fd-secondary p-0.5">
+              <Tabs.Tab id="light" className="h-7.5 min-w-0 rounded-full px-1.5">
+                <Sun className="size-4" />
+              </Tabs.Tab>
+              <Tabs.Tab id="dark" className="h-7.5 min-w-0 rounded-full px-1.5">
+                <Moon className="size-4" />
+              </Tabs.Tab>
+            </Tabs.List>
+          </Tabs.ListContainer>
+        </Tabs>
       </div>
     );
   }
 
   return (
-    <div
-      ref={containerRef}
-      onClick={toggleTheme}
-      className={cn(
-        "inline-flex items-center rounded-full border p-0.5 text-fd-muted-foreground border-fd-border bg-fd-secondary cursor-pointer",
-        className
-      )}
-    >
-      <span
-        className={cn(
-          "inline-flex items-center justify-center rounded-full p-1.5 transition-all",
-          !isDark ? "bg-fd-background text-fd-foreground shadow-sm" : "text-fd-muted-foreground"
-        )}
-      >
-        <Sun className="size-4" />
-      </span>
-      <span
-        className={cn(
-          "inline-flex items-center justify-center rounded-full p-1.5 transition-all",
-          isDark ? "bg-fd-background text-fd-foreground shadow-sm" : "text-fd-muted-foreground"
-        )}
-      >
-        <Moon className="size-4" />
-      </span>
-      <span className="sr-only">Toggle theme</span>
+    <div ref={containerRef} className={cn("inline-flex items-center", className)}>
+      <Tabs selectedKey={isDark ? "dark" : "light"} onSelectionChange={handleSelectionChange}>
+        <Tabs.ListContainer>
+          <Tabs.List aria-label="主题切换" className="inline-flex rounded-full gap-2 border border-fd-border bg-fd-secondary p-0.5">
+            <Tabs.Tab id="light" className="h-7.5 min-w-0 rounded-full px-1.5 text-fd-muted-foreground">
+              <Sun className="size-5" />
+              <Tabs.Indicator />
+            </Tabs.Tab>
+            <Tabs.Tab id="dark" className="h-7.5 min-w-0 rounded-full px-1.5 text-fd-muted-foreground">
+              <Moon className="size-5" />
+              <Tabs.Indicator />
+            </Tabs.Tab>
+          </Tabs.List>
+        </Tabs.ListContainer>
+      </Tabs>
     </div>
   );
 };

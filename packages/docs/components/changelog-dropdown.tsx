@@ -1,8 +1,9 @@
 'use client';
 
-import Link from 'next/link';
+import { Dropdown, DropdownItem, DropdownMenu, DropdownPopover, DropdownTrigger } from '@heroui/react';
 import { ChevronDown } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useMemo, useState, type Key } from 'react';
 import { cn } from '@/lib/cn';
 
 interface ChangelogDropdownProps {
@@ -11,66 +12,66 @@ interface ChangelogDropdownProps {
 }
 
 export function ChangelogDropdown({ latestVersion = 'v2.x.x', currentVersion = 'v2' }: ChangelogDropdownProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const versionItems = useMemo(
+    () => [
+      { key: 'v2', label: 'v2' },
+      { key: 'v1', label: 'v1' },
+      { key: 'v0', label: 'v0' },
+    ],
+    []
+  );
+  const selectedKeys = useMemo(() => new Set([currentVersion]), [currentVersion]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const handleAction = (key: Key) => {
+    router.push(`/changelog?version=${String(key)}`);
+  };
+  const triggerClassName = cn(
+    'relative isolate inline-flex w-fit origin-center items-center justify-center gap-2 whitespace-nowrap outline-none select-none no-highlight',
+    'h-9 px-3 text-sm font-medium md:h-8 rounded-3xl',
+    'transform-gpu motion-reduce:transition-none',
+    '[transition:transform_250ms_var(--ease-smooth),background-color_100ms_var(--ease-out),box-shadow_100ms_var(--ease-out)]',
+    'cursor-(--cursor-interactive)',
+    '[--button-bg:transparent] [--button-bg-hover:var(--color-default)] [--button-bg-pressed:var(--color-default)] [--button-fg:var(--color-default-foreground)]',
+    'bg-(--button-bg) text-(--button-fg)',
+    'focus-visible:status-focused data-[focus-visible=true]:status-focused',
+    'disabled:status-disabled aria-disabled:status-disabled',
+    'data-[pending=true]:status-pending',
+    'active:bg-(--button-bg-pressed) data-[pressed=true]:bg-(--button-bg-pressed)',
+    'active:scale-[0.98] data-[pressed=true]:scale-[0.98]',
+    'hover:bg-(--button-bg-hover) data-[hovered=true]:bg-(--button-bg-hover)',
+    '[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:self-center'
+  );
 
   return (
-    <div className="relative" ref={containerRef}>
-      <button
-        onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1.5 text-fd-muted-foreground text-sm p-1.5 hover:bg-fd-accent hover:text-fd-accent-foreground rounded-md transition-colors"
-      >
-        <span className="whitespace-nowrap">{latestVersion}</span>
+    <Dropdown onOpenChange={setOpen}>
+      <DropdownTrigger className={triggerClassName}>
+        <span className="whitespace-nowrap text-sm">{latestVersion}</span>
         <ChevronDown className={cn('size-3 transition-transform', open && 'rotate-180')} />
-      </button>
-
-      {open && (
-        <div className="absolute right-0 top-full mt-1 min-w-32 rounded-lg border bg-fd-popover p-1 text-fd-popover-foreground shadow-md z-50">
-          <p className="mb-1 p-1.5 text-xs font-medium text-fd-muted-foreground">
+      </DropdownTrigger>
+      <DropdownPopover placement="bottom end">
+        <DropdownMenu
+          aria-label="更新日志版本"
+          selectionMode="single"
+          disallowEmptySelection
+          selectedKeys={selectedKeys}
+          onAction={handleAction}
+        >
+          <DropdownItem
+            key="changelog-title"
+            isDisabled
+            className="cursor-default text-xs font-medium text-fd-muted-foreground opacity-100"
+          >
             更新日志
-          </p>
-          <Link
-            href="/changelog?version=v2"
-            onClick={() => setOpen(false)}
-            className={cn(
-              'flex w-full items-center rounded-md p-1.5 text-sm transition-colors hover:bg-fd-accent hover:text-fd-accent-foreground',
-              currentVersion === 'v2' && 'bg-fd-accent text-fd-accent-foreground'
-            )}
-          >
-            v2
-          </Link>
-          <Link
-            href="/changelog?version=v1"
-            onClick={() => setOpen(false)}
-            className={cn(
-              'flex w-full items-center rounded-md p-1.5 text-sm transition-colors hover:bg-fd-accent hover:text-fd-accent-foreground',
-              currentVersion === 'v1' && 'bg-fd-accent text-fd-accent-foreground'
-            )}
-          >
-            v1
-          </Link>
-          <Link
-            href="/changelog?version=v0"
-            onClick={() => setOpen(false)}
-            className={cn(
-              'flex w-full items-center rounded-md p-1.5 text-sm transition-colors hover:bg-fd-accent hover:text-fd-accent-foreground',
-              currentVersion === 'v0' && 'bg-fd-accent text-fd-accent-foreground'
-            )}
-          >
-            v0
-          </Link>
-        </div>
-      )}
-    </div>
+          </DropdownItem>
+          {versionItems.map((item) => (
+            <DropdownItem key={item.key}>
+              {item.label}
+            </DropdownItem>
+          ))}
+        </DropdownMenu>
+      </DropdownPopover>
+    </Dropdown>
   );
 }
