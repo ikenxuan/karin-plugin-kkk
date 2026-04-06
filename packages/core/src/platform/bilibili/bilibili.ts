@@ -43,7 +43,7 @@ import {
   Render,
   uploadFile
 } from '@/module/utils'
-import { bilibiliFetcher } from '@/module/utils/amagiClient'
+import { AmagiError, bilibiliFetcher } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import {
   bilibiliComments,
@@ -179,6 +179,7 @@ export class Bilibili extends Base {
           videoSize = (nockData.data.durl[0].size / (1024 * 1024)).toFixed(2)
         }
         if (Config.bilibili.sendContent.some(content => content === 'comment')) {
+          try {
           const commentsData = await this.amagi.bilibili.fetcher.fetchComments({
             number: Config.bilibili.numcomment,
             type: 1,
@@ -226,6 +227,13 @@ export class Bilibili extends Base {
                 null : `${playUrlData.data.data.dash.video[0].width} x ${playUrlData.data.data.dash.video[0].height}`
             })
             this.e.reply(img)
+          }
+          } catch (err) {
+            if (err instanceof AmagiError && err.code === 12061) {
+              this.e.reply('UP主已关闭评论区，无法获取评论')
+            } else {
+              throw err
+            }
           }
         }
 
@@ -846,6 +854,7 @@ export class Bilibili extends Base {
 
         // 统一处理评论（直播动态除外）
         if (Config.bilibili.sendContent.some(content => content === 'comment') && dynamicInfo.data.data.item.type !== DynamicType.LIVE_RCMD) {
+          try {
           const commentsData = await this.amagi.bilibili.fetcher.fetchComments({
             type: mapping_table(dynamicInfo.data.data.item.type),
             oid: oid(dynamicInfo.data, dynamicInfoCard.data),
@@ -898,6 +907,13 @@ export class Bilibili extends Base {
             this.e.reply(img)
           } else {
             this.e.reply('这条动态暂时还没有评论~')
+          }
+          } catch (err) {
+            if (err instanceof AmagiError && err.code === 12061) {
+              this.e.reply('UP主已关闭评论区，无法获取评论')
+            } else {
+              throw err
+            }
           }
         }
 
