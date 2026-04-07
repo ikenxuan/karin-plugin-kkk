@@ -2,6 +2,18 @@
 
 # Changelog
 
+## [2.28.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.27.7...v2.28.0) (2026-04-07)
+
+
+### ✨ 新功能
+
+* 新增B站推送类型筛选 ([#290](https://github.com/ikenxuan/karin-plugin-kkk/issues/290)) ([ec77d54](https://github.com/ikenxuan/karin-plugin-kkk/commit/ec77d54e3af2cda7bda25512175df60e23bb1866))
+
+
+### 🧰 其他更新
+
+* 格式化 ([e9e4e45](https://github.com/ikenxuan/karin-plugin-kkk/commit/e9e4e45b1d8b2922f1eb5aea4fe8d5de6ee9be1e))
+
 ## [2.27.7](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.27.6...v2.27.7) (2026-04-07)
 
 
