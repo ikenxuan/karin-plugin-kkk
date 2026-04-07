@@ -2,6 +2,29 @@
 
 # Changelog
 
+## [2.27.7](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.27.6...v2.27.7) (2026-04-07)
+
+
+### 🐛 错误修复
+
+* **bilibili:** gracefully handle closed comment sections (error code 12061) ([#288](https://github.com/ikenxuan/karin-plugin-kkk/issues/288)) ([48ffa3c](https://github.com/ikenxuan/karin-plugin-kkk/commit/48ffa3c4af75e1d5220a9305bd2146c489d240ce))
+
+
+### 📝 文档更新
+
+* readme ([fef2dd6](https://github.com/ikenxuan/karin-plugin-kkk/commit/fef2dd63bca137c8a6a43ebcca35824cab02ddd5))
+
+
+### 🧰 其他更新
+
+* update TypeScript configuration and dependencies ([a4f8368](https://github.com/ikenxuan/karin-plugin-kkk/commit/a4f83680f6db2a82849f470f71bdbb09fcd11913))
+
+
+### 💯 细节优化
+
+* 1 ([5d3d697](https://github.com/ikenxuan/karin-plugin-kkk/commit/5d3d697f11e075e9e9d39ac4be00b0a126ecfdd6))
+* 更新逻辑 ([eefa307](https://github.com/ikenxuan/karin-plugin-kkk/commit/eefa307e0910bec52987f88d5ded02e895116ed3))
+
 ## [2.27.6](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.27.5...v2.27.6) (2026-04-01)
 
 
