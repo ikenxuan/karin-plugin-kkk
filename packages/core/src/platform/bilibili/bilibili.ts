@@ -191,48 +191,48 @@ export class Bilibili extends Base {
           if (commentsData.code === SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED) {
             this.e.reply('UP主已关闭评论区，无法获取评论')
           } else {
-          const { comments: commentsdata, image_urls } = bilibiliComments(commentsData.data, infoData.data.data.owner.mid.toString())
-          if (!commentsdata?.length) {
-            this.e.reply('这个视频没有评论 ~')
-          } else {
+            const { comments: commentsdata, image_urls } = bilibiliComments(commentsData.data, infoData.data.data.owner.mid.toString())
+            if (!commentsdata?.length) {
+              this.e.reply('这个视频没有评论 ~')
+            } else {
             // 收集评论区图片
-            const messageElements = []
-            if (Config.bilibili.commentImageCollection && image_urls.length > 0) {
-              for (const [index, v] of image_urls.entries()) {
-                const imageUrl = await processImageUrl(v, infoData.data.data.title, index)
-                messageElements.push(segment.image(imageUrl))
+              const messageElements = []
+              if (Config.bilibili.commentImageCollection && image_urls.length > 0) {
+                for (const [index, v] of image_urls.entries()) {
+                  const imageUrl = await processImageUrl(v, infoData.data.data.title, index)
+                  messageElements.push(segment.image(imageUrl))
+                }
+                const res = common.makeForward(
+                  messageElements,
+                  Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
+                  Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
+                )
+                await this.e.bot.sendForwardMsg(this.e.contact, res, {
+                  source: '评论图片收集',
+                  summary: `查看${messageElements.length}张图片`,
+                  prompt: 'B站评论解析结果',
+                  news: [{ text: '点击查看解析结果' }]
+                })
               }
-              const res = common.makeForward(
-                messageElements,
-                Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
-                Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
-              )
-              await this.e.bot.sendForwardMsg(this.e.contact, res, {
-                source: '评论图片收集',
-                summary: `查看${messageElements.length}张图片`,
-                prompt: 'B站评论解析结果',
-                news: [{ text: '点击查看解析结果' }]
-              })
-            }
 
-            img = await Render(this.e, 'bilibili/comment', {
-              Type: '视频',
-              CommentsData: commentsdata,
-              CommentLength: Config.bilibili.realCommentCount ? Count(infoData.data.data.stat.reply) : String(commentsdata.length),
-              share_url: 'https://b23.tv/' + infoData.data.data.bvid,
-              Clarity: Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64 ?
-                nockData.data.accept_description[nockData.data.accept_description.length - 1] :
-                playUrlData.data.data.accept_description[0],
-              VideoSize: Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64 ?
-                Common.formatFileSize((nockData.data.durl[0].size! / (1024 * 1024)).toFixed(2)) :
-                Common.formatFileSize(videoSize),
-              ImageLength: 0,
-              shareurl: 'https://b23.tv/' + infoData.data.data.bvid,
-              Resolution: Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64 ?
-                null : `${playUrlData.data.data.dash.video[0].width} x ${playUrlData.data.data.dash.video[0].height}`
-            })
-            this.e.reply(img)
-          }
+              img = await Render(this.e, 'bilibili/comment', {
+                Type: '视频',
+                CommentsData: commentsdata,
+                CommentLength: Config.bilibili.realCommentCount ? Count(infoData.data.data.stat.reply) : String(commentsdata.length),
+                share_url: 'https://b23.tv/' + infoData.data.data.bvid,
+                Clarity: Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64 ?
+                  nockData.data.accept_description[nockData.data.accept_description.length - 1] :
+                  playUrlData.data.data.accept_description[0],
+                VideoSize: Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64 ?
+                  Common.formatFileSize((nockData.data.durl[0].size! / (1024 * 1024)).toFixed(2)) :
+                  Common.formatFileSize(videoSize),
+                ImageLength: 0,
+                shareurl: 'https://b23.tv/' + infoData.data.data.bvid,
+                Resolution: Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64 ?
+                  null : `${playUrlData.data.data.dash.video[0].width} x ${playUrlData.data.data.dash.video[0].height}`
+              })
+              this.e.reply(img)
+            }
           }
         }
 
@@ -308,7 +308,8 @@ export class Bilibili extends Base {
           length: videoInfo.data.result.episodes.length
         })
         this.e.reply([...img, segment.text('请在120秒内输入 第?集 选择集数')])
-        const context = await karin.ctx(this.e, { reply: true })
+        const context = await karin.ctx(this.e, { reply: true, throwOnTimeout: false })
+        if (!context) return true
         const regex = /第([一二三四五六七八九十百千万0-9]+)集/.exec(context.msg)
         let Episode
         if (regex && regex[1]) {
@@ -865,53 +866,53 @@ export class Bilibili extends Base {
           if (commentsData.code === SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED) {
             this.e.reply('UP主已关闭评论区，无法获取评论')
           } else {
-          const { comments: commentsdata, image_urls } = bilibiliComments(commentsData.data, dynamicInfo.data.data.item.modules.module_author.mid.toString())
+            const { comments: commentsdata, image_urls } = bilibiliComments(commentsData.data, dynamicInfo.data.data.item.modules.module_author.mid.toString())
 
-          if (commentsdata && commentsdata.length > 0) {
+            if (commentsdata && commentsdata.length > 0) {
             // 收集评论区图片
-            if (Config.bilibili.commentImageCollection && image_urls.length > 0) {
-              const messageElements = []
-              // 获取动态标题用于图片命名
-              let title = 'bilibili_dynamic'
-              if (dynamicInfo.data.data.item.type === DynamicType.DRAW) {
-                title = dynamicInfo.data.data.item.modules.module_dynamic.major.opus.title || 'bilibili_dynamic'
-              } else if (dynamicInfo.data.data.item.type === DynamicType.AV) {
-                title = dynamicInfo.data.data.item.modules.module_dynamic.major.archive.title || 'bilibili_dynamic'
+              if (Config.bilibili.commentImageCollection && image_urls.length > 0) {
+                const messageElements = []
+                // 获取动态标题用于图片命名
+                let title = 'bilibili_dynamic'
+                if (dynamicInfo.data.data.item.type === DynamicType.DRAW) {
+                  title = dynamicInfo.data.data.item.modules.module_dynamic.major.opus.title || 'bilibili_dynamic'
+                } else if (dynamicInfo.data.data.item.type === DynamicType.AV) {
+                  title = dynamicInfo.data.data.item.modules.module_dynamic.major.archive.title || 'bilibili_dynamic'
+                }
+
+                for (const [index, v] of image_urls.entries()) {
+                  const imageUrl = await processImageUrl(v, title, index)
+                  messageElements.push(segment.image(imageUrl))
+                }
+                const res = common.makeForward(
+                  messageElements,
+                  Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
+                  Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
+                )
+                await this.e.bot.sendForwardMsg(this.e.contact, res, {
+                  source: '评论图片收集',
+                  summary: `查看${messageElements.length}张图片`,
+                  prompt: 'B站评论解析结果',
+                  news: [{ text: '点击查看解析结果' }]
+                })
               }
 
-              for (const [index, v] of image_urls.entries()) {
-                const imageUrl = await processImageUrl(v, title, index)
-                messageElements.push(segment.image(imageUrl))
-              }
-              const res = common.makeForward(
-                messageElements,
-                Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
-                Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
-              )
-              await this.e.bot.sendForwardMsg(this.e.contact, res, {
-                source: '评论图片收集',
-                summary: `查看${messageElements.length}张图片`,
-                prompt: 'B站评论解析结果',
-                news: [{ text: '点击查看解析结果' }]
+              // 渲染评论图
+              const img = await Render(this.e, 'bilibili/comment', {
+                Type: '动态',
+                CommentsData: commentsdata,
+                CommentLength: String(commentsdata.length),
+                share_url: dynamicInfo.data.data.item.type === DynamicType.AV
+                  ? `https://www.bilibili.com/video/${dynamicInfo.data.data.item.modules.module_dynamic.major.archive.bvid}`
+                  : `https://t.bilibili.com/${dynamicInfo.data.data.item.id_str}`,
+                ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? 0,
+                shareurl: '动态分享链接',
+                Resolution: null
               })
+              this.e.reply(img)
+            } else {
+              this.e.reply('这条动态暂时还没有评论~')
             }
-
-            // 渲染评论图
-            const img = await Render(this.e, 'bilibili/comment', {
-              Type: '动态',
-              CommentsData: commentsdata,
-              CommentLength: String(commentsdata.length),
-              share_url: dynamicInfo.data.data.item.type === DynamicType.AV
-                ? `https://www.bilibili.com/video/${dynamicInfo.data.data.item.modules.module_dynamic.major.archive.bvid}`
-                : `https://t.bilibili.com/${dynamicInfo.data.data.item.id_str}`,
-              ImageLength: dynamicInfo.data.data.item.modules?.module_dynamic?.major?.draw?.items?.length ?? 0,
-              shareurl: '动态分享链接',
-              Resolution: null
-            })
-            this.e.reply(img)
-          } else {
-            this.e.reply('这条动态暂时还没有评论~')
-          }
           }
         }
 
