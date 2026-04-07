@@ -125,7 +125,7 @@ export class Bilibilipush extends Base {
 
     for (const item of pushList) {
       // 检查并补全 pushTypes 字段
-      if (!item.pushTypes || item.pushTypes.length === 0) {
+      if (!item.pushTypes?.length) {
         item.pushTypes = [...allBilibiliPushTypes]
         hasChanges = true
         logger.info(`为UP主 ${item.remark ?? item.host_mid} 自动补全推送类型：投稿视频、图文动态、纯文动态、直播动态、转发动态、投稿专栏`)
@@ -861,6 +861,8 @@ export class Bilibilipush extends Base {
       for (const item of filteredUserList) {
         await common.sleep(2000)
         logger.debug(`[Bilibili 推送] 开始获取UP: ${item.remark}（${item.host_mid}） 的动态列表`)
+        const pushTypes = item.pushTypes || allBilibiliPushTypes
+        const allowedDynamicTypes = new Set(pushTypes.map(pt => pushTypeToDynamicType[pt]))
         const dynamic_list = await this.amagi.bilibili.fetcher.fetchUserDynamicList({ host_mid: item.host_mid, typeMode: 'strict' })
         if (dynamic_list.data.data.items.length > 0) {
           // 遍历接口返回的视频列表
@@ -894,8 +896,6 @@ export class Bilibilipush extends Base {
             // 如果 shouldPush 为 true，或该作品距现在的时间差小于一天，则将该动态添加到 willbepushlist 中
             if (timeDifference < 86400 || shouldPush) {
               // 根据推送类型过滤
-              const pushTypes = item.pushTypes || allBilibiliPushTypes
-              const allowedDynamicTypes = new Set(pushTypes.map(pt => pushTypeToDynamicType[pt]))
               if (!allowedDynamicTypes.has(dynamic.type as DynamicType)) {
                 logger.debug(`UP主 ${item.remark}（${item.host_mid}）的动态 ${dynamic.id_str} 类型为「${dynamic.type}」，不在推送类型配置中，跳过`)
                 continue
