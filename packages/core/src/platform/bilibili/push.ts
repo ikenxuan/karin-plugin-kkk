@@ -128,7 +128,7 @@ export class Bilibilipush extends Base {
       if (!item.pushTypes?.length) {
         item.pushTypes = [...allBilibiliPushTypes]
         hasChanges = true
-        logger.info(`为UP主 ${item.remark ?? item.host_mid} 自动补全推送类型：投稿视频、图文动态、纯文动态、直播动态、转发动态、投稿专栏`)
+        logger.info(`[karin-plugin-kkk][v2.28.0] 为UP主 ${item.remark ?? item.host_mid} 自动补全推送类型：投稿视频、图文动态、纯文动态、直播动态、转发动态、投稿专栏`)
       }
 
       // 检查并补全 switch 字段
