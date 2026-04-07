@@ -50,7 +50,20 @@ import {
   replacetext,
   TimeFormatter
 } from '@/platform/bilibili'
-import type { bilibiliPushItem } from '@/types/config/pushlist'
+import type { bilibiliPushItem, BilibiliPushType } from '@/types/config/pushlist'
+
+/** BilibiliPushType 到 DynamicType 的映射 */
+const pushTypeToDynamicType: Record<BilibiliPushType, DynamicType> = {
+  video: DynamicType.AV,
+  draw: DynamicType.DRAW,
+  word: DynamicType.WORD,
+  live: DynamicType.LIVE_RCMD,
+  forward: DynamicType.FORWARD,
+  article: DynamicType.ARTICLE
+}
+
+/** 所有支持的 BilibiliPushType */
+const allBilibiliPushTypes: BilibiliPushType[] = ['video', 'draw', 'word', 'live', 'forward', 'article']
 
 
 // type DataItem = BiliUserDynamic['data']['items'] extends Array<infer T> ? T : never
@@ -100,12 +113,46 @@ export class Bilibilipush extends Base {
     eventWithBot.bot = bot
     eventWithBot.selfId = eventWithBot.selfId ?? targetBotId
   }
+
+  /**
+   * 检查并补全配置文件中缺失的字段
+   * @param pushList 推送配置列表
+   */
+  private ensureConfigFields (pushList: bilibiliPushItem[]): void {
+    if (!pushList || pushList.length === 0) return
+
+    let hasChanges = false
+
+    for (const item of pushList) {
+      // 检查并补全 pushTypes 字段
+      if (!item.pushTypes || item.pushTypes.length === 0) {
+        item.pushTypes = [...allBilibiliPushTypes]
+        hasChanges = true
+        logger.info(`为UP主 ${item.remark ?? item.host_mid} 自动补全推送类型：投稿视频、图文动态、纯文动态、直播动态、转发动态、投稿专栏`)
+      }
+
+      // 检查并补全 switch 字段
+      if (item.switch === undefined) {
+        item.switch = true
+        hasChanges = true
+      }
+    }
+
+    // 如果有修改，保存到配置文件
+    if (hasChanges) {
+      Config.Modify('pushlist', 'bilibili', pushList)
+      logger.info('已自动补全B站推送配置文件中缺失的字段并保存')
+    }
+  }
   
   /**
    * 执行主要的操作流程
    */
   async action () {
     await this.syncConfigToDatabase()
+
+    // 检查并补全配置文件中缺失的字段
+    this.ensureConfigFields(Config.pushlist.bilibili)
     // 清理旧的动态缓存记录
     const deletedCount = await cleanOldDynamicCache('bilibili')
     if (deletedCount > 0) {
@@ -846,6 +893,14 @@ export class Bilibilipush extends Base {
             } else logger.trace(logger.yellow(`根据以上判断，shoulPush 为 false，跳过该动态：https://t.bilibili.com/${dynamic.id_str}\n`))
             // 如果 shouldPush 为 true，或该作品距现在的时间差小于一天，则将该动态添加到 willbepushlist 中
             if (timeDifference < 86400 || shouldPush) {
+              // 根据推送类型过滤
+              const pushTypes = item.pushTypes || allBilibiliPushTypes
+              const allowedDynamicTypes = new Set(pushTypes.map(pt => pushTypeToDynamicType[pt]))
+              if (!allowedDynamicTypes.has(dynamic.type as DynamicType)) {
+                logger.debug(`UP主 ${item.remark}（${item.host_mid}）的动态 ${dynamic.id_str} 类型为「${dynamic.type}」，不在推送类型配置中，跳过`)
+                continue
+              }
+
               // 将群组ID和机器人ID分离
               const targets = item.group_id.map(groupWithBot => {
                 const [groupId, botId] = groupWithBot.split(':')

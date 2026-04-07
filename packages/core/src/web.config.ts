@@ -833,6 +833,52 @@ export const webConfig = defineConfig({
                 isRequired: false,
                 description: 'UP主的昵称'
               }),
+              components.divider.create('push:bilibili:divider-pushTypes', {
+                description: '推送类型配置',
+                descPosition: 20
+              }),
+              components.checkbox.group('pushTypes', {
+                label: '推送类型',
+                description: '选择要推送的动态类型，可多选',
+                orientation: 'horizontal',
+                color: 'warning',
+                checkbox: [
+                  components.checkbox.create('pushTypes:checkbox:video', {
+                    label: '投稿视频',
+                    description: '推送UP主投稿的视频',
+                    value: 'video'
+                  }),
+                  components.checkbox.create('pushTypes:checkbox:draw', {
+                    label: '图文动态',
+                    description: '推送UP主发布的图文动态',
+                    value: 'draw'
+                  }),
+                  components.checkbox.create('pushTypes:checkbox:word', {
+                    label: '纯文动态',
+                    description: '推送UP主发布的纯文字动态',
+                    value: 'word'
+                  }),
+                  components.checkbox.create('pushTypes:checkbox:live', {
+                    label: '直播动态',
+                    description: '推送UP主的直播通知',
+                    value: 'live'
+                  }),
+                  components.checkbox.create('pushTypes:checkbox:forward', {
+                    label: '转发动态',
+                    description: '推送UP主的转发动态',
+                    value: 'forward'
+                  }),
+                  components.checkbox.create('pushTypes:checkbox:article', {
+                    label: '投稿专栏',
+                    description: '推送UP主投稿的专栏文章',
+                    value: 'article'
+                  })
+                ]
+              }),
+              components.divider.create('push:bilibili:divider-filter', {
+                description: '过滤系统',
+                descPosition: 20
+              }),
               components.radio.group('filterMode', {
                 label: '过滤模式',
                 orientation: 'horizontal',
