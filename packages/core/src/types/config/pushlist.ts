@@ -1,6 +1,9 @@
 /** 推送内容类型 */
 export type DouyinPushType = 'post' | 'favorite' | 'recommend' | 'live'
 
+/** B站推送动态类型 */
+export type BilibiliPushType = 'video' | 'draw' | 'word' | 'live' | 'forward' | 'article'
+
 /** 定义推送列表项的接口 */
 export type douyinPushItem = {
   /** 是否启用 */
@@ -33,6 +36,8 @@ export type bilibiliPushItem = {
   group_id: string[]
   /** 博主或UP主的名字信息，可不填 */
   remark: string
+  /** 推送类型：投稿视频、图文动态、纯文动态、直播动态、转发动态、投稿专栏，默认全部 */
+  pushTypes?: BilibiliPushType[]
   /** 黑名单：命中不推送；白名单：命中才推送 */
   filterMode?: 'blacklist' | 'whitelist'
   /** 指定关键词 */
