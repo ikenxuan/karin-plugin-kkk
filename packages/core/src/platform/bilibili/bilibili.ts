@@ -43,7 +43,7 @@ import {
   Render,
   uploadFile
 } from '@/module/utils'
-import { bilibiliFetcher } from '@/module/utils/amagiClient'
+import { bilibiliFetcher, SOFT_ERROR_CODES, softFetch } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import {
   bilibiliComments,
@@ -179,12 +179,18 @@ export class Bilibili extends Base {
           videoSize = (nockData.data.durl[0].size / (1024 * 1024)).toFixed(2)
         }
         if (Config.bilibili.sendContent.some(content => content === 'comment')) {
-          const commentsData = await this.amagi.bilibili.fetcher.fetchComments({
-            number: Config.bilibili.numcomment,
-            type: 1,
-            oid: infoData.data.data.aid.toString(),
-            typeMode: 'strict'
-          })
+          const commentsData = await softFetch(
+            () => this.amagi.bilibili.fetcher.fetchComments({
+              number: Config.bilibili.numcomment,
+              type: 1,
+              oid: infoData.data.data.aid.toString(),
+              typeMode: 'strict'
+            }),
+            [SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED]
+          )
+          if (commentsData.code === SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED) {
+            this.e.reply('UP主已关闭评论区，无法获取评论')
+          } else {
           const { comments: commentsdata, image_urls } = bilibiliComments(commentsData.data, infoData.data.data.owner.mid.toString())
           if (!commentsdata?.length) {
             this.e.reply('这个视频没有评论 ~')
@@ -226,6 +232,7 @@ export class Bilibili extends Base {
                 null : `${playUrlData.data.data.dash.video[0].width} x ${playUrlData.data.data.dash.video[0].height}`
             })
             this.e.reply(img)
+          }
           }
         }
 
@@ -846,12 +853,18 @@ export class Bilibili extends Base {
 
         // 统一处理评论（直播动态除外）
         if (Config.bilibili.sendContent.some(content => content === 'comment') && dynamicInfo.data.data.item.type !== DynamicType.LIVE_RCMD) {
-          const commentsData = await this.amagi.bilibili.fetcher.fetchComments({
-            type: mapping_table(dynamicInfo.data.data.item.type),
-            oid: oid(dynamicInfo.data, dynamicInfoCard.data),
-            number: Config.bilibili.numcomment,
-            typeMode: 'strict'
-          })
+          const commentsData = await softFetch(
+            () => this.amagi.bilibili.fetcher.fetchComments({
+              type: mapping_table(dynamicInfo.data.data.item.type),
+              oid: oid(dynamicInfo.data, dynamicInfoCard.data),
+              number: Config.bilibili.numcomment,
+              typeMode: 'strict'
+            }),
+            [SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED]
+          )
+          if (commentsData.code === SOFT_ERROR_CODES.BILIBILI_COMMENTS_DISABLED) {
+            this.e.reply('UP主已关闭评论区，无法获取评论')
+          } else {
           const { comments: commentsdata, image_urls } = bilibiliComments(commentsData.data, dynamicInfo.data.data.item.modules.module_author.mid.toString())
 
           if (commentsdata && commentsdata.length > 0) {
@@ -898,6 +911,7 @@ export class Bilibili extends Base {
             this.e.reply(img)
           } else {
             this.e.reply('这条动态暂时还没有评论~')
+          }
           }
         }
 

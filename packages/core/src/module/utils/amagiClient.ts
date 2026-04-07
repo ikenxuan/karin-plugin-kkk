@@ -136,6 +136,46 @@ export class AmagiBase {
   }
 }
 
+/**
+ * 已知的软性错误码 — 这些接口响应属于正常业务边缘情况，不应中断执行流程。
+ * 在 softFetch 中配置后，对应接口调用不会抛出异常，而是原样返回 Result，
+ * 由业务代码根据 code 决定后续处理逻辑。
+ *
+ * Bilibili:
+ *   12061 - UP主已关闭评论区
+ */
+export const SOFT_ERROR_CODES = {
+  BILIBILI_COMMENTS_DISABLED: 12061
+} as const
+
+/**
+ * 调用 amagi fetcher 方法，允许特定错误码不抛出异常而是以 Result 形式返回。
+ * 用于处理已知的非致命接口响应（例如评论区已关闭）。
+ * 业务代码收到返回值后，通过判断 result.code 决定继续解析还是返回提示。
+ *
+ * @param fn           - 经过代理包装的 amagi 方法调用
+ * @param allowedCodes - 不应抛出异常的错误码列表
+ */
+export const softFetch = async <T>(
+  fn: () => Promise<Result<T>>,
+  allowedCodes: number[]
+): Promise<Result<T>> => {
+  try {
+    return await fn()
+  } catch (err) {
+    if (err instanceof AmagiError && allowedCodes.includes(err.code)) {
+      return {
+        success: false,
+        code: err.code,
+        data: err.data,
+        message: err.message,
+        error: err.rawError
+      } as unknown as Result<T>
+    }
+    throw err
+  }
+}
+
 /** 获取已初始化的解析库实例（单例） */
 const createLiveProxy = <T extends object>(getter: () => T): T => {
   return new Proxy({} as T, {
