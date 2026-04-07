@@ -4,6 +4,7 @@ import { AuroraBackground } from '@/components/ui/aurora-background';
 import { getChangelog } from '@/lib/changelog';
 import { ChangelogDropdown } from '@/components/changelog-dropdown';
 import { KKKLogo } from '@/components/kkk-logo';
+import { MirrorSiteDropdown } from '@/components/mirror-site-dropdown';
 
 export default async function Layout({
   children,
@@ -25,6 +26,7 @@ export default async function Layout({
     children: (
       <div className="flex gap-2 items-center ml-8">
         <ChangelogDropdown latestVersion={latestVersion} />
+        <MirrorSiteDropdown />
       </div>
     ),
   };

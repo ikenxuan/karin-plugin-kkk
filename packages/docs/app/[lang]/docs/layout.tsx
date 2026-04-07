@@ -7,6 +7,7 @@ import { SidebarBanner } from '@/components/sidebar-banner'
 import { SidebarFooter } from '@/components/sidebar-footer'
 import { ChangelogDropdown } from '@/components/changelog-dropdown'
 import { getChangelog } from '@/lib/changelog'
+import { MirrorSiteDropdown } from '@/components/mirror-site-dropdown'
 
 export default async function Layout ({ 
   children, 
@@ -35,6 +36,9 @@ export default async function Layout ({
           <div className="ml-4 flex gap-3 items-center mr-2 md:mr-0 in-[aside]:hidden">
             <div className="hidden md:block">
               <ChangelogDropdown latestVersion={latestVersion} />
+            </div>
+            <div className="hidden md:block">
+              <MirrorSiteDropdown />
             </div>
             <GitHubLink />
           </div>

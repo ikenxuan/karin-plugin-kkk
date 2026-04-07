@@ -51,7 +51,7 @@ export function GitHubLink () {
       className="no-underline"
     >
       <Button
-        variant="tertiary"
+        variant="ghost"
         size="sm"
       >
         <FaGithub size={20} />

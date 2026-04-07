@@ -9,6 +9,7 @@ import { SidebarFooter } from '@/components/sidebar-footer';
 import { KKKLogo } from '@/components/kkk-logo';
 import { ChangelogDropdown } from '@/components/changelog-dropdown';
 import { GitHubLink } from '@/components/github-link';
+import { MirrorSiteDropdown } from '@/components/mirror-site-dropdown';
 
 export default async function ChangelogPage({
   params,
@@ -58,6 +59,9 @@ export default async function ChangelogPage({
           <div className="flex gap-3 items-center mr-2 md:mr-0 in-[aside]:hidden">
             <div className="hidden md:block">
               <ChangelogDropdown latestVersion={latestVersion} currentVersion={currentVersion} />
+            </div>
+            <div className="hidden md:block">
+              <MirrorSiteDropdown />
             </div>
             <GitHubLink />
           </div>
