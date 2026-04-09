@@ -6,9 +6,6 @@ description: 將彈幕硬編碼到視頻中
 import { Callout } from 'fumadocs-ui/components/callout';
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
-<Callout type="info">
-將喺 **v2.17.0** 版本中發佈！
-</Callout>
 <Callout type="warn">
 **性能警告**：彈幕燒錄需要對視頻進行完整嘅重新編碼，呢個係一個非常消耗資源嘅操作。
 
@@ -18,7 +15,7 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 建議喺開啟此功能前，先確認你嘅運行環境係咪支持硬件加速。
 </Callout>
 
-將視頻彈幕**硬編碼**到畫面中，生成可直接分享嘅帶彈幕視頻。目前支持 **B站** 同 **抖音** 平台。
+當前版本已經支持將彈幕**硬編碼**到視頻畫面中，生成可直接分享嘅帶彈幕影片。目前只支持 **B站** 同 **抖音**。
 
 ## 支持平台
 
@@ -44,7 +41,12 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 ## 使用方式
 
-開啟彈幕燒錄後，發送視頻連結時會自動獲取彈幕並燒錄到視頻中。整個過程全自動，無需額外操作。
+你可以用兩種方式觸發燒錄：
+
+1. 喺平台配置中開啟 `burnDanmaku`，之後命中連結就會默認燒錄
+2. 引用一條抖音 / B站消息，手動發送 `#弹幕解析`
+
+其中 `#弹幕解析` 適合「平時默認關閉，偶爾按需燒錄」嘅場景。
 
 處理流程：
 1. 解析視頻連結，獲取視頻同彈幕數據
@@ -119,4 +121,15 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 ## 配置
 
-喺 Karin WebUI 嘅對應平台配置頁面開啟同調整彈幕燒錄選項。
+喺 Karin WebUI 入面分別進入抖音或者 B站配置頁，重點留意：
+
+- 彈幕燒錄（`burnDanmaku`）
+- 彈幕顯示區域 / 彈幕區域（`danmakuArea`）
+- 彈幕字號（`danmakuFontSize`）
+- 彈幕透明度（`danmakuOpacity`）
+- 豎屏適配（`verticalMode`）
+- 視頻編碼格式（`videoCodec`）
+
+<Callout type="info">
+抖音同 B站嘅字段名大致一致，但默認畫質、豎屏適配說明同影片來源處理邏輯唔完全相同，建議分開調試。
+</Callout>

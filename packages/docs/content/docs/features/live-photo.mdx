@@ -6,7 +6,7 @@ description: 动态照片无水印解析与跨平台兼容
 import { Callout } from 'fumadocs-ui/components/callout';
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
-插件支持解析动态照片（Motion Photo / Live Photo），并能够无水印提取封面图片和视频，生成跨平台兼容的动态照片文件。
+插件在解析作品、动态或推送内容时，遇到 Live Photo / Motion Photo 资源，会按当前配置生成兼容的实况图文件，并可额外生成“仿 iPhone Live Photo”效果视频。
 
 ## 平台兼容性
 
@@ -20,17 +20,21 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 | **vivo OriginOS** | 双文件（JPG + MP4） | ✗ | 独立存储，无法合成单文件 |
 
 <Callout type="info">
-解析后的动态照片保存到相册时，可被支持 Google Motion Photo 标准的设备和应用（如 Google Photos、部分原生相册）正确识别并播放。
+当前默认组合是：
+
+- `livePhotoMode: video_and_livephoto`
+- `livePhotoSystem: oppo`
 </Callout>
 
 ## 使用方式
 
-动态照片解析是自动触发的，无需额外操作：
+动态照片解析是自动触发的，无需额外命令：
 
 1. 当解析到包含动态照片的作品/动态时
-2. 插件会自动提取封面图片和视频
-3. 根据配置的兼容模式生成动态照片文件
-4. 在合并转发消息中发送
+2. 插件会自动提取封面图片和视频片段
+3. 根据 `livePhotoMode` 决定发送实况图、效果视频，或两者都发
+4. 根据 `livePhotoSystem` 生成兼容不同相册系统的单文件图片
+5. 最终通过合并转发消息发送
 
 <Callout type="info">
 动态照片会以独立文件的形式出现在合并转发消息中，保存到相册后即可在支持的设备上播放。
@@ -42,29 +46,39 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 ## 配置选项
 
-插件提供了 `livePhotoSystem` 配置项，用于指定生成的动态照片兼容系统。
+核心配置有两个：
+
+- Live Photo 处理和发送方式（`livePhotoMode`）
+- Live Photo 静态图兼容系统（`livePhotoSystem`）
 
 ### 配置方式
 
 在配置文件 `config/app.yaml` 中修改：
 
 ```yaml
-# 当解析到作品/动态包含动态照片时，合并转发消息里发送的动态照片静态图兼容系统
+# video_and_livephoto: 实况图 + 效果视频
+# video_only: 仅效果视频
+# livephoto_only: 仅实况图
+livePhotoMode: video_and_livephoto
+
 # 可选值：'google'、'xiaomi'、'oppo'、'huawei_honor'
-livePhotoSystem: google
+livePhotoSystem: oppo
 ```
 
 ### 可选值说明
 
-| 值 | 说明 | 推荐场景 |
+| 项目 | 可选值 | 说明 |
 |---|------|---------|
-| `google` | Google Photos 标准格式 | 默认选项，兼容性最广 |
-| `xiaomi` | 小米 HyperOS 优化格式 | 主要使用小米设备的群聊 |
-| `oppo` | OPPO ColorOS 优化格式 | 主要使用 OPPO 设备的群聊 |
-| `huawei_honor` | 华为/荣耀格式 | 主要使用华为/荣耀设备的群聊 |
+| `livePhotoMode` | `video_and_livephoto` | 同时发送实况图和效果视频 |
+| `livePhotoMode` | `video_only` | 仅发送效果视频，适合只关心播放效果的场景 |
+| `livePhotoMode` | `livephoto_only` | 仅发送单文件实况图，性能开销更小 |
+| `livePhotoSystem` | `google` | Google 标准格式 |
+| `livePhotoSystem` | `xiaomi` | 小米兼容格式 |
+| `livePhotoSystem` | `oppo` | OPPO / OnePlus / realme 兼容格式，当前默认推荐 |
+| `livePhotoSystem` | `huawei_honor` | 华为 / 荣耀兼容格式，仍建议自行实机验证 |
 
 <Callout type="info">
-如果不确定选择哪个，建议使用默认的 `google` 模式，它具有最好的跨平台兼容性。
+如果你不确定选哪个系统，先用默认的 `oppo`；如果你更在意“尽量标准”，可以改回 `google`。
 </Callout>
 
 ---
@@ -138,7 +152,7 @@ livePhotoSystem: google
 不同厂商对 Motion Photo 的实现略有差异，插件提供了四种兼容模式：
 
 <Accordions>
-  <Accordion title="Google 标准模式（默认）">
+  <Accordion title="Google 标准模式">
     最通用的格式，兼容性最广。使用 Google Photos 定义的标准 XMP 命名空间。
     
     **适用设备**：
@@ -156,7 +170,7 @@ livePhotoSystem: google
     - 小米 / Redmi / POCO 系列（HyperOS）
   </Accordion>
   
-  <Accordion title="OPPO ColorOS 模式">
+  <Accordion title="OPPO ColorOS 模式（当前默认推荐）">
     在 Google 标准基础上添加 OPPO 特有的 XMP 扩展字段：
     - `OpCamera:MotionPhotoOwner="oplus"`：OPPO 相册识别标记
     - `OpCamera:OLivePhotoVersion`：动态照片版本号
@@ -220,5 +234,9 @@ ffmpeg -i input.png -frames:v 1 -q:v 2 output.jpg
   
   <Accordion title="生成的动态照片文件很大怎么办？">
     动态照片文件大小 = 封面图片大小 + 视频大小，这是正常现象。
+  </Accordion>
+
+  <Accordion title="为什么我只收到视频，没有收到实况图？">
+    先检查 `livePhotoMode` 是否被设成了 `video_only`。如果是，这就是预期行为。
   </Accordion>
 </Accordions>

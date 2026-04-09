@@ -12,7 +12,9 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 1. 检查 Cookies 是否有效（可尝试重新扫码登录）
 2. 检查网络是否正常
-3. 部分内容可能需要登录态才能获取
+3. 检查对应平台 `switch` 是否开启
+4. 检查 `sendContent` 是否把你期望的返回内容关掉了
+5. 部分内容确实需要登录态或平台放行
 
 </Accordion>
 
@@ -76,10 +78,23 @@ volumes:
 
 </Accordion>
 
+<Accordion title="为什么只返回信息图，没有视频文件？">
+
+先检查以下几项：
+
+1. 平台配置里的 `sendContent` 是否勾选了 `video`
+2. 视频体积是否超过了上传阈值或群文件阈值
+3. 是否开启了 `usefilelimit` 直接拦截大视频
+4. 协议端与 Karin 是否不在同一机器，如果是，优先尝试 `videoSendMode: base64`
+
+</Accordion>
+
 <Accordion title="视频太大发不出去？">
 
 - 使用自动画质模式：`videoQuality: adapt`（抖音/小红书）或 `videoQuality: 0`（B站）
 - 调低 `maxAutoVideoSize` 值
+- 必要时开启 `compress`
+- 也可以启用 `usegroupfile`
 - 或直接设置较低画质如 `720p`
 
 </Accordion>
@@ -89,16 +104,19 @@ volumes:
 1. 确认 `push.switch` 已开启
 2. 检查 `pushlist.yaml` 中 `group_id` 格式：`群号:机器人账号`
 3. 确保机器人在目标群中
-4. 查看日志是否有报错
+4. 确认当前账号满足“谁可以设置推送（`push.permission`）”
+5. 修改“推送开关（`push.switch`）”或权限后记得重启
+6. 查看日志是否有报错
 
 </Accordion>
-
 
 <Accordion title="如何手动触发推送？">
 
 ```
 #抖音强制推送    → 当前群
 #B站强制推送     → 当前群
+#抖音全部强制推送 → 所有群
+#B站全部强制推送  → 所有群
 ```
 
 </Accordion>
@@ -123,6 +141,14 @@ volumes:
 - **改善方法**：
   - 尝试在配置中将 `videoCodec` 设置为 `h265` 或 `av1`（如果硬件支持）。
   - 确保没有开启过低的比特率限制。
+
+</Accordion>
+
+<Accordion title="`#弹幕解析` 和默认烧录有什么区别？">
+
+- `burnDanmaku: true` 是平台默认行为，命中链接就会烧录
+- `#弹幕解析` 是一次性的强制烧录入口，适合平时不开、偶尔想手动烧录的场景
+- 当前只对抖音和 B站有效
 
 </Accordion>
 

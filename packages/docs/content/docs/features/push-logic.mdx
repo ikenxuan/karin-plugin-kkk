@@ -7,30 +7,27 @@ import { Steps } from 'fumadocs-ui/components/steps';
 import { Callout } from 'fumadocs-ui/components/callout';
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
-本页详细介绍了插件针对抖音和 Bilibili 平台的推送检测与分发逻辑，帮助用户理解推送的触发机制、去重策略及新特性。
+本页按当前 `core` 实现说明抖音与 B站推送的检测、去重和分发方式。
 
 ## 抖音推送 (Douyin)
 
-抖音推送模块支持多种类型的动态监听，包括作品更新、点赞操作、推荐列表更新以及直播状态。
+抖音推送当前支持多种类型的监听：
 
-### 新特性：交互行为推送
-
-<Callout type="info">
-此功能将于 **v2.19.0** 版本中发布！
-</Callout>
-
-在最新版本中，我们引入了对**用户交互行为**的监控能力，让你能第一时间捕捉到博主的兴趣动态。
+- `post`：作品更新
+- `favorite`：喜欢列表更新
+- `recommend`：推荐列表更新
+- `live`：直播状态
 
 <Accordions>
   <Accordion title="喜欢列表推送效果">
-    当监控的博主点赞了某个视频时触发。
+    当监控的博主点赞了某个视频时触发，是否能抓到数据取决于对方是否公开了喜欢列表。
     
-    ![喜欢列表推送效果展示 - 占位符](/favorite-demo-placeholder.png)
+    ![喜欢列表推送效果展示](/favorite-demo-placeholder.png)
   </Accordion>
   <Accordion title="推荐列表推送效果">
-    当博主将某个视频标记为“推荐”时触发。
+    当博主将某个视频标记为“推荐”时触发，同样依赖对方的公开设置。
     
-    ![推荐列表推送效果展示 - 占位符](/recommend-demo-placeholder.png)
+    ![推荐列表推送效果展示](/recommend-demo-placeholder.png)
   </Accordion>
 </Accordions>
 
@@ -42,7 +39,7 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 <Steps>
 ### 定时轮询
-插件会根据配置文件 `config/pushlist.yaml` 中的设置，定期轮询已订阅用户的状态。
+插件会根据 `douyin.push.cron` 定时轮询。订阅源本身保存在 `pushlist` 中，通常由 `#设置抖音推送 抖音号` 维护。
 
 ### 类型分发
 针对每个订阅用户，系统会并行检查以下配置开启的推送类型：
@@ -52,8 +49,7 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 - **直播 (Live)**: 用户的实时直播状态。
 
 ### 数据比对与去重
-系统维护一个 SQLite 数据库 (`douyin.db`)，记录已推送过的 `aweme_id`。
-每次获取到最新列表（通常为前5条）后，会与数据库中的记录进行比对。只有**未存在于数据库中**且**符合过滤条件**（如屏蔽词）的新内容才会被推送。
+系统会把已推送记录写入数据库，按作品 ID 去重。这样即使你手动强制推送，也不会反复刷同一条内容。
 
 ### 渲染与分发
 不同类型的推送会使用专属的 UI 模板进行渲染：
@@ -68,7 +64,7 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 ## Bilibili 推送
 
-B站推送主要涵盖动态更新和直播状态监控。
+B站推送主要关注动态更新和直播状态。
 
 ### 核心流程
 
@@ -89,9 +85,21 @@ B站推送主要涵盖动态更新和直播状态监控。
 - **转发动态 (`DYNAMIC_TYPE_FORWARD`)**: 嵌套展示原动态内容。
 
 ### 直播监控
-除了依赖动态流中的开播通知，插件还包含独立的状态轮询机制，主动检测直播间状态变化（Off -> On），确保不错过未发动态的突袭直播。
+除了依赖动态流中的开播通知，插件还会主动轮询直播状态，尽量避免漏掉未发动态的突袭直播。
 </Steps>
 
 ### 去重机制
 
 B站推送同样基于数据库进行严格去重。已推送的 `dynamic_id` 会被持久化存储，确保同一条动态不会重复打扰。
+
+## 你最需要关心的配置
+
+- 推送开关（`push.switch`）
+- 谁可以设置推送（`push.permission`）
+- 定时任务表达式（`push.cron`）
+- 作品解析（`push.parsedynamic`）
+- 画质偏好 / 解析视频动态时的画质偏好（`push.pushVideoQuality`）
+
+<Callout type="info">
+推送是否“能配置成功”，除了平台配置外，还取决于 `pushlist` 里是否存在正确的 `群号:机器人账号` 绑定。
+</Callout>

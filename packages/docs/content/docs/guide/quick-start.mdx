@@ -7,7 +7,7 @@ import { Callout } from 'fumadocs-ui/components/callout';
 import { Steps, Step } from 'fumadocs-ui/components/steps';
 import { Cards, Card } from 'fumadocs-ui/components/card';
 
-## 安装
+## 安装流程
 
 <Steps>
 <Step>
@@ -15,6 +15,7 @@ import { Cards, Card } from 'fumadocs-ui/components/card';
 ### 环境要求
 
 - Karin >= 1.14.0
+- Node.js >= 18
 - FFmpeg 或 [FFmpeg 插件](https://github.com/KarinJS/karin-plugin-ffmpeg)
 
 </Step>
@@ -22,7 +23,9 @@ import { Cards, Card } from 'fumadocs-ui/components/card';
 
 ### 安装插件
 
-推荐通过 Karin WebUI 插件市场安装，或使用命令：
+推荐直接在 Karin WebUI 插件市场搜索 `karin-plugin-kkk` 安装。
+
+如果你是手动管理依赖，也可以执行：
 
 ```bash
 pnpm add karin-plugin-kkk@latest -w
@@ -31,27 +34,54 @@ pnpm add karin-plugin-kkk@latest -w
 </Step>
 <Step>
 
-### 配置 Cookies
+### 完成基础配置
 
-在 Karin WebUI → 插件配置 → karin-plugin-kkk 中填写各平台的 Cookies。
+打开 Karin WebUI → 插件配置 → `karin-plugin-kkk`，先把 Cookie 配好就够了。
 
-推荐使用**扫码登录**方式获取（在群聊中发送 `#抖音登录` 或 `#B站登录`），也可以通过浏览器手动获取。详细方法请参考 [获取 Cookies](/docs/advanced/ck)。
+- 抖音 Cookie
+- B站 Cookie
+- 如果你确实要用快手 / 小红书深度功能，也可以顺手补上对应 Cookie
 
 <Callout type="info">
-Cookies 用于请求平台 API，部分平台不配置也能使用基础功能，但部分高级功能（如高画质视频、推送）需要登录态。
+其他配置都有默认值兜底，先不动也能直接用。真正影响首次使用体验的，主要就是 Cookie。
 </Callout>
 
 </Step>
 </Steps>
 
-## 基本使用
+## 获取登录态
 
-启动后会监听群聊消息，发送包含平台链接的消息，插件成功匹配以下链接后自动解析：
+群聊或私聊中可直接使用：
+
+```bash
+#抖音登录
+#B站登录
+```
+
+详细方法见 [获取 Cookies](/docs/advanced/ck)。
+
+## 第一次试跑
+
+插件启动后会监听消息，命中以下内容时自动解析：
 
 - 抖音：支持 `douyin.com` 与 `iesdouyin.com` 及其子域名 (`www`, `v`, `jx`, `m`, `jingxuan`)
 - B站：支持 `bilibili.com`, `b23.tv`, `t.bilibili.com`, `bili2233.cn`，以及纯 **BV号** (`BV...`) 和 **av号** (`av...`)
 - 快手：支持 `kuaishou.com`, `v.kuaishou.com`，以及APP分享的文本格式（如 `快手...快手`）
 - 小红书：支持 `xiaohongshu.com`, `xhslink.com`
+
+手动解析命令：
+
+```bash
+#解析
+#kkk解析
+#弹幕解析
+```
+
+其中 `#弹幕解析` 需要引用一条抖音或 B 站消息使用，会强制走弹幕烧录流程。
+
+<Callout type="warn">
+抖音和 B站的高画质、扫码登录、推送等能力都依赖登录态。没配 Cookie 也能做基础解析，但完整体验会受限。
+</Callout>
 
 ## 反馈渠道
 

@@ -5,22 +5,29 @@ description: karin-plugin-kkk 文檔
 
 import { Cards, Card } from 'fumadocs-ui/components/card';
 
-`karin-plugin-kkk` 係基於 <LinkPreview url="https://github.com/KarinJS/Karin" className="font-bold text-fd-primary hover:underline">Karin</LinkPreview> 框架開發嘅功能插件。
+`karin-plugin-kkk` 係基於 <LinkPreview url="https://github.com/KarinJS/Karin" className="font-bold text-fd-primary hover:underline">Karin</LinkPreview> 開發嘅多平台內容解析插件。
 
-## 核心業務
+## 核心定位
 
-本插件專注於**多平台短視頻/圖文內容嘅解析同推送**，旨在為群傾偈提供極致嘅媒體分享體驗。
+佢嘅重點唔係「再發一次連結」，而係喺攞到平台數據之後，直接渲染成適合群聊閱讀同瀏覽嘅圖片內容。
 
-通过監聽並解析用戶發送嘅分享連結，插件會自動提取影片、圖集同評論區熱評，並使用精美嘅 React 模板渲染成圖片發送，等群友無需跳轉 APP 即可瀏覽完整內容。
+- 自動識別抖音、B站、快手、小紅書分享連結
+- 提取影片、圖文、熱評、動態內容並渲染成圖片
+- 為抖音、B站提供動態推送、強制推送同統計能力
+- 支持彈幕燒錄、Live Photo 兼容導出等增強能力
 
-## 支持平台
+## 當前能力概覽
 
-| 平台 | 解析能力 | 評論區渲染 | 動態推送 | 掃碼登錄 |
-|-----|:---:|:---:|:---:|:---:|
-| **抖音** | ✓ | ✓ | ✓ | ✓ |
-| **B站** | ✓ | ✓ | ✓ | ✓ |
-| **快手** | ✓ | ✓ | — | — |
-| **小紅書** | ✓ | ✓ | — | — |
+| 平台 | 自動解析 | 評論渲染 | 動態推送 | 掃碼登錄 | 彈幕燒錄 |
+|-----|:---:|:---:|:---:|:---:|:---:|
+| **抖音** | ✓ | ✓ | ✓ | ✓ | ✓ |
+| **B站** | ✓ | ✓ | ✓ | ✓ | ✓ |
+| **快手** | ✓ | ✓ | — | — | — |
+| **小紅書** | ✓ | ✓ | — | — | — |
+
+## 推薦閱讀
+
+如果你第一次接入，先睇快速開始；如果你已經裝好插件，後面幾頁更適合按需查閱：
 
 <Cards>
   <Card title="快速開始" href="/zh-HK/docs/guide/quick-start" />
@@ -28,6 +35,13 @@ import { Cards, Card } from 'fumadocs-ui/components/card';
   <Card title="使用指南" href="/zh-HK/docs/guide/usage" />
   <Card title="常見問題" href="/zh-HK/docs/guide/faq" />
 </Cards>
+
+## 其他能力
+
+- `#kkk帮助` 查看而家可用命令
+- `#kkk解析统计` / `#kkk全局解析统计` 查看解析數據
+- `#kkk版本` / `#kkk更新日志` 查看本地更新日誌
+- `#kkk更新` 直接更新插件
 
 ## 開源協議
 

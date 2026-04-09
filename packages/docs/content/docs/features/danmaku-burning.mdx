@@ -6,9 +6,6 @@ description: 将弹幕硬编码到视频中
 import { Callout } from 'fumadocs-ui/components/callout';
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
-<Callout type="info">
-将在 **v2.17.0** 版本中发布！
-</Callout>
 <Callout type="warn">
 **性能警告**：弹幕烧录需要对视频进行完整的重新编码，这是一个非常消耗资源的操作。
 
@@ -18,7 +15,7 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 建议在开启此功能前，先确认你的运行环境是否支持硬件加速。
 </Callout>
 
-将视频弹幕**硬编码**到画面中，生成可直接分享的带弹幕视频。目前支持 **B站** 和 **抖音** 平台。
+当前版本已经支持将弹幕**硬编码**到视频画面中，生成可直接分享的带弹幕视频。目前只支持 **B站** 和 **抖音**。
 
 ## 支持平台
 
@@ -44,7 +41,12 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 ## 使用方式
 
-开启弹幕烧录后，发送视频链接时会自动获取弹幕并烧录到视频中。整个过程全自动，无需额外操作。
+你可以用两种方式触发烧录：
+
+1. 在平台配置中开启 `burnDanmaku`，之后命中链接就默认烧录
+2. 引用一条抖音 / B站消息，手动发送 `#弹幕解析`
+
+其中 `#弹幕解析` 适合“平时默认关闭，偶尔按需烧录”的场景。
 
 处理流程：
 1. 解析视频链接，获取视频和弹幕数据
@@ -119,4 +121,15 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 ## 配置
 
-在 Karin WebUI 的对应平台配置页面开启和调整弹幕烧录选项。
+在 Karin WebUI 中分别进入抖音或 B站配置页，重点关注：
+
+- 弹幕烧录（`burnDanmaku`）
+- 弹幕显示区域 / 弹幕区域（`danmakuArea`）
+- 弹幕字号（`danmakuFontSize`）
+- 弹幕透明度（`danmakuOpacity`）
+- 竖屏适配（`verticalMode`）
+- 视频编码格式（`videoCodec`）
+
+<Callout type="info">
+抖音和 B站的字段名称基本一致，但默认画质、竖屏适配说明和视频来源处理逻辑并不完全相同，建议分别调试。
+</Callout>

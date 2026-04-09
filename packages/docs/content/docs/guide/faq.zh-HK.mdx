@@ -12,7 +12,20 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 1. 檢查 Cookies 是否有效（可嘗試重新掃碼登錄）
 2. 檢查網絡是否正常
-3. 部分內容可能需要登錄態才能獲取
+3. 檢查對應平台 `switch` 是否開啟
+4. 檢查 `sendContent` 有冇關掉你想返回嘅內容
+5. 部分內容確實需要登錄態或者平台放行
+
+</Accordion>
+
+<Accordion title="點解只返回信息圖，冇影片文件？">
+
+先檢查以下幾項：
+
+1. 平台配置入面嘅 `sendContent` 係咪勾選咗 `video`
+2. 影片體積係咪超過咗上傳閾值或者群文件閾值
+3. 係咪開咗 `usefilelimit` 直接攔截大影片
+4. 協議端同 Karin 如果唔喺同一部機，優先試下 `videoSendMode: base64`
 
 </Accordion>
 
@@ -36,6 +49,8 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 - 使用自動畫質模式：`videoQuality: adapt`（抖音/小紅書）或 `videoQuality: 0`（B站）
 - 調低 `maxAutoVideoSize` 值
+- 必要時開啟 `compress`
+- 亦可以啟用 `usegroupfile`
 - 或直接設置較低畫質如 `720p`
 
 </Accordion>
@@ -45,16 +60,19 @@ import { Callout } from 'fumadocs-ui/components/callout';
 1. 確認 `push.switch` 已開啟
 2. 檢查 `pushlist.yaml` 中 `group_id` 格式：`群號:機器人帳號`
 3. 確保機器人在目標群中
-4. 查看日誌是否有報錯
+4. 確認當前帳號符合「邊個可以設置推送（`push.permission`）」
+5. 修改「推送開關（`push.switch`）」或權限後記得重啟
+6. 查看日誌是否有報錯
 
 </Accordion>
-
 
 <Accordion title="如何手動觸發推送？">
 
 ```
 #抖音强制推送    → 當前群
 #B站强制推送     → 當前群
+#抖音全部强制推送 → 所有群
+#B站全部强制推送  → 所有群
 ```
 
 </Accordion>
@@ -79,6 +97,14 @@ import { Callout } from 'fumadocs-ui/components/callout';
 - **改善方法**：
   - 嘗試在配置中將 `videoCodec` 設置為 `h265` 或 `av1`（如果硬件支持）。
   - 確保冇開啟過低嘅比特率限制。
+
+</Accordion>
+
+<Accordion title="`#弹幕解析` 同默認燒錄有咩分別？">
+
+- `burnDanmaku: true` 係平台默認行為，命中連結就會燒錄
+- `#弹幕解析` 係一次性強制燒錄入口，適合平時唔開、偶爾想手動燒錄嘅場景
+- 而家只對抖音同 B站有效
 
 </Accordion>
 

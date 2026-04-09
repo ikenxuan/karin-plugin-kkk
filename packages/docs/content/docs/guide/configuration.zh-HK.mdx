@@ -4,60 +4,98 @@ description: 推薦使用 WebUI 進行配置
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
-import { Steps, Step } from 'fumadocs-ui/components/steps';
-import { Cards, Card } from 'fumadocs-ui/components/card';
 
-## 推薦配置方式
+## 推薦方式
 
-本插件配置項多達近百項，涵蓋各平台解析規則、推送策略、渲染參數等。為降低使用門檻並減少格式錯誤，**強烈推薦**通过 **Karin WebUI** 進行可視化配置。
+插件而家嘅配置面已經覆蓋了解析、評論、推送、彈幕燒錄、Live Photo、上下載、代理等內容。日常使用時，**優先推薦喺 Karin WebUI 入面修改**。
 
-<Callout type="warn" title="不推薦手動修改配置文件">
-手動編輯配置文件極易出錯，且部分配置存在聯動關係，手動修改可能導致未知嘅異常。
+<Callout type="info">
+手動 YAML 仍然可以用，但而家更適合作為排障或者批量遷移時嘅兜底方案，唔建議當日常主要入口。
 </Callout>
 
-<Callout type="info" title="未來計劃">
-未來版本計劃**逐步棄用可讀寫嘅 YAML 配置文件**，轉而採用數據庫存儲用戶配置，屆時手動修改將不再生效。
+## 配置分區一覽
+
+| 分區 | 主要內容 | 典型配置 |
+|---|---|---|
+| Cookies 相關 | 平台登錄態 | 抖音、B站、快手、小紅書 Cookie |
+| 插件應用相關 | 全局行為 | 默認解析（`videoTool`）、渲染主題（`Theme`）、Live Photo、錯誤日誌、API 服務 |
+| 抖音相關 | 抖音解析同推送 | 解析時發送的內容（`sendContent`）、評論解析、畫質偏好（`videoQuality`）、掃碼登錄、彈幕燒錄 |
+| B站相關 | B站解析同推送 | 解析時發送的內容（`sendContent`）、圖文布局（`imageLayout`）、畫質偏好（`videoQuality`）、掃碼登錄、彈幕燒錄 |
+| 視頻上傳和下載相關 | 文件發送鏈路 | 本地文件（`videoSendMode`）、Base64、群文件上傳、壓縮影片（`compress`）、下載限速（`downloadThrottle`） |
+| 解析庫請求配置相關 | 網絡請求 | 超時時間（`timeout`）、User-Agent、代理 |
+| 推送列表相關 | 訂閱目標 | 綁定群聊、機器人帳號、推送類型同過濾條件 |
+
+## 邊啲改動通常要重啟
+
+- 默認解析 / 自定義優先級（`videoTool` / `priority`）
+- 掛載到 Karin（`APIServerMount`）
+- 邊個可以觸發掃碼登錄（`loginPerm`）
+- 推送開關（`push.switch`）
+- 邊個可以設置推送（`push.permission`）
+
+如果你喺 WebUI 改完之後覺得「冇生效」，先確認係咪改到呢類選項。
+
+## 最常用嘅幾組配置
+
+### 1. 通用行為
+
+- 默認解析（`videoTool`）：係咪令插件直接用最高優先級識別連結
+- 渲染圖片嘅主題色（`Theme`）：自動 / 淺色 / 深色
+- 分頁渲染（`multiPageRender`）：長圖內容太多時建議保持開啟
+- Live Photo 處理和發送方式（`livePhotoMode`）：只發影片、只發實況圖，或者兩者都發
+- Live Photo 靜態圖兼容系統（`livePhotoSystem`）：而家默認推薦 OPPO 兼容模式
+
+### 2. 抖音 / B站解析
+
+- 解析時發送的內容（`sendContent`）：決定返回影片信息、評論列表定係影片文件
+- 評論解析數量（`numcomment`）：控制評論圖長度
+- 畫質偏好（`videoQuality`）：高畫質更清晰，但更依賴登錄態同發送能力
+- 視頻信息返回形式（`videoInfoMode`）：圖片模式更直觀，文本模式更輕量
+- 彈幕燒錄（`burnDanmaku`）：會明顯增加耗時，建議按需開啟
+
+抖音另外仲有：
+
+- 次級評論解析數量（`subCommentLimit`）
+- 次級評論解析深度（`subCommentDepth`）
+- 合輯 Live 圖 BGM 合併方式（`liveImageMergeMode`）
+- 推送圖二維碼嘅類型（`push.shareType`）
+
+B站另外仲有：
+
+- 解析圖文動態時嘅頁面布局方式（`imageLayout`）
+- 視頻信息前返回嘅內容（`displayContent`）
+- 解析視頻動態時嘅畫質偏好（`push.pushVideoQuality`）
+- 視頻動態嘅體積上限（`push.pushMaxAutoVideoSize`）
+
+### 3. 上傳與下載
+
+- 本地影片發送方式（`videoSendMode`）：
+  `File 協議（本地文件）` 適合 Karin 同協議端喺同一部機
+  `Base64（編碼傳輸）` 適合跨機器，但會增加流量
+- 群文件上傳（`usegroupfile`）：適合超大影片
+- 壓縮影片（`compress`）：適合發送受限環境，但會明顯食 CPU
+- 下載限速（`downloadThrottle`）：適合成日遇到 `ECONNRESET` 嘅網絡環境
+
+### 4. 推送
+
+推送實際上由兩部分組成：
+
+1. 平台頁入面嘅推送設定
+2. 推送列表入面嘅具體訂閱目標
+
+平時建議直接喺群入面用命令維護訂閱：
+
+```bash
+#设置抖音推送 抖音号
+#设置B站推送 UID
+```
+
+只有做批量遷移、修復群號或者機器人 ID 嘅時候，先建議手動睇 YAML。
+
+## 手動配置只作兜底
+
+如果你只係日常使用，基本唔需要碰配置文件。除非你正做遷移、備份恢復或者批量修訂，否則直接使用 WebUI 就夠。
+
+<Callout type="warn">
+就算真係手動維護推送列表，都只要記住一點：綁定推送群時必須使用 `群號:機器人帳號` 呢種格式。呢個地方填錯，係推送唔生效最常見嘅原因之一。
 </Callout>
-
-## 如何進入配置頁面
-
-<Steps>
-<Step>
-
-### 啟動 Karin
-
-確保 Karin 框架已正常運行。
-
-</Step>
-<Step>
-
-### 訪問 WebUI 控制台
-
-在瀏覽器中打開 Karin WebUI 地址。
-
-</Step>
-<Step>
-
-### 導航至插件配置
-
-依次點擊：**插件管理** → **插件配置** → **karin-plugin-kkk**
-
-</Step>
-</Steps>
-
-## 遇到問題？
-
-如果遇到修改配置後不生效，或有任何配置相關嘅疑問，請通过以下渠道反饋：
-
-<Cards>
-  <Card 
-    title="QQ 群" 
-    description="795874649 - 實時交流與反饋"
-    href="https://qm.qq.com/q/DgLbCERYVG"
-  />
-  <Card 
-    title="GitHub Issue" 
-    description="提交問題或功能建議"
-    href="https://github.com/ikenxuan/karin-plugin-kkk/issues/new/choose"
-  />
-</Cards>
