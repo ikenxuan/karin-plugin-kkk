@@ -11,7 +11,7 @@ import { NetworksConfigType } from '@/types'
 
 import { BASE_HEADERS } from './constants'
 import { Downloader } from './Downloader'
-import { getErrorDescription, isRecoverableNetworkError, sanitizeHeaders } from './helpers'
+import { extractTotalBytesFromHeaders, getErrorDescription, isRecoverableNetworkError, sanitizeHeaders } from './helpers'
 import type { CustomAxiosRequestConfig, DownloadResult, ProgressCallback, ThrottleConfig } from './types'
 
 /**
@@ -276,16 +276,60 @@ export class Network {
    * 适用于获取视频流的完整大小
    */
   async getHeaders (): Promise<AxiosResponse['headers']> {
-    try {
-      const response = await this.axiosInstance({
+    const tryRequest = async (
+      method: 'HEAD' | 'GET',
+      extraHeaders?: Record<string, string>
+    ): Promise<AxiosResponse | null> => {
+      const response = await this.axiosInstance.request({
         ...this.config,
-        method: 'GET',
+        method,
+        responseType: 'stream',
+        maxRedirects: 5,
         headers: {
           ...this.config.headers,
-          Range: 'bytes=0-0'
+          ...extraHeaders
+        },
+        skipRetry: true,
+        validateStatus: () => true
+      } as CustomAxiosRequestConfig)
+
+      const stream = response.data as { on?: (event: string, listener: (...args: any[]) => void) => void, destroy?: () => void } | undefined
+      if (stream && typeof stream.destroy === 'function') {
+        stream.on?.('error', () => {})
+        stream.destroy()
+      }
+
+      if (response.status >= 200 && response.status < 400) {
+        return response
+      }
+
+      logger.debug(`获取响应头时 ${method} 探测返回 HTTP ${response.status}，继续尝试其他策略`)
+      return null
+    }
+
+    try {
+      const headResponse = await tryRequest('HEAD')
+      if (headResponse) {
+        const totalBytes = extractTotalBytesFromHeaders(headResponse.headers)
+        if (totalBytes > 0 || headResponse.headers['content-type']) {
+          return headResponse.headers
         }
+      }
+
+      const rangedResponse = await tryRequest('GET', {
+        Range: 'bytes=0-0'
       })
-      return response.headers
+      if (rangedResponse) {
+        return rangedResponse.headers
+      }
+
+      const fallbackResponse = await tryRequest('GET')
+      if (fallbackResponse) {
+        return fallbackResponse.headers
+      }
+
+      const sanitized = sanitizeHeaders(this.headers)
+      throw new Error(`获取响应头失败: 所有探测方式均未返回有效响应, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`)
     } catch (error) {
       if (error instanceof AxiosError) {
         const sanitized = sanitizeHeaders(this.headers)

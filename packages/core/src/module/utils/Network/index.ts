@@ -7,6 +7,7 @@ export { BASE_HEADERS } from './constants'
 export { Downloader } from './Downloader'
 export {
   calculateBackoffDelay,
+  extractTotalBytesFromHeaders,
   formatBytes,
   getErrorDescription,
   isRecoverableNetworkError,

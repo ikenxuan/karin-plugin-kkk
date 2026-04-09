@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import karin, { type Contact, logger, Message, segment } from 'node-karin'
 import type { AxiosHeaders, AxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'node-karin/axios'
 
-import { baseHeaders, Common, compressVideo, getMediaDuration, Networks } from '@/module/utils'
+import { baseHeaders, Common, compressVideo, extractTotalBytesFromHeaders, getMediaDuration, Networks } from '@/module/utils'
 import { Config } from '@/module/utils/Config'
 import type { pushlistConfig } from '@/types/config/pushlist'
 
@@ -301,10 +301,10 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
 export const downloadVideo = async (event: Message, downloadOpt: downloadFileOptions, uploadOpt?: uploadFileOptions): Promise<boolean> => {
   /** 获取文件大小 */
   const fileHeaders = await new Networks({ url: downloadOpt.video_url, headers: downloadOpt.headers ?? baseHeaders }).getHeaders()
-  const fileSizeContent = fileHeaders['content-range']?.match(/\/(\d+)/) ? parseInt(fileHeaders['content-range']?.match(/\/(\d+)/)[1], 10) : 0
+  const fileSizeContent = extractTotalBytesFromHeaders(fileHeaders)
   const fileSizeInMB = (fileSizeContent / (1024 * 1024)).toFixed(2)
   const fileSize = parseInt(parseFloat(fileSizeInMB).toFixed(2))
-  if (Config.upload.usefilelimit && fileSize > Config.upload.filelimit) {
+  if (fileSizeContent > 0 && Config.upload.usefilelimit && fileSize > Config.upload.filelimit) {
     const message = segment.text(`视频：「${downloadOpt.title.originTitle ??
       'Error: 文件名获取失败'}」大小 (${fileSizeInMB} MB) 超出最大限制（设定值：${Config.upload.filelimit} MB），已取消上传`)
     const selfId = event.selfId || uploadOpt?.activeOption?.uin as string

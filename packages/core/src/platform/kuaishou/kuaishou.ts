@@ -1,6 +1,6 @@
 import { type Message } from 'node-karin'
 
-import { Base, downloadVideo, Networks, Render } from '@/module'
+import { Base, downloadVideo, extractTotalBytesFromHeaders, Networks, Render } from '@/module'
 import { Config } from '@/module/utils/Config'
 import { kuaishouComments } from '@/platform/kuaishou'
 import type { ExtendedKuaishouOptionsType, KuaishouDataTypes } from '@/types'
@@ -27,7 +27,7 @@ export class Kuaishou extends Base {
     })
     const CommentsData = await kuaishouComments(data.CommentsData.data, transformedData)
     const fileHeaders = await new Networks({ url: video_url, headers: this.headers }).getHeaders()
-    const fileSizeContent = fileHeaders['content-range']?.match(/\/(\d+)/) ? parseInt(fileHeaders['content-range']?.match(/\/(\d+)/)[1], 10) : 0
+    const fileSizeContent = extractTotalBytesFromHeaders(fileHeaders)
     const fileSizeInMB = (fileSizeContent / (1024 * 1024)).toFixed(2)
     const img = await Render(this.e, 'kuaishou/comment', {
       Type: '视频',

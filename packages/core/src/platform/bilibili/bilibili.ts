@@ -34,6 +34,7 @@ import {
   Count,
   downloadFile,
   downloadVideo,
+  extractTotalBytesFromHeaders,
   fileInfo,
   fixM4sFile,
   loopVideoWithTransition,
@@ -1517,8 +1518,8 @@ export const getvideosize = async (videourl: string, audiourl: string, bvid: str
     }
   }).getHeaders()
 
-  const videoSize = videoheaders['content-range']?.match(/\/(\d+)/) ? parseInt(videoheaders['content-range']?.match(/\/(\d+)/)[1], 10) : 0
-  const audioSize = audioheaders['content-range']?.match(/\/(\d+)/) ? parseInt(audioheaders['content-range']?.match(/\/(\d+)/)[1], 10) : 0
+  const videoSize = extractTotalBytesFromHeaders(videoheaders)
+  const audioSize = extractTotalBytesFromHeaders(audioheaders)
 
   const videoSizeInMB = (videoSize / (1024 * 1024)).toFixed(2)
   const audioSizeInMB = (audioSize / (1024 * 1024)).toFixed(2)

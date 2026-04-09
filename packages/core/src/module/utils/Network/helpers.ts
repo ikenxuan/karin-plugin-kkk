@@ -152,6 +152,30 @@ export const formatBytes = (bytes: number): string => {
 }
 
 /**
+ * 从响应头中提取文件总字节数
+ * @param headers 响应头
+ * @returns 文件总大小，无法提取时返回 0
+ */
+export const extractTotalBytesFromHeaders = (
+  headers?: Record<string, unknown> | null
+): number => {
+  if (!headers) return 0
+
+  const contentRange = headers['content-range']
+  const contentRangeText = Array.isArray(contentRange) ? contentRange[0] : String(contentRange ?? '')
+  const rangeMatch = contentRangeText.match(/\/(\d+)(?:\s*$)/)
+  if (rangeMatch) {
+    return Number.parseInt(rangeMatch[1], 10)
+  }
+
+  const contentLength = headers['content-length']
+  const contentLengthText = Array.isArray(contentLength) ? contentLength[0] : String(contentLength ?? '')
+  const parsedLength = Number.parseInt(contentLengthText, 10)
+
+  return Number.isFinite(parsedLength) ? parsedLength : 0
+}
+
+/**
  * 清理文件名，移除不安全字符
  * @param filename 原始文件名
  * @returns 安全的文件名
