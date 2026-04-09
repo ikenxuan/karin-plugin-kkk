@@ -586,6 +586,8 @@ export class DouYin extends Base {
         const sendvideofile = true
         type VideoType = DyVideoWork['aweme_detail']['video']
         let video: VideoType | null = null
+        const douyinMediaReferer = VideoData.data.aweme_detail.share_url ||
+          `https://www.douyin.com/video/${VideoData.data.aweme_detail.aweme_id}`
         if (isVideo) {
           // 视频地址特殊判断：play_addr_h264、play_addr、
           video = VideoData.data.aweme_detail.video as VideoType
@@ -605,7 +607,7 @@ export class DouYin extends Base {
             url: video.bit_rate[0].play_addr.url_list[2],
             headers: {
               ...this.headers,
-              Referer: video.bit_rate[0].play_addr.url_list[0]
+              Referer: douyinMediaReferer
             }
           }).getLongLink()
           const title = VideoData.data.aweme_detail.preview_title.substring(0, 80).replace(/[\\/:*?"<>|\r\n]/g, ' ') // video title
@@ -788,7 +790,7 @@ export class DouYin extends Base {
           if ((this.forceBurnDanmaku || Config.douyin.burnDanmaku) && danmakuList.length > 0) {
             const videoFile = await downloadFile(g_video_url, {
               title: `Douyin_V_tmp_${Date.now()}.mp4`,
-              headers: { ...baseHeaders, Referer: g_video_url }
+              headers: { ...baseHeaders, Referer: douyinMediaReferer }
             })
             if (videoFile.filepath) {
               const resultPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
@@ -821,13 +823,14 @@ export class DouYin extends Base {
               this.e,
               {
                 video_url: g_video_url,
+                expectedSizeBytes: video?.bit_rate[0]?.play_addr.data_size,
                 title: {
                   timestampTitle: `tmp_${Date.now()}.mp4`,
                   originTitle: `${g_title}.mp4`
                 },
                 headers: {
                   ...baseHeaders,
-                  Referer: g_video_url
+                  Referer: douyinMediaReferer
                 }
               },
               {

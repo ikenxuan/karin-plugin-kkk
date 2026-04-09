@@ -71,6 +71,42 @@ export const sanitizeHeaders = (
 }
 
 /**
+ * 从响应头中提取资源总大小（字节）
+ * @param headers 响应头
+ * @returns 资源总大小，无法解析时返回 null
+ */
+export const extractTotalSizeFromHeaders = (
+  headers: Record<string, unknown> | AxiosRequestConfig['headers'] | undefined
+): number | null => {
+  if (!headers) return null
+
+  const normalizedHeaders = Object.fromEntries(
+    Object.entries(headers).map(([key, value]) => [key.toLowerCase(), value])
+  )
+
+  const contentRange = normalizedHeaders['content-range']
+  if (typeof contentRange === 'string') {
+    const matched = contentRange.match(/\/(\d+)$/)
+    if (matched) {
+      const totalBytes = Number.parseInt(matched[1], 10)
+      if (Number.isFinite(totalBytes) && totalBytes > 0) {
+        return totalBytes
+      }
+    }
+  }
+
+  const contentLength = normalizedHeaders['content-length']
+  if (typeof contentLength === 'string' || typeof contentLength === 'number') {
+    const totalBytes = Number.parseInt(String(contentLength), 10)
+    if (Number.isFinite(totalBytes) && totalBytes > 0) {
+      return totalBytes
+    }
+  }
+
+  return null
+}
+
+/**
  * 判断错误是否为可恢复的网络错误
  * @param error 错误对象
  * @returns 是否为可恢复错误

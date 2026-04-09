@@ -14,6 +14,25 @@ import { Downloader } from './Downloader'
 import { getErrorDescription, isRecoverableNetworkError, sanitizeHeaders } from './helpers'
 import type { CustomAxiosRequestConfig, DownloadResult, ProgressCallback, ThrottleConfig } from './types'
 
+const isSuccessfulProbeStatus = (status: number): boolean => status >= 200 && status < 400
+
+const releaseResponseData = (response?: AxiosResponse): void => {
+  const data = response?.data as { destroy?: () => void, resume?: () => void } | undefined
+  if (!data) return
+
+  try {
+    data.resume?.()
+  } catch {
+    // ignore stream cleanup failure
+  }
+
+  try {
+    data.destroy?.()
+  } catch {
+    // ignore stream cleanup failure
+  }
+}
+
 /**
  * 网络请求类
  * 支持常规请求、文件下载（带限速和断点续传）、重定向跟踪等功能
@@ -182,7 +201,8 @@ export class Network {
           url: targetUrl,
           method,
           maxRedirects: 5,
-          validateStatus: (status) => status >= 200 && status < 400,
+          validateStatus: isSuccessfulProbeStatus,
+          responseType: 'stream',
           headers: method === 'get' ? { ...this.headers, Range: 'bytes=0-0' } : this.headers,
           skipRetry: true
         } as CustomAxiosRequestConfig)
@@ -191,9 +211,11 @@ export class Network {
           (response.request as any)?.res?.responseUrl ??
           (response.config as any)?.url ??
           targetUrl
+        releaseResponseData(response)
         return finalUrl
       } catch (error) {
         const axiosError = error as AxiosError
+        releaseResponseData(axiosError.response as AxiosResponse | undefined)
 
         // 处理所有重定向状态码
         const redirectStatuses = [301, 302, 303, 307, 308]
@@ -276,27 +298,87 @@ export class Network {
    * 适用于获取视频流的完整大小
    */
   async getHeaders (): Promise<AxiosResponse['headers']> {
-    try {
-      const response = await this.axiosInstance({
-        ...this.config,
-        method: 'GET',
-        headers: {
-          ...this.config.headers,
-          Range: 'bytes=0-0'
+    const probeConfigs: Array<{ label: string, config: CustomAxiosRequestConfig }> = [
+      {
+        label: 'HEAD',
+        config: {
+          ...this.config,
+          method: 'HEAD',
+          responseType: 'stream',
+          skipRetry: true
         }
-      })
-      return response.headers
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        const sanitized = sanitizeHeaders(this.headers)
-        const errorDesc = getErrorDescription(error)
-        const errorMsg = `获取响应头失败: ${errorDesc}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`
-        logger.error(errorMsg)
-        throw new Error(errorMsg)
+      },
+      {
+        label: 'GET_RANGE',
+        config: {
+          ...this.config,
+          method: 'GET',
+          responseType: 'stream',
+          headers: {
+            ...this.config.headers,
+            Range: 'bytes=0-0'
+          },
+          skipRetry: true
+        }
+      },
+      {
+        label: 'GET_FULL',
+        config: {
+          ...this.config,
+          method: 'GET',
+          responseType: 'stream',
+          skipRetry: true
+        }
       }
-      logger.error(error)
-      throw error
+    ]
+
+    let lastError: unknown = null
+
+    for (const probe of probeConfigs) {
+      try {
+        const response = await this.axiosInstance(probe.config)
+        if (isSuccessfulProbeStatus(response.status)) {
+          releaseResponseData(response)
+          return response.headers
+        }
+
+        releaseResponseData(response)
+        lastError = new Error(`${probe.label} 返回了 HTTP ${response.status}`)
+        logger.debug(`[karin-plugin-kkk] ${probe.label} 获取响应头返回 HTTP ${response.status}，继续尝试备用探测方案`)
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          const status = error.response?.status
+          if (
+            status &&
+            isSuccessfulProbeStatus(status) &&
+            error.response?.headers &&
+            Object.keys(error.response.headers).length > 0
+          ) {
+            releaseResponseData(error.response as AxiosResponse)
+            logger.warn(`[karin-plugin-kkk] ${probe.label} 在读取响应体时被中断，已回退为直接使用已收到的响应头`)
+            return error.response.headers
+          }
+        }
+
+        if (error instanceof AxiosError) {
+          releaseResponseData(error.response as AxiosResponse | undefined)
+          logger.debug(`[karin-plugin-kkk] ${probe.label} 获取响应头失败: ${getErrorDescription(error)}`)
+        }
+
+        lastError = error
+      }
     }
+
+    if (lastError instanceof AxiosError) {
+      const sanitized = sanitizeHeaders(this.headers)
+      const errorDesc = getErrorDescription(lastError)
+      const errorMsg = `获取响应头失败: ${errorDesc}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`
+      logger.error(errorMsg)
+      throw new Error(errorMsg)
+    }
+
+    logger.error(lastError)
+    throw lastError
   }
 
   /**
@@ -306,11 +388,14 @@ export class Network {
     try {
       const response = await this.axiosInstance({
         ...this.config,
-        method: 'GET'
+        method: 'GET',
+        responseType: 'stream'
       })
+      releaseResponseData(response)
       return response.headers
     } catch (error) {
       if (error instanceof AxiosError) {
+        releaseResponseData(error.response as AxiosResponse | undefined)
         const sanitized = sanitizeHeaders(this.headers)
         const errorDesc = getErrorDescription(error)
         const errorMsg = `获取完整响应头失败: ${errorDesc}, URL: ${this.url}, Headers: ${JSON.stringify(sanitized)}`

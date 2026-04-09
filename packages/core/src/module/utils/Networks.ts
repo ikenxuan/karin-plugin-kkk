@@ -13,6 +13,7 @@ export {
   baseHeaders,
   DEFAULT_THROTTLE_CONFIG,
   Downloader,
+  extractTotalSizeFromHeaders,
   formatBytes,
   getErrorDescription,
   isRecoverableNetworkError,

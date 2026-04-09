@@ -460,7 +460,11 @@ export class DouYinpush extends Base {
                     视频ID：${logger.green(Detail_Data.aweme_id)}\n
                     分享链接：${logger.green(Detail_Data.share_url)}
                     `)
-                const videoObj = douyinProcessVideos(Detail_Data.video.bit_rate, Config.douyin.videoQuality)
+                const videoObj = douyinProcessVideos(
+                  Detail_Data.video.bit_rate,
+                  Config.douyin.videoQuality,
+                  Config.douyin.maxAutoVideoSize
+                )
                 logger.debug('获取精确下载地址')
                 downloadUrl = await new Networks({
                   url: videoObj[0].play_addr.url_list[0],
@@ -469,7 +473,9 @@ export class DouYinpush extends Base {
                 // 下载视频
                 await downloadVideo(this.e, {
                   video_url: downloadUrl,
-                  title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${Detail_Data.desc}.mp4` }
+                  expectedSizeBytes: videoObj[0].play_addr.data_size,
+                  title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${Detail_Data.desc}.mp4` },
+                  headers: douyinBaseHeaders
                 }, { active: true, activeOption: { uin: botId, group_id: groupId } })
               } catch (error) {
                 throw new Error(`下载视频失败: ${error}`)
