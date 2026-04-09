@@ -8,6 +8,7 @@ import { AxiosError } from 'node-karin/axios'
 
 import {
   calculateBackoffDelay,
+  extractTotalSizeFromHeaders,
   formatBytes,
   getErrorDescription,
   isRecoverableNetworkError,
@@ -122,25 +123,40 @@ export class Downloader {
       // 检查 HTTP 状态码
       // 416 Range Not Satisfiable
       if (response.status === 416) {
-        logger.warn('服务器返回 416，文件可能已下载完成，验证文件大小...')
-        
+        logger.warn('服务器返回 416，开始严格校验本地文件是否真的完整...')
+
         if (fs.existsSync(this.filepath)) {
           const stats = fs.statSync(this.filepath)
-          logger.debug(`当前文件大小: ${formatBytes(stats.size)}`)
-          
-          // 如果文件大小合理（大于 1KB），认为下载完成
-          if (stats.size > 1024) {
-            logger.debug('文件大小合理，认为下载已完成')
+          const localSize = stats.size
+          const remoteTotalSize = extractTotalSizeFromHeaders(response.headers)
+          logger.debug(`当前文件大小: ${formatBytes(localSize)}`)
+
+          if (remoteTotalSize !== null && localSize === remoteTotalSize) {
+            logger.debug('416 校验通过，本地文件已完整下载')
             return {
               filepath: this.filepath,
-              totalBytes: stats.size
+              totalBytes: localSize
             }
+          }
+
+          if (remoteTotalSize !== null) {
+            logger.warn(`416 校验失败: 本地 ${formatBytes(localSize)}, 远端 ${formatBytes(remoteTotalSize)}，将删除残缺文件并重新下载`)
           } else {
-            // 文件太小，删除并重新下载
-            logger.warn('文件太小，删除并重新下载')
+            logger.warn('416 响应未提供可验证的远端总大小，不能将现有文件视为完整，准备重新下载')
+          }
+
+          if (fs.existsSync(this.filepath)) {
             fs.unlinkSync(this.filepath)
+          }
+
+          if (retryCount < this.maxRetries) {
+            const nextDelay = calculateBackoffDelay(retryCount)
+            logger.warn(`正在重试完整下载... (${retryCount + 1}/${this.maxRetries})，将在 ${nextDelay / 1000} 秒后重新开始`)
+            await new Promise(resolve => setTimeout(resolve, nextDelay))
             return this.download(progressCallback, retryCount + 1)
           }
+
+          throw new Error('服务器返回 416，但本地文件未通过完整性校验')
         }
       }
       
@@ -163,6 +179,26 @@ export class Downloader {
 
       // 检查服务器是否支持断点续传
       const supportsRange = response.status === 206
+      const contentRange = typeof response.headers['content-range'] === 'string'
+        ? response.headers['content-range']
+        : ''
+
+      if (startByte > 0 && supportsRange) {
+        const rangeStart = contentRange.match(/^bytes\s+(\d+)-/i)
+        const resumedFrom = rangeStart ? Number.parseInt(rangeStart[1], 10) : null
+
+        if (resumedFrom === null || resumedFrom !== startByte) {
+          logger.warn(`断点续传响应区间异常，期望从 ${formatBytes(startByte)} 继续，实际 Content-Range 为 "${contentRange || '缺失'}"，将重新下载整个文件`)
+          if (fs.existsSync(this.filepath)) {
+            fs.unlinkSync(this.filepath)
+          }
+          if (retryCount >= this.maxRetries) {
+            throw new Error(`断点续传响应区间异常，且已达到最大重试次数: ${contentRange || '缺失'}`)
+          }
+          return this.download(progressCallback, retryCount + 1)
+        }
+      }
+
       if (startByte > 0 && !supportsRange) {
         logger.warn('服务器不支持断点续传，将重新下载整个文件')
         if (fs.existsSync(this.filepath)) {
