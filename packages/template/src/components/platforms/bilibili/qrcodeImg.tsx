@@ -94,7 +94,7 @@ export const BilibiliQrcodeImg: React.FC<BilibiliQrcodeImgProps> = React.memo((p
           <div className="flex items-start justify-center gap-10 opacity-90" style={{ color: theme.text }}>
             {/* Step 1 */}
             <div className="flex flex-col items-center gap-4">
-              <div className="p-5 rounded-3xl bg-default-100/50 backdrop-blur-md">
+              <div className="p-5 rounded-3xl bg-surface/50 backdrop-blur-md">
                 <SiBilibili className="w-16 h-16" />
               </div>
               <span className="text-[28px] font-medium tracking-wide">打开哔哩哔哩</span>
@@ -102,7 +102,7 @@ export const BilibiliQrcodeImg: React.FC<BilibiliQrcodeImgProps> = React.memo((p
             <RiArrowRightFill className="w-10 h-10 mt-8 opacity-40" />
             {/* Step 2 */}
             <div className="flex flex-col items-center gap-4">
-              <div className="p-5 rounded-3xl bg-default-100/50 backdrop-blur-md">
+              <div className="p-5 rounded-3xl bg-surface/50 backdrop-blur-md">
                 <User className="w-16 h-16" />
               </div>
               <span className="text-[28px] font-medium tracking-wide">点击我的</span>
@@ -110,7 +110,7 @@ export const BilibiliQrcodeImg: React.FC<BilibiliQrcodeImgProps> = React.memo((p
             <RiArrowRightFill className="w-10 h-10 mt-8 opacity-40" />
             {/* Step 3 */}
             <div className="flex flex-col items-center gap-4">
-              <div className="p-5 rounded-3xl bg-default-100/50 backdrop-blur-md">
+              <div className="p-5 rounded-3xl bg-surface/50 backdrop-blur-md">
                 <ScanLine className="w-16 h-16" />
               </div>
               <span className="text-[28px] font-medium tracking-wide">右上角扫一扫</span>
@@ -136,7 +136,7 @@ export const BilibiliQrcodeImg: React.FC<BilibiliQrcodeImgProps> = React.memo((p
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center gap-8">
                 <div className="w-24 h-24 border-4 border-gray-200 rounded-full animate-spin" style={{ borderTopColor: theme.accent }} />
-                <span className="text-3xl text-default-500">未提供二维码图片</span>
+                <span className="text-3xl text-muted">未提供二维码图片</span>
               </div>
             )}
           </div>

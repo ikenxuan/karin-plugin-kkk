@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, Select, SelectItem, Tooltip } from '@heroui/react'
+import { Button, Card, Label, ListBox, Select, Tooltip } from '@heroui/react'
 import Editor from '@monaco-editor/react'
 import { Code, Copy, Download, FileJson, Save, Upload, X } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
@@ -34,8 +34,6 @@ interface JsonEditorProps {
 
 /**
  * JSON编辑器组件
- * @param props 组件属性
- * @returns JSX元素
  */
 export const JsonEditor: React.FC<JsonEditorProps> = ({
   data,
@@ -54,41 +52,40 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   const [jsonText, setJsonText] = useState<string>('')
   const [error, setError] = useState<string>('')
   const [isFormatted, setIsFormatted] = useState(true)
-  // 使用 useRef 跟踪内部变更，防止外部数据更新导致的光标跳动和输入重置
   const isInternalChange = useRef<boolean>(false)
 
-  // 配置 Monaco Editor 的 JSON 语法高亮
+  const toolbarButtonClass = 'h-8 rounded-xl border border-black/10 bg-black/[0.03] text-foreground shadow-none hover:bg-black/[0.05] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.06]'
+  const iconButtonClass = 'h-8 w-8 rounded-xl border border-black/10 bg-black/[0.03] text-foreground shadow-none hover:bg-black/[0.05] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.06]'
+
   const handleEditorWillMount = (monaco: any) => {
-    // 深色主题
     monaco.editor.defineTheme('json-dark', {
       base: 'vs-dark',
       inherit: true,
       rules: [
-        { token: 'string.key.json', foreground: '9CDCFE' }, // 键名 - 青色
-        { token: 'string.value.json', foreground: 'CE9178' }, // 字符串值 - 橙色
-        { token: 'number.json', foreground: 'B5CEA8' }, // 数字 - 浅绿
-        { token: 'keyword.json', foreground: '569CD6' }, // true/false/null - 蓝色
-        { token: 'delimiter.bracket.json', foreground: 'FFD700' }, // 括号 - 金色
-        { token: 'delimiter.colon.json', foreground: 'D4D4D4' }, // 冒号 - 灰色
-        { token: 'delimiter.comma.json', foreground: 'D4D4D4' } // 逗号 - 灰色
+        { token: 'string.key.json', foreground: '9CDCFE' },
+        { token: 'string.value.json', foreground: 'CE9178' },
+        { token: 'number.json', foreground: 'B5CEA8' },
+        { token: 'keyword.json', foreground: '569CD6' },
+        { token: 'delimiter.bracket.json', foreground: 'FFD700' },
+        { token: 'delimiter.colon.json', foreground: 'D4D4D4' },
+        { token: 'delimiter.comma.json', foreground: 'D4D4D4' }
       ],
       colors: {
-        'editor.background': '#1E1E1E'
+        'editor.background': '#09090B'
       }
     })
 
-    // 浅色主题
     monaco.editor.defineTheme('json-light', {
       base: 'vs',
       inherit: true,
       rules: [
-        { token: 'string.key.json', foreground: '001080' }, // 键名 - 深蓝
-        { token: 'string.value.json', foreground: 'A31515' }, // 字符串值 - 红色
-        { token: 'number.json', foreground: '098658' }, // 数字 - 深绿
-        { token: 'keyword.json', foreground: '0000FF' }, // true/false/null - 蓝色
-        { token: 'delimiter.bracket.json', foreground: '000000' }, // 括号 - 黑色
-        { token: 'delimiter.colon.json', foreground: '000000' }, // 冒号 - 黑色
-        { token: 'delimiter.comma.json', foreground: '000000' } // 逗号 - 黑色
+        { token: 'string.key.json', foreground: '001080' },
+        { token: 'string.value.json', foreground: 'A31515' },
+        { token: 'number.json', foreground: '098658' },
+        { token: 'keyword.json', foreground: '0000FF' },
+        { token: 'delimiter.bracket.json', foreground: '000000' },
+        { token: 'delimiter.colon.json', foreground: '000000' },
+        { token: 'delimiter.comma.json', foreground: '000000' }
       ],
       colors: {
         'editor.background': '#FFFFFF'
@@ -98,9 +95,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
 
   const editorTheme = isDarkMode ? 'json-dark' : 'json-light'
 
-  // 同步数据到JSON文本
   useEffect(() => {
-    // 如果是内部变更（用户输入），跳过本次同步
     if (isInternalChange.current) {
       isInternalChange.current = false
       return
@@ -112,60 +107,38 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
     }
   }, [data, isFormatted])
 
-  /**
-   * 解析JavaScript对象字面量或JSON
-   * @param text 文本内容
-   * @returns 解析后的对象
-   */
   const parseJavaScriptObject = (text: string): any => {
-    // 先尝试标准JSON解析
     try {
       return JSON.parse(text)
     } catch {
-      // JSON解析失败，尝试解析JavaScript对象字面量
       try {
         const cleanText = text
-          .replace(/`([^`]*)`/g, (_match, content) => {
-            return `"${content.trim()}"`
-          })
-          // 标准化属性名（处理没有引号的属性名）
+          .replace(/`([^`]*)`/g, (_match, content) => `"${content.trim()}"`)
           .replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g, '$1"$2":')
-          // 移除对象和数组末尾的逗号
           .replace(/,\s*([}\]])/g, '$1')
-          // 标准化冒号后的空格
           .replace(/:\s+/g, ': ')
 
-        // 使用Function构造器安全地解析JavaScript对象
-        // 注意：仅在开发环境工具中使用，生产环境需谨慎
-        const result = new Function('return ' + cleanText)()
-        return result
+        return new Function('return ' + cleanText)()
       } catch {
-        throw new Error('无法解析JavaScript对象或JSON格式')
+        throw new Error('无法解析 JavaScript 对象或 JSON 格式')
       }
     }
   }
 
-  /**
-   * 处理JSON数据变更
-   * @param value 新的JSON文本
-   */
   const handleJsonChange = (value: string | undefined) => {
     const text = value || ''
     setJsonText(text)
+
     try {
       const newData = parseJavaScriptObject(text)
       setError('')
-      // 标记为内部变更，防止 useEffect 再次覆盖
       isInternalChange.current = true
       onChange(newData)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'JSON格式错误')
+      setError(err instanceof Error ? err.message : 'JSON 格式错误')
     }
   }
 
-  /**
-   * 格式化JSON
-   */
   const formatJson = () => {
     try {
       const parsed = parseJavaScriptObject(jsonText)
@@ -177,9 +150,6 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
     }
   }
 
-  /**
-   * 压缩JSON
-   */
   const compressJson = () => {
     try {
       const parsed = parseJavaScriptObject(jsonText)
@@ -191,9 +161,6 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
     }
   }
 
-  /**
-   * 复制到剪贴板
-   */
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(jsonText)
@@ -203,9 +170,6 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
     }
   }
 
-  /**
-   * 导入JSON文件
-   */
   const importJson = () => {
     const input = document.createElement('input')
     input.type = 'file'
@@ -214,8 +178,8 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
       const file = (e.target as HTMLInputElement).files?.[0]
       if (file) {
         const reader = new FileReader()
-        reader.onload = (e) => {
-          const content = e.target?.result as string
+        reader.onload = (event) => {
+          const content = event.target?.result as string
           handleJsonChange(content)
         }
         reader.readAsText(file)
@@ -224,211 +188,197 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
     input.click()
   }
 
-  /**
-   * 导出JSON文件
-   */
   const exportJson = () => {
     const blob = new Blob([jsonText], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${platform}_${templateId}_${Date.now()}.json`
-    a.click()
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = `${platform}_${templateId}_${Date.now()}.json`
+    anchor.click()
     URL.revokeObjectURL(url)
   }
 
+  const renderToolButton = (label: string, icon: React.ReactNode, onPress: () => void, disabled = false) => (
+    <Tooltip delay={300}>
+      <Tooltip.Trigger>
+        <Button
+          className={iconButtonClass}
+          isDisabled={disabled}
+          isIconOnly
+          onPress={onPress}
+          size='sm'
+          variant='secondary'
+        >
+          {icon}
+        </Button>
+      </Tooltip.Trigger>
+      <Tooltip.Content className='rounded-xl border border-black/10 bg-white px-3 py-1.5 text-xs text-foreground shadow-lg dark:border-white/10 dark:bg-zinc-950' showArrow>
+        <Tooltip.Arrow />
+        {label}
+      </Tooltip.Content>
+    </Tooltip>
+  )
+
   return (
-    <div className='w-full h-full flex flex-col gap-2 p-3 bg-background'>
-      {/* 编辑器卡片 */}
-      <Card className='flex-1 shadow-sm overflow-hidden'>
-        <CardBody className='p-0 overflow-hidden flex flex-col'>
-          {/* 单行工具栏 */}
-          <div className='shrink-0 flex items-center justify-between gap-3 px-4 py-2.5 border-b border-divider'>
-            {/* 左侧：标题 + 操作按钮 */}
-            <div className='flex items-center gap-3'>
-              <div className='flex items-center gap-2'>
-                <Code className='w-4 h-4 text-primary' />
-                <h3 className='text-sm font-semibold text-foreground'>JSON 编辑器</h3>
-              </div>
-              
-              <div className='w-px h-5 bg-divider' />
-              
-              <div className='flex gap-1.5'>
-                <Button
-                  size='sm'
-                  variant='flat'
-                  color='primary'
-                  onPress={formatJson}
-                  isDisabled={readonly}
-                  className='h-7 px-3 text-xs'
-                >
-                  格式化
-                </Button>
-                <Button
-                  size='sm'
-                  variant='flat'
-                  color='secondary'
-                  onPress={compressJson}
-                  isDisabled={readonly}
-                  className='h-7 px-3 text-xs'
-                >
-                  压缩
-                </Button>
-              </div>
-            </div>
-            
-            {/* 右侧：文件选择 + 工具按钮 + 保存/取消（Modal 模式） */}
+    <div className='flex h-full w-full flex-col gap-2 bg-transparent p-3'>
+      <Card
+        className='flex min-h-0 flex-1 rounded-[32px] border border-black/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-zinc-950 dark:shadow-[0_28px_88px_rgba(0,0,0,0.55)]'
+        variant='transparent'
+      >
+        <Card.Header className='flex flex-row items-center justify-between gap-3 border-b border-black/10 px-4 py-3 dark:border-white/10'>
+          <div className='flex items-center gap-3'>
             <div className='flex items-center gap-2'>
-              {/* 数据文件选择器 */}
-              {availableDataFiles.length > 0 && (
-                <>
-                  <div className='flex items-center gap-2'>
-                    <FileJson className='w-3.5 h-3.5 text-warning' />
-                    <Select
-                      aria-label="选择数据文件"
-                      placeholder='选择数据文件'
-                      selectedKeys={selectedDataFile ? [selectedDataFile] : []}
-                      onSelectionChange={(keys) => {
-                        const key = Array.from(keys)[0] as string
-                        if (key && onDataFileChange) {
-                          onDataFileChange(key)
-                        }
-                      }}
-                      size='sm'
-                      variant='bordered'
-                      className='w-60'
-                      classNames={{
-                        trigger: 'h-7 min-h-7',
-                        value: 'text-foreground'
-                      }}
-                      popoverProps={{
-                        classNames: {
-                          content: isDarkMode ? 'dark bg-content1' : 'bg-content1'
-                        }
-                      }}
-                    >
-                      {availableDataFiles.map((filename) => (
-                        <SelectItem key={filename} className='text-foreground'>
-                          {filename.replace('.json', '')}
-                        </SelectItem>
-                      ))}
-                    </Select>
-                  </div>
-                  
-                  <div className='w-px h-5 bg-divider' />
-                </>
-              )}
-              
-              <div className='flex gap-1.5'>
-                <Tooltip content='复制到剪贴板' placement='bottom' delay={300}>
-                  <Button
-                    size='sm'
-                    variant='bordered'
-                    isIconOnly
-                    onPress={copyToClipboard}
-                    className='h-7 w-7'
-                  >
-                    <Copy className='w-3.5 h-3.5' />
-                  </Button>
-                </Tooltip>
-                <Tooltip content='导入 JSON 文件' placement='bottom' delay={300}>
-                  <Button
-                    size='sm'
-                    variant='bordered'
-                    isIconOnly
-                    onPress={importJson}
-                    isDisabled={readonly}
-                    className='h-7 w-7'
-                  >
-                    <Upload className='w-3.5 h-3.5' />
-                  </Button>
-                </Tooltip>
-                <Tooltip content='导出 JSON 文件' placement='bottom' delay={300}>
-                  <Button
-                    size='sm'
-                    variant='bordered'
-                    isIconOnly
-                    onPress={exportJson}
-                    className='h-7 w-7'
-                  >
-                    <Download className='w-3.5 h-3.5' />
-                  </Button>
-                </Tooltip>
-              </div>
-              
-              {/* Modal 模式的保存/取消按钮 */}
-              {onSave && onCancel && (
-                <>
-                  <div className='w-px h-5 bg-divider' />
-                  <div className='flex gap-1.5'>
-                    <Button
-                      size='sm'
-                      variant='flat'
-                      onPress={onCancel}
-                      className='h-7 px-3 text-xs'
-                      startContent={<X className='w-3.5 h-3.5' />}
-                    >
-                      取消
-                    </Button>
-                    <Button
-                      size='sm'
-                      color='primary'
-                      onPress={onSave}
-                      isLoading={isSaving}
-                      className='h-7 px-3 text-xs'
-                      startContent={<Save className='w-3.5 h-3.5' />}
-                    >
-                      保存并重载
-                    </Button>
-                  </div>
-                </>
-              )}
+              <Code className='h-4 w-4 text-foreground' />
+              <h3 className='text-sm font-semibold text-foreground'>JSON 编辑器</h3>
+            </div>
+
+            <div className='h-5 w-px bg-black/10 dark:bg-white/10' />
+
+            <div className='flex gap-1.5'>
+              <Button
+                className={toolbarButtonClass}
+                isDisabled={readonly}
+                onPress={formatJson}
+                size='sm'
+                variant='secondary'
+              >
+                格式化
+              </Button>
+              <Button
+                className={toolbarButtonClass}
+                isDisabled={readonly}
+                onPress={compressJson}
+                size='sm'
+                variant='secondary'
+              >
+                压缩
+              </Button>
             </div>
           </div>
 
-          {/* 错误提示条 */}
-          {error && (
-            <div className='shrink-0 px-4 py-2 bg-danger-50 border-b border-danger-200'>
-              <div className='flex items-center gap-2'>
-                <svg className='w-4 h-4 text-danger shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
-                </svg>
-                <span className='text-xs text-danger'>{error}</span>
-              </div>
-            </div>
-          )}
+          <div className='flex items-center gap-2'>
+            {availableDataFiles.length > 0 && (
+              <>
+                <div className='flex items-center gap-2'>
+                  <FileJson className='h-3.5 w-3.5 text-muted' />
+                  <Select
+                    aria-label='选择数据文件'
+                    className='w-60'
+                    placeholder='选择数据文件'
+                    value={selectedDataFile ?? null}
+                    variant='secondary'
+                    onChange={(value) => {
+                      if (typeof value === 'string' && value && onDataFileChange) {
+                        onDataFileChange(value)
+                      }
+                    }}
+                  >
+                    <Label className='sr-only'>选择数据文件</Label>
+                    <Select.Trigger className='h-8 rounded-xl border border-black/10 bg-black/[0.03] px-3 py-2 text-sm shadow-none hover:bg-black/[0.05] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.06]'>
+                      <Select.Value className='text-sm text-foreground' />
+                      <Select.Indicator className='text-muted' />
+                    </Select.Trigger>
+                    <Select.Popover className={isDarkMode ? 'dark' : 'light'}>
+                      <ListBox className='rounded-2xl border border-black/8 bg-white p-1 shadow-[0_16px_48px_rgba(15,23,42,0.12)] dark:border-white/10 dark:bg-zinc-950 dark:shadow-[0_18px_54px_rgba(0,0,0,0.55)]'>
+                        {availableDataFiles.map((filename) => (
+                          <ListBox.Item
+                            key={filename}
+                            className='rounded-xl px-3 py-2 text-sm text-foreground data-[hovered=true]:bg-black/[0.04] dark:data-[hovered=true]:bg-white/[0.06]'
+                            id={filename}
+                            textValue={filename.replace('.json', '')}
+                          >
+                            {filename.replace('.json', '')}
+                            <ListBox.ItemIndicator />
+                          </ListBox.Item>
+                        ))}
+                      </ListBox>
+                    </Select.Popover>
+                  </Select>
+                </div>
 
-          {/* 编辑器 */}
-          <div 
-            className='flex-1 w-full relative overflow-hidden'
-            onKeyDown={(e) => {
-              // 防止 Modal 捕获 Enter 键
-              if (e.key === 'Enter') {
-                e.stopPropagation()
-              }
+                <div className='h-5 w-px bg-black/10 dark:bg-white/10' />
+              </>
+            )}
+
+            <div className='flex gap-1.5'>
+              {renderToolButton('复制到剪贴板', <Copy className='h-3.5 w-3.5' />, copyToClipboard)}
+              {renderToolButton('导入 JSON 文件', <Upload className='h-3.5 w-3.5' />, importJson, readonly)}
+              {renderToolButton('导出 JSON 文件', <Download className='h-3.5 w-3.5' />, exportJson)}
+            </div>
+
+            {onSave && onCancel && (
+              <>
+                <div className='h-5 w-px bg-black/10 dark:bg-white/10' />
+                <div className='flex gap-1.5'>
+                  <Button
+                    className={toolbarButtonClass}
+                    onPress={onCancel}
+                    size='sm'
+                    variant='secondary'
+                  >
+                    <X className='h-3.5 w-3.5' />
+                    取消
+                  </Button>
+                  <Button
+                    className='h-8 rounded-xl border border-black bg-black text-white shadow-none hover:bg-black/90 dark:border-white dark:bg-white dark:text-black dark:hover:bg-white/90'
+                    isDisabled={!!error}
+                    isPending={isSaving}
+                    onPress={onSave}
+                    size='sm'
+                    variant='secondary'
+                  >
+                    {({ isPending }) => (
+                      <>
+                        <Save className='h-3.5 w-3.5' />
+                        {isPending ? '保存中...' : '保存并重载'}
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+        </Card.Header>
+
+        {error && (
+          <div className='shrink-0 border-b border-danger/20 bg-danger-soft/70 px-4 py-2 dark:border-danger/30 dark:bg-danger-soft/40'>
+            <div className='flex items-center gap-2 text-danger'>
+              <svg className='h-4 w-4 shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
+              </svg>
+              <span className='text-xs'>{error}</span>
+            </div>
+          </div>
+        )}
+
+        <Card.Content
+          className='relative flex min-h-0 flex-1 px-0 pb-0'
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.stopPropagation()
+            }
+          }}
+        >
+          <Editor
+            beforeMount={handleEditorWillMount}
+            defaultLanguage='json'
+            height='100%'
+            options={{
+              minimap: { enabled: false },
+              fontSize: 14,
+              formatOnPaste: true,
+              formatOnType: true,
+              readOnly: readonly,
+              scrollBeyondLastLine: false,
+              automaticLayout: true,
+              padding: { top: 16, bottom: 16 },
+              ariaLabel: 'JSON 编辑器'
             }}
-          >
-            <Editor
-              height="100%"
-              defaultLanguage="json"
-              value={jsonText}
-              onChange={handleJsonChange}
-              theme={editorTheme}
-              beforeMount={handleEditorWillMount}
-              options={{
-                minimap: { enabled: false },
-                fontSize: 14,
-                formatOnPaste: true,
-                formatOnType: true,
-                readOnly: readonly,
-                scrollBeyondLastLine: false,
-                automaticLayout: true,
-                padding: { top: 16, bottom: 16 },
-                ariaLabel: 'JSON 编辑器'
-              }}
-            />
-          </div>
-        </CardBody>
+            onChange={handleJsonChange}
+            theme={editorTheme}
+            value={jsonText}
+          />
+        </Card.Content>
       </Card>
     </div>
   )

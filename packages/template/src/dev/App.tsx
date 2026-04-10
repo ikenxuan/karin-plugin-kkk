@@ -1,8 +1,9 @@
-import { Camera, RefreshCw } from 'lucide-react'
+import { Breadcrumbs, Button, ButtonGroup, Toolbar } from '@heroui/react'
+import { Camera, Moon, Palette, RefreshCw, Sun } from 'lucide-react'
 import React from 'react'
 import { FaGithub } from 'react-icons/fa'
 import { LuInfo } from 'react-icons/lu'
-import { MdDashboard, MdFitScreen, MdInfoOutline } from 'react-icons/md'
+import { MdFitScreen, MdInfoOutline } from 'react-icons/md'
 import { Group, Panel, Separator } from 'react-resizable-panels'
 
 import { getEnabledComponents } from '../config/config'
@@ -10,10 +11,33 @@ import { DataService } from '../services/DataService'
 import { PlatformType } from '../types/platforms'
 import { DataFileSelector } from './components/DataFileSelector'
 import { MockDataEditorModal } from './components/MockDataEditorModal'
+import { PanelThemeControls } from './components/PanelThemeControls'
 import { PlatformSelector } from './components/PlatformSelector'
 import { PreviewPanel } from './components/PreviewPanel'
 import { ScreenshotPreviewModal } from './components/ScreenshotPreviewModal'
 import { getVersionEnabled, toggleVersionEnabled } from './utils/versionConfig'
+
+const PANEL_ACCENT_STORAGE_KEY = 'dev-panel-accent'
+
+const normalizeHexColor = (value: string) => {
+  const normalized = value.trim().replace('#', '')
+
+  if (normalized.length === 3) {
+    return `#${normalized.split('').map(char => `${char}${char}`).join('')}`.toLowerCase()
+  }
+
+  return `#${normalized.slice(0, 6)}`.toLowerCase()
+}
+
+const getContrastTextColor = (hexColor: string) => {
+  const hex = normalizeHexColor(hexColor).replace('#', '')
+  const red = Number.parseInt(hex.slice(0, 2), 16)
+  const green = Number.parseInt(hex.slice(2, 4), 16)
+  const blue = Number.parseInt(hex.slice(4, 6), 16)
+  const luminance = (red * 299 + green * 587 + blue * 114) / 1000
+
+  return luminance >= 150 ? '#09090b' : '#fafafa'
+}
 
 /**
  * URL参数接口
@@ -108,9 +132,14 @@ export const App: React.FC = () => {
   const [screenshotResult, setScreenshotResult] = React.useState<{ blob: Blob; download: () => void; copyToClipboard: () => Promise<void> } | null>(null)
   const [isScreenshotModalOpen, setIsScreenshotModalOpen] = React.useState(false)
   const [isEditorOpen, setIsEditorOpen] = React.useState(false)
+  const [isPanelThemeModalOpen, setIsPanelThemeModalOpen] = React.useState(false)
   const [isDarkMode, setIsDarkMode] = React.useState(() => {
     const saved = localStorage.getItem('dev-panel-dark-mode')
     return saved !== null ? saved === 'true' : false
+  })
+  const [panelAccentOverride, setPanelAccentOverride] = React.useState<string | null>(() => {
+    const saved = localStorage.getItem(PANEL_ACCENT_STORAGE_KEY)
+    return saved ? normalizeHexColor(saved) : null
   })
   
   // 版本信息开关状态
@@ -119,6 +148,30 @@ export const App: React.FC = () => {
   // 保存深色模式设置
   React.useEffect(() => {
     localStorage.setItem('dev-panel-dark-mode', String(isDarkMode))
+  }, [isDarkMode])
+
+  React.useEffect(() => {
+    if (panelAccentOverride) {
+      localStorage.setItem(PANEL_ACCENT_STORAGE_KEY, panelAccentOverride)
+      return
+    }
+
+    localStorage.removeItem(PANEL_ACCENT_STORAGE_KEY)
+  }, [panelAccentOverride])
+
+  React.useEffect(() => {
+    const nextTheme = isDarkMode ? 'dark' : 'light'
+    const root = document.documentElement
+    const body = document.body
+
+    root.classList.remove('light', 'dark')
+    body.classList.remove('light', 'dark')
+    root.classList.add(nextTheme)
+    body.classList.add(nextTheme)
+    root.dataset.theme = nextTheme
+    body.dataset.theme = nextTheme
+    root.style.colorScheme = nextTheme
+    body.style.colorScheme = nextTheme
   }, [isDarkMode])
   
   // 切换版本信息开关
@@ -433,139 +486,131 @@ export const App: React.FC = () => {
       import.meta.hot?.off('dev-data-updated', handleDevDataUpdated)
     }
   }, [selectedPlatform, selectedTemplate, selectedDataFile])
+
+  const shellTheme = isDarkMode ? 'dark' : 'light'
+  const componentTheme = templateData?.useDarkTheme ? 'dark' : 'light'
+  const resolvedPanelAccent = panelAccentOverride ?? (isDarkMode ? '#fafafa' : '#111111')
+  const resolvedPanelAccentForeground = getContrastTextColor(resolvedPanelAccent)
+  const resolvedPanelAccentHover = `color-mix(in oklab, ${resolvedPanelAccent} 88%, ${isDarkMode ? '#09090b' : '#fafafa'} 12%)`
+  const resolvedPanelAccentSoft = `color-mix(in oklab, ${resolvedPanelAccent} 14%, transparent)`
+  const resolvedPanelAccentSoftHover = `color-mix(in oklab, ${resolvedPanelAccent} 20%, transparent)`
+  const resolvedPanelDefault = isDarkMode ? '#18181b' : '#f4f4f5'
+  const resolvedPanelDefaultHover = isDarkMode ? '#232326' : '#ededed'
+  const panelThemeStyle = React.useMemo<React.CSSProperties>(() => ({
+    ['--background' as any]: isDarkMode ? '#09090b' : '#fafafa',
+    ['--foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
+    ['--surface' as any]: isDarkMode ? '#111113' : '#ffffff',
+    ['--surface-foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
+    ['--surface-secondary' as any]: isDarkMode ? '#18181b' : '#f5f5f5',
+    ['--surface-secondary-foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
+    ['--surface-tertiary' as any]: isDarkMode ? '#232326' : '#efefef',
+    ['--surface-tertiary-foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
+    ['--overlay' as any]: isDarkMode ? '#111113' : '#ffffff',
+    ['--overlay-foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
+    ['--muted' as any]: isDarkMode ? '#a1a1aa' : '#71717a',
+    ['--scrollbar' as any]: isDarkMode ? '#3f3f46' : '#d4d4d8',
+    ['--default' as any]: resolvedPanelDefault,
+    ['--default-foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
+    ['--segment' as any]: isDarkMode ? '#18181b' : '#f4f4f5',
+    ['--segment-foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
+    ['--border' as any]: isDarkMode ? '#27272a' : '#e4e4e7',
+    ['--separator' as any]: isDarkMode ? '#232326' : '#ededed',
+    ['--accent' as any]: resolvedPanelAccent,
+    ['--accent-foreground' as any]: resolvedPanelAccentForeground,
+    ['--accent-soft' as any]: resolvedPanelAccentSoft,
+    ['--accent-soft-foreground' as any]: resolvedPanelAccent,
+    ['--backdrop' as any]: isDarkMode ? 'rgba(0, 0, 0, 0.72)' : 'rgba(250, 250, 250, 0.82)',
+    ['--focus' as any]: resolvedPanelAccent,
+    ['--link' as any]: resolvedPanelAccent,
+    ['--field-background' as any]: isDarkMode ? '#111113' : '#ffffff',
+    ['--field-foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
+    ['--field-placeholder' as any]: isDarkMode ? '#71717a' : '#a1a1aa',
+    ['--field-border' as any]: isDarkMode ? '#27272a' : '#e4e4e7',
+    ['--field-border-width' as any]: '1px',
+    ['--color-accent' as any]: resolvedPanelAccent,
+    ['--color-accent-hover' as any]: resolvedPanelAccentHover,
+    ['--color-accent-foreground' as any]: resolvedPanelAccentForeground,
+    ['--color-accent-soft' as any]: resolvedPanelAccentSoft,
+    ['--color-accent-soft-hover' as any]: resolvedPanelAccentSoftHover,
+    ['--color-accent-soft-foreground' as any]: resolvedPanelAccent,
+    ['--color-default' as any]: resolvedPanelDefault,
+    ['--color-default-hover' as any]: resolvedPanelDefaultHover,
+    ['--color-default-foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
+    ['--surface-shadow' as any]: 'none',
+    ['--overlay-shadow' as any]: 'none',
+    ['--field-shadow' as any]: 'none'
+  }), [
+    isDarkMode,
+    resolvedPanelAccent,
+    resolvedPanelAccentForeground,
+    resolvedPanelAccentHover,
+    resolvedPanelAccentSoft,
+    resolvedPanelAccentSoftHover,
+    resolvedPanelDefault,
+    resolvedPanelDefaultHover
+  ])
+  const templateParts = selectedTemplate.split('/')
+  const dataFileLabel = selectedDataFile.replace(/\.json$/, '')
   
   return (
-    <>
-      <div className='flex h-screen bg-background'>
-        {/* 左侧垂直工具栏 */}
-        <div 
-          className={`w-16 bg-content1/95 backdrop-blur-xl shrink-0 flex flex-col items-center py-6 border-r border-divider ${isDarkMode ? 'dark' : ''}`}
-        >
-          {/* Logo 区域 */}
-          <div className='flex flex-col items-center gap-2 mb-6'>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 230 221"
-              className="w-10 h-10 text-foreground"
-            >
-              <path
-                d="M132.75,87.37l-53.72-53.37c-4.66-4.63-1.38-12.58,5.18-12.58h115.13c6.57,0,9.84,7.95,5.18,12.58l-53.72,53.37c-4.99,4.96-13.06,4.96-18.05,0Z"
-                fill="currentColor"
-              />
-              <path
-                d="M28.49,186.89l.03-51.42c-.02-6.57,7.92-9.87,12.56-5.23l57.02,57.02c4.64,4.64,1.34,12.41-5.23,12.39h-51.42c-7.04-.02-12.94-5.72-12.96-12.76Z"
-                fill="currentColor"
-              />
-              <path
-                d="M41.54,23.68l163.04,163.05c4.78,4.78,1.39,12.95-5.36,12.94h-47.88c-9.69,0-18.99-3.86-25.84-10.71L39.3,102.75c-6.85-6.85-10.7-16.15-10.7-25.84V29.04c0-6.76,8.16-10.14,12.94-5.36Z"
-                fill="currentColor"
-              />
-            </svg>
-          </div>
-        
-          <div className='w-10 h-px bg-divider mb-6' />
+    <div className={shellTheme} data-theme={shellTheme} style={panelThemeStyle}>
+      <div className='h-screen overflow-hidden bg-background text-foreground transition-colors duration-300'>
+        <Group orientation='horizontal' className='h-full w-full'>
+          <Panel defaultSize='18%' minSize='16%' maxSize='28%' id='sidebar'>
+            <aside className='flex h-full min-w-0 flex-col border-r border-border bg-background'>
+              <div className='flex h-14 shrink-0 items-center border-b border-border px-4'>
+                <div className='flex w-full items-center justify-between gap-3'>
+                  <div className='flex min-w-0 items-center gap-3'>
+                    <div className='flex size-10 shrink-0 items-center justify-center rounded-xl bg-foreground text-background'>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 230 221"
+                        className='h-6 w-6'
+                      >
+                        <path
+                          d="M132.75,87.37l-53.72-53.37c-4.66-4.63-1.38-12.58,5.18-12.58h115.13c6.57,0,9.84,7.95,5.18,12.58l-53.72,53.37c-4.99,4.96-13.06,4.96-18.05,0Z"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M28.49,186.89l.03-51.42c-.02-6.57,7.92-9.87,12.56-5.23l57.02,57.02c4.64,4.64,1.34,12.41-5.23,12.39h-51.42c-7.04-.02-12.94-5.72-12.96-12.76Z"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M41.54,23.68l163.04,163.05c4.78,4.78,1.39,12.95-5.36,12.94h-47.88c-9.69,0-18.99-3.86-25.84-10.71L39.3,102.75c-6.85-6.85-10.7-16.15-10.7-25.84V29.04c0-6.76,8.16-10.14,12.94-5.36Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </div>
 
-          {/* 面板深色模式切换 */}
-          <div className='flex flex-col items-center gap-2 mb-4'>
-            <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              className='p-2 active:scale-95 transition-all duration-200 group'
-            >
-              {isDarkMode ? (
-                <svg className='w-6 h-6 text-foreground-400 group-hover:text-warning transition-colors' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' />
-                </svg>
-              ) : (
-                <svg className='w-6 h-6 text-foreground-400 group-hover:text-primary transition-colors' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' />
-                </svg>
-              )}
-            </button>
-            <span className='text-xs font-medium text-foreground-500'>面板</span>
-          </div>
-        
-          {/* 占位 */}
-          <div className='flex-1' />
-
-          {/* GitHub 链接 */}
-          <div className='flex flex-col items-center gap-2'>
-            <a
-              href='https://github.com/ikenxuan/karin-plugin-kkk'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='p-2 active:scale-95 transition-all duration-200 group'
-              title='GitHub 仓库'
-            >
-              <FaGithub className='w-6 h-6 text-foreground-400 group-hover:text-foreground-600 transition-colors' />
-            </a>
-            <span className='text-[9px] font-medium text-foreground-500 text-center leading-tight'>GitHub</span>
-          </div>
-        </div>
-
-
-        {/* 菜单二 */}
-        <div className='flex-1 flex overflow-hidden'>
-          <Group orientation='horizontal' className='h-full w-full'>
-            {/* 左侧控制面板 */}
-            <Panel defaultSize='20%' minSize='15%' maxSize='40%' id='sidebar'>
-              <div className={`overflow-y-auto h-full scrollbar-hide bg-content1/95 backdrop-blur-xl border-r border-divider ${isDarkMode ? 'dark' : ''}`}>
-                {/* 头部状态卡片 */}
-                <div className='sticky top-0 z-10 from-content1 via-content1 to-content1/80 border-b border-divider/60 p-4 pb-3'>
-                  <div className='flex flex-col gap-3'>
-                    {/* 平台/模板路径 */}
-                    <div className='bg-default-50/80 rounded-xl p-2.5 border border-default-200/50'>
-                      <div className='flex items-center gap-1 flex-wrap'>
-                        {/* 平台图标 */}
-                        <div className='p-1 bg-default-100 rounded-md'>
-                          <MdDashboard className='w-3.5 h-3.5 text-default-600' />
-                        </div>
-                        
-                        {/* 平台名称 */}
-                        <span className='text-xs font-semibold text-default-700 px-1.5'>
-                          {selectedPlatform}
-                        </span>
-                        
-                        {/* 分隔符 */}
-                        <svg className='w-3 h-3 text-default-400' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
-                        </svg>
-                        
-                        {/* 模板路径 */}
-                        {selectedTemplate.split('/').map((part, index, array) => (
-                          <React.Fragment key={index}>
-                            <span 
-                              className={`text-xs font-medium px-1.5 py-0.5 rounded-md transition-colors ${
-                                index === array.length - 1 
-                                  ? 'bg-primary/15 text-primary font-semibold' 
-                                  : 'text-default-600'
-                              }`}
-                            >
-                              {part}
-                            </span>
-                            {index < array.length - 1 && (
-                              <svg className='w-2.5 h-2.5 text-default-300' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
-                              </svg>
-                            )}
-                          </React.Fragment>
-                        ))}
+                    <div className='min-w-0'>
+                      <div className='text-[10px] font-semibold tracking-[0.24em] text-muted uppercase'>
+                        KKK Dev Panel
                       </div>
+                      <div className='text-sm font-semibold leading-tight text-foreground'>组件开发工作台</div>
                     </div>
                   </div>
+
+                  <Button
+                    aria-label='GitHub 仓库'
+                    isIconOnly
+                    onPress={() => window.open('https://github.com/ikenxuan/karin-plugin-kkk', '_blank', 'noopener,noreferrer')}
+                    size='sm'
+                    variant='secondary'
+                  >
+                    <FaGithub className='size-4' />
+                  </Button>
                 </div>
-                
-                {/* 内容区域 */}
-                <div className='p-4 space-y-4'>
-              
+              </div>
+
+              <div className='min-h-0 flex-1 overflow-y-auto px-4 py-4'>
+                <div className='space-y-3'>
                   <PlatformSelector
                     selectedPlatform={selectedPlatform}
                     selectedTemplate={selectedTemplate}
                     onPlatformChange={handlePlatformChange}
                     onTemplateChange={handleTemplateChange}
                   />
-                
-                  <div className='w-full h-px bg-divider/60' />
-                
+
                   <DataFileSelector
                     availableDataFiles={availableDataFiles}
                     selectedDataFile={selectedDataFile}
@@ -574,113 +619,118 @@ export const App: React.FC = () => {
                     onRefreshFiles={loadAvailableFiles}
                     onEdit={() => setIsEditorOpen(true)}
                     isDarkMode={isDarkMode}
+                    panelTheme={shellTheme}
+                    panelThemeStyle={panelThemeStyle}
                   />
                 </div>
               </div>
-            </Panel>
+            </aside>
+          </Panel>
 
-            <Separator />
+          <Separator />
 
-            {/* 第三菜单栏 */}
-            <div className={`w-16 bg-content1/95 backdrop-blur-xl shrink-0 flex flex-col items-center py-8 gap-6 border-r border-divider ${isDarkMode ? 'dark' : ''}`}>
-              {/* 工具区域 */}
-              <div className='flex flex-col items-center gap-6'>
-                {/* 重载组件按钮 */}
-                <div className='flex flex-col items-center gap-2'>
-                  <button
-                    onClick={() => loadData(selectedDataFile)}
-                    className='p-2 active:scale-95 transition-all duration-200 group'
-                  >
-                    <RefreshCw className='w-6 h-6 text-foreground-400 group-hover:text-primary transition-colors' />
-                  </button>
-                  <span className='text-xs font-medium text-foreground-500'>重载</span>
-                </div>
+          <Panel defaultSize='82%' minSize='64%' id='preview'>
+            <section className='flex h-full min-w-0 flex-col bg-background'>
+              <div className='flex h-14 shrink-0 items-center border-b border-border px-4'>
+                <div className='flex w-full items-center justify-between gap-3'>
+                  <div className='min-w-0 space-y-0.5'>
+                    <div className='overflow-hidden'>
+                      <Breadcrumbs isDisabled className='gap-1 text-sm text-muted'>
+                        <Breadcrumbs.Item href='#'>{selectedPlatform}</Breadcrumbs.Item>
+                        {templateParts.map((part, index) => (
+                          <Breadcrumbs.Item
+                            key={`${part}-${index}`}
+                            href={index === templateParts.length - 1 ? undefined : '#'}
+                          >
+                            {part}
+                          </Breadcrumbs.Item>
+                        ))}
+                      </Breadcrumbs>
+                    </div>
+                    <div className='text-[11px] leading-tight text-muted'>
+                      数据文件：{dataFileLabel} · 面板：{shellTheme === 'dark' ? '深色' : '浅色'} · 子组件：{componentTheme === 'dark' ? '深色' : '浅色'}
+                    </div>
+                  </div>
 
-                {/* 截图按钮 */}
-                <div className='flex flex-col items-center gap-2'>
-                  <button
-                    onClick={() => handleCapture()}
-                    disabled={isCapturing}
-                    className='p-2 active:scale-95 transition-all duration-200 group disabled:opacity-50 disabled:cursor-not-allowed'
+                  <Toolbar
+                    aria-label='预览操作'
+                    className='flex flex-wrap gap-1.5 rounded-xl border border-border bg-surface p-1.5'
+                    isAttached
                   >
-                    <Camera className='w-6 h-6 text-foreground-400 group-hover:text-success transition-colors' />
-                  </button>
-                  <span className='text-xs font-medium text-foreground-500'>截图</span>
-                </div>
-                
-                {/* 版本信息开关按钮 */}
-                <div className='flex flex-col items-center gap-2'>
-                  <button
-                    onClick={handleToggleVersion}
-                    className='p-2 active:scale-95 transition-all duration-200 group'
-                    title={versionEnabled ? '点击隐藏版本信息' : '点击显示版本信息'}
-                  >
-                    {versionEnabled ? (
-                      <LuInfo className='w-6 h-6 text-foreground-400 group-hover:text-primary transition-colors' />
-                    ) : (
-                      <MdInfoOutline className='w-6 h-6 text-foreground-400 group-hover:text-warning transition-colors' />
-                    )}
-                  </button>
-                  <span className='text-xs font-medium text-foreground-500'>
-                    {versionEnabled ? '版本' : '无版'}
-                  </span>
-                </div>
-            
-                {/* 适应画布按钮 */}
-                <div className='flex flex-col items-center gap-2'>
-                  <button
-                    onClick={() => previewPanelRef.current?.fitToCanvas()}
-                    className='p-2 active:scale-95 transition-all duration-200 group'
-                  >
-                    <MdFitScreen className='w-6 h-6 text-foreground-400 group-hover:text-primary transition-colors' />
-                  </button>
-                  <span className='text-xs font-medium text-foreground-500'>适应</span>
+                    <ButtonGroup size='sm' variant='outline'>
+                      <Button onPress={() => loadData(selectedDataFile)}>
+                        <RefreshCw className='size-4' />
+                        重载
+                      </Button>
+                      <Button onPress={() => previewPanelRef.current?.fitToCanvas()}>
+                        <ButtonGroup.Separator />
+                        <MdFitScreen className='size-4' />
+                        适应
+                      </Button>
+                      <Button isDisabled={isCapturing} onPress={() => handleCapture()}>
+                        <ButtonGroup.Separator />
+                        <Camera className='size-4' />
+                        截图
+                      </Button>
+                    </ButtonGroup>
+
+                    <Button
+                      onPress={() => setIsPanelThemeModalOpen(true)}
+                      size='sm'
+                      variant='outline'
+                    >
+                      <Palette className='size-4' />
+                      面板主题
+                    </Button>
+
+                    <Button
+                      onPress={handleToggleVersion}
+                      size='sm'
+                      variant='outline'
+                    >
+                      {versionEnabled ? (
+                        <LuInfo className='size-4' />
+                      ) : (
+                        <MdInfoOutline className='size-4' />
+                      )}
+                      {versionEnabled ? '版本信息' : '隐藏版本'}
+                    </Button>
+
+                    <Button
+                      isDisabled={!templateData}
+                      onPress={() => handleThemeChange(!templateData?.useDarkTheme)}
+                      size='sm'
+                      variant='primary'
+                    >
+                      {templateData?.useDarkTheme ? (
+                        <Sun className='size-4' />
+                      ) : (
+                        <Moon className='size-4' />
+                      )}
+                      组件{componentTheme === 'dark' ? '深色' : '浅色'}
+                    </Button>
+                  </Toolbar>
                 </div>
               </div>
-            
-              {/* 分隔线 */}
-              <div className='w-12 h-px bg-divider' />
-            
-              {/* 主题切换 */}
-              <div className='flex flex-col items-center gap-2'>
-                <button
-                  onClick={() => handleThemeChange(!templateData?.useDarkTheme)}
-                  className='p-2 active:scale-95 transition-all duration-200 group'
-                >
-                  {templateData?.useDarkTheme ? (
-                    <svg className='w-6 h-6 text-primary group-hover:text-primary/80 transition-colors' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' />
-                    </svg>
-                  ) : (
-                    <svg className='w-6 h-6 text-foreground-400 group-hover:text-foreground-600 transition-colors' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' />
-                    </svg>
-                  )}
-                </button>
-                <span className='text-xs font-medium text-foreground-500'>
-                  {templateData?.useDarkTheme ? '浅色' : '深色'}
-                </span>
-              </div>
-            </div>
 
-            {/* 预览面板 */}
-            <Panel defaultSize='80%' minSize='60%' id='preview'>
-              <PreviewPanel
-                ref={previewPanelRef}
-                platform={selectedPlatform}
-                templateId={selectedTemplate}
-                data={templateData}
-                loadError={loadError}
-                qrCodeDataUrl={qrCodeDataUrl}
-                scale={scale}
-                onScaleChange={setScale}
-                onComponentLoadComplete={handleComponentLoadComplete}
-                isPanelDarkMode={isDarkMode}
-                versionEnabled={versionEnabled}
-              />
-            </Panel>
-          </Group>
-        </div>
+              <div className='min-h-0 flex-1'>
+                <PreviewPanel
+                  ref={previewPanelRef}
+                  platform={selectedPlatform}
+                  templateId={selectedTemplate}
+                  data={templateData}
+                  loadError={loadError}
+                  qrCodeDataUrl={qrCodeDataUrl}
+                  scale={scale}
+                  onScaleChange={setScale}
+                  onComponentLoadComplete={handleComponentLoadComplete}
+                  isPanelDarkMode={isDarkMode}
+                  versionEnabled={versionEnabled}
+                />
+              </div>
+            </section>
+          </Panel>
+        </Group>
       </div>
       <ScreenshotPreviewModal
         isOpen={isScreenshotModalOpen}
@@ -690,6 +740,18 @@ export const App: React.FC = () => {
         onRetakeScreenshot={handleCapture}
         isCapturing={isCapturing}
         componentDarkMode={templateData?.useDarkTheme || false}
+      />
+      <PanelThemeControls
+        isDarkMode={isDarkMode}
+        isMonochromeAccent={panelAccentOverride === null}
+        isOpen={isPanelThemeModalOpen}
+        panelAccent={resolvedPanelAccent}
+        panelTheme={shellTheme}
+        panelThemeStyle={panelThemeStyle}
+        onAccentChange={(hex) => setPanelAccentOverride(normalizeHexColor(hex))}
+        onOpenChange={setIsPanelThemeModalOpen}
+        onResetAccent={() => setPanelAccentOverride(null)}
+        onThemeModeChange={setIsDarkMode}
       />
       <MockDataEditorModal
         isOpen={isEditorOpen}
@@ -703,6 +765,6 @@ export const App: React.FC = () => {
         onDataFileChange={handleDataFileChange}
         isDarkMode={isDarkMode}
       />
-    </>
+    </div>
   )
 }

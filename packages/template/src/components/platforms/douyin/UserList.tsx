@@ -13,10 +13,10 @@ import type { DouyinUserListProps } from '../../../types/platforms/douyin/userli
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 const pushTypeConfig: Record<string, { label: string; color: string; icon: any }> = {
-  post: { label: '作品更新', color: 'bg-primary-500/5 text-primary-500 border-primary-500/20', icon: RiVideoLine },
-  favorite: { label: '喜欢列表', color: 'bg-danger-500/5 text-danger-500 border-danger-500/20', icon: RiHeart2Line },
-  recommend: { label: '推荐列表', color: 'bg-warning-500/5 text-warning-500 border-warning-500/20', icon: RiStarLine },
-  live: { label: '直播状态', color: 'bg-secondary-500/5 text-secondary-500 border-secondary-500/20', icon: RiLiveLine }
+  post: { label: '作品更新', color: 'bg-accent/5 text-accent border-accent/20', icon: RiVideoLine },
+  favorite: { label: '喜欢列表', color: 'bg-danger/5 text-danger border-danger/20', icon: RiHeart2Line },
+  recommend: { label: '推荐列表', color: 'bg-warning/5 text-warning border-warning/20', icon: RiStarLine },
+  live: { label: '直播状态', color: 'bg-surface-secondary/40 text-accent border-border/20', icon: RiLiveLine }
 }
 
 /**
@@ -24,7 +24,7 @@ const pushTypeConfig: Record<string, { label: string; color: string; icon: any }
  */
 const DouyinUserItem: React.FC<DouyinUserListProps['data']['renderOpt'][number]> = (props) => {
   return (
-    <li className='relative group overflow-hidden rounded-4xl bg-content1/60 border border-default-200/50 backdrop-blur-xl shadow-xl'>
+    <li className='relative group overflow-hidden rounded-4xl bg-surface/60 border border-border/50 backdrop-blur-xl shadow-xl'>
       {/* 渐进式模糊背景 - Progressive Blur Background */}
       <div className='absolute inset-0 pointer-events-none z-0 overflow-hidden'>
         <img
@@ -57,7 +57,7 @@ const DouyinUserItem: React.FC<DouyinUserListProps['data']['renderOpt'][number]>
       {/* 内容区域 */}
       <div className="relative z-10 p-6 flex flex-col gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-20 h-20 rounded-full p-1 bg-default-100/20 backdrop-blur-md border border-default-200/30 shadow-lg shrink-0">
+          <div className="w-20 h-20 rounded-full p-1 bg-surface/20 backdrop-blur-md border border-border/30 shadow-lg shrink-0">
             <img
               src={props.avatar_img}
               alt="Avatar"
@@ -69,7 +69,7 @@ const DouyinUserItem: React.FC<DouyinUserListProps['data']['renderOpt'][number]>
             <h3 className="text-3xl font-black tracking-tight text-foreground truncate drop-shadow-sm mb-1.5">
               {props.username}
             </h3>
-            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-default-100/50 border border-default-200/50 text-xs font-mono font-bold text-default-500">
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-surface/50 border border-border/50 text-xs font-mono font-bold text-muted">
               <RiHashtag className="w-3 h-3 opacity-70" />
               {props.short_id}
             </span>
@@ -79,10 +79,10 @@ const DouyinUserItem: React.FC<DouyinUserListProps['data']['renderOpt'][number]>
             className={`px-4 py-2 rounded-full border-2 border-background flex items-center gap-2 shadow-md shrink-0 ${
               props.switch 
                 ? 'bg-success text-white' 
-                : 'bg-danger-500 text-default-100'
+                : 'bg-danger text-danger-foreground'
             }`}
           >
-            <div className={`w-2 h-2 rounded-full ${props.switch ? 'bg-white' : 'bg-default-300'}`} />
+            <div className={`w-2 h-2 rounded-full ${props.switch ? 'bg-white' : 'bg-border'}`} />
             <span className="text-xs font-bold uppercase tracking-wider leading-none">
               {props.switch ? 'ON' : 'OFF'}
             </span>
@@ -101,7 +101,7 @@ const DouyinUserItem: React.FC<DouyinUserListProps['data']['renderOpt'][number]>
                   className={`px-2.5 py-3 rounded-xl border flex flex-col items-center gap-2.5 transition-colors duration-200 ${
                     isActive 
                       ? config.color 
-                      : 'bg-default-100/50 text-default-400 border-transparent dark:bg-default-100/10'
+                      : 'bg-surface/50 text-muted border-transparent dark:bg-surface/10'
                   }`}
                 >
                   <Icon className={`w-5 h-5 ${isActive ? '' : 'opacity-50'}`} />
@@ -127,14 +127,14 @@ const DouyinUserItem: React.FC<DouyinUserListProps['data']['renderOpt'][number]>
               return (
                 <div 
                   key={index}
-                  className="flex items-center gap-3 px-4 py-2 rounded-lg bg-content2/30 border border-default-200/30 backdrop-blur-sm"
+                  className="flex items-center gap-3 px-4 py-2 rounded-lg bg-surface-secondary/30 border border-border/30 backdrop-blur-sm"
                 >
-                  <Icon className="w-5 h-5 text-default-400 shrink-0" />
+                  <Icon className="w-5 h-5 text-muted shrink-0" />
                   <div className="flex items-baseline gap-2 flex-1">
                     <span className="text-base font-bold font-mono text-foreground">
                       {item.value}
                     </span>
-                    <span className="text-xs text-default-400 font-medium">
+                    <span className="text-xs text-muted font-medium">
                       {item.label}
                     </span>
                   </div>
@@ -201,7 +201,7 @@ const DouyinUserList: React.FC<DouyinUserListProps> = (props) => {
 
       {/* 3. 几何装饰 */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute left-16 top-0 bottom-0 w-px bg-linear-to-b from-transparent via-default-300 to-transparent" />
+        <div className="absolute left-16 top-0 bottom-0 w-px bg-linear-to-b from-transparent via-border to-transparent" />
         <div className="absolute top-0 right-0 p-16 opacity-10">
           <svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-foreground">
             <rect x="100" y="100" width="200" height="200" stroke="currentColor" strokeWidth="1" />
@@ -238,7 +238,7 @@ const DouyinUserList: React.FC<DouyinUserListProps> = (props) => {
 
           <div className="text-right">
             {/* 字体黑白灰渐变 */}
-            <div className="text-8xl font-black text-transparent bg-clip-text bg-linear-to-b from-foreground to-default-400 leading-none">
+            <div className="text-8xl font-black text-transparent bg-clip-text bg-linear-to-b from-foreground to-muted leading-none">
               {String(props.data.renderOpt.length).padStart(2, '0')}
             </div>
             <div className="text-sm font-bold tracking-[0.3em] uppercase opacity-40 mt-2 text-foreground">

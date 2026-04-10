@@ -77,7 +77,7 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
 
   if (hasError) {
     return (
-      <div className={`flex justify-center items-center text-sm select-text ${className} bg-content2 text-foreground-500`}>
+      <div className={`flex justify-center items-center text-sm select-text ${className} bg-surface-secondary text-muted`}>
         {placeholder || '图片加载失败'}
       </div>
     )
@@ -111,7 +111,7 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
             <img src={qrCodeDataUrl} alt='二维码' className='object-contain w-full h-full rounded-lg' />
           )
           : (
-            <div className='flex flex-col justify-center items-center text-foreground-400'>
+            <div className='flex flex-col justify-center items-center text-muted'>
               <span className='text-lg'>二维码生成失败</span>
             </div>
           )}
@@ -144,15 +144,15 @@ const VideoInfoHeader: React.FC<Omit<BilibiliCommentProps['data'], 'CommentsData
                   target.style.display = 'none'
                   const parent = target.parentElement
                   if (parent) {
-                    parent.innerHTML = '<div class="flex items-center h-full text-6xl font-bold text-foreground-600">哔哩哔哩</div>'
+                    parent.innerHTML = '<div class="flex items-center h-full text-6xl font-bold text-foreground/70">哔哩哔哩</div>'
                   }
                 }}
               />
               {/* 分辨率信息 - 仅视频类型显示 */}
               {props.Type === '视频' && props.Resolution && (
-                <div className='flex flex-col gap-2 px-8 py-4 ml-12 rounded-3xl bg-default-100/50 w-fit'>
-                  <span className='text-[42px] text-foreground-400'>分辨率（px）</span>
-                  <span className='text-[48px] font-medium text-foreground-600'>{props.Resolution}</span>
+                <div className='flex flex-col gap-2 px-8 py-4 ml-12 rounded-3xl bg-surface/50 w-fit'>
+                  <span className='text-[42px] text-muted'>分辨率（px）</span>
+                  <span className='text-[48px] font-medium text-foreground/70'>{props.Resolution}</span>
                 </div>
               )}
             </div>
@@ -160,30 +160,30 @@ const VideoInfoHeader: React.FC<Omit<BilibiliCommentProps['data'], 'CommentsData
 
           {/* 信息列表 */}
           <div className='grid grid-cols-2 gap-y-6 gap-x-16 pl-2'>
-            <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text whitespace-nowrap'>
-              <span className='shrink-0 mr-4 text-foreground-400'>类型</span>
-              <span className='font-medium text-foreground-600'>{props.Type}</span>
+            <div className='flex items-center tracking-[6px] text-[45px] text-muted select-text whitespace-nowrap'>
+              <span className='shrink-0 mr-4 text-muted'>类型</span>
+              <span className='font-medium text-foreground/70'>{props.Type}</span>
             </div>
-            <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text whitespace-nowrap'>
-              <span className='shrink-0 mr-4 text-foreground-400'>评论</span>
-              <span className='font-medium text-foreground-600'>{props.CommentLength}条</span>
+            <div className='flex items-center tracking-[6px] text-[45px] text-muted select-text whitespace-nowrap'>
+              <span className='shrink-0 mr-4 text-muted'>评论</span>
+              <span className='font-medium text-foreground/70'>{props.CommentLength}条</span>
             </div>
             {props.Type === '视频' ? (
               <>
-                <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text whitespace-nowrap'>
-                  <span className='shrink-0 mr-4 text-foreground-400'>大小</span>
-                  <span className='font-medium text-foreground-600'>{props.VideoSize}</span>
+                <div className='flex items-center tracking-[6px] text-[45px] text-muted select-text whitespace-nowrap'>
+                  <span className='shrink-0 mr-4 text-muted'>大小</span>
+                  <span className='font-medium text-foreground/70'>{props.VideoSize}</span>
                 </div>
-                <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text whitespace-nowrap'>
-                  <span className='shrink-0 mr-4 text-foreground-400'>画质</span>
-                  <span className='font-medium text-foreground-600'>{props.Clarity}</span>
+                <div className='flex items-center tracking-[6px] text-[45px] text-muted select-text whitespace-nowrap'>
+                  <span className='shrink-0 mr-4 text-muted'>画质</span>
+                  <span className='font-medium text-foreground/70'>{props.Clarity}</span>
                 </div>
               </>
             ) : (
               <>
-                <div className='flex items-center tracking-[6px] text-[45px] text-foreground-500 select-text whitespace-nowrap'>
-                  <span className='shrink-0 mr-4 text-foreground-400'>图片</span>
-                  <span className='font-medium text-foreground-600'>{props.ImageLength}张</span>
+                <div className='flex items-center tracking-[6px] text-[45px] text-muted select-text whitespace-nowrap'>
+                  <span className='shrink-0 mr-4 text-muted'>图片</span>
+                  <span className='font-medium text-foreground/70'>{props.ImageLength}张</span>
                 </div>
               </>
             )}
@@ -237,7 +237,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
 
         {/* 大会员标识 */}
         {props.vipstatus === 1 && (
-          <div className='flex absolute right-4 bottom-6 z-20 justify-center items-center rounded-full w-15 h-15 bg-default-100'>
+          <div className='flex absolute right-4 bottom-6 z-20 justify-center items-center rounded-full w-15 h-15 bg-surface'>
             <img
               src='/image/bilibili/res-local1.png'
               alt='大会员'
@@ -252,7 +252,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
         {/* 用户信息 */}
         <div className='flex items-start gap-2.5 mb-3.75 text-[50px] relative'>
           {/* 用户名区域  */}
-          <div className='shrink-0 flex items-center gap-2 leading-[1.2] text-foreground-700 font-bold select-text'>
+          <div className='shrink-0 flex items-center gap-2 leading-[1.2] text-foreground/80 font-bold select-text'>
             <div
               className='[&>span]:inline-block [&>span]:leading-[1.2] [&>svg]:inline-block [&>svg]:w-25 [&>svg]:h-25 [&>svg]:align-middle [&>svg]:shrink-0'
               dangerouslySetInnerHTML={{ __html: props.uname }}
@@ -324,7 +324,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
 
           {/* 状态标签 */}
           {props.status_label && (
-            <div className='inline-block px-5 py-0.5 rounded-[10px] text-[45px] bg-content2 text-foreground-600 shrink-0 self-center select-text'>
+            <div className='inline-block px-5 py-0.5 rounded-[10px] text-[45px] bg-surface-secondary text-foreground/70 shrink-0 self-center select-text'>
               {props.status_label}
             </div>
           )}
@@ -379,26 +379,26 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
         )}
 
         {/* 点赞区域 */}
-        <div className='flex items-center justify-between mt-[37.5px] whitespace-nowrap text-foreground-500'>
+        <div className='flex items-center justify-between mt-[37.5px] whitespace-nowrap text-muted'>
           <div className='flex flex-1 items-center'>
             <div className='text-[45px] tracking-[2px] select-text'>
               {props.ctime} · {props.location}
               {props.replylength > 0
                 ? (
-                  <span className='text-foreground-400 tracking-[3px] ml-4'>
+                  <span className='text-muted tracking-[3px] ml-4'>
                     {props.replylength}回复
                   </span>
                 )
                 : (
-                  <span className='ml-4 text-foreground-600'>回复</span>
+                  <span className='ml-4 text-foreground/70'>回复</span>
                 )}
             </div>
           </div>
 
           <div className='flex items-center gap-18.75 ml-auto'>
             <div className='flex items-center gap-3.75'>
-              <ThumbsUp className='w-15 h-15 text-foreground-500' />
-              <span className='text-[45px] text-foreground-500 select-text'>{props.like}</span>
+              <ThumbsUp className='w-15 h-15 text-muted' />
+              <span className='text-[45px] text-muted select-text'>{props.like}</span>
             </div>
           </div>
         </div>
@@ -429,7 +429,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
 
                     {/* 大会员标识 */}
                     {subReply.vipstatus === 1 && (
-                      <div className='flex absolute right-4 bottom-5 z-20 justify-center items-center w-12 h-12 rounded-full bg-default-100'>
+                      <div className='flex absolute right-4 bottom-5 z-20 justify-center items-center w-12 h-12 rounded-full bg-surface'>
                         <img
                           src='/image/bilibili/res-local1.png'
                           alt='大会员'
@@ -443,7 +443,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
                   <div className='flex-1'>
                     {/* 用户信息 */}
                     <div className='flex items-start gap-2.5 mb-3.75 text-[50px] relative overflow-visible'>
-                      <div className='shrink-0 flex items-center gap-2 leading-[1.2] text-foreground-700 font-bold select-text'>
+                      <div className='shrink-0 flex items-center gap-2 leading-[1.2] text-foreground/80 font-bold select-text'>
                         <div
                           className='[&>span]:inline-block [&>span]:leading-[1.2]'
                           dangerouslySetInnerHTML={{ __html: subReply.uname }}
@@ -556,7 +556,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
                     )}
 
                     {/* 二级评论底部信息 */}
-                    <div className='flex items-center justify-between mt-[37.5px] whitespace-nowrap text-foreground-500'>
+                    <div className='flex items-center justify-between mt-[37.5px] whitespace-nowrap text-muted'>
                       <div className='flex flex-1 items-center'>
                         <div className='text-[45px] tracking-[2px] select-text'>
                           {subReply.ctime} · {subReply.location}
@@ -565,8 +565,8 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
 
                       <div className='flex items-center gap-18.75 ml-auto'>
                         <div className='flex items-center gap-3.75'>
-                          <ThumbsUp className='w-15 h-15 text-foreground-500' />
-                          <span className='text-[45px] text-foreground-500 select-text'>{subReply.like}</span>
+                          <ThumbsUp className='w-15 h-15 text-muted' />
+                          <span className='text-[45px] text-muted select-text'>{subReply.like}</span>
                         </div>
                       </div>
                     </div>
@@ -635,7 +635,7 @@ export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType'
               ))
             )
             : (
-              <div className='flex justify-center items-center py-20 text-foreground-400'>
+              <div className='flex justify-center items-center py-20 text-muted'>
                 <div className='text-center'>
                   <p className='text-xl'>暂无评论数据</p>
                 </div>

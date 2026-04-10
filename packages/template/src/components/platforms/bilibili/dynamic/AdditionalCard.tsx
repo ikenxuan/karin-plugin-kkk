@@ -12,13 +12,13 @@ export const BilibiliReserveCard: React.FC<{ reserve: NonNullable<BilibiliAdditi
   if (!reserve) return null
 
   return (
-    <div className='overflow-hidden rounded-2xl bg-default-100'>
+    <div className='overflow-hidden rounded-2xl bg-surface'>
       <div className='flex gap-8 justify-between items-center px-10 py-10'>
         <div className='flex flex-col gap-4 flex-1'>
           <div className='text-5xl font-normal text-foreground select-text leading-tight'>
             {reserve.title}
           </div>
-          <div className='flex gap-8 items-center font-light text-4xl text-foreground-500'>
+          <div className='flex gap-8 items-center font-light text-4xl text-muted'>
             <span className='select-text'>{reserve.desc1}</span>
             <span className='select-text'>{reserve.desc2}</span>
           </div>
@@ -34,7 +34,7 @@ export const BilibiliReserveCard: React.FC<{ reserve: NonNullable<BilibiliAdditi
             startContent={reserve.buttonText !== '已结束' ? <Bell className='scale-180 mr-4' /> : undefined}
             className={`text-5xl font-normal px-8 py-5 h-auto min-w-0 ${
               reserve.buttonText === '已结束'
-                ? 'bg-default/70 text-default-400'
+                ? 'bg-surface-secondary/70 text-muted'
                 : 'bg-[#fb7299] text-white'
             }`}
             radius='md'
@@ -56,16 +56,16 @@ export const BilibiliVoteCard: React.FC<{ vote: NonNullable<BilibiliAdditionalDa
   const isEnded = vote.status === 4
 
   return (
-    <div className='overflow-hidden rounded-2xl bg-default-100'>
+    <div className='overflow-hidden rounded-2xl bg-surface'>
       <div className='flex gap-8 items-center px-10 py-8'>
         <div className='shrink-0'>
-          <BarChart3 size={56} className='text-foreground-400' />
+          <BarChart3 size={56} className='text-muted' />
         </div>
         <div className='flex flex-col gap-3 flex-1 min-w-0'>
           <div className='text-5xl font-medium text-foreground select-text line-clamp-1'>
             {vote.title}
           </div>
-          <div className='text-4xl text-foreground-500 select-text'>
+          <div className='text-4xl text-muted select-text'>
             {vote.desc}
           </div>
         </div>
@@ -73,7 +73,7 @@ export const BilibiliVoteCard: React.FC<{ vote: NonNullable<BilibiliAdditionalDa
           <Button
             className={`text-5xl font-normal px-8 py-5 h-auto min-w-0 ${
               isEnded
-                ? 'bg-default/70 text-default-400'
+                ? 'bg-surface-secondary/70 text-muted'
                 : 'bg-[#fb7299] text-white'
             }`}
             radius='md'
@@ -100,12 +100,12 @@ export const BilibiliCommonCard: React.FC<{ common: NonNullable<BilibiliAddition
   return (
     <div className='flex flex-col gap-4'>
       {common.head_text && (
-        <div className='flex gap-2 items-center text-4xl text-foreground-500'>
+        <div className='flex gap-2 items-center text-4xl text-muted'>
           <Gamepad2 size={40} />
           <span>{common.head_text}</span>
         </div>
       )}
-      <div className='overflow-hidden rounded-2xl bg-default-100'>
+      <div className='overflow-hidden rounded-2xl bg-surface'>
         <div className='flex gap-8 items-center px-10 py-8'>
           <div className='shrink-0'>
             <EnhancedImage
@@ -123,13 +123,13 @@ export const BilibiliCommonCard: React.FC<{ common: NonNullable<BilibiliAddition
                 {getTagText()}
               </span>
               {common.sub_type === 'game' && common.desc1 && (
-                <span className='text-foreground-500 line-clamp-1 select-text'>
+                <span className='text-muted line-clamp-1 select-text'>
                   {common.desc1}
                 </span>
               )}
             </div>
             {common.desc2 && (
-              <div className='text-4xl text-foreground-500 line-clamp-1 select-text'>
+              <div className='text-4xl text-muted line-clamp-1 select-text'>
                 {common.desc2}
               </div>
             )}
@@ -157,7 +157,7 @@ export const BilibiliUgcCard: React.FC<{ ugc: NonNullable<BilibiliAdditionalData
   if (!ugc) return null
 
   return (
-    <div className='overflow-hidden rounded-3xl bg-default-100'>
+    <div className='overflow-hidden rounded-3xl bg-surface'>
       <div className='flex gap-8 items-center pr-8'>
         <div className='relative shrink-0 p-5'>
           <EnhancedImage
@@ -173,7 +173,7 @@ export const BilibiliUgcCard: React.FC<{ ugc: NonNullable<BilibiliAdditionalData
           <div className='text-5xl font-medium text-foreground select-text line-clamp-2 leading-normal'>
             {ugc.title}
           </div>
-          <div className='flex gap-8 items-center text-4xl text-foreground-500'>
+          <div className='flex gap-8 items-center text-4xl text-muted'>
             <span>{ugc.play}播放</span>
             <span>{ugc.danmaku}弹幕</span>
           </div>

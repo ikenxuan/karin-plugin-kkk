@@ -36,11 +36,11 @@ const StatItem: React.FC<{
   value: number
   label: string
   iconColor?: string
-}> = React.memo(({ icon, value, label, iconColor = 'text-foreground-500' }) => (
+}> = React.memo(({ icon, value, label, iconColor = 'text-muted' }) => (
   <div className="flex gap-4 items-center">
     <div className={iconColor}>{icon}</div>
-    <span className="font-bold text-foreground-900">{formatNumber(value)}</span>
-    <span className="text-foreground-500">{label}</span>
+    <span className="font-bold text-foreground">{formatNumber(value)}</span>
+    <span className="text-muted">{label}</span>
   </div>
 ))
 
@@ -84,11 +84,11 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
             {/* 卡片头部 */}
             <div className="p-20 pb-36">
               {/* 视频标题 */}
-              <h1 className="mb-8 text-7xl font-bold leading-tight text-foreground-900">{props.data.title}</h1>
+              <h1 className="mb-8 text-7xl font-bold leading-tight text-foreground">{props.data.title}</h1>
               {/* 视频简介 */}
-              <p className="mb-8 text-5xl leading-normal whitespace-pre-wrap text-foreground-700">{props.data.desc}</p>
+              <p className="mb-8 text-5xl leading-normal whitespace-pre-wrap text-foreground/80">{props.data.desc}</p>
               {/* 发布日期 */}
-              <p className="mb-6 text-4xl text-foreground-500">{formattedDate}</p>
+              <p className="mb-6 text-4xl text-muted">{formattedDate}</p>
             </div>
 
             {/* 卡片内容 */}
@@ -108,7 +108,7 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
               <div className="h-18"></div>
 
               {/* 附加统计信息 */}
-              <div className="flex justify-between items-center mb-8 text-5xl text-foreground-500">
+              <div className="flex justify-between items-center mb-8 text-5xl text-muted">
                 <div className="flex gap-16 items-center">
                   <div className="flex gap-2 items-center">
                     <Coins size={48} />
@@ -120,7 +120,7 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
                   </div>
                 </div>
                 <div className="transform-gpu scale-[2.5] origin-right mb-8">
-                  <Chip color="warning" variant="flat" size="lg" radius="sm">
+                  <Chip color="warning" variant="soft" size="lg">
                     稿件BV号：{props.data.bvid}
                   </Chip>
                 </div>
@@ -128,7 +128,7 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
             </div>
 
             <div className="h-18" />
-            <div className="h-0.5 bg-default-300" />
+            <div className="h-0.5 bg-border" />
 
             {/* 卡片底部 */}
             <div className="flex justify-between items-center px-16 py-12 pb-0">
@@ -142,8 +142,8 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
                   isCircular
                 />
                 <div className="flex flex-col gap-6">
-                  <p className="text-6xl font-semibold text-foreground-900">{props.data.owner.name}</p>
-                  <p className="text-5xl text-foreground-500">ID: {props.data.owner.mid}</p>
+                  <p className="text-6xl font-semibold text-foreground">{props.data.owner.name}</p>
+                  <p className="text-5xl text-muted">ID: {props.data.owner.mid}</p>
                 </div>
               </div>
               <div className="transform-gpu scale-[3.5] origin-right">

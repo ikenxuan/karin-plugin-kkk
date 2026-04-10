@@ -29,10 +29,10 @@ const QRCodeSection: React.FC<XiaohongshuQRCodeSectionProps> = ({
             />
           )
           : (
-            <QrCode size={200} className='text-foreground-400' />
+            <QrCode size={200} className='text-muted' />
           )}
       </div>
-      <p className='mt-5 text-[40px] text-foreground-500 text-center'>
+      <p className='mt-5 text-[40px] text-muted text-center'>
         扫码查看原笔记
       </p>
     </div>
@@ -64,14 +64,14 @@ const NoteInfoHeader: React.FC<XiaohongshuNoteInfoHeaderProps> = ({
               target.style.display = 'none'
               const parent = target.parentElement
               if (parent) {
-                parent.innerHTML = '<div class="flex justify-start items-center h-full text-2xl font-bold text-foreground-600">小红书</div>'
+                parent.innerHTML = '<div class="flex justify-start items-center h-full text-2xl font-bold text-foreground/70">小红书</div>'
               }
             }}
           />
         </div>
 
         {/* 文字信息区域 */}
-        <div className='mt-8 space-y-4 text-left text-foreground-500'>
+        <div className='mt-8 space-y-4 text-left text-muted'>
           <div className='tracking-[6px] text-[45px] select-text'>
             笔记类型：{type}
           </div>
@@ -110,12 +110,12 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
       {/* 评论内容 */}
       <div className='flex-1'>
         {/* 用户信息 */}
-        <div className='mb-12.5 text-[50px] text-foreground-600 relative flex items-center select-text'>
+        <div className='mb-12.5 text-[50px] text-foreground/70 relative flex items-center select-text'>
           <span className='text-5xl'>{comment.user_info.nickname}</span>
           {comment.show_tags && comment.show_tags.length > 0 && comment.show_tags.map((tag, index) => {
             if (tag === 'is_author') {
               return (
-                <div key={index} className='inline-block px-6 py-3 ml-3 text-4xl rounded-full bg-default-100 text-default-500'>
+                <div key={index} className='inline-block px-6 py-3 ml-3 text-4xl rounded-full bg-surface text-muted'>
                   作者
                 </div>
               )
@@ -153,31 +153,31 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
         )}
 
         {/* 底部信息和操作区域 */}
-        <div className='flex justify-between items-center mt-6 text-foreground-500'>
+        <div className='flex justify-between items-center mt-6 text-muted'>
           <div className='flex items-center space-x-6 select-text'>
             <span className='text-[45px]'>{comment.create_time}</span>
             <span className='text-[45px]'>{comment.ip_location}</span>
             {parseInt(comment.sub_comment_count) > 0
               ? (
-                <span className='text-[40px] text-foreground-600'>
+                <span className='text-[40px] text-foreground/70'>
                   共{comment.sub_comment_count}条回复
                 </span>
               )
               : (
-                <span className='text-[40px] text-foreground-600'>回复</span>
+                <span className='text-[40px] text-foreground/70'>回复</span>
               )}
           </div>
 
           <div className='flex items-center space-x-6'>
             {/* 点赞按钮 */}
             <div className='flex items-center space-x-2 transition-colors cursor-pointer'>
-              <Heart size={60} className={comment.liked ? 'text-red-500 fill-current' : 'text-foreground-500'} />
+              <Heart size={60} className={comment.liked ? 'text-red-500 fill-current' : 'text-muted'} />
               <span className='text-[50px] select-text'>{comment.like_count}</span>
             </div>
 
             {/* 回复按钮 */}
             <div className='flex items-center transition-colors cursor-pointer'>
-              <MessageCircle size={60} className='stroke-current text-foreground-500' />
+              <MessageCircle size={60} className='stroke-current text-muted' />
             </div>
           </div>
         </div>
@@ -195,10 +195,10 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
                   />
                   <div className='flex-1'>
                     <div className='flex items-center mb-2 space-x-2'>
-                      <span className='text-[40px] font-medium text-foreground-600'>{subComment.user_info.nickname}</span>
+                      <span className='text-[40px] font-medium text-foreground/70'>{subComment.user_info.nickname}</span>
                       {subComment.show_tags && subComment.show_tags.length > 0 && subComment.show_tags.map((tag, tagIndex) => (
                         tag === 'is_author' ? (
-                          <div key={tagIndex} className='inline-block px-5 py-2 ml-2 text-3xl rounded-full bg-default-100 text-default-500'>
+                          <div key={tagIndex} className='inline-block px-5 py-2 ml-2 text-3xl rounded-full bg-surface text-muted'>
                             作者
                           </div>
                         ) : null
@@ -212,13 +212,13 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
                         overflowWrap: 'break-word'
                       }}
                     />
-                    <div className='flex justify-between items-center text-foreground-500'>
+                    <div className='flex justify-between items-center text-muted'>
                       <div className='flex items-center space-x-4'>
                         <span className='text-[35px]'>{subComment.create_time}</span>
                         <span className='text-[35px]'>{subComment.ip_location}</span>
                       </div>
                       <div className='flex items-center space-x-2'>
-                        <Heart size={40} className={subComment.liked ? 'text-red-500 fill-current' : 'text-foreground-500'} />
+                        <Heart size={40} className={subComment.liked ? 'text-red-500 fill-current' : 'text-muted'} />
                         <span className='text-[35px]'>{subComment.like_count}</span>
                       </div>
                     </div>
@@ -266,7 +266,7 @@ export const XiaohongshuComment: React.FC<Omit<XiaohongshuCommentProps, 'templat
           )
           : (
             <div className='flex justify-center items-center py-20'>
-              <p className='text-[60px] text-foreground-400'>暂无评论</p>
+              <p className='text-[60px] text-muted'>暂无评论</p>
             </div>
           )}
       </div>

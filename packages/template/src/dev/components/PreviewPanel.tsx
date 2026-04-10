@@ -1,4 +1,4 @@
-import { addToast } from '@heroui/react'
+import { toast } from '@heroui/react'
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 
@@ -73,6 +73,8 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   // 缩放提示显示状态
   const [showScaleIndicator, setShowScaleIndicator] = useState(false)
   const scaleIndicatorTimeoutRef = useRef<number | null>(null)
+  const panelTheme = isPanelDarkMode ? 'dark' : 'light'
+  const componentTheme = data?.useDarkTheme === true ? 'dark' : 'light'
 
   /**
    * ComponentRenderer 的 props
@@ -102,33 +104,28 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
       
       // 检测当前内容是否为深色模式
       const contentElement = previewContentRef.current
-      let isDarkMode = contentElement.classList.contains('dark') || data?.useDarkTheme
+      let isDarkMode = contentElement.dataset.theme === 'dark' || data?.useDarkTheme === true
       
       // 如果提供了临时深色模式，临时修改 DOM
       let needsRestore = false
-      let originalClassList: string[] = []
+      let originalClassName = ''
+      let originalTheme = ''
       
       if (tempDarkMode !== undefined && tempDarkMode !== isDarkMode) {
         // 找到实际的内容容器
-        const container = contentElement.querySelector('#container') as HTMLElement
-        if (container) {
-          // 保存原始 class
-          originalClassList = Array.from(container.classList)
-          
-          // 临时修改 class
-          if (tempDarkMode) {
-            container.classList.add('dark')
-          } else {
-            container.classList.remove('dark')
-          }
-          
-          isDarkMode = tempDarkMode
-          needsRestore = true
-          
-          // 等待一帧，确保样式应用
-          await new Promise(resolve => requestAnimationFrame(resolve))
-          await new Promise(resolve => setTimeout(resolve, 50))
-        }
+        const themeElement = (contentElement.querySelector('#container') as HTMLElement | null) ?? contentElement
+        originalClassName = themeElement.className
+        originalTheme = themeElement.dataset.theme ?? ''
+        themeElement.classList.remove('light', 'dark')
+        themeElement.classList.add(tempDarkMode ? 'dark' : 'light')
+        themeElement.dataset.theme = tempDarkMode ? 'dark' : 'light'
+
+        isDarkMode = tempDarkMode
+        needsRestore = true
+
+        // 等待一帧，确保样式应用
+        await new Promise(resolve => requestAnimationFrame(resolve))
+        await new Promise(resolve => setTimeout(resolve, 50))
       }
       
       // 获取水印配置
@@ -147,21 +144,20 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
       
       // 恢复原始 class
       if (needsRestore) {
-        const container = contentElement.querySelector('#container') as HTMLElement
-        if (container) {
-          container.className = originalClassList.join(' ')
+        const themeElement = (contentElement.querySelector('#container') as HTMLElement | null) ?? contentElement
+        themeElement.className = originalClassName
+        if (originalTheme) {
+          themeElement.dataset.theme = originalTheme
+        } else {
+          themeElement.removeAttribute('data-theme')
         }
       }
       
       return result
     } catch (error) {
       console.error('截图失败:', error)
-      addToast({
-        radius: 'lg',
-        variant: 'flat',
-        title: '截图失败',
+      toast.danger('截图失败', {
         description: '请重试或检查浏览器控制台',
-        color: 'danger',
         timeout: 3000
       })
       return null
@@ -462,21 +458,21 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   }), [captureScreenshot, handleFitToCanvas])
 
   return (
-    <div className='flex flex-col h-full'>
+    <div className={`flex h-full flex-col ${panelTheme}`} data-theme={panelTheme}>
       {/* 预览容器 */}
       <div
         ref={containerRef}
-        className={`overflow-hidden relative w-full h-full ${isPanelDarkMode ? 'bg-default-900' : 'bg-default-100'}`}
+        className='relative h-full w-full overflow-hidden bg-background'
+        style={{
+          backgroundImage: 'radial-gradient(circle at top, color-mix(in oklab, var(--foreground) 5%, transparent) 0%, transparent 34%), linear-gradient(180deg, var(--background) 0%, var(--color-background-secondary, var(--background)) 100%)'
+        }}
       >
         {/* 网格背景 */}
         <div
-          className='absolute inset-0 opacity-50 pointer-events-none'
+          className='pointer-events-none absolute inset-0 opacity-80'
           style={{
-            backgroundImage: isPanelDarkMode
-              ? `repeating-linear-gradient(0deg, hsl(var(--heroui-default-50) / 0.3) 0px, transparent 1px, transparent 20px),
-                 repeating-linear-gradient(90deg, hsl(var(--heroui-default-50) / 0.3) 0px, transparent 1px, transparent 20px)`
-              : `repeating-linear-gradient(0deg, hsl(var(--heroui-default-900) / 0.5) 0px, transparent 1px, transparent 20px),
-                 repeating-linear-gradient(90deg, hsl(var(--heroui-default-900) / 0.5) 0px, transparent 1px, transparent 20px)`
+            backgroundImage: `repeating-linear-gradient(0deg, color-mix(in oklab, var(--separator) 88%, transparent) 0px, color-mix(in oklab, var(--separator) 88%, transparent) 1px, transparent 1px, transparent 18px),
+                 repeating-linear-gradient(90deg, color-mix(in oklab, var(--separator) 88%, transparent) 0px, color-mix(in oklab, var(--separator) 88%, transparent) 1px, transparent 1px, transparent 18px)`
           }}
         />
 
@@ -488,14 +484,11 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
         }}>
           {/* 缩放比例显示 - 左上角 */}
           <div 
-            className="absolute left-4 top-4 px-3 py-1.5 text-xs font-semibold rounded-lg pointer-events-none backdrop-blur-sm border z-50"
+            className="pointer-events-none absolute left-3 top-3 z-50 rounded-lg border border-border bg-surface px-2.5 py-1 text-[11px] font-medium text-foreground shadow-none backdrop-blur-sm"
             style={{
               opacity: showScaleIndicator ? 1 : 0,
               transform: showScaleIndicator ? 'translateY(0)' : 'translateY(-10px)',
-              transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              backgroundColor: isPanelDarkMode ? 'rgba(39, 39, 42, 0.9)' : 'rgba(244, 244, 245, 0.9)',
-              borderColor: isPanelDarkMode ? 'rgba(63, 63, 70, 1)' : 'rgba(228, 228, 231, 1)',
-              color: isPanelDarkMode ? 'rgba(250, 250, 250, 1)' : 'rgba(24, 24, 27, 1)'
+              transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
             }}
           >
             {Math.round(scale * 100)}%
@@ -555,7 +548,8 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
             >
               <div 
                 ref={previewContentRef}
-                className={`${data?.useDarkTheme ? 'dark' : ''}`}
+                className={componentTheme}
+                data-theme={componentTheme}
                 style={{
                   userSelect: isCtrlPressed ? 'text' : 'none',
                   WebkitUserSelect: isCtrlPressed ? 'text' : 'none',

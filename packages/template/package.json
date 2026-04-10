@@ -33,9 +33,8 @@
     "sort": "sort-package-json"
   },
   "dependencies": {
-    "@heroui/react": "2.8.10",
-    "@heroui/system": "2.4.28",
-    "@heroui/theme": "2.4.26",
+    "@heroui/react": "3.0.2",
+    "@heroui/styles": "3.0.2",
     "@icons-pack/react-simple-icons": "^13.13.0",
     "@monaco-editor/react": "^4.7.0",
     "@pansy/watermark": "^2.3.0",

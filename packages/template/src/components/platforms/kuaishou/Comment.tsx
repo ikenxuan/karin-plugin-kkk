@@ -21,13 +21,13 @@ const KuaishouQRCodeSection: React.FC<KuaishouQRCodeSectionProps> = ({
 }) => {
   return (
     <div className='flex flex-col items-center -mr-10'>
-      <div className='mt-20 flex items-center justify-center w-150 h-150 bg-content1 rounded-lg shadow-medium'>
+      <div className='mt-20 flex items-center justify-center w-150 h-150 bg-surface rounded-lg shadow-medium'>
         {qrCodeDataUrl
           ? (
             <img src={qrCodeDataUrl} alt='二维码' className='object-contain w-full h-full' />
           )
           : (
-            <div className='flex flex-col justify-center items-center text-default-400'>
+            <div className='flex flex-col justify-center items-center text-muted'>
               <QrCode size={80} className='mb-4' />
               <span className='text-lg'>二维码生成失败</span>
             </div>
@@ -121,7 +121,7 @@ const KuaishouCommentItemComponent: React.FC<KuaishouCommentItemComponentProps &
       {/* 评论内容 */}
       <div className='flex-1'>
         {/* 用户信息 */}
-        <div className='mb-12.5 text-[50px] text-foreground-600 relative flex items-center'>
+        <div className='mb-12.5 text-[50px] text-foreground/70 relative flex items-center'>
           <span className='font-medium'>{comment.nickname}</span>
         </div>
 
@@ -147,7 +147,7 @@ const KuaishouCommentItemComponent: React.FC<KuaishouCommentItemComponentProps &
         )}
 
         {/* 底部信息和操作区域 */}
-        <div className='flex justify-between items-center mt-6 text-default-500'>
+        <div className='flex justify-between items-center mt-6 text-muted'>
           <div className='flex items-center space-x-6'>
             <span className='text-[45px] select-text'>{comment.create_time}</span>
             {comment.ip_label && (
@@ -155,12 +155,12 @@ const KuaishouCommentItemComponent: React.FC<KuaishouCommentItemComponentProps &
             )}
             {comment.reply_comment_total && comment.reply_comment_total > 0
               ? (
-                <span className='text-[40px] text-foreground-600'>
+                <span className='text-[40px] text-foreground/70'>
                   共{comment.reply_comment_total}条回复
                 </span>
               )
               : (
-                <span className='text-[40px] text-default-600'>回复</span>
+                <span className='text-[40px] text-foreground/70'>回复</span>
               )}
           </div>
 
@@ -172,7 +172,7 @@ const KuaishouCommentItemComponent: React.FC<KuaishouCommentItemComponentProps &
             </div>
 
             {/* 回复按钮 */}
-            <div className='flex items-center transition-colors cursor-pointer hover:text-primary'>
+            <div className='flex items-center transition-colors cursor-pointer hover:text-accent'>
               <MessageCircle size={60} className='stroke-current' />
             </div>
           </div>
@@ -251,9 +251,9 @@ export const KuaishouComment: React.FC<Omit<KuaishouCommentProps, 'templateType'
               ))
             )
             : (
-              <div className='flex justify-center items-center py-20 text-default-500'>
+              <div className='flex justify-center items-center py-20 text-muted'>
                 <div className='text-center'>
-                  <MessageCircle size={64} className='mx-auto mb-4 text-default-300' />
+                  <MessageCircle size={64} className='mx-auto mb-4 text-muted/70' />
                   <p className='text-xl'>暂无评论数据</p>
                 </div>
               </div>

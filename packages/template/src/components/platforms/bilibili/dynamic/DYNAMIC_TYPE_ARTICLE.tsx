@@ -75,7 +75,7 @@ const renderTextNode = (node: any, nodeIndex: number): React.ReactNode => {
 
   // 处理块级引用
   if (style.blockquote) {
-    classNames.push('border-l-4', 'border-foreground-300', 'pl-4', 'italic', 'text-foreground-600')
+    classNames.push('border-l-4', 'border-muted/80', 'pl-4', 'italic', 'text-foreground/70')
   }
 
   // 处理标题级别
@@ -123,7 +123,7 @@ const renderTextNode = (node: any, nodeIndex: number): React.ReactNode => {
       <a
         key={nodeIndex}
         href={style.link}
-        className={`${classNames.join(' ')} text-primary hover:text-primary-600 underline cursor-pointer`}
+        className={`${classNames.join(' ')} text-accent hover:text-accent/80 underline cursor-pointer`}
         style={inlineStyle}
         target="_blank"
         rel="noopener noreferrer"
@@ -189,7 +189,7 @@ const renderParagraphContent = (paragraph: any, paragraphIndex: number): React.R
     case 4: // 引用段落
       if (!text?.nodes) return null
       return (
-        <blockquote key={paragraphIndex} className="pl-6 my-8 border-l-8 border-default-400 text-foreground-700 leading-[1.7]">
+        <blockquote key={paragraphIndex} className="pl-6 my-8 border-l-8 border-muted text-foreground/80 leading-[1.7]">
           {text.nodes.map((node: any, nodeIndex: number) =>
             renderTextNode(node, nodeIndex)
           )}
@@ -310,7 +310,7 @@ const sanitizeHtmlContent = (htmlString: string): string => {
 
     // figure 和 figcaption
     processed = addClassToTag(processed, 'figure', 'my-8 w-full')
-    processed = addClassToTag(processed, 'figcaption', 'text-center text-[36px] text-foreground-600 mt-4')
+    processed = addClassToTag(processed, 'figcaption', 'text-center text-[36px] text-foreground/70 mt-4')
 
     // 标题
     processed = addClassToTag(processed, 'h1', 'text-[72px] font-bold mb-10 leading-[1.4]')
@@ -324,7 +324,7 @@ const sanitizeHtmlContent = (htmlString: string): string => {
     processed = addClassToTag(processed, 'p', 'mb-10 leading-[1.7] text-[42px]')
 
     // 引用
-    processed = addClassToTag(processed, 'blockquote', 'pl-6 my-8 border-l-8 border-default-400 text-foreground-700 leading-[1.7] text-[42px]')
+    processed = addClassToTag(processed, 'blockquote', 'pl-6 my-8 border-l-8 border-muted text-foreground/80 leading-[1.7] text-[42px]')
 
     // 列表
     processed = addClassToTag(processed, 'ul', 'list-disc list-inside mb-8 text-[42px] leading-[1.7]')
@@ -338,21 +338,21 @@ const sanitizeHtmlContent = (htmlString: string): string => {
     processed = addClassToTag(processed, 'i', 'italic')
 
     // 链接
-    processed = addClassToTag(processed, 'a', 'text-primary hover:text-primary-600 underline', 'target="_blank" rel="noopener noreferrer"')
+    processed = addClassToTag(processed, 'a', 'text-accent hover:text-accent/80 underline', 'target="_blank" rel="noopener noreferrer"')
 
     // 代码
-    processed = addClassToTag(processed, 'code', 'px-2 py-1 bg-default-100 rounded text-[38px] font-mono')
-    processed = addClassToTag(processed, 'pre', 'p-6 bg-default-100 rounded-2xl overflow-x-auto my-6')
+    processed = addClassToTag(processed, 'code', 'px-2 py-1 bg-surface rounded text-[38px] font-mono')
+    processed = addClassToTag(processed, 'pre', 'p-6 bg-surface rounded-2xl overflow-x-auto my-6')
 
     // 表格
     processed = addClassToTag(processed, 'table', 'w-full border-collapse my-8 text-[38px]')
-    processed = addClassToTag(processed, 'thead', 'bg-default-100')
-    processed = addClassToTag(processed, 'tr', 'border-b border-default-200')
+    processed = addClassToTag(processed, 'thead', 'bg-surface')
+    processed = addClassToTag(processed, 'tr', 'border-b border-border')
     processed = addClassToTag(processed, 'th', 'p-4 text-left font-semibold')
     processed = addClassToTag(processed, 'td', 'p-4')
 
     // 分隔线
-    processed = addClassToTag(processed, 'hr', 'my-8 border-default-300')
+    processed = addClassToTag(processed, 'hr', 'my-8 border-border')
 
     return processed
   } catch (error) {
@@ -386,7 +386,7 @@ const BilibiliArticleUserInfo: React.FC<BilibiliArticleDynamicProps> = React.mem
         <div className='text-6xl font-bold select-text text-foreground'>
           <span dangerouslySetInnerHTML={{ __html: props.data.username }} />
         </div>
-        <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-foreground-500'>
+        <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted'>
           <Clock size={36} className='text-time' />
           {props.data.create_time}
         </div>
@@ -447,7 +447,7 @@ const BilibiliArticleContent: React.FC<BilibiliArticleDynamicProps> = React.memo
         <div className='mb-8'>
           <CommentText
             content={props.data.summary}
-            className='text-[48px] leading-[1.6] text-foreground-600 select-text'
+            className='text-[48px] leading-[1.6] text-foreground/70 select-text'
           />
         </div>
       )}
@@ -481,22 +481,22 @@ const BilibiliArticleStatus: React.FC<BilibiliArticleDynamicProps> = React.memo(
         <div className='flex gap-3 items-center text-[42px] text-like'>
           <Heart size={32} />
           <span className='font-medium'>{props.data.stats.like || 0}</span>
-          <span className='text-[36px] text-foreground-600'>点赞</span>
+          <span className='text-[36px] text-foreground/70'>点赞</span>
         </div>
         <div className='flex gap-3 items-center text-[42px] text-comment'>
           <MessageCircle size={32} />
           <span className='font-medium'>{props.data.stats.reply || 0}</span>
-          <span className='text-[36px] text-foreground-600'>评论</span>
+          <span className='text-[36px] text-foreground/70'>评论</span>
         </div>
         <div className='flex gap-3 items-center text-[42px] text-share'>
           <Share2 size={32} />
           <span className='font-medium'>{props.data.stats.dynamic || 0}</span>
-          <span className='text-[36px] text-foreground-600'>分享</span>
+          <span className='text-[36px] text-foreground/70'>分享</span>
         </div>
       </div>
 
       {/* 专栏统计信息 */}
-      <div className='flex gap-20 items-center text-[36px] text-default-700'>
+      <div className='flex gap-20 items-center text-[36px] text-foreground/80'>
         <div className='flex gap-2 items-center'>
           <Eye size={28} className='text-view' />
           <span className='font-medium'>阅读量</span>
@@ -549,37 +549,37 @@ const BilibiliArticleFooter: React.FC<BilibiliArticleDynamicProps> = React.memo(
             <div className='text-7xl font-bold select-text text-foreground'>
               <span dangerouslySetInnerHTML={{ __html: props.data.username }} />
             </div>
-            <div className='flex gap-2 items-center text-4xl text-default-500'>
-              <Hash size={32} className='text-default-400' />
+            <div className='flex gap-2 items-center text-4xl text-muted'>
+              <Hash size={32} className='text-muted' />
               <span className='select-text'>UID: {props.data.user_shortid}</span>
             </div>
           </div>
         </div>
         
         {/* 用户统计信息 */}
-        <div className='text-3xl flex gap-6 items-center text-default-600'>
-          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+        <div className='text-3xl flex gap-6 items-center text-foreground/70'>
+          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
               <Heart size={28} className='text-like' />
-              <span className='text-default-400'>获赞</span>
+              <span className='text-muted'>获赞</span>
             </div>
-            <div className='w-full h-px bg-default-300' />
+            <div className='w-full h-px bg-border' />
             <span className='select-text font-medium text-4xl'>{props.data.total_favorited}</span>
           </div>
-          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
               <Eye size={28} className='text-view' />
-              <span className='text-default-400'>关注</span>
+              <span className='text-muted'>关注</span>
             </div>
-            <div className='w-full h-px bg-default-300' />
+            <div className='w-full h-px bg-border' />
             <span className='select-text font-medium text-4xl'>{props.data.following_count}</span>
           </div>
-          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
-              <Users size={28} className='text-primary' />
-              <span className='text-default-400'>粉丝</span>
+              <Users size={28} className='text-accent' />
+              <span className='text-muted'>粉丝</span>
             </div>
-            <div className='w-full h-px bg-default-300' />
+            <div className='w-full h-px bg-border' />
             <span className='select-text font-medium text-4xl'>{props.data.fans}</span>
           </div>
         </div>
@@ -596,8 +596,8 @@ const BilibiliArticleFooter: React.FC<BilibiliArticleDynamicProps> = React.memo(
             />
           )
           : (
-            <div className='flex justify-center items-center rounded-2xl bg-default-100 w-100 h-100'>
-              <span className='text-default-400'>二维码</span>
+            <div className='flex justify-center items-center rounded-2xl bg-surface w-100 h-100'>
+              <span className='text-muted'>二维码</span>
             </div>
           )}
       </div>

@@ -1,9 +1,8 @@
-import { Card, CardBody, CardHeader } from '@heroui/react'
+import { Card, Description, Label, ListBox, ScrollShadow, Tabs } from '@heroui/react'
 import { Settings } from 'lucide-react'
 import React from 'react'
 
-// 使用新的配置系统
-import { componentConfigs, getEnabledComponents, getPlatformConfig } from '../../config/config'
+import { componentConfigs } from '../../config/config'
 import { PlatformType } from '../../types/platforms'
 
 interface PlatformSelectorProps {
@@ -19,8 +18,6 @@ interface PlatformSelectorProps {
 
 /**
  * 平台选择组件
- * @param props 组件属性
- * @returns JSX元素
  */
 export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
   selectedPlatform,
@@ -28,89 +25,94 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
   onPlatformChange,
   onTemplateChange
 }) => {
-  const currentPlatformConfig = getPlatformConfig(selectedPlatform)
-
   return (
-    <Card className='w-full bg-content1/60 backdrop-blur-md border border-divider shadow-sm' shadow='none'>
-      <CardHeader className="pb-2 pt-2.5">
-        <div className='flex gap-2 items-center'>
-          <Settings className='w-4 h-4 text-foreground-600' />
-          <h3 className='text-sm font-semibold text-foreground'>平台与组件</h3>
-        </div>
-      </CardHeader>
-      <CardBody className='pt-0 space-y-3 px-3 pb-3'>
-        {/* 平台选择 */}
-        <div>
-          <label className='block mb-2 px-1 text-xs font-semibold text-foreground-500 uppercase tracking-wide'>平台</label>
-          <div className='grid grid-cols-2 gap-2'>
-            {componentConfigs.map(config => (
-              <label
-                key={config.type}
-                className={`
-                  flex items-center justify-start cursor-pointer rounded-lg gap-2 px-3 py-2
-                  border transition-all duration-200
-                  ${selectedPlatform === config.type 
-                ? 'border-primary bg-primary/10 shadow-sm' 
-                : 'border-divider bg-content3/50 hover:bg-content3 hover:border-default-300'
-              }
-                `}
-                onClick={() => {
-                  onPlatformChange(config.type)
-                  const firstComponent = getEnabledComponents(config.type)[0]
-                  if (firstComponent) {
-                    onTemplateChange(firstComponent.id)
-                  }
-                }}
-              >
-                <input
-                  type='radio'
-                  name='platform'
-                  value={config.type}
-                  checked={selectedPlatform === config.type}
-                  onChange={() => {}}
-                  className='w-3.5 h-3.5 text-primary shrink-0 cursor-pointer'
-                />
-                <span className='flex-1 text-sm font-medium leading-tight text-foreground'>{config.name}</span>
-              </label>
-            ))}
+    <Card
+      className='w-full rounded-2xl border border-border shadow-none'
+      variant='default'
+    >
+      <Card.Header className='flex-col items-start gap-3 px-4 pb-3 pt-4'>
+        <div className='flex items-start gap-3'>
+          <div className='flex size-7 items-center justify-center rounded-lg border border-border bg-background text-foreground'>
+            <Settings className='h-4 w-4' />
+          </div>
+          <div>
+            <Card.Description className='text-[10px] font-semibold tracking-[0.18em] uppercase text-muted'>
+              组件开发面板
+            </Card.Description>
+            <Card.Title className='mt-1 text-base font-semibold text-foreground'>
+              {selectedPlatform}
+            </Card.Title>
+            <Card.Description className='mt-1 text-sm text-muted break-all'>
+              {selectedTemplate}
+            </Card.Description>
           </div>
         </div>
+      </Card.Header>
 
-        {/* 组件选择 */}
-        <div>
-          <label className='block mb-2 px-1 text-xs font-semibold text-foreground-500 uppercase tracking-wide'>组件</label>
-          <div className='overflow-y-auto max-h-[calc(100vh-450px)] scrollbar-hide'>
-            <div className='grid grid-cols-2 gap-2'>
-              {currentPlatformConfig?.components
-                .filter(component => component.enabled)
-                .map(component => (
-                  <label
-                    key={component.id}
-                    className={`
-                      flex items-center justify-start cursor-pointer rounded-lg gap-2 px-3 py-2
-                      border transition-all duration-200
-                      ${selectedTemplate === component.id 
-                    ? 'border-primary bg-primary/10 shadow-sm' 
-                    : 'border-divider bg-content3/50 hover:bg-content3 hover:border-default-300'
-                  }
-                    `}
-                    onClick={() => onTemplateChange(component.id)}
-                  >
-                    <input
-                      type='radio'
-                      name='template'
-                      value={component.id}
-                      checked={selectedTemplate === component.id}
-                      onChange={() => {}}
-                      className='w-3.5 h-3.5 text-primary shrink-0 cursor-pointer'
-                    />
-                    <span className='flex-1 text-sm font-medium leading-tight text-foreground'>{component.name}</span>
-                  </label>
-                ))}
-            </div>
-          </div>
-        </div>
-      </CardBody>
+      <Card.Content className='space-y-4 px-4 pb-4'>
+        <Tabs
+          selectedKey={selectedPlatform}
+          variant='secondary'
+          onSelectionChange={(key) => onPlatformChange(key as PlatformType)}
+        >
+          <Tabs.ListContainer>
+            <Tabs.List
+              aria-label='平台选择'
+              className='w-full *:flex-1 *:justify-center *:px-3 *:py-2 *:text-xs *:font-medium'
+            >
+              {componentConfigs.map(config => (
+                <Tabs.Tab key={config.type} id={config.type}>
+                  {config.name}
+                  <Tabs.Indicator />
+                </Tabs.Tab>
+              ))}
+            </Tabs.List>
+          </Tabs.ListContainer>
+
+          {componentConfigs.map(config => (
+            <Tabs.Panel key={config.type} className='pt-3' id={config.type}>
+              <label className='mb-2 block px-0.5 text-[10px] font-semibold tracking-[0.18em] text-muted uppercase'>
+                组件
+              </label>
+
+              <ScrollShadow className='max-h-[calc(100vh-26rem)] pe-1' hideScrollBar size={48}>
+                <ListBox
+                  aria-label={`${config.name}组件列表`}
+                  selectedKeys={new Set([selectedTemplate])}
+                  selectionMode='single'
+                  onSelectionChange={(keys) => {
+                    const key = Array.from(keys as Set<React.Key>)[0]
+                    if (typeof key === 'string') {
+                      onTemplateChange(key)
+                    }
+                  }}
+                >
+                  {config.components
+                    .filter(component => component.enabled)
+                    .map(component => (
+                      <ListBox.Item
+                        key={component.id}
+                        className='rounded-xl px-3 py-2.5'
+                        id={component.id}
+                        textValue={component.name}
+                      >
+                        <div className='flex min-w-0 flex-1 flex-col'>
+                          <Label className='truncate text-sm font-medium text-foreground'>
+                            {component.name}
+                          </Label>
+                          <Description className='truncate text-xs text-muted'>
+                            {component.id}
+                          </Description>
+                        </div>
+                        <ListBox.ItemIndicator />
+                      </ListBox.Item>
+                    ))}
+                </ListBox>
+              </ScrollShadow>
+            </Tabs.Panel>
+          ))}
+        </Tabs>
+      </Card.Content>
     </Card>
   )
 }

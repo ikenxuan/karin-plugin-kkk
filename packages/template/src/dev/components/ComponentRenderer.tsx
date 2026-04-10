@@ -45,10 +45,10 @@ class ComponentErrorBoundary extends React.Component<{ children: React.ReactNode
     if (this.state.hasError) {
       return (
         <div className="flex justify-center items-center min-h-screen p-8">
-          <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
-            <div className="text-7xl text-warning">⚡</div>
+          <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-surface-secondary backdrop-blur-xl">
+            <Zap className="h-16 w-16 text-warning" strokeWidth={2.25} />
             <div className="text-2xl font-semibold text-warning">组件渲染错误</div>
-            <div className="text-base text-center text-default-500 wrap-break-word">{this.state.error?.message || '未知错误'}</div>
+            <div className="text-base text-center text-muted wrap-break-word">{this.state.error?.message || '未知错误'}</div>
           </div>
         </div>
       )
@@ -71,8 +71,8 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
    */
   const renderLoading = (message: string) => (
     <div className="flex justify-center items-center min-h-screen p-8">
-      <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
-        <Spinner size="lg" color="primary" />
+      <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-surface-secondary backdrop-blur-xl">
+        <Spinner color="accent" size="lg" />
         <p className="text-2xl font-medium text-foreground">{message}</p>
       </div>
     </div>
@@ -86,12 +86,12 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
    */
   const renderInDevelopment = (type: string, name: string) => (
     <div className="flex justify-center items-center min-h-screen p-8">
-      <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
-        <div className="text-7xl text-default-400">🚧</div>
+      <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-surface-secondary backdrop-blur-xl">
+        <Info className="h-16 w-16 text-muted" strokeWidth={2.25} />
         <p className="text-2xl font-semibold text-foreground">
           {type} {name} 开发中
         </p>
-        <p className="text-lg text-default-500">敬请期待</p>
+        <p className="text-lg text-muted">敬请期待</p>
       </div>
     </div>
   )
@@ -343,8 +343,8 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
       <React.Suspense
         fallback={
           <div className="flex justify-center items-center min-h-screen p-8">
-            <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
-              <Spinner size="lg" color="primary" />
+            <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-surface-secondary backdrop-blur-xl">
+              <Spinner color="accent" size="lg" />
               <p className="text-2xl font-medium text-foreground">加载 {componentConfig.name} 组件中</p>
             </div>
           </div>

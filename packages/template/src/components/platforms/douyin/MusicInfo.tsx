@@ -70,7 +70,7 @@ const MusicInfoSection: React.FC<MusicInfoProps & { desc: string }> = ({
         style={{ letterSpacing: '1.5px', wordWrap: 'break-word' }}
         dangerouslySetInnerHTML={{ __html: desc }}
       />
-      <div className='flex flex-col gap-2 text-[45px] text-default-500 font-light mb-2.5'>
+      <div className='flex flex-col gap-2 text-[45px] text-muted font-light mb-2.5'>
         <div className='flex gap-2 items-center select-text'>
           <Music className='w-11 h-11' />
           <span>音乐ID: {musicId}</span>
@@ -80,7 +80,7 @@ const MusicInfoSection: React.FC<MusicInfoProps & { desc: string }> = ({
           <span>{userCount} 人使用过</span>
         </div>
       </div>
-      <div className='flex items-center gap-2 text-[45px] text-default-500 font-light select-text'>
+      <div className='flex items-center gap-2 text-[45px] text-muted font-light select-text'>
         <LuFullscreen className='w-11 h-11 text-time' />
         <span>图片生成于: {createTime}</span>
       </div>
@@ -148,11 +148,11 @@ const MusicAuthorInfoSection: React.FC<MusicAuthorInfoProps> = ({
 const MusicQRCodeSection: React.FC<MusicQRCodeProps> = ({ qrCodeDataUrl }) => {
   return (
     <div className='flex flex-col-reverse items-center -mb-12 mr-18'>
-      <div className='flex items-center gap-2 text-[45px] text-right mt-5 text-default-500 select-text'>
+      <div className='flex items-center gap-2 text-[45px] text-right mt-5 text-muted select-text'>
         <QrCode className='w-11 h-11' />
         <span>文件直链：永久有效</span>
       </div>
-      <div className='p-2.5 rounded-sm border-[7px] border-dashed border-default-300'>
+      <div className='p-2.5 rounded-sm border-[7px] border-dashed border-border'>
         <img
           src={qrCodeDataUrl}
           alt='二维码'
@@ -195,7 +195,7 @@ export const DouyinMusicInfo: React.FC<Omit<DouyinMusicInfoProps, 'templateType'
         <div className='h-25' />
 
         {/* 底部文字 */}
-        <div className='text-[70px] text-right mr-21 -mb-11 z-[-1] text-default-500 select-text'>
+        <div className='text-[70px] text-right mr-21 -mb-11 z-[-1] text-muted select-text'>
           抖音音乐信息
         </div>
 

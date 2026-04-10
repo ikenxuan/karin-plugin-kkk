@@ -37,9 +37,9 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
   const titleRef = React.useRef<HTMLHeadingElement>(null)
 
   return (
-    <div className="bg-default-100 rounded-3xl overflow-hidden flex flex-col h-full">
+    <div className="bg-surface rounded-3xl overflow-hidden flex flex-col h-full">
       {/* 视频封面 - 固定 3:4 比例 */}
-      <div className="relative bg-default-900 overflow-hidden" style={{ aspectRatio: '3 / 4' }}>
+      <div className="relative bg-foreground overflow-hidden" style={{ aspectRatio: '3 / 4' }}>
         <img
           src={video.cover}
           alt={video.title}
@@ -60,7 +60,7 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
             <span>{video.is_video ? '视频' : '图集'}</span>
           </div>
           {video.is_top && (
-            <div className="px-6 py-4 rounded-2xl text-4xl bg-warning-500 text-black backdrop-blur-xs shadow-lg flex items-center gap-2">
+            <div className="px-6 py-4 rounded-2xl text-4xl bg-warning text-black backdrop-blur-xs shadow-lg flex items-center gap-2">
               <AiFillPushpin />
               <span>置顶</span>
             </div>
@@ -88,13 +88,13 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
         {/* 标题 */}
         <h3
           ref={titleRef}
-          className="text-4xl font-semibold text-default-900 line-clamp-2 my-2"
+          className="text-4xl font-semibold text-foreground line-clamp-2 my-2"
         >
           {video.title || '无标题'}
         </h3>
 
         {/* 发布时间 */}
-        <p className="text-3xl text-default-600 mb-8">
+        <p className="text-3xl text-foreground/70 mb-8">
           {formatDistanceToNow(new Date(video.create_time * 1000), {
             locale: zhCN,
             addSuffix: true
@@ -104,19 +104,19 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
         {/* 统计数据 */}
         <div className="mt-auto">
           <div className="grid grid-cols-2 gap-3 text-3xl">
-            <div className="flex items-center gap-2 text-default-600">
+            <div className="flex items-center gap-2 text-foreground/70">
               <AiFillHeart size={34} />
               <span>{formatCount(video.statistics.like_count)}</span>
             </div>
-            <div className="flex items-center gap-2 text-default-600">
+            <div className="flex items-center gap-2 text-foreground/70">
               <FaCommentDots size={34} />
               <span>{formatCount(video.statistics.comment_count)}</span>
             </div>
-            <div className="flex items-center gap-2 text-default-600">
+            <div className="flex items-center gap-2 text-foreground/70">
               <AiFillStar size={34} />
               <span>{formatCount(video.statistics.collect_count)}</span>
             </div>
-            <div className="flex items-center gap-2 text-default-600">
+            <div className="flex items-center gap-2 text-foreground/70">
               <RiShareForwardFill size={34} />
               <span>{formatCount(video.statistics.share_count)}</span>
             </div>
@@ -142,9 +142,9 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
             alt="头部背景"
             className="w-full h-auto object-cover"
           />
-          {/* 渐变遮罩 - 从图片渐变到 bg-default-50 */}
+          {/* 渐变遮罩 - 从图片渐变到 bg-surface */}
           <div
-            className="absolute inset-0 bg-linear-to-b from-transparent via-default-50/40 to-default-50"
+            className="absolute inset-0 bg-linear-to-b from-transparent via-surface/40 to-surface"
           />
         </div>
       )}
@@ -152,9 +152,9 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
       <div className="flex justify-center">
         <div className="px-20">
           {/* 用户信息头部 */}
-          <div className={`bg-default-100/60 backdrop-blur-xl mb-30 rounded-4xl p-10 relative ${prpos.data.user.head_image ? '-mt-170' : 'mt-35'}`}>
+          <div className={`bg-surface/60 backdrop-blur-xl mb-30 rounded-4xl p-10 relative ${prpos.data.user.head_image ? '-mt-170' : 'mt-35'}`}>
             {/* 上部分：头像、名称、抖音号、IP、用户统计 */}
-            <div className="flex items-start gap-8 pb-8 border-b border-default-200 mb-8">
+            <div className="flex items-start gap-8 pb-8 border-b border-border mb-8">
               {/* 用户头像 */}
               <img
                 src={prpos.data.user.avatar}
@@ -164,12 +164,12 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
               {/* 用户信息 */}
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-4">
-                  <h1 className="text-6xl font-bold text-default-900">{prpos.data.user.nickname}</h1>
-                  {prpos.data.user.verified && <RiVerifiedBadgeFill className="text-5xl text-primary-500" />}
+                  <h1 className="text-6xl font-bold text-foreground">{prpos.data.user.nickname}</h1>
+                  {prpos.data.user.verified && <RiVerifiedBadgeFill className="text-5xl text-accent" />}
                 </div>
 
                 {/* 抖音号和 IP 属地 */}
-                <div className="flex gap-6 mb-6 text-2xl text-default-500">
+                <div className="flex gap-6 mb-6 text-2xl text-muted">
                   <span className="flex items-center gap-2"><FaTiktok /> 抖音号：{prpos.data.user.short_id}</span>
                   {prpos.data.user.ip_location && <span className="flex items-center gap-1"><MdLocationOn className="text-3xl" /> {prpos.data.user.ip_location}</span>}
                 </div>
@@ -177,36 +177,36 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
                 {/* 用户统计 */}
                 <div className="flex gap-8 text-3xl">
                   <div className="flex items-center gap-2">
-                    <RiUserFollowLine className="text-default-500" />
-                    <span className="text-default-500">关注</span>
-                    <span className="font-medium text-4xl text-default-900"> {formatCount(prpos.data.user.following_count)}</span>
+                    <RiUserFollowLine className="text-muted" />
+                    <span className="text-muted">关注</span>
+                    <span className="font-medium text-4xl text-foreground"> {formatCount(prpos.data.user.following_count)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <FaUserGroup className="text-default-500" />
-                    <span className="text-default-500">粉丝</span>
-                    <span className="font-medium text-4xl text-default-900"> {formatCount(prpos.data.user.follower_count)}</span>
+                    <FaUserGroup className="text-muted" />
+                    <span className="text-muted">粉丝</span>
+                    <span className="font-medium text-4xl text-foreground"> {formatCount(prpos.data.user.follower_count)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <AiFillHeart className="text-default-500" />
-                    <span className="text-default-500">获赞</span>
-                    <span className="font-medium text-4xl  text-default-900"> {formatCount(prpos.data.user.total_favorited)}</span>
+                    <AiFillHeart className="text-muted" />
+                    <span className="text-muted">获赞</span>
+                    <span className="font-medium text-4xl  text-foreground"> {formatCount(prpos.data.user.total_favorited)}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* 下部分：用户签名 */}
-            <p className="text-3xl text-default-700 line-clamp-3">
+            <p className="text-3xl text-foreground/80 line-clamp-3">
               {prpos.data.user.signature || '这个用户很懒，还没有签名'}
             </p>
           </div>
 
           {/* 提示信息卡片 */}
           {prpos.data.timeoutSeconds && (
-            <div className="bg-default-100/60 backdrop-blur-xl mb-8 rounded-4xl p-6 border border-default-200/50 shadow-sm flex justify-center items-center">
-              <p className="text-3xl text-default-700 font-medium flex items-center gap-3">
-                <MdOutlineLightbulb className="text-4xl text-warning-500" />
-                <span>请在 {prpos.data.timeoutSeconds} 秒内发送 <span className="text-primary-500 font-bold">1~{prpos.data.videos.length}</span> 之间的数字解析对应作品。例如发送“1”解析第一个作品</span>
+            <div className="bg-surface/60 backdrop-blur-xl mb-8 rounded-4xl p-6 border border-border/50 shadow-sm flex justify-center items-center">
+              <p className="text-3xl text-foreground/80 font-medium flex items-center gap-3">
+                <MdOutlineLightbulb className="text-4xl text-warning" />
+                <span>请在 {prpos.data.timeoutSeconds} 秒内发送 <span className="text-accent font-bold">1~{prpos.data.videos.length}</span> 之间的数字解析对应作品。例如发送“1”解析第一个作品</span>
               </p>
             </div>
           )}
@@ -222,7 +222,7 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
             </>
           ) : (
             <div className="text-center py-20">
-              <p className="text-[32px] text-default-500">暂无视频内容</p>
+              <p className="text-[32px] text-muted">暂无视频内容</p>
             </div>
           )}
         </div>

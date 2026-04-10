@@ -75,7 +75,7 @@ export const DouyinQrcodeImg: React.FC<DouyinQrcodeImgProps> = React.memo((props
         <div className="text-center space-y-12">
           {/* Title */}
           <h1 className="text-8xl font-bold tracking-tight">
-            <span className="bg-linear-to-r from-default-foreground to-default-500 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-foreground to-muted bg-clip-text text-transparent">
               扫码登录
             </span>
           </h1>
@@ -84,7 +84,7 @@ export const DouyinQrcodeImg: React.FC<DouyinQrcodeImgProps> = React.memo((props
           <div className="flex items-start justify-center gap-10 opacity-90" style={{ color: theme.text }}>
             {/* Step 1 */}
             <div className="flex flex-col items-center gap-4">
-              <div className="p-5 rounded-3xl bg-default-100/50 backdrop-blur-md">
+              <div className="p-5 rounded-3xl bg-surface/50 backdrop-blur-md">
                 <RiTiktokFill className="w-16 h-16" />
               </div>
               <span className="text-[28px] font-medium tracking-wide">打开抖音</span>
@@ -92,7 +92,7 @@ export const DouyinQrcodeImg: React.FC<DouyinQrcodeImgProps> = React.memo((props
             <RiArrowRightFill className="w-10 h-10 mt-8 opacity-40" />
             {/* Step 2 */}
             <div className="flex flex-col items-center gap-4">
-              <div className="p-5 rounded-3xl bg-default-100/50 backdrop-blur-md">
+              <div className="p-5 rounded-3xl bg-surface/50 backdrop-blur-md">
                 <HiOutlineMenuAlt2 className="w-16 h-16" />
               </div>
               <span className="text-[28px] font-medium tracking-wide">左上角菜单</span>
@@ -100,7 +100,7 @@ export const DouyinQrcodeImg: React.FC<DouyinQrcodeImgProps> = React.memo((props
             <RiArrowRightFill className="w-10 h-10 mt-8 opacity-40" />
             {/* Step 3 */}
             <div className="flex flex-col items-center gap-4">
-              <div className="p-5 rounded-3xl bg-default-100/50 backdrop-blur-md">
+              <div className="p-5 rounded-3xl bg-surface/50 backdrop-blur-md">
                 <TbScan className="w-16 h-16" />
               </div>
               <span className="text-[28px] font-medium tracking-wide">顶部扫一扫</span>
@@ -133,7 +133,7 @@ export const DouyinQrcodeImg: React.FC<DouyinQrcodeImgProps> = React.memo((props
           {/* 倒计时 */}
           <div className="absolute -bottom-24 left-0 right-0 text-center">
             <p className="text-[28px] font-medium tracking-wide flex items-center justify-center gap-3" style={{ color: theme.subText }}>
-              <span className="h-6 w-1.5 rounded-full bg-danger-500 shadow-[0_0_8px_rgba(255,44,85,0.8)]"></span>
+              <span className="h-6 w-1.5 rounded-full bg-danger shadow-[0_0_8px_rgba(255,44,85,0.8)]"></span>
               此二维码 120 秒内有效，请及时扫码登录。
             </p>
           </div>

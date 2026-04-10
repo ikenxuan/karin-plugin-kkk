@@ -1,7 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { HeroUIProvider } from '@heroui/react'
 import React from 'react'
 import { renderToString } from 'react-dom/server'
 
@@ -876,11 +875,7 @@ type VideoPreviewState = DevPreviewState & {
 }
 
 const VideoPreviewApp: React.FC<{ state: VideoPreviewState }> = ({ state }) => {
-  return React.createElement(
-    HeroUIProvider,
-    null,
-    React.createElement(PreviewLayout, { state })
-  )
+  return React.createElement(PreviewLayout, { state })
 }
 
 const escapeVideoPreviewJson = (data: unknown): string => {
