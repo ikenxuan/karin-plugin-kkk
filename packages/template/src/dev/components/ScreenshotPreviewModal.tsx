@@ -42,7 +42,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
   const [watermarkEnabled, setWatermarkEnabledState] = useState(() => getWatermarkEnabled())
   const [tempDarkMode, setTempDarkMode] = useState(componentDarkMode)
 
-  const actionButtonClass = 'h-9 rounded-2xl border border-black/10 bg-black/[0.03] text-foreground shadow-none hover:bg-black/[0.05] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.06]'
+  const actionButtonClass = 'h-9 rounded-2xl border border-black/10 bg-black/3 text-foreground shadow-none hover:bg-black/5 dark:border-white/10 dark:bg-white/4 dark:hover:bg-white/6'
   const primaryActionClass = 'h-9 rounded-2xl border border-black bg-black text-white shadow-none hover:bg-black/90 dark:border-white dark:bg-white dark:text-black dark:hover:bg-white/90'
 
   useEffect(() => {
@@ -206,7 +206,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
               'border transition-colors',
               isSelected
                 ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
-                : 'border-black/10 bg-black/[0.06] text-foreground/60 dark:border-white/10 dark:bg-white/[0.08] dark:text-white/60'
+                : 'border-black/10 bg-black/6 text-foreground/60 dark:border-white/10 dark:bg-white/8 dark:text-white/60'
             )}
           >
             <Switch.Thumb className='border border-black/8 bg-white shadow-sm dark:border-white/10 dark:bg-black'>

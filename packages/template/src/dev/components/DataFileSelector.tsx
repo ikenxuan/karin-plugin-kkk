@@ -1,4 +1,4 @@
-import { Button, Card, Label, ListBox, Select } from '@heroui/react'
+import { Button, Card, Chip, Label, ListBox, Select } from '@heroui/react'
 import { Edit, FileText } from 'lucide-react'
 import React, { useEffect } from 'react'
 
@@ -66,75 +66,80 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
       variant='default'
     >
       <Card.Header className='flex-col items-start gap-3 px-4 pb-3 pt-4'>
-        <div className='flex items-center gap-2.5'>
-          <div className='flex size-7 items-center justify-center rounded-lg border border-border bg-background text-foreground'>
-            <FileText className='h-4 w-4' />
+        <div className='flex w-full items-start justify-between gap-3'>
+          <div className='flex items-center gap-2.5'>
+            <div className='flex size-7 items-center justify-center rounded-lg border border-border bg-background text-foreground'>
+              <FileText className='h-4 w-4' />
+            </div>
+            <div>
+              <Card.Title className='text-sm font-semibold text-foreground'>数据文件</Card.Title>
+              <Card.Description className='mt-1 text-xs text-muted'>
+                切换并编辑当前模板使用的 mock 数据
+              </Card.Description>
+            </div>
           </div>
-          <div>
-            <Card.Title className='text-sm font-semibold text-foreground'>数据文件</Card.Title>
-            <Card.Description className='mt-1 text-xs text-muted'>
-              切换并编辑当前模板使用的 mock 数据
-            </Card.Description>
-          </div>
+          <Chip className='shrink-0 text-[10px] font-semibold tracking-[0.16em] uppercase' size='sm' variant='soft'>
+            {availableDataFiles.length} Files
+          </Chip>
         </div>
       </Card.Header>
 
       <Card.Content className='px-4 pb-4'>
-        <div className='flex flex-col gap-3'>
-          <Select
-            className='w-full'
-            isDisabled={availableDataFiles.length === 0}
-            placeholder='选择预设数据'
-            value={selectedDataFile && availableDataFiles.includes(selectedDataFile) ? selectedDataFile : null}
-            variant='secondary'
-            onChange={(value) => {
-              if (typeof value === 'string' && value) {
-                onDataFileChange(value)
-              }
-            }}
-          >
-            <Label className='mb-2 text-[10px] font-semibold tracking-[0.18em] text-muted uppercase'>
-              选择数据文件
-            </Label>
-            <Select.Trigger className='rounded-lg px-3 py-2.5'>
-              <Select.Value className='text-sm font-medium text-foreground' />
-              <Select.Indicator className='text-muted' />
-            </Select.Trigger>
-            <Select.Popover className='p-0'>
-              <div className={panelTheme} data-theme={panelTheme} style={panelThemeStyle}>
-                <ListBox className='rounded-lg p-1'>
-                  {availableDataFiles.map((filename) => {
-                    const label = formatFileName(filename)
+        <Select
+          className='w-full'
+          isDisabled={availableDataFiles.length === 0}
+          placeholder='选择预设数据'
+          value={selectedDataFile && availableDataFiles.includes(selectedDataFile) ? selectedDataFile : null}
+          variant='secondary'
+          onChange={(value) => {
+            if (typeof value === 'string' && value) {
+              onDataFileChange(value)
+            }
+          }}
+        >
+          <Label className='mb-2 text-[10px] font-semibold tracking-[0.18em] text-muted uppercase'>
+            选择数据文件
+          </Label>
+          <Select.Trigger className='rounded-lg px-3 py-2.5'>
+            <Select.Value className='text-sm font-medium text-foreground' />
+            <Select.Indicator className='text-muted' />
+          </Select.Trigger>
+          <Select.Popover className='p-0'>
+            <div className={panelTheme} data-theme={panelTheme} style={panelThemeStyle}>
+              <ListBox className='rounded-lg p-1'>
+                {availableDataFiles.map((filename) => {
+                  const label = formatFileName(filename)
 
-                    return (
-                      <ListBox.Item
-                        key={filename}
-                        className='rounded-md px-3 py-2 text-sm'
-                        id={filename}
-                        textValue={label}
-                      >
-                        {label}
-                        <ListBox.ItemIndicator />
-                      </ListBox.Item>
-                    )
-                  })}
-                </ListBox>
-              </div>
-            </Select.Popover>
-          </Select>
-
-          <Button
-            className='w-full justify-center rounded-lg'
-            isDisabled={!onEdit}
-            onPress={onEdit}
-            size='sm'
-            variant='primary'
-          >
-            <Edit className='h-3.5 w-3.5' />
-            编辑数据
-          </Button>
-        </div>
+                  return (
+                    <ListBox.Item
+                      key={filename}
+                      className='rounded-md px-3 py-2 text-sm'
+                      id={filename}
+                      textValue={label}
+                    >
+                      {label}
+                      <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                  )
+                })}
+              </ListBox>
+            </div>
+          </Select.Popover>
+        </Select>
       </Card.Content>
+
+      <Card.Footer className='px-4 pb-4 pt-0'>
+        <Button
+          className='w-full justify-center rounded-lg'
+          isDisabled={!onEdit}
+          onPress={onEdit}
+          size='sm'
+          variant='primary'
+        >
+          <Edit className='h-3.5 w-3.5' />
+          编辑数据
+        </Button>
+      </Card.Footer>
     </Card>
   )
 }

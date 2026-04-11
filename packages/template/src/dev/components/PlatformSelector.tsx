@@ -1,5 +1,4 @@
 import { Card, Description, Label, ListBox, ScrollShadow, Tabs } from '@heroui/react'
-import { Settings } from 'lucide-react'
 import React from 'react'
 
 import { componentConfigs } from '../../config/config'
@@ -30,25 +29,6 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
       className='w-full rounded-2xl border border-border shadow-none'
       variant='default'
     >
-      <Card.Header className='flex-col items-start gap-3 px-4 pb-3 pt-4'>
-        <div className='flex items-start gap-3'>
-          <div className='flex size-7 items-center justify-center rounded-lg border border-border bg-background text-foreground'>
-            <Settings className='h-4 w-4' />
-          </div>
-          <div>
-            <Card.Description className='text-[10px] font-semibold tracking-[0.18em] uppercase text-muted'>
-              组件开发面板
-            </Card.Description>
-            <Card.Title className='mt-1 text-base font-semibold text-foreground'>
-              {selectedPlatform}
-            </Card.Title>
-            <Card.Description className='mt-1 text-sm text-muted break-all'>
-              {selectedTemplate}
-            </Card.Description>
-          </div>
-        </div>
-      </Card.Header>
-
       <Card.Content className='space-y-4 px-4 pb-4'>
         <Tabs
           selectedKey={selectedPlatform}
@@ -71,9 +51,9 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
 
           {componentConfigs.map(config => (
             <Tabs.Panel key={config.type} className='pt-3' id={config.type}>
-              <label className='mb-2 block px-0.5 text-[10px] font-semibold tracking-[0.18em] text-muted uppercase'>
+              <Label className='mb-2 block px-0.5 text-[10px] font-semibold tracking-[0.18em] text-muted uppercase'>
                 组件
-              </label>
+              </Label>
 
               <ScrollShadow className='max-h-[calc(100vh-26rem)] pe-1' hideScrollBar size={48}>
                 <ListBox

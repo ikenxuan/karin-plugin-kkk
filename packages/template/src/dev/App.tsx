@@ -1,4 +1,4 @@
-import { Breadcrumbs, Button, ButtonGroup, Toolbar } from '@heroui/react'
+import { Breadcrumbs, Button, ButtonGroup, ScrollShadow, Toolbar } from '@heroui/react'
 import { Camera, Moon, Palette, RefreshCw, Sun } from 'lucide-react'
 import React from 'react'
 import { FaGithub } from 'react-icons/fa'
@@ -50,6 +50,8 @@ interface URLParams {
   /** 数据文件名 */
   dataFile?: string
 }
+
+type CSSVariableStyle = React.CSSProperties & Partial<Record<`--${string}`, string>>
 
 /**
  * 从URL解析参数
@@ -496,49 +498,49 @@ export const App: React.FC = () => {
   const resolvedPanelAccentSoftHover = `color-mix(in oklab, ${resolvedPanelAccent} 20%, transparent)`
   const resolvedPanelDefault = isDarkMode ? '#18181b' : '#f4f4f5'
   const resolvedPanelDefaultHover = isDarkMode ? '#232326' : '#ededed'
-  const panelThemeStyle = React.useMemo<React.CSSProperties>(() => ({
-    ['--background' as any]: isDarkMode ? '#09090b' : '#fafafa',
-    ['--foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
-    ['--surface' as any]: isDarkMode ? '#111113' : '#ffffff',
-    ['--surface-foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
-    ['--surface-secondary' as any]: isDarkMode ? '#18181b' : '#f5f5f5',
-    ['--surface-secondary-foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
-    ['--surface-tertiary' as any]: isDarkMode ? '#232326' : '#efefef',
-    ['--surface-tertiary-foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
-    ['--overlay' as any]: isDarkMode ? '#111113' : '#ffffff',
-    ['--overlay-foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
-    ['--muted' as any]: isDarkMode ? '#a1a1aa' : '#71717a',
-    ['--scrollbar' as any]: isDarkMode ? '#3f3f46' : '#d4d4d8',
-    ['--default' as any]: resolvedPanelDefault,
-    ['--default-foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
-    ['--segment' as any]: isDarkMode ? '#18181b' : '#f4f4f5',
-    ['--segment-foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
-    ['--border' as any]: isDarkMode ? '#27272a' : '#e4e4e7',
-    ['--separator' as any]: isDarkMode ? '#232326' : '#ededed',
-    ['--accent' as any]: resolvedPanelAccent,
-    ['--accent-foreground' as any]: resolvedPanelAccentForeground,
-    ['--accent-soft' as any]: resolvedPanelAccentSoft,
-    ['--accent-soft-foreground' as any]: resolvedPanelAccent,
-    ['--backdrop' as any]: isDarkMode ? 'rgba(0, 0, 0, 0.72)' : 'rgba(250, 250, 250, 0.82)',
-    ['--focus' as any]: resolvedPanelAccent,
-    ['--link' as any]: resolvedPanelAccent,
-    ['--field-background' as any]: isDarkMode ? '#111113' : '#ffffff',
-    ['--field-foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
-    ['--field-placeholder' as any]: isDarkMode ? '#71717a' : '#a1a1aa',
-    ['--field-border' as any]: isDarkMode ? '#27272a' : '#e4e4e7',
-    ['--field-border-width' as any]: '1px',
-    ['--color-accent' as any]: resolvedPanelAccent,
-    ['--color-accent-hover' as any]: resolvedPanelAccentHover,
-    ['--color-accent-foreground' as any]: resolvedPanelAccentForeground,
-    ['--color-accent-soft' as any]: resolvedPanelAccentSoft,
-    ['--color-accent-soft-hover' as any]: resolvedPanelAccentSoftHover,
-    ['--color-accent-soft-foreground' as any]: resolvedPanelAccent,
-    ['--color-default' as any]: resolvedPanelDefault,
-    ['--color-default-hover' as any]: resolvedPanelDefaultHover,
-    ['--color-default-foreground' as any]: isDarkMode ? '#fafafa' : '#09090b',
-    ['--surface-shadow' as any]: 'none',
-    ['--overlay-shadow' as any]: 'none',
-    ['--field-shadow' as any]: 'none'
+  const panelThemeStyle = React.useMemo<CSSVariableStyle>(() => ({
+    '--background': isDarkMode ? '#09090b' : '#fafafa',
+    '--foreground': isDarkMode ? '#fafafa' : '#09090b',
+    '--surface': isDarkMode ? '#111113' : '#ffffff',
+    '--surface-foreground': isDarkMode ? '#fafafa' : '#09090b',
+    '--surface-secondary': isDarkMode ? '#18181b' : '#f5f5f5',
+    '--surface-secondary-foreground': isDarkMode ? '#fafafa' : '#09090b',
+    '--surface-tertiary': isDarkMode ? '#232326' : '#efefef',
+    '--surface-tertiary-foreground': isDarkMode ? '#fafafa' : '#09090b',
+    '--overlay': isDarkMode ? '#111113' : '#ffffff',
+    '--overlay-foreground': isDarkMode ? '#fafafa' : '#09090b',
+    '--muted': isDarkMode ? '#a1a1aa' : '#71717a',
+    '--scrollbar': isDarkMode ? '#3f3f46' : '#d4d4d8',
+    '--default': resolvedPanelDefault,
+    '--default-foreground': isDarkMode ? '#fafafa' : '#09090b',
+    '--segment': isDarkMode ? '#18181b' : '#f4f4f5',
+    '--segment-foreground': isDarkMode ? '#fafafa' : '#09090b',
+    '--border': isDarkMode ? '#27272a' : '#e4e4e7',
+    '--separator': isDarkMode ? '#232326' : '#ededed',
+    '--accent': resolvedPanelAccent,
+    '--accent-foreground': resolvedPanelAccentForeground,
+    '--accent-soft': resolvedPanelAccentSoft,
+    '--accent-soft-foreground': resolvedPanelAccent,
+    '--backdrop': isDarkMode ? 'rgba(0, 0, 0, 0.72)' : 'rgba(250, 250, 250, 0.82)',
+    '--focus': resolvedPanelAccent,
+    '--link': resolvedPanelAccent,
+    '--field-background': isDarkMode ? '#111113' : '#ffffff',
+    '--field-foreground': isDarkMode ? '#fafafa' : '#09090b',
+    '--field-placeholder': isDarkMode ? '#71717a' : '#a1a1aa',
+    '--field-border': isDarkMode ? '#27272a' : '#e4e4e7',
+    '--field-border-width': '1px',
+    '--color-accent': resolvedPanelAccent,
+    '--color-accent-hover': resolvedPanelAccentHover,
+    '--color-accent-foreground': resolvedPanelAccentForeground,
+    '--color-accent-soft': resolvedPanelAccentSoft,
+    '--color-accent-soft-hover': resolvedPanelAccentSoftHover,
+    '--color-accent-soft-foreground': resolvedPanelAccent,
+    '--color-default': resolvedPanelDefault,
+    '--color-default-hover': resolvedPanelDefaultHover,
+    '--color-default-foreground': isDarkMode ? '#fafafa' : '#09090b',
+    '--surface-shadow': 'none',
+    '--overlay-shadow': 'none',
+    '--field-shadow': 'none'
   }), [
     isDarkMode,
     resolvedPanelAccent,
@@ -558,10 +560,10 @@ export const App: React.FC = () => {
         <Group orientation='horizontal' className='h-full w-full'>
           <Panel defaultSize='18%' minSize='16%' maxSize='28%' id='sidebar'>
             <aside className='flex h-full min-w-0 flex-col border-r border-border bg-background'>
-              <div className='flex h-14 shrink-0 items-center border-b border-border px-4'>
+              <div className='flex min-h-14 shrink-0 items-center border-b border-border px-4 py-2'>
                 <div className='flex w-full items-center justify-between gap-3'>
                   <div className='flex min-w-0 items-center gap-3'>
-                    <div className='flex size-10 shrink-0 items-center justify-center rounded-xl bg-foreground text-background'>
+                    <div className='flex size-9 shrink-0 items-center justify-center rounded-xl bg-foreground text-background'>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 230 221"
@@ -586,7 +588,9 @@ export const App: React.FC = () => {
                       <div className='text-[10px] font-semibold tracking-[0.24em] text-muted uppercase'>
                         KKK Dev Panel
                       </div>
-                      <div className='text-sm font-semibold leading-tight text-foreground'>组件开发工作台</div>
+                      <div className='truncate text-sm font-semibold leading-tight tracking-[-0.02em] text-foreground'>
+                        组件开发工作台
+                      </div>
                     </div>
                   </div>
 
@@ -595,15 +599,15 @@ export const App: React.FC = () => {
                     isIconOnly
                     onPress={() => window.open('https://github.com/ikenxuan/karin-plugin-kkk', '_blank', 'noopener,noreferrer')}
                     size='sm'
-                    variant='secondary'
+                    variant='ghost'
                   >
                     <FaGithub className='size-4' />
                   </Button>
                 </div>
               </div>
 
-              <div className='min-h-0 flex-1 overflow-y-auto px-4 py-4'>
-                <div className='space-y-3'>
+              <ScrollShadow className='min-h-0 flex-1 px-4 py-4' hideScrollBar size={56}>
+                <div className='space-y-4 pb-6'>
                   <PlatformSelector
                     selectedPlatform={selectedPlatform}
                     selectedTemplate={selectedTemplate}
@@ -623,7 +627,7 @@ export const App: React.FC = () => {
                     panelThemeStyle={panelThemeStyle}
                   />
                 </div>
-              </div>
+              </ScrollShadow>
             </aside>
           </Panel>
 
@@ -632,8 +636,8 @@ export const App: React.FC = () => {
           <Panel defaultSize='82%' minSize='64%' id='preview'>
             <section className='flex h-full min-w-0 flex-col bg-background'>
               <div className='flex h-14 shrink-0 items-center border-b border-border px-4'>
-                <div className='flex w-full items-center justify-between gap-3'>
-                  <div className='min-w-0 space-y-0.5'>
+                <div className='flex w-full min-w-0 items-center justify-between gap-3'>
+                  <div className='min-w-0 flex-1 space-y-0.5'>
                     <div className='overflow-hidden'>
                       <Breadcrumbs isDisabled className='gap-1 text-sm text-muted'>
                         <Breadcrumbs.Item href='#'>{selectedPlatform}</Breadcrumbs.Item>
@@ -647,17 +651,17 @@ export const App: React.FC = () => {
                         ))}
                       </Breadcrumbs>
                     </div>
-                    <div className='text-[11px] leading-tight text-muted'>
-                      数据文件：{dataFileLabel} · 面板：{shellTheme === 'dark' ? '深色' : '浅色'} · 子组件：{componentTheme === 'dark' ? '深色' : '浅色'}
+                    <div className='mt-1 truncate text-[11px] leading-tight text-muted'>
+                      数据文件：{dataFileLabel} · 面板：{shellTheme === 'dark' ? '深色' : '浅色'} · 子组件：{componentTheme === 'dark' ? '深色' : '浅色'} · 版本信息：{versionEnabled ? '显示' : '隐藏'}
                     </div>
                   </div>
 
                   <Toolbar
                     aria-label='预览操作'
-                    className='flex flex-wrap gap-1.5 rounded-xl border border-border bg-surface p-1.5'
+                    className='shrink-0 gap-1 rounded-xl border border-border bg-surface p-1'
                     isAttached
                   >
-                    <ButtonGroup size='sm' variant='outline'>
+                    <ButtonGroup size='sm' variant='secondary'>
                       <Button onPress={() => loadData(selectedDataFile)}>
                         <RefreshCw className='size-4' />
                         重载
@@ -677,7 +681,7 @@ export const App: React.FC = () => {
                     <Button
                       onPress={() => setIsPanelThemeModalOpen(true)}
                       size='sm'
-                      variant='outline'
+                      variant='secondary'
                     >
                       <Palette className='size-4' />
                       面板主题
@@ -686,7 +690,7 @@ export const App: React.FC = () => {
                     <Button
                       onPress={handleToggleVersion}
                       size='sm'
-                      variant='outline'
+                      variant='secondary'
                     >
                       {versionEnabled ? (
                         <LuInfo className='size-4' />

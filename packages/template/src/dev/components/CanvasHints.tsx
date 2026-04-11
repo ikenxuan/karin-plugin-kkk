@@ -22,8 +22,8 @@ export const CanvasHints: React.FC<CanvasHintsProps> = () => {
             <Info className='h-4 w-4' />
           </div>
           <div>
-            <h3 className='text-sm font-semibold text-foreground'>画布操作</h3>
-            <p className='text-xs text-muted'>缩放、拖拽和文本选择的快捷提示</p>
+            <Card.Title className='text-sm font-semibold text-foreground'>画布操作</Card.Title>
+            <Card.Description className='text-xs text-muted'>缩放、拖拽和文本选择的快捷提示</Card.Description>
           </div>
         </div>
       </Card.Header>
