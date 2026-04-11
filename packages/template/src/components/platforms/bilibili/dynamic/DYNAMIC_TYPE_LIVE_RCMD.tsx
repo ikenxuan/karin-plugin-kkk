@@ -383,7 +383,7 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
                 chineseLabel='直播间信息'
                 accent={<Radio size={20} style={{ color: primaryColor }} />}
                 value={
-                  <div className='font-medium leading-none'>
+                  <div className='font-bold leading-none'>
                     {data.liveinf}
                   </div>
                 }
