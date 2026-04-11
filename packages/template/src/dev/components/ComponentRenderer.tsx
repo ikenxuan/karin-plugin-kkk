@@ -23,6 +23,29 @@ interface ComponentRendererProps {
   versionEnabled?: boolean
 }
 
+type PreviewPayload = {
+  __extraProps?: Record<string, unknown>
+  [key: string]: unknown
+}
+
+const splitPreviewPayload = (payload: PreviewPayload | null | undefined) => {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return {
+      renderData: payload,
+      extraProps: {}
+    }
+  }
+
+  const { __extraProps, ...renderData } = payload
+
+  return {
+    renderData,
+    extraProps: __extraProps && typeof __extraProps === 'object' && !Array.isArray(__extraProps)
+      ? __extraProps
+      : {}
+  }
+}
+
 /**
  * 错误边界
  */
@@ -64,6 +87,15 @@ class ComponentErrorBoundary extends React.Component<{ children: React.ReactNode
  * @returns JSX元素
  */
 const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, templateId, data, qrCodeDataUrl, loadError, onLoadComplete, versionEnabled = true }) => {
+  const { renderData, extraProps } = React.useMemo(() => splitPreviewPayload(data), [data])
+  const componentConfig = getComponentConfig(platform, templateId)
+
+  // 所有顶层 Hooks 都必须在任何 early return 之前调用，避免主题切换或数据到达时触发 Hook 顺序变化。
+  const LazyComponent = React.useMemo<React.ComponentType<any> | null>(() => {
+    if (!componentConfig?.lazyComponent) return null
+    return React.lazy(componentConfig.lazyComponent!)
+  }, [componentConfig?.lazyComponent])
+
   /**
    * 渲染优雅的加载状态
    * @param message 加载消息
@@ -98,7 +130,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
 
   // 如果有加载错误，显示错误信息
   if (loadError) {
-    const isDark = data?.useDarkTheme === true
+    const isDark = renderData?.useDarkTheme === true
     const bgColor = isDark ? '#0a0a0f' : '#fafafa'
 
     return (
@@ -220,18 +252,9 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
   }
 
   // 数据为空时显示加载状态
-  if (!data || Object.keys(data).length === 0) {
+  if (!renderData || Object.keys(renderData).length === 0) {
     return renderLoading('正在加载预览...')
   }
-
-  // 获取组件配置（在 Hooks 之前，供 useMemo 使用）
-  const componentConfig = getComponentConfig(platform, templateId)
-
-  // 保证 Hooks 顺序稳定：无条件 useMemo；缺失时返回 null，由渲染层处理
-  const LazyComponent = React.useMemo<React.ComponentType<any> | null>(() => {
-    if (!componentConfig?.lazyComponent) return null
-    return React.lazy(componentConfig.lazyComponent!)
-  }, [componentConfig?.lazyComponent])
 
   if (!componentConfig) {
     return renderInDevelopment('模板', templateId)
@@ -247,7 +270,8 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
 
   // 准备组件属性
   const commonProps = {
-    data,
+    ...extraProps,
+    data: renderData,
     qrCodeDataUrl,
     version: versionEnabled ? version : undefined,
     scale: 1

@@ -1,5 +1,20 @@
 import type { BaseComponentProps } from '../../../index'
 
+export interface BilibiliPosterPalette {
+  bgColor: string
+  primaryColor: string
+  secondaryColor: string
+  mutedColor: string
+  accentColor: string
+  deepColor: string
+  coverShade: string
+}
+
+export interface BilibiliPosterPalettes {
+  light: BilibiliPosterPalette
+  dark: BilibiliPosterPalette
+}
+
 /**
  * B站直播动态组件属性接口
  */
@@ -33,6 +48,10 @@ export interface BilibiliLiveDynamicProps extends BaseComponentProps {
   }
   /** 预生成的二维码数据URL */
   qrCodeDataUrl?: string
+  /** 服务端预计算的海报色板（亮色/深色） */
+  posterPalettes?: BilibiliPosterPalettes
+  /** 服务端预计算的海报色板 */
+  posterPalette?: BilibiliPosterPalette
 }
 
 /**
