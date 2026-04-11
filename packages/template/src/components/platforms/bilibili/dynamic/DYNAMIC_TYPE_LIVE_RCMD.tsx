@@ -309,7 +309,7 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
 
         {data.image_url && (
           <div className='relative mb-16 overflow-hidden'>
-            <div className='aspect-[2.18/1] rounded-[30px] overflow-hidden'>
+            <div className='rounded-[30px] overflow-hidden'>
               <EnhancedImage
                 src={data.image_url}
                 alt='直播封面'
