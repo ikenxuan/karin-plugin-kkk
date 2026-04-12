@@ -44,7 +44,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
   return (
     <div
       className={clsx(
-        'w-360 shrink-0 bg-background text-foreground font-[HarmonyOSHans-Regular]',
+        'w-360 shrink-0 bg-default text-foreground font-[HarmonyOSHans-Regular]',
         useDarkTheme ? 'dark' : 'light',
         className
       )}
