@@ -16,10 +16,10 @@ import { getRandomErrorTitle } from './errorTitles'
  * ANSI 颜色代码映射
  */
 const ansiColorMap: Record<number, string> = {
-  30: 'text-default-900', 31: 'text-danger', 32: 'text-success', 33: 'text-warning',
-  34: 'text-primary', 35: 'text-secondary', 36: 'text-cyan-600', 37: 'text-default-500',
-  90: 'text-default-600', 91: 'text-danger', 92: 'text-success', 93: 'text-warning',
-  94: 'text-primary', 95: 'text-secondary', 96: 'text-default-500', 97: 'text-default-200'
+  30: 'text-foreground', 31: 'text-danger', 32: 'text-success', 33: 'text-warning',
+  34: 'text-accent', 35: 'text-accent', 36: 'text-cyan-600', 37: 'text-muted',
+  90: 'text-foreground/70', 91: 'text-danger', 92: 'text-success', 93: 'text-warning',
+  94: 'text-accent', 95: 'text-accent', 96: 'text-muted', 97: 'text-background/80'
 }
 
 const ansi256ToColor = (colorCode: number): string => {
@@ -63,7 +63,7 @@ const convertAnsiToHtml = (text: string): string => {
       if (code === 90 && codes[i + 1] === 2) {
         currentStyles.classes = currentStyles.classes.filter(c => !c.startsWith('text-'))
         currentStyles.inlineColor = undefined
-        currentStyles.classes.push('text-default-400')
+        currentStyles.classes.push('text-muted')
         i++
       } else if (code === 0 || code === 39 || code === 49) {
         currentStyles.classes = currentStyles.classes.filter(c => !c.startsWith('text-') && !c.startsWith('bg-') && !c.startsWith('dark:'))
@@ -94,13 +94,13 @@ const convertAnsiToHtml = (text: string): string => {
 
 const getLogLevelTheme = (level: LogLevel, isDark: boolean): { bgClass: string; borderClass: string; textClass: string; iconClass: string } => {
   const themeMap: Record<LogLevel, { bgClass: string; borderClass: string; textClass: string; iconClass: string }> = {
-    'TRAC': { bgClass: isDark ? 'bg-default/10' : 'bg-default/5', borderClass: 'border-default/20', textClass: isDark ? 'text-default-400' : 'text-default-500', iconClass: 'text-default-400' },
-    'DEBU': { bgClass: isDark ? 'bg-primary/15' : 'bg-primary/5', borderClass: 'border-primary/25', textClass: 'text-primary', iconClass: 'text-primary' },
-    'MARK': { bgClass: isDark ? 'bg-secondary/15' : 'bg-secondary/5', borderClass: 'border-secondary/25', textClass: 'text-secondary', iconClass: 'text-secondary' },
-    'INFO': { bgClass: isDark ? 'bg-success/15' : 'bg-success/5', borderClass: 'border-success/25', textClass: 'text-success', iconClass: 'text-success' },
-    'WARN': { bgClass: isDark ? 'bg-warning/15' : 'bg-warning/5', borderClass: 'border-warning/25', textClass: 'text-warning', iconClass: 'text-warning' },
-    'ERRO': { bgClass: isDark ? 'bg-danger/15' : 'bg-danger/5', borderClass: 'border-danger/25', textClass: 'text-danger', iconClass: 'text-danger' },
-    'FATA': { bgClass: isDark ? 'bg-danger/20' : 'bg-danger/10', borderClass: 'border-danger/35', textClass: 'text-danger', iconClass: 'text-danger' }
+    'TRAC': { bgClass: isDark ? 'bg-surface-secondary/10' : 'bg-surface-secondary/5', borderClass: 'border-border/20', textClass: 'text-muted', iconClass: 'text-muted' },
+    'DEBU': { bgClass: isDark ? 'bg-accent-soft' : 'bg-accent/5', borderClass: 'border-accent/25', textClass: 'text-accent', iconClass: 'text-accent' },
+    'MARK': { bgClass: isDark ? 'bg-surface-secondary/15' : 'bg-surface-secondary/5', borderClass: 'border-accent/25', textClass: 'text-accent', iconClass: 'text-accent' },
+    'INFO': { bgClass: isDark ? 'bg-success-soft' : 'bg-success/5', borderClass: 'border-success/25', textClass: 'text-success', iconClass: 'text-success' },
+    'WARN': { bgClass: isDark ? 'bg-warning-soft' : 'bg-warning/5', borderClass: 'border-warning/25', textClass: 'text-warning', iconClass: 'text-warning' },
+    'ERRO': { bgClass: isDark ? 'bg-danger-soft' : 'bg-danger/5', borderClass: 'border-danger/25', textClass: 'text-danger', iconClass: 'text-danger' },
+    'FATA': { bgClass: isDark ? 'bg-danger-soft-hover' : 'bg-danger/10', borderClass: 'border-danger/35', textClass: 'text-danger', iconClass: 'text-danger' }
   }
   return themeMap[level] || themeMap['TRAC']
 }
@@ -120,7 +120,7 @@ const getAdapterLogo = (adapterName: string): React.ReactNode => {
   for (const [key, logoPath] of Object.entries(ADAPTER_LOGO_MAP)) {
     if (nameLower.includes(key)) return <img src={logoPath} className='h-20 w-auto' alt={adapterName} />
   }
-  return <IoExtensionPuzzleOutline className='w-16 h-auto text-danger-700/80' />
+  return <IoExtensionPuzzleOutline className='w-16 h-auto text-danger/80' />
 }
 
 const SectionTitle: React.FC<{ icon: React.ReactNode; en: string; zh: string; color: string }> = ({ icon, en, zh, color }) => (
@@ -514,7 +514,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
                       <p className='text-xl mb-1' style={{ color: mutedColor }}>Adapter / 适配器</p>
                       <div className='flex items-center gap-4 flex-wrap'>
                         <p className='text-3xl font-bold truncate' style={{ color: accentColor }}>{data.adapterInfo.name}</p>
-                        <Chip size='lg' variant='flat' color='danger' className='h-8 text-lg'>
+                        <Chip size='lg' variant='soft' color='danger' className='h-8 text-lg'>
                           {data.adapterInfo.version.startsWith('v') ? data.adapterInfo.version : `v${data.adapterInfo.version}`}
                         </Chip>
                       </div>

@@ -208,7 +208,7 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
   return (
     <DefaultLayout
       {...props}
-      className="relative overflow-hidden bg-default-50"
+      className="relative overflow-hidden bg-surface"
     >
       {/* 弥散光背景层 */}
       <div className="absolute inset-0 pointer-events-none z-0">
@@ -256,7 +256,7 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
 
       {/* 背景大字装饰 */}
       <div className="absolute top-30 right-15 pointer-events-none select-none opacity-[0.03] z-0">
-        <span className="text-[200px] font-black tracking-tighter leading-none block text-right text-default-900">
+        <span className="text-[200px] font-black tracking-tighter leading-none block text-right text-foreground">
           GLOBAL
         </span>
       </div>
@@ -265,13 +265,13 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-12 left-12 grid grid-cols-4 gap-2 opacity-20">
           {[...Array(16)].map((_, i) => (
-            <div key={i} className="w-1.5 h-1.5 rounded-full bg-default-900" />
+            <div key={i} className="w-1.5 h-1.5 rounded-full bg-foreground" />
           ))}
         </div>
         <div className="absolute top-12 right-12 flex flex-col items-end gap-1 opacity-20">
-          <div className="w-32 h-1 bg-default-900" />
-          <div className="w-24 h-1 bg-default-900" />
-          <div className="w-16 h-1 bg-default-900" />
+          <div className="w-32 h-1 bg-foreground" />
+          <div className="w-24 h-1 bg-foreground" />
+          <div className="w-16 h-1 bg-foreground" />
         </div>
       </div>
 
@@ -279,17 +279,17 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
       <div className="relative z-10 p-18 flex flex-col min-h-[calc(100vh-200px)]">
 
         {/* 头部区域 */}
-        <div className="mb-20 border-b-4 border-default-200/30 pb-16">
+        <div className="mb-20 border-b-4 border-border/30 pb-16">
           <div className="flex items-center gap-5 opacity-60 mb-8">
             <span className="w-4 h-4 rounded-full bg-indigo-500 animate-pulse" />
-            <span className="text-3xl font-mono tracking-widest text-default-500/80">
+            <span className="text-3xl font-mono tracking-widest text-muted/80">
               GLOBAL_ANALYTICS
             </span>
           </div>
-          <h1 className="text-[8rem] font-black leading-none tracking-tighter text-default-900/90 mb-6">
+          <h1 className="text-[8rem] font-black leading-none tracking-tighter text-foreground/90 mb-6">
             全局解析统计
           </h1>
-          <div className="text-5xl font-bold text-default-600/80">
+          <div className="text-5xl font-bold text-foreground/80">
             全局数据概览
           </div>
         </div>
@@ -299,10 +299,10 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
           <div className="flex items-center gap-8 mb-16">
             <div className="w-5 h-24 rounded-full bg-indigo-500" />
             <div className="flex flex-col">
-              <h2 className="text-[5rem] font-black tracking-tight leading-none text-default-900/90">
+              <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">
                 数据概览
               </h2>
-              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-default-500/70 mt-2">
+              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">
                 OVERVIEW
               </span>
             </div>
@@ -314,20 +314,20 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
               { title: '使用用户', titleEn: 'USERS', value: totalUsers, unit: '人' },
               { title: '总解析', titleEn: 'PARSES', value: totalParses, unit: '次' }
             ].map((card) => (
-              <div key={card.titleEn} className="relative rounded-3xl bg-default-100/40 backdrop-blur-md border-2 border-default-200/40 overflow-hidden">
-                <div className="p-6 border-default-200/40">
-                  <div className="text-3xl font-black text-default-900/90">
+              <div key={card.titleEn} className="relative rounded-3xl bg-surface/40 backdrop-blur-md border-2 border-border/40 overflow-hidden">
+                <div className="p-6 border-border/40">
+                  <div className="text-3xl font-black text-foreground/90">
                     {card.title}
                   </div>
-                  <div className="text-lg font-medium tracking-widest uppercase text-default-500/70 mt-1 opacity-60">
+                  <div className="text-lg font-medium tracking-widest uppercase text-muted/70 mt-1 opacity-60">
                     {card.titleEn}
                   </div>
                 </div>
                 <div className="p-10 pt-2 flex items-end justify-between">
-                  <div className="text-[4.5rem] font-black leading-none text-default-900/90">
+                  <div className="text-[4.5rem] font-black leading-none text-foreground/90">
                     {formatNumber(card.value)}
                   </div>
-                  <div className="text-3xl font-medium text-default-600/80 pb-1">
+                  <div className="text-3xl font-medium text-foreground/80 pb-1">
                     {card.unit}
                   </div>
                 </div>
@@ -342,16 +342,16 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
             <div className="flex items-center gap-8 mb-16">
               <div className="w-5 h-24 rounded-full bg-blue-500" />
               <div className="flex flex-col">
-                <h2 className="text-[5rem] font-black tracking-tight leading-none text-default-900/90">
+                <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">
                   趋势分析
                 </h2>
-                <span className="text-2xl font-medium tracking-[0.15em] uppercase text-default-500/70 mt-2">
+                <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">
                   TREND ANALYSIS
                 </span>
               </div>
             </div>
 
-            <div className="relative p-16 rounded-3xl bg-default-100/40 backdrop-blur-md border-2 border-default-200/40">
+            <div className="relative p-16 rounded-3xl bg-surface/40 backdrop-blur-md border-2 border-border/40">
               <svg width="1200" height="600" viewBox="0 0 1200 600">
                 <VictoryChart
                   standalone={false}
@@ -481,10 +481,10 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
           <div className="flex items-center gap-8 mb-16">
             <div className="w-5 h-24 rounded-full bg-violet-500" />
             <div className="flex flex-col">
-              <h2 className="text-[5rem] font-black tracking-tight leading-none text-default-900/90">
+              <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">
                 平台详情
               </h2>
-              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-default-500/70 mt-2">
+              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">
                 PLATFORMS
               </span>
             </div>
@@ -543,14 +543,14 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
                       style={{ backgroundColor: config.color }}
                     />
                     <div className="flex-1">
-                      <div className="text-4xl font-bold text-default-900/90 mb-2">
+                      <div className="text-4xl font-bold text-foreground/90 mb-2">
                         {config.name}
                       </div>
-                      <div className="text-2xl text-default-600/80 mb-2">
+                      <div className="text-2xl text-foreground/80 mb-2">
                         {config.nameEn}
                       </div>
-                      <div className="text-3xl text-default-600/80">
-                        <span className="font-black text-default-900/90">{formatWithCommas(count)}</span> 次
+                      <div className="text-3xl text-foreground/80">
+                        <span className="font-black text-foreground/90">{formatWithCommas(count)}</span> 次
                         <span className="text-2xl ml-2">({percentage}%)</span>
                       </div>
                     </div>
@@ -566,10 +566,10 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
           <div className="flex items-center gap-8 mb-16">
             <div className="w-5 h-24 rounded-full bg-yellow-500" />
             <div className="flex flex-col">
-              <h2 className="text-[5rem] font-black tracking-tight leading-none text-default-900/90">
+              <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">
                 群组排行
               </h2>
-              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-default-500/70 mt-2">
+              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">
                 TOP GROUPS
               </span>
             </div>
@@ -580,21 +580,21 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
               return (
                 <div
                   key={group.groupId}
-                  className="relative p-12 rounded-3xl bg-default-100/40 backdrop-blur-md border-2 border-default-200/40 flex items-center gap-10"
+                  className="relative p-12 rounded-3xl bg-surface/40 backdrop-blur-md border-2 border-border/40 flex items-center gap-10"
                 >
                   {/* 群组头像 */}
                   {group.groupAvatar && (
                     <img
                       src={group.groupAvatar}
                       alt={group.groupName || group.groupId}
-                      className="w-28 h-28 rounded-2xl object-cover border-2 border-default-200/50 shrink-0"
+                      className="w-28 h-28 rounded-2xl object-cover border-2 border-border/50 shrink-0"
                     />
                   )}
 
                   {/* 群组信息 */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-4 mb-3">
-                      <div className="text-4xl font-black text-default-900/90">
+                      <div className="text-4xl font-black text-foreground/90">
                         {group.groupName || `群组 ${group.groupId}`}
                       </div>
                       {/* 前三名奖杯图标 */}
@@ -608,7 +608,7 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
                         <RiTrophyFill className="w-12 h-12 text-orange-400 shrink-0" />
                       )}
                     </div>
-                    <div className="text-2xl text-default-600/80 mb-4">
+                    <div className="text-2xl text-foreground/80 mb-4">
                       {group.groupId} · {formatWithCommas(group.uniqueUsers)} 人使用
                     </div>
                     <div className="flex gap-6 flex-wrap">
@@ -622,7 +622,7 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
                               alt={config.name}
                               className="h-10 w-auto object-contain"
                             />
-                            <span className="text-3xl font-bold text-default-600/80">
+                            <span className="text-3xl font-bold text-foreground/80">
                               {formatWithCommas(count)}
                             </span>
                           </div>
@@ -633,10 +633,10 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
 
                   {/* 总次数 */}
                   <div className="shrink-0 text-right">
-                    <div className="text-[5rem] font-black text-default-900/90 leading-none">
+                    <div className="text-[5rem] font-black text-foreground/90 leading-none">
                       {formatWithCommas(group.totalParses)}
                     </div>
-                    <div className="text-3xl text-default-600/80 mt-2">
+                    <div className="text-3xl text-foreground/80 mt-2">
                       次
                     </div>
                   </div>

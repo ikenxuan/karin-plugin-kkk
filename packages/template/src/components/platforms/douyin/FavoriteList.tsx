@@ -26,7 +26,7 @@ export const DouyinFavoriteList: React.FC<DouyinFavoriteListProps> = (props) => 
   return (
     <DefaultLayout 
       {...props}
-      className="relative overflow-hidden bg-default-50"
+      className="relative overflow-hidden bg-surface"
     >
       {/* 1. 弥散光背景层 */}
       <div className="absolute inset-0 pointer-events-none z-0">
@@ -59,11 +59,11 @@ export const DouyinFavoriteList: React.FC<DouyinFavoriteListProps> = (props) => 
           
           {/* 顶部 Branding */}
           <div className="flex flex-col gap-1 select-none">
-            <span className="text-6xl font-black text-default-900/10 tracking-tighter leading-none">LIKE</span>
+            <span className="text-6xl font-black text-foreground/10 tracking-tighter leading-none">LIKE</span>
             <span className="text-6xl font-black text-rose-500/20 tracking-tighter leading-none">FAVORITE</span>
             <div className="flex items-center gap-3 mt-2">
               <div className="h-1.5 w-16 bg-rose-500 rounded-full"></div>
-              <span className="text-base text-default-400 font-mono tracking-widest uppercase">
+              <span className="text-base text-muted font-mono tracking-widest uppercase">
                 Push Notification
               </span>
             </div>
@@ -94,14 +94,14 @@ export const DouyinFavoriteList: React.FC<DouyinFavoriteListProps> = (props) => 
             </div>
 
             <div className="flex flex-col items-center text-center">
-              <span className="text-6xl font-black text-default-900 leading-tight relative">
+              <span className="text-6xl font-black text-foreground leading-tight relative">
                 {props.data.liker_username}
                 {/* 装饰图形 */}
                 <svg className="absolute -right-8 -top-2 text-orange-400 w-8 h-8 opacity-60" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6-4.8-6 4.8 2.4-7.2-6-4.8h7.6z" />
                 </svg>
               </span>
-              <div className="px-6 py-6 pt-0 rounded-full text-3xl text-default-500 font-mono">
+              <div className="px-6 py-6 pt-0 rounded-full text-3xl text-muted font-mono">
                 @{props.data.liker_douyin_id}
               </div>
               
@@ -123,17 +123,17 @@ export const DouyinFavoriteList: React.FC<DouyinFavoriteListProps> = (props) => 
             {/* 装饰图形 */}
             <div className="absolute left-4 bottom-4 w-32 h-32 bg-rose-500/5 rounded-2xl -z-10 rotate-12"></div>
             
-            <div className="h-px w-full bg-linear-to-r from-default-200 via-default-300 to-transparent"></div>
+            <div className="h-px w-full bg-linear-to-r from-surface-secondary via-border to-transparent"></div>
             <div className="flex items-end gap-6">
               {props.qrCodeDataUrl && (
                 <img src={props.qrCodeDataUrl} className="w-65 h-auto rounded-2xl mix-blend-multiply" alt="QR" />
               )}
               <div className="flex flex-col justify-end h-56 pb-2">
-                <span className="text-default-400 text-sm font-mono mb-2">SCAN TO VIEW</span>
-                <span className="text-3xl font-bold text-default-700 leading-none">
+                <span className="text-muted text-sm font-mono mb-2">SCAN TO VIEW</span>
+                <span className="text-3xl font-bold text-foreground/80 leading-none">
                   {format(new Date(), 'HH:mm')}
                 </span>
-                <span className="text-lg text-default-400 font-medium">
+                <span className="text-lg text-muted font-medium">
                   {format(new Date(), 'yyyy.MM.dd')}
                 </span>
               </div>
@@ -144,26 +144,26 @@ export const DouyinFavoriteList: React.FC<DouyinFavoriteListProps> = (props) => 
 
         {/* 右侧 */}
         <div className="col-span-8 h-full">
-          <div className="h-full bg-default-50/60 backdrop-blur-xl rounded-[3rem] p-10 border border-default-200 flex flex-col gap-8 shadow-2xl relative overflow-hidden">
+          <div className="h-full bg-surface/60 backdrop-blur-xl rounded-[3rem] p-10 border border-border flex flex-col gap-8 shadow-2xl relative overflow-hidden">
             
             {/* 作者信息栏 */}
             <div className="flex items-center justify-between z-10">
               <div className="flex items-center gap-6 flex-1 min-w-0 mr-6">
                 <img 
                   src={props.data.author_avatar} 
-                  className="w-24 h-24 rounded-full border-2 border-default-100 shadow-md shrink-0"
+                  className="w-24 h-24 rounded-full border-2 border-surface shadow-md shrink-0"
                   alt="Author"
                 />
                 <div className="flex flex-col gap-1 min-w-0">
-                  <span className="text-4xl font-bold text-default-800 truncate" title={props.data.author_username}>
+                  <span className="text-4xl font-bold text-foreground/90 truncate" title={props.data.author_username}>
                     {props.data.author_username}
                   </span>
-                  <span className="text-xl text-default-400 font-mono truncate">
+                  <span className="text-xl text-muted font-mono truncate">
                     抖音号: {props.data.author_douyin_id}
                   </span>
                 </div>
               </div>
-              <div className="px-6 py-3 bg-default-100/80 backdrop-blur-md rounded-full text-default-500 font-medium text-lg shrink-0">
+              <div className="px-6 py-3 bg-surface/80 backdrop-blur-md rounded-full text-muted font-medium text-lg shrink-0">
                 发布于 {props.data.create_time.split(' ')[0]}
               </div>
             </div>
@@ -210,8 +210,8 @@ const StatItem: React.FC<{
   value: string
   iconClassName?: string
 }> = ({ icon: Icon, value, iconClassName }) => (
-  <div className="flex flex-col items-center justify-center gap-2 py-6 rounded-3xl bg-default-100">
-    <Icon className={`w-12 h-12 fill-current opacity-90 ${iconClassName || 'text-default-400'}`} />
-    <span className="text-2xl font-bold text-default-600 mt-1">{value}</span>
+  <div className="flex flex-col items-center justify-center gap-2 py-6 rounded-3xl bg-surface">
+    <Icon className={`w-12 h-12 fill-current opacity-90 ${iconClassName || 'text-muted'}`} />
+    <span className="text-2xl font-bold text-foreground/70 mt-1">{value}</span>
   </div>
 )

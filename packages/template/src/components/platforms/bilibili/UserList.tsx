@@ -15,7 +15,7 @@ import { EnhancedImage } from './shared'
  */
 const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][number]> = (props) => {
   return (
-    <li className='relative group overflow-hidden rounded-4xl bg-content1/60 border border-default-200/50 backdrop-blur-xl shadow-xl'>
+    <li className='relative group overflow-hidden rounded-4xl bg-surface/60 border border-border/50 backdrop-blur-xl shadow-xl'>
       {/* 渐进式模糊背景 - Progressive Blur Background */}
       <div className='absolute inset-0 pointer-events-none z-0 overflow-hidden'>
         <EnhancedImage
@@ -50,7 +50,7 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
         {/* 左侧：头像与状态 */}
         <div className="relative shrink-0">
           {/* 头像容器 - 纯净玻璃态 */}
-          <div className="w-28 h-28 rounded-full p-1 bg-default-100/20 backdrop-blur-md border border-default-200/30 shadow-lg">
+          <div className="w-28 h-28 rounded-full p-1 bg-surface/20 backdrop-blur-md border border-border/30 shadow-lg">
             <EnhancedImage
               src={props.avatar_img}
               alt="Avatar"
@@ -63,10 +63,10 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
             className={`absolute -bottom-1 -right-1 px-3 py-1 rounded-full border-2 border-background flex items-center gap-1.5 shadow-md ${
               props.switch 
                 ? 'bg-success text-white' 
-                : 'bg-danger-500 text-default-100'
+                : 'bg-danger text-danger-foreground'
             }`}
           >
-            <div className={`w-1.5 h-1.5 rounded-full ${props.switch ? 'bg-white' : 'bg-default-300'}`} />
+            <div className={`w-1.5 h-1.5 rounded-full ${props.switch ? 'bg-white' : 'bg-border'}`} />
             <span className="text-[10px] font-bold uppercase tracking-wider leading-none">
               {props.switch ? 'ON' : 'OFF'}
             </span>
@@ -81,7 +81,7 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
               {props.username}
             </h3>
             <div className="flex items-center gap-2 mt-1">
-              <span className="px-2 py-0.5 rounded-md bg-default-100 border border-default-200 text-xs font-mono font-bold text-default-500 flex items-center gap-1">
+              <span className="px-2 py-0.5 rounded-md bg-surface border border-border text-xs font-mono font-bold text-muted flex items-center gap-1">
                 <RiHashtag className="w-3 h-3 opacity-70" />
                 {props.host_mid}
               </span>
@@ -91,27 +91,27 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
           {/* 数据栏 */}
           <div className="flex items-center gap-3 w-full">
             {/* 粉丝 */}
-            <div className="flex-1 flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-content2/40 border border-default-200/40 backdrop-blur-sm">
-              <RiGroupLine className="w-5 h-5 mb-1 text-default-500" />
-              <span className="text-lg font-black font-mono bg-linear-to-b from-foreground to-default-500 bg-clip-text text-transparent leading-none">
+            <div className="flex-1 flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-surface-secondary/40 border border-border/40 backdrop-blur-sm">
+              <RiGroupLine className="w-5 h-5 mb-1 text-muted" />
+              <span className="text-lg font-black font-mono bg-linear-to-b from-foreground to-muted bg-clip-text text-transparent leading-none">
                 {props.fans}
               </span>
               <span className="text-[10px] font-bold uppercase opacity-40 mt-1 text-foreground">Fans</span>
             </div>
 
             {/* 获赞 */}
-            <div className="flex-1 flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-content2/40 border border-default-200/40 backdrop-blur-sm">
-              <RiHeart3Line className="w-5 h-5 mb-1 text-default-500" />
-              <span className="text-lg font-black font-mono bg-linear-to-b from-foreground to-default-500 bg-clip-text text-transparent leading-none">
+            <div className="flex-1 flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-surface-secondary/40 border border-border/40 backdrop-blur-sm">
+              <RiHeart3Line className="w-5 h-5 mb-1 text-muted" />
+              <span className="text-lg font-black font-mono bg-linear-to-b from-foreground to-muted bg-clip-text text-transparent leading-none">
                 {props.total_favorited}
               </span>
               <span className="text-[10px] font-bold uppercase opacity-40 mt-1 text-foreground">Likes</span>
             </div>
 
             {/* 关注 */}
-            <div className="flex-1 flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-content2/40 border border-default-200/40 backdrop-blur-sm">
-              <RiUserFollowLine className="w-5 h-5 mb-1 text-default-500" />
-              <span className="text-lg font-black font-mono bg-linear-to-b from-foreground to-default-500 bg-clip-text text-transparent leading-none">
+            <div className="flex-1 flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-surface-secondary/40 border border-border/40 backdrop-blur-sm">
+              <RiUserFollowLine className="w-5 h-5 mb-1 text-muted" />
+              <span className="text-lg font-black font-mono bg-linear-to-b from-foreground to-muted bg-clip-text text-transparent leading-none">
                 {props.following_count}
               </span>
               <span className="text-[10px] font-bold uppercase opacity-40 mt-1 text-foreground">Follow</span>
@@ -176,7 +176,7 @@ const BilibiliUserList: React.FC<BilibiliUserListProps> = (props) => {
 
       {/* 3. 几何装饰 */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute left-16 top-0 bottom-0 w-px bg-linear-to-b from-transparent via-default-300 to-transparent" />
+        <div className="absolute left-16 top-0 bottom-0 w-px bg-linear-to-b from-transparent via-border to-transparent" />
         <div className="absolute top-0 right-0 p-16 opacity-10">
           <svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-foreground">
             <circle cx="200" cy="200" r="199.5" stroke="currentColor" />
@@ -214,7 +214,7 @@ const BilibiliUserList: React.FC<BilibiliUserListProps> = (props) => {
 
           <div className="text-right">
             {/* 字体黑白灰渐变 */}
-            <div className="text-8xl font-black text-transparent bg-clip-text bg-linear-to-b from-foreground to-default-400 leading-none">
+            <div className="text-8xl font-black text-transparent bg-clip-text bg-linear-to-b from-foreground to-muted leading-none">
               {String(props.data.renderOpt.length).padStart(2, '0')}
             </div>
             <div className="text-sm font-bold tracking-[0.3em] uppercase opacity-40 mt-2 text-foreground">

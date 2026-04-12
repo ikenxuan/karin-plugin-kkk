@@ -1,4 +1,4 @@
-import { Card, CardBody, CardHeader, Kbd } from '@heroui/react'
+import { Card, Kbd } from '@heroui/react'
 import { Info } from 'lucide-react'
 import React from 'react'
 
@@ -12,44 +12,54 @@ interface CanvasHintsProps {
  */
 export const CanvasHints: React.FC<CanvasHintsProps> = () => {
   return (
-    <Card className='w-full bg-content2/60 backdrop-blur-md border border-divider shadow-sm' shadow='none'>
-      <CardHeader className='pb-2 pt-2.5'>
-        <div className='flex gap-2 items-center'>
-          <Info className='w-4 h-4 text-foreground-600' />
-          <h3 className='text-sm font-semibold text-foreground'>画布操作</h3>
+    <Card
+      className='w-full rounded-xl border border-border shadow-none'
+      variant='default'
+    >
+      <Card.Header className='px-3 pb-2 pt-3'>
+        <div className='flex items-center gap-2.5'>
+          <div className='flex size-7 items-center justify-center rounded-lg border border-border bg-background text-foreground'>
+            <Info className='h-4 w-4' />
+          </div>
+          <div>
+            <Card.Title className='text-sm font-semibold text-foreground'>画布操作</Card.Title>
+            <Card.Description className='text-xs text-muted'>缩放、拖拽和文本选择的快捷提示</Card.Description>
+          </div>
         </div>
-      </CardHeader>
-      <CardBody className='pt-0 space-y-2 px-3 pb-3'>
-        {/* 双击提示 */}
+      </Card.Header>
+
+      <Card.Content className='space-y-2 px-3 pb-3'>
         <div className='flex gap-2'>
-          <span className='text-foreground-400 shrink-0 text-xs leading-relaxed'>•</span>
-          <div className='flex-1 text-xs text-foreground-600 leading-relaxed'>
+          <span className='shrink-0 text-xs leading-relaxed text-muted'>•</span>
+          <div className='flex-1 text-xs leading-relaxed text-foreground/70'>
             <span className='font-medium text-foreground'>双击画布</span>
             <span className='ml-1'>可将组件按屏幕比例显示全部并居中</span>
           </div>
         </div>
-        
-        {/* 文本选择提示 */}
+
         <div className='flex gap-2'>
-          <span className='text-foreground-400 shrink-0 text-xs leading-relaxed'>•</span>
-          <div className='flex-1 text-xs text-foreground-600 leading-relaxed'>
+          <span className='shrink-0 text-xs leading-relaxed text-muted'>•</span>
+          <div className='flex-1 text-xs leading-relaxed text-foreground/70'>
             <span className='font-medium text-foreground'>按住</span>
-            <Kbd keys={['ctrl']} className='mx-1'>Ctrl</Kbd>
+            <Kbd className='mx-1 rounded-md'>
+              <Kbd.Content>Ctrl</Kbd.Content>
+            </Kbd>
             <span>或</span>
-            <Kbd keys={['alt']} className='mx-1'>Alt</Kbd>
+            <Kbd className='mx-1 rounded-md'>
+              <Kbd.Content>Alt</Kbd.Content>
+            </Kbd>
             <span>可激活文本选择</span>
           </div>
         </div>
-        
-        {/* 滚轮缩放提示 */}
+
         <div className='flex gap-2'>
-          <span className='text-foreground-400 shrink-0 text-xs leading-relaxed'>•</span>
-          <div className='flex-1 text-xs text-foreground-600 leading-relaxed'>
+          <span className='shrink-0 text-xs leading-relaxed text-muted'>•</span>
+          <div className='flex-1 text-xs leading-relaxed text-foreground/70'>
             <span className='font-medium text-foreground'>滚轮</span>
             <span className='ml-1'>可缩放画布，拖拽可移动视图</span>
           </div>
         </div>
-      </CardBody>
+      </Card.Content>
     </Card>
   )
 }

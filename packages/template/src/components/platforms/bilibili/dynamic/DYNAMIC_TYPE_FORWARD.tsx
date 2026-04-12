@@ -41,7 +41,7 @@ const BilibiliForwardUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
         <div className='text-6xl font-bold select-text text-foreground'>
           <span dangerouslySetInnerHTML={{ __html: props.username }} />
         </div>
-        <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-foreground-500'>
+        <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted'>
           <Clock size={36} className='text-time' />
           {props.create_time}
         </div>
@@ -86,7 +86,7 @@ const OriginalUserInfo: React.FC<{
           <div className='text-5xl font-normal select-text text-foreground'>
             <span dangerouslySetInnerHTML={{ __html: props.username }} />
           </div>
-          <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-foreground-500'>
+          <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted'>
             <Clock size={32} className='text-time' />
             {props.create_time}
           </div>
@@ -106,7 +106,7 @@ const OriginalUserInfo: React.FC<{
  */
 const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-3xl bg-default-200/60'>
+    <div className='px-12 py-8 mt-4 w-full rounded-3xl bg-surface-secondary/60'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -144,7 +144,7 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
  */
 const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-default-200/60'>
+    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-surface-secondary/60'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -208,7 +208,7 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
  */
 const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-default-200/60'>
+    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-surface-secondary/60'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -234,7 +234,7 @@ const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ conte
  */
 const OriginalLiveRcmdContent: React.FC<{ content: OriginalContentLiveRcmd }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-default-200/60'>
+    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-surface-secondary/60'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -334,14 +334,14 @@ const BilibiliForwardContent: React.FC<BilibiliForwardDynamicProps['data']> = (p
 const BilibiliForwardStatus: React.FC<BilibiliDynamicStatusProps> = (props) => {
   return (
     <div className='flex flex-col gap-10 px-20 w-full leading-relaxed'>
-      <div className='flex gap-6 items-center text-5xl font-light tracking-normal select-text text-foreground-600'>
+      <div className='flex gap-6 items-center text-5xl font-light tracking-normal select-text text-foreground/70'>
         <div className='flex gap-2 items-center'>
           <Heart size={48} className='text-like' />
           {props.dianzan}点赞
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <MessageCircle size={48} className='text-primary text-comment' />
+          <MessageCircle size={48} className='text-comment' />
           {props.pinglun}评论
         </div>
         <span>·</span>
@@ -350,7 +350,7 @@ const BilibiliForwardStatus: React.FC<BilibiliDynamicStatusProps> = (props) => {
           {props.share}分享
         </div>
       </div>
-      <div className='flex gap-2 items-center text-5xl font-light tracking-normal select-text text-foreground-600'>
+      <div className='flex gap-2 items-center text-5xl font-light tracking-normal select-text text-foreground/70'>
         <LuFullscreen size={48} className='text-time' />
         图片生成于: {props.render_time}
       </div>
@@ -391,37 +391,37 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
             <div className='text-7xl font-bold select-text text-foreground'>
               <span dangerouslySetInnerHTML={{ __html: props.username }} />
             </div>
-            <div className='flex gap-2 items-center text-4xl text-default-500'>
-              <Hash size={32} className='text-default-400' />
+            <div className='flex gap-2 items-center text-4xl text-muted'>
+              <Hash size={32} className='text-muted' />
               <span className='select-text'>UID: {props.user_shortid}</span>
             </div>
           </div>
         </div>
         
         {/* 用户统计信息 */}
-        <div className='text-3xl flex gap-6 items-center text-default-600'>
-          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+        <div className='text-3xl flex gap-6 items-center text-foreground/70'>
+          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
               <Heart size={28} className='text-like' />
-              <span className='text-default-400'>获赞</span>
+              <span className='text-muted'>获赞</span>
             </div>
-            <div className='w-full h-px bg-default-300' />
+            <div className='w-full h-px bg-border' />
             <span className='select-text font-medium text-4xl'>{props.total_favorited}</span>
           </div>
-          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
               <Eye size={28} className='text-view' />
-              <span className='text-default-400'>关注</span>
+              <span className='text-muted'>关注</span>
             </div>
-            <div className='w-full h-px bg-default-300' />
+            <div className='w-full h-px bg-border' />
             <span className='select-text font-medium text-4xl'>{props.following_count}</span>
           </div>
-          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
-              <Users size={28} className='text-primary' />
-              <span className='text-default-400'>粉丝</span>
+              <Users size={28} className='text-accent' />
+              <span className='text-muted'>粉丝</span>
             </div>
-            <div className='w-full h-px bg-default-300' />
+            <div className='w-full h-px bg-border' />
             <span className='select-text font-medium text-4xl'>{props.fans}</span>
           </div>
         </div>
@@ -438,8 +438,8 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
             />
           )
           : (
-            <div className='flex justify-center items-center rounded-2xl bg-default-100 w-100 h-100'>
-              <span className='text-default-400'>二维码</span>
+            <div className='flex justify-center items-center rounded-2xl bg-surface w-100 h-100'>
+              <span className='text-muted'>二维码</span>
             </div>
           )}
       </div>

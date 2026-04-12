@@ -20,7 +20,7 @@ const DouyinHeader: React.FC<{ useDarkTheme?: boolean }> = ({ useDarkTheme }) =>
           className='object-contain w-full h-full'
         />
       </div>
-      <span className='text-[65px] ml-4 text-foreground-600'>
+      <span className='text-[65px] ml-4 text-foreground/70'>
         记录美好生活
       </span>
     </div>
@@ -36,14 +36,14 @@ const TitleSection: React.FC<{ title: string; createTime: string; readTime: numb
       <h1 className='text-8xl font-bold leading-relaxed mb-6 text-foreground select-text tracking-wide wrap-break-word'>
         {title}
       </h1>
-      <div className='flex items-center gap-8 text-5xl text-foreground-500'>
+      <div className='flex items-center gap-8 text-5xl text-muted'>
         <div className='flex items-center gap-2'>
           <Clock className='w-10 h-10' />
           <span>{createTime}</span>
         </div>
         <span>·</span>
         <div className='flex items-center gap-2'>
-          <Clock className='w-10 h-10 text-primary' />
+          <Clock className='w-10 h-10 text-accent' />
           <span>阅读 {readTime} 分钟</span>
         </div>
       </div>
@@ -88,15 +88,15 @@ const ContentSection: React.FC<{ markdown: string; images: DouyinArticleWorkProp
               <h4 className='text-5xl font-bold mb-4 mt-6 text-foreground'>{children}</h4>
             ),
             p: ({ children }) => (
-              <p className='text-6xl leading-relaxed mb-6 text-foreground-800 tracking-wide'>
+              <p className='text-6xl leading-relaxed mb-6 text-foreground/90 tracking-wide'>
                 {children}
               </p>
             ),
             ul: ({ children }) => (
-              <ul className='list-disc list-inside mb-6 text-6xl text-foreground-800'>{children}</ul>
+              <ul className='list-disc list-inside mb-6 text-6xl text-foreground/90'>{children}</ul>
             ),
             ol: ({ children }) => (
-              <ol className='list-decimal list-inside mb-6 text-6xl text-foreground-800'>{children}</ol>
+              <ol className='list-decimal list-inside mb-6 text-6xl text-foreground/90'>{children}</ol>
             ),
             li: ({ children }) => (
               <li className='mb-3 leading-relaxed'>{children}</li>
@@ -111,7 +111,7 @@ const ContentSection: React.FC<{ markdown: string; images: DouyinArticleWorkProp
                     className='rounded-2xl shadow-large w-full h-auto'
                   />
                   {alt && alt !== '图片描述' && (
-                    <span className='text-5xl text-foreground-500 mt-4'>{alt}</span>
+                    <span className='text-5xl text-muted mt-4'>{alt}</span>
                   )}
                 </div>
               )
@@ -120,15 +120,15 @@ const ContentSection: React.FC<{ markdown: string; images: DouyinArticleWorkProp
               <strong className='font-bold text-foreground'>{children}</strong>
             ),
             em: ({ children }) => (
-              <em className='italic text-foreground-700'>{children}</em>
+              <em className='italic text-foreground/80'>{children}</em>
             ),
             blockquote: ({ children }) => (
-              <blockquote className='border-l-4 border-primary pl-6 my-6 text-foreground-700 italic'>
+              <blockquote className='border-l-4 border-accent pl-6 my-6 text-foreground/80 italic'>
                 {children}
               </blockquote>
             ),
             code: ({ children }) => (
-              <code className='bg-default-100 px-3 py-1 rounded text-5xl text-primary font-mono'>
+              <code className='bg-surface px-3 py-1 rounded text-5xl text-accent font-mono'>
                 {children}
               </code>
             )
@@ -145,7 +145,7 @@ const ContentSection: React.FC<{ markdown: string; images: DouyinArticleWorkProp
 const InfoSection: React.FC<DouyinArticleWorkProps> = (props) => {
   return (
     <div className='flex flex-col px-16 py-5'>
-      <div className='flex items-center gap-6 text-5xl text-foreground-500 font-light mb-2.5 select-text'>
+      <div className='flex items-center gap-6 text-5xl text-muted font-light mb-2.5 select-text'>
         <div className='flex gap-2 items-center'>
           <Heart className='w-11 h-11 text-like' />
           <span>{props.data.dianzan}点赞</span>
@@ -166,7 +166,7 @@ const InfoSection: React.FC<DouyinArticleWorkProps> = (props) => {
           <span>{props.data.share}分享</span>
         </div>
       </div>
-      <div className='flex items-center gap-2 text-5xl text-foreground-500 font-light select-text'>
+      <div className='flex items-center gap-2 text-5xl text-muted font-light select-text'>
         <LuFullscreen className='w-11 h-11 text-time' />
         <span>图片生成于: {format(new Date(), 'yyyy-MM-dd HH:mm:ss')}</span>
       </div>
@@ -198,37 +198,37 @@ const UserInfoSection: React.FC<DouyinArticleWorkProps> = (props) => {
           <div className='text-7xl font-bold select-text text-foreground'>
             @{props.data.username}
           </div>
-          <div className='flex gap-2 items-center text-4xl text-default-500'>
-            <Hash className='w-8 h-8 text-default-400' />
+          <div className='flex gap-2 items-center text-4xl text-muted'>
+            <Hash className='w-8 h-8 text-muted' />
             <span className='select-text'>抖音号: {props.data.抖音号}</span>
           </div>
         </div>
       </div>
       
       {/* 用户统计信息 */}
-      <div className='text-3xl flex gap-6 items-center text-default-600'>
-        <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+      <div className='text-3xl flex gap-6 items-center text-foreground/70'>
+        <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
           <div className='flex gap-1 items-center'>
             <Heart className='w-7 h-7 text-like' />
-            <span className='text-default-400'>获赞</span>
+            <span className='text-muted'>获赞</span>
           </div>
-          <div className='w-full h-px bg-default-300' />
+          <div className='w-full h-px bg-border' />
           <span className='select-text font-medium text-4xl'>{props.data.获赞}</span>
         </div>
-        <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+        <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
           <div className='flex gap-1 items-center'>
             <Eye className='w-7 h-7 text-view' />
-            <span className='text-default-400'>关注</span>
+            <span className='text-muted'>关注</span>
           </div>
-          <div className='w-full h-px bg-default-300' />
+          <div className='w-full h-px bg-border' />
           <span className='select-text font-medium text-4xl'>{props.data.关注}</span>
         </div>
-        <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+        <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
           <div className='flex gap-1 items-center'>
-            <Users className='w-7 h-7 text-primary' />
-            <span className='text-default-400'>粉丝</span>
+            <Users className='w-7 h-7 text-accent' />
+            <span className='text-muted'>粉丝</span>
           </div>
-          <div className='w-full h-px bg-default-300' />
+          <div className='w-full h-px bg-border' />
           <span className='select-text font-medium text-4xl'>{props.data.粉丝}</span>
         </div>
       </div>
@@ -277,8 +277,8 @@ export const DouyinArticleWork: React.FC<Omit<DouyinArticleWorkProps, 'templateT
                   />
                 )
                 : (
-                  <div className='flex justify-center items-center rounded-2xl bg-default-100 w-100 h-100'>
-                    <span className='text-default-400'>二维码</span>
+                  <div className='flex justify-center items-center rounded-2xl bg-surface w-100 h-100'>
+                    <span className='text-muted'>二维码</span>
                   </div>
                 )}
             </div>

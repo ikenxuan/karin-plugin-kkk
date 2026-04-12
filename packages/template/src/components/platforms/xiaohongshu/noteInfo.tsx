@@ -45,11 +45,11 @@ const StatItem: React.FC<{
   label: string
   /** 图标颜色 */
   iconColor?: string
-}> = React.memo(({ icon, value, label, iconColor = 'text-foreground-500' }) => (
+}> = React.memo(({ icon, value, label, iconColor = 'text-muted' }) => (
   <div className="flex gap-4 items-center">
     <div className={iconColor}>{icon}</div>
-    <span className="font-bold text-foreground-900">{formatNumber(value)}</span>
-    <span className="text-foreground-500">{label}</span>
+    <span className="font-bold text-foreground">{formatNumber(value)}</span>
+    <span className="text-muted">{label}</span>
   </div>
 ))
 
@@ -95,16 +95,16 @@ export const XiaohongshuNoteInfo: React.FC<Omit<XiaohongshuNoteInfoProps, 'templ
             <div className="p-20 pb-36">
               {/* 笔记标题 */}
               {props.data.title && (
-                <h1 className="mb-6 text-7xl font-bold leading-tight text-foreground-900">{props.data.title}</h1>
+                <h1 className="mb-6 text-7xl font-bold leading-tight text-foreground">{props.data.title}</h1>
               )}
               {/* 笔记描述 - 支持HTML渲染 */}
               <div
-                className='text-5xl text-foreground-700 leading-relaxed mb-8 whitespace-pre-wrap select-text [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
+                className='text-5xl text-foreground/80 leading-relaxed mb-8 whitespace-pre-wrap select-text [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
                 dangerouslySetInnerHTML={{ __html: props.data.desc }}
               />
               
               {/* 发布信息 */}
-              <div className="flex gap-8 items-center text-5xl text-foreground-500">
+              <div className="flex gap-8 items-center text-5xl text-muted">
                 <div className="flex gap-2 items-center">
                   <Calendar size={32} />
                   <span>{formattedDate}</span>
@@ -135,12 +135,12 @@ export const XiaohongshuNoteInfo: React.FC<Omit<XiaohongshuNoteInfoProps, 'templ
               <div className="h-18"></div>
 
               {/* 附加统计信息 */}
-              <div className="flex justify-between items-center mb-8 text-5xl text-foreground-500">
+              <div className="flex justify-between items-center mb-8 text-5xl text-muted">
                 <div className="flex gap-16 items-center">
                   {/* 可以在这里添加其他小红书特有的统计信息 */}
                 </div>
                 <div className="transform-gpu scale-[2.5] origin-right mb-8">
-                  <Chip color="danger" variant="flat" size="lg" radius="sm">
+                  <Chip color="danger" variant="soft" size="lg">
                     笔记ID：{props.data.note_id}
                   </Chip>
                 </div>
@@ -148,7 +148,7 @@ export const XiaohongshuNoteInfo: React.FC<Omit<XiaohongshuNoteInfoProps, 'templ
             </div>
 
             <div className="h-18" />
-            <div className="h-0.5 bg-default-300" />
+            <div className="h-0.5 bg-border" />
 
             {/* 卡片底部 */}
             <div className="flex justify-between items-center px-16 py-12 pb-0">
@@ -160,8 +160,8 @@ export const XiaohongshuNoteInfo: React.FC<Omit<XiaohongshuNoteInfoProps, 'templ
                   className="object-cover w-48 h-48 rounded-full border-red-200 border-3"
                 />
                 <div className="flex flex-col gap-6">
-                  <p className="text-6xl font-semibold text-foreground-900">{props.data.author.nickname}</p>
-                  <p className="text-5xl text-foreground-500">用户ID: {props.data.author.user_id.slice(0, 8)}...</p>
+                  <p className="text-6xl font-semibold text-foreground">{props.data.author.nickname}</p>
+                  <p className="text-5xl text-muted">用户ID: {props.data.author.user_id.slice(0, 8)}...</p>
                 </div>
               </div>
               <div className="transform-gpu scale-[3.5] origin-right">

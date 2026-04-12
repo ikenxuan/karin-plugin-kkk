@@ -14,7 +14,7 @@ import { Common, Root } from '@/module'
 import { Config } from '@/module/utils/Config'
 
 import { isSemverGreater } from '../semver'
-import { createQrCodePlugin, createSanitizeContentPlugin } from './plugins'
+import { createPosterPalettePlugin, createQrCodePlugin, createSanitizeContentPlugin } from './plugins'
 import { embedWatermark } from './wm'
 
 type ImageMetadata = {
@@ -95,15 +95,17 @@ export const Render = async <P extends DynamicRenderPath> (
     outputDir,
     plugins: [
       createQrCodePlugin(),
+      createPosterPalettePlugin(),
       createSanitizeContentPlugin()
     ]
-  }).then(res => {
+  }).then((res) => {
     if (!res.success || !res.htmlPath) {
       throw new Error(res.error)
     }
     return res
-  }).catch(err => {
-    throw new Error(`SSR渲染失败: ${err.message || '未知错误'}`)
+  }).catch((err: unknown) => {
+    const message = err instanceof Error ? err.message : '未知错误'
+    throw new Error(`SSR渲染失败: ${message}`)
   })
 
   // 截图渲染

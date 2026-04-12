@@ -17,7 +17,7 @@ const BilibiliVideoDynamicHeader: React.FC = () => {
       <div className='h-20' />
 
       {/* B站Logo和标语 */}
-      <div className='flex items-center pl-20 text-6xl text-default-500'>
+      <div className='flex items-center pl-20 text-6xl text-muted'>
         <img
           src='/image/bilibili/bilibili.png'
           alt='bilibili'
@@ -82,9 +82,9 @@ const BilibiliVideoDynamicContent: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
         <div className='h-10' />
 
         {/* 视频描述 */}
-        <div className='text-6xl text-default-500'>
+        <div className='text-6xl text-muted'>
           <CommentText
-            className='text-[60px] leading-normal whitespace-pre-wrap text-default-500 select-text'
+            className='text-[60px] leading-normal whitespace-pre-wrap text-muted select-text'
             content={props.data.desc}
             style={{
               wordBreak: 'break-word',
@@ -97,7 +97,7 @@ const BilibiliVideoDynamicContent: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
         <div className='h-30' />
 
         {/* 统计信息 */}
-        <div className='flex flex-col gap-15 text-default-600'>
+        <div className='flex flex-col gap-15 text-foreground/70'>
           <div className='flex flex-col gap-8'>
             <div className='flex gap-12 items-center text-5xl font-light tracking-normal'>
               <div className='flex gap-3 items-center'>
@@ -123,7 +123,7 @@ const BilibiliVideoDynamicContent: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
               </div>
 
               <div className='flex gap-3 items-center'>
-                <Eye size={48} className='text-default-400 text-view' />
+                <Eye size={48} className='text-muted text-view' />
                 <span className='select-text'>{props.data.view}浏览</span>
               </div>
 
@@ -145,7 +145,7 @@ const BilibiliVideoDynamicContent: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
               <span>图片生成于: {format(new Date(), 'yyyy-MM-dd HH:mm:ss')}</span>
             </div>
             <div className='flex gap-3 items-center'>
-              <Hash size={32} className='text-default-400' />
+              <Hash size={32} className='text-muted' />
               <span className='select-text'>动态ID: {props.data.dynamic_id}</span>
             </div>
           </div>
@@ -216,7 +216,7 @@ const BilibiliVideoDynamicFooter: React.FC<Omit<BilibiliVideoDynamicProps, 'temp
                 <div className='overflow-hidden mt-6 w-full text-3xl font-medium leading-tight text-center truncate whitespace-nowrap select-text text-foreground'>
                   {member.name}
                 </div>
-                <div className='overflow-hidden mt-2 w-full text-3xl leading-tight text-center truncate whitespace-nowrap select-text text-default-500'>
+                <div className='overflow-hidden mt-2 w-full text-3xl leading-tight text-center truncate whitespace-nowrap select-text text-muted'>
                   {member.title}
                 </div>
               </div>
@@ -224,13 +224,13 @@ const BilibiliVideoDynamicFooter: React.FC<Omit<BilibiliVideoDynamicProps, 'temp
 
             {otherStaff.length > visibleCount && (
               <div className='flex flex-col items-center min-w-42 w-42 shrink-0'>
-                <div className='flex justify-center items-center rounded-full bg-default-200 w-30 h-30'>
-                  <span className='text-[42px] leading-none text-default-500'>···</span>
+                <div className='flex justify-center items-center rounded-full bg-surface-secondary w-30 h-30'>
+                  <span className='text-[42px] leading-none text-muted'>···</span>
                 </div>
                 <div className='overflow-hidden mt-6 w-full text-3xl font-medium leading-tight text-center truncate whitespace-nowrap select-text text-foreground'>
                   还有{otherStaff.length - visibleCount}人
                 </div>
-                <div className='overflow-hidden mt-2 w-full text-3xl leading-tight text-center truncate whitespace-nowrap select-text text-default-500'>
+                <div className='overflow-hidden mt-2 w-full text-3xl leading-tight text-center truncate whitespace-nowrap select-text text-muted'>
                   共创
                 </div>
               </div>
@@ -270,11 +270,11 @@ const BilibiliVideoDynamicFooter: React.FC<Omit<BilibiliVideoDynamicProps, 'temp
               <div className='text-7xl font-bold select-text text-foreground'>
                 <span dangerouslySetInnerHTML={{ __html: props.data.username }} />
               </div>
-              <div className='flex gap-2 items-center text-4xl text-default-500'>
+              <div className='flex gap-2 items-center text-4xl text-muted'>
                 <Hash size={32} />
                 <span>UID: {props.data.user_shortid}</span>
                 {currentUserRole && (
-                  <span className='ml-5 px-3 py-1 rounded-xl bg-default-200 text-3xl'>
+                  <span className='ml-5 px-3 py-1 rounded-xl bg-surface-secondary text-3xl'>
                     {currentUserRole}
                   </span>
                 )}
@@ -283,29 +283,29 @@ const BilibiliVideoDynamicFooter: React.FC<Omit<BilibiliVideoDynamicProps, 'temp
           </div>
           
           {/* 用户统计信息 */}
-          <div className='text-3xl flex gap-6 items-center text-default-600'>
-            <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+          <div className='text-3xl flex gap-6 items-center text-foreground/70'>
+            <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
               <div className='flex gap-1 items-center'>
                 <Heart size={28} className='text-like' />
-                <span className='text-default-400'>获赞</span>
+                <span className='text-muted'>获赞</span>
               </div>
-              <div className='w-full h-px bg-default-300' />
+              <div className='w-full h-px bg-border' />
               <span className='select-text font-medium text-4xl'>{props.data.total_favorited}</span>
             </div>
-            <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+            <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
               <div className='flex gap-1 items-center'>
                 <Eye size={28} className='text-view' />
-                <span className='text-default-400'>关注</span>
+                <span className='text-muted'>关注</span>
               </div>
-              <div className='w-full h-px bg-default-300' />
+              <div className='w-full h-px bg-border' />
               <span className='select-text font-medium text-4xl'>{props.data.following_count}</span>
             </div>
-            <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+            <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
               <div className='flex gap-1 items-center'>
-                <Users size={28} className='text-primary' />
-                <span className='text-default-400'>粉丝</span>
+                <Users size={28} className='text-accent' />
+                <span className='text-muted'>粉丝</span>
               </div>
-              <div className='w-full h-px bg-default-300' />
+              <div className='w-full h-px bg-border' />
               <span className='select-text font-medium text-4xl'>{props.data.fans}</span>
             </div>
           </div>
@@ -322,8 +322,8 @@ const BilibiliVideoDynamicFooter: React.FC<Omit<BilibiliVideoDynamicProps, 'temp
               />
             )
             : (
-              <div className='flex justify-center items-center rounded-xl bg-default-100 w-100 h-100'>
-                <span className='text-default-400'>二维码</span>
+              <div className='flex justify-center items-center rounded-xl bg-surface w-100 h-100'>
+                <span className='text-muted'>二维码</span>
               </div>
             )}
         </div>

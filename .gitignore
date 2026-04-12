@@ -30,3 +30,5 @@ node_modules/
 
 # 玩具
 packages/next-web/
+
+.agents/

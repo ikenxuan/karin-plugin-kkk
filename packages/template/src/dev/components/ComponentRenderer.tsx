@@ -23,6 +23,29 @@ interface ComponentRendererProps {
   versionEnabled?: boolean
 }
 
+type PreviewPayload = {
+  __extraProps?: Record<string, unknown>
+  [key: string]: unknown
+}
+
+const splitPreviewPayload = (payload: PreviewPayload | null | undefined) => {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return {
+      renderData: payload,
+      extraProps: {}
+    }
+  }
+
+  const { __extraProps, ...renderData } = payload
+
+  return {
+    renderData,
+    extraProps: __extraProps && typeof __extraProps === 'object' && !Array.isArray(__extraProps)
+      ? __extraProps
+      : {}
+  }
+}
+
 /**
  * 错误边界
  */
@@ -45,10 +68,10 @@ class ComponentErrorBoundary extends React.Component<{ children: React.ReactNode
     if (this.state.hasError) {
       return (
         <div className="flex justify-center items-center min-h-screen p-8">
-          <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
-            <div className="text-7xl text-warning">⚡</div>
+          <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-surface-secondary backdrop-blur-xl">
+            <Zap className="h-16 w-16 text-warning" strokeWidth={2.25} />
             <div className="text-2xl font-semibold text-warning">组件渲染错误</div>
-            <div className="text-base text-center text-default-500 wrap-break-word">{this.state.error?.message || '未知错误'}</div>
+            <div className="text-base text-center text-muted wrap-break-word">{this.state.error?.message || '未知错误'}</div>
           </div>
         </div>
       )
@@ -64,6 +87,15 @@ class ComponentErrorBoundary extends React.Component<{ children: React.ReactNode
  * @returns JSX元素
  */
 const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, templateId, data, qrCodeDataUrl, loadError, onLoadComplete, versionEnabled = true }) => {
+  const { renderData, extraProps } = React.useMemo(() => splitPreviewPayload(data), [data])
+  const componentConfig = getComponentConfig(platform, templateId)
+
+  // 所有顶层 Hooks 都必须在任何 early return 之前调用，避免主题切换或数据到达时触发 Hook 顺序变化。
+  const LazyComponent = React.useMemo<React.ComponentType<any> | null>(() => {
+    if (!componentConfig?.lazyComponent) return null
+    return React.lazy(componentConfig.lazyComponent!)
+  }, [componentConfig?.lazyComponent])
+
   /**
    * 渲染优雅的加载状态
    * @param message 加载消息
@@ -71,8 +103,8 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
    */
   const renderLoading = (message: string) => (
     <div className="flex justify-center items-center min-h-screen p-8">
-      <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
-        <Spinner size="lg" color="primary" />
+      <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-surface-secondary backdrop-blur-xl">
+        <Spinner color="accent" size="lg" />
         <p className="text-2xl font-medium text-foreground">{message}</p>
       </div>
     </div>
@@ -86,19 +118,19 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
    */
   const renderInDevelopment = (type: string, name: string) => (
     <div className="flex justify-center items-center min-h-screen p-8">
-      <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
-        <div className="text-7xl text-default-400">🚧</div>
+      <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-surface-secondary backdrop-blur-xl">
+        <Info className="h-16 w-16 text-muted" strokeWidth={2.25} />
         <p className="text-2xl font-semibold text-foreground">
           {type} {name} 开发中
         </p>
-        <p className="text-lg text-default-500">敬请期待</p>
+        <p className="text-lg text-muted">敬请期待</p>
       </div>
     </div>
   )
 
   // 如果有加载错误，显示错误信息
   if (loadError) {
-    const isDark = data?.useDarkTheme === true
+    const isDark = renderData?.useDarkTheme === true
     const bgColor = isDark ? '#0a0a0f' : '#fafafa'
 
     return (
@@ -220,18 +252,9 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
   }
 
   // 数据为空时显示加载状态
-  if (!data || Object.keys(data).length === 0) {
+  if (!renderData || Object.keys(renderData).length === 0) {
     return renderLoading('正在加载预览...')
   }
-
-  // 获取组件配置（在 Hooks 之前，供 useMemo 使用）
-  const componentConfig = getComponentConfig(platform, templateId)
-
-  // 保证 Hooks 顺序稳定：无条件 useMemo；缺失时返回 null，由渲染层处理
-  const LazyComponent = React.useMemo<React.ComponentType<any> | null>(() => {
-    if (!componentConfig?.lazyComponent) return null
-    return React.lazy(componentConfig.lazyComponent!)
-  }, [componentConfig?.lazyComponent])
 
   if (!componentConfig) {
     return renderInDevelopment('模板', templateId)
@@ -247,7 +270,8 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
 
   // 准备组件属性
   const commonProps = {
-    data,
+    ...extraProps,
+    data: renderData,
     qrCodeDataUrl,
     version: versionEnabled ? version : undefined,
     scale: 1
@@ -343,8 +367,8 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
       <React.Suspense
         fallback={
           <div className="flex justify-center items-center min-h-screen p-8">
-            <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-content2 backdrop-blur-xl">
-              <Spinner size="lg" color="primary" />
+            <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-surface-secondary backdrop-blur-xl">
+              <Spinner color="accent" size="lg" />
               <p className="text-2xl font-medium text-foreground">加载 {componentConfig.name} 组件中</p>
             </div>
           </div>

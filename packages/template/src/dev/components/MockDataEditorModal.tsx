@@ -1,4 +1,4 @@
-import { Modal, ModalContent } from '@heroui/react'
+import { Modal } from '@heroui/react'
 import React, { useEffect, useState } from 'react'
 
 import { JsonEditor } from './JsonEditor'
@@ -80,33 +80,36 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
   }
 
   return (
-    <Modal
+    <Modal.Backdrop
+      className='bg-black/48 dark:bg-black/72'
+      isDismissable
       isOpen={isOpen}
-      onClose={onClose}
-      size="5xl"
-      isDismissable={true}
-      hideCloseButton={true}
-      classNames={{
-        backdrop: 'bg-overlay/50 backdrop-blur-sm',
-        wrapper: 'items-center justify-center',
-        base: `bg-content1 border border-divider rounded-2xl ${isDarkMode ? 'dark' : ''}`
+      onOpenChange={(open) => {
+        if (!open) {
+          onClose()
+        }
       }}
+      variant='blur'
     >
-      <ModalContent className={`h-[90vh] ${isDarkMode ? 'dark' : ''}`}>
-        <JsonEditor
-          data={currentData}
-          onChange={setCurrentData}
-          platform={platform}
-          templateId={templateId}
-          availableDataFiles={availableDataFiles}
-          selectedDataFile={selectedDataFile}
-          onDataFileChange={onDataFileChange}
-          isDarkMode={isDarkMode}
-          onSave={handleSave}
-          onCancel={onClose}
-          isSaving={isSaving}
-        />
-      </ModalContent>
-    </Modal>
+      <Modal.Container className='p-4 sm:p-6' size='cover'>
+        <Modal.Dialog
+          className={`h-[90vh] max-h-[90vh] overflow-hidden rounded-[32px] border border-black/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-zinc-950 dark:shadow-[0_28px_84px_rgba(0,0,0,0.55)] ${isDarkMode ? 'dark' : 'light'}`}
+        >
+          <JsonEditor
+            data={currentData}
+            onChange={setCurrentData}
+            platform={platform}
+            templateId={templateId}
+            availableDataFiles={availableDataFiles}
+            selectedDataFile={selectedDataFile}
+            onDataFileChange={onDataFileChange}
+            isDarkMode={isDarkMode}
+            onSave={handleSave}
+            onCancel={onClose}
+            isSaving={isSaving}
+          />
+        </Modal.Dialog>
+      </Modal.Container>
+    </Modal.Backdrop>
   )
 }

@@ -1,4 +1,5 @@
-import { addToast, Button, Modal, ModalBody, ModalContent, ModalFooter, Switch } from '@heroui/react'
+import { Button, Label, Modal, Switch, toast } from '@heroui/react'
+import clsx from 'clsx'
 import { Camera, Copy, Download, Maximize, Moon, Sun, X } from 'lucide-react'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
@@ -34,135 +35,103 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
   const [scale, setScale] = useState(1)
   const transformWrapperRef = useRef<any>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  
-  // 缩放提示显示状态
+
   const [showScaleIndicator, setShowScaleIndicator] = useState(false)
   const scaleIndicatorTimeoutRef = useRef<number | null>(null)
-  
-  // 水印开关状态
+
   const [watermarkEnabled, setWatermarkEnabledState] = useState(() => getWatermarkEnabled())
-  
-  // 临时深色模式状态（仅在模态窗中生效）
   const [tempDarkMode, setTempDarkMode] = useState(componentDarkMode)
-  
-  // 当模态窗打开时，重置临时深色模式为组件的当前状态
+
+  const actionButtonClass = 'h-9 rounded-2xl border border-black/10 bg-black/3 text-foreground shadow-none hover:bg-black/5 dark:border-white/10 dark:bg-white/4 dark:hover:bg-white/6'
+  const primaryActionClass = 'h-9 rounded-2xl border border-black bg-black text-white shadow-none hover:bg-black/90 dark:border-white dark:bg-white dark:text-black dark:hover:bg-white/90'
+
   useEffect(() => {
     if (isOpen) {
       setTempDarkMode(componentDarkMode)
     }
-  }, [isOpen, componentDarkMode])
-  
-  // 当截图完成后，保持临时深色模式状态不变
-  // 只在模态窗关闭时才重置
+  }, [componentDarkMode, isOpen])
+
   useEffect(() => {
     if (!isOpen) {
-      // 模态窗关闭时重置状态
       setTempDarkMode(componentDarkMode)
     }
-  }, [isOpen, componentDarkMode])
+  }, [componentDarkMode, isOpen])
 
   const imageUrl = React.useMemo(() => {
     if (!screenshotResult) return ''
     return URL.createObjectURL(screenshotResult.blob)
   }, [screenshotResult])
 
-  // 清理 URL
-  React.useEffect(() => {
+  useEffect(() => {
     if (!imageUrl) return
+
     return () => {
       URL.revokeObjectURL(imageUrl)
     }
   }, [imageUrl])
 
-  /**
-   * 适应画布大小 - 重置到初始状态
-   */
   const handleFitToCanvas = useCallback(() => {
     if (!transformWrapperRef.current) return
-    
-    const transformInstance = transformWrapperRef.current
-    
-    // 重置到初始状态：居中，缩放为1
-    transformInstance.resetTransform(300, 'easeOut')
+    transformWrapperRef.current.resetTransform(300, 'easeOut')
   }, [])
 
-  /**
-   * 监听双击事件，调用适应画布
-   */
   useEffect(() => {
     if (!isOpen) return
-    
-    // 延迟获取容器，确保 TransformWrapper 已经初始化
+
     const timer = setTimeout(() => {
       const container = transformWrapperRef.current?.instance?.wrapperComponent
       if (!container) return
 
-      const handleDoubleClick = (e: MouseEvent) => {
-        e.preventDefault()
+      const handleDoubleClick = (event: MouseEvent) => {
+        event.preventDefault()
         handleFitToCanvas()
       }
 
       container.addEventListener('dblclick', handleDoubleClick)
-      
+
       return () => {
         container.removeEventListener('dblclick', handleDoubleClick)
       }
     }, 100)
 
     return () => clearTimeout(timer)
-  }, [isOpen, handleFitToCanvas])
+  }, [handleFitToCanvas, isOpen])
 
-  /**
-   * 在容器上监听滚轮事件，转发给 TransformWrapper
-   */
   useEffect(() => {
     if (!isOpen) return
-    
+
     const container = containerRef.current
     if (!container) return
 
-    const handleWheel = (e: WheelEvent) => {
-      // 阻止默认滚动
-      e.preventDefault()
-      e.stopPropagation()
-      
-      // 获取 transform 实例
+    const handleWheel = (event: WheelEvent) => {
+      event.preventDefault()
+      event.stopPropagation()
+
       const instance = transformWrapperRef.current?.instance
       if (!instance) return
 
-      // 计算缩放增量
-      const delta = -e.deltaY * 0.001 // 缩放因子
+      const delta = -event.deltaY * 0.001
       const scaleFactor = 1 + delta
-      const newScale = Math.min(
-        Math.max(instance.transformState.scale * scaleFactor, 0.01),
-        5
-      )
+      const newScale = Math.min(Math.max(instance.transformState.scale * scaleFactor, 0.01), 5)
 
-      // 获取鼠标相对于容器的位置
       const rect = container.getBoundingClientRect()
-      const mouseX = e.clientX - rect.left
-      const mouseY = e.clientY - rect.top
+      const mouseX = event.clientX - rect.left
+      const mouseY = event.clientY - rect.top
 
-      // 计算缩放中心点
       const { positionX, positionY, scale } = instance.transformState
       const scaleDiff = newScale - scale
-      
-      // 以鼠标位置为中心缩放
+
       const newPositionX = positionX - (mouseX - positionX) * (scaleDiff / scale)
       const newPositionY = positionY - (mouseY - positionY) * (scaleDiff / scale)
 
-      // 应用变换
       instance.setTransformState(newScale, newPositionX, newPositionY)
-      
-      // 显示缩放提示
+
       setShowScaleIndicator(true)
-      
-      // 清除之前的定时器
+
       if (scaleIndicatorTimeoutRef.current !== null) {
         clearTimeout(scaleIndicatorTimeoutRef.current)
       }
-      
-      // 1秒后隐藏提示
+
       scaleIndicatorTimeoutRef.current = window.setTimeout(() => {
         setShowScaleIndicator(false)
       }, 1000)
@@ -182,11 +151,8 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
 
   const handleDownload = () => {
     screenshotResult.download()
-    addToast({
-      title: '下载成功',
-      description: '图片已保存到本地',
-      color: 'success',
-      variant: 'flat'
+    toast.success('下载成功', {
+      description: '图片已保存到本地'
     })
     onClose()
   }
@@ -194,231 +160,245 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
   const handleCopy = async () => {
     try {
       await screenshotResult.copyToClipboard()
-      addToast({
-        title: '复制成功',
-        description: '图片已复制到剪贴板',
-        color: 'success',
-        variant: 'flat'
+      toast.success('复制成功', {
+        description: '图片已复制到剪贴板'
       })
       onClose()
     } catch {
-      addToast({
-        title: '复制失败',
-        description: '无法复制到剪贴板，请尝试下载',
-        color: 'danger',
-        variant: 'flat'
+      toast.danger('复制失败', {
+        description: '无法复制到剪贴板，请尝试下载'
       })
     }
   }
-  
-  // 处理水印开关变化
+
   const handleWatermarkChange = (checked: boolean) => {
     setWatermarkEnabledState(checked)
     setWatermarkEnabled(checked)
   }
-  
-  // 处理临时深色模式切换
+
   const handleTempDarkModeChange = (checked: boolean) => {
     setTempDarkMode(checked)
   }
-  
-  // 处理重新截图
+
   const handleRetake = async () => {
     if (onRetakeScreenshot && !isCapturing) {
-      // 传递临时深色模式设置
       await onRetakeScreenshot(tempDarkMode)
     }
   }
 
+  const previewSurface = isDarkMode ? '#050505' : '#ffffff'
+  const previewBorder = isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)'
+  const scaleBadgeBg = isDarkMode ? 'rgba(9, 9, 11, 0.9)' : 'rgba(255, 255, 255, 0.9)'
+  const scaleBadgeBorder = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.08)'
+  const scaleBadgeText = isDarkMode ? 'rgba(250,250,250,1)' : 'rgba(15,23,42,1)'
+
+  const renderSwitch = (
+    checked: boolean,
+    onChange: (checked: boolean) => void,
+    label: string,
+    icon: React.ReactNode
+  ) => (
+    <Switch className='gap-3' isSelected={checked} onChange={onChange} size='sm'>
+      {({ isSelected }) => (
+        <>
+          <Switch.Control
+            className={clsx(
+              'border transition-colors',
+              isSelected
+                ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
+                : 'border-black/10 bg-black/6 text-foreground/60 dark:border-white/10 dark:bg-white/8 dark:text-white/60'
+            )}
+          >
+            <Switch.Thumb className='border border-black/8 bg-white shadow-sm dark:border-white/10 dark:bg-black'>
+              <Switch.Icon>{icon}</Switch.Icon>
+            </Switch.Thumb>
+          </Switch.Control>
+          <Switch.Content>
+            <Label className='text-xs font-medium text-foreground/70'>{label}</Label>
+          </Switch.Content>
+        </>
+      )}
+    </Switch>
+  )
+
   return (
-    <Modal 
-      isOpen={isOpen} 
-      onClose={onClose} 
-      size="5xl"
-      backdrop="blur"
-      hideCloseButton={true}
-      classNames={{
-        backdrop: 'bg-overlay/50 backdrop-blur-sm',
-        wrapper: 'items-center justify-center',
-        base: `border border-divider rounded-2xl ${isDarkMode ? 'dark bg-content1' : 'bg-content1'}`
+    <Modal.Backdrop
+      className='bg-black/48 dark:bg-black/72'
+      isDismissable
+      isOpen={isOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          onClose()
+        }
       }}
+      variant='blur'
     >
-      <ModalContent className={`${isDarkMode ? 'dark' : ''} flex flex-col max-h-[95vh]`}>
-        {(onClose) => (
-          <>
-            <ModalBody className="overflow-hidden flex-1 p-4" style={{ backgroundColor: isDarkMode ? '#18181b' : '#f4f4f5' }}>
-              <div 
-                ref={containerRef}
-                className="overflow-hidden relative w-full h-full rounded-lg border border-dashed border-divider"
-                style={{ backgroundColor: isDarkMode ? '#18181b' : '#f4f4f5' }}
+      <Modal.Container className='p-4 sm:p-6' size='cover'>
+        <Modal.Dialog
+          className={`flex h-[min(92vh,1100px)] max-h-[92vh] flex-col overflow-hidden rounded-[32px] border border-black/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-zinc-950 dark:shadow-[0_28px_84px_rgba(0,0,0,0.55)] ${isDarkMode ? 'dark' : 'light'}`}
+        >
+          <Modal.Body className='flex-1 overflow-hidden p-4 sm:p-5'>
+            <div
+              ref={containerRef}
+              className='relative h-full overflow-hidden rounded-[28px] border'
+              style={{
+                backgroundColor: previewSurface,
+                borderColor: previewBorder
+              }}
+            >
+              <div
+                className='pointer-events-none absolute inset-0 opacity-60'
+                style={{
+                  backgroundImage: isDarkMode
+                    ? 'repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0px, transparent 1px, transparent 22px), repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0px, transparent 1px, transparent 22px)'
+                    : 'repeating-linear-gradient(0deg, rgba(15,23,42,0.04) 0px, transparent 1px, transparent 22px), repeating-linear-gradient(90deg, rgba(15,23,42,0.04) 0px, transparent 1px, transparent 22px)'
+                }}
+              />
+
+              <div
+                className='pointer-events-none absolute left-4 top-4 z-50 rounded-2xl border px-3 py-1.5 text-xs font-semibold backdrop-blur-sm'
+                style={{
+                  opacity: showScaleIndicator ? 1 : 0,
+                  transform: showScaleIndicator ? 'translateY(0)' : 'translateY(-10px)',
+                  transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  backgroundColor: scaleBadgeBg,
+                  borderColor: scaleBadgeBorder,
+                  color: scaleBadgeText
+                }}
               >
-                {/* 网格背景 */}
-                <div
-                  className='absolute inset-0 opacity-50 pointer-events-none'
-                  style={{
-                    backgroundImage: isDarkMode
-                      ? `repeating-linear-gradient(0deg, rgba(244, 244, 245, 0.3) 0px, transparent 1px, transparent 20px),
-                         repeating-linear-gradient(90deg, rgba(244, 244, 245, 0.3) 0px, transparent 1px, transparent 20px)`
-                      : `repeating-linear-gradient(0deg, rgba(24, 24, 27, 0.5) 0px, transparent 1px, transparent 20px),
-                         repeating-linear-gradient(90deg, rgba(24, 24, 27, 0.5) 0px, transparent 1px, transparent 20px)`
+                {Math.round(scale * 100)}%
+              </div>
+
+              <div className='relative h-full w-full'>
+                <TransformWrapper
+                  ref={transformWrapperRef}
+                  centerOnInit
+                  disablePadding
+                  doubleClick={{
+                    disabled: true
                   }}
-                />
-                
-                {/* 缩放比例显示 - 左上角 */}
-                <div 
-                  className="absolute left-4 top-4 px-3 py-1.5 text-xs font-semibold rounded-lg pointer-events-none backdrop-blur-sm border z-50"
-                  style={{
-                    opacity: showScaleIndicator ? 1 : 0,
-                    transform: showScaleIndicator ? 'translateY(0)' : 'translateY(-10px)',
-                    transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    backgroundColor: isDarkMode ? 'rgba(39, 39, 42, 0.9)' : 'rgba(244, 244, 245, 0.9)',
-                    borderColor: isDarkMode ? 'rgba(63, 63, 70, 1)' : 'rgba(228, 228, 231, 1)',
-                    color: isDarkMode ? 'rgba(250, 250, 250, 1)' : 'rgba(24, 24, 27, 1)'
+                  initialScale={1}
+                  limitToBounds={false}
+                  maxScale={5}
+                  minScale={0.01}
+                  onTransformed={(ref) => {
+                    if (ref.state.scale !== scale) {
+                      setScale(ref.state.scale)
+                    }
+                  }}
+                  panning={{
+                    velocityDisabled: false,
+                    disabled: false
+                  }}
+                  wheel={{
+                    step: 0.02,
+                    disabled: true
                   }}
                 >
-                  {Math.round(scale * 100)}%
-                </div>
-                
-                {/* react-zoom-pan-pinch 包装器 */}
-                <div style={{ 
-                  width: '100%', 
-                  height: '100%',
-                  position: 'relative'
-                }}>
-                  <TransformWrapper
-                    ref={transformWrapperRef}
-                    initialScale={1}
-                    minScale={0.01}
-                    maxScale={5}
-                    centerOnInit
-                    limitToBounds={false}
-                    disablePadding={true}
-                    wheel={{
-                      step: 0.02,
-                      disabled: true // 禁用库自带的滚轮处理，使用我们自定义的
+                  <TransformComponent
+                    contentClass='flex h-full! w-full! items-center justify-center'
+                    contentStyle={{
+                      transition: 'transform 0.3s ease-out',
+                      willChange: 'transform'
                     }}
-                    panning={{
-                      velocityDisabled: false,
-                      disabled: false
-                    }}
-                    doubleClick={{
-                      disabled: true
-                    }}
-                    onTransformed={(ref) => {
-                      if (ref.state.scale !== scale) {
-                        setScale(ref.state.scale)
-                      }
-                    }}
+                    wrapperClass='h-full! w-full!'
                   >
-                    <TransformComponent
-                      wrapperClass="w-full! h-full!"
-                      contentClass="w-full! h-full! flex items-center justify-center"
-                      contentStyle={{
-                        transition: 'transform 0.3s ease-out',
-                        willChange: 'transform'
+                    <img
+                      alt='Screenshot Preview'
+                      className='object-contain'
+                      draggable={false}
+                      src={imageUrl}
+                      style={{
+                        userSelect: 'none',
+                        WebkitUserSelect: 'none',
+                        filter: 'drop-shadow(0 30px 80px rgba(0, 0, 0, 0.22))'
                       }}
-                    >
-                      <img
-                        src={imageUrl}
-                        alt="Screenshot Preview"
-                        className="object-contain"
-                        draggable={false}
-                        style={{
-                          userSelect: 'none',
-                          WebkitUserSelect: 'none',
-                          filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.25))'
-                        }}
-                      />
-                    </TransformComponent>
-                  </TransformWrapper>
-                </div>
+                    />
+                  </TransformComponent>
+                </TransformWrapper>
               </div>
-            </ModalBody>
-            <ModalFooter className="border-t border-divider shrink-0" style={{ backgroundColor: isDarkMode ? 'hsl(var(--heroui-content1))' : 'hsl(var(--heroui-content1))' }}>
-              <div className="flex flex-1 gap-4 items-center">
-                <div className="text-xs text-foreground-500 font-medium">
-                  滚轮缩放 • 拖拽移动 • 双击适应
-                </div>
-                <div className="flex items-center gap-3">
-                  {/* 水印开关 */}
-                  <Switch
-                    size="sm"
-                    isSelected={watermarkEnabled}
-                    onValueChange={handleWatermarkChange}
-                    classNames={{
-                      wrapper: 'group-data-[selected=true]:bg-primary'
-                    }}
-                  >
-                    <span className='text-xs font-medium text-foreground-600'>
-                      {watermarkEnabled ? '水印已启用' : '水印已关闭'}
-                    </span>
-                  </Switch>
-                  
-                  {/* 临时深色模式开关 */}
-                  <Switch
-                    size="sm"
-                    isSelected={tempDarkMode}
-                    onValueChange={handleTempDarkModeChange}
-                    classNames={{
-                      wrapper: 'group-data-[selected=true]:bg-secondary'
-                    }}
-                    startContent={<Sun className='w-3 h-3' />}
-                    endContent={<Moon className='w-3 h-3' />}
-                  >
-                    <span className='text-xs font-medium text-foreground-600'>
-                      {tempDarkMode ? '深色主题' : '浅色主题'}
-                    </span>
-                  </Switch>
-                </div>
+            </div>
+          </Modal.Body>
+
+          <Modal.Footer className='flex flex-col gap-4 border-t border-black/8 bg-white/88 px-4 py-4 dark:border-white/10 dark:bg-zinc-950/88 sm:flex-row sm:items-center sm:justify-between'>
+            <div className='flex flex-wrap items-center gap-3'>
+              <div className='text-xs font-medium text-muted'>
+                滚轮缩放 · 拖拽移动 · 双击适应
               </div>
+              {renderSwitch(
+                watermarkEnabled,
+                handleWatermarkChange,
+                watermarkEnabled ? '水印已启用' : '水印已关闭',
+                watermarkEnabled ? <Camera className='h-3 w-3' /> : <X className='h-3 w-3' />
+              )}
+              {renderSwitch(
+                tempDarkMode,
+                handleTempDarkModeChange,
+                tempDarkMode ? '深色主题' : '浅色主题',
+                tempDarkMode ? <Moon className='h-3 w-3' /> : <Sun className='h-3 w-3' />
+              )}
+            </div>
+
+            <div className='flex flex-wrap items-center justify-end gap-2'>
               <Button
-                variant="flat"
-                onPress={handleRetake}
+                className={actionButtonClass}
                 isDisabled={isCapturing || !onRetakeScreenshot}
-                isLoading={isCapturing}
-                startContent={!isCapturing && <Camera className="w-4 h-4" />}
-                className="transition-colors duration-200 cursor-pointer"
+                isPending={isCapturing}
+                onPress={handleRetake}
+                size='sm'
+                variant='secondary'
               >
-                {isCapturing ? '截图中...' : '重新截图'}
+                {({ isPending }) => (
+                  <>
+                    {!isPending && <Camera className='h-4 w-4' />}
+                    {isPending ? '截图中...' : '重新截图'}
+                  </>
+                )}
               </Button>
+
               <Button
-                variant="flat"
+                className={actionButtonClass}
                 onPress={handleFitToCanvas}
-                startContent={<Maximize className="w-4 h-4" />}
-                className="transition-colors duration-200 cursor-pointer"
+                size='sm'
+                variant='secondary'
               >
+                <Maximize className='h-4 w-4' />
                 适应画布
               </Button>
-              <Button 
-                color="danger"
-                variant="flat" 
-                onPress={onClose}
-                startContent={<X className="w-4 h-4" />}
-                className="transition-colors duration-200 cursor-pointer"
-              >
-                关闭
-              </Button>
-              <Button 
-                color="primary"
-                variant="flat" 
+
+              <Button
+                className={actionButtonClass}
                 onPress={handleCopy}
-                startContent={<Copy className="w-4 h-4" />}
-                className="transition-colors duration-200 cursor-pointer"
+                size='sm'
+                variant='secondary'
               >
+                <Copy className='h-4 w-4' />
                 复制
               </Button>
-              <Button 
-                color="success"
+
+              <Button
+                className={primaryActionClass}
                 onPress={handleDownload}
-                startContent={<Download className="w-4 h-4" />}
-                className="transition-colors duration-200 cursor-pointer"
+                size='sm'
+                variant='secondary'
               >
+                <Download className='h-4 w-4' />
                 下载
               </Button>
-            </ModalFooter>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
+
+              <Button
+                className={actionButtonClass}
+                onPress={onClose}
+                size='sm'
+                variant='secondary'
+              >
+                <X className='h-4 w-4' />
+                关闭
+              </Button>
+            </div>
+          </Modal.Footer>
+        </Modal.Dialog>
+      </Modal.Container>
+    </Modal.Backdrop>
   )
 }

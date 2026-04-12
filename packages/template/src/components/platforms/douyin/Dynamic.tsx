@@ -23,7 +23,7 @@ const DouyinHeader: React.FC<{ useDarkTheme?: boolean }> = ({ useDarkTheme }) =>
           className='object-contain w-full h-full'
         />
       </div>
-      <span className='text-[65px] ml-4 text-foreground-600'>
+      <span className='text-[65px] ml-4 text-foreground/70'>
         记录美好生活
       </span>
     </div>
@@ -62,7 +62,7 @@ const InfoSection: React.FC<DouyinDynamicProps> = (props) => {
         style={{ letterSpacing: '1.5px', wordWrap: 'break-word' }}
         dangerouslySetInnerHTML={{ __html: props.data.desc }}
       />
-      <div className='flex items-center gap-6 text-[45px] text-foreground-500 font-light mb-2.5 select-text'>
+      <div className='flex items-center gap-6 text-[45px] text-muted font-light mb-2.5 select-text'>
         <div className='flex gap-2 items-center'>
           <Heart className='w-11 h-11 text-like' />
           <span>{props.data.dianzan}点赞</span>
@@ -83,11 +83,11 @@ const InfoSection: React.FC<DouyinDynamicProps> = (props) => {
           <span>{props.data.share}分享</span>
         </div>
       </div>
-      <div className='flex items-center gap-2 text-[45px] text-foreground-500 font-light select-text'>
+      <div className='flex items-center gap-2 text-[45px] text-muted font-light select-text'>
         <Clock className='w-11 h-11 text-time' />
         <span>发布于: {props.data.create_time}</span>
       </div>
-      <div className='flex items-center gap-2 text-[45px] text-foreground-500 font-light select-text'>
+      <div className='flex items-center gap-2 text-[45px] text-muted font-light select-text'>
         <LuFullscreen className='w-11 h-11 text-time text-time' />
         <span>图片生成于: {format(new Date(), 'yyyy-MM-dd HH:mm:ss')}</span>
       </div>
@@ -121,37 +121,37 @@ const UserInfoSection: React.FC<DouyinDynamicProps & { coCreatorCount?: number }
           <div className='text-7xl font-bold select-text text-foreground'>
             @{props.data.username}
           </div>
-          <div className='flex gap-2 items-center text-4xl text-default-500'>
-            <Hash size={32} className='text-default-400' />
+          <div className='flex gap-2 items-center text-4xl text-muted'>
+            <Hash size={32} className='text-muted' />
             <span className='select-text'>抖音号: {props.data.抖音号}</span>
           </div>
         </div>
       </div>
       
       {/* 用户统计信息 */}
-      <div className='text-3xl flex gap-6 items-center text-default-600'>
-        <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+      <div className='text-3xl flex gap-6 items-center text-foreground/70'>
+        <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
           <div className='flex gap-1 items-center'>
             <Heart size={28} className='text-like' />
-            <span className='text-default-400'>获赞</span>
+            <span className='text-muted'>获赞</span>
           </div>
-          <div className='w-full h-px bg-default-300' />
+          <div className='w-full h-px bg-border' />
           <span className='select-text font-medium text-4xl'>{props.data.获赞}</span>
         </div>
-        <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+        <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
           <div className='flex gap-1 items-center'>
             <Eye size={28} className='text-view' />
-            <span className='text-default-400'>关注</span>
+            <span className='text-muted'>关注</span>
           </div>
-          <div className='w-full h-px bg-default-300' />
+          <div className='w-full h-px bg-border' />
           <span className='select-text font-medium text-4xl'>{props.data.关注}</span>
         </div>
-        <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-default-100'>
+        <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
           <div className='flex gap-1 items-center'>
-            <Users size={28} className='text-primary' />
-            <span className='text-default-400'>粉丝</span>
+            <Users size={28} className='text-accent' />
+            <span className='text-muted'>粉丝</span>
           </div>
-          <div className='w-full h-px bg-default-300' />
+          <div className='w-full h-px bg-border' />
           <span className='select-text font-medium text-4xl'>{props.data.粉丝}</span>
         </div>
       </div>
@@ -216,10 +216,10 @@ const CoCreatorsInfo: React.FC<{
                   className='object-cover w-28 h-auto rounded-full'
                 />
               </div>
-              <div className='overflow-hidden mt-6 w-full text-3xl font-medium leading-tight text-center truncate whitespace-nowrap select-text text-foreground-700'>
+              <div className='overflow-hidden mt-6 w-full text-3xl font-medium leading-tight text-center truncate whitespace-nowrap select-text text-foreground/80'>
                 {c.nickname || '未提供'}
               </div>
-              <div className='overflow-hidden mt-2 w-full text-3xl leading-tight text-center truncate whitespace-nowrap select-text text-foreground-600'>
+              <div className='overflow-hidden mt-2 w-full text-3xl leading-tight text-center truncate whitespace-nowrap select-text text-foreground/70'>
                 {c.role_title || '未提供'}
               </div>
             </div>
@@ -228,13 +228,13 @@ const CoCreatorsInfo: React.FC<{
 
         {items.length > visibleCount && (
           <div className='flex flex-col items-center min-w-38 w-38 shrink-0'>
-            <div className='flex justify-center items-center rounded-full bg-default-200 w-38 h-38'>
-              <span className='text-[42px] leading-none text-foreground-500'>···</span>
+            <div className='flex justify-center items-center rounded-full bg-surface-secondary w-38 h-38'>
+              <span className='text-[42px] leading-none text-muted'>···</span>
             </div>
-            <div className='overflow-hidden mt-6 w-full text-3xl font-medium leading-tight text-center truncate whitespace-nowrap select-text text-foreground-700'>
+            <div className='overflow-hidden mt-6 w-full text-3xl font-medium leading-tight text-center truncate whitespace-nowrap select-text text-foreground/80'>
               还有{items.length - visibleCount}人
             </div>
-            <div className='overflow-hidden mt-2 w-full text-3xl leading-tight text-center truncate whitespace-nowrap select-text text-foreground-600'>
+            <div className='overflow-hidden mt-2 w-full text-3xl leading-tight text-center truncate whitespace-nowrap select-text text-foreground/70'>
               共创
             </div>
           </div>
@@ -275,9 +275,9 @@ export const DouyinDynamic: React.FC<Omit<DouyinDynamicProps, 'templateType' | '
           <div className='w-full'>
             {coCreatorCount && coCreatorCount > 0 && (
               <div className='px-16 pb-8'>
-                <div className='gap-2 inline-flex items-center rounded-2xl bg-default-100 text-foreground-700 px-6 py-3'>
+                <div className='gap-2 inline-flex items-center rounded-2xl bg-surface text-foreground/80 px-6 py-3'>
                   <Users className='w-7 h-7' />
-                  <span className='text-3xl font-medium leading-none select-text text-foreground-700'>{coCreatorCount}人共创</span>
+                  <span className='text-3xl font-medium leading-none select-text text-foreground/80'>{coCreatorCount}人共创</span>
                 </div>
               </div>
             )}
@@ -300,8 +300,8 @@ export const DouyinDynamic: React.FC<Omit<DouyinDynamicProps, 'templateType' | '
                   />
                 )
                 : (
-                  <div className='flex justify-center items-center rounded-2xl bg-default-100 w-100 h-100'>
-                    <span className='text-default-400'>二维码</span>
+                  <div className='flex justify-center items-center rounded-2xl bg-surface w-100 h-100'>
+                    <span className='text-muted'>二维码</span>
                   </div>
                 )}
             </div>

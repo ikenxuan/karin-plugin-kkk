@@ -1,4 +1,3 @@
-import { Code } from '@heroui/react'
 import { CornerDownLeft } from 'lucide-react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
@@ -6,6 +5,18 @@ import rehypeHighlight from 'rehype-highlight'
 
 import type { ChangelogProps } from '../../../types/platforms/other/changelog'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
+
+const InlineCalloutCode: React.FC<React.PropsWithChildren<{ className?: string }>> = ({ children, className }) => (
+  <span
+    className={`inline-flex items-center rounded-[0.55em] px-[0.48em] py-[0.18em] font-semibold ${className ?? ''}`.trim()}
+    style={{
+      background: 'color-mix(in oklab, var(--success) 12%, transparent)',
+      color: 'var(--success)'
+    }}
+  >
+    {children}
+  </span>
+)
 
 
 /**
@@ -112,7 +123,7 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
         </svg>
       </div>
 
-      <div className='relative px-20 pt-5 pb-0 w-full max-w-none prose prose-lg prose-invert from-default-50 to-default-100'>
+      <div className='relative px-20 pt-5 pb-0 w-full max-w-none prose prose-lg prose-invert from-surface to-surface'>
 
         {props.data.Tip === true ? (
           <>
@@ -130,45 +141,45 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
 
             {/* 更新提示 */}
             <div className='pt-32'>
-              <div className='text-5xl leading-relaxed text-center mb-8 opacity-50 text-default-600'>
+              <div className='text-5xl leading-relaxed text-center mb-8 opacity-50 text-foreground/70'>
                 以下任意方式均可更新
               </div>
               
-              <div className='mb-10 px-8 py-5 rounded-2xl border border-default-300/70 bg-default-50/50 text-default-700 text-[2.2em] flex items-center justify-center gap-6'>
+              <div className='mb-10 px-8 py-5 rounded-2xl border border-border/70 bg-surface/50 text-foreground/80 text-[2.2em] flex items-center justify-center gap-6'>
                 <span>当前版本: v{props.data.localVersion}</span>
                 <span>→</span>
                 <span>最新版本: v{props.data.remoteVersion}</span>
                 <span>，共落后 {props.data.lagVersionCount ?? 0} 个版本</span>
               </div>
 
-              <div className='flex flex-col gap-6 text-[2.8em] leading-relaxed text-default-700'>
+              <div className='flex flex-col gap-6 text-[2.8em] leading-relaxed text-foreground/80'>
                 <div className='flex items-center gap-5'>
-                  <span className='text-default-500 text-[1.2em]'>•</span>
+                  <span className='text-muted text-[1.2em]'>•</span>
                   <span>引用回复</span>
-                  <span className='inline-block text-[1.15em] font-bold text-default-900'>
+                  <span className='inline-block text-[1.15em] font-bold text-foreground'>
                     更新
                   </span>
                   <span>立刻开始</span>
                 </div>
                 
                 <div className='flex items-center gap-5'>
-                  <span className='text-default-500 text-[1.2em]'>•</span>
+                  <span className='text-muted text-[1.2em]'>•</span>
                   <span>进入</span>
-                  <Code radius='lg' color='success' className='text-[0.9em]'>Karin WebUI</Code>
+                  <InlineCalloutCode className='text-[0.9em]'>Karin WebUI</InlineCalloutCode>
                   <span>→</span>
-                  <Code radius='lg' color='success' className='text-[0.9em]'>插件管理</Code>
+                  <InlineCalloutCode className='text-[0.9em]'>插件管理</InlineCalloutCode>
                   <span>→</span>
-                  <Code radius='lg' color='success' className='text-[0.9em]'>已安装</Code>
+                  <InlineCalloutCode className='text-[0.9em]'>已安装</InlineCalloutCode>
                   <span>→</span>
                   <span>一览更新</span>
                 </div>
                 
                 <div className='flex items-center gap-5'>
-                  <span className='text-default-500 text-[1.2em]'>•</span>
+                  <span className='text-muted text-[1.2em]'>•</span>
                   <span>Karin 根目录运行</span>
-                  <Code radius='lg' color='success' className='text-[0.85em] whitespace-nowrap'>
+                  <InlineCalloutCode className='text-[0.85em] whitespace-nowrap'>
                     pnpm add karin-plugin-kkk@{props.data.remoteVersion} -w
-                  </Code>
+                  </InlineCalloutCode>
                 </div>
               </div>
             </div>
@@ -179,67 +190,67 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
             rehypePlugins={[rehypeHighlight]}
             components={{
               h1: ({ children, ...props }) => (
-                <h1 className="text-[5.28em] font-semibold mb-8 pb-2 border-b-2 border-default-400 text-default-900" {...props}>
+                <h1 className="text-[5.28em] font-semibold mb-8 pb-2 border-b-2 border-muted text-foreground" {...props}>
                   {children}
                 </h1>
               ),
               h2: ({ children, ...props }) => (
                 <div className="relative mt-25 mb-5">
                   {/* <div
-                    className="absolute -top-13 left-0 text-[11em] font-black text-default-500/50 select-none pointer-events-none uppercase leading-none"
+                    className="absolute -top-13 left-0 text-[11em] font-black text-muted/50 select-none pointer-events-none uppercase leading-none"
                     aria-hidden="true"
                   >
                     {typeof children === 'string' ? children : 'H2'}
                   </div> */}
-                  <h2 className="ml-5 relative z-10 text-[5.28em] text-default-900 font-light" {...props}>
+                  <h2 className="ml-5 relative z-10 text-[5.28em] text-foreground font-light" {...props}>
                     {children}
                   </h2>
-                  <div className='w-full border-b border-default-400' />
+                  <div className='w-full border-b border-muted' />
                 </div>
               ),
               h3: ({ children, ...props }) => (
-                <h3 className="flex items-baseline gap-3 text-[3.2em] font-light mb-2 text-default-900" {...props}>
+                <h3 className="flex items-baseline gap-3 text-[3.2em] font-light mb-2 text-foreground" {...props}>
                   {children}
-                  <CornerDownLeft strokeWidth={2.5} className="w-[1em] h-[1em] text-default-900/10" />
+                  <CornerDownLeft strokeWidth={2.5} className="w-[1em] h-[1em] text-foreground/10" />
                 </h3>
               ),
               h4: ({ children, ...props }) => (
-                <h4 className="text-[2.64em] font-semibold mb-5 text-default-900" {...props}>
+                <h4 className="text-[2.64em] font-semibold mb-5 text-foreground" {...props}>
                   {children}
                 </h4>
               ),
               h5: ({ children, ...props }) => (
-                <h5 className="text-[2.38em] font-semibold mb-5 text-default-900" {...props}>
+                <h5 className="text-[2.38em] font-semibold mb-5 text-foreground" {...props}>
                   {children}
                 </h5>
               ),
               h6: ({ children, ...props }) => (
-                <h6 className="text-[2.11em] font-semibold mb-4 text-default-600" {...props}>
+                <h6 className="text-[2.11em] font-semibold mb-4 text-foreground/70" {...props}>
                   {children}
                 </h6>
               ),
               p: ({ children, ...props }) => (
-                <p className="text-[2.64em] leading-[1.75] mb-[2.64em] text-default-900" {...props}>
+                <p className="text-[2.64em] leading-[1.75] mb-[2.64em] text-foreground" {...props}>
                   {children}
                 </p>
               ),
               ul: ({ children, ...props }) => (
-                <ul className="pl-[5em] mb-[2em] list-disc text-default-900" {...props}>
+                <ul className="pl-[5em] mb-[2em] list-disc text-foreground" {...props}>
                   {children}
                 </ul>
               ),
               ol: ({ children, ...props }) => (
-                <ol className="pl-[3.6em] mb-[1.8em] list-decimal text-default-900" {...props}>
+                <ol className="pl-[3.6em] mb-[1.8em] list-decimal text-foreground" {...props}>
                   {children}
                 </ol>
               ),
               li: ({ children, ...props }) => (
-                <li className="text-[2.6em] leading-[1.6] text-default-900 font-black" {...props}>
+                <li className="text-[2.6em] leading-[1.6] text-foreground font-black" {...props}>
                   {children}
                 </li>
               ),
               blockquote: ({ children, ...props }) => (
-                <blockquote className="border-l-4 border-default-500 pl-[1.8em] py-[0.9em] mb-[1.8em] text-default-700 bg-default-100" {...props}>
+                <blockquote className="border-l-4 border-muted pl-[1.8em] py-[0.9em] mb-[1.8em] text-foreground/80 bg-surface" {...props}>
                   {children}
                 </blockquote>
               ),
@@ -255,13 +266,13 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
                 </code>
               ),
               pre: ({ children, ...props }) => (
-                <pre className="p-[1.8em] mb-[1.8em] bg-default-200 rounded overflow-x-auto font-mono" {...props}>
+                <pre className="p-[1.8em] mb-[1.8em] bg-surface-secondary rounded overflow-x-auto font-mono" {...props}>
                   {children}
                 </pre>
               ),
               a: ({ children, href, ...props }) => (
                 <a
-                  className="inline-flex gap-3 items-baseline cursor-pointer text-default-900/50 hover:underline"
+                  className="inline-flex gap-3 items-baseline cursor-pointer text-foreground/50 hover:underline"
                   onClick={(e) => e.preventDefault()}
                   {...props}
                 >
@@ -273,17 +284,17 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
                 <img className="max-w-full h-auto rounded" {...props} />
               ),
               table: ({ children, ...props }) => (
-                <table className="w-full border-collapse mb-[1.8em] text-default-900" {...props}>
+                <table className="w-full border-collapse mb-[1.8em] text-foreground" {...props}>
                   {children}
                 </table>
               ),
               th: ({ children, ...props }) => (
-                <th className="px-5 py-3 font-semibold text-left border text-default-900 bg-default-200 border-default-400" {...props}>
+                <th className="px-5 py-3 font-semibold text-left border text-foreground bg-surface-secondary border-muted" {...props}>
                   {children}
                 </th>
               ),
               td: ({ children, ...props }) => (
-                <td className="px-5 py-3 border text-default-900 border-default-400" {...props}>
+                <td className="px-5 py-3 border text-foreground border-muted" {...props}>
                   {children}
                 </td>
               )
@@ -295,14 +306,14 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
 
         {/* 底部信息 */}
         {props.data.Tip === true && props.data.buildTime && (
-          <div className='flex gap-8 justify-center py-12 mt-16 border-t-2 border-default-300 opacity-60'>
+          <div className='flex gap-8 justify-center py-12 mt-16 border-t-2 border-border opacity-60'>
             <div className='text-4xl'>
               更新频道:
-              <span className='font-bold text-default-700'> 正式版</span>
+              <span className='font-bold text-foreground/80'> 正式版</span>
             </div>
             <div className='text-4xl'>
               编译于:
-              <span className='font-bold text-default-700'> {props.data.buildTime}</span>
+              <span className='font-bold text-foreground/80'> {props.data.buildTime}</span>
             </div>
           </div>
         )}
