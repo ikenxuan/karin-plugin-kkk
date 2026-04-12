@@ -18,10 +18,13 @@ type VideoPreviewInfo = {
   expireAt?: number
   removeCache: boolean
   removedAt?: number
+  cleanupAt?: number
 }
 
 /** 常用工具合集 */
 class Tools {
+  private static readonly VIDEO_PREVIEW_REMOVED_RETENTION_MS = 5 * 60 * 1000
+  private static readonly VIDEO_PREVIEW_SWEEP_INTERVAL_MS = 10 * 60 * 1000
   /**
    * 插件缓存目录
    */
@@ -35,6 +38,9 @@ class Tools {
   }
   private videoPreviewState: Map<string, VideoPreviewInfo>
 
+  /**
+   * 初始化工具实例并启动预览状态的后台清理任务。
+   */
   constructor () {
     this.tempDri = {
       /** 插件缓存目录 */
@@ -45,6 +51,10 @@ class Tools {
       images: `${karinPathTemp}/${Root.pluginName}/kkkdownload/images/`.replace(/\\/g, '/')
     }
     this.videoPreviewState = new Map()
+    const cleanupTimer = setInterval(() => {
+      this.pruneVideoPreviewState()
+    }, Tools.VIDEO_PREVIEW_SWEEP_INTERVAL_MS)
+    cleanupTimer.unref?.()
   }
 
   /**
@@ -201,7 +211,15 @@ class Tools {
     return true
   }
 
+  /**
+   * 注册一个视频预览状态，供预览页面和 SSE 状态流读取。
+   * @param filePath 视频文件绝对路径。
+   * @param removeCache 预览文件是否会在 TTL 到期后自动删除。
+   * @param ttlMs 预览状态的生存时间，单位为毫秒。
+   * @returns 当前注册后的预览状态对象。
+   */
   registerVideoPreview (filePath: string, removeCache: boolean, ttlMs: number): VideoPreviewInfo {
+    this.pruneVideoPreviewState()
     const filename = path.basename(filePath)
     const createdAt = Date.now()
     const expireAt = removeCache ? createdAt + ttlMs : undefined
@@ -216,11 +234,23 @@ class Tools {
     return info
   }
 
+  /**
+   * 按文件名获取视频预览状态。
+   * @param filename 预览文件名。
+   * @returns 命中的预览状态；未命中时返回 `null`。
+   */
   getVideoPreview (filename: string): VideoPreviewInfo | null {
+    this.pruneVideoPreviewState()
     return this.videoPreviewState.get(filename) ?? null
   }
 
+  /**
+   * 将视频预览状态标记为已移除，并安排延迟回收。
+   * @param filePathOrFilename 视频绝对路径或文件名。
+   * @returns 更新后的预览状态；若不存在则返回 `null`。
+   */
   markVideoPreviewRemoved (filePathOrFilename: string): VideoPreviewInfo | null {
+    this.pruneVideoPreviewState()
     const filename = filePathOrFilename.includes('/') || filePathOrFilename.includes('\\')
       ? path.basename(filePathOrFilename)
       : filePathOrFilename
@@ -230,10 +260,39 @@ class Tools {
     }
     const updated: VideoPreviewInfo = {
       ...info,
-      removedAt: Date.now()
+      removedAt: Date.now(),
+      cleanupAt: Date.now() + Tools.VIDEO_PREVIEW_REMOVED_RETENTION_MS
     }
     this.videoPreviewState.set(filename, updated)
     return updated
+  }
+
+  /**
+   * 清理过期或已删除的视频预览状态，避免全局缓存持续增长。
+   * @param now 当前时间戳，默认使用 `Date.now()`。
+   */
+  private pruneVideoPreviewState (now = Date.now()) {
+    for (const [filename, info] of this.videoPreviewState) {
+      const fileMissing = !fs.existsSync(info.filePath)
+      const shouldMarkRemoved = !info.removedAt && (
+        (info.removeCache && typeof info.expireAt === 'number' && now >= info.expireAt && fileMissing) ||
+        (!info.removeCache && fileMissing)
+      )
+
+      if (shouldMarkRemoved) {
+        const removedAt = now
+        this.videoPreviewState.set(filename, {
+          ...info,
+          removedAt,
+          cleanupAt: removedAt + Tools.VIDEO_PREVIEW_REMOVED_RETENTION_MS
+        })
+        continue
+      }
+
+      if (info.cleanupAt && now >= info.cleanupAt) {
+        this.videoPreviewState.delete(filename)
+      }
+    }
   }
 
   /**

@@ -17,6 +17,8 @@ import { Config } from '@/module/utils/Config'
 /**
  * 视频文件流传输
  * GET /api/kkk/stream/:filename
+ * @param req 请求对象。
+ * @param res 响应对象。
  */
 export const videoStreamRouter: RequestHandler = (req, res) => {
   const filenameParam = req.params.filename
@@ -106,6 +108,8 @@ export const videoStreamRouter: RequestHandler = (req, res) => {
 /**
  * 视频播放页面
  * GET /api/kkk/video/:filename
+ * @param req 请求对象。
+ * @param res 响应对象。
  */
 export const getVideoRouter: RequestHandler = (req, res) => {
   const filenameParam = req.params.filename
@@ -140,6 +144,12 @@ export const getVideoRouter: RequestHandler = (req, res) => {
   res.send(htmlContent)
 }
 
+/**
+ * 视频预览状态事件流。
+ * 持续向前端推送剩余有效期与删除状态，并在预览失效后自动结束连接。
+ * @param req 请求对象。
+ * @param res 响应对象。
+ */
 export const videoPreviewEventsRouter: RequestHandler = (req, res) => {
   const filenameParam = req.params.filename
   const filename = Array.isArray(filenameParam) ? filenameParam[0] : filenameParam
@@ -164,31 +174,55 @@ export const videoPreviewEventsRouter: RequestHandler = (req, res) => {
   res.setHeader('Connection', 'keep-alive')
   res.flushHeaders?.()
 
+  let timer: NodeJS.Timeout | null = null
+  /**
+   * 推送一次最新的预览状态到客户端。
+   * @returns 当前预览是否已被删除或失效。
+   */
   const sendPayload = () => {
+    const currentInfo = Common.getVideoPreview(filename) ?? previewInfo
     const now = Date.now()
-    const remainingMs = previewInfo.expireAt ? Math.max(previewInfo.expireAt - now, 0) : null
-    const fileMissing = previewInfo.filePath ? !fs.existsSync(previewInfo.filePath) : false
-    const removed = Boolean(previewInfo.removedAt) || (previewInfo.removeCache && remainingMs === 0 && fileMissing)
-    if (removed && !previewInfo.removedAt) {
-      Common.markVideoPreviewRemoved(previewInfo.filename)
+    const remainingMs = currentInfo.expireAt ? Math.max(currentInfo.expireAt - now, 0) : null
+    const fileMissing = currentInfo.filePath ? !fs.existsSync(currentInfo.filePath) : false
+    const removed = Boolean(currentInfo.removedAt) || (currentInfo.removeCache && remainingMs === 0 && fileMissing)
+    if (removed && !currentInfo.removedAt) {
+      Common.markVideoPreviewRemoved(currentInfo.filename)
     }
     const payload = {
-      filename: previewInfo.filename,
-      filePath: previewInfo.filePath,
-      removeCache: previewInfo.removeCache,
-      createdAt: previewInfo.createdAt,
-      expireAt: previewInfo.expireAt,
+      filename: currentInfo.filename,
+      filePath: currentInfo.filePath,
+      removeCache: currentInfo.removeCache,
+      createdAt: currentInfo.createdAt,
+      expireAt: currentInfo.expireAt,
       remainingMs,
       removed,
       serverNow: now
     }
     res.write(`data: ${JSON.stringify(payload)}\n\n`)
+    return removed
   }
 
-  sendPayload()
-  const timer = setInterval(sendPayload, 1000)
+  const shouldCloseImmediately = sendPayload()
+  if (shouldCloseImmediately) {
+    res.end()
+    return
+  }
+
+  timer = setInterval(() => {
+    const removed = sendPayload()
+    if (removed) {
+      if (timer) {
+        clearInterval(timer)
+        timer = null
+      }
+      res.end()
+    }
+  }, 1000)
 
   res.on('close', () => {
-    clearInterval(timer)
+    if (timer) {
+      clearInterval(timer)
+      timer = null
+    }
   })
 }
