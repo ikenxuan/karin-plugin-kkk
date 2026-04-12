@@ -1,4 +1,4 @@
-import { Clock, Radio, ScanLine, Users } from 'lucide-react'
+import { Clock, Radio, Users } from 'lucide-react'
 import React from 'react'
 
 import type {
@@ -81,74 +81,6 @@ const InlineHtmlText: React.FC<{
   )
 }
 
-const AccentLabel: React.FC<{
-  english: string
-  chinese: string
-  icon?: React.ReactNode
-  align?: 'left' | 'right'
-  style?: React.CSSProperties
-  englishClassName?: string
-  chineseClassName?: string
-}> = ({
-  english,
-  chinese,
-  icon,
-  align = 'left',
-  style,
-  englishClassName = '',
-  chineseClassName = ''
-}) => {
-  const isRight = align === 'right'
-
-  return (
-    <div className={`flex flex-col gap-1.5 ${isRight ? 'items-end text-right' : 'items-start text-left'} min-w-0`} style={style}>
-      <div className={`flex items-center gap-3 whitespace-nowrap text-[22px] font-black tracking-[0.30em] uppercase ${englishClassName}`}>
-        {icon}
-        <span>{english}</span>
-      </div>
-      <div className={`text-[18px] font-semibold tracking-[0.08em] whitespace-nowrap ${chineseClassName}`}>
-        {chinese}
-      </div>
-    </div>
-  )
-}
-
-const MetaLabel: React.FC<{
-  englishLabel: string
-  chineseLabel: string
-  value: React.ReactNode
-  accent?: React.ReactNode
-  valueClassName?: string
-  valueStyle?: React.CSSProperties
-}> = ({
-  englishLabel,
-  chineseLabel,
-  value,
-  accent,
-  valueClassName = '',
-  valueStyle
-}) => {
-  return (
-    <div className='flex flex-col gap-4 min-w-0'>
-      <div className='min-w-0'>
-        <AccentLabel
-          english={englishLabel}
-          chinese={chineseLabel}
-          icon={accent}
-          englishClassName='text-foreground/56'
-          chineseClassName='text-foreground/36'
-        />
-      </div>
-      <div
-        className={`min-w-0 font-medium leading-[1.06] tracking-[-0.035em] text-foreground whitespace-nowrap select-text ${valueClassName}`}
-        style={valueStyle}
-      >
-        {value}
-      </div>
-    </div>
-  )
-}
-
 export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templateType' | 'templateName'>> = React.memo((props) => {
   const { data, qrCodeDataUrl } = props
   const isDark = data.useDarkTheme === true
@@ -164,22 +96,23 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
     deepColor,
     coverShade
   } = palette
+
   const logo = isDark ? '/image/bilibili/bilibili-light.png' : '/image/bilibili/bilibili.png'
-  const streamerFontSize = getSingleLineFontSize(data.username, 62, 38)
-  const footerBroadcastFontSize = getSingleLineFontSize(`${data.username} 开播了`, 54, 34)
-  const footerStatusFontSize = getSingleLineFontSize(`正在直播 ${data.dynamicTYPE}`, 34, 22)
-  const roomSignalFontSize = getSingleLineFontSize(data.liveinf, 50, 34)
-  const followerFontSize = getSingleLineFontSize(`${data.fans} 粉丝`, 42, 28)
-  const startTimeFontSize = getSingleLineFontSize(data.create_time, 38, 28)
   const liveSignalTime = data.now_time || data.create_time
+  const streamerFontSize = getSingleLineFontSize(data.username, 68, 42)
+  const liveInfoFontSize = getSingleLineFontSize(data.liveinf, 38, 28)
+  const followerFontSize = getSingleLineFontSize(`${data.fans} 粉丝`, 30, 24)
+  const metaValueFontSize = getSingleLineFontSize(liveSignalTime, 32, 24)
+  const coverInfoFontSize = getSingleLineFontSize(data.liveinf, 38, 24)
+  const broadcastFontSize = getSingleLineFontSize(`${stripHtmlTags(data.username)} 开播了`, 42, 28)
   const liveTitleLength = stripHtmlTags(data.text).length
   const liveTitleFontSize = liveTitleLength <= 16
-    ? 64
+    ? 74
     : liveTitleLength <= 28
-      ? 56
+      ? 66
       : liveTitleLength <= 44
-        ? 50
-        : 44
+        ? 58
+        : 52
 
   return (
     <DefaultLayout
@@ -228,32 +161,26 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
           className='text-[220px] font-black tracking-tighter leading-none'
           style={{ color: deepColor }}
         >
-          LIVE
+          ON
         </div>
         <div
-          className='text-[220px] font-black tracking-tighter leading-none -mt-4'
+          className='-mt-6 text-[220px] font-black tracking-tighter leading-none'
           style={{ color: deepColor }}
         >
-          SIGNAL
-        </div>
-        <div
-          className='mt-3 text-[34px] font-bold tracking-[0.24em] whitespace-nowrap'
-          style={{ color: deepColor }}
-        >
-          直播信号
+          AIR
         </div>
       </div>
 
       <div className='absolute inset-0 pointer-events-none overflow-hidden'>
-        <div className='absolute top-20 right-18 grid grid-cols-4 gap-3 opacity-40'>
-          <div className='w-3 h-3 rounded-full' style={{ backgroundColor: accentColor }} />
-          <div className='w-3 h-3 rounded-full' style={{ backgroundColor: primaryColor }} />
-          <div className='w-3 h-3 rounded-full' style={{ backgroundColor: secondaryColor }} />
-          <div className='w-3 h-3 rounded-full' style={{ backgroundColor: primaryColor }} />
-        </div>
+        {/* <div className='absolute top-20 right-18 grid grid-cols-4 gap-3 opacity-40'>
+          <div className='h-3 w-3 rounded-full' style={{ backgroundColor: accentColor }} />
+          <div className='h-3 w-3 rounded-full' style={{ backgroundColor: primaryColor }} />
+          <div className='h-3 w-3 rounded-full' style={{ backgroundColor: secondaryColor }} />
+          <div className='h-3 w-3 rounded-full' style={{ backgroundColor: primaryColor }} />
+        </div> */}
 
         <div
-          className='absolute right-0 bottom-0 w-150 h-120 opacity-[0.08]'
+          className='absolute right-0 bottom-0 h-120 w-150 opacity-[0.08]'
           style={{
             backgroundImage: `repeating-linear-gradient(-36deg, ${primaryColor}, ${primaryColor} 3px, transparent 3px, transparent 18px)`,
             maskImage: 'linear-gradient(to top left, black, transparent 72%)',
@@ -265,7 +192,7 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
           className='absolute w-175 h-100'
           style={{
             left: '100px',
-            top: '1720px'
+            top: '1600px'
           }}
         >
           <div
@@ -284,36 +211,6 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
             className='absolute left-34 top-6 h-28 w-36 rounded-full blur-2xl'
             style={{
               background: `radial-gradient(circle, ${withAlphaFromCss(secondaryColor, isDark ? 0.08 : 0.05)} 0%, transparent 72%)`
-            }}
-          />
-          <div
-            className='absolute rounded-full'
-            style={{
-              left: '-180px',
-              bottom: '-186px',
-              width: '540px',
-              height: '540px',
-              border: `1px solid ${withAlphaFromCss(primaryColor, isDark ? 0.16 : 0.08)}`
-            }}
-          />
-          <div
-            className='absolute rounded-full'
-            style={{
-              left: '-74px',
-              bottom: '-88px',
-              width: '330px',
-              height: '330px',
-              border: `1px solid ${withAlphaFromCss(accentColor, isDark ? 0.18 : 0.09)}`
-            }}
-          />
-          <div
-            className='absolute rounded-full'
-            style={{
-              left: '22px',
-              bottom: '4px',
-              width: '148px',
-              height: '148px',
-              border: `1px dashed ${withAlphaFromCss(secondaryColor, isDark ? 0.18 : 0.10)}`
             }}
           />
 
@@ -369,12 +266,6 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
               strokeDasharray='8 14'
               strokeLinecap='round'
             />
-            <path
-              d='M98 298V344H138'
-              stroke={withAlphaFromCss(secondaryColor, isDark ? 0.20 : 0.10)}
-              strokeWidth='1.5'
-              strokeLinecap='round'
-            />
             <circle cx='188' cy='224' r='7' fill={accentColor} fillOpacity='0.62' />
             <circle cx='420' cy='220' r='5' fill={secondaryColor} fillOpacity='0.48' />
             <circle cx='640' cy='88' r='4' fill={primaryColor} fillOpacity='0.42' />
@@ -382,282 +273,215 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
         </div>
       </div>
 
-      <div className='relative z-10 flex flex-col h-full px-16 pt-14 pb-12'>
-        <div className='flex justify-between items-start mb-12'>
+      <div className='relative z-10 flex h-full flex-col px-16 pt-14 pb-12'>
+        <div className='mb-10 flex items-start justify-between gap-10'>
           <div className='flex flex-col gap-5'>
-            <AccentLabel
-              english='Bilibili Live Signal'
-              chinese='哔哩哔哩直播信号'
-              icon={<span className='w-3 h-3 rounded-full shrink-0' style={{ backgroundColor: accentColor }} />}
+            <div
+              className='inline-flex items-center gap-4 text-[22px] font-black tracking-[0.28em] uppercase'
               style={{ color: mutedColor }}
-              englishClassName='text-[24px]'
-              chineseClassName='text-[19px]'
-            />
-            <img
-              src={logo}
-              alt='哔哩哔哩'
-              className={`h-auto ${isDark ? 'w-75' : 'w-120'}`}
-            />
+            >
+              <span className='h-3 w-3 shrink-0 rounded-full' style={{ backgroundColor: accentColor }} />
+              <span>Bilibili Live Signal</span>
+            </div>
           </div>
 
-          <div className='flex flex-col items-end gap-4 text-right'>
-            <AccentLabel
-              english='On Air'
-              chinese='正在直播'
-              icon={<Radio size={20} />}
-              align='right'
+          <div className='flex flex-col items-end gap-5 text-right'>
+            <div
+              className='inline-flex items-center gap-3 text-[20px] font-black tracking-[0.24em] uppercase'
               style={{ color: accentColor }}
-              englishClassName='text-[24px]'
-              chineseClassName='text-[19px]'
-            />
-            <div className='text-[20px] font-semibold tracking-widest' style={{ color: mutedColor }}>
+            >
+              <span className='h-3.5 w-3.5 rounded-full animate-pulse' style={{ backgroundColor: accentColor }} />
+              <span>Live</span>
+            </div>
+            <div className='text-[22px] font-semibold tracking-[0.18em] uppercase' style={{ color: mutedColor }}>
               {data.dynamicTYPE}
             </div>
           </div>
         </div>
 
-        <div className='grid grid-cols-12 gap-8 mb-10 items-end'>
-          <div className='col-span-8 flex gap-6 items-center min-w-0'>
-            <div className='relative shrink-0'>
-              <div
-                className='absolute -inset-6 rounded-full blur-[42px]'
-                style={{
-                  background: `radial-gradient(circle, ${withAlphaFromCss(accentColor, isDark ? 0.26 : 0.18)} 0%, transparent 72%)`
-                }}
-              />
-              <EnhancedImage
-                src={data.avatar_url}
-                alt='头像'
-                className='w-36 h-36 rounded-full object-cover'
-                isCircular
-              />
-              {data.frame && (
-                <EnhancedImage
-                  src={data.frame}
-                  alt='头像框'
-                  className='absolute inset-0 scale-160'
+        <div className='mb-12'>
+          <div className='grid grid-cols-12 gap-8 items-center'>
+            <div className='col-span-7 flex min-w-0 items-center gap-6'>
+              <div className='relative shrink-0'>
+                <div
+                  className='absolute -inset-6 rounded-full blur-[42px]'
+                  style={{
+                    background: `radial-gradient(circle, ${withAlphaFromCss(accentColor, isDark ? 0.26 : 0.18)} 0%, transparent 72%)`
+                  }}
                 />
-              )}
+                <EnhancedImage
+                  src={data.avatar_url}
+                  alt='头像'
+                  className='h-36 w-36 rounded-full object-cover'
+                  isCircular
+                />
+                {data.frame && (
+                  <EnhancedImage
+                    src={data.frame}
+                    alt='头像框'
+                    className='absolute inset-0 scale-160'
+                  />
+                )}
+              </div>
+
+              <div className='min-w-0 flex-1'>
+                <div className='text-[18px] font-black tracking-[0.28em] uppercase' style={{ color: mutedColor }}>
+                  Up On Air
+                </div>
+                <div
+                  className='mt-4 min-w-0 whitespace-nowrap font-black tracking-[-0.04em] leading-none text-foreground select-text'
+                  style={{ fontSize: `${streamerFontSize}px`, color: deepColor }}
+                >
+                  <InlineHtmlText content={data.username} />
+                </div>
+                <div
+                  className='mt-5 inline-flex items-center gap-3 font-black'
+                  style={{ color: deepColor }}
+                >
+                  <Users size={22} style={{ color: accentColor }} />
+                  <span className='select-text' style={{ fontSize: `${followerFontSize}px` }}>
+                    {data.fans} 粉丝
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <div className='min-w-0 flex-1'>
-              <div className='text-[18px] font-black tracking-[0.28em] uppercase' style={{ color: mutedColor }}>
-                Up On Air
-              </div>
+            <div className='col-span-5 self-start pt-8 text-right'>
               <div
-                className='mt-4 min-w-0 whitespace-nowrap font-black tracking-[-0.04em] leading-none text-foreground select-text'
-                style={{ fontSize: `${streamerFontSize}px`, color: deepColor }}
+                className='inline-flex items-center gap-3 text-[20px] font-black tracking-[0.24em] uppercase'
+                style={{ color: accentColor }}
               >
-                <InlineHtmlText content={data.username} />
+                <span className='h-3.5 w-3.5 rounded-full animate-pulse' style={{ backgroundColor: accentColor }} />
+                <span>Live Now</span>
               </div>
-              <div className='mt-5 flex flex-wrap gap-x-6 gap-y-3'>
-                <div
-                  className='inline-flex items-center gap-3 text-[24px] font-bold tracking-[-0.02em]'
-                  style={{ color: deepColor }}
-                >
-                  <Users size={20} />
-                  <span>{data.fans} 粉丝</span>
-                </div>
-                <div
-                  className='inline-flex items-center gap-3 text-[24px] font-semibold tracking-[-0.02em]'
-                  style={{ color: deepColor }}
-                >
-                  <Radio size={20} />
-                  <span>{data.liveinf}</span>
-                </div>
+              <div className='text-[86px] font-black tracking-[-0.06em] leading-[0.92]' style={{ color: deepColor }}>
+                正在开播
               </div>
             </div>
           </div>
 
-          <div className='col-span-4 flex flex-col items-end text-right'>
-            <div className='flex items-center gap-3 text-[18px] font-black tracking-[0.32em] uppercase' style={{ color: accentColor }}>
-              <span className='w-3.5 h-3.5 rounded-full animate-pulse' style={{ backgroundColor: accentColor }} />
-              <span>Live Now</span>
+          <div
+            className='mt-8 flex flex-wrap items-center gap-x-6 gap-y-4 font-black tracking-[-0.025em]'
+            style={{ color: deepColor, fontSize: `${metaValueFontSize}px` }}
+          >
+            <div className='inline-flex min-w-0 items-center gap-3'>
+              <Radio size={20} style={{ color: accentColor }} />
+              <span className='min-w-0 whitespace-normal leading-[1.18] select-text' style={{ fontSize: `${liveInfoFontSize}px` }}>
+                {data.liveinf}
+              </span>
             </div>
-            <div className='mt-5 text-[64px] font-black tracking-[-0.06em] leading-[0.92]' style={{ color: deepColor }}>
-              正在开播
-            </div>
-            <div className='mt-4 flex items-center gap-3 text-[24px] font-semibold tracking-[-0.02em]' style={{ color: mutedColor }}>
-              <Clock size={20} />
-              <span>{liveSignalTime}</span>
-            </div>
-            <div className='mt-3 text-[20px] font-semibold tracking-[0.08em]' style={{ color: withAlphaFromCss(deepColor, 0.72) }}>
-              UP 主直播中
+            <span style={{ color: withAlphaFromCss(deepColor, 0.26) }}>/</span>
+            <div className='inline-flex items-center gap-3 whitespace-nowrap font-mono'>
+              <Clock size={20} style={{ color: primaryColor }} />
+              <span className='select-text'>{liveSignalTime}</span>
             </div>
           </div>
         </div>
 
         {data.image_url && (
-          <div className='relative mb-12 overflow-hidden'>
-            <div className='rounded-[34px] overflow-hidden'>
+          <div className='relative mb-18 overflow-hidden rounded-[36px]'>
+            <div className='overflow-hidden rounded-[36px]'>
               <EnhancedImage
                 src={data.image_url}
                 alt='直播封面'
-                className='object-cover w-full h-full'
+                className='h-full w-full object-cover'
               />
             </div>
 
             <div
-              className='absolute inset-0 rounded-[34px]'
+              className='absolute inset-0 rounded-[36px]'
               style={{
-                backgroundImage: `linear-gradient(to top, ${coverShade}, rgba(0,0,0,0.10), transparent 42%)`
+                backgroundImage: `linear-gradient(to top, ${coverShade}, rgba(0,0,0,0.10), transparent 46%)`
               }}
             />
 
-            <div className='absolute top-8 left-8 right-8 flex justify-between items-start gap-6'>
-              <div className='inline-flex items-center gap-3 text-white drop-shadow-[0_8px_18px_rgba(0,0,0,0.28)]'>
-                <span className='w-3.5 h-3.5 rounded-full animate-pulse' style={{ backgroundColor: '#ffffff' }} />
-                <span className='text-[20px] font-black tracking-[0.24em] uppercase'>Live Now</span>
-                <span className='text-[18px] font-semibold tracking-[0.06em]'>正在开播</span>
-              </div>
-
-              <div className='text-[22px] font-mono font-black whitespace-nowrap text-white drop-shadow-[0_8px_18px_rgba(0,0,0,0.28)]'>
-                {data.create_time}
+            <div className='absolute left-8 top-8'>
+              <div className='inline-flex items-center gap-3 text-white drop-shadow-[0_10px_24px_rgba(0,0,0,0.24)]'>
+                <span className='h-3.5 w-3.5 rounded-full animate-pulse bg-white' />
+                <span className='text-[20px] font-black tracking-[0.22em] uppercase'>Live Now</span>
               </div>
             </div>
 
-            <div className='absolute right-8 bottom-8 left-8 flex justify-between items-end gap-8'>
-              <div className='max-w-[72%]'>
-                <div className='inline-flex items-center gap-3 text-[22px] font-semibold text-white drop-shadow-[0_8px_18px_rgba(0,0,0,0.28)]'>
-                  <Radio size={20} />
-                  <span>{data.liveinf}</span>
+            <div className='absolute bottom-8 left-8 right-8 flex items-end justify-between gap-8 text-white drop-shadow-[0_12px_28px_rgba(0,0,0,0.28)]'>
+              <div className='min-w-0 max-w-[72%]'>
+                <div
+                  className='whitespace-normal font-black leading-[1.12] tracking-[-0.03em] select-text'
+                  style={{ fontSize: `${coverInfoFontSize}px` }}
+                >
+                  {data.liveinf}
                 </div>
               </div>
-              <div className='flex gap-3 items-center text-[24px] font-mono font-black whitespace-nowrap text-white'>
-                <Clock size={22} />
-                <span>{liveSignalTime}</span>
+              <div
+                className='shrink-0 whitespace-nowrap font-mono font-black tracking-[-0.02em] text-white select-text'
+                style={{ fontSize: `${metaValueFontSize}px` }}
+              >
+                {liveSignalTime}
               </div>
             </div>
           </div>
         )}
 
-        <div className='mb-14'>
-          <CommentText
-            className='font-black leading-[1.04] tracking-[-0.045em] whitespace-pre-wrap text-foreground select-text'
-            content={data.text}
-            style={{
-              color: deepColor,
-              fontSize: `${liveTitleFontSize}px`,
-              wordBreak: 'break-word',
-              overflowWrap: 'break-word'
-            }}
-          />
-        </div>
-
-        <div className='grid grid-cols-12 gap-10 items-end'>
-          <div className='col-span-8 self-start flex flex-col gap-7'>
-            <div className='flex flex-col gap-7'>
-              <MetaLabel
-                englishLabel='Room Signal'
-                chineseLabel='直播间信息'
-                accent={<Radio size={20} style={{ color: primaryColor }} />}
-                value={
-                  <div className='font-bold leading-none'>
-                    {data.liveinf}
-                  </div>
-                }
-                valueClassName='tracking-[-0.04em] whitespace-normal leading-[1.08]'
-                valueStyle={{ fontSize: `${roomSignalFontSize}px` }}
-              />
-
-              <MetaLabel
-                englishLabel='Followers'
-                chineseLabel='粉丝规模'
-                accent={<Users size={20} style={{ color: accentColor }} />}
-                value={
-                  <div className='font-medium leading-none'>
-                    {data.fans} 粉丝
-                  </div>
-                }
-                valueClassName='tracking-[-0.035em]'
-                valueStyle={{ fontSize: `${followerFontSize}px` }}
-              />
-
-              <MetaLabel
-                englishLabel='Start Time'
-                chineseLabel='开播时间'
-                accent={<Clock size={20} style={{ color: primaryColor }} />}
-                value={
-                  <div className='font-medium leading-none'>
-                    {data.create_time}
-                  </div>
-                }
-                valueClassName='tracking-[-0.03em]'
-                valueStyle={{ fontSize: `${startTimeFontSize}px` }}
-              />
-            </div>
-          </div>
-
-          <div className='col-span-4 flex flex-col items-end gap-4'>
-            <AccentLabel
-              english='Scan To Watch'
-              chinese='扫码观看'
-              icon={<ScanLine size={20} style={{ color: primaryColor }} />}
-              align='right'
-              style={{ color: mutedColor }}
-              englishClassName='text-[22px]'
-              chineseClassName='text-[18px]'
+        <div className='grid grid-cols-12 gap-10 items-start'>
+          <div className='col-span-7'>
+            <CommentText
+              className='font-black leading-normal tracking-[-0.045em] whitespace-pre-wrap text-foreground select-text'
+              content={data.text}
+              style={{
+                color: deepColor,
+                fontSize: `${liveTitleFontSize}px`,
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word'
+              }}
             />
 
-            {qrCodeDataUrl
-              ? (
-                <img
-                  src={qrCodeDataUrl}
-                  alt='二维码'
-                  className='w-86 h-86 object-contain'
-                />
-              )
-              : (
-                <div className='flex justify-center items-center w-86 h-86'>
-                  <span className='text-muted'>二维码</span>
-                </div>
-              )}
-
-            <AccentLabel
-              english='Dynamic Share Link'
-              chinese='动态分享链接'
-              align='right'
-              style={{ color: mutedColor }}
-              englishClassName='text-[20px]'
-              chineseClassName='text-[17px]'
-            />
-          </div>
-        </div>
-
-        <div className='mt-auto pt-18 flex justify-between items-end gap-8'>
-          <div className='flex flex-col gap-4'>
-            <AccentLabel
-              english='Broadcast Note'
-              chinese='开播播报'
-              style={{ color: mutedColor }}
-              englishClassName='text-[22px]'
-              chineseClassName='text-[18px]'
-            />
             <div
-              className='font-black leading-[1.02] tracking-[-0.035em] text-foreground select-text'
-              style={{ fontSize: `${footerBroadcastFontSize}px`, color: deepColor }}
+              className='mt-12 font-black leading-[1.08] tracking-[-0.02em] select-text'
+              style={{ fontSize: `${broadcastFontSize}px`, color: withAlphaFromCss(deepColor, 0.72) }}
             >
               <InlineHtmlText content={data.username} />
               <span> 开播了</span>
             </div>
+
+            <img
+              src={logo}
+              alt='哔哩哔哩'
+              className={`mt-14 h-auto ${isDark ? 'w-78' : 'w-118'}`}
+            />
           </div>
 
-          <div className='max-w-[38%] text-right'>
-            <div className='mb-3'>
-              <AccentLabel
-                english='Live Signal'
-                chinese='直播状态'
-                align='right'
-                style={{ color: mutedColor }}
-                englishClassName='text-[22px]'
-                chineseClassName='text-[18px]'
-              />
+          <div className='col-span-5 flex flex-col items-end text-right'>
+            <div className='text-[20px] font-black tracking-[0.22em] uppercase' style={{ color: mutedColor }}>
+              Scan To Watch
             </div>
-            <div
-              className='whitespace-nowrap font-bold text-foreground select-text'
-              style={{ fontSize: `${footerStatusFontSize}px`, color: deepColor }}
-            >
-              正在直播 · {data.dynamicTYPE}
+            <div className='mt-4 text-[54px] font-black tracking-[-0.04em] leading-[1.02]' style={{ color: deepColor }}>
+              扫码观看
+            </div>
+            <div className='mt-3 text-[24px] font-semibold leading-[1.4]' style={{ color: mutedColor }}>
+              长按识别二维码，直接进入直播间。
+            </div>
+
+            <div className='relative mt-8 flex flex-1 items-center justify-end'>
+              <div
+                className='absolute right-10 top-1/2 h-80 w-80 -translate-y-1/2 rounded-full blur-[84px]'
+                style={{ backgroundColor: withAlphaFromCss(primaryColor, isDark ? 0.18 : 0.12) }}
+              />
+              <div
+                className='absolute right-22 top-1/2 h-52 w-52 -translate-y-1/2 rounded-full blur-[48px]'
+                style={{ backgroundColor: withAlphaFromCss(accentColor, isDark ? 0.16 : 0.10) }}
+              />
+              {qrCodeDataUrl
+                ? (
+                  <img
+                    src={qrCodeDataUrl}
+                    alt='二维码'
+                    className='relative h-100 w-100 object-contain drop-shadow-[0_20px_38px_rgba(0,0,0,0.18)]'
+                  />
+                )
+                : (
+                  <div className='relative flex h-100 w-100 items-center justify-center'>
+                    <span className='text-[28px]' style={{ color: mutedColor }}>二维码</span>
+                  </div>
+                )}
             </div>
           </div>
         </div>
