@@ -1177,7 +1177,11 @@ export const replacetext = (text: string, rich_text_nodes: any[]) => {
       case 'RICH_TEXT_NODE_TYPE_EMOJI': {
         const regex = new RegExp(tag.orig_text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')
         const emojiUrl = tag.emoji.gif_url || tag.emoji.icon_url
-        text = text.replace(regex, `<img src='${emojiUrl}' style='height: 160px; margin: 0 0 -10px 0;'>`)
+        if (tag.emoji.size === 2) {
+          text = text.replace(regex, `<img src='${emojiUrl}' style='height: 160px; margin: 0 0 -10px 0;'>`)
+        } else {
+          text = text.replace(regex, `<img src='${emojiUrl}' style='height: 80px; margin: 0 0 -5px 0;'>`)
+        }
         break
       }
       case 'RICH_TEXT_NODE_TYPE_VOTE': {
