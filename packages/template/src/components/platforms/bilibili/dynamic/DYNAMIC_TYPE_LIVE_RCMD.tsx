@@ -191,8 +191,10 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
         <div
           className='absolute w-175 h-100'
           style={{
-            left: '100px',
-            top: '1600px'
+            left: '56px',
+            bottom: '18px',
+            transform: 'scale(0.82)',
+            transformOrigin: 'left bottom'
           }}
         >
           <div
@@ -421,35 +423,61 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
           </div>
         )}
 
-        <div className='grid grid-cols-12 gap-10 items-start'>
-          <div className='col-span-7'>
-            <CommentText
-              className='font-black leading-normal tracking-[-0.045em] whitespace-pre-wrap text-foreground select-text'
-              content={data.text}
-              style={{
-                color: deepColor,
-                fontSize: `${liveTitleFontSize}px`,
-                wordBreak: 'break-word',
-                overflowWrap: 'break-word'
-              }}
-            />
+        <div className='mb-12'>
+          <CommentText
+            className='font-black leading-normal tracking-[-0.045em] whitespace-pre-wrap text-foreground select-text'
+            content={data.text}
+            style={{
+              color: deepColor,
+              fontSize: `${liveTitleFontSize}px`,
+              wordBreak: 'break-word',
+              overflowWrap: 'break-word'
+            }}
+          />
+        </div>
 
+        <div className='mt-6 grid min-h-115 grid-cols-12 gap-10 items-end'>
+          <div className='col-span-7 self-start pb-18'>
             <div
-              className='mt-12 font-black leading-[1.08] tracking-[-0.02em] select-text'
+              className='font-black leading-[1.08] tracking-[-0.02em] select-text'
               style={{ fontSize: `${broadcastFontSize}px`, color: withAlphaFromCss(deepColor, 0.72) }}
             >
               <InlineHtmlText content={data.username} />
               <span> 开播了</span>
             </div>
 
+            <div
+              className='mt-6 inline-flex items-center gap-4 text-[20px] font-black tracking-[0.24em] uppercase'
+              style={{ color: mutedColor }}
+            >
+              <span className='h-2.5 w-2.5 rounded-full' style={{ backgroundColor: accentColor }} />
+              <span>Bilibili Live</span>
+            </div>
+
+            <div
+              className='mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[24px] font-semibold leading-[1.35]'
+              style={{ color: withAlphaFromCss(deepColor, 0.76) }}
+            >
+              <span>{data.dynamicTYPE}</span>
+              <span style={{ color: withAlphaFromCss(deepColor, 0.24) }}>/</span>
+              <span className='font-mono'>{liveSignalTime}</span>
+            </div>
+
             <img
               src={logo}
               alt='哔哩哔哩'
-              className={`mt-14 h-auto ${isDark ? 'w-78' : 'w-118'}`}
+              className={`mt-18 h-auto ${isDark ? 'w-72' : 'w-108'}`}
             />
+
+            <div
+              className='mt-5 text-[22px] font-bold tracking-[0.08em] select-text'
+              style={{ color: mutedColor }}
+            >
+              你感兴趣的直播都在哔哩哔哩
+            </div>
           </div>
 
-          <div className='col-span-5 flex flex-col items-end text-right'>
+          <div className='col-span-5 flex flex-col items-end self-start pt-2 text-right'>
             <div className='text-[20px] font-black tracking-[0.22em] uppercase' style={{ color: mutedColor }}>
               Scan To Watch
             </div>
