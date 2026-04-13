@@ -1246,7 +1246,8 @@ interface BilibiliUserListProps extends BaseComponentProps {
       fans: string; /** 获赞总数 */
       total_favorited: string; /** 关注数 */
       following_count: string; /** 全局推送开关状态 */
-      switch: boolean;
+      switch: boolean; /** 推送类型列表 */
+      pushTypes?: ('video' | 'draw' | 'word' | 'live' | 'forward' | 'article')[];
     }[];
   };
 }
