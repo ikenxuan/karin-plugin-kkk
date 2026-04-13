@@ -2,6 +2,26 @@
 
 # Changelog
 
+## [2.28.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.28.0...v2.28.1) (2026-04-13)
+
+
+### 🐛 错误修复
+
+* **bilibili:** 动态正文中up专属表情和普通表情一样大小的问题 ([428fe15](https://github.com/ikenxuan/karin-plugin-kkk/commit/428fe15bf7627206ea4f5725e0175e3c23b70963))
+* 兼容性提高 ([a3925f7](https://github.com/ikenxuan/karin-plugin-kkk/commit/a3925f7b75694a95b31f079f77b2a3851de9e581))
+
+
+### 💄 UI 优化
+
+* 开发面板组件库迁移到 heroui v3; 重写直播推送卡片样式 ([#294](https://github.com/ikenxuan/karin-plugin-kkk/issues/294)) ([696e77e](https://github.com/ikenxuan/karin-plugin-kkk/commit/696e77e09b72362b1ab1a675dadd1c5bfd194116))
+* 推送列表显示各UP主开启的推送类型 ([5be00e6](https://github.com/ikenxuan/karin-plugin-kkk/commit/5be00e6769036847abe69865e7703403c71817c6))
+* 背景色太深了 ([f6b45fd](https://github.com/ikenxuan/karin-plugin-kkk/commit/f6b45fd6b2e2f5aae218e845ebcd5d5497027f79))
+
+
+### 💯 细节优化
+
+* 细优 ([99df9c8](https://github.com/ikenxuan/karin-plugin-kkk/commit/99df9c837493f9c398eaa7c5800d586e601770fc))
+
 ## [2.28.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.27.7...v2.28.0) (2026-04-07)
 
 
