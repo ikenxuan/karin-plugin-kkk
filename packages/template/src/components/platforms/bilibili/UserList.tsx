@@ -1,19 +1,39 @@
 import React from 'react'
+import type { IconType } from 'react-icons'
 import {
+  RiArticleLine,
+  RiFileTextLine,
   RiGroupLine,
   RiHashtag,
   RiHeart3Line,
-  RiUserFollowLine
+  RiImageLine,
+  RiLiveLine,
+  RiShareForwardLine,
+  RiUserFollowLine,
+  RiVideoLine
 } from 'react-icons/ri'
 
 import type { BilibiliUserListProps } from '../../../types/platforms/bilibili/userlist'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 import { EnhancedImage } from './shared'
 
+type BilibiliPushType = NonNullable<BilibiliUserListProps['data']['renderOpt'][number]['pushTypes']>[number]
+
+const pushTypeConfig: Record<BilibiliPushType, { label: string, color: string, icon: IconType }> = {
+  video: { label: '投稿视频', color: 'bg-accent/8 text-accent border-accent/25', icon: RiVideoLine },
+  draw: { label: '图文动态', color: 'bg-[#23ade5]/10 text-[#23ade5] border-[#23ade5]/25', icon: RiImageLine },
+  word: { label: '纯文动态', color: 'bg-warning/10 text-warning border-warning/25', icon: RiFileTextLine },
+  live: { label: '直播动态', color: 'bg-success/10 text-success border-success/25', icon: RiLiveLine },
+  forward: { label: '转发动态', color: 'bg-[#f97316]/10 text-[#f97316] border-[#f97316]/25', icon: RiShareForwardLine },
+  article: { label: '投稿专栏', color: 'bg-[#7c3aed]/10 text-[#7c3aed] border-[#7c3aed]/25', icon: RiArticleLine }
+}
+
 /**
  * B站用户项组件 - 工业风卡片设计 (V5: 语义化主题色重构)
  */
 const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][number]> = (props) => {
+  const activePushTypes = new Set<BilibiliPushType>(props.pushTypes ?? (Object.keys(pushTypeConfig) as BilibiliPushType[]))
+
   return (
     <li className='relative group overflow-hidden rounded-4xl bg-surface/60 border border-border/50 backdrop-blur-xl shadow-xl'>
       {/* 渐进式模糊背景 - Progressive Blur Background */}
@@ -46,76 +66,98 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
       </div>
 
       {/* 内容区域 */}
-      <div className="relative z-10 p-8 flex items-center gap-8">
-        {/* 左侧：头像与状态 */}
-        <div className="relative shrink-0">
-          {/* 头像容器 - 纯净玻璃态 */}
-          <div className="w-28 h-28 rounded-full p-1 bg-surface/20 backdrop-blur-md border border-border/30 shadow-lg">
-            <EnhancedImage
-              src={props.avatar_img}
-              alt="Avatar"
-              className="w-full h-full rounded-full object-cover"
-            />
-          </div>
-          
-          {/* 状态徽章 - 扁平化/微立体 */}
-          <div 
-            className={`absolute -bottom-1 -right-1 px-3 py-1 rounded-full border-2 border-background flex items-center gap-1.5 shadow-md ${
-              props.switch 
-                ? 'bg-success text-white' 
+      <div className="relative z-10 p-5 flex flex-col gap-4">
+        <div className="flex items-center gap-4">
+          {/* 左侧：头像与状态 */}
+          <div className="relative shrink-0">
+            {/* 头像容器 - 纯净玻璃态 */}
+            <div className="w-20 h-20 rounded-full p-1 bg-surface/20 backdrop-blur-md border border-border/30 shadow-lg">
+              <EnhancedImage
+                src={props.avatar_img}
+                alt="Avatar"
+                className="w-full h-full rounded-full object-cover"
+              />
+            </div>
+
+            {/* 状态徽章 - 扁平化/微立体 */}
+            <div
+              className={`absolute -bottom-1 -right-1 px-2.5 py-1 rounded-full border-2 border-background flex items-center gap-1.5 shadow-md ${props.switch
+                ? 'bg-success text-white'
                 : 'bg-danger text-danger-foreground'
-            }`}
-          >
-            <div className={`w-1.5 h-1.5 rounded-full ${props.switch ? 'bg-white' : 'bg-border'}`} />
-            <span className="text-[10px] font-bold uppercase tracking-wider leading-none">
-              {props.switch ? 'ON' : 'OFF'}
-            </span>
+              }`}
+            >
+              <div className={`w-1.5 h-1.5 rounded-full ${props.switch ? 'bg-white' : 'bg-border'}`} />
+              <span className="text-[10px] font-bold uppercase tracking-wider leading-none">
+                {props.switch ? 'ON' : 'OFF'}
+              </span>
+            </div>
+          </div>
+
+          {/* 右侧：信息主体 */}
+          <div className="flex-1 min-w-0">
+            {/* 名字 */}
+            <div>
+              <h3 className="text-[1.75rem] font-black tracking-tight text-foreground truncate drop-shadow-sm leading-none">
+                {props.username}
+              </h3>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="px-2 py-0.5 rounded-md bg-surface border border-border text-xs font-mono font-bold text-muted flex items-center gap-1">
+                  <RiHashtag className="w-3 h-3 opacity-70" />
+                  {props.host_mid}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* 右侧：信息主体 */}
-        <div className="flex-1 min-w-0">
-          {/* 名字 */}
-          <div className="mb-5">
-            <h3 className="text-3xl font-black tracking-tight text-foreground truncate drop-shadow-sm">
-              {props.username}
-            </h3>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="px-2 py-0.5 rounded-md bg-surface border border-border text-xs font-mono font-bold text-muted flex items-center gap-1">
-                <RiHashtag className="w-3 h-3 opacity-70" />
-                {props.host_mid}
-              </span>
-            </div>
+        <div className="grid grid-cols-[minmax(0,1.15fr)_minmax(0,0.95fr)] gap-3 items-stretch min-h-[156px]">
+          <div className="grid grid-cols-3 gap-2 auto-rows-fr h-full">
+            {(Object.entries(pushTypeConfig) as [BilibiliPushType, typeof pushTypeConfig[BilibiliPushType]][]).map(([type, config]) => {
+              const isActive = activePushTypes.has(type)
+              const Icon = config.icon
+
+              return (
+                <div
+                  key={type}
+                  className={`h-full min-h-[74px] px-2.5 py-2.5 rounded-xl border backdrop-blur-sm flex flex-col justify-between transition-colors duration-200 ${isActive
+                    ? config.color
+                    : 'bg-surface/45 text-muted border-border/15'
+                  }`}
+                >
+                  <Icon className={`w-4.5 h-4.5 ${isActive ? '' : 'opacity-50'}`} />
+                  <span className="text-[13px] font-bold tracking-wide leading-tight">
+                    {config.label}
+                  </span>
+                </div>
+              )
+            })}
           </div>
 
-          {/* 数据栏 */}
-          <div className="flex items-center gap-3 w-full">
-            {/* 粉丝 */}
-            <div className="flex-1 flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-surface-secondary/40 border border-border/40 backdrop-blur-sm">
-              <RiGroupLine className="w-5 h-5 mb-1 text-muted" />
-              <span className="text-lg font-black font-mono bg-linear-to-b from-foreground to-muted bg-clip-text text-transparent leading-none">
-                {props.fans}
-              </span>
-              <span className="text-[10px] font-bold uppercase opacity-40 mt-1 text-foreground">Fans</span>
-            </div>
+          <div className="grid grid-rows-3 gap-2 h-full">
+            {[
+              { icon: RiGroupLine, value: props.fans, label: '粉丝' },
+              { icon: RiHeart3Line, value: props.total_favorited, label: '获赞' },
+              { icon: RiUserFollowLine, value: props.following_count, label: '关注' }
+            ].map((item, index) => {
+              const Icon = item.icon
 
-            {/* 获赞 */}
-            <div className="flex-1 flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-surface-secondary/40 border border-border/40 backdrop-blur-sm">
-              <RiHeart3Line className="w-5 h-5 mb-1 text-muted" />
-              <span className="text-lg font-black font-mono bg-linear-to-b from-foreground to-muted bg-clip-text text-transparent leading-none">
-                {props.total_favorited}
-              </span>
-              <span className="text-[10px] font-bold uppercase opacity-40 mt-1 text-foreground">Likes</span>
-            </div>
-
-            {/* 关注 */}
-            <div className="flex-1 flex flex-col items-center justify-center py-2 px-3 rounded-2xl bg-surface-secondary/40 border border-border/40 backdrop-blur-sm">
-              <RiUserFollowLine className="w-5 h-5 mb-1 text-muted" />
-              <span className="text-lg font-black font-mono bg-linear-to-b from-foreground to-muted bg-clip-text text-transparent leading-none">
-                {props.following_count}
-              </span>
-              <span className="text-[10px] font-bold uppercase opacity-40 mt-1 text-foreground">Follow</span>
-            </div>
+              return (
+                <div
+                  key={index}
+                  className="h-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-surface-secondary/35 border border-border/35 backdrop-blur-sm"
+                >
+                  <Icon className="w-4.5 h-4.5 text-muted shrink-0" />
+                  <div className="flex items-baseline gap-2 flex-1 min-w-0">
+                    <span className="text-[15px] font-bold font-mono text-foreground truncate">
+                      {item.value}
+                    </span>
+                    <span className="text-xs text-muted font-medium shrink-0">
+                      {item.label}
+                    </span>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
@@ -128,16 +170,16 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
  */
 const BilibiliUserList: React.FC<BilibiliUserListProps> = (props) => {
   const isDark = props.data.useDarkTheme !== false
-  
+
   // 极简配色：主色(B站蓝) + 邻色(浅蓝/紫)
-  const primaryColor = isDark ? '#23ade5' : '#00a1d6' 
+  const primaryColor = isDark ? '#23ade5' : '#00a1d6'
   const secondaryColor = isDark ? '#4f46e5' : '#60a5fa' // Indigo/Blue
 
   return (
     <DefaultLayout
       {...props}
       className="relative overflow-hidden bg-background"
-      style={{ 
+      style={{
         width: '1440px',
         minHeight: '100vh'
       }}
@@ -189,7 +231,7 @@ const BilibiliUserList: React.FC<BilibiliUserListProps> = (props) => {
 
       {/* 主要内容区域 */}
       <div className="relative z-10 px-24 py-20 flex flex-col min-h-screen">
-        
+
         {/* 极简头部 */}
         <div className="flex justify-between items-end mb-16">
           <div>

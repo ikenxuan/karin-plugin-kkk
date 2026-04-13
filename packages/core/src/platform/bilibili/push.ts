@@ -1165,6 +1165,7 @@ export class Bilibilipush extends Base {
       // 查找配置文件中对应的全局开关状态
       const configItem = Config.pushlist.bilibili?.find((item: bilibiliPushItem) => item.host_mid === host_mid)
       const switchStatus = configItem?.switch !== false // 默认为 true
+      const pushTypes = configItem?.pushTypes || allBilibiliPushTypes
 
       renderOpt.push({
         avatar_img: userInfo.data.data.card.face,
@@ -1173,7 +1174,8 @@ export class Bilibilipush extends Base {
         fans: Count(userInfo.data.data.follower),
         total_favorited: Count(userInfo.data.data.like_num),
         following_count: Count(userInfo.data.data.card.attention),
-        switch: switchStatus
+        switch: switchStatus,
+        pushTypes
       })
     }
 
