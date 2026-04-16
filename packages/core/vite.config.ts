@@ -103,6 +103,7 @@ export default defineConfig({
     conditions: ['node'],
     alias: {
       '@': resolve(__dirname, './src'),
+      axios: 'node-karin/axios',
       template: resolve(__dirname, '../template/src/client.ts'),
       '@ikenxuan/amagi': resolve(__dirname, '../amagi/packages/core/src/index.ts'),
       amagi: resolve(__dirname, '../amagi/packages/core/src')

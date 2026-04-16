@@ -13,6 +13,10 @@ import checker from 'vite-plugin-checker'
 import { mockApiPlugin } from './src/dev/vite-mock-plugin'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
+const nodeKarinDistDir = resolve(__dirname, '../../node_modules/node-karin/dist/module')
+const nodeKarinDevAliases = {
+  'node-karin/lodash': resolve(nodeKarinDistDir, 'lodash.mjs')
+}
 
 /**
  * 递归复制目录
@@ -95,6 +99,12 @@ export default defineConfig(({ command }) => {
   if (command === 'serve') {
     return {
       ...baseConfig,
+      resolve: {
+        alias: {
+          ...baseConfig.resolve.alias,
+          ...nodeKarinDevAliases
+        }
+      },
       plugins: [
         ...baseConfig.plugins,
         DevTools(),

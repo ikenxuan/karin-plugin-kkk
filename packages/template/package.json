@@ -38,17 +38,16 @@
     "@icons-pack/react-simple-icons": "^13.13.0",
     "@monaco-editor/react": "^4.7.0",
     "@pansy/watermark": "^2.3.0",
-    "@zumer/snapdom": "^2.7.0",
-    "axios": "1.14.0",
+    "@zumer/snapdom": "^2.8.0",
+    "axios": "1.15.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "gsap": "^3.14.2",
+    "gsap": "^3.15.0",
     "highlight.js": "^11.11.1",
-    "lodash": "^4.17.23",
     "react-icons": "^5.6.0",
     "react-markdown": "^10.1.0",
-    "react-resizable-panels": "^4.8.0",
-    "react-zoom-pan-pinch": "^3.7.0",
+    "react-resizable-panels": "^4.10.0",
+    "react-zoom-pan-pinch": "^4.0.3",
     "rehype-highlight": "^7.0.2",
     "victory": "^37.3.6"
   },
@@ -59,12 +58,12 @@
     "@types/lodash": "^4.17.24",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
-    "code-inspector-plugin": "^1.4.5",
+    "code-inspector-plugin": "^1.5.1",
     "concurrently": "^9.2.1",
     "cross-env": "10.1.0",
-    "jsdom": "^29.0.1",
+    "jsdom": "^29.0.2",
     "qr-code-styling": "^1.9.2",
     "react-scan": "^0.5.3",
-    "vite-plugin-checker": "^0.12.0"
+    "vite-plugin-checker": "^0.13.0"
   }
 }
