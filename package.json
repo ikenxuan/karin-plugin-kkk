@@ -43,8 +43,8 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
-    "@ikenxuan/watermark": "^1.0.6",
-    "fingerprint-injector": "^2.1.81"
+    "@ikenxuan/watermark": "^1.0.11",
+    "fingerprint-injector": "^2.1.82"
   },
   "peerDependencies": {
     "@snapka/puppeteer": ">=0.1.5 <0.3.0",
@@ -77,5 +77,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-04-13T21:30:31.770Z"
+  "timestamp": "2026-04-16T12:41:41.486Z"
 }
