@@ -1,3 +1,6 @@
+import { renderRichTextToReact } from '@kkk/richtext'
+import { differenceInSeconds, format, formatDistanceToNow } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
 import { Heart, MessageCircle, QrCode } from 'lucide-react'
 import React from 'react'
 
@@ -8,6 +11,47 @@ import type {
   XiaohongshuQRCodeSectionProps
 } from '../../../types/platforms/xiaohongshu'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
+
+const xiaohongshuMentionClassName = 'text-[#13386c] dark:text-[#c7daef]'
+
+const renderXiaohongshuCommentRichText = (
+  content: XiaohongshuCommentItemComponentProps['comment']['content']
+) => {
+  return renderRichTextToReact(content, {
+    mentionClassName: xiaohongshuMentionClassName
+  })
+}
+
+const formatXiaohongshuCommentTime = (timestamp: number): string => {
+  if (!timestamp) {
+    return ''
+  }
+
+  const commentDate = new Date(timestamp)
+  const diffSeconds = differenceInSeconds(new Date(), commentDate)
+
+  if (diffSeconds < 30) {
+    return '刚刚'
+  }
+
+  if (diffSeconds < 7776000) {
+    return formatDistanceToNow(commentDate, {
+      locale: zhCN,
+      addSuffix: true
+    })
+  }
+
+  return format(commentDate, 'yyyy-MM-dd')
+}
+
+const formatXiaohongshuLikeCount = (count: string): string => {
+  const numberCount = Number(count)
+  if (Number.isFinite(numberCount) && numberCount >= 10000) {
+    return `${(numberCount / 10000).toFixed(1)}w`
+  }
+
+  return count || '0'
+}
 
 /**
  * 二维码区域组件
@@ -133,13 +177,14 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
 
         {/* 评论文本 */}
         <div
-          className='text-[60px] text-foreground leading-relaxed mb-2 whitespace-pre-wrap select-text [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em] [&_span]:inline'
-          dangerouslySetInnerHTML={{ __html: comment.content }}
+          className='text-[60px] text-foreground leading-relaxed mb-2 whitespace-pre-wrap select-text'
           style={{
             wordBreak: 'break-word',
             overflowWrap: 'break-word'
           }}
-        />
+        >
+          {renderXiaohongshuCommentRichText(comment.content)}
+        </div>
 
         {/* 评论图片 */}
         {comment.pictures && comment.pictures.length > 0 && (
@@ -155,7 +200,7 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
         {/* 底部信息和操作区域 */}
         <div className='flex justify-between items-center mt-6 text-muted'>
           <div className='flex items-center space-x-6 select-text'>
-            <span className='text-[45px]'>{comment.create_time}</span>
+            <span className='text-[45px]'>{formatXiaohongshuCommentTime(comment.create_time)}</span>
             <span className='text-[45px]'>{comment.ip_location}</span>
             {parseInt(comment.sub_comment_count) > 0
               ? (
@@ -172,7 +217,7 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
             {/* 点赞按钮 */}
             <div className='flex items-center space-x-2 transition-colors cursor-pointer'>
               <Heart size={60} className={comment.liked ? 'text-red-500 fill-current' : 'text-muted'} />
-              <span className='text-[50px] select-text'>{comment.like_count}</span>
+              <span className='text-[50px] select-text'>{formatXiaohongshuLikeCount(comment.like_count)}</span>
             </div>
 
             {/* 回复按钮 */}
@@ -205,21 +250,24 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
                       ))}
                     </div>
                     <div
-                      className='text-[45px] text-foreground leading-relaxed mb-2 select-text [&_img]:mb-2 [&_img]:inline [&_img]:h-[1.2em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.5em] [&_span]:inline'
-                      dangerouslySetInnerHTML={{ __html: subComment.content }}
+                      className='text-[45px] text-foreground leading-relaxed mb-2 whitespace-pre-wrap select-text'
                       style={{
                         wordBreak: 'break-word',
                         overflowWrap: 'break-word'
                       }}
-                    />
+                    >
+                      {renderRichTextToReact(subComment.content, {
+                        mentionClassName: xiaohongshuMentionClassName
+                      })}
+                    </div>
                     <div className='flex justify-between items-center text-muted'>
                       <div className='flex items-center space-x-4'>
-                        <span className='text-[35px]'>{subComment.create_time}</span>
+                        <span className='text-[35px]'>{formatXiaohongshuCommentTime(subComment.create_time)}</span>
                         <span className='text-[35px]'>{subComment.ip_location}</span>
                       </div>
                       <div className='flex items-center space-x-2'>
                         <Heart size={40} className={subComment.liked ? 'text-red-500 fill-current' : 'text-muted'} />
-                        <span className='text-[35px]'>{subComment.like_count}</span>
+                        <span className='text-[35px]'>{formatXiaohongshuLikeCount(subComment.like_count)}</span>
                       </div>
                     </div>
                   </div>

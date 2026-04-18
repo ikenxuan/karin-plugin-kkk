@@ -89,9 +89,10 @@ export default defineConfig(({ command }) => {
       tailwindcss()
     ],
     resolve: {
-      alias: {
-        '@': resolve(__dirname, './src')
-      }
+      alias: [
+        { find: '@kkk/richtext', replacement: resolve(__dirname, '../richtext/src/index.ts') },
+        { find: '@', replacement: resolve(__dirname, './src') }
+      ]
     }
   }
 

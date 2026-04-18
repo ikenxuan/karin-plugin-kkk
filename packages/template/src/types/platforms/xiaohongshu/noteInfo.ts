@@ -1,3 +1,5 @@
+import type { RichTextDocument } from '@kkk/richtext'
+
 import type { BaseComponentProps } from '../../index'
 
 /**
@@ -43,7 +45,7 @@ export interface XiaohongshuNoteInfoData {
   /** 笔记标题 */
   title: string
   /** 笔记描述 */
-  desc: string
+  desc: RichTextDocument
   /** 统计信息 */
   statistics: XiaohongshuNoteStatistics
   /** 笔记ID */

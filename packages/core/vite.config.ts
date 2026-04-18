@@ -101,13 +101,14 @@ export default defineConfig({
   },
   resolve: {
     conditions: ['node'],
-    alias: {
-      '@': resolve(__dirname, './src'),
-      axios: 'node-karin/axios',
-      template: resolve(__dirname, '../template/src/client.ts'),
-      '@ikenxuan/amagi': resolve(__dirname, '../amagi/packages/core/src/index.ts'),
-      amagi: resolve(__dirname, '../amagi/packages/core/src')
-    }
+    alias: [
+      { find: '@kkk/richtext', replacement: resolve(__dirname, '../richtext/src/index.ts') },
+      { find: '@', replacement: resolve(__dirname, './src') },
+      { find: 'axios', replacement: 'node-karin/axios' },
+      { find: 'template', replacement: resolve(__dirname, '../template/src/client.ts') },
+      { find: '@ikenxuan/amagi', replacement: resolve(__dirname, '../amagi/packages/core/src/index.ts') },
+      { find: 'amagi', replacement: resolve(__dirname, '../amagi/packages/core/src') }
+    ]
   },
   plugins: [
     terser({

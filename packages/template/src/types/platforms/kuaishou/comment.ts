@@ -1,3 +1,5 @@
+import type { RichTextDocument } from '@kkk/richtext'
+
 import type { BaseComponentProps } from '../../index'
 
 /**
@@ -23,9 +25,7 @@ export interface KuaishouCommentProps extends BaseComponentProps {
     /** 分享链接 */
     share_url: string
     /** 评论数据 */
-    CommentsData: {
-      jsonArray: KuaishouCommentItem[]
-    }
+    CommentsData: KuaishouCommentItem[]
   }
   /** 预生成的二维码数据URL */
   qrCodeDataUrl: string
@@ -44,11 +44,11 @@ export interface KuaishouCommentItem {
   /** 用户头像URL */
   userimageurl: string
   /** 评论内容 */
-  text: string
+  text: RichTextDocument
   /** 点赞数 */
-  digg_count: number | string
-  /** 创建时间 */
-  create_time: string
+  digg_count: number
+  /** 创建时间戳（毫秒） */
+  create_time: number
   /** 评论图片 */
   commentimage?: string
   /** 贴纸 */

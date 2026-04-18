@@ -1,0 +1,89 @@
+import type {
+  RichTextDocument,
+  RichTextEmojiNode,
+  RichTextLineBreakNode,
+  RichTextMentionNode,
+  RichTextNode,
+  RichTextSearchKeywordNode,
+  RichTextTextNode
+} from '../types'
+
+/** 创建普通文本节点。 */
+export const createTextNode = (text: string): RichTextTextNode => ({
+  type: 'text',
+  text
+})
+
+/** 创建行内表情节点。 */
+export const createEmojiNode = (
+  name: string,
+  src: string,
+  options: {
+    scale?: number
+  } = {}
+): RichTextEmojiNode => ({
+  type: 'emoji',
+  name,
+  src,
+  scale: options.scale
+})
+
+/** 创建 @ 用户节点。 */
+export const createMentionNode = (text: string, userId?: string): RichTextMentionNode => ({
+  type: 'mention',
+  text,
+  userId
+})
+
+/** 创建搜索词高亮节点。 */
+export const createSearchKeywordNode = (text: string, queryId?: string): RichTextSearchKeywordNode => ({
+  type: 'searchKeyword',
+  text,
+  queryId
+})
+
+/** 创建换行节点。 */
+export const createLineBreakNode = (): RichTextLineBreakNode => ({
+  type: 'lineBreak'
+})
+
+/**
+ * 合并相邻文本节点并丢弃空文本节点。
+ *
+ * 这样 core 可以按匹配过程简单 push 节点，最后统一整理，避免前端拿到碎片过多的数据。
+ */
+export const normalizeRichTextNodes = (nodes: RichTextNode[]): RichTextNode[] => {
+  const normalized: RichTextNode[] = []
+
+  for (const node of nodes) {
+    if (node.type === 'text') {
+      if (node.text.length === 0) {
+        continue
+      }
+
+      const previousNode = normalized[normalized.length - 1]
+      if (previousNode?.type === 'text') {
+        previousNode.text += node.text
+        continue
+      }
+    }
+
+    normalized.push(node)
+  }
+
+  return normalized
+}
+
+/**
+ * 创建富文本文档。
+ *
+ * 这里不会生成任何 HTML，只返回可序列化 JSON，适合作为 core 到 template 的数据边界。
+ */
+export const createRichTextDocument = (
+  nodes: RichTextNode[],
+  options: { platform?: string } = {}
+): RichTextDocument => ({
+  version: 1,
+  platform: options.platform,
+  nodes: normalizeRichTextNodes(nodes)
+})

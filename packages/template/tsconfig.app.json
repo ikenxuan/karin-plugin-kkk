@@ -4,6 +4,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@kkk/richtext": [
+        "../richtext"
       ]
     },
     "incremental": true,
@@ -26,7 +29,6 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "outDir": "./dist",
-    "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,
     /* Bundler mode */
@@ -40,5 +42,10 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/global.d.ts"
+  ],
+  "references": [
+    {
+      "path": "../richtext"
+    }
   ]
 }

@@ -1,3 +1,5 @@
+import type { RichTextDocument } from '@kkk/richtext'
+
 import type { BaseComponentProps } from '../../index'
 
 /**
@@ -43,17 +45,17 @@ export interface DouyinCommentProps extends BaseComponentProps {
       /** 状态标签 */
       status_label?: string
       /** 评论内容 */
-      text: string
+      text: RichTextDocument
       /** 评论图片 */
       commentimage?: string
       /** 贴纸 */
       sticker?: string
-      /** 创建时间 */
-      create_time: string
+      /** 创建时间戳（秒） */
+      create_time: number
       /** IP标签 */
       ip_label: string
       /** 点赞数 */
-      digg_count: number | string
+      digg_count: number
       /** 搜索文本 */
       search_text?: Array<{
         /** 搜索文本内容 */
@@ -79,16 +81,16 @@ export interface DouyinCommentProps extends BaseComponentProps {
  * 抖音子评论数据接口
  */
 export interface DouyinSubComment {
-  /** 创建时间 */
-  create_time: string
+  /** 创建时间戳（秒） */
+  create_time: number
   /** 用户昵称 */
   nickname: string
   /** 用户头像URL */
   userimageurl: string
   /** 评论内容 */
-  text: string
+  text: RichTextDocument
   /** 点赞数 */
-  digg_count: number | string
+  digg_count: number
   /** IP标签 */
   ip_label: string
   /** 文本额外信息 */

@@ -1,5 +1,8 @@
+import { renderRichTextToReact } from '@kkk/richtext'
+import { differenceInSeconds, format, formatDistanceToNow } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
 import { Heart, MessageCircle, QrCode } from 'lucide-react'
-import React, { useMemo } from 'react'
+import React from 'react'
 
 import type {
   KuaishouCommentItemComponentProps,
@@ -8,6 +11,44 @@ import type {
   KuaishouVideoInfoHeaderProps
 } from '../../../types/platforms/kuaishou'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
+
+const kuaishouMentionClassName = 'text-[#03488d] dark:text-[#c7daef]'
+
+const renderKuaishouCommentRichText = (content: KuaishouCommentItemComponentProps['comment']['text']) => {
+  return renderRichTextToReact(content, {
+    mentionClassName: kuaishouMentionClassName
+  })
+}
+
+const formatKuaishouCommentTime = (timestamp: number): string => {
+  if (!timestamp) {
+    return ''
+  }
+
+  const commentDate = new Date(timestamp)
+  const diffSeconds = differenceInSeconds(new Date(), commentDate)
+
+  if (diffSeconds < 30) {
+    return '刚刚'
+  }
+
+  if (diffSeconds < 7776000) {
+    return formatDistanceToNow(commentDate, {
+      locale: zhCN,
+      addSuffix: true
+    })
+  }
+
+  return format(commentDate, 'yyyy-MM-dd')
+}
+
+const formatKuaishouLikeCount = (count: number): string => {
+  if (count >= 10000) {
+    return `${(count / 10000).toFixed(1)}w`
+  }
+
+  return String(count)
+}
 
 /**
  * 快手二维码组件
@@ -111,31 +152,27 @@ const KuaishouVideoInfoHeader: React.FC<KuaishouVideoInfoHeaderProps> = ({
 const KuaishouCommentItemComponent: React.FC<KuaishouCommentItemComponentProps & { isLast?: boolean }> = ({ comment, isLast = false }) => {
   return (
     <div className={`flex px-10 pt-10 ${isLast ? 'pb-0' : 'pb-10'}`}>
-      {/* 用户头像 */}
       <img
         src={comment.userimageurl}
         className='mb-12.5 w-[187.5px] h-[187.5px] rounded-full mr-8 object-cover shadow-lg'
         alt='用户头像'
       />
 
-      {/* 评论内容 */}
       <div className='flex-1'>
-        {/* 用户信息 */}
         <div className='mb-12.5 text-[50px] text-foreground/70 relative flex items-center'>
           <span className='font-medium'>{comment.nickname}</span>
         </div>
 
-        {/* 评论文本 */}
         <div
-          className='text-[60px] text-foreground leading-relaxed mb-2 whitespace-pre-wrap [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em] select-text'
-          dangerouslySetInnerHTML={{ __html: comment.text }}
+          className='text-[60px] text-foreground leading-relaxed mb-2 whitespace-pre-wrap select-text'
           style={{
             wordBreak: 'break-word',
             overflowWrap: 'break-word'
           }}
-        />
+        >
+          {renderKuaishouCommentRichText(comment.text)}
+        </div>
 
-        {/* 评论图片 */}
         {(comment.commentimage || comment.sticker) && (
           <div className='flex my-5 overflow-hidden shadow-md rounded-2xl w-[95%] flex-1'>
             <img
@@ -146,10 +183,9 @@ const KuaishouCommentItemComponent: React.FC<KuaishouCommentItemComponentProps &
           </div>
         )}
 
-        {/* 底部信息和操作区域 */}
         <div className='flex justify-between items-center mt-6 text-muted'>
           <div className='flex items-center space-x-6'>
-            <span className='text-[45px] select-text'>{comment.create_time}</span>
+            <span className='text-[45px] select-text'>{formatKuaishouCommentTime(comment.create_time)}</span>
             {comment.ip_label && (
               <span className='text-[45px] select-text'>{comment.ip_label}</span>
             )}
@@ -165,13 +201,11 @@ const KuaishouCommentItemComponent: React.FC<KuaishouCommentItemComponentProps &
           </div>
 
           <div className='flex items-center space-x-6'>
-            {/* 点赞按钮 */}
             <div className='flex items-center space-x-2 transition-colors cursor-pointer hover:text-danger'>
               <Heart size={60} className='stroke-current' />
-              <span className='text-[50px] select-text'>{comment.digg_count}</span>
+              <span className='text-[50px] select-text'>{formatKuaishouLikeCount(comment.digg_count)}</span>
             </div>
 
-            {/* 回复按钮 */}
             <div className='flex items-center transition-colors cursor-pointer hover:text-accent'>
               <MessageCircle size={60} className='stroke-current' />
             </div>
@@ -188,65 +222,37 @@ const KuaishouCommentItemComponent: React.FC<KuaishouCommentItemComponentProps &
  * @returns JSX元素
  */
 export const KuaishouComment: React.FC<Omit<KuaishouCommentProps, 'templateType' | 'templateName'>> = React.memo((props) => {
-  const processedData = useMemo(() => {
-    if (!props.data) {
-      return {
-        commentsArray: [],
-        type: '未知',
-        commentLength: 0,
-        videoSize: undefined,
-        likeCount: undefined,
-        viewCount: undefined,
-        imageLength: undefined,
-        useDarkTheme: false
-      }
-    }
-
-    return {
-      commentsArray: Array.isArray(props.data.CommentsData) 
-        ? props.data.CommentsData 
-        : (props.data.CommentsData?.jsonArray || []),
-      type: props.data.Type || '未知',
-      commentLength: props.data.CommentLength || 0,
-      videoSize: props.data.VideoSize,
-      likeCount: props.data.likeCount,
-      viewCount: props.data.viewCount,
-      imageLength: props.data.ImageLength,
-      useDarkTheme: props.data.useDarkTheme || false
-    }
-  }, [props.data])
+  const commentsArray = Array.isArray(props.data?.CommentsData) ? props.data.CommentsData : []
 
   return (
     <DefaultLayout {...props}>
       <div className='p-5'>
-        {/* 视频信息头部 */}
         <div className='flex justify-between items-center max-w-300 mx-auto p-5'>
           <KuaishouVideoInfoHeader
-            type={processedData.type}
-            commentLength={processedData.commentLength}
-            videoSize={processedData.videoSize}
-            likeCount={processedData.likeCount}
-            viewCount={processedData.viewCount}
-            imageLength={processedData.imageLength}
-            useDarkTheme={processedData.useDarkTheme}
+            type={props.data?.Type || '视频'}
+            commentLength={props.data?.CommentLength || 0}
+            videoSize={props.data?.VideoSize}
+            likeCount={props.data?.likeCount}
+            viewCount={props.data?.viewCount}
+            imageLength={props.data?.ImageLength}
+            useDarkTheme={props.data?.useDarkTheme}
           />
           <KuaishouQRCodeSection
             qrCodeDataUrl={props.qrCodeDataUrl || ''}
-            type={processedData.type}
-            imageLength={processedData.imageLength}
-            useDarkTheme={processedData.useDarkTheme}
+            type={props.data?.Type || '视频'}
+            imageLength={props.data?.ImageLength}
+            useDarkTheme={props.data?.useDarkTheme}
           />
         </div>
 
-        {/* 评论列表 */}
         <div className='overflow-auto mx-auto max-w-full'>
-          {processedData.commentsArray.length > 0
+          {commentsArray.length > 0
             ? (
-              processedData.commentsArray.map((comment, index) => (
-                <KuaishouCommentItemComponent 
-                  key={index} 
-                  comment={comment} 
-                  isLast={index === processedData.commentsArray.length - 1}
+              commentsArray.map((comment, index) => (
+                <KuaishouCommentItemComponent
+                  key={comment.cid || index}
+                  comment={comment}
+                  isLast={index === commentsArray.length - 1}
                 />
               ))
             )

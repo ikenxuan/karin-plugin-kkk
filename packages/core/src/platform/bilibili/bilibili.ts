@@ -84,7 +84,7 @@ export class Bilibili extends Base {
     this.islogin = data?.USER?.STATUS === 'isLogin'
     this.downloadfilename = ''
     this.forceBurnDanmaku = options?.forceBurnDanmaku ?? false
-    this.headers!.Referer = 'https://api.bilibili.com/'
+    this.headers!.Referer = 'https://www.bilibili.com/'
     this.headers!.Cookie = Config.cookies.bilibili
   }
 
@@ -1177,7 +1177,7 @@ export const replacetext = (text: string, rich_text_nodes: any[]) => {
       case 'RICH_TEXT_NODE_TYPE_EMOJI': {
         const regex = new RegExp(tag.orig_text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')
         const emojiUrl = tag.emoji.gif_url || tag.emoji.icon_url
-        if (tag.emoji.size === 2) {
+        if (tag.emoji.size === 2 || tag.emoji.size === 3) { // type === 2 || type === 3 表示大表情
           text = text.replace(regex, `<img src='${emojiUrl}' style='height: 160px; margin: 0 0 -10px 0;'>`)
         } else {
           text = text.replace(regex, `<img src='${emojiUrl}' style='height: 80px; margin: 0 0 -5px 0;'>`)
@@ -1509,7 +1509,7 @@ export const getvideosize = async (videourl: string, audiourl: string, bvid: str
     url: videourl,
     headers: {
       ...baseHeaders,
-      Referer: `https://api.bilibili.com/video/${bvid}`,
+      Referer: `https://wwww.bilibili.com/video/${bvid}`,
       Cookie: Config.cookies.bilibili
     }
   }).getHeaders()
@@ -1517,7 +1517,7 @@ export const getvideosize = async (videourl: string, audiourl: string, bvid: str
     url: audiourl,
     headers: {
       ...baseHeaders,
-      Referer: `https://api.bilibili.com/video/${bvid}`,
+      Referer: `https://www.bilibili.com/video/${bvid}`,
       Cookie: Config.cookies.bilibili
     }
   }).getHeaders()

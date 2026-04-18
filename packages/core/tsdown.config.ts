@@ -15,6 +15,7 @@ export default defineConfig({
       baseUrl: '.',
       moduleResolution: 'bundler',
       paths: {
+        '@kkk/richtext': ['../richtext/src/index.ts'],
         template: ['../template/src/index.ts'],
         'template/*': ['../template/src/*']
       }

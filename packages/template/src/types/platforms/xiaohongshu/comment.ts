@@ -1,3 +1,5 @@
+import type { RichTextDocument } from '@kkk/richtext'
+
 import type { BaseComponentProps } from '../../index'
 
 /**
@@ -32,7 +34,7 @@ export interface XiaohongshuCommentItem {
   /** 笔记ID */
   note_id: string
   /** 评论内容 */
-  content: string
+  content: RichTextDocument
   /** 用户信息 */
   user_info: {
     user_id: string
@@ -40,11 +42,11 @@ export interface XiaohongshuCommentItem {
     image: string
     xsec_token: string
   }
-  /** 创建时间 - 已格式化为相对时间 */
-  create_time: string
+  /** 创建时间戳（毫秒） */
+  create_time: number
   /** IP位置 */
   ip_location: string
-  /** 点赞数 - 已格式化（如1.2w） */
+  /** 点赞数 */
   like_count: string
   /** 是否已点赞 */
   liked: boolean
@@ -80,7 +82,7 @@ export interface XiaohongshuSubComment {
   /** 笔记ID */
   note_id: string
   /** 评论内容 */
-  content: string
+  content: RichTextDocument
   /** 用户信息 */
   user_info: {
     user_id: string
@@ -88,11 +90,11 @@ export interface XiaohongshuSubComment {
     image: string
     xsec_token: string
   }
-  /** 创建时间 - 已格式化为相对时间 */
-  create_time: string
+  /** 创建时间戳（毫秒） */
+  create_time: number
   /** IP位置 */
   ip_location: string
-  /** 点赞数 - 已格式化（如1.2w） */
+  /** 点赞数 */
   like_count: string
   /** 是否已点赞 */
   liked: boolean

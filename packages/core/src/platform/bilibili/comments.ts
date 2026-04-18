@@ -1,9 +1,16 @@
-import { BiliWorkComments } from '@ikenxuan/amagi'
-import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from 'date-fns'
-import { zhCN } from 'date-fns/locale'
-import { CommentItem } from 'template/types/platforms/bilibili'
+import type { BiliWorkComments } from '@ikenxuan/amagi'
+import {
+  createEmojiNode,
+  createLineBreakNode,
+  createMentionNode,
+  createRichTextDocument,
+  createTextNode,
+  type RichTextDocument,
+  type RichTextEmojiDefinition,
+  type RichTextNode
+} from '@kkk/richtext'
+import type { CommentItem, SubCommentItem } from 'template/types/platforms/bilibili/comment'
 
-import { Common } from '@/module'
 import { Config } from '@/module/utils/Config'
 
 /**
@@ -13,401 +20,343 @@ import { Config } from '@/module/utils/Config'
  * @returns 处理后的评论数据数组和图片URL数组
  */
 export const bilibiliComments = (commentsData: BiliWorkComments, host_mid: string): { comments: CommentItem[] | [], image_urls: string[] } => {
-  if (!commentsData) return { comments: [], image_urls: [] }
-  let jsonArray: any[] = []
-  const image_urls: string[] = []
-  if (commentsData.code === 404) {
+  if (!commentsData || commentsData.code === 404) {
     return { comments: [], image_urls: [] }
   }
 
-  // 处理置顶评论
-  if (commentsData.data.top && commentsData.data.top.upper) {
-    const topReply = commentsData.data.top.upper
-    const ctime = getRelativeTimeFromTimestamp(topReply.ctime)
-    const emote = topReply.content.emote
-    let message = topReply.content.message
-    if (message && emote) message = emoteToUrl(message, emote)
-    const avatar = topReply.member.avatar
-    const frame = topReply.member.pendant.image
-    const uname = checkvip(topReply.member)
-    const level = topReply.member.level_info.current_level
-    const vipstatus = topReply.member.vip.status
-    const like = topReply.like
-    const replylength = topReply.rcount
-    const location = topReply.reply_control?.location?.replace('IP属地：', '') ?? ''
-    
-    // 收集评论中的所有图片
-    const pictures = []
-    if (topReply.content && topReply.content.pictures && topReply.content.pictures.length > 0) {
-      for (const picture of topReply.content.pictures) {
-        if (picture.img_src) {
-          pictures.push(picture.img_src)
-          image_urls.push(picture.img_src)
-        }
-      }
-    }
-        
-    const members = topReply.content.members
-    const isUP = topReply.mid_str === host_mid
-    const fanCard = extractFanCard(topReply.member)
+  const comments: CommentItem[] = []
+  const image_urls: string[] = []
+  const topReply = commentsData.data.top?.upper
 
-    // 处理置顶评论的二级评论
-    const subReplies = []
-    if (topReply.replies && Array.isArray(topReply.replies)) {
-      for (const subReply of topReply.replies) {
-        if (!subReply.content || !subReply.member) continue
-        
-        const subCtime = getRelativeTimeFromTimestamp(subReply.ctime || 0)
-        const subEmote = subReply.content.emote
-        let subMessage = subReply.content.message || ''
-        if (subMessage && subEmote) subMessage = emoteToUrl(subMessage, subEmote)
-        const subAvatar = subReply.member.avatar || ''
-        const subFrame = subReply.member.pendant?.image || ''
-        const subUname = checkvip(subReply.member)
-        const subLevel = subReply.member.level_info?.current_level || 0
-        const subVipstatus = subReply.member.vip?.vipStatus || 0
-        const subLike = subReply.like || 0
-        const subLocation = subReply.reply_control?.location?.replace('IP属地：', '') ?? ''
-        
-        // 收集二级评论中的所有图片
-        const subPictures = []
-        if (subReply.content.pictures && subReply.content.pictures.length > 0) {
-          for (const picture of subReply.content.pictures) {
-            if (picture.img_src) {
-              subPictures.push(picture.img_src)
-              image_urls.push(picture.img_src)
-            }
-          }
-        }
-        
-        const subMembers = subReply.content.members || []
-        const subIsUP = subReply.mid_str === host_mid
-        const subFanCard = extractFanCard(subReply.member)
-
-        subReplies.push({
-          ctime: subCtime,
-          message: subMessage,
-          avatar: subAvatar,
-          frame: subFrame,
-          uname: subUname,
-          level: subLevel,
-          vipstatus: subVipstatus,
-          pictures: subPictures,
-          location: subLocation,
-          like: subLike,
-          icon_big_vip: subVipstatus === 1 ? 'https://i0.hdslb.com/bfs/seed/jinkela/short/user-avatar/big-vip.svg' : null,
-          members: subMembers,
-          isUP: subIsUP,
-          fanCard: subFanCard
-        })
-      }
-    }
-
-    const obj = {
+  if (topReply) {
+    comments.push(buildCommentItem(topReply, host_mid, image_urls, {
       id: 0,
-      ctime,
-      message,
-      avatar,
-      frame,
-      uname,
-      level,
-      vipstatus,
-      pictures,
-      replylength,
-      location,
-      like,
-      icon_big_vip: vipstatus === 1 ? 'https://i0.hdslb.com/bfs/seed/jinkela/short/user-avatar/big-vip.svg' : null,
-      members,
-      isTop: true,
-      isUP,
-      fanCard,
-      replies: subReplies
-    }
-
-    jsonArray.push(obj)
+      isTop: true
+    }))
   }
 
-  // 处理普通评论
-  for (const [i, reply] of commentsData.data.replies.entries()) {
-    const ctime = getRelativeTimeFromTimestamp(reply.ctime)
-    const emote = reply.content.emote
-    let message = reply.content.message
-    if (message && emote) message = emoteToUrl(message, emote)
-    const avatar = reply.member.avatar
-    const frame = reply.member.pendant.image
-    const uname = checkvip(reply.member)
-    const level = reply.member.level_info.current_level
-    const vipstatus = reply.member.vip.vipStatus
-    const like = reply.like
-    const replylength = reply.rcount
-    const location = reply.reply_control?.location?.replace('IP属地：', '') ?? ''
-    
-    // 收集评论中的所有图片
-    const pictures = []
-    if (reply.content && reply.content.pictures && reply.content.pictures.length > 0) {
-      for (const picture of reply.content.pictures) {
-        if (picture.img_src) {
-          pictures.push(picture.img_src)
-          image_urls.push(picture.img_src)
-        }
-      }
-    }
-        
-    const members = reply.content.members
-    const isUP = reply.mid_str === host_mid
-    const fanCard = extractFanCard(reply.member)
-
-    // 处理二级评论
-    const subReplies = []
-    if (reply.replies && Array.isArray(reply.replies)) {
-      for (const subReply of reply.replies) {
-        if (!subReply.content || !subReply.member) continue
-        
-        const subCtime = getRelativeTimeFromTimestamp(subReply.ctime || 0)
-        const subEmote = subReply.content.emote
-        let subMessage = subReply.content.message || ''
-        if (subMessage && subEmote) subMessage = emoteToUrl(subMessage, subEmote)
-        const subAvatar = subReply.member.avatar || ''
-        const subFrame = subReply.member.pendant?.image || ''
-        const subUname = checkvip(subReply.member)
-        const subLevel = subReply.member.level_info?.current_level || 0
-        const subVipstatus = subReply.member.vip?.vipStatus || 0
-        const subLike = subReply.like || 0
-        const subLocation = subReply.reply_control?.location?.replace('IP属地：', '') ?? ''
-        
-        // 收集二级评论中的所有图片
-        const subPictures = []
-        if (subReply.content.pictures && subReply.content.pictures.length > 0) {
-          for (const picture of subReply.content.pictures) {
-            if (picture.img_src) {
-              subPictures.push(picture.img_src)
-              image_urls.push(picture.img_src)
-            }
-          }
-        }
-        
-        const subMembers = subReply.content.members || []
-        const subIsUP = subReply.mid_str === host_mid
-        const subFanCard = extractFanCard(subReply.member)
-
-        subReplies.push({
-          ctime: subCtime,
-          message: subMessage,
-          avatar: subAvatar,
-          frame: subFrame,
-          uname: subUname,
-          level: subLevel,
-          vipstatus: subVipstatus,
-          pictures: subPictures,
-          location: subLocation,
-          like: subLike,
-          icon_big_vip: subVipstatus === 1 ? 'https://i0.hdslb.com/bfs/seed/jinkela/short/user-avatar/big-vip.svg' : null,
-          members: subMembers,
-          isUP: subIsUP,
-          fanCard: subFanCard
-        })
-      }
-    }
-
-    const obj = {
-      id: i + 1,
-      ctime,
-      message,
-      avatar,
-      frame,
-      uname,
-      level,
-      vipstatus,
-      pictures,
-      replylength,
-      location,
-      like,
-      icon_big_vip: vipstatus === 1 ? 'https://i0.hdslb.com/bfs/seed/jinkela/short/user-avatar/big-vip.svg' : null,
-      members,
-      isTop: false,
-      isUP,
-      replies: subReplies,
-      fanCard
-    }
-
-    jsonArray.push(obj)
-  }
-
-  // 按点赞数排序，但置顶评论始终在前面
-  jsonArray.sort((a, b) => {
-    if (a.isTop && !b.isTop) return -1
-    if (!a.isTop && b.isTop) return 1
-    if (a.isTop && b.isTop) return 0
-    return b.like - a.like
+  const replies = commentsData.data.replies ?? []
+  replies.forEach((reply, index) => {
+    comments.push(buildCommentItem(reply, host_mid, image_urls, {
+      id: index + 1,
+      isTop: false
+    }))
   })
 
-  /** 对评论点赞数过万整除 */
-  for (const i of jsonArray) {
-    if (i.like > 10000) {
-      i.like = (i.like / 10000).toFixed(1) + 'w'
-    }
-    // 处理二级评论的点赞数
-    if (i.replies && Array.isArray(i.replies)) {
-      for (const subReply of i.replies) {
-        if (subReply.like > 10000) {
-          subReply.like = (subReply.like / 10000).toFixed(1) + 'w'
-        }
-      }
-    }
-  }
-  jsonArray = space(jsonArray)
+  const sortedComments = comments
+    .sort((a, b) => {
+      if (a.isTop && !b.isTop) return -1
+      if (!a.isTop && b.isTop) return 1
+      if (a.isTop && b.isTop) return 0
+      return b.like - a.like
+    })
+    .slice(0, Config.bilibili.numcomment)
 
-  /** 匹配被艾特的用户 */
-  for (const comment of jsonArray) {
-    let originalText = comment.message
-    if (comment.members && comment.members.length > 0) {
-      for (const member of comment.members) {
-        // 构建正则表达式，匹配被艾特的用户
-        const regex = new RegExp(`@${member.uname}`, 'g')
-        originalText = originalText.replace(regex, `<span style="color: ${Common.useDarkTheme() ? '#58B0D5' : '#006A9E'};">@${member.uname}</span>`)
-      }
-    }
-
-    // 更新评论内容为处理后的文本
-    comment.message = originalText
-
-    // 处理二级评论中被艾特的用户
-    if (comment.replies && Array.isArray(comment.replies)) {
-      for (const subReply of comment.replies) {
-        let subOriginalText = subReply.message
-        if (subReply.members && subReply.members.length > 0) {
-          for (const member of subReply.members) {
-            const regex = new RegExp(`@${member.uname}`, 'g')
-            subOriginalText = subOriginalText.replace(regex, `<span style="color: ${Common.useDarkTheme() ? '#58B0D5' : '#006A9E'};">@${member.uname}</span>`)
-          }
-        }
-        subReply.message = subOriginalText
-      }
-    }
-  }
-
-  let res
-  res = br(jsonArray)
-  res = [...res.filter((c: any) => c.isTop), ...res.filter((c: any) => !c.isTop)].slice(0, Config.bilibili.numcomment)
-
-  return { comments: res as CommentItem[], image_urls }
+  return { comments: sortedComments, image_urls }
 }
 
-/** 检查评论是否带表情，是则添加img标签 */
-const emoteToUrl = (message: any, emote: any) => {
-  // 遍历 emote 对象的键
-  for (const key in emote) {
-    if (Object.prototype.hasOwnProperty.call(emote, key)) { // 确保是对象自身的属性
-      // 如果message中有对应的表情包名，替换为图片标签
-      if (message.includes(key)) {
-        if (message.includes('[') && message.includes(']')) {
-          message = message.replace(new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), `<img src="${emote[key].url}"/>`)
-        }
-      }
-    }
+const buildCommentItem = (
+  reply: BiliWorkComments['data']['replies'][number] | NonNullable<BiliWorkComments['data']['top']['upper']>,
+  hostMid: string,
+  imageUrls: string[],
+  options: {
+    id: number
+    isTop: boolean
   }
-  return message
+): CommentItem => {
+  const member = reply.member
+  const content = reply.content
+  const pictures = extractPictureUrls(getContentPictures(content), imageUrls)
+  const vipstatus = getVipStatus(member)
+
+  return {
+    ctime: reply.ctime ?? 0,
+    message: buildBilibiliRichText(content?.message ?? '', getContentEmote(content), getContentMembers(content)),
+    avatar: member?.avatar ?? '',
+    frame: member?.pendant?.image ?? '',
+    uname: member?.uname ?? '',
+    unameColor: getUserNameColor(member),
+    level: member?.level_info?.current_level ?? 0,
+    vipstatus,
+    pictures,
+    replylength: reply.rcount ?? 0,
+    location: getLocationLabel(reply),
+    like: reply.like ?? 0,
+    isTop: options.isTop,
+    isUP: reply.mid_str === hostMid,
+    fanCard: extractFanCard(member),
+    replies: buildSubReplies(reply.replies, hostMid, imageUrls)
+  }
 }
 
-/** 替换空格 */
-const space = (data: any) => {
-  for (const i in data) {
-    if (data[i].message) {
-      data[i].message = data[i].message.replace(/ /g, ' ') // 替换空格
-    }
+const buildSubReplies = (
+  replies:
+    | BiliWorkComments['data']['replies'][number]['replies']
+    | NonNullable<BiliWorkComments['data']['top']['upper']>['replies']
+    | undefined,
+  hostMid: string,
+  imageUrls: string[]
+): SubCommentItem[] => {
+  if (!Array.isArray(replies)) {
+    return []
   }
-  return data
+
+  return replies
+    .filter(reply => Boolean(reply.content) && Boolean(reply.member))
+    .map(reply => buildSubCommentItem(reply, hostMid, imageUrls))
 }
 
-/** 换行符转<br> */
-const br = (data: any) => {
-  for (const i in data) {
-    let message = data[i].message
+const buildSubCommentItem = (
+  reply:
+    | NonNullable<BiliWorkComments['data']['replies'][number]['replies']>[number]
+    | NonNullable<NonNullable<BiliWorkComments['data']['top']['upper']>['replies']>[number],
+  hostMid: string,
+  imageUrls: string[]
+): SubCommentItem => {
+  const member = reply.member
+  const content = reply.content
+  const vipstatus = getVipStatus(member)
 
-    message = message?.replace(/\n/g, '<br>')
-    data[i].message = message
-
-    // 处理二级评论的换行符
-    if (data[i].replies && Array.isArray(data[i].replies)) {
-      for (const subReply of data[i].replies) {
-        if (subReply.message) {
-          subReply.message = subReply.message.replace(/\n/g, '<br>')
-        }
-      }
-    }
+  return {
+    ctime: reply.ctime ?? 0,
+    message: buildBilibiliRichText(content?.message ?? '', getContentEmote(content), getContentMembers(content)),
+    avatar: member?.avatar ?? '',
+    frame: member?.pendant?.image ?? '',
+    uname: member?.uname ?? '',
+    unameColor: getUserNameColor(member),
+    level: member?.level_info?.current_level ?? 0,
+    vipstatus,
+    pictures: extractPictureUrls(getContentPictures(content), imageUrls),
+    location: getLocationLabel(reply),
+    like: reply.like ?? 0,
+    isUP: reply.mid_str === hostMid,
+    fanCard: extractFanCard(member)
   }
-  return data
-}
-
-/** 检查是否大会员 */
-const checkvip = (member: any) => {
-  return member.vip.vipStatus === 1
-    ? `<span style="color: ${member.vip.nickname_color ?? '#FB7299'}; font-weight: 700;">${member.uname}</span>`
-    : `<span style="color: #888">${member.uname}</span>`
 }
 
 /**
- * 将时间戳转换为相对时间字符串
- * @param timestamp 时间戳（秒）
- * @returns 相对时间字符串
+ * 把 B 站评论正文解析成共享富文本 JSON。
+ *
+ * B 站评论里常见的特殊内容包括：
+ * - `[doge]` 这类平台表情；
+ * - `@用户名` 这类提及；
+ * - 换行符；
+ * - `¨` 这种接口里的分隔符字符。
  */
-const getRelativeTimeFromTimestamp = (timestamp: number): string => {
-  const commentDate = fromUnixTime(timestamp)
-  const diffSeconds = differenceInSeconds(new Date(), commentDate)
+const buildBilibiliRichText = (
+  text: string,
+  emote: unknown,
+  members: unknown
+): RichTextDocument => {
+  const normalizedText = normalizeBilibiliText(text)
+  const emojiTokens = extractEmojiTokens(emote)
+  const mentionTokens = extractMentionTokens(members)
+  const nodes: RichTextNode[] = []
+  let buffer = ''
+  let index = 0
 
-  // 30秒内显示"刚刚"
-  if (diffSeconds < 30) {
-    return '刚刚'
+  const pushBuffer = () => {
+    if (buffer.length > 0) {
+      nodes.push(createTextNode(buffer))
+      buffer = ''
+    }
   }
-  
-  // 三个月内使用相对时间
-  if (diffSeconds < 7776000) {
-    return formatDistanceToNow(commentDate, { 
-      locale: zhCN, 
-      addSuffix: true 
-    })
+
+  while (index < normalizedText.length) {
+    if (normalizedText[index] === '\r') {
+      pushBuffer()
+      index += normalizedText[index + 1] === '\n' ? 2 : 1
+      nodes.push(createLineBreakNode())
+      continue
+    }
+
+    if (normalizedText[index] === '\n') {
+      pushBuffer()
+      nodes.push(createLineBreakNode())
+      index += 1
+      continue
+    }
+
+    const matchedMention = mentionTokens.find(item => normalizedText.startsWith(item.text, index))
+    if (matchedMention) {
+      pushBuffer()
+      nodes.push(createMentionNode(matchedMention.text, matchedMention.userId))
+      index += matchedMention.text.length
+      continue
+    }
+
+    const matchedEmoji = emojiTokens.find(item => normalizedText.startsWith(item.name, index))
+    if (matchedEmoji) {
+      pushBuffer()
+      nodes.push(createEmojiNode(matchedEmoji.name, matchedEmoji.url, {
+        scale: matchedEmoji.scale
+      }))
+      index += matchedEmoji.name.length
+      continue
+    }
+
+    buffer += normalizedText[index]
+    index += 1
   }
-  
-  // 超过三个月，显示具体日期
-  return format(commentDate, 'yyyy-MM-dd')
+
+  pushBuffer()
+
+  return createRichTextDocument(nodes, { platform: 'bilibili' })
+}
+
+const normalizeBilibiliText = (text: string): string => {
+  return text.replace(/¨/g, '•')
+}
+
+const extractEmojiTokens = (emote: unknown): RichTextEmojiDefinition[] => {
+  if (!emote || typeof emote !== 'object') {
+    return []
+  }
+
+  return Object.entries(emote as Record<string, { url?: string; type?: number }>)
+    .filter((entry): entry is [string, { url: string; type?: number }] => Boolean(entry[0]) && Boolean(entry[1]?.url))
+    .map(([name, item]) => ({
+      name,
+      url: item.url,
+      scale: item.type === 2 || item.type === 3 ? 2 : undefined
+    }))
+    .sort((a, b) => b.name.length - a.name.length)
+}
+
+const getContentEmote = (content: unknown): unknown => {
+  if (!content || typeof content !== 'object') {
+    return undefined
+  }
+
+  return (content as { emote?: unknown }).emote
+}
+
+const getContentMembers = (content: unknown): unknown => {
+  if (!content || typeof content !== 'object') {
+    return undefined
+  }
+
+  return (content as { members?: unknown }).members
+}
+
+const getContentPictures = (content: unknown): unknown => {
+  if (!content || typeof content !== 'object') {
+    return undefined
+  }
+
+  return (content as { pictures?: unknown }).pictures
+}
+
+const extractMentionTokens = (members: unknown): Array<{ text: string; userId?: string }> => {
+  if (!Array.isArray(members) || members.length === 0) {
+    return []
+  }
+
+  return members
+    .filter((item): item is { uname?: string; mid?: string | number } => typeof item === 'object' && item !== null)
+    .filter(item => Boolean(item.uname))
+    .map(item => ({
+      text: `@${item.uname}`,
+      userId: item.mid?.toString()
+    }))
+    .sort((a, b) => b.text.length - a.text.length)
+}
+
+const extractPictureUrls = (
+  pictures: unknown,
+  imageUrls: string[]
+): string[] => {
+  if (!Array.isArray(pictures)) {
+    return []
+  }
+
+  const urls: string[] = []
+  for (const picture of pictures) {
+    if (typeof picture === 'object' && picture !== null && 'img_src' in picture && typeof picture.img_src === 'string') {
+      urls.push(picture.img_src)
+      imageUrls.push(picture.img_src)
+    }
+  }
+
+  return urls
+}
+
+const getLocationLabel = (reply: unknown): string => {
+  if (!reply || typeof reply !== 'object') {
+    return ''
+  }
+
+  const replyControl = (reply as { reply_control?: { location?: string } }).reply_control
+  return replyControl?.location?.replace('IP属地：', '') ?? ''
+}
+
+const getVipStatus = (member: unknown): number => {
+  if (!member || typeof member !== 'object') {
+    return 0
+  }
+
+  // @ts-ignore
+  const vip = member?.vip as { vipStatus?: unknown; status?: unknown } | undefined
+
+  if (typeof vip?.vipStatus === 'number') {
+    return vip.vipStatus
+  }
+
+  if (typeof vip?.status === 'number') {
+    return vip.status
+  }
+
+  return 0
+}
+
+const getUserNameColor = (member: unknown): string | null => {
+  if (!member || typeof member !== 'object') {
+    return '#888'
+  }
+
+  if (getVipStatus(member) === 1) {
+    return (member as { vip?: { nickname_color?: string } }).vip?.nickname_color ?? '#FB7299'
+  }
+
+  return '#888'
 }
 
 /** 提取粉丝卡片信息 */
-const extractFanCard = (member: any) => {
-  if (
-    // 确保属性存在且是对象类型（排除 null，因为 typeof null 会返回 'object'）
-    member.user_sailing_v2 &&
-    typeof member.user_sailing_v2 === 'object' &&
-    // 排除空对象（判断是否有自有属性）
-    Object.keys(member.user_sailing_v2).length > 0
-  ) {
-    if (!member.user_sailing_v2.card_bg) return null
-
-    const cardBg = member.user_sailing_v2.card_bg
-    const fan = cardBg.fan
-
-    if (!fan || !fan.is_fan) {
-      return null
-    }
-
-    // 构建渐变色
-    let gradientStyle = ''
-    if (fan.color_format && fan.color_format.colors && fan.color_format.gradients) {
-      const colors = fan.color_format.colors
-      const gradients = fan.color_format.gradients
-      const colorStops = colors.map((color: string, index: number) => `${color} ${gradients[index]}%`).join(', ')
-      gradientStyle = `linear-gradient(135deg, ${colorStops})`
-    } else if (fan.color) {
-      gradientStyle = fan.color
-    }
-
-    return {
-      image: cardBg.image ?? null,
-      numPrefix: fan.num_prefix || '',
-      numDesc: fan.num_desc || '',
-      gradientStyle
-    }
+const extractFanCard = (member: unknown) => {
+  if (!member || typeof member !== 'object') {
+    return null
   }
 
-  return null
+  const sailing = (member as { user_sailing_v2?: unknown }).user_sailing_v2
+  if (!sailing || typeof sailing !== 'object' || Object.keys(sailing).length === 0) {
+    return null
+  }
+
+  const cardBg = (sailing as { card_bg?: unknown }).card_bg
+  if (!cardBg || typeof cardBg !== 'object') {
+    return null
+  }
+
+  const fan = (cardBg as { fan?: unknown }).fan
+  if (!fan || typeof fan !== 'object' || !(fan as { is_fan?: boolean }).is_fan) {
+    return null
+  }
+
+  let gradientStyle = ''
+  const colorFormat = (fan as { color_format?: { colors?: string[]; gradients?: number[] } }).color_format
+  if (Array.isArray(colorFormat?.colors) && Array.isArray(colorFormat.gradients)) {
+    const colorStops = colorFormat.colors
+      .map((color, index) => `${color} ${colorFormat.gradients?.[index] ?? 0}%`)
+      .join(', ')
+    gradientStyle = `linear-gradient(135deg, ${colorStops})`
+  } else if (typeof (fan as { color?: unknown }).color === 'string') {
+    gradientStyle = (fan as { color: string }).color
+  }
+
+  return {
+    image: (cardBg as { image?: string | null }).image ?? null,
+    numPrefix: typeof (fan as { num_prefix?: unknown }).num_prefix === 'string' ? (fan as { num_prefix: string }).num_prefix : '',
+    numDesc: typeof (fan as { num_desc?: unknown }).num_desc === 'string' ? (fan as { num_desc: string }).num_desc : '',
+    gradientStyle
+  }
 }

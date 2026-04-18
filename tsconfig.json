@@ -1,6 +1,7 @@
 {
   "files": [],
   "references": [
+    { "path": "./packages/richtext" },
     { "path": "./packages/template" },
     { "path": "./packages/core" },
     { "path": "./packages/amagi" }
