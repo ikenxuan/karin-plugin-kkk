@@ -1,6 +1,6 @@
 import { toast } from '@heroui/react'
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
-import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
+import { type ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 
 import { PlatformType } from '../../types/platforms'
 import { captureScreenshot as captureScreenshotUtil } from '../utils/screenshot'
@@ -61,7 +61,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   // 截图相关
   const [isCapturing, setIsCapturing] = useState(false)
   const previewContentRef = useRef<HTMLDivElement>(null)
-  const transformWrapperRef = useRef<any>(null)
+  const transformWrapperRef = useRef<ReactZoomPanPinchRef | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   
   // Ctrl 键状态
@@ -100,7 +100,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
 
     try {
       // 获取当前的 transform 状态
-      const transformState = transformWrapperRef.current?.instance?.transformState
+      const transformState = transformWrapperRef.current?.state
       
       // 检测当前内容是否为深色模式
       const contentElement = previewContentRef.current
@@ -355,14 +355,16 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
       e.preventDefault()
       
       // 获取 transform 实例
-      const instance = transformWrapperRef.current?.instance
-      if (!instance) return
+      const transformRef = transformWrapperRef.current
+      const instance = transformRef?.instance
+      const transformState = transformRef?.state
+      if (!instance || !transformState || !transformRef) return
 
       // 计算缩放增量
       const delta = -e.deltaY * 0.001 // 缩放因子
       const scaleFactor = 1 + delta
       const newScale = Math.min(
-        Math.max(instance.transformState.scale * scaleFactor, 0.01),
+        Math.max(transformState.scale * scaleFactor, 0.01),
         5
       )
 
@@ -372,7 +374,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
       const mouseY = e.clientY - rect.top
 
       // 计算缩放中心点
-      const { positionX, positionY, scale } = instance.transformState
+      const { positionX, positionY, scale } = transformState
       const scaleDiff = newScale - scale
       
       // 以鼠标位置为中心缩放
@@ -380,7 +382,7 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
       const newPositionY = positionY - (mouseY - positionY) * (scaleDiff / scale)
 
       // 应用变换
-      instance.setTransformState(newScale, newPositionX, newPositionY)
+      transformRef.setTransform(newPositionX, newPositionY, newScale, 0, 'easeOut')
       
       // 显示缩放提示
       setShowScaleIndicator(true)
@@ -532,9 +534,9 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
             doubleClick={{
               disabled: true
             }}
-            onTransformed={(ref) => {
-              if (ref.state.scale !== scale) {
-                onScaleChange(ref.state.scale)
+            onTransform={(_ref, state) => {
+              if (state.scale !== scale) {
+                onScaleChange(state.scale)
               }
             }}
           >

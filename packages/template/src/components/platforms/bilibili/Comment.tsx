@@ -1,12 +1,17 @@
+import { renderRichTextToReact } from '@kkk/richtext'
 import clsx from 'clsx'
+import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
 import { ThumbsUp } from 'lucide-react'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { type ReactNode, useEffect, useMemo, useState } from 'react'
 
 import type {
   BilibiliCommentProps,
   QRCodeSectionProps
 } from '../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
+
+const bilibiliMentionClassName = 'text-[#006A9E] dark:text-[#58B0D5]'
 
 /**
  * 置顶标签组件
@@ -46,15 +51,6 @@ interface ImageWithSkeletonProps {
   isCircular?: boolean
 }
 
-
-const processCommentHTML = (htmlContent: string): string => {
-  // 使用正则表达式匹配所有img标签并添加防盗链属性
-  return htmlContent.replace(
-    /<img([^>]*?)>/gi,
-    '<img$1 referrerpolicy="no-referrer" crossorigin="anonymous">'
-  )
-}
-
 const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
   src,
   alt,
@@ -91,6 +87,83 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
       onError={handleError}
       referrerPolicy='no-referrer'
       crossOrigin='anonymous'
+    />
+  )
+}
+
+const renderBilibiliCommentRichText = (
+  content: BilibiliCommentProps['data']['CommentsData'][number]['message']
+): ReactNode => {
+  return renderRichTextToReact(content, {
+    mentionClassName: bilibiliMentionClassName
+  })
+}
+
+const formatBilibiliCommentTime = (timestamp: number): string => {
+  if (!timestamp) {
+    return ''
+  }
+
+  const commentDate = fromUnixTime(timestamp)
+  const diffSeconds = differenceInSeconds(new Date(), commentDate)
+
+  if (diffSeconds < 30) {
+    return '刚刚'
+  }
+
+  if (diffSeconds < 7776000) {
+    return formatDistanceToNow(commentDate, {
+      locale: zhCN,
+      addSuffix: true
+    })
+  }
+
+  return format(commentDate, 'yyyy-MM-dd')
+}
+
+const formatBilibiliLikeCount = (count: number): string => {
+  if (count > 10000) {
+    return `${(count / 10000).toFixed(1)}w`
+  }
+
+  return String(count)
+}
+
+const renderBilibiliUserName = (
+  uname: string,
+  unameColor: string | null | undefined,
+  vipstatus?: number
+) => {
+  return (
+    <span
+      className='inline-block leading-[1.2]'
+      style={{
+        color: unameColor ?? '#888',
+        fontWeight: vipstatus === 1 ? 700 : undefined
+      }}
+    >
+      {uname}
+    </span>
+  )
+}
+
+const BilibiliLogo: React.FC = () => {
+  const [hasError, setHasError] = useState(false)
+
+  if (hasError) {
+    return (
+      <div className='flex items-center h-full text-6xl font-bold text-foreground/70'>
+        哔哩哔哩
+      </div>
+    )
+  }
+
+  return (
+    <img
+      src='/image/bilibili/bilibili.png'
+      alt='B站Logo'
+      className='object-contain h-full w-auto max-w-112.5'
+      onError={() => setHasError(true)}
     />
   )
 }
@@ -135,19 +208,7 @@ const VideoInfoHeader: React.FC<Omit<BilibiliCommentProps['data'], 'CommentsData
           <div className='mb-12'>
             {/* Logo */}
             <div className='h-45 flex items-center'>
-              <img
-                src='/image/bilibili/bilibili.png'
-                alt='B站Logo'
-                className='object-contain h-full w-auto max-w-112.5'
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement
-                  target.style.display = 'none'
-                  const parent = target.parentElement
-                  if (parent) {
-                    parent.innerHTML = '<div class="flex items-center h-full text-6xl font-bold text-foreground/70">哔哩哔哩</div>'
-                  }
-                }}
-              />
+              <BilibiliLogo />
               {/* 分辨率信息 - 仅视频类型显示 */}
               {props.Type === '视频' && props.Resolution && (
                 <div className='flex flex-col gap-2 px-8 py-4 ml-12 rounded-3xl bg-surface/50 w-fit'>
@@ -253,10 +314,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
         <div className='flex items-start gap-2.5 mb-3.75 text-[50px] relative'>
           {/* 用户名区域  */}
           <div className='shrink-0 flex items-center gap-2 leading-[1.2] text-foreground/80 font-bold select-text'>
-            <div
-              className='[&>span]:inline-block [&>span]:leading-[1.2] [&>svg]:inline-block [&>svg]:w-25 [&>svg]:h-25 [&>svg]:align-middle [&>svg]:shrink-0'
-              dangerouslySetInnerHTML={{ __html: props.uname }}
-            />
+            {renderBilibiliUserName(props.uname, props.unameColor, props.vipstatus)}
 
             {/* 等级图标 */}
             {props.level !== undefined && props.level >= 0 && props.level <= 7 && (
@@ -332,11 +390,13 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
 
         {/* 评论文本 */}
         <div
-          className='items-center text-[60px] tracking-[0.5px] leading-[1.6] text-foreground mb-5 select-text [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em] flex flex-wrap'
+          className='items-center text-[60px] tracking-[0.5px] leading-[1.6] text-foreground mb-5 select-text flex flex-wrap'
           style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
         >
           {props.isTop && <TopBadge />}
-          <span dangerouslySetInnerHTML={{ __html: processCommentHTML(props.message) }} />
+          <span className='whitespace-pre-wrap'>
+            {renderBilibiliCommentRichText(props.message)}
+          </span>
         </div>
 
         {/* 评论图片 */}
@@ -382,7 +442,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
         <div className='flex items-center justify-between mt-[37.5px] whitespace-nowrap text-muted'>
           <div className='flex flex-1 items-center'>
             <div className='text-[45px] tracking-[2px] select-text'>
-              {props.ctime} · {props.location}
+              {formatBilibiliCommentTime(props.ctime)} · {props.location}
               {props.replylength > 0
                 ? (
                   <span className='text-muted tracking-[3px] ml-4'>
@@ -398,7 +458,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
           <div className='flex items-center gap-18.75 ml-auto'>
             <div className='flex items-center gap-3.75'>
               <ThumbsUp className='w-15 h-15 text-muted' />
-              <span className='text-[45px] text-muted select-text'>{props.like}</span>
+              <span className='text-[45px] text-muted select-text'>{formatBilibiliLikeCount(props.like)}</span>
             </div>
           </div>
         </div>
@@ -444,10 +504,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
                     {/* 用户信息 */}
                     <div className='flex items-start gap-2.5 mb-3.75 text-[50px] relative overflow-visible'>
                       <div className='shrink-0 flex items-center gap-2 leading-[1.2] text-foreground/80 font-bold select-text'>
-                        <div
-                          className='[&>span]:inline-block [&>span]:leading-[1.2]'
-                          dangerouslySetInnerHTML={{ __html: subReply.uname }}
-                        />
+                        {renderBilibiliUserName(subReply.uname, subReply.unameColor, subReply.vipstatus)}
                         {subReply.level !== undefined && subReply.level >= 0 && subReply.level <= 7 && (
                           <img
                             src={`/image/bilibili/level/lv${subReply.level}.svg`}
@@ -506,10 +563,11 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
 
                     {/* 评论文本 */}
                     <div
-                      className='text-[60px] tracking-[0.5px] leading-[1.6] text-foreground mb-5 select-text [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
+                      className='text-[60px] tracking-[0.5px] leading-[1.6] text-foreground mb-5 select-text whitespace-pre-wrap'
                       style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
-                      dangerouslySetInnerHTML={{ __html: processCommentHTML(subReply.message) }}
-                    />
+                    >
+                      {renderBilibiliCommentRichText(subReply.message)}
+                    </div>
 
                     {/* 二级评论图片 */}
                     {subReply.pictures && subReply.pictures.length > 0 && (
@@ -559,14 +617,14 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
                     <div className='flex items-center justify-between mt-[37.5px] whitespace-nowrap text-muted'>
                       <div className='flex flex-1 items-center'>
                         <div className='text-[45px] tracking-[2px] select-text'>
-                          {subReply.ctime} · {subReply.location}
+                          {formatBilibiliCommentTime(subReply.ctime)} · {subReply.location}
                         </div>
                       </div>
 
                       <div className='flex items-center gap-18.75 ml-auto'>
                         <div className='flex items-center gap-3.75'>
                           <ThumbsUp className='w-15 h-15 text-muted' />
-                          <span className='text-[45px] text-muted select-text'>{subReply.like}</span>
+                          <span className='text-[45px] text-muted select-text'>{formatBilibiliLikeCount(subReply.like)}</span>
                         </div>
                       </div>
                     </div>

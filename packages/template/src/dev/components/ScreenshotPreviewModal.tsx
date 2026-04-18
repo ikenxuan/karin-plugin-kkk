@@ -2,7 +2,7 @@ import { Button, Label, Modal, Switch, toast } from '@heroui/react'
 import clsx from 'clsx'
 import { Camera, Copy, Download, Maximize, Moon, Sun, X } from 'lucide-react'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
+import { TransformComponent, TransformWrapper, type ReactZoomPanPinchRef } from 'react-zoom-pan-pinch'
 
 import { getWatermarkEnabled, setWatermarkEnabled } from '../utils/watermarkConfig'
 
@@ -33,7 +33,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
   componentDarkMode = false
 }) => {
   const [scale, setScale] = useState(1)
-  const transformWrapperRef = useRef<any>(null)
+  const transformWrapperRef = useRef<ReactZoomPanPinchRef | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const [showScaleIndicator, setShowScaleIndicator] = useState(false)
@@ -107,24 +107,26 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
       event.preventDefault()
       event.stopPropagation()
 
-      const instance = transformWrapperRef.current?.instance
-      if (!instance) return
+      const transformRef = transformWrapperRef.current
+      const instance = transformRef?.instance
+      const transformState = transformRef?.state
+      if (!instance || !transformState || !transformRef) return
 
       const delta = -event.deltaY * 0.001
       const scaleFactor = 1 + delta
-      const newScale = Math.min(Math.max(instance.transformState.scale * scaleFactor, 0.01), 5)
+      const newScale = Math.min(Math.max(transformState.scale * scaleFactor, 0.01), 5)
 
       const rect = container.getBoundingClientRect()
       const mouseX = event.clientX - rect.left
       const mouseY = event.clientY - rect.top
 
-      const { positionX, positionY, scale } = instance.transformState
+      const { positionX, positionY, scale } = transformState
       const scaleDiff = newScale - scale
 
       const newPositionX = positionX - (mouseX - positionX) * (scaleDiff / scale)
       const newPositionY = positionY - (mouseY - positionY) * (scaleDiff / scale)
 
-      instance.setTransformState(newScale, newPositionX, newPositionY)
+      transformRef.setTransform(newPositionX, newPositionY, newScale, 0, 'easeOut')
 
       setShowScaleIndicator(true)
 
@@ -281,9 +283,9 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
                   limitToBounds={false}
                   maxScale={5}
                   minScale={0.01}
-                  onTransformed={(ref) => {
-                    if (ref.state.scale !== scale) {
-                      setScale(ref.state.scale)
+                  onTransform={(_ref, state) => {
+                    if (state.scale !== scale) {
+                      setScale(state.scale)
                     }
                   }}
                   panning={{

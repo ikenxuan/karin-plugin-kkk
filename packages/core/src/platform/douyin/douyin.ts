@@ -707,7 +707,7 @@ export class DouYin extends Base {
         }
 
         if (Config.douyin.sendContent.includes('comment')) {
-          const EmojiData = await this.amagi.douyin.fetcher.fetchEmojiList({ typeMode: 'loose' })
+          const EmojiData = await this.amagi.douyin.fetcher.fetchEmojiList({ typeMode: 'strict' })
           const list = Emoji(EmojiData.data)
           const douyinCommentsRes = await douyinComments(CommentsData, list)
           if (!douyinCommentsRes.CommentsData.length) {

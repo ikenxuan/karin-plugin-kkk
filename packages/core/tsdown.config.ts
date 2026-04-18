@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  entry: ['src/export/template.ts'],
+  entry: ['src/export/template.ts', 'src/export/richtext.ts'],
   format: ['esm'],
   target: 'es2022',
   outDir: 'lib/core_chunk',
@@ -15,6 +15,7 @@ export default defineConfig({
       baseUrl: '.',
       moduleResolution: 'bundler',
       paths: {
+        '@kkk/richtext': ['../richtext/src/index.ts'],
         template: ['../template/src/index.ts'],
         'template/*': ['../template/src/*']
       }

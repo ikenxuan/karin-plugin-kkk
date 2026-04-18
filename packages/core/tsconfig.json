@@ -17,6 +17,9 @@
       "template/*": [
         "../template/src/*"
       ],
+      "@kkk/richtext": [
+        "../richtext"
+      ],
       "@ikenxuan/amagi": [
         "../amagi/packages/core/src/index.ts"
       ],
@@ -54,6 +57,9 @@
     "vite.config.ts",
   ],
   "references": [
+    {
+      "path": "../richtext"
+    },
     {
       "path": "../template/tsconfig.app.json"
     },

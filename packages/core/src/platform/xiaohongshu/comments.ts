@@ -1,219 +1,218 @@
-import { differenceInSeconds, format, formatDistanceToNow } from 'date-fns'
-import { zhCN } from 'date-fns/locale'
+import type { NoteComments } from '@ikenxuan/amagi'
+import {
+  createEmojiNode,
+  createLineBreakNode,
+  createMentionNode,
+  createRichTextDocument,
+  createTextNode,
+  type RichTextDocument,
+  type RichTextEmojiDefinition,
+  type RichTextNode
+} from '@kkk/richtext'
+import type {
+  XiaohongshuCommentItem,
+  XiaohongshuSubComment
+} from 'template/types/platforms/xiaohongshu/comment'
 
 import { Config } from '@/module/utils/Config'
 
 /**
- * 处理评论中的表情
- * @param text 原始文本
- * @param emojiData 表情数据
- * @returns 处理后的文本
+ * 处理小红书评论数据。
+ *
+ * 这里直接输出结构化评论 JSON，正文部分使用 richtext 文档，避免后端拼接 HTML。
  */
-const processCommentEmojis = (text: string, emojiData: any): string => {
-  if (!text || !emojiData || !Array.isArray(emojiData)) {
-    return text
-  }
-
-  let processedText = text
-
-  // 遍历表情数据，替换文本中的表情
-  for (const emoji of emojiData) {
-    if (emoji.name && emoji.url && processedText.includes(emoji.name)) {
-      // 使用正则表达式进行全局替换，确保特殊字符被正确转义
-      const escapedName = emoji.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      const regex = new RegExp(escapedName, 'g')
-      // 不在 alt 中包含表情名称，避免嵌套问题
-      processedText = processedText.replace(regex, `<img src="${emoji.url}" alt="" />`)
-    }
-  }
-
-  // 处理表情和文本混合的情况，将非表情文本用span包裹
-  // 先分割文本，区分表情和普通文本
-  const parts = processedText.split(/(<img[^>]*>)/)
-
-  const wrappedParts = parts.map(part => {
-    // 如果是img标签（表情），直接返回
-    if (part.startsWith('<img')) {
-      return part
-    }
-    // 如果是普通文本且不为空，用span包裹
-    if (part.trim()) {
-      return `<span>${part}</span>`
-    }
-    return part
-  })
-
-  return wrappedParts.join('')
-}
-
-/**
- * 处理评论中的@用户
- * @param text 原始文本
- * @param atUsers @用户列表
- * @param useDarkTheme 是否使用深色主题
- * @returns 处理后的文本
- */
-const processAtUsers = (text: string, atUsers: any[], useDarkTheme: boolean = false): string => {
-  if (!text || !atUsers || !Array.isArray(atUsers) || atUsers.length === 0) {
-    return text
-  }
-
-  let processedText = text
-
-  // 遍历@用户列表，替换文本中的@用户昵称
-  for (const atUser of atUsers) {
-    if (atUser.nickname && processedText.includes(`@${atUser.nickname}`)) {
-      // 使用正则表达式进行全局替换，确保特殊字符被正确转义
-      const escapedNickname = atUser.nickname.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      const regex = new RegExp(`@${escapedNickname}`, 'g')
-
-      const color = useDarkTheme ? '#c7daef' : '#13386c'
-      processedText = processedText.replace(regex, `<span style="color: ${color};">@${atUser.nickname}</span>`)
-    }
-  }
-
-  return processedText
-}
-
-/**
- * 将时间戳转换为相对时间字符串
- * @param timestamp 时间戳（毫秒）
- * @returns 相对时间字符串
- */
-export const getRelativeTimeFromTimestamp = (timestamp: number): string => {
-  const commentDate = new Date(timestamp)
-  const diffSeconds = differenceInSeconds(new Date(), commentDate)
-
-  // 30秒内显示"刚刚"
-  if (diffSeconds < 30) {
-    return '刚刚'
-  }
-  
-  // 三个月内使用相对时间
-  if (diffSeconds < 7776000) {
-    return formatDistanceToNow(commentDate, { 
-      locale: zhCN, 
-      addSuffix: true 
-    })
-  }
-  
-  // 超过三个月，显示具体日期
-  return format(commentDate, 'yyyy-MM-dd')
-}
-
-/**
- * 处理小红书评论数据 - 简化版本，直接返回评论数组
- * @param data 完整的评论数据
- * @param emojiData 处理过后的emoji列表
- * @param useDarkTheme 是否使用深色主题
- * @returns 处理后的评论数组
- */
-export const xiaohongshuComments = async (data: any, emojiData: any, useDarkTheme: boolean = false): Promise<any[]> => {
-  if (!data.data || !data.data.comments || data.data.comments.length === 0) {
+export const xiaohongshuComments = (
+  data: NoteComments,
+  emojiData: RichTextEmojiDefinition[]
+): XiaohongshuCommentItem[] => {
+  const rawComments = data?.data?.comments
+  if (!Array.isArray(rawComments) || rawComments.length === 0) {
     return []
   }
 
-  const comments = []
+  const comments = rawComments.map(comment => {
+    const showTags = normalizeTagNames(comment.show_tags)
 
-  for (const comment of data.data.comments) {
-    // 处理主评论
-    const processedComment = {
+    return {
       id: comment.id,
       note_id: comment.note_id,
-      content: comment.content,
+      content: buildXiaohongshuRichText(comment.content, emojiData, comment.at_users),
       user_info: comment.user_info,
-      create_time: getRelativeTimeFromTimestamp(comment.create_time),
+      create_time: comment.create_time,
       ip_location: comment.ip_location || '未知',
       like_count: comment.like_count,
       liked: comment.liked,
-      pictures: comment.pictures || [],
+      pictures: Array.isArray(comment.pictures) ? comment.pictures : [],
       sub_comment_count: comment.sub_comment_count,
-      sub_comments: comment.sub_comments || [],
-      show_tags: comment.show_tags || [],
-      at_users: comment.at_users || [],
-      status: comment.status,
-      isTop: Array.isArray(comment.show_tags) && comment.show_tags.some((t: any) => {
-        if (typeof t === 'string') return t === 'user_top'
-        if (t && typeof t === 'object') return t.name === 'user_top' || t.tag === 'user_top'
-        return false
-      })
+      sub_comments: buildXiaohongshuSubComments(comment.sub_comments, emojiData),
+      show_tags: showTags,
+      at_users: normalizeAtUsers(comment.at_users).map(item => item.text),
+      status: comment.status
     }
+  })
 
-    // 处理子评论
-    if (comment.sub_comments && Array.isArray(comment.sub_comments)) {
-      processedComment.sub_comments = comment.sub_comments.map((subComment: any) => ({
-        id: subComment.id,
-        note_id: subComment.note_id,
-        content: subComment.content,
-        user_info: subComment.user_info,
-        create_time: getRelativeTimeFromTimestamp(subComment.create_time),
-        ip_location: subComment.ip_location || '未知',
-        like_count: subComment.like_count,
-        liked: subComment.liked,
-        pictures: subComment.pictures || [],
-        show_tags: subComment.show_tags || [],
-        at_users: subComment.at_users || [],
-        status: subComment.status,
-        target_comment: subComment.target_comment,
-        isTop: Array.isArray(subComment.show_tags) && subComment.show_tags.some((t: any) => {
-          if (typeof t === 'string') return t === 'user_top'
-          if (t && typeof t === 'object') return t.name === 'user_top' || t.tag === 'user_top'
-          return false
-        })
-      }))
-    }
+  return comments
+    .sort((a, b) => Number(b.show_tags.includes('user_top')) - Number(a.show_tags.includes('user_top')))
+    .slice(0, Config.xiaohongshu.numcomment)
+}
 
-    comments.push(processedComment)
+const buildXiaohongshuSubComments = (
+  subComments: NoteComments['data']['comments'][number]['sub_comments'],
+  emojiData: RichTextEmojiDefinition[]
+): XiaohongshuSubComment[] => {
+  if (!Array.isArray(subComments)) {
+    return []
   }
 
-  // 处理文本格式、表情包和@用户
-  for (const comment of comments) {
-    // 确保 content 是字符串
-    if (typeof comment.content !== 'string') {
-      comment.content = String(comment.content || '')
+  return subComments.map(subComment => ({
+    id: subComment.id,
+    note_id: subComment.note_id,
+    content: buildXiaohongshuRichText(subComment.content, emojiData, subComment.at_users),
+    user_info: subComment.user_info,
+    create_time: subComment.create_time,
+    ip_location: subComment.ip_location || '未知',
+    like_count: subComment.like_count,
+    liked: subComment.liked,
+    pictures: Array.isArray(subComment.pictures) ? subComment.pictures : [],
+    show_tags: normalizeTagNames(subComment.show_tags),
+    at_users: normalizeAtUsers(subComment.at_users).map(item => item.text),
+    status: subComment.status,
+    target_comment: subComment.target_comment
+  }))
+}
+
+/**
+ * 把小红书评论正文解析成共享富文本 JSON。
+ *
+ * 当前主要兼容：
+ * - `[表情]` 形式的平台表情；
+ * - `@用户` 提及；
+ * - 评论里的换行与连续空格。
+ */
+export const buildXiaohongshuRichText = (
+  text: string,
+  emojiData: RichTextEmojiDefinition[],
+  atUsers: unknown = [],
+  options: {
+    stripTopicMarker?: boolean
+  } = {}
+): RichTextDocument => {
+  const normalizedText = normalizeXiaohongshuText(text, options)
+  const emojiTokens = [...emojiData].sort((a, b) => b.name.length - a.name.length)
+  const mentionTokens = normalizeAtUsers(atUsers).sort((a, b) => b.text.length - a.text.length)
+  const nodes: RichTextNode[] = []
+  let buffer = ''
+  let index = 0
+
+  const pushBuffer = () => {
+    if (buffer.length > 0) {
+      nodes.push(createTextNode(buffer))
+      buffer = ''
+    }
+  }
+
+  while (index < normalizedText.length) {
+    if (normalizedText[index] === '\r') {
+      pushBuffer()
+      index += normalizedText[index + 1] === '\n' ? 2 : 1
+      nodes.push(createLineBreakNode())
+      continue
     }
 
-    // 处理换行符和空格
-    comment.content = comment.content.replace(/\n/g, '<br>').replace(/ {2,}/g, (match: string) => '&nbsp;'.repeat(match.length))
-
-    // 处理@用户（在表情处理之前，避免冲突）
-    comment.content = processAtUsers(comment.content, comment.at_users, useDarkTheme)
-
-    // 处理表情包
-    comment.content = processCommentEmojis(comment.content, emojiData)
-
-    // 格式化点赞数
-    if (parseInt(comment.like_count) > 10000) {
-      comment.like_count = (parseInt(comment.like_count) / 10000).toFixed(1) + 'w'
+    if (normalizedText[index] === '\n') {
+      pushBuffer()
+      nodes.push(createLineBreakNode())
+      index += 1
+      continue
     }
 
-    // 处理子评论
-    if (comment.sub_comments && Array.isArray(comment.sub_comments)) {
-      for (const subComment of comment.sub_comments) {
-        // 确保 content 是字符串
-        if (typeof subComment.content !== 'string') {
-          subComment.content = String(subComment.content || '')
-        }
+    const matchedMention = mentionTokens.find(item => normalizedText.startsWith(item.text, index))
+    if (matchedMention) {
+      pushBuffer()
+      nodes.push(createMentionNode(matchedMention.text, matchedMention.userId))
+      index += matchedMention.text.length
+      continue
+    }
 
-        // 处理换行符和空格
-        subComment.content = subComment.content.replace(/\n/g, '<br>').replace(/ {2,}/g, (match: string) => '&nbsp;'.repeat(match.length))
+    const matchedEmoji = emojiTokens.find(item => normalizedText.startsWith(item.name, index))
+    if (matchedEmoji) {
+      pushBuffer()
+      nodes.push(createEmojiNode(matchedEmoji.name, matchedEmoji.url))
+      index += matchedEmoji.name.length
+      continue
+    }
 
-        // 处理@用户（在表情处理之前，避免冲突）
-        subComment.content = processAtUsers(subComment.content, subComment.at_users, useDarkTheme)
+    buffer += normalizedText[index]
+    index += 1
+  }
 
-        // 处理表情包
-        subComment.content = processCommentEmojis(subComment.content, emojiData)
+  pushBuffer()
 
-        // 格式化点赞数
-        if (parseInt(subComment.like_count) > 10000) {
-          subComment.like_count = (parseInt(subComment.like_count) / 10000).toFixed(1) + 'w'
+  return createRichTextDocument(nodes, { platform: 'xiaohongshu' })
+}
+
+const normalizeXiaohongshuText = (
+  text: string,
+  options: {
+    stripTopicMarker?: boolean
+  }
+): string => {
+  const normalized = typeof text === 'string' ? text : String(text || '')
+  if (options.stripTopicMarker) {
+    return normalized.replace(/\[话题\]/g, '')
+  }
+
+  return normalized
+}
+
+const normalizeTagNames = (tags: unknown): string[] => {
+  if (!Array.isArray(tags)) {
+    return []
+  }
+
+  return tags
+    .map(tag => {
+      if (typeof tag === 'string') {
+        return tag
+      }
+
+      if (tag && typeof tag === 'object') {
+        const candidate = (tag as { name?: string; tag?: string }).name ?? (tag as { tag?: string }).tag
+        return typeof candidate === 'string' ? candidate : ''
+      }
+
+      return ''
+    })
+    .filter(Boolean)
+}
+
+const normalizeAtUsers = (atUsers: unknown): Array<{ text: string; userId?: string }> => {
+  if (!Array.isArray(atUsers)) {
+    return []
+  }
+
+  return atUsers
+    .map(item => {
+      if (typeof item === 'string' && item.trim()) {
+        const nickname = item.trim().replace(/^@/, '')
+        return { text: `@${nickname}` }
+      }
+
+      if (item && typeof item === 'object') {
+        const nickname = (item as { nickname?: string; user_info?: { nickname?: string } }).nickname
+          ?? (item as { user_info?: { nickname?: string } }).user_info?.nickname
+        const userId = (item as { user_id?: string; user_info?: { user_id?: string } }).user_id
+          ?? (item as { user_info?: { user_id?: string } }).user_info?.user_id
+
+        if (typeof nickname === 'string' && nickname.trim()) {
+          return {
+            text: `@${nickname.trim().replace(/^@/, '')}`,
+            userId
+          }
         }
       }
-    }
-  }
 
-  // 在返回前进行置顶排序：isTop=true 的评论优先
-  comments.sort((a: any, b: any) => Number(b.isTop) - Number(a.isTop))
-
-  return comments.slice(0, Config.xiaohongshu.numcomment)
+      return null
+    })
+    .filter((item): item is { text: string; userId?: string } => Boolean(item))
 }

@@ -1,14 +1,81 @@
+import { createRichTextDocument, renderRichTextToReact } from '@kkk/richtext'
 import clsx from 'clsx'
+import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
 import { CircleEllipsis, Heart, Play, QrCode } from 'lucide-react'
-import React from 'react'
+import React, { type ReactNode } from 'react'
 import { IoSearch } from 'react-icons/io5'
 
-import type { QRCodeSectionProps } from '../../../types'
+import type { QRCodeSectionProps } from '../../../types'  
 import type {
   DouyinCommentProps,
   DouyinSubComment
 } from '../../../types/platforms/douyin'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
+
+const douyinMentionClassName = 'text-[#04498d] dark:text-[#face15]'
+const douyinSearchKeywordClassName = 'font-medium text-[#04498d] dark:text-[#face15]'
+const douyinSearchKeywordIconClassName = 'opacity-90'
+const emptyDouyinRichText = createRichTextDocument([], { platform: 'douyin' })
+
+const renderDouyinCommentRichText = (content: DouyinSubComment['text'] | DouyinCommentProps['data']['CommentsData'][number]['text']): ReactNode => {
+  return renderRichTextToReact(content, {
+    mentionClassName: douyinMentionClassName,
+    searchKeywordClassName: douyinSearchKeywordClassName,
+    searchKeywordIconClassName: douyinSearchKeywordIconClassName
+  })
+}
+
+const formatDouyinCommentTime = (timestamp: number): string => {
+  if (!timestamp) {
+    return ''
+  }
+
+  const commentDate = fromUnixTime(timestamp)
+  const diffSeconds = differenceInSeconds(new Date(), commentDate)
+
+  if (diffSeconds < 30) {
+    return '刚刚'
+  }
+
+  if (diffSeconds < 7776000) {
+    return formatDistanceToNow(commentDate, {
+      locale: zhCN,
+      addSuffix: true
+    })
+  }
+
+  return format(commentDate, 'yyyy-MM-dd')
+}
+
+const formatDouyinCommentDiggCount = (count: number): string => {
+  if (count >= 10000) {
+    return `${(count / 10000).toFixed(1)}w`
+  }
+
+  return String(count)
+}
+
+const DouyinLogo: React.FC<{ useDarkTheme?: boolean }> = ({ useDarkTheme }) => {
+  const [hasError, setHasError] = React.useState(false)
+
+  if (hasError) {
+    return (
+      <div className='flex items-center h-full text-6xl font-bold text-foreground/70'>
+        抖音
+      </div>
+    )
+  }
+
+  return (
+    <img
+      src={useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
+      alt='抖音Logo'
+      className='object-contain h-full w-auto max-w-125'
+      onError={() => setHasError(true)}
+    />
+  )
+}
 
 /**
  * 二维码组件
@@ -51,19 +118,7 @@ const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'>
           <div className='mb-12'>
             {/* Logo */}
             <div className='h-45 flex items-center'>
-              <img
-                src={props.useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
-                alt='抖音Logo'
-                className='object-contain h-full w-auto max-w-125'
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement
-                  target.style.display = 'none'
-                  const parent = target.parentElement
-                  if (parent) {
-                    parent.innerHTML = '<div class="flex items-center h-full text-6xl font-bold text-foreground/70">抖音</div>'
-                  }
-                }}
-              />
+              <DouyinLogo useDarkTheme={props.useDarkTheme} />
               {/* 分辨率信息 - 仅视频类型显示 */}
               {props.Type === '视频' && props.Resolution && (
                 <div className='flex flex-col gap-2 px-8 py-4 ml-8 rounded-3xl bg-surface/50 w-fit'>
@@ -152,9 +207,9 @@ const organizeReplies = (replies: DouyinSubComment[], rootCid: string, maxDepth:
       if (count > 0) {
         return [{
           cid: `more-${Date.now()}-${Math.random()}`,
-          text: '',
+          text: emptyDouyinRichText,
           digg_count: 0,
-          create_time: '',
+          create_time: 0,
           nickname: '',
           userimageurl: '',
           ip_label: '',
@@ -322,7 +377,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
                     'flex items-center',
                     !isNicknameLonger ? 'overflow-hidden min-w-0 shrink' : 'shrink-0'
                   )}>
-                    <Play size={35} className='mr-3.5 mx-1 text-muted/70 shrink-0' fill='currentColor' />
+                    <Play size={35} className='mr-3.5 mx-1 text-muted shrink-0' fill='currentColor' />
                     <span className={clsx(
                       'text-5xl font-medium text-muted',
                       !isNicknameLonger && 'truncate'
@@ -336,13 +391,14 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
               {/* 第2行：内容 */}
               <div className='py-2'>
                 <div
-                  className='text-5xl text-foreground leading-normal whitespace-pre-wrap select-text [&_img]:mb-2 [&_img]:inline [&_img]:h-[1.3em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
-                  dangerouslySetInnerHTML={{ __html: reply.text }}
+                  className='text-5xl text-foreground leading-normal whitespace-pre-wrap select-text'
                   style={{
                     wordBreak: 'break-word',
                     overflowWrap: 'break-word'
                   }}
-                />
+                >
+                  {renderDouyinCommentRichText(reply.text)}
+                </div>
                 
                 {reply.image_list && reply.image_list.length > 0 &&
                   reply.image_list.filter(Boolean).map((img, idx) => (
@@ -361,10 +417,10 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
                 <div className='flex gap-6 items-center text-muted'>
                   <div className='flex gap-2 items-center'>
                     <Heart size={40} className='text-muted' />
-                    <span className='text-4xl'>{reply.digg_count}</span>
+                    <span className='text-4xl select-text'>{formatDouyinCommentDiggCount(reply.digg_count)}</span>
                   </div>
                   <span className='text-4xl'>{reply.ip_label}</span>
-                  <span className='ml-2 text-4xl'>{reply.create_time}</span>
+                  <span className='ml-2 text-4xl'>{formatDouyinCommentTime(reply.create_time)}</span>
                 </div>
               </div>
             </div>
@@ -450,13 +506,14 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
             </div>
 
             <div
-              className='text-5xl text-foreground leading-normal mb-4 whitespace-pre-wrap select-text [&_img]:mb-2 [&_img]:inline [&_img]:h-[1.3em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
-              dangerouslySetInnerHTML={{ __html: props.text }}
+              className='text-5xl text-foreground leading-normal mb-4 whitespace-pre-wrap select-text'
               style={{
                 wordBreak: 'break-word',
                 overflowWrap: 'break-word'
               }}
-            />
+            >
+              {renderDouyinCommentRichText(props.text)}
+            </div>
 
             {/* 评论图片 */}
             {(props.commentimage || props.sticker) && (
@@ -473,10 +530,10 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
               <div className='flex gap-6 items-center shrink-0'>
                 <div className='flex gap-2 items-center transition-colors cursor-pointer'>
                   <Heart size={44} className='text-muted' />
-                  <span className='text-4xl select-text'>{props.digg_count}</span>
+                  <span className='text-4xl select-text'>{formatDouyinCommentDiggCount(props.digg_count)}</span>
                 </div>
                 <span className='text-4xl'>{props.ip_label}</span>
-                <span className='ml-2 text-4xl'>{props.create_time}</span>
+                <span className='ml-2 text-4xl'>{formatDouyinCommentTime(props.create_time)}</span>
               </div>
             </div>
           </div>

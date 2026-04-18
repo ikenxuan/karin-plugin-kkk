@@ -110,7 +110,7 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
           </div>
         </div>
 
-        <div className="grid grid-cols-[minmax(0,1.15fr)_minmax(0,0.95fr)] gap-3 items-stretch min-h-[156px]">
+        <div className="grid grid-cols-[minmax(0,1.15fr)_minmax(0,0.95fr)] gap-3 items-stretch min-h-39">
           <div className="grid grid-cols-3 gap-2 auto-rows-fr h-full">
             {(Object.entries(pushTypeConfig) as [BilibiliPushType, typeof pushTypeConfig[BilibiliPushType]][]).map(([type, config]) => {
               const isActive = activePushTypes.has(type)
@@ -119,7 +119,7 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
               return (
                 <div
                   key={type}
-                  className={`h-full min-h-[74px] px-2.5 py-2.5 rounded-xl border backdrop-blur-sm flex flex-col justify-between transition-colors duration-200 ${isActive
+                  className={`h-full min-h-18.5 px-2.5 py-2.5 rounded-xl border backdrop-blur-sm flex flex-col justify-between transition-colors duration-200 ${isActive
                     ? config.color
                     : 'bg-surface/45 text-muted border-border/15'
                   }`}

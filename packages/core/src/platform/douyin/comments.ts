@@ -1,96 +1,240 @@
-import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from 'date-fns'
-import { zhCN } from 'date-fns/locale'
+import { DyWorkComments, Result } from '@ikenxuan/amagi'
+import {
+  createEmojiNode,
+  createLineBreakNode,
+  createMentionNode,
+  createRichTextDocument,
+  createSearchKeywordNode,
+  createTextNode,
+  type RichTextDocument,
+  type RichTextEmojiDefinition,
+  type RichTextNode
+} from '@kkk/richtext'
 import decode from 'heic-decode'
 import jpeg from 'jpeg-js'
-import { DouyinCommentProps } from 'template/types/platforms/douyin'
+import type { DouyinCommentProps } from 'template/types/platforms/douyin'
 
-import { Common, Networks } from '@/module/utils'
+import { Networks } from '@/module/utils'
 import { douyinFetcher } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 
 
 /**
- * 处理评论中的表情
- * @param text 原始文本
- * @param emojiData 表情数据
- * @returns 处理后的文本
+ * @description 提取评论里的 @ 用户 sec_uid 列表
  */
-const processCommentEmojis = (text: string, emojiData: any): string => {
-  if (!text || !emojiData || !Array.isArray(emojiData)) {
-    return text
+const extractMentionSecUids = (textExtra: unknown): string[] | null => {
+  if (!Array.isArray(textExtra) || textExtra.length === 0) {
+    return null
   }
 
-  let processedText = text
+  const secUids = textExtra
+    .filter((item): item is { sec_uid?: string } => typeof item === 'object' && item !== null)
+    .map(item => item.sec_uid)
+    .filter((secUid): secUid is string => Boolean(secUid))
 
-  // 遍历表情数据，替换文本中的表情
-  for (const emoji of emojiData) {
-    if (emoji.name && emoji.url && processedText.includes(emoji.name)) {
-      // 使用正则表达式进行全局替换，确保特殊字符被正确转义
-      const escapedName = emoji.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      const regex = new RegExp(escapedName, 'g')
-      processedText = processedText.replace(regex, `<img src="${emoji.url}" alt="${emoji.name}" />`)
-    }
-  }
-
-  // 处理表情和文本混合的情况，将非表情文本用span包裹
-  // 先分割文本，区分表情和普通文本
-  const parts = processedText.split(/(<img[^>]*>)/)
-
-  const wrappedParts = parts.map(part => {
-    // 如果是img标签（表情），直接返回
-    if (part.startsWith('<img')) {
-      return part
-    }
-    // 如果是普通文本且不为空，用span包裹
-    if (part.trim()) {
-      return `<span>${part}</span>`
-    }
-    return part
-  })
-
-  return wrappedParts.join('')
+  return secUids.length > 0 ? secUids : null
 }
 
 /**
- * 处理单个评论文本的换行符和空格
- * @param text 原始文本
- * @returns 处理后的文本
+ * @description 解析评论中的搜索词信息
  */
-const processTextFormatting = (text: string): string => {
-  // 处理换行符
-  let processedText = text.replace(/\n/g, '<br>')
-  // 处理多个连续空格，将两个或更多连续空格替换为&nbsp;
-  processedText = processedText.replace(/ {2,}/g, (match: string) => {
-    return '&nbsp;'.repeat(match.length)
-  })
-  return processedText
+const extractSearchText = (textExtra: unknown) => {
+  if (!Array.isArray(textExtra) || textExtra.length === 0) {
+    return null
+  }
+
+  const searchItems = textExtra
+    .filter((item): item is { search_text?: string; search_query_id?: string } => typeof item === 'object' && item !== null)
+    .filter(item => Boolean(item.search_text))
+    .map(item => ({
+      search_text: item.search_text!,
+      search_query_id: item.search_query_id ?? ''
+    }))
+
+  return searchItems.length > 0 ? searchItems : null
+}
+
+type DouyinSearchToken = {
+  start: number
+  end: number
+  text: string
+  queryId: string
+}
+
+type DouyinMentionToken = {
+  text: string
+  userId: string
+}
+
+type DouyinCommentItem = DouyinCommentProps['data']['CommentsData'][number]
+type DouyinReplyCommentItem = NonNullable<DouyinCommentItem['replyComment']>[number]
+
+/**
+ * 提取评论正文中的搜索词范围。
+ *
+ * 抖音会把高亮搜索词单独放在 `text_extra` 里，但用户实际看到的是“正文里某一段文字高亮”。
+ * 所以这里不能只把它单独透传给 template，而是要把范围信息重新合回正文解析流程里。
+ */
+const extractSearchTokens = (textExtra: unknown, text: string): DouyinSearchToken[] => {
+  if (!Array.isArray(textExtra) || textExtra.length === 0 || !text) {
+    return []
+  }
+
+  return textExtra
+    .filter((item): item is {
+      start?: number
+      end?: number
+      search_text?: string
+      search_query_id?: string
+    } => typeof item === 'object' && item !== null)
+    .filter((item): item is {
+      start: number
+      end: number
+      search_text: string
+      search_query_id?: string
+    } => (
+      typeof item.start === 'number' &&
+      typeof item.end === 'number' &&
+      typeof item.search_text === 'string' &&
+      item.search_text.length > 0 &&
+      item.start >= 0 &&
+      item.end > item.start &&
+      item.end <= text.length
+    ))
+    .map(item => ({
+      start: item.start,
+      end: item.end,
+      text: item.search_text,
+      queryId: item.search_query_id ?? ''
+    }))
+    .filter(item => text.slice(item.start, item.end) === item.text)
+    .sort((a, b) => a.start - b.start || (b.end - b.start) - (a.end - a.start))
 }
 
 /**
- * 处理单个评论的@用户高亮
- * @param text 评论文本
- * @param userIds @的用户ID列表
- * @returns 处理后的文本
+ * 根据抖音 `sec_uid` 反查当前昵称，生成文本中可匹配的 @ 标记。
+ *
+ * 抖音评论正文里通常只保留 `@昵称` 文本，稳定用户 ID 在 `text_extra` 里。
+ * 这里先把 ID 转成 `@昵称 + userId`，后续解析时才能把普通文本切成 mention 节点。
  */
-const processAtUsers = async (text: string, userIds: string[] | null): Promise<string> => {
-  if (!userIds || !Array.isArray(userIds)) {
-    return text
+const resolveMentionTokens = async (userIds: string[] | null): Promise<DouyinMentionToken[]> => {
+  if (!userIds || userIds.length === 0) {
+    return []
   }
 
-  const atColor = Common.useDarkTheme() ? '#face15' : '#04498d'
-  let processedText = text
-  for (const secUid of userIds) {
-    const UserInfoData = await douyinFetcher.fetchUserProfile({ sec_uid: secUid, typeMode: 'strict' })
-    if (UserInfoData.data.user.sec_uid === secUid) {
-      /** 这里评论只要生成了艾特，如果被艾特的人改了昵称，评论也不会变，所以可能会出现有些艾特没有正确上颜色，因为接口没有提供历史昵称 */
-      const regex = new RegExp(`@${UserInfoData.data.user.nickname?.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')}`, 'g')
+  const uniqueUserIds = [...new Set(userIds)]
 
-      processedText = processedText.replace(regex, match => {
-        return `<span style="color: ${atColor};">${match}</span>`
-      })
+  const mentionTokens = await Promise.all(uniqueUserIds.map(async (secUid) => {
+    try {
+      const userInfo = await douyinFetcher.fetchUserProfile({ sec_uid: secUid, typeMode: 'strict' })
+      const nickname = userInfo.data.user.nickname?.trim()
+
+      if (!nickname || userInfo.data.user.sec_uid !== secUid) {
+        return null
+      }
+
+      return {
+        text: `@${nickname}`,
+        userId: secUid
+      }
+    } catch {
+      return null
+    }
+  }))
+
+  return mentionTokens
+    .filter((item): item is DouyinMentionToken => Boolean(item))
+    .sort((a, b) => b.text.length - a.text.length)
+}
+
+/**
+ * 把抖音评论原始文本解析成共享富文本 JSON。
+ *
+ * 这里刻意不拼 HTML：
+ * - 普通文本原样放进 text 节点，由 React 渲染时自动转义。
+ * - 换行符转成 lineBreak 节点，保留原来的视觉换行。
+ * - 平台表情转成 emoji 节点，图片 URL 交给 template 侧渲染器再做协议白名单。
+ * - @ 用户转成 mention 节点，template 侧只负责套样式。
+ */
+const buildDouyinRichText = async (
+  text: string,
+  emojiData: RichTextEmojiDefinition[],
+  mentionUserIds: string[] | null,
+  searchTokens: DouyinSearchToken[] = []
+): Promise<RichTextDocument> => {
+  const mentionTokens = await resolveMentionTokens(mentionUserIds)
+  const emojiTokens = emojiData
+    .filter(item => Boolean(item?.name) && Boolean(item?.url))
+    .sort((a, b) => b.name.length - a.name.length)
+
+  const nodes: RichTextNode[] = []
+  let buffer = ''
+  let index = 0
+
+  const pushBuffer = () => {
+    if (buffer.length > 0) {
+      nodes.push(createTextNode(buffer))
+      buffer = ''
     }
   }
-  return processedText
+
+  let searchTokenIndex = 0
+
+  while (index < text.length) {
+    while (searchTokens[searchTokenIndex] && searchTokens[searchTokenIndex].start < index) {
+      searchTokenIndex += 1
+    }
+
+    const currentSearchToken = searchTokens[searchTokenIndex]
+    if (currentSearchToken && currentSearchToken.start === index) {
+      pushBuffer()
+      nodes.push(createSearchKeywordNode(currentSearchToken.text, currentSearchToken.queryId))
+      index = currentSearchToken.end
+      searchTokenIndex += 1
+      continue
+    }
+
+    if (text[index] === '\r') {
+      pushBuffer()
+      if (text[index + 1] === '\n') {
+        index += 2
+      } else {
+        index += 1
+      }
+      nodes.push(createLineBreakNode())
+      continue
+    }
+
+    if (text[index] === '\n') {
+      pushBuffer()
+      nodes.push(createLineBreakNode())
+      index += 1
+      continue
+    }
+
+    const matchedMention = mentionTokens.find(item => text.startsWith(item.text, index))
+    if (matchedMention) {
+      pushBuffer()
+      nodes.push(createMentionNode(matchedMention.text, matchedMention.userId))
+      index += matchedMention.text.length
+      continue
+    }
+
+    const matchedEmoji = emojiTokens.find(item => text.startsWith(item.name, index))
+    if (matchedEmoji) {
+      pushBuffer()
+      nodes.push(createEmojiNode(matchedEmoji.name, matchedEmoji.url))
+      index += matchedEmoji.name.length
+      continue
+    }
+
+    buffer += text[index]
+    index += 1
+  }
+
+  pushBuffer()
+
+  return createRichTextDocument(nodes, { platform: 'douyin' })
 }
 
 /**
@@ -128,8 +272,8 @@ const processCommentImage = async (imageUrl: string | null): Promise<string | nu
  * @param {*} emojidata 处理过后的emoji列表
  * @returns obj
  */
-export const douyinComments = async (data: any, emojidata: any) => {
-  let jsonArray: any[] = []
+export const douyinComments = async (data: Result<DyWorkComments>, emojidata: any) => {
+  const commentsData: DouyinCommentItem[] = []
   let imageUrls: string[] = []
   if (data.data.comments === null) return { CommentsData: [], image_url: [] }
   let id = 1
@@ -138,12 +282,11 @@ export const douyinComments = async (data: any, emojidata: any) => {
     const aweme_id = comment.aweme_id
     const nickname = comment.user.nickname
     const userimageurl = comment.user.avatar_thumb.url_list[0]
-    let text = comment.text
+    const text = comment.text
     const ip = comment.ip_label ?? '未知'
-    const time = comment.create_time
     const label_type = comment.label_type ?? -1
     const sticker = comment.sticker ? comment.sticker.animate_url.url_list[0] : null
-    let digg_count = comment.digg_count
+    const digg_count = comment.digg_count
     const imageurl =
       comment.image_list &&
         comment.image_list?.[0] &&
@@ -152,28 +295,10 @@ export const douyinComments = async (data: any, emojidata: any) => {
         ? comment.image_list?.[0].origin_url.url_list[0]
         : null
     const status_label = comment.label_list?.[0]?.text ?? null
-    const userintextlongid =
-      comment.text_extra && comment.text_extra[0] && comment.text_extra[0].sec_uid
-        ? comment.text_extra.map((extra: { sec_uid: string }) => extra.sec_uid)
-        : null
-    const search_text =
-      comment.text_extra && comment.text_extra[0] && comment.text_extra[0].search_text
-        ? comment.text_extra[0].search_text &&
-        comment.text_extra.map((extra: { search_text: string; search_query_id: string }) => ({
-          search_text: extra.search_text,
-          search_query_id: extra.search_query_id
-        }))
-        : null
-    const relativeTime = getRelativeTimeFromTimestamp(time)
-
-    // 在循环中处理文本格式化（换行符和空格）
-    text = processTextFormatting(text)
-
-    // 在循环中处理@用户高亮
-    text = await processAtUsers(text, userintextlongid)
-
-    // 在循环中处理表情
-    text = processCommentEmojis(text, emojidata)
+    const userintextlongid = extractMentionSecUids(comment.text_extra)
+    const search_text = extractSearchText(comment.text_extra)
+    const searchTokens = extractSearchTokens(comment.text_extra, text)
+    const richText = await buildDouyinRichText(text, emojidata, userintextlongid, searchTokens)
 
     // 在循环中处理图片HEIC转JPG
     const processedImageUrl = await processCommentImage(imageurl)
@@ -188,11 +313,6 @@ export const douyinComments = async (data: any, emojidata: any) => {
       imageUrls.push(sticker)
     }
 
-    // 在循环中处理点赞数格式化
-    if (digg_count > 10000) {
-      digg_count = (digg_count / 10000).toFixed(1) + 'w'
-    }
-
     const replyComment = await douyinFetcher.fetchCommentReplies({
       aweme_id,
       comment_id: cid,
@@ -200,17 +320,15 @@ export const douyinComments = async (data: any, emojidata: any) => {
       number: Config.douyin.subCommentLimit
     })
 
-    const replyCommentsList: any[] = []
+    const replyComments: DouyinReplyCommentItem[] = []
 
     if (replyComment.data.comments && replyComment.data.comments.length > 0) {
       for (const reply of replyComment.data.comments) {
         const replyItem = reply
         const replyUserintextlongid =
-          replyItem.text_extra && replyItem.text_extra[0] && replyItem.text_extra[0].sec_uid
-            ? replyItem.text_extra.filter(extra => extra.sec_uid).map((extra: any) => extra.sec_uid!)
-            : null
-
-        const processedReplyText = await processAtUsers(replyItem.text, replyUserintextlongid)
+          extractMentionSecUids(replyItem.text_extra)
+        const replySearchTokens = extractSearchTokens(replyItem.text_extra, replyItem.text)
+        const replyRichText = await buildDouyinRichText(replyItem.text, emojidata, replyUserintextlongid, replySearchTokens)
 
         // 处理回复评论的图片列表
         const replyImageUrl = (replyItem as any).image_list?.[0]?.origin_url?.url_list?.[0]
@@ -228,14 +346,12 @@ export const douyinComments = async (data: any, emojidata: any) => {
           imageUrls.push(replyStickerUrl)
         }
 
-        replyCommentsList.push({
-          create_time: getRelativeTimeFromTimestamp(replyItem.create_time),
+        replyComments.push({
+          create_time: replyItem.create_time,
           nickname: replyItem.user.nickname,
           userimageurl: replyItem.user.avatar_thumb.url_list[0],
-          text: processCommentEmojis(processedReplyText, emojidata),
-          digg_count: replyItem.digg_count > 10000
-            ? (replyItem.digg_count / 10000).toFixed(1) + 'w'
-            : replyItem.digg_count,
+          text: replyRichText,
+          digg_count: replyItem.digg_count,
           ip_label: replyItem.ip_label,
           text_extra: replyItem.text_extra,
           label_text: replyItem.label_text,
@@ -249,15 +365,15 @@ export const douyinComments = async (data: any, emojidata: any) => {
 
     const commentObj: DouyinCommentProps['data']['CommentsData'][number] = {
       id: id++,
-      replyComment: replyCommentsList.length > 0 ? replyCommentsList : undefined,
+      replyComment: replyComments.length > 0 ? replyComments : undefined,
       cid,
       aweme_id,
       nickname,
       userimageurl,
-      text,
+      text: richText,
       digg_count,
       ip_label: ip,
-      create_time: relativeTime,
+      create_time: comment.create_time,
       commentimage: processedImageUrl ?? undefined,
       label_type,
       sticker: sticker ?? undefined,
@@ -266,55 +382,20 @@ export const douyinComments = async (data: any, emojidata: any) => {
       search_text,
       is_author_digged: comment.is_author_digged ?? false
     }
-    jsonArray.push(commentObj)
+    commentsData.push(commentObj)
   }
 
-  jsonArray.sort((a, b) => {
-    // 由于digg_count可能已经是字符串格式，需要重新处理排序
-    const aCount = typeof a.digg_count === 'string' && a.digg_count.includes('w')
-      ? parseFloat(a.digg_count) * 10000
-      : typeof a.digg_count === 'number' ? a.digg_count : 0
-    const bCount = typeof b.digg_count === 'string' && b.digg_count.includes('w')
-      ? parseFloat(b.digg_count) * 10000
-      : typeof b.digg_count === 'number' ? b.digg_count : 0
-    return bCount - aCount
-  })
+  commentsData.sort((a, b) => b.digg_count - a.digg_count)
 
-  const indexLabelTypeOne = jsonArray.findIndex((comment) => comment.label_type === 1)
+  const indexLabelTypeOne = commentsData.findIndex((comment) => comment.label_type === 1)
 
   if (indexLabelTypeOne !== -1) {
-    const commentTypeOne = jsonArray.splice(indexLabelTypeOne, 1)[0]
-    jsonArray.unshift(commentTypeOne)
+    const authorComment = commentsData.splice(indexLabelTypeOne, 1)[0]
+    commentsData.unshift(authorComment)
   }
 
   return {
-    CommentsData: jsonArray,
+    CommentsData: commentsData,
     image_url: imageUrls
   }
-}
-
-/**
- * 将时间戳转换为相对时间字符串
- * @param timestamp 时间戳（秒）
- * @returns 相对时间字符串
- */
-const getRelativeTimeFromTimestamp = (timestamp: number): string => {
-  const commentDate = fromUnixTime(timestamp)
-  const diffSeconds = differenceInSeconds(new Date(), commentDate)
-
-  // 30秒内显示"刚刚"
-  if (diffSeconds < 30) {
-    return '刚刚'
-  }
-
-  // 三个月内使用相对时间
-  if (diffSeconds < 7776000) {
-    return formatDistanceToNow(commentDate, {
-      locale: zhCN,
-      addSuffix: true
-    })
-  }
-
-  // 超过三个月，显示具体日期
-  return format(commentDate, 'yyyy-MM-dd')
 }

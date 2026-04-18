@@ -7,7 +7,7 @@ import { logger } from 'node-karin'
 import { Base, baseHeaders, buildGoogleMotionPhoto, Common, downloadFile, type downLoadFileOptions, downloadVideo, type LiveImageMergeOptions, loopVideoWithTransition, processImageUrl, Render } from '@/module'
 import { Config } from '@/module/utils/Config'
 
-import { xiaohongshuComments } from './comments'
+import { buildXiaohongshuRichText, xiaohongshuComments } from './comments'
 import { XiaohongshuIdData } from './getID'
 
 // 定义小红书视频流类型
@@ -57,9 +57,11 @@ export class Xiaohongshu extends Base {
       const noteInfoImg = await Render(this.e, 'xiaohongshu/noteInfo',
         {
           title: NoteData.data.data.items[0].note_card!.title,
-          desc: processXiaohongshuEmojis(
+          desc: buildXiaohongshuRichText(
             NoteData.data.data.items[0].note_card!.desc,
-            formattedEmojis
+            formattedEmojis,
+            [],
+            { stripTopicMarker: true }
           ),
           statistics: NoteData.data.data.items[0].note_card!.interact_info,
           note_id: NoteData.data.data.items[0].note_card!.note_id,
@@ -497,47 +499,3 @@ export const XiaohongshuEmoji = (data: any) => {
   return ListArray
 }
 
-/**
- * 处理小红书笔记描述中的表情和话题标签
- * @param text 原始文本
- * @param emojiData 表情数据
- * @returns 处理后的HTML文本
- */
-const processXiaohongshuEmojis = (text: string, emojiData: any): string => {
-  if (!text || !emojiData || !Array.isArray(emojiData)) {
-    return `<span>${text}</span>`
-  }
-
-  let processedText = text
-
-  // 首先处理话题标签，移除[话题]标识
-  processedText = processedText.replace(/\[话题\]/g, '')
-
-  // 遍历表情数据，替换文本中的表情
-  for (const emoji of emojiData) {
-    if (emoji.name && emoji.url && processedText.includes(emoji.name)) {
-      // 使用正则表达式进行全局替换，确保特殊字符被正确转义
-      const escapedName = emoji.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      const regex = new RegExp(escapedName, 'g')
-      processedText = processedText.replace(regex, `<img src="${emoji.url}" alt="${emoji.name}" />`)
-    }
-  }
-
-  // 处理表情和文本混合的情况，将非表情文本用span包裹
-  // 先分割文本，区分表情和普通文本
-  const parts = processedText.split(/(<img[^>]*>)/)
-
-  const wrappedParts = parts.map(part => {
-    // 如果是img标签（表情），直接返回
-    if (part.startsWith('<img')) {
-      return part
-    }
-    // 如果是普通文本且不为空，用span包裹
-    if (part.trim()) {
-      return `<span>${part}</span>`
-    }
-    return part
-  })
-
-  return wrappedParts.join('')
-}

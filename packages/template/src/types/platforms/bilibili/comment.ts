@@ -1,3 +1,5 @@
+import type { RichTextDocument } from '@kkk/richtext'
+
 import type { BaseComponentProps } from '../../index'
 
 /**
@@ -53,28 +55,26 @@ export interface SubCommentItem {
   avatar: string
   /** 用户昵称 */
   uname: string
+  /** 用户昵称颜色 */
+  unameColor?: string | null
   /** 用户等级 */
   level: number
   /** 头像框 */
   frame?: string
   /** 评论内容 */
-  message: string
+  message: RichTextDocument
   /** 评论所有图片 */
   pictures: string[]
-  /** 创建时间 */
-  ctime: string
+  /** 创建时间戳（秒） */
+  ctime: number
   /** IP标签/地理位置 */
   location: string
   /** 点赞数 */
-  like: string | number
+  like: number
   /** 是否为UP主评论 */
   isUP: boolean
   /** VIP状态 */
   vipstatus?: number
-  /** 大会员图标 */
-  icon_big_vip?: string | null
-  /** 被艾特的用户 */
-  members?: any[]
   /** 粉丝卡片信息 */
   fanCard?: FanCardInfo | null
 }
@@ -87,6 +87,8 @@ export interface CommentItem {
   avatar: string
   /** 用户昵称 */
   uname: string
+  /** 用户昵称颜色 */
+  unameColor?: string | null
   /** 用户等级 */
   level: number
   /** 头像框 */
@@ -96,21 +98,21 @@ export interface CommentItem {
   /** 状态标签 */
   status_label?: string | null
   /** 评论内容 */
-  message: string
+  message: RichTextDocument
   /** 评论所有图片 */
   pictures: string[]
   /** VIP状态 */
   vipstatus?: number
   /** 贴纸 */
   sticker?: string
-  /** 创建时间 */
-  ctime: string
+  /** 创建时间戳（秒） */
+  ctime: number
   /** IP标签/地理位置 */
   location: string
   /** 回复数量 */
   replylength: number
   /** 点赞数 */
-  like: string
+  like: number
   /** 是否置顶评论 */
   isTop: boolean
   /** 是否为UP主评论 */

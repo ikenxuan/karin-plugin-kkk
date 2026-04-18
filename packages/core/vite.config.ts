@@ -3,7 +3,6 @@ import { builtinModules } from 'node:module'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import terser from '@rollup/plugin-terser'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
@@ -18,7 +17,7 @@ const __dirname = dirname(__filename)
 // 读取 amagi 的版本号
 const amagiPkg = JSON.parse(fs.readFileSync(resolve(__dirname, '../amagi/packages/core/package.json'), 'utf-8'))
 
-const entry: string[] = ['src/index.ts', 'src/root.ts', 'src/web.config.ts', 'src/export/template.ts']
+const entry: string[] = ['src/index.ts', 'src/root.ts', 'src/web.config.ts', 'src/export/template.ts', 'src/export/richtext.ts']
 
 const getFiles = (dir: string) => {
   fs.readdirSync(dir).forEach((file) => {
@@ -101,22 +100,16 @@ export default defineConfig({
   },
   resolve: {
     conditions: ['node'],
-    alias: {
-      '@': resolve(__dirname, './src'),
-      axios: 'node-karin/axios',
-      template: resolve(__dirname, '../template/src/client.ts'),
-      '@ikenxuan/amagi': resolve(__dirname, '../amagi/packages/core/src/index.ts'),
-      amagi: resolve(__dirname, '../amagi/packages/core/src')
-    }
+    alias: [
+      { find: '@kkk/richtext', replacement: resolve(__dirname, '../richtext/src/index.ts') },
+      { find: '@', replacement: resolve(__dirname, './src') },
+      { find: 'axios', replacement: 'node-karin/axios' },
+      { find: 'template', replacement: resolve(__dirname, '../template/src/client.ts') },
+      { find: '@ikenxuan/amagi', replacement: resolve(__dirname, '../amagi/packages/core/src/index.ts') },
+      { find: 'amagi', replacement: resolve(__dirname, '../amagi/packages/core/src') }
+    ]
   },
   plugins: [
-    terser({
-      compress: false,
-      mangle: false,
-      format: {
-        ascii_only: false
-      }
-    }),
     react(),
     tailwindcss(),
     injectStartTimerPlugin(),

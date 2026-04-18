@@ -1,9 +1,12 @@
 import { Button, Chip } from '@heroui/react'
+import { renderRichTextToReact } from '@kkk/richtext'
 import { Calendar, ExternalLink, Heart, MapPin, MessageCircle, Share2, Star } from 'lucide-react'
 import React, { useMemo } from 'react'
 
 import { DefaultLayout } from '../../../components/layouts/DefaultLayout'
 import type { XiaohongshuNoteInfoProps } from '../../../types/platforms/xiaohongshu'
+
+const xiaohongshuNoteMentionClassName = 'text-[#13386c] dark:text-[#c7daef]'
 
 /**
  * 格式化数字显示
@@ -85,7 +88,7 @@ export const XiaohongshuNoteInfo: React.FC<Omit<XiaohongshuNoteInfoProps, 'templ
             <div className="overflow-hidden relative">
               <img
                 src={props.data.image_url}
-                alt={props.data.desc}
+                alt={props.data.title || '小红书笔记封面'}
                 className="object-cover w-full h-full"
               />
               <div className="absolute inset-0 bg-linear-to-t to-transparent from-black/30" />
@@ -97,11 +100,14 @@ export const XiaohongshuNoteInfo: React.FC<Omit<XiaohongshuNoteInfoProps, 'templ
               {props.data.title && (
                 <h1 className="mb-6 text-7xl font-bold leading-tight text-foreground">{props.data.title}</h1>
               )}
-              {/* 笔记描述 - 支持HTML渲染 */}
+              {/* 笔记描述 */}
               <div
-                className='text-5xl text-foreground/80 leading-relaxed mb-8 whitespace-pre-wrap select-text [&_img]:mb-3 [&_img]:inline [&_img]:h-[1.4em] [&_img]:w-auto [&_img]:align-middle [&_img]:mx-1 [&_img]:max-w-[1.7em]'
-                dangerouslySetInnerHTML={{ __html: props.data.desc }}
-              />
+                className='text-5xl text-foreground/80 leading-relaxed mb-8 whitespace-pre-wrap select-text'
+              >
+                {renderRichTextToReact(props.data.desc, {
+                  mentionClassName: xiaohongshuNoteMentionClassName
+                })}
+              </div>
               
               {/* 发布信息 */}
               <div className="flex gap-8 items-center text-5xl text-muted">
