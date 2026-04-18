@@ -54,7 +54,7 @@
 该项目的部分功能开发依赖了 OpenAI，他们提供了前沿的 AI Agent 访问。
 
 <p align="left">
-<a href="https://openai.com" target="_blank">
+<a href="https://openai.com" target="_blank" style="text-decoration: none;">
   <picture>
     <source
       media="(prefers-color-scheme: dark)"
@@ -80,7 +80,7 @@
   </picture>
   </a>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://chatgpt.com/codex/cloud" target="_blank">
+  <a href="https://chatgpt.com/codex/cloud" target="_blank" style="text-decoration: none;">
   <picture>
     <source
       media="(prefers-color-scheme: dark)"
