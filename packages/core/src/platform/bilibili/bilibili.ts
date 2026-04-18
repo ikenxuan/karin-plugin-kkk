@@ -1509,7 +1509,7 @@ export const getvideosize = async (videourl: string, audiourl: string, bvid: str
     url: videourl,
     headers: {
       ...baseHeaders,
-      Referer: `https://wwww.bilibili.com/video/${bvid}`,
+      Referer: `https://www.bilibili.com/video/${bvid}`,
       Cookie: Config.cookies.bilibili
     }
   }).getHeaders()
