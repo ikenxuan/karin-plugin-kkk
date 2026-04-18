@@ -3,7 +3,6 @@ import { builtinModules } from 'node:module'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import terser from '@rollup/plugin-terser'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
@@ -111,13 +110,6 @@ export default defineConfig({
     ]
   },
   plugins: [
-    terser({
-      compress: false,
-      mangle: false,
-      format: {
-        ascii_only: false
-      }
-    }),
     react(),
     tailwindcss(),
     injectStartTimerPlugin(),

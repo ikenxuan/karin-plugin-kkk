@@ -63,7 +63,6 @@
     "@karinjs/plugin-adapter-milky": "^1.2.4",
     "@karinjs/plugin-puppeteer": "^2.3.1",
     "@kkk/richtext": "workspace:*",
-    "@rollup/plugin-terser": "^1.0.0",
     "@types/express": "5.0.6",
     "@types/heic-decode": "^1.1.3",
     "@types/pngjs": "^6.0.5",
@@ -78,13 +77,13 @@
     "pngjs": "^7.0.0",
     "qr-code-styling": "^1.9.2",
     "template": "workspace:*",
-    "tsdown": "^0.21.8",
+    "tsdown": "^0.21.9",
     "vite-plugin-top-level-await": "^1.6.0",
     "vite-plugin-wasm": "^3.6.0",
     "vitest": "^4.1.4"
   },
   "peerDependencies": {
-    "@snapka/puppeteer": ">=0.1.5 <0.3.0",
+    "@snapka/puppeteer": ">=0.1.5",
     "@types/react": "*"
   },
   "engines": {
