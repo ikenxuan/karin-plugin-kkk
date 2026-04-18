@@ -23,7 +23,7 @@
     },
     "./template": {
       "types": "./lib/core_chunk/template.d.mts",
-      "import": "./lib/core_chunk/template.mjs"
+      "import": "./lib/core_chunk/template.js"
     }
   },
   "typesVersions": {
