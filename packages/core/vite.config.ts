@@ -17,7 +17,7 @@ const __dirname = dirname(__filename)
 // 读取 amagi 的版本号
 const amagiPkg = JSON.parse(fs.readFileSync(resolve(__dirname, '../amagi/packages/core/package.json'), 'utf-8'))
 
-const entry: string[] = ['src/index.ts', 'src/root.ts', 'src/web.config.ts', 'src/export/template.ts']
+const entry: string[] = ['src/index.ts', 'src/root.ts', 'src/web.config.ts', 'src/export/template.ts', 'src/export/richtext.ts']
 
 const getFiles = (dir: string) => {
   fs.readdirSync(dir).forEach((file) => {
