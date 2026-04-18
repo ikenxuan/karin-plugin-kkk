@@ -35,6 +35,10 @@
 - [KarinJS/Karin](https://github.com/KarinJS/Karin) - 即时通讯应用机器人框架，本项目基于此开发
 - [ikenxuan/amagi](https://github.com/ikenxuan/amagi) - 封装了本插件中用到接口的 TypeScript 实现
 
+<a href="https://github.com/ikenxuan/karin-plugin-kkk/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=ikenxuan/karin-plugin-kkk" />
+</a>
+
 ## Star History
 
 <a href="https://www.star-history.com/?repos=ikenxuan%2Fkarin-plugin-kkk%2Cikenxuan%2Famagi&type=timeline&legend=bottom-right">
@@ -45,13 +49,64 @@
  </picture>
 </a>
 
-## Contributors
+## Further support
 
-<a href="https://github.com/ikenxuan/karin-plugin-kkk/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=ikenxuan/karin-plugin-kkk" />
-</a>
+该项目的部分功能开发依赖了 OpenAI，他们提供了前沿的 AI Agent 访问。
 
----
+<p align="left">
+<a href="https://openai.com" target="_blank" style="text-decoration: none;">
+  <picture>
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcset="https://unpkg.com/@lobehub/icons-static-png@latest/dark/openai.png"
+    />
+    <img
+      height="60"
+      src="https://unpkg.com/@lobehub/icons-static-png@latest/light/openai.png"
+      alt="OpenAI logo"
+    />
+  </picture>
+  &nbsp;
+  <picture>
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcset="https://unpkg.com/@lobehub/icons-static-png@latest/dark/openai-text.png"
+    />
+    <img
+      height="60"
+      src="https://unpkg.com/@lobehub/icons-static-png@latest/light/openai-text.png"
+      alt="OpenAI"
+    />
+  </picture>
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://chatgpt.com/codex/cloud" target="_blank" style="text-decoration: none;">
+  <picture>
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcset="https://unpkg.com/@lobehub/icons-static-png@latest/dark/codex-color.png"
+    />
+    <img
+      height="60"
+      src="https://unpkg.com/@lobehub/icons-static-png@latest/light/codex-color.png"
+      alt="Codex logo"
+    />
+  </picture>
+  &nbsp;
+  <picture>
+    <source
+      media="(prefers-color-scheme: light)"
+      srcset="https://unpkg.com/@lobehub/icons-static-png@latest/light/codex-text.png"
+    />
+    <img
+      height="60"
+      src="https://unpkg.com/@lobehub/icons-static-png@latest/dark/codex-text.png"
+      alt="Codex"
+    />
+  </picture>
+  </a>
+</p>
+
 
 ## License
 

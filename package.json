@@ -23,7 +23,11 @@
     },
     "./template": {
       "types": "./lib/core_chunk/template.d.mts",
-      "import": "./lib/core_chunk/template.mjs"
+      "import": "./lib/core_chunk/template.js"
+    },
+    "./richtext": {
+      "types": "./lib/core_chunk/richtext.d.mts",
+      "import": "./lib/core_chunk/richtext.js"
     }
   },
   "typesVersions": {
@@ -47,7 +51,7 @@
     "fingerprint-injector": "^2.1.82"
   },
   "peerDependencies": {
-    "@snapka/puppeteer": ">=0.1.5 <0.3.0",
+    "@snapka/puppeteer": ">=0.1.5",
     "@types/react": "*"
   },
   "engines": {
@@ -77,5 +81,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-04-16T12:41:41.486Z"
+  "timestamp": "2026-04-18T16:27:36.206Z"
 }

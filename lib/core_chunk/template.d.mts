@@ -1,4 +1,5 @@
 /// <reference types="node" />
+import { l as RichTextDocument } from "./index-UcNmggR0.mjs";
 import React$1 from "react";
 import { Agent, ClientRequest, ClientRequestArgs, IncomingMessage, OutgoingHttpHeaders, Server } from "http";
 import { EventEmitter } from "events";
@@ -75,12 +76,12 @@ interface DouyinCommentProps extends BaseComponentProps {
       nickname: string; /** 标签类型 (1=作者) */
       label_type?: number; /** 状态标签 */
       status_label?: string; /** 评论内容 */
-      text: string; /** 评论图片 */
+      text: RichTextDocument; /** 评论图片 */
       commentimage?: string; /** 贴纸 */
-      sticker?: string; /** 创建时间 */
-      create_time: string; /** IP标签 */
+      sticker?: string; /** 创建时间戳（秒） */
+      create_time: number; /** IP标签 */
       ip_label: string; /** 点赞数 */
-      digg_count: number | string; /** 搜索文本 */
+      digg_count: number; /** 搜索文本 */
       search_text?: Array<{
         /** 搜索文本内容 */search_text: string; /** 搜索查询ID */
         search_query_id: string;
@@ -98,16 +99,16 @@ interface DouyinCommentProps extends BaseComponentProps {
  * 抖音子评论数据接口
  */
 interface DouyinSubComment {
-  /** 创建时间 */
-  create_time: string;
+  /** 创建时间戳（秒） */
+  create_time: number;
   /** 用户昵称 */
   nickname: string;
   /** 用户头像URL */
   userimageurl: string;
   /** 评论内容 */
-  text: string;
+  text: RichTextDocument;
   /** 点赞数 */
-  digg_count: number | string;
+  digg_count: number;
   /** IP标签 */
   ip_label: string;
   /** 文本额外信息 */
@@ -733,28 +734,26 @@ interface SubCommentItem {
   avatar: string;
   /** 用户昵称 */
   uname: string;
+  /** 用户昵称颜色 */
+  unameColor?: string | null;
   /** 用户等级 */
   level: number;
   /** 头像框 */
   frame?: string;
   /** 评论内容 */
-  message: string;
+  message: RichTextDocument;
   /** 评论所有图片 */
   pictures: string[];
-  /** 创建时间 */
-  ctime: string;
+  /** 创建时间戳（秒） */
+  ctime: number;
   /** IP标签/地理位置 */
   location: string;
   /** 点赞数 */
-  like: string | number;
+  like: number;
   /** 是否为UP主评论 */
   isUP: boolean;
   /** VIP状态 */
   vipstatus?: number;
-  /** 大会员图标 */
-  icon_big_vip?: string | null;
-  /** 被艾特的用户 */
-  members?: any[];
   /** 粉丝卡片信息 */
   fanCard?: FanCardInfo | null;
 }
@@ -766,6 +765,8 @@ interface CommentItem {
   avatar: string;
   /** 用户昵称 */
   uname: string;
+  /** 用户昵称颜色 */
+  unameColor?: string | null;
   /** 用户等级 */
   level: number;
   /** 头像框 */
@@ -775,21 +776,21 @@ interface CommentItem {
   /** 状态标签 */
   status_label?: string | null;
   /** 评论内容 */
-  message: string;
+  message: RichTextDocument;
   /** 评论所有图片 */
   pictures: string[];
   /** VIP状态 */
   vipstatus?: number;
   /** 贴纸 */
   sticker?: string;
-  /** 创建时间 */
-  ctime: string;
+  /** 创建时间戳（秒） */
+  ctime: number;
   /** IP标签/地理位置 */
   location: string;
   /** 回复数量 */
   replylength: number;
   /** 点赞数 */
-  like: string;
+  like: number;
   /** 是否置顶评论 */
   isTop: boolean;
   /** 是否为UP主评论 */
@@ -1354,9 +1355,7 @@ interface KuaishouCommentProps extends BaseComponentProps {
     viewCount?: number; /** 图片数量 */
     ImageLength?: number; /** 分享链接 */
     share_url: string; /** 评论数据 */
-    CommentsData: {
-      jsonArray: KuaishouCommentItem[];
-    };
+    CommentsData: KuaishouCommentItem[];
   };
   /** 预生成的二维码数据URL */
   qrCodeDataUrl: string;
@@ -1374,11 +1373,11 @@ interface KuaishouCommentItem {
   /** 用户头像URL */
   userimageurl: string;
   /** 评论内容 */
-  text: string;
+  text: RichTextDocument;
   /** 点赞数 */
-  digg_count: number | string;
-  /** 创建时间 */
-  create_time: string;
+  digg_count: number;
+  /** 创建时间戳（毫秒） */
+  create_time: number;
   /** 评论图片 */
   commentimage?: string;
   /** 贴纸 */
@@ -1415,7 +1414,7 @@ interface XiaohongshuCommentItem {
   /** 笔记ID */
   note_id: string;
   /** 评论内容 */
-  content: string;
+  content: RichTextDocument;
   /** 用户信息 */
   user_info: {
     user_id: string;
@@ -1423,11 +1422,11 @@ interface XiaohongshuCommentItem {
     image: string;
     xsec_token: string;
   };
-  /** 创建时间 - 已格式化为相对时间 */
-  create_time: string;
+  /** 创建时间戳（毫秒） */
+  create_time: number;
   /** IP位置 */
   ip_location: string;
-  /** 点赞数 - 已格式化（如1.2w） */
+  /** 点赞数 */
   like_count: string;
   /** 是否已点赞 */
   liked: boolean;
@@ -1462,7 +1461,7 @@ interface XiaohongshuSubComment {
   /** 笔记ID */
   note_id: string;
   /** 评论内容 */
-  content: string;
+  content: RichTextDocument;
   /** 用户信息 */
   user_info: {
     user_id: string;
@@ -1470,11 +1469,11 @@ interface XiaohongshuSubComment {
     image: string;
     xsec_token: string;
   };
-  /** 创建时间 - 已格式化为相对时间 */
-  create_time: string;
+  /** 创建时间戳（毫秒） */
+  create_time: number;
   /** IP位置 */
   ip_location: string;
-  /** 点赞数 - 已格式化（如1.2w） */
+  /** 点赞数 */
   like_count: string;
   /** 是否已点赞 */
   liked: boolean;
@@ -1540,7 +1539,7 @@ interface XiaohongshuNoteInfoData {
   /** 笔记标题 */
   title: string;
   /** 笔记描述 */
-  desc: string;
+  desc: RichTextDocument;
   /** 统计信息 */
   statistics: XiaohongshuNoteStatistics;
   /** 笔记ID */

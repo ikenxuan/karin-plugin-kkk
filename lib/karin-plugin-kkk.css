@@ -13344,20 +13344,20 @@
     min-height: calc(var(--spacing) * 14);
   }
 
+  .min-h-18\.5 {
+    min-height: calc(var(--spacing) * 18.5);
+  }
+
   .min-h-35 {
     min-height: calc(var(--spacing) * 35);
   }
 
+  .min-h-39 {
+    min-height: calc(var(--spacing) * 39);
+  }
+
   .min-h-115 {
     min-height: calc(var(--spacing) * 115);
-  }
-
-  .min-h-\[74px\] {
-    min-height: 74px;
-  }
-
-  .min-h-\[156px\] {
-    min-height: 156px;
   }
 
   .min-h-\[2000px\] {
@@ -14940,6 +14940,10 @@
 
   .bg-\[\#FF6699\] {
     background-color: #f69;
+  }
+
+  .bg-\[\#f5f5f5\] {
+    background-color: #f5f5f5;
   }
 
   .bg-\[\#f97316\]\/10 {
@@ -16860,6 +16864,10 @@
     color: var(--preview-fg);
   }
 
+  .text-\[\#006A9E\] {
+    color: #006a9e;
+  }
+
   .text-\[\#7c3aed\] {
     color: #7c3aed;
   }
@@ -16868,8 +16876,16 @@
     color: #23ade5;
   }
 
+  .text-\[\#03488d\] {
+    color: #03488d;
+  }
+
   .text-\[\#04498d\] {
     color: #04498d;
+  }
+
+  .text-\[\#13386c\] {
+    color: #13386c;
   }
 
   .text-\[\#f97316\] {
@@ -17830,6 +17846,10 @@
     }
   }
 
+  .dark\:bg-field:is(.dark *) {
+    background-color: var(--field-background, var(--default));
+  }
+
   .dark\:bg-surface\/10:is(.dark *) {
     background-color: var(--surface);
   }
@@ -17939,6 +17959,14 @@
 
   .dark\:to-black\/40:is(.dark *) {
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+
+  .dark\:text-\[\#58B0D5\]:is(.dark *) {
+    color: #58b0d5;
+  }
+
+  .dark\:text-\[\#c7daef\]:is(.dark *) {
+    color: #c7daef;
   }
 
   .dark\:text-\[\#cb5775\]:is(.dark *) {
@@ -18066,10 +18094,6 @@
     margin-inline: calc(var(--spacing) * 1);
   }
 
-  .\[\&_img\]\:mb-2 img {
-    margin-bottom: calc(var(--spacing) * 2);
-  }
-
   .\[\&_img\]\:mb-3 img {
     margin-bottom: calc(var(--spacing) * 3);
   }
@@ -18078,44 +18102,12 @@
     display: inline;
   }
 
-  .\[\&_img\]\:h-\[1\.2em\] img {
-    height: 1.2em;
-  }
-
-  .\[\&_img\]\:h-\[1\.3em\] img {
-    height: 1.3em;
-  }
-
-  .\[\&_img\]\:h-\[1\.4em\] img {
-    height: 1.4em;
-  }
-
-  .\[\&_img\]\:w-auto img {
-    width: auto;
-  }
-
-  .\[\&_img\]\:max-w-\[1\.5em\] img {
-    max-width: 1.5em;
-  }
-
-  .\[\&_img\]\:max-w-\[1\.7em\] img {
-    max-width: 1.7em;
-  }
-
   .\[\&_img\]\:align-bottom img {
     vertical-align: bottom;
   }
 
-  .\[\&_img\]\:align-middle img {
-    vertical-align: middle;
-  }
-
   .\[\&_img\]\:align-text-bottom img {
     vertical-align: text-bottom;
-  }
-
-  .\[\&_span\]\:inline span {
-    display: inline;
   }
 
   .\[\&_svg\]\:mb-4\! svg {
@@ -18124,35 +18116,6 @@
 
   .\[\&_svg\]\:inline svg {
     display: inline;
-  }
-
-  .\[\&\>span\]\:inline-block > span {
-    display: inline-block;
-  }
-
-  .\[\&\>span\]\:leading-\[1\.2\] > span {
-    --tw-leading: 1.2;
-    line-height: 1.2;
-  }
-
-  .\[\&\>svg\]\:inline-block > svg {
-    display: inline-block;
-  }
-
-  .\[\&\>svg\]\:h-25 > svg {
-    height: calc(var(--spacing) * 25);
-  }
-
-  .\[\&\>svg\]\:w-25 > svg {
-    width: calc(var(--spacing) * 25);
-  }
-
-  .\[\&\>svg\]\:shrink-0 > svg {
-    flex-shrink: 0;
-  }
-
-  .\[\&\>svg\]\:align-middle > svg {
-    vertical-align: middle;
   }
 
   .theme-bg {
