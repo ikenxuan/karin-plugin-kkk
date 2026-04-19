@@ -3,7 +3,7 @@ import React, { type JSX } from 'react'
 
 import type { BilibiliArticleDynamicProps } from '../../../../types/platforms/bilibili/dynamic/article'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
-import { CommentText, DecorationCard, EnhancedImage } from '../shared'
+import { CommentText, DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
 
 /**
  * 获取字体级别对应的样式类名
@@ -235,133 +235,6 @@ const parseOpusContent = (opus: any): React.ReactNode => {
 }
 
 /**
- * 清理和转换HTML内容，移除B站的class并应用自定义样式
- */
-const sanitizeHtmlContent = (htmlString: string): string => {
-  try {
-    let processed = htmlString
-
-    // Step 1: 先处理 B站的颜色类，转换为内联样式
-    const colorMap: Record<string, string> = {
-      'color-pink-01': '#FF6699',
-      'color-pink-02': '#FF85C0',
-      'color-pink-03': '#FFA0D0',
-      'color-pink-04': '#FFB8E0',
-      'color-blue-01': '#00A1D6',
-      'color-blue-02': '#00B5E5',
-      'color-blue-03': '#33C5F3',
-      'color-purple-01': '#9B59B6',
-      'color-yellow-01': '#FFC107',
-      'color-orange-01': '#FF6600',
-      'color-red-01': '#FF0000',
-      'color-green-01': '#00C853'
-    }
-
-    // 将颜色类转换为内联样式
-    Object.entries(colorMap).forEach(([className, color]) => {
-      // 处理 class="color-xxx"
-      processed = processed.replace(
-        new RegExp(`class="${className}"`, 'gi'),
-        `style="color: ${color}"`
-      )
-      // 处理 class="xxx color-xxx"
-      processed = processed.replace(
-        new RegExp(`class="([^"]*?)\\s*${className}\\s*([^"]*?)"`, 'gi'),
-        (match, before, after) => {
-          const otherClasses = `${before} ${after}`.trim()
-          if (otherClasses) {
-            return `class="${otherClasses}" style="color: ${color}"`
-          }
-          return `style="color: ${color}"`
-        }
-      )
-    })
-
-    // Step 2: 移除 contenteditable 和剩余的 class 属性
-    processed = processed.replace(/\s+contenteditable="[^"]*"/gi, '')
-    processed = processed.replace(/\s+contenteditable='[^']*'/gi, '')
-    processed = processed.replace(/\s+contenteditable(?=\s|>)/gi, '')
-    processed = processed.replace(/\s+class="[^"]*"/gi, '')
-    processed = processed.replace(/\s+class='[^']*'/gi, '')
-
-    // Step 3: 修复图片协议 (// -> https://)
-    processed = processed.replace(/src="\/\//gi, 'src="https://')
-
-    // Step 4: 为标签添加样式类 - 使用函数来保留原有属性
-    const addClassToTag = (html: string, tagName: string, className: string, extraAttrs: string = ''): string => {
-      // 匹配有属性的标签 - 将 class 放在最后，避免覆盖其他属性
-      html = html.replace(
-        new RegExp(`<${tagName}\\s+([^>]*?)>`, 'gi'),
-        (match, attrs) => {
-          const extra = extraAttrs ? extraAttrs + ' ' : ''
-          return `<${tagName} ${extra}${attrs} class="${className}">`
-        }
-      )
-      // 匹配无属性的标签
-      html = html.replace(
-        new RegExp(`<${tagName}>`, 'gi'),
-        `<${tagName}${extraAttrs ? ' ' + extraAttrs : ''} class="${className}">`
-      )
-      return html
-    }
-
-    // 图片 - 添加防盗链
-    processed = addClassToTag(processed, 'img', 'w-full rounded-4xl', 'referrerpolicy="no-referrer" crossorigin="anonymous"')
-
-    // figure 和 figcaption
-    processed = addClassToTag(processed, 'figure', 'my-8 w-full')
-    processed = addClassToTag(processed, 'figcaption', 'text-center text-[36px] text-foreground/70 mt-4')
-
-    // 标题
-    processed = addClassToTag(processed, 'h1', 'text-[72px] font-bold mb-10 leading-[1.4]')
-    processed = addClassToTag(processed, 'h2', 'text-[64px] font-bold mb-10 leading-[1.4]')
-    processed = addClassToTag(processed, 'h3', 'text-[56px] font-semibold mb-8 leading-[1.4]')
-    processed = addClassToTag(processed, 'h4', 'text-[48px] font-semibold mb-8 leading-[1.4]')
-    processed = addClassToTag(processed, 'h5', 'text-[40px] font-medium mb-6 leading-[1.4]')
-    processed = addClassToTag(processed, 'h6', 'text-[36px] font-medium mb-6 leading-[1.4]')
-
-    // 段落
-    processed = addClassToTag(processed, 'p', 'mb-10 leading-[1.7] text-[42px]')
-
-    // 引用
-    processed = addClassToTag(processed, 'blockquote', 'pl-6 my-8 border-l-8 border-muted text-foreground/80 leading-[1.7] text-[42px]')
-
-    // 列表
-    processed = addClassToTag(processed, 'ul', 'list-disc list-inside mb-8 text-[42px] leading-[1.7]')
-    processed = addClassToTag(processed, 'ol', 'list-decimal list-inside mb-8 text-[42px] leading-[1.7]')
-    processed = addClassToTag(processed, 'li', 'mb-4')
-
-    // 加粗和斜体
-    processed = addClassToTag(processed, 'strong', 'font-bold')
-    processed = addClassToTag(processed, 'b', 'font-bold')
-    processed = addClassToTag(processed, 'em', 'italic')
-    processed = addClassToTag(processed, 'i', 'italic')
-
-    // 链接
-    processed = addClassToTag(processed, 'a', 'text-accent hover:text-accent/80 underline', 'target="_blank" rel="noopener noreferrer"')
-
-    // 代码
-    processed = addClassToTag(processed, 'code', 'px-2 py-1 bg-surface rounded text-[38px] font-mono')
-    processed = addClassToTag(processed, 'pre', 'p-6 bg-surface rounded-2xl overflow-x-auto my-6')
-
-    // 表格
-    processed = addClassToTag(processed, 'table', 'w-full border-collapse my-8 text-[38px]')
-    processed = addClassToTag(processed, 'thead', 'bg-surface')
-    processed = addClassToTag(processed, 'tr', 'border-b border-border')
-    processed = addClassToTag(processed, 'th', 'p-4 text-left font-semibold')
-    processed = addClassToTag(processed, 'td', 'p-4')
-
-    // 分隔线
-    processed = addClassToTag(processed, 'hr', 'my-8 border-border')
-
-    return processed
-  } catch (error) {
-    console.error('清理HTML内容失败:', error)
-    return htmlString
-  }
-}
-
-/**
  * B站专栏动态用户信息组件
  */
 const BilibiliArticleUserInfo: React.FC<BilibiliArticleDynamicProps> = React.memo((props) => {
@@ -384,7 +257,7 @@ const BilibiliArticleUserInfo: React.FC<BilibiliArticleDynamicProps> = React.mem
       </div>
       <div className='flex flex-col gap-8 text-7xl'>
         <div className='text-6xl font-bold select-text text-foreground'>
-          <span dangerouslySetInnerHTML={{ __html: props.data.username }} />
+          <UsernameDisplay metadata={props.data.usernameMeta} />
         </div>
         <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted'>
           <Clock size={36} className='text-time' />
@@ -411,16 +284,6 @@ const BilibiliArticleContent: React.FC<BilibiliArticleDynamicProps> = React.memo
     }
     return null
   }, [props.data.opus])
-
-  // 处理HTML字符串内容
-  const sanitizedHtmlContent = React.useMemo(() => {
-    const isJson = (() => { try { return typeof props.data.content === 'string' && !!JSON.parse(props.data.content) } catch { return false } })()
-    
-    if (props.data.content && typeof props.data.content === 'string' && !isJson) {
-      return sanitizeHtmlContent(props.data.content)
-    }
-    return null
-  }, [props.data.content])
 
   return (
     <div className='flex flex-col px-20 w-full leading-relaxed'>
@@ -457,14 +320,6 @@ const BilibiliArticleContent: React.FC<BilibiliArticleDynamicProps> = React.memo
         <div className='flex-col items-center mb-8 select-text'>
           {articleContentElements}
         </div>
-      )}
-
-      {/* 专栏正文内容 - HTML字符串 */}
-      {sanitizedHtmlContent && (
-        <div
-          className='flex-col items-center mb-8 select-text'
-          dangerouslySetInnerHTML={{ __html: sanitizedHtmlContent }}
-        />
       )}
     </div>
   )
@@ -547,7 +402,7 @@ const BilibiliArticleFooter: React.FC<BilibiliArticleDynamicProps> = React.memo(
           {/* 用户名和UID - 纵向排列 */}
           <div className='flex flex-col gap-5'>
             <div className='text-7xl font-bold select-text text-foreground'>
-              <span dangerouslySetInnerHTML={{ __html: props.data.username }} />
+              <UsernameDisplay metadata={props.data.usernameMeta} />
             </div>
             <div className='flex gap-2 items-center text-4xl text-muted'>
               <Hash size={32} className='text-muted' />

@@ -57,6 +57,10 @@ import {
   burnBiliDanmaku,
   mergeAndBurnBili
 } from '@/platform/bilibili/danmaku'
+import {
+  buildBilibiliDynamicRichText,
+  getUsernameMetadata
+} from '@/platform/bilibili/dynamic-text'
 import { BilibiliDataTypes } from '@/types'
 
 let img: ElementTypes[]
@@ -523,11 +527,11 @@ export class Bilibili extends Base {
               // TIP: 2025/08/20, 动态卡片数据中，图文动态的描述文本在 major.opus.summary 中
               title: dynamicInfo.data.data.item.modules.module_dynamic.major.opus.title ?? undefined,
               text: dynamicInfo.data.data.item.modules.module_dynamic.major
-                ? replacetext(
-                  br(dynamicInfo.data.data.item.modules.module_dynamic.major.opus?.summary?.text ?? ''),
+                ? buildBilibiliDynamicRichText(
+                  dynamicInfo.data.data.item.modules.module_dynamic.major.opus?.summary?.text ?? '',
                   dynamicInfo.data.data.item.modules.module_dynamic.major.opus?.summary?.rich_text_nodes ?? []
                 )
-                : '',
+                : null,
               dianzan: Count(dynamicInfo.data.data.item.modules.module_stat.like.count),
               pinglun: Count(dynamicInfo.data.data.item.modules.module_stat.comment.count),
               share: Count(dynamicInfo.data.data.item.modules.module_stat.forward.count),
@@ -535,7 +539,7 @@ export class Bilibili extends Base {
               avatar_url: dynamicInfo.data.data.item.modules.module_author.face,
               frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
               share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
-              username: checkvip(userProfileData.data.data.card),
+              usernameMeta: getUsernameMetadata(userProfileData.data.data.card),
               fans: Count(userProfileData.data.data.follower),
               user_shortid: dynamicInfo.data.data.item.modules.module_author.mid,
               total_favorited: Count(userProfileData.data.data.like_num),
@@ -562,8 +566,8 @@ export class Bilibili extends Base {
               dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text = `${name}\n\n` + dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text
             }
 
-            const text = replacetext(
-              br(dynamicInfo.data.data.item.modules.module_dynamic.major.opus?.summary?.text ?? ''),
+            const text = buildBilibiliDynamicRichText(
+              dynamicInfo.data.data.item.modules.module_dynamic.major.opus?.summary?.text ?? '',
               dynamicInfo.data.data.item.modules.module_dynamic.major.opus?.summary?.rich_text_nodes ?? []
             )
 
@@ -577,7 +581,7 @@ export class Bilibili extends Base {
                 avatar_url: dynamicInfo.data.data.item.modules.module_author.face,
                 frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
                 share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
-                username: checkvip(userProfileData.data.data.card),
+                usernameMeta: getUsernameMetadata(userProfileData.data.data.card),
                 fans: Count(userProfileData.data.data.follower),
                 user_shortid: dynamicInfo.data.data.item.modules.module_author.mid,
                 total_favorited: Count(userProfileData.data.data.like_num),
@@ -592,8 +596,8 @@ export class Bilibili extends Base {
           }
           /** 转发动态 */
           case DynamicType.FORWARD: {
-            const text = replacetext(
-              br(dynamicInfo.data.data.item.modules.module_dynamic.desc.text),
+            const text = buildBilibiliDynamicRichText(
+              dynamicInfo.data.data.item.modules.module_dynamic.desc.text,
               dynamicInfo.data.data.item.modules.module_dynamic.desc.rich_text_nodes
             )
 
@@ -610,11 +614,11 @@ export class Bilibili extends Base {
             switch (dynamicInfo.data.data.item.orig.type) {
               case DynamicType.AV: {
                 data = {
-                  username: checkvip(dynamicInfo.data.data.item.orig.modules.module_author),
+                  usernameMeta: getUsernameMetadata(dynamicInfo.data.data.item.orig.modules.module_author),
                   pub_action: dynamicInfo.data.data.item.orig.modules.module_author.pub_action,
                   avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
                   duration_text: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.duration_text,
-                  title: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.title,
+                  title: buildBilibiliDynamicRichText(dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.title, []),
                   danmaku: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.stat.danmaku,
                   view: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.stat.view,
                   play: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.stat.play,
@@ -630,10 +634,10 @@ export class Bilibili extends Base {
                 const cardData = JSON.parse(dynamicCARD2.data.data.card.card)
                 data = {
                   title: dynamicInfo.data.data.item.orig.modules.module_dynamic.major?.opus?.title ?? null,
-                  username: checkvip(dynamicInfo.data.data.item.orig.modules.module_author),
+                  usernameMeta: getUsernameMetadata(dynamicInfo.data.data.item.orig.modules.module_author),
                   create_time: TimeFormatter.toDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
                   avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
-                  text: replacetext(br(dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.text), dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes),
+                  text: buildBilibiliDynamicRichText(dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.text, dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes),
                   image_url: cardData.item.pictures && cover(cardData.item.pictures),
                   decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decoration_card),
                   frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image
@@ -642,10 +646,10 @@ export class Bilibili extends Base {
               }
               case DynamicType.WORD: {
                 data = {
-                  username: checkvip(dynamicInfo.data.data.item.orig.modules.module_author),
+                  usernameMeta: getUsernameMetadata(dynamicInfo.data.data.item.orig.modules.module_author),
                   create_time: TimeFormatter.toDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
                   avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
-                  text: replacetext(br(dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.text), dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes),
+                  text: buildBilibiliDynamicRichText(dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.text, dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes),
                   decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decoration_card),
                   frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image
                 }
@@ -654,7 +658,7 @@ export class Bilibili extends Base {
               case DynamicType.LIVE_RCMD: {
                 const liveData = JSON.parse(dynamicInfo.data.data.item.orig.modules.module_dynamic.major.live_rcmd.content)
                 data = {
-                  username: checkvip(dynamicInfo.data.data.item.orig.modules.module_author),
+                  usernameMeta: getUsernameMetadata(dynamicInfo.data.data.item.orig.modules.module_author),
                   create_time: TimeFormatter.toDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
                   avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
                   decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decoration_card),
@@ -662,7 +666,7 @@ export class Bilibili extends Base {
                   cover: liveData.live_play_info.cover,
                   text_large: liveData.live_play_info.watched_show.text_large,
                   area_name: liveData.live_play_info.area_name,
-                  title: liveData.live_play_info.title,
+                  title: buildBilibiliDynamicRichText(liveData.live_play_info.title, []),
                   online: liveData.live_play_info.online
                 }
                 break
@@ -684,7 +688,7 @@ export class Bilibili extends Base {
                 avatar_url: dynamicInfo.data.data.item.modules.module_author.face,
                 frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
                 share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
-                username: checkvip(userProfileData.data.data.card),
+                usernameMeta: getUsernameMetadata(userProfileData.data.data.card),
                 fans: Count(userProfileData.data.data.follower),
                 user_shortid: dynamicInfo.data.data.item.modules.module_author.mid,
                 total_favorited: Count(userProfileData.data.data.like_num),
@@ -728,8 +732,8 @@ export class Bilibili extends Base {
               img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {
                   image_url: INFODATA.data.data.pic,
-                  text: br(INFODATA.data.data.title),
-                  desc: br(dycrad.desc),
+                  text: buildBilibiliDynamicRichText(INFODATA.data.data.title, []),
+                  desc: buildBilibiliDynamicRichText(dycrad.desc, []),
                   dianzan: Count(INFODATA.data.data.stat.like),
                   pinglun: Count(INFODATA.data.data.stat.reply),
                   share: Count(INFODATA.data.data.stat.share),
@@ -740,7 +744,7 @@ export class Bilibili extends Base {
                   avatar_url: userProfileData.data.data.card.face,
                   frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
                   share_url: 'https://www.bilibili.com/video/' + bvid,
-                  username: checkvip(userProfileData.data.data.card),
+                  usernameMeta: getUsernameMetadata(userProfileData.data.data.card),
                   fans: Count(userProfileData.data.data.follower),
                   user_shortid: userProfileData.data.data.card.mid,
                   total_favorited: Count(userProfileData.data.data.like_num),
@@ -761,9 +765,9 @@ export class Bilibili extends Base {
             img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
               {
                 image_url: dynamicCARD.live_play_info.cover,
-                text: br(dynamicCARD.live_play_info.title),
+                text: buildBilibiliDynamicRichText(dynamicCARD.live_play_info.title, []),
                 liveinf: br(`${dynamicCARD.live_play_info.area_name} | 房间号: ${dynamicCARD.live_play_info.room_id}`),
-                username: checkvip(userINFO.data.data.card),
+                usernameMeta: getUsernameMetadata(userINFO.data.data.card),
                 avatar_url: userINFO.data.data.card.face,
                 frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
                 fans: Count(userINFO.data.data.follower),
@@ -814,7 +818,7 @@ export class Bilibili extends Base {
             const img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_ARTICLE',
               {
                 // 用户信息
-                username: checkvip(userProfileData.data.data.card),
+                usernameMeta: getUsernameMetadata(userProfileData.data.data.card),
                 avatar_url: userProfileData.data.data.card.face,
                 frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
                 create_time: TimeFormatter.toDateTime(dynamicInfo.data.data.item.modules.module_author.pub_ts),
@@ -931,9 +935,9 @@ export class Bilibili extends Base {
         const img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD',
           {
             image_url: liveInfo.data.data.user_cover,
-            text: br(liveInfo.data.data.title),
+            text: buildBilibiliDynamicRichText(liveInfo.data.data.title, []),
             liveinf: br(`${liveInfo.data.data.area_name} | 房间号: ${liveInfo.data.data.room_id}`),
-            username: userProfileData.data.data.card.name,
+            usernameMeta: getUsernameMetadata(userProfileData.data.data.card),
             avatar_url: userProfileData.data.data.card.face,
             frame: userProfileData.data.data.card.pendant.image,
             fans: Count(userProfileData.data.data.card.fans),
@@ -1089,12 +1093,6 @@ export class Bilibili extends Base {
         break
     }
   }
-}
-
-const checkvip = (member: any) => {
-  return member.vip.status === 1
-    ? `<span style="color: ${member.vip.nickname_color ?? '#FB7299'}; font-weight: 700;">${member.name}</span>`
-    : `<span style="color: ${Common.useDarkTheme() ? '#e9e9e9' : '#313131'}; font-weight: 700;">${member.name}</span>`
 }
 
 const br = (data: string) => {

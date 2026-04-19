@@ -16,7 +16,7 @@ const kuaishouMentionClassName = 'text-[#03488d] dark:text-[#c7daef]'
 
 const renderKuaishouCommentRichText = (content: KuaishouCommentItemComponentProps['comment']['text']) => {
   return renderRichTextToReact(content, {
-    mentionClassName: kuaishouMentionClassName
+    mention: { className: kuaishouMentionClassName }
   })
 }
 

@@ -5,7 +5,13 @@ import type {
   RichTextMentionNode,
   RichTextNode,
   RichTextSearchKeywordNode,
-  RichTextTextNode
+  RichTextTextNode,
+  RichTextTopicNode,
+  RichTextAtNode,
+  RichTextLotteryNode,
+  RichTextWebLinkNode,
+  RichTextVoteNode,
+  RichTextViewPictureNode
 } from '../types'
 
 /** 创建普通文本节点。 */
@@ -45,6 +51,44 @@ export const createSearchKeywordNode = (text: string, queryId?: string): RichTex
 /** 创建换行节点。 */
 export const createLineBreakNode = (): RichTextLineBreakNode => ({
   type: 'lineBreak'
+})
+
+/** 创建话题节点。 */
+export const createTopicNode = (text: string): RichTextTopicNode => ({
+  type: 'topic',
+  text
+})
+
+/** 创建 @ 用户节点。 */
+export const createAtNode = (text: string, userId?: string): RichTextAtNode => ({
+  type: 'at',
+  text,
+  userId
+})
+
+/** 创建抽奖节点。 */
+export const createLotteryNode = (text: string): RichTextLotteryNode => ({
+  type: 'lottery',
+  text
+})
+
+/** 创建网页链接节点。 */
+export const createWebLinkNode = (text: string, jumpUrl: string): RichTextWebLinkNode => ({
+  type: 'webLink',
+  text,
+  jumpUrl
+})
+
+/** 创建投票节点。 */
+export const createVoteNode = (text: string): RichTextVoteNode => ({
+  type: 'vote',
+  text
+})
+
+/** 创建查看图片节点。 */
+export const createViewPictureNode = (text: string): RichTextViewPictureNode => ({
+  type: 'viewPicture',
+  text
 })
 
 /**

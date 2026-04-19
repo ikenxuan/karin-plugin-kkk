@@ -1,3 +1,4 @@
+import { renderRichTextToReact } from '@kkk/richtext'
 import { format } from 'date-fns'
 import { Clock, Coins, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
 import React from 'react'
@@ -5,7 +6,7 @@ import { LuFullscreen } from 'react-icons/lu'
 
 import type { BilibiliVideoDynamicProps } from '../../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
-import { CommentText, EnhancedImage } from '../shared'
+import { EnhancedImage, UsernameDisplay } from '../shared'
 
 /**
  * B站视频动态头部组件
@@ -67,15 +68,15 @@ const BilibiliVideoDynamicContent: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
       {/* 视频信息 */}
       <div className='flex flex-col w-full leading-relaxed px-21'>
         {/* 视频标题 */}
-        <div className='relative items-center text-8xl font-bold tracking-wider wrap-break-word text-foreground'>
-          <CommentText
-            className='text-[80px] font-bold tracking-[1.5px] leading-normal whitespace-pre-wrap text-foreground select-text'
-            content={props.data.text}
-            style={{
-              wordBreak: 'break-word',
-              overflowWrap: 'break-word'
-            }}
-          />
+        <div className='relative items-center text-7xl font-bold tracking-wider wrap-break-word text-foreground leading-tight'>
+          {props.data.text && renderRichTextToReact(props.data.text, {
+            at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+          })}
         </div>
 
         {/* 间距 */}
@@ -83,14 +84,14 @@ const BilibiliVideoDynamicContent: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
 
         {/* 视频描述 */}
         <div className='text-6xl text-muted'>
-          <CommentText
-            className='text-[60px] leading-normal whitespace-pre-wrap text-muted select-text'
-            content={props.data.desc}
-            style={{
-              wordBreak: 'break-word',
-              overflowWrap: 'break-word'
-            }}
-          />
+          {props.data.desc && renderRichTextToReact(props.data.desc, {
+            at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+          })}
         </div>
 
         {/* 间距 */}
@@ -268,7 +269,7 @@ const BilibiliVideoDynamicFooter: React.FC<Omit<BilibiliVideoDynamicProps, 'temp
             {/* 用户名和UID - 纵向排列 */}
             <div className='flex flex-col gap-5'>
               <div className='text-7xl font-bold select-text text-foreground'>
-                <span dangerouslySetInnerHTML={{ __html: props.data.username }} />
+                <UsernameDisplay metadata={props.data.usernameMeta} />
               </div>
               <div className='flex gap-2 items-center text-4xl text-muted'>
                 <Hash size={32} />

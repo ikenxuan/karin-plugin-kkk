@@ -95,7 +95,7 @@ const renderBilibiliCommentRichText = (
   content: BilibiliCommentProps['data']['CommentsData'][number]['message']
 ): ReactNode => {
   return renderRichTextToReact(content, {
-    mentionClassName: bilibiliMentionClassName
+    mention: { className: bilibiliMentionClassName }
   })
 }
 
@@ -390,13 +390,10 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
 
         {/* 评论文本 */}
         <div
-          className='items-center text-[60px] tracking-[0.5px] leading-[1.6] text-foreground mb-5 select-text flex flex-wrap'
-          style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
+          className='items-center whitespace-pre-wrap text-6xl tracking-[0.5px] leading-[1.6] text-foreground'
         >
           {props.isTop && <TopBadge />}
-          <span className='whitespace-pre-wrap'>
-            {renderBilibiliCommentRichText(props.message)}
-          </span>
+          {renderBilibiliCommentRichText(props.message)}
         </div>
 
         {/* 评论图片 */}

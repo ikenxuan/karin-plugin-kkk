@@ -20,9 +20,8 @@ const emptyDouyinRichText = createRichTextDocument([], { platform: 'douyin' })
 
 const renderDouyinCommentRichText = (content: DouyinSubComment['text'] | DouyinCommentProps['data']['CommentsData'][number]['text']): ReactNode => {
   return renderRichTextToReact(content, {
-    mentionClassName: douyinMentionClassName,
-    searchKeywordClassName: douyinSearchKeywordClassName,
-    searchKeywordIconClassName: douyinSearchKeywordIconClassName
+    mention: { className: douyinMentionClassName },
+    searchKeyword: { className: douyinSearchKeywordClassName, iconClassName: douyinSearchKeywordIconClassName }
   })
 }
 

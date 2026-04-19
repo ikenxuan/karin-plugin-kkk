@@ -1,4 +1,7 @@
+import type { RichTextDocument } from '@kkk/richtext'
+
 import type { BaseComponentProps } from '../../../index'
+import type { UsernameMetadata } from './normal'
 
 /**
  * B站视频动态组件属性接口
@@ -12,16 +15,16 @@ export interface BilibiliVideoDynamicProps extends BaseComponentProps {
     avatar_url: string
     /** 头像框 */
     frame?: string
-    /** 用户名 */
-    username: string
+    /** 用户名元数据 */
+    usernameMeta: UsernameMetadata
     /** 动态创建时间 */
     create_time: string
     /** 装饰卡片 */
     decoration_card?: string
     /** 视频标题 */
-    text: string
+    text: RichTextDocument
     /** 视频描述 */
-    desc: string
+    desc: RichTextDocument
     /** 视频封面图片URL */
     image_url: string
     /** 点赞数 */

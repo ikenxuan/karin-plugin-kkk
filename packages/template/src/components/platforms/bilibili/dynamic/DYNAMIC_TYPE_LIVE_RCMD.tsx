@@ -1,3 +1,4 @@
+import { renderRichTextToReact } from '@kkk/richtext'
 import { Clock, Radio, Users } from 'lucide-react'
 import React from 'react'
 
@@ -5,7 +6,7 @@ import type {
   BilibiliLiveDynamicProps,
   BilibiliPosterPalette } from '../../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
-import { CommentText, EnhancedImage, processCommentHTML } from '../shared'
+import { EnhancedImage, UsernameDisplay } from '../shared'
 
 const LIGHT_FALLBACK: BilibiliPosterPalette = {
   bgColor: '#f4fbff',
@@ -69,18 +70,6 @@ const getSingleLineFontSize = (content: string, base: number, min: number): numb
   return min
 }
 
-const InlineHtmlText: React.FC<{
-  content: string
-  className?: string
-}> = ({ content, className }) => {
-  return (
-    <span
-      className={className}
-      dangerouslySetInnerHTML={{ __html: processCommentHTML(content) }}
-    />
-  )
-}
-
 export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templateType' | 'templateName'>> = React.memo((props) => {
   const { data, qrCodeDataUrl } = props
   const isDark = data.useDarkTheme === true
@@ -99,13 +88,14 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
 
   const logo = isDark ? '/image/bilibili/bilibili-light.png' : '/image/bilibili/bilibili.png'
   const liveSignalTime = data.now_time || data.create_time
-  const streamerFontSize = getSingleLineFontSize(data.username, 68, 42)
+  const streamerName = data.usernameMeta.name
+  const streamerFontSize = getSingleLineFontSize(streamerName, 68, 42)
   const liveInfoFontSize = getSingleLineFontSize(data.liveinf, 38, 28)
   const followerFontSize = getSingleLineFontSize(`${data.fans} 粉丝`, 30, 24)
   const metaValueFontSize = getSingleLineFontSize(liveSignalTime, 32, 24)
   const coverInfoFontSize = getSingleLineFontSize(data.liveinf, 38, 24)
-  const broadcastFontSize = getSingleLineFontSize(`${stripHtmlTags(data.username)} 开播了`, 42, 28)
-  const liveTitleLength = stripHtmlTags(data.text).length
+  const broadcastFontSize = getSingleLineFontSize(`${streamerName} 开播了`, 42, 28)
+  const liveTitleLength = streamerName.length
   const liveTitleFontSize = liveTitleLength <= 16
     ? 74
     : liveTitleLength <= 28
@@ -334,7 +324,7 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
                   className='mt-4 min-w-0 whitespace-nowrap font-black tracking-[-0.04em] leading-none text-foreground select-text'
                   style={{ fontSize: `${streamerFontSize}px`, color: deepColor }}
                 >
-                  <InlineHtmlText content={data.username} />
+                  <UsernameDisplay metadata={data.usernameMeta} />
                 </div>
                 <div
                   className='mt-5 inline-flex items-center gap-3 font-black'
@@ -423,17 +413,21 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
           </div>
         )}
 
-        <div className='mb-12'>
-          <CommentText
-            className='font-black leading-normal tracking-[-0.045em] whitespace-pre-wrap text-foreground select-text'
-            content={data.text}
-            style={{
-              color: deepColor,
-              fontSize: `${liveTitleFontSize}px`,
-              wordBreak: 'break-word',
-              overflowWrap: 'break-word'
-            }}
-          />
+        <div className='mb-12 font-black leading-normal tracking-[-0.045em] whitespace-pre-wrap text-foreground select-text'
+          style={{
+            color: deepColor,
+            fontSize: `${liveTitleFontSize}px`,
+            wordBreak: 'break-word',
+            overflowWrap: 'break-word'
+          }}>
+          {data.text && renderRichTextToReact(data.text, {
+            at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+          })}
         </div>
 
         <div className='mt-6 grid min-h-115 grid-cols-12 gap-10 items-end'>
@@ -442,7 +436,7 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
               className='font-black leading-[1.08] tracking-[-0.02em] select-text'
               style={{ fontSize: `${broadcastFontSize}px`, color: withAlphaFromCss(deepColor, 0.72) }}
             >
-              <InlineHtmlText content={data.username} />
+              <UsernameDisplay metadata={data.usernameMeta} />
               <span> 开播了</span>
             </div>
 

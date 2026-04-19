@@ -12,9 +12,6 @@ lerna-debug.log*
 
 # 编辑器配置
 /.idea/
-/.shared/
-/.kiro/
-/.trae/
 
 # 临时文件
 logs/
@@ -31,4 +28,10 @@ node_modules/
 # 玩具
 packages/next-web/
 
+# AI Agent
 .agents/
+.codex/
+.claude/
+.trae/
+.kiro/
+.shared/

@@ -1,5 +1,5 @@
-import clsx from 'clsx'
-import { Clock, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
+import { renderRichTextToReact } from '@kkk/richtext'
+import { Clock, Eye, Heart, MessageCircle, Share2, Users } from 'lucide-react'
 import React from 'react'
 import { LuFullscreen } from 'react-icons/lu'
 
@@ -11,7 +11,7 @@ import type {
   BilibiliDynamicUserInfoProps
 } from '../../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
-import { CommentText, DecorationCard, EnhancedImage } from '../shared'
+import { DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
 import { BilibiliAdditionalCard } from './AdditionalCard'
 
 /**
@@ -37,7 +37,7 @@ const BilibiliDynamicUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
       </div>
       <div className='flex flex-col gap-8 text-7xl'>
         <div className='text-6xl font-bold select-text text-foreground'>
-          <span dangerouslySetInnerHTML={{ __html: props.username }} />
+          <UsernameDisplay metadata={props.usernameMeta} />
         </div>
         <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted'>
           <Clock size={36} className='text-time' />
@@ -60,7 +60,7 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
   // 根据配置决定布局方式
   const getLayoutType = () => {
     if (!props.image_url || props.image_url.length === 0) return 'auto'
-      
+
     switch (props.imageLayout) {
       case 'vertical':
         return 'vertical'
@@ -76,7 +76,7 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
         return 'waterfall'
     }
   }
-    
+
   const layoutType = getLayoutType()
 
   return (
@@ -91,20 +91,24 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
             </h2>
           </div>
         )}
-        
+
         <div className='relative items-center text-5xl tracking-wider wrap-break-word text-foreground'>
-          <CommentText
-            className={clsx(
-              'text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-foreground mb-5 select-text',
-              '[&_svg]:inline [&_svg]:mb-4!',
-              '[&_img]:inline [&_img]:mx-1 [&_img]:align-text-bottom'
-            )}
-            content={props.text}
+          <div
+            className='text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-foreground select-text'
             style={{
               wordBreak: 'break-word',
               overflowWrap: 'break-word'
             }}
-          />
+          >
+            {props.text && renderRichTextToReact(props.text, {
+              at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+              topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+              lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+              webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+              vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+              viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+            })}
+          </div>
         </div>
         <div className='h-15' />
       </div>
@@ -232,7 +236,7 @@ const BilibiliDynamicStatus: React.FC<BilibiliDynamicStatusProps> = (props) => {
 /**
  * B站动态底部信息组件
  */
-const BilibiliDynamicFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url: string; frame?: string; username: string }> = (props) => {
+const BilibiliDynamicFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url: string; frame?: string; usernameMeta: { name: string; vipStatus: number; nicknameColor: string | null } }> = (props) => {
   return (
     <div className='flex justify-between items-start px-20 pb-20'>
       {/* 左侧：用户信息 */}
@@ -255,15 +259,14 @@ const BilibiliDynamicFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
               />
             )}
           </div>
-          
+
           {/* 用户名和UID - 纵向排列 */}
           <div className='flex flex-col gap-5'>
-            <div className='text-7xl font-bold select-text text-foreground'>
-              <span dangerouslySetInnerHTML={{ __html: props.username }} />
+            <div className='text-7xl font-bold select-text'>
+              <UsernameDisplay metadata={props.usernameMeta} />
             </div>
             <div className='flex gap-2 items-center text-4xl text-muted'>
-              <Hash size={32} className='text-muted' />
-              <span className='select-text'>UID: {props.user_shortid}</span>
+              <span className='text-muted select-text'>UID: {props.user_shortid}</span>
             </div>
           </div>
         </div>
@@ -331,7 +334,7 @@ export const BilibiliDrawDynamic: React.FC<Omit<BilibiliDynamicProps, 'templateT
         <BilibiliDynamicUserInfo
           avatar_url={props.data.avatar_url}
           frame={props.data.frame}
-          username={props.data.username}
+          usernameMeta={props.data.usernameMeta}
           create_time={props.data.create_time}
           decoration_card={props.data.decoration_card}
         />
@@ -363,7 +366,7 @@ export const BilibiliDrawDynamic: React.FC<Omit<BilibiliDynamicProps, 'templateT
         <BilibiliDynamicFooter
           avatar_url={props.data.avatar_url}
           frame={props.data.frame}
-          username={props.data.username}
+          usernameMeta={props.data.usernameMeta}
           user_shortid={props.data.user_shortid}
           total_favorited={props.data.total_favorited}
           following_count={props.data.following_count}

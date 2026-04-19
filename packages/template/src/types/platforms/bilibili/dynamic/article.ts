@@ -1,4 +1,5 @@
 import type { BaseComponentProps } from '../../../index'
+import type { UsernameMetadata } from './normal'
 
 /**
  * B站专栏动态组件属性接口
@@ -12,8 +13,8 @@ export interface BilibiliArticleDynamicProps extends BaseComponentProps {
     avatar_url: string
     /** 头像框 */
     frame?: string
-    /** 用户名 */
-    username: string
+    /** 用户名元数据 */
+    usernameMeta: UsernameMetadata
     /** 动态创建时间 */
     create_time: string
     /** 装饰卡片 */

@@ -1,4 +1,30 @@
+import clsx from 'clsx'
 import React, { useState } from 'react'
+
+import type { UsernameMetadata } from '../../../types/platforms/bilibili/dynamic/normal'
+
+/**
+ * 用户名渲染组件
+ * 根据 VIP 状态和颜色信息渲染用户名
+ */
+export const UsernameDisplay: React.FC<{
+  metadata: UsernameMetadata
+  className?: string
+  style?: React.CSSProperties
+}> = ({ metadata, className, style }) => {
+  return (
+    <span
+      className={clsx(
+        metadata.vipStatus === 1 ? 'text-[#FB7299]' : 'text-foreground',
+        'font-bold',
+        className
+      )}
+      style={{ ...style }}
+    >
+      {metadata.name}
+    </span>
+  )
+}
 
 /**
  * 处理评论文本中的图片防盗链问题

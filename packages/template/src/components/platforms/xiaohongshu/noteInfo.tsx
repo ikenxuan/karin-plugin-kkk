@@ -105,7 +105,7 @@ export const XiaohongshuNoteInfo: React.FC<Omit<XiaohongshuNoteInfoProps, 'templ
                 className='text-5xl text-foreground/80 leading-relaxed mb-8 whitespace-pre-wrap select-text'
               >
                 {renderRichTextToReact(props.data.desc, {
-                  mentionClassName: xiaohongshuNoteMentionClassName
+                  mention: { className: xiaohongshuNoteMentionClassName }
                 })}
               </div>
               

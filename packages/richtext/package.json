@@ -35,5 +35,8 @@
     "react": {
       "optional": true
     }
+  },
+  "dependencies": {
+    "clsx": "^2.1.1"
   }
 }

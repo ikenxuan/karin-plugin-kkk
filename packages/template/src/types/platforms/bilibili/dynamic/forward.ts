@@ -1,4 +1,7 @@
+import type { RichTextDocument } from '@kkk/richtext'
+
 import type { BaseComponentProps } from '../../../index'
+import type { UsernameMetadata } from './normal'
 
 /**
  * 原始内容AV类型接口
@@ -8,8 +11,8 @@ export interface OriginalContentAV {
   avatar_url: string
   /** 头像框 */
   frame?: string
-  /** 用户名 */
-  username: string
+  /** 用户名元数据 */
+  usernameMeta: UsernameMetadata
   /** 创建时间 */
   create_time: string
   /** 装饰卡片 */
@@ -23,7 +26,7 @@ export interface OriginalContentAV {
   /** 弹幕数 */
   danmaku: string
   /** 视频标题 */
-  title: string
+  title: RichTextDocument
 }
 
 /**
@@ -36,14 +39,14 @@ export interface OriginalContentDraw {
   avatar_url: string
   /** 头像框 */
   frame?: string
-  /** 用户名 */
-  username: string
+  /** 用户名元数据 */
+  usernameMeta: UsernameMetadata
   /** 创建时间 */
   create_time: string
   /** 装饰卡片 */
   decoration_card?: string
-  /** 动态文本内容 */
-  text: string
+  /** 动态文本内容（富文本文档） */
+  text: RichTextDocument
   /** 图片URL数组 */
   image_url: Array<{ image_src: string }>
 }
@@ -56,14 +59,14 @@ export interface OriginalContentWord {
   avatar_url: string
   /** 头像框 */
   frame?: string
-  /** 用户名 */
-  username: string
+  /** 用户名元数据 */
+  usernameMeta: UsernameMetadata
   /** 创建时间 */
   create_time: string
   /** 装饰卡片 */
   decoration_card?: string
-  /** 动态文本内容 */
-  text: string
+  /** 动态文本内容（富文本文档） */
+  text: RichTextDocument
 }
 
 /**
@@ -74,8 +77,8 @@ export interface OriginalContentLiveRcmd {
   avatar_url: string
   /** 头像框 */
   frame?: string
-  /** 用户名 */
-  username: string
+  /** 用户名元数据 */
+  usernameMeta: UsernameMetadata
   /** 创建时间 */
   create_time: string
   /** 装饰卡片 */
@@ -89,7 +92,7 @@ export interface OriginalContentLiveRcmd {
   /** 在线人数 */
   online: string
   /** 直播标题 */
-  title: string
+  title: RichTextDocument
 }
 
 /**
@@ -113,8 +116,8 @@ export interface BilibiliForwardOriginalContentProps {
  * 转发动态内容Props接口
  */
 export interface BilibiliForwardContentProps {
-  /** 动态文本内容 */
-  text: string
+  /** 动态文本内容（富文本文档） */
+  text: RichTextDocument
   /** 原始内容 */
   original_content: BilibiliForwardOriginalContentProps['original_content']
   /** 是否使用深色主题 */
@@ -133,14 +136,14 @@ export interface BilibiliForwardDynamicProps extends BaseComponentProps {
     avatar_url: string
     /** 头像框 */
     frame?: string
-    /** 用户名 */
-    username: string
+    /** 用户名元数据 */
+    usernameMeta: UsernameMetadata
     /** 动态创建时间 */
     create_time: string
     /** 装饰卡片 */
     decoration_card?: string
-    /** 动态文本内容 */
-    text: string
+    /** 动态文本内容（富文本文档） */
+    text: RichTextDocument
     /** 原始内容 */
     original_content: BilibiliForwardOriginalContentProps['original_content']
     /** 点赞数 */

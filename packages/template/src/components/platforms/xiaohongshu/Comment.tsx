@@ -18,7 +18,7 @@ const renderXiaohongshuCommentRichText = (
   content: XiaohongshuCommentItemComponentProps['comment']['content']
 ) => {
   return renderRichTextToReact(content, {
-    mentionClassName: xiaohongshuMentionClassName
+    mention: { className: xiaohongshuMentionClassName }
   })
 }
 
@@ -257,7 +257,7 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
                       }}
                     >
                       {renderRichTextToReact(subComment.content, {
-                        mentionClassName: xiaohongshuMentionClassName
+                        mention: { className: xiaohongshuMentionClassName }
                       })}
                     </div>
                     <div className='flex justify-between items-center text-muted'>

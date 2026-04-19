@@ -1,4 +1,4 @@
-import clsx from 'clsx'
+import { renderRichTextToReact } from '@kkk/richtext'
 import { Clock, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
 import React from 'react'
 import { LuFullscreen } from 'react-icons/lu'
@@ -14,7 +14,7 @@ import type {
   OriginalContentWord
 } from '../../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
-import { CommentText, DecorationCard, EnhancedImage } from '../shared'
+import { DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
 
 /**
  * B站转发动态用户信息组件
@@ -39,7 +39,7 @@ const BilibiliForwardUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
       </div>
       <div className='flex flex-col gap-8 text-7xl'>
         <div className='text-6xl font-bold select-text text-foreground'>
-          <span dangerouslySetInnerHTML={{ __html: props.username }} />
+          <UsernameDisplay metadata={props.usernameMeta} />
         </div>
         <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted'>
           <Clock size={36} className='text-time' />
@@ -61,7 +61,7 @@ const BilibiliForwardUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
 const OriginalUserInfo: React.FC<{
   avatar_url: string
   frame?: string
-  username: string
+  usernameMeta: { name: string; vipStatus: number; nicknameColor: string | null }
   create_time: string
   decoration_card?: string
 }> = (props) => {
@@ -84,7 +84,7 @@ const OriginalUserInfo: React.FC<{
         </div>
         <div className='flex flex-col gap-4 text-7xl'>
           <div className='text-5xl font-normal select-text text-foreground'>
-            <span dangerouslySetInnerHTML={{ __html: props.username }} />
+            <UsernameDisplay metadata={props.usernameMeta} />
           </div>
           <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted'>
             <Clock size={32} className='text-time' />
@@ -110,7 +110,7 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
-        username={content.username}
+        usernameMeta={content.usernameMeta}
         create_time={content.create_time}
         decoration_card={content.decoration_card}
       />
@@ -133,7 +133,14 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
       </div>
 
       <div className='pb-10 pl-8 text-6xl font-bold select-text leading-20 text-foreground'>
-        <span dangerouslySetInnerHTML={{ __html: content.title }} />
+        {content.title && renderRichTextToReact(content.title, {
+          at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+        })}
       </div>
     </div>
   )
@@ -148,7 +155,7 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
-        username={content.username}
+        usernameMeta={content.usernameMeta}
         create_time={content.create_time}
         decoration_card={content.decoration_card}
       />
@@ -158,17 +165,14 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
           {content.title && (
             <span className='text-6xl font-bold'>{content.title}</span>
           )}
-          <CommentText
-            className={clsx(
-              'text-[50px] tracking-[0.5px] leading-normal whitespace-pre-wrap text-foreground select-text',
-              '[&_svg]:inline [&_svg]:mb-4!'
-            )}
-            content={content.text}
-            style={{
-              wordBreak: 'break-word',
-              overflowWrap: 'break-word'
-            }}
-          />
+          {content.text && renderRichTextToReact(content.text, {
+            at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+          })}
         </div>
       </div>
 
@@ -212,17 +216,21 @@ const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ conte
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
-        username={content.username}
+        usernameMeta={content.usernameMeta}
         create_time={content.create_time}
         decoration_card={content.decoration_card}
       />
 
       <div className='py-4'>
         <div className='text-5xl leading-relaxed text-foreground'>
-          <CommentText
-            className='text-[50px] tracking-[0.5px] leading-normal whitespace-pre-wrap text-foreground select-text'
-            content={content.text}
-          />
+          {content.text && renderRichTextToReact(content.text, {
+            at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+          })}
         </div>
       </div>
     </div>
@@ -238,7 +246,7 @@ const OriginalLiveRcmdContent: React.FC<{ content: OriginalContentLiveRcmd }> = 
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
-        username={content.username}
+        usernameMeta={content.usernameMeta}
         create_time={content.create_time}
         decoration_card={content.decoration_card}
       />
@@ -261,7 +269,14 @@ const OriginalLiveRcmdContent: React.FC<{ content: OriginalContentLiveRcmd }> = 
       </div>
 
       <div className='pl-8 text-6xl font-bold select-text text-foreground'>
-        <span dangerouslySetInnerHTML={{ __html: content.title }} />
+        {content.title && renderRichTextToReact(content.title, {
+          at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+        })}
       </div>
     </div>
   )
@@ -274,20 +289,16 @@ const BilibiliForwardContent: React.FC<BilibiliForwardDynamicProps['data']> = (p
   return (
     <>
       {/* 转发文本内容 */}
-      <div className='flex flex-col px-20 w-full leading-relaxed'>
-        <div className='relative items-center text-5xl tracking-wider wrap-break-word text-foreground'>
-          <CommentText
-            className={clsx(
-              'text-[65px] tracking-[1.5px] leading-normal whitespace-pre-wrap text-foreground mb-5 select-text',
-              '[&_svg]:inline [&_svg]:mb-4!',
-              '[&_img]:mb-3 [&_img]:inline [&_img]:mx-1'
-            )}
-            content={props.text}
-            style={{
-              wordBreak: 'break-word',
-              overflowWrap: 'break-word'
-            }}
-          />
+      <div className='flex flex-col px-20 w-full'>
+        <div className='relative items-center text-5xl tracking-wider wrap-break-word text-foreground leading-relaxed'>
+          {props.text && renderRichTextToReact(props.text, {
+            at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+          })}
         </div>
         {props.imgList && props.imgList.length === 0 && <div className='h-15' />}
       </div>
@@ -362,7 +373,7 @@ const BilibiliForwardStatus: React.FC<BilibiliDynamicStatusProps> = (props) => {
 /**
  * B站转发动态底部信息组件
  */
-const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url: string; frame?: string; username: string }> = (props) => {
+const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url: string; frame?: string; usernameMeta: { name: string; vipStatus: number; nicknameColor: string | null } }> = (props) => {
   return (
     <div className='flex justify-between items-start px-20 pb-20'>
       {/* 左侧：用户信息 */}
@@ -385,11 +396,11 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
               />
             )}
           </div>
-          
+
           {/* 用户名和UID - 纵向排列 */}
           <div className='flex flex-col gap-5'>
             <div className='text-7xl font-bold select-text text-foreground'>
-              <span dangerouslySetInnerHTML={{ __html: props.username }} />
+              <UsernameDisplay metadata={props.usernameMeta} />
             </div>
             <div className='flex gap-2 items-center text-4xl text-muted'>
               <Hash size={32} className='text-muted' />
@@ -461,7 +472,7 @@ export const BilibiliForwardDynamic: React.FC<BilibiliForwardDynamicProps> = Rea
         <BilibiliForwardUserInfo
           avatar_url={props.data.avatar_url}
           frame={props.data.frame}
-          username={props.data.username}
+          usernameMeta={props.data.usernameMeta}
           create_time={props.data.create_time}
           decoration_card={props.data.decoration_card}
         />
@@ -492,7 +503,7 @@ export const BilibiliForwardDynamic: React.FC<BilibiliForwardDynamicProps> = Rea
         <BilibiliForwardFooter
           avatar_url={props.data.avatar_url}
           frame={props.data.frame}
-          username={props.data.username}
+          usernameMeta={props.data.usernameMeta}
           user_shortid={props.data.user_shortid}
           total_favorited={props.data.total_favorited}
           following_count={props.data.following_count}

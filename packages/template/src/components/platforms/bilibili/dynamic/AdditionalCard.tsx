@@ -31,14 +31,13 @@ export const BilibiliReserveCard: React.FC<{ reserve: NonNullable<BilibiliAdditi
         </div>
         <div className='shrink-0'>
           <Button
-            startContent={reserve.buttonText !== '已结束' ? <Bell className='scale-180 mr-4' /> : undefined}
             className={`text-5xl font-normal px-8 py-5 h-auto min-w-0 ${
               reserve.buttonText === '已结束'
                 ? 'bg-surface-secondary/70 text-muted'
                 : 'bg-[#fb7299] text-white'
             }`}
-            radius='md'
           >
+            {reserve.buttonText !== '已结束' && <Bell className='scale-180 mr-4' />}
             {reserve.buttonText}
           </Button>
         </div>
@@ -76,7 +75,6 @@ export const BilibiliVoteCard: React.FC<{ vote: NonNullable<BilibiliAdditionalDa
                 ? 'bg-surface-secondary/70 text-muted'
                 : 'bg-[#fb7299] text-white'
             }`}
-            radius='md'
           >
             {isEnded ? '已结束' : '参与'}
           </Button>
@@ -138,7 +136,6 @@ export const BilibiliCommonCard: React.FC<{ common: NonNullable<BilibiliAddition
             <div className='shrink-0'>
               <Button
                 className='text-5xl font-normal px-8 py-5 h-auto min-w-0 bg-[#fb7299] text-white'
-                radius='md'
               >
                 {common.button_text}
               </Button>

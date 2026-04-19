@@ -1,4 +1,18 @@
+import type { RichTextDocument } from '@kkk/richtext'
+
 import type { BaseComponentProps } from '../../../index'
+
+/**
+ * 用户名元数据，用于传递 VIP 状态和颜色信息
+ */
+export interface UsernameMetadata {
+  /** 用户名 */
+  name: string
+  /** VIP状态，1为年度大会员 */
+  vipStatus: number
+  /** 昵称颜色，VIP用户特有 */
+  nicknameColor: string | null
+}
 
 /**
  * B站普通动态组件属性接口
@@ -12,16 +26,16 @@ export interface BilibiliDynamicProps extends BaseComponentProps {
     avatar_url: string
     /** 头像框 */
     frame?: string
-    /** 用户名 */
-    username: string
+    /** 用户名元数据 */
+    usernameMeta: UsernameMetadata
     /** 动态创建时间 */
     create_time: string
     /** 装饰卡片 */
     decoration_card?: string
     /** 图文动态标题 */
     title?: string
-    /** 动态文本内容 */
-    text: string
+    /** 动态文本内容（富文本文档） */
+    text: RichTextDocument | null
     /** 图片URL数组 */
     image_url: Array<{ image_src: string }>
     /** 点赞数 */
@@ -61,8 +75,8 @@ export interface BilibiliDynamicUserInfoProps {
   avatar_url: string
   /** 头像框 */
   frame?: string
-  /** 用户名 */
-  username: string
+  /** 用户名元数据 */
+  usernameMeta: UsernameMetadata
   /** 动态创建时间 */
   create_time: string
   /** 装饰卡片 */
@@ -157,8 +171,8 @@ export interface BilibiliAdditionalData {
 export interface BilibiliDynamicContentProps {
   /** 图文动态标题 */
   title?: string
-  /** 动态文本内容 */
-  text: string
+  /** 动态文本内容（富文本文档） */
+  text: RichTextDocument | null
   /** 图片URL数组 */
   image_url: Array<{ image_src: string }>
   /** 是否使用深色主题 */
@@ -220,14 +234,14 @@ export interface BilibiliWordDynamicProps extends BaseComponentProps {
     avatar_url: string
     /** 头像框 */
     frame?: string
-    /** 用户名 */
-    username: string
+    /** 用户名元数据 */
+    usernameMeta: UsernameMetadata
     /** 动态创建时间 */
     create_time: string
     /** 装饰卡片 */
     decoration_card?: string
-    /** 动态文本内容 */
-    text: string
+    /** 动态文本内容（富文本文档） */
+    text: RichTextDocument | null
     /** 点赞数 */
     dianzan: string | number
     /** 评论数 */
@@ -259,8 +273,8 @@ export interface BilibiliWordDynamicProps extends BaseComponentProps {
  * B站纯文动态内容组件属性接口
  */
 export interface BilibiliWordContentProps {
-  /** 动态文本内容 */
-  text: string
+  /** 动态文本内容（富文本文档） */
+  text: RichTextDocument | null
   /** 是否使用深色主题 */
   useDarkTheme?: boolean
   /** 相关内容卡片 */
