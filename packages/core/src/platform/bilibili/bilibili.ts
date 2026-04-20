@@ -596,6 +596,18 @@ export class Bilibili extends Base {
           }
           /** 转发动态 */
           case DynamicType.FORWARD: {
+            // 处理话题
+            if ('topic' in dynamicInfo.data.data.item.modules.module_dynamic && dynamicInfo.data.data.item.modules.module_dynamic.topic !== null) {
+              const name = (dynamicInfo.data.data.item.modules.module_dynamic.topic as { name: string }).name
+              dynamicInfo.data.data.item.modules.module_dynamic.desc.rich_text_nodes.unshift({
+                orig_text: name,
+                jump_url: '',
+                text: name,
+                type: 'topic'
+              })
+              dynamicInfo.data.data.item.modules.module_dynamic.desc.text = `${name}\n\n` + dynamicInfo.data.data.item.modules.module_dynamic.desc.text
+            }
+
             const text = buildBilibiliDynamicRichText(
               dynamicInfo.data.data.item.modules.module_dynamic.desc.text,
               dynamicInfo.data.data.item.modules.module_dynamic.desc.rich_text_nodes
@@ -612,6 +624,7 @@ export class Bilibili extends Base {
             }
             let data = {}
             switch (dynamicInfo.data.data.item.orig.type) {
+              // 转发视频动态
               case DynamicType.AV: {
                 data = {
                   usernameMeta: getUsernameMetadata(dynamicInfo.data.data.item.orig.modules.module_author),
@@ -629,6 +642,7 @@ export class Bilibili extends Base {
                 }
                 break
               }
+              // 转发图文动态
               case DynamicType.DRAW: {
                 const dynamicCARD2 = await this.amagi.bilibili.fetcher.fetchDynamicCard({ dynamic_id: dynamicInfo.data.data.item.orig.id_str, typeMode: 'strict' })
                 const cardData = JSON.parse(dynamicCARD2.data.data.card.card)
@@ -644,6 +658,7 @@ export class Bilibili extends Base {
                 }
                 break
               }
+              // 转发纯文动态
               case DynamicType.WORD: {
                 data = {
                   usernameMeta: getUsernameMetadata(dynamicInfo.data.data.item.orig.modules.module_author),
@@ -655,6 +670,7 @@ export class Bilibili extends Base {
                 }
                 break
               }
+              // 转发直播开始动态
               case DynamicType.LIVE_RCMD: {
                 const liveData = JSON.parse(dynamicInfo.data.data.item.orig.modules.module_dynamic.major.live_rcmd.content)
                 data = {
@@ -671,6 +687,7 @@ export class Bilibili extends Base {
                 }
                 break
               }
+              // 其他类型动态未适配
               case DynamicType.FORWARD:
               default: {
                 logger.warn(`UP主：${userProfileData.data.data.card.name}的${logger.green('转发动态')}转发的原动态类型为「${logger.yellow(dynamicInfo.data.item.orig.type)}」暂未支持解析`)

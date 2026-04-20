@@ -169,4 +169,6 @@ export interface RichTextRenderOptions {
   vote?: RichTextNodeStyleConfig
   /** 查看图片节点 */
   viewPicture?: RichTextNodeStyleConfig
+  /** 图标缩放比例，默认 1。用于在不同字体大小下保持图标比例一致。 */
+  iconScale?: number
 }

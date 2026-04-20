@@ -275,7 +275,9 @@ const renderNodeToReact = (
           className={options.topic?.className}
           data-richtext-node='topic'
         >
-          <TopicIcon />
+          <span style={options.iconScale && options.iconScale !== 1 ? { transform: `scale(${options.iconScale})`, transformOrigin: 'left center', display: 'inline-block' } : undefined}>
+            <TopicIcon />
+          </span>
           {node.text}
         </span>
       )
@@ -299,7 +301,9 @@ const renderNodeToReact = (
           className={options.lottery?.className}
           data-richtext-node='lottery'
         >
-          <LotteryIcon />
+          <span style={options.iconScale && options.iconScale !== 1 ? { transform: `scale(${options.iconScale})`, transformOrigin: 'left center', display: 'inline-block' } : undefined}>
+            <LotteryIcon />
+          </span>
           {node.text}
         </span>
       )
@@ -314,7 +318,9 @@ const renderNodeToReact = (
           rel='noopener noreferrer'
           data-richtext-node='webLink'
         >
-          <WebLinkIcon />
+          <span style={options.iconScale && options.iconScale !== 1 ? { transform: `scale(${options.iconScale})`, transformOrigin: 'left center', display: 'inline-block' } : undefined}>
+            <WebLinkIcon />
+          </span>
           {node.text}
         </a>
       )
@@ -326,7 +332,9 @@ const renderNodeToReact = (
           className={options.vote?.className}
           data-richtext-node='vote'
         >
-          <VoteIcon />
+          <span style={options.iconScale && options.iconScale !== 1 ? { transform: `scale(${options.iconScale})`, transformOrigin: 'left center', display: 'inline-block' } : undefined}>
+            <VoteIcon />
+          </span>
           {node.text}
         </span>
       )
@@ -338,7 +346,9 @@ const renderNodeToReact = (
           className={options.viewPicture?.className}
           data-richtext-node='viewPicture'
         >
-          <ViewPictureIcon />
+          <span style={options.iconScale && options.iconScale !== 1 ? { transform: `scale(${options.iconScale})`, transformOrigin: 'left center', display: 'inline-block' } : undefined}>
+            <ViewPictureIcon />
+          </span>
           {node.text}
         </span>
       )

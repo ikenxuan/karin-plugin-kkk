@@ -422,6 +422,18 @@ export class Bilibilipush extends Base {
           }
           /** 处理转发动态 */
           case DynamicType.FORWARD: {
+            // 处理话题
+            if ('topic' in data[dynamicId].Dynamic_Data.modules.module_dynamic && data[dynamicId].Dynamic_Data.modules.module_dynamic.topic !== null) {
+              const name = (data[dynamicId].Dynamic_Data.modules.module_dynamic.topic as { name: string }).name
+              data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.rich_text_nodes.unshift({
+                orig_text: name,
+                jump_url: '',
+                text: name,
+                type: 'topic'
+              })
+              data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.text = `${name}\n\n` + data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.text
+            }
+
             const text = buildBilibiliDynamicRichText(data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.text, data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.rich_text_nodes)
             let param = {}
             /** 富文本节点：查看图片 */

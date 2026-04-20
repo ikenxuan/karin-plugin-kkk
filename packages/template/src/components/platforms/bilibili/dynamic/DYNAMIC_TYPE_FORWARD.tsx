@@ -106,7 +106,7 @@ const OriginalUserInfo: React.FC<{
  */
 const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-3xl bg-surface-secondary/60'>
+    <div className='px-12 py-8 mt-4 w-full rounded-4xl bg-surface-secondary'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -151,7 +151,7 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
  */
 const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-surface-secondary/60'>
+    <div className='px-12 py-8 mt-4 w-full rounded-4xl bg-surface-secondary'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -171,7 +171,8 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
             lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
             webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
             vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-            viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+            viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            iconScale: 0.8
           })}
         </div>
       </div>
@@ -212,7 +213,7 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
  */
 const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-surface-secondary/60'>
+    <div className='px-12 py-8 mt-4 w-full rounded-4xl bg-surface-secondary'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -229,7 +230,8 @@ const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ conte
             lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
             webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
             vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-            viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+            viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            iconScale: 0.8
           })}
         </div>
       </div>
@@ -242,7 +244,7 @@ const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ conte
  */
 const OriginalLiveRcmdContent: React.FC<{ content: OriginalContentLiveRcmd }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-surface-secondary/60'>
+    <div className='px-12 py-8 mt-4 w-full rounded-4xl bg-surface-secondary'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -256,19 +258,19 @@ const OriginalLiveRcmdContent: React.FC<{ content: OriginalContentLiveRcmd }> = 
           <EnhancedImage
             src={content.cover}
             alt='直播封面'
-            className='object-cover absolute w-full h-full'
+            className='object-cover absolute w-full h-full rounded-3xl'
           />
-          <div className='absolute right-0 bottom-0 left-0 h-1/2 bg-linear-to-t to-transparent pointer-events-none from-black/75' />
+          <div className='absolute right-0 bottom-0 left-0 h-1/2 bg-linear-to-t to-transparent pointer-events-none from-black/75 rounded-3xl' />
           <div className='absolute right-5 bottom-8 left-12 z-10 text-4xl font-light text-white select-text'>
-            <span className='px-4 py-2 mr-3 text-4xl text-white bg-black/50 rounded-3'>
+            <span className='px-4 py-2 mr-3 text-3xl text-white bg-black/50 rounded-3xl'>
               {content.area_name}
             </span>
-            {content.text_large}   在线: {content.online}
+            {content.text_large}、在线: {content.online}
           </div>
         </div>
       </div>
 
-      <div className='pl-8 text-6xl font-bold select-text text-foreground'>
+      <div className='pl-8 text-6xl font-bold select-text text-foreground mb-8'>
         {content.title && renderRichTextToReact(content.title, {
           at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
           topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
@@ -297,7 +299,8 @@ const BilibiliForwardContent: React.FC<BilibiliForwardDynamicProps['data']> = (p
             lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
             webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
             vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-            viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+            viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            iconScale: 0.8
           })}
         </div>
         {props.imgList && props.imgList.length === 0 && <div className='h-15' />}

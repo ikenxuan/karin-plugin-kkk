@@ -117,6 +117,19 @@ export const buildBilibiliDynamicRichText = (
 
     // 根据节点类型创建对应的 RichTextNode
     switch (tag.type) {
+      case 'RICH_TEXT_NODE_TYPE_TEXT': {
+        // TEXT 类型的 orig_text 可能包含换行符，需要单独处理
+        const parts = matchText.split(/(\r?\n)/)
+        for (const part of parts) {
+          if (part === '\r\n' || part === '\n') {
+            nodes.push(createLineBreakNode())
+          } else if (part) {
+            nodes.push(createTextNode(part))
+          }
+        }
+        break
+      }
+
       case 'topic':
       case 'RICH_TEXT_NODE_TYPE_TOPIC':
         nodes.push(createTopicNode(matchText))
