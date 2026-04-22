@@ -1,10 +1,10 @@
-import { Icon } from '@iconify/react'
 import { extractRichTextPlainText, renderRichTextToReact } from '@kkk/richtext'
 import React from 'react'
 
 import type {
   BilibiliLiveDynamicProps,
   BilibiliPosterPalette } from '../../../../types/platforms/bilibili'
+import { Icon } from '../../../common/Icon'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { EnhancedImage, UsernameDisplay } from '../shared'
 

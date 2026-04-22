@@ -1,8 +1,8 @@
-import { Icon } from '@iconify/react'
 import { renderRichTextToReact } from '@kkk/richtext'
 import React from 'react'
 
 import type { BilibiliArticleDynamicProps } from '../../../../types/platforms/bilibili/dynamic/article'
+import { Icon } from '../../../common/Icon'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { CommentText, DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
 

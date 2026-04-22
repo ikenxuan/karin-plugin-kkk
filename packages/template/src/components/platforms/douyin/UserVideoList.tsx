@@ -1,9 +1,9 @@
-import { Icon } from '@iconify/react'
 import { formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import React from 'react'
 
 import type { DouyinUserVideoListProps } from '../../../types/platforms/douyin/UserVideoList'
+import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**

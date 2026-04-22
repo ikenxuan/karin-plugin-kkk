@@ -10,8 +10,9 @@ import {
   Modal,
   parseColor
 } from '@heroui/react'
-import { Icon } from '@iconify/react'
 import React from 'react'
+
+import { Icon } from '../../components/common/Icon'
 
 interface PanelThemeControlsProps {
   isOpen: boolean

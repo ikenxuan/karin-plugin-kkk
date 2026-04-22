@@ -1,8 +1,8 @@
 import { Breadcrumbs, Button, ButtonGroup, ScrollShadow, Toolbar } from '@heroui/react'
-import { Icon } from '@iconify/react'
 import React from 'react'
 import { Group, Panel, Separator } from 'react-resizable-panels'
 
+import { Icon } from '../components/common/Icon'
 import { getEnabledComponents } from '../config/config'
 import { DataService } from '../services/DataService'
 import { PlatformType } from '../types/platforms'

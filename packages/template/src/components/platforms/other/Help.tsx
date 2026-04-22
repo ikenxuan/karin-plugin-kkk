@@ -1,7 +1,7 @@
-import { Icon } from '@iconify/react'
 import React from 'react'
 
 import type { HelpProps, MenuGroup, MenuItem } from '../../../types/platforms/other/help'
+import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**

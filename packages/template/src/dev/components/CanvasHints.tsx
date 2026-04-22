@@ -1,6 +1,7 @@
 import { Card, Kbd } from '@heroui/react'
-import { Icon } from '@iconify/react'
 import React from 'react'
+
+import { Icon } from '../../components/common/Icon'
 
 interface CanvasHintsProps {
   /** 是否深色模式 */

@@ -1,9 +1,9 @@
-import { Icon } from '@iconify/react'
 import { format } from 'date-fns'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
 import type { DouyinArticleWorkProps } from '../../../types/platforms/douyin'
+import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**

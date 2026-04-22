@@ -1,9 +1,9 @@
-import { Icon } from '@iconify/react'
 import clsx from 'clsx'
 import React from 'react'
 
 import type { BaseComponentProps, RenderRequest } from '../../types'
 import { GlowImage } from '../common/GlowImage'
+import { Icon } from '../common/Icon'
 import { RolldownLogo } from '../common/RolldownLogo'
 import { ViteLogo } from '../common/ViteLogo'
 

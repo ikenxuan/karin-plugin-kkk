@@ -1,8 +1,8 @@
-import { Icon } from '@iconify/react'
 import React from 'react'
 import { VictoryPie } from 'victory'
 
 import type { GroupStatisticsProps } from '../../../types/platforms/other/statistics'
+import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**

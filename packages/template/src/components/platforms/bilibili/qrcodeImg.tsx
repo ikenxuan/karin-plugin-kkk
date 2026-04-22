@@ -1,7 +1,7 @@
-import { Icon } from '@iconify/react'
 import React from 'react'
 
 import type { BilibiliQrcodeImgProps } from '../../../types/platforms/bilibili'
+import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**

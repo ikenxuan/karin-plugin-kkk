@@ -1,9 +1,9 @@
-import { Icon } from '@iconify/react'
 import { renderRichTextToReact } from '@kkk/richtext'
 import { format } from 'date-fns'
 import React from 'react'
 
 import type { BilibiliVideoDynamicProps } from '../../../../types/platforms/bilibili'
+import { Icon } from '../../../common/Icon'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { EnhancedImage, UsernameDisplay } from '../shared'
 

@@ -1,8 +1,8 @@
-import { Icon } from '@iconify/react'
 import React from 'react'
 
 import type { QrLoginProps } from '../../../types/platforms/other'
 import { GlowImage } from '../../common/GlowImage'
+import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**

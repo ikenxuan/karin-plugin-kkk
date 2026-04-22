@@ -1,9 +1,9 @@
 import { Button, Label, Modal, Switch, toast } from '@heroui/react'
-import { Icon } from '@iconify/react'
 import clsx from 'clsx'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { type ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 
+import { Icon } from '../../components/common/Icon'
 import { getWatermarkEnabled, setWatermarkEnabled } from '../utils/watermarkConfig'
 
 interface ScreenshotPreviewModalProps {
@@ -237,7 +237,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
     >
       <Modal.Container className='p-4 sm:p-6' size='cover'>
         <Modal.Dialog
-          className={`flex h-[min(92vh,1100px)] max-h-[92vh] flex-col overflow-hidden rounded-[32px] border border-black/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-zinc-950 dark:shadow-[0_28px_84px_rgba(0,0,0,0.55)] ${isDarkMode ? 'dark' : 'light'}`}
+          className={`flex h-[min(92vh,1100px)] max-h-[92vh] flex-col overflow-hidden rounded-4xl border border-black/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-zinc-950 dark:shadow-[0_28px_84px_rgba(0,0,0,0.55)] ${isDarkMode ? 'dark' : 'light'}`}
         >
           <Modal.Body className='flex-1 overflow-hidden p-4 sm:p-5'>
             <div

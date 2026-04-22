@@ -1,8 +1,8 @@
-import { Icon } from '@iconify/react'
 import { format } from 'date-fns'
 import React from 'react'
 
 import type { DouyinVideoWorkProps } from '../../../types/platforms/douyin'
+import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**

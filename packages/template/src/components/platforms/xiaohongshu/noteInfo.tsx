@@ -1,10 +1,10 @@
 import { Button, Chip } from '@heroui/react'
-import { Icon } from '@iconify/react'
 import { renderRichTextToReact } from '@kkk/richtext'
 import React, { useMemo } from 'react'
 
 import { DefaultLayout } from '../../../components/layouts/DefaultLayout'
 import type { XiaohongshuNoteInfoProps } from '../../../types/platforms/xiaohongshu'
+import { Icon } from '../../common/Icon'
 
 const xiaohongshuNoteMentionClassName = 'text-[#13386c] dark:text-[#c7daef]'
 

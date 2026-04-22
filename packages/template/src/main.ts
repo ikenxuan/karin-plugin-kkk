@@ -1,8 +1,24 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import antDesignIcons from '@iconify/json/json/ant-design.json'
+import lucideIcons from '@iconify/json/json/lucide.json'
+import materialSymbolsIcons from '@iconify/json/json/material-symbols.json'
+import riIcons from '@iconify/json/json/ri.json'
+import simpleIcons from '@iconify/json/json/simple-icons.json'
+import tablerIcons from '@iconify/json/json/tabler.json'
+import { addCollection } from '@iconify/react'
 import React from 'react'
 import { renderToString } from 'react-dom/server'
+
+addCollection(lucideIcons)
+addCollection(riIcons)
+addCollection(antDesignIcons)
+addCollection(tablerIcons)
+// @ts-ignore
+addCollection(simpleIcons)
+// @ts-ignore
+addCollection(materialSymbolsIcons)
 
 import { PreviewLayout } from './dev/preview/components/PreviewLayout'
 import type { PreviewState as DevPreviewState } from './dev/preview/types'

@@ -35,6 +35,8 @@
   "dependencies": {
     "@heroui/react": "3.0.2",
     "@heroui/styles": "3.0.2",
+    "@iconify/json": "^2.2.465",
+    "@iconify/react": "^6.0.2",
     "@icons-pack/react-simple-icons": "^13.13.0",
     "@kkk/richtext": "workspace:*",
     "@monaco-editor/react": "^4.7.0",
@@ -44,7 +46,6 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "gsap": "^3.15.0",
-    "@iconify/react": "^6.0.2",
     "highlight.js": "^11.11.1",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^4.10.0",

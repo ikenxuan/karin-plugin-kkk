@@ -1,7 +1,7 @@
 import { Spinner } from '@heroui/react'
-import { Icon } from '@iconify/react'
 import React from 'react'
 
+import { Icon } from '../../components/common/Icon'
 import { getComponentConfig } from '../../config/config'
 import { version } from '../../services/DataService'
 import { PlatformType } from '../../types/platforms'

@@ -1,8 +1,8 @@
-import { Icon } from '@iconify/react'
 import React from 'react'
 import { VictoryAxis, VictoryChart, VictoryLabel, VictoryLine, VictoryPie, VictoryScatter, VictoryTheme } from 'victory'
 
 import type { GlobalStatisticsProps } from '../../../types/platforms/other/statistics'
+import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**

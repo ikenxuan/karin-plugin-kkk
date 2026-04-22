@@ -93,7 +93,7 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
     >
       <Modal.Container className='p-4 sm:p-6' size='cover'>
         <Modal.Dialog
-          className={`h-[90vh] max-h-[90vh] overflow-hidden rounded-[32px] border border-black/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-zinc-950 dark:shadow-[0_28px_84px_rgba(0,0,0,0.55)] ${isDarkMode ? 'dark' : 'light'}`}
+          className={`h-[90vh] max-h-[90vh] overflow-hidden rounded-4xl border border-black/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-zinc-950 dark:shadow-[0_28px_84px_rgba(0,0,0,0.55)] ${isDarkMode ? 'dark' : 'light'}`}
         >
           <JsonEditor
             data={currentData}

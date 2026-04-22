@@ -1,5 +1,4 @@
 import { Chip } from '@heroui/react'
-import { Icon } from '@iconify/react'
 import clsx from 'clsx'
 import React from 'react'
 
@@ -8,6 +7,7 @@ import type {
   BangumiBilibiliHeaderProps,
   BilibiliBangumiProps
 } from '../../../../types/platforms/bilibili'
+import { Icon } from '../../../common/Icon'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { EnhancedImage } from '../shared'
 

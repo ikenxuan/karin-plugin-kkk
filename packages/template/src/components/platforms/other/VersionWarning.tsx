@@ -1,10 +1,10 @@
 ﻿import { Chip } from '@heroui/react'
-import { Icon } from '@iconify/react'
 import clsx from 'clsx'
 import React from 'react'
 
 import type { VersionWarningProps } from '../../../types/platforms/other/VersionWarningProps'
 import { GlowImage } from '../../common/GlowImage'
+import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 

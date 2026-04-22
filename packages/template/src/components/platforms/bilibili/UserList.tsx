@@ -1,7 +1,7 @@
-import { Icon } from '@iconify/react'
 import React from 'react'
 
 import type { BilibiliUserListProps } from '../../../types/platforms/bilibili/userlist'
+import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 import { EnhancedImage } from './shared'
 

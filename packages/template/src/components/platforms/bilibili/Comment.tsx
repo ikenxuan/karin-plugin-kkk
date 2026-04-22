@@ -1,4 +1,3 @@
-import { Icon } from '@iconify/react'
 import { renderRichTextToReact } from '@kkk/richtext'
 import clsx from 'clsx'
 import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from 'date-fns'
@@ -9,6 +8,7 @@ import type {
   BilibiliCommentProps,
   QRCodeSectionProps
 } from '../../../types/platforms/bilibili'
+import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 const bilibiliMentionClassName = 'text-[#006A9E] dark:text-[#58B0D5]'

@@ -1,4 +1,3 @@
-import { Icon } from '@iconify/react'
 import { renderRichTextToReact } from '@kkk/richtext'
 import React from 'react'
 
@@ -9,6 +8,7 @@ import type {
   BilibiliWordContentProps,
   BilibiliWordDynamicProps
 } from '../../../../types/platforms/bilibili'
+import { Icon } from '../../../common/Icon'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
 import { BilibiliAdditionalCard } from './AdditionalCard'

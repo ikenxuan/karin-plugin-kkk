@@ -1,4 +1,3 @@
-import { Icon } from '@iconify/react'
 import { renderRichTextToReact } from '@kkk/richtext'
 import React from 'react'
 
@@ -9,6 +8,7 @@ import type {
   BilibiliDynamicStatusProps,
   BilibiliDynamicUserInfoProps
 } from '../../../../types/platforms/bilibili'
+import { Icon } from '../../../common/Icon'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
 import { BilibiliAdditionalCard } from './AdditionalCard'
@@ -290,7 +290,7 @@ const BilibiliDynamicFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
           </div>
           <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
-              <Icon icon="lucide:users" width={28} className='text-accent' />
+              <Icon icon="lucide:users" width={28} className='text-accent' ssr={true} />
               <span className='text-muted'>粉丝</span>
             </div>
             <div className='w-full h-px bg-border' />

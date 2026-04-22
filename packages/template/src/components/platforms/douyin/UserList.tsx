@@ -1,7 +1,7 @@
-import { Icon } from '@iconify/react'
 import React from 'react'
 
 import type { DouyinUserListProps } from '../../../types/platforms/douyin/userlist'
+import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 const pushTypeConfig: Record<string, { label: string; color: string; icon: string }> = {

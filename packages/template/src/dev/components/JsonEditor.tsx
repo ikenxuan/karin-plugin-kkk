@@ -1,7 +1,8 @@
 import { Button, Card, Label, ListBox, Select, Tooltip } from '@heroui/react'
-import { Icon } from '@iconify/react'
 import Editor from '@monaco-editor/react'
 import React, { useEffect, useRef, useState } from 'react'
+
+import { Icon } from '../../components/common/Icon'
 
 interface JsonEditorProps {
   /** 当前数据 */
@@ -222,7 +223,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   return (
     <div className='flex h-full w-full flex-col gap-2 bg-transparent p-3'>
       <Card
-        className='flex min-h-0 flex-1 rounded-[32px] border border-black/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-zinc-950 dark:shadow-[0_28px_88px_rgba(0,0,0,0.55)]'
+        className='flex min-h-0 flex-1 rounded-4xl border border-black/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-zinc-950 dark:shadow-[0_28px_88px_rgba(0,0,0,0.55)]'
         variant='transparent'
       >
         <Card.Header className='flex flex-row items-center justify-between gap-3 border-b border-black/10 px-4 py-3 dark:border-white/10'>

@@ -1,9 +1,9 @@
-import { Icon } from '@iconify/react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 
 import type { ChangelogProps } from '../../../types/platforms/other/changelog'
+import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 const InlineCalloutCode: React.FC<React.PropsWithChildren<{ className?: string }>> = ({ children, className }) => (

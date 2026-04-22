@@ -1,4 +1,3 @@
-import { Icon } from '@iconify/react'
 import { createRichTextDocument, renderRichTextToReact } from '@kkk/richtext'
 import clsx from 'clsx'
 import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from 'date-fns'
@@ -10,6 +9,7 @@ import type {
   DouyinCommentProps,
   DouyinSubComment
 } from '../../../types/platforms/douyin'
+import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 const douyinMentionClassName = 'text-[#04498d] dark:text-[#face15]'

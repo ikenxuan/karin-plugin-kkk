@@ -1,9 +1,9 @@
 import { Button, Chip } from '@heroui/react'
-import { Icon } from '@iconify/react'
 import React, { useMemo } from 'react'
 
 import { DefaultLayout } from '../../../components/layouts/DefaultLayout'
 import type { BilibiliVideoInfoProps } from '../../../types/platforms/bilibili/videoInfo'
+import { Icon } from '../../common/Icon'
 import { EnhancedImage } from './shared'
 
 /**

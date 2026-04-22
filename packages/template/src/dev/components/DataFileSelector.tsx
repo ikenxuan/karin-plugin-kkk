@@ -1,6 +1,7 @@
 import { Button, Card, Chip, Label, ListBox, Select } from '@heroui/react'
-import { Icon } from '@iconify/react'
 import React, { useEffect } from 'react'
+
+import { Icon } from '../../components/common/Icon'
 
 interface DataFileSelectorProps {
   /** 可用的数据文件列表 */

@@ -1,8 +1,8 @@
-import { Icon } from '@iconify/react'
 import React, { useMemo } from 'react'
 
 import { DefaultLayout } from '../../../components/layouts/DefaultLayout'
 import type { DouyinVideoInfoProps } from '../../../types/platforms/douyin/videoInfo'
+import { Icon } from '../../common/Icon'
 
 const formatNumber = (num: number): string => {
   if (num >= 100000000) return `${(num / 100000000).toFixed(1)}亿`

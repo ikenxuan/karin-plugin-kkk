@@ -1,11 +1,11 @@
 import { Chip } from '@heroui/react'
-import { Icon } from '@iconify/react'
 import { formatDistanceToNow, parse } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import _ from 'node-karin/lodash'
 import React from 'react'
 
 import type { ApiErrorProps, BusinessError, LogLevel } from '../../../types/platforms/other/handlerError'
+import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 import { getRandomErrorTitle } from './errorTitles'
 

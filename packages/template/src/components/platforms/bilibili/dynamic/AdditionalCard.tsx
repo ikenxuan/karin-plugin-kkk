@@ -1,8 +1,8 @@
 import { Button } from '@heroui/react'
-import { Icon } from '@iconify/react'
 import React from 'react'
 
 import type { BilibiliAdditionalData } from '../../../../types/platforms/bilibili'
+import { Icon } from '../../../common/Icon'
 import { EnhancedImage } from '../shared'
 
 /**

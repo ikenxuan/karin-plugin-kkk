@@ -1,4 +1,3 @@
-import { Icon } from '@iconify/react'
 import { renderRichTextToReact } from '@kkk/richtext'
 import React from 'react'
 
@@ -12,6 +11,7 @@ import type {
   OriginalContentLiveRcmd,
   OriginalContentWord
 } from '../../../../types/platforms/bilibili'
+import { Icon } from '../../../common/Icon'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
 

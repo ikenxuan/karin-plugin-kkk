@@ -1,4 +1,3 @@
-import { Icon } from '@iconify/react'
 import { renderRichTextToReact } from '@kkk/richtext'
 import { differenceInSeconds, format, formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
@@ -10,6 +9,7 @@ import type {
   KuaishouQRCodeSectionProps,
   KuaishouVideoInfoHeaderProps
 } from '../../../types/platforms/kuaishou'
+import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 const kuaishouMentionClassName = 'text-[#03488d] dark:text-[#c7daef]'

@@ -446,7 +446,10 @@ importers:
         version: 3.0.2(@react-spectrum/provider@3.11.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(tailwindcss@4.2.4)
       '@heroui/styles':
         specifier: 3.0.2
-        version: 3.0.2(tailwind-merge@3.5.0)(tailwindcss@4.2.4)
+        version: 3.0.2(tailwind-merge@3.4.0)(tailwindcss@4.2.4)
+      '@iconify/json':
+        specifier: ^2.2.465
+        version: 2.2.465
       '@iconify/react':
         specifier: ^6.0.2
         version: 6.0.2(react@19.2.5)
@@ -1427,6 +1430,9 @@ packages:
   '@hutson/parse-repository-url@5.0.0':
     resolution: {integrity: sha512-e5+YUKENATs1JgYHMzTr2MW/NDcXGfYFAuOQU8gJgF/kEh4EqKgfGrfLI67bMD4tbhZVlkigz/9YYwWcbOFthg==}
     engines: {node: '>=10.13.0'}
+
+  '@iconify/json@2.2.465':
+    resolution: {integrity: sha512-5N335QKo4ESk2uohTgzcL19Pdw2ECOQl9ho+5MdDE9FdSLzU4PdjHiypqR/34NpIiq8mjzNgEgwlEsrLLgzikw==}
 
   '@iconify/react@5.2.1':
     resolution: {integrity: sha512-37GDR3fYDZmnmUn9RagyaX+zca24jfVOMY8E1IXTqJuE8pxNtN51KWPQe3VODOWvuUurq7q9uUu3CFrpqj5Iqg==}
@@ -10190,6 +10196,11 @@ snapshots:
 
   '@hutson/parse-repository-url@5.0.0': {}
 
+  '@iconify/json@2.2.465':
+    dependencies:
+      '@iconify/types': 2.0.0
+      pathe: 2.0.3
+
   '@iconify/react@5.2.1(react@19.2.5)':
     dependencies:
       '@iconify/types': 2.0.0
@@ -13074,7 +13085,7 @@ snapshots:
       '@vitejs/devtools-rpc': 0.1.15(typescript@6.0.3)
       birpc: 4.0.0
       ohash: 2.0.11
-      vite: 8.0.9(@types/node@24.12.2)(@vitejs/devtools@0.1.15)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 8.0.9(@types/node@25.6.0)(@vitejs/devtools@0.1.15)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - bufferutil
       - typescript
@@ -13168,7 +13179,7 @@ snapshots:
       perfect-debounce: 2.1.0
       sirv: 3.0.2
       tinyexec: 1.1.1
-      vite: 8.0.9(@types/node@24.12.2)(@vitejs/devtools@0.1.15)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 8.0.9(@types/node@25.6.0)(@vitejs/devtools@0.1.15)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
       vue: 3.5.33(typescript@6.0.3)
       ws: 8.20.0
     transitivePeerDependencies:

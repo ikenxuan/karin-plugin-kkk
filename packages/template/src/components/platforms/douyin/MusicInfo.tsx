@@ -1,4 +1,3 @@
-import { Icon } from '@iconify/react'
 import React from 'react'
 
 import type {
@@ -8,6 +7,7 @@ import type {
   MusicInfoProps,
   MusicQRCodeProps
 } from '../../../types/platforms/douyin/musicinfo'
+import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
