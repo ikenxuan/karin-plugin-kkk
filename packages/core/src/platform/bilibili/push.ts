@@ -50,6 +50,7 @@ import {
   TimeFormatter
 } from '@/platform/bilibili'
 import {
+  buildBilibiliArticleRichText,
   buildBilibiliDynamicRichText,
   getUsernameMetadata
 } from '@/platform/bilibili/dynamic-text'
@@ -565,9 +566,8 @@ export class Bilibilipush extends Base {
                 categories: articleData.categories || [],
                 words: articleData.words || 0,
 
-                // 专栏正文内容
-                opus: articleContent.opus || undefined,
-                content: articleContent.content || undefined,
+                // 专栏正文内容（richtext 格式）
+                body: buildBilibiliArticleRichText(articleContent.opus, articleContent.content),
 
                 // 统计信息
                 stats: articleData.stats,

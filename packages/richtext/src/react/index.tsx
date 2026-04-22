@@ -1,6 +1,6 @@
 import React, { type CSSProperties, type ReactNode } from 'react'
 
-import type { RichTextDocument, RichTextNode, RichTextRenderOptions } from '../types'
+import type { RichTextDocument, RichTextInlineStyle, RichTextNode, RichTextRenderOptions } from '../types'
 import clsx from 'clsx'
 
 /**
@@ -205,9 +205,63 @@ const ViewPictureIcon = ({ className }: { className?: string }) => (
 )
 
 /**
+ * 渲染带行内样式的文本节点。
+ */
+const renderStyledText = (
+  text: string,
+  style: RichTextInlineStyle | undefined,
+  index: number
+): ReactNode => {
+  if (!style) {
+    return text
+  }
+
+  const classNames: string[] = []
+  if (style.bold) classNames.push('font-bold')
+  if (style.italic) classNames.push('italic')
+  if (style.strike) classNames.push('line-through')
+
+  const inlineStyle: CSSProperties = {}
+  if (style.color) {
+    inlineStyle.color = style.color
+  }
+
+  if (style.link) {
+    return (
+      <a
+        key={`text-${index}`}
+        href={style.link}
+        className={classNames.join(' ') || undefined}
+        style={inlineStyle}
+        target='_blank'
+        rel='noopener noreferrer'
+        data-richtext-node='text'
+      >
+        {text}
+      </a>
+    )
+  }
+
+  if (classNames.length === 0 && Object.keys(inlineStyle).length === 0) {
+    return text
+  }
+
+  return (
+    <span
+      key={`text-${index}`}
+      className={classNames.join(' ') || undefined}
+      style={inlineStyle}
+      data-richtext-node='text'
+    >
+      {text}
+    </span>
+  )
+}
+
+/**
  * 将单个富文本节点渲染成 React 节点。
  *
- * 这里的设计重点是“只在 template 侧落地 UI 语义”：
+ * 这里的设计重点是"只在 template 侧落地 UI 语义"：
  * - `core` 不需要依赖 React，也不用承担 JSX/SSR 运行时边界。
  * - React 负责文本与属性转义，我们只补上图片协议白名单。
  */
@@ -218,7 +272,7 @@ const renderNodeToReact = (
 ): ReactNode => {
   switch (node.type) {
     case 'text':
-      return node.text
+      return renderStyledText(node.text, node.style, index)
 
     case 'lineBreak':
       return <br key={`br-${index}`} />
@@ -351,6 +405,79 @@ const renderNodeToReact = (
           </span>
           {node.text}
         </span>
+      )
+
+    case 'heading': {
+      const HeadingTag = `h${node.level}` as keyof React.JSX.IntrinsicElements
+      return (
+        <HeadingTag
+          key={`heading-${index}`}
+          data-richtext-node='heading'
+          data-heading-level={node.level}
+        >
+          {node.nodes.map((child, childIndex) => renderNodeToReact(child, childIndex, options))}
+        </HeadingTag>
+      )
+    }
+
+    case 'paragraph':
+      return (
+        <p
+          key={`paragraph-${index}`}
+          data-richtext-node='paragraph'
+        >
+          {node.nodes.map((child, childIndex) => renderNodeToReact(child, childIndex, options))}
+        </p>
+      )
+
+    case 'image': {
+      const safeSrc = sanitizeImageSource(node.src)
+      if (!safeSrc) {
+        return null
+      }
+      return (
+        <img
+          key={`image-${index}`}
+          src={safeSrc}
+          alt={node.alt || ''}
+          referrerPolicy='no-referrer'
+          crossOrigin='anonymous'
+          data-richtext-node='image'
+        />
+      )
+    }
+
+    case 'blockquote':
+      return (
+        <blockquote
+          key={`blockquote-${index}`}
+          data-richtext-node='blockquote'
+        >
+          {node.nodes.map((child, childIndex) => renderNodeToReact(child, childIndex, options))}
+        </blockquote>
+      )
+
+    case 'list': {
+      const ListTag = node.ordered ? 'ol' : 'ul'
+      return (
+        <ListTag
+          key={`list-${index}`}
+          data-richtext-node='list'
+          data-list-ordered={node.ordered}
+        >
+          {node.items.map((item, itemIndex) => renderNodeToReact(item, itemIndex, options))}
+        </ListTag>
+      )
+    }
+
+    case 'listItem':
+      return (
+        <li
+          key={`listitem-${index}`}
+          data-richtext-node='listItem'
+        >
+          {node.nodes.map((child, childIndex) => renderNodeToReact(child, childIndex, options))}
+        </li>
       )
 
     default:

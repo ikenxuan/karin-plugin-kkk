@@ -1,3 +1,5 @@
+import type { RichTextDocument } from '@kkk/richtext'
+
 import type { BaseComponentProps } from '../../../index'
 import type { UsernameMetadata } from './normal'
 
@@ -53,35 +55,8 @@ export interface BilibiliArticleDynamicProps extends BaseComponentProps {
       /** 转发动态 */
       dynamic: number
     }
-    /** 专栏正文的html字符串 */
-    content?: string
-    /** 专栏结构化内容 */
-    opus?: {
-      content: {
-        paragraphs: Array<{
-          para_type: number
-          text?: {
-            nodes: Array<{
-              node_type: number
-              word?: {
-                words: string
-                font_size: number
-                style: Record<string, any>
-                font_level: string
-              }
-            }>
-          }
-          pic?: {
-            pics: Array<{
-              url: string
-              width: number
-              height: number
-              size: number
-            }>
-          }
-        }>
-      }
-    }
+    /** 专栏正文（richtext 格式） */
+    body: RichTextDocument
     /** 渲染时间 */
     render_time: string
     /** 动态类型 */

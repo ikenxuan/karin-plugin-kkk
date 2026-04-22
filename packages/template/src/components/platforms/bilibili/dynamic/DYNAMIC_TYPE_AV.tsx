@@ -60,12 +60,12 @@ const BilibiliVideoDynamicContent: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
               </div>
             </div>
           </div>
-          <div className='h-5' />
+          <div className='h-10' />
         </>
       )}
 
       {/* 视频信息 */}
-      <div className='flex flex-col w-full leading-relaxed px-21'>
+      <div className='flex flex-col w-full leading-relaxed px-16'>
         {/* 视频标题 */}
         <div className='relative items-center text-7xl font-bold tracking-wider wrap-break-word text-foreground leading-tight'>
           {props.data.text && renderRichTextToReact(props.data.text, {
@@ -82,7 +82,7 @@ const BilibiliVideoDynamicContent: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
         <div className='h-10' />
 
         {/* 视频描述 */}
-        <div className='text-6xl text-muted'>
+        <div className='text-5xl text-muted leading-normal'>
           {props.data.desc && renderRichTextToReact(props.data.desc, {
             at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
             topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },

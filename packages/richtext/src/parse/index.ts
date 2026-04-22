@@ -1,9 +1,15 @@
 import type {
+  RichTextBlockquoteNode,
   RichTextDocument,
   RichTextEmojiNode,
+  RichTextHeadingNode,
+  RichTextImageNode,
   RichTextLineBreakNode,
+  RichTextListItemNode,
+  RichTextListNode,
   RichTextMentionNode,
   RichTextNode,
+  RichTextParagraphNode,
   RichTextSearchKeywordNode,
   RichTextTextNode,
   RichTextTopicNode,
@@ -11,13 +17,15 @@ import type {
   RichTextLotteryNode,
   RichTextWebLinkNode,
   RichTextVoteNode,
-  RichTextViewPictureNode
+  RichTextViewPictureNode,
+  RichTextInlineStyle
 } from '../types'
 
 /** 创建普通文本节点。 */
-export const createTextNode = (text: string): RichTextTextNode => ({
+export const createTextNode = (text: string, style?: RichTextInlineStyle): RichTextTextNode => ({
   type: 'text',
-  text
+  text,
+  style
 })
 
 /** 创建行内表情节点。 */
@@ -89,6 +97,45 @@ export const createVoteNode = (text: string): RichTextVoteNode => ({
 export const createViewPictureNode = (text: string): RichTextViewPictureNode => ({
   type: 'viewPicture',
   text
+})
+
+/** 创建标题节点。 */
+export const createHeadingNode = (level: 1 | 2 | 3 | 4 | 5 | 6, nodes: RichTextNode[]): RichTextHeadingNode => ({
+  type: 'heading',
+  level,
+  nodes
+})
+
+/** 创建段落节点。 */
+export const createParagraphNode = (nodes: RichTextNode[]): RichTextParagraphNode => ({
+  type: 'paragraph',
+  nodes
+})
+
+/** 创建图片节点。 */
+export const createImageNode = (src: string, alt?: string): RichTextImageNode => ({
+  type: 'image',
+  src,
+  alt
+})
+
+/** 创建引用块节点。 */
+export const createBlockquoteNode = (nodes: RichTextNode[]): RichTextBlockquoteNode => ({
+  type: 'blockquote',
+  nodes
+})
+
+/** 创建列表节点。 */
+export const createListNode = (ordered: boolean, items: RichTextListItemNode[]): RichTextListNode => ({
+  type: 'list',
+  ordered,
+  items
+})
+
+/** 创建列表项节点。 */
+export const createListItemNode = (nodes: RichTextNode[]): RichTextListItemNode => ({
+  type: 'listItem',
+  nodes
 })
 
 /**

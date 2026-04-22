@@ -4,6 +4,11 @@
  * 后端只需要生产这些纯 JSON 节点，前端可以再按 React、HTML、Canvas 等不同目标渲染。
  */
 export type RichTextNode =
+  | RichTextInlineNode
+  | RichTextBlockNode
+
+/** 行内节点。 */
+export type RichTextInlineNode =
   | RichTextTextNode
   | RichTextEmojiNode
   | RichTextMentionNode
@@ -16,6 +21,15 @@ export type RichTextNode =
   | RichTextVoteNode
   | RichTextViewPictureNode
 
+/** 块级节点。 */
+export type RichTextBlockNode =
+  | RichTextHeadingNode
+  | RichTextParagraphNode
+  | RichTextImageNode
+  | RichTextBlockquoteNode
+  | RichTextListNode
+  | RichTextListItemNode
+
 /**
  * 富文本文档。
  *
@@ -27,11 +41,27 @@ export interface RichTextDocument {
   nodes: RichTextNode[]
 }
 
+/** 行内文本样式。 */
+export interface RichTextInlineStyle {
+  /** 粗体 */
+  bold?: boolean
+  /** 斜体 */
+  italic?: boolean
+  /** 删除线 */
+  strike?: boolean
+  /** 文字颜色（CSS color 值） */
+  color?: string
+  /** 超链接地址 */
+  link?: string
+}
+
 /** 普通文本节点。文本永远作为文本渲染，不会当成 HTML 执行。 */
 export interface RichTextTextNode {
   type: 'text'
   /** 文本内容 */
   text: string
+  /** 可选的行内样式 */
+  style?: RichTextInlineStyle
 }
 
 /** 行内表情节点。用于评论文本中夹杂的平台表情图片。 */
@@ -57,7 +87,7 @@ export interface RichTextMentionNode {
 /**
  * 搜索词高亮节点。
  *
- * 某些平台会把“评论里的高亮搜索词”独立放在元数据里，而不是单独拼进 HTML。
+ * 某些平台会把"评论里的高亮搜索词"独立放在元数据里，而不是单独拼进 HTML。
  * 这里把它提升成独立节点，方便 template 渲染成高亮文本和上标搜索图标。
  */
 export interface RichTextSearchKeywordNode {
@@ -117,6 +147,54 @@ export interface RichTextViewPictureNode {
   type: 'viewPicture'
   /** 显示文本 */
   text: string
+}
+
+/** 标题节点。 */
+export interface RichTextHeadingNode {
+  type: 'heading'
+  /** 标题级别 1-6 */
+  level: 1 | 2 | 3 | 4 | 5 | 6
+  /** 子节点 */
+  nodes: RichTextNode[]
+}
+
+/** 段落节点。 */
+export interface RichTextParagraphNode {
+  type: 'paragraph'
+  /** 子节点 */
+  nodes: RichTextNode[]
+}
+
+/** 图片节点。 */
+export interface RichTextImageNode {
+  type: 'image'
+  /** 图片地址 */
+  src: string
+  /** 替代文本 */
+  alt?: string
+}
+
+/** 引用块节点。 */
+export interface RichTextBlockquoteNode {
+  type: 'blockquote'
+  /** 子节点 */
+  nodes: RichTextNode[]
+}
+
+/** 列表节点。 */
+export interface RichTextListNode {
+  type: 'list'
+  /** 是否为有序列表 */
+  ordered: boolean
+  /** 列表项 */
+  items: RichTextListItemNode[]
+}
+
+/** 列表项节点。 */
+export interface RichTextListItemNode {
+  type: 'listItem'
+  /** 子节点 */
+  nodes: RichTextNode[]
 }
 
 /** 平台表情定义，通常由 core 从平台表情接口转换得到。 */

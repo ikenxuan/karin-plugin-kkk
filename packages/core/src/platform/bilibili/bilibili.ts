@@ -58,6 +58,7 @@ import {
   mergeAndBurnBili
 } from '@/platform/bilibili/danmaku'
 import {
+  buildBilibiliArticleRichText,
   buildBilibiliDynamicRichText,
   getUsernameMetadata
 } from '@/platform/bilibili/dynamic-text'
@@ -807,9 +808,30 @@ export class Bilibili extends Base {
             // 提取专栏正文内容
             const articleContent = articleInfo.data.data
 
+            // TODO: 还未完全支持B站的富文本格式，后续需要根据实际情况补充更多类型的节点解析
+            // 构建富文本文档
+            const body = buildBilibiliArticleRichText(articleContent.opus, articleContent.content)
+
+            // 从富文本文档中提取所有图片
+            const extractImagesFromBody = (nodes: any[]): string[] => {
+              const images: string[] = []
+              for (const node of nodes) {
+                if (node.type === 'image' && node.src) {
+                  images.push(node.src)
+                }
+                if (node.nodes) {
+                  images.push(...extractImagesFromBody(node.nodes))
+                }
+                if (node.items) {
+                  images.push(...extractImagesFromBody(node.items))
+                }
+              }
+              return images
+            }
+
             // 提取所有图片
             const messageElements: ImageElement[] = []
-            const articleImages = extractArticleImages(articleContent)
+            const articleImages = extractImagesFromBody(body.nodes)
             const title = articleData.title || 'bilibili_article'
             for (const [index, item] of articleImages.entries()) {
               const imageUrl = await processImageUrl(item, title, index)
@@ -847,9 +869,8 @@ export class Bilibili extends Base {
                 categories: articleData.categories || [],
                 words: articleData.words || 0,
 
-                // 专栏正文内容 - 优先使用opus，否则使用content
-                opus: articleContent.opus || undefined,
-                content: articleContent.content || undefined,
+                // 专栏正文内容（richtext 格式）
+                body,
                 // 统计信息
                 stats: articleData.stats,
                 render_time: TimeFormatter.now(),
