@@ -171,6 +171,22 @@ export class Downloader {
         startByte = 0
       }
 
+      // 验证 206 响应的 Content-Range 起始位置，防止 CDN 返回错误范围导致文件损坏
+      if (supportsRange && response.headers['content-range']) {
+        const contentRange = String(response.headers['content-range'])
+        const rangeMatch = contentRange.match(/bytes\s*(\d+)-\d+\/\d+/)
+        if (rangeMatch) {
+          const responseStartByte = Number.parseInt(rangeMatch[1], 10)
+          if (responseStartByte !== startByte) {
+            logger.warn(`Content-Range 起始位置不匹配: 请求 ${startByte}, 实际 ${responseStartByte}，将重新下载`)
+            if (fs.existsSync(this.filepath)) {
+              fs.unlinkSync(this.filepath)
+            }
+            startByte = 0
+          }
+        }
+      }
+
       // 解析内容长度
       const rawContentLength = response.headers['content-length']
       const contentLength = Number.parseInt(rawContentLength ?? '-1', 10)
