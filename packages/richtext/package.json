@@ -29,7 +29,7 @@
     "src/"
   ],
   "peerDependencies": {
-    "react": ">=18.0.0"
+    "react": "*"
   },
   "peerDependenciesMeta": {
     "react": {
