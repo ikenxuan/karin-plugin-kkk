@@ -1,4 +1,4 @@
-import { AlertTriangle, QrCode, Smartphone } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import React from 'react'
 
 import type { QrLoginProps } from '../../../types/platforms/other'
@@ -32,7 +32,7 @@ export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName
       <div className='absolute inset-0 pointer-events-none'>
         {/* 顶部光斑 */}
         <div
-          className='absolute rounded-full w-[800px] h-[600px] -top-[200px] left-1/2 -translate-x-1/2 blur-[150px]'
+          className='absolute rounded-full w-200 h-150 -top-50 left-1/2 -translate-x-1/2 blur-[150px]'
           style={{
             background: isDark
               ? 'radial-gradient(ellipse at 50% 30%, rgba(99,102,241,0.5) 0%, rgba(139,92,246,0.25) 50%, transparent 100%)'
@@ -41,7 +41,7 @@ export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName
         />
         {/* 中间光斑 */}
         <div
-          className='absolute rounded-full w-[700px] h-[700px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 blur-[140px]'
+          className='absolute rounded-full w-175 h-175 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 blur-[140px]'
           style={{
             background: isDark
               ? 'radial-gradient(ellipse at 50% 50%, rgba(167,139,250,0.4) 0%, rgba(196,181,253,0.2) 50%, transparent 100%)'
@@ -50,7 +50,7 @@ export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName
         />
         {/* 底部光斑 */}
         <div
-          className='absolute rounded-full w-[800px] h-[600px] -bottom-[200px] left-1/2 -translate-x-1/2 blur-[150px]'
+          className='absolute rounded-full w-200 h-150 -bottom-50 left-1/2 -translate-x-1/2 blur-[150px]'
           style={{
             background: isDark
               ? 'radial-gradient(ellipse at 50% 70%, rgba(124,58,237,0.35) 0%, rgba(99,102,241,0.18) 50%, transparent 100%)'
@@ -79,7 +79,7 @@ export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName
       </div>
 
       {/* 内容层 */}
-      <div className='relative z-10 flex flex-col min-h-[2000px] pt-20 pb-20 px-32'>
+      <div className='relative z-10 flex flex-col min-h-500 pt-20 pb-20 px-32'>
         {/* 顶部标题区域 */}
         <div className='flex flex-col gap-5'>
           <p className='text-2xl font-medium tracking-[0.3em] uppercase' style={{ color: mutedColor }}>
@@ -87,7 +87,7 @@ export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName
           </p>
           <div className='flex items-center gap-6'>
             <GlowImage glowStrength={0.8} blurRadius={25}>
-              <Smartphone className='w-20 h-20' style={{ color: accentColor }} />
+              <Icon icon="lucide:smartphone" className='w-20 h-20' style={{ color: accentColor }} />
             </GlowImage>
             <h1 className='text-[90px] font-black leading-none' style={{ color: accentColor }}>
               扫码登录
@@ -125,7 +125,7 @@ export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName
                     : '0 0 40px rgba(239,68,68,0.5)'
                 }}
               >
-                <AlertTriangle className='w-16 h-16 text-white' strokeWidth={3} />
+                <Icon icon="lucide:alert-triangle" className='w-16 h-16 text-white' strokeWidth={3} />
               </div>
             </div>
 
@@ -189,7 +189,7 @@ export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName
         <div className='flex-1 flex flex-col justify-center items-center py-12'>
           {/* 二维码 */}
           {qrCodeDataUrl ? (
-            <div className='flex justify-center items-center w-[800px] h-[800px]'>
+            <div className='flex justify-center items-center w-200 h-200'>
               <img
                 src={qrCodeDataUrl}
                 alt='登录二维码'
@@ -197,8 +197,8 @@ export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName
               />
             </div>
           ) : (
-            <div className='flex flex-col gap-8 justify-center items-center w-[800px] h-[800px]'>
-              <QrCode className='w-40 h-40' style={{ color: mutedColor }} />
+            <div className='flex flex-col gap-8 justify-center items-center w-200 h-200'>
+              <Icon icon="lucide:qr-code" className='w-40 h-40' style={{ color: mutedColor }} />
               <span className='text-5xl font-medium' style={{ color: mutedColor }}>二维码生成中...</span>
             </div>
           )}
@@ -207,7 +207,7 @@ export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName
           <div className='mt-10 flex items-center gap-8'>
             <div className='w-32 h-2 rounded-full' style={{ background: `linear-gradient(90deg, transparent, ${mutedColor})` }} />
             <div className='flex items-center gap-4'>
-              <Smartphone className='w-12 h-12' style={{ color: mutedColor }} />
+              <Icon icon="lucide:smartphone" className='w-12 h-12' style={{ color: mutedColor }} />
               <span className='text-5xl font-bold' style={{ color: mutedColor }}>
                 打开 APP 扫一扫
               </span>

@@ -1,7 +1,7 @@
 'use client';
 
 import { Dropdown, DropdownItem, DropdownMenu, DropdownPopover, DropdownTrigger } from '@heroui/react';
-import { ChevronDown } from 'lucide-react';
+import { Icon } from '@iconify/react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState, type Key } from 'react';
 import { cn } from '@/lib/cn';
@@ -48,7 +48,7 @@ export function ChangelogDropdown({ latestVersion = 'v2.x.x', currentVersion = '
     <Dropdown onOpenChange={setOpen}>
       <DropdownTrigger className={triggerClassName}>
         <span className="whitespace-nowrap text-sm">{latestVersion}</span>
-        <ChevronDown className={cn('size-3 transition-transform', open && 'rotate-180')} />
+        <Icon icon="lucide:chevron-down" className={cn('size-3 transition-transform', open && 'rotate-180')} />
       </DropdownTrigger>
       <DropdownPopover placement="bottom end">
         <DropdownMenu

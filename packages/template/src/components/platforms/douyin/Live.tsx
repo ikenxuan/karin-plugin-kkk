@@ -1,4 +1,4 @@
-import { Eye, QrCode, Users } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import React from 'react'
 
 import type {
@@ -59,7 +59,7 @@ const UserInfoSection: React.FC<DouyinLiveUserInfoProps> = ({
           />
         </div>
         <div className='flex gap-2 items-center'>
-          <Users className='w-8 h-8 text-follow' />
+          <Icon icon="lucide:users" className='w-8 h-8 text-follow' />
           <span className='text-muted text-[35px] select-text'>{fans}粉丝</span>
         </div>
       </div>
@@ -76,7 +76,7 @@ const QRCodeSection: React.FC<DouyinLiveQRCodeProps> = ({ qrCodeDataUrl }) => {
   return (
     <div className='flex flex-col-reverse items-center mt-7.5 mr-5'>
       <div className='flex items-center gap-2 text-[50px] ml-2.5 text-right mr-2.5 text-foreground select-text'>
-        <QrCode className='w-12 h-12' />
+        <Icon icon="lucide:qr-code" className='w-12 h-12' />
         <span>直播分享链接</span>
       </div>
       <div className='p-2.5 rounded-[2%] border-[7px] border-dashed border-border'>
@@ -115,12 +115,12 @@ export const DouyinLive: React.FC<Omit<DouyinLiveProps, 'templateType' | 'templa
         </div>
         <div className='flex items-center gap-6 text-[45px] tracking-[1.5px] relative wrap-break-word text-muted select-text'>
           <div className='flex gap-2 items-center'>
-            <Eye className='w-11 h-11 text-view' />
+            <Icon icon="lucide:eye" className='w-11 h-11 text-view' />
             <span>观看总人数{props.data.总观看次数}</span>
           </div>
           <span>|</span>
           <div className='flex gap-2 items-center'>
-            <Users className='w-11 h-11 text-follow' />
+            <Icon icon="lucide:users" className='w-11 h-11 text-follow' />
             <span>在线观众{props.data.在线观众}</span>
           </div>
         </div>

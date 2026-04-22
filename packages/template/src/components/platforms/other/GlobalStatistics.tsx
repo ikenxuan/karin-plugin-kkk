@@ -1,5 +1,5 @@
+import { Icon } from '@iconify/react'
 import React from 'react'
-import { RiTrophyFill } from 'react-icons/ri'
 import { VictoryAxis, VictoryChart, VictoryLabel, VictoryLine, VictoryPie, VictoryScatter, VictoryTheme } from 'victory'
 
 import type { GlobalStatisticsProps } from '../../../types/platforms/other/statistics'
@@ -599,13 +599,13 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
                       </div>
                       {/* 前三名奖杯图标 */}
                       {index === 0 && (
-                        <RiTrophyFill className="w-12 h-12 text-yellow-400 shrink-0" />
+                        <Icon icon="ri:trophy-fill" className="w-12 h-12 text-yellow-400 shrink-0" />
                       )}
                       {index === 1 && (
-                        <RiTrophyFill className="w-12 h-12 text-gray-400 shrink-0" />
+                        <Icon icon="ri:trophy-fill" className="w-12 h-12 text-gray-400 shrink-0" />
                       )}
                       {index === 2 && (
-                        <RiTrophyFill className="w-12 h-12 text-orange-400 shrink-0" />
+                        <Icon icon="ri:trophy-fill" className="w-12 h-12 text-orange-400 shrink-0" />
                       )}
                     </div>
                     <div className="text-2xl text-foreground/80 mb-4">

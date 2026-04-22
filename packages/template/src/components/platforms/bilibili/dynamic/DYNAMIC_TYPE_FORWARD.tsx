@@ -1,7 +1,6 @@
-import clsx from 'clsx'
-import { Clock, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
+import { Icon } from '@iconify/react'
+import { renderRichTextToReact } from '@kkk/richtext'
 import React from 'react'
-import { LuFullscreen } from 'react-icons/lu'
 
 import type {
   BilibiliDynamicFooterProps,
@@ -14,7 +13,7 @@ import type {
   OriginalContentWord
 } from '../../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
-import { CommentText, DecorationCard, EnhancedImage } from '../shared'
+import { DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
 
 /**
  * B站转发动态用户信息组件
@@ -39,10 +38,10 @@ const BilibiliForwardUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
       </div>
       <div className='flex flex-col gap-8 text-7xl'>
         <div className='text-6xl font-bold select-text text-foreground'>
-          <span dangerouslySetInnerHTML={{ __html: props.username }} />
+          <UsernameDisplay metadata={props.usernameMeta} />
         </div>
         <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted'>
-          <Clock size={36} className='text-time' />
+          <Icon icon="lucide:clock" width={36} className='text-time' />
           {props.create_time}
         </div>
       </div>
@@ -61,7 +60,7 @@ const BilibiliForwardUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
 const OriginalUserInfo: React.FC<{
   avatar_url: string
   frame?: string
-  username: string
+  usernameMeta: { name: string; vipStatus: number; nicknameColor: string | null }
   create_time: string
   decoration_card?: string
 }> = (props) => {
@@ -84,10 +83,10 @@ const OriginalUserInfo: React.FC<{
         </div>
         <div className='flex flex-col gap-4 text-7xl'>
           <div className='text-5xl font-normal select-text text-foreground'>
-            <span dangerouslySetInnerHTML={{ __html: props.username }} />
+            <UsernameDisplay metadata={props.usernameMeta} />
           </div>
           <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted'>
-            <Clock size={32} className='text-time' />
+            <Icon icon="lucide:clock" width={32} className='text-time' />
             {props.create_time}
           </div>
         </div>
@@ -106,11 +105,11 @@ const OriginalUserInfo: React.FC<{
  */
 const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-3xl bg-surface-secondary/60'>
+    <div className='px-12 py-8 mt-4 w-full rounded-6xl bg-surface-secondary'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
-        username={content.username}
+        usernameMeta={content.usernameMeta}
         create_time={content.create_time}
         decoration_card={content.decoration_card}
       />
@@ -133,7 +132,14 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
       </div>
 
       <div className='pb-10 pl-8 text-6xl font-bold select-text leading-20 text-foreground'>
-        <span dangerouslySetInnerHTML={{ __html: content.title }} />
+        {content.title && renderRichTextToReact(content.title, {
+          at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+        })}
       </div>
     </div>
   )
@@ -144,11 +150,11 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
  */
 const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-surface-secondary/60'>
+    <div className='px-12 py-8 mt-4 w-full rounded-6xl bg-surface-secondary'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
-        username={content.username}
+        usernameMeta={content.usernameMeta}
         create_time={content.create_time}
         decoration_card={content.decoration_card}
       />
@@ -158,17 +164,15 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
           {content.title && (
             <span className='text-6xl font-bold'>{content.title}</span>
           )}
-          <CommentText
-            className={clsx(
-              'text-[50px] tracking-[0.5px] leading-normal whitespace-pre-wrap text-foreground select-text',
-              '[&_svg]:inline [&_svg]:mb-4!'
-            )}
-            content={content.text}
-            style={{
-              wordBreak: 'break-word',
-              overflowWrap: 'break-word'
-            }}
-          />
+          {content.text && renderRichTextToReact(content.text, {
+            at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            iconScale: 0.8
+          })}
         </div>
       </div>
 
@@ -185,9 +189,9 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
           </div>
         )
         : (
-          <div className='grid grid-cols-3 gap-4 p-4'>
+          <div className={`grid gap-3 p-4 ${content.image_url?.length === 4 ? 'grid-cols-2' : 'grid-cols-3'}`}>
             {content.image_url?.map((img, index) => (
-              <div key={index} className='overflow-hidden relative shadow-medium aspect-square rounded-2'>
+              <div key={index} className='overflow-hidden relative shadow-medium aspect-square rounded-2xl'>
                 <EnhancedImage
                   src={img.image_src}
                   alt={`图片${index + 1}`}
@@ -208,21 +212,26 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
  */
 const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-surface-secondary/60'>
+    <div className='px-12 py-8 mt-4 w-full rounded-6xl bg-surface-secondary'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
-        username={content.username}
+        usernameMeta={content.usernameMeta}
         create_time={content.create_time}
         decoration_card={content.decoration_card}
       />
 
       <div className='py-4'>
         <div className='text-5xl leading-relaxed text-foreground'>
-          <CommentText
-            className='text-[50px] tracking-[0.5px] leading-normal whitespace-pre-wrap text-foreground select-text'
-            content={content.text}
-          />
+          {content.text && renderRichTextToReact(content.text, {
+            at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            iconScale: 0.8
+          })}
         </div>
       </div>
     </div>
@@ -234,11 +243,11 @@ const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ conte
  */
 const OriginalLiveRcmdContent: React.FC<{ content: OriginalContentLiveRcmd }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-2xl bg-surface-secondary/60'>
+    <div className='px-12 py-8 mt-4 w-full rounded-6xl bg-surface-secondary'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
-        username={content.username}
+        usernameMeta={content.usernameMeta}
         create_time={content.create_time}
         decoration_card={content.decoration_card}
       />
@@ -248,20 +257,27 @@ const OriginalLiveRcmdContent: React.FC<{ content: OriginalContentLiveRcmd }> = 
           <EnhancedImage
             src={content.cover}
             alt='直播封面'
-            className='object-cover absolute w-full h-full'
+            className='object-cover absolute w-full h-full rounded-3xl'
           />
-          <div className='absolute right-0 bottom-0 left-0 h-1/2 bg-linear-to-t to-transparent pointer-events-none from-black/75' />
+          <div className='absolute right-0 bottom-0 left-0 h-1/2 bg-linear-to-t to-transparent pointer-events-none from-black/75 rounded-3xl' />
           <div className='absolute right-5 bottom-8 left-12 z-10 text-4xl font-light text-white select-text'>
-            <span className='px-4 py-2 mr-3 text-4xl text-white bg-black/50 rounded-3'>
+            <span className='px-4 py-2 mr-3 text-3xl text-white bg-black/50 rounded-3xl'>
               {content.area_name}
             </span>
-            {content.text_large}   在线: {content.online}
+            {content.text_large}、在线: {content.online}
           </div>
         </div>
       </div>
 
-      <div className='pl-8 text-6xl font-bold select-text text-foreground'>
-        <span dangerouslySetInnerHTML={{ __html: content.title }} />
+      <div className='pl-8 text-6xl font-bold select-text text-foreground mb-8'>
+        {content.title && renderRichTextToReact(content.title, {
+          at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+        })}
       </div>
     </div>
   )
@@ -274,20 +290,17 @@ const BilibiliForwardContent: React.FC<BilibiliForwardDynamicProps['data']> = (p
   return (
     <>
       {/* 转发文本内容 */}
-      <div className='flex flex-col px-20 w-full leading-relaxed'>
-        <div className='relative items-center text-5xl tracking-wider wrap-break-word text-foreground'>
-          <CommentText
-            className={clsx(
-              'text-[65px] tracking-[1.5px] leading-normal whitespace-pre-wrap text-foreground mb-5 select-text',
-              '[&_svg]:inline [&_svg]:mb-4!',
-              '[&_img]:mb-3 [&_img]:inline [&_img]:mx-1'
-            )}
-            content={props.text}
-            style={{
-              wordBreak: 'break-word',
-              overflowWrap: 'break-word'
-            }}
-          />
+      <div className='flex flex-col px-20 w-full'>
+        <div className='relative items-center text-5xl tracking-wider wrap-break-word text-foreground leading-relaxed'>
+          {props.text && renderRichTextToReact(props.text, {
+            at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+            iconScale: 0.8
+          })}
         </div>
         {props.imgList && props.imgList.length === 0 && <div className='h-15' />}
       </div>
@@ -336,22 +349,22 @@ const BilibiliForwardStatus: React.FC<BilibiliDynamicStatusProps> = (props) => {
     <div className='flex flex-col gap-10 px-20 w-full leading-relaxed'>
       <div className='flex gap-6 items-center text-5xl font-light tracking-normal select-text text-foreground/70'>
         <div className='flex gap-2 items-center'>
-          <Heart size={48} className='text-like' />
+          <Icon icon="lucide:heart" width={48} className='text-like' />
           {props.dianzan}点赞
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <MessageCircle size={48} className='text-comment' />
+          <Icon icon="lucide:message-circle" width={48} className='text-comment' />
           {props.pinglun}评论
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <Share2 size={48} className='text-success' />
+          <Icon icon="lucide:share-2" width={48} className='text-success' />
           {props.share}分享
         </div>
       </div>
       <div className='flex gap-2 items-center text-5xl font-light tracking-normal select-text text-foreground/70'>
-        <LuFullscreen size={48} className='text-time' />
+        <Icon icon="lucide:maximize" width={48} className='text-time' />
         图片生成于: {props.render_time}
       </div>
       <div className='h-3' />
@@ -362,7 +375,7 @@ const BilibiliForwardStatus: React.FC<BilibiliDynamicStatusProps> = (props) => {
 /**
  * B站转发动态底部信息组件
  */
-const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url: string; frame?: string; username: string }> = (props) => {
+const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url: string; frame?: string; usernameMeta: { name: string; vipStatus: number; nicknameColor: string | null } }> = (props) => {
   return (
     <div className='flex justify-between items-start px-20 pb-20'>
       {/* 左侧：用户信息 */}
@@ -385,14 +398,14 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
               />
             )}
           </div>
-          
+
           {/* 用户名和UID - 纵向排列 */}
           <div className='flex flex-col gap-5'>
             <div className='text-7xl font-bold select-text text-foreground'>
-              <span dangerouslySetInnerHTML={{ __html: props.username }} />
+              <UsernameDisplay metadata={props.usernameMeta} />
             </div>
             <div className='flex gap-2 items-center text-4xl text-muted'>
-              <Hash size={32} className='text-muted' />
+              <Icon icon="lucide:hash" width={32} className='text-muted' />
               <span className='select-text'>UID: {props.user_shortid}</span>
             </div>
           </div>
@@ -402,7 +415,7 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
         <div className='text-3xl flex gap-6 items-center text-foreground/70'>
           <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
-              <Heart size={28} className='text-like' />
+              <Icon icon="lucide:heart" width={28} className='text-like' />
               <span className='text-muted'>获赞</span>
             </div>
             <div className='w-full h-px bg-border' />
@@ -410,7 +423,7 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
           </div>
           <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
-              <Eye size={28} className='text-view' />
+              <Icon icon="lucide:eye" width={28} className='text-view' />
               <span className='text-muted'>关注</span>
             </div>
             <div className='w-full h-px bg-border' />
@@ -418,7 +431,7 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
           </div>
           <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
-              <Users size={28} className='text-accent' />
+              <Icon icon="lucide:users" width={28} className='text-accent' />
               <span className='text-muted'>粉丝</span>
             </div>
             <div className='w-full h-px bg-border' />
@@ -461,7 +474,7 @@ export const BilibiliForwardDynamic: React.FC<BilibiliForwardDynamicProps> = Rea
         <BilibiliForwardUserInfo
           avatar_url={props.data.avatar_url}
           frame={props.data.frame}
-          username={props.data.username}
+          usernameMeta={props.data.usernameMeta}
           create_time={props.data.create_time}
           decoration_card={props.data.decoration_card}
         />
@@ -492,7 +505,7 @@ export const BilibiliForwardDynamic: React.FC<BilibiliForwardDynamicProps> = Rea
         <BilibiliForwardFooter
           avatar_url={props.data.avatar_url}
           frame={props.data.frame}
-          username={props.data.username}
+          usernameMeta={props.data.usernameMeta}
           user_shortid={props.data.user_shortid}
           total_favorited={props.data.total_favorited}
           following_count={props.data.following_count}

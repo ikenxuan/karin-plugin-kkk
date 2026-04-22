@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronDown } from 'lucide-react';
+import { Icon } from '@iconify/react';
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/cn';
 
@@ -31,7 +31,7 @@ export function SidebarFooter({ latestVersion = 'v2.x.x', currentVersion = 'v2' 
         className="inline-flex items-center gap-1.5 text-fd-muted-foreground text-sm p-1.5 hover:bg-fd-accent hover:text-fd-accent-foreground rounded-md transition-colors"
       >
         <span className="whitespace-nowrap">{latestVersion}</span>
-        <ChevronDown className={cn('size-3 transition-transform', open && 'rotate-180')} />
+        <Icon icon="lucide:chevron-down" className={cn('size-3 transition-transform', open && 'rotate-180')} />
       </button>
 
       {open && (

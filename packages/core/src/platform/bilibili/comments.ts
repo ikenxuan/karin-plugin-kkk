@@ -218,7 +218,7 @@ const extractEmojiTokens = (emote: unknown): RichTextEmojiDefinition[] => {
     .map(([name, item]) => ({
       name,
       url: item.url,
-      scale: item.type === 2 || item.type === 3 ? 2 : undefined
+      scale: item.type !== 1 ? 2 : undefined
     }))
     .sort((a, b) => b.name.length - a.name.length)
 }

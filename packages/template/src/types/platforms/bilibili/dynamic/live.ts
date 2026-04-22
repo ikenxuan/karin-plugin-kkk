@@ -1,4 +1,7 @@
+import type { RichTextDocument } from '@kkk/richtext'
+
 import type { BaseComponentProps } from '../../../index'
+import type { UsernameMetadata } from './normal'
 
 export interface BilibiliPosterPalette {
   bgColor: string
@@ -26,11 +29,11 @@ export interface BilibiliLiveDynamicProps extends BaseComponentProps {
     /** 直播封面 */
     image_url: string
     /** 直播标题 */
-    text: string
+    text: RichTextDocument
     /** 直播房间信息（分区 | 房间号） */
     liveinf: string
-    /** 用户信息 */
-    username: string
+    /** 用户名元数据 */
+    usernameMeta: UsernameMetadata
     /** 用户头像URL */
     avatar_url: string
     /** 头像框 */
@@ -61,11 +64,11 @@ export interface BilibiliLiveDynamicContentProps {
   /** 直播封面 */
   image_url: string
   /** 直播标题 */
-  text: string
+  text: RichTextDocument
   /** 直播房间信息（分区 | 房间号） */
   liveinf: string
-  /** 用户信息 */
-  username: string
+  /** 用户名元数据 */
+  usernameMeta: UsernameMetadata
   avatar_url: string
   frame?: string
   fans: string
@@ -81,8 +84,8 @@ export interface BilibiliLiveDynamicFooterProps {
   avatar_url: string
   /** 头像框 */
   frame?: string
-  /** 用户名 */
-  username: string
+  /** 用户名元数据 */
+  usernameMeta: UsernameMetadata
   /** 粉丝数 */
   fans: string
   /** 动态类型 */

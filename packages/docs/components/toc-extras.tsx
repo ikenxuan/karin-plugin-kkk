@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@heroui/react';
 import { FaGithub } from 'react-icons/fa';
-import { LinkIcon, BugIcon, Check } from 'lucide-react';
+import { Icon } from '@iconify/react';
 import Link from 'next/link';
 
 export function TocCopyUrl() {
@@ -24,7 +24,7 @@ export function TocCopyUrl() {
           onPress={handleCopy}
           className="w-full font-medium bg-fd-secondary hover:bg-fd-accent text-fd-secondary-foreground"
         >
-          {copied ? <Check size={14} /> : <LinkIcon size={14} />}
+          {copied ? <Icon icon="lucide:check" width={14} /> : <Icon icon="lucide:link" width={14} />}
           {copied ? '已复制链接' : '复制此页链接'}
         </Button>
     </div>
@@ -50,7 +50,7 @@ export function TocBottomLinks() {
         className="group flex items-center gap-2.5 text-xs text-muted-foreground hover:text-primary transition-colors"
       >
         <div className="p-1 rounded-md bg-fd-secondary group-hover:bg-fd-accent transition-colors">
-            <BugIcon className="size-3.5" />
+            <Icon icon="lucide:bug" className="size-3.5" />
         </div>
         <span>遇到问题？反馈 Issue</span>
       </Link>

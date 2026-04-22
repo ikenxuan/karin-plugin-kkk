@@ -1,7 +1,7 @@
+import { Icon } from '@iconify/react'
 import { renderRichTextToReact } from '@kkk/richtext'
 import { differenceInSeconds, format, formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
-import { Heart, MessageCircle, QrCode } from 'lucide-react'
 import React from 'react'
 
 import type {
@@ -18,7 +18,7 @@ const renderXiaohongshuCommentRichText = (
   content: XiaohongshuCommentItemComponentProps['comment']['content']
 ) => {
   return renderRichTextToReact(content, {
-    mentionClassName: xiaohongshuMentionClassName
+    mention: { className: xiaohongshuMentionClassName }
   })
 }
 
@@ -73,7 +73,7 @@ const QRCodeSection: React.FC<XiaohongshuQRCodeSectionProps> = ({
             />
           )
           : (
-            <QrCode size={200} className='text-muted' />
+            <Icon icon="lucide:qr-code" width={200} className='text-muted' />
           )}
       </div>
       <p className='mt-5 text-[40px] text-muted text-center'>
@@ -216,13 +216,13 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
           <div className='flex items-center space-x-6'>
             {/* 点赞按钮 */}
             <div className='flex items-center space-x-2 transition-colors cursor-pointer'>
-              <Heart size={60} className={comment.liked ? 'text-red-500 fill-current' : 'text-muted'} />
+              <Icon icon="lucide:heart" width={60} className={comment.liked ? 'text-red-500 fill-current' : 'text-muted'} />
               <span className='text-[50px] select-text'>{formatXiaohongshuLikeCount(comment.like_count)}</span>
             </div>
 
             {/* 回复按钮 */}
             <div className='flex items-center transition-colors cursor-pointer'>
-              <MessageCircle size={60} className='stroke-current text-muted' />
+              <Icon icon="lucide:message-circle" width={60} className='stroke-current text-muted' />
             </div>
           </div>
         </div>
@@ -257,7 +257,7 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
                       }}
                     >
                       {renderRichTextToReact(subComment.content, {
-                        mentionClassName: xiaohongshuMentionClassName
+                        mention: { className: xiaohongshuMentionClassName }
                       })}
                     </div>
                     <div className='flex justify-between items-center text-muted'>
@@ -266,7 +266,7 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
                         <span className='text-[35px]'>{subComment.ip_location}</span>
                       </div>
                       <div className='flex items-center space-x-2'>
-                        <Heart size={40} className={subComment.liked ? 'text-red-500 fill-current' : 'text-muted'} />
+                        <Icon icon="lucide:heart" width={40} className={subComment.liked ? 'text-red-500 fill-current' : 'text-muted'} />
                         <span className='text-[35px]'>{formatXiaohongshuLikeCount(subComment.like_count)}</span>
                       </div>
                     </div>

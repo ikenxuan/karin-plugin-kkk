@@ -1,5 +1,5 @@
 'use client';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Icon } from '@iconify/react';
 import Link from 'fumadocs-core/link';
 import { Footer } from './Footer';
 
@@ -24,7 +24,7 @@ function NavCard({ item, direction }: { item: NavItem; direction: 'prev' | 'next
       className="flex flex-col rounded-lg border border-fd-border p-4 text-sm transition-colors hover:bg-fd-accent hover:text-fd-accent-foreground"
     >
       <span className={`flex items-center gap-1 font-medium ${isNext ? 'flex-row-reverse' : ''}`}>
-        {isNext ? <ChevronRight className="size-4" /> : <ChevronLeft className="size-4" />}
+        {isNext ? <Icon icon="lucide:chevron-right" className="size-4" /> : <Icon icon="lucide:chevron-left" className="size-4" />}
         {item.name}
       </span>
       {item.description && (

@@ -1,17 +1,31 @@
 import type {
+  RichTextBlockquoteNode,
   RichTextDocument,
   RichTextEmojiNode,
+  RichTextHeadingNode,
+  RichTextImageNode,
   RichTextLineBreakNode,
+  RichTextListItemNode,
+  RichTextListNode,
   RichTextMentionNode,
   RichTextNode,
+  RichTextParagraphNode,
   RichTextSearchKeywordNode,
-  RichTextTextNode
+  RichTextTextNode,
+  RichTextTopicNode,
+  RichTextAtNode,
+  RichTextLotteryNode,
+  RichTextWebLinkNode,
+  RichTextVoteNode,
+  RichTextViewPictureNode,
+  RichTextInlineStyle
 } from '../types'
 
 /** 创建普通文本节点。 */
-export const createTextNode = (text: string): RichTextTextNode => ({
+export const createTextNode = (text: string, style?: RichTextInlineStyle): RichTextTextNode => ({
   type: 'text',
-  text
+  text,
+  style
 })
 
 /** 创建行内表情节点。 */
@@ -47,6 +61,83 @@ export const createLineBreakNode = (): RichTextLineBreakNode => ({
   type: 'lineBreak'
 })
 
+/** 创建话题节点。 */
+export const createTopicNode = (text: string): RichTextTopicNode => ({
+  type: 'topic',
+  text
+})
+
+/** 创建 @ 用户节点。 */
+export const createAtNode = (text: string, userId?: string): RichTextAtNode => ({
+  type: 'at',
+  text,
+  userId
+})
+
+/** 创建抽奖节点。 */
+export const createLotteryNode = (text: string): RichTextLotteryNode => ({
+  type: 'lottery',
+  text
+})
+
+/** 创建网页链接节点。 */
+export const createWebLinkNode = (text: string, jumpUrl: string): RichTextWebLinkNode => ({
+  type: 'webLink',
+  text,
+  jumpUrl
+})
+
+/** 创建投票节点。 */
+export const createVoteNode = (text: string): RichTextVoteNode => ({
+  type: 'vote',
+  text
+})
+
+/** 创建查看图片节点。 */
+export const createViewPictureNode = (text: string): RichTextViewPictureNode => ({
+  type: 'viewPicture',
+  text
+})
+
+/** 创建标题节点。 */
+export const createHeadingNode = (level: 1 | 2 | 3 | 4 | 5 | 6, nodes: RichTextNode[]): RichTextHeadingNode => ({
+  type: 'heading',
+  level,
+  nodes
+})
+
+/** 创建段落节点。 */
+export const createParagraphNode = (nodes: RichTextNode[]): RichTextParagraphNode => ({
+  type: 'paragraph',
+  nodes
+})
+
+/** 创建图片节点。 */
+export const createImageNode = (src: string, alt?: string): RichTextImageNode => ({
+  type: 'image',
+  src,
+  alt
+})
+
+/** 创建引用块节点。 */
+export const createBlockquoteNode = (nodes: RichTextNode[]): RichTextBlockquoteNode => ({
+  type: 'blockquote',
+  nodes
+})
+
+/** 创建列表节点。 */
+export const createListNode = (ordered: boolean, items: RichTextListItemNode[]): RichTextListNode => ({
+  type: 'list',
+  ordered,
+  items
+})
+
+/** 创建列表项节点。 */
+export const createListItemNode = (nodes: RichTextNode[]): RichTextListItemNode => ({
+  type: 'listItem',
+  nodes
+})
+
 /**
  * 合并相邻文本节点并丢弃空文本节点。
  *
@@ -72,6 +163,45 @@ export const normalizeRichTextNodes = (nodes: RichTextNode[]): RichTextNode[] =>
   }
 
   return normalized
+}
+
+/**
+ * 从富文本文档中提取纯文本内容。
+ *
+ * 遍历所有节点，收集包含 text 字段的文本内容。
+ * lineBreak 节点映射为空格（不参与长度计数），图片节点被忽略。
+ */
+export const extractRichTextPlainText = (document: RichTextDocument): string => {
+  const extractFromNode = (node: RichTextNode): string => {
+    switch (node.type) {
+      case 'text':
+      case 'mention':
+      case 'searchKeyword':
+      case 'topic':
+      case 'at':
+      case 'lottery':
+      case 'webLink':
+      case 'vote':
+      case 'viewPicture':
+      case 'emoji':
+        return 'text' in node ? (node as any).text ?? '' : (node as any).name ?? ''
+      case 'heading':
+      case 'paragraph':
+      case 'blockquote':
+      case 'listItem':
+        return node.nodes.map(extractFromNode).join('')
+      case 'list':
+        return node.items.map(extractFromNode).join('')
+      case 'lineBreak':
+        return ''
+      case 'image':
+        return ''
+      default:
+        return ''
+    }
+  }
+
+  return document.nodes.map(extractFromNode).join('')
 }
 
 /**

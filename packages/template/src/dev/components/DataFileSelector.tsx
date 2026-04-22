@@ -1,5 +1,5 @@
 import { Button, Card, Chip, Label, ListBox, Select } from '@heroui/react'
-import { Edit, FileText } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import React, { useEffect } from 'react'
 
 interface DataFileSelectorProps {
@@ -69,7 +69,7 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
         <div className='flex w-full items-start justify-between gap-3'>
           <div className='flex items-center gap-2.5'>
             <div className='flex size-7 items-center justify-center rounded-lg border border-border bg-background text-foreground'>
-              <FileText className='h-4 w-4' />
+              <Icon icon="lucide:file-text" className='h-4 w-4' />
             </div>
             <div>
               <Card.Title className='text-sm font-semibold text-foreground'>数据文件</Card.Title>
@@ -136,7 +136,7 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
           size='sm'
           variant='primary'
         >
-          <Edit className='h-3.5 w-3.5' />
+          <Icon icon="lucide:edit" className='h-3.5 w-3.5' />
           编辑数据
         </Button>
       </Card.Footer>

@@ -1,7 +1,6 @@
+import { Icon } from '@iconify/react'
 import { format } from 'date-fns'
-import { Bookmark, Clock, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
 import React from 'react'
-import { LuFullscreen } from 'react-icons/lu'
 
 import type {
   DouyinDynamicProps
@@ -64,31 +63,31 @@ const InfoSection: React.FC<DouyinDynamicProps> = (props) => {
       />
       <div className='flex items-center gap-6 text-[45px] text-muted font-light mb-2.5 select-text'>
         <div className='flex gap-2 items-center'>
-          <Heart className='w-11 h-11 text-like' />
+          <Icon icon="lucide:heart" className='w-11 h-11 text-like' />
           <span>{props.data.dianzan}点赞</span>
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <MessageCircle className='w-11 h-11 text-comment' />
+          <Icon icon="lucide:message-circle" className='w-11 h-11 text-comment' />
           <span>{props.data.pinglun}评论</span>
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <Bookmark className='w-11 h-11' />
+          <Icon icon="lucide:bookmark" className='w-11 h-11' />
           <span>{props.data.shouchang}收藏</span>
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <Share2 className='w-11 h-11 text-success' />
+          <Icon icon="lucide:share-2" className='w-11 h-11 text-success' />
           <span>{props.data.share}分享</span>
         </div>
       </div>
       <div className='flex items-center gap-2 text-[45px] text-muted font-light select-text'>
-        <Clock className='w-11 h-11 text-time' />
+        <Icon icon="lucide:clock" className='w-11 h-11 text-time' />
         <span>发布于: {props.data.create_time}</span>
       </div>
       <div className='flex items-center gap-2 text-[45px] text-muted font-light select-text'>
-        <LuFullscreen className='w-11 h-11 text-time text-time' />
+        <Icon icon="lucide:maximize" className='w-11 h-11 text-time text-time' />
         <span>图片生成于: {format(new Date(), 'yyyy-MM-dd HH:mm:ss')}</span>
       </div>
     </div>
@@ -122,7 +121,7 @@ const UserInfoSection: React.FC<DouyinDynamicProps & { coCreatorCount?: number }
             @{props.data.username}
           </div>
           <div className='flex gap-2 items-center text-4xl text-muted'>
-            <Hash size={32} className='text-muted' />
+            <Icon icon="lucide:hash" width={32} className='text-muted' />
             <span className='select-text'>抖音号: {props.data.抖音号}</span>
           </div>
         </div>
@@ -132,7 +131,7 @@ const UserInfoSection: React.FC<DouyinDynamicProps & { coCreatorCount?: number }
       <div className='text-3xl flex gap-6 items-center text-foreground/70'>
         <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
           <div className='flex gap-1 items-center'>
-            <Heart size={28} className='text-like' />
+            <Icon icon="lucide:heart" width={28} className='text-like' />
             <span className='text-muted'>获赞</span>
           </div>
           <div className='w-full h-px bg-border' />
@@ -140,7 +139,7 @@ const UserInfoSection: React.FC<DouyinDynamicProps & { coCreatorCount?: number }
         </div>
         <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
           <div className='flex gap-1 items-center'>
-            <Eye size={28} className='text-view' />
+            <Icon icon="lucide:eye" width={28} className='text-view' />
             <span className='text-muted'>关注</span>
           </div>
           <div className='w-full h-px bg-border' />
@@ -148,7 +147,7 @@ const UserInfoSection: React.FC<DouyinDynamicProps & { coCreatorCount?: number }
         </div>
         <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
           <div className='flex gap-1 items-center'>
-            <Users size={28} className='text-accent' />
+            <Icon icon="lucide:users" width={28} className='text-accent' />
             <span className='text-muted'>粉丝</span>
           </div>
           <div className='w-full h-px bg-border' />
@@ -276,7 +275,7 @@ export const DouyinDynamic: React.FC<Omit<DouyinDynamicProps, 'templateType' | '
             {coCreatorCount && coCreatorCount > 0 && (
               <div className='px-16 pb-8'>
                 <div className='gap-2 inline-flex items-center rounded-2xl bg-surface text-foreground/80 px-6 py-3'>
-                  <Users className='w-7 h-7' />
+                  <Icon icon="lucide:users" className='w-7 h-7' />
                   <span className='text-3xl font-medium leading-none select-text text-foreground/80'>{coCreatorCount}人共创</span>
                 </div>
               </div>

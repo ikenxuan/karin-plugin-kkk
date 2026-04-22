@@ -1,6 +1,6 @@
 "use client";
 import { Tabs } from "@heroui/react";
-import { Moon, Sun } from "lucide-react";
+import { Icon } from '@iconify/react';
 import { useCallback, useEffect, useRef, useState, type Key } from "react";
 import { cn } from "@/lib/cn";
 
@@ -132,10 +132,10 @@ export const AnimatedThemeToggler = ({ className, duration = 400 }: AnimatedThem
           <Tabs.ListContainer>
             <Tabs.List aria-label="主题切换" className="inline-flex rounded-full gap-2 border border-fd-border bg-fd-secondary p-0.5">
               <Tabs.Tab id="light" className="h-7.5 min-w-0 rounded-full px-1.5">
-                <Sun className="size-4" />
+                <Icon icon="lucide:sun" className="size-4" />
               </Tabs.Tab>
               <Tabs.Tab id="dark" className="h-7.5 min-w-0 rounded-full px-1.5">
-                <Moon className="size-4" />
+                <Icon icon="lucide:moon" className="size-4" />
               </Tabs.Tab>
             </Tabs.List>
           </Tabs.ListContainer>
@@ -150,11 +150,11 @@ export const AnimatedThemeToggler = ({ className, duration = 400 }: AnimatedThem
         <Tabs.ListContainer>
           <Tabs.List aria-label="主题切换" className="inline-flex rounded-full gap-2 border border-fd-border bg-fd-secondary p-0.5">
             <Tabs.Tab id="light" className="h-7.5 min-w-0 rounded-full px-1.5 text-fd-muted-foreground">
-              <Sun className="size-5" />
+              <Icon icon="lucide:sun" className="size-5" />
               <Tabs.Indicator />
             </Tabs.Tab>
             <Tabs.Tab id="dark" className="h-7.5 min-w-0 rounded-full px-1.5 text-fd-muted-foreground">
-              <Moon className="size-5" />
+              <Icon icon="lucide:moon" className="size-5" />
               <Tabs.Indicator />
             </Tabs.Tab>
           </Tabs.List>

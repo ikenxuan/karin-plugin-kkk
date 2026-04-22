@@ -1,6 +1,6 @@
 import { Button, Chip } from '@heroui/react'
+import { Icon } from '@iconify/react'
 import { renderRichTextToReact } from '@kkk/richtext'
-import { Calendar, ExternalLink, Heart, MapPin, MessageCircle, Share2, Star } from 'lucide-react'
 import React, { useMemo } from 'react'
 
 import { DefaultLayout } from '../../../components/layouts/DefaultLayout'
@@ -71,10 +71,10 @@ export const XiaohongshuNoteInfo: React.FC<Omit<XiaohongshuNoteInfoProps, 'templ
     /** 统计数据配置 - 小红书特色配色 */
     const statsData = useMemo(
       () => [
-        { icon: <Heart size={48} />, value: props.data.statistics.liked_count, label: '点赞', iconColor: 'text-red-500' },
-        { icon: <MessageCircle size={48} />, value: props.data.statistics.comment_count, label: '评论', iconColor: 'text-blue-500' },
-        { icon: <Star size={48} />, value: props.data.statistics.collected_count, label: '收藏', iconColor: 'text-yellow-500' },
-        { icon: <Share2 size={48} />, value: props.data.statistics.share_count, label: '分享', iconColor: 'text-green-500' }
+        { icon: <Icon icon="lucide:heart" width={48} />, value: props.data.statistics.liked_count, label: '点赞', iconColor: 'text-red-500' },
+        { icon: <Icon icon="lucide:message-circle" width={48} />, value: props.data.statistics.comment_count, label: '评论', iconColor: 'text-blue-500' },
+        { icon: <Icon icon="lucide:star" width={48} />, value: props.data.statistics.collected_count, label: '收藏', iconColor: 'text-yellow-500' },
+        { icon: <Icon icon="lucide:share-2" width={48} />, value: props.data.statistics.share_count, label: '分享', iconColor: 'text-green-500' }
       ],
       [props.data.statistics]
     )
@@ -105,19 +105,19 @@ export const XiaohongshuNoteInfo: React.FC<Omit<XiaohongshuNoteInfoProps, 'templ
                 className='text-5xl text-foreground/80 leading-relaxed mb-8 whitespace-pre-wrap select-text'
               >
                 {renderRichTextToReact(props.data.desc, {
-                  mentionClassName: xiaohongshuNoteMentionClassName
+                  mention: { className: xiaohongshuNoteMentionClassName }
                 })}
               </div>
               
               {/* 发布信息 */}
               <div className="flex gap-8 items-center text-5xl text-muted">
                 <div className="flex gap-2 items-center">
-                  <Calendar size={32} />
+                  <Icon icon="lucide:calendar" width={32} />
                   <span>{formattedDate}</span>
                 </div>
                 {props.data.ip_location && (
                   <div className="flex gap-2 items-center">
-                    <MapPin size={32} />
+                    <Icon icon="lucide:map-pin" width={32} />
                     <span>{props.data.ip_location}</span>
                   </div>
                 )}
@@ -176,7 +176,7 @@ export const XiaohongshuNoteInfo: React.FC<Omit<XiaohongshuNoteInfoProps, 'templ
                   className='text-white bg-[#FF2442]'
                 >
                   <div className='flex items-center'>
-                    <ExternalLink className="mr-1 w-4 h-4" />
+                    <Icon icon="lucide:external-link" className="mr-1 w-4 h-4" />
                     <span>查看原文</span>
                   </div>
                 </Button>

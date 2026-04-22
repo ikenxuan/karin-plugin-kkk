@@ -51,61 +51,7 @@
 
 ## Further support
 
-该项目的部分功能开发依赖了 OpenAI，他们提供了前沿的 AI Agent 访问。
-
-<p align="left">
-<a href="https://openai.com" target="_blank" style="text-decoration: none;">
-  <picture>
-    <source
-      media="(prefers-color-scheme: dark)"
-      srcset="https://unpkg.com/@lobehub/icons-static-png@latest/dark/openai.png"
-    />
-    <img
-      height="60"
-      src="https://unpkg.com/@lobehub/icons-static-png@latest/light/openai.png"
-      alt="OpenAI logo"
-    />
-  </picture>
-  &nbsp;
-  <picture>
-    <source
-      media="(prefers-color-scheme: dark)"
-      srcset="https://unpkg.com/@lobehub/icons-static-png@latest/dark/openai-text.png"
-    />
-    <img
-      height="60"
-      src="https://unpkg.com/@lobehub/icons-static-png@latest/light/openai-text.png"
-      alt="OpenAI"
-    />
-  </picture>
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://chatgpt.com/codex/cloud" target="_blank" style="text-decoration: none;">
-  <picture>
-    <source
-      media="(prefers-color-scheme: dark)"
-      srcset="https://unpkg.com/@lobehub/icons-static-png@latest/dark/codex-color.png"
-    />
-    <img
-      height="60"
-      src="https://unpkg.com/@lobehub/icons-static-png@latest/light/codex-color.png"
-      alt="Codex logo"
-    />
-  </picture>
-  &nbsp;
-  <picture>
-    <source
-      media="(prefers-color-scheme: light)"
-      srcset="https://unpkg.com/@lobehub/icons-static-png@latest/light/codex-text.png"
-    />
-    <img
-      height="60"
-      src="https://unpkg.com/@lobehub/icons-static-png@latest/dark/codex-text.png"
-      alt="Codex"
-    />
-  </picture>
-  </a>
-</p>
+本项目由 **[ikenxuan](https://github.com/ikenxuan)** 提供产品创意与 UI 设计，并在 **[Codex](https://chatgpt.com/codex/cloud)** 与 **[Claude Code](https://claude.ai/code)** 的辅助下完成工程开发。
 
 
 ## License

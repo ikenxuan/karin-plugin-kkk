@@ -2,7 +2,7 @@
 
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { CornerDownLeft, ExternalLink } from 'lucide-react';
+import { Icon } from '@iconify/react';
 import { cn } from '@/lib/cn';
 
 interface ChangelogItem {
@@ -38,7 +38,7 @@ export function ChangelogViewer({ items }: ChangelogViewerProps) {
                 h3: ({ children, ...props }) => (
                   <h3 className="flex gap-2 items-baseline mt-6 mb-4 text-xl font-semibold text-fd-foreground" {...props}>
                     {children}
-                    <CornerDownLeft strokeWidth={2.5} className="w-4 h-4 text-fd-muted-foreground" />
+                    <Icon icon="lucide:corner-down-left" width={16} className="text-fd-muted-foreground" />
                   </h3>
                 ),
                 h4: ({ children, ...props }) => (
@@ -110,7 +110,7 @@ export function ChangelogViewer({ items }: ChangelogViewerProps) {
                     {...props}
                   >
                     {children}
-                    <ExternalLink className="w-6 h-auto" />
+                    <Icon icon="lucide:external-link" width={24} />
                   </a>
                 ),
                 img: ({ ...props }) => (

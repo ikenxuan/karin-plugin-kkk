@@ -29,11 +29,14 @@
     "src/"
   ],
   "peerDependencies": {
-    "react": ">=18.0.0"
+    "react": "*"
   },
   "peerDependenciesMeta": {
     "react": {
       "optional": true
     }
+  },
+  "dependencies": {
+    "clsx": "^2.1.1"
   }
 }

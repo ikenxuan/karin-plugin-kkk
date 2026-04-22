@@ -10,7 +10,7 @@ import {
   Modal,
   parseColor
 } from '@heroui/react'
-import { Moon, Palette, RotateCcw, Sun } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import React from 'react'
 
 interface PanelThemeControlsProps {
@@ -57,11 +57,11 @@ export const PanelThemeControls: React.FC<PanelThemeControlsProps> = ({
       onOpenChange={onOpenChange}
     >
       <Modal.Container className='p-4 sm:p-6' placement='center' size='sm'>
-        <Modal.Dialog className='sm:max-w-[30rem]'>
+        <Modal.Dialog className='sm:max-w-120'>
           <Modal.CloseTrigger />
           <Modal.Header>
             <Modal.Icon className='bg-default text-foreground'>
-              <Palette className='size-5' />
+              <Icon icon="lucide:palette" className='size-5' />
             </Modal.Icon>
             <Modal.Heading>面板主题</Modal.Heading>
           </Modal.Header>
@@ -78,11 +78,11 @@ export const PanelThemeControls: React.FC<PanelThemeControlsProps> = ({
               </Label>
               <div className='grid grid-cols-2 gap-2'>
                 <Button onPress={() => onThemeModeChange(false)} variant={isDarkMode ? 'secondary' : 'primary'}>
-                  <Sun className='size-4' />
+                  <Icon icon="lucide:sun" className='size-4' />
                   浅色
                 </Button>
                 <Button onPress={() => onThemeModeChange(true)} variant={isDarkMode ? 'primary' : 'secondary'}>
-                  <Moon className='size-4' />
+                  <Icon icon="lucide:moon" className='size-4' />
                   深色
                 </Button>
               </div>
@@ -167,7 +167,7 @@ export const PanelThemeControls: React.FC<PanelThemeControlsProps> = ({
               onPress={onResetAccent}
               variant='secondary'
             >
-              <RotateCcw className='size-4' />
+              <Icon icon="lucide:rotate-ccw" className='size-4' />
               恢复黑白
             </Button>
             <Button onPress={() => onOpenChange(false)}>
