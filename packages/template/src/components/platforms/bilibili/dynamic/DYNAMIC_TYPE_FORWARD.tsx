@@ -115,7 +115,7 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
       />
 
       <div className='flex flex-col items-center py-11'>
-        <div className='flex overflow-hidden relative flex-col items-center w-11/12 rounded-2xl rounded-10 aspect-video shadow-large'>
+        <div className='flex overflow-hidden relative flex-col items-center w-11/12 rounded-4xl rounded-10 aspect-video shadow-large'>
           <EnhancedImage
             src={content.cover}
             alt='视频封面'
