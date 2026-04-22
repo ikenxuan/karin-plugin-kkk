@@ -424,7 +424,7 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliData> = (props) => {
                         {episode.badge && (
                           <Chip 
                             size='lg'
-                            className='absolute top-3 right-3 rounded-2xl py-1 text-2xl font-medium select-text'
+                            className='absolute top-6 right-8 rounded-2xl py-1 text-lg font-medium select-text scale-150'
                             style={{
                               backgroundColor: episode.badge_info?.bg_color || '#FB7299',
                               color: '#FFFFFF'
