@@ -1,5 +1,5 @@
 import { Button, Chip } from '@heroui/react'
-import { Coins, ExternalLink, Eye, Heart, MessageCircle, Share2, Star } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import React, { useMemo } from 'react'
 
 import { DefaultLayout } from '../../../components/layouts/DefaultLayout'
@@ -57,10 +57,10 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
 
     const statsData = useMemo(
       () => [
-        { icon: <Eye size={48} />, value: props.data.stat.view, label: '播放', iconColor: 'text-view' },
-        { icon: <Heart size={48} />, value: props.data.stat.like, label: '点赞', iconColor: 'text-like' },
-        { icon: <MessageCircle size={48} />, value: props.data.stat.reply, label: '评论', iconColor: 'text-comment' },
-        { icon: <Star size={48} />, value: props.data.stat.favorite, label: '收藏', iconColor: 'text-yellow-500' }
+        { icon: <Icon icon="lucide:eye" width={48} />, value: props.data.stat.view, label: '播放', iconColor: 'text-view' },
+        { icon: <Icon icon="lucide:heart" width={48} />, value: props.data.stat.like, label: '点赞', iconColor: 'text-like' },
+        { icon: <Icon icon="lucide:message-circle" width={48} />, value: props.data.stat.reply, label: '评论', iconColor: 'text-comment' },
+        { icon: <Icon icon="lucide:star" width={48} />, value: props.data.stat.favorite, label: '收藏', iconColor: 'text-yellow-500' }
       ],
       [props.data.stat]
     )
@@ -111,11 +111,11 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
               <div className="flex justify-between items-center mb-8 text-5xl text-muted">
                 <div className="flex gap-16 items-center">
                   <div className="flex gap-2 items-center">
-                    <Coins size={48} />
+                    <Icon icon="lucide:coins" width={48} />
                     <span className="font-medium">{props.data.stat.coin}</span>
                   </div>
                   <div className="flex gap-2 items-center">
-                    <Share2 size={48} />
+                    <Icon icon="lucide:share-2" width={48} />
                     <span className="font-medium">{props.data.stat.share}</span>
                   </div>
                 </div>
@@ -148,7 +148,7 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
               </div>
               <div className="transform-gpu scale-[3.5] origin-right">
                 <Button size="sm" className="bg-[#FF6699] text-white">
-                  <ExternalLink className="mr-1 w-4 h-4" />
+                  <Icon icon="lucide:external-link" className="mr-1 w-4 h-4" />
                   观看
                 </Button>
               </div>

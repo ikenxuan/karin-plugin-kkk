@@ -1,8 +1,8 @@
+import { Icon } from '@iconify/react'
 import { renderRichTextToReact } from '@kkk/richtext'
 import clsx from 'clsx'
 import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
-import { ThumbsUp } from 'lucide-react'
 import React, { type ReactNode, useEffect, useMemo, useState } from 'react'
 
 import type {
@@ -454,7 +454,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
 
           <div className='flex items-center gap-18.75 ml-auto'>
             <div className='flex items-center gap-3.75'>
-              <ThumbsUp className='w-15 h-15 text-muted' />
+              <Icon icon="lucide:thumbs-up" className='w-15 h-15 text-muted' />
               <span className='text-[45px] text-muted select-text'>{formatBilibiliLikeCount(props.like)}</span>
             </div>
           </div>
@@ -620,7 +620,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
 
                       <div className='flex items-center gap-18.75 ml-auto'>
                         <div className='flex items-center gap-3.75'>
-                          <ThumbsUp className='w-15 h-15 text-muted' />
+                          <Icon icon="lucide:thumbs-up" className='w-15 h-15 text-muted' />
                           <span className='text-[45px] text-muted select-text'>{formatBilibiliLikeCount(subReply.like)}</span>
                         </div>
                       </div>

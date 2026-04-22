@@ -37,9 +37,6 @@ importers:
       cors:
         specifier: ^2.8.6
         version: 2.8.6
-      lucide-react:
-        specifier: 0.577.0
-        version: 0.577.0(react@19.2.5)
       node-karin:
         specifier: 1.15.2
         version: 1.15.2
@@ -447,6 +444,9 @@ importers:
       '@heroui/styles':
         specifier: 3.0.2
         version: 3.0.2(tailwind-merge@3.4.0)(tailwindcss@4.2.4)
+      '@iconify/react':
+        specifier: ^6.0.2
+        version: 6.0.2(react@19.2.5)
       '@icons-pack/react-simple-icons':
         specifier: ^13.13.0
         version: 13.13.0(react@19.2.5)
@@ -477,9 +477,6 @@ importers:
       highlight.js:
         specifier: ^11.11.1
         version: 11.11.1
-      react-icons:
-        specifier: ^5.6.0
-        version: 5.6.0(react@19.2.5)
       react-markdown:
         specifier: ^10.1.0
         version: 10.1.0(@types/react@19.2.14)(react@19.2.5)
@@ -1420,6 +1417,11 @@ packages:
   '@hutson/parse-repository-url@5.0.0':
     resolution: {integrity: sha512-e5+YUKENATs1JgYHMzTr2MW/NDcXGfYFAuOQU8gJgF/kEh4EqKgfGrfLI67bMD4tbhZVlkigz/9YYwWcbOFthg==}
     engines: {node: '>=10.13.0'}
+
+  '@iconify/react@6.0.2':
+    resolution: {integrity: sha512-SMmC2sactfpJD427WJEDN6PMyznTFMhByK9yLW0gOTtnjzzbsi/Ke/XqsumsavFPwNiXs8jSiYeZTmLCLwO+Fg==}
+    peerDependencies:
+      react: 19.2.5
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -7045,11 +7047,6 @@ packages:
     peerDependencies:
       react: 19.2.5
 
-  lucide-react@0.577.0:
-    resolution: {integrity: sha512-4LjoFv2eEPwYDPg/CUdBJQSDfPyzXCRrVW1X7jrx/trgxnxkHFjnVZINbzvzxjN70dxychOfg+FTYwBiS3pQ5A==}
-    peerDependencies:
-      react: 19.2.5
-
   lucide-react@1.7.0:
     resolution: {integrity: sha512-yI7BeItCLZJTXikmK4KNUGCKoGzSvbKlfCvw44bU4fXAL6v3gYS4uHD1jzsLkfwODYwI6Drw5Tu9Z5ulDe0TSg==}
     peerDependencies:
@@ -10578,6 +10575,11 @@ snapshots:
   '@humanwhocodes/retry@0.4.3': {}
 
   '@hutson/parse-repository-url@5.0.0': {}
+
+  '@iconify/react@6.0.2(react@19.2.5)':
+    dependencies:
+      '@iconify/types': 2.0.0
+      react: 19.2.5
 
   '@iconify/types@2.0.0': {}
 
@@ -16968,10 +16970,6 @@ snapshots:
       react: 19.2.5
 
   lucide-react@0.563.0(react@19.2.5):
-    dependencies:
-      react: 19.2.5
-
-  lucide-react@0.577.0(react@19.2.5):
     dependencies:
       react: 19.2.5
 

@@ -1,4 +1,4 @@
-import { CornerDownLeft } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
@@ -88,7 +88,7 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
           }}
         />
         <div
-          className="absolute left-[32%] -bottom-[14%] w-[44%] h-[28%] blur-[342px]"
+          className="absolute left-[32%] bottom-[-14%] w-[44%] h-[28%] blur-[342px]"
           style={{
             background: `radial-gradient(ellipse at 50% 48%, ${backgroundColors.secondary} 0%, transparent 77%)`
           }}
@@ -211,7 +211,7 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
               h3: ({ children, ...props }) => (
                 <h3 className="flex items-baseline gap-3 text-[3.2em] font-light mb-2 text-foreground" {...props}>
                   {children}
-                  <CornerDownLeft strokeWidth={2.5} className="w-[1em] h-[1em] text-foreground/10" />
+                  <Icon icon="lucide:corner-down-left" className="w-[1em] h-[1em] text-foreground/10" />
                 </h3>
               ),
               h4: ({ children, ...props }) => (
@@ -277,7 +277,7 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
                   {...props}
                 >
                   <span>{children}</span>
-                  {/* <ExternalLink className="w-[0.8em] h-auto -mb-[0.1em] opacity-70" /> */}
+                  {/* <ExternalLink className="w-[0.8em] h-auto mb-[-0.1em] opacity-70" /> */}
                 </a>
               ),
               img: ({ ...props }) => (

@@ -1,6 +1,6 @@
 import { Button, Card, Label, ListBox, Select, Tooltip } from '@heroui/react'
+import { Icon } from '@iconify/react'
 import Editor from '@monaco-editor/react'
-import { Code, Copy, Download, FileJson, Save, Upload, X } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 
 interface JsonEditorProps {
@@ -54,8 +54,8 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   const [isFormatted, setIsFormatted] = useState(true)
   const isInternalChange = useRef<boolean>(false)
 
-  const toolbarButtonClass = 'h-8 rounded-xl border border-black/10 bg-black/[0.03] text-foreground shadow-none hover:bg-black/[0.05] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.06]'
-  const iconButtonClass = 'h-8 w-8 rounded-xl border border-black/10 bg-black/[0.03] text-foreground shadow-none hover:bg-black/[0.05] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.06]'
+  const toolbarButtonClass = 'h-8 rounded-xl border border-black/10 bg-black/3 text-foreground shadow-none hover:bg-black/5 dark:border-white/10 dark:bg-white/4 dark:hover:bg-white/6'
+  const iconButtonClass = 'h-8 w-8 rounded-xl border border-black/10 bg-black/3 text-foreground shadow-none hover:bg-black/5 dark:border-white/10 dark:bg-white/4 dark:hover:bg-white/6'
 
   const handleEditorWillMount = (monaco: any) => {
     monaco.editor.defineTheme('json-dark', {
@@ -228,7 +228,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
         <Card.Header className='flex flex-row items-center justify-between gap-3 border-b border-black/10 px-4 py-3 dark:border-white/10'>
           <div className='flex items-center gap-3'>
             <div className='flex items-center gap-2'>
-              <Code className='h-4 w-4 text-foreground' />
+              <Icon icon="lucide:code" className='h-4 w-4 text-foreground' />
               <h3 className='text-sm font-semibold text-foreground'>JSON 编辑器</h3>
             </div>
 
@@ -260,7 +260,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
             {availableDataFiles.length > 0 && (
               <>
                 <div className='flex items-center gap-2'>
-                  <FileJson className='h-3.5 w-3.5 text-muted' />
+                  <Icon icon="lucide:file-json" className='h-3.5 w-3.5 text-muted' />
                   <Select
                     aria-label='选择数据文件'
                     className='w-60'
@@ -274,7 +274,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
                     }}
                   >
                     <Label className='sr-only'>选择数据文件</Label>
-                    <Select.Trigger className='h-8 rounded-xl border border-black/10 bg-black/[0.03] px-3 py-2 text-sm shadow-none hover:bg-black/[0.05] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.06]'>
+                    <Select.Trigger className='h-8 rounded-xl border border-black/10 bg-black/3 px-3 py-2 text-sm shadow-none hover:bg-black/5 dark:border-white/10 dark:bg-white/4 dark:hover:bg-white/6'>
                       <Select.Value className='text-sm text-foreground' />
                       <Select.Indicator className='text-muted' />
                     </Select.Trigger>
@@ -283,7 +283,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
                         {availableDataFiles.map((filename) => (
                           <ListBox.Item
                             key={filename}
-                            className='rounded-xl px-3 py-2 text-sm text-foreground data-[hovered=true]:bg-black/[0.04] dark:data-[hovered=true]:bg-white/[0.06]'
+                            className='rounded-xl px-3 py-2 text-sm text-foreground data-[hovered=true]:bg-black/4 dark:data-[hovered=true]:bg-white/6'
                             id={filename}
                             textValue={filename.replace('.json', '')}
                           >
@@ -301,9 +301,9 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
             )}
 
             <div className='flex gap-1.5'>
-              {renderToolButton('复制到剪贴板', <Copy className='h-3.5 w-3.5' />, copyToClipboard)}
-              {renderToolButton('导入 JSON 文件', <Upload className='h-3.5 w-3.5' />, importJson, readonly)}
-              {renderToolButton('导出 JSON 文件', <Download className='h-3.5 w-3.5' />, exportJson)}
+              {renderToolButton('复制到剪贴板', <Icon icon="lucide:copy" className='h-3.5 w-3.5' />, copyToClipboard)}
+              {renderToolButton('导入 JSON 文件', <Icon icon="lucide:upload" className='h-3.5 w-3.5' />, importJson, readonly)}
+              {renderToolButton('导出 JSON 文件', <Icon icon="lucide:download" className='h-3.5 w-3.5' />, exportJson)}
             </div>
 
             {onSave && onCancel && (
@@ -316,7 +316,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
                     size='sm'
                     variant='secondary'
                   >
-                    <X className='h-3.5 w-3.5' />
+                    <Icon icon="lucide:x" className='h-3.5 w-3.5' />
                     取消
                   </Button>
                   <Button
@@ -329,7 +329,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
                   >
                     {({ isPending }) => (
                       <>
-                        <Save className='h-3.5 w-3.5' />
+                        <Icon icon="lucide:save" className='h-3.5 w-3.5' />
                         {isPending ? '保存中...' : '保存并重载'}
                       </>
                     )}
@@ -341,7 +341,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
         </Card.Header>
 
         {error && (
-          <div className='shrink-0 border-b border-danger/20 bg-danger-soft/70 px-4 py-2 dark:border-danger/30 dark:bg-danger-soft/40'>
+          <div className='shrink-0 border-b border-danger-soft-hover bg-danger-soft/70 px-4 py-2 dark:border-danger/30 dark:bg-danger-soft/40'>
             <div className='flex items-center gap-2 text-danger'>
               <svg className='h-4 w-4 shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />

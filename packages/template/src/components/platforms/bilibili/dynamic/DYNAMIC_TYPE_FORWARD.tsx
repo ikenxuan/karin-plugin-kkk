@@ -1,7 +1,6 @@
+import { Icon } from '@iconify/react'
 import { renderRichTextToReact } from '@kkk/richtext'
-import { Clock, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
 import React from 'react'
-import { LuFullscreen } from 'react-icons/lu'
 
 import type {
   BilibiliDynamicFooterProps,
@@ -42,7 +41,7 @@ const BilibiliForwardUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
           <UsernameDisplay metadata={props.usernameMeta} />
         </div>
         <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted'>
-          <Clock size={36} className='text-time' />
+          <Icon icon="lucide:clock" width={36} className='text-time' />
           {props.create_time}
         </div>
       </div>
@@ -87,7 +86,7 @@ const OriginalUserInfo: React.FC<{
             <UsernameDisplay metadata={props.usernameMeta} />
           </div>
           <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted'>
-            <Clock size={32} className='text-time' />
+            <Icon icon="lucide:clock" width={32} className='text-time' />
             {props.create_time}
           </div>
         </div>
@@ -350,22 +349,22 @@ const BilibiliForwardStatus: React.FC<BilibiliDynamicStatusProps> = (props) => {
     <div className='flex flex-col gap-10 px-20 w-full leading-relaxed'>
       <div className='flex gap-6 items-center text-5xl font-light tracking-normal select-text text-foreground/70'>
         <div className='flex gap-2 items-center'>
-          <Heart size={48} className='text-like' />
+          <Icon icon="lucide:heart" width={48} className='text-like' />
           {props.dianzan}点赞
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <MessageCircle size={48} className='text-comment' />
+          <Icon icon="lucide:message-circle" width={48} className='text-comment' />
           {props.pinglun}评论
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <Share2 size={48} className='text-success' />
+          <Icon icon="lucide:share-2" width={48} className='text-success' />
           {props.share}分享
         </div>
       </div>
       <div className='flex gap-2 items-center text-5xl font-light tracking-normal select-text text-foreground/70'>
-        <LuFullscreen size={48} className='text-time' />
+        <Icon icon="lucide:maximize" width={48} className='text-time' />
         图片生成于: {props.render_time}
       </div>
       <div className='h-3' />
@@ -406,7 +405,7 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
               <UsernameDisplay metadata={props.usernameMeta} />
             </div>
             <div className='flex gap-2 items-center text-4xl text-muted'>
-              <Hash size={32} className='text-muted' />
+              <Icon icon="lucide:hash" width={32} className='text-muted' />
               <span className='select-text'>UID: {props.user_shortid}</span>
             </div>
           </div>
@@ -416,7 +415,7 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
         <div className='text-3xl flex gap-6 items-center text-foreground/70'>
           <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
-              <Heart size={28} className='text-like' />
+              <Icon icon="lucide:heart" width={28} className='text-like' />
               <span className='text-muted'>获赞</span>
             </div>
             <div className='w-full h-px bg-border' />
@@ -424,7 +423,7 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
           </div>
           <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
-              <Eye size={28} className='text-view' />
+              <Icon icon="lucide:eye" width={28} className='text-view' />
               <span className='text-muted'>关注</span>
             </div>
             <div className='w-full h-px bg-border' />
@@ -432,7 +431,7 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
           </div>
           <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
-              <Users size={28} className='text-accent' />
+              <Icon icon="lucide:users" width={28} className='text-accent' />
               <span className='text-muted'>粉丝</span>
             </div>
             <div className='w-full h-px bg-border' />

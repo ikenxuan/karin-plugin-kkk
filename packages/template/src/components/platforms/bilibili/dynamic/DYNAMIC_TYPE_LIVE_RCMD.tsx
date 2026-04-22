@@ -1,5 +1,5 @@
+import { Icon } from '@iconify/react'
 import { renderRichTextToReact } from '@kkk/richtext'
-import { Clock, Radio, Users } from 'lucide-react'
 import React from 'react'
 
 import type {
@@ -330,7 +330,7 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
                   className='mt-5 inline-flex items-center gap-3 font-black'
                   style={{ color: deepColor }}
                 >
-                  <Users size={22} style={{ color: accentColor }} />
+                  <Icon icon="lucide:users" width={22} style={{ color: accentColor }} />
                   <span className='select-text' style={{ fontSize: `${followerFontSize}px` }}>
                     {data.fans} 粉丝
                   </span>
@@ -353,18 +353,18 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
           </div>
 
           <div
-            className='mt-8 flex flex-wrap items-center gap-x-6 gap-y-4 font-black tracking-[-0.025em]'
+            className='mt-8 flex flex-wrap items-center gap-x-6 gap-y-4 font-black tracking-tight'
             style={{ color: deepColor, fontSize: `${metaValueFontSize}px` }}
           >
             <div className='inline-flex min-w-0 items-center gap-3'>
-              <Radio size={20} style={{ color: accentColor }} />
+              <Icon icon="lucide:radio" width={20} style={{ color: accentColor }} />
               <span className='min-w-0 whitespace-normal leading-[1.18] select-text' style={{ fontSize: `${liveInfoFontSize}px` }}>
                 {data.liveinf}
               </span>
             </div>
             <span style={{ color: withAlphaFromCss(deepColor, 0.26) }}>/</span>
             <div className='inline-flex items-center gap-3 whitespace-nowrap font-mono'>
-              <Clock size={20} style={{ color: primaryColor }} />
+              <Icon icon="lucide:clock" width={20} style={{ color: primaryColor }} />
               <span className='select-text'>{liveSignalTime}</span>
             </div>
           </div>

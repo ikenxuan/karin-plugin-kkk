@@ -1,22 +1,14 @@
+import { Icon } from '@iconify/react'
 import React from 'react'
-import {
-  RiGroupLine,
-  RiHashtag,
-  RiHeart2Line,
-  RiHeart3Line,
-  RiLiveLine,
-  RiStarLine,
-  RiUserFollowLine,
-  RiVideoLine } from 'react-icons/ri'
 
 import type { DouyinUserListProps } from '../../../types/platforms/douyin/userlist'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
-const pushTypeConfig: Record<string, { label: string; color: string; icon: any }> = {
-  post: { label: '作品更新', color: 'bg-accent/5 text-accent border-accent/20', icon: RiVideoLine },
-  favorite: { label: '喜欢列表', color: 'bg-danger/5 text-danger border-danger/20', icon: RiHeart2Line },
-  recommend: { label: '推荐列表', color: 'bg-warning/5 text-warning border-warning/20', icon: RiStarLine },
-  live: { label: '直播状态', color: 'bg-surface-secondary/40 text-accent border-border/20', icon: RiLiveLine }
+const pushTypeConfig: Record<string, { label: string; color: string; icon: string }> = {
+  post: { label: '作品更新', color: 'bg-accent/5 text-accent border-accent-soft-hover', icon: 'ri:video-line' },
+  favorite: { label: '喜欢列表', color: 'bg-danger/5 text-danger border-danger-soft-hover', icon: 'ri:heart-line' },
+  recommend: { label: '推荐列表', color: 'bg-warning/5 text-warning border-warning-soft-hover', icon: 'ri:star-line' },
+  live: { label: '直播状态', color: 'bg-surface-secondary/40 text-accent border-border/20', icon: 'ri:live-line' }
 }
 
 /**
@@ -70,7 +62,7 @@ const DouyinUserItem: React.FC<DouyinUserListProps['data']['renderOpt'][number]>
               {props.username}
             </h3>
             <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-surface/50 border border-border/50 text-xs font-mono font-bold text-muted">
-              <RiHashtag className="w-3 h-3 opacity-70" />
+              <Icon icon="ri:hashtag" className="w-3 h-3 opacity-70" />
               {props.short_id}
             </span>
           </div>
@@ -94,17 +86,16 @@ const DouyinUserItem: React.FC<DouyinUserListProps['data']['renderOpt'][number]>
           <div className="flex gap-2.5">
             {Object.entries(pushTypeConfig).map(([type, config]) => {
               const isActive = props.pushTypes?.includes(type)
-              const Icon = config.icon
               return (
-                <div 
-                  key={type} 
+                <div
+                  key={type}
                   className={`px-2.5 py-3 rounded-xl border flex flex-col items-center gap-2.5 transition-colors duration-200 ${
-                    isActive 
-                      ? config.color 
+                    isActive
+                      ? config.color
                       : 'bg-surface/50 text-muted border-transparent dark:bg-surface/10'
                   }`}
                 >
-                  <Icon className={`w-5 h-5 ${isActive ? '' : 'opacity-50'}`} />
+                  <Icon icon={config.icon} className={`w-5 h-5 ${isActive ? '' : 'opacity-50'}`} />
                   <span 
                     className="text-xs font-bold whitespace-nowrap tracking-wide"
                     style={{ writingMode: 'vertical-rl' }}
@@ -119,17 +110,16 @@ const DouyinUserItem: React.FC<DouyinUserListProps['data']['renderOpt'][number]>
           {/* 右侧 */}
           <div className="flex-1 flex flex-col gap-2">
             {[
-              { icon: RiGroupLine, value: props.fans, label: '粉丝' },
-              { icon: RiHeart3Line, value: props.total_favorited, label: '获赞' },
-              { icon: RiUserFollowLine, value: props.following_count, label: '关注' }
+              { icon: 'ri:group-line', value: props.fans, label: '粉丝' },
+              { icon: 'ri:heart-3-line', value: props.total_favorited, label: '获赞' },
+              { icon: 'ri:user-follow-line', value: props.following_count, label: '关注' }
             ].map((item, index) => {
-              const Icon = item.icon
               return (
-                <div 
+                <div
                   key={index}
                   className="flex items-center gap-3 px-4 py-2 rounded-lg bg-surface-secondary/30 border border-border/30 backdrop-blur-sm"
                 >
-                  <Icon className="w-5 h-5 text-muted shrink-0" />
+                  <Icon icon={item.icon} className="w-5 h-5 text-muted shrink-0" />
                   <div className="flex items-baseline gap-2 flex-1">
                     <span className="text-base font-bold font-mono text-foreground">
                       {item.value}

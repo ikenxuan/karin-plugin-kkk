@@ -1,5 +1,5 @@
 import { Spinner } from '@heroui/react'
-import { AlertTriangle, Info, Zap } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import React from 'react'
 
 import { getComponentConfig } from '../../config/config'
@@ -69,7 +69,7 @@ class ComponentErrorBoundary extends React.Component<{ children: React.ReactNode
       return (
         <div className="flex justify-center items-center min-h-screen p-8">
           <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-surface-secondary backdrop-blur-xl">
-            <Zap className="h-16 w-16 text-warning" strokeWidth={2.25} />
+            <Icon icon="lucide:zap" className="h-16 w-16 text-warning" strokeWidth={2.25} />
             <div className="text-2xl font-semibold text-warning">组件渲染错误</div>
             <div className="text-base text-center text-muted wrap-break-word">{this.state.error?.message || '未知错误'}</div>
           </div>
@@ -119,7 +119,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
   const renderInDevelopment = (type: string, name: string) => (
     <div className="flex justify-center items-center min-h-screen p-8">
       <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-surface-secondary backdrop-blur-xl">
-        <Info className="h-16 w-16 text-muted" strokeWidth={2.25} />
+        <Icon icon="lucide:info" className="h-16 w-16 text-muted" strokeWidth={2.25} />
         <p className="text-2xl font-semibold text-foreground">
           {type} {name} 开发中
         </p>
@@ -196,7 +196,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
             {/* 顶部标题 */}
             <div className="flex items-center gap-10 mb-20">
               <div className="flex items-center justify-center w-36 h-36 bg-white/10 backdrop-blur-sm rounded-[40px]">
-                <AlertTriangle className="w-20 h-20 text-white" strokeWidth={2.5} />
+                <Icon icon="lucide:alert-triangle" className="w-20 h-20 text-white" strokeWidth={2.5} />
               </div>
               <div className="flex flex-col">
                 <div className="text-8xl font-black text-white mb-4 drop-shadow-lg">数据加载失败</div>
@@ -207,7 +207,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
             {/* 使用提示 */}
             <div className="mb-16">
               <div className="flex items-center gap-4 mb-6">
-                <Info className="w-7 h-7 text-white" strokeWidth={2.5} />
+                <Icon icon="lucide:info" className="w-7 h-7 text-white" strokeWidth={2.5} />
                 <div className="text-2xl font-bold text-white uppercase tracking-wider">使用提示</div>
               </div>
               <div className="text-3xl font-medium text-white bg-black/20 backdrop-blur-sm rounded-[40px] px-12 py-10 leading-relaxed">
@@ -218,7 +218,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
             {/* 错误信息 */}
             <div className="mb-16">
               <div className="flex items-center gap-4 mb-6">
-                <AlertTriangle className="w-7 h-7 text-white" strokeWidth={2.5} />
+                <Icon icon="lucide:alert-triangle" className="w-7 h-7 text-white" strokeWidth={2.5} />
                 <div className="text-2xl font-bold text-white uppercase tracking-wider">错误信息</div>
               </div>
               <div className="text-3xl font-semibold text-white bg-black/20 backdrop-blur-sm rounded-[40px] px-12 py-10" style={{ wordBreak: 'break-word' }}>
@@ -230,7 +230,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
             {loadError.stack && (
               <div className="flex-1 flex flex-col">
                 <div className="flex items-center gap-4 mb-6">
-                  <Zap className="w-7 h-7 text-white" strokeWidth={2.5} />
+                  <Icon icon="lucide:zap" className="w-7 h-7 text-white" strokeWidth={2.5} />
                   <div className="text-2xl font-bold text-white uppercase tracking-wider">堆栈跟踪</div>
                 </div>
                 <div

@@ -1,16 +1,5 @@
+import { Icon } from '@iconify/react'
 import React from 'react'
-import { 
-  RiBarChartFill,
-  RiBellFill, 
-  RiLineChartFill,
-  RiLinkM, 
-  RiListCheck2, 
-  RiLoginCircleFill, 
-  RiQuestionFill, 
-  RiRefreshLine, 
-  RiRobot2Fill, 
-  RiSendPlaneFill, 
-  RiSparkling2Fill } from 'react-icons/ri'
 
 import type { HelpProps, MenuGroup, MenuItem } from '../../../types/platforms/other/help'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
@@ -18,28 +7,26 @@ import { DefaultLayout } from '../../layouts/DefaultLayout'
 /**
  * 图标映射表
  */
-const ICON_MAP = {
-  Link: RiLinkM,
-  Sparkles: RiSparkling2Fill,
-  Send: RiSendPlaneFill,
-  List: RiListCheck2,
-  Bell: RiBellFill,
-  LogIn: RiLoginCircleFill,
-  Bot: RiRobot2Fill,
-  RefreshCw: RiRefreshLine,
-  BarChart: RiBarChartFill,
-  TrendingUp: RiLineChartFill
-} as const
+const ICON_MAP: Record<string, string> = {
+  Link: 'ri:link-m',
+  Sparkles: 'ri:sparkling-2-fill',
+  Send: 'ri:send-plane-fill',
+  List: 'ri:list-check-2',
+  Bell: 'ri:bell-fill',
+  LogIn: 'ri:login-circle-fill',
+  Bot: 'ri:robot-2-fill',
+  RefreshCw: 'ri:refresh-line',
+  BarChart: 'ri:bar-chart-fill',
+  TrendingUp: 'ri:line-chart-fill'
+}
 
 /**
- * 根据名称获取图标组件
+ * 根据名称获取图标名称
  * @param icon - 图标名称
- * @returns 对应的 React 组件，默认为 RiQuestionFill
+ * @returns 对应的 iconify 图标名称，默认为 ri:question-fill
  */
-const getIconForItem = (icon?: string) => {
-  const byIcon = icon && ICON_MAP[icon as keyof typeof ICON_MAP]
-  if (byIcon) return byIcon
-  return RiQuestionFill
+const getIconForItem = (icon?: string): string => {
+  return (icon && ICON_MAP[icon]) || 'ri:question-fill'
 }
 
 /**
@@ -52,12 +39,13 @@ const MenuItemComponent: React.FC<{
   /** 主题色 */
   themeColor: string
 }> = ({ item, themeColor }) => {
-  const Icon = getIconForItem(item.icon)
+  const iconName = getIconForItem(item.icon)
 
   return (
     <div className="flex flex-row gap-8 py-2 relative">
       <div className="pt-2 shrink-0 relative">
         <Icon
+          icon={iconName}
           className="w-16 h-16 relative z-10 text-slate-900 dark:text-white"
           style={{ color: themeColor }}
         />

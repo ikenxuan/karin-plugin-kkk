@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, Share2, Star } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import React, { useMemo } from 'react'
 
 import { DefaultLayout } from '../../../components/layouts/DefaultLayout'
@@ -121,10 +121,10 @@ export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType'
 
               {/* 数据统计 */}
               <div className="flex items-center gap-14 shrink-0">
-                <StatItem icon={<Heart size={48} />} value={props.data.statistics.digg_count} />
-                <StatItem icon={<MessageCircle size={48} />} value={props.data.statistics.comment_count} />
-                <StatItem icon={<Star size={48} />} value={props.data.statistics.collect_count} />
-                <StatItem icon={<Share2 size={48} />} value={props.data.statistics.share_count} />
+                <StatItem icon={<Icon icon="lucide:heart" width={48} />} value={props.data.statistics.digg_count} />
+                <StatItem icon={<Icon icon="lucide:message-circle" width={48} />} value={props.data.statistics.comment_count} />
+                <StatItem icon={<Icon icon="lucide:star" width={48} />} value={props.data.statistics.collect_count} />
+                <StatItem icon={<Icon icon="lucide:share-2" width={48} />} value={props.data.statistics.share_count} />
               </div>
             </div>
 

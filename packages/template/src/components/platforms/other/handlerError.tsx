@@ -1,12 +1,9 @@
 import { Chip } from '@heroui/react'
+import { Icon } from '@iconify/react'
 import { formatDistanceToNow, parse } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
-import { AlertCircle, Clock, FileText, QrCode, Terminal } from 'lucide-react'
 import _ from 'node-karin/lodash'
 import React from 'react'
-import { FaCodeBranch } from 'react-icons/fa6'
-import { IoExtensionPuzzleOutline } from 'react-icons/io5'
-import { MdAccessTime } from 'react-icons/md'
 
 import type { ApiErrorProps, BusinessError, LogLevel } from '../../../types/platforms/other/handlerError'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
@@ -120,7 +117,7 @@ const getAdapterLogo = (adapterName: string): React.ReactNode => {
   for (const [key, logoPath] of Object.entries(ADAPTER_LOGO_MAP)) {
     if (nameLower.includes(key)) return <img src={logoPath} className='h-20 w-auto' alt={adapterName} />
   }
-  return <IoExtensionPuzzleOutline className='w-16 h-auto text-danger/80' />
+  return <Icon icon="lucide:puzzle" className='w-16 h-auto text-danger/80' />
 }
 
 const SectionTitle: React.FC<{ icon: React.ReactNode; en: string; zh: string; color: string }> = ({ icon, en, zh, color }) => (
@@ -338,7 +335,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
             style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.6)' }}
           >
             <div className='flex items-center gap-6 mb-10'>
-              <QrCode className='w-10 h-10 text-warning' />
+              <Icon icon="lucide:qr-code" className='w-10 h-10 text-warning' />
               <span className='text-3xl font-semibold' style={{ color: accentColor }}>人机验证</span>
             </div>
             <div className='flex gap-16 items-center'>
@@ -360,7 +357,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
         {data.triggerCommand && (
           <div className='mb-14'>
             <SectionTitle
-              icon={<Terminal className='w-9 h-9' style={{ color: mutedColor }} />}
+              icon={<Icon icon="lucide:terminal" className='w-9 h-9' style={{ color: mutedColor }} />}
               en='Trigger Command'
               zh='触发命令'
               color={mutedColor}
@@ -381,7 +378,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
         {/* 错误堆栈 */}
         <div className='mb-14'>
           <SectionTitle
-            icon={<AlertCircle className='w-9 h-9' style={{ color: primaryColor }} />}
+            icon={<Icon icon="lucide:alert-circle" className='w-9 h-9' style={{ color: primaryColor }} />}
             en='Stack Trace'
             zh='错误堆栈'
             color={mutedColor}
@@ -405,7 +402,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
         {data.logs && data.logs.length > 0 && (
           <div className='mb-14'>
             <SectionTitle
-              icon={<FileText className='w-9 h-9' style={{ color: mutedColor }} />}
+              icon={<Icon icon="lucide:file-text" className='w-9 h-9' style={{ color: mutedColor }} />}
               en='Execution Logs'
               zh='执行日志'
               color={mutedColor}
@@ -442,7 +439,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
                         style={{ backgroundColor: borderColor }}
                       />
                       <span className='flex items-center gap-2 px-3'>
-                        <Clock size={18} className={theme.iconClass} />
+                        <Icon icon="lucide:clock" width={18} className={theme.iconClass} />
                         <span className={`text-xl font-mono font-medium ${theme.textClass}`}>{log.timestamp}</span>
                       </span>
                       {/* 右侧圆角装饰 */}
@@ -589,13 +586,13 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
           <div className='flex items-center gap-10 text-xl mb-12' style={{ color: mutedColor }}>
             {data.buildTime && (
               <div className='flex items-center gap-3'>
-                <MdAccessTime className='w-6 h-6' />
+                <Icon icon="material-symbols:schedule-outline" className='w-6 h-6' />
                 <span>Built Time: {data.buildTime} 距离 {formatDistanceToNow(parse(data.buildTime, 'yyyy年MM月dd日 HH:mm', new Date()), { locale: zhCN })}</span>
               </div>
             )}
             {data.commitHash && (
               <div className='flex items-center gap-3'>
-                <FaCodeBranch className='w-6 h-6' />
+                <Icon icon="lucide:git-branch" className='w-6 h-6' />
                 <span>Commit Hash: {data.commitHash}</span>
               </div>
             )}

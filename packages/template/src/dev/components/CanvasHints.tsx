@@ -1,5 +1,5 @@
 import { Card, Kbd } from '@heroui/react'
-import { Info } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import React from 'react'
 
 interface CanvasHintsProps {
@@ -19,7 +19,7 @@ export const CanvasHints: React.FC<CanvasHintsProps> = () => {
       <Card.Header className='px-3 pb-2 pt-3'>
         <div className='flex items-center gap-2.5'>
           <div className='flex size-7 items-center justify-center rounded-lg border border-border bg-background text-foreground'>
-            <Info className='h-4 w-4' />
+            <Icon icon="lucide:info" className='h-4 w-4' />
           </div>
           <div>
             <Card.Title className='text-sm font-semibold text-foreground'>画布操作</Card.Title>

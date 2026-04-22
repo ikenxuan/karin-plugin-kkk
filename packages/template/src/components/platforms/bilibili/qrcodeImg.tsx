@@ -1,7 +1,5 @@
-import { AlertTriangle, ScanLine, User } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import React from 'react'
-import { RiArrowRightFill } from 'react-icons/ri'
-import { SiBilibili } from 'react-icons/si'
 
 import type { BilibiliQrcodeImgProps } from '../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
@@ -95,23 +93,23 @@ export const BilibiliQrcodeImg: React.FC<BilibiliQrcodeImgProps> = React.memo((p
             {/* Step 1 */}
             <div className="flex flex-col items-center gap-4">
               <div className="p-5 rounded-3xl bg-surface/50 backdrop-blur-md">
-                <SiBilibili className="w-16 h-16" />
+                <Icon icon="simple-icons:bilibili" className="w-16 h-16" />
               </div>
               <span className="text-[28px] font-medium tracking-wide">打开哔哩哔哩</span>
             </div>
-            <RiArrowRightFill className="w-10 h-10 mt-8 opacity-40" />
+            <Icon icon="ri:arrow-right-fill" className="w-10 h-10 mt-8 opacity-40" />
             {/* Step 2 */}
             <div className="flex flex-col items-center gap-4">
               <div className="p-5 rounded-3xl bg-surface/50 backdrop-blur-md">
-                <User className="w-16 h-16" />
+                <Icon icon="lucide:user" className="w-16 h-16" />
               </div>
               <span className="text-[28px] font-medium tracking-wide">点击我的</span>
             </div>
-            <RiArrowRightFill className="w-10 h-10 mt-8 opacity-40" />
+            <Icon icon="ri:arrow-right-fill" className="w-10 h-10 mt-8 opacity-40" />
             {/* Step 3 */}
             <div className="flex flex-col items-center gap-4">
               <div className="p-5 rounded-3xl bg-surface/50 backdrop-blur-md">
-                <ScanLine className="w-16 h-16" />
+                <Icon icon="lucide:scan-line" className="w-16 h-16" />
               </div>
               <span className="text-[28px] font-medium tracking-wide">右上角扫一扫</span>
             </div>
@@ -154,7 +152,7 @@ export const BilibiliQrcodeImg: React.FC<BilibiliQrcodeImgProps> = React.memo((p
         <div className="w-full max-w-4xl pt-20">
           <div className="flex flex-col items-center space-y-6 text-center">
             <div className="flex items-center justify-center w-16 h-16 mb-2">
-              <AlertTriangle className="w-16 h-16" style={{ color: theme.text }} strokeWidth={1.5} />
+              <Icon icon="lucide:alert-triangle" className="w-16 h-16" style={{ color: theme.text }} strokeWidth={1.5} />
             </div>
             <h3 className="text-[40px] font-bold" style={{ color: theme.text }}>免责声明</h3>
             <div className="text-[24px] leading-relaxed opacity-60 space-y-2 max-w-3xl" style={{ color: theme.text }}>

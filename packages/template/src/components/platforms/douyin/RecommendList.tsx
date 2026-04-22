@@ -1,7 +1,6 @@
+import { Icon } from '@iconify/react'
 import { format } from 'date-fns'
-import { Quote } from 'lucide-react'
 import React from 'react'
-import { RiHeart3Fill, RiMessage3Fill, RiShareForwardFill, RiStarFill, RiThumbUpFill } from 'react-icons/ri'
 
 import type { DouyinRecommendListProps } from '../../../types/platforms/douyin'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
@@ -31,11 +30,11 @@ export const DouyinRecommendList: React.FC<DouyinRecommendListProps> = (props) =
       {/* 1. 弥散光背景层 */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div
-          className="absolute rounded-full w-full h-[60%] -top-[20%] -left-[20%] blur-[150px]"
+          className="absolute rounded-full w-full h-[60%] top-[-20%] left-[-20%] blur-[150px]"
           style={{ background: glowColors.primary }}
         />
         <div
-          className="absolute rounded-full w-full h-[60%] -bottom-[20%] -right-[20%] blur-[180px]"
+          className="absolute rounded-full w-full h-[60%] bottom-[-20%] right-[-20%] blur-[180px]"
           style={{ background: glowColors.secondary }}
         />
       </div>
@@ -88,7 +87,7 @@ export const DouyinRecommendList: React.FC<DouyinRecommendListProps> = (props) =
                 alt="Recommender"
               />
               <div className="absolute -bottom-3 -right-3 bg-emerald-500 text-white px-5 py-2 rounded-full border-[5px] border-white font-bold text-xl shadow-xl flex items-center gap-2">
-                <RiThumbUpFill className="w-5 h-5 fill-current" />
+                <Icon icon="ri:thumb-up-fill" className="w-5 h-5 fill-current" />
                 <span>推荐</span>
               </div>
             </div>
@@ -107,7 +106,7 @@ export const DouyinRecommendList: React.FC<DouyinRecommendListProps> = (props) =
               
               <div className="mt-6 flex flex-col items-center gap-2 text-emerald-500">
                 <div className="flex items-center gap-3">
-                  <RiThumbUpFill className="w-10 h-10 fill-current" />
+                  <Icon icon="ri:thumb-up-fill" className="w-10 h-10 fill-current" />
                   <span className="text-4xl font-bold">刚刚推荐了这个作品</span>
                 </div>
                 {/* 装饰线条 */}
@@ -178,7 +177,7 @@ export const DouyinRecommendList: React.FC<DouyinRecommendListProps> = (props) =
               {/* 描述遮罩 */}
               <div className="absolute inset-x-0 bottom-0 pt-40 pb-12 px-12 bg-linear-to-t from-black/90 via-black/50 to-transparent">
                 <div className="flex gap-6 items-start">
-                  <Quote size={48} className="text-emerald-500/90 shrink-0 rotate-180 mt-2" />
+                  <Icon icon="lucide:quote" width={48} className="text-emerald-500/90 shrink-0 rotate-180 mt-2" />
                   <div 
                     className="text-white text-4xl font-medium leading-relaxed line-clamp-3 drop-shadow-lg tracking-wide"
                     dangerouslySetInnerHTML={{ __html: props.data.desc || '分享视频' }}
@@ -189,11 +188,11 @@ export const DouyinRecommendList: React.FC<DouyinRecommendListProps> = (props) =
 
             {/* 统计数据 */}
             <div className="grid grid-cols-5 gap-6 z-10">
-              <StatItem icon={RiHeart3Fill} value={props.data.dianzan} />
-              <StatItem icon={RiThumbUpFill} value={props.data.tuijian} iconClassName="text-emerald-500/80" />
-              <StatItem icon={RiMessage3Fill} value={props.data.pinglun} />
-              <StatItem icon={RiStarFill} value={props.data.shouchang} />
-              <StatItem icon={RiShareForwardFill} value={props.data.share} />
+              <StatItem icon="ri:heart-3-fill" value={props.data.dianzan} />
+              <StatItem icon="ri:thumb-up-fill" value={props.data.tuijian} iconClassName="text-emerald-500/80" />
+              <StatItem icon="ri:message-3-fill" value={props.data.pinglun} />
+              <StatItem icon="ri:star-fill" value={props.data.shouchang} />
+              <StatItem icon="ri:share-forward-fill" value={props.data.share} />
             </div>
 
           </div>
@@ -206,12 +205,12 @@ export const DouyinRecommendList: React.FC<DouyinRecommendListProps> = (props) =
 
 /** 统计项小组件 */
 const StatItem: React.FC<{
-  icon: React.ElementType,
+  icon: string
   value: string
   iconClassName?: string
-}> = ({ icon: Icon, value, iconClassName }) => (
+}> = ({ icon, value, iconClassName }) => (
   <div className="flex flex-col items-center justify-center gap-2 py-6 rounded-3xl bg-surface">
-    <Icon className={`w-12 h-12 fill-current opacity-90 ${iconClassName || 'text-muted'}`} />
+    <Icon icon={icon} className={`w-12 h-12 opacity-90 ${iconClassName || 'text-muted'}`} />
     <span className="text-2xl font-bold text-foreground/70 mt-1">{value}</span>
   </div>
 )

@@ -1,4 +1,4 @@
-import { BookOpen, Clock, Eye, Hash, Heart, MessageCircle, Share2, Users } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import React, { type JSX } from 'react'
 
 import type { BilibiliArticleDynamicProps } from '../../../../types/platforms/bilibili/dynamic/article'
@@ -260,7 +260,7 @@ const BilibiliArticleUserInfo: React.FC<BilibiliArticleDynamicProps> = React.mem
           <UsernameDisplay metadata={props.data.usernameMeta} />
         </div>
         <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted'>
-          <Clock size={36} className='text-time' />
+          <Icon icon="lucide:clock" width={36} className='text-time' />
           {props.data.create_time}
         </div>
       </div>
@@ -334,17 +334,17 @@ const BilibiliArticleStatus: React.FC<BilibiliArticleDynamicProps> = React.memo(
       {/* 互动数据 */}
       <div className='flex gap-24 items-center'>
         <div className='flex gap-3 items-center text-[42px] text-like'>
-          <Heart size={32} />
+          <Icon icon="lucide:heart" width={32} />
           <span className='font-medium'>{props.data.stats.like || 0}</span>
           <span className='text-[36px] text-foreground/70'>点赞</span>
         </div>
         <div className='flex gap-3 items-center text-[42px] text-comment'>
-          <MessageCircle size={32} />
+          <Icon icon="lucide:message-circle" width={32} />
           <span className='font-medium'>{props.data.stats.reply || 0}</span>
           <span className='text-[36px] text-foreground/70'>评论</span>
         </div>
         <div className='flex gap-3 items-center text-[42px] text-share'>
-          <Share2 size={32} />
+          <Icon icon="lucide:share-2" width={32} />
           <span className='font-medium'>{props.data.stats.dynamic || 0}</span>
           <span className='text-[36px] text-foreground/70'>分享</span>
         </div>
@@ -353,17 +353,17 @@ const BilibiliArticleStatus: React.FC<BilibiliArticleDynamicProps> = React.memo(
       {/* 专栏统计信息 */}
       <div className='flex gap-20 items-center text-[36px] text-foreground/80'>
         <div className='flex gap-2 items-center'>
-          <Eye size={28} className='text-view' />
+          <Icon icon="lucide:eye" width={28} className='text-view' />
           <span className='font-medium'>阅读量</span>
           <span className='font-bold text-foreground'>{props.data.stats.view || 0}</span>
         </div>
         <div className='flex gap-2 items-center'>
-          <BookOpen size={28} className='text-coin' />
+          <Icon icon="lucide:book-open" width={28} className='text-coin' />
           <span className='font-medium'>收藏</span>
           <span className='font-bold text-foreground'>{props.data.stats.favorite || 0}</span>
         </div>
         <div className='flex gap-2 items-center'>
-          <Heart size={28} className='text-like' />
+          <Icon icon="lucide:heart" width={28} className='text-like' />
           <span className='font-medium'>获赞</span>
           <span className='font-bold text-foreground'>{props.data.stats.like || 0}</span>
         </div>
@@ -405,7 +405,7 @@ const BilibiliArticleFooter: React.FC<BilibiliArticleDynamicProps> = React.memo(
               <UsernameDisplay metadata={props.data.usernameMeta} />
             </div>
             <div className='flex gap-2 items-center text-4xl text-muted'>
-              <Hash size={32} className='text-muted' />
+              <Icon icon="lucide:hash" width={32} className='text-muted' />
               <span className='select-text'>UID: {props.data.user_shortid}</span>
             </div>
           </div>
@@ -415,7 +415,7 @@ const BilibiliArticleFooter: React.FC<BilibiliArticleDynamicProps> = React.memo(
         <div className='text-3xl flex gap-6 items-center text-foreground/70'>
           <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
-              <Heart size={28} className='text-like' />
+              <Icon icon="lucide:heart" width={28} className='text-like' />
               <span className='text-muted'>获赞</span>
             </div>
             <div className='w-full h-px bg-border' />
@@ -423,7 +423,7 @@ const BilibiliArticleFooter: React.FC<BilibiliArticleDynamicProps> = React.memo(
           </div>
           <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
-              <Eye size={28} className='text-view' />
+              <Icon icon="lucide:eye" width={28} className='text-view' />
               <span className='text-muted'>关注</span>
             </div>
             <div className='w-full h-px bg-border' />
@@ -431,7 +431,7 @@ const BilibiliArticleFooter: React.FC<BilibiliArticleDynamicProps> = React.memo(
           </div>
           <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
-              <Users size={28} className='text-accent' />
+              <Icon icon="lucide:users" width={28} className='text-accent' />
               <span className='text-muted'>粉丝</span>
             </div>
             <div className='w-full h-px bg-border' />

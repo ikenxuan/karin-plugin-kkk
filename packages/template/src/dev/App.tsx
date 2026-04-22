@@ -1,9 +1,6 @@
 import { Breadcrumbs, Button, ButtonGroup, ScrollShadow, Toolbar } from '@heroui/react'
-import { Camera, Moon, Palette, RefreshCw, Sun } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import React from 'react'
-import { FaGithub } from 'react-icons/fa'
-import { LuInfo } from 'react-icons/lu'
-import { MdFitScreen, MdInfoOutline } from 'react-icons/md'
 import { Group, Panel, Separator } from 'react-resizable-panels'
 
 import { getEnabledComponents } from '../config/config'
@@ -601,7 +598,7 @@ export const App: React.FC = () => {
                     size='sm'
                     variant='ghost'
                   >
-                    <FaGithub className='size-4' />
+                    <Icon icon="simple-icons:github" className='size-4' />
                   </Button>
                 </div>
               </div>
@@ -663,17 +660,17 @@ export const App: React.FC = () => {
                   >
                     <ButtonGroup size='sm' variant='secondary'>
                       <Button onPress={() => loadData(selectedDataFile)}>
-                        <RefreshCw className='size-4' />
+                        <Icon icon="lucide:refresh-cw" className='size-4' />
                         重载
                       </Button>
                       <Button onPress={() => previewPanelRef.current?.fitToCanvas()}>
                         <ButtonGroup.Separator />
-                        <MdFitScreen className='size-4' />
+                        <Icon icon="material-symbols:fit-screen" className='size-4' />
                         适应
                       </Button>
                       <Button isDisabled={isCapturing} onPress={() => handleCapture()}>
                         <ButtonGroup.Separator />
-                        <Camera className='size-4' />
+                        <Icon icon="lucide:camera" className='size-4' />
                         截图
                       </Button>
                     </ButtonGroup>
@@ -683,7 +680,7 @@ export const App: React.FC = () => {
                       size='sm'
                       variant='secondary'
                     >
-                      <Palette className='size-4' />
+                      <Icon icon="lucide:palette" className='size-4' />
                       面板主题
                     </Button>
 
@@ -693,9 +690,9 @@ export const App: React.FC = () => {
                       variant='secondary'
                     >
                       {versionEnabled ? (
-                        <LuInfo className='size-4' />
+                        <Icon icon="lucide:info" className='size-4' />
                       ) : (
-                        <MdInfoOutline className='size-4' />
+                        <Icon icon="material-symbols:info-outline" className='size-4' />
                       )}
                       {versionEnabled ? '版本信息' : '隐藏版本'}
                     </Button>
@@ -707,9 +704,9 @@ export const App: React.FC = () => {
                       variant='primary'
                     >
                       {templateData?.useDarkTheme ? (
-                        <Sun className='size-4' />
+                        <Icon icon="lucide:sun" className='size-4' />
                       ) : (
-                        <Moon className='size-4' />
+                        <Icon icon="lucide:moon" className='size-4' />
                       )}
                       组件{componentTheme === 'dark' ? '深色' : '浅色'}
                     </Button>

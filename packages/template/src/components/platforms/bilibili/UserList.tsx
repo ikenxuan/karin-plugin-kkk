@@ -1,17 +1,5 @@
+import { Icon } from '@iconify/react'
 import React from 'react'
-import type { IconType } from 'react-icons'
-import {
-  RiArticleLine,
-  RiFileTextLine,
-  RiGroupLine,
-  RiHashtag,
-  RiHeart3Line,
-  RiImageLine,
-  RiLiveLine,
-  RiShareForwardLine,
-  RiUserFollowLine,
-  RiVideoLine
-} from 'react-icons/ri'
 
 import type { BilibiliUserListProps } from '../../../types/platforms/bilibili/userlist'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
@@ -19,13 +7,13 @@ import { EnhancedImage } from './shared'
 
 type BilibiliPushType = NonNullable<BilibiliUserListProps['data']['renderOpt'][number]['pushTypes']>[number]
 
-const pushTypeConfig: Record<BilibiliPushType, { label: string, color: string, icon: IconType }> = {
-  video: { label: '投稿视频', color: 'bg-accent/8 text-accent border-accent/25', icon: RiVideoLine },
-  draw: { label: '图文动态', color: 'bg-[#23ade5]/10 text-[#23ade5] border-[#23ade5]/25', icon: RiImageLine },
-  word: { label: '纯文动态', color: 'bg-warning/10 text-warning border-warning/25', icon: RiFileTextLine },
-  live: { label: '直播动态', color: 'bg-success/10 text-success border-success/25', icon: RiLiveLine },
-  forward: { label: '转发动态', color: 'bg-[#f97316]/10 text-[#f97316] border-[#f97316]/25', icon: RiShareForwardLine },
-  article: { label: '投稿专栏', color: 'bg-[#7c3aed]/10 text-[#7c3aed] border-[#7c3aed]/25', icon: RiArticleLine }
+const pushTypeConfig: Record<BilibiliPushType, { label: string, color: string, icon: string }> = {
+  video: { label: '投稿视频', color: 'bg-accent/8 text-accent border-accent/25', icon: 'ri:video-line' },
+  draw: { label: '图文动态', color: 'bg-[#23ade5]/10 text-[#23ade5] border-[#23ade5]/25', icon: 'ri:image-line' },
+  word: { label: '纯文动态', color: 'bg-warning/10 text-warning border-warning/25', icon: 'ri:file-text-line' },
+  live: { label: '直播动态', color: 'bg-success/10 text-success border-success/25', icon: 'ri:live-line' },
+  forward: { label: '转发动态', color: 'bg-[#f97316]/10 text-[#f97316] border-[#f97316]/25', icon: 'ri:share-forward-line' },
+  article: { label: '投稿专栏', color: 'bg-[#7c3aed]/10 text-[#7c3aed] border-[#7c3aed]/25', icon: 'ri:article-line' }
 }
 
 /**
@@ -102,7 +90,7 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
               </h3>
               <div className="flex items-center gap-2 mt-1">
                 <span className="px-2 py-0.5 rounded-md bg-surface border border-border text-xs font-mono font-bold text-muted flex items-center gap-1">
-                  <RiHashtag className="w-3 h-3 opacity-70" />
+                  <Icon icon="ri:hashtag" className="w-3 h-3 opacity-70" />
                   {props.host_mid}
                 </span>
               </div>
@@ -114,7 +102,6 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
           <div className="grid grid-cols-3 gap-2 auto-rows-fr h-full">
             {(Object.entries(pushTypeConfig) as [BilibiliPushType, typeof pushTypeConfig[BilibiliPushType]][]).map(([type, config]) => {
               const isActive = activePushTypes.has(type)
-              const Icon = config.icon
 
               return (
                 <div
@@ -124,7 +111,7 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
                     : 'bg-surface/45 text-muted border-border/15'
                   }`}
                 >
-                  <Icon className={`w-4.5 h-4.5 ${isActive ? '' : 'opacity-50'}`} />
+                  <Icon icon={config.icon} className={`w-4.5 h-4.5 ${isActive ? '' : 'opacity-50'}`} />
                   <span className="text-[13px] font-bold tracking-wide leading-tight">
                     {config.label}
                   </span>
@@ -135,18 +122,16 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
 
           <div className="grid grid-rows-3 gap-2 h-full">
             {[
-              { icon: RiGroupLine, value: props.fans, label: '粉丝' },
-              { icon: RiHeart3Line, value: props.total_favorited, label: '获赞' },
-              { icon: RiUserFollowLine, value: props.following_count, label: '关注' }
+              { icon: 'ri:group-line', value: props.fans, label: '粉丝' },
+              { icon: 'ri:heart-3-line', value: props.total_favorited, label: '获赞' },
+              { icon: 'ri:user-follow-line', value: props.following_count, label: '关注' }
             ].map((item, index) => {
-              const Icon = item.icon
-
               return (
                 <div
                   key={index}
                   className="h-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-surface-secondary/35 border border-border/35 backdrop-blur-sm"
                 >
-                  <Icon className="w-4.5 h-4.5 text-muted shrink-0" />
+                  <Icon icon={item.icon} className="w-4.5 h-4.5 text-muted shrink-0" />
                   <div className="flex items-baseline gap-2 flex-1 min-w-0">
                     <span className="text-[15px] font-bold font-mono text-foreground truncate">
                       {item.value}

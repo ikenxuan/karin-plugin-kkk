@@ -1,5 +1,5 @@
+import { Icon } from '@iconify/react'
 import clsx from 'clsx'
-import { AlertTriangle, CheckCircle, CircleFadingArrowUp, Info, Zap } from 'lucide-react'
 import React from 'react'
 
 import type { BaseComponentProps, RenderRequest } from '../../types'
@@ -100,10 +100,10 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
 
             <div className='flex flex-col items-start opacity-90'>
               <div className='flex items-center mb-1 space-x-2 text-sm font-bold tracking-widest uppercase text-foreground/80'>
-                {version.hasUpdate && <CircleFadingArrowUp strokeWidth={3} className="w-4 h-4 text-success" />}
-                {!version.hasUpdate && version.releaseType === 'Stable' && <CheckCircle strokeWidth={3} className="w-4 h-4" />}
-                {!version.hasUpdate && version.releaseType === 'Preview' && <AlertTriangle strokeWidth={3} className="w-4 h-4 text-warning" />}
-                {!version.hasUpdate && version.releaseType !== 'Stable' && version.releaseType !== 'Preview' && <Info strokeWidth={3} className="w-4 h-4" />}
+                {version.hasUpdate && <Icon icon="lucide:circle-fading-arrow-up" strokeWidth={3} className="w-4 h-4 text-success" />}
+                {!version.hasUpdate && version.releaseType === 'Stable' && <Icon icon="lucide:check-circle" strokeWidth={3} className="w-4 h-4" />}
+                {!version.hasUpdate && version.releaseType === 'Preview' && <Icon icon="lucide:alert-triangle" strokeWidth={3} className="w-4 h-4 text-warning" />}
+                {!version.hasUpdate && version.releaseType !== 'Stable' && version.releaseType !== 'Preview' && <Icon icon="lucide:info" strokeWidth={3} className="w-4 h-4" />}
                 <span className={clsx(
                   version.hasUpdate && 'text-success',
                   !version.hasUpdate && version.releaseType === 'Preview' && 'text-warning'
@@ -133,7 +133,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
               />
               <div className='flex flex-col items-start'>
                 <div className='flex items-center mb-1 space-x-2 text-sm font-bold tracking-widest uppercase text-foreground/80'>
-                  <Zap strokeWidth={3} className="w-4 h-4 opacity-90" />
+                  <Icon icon="lucide:zap" strokeWidth={3} className="w-4 h-4 opacity-90" />
                   <span className='opacity-90'>Power By</span>
                 </div>
                 <div className='flex items-end space-x-2'>

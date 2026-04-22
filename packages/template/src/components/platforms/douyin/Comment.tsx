@@ -1,10 +1,9 @@
+import { Icon } from '@iconify/react'
 import { createRichTextDocument, renderRichTextToReact } from '@kkk/richtext'
 import clsx from 'clsx'
 import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
-import { CircleEllipsis, Heart, Play, QrCode } from 'lucide-react'
 import React, { type ReactNode } from 'react'
-import { IoSearch } from 'react-icons/io5'
 
 import type { QRCodeSectionProps } from '../../../types'  
 import type {
@@ -93,7 +92,7 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
           )
           : (
             <div className='flex flex-col justify-center items-center text-muted'>
-              <QrCode size={80} className='mb-4' />
+              <Icon icon="lucide:qr-code" width={80} className='mb-4' />
               <span className='text-lg'>二维码生成失败</span>
             </div>
           )}
@@ -281,7 +280,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
           <div className='flex flex-col mt-6 min-w-0'>
             <div className='flex items-center h-12.5'>
               <div className='flex items-center text-muted'>
-                <CircleEllipsis size={45} className='mr-5' />
+                <Icon icon="lucide:circle-ellipsis" width={45} className='mr-5' />
                 <span className='text-4xl font-medium tracking-wide'>
                   另外 {reply.hiddenCount} 条回复
                 </span>
@@ -376,7 +375,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
                     'flex items-center',
                     !isNicknameLonger ? 'overflow-hidden min-w-0 shrink' : 'shrink-0'
                   )}>
-                    <Play size={35} className='mr-3.5 mx-1 text-muted shrink-0' fill='currentColor' />
+                    <Icon icon="lucide:play" width={35} className='mr-3.5 mx-1 text-muted shrink-0' fill='currentColor' />
                     <span className={clsx(
                       'text-5xl font-medium text-muted',
                       !isNicknameLonger && 'truncate'
@@ -415,7 +414,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
               <div className='pb-4'>
                 <div className='flex gap-6 items-center text-muted'>
                   <div className='flex gap-2 items-center'>
-                    <Heart size={40} className='text-muted' />
+                    <Icon icon="lucide:heart" width={40} className='text-muted' />
                     <span className='text-4xl select-text'>{formatDouyinCommentDiggCount(reply.digg_count)}</span>
                   </div>
                   <span className='text-4xl'>{reply.ip_label}</span>
@@ -528,7 +527,7 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
             <div className='flex justify-between items-center mt-3 text-muted'>
               <div className='flex gap-6 items-center shrink-0'>
                 <div className='flex gap-2 items-center transition-colors cursor-pointer'>
-                  <Heart size={44} className='text-muted' />
+                  <Icon icon="lucide:heart" width={44} className='text-muted' />
                   <span className='text-4xl select-text'>{formatDouyinCommentDiggCount(props.digg_count)}</span>
                 </div>
                 <span className='text-4xl'>{props.ip_label}</span>
@@ -600,7 +599,7 @@ export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | '
               <span className='text-5xl text-muted'>大家都在搜：</span>
               <span className='relative text-5xl text-[#04498d] dark:text-[#face15]'>
                 {randomSuggestWord}
-                <IoSearch size={32} className='absolute -top-2 -right-8' />
+                <Icon icon="lucide:search" width={32} className='absolute -top-2 -right-8' />
               </span>
             </div>
           </div>
@@ -610,7 +609,7 @@ export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | '
             <div className='flex gap-10 items-center px-6 py-4 rounded-2xl'>
               <span className='text-5xl font-bold text-muted'>相关搜索</span>
               <span className='flex gap-2 bg-surface py-5 px-5 rounded-3xl relative text-5xl text-[#04498d] dark:text-[#face15]'>
-                <IoSearch size={50} />
+                <Icon icon="lucide:search" width={50} />
                 {randomSuggestWord}
                 
               </span>
