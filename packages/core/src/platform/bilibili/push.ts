@@ -439,9 +439,8 @@ export class Bilibilipush extends Base {
             let param = {}
             /** 富文本节点：查看图片 */
             const imgList = []
-            if (!data[dynamicId].Dynamic_Data.modules.module_dynamic.desc) {
-              // @ts-ignore
-              for (const richTxtItem of data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.rich_text_nodes) {
+            if (data[dynamicId].Dynamic_Data.modules.module_dynamic.desc) {
+              for (const richTxtItem of data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.rich_text_nodes) {
                 if (richTxtItem.type === 'RICH_TEXT_NODE_TYPE_VIEW_PICTURE') {
                   for (const pic of richTxtItem.pics) {
                     imgList.push(pic.src)
@@ -458,6 +457,7 @@ export class Bilibilipush extends Base {
                   duration_text: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.archive?.duration_text,
                   title: buildBilibiliDynamicRichText(data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.archive?.title ?? '', []),
                   danmaku: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.archive?.stat.danmaku,
+                  view: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.archive?.stat.view,
                   play: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.archive?.stat.play,
                   cover: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.archive?.cover,
                   create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
