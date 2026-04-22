@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { l as RichTextDocument } from "./index-UcNmggR0.mjs";
+import { T as RichTextDocument } from "./index-Cun8KJGp.mjs";
 import React$1 from "react";
 import { Agent, ClientRequest, ClientRequestArgs, IncomingMessage, OutgoingHttpHeaders, Server } from "http";
 import { EventEmitter } from "events";
@@ -801,254 +801,18 @@ interface CommentItem {
   fanCard?: FanCardInfo | null;
 }
 //#endregion
-//#region ../template/src/types/platforms/bilibili/dynamic/article.d.ts
-/**
- * B站专栏动态组件属性接口
- */
-interface BilibiliArticleDynamicProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 用户头像URL */
-    avatar_url: string; /** 头像框 */
-    frame?: string; /** 用户名 */
-    username: string; /** 动态创建时间 */
-    create_time: string; /** 装饰卡片 */
-    decoration_card?: {
-      card_url: string;
-      [key: string]: any;
-    }; /** 专栏标题 */
-    title: string; /** 专栏摘要 */
-    summary: string; /** 专栏封面图片URL */
-    banner_url?: string; /** 专栏分类 */
-    categories: Array<{
-      id: number;
-      name: string;
-      parent_id: number;
-    }>; /** 专栏字数 */
-    words: number; /** 专栏统计数据 */
-    stats: {
-      /** 阅读数 */view: number; /** 点赞数 */
-      like: number; /** 收藏数 */
-      favorite: number; /** 评论数 */
-      reply: number; /** 分享数 */
-      share: number; /** 投币数 */
-      coin: number; /** 转发动态 */
-      dynamic: number;
-    }; /** 专栏正文的html字符串 */
-    content?: string; /** 专栏结构化内容 */
-    opus?: {
-      content: {
-        paragraphs: Array<{
-          para_type: number;
-          text?: {
-            nodes: Array<{
-              node_type: number;
-              word?: {
-                words: string;
-                font_size: number;
-                style: Record<string, any>;
-                font_level: string;
-              };
-            }>;
-          };
-          pic?: {
-            pics: Array<{
-              url: string;
-              width: number;
-              height: number;
-              size: number;
-            }>;
-          };
-        }>;
-      };
-    }; /** 渲染时间 */
-    render_time: string; /** 动态类型 */
-    dynamicTYPE: string; /** 分享链接 */
-    share_url: string; /** 用户短ID */
-    user_shortid: string | number; /** 获赞总数 */
-    total_favorited: string | number; /** 关注数 */
-    following_count: string | number; /** 粉丝数 */
-    fans: string | number;
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string;
-}
-//#endregion
-//#region ../template/src/types/platforms/bilibili/dynamic/forward.d.ts
-/**
- * 原始内容AV类型接口
- */
-interface OriginalContentAV {
-  /** 用户头像URL */
-  avatar_url: string;
-  /** 头像框 */
-  frame?: string;
-  /** 用户名 */
-  username: string;
-  /** 创建时间 */
-  create_time: string;
-  /** 装饰卡片 */
-  decoration_card?: string;
-  /** 视频封面 */
-  cover: string;
-  /** 视频时长文本 */
-  duration_text: string;
-  /** 播放量 */
-  play: string;
-  /** 弹幕数 */
-  danmaku: string;
-  /** 视频标题 */
-  title: string;
-}
-/**
- * 原始内容图文类型接口
- */
-interface OriginalContentDraw {
-  /** 标题 */
-  title?: string;
-  /** 用户头像URL */
-  avatar_url: string;
-  /** 头像框 */
-  frame?: string;
-  /** 用户名 */
-  username: string;
-  /** 创建时间 */
-  create_time: string;
-  /** 装饰卡片 */
-  decoration_card?: string;
-  /** 动态文本内容 */
-  text: string;
-  /** 图片URL数组 */
-  image_url: Array<{
-    image_src: string;
-  }>;
-}
-/**
- * 原始内容文字类型接口
- */
-interface OriginalContentWord {
-  /** 用户头像URL */
-  avatar_url: string;
-  /** 头像框 */
-  frame?: string;
-  /** 用户名 */
-  username: string;
-  /** 创建时间 */
-  create_time: string;
-  /** 装饰卡片 */
-  decoration_card?: string;
-  /** 动态文本内容 */
-  text: string;
-}
-/**
- * 原始内容直播推荐类型接口
- */
-interface OriginalContentLiveRcmd {
-  /** 用户头像URL */
-  avatar_url: string;
-  /** 头像框 */
-  frame?: string;
-  /** 用户名 */
-  username: string;
-  /** 创建时间 */
-  create_time: string;
-  /** 装饰卡片 */
-  decoration_card?: string;
-  /** 直播封面 */
-  cover: string;
-  /** 分区名称 */
-  area_name: string;
-  /** 大文本 */
-  text_large: string;
-  /** 在线人数 */
-  online: string;
-  /** 直播标题 */
-  title: string;
-}
-/**
- * 转发动态原始内容Props接口
- */
-interface BilibiliForwardOriginalContentProps {
-  /** 原始内容 */
-  original_content: {
-    /** AV类型内容 */DYNAMIC_TYPE_AV?: OriginalContentAV; /** 图文类型内容 */
-    DYNAMIC_TYPE_DRAW?: OriginalContentDraw; /** 文字类型内容 */
-    DYNAMIC_TYPE_WORD?: OriginalContentWord; /** 直播推荐类型内容 */
-    DYNAMIC_TYPE_LIVE_RCMD?: OriginalContentLiveRcmd;
-  };
-}
-/**
- * B站转发动态组件属性接口
- */
-interface BilibiliForwardDynamicProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 用户头像URL */
-    avatar_url: string; /** 头像框 */
-    frame?: string; /** 用户名 */
-    username: string; /** 动态创建时间 */
-    create_time: string; /** 装饰卡片 */
-    decoration_card?: string; /** 动态文本内容 */
-    text: string; /** 原始内容 */
-    original_content: BilibiliForwardOriginalContentProps['original_content']; /** 点赞数 */
-    dianzan: string | number; /** 评论数 */
-    pinglun: string | number; /** 分享数 */
-    share: string | number; /** 渲染时间 */
-    render_time: string; /** 用户短ID */
-    user_shortid: string | number; /** 获赞总数 */
-    total_favorited: string | number; /** 关注数 */
-    following_count: string | number; /** 粉丝数 */
-    fans: string | number; /** 动态类型 */
-    dynamicTYPE: string; /** 分享链接 */
-    share_url: string; /** 图片URL */
-    imgList: string[] | null;
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string;
-}
-//#endregion
-//#region ../template/src/types/platforms/bilibili/dynamic/live.d.ts
-interface BilibiliPosterPalette {
-  bgColor: string;
-  primaryColor: string;
-  secondaryColor: string;
-  mutedColor: string;
-  accentColor: string;
-  deepColor: string;
-  coverShade: string;
-}
-interface BilibiliPosterPalettes {
-  light: BilibiliPosterPalette;
-  dark: BilibiliPosterPalette;
-}
-/**
- * B站直播动态组件属性接口
- */
-interface BilibiliLiveDynamicProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 直播封面 */
-    image_url: string; /** 直播标题 */
-    text: string; /** 直播房间信息（分区 | 房间号） */
-    liveinf: string; /** 用户信息 */
-    username: string; /** 用户头像URL */
-    avatar_url: string; /** 头像框 */
-    frame?: string; /** 粉丝数 */
-    fans: string; /** 时间信息 */
-    create_time: string; /** 直播开始时间 */
-    now_time: string; /** 分享和配置 */
-    share_url: string; /** 动态类型 */
-    dynamicTYPE: string;
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string;
-  /** 服务端预计算的海报色板（亮色/深色） */
-  posterPalettes?: BilibiliPosterPalettes;
-  /** 服务端预计算的海报色板 */
-  posterPalette?: BilibiliPosterPalette;
-}
-//#endregion
 //#region ../template/src/types/platforms/bilibili/dynamic/normal.d.ts
+/**
+ * 用户名元数据，用于传递 VIP 状态和颜色信息
+ */
+interface UsernameMetadata {
+  /** 用户名 */
+  name: string;
+  /** VIP状态，1为年度大会员 */
+  vipStatus: number;
+  /** 昵称颜色，VIP用户特有 */
+  nicknameColor: string | null;
+}
 /**
  * B站普通动态组件属性接口
  */
@@ -1057,12 +821,12 @@ interface BilibiliDynamicProps extends BaseComponentProps {
   data: {
     /** 是否使用深色主题 */useDarkTheme?: boolean; /** 用户头像URL */
     avatar_url: string; /** 头像框 */
-    frame?: string; /** 用户名 */
-    username: string; /** 动态创建时间 */
+    frame?: string; /** 用户名元数据 */
+    usernameMeta: UsernameMetadata; /** 动态创建时间 */
     create_time: string; /** 装饰卡片 */
     decoration_card?: string; /** 图文动态标题 */
-    title?: string; /** 动态文本内容 */
-    text: string; /** 图片URL数组 */
+    title?: string; /** 动态文本内容（富文本文档） */
+    text: RichTextDocument | null; /** 图片URL数组 */
     image_url: Array<{
       image_src: string;
     }>; /** 点赞数 */
@@ -1165,11 +929,11 @@ interface BilibiliWordDynamicProps extends BaseComponentProps {
   data: {
     /** 是否使用深色主题 */useDarkTheme?: boolean; /** 用户头像URL */
     avatar_url: string; /** 头像框 */
-    frame?: string; /** 用户名 */
-    username: string; /** 动态创建时间 */
+    frame?: string; /** 用户名元数据 */
+    usernameMeta: UsernameMetadata; /** 动态创建时间 */
     create_time: string; /** 装饰卡片 */
-    decoration_card?: string; /** 动态文本内容 */
-    text: string; /** 点赞数 */
+    decoration_card?: string; /** 动态文本内容（富文本文档） */
+    text: RichTextDocument | null; /** 点赞数 */
     dianzan: string | number; /** 评论数 */
     pinglun: string | number; /** 分享数 */
     share: string | number; /** 渲染时间 */
@@ -1186,6 +950,227 @@ interface BilibiliWordDynamicProps extends BaseComponentProps {
   qrCodeDataUrl?: string;
 }
 //#endregion
+//#region ../template/src/types/platforms/bilibili/dynamic/article.d.ts
+/**
+ * B站专栏动态组件属性接口
+ */
+interface BilibiliArticleDynamicProps extends BaseComponentProps {
+  /** 渲染请求数据 */
+  data: {
+    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 用户头像URL */
+    avatar_url: string; /** 头像框 */
+    frame?: string; /** 用户名元数据 */
+    usernameMeta: UsernameMetadata; /** 动态创建时间 */
+    create_time: string; /** 装饰卡片 */
+    decoration_card?: {
+      card_url: string;
+      [key: string]: any;
+    }; /** 专栏标题 */
+    title: string; /** 专栏摘要 */
+    summary: string; /** 专栏封面图片URL */
+    banner_url?: string; /** 专栏分类 */
+    categories: Array<{
+      id: number;
+      name: string;
+      parent_id: number;
+    }>; /** 专栏字数 */
+    words: number; /** 专栏统计数据 */
+    stats: {
+      /** 阅读数 */view: number; /** 点赞数 */
+      like: number; /** 收藏数 */
+      favorite: number; /** 评论数 */
+      reply: number; /** 分享数 */
+      share: number; /** 投币数 */
+      coin: number; /** 转发动态 */
+      dynamic: number;
+    }; /** 专栏正文（richtext 格式） */
+    body: RichTextDocument; /** 渲染时间 */
+    render_time: string; /** 动态类型 */
+    dynamicTYPE: string; /** 分享链接 */
+    share_url: string; /** 用户短ID */
+    user_shortid: string | number; /** 获赞总数 */
+    total_favorited: string | number; /** 关注数 */
+    following_count: string | number; /** 粉丝数 */
+    fans: string | number;
+  };
+  /** 预生成的二维码数据URL */
+  qrCodeDataUrl?: string;
+}
+//#endregion
+//#region ../template/src/types/platforms/bilibili/dynamic/forward.d.ts
+/**
+ * 原始内容AV类型接口
+ */
+interface OriginalContentAV {
+  /** 用户头像URL */
+  avatar_url: string;
+  /** 头像框 */
+  frame?: string;
+  /** 用户名元数据 */
+  usernameMeta: UsernameMetadata;
+  /** 创建时间 */
+  create_time: string;
+  /** 装饰卡片 */
+  decoration_card?: string;
+  /** 视频封面 */
+  cover: string;
+  /** 视频时长文本 */
+  duration_text: string;
+  /** 播放量 */
+  play: string;
+  /** 弹幕数 */
+  danmaku: string;
+  /** 视频标题 */
+  title: RichTextDocument;
+}
+/**
+ * 原始内容图文类型接口
+ */
+interface OriginalContentDraw {
+  /** 标题 */
+  title?: string;
+  /** 用户头像URL */
+  avatar_url: string;
+  /** 头像框 */
+  frame?: string;
+  /** 用户名元数据 */
+  usernameMeta: UsernameMetadata;
+  /** 创建时间 */
+  create_time: string;
+  /** 装饰卡片 */
+  decoration_card?: string;
+  /** 动态文本内容（富文本文档） */
+  text: RichTextDocument;
+  /** 图片URL数组 */
+  image_url: Array<{
+    image_src: string;
+  }>;
+}
+/**
+ * 原始内容文字类型接口
+ */
+interface OriginalContentWord {
+  /** 用户头像URL */
+  avatar_url: string;
+  /** 头像框 */
+  frame?: string;
+  /** 用户名元数据 */
+  usernameMeta: UsernameMetadata;
+  /** 创建时间 */
+  create_time: string;
+  /** 装饰卡片 */
+  decoration_card?: string;
+  /** 动态文本内容（富文本文档） */
+  text: RichTextDocument;
+}
+/**
+ * 原始内容直播推荐类型接口
+ */
+interface OriginalContentLiveRcmd {
+  /** 用户头像URL */
+  avatar_url: string;
+  /** 头像框 */
+  frame?: string;
+  /** 用户名元数据 */
+  usernameMeta: UsernameMetadata;
+  /** 创建时间 */
+  create_time: string;
+  /** 装饰卡片 */
+  decoration_card?: string;
+  /** 直播封面 */
+  cover: string;
+  /** 分区名称 */
+  area_name: string;
+  /** 大文本 */
+  text_large: string;
+  /** 在线人数 */
+  online: string;
+  /** 直播标题 */
+  title: RichTextDocument;
+}
+/**
+ * 转发动态原始内容Props接口
+ */
+interface BilibiliForwardOriginalContentProps {
+  /** 原始内容 */
+  original_content: {
+    /** AV类型内容 */DYNAMIC_TYPE_AV?: OriginalContentAV; /** 图文类型内容 */
+    DYNAMIC_TYPE_DRAW?: OriginalContentDraw; /** 文字类型内容 */
+    DYNAMIC_TYPE_WORD?: OriginalContentWord; /** 直播推荐类型内容 */
+    DYNAMIC_TYPE_LIVE_RCMD?: OriginalContentLiveRcmd;
+  };
+}
+/**
+ * B站转发动态组件属性接口
+ */
+interface BilibiliForwardDynamicProps extends BaseComponentProps {
+  /** 渲染请求数据 */
+  data: {
+    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 用户头像URL */
+    avatar_url: string; /** 头像框 */
+    frame?: string; /** 用户名元数据 */
+    usernameMeta: UsernameMetadata; /** 动态创建时间 */
+    create_time: string; /** 装饰卡片 */
+    decoration_card?: string; /** 动态文本内容（富文本文档） */
+    text: RichTextDocument; /** 原始内容 */
+    original_content: BilibiliForwardOriginalContentProps['original_content']; /** 点赞数 */
+    dianzan: string | number; /** 评论数 */
+    pinglun: string | number; /** 分享数 */
+    share: string | number; /** 渲染时间 */
+    render_time: string; /** 用户短ID */
+    user_shortid: string | number; /** 获赞总数 */
+    total_favorited: string | number; /** 关注数 */
+    following_count: string | number; /** 粉丝数 */
+    fans: string | number; /** 动态类型 */
+    dynamicTYPE: string; /** 分享链接 */
+    share_url: string; /** 图片URL */
+    imgList: string[] | null;
+  };
+  /** 预生成的二维码数据URL */
+  qrCodeDataUrl?: string;
+}
+//#endregion
+//#region ../template/src/types/platforms/bilibili/dynamic/live.d.ts
+interface BilibiliPosterPalette {
+  bgColor: string;
+  primaryColor: string;
+  secondaryColor: string;
+  mutedColor: string;
+  accentColor: string;
+  deepColor: string;
+  coverShade: string;
+}
+interface BilibiliPosterPalettes {
+  light: BilibiliPosterPalette;
+  dark: BilibiliPosterPalette;
+}
+/**
+ * B站直播动态组件属性接口
+ */
+interface BilibiliLiveDynamicProps extends BaseComponentProps {
+  /** 渲染请求数据 */
+  data: {
+    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 直播封面 */
+    image_url: string; /** 直播标题 */
+    text: RichTextDocument; /** 直播房间信息（分区 | 房间号） */
+    liveinf: string; /** 用户名元数据 */
+    usernameMeta: UsernameMetadata; /** 用户头像URL */
+    avatar_url: string; /** 头像框 */
+    frame?: string; /** 粉丝数 */
+    fans: string; /** 时间信息 */
+    create_time: string; /** 直播开始时间 */
+    now_time: string; /** 分享和配置 */
+    share_url: string; /** 动态类型 */
+    dynamicTYPE: string;
+  };
+  /** 预生成的二维码数据URL */
+  qrCodeDataUrl?: string;
+  /** 服务端预计算的海报色板（亮色/深色） */
+  posterPalettes?: BilibiliPosterPalettes;
+  /** 服务端预计算的海报色板 */
+  posterPalette?: BilibiliPosterPalette;
+}
+//#endregion
 //#region ../template/src/types/platforms/bilibili/dynamic/video.d.ts
 /**
  * B站视频动态组件属性接口
@@ -1195,12 +1180,12 @@ interface BilibiliVideoDynamicProps extends BaseComponentProps {
   data: {
     /** 是否使用深色主题 */useDarkTheme?: boolean; /** 用户头像URL */
     avatar_url: string; /** 头像框 */
-    frame?: string; /** 用户名 */
-    username: string; /** 动态创建时间 */
+    frame?: string; /** 用户名元数据 */
+    usernameMeta: UsernameMetadata; /** 动态创建时间 */
     create_time: string; /** 装饰卡片 */
     decoration_card?: string; /** 视频标题 */
-    text: string; /** 视频描述 */
-    desc: string; /** 视频封面图片URL */
+    text: RichTextDocument; /** 视频描述 */
+    desc: RichTextDocument; /** 视频封面图片URL */
     image_url: string; /** 点赞数 */
     dianzan: string | number; /** 评论数 */
     pinglun: string | number; /** 分享数 */
