@@ -175,7 +175,7 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
             props.image_url.map((img, index) => (
               <React.Fragment key={index}>
                 <div className='flex flex-col items-center'>
-                  <div className='flex overflow-hidden flex-col flex-1 items-center w-11/12 rounded-3xl shadow-large'>
+                  <div className='flex overflow-hidden flex-col flex-1 items-center rounded-3xl shadow-large'>
                     <EnhancedImage
                       src={img.image_src}
                       alt='封面'

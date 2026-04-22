@@ -105,7 +105,7 @@ const OriginalUserInfo: React.FC<{
  */
 const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-4xl bg-surface-secondary'>
+    <div className='px-12 py-8 mt-4 w-full rounded-6xl bg-surface-secondary'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -150,7 +150,7 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
  */
 const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-4xl bg-surface-secondary'>
+    <div className='px-12 py-8 mt-4 w-full rounded-6xl bg-surface-secondary'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -189,9 +189,9 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
           </div>
         )
         : (
-          <div className='grid grid-cols-3 gap-4 p-4'>
+          <div className={`grid gap-3 p-4 ${content.image_url?.length === 4 ? 'grid-cols-2' : 'grid-cols-3'}`}>
             {content.image_url?.map((img, index) => (
-              <div key={index} className='overflow-hidden relative shadow-medium aspect-square rounded-2'>
+              <div key={index} className='overflow-hidden relative shadow-medium aspect-square rounded-2xl'>
                 <EnhancedImage
                   src={img.image_src}
                   alt={`图片${index + 1}`}
@@ -212,7 +212,7 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
  */
 const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-4xl bg-surface-secondary'>
+    <div className='px-12 py-8 mt-4 w-full rounded-6xl bg-surface-secondary'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -243,7 +243,7 @@ const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ conte
  */
 const OriginalLiveRcmdContent: React.FC<{ content: OriginalContentLiveRcmd }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-4xl bg-surface-secondary'>
+    <div className='px-12 py-8 mt-4 w-full rounded-6xl bg-surface-secondary'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
