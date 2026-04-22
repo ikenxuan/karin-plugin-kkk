@@ -1,6 +1,6 @@
 'use client';
 import { useMemo, useState } from 'react';
-import { Check, ChevronDown, Copy, ExternalLinkIcon, MessageCircleIcon } from 'lucide-react';
+import { Icon } from '@iconify/react';
 import { cn } from '@/lib/cn';
 import { useCopyButton } from 'fumadocs-ui/utils/use-copy-button';
 import { buttonVariants } from '@/components/ui/button';
@@ -38,7 +38,7 @@ export function LLMCopyButton({ markdownUrl }: { markdownUrl: string }) {
       className={cn(buttonVariants({ color: 'secondary', size: 'sm', className: 'gap-2 [&_svg]:size-3.5 [&_svg]:text-fd-muted-foreground' }))}
       onClick={onClick}
     >
-      {checked ? <Check /> : <Copy />}
+      {checked ? <Icon icon="lucide:check" /> : <Icon icon="lucide:copy" />}
       复制 Markdown
     </button>
   );
@@ -72,7 +72,7 @@ export function ViewOptions({ markdownUrl, githubUrl }: { markdownUrl: string; g
       { title: '在 ChatGPT 中打开', href: `https://chatgpt.com/?${new URLSearchParams({ hints: 'search', q })}`, icon: <OpenAI /> },
       { title: '在 Claude 中打开', href: `https://claude.ai/new?${new URLSearchParams({ q })}`, icon: <Claude.Color /> },
       { title: '在 Grok 中打开', href: `https://grok.com/?${new URLSearchParams({ q })}`, icon: <Grok /> },
-      { title: '在 T3 Chat 中打开', href: `https://t3.chat/new?${new URLSearchParams({ q })}`, icon: <MessageCircleIcon /> },
+      { title: '在 T3 Chat 中打开', href: `https://t3.chat/new?${new URLSearchParams({ q })}`, icon: <Icon icon="lucide:message-circle" /> },
     ];
   }, [githubUrl, markdownUrl]);
 
@@ -80,14 +80,14 @@ export function ViewOptions({ markdownUrl, githubUrl }: { markdownUrl: string; g
     <Popover>
       <PopoverTrigger className={cn(buttonVariants({ color: 'secondary', size: 'sm', className: 'gap-2' }))}>
         打开
-        <ChevronDown className="size-3.5 text-fd-muted-foreground" />
+        <Icon icon="lucide:chevron-down" className="size-3.5 text-fd-muted-foreground" />
       </PopoverTrigger>
       <PopoverContent className="flex flex-col">
         {items.map((item) => (
           <a key={item.href} href={item.href} rel="noreferrer noopener" target="_blank" className={cn(optionVariants())}>
             {item.icon}
             {item.title}
-            <ExternalLinkIcon className="text-fd-muted-foreground size-3.5 ms-auto" />
+            <Icon icon="lucide:external-link" className="text-fd-muted-foreground size-3.5 ms-auto" />
           </a>
         ))}
       </PopoverContent>

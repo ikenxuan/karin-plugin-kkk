@@ -323,6 +323,9 @@ importers:
       '@heroui/styles':
         specifier: ^3.0.2
         version: 3.0.2(tailwind-merge@3.5.0)(tailwindcss@4.2.4)
+      '@iconify/react':
+        specifier: ^5.2.1
+        version: 5.2.1(react@19.2.5)
       '@lobehub/icons':
         specifier: ^5.2.0
         version: 5.5.4(@lobehub/ui@5.9.3)(@types/react@19.2.14)(antd@6.3.6(date-fns@4.1.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -1424,6 +1427,11 @@ packages:
   '@hutson/parse-repository-url@5.0.0':
     resolution: {integrity: sha512-e5+YUKENATs1JgYHMzTr2MW/NDcXGfYFAuOQU8gJgF/kEh4EqKgfGrfLI67bMD4tbhZVlkigz/9YYwWcbOFthg==}
     engines: {node: '>=10.13.0'}
+
+  '@iconify/react@5.2.1':
+    resolution: {integrity: sha512-37GDR3fYDZmnmUn9RagyaX+zca24jfVOMY8E1IXTqJuE8pxNtN51KWPQe3VODOWvuUurq7q9uUu3CFrpqj5Iqg==}
+    peerDependencies:
+      react: 19.2.5
 
   '@iconify/react@6.0.2':
     resolution: {integrity: sha512-SMmC2sactfpJD427WJEDN6PMyznTFMhByK9yLW0gOTtnjzzbsi/Ke/XqsumsavFPwNiXs8jSiYeZTmLCLwO+Fg==}
@@ -10181,6 +10189,11 @@ snapshots:
   '@humanwhocodes/retry@0.4.3': {}
 
   '@hutson/parse-repository-url@5.0.0': {}
+
+  '@iconify/react@5.2.1(react@19.2.5)':
+    dependencies:
+      '@iconify/types': 2.0.0
+      react: 19.2.5
 
   '@iconify/react@6.0.2(react@19.2.5)':
     dependencies:

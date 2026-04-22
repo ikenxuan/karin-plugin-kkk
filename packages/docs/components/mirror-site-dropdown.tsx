@@ -1,7 +1,7 @@
 'use client';
 
 import { Dropdown, DropdownItem, DropdownMenu, DropdownPopover, DropdownTrigger, Link } from '@heroui/react';
-import { Globe } from 'lucide-react';
+import { Icon } from '@iconify/react';
 import { useEffect, useMemo, useState } from 'react';
 
 type MirrorSite = {
@@ -72,7 +72,7 @@ export const MirrorSiteDropdown = () => {
     <Dropdown>
       <DropdownTrigger className="inline-flex items-center gap-2 rounded-full px-3 h-8 text-sm bg-transparent hover:bg-default">
         <span className="inline-flex items-center gap-2">
-          <Globe size={16} />
+          <Icon icon="lucide:globe" width={16} />
           镜像站
         </span>
       </DropdownTrigger>

@@ -32,6 +32,7 @@
     "mermaid": "^11.14.0",
     "motion": "^12.38.0",
     "next": "^16.2.2",
+    "@iconify/react": "^5.2.1",
     "next-themes": "^0.4.6",
     "qss": "^3.0.0",
     "react-icons": "^5.6.0",

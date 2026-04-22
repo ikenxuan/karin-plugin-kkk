@@ -1,5 +1,5 @@
 "use client";
-import { ArrowRight } from "lucide-react";
+import { Icon } from '@iconify/react';
 import { cn } from "@/lib/cn";
 
 export function InteractiveHoverButton({
@@ -24,7 +24,7 @@ export function InteractiveHoverButton({
       </div>
       <div className="text-fd-primary-foreground absolute top-0 z-10 flex h-full w-full translate-x-12 items-center justify-center gap-2 opacity-0 transition-all duration-300 group-hover:-translate-x-5 group-hover:opacity-100">
         <span>{children}</span>
-        <ArrowRight />
+        <Icon icon="lucide:arrow-right" />
       </div>
     </button>
   );
