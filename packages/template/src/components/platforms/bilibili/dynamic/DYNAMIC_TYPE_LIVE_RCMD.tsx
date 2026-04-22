@@ -1,5 +1,5 @@
 import { Icon } from '@iconify/react'
-import { renderRichTextToReact } from '@kkk/richtext'
+import { extractRichTextPlainText, renderRichTextToReact } from '@kkk/richtext'
 import React from 'react'
 
 import type {
@@ -95,7 +95,7 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
   const metaValueFontSize = getSingleLineFontSize(liveSignalTime, 32, 24)
   const coverInfoFontSize = getSingleLineFontSize(data.liveinf, 38, 24)
   const broadcastFontSize = getSingleLineFontSize(`${streamerName} 开播了`, 42, 28)
-  const liveTitleLength = streamerName.length
+  const liveTitleLength = extractRichTextPlainText(data.text).length
   const liveTitleFontSize = liveTitleLength <= 16
     ? 74
     : liveTitleLength <= 28

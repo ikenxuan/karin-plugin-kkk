@@ -12,14 +12,18 @@ export const UsernameDisplay: React.FC<{
   className?: string
   style?: React.CSSProperties
 }> = ({ metadata, className, style }) => {
+  const vipColor = metadata.vipStatus === 1
+    ? (metadata.nicknameColor ?? '#FB7299')
+    : null
+
   return (
     <span
       className={clsx(
-        metadata.vipStatus === 1 ? 'text-[#FB7299]' : 'text-foreground',
+        !vipColor && 'text-foreground',
         'font-bold',
         className
       )}
-      style={{ ...style }}
+      style={{ ...style, ...(vipColor ? { color: vipColor } : {}) }}
     >
       {metadata.name}
     </span>

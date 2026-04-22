@@ -166,6 +166,45 @@ export const normalizeRichTextNodes = (nodes: RichTextNode[]): RichTextNode[] =>
 }
 
 /**
+ * 从富文本文档中提取纯文本内容。
+ *
+ * 遍历所有节点，收集包含 text 字段的文本内容。
+ * lineBreak 节点映射为空格（不参与长度计数），图片节点被忽略。
+ */
+export const extractRichTextPlainText = (document: RichTextDocument): string => {
+  const extractFromNode = (node: RichTextNode): string => {
+    switch (node.type) {
+      case 'text':
+      case 'mention':
+      case 'searchKeyword':
+      case 'topic':
+      case 'at':
+      case 'lottery':
+      case 'webLink':
+      case 'vote':
+      case 'viewPicture':
+      case 'emoji':
+        return 'text' in node ? (node as any).text ?? '' : (node as any).name ?? ''
+      case 'heading':
+      case 'paragraph':
+      case 'blockquote':
+      case 'listItem':
+        return node.nodes.map(extractFromNode).join('')
+      case 'list':
+        return node.items.map(extractFromNode).join('')
+      case 'lineBreak':
+        return ''
+      case 'image':
+        return ''
+      default:
+        return ''
+    }
+  }
+
+  return document.nodes.map(extractFromNode).join('')
+}
+
+/**
  * 创建富文本文档。
  *
  * 这里不会生成任何 HTML，只返回可序列化 JSON，适合作为 core 到 template 的数据边界。
