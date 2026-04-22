@@ -29,6 +29,8 @@ export type RichTextBlockNode =
   | RichTextBlockquoteNode
   | RichTextListNode
   | RichTextListItemNode
+  | RichTextCodeBlockNode
+  | RichTextLinkCardNode
 
 /**
  * 富文本文档。
@@ -53,6 +55,8 @@ export interface RichTextInlineStyle {
   color?: string
   /** 超链接地址 */
   link?: string
+  /** 字体大小（CSS font-size 值） */
+  fontSize?: string
 }
 
 /** 普通文本节点。文本永远作为文本渲染，不会当成 HTML 执行。 */
@@ -197,6 +201,28 @@ export interface RichTextListItemNode {
   nodes: RichTextNode[]
 }
 
+/** 代码块节点。 */
+export interface RichTextCodeBlockNode {
+  type: 'codeBlock'
+  /** 代码语言 */
+  language?: string
+  /** 代码内容 */
+  content: string
+}
+
+/** 链接卡片节点。 */
+export interface RichTextLinkCardNode {
+  type: 'linkCard'
+  /** 卡片标题/显示文本 */
+  title: string
+  /** 跳转链接 */
+  url: string
+  /** 卡片类型标识 */
+  cardType?: string
+  /** 额外元数据 */
+  meta?: Record<string, any>
+}
+
 /** 平台表情定义，通常由 core 从平台表情接口转换得到。 */
 export interface RichTextEmojiDefinition {
   name: string
@@ -247,6 +273,10 @@ export interface RichTextRenderOptions {
   vote?: RichTextNodeStyleConfig
   /** 查看图片节点 */
   viewPicture?: RichTextNodeStyleConfig
+  /** 代码块节点 */
+  codeBlock?: RichTextNodeStyleConfig
+  /** 链接卡片节点 */
+  linkCard?: RichTextNodeStyleConfig
   /** 图标缩放比例，默认 1。用于在不同字体大小下保持图标比例一致。 */
   iconScale?: number
 }

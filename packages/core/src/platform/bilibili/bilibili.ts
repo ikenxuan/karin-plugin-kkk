@@ -810,7 +810,7 @@ export class Bilibili extends Base {
 
             // TODO: 还未完全支持B站的富文本格式，后续需要根据实际情况补充更多类型的节点解析
             // 构建富文本文档
-            const body = buildBilibiliArticleRichText(articleContent.opus, articleContent.content)
+            const body = buildBilibiliArticleRichText(articleContent.opus, articleContent.content, Common.useDarkTheme())
 
             // 从富文本文档中提取所有图片
             const extractImagesFromBody = (nodes: any[]): string[] => {

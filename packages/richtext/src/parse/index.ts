@@ -1,10 +1,12 @@
 import type {
   RichTextBlockquoteNode,
+  RichTextCodeBlockNode,
   RichTextDocument,
   RichTextEmojiNode,
   RichTextHeadingNode,
   RichTextImageNode,
   RichTextLineBreakNode,
+  RichTextLinkCardNode,
   RichTextListItemNode,
   RichTextListNode,
   RichTextMentionNode,
@@ -138,6 +140,26 @@ export const createListItemNode = (nodes: RichTextNode[]): RichTextListItemNode 
   nodes
 })
 
+/** 创建代码块节点。 */
+export const createCodeBlockNode = (content: string, language?: string): RichTextCodeBlockNode => ({
+  type: 'codeBlock',
+  content,
+  language
+})
+
+/** 创建链接卡片节点。 */
+export const createLinkCardNode = (
+  title: string,
+  url: string,
+  options: { cardType?: string; meta?: Record<string, any> } = {}
+): RichTextLinkCardNode => ({
+  type: 'linkCard',
+  title,
+  url,
+  cardType: options.cardType,
+  meta: options.meta
+})
+
 /**
  * 合并相邻文本节点并丢弃空文本节点。
  *
@@ -196,6 +218,10 @@ export const extractRichTextPlainText = (document: RichTextDocument): string => 
         return ''
       case 'image':
         return ''
+      case 'codeBlock':
+        return node.content
+      case 'linkCard':
+        return node.title
       default:
         return ''
     }

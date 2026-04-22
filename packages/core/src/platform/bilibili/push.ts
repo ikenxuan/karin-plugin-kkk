@@ -567,7 +567,7 @@ export class Bilibilipush extends Base {
                 words: articleData.words || 0,
 
                 // 专栏正文内容（richtext 格式）
-                body: buildBilibiliArticleRichText(articleContent.opus, articleContent.content),
+                body: buildBilibiliArticleRichText(articleContent.opus, articleContent.content, Common.useDarkTheme()),
 
                 // 统计信息
                 stats: articleData.stats,

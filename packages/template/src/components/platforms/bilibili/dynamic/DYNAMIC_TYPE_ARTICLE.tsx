@@ -93,6 +93,12 @@ const BilibiliArticleContent: React.FC<BilibiliArticleDynamicProps> = React.memo
             searchKeyword: {
               className: 'text-[#006A9E] dark:text-[#58B0D5]',
               iconClassName: 'text-[#006A9E] dark:text-[#58B0D5]'
+            },
+            codeBlock: {
+              className: 'font-mono'
+            },
+            linkCard: {
+              className: 'block bg-default rounded-4xl p-16 my-8 text-[#006A9E] dark:text-[#58B0D5] underline border border-scrollbar'
             }
           })}
         </div>

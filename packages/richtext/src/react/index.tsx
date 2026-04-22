@@ -225,6 +225,9 @@ const renderStyledText = (
   if (style.color) {
     inlineStyle.color = style.color
   }
+  if (style.fontSize) {
+    inlineStyle.fontSize = style.fontSize
+  }
 
   if (style.link) {
     return (
@@ -409,9 +412,17 @@ const renderNodeToReact = (
 
     case 'heading': {
       const HeadingTag = `h${node.level}` as keyof React.JSX.IntrinsicElements
+      const sizeClass =
+        node.level === 1 ? 'text-[64px]' :
+          node.level === 2 ? 'text-[58px]' :
+            node.level === 3 ? 'text-[52px]' :
+              node.level === 4 ? 'text-[48px]' :
+                node.level === 5 ? 'text-[44px]' :
+                  'text-[40px]'
       return (
         <HeadingTag
           key={`heading-${index}`}
+          className={`${sizeClass} font-bold my-10`}
           data-richtext-node='heading'
           data-heading-level={node.level}
         >
@@ -438,6 +449,7 @@ const renderNodeToReact = (
       return (
         <img
           key={`image-${index}`}
+          className='rounded-4xl'
           src={safeSrc}
           alt={node.alt || ''}
           referrerPolicy='no-referrer'
@@ -478,6 +490,68 @@ const renderNodeToReact = (
         >
           {node.nodes.map((child, childIndex) => renderNodeToReact(child, childIndex, options))}
         </li>
+      )
+
+    case 'codeBlock': {
+      const lines = node.content.split('\n')
+      const showLang = node.language && node.language !== 'plaintext'
+      return (
+        <div
+          key={`codeblock-${index}`}
+          className={clsx(
+            'bg-surface rounded-4xl my-8 border border-border',
+            options.codeBlock?.className
+          )}
+          data-richtext-node='codeBlock'
+          data-language={node.language}
+        >
+          {showLang && (
+            <div
+              className='px-12 py-6 text-[36px] font-medium text-muted border-b border-border'
+              data-richtext-code-lang
+            >
+              {node.language}
+            </div>
+          )}
+          <div className='py-8 pl-4 pr-12' data-richtext-code-body>
+            {lines.map((line, lineIndex) => (
+              <div
+                key={`line-${lineIndex}`}
+                className='flex gap-16 leading-[1.8]'
+                data-richtext-code-line
+              >
+                <span
+                  className='shrink-0 w-12 text-right text-[30px] text-muted select-none font-mono'
+                  data-richtext-code-lineno
+                >
+                  {lineIndex + 1}
+                </span>
+                <code
+                  className='font-mono text-[34px] whitespace-pre-wrap break-all text-foreground'
+                  data-richtext-code-content
+                >
+                  {line || ' '}
+                </code>
+              </div>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
+    case 'linkCard':
+      return (
+        <a
+          key={`linkcard-${index}`}
+          className={options.linkCard?.className}
+          href={node.url}
+          target='_blank'
+          rel='noopener noreferrer'
+          data-richtext-node='linkCard'
+          data-card-type={node.cardType}
+        >
+          {node.title}
+        </a>
       )
 
     default:

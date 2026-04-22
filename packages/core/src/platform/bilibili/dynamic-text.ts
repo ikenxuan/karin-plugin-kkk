@@ -2,10 +2,12 @@ import { ArticleContent } from '@ikenxuan/amagi'
 import {
   createAtNode,
   createBlockquoteNode,
+  createCodeBlockNode,
   createEmojiNode,
   createHeadingNode,
   createImageNode,
   createLineBreakNode,
+  createLinkCardNode,
   createListItemNode,
   createListNode,
   createLotteryNode,
@@ -20,6 +22,7 @@ import {
   type RichTextInlineStyle,
   type RichTextNode
 } from '@kkk/richtext'
+import { logger } from 'node-karin'
 
 /**
  * 用户名元数据，用于传递 VIP 状态和颜色信息
@@ -226,18 +229,30 @@ const extractWordStyle = (style: Record<string, any> = {}): RichTextInlineStyle 
 }
 
 /** 解析 opus 段落中的文本节点为 RichTextNode 数组。 */
-const parseOpusTextNodes = (nodes: ArticleContent['data']['opus']['content']['paragraphs'][number]['text']['nodes']): RichTextNode[] => {
+const parseOpusTextNodes = (
+  nodes: ArticleContent['data']['opus']['content']['paragraphs'][number]['text']['nodes'],
+  useDarkTheme?: boolean
+): RichTextNode[] => {
   const result: RichTextNode[] = []
   for (const node of nodes) {
-    if (node.node_type !== 1 || !node.word) continue
+    if (node.node_type !== 1 || !node.word) {
+      // 记录未适配的节点类型
+      if (node.node_type !== undefined && node.node_type !== 1) {
+        logger.error(`[bilibili] opus 富文本遇到未适配的 node_type: ${node.node_type}，节点数据: ${JSON.stringify(node).slice(0, 500)}`)
+      }
+      continue
+    }
     const words = node.word.words || ''
     if (!words) continue
 
     const style = extractWordStyle(node.word.style || {})
-    // 合并节点自带的颜色
-    if (node.word.color && !style.color) {
-      style.color = node.word.color
+    // 合并节点自带的颜色（根据主题选择 color 或 dark_color）
+    const colorValue = useDarkTheme ? node.word.dark_color : node.word.color
+    if (colorValue && !style.color) {
+      style.color = colorValue
     }
+    // 注：B站 font_size 基于宽屏布局，模板固定宽度（w-360 / 实际 1440px 渲染后缩放）
+    // 直接映射会导致正文（17px）在模板中过小。字号统一由前端控制，后端不提取 font_size。
 
     // 按换行符拆分
     const parts = words.split(/(\r?\n)/)
@@ -255,7 +270,7 @@ const parseOpusTextNodes = (nodes: ArticleContent['data']['opus']['content']['pa
 /**
  * 将 B 站专栏 opus 结构化数据解析为 RichTextDocument。
  */
-const parseOpusToRichText = (opus: ArticleContent['data']['opus']): RichTextDocument => {
+const parseOpusToRichText = (opus: ArticleContent['data']['opus'], useDarkTheme?: boolean): RichTextDocument => {
   const nodes: RichTextNode[] = []
   const paragraphs = opus?.content?.paragraphs
   if (!Array.isArray(paragraphs)) {
@@ -291,38 +306,105 @@ const parseOpusToRichText = (opus: ArticleContent['data']['opus']): RichTextDocu
       continue
     }
 
-    // 文本段落或引用段落
-    const textNodes = paragraph.text?.nodes
-    if (!Array.isArray(textNodes) || textNodes.length === 0) {
+    // 链接卡片段落（包含视频卡片等）
+    if (paraType === 7) {
+      flushList()
+      const linkCard = paragraph.link_card
+      const card = linkCard?.card
+      if (card?.link) {
+        nodes.push(createLinkCardNode(
+          card.show_text || linkCard?.default_text || '链接卡片',
+          card.link,
+          {
+            cardType: String(card.link_type || ''),
+            meta: { bizId: card.biz_id, contentCard: card.content_card }
+          }
+        ))
+      } else {
+        logger.error(`[bilibili] opus 富文本遇到 para_type=7 但缺少 link_card 数据: ${JSON.stringify(paragraph).slice(0, 500)}`)
+      }
       continue
     }
 
-    // 检查段落中是否有 header 样式
-    const hasHeader = textNodes.some(
-      (n: any) => n.word?.style?.header && n.node_type === 1
+    // 代码块段落
+    if (paraType === 8) {
+      flushList()
+      const code = paragraph.code
+      if (code?.content) {
+        nodes.push(createCodeBlockNode(code.content, code.lang || undefined))
+      } else {
+        logger.error(`[bilibili] opus 富文本遇到 para_type=8 但缺少 code 数据: ${JSON.stringify(paragraph).slice(0, 500)}`)
+      }
+      continue
+    }
+
+    // 文本段落或引用段落或标题段落
+    const textNodes = paragraph.text?.nodes
+    if (!Array.isArray(textNodes) || textNodes.length === 0) {
+      // 既不是已知块级类型，也没有文本节点——记录未适配的段落类型
+      const knownTypes = [1, 2, 4, 7, 8, 9]
+      if (!knownTypes.includes(paraType)) {
+        logger.error(`[bilibili] opus 富文本遇到未适配的 para_type: ${paraType}，段落数据: ${JSON.stringify(paragraph).slice(0, 500)}`)
+      }
+      continue
+    }
+
+    // 检查是否是标题段落（通过 format.heading_type、header 样式、或字体大小模拟）
+    const headingType = paragraph.format?.heading_type
+    const hasHeaderStyle = textNodes.some(
+      n => n.word?.style?.header && n.node_type === 1
     )
+    // B站有些文章通过 font_size / font_level 模拟标题（para_type 仍为 1）
+    const hasLargeFont = textNodes.some(
+      n => n.node_type === 1 && n.word?.font_size && n.word.font_size >= 20
+    )
+    const hasXLargeLevel = textNodes.some(
+      n => n.node_type === 1 && ['xLarge', 'large'].includes(n.word?.font_level)
+    )
+    const isHeading = paraType === 9 || headingType !== undefined || hasHeaderStyle || hasLargeFont || hasXLargeLevel
+    // 根据 font_size 推断标题级别（用于纯字体模拟的标题）
+    const inferredHeadingLevel = (): number => {
+      const sizes = textNodes
+        .filter(n => n.node_type === 1 && n.word?.font_size)
+        .map(n => n.word.font_size)
+      if (sizes.length === 0) return 2
+      const maxSize = Math.max(...sizes)
+      if (maxSize >= 26) return 1
+      if (maxSize >= 22) return 2
+      if (maxSize >= 20) return 3
+      return 2
+    }
+
     // 检查段落中是否有 list 样式
     const hasList = textNodes.some(
-      (n: any) => n.word?.style?.list && n.node_type === 1
+      n => n.word?.style?.list && n.node_type === 1
     )
     // 检查是否是引用段落
     const isBlockquote = paraType === 4
 
-    const inlineNodes = parseOpusTextNodes(textNodes)
+    const inlineNodes = parseOpusTextNodes(textNodes, useDarkTheme)
     if (inlineNodes.length === 0) continue
 
-    if (hasHeader) {
+    if (isHeading) {
       flushList()
-      // 取第一个带 header 的级别
-      const headerNode = textNodes.find((n: any) => n.word?.style?.header)
-      const level = Math.min(Math.max(1, headerNode?.word?.style?.header || 1), 6) as 1 | 2 | 3 | 4 | 5 | 6
-      nodes.push(createHeadingNode(level, inlineNodes))
+      // 优先使用 format.heading_type，其次是 style.header，最后是字体大小推断
+      let level = inferredHeadingLevel()
+      if (typeof headingType === 'number' && headingType >= 1 && headingType <= 6) {
+        level = headingType
+      } else if (hasHeaderStyle) {
+        const headerNode = textNodes.find(n => n.word?.style?.header)
+        const headerLevel = headerNode?.word?.style?.header
+        if (typeof headerLevel === 'number' && headerLevel >= 1 && headerLevel <= 6) {
+          level = headerLevel
+        }
+      }
+      nodes.push(createHeadingNode(level as 1 | 2 | 3 | 4 | 5 | 6, inlineNodes))
     } else if (isBlockquote) {
       flushList()
       nodes.push(createBlockquoteNode(inlineNodes))
     } else if (hasList) {
       // 确定列表类型（bullet / ordered）
-      const listNode = textNodes.find((n: any) => n.word?.style?.list)
+      const listNode = textNodes.find(n => n.word?.style?.list)
       const listType = listNode?.word?.style?.list
       const ordered = listType === 'ordered'
 
@@ -356,7 +438,7 @@ const parseHtmlContentToRichText = (content: string): RichTextDocument => {
 
   let lastIndex = 0
   let match: RegExpExecArray | null
-  const stack: Array<{ tag: string; level?: number; nodes: RichTextNode[] }> = []
+  const stack: Array<{ tag: string; level?: 1 | 2 | 3 | 4 | 5 | 6; nodes: RichTextNode[] }> = []
   let currentInline: RichTextNode[] = []
 
   const flushInline = (): RichTextNode[] => {
@@ -469,7 +551,7 @@ const parseHtmlContentToRichText = (content: string): RichTextDocument => {
         currentInline = []
         stack.push({ tag: 'li', nodes: [] })
       } else {
-        stack.push({ tag, level: level as any, nodes: [] })
+        stack.push({ tag, level: level as 1 | 2 | 3 | 4 | 5 | 6, nodes: [] })
       }
     } else {
       // 结束标签
@@ -483,7 +565,7 @@ const parseHtmlContentToRichText = (content: string): RichTextDocument => {
         const inlineNodes = flushInline()
         const childNodes = [...(frame?.nodes || []), ...inlineNodes]
         if (tag.startsWith('h') && frame?.level) {
-          pushBlock(createHeadingNode(frame.level as any, childNodes))
+          pushBlock(createHeadingNode(frame.level as 1 | 2 | 3 | 4 | 5 | 6, childNodes))
         } else {
           pushBlock(createParagraphNode(childNodes))
         }
@@ -523,7 +605,7 @@ const parseHtmlContentToRichText = (content: string): RichTextDocument => {
     if (frame.tag === 'li') {
       pushBlock(createListItemNode(childNodes))
     } else if (frame.tag.startsWith('h') && frame.level) {
-      pushBlock(createHeadingNode(frame.level as any, childNodes))
+      pushBlock(createHeadingNode(frame.level, childNodes))
     } else if (frame.tag === 'blockquote') {
       pushBlock(createBlockquoteNode(childNodes))
     } else {
@@ -541,10 +623,11 @@ const parseHtmlContentToRichText = (content: string): RichTextDocument => {
  */
 export const buildBilibiliArticleRichText = (
   opus: ArticleContent['data']['opus'],
-  content: string | undefined
+  content: string | undefined,
+  useDarkTheme?: boolean
 ): RichTextDocument => {
   if (opus?.content?.paragraphs) {
-    return parseOpusToRichText(opus)
+    return parseOpusToRichText(opus, useDarkTheme)
   }
   if (content) {
     return parseHtmlContentToRichText(content)
