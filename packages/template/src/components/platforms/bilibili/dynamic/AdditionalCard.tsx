@@ -103,8 +103,8 @@ export const BilibiliCommonCard: React.FC<{ common: NonNullable<BilibiliAddition
           <span>{common.head_text}</span>
         </div>
       )}
-      <div className='overflow-hidden rounded-2xl bg-surface'>
-        <div className='flex gap-8 items-center px-10 py-8'>
+      <div className='overflow-hidden rounded-4xl bg-surface'>
+        <div className='flex gap-8 items-center pl-6 pr-12 py-6'>
           <div className='shrink-0'>
             <EnhancedImage
               src={common.cover}
