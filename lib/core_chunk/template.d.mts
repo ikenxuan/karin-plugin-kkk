@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { T as RichTextDocument } from "./index-Cun8KJGp.mjs";
+import { O as RichTextDocument } from "./index-BNXpD9cr.mjs";
 import React$1 from "react";
 import { Agent, ClientRequest, ClientRequestArgs, IncomingMessage, OutgoingHttpHeaders, Server } from "http";
 import { EventEmitter } from "events";
