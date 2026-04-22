@@ -1,3 +1,4 @@
+import { ArticleContent } from '@ikenxuan/amagi'
 import {
   createAtNode,
   createBlockquoteNode,
@@ -225,16 +226,7 @@ const extractWordStyle = (style: Record<string, any> = {}): RichTextInlineStyle 
 }
 
 /** 解析 opus 段落中的文本节点为 RichTextNode 数组。 */
-const parseOpusTextNodes = (nodes: Array<{
-  node_type?: number
-  word?: {
-    words?: string
-    style?: Record<string, any>
-    font_level?: string
-    font_size?: number
-    color?: string
-  }
-}>): RichTextNode[] => {
+const parseOpusTextNodes = (nodes: ArticleContent['data']['opus']['content']['paragraphs'][number]['text']['nodes']): RichTextNode[] => {
   const result: RichTextNode[] = []
   for (const node of nodes) {
     if (node.node_type !== 1 || !node.word) continue
@@ -263,7 +255,7 @@ const parseOpusTextNodes = (nodes: Array<{
 /**
  * 将 B 站专栏 opus 结构化数据解析为 RichTextDocument。
  */
-const parseOpusToRichText = (opus: any): RichTextDocument => {
+const parseOpusToRichText = (opus: ArticleContent['data']['opus']): RichTextDocument => {
   const nodes: RichTextNode[] = []
   const paragraphs = opus?.content?.paragraphs
   if (!Array.isArray(paragraphs)) {
@@ -548,7 +540,7 @@ const parseHtmlContentToRichText = (content: string): RichTextDocument => {
  * opus 和 content 互斥：优先 opus，其次 content，都没有返回空 document。
  */
 export const buildBilibiliArticleRichText = (
-  opus: any,
+  opus: ArticleContent['data']['opus'],
   content: string | undefined
 ): RichTextDocument => {
   if (opus?.content?.paragraphs) {
