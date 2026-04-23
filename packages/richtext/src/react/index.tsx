@@ -210,7 +210,7 @@ const ViewPictureIcon = ({ className }: { className?: string }) => (
 const renderStyledText = (
   text: string,
   style: RichTextInlineStyle | undefined,
-  index: number
+  index: number | string
 ): ReactNode => {
   if (!style) {
     return text
@@ -274,8 +274,33 @@ const renderNodeToReact = (
   options: RichTextRenderOptions
 ): ReactNode => {
   switch (node.type) {
-    case 'text':
-      return renderStyledText(node.text, node.style, index)
+    case 'text': {
+      const text = node.text
+      const urlRegex = /https?:\/\/[^\s]+/g
+      if (!urlRegex.test(text)) {
+        return renderStyledText(text, node.style, index)
+      }
+
+      const parts: ReactNode[] = []
+      let lastIndex = 0
+      let match: RegExpExecArray | null
+      urlRegex.lastIndex = 0
+      while ((match = urlRegex.exec(text)) !== null) {
+        if (match.index > lastIndex) {
+          parts.push(renderStyledText(text.slice(lastIndex, match.index), node.style, `${index}-pre-${match.index}`))
+        }
+        parts.push(
+          <span key={`url-${index}-${match.index}`} className="break-all">
+            {renderStyledText(match[0], node.style, `${index}-url-${match.index}`)}
+          </span>
+        )
+        lastIndex = match.index + match[0].length
+      }
+      if (lastIndex < text.length) {
+        parts.push(renderStyledText(text.slice(lastIndex), node.style, `${index}-post`))
+      }
+      return <>{parts}</>
+    }
 
     case 'lineBreak':
       return <br key={`br-${index}`} />
@@ -369,7 +394,7 @@ const renderNodeToReact = (
       return (
         <a
           key={`weblink-${index}`}
-          className={options.webLink?.className}
+          className={clsx(options.webLink?.className, 'break-all')}
           href={node.jumpUrl}
           target='_blank'
           rel='noopener noreferrer'

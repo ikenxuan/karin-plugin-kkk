@@ -160,7 +160,7 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
       />
 
       <div className='py-4'>
-        <div className='text-5xl leading-relaxed text-foreground'>
+        <div className='text-5xl leading-relaxed text-foreground wrap-break-word'>
           {content.title && (
             <span className='text-6xl font-bold'>{content.title}</span>
           )}
@@ -178,8 +178,8 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
 
       {content.image_url && content.image_url.length === 1
         ? (
-          <div className='flex justify-center py-11'>
-            <div className='flex overflow-hidden flex-col items-center w-11/12 rounded-6 shadow-large'>
+          <div className='flex justify-center py-11 pb-4'>
+            <div className='flex overflow-hidden flex-col items-center w-full rounded-4xl shadow-large'>
               <EnhancedImage
                 src={content.image_url[0].image_src}
                 alt='图片'
@@ -199,10 +199,9 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
                 />
               </div>
             ))}
+            <div className='h-2' />
           </div>
         )}
-
-      <div className='h-4' />
     </div>
   )
 }
@@ -222,7 +221,7 @@ const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ conte
       />
 
       <div className='py-4'>
-        <div className='text-5xl leading-relaxed text-foreground'>
+        <div className='text-5xl leading-relaxed text-foreground wrap-break-word'>
           {content.text && renderRichTextToReact(content.text, {
             at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
             topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
@@ -410,7 +409,7 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
             </div>
           </div>
         </div>
-        
+
         {/* 用户统计信息 */}
         <div className='text-3xl flex gap-6 items-center text-foreground/70'>
           <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>

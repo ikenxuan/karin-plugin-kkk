@@ -82,7 +82,7 @@ const BilibiliVideoDynamicContent: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
         <div className='h-10' />
 
         {/* 视频描述 */}
-        <div className='text-5xl text-muted leading-normal'>
+        <div className='text-5xl text-muted leading-normal wrap-break-word break-keep'>
           {props.data.desc && renderRichTextToReact(props.data.desc, {
             at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
             topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
