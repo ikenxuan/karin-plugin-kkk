@@ -16757,6 +16757,10 @@
     word-break: break-all;
   }
 
+  .break-keep {
+    word-break: keep-all;
+  }
+
   .whitespace-normal {
     white-space: normal;
   }
