@@ -2004,7 +2004,8 @@ interface ChangelogProps extends BaseComponentProps {
     localVersion: string; /** 远程版本号 */
     remoteVersion: string; /** 落后的版本数量 */
     lagVersionCount?: number; /** 构建时间 */
-    buildTime?: string;
+    buildTime?: string; /** 版本差异对比页面分享链接 */
+    share_url?: string;
   };
 }
 //#endregion

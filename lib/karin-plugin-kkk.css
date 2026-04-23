@@ -12598,10 +12598,6 @@
     margin-top: calc(var(--spacing) * 15);
   }
 
-  .mt-16 {
-    margin-top: calc(var(--spacing) * 16);
-  }
-
   .mt-18 {
     margin-top: calc(var(--spacing) * 18);
   }
