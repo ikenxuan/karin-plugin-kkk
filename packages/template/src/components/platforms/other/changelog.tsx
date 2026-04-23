@@ -26,6 +26,7 @@ const InlineCalloutCode: React.FC<React.PropsWithChildren<{ className?: string }
  */
 export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: boolean } }, 'templateType' | 'templateName'>> = React.memo((props) => {
   const isDark = props.data.useDarkTheme ?? false
+  const { qrCodeDataUrl } = props as any
 
   const backgroundColors = isDark
     ? {
@@ -144,7 +145,7 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
               <div className='text-5xl leading-relaxed text-center mb-8 opacity-50 text-foreground/70'>
                 以下任意方式均可更新
               </div>
-              
+
               <div className='mb-10 px-8 py-5 rounded-2xl border border-border/70 bg-surface/50 text-foreground/80 text-[2.2em] flex items-center justify-center gap-6'>
                 <span>当前版本: v{props.data.localVersion}</span>
                 <span>→</span>
@@ -161,7 +162,7 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
                   </span>
                   <span>立刻开始</span>
                 </div>
-                
+
                 <div className='flex items-center gap-5'>
                   <span className='text-muted text-[1.2em]'>•</span>
                   <span>进入</span>
@@ -173,7 +174,7 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
                   <span>→</span>
                   <span>一览更新</span>
                 </div>
-                
+
                 <div className='flex items-center gap-5'>
                   <span className='text-muted text-[1.2em]'>•</span>
                   <span>Karin 根目录运行</span>
@@ -304,9 +305,24 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
           </ReactMarkdown>
         </div>
 
+        {qrCodeDataUrl && (
+          <div className='flex flex-col items-center gap-12 py-8'>
+            <div className='w-120 h-auto'>
+              <img src={qrCodeDataUrl} alt='二维码' className='w-full h-full object-contain' />
+            </div>
+            <div className='text-4xl text-foreground/60'>
+              <span>查看实际运行代码从</span>
+              <span className='font-bold text-foreground/80'> v{props.data.localVersion}</span>
+              <span> 到 </span>
+              <span className='font-bold text-foreground/80'> v{props.data.remoteVersion}</span>
+              <span> 的 Diff 差异</span>
+            </div>  
+          </div>
+        )}
+
         {/* 底部信息 */}
         {props.data.Tip === true && props.data.buildTime && (
-          <div className='flex gap-8 justify-center py-12 mt-16 border-t-2 border-border opacity-60'>
+          <div className='flex gap-8 justify-center text-foreground/60'>
             <div className='text-4xl'>
               更新频道:
               <span className='font-bold text-foreground/80'> 正式版</span>

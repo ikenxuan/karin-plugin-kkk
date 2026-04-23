@@ -18,5 +18,7 @@ export interface ChangelogProps extends BaseComponentProps {
     lagVersionCount?: number,
     /** 构建时间 */
     buildTime?: string,
+    /** 版本差异对比页面分享链接 */
+    share_url?: string,
   }
 }

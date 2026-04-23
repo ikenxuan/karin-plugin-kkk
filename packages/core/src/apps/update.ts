@@ -25,9 +25,9 @@ const UPDATE_MSGID_KEY = 'kkk:update:msgId'
  * @returns 是否继续后续任务
  */
 const Handler = async () => {
-  if (process.env.NODE_ENV === 'development') {
-    return true
-  }
+  // if (process.env.NODE_ENV === 'development') {
+  //   return true
+  // }
 
   let upd:
     | { status: 'yes'; local: string; remote: string }
@@ -231,11 +231,12 @@ const handleKkkUpdate = wrapWithErrorHandler(async (e: Message) => {
 
 export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, handleKkkUpdate, { name: 'kkk-更新' })
 
-// export const kkkUpdateTest = karin.command('test', async (_e: Message) => {
-//   await db.del(UPDATE_MSGID_KEY)
-//   await db.del(UPDATE_LOCK_KEY)
-//   return Handler()
-// })
+export const kkkUpdateTest = process.env.NODE_ENV === 'development' && karin.command('test', async (_e: Message, next) => {
+  await db.del(UPDATE_MSGID_KEY)
+  await db.del(UPDATE_LOCK_KEY)
+  await Handler()  
+  next()
+}, { name: 'kkk-更新检测-测试' })
 
 export const update = karin.task('kkk-更新检测', '*/3 * * * *', Handler, {
   name: 'kkk-更新检测',
