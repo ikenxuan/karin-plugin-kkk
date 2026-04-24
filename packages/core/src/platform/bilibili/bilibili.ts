@@ -60,6 +60,7 @@ import {
 import {
   buildBilibiliArticleRichText,
   buildBilibiliDynamicRichText,
+  buildBilibiliVideoDescRichText,
   getUsernameMetadata
 } from '@/platform/bilibili/dynamic-text'
 import { BilibiliDataTypes } from '@/types'
@@ -142,15 +143,25 @@ export class Bilibili extends Base {
             }
           } else {
             // 渲染为图片
+            const userProfileData = await this.amagi.bilibili.fetcher.fetchUserCard({
+              host_mid: infoData.data.data.owner.mid,
+              typeMode: 'strict'
+            })
             const img = await Render(this.e, 'bilibili/videoInfo', {
               share_url: 'https://b23.tv/' + infoData.data.data.bvid,
               title: infoData.data.data.title,
-              desc: infoData.data.data.desc,
+              desc: infoData.data.data.desc_v2?.length
+                ? buildBilibiliVideoDescRichText(infoData.data.data.desc_v2)
+                : buildBilibiliDynamicRichText(infoData.data.data.desc || '', []),
               stat: infoData.data.data.stat,
               bvid: infoData.data.data.bvid,
               ctime: infoData.data.data.ctime,
               pic: infoData.data.data.pic,
-              owner: infoData.data.data.owner
+              owner: {
+                ...infoData.data.data.owner,
+                usernameMeta: getUsernameMetadata(userProfileData.data.data.card),
+                frame: userProfileData.data.data.card.pendant?.image || ''
+              }
             })
             this.e.reply(img)
           }
@@ -751,7 +762,9 @@ export class Bilibili extends Base {
                 {
                   image_url: INFODATA.data.data.pic,
                   text: buildBilibiliDynamicRichText(INFODATA.data.data.title, []),
-                  desc: buildBilibiliDynamicRichText(dycrad.desc, []),
+                  desc: INFODATA.data.data.desc_v2?.length
+                    ? buildBilibiliVideoDescRichText(INFODATA.data.data.desc_v2)
+                    : buildBilibiliDynamicRichText(INFODATA.data.data.desc || '', []),
                   dianzan: Count(INFODATA.data.data.stat.like),
                   pinglun: Count(INFODATA.data.data.stat.reply),
                   share: Count(INFODATA.data.data.stat.share),

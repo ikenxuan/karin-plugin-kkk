@@ -77,6 +77,29 @@ export const buildUsernameRichText = (metadata: UsernameMetadata): RichTextDocum
  * 核心逻辑：按 richTextNodes 原始顺序遍历，用节点文本在正文 text 中查找位置，
  * 来确定普通文本和富文本节点的边界。
  */
+
+const URL_REGEX = /https?:\/\/[-\w._~:/?#[\]@!$&'()*+,;=%]+/g
+
+/**
+ * 将单行普通文本解析为文本节点和链接节点，自动提取 URL。
+ */
+const parseTextWithUrls = (text: string): Array<ReturnType<typeof createTextNode | typeof createWebLinkNode>> => {
+  const nodes: Array<ReturnType<typeof createTextNode | typeof createWebLinkNode>> = []
+  const matches = Array.from(text.matchAll(URL_REGEX))
+  let lastIndex = 0
+  for (const match of matches) {
+    if (match.index! > lastIndex) {
+      nodes.push(createTextNode(text.slice(lastIndex, match.index)))
+    }
+    nodes.push(createWebLinkNode(match[0], match[0]))
+    lastIndex = match.index! + match[0].length
+  }
+  if (lastIndex < text.length) {
+    nodes.push(createTextNode(text.slice(lastIndex)))
+  }
+  return nodes
+}
+
 export const buildBilibiliDynamicRichText = (
   text: string,
   richTextNodes: Array<{
@@ -99,7 +122,7 @@ export const buildBilibiliDynamicRichText = (
         if (part === '\r\n' || part === '\n') {
           nodes.push(createLineBreakNode())
         } else if (part) {
-          nodes.push(createTextNode(part))
+          nodes.push(...parseTextWithUrls(part))
         }
       }
     }
@@ -129,7 +152,7 @@ export const buildBilibiliDynamicRichText = (
         if (part === '\r\n' || part === '\n') {
           nodes.push(createLineBreakNode())
         } else if (part) {
-          nodes.push(createTextNode(part))
+          nodes.push(...parseTextWithUrls(part))
         }
       }
     }
@@ -143,7 +166,7 @@ export const buildBilibiliDynamicRichText = (
           if (part === '\r\n' || part === '\n') {
             nodes.push(createLineBreakNode())
           } else if (part) {
-            nodes.push(createTextNode(part))
+            nodes.push(...parseTextWithUrls(part))
           }
         }
         break
@@ -201,11 +224,48 @@ export const buildBilibiliDynamicRichText = (
       if (part === '\r\n' || part === '\n') {
         nodes.push(createLineBreakNode())
       } else if (part) {
-        nodes.push(createTextNode(part))
+        nodes.push(...parseTextWithUrls(part))
       }
     }
   }
 
+  return createRichTextDocument(nodes, { platform: 'bilibili' })
+}
+
+/**
+ * 根据 B站视频详情 desc_v2 构建富文本文档。
+ *
+ * desc_v2 结构：
+ * - type: 1 → 纯文本（含换行、链接）
+ * - type: 2 → @提及（biz_id 为用户ID）
+ */
+export const buildBilibiliVideoDescRichText = (
+  descV2: Array<{ raw_text?: string; type?: number; biz_id?: number }>
+): RichTextDocument => {
+  const nodes: RichTextNode[] = []
+  for (const item of descV2) {
+    const rawText = item.raw_text || ''
+    if (!rawText) continue
+    switch (item.type) {
+      case 1: {
+        const parts = rawText.split(/(\r?\n)/)
+        for (const part of parts) {
+          if (part === '\r\n' || part === '\n') {
+            nodes.push(createLineBreakNode())
+          } else if (part) {
+            nodes.push(...parseTextWithUrls(part))
+          }
+        }
+        break
+      }
+      case 2:
+        nodes.push(createAtNode(`@${rawText}`, item.biz_id?.toString()))
+        break
+      default:
+        nodes.push(createTextNode(rawText))
+        break
+    }
+  }
   return createRichTextDocument(nodes, { platform: 'bilibili' })
 }
 

@@ -52,6 +52,7 @@ import {
 import {
   buildBilibiliArticleRichText,
   buildBilibiliDynamicRichText,
+  buildBilibiliVideoDescRichText,
   getUsernameMetadata
 } from '@/platform/bilibili/dynamic-text'
 import type { bilibiliPushItem, BilibiliPushType } from '@/types/config/pushlist'
@@ -377,7 +378,9 @@ export class Bilibilipush extends Base {
                 {
                   image_url: INFODATA.data.data.pic,
                   text: buildBilibiliDynamicRichText(INFODATA.data.data.title, []),
-                  desc: buildBilibiliDynamicRichText(dycrad.desc, []),
+                  desc: INFODATA.data.data.desc_v2?.length
+                    ? buildBilibiliVideoDescRichText(INFODATA.data.data.desc_v2)
+                    : buildBilibiliDynamicRichText(INFODATA.data.data.desc || '', []),
                   dianzan: Count(INFODATA.data.data.stat.like),
                   pinglun: Count(INFODATA.data.data.stat.reply),
                   share: Count(INFODATA.data.data.stat.share),

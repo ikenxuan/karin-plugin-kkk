@@ -1,3 +1,5 @@
+import type { RichTextDocument } from '@kkk/richtext'
+
 import type { BaseComponentProps } from '../../index'
 
 /**
@@ -33,6 +35,18 @@ export interface BilibiliVideoStat {
 }
 
 /**
+ * 用户名元数据接口
+ */
+export interface UsernameMetadata {
+  /** 用户名 */
+  name: string
+  /** VIP状态 */
+  vipStatus: number
+  /** 昵称颜色 */
+  nicknameColor: string | null
+}
+
+/**
  * B站视频UP主信息接口
  */
 export interface BilibiliVideoOwner {
@@ -42,6 +56,10 @@ export interface BilibiliVideoOwner {
   name: string
   /** UP主头像URL */
   face: string
+  /** 用户名元数据（VIP颜色等） */
+  usernameMeta?: UsernameMetadata
+  /** 头像框图片URL */
+  frame?: string
 }
 
 /**
@@ -52,8 +70,8 @@ export interface BilibiliVideoInfoData {
   share_url: string
   /** 视频标题 */
   title: string
-  /** 视频简介 */
-  desc: string
+  /** 视频简介（富文本格式） */
+  desc: RichTextDocument
   /** 统计数据 */
   stat: BilibiliVideoStat
   /** 视频BV号 */

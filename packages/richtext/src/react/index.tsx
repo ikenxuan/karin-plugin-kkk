@@ -213,7 +213,7 @@ const renderStyledText = (
   index: number | string
 ): ReactNode => {
   if (!style) {
-    return text
+    return <span key={`text-${index}`}>{text}</span>
   }
 
   const classNames: string[] = []
@@ -246,7 +246,7 @@ const renderStyledText = (
   }
 
   if (classNames.length === 0 && Object.keys(inlineStyle).length === 0) {
-    return text
+    return <span key={`text-${index}`}>{text}</span>
   }
 
   return (
@@ -276,7 +276,7 @@ const renderNodeToReact = (
   switch (node.type) {
     case 'text': {
       const text = node.text
-      const urlRegex = /https?:\/\/[^\s]+/g
+      const urlRegex = /https?:\/\/[-\w._~:/?#[\]@!$&'()*+,;=%]+/g
       if (!urlRegex.test(text)) {
         return renderStyledText(text, node.style, index)
       }
