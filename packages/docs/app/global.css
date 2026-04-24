@@ -48,10 +48,30 @@ b {
   }
 }
 
+/* 隐藏滚动条 */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 @theme inline {
   /* HeroUI v3 主题：覆盖默认蓝色为黑白风格 */
   --accent: oklch(0.205 0 0);
   --accent-foreground: oklch(0.985 0 0);
+
+  /* Diff 页面语义化颜色 */
+  --color-diff-remove-bg: color-mix(in oklch, var(--danger) 12%, transparent);
+  --color-diff-remove-bg-light: color-mix(in oklch, var(--danger) 8%, transparent);
+  --color-diff-add-bg: color-mix(in oklch, var(--success) 12%, transparent);
+  --color-diff-add-bg-light: color-mix(in oklch, var(--success) 8%, transparent);
+  --color-diff-word-remove: color-mix(in oklch, var(--danger) 40%, transparent);
+  --color-diff-word-add: color-mix(in oklch, var(--success) 40%, transparent);
+  --color-diff-accent-bg: color-mix(in oklch, var(--accent) 10%, transparent);
+  --color-diff-accent-border: color-mix(in oklch, var(--accent) 20%, transparent);
+  --color-diff-border: color-mix(in oklch, var(--border) 30%, transparent);
 
   /* Meteors 组件动画（被迁移时遗漏） */
   --animate-meteor: meteor 5s linear infinite;

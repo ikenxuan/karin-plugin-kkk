@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useTheme } from 'next-themes'
 import {
   Autocomplete,
   Button,
@@ -11,6 +10,7 @@ import {
   Spinner,
   useFilter
 } from '@heroui/react'
+import { cn } from '@/lib/cn'
 import { CodeDiffViewer } from '@/components/code-diff'
 import {
   computePackageDiffLite,
@@ -50,8 +50,6 @@ function formatBytes (n: number): string {
 }
 
 export default function DiffPage () {
-  const { resolvedTheme } = useTheme()
-  const isDark = resolvedTheme === 'dark'
   const { contains } = useFilter({ sensitivity: 'base' })
 
   const [versions, setVersions] = useState<string[]>([])
@@ -351,31 +349,21 @@ export default function DiffPage () {
   }
 
   return (
-    <div
-      className="md:h-screen md:flex md:flex-col md:overflow-hidden"
-      style={{ backgroundColor: isDark ? '#0d1117' : '#ffffff' }}
-    >
+    <div className="md:h-screen md:flex md:flex-col md:overflow-hidden bg-background">
       {/* 顶部控制栏 */}
-      <div
-        className="shrink-0 px-6 py-4 flex flex-wrap items-end gap-4"
-        style={{
-          backgroundColor: isDark ? '#161b22' : '#f6f8fa',
-          borderBottom: `1px solid ${isDark ? 'rgba(48, 54, 61, 0.6)' : 'rgba(208, 215, 222, 0.8)'}`
-        }}
-      >
+      <div className="shrink-0 px-6 py-4 flex flex-wrap items-end gap-4 bg-surface-secondary border-b border-border">
         {isMobile && result && (
           <Button
             size="sm"
             variant="ghost"
             onPress={() => setSidebarOpen(!sidebarOpen)}
-            className="px-2 min-w-0 font-medium"
-            style={{ color: isDark ? '#c9d1d9' : '#1f2328' }}
+            className="px-2 min-w-0 font-medium text-foreground"
           >
             {sidebarOpen ? '✕' : '☰'}
           </Button>
         )}
         <div>
-          <label className="block text-xs font-medium mb-1" style={{ color: isDark ? '#8b949e' : '#656d76' }}>
+          <label className="block text-xs font-medium mb-1 text-muted">
             旧版本
           </label>
           <Autocomplete
@@ -406,7 +394,7 @@ export default function DiffPage () {
         </div>
 
         <div>
-          <label className="block text-xs font-medium mb-1" style={{ color: isDark ? '#8b949e' : '#656d76' }}>
+          <label className="block text-xs font-medium mb-1 text-muted">
             新版本
           </label>
           <Autocomplete
@@ -437,35 +425,29 @@ export default function DiffPage () {
         </div>
 
         <div>
-          <label className="block text-xs font-medium mb-1" style={{ color: isDark ? '#8b949e' : '#656d76' }}>
+          <label className="block text-xs font-medium mb-1 text-muted">
             对比精度
           </label>
           <div className="flex gap-1">
             <button
               onClick={() => setDiffGranularity('word')}
-              className="px-2 py-1 text-xs rounded transition-colors"
-              style={{
-                backgroundColor: diffGranularity === 'word'
-                  ? (isDark ? 'rgba(48, 54, 61, 0.6)' : 'rgba(208, 215, 222, 0.6)')
-                  : 'transparent',
-                color: diffGranularity === 'word'
-                  ? (isDark ? '#c9d1d9' : '#1f2328')
-                  : (isDark ? '#8b949e' : '#656d76')
-              }}
+              className={cn(
+                'px-2 py-1 text-xs rounded transition-colors',
+                diffGranularity === 'word'
+                  ? 'bg-surface-secondary text-foreground'
+                  : 'text-muted'
+              )}
             >
               单词
             </button>
             <button
               onClick={() => setDiffGranularity('char')}
-              className="px-2 py-1 text-xs rounded transition-colors"
-              style={{
-                backgroundColor: diffGranularity === 'char'
-                  ? (isDark ? 'rgba(48, 54, 61, 0.6)' : 'rgba(208, 215, 222, 0.6)')
-                  : 'transparent',
-                color: diffGranularity === 'char'
-                  ? (isDark ? '#c9d1d9' : '#1f2328')
-                  : (isDark ? '#8b949e' : '#656d76')
-              }}
+              className={cn(
+                'px-2 py-1 text-xs rounded transition-colors',
+                diffGranularity === 'char'
+                  ? 'bg-surface-secondary text-foreground'
+                  : 'text-muted'
+              )}
             >
               字符
             </button>
@@ -473,20 +455,15 @@ export default function DiffPage () {
         </div>
 
         <div>
-          <label className="block text-xs font-medium mb-1" style={{ color: isDark ? '#8b949e' : '#656d76' }}>
+          <label className="block text-xs font-medium mb-1 text-muted">
             自动换行
           </label>
           <button
             onClick={() => setWrapEnabled(!wrapEnabled)}
-            className="px-2 py-1 text-xs rounded transition-colors"
-            style={{
-              backgroundColor: wrapEnabled
-                ? (isDark ? 'rgba(48, 54, 61, 0.6)' : 'rgba(208, 215, 222, 0.6)')
-                : 'transparent',
-              color: wrapEnabled
-                ? (isDark ? '#c9d1d9' : '#1f2328')
-                : (isDark ? '#8b949e' : '#656d76')
-            }}
+            className={cn(
+              'px-2 py-1 text-xs rounded transition-colors',
+              wrapEnabled ? 'bg-surface-secondary text-foreground' : 'text-muted'
+            )}
           >
             {wrapEnabled ? '开启' : '关闭'}
           </button>
@@ -496,7 +473,7 @@ export default function DiffPage () {
           size="sm"
           onPress={handleCompare}
           isDisabled={comparing}
-          className="font-medium bg-[#238636] text-white"
+          className="font-medium bg-success text-success-foreground"
         >
           {comparing ? (
             <span className="flex items-center gap-2">
@@ -508,13 +485,13 @@ export default function DiffPage () {
 
         {result && (
           <div className="flex items-center gap-3 text-sm ml-auto">
-            <span style={{ color: isDark ? '#8b949e' : '#656d76' }}>
+            <span className="text-muted">
               共 {changedFiles.length} 个文件变更
             </span>
-            <span style={{ color: isDark ? '#3fb950' : '#1a7f37' }}>
+            <span className="text-success">
               +{changedFiles.reduce((s, f) => s + f.additions, 0)}
             </span>
-            <span style={{ color: isDark ? '#f85149' : '#cf222e' }}>
+            <span className="text-danger">
               −{changedFiles.reduce((s, f) => s + f.deletions, 0)}
             </span>
           </div>
@@ -523,13 +500,7 @@ export default function DiffPage () {
 
       {/* 错误提示 */}
       {error && (
-        <div
-          className="shrink-0 mx-6 mt-4 p-3 rounded-lg text-sm"
-          style={{
-            backgroundColor: isDark ? 'rgba(248, 81, 73, 0.15)' : '#ffebe9',
-            color: isDark ? '#f85149' : '#cf222e'
-          }}
-        >
+        <div className="shrink-0 mx-6 mt-4 p-3 rounded-lg text-sm bg-danger-soft text-danger">
           {error}
         </div>
       )}
@@ -539,31 +510,22 @@ export default function DiffPage () {
         <>
           {isMobile && sidebarOpen && (
             <div
-              className="fixed inset-0 z-40"
-              style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+              className="fixed inset-0 z-40 bg-black/50"
               onClick={() => setSidebarOpen(false)}
             />
           )}
           <div className="flex flex-col md:flex-row md:flex-1 md:overflow-hidden relative">
             {/* 左侧文件列表 */}
             <div
-              className={`shrink-0 flex flex-col ${isMobile ? 'fixed inset-y-0 left-0 z-50 w-72' : 'w-72'}`}
-              style={{
-                backgroundColor: isDark ? '#0d1117' : '#ffffff',
-                borderRight: `1px solid ${isDark ? 'rgba(48, 54, 61, 0.4)' : 'rgba(208, 215, 222, 0.6)'}`,
-                transform: isMobile && !sidebarOpen ? 'translateX(-100%)' : undefined,
-                transition: isMobile ? 'transform 0.2s ease' : undefined
-              }}
+              className={cn(
+                'shrink-0 flex flex-col bg-background border-r border-border',
+                isMobile && 'fixed inset-y-0 left-0 z-50 w-72 transition-transform duration-200 ease-out',
+                !isMobile && 'w-72',
+                isMobile && !sidebarOpen && '-translate-x-full'
+              )}
             >
             {/* 文件列表头部 */}
-            <div
-              className="shrink-0 px-3 py-2 flex items-center justify-between"
-              style={{
-                backgroundColor: isDark ? '#161b22' : '#f6f8fa',
-                color: isDark ? '#8b949e' : '#656d76',
-                borderBottom: `1px solid ${isDark ? 'rgba(48, 54, 61, 0.4)' : 'rgba(208, 215, 222, 0.6)'}`
-              }}
-            >
+            <div className="shrink-0 px-3 py-2 flex items-center justify-between bg-surface-secondary text-muted border-b border-border">
               <span className="text-xs font-medium">
                 文件列表 ({result.files.length})
               </span>
@@ -572,15 +534,12 @@ export default function DiffPage () {
                   <button
                     key={mode}
                     onClick={() => setSortMode(mode)}
-                    className="px-2 py-0.5 text-[10px] rounded transition-colors"
-                    style={{
-                      backgroundColor: sortMode === mode
-                        ? (isDark ? 'rgba(48, 54, 61, 0.6)' : 'rgba(208, 215, 222, 0.6)')
-                        : 'transparent',
-                      color: sortMode === mode
-                        ? (isDark ? '#c9d1d9' : '#1f2328')
-                        : (isDark ? '#8b949e' : '#656d76')
-                    }}
+                    className={cn(
+                      'px-2 py-0.5 text-[10px] rounded transition-colors',
+                      sortMode === mode
+                        ? 'bg-surface-secondary text-foreground'
+                        : 'text-muted'
+                    )}
                   >
                     {mode === 'size' ? '大小' : mode === 'name' ? '名称' : '默认'}
                   </button>
@@ -589,18 +548,7 @@ export default function DiffPage () {
             </div>
 
             {/* 文件列表内容 - 可滚动，隐藏滚动条 */}
-            <div
-              className="flex-1 overflow-y-auto"
-              style={{
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none'
-              }}
-            >
-              <style jsx>{`
-                div::-webkit-scrollbar {
-                  display: none;
-                }
-              `}</style>
+            <div className="flex-1 overflow-y-auto no-scrollbar">
               <div className="py-1">
                 {sortedFiles.map((file) => (
                   <button
@@ -609,21 +557,19 @@ export default function DiffPage () {
                       setSelectedFile(file.path)
                       if (isMobile) setSidebarOpen(false)
                     }}
-                    className="w-full text-left px-3 py-2 flex items-center gap-2 transition-colors hover:opacity-80"
-                    style={{
-                      backgroundColor: selectedFile === file.path
-                        ? (isDark ? 'rgba(48, 54, 61, 0.4)' : 'rgba(208, 215, 222, 0.4)')
-                        : 'transparent'
-                    }}
+                    className={cn(
+                      'w-full text-left px-3 py-2 flex items-center gap-2 transition-colors hover:opacity-80',
+                      selectedFile === file.path && 'bg-border/40'
+                    )}
                   >
-                    <span className="text-xs truncate flex-1" style={{ color: isDark ? '#c9d1d9' : '#1f2328' }}>
+                    <span className="text-xs truncate flex-1 text-foreground">
                       {file.path}
                     </span>
-                    <span className="text-[10px] shrink-0" style={{ color: isDark ? '#6e7681' : '#9ca3af' }}>
+                    <span className="text-[10px] shrink-0 text-muted">
                       {formatBytes(file.oldSize + file.newSize)}
                     </span>
                     {selectedFile === file.path && file.status !== 'unchanged' && file.rows.length === 0 && (
-                      <Spinner size="sm" className="shrink-0" style={{ color: isDark ? '#8b949e' : '#656d76' }} aria-label="加载中" />
+                      <Spinner size="sm" className="shrink-0 text-muted" aria-label="加载中" />
                     )}
                     {statusChip(file.status)}
                   </button>
@@ -635,9 +581,9 @@ export default function DiffPage () {
           {/* 右侧 diff 内容 */}
           <div className="w-full h-dvh md:h-auto md:flex-1">
             {selectedDiff ? (
-              <CodeDiffViewer data={selectedDiff} isDark={isDark} isMobile={isMobile} wrap={wrapEnabled} />
+              <CodeDiffViewer data={selectedDiff} isMobile={isMobile} wrap={wrapEnabled} />
             ) : (
-              <div className="flex items-center justify-center h-full text-sm" style={{ color: isDark ? '#8b949e' : '#656d76' }}>
+              <div className="flex items-center justify-center h-full text-sm text-muted">
                 请从左侧选择一个文件
               </div>
             )}
@@ -652,12 +598,12 @@ export default function DiffPage () {
               <ProgressCircle.FillCircle />
             </ProgressCircle.Track>
           </ProgressCircle>
-          <span className="text-sm" style={{ color: isDark ? '#8b949e' : '#656d76' }}>
+          <span className="text-sm text-muted">
             正在下载并对比版本...
           </span>
         </div>
       ) : (
-        <div className="flex-1 flex items-center justify-center text-sm" style={{ color: isDark ? '#8b949e' : '#656d76' }}>
+        <div className="flex-1 flex items-center justify-center text-sm text-muted">
           选择两个版本并点击「开始对比」
         </div>
       )}
