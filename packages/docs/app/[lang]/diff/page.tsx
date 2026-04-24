@@ -66,6 +66,7 @@ export default function DiffPage () {
   const [isMobile, setIsMobile] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [diffGranularity, setDiffGranularity] = useState<DiffGranularity>('word')
+  const [wrapEnabled, setWrapEnabled] = useState(true)
   const diffQueueRef = useRef(0)
 
   const diffSourcesRef = useRef<Map<string, { oldContent?: Uint8Array; newContent?: Uint8Array }>>(new Map())
@@ -351,7 +352,7 @@ export default function DiffPage () {
 
   return (
     <div
-      className="h-screen flex flex-col overflow-hidden"
+      className="md:h-screen md:flex md:flex-col md:overflow-hidden"
       style={{ backgroundColor: isDark ? '#0d1117' : '#ffffff' }}
     >
       {/* 顶部控制栏 */}
@@ -471,6 +472,26 @@ export default function DiffPage () {
           </div>
         </div>
 
+        <div>
+          <label className="block text-xs font-medium mb-1" style={{ color: isDark ? '#8b949e' : '#656d76' }}>
+            自动换行
+          </label>
+          <button
+            onClick={() => setWrapEnabled(!wrapEnabled)}
+            className="px-2 py-1 text-xs rounded transition-colors"
+            style={{
+              backgroundColor: wrapEnabled
+                ? (isDark ? 'rgba(48, 54, 61, 0.6)' : 'rgba(208, 215, 222, 0.6)')
+                : 'transparent',
+              color: wrapEnabled
+                ? (isDark ? '#c9d1d9' : '#1f2328')
+                : (isDark ? '#8b949e' : '#656d76')
+            }}
+          >
+            {wrapEnabled ? '开启' : '关闭'}
+          </button>
+        </div>
+
         <Button
           size="sm"
           onPress={handleCompare}
@@ -523,7 +544,7 @@ export default function DiffPage () {
               onClick={() => setSidebarOpen(false)}
             />
           )}
-          <div className="flex flex-1 overflow-hidden relative">
+          <div className="flex flex-col md:flex-row md:flex-1 md:overflow-hidden relative">
             {/* 左侧文件列表 */}
             <div
               className={`shrink-0 flex flex-col ${isMobile ? 'fixed inset-y-0 left-0 z-50 w-72' : 'w-72'}`}
@@ -612,9 +633,9 @@ export default function DiffPage () {
           </div>
 
           {/* 右侧 diff 内容 */}
-          <div className="flex-1">
+          <div className="w-full h-dvh md:h-auto md:flex-1">
             {selectedDiff ? (
-              <CodeDiffViewer data={selectedDiff} isDark={isDark} />
+              <CodeDiffViewer data={selectedDiff} isDark={isDark} isMobile={isMobile} wrap={wrapEnabled} />
             ) : (
               <div className="flex items-center justify-center h-full text-sm" style={{ color: isDark ? '#8b949e' : '#656d76' }}>
                 请从左侧选择一个文件

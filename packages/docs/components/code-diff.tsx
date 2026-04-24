@@ -1,12 +1,14 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Spinner } from '@heroui/react'
 import type { FileDiffResult, WordDiff } from '@/lib/diff-client'
 
 interface CodeDiffViewerProps {
   data: FileDiffResult
   isDark?: boolean
+  isMobile?: boolean
+  wrap?: boolean
 }
 
 const ROW_HEIGHT = 24
@@ -46,12 +48,14 @@ const WordDiffSpan = ({ diff, isDark, side }: { diff: WordDiff; isDark: boolean;
   return <span>{diff.value}</span>
 }
 
-export const CodeDiffViewer = ({ data, isDark = false }: CodeDiffViewerProps) => {
+export const CodeDiffViewer = ({ data, isDark = false, isMobile = false, wrap = true }: CodeDiffViewerProps) => {
   const { path, status, rows, additions, deletions } = data
   const scrollRef = useRef<HTMLDivElement>(null)
   const [scrollTop, setScrollTop] = useState(0)
   const [containerHeight, setContainerHeight] = useState(0)
   const [containerWidth, setContainerWidth] = useState(0)
+  const leftPaneRef = useRef<HTMLDivElement>(null)
+  const rightPaneRef = useRef<HTMLDivElement>(null)
 
   // 切换文件时重置滚动位置
   useEffect(() => {
@@ -119,6 +123,10 @@ export const CodeDiffViewer = ({ data, isDark = false }: CodeDiffViewerProps) =>
         offsets[i + 1] = offsets[i] + ROW_HEIGHT
         continue
       }
+      if (!wrap) {
+        offsets[i + 1] = offsets[i] + ROW_HEIGHT
+        continue
+      }
       const leftLen = row.left?.content.length ?? 0
       const rightLen = row.right?.content.length ?? 0
       const maxLen = Math.max(leftLen, rightLen)
@@ -126,7 +134,7 @@ export const CodeDiffViewer = ({ data, isDark = false }: CodeDiffViewerProps) =>
       offsets[i + 1] = offsets[i] + Math.max(ROW_HEIGHT, lines * ROW_HEIGHT)
     }
     return { totalHeight: offsets[rows.length], rowOffsets: offsets }
-  }, [rows, containerWidth])
+  }, [rows, containerWidth, wrap])
 
   const findIndexByOffset = useCallback((target: number, offsets: number[]): number => {
     let lo = 0, hi = offsets.length - 1
@@ -147,6 +155,33 @@ export const CodeDiffViewer = ({ data, isDark = false }: CodeDiffViewerProps) =>
   const topPadding = rowOffsets[startIndex]
   const bottomPadding = Math.max(0, totalHeight - rowOffsets[endIndex + 1])
 
+  // 同步左右两块的横向滚动
+  useEffect(() => {
+    if (wrap) return
+    const left = leftPaneRef.current
+    const right = rightPaneRef.current
+    if (!left || !right) return
+
+    let syncing = false
+    const sync = (source: HTMLDivElement, target: HTMLDivElement) => {
+      if (syncing) return
+      syncing = true
+      target.scrollLeft = source.scrollLeft
+      syncing = false
+    }
+
+    const onLeft = () => sync(left, right)
+    const onRight = () => sync(right, left)
+
+    left.addEventListener('scroll', onLeft)
+    right.addEventListener('scroll', onRight)
+
+    return () => {
+      left.removeEventListener('scroll', onLeft)
+      right.removeEventListener('scroll', onRight)
+    }
+  }, [wrap])
+
   const bgColor = isDark ? '#0d1117' : '#ffffff'
   const headerBg = isDark ? '#161b22' : '#f6f8fa'
   const borderColor = isDark ? 'rgba(48, 54, 61, 0.6)' : 'rgba(208, 215, 222, 0.8)'
@@ -160,7 +195,10 @@ export const CodeDiffViewer = ({ data, isDark = false }: CodeDiffViewerProps) =>
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
     lineHeight: 1.5,
     verticalAlign: 'top',
-    minHeight: ROW_HEIGHT
+    minHeight: ROW_HEIGHT,
+    whiteSpace: wrap ? 'pre-wrap' : 'pre',
+    wordBreak: wrap ? 'break-all' : 'normal',
+    overflowWrap: wrap ? 'break-word' : 'normal'
   }
 
   const getCellBg = (row: typeof rows[0], side: 'left' | 'right'): string => {
@@ -195,127 +233,263 @@ export const CodeDiffViewer = ({ data, isDark = false }: CodeDiffViewerProps) =>
     return sideData.content
   }
 
-  return (
-    <div ref={scrollRef} className="h-full overflow-auto" style={{ backgroundColor: bgColor, color: textColor }} onMouseDown={handleMouseDown}>
-      {/* Header */}
-      <div
-        className="flex items-center justify-between px-3 py-2"
-        style={{ backgroundColor: headerBg, borderBottom: `1px solid ${borderColor}`, position: 'sticky', top: 0, zIndex: 10 }}
-      >
-        <span className="text-sm font-semibold truncate" style={{ maxWidth: '60%' }}>{path}</span>
-        <div className="flex items-center gap-3 text-sm">
-          {status === 'modified' && (
-            <>
-              {additions > 0 && <span className="font-medium" style={{ color: isDark ? '#3fb950' : '#1a7f37' }}>+{additions}</span>}
-              {deletions > 0 && <span className="font-medium" style={{ color: isDark ? '#f85149' : '#cf222e' }}>−{deletions}</span>}
-            </>
-          )}
-          {status === 'added' && <span className="font-medium" style={{ color: isDark ? '#3fb950' : '#1a7f37' }}>新增文件</span>}
-          {status === 'removed' && <span className="font-medium" style={{ color: isDark ? '#f85149' : '#cf222e' }}>删除文件</span>}
-        </div>
+  const header = (
+    <div className="flex items-center justify-between px-3 py-2">
+      <span className="text-sm font-semibold truncate" style={{ maxWidth: '60%' }}>{path}</span>
+      <div className="flex items-center gap-3 text-sm">
+        {status === 'modified' && (
+          <>
+            {additions > 0 && <span className="font-medium" style={{ color: isDark ? '#3fb950' : '#1a7f37' }}>+{additions}</span>}
+            {deletions > 0 && <span className="font-medium" style={{ color: isDark ? '#f85149' : '#cf222e' }}>−{deletions}</span>}
+          </>
+        )}
+        {status === 'added' && <span className="font-medium" style={{ color: isDark ? '#3fb950' : '#1a7f37' }}>新增文件</span>}
+        {status === 'removed' && <span className="font-medium" style={{ color: isDark ? '#f85149' : '#cf222e' }}>删除文件</span>}
       </div>
+    </div>
+  )
 
-      {/* Virtual rows */}
-      {rows.length === 0 ? (
-        status === 'unchanged' ? (
-          <div className="flex items-center justify-center py-12 text-sm" style={{ color: mutedColor }}>
-            没有可显示的差异
-          </div>
-        ) : (
-          <div className="flex items-center justify-center py-12 text-sm gap-2" style={{ color: mutedColor }}>
-            <Spinner size="sm" aria-label="加载中" />
-            正在计算差异...
+  const content = rows.length === 0 ? (
+    status === 'unchanged' ? (
+      <div className="flex items-center justify-center py-12 text-sm" style={{ color: mutedColor }}>
+        没有可显示的差异
+      </div>
+    ) : (
+      <div className="flex items-center justify-center py-12 text-sm gap-2" style={{ color: mutedColor }}>
+        <Spinner size="sm" aria-label="加载中" />
+        正在计算差异...
+      </div>
+    )
+  ) : wrap ? (
+    <div style={{ height: totalHeight }}>
+      <div style={{ height: topPadding }} />
+      {visibleRows.map((row, idx) => {
+        const actualIndex = startIndex + idx
+        if (row.type === 'skip') {
+          const headerText = `@@ -${row.oldStart},${row.oldCount} +${row.newStart},${row.newCount} @@`
+          return (
+            <div
+              key={`skip-${actualIndex}`}
+              className="flex items-center"
+              style={{
+                height: ROW_HEIGHT,
+                backgroundColor: isDark ? 'rgba(56, 139, 253, 0.1)' : '#ddf4ff',
+                borderTop: `1px solid ${isDark ? 'rgba(56, 139, 253, 0.2)' : 'rgba(84, 174, 255, 0.4)'}`,
+                borderBottom: `1px solid ${isDark ? 'rgba(56, 139, 253, 0.2)' : 'rgba(84, 174, 255, 0.4)'}`,
+                paddingLeft: 50
+              }}
+            >
+              <span
+                className="font-mono text-xs select-none"
+                style={{ color: isDark ? '#58a6ff' : '#0969da' }}
+              >
+                {headerText}
+              </span>
+            </div>
+          )
+        }
+        return (
+          <div key={`row-${actualIndex}`} className="flex" style={{ minHeight: ROW_HEIGHT }}>
+            <div
+              data-diff-side="left"
+              className="shrink-0 text-right whitespace-nowrap select-none"
+              style={{
+                width: 50,
+                color: getLineNumColor(row, 'left'),
+                backgroundColor: getCellBg(row, 'left'),
+                borderRight: `1px solid ${isDark ? 'rgba(48, 54, 61, 0.15)' : 'rgba(208, 215, 222, 0.4)'}`,
+                ...cellBaseStyle
+              }}
+            >
+              {row.left?.lineNum ?? '—'}
+            </div>
+            <div
+              data-diff-side="left"
+              className="flex-1"
+              style={{
+                color: codeColor,
+                backgroundColor: getCellBg(row, 'left'),
+                borderRight: `1px solid ${borderColor}`,
+                ...cellBaseStyle
+              }}
+            >
+              {renderCellContent(row.left, 'left')}
+            </div>
+            <div
+              data-diff-side="right"
+              className="shrink-0 text-right whitespace-nowrap select-none"
+              style={{
+                width: 50,
+                color: getLineNumColor(row, 'right'),
+                backgroundColor: getCellBg(row, 'right'),
+                borderRight: `1px solid ${isDark ? 'rgba(48, 54, 61, 0.15)' : 'rgba(208, 215, 222, 0.4)'}`,
+                ...cellBaseStyle
+              }}
+            >
+              {row.right?.lineNum ?? '—'}
+            </div>
+            <div
+              data-diff-side="right"
+              className="flex-1"
+              style={{
+                color: codeColor,
+                backgroundColor: getCellBg(row, 'right'),
+                ...cellBaseStyle
+              }}
+            >
+              {renderCellContent(row.right, 'right')}
+            </div>
           </div>
         )
-      ) : (
-        <div style={{ height: totalHeight }}>
-          <div style={{ height: topPadding }} />
-          {visibleRows.map((row, idx) => {
-            const actualIndex = startIndex + idx
-            if (row.type === 'skip') {
-              const headerText = `@@ -${row.oldStart},${row.oldCount} +${row.newStart},${row.newCount} @@`
-              return (
-                <div
-                  key={`skip-${actualIndex}`}
-                  className="flex items-center"
-                  style={{
-                    height: ROW_HEIGHT,
-                    backgroundColor: isDark ? 'rgba(56, 139, 253, 0.1)' : '#ddf4ff',
-                    borderTop: `1px solid ${isDark ? 'rgba(56, 139, 253, 0.2)' : 'rgba(84, 174, 255, 0.4)'}`,
-                    borderBottom: `1px solid ${isDark ? 'rgba(56, 139, 253, 0.2)' : 'rgba(84, 174, 255, 0.4)'}`,
-                    paddingLeft: 50
-                  }}
-                >
-                  <span
-                    className="font-mono text-xs select-none"
-                    style={{ color: isDark ? '#58a6ff' : '#0969da' }}
-                  >
-                    {headerText}
-                  </span>
-                </div>
-              )
-            }
+      })}
+      <div style={{ height: bottomPadding }} />
+    </div>
+  ) : (
+    <div style={{ display: 'flex', height: totalHeight }}>
+      {/* 左侧 */}
+      <div ref={leftPaneRef} style={{ width: '50%', overflow: 'auto' }}>
+        <div style={{ height: topPadding }} />
+        {visibleRows.map((row, idx) => {
+          const actualIndex = startIndex + idx
+          if (row.type === 'skip') {
             return (
-              <div key={`row-${actualIndex}`} className="flex" style={{ minHeight: ROW_HEIGHT }}>
-                <div
-                  data-diff-side="left"
-                  className="shrink-0 text-right whitespace-nowrap select-none"
-                  style={{
-                    width: 50,
-                    color: getLineNumColor(row, 'left'),
-                    backgroundColor: getCellBg(row, 'left'),
-                    borderRight: `1px solid ${isDark ? 'rgba(48, 54, 61, 0.15)' : 'rgba(208, 215, 222, 0.4)'}`,
-                    ...cellBaseStyle
-                  }}
-                >
-                  {row.left?.lineNum ?? '—'}
-                </div>
-                <div
-                  data-diff-side="left"
-                  className="flex-1"
-                  style={{
-                    color: codeColor,
-                    backgroundColor: getCellBg(row, 'left'),
-                    borderRight: `1px solid ${borderColor}`,
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-all',
-                    ...cellBaseStyle
-                  }}
-                >
-                  {renderCellContent(row.left, 'left')}
-                </div>
-                <div
-                  data-diff-side="right"
-                  className="shrink-0 text-right whitespace-nowrap select-none"
-                  style={{
-                    width: 50,
-                    color: getLineNumColor(row, 'right'),
-                    backgroundColor: getCellBg(row, 'right'),
-                    borderRight: `1px solid ${isDark ? 'rgba(48, 54, 61, 0.15)' : 'rgba(208, 215, 222, 0.4)'}`,
-                    ...cellBaseStyle
-                  }}
-                >
-                  {row.right?.lineNum ?? '—'}
-                </div>
-                <div
-                  data-diff-side="right"
-                  className="flex-1"
-                  style={{
-                    color: codeColor,
-                    backgroundColor: getCellBg(row, 'right'),
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-all',
-                    ...cellBaseStyle
-                  }}
-                >
-                  {renderCellContent(row.right, 'right')}
-                </div>
+              <div
+                key={`skip-l-${actualIndex}`}
+                className="flex items-center"
+                style={{
+                  height: ROW_HEIGHT,
+                  backgroundColor: isDark ? 'rgba(56, 139, 253, 0.1)' : '#ddf4ff',
+                  borderTop: `1px solid ${isDark ? 'rgba(56, 139, 253, 0.2)' : 'rgba(84, 174, 255, 0.4)'}`,
+                  borderBottom: `1px solid ${isDark ? 'rgba(56, 139, 253, 0.2)' : 'rgba(84, 174, 255, 0.4)'}`,
+                  paddingLeft: 50
+                }}
+              >
+                <span className="font-mono text-xs select-none" style={{ color: isDark ? '#58a6ff' : '#0969da' }}>
+                  @@ -{row.oldStart},{row.oldCount} +{row.newStart},{row.newCount} @@
+                </span>
               </div>
             )
-          })}
-          <div style={{ height: bottomPadding }} />
+          }
+          return (
+            <div key={`row-l-${actualIndex}`} className="flex" style={{ minHeight: ROW_HEIGHT }}>
+              <div
+                data-diff-side="left"
+                className="shrink-0 text-right whitespace-nowrap select-none"
+                style={{
+                  width: 50,
+                  color: getLineNumColor(row, 'left'),
+                  backgroundColor: getCellBg(row, 'left'),
+                  borderRight: `1px solid ${isDark ? 'rgba(48, 54, 61, 0.15)' : 'rgba(208, 215, 222, 0.4)'}`,
+                  ...cellBaseStyle
+                }}
+              >
+                {row.left?.lineNum ?? '—'}
+              </div>
+              <div
+                data-diff-side="left"
+                className="flex-1"
+                style={{
+                  color: codeColor,
+                  backgroundColor: getCellBg(row, 'left'),
+                  ...cellBaseStyle
+                }}
+              >
+                {renderCellContent(row.left, 'left')}
+              </div>
+            </div>
+          )
+        })}
+        <div style={{ height: bottomPadding }} />
+      </div>
+
+      {/* 中间分割线 */}
+      <div style={{ width: 1, flexShrink: 0, backgroundColor: borderColor }} />
+
+      {/* 右侧 */}
+      <div ref={rightPaneRef} style={{ width: '50%', overflow: 'auto' }}>
+        <div style={{ height: topPadding }} />
+        {visibleRows.map((row, idx) => {
+          const actualIndex = startIndex + idx
+          if (row.type === 'skip') {
+            return (
+              <div
+                key={`skip-r-${actualIndex}`}
+                className="flex items-center"
+                style={{
+                  height: ROW_HEIGHT,
+                  backgroundColor: isDark ? 'rgba(56, 139, 253, 0.1)' : '#ddf4ff',
+                  borderTop: `1px solid ${isDark ? 'rgba(56, 139, 253, 0.2)' : 'rgba(84, 174, 255, 0.4)'}`,
+                  borderBottom: `1px solid ${isDark ? 'rgba(56, 139, 253, 0.2)' : 'rgba(84, 174, 255, 0.4)'}`,
+                  paddingLeft: 50
+                }}
+              >
+                <span className="font-mono text-xs select-none" style={{ color: isDark ? '#58a6ff' : '#0969da' }}>
+                  @@ -{row.oldStart},{row.oldCount} +{row.newStart},{row.newCount} @@
+                </span>
+              </div>
+            )
+          }
+          return (
+            <div key={`row-r-${actualIndex}`} className="flex" style={{ minHeight: ROW_HEIGHT }}>
+              <div
+                data-diff-side="right"
+                className="shrink-0 text-right whitespace-nowrap select-none"
+                style={{
+                  width: 50,
+                  color: getLineNumColor(row, 'right'),
+                  backgroundColor: getCellBg(row, 'right'),
+                  borderRight: `1px solid ${isDark ? 'rgba(48, 54, 61, 0.15)' : 'rgba(208, 215, 222, 0.4)'}`,
+                  ...cellBaseStyle
+                }}
+              >
+                {row.right?.lineNum ?? '—'}
+              </div>
+              <div
+                data-diff-side="right"
+                className="flex-1"
+                style={{
+                  color: codeColor,
+                  backgroundColor: getCellBg(row, 'right'),
+                  ...cellBaseStyle
+                }}
+              >
+                {renderCellContent(row.right, 'right')}
+              </div>
+            </div>
+          )
+        })}
+        <div style={{ height: bottomPadding }} />
+      </div>
+    </div>
+  )
+
+  if (isMobile) {
+    return (
+      <div className="flex flex-col h-full">
+        <div
+          className="shrink-0 sticky top-0 z-10"
+          style={{ backgroundColor: headerBg, borderBottom: `1px solid ${borderColor}` }}
+        >
+          {header}
         </div>
-      )}
+        <div
+          ref={scrollRef}
+          className="flex-1 overflow-auto"
+          style={{ backgroundColor: bgColor, color: textColor }}
+          onMouseDown={handleMouseDown}
+        >
+          {content}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div ref={scrollRef} className="h-full overflow-auto" style={{ backgroundColor: bgColor, color: textColor }} onMouseDown={handleMouseDown}>
+      <div style={{ backgroundColor: headerBg, borderBottom: `1px solid ${borderColor}`, position: 'sticky', top: 0, zIndex: 10 }}>
+        {header}
+      </div>
+      {content}
     </div>
   )
 }
