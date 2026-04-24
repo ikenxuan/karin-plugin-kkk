@@ -805,7 +805,7 @@ interface CommentItem {
 /**
  * 用户名元数据，用于传递 VIP 状态和颜色信息
  */
-interface UsernameMetadata {
+interface UsernameMetadata$1 {
   /** 用户名 */
   name: string;
   /** VIP状态，1为年度大会员 */
@@ -822,7 +822,7 @@ interface BilibiliDynamicProps extends BaseComponentProps {
     /** 是否使用深色主题 */useDarkTheme?: boolean; /** 用户头像URL */
     avatar_url: string; /** 头像框 */
     frame?: string; /** 用户名元数据 */
-    usernameMeta: UsernameMetadata; /** 动态创建时间 */
+    usernameMeta: UsernameMetadata$1; /** 动态创建时间 */
     create_time: string; /** 装饰卡片 */
     decoration_card?: string; /** 图文动态标题 */
     title?: string; /** 动态文本内容（富文本文档） */
@@ -930,7 +930,7 @@ interface BilibiliWordDynamicProps extends BaseComponentProps {
     /** 是否使用深色主题 */useDarkTheme?: boolean; /** 用户头像URL */
     avatar_url: string; /** 头像框 */
     frame?: string; /** 用户名元数据 */
-    usernameMeta: UsernameMetadata; /** 动态创建时间 */
+    usernameMeta: UsernameMetadata$1; /** 动态创建时间 */
     create_time: string; /** 装饰卡片 */
     decoration_card?: string; /** 动态文本内容（富文本文档） */
     text: RichTextDocument | null; /** 点赞数 */
@@ -960,7 +960,7 @@ interface BilibiliArticleDynamicProps extends BaseComponentProps {
     /** 是否使用深色主题 */useDarkTheme?: boolean; /** 用户头像URL */
     avatar_url: string; /** 头像框 */
     frame?: string; /** 用户名元数据 */
-    usernameMeta: UsernameMetadata; /** 动态创建时间 */
+    usernameMeta: UsernameMetadata$1; /** 动态创建时间 */
     create_time: string; /** 装饰卡片 */
     decoration_card?: {
       card_url: string;
@@ -1007,7 +1007,7 @@ interface OriginalContentAV {
   /** 头像框 */
   frame?: string;
   /** 用户名元数据 */
-  usernameMeta: UsernameMetadata;
+  usernameMeta: UsernameMetadata$1;
   /** 创建时间 */
   create_time: string;
   /** 装饰卡片 */
@@ -1034,7 +1034,7 @@ interface OriginalContentDraw {
   /** 头像框 */
   frame?: string;
   /** 用户名元数据 */
-  usernameMeta: UsernameMetadata;
+  usernameMeta: UsernameMetadata$1;
   /** 创建时间 */
   create_time: string;
   /** 装饰卡片 */
@@ -1055,7 +1055,7 @@ interface OriginalContentWord {
   /** 头像框 */
   frame?: string;
   /** 用户名元数据 */
-  usernameMeta: UsernameMetadata;
+  usernameMeta: UsernameMetadata$1;
   /** 创建时间 */
   create_time: string;
   /** 装饰卡片 */
@@ -1072,7 +1072,7 @@ interface OriginalContentLiveRcmd {
   /** 头像框 */
   frame?: string;
   /** 用户名元数据 */
-  usernameMeta: UsernameMetadata;
+  usernameMeta: UsernameMetadata$1;
   /** 创建时间 */
   create_time: string;
   /** 装饰卡片 */
@@ -1109,7 +1109,7 @@ interface BilibiliForwardDynamicProps extends BaseComponentProps {
     /** 是否使用深色主题 */useDarkTheme?: boolean; /** 用户头像URL */
     avatar_url: string; /** 头像框 */
     frame?: string; /** 用户名元数据 */
-    usernameMeta: UsernameMetadata; /** 动态创建时间 */
+    usernameMeta: UsernameMetadata$1; /** 动态创建时间 */
     create_time: string; /** 装饰卡片 */
     decoration_card?: string; /** 动态文本内容（富文本文档） */
     text: RichTextDocument; /** 原始内容 */
@@ -1154,7 +1154,7 @@ interface BilibiliLiveDynamicProps extends BaseComponentProps {
     image_url: string; /** 直播标题 */
     text: RichTextDocument; /** 直播房间信息（分区 | 房间号） */
     liveinf: string; /** 用户名元数据 */
-    usernameMeta: UsernameMetadata; /** 用户头像URL */
+    usernameMeta: UsernameMetadata$1; /** 用户头像URL */
     avatar_url: string; /** 头像框 */
     frame?: string; /** 粉丝数 */
     fans: string; /** 时间信息 */
@@ -1181,7 +1181,7 @@ interface BilibiliVideoDynamicProps extends BaseComponentProps {
     /** 是否使用深色主题 */useDarkTheme?: boolean; /** 用户头像URL */
     avatar_url: string; /** 头像框 */
     frame?: string; /** 用户名元数据 */
-    usernameMeta: UsernameMetadata; /** 动态创建时间 */
+    usernameMeta: UsernameMetadata$1; /** 动态创建时间 */
     create_time: string; /** 装饰卡片 */
     decoration_card?: string; /** 视频标题 */
     text: RichTextDocument; /** 视频描述 */
@@ -1271,6 +1271,17 @@ interface BilibiliVideoStat {
   vt: number;
 }
 /**
+ * 用户名元数据接口
+ */
+interface UsernameMetadata {
+  /** 用户名 */
+  name: string;
+  /** VIP状态 */
+  vipStatus: number;
+  /** 昵称颜色 */
+  nicknameColor: string | null;
+}
+/**
  * B站视频UP主信息接口
  */
 interface BilibiliVideoOwner {
@@ -1280,6 +1291,10 @@ interface BilibiliVideoOwner {
   name: string;
   /** UP主头像URL */
   face: string;
+  /** 用户名元数据（VIP颜色等） */
+  usernameMeta?: UsernameMetadata;
+  /** 头像框图片URL */
+  frame?: string;
 }
 /**
  * B站视频信息数据接口
@@ -1289,8 +1304,8 @@ interface BilibiliVideoInfoData {
   share_url: string;
   /** 视频标题 */
   title: string;
-  /** 视频简介 */
-  desc: string;
+  /** 视频简介（富文本格式） */
+  desc: RichTextDocument;
   /** 统计数据 */
   stat: BilibiliVideoStat;
   /** 视频BV号 */
