@@ -1554,31 +1554,36 @@ export const bilibiliProcessVideos = async (qualityOptions: qualityOptions, vide
  * @returns  返回视频和音频总大小(MB),保留2位小数
  */
 export const getvideosize = async (videourl: string, audiourl: string, bvid: string) => {
-  const videoheaders = await new Networks({
-    url: videourl,
-    headers: {
-      ...baseHeaders,
-      Referer: `https://www.bilibili.com/video/${bvid}`,
-      Cookie: Config.cookies.bilibili
-    }
-  }).getHeaders()
-  const audioheaders = await new Networks({
-    url: audiourl,
-    headers: {
-      ...baseHeaders,
-      Referer: `https://www.bilibili.com/video/${bvid}`,
-      Cookie: Config.cookies.bilibili
-    }
-  }).getHeaders()
+  try {
+    const videoheaders = await new Networks({
+      url: videourl,
+      headers: {
+        ...baseHeaders,
+        Referer: `https://www.bilibili.com/video/${bvid}`,
+        Cookie: Config.cookies.bilibili
+      }
+    }).getHeaders()
+    const audioheaders = await new Networks({
+      url: audiourl,
+      headers: {
+        ...baseHeaders,
+        Referer: `https://www.bilibili.com/video/${bvid}`,
+        Cookie: Config.cookies.bilibili
+      }
+    }).getHeaders()
 
-  const videoSize = extractTotalBytesFromHeaders(videoheaders)
-  const audioSize = extractTotalBytesFromHeaders(audioheaders)
+    const videoSize = extractTotalBytesFromHeaders(videoheaders)
+    const audioSize = extractTotalBytesFromHeaders(audioheaders)
 
-  const videoSizeInMB = (videoSize / (1024 * 1024)).toFixed(2)
-  const audioSizeInMB = (audioSize / (1024 * 1024)).toFixed(2)
+    const videoSizeInMB = (videoSize / (1024 * 1024)).toFixed(2)
+    const audioSizeInMB = (audioSize / (1024 * 1024)).toFixed(2)
 
-  const totalSizeInMB = parseFloat(videoSizeInMB) + parseFloat(audioSizeInMB)
-  return totalSizeInMB.toFixed(2)
+    const totalSizeInMB = parseFloat(videoSizeInMB) + parseFloat(audioSizeInMB)
+    return totalSizeInMB.toFixed(2)
+  } catch (error) {
+    logger.warn(`[karin-plugin-kkk] 获取视频大小失败: ${error instanceof Error ? error.message : String(error)}`)
+    return '0.00'
+  }
 }
 
 /**
