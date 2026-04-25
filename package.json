@@ -28,12 +28,19 @@
     "./richtext": {
       "types": "./lib/core_chunk/richtext.d.mts",
       "import": "./lib/core_chunk/richtext.js"
+    },
+    "./amagi": {
+      "types": "./lib/core_chunk/amagi.d.mts",
+      "import": "./lib/core_chunk/amagi.js"
     }
   },
   "typesVersions": {
     "*": {
       "template": [
         "./lib/core_chunk/template.d.mts"
+      ],
+      "amagi": [
+        "./lib/core_chunk/amagi.d.mts"
       ]
     }
   },
@@ -81,5 +88,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-04-25T19:00:31.573Z"
+  "timestamp": "2026-04-25T20:32:30.431Z"
 }

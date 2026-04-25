@@ -1,8 +1,10 @@
 /// <reference types="node" />
-import { O as RichTextDocument } from "./index-BNXpD9cr.mjs";
+import { O as RichTextDocument } from "./index-CN7AJkHp.mjs";
+import { EventEmitter } from "node:events";
+import { AxiosRequestConfig, AxiosResponse } from "axios";
 import React$1 from "react";
 import { Agent, ClientRequest, ClientRequestArgs, IncomingMessage, OutgoingHttpHeaders, Server } from "http";
-import { EventEmitter } from "events";
+import { EventEmitter as EventEmitter$1 } from "events";
 import { createConnection } from "net";
 import { SecureContextOptions } from "tls";
 import { Server as Server$1 } from "https";
@@ -1675,7 +1677,7 @@ type BufferLike = string | Buffer | DataView | number | ArrayBufferView | Uint8A
 } | {
   [Symbol.toPrimitive](hint: string): string;
 }; // WebSocket socket.
-declare class WebSocket extends EventEmitter {
+declare class WebSocket extends EventEmitter$1 {
   /** The connection is not yet open. */
   static readonly CONNECTING: 0;
   /** The connection is open and ready to communicate. */
@@ -1921,26 +1923,33 @@ declare namespace WebSocket {
   }
 }
 //#endregion
-//#region ../../node_modules/.pnpm/node-karin@1.15.2/node_modules/node-karin/dist/index.d.ts
+//#region ../../node_modules/.pnpm/node-karin@1.15.5/node_modules/node-karin/dist/index.d.ts
 /**
  * 适配器所属平台
  * - `qq`: QQ
  * - `wechat`: 微信
+ * - `wecom`: 企业微信
  * - `telegram`: Telegram
  * - `discord`: Discord
  * - `koko`: 开黑吧
+ * - `dingtalk`: 钉钉
+ * - `feishu`: 飞书
+ * - `slack`: Slack
+ * - `whatsapp`: WhatsApp
  * - `other`: 其他
  */
-type AdapterPlatform = 'qq' | 'wechat' | 'telegram' | 'discord' | 'koko' | 'other';
+type AdapterPlatform = 'qq' | 'wechat' | 'telegram' | 'discord' | 'koko' | 'dingtalk' | 'feishu' | 'slack' | 'wecom' | 'whatsapp' | 'other' | (string & {});
 /**
  * 适配器所使用的标准接口协议
  * - `onebot11`: OneBot v11 标准
  * - `onebot12`: OneBot v12 标准
  * - `oicq`: OICQ 标准
  * - `icqq`: OICQ fork 标准
+ * - `milky`: Milky 标准
+ * - `satori`: Satori 标准
  * - `other`: 其他标准
  */
-type AdapterStandard = 'onebot11' | 'onebot12' | 'oicq' | 'icqq' | 'other';
+type AdapterStandard = 'onebot11' | 'onebot12' | 'oicq' | 'icqq' | 'milky' | 'satori' | 'other' | (string & {});
 /**
  * 适配器协议实现名称
  * - `console`: 控制台
@@ -1952,17 +1961,19 @@ type AdapterStandard = 'onebot11' | 'onebot12' | 'oicq' | 'icqq' | 'other';
  * - `llonebot`: https://llonebot.github.io/zh-CN/
  * - `conwechat`: https://justundertaker.github.io/ComWeChatBotClient/
  * - `lagrange`: https://lagrangedev.github.io/Lagrange.Doc/Lagrange.OneBot/
+ * - `yogurt`: https://acidify.ntqqrev.org/
  */
-type AdapterProtocol = 'qqbot' | 'icqq' | 'gocq-http' | 'napcat' | 'oicq' | 'llonebot' | 'conwechat' | 'lagrange' | 'console' | 'other';
+type AdapterProtocol = 'qqbot' | 'icqq' | 'gocq-http' | 'napcat' | 'oicq' | 'llonebot' | 'conwechat' | 'lagrange' | 'console' | 'yogurt' | 'other' | (string & {});
 /**
  * 适配器通信方式
  * - `http`: HTTP 通信
  * - `webSocketServer`: WebSocket 服务端
  * - `webSocketClient`: WebSocket 客户端
  * - `grpc`: gRPC 通信
+ * - `sse`: Server-Sent Events 通信
  * - `other`: 其他通信方式
  */
-type AdapterCommunication = 'http' | 'webSocketServer' | 'webSocketClient' | 'grpc' | 'other';
+type AdapterCommunication = 'http' | 'webSocketServer' | 'webSocketClient' | 'grpc' | 'sse' | 'other' | (string & {});
 /**
  * 适配器基本信息
  */
