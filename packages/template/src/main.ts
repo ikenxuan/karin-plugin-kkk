@@ -757,7 +757,7 @@ class HtmlWrapper {
           justify-content: flex-start;
         }
         #container {
-          border-radius: 3rem;
+          border-radius: 5rem;
           overflow: hidden;
           background-clip: padding-box;
         }

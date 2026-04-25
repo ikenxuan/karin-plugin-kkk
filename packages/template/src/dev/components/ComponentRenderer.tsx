@@ -134,7 +134,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
     const bgColor = isDark ? '#0a0a0f' : '#fafafa'
 
     return (
-      <div className="shadow-2xl rounded-[3rem] overflow-hidden">
+      <div className="shadow-2xl overflow-hidden">
         <div
           className="relative flex flex-col"
           style={{
@@ -367,7 +367,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
       <React.Suspense
         fallback={
           <div className="flex justify-center items-center min-h-screen p-8">
-            <div className="w-full max-w-150 rounded-3xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-surface-secondary backdrop-blur-xl">
+            <div className="w-full max-w-150 rounded-6xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-surface-secondary backdrop-blur-xl">
               <Spinner color="accent" size="lg" />
               <p className="text-2xl font-medium text-foreground">加载 {componentConfig.name} 组件中</p>
             </div>
@@ -375,7 +375,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
         }
       >
         <ComponentWrapper>
-          <div className="shadow-2xl rounded-[3rem] overflow-hidden">
+          <div className="shadow-2xl rounded-[5rem] overflow-hidden">
             <LazyComponent {...commonProps} />
           </div>
         </ComponentWrapper>
