@@ -1030,14 +1030,16 @@ export class Bilibilipush extends Base {
           await bilibiliDB.unsubscribeBilibiliUser(groupId, host_mid)
         }
 
-        logger.info(`\n删除成功！${data.data.card.name}\nUID：${host_mid}`)
-        await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n删除成功！${data.data.card.name}\nUID：${host_mid}`)
-
         // 如果删除后 group_id 数组为空，则删除整个属性
         if (existingItem.group_id.length === 0) {
           const index = config.bilibili.indexOf(existingItem)
           config.bilibili.splice(index, 1)
         }
+
+        // 保存配置到文件
+        Config.Modify('pushlist', 'bilibili', config.bilibili)
+        await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n删除成功！${data.data.card.name}\nUID：${host_mid}`)
+        logger.info(`\n删除成功！${data.data.card.name}\nUID：${host_mid}`)
       } else {
         // 在数据库中添加订阅
         await bilibiliDB.subscribeBilibiliUser(
@@ -1050,6 +1052,8 @@ export class Bilibilipush extends Base {
         // 将新的 group_id 添加到该 host_mid 对应的数组中
         existingItem.group_id.push(`${groupId}:${botId}`)
 
+        // 保存配置到文件
+        Config.Modify('pushlist', 'bilibili', config.bilibili)
         await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${data.data.card.name}\nUID：${host_mid}`)
         if (Config.bilibili.push.switch === false) await this.e.reply('请发送「#设置B站推送开启」以进行推送')
 
@@ -1072,12 +1076,13 @@ export class Bilibilipush extends Base {
         remark: data.data.card.name
       })
 
+      // 保存配置到文件
+      Config.Modify('pushlist', 'bilibili', config.bilibili)
       await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${data.data.card.name}\nUID：${host_mid}`)
       if (Config.bilibili.push.switch === false) await this.e.reply('请发送「#设置B站推送开启」以进行推送')
+      logger.info(`\n设置成功！${data.data.card.name}\nUID：${host_mid}`)
     }
 
-    // 更新配置文件
-    Config.Modify('pushlist', 'bilibili', config.bilibili)
     // 渲染状态图片
     await this.renderPushList()
   }

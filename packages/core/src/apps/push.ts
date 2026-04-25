@@ -6,7 +6,7 @@ import { bilibiliDB, douyinDB } from '@/module/db'
 import { bilibiliFetcher, douyinFetcher } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
-import { Bilibilipush, DouYinpush, getDouyinID } from '@/platform'
+import { Bilibilipush, DouYinpush, getBilibiliID, getDouyinID } from '@/platform'
 import { getWorkCoverUrl, getWorkTypeInfo } from '@/platform/douyin/workType'
 
 // 包装抖音推送任务
@@ -281,6 +281,102 @@ const handleTestDouyinPush = wrapWithErrorHandler(async (e) => {
   businessName: '测试抖音推送'
 })
 
+// 包装全局忽略命令
+const handleGlobalIgnore = wrapWithErrorHandler(async (e) => {
+  const url = e.msg.replace(/^#kkk推送全局忽略/, '').trim()
+
+  if (!url) {
+    await e.reply('请提供链接')
+    return true
+  }
+
+  // 判断平台
+  const isDouyin = /(douyin|iesdouyin)\.com/.test(url)
+  const isBilibili = /bilibili\.com/.test(url)
+
+  if (!isDouyin && !isBilibili) {
+    await e.reply('暂不支持该平台链接')
+    return true
+  }
+
+  if (isDouyin) {
+    const idData = await getDouyinID(e, url, false)
+    if (!idData.aweme_id) {
+      await e.reply('无法解析该抖音链接')
+      return true
+    }
+
+    // 获取作品详情以获取 sec_uid
+    const workInfo = await douyinFetcher.parseWork({ aweme_id: idData.aweme_id, typeMode: 'strict' })
+    const sec_uid = workInfo.data?.aweme_detail?.author?.sec_uid
+
+    if (!sec_uid) {
+      await e.reply('无法获取该作品作者信息')
+      return true
+    }
+
+    // 检查该作者是否在订阅配置中
+    const subscribedItem = Config.pushlist.douyin?.find((item: any) => item.sec_uid === sec_uid)
+    if (!subscribedItem) {
+      await e.reply('该作品对应的博主未在推送订阅中，跳过')
+      return true
+    }
+
+    // 获取所有订阅该作者的群组
+    const groupIds = subscribedItem.group_id.map((g: string) => g.split(':')[0])
+
+    // 将作品缓存写入所有订阅群组
+    for (const groupId of groupIds) {
+      await douyinDB.addAwemeCache(idData.aweme_id, sec_uid, groupId, 'post')
+    }
+
+    await e.reply(`已忽略抖音作品 ${idData.aweme_id}，共 ${groupIds.length} 个群组的推送标记为已处理`)
+    logger.info(`全局忽略抖音作品 ${idData.aweme_id}，博主 sec_uid: ${sec_uid}`)
+    return true
+  }
+
+  if (isBilibili) {
+    const idData = await getBilibiliID(url)
+    if (!idData.dynamic_id) {
+      await e.reply('无法解析该B站链接或该链接不是动态链接')
+      return true
+    }
+
+    // 获取动态详情以获取 host_mid
+    const dynamicInfo = await bilibiliFetcher.fetchDynamicCard({ dynamic_id: idData.dynamic_id, typeMode: 'strict' })
+    const host_mid = dynamicInfo.data?.data?.card?.desc?.uid
+
+    if (!host_mid) {
+      await e.reply('无法获取该动态作者信息')
+      return true
+    }
+
+    // 检查该UP主是否在订阅配置中
+    const subscribedItem = Config.pushlist.bilibili?.find((item: any) => item.host_mid === Number(host_mid))
+    if (!subscribedItem) {
+      await e.reply('该动态对应的UP主未在推送订阅中，跳过')
+      return true
+    }
+
+    // 获取所有订阅该UP主的群组
+    const groupIds = subscribedItem.group_id.map((g: string) => g.split(':')[0])
+    const dynamicType = dynamicInfo.data?.data?.card?.desc?.type ?? 'DYNAMIC_TYPE_WORD'
+
+    // 将动态缓存写入所有订阅群组
+    for (const groupId of groupIds) {
+      await bilibiliDB.addDynamicCache(idData.dynamic_id, Number(host_mid), groupId, String(dynamicType))
+    }
+
+    await e.reply(`已忽略B站动态 ${idData.dynamic_id}，共 ${groupIds.length} 个群组的推送标记为已处理`)
+    logger.info(`全局忽略B站动态 ${idData.dynamic_id}，UP主 host_mid: ${host_mid}`)
+    return true
+  }
+
+  return true
+}, {
+  businessName: '推送全局忽略'
+})
+
 // 注册任务和命令
 export const douyinPush = Config.douyin.push.switch && karin.task('抖音推送', Config.douyin.push.cron, handleDouyinPush, { log: true, type: 'skip' })
 
@@ -299,3 +395,5 @@ export const douyinPushList = karin.command(/^#?抖音推送列表$/, handleDouy
 export const changeBotID = karin.command(/^#kkk设置推送机器人/, handleChangeBotID, { name: 'kkk-推送功能-设置', perm: 'master' })
 
 export const testDouyinPush = karin.command(/^#测试抖音推送\s*(https?:\/\/[^\s]+)?/, handleTestDouyinPush, { name: 'kkk-推送功能-测试', event: 'message.group', perm: Config.douyin.push.permission, dsbAdapter: ['qqbot'], priority: -Infinity - 1 })
+
+export const globalIgnore = karin.command(/^#kkk推送全局忽略/, handleGlobalIgnore, { name: 'kkk-推送功能-全局忽略', perm: 'master', event: 'message.group' })

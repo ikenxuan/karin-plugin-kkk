@@ -1042,14 +1042,16 @@ export class DouYinpush extends Base {
             await douyinDB.unsubscribeDouyinUser(groupId, sec_uid)
           }
 
-          logger.info(`\n删除成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.data.user.sec_uid}`)
-          await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n删除成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}`)
-
           // 如果删除后 group_id 数组为空，则删除整个属性
           if (existingItem.group_id.length === 0) {
             const index = config.douyin.indexOf(existingItem)
             config.douyin.splice(index, 1)
           }
+
+          // 保存配置到文件
+          Config.Modify('pushlist', 'douyin', config.douyin)
+          await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n删除成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}`)
+          logger.info(`\n删除成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.data.user.sec_uid}`)
         } else {
           // 否则，将新的 group_id 添加到该 sec_uid 对应的数组中
           existingItem.group_id.push(`${groupId}:${botId}`)
@@ -1064,6 +1066,8 @@ export class DouYinpush extends Base {
             await douyinDB.subscribeDouyinUser(groupId, botId, sec_uid, user_shortid, UserInfoData.data.user.nickname)
           }
 
+          // 保存配置到文件
+          Config.Modify('pushlist', 'douyin', config.douyin)
           await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}`)
           if (Config.douyin.push.switch === false) await this.e.reply('请发送「#设置抖音推送开启」以进行推送')
           logger.info(`\n设置成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.data.user.sec_uid}`)
@@ -1084,13 +1088,12 @@ export class DouYinpush extends Base {
           await douyinDB.subscribeDouyinUser(groupId, botId, sec_uid, user_shortid, UserInfoData.data.user.nickname)
         }
 
+        // 保存配置到文件
+        Config.Modify('pushlist', 'douyin', config.douyin)
         await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}`)
         if (Config.douyin.push.switch === false) await this.e.reply('请发送「#设置抖音推送开启」以进行推送')
         logger.info(`\n设置成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.data.user.sec_uid}`)
       }
-
-      // 保存配置到文件
-      Config.Modify('pushlist', 'douyin', config.douyin)
 
       await this.renderPushList()
     } catch (error) {
