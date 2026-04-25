@@ -14074,6 +14074,10 @@
     align-items: stretch;
   }
 
+  .justify-around {
+    justify-content: space-around;
+  }
+
   .justify-between {
     justify-content: space-between;
   }
@@ -16569,11 +16573,6 @@
     line-height: 1.4;
   }
 
-  .leading-\[1\.05\] {
-    --tw-leading: 1.05;
-    line-height: 1.05;
-  }
-
   .leading-\[1\.6\] {
     --tw-leading: 1.6;
     line-height: 1.6;
@@ -16962,23 +16961,23 @@
     }
   }
 
-  .text-foreground\/25 {
+  .text-foreground\/20 {
     color: var(--foreground);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .text-foreground\/25 {
-      color: color-mix(in oklab, var(--foreground) 25%, transparent);
+    .text-foreground\/20 {
+      color: color-mix(in oklab, var(--foreground) 20%, transparent);
     }
   }
 
-  .text-foreground\/40 {
+  .text-foreground\/30 {
     color: var(--foreground);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .text-foreground\/40 {
-      color: color-mix(in oklab, var(--foreground) 40%, transparent);
+    .text-foreground\/30 {
+      color: color-mix(in oklab, var(--foreground) 30%, transparent);
     }
   }
 
