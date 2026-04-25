@@ -756,6 +756,49 @@ interface SubCommentItem {
   vipstatus?: number;
   /** 粉丝卡片信息 */
   fanCard?: FanCardInfo | null;
+  /** 粉丝勋章详情 */
+  fansDetail?: FansDetail | null;
+}
+/**
+ * 粉丝勋章详情
+ */
+interface FansDetail {
+  /** 用户ID */
+  uid: number;
+  /** 勋章ID */
+  medal_id: number;
+  /** 勋章名称 */
+  medal_name: string;
+  /** 分数 */
+  score: number;
+  /** 等级 */
+  level: number;
+  /** 亲密度 */
+  intimacy: number;
+  /** 主播状态 */
+  master_status: number;
+  /** 是否领取 */
+  is_receive: number;
+  /** 勋章颜色（起始） */
+  medal_color: number;
+  /** 勋章颜色（结束） */
+  medal_color_end: number;
+  /** 边框颜色 */
+  medal_color_border: number;
+  /** 名称颜色 */
+  medal_color_name: number;
+  /** 等级颜色 */
+  medal_color_level: number;
+  /** 守护等级 */
+  guard_level: number;
+  /** 守护图标 */
+  guard_icon: string;
+  /** 荣誉图标 */
+  honor_icon: string;
+  /** 首图标（可选） */
+  first_icon?: string;
+  /** 等级背景色 */
+  medal_level_bg_color: number;
 }
 /**
  * B站评论项数据接口
@@ -799,9 +842,22 @@ interface CommentItem {
   replies?: SubCommentItem[];
   /** 粉丝卡片信息 */
   fanCard?: FanCardInfo | null;
+  /** 粉丝勋章详情 */
+  fansDetail?: FansDetail | null;
 }
 //#endregion
 //#region ../template/src/types/platforms/bilibili/dynamic/normal.d.ts
+/**
+ * 装饰卡片数据
+ */
+interface DecorationCardData {
+  /** 卡片背景图片URL */
+  card_url: string;
+  /** 渐变颜色数组 */
+  colors: string[];
+  /** 卡片显示文字 */
+  text: string;
+}
 /**
  * 用户名元数据，用于传递 VIP 状态和颜色信息
  */
@@ -824,7 +880,7 @@ interface BilibiliDynamicProps extends BaseComponentProps {
     frame?: string; /** 用户名元数据 */
     usernameMeta: UsernameMetadata$1; /** 动态创建时间 */
     create_time: string; /** 装饰卡片 */
-    decoration_card?: string; /** 图文动态标题 */
+    decoration_card?: DecorationCardData; /** 图文动态标题 */
     title?: string; /** 动态文本内容（富文本文档） */
     text: RichTextDocument | null; /** 图片URL数组 */
     image_url: Array<{
@@ -932,7 +988,7 @@ interface BilibiliWordDynamicProps extends BaseComponentProps {
     frame?: string; /** 用户名元数据 */
     usernameMeta: UsernameMetadata$1; /** 动态创建时间 */
     create_time: string; /** 装饰卡片 */
-    decoration_card?: string; /** 动态文本内容（富文本文档） */
+    decoration_card?: DecorationCardData; /** 动态文本内容（富文本文档） */
     text: RichTextDocument | null; /** 点赞数 */
     dianzan: string | number; /** 评论数 */
     pinglun: string | number; /** 分享数 */
@@ -962,10 +1018,7 @@ interface BilibiliArticleDynamicProps extends BaseComponentProps {
     frame?: string; /** 用户名元数据 */
     usernameMeta: UsernameMetadata$1; /** 动态创建时间 */
     create_time: string; /** 装饰卡片 */
-    decoration_card?: {
-      card_url: string;
-      [key: string]: any;
-    }; /** 专栏标题 */
+    decoration_card?: DecorationCardData; /** 专栏标题 */
     title: string; /** 专栏摘要 */
     summary: string; /** 专栏封面图片URL */
     banner_url?: string; /** 专栏分类 */
@@ -1011,7 +1064,7 @@ interface OriginalContentAV {
   /** 创建时间 */
   create_time: string;
   /** 装饰卡片 */
-  decoration_card?: string;
+  decoration_card?: DecorationCardData;
   /** 视频封面 */
   cover: string;
   /** 视频时长文本 */
@@ -1038,7 +1091,7 @@ interface OriginalContentDraw {
   /** 创建时间 */
   create_time: string;
   /** 装饰卡片 */
-  decoration_card?: string;
+  decoration_card?: DecorationCardData;
   /** 动态文本内容（富文本文档） */
   text: RichTextDocument;
   /** 图片URL数组 */
@@ -1059,7 +1112,7 @@ interface OriginalContentWord {
   /** 创建时间 */
   create_time: string;
   /** 装饰卡片 */
-  decoration_card?: string;
+  decoration_card?: DecorationCardData;
   /** 动态文本内容（富文本文档） */
   text: RichTextDocument;
 }
@@ -1076,7 +1129,7 @@ interface OriginalContentLiveRcmd {
   /** 创建时间 */
   create_time: string;
   /** 装饰卡片 */
-  decoration_card?: string;
+  decoration_card?: DecorationCardData;
   /** 直播封面 */
   cover: string;
   /** 分区名称 */
@@ -1111,7 +1164,7 @@ interface BilibiliForwardDynamicProps extends BaseComponentProps {
     frame?: string; /** 用户名元数据 */
     usernameMeta: UsernameMetadata$1; /** 动态创建时间 */
     create_time: string; /** 装饰卡片 */
-    decoration_card?: string; /** 动态文本内容（富文本文档） */
+    decoration_card?: DecorationCardData; /** 动态文本内容（富文本文档） */
     text: RichTextDocument; /** 原始内容 */
     original_content: BilibiliForwardOriginalContentProps['original_content']; /** 点赞数 */
     dianzan: string | number; /** 评论数 */
@@ -1183,7 +1236,7 @@ interface BilibiliVideoDynamicProps extends BaseComponentProps {
     frame?: string; /** 用户名元数据 */
     usernameMeta: UsernameMetadata$1; /** 动态创建时间 */
     create_time: string; /** 装饰卡片 */
-    decoration_card?: string; /** 视频标题 */
+    decoration_card?: DecorationCardData; /** 视频标题 */
     text: RichTextDocument; /** 视频描述 */
     desc: RichTextDocument; /** 视频封面图片URL */
     image_url: string; /** 点赞数 */
