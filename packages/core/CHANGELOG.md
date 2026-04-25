@@ -2,6 +2,61 @@
 
 # Changelog
 
+## [2.29.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.28.1...v2.29.0) (2026-04-25)
+
+
+### ✨ 新功能
+
+* 更新日志添加Diff差异二维码 ([b3d37cd](https://github.com/ikenxuan/karin-plugin-kkk/commit/b3d37cd9f2e18d434f42f8b6e414a7065d157f89))
+* 重构前后端数据传递逻辑 ([#297](https://github.com/ikenxuan/karin-plugin-kkk/issues/297)) ([3b3bd20](https://github.com/ikenxuan/karin-plugin-kkk/commit/3b3bd201adb48c12fbd3b15f5fccbb9e4a755be1))
+
+
+### 🐛 错误修复
+
+* **bilibili:** 专栏动态卡片深色模式下正文颜色错误 ([2f775f1](https://github.com/ikenxuan/karin-plugin-kkk/commit/2f775f1d144d347cd62b8101f277367800d15357))
+* ssr render icon ([428fa78](https://github.com/ikenxuan/karin-plugin-kkk/commit/428fa7886da3d73b304057563d0020326a5ebf93))
+* types ([33f45fc](https://github.com/ikenxuan/karin-plugin-kkk/commit/33f45fcb16baac1f34ef78aef52e97188d8d333a))
+* 尝试修复断点续传触发后视频文件损坏。 ([1cd0a39](https://github.com/ikenxuan/karin-plugin-kkk/commit/1cd0a393140a90a9466a2228993f24594bec2e27))
+* 忽略获取视频和音频的总大小失败导致的错误 ([c12b27d](https://github.com/ikenxuan/karin-plugin-kkk/commit/c12b27d9f2beb45d7ced4ad749b9718c4bd202f0))
+* 细优 ([5e96b28](https://github.com/ikenxuan/karin-plugin-kkk/commit/5e96b2888320b2637e7fa12a34a8fad3e7c85fa5))
+* 细节优化 ([ecfa04b](https://github.com/ikenxuan/karin-plugin-kkk/commit/ecfa04b92f939b6930f1e4b9e5d230773244fab1))
+
+
+### 📝 文档更新
+
+* readme ([95fa26b](https://github.com/ikenxuan/karin-plugin-kkk/commit/95fa26bfb793728e56ba3d8a37096dc3892bc055))
+
+
+### 💄 UI 优化
+
+* **bilibili:** 优化图文动态底部应用卡片间隔 ([cde6adc](https://github.com/ikenxuan/karin-plugin-kkk/commit/cde6adc3e03b1b9514b9f896d41159c6ef7de20e))
+* **bilibili:** 完全重写视频信息卡片样式 ([58fadbe](https://github.com/ikenxuan/karin-plugin-kkk/commit/58fadbeccd9b181d0647390b5c720b3901658bb4))
+* **bilibili:** 细优转发动态圆角 ([502af38](https://github.com/ikenxuan/karin-plugin-kkk/commit/502af382561b5582a8199f1051205c74aaf08d39))
+* **B站:** 优化视频卡片细节 ([94a974f](https://github.com/ikenxuan/karin-plugin-kkk/commit/94a974f540d7e12c151930cdab6c51d4651d6a94))
+* 增加输出图片的圆角幅度 ([472c555](https://github.com/ikenxuan/karin-plugin-kkk/commit/472c55575265e369f1e247dca21fe87f25f6927d))
+* 换行问题，修复文章页 ([8fb00ac](https://github.com/ikenxuan/karin-plugin-kkk/commit/8fb00ace3caa738dc2eb8c98cce11d599ec6dd77))
+* 细优圆角 ([c9bff51](https://github.com/ikenxuan/karin-plugin-kkk/commit/c9bff51ec9eb67e7e8d362e96ec6bc317aa88c71))
+* 背景色 ([52b62f3](https://github.com/ikenxuan/karin-plugin-kkk/commit/52b62f3974bf8a17634c26ed45e8313d7fb1e841))
+* 转发图文动态布局优化，添加四宫格样式。 ([efd1d31](https://github.com/ikenxuan/karin-plugin-kkk/commit/efd1d31265a932418a32951145526234be155768))
+
+
+### 🧰 其他更新
+
+* fix ([dee7c46](https://github.com/ikenxuan/karin-plugin-kkk/commit/dee7c46548cc5a7d7c6cb4e1615d140f28e2c4bf))
+* 更新依赖，优化包大小 ([83945a6](https://github.com/ikenxuan/karin-plugin-kkk/commit/83945a6d2160adf875f427e908cbc7779409cfb0))
+
+
+### ♻️ 代码重构
+
+* 迁移图标库 ([69c4631](https://github.com/ikenxuan/karin-plugin-kkk/commit/69c4631901233f33ddddc12eff691a46b2d5ecac))
+* 重写评论数据传递逻辑，优化抖音、B站评论渲染效果 ([#296](https://github.com/ikenxuan/karin-plugin-kkk/issues/296)) ([47e0a3e](https://github.com/ikenxuan/karin-plugin-kkk/commit/47e0a3e0b4b63da1278f9370354cc1e3b560f6fe))
+* 重构前后端数据传递逻辑 ([8a70b45](https://github.com/ikenxuan/karin-plugin-kkk/commit/8a70b45a416228f913b6c339b452e204e279de51))
+
+
+### 📦 依赖更新
+
+* 更新 ([e071272](https://github.com/ikenxuan/karin-plugin-kkk/commit/e071272ec1200fdd3d19cf2ba0b738feb7811880))
+
 ## [2.28.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.28.0...v2.28.1) (2026-04-13)
 
 
