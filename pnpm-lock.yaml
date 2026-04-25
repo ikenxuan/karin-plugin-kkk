@@ -180,7 +180,7 @@ importers:
         specifier: ^1.0.6
         version: 1.0.6
       axios:
-        specifier: ^1.15.0
+        specifier: ^1.15.2
         version: 1.15.2
       chalk:
         specifier: 5.6.2
@@ -210,6 +210,9 @@ importers:
       tsc-alias:
         specifier: 1.8.16
         version: 1.8.16
+      tsdown:
+        specifier: ^0.21.10
+        version: 0.21.10(@vitejs/devtools@0.1.15)(publint@0.3.18)(typescript@6.0.3)
       typedoc:
         specifier: 0.28.19
         version: 0.28.19(typescript@6.0.3)

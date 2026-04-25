@@ -16,6 +16,7 @@
     "docs": "pnpm --filter docs run dev",
     "lint": "pnpm -r run lint",
     "prepare": "husky",
+    "postinstall": "pnpm --filter @ikenxuan/amagi run build",
     "sort": "pnpm -r sort",
     "template": "pnpm --filter template run dev",
     "watch": "pnpm --filter karin-plugin-kkk run watch"
