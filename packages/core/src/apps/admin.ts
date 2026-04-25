@@ -48,9 +48,25 @@ const handleDouyinLogin = wrapWithErrorHandler(async (e) => {
   businessName: '抖音登录'
 })
 
+// 包装B站登录命令
+const handlTestWrapWithErrorHandler = wrapWithErrorHandler(async (_e) => {
+  logger.trace('测试跟踪日志')
+  logger.debug('测试调试日志')
+  logger.info('测试信息日志')
+  logger.mark('测试标记日志')
+  logger.warn('测试警告日志')
+  logger.error('测试错误日志')
+  logger.fatal('测试致命日志')
+  throw Error('测试异常')
+}, {
+  businessName: '测试命令-错误捕获'
+})
+
 export const biLogin = karin.command(/^#?(kkk)?\s*B站\s*(扫码)?\s*登录$/i, handleBilibiliLogin, { perm: Config.bilibili.loginPerm, name: 'kkk-ck管理' })
 
 export const dylogin = karin.command(/^#?(kkk)?抖音(扫码)?登录$/, handleDouyinLogin, { perm: Config.douyin.loginPerm, name: 'kkk-ck管理' })
+
+export const testWrapWithErrorHandler = process.env.NODE_ENV === 'development' ? karin.command(/^#?(kkk)?\s*测试\s*错误捕获$/i, handlTestWrapWithErrorHandler, { perm: Config.bilibili.loginPerm, name: 'kkk-测试命令-错误捕获' }) : null 
 
 // 删除指定时间之前的文件
 export const removeOldFiles = (dir: string, beforeTimestamp: number): number => {

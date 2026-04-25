@@ -89,15 +89,71 @@ const convertAnsiToHtml = (text: string): string => {
   return result
 }
 
-const getLogLevelTheme = (level: LogLevel, isDark: boolean): { bgClass: string; borderClass: string; textClass: string; iconClass: string } => {
-  const themeMap: Record<LogLevel, { bgClass: string; borderClass: string; textClass: string; iconClass: string }> = {
-    'TRAC': { bgClass: isDark ? 'bg-surface-secondary/10' : 'bg-surface-secondary/5', borderClass: 'border-border/20', textClass: 'text-muted', iconClass: 'text-muted' },
-    'DEBU': { bgClass: isDark ? 'bg-accent-soft' : 'bg-accent/5', borderClass: 'border-accent/25', textClass: 'text-accent', iconClass: 'text-accent' },
-    'MARK': { bgClass: isDark ? 'bg-surface-secondary/15' : 'bg-surface-secondary/5', borderClass: 'border-accent/25', textClass: 'text-accent', iconClass: 'text-accent' },
-    'INFO': { bgClass: isDark ? 'bg-success-soft' : 'bg-success/5', borderClass: 'border-success/25', textClass: 'text-success', iconClass: 'text-success' },
-    'WARN': { bgClass: isDark ? 'bg-warning-soft' : 'bg-warning/5', borderClass: 'border-warning/25', textClass: 'text-warning', iconClass: 'text-warning' },
-    'ERRO': { bgClass: isDark ? 'bg-danger-soft' : 'bg-danger/5', borderClass: 'border-danger/25', textClass: 'text-danger', iconClass: 'text-danger' },
-    'FATA': { bgClass: isDark ? 'bg-danger-soft-hover' : 'bg-danger/10', borderClass: 'border-danger/35', textClass: 'text-danger', iconClass: 'text-danger' }
+const getLogLevelTheme = (level: LogLevel, isDark: boolean) => {
+  const themeMap: Record<LogLevel, {
+    bgClass: string
+    borderClass: string
+    textClass: string
+    iconClass: string
+    levelClass: string
+    dotClass: string
+  }> = {
+    'TRAC': {
+      bgClass: isDark ? 'bg-muted/10' : 'bg-muted/5',
+      borderClass: 'border-muted/20',
+      textClass: 'text-muted',
+      iconClass: 'text-muted',
+      levelClass: isDark ? 'text-muted/10' : 'text-muted/5',
+      dotClass: 'bg-muted/20'
+    },
+    'DEBU': {
+      bgClass: isDark ? 'bg-cyan-400/10' : 'bg-cyan-500/5',
+      borderClass: isDark ? 'border-cyan-400/20' : 'border-cyan-500/20',
+      textClass: isDark ? 'text-cyan-400' : 'text-cyan-600',
+      iconClass: isDark ? 'text-cyan-400' : 'text-cyan-600',
+      levelClass: isDark ? 'text-cyan-400/10' : 'text-cyan-600/5',
+      dotClass: isDark ? 'bg-cyan-400/20' : 'bg-cyan-500/20'
+    },
+    'MARK': {
+      bgClass: isDark ? 'bg-muted/10' : 'bg-muted/5',
+      borderClass: 'border-muted/20',
+      textClass: 'text-muted',
+      iconClass: 'text-muted',
+      levelClass: isDark ? 'text-muted/10' : 'text-muted/5',
+      dotClass: 'bg-muted/20'
+    },
+    'INFO': {
+      bgClass: 'bg-success-soft',
+      borderClass: 'border-success/25',
+      textClass: 'text-success',
+      iconClass: 'text-success',
+      levelClass: isDark ? 'text-success/10' : 'text-success/5',
+      dotClass: 'bg-success/25'
+    },
+    'WARN': {
+      bgClass: 'bg-warning-soft',
+      borderClass: 'border-warning/25',
+      textClass: 'text-warning',
+      iconClass: 'text-warning',
+      levelClass: isDark ? 'text-warning/10' : 'text-warning/5',
+      dotClass: 'bg-warning/25'
+    },
+    'ERRO': {
+      bgClass: 'bg-danger-soft',
+      borderClass: 'border-danger/25',
+      textClass: 'text-danger',
+      iconClass: 'text-danger',
+      levelClass: isDark ? 'text-danger/10' : 'text-danger/5',
+      dotClass: 'bg-danger/25'
+    },
+    'FATA': {
+      bgClass: isDark ? 'bg-pink-400/10' : 'bg-pink-500/5',
+      borderClass: isDark ? 'border-pink-400/25' : 'border-pink-500/25',
+      textClass: isDark ? 'text-pink-400' : 'text-pink-500',
+      iconClass: isDark ? 'text-pink-400' : 'text-pink-500',
+      levelClass: isDark ? 'text-pink-400/10' : 'text-pink-500/5',
+      dotClass: isDark ? 'bg-pink-400/25' : 'bg-pink-500/25'
+    }
   }
   return themeMap[level] || themeMap['TRAC']
 }
@@ -410,52 +466,34 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
             <div className='space-y-6'>
               {data.logs.map((log, index) => {
                 const theme = getLogLevelTheme(log.level, isDark)
-                // 日志等级半透明颜色
-                const levelColor = theme.textClass.includes('danger') ? (isDark ? 'rgba(248,113,113,0.1)' : 'rgba(220,38,38,0.07)') :
-                  theme.textClass.includes('warning') ? (isDark ? 'rgba(251,191,36,0.1)' : 'rgba(245,158,11,0.07)') :
-                    theme.textClass.includes('success') ? (isDark ? 'rgba(34,197,94,0.1)' : 'rgba(22,163,74,0.07)') :
-                      theme.textClass.includes('primary') ? (isDark ? 'rgba(59,130,246,0.1)' : 'rgba(37,99,235,0.07)') :
-                        theme.textClass.includes('secondary') ? (isDark ? 'rgba(168,85,247,0.1)' : 'rgba(147,51,234,0.07)') :
-                          (isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)')
-                // 边框颜色
-                const borderColor = theme.textClass.includes('danger') ? (isDark ? 'rgba(248,113,113,0.3)' : 'rgba(220,38,38,0.2)') :
-                  theme.textClass.includes('warning') ? (isDark ? 'rgba(251,191,36,0.3)' : 'rgba(245,158,11,0.2)') :
-                    theme.textClass.includes('success') ? (isDark ? 'rgba(34,197,94,0.3)' : 'rgba(22,163,74,0.2)') :
-                      theme.textClass.includes('primary') ? (isDark ? 'rgba(59,130,246,0.3)' : 'rgba(37,99,235,0.2)') :
-                        theme.textClass.includes('secondary') ? (isDark ? 'rgba(168,85,247,0.3)' : 'rgba(147,51,234,0.2)') :
-                          (isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)')
-                
                 return (
-                  <fieldset 
-                    key={index} 
-                    className={`relative rounded-3xl ${theme.bgClass} border-2 p-6`}
-                    style={{ borderColor }}
+                  <fieldset
+                    key={index}
+                    className={`relative rounded-3xl ${theme.bgClass} border-2 ${theme.borderClass} p-6`}
                   >
                     {/* 时间戳 */}
                     <legend className='flex items-center gap-2 ml-4'>
                       {/* 左侧圆角装饰 */}
-                      <span 
-                        className='w-3 h-3 rounded-full -mr-1.5'
-                        style={{ backgroundColor: borderColor }}
+                      <span
+                        className={`w-3 h-3 rounded-full -mr-1.5 ${theme.dotClass}`}
                       />
                       <span className='flex items-center gap-2 px-3'>
                         <Icon icon="lucide:clock" width={18} className={theme.iconClass} />
                         <span className={`text-xl font-mono font-medium ${theme.textClass}`}>{log.timestamp}</span>
                       </span>
                       {/* 右侧圆角装饰 */}
-                      <span 
-                        className='w-3 h-3 rounded-full -ml-1.5'
-                        style={{ backgroundColor: borderColor }}
+                      <span
+                        className={`w-3 h-3 rounded-full -ml-1.5 ${theme.dotClass}`}
                       />
                     </legend>
-                    
+
                     {/* 日志等级 */}
                     <div className='absolute bottom-2 right-6 pointer-events-none'>
-                      <span className='text-[56px] font-black uppercase leading-none tracking-tight' style={{ color: levelColor }}>
+                      <span className={`text-[56px] font-black uppercase leading-none tracking-tight ${theme.levelClass}`}>
                         {log.level}
                       </span>
                     </div>
-                    
+
                     {/* 日志内容 */}
                     <div
                       className='relative z-1 text-2xl font-mono whitespace-pre-wrap break-all leading-relaxed'
