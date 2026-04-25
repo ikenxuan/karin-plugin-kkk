@@ -59,7 +59,7 @@ export default defineConfig({
         '@ikenxuan/watermark'
       ],
       output: {
-        // inlineDynamicImports: false,
+        // inlineDynamicImports: true,
         format: 'esm',
         esModule: true,
         generatedCode: {
