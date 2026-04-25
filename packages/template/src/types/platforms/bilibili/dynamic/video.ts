@@ -1,7 +1,7 @@
 import type { RichTextDocument } from '@kkk/richtext'
 
 import type { BaseComponentProps } from '../../../index'
-import type { UsernameMetadata } from './normal'
+import type { DecorationCardData, UsernameMetadata } from './normal'
 
 /**
  * B站视频动态组件属性接口
@@ -20,7 +20,7 @@ export interface BilibiliVideoDynamicProps extends BaseComponentProps {
     /** 动态创建时间 */
     create_time: string
     /** 装饰卡片 */
-    decoration_card?: string
+    decoration_card?: DecorationCardData
     /** 视频标题 */
     text: RichTextDocument
     /** 视频描述 */

@@ -85,6 +85,7 @@ const buildCommentItem = (
     isTop: options.isTop,
     isUP: reply.mid_str === hostMid,
     fanCard: extractFanCard(member),
+    fansDetail: extractFansDetail(member),
     replies: buildSubReplies(reply.replies, hostMid, imageUrls)
   }
 }
@@ -130,7 +131,8 @@ const buildSubCommentItem = (
     location: getLocationLabel(reply),
     like: reply.like ?? 0,
     isUP: reply.mid_str === hostMid,
-    fanCard: extractFanCard(member)
+    fanCard: extractFanCard(member),
+    fansDetail: extractFansDetail(member)
   }
 }
 
@@ -358,5 +360,40 @@ const extractFanCard = (member: unknown) => {
     numPrefix: typeof (fan as { num_prefix?: unknown }).num_prefix === 'string' ? (fan as { num_prefix: string }).num_prefix : '',
     numDesc: typeof (fan as { num_desc?: unknown }).num_desc === 'string' ? (fan as { num_desc: string }).num_desc : '',
     gradientStyle
+  }
+}
+
+/** 提取粉丝勋章详情 */
+const extractFansDetail = (member: unknown) => {
+  if (!member || typeof member !== 'object') {
+    return null
+  }
+
+  const fd = (member as { fans_detail?: unknown }).fans_detail
+  if (!fd || typeof fd !== 'object') {
+    return null
+  }
+
+  const detail = fd as Record<string, unknown>
+
+  return {
+    uid: typeof detail.uid === 'number' ? detail.uid : 0,
+    medal_id: typeof detail.medal_id === 'number' ? detail.medal_id : 0,
+    medal_name: typeof detail.medal_name === 'string' ? detail.medal_name : '',
+    score: typeof detail.score === 'number' ? detail.score : 0,
+    level: typeof detail.level === 'number' ? detail.level : 0,
+    intimacy: typeof detail.intimacy === 'number' ? detail.intimacy : 0,
+    master_status: typeof detail.master_status === 'number' ? detail.master_status : 0,
+    is_receive: typeof detail.is_receive === 'number' ? detail.is_receive : 0,
+    medal_color: typeof detail.medal_color === 'number' ? detail.medal_color : 0,
+    medal_color_end: typeof detail.medal_color_end === 'number' ? detail.medal_color_end : 0,
+    medal_color_border: typeof detail.medal_color_border === 'number' ? detail.medal_color_border : 0,
+    medal_color_name: typeof detail.medal_color_name === 'number' ? detail.medal_color_name : 0,
+    medal_color_level: typeof detail.medal_color_level === 'number' ? detail.medal_color_level : 0,
+    guard_level: typeof detail.guard_level === 'number' ? detail.guard_level : 0,
+    guard_icon: typeof detail.guard_icon === 'string' ? detail.guard_icon : '',
+    honor_icon: typeof detail.honor_icon === 'string' ? detail.honor_icon : '',
+    first_icon: typeof detail.first_icon === 'string' ? detail.first_icon : undefined,
+    medal_level_bg_color: typeof detail.medal_level_bg_color === 'number' ? detail.medal_level_bg_color : 0
   }
 }

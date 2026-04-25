@@ -8,10 +8,73 @@ import type {
   BilibiliCommentProps,
   QRCodeSectionProps
 } from '../../../types/platforms/bilibili'
+import type { FansDetail } from '../../../types/platforms/bilibili/comment'
 import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 const bilibiliMentionClassName = 'text-[#006A9E] dark:text-[#58B0D5]'
+
+/**
+ * 将 B 站 32 位 ARGB 整数转为 rgba 字符串
+ */
+const intToRgba = (color: number): string => {
+  const a = ((color >>> 24) & 0xFF) / 255
+  const r = (color >>> 16) & 0xFF
+  const g = (color >>> 8) & 0xFF
+  const b = color & 0xFF
+  return `rgba(${r}, ${g}, ${b}, ${a})`
+}
+
+/**
+ * 粉丝勋章组件
+ */
+const FansMedal: React.FC<{ detail: FansDetail }> = ({ detail }) => {
+  const bgStart = intToRgba(detail.medal_color)
+  const bgEnd = intToRgba(detail.medal_color_end)
+  const borderColor = intToRgba(detail.medal_color_border)
+  const nameColor = intToRgba(detail.medal_color_name)
+  const levelColor = intToRgba(detail.medal_color_level)
+
+  return (
+    <div
+      className={clsx(
+        'inline-flex items-center shrink-0',
+        'h-14 rounded-full border'
+      )}
+      style={{
+        borderColor,
+        backgroundImage: `linear-gradient(90deg, ${bgStart}, ${bgEnd})`
+      }}
+    >
+      {detail.first_icon && (
+        <img
+          src={detail.first_icon}
+          alt=''
+          className='shrink-0 -ml-3 w-20'
+          referrerPolicy='no-referrer'
+          crossOrigin='anonymous'
+        />
+      )}
+      <div className={clsx(
+        'flex items-center',
+        detail.first_icon ? 'pr-4' : 'px-4'
+      )}>
+        <span
+          className='font-medium whitespace-nowrap text-3xl'
+          style={{ color: nameColor }}
+        >
+          {detail.medal_name}
+        </span>
+        <span
+          className='whitespace-nowrap ml-2 mb-1 text-4xl font-[fansmedal-num]'
+          style={{ color: levelColor }}
+        >
+          {detail.level}
+        </span>
+      </div>
+    </div>
+  )
+}
 
 /**
  * 置顶标签组件
@@ -313,7 +376,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
         {/* 用户信息 */}
         <div className='flex items-start gap-2.5 mb-3.75 text-[50px] relative'>
           {/* 用户名区域  */}
-          <div className='shrink-0 flex items-center gap-2 leading-[1.2] text-foreground/80 font-bold select-text'>
+          <div className='shrink-0 flex items-center gap-6 leading-[1.2] text-foreground/80 font-bold select-text'>
             {renderBilibiliUserName(props.uname, props.unameColor, props.vipstatus)}
 
             {/* 等级图标 */}
@@ -331,6 +394,10 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
                 alt='UP主标签'
                 className='inline-block shrink-0 align-middle w-23 h-23'
               />
+            )}
+            {/* 粉丝勋章 */}
+            {props.fansDetail && (
+              <FansMedal detail={props.fansDetail} />
             )}
           </div>
 
@@ -358,7 +425,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
                     {props.fanCard.numPrefix}
                   </span>
                   <span
-                    className='text-4xl font-bold whitespace-nowrap'
+                    className='text-4xl font-bold whitespace-nowrap font-bilifont'
                     style={{
                       backgroundImage: props.fanCard.gradientStyle,
                       WebkitTextFillColor: 'transparent',
@@ -500,7 +567,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
                   <div className='flex-1'>
                     {/* 用户信息 */}
                     <div className='flex items-start gap-2.5 mb-3.75 text-[50px] relative overflow-visible'>
-                      <div className='shrink-0 flex items-center gap-2 leading-[1.2] text-foreground/80 font-bold select-text'>
+                      <div className='shrink-0 flex items-center gap-6 leading-[1.2] text-foreground/80 font-bold select-text'>
                         {renderBilibiliUserName(subReply.uname, subReply.unameColor, subReply.vipstatus)}
                         {subReply.level !== undefined && subReply.level >= 0 && subReply.level <= 7 && (
                           <img
@@ -515,6 +582,10 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
                             alt='UP主标签'
                             className='inline-block shrink-0 align-middle w-23 h-23'
                           />
+                        )}
+                        {/* 粉丝勋章 */}
+                        {subReply.fansDetail && (
+                          <FansMedal detail={subReply.fansDetail} />
                         )}
                       </div>
 

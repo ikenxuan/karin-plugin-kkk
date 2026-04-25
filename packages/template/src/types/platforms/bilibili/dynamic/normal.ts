@@ -3,6 +3,18 @@ import type { RichTextDocument } from '@kkk/richtext'
 import type { BaseComponentProps } from '../../../index'
 
 /**
+ * 装饰卡片数据
+ */
+export interface DecorationCardData {
+  /** 卡片背景图片URL */
+  card_url: string
+  /** 渐变颜色数组 */
+  colors: string[]
+  /** 卡片显示文字 */
+  text: string
+}
+
+/**
  * 用户名元数据，用于传递 VIP 状态和颜色信息
  */
 export interface UsernameMetadata {
@@ -31,7 +43,7 @@ export interface BilibiliDynamicProps extends BaseComponentProps {
     /** 动态创建时间 */
     create_time: string
     /** 装饰卡片 */
-    decoration_card?: string
+    decoration_card?: DecorationCardData
     /** 图文动态标题 */
     title?: string
     /** 动态文本内容（富文本文档） */
@@ -80,7 +92,7 @@ export interface BilibiliDynamicUserInfoProps {
   /** 动态创建时间 */
   create_time: string
   /** 装饰卡片 */
-  decoration_card?: string
+  decoration_card?: DecorationCardData
   /** 是否使用深色主题 */
   useDarkTheme?: boolean
 }
@@ -239,7 +251,7 @@ export interface BilibiliWordDynamicProps extends BaseComponentProps {
     /** 动态创建时间 */
     create_time: string
     /** 装饰卡片 */
-    decoration_card?: string
+    decoration_card?: DecorationCardData
     /** 动态文本内容（富文本文档） */
     text: RichTextDocument | null
     /** 点赞数 */

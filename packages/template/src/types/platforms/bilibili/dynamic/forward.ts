@@ -1,7 +1,7 @@
 import type { RichTextDocument } from '@kkk/richtext'
 
 import type { BaseComponentProps } from '../../../index'
-import type { UsernameMetadata } from './normal'
+import type { DecorationCardData, UsernameMetadata } from './normal'
 
 /**
  * 原始内容AV类型接口
@@ -16,7 +16,7 @@ export interface OriginalContentAV {
   /** 创建时间 */
   create_time: string
   /** 装饰卡片 */
-  decoration_card?: string
+  decoration_card?: DecorationCardData
   /** 视频封面 */
   cover: string
   /** 视频时长文本 */
@@ -44,7 +44,7 @@ export interface OriginalContentDraw {
   /** 创建时间 */
   create_time: string
   /** 装饰卡片 */
-  decoration_card?: string
+  decoration_card?: DecorationCardData
   /** 动态文本内容（富文本文档） */
   text: RichTextDocument
   /** 图片URL数组 */
@@ -64,7 +64,7 @@ export interface OriginalContentWord {
   /** 创建时间 */
   create_time: string
   /** 装饰卡片 */
-  decoration_card?: string
+  decoration_card?: DecorationCardData
   /** 动态文本内容（富文本文档） */
   text: RichTextDocument
 }
@@ -82,7 +82,7 @@ export interface OriginalContentLiveRcmd {
   /** 创建时间 */
   create_time: string
   /** 装饰卡片 */
-  decoration_card?: string
+  decoration_card?: DecorationCardData
   /** 直播封面 */
   cover: string
   /** 分区名称 */
@@ -141,7 +141,7 @@ export interface BilibiliForwardDynamicProps extends BaseComponentProps {
     /** 动态创建时间 */
     create_time: string
     /** 装饰卡片 */
-    decoration_card?: string
+    decoration_card?: DecorationCardData
     /** 动态文本内容（富文本文档） */
     text: RichTextDocument
     /** 原始内容 */

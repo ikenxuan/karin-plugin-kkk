@@ -18,34 +18,36 @@ import { BilibiliAdditionalCard } from './AdditionalCard'
  */
 const BilibiliDynamicUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) => {
   return (
-    <div className='flex gap-10 items-center px-0 pb-0 pl-24'>
-      <div className='relative'>
-        <EnhancedImage
-          src={props.avatar_url}
-          alt='头像'
-          className='w-32 h-32 rounded-full shadow-medium'
-          isCircular
-        />
-        {props.frame && (
+    <div className='flex gap-10 items-center justify-between px-0 pb-0 pl-24 pr-10'>
+      <div className='flex gap-10 items-center'>
+        <div className='relative'>
           <EnhancedImage
-            src={props.frame}
-            alt='头像框'
-            className='absolute inset-0 transform scale-180'
+            src={props.avatar_url}
+            alt='头像'
+            className='w-32 h-32 rounded-full shadow-medium'
+            isCircular
           />
-        )}
-      </div>
-      <div className='flex flex-col gap-8 text-7xl'>
-        <div className='text-6xl font-bold select-text text-foreground'>
-          <UsernameDisplay metadata={props.usernameMeta} />
+          {props.frame && (
+            <EnhancedImage
+              src={props.frame}
+              alt='头像框'
+              className='absolute inset-0 transform scale-180'
+            />
+          )}
         </div>
-        <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted'>
-          <Icon icon="lucide:clock" width={36} className='text-time' />
-          {props.create_time}
+        <div className='flex flex-col gap-8 text-7xl'>
+          <div className='text-6xl font-bold select-text text-foreground'>
+            <UsernameDisplay metadata={props.usernameMeta} />
+          </div>
+          <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted'>
+            <Icon icon="lucide:clock" width={36} className='text-time' />
+            {props.create_time}
+          </div>
         </div>
       </div>
       {props.decoration_card && (
-        <div className='pl-40'>
-          <DecorationCard html={props.decoration_card} />
+        <div className='shrink-0'>
+          <DecorationCard data={props.decoration_card} />
         </div>
       )}
     </div>

@@ -3,8 +3,11 @@
 @import 'highlight.js/styles/github.css';
 @import 'highlight.js/styles/github-dark.css';
 @import './font.css';
+@import '../../public//font/mono/font.css';
+@import '../../public//font/bilifont/font.css';
+@import '../../public/font/fansmedal-num/font.css';
 @theme {
-  --font-mono: 'JetBrains Mono', HarmonyOSHans-Regular, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+  --font-mono: 'JetBrains Mono, fansmedal-num';
   --radius-5xl: calc(var(--radius) * 5);
   --radius-6xl: calc(var(--radius) * 6);
 }
@@ -169,7 +172,7 @@
   }
 
   body {
-    font-family: HarmonyOSHans-Regular, bilifont, -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', 'Hiragino Sans GB', 'WenQuanYi Micro Hei', 'Segoe UI', 'Roboto', sans-serif;
+    font-family: HarmonyOSHans-Regular, bilifont, fansmedal-num;
     line-height: 1.6;
     color: var(--theme-text);
     background-color: var(--theme-bg);

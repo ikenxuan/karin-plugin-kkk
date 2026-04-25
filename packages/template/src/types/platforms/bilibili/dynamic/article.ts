@@ -1,7 +1,7 @@
 import type { RichTextDocument } from '@kkk/richtext'
 
 import type { BaseComponentProps } from '../../../index'
-import type { UsernameMetadata } from './normal'
+import type { DecorationCardData, UsernameMetadata } from './normal'
 
 /**
  * B站专栏动态组件属性接口
@@ -20,10 +20,7 @@ export interface BilibiliArticleDynamicProps extends BaseComponentProps {
     /** 动态创建时间 */
     create_time: string
     /** 装饰卡片 */
-    decoration_card?: {
-      card_url: string
-      [key: string]: any
-    }
+    decoration_card?: DecorationCardData
     /** 专栏标题 */
     title: string
     /** 专栏摘要 */

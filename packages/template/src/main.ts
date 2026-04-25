@@ -704,7 +704,8 @@ class HtmlWrapper {
     if (includeFonts) {
       styleFiles.unshift(
         path.join(fontDir, 'bilifont', 'font.css'),
-        path.join(fontDir, 'mono', 'font.css')
+        path.join(fontDir, 'mono', 'font.css'),
+        path.join(fontDir, 'fansmedal-num', 'font.css')
       )
     }
 

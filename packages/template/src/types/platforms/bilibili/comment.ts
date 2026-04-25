@@ -77,6 +77,50 @@ export interface SubCommentItem {
   vipstatus?: number
   /** 粉丝卡片信息 */
   fanCard?: FanCardInfo | null
+  /** 粉丝勋章详情 */
+  fansDetail?: FansDetail | null
+}
+
+/**
+ * 粉丝勋章详情
+ */
+export interface FansDetail {
+  /** 用户ID */
+  uid: number
+  /** 勋章ID */
+  medal_id: number
+  /** 勋章名称 */
+  medal_name: string
+  /** 分数 */
+  score: number
+  /** 等级 */
+  level: number
+  /** 亲密度 */
+  intimacy: number
+  /** 主播状态 */
+  master_status: number
+  /** 是否领取 */
+  is_receive: number
+  /** 勋章颜色（起始） */
+  medal_color: number
+  /** 勋章颜色（结束） */
+  medal_color_end: number
+  /** 边框颜色 */
+  medal_color_border: number
+  /** 名称颜色 */
+  medal_color_name: number
+  /** 等级颜色 */
+  medal_color_level: number
+  /** 守护等级 */
+  guard_level: number
+  /** 守护图标 */
+  guard_icon: string
+  /** 荣誉图标 */
+  honor_icon: string
+  /** 首图标（可选） */
+  first_icon?: string
+  /** 等级背景色 */
+  medal_level_bg_color: number
 }
 
 /**
@@ -121,4 +165,6 @@ export interface CommentItem {
   replies?: SubCommentItem[]
   /** 粉丝卡片信息 */
   fanCard?: FanCardInfo | null
+  /** 粉丝勋章详情 */
+  fansDetail?: FansDetail | null
 }

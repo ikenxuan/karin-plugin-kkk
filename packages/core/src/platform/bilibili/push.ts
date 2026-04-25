@@ -532,7 +532,7 @@ export class Bilibilipush extends Base {
               total_favorited: Count(userINFO.data.data.like_num),
               following_count: Count(userINFO.data.data.card.attention),
               dynamicTYPE: '转发动态推送',
-              decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decorate),
+              decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decoration_card),
               render_time: TimeFormatter.now(),
               original_content: { [data[dynamicId].Dynamic_Data.orig.type]: param },
               imgList: imgList.length > 0 ? imgList : null
