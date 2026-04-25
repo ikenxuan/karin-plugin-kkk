@@ -28,12 +28,19 @@
     "./richtext": {
       "types": "./lib/core_chunk/richtext.d.mts",
       "import": "./lib/core_chunk/richtext.js"
+    },
+    "./amagi": {
+      "types": "./lib/core_chunk/amagi.d.mts",
+      "import": "./lib/core_chunk/amagi.js"
     }
   },
   "typesVersions": {
     "*": {
       "template": [
         "./lib/core_chunk/template.d.mts"
+      ],
+      "amagi": [
+        "./lib/core_chunk/amagi.d.mts"
       ]
     }
   },
