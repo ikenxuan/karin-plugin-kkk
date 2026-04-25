@@ -6,6 +6,7 @@ import { DefaultLayout } from '../../../components/layouts/DefaultLayout'
 import type { BilibiliVideoInfoProps } from '../../../types/platforms/bilibili/videoInfo'
 import { GlowText } from '../../common/GlowImage'
 import { Icon } from '../../common/Icon'
+import { CoinIcon, PlayIcon, ShareIcon, StarIcon, ThumbUpIcon } from './Icons'
 import { EnhancedImage } from './shared'
 
 const formatNumber = (num: number): string => {
@@ -91,18 +92,36 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
           <div className="flex flex-col gap-10 px-16 pt-20">
             {/* 标题区 */}
             <div className="flex flex-col gap-5">
-              <h1 className="text-[80px] font-black leading-[1.05] text-foreground tracking-tight">
+              <h1 className="text-[80px] font-black leading-tight text-foreground tracking-tight">
                 {props.data.title}
               </h1>
-              <div className="flex items-center gap-4 text-4xl text-muted">
-                <Icon icon="solar:calendar-linear" width={38} className="text-foreground/25" />
-                <span>{format(fromUnixTime(props.data.ctime), 'yyyy-MM-dd HH:mm')}</span>
+              <div className="flex justify-between items-center gap-4">
+                <div className="flex items-center gap-6 text-3xl text-foreground/30">
+                  {/* 时间 */}
+                  <div className='flex items-center gap-2'>
+                    <Icon icon="solar:calendar-linear" width={32} className="text-foreground/20" />
+                    <span>{format(fromUnixTime(props.data.ctime), 'yyyy-MM-dd HH:mm')}</span>
+                  </div>
+                  {/* 播放 */}
+                  <span className="flex items-center gap-1.5">
+                    <PlayIcon size={28} className="text-foreground/20" />
+                    {formatNumber(props.data.stat.view)}
+                  </span>
+                  {/* 评论 */}
+                  <span className="flex items-center gap-1.5">
+                    <Icon icon="tabler:message-circle" width={28} className="text-foreground/20" />
+                    {formatNumber(props.data.stat.reply)}
+                  </span>
+                </div>
+                {/* BV号 */}
+                <span className="font-mono text-3xl text-foreground/30">稿件BV号：{props.data.bvid}</span>
               </div>
+              
             </div>
 
             {/* 视频简介 */}
             {props.data.desc && (
-              <div className="text-5xl leading-relaxed text-foreground/75">
+              <div className="text-5xl leading-relaxed text-foreground/75 pb-10">
                 {renderRichTextToReact(props.data.desc, {
                   at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
                   topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
@@ -114,78 +133,24 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
               </div>
             )}
 
-            {/* 统计 3×2：紧凑同行排列，图标小、数字标签同排 */}
-            <div className="grid grid-cols-2 gap-x-6 gap-y-10">
-              {/* 播放 */}
-              <div className="flex items-baseline gap-3 text-4xl">
-                <Icon icon="tabler:eye" width={38} className="text-foreground/25 shrink-0 self-center" />
-                <span className="font-bold text-foreground tabular-nums leading-none">
-                  {formatNumber(props.data.stat.view)}
-                </span>
-                <span className="ml-1 text-3xl opacity-40 leading-none">
-                  播放
-                </span>
+            {/* 互动数据：点赞 / 投币 / 收藏 / 分享 */}
+            <div className="flex justify-around items-center">
+              <div className="flex items-center gap-5 text-5xl">
+                <ThumbUpIcon size={90} className="text-foreground/30" />
+                <span className="tabular-nums text-foreground">{formatNumber(props.data.stat.like)}</span>
               </div>
-
-              {/* 点赞 */}
-              <div className="flex items-baseline gap-3 text-4xl">
-                <Icon icon="tabler:heart" width={38} className="text-foreground/25 shrink-0 self-center" />
-                <span className="font-bold text-foreground tabular-nums leading-none">
-                  {formatNumber(props.data.stat.like)}
-                </span>
-                <span className="ml-1 text-3xl opacity-40 leading-none">
-                  点赞
-                </span>
+              <div className="flex items-center gap-5 text-5xl">
+                <CoinIcon size={90} className="text-foreground/30" />
+                <span className="tabular-nums text-foreground">{formatNumber(props.data.stat.coin)}</span>
               </div>
-
-              {/* 评论 */}
-              <div className="flex items-baseline gap-3 text-4xl">
-                <Icon icon="tabler:message-circle" width={38} className="text-foreground/25 shrink-0 self-center" />
-                <span className="font-bold text-foreground tabular-nums leading-none">
-                  {formatNumber(props.data.stat.reply)}
-                </span>
-                <span className="ml-1 text-3xl opacity-40 leading-none">
-                  评论
-                </span>
+              <div className="flex items-center gap-5 text-5xl">
+                <StarIcon size={90} className="text-foreground/30" />
+                <span className="tabular-nums text-foreground">{formatNumber(props.data.stat.favorite)}</span>
               </div>
-
-              {/* 收藏 */}
-              <div className="flex items-baseline gap-3 text-4xl">
-                <Icon icon="tabler:star" width={38} className="text-foreground/25 shrink-0 self-center" />
-                <span className="font-bold text-foreground tabular-nums leading-none">
-                  {formatNumber(props.data.stat.favorite)}
-                </span>
-                <span className="ml-1 text-3xl opacity-40 leading-none">
-                  收藏
-                </span>
+              <div className="flex items-center gap-5 text-5xl">
+                <ShareIcon size={90} className="text-foreground/30" />
+                <span className="tabular-nums text-foreground">{formatNumber(props.data.stat.share)}</span>
               </div>
-
-              {/* 投币 */}
-              <div className="flex items-baseline gap-3 text-4xl">
-                <Icon icon="tabler:coins" width={38} className="text-foreground/25 shrink-0 self-center" />
-                <span className="font-bold text-foreground tabular-nums leading-none">
-                  {formatNumber(props.data.stat.coin)}
-                </span>
-                <span className="ml-1 text-3xl opacity-40 leading-none">
-                  投币
-                </span>
-              </div>
-
-              {/* 分享 */}
-              <div className="flex items-baseline gap-3 text-4xl">
-                <Icon icon="tabler:share-2" width={38} className="text-foreground/25 shrink-0 self-center" />
-                <span className="font-bold text-foreground tabular-nums leading-none">
-                  {formatNumber(props.data.stat.share)}
-                </span>
-                <span className="ml-1 text-3xl opacity-40 leading-none">
-                  分享
-                </span>
-              </div>
-            </div>
-
-            {/* BV号 */}
-            <div className="text-right">
-              <span className="font-mono text-4xl text-foreground/40">稿件BV号：{props.data.bvid}</span>
             </div>
 
             <div />
