@@ -91,10 +91,15 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
   const componentConfig = getComponentConfig(platform, templateId)
 
   // 所有顶层 Hooks 都必须在任何 early return 之前调用，避免主题切换或数据到达时触发 Hook 顺序变化。
-  const LazyComponent = React.useMemo<React.ComponentType<any> | null>(() => {
-    if (!componentConfig?.lazyComponent) return null
-    return React.lazy(componentConfig.lazyComponent!)
-  }, [componentConfig?.lazyComponent])
+  const ResolvedComponent = React.useMemo<React.ComponentType<any> | null>(() => {
+    if (componentConfig?.component) {
+      return componentConfig.component
+    }
+    if (componentConfig?.lazyComponent) {
+      return React.lazy(componentConfig.lazyComponent)
+    }
+    return null
+  }, [componentConfig])
 
   /**
    * 渲染优雅的加载状态
@@ -264,7 +269,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
     return renderInDevelopment('模板', componentConfig.name)
   }
 
-  if (!LazyComponent) {
+  if (!ResolvedComponent) {
     return renderInDevelopment('组件', componentConfig.name)
   }
 
@@ -279,7 +284,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
 
   /**
    * 资源加载检测包装组件
-   * 在懒加载组件真正渲染后才开始检测资源加载
+   * 在组件真正渲染后才开始检测资源加载
    */
   const ComponentWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const wrapperRef = React.useRef<HTMLDivElement>(null)
@@ -362,24 +367,34 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
     return <div ref={wrapperRef}>{children}</div>
   }
 
+  const isLazy = !componentConfig.component && !!componentConfig.lazyComponent
+
   return (
     <ComponentErrorBoundary>
-      <React.Suspense
-        fallback={
-          <div className="flex justify-center items-center min-h-screen p-8">
-            <div className="w-full max-w-150 rounded-6xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-surface-secondary backdrop-blur-xl">
-              <Spinner color="accent" size="lg" />
-              <p className="text-2xl font-medium text-foreground">加载 {componentConfig.name} 组件中</p>
+      {isLazy ? (
+        <React.Suspense
+          fallback={
+            <div className="flex justify-center items-center min-h-screen p-8">
+              <div className="w-full max-w-150 rounded-6xl flex flex-col justify-center items-center gap-6 py-20 px-8 bg-surface-secondary backdrop-blur-xl">
+                <Spinner color="accent" size="lg" />
+                <p className="text-2xl font-medium text-foreground">加载 {componentConfig.name} 组件中</p>
+              </div>
             </div>
-          </div>
-        }
-      >
+          }
+        >
+          <ComponentWrapper>
+            <div className="shadow-2xl rounded-[5rem] overflow-hidden">
+              <ResolvedComponent {...commonProps} />
+            </div>
+          </ComponentWrapper>
+        </React.Suspense>
+      ) : (
         <ComponentWrapper>
           <div className="shadow-2xl rounded-[5rem] overflow-hidden">
-            <LazyComponent {...commonProps} />
+            <ResolvedComponent {...commonProps} />
           </div>
         </ComponentWrapper>
-      </React.Suspense>
+      )}
     </ComponentErrorBoundary>
   )
 }

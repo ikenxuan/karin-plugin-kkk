@@ -49,6 +49,7 @@ export default defineConfig({
     outDir: 'lib',
     rolldownOptions: {
       platform: 'node',
+      preserveEntrySignatures: 'allow-extension',
       external: [
         ...builtinModules,
         ...builtinModules.map((mod) => `node:${mod}`),
@@ -59,16 +60,21 @@ export default defineConfig({
         '@ikenxuan/watermark'
       ],
       output: {
-        // inlineDynamicImports: true,
         format: 'esm',
         esModule: true,
-        generatedCode: {
-          preset: 'es2015'
-        },
-        advancedChunks: {
+        codeSplitting: {
+          includeDependenciesRecursively: false,
           groups: [
-            { name: 'vendor', test: /node_modules/ },
-            { name: 'main', test: /src/ }
+            {
+              name: 'main',
+              test: /src/,
+              priority: 1
+            },
+            {
+              name: 'vendor',
+              test: /node_modules/,
+              priority: 0
+            }
           ]
         },
         entryFileNames: (chunkInfo) => {
@@ -87,7 +93,7 @@ export default defineConfig({
           return `core_chunk/${chunkInfo.name}.js`
         },
         chunkFileNames: (chunkInfo) => {
-          return `core_chunk/${chunkInfo.name}-[hash].js`
+          return `core_chunk/${chunkInfo.name}.js`
         }
       }
     },
@@ -101,12 +107,15 @@ export default defineConfig({
   resolve: {
     conditions: ['node'],
     alias: [
-      { find: '@kkk/richtext', replacement: resolve(__dirname, '../richtext/src/index.ts') },
-      { find: '@', replacement: resolve(__dirname, './src') },
+      { find: 'express', replacement: 'node-karin/express' },
+      { find: 'ws', replacement: 'node-karin/ws' },
       { find: 'axios', replacement: 'node-karin/axios' },
+      { find: '@', replacement: resolve(__dirname, './src') },
+      { find: '@kkk/richtext', replacement: resolve(__dirname, '../richtext/src/index.ts') },
       { find: 'template', replacement: resolve(__dirname, '../template/src/client.ts') },
       { find: '@ikenxuan/amagi', replacement: resolve(__dirname, '../amagi/packages/core/src/index.ts') },
       { find: 'amagi', replacement: resolve(__dirname, '../amagi/packages/core/src') }
+
     ]
   },
   plugins: [

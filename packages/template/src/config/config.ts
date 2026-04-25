@@ -4,6 +4,46 @@
  */
 import React from 'react'
 
+import BilibiliBangumi from '../components/platforms/bilibili/bangumi/bangumi'
+// Bilibili components
+import { BilibiliComment } from '../components/platforms/bilibili/Comment'
+import { BilibiliArticleDynamic } from '../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_ARTICLE'
+import { BilibiliVideoDynamic } from '../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_AV'
+import { BilibiliDrawDynamic } from '../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_DRAW'
+import { BilibiliForwardDynamic } from '../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_FORWARD'
+import { BilibiliLiveDynamic } from '../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD'
+import { BilibiliWordDynamic } from '../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_WORD'
+import { BilibiliQrcodeImg } from '../components/platforms/bilibili/qrcodeImg'
+import BilibiliUserList from '../components/platforms/bilibili/UserList'
+import { BilibiliVideoInfo } from '../components/platforms/bilibili/videoInfo'
+import { DouyinArticleWork } from '../components/platforms/douyin/ArticleWork'
+// Douyin components
+import { DouyinComment } from '../components/platforms/douyin/Comment'
+import { DouyinDynamic } from '../components/platforms/douyin/Dynamic'
+import { DouyinFavoriteList } from '../components/platforms/douyin/FavoriteList'
+import { DouyinImageWork } from '../components/platforms/douyin/ImageWork'
+import { DouyinLive } from '../components/platforms/douyin/Live'
+import { DouyinMusicInfo } from '../components/platforms/douyin/MusicInfo'
+import { DouyinQrcodeImg } from '../components/platforms/douyin/qrcodeImg'
+import { DouyinRecommendList } from '../components/platforms/douyin/RecommendList'
+import DouyinUserList from '../components/platforms/douyin/UserList'
+import { DouyinUserVideoList } from '../components/platforms/douyin/UserVideoList'
+import { DouyinVideoInfo } from '../components/platforms/douyin/videoInfo'
+import { DouyinVideoWork } from '../components/platforms/douyin/VideoWork'
+// Kuaishou components
+import { KuaishouComment } from '../components/platforms/kuaishou/Comment'
+import { Changelog } from '../components/platforms/other/changelog'
+import { GlobalStatistics } from '../components/platforms/other/GlobalStatistics'
+// Statistics components
+import { GroupStatistics } from '../components/platforms/other/GroupStatistics'
+import { handlerError } from '../components/platforms/other/handlerError'
+// Other components
+import Help from '../components/platforms/other/Help'
+import { QrLogin } from '../components/platforms/other/qrlogin'
+import { VersionWarning } from '../components/platforms/other/VersionWarning'
+import { XiaohongshuComment } from '../components/platforms/xiaohongshu/Comment'
+// Xiaohongshu components
+import { XiaohongshuNoteInfo } from '../components/platforms/xiaohongshu/noteInfo'
 import { PlatformType } from '../types/platforms'
 import { type BaseComponentConfig, baseComponentConfigs, type BasePlatformConfig } from './config-base'
 
@@ -13,7 +53,9 @@ import { type BaseComponentConfig, baseComponentConfigs, type BasePlatformConfig
 export interface ComponentConfig extends BaseComponentConfig {
   /** 数据验证函数 */
   validateData?: (data: any) => boolean
-  /** 组件懒加载函数 */
+  /** 同步组件 */
+  component?: React.ComponentType<any>
+  /** 组件懒加载函数（已废弃，保留用于兼容） */
   lazyComponent?: () => Promise<{ default: React.ComponentType<any> }>
 }
 
@@ -33,7 +75,7 @@ export interface ExtendedPlatformConfig extends BasePlatformConfig {
  */
 function createComponentConfig (
   baseConfig: BaseComponentConfig,
-  extensions: Partial<Pick<ComponentConfig, 'validateData' | 'lazyComponent'>> = {}
+  extensions: Partial<Pick<ComponentConfig, 'validateData' | 'component' | 'lazyComponent'>> = {}
 ): ComponentConfig {
   return {
     ...baseConfig,
@@ -50,7 +92,7 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
     components: []
   }
 
-  // 根据平台类型添加懒加载和验证逻辑
+  // 根据平台类型添加组件和验证逻辑
   switch (basePlatform.type) {
     case PlatformType.DOUYIN:
       platform.components = basePlatform.components.map(baseComponent => {
@@ -58,93 +100,66 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
           case 'comment':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/douyin/Comment').then(module => ({
-                default: module.DouyinComment
-              }))
+              component: DouyinComment
             })
           case 'dynamic':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/douyin/Dynamic').then(module => ({
-                default: module.DouyinDynamic
-              }))
+              component: DouyinDynamic
             })
           case 'video-work':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/douyin/VideoWork').then(module => ({
-                default: module.DouyinVideoWork
-              }))
+              component: DouyinVideoWork
             })
           case 'image-work':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/douyin/ImageWork').then(module => ({
-                default: module.DouyinImageWork
-              }))
+              component: DouyinImageWork
             })
           case 'article-work':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/douyin/ArticleWork').then(module => ({
-                default: module.DouyinArticleWork
-              }))
+              component: DouyinArticleWork
             })
           case 'favorite-list':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/douyin/FavoriteList').then(module => ({
-                default: module.DouyinFavoriteList
-              }))
+              component: DouyinFavoriteList
             })
           case 'recommend-list':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/douyin/RecommendList').then(module => ({
-                default: module.DouyinRecommendList
-              }))
+              component: DouyinRecommendList
             })
           case 'live':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/douyin/Live').then(module => ({
-                default: module.DouyinLive
-              }))
+              component: DouyinLive
             })
           case 'musicinfo':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/douyin/MusicInfo').then(module => ({
-                default: module.DouyinMusicInfo
-              }))
+              component: DouyinMusicInfo
             })
           case 'user_profile':
             return createComponentConfig(baseComponent, {
-              lazyComponent: () => import('../components/platforms/douyin/UserVideoList').then(module => ({
-                default: module.DouyinUserVideoList
-              }))
-
+              component: DouyinUserVideoList
             })
           case 'userlist':
             return createComponentConfig(baseComponent, {
               validateData: (data: any) => {
                 return data && Array.isArray(data.renderOpt)
               },
-              lazyComponent: () => import('../components/platforms/douyin/UserList').then(module => ({
-                default: module.default
-              }))
+              component: DouyinUserList
             })
           case 'videoInfo':
             return createComponentConfig(baseComponent, {
-              lazyComponent: () => import('../components/platforms/douyin/videoInfo').then(module => ({
-                default: module.DouyinVideoInfo
-              }))
+              component: DouyinVideoInfo
             })
           case 'qrcodeImg':
             return createComponentConfig(baseComponent, {
-              lazyComponent: () => import('../components/platforms/douyin/qrcodeImg').then(module => ({
-                default: module.DouyinQrcodeImg
-              }))
+              component: DouyinQrcodeImg
             })
           default:
             return createComponentConfig(baseComponent)
@@ -158,83 +173,57 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
           case 'comment':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/bilibili/Comment').then(module => ({
-                default: module.BilibiliComment
-              }))
+              component: BilibiliComment
             })
           case 'userlist':
             return createComponentConfig(baseComponent, {
               validateData: (data: any) => {
                 return data && Array.isArray(data.renderOpt)
               },
-              lazyComponent: () => import('../components/platforms/bilibili/UserList').then(module => ({
-                default: module.default
-              }))
+              component: BilibiliUserList
             })
           case 'bangumi':
             return createComponentConfig(baseComponent, {
-              lazyComponent: () => import('../components/platforms/bilibili/bangumi/bangumi').then(module => ({
-                default: module.default
-              }))
+              component: BilibiliBangumi
             })
           case 'dynamic/DYNAMIC_TYPE_DRAW':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_DRAW').then(module => ({
-                default: module.BilibiliDrawDynamic
-              }))
+              component: BilibiliDrawDynamic
             })
           case 'dynamic/DYNAMIC_TYPE_WORD':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_WORD').then(module => ({
-                default: module.BilibiliWordDynamic
-              }))
+              component: BilibiliWordDynamic
             })
           case 'dynamic/DYNAMIC_TYPE_AV':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_AV').then(module => ({
-                default: module.BilibiliVideoDynamic
-              }))
+              component: BilibiliVideoDynamic
             })
           case 'dynamic/DYNAMIC_TYPE_FORWARD':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_FORWARD').then(module => ({
-                default: module.BilibiliForwardDynamic
-              }))
+              component: BilibiliForwardDynamic
             })
           case 'dynamic/DYNAMIC_TYPE_LIVE_RCMD':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_LIVE_RCMD').then(module => ({
-                default: module.BilibiliLiveDynamic
-              }))
-            })
-          case 'dynamic/DYNAMIC_TYPE_WORD':
-            return createComponentConfig(baseComponent, {
-              validateData: (data) => data && typeof data.share_url === 'string'
+              component: BilibiliLiveDynamic
             })
           case 'dynamic/DYNAMIC_TYPE_ARTICLE':
             return createComponentConfig(baseComponent, {
-              lazyComponent: () => import('../components/platforms/bilibili/dynamic/DYNAMIC_TYPE_ARTICLE').then(module => ({
-                default: module.BilibiliArticleDynamic
-              }))
+              component: BilibiliArticleDynamic
             })
           case 'videoInfo':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/bilibili/videoInfo').then(module => ({
-                default: module.BilibiliVideoInfo
-              }))
+              component: BilibiliVideoInfo
             })
           case 'qrcodeImg':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/bilibili/qrcodeImg').then(module => ({
-                default: module.BilibiliQrcodeImg
-              }))
+              component: BilibiliQrcodeImg
             })
           default:
             return createComponentConfig(baseComponent)
@@ -248,9 +237,7 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
           case 'comment':
             return createComponentConfig(baseComponent, {
               validateData: (data) => data && typeof data.share_url === 'string',
-              lazyComponent: () => import('../components/platforms/kuaishou/Comment').then(module => ({
-                default: module.KuaishouComment
-              }))
+              component: KuaishouComment
             })
           default:
             return createComponentConfig(baseComponent)
@@ -263,15 +250,11 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
         switch (baseComponent.id) {
           case 'noteInfo':
             return createComponentConfig(baseComponent, {
-              lazyComponent: () => import('../components/platforms/xiaohongshu/noteInfo').then(module => ({
-                default: module.XiaohongshuNoteInfo
-              }))
+              component: XiaohongshuNoteInfo
             })
           case 'comment':
             return createComponentConfig(baseComponent, {
-              lazyComponent: () => import('../components/platforms/xiaohongshu/Comment').then(module => ({
-                default: module.XiaohongshuComment
-              }))
+              component: XiaohongshuComment
             })
           default:
             return createComponentConfig(baseComponent)
@@ -284,33 +267,23 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
         switch (baseComponent.id) {
           case 'help':
             return createComponentConfig(baseComponent, {
-              lazyComponent: () => import('../components/platforms/other/Help').then(module => ({
-                default: module.default
-              }))
+              component: Help
             })
           case 'handlerError':
             return createComponentConfig(baseComponent, {
-              lazyComponent: () => import('../components/platforms/other/handlerError').then(module => ({
-                default: module.handlerError
-              }))
+              component: handlerError
             })
           case 'changelog':
             return createComponentConfig(baseComponent, {
-              lazyComponent: () => import('../components/platforms/other/changelog').then(module => ({
-                default: module.Changelog
-              }))
+              component: Changelog
             })
           case 'version_warning':
             return createComponentConfig(baseComponent, {
-              lazyComponent: () => import('../components/platforms/other/VersionWarning').then(module => ({
-                default: module.VersionWarning
-              }))
+              component: VersionWarning
             })
           case 'qrlogin':
             return createComponentConfig(baseComponent, {
-              lazyComponent: () => import('../components/platforms/other/qrlogin').then(module => ({
-                default: module.QrLogin
-              }))
+              component: QrLogin
             })
           default:
             return createComponentConfig(baseComponent)
@@ -323,15 +296,11 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
         switch (baseComponent.id) {
           case 'group':
             return createComponentConfig(baseComponent, {
-              lazyComponent: () => import('../components/platforms/other/GroupStatistics').then(module => ({
-                default: module.GroupStatistics
-              }))
+              component: GroupStatistics
             })
           case 'global':
             return createComponentConfig(baseComponent, {
-              lazyComponent: () => import('../components/platforms/other/GlobalStatistics').then(module => ({
-                default: module.GlobalStatistics
-              }))
+              component: GlobalStatistics
             })
           default:
             return createComponentConfig(baseComponent)

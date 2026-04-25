@@ -31,20 +31,20 @@ export class ComponentAutoRegistry {
     if (this.initialized) {
       return
     }
-    
+
     // 计算总数
     this.registrationProgress.total = componentConfigs.reduce(
-      (sum, p) => sum + p.components.filter(c => c.enabled).length, 
+      (sum, p) => sum + p.components.filter(c => c.enabled).length,
       0
     )
     this.registrationProgress.completed = 0
-    
+
     // 使用 stdout 实现单行更新
     const isTTY = process.stdout.isTTY
     const updateProgress = () => {
       const { completed, total, currentPlatform, currentComponent } = this.registrationProgress
       const message = `🔄 注册组件中... ${completed}/${total} [${currentPlatform}:${currentComponent}]`
-      
+
       if (isTTY) {
         process.stdout.write(`\r\x1b[K${message}`)
       } else {
@@ -52,13 +52,13 @@ export class ComponentAutoRegistry {
         logger.debug(message)
       }
     }
-    
+
     if (isTTY) {
       process.stdout.write('🔄 开始注册组件...')
     } else {
       logger.info('🔄 开始注册组件...')
     }
-    
+
     // 串行注册各平台（平台内并行），这样进度更清晰
     for (const platformConfig of componentConfigs) {
       const enabledCount = platformConfig.components.filter(c => c.enabled).length
@@ -70,13 +70,13 @@ export class ComponentAutoRegistry {
     }
 
     this.initialized = true
-    
+
     // 汇总输出（换行）
     const stats = this.getStats()
     const platforms = Object.entries(stats.byPlatform)
       .map(([name, count]) => `${name}(${count})`)
       .join(', ')
-    
+
     if (isTTY) {
       process.stdout.write('\r\x1b[K')
     }
@@ -93,11 +93,11 @@ export class ComponentAutoRegistry {
     onProgress?: () => void
   ): Promise<void> {
     const enabledComponents = platformConfig.components.filter(c => c.enabled)
-    
+
     if (enabledComponents.length === 0) {
       return
     }
-    
+
     // 串行注册该平台的所有组件，这样进度显示更清晰
     for (const componentConfig of enabledComponents) {
       try {
@@ -121,8 +121,15 @@ export class ComponentAutoRegistry {
   private static async registerComponent(platform: string, componentConfig: ComponentConfig): Promise<void> {
     const key = `${platform}:${componentConfig.id}`
 
-    // 如果有懒加载函数，使用懒加载
-    if (componentConfig.lazyComponent) {
+    // 如果有同步组件，直接使用
+    if (componentConfig.component) {
+      this.components.set(key, {
+        component: componentConfig.component,
+        validateData: componentConfig.validateData,
+        config: componentConfig
+      })
+    } else if (componentConfig.lazyComponent) {
+      // 如果有懒加载函数，使用懒加载
       const module = await componentConfig.lazyComponent()
       this.components.set(key, {
         component: module.default,
@@ -130,11 +137,11 @@ export class ComponentAutoRegistry {
         config: componentConfig
       })
     } else {
-      // 如果没有懒加载函数，尝试动态导入
+      // 如果没有组件也没有懒加载函数，尝试动态导入
       const modulePath = `../components/${componentConfig.componentPath}`
       const module = await import(modulePath)
       const component = module[componentConfig.exportName]
-      
+
       if (!component) {
         throw new Error(`组件 ${componentConfig.exportName} 未在模块 ${modulePath} 中找到`)
       }
@@ -193,7 +200,7 @@ export class ComponentAutoRegistry {
    */
   static getStats(): { total: number; byPlatform: Record<string, number> } {
     const stats = { total: this.components.size, byPlatform: {} as Record<string, number> }
-    
+
     for (const key of this.components.keys()) {
       const platform = key.split(':')[0]
       stats.byPlatform[platform] = (stats.byPlatform[platform] || 0) + 1
