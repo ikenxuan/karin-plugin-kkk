@@ -2,6 +2,30 @@
 
 # Changelog
 
+## [2.30.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.29.0...v2.30.0) (2026-04-26)
+
+
+### ✨ 新功能
+
+* add `#kkk推送全局忽略{url}` ([f7545d2](https://github.com/ikenxuan/karin-plugin-kkk/commit/f7545d2096150666ab6d6659b6770c8b58d052d9))
+* **bilibili:** ui: 评论对象添加粉丝勋章 ([d4b42ab](https://github.com/ikenxuan/karin-plugin-kkk/commit/d4b42ab8bc3a11f24de225b48fb662c031dc23d6))
+
+
+### 💄 UI 优化
+
+* 优化错误图片部分日志颜色 ([79a295b](https://github.com/ikenxuan/karin-plugin-kkk/commit/79a295b6e39f59227ad11eb52cc566d8db63524e))
+
+
+### 📦 依赖更新
+
+* update ([1e52c4d](https://github.com/ikenxuan/karin-plugin-kkk/commit/1e52c4d5b731f3a402abe2be4ccbd66ccebacde4))
+
+
+### 🏗️ 构建系统
+
+* 二次导出amagi包 ([533549c](https://github.com/ikenxuan/karin-plugin-kkk/commit/533549cf4eaad16f70e0e90e82292ed364fd8620))
+* 优化打包配置 ([1174f57](https://github.com/ikenxuan/karin-plugin-kkk/commit/1174f5715755a639404d766c8fe6fb61b270fe35))
+
 ## [2.29.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.28.1...v2.29.0) (2026-04-25)
 
 
