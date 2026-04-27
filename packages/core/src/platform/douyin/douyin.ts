@@ -788,7 +788,7 @@ export class DouYin extends Base {
           if ((this.forceBurnDanmaku || Config.douyin.burnDanmaku) && danmakuList.length > 0) {
             const videoFile = await downloadFile(g_video_url, {
               title: `Douyin_V_tmp_${Date.now()}.mp4`,
-              headers: { ...baseHeaders, Referer: g_video_url }
+              headers: { ...baseHeaders, Referer: 'https://www.douyin.com' }
             })
             if (videoFile.filepath) {
               const resultPath = Common.tempDri.video + `Douyin_Result_${Date.now()}.mp4`
@@ -827,7 +827,7 @@ export class DouYin extends Base {
                 },
                 headers: {
                   ...baseHeaders,
-                  Referer: g_video_url
+                  Referer: 'https://www.douyin.com'
                 }
               },
               {

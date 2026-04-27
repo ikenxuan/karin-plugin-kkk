@@ -113,7 +113,7 @@ export class Downloader {
         url: this.url,
         headers: sanitizeHeaders(requestConfig.headers),
         throttleEnabled: this.throttleConfig.enabled,
-        currentSpeed: formatBytes(this.currentSpeed) + '/s'
+        currentSpeed: this.throttleConfig.enabled ? formatBytes(this.currentSpeed) + '/s' : '不限速'
       })
 
       const response = await this.axiosInstance(requestConfig)
