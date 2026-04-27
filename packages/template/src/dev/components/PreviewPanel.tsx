@@ -465,13 +465,13 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
       <div
         ref={containerRef}
         className='relative h-full w-full overflow-hidden bg-background'
-        style={{
-          backgroundImage: 'radial-gradient(circle at top, color-mix(in oklab, var(--foreground) 5%, transparent) 0%, transparent 34%), linear-gradient(180deg, var(--background) 0%, var(--color-background-secondary, var(--background)) 100%)'
-        }}
+        // style={{
+        //   backgroundImage: 'radial-gradient(circle at top, color-mix(in oklab, var(--foreground) 5%, transparent) 0%, transparent 34%), linear-gradient(180deg, var(--background) 0%, var(--color-background-secondary, var(--background)) 100%)'
+        // }}
       >
         {/* 网格背景 */}
         <div
-          className='pointer-events-none absolute inset-0 opacity-80'
+          className='pointer-events-none absolute inset-0'
           style={{
             backgroundImage: `repeating-linear-gradient(0deg, color-mix(in oklab, var(--separator) 88%, transparent) 0px, color-mix(in oklab, var(--separator) 88%, transparent) 1px, transparent 1px, transparent 18px),
                  repeating-linear-gradient(90deg, color-mix(in oklab, var(--separator) 88%, transparent) 0px, color-mix(in oklab, var(--separator) 88%, transparent) 1px, transparent 1px, transparent 18px)`

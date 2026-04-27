@@ -47,7 +47,6 @@ export async function processLiveStream(
 
     // 如果之前没有直播，现在开播了，需要推送
     if (!liveStatus.living) {
-      await douyinDB.updateLiveStatus(sec_uid, true)
       logger.info(`用户 ${item.remark ?? sec_uid} 开播了`)
 
       return {

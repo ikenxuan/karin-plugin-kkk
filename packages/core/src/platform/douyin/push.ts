@@ -215,19 +215,44 @@ export class DouYinpush extends Base {
 
       if (!skip) {
         if (pushItem.pushType === 'live' && 'room_data' in pushItem.Detail_Data && Detail_Data.live_data) {
-          const hasData = Detail_Data.live_data.data && Detail_Data.live_data.data.data && Detail_Data.live_data.data.data.length > 0
           // 处理直播推送
+          const liveItem = Detail_Data.live_data.data.data.data[0]
+          //@ts-ignore
+          const streamExtra = liveItem.stream_url.extra
+          const resolution = streamExtra
+            ? `${streamExtra.width}x${streamExtra.height}`
+            //@ts-ignore
+            : liveItem.stream_url.default_resolution
+
           img = await Render(this.e, 'douyin/live', {
-            image_url: Detail_Data.live_data.data.data.data[0]?.cover?.url_list[0] ?? Detail_Data.live_data.data.data.qrcode_url,
-            text: Detail_Data.live_data.data.data.data[0]?.title ?? '',
-            liveinf: `${Detail_Data.live_data.data.data.partition_road_map?.partition?.title ?? Detail_Data.live_data.data.data.data[0]?.title ?? '获取失败'} | 房间号: ${Detail_Data.room_data.owner.web_rid}`,
-            在线观众: hasData && Detail_Data.live_data.data.data.data[0].room_view_stats?.display_value ? this.count(Detail_Data.live_data.data.data.data[0].room_view_stats.display_value) : '：语音直播或刚开播获取失败。',
-            总观看次数: hasData ? (Detail_Data.live_data.data.data.data[0].stats?.total_user_str ? this.count(Number(Detail_Data.live_data.data.data.data[0].stats!.total_user_str)) : '刚开播无法获取') : '：语音直播不支持',
+            //@ts-ignore
+            image_url: liveItem.cover.url_list[0],
+            //@ts-ignore
+            text: liveItem.title,
+            partition_title: Detail_Data.live_data.data.data.partition_road_map.partition.title,
+            room_id: Detail_Data.room_data.owner.web_rid,
+            //@ts-ignore
+            online_viewers: this.count(liveItem.room_view_stats.display_value),
+            //@ts-ignore
+            total_viewers: liveItem.stats.total_user_str,
             username: Detail_Data.user_info.data.user.nickname,
             avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
             fans: this.count(Detail_Data.user_info.data.user.follower_count),
             share_url: 'https://live.douyin.com/' + Detail_Data.room_data.owner.web_rid,
-            dynamicTYPE: '直播动态推送'
+            dynamicTYPE: '直播动态推送',
+            //@ts-ignore
+            like_count: this.count(liveItem.like_count),
+            //@ts-ignore
+            user_count_str: liveItem.user_count_str,
+            resolution,
+            signature: Detail_Data.user_info.data.user.signature,
+            //@ts-ignore
+            city: Detail_Data.user_info.data.user.city,
+            aweme_count: this.count(Detail_Data.user_info.data.user.aweme_count),
+            following_count: this.count(Detail_Data.user_info.data.user.following_count),
+            total_favorited: this.count(Detail_Data.user_info.data.user.total_favorited),
+            //@ts-ignore
+            has_commerce_goods: liveItem.has_commerce_goods
           })
         } else {
           // 处理普通作品推送
