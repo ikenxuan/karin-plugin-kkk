@@ -101,7 +101,7 @@
   :root, :host {
     --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    --font-mono: "JetBrains Mono, fansmedal-num";
+    --font-mono: "JetBrains Mono";
     --color-red-200: oklch(88.5% .062 18.334);
     --color-red-500: oklch(63.7% .237 25.331);
     --color-orange-300: oklch(83.7% .128 66.29);
