@@ -42,7 +42,26 @@
       "react": "$react",
       "react-dom": "$react-dom",
       "vite": "$vite"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "@heroui/shared-utils",
+      "@karinjs/sqlite3-cjs",
+      "@parcel/watcher",
+      "@swc/core",
+      "cwebp-bin",
+      "dtrace-provider",
+      "esbuild",
+      "gifsicle",
+      "javascript-obfuscator",
+      "jpegtran-bin",
+      "mozjpeg",
+      "msw",
+      "optipng-bin",
+      "pngquant-bin",
+      "protobufjs",
+      "sharp",
+      "unrs-resolver"
+    ]
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",

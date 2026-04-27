@@ -14,6 +14,7 @@
     "types:check": "fumadocs-mdx && tsc --noEmit"
   },
   "dependencies": {
+    "@kkk/richtext": "workspace:*",
     "@gravity-ui/icons": "^2.18.0",
     "@heroui/react": "^3.0.2",
     "@heroui/styles": "^3.0.2",
@@ -60,6 +61,7 @@
     "@types/semver": "^7.7.1",
     "code-inspector-plugin": "^1.5.1",
     "eslint-config-next": "^16.2.4",
-    "postcss": "^8.5.10"
+    "postcss": "^8.5.10",
+    "shadcn": "^4.5.0"
   }
 }

@@ -6,111 +6,161 @@ description: 基于 React 与 TailwindCSS 的模板开发方案
 import { Callout } from 'fumadocs-ui/components/callout';
 import { Mermaid } from '@/components/Mermaid';
 
-本插件采用 **React + TailwindCSS** 技术栈进行图片渲染，将现代前端的工程化能力引入模板开发领域，解决了传统模板引擎在**长期维护**上的痛点。
+本插件采用 **React + TailwindCSS** 技术栈进行图片渲染，将现代前端的工程化能力引入模板开发。
+
+相比传统模板引擎在维护上的痛点——逻辑与视图耦合、全局 CSS 冲突、缺乏类型检查——本方案通过**组件化构建**、**原子化样式**和**类型安全**三条路径彻底解决了这些问题。
 
 <Callout type="warn" title="传统方案的维护陷阱">
-随着项目迭代，基于 `art-template` 的模板往往会陷入维护泥潭：
+基于 `art-template` 的模板在项目迭代中往往会陷入维护泥潭：
 - **逻辑黑洞**：业务逻辑混杂在 HTML 模板中，难以阅读和剥离。
-- **样式冲突**：全局 CSS 类名随着时间推移不断堆积，修改一个样式可能导致多处崩坏。
+- **样式冲突**：全局 CSS 类名随时间推移不断堆积，修改一处可能导致多处崩坏。
 - **重构风险**：缺乏类型检查，修改字段名就像在"排雷"，只能祈祷运行时不出错。
 </Callout>
 
-## 方案对比
-
-### 传统方案 (art-template)
-
-<Callout type="error" title="开发痛点">
-- **调试低效**：修改代码 -> 编译生成 -> 浏览器刷新，反馈链路极长。
-- **工程缺失**：缺乏 Source Map 导致报错定位难；全局 CSS 易引发样式冲突。
-- **维护困难**：逻辑与视图耦合严重，缺乏 TypeScript 类型支持，重构风险高。
-- **交互受限**：仅能实现静态渲染，难以处理复杂的动态布局逻辑。
-- **资源割裂**：图片、字体等静态资源引用路径处理繁琐，缺乏统一的打包优化。
-</Callout>
-
-### 现代方案 (React)
-
-<Callout type="info" title="核心优势">
-- **极致体验**：内置可视化面板，支持 HMR 热更新，毫秒级反馈。
-- **架构先进**：组件化开发实现高内聚低耦合；TailwindCSS 解决样式冲突。
-- **生态丰富**：背靠 React 庞大生态，海量组件库与工具库即插即用。
-- **逻辑复用**：利用 Hooks 轻松复用状态逻辑，轻松应对复杂数据处理。
-- **构建优化**：依托 Vite 强大的构建能力，自动处理资源压缩、路径别名等。
-</Callout>
-
-### 综合对比表
-
-| 特性 | art-template | React + Tailwind |
-| :--- | :--- | :--- |
-| **核心理念** | 字符串拼接模板 | **组件化视图构建** |
-| **样式方案** | 全局 CSS (易冲突) | **TailwindCSS (原子化)** |
-| **数据流** | 弱类型，隐式传递 | **TypeScript 强类型 props** |
-| **调试体验** | 盲写，手动刷新 | **可视化面板，实时预览** |
-| **渲染机制** | 运行时编译 HTML | **构建时预编译 SSR** |
-
-## 架构优势
-
-本方案用**现代前端工程化思维**重构了静态图片的生成方式，核心优势体现在三个方面：
-
-**组件化构建**：摒弃 `art-template` 简陋的 `include` 语法，React 组件允许将复杂画面拆解为独立单元。每个组件独立管理样式与逻辑，基础组件可在不同模板间无缝复用。
-
-**原子化样式**：TailwindCSS 彻底告别 `style.css` 几千行的噩梦。样式直接作用于 DOM 元素，不存在类名覆盖问题；构建时自动剔除未使用的样式，生成的 HTML 体积更小。
-
-**类型安全**：从数据获取到图片渲染，全链路 TypeScript 类型护航。编写模板时 IDE 自动提示数据结构，后端字段变更时前端立即报错，避免线上"图片渲染失败"。
-
-## 开发辅助
-
-虽然最终产物是静态图片，但内置了**可视化开发面板** (`pnpm dev`) 来提升开发效率：
-
-- **实时预览**：修改组件代码，浏览器右侧即时刷新渲染结果。
-- **数据Mock**：可配置多套 JSON 数据，轻松测试文本超长、头像缺失等边缘情况。
-- **快速调试**：无需启动整个 Bot，仅需浏览器即可完成模板开发。
-
-## 生态复用
-
-得益于 React 标准，可以直接引入成熟的库来丰富**静态画面**的表现力：
-
-- **排版布局**：引入现代化的 UI 组件库，快速构建精美的卡片、列表。
-- **数据可视化**：使用专业图表库将复杂数据渲染为统计图表。
-- **矢量图标**：引入海量 SVG 图标库，支持任意缩放不失真。
-
-## 工作原理
+## 架构概览
 
 <Mermaid chart={`
 flowchart TB
-    subgraph Development [开发阶段]
+    subgraph Data [数据层]
         direction LR
-        A[React 组件源码] -- HMR 热更新 --> B[可视化开发面板]
-        B -- 实时预览 --> C[开发者]
+        R1["@kkk/richtext"]
+        R2["纯 JSON 节点树"]
+        R3["RichTextDocument"]
     end
 
-    subgraph Build [构建阶段]
+    subgraph Core [Core 解析层]
         direction LR
-        D[Vite 构建] -- 编译 --> E[SSR Bundle]
+        C1["平台 API 响应"]
+        C2["解析器"]
+        C3["生成 RichTextDocument"]
     end
 
-    subgraph Runtime [运行时]
+    subgraph Template [Template 渲染层]
         direction LR
-        F[插件逻辑] -- 数据 --> G[SSR 渲染引擎]
-        E -- 组件 --> G
-        G -- 生成 --> H[完整 HTML]
-        H -- Karin render 截图 --> I[最终图片]
+        T1["React 组件"]
+        T2["TailwindCSS 样式"]
+        T3["SSR → HTML"]
     end
 
-    Development -.-> Build
-    Build -.-> Runtime
+    subgraph Output [输出层]
+        direction LR
+        O1["Karin render"]
+        O2["Puppeteer 截图"]
+        O3["图片消息"]
+    end
+
+    C1 --> C2 --> C3
+    C3 --> R1
+    R1 --> R2 --> R3
+    R3 --> T1
+    T1 --> T2 --> T3
+    T3 --> O1 --> O2 --> O3
 `} />
 
-1.  **开发阶段**：利用 **Vite** 提供秒级启动与毫秒级热更新，在可视化面板中实时调试 UI。
-2.  **构建阶段**：将 React 组件编译为优化的服务端渲染 (SSR) 包，不依赖浏览器 JS 执行。
-3.  **运行阶段**：
-    *   插件接收数据，调用渲染函数。
-    *   React SSR 引擎将组件渲染为**纯静态 HTML**。
-    *   Karin 框架接管 HTML，调用 Puppeteer 进行截图并发送。
+整个渲染链路分为四层：
 
-<Callout type="info" title="性能优化">
-SSR 直接输出包含完整样式与内容的 HTML，Puppeteer 打开页面后**无需等待 JavaScript 加载与执行**即可立即截图，显著降低了渲染耗时与内存占用。
+1. **数据层（`@kkk/richtext`）**：定义平台无关的富文本文档协议，作为 core 与 template 之间的数据边界。
+2. **Core 解析层**：将抖音、B 站等平台的原始 API 响应解析为标准的 `RichTextDocument` JSON。
+3. **Template 渲染层**：React 组件消费 JSON 数据，TailwindCSS 处理样式，最终通过 SSR 输出静态 HTML。
+4. **输出层**：Karin 框架调用 Puppeteer 截图，生成图片消息发送到群聊。
+
+## 富文本文档（RichTextDocument）
+
+`@kkk/richtext` 是 core 包与 template 包之间的共享子包，负责定义**平台无关的富文本中间表示（IR）**。
+
+<Callout type="info" title="设计动机">
+不同平台的文本描述格式差异很大：抖音的富文本是一段带特殊标记的字符串，B 站则提供了结构化的内容节点。如果在 template 侧分别解析，会导致平台逻辑泄漏到渲染层，维护成本极高。
+
+富文本文档将这一问题收拢到 core 层：core 负责把各平台的异构数据转换成统一的 JSON 节点树，template 只负责渲染。
 </Callout>
 
+### 节点类型
+
+富文本文档支持两类节点：**行内节点**与**块级节点**。
+
+**行内节点**用于描述段落内的文本片段：
+
+| 节点类型 | 用途 | 示例 |
+| :--- | :--- | :--- |
+| `text` | 普通文本，支持粗体/斜体/颜色/超链接 | 评论正文 |
+| `emoji` | 平台表情包图片 | [doge] |
+| `mention` / `at` | @用户 | @某某 |
+| `searchKeyword` | 搜索词高亮 | 带搜索图标的蓝色高亮文本 |
+| `topic` | 话题标签 | #某某话题# |
+| `lottery` | 抽奖信息 | 带抽奖图标的文本 |
+| `webLink` | 网页链接 | 带链接图标的标题 |
+| `vote` | 投票 | 带投票图标的标题 |
+| `viewPicture` | 查看图片提示 | 带相册图标的提示文本 |
+| `lineBreak` | 换行 | `<br />` |
+
+**块级节点**用于描述文档结构：
+
+| 节点类型 | 用途 |
+| :--- | :--- |
+| `heading` | 标题（1-6 级） |
+| `paragraph` | 段落 |
+| `image` | 图片 |
+| `blockquote` | 引用块 |
+| `list` / `listItem` | 有序/无序列表 |
+| `codeBlock` | 代码块（带语法高亮和行号） |
+| `linkCard` | 链接卡片 |
+
+### 在 core 中使用
+
+`@kkk/richtext` 的 `parse` 模块提供了一系列工厂函数，用于从平台原始数据中构建节点：
+
+```ts twoslash
+import { createTextNode, createEmojiNode, createParagraphNode, createRichTextDocument } from '@kkk/richtext'
+
+const doc = createRichTextDocument([
+  createParagraphNode([
+    createTextNode('这条视频太棒了', { bold: true }),
+    createEmojiNode('doge', 'https://example.com/doge.png'),
+    createTextNode('！推荐大家看看。')
+  ])
+], { platform: 'douyin' })
+```
+
+core 侧只需要导入**类型**和**节点创建方法**，不依赖 React 运行时，输出的是可序列化的纯 JSON。
+
+### 在 template 中使用
+
+`@kkk/richtext` 的 `react` 模块提供了渲染器，将 `RichTextDocument` 转成 React 节点：
+
+```tsx
+import { renderRichTextToReact } from '@kkk/richtext/react'
+
+// 在平台模板组件中
+const content = renderRichTextToReact(document, {
+  mention: { className: 'text-blue-500' },
+  topic: { className: 'text-pink-500' },
+  searchKeyword: { className: 'text-blue-600 bg-blue-100', iconClassName: 'text-blue-400' },
+})
+
+return <div className="text-base leading-relaxed">{content}</div>
+```
+
+渲染器会自动处理以下细节：
+- **文本转义**：React 自动转义文本内容，防止 XSS。
+- **图片安全**：对 `emoji` 和 `image` 节点的 `src` 做协议白名单校验（仅允许 `http://`、`https://` 和 `data:image/*;base64`）。
+- **URL 自动识别**：`text` 节点中的链接会被自动包裹为可点击的超链接。
+- **行内样式**：支持 `bold`、`italic`、`strike`、`color`、`fontSize`、`link` 等行内样式。
+
+<Callout type="info" title="为什么不用 dangerouslySetInnerHTML？">
+平台返回的富文本描述往往包含未经校验的 HTML。使用 `renderRichTextToReact` 将结构化 JSON 映射为 React 节点，可以避免直接注入 HTML 带来的安全风险，同时让样式完全由 Tailwind 接管。
+</Callout>
+
+### 节点归一化
+
+`createRichTextDocument` 内部会自动调用 `normalizeRichTextNodes`，合并相邻的文本节点并丢弃空文本节点。这样 core 在解析时可以按匹配过程简单 `push` 节点，无需担心碎片过多的问题。
+
+## 开发工作流
+
+内置的**可视化开发面板** (`pnpm dev`) 大幅提升模板开发效率：
+
+- **实时预览**：修改组件代码，浏览器即时刷新渲染结果（HMR 热更新）。
+- **数据 Mock**：可配置多套 JSON 数据，轻松测试文本超长、头像缺失等边缘情况。
+- **快速调试**：无需启动整个 Bot，仅需浏览器即可完成模板开发。
 
 ## SSR 渲染引擎
 
@@ -153,25 +203,25 @@ flowchart TB
         D3[state.props 额外属性]
         D4[state.component 组件实例]
         D5[state.html 渲染结果]
-        
+
         E1[runBefore 执行前置插件]
         E2[遍历插件检查 apply 条件]
         E3[调用 beforeRender 钩子]
         E4[插件注入 props 如二维码]
-        
+
         F1[ComponentRendererFactory]
         F2[从注册表查找组件 get]
         F3[执行 validateData 验证]
         F4[合并 data + version + scale + extraProps]
         F5[处理嵌套路径提取 subType]
         F6[React.createElement 创建实例]
-        
+
         G1[runDuring 执行渲染插件]
         G2[可包装或替换组件]
-        
+
         H1[renderToString 核心渲染]
         H2[React 组件转 HTML 字符串]
-        
+
         I1[runAfter 执行后置插件]
         I2[可修改最终 HTML]
     end
@@ -221,3 +271,15 @@ flowchart TB
 **渲染流程**：构建 `PluginContext` 上下文和 `RenderState` 状态对象 → 执行 `runBefore` 前置插件（如二维码生成）注入额外 props → `ComponentRendererFactory` 从注册表查找组件、验证数据、合并 props、处理嵌套路径、调用 `React.createElement` → 执行 `runDuring` 渲染插件（可包装组件）→ 调用 `renderToString` 将 React 组件转为 HTML 字符串 → 执行 `runAfter` 后置插件（可修改 HTML）。
 
 **输出阶段**：生成带时间戳的安全文件名 → `HtmlWrapper.wrapContent` 计算 CSS 和图片的相对路径、替换图片 src、注入 DOCTYPE/meta/CSS link/主题类名 → 写入文件系统 → 返回 HTML 文件路径供 Karin 框架截图。
+
+<Callout type="info" title="性能优化">
+SSR 直接输出包含完整样式与内容的 HTML，Puppeteer 打开页面后**无需等待 JavaScript 加载与执行**即可立即截图，显著降低了渲染耗时与内存占用。
+</Callout>
+
+## 生态复用
+
+得益于 React 标准，可以直接引入成熟的库来丰富**静态画面**的表现力：
+
+- **排版布局**：引入现代化的 UI 组件库，快速构建精美的卡片、列表。
+- **数据可视化**：使用专业图表库将复杂数据渲染为统计图表。
+- **矢量图标**：引入海量 SVG 图标库，支持任意缩放不失真。

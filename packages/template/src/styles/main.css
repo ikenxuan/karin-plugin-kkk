@@ -7,7 +7,7 @@
 @import '../../public//font/bilifont/font.css';
 @import '../../public/font/fansmedal-num/font.css';
 @theme {
-  --font-mono: 'JetBrains Mono, fansmedal-num';
+  --font-mono: 'JetBrains Mono';
   --radius-5xl: calc(var(--radius) * 5);
   --radius-6xl: calc(var(--radius) * 6);
 }
