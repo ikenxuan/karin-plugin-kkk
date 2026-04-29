@@ -229,7 +229,7 @@ export class DouYinpush extends Base {
             image_url: liveItem.cover.url_list[0],
             //@ts-ignore
             text: liveItem.title,
-            partition_title: Detail_Data.live_data.data.data.partition_road_map.partition.title,
+            partition_title: Detail_Data.live_data.data.data.partition_road_map?.partition?.title || '未知分区',
             room_id: Detail_Data.room_data.owner.web_rid,
             //@ts-ignore
             online_viewers: this.count(liveItem.room_view_stats.display_value),
