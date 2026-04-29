@@ -24,7 +24,7 @@ export const BilibiliReserveCard: React.FC<{ reserve: NonNullable<BilibiliAdditi
           </div>
           {reserve.desc3 && (
             <div className='flex gap-2 items-center text-4xl select-text leading-none text-[#fb7299]'>
-              <Icon icon="lucide:gift" width={40} className='shrink-0' />
+              <Icon icon="mingcute:gift-fill" width={40} className='shrink-0' />
               <span className='line-clamp-1'>{reserve.desc3}</span>
             </div>
           )}
@@ -37,7 +37,7 @@ export const BilibiliReserveCard: React.FC<{ reserve: NonNullable<BilibiliAdditi
                 : 'bg-[#fb7299] text-white'
             }`}
           >
-            {reserve.buttonText !== '已结束' && <Icon icon="lucide:bell" className='scale-180 mr-4' />}
+            {reserve.buttonText !== '已结束' && <Icon icon="mingcute:bell-fill" className='scale-180 mr-4' />}
             {reserve.buttonText}
           </Button>
         </div>
@@ -58,7 +58,7 @@ export const BilibiliVoteCard: React.FC<{ vote: NonNullable<BilibiliAdditionalDa
     <div className='overflow-hidden rounded-2xl bg-surface'>
       <div className='flex gap-8 items-center px-10 py-8'>
         <div className='shrink-0'>
-          <Icon icon="lucide:bar-chart-3" width={56} className='text-muted' />
+          <Icon icon="mingcute:chart-bar-fill" width={56} />
         </div>
         <div className='flex flex-col gap-3 flex-1 min-w-0'>
           <div className='text-5xl font-medium text-foreground select-text line-clamp-1'>
@@ -99,7 +99,7 @@ export const BilibiliCommonCard: React.FC<{ common: NonNullable<BilibiliAddition
     <div className='flex flex-col gap-4'>
       {common.head_text && (
         <div className='flex gap-2 items-center text-4xl text-muted'>
-          <Icon icon="lucide:gamepad-2" width={40} />
+          <Icon icon="mingcute:gamepad-fill" width={40} />
           <span>{common.head_text}</span>
         </div>
       )}

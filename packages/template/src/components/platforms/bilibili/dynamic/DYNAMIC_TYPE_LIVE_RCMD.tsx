@@ -330,7 +330,7 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
                   className='mt-5 inline-flex items-center gap-3 font-black'
                   style={{ color: deepColor }}
                 >
-                  <Icon icon="lucide:users" width={22} style={{ color: accentColor }} />
+                  <Icon icon="mingcute:group-fill" width={22} />
                   <span className='select-text' style={{ fontSize: `${followerFontSize}px` }}>
                     {data.fans} 粉丝
                   </span>
@@ -357,14 +357,14 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
             style={{ color: deepColor, fontSize: `${metaValueFontSize}px` }}
           >
             <div className='inline-flex min-w-0 items-center gap-3'>
-              <Icon icon="lucide:radio" width={20} style={{ color: accentColor }} />
+              <Icon icon="mingcute:radio-fill" width={20} />
               <span className='min-w-0 whitespace-normal leading-[1.18] select-text' style={{ fontSize: `${liveInfoFontSize}px` }}>
                 {data.liveinf}
               </span>
             </div>
             <span style={{ color: withAlphaFromCss(deepColor, 0.26) }}>/</span>
             <div className='inline-flex items-center gap-3 whitespace-nowrap font-mono'>
-              <Icon icon="lucide:clock" width={20} style={{ color: primaryColor }} />
+              <Icon icon="mingcute:time-fill" width={20} />
               <span className='select-text'>{liveSignalTime}</span>
             </div>
           </div>

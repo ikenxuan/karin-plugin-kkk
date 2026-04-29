@@ -5,6 +5,7 @@ import React from 'react'
 import type { BilibiliVideoDynamicProps } from '../../../../types/platforms/bilibili'
 import { Icon } from '../../../common/Icon'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
+import { CoinIcon, ShareIcon, ThumbUpIcon } from '../Icons'
 import { EnhancedImage, UsernameDisplay } from '../shared'
 
 /**
@@ -101,34 +102,34 @@ const BilibiliVideoDynamicContent: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
           <div className='flex flex-col gap-8'>
             <div className='flex gap-12 items-center text-5xl font-light tracking-normal'>
               <div className='flex gap-3 items-center'>
-                <Icon icon="lucide:heart" width={48} className='text-like' />
+                <ThumbUpIcon size={48} />
                 <span className='select-text'>{props.data.dianzan}点赞</span>
               </div>
 
               <div className='flex gap-3 items-center'>
-                <Icon icon="lucide:message-circle" width={48} className='text-comment' />
+                <Icon icon="mingcute:comment-2-fill" width={48} />
                 <span className='select-text'>{props.data.pinglun}评论</span>
               </div>
 
               <div className='flex gap-3 items-center'>
-                <Icon icon="lucide:share-2" width={48} className='text-success' />
+                <ShareIcon size={48} />
                 <span className='select-text'>{props.data.share}分享</span>
               </div>
             </div>
 
             <div className='flex gap-12 items-center text-5xl font-light tracking-normal'>
               <div className='flex gap-3 items-center'>
-                <Icon icon="lucide:coins" width={48} className='text-warning' />
+                <CoinIcon size={48} />
                 <span className='select-text'>{props.data.coin}硬币</span>
               </div>
 
               <div className='flex gap-3 items-center'>
-                <Icon icon="lucide:eye" width={48} className='text-muted text-view' />
+                <Icon icon="mingcute:eye-fill" width={48} />
                 <span className='select-text'>{props.data.view}浏览</span>
               </div>
 
               <div className='flex gap-3 items-center text-5xl font-light tracking-normal'>
-                <Icon icon="lucide:clock" width={48} className='text-time' />
+                <Icon icon="mingcute:time-fill" width={48} />
                 <span className='select-text'>视频时长: {props.data.duration_text}</span>
               </div>
             </div>
@@ -137,15 +138,15 @@ const BilibiliVideoDynamicContent: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
           {/* 发布时间 */}
           <div className='flex flex-col gap-4 text-4xl font-light'>
             <div className='flex gap-3 items-center whitespace-nowrap'>
-              <Icon icon="lucide:clock" width={32} className='text-time' />
+              <Icon icon="mingcute:time-fill" width={32} />
               <span className='select-text'>发布于{props.data.create_time}</span>
             </div>
             <div className='flex gap-3 items-center whitespace-nowrap'>
-              <Icon icon="lucide:maximize" width={32} className='text-time' />
+              <Icon icon="mingcute:time-fill" width={32} />
               <span>图片生成于: {format(new Date(), 'yyyy-MM-dd HH:mm:ss')}</span>
             </div>
             <div className='flex gap-3 items-center'>
-              <Icon icon="lucide:hash" width={32} className='text-muted' />
+              <Icon icon="mingcute:hashtag-fill" width={32} />
               <span className='select-text'>动态ID: {props.data.dynamic_id}</span>
             </div>
           </div>
@@ -271,7 +272,7 @@ const BilibiliVideoDynamicFooter: React.FC<Omit<BilibiliVideoDynamicProps, 'temp
                 <UsernameDisplay metadata={props.data.usernameMeta} />
               </div>
               <div className='flex gap-2 items-center text-4xl text-muted'>
-                <Icon icon="lucide:hash" width={32} />
+                <Icon icon="mingcute:hashtag-fill" width={32} />
                 <span>UID: {props.data.user_shortid}</span>
                 {currentUserRole && (
                   <span className='ml-5 px-3 py-1 rounded-xl bg-surface-secondary text-3xl'>
@@ -286,7 +287,7 @@ const BilibiliVideoDynamicFooter: React.FC<Omit<BilibiliVideoDynamicProps, 'temp
           <div className='text-3xl flex gap-6 items-center text-foreground/70'>
             <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
               <div className='flex gap-1 items-center'>
-                <Icon icon="lucide:heart" width={28} className='text-like' />
+                <ThumbUpIcon size={28} />
                 <span className='text-muted'>获赞</span>
               </div>
               <div className='w-full h-px bg-border' />
@@ -294,7 +295,7 @@ const BilibiliVideoDynamicFooter: React.FC<Omit<BilibiliVideoDynamicProps, 'temp
             </div>
             <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
               <div className='flex gap-1 items-center'>
-                <Icon icon="lucide:eye" width={28} className='text-view' />
+                <Icon icon="mingcute:eye-fill" width={28} />
                 <span className='text-muted'>关注</span>
               </div>
               <div className='w-full h-px bg-border' />
@@ -302,7 +303,7 @@ const BilibiliVideoDynamicFooter: React.FC<Omit<BilibiliVideoDynamicProps, 'temp
             </div>
             <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
               <div className='flex gap-1 items-center'>
-                <Icon icon="lucide:users" width={28} className='text-accent' />
+                <Icon icon="mingcute:group-fill" width={28} />
                 <span className='text-muted'>粉丝</span>
               </div>
               <div className='w-full h-px bg-border' />

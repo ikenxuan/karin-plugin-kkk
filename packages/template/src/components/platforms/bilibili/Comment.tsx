@@ -11,6 +11,7 @@ import type {
 import type { FansDetail } from '../../../types/platforms/bilibili/comment'
 import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
+import { ThumbUpIcon } from './Icons'
 
 const bilibiliMentionClassName = 'text-[#006A9E] dark:text-[#58B0D5]'
 
@@ -521,7 +522,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
 
           <div className='flex items-center gap-18.75 ml-auto'>
             <div className='flex items-center gap-3.75'>
-              <Icon icon="lucide:thumbs-up" className='w-15 h-15 text-muted' />
+              <ThumbUpIcon variant="line" className='w-15 h-15 text-muted' />
               <span className='text-[45px] text-muted select-text'>{formatBilibiliLikeCount(props.like)}</span>
             </div>
           </div>
@@ -691,7 +692,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
 
                       <div className='flex items-center gap-18.75 ml-auto'>
                         <div className='flex items-center gap-3.75'>
-                          <Icon icon="lucide:thumbs-up" className='w-15 h-15 text-muted' />
+                          <ThumbUpIcon variant="line" className='w-15 h-15 text-muted' />
                           <span className='text-[45px] text-muted select-text'>{formatBilibiliLikeCount(subReply.like)}</span>
                         </div>
                       </div>
