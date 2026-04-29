@@ -472,6 +472,25 @@ export class Bilibilipush extends Base {
               case DynamicType.DRAW: {
                 const dynamicCARD = await bilibiliFetcher.fetchDynamicCard({ dynamic_id: data[dynamicId].Dynamic_Data.orig.id_str, typeMode: 'strict' })
                 const cardData = JSON.parse(dynamicCARD.data.data.card.card)
+
+                // 处理话题
+                if ('topic' in data[dynamicId].Dynamic_Data.orig.modules.module_dynamic && data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.topic !== null) {
+                  const name = (data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.topic as { name: string; id: number }).name
+                  const origSummary = data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major?.opus?.summary
+                  if (origSummary) {
+                    if (!origSummary.rich_text_nodes) {
+                      origSummary.rich_text_nodes = []
+                    }
+                    origSummary.rich_text_nodes.unshift({
+                      orig_text: name,
+                      text: name,
+                      type: 'topic',
+                      rid: (data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.topic as { id: number }).id.toString()
+                    })
+                    origSummary.text = `${name}\n` + (origSummary.text || '')
+                  }
+                }
+
                 param = {
                   title: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major?.opus?.title ?? null,
                   usernameMeta: getUsernameMetadata(data[dynamicId].Dynamic_Data.orig.modules.module_author),
@@ -485,6 +504,24 @@ export class Bilibilipush extends Base {
                 break
               }
               case DynamicType.WORD: {
+                // 处理话题
+                if ('topic' in data[dynamicId].Dynamic_Data.orig.modules.module_dynamic && data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.topic !== null) {
+                  const name = (data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.topic as { name: string; id: number }).name
+                  const origSummary = data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major?.opus?.summary
+                  if (origSummary) {
+                    if (!origSummary.rich_text_nodes) {
+                      origSummary.rich_text_nodes = []
+                    }
+                    origSummary.rich_text_nodes.unshift({
+                      orig_text: name,
+                      text: name,
+                      type: 'topic',
+                      rid: (data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.topic as { id: number }).id.toString()
+                    })
+                    origSummary.text = `${name}\n` + (origSummary.text || '')
+                  }
+                }
+
                 param = {
                   usernameMeta: getUsernameMetadata(data[dynamicId].Dynamic_Data.orig.modules.module_author),
                   create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),

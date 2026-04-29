@@ -44,7 +44,7 @@ const BilibiliVideoDynamicContent: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
       {props.data.image_url && (
         <>
           <div className='flex flex-col items-center'>
-            <div className='flex overflow-hidden relative flex-col flex-1 items-center w-11/12 rounded-3xl shadow-large'>
+            <div className='flex overflow-hidden relative flex-col flex-1 items-center w-11/12 rounded-5xl shadow-large'>
               <EnhancedImage
                 src={props.data.image_url}
                 alt='封面'

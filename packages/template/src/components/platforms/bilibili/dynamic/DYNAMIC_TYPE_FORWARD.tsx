@@ -1,7 +1,6 @@
 import { renderRichTextToReact } from '@kkk/richtext'
 import React from 'react'
 
-import type { DecorationCardData } from '../../../../types/platforms/bilibili/dynamic/normal'
 import type {
   BilibiliDynamicFooterProps,
   BilibiliDynamicStatusProps,
@@ -12,6 +11,7 @@ import type {
   OriginalContentLiveRcmd,
   OriginalContentWord
 } from '../../../../types/platforms/bilibili'
+import type { DecorationCardData } from '../../../../types/platforms/bilibili/dynamic/normal'
 import { Icon } from '../../../common/Icon'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
@@ -108,7 +108,7 @@ const OriginalUserInfo: React.FC<{
  */
 const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-6xl bg-surface-secondary'>
+    <div className='px-12 py-8 mt-4 w-full rounded-8xl bg-surface-secondary'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -153,7 +153,7 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
  */
 const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-6xl bg-surface-secondary'>
+    <div className='px-12 py-8 mt-4 w-full rounded-8xl bg-surface-secondary'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -165,7 +165,7 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
       <div className='py-4'>
         <div className='text-5xl leading-relaxed text-foreground wrap-break-word'>
           {content.title && (
-            <span className='text-6xl font-bold'>{content.title}</span>
+            <span className='text-6xl font-bold'>{content.title}<br /><br /></span>
           )}
           {content.text && renderRichTextToReact(content.text, {
             at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
@@ -193,16 +193,34 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
         )
         : (
           <div className={`grid gap-3 p-4 ${content.image_url?.length === 4 ? 'grid-cols-2' : 'grid-cols-3'}`}>
-            {content.image_url?.map((img, index) => (
-              <div key={index} className='overflow-hidden relative shadow-medium aspect-square rounded-2xl'>
-                <EnhancedImage
-                  src={img.image_src}
-                  alt={`图片${index + 1}`}
-                  className='object-cover absolute top-0 left-0 w-full h-full'
-                />
-              </div>
-            ))}
-            <div className='h-2' />
+            {content.image_url?.map((img, index) => {
+              const total = content.image_url?.length || 0
+              const cols = total === 4 ? 2 : 3
+              const row = Math.floor(index / cols)
+              const col = index % cols
+              const lastRow = Math.floor((total - 1) / cols)
+              const firstRowLastCol = Math.min(cols, total) - 1
+              const lastRowLastCol = (total - 1) % cols
+
+              const cornerClasses = [
+                'overflow-hidden', 'relative', 'shadow-medium', 'aspect-square', 'rounded-2xl',
+                row === 0 && col === 0 ? 'rounded-tl-4xl' : '',
+                row === 0 && col === firstRowLastCol ? 'rounded-tr-4xl' : '',
+                row === lastRow && col === 0 ? 'rounded-bl-4xl' : '',
+                row === lastRow && col === lastRowLastCol ? 'rounded-br-4xl' : ''
+              ].filter(Boolean).join(' ')
+
+              return (
+                <div key={index} className={cornerClasses}>
+                  <EnhancedImage
+                    src={img.image_src}
+                    alt={`图片${index + 1}`}
+                    className='object-cover absolute top-0 left-0 w-full h-full'
+                  />
+                </div>
+              )
+            })}
+            <div className='col-span-full h-2' />
           </div>
         )}
     </div>
@@ -214,7 +232,7 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
  */
 const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-6xl bg-surface-secondary'>
+    <div className='px-12 py-8 mt-4 w-full rounded-8xl bg-surface-secondary'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -245,7 +263,7 @@ const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ conte
  */
 const OriginalLiveRcmdContent: React.FC<{ content: OriginalContentLiveRcmd }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-6xl bg-surface-secondary'>
+    <div className='px-12 py-8 mt-4 w-full rounded-8xl bg-surface-secondary'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}

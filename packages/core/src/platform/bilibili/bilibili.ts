@@ -534,7 +534,7 @@ export class Bilibili extends Base {
                 text: name,
                 type: 'topic'
               })
-              dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text = `${name}\n\n` + dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text
+              dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text = `${name}\n` + dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text
             }
             this.e.reply(await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_DRAW', {
               image_url: dynamicCARD.item.pictures && cover(dynamicCARD.item.pictures),
@@ -660,6 +660,25 @@ export class Bilibili extends Base {
               case DynamicType.DRAW: {
                 const dynamicCARD2 = await this.amagi.bilibili.fetcher.fetchDynamicCard({ dynamic_id: dynamicInfo.data.data.item.orig.id_str, typeMode: 'strict' })
                 const cardData = JSON.parse(dynamicCARD2.data.data.card.card)
+
+                // 处理话题
+                if ('topic' in dynamicInfo.data.data.item.orig.modules.module_dynamic && dynamicInfo.data.data.item.orig.modules.module_dynamic.topic !== null) {
+                  const name = (dynamicInfo.data.data.item.orig.modules.module_dynamic.topic as { name: string }).name
+                  const origSummary = dynamicInfo.data.data.item.orig.modules.module_dynamic.major?.opus?.summary
+                  if (origSummary) {
+                    if (!origSummary.rich_text_nodes) {
+                      origSummary.rich_text_nodes = []
+                    }
+                    origSummary.rich_text_nodes.unshift({
+                      orig_text: name,
+                      jump_url: '',
+                      text: name,
+                      type: 'topic'
+                    })
+                    origSummary.text = `${name}\n` + (origSummary.text || '')
+                  }
+                }
+
                 data = {
                   title: dynamicInfo.data.data.item.orig.modules.module_dynamic.major?.opus?.title ?? null,
                   usernameMeta: getUsernameMetadata(dynamicInfo.data.data.item.orig.modules.module_author),
@@ -674,6 +693,24 @@ export class Bilibili extends Base {
               }
               // 转发纯文动态
               case DynamicType.WORD: {
+                // 处理话题
+                if ('topic' in dynamicInfo.data.data.item.orig.modules.module_dynamic && dynamicInfo.data.data.item.orig.modules.module_dynamic.topic !== null) {
+                  const name = (dynamicInfo.data.data.item.orig.modules.module_dynamic.topic as { name: string }).name
+                  const origSummary = dynamicInfo.data.data.item.orig.modules.module_dynamic.major?.opus?.summary
+                  if (origSummary) {
+                    if (!origSummary.rich_text_nodes) {
+                      origSummary.rich_text_nodes = []
+                    }
+                    origSummary.rich_text_nodes.unshift({
+                      orig_text: name,
+                      jump_url: '',
+                      text: name,
+                      type: 'topic'
+                    })
+                    origSummary.text = `${name}\n` + (origSummary.text || '')
+                  }
+                }
+
                 data = {
                   usernameMeta: getUsernameMetadata(dynamicInfo.data.data.item.orig.modules.module_author),
                   create_time: TimeFormatter.toDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),

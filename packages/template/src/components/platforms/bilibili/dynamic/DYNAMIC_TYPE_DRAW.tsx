@@ -119,16 +119,34 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
         <div className='px-20'>
           {/* 九宫格布局 */}
           {layoutType === 'grid' && (
-            <div className='grid grid-cols-3 gap-4 w-full'>
-              {props.image_url.slice(0, 9).map((img, index) => (
-                <div key={index} className='overflow-hidden rounded-2xl aspect-square shadow-medium'>
-                  <EnhancedImage
-                    src={img.image_src}
-                    alt={`图片${index + 1}`}
-                    className='object-cover w-full h-full'
-                  />
-                </div>
-              ))}
+            <div className='grid grid-cols-3 gap-3 w-full'>
+              {props.image_url.slice(0, 9).map((img, index) => {
+                const total = Math.min(props.image_url?.length || 0, 9)
+                const cols = 3
+                const row = Math.floor(index / cols)
+                const col = index % cols
+                const lastRow = Math.floor((total - 1) / cols)
+                const firstRowLastCol = Math.min(cols, total) - 1
+                const lastRowLastCol = (total - 1) % cols
+
+                const cornerClasses = [
+                  'overflow-hidden', 'aspect-square', 'shadow-medium', 'rounded-2xl',
+                  row === 0 && col === 0 ? 'rounded-tl-4xl' : '',
+                  row === 0 && col === firstRowLastCol ? 'rounded-tr-4xl' : '',
+                  row === lastRow && col === 0 ? 'rounded-bl-4xl' : '',
+                  row === lastRow && col === lastRowLastCol ? 'rounded-br-4xl' : ''
+                ].filter(Boolean).join(' ')
+
+                return (
+                  <div key={index} className={cornerClasses}>
+                    <EnhancedImage
+                      src={img.image_src}
+                      alt={`图片${index + 1}`}
+                      className='object-cover w-full h-full'
+                    />
+                  </div>
+                )
+              })}
             </div>
           )}
           
@@ -142,7 +160,7 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
                   .map((img, arrayIndex) => {
                     const originalIndex = arrayIndex * 2
                     return (
-                      <div key={originalIndex} className='overflow-hidden rounded-2xl shadow-medium'>
+                      <div key={originalIndex} className='overflow-hidden rounded-3xl shadow-medium'>
                         <EnhancedImage
                           src={img.image_src}
                           alt={`图片${originalIndex + 1}`}
@@ -159,7 +177,7 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
                   .map((img, arrayIndex) => {
                     const originalIndex = arrayIndex * 2 + 1
                     return (
-                      <div key={originalIndex} className='overflow-hidden rounded-2xl shadow-medium'>
+                      <div key={originalIndex} className='overflow-hidden rounded-3xl shadow-medium'>
                         <EnhancedImage
                           src={img.image_src}
                           alt={`图片${originalIndex + 1}`}
@@ -177,7 +195,7 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
             props.image_url.map((img, index) => (
               <React.Fragment key={index}>
                 <div className='flex flex-col items-center'>
-                  <div className='flex overflow-hidden flex-col flex-1 items-center rounded-3xl shadow-large'>
+                  <div className='flex overflow-hidden flex-col flex-1 items-center rounded-4xl shadow-large'>
                     <EnhancedImage
                       src={img.image_src}
                       alt='封面'
