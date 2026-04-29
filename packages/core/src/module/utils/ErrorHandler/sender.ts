@@ -19,9 +19,10 @@ export const sendErrorToTrigger = async (
   ctx: ErrorContext,
   img: Awaited<ReturnType<typeof renderErrorImage>>
 ) => {
-  const { event } = ctx
+  const { event, options } = ctx
 
   if (!event) return
+  if (isPushTask(event, options.businessName)) return
   if (!Config.app.errorLogSendTo.some(item => item === 'trigger')) return
 
   try {
