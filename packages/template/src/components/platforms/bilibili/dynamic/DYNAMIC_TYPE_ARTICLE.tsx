@@ -4,8 +4,8 @@ import React from 'react'
 import type { BilibiliArticleDynamicProps } from '../../../../types/platforms/bilibili/dynamic/article'
 import { Icon } from '../../../common/Icon'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
-import { CommentText, DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
 import { ShareIcon, ThumbUpIcon } from '../Icons'
+import { CommentText, DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
 
 /**
  * B站专栏动态用户信息组件

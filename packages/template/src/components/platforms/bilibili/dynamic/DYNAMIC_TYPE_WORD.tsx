@@ -10,8 +10,8 @@ import type {
 } from '../../../../types/platforms/bilibili'
 import { Icon } from '../../../common/Icon'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
-import { DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
 import { ShareIcon, ThumbUpIcon } from '../Icons'
+import { DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
 import { BilibiliAdditionalCard } from './AdditionalCard'
 
 /**

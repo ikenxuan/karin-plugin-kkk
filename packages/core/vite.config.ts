@@ -31,6 +31,14 @@ getFiles('src/apps')
 
 const karinVersion = getKarinVersion(__dirname)
 
+// 定义需要打包进 main 的 src 目录前缀
+const mainSrcPrefixes = [
+  resolve(__dirname, 'src'),
+  resolve(__dirname, '../amagi/packages/core/src'),
+  resolve(__dirname, '../richtext/src'),
+  resolve(__dirname, '../template/src')
+].map((p) => p.replace(/\\/g, '/'))
+
 export default defineConfig({
   define: {
     __dirname: 'new URL(\'.\', import.meta.url).pathname',
@@ -67,7 +75,11 @@ export default defineConfig({
           groups: [
             {
               name: 'main',
-              test: /src/,
+              test: (module) => {
+                const id = typeof module === 'string' ? module.replace(/\\/g, '/') : ''
+                if (!id) return false
+                return mainSrcPrefixes.some((prefix) => id.startsWith(prefix + '/'))
+              },
               priority: 1
             },
             {

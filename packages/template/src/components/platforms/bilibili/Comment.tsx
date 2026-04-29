@@ -9,7 +9,6 @@ import type {
   QRCodeSectionProps
 } from '../../../types/platforms/bilibili'
 import type { FansDetail } from '../../../types/platforms/bilibili/comment'
-import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 import { ThumbUpIcon } from './Icons'
 
