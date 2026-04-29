@@ -354,7 +354,9 @@
     --ease-out-quart: cubic-bezier(.165, .84, .44, 1);
     --ease-out-fluid: cubic-bezier(.32, .72, 0, 1);
     --ease-linear: linear;
+    --radius-5xl: calc(var(--radius) * 5);
     --radius-6xl: calc(var(--radius) * 6);
+    --radius-8xl: calc(var(--radius) * 8);
   }
 
   @layer theme {
@@ -12451,6 +12453,10 @@
     grid-column: span 8 / span 8;
   }
 
+  .col-span-full {
+    grid-column: 1 / -1;
+  }
+
   .container {
     width: 100%;
   }
@@ -14353,8 +14359,16 @@
     border-radius: calc(var(--radius) * 4);
   }
 
+  .rounded-5xl {
+    border-radius: var(--radius-5xl);
+  }
+
   .rounded-6xl {
     border-radius: var(--radius-6xl);
+  }
+
+  .rounded-8xl {
+    border-radius: var(--radius-8xl);
   }
 
   .rounded-\[0\.5em\] {
@@ -14430,16 +14444,32 @@
     border-top-left-radius: calc(var(--radius) * 2);
   }
 
+  .rounded-tl-4xl {
+    border-top-left-radius: calc(var(--radius) * 4);
+  }
+
   .rounded-tr-2xl {
     border-top-right-radius: calc(var(--radius) * 2);
+  }
+
+  .rounded-tr-4xl {
+    border-top-right-radius: calc(var(--radius) * 4);
   }
 
   .rounded-br-2xl {
     border-bottom-right-radius: calc(var(--radius) * 2);
   }
 
+  .rounded-br-4xl {
+    border-bottom-right-radius: calc(var(--radius) * 4);
+  }
+
   .rounded-bl-2xl {
     border-bottom-left-radius: calc(var(--radius) * 2);
+  }
+
+  .rounded-bl-4xl {
+    border-bottom-left-radius: calc(var(--radius) * 4);
   }
 
   .border {
