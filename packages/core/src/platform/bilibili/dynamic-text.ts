@@ -208,9 +208,18 @@ export const buildBilibiliDynamicRichText = (
         nodes.push(createViewPictureNode(matchText))
         break
 
-      default:
-        nodes.push(createTextNode(matchText))
+      default: {
+        // 未知类型兜底：尝试识别其中的 URL
+        const parts = matchText.split(/(\r?\n)/)
+        for (const part of parts) {
+          if (part === '\r\n' || part === '\n') {
+            nodes.push(createLineBreakNode())
+          } else if (part) {
+            nodes.push(...parseTextWithUrls(part))
+          }
+        }
         break
+      }
     }
 
     currentPos = matchPos + matchText.length
