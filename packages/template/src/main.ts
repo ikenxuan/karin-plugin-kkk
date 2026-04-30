@@ -4,8 +4,10 @@ import path from 'node:path'
 import antDesignIcons from '@iconify/json/json/ant-design.json'
 import lucideIcons from '@iconify/json/json/lucide.json'
 import materialSymbolsIcons from '@iconify/json/json/material-symbols.json'
+import mingcuteIcons from '@iconify/json/json/mingcute.json'
 import riIcons from '@iconify/json/json/ri.json'
 import simpleIcons from '@iconify/json/json/simple-icons.json'
+import solarIcons from '@iconify/json/json/solar.json'
 import tablerIcons from '@iconify/json/json/tabler.json'
 import { addCollection } from '@iconify/react'
 import React from 'react'
@@ -19,6 +21,9 @@ addCollection(tablerIcons)
 addCollection(simpleIcons)
 // @ts-ignore
 addCollection(materialSymbolsIcons)
+addCollection(mingcuteIcons)
+// @ts-ignore
+addCollection(solarIcons)
 
 import { PreviewLayout } from './dev/preview/components/PreviewLayout'
 import type { PreviewState as DevPreviewState } from './dev/preview/types'
