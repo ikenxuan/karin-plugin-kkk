@@ -1653,8 +1653,11 @@ interface MenuItem {
   title: string;
   /** 菜单项描述 */
   description: string;
-  /** 图标名称 */
-  icon?: string;
+  /** 图标：可以是图标名称字符串，或带颜色的对象 */
+  icon?: string | {
+    name: string;
+    color?: string;
+  };
 }
 /**
  * 菜单分组接口
