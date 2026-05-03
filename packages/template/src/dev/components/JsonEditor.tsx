@@ -1,4 +1,4 @@
-import { Button, Card, Label, ListBox, Select, Tooltip } from '@heroui/react'
+import { Button, Label, ListBox, Select, Tooltip } from '@heroui/react'
 import Editor from '@monaco-editor/react'
 import React, { useEffect, useRef, useState } from 'react'
 
@@ -9,6 +9,8 @@ interface JsonEditorProps {
   data: any
   /** 数据变更回调 */
   onChange: (data: any) => void
+  /** 错误状态变更回调 */
+  onErrorChange?: (hasError: boolean) => void
   /** 是否只读 */
   readonly?: boolean
   /** 平台类型 */
@@ -21,16 +23,8 @@ interface JsonEditorProps {
   selectedDataFile?: string
   /** 数据文件变更回调 */
   onDataFileChange?: (filename: string) => void
-  /** 保存新数据文件回调 */
-  onSaveNewDataFile?: (filename: string, data: any) => void
   /** 是否深色模式 */
   isDarkMode?: boolean
-  /** 保存回调（用于 Modal 模式） */
-  onSave?: () => void
-  /** 取消回调（用于 Modal 模式） */
-  onCancel?: () => void
-  /** 是否正在保存 */
-  isSaving?: boolean
 }
 
 /**
@@ -39,24 +33,19 @@ interface JsonEditorProps {
 export const JsonEditor: React.FC<JsonEditorProps> = ({
   data,
   onChange,
+  onErrorChange,
   readonly = false,
   platform,
   templateId,
   availableDataFiles = [],
   selectedDataFile,
   onDataFileChange,
-  isDarkMode = false,
-  onSave,
-  onCancel,
-  isSaving = false
+  isDarkMode = false
 }) => {
   const [jsonText, setJsonText] = useState<string>('')
   const [error, setError] = useState<string>('')
   const [isFormatted, setIsFormatted] = useState(true)
   const isInternalChange = useRef<boolean>(false)
-
-  const toolbarButtonClass = 'h-8 rounded-xl border border-black/10 bg-black/3 text-foreground shadow-none hover:bg-black/5 dark:border-white/10 dark:bg-white/4 dark:hover:bg-white/6'
-  const iconButtonClass = 'h-8 w-8 rounded-xl border border-black/10 bg-black/3 text-foreground shadow-none hover:bg-black/5 dark:border-white/10 dark:bg-white/4 dark:hover:bg-white/6'
 
   const handleEditorWillMount = (monaco: any) => {
     monaco.editor.defineTheme('json-dark', {
@@ -105,6 +94,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
     if (data) {
       setJsonText(JSON.stringify(data, null, isFormatted ? 2 : 0))
       setError('')
+      onErrorChange?.(false)
     }
   }, [data, isFormatted])
 
@@ -133,10 +123,13 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
     try {
       const newData = parseJavaScriptObject(text)
       setError('')
+      onErrorChange?.(false)
       isInternalChange.current = true
       onChange(newData)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'JSON 格式错误')
+      const errMsg = err instanceof Error ? err.message : 'JSON 格式错误'
+      setError(errMsg)
+      onErrorChange?.(true)
     }
   }
 
@@ -146,8 +139,10 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
       setJsonText(JSON.stringify(parsed, null, 2))
       setIsFormatted(true)
       setError('')
+      onErrorChange?.(false)
     } catch {
       setError('无法格式化：格式错误')
+      onErrorChange?.(true)
     }
   }
 
@@ -157,8 +152,10 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
       setJsonText(JSON.stringify(parsed))
       setIsFormatted(false)
       setError('')
+      onErrorChange?.(false)
     } catch {
       setError('无法压缩：格式错误')
+      onErrorChange?.(true)
     }
   }
 
@@ -199,21 +196,20 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
     URL.revokeObjectURL(url)
   }
 
-  const renderToolButton = (label: string, icon: React.ReactNode, onPress: () => void, disabled = false) => (
+  const renderIconButton = (label: string, icon: React.ReactNode, onPress: () => void, disabled = false) => (
     <Tooltip delay={300}>
       <Tooltip.Trigger>
         <Button
-          className={iconButtonClass}
           isDisabled={disabled}
           isIconOnly
           onPress={onPress}
           size='sm'
-          variant='secondary'
+          variant='flat'
         >
           {icon}
         </Button>
       </Tooltip.Trigger>
-      <Tooltip.Content className='rounded-xl border border-black/10 bg-white px-3 py-1.5 text-xs text-foreground shadow-lg dark:border-white/10 dark:bg-zinc-950' showArrow>
+      <Tooltip.Content showArrow>
         <Tooltip.Arrow />
         {label}
       </Tooltip.Content>
@@ -221,166 +217,112 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   )
 
   return (
-    <div className='flex h-full w-full flex-col gap-2 bg-transparent p-3'>
-      <Card
-        className='flex min-h-0 flex-1 rounded-4xl border border-black/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-zinc-950 dark:shadow-[0_28px_88px_rgba(0,0,0,0.55)]'
-        variant='transparent'
-      >
-        <Card.Header className='flex flex-row items-center justify-between gap-3 border-b border-black/10 px-4 py-3 dark:border-white/10'>
-          <div className='flex items-center gap-3'>
-            <div className='flex items-center gap-2'>
-              <Icon icon="lucide:code" className='h-4 w-4 text-foreground' />
-              <h3 className='text-sm font-semibold text-foreground'>JSON 编辑器</h3>
-            </div>
-
-            <div className='h-5 w-px bg-black/10 dark:bg-white/10' />
-
-            <div className='flex gap-1.5'>
-              <Button
-                className={toolbarButtonClass}
-                isDisabled={readonly}
-                onPress={formatJson}
-                size='sm'
-                variant='secondary'
-              >
-                格式化
-              </Button>
-              <Button
-                className={toolbarButtonClass}
-                isDisabled={readonly}
-                onPress={compressJson}
-                size='sm'
-                variant='secondary'
-              >
-                压缩
-              </Button>
-            </div>
+    <div className='flex h-full w-full flex-col'>
+      {/* 工具栏 */}
+      <div className='flex shrink-0 items-center justify-between gap-3 border-b border-divider px-4 py-2.5'>
+        <div className='flex items-center gap-2'>
+          <div className='flex items-center gap-1.5'>
+            <Icon icon="lucide:code" className='h-4 w-4 text-default-500' />
+            <span className='text-sm font-semibold'>JSON 编辑器</span>
           </div>
 
+          <div className='w-px h-4 bg-default-200' />
+
+          <div className='flex gap-1'>
+            <Button variant='flat' size='sm' isDisabled={readonly} onPress={formatJson}>
+              格式化
+            </Button>
+            <Button variant='flat' size='sm' isDisabled={readonly} onPress={compressJson}>
+              压缩
+            </Button>
+          </div>
+        </div>
+
+        <div className='flex items-center gap-2'>
+          {availableDataFiles.length > 0 && (
+            <>
+              <div className='flex items-center gap-1.5'>
+                <Icon icon="lucide:file-json" className='h-3.5 w-3.5 text-default-500' />
+                <Select
+                  aria-label='选择数据文件'
+                  className='w-48'
+                  placeholder='选择数据文件'
+                  value={selectedDataFile ?? null}
+                  variant='flat'
+                  size='sm'
+                  onChange={(value) => {
+                    if (typeof value === 'string' && value && onDataFileChange) {
+                      onDataFileChange(value)
+                    }
+                  }}
+                >
+                  <Label className='sr-only'>选择数据文件</Label>
+                  <Select.Trigger>
+                    <Select.Value />
+                    <Select.Indicator />
+                  </Select.Trigger>
+                  <Select.Popover>
+                    <ListBox>
+                      {availableDataFiles.map((filename) => (
+                        <ListBox.Item
+                          key={filename}
+                          id={filename}
+                          textValue={filename.replace('.json', '')}
+                        >
+                          {filename.replace('.json', '')}
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                      ))}
+                    </ListBox>
+                  </Select.Popover>
+                </Select>
+              </div>
+              <div className='w-px h-4 bg-default-200' />
+            </>
+          )}
+
+          <div className='flex gap-1'>
+            {renderIconButton('复制', <Icon icon="lucide:copy" className='h-3.5 w-3.5' />, copyToClipboard)}
+            {renderIconButton('导入', <Icon icon="lucide:upload" className='h-3.5 w-3.5' />, importJson, readonly)}
+            {renderIconButton('导出', <Icon icon="lucide:download" className='h-3.5 w-3.5' />, exportJson)}
+          </div>
+        </div>
+      </div>
+
+      {/* 错误提示 */}
+      {error && (
+        <div className='shrink-0 border-b border-danger px-4 py-2 text-danger'>
           <div className='flex items-center gap-2'>
-            {availableDataFiles.length > 0 && (
-              <>
-                <div className='flex items-center gap-2'>
-                  <Icon icon="lucide:file-json" className='h-3.5 w-3.5 text-muted' />
-                  <Select
-                    aria-label='选择数据文件'
-                    className='w-60'
-                    placeholder='选择数据文件'
-                    value={selectedDataFile ?? null}
-                    variant='secondary'
-                    onChange={(value) => {
-                      if (typeof value === 'string' && value && onDataFileChange) {
-                        onDataFileChange(value)
-                      }
-                    }}
-                  >
-                    <Label className='sr-only'>选择数据文件</Label>
-                    <Select.Trigger className='h-8 rounded-xl border border-black/10 bg-black/3 px-3 py-2 text-sm shadow-none hover:bg-black/5 dark:border-white/10 dark:bg-white/4 dark:hover:bg-white/6'>
-                      <Select.Value className='text-sm text-foreground' />
-                      <Select.Indicator className='text-muted' />
-                    </Select.Trigger>
-                    <Select.Popover className={isDarkMode ? 'dark' : 'light'}>
-                      <ListBox className='rounded-2xl border border-black/8 bg-white p-1 shadow-[0_16px_48px_rgba(15,23,42,0.12)] dark:border-white/10 dark:bg-zinc-950 dark:shadow-[0_18px_54px_rgba(0,0,0,0.55)]'>
-                        {availableDataFiles.map((filename) => (
-                          <ListBox.Item
-                            key={filename}
-                            className='rounded-xl px-3 py-2 text-sm text-foreground data-[hovered=true]:bg-black/4 dark:data-[hovered=true]:bg-white/6'
-                            id={filename}
-                            textValue={filename.replace('.json', '')}
-                          >
-                            {filename.replace('.json', '')}
-                            <ListBox.ItemIndicator />
-                          </ListBox.Item>
-                        ))}
-                      </ListBox>
-                    </Select.Popover>
-                  </Select>
-                </div>
-
-                <div className='h-5 w-px bg-black/10 dark:bg-white/10' />
-              </>
-            )}
-
-            <div className='flex gap-1.5'>
-              {renderToolButton('复制到剪贴板', <Icon icon="lucide:copy" className='h-3.5 w-3.5' />, copyToClipboard)}
-              {renderToolButton('导入 JSON 文件', <Icon icon="lucide:upload" className='h-3.5 w-3.5' />, importJson, readonly)}
-              {renderToolButton('导出 JSON 文件', <Icon icon="lucide:download" className='h-3.5 w-3.5' />, exportJson)}
-            </div>
-
-            {onSave && onCancel && (
-              <>
-                <div className='h-5 w-px bg-black/10 dark:bg-white/10' />
-                <div className='flex gap-1.5'>
-                  <Button
-                    className={toolbarButtonClass}
-                    onPress={onCancel}
-                    size='sm'
-                    variant='secondary'
-                  >
-                    <Icon icon="lucide:x" className='h-3.5 w-3.5' />
-                    取消
-                  </Button>
-                  <Button
-                    className='h-8 rounded-xl border border-black bg-black text-white shadow-none hover:bg-black/90 dark:border-white dark:bg-white dark:text-black dark:hover:bg-white/90'
-                    isDisabled={!!error}
-                    isPending={isSaving}
-                    onPress={onSave}
-                    size='sm'
-                    variant='secondary'
-                  >
-                    {({ isPending }) => (
-                      <>
-                        <Icon icon="lucide:save" className='h-3.5 w-3.5' />
-                        {isPending ? '保存中...' : '保存并重载'}
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </>
-            )}
+            <svg className='h-4 w-4 shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
+            </svg>
+            <span className='text-xs'>{error}</span>
           </div>
-        </Card.Header>
+        </div>
+      )}
 
-        {error && (
-          <div className='shrink-0 border-b border-danger-soft-hover bg-danger-soft/70 px-4 py-2 dark:border-danger/30 dark:bg-danger-soft/40'>
-            <div className='flex items-center gap-2 text-danger'>
-              <svg className='h-4 w-4 shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
-              </svg>
-              <span className='text-xs'>{error}</span>
-            </div>
-          </div>
-        )}
-
-        <Card.Content
-          className='relative flex min-h-0 flex-1 px-0 pb-0'
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.stopPropagation()
-            }
+      {/* 编辑器 */}
+      <div className='relative min-h-0 flex-1'>
+        <Editor
+          beforeMount={handleEditorWillMount}
+          defaultLanguage='json'
+          height='100%'
+          options={{
+            minimap: { enabled: true },
+            fontSize: 14,
+            formatOnPaste: true,
+            formatOnType: true,
+            readOnly: readonly,
+            scrollBeyondLastLine: false,
+            automaticLayout: true,
+            padding: { top: 12, bottom: 12 },
+            ariaLabel: 'JSON 编辑器'
           }}
-        >
-          <Editor
-            beforeMount={handleEditorWillMount}
-            defaultLanguage='json'
-            height='100%'
-            options={{
-              minimap: { enabled: false },
-              fontSize: 14,
-              formatOnPaste: true,
-              formatOnType: true,
-              readOnly: readonly,
-              scrollBeyondLastLine: false,
-              automaticLayout: true,
-              padding: { top: 16, bottom: 16 },
-              ariaLabel: 'JSON 编辑器'
-            }}
-            onChange={handleJsonChange}
-            theme={editorTheme}
-            value={jsonText}
-          />
-        </Card.Content>
-      </Card>
+          onChange={handleJsonChange}
+          theme={editorTheme}
+          value={jsonText}
+        />
+      </div>
     </div>
   )
 }

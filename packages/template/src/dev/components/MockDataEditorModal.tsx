@@ -1,6 +1,7 @@
-import { Modal } from '@heroui/react'
+import { Button, Modal } from '@heroui/react'
 import React, { useEffect, useState } from 'react'
 
+import { Icon } from '../../components/common/Icon'
 import { JsonEditor } from './JsonEditor'
 
 interface MockDataEditorModalProps {
@@ -33,11 +34,13 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
 }) => {
   const [currentData, setCurrentData] = useState<any>(initialData)
   const [isSaving, setIsSaving] = useState(false)
+  const [hasError, setHasError] = useState(false)
 
   // 当初始数据变化或模态窗打开时，重置当前数据
   useEffect(() => {
     if (isOpen && initialData) {
       setCurrentData(initialData)
+      setHasError(false)
     }
   }, [isOpen, initialData])
 
@@ -46,26 +49,20 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
     if (!isOpen) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // 检查是否按下 Ctrl+S (Windows/Linux) 或 Cmd+S (Mac)
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-        // 阻止浏览器默认的保存页面行为
         e.preventDefault()
         e.stopPropagation()
-        
-        // 触发保存并重载
-        if (!isSaving) {
+        if (!isSaving && !hasError) {
           handleSave()
         }
       }
     }
 
-    // 在捕获阶段监听，确保能够拦截事件
     document.addEventListener('keydown', handleKeyDown, true)
-
     return () => {
       document.removeEventListener('keydown', handleKeyDown, true)
     }
-  }, [isOpen, isSaving, currentData])
+  }, [isOpen, isSaving, currentData, hasError])
 
   const handleSave = async () => {
     try {
@@ -81,7 +78,6 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
 
   return (
     <Modal.Backdrop
-      className='bg-black/48 dark:bg-black/72'
       isDismissable
       isOpen={isOpen}
       onOpenChange={(open) => {
@@ -91,23 +87,45 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
       }}
       variant='blur'
     >
-      <Modal.Container className='p-4 sm:p-6' size='cover'>
-        <Modal.Dialog
-          className={`h-[90vh] max-h-[90vh] overflow-hidden rounded-4xl border border-black/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-zinc-950 dark:shadow-[0_28px_84px_rgba(0,0,0,0.55)] ${isDarkMode ? 'dark' : 'light'}`}
-        >
+      <Modal.Container className='p-2 sm:p-4' size='cover'>
+        <Modal.Dialog className='max-h-[92vh] overflow-hidden flex flex-col'>
           <JsonEditor
             data={currentData}
-            onChange={setCurrentData}
+            onChange={(data) => {
+              setCurrentData(data)
+            }}
+            onErrorChange={setHasError}
             platform={platform}
             templateId={templateId}
             availableDataFiles={availableDataFiles}
             selectedDataFile={selectedDataFile}
             onDataFileChange={onDataFileChange}
             isDarkMode={isDarkMode}
-            onSave={handleSave}
-            onCancel={onClose}
-            isSaving={isSaving}
           />
+
+          <Modal.Footer className='flex justify-end gap-2'>
+            <Button
+              variant='flat'
+              size='sm'
+              onPress={onClose}
+            >
+              取消
+            </Button>
+            <Button
+              color='primary'
+              isDisabled={hasError}
+              isPending={isSaving}
+              onPress={handleSave}
+              size='sm'
+            >
+              {({ isPending }) => (
+                <span className='flex items-center gap-1.5'>
+                  <Icon icon="lucide:save" className='h-3.5 w-3.5' />
+                  {isPending ? '保存中...' : '保存并重载'}
+                </span>
+              )}
+            </Button>
+          </Modal.Footer>
         </Modal.Dialog>
       </Modal.Container>
     </Modal.Backdrop>

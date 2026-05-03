@@ -15,6 +15,8 @@ interface PreviewPanelProps {
   platform: PlatformType
   /** 模板ID */
   templateId: string
+  /** 数据文件 */
+  dataFile?: string
   /** 数据 */
   data: any
   /** 加载错误 */
@@ -49,6 +51,7 @@ export interface PreviewPanelRef {
 export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   platform,
   templateId,
+  dataFile,
   data,
   loadError,
   qrCodeDataUrl,
@@ -82,12 +85,13 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   const componentRendererProps = useMemo(() => ({
     platform,
     templateId,
+    dataFile,
     data,
     qrCodeDataUrl,
     loadError,
     onLoadComplete: onComponentLoadComplete,
     versionEnabled
-  }), [platform, templateId, data, qrCodeDataUrl, loadError, onComponentLoadComplete, versionEnabled])
+  }), [platform, templateId, dataFile, data, qrCodeDataUrl, loadError, onComponentLoadComplete, versionEnabled])
 
   /**
    * 截图功能

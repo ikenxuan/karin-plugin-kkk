@@ -250,6 +250,7 @@ export const App: React.FC = () => {
     setSelectedPlatform(platform)
     setSelectedTemplate(defaultTemplate)
     setSelectedDataFile('default.json')
+    setTemplateData(null)
   }
 
   /**
@@ -259,6 +260,7 @@ export const App: React.FC = () => {
   const handleTemplateChange = (template: string) => {
     setSelectedTemplate(template)
     setSelectedDataFile('default.json')
+    setTemplateData(null)
   }
 
   /**
@@ -291,6 +293,7 @@ export const App: React.FC = () => {
   const loadData = async (filename?: string) => {
     try {
       setLoadError(null)
+      setTemplateData(null)
       // 加载模板数据
       const data = await dataService.getTemplateData(
         selectedPlatform,
@@ -719,6 +722,7 @@ export const App: React.FC = () => {
                   ref={previewPanelRef}
                   platform={selectedPlatform}
                   templateId={selectedTemplate}
+                  dataFile={selectedDataFile}
                   data={templateData}
                   loadError={loadError}
                   qrCodeDataUrl={qrCodeDataUrl}

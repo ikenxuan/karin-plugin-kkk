@@ -299,7 +299,7 @@ const renderNodeToReact = (
       if (lastIndex < text.length) {
         parts.push(renderStyledText(text.slice(lastIndex), node.style, `${index}-post`))
       }
-      return <>{parts}</>
+      return <React.Fragment key={`text-fragment-${index}`}>{parts}</React.Fragment>
     }
 
     case 'lineBreak':

@@ -11,6 +11,8 @@ interface ComponentRendererProps {
   platform: PlatformType
   /** 当前模板ID */
   templateId: string
+  /** 当前数据文件 */
+  dataFile?: string
   /** 当前数据 */
   data: any
   /** 二维码数据URL */
@@ -86,9 +88,16 @@ class ComponentErrorBoundary extends React.Component<{ children: React.ReactNode
  * @param props 组件属性
  * @returns JSX元素
  */
-const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, templateId, data, qrCodeDataUrl, loadError, onLoadComplete, versionEnabled = true }) => {
+const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, templateId, dataFile, data, qrCodeDataUrl, loadError, onLoadComplete, versionEnabled = true }) => {
   const { renderData, extraProps } = React.useMemo(() => splitPreviewPayload(data), [data])
   const componentConfig = getComponentConfig(platform, templateId)
+
+  // 切换组件时在控制台打印信息
+  React.useEffect(() => {
+    if (componentConfig) {
+      console.log(`[DevPanel] 渲染组件: ${platform} / ${componentConfig.name} (${templateId})`)
+    }
+  }, [platform, templateId, componentConfig])
 
   // 所有顶层 Hooks 都必须在任何 early return 之前调用，避免主题切换或数据到达时触发 Hook 顺序变化。
   const ResolvedComponent = React.useMemo<React.ComponentType<any> | null>(() => {
@@ -370,7 +379,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
   const isLazy = !componentConfig.component && !!componentConfig.lazyComponent
 
   return (
-    <ComponentErrorBoundary>
+    <ComponentErrorBoundary key={`${platform}-${templateId}-${dataFile || 'default'}`}>
       {isLazy ? (
         <React.Suspense
           fallback={
