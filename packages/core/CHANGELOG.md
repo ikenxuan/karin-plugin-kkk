@@ -2,6 +2,41 @@
 
 # Changelog
 
+## [2.30.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.30.0...v2.30.1) (2026-05-03)
+
+
+### 🐛 错误修复
+
+* handler.ts:43 无条件调用了 sendErrorToTrigger(ctx, img) ([0eed4ce](https://github.com/ikenxuan/karin-plugin-kkk/commit/0eed4ce4b7dad3e51db7871e17378dfcc812bd23))
+* icon ([dd626d4](https://github.com/ikenxuan/karin-plugin-kkk/commit/dd626d4ea6aaaf0a0af73f87657494209051e8ff))
+* 修复模板开发面板部分bug ([697a3fc](https://github.com/ikenxuan/karin-plugin-kkk/commit/697a3fcdaa34ad04ddbbccc8f17e5854da1c6148))
+* 帮助图添加更多命令 ([484e391](https://github.com/ikenxuan/karin-plugin-kkk/commit/484e3918a777fd227f1a50fe4a8feb82f6283978))
+* 抖音直播推送 ([9872ce2](https://github.com/ikenxuan/karin-plugin-kkk/commit/9872ce2168806d080f08acb86b714ed4d0f85b4a))
+* 更新帮助菜单项图标和类型定义 ([bdbd04e](https://github.com/ikenxuan/karin-plugin-kkk/commit/bdbd04e8ebeca816b3cf0b48bca3e5de66e4029b))
+* 细优 ([ed6ab05](https://github.com/ikenxuan/karin-plugin-kkk/commit/ed6ab0533c97e2ef3d21ec5a56d970dc9aaf5086))
+
+
+### 💄 UI 优化
+
+* **bilibili:** 转发动态效果优化 ([21d097d](https://github.com/ikenxuan/karin-plugin-kkk/commit/21d097da32a38794d793457bbefe54b47890686d))
+* **B站:** 优化图标 ([ba08410](https://github.com/ikenxuan/karin-plugin-kkk/commit/ba08410cd7ff2e07434f9241b9576ff90934b5f1))
+* **douyin:** 重写直播推送图片 ([c43697d](https://github.com/ikenxuan/karin-plugin-kkk/commit/c43697d075397c8233fc101e0544202242019828))
+
+
+### 📦 依赖更新
+
+* update ([137629f](https://github.com/ikenxuan/karin-plugin-kkk/commit/137629f18706bb6110d7a61de415486c26ab15bc))
+
+
+### 🏗️ 构建系统
+
+* 优化分包配置 ([62fb7b5](https://github.com/ikenxuan/karin-plugin-kkk/commit/62fb7b5544954d2c85773fd69b85b2a0e3de07af))
+
+
+### 💯 细节优化
+
+* 1 ([cce6332](https://github.com/ikenxuan/karin-plugin-kkk/commit/cce633210f8629e364ca5d5975dd037cc2f6b614))
+
 ## [2.30.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.29.0...v2.30.0) (2026-04-26)
 
 
