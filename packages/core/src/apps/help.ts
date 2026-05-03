@@ -66,6 +66,12 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
         description: '全部强制推送：手动模拟一次定时任务；\n强制推送：只在触发群模拟一次定时任务；\n已推送过的不会再推送',
         icon: 'Send',
         roles: ['master']
+      },
+      {
+        title: '#kkk推送全局忽略 + 链接',
+        description: '对抖音作品或B站动态进行全局忽略，所有群组的推送标记为已处理',
+        icon: 'RefreshCw',
+        roles: ['master']
       }
     ],
     subGroups: [

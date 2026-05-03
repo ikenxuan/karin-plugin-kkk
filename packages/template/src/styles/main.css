@@ -20,7 +20,7 @@
     @slot;
   }
   @media (prefers-color-scheme: dark) {
-    &:not(:is(.light, .light *, [data-theme="light"], [data-theme="light"] *)) & {
+    &:not(:is(.light, .light *, [data-theme="light"], [data-theme="light"] *)) {
       @slot;
     }
   }

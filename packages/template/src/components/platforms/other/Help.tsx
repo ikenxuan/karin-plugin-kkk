@@ -46,15 +46,15 @@ const MenuItemComponent: React.FC<{
       <div className="pt-2 shrink-0 relative">
         <Icon
           icon={iconName}
-          className="w-16 h-16 relative z-10 text-slate-900 dark:text-white"
+          className="w-16 h-16 relative z-10 text-foreground"
           style={{ color: themeColor }}
         />
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className="mb-3 text-4xl font-black leading-tight tracking-wide text-slate-900 dark:text-white">
+        <h3 className="mb-3 text-4xl font-black leading-tight tracking-wide text-foreground">
           {item.title}
         </h3>
-        <p className="text-2xl font-medium leading-relaxed whitespace-pre-line opacity-80 text-slate-600 dark:text-white/70">
+        <p className="text-2xl font-medium leading-relaxed whitespace-pre-line text-muted">
           {item.description}
         </p>
       </div>
@@ -80,7 +80,7 @@ const MenuGroupComponent: React.FC<{
           className="w-3 h-16 rounded-full"
           style={{ backgroundColor: themeColor }}
         />
-        <h2 className="m-0 text-[4rem] font-black tracking-tight uppercase leading-none text-slate-900 dark:text-white">
+        <h2 className="m-0 text-[4rem] font-black tracking-tight uppercase leading-none text-foreground">
           {group.title}
         </h2>
       </div>
@@ -97,7 +97,7 @@ const MenuGroupComponent: React.FC<{
 
       {group.subGroups?.map((sub, i) => (
         <div key={i} className="mt-20 relative">
-          <h3 className="m-0 mb-10 text-3xl font-bold tracking-wide uppercase opacity-60 flex items-center gap-4 text-slate-900 dark:text-white">
+          <h3 className="m-0 mb-10 text-3xl font-bold tracking-wide uppercase opacity-60 flex items-center gap-4 text-foreground">
             <div className="w-2 h-2 rounded-full bg-current" />
             {sub.title}
           </h3>
@@ -145,7 +145,6 @@ export const Help: React.FC<Omit<HelpProps, 'templateType' | 'templateName'>> = 
   return (
     <DefaultLayout 
       {...props}
-      className="relative overflow-hidden bg-slate-50 dark:bg-[#09090b]"
     >
       {/* 1. 弥散光背景层 */}
       <div className="absolute inset-0 pointer-events-none z-0">
@@ -188,7 +187,7 @@ export const Help: React.FC<Omit<HelpProps, 'templateType' | 'templateName'>> = 
       {/* 3. 背景大字装饰 */}
       <div className="absolute top-30 right-15 pointer-events-none select-none opacity-[0.03] z-0">
         <span
-          className="text-[200px] font-black tracking-tighter leading-none block text-right text-black dark:text-white"
+          className="text-[200px] font-black tracking-tighter leading-none block text-right text-foreground"
           style={{ 
             writingMode: 'vertical-rl',
             textOrientation: 'mixed'
@@ -203,16 +202,16 @@ export const Help: React.FC<Omit<HelpProps, 'templateType' | 'templateName'>> = 
         {/* 左上角：矩阵点阵 */}
         <div className="absolute top-12 left-12 grid grid-cols-4 gap-2 opacity-20">
           {[...Array(16)].map((_, i) => (
-            <div key={i} className="w-1.5 h-1.5 rounded-full bg-slate-900 dark:bg-white" />
+            <div key={i} className="w-1.5 h-1.5 rounded-full bg-foreground" />
           ))}
         </div>
 
         {/* 右上角 */}
         <div className="absolute top-12 right-12 flex flex-col items-end gap-1 opacity-20">
-          <div className="w-32 h-1 bg-slate-900 dark:bg-white" />
-          <div className="w-24 h-1 bg-slate-900 dark:bg-white" />
-          <div className="w-16 h-1 bg-slate-900 dark:bg-white" />
-          <div className="text-xs font-mono mt-1 text-slate-900 dark:text-white">SYS.32.91</div>
+          <div className="w-32 h-1 bg-foreground" />
+          <div className="w-24 h-1 bg-foreground" />
+          <div className="w-16 h-1 bg-foreground" />
+          <div className="text-xs font-mono mt-1 text-foreground">SYS.32.91</div>
         </div>
 
         {/* 左侧边缘 */}
@@ -220,14 +219,14 @@ export const Help: React.FC<Omit<HelpProps, 'templateType' | 'templateName'>> = 
           {[...Array(20)].map((_, i) => (
             <div 
               key={i} 
-              className="w-full bg-slate-900 dark:bg-white" 
+              className="w-full bg-foreground" 
               style={{ height: Math.random() > 0.5 ? '4px' : '2px', width: Math.random() * 100 + '%' }}
             />
           ))}
         </div>
 
         {/* 右侧边缘 */}
-        <div className="absolute top-1/3 right-0 w-0 h-0 border-t-20 border-t-transparent border-r-30 border-r-slate-900 dark:border-r-white border-b-20 border-b-transparent opacity-10" />
+        <div className="absolute top-1/3 right-0 w-0 h-0 border-t-20 border-t-transparent border-r-30 border-r-foreground border-b-20 border-b-transparent opacity-10" />
 
         {/* 底部装饰 */}
         <div className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none">
@@ -238,7 +237,7 @@ export const Help: React.FC<Omit<HelpProps, 'templateType' | 'templateName'>> = 
             }}
           />
           {/* 右下角大圆环 */}
-          <div className="absolute -bottom-120 -right-90 w-300 h-300 rounded-full border-200 border-slate-900 dark:border-white opacity-[0.04]" />
+          <div className="absolute -bottom-120 -right-90 w-300 h-300 rounded-full border-200 border-foreground opacity-[0.04]" />
         </div>
       </div>
 
@@ -246,24 +245,24 @@ export const Help: React.FC<Omit<HelpProps, 'templateType' | 'templateName'>> = 
       <div className="relative z-10 p-18 flex flex-col min-h-[calc(100vh-200px)]">
         
         {/* 头部区域 */}
-        <div className="flex justify-between items-end mb-24 border-b-4 border-slate-900/10 dark:border-white/10 pb-8">
+        <div className="flex justify-between items-end mb-24 border-b-4 border-foreground/10 pb-8">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-3 opacity-60">
               <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-              <span className="text-sm font-mono tracking-widest text-slate-500 dark:text-slate-400">
+              <span className="text-sm font-mono tracking-widest text-muted">
                 SYSTEM_READY
               </span>
             </div>
-            <h1 className="text-[5rem] font-black leading-none tracking-tighter text-slate-900 dark:text-white">
+            <h1 className="text-[5rem] font-black leading-none tracking-tighter text-foreground">
               COMMANDS
             </h1>
           </div>
           
           <div className="text-right pb-2 opacity-80">
-            <div className="text-xs font-bold tracking-[0.2em] uppercase text-slate-500 dark:text-slate-400 mb-1">
+            <div className="text-xs font-bold tracking-[0.2em] uppercase text-muted mb-1">
               CURRENT MODULE
             </div>
-            <div className="text-2xl font-bold text-slate-900 dark:text-white">
+            <div className="text-2xl font-bold text-foreground">
               {title}
             </div>
           </div>
