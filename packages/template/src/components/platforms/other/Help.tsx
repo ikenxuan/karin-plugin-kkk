@@ -5,28 +5,13 @@ import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
- * 图标映射表
+ * 获取图标名称，兜底为默认图标
+ * @param icon - 图标：可以是字符串或带颜色的对象
+ * @returns 对应的 iconify 图标名称
  */
-const ICON_MAP: Record<string, string> = {
-  Link: 'ri:link-m',
-  Sparkles: 'ri:sparkling-2-fill',
-  Send: 'ri:send-plane-fill',
-  List: 'ri:list-check-2',
-  Bell: 'ri:bell-fill',
-  LogIn: 'ri:login-circle-fill',
-  Bot: 'ri:robot-2-fill',
-  RefreshCw: 'ri:refresh-line',
-  BarChart: 'ri:bar-chart-fill',
-  TrendingUp: 'ri:line-chart-fill'
-}
-
-/**
- * 根据名称获取图标名称
- * @param icon - 图标名称
- * @returns 对应的 iconify 图标名称，默认为 ri:question-fill
- */
-const getIconForItem = (icon?: string): string => {
-  return (icon && ICON_MAP[icon]) || 'ri:question-fill'
+const getIconForItem = (icon?: MenuItem['icon']): string => {
+  if (!icon) return 'ph:question-fill'
+  return typeof icon === 'string' ? icon : icon.name
 }
 
 /**
@@ -40,6 +25,7 @@ const MenuItemComponent: React.FC<{
   themeColor: string
 }> = ({ item, themeColor }) => {
   const iconName = getIconForItem(item.icon)
+  const iconColor = typeof item.icon === 'object' && item.icon?.color ? item.icon.color : themeColor
 
   return (
     <div className="flex flex-row gap-8 py-2 relative">
@@ -47,7 +33,7 @@ const MenuItemComponent: React.FC<{
         <Icon
           icon={iconName}
           className="w-16 h-16 relative z-10 text-foreground"
-          style={{ color: themeColor }}
+          style={{ color: iconColor }}
         />
       </div>
       <div className="flex-1 min-w-0">

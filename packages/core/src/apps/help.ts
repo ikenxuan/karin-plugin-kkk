@@ -8,7 +8,7 @@ import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 
 
 type Role = 'master' | 'member'
-type RoleItem = { title: string; description: string; icon?: string; roles?: Role[] }
+type RoleItem = { title: string; description: string; icon?: string | { name: string; color?: string }; roles?: Role[] }
 type RoleMenuGroup = {
   title: string
   items: RoleItem[]
@@ -29,25 +29,25 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
           if (Config.xiaohongshu?.switch) platforms.push('小红书')
           return platforms.length > 0 ? `支持「${platforms.join('」「')}」` : '暂无可用平台'
         })(),
-        icon: 'Link',
+        icon: 'ph:link-fill',
         roles: ['member', 'master']
       },
       {
         title: '「#解析」「#kkk解析」「#弹幕解析」',
         description: '在解析功能关闭的情况下，可对引用消息进行解析；弹幕解析仅使用于「抖音」「哔哩哔哩」',
-        icon: 'Sparkles',
+        icon: 'ph:magic-wand-fill',
         roles: ['member', 'master']
       },
       {
         title: '#kkk解析统计',
         description: '查看当前群组的解析统计数据，包括各平台解析次数、使用用户数等',
-        icon: 'BarChart',
+        icon: 'ph:chart-bar-fill',
         roles: ['member', 'master']
       },
       {
         title: '#kkk全局解析统计',
         description: '查看全局解析统计数据，包括所有群组的解析情况、趋势分析和群组排行',
-        icon: 'TrendingUp',
+        icon: 'ph:chart-line-up-fill',
         roles: ['master']
       }
     ]
@@ -58,19 +58,19 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
       {
         title: '#抖音/B站推送列表',
         description: '查看当前群的订阅推送列表',
-        icon: 'List',
+        icon: 'ph:list-checks-fill',
         roles: ['master']
       },
       {
         title: '#抖音/B站全部?强制推送',
         description: '全部强制推送：手动模拟一次定时任务；\n强制推送：只在触发群模拟一次定时任务；\n已推送过的不会再推送',
-        icon: 'Send',
+        icon: 'ph:paper-plane-right-fill',
         roles: ['master']
       },
       {
         title: '#kkk推送全局忽略 + 链接',
         description: '对抖音作品或B站动态进行全局忽略，所有群组的推送标记为已处理',
-        icon: 'RefreshCw',
+        icon: 'ph:arrows-clockwise-fill',
         roles: ['master']
       }
     ],
@@ -81,13 +81,13 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
           {
             title: '#设置抖音推送 + 抖音号',
             description: '在群聊中发送以对该群订阅该抖音博主的作品更新',
-            icon: 'Bell',
+            icon: 'ph:bell-fill',
             roles: Config.douyin.push.permission === 'all' ? ['member', 'master'] : ['master']
           },
           {
             title: '#设置B站推送 + UP主UID',
             description: '在群聊中发送以对该群订阅该B站UP主的稿件/动态更新',
-            icon: 'Bell',
+            icon: 'ph:bell-fill',
             roles: Config.bilibili.push.permission === 'all' ? ['member', 'master'] : ['master']
           }
         ]
@@ -100,13 +100,22 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
       {
         title: '#kkk设置推送机器人 + Bot ID',
         description: '一键更换推送机器人',
-        icon: 'Bot',
+        icon: 'ph:robot-fill',
+        roles: ['master']
+      },
+      {
+        title: '#抖音登录',
+        description: '使用抖音APP扫码登录获取 Cookies',
+        icon: 'logos:tiktok-icon',
         roles: ['master']
       },
       {
         title: '#B站登录',
         description: '使用哔哩哔哩APP扫码登录获取 Cookies',
-        icon: 'LogIn',
+        icon: {
+          name: 'streamline-ultimate:bilibili-logo-bold',
+          color: '#7fe1fa'
+        },
         roles: ['master']
       }
     ]
@@ -117,7 +126,7 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
       {
         title: '「#kkk更新日志」「#kkk更新」',
         description: '字面意思~',
-        icon: 'RefreshCw',
+        icon: 'ph:arrows-clockwise-fill',
         roles: ['master']
       }
     ]
