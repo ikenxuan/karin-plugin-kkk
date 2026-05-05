@@ -7,6 +7,7 @@ import fa6BrandsIcons from '@iconify/json/json/fa6-brands.json'
 import fa6RegularIcons from '@iconify/json/json/fa6-regular.json'
 import fa6SolidIcons from '@iconify/json/json/fa6-solid.json'
 import heroiconsOutlineIcons from '@iconify/json/json/heroicons-outline.json'
+import logosIcons from '@iconify/json/json/logos.json'
 import lucideIcons from '@iconify/json/json/lucide.json'
 import materialSymbolsIcons from '@iconify/json/json/material-symbols.json'
 import mingcuteIcons from '@iconify/json/json/mingcute.json'
@@ -14,6 +15,7 @@ import phIcons from '@iconify/json/json/ph.json'
 import riIcons from '@iconify/json/json/ri.json'
 import simpleIcons from '@iconify/json/json/simple-icons.json'
 import solarIcons from '@iconify/json/json/solar.json'
+import streamlineUltimateIcons from '@iconify/json/json/streamline-ultimate.json'
 import tablerIcons from '@iconify/json/json/tabler.json'
 import { addCollection } from '@iconify/react'
 import React from 'react'
@@ -37,6 +39,9 @@ addCollection(fa6SolidIcons)
 addCollection(fa6RegularIcons)
 addCollection(fa6BrandsIcons)
 addCollection(biIcons)
+// @ts-ignore
+addCollection(logosIcons)
+addCollection(streamlineUltimateIcons)
 
 import { PreviewLayout } from './dev/preview/components/PreviewLayout'
 import type { PreviewState as DevPreviewState } from './dev/preview/types'
