@@ -305,7 +305,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
           {/* 1. 脊柱：来自父级的垂直线 */}
           {/* 如果不是最后一个子节点则穿过 */}
           {!isLast && (
-            <div className='absolute top-0 bottom-0 left-1/2 w-0.5 bg-border -ml-px'></div>
+            <div className='absolute top-0 bottom-0 left-1/2 w-0.5 bg-border-secondary -ml-px'></div>
           )}
 
           {/* 脊柱延伸用于边距间隙 */}
@@ -315,7 +315,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
           )}
           
           {/* 2. 曲线：L形连接到当前评论 */}
-          <svg className='absolute top-0 left-0 w-full h-12.5 pointer-events-none overflow-visible z-0 text-border'>
+          <svg className='absolute top-0 left-0 w-full h-12.5 pointer-events-none overflow-visible z-0 text-border-secondary'>
             <path
               d='M 50 0 V 15 Q 50 50 85 50 H 90'
               fill='none'
@@ -346,16 +346,19 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
                
               {/* 子线程线 - 从头像下方开始并延伸到此单元格底部 */}
               {reply.children.length > 0 && (
-                <div className='w-0.5 bg-border h-full grow mt-3 rounded-t-full'></div>
+                <div className='w-0.5 bg-border-secondary h-full grow mt-3 rounded-t-full'></div>
               )}
             </div>
 
             {/* 内部第2列：头部、内容、操作 */}
-            <div className='flex flex-col pb-8 pl-3 min-w-0'>
+            <div className={clsx(
+              'flex flex-col pl-6 min-w-0 gap-2',
+              isLast && reply.children.length === 0 ? 'pb-16' : 'pb-6'
+            )}>
               {/* 第1行：头部 */}
-              <div className='flex flex-nowrap items-center h-25 content-center w-full overflow-hidden'>
+              <div className='flex flex-nowrap items-center content-center w-full overflow-hidden'>
                 <span className={clsx(
-                  'mr-2 text-5xl font-medium text-muted',
+                  'mr-2 text-4xl font-normal text-muted',
                   isNicknameLonger ? 'min-w-0 truncate shrink' : 'shrink-0'
                 )}>
                   {reply.nickname}
@@ -375,9 +378,9 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
                     'flex items-center',
                     !isNicknameLonger ? 'overflow-hidden min-w-0 shrink' : 'shrink-0'
                   )}>
-                    <Icon icon="lucide:play" width={35} className='mr-3.5 mx-1 text-muted shrink-0' fill='currentColor' />
+                    <Icon icon="ph:play-fill" width={30} className='mr-3.5 mx-1 text-muted shrink-0' />
                     <span className={clsx(
-                      'text-5xl font-medium text-muted',
+                      'text-4xl font-normal text-muted',
                       !isNicknameLonger && 'truncate'
                     )}>
                       {reply.reply_to_username}
@@ -387,7 +390,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
               </div>
 
               {/* 第2行：内容 */}
-              <div className='py-2'>
+              <div>
                 <div
                   className='text-5xl text-foreground leading-normal whitespace-pre-wrap select-text'
                   style={{
@@ -413,12 +416,12 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
               {/* 第3行：操作 */}
               <div className='pb-4'>
                 <div className='flex gap-6 items-center text-muted'>
+                  <span className='text-4xl'>{formatDouyinCommentTime(reply.create_time)}</span>
+                  <span className='text-4xl'>{reply.ip_label}</span>
                   <div className='flex gap-2 items-center'>
                     <Icon icon="lucide:heart" width={40} className='text-muted' />
                     <span className='text-4xl select-text'>{formatDouyinCommentDiggCount(reply.digg_count)}</span>
                   </div>
-                  <span className='text-4xl'>{reply.ip_label}</span>
-                  <span className='ml-2 text-4xl'>{formatDouyinCommentTime(reply.create_time)}</span>
                 </div>
               </div>
             </div>
@@ -477,15 +480,15 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
             
             {/* 子线程线 */}
             {props.replyComment && props.replyComment.length > 0 && (
-              <div className='w-0.5 bg-border h-full grow mt-4 rounded-t-full'></div>
+              <div className='w-0.5 bg-border-secondary h-full grow mt-4 rounded-t-full'></div>
             )}
           </div>
 
           {/* 内部第2列：内容 */}
-          <div className='flex flex-col pb-4 pl-4 min-w-0'>
+          <div className='flex flex-col py-4 pl-6 min-w-0 gap-2'>
             {/* 头部 */}
-            <div className='flex flex-wrap gap-4 items-center mb-3 text-5xl select-text min-h-35 content-center'>
-              <span className='font-medium text-muted'>{props.nickname}</span>
+            <div className='flex flex-wrap gap-4 items-center mb-3 text-4xl select-text content-center'>
+              <span className='font-normal text-muted'>{props.nickname}</span>
               {props.label_type === 1 && (
                 <div className='inline-flex items-center px-3 py-1 rounded-lg text-3xl bg-[#fe2c55] text-white'>
                   作者
@@ -504,7 +507,7 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
             </div>
 
             <div
-              className='text-5xl text-foreground leading-normal mb-4 whitespace-pre-wrap select-text'
+              className='text-5xl text-foreground leading-normal whitespace-pre-wrap select-text'
               style={{
                 wordBreak: 'break-word',
                 overflowWrap: 'break-word'
@@ -524,14 +527,14 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
               </div>
             )}
 
-            <div className='flex justify-between items-center mt-3 text-muted'>
+            <div className='flex justify-between items-center text-muted'>
               <div className='flex gap-6 items-center shrink-0'>
+                <span className='text-4xl'>{formatDouyinCommentTime(props.create_time)}</span>
+                <span className='text-4xl'>{props.ip_label}</span>
                 <div className='flex gap-2 items-center transition-colors cursor-pointer'>
                   <Icon icon="lucide:heart" width={44} className='text-muted' />
                   <span className='text-4xl select-text'>{formatDouyinCommentDiggCount(props.digg_count)}</span>
                 </div>
-                <span className='text-4xl'>{props.ip_label}</span>
-                <span className='ml-2 text-4xl'>{formatDouyinCommentTime(props.create_time)}</span>
               </div>
             </div>
           </div>
@@ -550,7 +553,7 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
         */}
         {props.replyComment && props.replyComment.length > 0 && (
           <div className='flex relative flex-col mt-8 ml-5'>
-            <div className='absolute -top-8 left-12.5 w-0.5 h-8 bg-border -ml-px'></div>
+            <div className='absolute -top-8 left-12.5 w-0.5 h-8 bg-border-secondary -ml-px'></div>
             {organizeReplies(props.replyComment, props.cid || '', props.maxDepth).map((reply, index, arr) => (
               <ReplyItemComponent 
                 key={reply.cid} 
