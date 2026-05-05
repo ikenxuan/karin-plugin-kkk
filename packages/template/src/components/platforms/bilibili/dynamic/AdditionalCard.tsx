@@ -37,7 +37,7 @@ export const BilibiliReserveCard: React.FC<{ reserve: NonNullable<BilibiliAdditi
                 : 'bg-[#fb7299] text-white'
             }`}
           >
-            {reserve.buttonText !== '已结束' && <Icon icon="mingcute:bell-fill" className='scale-180 mr-4' />}
+            {reserve.buttonText !== '已结束' && <Icon icon="mingcute:bell-ringing-fill" className='scale-180 mr-4' />}
             {reserve.buttonText}
           </Button>
         </div>
@@ -99,7 +99,7 @@ export const BilibiliCommonCard: React.FC<{ common: NonNullable<BilibiliAddition
     <div className='flex flex-col gap-4'>
       {common.head_text && (
         <div className='flex gap-2 items-center text-4xl text-muted'>
-          <Icon icon="mingcute:gamepad-fill" width={40} />
+          <Icon icon="mingcute:game-1-fill" width={40} />
           <span>{common.head_text}</span>
         </div>
       )}

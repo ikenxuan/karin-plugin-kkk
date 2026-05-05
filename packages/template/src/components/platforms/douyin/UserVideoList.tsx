@@ -52,7 +52,7 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
         {/* 视频/图集标签 */}
         <div className="absolute top-4 right-4 flex flex-col gap-2">
           <div className="px-6 py-4 rounded-2xl text-4xl bg-white/50 text-black backdrop-blur-xs shadow-lg flex items-center gap-2">
-            {video.is_video ? <Icon icon="ant-design:video-camera-outlined" /> : <Icon icon="bootstrap:image" />}
+            {video.is_video ? <Icon icon="ant-design:video-camera-outlined" /> : <Icon icon="bi:image" />}
             <span>{video.is_video ? '视频' : '图集'}</span>
           </div>
           {video.is_top && (
@@ -73,7 +73,7 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
         {/* 背景音乐图标 */}
         {video.music && (
           <div className="absolute bottom-4 left-4 flex items-center gap-2 px-6 py-3 rounded-2xl text-xl bg-white/50 text-black backdrop-blur-xs shadow-lg">
-            <Icon icon="fa6:music" />
+            <Icon icon="fa6-solid:music" />
             <span className="max-w-80 truncate">{video.music.title}</span>
           </div>
         )}
@@ -105,7 +105,7 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
               <span>{formatCount(video.statistics.like_count)}</span>
             </div>
             <div className="flex items-center gap-2 text-foreground/70">
-              <Icon icon="fa6:comment-dots" width={34} />
+              <Icon icon="fa6-solid:comment-dots" width={34} />
               <span>{formatCount(video.statistics.comment_count)}</span>
             </div>
             <div className="flex items-center gap-2 text-foreground/70">
@@ -166,7 +166,7 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
 
                 {/* 抖音号和 IP 属地 */}
                 <div className="flex gap-6 mb-6 text-2xl text-muted">
-                  <span className="flex items-center gap-2"><Icon icon="fa6:tiktok" /> 抖音号：{prpos.data.user.short_id}</span>
+                  <span className="flex items-center gap-2"><Icon icon="fa6-brands:tiktok" /> 抖音号：{prpos.data.user.short_id}</span>
                   {prpos.data.user.ip_location && <span className="flex items-center gap-1"><Icon icon="material-symbols:location-on" className="text-3xl" /> {prpos.data.user.ip_location}</span>}
                 </div>
 
@@ -178,7 +178,7 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
                     <span className="font-medium text-4xl text-foreground"> {formatCount(prpos.data.user.following_count)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Icon icon="fa6:user-group" className="text-muted" />
+                    <Icon icon="fa6-solid:user-group" className="text-muted" />
                     <span className="text-muted">粉丝</span>
                     <span className="font-medium text-4xl text-foreground"> {formatCount(prpos.data.user.follower_count)}</span>
                   </div>

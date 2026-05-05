@@ -76,7 +76,7 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
               </Card.Description>
             </div>
           </div>
-          <Chip className='shrink-0 font-semibold tracking-[0.16em] uppercase' size='md' variant='soft'>
+          <Chip className='shrink-0 tracking-[0.16em] uppercase' size='md' variant='soft'>
             加载了 {availableDataFiles.length} 个数据文件
           </Chip>
         </div>
