@@ -72,9 +72,9 @@
     "@types/cors": "2.8.19",
     "@types/eslint": "^9.6.1",
     "@types/node": "24.12.2",
-    "@typescript-eslint/eslint-plugin": "8.59.0",
-    "@typescript-eslint/parser": "8.59.0",
-    "@vitejs/devtools": "^0.1.15",
+    "@typescript-eslint/eslint-plugin": "8.59.2",
+    "@typescript-eslint/parser": "8.59.2",
+    "@vitejs/devtools": "^0.1.18",
     "cross-env": "10.1.0",
     "eslint": "9",
     "eslint-plugin-react-hooks": "7.1.1",
@@ -84,7 +84,7 @@
     "sort-package-json": "^3.6.1",
     "tsx": "4.21.0",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.59.0",
+    "typescript-eslint": "8.59.2",
     "vite": "8.0.10"
   }
 }

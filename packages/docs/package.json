@@ -16,11 +16,11 @@
   "dependencies": {
     "@kkk/richtext": "workspace:*",
     "@gravity-ui/icons": "^2.18.0",
-    "@heroui/react": "^3.0.2",
-    "@heroui/styles": "^3.0.2",
+    "@heroui/react": "^3.0.3",
+    "@heroui/styles": "^3.0.3",
     "@iconify/react": "^6.0.2",
-    "@lobehub/icons": "^5.5.4",
-    "@lobehub/ui": "^5.9.6",
+    "@lobehub/icons": "^5.6.0",
+    "@lobehub/ui": "^5.10.0",
     "@orama/orama": "^3.1.18",
     "@orama/tokenizers": "^3.1.18",
     "@radix-ui/react-hover-card": "^1.1.15",
@@ -29,10 +29,10 @@
     "clsx": "^2.1.1",
     "diff": "^9.0.0",
     "fflate": "^0.8.2",
-    "fumadocs-core": "16.8.4",
-    "fumadocs-mdx": "14.3.1",
+    "fumadocs-core": "16.8.7",
+    "fumadocs-mdx": "14.3.2",
     "fumadocs-twoslash": "^3.2.0",
-    "fumadocs-ui": "16.8.4",
+    "fumadocs-ui": "16.8.7",
     "gsap": "^3.15.0",
     "jsonc-parser": "^3.3.1",
     "mermaid": "^11.14.0",
@@ -61,7 +61,7 @@
     "@types/semver": "^7.7.1",
     "code-inspector-plugin": "^1.5.1",
     "eslint-config-next": "^16.2.4",
-    "postcss": "^8.5.10",
-    "shadcn": "^4.5.0"
+    "postcss": "^8.5.14",
+    "shadcn": "^4.6.0"
   }
 }
