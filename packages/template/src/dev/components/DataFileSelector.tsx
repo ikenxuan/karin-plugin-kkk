@@ -63,15 +63,12 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
   const formatFileName = (filename: string) => filename.replace('.json', '')
   return (
     <Card
-      className='w-full rounded-xl border border-border shadow-none'
+      className='w-full border border-border shadow-none'
       variant='default'
     >
       <Card.Header className='flex-col items-start gap-3 px-4 pb-3 pt-4'>
         <div className='flex w-full items-start justify-between gap-3'>
           <div className='flex items-center gap-2.5'>
-            <div className='flex size-7 items-center justify-center rounded-lg border border-border bg-background text-foreground'>
-              <Icon icon="lucide:file-text" className='h-4 w-4' />
-            </div>
             <div>
               <Card.Title className='text-sm font-semibold text-foreground'>数据文件</Card.Title>
               <Card.Description className='mt-1 text-xs text-muted'>
@@ -79,8 +76,8 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
               </Card.Description>
             </div>
           </div>
-          <Chip className='shrink-0 text-[10px] font-semibold tracking-[0.16em] uppercase' size='sm' variant='soft'>
-            {availableDataFiles.length} Files
+          <Chip className='shrink-0 font-semibold tracking-[0.16em] uppercase' size='md' variant='soft'>
+            加载了 {availableDataFiles.length} 个数据文件
           </Chip>
         </div>
       </Card.Header>
@@ -101,20 +98,20 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
           <Label className='mb-2 text-[10px] font-semibold tracking-[0.18em] text-muted uppercase'>
             选择数据文件
           </Label>
-          <Select.Trigger className='rounded-lg px-3 py-2.5'>
+          <Select.Trigger className='px-3 py-2.5'>
             <Select.Value className='text-sm font-medium text-foreground' />
             <Select.Indicator className='text-muted' />
           </Select.Trigger>
           <Select.Popover className='p-0'>
             <div className={panelTheme} data-theme={panelTheme} style={panelThemeStyle}>
-              <ListBox className='rounded-lg p-1'>
+              <ListBox className='p-1'>
                 {availableDataFiles.map((filename) => {
                   const label = formatFileName(filename)
 
                   return (
                     <ListBox.Item
                       key={filename}
-                      className='rounded-md px-3 py-2 text-sm'
+                      className='px-3 py-2 text-sm'
                       id={filename}
                       textValue={label}
                     >
@@ -131,10 +128,10 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
 
       <Card.Footer className='px-4 pb-4 pt-0'>
         <Button
-          className='w-full justify-center rounded-lg'
+          className='w-full justify-center'
           isDisabled={!onEdit}
           onPress={onEdit}
-          size='sm'
+          size='md'
           variant='primary'
         >
           <Icon icon="lucide:edit" className='h-3.5 w-3.5' />

@@ -559,15 +559,15 @@ export const App: React.FC = () => {
       <div className='h-screen overflow-hidden bg-background text-foreground transition-colors duration-300'>
         <Group orientation='horizontal' className='h-full w-full'>
           <Panel defaultSize='18%' minSize='16%' maxSize='28%' id='sidebar'>
-            <aside className='flex h-full min-w-0 flex-col border-r border-border bg-background'>
+            <aside className='flex h-full min-w-0 flex-col border-r border-border'>
               <div className='flex min-h-14 shrink-0 items-center border-b border-border px-4 py-2'>
                 <div className='flex w-full items-center justify-between gap-3'>
                   <div className='flex min-w-0 items-center gap-3'>
-                    <div className='flex size-9 shrink-0 items-center justify-center rounded-xl bg-foreground text-background'>
+                    <div className='flex size-9 shrink-0 items-center justify-center text-foreground'>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 230 221"
-                        className='h-6 w-6'
+                        className='h-10 w-10'
                       >
                         <path
                           d="M132.75,87.37l-53.72-53.37c-4.66-4.63-1.38-12.58,5.18-12.58h115.13c6.57,0,9.84,7.95,5.18,12.58l-53.72,53.37c-4.99,4.96-13.06,4.96-18.05,0Z"
@@ -585,11 +585,11 @@ export const App: React.FC = () => {
                     </div>
 
                     <div className='min-w-0'>
-                      <div className='text-[10px] font-semibold tracking-[0.24em] text-muted uppercase'>
-                        KKK Dev Panel
+                      <div className='text-[10px] font-semibold tracking-[0.24em] text-muted'>
+                        karin-plugin-kkk
                       </div>
                       <div className='truncate text-sm font-semibold leading-tight tracking-[-0.02em] text-foreground'>
-                        组件开发工作台
+                        图片模板开发面板
                       </div>
                     </div>
                   </div>
@@ -598,10 +598,10 @@ export const App: React.FC = () => {
                     aria-label='GitHub 仓库'
                     isIconOnly
                     onPress={() => window.open('https://github.com/ikenxuan/karin-plugin-kkk', '_blank', 'noopener,noreferrer')}
-                    size='sm'
+                    size='lg'
                     variant='ghost'
                   >
-                    <Icon icon="simple-icons:github" className='size-4' />
+                    <Icon icon="simple-icons:github" className='size-6' />
                   </Button>
                 </div>
               </div>

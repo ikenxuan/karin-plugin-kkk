@@ -204,7 +204,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
           isIconOnly
           onPress={onPress}
           size='sm'
-          variant='flat'
+          variant='ghost'
         >
           {icon}
         </Button>
@@ -223,16 +223,16 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
         <div className='flex items-center gap-2'>
           <div className='flex items-center gap-1.5'>
             <Icon icon="lucide:code" className='h-4 w-4 text-default-500' />
-            <span className='text-sm font-semibold'>JSON 编辑器</span>
+            <span className='text-lg font-semibold'>数据编辑器</span>
           </div>
 
           <div className='w-px h-4 bg-default-200' />
 
-          <div className='flex gap-1'>
-            <Button variant='flat' size='sm' isDisabled={readonly} onPress={formatJson}>
+          <div className='flex gap-4'>
+            <Button variant='tertiary' size='sm' isDisabled={readonly} onPress={formatJson}>
               格式化
             </Button>
-            <Button variant='flat' size='sm' isDisabled={readonly} onPress={compressJson}>
+            <Button variant='tertiary' size='sm' isDisabled={readonly} onPress={compressJson}>
               压缩
             </Button>
           </div>
@@ -242,14 +242,12 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
           {availableDataFiles.length > 0 && (
             <>
               <div className='flex items-center gap-1.5'>
-                <Icon icon="lucide:file-json" className='h-3.5 w-3.5 text-default-500' />
                 <Select
                   aria-label='选择数据文件'
                   className='w-48'
                   placeholder='选择数据文件'
                   value={selectedDataFile ?? null}
-                  variant='flat'
-                  size='sm'
+                  variant='secondary'
                   onChange={(value) => {
                     if (typeof value === 'string' && value && onDataFileChange) {
                       onDataFileChange(value)

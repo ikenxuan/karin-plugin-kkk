@@ -88,7 +88,7 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
       variant='blur'
     >
       <Modal.Container className='p-2 sm:p-4' size='cover'>
-        <Modal.Dialog className='max-h-[92vh] overflow-hidden flex flex-col'>
+        <Modal.Dialog className='max-h-[92vh] overflow-hidden flex flex-col gap-10'>
           <JsonEditor
             data={currentData}
             onChange={(data) => {
@@ -103,20 +103,20 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
             isDarkMode={isDarkMode}
           />
 
-          <Modal.Footer className='flex justify-end gap-2'>
+          <Modal.Footer className='flex justify-end gap-4'>
             <Button
-              variant='flat'
-              size='sm'
+              variant='tertiary'
+              size='lg'
               onPress={onClose}
             >
               取消
             </Button>
             <Button
-              color='primary'
               isDisabled={hasError}
               isPending={isSaving}
               onPress={handleSave}
-              size='sm'
+              size='lg'
+              variant='danger-soft'
             >
               {({ isPending }) => (
                 <span className='flex items-center gap-1.5'>

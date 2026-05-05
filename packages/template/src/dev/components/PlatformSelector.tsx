@@ -26,13 +26,13 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
 }) => {
   return (
     <Card
-      className='w-full rounded-2xl border border-border shadow-none'
+      className='w-full border border-border shadow-none'
       variant='default'
     >
       <Card.Content className='space-y-4 px-4 pb-4'>
         <Tabs
           selectedKey={selectedPlatform}
-          variant='secondary'
+          // variant='secondary'
           onSelectionChange={(key) => onPlatformChange(key as PlatformType)}
         >
           <Tabs.ListContainer>
@@ -72,7 +72,7 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
                     .map(component => (
                       <ListBox.Item
                         key={component.id}
-                        className='rounded-xl px-3 py-2.5'
+                        className='px-3 py-2.5'
                         id={component.id}
                         textValue={component.name}
                       >

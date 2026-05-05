@@ -1,5 +1,4 @@
 import { Button, Label, Modal, Switch, toast } from '@heroui/react'
-import clsx from 'clsx'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { type ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 
@@ -200,26 +199,15 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
     label: string,
     icon: React.ReactNode
   ) => (
-    <Switch className='gap-3' isSelected={checked} onChange={onChange} size='sm'>
-      {({ isSelected }) => (
-        <>
-          <Switch.Control
-            className={clsx(
-              'border transition-colors',
-              isSelected
-                ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
-                : 'border-black/10 bg-black/6 text-foreground/60 dark:border-white/10 dark:bg-white/8 dark:text-white/60'
-            )}
-          >
-            <Switch.Thumb className='border border-black/8 bg-white shadow-sm dark:border-white/10 dark:bg-black'>
-              <Switch.Icon>{icon}</Switch.Icon>
-            </Switch.Thumb>
-          </Switch.Control>
-          <Switch.Content>
-            <Label className='text-xs font-medium text-foreground/70'>{label}</Label>
-          </Switch.Content>
-        </>
-      )}
+    <Switch className='gap-4' isSelected={checked} onChange={onChange} size='lg'>
+      <Switch.Control>
+        <Switch.Thumb>
+          <Switch.Icon>{icon}</Switch.Icon>
+        </Switch.Thumb>
+      </Switch.Control>
+      <Switch.Content>
+        <Label className='text-xs font-medium text-foreground/70'>{label}</Label>
+      </Switch.Content>
     </Switch>
   )
 
@@ -235,14 +223,14 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
       }}
       variant='blur'
     >
-      <Modal.Container className='p-4 sm:p-6' size='cover'>
+      <Modal.Container className='' size='cover'>
         <Modal.Dialog
           className={`flex h-[min(92vh,1100px)] max-h-[92vh] flex-col overflow-hidden rounded-4xl border border-black/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-zinc-950 dark:shadow-[0_28px_84px_rgba(0,0,0,0.55)] ${isDarkMode ? 'dark' : 'light'}`}
         >
-          <Modal.Body className='flex-1 overflow-hidden p-4 sm:p-5'>
+          <Modal.Body className='flex-1 overflow-hidden'>
             <div
               ref={containerRef}
-              className='relative h-full overflow-hidden rounded-[28px] border'
+              className='relative h-full overflow-hidden rounded-3xl border'
               style={{
                 backgroundColor: previewSurface,
                 borderColor: previewBorder
@@ -324,9 +312,9 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
 
           <Modal.Footer className='flex flex-col gap-4 border-t border-black/8 bg-white/88 px-4 py-4 dark:border-white/10 dark:bg-zinc-950/88 sm:flex-row sm:items-center sm:justify-between'>
             <div className='flex flex-wrap items-center gap-3'>
-              <div className='text-xs font-medium text-muted'>
+              {/* <div className='text-xs font-medium text-muted'>
                 滚轮缩放 · 拖拽移动 · 双击适应
-              </div>
+              </div> */}
               {renderSwitch(
                 watermarkEnabled,
                 handleWatermarkChange,
@@ -347,7 +335,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
                 isDisabled={isCapturing || !onRetakeScreenshot}
                 isPending={isCapturing}
                 onPress={handleRetake}
-                size='sm'
+                size='lg'
                 variant='secondary'
               >
                 {({ isPending }) => (
@@ -361,7 +349,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
               <Button
                 className={actionButtonClass}
                 onPress={handleFitToCanvas}
-                size='sm'
+                size='lg'
                 variant='secondary'
               >
                 <Icon icon="lucide:maximize" className='h-4 w-4' />
@@ -371,7 +359,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
               <Button
                 className={actionButtonClass}
                 onPress={handleCopy}
-                size='sm'
+                size='lg'
                 variant='secondary'
               >
                 <Icon icon="lucide:copy" className='h-4 w-4' />
@@ -381,7 +369,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
               <Button
                 className={primaryActionClass}
                 onPress={handleDownload}
-                size='sm'
+                size='lg'
                 variant='secondary'
               >
                 <Icon icon="lucide:download" className='h-4 w-4' />
@@ -391,7 +379,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
               <Button
                 className={actionButtonClass}
                 onPress={onClose}
-                size='sm'
+                size='lg'
                 variant='secondary'
               >
                 <Icon icon="lucide:x" className='h-4 w-4' />
