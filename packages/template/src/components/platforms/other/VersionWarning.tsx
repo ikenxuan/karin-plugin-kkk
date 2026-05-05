@@ -128,7 +128,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
         <div className="flex-1 flex flex-col justify-center">
           {/* 版本对比卡片 */}
           <div
-            className="rounded-3xl p-12"
+            className="rounded-7xl p-12"
             style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)' }}
           >
             {/* 版本对比 */}
@@ -163,7 +163,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
                     需要/建议的版本
                   </span>
                   <Chip
-                    className="text-lg font-bold"
+                    className="text-xl font-bold rounded-full px-4 py-2"
                     style={{ backgroundColor: accentColor, color: bgColor }}
                     size="md"
                   >
@@ -184,7 +184,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
               {/* 方案一：Web UI */}
               <div>
                 <div className="flex items-center space-x-4 mb-6">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-lg" style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}>
+                  <div className="flex items-center justify-center w-10 h-10 rounded-xl" style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}>
                     <span className="text-[28px] font-black" style={{ color: accentColor }}>1</span>
                   </div>
                   <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={mutedColor} strokeWidth="2">
@@ -195,7 +195,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
                     Web 控制台更新
                   </span>
                   <Chip
-                    className="text-[20px] font-semibold px-4"
+                    className="text-2xl font-semibold px-5 py-3 rounded-full"
                     style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.2)' : 'rgba(194,65,12,0.15)', color: accentColor }}
                     size="lg"
                   >
@@ -227,7 +227,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
               {/* 方案二：安装 karin-plugin-basic */}
               <div>
                 <div className="flex items-center space-x-4 mb-6">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-lg" style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}>
+                  <div className="flex items-center justify-center w-10 h-10 rounded-xl" style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}>
                     <span className="text-[28px] font-black" style={{ color: accentColor }}>2</span>
                   </div>
                   <Icon icon="lucide:puzzle" className={clsx('w-10 h-auto')} style={{ color: mutedColor }} />
@@ -235,7 +235,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
                     使用 basic 插件命令更新
                   </span>
                   <Chip
-                    className="text-[20px] font-semibold px-4"
+                    className="text-2xl font-semibold px-5 py-3 rounded-full"
                     style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.2)' : 'rgba(194,65,12,0.15)', color: accentColor }}
                     size="lg"
                   >
@@ -267,7 +267,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
               {/* 方案三：命令行手动更新 */}
               <div>
                 <div className="flex items-center space-x-4 mb-6">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-lg" style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}>
+                  <div className="flex items-center justify-center w-10 h-10 rounded-xl" style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}>
                     <span className="text-[28px] font-black" style={{ color: accentColor }}>3</span>
                   </div>
                   <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={mutedColor} strokeWidth="2">
@@ -301,7 +301,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
 
             {/* 重要提示 */}
             <div
-              className="rounded-2xl p-6 flex items-start space-x-5"
+              className="rounded-4xl p-6 flex items-start space-x-5"
               style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.08)' : 'rgba(194,65,12,0.08)' }}
             >
               <svg className="w-10 h-10 mt-1 shrink-0" viewBox="0 0 24 24" fill={accentColor}>

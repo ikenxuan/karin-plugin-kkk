@@ -28,6 +28,19 @@ export interface DouyinCommentProps extends BaseComponentProps {
     Resolution: string | null
     /** 分享链接 */
     share_url: string
+    /** 作者昵称 */
+    Author: string
+    /** 作者头像 */
+    AuthorAvatar: string
+    /** 作品统计 */
+    Statistics: {
+      digg_count: number
+      comment_count: number
+      share_count: number
+      collect_count: number
+    }
+    /** 发布时间戳（秒） */
+    CreateTime: number
     /** 评论数据列表 */
     CommentsData: Array<{
       /** 评论ID */

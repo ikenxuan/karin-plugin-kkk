@@ -398,6 +398,120 @@ export function mockApiPlugin (): Plugin {
         }
       })
 
+      // ========== AI 代理中间件（解决浏览器 CORS 问题）==========
+      server.middlewares.use('/__ai_proxy__', async (req, res) => {
+        if (req.method !== 'POST') {
+          res.statusCode = 405
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: '仅支持 POST 请求' }))
+          return
+        }
+
+        try {
+          const bodyText = await parseBody(req)
+          const payload = JSON.parse(bodyText)
+          const { apiFormat, baseUrl, apiKey, body: apiBody } = payload
+
+          if (!apiFormat || !baseUrl || !apiKey) {
+            res.statusCode = 400
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify({ error: '缺少必要参数：apiFormat、baseUrl、apiKey' }))
+            return
+          }
+
+          // 确定目标端点
+          // 官方 SDK 默认在 baseURL 后拼接 /v1/{endpoint}
+          // Claude: /v1/messages, OpenAI: /v1/chat/completions
+          const normalizedBase = baseUrl.replace(/\/$/, '')
+          const endpoint = apiFormat === 'claude' ? 'messages' : 'chat/completions'
+
+          // 如果用户粘贴了完整端点 URL，直接使用
+          let targetUrl: string
+          if (normalizedBase.includes(`/${endpoint}`)) {
+            targetUrl = normalizedBase
+          } else if (normalizedBase.endsWith('/v1')) {
+            targetUrl = `${normalizedBase}/${endpoint}`
+          } else {
+            targetUrl = `${normalizedBase}/v1/${endpoint}`
+          }
+
+          console.log(`[AI Proxy] 转发请求 → ${targetUrl} (格式: ${apiFormat})`)
+
+          // 构建请求头
+          const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          }
+
+          // Claude 使用 x-api-key 而不是 Authorization
+          if (apiFormat === 'claude') {
+            delete headers.Authorization
+            headers['x-api-key'] = apiKey
+            headers['anthropic-version'] = '2023-06-01'
+          }
+
+          // 检测是否为流式请求
+          const shouldStream = apiBody.stream === true
+
+          // 转发请求到实际 AI API
+          const response = await fetch(targetUrl, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(apiBody)
+          })
+
+          // 流式响应：直接透传 SSE 数据流（仅当外部 API 返回 200 时）
+          if (shouldStream && response.body && response.ok) {
+            res.statusCode = response.status
+            const contentType = response.headers.get('content-type') || 'text/event-stream'
+            res.setHeader('Content-Type', contentType)
+            res.setHeader('Cache-Control', 'no-cache')
+            res.setHeader('Connection', 'keep-alive')
+
+            const reader = response.body.getReader()
+            try {
+              while (true) {
+                const { done, value } = await reader.read()
+                if (done) break
+                res.write(value)
+              }
+            } finally {
+              reader.releaseLock()
+            }
+            res.end()
+            return
+          }
+
+          // 非流式：读取完整响应后返回
+          const responseText = await response.text()
+
+          if (!response.ok) {
+            console.error(`[AI Proxy] 外部 API 返回 ${response.status}: ${responseText.slice(0, 200)}`)
+          } else {
+            console.log(`[AI Proxy] 外部 API 返回 ${response.status}`)
+          }
+
+          // 设置响应头（透传 Content-Type）
+          const contentType = response.headers.get('content-type')
+          if (contentType) {
+            res.setHeader('Content-Type', contentType)
+          } else {
+            res.setHeader('Content-Type', 'application/json')
+          }
+
+          res.statusCode = response.status
+          res.end(responseText)
+        } catch (error) {
+          console.error('[AI Proxy] 代理请求失败:', error)
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({
+            error: 'AI 代理请求失败',
+            message: error instanceof Error ? error.message : String(error)
+          }))
+        }
+      })
+
       console.log('🚀 Mock API 中间件已集成到 Vite 开发服务器')
     }
   }

@@ -16,6 +16,8 @@ interface DataFileSelectorProps {
   onRefreshFiles?: () => void
   /** 编辑当前数据回调 */
   onEdit?: () => void
+  /** 通过 AI 生成数据回调 */
+  onAIGenerate?: () => void
   /** 是否深色模式 */
   isDarkMode?: boolean
   /** 面板主题名 */
@@ -33,6 +35,7 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
   onDataFileChange,
   onRefreshFiles,
   onEdit,
+  onAIGenerate,
   panelTheme = 'light',
   panelThemeStyle
 }) => {
@@ -126,7 +129,17 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
         </Select>
       </Card.Content>
 
-      <Card.Footer className='px-4 pb-4 pt-0'>
+      <Card.Footer className='flex flex-col gap-2 px-4 pb-4 pt-0'>
+        <Button
+          className='w-full justify-center'
+          isDisabled={!onAIGenerate}
+          onPress={onAIGenerate}
+          size='md'
+          variant='secondary'
+        >
+          <Icon icon="lucide:sparkles" className='h-3.5 w-3.5' />
+          AI 生成
+        </Button>
         <Button
           className='w-full justify-center'
           isDisabled={!onEdit}

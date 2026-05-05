@@ -3,9 +3,11 @@ import React from 'react'
 import { Group, Panel, Separator } from 'react-resizable-panels'
 
 import { Icon } from '../components/common/Icon'
-import { getEnabledComponents } from '../config/config'
+import { getComponentConfig, getEnabledComponents } from '../config/config'
 import { DataService } from '../services/DataService'
 import { PlatformType } from '../types/platforms'
+import { AIConfigPopover } from './components/AIConfigPopover'
+import { AIGenerateModal } from './components/AIGenerateModal'
 import { DataFileSelector } from './components/DataFileSelector'
 import { MockDataEditorModal } from './components/MockDataEditorModal'
 import { PanelThemeControls } from './components/PanelThemeControls'
@@ -132,6 +134,7 @@ export const App: React.FC = () => {
   const [isScreenshotModalOpen, setIsScreenshotModalOpen] = React.useState(false)
   const [isEditorOpen, setIsEditorOpen] = React.useState(false)
   const [isPanelThemeModalOpen, setIsPanelThemeModalOpen] = React.useState(false)
+  const [isAIGenerateOpen, setIsAIGenerateOpen] = React.useState(false)
   const [isDarkMode, setIsDarkMode] = React.useState(() => {
     const saved = localStorage.getItem('dev-panel-dark-mode')
     return saved !== null ? saved === 'true' : false
@@ -399,6 +402,20 @@ export const App: React.FC = () => {
   }
 
   /**
+   * 应用 AI 生成的数据
+   * @param data AI 生成的数据
+   * @param saveAsFilename 若提供则保存为新文件，否则覆盖当前
+   */
+  const handleApplyAIData = async (data: any, saveAsFilename?: string) => {
+    if (saveAsFilename) {
+      await handleSaveNewDataFile(saveAsFilename, data)
+      return
+    }
+    await dataService.saveTemplateData(selectedPlatform, selectedTemplate, data, selectedDataFile)
+    setTemplateData(data)
+  }
+
+  /**
    * 处理截图
    * @param tempDarkMode 临时深色模式（可选，仅在重新截图时使用）
    */
@@ -622,6 +639,7 @@ export const App: React.FC = () => {
                     onSaveNewDataFile={handleSaveNewDataFile}
                     onRefreshFiles={loadAvailableFiles}
                     onEdit={() => setIsEditorOpen(true)}
+                    onAIGenerate={() => setIsAIGenerateOpen(true)}
                     isDarkMode={isDarkMode}
                     panelTheme={shellTheme}
                     panelThemeStyle={panelThemeStyle}
@@ -686,6 +704,8 @@ export const App: React.FC = () => {
                       <Icon icon="lucide:palette" className='size-4' />
                       面板主题
                     </Button>
+
+                    <AIConfigPopover panelTheme={shellTheme} panelThemeStyle={panelThemeStyle} />
 
                     <Button
                       onPress={handleToggleVersion}
@@ -769,6 +789,17 @@ export const App: React.FC = () => {
         selectedDataFile={selectedDataFile}
         onDataFileChange={handleDataFileChange}
         isDarkMode={isDarkMode}
+      />
+      <AIGenerateModal
+        isOpen={isAIGenerateOpen}
+        onClose={() => setIsAIGenerateOpen(false)}
+        platform={selectedPlatform}
+        templateId={selectedTemplate}
+        componentName={getComponentConfig(selectedPlatform, selectedTemplate)?.name}
+        referenceData={templateData}
+        onApply={handleApplyAIData}
+        panelTheme={shellTheme}
+        panelThemeStyle={panelThemeStyle}
       />
     </div>
   )

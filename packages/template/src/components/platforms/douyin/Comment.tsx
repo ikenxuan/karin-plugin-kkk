@@ -54,6 +54,11 @@ const formatDouyinCommentDiggCount = (count: number): string => {
   return String(count)
 }
 
+const formatPublishTime = (timestamp: number): string => {
+  if (!timestamp) return ''
+  return format(fromUnixTime(timestamp), 'yyyy年MM月dd日 HH:mm', { locale: zhCN })
+}
+
 const DouyinLogo: React.FC<{ useDarkTheme?: boolean }> = ({ useDarkTheme }) => {
   const [hasError, setHasError] = React.useState(false)
 
@@ -108,63 +113,97 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
  */
 const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'> & { qrCodeDataUrl: string }> = (props) => {
   return (
-    <div className='max-w-350 mx-auto px-10 py-8'>
-      <div className='flex gap-16 justify-between items-start'>
-        {/* 左侧信息区域 */}
-        <div className='flex flex-col flex-1'>
-          {/* Logo 和分辨率区域 */}
-          <div className='mb-12'>
-            {/* Logo */}
-            <div className='h-45 flex items-center'>
-              <DouyinLogo useDarkTheme={props.useDarkTheme} />
-              {/* 分辨率信息 - 仅视频类型显示 */}
-              {props.Type === '视频' && props.Resolution && (
-                <div className='flex flex-col gap-2 px-8 py-4 ml-8 rounded-3xl bg-surface/50 w-fit'>
-                  <span className='text-[42px] text-muted'>分辨率（px）</span>
-                  <span className='text-[48px] font-medium text-foreground/70'>{props.Resolution}</span>
+    <div className='max-w-350 mx-auto px-10 pt-14'>
+      <div className='flex items-start justify-between gap-10'>
+        {/* 左侧内容区 */}
+        <div className='flex flex-col gap-10 flex-1 min-w-0'>
+          {/* 作者信息 + Logo */}
+          <div className='flex items-start justify-between gap-6'>
+            <div className='flex items-center gap-6 min-w-0'>
+              {/* 作者头像 */}
+              <div className='w-32 h-32 shrink-0 rounded-full overflow-hidden bg-surface-secondary ring-2 ring-border/40'>
+                <img
+                  src={props.AuthorAvatar}
+                  className='w-full h-full object-cover'
+                  alt={props.Author}
+                />
+              </div>
+              {/* 作者名 + 时间 */}
+              <div className='flex flex-col gap-3 min-w-0'>
+                <div className='flex items-center gap-4 flex-wrap'>
+                  <span className='text-5xl font-medium text-foreground truncate'>{props.Author}</span>
+                  <span className='inline-flex items-center px-4 py-1.5 rounded-xl text-4xl bg-[#fe2c55] text-white shrink-0'>
+                    作者
+                  </span>
                 </div>
-              )}
+                <span className='text-4xl text-muted'>
+                  {formatPublishTime(props.CreateTime)}
+                </span>
+              </div>
             </div>
 
+            {/* 抖音 Logo */}
+            <div className='h-28 flex items-center shrink-0'>
+              <DouyinLogo useDarkTheme={props.useDarkTheme} />
+            </div>
           </div>
 
-          {/* 信息列表 */}
-          <div className='grid grid-cols-2 gap-y-6 gap-x-16 pl-2'>
-            <div className='flex items-center tracking-[6px] text-[45px] text-muted select-text'>
-              <span className='mr-4 text-muted'>类型</span>
-              <span className='font-medium text-foreground/70'>{props.Type}</span>
+          {/* 数据统计 */}
+          <div className='flex items-center gap-12 flex-wrap'>
+            <div className='flex items-center gap-4 text-foreground/50'>
+              <Icon icon="lucide:heart" width={48} />
+              <span className='text-5xl font-medium text-foreground/90'>
+                {formatDouyinCommentDiggCount(props.Statistics.digg_count)}
+              </span>
             </div>
-            <div className='flex items-center tracking-[6px] text-[45px] text-muted select-text'>
-              <span className='mr-4 text-muted'>评论</span>
-              <span className='font-medium text-foreground/70'>{props.CommentLength}条</span>
+            <div className='flex items-center gap-4 text-foreground/50'>
+              <Icon icon="lucide:message-circle" width={48} />
+              <span className='text-5xl font-medium text-foreground/90'>
+                {formatDouyinCommentDiggCount(props.Statistics.comment_count)}
+              </span>
             </div>
+            <div className='flex items-center gap-4 text-foreground/50'>
+              <Icon icon="lucide:share-2" width={48} />
+              <span className='text-5xl font-medium text-foreground/90'>
+                {formatDouyinCommentDiggCount(props.Statistics.share_count)}
+              </span>
+            </div>
+            <div className='flex items-center gap-4 text-foreground/50'>
+              <Icon icon="lucide:star" width={48} />
+              <span className='text-5xl font-medium text-foreground/90'>
+                {formatDouyinCommentDiggCount(props.Statistics.collect_count)}
+              </span>
+            </div>
+          </div>
+
+          {/* 规格信息 */}
+          <div className='flex items-center gap-4 flex-wrap text-muted'>
+            <span className='text-4xl'>{props.Type}</span>
+            {props.Type === '视频' && props.Resolution && (
+              <>
+                <span className='text-4xl text-border'>·</span>
+                <span className='text-4xl'>{props.Resolution}</span>
+              </>
+            )}
             {props.Type === '视频' ? (
               <>
-                <div className='flex items-center tracking-[6px] text-[45px] text-muted select-text'>
-                  <span className='mr-4 text-muted'>大小</span>
-                  <span className='font-medium text-foreground/70'>{props.VideoSize}MB</span>
-                </div>
-                <div className='flex items-center tracking-[6px] text-[45px] text-muted select-text'>
-                  <span className='mr-4 text-muted'>帧率</span>
-                  <span className='font-medium text-foreground/70'>{props.VideoFPS}Hz</span>
-                </div>
+                <span className='text-4xl text-border'>·</span>
+                <span className='text-4xl'>{props.VideoSize}MB</span>
+                <span className='text-4xl text-border'>·</span>
+                <span className='text-4xl'>{props.VideoFPS}Hz</span>
               </>
             ) : (
               <>
-                <div className='flex items-center tracking-[6px] text-[45px] text-muted select-text'>
-                  <span className='mr-4 text-muted'>区域</span>
-                  <span className='font-medium text-foreground/70'>{props.Region}</span>
-                </div>
-                <div className='flex items-center tracking-[6px] text-[45px] text-muted select-text'>
-                  <span className='mr-4 text-muted'>数量</span>
-                  <span className='font-medium text-foreground/70'>{props.ImageLength}张</span>
-                </div>
+                <span className='text-4xl text-border'>·</span>
+                <span className='text-4xl'>{props.Region}</span>
+                <span className='text-4xl text-border'>·</span>
+                <span className='text-4xl'>{props.ImageLength}张</span>
               </>
             )}
           </div>
         </div>
 
-        {/* 右侧二维码区域 */}
+        {/* 右侧二维码 */}
         <div className='shrink-0'>
           <QRCodeSection qrCodeDataUrl={props.qrCodeDataUrl} />
         </div>
@@ -587,7 +626,7 @@ export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | '
 
   return (
     <DefaultLayout {...props}>
-      <div className='p-5'>
+      <div className='p-5 px-15'>
         <div className='h-20'></div>
         {/* 视频信息头部 */}
         <VideoInfoHeader

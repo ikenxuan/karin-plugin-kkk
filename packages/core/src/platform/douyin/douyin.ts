@@ -723,21 +723,31 @@ export class DouYin extends Base {
                 }
               }
             }
+            const aweme = VideoData.data.aweme_detail
             const img = await Render(this.e, 'douyin/comment',
               {
                 Type: isArticle ? '文章' : isVideo ? '视频' : this.is_slides ? '合辑' : '图集',
                 CommentsData: douyinCommentsRes.CommentsData,
-                CommentLength: Config.douyin.realCommentCount ? VideoData.data.aweme_detail.statistics.comment_count : douyinCommentsRes.CommentsData.length ?? 0,
+                CommentLength: Config.douyin.realCommentCount ? aweme.statistics.comment_count : douyinCommentsRes.CommentsData.length ?? 0,
                 share_url: isVideo
-                  ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${VideoData.data.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`
-                  : VideoData.data.aweme_detail.share_url,
+                  ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${aweme.video.play_addr.uri}&ratio=1080p&line=0`
+                  : aweme.share_url,
                 VideoSize: mp4size,
                 VideoFPS: FPS,
                 ImageLength: imagenum,
-                Region: VideoData.data.aweme_detail.region,
+                Region: aweme.region,
                 suggestWrod: suggest,
                 Resolution: isVideo && video ? `${video.bit_rate[0].play_addr.width} x ${video.bit_rate[0].play_addr.height}` : null,
-                maxDepth: Config.douyin.subCommentDepth
+                maxDepth: Config.douyin.subCommentDepth,
+                Author: aweme.author.nickname,
+                AuthorAvatar: aweme.author.avatar_thumb.url_list[0],
+                Statistics: {
+                  digg_count: aweme.statistics.digg_count,
+                  comment_count: aweme.statistics.comment_count,
+                  share_count: aweme.statistics.share_count,
+                  collect_count: aweme.statistics.collect_count
+                },
+                CreateTime: aweme.create_time
               }
             )
             const messageElements = []
@@ -1023,21 +1033,46 @@ export class DouYin extends Base {
             web_rid: room_data.owner.web_rid,
             typeMode: 'strict'
           })
+          const liveItem = live_data.data.data[0]
+          const user = UserInfoData.data.user
+          //@ts-ignore
+          const streamExtra = liveItem.stream_url?.extra
+          const resolution = streamExtra
+            //@ts-ignore
+            ? `${streamExtra.width}x${streamExtra.height}`
+            //@ts-ignore
+            : liveItem.stream_url?.default_resolution || ''
 
-          const img = await Render(this.e, 'douyin/live',
-            {
-              image_url: live_data.data.data[0].cover?.url_list[0],
-              text: live_data.data.data[0].title,
-              liveinf: `${live_data.data.partition_road_map.partition.title} | 房间号: ${room_data.owner.web_rid}`,
-              在线观众: Count(Number(live_data.data.data[0].room_view_stats?.display_value)),
-              总观看次数: live_data.data.data[0].stats?.total_user_str ? Count(Number(live_data.data.data[0].stats?.total_user_str)) : '刚开播无法获取',
-              username: UserInfoData.data.user.nickname,
-              avater_url: UserInfoData.data.user.avatar_larger.url_list[0],
-              fans: Count(UserInfoData.data.user.follower_count),
-              share_url: 'https://live.douyin.com/' + room_data.owner.web_rid,
-              dynamicTYPE: '直播间信息'
-            }
-          )
+          const img = await Render(this.e, 'douyin/live', {
+            image_url: liveItem.cover?.url_list[0],
+            text: liveItem.title,
+            partition_title: live_data.data.partition_road_map?.partition?.title || '未知分区',
+            room_id: room_data.owner.web_rid,
+            online_viewers: Count(Number(liveItem.room_view_stats?.display_value)),
+            total_viewers: liveItem.stats?.total_user_str || '刚开播无法获取',
+            username: user.nickname,
+            avater_url: user.avatar_larger.url_list[0],
+            fans: Count(user.follower_count),
+            share_url: 'https://live.douyin.com/' + room_data.owner.web_rid,
+            dynamicTYPE: '直播间信息',
+            //@ts-ignore
+            like_count: Count(Number(liveItem.like_count || 0)),
+            //@ts-ignore
+            user_count_str: liveItem.user_count_str || '',
+            resolution,
+            //@ts-ignore
+            signature: user.signature || '',
+            //@ts-ignore
+            city: user.city || '',
+            //@ts-ignore
+            aweme_count: Count(Number(user.aweme_count || 0)),
+            //@ts-ignore
+            following_count: Count(Number(user.following_count || 0)),
+            //@ts-ignore
+            total_favorited: Count(Number(user.total_favorited || 0)),
+            //@ts-ignore
+            has_commerce_goods: liveItem.has_commerce_goods || false
+          })
           await this.e.reply(img)
         } else {
           this.e.reply(`「${UserInfoData.data.user.nickname}」\n未开播，正在休息中~`)
