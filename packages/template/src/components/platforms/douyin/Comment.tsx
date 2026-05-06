@@ -59,26 +59,26 @@ const formatPublishTime = (timestamp: number): string => {
   return format(fromUnixTime(timestamp), 'yyyy年MM月dd日 HH:mm', { locale: zhCN })
 }
 
-const DouyinLogo: React.FC<{ useDarkTheme?: boolean }> = ({ useDarkTheme }) => {
-  const [hasError, setHasError] = React.useState(false)
+// const DouyinLogo: React.FC<{ useDarkTheme?: boolean }> = ({ useDarkTheme }) => {
+//   const [hasError, setHasError] = React.useState(false)
 
-  if (hasError) {
-    return (
-      <div className='flex items-center h-full text-6xl font-bold text-foreground/70'>
-        抖音
-      </div>
-    )
-  }
+//   if (hasError) {
+//     return (
+//       <div className='flex items-center h-full text-6xl font-bold text-foreground/70'>
+//         抖音
+//       </div>
+//     )
+//   }
 
-  return (
-    <img
-      src={useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
-      alt='抖音Logo'
-      className='object-contain h-full w-auto max-w-125'
-      onError={() => setHasError(true)}
-    />
-  )
-}
+//   return (
+//     <img
+//       src={useDarkTheme ? '/image/douyin/dylogo-light.svg' : '/image/douyin/dylogo-dark.svg'}
+//       alt='抖音Logo'
+//       className='object-contain h-full w-auto max-w-125'
+//       onError={() => setHasError(true)}
+//     />
+//   )
+// }
 
 /**
  * 二维码组件
@@ -121,7 +121,7 @@ const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'>
           <div className='flex items-start justify-between gap-6'>
             <div className='flex items-center gap-6 min-w-0'>
               {/* 作者头像 */}
-              <div className='w-32 h-32 shrink-0 rounded-full overflow-hidden bg-surface-secondary ring-2 ring-border/40'>
+              <div className='w-35 h-35 shrink-0 rounded-full overflow-hidden bg-surface-secondary ring-2 ring-border/40'>
                 <img
                   src={props.AuthorAvatar}
                   className='w-full h-full object-cover'
@@ -132,9 +132,6 @@ const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'>
               <div className='flex flex-col gap-3 min-w-0'>
                 <div className='flex items-center gap-4 flex-wrap'>
                   <span className='text-5xl font-medium text-foreground truncate'>{props.Author}</span>
-                  <span className='inline-flex items-center px-4 py-1.5 rounded-xl text-4xl bg-[#fe2c55] text-white shrink-0'>
-                    作者
-                  </span>
                 </div>
                 <span className='text-4xl text-muted'>
                   {formatPublishTime(props.CreateTime)}
@@ -143,9 +140,9 @@ const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'>
             </div>
 
             {/* 抖音 Logo */}
-            <div className='h-28 flex items-center shrink-0'>
+            {/* <div className='h-28 flex items-center shrink-0'>
               <DouyinLogo useDarkTheme={props.useDarkTheme} />
-            </div>
+            </div> */}
           </div>
 
           {/* 数据统计 */}
