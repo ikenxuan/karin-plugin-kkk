@@ -69,7 +69,16 @@ interface DouyinCommentProps extends BaseComponentProps {
     Region: string; /** 相关搜索（大家都在搜） */
     suggestWrod: string[]; /** 视频分辨率 */
     Resolution: string | null; /** 分享链接 */
-    share_url: string; /** 评论数据列表 */
+    share_url: string; /** 作者昵称 */
+    Author: string; /** 作者头像 */
+    AuthorAvatar: string; /** 作品统计 */
+    Statistics: {
+      digg_count: number;
+      comment_count: number;
+      share_count: number;
+      collect_count: number;
+    }; /** 发布时间戳（秒） */
+    CreateTime: number; /** 评论数据列表 */
     CommentsData: Array<{
       /** 评论ID */id?: number; /** 评论CID */
       cid?: string; /** 作品ID */
