@@ -81,14 +81,25 @@ export class Downloader {
     const timeoutId = setTimeout(() => controller.abort(), this.timeout)
     let intervalId: NodeJS.Timeout | null = null
     let throttleStream: ThrottleStream | null = null
+    let writer: fs.WriteStream | null = null
 
     try {
       // 检查断点续传
       let startByte = 0
       if (fs.existsSync(this.filepath)) {
         const stats = fs.statSync(this.filepath)
-        startByte = stats.size
-        logger.debug(`检测到部分下载文件，从 ${formatBytes(startByte)} 处继续下载`)
+        // 由于 stream.pipeline 出错时可能丢失内部缓冲区数据（最多约 32KB），
+        // 保守起见回退 256KB 重新下载，避免文件损坏
+        startByte = Math.max(0, stats.size - 256 * 1024)
+        if (startByte > 0 && startByte < stats.size) {
+          // 截断文件到回退位置，避免 r+ 模式下旧数据残留在文件末尾
+          fs.truncateSync(this.filepath, startByte)
+          logger.debug(`检测到部分下载文件，截断到 ${formatBytes(startByte)} 后重新下载（回退 256KB 安全裕量）`)
+        } else if (startByte > 0) {
+          logger.debug(`检测到部分下载文件，从 ${formatBytes(startByte)} 处继续下载（回退 256KB 安全裕量）`)
+        } else {
+          logger.debug('检测到部分下载文件，文件较小，将重新下载')
+        }
       }
 
       // 构建请求配置
@@ -123,11 +134,11 @@ export class Downloader {
       // 416 Range Not Satisfiable
       if (response.status === 416) {
         logger.warn('服务器返回 416，文件可能已下载完成，验证文件大小...')
-        
+
         if (fs.existsSync(this.filepath)) {
           const stats = fs.statSync(this.filepath)
           logger.debug(`当前文件大小: ${formatBytes(stats.size)}`)
-          
+
           // 如果文件大小合理（大于 1KB），认为下载完成
           if (stats.size > 1024) {
             logger.debug('文件大小合理，认为下载已完成')
@@ -143,11 +154,11 @@ export class Downloader {
           }
         }
       }
-      
+
       if (response.status !== 200 && response.status !== 206) {
         logger.error(`下载失败: HTTP ${response.status}, URL: ${this.url}`)
         logger.error(`响应头: ${JSON.stringify(response.headers)}`)
-        
+
         // 如果响应体很小，可能是错误信息，尝试读取
         if (response.headers['content-length'] && parseInt(response.headers['content-length']) < 10240) {
           let errorBody = ''
@@ -157,7 +168,7 @@ export class Downloader {
           await new Promise(resolve => setTimeout(resolve, 100))
           logger.error(`响应内容: ${errorBody}`)
         }
-        
+
         throw new Error(`HTTP ${response.status}: ${this.url}`)
       }
 
@@ -200,8 +211,10 @@ export class Downloader {
       let lastPrintedPercentage = -1
 
       // 创建写入流
-      const writer = fs.createWriteStream(this.filepath, {
-        flags: startByte > 0 ? 'a' : 'w'
+      // 使用 r+ 模式和 start 选项，从指定位置覆盖写入，避免 append 模式导致的数据错位
+      writer = fs.createWriteStream(this.filepath, {
+        flags: startByte > 0 ? 'r+' : 'w',
+        start: startByte > 0 ? startByte : undefined
       })
 
       // 进度回调
@@ -222,7 +235,7 @@ export class Downloader {
 
       // 创建计数流
       const counterStream = new Transform({
-        transform(chunk, encoding, callback) {
+        transform (chunk, encoding, callback) {
           downloadedBytes += chunk.length
           callback(null, chunk)
         }
@@ -232,26 +245,26 @@ export class Downloader {
       if (this.throttleConfig.enabled) {
         throttleStream = new ThrottleStream(this.currentSpeed)
         logger.debug(`启用限速下载: ${formatBytes(this.currentSpeed)}/s`)
-        await pipeline(response.data, throttleStream, counterStream, writer)
+        await pipeline(response.data, throttleStream, counterStream, writer as fs.WriteStream)
       } else {
-        await pipeline(response.data, counterStream, writer)
+        await pipeline(response.data, counterStream, writer as fs.WriteStream)
       }
 
       if (intervalId) clearInterval(intervalId)
-      
+
       // pipeline 已经等待所有流完成，包括 writer 的 finish 事件
       logger.debug('文件下载并写入完成')
-      
+
       // 验证文件大小
       if (fs.existsSync(this.filepath)) {
         const stats = fs.statSync(this.filepath)
         const actualSize = stats.size
         const expectedSize = totalBytes > 0 ? totalBytes : downloadedBytes
-        
+
         // 检查文件是否太小（可能是错误响应）
         if (actualSize < 1024 && expectedSize < 1024) {
           logger.error(`下载的文件异常小 (${formatBytes(actualSize)})，可能是错误响应`)
-          
+
           // 尝试读取文件内容
           try {
             const content = fs.readFileSync(this.filepath, 'utf-8')
@@ -259,16 +272,16 @@ export class Downloader {
           } catch {
             logger.error('无法读取文件内容（可能是二进制文件）')
           }
-          
+
           throw new Error(`下载的文件异常小: ${formatBytes(actualSize)}，可能是错误响应或链接失效`)
         }
-        
+
         if (actualSize < expectedSize) {
           logger.warn(`文件大小不匹配: 实际 ${formatBytes(actualSize)}, 预期 ${formatBytes(expectedSize)}`)
           logger.warn(`差异: ${formatBytes(expectedSize - actualSize)} (${((expectedSize - actualSize) / expectedSize * 100).toFixed(2)}%)`)
-          
-          // 如果差异小于 1%，可能是正常的元数据差异，否则认为下载不完整
-          if ((expectedSize - actualSize) / expectedSize > 0.01) {
+
+          // 如果差异大于 10KB，认为下载不完整
+          if (expectedSize - actualSize > 10 * 1024) {
             throw new Error(`文件下载不完整: 实际 ${formatBytes(actualSize)}, 预期 ${formatBytes(expectedSize)}`)
           }
         } else {
@@ -305,7 +318,7 @@ export class Downloader {
           this.currentSpeed * this.throttleConfig.autoReduceRatio,
           this.throttleConfig.minSpeed
         )
-        
+
         if (newSpeed < this.currentSpeed) {
           logger.warn(`检测到服务器断流 (连续 ${this.consecutiveResets} 次)，自动降速: ${formatBytes(this.currentSpeed)}/s -> ${formatBytes(newSpeed)}/s`)
           this.currentSpeed = newSpeed
@@ -317,6 +330,22 @@ export class Downloader {
       const nextDelay = calculateBackoffDelay(retryCount)
 
       if (retryCount < this.maxRetries) {
+        // 等待 writer 完全关闭，确保异步写入操作已完成，避免 stat 获取到不准确的文件大小
+        if (writer && !(writer.closed ?? false)) {
+          const ws = writer
+          await new Promise<void>((resolve) => {
+            const timeout = setTimeout(() => {
+              ws.off('close', onClose)
+              resolve()
+            }, 1000)
+            const onClose = () => {
+              clearTimeout(timeout)
+              resolve()
+            }
+            ws.once('close', onClose)
+          })
+        }
+
         if (isRecoverable && fs.existsSync(this.filepath)) {
           const stats = fs.statSync(this.filepath)
           logger.warn(`检测到可恢复的网络错误，保留已下载的 ${formatBytes(stats.size)} 数据`)
@@ -335,7 +364,7 @@ export class Downloader {
           if (isRecoverable && stats.size > 0) {
             logger.warn(`下载失败但保留了部分文件 (${formatBytes(stats.size)}): ${this.filepath}`)
             logger.warn('这可能是由于网络环境变化或服务器风控导致的，文件已保留供后续恢复')
-            
+
             if (isThrottling) {
               logger.warn('建议: 服务器可能有下载速度限制，请尝试在配置中降低 maxSpeed 参数')
             }
