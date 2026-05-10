@@ -55,6 +55,7 @@ jobs:
   # 版本发布管理
   version-release:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     outputs:
       releases_created: ${{ steps.release-please.outputs.releases_created || steps.manual-release.outputs.releases_created }}
       core_release_created: ${{ steps.release-please.outputs['packages/core--release_created'] || steps.manual-release.outputs.core_release_created }}
@@ -140,6 +141,7 @@ jobs:
   # 统一构建作业（仅核心包和Web应用）
   unified-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [version-release]
     outputs:
       build_success: ${{ steps.build-status.outputs.success }}
@@ -258,6 +260,7 @@ jobs:
   # NPM 正式发布
   npm-production-publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [version-release, unified-build]
     if: |
       needs.unified-build.outputs.build_success == 'true' && (
@@ -311,6 +314,7 @@ jobs:
   # GitHub Packages 发布
   github-package-publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [version-release, unified-build]
     permissions:
       contents: read
@@ -386,15 +390,17 @@ jobs:
   # 镜像源同步
   npm-mirror-sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [npm-production-publish]
     steps:
       - name: 🔄 同步到国内镜像源
         run: |
-          curl -X PUT "https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs"
+          curl --max-time 60 --connect-timeout 10 -X PUT "https://registry-direct.npmmirror.com/-/package/karin-plugin-kkk/syncs"
 
   # 构建分支同步
   build-branch-sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [unified-build]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.unified-build.outputs.build_success == 'true'
     outputs:
@@ -478,6 +484,7 @@ jobs:
   # 预览包发布（优先执行）
   preview-package-publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [unified-build, version-release]
     if: needs.unified-build.outputs.build_success == 'true' && (github.event_name != 'workflow_dispatch' || inputs.run_mode != 'production')
     outputs:
@@ -697,6 +704,7 @@ jobs:
   # 预览包发布后的即时构建摘要（PR）
   pr-summary:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [unified-build, preview-package-publish]
     if: github.event_name == 'pull_request' && needs.unified-build.outputs.build_success == 'true' && needs.preview-package-publish.result == 'success'
     steps:
@@ -718,6 +726,7 @@ jobs:
   # 预览包发布后的即时构建摘要（仅针对main分支推送）
   main-push-summary:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [unified-build, preview-package-publish]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.unified-build.outputs.build_success == 'true' && needs.preview-package-publish.result == 'success'
     steps:
@@ -744,6 +753,7 @@ jobs:
 
   build-summary:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [unified-build, preview-package-publish, github-package-publish]
     if: always() && needs.unified-build.outputs.build_success == 'true'
     steps:

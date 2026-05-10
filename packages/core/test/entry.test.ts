@@ -20,20 +20,25 @@ describe('Entry File', () => {
         stderr += data.toString()
       })
 
+      const killTimer = setTimeout(() => {
+        child.kill('SIGKILL')
+      }, 2000)
+
       child.on('error', (err) => {
+        clearTimeout(killTimer)
         resolve({ code: 1, error: err.message })
       })
 
-      child.on('exit', (code) => {
-        resolve({ code, error: stderr || undefined })
+      child.on('exit', (code, signal) => {
+        clearTimeout(killTimer)
+        if (signal === 'SIGKILL') {
+          resolve({ code: 0, error: stderr || undefined })
+        } else {
+          resolve({ code, error: stderr || undefined })
+        }
       })
-
-      setTimeout(() => {
-        child.kill()
-        resolve({ code: 0 })
-      }, 2000)
     })
 
     expect(result.code, result.error).toBe(0)
-  }, 5000)
+  }, 10000)
 })
