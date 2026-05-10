@@ -2,6 +2,36 @@
 
 # Changelog
 
+## [2.30.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.30.1...v2.30.2) (2026-05-06)
+
+
+### 🐛 错误修复
+
+* add AI configuration and generation components ([baa62c7](https://github.com/ikenxuan/karin-plugin-kkk/commit/baa62c7a81ae2af8871f5f28cc1db2265379ab51))
+* 断点续传 ([4478808](https://github.com/ikenxuan/karin-plugin-kkk/commit/4478808a428a464aa3e13c977d37b3da764adfe3))
+* 部分场景图标缺失 ([d9d3024](https://github.com/ikenxuan/karin-plugin-kkk/commit/d9d30240dc857bf21e4d655150f4904e7973a009))
+* 部分场景图标缺失 ([7f52195](https://github.com/ikenxuan/karin-plugin-kkk/commit/7f521956aba83a96ec4b7ebeaaa9ee97f134c078))
+
+
+### 💄 UI 优化
+
+* 优化抖音评论 ([1123f79](https://github.com/ikenxuan/karin-plugin-kkk/commit/1123f79feafe2c7534eea864f93a623e09fb95e2))
+
+
+### 🧰 其他更新
+
+* 优化模板开发面板部分UI ([9bc52e5](https://github.com/ikenxuan/karin-plugin-kkk/commit/9bc52e5a4bb70d4ac8a4fb3c78da32d23391203c))
+
+
+### 📦 依赖更新
+
+* update ([75b0d73](https://github.com/ikenxuan/karin-plugin-kkk/commit/75b0d73ac54c64a5f5078d3ba1e530c23bb2aab3))
+
+
+### 💯 细节优化
+
+* 1 ([658829a](https://github.com/ikenxuan/karin-plugin-kkk/commit/658829a1893942ae87c974311d296856fe1a4182))
+
 ## [2.30.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.30.0...v2.30.1) (2026-05-03)
 
 

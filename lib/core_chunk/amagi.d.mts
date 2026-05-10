@@ -1582,11 +1582,11 @@ declare const bv2av: (bvid: string) => number; //#endregion
 //#region src/types/ReturnDataType/Bilibili/ProtobufDanmaku.d.ts
 type BiliProtobufDanmaku = {
   code: number;
-  data: DataData$27;
+  data: DataData$29;
   message: string;
   [property: string]: any;
 };
-type DataData$27 = {
+type DataData$29 = {
   elems: Elem[];
   [property: string]: any;
 };
@@ -3210,15 +3210,95 @@ declare enum xiaohongshuAPIErrorCode {
   /** 浏览器异常，请尝试更换浏览器后重试 */
   BROWSER_ERROR = 300015
 } //#endregion
+//#region src/validation/index.d.ts
+/**
+ * 基础响应类型
+ */
+type BaseResponse = {
+  /** 响应消息 */message: string; /** 响应状态码 */
+  code: number;
+};
+/**
+ * 成功响应类型
+ * @template T - 响应数据的类型，默认为any
+ */
+type SuccessResult$1<T = any> = BaseResponse & {
+  /** 响应状态 */success: true; /** 响应数据，类型由泛型 T 决定 */
+  data: T; /** 成功响应时错误信息为空 */
+  error: never;
+};
+/**
+ * 错误响应类型
+ */
+type ErrorResult = BaseResponse & {
+  /** 响应状态 */success: false; /** API 错误类型 */
+  error: APIErrorType; /** 错误响应时数据为空 */
+  data: never;
+};
+/**
+ * 通用API响应类型
+ * @template T - 成功响应数据的类型，默认为any
+ */
+type Result$1<T> = SuccessResult$1<T> | ErrorResult;
+/**
+ * 通用API响应类型
+ * @template T - 成功响应数据的类型，默认为any
+ * @deprecated 请使用 Result<T> 替代
+ */
+type ApiResponse<T> = Result$1<T>;
+/**
+ * 验证抖音参数
+ * @param methodType - 抖音方法类型
+ * @param params - 待验证的参数
+ * @returns 验证后的参数，符合原始API期望的类型
+ */
+declare const validateDouyinParams: <T extends DouyinMethodType>(methodType: T, params: unknown) => output<(typeof DouyinValidationSchemas)[T]>;
+/**
+ * 验证哔哩哔哩参数
+ * @param methodType - 哔哩哔哩方法类型
+ * @param params - 待验证的参数
+ * @returns 验证后的参数，符合原始API期望的类型
+ */
+declare const validateBilibiliParams: <T extends BilibiliMethodType>(methodType: T, params: unknown) => output<(typeof BilibiliValidationSchemas)[T]>;
+/**
+ * 验证快手参数
+ * @param methodType - 快手方法类型
+ * @param params - 待验证的参数
+ * @returns 验证后的参数，符合原始API期望的类型
+ */
+declare const validateKuaishouParams: <T extends KuaishouMethodType>(methodType: T, params: unknown) => output<(typeof KuaishouValidationSchemas)[T]>;
+/**
+ * 验证小红书参数
+ * @param methodType - 小红书方法类型
+ * @param params - 待验证的参数
+ * @returns 验证后的参数
+ */
+declare const validateXiaohongshuParams: <T extends XiaohongshuMethodType>(methodType: T, params: unknown) => output<(typeof XiaohongshuValidationSchemas)[T]>;
+/**
+ * 创建成功响应格式
+ * @param data - 响应数据
+ * @param message - 响应消息（可选）
+ * @param code - 响应状态码（可选，默认200）
+ * @returns 格式化的成功API响应对象
+ */
+declare const createSuccessResponse: <T>(data: T, message: string, code?: number) => SuccessResult$1<T>;
+/**
+ * 创建失败响应格式
+ * @param error - 错误信息
+ * @param message - 详细错误消息（可选）
+ * @param code - 错误状态码（可选，默认500）
+ * @returns 格式化的错误响应对象
+ */
+declare const createErrorResponse: (error: APIErrorType, message: string, code?: number, data?: unknown) => ErrorResult; //#endregion
 //#region src/types/ReturnDataType/Bilibili/ArticleCard.d.ts
 type ArticleCard = {
   code: number;
-  data: DataData$26;
+  data: DataData$28;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$26 = {
+type DataData$28 = {
   av2: Av2;
   cv1: Cv1;
   cv2: Cv2;
@@ -3340,9 +3420,9 @@ type Cv1Author = {
   mid: number;
   name: string;
   nameplate: PurpleNameplate$1;
-  official_verify: PurpleOfficialVerify$5;
-  pendant: PurplePendant$5;
-  vip: PurpleVip$5;
+  official_verify: PurpleOfficialVerify$6;
+  pendant: PurplePendant$6;
+  vip: PurpleVip$6;
   [property: string]: any;
 };
 type PurpleNameplate$1 = {
@@ -3354,22 +3434,22 @@ type PurpleNameplate$1 = {
   nid: number;
   [property: string]: any;
 };
-type PurpleOfficialVerify$5 = {
+type PurpleOfficialVerify$6 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type PurplePendant$5 = {
+type PurplePendant$6 = {
   expire: number;
   image: string;
   name: string;
   pid: number;
   [property: string]: any;
 };
-type PurpleVip$5 = {
+type PurpleVip$6 = {
   avatar_subscript: number;
   due_date: number;
-  label: PurpleLabel$5;
+  label: PurpleLabel$6;
   nickname_color: string;
   status: number;
   theme_type: number;
@@ -3377,7 +3457,7 @@ type PurpleVip$5 = {
   vip_pay_type: number;
   [property: string]: any;
 };
-type PurpleLabel$5 = {
+type PurpleLabel$6 = {
   label_theme: string;
   path: string;
   text: string;
@@ -3479,9 +3559,9 @@ type Cv2Author = {
   mid: number;
   name: string;
   nameplate: FluffyNameplate$1;
-  official_verify: FluffyOfficialVerify$5;
-  pendant: FluffyPendant$5;
-  vip: FluffyVip$5;
+  official_verify: FluffyOfficialVerify$6;
+  pendant: FluffyPendant$6;
+  vip: FluffyVip$6;
   [property: string]: any;
 };
 type FluffyNameplate$1 = {
@@ -3493,22 +3573,22 @@ type FluffyNameplate$1 = {
   nid: number;
   [property: string]: any;
 };
-type FluffyOfficialVerify$5 = {
+type FluffyOfficialVerify$6 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type FluffyPendant$5 = {
+type FluffyPendant$6 = {
   expire: number;
   image: string;
   name: string;
   pid: number;
   [property: string]: any;
 };
-type FluffyVip$5 = {
+type FluffyVip$6 = {
   avatar_subscript: number;
   due_date: number;
-  label: FluffyLabel$5;
+  label: FluffyLabel$6;
   nickname_color: string;
   status: number;
   theme_type: number;
@@ -3516,7 +3596,7 @@ type FluffyVip$5 = {
   vip_pay_type: number;
   [property: string]: any;
 };
-type FluffyLabel$5 = {
+type FluffyLabel$6 = {
   label_theme: string;
   path: string;
   text: string;
@@ -3576,12 +3656,12 @@ type Lv5440 = {
 //#region src/types/ReturnDataType/Bilibili/ArticleContent.d.ts
 type ArticleContent = {
   code: number;
-  data: DataData$25;
+  data: DataData$27;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$25 = {
+type DataData$27 = {
   act_id: number;
   apply_time: string;
   authenMark: null;
@@ -3604,7 +3684,7 @@ type DataData$25 = {
   list: null;
   media: Media;
   mtime: number;
-  opus: Opus$5;
+  opus: Opus$6;
   origin_image_urls: string[];
   origin_template_id: number;
   original: number;
@@ -3630,9 +3710,9 @@ type Author$10 = {
   mid: number;
   name: string;
   nameplate: Nameplate$4;
-  official_verify: OfficialVerify$9;
-  pendant: Pendant$10;
-  vip: Vip$10;
+  official_verify: OfficialVerify$10;
+  pendant: Pendant$11;
+  vip: Vip$11;
   [property: string]: any;
 };
 type Nameplate$4 = {
@@ -3644,22 +3724,22 @@ type Nameplate$4 = {
   nid: number;
   [property: string]: any;
 };
-type OfficialVerify$9 = {
+type OfficialVerify$10 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant$10 = {
+type Pendant$11 = {
   expire: number;
   image: string;
   name: string;
   pid: number;
   [property: string]: any;
 };
-type Vip$10 = {
+type Vip$11 = {
   avatar_subscript: number;
   due_date: number;
-  label: Label$10;
+  label: Label$11;
   nickname_color: string;
   status: number;
   theme_type: number;
@@ -3667,7 +3747,7 @@ type Vip$10 = {
   vip_pay_type: number;
   [property: string]: any;
 };
-type Label$10 = {
+type Label$11 = {
   label_theme: string;
   path: string;
   text: string;
@@ -3697,7 +3777,7 @@ type Media = {
   type_name: string;
   [property: string]: any;
 };
-type Opus$5 = {
+type Opus$6 = {
   article: Article$1;
   content: Content$1;
   opus_id: number;
@@ -3792,12 +3872,12 @@ type Stats$1 = {
 //#region src/types/ReturnDataType/Bilibili/ArticleInfo.d.ts
 type ArticleInfo = {
   code: number;
-  data: DataData$24;
+  data: DataData$26;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$24 = {
+type DataData$26 = {
   attention: boolean;
   author_name: string;
   banner_url: string;
@@ -4224,7 +4304,7 @@ type UpInfo = {
   is_follow: number;
   mid: number;
   nickname_color: string;
-  pendant: Pendant$9;
+  pendant: Pendant$10;
   theme_type: number;
   uname: string;
   verify_type: number;
@@ -4233,7 +4313,7 @@ type UpInfo = {
   vip_type: number;
   [property: string]: any;
 };
-type Pendant$9 = {
+type Pendant$10 = {
   image: string;
   name: string;
   pid: number;
@@ -4557,12 +4637,12 @@ type Setting = {
 //#region src/types/ReturnDataType/Bilibili/BiliCommentReply.d.ts
 type BiliCommentReply = {
   code: number;
-  data: DataData$23;
+  data: DataData$25;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$23 = {
+type DataData$25 = {
   assist: number;
   blacklist: number;
   callbacks: {
@@ -4749,7 +4829,7 @@ type Member = {
   mid: string;
   nameplate: Nameplate$3;
   nft_interaction: null;
-  official_verify: OfficialVerify$8;
+  official_verify: OfficialVerify$9;
   pendant: MemberPendant;
   rank: string;
   senior: Senior;
@@ -4758,63 +4838,63 @@ type Member = {
   uname: string;
   user_sailing: UserSailing;
   user_sailing_v2: UserSailingV2;
-  vip: Vip$9;
+  vip: Vip$10;
   [property: string]: any;
 };
 type AvatarItem = {
-  container_size: ContainerSize$5;
-  fallback_layers: FallbackLayers$5;
+  container_size: ContainerSize$6;
+  fallback_layers: FallbackLayers$6;
   mid: string;
   [property: string]: any;
 };
-type ContainerSize$5 = {
+type ContainerSize$6 = {
   height: number;
   width: number;
   [property: string]: any;
 };
-type FallbackLayers$5 = {
+type FallbackLayers$6 = {
   is_critical_group: boolean;
-  layers: Layer$5[];
+  layers: Layer$6[];
   [property: string]: any;
 };
-type Layer$5 = {
-  general_spec: GeneralSpec$5;
-  layer_config: LayerConfig$5;
-  resource: Resource$5;
+type Layer$6 = {
+  general_spec: GeneralSpec$6;
+  layer_config: LayerConfig$6;
+  resource: Resource$6;
   visible: boolean;
   [property: string]: any;
 };
-type GeneralSpec$5 = {
-  pos_spec: PosSpec$5;
-  render_spec: RenderSpec$5;
-  size_spec: SizeSpec$5;
+type GeneralSpec$6 = {
+  pos_spec: PosSpec$6;
+  render_spec: RenderSpec$6;
+  size_spec: SizeSpec$6;
   [property: string]: any;
 };
-type PosSpec$5 = {
+type PosSpec$6 = {
   axis_x: number;
   axis_y: number;
   coordinate_pos: number;
   [property: string]: any;
 };
-type RenderSpec$5 = {
+type RenderSpec$6 = {
   opacity: number;
   [property: string]: any;
 };
-type SizeSpec$5 = {
+type SizeSpec$6 = {
   height: number;
   width: number;
   [property: string]: any;
 };
-type LayerConfig$5 = {
+type LayerConfig$6 = {
   is_critical: boolean;
-  tags: Tags$5;
+  tags: Tags$6;
   [property: string]: any;
 };
-type Tags$5 = {
+type Tags$6 = {
   AVATAR_LAYER: {
     [key: string]: any;
   };
-  GENERAL_CFG: GeneralCFG$5;
+  GENERAL_CFG: GeneralCFG$6;
   ICON_LAYER?: {
     [key: string]: any;
   };
@@ -4823,39 +4903,39 @@ type Tags$5 = {
   };
   [property: string]: any;
 };
-type GeneralCFG$5 = {
+type GeneralCFG$6 = {
   config_type: number;
-  general_config: GeneralConfig$5;
+  general_config: GeneralConfig$6;
   [property: string]: any;
 };
-type GeneralConfig$5 = {
-  web_css_style: WebcssStyle$5;
+type GeneralConfig$6 = {
+  web_css_style: WebcssStyle$6;
   [property: string]: any;
 };
-type WebcssStyle$5 = {
+type WebcssStyle$6 = {
   'background-color'?: string;
   border?: string;
   borderRadius: string;
   boxSizing?: string;
   [property: string]: any;
 };
-type Resource$5 = {
-  res_image: ResImage$5;
+type Resource$6 = {
+  res_image: ResImage$6;
   res_type: number;
   [property: string]: any;
 };
-type ResImage$5 = {
-  image_src: ImageSrc$5;
+type ResImage$6 = {
+  image_src: ImageSrc$6;
   [property: string]: any;
 };
-type ImageSrc$5 = {
+type ImageSrc$6 = {
   local?: number;
   placeholder: number;
-  remote: Remote$5;
+  remote: Remote$6;
   src_type: number;
   [property: string]: any;
 };
-type Remote$5 = {
+type Remote$6 = {
   bfs_style: string;
   url: string;
   [property: string]: any;
@@ -4896,7 +4976,7 @@ type Nameplate$3 = {
   nid: number;
   [property: string]: any;
 };
-type OfficialVerify$8 = {
+type OfficialVerify$9 = {
   desc: string;
   type: number;
   [property: string]: any;
@@ -4997,11 +5077,11 @@ type UserSailingV2Pendant = {
   type: string;
   [property: string]: any;
 };
-type Vip$9 = {
+type Vip$10 = {
   accessStatus: number;
   avatar_subscript: number;
   dueRemark: string;
-  label: Label$9;
+  label: Label$10;
   nickname_color: string;
   themeType: number;
   vipDueDate: number;
@@ -5010,7 +5090,7 @@ type Vip$9 = {
   vipType: number;
   [property: string]: any;
 };
-type Label$9 = {
+type Label$10 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -5065,12 +5145,12 @@ type Data$13 = {
 //#region src/types/ReturnDataType/Bilibili/Captcha/ApplyCaptcha.d.ts
 type ApplyCaptcha = {
   code: number;
-  data: DataData$22;
+  data: DataData$24;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$22 = {
+type DataData$24 = {
   biliword: null;
   geetest: Geetest;
   phone: null;
@@ -5088,12 +5168,12 @@ type Geetest = {
 //#region src/types/ReturnDataType/Bilibili/Captcha/ValidateCaptcha.d.ts
 type ValidateCaptcha = {
   code: number;
-  data: DataData$21;
+  data: DataData$23;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$21 = {
+type DataData$23 = {
   grisk_id: string;
   is_valid: number;
   [property: string]: any;
@@ -5101,12 +5181,12 @@ type DataData$21 = {
 //#region src/types/ReturnDataType/Bilibili/ColumnInfo.d.ts
 type ColumnInfo = {
   code: number;
-  data: DataData$20;
+  data: DataData$22;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$20 = {
+type DataData$22 = {
   articles: null;
   attention: boolean;
   author: Author$9;
@@ -5121,9 +5201,9 @@ type Author$9 = {
   mid: number;
   name: string;
   nameplate: Nameplate$2;
-  official_verify: OfficialVerify$7;
-  pendant: Pendant$8;
-  vip: Vip$8;
+  official_verify: OfficialVerify$8;
+  pendant: Pendant$9;
+  vip: Vip$9;
   [property: string]: any;
 };
 type Nameplate$2 = {
@@ -5135,22 +5215,22 @@ type Nameplate$2 = {
   nid: number;
   [property: string]: any;
 };
-type OfficialVerify$7 = {
+type OfficialVerify$8 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant$8 = {
+type Pendant$9 = {
   expire: number;
   image: string;
   name: string;
   pid: number;
   [property: string]: any;
 };
-type Vip$8 = {
+type Vip$9 = {
   avatar_subscript: number;
   due_date: number;
-  label: Label$8;
+  label: Label$9;
   nickname_color: string;
   status: number;
   theme_type: number;
@@ -5158,7 +5238,7 @@ type Vip$8 = {
   vip_pay_type: number;
   [property: string]: any;
 };
-type Label$8 = {
+type Label$9 = {
   label_theme: string;
   path: string;
   text: string;
@@ -5205,136 +5285,6 @@ type List = {
   words: number;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/DynamicCard.d.ts
-type BiliDynamicCard = {
-  code: number;
-  data: Data$12;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type Data$12 = {
-  card: DataCard;
-  [property: string]: any;
-};
-type DataCard = {
-  card: string;
-  desc: Desc$5;
-  display: Display$1;
-  extend_json: string;
-  [property: string]: any;
-};
-type Desc$5 = {
-  acl: number;
-  bvid: string;
-  comment: number;
-  dynamic_id: number;
-  dynamic_id_str: string;
-  inner_id: number;
-  is_liked: number;
-  like: number;
-  orig_dy_id: number;
-  orig_dy_id_str: string;
-  orig_type: number;
-  origin: null;
-  pre_dy_id: number;
-  pre_dy_id_str: string;
-  previous: null;
-  r_type: number;
-  repost: number;
-  rid: number;
-  rid_str: string;
-  spec_type: number;
-  status: number;
-  stype: number;
-  timestamp: number;
-  type: number;
-  uid: number;
-  uid_type: number;
-  user_profile: UserProfile;
-  view: number;
-  [property: string]: any;
-};
-type UserProfile = {
-  card: UserProfileCard;
-  info: Info$1;
-  level_info: LevelInfo$1;
-  pendant: Pendant$7;
-  rank: string;
-  sign: string;
-  vip: Vip$7;
-  [property: string]: any;
-};
-type UserProfileCard = {
-  official_verify: OfficialVerify$6;
-  [property: string]: any;
-};
-type OfficialVerify$6 = {
-  type: number;
-  [property: string]: any;
-};
-type Info$1 = {
-  face: string;
-  uid: number;
-  uname: string;
-  [property: string]: any;
-};
-type LevelInfo$1 = {
-  current_exp: number;
-  current_level: number;
-  current_min: number;
-  next_exp: string;
-  [property: string]: any;
-};
-type Pendant$7 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type Vip$7 = {
-  accessStatus: number;
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  dueRemark: string;
-  label: Label$7;
-  nickname_color: string;
-  role: number;
-  themeType: number;
-  vipDueDate: number;
-  vipStatus: number;
-  vipStatusWarn: string;
-  vipType: number;
-  [property: string]: any;
-};
-type Label$7 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  [property: string]: any;
-};
-type Display$1 = {
-  emoji_info: null;
-  highlight: null;
-  live_info: null;
-  origin: null;
-  relation: Relation;
-  usr_action_txt: string;
-  [property: string]: any;
-};
-type Relation = {
-  is_follow: number;
-  is_followed: number;
-  status: number;
-  [property: string]: any;
-}; //#endregion
 //#region src/types/ReturnDataType/Bilibili/DynamicInfo.d.ts
 declare enum DynamicType {
   AV = "DYNAMIC_TYPE_AV",
@@ -5344,21 +5294,21 @@ declare enum DynamicType {
   FORWARD = "DYNAMIC_TYPE_FORWARD",
   ARTICLE = "DYNAMIC_TYPE_ARTICLE"
 }
-type BiliDynamicInfoUnion = DynamicTypeAV | DynamicTypeDraw | DynamicTypeWord | DynamicTypeLiveRcmd | DynamicTypeForwardUnion | DynamicTypeArticle;
+type BiliDynamicInfoUnion = DynamicTypeAV | DynamicTypeDraw | DynamicTypeWord | DynamicTypeLiveRcmd_V0 | DynamicTypeLiveRcmd_V1 | DynamicTypeForwardUnion | DynamicTypeArticle;
 type DynamicTypeItemMap$1 = {
   [DynamicType.AV]: DynamicTypeAV['data']['item'];
   [DynamicType.DRAW]: DynamicTypeDraw['data']['item'];
   [DynamicType.WORD]: DynamicTypeWord['data']['item'];
-  [DynamicType.LIVE_RCMD]: DynamicTypeLiveRcmd['data']['item'];
+  [DynamicType.LIVE_RCMD]: DynamicTypeLiveRcmd_V0['data']['item'] | DynamicTypeLiveRcmd_V1['data']['item'];
   [DynamicType.FORWARD]: DynamicTypeForwardUnion['data']['item'];
   [DynamicType.ARTICLE]: DynamicTypeArticle['data']['item'];
 };
-type DataData$19<T extends DynamicType> = {
+type DataData$21<T extends DynamicType> = {
   item: DynamicTypeItemMap$1[T];
 };
 type BiliDynamicInfo<T extends DynamicType> = {
   code: number;
-  data: DataData$19<T>;
+  data: DataData$21<T>;
   message: string;
   ttl: number;
   [property: string]: any;
@@ -5366,12 +5316,12 @@ type BiliDynamicInfo<T extends DynamicType> = {
 //#region src/types/ReturnDataType/Bilibili/LiveRoomDef.d.ts
 type BiliLiveRoomDef = {
   code: number;
-  data: Data$11;
+  data: Data$12;
   message: string;
   msg: string;
   [property: string]: any;
 };
-type Data$11 = {
+type Data$12 = {
   encrypted: boolean;
   hidden_till: number;
   is_hidden: boolean;
@@ -5393,12 +5343,12 @@ type Data$11 = {
 //#region src/types/ReturnDataType/Bilibili/LiveRoomDetail.d.ts
 type BiliLiveRoomDetail = {
   code: number;
-  data: Data$10;
+  data: Data$11;
   message: string;
   msg: string;
   [property: string]: any;
 };
-type Data$10 = {
+type Data$11 = {
   allow_change_area_time: number;
   allow_upload_cover_time: number;
   area_id: number;
@@ -5504,12 +5454,12 @@ type FluffyData = {
 //#region src/types/ReturnDataType/Bilibili/Login/NewLoginQrcode.d.ts
 type BiliNewLoginQrcode = {
   code: number;
-  data: Data$9;
+  data: Data$10;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type Data$9 = {
+type Data$10 = {
   qrcode_key: string;
   url: string;
   [property: string]: any;
@@ -5517,12 +5467,12 @@ type Data$9 = {
 //#region src/types/ReturnDataType/Bilibili/OneWork.d.ts
 type BiliOneWork = {
   code: number;
-  data: Data$8;
+  data: Data$9;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type Data$8 = {
+type Data$9 = {
   aid: number;
   argue_info: ArgueInfo;
   bvid: string;
@@ -5661,7 +5611,7 @@ type UserGarb = {
 //#region src/types/ReturnDataType/Bilibili/UserDynamic.d.ts
 type BiliUserDynamic = {
   code: number;
-  data: DataData$18;
+  data: DataData$20;
   message: string;
   ttl: number;
   [property: string]: any;
@@ -5669,7 +5619,7 @@ type BiliUserDynamic = {
 type AVItem = DynamicTypeAV['data']['item'];
 type DrawItem = DynamicTypeDraw['data']['item'];
 type WordItem = DynamicTypeWord['data']['item'];
-type LiveRcmdItem = DynamicTypeLiveRcmd['data']['item'];
+type LiveRcmdItem = DynamicTypeLiveRcmd_V0['data']['item'] | DynamicTypeLiveRcmd_V1['data']['item'];
 type ForwardItem = DynamicTypeForwardUnion['data']['item'];
 type ArticleItem = DynamicTypeArticle['data']['item'];
 type DynamicTypeItemMap = {
@@ -5680,7 +5630,7 @@ type DynamicTypeItemMap = {
   [DynamicType.FORWARD]: ForwardItem;
   [DynamicType.ARTICLE]: ArticleItem;
 };
-type DataData$18<T extends DynamicType = DynamicType> = {
+type DataData$20<T extends DynamicType = DynamicType> = {
   has_more: boolean;
   items: DynamicTypeItemMap[T][];
   offset: string;
@@ -5691,12 +5641,12 @@ type DataData$18<T extends DynamicType = DynamicType> = {
 //#region src/types/ReturnDataType/Bilibili/UserFullView.d.ts
 type BiliUserFullView = {
   code: number;
-  data: Data$7;
+  data: Data$8;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type Data$7 = {
+type Data$8 = {
   archive: Archive$2;
   article: Article;
   likes: number;
@@ -5715,12 +5665,12 @@ type Article = {
 //#region src/types/ReturnDataType/Bilibili/UserProfile.d.ts
 type BiliUserProfile = {
   code: number;
-  data: Data$6;
+  data: Data$7;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type Data$6 = {
+type Data$7 = {
   archive_count: number;
   article_count: number;
   card: Card;
@@ -5744,21 +5694,21 @@ type Card = {
   fans: number;
   friend: number;
   is_senior_member: number;
-  level_info: LevelInfo;
+  level_info: LevelInfo$1;
   mid: string;
   name: string;
   name_render: null;
   nameplate: Nameplate$1;
   Official: Official$1;
-  official_verify: OfficialVerify$5;
-  pendant: Pendant$6;
+  official_verify: OfficialVerify$7;
+  pendant: Pendant$8;
   place: string;
   rank: string;
   regtime: number;
   sex: string;
   sign: string;
   spacesta: number;
-  vip: Vip$6;
+  vip: Vip$8;
   [property: string]: any;
 };
 type Official$1 = {
@@ -5768,7 +5718,7 @@ type Official$1 = {
   type: number;
   [property: string]: any;
 };
-type LevelInfo = {
+type LevelInfo$1 = {
   current_exp: number;
   current_level: number;
   current_min: number;
@@ -5784,12 +5734,12 @@ type Nameplate$1 = {
   nid: number;
   [property: string]: any;
 };
-type OfficialVerify$5 = {
+type OfficialVerify$7 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant$6 = {
+type Pendant$8 = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -5799,12 +5749,12 @@ type Pendant$6 = {
   pid: number;
   [property: string]: any;
 };
-type Vip$6 = {
+type Vip$8 = {
   avatar_icon: AvatarIcon$1;
   avatar_subscript: number;
   avatar_subscript_url: string;
   due_date: number;
-  label: Label$6;
+  label: Label$8;
   nickname_color: string;
   role: number;
   status: number;
@@ -5828,7 +5778,7 @@ type IconResource = {
   url: string;
   [property: string]: any;
 };
-type Label$6 = {
+type Label$8 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -5851,12 +5801,12 @@ type Space = {
 //#region src/types/ReturnDataType/Bilibili/UserSpaceInfo.d.ts
 type UserSpaceInfo = {
   code: number;
-  data: DataData$17;
+  data: DataData$19;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$17 = {
+type DataData$19 = {
   attestation: Attestation;
   birthday: string;
   certificate_show: boolean;
@@ -5884,7 +5834,7 @@ type DataData$17 = {
   name_render: null;
   nameplate: Nameplate;
   official: Official;
-  pendant: Pendant$5;
+  pendant: Pendant$7;
   profession: Profession;
   rank: number;
   school: null;
@@ -5900,7 +5850,7 @@ type DataData$17 = {
   top_photo: string;
   top_photo_v2: TopPhotoV2;
   user_honour_info: UserHonourInfo;
-  vip: Vip$5;
+  vip: Vip$7;
   [property: string]: any;
 };
 type Attestation = {
@@ -5988,7 +5938,7 @@ type Official = {
   type: number;
   [property: string]: any;
 };
-type Pendant$5 = {
+type Pendant$7 = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -6023,12 +5973,12 @@ type UserHonourInfo = {
   tags: string[];
   [property: string]: any;
 };
-type Vip$5 = {
+type Vip$7 = {
   avatar_icon: AvatarIcon;
   avatar_subscript: number;
   avatar_subscript_url: string;
   due_date: number;
-  label: Label$5;
+  label: Label$7;
   nickname_color: string;
   ott_info: OttInfo;
   role: number;
@@ -6049,7 +5999,7 @@ type AvatarIcon = {
   icon_type: number;
   [property: string]: any;
 };
-type Label$5 = {
+type Label$7 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -6087,12 +6037,12 @@ type SuperVip = {
 /** 视频下载地址（已登录） */
 type BiliVideoPlayurlIsLogin = {
   code: number;
-  data: Data$5;
+  data: Data$6;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type Data$5 = {
+type Data$6 = {
   accept_description: string[];
   accept_format: string;
   accept_quality: number[];
@@ -6205,12 +6155,12 @@ type SupportFormat$1 = {
 /** 视频下载地址（未登录） */
 type BiliBiliVideoPlayurlNoLogin = {
   code: number;
-  data: Data$4;
+  data: Data$5;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type Data$4 = {
+type Data$5 = {
   accept_description: string[];
   accept_format: string;
   accept_quality: number[];
@@ -6253,12 +6203,12 @@ type SupportFormat = {
 //#region src/types/ReturnDataType/Bilibili/WorkComments.d.ts
 type BiliWorkComments = {
   code: number;
-  data: DataData$16;
+  data: DataData$18;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$16 = {
+type DataData$18 = {
   assist: number;
   blacklist: number;
   callbacks: {
@@ -6432,8 +6382,8 @@ type PurpleMember = {
   mid: string;
   nameplate: PurpleNameplate;
   nft_interaction: null;
-  official_verify: PurpleOfficialVerify$4;
-  pendant: PurplePendant$4;
+  official_verify: PurpleOfficialVerify$5;
+  pendant: PurplePendant$5;
   rank: string;
   senior: {
     [key: string]: any;
@@ -6445,101 +6395,101 @@ type PurpleMember = {
   user_sailing_v2: {
     [key: string]: any;
   };
-  vip: PurpleVip$4;
+  vip: PurpleVip$5;
   [property: string]: any;
 };
 type PurpleAvatarItem = {
-  container_size: PurpleContainerSize$4;
-  fallback_layers: PurpleFallbackLayers$4;
+  container_size: PurpleContainerSize$5;
+  fallback_layers: PurpleFallbackLayers$5;
   mid: string;
   [property: string]: any;
 };
-type PurpleContainerSize$4 = {
+type PurpleContainerSize$5 = {
   height: number;
   width: number;
   [property: string]: any;
 };
-type PurpleFallbackLayers$4 = {
+type PurpleFallbackLayers$5 = {
   is_critical_group: boolean;
-  layers: PurpleLayer$4[];
+  layers: PurpleLayer$5[];
   [property: string]: any;
 };
-type PurpleLayer$4 = {
-  general_spec: PurpleGeneralSpec$4;
-  layer_config: PurpleLayerConfig$4;
-  resource: PurpleResource$4;
+type PurpleLayer$5 = {
+  general_spec: PurpleGeneralSpec$5;
+  layer_config: PurpleLayerConfig$5;
+  resource: PurpleResource$5;
   visible: boolean;
   [property: string]: any;
 };
-type PurpleGeneralSpec$4 = {
-  pos_spec: PurplePosSpec$4;
-  render_spec: PurpleRenderSpec$4;
-  size_spec: PurpleSizeSpec$4;
+type PurpleGeneralSpec$5 = {
+  pos_spec: PurplePosSpec$5;
+  render_spec: PurpleRenderSpec$5;
+  size_spec: PurpleSizeSpec$5;
   [property: string]: any;
 };
-type PurplePosSpec$4 = {
+type PurplePosSpec$5 = {
   axis_x: number;
   axis_y: number;
   coordinate_pos: number;
   [property: string]: any;
 };
-type PurpleRenderSpec$4 = {
+type PurpleRenderSpec$5 = {
   opacity: number;
   [property: string]: any;
 };
-type PurpleSizeSpec$4 = {
+type PurpleSizeSpec$5 = {
   height: number;
   width: number;
   [property: string]: any;
 };
-type PurpleLayerConfig$4 = {
+type PurpleLayerConfig$5 = {
   is_critical: boolean;
-  tags: PurpleTags$4;
+  tags: PurpleTags$5;
   [property: string]: any;
 };
-type PurpleTags$4 = {
+type PurpleTags$5 = {
   AVATAR_LAYER: {
     [key: string]: any;
   };
-  GENERAL_CFG: PurpleGENERALCFG$4;
+  GENERAL_CFG: PurpleGENERALCFG$5;
   ICON_LAYER?: {
     [key: string]: any;
   };
   [property: string]: any;
 };
-type PurpleGENERALCFG$4 = {
+type PurpleGENERALCFG$5 = {
   config_type: number;
-  general_config: PurpleGeneralConfig$4;
+  general_config: PurpleGeneralConfig$5;
   [property: string]: any;
 };
-type PurpleGeneralConfig$4 = {
-  web_css_style: PurpleWebcssStyle$4;
+type PurpleGeneralConfig$5 = {
+  web_css_style: PurpleWebcssStyle$5;
   [property: string]: any;
 };
-type PurpleWebcssStyle$4 = {
+type PurpleWebcssStyle$5 = {
   'background-color'?: string;
   border?: string;
   borderRadius: string;
   boxSizing?: string;
   [property: string]: any;
 };
-type PurpleResource$4 = {
-  res_image: PurpleResImage$4;
+type PurpleResource$5 = {
+  res_image: PurpleResImage$5;
   res_type: number;
   [property: string]: any;
 };
-type PurpleResImage$4 = {
-  image_src: PurpleImageSrc$4;
+type PurpleResImage$5 = {
+  image_src: PurpleImageSrc$5;
   [property: string]: any;
 };
-type PurpleImageSrc$4 = {
+type PurpleImageSrc$5 = {
   local?: number;
   placeholder: number;
-  remote: PurpleRemote$4;
+  remote: PurpleRemote$5;
   src_type: number;
   [property: string]: any;
 };
-type PurpleRemote$4 = {
+type PurpleRemote$5 = {
   bfs_style: string;
   url: string;
   [property: string]: any;
@@ -6560,12 +6510,12 @@ type PurpleNameplate = {
   nid: number;
   [property: string]: any;
 };
-type PurpleOfficialVerify$4 = {
+type PurpleOfficialVerify$5 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type PurplePendant$4 = {
+type PurplePendant$5 = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -6581,11 +6531,11 @@ type PurpleUserSailing = {
   pendant: null;
   [property: string]: any;
 };
-type PurpleVip$4 = {
+type PurpleVip$5 = {
   accessStatus: number;
   avatar_subscript: number;
   dueRemark: string;
-  label: PurpleLabel$4;
+  label: PurpleLabel$5;
   nickname_color: string;
   themeType: number;
   vipDueDate: number;
@@ -6594,7 +6544,7 @@ type PurpleVip$4 = {
   vipType: number;
   [property: string]: any;
 };
-type PurpleLabel$4 = {
+type PurpleLabel$5 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -6694,8 +6644,8 @@ type FluffyMember = {
   mid: string;
   nameplate: FluffyNameplate;
   nft_interaction: null;
-  official_verify: FluffyOfficialVerify$4;
-  pendant: FluffyPendant$4;
+  official_verify: FluffyOfficialVerify$5;
+  pendant: FluffyPendant$5;
   rank: string;
   senior: {
     [key: string]: any;
@@ -6707,101 +6657,101 @@ type FluffyMember = {
   user_sailing_v2: {
     [key: string]: any;
   };
-  vip: FluffyVip$4;
+  vip: FluffyVip$5;
   [property: string]: any;
 };
 type FluffyAvatarItem = {
-  container_size: FluffyContainerSize$4;
-  fallback_layers: FluffyFallbackLayers$4;
+  container_size: FluffyContainerSize$5;
+  fallback_layers: FluffyFallbackLayers$5;
   mid: string;
   [property: string]: any;
 };
-type FluffyContainerSize$4 = {
+type FluffyContainerSize$5 = {
   height: number;
   width: number;
   [property: string]: any;
 };
-type FluffyFallbackLayers$4 = {
+type FluffyFallbackLayers$5 = {
   is_critical_group: boolean;
-  layers: FluffyLayer$4[];
+  layers: FluffyLayer$5[];
   [property: string]: any;
 };
-type FluffyLayer$4 = {
-  general_spec: FluffyGeneralSpec$4;
-  layer_config: FluffyLayerConfig$4;
-  resource: FluffyResource$4;
+type FluffyLayer$5 = {
+  general_spec: FluffyGeneralSpec$5;
+  layer_config: FluffyLayerConfig$5;
+  resource: FluffyResource$5;
   visible: boolean;
   [property: string]: any;
 };
-type FluffyGeneralSpec$4 = {
-  pos_spec: FluffyPosSpec$4;
-  render_spec: FluffyRenderSpec$4;
-  size_spec: FluffySizeSpec$4;
+type FluffyGeneralSpec$5 = {
+  pos_spec: FluffyPosSpec$5;
+  render_spec: FluffyRenderSpec$5;
+  size_spec: FluffySizeSpec$5;
   [property: string]: any;
 };
-type FluffyPosSpec$4 = {
+type FluffyPosSpec$5 = {
   axis_x: number;
   axis_y: number;
   coordinate_pos: number;
   [property: string]: any;
 };
-type FluffyRenderSpec$4 = {
+type FluffyRenderSpec$5 = {
   opacity: number;
   [property: string]: any;
 };
-type FluffySizeSpec$4 = {
+type FluffySizeSpec$5 = {
   height: number;
   width: number;
   [property: string]: any;
 };
-type FluffyLayerConfig$4 = {
+type FluffyLayerConfig$5 = {
   is_critical?: boolean;
-  tags: FluffyTags$4;
+  tags: FluffyTags$5;
   [property: string]: any;
 };
-type FluffyTags$4 = {
+type FluffyTags$5 = {
   AVATAR_LAYER?: {
     [key: string]: any;
   };
-  GENERAL_CFG: FluffyGENERALCFG$4;
+  GENERAL_CFG: FluffyGENERALCFG$5;
   ICON_LAYER: {
     [key: string]: any;
   };
   [property: string]: any;
 };
-type FluffyGENERALCFG$4 = {
+type FluffyGENERALCFG$5 = {
   config_type: number;
-  general_config: FluffyGeneralConfig$4;
+  general_config: FluffyGeneralConfig$5;
   [property: string]: any;
 };
-type FluffyGeneralConfig$4 = {
-  web_css_style: FluffyWebcssStyle$4;
+type FluffyGeneralConfig$5 = {
+  web_css_style: FluffyWebcssStyle$5;
   [property: string]: any;
 };
-type FluffyWebcssStyle$4 = {
+type FluffyWebcssStyle$5 = {
   'background-color': string;
   border: string;
   borderRadius: string;
   boxSizing: string;
   [property: string]: any;
 };
-type FluffyResource$4 = {
-  res_image: FluffyResImage$4;
+type FluffyResource$5 = {
+  res_image: FluffyResImage$5;
   res_type: number;
   [property: string]: any;
 };
-type FluffyResImage$4 = {
-  image_src: FluffyImageSrc$4;
+type FluffyResImage$5 = {
+  image_src: FluffyImageSrc$5;
   [property: string]: any;
 };
-type FluffyImageSrc$4 = {
+type FluffyImageSrc$5 = {
   local: number;
   placeholder?: number;
-  remote?: FluffyRemote$4;
+  remote?: FluffyRemote$5;
   src_type: number;
   [property: string]: any;
 };
-type FluffyRemote$4 = {
+type FluffyRemote$5 = {
   bfs_style: string;
   url: string;
   [property: string]: any;
@@ -6822,12 +6772,12 @@ type FluffyNameplate = {
   nid: number;
   [property: string]: any;
 };
-type FluffyOfficialVerify$4 = {
+type FluffyOfficialVerify$5 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type FluffyPendant$4 = {
+type FluffyPendant$5 = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -6843,11 +6793,11 @@ type FluffyUserSailing = {
   pendant: null;
   [property: string]: any;
 };
-type FluffyVip$4 = {
+type FluffyVip$5 = {
   accessStatus: number;
   avatar_subscript: number;
   dueRemark: string;
-  label: FluffyLabel$4;
+  label: FluffyLabel$5;
   nickname_color: string;
   themeType: number;
   vipDueDate: number;
@@ -6856,7 +6806,7 @@ type FluffyVip$4 = {
   vipType: number;
   [property: string]: any;
 };
-type FluffyLabel$4 = {
+type FluffyLabel$5 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -8035,27 +7985,286 @@ type DataUpper = {
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_ARTICLE.d.ts
 type DynamicTypeArticle = {
   code: number;
-  data: DataData$15;
+  data: DataData$17;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$15 = {
-  item: Item$14;
+type DataData$17 = {
+  item: Item$16;
   [property: string]: any;
 };
-type Item$14 = {
+type Item$16 = {
+  basic: Basic$5;
+  id_str: string;
+  modules: Modules$5;
+  type: DynamicType.ARTICLE;
+  visible: boolean;
+  [property: string]: any;
+};
+type Basic$5 = {
+  comment_id_str: string;
+  comment_type: number;
+  jump_url: string;
+  like_icon: LikeIcon$5;
+  rid_str: string;
+  [property: string]: any;
+};
+type LikeIcon$5 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type Modules$5 = {
+  module_author: ModuleAuthor$5;
+  module_dynamic: ModuleDynamic$5;
+  module_more: ModuleMore$10;
+  module_stat: ModuleStat$10;
+  [property: string]: any;
+};
+type ModuleAuthor$5 = {
+  avatar: Avatar$6;
+  face: string;
+  face_nft: boolean;
+  following: null;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: OfficialVerify$6;
+  pendant: Pendant$6;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: Vip$6;
+  [property: string]: any;
+};
+type Avatar$6 = {
+  container_size: ContainerSize$5;
+  fallback_layers: FallbackLayers$5;
+  mid: string;
+  [property: string]: any;
+};
+type ContainerSize$5 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FallbackLayers$5 = {
+  is_critical_group: boolean;
+  layers: Layer$5[];
+  [property: string]: any;
+};
+type Layer$5 = {
+  general_spec: GeneralSpec$5;
+  layer_config: LayerConfig$5;
+  resource: Resource$5;
+  visible: boolean;
+  [property: string]: any;
+};
+type GeneralSpec$5 = {
+  pos_spec: PosSpec$5;
+  render_spec: RenderSpec$5;
+  size_spec: SizeSpec$5;
+  [property: string]: any;
+};
+type PosSpec$5 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type RenderSpec$5 = {
+  opacity: number;
+  [property: string]: any;
+};
+type SizeSpec$5 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type LayerConfig$5 = {
+  is_critical?: boolean;
+  tags: Tags$5;
+  [property: string]: any;
+};
+type Tags$5 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: GeneralCFG$5;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type GeneralCFG$5 = {
+  config_type: number;
+  general_config: GeneralConfig$5;
+  [property: string]: any;
+};
+type GeneralConfig$5 = {
+  web_css_style: WebcssStyle$5;
+  [property: string]: any;
+};
+type WebcssStyle$5 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type Resource$5 = {
+  res_image: ResImage$5;
+  res_type: number;
+  [property: string]: any;
+};
+type ResImage$5 = {
+  image_src: ImageSrc$5;
+  [property: string]: any;
+};
+type ImageSrc$5 = {
+  local: number;
+  placeholder?: number;
+  remote?: Remote$5;
+  src_type: number;
+  [property: string]: any;
+};
+type Remote$5 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type OfficialVerify$6 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$6 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Vip$6 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: Label$6;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type Label$6 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type ModuleDynamic$5 = {
+  additional: null;
+  desc: null;
+  major: Major$10;
+  topic: null;
+  [property: string]: any;
+};
+type Major$10 = {
+  opus: Opus$5;
+  type: string;
+  [property: string]: any;
+};
+type Opus$5 = {
+  fold_action: string[];
+  jump_url: string;
+  pics: string[];
+  summary: Summary$6;
+  title: string;
+  [property: string]: any;
+};
+type Summary$6 = {
+  rich_text_nodes: RichTextNode$5[];
+  text: string;
+  [property: string]: any;
+};
+type RichTextNode$5 = {
+  orig_text?: string;
+  text?: string;
+  type?: string;
+  [property: string]: any;
+};
+type ModuleMore$10 = {
+  three_point_items: ThreePointItem$10[];
+  [property: string]: any;
+};
+type ThreePointItem$10 = {
+  label?: string;
+  type?: string;
+  [property: string]: any;
+};
+type ModuleStat$10 = {
+  comment: Comment$12;
+  forward: Forward$10;
+  like: Like$11;
+  [property: string]: any;
+};
+type Comment$12 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Forward$10 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Like$11 = {
+  count: number;
+  forbidden: boolean;
+  status: boolean;
+  [property: string]: any;
+}; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_AV.d.ts
+type DynamicTypeAV = {
+  code: number;
+  data: DataData$16;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type DataData$16 = {
+  item: Item$15;
+  [property: string]: any;
+};
+type Item$15 = {
   basic: Basic$4;
   id_str: string;
   modules: Modules$4;
-  type: DynamicType.ARTICLE;
+  type: DynamicType.AV;
   visible: boolean;
   [property: string]: any;
 };
 type Basic$4 = {
   comment_id_str: string;
   comment_type: number;
-  jump_url: string;
   like_icon: LikeIcon$4;
   rid_str: string;
   [property: string]: any;
@@ -8070,27 +8279,27 @@ type LikeIcon$4 = {
 type Modules$4 = {
   module_author: ModuleAuthor$4;
   module_dynamic: ModuleDynamic$4;
-  module_more: ModuleMore$8;
-  module_stat: ModuleStat$8;
+  module_more: ModuleMore$9;
+  module_stat: ModuleStat$9;
   [property: string]: any;
 };
 type ModuleAuthor$4 = {
   avatar: Avatar$5;
   face: string;
   face_nft: boolean;
-  following: null;
+  following: boolean;
   jump_url: string;
   label: string;
   mid: number;
   name: string;
-  official_verify: OfficialVerify$4;
-  pendant: Pendant$4;
+  official_verify: OfficialVerify$5;
+  pendant: Pendant$5;
   pub_action: string;
   pub_location_text: string;
   pub_time: string;
   pub_ts: number;
   type: string;
-  vip: Vip$4;
+  vip: Vip$5;
   [property: string]: any;
 };
 type Avatar$5 = {
@@ -8189,12 +8398,12 @@ type Remote$4 = {
   url: string;
   [property: string]: any;
 };
-type OfficialVerify$4 = {
+type OfficialVerify$5 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant$4 = {
+type Pendant$5 = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -8204,18 +8413,18 @@ type Pendant$4 = {
   pid: number;
   [property: string]: any;
 };
-type Vip$4 = {
+type Vip$5 = {
   avatar_subscript: number;
   avatar_subscript_url: string;
   due_date: number;
-  label: Label$4;
+  label: Label$5;
   nickname_color: string;
   status: number;
   theme_type: number;
   type: number;
   [property: string]: any;
 };
-type Label$4 = {
+type Label$5 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -8232,48 +8441,66 @@ type Label$4 = {
 };
 type ModuleDynamic$4 = {
   additional: null;
-  desc: null;
-  major: Major$8;
+  desc: Desc$6;
+  major: Major$9;
   topic: null;
   [property: string]: any;
 };
-type Major$8 = {
-  opus: Opus$4;
-  type: string;
-  [property: string]: any;
-};
-type Opus$4 = {
-  fold_action: string[];
-  jump_url: string;
-  pics: string[];
-  summary: Summary$5;
-  title: string;
-  [property: string]: any;
-};
-type Summary$5 = {
-  rich_text_nodes: RichTextNode$5[];
+type Desc$6 = {
+  rich_text_nodes: RichTextNode$4[];
   text: string;
   [property: string]: any;
 };
-type RichTextNode$5 = {
+type RichTextNode$4 = {
   orig_text?: string;
   text?: string;
   type?: string;
   [property: string]: any;
 };
-type ModuleMore$8 = {
-  three_point_items: ThreePointItem$8[];
+type Major$9 = {
+  archive: Archive$1;
+  type: string;
   [property: string]: any;
 };
-type ThreePointItem$8 = {
+type Archive$1 = {
+  aid: string;
+  badge: Badge$1;
+  bvid: string;
+  cover: string;
+  desc: string;
+  disable_preview: number;
+  duration_text: string;
+  jump_url: string;
+  stat: Stat$1;
+  title: string;
+  type: number;
+  [property: string]: any;
+};
+type Badge$1 = {
+  bg_color: string;
+  color: string;
+  icon_url: null;
+  text: string;
+  [property: string]: any;
+};
+type Stat$1 = {
+  danmaku: string;
+  play: string;
+  [property: string]: any;
+};
+type ModuleMore$9 = {
+  three_point_items: ThreePointItem$9[];
+  [property: string]: any;
+};
+type ThreePointItem$9 = {
   label?: string;
   type?: string;
   [property: string]: any;
 };
-type ModuleStat$8 = {
+type ModuleStat$9 = {
   comment: Comment$11;
-  forward: Forward$8;
-  like: Like$9;
+  forward: Forward$9;
+  like: Like$10;
   [property: string]: any;
 };
 type Comment$11 = {
@@ -8281,40 +8508,41 @@ type Comment$11 = {
   forbidden: boolean;
   [property: string]: any;
 };
-type Forward$8 = {
+type Forward$9 = {
   count: number;
   forbidden: boolean;
   [property: string]: any;
 };
-type Like$9 = {
+type Like$10 = {
   count: number;
   forbidden: boolean;
   status: boolean;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_AV.d.ts
-type DynamicTypeAV = {
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_DRAW.d.ts
+type DynamicTypeDraw = {
   code: number;
-  data: DataData$14;
+  data: DataData$15;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$14 = {
-  item: Item$13;
+type DataData$15 = {
+  item: Item$14;
   [property: string]: any;
 };
-type Item$13 = {
+type Item$14 = {
   basic: Basic$3;
   id_str: string;
   modules: Modules$3;
-  type: DynamicType.AV;
+  type: DynamicType.DRAW;
   visible: boolean;
   [property: string]: any;
 };
 type Basic$3 = {
   comment_id_str: string;
   comment_type: number;
+  jump_url: string;
   like_icon: LikeIcon$3;
   rid_str: string;
   [property: string]: any;
@@ -8329,27 +8557,28 @@ type LikeIcon$3 = {
 type Modules$3 = {
   module_author: ModuleAuthor$3;
   module_dynamic: ModuleDynamic$3;
-  module_more: ModuleMore$7;
-  module_stat: ModuleStat$7;
+  module_more: ModuleMore$8;
+  module_stat: ModuleStat$8;
   [property: string]: any;
 };
 type ModuleAuthor$3 = {
   avatar: Avatar$4;
+  decoration_card: DecorationCard$7;
   face: string;
   face_nft: boolean;
-  following: boolean;
+  following: null;
   jump_url: string;
   label: string;
   mid: number;
   name: string;
-  official_verify: OfficialVerify$3;
-  pendant: Pendant$3;
+  official_verify: OfficialVerify$4;
+  pendant: Pendant$4;
   pub_action: string;
   pub_location_text: string;
   pub_time: string;
   pub_ts: number;
   type: string;
-  vip: Vip$3;
+  vip: Vip$4;
   [property: string]: any;
 };
 type Avatar$4 = {
@@ -8409,6 +8638,9 @@ type Tags$3 = {
   ICON_LAYER: {
     [key: string]: any;
   };
+  PENDENT_LAYER?: {
+    [key: string]: any;
+  };
   [property: string]: any;
 };
 type GeneralCFG$3 = {
@@ -8448,12 +8680,41 @@ type Remote$3 = {
   url: string;
   [property: string]: any;
 };
-type OfficialVerify$3 = {
+type DecorationCard$7 = {
+  big_card_url: string;
+  card_type: number;
+  card_type_name: string;
+  card_url: string;
+  fan: Fan$7;
+  id: number;
+  image_enhance: string;
+  item_id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type Fan$7 = {
+  color: string;
+  color_format: ColorFormat$7;
+  is_fan: number;
+  name: string;
+  num_desc: string;
+  number: number;
+  [property: string]: any;
+};
+type ColorFormat$7 = {
+  colors: string[];
+  end_point: string;
+  gradients: number[];
+  start_point: string;
+  [property: string]: any;
+};
+type OfficialVerify$4 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant$3 = {
+type Pendant$4 = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -8463,18 +8724,18 @@ type Pendant$3 = {
   pid: number;
   [property: string]: any;
 };
-type Vip$3 = {
+type Vip$4 = {
   avatar_subscript: number;
   avatar_subscript_url: string;
   due_date: number;
-  label: Label$3;
+  label: Label$4;
   nickname_color: string;
   status: number;
   theme_type: number;
   type: number;
   [property: string]: any;
 };
-type Label$3 = {
+type Label$4 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -8490,330 +8751,19 @@ type Label$3 = {
   [property: string]: any;
 };
 type ModuleDynamic$3 = {
-  additional: null;
-  desc: Desc$4;
-  major: Major$7;
-  topic: null;
-  [property: string]: any;
-};
-type Desc$4 = {
-  rich_text_nodes: RichTextNode$4[];
-  text: string;
-  [property: string]: any;
-};
-type RichTextNode$4 = {
-  orig_text?: string;
-  text?: string;
-  type?: string;
-  [property: string]: any;
-};
-type Major$7 = {
-  archive: Archive$1;
-  type: string;
-  [property: string]: any;
-};
-type Archive$1 = {
-  aid: string;
-  badge: Badge$1;
-  bvid: string;
-  cover: string;
-  desc: string;
-  disable_preview: number;
-  duration_text: string;
-  jump_url: string;
-  stat: Stat$1;
-  title: string;
-  type: number;
-  [property: string]: any;
-};
-type Badge$1 = {
-  bg_color: string;
-  color: string;
-  icon_url: null;
-  text: string;
-  [property: string]: any;
-};
-type Stat$1 = {
-  danmaku: string;
-  play: string;
-  [property: string]: any;
-};
-type ModuleMore$7 = {
-  three_point_items: ThreePointItem$7[];
-  [property: string]: any;
-};
-type ThreePointItem$7 = {
-  label?: string;
-  type?: string;
-  [property: string]: any;
-};
-type ModuleStat$7 = {
-  comment: Comment$10;
-  forward: Forward$7;
-  like: Like$8;
-  [property: string]: any;
-};
-type Comment$10 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Forward$7 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Like$8 = {
-  count: number;
-  forbidden: boolean;
-  status: boolean;
-  [property: string]: any;
-}; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_DRAW.d.ts
-type DynamicTypeDraw = {
-  code: number;
-  data: DataData$13;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type DataData$13 = {
-  item: Item$12;
-  [property: string]: any;
-};
-type Item$12 = {
-  basic: Basic$2;
-  id_str: string;
-  modules: Modules$2;
-  type: DynamicType.DRAW;
-  visible: boolean;
-  [property: string]: any;
-};
-type Basic$2 = {
-  comment_id_str: string;
-  comment_type: number;
-  jump_url: string;
-  like_icon: LikeIcon$2;
-  rid_str: string;
-  [property: string]: any;
-};
-type LikeIcon$2 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type Modules$2 = {
-  module_author: ModuleAuthor$2;
-  module_dynamic: ModuleDynamic$2;
-  module_more: ModuleMore$6;
-  module_stat: ModuleStat$6;
-  [property: string]: any;
-};
-type ModuleAuthor$2 = {
-  avatar: Avatar$3;
-  decoration_card: DecorationCard$5;
-  face: string;
-  face_nft: boolean;
-  following: null;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: OfficialVerify$2;
-  pendant: Pendant$2;
-  pub_action: string;
-  pub_location_text: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: Vip$2;
-  [property: string]: any;
-};
-type Avatar$3 = {
-  container_size: ContainerSize$2;
-  fallback_layers: FallbackLayers$2;
-  mid: string;
-  [property: string]: any;
-};
-type ContainerSize$2 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FallbackLayers$2 = {
-  is_critical_group: boolean;
-  layers: Layer$2[];
-  [property: string]: any;
-};
-type Layer$2 = {
-  general_spec: GeneralSpec$2;
-  layer_config: LayerConfig$2;
-  resource: Resource$2;
-  visible: boolean;
-  [property: string]: any;
-};
-type GeneralSpec$2 = {
-  pos_spec: PosSpec$2;
-  render_spec: RenderSpec$2;
-  size_spec: SizeSpec$2;
-  [property: string]: any;
-};
-type PosSpec$2 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type RenderSpec$2 = {
-  opacity: number;
-  [property: string]: any;
-};
-type SizeSpec$2 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type LayerConfig$2 = {
-  is_critical?: boolean;
-  tags: Tags$2;
-  [property: string]: any;
-};
-type Tags$2 = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: GeneralCFG$2;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  PENDENT_LAYER?: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type GeneralCFG$2 = {
-  config_type: number;
-  general_config: GeneralConfig$2;
-  [property: string]: any;
-};
-type GeneralConfig$2 = {
-  web_css_style: WebcssStyle$2;
-  [property: string]: any;
-};
-type WebcssStyle$2 = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type Resource$2 = {
-  res_image: ResImage$2;
-  res_type: number;
-  [property: string]: any;
-};
-type ResImage$2 = {
-  image_src: ImageSrc$2;
-  [property: string]: any;
-};
-type ImageSrc$2 = {
-  local: number;
-  placeholder?: number;
-  remote?: Remote$2;
-  src_type: number;
-  [property: string]: any;
-};
-type Remote$2 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type DecorationCard$5 = {
-  big_card_url: string;
-  card_type: number;
-  card_type_name: string;
-  card_url: string;
-  fan: Fan$5;
-  id: number;
-  image_enhance: string;
-  item_id: number;
-  jump_url: string;
-  name: string;
-  [property: string]: any;
-};
-type Fan$5 = {
-  color: string;
-  color_format: ColorFormat$5;
-  is_fan: number;
-  name: string;
-  num_desc: string;
-  number: number;
-  [property: string]: any;
-};
-type ColorFormat$5 = {
-  colors: string[];
-  end_point: string;
-  gradients: number[];
-  start_point: string;
-  [property: string]: any;
-};
-type OfficialVerify$2 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type Pendant$2 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type Vip$2 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: Label$2;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type Label$2 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type ModuleDynamic$2 = {
-  additional: Additional$2;
+  additional: Additional$3;
   desc: null;
-  major: Major$6;
+  major: Major$8;
   topic: Topic$4;
   [property: string]: any;
 };
-type Additional$2 = {
+type Additional$3 = {
   type: string;
   reserve: Reserve$1;
   [property: string]: any;
 };
 type Reserve$1 = {
-  button: Button$2;
+  button: Button$3;
   desc1: Desc1$1;
   desc2: Desc2$1;
   jump_url: string;
@@ -8825,7 +8775,7 @@ type Reserve$1 = {
   up_mid: number;
   [property: string]: any;
 };
-type Button$2 = {
+type Button$3 = {
   check: Check$1;
   status: number;
   type: number;
@@ -8855,20 +8805,20 @@ type Desc2$1 = {
   visible: boolean;
   [property: string]: any;
 };
-type Major$6 = {
-  opus: Opus$3;
+type Major$8 = {
+  opus: Opus$4;
   type: string;
   [property: string]: any;
 };
-type Opus$3 = {
+type Opus$4 = {
   fold_action: string[];
   jump_url: string;
-  pics: Pic$2[];
-  summary: Summary$4;
+  pics: Pic$3[];
+  summary: Summary$5;
   title: null;
   [property: string]: any;
 };
-type Pic$2 = {
+type Pic$3 = {
   height?: number;
   live_url?: null;
   size?: number;
@@ -8876,7 +8826,7 @@ type Pic$2 = {
   width?: number;
   [property: string]: any;
 };
-type Summary$4 = {
+type Summary$5 = {
   rich_text_nodes: RichTextNode$3[];
   text: string;
   [property: string]: any;
@@ -8894,32 +8844,32 @@ type Topic$4 = {
   name: string;
   [property: string]: any;
 };
-type ModuleMore$6 = {
-  three_point_items: ThreePointItem$6[];
+type ModuleMore$8 = {
+  three_point_items: ThreePointItem$8[];
   [property: string]: any;
 };
-type ThreePointItem$6 = {
+type ThreePointItem$8 = {
   label?: string;
   type?: string;
   [property: string]: any;
 };
-type ModuleStat$6 = {
-  comment: Comment$9;
-  forward: Forward$6;
-  like: Like$7;
+type ModuleStat$8 = {
+  comment: Comment$10;
+  forward: Forward$8;
+  like: Like$9;
   [property: string]: any;
 };
-type Comment$9 = {
+type Comment$10 = {
   count: number;
   forbidden: boolean;
   [property: string]: any;
 };
-type Forward$6 = {
+type Forward$8 = {
   count: number;
   forbidden: boolean;
   [property: string]: any;
 };
-type Like$7 = {
+type Like$9 = {
   count: number;
   forbidden: boolean;
   status: boolean;
@@ -8928,21 +8878,555 @@ type Like$7 = {
 //#region src/types/ReturnDataType/Bilibili/Dynamic/Forward/DYNAMIC_TYPE_AV.d.ts
 type DynamicTypeAV$1 = {
   code: number;
-  data: DataData$12;
+  data: DataData$14;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$12 = {
-  item: Item$11;
+type DataData$14 = {
+  item: Item$13;
   [property: string]: any;
 };
-type Item$11 = {
+type Item$13 = {
+  basic: ItemBasic$5;
+  id_str: string;
+  modules: ItemModules$5;
+  orig: Orig$4;
+  type: DynamicType.AV;
+  visible: boolean;
+  [property: string]: any;
+};
+type ItemBasic$5 = {
+  comment_id_str: string;
+  comment_type: number;
+  editable: boolean;
+  like_icon: PurpleLikeIcon$4;
+  rid_str: string;
+  [property: string]: any;
+};
+type PurpleLikeIcon$4 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type ItemModules$5 = {
+  module_author: PurpleModuleAuthor$4;
+  module_dynamic: PurpleModuleDynamic$4;
+  module_more: ModuleMore$7;
+  module_stat: ModuleStat$7;
+  [property: string]: any;
+};
+type PurpleModuleAuthor$4 = {
+  avatar: PurpleAvatar$4;
+  face: string;
+  face_nft: boolean;
+  following: null;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: PurpleOfficialVerify$4;
+  pendant: PurplePendant$4;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: PurpleVip$4;
+  [property: string]: any;
+};
+type PurpleAvatar$4 = {
+  container_size: PurpleContainerSize$4;
+  fallback_layers: PurpleFallbackLayers$4;
+  mid: string;
+  [property: string]: any;
+};
+type PurpleContainerSize$4 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type PurpleFallbackLayers$4 = {
+  is_critical_group: boolean;
+  layers: PurpleLayer$4[];
+  [property: string]: any;
+};
+type PurpleLayer$4 = {
+  general_spec: PurpleGeneralSpec$4;
+  layer_config: PurpleLayerConfig$4;
+  resource: PurpleResource$4;
+  visible: boolean;
+  [property: string]: any;
+};
+type PurpleGeneralSpec$4 = {
+  pos_spec: PurplePosSpec$4;
+  render_spec: PurpleRenderSpec$4;
+  size_spec: PurpleSizeSpec$4;
+  [property: string]: any;
+};
+type PurplePosSpec$4 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type PurpleRenderSpec$4 = {
+  opacity: number;
+  [property: string]: any;
+};
+type PurpleSizeSpec$4 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type PurpleLayerConfig$4 = {
+  is_critical?: boolean;
+  tags: PurpleTags$4;
+  [property: string]: any;
+};
+type PurpleTags$4 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: PurpleGENERALCFG$4;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type PurpleGENERALCFG$4 = {
+  config_type: number;
+  general_config: PurpleGeneralConfig$4;
+  [property: string]: any;
+};
+type PurpleGeneralConfig$4 = {
+  web_css_style: PurpleWebcssStyle$4;
+  [property: string]: any;
+};
+type PurpleWebcssStyle$4 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type PurpleResource$4 = {
+  res_image: PurpleResImage$4;
+  res_type: number;
+  [property: string]: any;
+};
+type PurpleResImage$4 = {
+  image_src: PurpleImageSrc$4;
+  [property: string]: any;
+};
+type PurpleImageSrc$4 = {
+  local: number;
+  placeholder?: number;
+  remote?: PurpleRemote$4;
+  src_type: number;
+  [property: string]: any;
+};
+type PurpleRemote$4 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type PurpleOfficialVerify$4 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type PurplePendant$4 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type PurpleVip$4 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: PurpleLabel$4;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type PurpleLabel$4 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type PurpleModuleDynamic$4 = {
+  additional: null;
+  desc: Desc$5;
+  major: null;
+  topic: Topic$3;
+  [property: string]: any;
+};
+type Desc$5 = {
+  rich_text_nodes: RichTextNode$2[];
+  text: string;
+  [property: string]: any;
+};
+type RichTextNode$2 = {
+  emoji?: Emoji$4;
+  orig_text: string;
+  rid?: string;
+  text: string;
+  type: string;
+  [property: string]: any;
+};
+type Emoji$4 = {
+  icon_url: string;
+  size: number;
+  text: string;
+  type: number;
+  [property: string]: any;
+};
+type Topic$3 = {
+  id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type ModuleMore$7 = {
+  three_point_items: ThreePointItem$7[];
+  [property: string]: any;
+};
+type ThreePointItem$7 = {
+  label: string;
+  modal?: Modal$3;
+  params: Params$3;
+  type: string;
+  [property: string]: any;
+};
+type Modal$3 = {
+  cancel: string;
+  confirm: string;
+  content: string;
+  title: string;
+  [property: string]: any;
+};
+type Params$3 = {
+  dyn_id_str: string;
+  dyn_type: number;
+  dynamic_id?: string;
+  rid_str: string;
+  status?: number;
+  type?: number;
+  [property: string]: any;
+};
+type ModuleStat$7 = {
+  comment: Comment$9;
+  forward: Forward$7;
+  like: Like$8;
+  [property: string]: any;
+};
+type Comment$9 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Forward$7 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Like$8 = {
+  count: number;
+  forbidden: boolean;
+  status: boolean;
+  [property: string]: any;
+};
+type Orig$4 = {
+  basic: OrigBasic$4;
+  id_str: string;
+  modules: OrigModules$4;
+  type: string;
+  visible: boolean;
+  [property: string]: any;
+};
+type OrigBasic$4 = {
+  comment_id_str: string;
+  comment_type: number;
+  like_icon: FluffyLikeIcon$4;
+  rid_str: string;
+  [property: string]: any;
+};
+type FluffyLikeIcon$4 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type OrigModules$4 = {
+  module_author: FluffyModuleAuthor$4;
+  module_dynamic: FluffyModuleDynamic$4;
+  [property: string]: any;
+};
+type FluffyModuleAuthor$4 = {
+  avatar: FluffyAvatar$4;
+  decoration_card: DecorationCard$6;
+  face: string;
+  face_nft: boolean;
+  following: null;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: FluffyOfficialVerify$4;
+  pendant: FluffyPendant$4;
+  pub_action: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: FluffyVip$4;
+  [property: string]: any;
+};
+type FluffyAvatar$4 = {
+  container_size: FluffyContainerSize$4;
+  fallback_layers: FluffyFallbackLayers$4;
+  mid: string;
+  [property: string]: any;
+};
+type FluffyContainerSize$4 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FluffyFallbackLayers$4 = {
+  is_critical_group: boolean;
+  layers: FluffyLayer$4[];
+  [property: string]: any;
+};
+type FluffyLayer$4 = {
+  general_spec: FluffyGeneralSpec$4;
+  layer_config: FluffyLayerConfig$4;
+  resource: FluffyResource$4;
+  visible: boolean;
+  [property: string]: any;
+};
+type FluffyGeneralSpec$4 = {
+  pos_spec: FluffyPosSpec$4;
+  render_spec: FluffyRenderSpec$4;
+  size_spec: FluffySizeSpec$4;
+  [property: string]: any;
+};
+type FluffyPosSpec$4 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type FluffyRenderSpec$4 = {
+  opacity: number;
+  [property: string]: any;
+};
+type FluffySizeSpec$4 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FluffyLayerConfig$4 = {
+  is_critical?: boolean;
+  tags: FluffyTags$4;
+  [property: string]: any;
+};
+type FluffyTags$4 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: FluffyGENERALCFG$4;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  PENDENT_LAYER?: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type FluffyGENERALCFG$4 = {
+  config_type: number;
+  general_config: FluffyGeneralConfig$4;
+  [property: string]: any;
+};
+type FluffyGeneralConfig$4 = {
+  web_css_style: FluffyWebcssStyle$4;
+  [property: string]: any;
+};
+type FluffyWebcssStyle$4 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type FluffyResource$4 = {
+  res_image: FluffyResImage$4;
+  res_type: number;
+  [property: string]: any;
+};
+type FluffyResImage$4 = {
+  image_src: FluffyImageSrc$4;
+  [property: string]: any;
+};
+type FluffyImageSrc$4 = {
+  local: number;
+  placeholder?: number;
+  remote?: FluffyRemote$4;
+  src_type: number;
+  [property: string]: any;
+};
+type FluffyRemote$4 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type DecorationCard$6 = {
+  big_card_url: string;
+  card_type: number;
+  card_type_name: string;
+  card_url: string;
+  fan: Fan$6;
+  id: number;
+  image_enhance: string;
+  item_id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type Fan$6 = {
+  color: string;
+  color_format: ColorFormat$6;
+  is_fan: number;
+  name: string;
+  num_desc: string;
+  number: number;
+  [property: string]: any;
+};
+type ColorFormat$6 = {
+  colors: string[];
+  end_point: string;
+  gradients: number[];
+  start_point: string;
+  [property: string]: any;
+};
+type FluffyOfficialVerify$4 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type FluffyPendant$4 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type FluffyVip$4 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: FluffyLabel$4;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type FluffyLabel$4 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type FluffyModuleDynamic$4 = {
+  additional: null;
+  desc: null;
+  major: Major$7;
+  topic: null;
+  [property: string]: any;
+};
+type Major$7 = {
+  archive: Archive;
+  type: string;
+  [property: string]: any;
+};
+type Archive = {
+  aid: string;
+  badge: Badge;
+  bvid: string;
+  cover: string;
+  desc: string;
+  disable_preview: number;
+  duration_text: string;
+  jump_url: string;
+  stat: Stat;
+  title: string;
+  type: number;
+  [property: string]: any;
+};
+type Badge = {
+  bg_color: string;
+  color: string;
+  icon_url: null;
+  text: string;
+  [property: string]: any;
+};
+type Stat = {
+  danmaku: string;
+  play: string;
+  [property: string]: any;
+}; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/Forward/DYNAMIC_TYPE_DRAW_V0.d.ts
+type DynamicTypeDraw_V0 = {
+  code: number;
+  data: DataData$13;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type DataData$13 = {
+  item: Item$12;
+  [property: string]: any;
+};
+type Item$12 = {
   basic: ItemBasic$4;
   id_str: string;
   modules: ItemModules$4;
   orig: Orig$3;
-  type: DynamicType.AV;
+  type: DynamicType.DRAW;
   visible: boolean;
   [property: string]: any;
 };
@@ -8964,8 +9448,8 @@ type PurpleLikeIcon$3 = {
 type ItemModules$4 = {
   module_author: PurpleModuleAuthor$3;
   module_dynamic: PurpleModuleDynamic$3;
-  module_more: ModuleMore$5;
-  module_stat: ModuleStat$5;
+  module_more: ModuleMore$6;
+  module_stat: ModuleStat$6;
   [property: string]: any;
 };
 type PurpleModuleAuthor$3 = {
@@ -9126,56 +9610,56 @@ type PurpleLabel$3 = {
 };
 type PurpleModuleDynamic$3 = {
   additional: null;
-  desc: Desc$3;
+  desc: Desc$4;
   major: null;
-  topic: Topic$3;
+  topic: Topic$2;
   [property: string]: any;
 };
-type Desc$3 = {
-  rich_text_nodes: RichTextNode$2[];
+type Desc$4 = {
+  rich_text_nodes: DescRichTextNode$2[];
   text: string;
   [property: string]: any;
 };
-type RichTextNode$2 = {
-  emoji?: Emoji$4;
+type DescRichTextNode$2 = {
+  emoji?: Emoji$3;
   orig_text: string;
   rid?: string;
   text: string;
   type: string;
   [property: string]: any;
 };
-type Emoji$4 = {
+type Emoji$3 = {
   icon_url: string;
   size: number;
   text: string;
   type: number;
   [property: string]: any;
 };
-type Topic$3 = {
+type Topic$2 = {
   id: number;
   jump_url: string;
   name: string;
   [property: string]: any;
 };
-type ModuleMore$5 = {
-  three_point_items: ThreePointItem$5[];
+type ModuleMore$6 = {
+  three_point_items: ThreePointItem$6[];
   [property: string]: any;
 };
-type ThreePointItem$5 = {
+type ThreePointItem$6 = {
   label: string;
-  modal?: Modal$3;
-  params: Params$3;
+  modal?: Modal$2;
+  params: Params$2;
   type: string;
   [property: string]: any;
 };
-type Modal$3 = {
+type Modal$2 = {
   cancel: string;
   confirm: string;
   content: string;
   title: string;
   [property: string]: any;
 };
-type Params$3 = {
+type Params$2 = {
   dyn_id_str: string;
   dyn_type: number;
   dynamic_id?: string;
@@ -9184,10 +9668,10 @@ type Params$3 = {
   type?: number;
   [property: string]: any;
 };
-type ModuleStat$5 = {
+type ModuleStat$6 = {
   comment: Comment$8;
-  forward: Forward$5;
-  like: Like$6;
+  forward: Forward$6;
+  like: Like$7;
   [property: string]: any;
 };
 type Comment$8 = {
@@ -9195,12 +9679,12 @@ type Comment$8 = {
   forbidden: boolean;
   [property: string]: any;
 };
-type Forward$5 = {
+type Forward$6 = {
   count: number;
   forbidden: boolean;
   [property: string]: any;
 };
-type Like$6 = {
+type Like$7 = {
   count: number;
   forbidden: boolean;
   status: boolean;
@@ -9217,6 +9701,7 @@ type Orig$3 = {
 type OrigBasic$3 = {
   comment_id_str: string;
   comment_type: number;
+  jump_url: string;
   like_icon: FluffyLikeIcon$3;
   rid_str: string;
   [property: string]: any;
@@ -9235,7 +9720,7 @@ type OrigModules$3 = {
 };
 type FluffyModuleAuthor$3 = {
   avatar: FluffyAvatar$3;
-  decoration_card: DecorationCard$4;
+  decoration_card: DecorationCard$5;
   face: string;
   face_nft: boolean;
   following: null;
@@ -9351,12 +9836,12 @@ type FluffyRemote$3 = {
   url: string;
   [property: string]: any;
 };
-type DecorationCard$4 = {
+type DecorationCard$5 = {
   big_card_url: string;
   card_type: number;
   card_type_name: string;
   card_url: string;
-  fan: Fan$4;
+  fan: Fan$5;
   id: number;
   image_enhance: string;
   item_id: number;
@@ -9364,16 +9849,16 @@ type DecorationCard$4 = {
   name: string;
   [property: string]: any;
 };
-type Fan$4 = {
+type Fan$5 = {
   color: string;
-  color_format: ColorFormat$4;
+  color_format: ColorFormat$5;
   is_fan: number;
   name: string;
   num_desc: string;
   number: number;
   [property: string]: any;
 };
-type ColorFormat$4 = {
+type ColorFormat$5 = {
   colors: string[];
   end_point: string;
   gradients: number[];
@@ -9424,66 +9909,67 @@ type FluffyLabel$3 = {
 type FluffyModuleDynamic$3 = {
   additional: null;
   desc: null;
-  major: Major$5;
+  major: Major$6;
   topic: null;
   [property: string]: any;
 };
-type Major$5 = {
-  archive: Archive;
+type Major$6 = {
+  opus: Opus$3;
   type: string;
   [property: string]: any;
 };
-type Archive = {
-  aid: string;
-  badge: Badge;
-  bvid: string;
-  cover: string;
-  desc: string;
-  disable_preview: number;
-  duration_text: string;
+type Opus$3 = {
+  fold_action: string[];
   jump_url: string;
-  stat: Stat;
-  title: string;
-  type: number;
+  pics: Pic$2[];
+  summary: Summary$4;
+  title: null;
   [property: string]: any;
 };
-type Badge = {
-  bg_color: string;
-  color: string;
-  icon_url: null;
+type Pic$2 = {
+  height?: number;
+  live_url?: null;
+  size?: number;
+  url?: string;
+  width?: number;
+  [property: string]: any;
+};
+type Summary$4 = {
+  rich_text_nodes: SummaryRichTextNode$2[];
   text: string;
   [property: string]: any;
 };
-type Stat = {
-  danmaku: string;
-  play: string;
+type SummaryRichTextNode$2 = {
+  jump_url?: string;
+  orig_text: string;
+  text: string;
+  type: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/Forward/DYNAMIC_TYPE_DRAW.d.ts
-type DynamicTypeDraw$1 = {
+//#region src/types/ReturnDataType/Bilibili/Dynamic/Forward/DYNAMIC_TYPE_DRAW_V1.d.ts
+type DynamicTypeDraw_V1 = {
   code: number;
-  data: DataData$11;
+  data: DataData$12;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$11 = {
-  item: Item$10;
+type DataData$12 = {
+  item: Item$11;
   [property: string]: any;
 };
-type Item$10 = {
+type Item$11 = {
   basic: ItemBasic$3;
   id_str: string;
   modules: ItemModules$3;
   orig: Orig$2;
-  type: DynamicType.DRAW;
+  type: string;
   visible: boolean;
   [property: string]: any;
 };
 type ItemBasic$3 = {
   comment_id_str: string;
   comment_type: number;
-  editable: boolean;
   like_icon: PurpleLikeIcon$2;
   rid_str: string;
   [property: string]: any;
@@ -9498,8 +9984,8 @@ type PurpleLikeIcon$2 = {
 type ItemModules$3 = {
   module_author: PurpleModuleAuthor$2;
   module_dynamic: PurpleModuleDynamic$2;
-  module_more: ModuleMore$4;
-  module_stat: ModuleStat$4;
+  module_more: ModuleMore$5;
+  module_stat: ModuleStat$5;
   [property: string]: any;
 };
 type PurpleModuleAuthor$2 = {
@@ -9659,69 +10145,65 @@ type PurpleLabel$2 = {
   [property: string]: any;
 };
 type PurpleModuleDynamic$2 = {
-  additional: null;
-  desc: Desc$2;
+  additional: Additional$2;
+  desc: Desc$3;
   major: null;
-  topic: Topic$2;
+  topic: null;
   [property: string]: any;
 };
-type Desc$2 = {
+type Additional$2 = {
+  common: Common;
+  type: string;
+  [property: string]: any;
+};
+type Common = {
+  button: Button$2;
+  cover: string;
+  desc1: string;
+  desc2: string;
+  head_text: string;
+  id_str: string;
+  jump_url: string;
+  style: number;
+  sub_type: string;
+  title: string;
+  [property: string]: any;
+};
+type Button$2 = {
+  jump_style: JumpStyle$1;
+  jump_url: string;
+  type: number;
+  [property: string]: any;
+};
+type JumpStyle$1 = {
+  icon_url: string;
+  text: string;
+  [property: string]: any;
+};
+type Desc$3 = {
   rich_text_nodes: DescRichTextNode$1[];
   text: string;
   [property: string]: any;
 };
 type DescRichTextNode$1 = {
-  emoji?: Emoji$3;
-  orig_text: string;
-  rid?: string;
-  text: string;
-  type: string;
+  orig_text?: string;
+  text?: string;
+  type?: string;
   [property: string]: any;
 };
-type Emoji$3 = {
-  icon_url: string;
-  size: number;
-  text: string;
-  type: number;
+type ModuleMore$5 = {
+  three_point_items: ThreePointItem$5[];
   [property: string]: any;
 };
-type Topic$2 = {
-  id: number;
-  jump_url: string;
-  name: string;
+type ThreePointItem$5 = {
+  label?: string;
+  type?: string;
   [property: string]: any;
 };
-type ModuleMore$4 = {
-  three_point_items: ThreePointItem$4[];
-  [property: string]: any;
-};
-type ThreePointItem$4 = {
-  label: string;
-  modal?: Modal$2;
-  params: Params$2;
-  type: string;
-  [property: string]: any;
-};
-type Modal$2 = {
-  cancel: string;
-  confirm: string;
-  content: string;
-  title: string;
-  [property: string]: any;
-};
-type Params$2 = {
-  dyn_id_str: string;
-  dyn_type: number;
-  dynamic_id?: string;
-  rid_str: string;
-  status?: number;
-  type?: number;
-  [property: string]: any;
-};
-type ModuleStat$4 = {
+type ModuleStat$5 = {
   comment: Comment$7;
-  forward: Forward$4;
-  like: Like$5;
+  forward: Forward$5;
+  like: Like$6;
   [property: string]: any;
 };
 type Comment$7 = {
@@ -9729,12 +10211,12 @@ type Comment$7 = {
   forbidden: boolean;
   [property: string]: any;
 };
-type Forward$4 = {
+type Forward$5 = {
   count: number;
   forbidden: boolean;
   [property: string]: any;
 };
-type Like$5 = {
+type Like$6 = {
   count: number;
   forbidden: boolean;
   status: boolean;
@@ -9770,7 +10252,7 @@ type OrigModules$2 = {
 };
 type FluffyModuleAuthor$2 = {
   avatar: FluffyAvatar$2;
-  decoration_card: DecorationCard$3;
+  decoration_card: DecorationCard$4;
   face: string;
   face_nft: boolean;
   following: null;
@@ -9886,12 +10368,12 @@ type FluffyRemote$2 = {
   url: string;
   [property: string]: any;
 };
-type DecorationCard$3 = {
+type DecorationCard$4 = {
   big_card_url: string;
   card_type: number;
   card_type_name: string;
   card_url: string;
-  fan: Fan$3;
+  fan: Fan$4;
   id: number;
   image_enhance: string;
   item_id: number;
@@ -9899,16 +10381,16 @@ type DecorationCard$3 = {
   name: string;
   [property: string]: any;
 };
-type Fan$3 = {
+type Fan$4 = {
   color: string;
-  color_format: ColorFormat$3;
+  color_format: ColorFormat$4;
   is_fan: number;
   name: string;
   num_desc: string;
   number: number;
   [property: string]: any;
 };
-type ColorFormat$3 = {
+type ColorFormat$4 = {
   colors: string[];
   end_point: string;
   gradients: number[];
@@ -9959,11 +10441,11 @@ type FluffyLabel$2 = {
 type FluffyModuleDynamic$2 = {
   additional: null;
   desc: null;
-  major: Major$4;
+  major: Major$5;
   topic: null;
   [property: string]: any;
 };
-type Major$4 = {
+type Major$5 = {
   opus: Opus$2;
   type: string;
   [property: string]: any;
@@ -9977,6 +10459,7 @@ type Opus$2 = {
   [property: string]: any;
 };
 type Pic$1 = {
+  aigc?: null;
   height?: number;
   live_url?: null;
   size?: number;
@@ -9990,25 +10473,29 @@ type Summary$3 = {
   [property: string]: any;
 };
 type SummaryRichTextNode$1 = {
-  jump_url?: string;
+  jump_url: string;
   orig_text: string;
+  rid: string;
+  style: {
+    [key: string]: any;
+  };
   text: string;
   type: string;
   [property: string]: any;
 }; //#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/Forward/DYNAMIC_TYPE_LIVE_RCMD.d.ts
-type DynamicTypeLiveRcmd$1 = {
+type DynamicTypeLiveRcmd = {
   code: number;
-  data: DataData$10;
+  data: DataData$11;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$10 = {
-  item: Item$9;
+type DataData$11 = {
+  item: Item$10;
   [property: string]: any;
 };
-type Item$9 = {
+type Item$10 = {
   basic: ItemBasic$2;
   id_str: string;
   modules: ItemModules$2;
@@ -10035,8 +10522,8 @@ type PurpleLikeIcon$1 = {
 type ItemModules$2 = {
   module_author: PurpleModuleAuthor$1;
   module_dynamic: PurpleModuleDynamic$1;
-  module_more: ModuleMore$3;
-  module_stat: ModuleStat$3;
+  module_more: ModuleMore$4;
+  module_stat: ModuleStat$4;
   [property: string]: any;
 };
 type PurpleModuleAuthor$1 = {
@@ -10197,12 +10684,12 @@ type PurpleLabel$1 = {
 };
 type PurpleModuleDynamic$1 = {
   additional: null;
-  desc: Desc$1;
+  desc: Desc$2;
   major: null;
   topic: Topic$1;
   [property: string]: any;
 };
-type Desc$1 = {
+type Desc$2 = {
   rich_text_nodes: RichTextNode$1[];
   text: string;
   [property: string]: any;
@@ -10228,11 +10715,11 @@ type Topic$1 = {
   name: string;
   [property: string]: any;
 };
-type ModuleMore$3 = {
-  three_point_items: ThreePointItem$3[];
+type ModuleMore$4 = {
+  three_point_items: ThreePointItem$4[];
   [property: string]: any;
 };
-type ThreePointItem$3 = {
+type ThreePointItem$4 = {
   label: string;
   modal?: Modal$1;
   params: Params$1;
@@ -10255,10 +10742,10 @@ type Params$1 = {
   type?: number;
   [property: string]: any;
 };
-type ModuleStat$3 = {
+type ModuleStat$4 = {
   comment: Comment$6;
-  forward: Forward$3;
-  like: Like$4;
+  forward: Forward$4;
+  like: Like$5;
   [property: string]: any;
 };
 type Comment$6 = {
@@ -10266,12 +10753,12 @@ type Comment$6 = {
   forbidden: boolean;
   [property: string]: any;
 };
-type Forward$3 = {
+type Forward$4 = {
   count: number;
   forbidden: boolean;
   [property: string]: any;
 };
-type Like$4 = {
+type Like$5 = {
   count: number;
   forbidden: boolean;
   status: boolean;
@@ -10462,16 +10949,16 @@ type FluffyLabel$1 = {
 type FluffyModuleDynamic$1 = {
   additional: null;
   desc: null;
-  major: Major$3;
+  major: Major$4;
   topic: null;
   [property: string]: any;
 };
-type Major$3 = {
-  live_rcmd: LiveRcmd$1;
+type Major$4 = {
+  live_rcmd: LiveRcmd$2;
   type: string;
   [property: string]: any;
 };
-type LiveRcmd$1 = {
+type LiveRcmd$2 = {
   content: string;
   reserve_type: number;
   [property: string]: any;
@@ -10479,16 +10966,16 @@ type LiveRcmd$1 = {
 //#region src/types/ReturnDataType/Bilibili/Dynamic/Forward/DYNAMIC_TYPE_WORD.d.ts
 type DynamicTypeWord$1 = {
   code: number;
-  data: DataData$9;
+  data: DataData$10;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$9 = {
-  item: Item$8;
+type DataData$10 = {
+  item: Item$9;
   [property: string]: any;
 };
-type Item$8 = {
+type Item$9 = {
   basic: ItemBasic$1;
   id_str: string;
   modules: ItemModules$1;
@@ -10515,8 +11002,8 @@ type PurpleLikeIcon = {
 type ItemModules$1 = {
   module_author: PurpleModuleAuthor;
   module_dynamic: PurpleModuleDynamic;
-  module_more: ModuleMore$2;
-  module_stat: ModuleStat$2;
+  module_more: ModuleMore$3;
+  module_stat: ModuleStat$3;
   [property: string]: any;
 };
 type PurpleModuleAuthor = {
@@ -10677,7 +11164,7 @@ type PurpleLabel = {
 };
 type PurpleModuleDynamic = {
   additional: Additional$1;
-  desc: Desc;
+  desc: Desc$1;
   major: null;
   topic: Topic;
   [property: string]: any;
@@ -10730,7 +11217,7 @@ type Desc2 = {
   visible: boolean;
   [property: string]: any;
 };
-type Desc = {
+type Desc$1 = {
   rich_text_nodes: DescRichTextNode[];
   text: string;
   [property: string]: any;
@@ -10756,11 +11243,11 @@ type Topic = {
   name: string;
   [property: string]: any;
 };
-type ModuleMore$2 = {
-  three_point_items: ThreePointItem$2[];
+type ModuleMore$3 = {
+  three_point_items: ThreePointItem$3[];
   [property: string]: any;
 };
-type ThreePointItem$2 = {
+type ThreePointItem$3 = {
   label: string;
   modal?: Modal;
   params: Params;
@@ -10783,10 +11270,10 @@ type Params = {
   type?: number;
   [property: string]: any;
 };
-type ModuleStat$2 = {
+type ModuleStat$3 = {
   comment: Comment$5;
-  forward: Forward$2;
-  like: Like$3;
+  forward: Forward$3;
+  like: Like$4;
   [property: string]: any;
 };
 type Comment$5 = {
@@ -10794,12 +11281,12 @@ type Comment$5 = {
   forbidden: boolean;
   [property: string]: any;
 };
-type Forward$2 = {
+type Forward$3 = {
   count: number;
   forbidden: boolean;
   [property: string]: any;
 };
-type Like$3 = {
+type Like$4 = {
   count: number;
   forbidden: boolean;
   status: boolean;
@@ -10835,7 +11322,7 @@ type OrigModules = {
 };
 type FluffyModuleAuthor = {
   avatar: FluffyAvatar;
-  decoration_card: DecorationCard$2;
+  decoration_card: DecorationCard$3;
   face: string;
   face_nft: boolean;
   following: null;
@@ -10951,12 +11438,12 @@ type FluffyRemote = {
   url: string;
   [property: string]: any;
 };
-type DecorationCard$2 = {
+type DecorationCard$3 = {
   big_card_url: string;
   card_type: number;
   card_type_name: string;
   card_url: string;
-  fan: Fan$2;
+  fan: Fan$3;
   id: number;
   image_enhance: string;
   item_id: number;
@@ -10964,16 +11451,16 @@ type DecorationCard$2 = {
   name: string;
   [property: string]: any;
 };
-type Fan$2 = {
+type Fan$3 = {
   color: string;
-  color_format: ColorFormat$2;
+  color_format: ColorFormat$3;
   is_fan: number;
   name: string;
   num_desc: string;
   number: number;
   [property: string]: any;
 };
-type ColorFormat$2 = {
+type ColorFormat$3 = {
   colors: string[];
   end_point: string;
   gradients: number[];
@@ -11024,11 +11511,11 @@ type FluffyLabel = {
 type FluffyModuleDynamic = {
   additional: null;
   desc: null;
-  major: Major$2;
+  major: Major$3;
   topic: null;
   [property: string]: any;
 };
-type Major$2 = {
+type Major$3 = {
   opus: Opus$1;
   type: string;
   [property: string]: any;
@@ -11062,20 +11549,23 @@ type SummaryRichTextNode = {
   [property: string]: any;
 }; //#endregion
 //#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD.d.ts
+type FixOrig<O, LiteralType extends string> = O & {
+  type: LiteralType;
+};
 type OriginalDynamicItemMap = {
   [DynamicType.AV]: DynamicTypeAV$1['data']['item'];
-  [DynamicType.DRAW]: DynamicTypeDraw$1['data']['item'];
+  [DynamicType.DRAW]: DynamicTypeDraw_V0['data']['item'] | DynamicTypeDraw_V1['data']['item'];
   [DynamicType.WORD]: DynamicTypeWord$1['data']['item'];
-  [DynamicType.LIVE_RCMD]: DynamicTypeLiveRcmd$1['data']['item'];
+  [DynamicType.LIVE_RCMD]: DynamicTypeLiveRcmd['data']['item'];
 };
-type ItemBasic = OriginalDynamicItemMap[DynamicType.DRAW]['basic'];
-type ItemModules = OriginalDynamicItemMap[DynamicType.DRAW]['modules'];
-type DataData$8<T extends keyof OriginalDynamicItemMap> = {
+type ItemBasic = DynamicTypeWord$1['data']['item']['basic'] | DynamicTypeLiveRcmd['data']['item']['basic'] | DynamicTypeDraw_V0['data']['item']['basic'] | DynamicTypeDraw_V1['data']['item']['basic'] | DynamicTypeAV$1['data']['item']['basic'];
+type ItemModules = DynamicTypeWord$1['data']['item']['modules'] | DynamicTypeLiveRcmd['data']['item']['modules'] | DynamicTypeDraw_V0['data']['item']['modules'] | DynamicTypeDraw_V1['data']['item']['modules'] | DynamicTypeAV$1['data']['item']['modules'];
+type DataData$9<T extends keyof OriginalDynamicItemMap> = {
   item: {
     basic: ItemBasic;
     id_str: string;
     modules: ItemModules;
-    orig: OriginalDynamicItemMap[T]['orig'];
+    orig: FixOrig<OriginalDynamicItemMap[T]['orig'], T>;
     type: DynamicType.FORWARD;
     visible: boolean;
     [property: string]: any;
@@ -11084,14 +11574,290 @@ type DataData$8<T extends keyof OriginalDynamicItemMap> = {
 };
 type DynamicTypeForward<T extends keyof OriginalDynamicItemMap> = {
   code: number;
-  data: DataData$8<T>;
+  data: DataData$9<T>;
   message: string;
   ttl: number;
   [property: string]: any;
 };
 type DynamicTypeForwardUnion = DynamicTypeForward<DynamicType.AV> | DynamicTypeForward<DynamicType.DRAW> | DynamicTypeForward<DynamicType.WORD> | DynamicTypeForward<DynamicType.LIVE_RCMD>; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_LIVE_RCMD.d.ts
-type DynamicTypeLiveRcmd = {
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_LIVE_RCMD_V0.d.ts
+type DynamicTypeLiveRcmd_V0 = {
+  code: number;
+  data: DataData$8;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type DataData$8 = {
+  item: Item$8;
+  [property: string]: any;
+};
+type Item$8 = {
+  basic: Basic$2;
+  id_str: string;
+  modules: Modules$2;
+  type: DynamicType.LIVE_RCMD;
+  visible: boolean;
+  [property: string]: any;
+};
+type Basic$2 = {
+  comment_id_str: string;
+  comment_type: number;
+  like_icon: LikeIcon$2;
+  rid_str: string;
+  [property: string]: any;
+};
+type LikeIcon$2 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type Modules$2 = {
+  module_author: ModuleAuthor$2;
+  module_dynamic: ModuleDynamic$2;
+  module_more: ModuleMore$2;
+  module_stat: ModuleStat$2;
+  [property: string]: any;
+};
+type ModuleAuthor$2 = {
+  avatar: Avatar$3;
+  decoration_card: DecorationCard$2;
+  face: string;
+  face_nft: boolean;
+  following: boolean;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: OfficialVerify$3;
+  pendant: Pendant$3;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: Vip$3;
+  [property: string]: any;
+};
+type Avatar$3 = {
+  container_size: ContainerSize$2;
+  fallback_layers: FallbackLayers$2;
+  mid: string;
+  [property: string]: any;
+};
+type ContainerSize$2 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FallbackLayers$2 = {
+  is_critical_group: boolean;
+  layers: Layer$2[];
+  [property: string]: any;
+};
+type Layer$2 = {
+  general_spec: GeneralSpec$2;
+  layer_config: LayerConfig$2;
+  resource: Resource$2;
+  visible: boolean;
+  [property: string]: any;
+};
+type GeneralSpec$2 = {
+  pos_spec: PosSpec$2;
+  render_spec: RenderSpec$2;
+  size_spec: SizeSpec$2;
+  [property: string]: any;
+};
+type PosSpec$2 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type RenderSpec$2 = {
+  opacity: number;
+  [property: string]: any;
+};
+type SizeSpec$2 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type LayerConfig$2 = {
+  is_critical?: boolean;
+  tags: Tags$2;
+  [property: string]: any;
+};
+type Tags$2 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: GeneralCFG$2;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type GeneralCFG$2 = {
+  config_type: number;
+  general_config: GeneralConfig$2;
+  [property: string]: any;
+};
+type GeneralConfig$2 = {
+  web_css_style: WebcssStyle$2;
+  [property: string]: any;
+};
+type WebcssStyle$2 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type Resource$2 = {
+  res_image: ResImage$2;
+  res_type: number;
+  [property: string]: any;
+};
+type ResImage$2 = {
+  image_src: ImageSrc$2;
+  [property: string]: any;
+};
+type ImageSrc$2 = {
+  local: number;
+  placeholder?: number;
+  remote?: Remote$2;
+  src_type: number;
+  [property: string]: any;
+};
+type Remote$2 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type DecorationCard$2 = {
+  big_card_url: string;
+  card_type: number;
+  card_type_name: string;
+  card_url: string;
+  fan: Fan$2;
+  id: number;
+  image_enhance: string;
+  item_id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type Fan$2 = {
+  color: string;
+  color_format: ColorFormat$2;
+  is_fan: number;
+  name: string;
+  num_desc: string;
+  number: number;
+  [property: string]: any;
+};
+type ColorFormat$2 = {
+  colors: string[];
+  end_point: string;
+  gradients: number[];
+  start_point: string;
+  [property: string]: any;
+};
+type OfficialVerify$3 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$3 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Vip$3 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: Label$3;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type Label$3 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type ModuleDynamic$2 = {
+  additional: null;
+  desc: null;
+  major: Major$2;
+  topic: null;
+  [property: string]: any;
+};
+type Major$2 = {
+  live_rcmd: LiveRcmd$1;
+  type: string;
+  [property: string]: any;
+};
+type LiveRcmd$1 = {
+  content: string;
+  reserve_type: number;
+  [property: string]: any;
+};
+type ModuleMore$2 = {
+  three_point_items: ThreePointItem$2[];
+  [property: string]: any;
+};
+type ThreePointItem$2 = {
+  label?: string;
+  type?: string;
+  [property: string]: any;
+};
+type ModuleStat$2 = {
+  comment: Comment$4;
+  forward: Forward$2;
+  like: Like$3;
+  [property: string]: any;
+};
+type Comment$4 = {
+  count: number;
+  forbidden: boolean;
+  hidden: boolean;
+  [property: string]: any;
+};
+type Forward$2 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Like$3 = {
+  count: number;
+  forbidden: boolean;
+  status: boolean;
+  [property: string]: any;
+}; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_LIVE_RCMD_V1.d.ts
+type DynamicTypeLiveRcmd_V1 = {
   code: number;
   data: DataData$7;
   message: string;
@@ -11141,14 +11907,14 @@ type ModuleAuthor$1 = {
   label: string;
   mid: number;
   name: string;
-  official_verify: OfficialVerify$1;
-  pendant: Pendant$1;
+  official_verify: OfficialVerify$2;
+  pendant: Pendant$2;
   pub_action: string;
   pub_location_text: string;
   pub_time: string;
   pub_ts: number;
   type: string;
-  vip: Vip$1;
+  vip: Vip$2;
   [property: string]: any;
 };
 type Avatar$2 = {
@@ -11276,12 +12042,12 @@ type ColorFormat$1 = {
   start_point: string;
   [property: string]: any;
 };
-type OfficialVerify$1 = {
+type OfficialVerify$2 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant$1 = {
+type Pendant$2 = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -11291,18 +12057,18 @@ type Pendant$1 = {
   pid: number;
   [property: string]: any;
 };
-type Vip$1 = {
+type Vip$2 = {
   avatar_subscript: number;
   avatar_subscript_url: string;
   due_date: number;
-  label: Label$1;
+  label: Label$2;
   nickname_color: string;
   status: number;
   theme_type: number;
   type: number;
   [property: string]: any;
 };
-type Label$1 = {
+type Label$2 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -11344,12 +12110,12 @@ type ThreePointItem$1 = {
   [property: string]: any;
 };
 type ModuleStat$1 = {
-  comment: Comment$4;
+  comment: Comment$;
   forward: Forward$1;
   like: Like$2;
   [property: string]: any;
 };
-type Comment$4 = {
+type Comment$ = {
   count: number;
   forbidden: boolean;
   hidden: boolean;
@@ -11418,14 +12184,14 @@ type ModuleAuthor = {
   label: string;
   mid: number;
   name: string;
-  official_verify: OfficialVerify;
-  pendant: Pendant;
+  official_verify: OfficialVerify$1;
+  pendant: Pendant$1;
   pub_action: string;
   pub_location_text: string;
   pub_time: string;
   pub_ts: number;
   type: string;
-  vip: Vip;
+  vip: Vip$1;
   [property: string]: any;
 };
 type Avatar$1 = {
@@ -11553,12 +12319,12 @@ type ColorFormat = {
   start_point: string;
   [property: string]: any;
 };
-type OfficialVerify = {
+type OfficialVerify$1 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant = {
+type Pendant$1 = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -11568,18 +12334,18 @@ type Pendant = {
   pid: number;
   [property: string]: any;
 };
-type Vip = {
+type Vip$1 = {
   avatar_subscript: number;
   avatar_subscript_url: string;
   due_date: number;
-  label: Label;
+  label: Label$1;
   nickname_color: string;
   status: number;
   theme_type: number;
   type: number;
   [property: string]: any;
 };
-type Label = {
+type Label$1 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -11759,6 +12525,136 @@ declare enum AdditionalType {
   /** 充电专属抽奖 */
   UPOWER_LOTTERY = "ADDITIONAL_TYPE_UPOWER_LOTTERY"
 } //#endregion
+//#region src/types/ReturnDataType/Bilibili/DynamicCard.d.ts
+type BiliDynamicCard = {
+  code: number;
+  data: Data$4;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type Data$4 = {
+  card: DataCard;
+  [property: string]: any;
+};
+type DataCard = {
+  card: string;
+  desc: Desc;
+  display: Display$1;
+  extend_json: string;
+  [property: string]: any;
+};
+type Desc = {
+  acl: number;
+  bvid: string;
+  comment: number;
+  dynamic_id: number;
+  dynamic_id_str: string;
+  inner_id: number;
+  is_liked: number;
+  like: number;
+  orig_dy_id: number;
+  orig_dy_id_str: string;
+  orig_type: number;
+  origin: null;
+  pre_dy_id: number;
+  pre_dy_id_str: string;
+  previous: null;
+  r_type: number;
+  repost: number;
+  rid: number;
+  rid_str: string;
+  spec_type: number;
+  status: number;
+  stype: number;
+  timestamp: number;
+  type: number;
+  uid: number;
+  uid_type: number;
+  user_profile: UserProfile;
+  view: number;
+  [property: string]: any;
+};
+type UserProfile = {
+  card: UserProfileCard;
+  info: Info$1;
+  level_info: LevelInfo;
+  pendant: Pendant;
+  rank: string;
+  sign: string;
+  vip: Vip;
+  [property: string]: any;
+};
+type UserProfileCard = {
+  official_verify: OfficialVerify;
+  [property: string]: any;
+};
+type OfficialVerify = {
+  type: number;
+  [property: string]: any;
+};
+type Info$1 = {
+  face: string;
+  uid: number;
+  uname: string;
+  [property: string]: any;
+};
+type LevelInfo = {
+  current_exp: number;
+  current_level: number;
+  current_min: number;
+  next_exp: string;
+  [property: string]: any;
+};
+type Pendant = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Vip = {
+  accessStatus: number;
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  dueRemark: string;
+  label: Label;
+  nickname_color: string;
+  role: number;
+  themeType: number;
+  vipDueDate: number;
+  vipStatus: number;
+  vipStatusWarn: string;
+  vipType: number;
+  [property: string]: any;
+};
+type Label = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  [property: string]: any;
+};
+type Display$1 = {
+  emoji_info: null;
+  highlight: null;
+  live_info: null;
+  origin: null;
+  relation: Relation;
+  usr_action_txt: string;
+  [property: string]: any;
+};
+type Relation = {
+  is_follow: number;
+  is_followed: number;
+  status: number;
+  [property: string]: any;
+}; //#endregion
 //#region src/types/ReturnDataType/Bilibili/index.d.ts
 /**
  * B站返回类型映射
@@ -11777,7 +12673,8 @@ interface BilibiliReturnTypeMap {
   bangumiInfo: BiliBangumiVideoInfo;
   bangumiStream: BiliBangumiVideoPlayurlIsLogin | BiliBangumiVideoPlayurlNoLogin;
   dynamicDetail: BiliDynamicInfoUnion;
-  dynamicCard: BiliDynamicCard;
+  /** @deprecated 接口已停用，现返回错误信息 */
+  dynamicCard: ErrorResult;
   liveRoomInfo: BiliLiveRoomDetail;
   liveRoomInit: BiliLiveRoomDef;
   loginStatus: any;
@@ -26561,7 +27458,12 @@ declare class BilibiliAPI {
   getUserDynamicList(data: BilibiliMethodOptionsWithoutMethodType['UserParams']): string;
   /** 获取动态详情 */
   getDynamicDetail(data: BilibiliMethodOptionsWithoutMethodType['DynamicParams']): string;
-  /** 获取动态卡片信息 */
+  /**
+   * 获取动态卡片信息
+   *
+   * @deprecated B站官方已于 `2025-08-09` 删除原 `dynamic_svr` 接口，该接口已停用。
+   * 调用将返回错误信息，请使用 {@link getDynamicDetail} 替代。
+   */
   getDynamicCard(data: BilibiliMethodOptionsWithoutMethodType['DynamicParams']): string;
   /** 获取用户名片信息 */
   getUserCard(data: BilibiliMethodOptionsWithoutMethodType['UserParams']): string;
@@ -26612,351 +27514,6 @@ declare class BilibiliAPI {
 }
 /** B站 API URL 构建器实例 */
 declare const bilibiliApiUrls: BilibiliAPI; //#endregion
-//#region src/model/events.d.ts
-/**
- * Amagi 支持的事件类型
- * @description
- * - `log:*` - 日志相关事件
- * - `http:*` - HTTP 请求/响应事件
- * - `network:*` - 网络层事件（重试、错误）
- * - `api:*` - API 调用结果事件
- */
-type AmagiEventType = 'log:info' | 'log:warn' | 'log:error' | 'log:debug' | 'log:mark' | 'http:request' | 'http:response' | 'http:error' | 'network:retry' | 'network:error' | 'api:success' | 'api:error';
-/**
- * 日志事件数据
- * @description 所有 `log:*` 事件的数据结构
- */
-interface LogEventData {
-  /** 日志级别 */
-  level: 'info' | 'warn' | 'error' | 'debug' | 'mark';
-  /** 日志消息 */
-  message: string;
-  /** 附加参数 */
-  args?: unknown[];
-  /** 事件时间戳 */
-  timestamp: Date;
-}
-/**
- * HTTP 请求事件数据
- * @description `http:request` 事件的数据结构
- */
-interface HttpRequestEventData {
-  /** 请求方法 (GET, POST, etc.) */
-  method: string;
-  /** 请求 URL */
-  url: string;
-  /** 请求头 */
-  headers?: Record<string, string>;
-  /** 事件时间戳 */
-  timestamp: Date;
-}
-/**
- * HTTP 响应事件数据
- * @description `http:response` 事件的数据结构
- */
-interface HttpResponseEventData {
-  /** 请求方法 */
-  method: string;
-  /** 请求 URL */
-  url: string;
-  /** HTTP 状态码 */
-  statusCode: number;
-  /** 响应耗时 (毫秒) */
-  responseTime: number;
-  /** 客户端 IP */
-  clientIP?: string;
-  /** 请求体大小 */
-  requestSize?: string;
-  /** 响应体大小 */
-  responseSize?: string;
-  /** 事件时间戳 */
-  timestamp: Date;
-}
-/**
- * 网络重试事件数据
- * @description `network:retry` 事件的数据结构
- */
-interface NetworkRetryEventData {
-  /** 错误代码 */
-  errorCode: string;
-  /** 当前重试次数 */
-  attempt: number;
-  /** 最大重试次数 */
-  maxRetries: number;
-  /** 重试延迟 (毫秒) */
-  delayMs: number;
-  /** 请求 URL */
-  url?: string;
-  /** 事件时间戳 */
-  timestamp: Date;
-}
-/**
- * 网络错误事件数据
- * @description `network:error` 和 `http:error` 事件的数据结构
- */
-interface NetworkErrorEventData {
-  /** 错误代码 */
-  errorCode: string;
-  /** 错误消息 */
-  message: string;
-  /** 已重试次数 */
-  retries: number;
-  /** 请求 URL */
-  url?: string;
-  /** 事件时间戳 */
-  timestamp: Date;
-}
-/**
- * API 成功事件数据
- * @description `api:success` 事件的数据结构
- */
-interface ApiSuccessEventData {
-  /** 请求平台 */
-  platform: 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu';
-  /** 调用的 API 方法 */
-  methodType: string;
-  /** API 响应数据 (Result 结构) */
-  response: unknown;
-  /** HTTP 状态码 */
-  statusCode: number;
-  /** 请求耗时 (毫秒) */
-  duration: number;
-  /** 事件时间戳 */
-  timestamp: Date;
-}
-/**
- * API 错误事件数据
- * @description `api:error` 事件的数据结构
- */
-interface ApiErrorEventData {
-  /** 请求平台 */
-  platform: 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu';
-  /** 调用的 API 方法 */
-  methodType: string;
-  /** 错误代码 */
-  errorCode?: string | number;
-  /** 错误消息 */
-  errorMessage: string;
-  /** 请求 URL */
-  url?: string;
-  /** 请求耗时 (毫秒) */
-  duration?: number;
-  /** 事件时间戳 */
-  timestamp: Date;
-}
-/**
- * 事件类型到数据的映射
- * @description 用于类型推断，确保事件名称与数据类型匹配
- */
-interface AmagiEventMap {
-  'log:info': LogEventData;
-  'log:warn': LogEventData;
-  'log:error': LogEventData;
-  'log:debug': LogEventData;
-  'log:mark': LogEventData;
-  'http:request': HttpRequestEventData;
-  'http:response': HttpResponseEventData;
-  'http:error': NetworkErrorEventData;
-  'network:retry': NetworkRetryEventData;
-  'network:error': NetworkErrorEventData;
-  'api:success': ApiSuccessEventData;
-  'api:error': ApiErrorEventData;
-}
-/**
- * 类型安全的事件发射器
- * @description 继承自 Node.js EventEmitter，提供泛型约束确保事件名称与数据类型匹配
- */
-declare class TypedEventEmitter extends EventEmitter {
-  /**
-   * 触发事件
-   * @param event - 事件名称
-   * @param data - 事件数据
-   * @returns 是否有监听器处理了该事件
-   */
-  emit<K extends AmagiEventType>(event: K, data: AmagiEventMap[K]): boolean;
-  /**
-   * 注册事件监听器
-   * @param event - 事件名称
-   * @param listener - 事件处理函数
-   * @returns this (支持链式调用)
-   */
-  on<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): this;
-  /**
-   * 注册一次性事件监听器
-   * @param event - 事件名称
-   * @param listener - 事件处理函数 (只触发一次)
-   * @returns this (支持链式调用)
-   */
-  once<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): this;
-  /**
-   * 移除事件监听器
-   * @param event - 事件名称
-   * @param listener - 要移除的事件处理函数
-   * @returns this (支持链式调用)
-   */
-  off<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): this;
-}
-/**
- * Amagi 全局事件发射器实例
- * @description 单例模式，所有模块共享同一个事件总线
- * @example
- * ```typescript
- * import { amagiEvents } from 'amagi/model/events'
- *
- * // 监听 API 成功事件
- * amagiEvents.on('api:success', (data) => {
- *   console.log(`[${data.platform}] ${data.methodType} 耗时 ${data.duration}ms`)
- * })
- * ```
- */
-declare const amagiEvents: TypedEventEmitter;
-/**
- * 发射日志事件
- * @param level - 日志级别
- * @param message - 日志消息
- * @param args - 附加参数
- */
-declare const emitLog: (level: LogEventData["level"], message: string, ...args: unknown[]) => void;
-/**
- * 发射 HTTP 请求事件
- * @param data - 请求数据 (不含 timestamp)
- */
-declare const emitHttpRequest: (data: Omit<HttpRequestEventData, "timestamp">) => void;
-/**
- * 发射 HTTP 响应事件
- * @param data - 响应数据 (不含 timestamp)
- */
-declare const emitHttpResponse: (data: Omit<HttpResponseEventData, "timestamp">) => void;
-/**
- * 发射网络重试事件
- * @param data - 重试数据 (不含 timestamp)
- */
-declare const emitNetworkRetry: (data: Omit<NetworkRetryEventData, "timestamp">) => void;
-/**
- * 发射网络错误事件
- * @param data - 错误数据 (不含 timestamp)
- */
-declare const emitNetworkError: (data: Omit<NetworkErrorEventData, "timestamp">) => void;
-/**
- * 发射 API 成功事件
- * @param data - 成功数据 (不含 timestamp)
- */
-declare const emitApiSuccess: (data: Omit<ApiSuccessEventData, "timestamp">) => void;
-/**
- * 发射 API 错误事件
- * @param data - 错误数据 (不含 timestamp)
- */
-declare const emitApiError: (data: Omit<ApiErrorEventData, "timestamp">) => void;
-/**
- * 发射 info 级别日志
- * @param message - 日志消息
- * @param args - 附加参数
- */
-declare const emitLogInfo: (message: string, ...args: unknown[]) => void;
-/**
- * 发射 warn 级别日志
- * @param message - 日志消息
- * @param args - 附加参数
- */
-declare const emitLogWarn: (message: string, ...args: unknown[]) => void;
-/**
- * 发射 error 级别日志
- * @param message - 日志消息
- * @param args - 附加参数
- */
-declare const emitLogError: (message: string, ...args: unknown[]) => void;
-/**
- * 发射 debug 级别日志
- * @param message - 日志消息
- * @param args - 附加参数
- */
-declare const emitLogDebug: (message: string, ...args: unknown[]) => void;
-/**
- * 发射 mark 级别日志 (用于重要标记)
- * @param message - 日志消息
- * @param args - 附加参数
- */
-declare const emitLogMark: (message: string, ...args: unknown[]) => void; //#endregion
-//#region src/validation/index.d.ts
-/**
- * 基础响应类型
- */
-type BaseResponse = {
-  /** 响应消息 */message: string; /** 响应状态码 */
-  code: number;
-};
-/**
- * 成功响应类型
- * @template T - 响应数据的类型，默认为any
- */
-type SuccessResult$1<T = any> = BaseResponse & {
-  /** 响应状态 */success: true; /** 响应数据，类型由泛型 T 决定 */
-  data: T; /** 成功响应时错误信息为空 */
-  error: never;
-};
-/**
- * 错误响应类型
- */
-type ErrorResult = BaseResponse & {
-  /** 响应状态 */success: false; /** API 错误类型 */
-  error: APIErrorType; /** 错误响应时数据为空 */
-  data: never;
-};
-/**
- * 通用API响应类型
- * @template T - 成功响应数据的类型，默认为any
- */
-type Result$1<T> = SuccessResult$1<T> | ErrorResult;
-/**
- * 通用API响应类型
- * @template T - 成功响应数据的类型，默认为any
- * @deprecated 请使用 Result<T> 替代
- */
-type ApiResponse<T> = Result$1<T>;
-/**
- * 验证抖音参数
- * @param methodType - 抖音方法类型
- * @param params - 待验证的参数
- * @returns 验证后的参数，符合原始API期望的类型
- */
-declare const validateDouyinParams: <T extends DouyinMethodType>(methodType: T, params: unknown) => output<(typeof DouyinValidationSchemas)[T]>;
-/**
- * 验证哔哩哔哩参数
- * @param methodType - 哔哩哔哩方法类型
- * @param params - 待验证的参数
- * @returns 验证后的参数，符合原始API期望的类型
- */
-declare const validateBilibiliParams: <T extends BilibiliMethodType>(methodType: T, params: unknown) => output<(typeof BilibiliValidationSchemas)[T]>;
-/**
- * 验证快手参数
- * @param methodType - 快手方法类型
- * @param params - 待验证的参数
- * @returns 验证后的参数，符合原始API期望的类型
- */
-declare const validateKuaishouParams: <T extends KuaishouMethodType>(methodType: T, params: unknown) => output<(typeof KuaishouValidationSchemas)[T]>;
-/**
- * 验证小红书参数
- * @param methodType - 小红书方法类型
- * @param params - 待验证的参数
- * @returns 验证后的参数
- */
-declare const validateXiaohongshuParams: <T extends XiaohongshuMethodType>(methodType: T, params: unknown) => output<(typeof XiaohongshuValidationSchemas)[T]>;
-/**
- * 创建成功响应格式
- * @param data - 响应数据
- * @param message - 响应消息（可选）
- * @param code - 响应状态码（可选，默认200）
- * @returns 格式化的成功API响应对象
- */
-declare const createSuccessResponse: <T>(data: T, message: string, code?: number) => SuccessResult$1<T>;
-/**
- * 创建失败响应格式
- * @param error - 错误信息
- * @param message - 详细错误消息（可选）
- * @param code - 错误状态码（可选，默认500）
- * @returns 格式化的错误响应对象
- */
-declare const createErrorResponse: (error: APIErrorType, message: string, code?: number, data?: unknown) => ErrorResult; //#endregion
 //#region src/model/fetchers/bilibili/types.d.ts
 /** B站视频信息请求参数 */
 interface BilibiliVideoInfoOptions extends BaseRequestOptions {
@@ -27122,6 +27679,9 @@ interface IBilibiliFetcher {
   fetchDynamicDetail: MethodOverload<BilibiliDynamicOptions, BilibiliReturnTypeMap['dynamicDetail']>;
   /**
    * 获取B站动态卡片信息
+   * @deprecated v6.1.3 已废弃，B站官方已于 `2025-08-09` 删除原 `dynamic_svr` 接口。
+   * 调用将返回错误信息
+   * 计划于 v7.0.0 移除。
    */
   fetchDynamicCard: MethodOverload<BilibiliDynamicOptions, BilibiliReturnTypeMap['dynamicCard']>;
   /**
@@ -27643,7 +28203,12 @@ interface IBoundBilibiliFetcher {
   fetchUploaderTotalViews: BoundMethodOverload<BilibiliUserOptions, BilibiliReturnTypeMap['uploaderTotalViews']>;
   /** 获取B站动态详情 */
   fetchDynamicDetail: BoundMethodOverload<BilibiliDynamicOptions, BilibiliReturnTypeMap['dynamicDetail']>;
-  /** 获取B站动态卡片信息 */
+  /**
+   * 获取B站动态卡片信息
+   * @deprecated v6.1.3 已废弃，B站官方已于 `2025-08-09` 删除原 `dynamic_svr` 接口。
+   * 调用将返回错误信息
+   * 计划于 v7.0.0 移除。
+   */
   fetchDynamicCard: BoundMethodOverload<BilibiliDynamicOptions, BilibiliReturnTypeMap['dynamicCard']>;
   /** 获取B站番剧基本信息 */
   fetchBangumiInfo: BoundMethodOverload<BilibiliBangumiInfoOptions, BilibiliReturnTypeMap['bangumiInfo']>;
@@ -27847,6 +28412,271 @@ type XiaohongshuFetcher = typeof xiaohongshuFetcher;
 declare function createBoundXiaohongshuFetcher(cookie: string, requestConfig?: RequestConfig): IBoundXiaohongshuFetcher;
 /** 绑定 Cookie 的小红书 Fetcher 类型 */
 type BoundXiaohongshuFetcher = IBoundXiaohongshuFetcher; //#endregion
+//#region src/model/events.d.ts
+/**
+ * Amagi 支持的事件类型
+ * @description
+ * - `log:*` - 日志相关事件
+ * - `http:*` - HTTP 请求/响应事件
+ * - `network:*` - 网络层事件（重试、错误）
+ * - `api:*` - API 调用结果事件
+ */
+type AmagiEventType = 'log:info' | 'log:warn' | 'log:error' | 'log:debug' | 'log:mark' | 'http:request' | 'http:response' | 'http:error' | 'network:retry' | 'network:error' | 'api:success' | 'api:error';
+/**
+ * 日志事件数据
+ * @description 所有 `log:*` 事件的数据结构
+ */
+interface LogEventData {
+  /** 日志级别 */
+  level: 'info' | 'warn' | 'error' | 'debug' | 'mark';
+  /** 日志消息 */
+  message: string;
+  /** 附加参数 */
+  args?: unknown[];
+  /** 事件时间戳 */
+  timestamp: Date;
+}
+/**
+ * HTTP 请求事件数据
+ * @description `http:request` 事件的数据结构
+ */
+interface HttpRequestEventData {
+  /** 请求方法 (GET, POST, etc.) */
+  method: string;
+  /** 请求 URL */
+  url: string;
+  /** 请求头 */
+  headers?: Record<string, string>;
+  /** 事件时间戳 */
+  timestamp: Date;
+}
+/**
+ * HTTP 响应事件数据
+ * @description `http:response` 事件的数据结构
+ */
+interface HttpResponseEventData {
+  /** 请求方法 */
+  method: string;
+  /** 请求 URL */
+  url: string;
+  /** HTTP 状态码 */
+  statusCode: number;
+  /** 响应耗时 (毫秒) */
+  responseTime: number;
+  /** 客户端 IP */
+  clientIP?: string;
+  /** 请求体大小 */
+  requestSize?: string;
+  /** 响应体大小 */
+  responseSize?: string;
+  /** 事件时间戳 */
+  timestamp: Date;
+}
+/**
+ * 网络重试事件数据
+ * @description `network:retry` 事件的数据结构
+ */
+interface NetworkRetryEventData {
+  /** 错误代码 */
+  errorCode: string;
+  /** 当前重试次数 */
+  attempt: number;
+  /** 最大重试次数 */
+  maxRetries: number;
+  /** 重试延迟 (毫秒) */
+  delayMs: number;
+  /** 请求 URL */
+  url?: string;
+  /** 事件时间戳 */
+  timestamp: Date;
+}
+/**
+ * 网络错误事件数据
+ * @description `network:error` 和 `http:error` 事件的数据结构
+ */
+interface NetworkErrorEventData {
+  /** 错误代码 */
+  errorCode: string;
+  /** 错误消息 */
+  message: string;
+  /** 已重试次数 */
+  retries: number;
+  /** 请求 URL */
+  url?: string;
+  /** 事件时间戳 */
+  timestamp: Date;
+}
+/**
+ * API 成功事件数据
+ * @description `api:success` 事件的数据结构
+ */
+interface ApiSuccessEventData {
+  /** 请求平台 */
+  platform: 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu';
+  /** 调用的 API 方法 */
+  methodType: string;
+  /** API 响应数据 (Result 结构) */
+  response: unknown;
+  /** HTTP 状态码 */
+  statusCode: number;
+  /** 请求耗时 (毫秒) */
+  duration: number;
+  /** 事件时间戳 */
+  timestamp: Date;
+}
+/**
+ * API 错误事件数据
+ * @description `api:error` 事件的数据结构
+ */
+interface ApiErrorEventData {
+  /** 请求平台 */
+  platform: 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu';
+  /** 调用的 API 方法 */
+  methodType: string;
+  /** 错误代码 */
+  errorCode?: string | number;
+  /** 错误消息 */
+  errorMessage: string;
+  /** 请求 URL */
+  url?: string;
+  /** 请求耗时 (毫秒) */
+  duration?: number;
+  /** 事件时间戳 */
+  timestamp: Date;
+}
+/**
+ * 事件类型到数据的映射
+ * @description 用于类型推断，确保事件名称与数据类型匹配
+ */
+interface AmagiEventMap {
+  'log:info': LogEventData;
+  'log:warn': LogEventData;
+  'log:error': LogEventData;
+  'log:debug': LogEventData;
+  'log:mark': LogEventData;
+  'http:request': HttpRequestEventData;
+  'http:response': HttpResponseEventData;
+  'http:error': NetworkErrorEventData;
+  'network:retry': NetworkRetryEventData;
+  'network:error': NetworkErrorEventData;
+  'api:success': ApiSuccessEventData;
+  'api:error': ApiErrorEventData;
+}
+/**
+ * 类型安全的事件发射器
+ * @description 继承自 Node.js EventEmitter，提供泛型约束确保事件名称与数据类型匹配
+ */
+declare class TypedEventEmitter extends EventEmitter {
+  /**
+   * 触发事件
+   * @param event - 事件名称
+   * @param data - 事件数据
+   * @returns 是否有监听器处理了该事件
+   */
+  emit<K extends AmagiEventType>(event: K, data: AmagiEventMap[K]): boolean;
+  /**
+   * 注册事件监听器
+   * @param event - 事件名称
+   * @param listener - 事件处理函数
+   * @returns this (支持链式调用)
+   */
+  on<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): this;
+  /**
+   * 注册一次性事件监听器
+   * @param event - 事件名称
+   * @param listener - 事件处理函数 (只触发一次)
+   * @returns this (支持链式调用)
+   */
+  once<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): this;
+  /**
+   * 移除事件监听器
+   * @param event - 事件名称
+   * @param listener - 要移除的事件处理函数
+   * @returns this (支持链式调用)
+   */
+  off<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): this;
+}
+/**
+ * Amagi 全局事件发射器实例
+ * @description 单例模式，所有模块共享同一个事件总线
+ * @example
+ * ```typescript
+ * import { amagiEvents } from 'amagi/model/events'
+ *
+ * // 监听 API 成功事件
+ * amagiEvents.on('api:success', (data) => {
+ *   console.log(`[${data.platform}] ${data.methodType} 耗时 ${data.duration}ms`)
+ * })
+ * ```
+ */
+declare const amagiEvents: TypedEventEmitter;
+/**
+ * 发射日志事件
+ * @param level - 日志级别
+ * @param message - 日志消息
+ * @param args - 附加参数
+ */
+declare const emitLog: (level: LogEventData["level"], message: string, ...args: unknown[]) => void;
+/**
+ * 发射 HTTP 请求事件
+ * @param data - 请求数据 (不含 timestamp)
+ */
+declare const emitHttpRequest: (data: Omit<HttpRequestEventData, "timestamp">) => void;
+/**
+ * 发射 HTTP 响应事件
+ * @param data - 响应数据 (不含 timestamp)
+ */
+declare const emitHttpResponse: (data: Omit<HttpResponseEventData, "timestamp">) => void;
+/**
+ * 发射网络重试事件
+ * @param data - 重试数据 (不含 timestamp)
+ */
+declare const emitNetworkRetry: (data: Omit<NetworkRetryEventData, "timestamp">) => void;
+/**
+ * 发射网络错误事件
+ * @param data - 错误数据 (不含 timestamp)
+ */
+declare const emitNetworkError: (data: Omit<NetworkErrorEventData, "timestamp">) => void;
+/**
+ * 发射 API 成功事件
+ * @param data - 成功数据 (不含 timestamp)
+ */
+declare const emitApiSuccess: (data: Omit<ApiSuccessEventData, "timestamp">) => void;
+/**
+ * 发射 API 错误事件
+ * @param data - 错误数据 (不含 timestamp)
+ */
+declare const emitApiError: (data: Omit<ApiErrorEventData, "timestamp">) => void;
+/**
+ * 发射 info 级别日志
+ * @param message - 日志消息
+ * @param args - 附加参数
+ */
+declare const emitLogInfo: (message: string, ...args: unknown[]) => void;
+/**
+ * 发射 warn 级别日志
+ * @param message - 日志消息
+ * @param args - 附加参数
+ */
+declare const emitLogWarn: (message: string, ...args: unknown[]) => void;
+/**
+ * 发射 error 级别日志
+ * @param message - 日志消息
+ * @param args - 附加参数
+ */
+declare const emitLogError: (message: string, ...args: unknown[]) => void;
+/**
+ * 发射 debug 级别日志
+ * @param message - 日志消息
+ * @param args - 附加参数
+ */
+declare const emitLogDebug: (message: string, ...args: unknown[]) => void;
+/**
+ * 发射 mark 级别日志 (用于重要标记)
+ * @param message - 日志消息
+ * @param args - 附加参数
+ */
+declare const emitLogMark: (message: string, ...args: unknown[]) => void; //#endregion
 //#region src/server/index.d.ts
 /**
  * 请求配置选项接口
@@ -27900,7 +28730,7 @@ declare const createAmagiClient: (options?: Options) => {
    */
   on: <K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void) => {
     emit<K_1 extends AmagiEventType>(event: K_1, data: AmagiEventMap[K_1]): boolean;
-    on<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): /*elided*/any;
+    on<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/any;
     once<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/any;
     off<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/any;
     [EventEmitter.captureRejectionSymbol]?<K_1>(error: Error, event: string | symbol, ...args: any[]): void;
@@ -27924,7 +28754,7 @@ declare const createAmagiClient: (options?: Options) => {
   once: <K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void) => {
     emit<K_1 extends AmagiEventType>(event: K_1, data: AmagiEventMap[K_1]): boolean;
     on<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/any;
-    once<K extends AmagiEventType>(event: K, listener: (data: AmagiEventMap[K]) => void): /*elided*/any;
+    once<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/any;
     off<K_1 extends AmagiEventType>(event: K_1, listener: (data: AmagiEventMap[K_1]) => void): /*elided*/any;
     [EventEmitter.captureRejectionSymbol]?<K_1>(error: Error, event: string | symbol, ...args: any[]): void;
     addListener<K_1>(eventName: string | symbol, listener: (...args: any[]) => void): /*elided*/any;
@@ -29301,4 +30131,4 @@ declare const amagi: typeof Client;
  */
 //#endregion
 //#endregion
-export { APIErrorType, AdditionalType, type AmagiEventMap, type AmagiEventType, type ApiEndpoint, ApiError, type ApiErrorEventData, ApiResponse, type ApiSuccessEventData, ArticleCard, ArticleContent, ArticleInfo, ArticleWork, BaseRequestOptions, BaseResponse, BiliAv2Bv, BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliBv2AV, BiliCheckQrcode, BiliCommentReply, BiliDynamicCard, BiliDynamicInfo, BiliDynamicInfoUnion, BiliEmojiList, BiliLiveRoomDef, BiliLiveRoomDetail, BiliNewLoginQrcode, BiliOneWork, BiliProtobufDanmaku, BiliUserDynamic, BiliUserFullView, BiliUserProfile, BiliVideoPlayurlIsLogin, BiliWorkComments, BilibiliApiRoutes, type BilibiliApplyCaptchaOptions, BilibiliApplyCaptchaParamsSchema, type BilibiliArticleCardOptions, BilibiliArticleCardParamsSchema, BilibiliArticleInfoParamsSchema, type BilibiliArticleOptions, BilibiliArticleParamsSchema, type BilibiliAv2BvOptions, BilibiliAv2BvParamsSchema, type BilibiliBangumiInfoOptions, BilibiliBangumiInfoParamsSchema, type BilibiliBangumiStreamOptions, BilibiliBangumiStreamParamsSchema, type BilibiliBv2AvOptions, BilibiliBv2AvParamsSchema, BilibiliColumnInfoParamsSchema, BilibiliCommentParamsSchema, type BilibiliCommentRepliesOptions, BilibiliCommentReplyParamsSchema, type BilibiliCommentsOptions, type BilibiliDanmakuOptions, BilibiliDanmakuParamsSchema, BilibiliDataOptions, BilibiliDataOptionsMap, type BilibiliDynamicOptions, BilibiliDynamicParamsSchema, BilibiliEmojiParamsSchema, type BilibiliFetcher, BilibiliFetcherMethodKey, BilibiliFetcherMethods, BilibiliInternalMethodKey, BilibiliInternalMethods, BilibiliLiveParamsSchema, type BilibiliLiveRoomOptions, BilibiliLoginParamsSchema, type BilibiliMethodKey, BilibiliMethodMapping, BilibiliMethodOptMap, BilibiliMethodOptionsMap, BilibiliMethodRoutes, BilibiliMethodToFetcher, type BilibiliMethodType, type BilibiliMethodValue, BilibiliQrcodeParamsSchema, type BilibiliQrcodeStatusOptions, BilibiliQrcodeStatusParamsSchema, BilibiliReturnTypeMap, type BilibiliUserOptions, BilibiliUserParamsSchema, type BilibiliValidateCaptchaOptions, BilibiliValidateCaptchaParamsSchema, BilibiliValidationSchemas, BilibiliVideoDownloadParamsSchema, type BilibiliVideoInfoOptions, BilibiliVideoParamsSchema, type BilibiliVideoStreamOptions, BoundBilibiliApi, type BoundBilibiliFetcher, BoundDouyinApi, type BoundDouyinFetcher, BoundKuaishouApi, type BoundKuaishouFetcher, BoundXiaohongshuApi, type BoundXiaohongshuFetcher, ColumnInfo, CommentReply, CommentType, ConditionalReturnType, CookieConfig, CreateApp, DouyinApiRoutes, DouyinCommentParamsSchema, type DouyinCommentRepliesOptions, DouyinCommentReplyParamsSchema, type DouyinCommentsOptions, type DouyinDanmakuOptions, DouyinDanmakuParamsSchema, DouyinDataOptions, DouyinDataOptionsMap, DouyinEmojiListParamsSchema, DouyinEmojiProParamsSchema, type DouyinFetcher, DouyinFetcherMethodKey, DouyinFetcherMethods, DouyinHotWordsParamsSchema, DouyinInternalMethodKey, DouyinInternalMethods, type DouyinLiveRoomOptions, DouyinLiveRoomParamsSchema, type DouyinMethodKey, DouyinMethodMapping, DouyinMethodOptMap, DouyinMethodOptionsMap, DouyinMethodRoutes, DouyinMethodToFetcher, type DouyinMethodType, type DouyinMethodValue, type DouyinMusicOptions, DouyinMusicParamsSchema, type DouyinQrcodeOptions, DouyinQrcodeParamsSchema, DouyinReturnTypeMap, type DouyinSearchOptions, DouyinSearchParamsSchema, type DouyinSuggestWordsOptions, type DouyinUserListOptions, DouyinUserListParamsSchema, type DouyinUserOptions, DouyinUserParamsSchema, DouyinValidationSchemas, type DouyinWorkOptions, DouyinWorkParamsSchema, DyDanmakuList, DyEmojiList, DyEmojiProList, DyImageAlbumWork, DyMusicWork, DySearchInfo, DySlidesWork, DySuggestWords, DyUserInfo, DyUserLiveVideos, DyUserPostVideos, DyVideoWork, DyWorkComments, DynamicType, DynamicTypeAV, DynamicTypeArticle, DynamicTypeDraw, DynamicTypeForward, DynamicTypeForwardUnion, DynamicTypeLiveRcmd, DynamicTypeWord, ErrorResult, ExtractTypeMode, FetcherConfig, HomeFeed, type HttpMethod, type HttpRequestEventData, type HttpResponseEventData, type IBilibiliFetcher, type IBoundBilibiliFetcher, type IBoundDouyinFetcher, type IBoundKuaishouFetcher, type IBoundXiaohongshuFetcher, type IDouyinFetcher, type IKuaishouFetcher, type IXiaohongshuFetcher, type KsBannedStatus, KsEmojiList, KsLiveRoomDetail, KsLiveRoomInfo, KsOneWork, KsUserHomeAuthorInfo, KsUserHomeCategoryMask, KsUserHomeDetail, KsUserHomeFollowButtonState, KsUserHomeFollowState, KsUserHomeHotCategory, KsUserHomeInterestAuthor, KsUserHomeInterestCategory, KsUserHomeProfileState, KsUserHomeTabData, type KsUserHomeWork, KsUserProfile, type KsUserProfileCounts, type KsUserProfileGameInfo, type KsUserProfileLiveInfo, type KsUserProfileSensitiveInfo, type KsUserProfileUserInfo, KsUserWorkList, type KsVerifiedStatus, KsWorkComments, KuaishouApiRoutes, KuaishouCommentParamsSchema, type KuaishouCommentsOptions, KuaishouDataOptions, KuaishouDataOptionsMap, KuaishouEmojiParamsSchema, type KuaishouFetcher, KuaishouFetcherMethodKey, KuaishouFetcherMethods, type KuaishouGraphqlRequest, KuaishouInternalMethodKey, KuaishouInternalMethods, type KuaishouLiveApiRequest, type KuaishouLiveRoomInfoOptions, KuaishouLiveRoomInfoParamsSchema, type KuaishouMethodKey, KuaishouMethodMapping, KuaishouMethodOptMap, KuaishouMethodOptionsMap, KuaishouMethodRoutes, KuaishouMethodToFetcher, type KuaishouMethodType, type KuaishouMethodValue, KuaishouReturnTypeMap, type KuaishouUserProfileOptions, KuaishouUserProfileParamsSchema, type KuaishouUserWorkListOptions, KuaishouUserWorkListParamsSchema, KuaishouValidationSchemas, KuaishouVideoParamsSchema, type KuaishouVideoWorkOptions, type LogEventData, MajorType, MethodMaps, type NetworkErrorEventData, type NetworkRetryEventData, type NetworksConfigType, NoteComments, OmitMethodType, OneNote, Options, type Platform, RequestConfig, Result$1 as Result, SearchInfoGeneralData, SearchInfoUser, SearchInfoVideo, SearchNotes, SuccessResult$1 as SuccessResult, TypeControl, TypeMode, ValidationError, XiaohongshuApiRoutes, type XiaohongshuCommentsOptions, XiaohongshuDataOptions, XiaohongshuDataOptionsMap, XiaohongshuEmojiList, type XiaohongshuFetcher, XiaohongshuFetcherMethodKey, XiaohongshuFetcherMethods, type XiaohongshuHomeFeedOptions, XiaohongshuInternalMethodKey, XiaohongshuInternalMethods, type XiaohongshuMethodKey, XiaohongshuMethodMapping, XiaohongshuMethodOptMap, XiaohongshuMethodOptionsMap, XiaohongshuMethodRoutes, XiaohongshuMethodToFetcher, XiaohongshuMethodType, type XiaohongshuMethodValue, type XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap, type XiaohongshuSearchNotesOptions, type XiaohongshuUserNotesOptions, XiaohongshuUserProfile, type XiaohongshuUserProfileOptions, XiaohongshuValidationSchemas, amagi, amagiClient, amagiEvents, av2bv, bilibili, bilibiliApiUrls, bilibiliErrorCodeMap, bilibiliFetcher, bilibiliUtils, bv2av, createAmagiClient, createBilibiliRoutes, createBilibiliRoutes as registerBilibiliRoutes, createBoundBilibiliApi, createBoundBilibiliFetcher, createBoundDouyinApi, createBoundDouyinFetcher, createBoundKuaishouApi, createBoundKuaishouFetcher, createBoundXiaohongshuApi, createBoundXiaohongshuFetcher, createDouyinRoutes, createDouyinRoutes as registerDouyinRoutes, createErrorResponse, createKuaishouRoutes, createKuaishouRoutes as registerKuaishouRoutes, createSuccessResponse, createXiaohongshuRoutes, createXiaohongshuRoutes as registerXiaohongshuRoutes, douyin, douyinApiUrls, douyinFetcher, douyinSign, douyinUtils, emitApiError, emitApiSuccess, emitHttpRequest, emitHttpResponse, emitLog, emitLogDebug, emitLogError, emitLogInfo, emitLogMark, emitLogWarn, emitNetworkError, emitNetworkRetry, fetchData, fetchResponse, getApiRoute, getBilibiliData, getDouyinData, getEnglishMethodName, getHeadersAndData, getKuaishouData, handleError, httpLogger, initLogger, isNetworkErrorResult, kuaishou, kuaishouApiUrls, kuaishouFetcher, kuaishouSign, kuaishouUtils, logMiddleware, logger, parseDmSegMobileReply, qtparam, toFetcherMethod, validateBilibiliParams, validateDouyinParams, validateKuaishouParams, validateXiaohongshuParams, wbi_sign, xiaohongshu, xiaohongshuApiUrls, xiaohongshuFetcher, xiaohongshuSign, xiaohongshuUtils };
+export { APIErrorType, AdditionalType, type AmagiEventMap, type AmagiEventType, type ApiEndpoint, ApiError, type ApiErrorEventData, ApiResponse, type ApiSuccessEventData, ArticleCard, ArticleContent, ArticleInfo, ArticleWork, BaseRequestOptions, BaseResponse, BiliAv2Bv, BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliBv2AV, BiliCheckQrcode, BiliCommentReply, BiliDynamicCard, BiliDynamicInfo, BiliDynamicInfoUnion, BiliEmojiList, BiliLiveRoomDef, BiliLiveRoomDetail, BiliNewLoginQrcode, BiliOneWork, BiliProtobufDanmaku, BiliUserDynamic, BiliUserFullView, BiliUserProfile, BiliVideoPlayurlIsLogin, BiliWorkComments, BilibiliApiRoutes, type BilibiliApplyCaptchaOptions, BilibiliApplyCaptchaParamsSchema, type BilibiliArticleCardOptions, BilibiliArticleCardParamsSchema, BilibiliArticleInfoParamsSchema, type BilibiliArticleOptions, BilibiliArticleParamsSchema, type BilibiliAv2BvOptions, BilibiliAv2BvParamsSchema, type BilibiliBangumiInfoOptions, BilibiliBangumiInfoParamsSchema, type BilibiliBangumiStreamOptions, BilibiliBangumiStreamParamsSchema, type BilibiliBv2AvOptions, BilibiliBv2AvParamsSchema, BilibiliColumnInfoParamsSchema, BilibiliCommentParamsSchema, type BilibiliCommentRepliesOptions, BilibiliCommentReplyParamsSchema, type BilibiliCommentsOptions, type BilibiliDanmakuOptions, BilibiliDanmakuParamsSchema, BilibiliDataOptions, BilibiliDataOptionsMap, type BilibiliDynamicOptions, BilibiliDynamicParamsSchema, BilibiliEmojiParamsSchema, type BilibiliFetcher, BilibiliFetcherMethodKey, BilibiliFetcherMethods, BilibiliInternalMethodKey, BilibiliInternalMethods, BilibiliLiveParamsSchema, type BilibiliLiveRoomOptions, BilibiliLoginParamsSchema, type BilibiliMethodKey, BilibiliMethodMapping, BilibiliMethodOptMap, BilibiliMethodOptionsMap, BilibiliMethodRoutes, BilibiliMethodToFetcher, type BilibiliMethodType, type BilibiliMethodValue, BilibiliQrcodeParamsSchema, type BilibiliQrcodeStatusOptions, BilibiliQrcodeStatusParamsSchema, BilibiliReturnTypeMap, type BilibiliUserOptions, BilibiliUserParamsSchema, type BilibiliValidateCaptchaOptions, BilibiliValidateCaptchaParamsSchema, BilibiliValidationSchemas, BilibiliVideoDownloadParamsSchema, type BilibiliVideoInfoOptions, BilibiliVideoParamsSchema, type BilibiliVideoStreamOptions, BoundBilibiliApi, type BoundBilibiliFetcher, BoundDouyinApi, type BoundDouyinFetcher, BoundKuaishouApi, type BoundKuaishouFetcher, BoundXiaohongshuApi, type BoundXiaohongshuFetcher, ColumnInfo, CommentReply, CommentType, ConditionalReturnType, CookieConfig, CreateApp, DouyinApiRoutes, DouyinCommentParamsSchema, type DouyinCommentRepliesOptions, DouyinCommentReplyParamsSchema, type DouyinCommentsOptions, type DouyinDanmakuOptions, DouyinDanmakuParamsSchema, DouyinDataOptions, DouyinDataOptionsMap, DouyinEmojiListParamsSchema, DouyinEmojiProParamsSchema, type DouyinFetcher, DouyinFetcherMethodKey, DouyinFetcherMethods, DouyinHotWordsParamsSchema, DouyinInternalMethodKey, DouyinInternalMethods, type DouyinLiveRoomOptions, DouyinLiveRoomParamsSchema, type DouyinMethodKey, DouyinMethodMapping, DouyinMethodOptMap, DouyinMethodOptionsMap, DouyinMethodRoutes, DouyinMethodToFetcher, type DouyinMethodType, type DouyinMethodValue, type DouyinMusicOptions, DouyinMusicParamsSchema, type DouyinQrcodeOptions, DouyinQrcodeParamsSchema, DouyinReturnTypeMap, type DouyinSearchOptions, DouyinSearchParamsSchema, type DouyinSuggestWordsOptions, type DouyinUserListOptions, DouyinUserListParamsSchema, type DouyinUserOptions, DouyinUserParamsSchema, DouyinValidationSchemas, type DouyinWorkOptions, DouyinWorkParamsSchema, DyDanmakuList, DyEmojiList, DyEmojiProList, DyImageAlbumWork, DyMusicWork, DySearchInfo, DySlidesWork, DySuggestWords, DyUserInfo, DyUserLiveVideos, DyUserPostVideos, DyVideoWork, DyWorkComments, DynamicType, DynamicTypeAV, DynamicTypeArticle, DynamicTypeDraw, DynamicTypeForward, DynamicTypeForwardUnion, DynamicTypeLiveRcmd_V0, DynamicTypeLiveRcmd_V1, DynamicTypeWord, ErrorResult, ExtractTypeMode, FetcherConfig, HomeFeed, type HttpMethod, type HttpRequestEventData, type HttpResponseEventData, type IBilibiliFetcher, type IBoundBilibiliFetcher, type IBoundDouyinFetcher, type IBoundKuaishouFetcher, type IBoundXiaohongshuFetcher, type IDouyinFetcher, type IKuaishouFetcher, type IXiaohongshuFetcher, type KsBannedStatus, KsEmojiList, KsLiveRoomDetail, KsLiveRoomInfo, KsOneWork, KsUserHomeAuthorInfo, KsUserHomeCategoryMask, KsUserHomeDetail, KsUserHomeFollowButtonState, KsUserHomeFollowState, KsUserHomeHotCategory, KsUserHomeInterestAuthor, KsUserHomeInterestCategory, KsUserHomeProfileState, KsUserHomeTabData, type KsUserHomeWork, KsUserProfile, type KsUserProfileCounts, type KsUserProfileGameInfo, type KsUserProfileLiveInfo, type KsUserProfileSensitiveInfo, type KsUserProfileUserInfo, KsUserWorkList, type KsVerifiedStatus, KsWorkComments, KuaishouApiRoutes, KuaishouCommentParamsSchema, type KuaishouCommentsOptions, KuaishouDataOptions, KuaishouDataOptionsMap, KuaishouEmojiParamsSchema, type KuaishouFetcher, KuaishouFetcherMethodKey, KuaishouFetcherMethods, type KuaishouGraphqlRequest, KuaishouInternalMethodKey, KuaishouInternalMethods, type KuaishouLiveApiRequest, type KuaishouLiveRoomInfoOptions, KuaishouLiveRoomInfoParamsSchema, type KuaishouMethodKey, KuaishouMethodMapping, KuaishouMethodOptMap, KuaishouMethodOptionsMap, KuaishouMethodRoutes, KuaishouMethodToFetcher, type KuaishouMethodType, type KuaishouMethodValue, KuaishouReturnTypeMap, type KuaishouUserProfileOptions, KuaishouUserProfileParamsSchema, type KuaishouUserWorkListOptions, KuaishouUserWorkListParamsSchema, KuaishouValidationSchemas, KuaishouVideoParamsSchema, type KuaishouVideoWorkOptions, type LogEventData, MajorType, MethodMaps, type NetworkErrorEventData, type NetworkRetryEventData, type NetworksConfigType, NoteComments, OmitMethodType, OneNote, Options, type Platform, RequestConfig, Result$1 as Result, SearchInfoGeneralData, SearchInfoUser, SearchInfoVideo, SearchNotes, SuccessResult$1 as SuccessResult, TypeControl, TypeMode, ValidationError, XiaohongshuApiRoutes, type XiaohongshuCommentsOptions, XiaohongshuDataOptions, XiaohongshuDataOptionsMap, XiaohongshuEmojiList, type XiaohongshuFetcher, XiaohongshuFetcherMethodKey, XiaohongshuFetcherMethods, type XiaohongshuHomeFeedOptions, XiaohongshuInternalMethodKey, XiaohongshuInternalMethods, type XiaohongshuMethodKey, XiaohongshuMethodMapping, XiaohongshuMethodOptMap, XiaohongshuMethodOptionsMap, XiaohongshuMethodRoutes, XiaohongshuMethodToFetcher, XiaohongshuMethodType, type XiaohongshuMethodValue, type XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap, type XiaohongshuSearchNotesOptions, type XiaohongshuUserNotesOptions, XiaohongshuUserProfile, type XiaohongshuUserProfileOptions, XiaohongshuValidationSchemas, amagi, amagiClient, amagiEvents, av2bv, bilibili, bilibiliApiUrls, bilibiliErrorCodeMap, bilibiliFetcher, bilibiliUtils, bv2av, createAmagiClient, createBilibiliRoutes, createBilibiliRoutes as registerBilibiliRoutes, createBoundBilibiliApi, createBoundBilibiliFetcher, createBoundDouyinApi, createBoundDouyinFetcher, createBoundKuaishouApi, createBoundKuaishouFetcher, createBoundXiaohongshuApi, createBoundXiaohongshuFetcher, createDouyinRoutes, createDouyinRoutes as registerDouyinRoutes, createErrorResponse, createKuaishouRoutes, createKuaishouRoutes as registerKuaishouRoutes, createSuccessResponse, createXiaohongshuRoutes, createXiaohongshuRoutes as registerXiaohongshuRoutes, douyin, douyinApiUrls, douyinFetcher, douyinSign, douyinUtils, emitApiError, emitApiSuccess, emitHttpRequest, emitHttpResponse, emitLog, emitLogDebug, emitLogError, emitLogInfo, emitLogMark, emitLogWarn, emitNetworkError, emitNetworkRetry, fetchData, fetchResponse, getApiRoute, getBilibiliData, getDouyinData, getEnglishMethodName, getHeadersAndData, getKuaishouData, handleError, httpLogger, initLogger, isNetworkErrorResult, kuaishou, kuaishouApiUrls, kuaishouFetcher, kuaishouSign, kuaishouUtils, logMiddleware, logger, parseDmSegMobileReply, qtparam, toFetcherMethod, validateBilibiliParams, validateDouyinParams, validateKuaishouParams, validateXiaohongshuParams, wbi_sign, xiaohongshu, xiaohongshuApiUrls, xiaohongshuFetcher, xiaohongshuSign, xiaohongshuUtils };
