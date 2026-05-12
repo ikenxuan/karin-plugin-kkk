@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { motion } from "motion/react";
 import { TextHoverEffect } from "./ui/text-hover-effect";
 import { NoiseBackground } from "./ui/noise-background";
@@ -110,13 +109,13 @@ function PlatformBadge({
   );
 }
 
-function CTAButtons({ lang }: { lang: string }) {
+function CTAButtons() {
   return (
     <div className="flex flex-wrap gap-4 justify-center items-center">
       <SparklesText className="p-4 -m-4" sparklesCount={10} colors={{ first: "#9E7AFF", second: "#FE8BBB" }}>
         <Link
           className="inline-flex overflow-hidden relative p-px h-11 rounded-full focus:outline-none focus:ring-2 focus:ring-fd-ring focus:ring-offset-2"
-          href={`/${lang}/docs`}
+          href="/docs"
         >
           <NoiseBackground
             containerClassName="w-full h-full rounded-full flex items-center justify-center bg-transparent dark:bg-transparent"
@@ -141,8 +140,6 @@ function CTAButtons({ lang }: { lang: string }) {
 }
 
 export function HeroSection() {
-  const { lang } = useParams();
-  const langStr = Array.isArray(lang) ? lang[0] : lang ?? "zh-CN";
 
   return (
     <div className="flex flex-col w-full">
@@ -209,7 +206,7 @@ export function HeroSection() {
 
           {/* CTA */}
           <motion.div variants={itemVariants}>
-            <CTAButtons lang={langStr} />
+            <CTAButtons />
           </motion.div>
 
           {/* 底部信任指标 */}
@@ -295,7 +292,7 @@ export function HeroSection() {
           </motion.div>
 
           <motion.div variants={itemVariants} className="flex justify-center">
-            <CTAButtons lang={langStr} />
+            <CTAButtons />
           </motion.div>
         </motion.div>
       </section>
@@ -347,7 +344,7 @@ export function HeroSection() {
           </motion.div>
 
           <motion.div variants={itemVariants} className="flex justify-center">
-            <CTAButtons lang={langStr} />
+            <CTAButtons />
           </motion.div>
         </motion.div>
       </section>

@@ -1,7 +1,22 @@
 'use client';
-import { Icon } from '@iconify/react';
 import Link from 'fumadocs-core/link';
 import { Footer } from './Footer';
+
+function ChevronLeftIcon() {
+  return (
+    <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon() {
+  return (
+    <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    </svg>
+  );
+}
 
 interface NavItem {
   name: string;
@@ -12,7 +27,6 @@ interface NavItem {
 export interface DocsFooterProps {
   prev?: NavItem;
   next?: NavItem;
-  lang?: string;
 }
 
 function NavCard({ item, direction }: { item: NavItem; direction: 'prev' | 'next' }) {
@@ -24,7 +38,7 @@ function NavCard({ item, direction }: { item: NavItem; direction: 'prev' | 'next
       className="flex flex-col rounded-lg border border-fd-border p-4 text-sm transition-colors hover:bg-fd-accent hover:text-fd-accent-foreground"
     >
       <span className={`flex items-center gap-1 font-medium ${isNext ? 'flex-row-reverse' : ''}`}>
-        {isNext ? <Icon icon="lucide:chevron-right" className="size-4" /> : <Icon icon="lucide:chevron-left" className="size-4" />}
+        {isNext ? <ChevronRightIcon /> : <ChevronLeftIcon />}
         {item.name}
       </span>
       {item.description && (
@@ -36,7 +50,7 @@ function NavCard({ item, direction }: { item: NavItem; direction: 'prev' | 'next
   );
 }
 
-export function DocsFooter({ prev, next, lang }: DocsFooterProps) {
+export function DocsFooter({ prev, next }: DocsFooterProps) {
   return (
     <>
       {(prev || next) && (
@@ -45,7 +59,7 @@ export function DocsFooter({ prev, next, lang }: DocsFooterProps) {
           {next && <NavCard item={next} direction="next" />}
         </div>
       )}
-      <Footer lang={lang} />
+      <Footer />
     </>
   );
 }

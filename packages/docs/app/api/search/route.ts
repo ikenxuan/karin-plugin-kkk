@@ -27,14 +27,5 @@ export const { GET } = createFromSource(source, {
         tolerance: 0,
       },
     },
-    'zh-HK': {
-      components: {
-        tokenizer: createCaseInsensitiveTokenizer(),
-      },
-      search: {
-        threshold: 0,
-        tolerance: 0,
-      },
-    },
   },
 });

@@ -10,13 +10,13 @@ import { getMDXComponents } from '@/mdx-components';
 import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
 import { DocsFooter } from '@/components/DocsFooter';
-import { LLMCopyButton, ViewOptions } from '@/components/page-actions';
+import { MarkdownCopyButton, ViewOptionsPopover } from '@/components/ai/page-actions';
 import { TocCopyUrl, TocBottomLinks } from '@/components/toc-extras';
 import type * as PageTree from 'fumadocs-core/page-tree';
 import { PageLastUpdate } from 'fumadocs-ui/page';
 
 interface PageProps {
-  params: Promise<{ slug?: string[]; lang: string }>;
+  params: Promise<{ slug?: string[] }>;
 }
 
 interface NavItem {
@@ -25,12 +25,12 @@ interface NavItem {
   url: string;
 }
 
-interface DocsFooterProps {
+interface DocsFooterNavProps {
   prev?: NavItem;
   next?: NavItem;
 }
 
-function getNavItems(tree: PageTree.Root, currentPath: string): DocsFooterProps {
+function getNavItems(tree: PageTree.Root, currentPath: string): DocsFooterNavProps {
   const pages: NavItem[] = [];
 
   function flattenTree(nodes: PageTree.Node[]) {
@@ -58,36 +58,40 @@ function getNavItems(tree: PageTree.Root, currentPath: string): DocsFooterProps 
 function PageActions({ pageUrl, filePath }: { pageUrl: string; filePath: string }) {
   const markdownUrl = `${pageUrl}.mdx`;
   return (
-    <div className="flex flex-row gap-2 items-center pt-2 pb-6 border-b">
-      <LLMCopyButton markdownUrl={markdownUrl} />
-      <ViewOptions
+    <div className="flex flex-row gap-2 items-center border-b pt-2 pb-6">
+      <MarkdownCopyButton markdownUrl={markdownUrl}>
+        复制 Markdown
+      </MarkdownCopyButton>
+      <ViewOptionsPopover
         markdownUrl={markdownUrl}
         githubUrl={`https://github.com/ikenxuan/karin-plugin-kkk/blob/main/packages/docs/content/docs/${filePath}.mdx`}
-      />
+      >
+        打开
+      </ViewOptionsPopover>
     </div>
   );
 }
 
 export default async function Page(props: PageProps) {
   const params = await props.params;
-  const page = source.getPage(params.slug, params.lang);
+  const page = source.getPage(params.slug);
   if (!page) notFound();
 
   const { body: MDX, toc, lastModified } = await page.data.load();
-  const tree = source.pageTree[params.lang];
+  const tree = source.pageTree;
   const navItems = getNavItems(tree, page.url);
   const filePath = params.slug?.join('/') || 'index';
 
   return (
     <DocsPage
       toc={toc}
-      tableOfContent={{ 
+      tableOfContent={{
         style: 'clerk',
         header: <TocCopyUrl />,
         footer: <TocBottomLinks />
       }}
       full={page.data.full}
-      footer={{ component: <DocsFooter {...navItems} lang={params.lang} /> }}
+      footer={{ component: <DocsFooter {...navItems} /> }}
     >
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
@@ -116,7 +120,7 @@ export async function generateMetadata(
   props: PageProps,
 ): Promise<Metadata> {
   const params = await props.params;
-  const page = source.getPage(params.slug, params.lang);
+  const page = source.getPage(params.slug);
   if (!page) notFound();
 
   return {

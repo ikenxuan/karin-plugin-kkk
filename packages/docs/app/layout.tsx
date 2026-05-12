@@ -1,11 +1,9 @@
 import { RootProvider } from 'fumadocs-ui/provider/next';
-import '../global.css';
+import './global.css';
 import { Inter } from 'next/font/google';
 import type { Metadata } from 'next';
 import SearchDialog from '@/components/search';
 import Script from 'next/script';
-import { i18n } from '@/lib/i18n';
-import { defineI18nUI } from 'fumadocs-ui/i18n';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -94,60 +92,17 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: 'https://kkk.karinjs.com',
-    languages: {
-      'zh-CN': 'https://kkk.karinjs.com/zh-CN',
-      'zh-HK': 'https://kkk.karinjs.com/zh-HK',
-    },
   },
   verification: {
-    // 添加搜索引擎验证码（需要在搜索引擎管理后台获取）
-    // google: 'your-google-verification-code',
-    // baidu: 'your-baidu-verification-code',
   },
   category: 'technology',
 };
 
-const { provider } = defineI18nUI(i18n, {
-  translations: {
-    'zh-CN': {
-      displayName: '简体中文',
-      search: '搜索文档',
-      searchNoResult: '未找到结果',
-      toc: '本页目录',
-      tocNoHeadings: '暂无标题',
-      lastUpdate: '最后更新于',
-      chooseLanguage: '选择语言',
-      nextPage: '下一页',
-      previousPage: '上一页',
-      chooseTheme: '主题',
-      editOnGithub: '在 GitHub 上编辑',
-    },
-    'zh-HK': {
-      displayName: '繁體中文 (香港)',
-      search: '搜尋文件',
-      searchNoResult: '未找到結果',
-      toc: '本頁目錄',
-      tocNoHeadings: '暫無標題',
-      lastUpdate: '最後更新於',
-      chooseLanguage: '選擇語言',
-      nextPage: '下一頁',
-      previousPage: '上一頁',
-      chooseTheme: '主題',
-      editOnGithub: '在 GitHub 上編輯',
-    },
-  },
-});
-
 export default async function Layout({
   children,
-  params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ lang: string }>;
 }) {
-  const lang = (await params).lang;
-  
-  // 结构化数据 (JSON-LD) 用于 SEO
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
@@ -208,7 +163,7 @@ export default async function Layout({
   };
 
   return (
-    <html lang={lang} className={inter.className} suppressHydrationWarning>
+    <html lang="zh-CN" className={inter.className} suppressHydrationWarning>
       <head>
         <Script src="https://static.geetest.com/static/js/gt.0.5.0.js" strategy="beforeInteractive" />
         <Script src="https://static.geetest.com/v4/gt4.js" strategy="beforeInteractive" />
@@ -226,7 +181,7 @@ export default async function Layout({
         />
       </head>
       <body className="flex flex-col min-h-screen">
-        <RootProvider search={{ SearchDialog }} i18n={provider(lang)}>
+        <RootProvider search={{ SearchDialog }}>
           {children}
         </RootProvider>
       </body>

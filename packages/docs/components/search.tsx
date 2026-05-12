@@ -14,18 +14,16 @@ import {
   type SharedProps,
 } from 'fumadocs-ui/components/dialog/search';
 import { useDocsSearch } from 'fumadocs-core/search/client';
-import { useI18n } from 'fumadocs-ui/contexts/i18n';
 import { Chip, Kbd, Spinner } from '@heroui/react';
 import { useEffect, useRef, useState, type CompositionEvent, type FocusEvent } from 'react';
 
 const DefaultSearchDialog = (props: SharedProps) => {
-  const { locale } = useI18n();
+  const locale = 'zh-CN';
   const { search, setSearch, query } = useDocsSearch({
     type: 'fetch',
     locale,
   });
-  const resolvedLocale = locale ?? 'en';
-  const isZhLocale = resolvedLocale.startsWith('zh');
+  const isZhLocale = true;
   const isComposingRef = useRef(false);
   const [inputValue, setInputValue] = useState(search);
   const normalizeSearchValue = (value: string) => (isZhLocale ? value : value);

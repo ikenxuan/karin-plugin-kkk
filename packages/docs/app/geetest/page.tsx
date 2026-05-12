@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import type { Key } from 'react';
 import Link from 'next/link';
-import { useSearchParams, useRouter, useParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Tabs, Toast } from '@heroui/react';
 import { Geetest3Panel } from '@/components/geetest/Geetest3Panel';
 import { Geetest4Panel } from '@/components/geetest/Geetest4Panel';
@@ -11,7 +11,6 @@ import type { GeetestVersion } from '@/components/geetest/types';
 function GeetestAppContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { lang } = useParams();
 
   const urlParams = useMemo(() => {
     const versionParam = searchParams.get('v') || searchParams.get('version');
@@ -34,9 +33,9 @@ function GeetestAppContent() {
     if (!urlParams.hasVersionParam) {
       const newParams = new URLSearchParams(searchParams.toString());
       newParams.set('v', version === 'v3' ? '3' : '4');
-      router.replace(`/${lang}/geetest?${newParams.toString()}`);
+      router.replace(`/geetest?${newParams.toString()}`);
     }
-  }, [urlParams.hasVersionParam, version, searchParams, router, lang]);
+  }, [urlParams.hasVersionParam, version, searchParams, router]);
 
   const handleVersionChange = (newVersion: GeetestVersion) => {
     if (newVersion === version) return;
@@ -51,7 +50,7 @@ function GeetestAppContent() {
       newParams.delete('gt');
       newParams.delete('challenge');
     }
-    router.replace(`/${lang}/geetest?${newParams.toString()}`);
+    router.replace(`/geetest?${newParams.toString()}`);
   };
 
   return (
@@ -59,7 +58,7 @@ function GeetestAppContent() {
       <Toast.Provider placement="top" />
       <div className="w-full max-w-md flex justify-between items-center">
         <Link
-          href={`/${lang}`}
+          href="/"
           className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,7 +67,7 @@ function GeetestAppContent() {
           返回首页
         </Link>
         <Link
-          href={`/${lang}/docs/guide/faq`}
+          href="/docs/guide/faq"
           className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors"
         >
           查看文档

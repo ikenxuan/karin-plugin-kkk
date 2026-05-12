@@ -8,18 +8,14 @@ import { MirrorSiteDropdown } from '@/components/mirror-site-dropdown';
 
 export default async function Layout({
   children,
-  params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ lang: string }>;
 }) {
-  const { lang } = await params;
   const changelogs = await getChangelog();
   const latestVersion = changelogs.v2.latest || 'v2.x.x';
 
-  const homeOptions = baseOptions(lang);
-  
-  // Override nav to include latest version in ChangelogDropdown
+  const homeOptions = baseOptions();
+
   homeOptions.nav = {
     ...homeOptions.nav,
     title: <KKKLogo />,
