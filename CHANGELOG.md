@@ -2,6 +2,25 @@
 
 # Changelog
 
+## [2.30.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.30.2...v2.30.3) (2026-05-12)
+
+
+### 🐛 错误修复
+
+* ci ([cc3c7b0](https://github.com/ikenxuan/karin-plugin-kkk/commit/cc3c7b0588af98be3d2a82af3363c31fd2779296))
+* ci ([f33ef0f](https://github.com/ikenxuan/karin-plugin-kkk/commit/f33ef0f4db26196cdf5e08379413690c560bd2e9))
+* what can i say ([daab042](https://github.com/ikenxuan/karin-plugin-kkk/commit/daab042663b358f51d3c700bdeb17fe3a0d6ab2e))
+
+
+### 📝 文档更新
+
+* 移除i18n ([81d6c1f](https://github.com/ikenxuan/karin-plugin-kkk/commit/81d6c1fb2dc373b662c4ea38a16847583eada5b3))
+
+
+### ♻️ 代码重构
+
+* 迁移图标库 ([08b5c18](https://github.com/ikenxuan/karin-plugin-kkk/commit/08b5c1832ab466ed3a1046dae6a2f11bb427fca6))
+
 ## [2.30.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.30.1...v2.30.2) (2026-05-06)
 
 
