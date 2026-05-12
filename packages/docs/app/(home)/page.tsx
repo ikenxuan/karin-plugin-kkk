@@ -1,4 +1,6 @@
 import { HeroSection } from '@/components/hero-section';
+import { PokerCardsSection } from '@/components/poker-cards-section';
+import { Footer } from '@/components/Footer';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -8,6 +10,12 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <HeroSection />
+    <div className="w-full">
+      <HeroSection />
+      <PokerCardsSection />
+      <div className="px-4">
+        <Footer />
+      </div>
+    </div>
   );
 }
