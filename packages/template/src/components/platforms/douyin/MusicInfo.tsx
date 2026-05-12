@@ -1,3 +1,4 @@
+import { Hash, Heart, Maximize, Music, QrCode, UserPlus, Users } from 'lucide-react'
 import React from 'react'
 
 import type {
@@ -7,7 +8,6 @@ import type {
   MusicInfoProps,
   MusicQRCodeProps
 } from '../../../types/platforms/douyin/musicinfo'
-import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
@@ -71,16 +71,16 @@ const MusicInfoSection: React.FC<MusicInfoProps & { desc: string }> = ({
       />
       <div className='flex flex-col gap-2 text-[45px] text-muted font-light mb-2.5'>
         <div className='flex gap-2 items-center select-text'>
-          <Icon icon="lucide:music" className='w-11 h-11' />
+          <Music className='w-11 h-11' />
           <span>音乐ID: {musicId}</span>
         </div>
         <div className='flex gap-2 items-center select-text'>
-          <Icon icon="lucide:users" className='w-11 h-11 text-follow' />
+          <Users className='w-11 h-11 text-follow' />
           <span>{userCount} 人使用过</span>
         </div>
       </div>
       <div className='flex items-center gap-2 text-[45px] text-muted font-light select-text'>
-        <Icon icon="lucide:maximize" className='w-11 h-11 text-time' />
+        <Maximize className='w-11 h-11 text-time' />
         <span>图片生成于: {createTime}</span>
       </div>
     </div>
@@ -119,19 +119,19 @@ const MusicAuthorInfoSection: React.FC<MusicAuthorInfoProps> = ({
         style={{ letterSpacing: '2.5px' }}
       >
         <div className='flex gap-2 items-center'>
-          <Icon icon="lucide:hash" className='w-8 h-8' />
+          <Hash className='w-8 h-8' />
           <span>ID: {userShortId}</span>
         </div>
         <div className='flex gap-2 items-center'>
-          <Icon icon="lucide:heart" className='w-8 h-8 text-like' />
+          <Heart className='w-8 h-8 text-like' />
           <span>获赞: {totalFavorited}</span>
         </div>
         <div className='flex gap-2 items-center'>
-          <Icon icon="lucide:user-plus" className='w-8 h-8' />
+          <UserPlus className='w-8 h-8' />
           <span>关注: {followingCount}</span>
         </div>
         <div className='flex gap-2 items-center'>
-          <Icon icon="lucide:users" className='w-8 h-8 text-follow' />
+          <Users className='w-8 h-8 text-follow' />
           <span>粉丝: {fans}</span>
         </div>
       </div>
@@ -148,7 +148,7 @@ const MusicQRCodeSection: React.FC<MusicQRCodeProps> = ({ qrCodeDataUrl }) => {
   return (
     <div className='flex flex-col-reverse items-center -mb-12 mr-18'>
       <div className='flex items-center gap-2 text-[45px] text-right mt-5 text-muted select-text'>
-        <Icon icon="lucide:qr-code" className='w-11 h-11' />
+        <QrCode className='w-11 h-11' />
         <span>文件直链：永久有效</span>
       </div>
       <div className='p-2.5 rounded-sm border-[7px] border-dashed border-border'>

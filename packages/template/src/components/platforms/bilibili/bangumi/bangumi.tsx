@@ -1,5 +1,6 @@
 import { Chip } from '@heroui/react'
 import clsx from 'clsx'
+import { Calendar, Clock, Crown, Hash, Play, Share2, Shield, Star, Users } from 'lucide-react'
 import React from 'react'
 
 import type {
@@ -7,7 +8,6 @@ import type {
   BangumiBilibiliHeaderProps,
   BilibiliBangumiProps
 } from '../../../../types/platforms/bilibili'
-import { Icon } from '../../../common/Icon'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { EnhancedImage } from '../shared'
 
@@ -115,10 +115,10 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
                 {props.upInfo.verify_type > 0 && (
                   <div className='flex items-center'>
                     {props.upInfo.verify_type === 1 ? (
-                      <Icon icon="lucide:shield" width={20} 
+                      <Shield width={20}
                         className='text-warning' />
                     ) : (
-                      <Icon icon="lucide:crown" width={20} 
+                      <Crown width={20}
                         className='text-accent' />
                     )}
                   </div>
@@ -141,7 +141,7 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
               
               {/* 粉丝数和关注状态 */}
               <div className='flex gap-6 items-center text-3xl select-text text-foreground'>
-                <Icon icon="lucide:users" width={30} />
+                <Users size={30} />
                 <span>{formatNumber(props.upInfo.follower)}粉丝</span>
                 
                 {/* 关注状态 */}
@@ -158,7 +158,7 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
               </div>
               
               <div className='flex gap-2 items-center text-2xl select-text text-foreground/70'>
-                <Icon icon="lucide:hash" width={20} />
+                <Hash size={20} />
                 <span>UID: {props.upInfo.mid}</span>
               </div>
             </div>
@@ -203,7 +203,7 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
             {actorList.length > 0 && (
               <div className='mb-12'>
                 <div className='flex gap-6 items-center mb-6 text-3xl select-text text-foreground'>
-                  <Icon icon="lucide:users" width={30} />
+                  <Users size={30} />
                   <span>声优阵容</span>
                 </div>
                 <div className='flex flex-wrap gap-8'>
@@ -223,7 +223,7 @@ const BangumiBilibiliHeader: React.FC<BangumiBilibiliHeaderProps> = (props) => {
             {props.evaluate && (
               <div className='mb-12'>
                 <div className='flex gap-6 items-center mb-6 text-3xl select-text text-foreground'>
-                  <Icon icon="lucide:star" width={30} />
+                  <Star size={30} />
                   <span>评价</span>
                 </div>
                 <div className='text-3xl leading-relaxed select-text text-foreground'>
@@ -326,7 +326,7 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliData> = (props) => {
     <div className='px-10'>
       {/* 剧集标题 */}
       <div className='flex gap-8 items-center mb-20 text-5xl font-bold select-text text-foreground'>
-        <Icon icon="lucide:play" width={46} />
+        <Play size={46} />
         <span>剧集列表</span>
         <Chip 
           size='lg'
@@ -397,7 +397,7 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliData> = (props) => {
                     <div className='flex flex-col gap-6'>
                       <div className='text-4xl font-bold select-text text-foreground/80'>{props.UPInfo ? props.UPInfo.uname : props.Title}</div>
                       <div className='flex gap-4 items-center text-3xl select-text text-foreground/70'>
-                        <Icon icon="lucide:calendar" width={30} />
+                        <Calendar size={30} />
                         <span>发布了内容</span>
                       </div>
                     </div>
@@ -444,17 +444,17 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliData> = (props) => {
                       
                       <div className='space-y-4 text-4xl'>
                         <div className='flex gap-6 items-center select-text text-foreground/70'>
-                          <Icon icon="lucide:hash" width={36} />
+                          <Hash size={36} />
                           <span className='truncate'>{episode.bvid}</span>
                         </div>
                         
                         <div className='flex gap-6 items-center select-text text-foreground/70'>
-                          <Icon icon="lucide:clock" width={36} />
+                          <Clock size={36} />
                           <span className='whitespace-nowrap'>{formatDateTime(episode.pub_time)}</span>
                         </div>
 
                         <div className='flex gap-6 items-center select-text text-foreground/70'>
-                          <Icon icon="lucide:share-2" width={36} />
+                          <Share2 size={36} />
                           <span className='truncate'>{episode.link}</span>
                         </div>
                       </div>

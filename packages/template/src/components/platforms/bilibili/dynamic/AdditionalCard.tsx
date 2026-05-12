@@ -1,8 +1,8 @@
 import { Button } from '@heroui/react'
+import { BarChart3, BellRing, Gamepad2, Gift } from 'lucide-react'
 import React from 'react'
 
 import type { BilibiliAdditionalData } from '../../../../types/platforms/bilibili'
-import { Icon } from '../../../common/Icon'
 import { EnhancedImage } from '../shared'
 
 /**
@@ -24,7 +24,7 @@ export const BilibiliReserveCard: React.FC<{ reserve: NonNullable<BilibiliAdditi
           </div>
           {reserve.desc3 && (
             <div className='flex gap-2 items-center text-4xl select-text leading-none text-[#fb7299]'>
-              <Icon icon="mingcute:gift-fill" width={40} className='shrink-0' />
+              <Gift size={40} className='shrink-0' />
               <span className='line-clamp-1'>{reserve.desc3}</span>
             </div>
           )}
@@ -37,7 +37,7 @@ export const BilibiliReserveCard: React.FC<{ reserve: NonNullable<BilibiliAdditi
                 : 'bg-[#fb7299] text-white'
             }`}
           >
-            {reserve.buttonText !== '已结束' && <Icon icon="mingcute:bell-ringing-fill" className='scale-180 mr-4' />}
+            {reserve.buttonText !== '已结束' && <BellRing className='scale-180 mr-4' />}
             {reserve.buttonText}
           </Button>
         </div>
@@ -58,7 +58,7 @@ export const BilibiliVoteCard: React.FC<{ vote: NonNullable<BilibiliAdditionalDa
     <div className='overflow-hidden rounded-2xl bg-surface'>
       <div className='flex gap-8 items-center px-10 py-8'>
         <div className='shrink-0'>
-          <Icon icon="mingcute:chart-bar-fill" width={56} />
+          <BarChart3 size={56} />
         </div>
         <div className='flex flex-col gap-3 flex-1 min-w-0'>
           <div className='text-5xl font-medium text-foreground select-text line-clamp-1'>
@@ -99,7 +99,7 @@ export const BilibiliCommonCard: React.FC<{ common: NonNullable<BilibiliAddition
     <div className='flex flex-col gap-4'>
       {common.head_text && (
         <div className='flex gap-2 items-center text-4xl text-muted'>
-          <Icon icon="mingcute:game-1-fill" width={40} />
+          <Gamepad2 size={40} />
           <span>{common.head_text}</span>
         </div>
       )}

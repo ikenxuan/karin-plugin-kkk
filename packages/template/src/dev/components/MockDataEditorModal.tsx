@@ -1,7 +1,7 @@
 import { Button, Modal } from '@heroui/react'
+import { Save } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 
-import { Icon } from '../../components/common/Icon'
 import { JsonEditor } from './JsonEditor'
 
 interface MockDataEditorModalProps {
@@ -120,7 +120,7 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
             >
               {({ isPending }) => (
                 <span className='flex items-center gap-1.5'>
-                  <Icon icon="lucide:save" className='h-3.5 w-3.5' />
+                  <Save size={14} />
                   {isPending ? '保存中...' : '保存并重载'}
                 </span>
               )}

@@ -1,7 +1,8 @@
+import { Menu, ScanLine, ShieldCheck, Smartphone } from 'lucide-react'
 import React from 'react'
+import { RiArrowRightFill, RiTiktokFill } from 'react-icons/ri'
 
 import type { DouyinQrcodeImgProps } from '../../../types/platforms/douyin'
-import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
@@ -81,23 +82,23 @@ export const DouyinQrcodeImg: React.FC<DouyinQrcodeImgProps> = React.memo((props
             {/* Step 1 */}
             <div className="flex flex-col items-center gap-4">
               <div className="p-5 rounded-3xl bg-surface/50 backdrop-blur-md">
-                <Icon icon="ri:tiktok-fill" className="w-16 h-16" />
+                <RiTiktokFill size={64} />
               </div>
               <span className="text-[28px] font-medium tracking-wide">打开抖音</span>
             </div>
-            <Icon icon="ri:arrow-right-fill" className="w-10 h-10 mt-8 opacity-40" />
+            <RiArrowRightFill size={40} className="mt-8 opacity-40" />
             {/* Step 2 */}
             <div className="flex flex-col items-center gap-4">
               <div className="p-5 rounded-3xl bg-surface/50 backdrop-blur-md">
-                <Icon icon="heroicons-outline:menu-alt-2" className="w-16 h-16" />
+                <Menu size={64} />
               </div>
               <span className="text-[28px] font-medium tracking-wide">左上角菜单</span>
             </div>
-            <Icon icon="ri:arrow-right-fill" className="w-10 h-10 mt-8 opacity-40" />
+            <RiArrowRightFill size={40} className="mt-8 opacity-40" />
             {/* Step 3 */}
             <div className="flex flex-col items-center gap-4">
               <div className="p-5 rounded-3xl bg-surface/50 backdrop-blur-md">
-                <Icon icon="tabler:scan" className="w-16 h-16" />
+                <ScanLine size={64} />
               </div>
               <span className="text-[28px] font-medium tracking-wide">顶部扫一扫</span>
             </div>
@@ -139,7 +140,7 @@ export const DouyinQrcodeImg: React.FC<DouyinQrcodeImgProps> = React.memo((props
         <div className="w-full max-w-225 grid grid-cols-2 gap-24 pt-20">
           <div className="flex flex-col items-start space-y-6 mt-1.5">
             <div className="flex items-center justify-center w-16 h-16 mb-2">
-              <Icon icon="lucide:smartphone" className="w-16 h-16" style={{ color: theme.text }} strokeWidth={1} />
+              <Smartphone size={64} style={{ color: theme.text }} strokeWidth={1} />
             </div>
             <h3 className="text-[40px] font-bold" style={{ color: theme.text }}>扫码登录说明</h3>
             <p className="text-[24px] leading-relaxed opacity-60" style={{ color: theme.text }}>
@@ -149,7 +150,7 @@ export const DouyinQrcodeImg: React.FC<DouyinQrcodeImgProps> = React.memo((props
 
           <div className="flex flex-col items-start space-y-6">
             <div className="flex items-center justify-center w-16 h-16 mb-2">
-              <Icon icon="lucide:shield-check" className="w-16 h-16" style={{ color: theme.text }} strokeWidth={1} />
+              <ShieldCheck size={64} style={{ color: theme.text }} strokeWidth={1} />
             </div>
             <h3 className="text-[40px] font-bold" style={{ color: theme.text }}>安全承诺</h3>
             <p className="text-[24px] leading-relaxed opacity-60" style={{ color: theme.text }}>

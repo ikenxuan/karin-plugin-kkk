@@ -1,17 +1,18 @@
 import React from 'react'
 
 import type { HelpProps, MenuGroup, MenuItem } from '../../../types/platforms/other/help'
-import { Icon } from '../../common/Icon'
+import { resolveIcon } from '../../common/iconRegistry'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
- * 获取图标名称，兜底为默认图标
+ * 获取图标组件，兜底为默认图标
  * @param icon - 图标：可以是字符串或带颜色的对象
- * @returns 对应的 iconify 图标名称
+ * @returns React 图标组件类型
  */
-const getIconForItem = (icon?: MenuItem['icon']): string => {
-  if (!icon) return 'ph:question-fill'
-  return typeof icon === 'string' ? icon : icon.name
+const getIconForItem = (icon?: MenuItem['icon']): React.ComponentType<any> => {
+  if (!icon) return resolveIcon('ph:question-fill')
+  const name = typeof icon === 'string' ? icon : icon.name
+  return resolveIcon(name)
 }
 
 /**
@@ -24,14 +25,13 @@ const MenuItemComponent: React.FC<{
   /** 主题色 */
   themeColor: string
 }> = ({ item, themeColor }) => {
-  const iconName = getIconForItem(item.icon)
+  const IconComponent = getIconForItem(item.icon)
   const iconColor = typeof item.icon === 'object' && item.icon?.color ? item.icon.color : themeColor
 
   return (
     <div className="flex flex-row gap-8 py-2 relative">
       <div className="pt-2 shrink-0 relative">
-        <Icon
-          icon={iconName}
+        <IconComponent
           className="w-16 h-16 relative z-10 text-foreground"
           style={{ color: iconColor }}
         />

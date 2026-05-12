@@ -1,8 +1,7 @@
 import { Button, Label, ListBox, Select, Tooltip } from '@heroui/react'
 import Editor from '@monaco-editor/react'
+import { Code, Copy, Download, Upload } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
-
-import { Icon } from '../../components/common/Icon'
 
 interface JsonEditorProps {
   /** 当前数据 */
@@ -222,7 +221,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
       <div className='flex shrink-0 items-center justify-between gap-3 border-b border-divider px-4 py-2.5'>
         <div className='flex items-center gap-2'>
           <div className='flex items-center gap-1.5'>
-            <Icon icon="lucide:code" className='h-4 w-4 text-default-500' />
+            <Code size={16} className='text-default-500' />
             <span className='text-lg font-semibold'>数据编辑器</span>
           </div>
 
@@ -280,9 +279,9 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
           )}
 
           <div className='flex gap-1'>
-            {renderIconButton('复制', <Icon icon="lucide:copy" className='h-3.5 w-3.5' />, copyToClipboard)}
-            {renderIconButton('导入', <Icon icon="lucide:upload" className='h-3.5 w-3.5' />, importJson, readonly)}
-            {renderIconButton('导出', <Icon icon="lucide:download" className='h-3.5 w-3.5' />, exportJson)}
+            {renderIconButton('复制', <Copy size={14} />, copyToClipboard)}
+            {renderIconButton('导入', <Upload size={14} />, importJson, readonly)}
+            {renderIconButton('导出', <Download size={14} />, exportJson)}
           </div>
         </div>
       </div>

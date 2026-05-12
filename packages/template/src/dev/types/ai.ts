@@ -3,6 +3,10 @@
  * 仅支持 OpenAI 兼容格式 与 Claude 兼容格式
  */
 
+import { SiAnthropic } from '@icons-pack/react-simple-icons'
+import { Sparkles } from 'lucide-react'
+import type { ComponentType } from 'react'
+
 export type APIFormat = 'openai' | 'claude'
 
 /**
@@ -74,7 +78,7 @@ export interface APIFormatTemplate {
   key: APIFormat
   name: string
   defaultBaseUrl: string
-  icon: string
+  icon: ComponentType<any>
 }
 
 export const API_FORMAT_TEMPLATES: APIFormatTemplate[] = [
@@ -82,13 +86,13 @@ export const API_FORMAT_TEMPLATES: APIFormatTemplate[] = [
     key: 'openai',
     name: 'OpenAI 兼容',
     defaultBaseUrl: 'https://api.openai.com',
-    icon: 'simple-icons:openai'
+    icon: Sparkles
   },
   {
     key: 'claude',
     name: 'Claude 兼容',
     defaultBaseUrl: 'https://api.anthropic.com',
-    icon: 'simple-icons:anthropic'
+    icon: SiAnthropic
   }
 ]
 

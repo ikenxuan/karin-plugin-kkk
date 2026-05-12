@@ -1,7 +1,6 @@
 import { Card, Kbd } from '@heroui/react'
+import { Info } from 'lucide-react'
 import React from 'react'
-
-import { Icon } from '../../components/common/Icon'
 
 interface CanvasHintsProps {
   /** 是否深色模式 */
@@ -20,7 +19,7 @@ export const CanvasHints: React.FC<CanvasHintsProps> = () => {
       <Card.Header className='px-3 pb-2 pt-3'>
         <div className='flex items-center gap-2.5'>
           <div className='flex size-7 items-center justify-center rounded-lg border border-border bg-background text-foreground'>
-            <Icon icon="lucide:info" className='h-4 w-4' />
+            <Info size={16} />
           </div>
           <div>
             <Card.Title className='text-sm font-semibold text-foreground'>画布操作</Card.Title>

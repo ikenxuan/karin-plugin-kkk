@@ -1,7 +1,6 @@
 import { Button, Card, Chip, Label, ListBox, Select } from '@heroui/react'
+import { Edit, Sparkles } from 'lucide-react'
 import React, { useEffect } from 'react'
-
-import { Icon } from '../../components/common/Icon'
 
 interface DataFileSelectorProps {
   /** 可用的数据文件列表 */
@@ -137,7 +136,7 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
           size='md'
           variant='secondary'
         >
-          <Icon icon="lucide:sparkles" className='h-3.5 w-3.5' />
+          <Sparkles size={14} />
           AI 生成
         </Button>
         <Button
@@ -147,7 +146,7 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
           size='md'
           variant='primary'
         >
-          <Icon icon="lucide:edit" className='h-3.5 w-3.5' />
+          <Edit size={14} />
           编辑数据
         </Button>
       </Card.Footer>

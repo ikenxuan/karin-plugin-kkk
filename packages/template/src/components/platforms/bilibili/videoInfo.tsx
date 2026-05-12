@@ -5,7 +5,7 @@ import React from 'react'
 import { DefaultLayout } from '../../../components/layouts/DefaultLayout'
 import type { BilibiliVideoInfoProps } from '../../../types/platforms/bilibili/videoInfo'
 import { GlowText } from '../../common/GlowImage'
-import { Icon } from '../../common/Icon'
+import { Calendar, MessageCircle } from 'lucide-react'
 import { CoinIcon, PlayIcon, ShareIcon, StarIcon, ThumbUpIcon } from './Icons'
 import { EnhancedImage } from './shared'
 
@@ -99,7 +99,7 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
                 <div className="flex items-center gap-6 text-3xl text-foreground/30">
                   {/* 时间 */}
                   <div className='flex items-center gap-2'>
-                    <Icon icon="solar:calendar-linear" width={32} className="text-foreground/20" />
+                    <Calendar size={32} className="text-foreground/20" />
                     <span>{format(fromUnixTime(props.data.ctime), 'yyyy-MM-dd HH:mm')}</span>
                   </div>
                   {/* 播放 */}
@@ -109,7 +109,7 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
                   </span>
                   {/* 评论 */}
                   <span className="flex items-center gap-1.5">
-                    <Icon icon="tabler:message-circle" width={28} className="text-foreground/20" />
+                    <MessageCircle size={28} className="text-foreground/20" />
                     {formatNumber(props.data.stat.reply)}
                   </span>
                 </div>

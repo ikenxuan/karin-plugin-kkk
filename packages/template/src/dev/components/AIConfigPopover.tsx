@@ -8,9 +8,9 @@ import {
   TextField,
   toast
 } from '@heroui/react'
+import { Bot, CheckCircle2, Eye, EyeOff, Pencil, Plus, Save, Sparkles, Trash2 } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 
-import { Icon } from '../../components/common/Icon'
 import type { AIProvider, APIFormat } from '../types/ai'
 import { API_FORMAT_TEMPLATES } from '../types/ai'
 import {
@@ -169,7 +169,7 @@ export const AIConfigPopover: React.FC<AIConfigPopoverProps> = ({
     <Popover.Root onOpenChange={handleOpenChange}>
       <Popover.Trigger>
         <Button size='sm' variant='secondary'>
-          <Icon icon='lucide:sparkles' className='size-4' />
+          <Sparkles size={16} />
           AI 配置
           {activeProvider && (
             <span className='ml-1 rounded-full bg-foreground px-1.5 py-0.5 text-[10px] text-background'>
@@ -182,7 +182,7 @@ export const AIConfigPopover: React.FC<AIConfigPopoverProps> = ({
         <Popover.Arrow />
         <Popover.Dialog className='flex max-h-[70vh] flex-col gap-4 overflow-y-auto p-4'>
           <Popover.Heading className='flex items-center gap-2 text-sm font-semibold'>
-            <Icon icon='lucide:sparkles' className='size-4' />
+            <Sparkles size={16} />
             AI 供应商配置
           </Popover.Heading>
 
@@ -217,7 +217,7 @@ export const AIConfigPopover: React.FC<AIConfigPopoverProps> = ({
                       <ListBox className='p-1'>
                         {API_FORMAT_TEMPLATES.map(t => (
                           <ListBox.Item key={t.key} id={t.key} textValue={t.name}>
-                            <Icon icon={t.icon} className='size-4 text-muted' />
+                            {(() => { const TIcon = t.icon; return <TIcon size={16} className='text-muted' /> })()}
                             {t.name}
                             <ListBox.ItemIndicator />
                           </ListBox.Item>
@@ -256,7 +256,7 @@ export const AIConfigPopover: React.FC<AIConfigPopoverProps> = ({
                     size='sm'
                     variant='ghost'
                   >
-                    <Icon icon={showApiKey ? 'lucide:eye-off' : 'lucide:eye'} className='size-4' />
+                    {showApiKey ? <EyeOff size={16} /> : <Eye size={16} />}
                   </Button>
                 </div>
               </TextField>
@@ -310,7 +310,7 @@ export const AIConfigPopover: React.FC<AIConfigPopoverProps> = ({
                     size='sm'
                     variant='primary'
                   >
-                    <Icon icon='lucide:plus' className='size-4' />
+                    <Plus size={16} />
                     添加供应商
                   </Button>
                 </div>
@@ -327,7 +327,7 @@ export const AIConfigPopover: React.FC<AIConfigPopoverProps> = ({
                         <div className='flex items-center justify-between gap-2'>
                           <div className='min-w-0 flex-1'>
                             <div className='flex items-center gap-1.5'>
-                              <Icon icon={tmpl?.icon ?? 'lucide:bot'} className='size-3.5 text-muted' />
+                              {(() => { const TmplIcon = tmpl?.icon ?? Bot; return <TmplIcon size={14} className='text-muted' /> })()}
                               <span className='text-xs font-medium'>{tmpl?.name ?? p.apiFormat}</span>
                               {isActive && (
                                 <span className='rounded bg-foreground px-1 py-0.5 text-[9px] text-background'>默认</span>
@@ -343,7 +343,7 @@ export const AIConfigPopover: React.FC<AIConfigPopoverProps> = ({
                                 size='sm'
                                 variant='ghost'
                               >
-                                <Icon icon='lucide:check-circle-2' className='size-3.5' />
+                                <CheckCircle2 size={14} />
                               </Button>
                             )}
                             <Button
@@ -352,7 +352,7 @@ export const AIConfigPopover: React.FC<AIConfigPopoverProps> = ({
                               size='sm'
                               variant='ghost'
                             >
-                              <Icon icon='lucide:pencil' className='size-3.5' />
+                              <Pencil size={14} />
                             </Button>
                             <Button
                               isIconOnly
@@ -360,7 +360,7 @@ export const AIConfigPopover: React.FC<AIConfigPopoverProps> = ({
                               size='sm'
                               variant='ghost'
                             >
-                              <Icon icon='lucide:trash-2' className='size-3.5' />
+                              <Trash2 size={14} />
                             </Button>
                           </div>
                         </div>
@@ -373,7 +373,7 @@ export const AIConfigPopover: React.FC<AIConfigPopoverProps> = ({
                     size='sm'
                     variant='secondary'
                   >
-                    <Icon icon='lucide:plus' className='size-4' />
+                    <Plus size={16} />
                     添加供应商
                   </Button>
                 </div>
@@ -391,7 +391,7 @@ export const AIConfigPopover: React.FC<AIConfigPopoverProps> = ({
                 />
                 <div className='flex justify-end'>
                   <Button onPress={handleSavePrompt} size='sm' variant='secondary'>
-                    <Icon icon='lucide:save' className='size-3.5' />
+                    <Save size={14} />
                     保存
                   </Button>
                 </div>

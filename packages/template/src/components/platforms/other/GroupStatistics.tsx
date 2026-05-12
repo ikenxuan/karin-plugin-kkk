@@ -1,8 +1,8 @@
 import React from 'react'
+import { RiPieChart2Fill } from 'react-icons/ri'
 import { VictoryPie } from 'victory'
 
 import type { GroupStatisticsProps } from '../../../types/platforms/other/statistics'
-import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
@@ -259,7 +259,7 @@ export const GroupStatistics: React.FC<GroupStatisticsProps> = (props) => {
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <Icon icon="ri:pie-chart-2-fill" className="w-80 h-auto opacity-10" />
+                  <RiPieChart2Fill size={320} className="opacity-10" />
                 </div>
               </div>
 

@@ -1,9 +1,9 @@
+import { Eye, FileVideo, Heart, MapPin, Monitor, ShoppingBag, UserPlus, Users } from 'lucide-react'
 import React from 'react'
 
 import type {
   DouyinLiveProps
 } from '../../../types/platforms/douyin'
-import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 const coverMaskStyle: React.CSSProperties = {
@@ -105,26 +105,26 @@ const InfoSection: React.FC<{ data: DouyinLiveProps['data'] }> = ({ data }) => {
       {/* 直播数据 */}
       <div className="flex flex-wrap items-center gap-6 text-3xl text-foreground/30">
         <span className="flex items-center gap-1.5">
-          <Icon icon="lucide:users" width={28} className="text-foreground/20" />
+          <Users size={28} className="text-foreground/20" />
           {data.online_viewers}在线
         </span>
         <span className="flex items-center gap-1.5">
-          <Icon icon="lucide:eye" width={28} className="text-foreground/20" />
+          <Eye size={28} className="text-foreground/20" />
           {data.total_viewers}观看
         </span>
         <span className="flex items-center gap-1.5">
-          <Icon icon="lucide:heart" width={28} className="text-foreground/20" />
+          <Heart size={28} className="text-foreground/20" />
           {data.like_count}点赞
         </span>
         {data.resolution && (
           <span className="flex items-center gap-1.5">
-            <Icon icon="lucide:monitor" width={28} className="text-foreground/20" />
+            <Monitor size={28} className="text-foreground/20" />
             {data.resolution}
           </span>
         )}
         {data.has_commerce_goods && (
           <span className="flex items-center gap-1.5">
-            <Icon icon="lucide:shopping-bag" width={28} className="text-foreground/20" />
+            <ShoppingBag size={28} className="text-foreground/20" />
             带货中
           </span>
         )}
@@ -140,7 +140,7 @@ const InfoSection: React.FC<{ data: DouyinLiveProps['data'] }> = ({ data }) => {
       {/* 城市 */}
       {data.city && (
         <div className="flex items-center gap-2 text-3xl text-foreground/30">
-          <Icon icon="lucide:map-pin" width={28} className="text-foreground/20" />
+          <MapPin size={28} className="text-foreground/20" />
           <span>{data.city}</span>
         </div>
       )}
@@ -173,7 +173,7 @@ const BottomSection: React.FC<{ data: DouyinLiveProps['data']; qrCodeDataUrl: st
             <div className="flex items-center gap-3 text-4xl text-foreground/50">
               <span className="text-foreground/50 font-black tracking-wider text-3xl">直播中</span>
               <span className="text-foreground/40">·</span>
-              <Icon icon="lucide:users" width={32} />
+              <Users size={32} />
               <span className="select-text">{data.fans}粉丝</span>
             </div>
           </div>
@@ -182,21 +182,21 @@ const BottomSection: React.FC<{ data: DouyinLiveProps['data']; qrCodeDataUrl: st
         <div className="flex gap-6 text-3xl text-foreground/70">
           <div className="flex flex-col gap-2 px-6 py-3 rounded-2xl bg-default/45">
             <div className="flex items-center gap-2">
-              <Icon icon="lucide:file-video" width={28} />
+              <FileVideo size={28} />
               <span className="text-foreground/40">作品</span>
             </div>
             <span className="font-medium text-4xl select-text">{data.aweme_count}</span>
           </div>
           <div className="flex flex-col gap-2 px-6 py-3 rounded-2xl bg-default/45">
             <div className="flex items-center gap-2">
-              <Icon icon="lucide:user-plus" width={28} />
+              <UserPlus size={28} />
               <span className="text-foreground/40">关注</span>
             </div>
             <span className="font-medium text-4xl select-text">{data.following_count}</span>
           </div>
           <div className="flex flex-col gap-2 px-6 py-3 rounded-2xl bg-default/45">
             <div className="flex items-center gap-2">
-              <Icon icon="lucide:heart" width={28} />
+              <Heart size={28} />
               <span className="text-foreground/40">获赞</span>
             </div>
             <span className="font-medium text-4xl select-text">{data.total_favorited}</span>

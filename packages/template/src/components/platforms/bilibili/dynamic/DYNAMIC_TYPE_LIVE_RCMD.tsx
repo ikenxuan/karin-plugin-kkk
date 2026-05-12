@@ -1,10 +1,10 @@
 import { extractRichTextPlainText, renderRichTextToReact } from '@kkk/richtext'
+import { Clock, Radio, UsersRound } from 'lucide-react'
 import React from 'react'
 
 import type {
   BilibiliLiveDynamicProps,
   BilibiliPosterPalette } from '../../../../types/platforms/bilibili'
-import { Icon } from '../../../common/Icon'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { EnhancedImage, UsernameDisplay } from '../shared'
 
@@ -330,7 +330,7 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
                   className='mt-5 inline-flex items-center gap-3 font-black'
                   style={{ color: deepColor }}
                 >
-                  <Icon icon="mingcute:group-fill" width={22} />
+                  <UsersRound size={22} />
                   <span className='select-text' style={{ fontSize: `${followerFontSize}px` }}>
                     {data.fans} 粉丝
                   </span>
@@ -357,14 +357,14 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
             style={{ color: deepColor, fontSize: `${metaValueFontSize}px` }}
           >
             <div className='inline-flex min-w-0 items-center gap-3'>
-              <Icon icon="mingcute:radio-fill" width={20} />
+              <Radio size={20} />
               <span className='min-w-0 whitespace-normal leading-[1.18] select-text' style={{ fontSize: `${liveInfoFontSize}px` }}>
                 {data.liveinf}
               </span>
             </div>
             <span style={{ color: withAlphaFromCss(deepColor, 0.26) }}>/</span>
             <div className='inline-flex items-center gap-3 whitespace-nowrap font-mono'>
-              <Icon icon="mingcute:time-fill" width={20} />
+              <Clock size={20} />
               <span className='select-text'>{liveSignalTime}</span>
             </div>
           </div>

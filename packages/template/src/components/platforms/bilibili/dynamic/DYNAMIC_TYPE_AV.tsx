@@ -1,9 +1,9 @@
 import { renderRichTextToReact } from '@kkk/richtext'
 import { format } from 'date-fns'
+import { Clock, Eye, Hash, MessageCircle, UsersRound } from 'lucide-react'
 import React from 'react'
 
 import type { BilibiliVideoDynamicProps } from '../../../../types/platforms/bilibili'
-import { Icon } from '../../../common/Icon'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { CoinIcon, ShareIcon, ThumbUpIcon } from '../Icons'
 import { EnhancedImage, UsernameDisplay } from '../shared'
@@ -107,7 +107,7 @@ const BilibiliVideoDynamicContent: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
               </div>
 
               <div className='flex gap-3 items-center'>
-                <Icon icon="mingcute:comment-2-fill" width={48} />
+                <MessageCircle size={48} />
                 <span className='select-text'>{props.data.pinglun}评论</span>
               </div>
 
@@ -124,12 +124,12 @@ const BilibiliVideoDynamicContent: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
               </div>
 
               <div className='flex gap-3 items-center'>
-                <Icon icon="mingcute:eye-fill" width={48} />
+                <Eye size={48} />
                 <span className='select-text'>{props.data.view}浏览</span>
               </div>
 
               <div className='flex gap-3 items-center text-5xl font-light tracking-normal'>
-                <Icon icon="mingcute:time-fill" width={48} />
+                <Clock size={48} />
                 <span className='select-text'>视频时长: {props.data.duration_text}</span>
               </div>
             </div>
@@ -138,15 +138,15 @@ const BilibiliVideoDynamicContent: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
           {/* 发布时间 */}
           <div className='flex flex-col gap-4 text-4xl font-light'>
             <div className='flex gap-3 items-center whitespace-nowrap'>
-              <Icon icon="mingcute:time-fill" width={32} />
+              <Clock size={32} />
               <span className='select-text'>发布于{props.data.create_time}</span>
             </div>
             <div className='flex gap-3 items-center whitespace-nowrap'>
-              <Icon icon="mingcute:time-fill" width={32} />
+              <Clock size={32} />
               <span>图片生成于: {format(new Date(), 'yyyy-MM-dd HH:mm:ss')}</span>
             </div>
             <div className='flex gap-3 items-center'>
-              <Icon icon="mingcute:hashtag-fill" width={32} />
+              <Hash size={32} />
               <span className='select-text'>动态ID: {props.data.dynamic_id}</span>
             </div>
           </div>
@@ -272,7 +272,7 @@ const BilibiliVideoDynamicFooter: React.FC<Omit<BilibiliVideoDynamicProps, 'temp
                 <UsernameDisplay metadata={props.data.usernameMeta} />
               </div>
               <div className='flex gap-2 items-center text-4xl text-muted'>
-                <Icon icon="mingcute:hashtag-fill" width={32} />
+                <Hash size={32} />
                 <span>UID: {props.data.user_shortid}</span>
                 {currentUserRole && (
                   <span className='ml-5 px-3 py-1 rounded-xl bg-surface-secondary text-3xl'>
@@ -295,7 +295,7 @@ const BilibiliVideoDynamicFooter: React.FC<Omit<BilibiliVideoDynamicProps, 'temp
             </div>
             <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
               <div className='flex gap-1 items-center'>
-                <Icon icon="mingcute:eye-fill" width={28} />
+                <Eye size={28} />
                 <span className='text-muted'>关注</span>
               </div>
               <div className='w-full h-px bg-border' />
@@ -303,7 +303,7 @@ const BilibiliVideoDynamicFooter: React.FC<Omit<BilibiliVideoDynamicProps, 'temp
             </div>
             <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
               <div className='flex gap-1 items-center'>
-                <Icon icon="mingcute:group-fill" width={28} />
+                <UsersRound size={28} />
                 <span className='text-muted'>粉丝</span>
               </div>
               <div className='w-full h-px bg-border' />

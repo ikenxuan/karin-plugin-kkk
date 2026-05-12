@@ -1,7 +1,7 @@
 import { Button, Card, Chip, Label, Modal, ScrollShadow, toast } from '@heroui/react'
+import { AlertTriangle, Box, Check, Cpu, LayoutTemplate, Loader2, Settings2, Sparkles, Square, WandSparkles } from 'lucide-react'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 
-import { Icon } from '../../components/common/Icon'
 import type { AIProvider } from '../types/ai'
 import { getAIConfig } from '../utils/aiConfig'
 import { buildPrompt, extractJsonFromText, streamGenerateMockData } from '../utils/aiService'
@@ -163,22 +163,22 @@ export const AIGenerateModal: React.FC<AIGenerateModalProps> = ({
           <Modal.CloseTrigger />
           <Modal.Header>
             <Modal.Icon className='bg-default'>
-              <Icon icon='lucide:wand-2' />
+              <WandSparkles size={20} />
             </Modal.Icon>
             <Modal.Heading>AI 生成 Mock 数据</Modal.Heading>
             {!noProvider && (
               <div className='ml-auto flex items-center gap-2'>
                 <Chip size='lg' variant='soft'>
-                  <Icon icon='lucide:layout-template' className='size-3.5' />
+                  <LayoutTemplate size={14} />
                   {platform}
                 </Chip>
                 <Chip size='lg' variant='soft'>
-                  <Icon icon='lucide:box' className='size-3.5' />
+                  <Box size={14} />
                   {componentName ?? templateId}
                 </Chip>
                 {provider && (
                   <Chip size='lg' variant='soft'>
-                    <Icon icon='lucide:cpu' className='size-3.5' />
+                    <Cpu size={14} />
                     {provider.model}
                   </Chip>
                 )}
@@ -189,7 +189,7 @@ export const AIGenerateModal: React.FC<AIGenerateModalProps> = ({
           <Modal.Body className='flex-1 overflow-hidden'>
             {noProvider ? (
               <div className='flex flex-col items-center justify-center gap-3 py-12'>
-                <Icon icon='lucide:settings-2' className='size-8 text-default-400' />
+                <Settings2 size={32} className='text-default-400' />
                 <p className='text-sm font-medium'>尚未配置 AI 供应商</p>
                 <p className='text-xs text-default-400'>请先在顶部导航栏的「AI 配置」中完成设置。</p>
               </div>
@@ -247,7 +247,7 @@ export const AIGenerateModal: React.FC<AIGenerateModalProps> = ({
                     </Card.Title>
                     {isGenerating && (
                       <span className='flex items-center gap-1.5 text-xs text-default-400'>
-                        <Icon icon='lucide:loader-2' className='size-3 animate-spin' />
+                        <Loader2 size={12} className='animate-spin' />
                         {streamText.length} 字符
                       </span>
                     )}
@@ -260,7 +260,7 @@ export const AIGenerateModal: React.FC<AIGenerateModalProps> = ({
                         </pre>
                       ) : (
                         <div className='flex h-full flex-col items-center justify-center gap-2 text-xs text-default-400'>
-                          <Icon icon='lucide:sparkles' className='size-5 opacity-40' />
+                          <Sparkles size={20} className='opacity-40' />
                           <span>点击「开始生成」生成 mock 数据</span>
                         </div>
                       )}
@@ -273,7 +273,7 @@ export const AIGenerateModal: React.FC<AIGenerateModalProps> = ({
             {/* 错误提示 */}
             {error && (
               <div className='mt-3 flex items-start gap-2 rounded-lg bg-danger-50 p-2.5 text-xs text-danger'>
-                <Icon icon='lucide:alert-triangle' className='size-4 shrink-0' />
+                <AlertTriangle size={16} className='shrink-0' />
                 <span className='break-all'>{error}</span>
               </div>
             )}
@@ -286,12 +286,12 @@ export const AIGenerateModal: React.FC<AIGenerateModalProps> = ({
               </Button>
               {isGenerating ? (
                 <Button onPress={handleStop} variant='secondary'>
-                  <Icon icon='lucide:square' className='size-4' />
+                  <Square size={16} />
                   停止生成
                 </Button>
               ) : (
                 <Button onPress={handleGenerate} variant='secondary'>
-                  <Icon icon='lucide:wand-2' className='size-4' />
+                  <WandSparkles size={16} />
                   {streamText ? '重新生成' : '开始生成'}
                 </Button>
               )}
@@ -300,7 +300,7 @@ export const AIGenerateModal: React.FC<AIGenerateModalProps> = ({
                 onPress={handleApply}
                 variant='primary'
               >
-                <Icon icon='lucide:check' className='size-4' />
+                <Check size={16} />
                 确认应用
               </Button>
             </Modal.Footer>

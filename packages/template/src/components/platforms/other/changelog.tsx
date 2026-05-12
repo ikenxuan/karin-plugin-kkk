@@ -1,9 +1,9 @@
+import { CornerDownLeft } from 'lucide-react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 
 import type { ChangelogProps } from '../../../types/platforms/other/changelog'
-import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 const InlineCalloutCode: React.FC<React.PropsWithChildren<{ className?: string }>> = ({ children, className }) => (
@@ -212,7 +212,7 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
               h3: ({ children, ...props }) => (
                 <h3 className="flex items-baseline gap-3 text-[3.2em] font-light mb-2 text-foreground" {...props}>
                   {children}
-                  <Icon icon="lucide:corner-down-left" className="w-[1em] h-[1em] text-foreground/10" />
+                  <CornerDownLeft className="w-[1em] h-[1em] text-foreground/10" />
                 </h3>
               ),
               h4: ({ children, ...props }) => (

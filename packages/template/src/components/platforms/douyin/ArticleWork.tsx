@@ -1,9 +1,9 @@
 import { format } from 'date-fns'
+import { Bookmark, Clock, Eye, Hash, Heart, Maximize, MessageCircle, Share2, Users } from 'lucide-react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
 import type { DouyinArticleWorkProps } from '../../../types/platforms/douyin'
-import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
@@ -37,12 +37,12 @@ const TitleSection: React.FC<{ title: string; createTime: string; readTime: numb
       </h1>
       <div className='flex items-center gap-8 text-5xl text-muted'>
         <div className='flex items-center gap-2'>
-          <Icon icon="lucide:clock" className='w-10 h-10' />
+          <Clock className='w-10 h-10' />
           <span>{createTime}</span>
         </div>
         <span>·</span>
         <div className='flex items-center gap-2'>
-          <Icon icon="lucide:clock" className='w-10 h-10 text-accent' />
+          <Clock className='w-10 h-10 text-accent' />
           <span>阅读 {readTime} 分钟</span>
         </div>
       </div>
@@ -146,27 +146,27 @@ const InfoSection: React.FC<DouyinArticleWorkProps> = (props) => {
     <div className='flex flex-col px-16 py-5'>
       <div className='flex items-center gap-6 text-5xl text-muted font-light mb-2.5 select-text'>
         <div className='flex gap-2 items-center'>
-          <Icon icon="lucide:heart" className='w-11 h-11 text-like' />
+          <Heart className='w-11 h-11 text-like' />
           <span>{props.data.dianzan}点赞</span>
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <Icon icon="lucide:message-circle" className='w-11 h-11 text-comment' />
+          <MessageCircle className='w-11 h-11 text-comment' />
           <span>{props.data.pinglun}评论</span>
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <Icon icon="lucide:bookmark" className='w-11 h-11' />
+          <Bookmark className='w-11 h-11' />
           <span>{props.data.shouchang}收藏</span>
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <Icon icon="lucide:share-2" className='w-11 h-11 text-success' />
+          <Share2 className='w-11 h-11 text-success' />
           <span>{props.data.share}分享</span>
         </div>
       </div>
       <div className='flex items-center gap-2 text-5xl text-muted font-light select-text'>
-        <Icon icon="lucide:maximize" className='w-11 h-11 text-time' />
+        <Maximize className='w-11 h-11 text-time' />
         <span>图片生成于: {format(new Date(), 'yyyy-MM-dd HH:mm:ss')}</span>
       </div>
     </div>
@@ -198,7 +198,7 @@ const UserInfoSection: React.FC<DouyinArticleWorkProps> = (props) => {
             @{props.data.username}
           </div>
           <div className='flex gap-2 items-center text-4xl text-muted'>
-            <Icon icon="lucide:hash" className='w-8 h-8 text-muted' />
+            <Hash className='w-8 h-8 text-muted' />
             <span className='select-text'>抖音号: {props.data.抖音号}</span>
           </div>
         </div>
@@ -208,7 +208,7 @@ const UserInfoSection: React.FC<DouyinArticleWorkProps> = (props) => {
       <div className='text-3xl flex gap-6 items-center text-foreground/70'>
         <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
           <div className='flex gap-1 items-center'>
-            <Icon icon="lucide:heart" className='w-7 h-7 text-like' />
+            <Heart className='w-7 h-7 text-like' />
             <span className='text-muted'>获赞</span>
           </div>
           <div className='w-full h-px bg-border' />
@@ -216,7 +216,7 @@ const UserInfoSection: React.FC<DouyinArticleWorkProps> = (props) => {
         </div>
         <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
           <div className='flex gap-1 items-center'>
-            <Icon icon="lucide:eye" className='w-7 h-7 text-view' />
+            <Eye className='w-7 h-7 text-view' />
             <span className='text-muted'>关注</span>
           </div>
           <div className='w-full h-px bg-border' />
@@ -224,7 +224,7 @@ const UserInfoSection: React.FC<DouyinArticleWorkProps> = (props) => {
         </div>
         <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
           <div className='flex gap-1 items-center'>
-            <Icon icon="lucide:users" className='w-7 h-7 text-accent' />
+            <Users className='w-7 h-7 text-accent' />
             <span className='text-muted'>粉丝</span>
           </div>
           <div className='w-full h-px bg-border' />

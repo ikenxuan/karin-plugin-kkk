@@ -1,8 +1,8 @@
 import { Button, Label, Modal, Switch, toast } from '@heroui/react'
+import { Camera, Copy, Download, Maximize, Moon, Sun, X } from 'lucide-react'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { type ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 
-import { Icon } from '../../components/common/Icon'
 import { getWatermarkEnabled, setWatermarkEnabled } from '../utils/watermarkConfig'
 
 interface ScreenshotPreviewModalProps {
@@ -319,13 +319,13 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
                 watermarkEnabled,
                 handleWatermarkChange,
                 watermarkEnabled ? '水印已启用' : '水印已关闭',
-                watermarkEnabled ? <Icon icon="lucide:camera" className='h-3 w-3' /> : <Icon icon="lucide:x" className='h-3 w-3' />
+                watermarkEnabled ? <Camera size={12} /> : <X size={12} />
               )}
               {renderSwitch(
                 tempDarkMode,
                 handleTempDarkModeChange,
                 tempDarkMode ? '深色主题' : '浅色主题',
-                tempDarkMode ? <Icon icon="lucide:moon" className='h-3 w-3' /> : <Icon icon="lucide:sun" className='h-3 w-3' />
+                tempDarkMode ? <Moon size={12} /> : <Sun size={12} />
               )}
             </div>
 
@@ -340,7 +340,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
               >
                 {({ isPending }) => (
                   <>
-                    {!isPending && <Icon icon="lucide:camera" className='h-4 w-4' />}
+                    {!isPending && <Camera size={16} />}
                     {isPending ? '截图中...' : '重新截图'}
                   </>
                 )}
@@ -352,7 +352,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
                 size='lg'
                 variant='secondary'
               >
-                <Icon icon="lucide:maximize" className='h-4 w-4' />
+                <Maximize size={16} />
                 适应画布
               </Button>
 
@@ -362,7 +362,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
                 size='lg'
                 variant='secondary'
               >
-                <Icon icon="lucide:copy" className='h-4 w-4' />
+                <Copy size={16} />
                 复制
               </Button>
 
@@ -372,7 +372,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
                 size='lg'
                 variant='secondary'
               >
-                <Icon icon="lucide:download" className='h-4 w-4' />
+                <Download size={16} />
                 下载
               </Button>
 
@@ -382,7 +382,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
                 size='lg'
                 variant='secondary'
               >
-                <Icon icon="lucide:x" className='h-4 w-4' />
+                <X size={16} />
                 关闭
               </Button>
             </div>

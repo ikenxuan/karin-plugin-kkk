@@ -1,4 +1,5 @@
 import { renderRichTextToReact } from '@kkk/richtext'
+import { Clock, Eye, Hash, MessageCircle, UsersRound } from 'lucide-react'
 import React from 'react'
 
 import type {
@@ -12,7 +13,6 @@ import type {
   OriginalContentWord
 } from '../../../../types/platforms/bilibili'
 import type { DecorationCardData } from '../../../../types/platforms/bilibili/dynamic/normal'
-import { Icon } from '../../../common/Icon'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { ShareIcon, ThumbUpIcon } from '../Icons'
 import { DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
@@ -44,7 +44,7 @@ const BilibiliForwardUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) 
             <UsernameDisplay metadata={props.usernameMeta} />
           </div>
           <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted'>
-            <Icon icon="mingcute:time-fill" width={36} />
+            <Clock size={36} />
             {props.create_time}
           </div>
         </div>
@@ -90,7 +90,7 @@ const OriginalUserInfo: React.FC<{
             <UsernameDisplay metadata={props.usernameMeta} />
           </div>
           <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted'>
-            <Icon icon="mingcute:time-fill" width={32} />
+            <Clock size={32} />
             {props.create_time}
           </div>
         </div>
@@ -375,7 +375,7 @@ const BilibiliForwardStatus: React.FC<BilibiliDynamicStatusProps> = (props) => {
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <Icon icon="mingcute:comment-2-fill" width={48} />
+          <MessageCircle size={48} />
           {props.pinglun}评论
         </div>
         <span>·</span>
@@ -385,7 +385,7 @@ const BilibiliForwardStatus: React.FC<BilibiliDynamicStatusProps> = (props) => {
         </div>
       </div>
       <div className='flex gap-2 items-center text-5xl font-light tracking-normal select-text text-foreground/70'>
-        <Icon icon="mingcute:time-fill" width={48} />
+        <Clock size={48} />
         图片生成于: {props.render_time}
       </div>
       <div className='h-3' />
@@ -426,7 +426,7 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
               <UsernameDisplay metadata={props.usernameMeta} />
             </div>
             <div className='flex gap-2 items-center text-4xl text-muted'>
-              <Icon icon="mingcute:hashtag-fill" width={32} />
+              <Hash size={32} />
               <span className='select-text'>UID: {props.user_shortid}</span>
             </div>
           </div>
@@ -444,7 +444,7 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
           </div>
           <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
-              <Icon icon="mingcute:eye-fill" width={28} />
+              <Eye size={28} />
               <span className='text-muted'>关注</span>
             </div>
             <div className='w-full h-px bg-border' />
@@ -452,7 +452,7 @@ const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url:
           </div>
           <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
-              <Icon icon="mingcute:group-fill" width={28} />
+              <UsersRound size={28} />
               <span className='text-muted'>粉丝</span>
             </div>
             <div className='w-full h-px bg-border' />

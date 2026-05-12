@@ -1,8 +1,10 @@
 import { Breadcrumbs, Button, ButtonGroup, ScrollShadow, Toolbar } from '@heroui/react'
+import { SiGithub } from '@icons-pack/react-simple-icons'
+import { Camera, Info, Moon, Palette, RefreshCw, Sun } from 'lucide-react'
 import React from 'react'
+import { MdFitScreen, MdInfoOutline } from 'react-icons/md'
 import { Group, Panel, Separator } from 'react-resizable-panels'
 
-import { Icon } from '../components/common/Icon'
 import { getComponentConfig, getEnabledComponents } from '../config/config'
 import { DataService } from '../services/DataService'
 import { PlatformType } from '../types/platforms'
@@ -618,7 +620,7 @@ export const App: React.FC = () => {
                     size='lg'
                     variant='ghost'
                   >
-                    <Icon icon="simple-icons:github" className='size-6' />
+                    <SiGithub size={24} />
                   </Button>
                 </div>
               </div>
@@ -681,17 +683,17 @@ export const App: React.FC = () => {
                   >
                     <ButtonGroup size='sm' variant='secondary'>
                       <Button onPress={() => loadData(selectedDataFile)}>
-                        <Icon icon="lucide:refresh-cw" className='size-4' />
+                        <RefreshCw size={16} />
                         重载
                       </Button>
                       <Button onPress={() => previewPanelRef.current?.fitToCanvas()}>
                         <ButtonGroup.Separator />
-                        <Icon icon="material-symbols:fit-screen" className='size-4' />
+                        <MdFitScreen size={16} />
                         适应
                       </Button>
                       <Button isDisabled={isCapturing} onPress={() => handleCapture()}>
                         <ButtonGroup.Separator />
-                        <Icon icon="lucide:camera" className='size-4' />
+                        <Camera size={16} />
                         截图
                       </Button>
                     </ButtonGroup>
@@ -701,7 +703,7 @@ export const App: React.FC = () => {
                       size='sm'
                       variant='secondary'
                     >
-                      <Icon icon="lucide:palette" className='size-4' />
+                      <Palette size={16} />
                       面板主题
                     </Button>
 
@@ -713,9 +715,9 @@ export const App: React.FC = () => {
                       variant='secondary'
                     >
                       {versionEnabled ? (
-                        <Icon icon="lucide:info" className='size-4' />
+                        <Info size={16} />
                       ) : (
-                        <Icon icon="material-symbols:info-outline" className='size-4' />
+                        <MdInfoOutline size={16} />
                       )}
                       {versionEnabled ? '版本信息' : '隐藏版本'}
                     </Button>
@@ -727,9 +729,9 @@ export const App: React.FC = () => {
                       variant='primary'
                     >
                       {templateData?.useDarkTheme ? (
-                        <Icon icon="lucide:sun" className='size-4' />
+                        <Sun size={16} />
                       ) : (
-                        <Icon icon="lucide:moon" className='size-4' />
+                        <Moon size={16} />
                       )}
                       组件{componentTheme === 'dark' ? '深色' : '浅色'}
                     </Button>

@@ -1,6 +1,7 @@
 import { renderRichTextToReact } from '@kkk/richtext'
 import { differenceInSeconds, format, formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
+import { Heart, MessageCircle, QrCode } from 'lucide-react'
 import React from 'react'
 
 import type {
@@ -9,7 +10,6 @@ import type {
   KuaishouQRCodeSectionProps,
   KuaishouVideoInfoHeaderProps
 } from '../../../types/platforms/kuaishou'
-import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 const kuaishouMentionClassName = 'text-[#03488d] dark:text-[#c7daef]'
@@ -69,7 +69,7 @@ const KuaishouQRCodeSection: React.FC<KuaishouQRCodeSectionProps> = ({
           )
           : (
             <div className='flex flex-col justify-center items-center text-muted'>
-              <Icon icon="lucide:qr-code" width={80} className='mb-4' />
+              <QrCode width={80} className='mb-4' />
               <span className='text-lg'>二维码生成失败</span>
             </div>
           )}
@@ -202,12 +202,12 @@ const KuaishouCommentItemComponent: React.FC<KuaishouCommentItemComponentProps &
 
           <div className='flex items-center space-x-6'>
             <div className='flex items-center space-x-2 transition-colors cursor-pointer hover:text-danger'>
-              <Icon icon="lucide:heart" width={60} className='stroke-current' />
+              <Heart size={60} className='stroke-current' />
               <span className='text-[50px] select-text'>{formatKuaishouLikeCount(comment.digg_count)}</span>
             </div>
 
             <div className='flex items-center transition-colors cursor-pointer hover:text-accent'>
-              <Icon icon="lucide:message-circle" width={60} className='stroke-current' />
+              <MessageCircle size={60} className='stroke-current' />
             </div>
           </div>
         </div>
@@ -259,7 +259,7 @@ export const KuaishouComment: React.FC<Omit<KuaishouCommentProps, 'templateType'
             : (
               <div className='flex justify-center items-center py-20 text-muted'>
                 <div className='text-center'>
-                  <Icon icon="lucide:message-circle" width={64} className='mx-auto mb-4 text-muted/70' />
+                  <MessageCircle size={64} className='mx-auto mb-4 text-muted/70' />
                   <p className='text-xl'>暂无评论数据</p>
                 </div>
               </div>

@@ -1,9 +1,13 @@
 import { formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import React from 'react'
+import { AiFillHeart, AiFillPushpin, AiFillStar, AiOutlineVideoCamera } from 'react-icons/ai'
+import { BiImage } from 'react-icons/bi'
+import { FaCommentDots, FaMusic, FaTiktok, FaUserGroup } from 'react-icons/fa6'
+import { MdLightbulbOutline, MdLocationOn } from 'react-icons/md'
+import { RiShareForwardFill, RiUserFollowLine, RiVerifiedBadgeFill } from 'react-icons/ri'
 
 import type { DouyinUserVideoListProps } from '../../../types/platforms/douyin/UserVideoList'
-import { Icon } from '../../common/Icon'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
@@ -52,12 +56,12 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
         {/* 视频/图集标签 */}
         <div className="absolute top-4 right-4 flex flex-col gap-2">
           <div className="px-6 py-4 rounded-2xl text-4xl bg-white/50 text-black backdrop-blur-xs shadow-lg flex items-center gap-2">
-            {video.is_video ? <Icon icon="ant-design:video-camera-outlined" /> : <Icon icon="bi:image" />}
+            {video.is_video ? <AiOutlineVideoCamera size={34} /> : <BiImage size={34} />}
             <span>{video.is_video ? '视频' : '图集'}</span>
           </div>
           {video.is_top && (
             <div className="px-6 py-4 rounded-2xl text-4xl bg-warning text-black backdrop-blur-xs shadow-lg flex items-center gap-2">
-              <Icon icon="ant-design:pushpin-filled" />
+              <AiFillPushpin size={34} />
               <span>置顶</span>
             </div>
           )}
@@ -73,7 +77,7 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
         {/* 背景音乐图标 */}
         {video.music && (
           <div className="absolute bottom-4 left-4 flex items-center gap-2 px-6 py-3 rounded-2xl text-xl bg-white/50 text-black backdrop-blur-xs shadow-lg">
-            <Icon icon="fa6-solid:music" />
+            <FaMusic size={34} />
             <span className="max-w-80 truncate">{video.music.title}</span>
           </div>
         )}
@@ -101,19 +105,19 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
         <div className="mt-auto">
           <div className="grid grid-cols-2 gap-3 text-3xl">
             <div className="flex items-center gap-2 text-foreground/70">
-              <Icon icon="ant-design:heart-filled" width={34} />
+              <AiFillHeart size={34} />
               <span>{formatCount(video.statistics.like_count)}</span>
             </div>
             <div className="flex items-center gap-2 text-foreground/70">
-              <Icon icon="fa6-solid:comment-dots" width={34} />
+              <FaCommentDots size={34} />
               <span>{formatCount(video.statistics.comment_count)}</span>
             </div>
             <div className="flex items-center gap-2 text-foreground/70">
-              <Icon icon="ant-design:star-filled" width={34} />
+              <AiFillStar size={34} />
               <span>{formatCount(video.statistics.collect_count)}</span>
             </div>
             <div className="flex items-center gap-2 text-foreground/70">
-              <Icon icon="ri:share-forward-fill" width={34} />
+              <RiShareForwardFill size={34} />
               <span>{formatCount(video.statistics.share_count)}</span>
             </div>
           </div>
@@ -161,29 +165,29 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-4">
                   <h1 className="text-6xl font-bold text-foreground">{prpos.data.user.nickname}</h1>
-                  {prpos.data.user.verified && <Icon icon="ri:verified-badge-fill" className="text-5xl text-accent" />}
+                  {prpos.data.user.verified && <RiVerifiedBadgeFill size={40} className="text-accent" />}
                 </div>
 
                 {/* 抖音号和 IP 属地 */}
                 <div className="flex gap-6 mb-6 text-2xl text-muted">
-                  <span className="flex items-center gap-2"><Icon icon="fa6-brands:tiktok" /> 抖音号：{prpos.data.user.short_id}</span>
-                  {prpos.data.user.ip_location && <span className="flex items-center gap-1"><Icon icon="material-symbols:location-on" className="text-3xl" /> {prpos.data.user.ip_location}</span>}
+                  <span className="flex items-center gap-2"><FaTiktok size={24} /> 抖音号：{prpos.data.user.short_id}</span>
+                  {prpos.data.user.ip_location && <span className="flex items-center gap-1"><MdLocationOn size={28} /> {prpos.data.user.ip_location}</span>}
                 </div>
 
                 {/* 用户统计 */}
                 <div className="flex gap-8 text-3xl">
                   <div className="flex items-center gap-2">
-                    <Icon icon="ri:user-follow-line" className="text-muted" />
+                    <RiUserFollowLine size={28} className="text-muted" />
                     <span className="text-muted">关注</span>
                     <span className="font-medium text-4xl text-foreground"> {formatCount(prpos.data.user.following_count)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Icon icon="fa6-solid:user-group" className="text-muted" />
+                    <FaUserGroup size={28} className="text-muted" />
                     <span className="text-muted">粉丝</span>
                     <span className="font-medium text-4xl text-foreground"> {formatCount(prpos.data.user.follower_count)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Icon icon="ant-design:heart-filled" className="text-muted" />
+                    <AiFillHeart size={28} className="text-muted" />
                     <span className="text-muted">获赞</span>
                     <span className="font-medium text-4xl  text-foreground"> {formatCount(prpos.data.user.total_favorited)}</span>
                   </div>
@@ -201,7 +205,7 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
           {prpos.data.timeoutSeconds && (
             <div className="bg-surface/60 backdrop-blur-xl mb-8 rounded-4xl p-6 border border-border/50 shadow-sm flex justify-center items-center">
               <p className="text-3xl text-foreground/80 font-medium flex items-center gap-3">
-                <Icon icon="material-symbols:lightbulb-outline" className="text-4xl text-warning" />
+                <MdLightbulbOutline size={40} className="text-warning" />
                 <span>请在 {prpos.data.timeoutSeconds} 秒内发送 <span className="text-accent font-bold">1~{prpos.data.videos.length}</span> 之间的数字解析对应作品。例如发送“1”解析第一个作品</span>
               </p>
             </div>
