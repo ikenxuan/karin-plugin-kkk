@@ -1579,14 +1579,14 @@ declare const av2bv: (aid: number) => `BV1${string}`;
  * @returns
  */
 declare const bv2av: (bvid: string) => number; //#endregion
-//#region src/types/ReturnDataType/Bilibili/ProtobufDanmaku.d.ts
-type BiliProtobufDanmaku = {
+//#region src/types/ReturnDataType/Bilibili/ProtobufDanmaku/ProtobufDanmaku_V0.d.ts
+type BiliProtobufDanmaku_V0 = {
   code: number;
-  data: DataData$29;
+  data: DataData$28;
   message: string;
   [property: string]: any;
 };
-type DataData$29 = {
+type DataData$28 = {
   elems: Elem[];
   [property: string]: any;
 };
@@ -1607,6 +1607,8 @@ type Elem = {
   weight: number;
   [property: string]: any;
 }; //#endregion
+//#region src/types/ReturnDataType/Bilibili/ProtobufDanmaku/index.d.ts
+type BiliProtobufDanmaku = BiliProtobufDanmaku_V0; //#endregion
 //#region src/platform/bilibili/sign/danmaku_proto.d.ts
 /**
  * 解析弹幕分段响应
@@ -3290,15 +3292,15 @@ declare const createSuccessResponse: <T>(data: T, message: string, code?: number
  * @returns 格式化的错误响应对象
  */
 declare const createErrorResponse: (error: APIErrorType, message: string, code?: number, data?: unknown) => ErrorResult; //#endregion
-//#region src/types/ReturnDataType/Bilibili/ArticleCard.d.ts
-type ArticleCard = {
+//#region src/types/ReturnDataType/Bilibili/ArticleCard/ArticleCard_V0.d.ts
+type ArticleCard_V0 = {
   code: number;
-  data: DataData$28;
+  data: DataData$27;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$28 = {
+type DataData$27 = {
   av2: Av2;
   cv1: Cv1;
   cv2: Cv2;
@@ -3653,15 +3655,17 @@ type Lv5440 = {
   uname: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/ArticleContent.d.ts
-type ArticleContent = {
+//#region src/types/ReturnDataType/Bilibili/ArticleCard/index.d.ts
+type ArticleCard = ArticleCard_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/ArticleContent/ArticleContent.d.ts
+type ArticleContent_V0 = {
   code: number;
-  data: DataData$27;
+  data: DataData$26;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$27 = {
+type DataData$26 = {
   act_id: number;
   apply_time: string;
   authenMark: null;
@@ -3710,9 +3714,9 @@ type Author$10 = {
   mid: number;
   name: string;
   nameplate: Nameplate$4;
-  official_verify: OfficialVerify$10;
-  pendant: Pendant$11;
-  vip: Vip$11;
+  official_verify: OfficialVerify$9;
+  pendant: Pendant$10;
+  vip: Vip$10;
   [property: string]: any;
 };
 type Nameplate$4 = {
@@ -3724,22 +3728,22 @@ type Nameplate$4 = {
   nid: number;
   [property: string]: any;
 };
-type OfficialVerify$10 = {
+type OfficialVerify$9 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant$11 = {
+type Pendant$10 = {
   expire: number;
   image: string;
   name: string;
   pid: number;
   [property: string]: any;
 };
-type Vip$11 = {
+type Vip$10 = {
   avatar_subscript: number;
   due_date: number;
-  label: Label$11;
+  label: Label$10;
   nickname_color: string;
   status: number;
   theme_type: number;
@@ -3747,7 +3751,7 @@ type Vip$11 = {
   vip_pay_type: number;
   [property: string]: any;
 };
-type Label$11 = {
+type Label$10 = {
   label_theme: string;
   path: string;
   text: string;
@@ -3869,15 +3873,17 @@ type Stats$1 = {
   view: number;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/ArticleInfo.d.ts
-type ArticleInfo = {
+//#region src/types/ReturnDataType/Bilibili/ArticleContent/index.d.ts
+type ArticleContent = ArticleContent_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/ArticleInfo/ArticleInfo_V0.d.ts
+type ArticleInfo_V0 = {
   code: number;
-  data: DataData$26;
+  data: DataData$25;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$26 = {
+type DataData$25 = {
   attention: boolean;
   author_name: string;
   banner_url: string;
@@ -3920,8 +3926,10 @@ type Stats = {
   view: number;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/AV2BV.d.ts
-type BiliAv2Bv = {
+//#region src/types/ReturnDataType/Bilibili/ArticleInfo/index.d.ts
+type ArticleInfo = ArticleInfo_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/AV2BV/AV2BV_V0.d.ts
+type BiliAv2Bv_V0 = {
   code: number;
   data: Data$15;
   message: string;
@@ -3931,8 +3939,10 @@ type Data$15 = {
   bvid: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/BangumiVideoInfo.d.ts
-type BiliBangumiVideoInfo = {
+//#region src/types/ReturnDataType/Bilibili/AV2BV/index.d.ts
+type BiliAv2Bv = BiliAv2Bv_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/BangumiVideoInfo/BangumiVideoInfo_V0.d.ts
+type BiliBangumiVideoInfo_V0 = {
   code: number;
   message: string;
   result: Result$5;
@@ -4304,7 +4314,7 @@ type UpInfo = {
   is_follow: number;
   mid: number;
   nickname_color: string;
-  pendant: Pendant$10;
+  pendant: Pendant$9;
   theme_type: number;
   uname: string;
   verify_type: number;
@@ -4313,7 +4323,7 @@ type UpInfo = {
   vip_type: number;
   [property: string]: any;
 };
-type Pendant$10 = {
+type Pendant$9 = {
   image: string;
   name: string;
   pid: number;
@@ -4352,9 +4362,11 @@ type VipInfo = {
   type: number;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/BangumiVideoPlayurlIsLogin.d.ts
+//#region src/types/ReturnDataType/Bilibili/BangumiVideoInfo/index.d.ts
+type BiliBangumiVideoInfo = BiliBangumiVideoInfo_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/BangumiVideoPlayurlIsLogin/BangumiVideoPlayurlIsLogin_V0.d.ts
 /** 番剧下载地址（已登录） */
-type BiliBangumiVideoPlayurlIsLogin = {
+type BiliBangumiVideoPlayurlIsLogin_V0 = {
   code: number;
   message: string;
   result: Result$4;
@@ -4494,9 +4506,11 @@ type SupportFormat$3 = {
   superscript: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/BangumiVideoPlayurlNoLogin.d.ts
+//#region src/types/ReturnDataType/Bilibili/BangumiVideoPlayurlIsLogin/index.d.ts
+type BiliBangumiVideoPlayurlIsLogin = BiliBangumiVideoPlayurlIsLogin_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/BangumiVideoPlayurlNoLogin/BangumiVideoPlayurlNoLogin_V0.d.ts
 /** 番剧下载地址（未登录） */
-type BiliBangumiVideoPlayurlNoLogin = {
+type BiliBangumiVideoPlayurlNoLogin_V0 = {
   code: number;
   message: string;
   result: Result$3;
@@ -4562,8 +4576,10 @@ type SupportFormat$2 = {
   superscript: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/EmojiList.d.ts
-type BiliEmojiList = {
+//#region src/types/ReturnDataType/Bilibili/BangumiVideoPlayurlNoLogin/index.d.ts
+type BiliBangumiVideoPlayurlNoLogin = BiliBangumiVideoPlayurlNoLogin_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/EmojiList/EmojiList_V0.d.ts
+type BiliEmojiList_V0 = {
   code: number;
   data: Data$14;
   message: string;
@@ -4634,15 +4650,17 @@ type Setting = {
   schema: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/BiliCommentReply.d.ts
-type BiliCommentReply = {
+//#region src/types/ReturnDataType/Bilibili/EmojiList/index.d.ts
+type BiliEmojiList = BiliEmojiList_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/BiliCommentReply/BiliCommentReply_V0.d.ts
+type BiliCommentReply_V0 = {
   code: number;
-  data: DataData$25;
+  data: DataData$24;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$25 = {
+type DataData$24 = {
   assist: number;
   blacklist: number;
   callbacks: {
@@ -4829,7 +4847,7 @@ type Member = {
   mid: string;
   nameplate: Nameplate$3;
   nft_interaction: null;
-  official_verify: OfficialVerify$9;
+  official_verify: OfficialVerify$8;
   pendant: MemberPendant;
   rank: string;
   senior: Senior;
@@ -4838,63 +4856,63 @@ type Member = {
   uname: string;
   user_sailing: UserSailing;
   user_sailing_v2: UserSailingV2;
-  vip: Vip$10;
+  vip: Vip$9;
   [property: string]: any;
 };
 type AvatarItem = {
-  container_size: ContainerSize$6;
-  fallback_layers: FallbackLayers$6;
+  container_size: ContainerSize$5;
+  fallback_layers: FallbackLayers$5;
   mid: string;
   [property: string]: any;
 };
-type ContainerSize$6 = {
+type ContainerSize$5 = {
   height: number;
   width: number;
   [property: string]: any;
 };
-type FallbackLayers$6 = {
+type FallbackLayers$5 = {
   is_critical_group: boolean;
-  layers: Layer$6[];
+  layers: Layer$5[];
   [property: string]: any;
 };
-type Layer$6 = {
-  general_spec: GeneralSpec$6;
-  layer_config: LayerConfig$6;
-  resource: Resource$6;
+type Layer$5 = {
+  general_spec: GeneralSpec$5;
+  layer_config: LayerConfig$5;
+  resource: Resource$5;
   visible: boolean;
   [property: string]: any;
 };
-type GeneralSpec$6 = {
-  pos_spec: PosSpec$6;
-  render_spec: RenderSpec$6;
-  size_spec: SizeSpec$6;
+type GeneralSpec$5 = {
+  pos_spec: PosSpec$5;
+  render_spec: RenderSpec$5;
+  size_spec: SizeSpec$5;
   [property: string]: any;
 };
-type PosSpec$6 = {
+type PosSpec$5 = {
   axis_x: number;
   axis_y: number;
   coordinate_pos: number;
   [property: string]: any;
 };
-type RenderSpec$6 = {
+type RenderSpec$5 = {
   opacity: number;
   [property: string]: any;
 };
-type SizeSpec$6 = {
+type SizeSpec$5 = {
   height: number;
   width: number;
   [property: string]: any;
 };
-type LayerConfig$6 = {
+type LayerConfig$5 = {
   is_critical: boolean;
-  tags: Tags$6;
+  tags: Tags$5;
   [property: string]: any;
 };
-type Tags$6 = {
+type Tags$5 = {
   AVATAR_LAYER: {
     [key: string]: any;
   };
-  GENERAL_CFG: GeneralCFG$6;
+  GENERAL_CFG: GeneralCFG$5;
   ICON_LAYER?: {
     [key: string]: any;
   };
@@ -4903,39 +4921,39 @@ type Tags$6 = {
   };
   [property: string]: any;
 };
-type GeneralCFG$6 = {
+type GeneralCFG$5 = {
   config_type: number;
-  general_config: GeneralConfig$6;
+  general_config: GeneralConfig$5;
   [property: string]: any;
 };
-type GeneralConfig$6 = {
-  web_css_style: WebcssStyle$6;
+type GeneralConfig$5 = {
+  web_css_style: WebcssStyle$5;
   [property: string]: any;
 };
-type WebcssStyle$6 = {
+type WebcssStyle$5 = {
   'background-color'?: string;
   border?: string;
   borderRadius: string;
   boxSizing?: string;
   [property: string]: any;
 };
-type Resource$6 = {
-  res_image: ResImage$6;
+type Resource$5 = {
+  res_image: ResImage$5;
   res_type: number;
   [property: string]: any;
 };
-type ResImage$6 = {
-  image_src: ImageSrc$6;
+type ResImage$5 = {
+  image_src: ImageSrc$5;
   [property: string]: any;
 };
-type ImageSrc$6 = {
+type ImageSrc$5 = {
   local?: number;
   placeholder: number;
-  remote: Remote$6;
+  remote: Remote$5;
   src_type: number;
   [property: string]: any;
 };
-type Remote$6 = {
+type Remote$5 = {
   bfs_style: string;
   url: string;
   [property: string]: any;
@@ -4976,7 +4994,7 @@ type Nameplate$3 = {
   nid: number;
   [property: string]: any;
 };
-type OfficialVerify$9 = {
+type OfficialVerify$8 = {
   desc: string;
   type: number;
   [property: string]: any;
@@ -5077,11 +5095,11 @@ type UserSailingV2Pendant = {
   type: string;
   [property: string]: any;
 };
-type Vip$10 = {
+type Vip$9 = {
   accessStatus: number;
   avatar_subscript: number;
   dueRemark: string;
-  label: Label$10;
+  label: Label$9;
   nickname_color: string;
   themeType: number;
   vipDueDate: number;
@@ -5090,7 +5108,7 @@ type Vip$10 = {
   vipType: number;
   [property: string]: any;
 };
-type Label$10 = {
+type Label$9 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -5131,8 +5149,10 @@ type Upper = {
   mid: number;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/BV2AV.d.ts
-type BiliBv2AV = {
+//#region src/types/ReturnDataType/Bilibili/BiliCommentReply/index.d.ts
+type BiliCommentReply = BiliCommentReply_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/BV2AV/BV2AV_V0.d.ts
+type BiliBv2AV_V0 = {
   code: number;
   data: Data$13;
   message: string;
@@ -5142,15 +5162,17 @@ type Data$13 = {
   aid: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Captcha/ApplyCaptcha.d.ts
-type ApplyCaptcha = {
+//#region src/types/ReturnDataType/Bilibili/BV2AV/index.d.ts
+type BiliBv2AV = BiliBv2AV_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Captcha/ApplyCaptcha/ApplyCaptcha_V0.d.ts
+type ApplyCaptcha_V0 = {
   code: number;
-  data: DataData$24;
+  data: DataData$23;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$24 = {
+type DataData$23 = {
   biliword: null;
   geetest: Geetest;
   phone: null;
@@ -5165,21 +5187,10 @@ type Geetest = {
   gt: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Captcha/ValidateCaptcha.d.ts
-type ValidateCaptcha = {
-  code: number;
-  data: DataData$23;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type DataData$23 = {
-  grisk_id: string;
-  is_valid: number;
-  [property: string]: any;
-}; //#endregion
-//#region src/types/ReturnDataType/Bilibili/ColumnInfo.d.ts
-type ColumnInfo = {
+//#region src/types/ReturnDataType/Bilibili/Captcha/ApplyCaptcha/index.d.ts
+type ApplyCaptcha = ApplyCaptcha_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Captcha/ValidateCaptcha/ValidateCaptcha_V0.d.ts
+type ValidateCaptcha_V0 = {
   code: number;
   data: DataData$22;
   message: string;
@@ -5187,6 +5198,21 @@ type ColumnInfo = {
   [property: string]: any;
 };
 type DataData$22 = {
+  grisk_id: string;
+  is_valid: number;
+  [property: string]: any;
+}; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Captcha/ValidateCaptcha/index.d.ts
+type ValidateCaptcha = ValidateCaptcha_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/ColumnInfo/ColumnInfo_V0.d.ts
+type ColumnInfo_V0 = {
+  code: number;
+  data: DataData$21;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type DataData$21 = {
   articles: null;
   attention: boolean;
   author: Author$9;
@@ -5201,9 +5227,9 @@ type Author$9 = {
   mid: number;
   name: string;
   nameplate: Nameplate$2;
-  official_verify: OfficialVerify$8;
-  pendant: Pendant$9;
-  vip: Vip$9;
+  official_verify: OfficialVerify$7;
+  pendant: Pendant$8;
+  vip: Vip$8;
   [property: string]: any;
 };
 type Nameplate$2 = {
@@ -5215,22 +5241,22 @@ type Nameplate$2 = {
   nid: number;
   [property: string]: any;
 };
-type OfficialVerify$8 = {
+type OfficialVerify$7 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant$9 = {
+type Pendant$8 = {
   expire: number;
   image: string;
   name: string;
   pid: number;
   [property: string]: any;
 };
-type Vip$9 = {
+type Vip$8 = {
   avatar_subscript: number;
   due_date: number;
-  label: Label$9;
+  label: Label$8;
   nickname_color: string;
   status: number;
   theme_type: number;
@@ -5238,7 +5264,7 @@ type Vip$9 = {
   vip_pay_type: number;
   [property: string]: any;
 };
-type Label$9 = {
+type Label$8 = {
   label_theme: string;
   path: string;
   text: string;
@@ -5285,7 +5311,4294 @@ type List = {
   words: number;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/DynamicInfo.d.ts
+//#region src/types/ReturnDataType/Bilibili/ColumnInfo/index.d.ts
+type ColumnInfo = ColumnInfo_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_ARTICLE/DYNAMIC_TYPE_ARTICLE_V0.d.ts
+type DynamicTypeArticle_V0 = {
+  code: number;
+  data: DataData$20;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type DataData$20 = {
+  item: Item$15;
+  [property: string]: any;
+};
+type Item$15 = {
+  basic: Basic$4;
+  id_str: string;
+  modules: Modules$4;
+  type: DynamicType.ARTICLE;
+  visible: boolean;
+  [property: string]: any;
+};
+type Basic$4 = {
+  comment_id_str: string;
+  comment_type: number;
+  jump_url: string;
+  like_icon: LikeIcon$4;
+  rid_str: string;
+  [property: string]: any;
+};
+type LikeIcon$4 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type Modules$4 = {
+  module_author: ModuleAuthor$4;
+  module_dynamic: ModuleDynamic$4;
+  module_more: ModuleMore$9;
+  module_stat: ModuleStat$9;
+  [property: string]: any;
+};
+type ModuleAuthor$4 = {
+  avatar: Avatar$5;
+  face: string;
+  face_nft: boolean;
+  following: null;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: OfficialVerify$6;
+  pendant: Pendant$7;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: Vip$7;
+  [property: string]: any;
+};
+type Avatar$5 = {
+  container_size: ContainerSize$4;
+  fallback_layers: FallbackLayers$4;
+  mid: string;
+  [property: string]: any;
+};
+type ContainerSize$4 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FallbackLayers$4 = {
+  is_critical_group: boolean;
+  layers: Layer$4[];
+  [property: string]: any;
+};
+type Layer$4 = {
+  general_spec: GeneralSpec$4;
+  layer_config: LayerConfig$4;
+  resource: Resource$4;
+  visible: boolean;
+  [property: string]: any;
+};
+type GeneralSpec$4 = {
+  pos_spec: PosSpec$4;
+  render_spec: RenderSpec$4;
+  size_spec: SizeSpec$4;
+  [property: string]: any;
+};
+type PosSpec$4 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type RenderSpec$4 = {
+  opacity: number;
+  [property: string]: any;
+};
+type SizeSpec$4 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type LayerConfig$4 = {
+  is_critical?: boolean;
+  tags: Tags$4;
+  [property: string]: any;
+};
+type Tags$4 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: GeneralCFG$4;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type GeneralCFG$4 = {
+  config_type: number;
+  general_config: GeneralConfig$4;
+  [property: string]: any;
+};
+type GeneralConfig$4 = {
+  web_css_style: WebcssStyle$4;
+  [property: string]: any;
+};
+type WebcssStyle$4 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type Resource$4 = {
+  res_image: ResImage$4;
+  res_type: number;
+  [property: string]: any;
+};
+type ResImage$4 = {
+  image_src: ImageSrc$4;
+  [property: string]: any;
+};
+type ImageSrc$4 = {
+  local: number;
+  placeholder?: number;
+  remote?: Remote$4;
+  src_type: number;
+  [property: string]: any;
+};
+type Remote$4 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type OfficialVerify$6 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$7 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Vip$7 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: Label$7;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type Label$7 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type ModuleDynamic$4 = {
+  additional: null;
+  desc: null;
+  major: Major$9;
+  topic: null;
+  [property: string]: any;
+};
+type Major$9 = {
+  opus: Opus$5;
+  type: string;
+  [property: string]: any;
+};
+type Opus$5 = {
+  fold_action: string[];
+  jump_url: string;
+  pics: string[];
+  summary: Summary$6;
+  title: string;
+  [property: string]: any;
+};
+type Summary$6 = {
+  rich_text_nodes: RichTextNode$5[];
+  text: string;
+  [property: string]: any;
+};
+type RichTextNode$5 = {
+  orig_text?: string;
+  text?: string;
+  type?: string;
+  [property: string]: any;
+};
+type ModuleMore$9 = {
+  three_point_items: ThreePointItem$9[];
+  [property: string]: any;
+};
+type ThreePointItem$9 = {
+  label?: string;
+  type?: string;
+  [property: string]: any;
+};
+type ModuleStat$9 = {
+  comment: Comment$11;
+  forward: Forward$9;
+  like: Like$10;
+  [property: string]: any;
+};
+type Comment$11 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Forward$9 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Like$10 = {
+  count: number;
+  forbidden: boolean;
+  status: boolean;
+  [property: string]: any;
+}; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_ARTICLE/index.d.ts
+type DynamicTypeArticle = DynamicTypeArticle_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_AV/DYNAMIC_TYPE_AV_V0.d.ts
+type DynamicTypeAV_V0$1 = {
+  code: number;
+  data: DataData$19;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type DataData$19 = {
+  item: Item$14;
+  [property: string]: any;
+};
+type Item$14 = {
+  basic: Basic$3;
+  id_str: string;
+  modules: Modules$3;
+  type: DynamicType.AV;
+  visible: boolean;
+  [property: string]: any;
+};
+type Basic$3 = {
+  comment_id_str: string;
+  comment_type: number;
+  like_icon: LikeIcon$3;
+  rid_str: string;
+  [property: string]: any;
+};
+type LikeIcon$3 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type Modules$3 = {
+  module_author: ModuleAuthor$3;
+  module_dynamic: ModuleDynamic$3;
+  module_more: ModuleMore$8;
+  module_stat: ModuleStat$8;
+  [property: string]: any;
+};
+type ModuleAuthor$3 = {
+  avatar: Avatar$4;
+  face: string;
+  face_nft: boolean;
+  following: boolean;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: OfficialVerify$5;
+  pendant: Pendant$6;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: Vip$6;
+  [property: string]: any;
+};
+type Avatar$4 = {
+  container_size: ContainerSize$3;
+  fallback_layers: FallbackLayers$3;
+  mid: string;
+  [property: string]: any;
+};
+type ContainerSize$3 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FallbackLayers$3 = {
+  is_critical_group: boolean;
+  layers: Layer$3[];
+  [property: string]: any;
+};
+type Layer$3 = {
+  general_spec: GeneralSpec$3;
+  layer_config: LayerConfig$3;
+  resource: Resource$3;
+  visible: boolean;
+  [property: string]: any;
+};
+type GeneralSpec$3 = {
+  pos_spec: PosSpec$3;
+  render_spec: RenderSpec$3;
+  size_spec: SizeSpec$3;
+  [property: string]: any;
+};
+type PosSpec$3 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type RenderSpec$3 = {
+  opacity: number;
+  [property: string]: any;
+};
+type SizeSpec$3 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type LayerConfig$3 = {
+  is_critical?: boolean;
+  tags: Tags$3;
+  [property: string]: any;
+};
+type Tags$3 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: GeneralCFG$3;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type GeneralCFG$3 = {
+  config_type: number;
+  general_config: GeneralConfig$3;
+  [property: string]: any;
+};
+type GeneralConfig$3 = {
+  web_css_style: WebcssStyle$3;
+  [property: string]: any;
+};
+type WebcssStyle$3 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type Resource$3 = {
+  res_image: ResImage$3;
+  res_type: number;
+  [property: string]: any;
+};
+type ResImage$3 = {
+  image_src: ImageSrc$3;
+  [property: string]: any;
+};
+type ImageSrc$3 = {
+  local: number;
+  placeholder?: number;
+  remote?: Remote$3;
+  src_type: number;
+  [property: string]: any;
+};
+type Remote$3 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type OfficialVerify$5 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$6 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Vip$6 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: Label$6;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type Label$6 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type ModuleDynamic$3 = {
+  additional: null;
+  desc: Desc$6;
+  major: Major$8;
+  topic: null;
+  [property: string]: any;
+};
+type Desc$6 = {
+  rich_text_nodes: RichTextNode$4[];
+  text: string;
+  [property: string]: any;
+};
+type RichTextNode$4 = {
+  orig_text?: string;
+  text?: string;
+  type?: string;
+  [property: string]: any;
+};
+type Major$8 = {
+  archive: Archive$2;
+  type: string;
+  [property: string]: any;
+};
+type Archive$2 = {
+  aid: string;
+  badge: Badge$2;
+  bvid: string;
+  cover: string;
+  desc: string;
+  disable_preview: number;
+  duration_text: string;
+  jump_url: string;
+  stat: Stat$2;
+  title: string;
+  type: number;
+  [property: string]: any;
+};
+type Badge$2 = {
+  bg_color: string;
+  color: string;
+  icon_url: null;
+  text: string;
+  [property: string]: any;
+};
+type Stat$2 = {
+  danmaku: string;
+  play: string;
+  [property: string]: any;
+};
+type ModuleMore$8 = {
+  three_point_items: ThreePointItem$8[];
+  [property: string]: any;
+};
+type ThreePointItem$8 = {
+  label?: string;
+  type?: string;
+  [property: string]: any;
+};
+type ModuleStat$8 = {
+  comment: Comment$10;
+  forward: Forward$8;
+  like: Like$9;
+  [property: string]: any;
+};
+type Comment$10 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Forward$8 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Like$9 = {
+  count: number;
+  forbidden: boolean;
+  status: boolean;
+  [property: string]: any;
+}; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_AV/index.d.ts
+type DynamicTypeAV = DynamicTypeAV_V0$1; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_DRAW/DYNAMIC_TYPE_DRAW_V0.d.ts
+type DynamicTypeDraw_V0$1 = {
+  code: number;
+  data: DataData$18;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type DataData$18 = {
+  item: Item$13;
+  [property: string]: any;
+};
+type Item$13 = {
+  basic: Basic$2;
+  id_str: string;
+  modules: Modules$2;
+  type: DynamicType.DRAW;
+  visible: boolean;
+  [property: string]: any;
+};
+type Basic$2 = {
+  comment_id_str: string;
+  comment_type: number;
+  jump_url: string;
+  like_icon: LikeIcon$2;
+  rid_str: string;
+  [property: string]: any;
+};
+type LikeIcon$2 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type Modules$2 = {
+  module_author: ModuleAuthor$2;
+  module_dynamic: ModuleDynamic$2;
+  module_more: ModuleMore$7;
+  module_stat: ModuleStat$7;
+  [property: string]: any;
+};
+type ModuleAuthor$2 = {
+  avatar: Avatar$3;
+  decoration_card: DecorationCard$6;
+  face: string;
+  face_nft: boolean;
+  following: null;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: OfficialVerify$4;
+  pendant: Pendant$5;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: Vip$5;
+  [property: string]: any;
+};
+type Avatar$3 = {
+  container_size: ContainerSize$2;
+  fallback_layers: FallbackLayers$2;
+  mid: string;
+  [property: string]: any;
+};
+type ContainerSize$2 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FallbackLayers$2 = {
+  is_critical_group: boolean;
+  layers: Layer$2[];
+  [property: string]: any;
+};
+type Layer$2 = {
+  general_spec: GeneralSpec$2;
+  layer_config: LayerConfig$2;
+  resource: Resource$2;
+  visible: boolean;
+  [property: string]: any;
+};
+type GeneralSpec$2 = {
+  pos_spec: PosSpec$2;
+  render_spec: RenderSpec$2;
+  size_spec: SizeSpec$2;
+  [property: string]: any;
+};
+type PosSpec$2 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type RenderSpec$2 = {
+  opacity: number;
+  [property: string]: any;
+};
+type SizeSpec$2 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type LayerConfig$2 = {
+  is_critical?: boolean;
+  tags: Tags$2;
+  [property: string]: any;
+};
+type Tags$2 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: GeneralCFG$2;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  PENDENT_LAYER?: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type GeneralCFG$2 = {
+  config_type: number;
+  general_config: GeneralConfig$2;
+  [property: string]: any;
+};
+type GeneralConfig$2 = {
+  web_css_style: WebcssStyle$2;
+  [property: string]: any;
+};
+type WebcssStyle$2 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type Resource$2 = {
+  res_image: ResImage$2;
+  res_type: number;
+  [property: string]: any;
+};
+type ResImage$2 = {
+  image_src: ImageSrc$2;
+  [property: string]: any;
+};
+type ImageSrc$2 = {
+  local: number;
+  placeholder?: number;
+  remote?: Remote$2;
+  src_type: number;
+  [property: string]: any;
+};
+type Remote$2 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type DecorationCard$6 = {
+  big_card_url: string;
+  card_type: number;
+  card_type_name: string;
+  card_url: string;
+  fan: Fan$6;
+  id: number;
+  image_enhance: string;
+  item_id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type Fan$6 = {
+  color: string;
+  color_format: ColorFormat$6;
+  is_fan: number;
+  name: string;
+  num_desc: string;
+  number: number;
+  [property: string]: any;
+};
+type ColorFormat$6 = {
+  colors: string[];
+  end_point: string;
+  gradients: number[];
+  start_point: string;
+  [property: string]: any;
+};
+type OfficialVerify$4 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$5 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Vip$5 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: Label$5;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type Label$5 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type ModuleDynamic$2 = {
+  additional: Additional$3;
+  desc: null;
+  major: Major$7;
+  topic: Topic$4;
+  [property: string]: any;
+};
+type Additional$3 = {
+  type: string;
+  reserve: Reserve$1;
+  [property: string]: any;
+};
+type Reserve$1 = {
+  button: Button$3;
+  desc1: Desc1$1;
+  desc2: Desc2$1;
+  jump_url: string;
+  reserve_total: number;
+  rid: number;
+  state: number;
+  stype: number;
+  title: string;
+  up_mid: number;
+  [property: string]: any;
+};
+type Button$3 = {
+  check: Check$1;
+  status: number;
+  type: number;
+  uncheck: Uncheck$1;
+  [property: string]: any;
+};
+type Check$1 = {
+  icon_url: string;
+  text: string;
+  [property: string]: any;
+};
+type Uncheck$1 = {
+  disable: number;
+  icon_url: string;
+  text: string;
+  toast: string;
+  [property: string]: any;
+};
+type Desc1$1 = {
+  style: number;
+  text: string;
+  [property: string]: any;
+};
+type Desc2$1 = {
+  style: number;
+  text: string;
+  visible: boolean;
+  [property: string]: any;
+};
+type Major$7 = {
+  opus: Opus$4;
+  type: string;
+  [property: string]: any;
+};
+type Opus$4 = {
+  fold_action: string[];
+  jump_url: string;
+  pics: Pic$3[];
+  summary: Summary$5;
+  title: null;
+  [property: string]: any;
+};
+type Pic$3 = {
+  height?: number;
+  live_url?: null;
+  size?: number;
+  url?: string;
+  width?: number;
+  [property: string]: any;
+};
+type Summary$5 = {
+  rich_text_nodes: RichTextNode$3[];
+  text: string;
+  [property: string]: any;
+};
+type RichTextNode$3 = {
+  jump_url?: string;
+  orig_text: string;
+  text: string;
+  type: string;
+  [property: string]: any;
+};
+type Topic$4 = {
+  id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type ModuleMore$7 = {
+  three_point_items: ThreePointItem$7[];
+  [property: string]: any;
+};
+type ThreePointItem$7 = {
+  label?: string;
+  type?: string;
+  [property: string]: any;
+};
+type ModuleStat$7 = {
+  comment: Comment$9;
+  forward: Forward$7;
+  like: Like$8;
+  [property: string]: any;
+};
+type Comment$9 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Forward$7 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Like$8 = {
+  count: number;
+  forbidden: boolean;
+  status: boolean;
+  [property: string]: any;
+}; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_DRAW/index.d.ts
+type DynamicTypeDraw = DynamicTypeDraw_V0$1; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_AV/DYNAMIC_TYPE_AV_V0.d.ts
+type DynamicTypeAV_V0 = {
+  code: number;
+  data: DataData$17;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type DataData$17 = {
+  item: Item$12;
+  [property: string]: any;
+};
+type Item$12 = {
+  basic: ItemBasic$5;
+  id_str: string;
+  modules: ItemModules$5;
+  orig: Orig$4;
+  type: DynamicType.AV;
+  visible: boolean;
+  [property: string]: any;
+};
+type ItemBasic$5 = {
+  comment_id_str: string;
+  comment_type: number;
+  editable: boolean;
+  like_icon: PurpleLikeIcon$4;
+  rid_str: string;
+  [property: string]: any;
+};
+type PurpleLikeIcon$4 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type ItemModules$5 = {
+  module_author: PurpleModuleAuthor$4;
+  module_dynamic: PurpleModuleDynamic$4;
+  module_more: ModuleMore$6;
+  module_stat: ModuleStat$6;
+  [property: string]: any;
+};
+type PurpleModuleAuthor$4 = {
+  avatar: PurpleAvatar$4;
+  face: string;
+  face_nft: boolean;
+  following: null;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: PurpleOfficialVerify$5;
+  pendant: PurplePendant$5;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: PurpleVip$5;
+  [property: string]: any;
+};
+type PurpleAvatar$4 = {
+  container_size: PurpleContainerSize$5;
+  fallback_layers: PurpleFallbackLayers$5;
+  mid: string;
+  [property: string]: any;
+};
+type PurpleContainerSize$5 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type PurpleFallbackLayers$5 = {
+  is_critical_group: boolean;
+  layers: PurpleLayer$5[];
+  [property: string]: any;
+};
+type PurpleLayer$5 = {
+  general_spec: PurpleGeneralSpec$5;
+  layer_config: PurpleLayerConfig$5;
+  resource: PurpleResource$5;
+  visible: boolean;
+  [property: string]: any;
+};
+type PurpleGeneralSpec$5 = {
+  pos_spec: PurplePosSpec$5;
+  render_spec: PurpleRenderSpec$5;
+  size_spec: PurpleSizeSpec$5;
+  [property: string]: any;
+};
+type PurplePosSpec$5 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type PurpleRenderSpec$5 = {
+  opacity: number;
+  [property: string]: any;
+};
+type PurpleSizeSpec$5 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type PurpleLayerConfig$5 = {
+  is_critical?: boolean;
+  tags: PurpleTags$5;
+  [property: string]: any;
+};
+type PurpleTags$5 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: PurpleGENERALCFG$5;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type PurpleGENERALCFG$5 = {
+  config_type: number;
+  general_config: PurpleGeneralConfig$5;
+  [property: string]: any;
+};
+type PurpleGeneralConfig$5 = {
+  web_css_style: PurpleWebcssStyle$5;
+  [property: string]: any;
+};
+type PurpleWebcssStyle$5 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type PurpleResource$5 = {
+  res_image: PurpleResImage$5;
+  res_type: number;
+  [property: string]: any;
+};
+type PurpleResImage$5 = {
+  image_src: PurpleImageSrc$5;
+  [property: string]: any;
+};
+type PurpleImageSrc$5 = {
+  local: number;
+  placeholder?: number;
+  remote?: PurpleRemote$5;
+  src_type: number;
+  [property: string]: any;
+};
+type PurpleRemote$5 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type PurpleOfficialVerify$5 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type PurplePendant$5 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type PurpleVip$5 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: PurpleLabel$5;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type PurpleLabel$5 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type PurpleModuleDynamic$4 = {
+  additional: null;
+  desc: Desc$5;
+  major: null;
+  topic: Topic$3;
+  [property: string]: any;
+};
+type Desc$5 = {
+  rich_text_nodes: RichTextNode$2[];
+  text: string;
+  [property: string]: any;
+};
+type RichTextNode$2 = {
+  emoji?: Emoji$4;
+  orig_text: string;
+  rid?: string;
+  text: string;
+  type: string;
+  [property: string]: any;
+};
+type Emoji$4 = {
+  icon_url: string;
+  size: number;
+  text: string;
+  type: number;
+  [property: string]: any;
+};
+type Topic$3 = {
+  id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type ModuleMore$6 = {
+  three_point_items: ThreePointItem$6[];
+  [property: string]: any;
+};
+type ThreePointItem$6 = {
+  label: string;
+  modal?: Modal$3;
+  params: Params$3;
+  type: string;
+  [property: string]: any;
+};
+type Modal$3 = {
+  cancel: string;
+  confirm: string;
+  content: string;
+  title: string;
+  [property: string]: any;
+};
+type Params$3 = {
+  dyn_id_str: string;
+  dyn_type: number;
+  dynamic_id?: string;
+  rid_str: string;
+  status?: number;
+  type?: number;
+  [property: string]: any;
+};
+type ModuleStat$6 = {
+  comment: Comment$8;
+  forward: Forward$6;
+  like: Like$7;
+  [property: string]: any;
+};
+type Comment$8 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Forward$6 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Like$7 = {
+  count: number;
+  forbidden: boolean;
+  status: boolean;
+  [property: string]: any;
+};
+type Orig$4 = {
+  basic: OrigBasic$4;
+  id_str: string;
+  modules: OrigModules$4;
+  type: string;
+  visible: boolean;
+  [property: string]: any;
+};
+type OrigBasic$4 = {
+  comment_id_str: string;
+  comment_type: number;
+  like_icon: FluffyLikeIcon$4;
+  rid_str: string;
+  [property: string]: any;
+};
+type FluffyLikeIcon$4 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type OrigModules$4 = {
+  module_author: FluffyModuleAuthor$4;
+  module_dynamic: FluffyModuleDynamic$4;
+  [property: string]: any;
+};
+type FluffyModuleAuthor$4 = {
+  avatar: FluffyAvatar$4;
+  decoration_card: DecorationCard$5;
+  face: string;
+  face_nft: boolean;
+  following: null;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: FluffyOfficialVerify$5;
+  pendant: FluffyPendant$5;
+  pub_action: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: FluffyVip$5;
+  [property: string]: any;
+};
+type FluffyAvatar$4 = {
+  container_size: FluffyContainerSize$5;
+  fallback_layers: FluffyFallbackLayers$5;
+  mid: string;
+  [property: string]: any;
+};
+type FluffyContainerSize$5 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FluffyFallbackLayers$5 = {
+  is_critical_group: boolean;
+  layers: FluffyLayer$5[];
+  [property: string]: any;
+};
+type FluffyLayer$5 = {
+  general_spec: FluffyGeneralSpec$5;
+  layer_config: FluffyLayerConfig$5;
+  resource: FluffyResource$5;
+  visible: boolean;
+  [property: string]: any;
+};
+type FluffyGeneralSpec$5 = {
+  pos_spec: FluffyPosSpec$5;
+  render_spec: FluffyRenderSpec$5;
+  size_spec: FluffySizeSpec$5;
+  [property: string]: any;
+};
+type FluffyPosSpec$5 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type FluffyRenderSpec$5 = {
+  opacity: number;
+  [property: string]: any;
+};
+type FluffySizeSpec$5 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FluffyLayerConfig$5 = {
+  is_critical?: boolean;
+  tags: FluffyTags$5;
+  [property: string]: any;
+};
+type FluffyTags$5 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: FluffyGENERALCFG$5;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  PENDENT_LAYER?: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type FluffyGENERALCFG$5 = {
+  config_type: number;
+  general_config: FluffyGeneralConfig$5;
+  [property: string]: any;
+};
+type FluffyGeneralConfig$5 = {
+  web_css_style: FluffyWebcssStyle$5;
+  [property: string]: any;
+};
+type FluffyWebcssStyle$5 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type FluffyResource$5 = {
+  res_image: FluffyResImage$5;
+  res_type: number;
+  [property: string]: any;
+};
+type FluffyResImage$5 = {
+  image_src: FluffyImageSrc$5;
+  [property: string]: any;
+};
+type FluffyImageSrc$5 = {
+  local: number;
+  placeholder?: number;
+  remote?: FluffyRemote$5;
+  src_type: number;
+  [property: string]: any;
+};
+type FluffyRemote$5 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type DecorationCard$5 = {
+  big_card_url: string;
+  card_type: number;
+  card_type_name: string;
+  card_url: string;
+  fan: Fan$5;
+  id: number;
+  image_enhance: string;
+  item_id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type Fan$5 = {
+  color: string;
+  color_format: ColorFormat$5;
+  is_fan: number;
+  name: string;
+  num_desc: string;
+  number: number;
+  [property: string]: any;
+};
+type ColorFormat$5 = {
+  colors: string[];
+  end_point: string;
+  gradients: number[];
+  start_point: string;
+  [property: string]: any;
+};
+type FluffyOfficialVerify$5 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type FluffyPendant$5 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type FluffyVip$5 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: FluffyLabel$5;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type FluffyLabel$5 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type FluffyModuleDynamic$4 = {
+  additional: null;
+  desc: null;
+  major: Major$6;
+  topic: null;
+  [property: string]: any;
+};
+type Major$6 = {
+  archive: Archive$1;
+  type: string;
+  [property: string]: any;
+};
+type Archive$1 = {
+  aid: string;
+  badge: Badge$1;
+  bvid: string;
+  cover: string;
+  desc: string;
+  disable_preview: number;
+  duration_text: string;
+  jump_url: string;
+  stat: Stat$1;
+  title: string;
+  type: number;
+  [property: string]: any;
+};
+type Badge$1 = {
+  bg_color: string;
+  color: string;
+  icon_url: null;
+  text: string;
+  [property: string]: any;
+};
+type Stat$1 = {
+  danmaku: string;
+  play: string;
+  [property: string]: any;
+}; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_AV/index.d.ts
+type DynamicTypeAV$1 = DynamicTypeAV_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_DRAW/DYNAMIC_TYPE_DRAW_V0.d.ts
+type DynamicTypeDraw_V0 = {
+  code: number;
+  data: DataData$16;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type DataData$16 = {
+  item: Item$11;
+  [property: string]: any;
+};
+type Item$11 = {
+  basic: ItemBasic$4;
+  id_str: string;
+  modules: ItemModules$4;
+  orig: Orig$3;
+  type: DynamicType.DRAW;
+  visible: boolean;
+  [property: string]: any;
+};
+type ItemBasic$4 = {
+  comment_id_str: string;
+  comment_type: number;
+  editable: boolean;
+  like_icon: PurpleLikeIcon$3;
+  rid_str: string;
+  [property: string]: any;
+};
+type PurpleLikeIcon$3 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type ItemModules$4 = {
+  module_author: PurpleModuleAuthor$3;
+  module_dynamic: PurpleModuleDynamic$3;
+  module_more: ModuleMore$5;
+  module_stat: ModuleStat$5;
+  [property: string]: any;
+};
+type PurpleModuleAuthor$3 = {
+  avatar: PurpleAvatar$3;
+  face: string;
+  face_nft: boolean;
+  following: null;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: PurpleOfficialVerify$4;
+  pendant: PurplePendant$4;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: PurpleVip$4;
+  [property: string]: any;
+};
+type PurpleAvatar$3 = {
+  container_size: PurpleContainerSize$4;
+  fallback_layers: PurpleFallbackLayers$4;
+  mid: string;
+  [property: string]: any;
+};
+type PurpleContainerSize$4 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type PurpleFallbackLayers$4 = {
+  is_critical_group: boolean;
+  layers: PurpleLayer$4[];
+  [property: string]: any;
+};
+type PurpleLayer$4 = {
+  general_spec: PurpleGeneralSpec$4;
+  layer_config: PurpleLayerConfig$4;
+  resource: PurpleResource$4;
+  visible: boolean;
+  [property: string]: any;
+};
+type PurpleGeneralSpec$4 = {
+  pos_spec: PurplePosSpec$4;
+  render_spec: PurpleRenderSpec$4;
+  size_spec: PurpleSizeSpec$4;
+  [property: string]: any;
+};
+type PurplePosSpec$4 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type PurpleRenderSpec$4 = {
+  opacity: number;
+  [property: string]: any;
+};
+type PurpleSizeSpec$4 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type PurpleLayerConfig$4 = {
+  is_critical?: boolean;
+  tags: PurpleTags$4;
+  [property: string]: any;
+};
+type PurpleTags$4 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: PurpleGENERALCFG$4;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type PurpleGENERALCFG$4 = {
+  config_type: number;
+  general_config: PurpleGeneralConfig$4;
+  [property: string]: any;
+};
+type PurpleGeneralConfig$4 = {
+  web_css_style: PurpleWebcssStyle$4;
+  [property: string]: any;
+};
+type PurpleWebcssStyle$4 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type PurpleResource$4 = {
+  res_image: PurpleResImage$4;
+  res_type: number;
+  [property: string]: any;
+};
+type PurpleResImage$4 = {
+  image_src: PurpleImageSrc$4;
+  [property: string]: any;
+};
+type PurpleImageSrc$4 = {
+  local: number;
+  placeholder?: number;
+  remote?: PurpleRemote$4;
+  src_type: number;
+  [property: string]: any;
+};
+type PurpleRemote$4 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type PurpleOfficialVerify$4 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type PurplePendant$4 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type PurpleVip$4 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: PurpleLabel$4;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type PurpleLabel$4 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type PurpleModuleDynamic$3 = {
+  additional: null;
+  desc: Desc$4;
+  major: null;
+  topic: Topic$2;
+  [property: string]: any;
+};
+type Desc$4 = {
+  rich_text_nodes: DescRichTextNode$2[];
+  text: string;
+  [property: string]: any;
+};
+type DescRichTextNode$2 = {
+  emoji?: Emoji$3;
+  orig_text: string;
+  rid?: string;
+  text: string;
+  type: string;
+  [property: string]: any;
+};
+type Emoji$3 = {
+  icon_url: string;
+  size: number;
+  text: string;
+  type: number;
+  [property: string]: any;
+};
+type Topic$2 = {
+  id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type ModuleMore$5 = {
+  three_point_items: ThreePointItem$5[];
+  [property: string]: any;
+};
+type ThreePointItem$5 = {
+  label: string;
+  modal?: Modal$2;
+  params: Params$2;
+  type: string;
+  [property: string]: any;
+};
+type Modal$2 = {
+  cancel: string;
+  confirm: string;
+  content: string;
+  title: string;
+  [property: string]: any;
+};
+type Params$2 = {
+  dyn_id_str: string;
+  dyn_type: number;
+  dynamic_id?: string;
+  rid_str: string;
+  status?: number;
+  type?: number;
+  [property: string]: any;
+};
+type ModuleStat$5 = {
+  comment: Comment$7;
+  forward: Forward$5;
+  like: Like$6;
+  [property: string]: any;
+};
+type Comment$7 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Forward$5 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Like$6 = {
+  count: number;
+  forbidden: boolean;
+  status: boolean;
+  [property: string]: any;
+};
+type Orig$3 = {
+  basic: OrigBasic$3;
+  id_str: string;
+  modules: OrigModules$3;
+  type: string;
+  visible: boolean;
+  [property: string]: any;
+};
+type OrigBasic$3 = {
+  comment_id_str: string;
+  comment_type: number;
+  jump_url: string;
+  like_icon: FluffyLikeIcon$3;
+  rid_str: string;
+  [property: string]: any;
+};
+type FluffyLikeIcon$3 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type OrigModules$3 = {
+  module_author: FluffyModuleAuthor$3;
+  module_dynamic: FluffyModuleDynamic$3;
+  [property: string]: any;
+};
+type FluffyModuleAuthor$3 = {
+  avatar: FluffyAvatar$3;
+  decoration_card: DecorationCard$4;
+  face: string;
+  face_nft: boolean;
+  following: null;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: FluffyOfficialVerify$4;
+  pendant: FluffyPendant$4;
+  pub_action: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: FluffyVip$4;
+  [property: string]: any;
+};
+type FluffyAvatar$3 = {
+  container_size: FluffyContainerSize$4;
+  fallback_layers: FluffyFallbackLayers$4;
+  mid: string;
+  [property: string]: any;
+};
+type FluffyContainerSize$4 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FluffyFallbackLayers$4 = {
+  is_critical_group: boolean;
+  layers: FluffyLayer$4[];
+  [property: string]: any;
+};
+type FluffyLayer$4 = {
+  general_spec: FluffyGeneralSpec$4;
+  layer_config: FluffyLayerConfig$4;
+  resource: FluffyResource$4;
+  visible: boolean;
+  [property: string]: any;
+};
+type FluffyGeneralSpec$4 = {
+  pos_spec: FluffyPosSpec$4;
+  render_spec: FluffyRenderSpec$4;
+  size_spec: FluffySizeSpec$4;
+  [property: string]: any;
+};
+type FluffyPosSpec$4 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type FluffyRenderSpec$4 = {
+  opacity: number;
+  [property: string]: any;
+};
+type FluffySizeSpec$4 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FluffyLayerConfig$4 = {
+  is_critical?: boolean;
+  tags: FluffyTags$4;
+  [property: string]: any;
+};
+type FluffyTags$4 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: FluffyGENERALCFG$4;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  PENDENT_LAYER?: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type FluffyGENERALCFG$4 = {
+  config_type: number;
+  general_config: FluffyGeneralConfig$4;
+  [property: string]: any;
+};
+type FluffyGeneralConfig$4 = {
+  web_css_style: FluffyWebcssStyle$4;
+  [property: string]: any;
+};
+type FluffyWebcssStyle$4 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type FluffyResource$4 = {
+  res_image: FluffyResImage$4;
+  res_type: number;
+  [property: string]: any;
+};
+type FluffyResImage$4 = {
+  image_src: FluffyImageSrc$4;
+  [property: string]: any;
+};
+type FluffyImageSrc$4 = {
+  local: number;
+  placeholder?: number;
+  remote?: FluffyRemote$4;
+  src_type: number;
+  [property: string]: any;
+};
+type FluffyRemote$4 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type DecorationCard$4 = {
+  big_card_url: string;
+  card_type: number;
+  card_type_name: string;
+  card_url: string;
+  fan: Fan$4;
+  id: number;
+  image_enhance: string;
+  item_id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type Fan$4 = {
+  color: string;
+  color_format: ColorFormat$4;
+  is_fan: number;
+  name: string;
+  num_desc: string;
+  number: number;
+  [property: string]: any;
+};
+type ColorFormat$4 = {
+  colors: string[];
+  end_point: string;
+  gradients: number[];
+  start_point: string;
+  [property: string]: any;
+};
+type FluffyOfficialVerify$4 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type FluffyPendant$4 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type FluffyVip$4 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: FluffyLabel$4;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type FluffyLabel$4 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type FluffyModuleDynamic$3 = {
+  additional: null;
+  desc: null;
+  major: Major$5;
+  topic: null;
+  [property: string]: any;
+};
+type Major$5 = {
+  opus: Opus$3;
+  type: string;
+  [property: string]: any;
+};
+type Opus$3 = {
+  fold_action: string[];
+  jump_url: string;
+  pics: Pic$2[];
+  summary: Summary$4;
+  title: null;
+  [property: string]: any;
+};
+type Pic$2 = {
+  height?: number;
+  live_url?: null;
+  size?: number;
+  url?: string;
+  width?: number;
+  [property: string]: any;
+};
+type Summary$4 = {
+  rich_text_nodes: SummaryRichTextNode$2[];
+  text: string;
+  [property: string]: any;
+};
+type SummaryRichTextNode$2 = {
+  jump_url?: string;
+  orig_text: string;
+  text: string;
+  type: string;
+  [property: string]: any;
+}; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_DRAW/DYNAMIC_TYPE_DRAW_V1.d.ts
+type DynamicTypeDraw_V1 = {
+  code: number;
+  data: DataData$15;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type DataData$15 = {
+  item: Item$10;
+  [property: string]: any;
+};
+type Item$10 = {
+  basic: ItemBasic$3;
+  id_str: string;
+  modules: ItemModules$3;
+  orig: Orig$2;
+  type: DynamicType.DRAW;
+  visible: boolean;
+  [property: string]: any;
+};
+type ItemBasic$3 = {
+  comment_id_str: string;
+  comment_type: number;
+  like_icon: PurpleLikeIcon$2;
+  rid_str: string;
+  [property: string]: any;
+};
+type PurpleLikeIcon$2 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type ItemModules$3 = {
+  module_author: PurpleModuleAuthor$2;
+  module_dynamic: PurpleModuleDynamic$2;
+  module_more: ModuleMore$4;
+  module_stat: ModuleStat$4;
+  [property: string]: any;
+};
+type PurpleModuleAuthor$2 = {
+  avatar: PurpleAvatar$2;
+  face: string;
+  face_nft: boolean;
+  following: null;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: PurpleOfficialVerify$3;
+  pendant: PurplePendant$3;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: PurpleVip$3;
+  [property: string]: any;
+};
+type PurpleAvatar$2 = {
+  container_size: PurpleContainerSize$3;
+  fallback_layers: PurpleFallbackLayers$3;
+  mid: string;
+  [property: string]: any;
+};
+type PurpleContainerSize$3 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type PurpleFallbackLayers$3 = {
+  is_critical_group: boolean;
+  layers: PurpleLayer$3[];
+  [property: string]: any;
+};
+type PurpleLayer$3 = {
+  general_spec: PurpleGeneralSpec$3;
+  layer_config: PurpleLayerConfig$3;
+  resource: PurpleResource$3;
+  visible: boolean;
+  [property: string]: any;
+};
+type PurpleGeneralSpec$3 = {
+  pos_spec: PurplePosSpec$3;
+  render_spec: PurpleRenderSpec$3;
+  size_spec: PurpleSizeSpec$3;
+  [property: string]: any;
+};
+type PurplePosSpec$3 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type PurpleRenderSpec$3 = {
+  opacity: number;
+  [property: string]: any;
+};
+type PurpleSizeSpec$3 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type PurpleLayerConfig$3 = {
+  is_critical?: boolean;
+  tags: PurpleTags$3;
+  [property: string]: any;
+};
+type PurpleTags$3 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: PurpleGENERALCFG$3;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type PurpleGENERALCFG$3 = {
+  config_type: number;
+  general_config: PurpleGeneralConfig$3;
+  [property: string]: any;
+};
+type PurpleGeneralConfig$3 = {
+  web_css_style: PurpleWebcssStyle$3;
+  [property: string]: any;
+};
+type PurpleWebcssStyle$3 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type PurpleResource$3 = {
+  res_image: PurpleResImage$3;
+  res_type: number;
+  [property: string]: any;
+};
+type PurpleResImage$3 = {
+  image_src: PurpleImageSrc$3;
+  [property: string]: any;
+};
+type PurpleImageSrc$3 = {
+  local: number;
+  placeholder?: number;
+  remote?: PurpleRemote$3;
+  src_type: number;
+  [property: string]: any;
+};
+type PurpleRemote$3 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type PurpleOfficialVerify$3 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type PurplePendant$3 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type PurpleVip$3 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: PurpleLabel$3;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type PurpleLabel$3 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type PurpleModuleDynamic$2 = {
+  additional: Additional$2;
+  desc: Desc$3;
+  major: null;
+  topic: null;
+  [property: string]: any;
+};
+type Additional$2 = {
+  common: Common;
+  type: string;
+  [property: string]: any;
+};
+type Common = {
+  button: Button$2;
+  cover: string;
+  desc1: string;
+  desc2: string;
+  head_text: string;
+  id_str: string;
+  jump_url: string;
+  style: number;
+  sub_type: string;
+  title: string;
+  [property: string]: any;
+};
+type Button$2 = {
+  jump_style: JumpStyle$1;
+  jump_url: string;
+  type: number;
+  [property: string]: any;
+};
+type JumpStyle$1 = {
+  icon_url: string;
+  text: string;
+  [property: string]: any;
+};
+type Desc$3 = {
+  rich_text_nodes: DescRichTextNode$1[];
+  text: string;
+  [property: string]: any;
+};
+type DescRichTextNode$1 = {
+  orig_text?: string;
+  text?: string;
+  type?: string;
+  [property: string]: any;
+};
+type ModuleMore$4 = {
+  three_point_items: ThreePointItem$4[];
+  [property: string]: any;
+};
+type ThreePointItem$4 = {
+  label?: string;
+  type?: string;
+  [property: string]: any;
+};
+type ModuleStat$4 = {
+  comment: Comment$6;
+  forward: Forward$4;
+  like: Like$5;
+  [property: string]: any;
+};
+type Comment$6 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Forward$4 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Like$5 = {
+  count: number;
+  forbidden: boolean;
+  status: boolean;
+  [property: string]: any;
+};
+type Orig$2 = {
+  basic: OrigBasic$2;
+  id_str: string;
+  modules: OrigModules$2;
+  type: string;
+  visible: boolean;
+  [property: string]: any;
+};
+type OrigBasic$2 = {
+  comment_id_str: string;
+  comment_type: number;
+  jump_url: string;
+  like_icon: FluffyLikeIcon$2;
+  rid_str: string;
+  [property: string]: any;
+};
+type FluffyLikeIcon$2 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type OrigModules$2 = {
+  module_author: FluffyModuleAuthor$2;
+  module_dynamic: FluffyModuleDynamic$2;
+  [property: string]: any;
+};
+type FluffyModuleAuthor$2 = {
+  avatar: FluffyAvatar$2;
+  decoration_card: DecorationCard$3;
+  face: string;
+  face_nft: boolean;
+  following: null;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: FluffyOfficialVerify$3;
+  pendant: FluffyPendant$3;
+  pub_action: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: FluffyVip$3;
+  [property: string]: any;
+};
+type FluffyAvatar$2 = {
+  container_size: FluffyContainerSize$3;
+  fallback_layers: FluffyFallbackLayers$3;
+  mid: string;
+  [property: string]: any;
+};
+type FluffyContainerSize$3 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FluffyFallbackLayers$3 = {
+  is_critical_group: boolean;
+  layers: FluffyLayer$3[];
+  [property: string]: any;
+};
+type FluffyLayer$3 = {
+  general_spec: FluffyGeneralSpec$3;
+  layer_config: FluffyLayerConfig$3;
+  resource: FluffyResource$3;
+  visible: boolean;
+  [property: string]: any;
+};
+type FluffyGeneralSpec$3 = {
+  pos_spec: FluffyPosSpec$3;
+  render_spec: FluffyRenderSpec$3;
+  size_spec: FluffySizeSpec$3;
+  [property: string]: any;
+};
+type FluffyPosSpec$3 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type FluffyRenderSpec$3 = {
+  opacity: number;
+  [property: string]: any;
+};
+type FluffySizeSpec$3 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FluffyLayerConfig$3 = {
+  is_critical?: boolean;
+  tags: FluffyTags$3;
+  [property: string]: any;
+};
+type FluffyTags$3 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: FluffyGENERALCFG$3;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  PENDENT_LAYER?: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type FluffyGENERALCFG$3 = {
+  config_type: number;
+  general_config: FluffyGeneralConfig$3;
+  [property: string]: any;
+};
+type FluffyGeneralConfig$3 = {
+  web_css_style: FluffyWebcssStyle$3;
+  [property: string]: any;
+};
+type FluffyWebcssStyle$3 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type FluffyResource$3 = {
+  res_image: FluffyResImage$3;
+  res_type: number;
+  [property: string]: any;
+};
+type FluffyResImage$3 = {
+  image_src: FluffyImageSrc$3;
+  [property: string]: any;
+};
+type FluffyImageSrc$3 = {
+  local: number;
+  placeholder?: number;
+  remote?: FluffyRemote$3;
+  src_type: number;
+  [property: string]: any;
+};
+type FluffyRemote$3 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type DecorationCard$3 = {
+  big_card_url: string;
+  card_type: number;
+  card_type_name: string;
+  card_url: string;
+  fan: Fan$3;
+  id: number;
+  image_enhance: string;
+  item_id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type Fan$3 = {
+  color: string;
+  color_format: ColorFormat$3;
+  is_fan: number;
+  name: string;
+  num_desc: string;
+  number: number;
+  [property: string]: any;
+};
+type ColorFormat$3 = {
+  colors: string[];
+  end_point: string;
+  gradients: number[];
+  start_point: string;
+  [property: string]: any;
+};
+type FluffyOfficialVerify$3 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type FluffyPendant$3 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type FluffyVip$3 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: FluffyLabel$3;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type FluffyLabel$3 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type FluffyModuleDynamic$2 = {
+  additional: null;
+  desc: null;
+  major: Major$4;
+  topic: null;
+  [property: string]: any;
+};
+type Major$4 = {
+  opus: Opus$2;
+  type: string;
+  [property: string]: any;
+};
+type Opus$2 = {
+  fold_action: string[];
+  jump_url: string;
+  pics: Pic$1[];
+  summary: Summary$3;
+  title: null;
+  [property: string]: any;
+};
+type Pic$1 = {
+  aigc?: null;
+  height?: number;
+  live_url?: null;
+  size?: number;
+  url?: string;
+  width?: number;
+  [property: string]: any;
+};
+type Summary$3 = {
+  rich_text_nodes: SummaryRichTextNode$1[];
+  text: string;
+  [property: string]: any;
+};
+type SummaryRichTextNode$1 = {
+  jump_url: string;
+  orig_text: string;
+  rid: string;
+  style: {
+    [key: string]: any;
+  };
+  text: string;
+  type: string;
+  [property: string]: any;
+}; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_DRAW/index.d.ts
+type DynamicTypeDraw$1 = DynamicTypeDraw_V0 | DynamicTypeDraw_V1; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_LIVE_RCMD/DYNAMIC_TYPE_LIVE_RCMD_V0.d.ts
+type DynamicTypeLiveRcmd_V0$1 = {
+  code: number;
+  data: DataData$14;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type DataData$14 = {
+  item: Item$9;
+  [property: string]: any;
+};
+type Item$9 = {
+  basic: ItemBasic$2;
+  id_str: string;
+  modules: ItemModules$2;
+  orig: Orig$1;
+  type: DynamicType.LIVE_RCMD;
+  visible: boolean;
+  [property: string]: any;
+};
+type ItemBasic$2 = {
+  comment_id_str: string;
+  comment_type: number;
+  editable: boolean;
+  like_icon: PurpleLikeIcon$1;
+  rid_str: string;
+  [property: string]: any;
+};
+type PurpleLikeIcon$1 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type ItemModules$2 = {
+  module_author: PurpleModuleAuthor$1;
+  module_dynamic: PurpleModuleDynamic$1;
+  module_more: ModuleMore$3;
+  module_stat: ModuleStat$3;
+  [property: string]: any;
+};
+type PurpleModuleAuthor$1 = {
+  avatar: PurpleAvatar$1;
+  face: string;
+  face_nft: boolean;
+  following: null;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: PurpleOfficialVerify$2;
+  pendant: PurplePendant$2;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: PurpleVip$2;
+  [property: string]: any;
+};
+type PurpleAvatar$1 = {
+  container_size: PurpleContainerSize$2;
+  fallback_layers: PurpleFallbackLayers$2;
+  mid: string;
+  [property: string]: any;
+};
+type PurpleContainerSize$2 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type PurpleFallbackLayers$2 = {
+  is_critical_group: boolean;
+  layers: PurpleLayer$2[];
+  [property: string]: any;
+};
+type PurpleLayer$2 = {
+  general_spec: PurpleGeneralSpec$2;
+  layer_config: PurpleLayerConfig$2;
+  resource: PurpleResource$2;
+  visible: boolean;
+  [property: string]: any;
+};
+type PurpleGeneralSpec$2 = {
+  pos_spec: PurplePosSpec$2;
+  render_spec: PurpleRenderSpec$2;
+  size_spec: PurpleSizeSpec$2;
+  [property: string]: any;
+};
+type PurplePosSpec$2 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type PurpleRenderSpec$2 = {
+  opacity: number;
+  [property: string]: any;
+};
+type PurpleSizeSpec$2 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type PurpleLayerConfig$2 = {
+  is_critical?: boolean;
+  tags: PurpleTags$2;
+  [property: string]: any;
+};
+type PurpleTags$2 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: PurpleGENERALCFG$2;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type PurpleGENERALCFG$2 = {
+  config_type: number;
+  general_config: PurpleGeneralConfig$2;
+  [property: string]: any;
+};
+type PurpleGeneralConfig$2 = {
+  web_css_style: PurpleWebcssStyle$2;
+  [property: string]: any;
+};
+type PurpleWebcssStyle$2 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type PurpleResource$2 = {
+  res_image: PurpleResImage$2;
+  res_type: number;
+  [property: string]: any;
+};
+type PurpleResImage$2 = {
+  image_src: PurpleImageSrc$2;
+  [property: string]: any;
+};
+type PurpleImageSrc$2 = {
+  local: number;
+  placeholder?: number;
+  remote?: PurpleRemote$2;
+  src_type: number;
+  [property: string]: any;
+};
+type PurpleRemote$2 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type PurpleOfficialVerify$2 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type PurplePendant$2 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type PurpleVip$2 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: PurpleLabel$2;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type PurpleLabel$2 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type PurpleModuleDynamic$1 = {
+  additional: null;
+  desc: Desc$2;
+  major: null;
+  topic: Topic$1;
+  [property: string]: any;
+};
+type Desc$2 = {
+  rich_text_nodes: RichTextNode$1[];
+  text: string;
+  [property: string]: any;
+};
+type RichTextNode$1 = {
+  emoji?: Emoji$2;
+  orig_text: string;
+  rid?: string;
+  text: string;
+  type: string;
+  [property: string]: any;
+};
+type Emoji$2 = {
+  icon_url: string;
+  size: number;
+  text: string;
+  type: number;
+  [property: string]: any;
+};
+type Topic$1 = {
+  id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type ModuleMore$3 = {
+  three_point_items: ThreePointItem$3[];
+  [property: string]: any;
+};
+type ThreePointItem$3 = {
+  label: string;
+  modal?: Modal$1;
+  params: Params$1;
+  type: string;
+  [property: string]: any;
+};
+type Modal$1 = {
+  cancel: string;
+  confirm: string;
+  content: string;
+  title: string;
+  [property: string]: any;
+};
+type Params$1 = {
+  dyn_id_str: string;
+  dyn_type: number;
+  dynamic_id?: string;
+  rid_str: string;
+  status?: number;
+  type?: number;
+  [property: string]: any;
+};
+type ModuleStat$3 = {
+  comment: Comment$5;
+  forward: Forward$3;
+  like: Like$4;
+  [property: string]: any;
+};
+type Comment$5 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Forward$3 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Like$4 = {
+  count: number;
+  forbidden: boolean;
+  status: boolean;
+  [property: string]: any;
+};
+type Orig$1 = {
+  basic: OrigBasic$1;
+  id_str: string;
+  modules: OrigModules$1;
+  type: string;
+  visible: boolean;
+  [property: string]: any;
+};
+type OrigBasic$1 = {
+  comment_id_str: string;
+  comment_type: number;
+  like_icon: FluffyLikeIcon$1;
+  rid_str: string;
+  [property: string]: any;
+};
+type FluffyLikeIcon$1 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type OrigModules$1 = {
+  module_author: FluffyModuleAuthor$1;
+  module_dynamic: FluffyModuleDynamic$1;
+  [property: string]: any;
+};
+type FluffyModuleAuthor$1 = {
+  avatar: FluffyAvatar$1;
+  face: string;
+  face_nft: boolean;
+  following: boolean;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: FluffyOfficialVerify$2;
+  pendant: FluffyPendant$2;
+  pub_action: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: FluffyVip$2;
+  [property: string]: any;
+};
+type FluffyAvatar$1 = {
+  container_size: FluffyContainerSize$2;
+  fallback_layers: FluffyFallbackLayers$2;
+  mid: string;
+  [property: string]: any;
+};
+type FluffyContainerSize$2 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FluffyFallbackLayers$2 = {
+  is_critical_group: boolean;
+  layers: FluffyLayer$2[];
+  [property: string]: any;
+};
+type FluffyLayer$2 = {
+  general_spec: FluffyGeneralSpec$2;
+  layer_config: FluffyLayerConfig$2;
+  resource: FluffyResource$2;
+  visible: boolean;
+  [property: string]: any;
+};
+type FluffyGeneralSpec$2 = {
+  pos_spec: FluffyPosSpec$2;
+  render_spec: FluffyRenderSpec$2;
+  size_spec: FluffySizeSpec$2;
+  [property: string]: any;
+};
+type FluffyPosSpec$2 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type FluffyRenderSpec$2 = {
+  opacity: number;
+  [property: string]: any;
+};
+type FluffySizeSpec$2 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FluffyLayerConfig$2 = {
+  is_critical?: boolean;
+  tags: FluffyTags$2;
+  [property: string]: any;
+};
+type FluffyTags$2 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: FluffyGENERALCFG$2;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type FluffyGENERALCFG$2 = {
+  config_type: number;
+  general_config: FluffyGeneralConfig$2;
+  [property: string]: any;
+};
+type FluffyGeneralConfig$2 = {
+  web_css_style: FluffyWebcssStyle$2;
+  [property: string]: any;
+};
+type FluffyWebcssStyle$2 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type FluffyResource$2 = {
+  res_image: FluffyResImage$2;
+  res_type: number;
+  [property: string]: any;
+};
+type FluffyResImage$2 = {
+  image_src: FluffyImageSrc$2;
+  [property: string]: any;
+};
+type FluffyImageSrc$2 = {
+  local: number;
+  placeholder?: number;
+  remote?: FluffyRemote$2;
+  src_type: number;
+  [property: string]: any;
+};
+type FluffyRemote$2 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type FluffyOfficialVerify$2 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type FluffyPendant$2 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type FluffyVip$2 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: FluffyLabel$2;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type FluffyLabel$2 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type FluffyModuleDynamic$1 = {
+  additional: null;
+  desc: null;
+  major: Major$3;
+  topic: null;
+  [property: string]: any;
+};
+type Major$3 = {
+  live_rcmd: LiveRcmd$1;
+  type: string;
+  [property: string]: any;
+};
+type LiveRcmd$1 = {
+  content: string;
+  reserve_type: number;
+  [property: string]: any;
+}; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_LIVE_RCMD/index.d.ts
+type DynamicTypeLiveRcmd$1 = DynamicTypeLiveRcmd_V0$1; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_WORD/DYNAMIC_TYPE_WORD_V0.d.ts
+type DynamicTypeWord_V0$1 = {
+  code: number;
+  data: DataData$13;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type DataData$13 = {
+  item: Item$8;
+  [property: string]: any;
+};
+type Item$8 = {
+  basic: ItemBasic$1;
+  id_str: string;
+  modules: ItemModules$1;
+  orig: Orig;
+  type: DynamicType.WORD;
+  visible: boolean;
+  [property: string]: any;
+};
+type ItemBasic$1 = {
+  comment_id_str: string;
+  comment_type: number;
+  editable: boolean;
+  like_icon: PurpleLikeIcon;
+  rid_str: string;
+  [property: string]: any;
+};
+type PurpleLikeIcon = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type ItemModules$1 = {
+  module_author: PurpleModuleAuthor;
+  module_dynamic: PurpleModuleDynamic;
+  module_more: ModuleMore$2;
+  module_stat: ModuleStat$2;
+  [property: string]: any;
+};
+type PurpleModuleAuthor = {
+  avatar: PurpleAvatar;
+  face: string;
+  face_nft: boolean;
+  following: null;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: PurpleOfficialVerify$1;
+  pendant: PurplePendant$1;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: PurpleVip$1;
+  [property: string]: any;
+};
+type PurpleAvatar = {
+  container_size: PurpleContainerSize$1;
+  fallback_layers: PurpleFallbackLayers$1;
+  mid: string;
+  [property: string]: any;
+};
+type PurpleContainerSize$1 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type PurpleFallbackLayers$1 = {
+  is_critical_group: boolean;
+  layers: PurpleLayer$1[];
+  [property: string]: any;
+};
+type PurpleLayer$1 = {
+  general_spec: PurpleGeneralSpec$1;
+  layer_config: PurpleLayerConfig$1;
+  resource: PurpleResource$1;
+  visible: boolean;
+  [property: string]: any;
+};
+type PurpleGeneralSpec$1 = {
+  pos_spec: PurplePosSpec$1;
+  render_spec: PurpleRenderSpec$1;
+  size_spec: PurpleSizeSpec$1;
+  [property: string]: any;
+};
+type PurplePosSpec$1 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type PurpleRenderSpec$1 = {
+  opacity: number;
+  [property: string]: any;
+};
+type PurpleSizeSpec$1 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type PurpleLayerConfig$1 = {
+  is_critical?: boolean;
+  tags: PurpleTags$1;
+  [property: string]: any;
+};
+type PurpleTags$1 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: PurpleGENERALCFG$1;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type PurpleGENERALCFG$1 = {
+  config_type: number;
+  general_config: PurpleGeneralConfig$1;
+  [property: string]: any;
+};
+type PurpleGeneralConfig$1 = {
+  web_css_style: PurpleWebcssStyle$1;
+  [property: string]: any;
+};
+type PurpleWebcssStyle$1 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type PurpleResource$1 = {
+  res_image: PurpleResImage$1;
+  res_type: number;
+  [property: string]: any;
+};
+type PurpleResImage$1 = {
+  image_src: PurpleImageSrc$1;
+  [property: string]: any;
+};
+type PurpleImageSrc$1 = {
+  local: number;
+  placeholder?: number;
+  remote?: PurpleRemote$1;
+  src_type: number;
+  [property: string]: any;
+};
+type PurpleRemote$1 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type PurpleOfficialVerify$1 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type PurplePendant$1 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type PurpleVip$1 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: PurpleLabel$1;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type PurpleLabel$1 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type PurpleModuleDynamic = {
+  additional: Additional$1;
+  desc: Desc$1;
+  major: null;
+  topic: Topic;
+  [property: string]: any;
+};
+type Additional$1 = {
+  type: string;
+  reserve: Reserve;
+  [property: string]: any;
+};
+type Reserve = {
+  button: Button$1;
+  desc1: Desc1;
+  desc2: Desc2;
+  jump_url: string;
+  reserve_total: number;
+  rid: number;
+  state: number;
+  stype: number;
+  title: string;
+  up_mid: number;
+  [property: string]: any;
+};
+type Button$1 = {
+  check: Check;
+  status: number;
+  type: number;
+  uncheck: Uncheck;
+  [property: string]: any;
+};
+type Check = {
+  icon_url: string;
+  text: string;
+  [property: string]: any;
+};
+type Uncheck = {
+  disable: number;
+  icon_url: string;
+  text: string;
+  toast: string;
+  [property: string]: any;
+};
+type Desc1 = {
+  style: number;
+  text: string;
+  [property: string]: any;
+};
+type Desc2 = {
+  style: number;
+  text: string;
+  visible: boolean;
+  [property: string]: any;
+};
+type Desc$1 = {
+  rich_text_nodes: DescRichTextNode[];
+  text: string;
+  [property: string]: any;
+};
+type DescRichTextNode = {
+  emoji?: Emoji$1;
+  orig_text: string;
+  rid?: string;
+  text: string;
+  type: string;
+  [property: string]: any;
+};
+type Emoji$1 = {
+  icon_url: string;
+  size: number;
+  text: string;
+  type: number;
+  [property: string]: any;
+};
+type Topic = {
+  id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type ModuleMore$2 = {
+  three_point_items: ThreePointItem$2[];
+  [property: string]: any;
+};
+type ThreePointItem$2 = {
+  label: string;
+  modal?: Modal;
+  params: Params;
+  type: string;
+  [property: string]: any;
+};
+type Modal = {
+  cancel: string;
+  confirm: string;
+  content: string;
+  title: string;
+  [property: string]: any;
+};
+type Params = {
+  dyn_id_str: string;
+  dyn_type: number;
+  dynamic_id?: string;
+  rid_str: string;
+  status?: number;
+  type?: number;
+  [property: string]: any;
+};
+type ModuleStat$2 = {
+  comment: Comment$4;
+  forward: Forward$2;
+  like: Like$3;
+  [property: string]: any;
+};
+type Comment$4 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Forward$2 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Like$3 = {
+  count: number;
+  forbidden: boolean;
+  status: boolean;
+  [property: string]: any;
+};
+type Orig = {
+  basic: OrigBasic;
+  id_str: string;
+  modules: OrigModules;
+  type: string;
+  visible: boolean;
+  [property: string]: any;
+};
+type OrigBasic = {
+  comment_id_str: string;
+  comment_type: number;
+  jump_url: string;
+  like_icon: FluffyLikeIcon;
+  rid_str: string;
+  [property: string]: any;
+};
+type FluffyLikeIcon = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type OrigModules = {
+  module_author: FluffyModuleAuthor;
+  module_dynamic: FluffyModuleDynamic;
+  [property: string]: any;
+};
+type FluffyModuleAuthor = {
+  avatar: FluffyAvatar;
+  decoration_card: DecorationCard$2;
+  face: string;
+  face_nft: boolean;
+  following: null;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: FluffyOfficialVerify$1;
+  pendant: FluffyPendant$1;
+  pub_action: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: FluffyVip$1;
+  [property: string]: any;
+};
+type FluffyAvatar = {
+  container_size: FluffyContainerSize$1;
+  fallback_layers: FluffyFallbackLayers$1;
+  mid: string;
+  [property: string]: any;
+};
+type FluffyContainerSize$1 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FluffyFallbackLayers$1 = {
+  is_critical_group: boolean;
+  layers: FluffyLayer$1[];
+  [property: string]: any;
+};
+type FluffyLayer$1 = {
+  general_spec: FluffyGeneralSpec$1;
+  layer_config: FluffyLayerConfig$1;
+  resource: FluffyResource$1;
+  visible: boolean;
+  [property: string]: any;
+};
+type FluffyGeneralSpec$1 = {
+  pos_spec: FluffyPosSpec$1;
+  render_spec: FluffyRenderSpec$1;
+  size_spec: FluffySizeSpec$1;
+  [property: string]: any;
+};
+type FluffyPosSpec$1 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type FluffyRenderSpec$1 = {
+  opacity: number;
+  [property: string]: any;
+};
+type FluffySizeSpec$1 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FluffyLayerConfig$1 = {
+  is_critical?: boolean;
+  tags: FluffyTags$1;
+  [property: string]: any;
+};
+type FluffyTags$1 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: FluffyGENERALCFG$1;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  PENDENT_LAYER?: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type FluffyGENERALCFG$1 = {
+  config_type: number;
+  general_config: FluffyGeneralConfig$1;
+  [property: string]: any;
+};
+type FluffyGeneralConfig$1 = {
+  web_css_style: FluffyWebcssStyle$1;
+  [property: string]: any;
+};
+type FluffyWebcssStyle$1 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type FluffyResource$1 = {
+  res_image: FluffyResImage$1;
+  res_type: number;
+  [property: string]: any;
+};
+type FluffyResImage$1 = {
+  image_src: FluffyImageSrc$1;
+  [property: string]: any;
+};
+type FluffyImageSrc$1 = {
+  local: number;
+  placeholder?: number;
+  remote?: FluffyRemote$1;
+  src_type: number;
+  [property: string]: any;
+};
+type FluffyRemote$1 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type DecorationCard$2 = {
+  big_card_url: string;
+  card_type: number;
+  card_type_name: string;
+  card_url: string;
+  fan: Fan$2;
+  id: number;
+  image_enhance: string;
+  item_id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type Fan$2 = {
+  color: string;
+  color_format: ColorFormat$2;
+  is_fan: number;
+  name: string;
+  num_desc: string;
+  number: number;
+  [property: string]: any;
+};
+type ColorFormat$2 = {
+  colors: string[];
+  end_point: string;
+  gradients: number[];
+  start_point: string;
+  [property: string]: any;
+};
+type FluffyOfficialVerify$1 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type FluffyPendant$1 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type FluffyVip$1 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: FluffyLabel$1;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type FluffyLabel$1 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type FluffyModuleDynamic = {
+  additional: null;
+  desc: null;
+  major: Major$2;
+  topic: null;
+  [property: string]: any;
+};
+type Major$2 = {
+  opus: Opus$1;
+  type: string;
+  [property: string]: any;
+};
+type Opus$1 = {
+  fold_action: string[];
+  jump_url: string;
+  pics: Pic[];
+  summary: Summary$2;
+  title: null;
+  [property: string]: any;
+};
+type Pic = {
+  height?: number;
+  live_url?: null;
+  size?: number;
+  url?: string;
+  width?: number;
+  [property: string]: any;
+};
+type Summary$2 = {
+  rich_text_nodes: SummaryRichTextNode[];
+  text: string;
+  [property: string]: any;
+};
+type SummaryRichTextNode = {
+  jump_url?: string;
+  orig_text: string;
+  text: string;
+  type: string;
+  [property: string]: any;
+}; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/Forward/DYNAMIC_TYPE_WORD/index.d.ts
+type DynamicTypeWord$1 = DynamicTypeWord_V0$1; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD/index.d.ts
+type FixOrig<O, LiteralType extends string> = O & {
+  type: LiteralType;
+};
+type OriginalDynamicItemMap = {
+  [DynamicType.AV]: DynamicTypeAV$1['data']['item'];
+  [DynamicType.DRAW]: DynamicTypeDraw$1['data']['item'];
+  [DynamicType.WORD]: DynamicTypeWord$1['data']['item'];
+  [DynamicType.LIVE_RCMD]: DynamicTypeLiveRcmd$1['data']['item'];
+};
+type ItemBasic = DynamicTypeWord$1['data']['item']['basic'] | DynamicTypeLiveRcmd$1['data']['item']['basic'] | DynamicTypeDraw$1['data']['item']['basic'] | DynamicTypeAV$1['data']['item']['basic'];
+type ItemModules = DynamicTypeWord$1['data']['item']['modules'] | DynamicTypeLiveRcmd$1['data']['item']['modules'] | DynamicTypeDraw$1['data']['item']['modules'] | DynamicTypeAV$1['data']['item']['modules'];
+type DataData$12<T extends keyof OriginalDynamicItemMap> = {
+  item: {
+    basic: ItemBasic;
+    id_str: string;
+    modules: ItemModules;
+    orig: FixOrig<OriginalDynamicItemMap[T]['orig'], T>;
+    type: DynamicType.FORWARD;
+    visible: boolean;
+    [property: string]: any;
+  };
+  [property: string]: any;
+};
+type DynamicTypeForward<T extends keyof OriginalDynamicItemMap> = {
+  code: number;
+  data: DataData$12<T>;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type DynamicTypeForwardUnion = DynamicTypeForward<DynamicType.AV> | DynamicTypeForward<DynamicType.DRAW> | DynamicTypeForward<DynamicType.WORD> | DynamicTypeForward<DynamicType.LIVE_RCMD>; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_LIVE_RCMD/DYNAMIC_TYPE_LIVE_RCMD_V0.d.ts
+type DynamicTypeLiveRcmd_V0 = {
+  code: number;
+  data: DataData$11;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type DataData$11 = {
+  item: Item$7;
+  [property: string]: any;
+};
+type Item$7 = {
+  basic: Basic$1;
+  id_str: string;
+  modules: Modules$1;
+  type: DynamicType.LIVE_RCMD;
+  visible: boolean;
+  [property: string]: any;
+};
+type Basic$1 = {
+  comment_id_str: string;
+  comment_type: number;
+  like_icon: LikeIcon$1;
+  rid_str: string;
+  [property: string]: any;
+};
+type LikeIcon$1 = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type Modules$1 = {
+  module_author: ModuleAuthor$1;
+  module_dynamic: ModuleDynamic$1;
+  module_more: ModuleMore$1;
+  module_stat: ModuleStat$1;
+  [property: string]: any;
+};
+type ModuleAuthor$1 = {
+  avatar: Avatar$2;
+  decoration_card: DecorationCard$1;
+  face: string;
+  face_nft: boolean;
+  following: boolean;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: OfficialVerify$3;
+  pendant: Pendant$4;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: Vip$4;
+  [property: string]: any;
+};
+type Avatar$2 = {
+  container_size: ContainerSize$1;
+  fallback_layers: FallbackLayers$1;
+  mid: string;
+  [property: string]: any;
+};
+type ContainerSize$1 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FallbackLayers$1 = {
+  is_critical_group: boolean;
+  layers: Layer$1[];
+  [property: string]: any;
+};
+type Layer$1 = {
+  general_spec: GeneralSpec$1;
+  layer_config: LayerConfig$1;
+  resource: Resource$1;
+  visible: boolean;
+  [property: string]: any;
+};
+type GeneralSpec$1 = {
+  pos_spec: PosSpec$1;
+  render_spec: RenderSpec$1;
+  size_spec: SizeSpec$1;
+  [property: string]: any;
+};
+type PosSpec$1 = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type RenderSpec$1 = {
+  opacity: number;
+  [property: string]: any;
+};
+type SizeSpec$1 = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type LayerConfig$1 = {
+  is_critical?: boolean;
+  tags: Tags$1;
+  [property: string]: any;
+};
+type Tags$1 = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: GeneralCFG$1;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type GeneralCFG$1 = {
+  config_type: number;
+  general_config: GeneralConfig$1;
+  [property: string]: any;
+};
+type GeneralConfig$1 = {
+  web_css_style: WebcssStyle$1;
+  [property: string]: any;
+};
+type WebcssStyle$1 = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type Resource$1 = {
+  res_image: ResImage$1;
+  res_type: number;
+  [property: string]: any;
+};
+type ResImage$1 = {
+  image_src: ImageSrc$1;
+  [property: string]: any;
+};
+type ImageSrc$1 = {
+  local: number;
+  placeholder?: number;
+  remote?: Remote$1;
+  src_type: number;
+  [property: string]: any;
+};
+type Remote$1 = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type DecorationCard$1 = {
+  big_card_url: string;
+  card_type: number;
+  card_type_name: string;
+  card_url: string;
+  fan: Fan$1;
+  id: number;
+  image_enhance: string;
+  item_id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type Fan$1 = {
+  color: string;
+  color_format: ColorFormat$1;
+  is_fan: number;
+  name: string;
+  num_desc: string;
+  number: number;
+  [property: string]: any;
+};
+type ColorFormat$1 = {
+  colors: string[];
+  end_point: string;
+  gradients: number[];
+  start_point: string;
+  [property: string]: any;
+};
+type OfficialVerify$3 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$4 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Vip$4 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: Label$4;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type Label$4 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type ModuleDynamic$1 = {
+  additional: null;
+  desc: null;
+  major: Major$1;
+  topic: null;
+  [property: string]: any;
+};
+type Major$1 = {
+  live_rcmd: LiveRcmd;
+  type: string;
+  [property: string]: any;
+};
+type LiveRcmd = {
+  content: string;
+  reserve_type: number;
+  [property: string]: any;
+};
+type ModuleMore$1 = {
+  three_point_items: ThreePointItem$1[];
+  [property: string]: any;
+};
+type ThreePointItem$1 = {
+  label?: string;
+  type?: string;
+  [property: string]: any;
+};
+type ModuleStat$1 = {
+  comment: Comment$;
+  forward: Forward$1;
+  like: Like$2;
+  [property: string]: any;
+};
+type Comment$ = {
+  count: number;
+  forbidden: boolean;
+  hidden: boolean;
+  [property: string]: any;
+};
+type Forward$1 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Like$2 = {
+  count: number;
+  forbidden: boolean;
+  status: boolean;
+  [property: string]: any;
+}; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_LIVE_RCMD/index.d.ts
+type DynamicTypeLiveRcmd = DynamicTypeLiveRcmd_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_WORD/DYNAMIC_TYPE_WORD_V0.d.ts
+type DynamicTypeWord_V0 = {
+  code: number;
+  data: DataData$10;
+  message: string;
+  ttl: number;
+  [property: string]: any;
+};
+type DataData$10 = {
+  item: Item$6;
+  [property: string]: any;
+};
+type Item$6 = {
+  basic: Basic;
+  id_str: string;
+  modules: Modules;
+  type: DynamicType.WORD;
+  visible: boolean;
+  [property: string]: any;
+};
+type Basic = {
+  comment_id_str: string;
+  comment_type: number;
+  jump_url: string;
+  like_icon: LikeIcon;
+  rid_str: string;
+  [property: string]: any;
+};
+type LikeIcon = {
+  action_url: string;
+  end_url: string;
+  id: number;
+  start_url: string;
+  [property: string]: any;
+};
+type Modules = {
+  module_author: ModuleAuthor;
+  module_dynamic: ModuleDynamic;
+  module_more: ModuleMore;
+  module_stat: ModuleStat;
+  [property: string]: any;
+};
+type ModuleAuthor = {
+  avatar: Avatar$1;
+  decoration_card: DecorationCard;
+  face: string;
+  face_nft: boolean;
+  following: boolean;
+  jump_url: string;
+  label: string;
+  mid: number;
+  name: string;
+  official_verify: OfficialVerify$2;
+  pendant: Pendant$3;
+  pub_action: string;
+  pub_location_text: string;
+  pub_time: string;
+  pub_ts: number;
+  type: string;
+  vip: Vip$3;
+  [property: string]: any;
+};
+type Avatar$1 = {
+  container_size: ContainerSize;
+  fallback_layers: FallbackLayers;
+  mid: string;
+  [property: string]: any;
+};
+type ContainerSize = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type FallbackLayers = {
+  is_critical_group: boolean;
+  layers: Layer[];
+  [property: string]: any;
+};
+type Layer = {
+  general_spec: GeneralSpec;
+  layer_config: LayerConfig;
+  resource: Resource;
+  visible: boolean;
+  [property: string]: any;
+};
+type GeneralSpec = {
+  pos_spec: PosSpec;
+  render_spec: RenderSpec;
+  size_spec: SizeSpec;
+  [property: string]: any;
+};
+type PosSpec = {
+  axis_x: number;
+  axis_y: number;
+  coordinate_pos: number;
+  [property: string]: any;
+};
+type RenderSpec = {
+  opacity: number;
+  [property: string]: any;
+};
+type SizeSpec = {
+  height: number;
+  width: number;
+  [property: string]: any;
+};
+type LayerConfig = {
+  is_critical?: boolean;
+  tags: Tags;
+  [property: string]: any;
+};
+type Tags = {
+  AVATAR_LAYER?: {
+    [key: string]: any;
+  };
+  GENERAL_CFG: GeneralCFG;
+  ICON_LAYER: {
+    [key: string]: any;
+  };
+  [property: string]: any;
+};
+type GeneralCFG = {
+  config_type: number;
+  general_config: GeneralConfig;
+  [property: string]: any;
+};
+type GeneralConfig = {
+  web_css_style: WebcssStyle;
+  [property: string]: any;
+};
+type WebcssStyle = {
+  'background-color': string;
+  border: string;
+  borderRadius: string;
+  boxSizing: string;
+  [property: string]: any;
+};
+type Resource = {
+  res_image: ResImage;
+  res_type: number;
+  [property: string]: any;
+};
+type ResImage = {
+  image_src: ImageSrc;
+  [property: string]: any;
+};
+type ImageSrc = {
+  local: number;
+  placeholder?: number;
+  remote?: Remote;
+  src_type: number;
+  [property: string]: any;
+};
+type Remote = {
+  bfs_style: string;
+  url: string;
+  [property: string]: any;
+};
+type DecorationCard = {
+  big_card_url: string;
+  card_type: number;
+  card_type_name: string;
+  card_url: string;
+  fan: Fan;
+  id: number;
+  image_enhance: string;
+  item_id: number;
+  jump_url: string;
+  name: string;
+  [property: string]: any;
+};
+type Fan = {
+  color: string;
+  color_format: ColorFormat;
+  is_fan: number;
+  name: string;
+  num_desc: string;
+  number: number;
+  [property: string]: any;
+};
+type ColorFormat = {
+  colors: string[];
+  end_point: string;
+  gradients: number[];
+  start_point: string;
+  [property: string]: any;
+};
+type OfficialVerify$2 = {
+  desc: string;
+  type: number;
+  [property: string]: any;
+};
+type Pendant$3 = {
+  expire: number;
+  image: string;
+  image_enhance: string;
+  image_enhance_frame: string;
+  n_pid: number;
+  name: string;
+  pid: number;
+  [property: string]: any;
+};
+type Vip$3 = {
+  avatar_subscript: number;
+  avatar_subscript_url: string;
+  due_date: number;
+  label: Label$3;
+  nickname_color: string;
+  status: number;
+  theme_type: number;
+  type: number;
+  [property: string]: any;
+};
+type Label$3 = {
+  bg_color: string;
+  bg_style: number;
+  border_color: string;
+  img_label_uri_hans: string;
+  img_label_uri_hans_static: string;
+  img_label_uri_hant: string;
+  img_label_uri_hant_static: string;
+  label_theme: string;
+  path: string;
+  text: string;
+  text_color: string;
+  use_img_label: boolean;
+  [property: string]: any;
+};
+type ModuleDynamic = {
+  additional: Additional;
+  desc: null;
+  major: Major;
+  topic: null;
+  [property: string]: any;
+};
+type Additional = {
+  type: string;
+  vote: Vote;
+  [property: string]: any;
+};
+type Vote = {
+  button: Button;
+  choice_cnt: number;
+  default_share: number;
+  desc: string;
+  end_time: number;
+  join_num: number;
+  status: number;
+  title: string;
+  type: null;
+  uid: number;
+  vote_id: number;
+  [property: string]: any;
+};
+type Button = {
+  jump_style: JumpStyle;
+  type: number;
+  [property: string]: any;
+};
+type JumpStyle = {
+  text: string;
+  [property: string]: any;
+};
+type Major = {
+  opus: Opus;
+  type: string;
+  [property: string]: any;
+};
+type Opus = {
+  fold_action: string[];
+  jump_url: string;
+  pics: string[];
+  summary: Summary$1;
+  title: null;
+  [property: string]: any;
+};
+type Summary$1 = {
+  rich_text_nodes: RichTextNode[];
+  text: string;
+  [property: string]: any;
+};
+type RichTextNode = {
+  emoji?: Emoji;
+  orig_text: string;
+  rid?: string;
+  text: string;
+  type: string;
+  [property: string]: any;
+};
+type Emoji = {
+  icon_url: string;
+  size: number;
+  text: string;
+  type: number;
+  [property: string]: any;
+};
+type ModuleMore = {
+  three_point_items: ThreePointItem[];
+  [property: string]: any;
+};
+type ThreePointItem = {
+  label?: string;
+  type?: string;
+  [property: string]: any;
+};
+type ModuleStat = {
+  comment: Comment$3;
+  forward: Forward;
+  like: Like$1;
+  [property: string]: any;
+};
+type Comment$3 = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Forward = {
+  count: number;
+  forbidden: boolean;
+  [property: string]: any;
+};
+type Like$1 = {
+  count: number;
+  forbidden: boolean;
+  status: boolean;
+  [property: string]: any;
+}; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_WORD/index.d.ts
+type DynamicTypeWord = DynamicTypeWord_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Dynamic/index.d.ts
+/**
+ * 转发动态种子动态主体类型枚举
+ */
+declare enum MajorType {
+  /** 动态失效 */
+  NONE = "MAJOR_TYPE_NONE",
+  /** 图文动态 */
+  OPUS = "MAJOR_TYPE_OPUS",
+  /** 视频 */
+  ARCHIVE = "MAJOR_TYPE_ARCHIVE",
+  /** 剧集更新 */
+  PGC = "MAJOR_TYPE_PGC",
+  /** 课程 */
+  COURSES = "MAJOR_TYPE_COURSES",
+  /** 带图动态 */
+  DRAW = "MAJOR_TYPE_DRAW",
+  /** 文章 */
+  ARTICLE = "MAJOR_TYPE_ARTICLE",
+  /** 音频更新 */
+  MUSIC = "MAJOR_TYPE_MUSIC",
+  /** 一般类型 */
+  COMMON = "MAJOR_TYPE_COMMON",
+  /** 直播间分享 */
+  LIVE = "MAJOR_TYPE_LIVE",
+  /** 媒体列表 */
+  MEDIALIST = "MAJOR_TYPE_MEDIALIST",
+  /** 小程序 */
+  APPLET = "MAJOR_TYPE_APPLET",
+  /** 订阅 */
+  SUBSCRIPTION = "MAJOR_TYPE_SUBSCRIPTION",
+  /** 直播状态 */
+  LIVE_RCMD = "MAJOR_TYPE_LIVE_RCMD",
+  /** 合集更新 */
+  UGC_SEASON = "MAJOR_TYPE_UGC_SEASON",
+  /** 新订阅 */
+  SUBSCRIPTION_NEW = "MAJOR_TYPE_SUBSCRIPTION_NEW",
+  /** 充电相关 */
+  UPOWER_COMMON = "MAJOR_TYPE_UPOWER_COMMON"
+}
+/**
+ * 相关内容卡片类型枚举
+ * 用于标识动态中附加的相关内容卡片的类型
+ */
+declare enum AdditionalType {
+  /** 无相关内容 */
+  NONE = "ADDITIONAL_TYPE_NONE",
+  /** 剧集相关 */
+  PGC = "ADDITIONAL_TYPE_PGC",
+  /** 商品信息 */
+  GOODS = "ADDITIONAL_TYPE_GOODS",
+  /** 投票 */
+  VOTE = "ADDITIONAL_TYPE_VOTE",
+  /** 一般类型 */
+  COMMON = "ADDITIONAL_TYPE_COMMON",
+  /** 比赛信息 */
+  MATCH = "ADDITIONAL_TYPE_MATCH",
+  /** UP主推荐 */
+  UP_RCMD = "ADDITIONAL_TYPE_UP_RCMD",
+  /** 视频跳转 */
+  UGC = "ADDITIONAL_TYPE_UGC",
+  /** 直播预约 */
+  RESERVE = "ADDITIONAL_TYPE_RESERVE",
+  /** 充电专属抽奖 */
+  UPOWER_LOTTERY = "ADDITIONAL_TYPE_UPOWER_LOTTERY"
+} //#endregion
+//#region src/types/ReturnDataType/Bilibili/DynamicInfo/index.d.ts
 declare enum DynamicType {
   AV = "DYNAMIC_TYPE_AV",
   DRAW = "DYNAMIC_TYPE_DRAW",
@@ -5294,27 +9607,27 @@ declare enum DynamicType {
   FORWARD = "DYNAMIC_TYPE_FORWARD",
   ARTICLE = "DYNAMIC_TYPE_ARTICLE"
 }
-type BiliDynamicInfoUnion = DynamicTypeAV | DynamicTypeDraw | DynamicTypeWord | DynamicTypeLiveRcmd_V0 | DynamicTypeLiveRcmd_V1 | DynamicTypeForwardUnion | DynamicTypeArticle;
+type BiliDynamicInfoUnion = DynamicTypeAV | DynamicTypeDraw | DynamicTypeWord | DynamicTypeLiveRcmd | DynamicTypeForwardUnion | DynamicTypeArticle;
 type DynamicTypeItemMap$1 = {
   [DynamicType.AV]: DynamicTypeAV['data']['item'];
   [DynamicType.DRAW]: DynamicTypeDraw['data']['item'];
   [DynamicType.WORD]: DynamicTypeWord['data']['item'];
-  [DynamicType.LIVE_RCMD]: DynamicTypeLiveRcmd_V0['data']['item'] | DynamicTypeLiveRcmd_V1['data']['item'];
+  [DynamicType.LIVE_RCMD]: DynamicTypeLiveRcmd['data']['item'];
   [DynamicType.FORWARD]: DynamicTypeForwardUnion['data']['item'];
   [DynamicType.ARTICLE]: DynamicTypeArticle['data']['item'];
 };
-type DataData$21<T extends DynamicType> = {
+type DataData$9<T extends DynamicType> = {
   item: DynamicTypeItemMap$1[T];
 };
 type BiliDynamicInfo<T extends DynamicType> = {
   code: number;
-  data: DataData$21<T>;
+  data: DataData$9<T>;
   message: string;
   ttl: number;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/LiveRoomDef.d.ts
-type BiliLiveRoomDef = {
+//#region src/types/ReturnDataType/Bilibili/LiveRoomDef/LiveRoomDef_V0.d.ts
+type BiliLiveRoomDef_V0 = {
   code: number;
   data: Data$12;
   message: string;
@@ -5340,8 +9653,10 @@ type Data$12 = {
   uid: number;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/LiveRoomDetail.d.ts
-type BiliLiveRoomDetail = {
+//#region src/types/ReturnDataType/Bilibili/LiveRoomDef/index.d.ts
+type BiliLiveRoomDef = BiliLiveRoomDef_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/LiveRoomDetail/LiveRoomDetail_V0.d.ts
+type BiliLiveRoomDetail_V0 = {
   code: number;
   data: Data$11;
   message: string;
@@ -5389,13 +9704,13 @@ type Data$11 = {
   [property: string]: any;
 };
 type NewPendants = {
-  badge: Badge$2;
+  badge: Badge;
   frame: Frame;
   mobile_badge: null;
   mobile_frame: MobileFrame;
   [property: string]: any;
 };
-type Badge$2 = {
+type Badge = {
   desc: string;
   name: string;
   position: number;
@@ -5431,8 +9746,10 @@ type StudioInfo = {
   status: number;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Login/CheckQrcode.d.ts
-type BiliCheckQrcode = {
+//#region src/types/ReturnDataType/Bilibili/LiveRoomDetail/index.d.ts
+type BiliLiveRoomDetail = BiliLiveRoomDetail_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Login/CheckQrcode/CheckQrcode_V0.d.ts
+type BiliCheckQrcode_V0 = {
   code: number;
   data: PurpleData;
   message: string;
@@ -5451,8 +9768,10 @@ type FluffyData = {
   url: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Login/NewLoginQrcode.d.ts
-type BiliNewLoginQrcode = {
+//#region src/types/ReturnDataType/Bilibili/Login/CheckQrcode/index.d.ts
+type BiliCheckQrcode = BiliCheckQrcode_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/Login/NewLoginQrcode/NewLoginQrcode.d.ts
+type BiliNewLoginQrcode_V0 = {
   code: number;
   data: Data$10;
   message: string;
@@ -5464,8 +9783,10 @@ type Data$10 = {
   url: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/OneWork.d.ts
-type BiliOneWork = {
+//#region src/types/ReturnDataType/Bilibili/Login/NewLoginQrcode/index.d.ts
+type BiliNewLoginQrcode = BiliNewLoginQrcode_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/OneWork/OneWork_V0.d.ts
+type BiliOneWork_V0 = {
   code: number;
   data: Data$9;
   message: string;
@@ -5506,7 +9827,7 @@ type Data$9 = {
   premiere: null;
   pubdate: number;
   rights: Rights;
-  stat: Stat$2;
+  stat: Stat;
   state: number;
   subtitle: Subtitle;
   teenage_mode: number;
@@ -5583,7 +9904,7 @@ type Rights = {
   ugc_pay_preview: number;
   [property: string]: any;
 };
-type Stat$2 = {
+type Stat = {
   aid: number;
   coin: number;
   danmaku: number;
@@ -5608,10 +9929,12 @@ type UserGarb = {
   url_image_ani_cut: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/UserDynamic.d.ts
+//#region src/types/ReturnDataType/Bilibili/OneWork/index.d.ts
+type BiliOneWork = BiliOneWork_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/UserDynamic/index.d.ts
 type BiliUserDynamic = {
   code: number;
-  data: DataData$20;
+  data: DataData$8;
   message: string;
   ttl: number;
   [property: string]: any;
@@ -5619,7 +9942,7 @@ type BiliUserDynamic = {
 type AVItem = DynamicTypeAV['data']['item'];
 type DrawItem = DynamicTypeDraw['data']['item'];
 type WordItem = DynamicTypeWord['data']['item'];
-type LiveRcmdItem = DynamicTypeLiveRcmd_V0['data']['item'] | DynamicTypeLiveRcmd_V1['data']['item'];
+type LiveRcmdItem = DynamicTypeLiveRcmd['data']['item'];
 type ForwardItem = DynamicTypeForwardUnion['data']['item'];
 type ArticleItem = DynamicTypeArticle['data']['item'];
 type DynamicTypeItemMap = {
@@ -5630,7 +9953,7 @@ type DynamicTypeItemMap = {
   [DynamicType.FORWARD]: ForwardItem;
   [DynamicType.ARTICLE]: ArticleItem;
 };
-type DataData$20<T extends DynamicType = DynamicType> = {
+type DataData$8<T extends DynamicType = DynamicType> = {
   has_more: boolean;
   items: DynamicTypeItemMap[T][];
   offset: string;
@@ -5638,8 +9961,8 @@ type DataData$20<T extends DynamicType = DynamicType> = {
   update_num: number;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/UserFullView.d.ts
-type BiliUserFullView = {
+//#region src/types/ReturnDataType/Bilibili/UserFullView/UserFullView_V0.d.ts
+type BiliUserFullView_V0 = {
   code: number;
   data: Data$8;
   message: string;
@@ -5647,12 +9970,12 @@ type BiliUserFullView = {
   [property: string]: any;
 };
 type Data$8 = {
-  archive: Archive$2;
+  archive: Archive;
   article: Article;
   likes: number;
   [property: string]: any;
 };
-type Archive$2 = {
+type Archive = {
   enable_vt: number;
   view: number;
   vt: number;
@@ -5662,8 +9985,10 @@ type Article = {
   view: number;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/UserProfile.d.ts
-type BiliUserProfile = {
+//#region src/types/ReturnDataType/Bilibili/UserFullView/index.d.ts
+type BiliUserFullView = BiliUserFullView_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/UserProfile/UserProfile_V0.d.ts
+type BiliUserProfile_V0 = {
   code: number;
   data: Data$7;
   message: string;
@@ -5700,15 +10025,15 @@ type Card = {
   name_render: null;
   nameplate: Nameplate$1;
   Official: Official$1;
-  official_verify: OfficialVerify$7;
-  pendant: Pendant$8;
+  official_verify: OfficialVerify$1;
+  pendant: Pendant$2;
   place: string;
   rank: string;
   regtime: number;
   sex: string;
   sign: string;
   spacesta: number;
-  vip: Vip$8;
+  vip: Vip$2;
   [property: string]: any;
 };
 type Official$1 = {
@@ -5734,12 +10059,12 @@ type Nameplate$1 = {
   nid: number;
   [property: string]: any;
 };
-type OfficialVerify$7 = {
+type OfficialVerify$1 = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type Pendant$8 = {
+type Pendant$2 = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -5749,12 +10074,12 @@ type Pendant$8 = {
   pid: number;
   [property: string]: any;
 };
-type Vip$8 = {
+type Vip$2 = {
   avatar_icon: AvatarIcon$1;
   avatar_subscript: number;
   avatar_subscript_url: string;
   due_date: number;
-  label: Label$8;
+  label: Label$2;
   nickname_color: string;
   role: number;
   status: number;
@@ -5778,7 +10103,7 @@ type IconResource = {
   url: string;
   [property: string]: any;
 };
-type Label$8 = {
+type Label$2 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -5798,15 +10123,17 @@ type Space = {
   s_img: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/UserSpaceInfo.d.ts
-type UserSpaceInfo = {
+//#region src/types/ReturnDataType/Bilibili/UserProfile/index.d.ts
+type BiliUserProfile = BiliUserProfile_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/UserSpaceInfo/UserSpaceInfo_V0.d.ts
+type UserSpaceInfo_V0 = {
   code: number;
-  data: DataData$19;
+  data: DataData$7;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$19 = {
+type DataData$7 = {
   attestation: Attestation;
   birthday: string;
   certificate_show: boolean;
@@ -5834,7 +10161,7 @@ type DataData$19 = {
   name_render: null;
   nameplate: Nameplate;
   official: Official;
-  pendant: Pendant$7;
+  pendant: Pendant$1;
   profession: Profession;
   rank: number;
   school: null;
@@ -5850,7 +10177,7 @@ type DataData$19 = {
   top_photo: string;
   top_photo_v2: TopPhotoV2;
   user_honour_info: UserHonourInfo;
-  vip: Vip$7;
+  vip: Vip$1;
   [property: string]: any;
 };
 type Attestation = {
@@ -5938,7 +10265,7 @@ type Official = {
   type: number;
   [property: string]: any;
 };
-type Pendant$7 = {
+type Pendant$1 = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -5973,12 +10300,12 @@ type UserHonourInfo = {
   tags: string[];
   [property: string]: any;
 };
-type Vip$7 = {
+type Vip$1 = {
   avatar_icon: AvatarIcon;
   avatar_subscript: number;
   avatar_subscript_url: string;
   due_date: number;
-  label: Label$7;
+  label: Label$1;
   nickname_color: string;
   ott_info: OttInfo;
   role: number;
@@ -5999,7 +10326,7 @@ type AvatarIcon = {
   icon_type: number;
   [property: string]: any;
 };
-type Label$7 = {
+type Label$1 = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -6033,9 +10360,11 @@ type SuperVip = {
   is_super_vip: boolean;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/VideoPlayurlIsLogin.d.ts
+//#region src/types/ReturnDataType/Bilibili/UserSpaceInfo/index.d.ts
+type UserSpaceInfo = UserSpaceInfo_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/VideoPlayurlIsLogin/VideoPlayurlIsLogin_V0.d.ts
 /** 视频下载地址（已登录） */
-type BiliVideoPlayurlIsLogin = {
+type BiliVideoPlayurlIsLogin_V0 = {
   code: number;
   data: Data$6;
   message: string;
@@ -6151,9 +10480,11 @@ type SupportFormat$1 = {
   superscript: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/VideoPlayurlNoLogin.d.ts
+//#region src/types/ReturnDataType/Bilibili/VideoPlayurlIsLogin/index.d.ts
+type BiliVideoPlayurlIsLogin = BiliVideoPlayurlIsLogin_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/VideoPlayurlNoLogin/VideoPlayurlNoLogin_V0.d.ts
 /** 视频下载地址（未登录） */
-type BiliBiliVideoPlayurlNoLogin = {
+type BiliBiliVideoPlayurlNoLogin_V0 = {
   code: number;
   data: Data$5;
   message: string;
@@ -6200,15 +10531,17 @@ type SupportFormat = {
   superscript?: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/WorkComments.d.ts
-type BiliWorkComments = {
+//#region src/types/ReturnDataType/Bilibili/VideoPlayurlNoLogin/index.d.ts
+type BiliBiliVideoPlayurlNoLogin = BiliBiliVideoPlayurlNoLogin_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/WorkComments/WorkComments_V0.d.ts
+type BiliWorkComments_V0 = {
   code: number;
-  data: DataData$18;
+  data: DataData$6;
   message: string;
   ttl: number;
   [property: string]: any;
 };
-type DataData$18 = {
+type DataData$6 = {
   assist: number;
   blacklist: number;
   callbacks: {
@@ -6382,8 +10715,8 @@ type PurpleMember = {
   mid: string;
   nameplate: PurpleNameplate;
   nft_interaction: null;
-  official_verify: PurpleOfficialVerify$5;
-  pendant: PurplePendant$5;
+  official_verify: PurpleOfficialVerify;
+  pendant: PurplePendant;
   rank: string;
   senior: {
     [key: string]: any;
@@ -6395,101 +10728,101 @@ type PurpleMember = {
   user_sailing_v2: {
     [key: string]: any;
   };
-  vip: PurpleVip$5;
+  vip: PurpleVip;
   [property: string]: any;
 };
 type PurpleAvatarItem = {
-  container_size: PurpleContainerSize$5;
-  fallback_layers: PurpleFallbackLayers$5;
+  container_size: PurpleContainerSize;
+  fallback_layers: PurpleFallbackLayers;
   mid: string;
   [property: string]: any;
 };
-type PurpleContainerSize$5 = {
+type PurpleContainerSize = {
   height: number;
   width: number;
   [property: string]: any;
 };
-type PurpleFallbackLayers$5 = {
+type PurpleFallbackLayers = {
   is_critical_group: boolean;
-  layers: PurpleLayer$5[];
+  layers: PurpleLayer[];
   [property: string]: any;
 };
-type PurpleLayer$5 = {
-  general_spec: PurpleGeneralSpec$5;
-  layer_config: PurpleLayerConfig$5;
-  resource: PurpleResource$5;
+type PurpleLayer = {
+  general_spec: PurpleGeneralSpec;
+  layer_config: PurpleLayerConfig;
+  resource: PurpleResource;
   visible: boolean;
   [property: string]: any;
 };
-type PurpleGeneralSpec$5 = {
-  pos_spec: PurplePosSpec$5;
-  render_spec: PurpleRenderSpec$5;
-  size_spec: PurpleSizeSpec$5;
+type PurpleGeneralSpec = {
+  pos_spec: PurplePosSpec;
+  render_spec: PurpleRenderSpec;
+  size_spec: PurpleSizeSpec;
   [property: string]: any;
 };
-type PurplePosSpec$5 = {
+type PurplePosSpec = {
   axis_x: number;
   axis_y: number;
   coordinate_pos: number;
   [property: string]: any;
 };
-type PurpleRenderSpec$5 = {
+type PurpleRenderSpec = {
   opacity: number;
   [property: string]: any;
 };
-type PurpleSizeSpec$5 = {
+type PurpleSizeSpec = {
   height: number;
   width: number;
   [property: string]: any;
 };
-type PurpleLayerConfig$5 = {
+type PurpleLayerConfig = {
   is_critical: boolean;
-  tags: PurpleTags$5;
+  tags: PurpleTags;
   [property: string]: any;
 };
-type PurpleTags$5 = {
+type PurpleTags = {
   AVATAR_LAYER: {
     [key: string]: any;
   };
-  GENERAL_CFG: PurpleGENERALCFG$5;
+  GENERAL_CFG: PurpleGENERALCFG;
   ICON_LAYER?: {
     [key: string]: any;
   };
   [property: string]: any;
 };
-type PurpleGENERALCFG$5 = {
+type PurpleGENERALCFG = {
   config_type: number;
-  general_config: PurpleGeneralConfig$5;
+  general_config: PurpleGeneralConfig;
   [property: string]: any;
 };
-type PurpleGeneralConfig$5 = {
-  web_css_style: PurpleWebcssStyle$5;
+type PurpleGeneralConfig = {
+  web_css_style: PurpleWebcssStyle;
   [property: string]: any;
 };
-type PurpleWebcssStyle$5 = {
+type PurpleWebcssStyle = {
   'background-color'?: string;
   border?: string;
   borderRadius: string;
   boxSizing?: string;
   [property: string]: any;
 };
-type PurpleResource$5 = {
-  res_image: PurpleResImage$5;
+type PurpleResource = {
+  res_image: PurpleResImage;
   res_type: number;
   [property: string]: any;
 };
-type PurpleResImage$5 = {
-  image_src: PurpleImageSrc$5;
+type PurpleResImage = {
+  image_src: PurpleImageSrc;
   [property: string]: any;
 };
-type PurpleImageSrc$5 = {
+type PurpleImageSrc = {
   local?: number;
   placeholder: number;
-  remote: PurpleRemote$5;
+  remote: PurpleRemote;
   src_type: number;
   [property: string]: any;
 };
-type PurpleRemote$5 = {
+type PurpleRemote = {
   bfs_style: string;
   url: string;
   [property: string]: any;
@@ -6510,12 +10843,12 @@ type PurpleNameplate = {
   nid: number;
   [property: string]: any;
 };
-type PurpleOfficialVerify$5 = {
+type PurpleOfficialVerify = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type PurplePendant$5 = {
+type PurplePendant = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -6531,11 +10864,11 @@ type PurpleUserSailing = {
   pendant: null;
   [property: string]: any;
 };
-type PurpleVip$5 = {
+type PurpleVip = {
   accessStatus: number;
   avatar_subscript: number;
   dueRemark: string;
-  label: PurpleLabel$5;
+  label: PurpleLabel;
   nickname_color: string;
   themeType: number;
   vipDueDate: number;
@@ -6544,7 +10877,7 @@ type PurpleVip$5 = {
   vipType: number;
   [property: string]: any;
 };
-type PurpleLabel$5 = {
+type PurpleLabel = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -6644,8 +10977,8 @@ type FluffyMember = {
   mid: string;
   nameplate: FluffyNameplate;
   nft_interaction: null;
-  official_verify: FluffyOfficialVerify$5;
-  pendant: FluffyPendant$5;
+  official_verify: FluffyOfficialVerify;
+  pendant: FluffyPendant;
   rank: string;
   senior: {
     [key: string]: any;
@@ -6657,101 +10990,101 @@ type FluffyMember = {
   user_sailing_v2: {
     [key: string]: any;
   };
-  vip: FluffyVip$5;
+  vip: FluffyVip;
   [property: string]: any;
 };
 type FluffyAvatarItem = {
-  container_size: FluffyContainerSize$5;
-  fallback_layers: FluffyFallbackLayers$5;
+  container_size: FluffyContainerSize;
+  fallback_layers: FluffyFallbackLayers;
   mid: string;
   [property: string]: any;
 };
-type FluffyContainerSize$5 = {
+type FluffyContainerSize = {
   height: number;
   width: number;
   [property: string]: any;
 };
-type FluffyFallbackLayers$5 = {
+type FluffyFallbackLayers = {
   is_critical_group: boolean;
-  layers: FluffyLayer$5[];
+  layers: FluffyLayer[];
   [property: string]: any;
 };
-type FluffyLayer$5 = {
-  general_spec: FluffyGeneralSpec$5;
-  layer_config: FluffyLayerConfig$5;
-  resource: FluffyResource$5;
+type FluffyLayer = {
+  general_spec: FluffyGeneralSpec;
+  layer_config: FluffyLayerConfig;
+  resource: FluffyResource;
   visible: boolean;
   [property: string]: any;
 };
-type FluffyGeneralSpec$5 = {
-  pos_spec: FluffyPosSpec$5;
-  render_spec: FluffyRenderSpec$5;
-  size_spec: FluffySizeSpec$5;
+type FluffyGeneralSpec = {
+  pos_spec: FluffyPosSpec;
+  render_spec: FluffyRenderSpec;
+  size_spec: FluffySizeSpec;
   [property: string]: any;
 };
-type FluffyPosSpec$5 = {
+type FluffyPosSpec = {
   axis_x: number;
   axis_y: number;
   coordinate_pos: number;
   [property: string]: any;
 };
-type FluffyRenderSpec$5 = {
+type FluffyRenderSpec = {
   opacity: number;
   [property: string]: any;
 };
-type FluffySizeSpec$5 = {
+type FluffySizeSpec = {
   height: number;
   width: number;
   [property: string]: any;
 };
-type FluffyLayerConfig$5 = {
+type FluffyLayerConfig = {
   is_critical?: boolean;
-  tags: FluffyTags$5;
+  tags: FluffyTags;
   [property: string]: any;
 };
-type FluffyTags$5 = {
+type FluffyTags = {
   AVATAR_LAYER?: {
     [key: string]: any;
   };
-  GENERAL_CFG: FluffyGENERALCFG$5;
+  GENERAL_CFG: FluffyGENERALCFG;
   ICON_LAYER: {
     [key: string]: any;
   };
   [property: string]: any;
 };
-type FluffyGENERALCFG$5 = {
+type FluffyGENERALCFG = {
   config_type: number;
-  general_config: FluffyGeneralConfig$5;
+  general_config: FluffyGeneralConfig;
   [property: string]: any;
 };
-type FluffyGeneralConfig$5 = {
-  web_css_style: FluffyWebcssStyle$5;
+type FluffyGeneralConfig = {
+  web_css_style: FluffyWebcssStyle;
   [property: string]: any;
 };
-type FluffyWebcssStyle$5 = {
+type FluffyWebcssStyle = {
   'background-color': string;
   border: string;
   borderRadius: string;
   boxSizing: string;
   [property: string]: any;
 };
-type FluffyResource$5 = {
-  res_image: FluffyResImage$5;
+type FluffyResource = {
+  res_image: FluffyResImage;
   res_type: number;
   [property: string]: any;
 };
-type FluffyResImage$5 = {
-  image_src: FluffyImageSrc$5;
+type FluffyResImage = {
+  image_src: FluffyImageSrc;
   [property: string]: any;
 };
-type FluffyImageSrc$5 = {
+type FluffyImageSrc = {
   local: number;
   placeholder?: number;
-  remote?: FluffyRemote$5;
+  remote?: FluffyRemote;
   src_type: number;
   [property: string]: any;
 };
-type FluffyRemote$5 = {
+type FluffyRemote = {
   bfs_style: string;
   url: string;
   [property: string]: any;
@@ -6772,12 +11105,12 @@ type FluffyNameplate = {
   nid: number;
   [property: string]: any;
 };
-type FluffyOfficialVerify$5 = {
+type FluffyOfficialVerify = {
   desc: string;
   type: number;
   [property: string]: any;
 };
-type FluffyPendant$5 = {
+type FluffyPendant = {
   expire: number;
   image: string;
   image_enhance: string;
@@ -6793,11 +11126,11 @@ type FluffyUserSailing = {
   pendant: null;
   [property: string]: any;
 };
-type FluffyVip$5 = {
+type FluffyVip = {
   accessStatus: number;
   avatar_subscript: number;
   dueRemark: string;
-  label: FluffyLabel$5;
+  label: FluffyLabel;
   nickname_color: string;
   themeType: number;
   vipDueDate: number;
@@ -6806,7 +11139,7 @@ type FluffyVip$5 = {
   vipType: number;
   [property: string]: any;
 };
-type FluffyLabel$5 = {
+type FluffyLabel = {
   bg_color: string;
   bg_style: number;
   border_color: string;
@@ -7982,4551 +12315,10 @@ type DataUpper = {
   mid: number;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_ARTICLE.d.ts
-type DynamicTypeArticle = {
-  code: number;
-  data: DataData$17;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type DataData$17 = {
-  item: Item$16;
-  [property: string]: any;
-};
-type Item$16 = {
-  basic: Basic$5;
-  id_str: string;
-  modules: Modules$5;
-  type: DynamicType.ARTICLE;
-  visible: boolean;
-  [property: string]: any;
-};
-type Basic$5 = {
-  comment_id_str: string;
-  comment_type: number;
-  jump_url: string;
-  like_icon: LikeIcon$5;
-  rid_str: string;
-  [property: string]: any;
-};
-type LikeIcon$5 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type Modules$5 = {
-  module_author: ModuleAuthor$5;
-  module_dynamic: ModuleDynamic$5;
-  module_more: ModuleMore$10;
-  module_stat: ModuleStat$10;
-  [property: string]: any;
-};
-type ModuleAuthor$5 = {
-  avatar: Avatar$6;
-  face: string;
-  face_nft: boolean;
-  following: null;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: OfficialVerify$6;
-  pendant: Pendant$6;
-  pub_action: string;
-  pub_location_text: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: Vip$6;
-  [property: string]: any;
-};
-type Avatar$6 = {
-  container_size: ContainerSize$5;
-  fallback_layers: FallbackLayers$5;
-  mid: string;
-  [property: string]: any;
-};
-type ContainerSize$5 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FallbackLayers$5 = {
-  is_critical_group: boolean;
-  layers: Layer$5[];
-  [property: string]: any;
-};
-type Layer$5 = {
-  general_spec: GeneralSpec$5;
-  layer_config: LayerConfig$5;
-  resource: Resource$5;
-  visible: boolean;
-  [property: string]: any;
-};
-type GeneralSpec$5 = {
-  pos_spec: PosSpec$5;
-  render_spec: RenderSpec$5;
-  size_spec: SizeSpec$5;
-  [property: string]: any;
-};
-type PosSpec$5 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type RenderSpec$5 = {
-  opacity: number;
-  [property: string]: any;
-};
-type SizeSpec$5 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type LayerConfig$5 = {
-  is_critical?: boolean;
-  tags: Tags$5;
-  [property: string]: any;
-};
-type Tags$5 = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: GeneralCFG$5;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type GeneralCFG$5 = {
-  config_type: number;
-  general_config: GeneralConfig$5;
-  [property: string]: any;
-};
-type GeneralConfig$5 = {
-  web_css_style: WebcssStyle$5;
-  [property: string]: any;
-};
-type WebcssStyle$5 = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type Resource$5 = {
-  res_image: ResImage$5;
-  res_type: number;
-  [property: string]: any;
-};
-type ResImage$5 = {
-  image_src: ImageSrc$5;
-  [property: string]: any;
-};
-type ImageSrc$5 = {
-  local: number;
-  placeholder?: number;
-  remote?: Remote$5;
-  src_type: number;
-  [property: string]: any;
-};
-type Remote$5 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type OfficialVerify$6 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type Pendant$6 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type Vip$6 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: Label$6;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type Label$6 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type ModuleDynamic$5 = {
-  additional: null;
-  desc: null;
-  major: Major$10;
-  topic: null;
-  [property: string]: any;
-};
-type Major$10 = {
-  opus: Opus$5;
-  type: string;
-  [property: string]: any;
-};
-type Opus$5 = {
-  fold_action: string[];
-  jump_url: string;
-  pics: string[];
-  summary: Summary$6;
-  title: string;
-  [property: string]: any;
-};
-type Summary$6 = {
-  rich_text_nodes: RichTextNode$5[];
-  text: string;
-  [property: string]: any;
-};
-type RichTextNode$5 = {
-  orig_text?: string;
-  text?: string;
-  type?: string;
-  [property: string]: any;
-};
-type ModuleMore$10 = {
-  three_point_items: ThreePointItem$10[];
-  [property: string]: any;
-};
-type ThreePointItem$10 = {
-  label?: string;
-  type?: string;
-  [property: string]: any;
-};
-type ModuleStat$10 = {
-  comment: Comment$12;
-  forward: Forward$10;
-  like: Like$11;
-  [property: string]: any;
-};
-type Comment$12 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Forward$10 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Like$11 = {
-  count: number;
-  forbidden: boolean;
-  status: boolean;
-  [property: string]: any;
-}; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_AV.d.ts
-type DynamicTypeAV = {
-  code: number;
-  data: DataData$16;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type DataData$16 = {
-  item: Item$15;
-  [property: string]: any;
-};
-type Item$15 = {
-  basic: Basic$4;
-  id_str: string;
-  modules: Modules$4;
-  type: DynamicType.AV;
-  visible: boolean;
-  [property: string]: any;
-};
-type Basic$4 = {
-  comment_id_str: string;
-  comment_type: number;
-  like_icon: LikeIcon$4;
-  rid_str: string;
-  [property: string]: any;
-};
-type LikeIcon$4 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type Modules$4 = {
-  module_author: ModuleAuthor$4;
-  module_dynamic: ModuleDynamic$4;
-  module_more: ModuleMore$9;
-  module_stat: ModuleStat$9;
-  [property: string]: any;
-};
-type ModuleAuthor$4 = {
-  avatar: Avatar$5;
-  face: string;
-  face_nft: boolean;
-  following: boolean;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: OfficialVerify$5;
-  pendant: Pendant$5;
-  pub_action: string;
-  pub_location_text: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: Vip$5;
-  [property: string]: any;
-};
-type Avatar$5 = {
-  container_size: ContainerSize$4;
-  fallback_layers: FallbackLayers$4;
-  mid: string;
-  [property: string]: any;
-};
-type ContainerSize$4 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FallbackLayers$4 = {
-  is_critical_group: boolean;
-  layers: Layer$4[];
-  [property: string]: any;
-};
-type Layer$4 = {
-  general_spec: GeneralSpec$4;
-  layer_config: LayerConfig$4;
-  resource: Resource$4;
-  visible: boolean;
-  [property: string]: any;
-};
-type GeneralSpec$4 = {
-  pos_spec: PosSpec$4;
-  render_spec: RenderSpec$4;
-  size_spec: SizeSpec$4;
-  [property: string]: any;
-};
-type PosSpec$4 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type RenderSpec$4 = {
-  opacity: number;
-  [property: string]: any;
-};
-type SizeSpec$4 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type LayerConfig$4 = {
-  is_critical?: boolean;
-  tags: Tags$4;
-  [property: string]: any;
-};
-type Tags$4 = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: GeneralCFG$4;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type GeneralCFG$4 = {
-  config_type: number;
-  general_config: GeneralConfig$4;
-  [property: string]: any;
-};
-type GeneralConfig$4 = {
-  web_css_style: WebcssStyle$4;
-  [property: string]: any;
-};
-type WebcssStyle$4 = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type Resource$4 = {
-  res_image: ResImage$4;
-  res_type: number;
-  [property: string]: any;
-};
-type ResImage$4 = {
-  image_src: ImageSrc$4;
-  [property: string]: any;
-};
-type ImageSrc$4 = {
-  local: number;
-  placeholder?: number;
-  remote?: Remote$4;
-  src_type: number;
-  [property: string]: any;
-};
-type Remote$4 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type OfficialVerify$5 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type Pendant$5 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type Vip$5 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: Label$5;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type Label$5 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type ModuleDynamic$4 = {
-  additional: null;
-  desc: Desc$6;
-  major: Major$9;
-  topic: null;
-  [property: string]: any;
-};
-type Desc$6 = {
-  rich_text_nodes: RichTextNode$4[];
-  text: string;
-  [property: string]: any;
-};
-type RichTextNode$4 = {
-  orig_text?: string;
-  text?: string;
-  type?: string;
-  [property: string]: any;
-};
-type Major$9 = {
-  archive: Archive$1;
-  type: string;
-  [property: string]: any;
-};
-type Archive$1 = {
-  aid: string;
-  badge: Badge$1;
-  bvid: string;
-  cover: string;
-  desc: string;
-  disable_preview: number;
-  duration_text: string;
-  jump_url: string;
-  stat: Stat$1;
-  title: string;
-  type: number;
-  [property: string]: any;
-};
-type Badge$1 = {
-  bg_color: string;
-  color: string;
-  icon_url: null;
-  text: string;
-  [property: string]: any;
-};
-type Stat$1 = {
-  danmaku: string;
-  play: string;
-  [property: string]: any;
-};
-type ModuleMore$9 = {
-  three_point_items: ThreePointItem$9[];
-  [property: string]: any;
-};
-type ThreePointItem$9 = {
-  label?: string;
-  type?: string;
-  [property: string]: any;
-};
-type ModuleStat$9 = {
-  comment: Comment$11;
-  forward: Forward$9;
-  like: Like$10;
-  [property: string]: any;
-};
-type Comment$11 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Forward$9 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Like$10 = {
-  count: number;
-  forbidden: boolean;
-  status: boolean;
-  [property: string]: any;
-}; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_DRAW.d.ts
-type DynamicTypeDraw = {
-  code: number;
-  data: DataData$15;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type DataData$15 = {
-  item: Item$14;
-  [property: string]: any;
-};
-type Item$14 = {
-  basic: Basic$3;
-  id_str: string;
-  modules: Modules$3;
-  type: DynamicType.DRAW;
-  visible: boolean;
-  [property: string]: any;
-};
-type Basic$3 = {
-  comment_id_str: string;
-  comment_type: number;
-  jump_url: string;
-  like_icon: LikeIcon$3;
-  rid_str: string;
-  [property: string]: any;
-};
-type LikeIcon$3 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type Modules$3 = {
-  module_author: ModuleAuthor$3;
-  module_dynamic: ModuleDynamic$3;
-  module_more: ModuleMore$8;
-  module_stat: ModuleStat$8;
-  [property: string]: any;
-};
-type ModuleAuthor$3 = {
-  avatar: Avatar$4;
-  decoration_card: DecorationCard$7;
-  face: string;
-  face_nft: boolean;
-  following: null;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: OfficialVerify$4;
-  pendant: Pendant$4;
-  pub_action: string;
-  pub_location_text: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: Vip$4;
-  [property: string]: any;
-};
-type Avatar$4 = {
-  container_size: ContainerSize$3;
-  fallback_layers: FallbackLayers$3;
-  mid: string;
-  [property: string]: any;
-};
-type ContainerSize$3 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FallbackLayers$3 = {
-  is_critical_group: boolean;
-  layers: Layer$3[];
-  [property: string]: any;
-};
-type Layer$3 = {
-  general_spec: GeneralSpec$3;
-  layer_config: LayerConfig$3;
-  resource: Resource$3;
-  visible: boolean;
-  [property: string]: any;
-};
-type GeneralSpec$3 = {
-  pos_spec: PosSpec$3;
-  render_spec: RenderSpec$3;
-  size_spec: SizeSpec$3;
-  [property: string]: any;
-};
-type PosSpec$3 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type RenderSpec$3 = {
-  opacity: number;
-  [property: string]: any;
-};
-type SizeSpec$3 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type LayerConfig$3 = {
-  is_critical?: boolean;
-  tags: Tags$3;
-  [property: string]: any;
-};
-type Tags$3 = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: GeneralCFG$3;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  PENDENT_LAYER?: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type GeneralCFG$3 = {
-  config_type: number;
-  general_config: GeneralConfig$3;
-  [property: string]: any;
-};
-type GeneralConfig$3 = {
-  web_css_style: WebcssStyle$3;
-  [property: string]: any;
-};
-type WebcssStyle$3 = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type Resource$3 = {
-  res_image: ResImage$3;
-  res_type: number;
-  [property: string]: any;
-};
-type ResImage$3 = {
-  image_src: ImageSrc$3;
-  [property: string]: any;
-};
-type ImageSrc$3 = {
-  local: number;
-  placeholder?: number;
-  remote?: Remote$3;
-  src_type: number;
-  [property: string]: any;
-};
-type Remote$3 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type DecorationCard$7 = {
-  big_card_url: string;
-  card_type: number;
-  card_type_name: string;
-  card_url: string;
-  fan: Fan$7;
-  id: number;
-  image_enhance: string;
-  item_id: number;
-  jump_url: string;
-  name: string;
-  [property: string]: any;
-};
-type Fan$7 = {
-  color: string;
-  color_format: ColorFormat$7;
-  is_fan: number;
-  name: string;
-  num_desc: string;
-  number: number;
-  [property: string]: any;
-};
-type ColorFormat$7 = {
-  colors: string[];
-  end_point: string;
-  gradients: number[];
-  start_point: string;
-  [property: string]: any;
-};
-type OfficialVerify$4 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type Pendant$4 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type Vip$4 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: Label$4;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type Label$4 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type ModuleDynamic$3 = {
-  additional: Additional$3;
-  desc: null;
-  major: Major$8;
-  topic: Topic$4;
-  [property: string]: any;
-};
-type Additional$3 = {
-  type: string;
-  reserve: Reserve$1;
-  [property: string]: any;
-};
-type Reserve$1 = {
-  button: Button$3;
-  desc1: Desc1$1;
-  desc2: Desc2$1;
-  jump_url: string;
-  reserve_total: number;
-  rid: number;
-  state: number;
-  stype: number;
-  title: string;
-  up_mid: number;
-  [property: string]: any;
-};
-type Button$3 = {
-  check: Check$1;
-  status: number;
-  type: number;
-  uncheck: Uncheck$1;
-  [property: string]: any;
-};
-type Check$1 = {
-  icon_url: string;
-  text: string;
-  [property: string]: any;
-};
-type Uncheck$1 = {
-  disable: number;
-  icon_url: string;
-  text: string;
-  toast: string;
-  [property: string]: any;
-};
-type Desc1$1 = {
-  style: number;
-  text: string;
-  [property: string]: any;
-};
-type Desc2$1 = {
-  style: number;
-  text: string;
-  visible: boolean;
-  [property: string]: any;
-};
-type Major$8 = {
-  opus: Opus$4;
-  type: string;
-  [property: string]: any;
-};
-type Opus$4 = {
-  fold_action: string[];
-  jump_url: string;
-  pics: Pic$3[];
-  summary: Summary$5;
-  title: null;
-  [property: string]: any;
-};
-type Pic$3 = {
-  height?: number;
-  live_url?: null;
-  size?: number;
-  url?: string;
-  width?: number;
-  [property: string]: any;
-};
-type Summary$5 = {
-  rich_text_nodes: RichTextNode$3[];
-  text: string;
-  [property: string]: any;
-};
-type RichTextNode$3 = {
-  jump_url?: string;
-  orig_text: string;
-  text: string;
-  type: string;
-  [property: string]: any;
-};
-type Topic$4 = {
-  id: number;
-  jump_url: string;
-  name: string;
-  [property: string]: any;
-};
-type ModuleMore$8 = {
-  three_point_items: ThreePointItem$8[];
-  [property: string]: any;
-};
-type ThreePointItem$8 = {
-  label?: string;
-  type?: string;
-  [property: string]: any;
-};
-type ModuleStat$8 = {
-  comment: Comment$10;
-  forward: Forward$8;
-  like: Like$9;
-  [property: string]: any;
-};
-type Comment$10 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Forward$8 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Like$9 = {
-  count: number;
-  forbidden: boolean;
-  status: boolean;
-  [property: string]: any;
-}; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/Forward/DYNAMIC_TYPE_AV.d.ts
-type DynamicTypeAV$1 = {
-  code: number;
-  data: DataData$14;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type DataData$14 = {
-  item: Item$13;
-  [property: string]: any;
-};
-type Item$13 = {
-  basic: ItemBasic$5;
-  id_str: string;
-  modules: ItemModules$5;
-  orig: Orig$4;
-  type: DynamicType.AV;
-  visible: boolean;
-  [property: string]: any;
-};
-type ItemBasic$5 = {
-  comment_id_str: string;
-  comment_type: number;
-  editable: boolean;
-  like_icon: PurpleLikeIcon$4;
-  rid_str: string;
-  [property: string]: any;
-};
-type PurpleLikeIcon$4 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type ItemModules$5 = {
-  module_author: PurpleModuleAuthor$4;
-  module_dynamic: PurpleModuleDynamic$4;
-  module_more: ModuleMore$7;
-  module_stat: ModuleStat$7;
-  [property: string]: any;
-};
-type PurpleModuleAuthor$4 = {
-  avatar: PurpleAvatar$4;
-  face: string;
-  face_nft: boolean;
-  following: null;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: PurpleOfficialVerify$4;
-  pendant: PurplePendant$4;
-  pub_action: string;
-  pub_location_text: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: PurpleVip$4;
-  [property: string]: any;
-};
-type PurpleAvatar$4 = {
-  container_size: PurpleContainerSize$4;
-  fallback_layers: PurpleFallbackLayers$4;
-  mid: string;
-  [property: string]: any;
-};
-type PurpleContainerSize$4 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type PurpleFallbackLayers$4 = {
-  is_critical_group: boolean;
-  layers: PurpleLayer$4[];
-  [property: string]: any;
-};
-type PurpleLayer$4 = {
-  general_spec: PurpleGeneralSpec$4;
-  layer_config: PurpleLayerConfig$4;
-  resource: PurpleResource$4;
-  visible: boolean;
-  [property: string]: any;
-};
-type PurpleGeneralSpec$4 = {
-  pos_spec: PurplePosSpec$4;
-  render_spec: PurpleRenderSpec$4;
-  size_spec: PurpleSizeSpec$4;
-  [property: string]: any;
-};
-type PurplePosSpec$4 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type PurpleRenderSpec$4 = {
-  opacity: number;
-  [property: string]: any;
-};
-type PurpleSizeSpec$4 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type PurpleLayerConfig$4 = {
-  is_critical?: boolean;
-  tags: PurpleTags$4;
-  [property: string]: any;
-};
-type PurpleTags$4 = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: PurpleGENERALCFG$4;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type PurpleGENERALCFG$4 = {
-  config_type: number;
-  general_config: PurpleGeneralConfig$4;
-  [property: string]: any;
-};
-type PurpleGeneralConfig$4 = {
-  web_css_style: PurpleWebcssStyle$4;
-  [property: string]: any;
-};
-type PurpleWebcssStyle$4 = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type PurpleResource$4 = {
-  res_image: PurpleResImage$4;
-  res_type: number;
-  [property: string]: any;
-};
-type PurpleResImage$4 = {
-  image_src: PurpleImageSrc$4;
-  [property: string]: any;
-};
-type PurpleImageSrc$4 = {
-  local: number;
-  placeholder?: number;
-  remote?: PurpleRemote$4;
-  src_type: number;
-  [property: string]: any;
-};
-type PurpleRemote$4 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type PurpleOfficialVerify$4 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type PurplePendant$4 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type PurpleVip$4 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: PurpleLabel$4;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type PurpleLabel$4 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type PurpleModuleDynamic$4 = {
-  additional: null;
-  desc: Desc$5;
-  major: null;
-  topic: Topic$3;
-  [property: string]: any;
-};
-type Desc$5 = {
-  rich_text_nodes: RichTextNode$2[];
-  text: string;
-  [property: string]: any;
-};
-type RichTextNode$2 = {
-  emoji?: Emoji$4;
-  orig_text: string;
-  rid?: string;
-  text: string;
-  type: string;
-  [property: string]: any;
-};
-type Emoji$4 = {
-  icon_url: string;
-  size: number;
-  text: string;
-  type: number;
-  [property: string]: any;
-};
-type Topic$3 = {
-  id: number;
-  jump_url: string;
-  name: string;
-  [property: string]: any;
-};
-type ModuleMore$7 = {
-  three_point_items: ThreePointItem$7[];
-  [property: string]: any;
-};
-type ThreePointItem$7 = {
-  label: string;
-  modal?: Modal$3;
-  params: Params$3;
-  type: string;
-  [property: string]: any;
-};
-type Modal$3 = {
-  cancel: string;
-  confirm: string;
-  content: string;
-  title: string;
-  [property: string]: any;
-};
-type Params$3 = {
-  dyn_id_str: string;
-  dyn_type: number;
-  dynamic_id?: string;
-  rid_str: string;
-  status?: number;
-  type?: number;
-  [property: string]: any;
-};
-type ModuleStat$7 = {
-  comment: Comment$9;
-  forward: Forward$7;
-  like: Like$8;
-  [property: string]: any;
-};
-type Comment$9 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Forward$7 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Like$8 = {
-  count: number;
-  forbidden: boolean;
-  status: boolean;
-  [property: string]: any;
-};
-type Orig$4 = {
-  basic: OrigBasic$4;
-  id_str: string;
-  modules: OrigModules$4;
-  type: string;
-  visible: boolean;
-  [property: string]: any;
-};
-type OrigBasic$4 = {
-  comment_id_str: string;
-  comment_type: number;
-  like_icon: FluffyLikeIcon$4;
-  rid_str: string;
-  [property: string]: any;
-};
-type FluffyLikeIcon$4 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type OrigModules$4 = {
-  module_author: FluffyModuleAuthor$4;
-  module_dynamic: FluffyModuleDynamic$4;
-  [property: string]: any;
-};
-type FluffyModuleAuthor$4 = {
-  avatar: FluffyAvatar$4;
-  decoration_card: DecorationCard$6;
-  face: string;
-  face_nft: boolean;
-  following: null;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: FluffyOfficialVerify$4;
-  pendant: FluffyPendant$4;
-  pub_action: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: FluffyVip$4;
-  [property: string]: any;
-};
-type FluffyAvatar$4 = {
-  container_size: FluffyContainerSize$4;
-  fallback_layers: FluffyFallbackLayers$4;
-  mid: string;
-  [property: string]: any;
-};
-type FluffyContainerSize$4 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FluffyFallbackLayers$4 = {
-  is_critical_group: boolean;
-  layers: FluffyLayer$4[];
-  [property: string]: any;
-};
-type FluffyLayer$4 = {
-  general_spec: FluffyGeneralSpec$4;
-  layer_config: FluffyLayerConfig$4;
-  resource: FluffyResource$4;
-  visible: boolean;
-  [property: string]: any;
-};
-type FluffyGeneralSpec$4 = {
-  pos_spec: FluffyPosSpec$4;
-  render_spec: FluffyRenderSpec$4;
-  size_spec: FluffySizeSpec$4;
-  [property: string]: any;
-};
-type FluffyPosSpec$4 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type FluffyRenderSpec$4 = {
-  opacity: number;
-  [property: string]: any;
-};
-type FluffySizeSpec$4 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FluffyLayerConfig$4 = {
-  is_critical?: boolean;
-  tags: FluffyTags$4;
-  [property: string]: any;
-};
-type FluffyTags$4 = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: FluffyGENERALCFG$4;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  PENDENT_LAYER?: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type FluffyGENERALCFG$4 = {
-  config_type: number;
-  general_config: FluffyGeneralConfig$4;
-  [property: string]: any;
-};
-type FluffyGeneralConfig$4 = {
-  web_css_style: FluffyWebcssStyle$4;
-  [property: string]: any;
-};
-type FluffyWebcssStyle$4 = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type FluffyResource$4 = {
-  res_image: FluffyResImage$4;
-  res_type: number;
-  [property: string]: any;
-};
-type FluffyResImage$4 = {
-  image_src: FluffyImageSrc$4;
-  [property: string]: any;
-};
-type FluffyImageSrc$4 = {
-  local: number;
-  placeholder?: number;
-  remote?: FluffyRemote$4;
-  src_type: number;
-  [property: string]: any;
-};
-type FluffyRemote$4 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type DecorationCard$6 = {
-  big_card_url: string;
-  card_type: number;
-  card_type_name: string;
-  card_url: string;
-  fan: Fan$6;
-  id: number;
-  image_enhance: string;
-  item_id: number;
-  jump_url: string;
-  name: string;
-  [property: string]: any;
-};
-type Fan$6 = {
-  color: string;
-  color_format: ColorFormat$6;
-  is_fan: number;
-  name: string;
-  num_desc: string;
-  number: number;
-  [property: string]: any;
-};
-type ColorFormat$6 = {
-  colors: string[];
-  end_point: string;
-  gradients: number[];
-  start_point: string;
-  [property: string]: any;
-};
-type FluffyOfficialVerify$4 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type FluffyPendant$4 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type FluffyVip$4 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: FluffyLabel$4;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type FluffyLabel$4 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type FluffyModuleDynamic$4 = {
-  additional: null;
-  desc: null;
-  major: Major$7;
-  topic: null;
-  [property: string]: any;
-};
-type Major$7 = {
-  archive: Archive;
-  type: string;
-  [property: string]: any;
-};
-type Archive = {
-  aid: string;
-  badge: Badge;
-  bvid: string;
-  cover: string;
-  desc: string;
-  disable_preview: number;
-  duration_text: string;
-  jump_url: string;
-  stat: Stat;
-  title: string;
-  type: number;
-  [property: string]: any;
-};
-type Badge = {
-  bg_color: string;
-  color: string;
-  icon_url: null;
-  text: string;
-  [property: string]: any;
-};
-type Stat = {
-  danmaku: string;
-  play: string;
-  [property: string]: any;
-}; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/Forward/DYNAMIC_TYPE_DRAW_V0.d.ts
-type DynamicTypeDraw_V0 = {
-  code: number;
-  data: DataData$13;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type DataData$13 = {
-  item: Item$12;
-  [property: string]: any;
-};
-type Item$12 = {
-  basic: ItemBasic$4;
-  id_str: string;
-  modules: ItemModules$4;
-  orig: Orig$3;
-  type: DynamicType.DRAW;
-  visible: boolean;
-  [property: string]: any;
-};
-type ItemBasic$4 = {
-  comment_id_str: string;
-  comment_type: number;
-  editable: boolean;
-  like_icon: PurpleLikeIcon$3;
-  rid_str: string;
-  [property: string]: any;
-};
-type PurpleLikeIcon$3 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type ItemModules$4 = {
-  module_author: PurpleModuleAuthor$3;
-  module_dynamic: PurpleModuleDynamic$3;
-  module_more: ModuleMore$6;
-  module_stat: ModuleStat$6;
-  [property: string]: any;
-};
-type PurpleModuleAuthor$3 = {
-  avatar: PurpleAvatar$3;
-  face: string;
-  face_nft: boolean;
-  following: null;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: PurpleOfficialVerify$3;
-  pendant: PurplePendant$3;
-  pub_action: string;
-  pub_location_text: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: PurpleVip$3;
-  [property: string]: any;
-};
-type PurpleAvatar$3 = {
-  container_size: PurpleContainerSize$3;
-  fallback_layers: PurpleFallbackLayers$3;
-  mid: string;
-  [property: string]: any;
-};
-type PurpleContainerSize$3 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type PurpleFallbackLayers$3 = {
-  is_critical_group: boolean;
-  layers: PurpleLayer$3[];
-  [property: string]: any;
-};
-type PurpleLayer$3 = {
-  general_spec: PurpleGeneralSpec$3;
-  layer_config: PurpleLayerConfig$3;
-  resource: PurpleResource$3;
-  visible: boolean;
-  [property: string]: any;
-};
-type PurpleGeneralSpec$3 = {
-  pos_spec: PurplePosSpec$3;
-  render_spec: PurpleRenderSpec$3;
-  size_spec: PurpleSizeSpec$3;
-  [property: string]: any;
-};
-type PurplePosSpec$3 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type PurpleRenderSpec$3 = {
-  opacity: number;
-  [property: string]: any;
-};
-type PurpleSizeSpec$3 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type PurpleLayerConfig$3 = {
-  is_critical?: boolean;
-  tags: PurpleTags$3;
-  [property: string]: any;
-};
-type PurpleTags$3 = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: PurpleGENERALCFG$3;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type PurpleGENERALCFG$3 = {
-  config_type: number;
-  general_config: PurpleGeneralConfig$3;
-  [property: string]: any;
-};
-type PurpleGeneralConfig$3 = {
-  web_css_style: PurpleWebcssStyle$3;
-  [property: string]: any;
-};
-type PurpleWebcssStyle$3 = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type PurpleResource$3 = {
-  res_image: PurpleResImage$3;
-  res_type: number;
-  [property: string]: any;
-};
-type PurpleResImage$3 = {
-  image_src: PurpleImageSrc$3;
-  [property: string]: any;
-};
-type PurpleImageSrc$3 = {
-  local: number;
-  placeholder?: number;
-  remote?: PurpleRemote$3;
-  src_type: number;
-  [property: string]: any;
-};
-type PurpleRemote$3 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type PurpleOfficialVerify$3 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type PurplePendant$3 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type PurpleVip$3 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: PurpleLabel$3;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type PurpleLabel$3 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type PurpleModuleDynamic$3 = {
-  additional: null;
-  desc: Desc$4;
-  major: null;
-  topic: Topic$2;
-  [property: string]: any;
-};
-type Desc$4 = {
-  rich_text_nodes: DescRichTextNode$2[];
-  text: string;
-  [property: string]: any;
-};
-type DescRichTextNode$2 = {
-  emoji?: Emoji$3;
-  orig_text: string;
-  rid?: string;
-  text: string;
-  type: string;
-  [property: string]: any;
-};
-type Emoji$3 = {
-  icon_url: string;
-  size: number;
-  text: string;
-  type: number;
-  [property: string]: any;
-};
-type Topic$2 = {
-  id: number;
-  jump_url: string;
-  name: string;
-  [property: string]: any;
-};
-type ModuleMore$6 = {
-  three_point_items: ThreePointItem$6[];
-  [property: string]: any;
-};
-type ThreePointItem$6 = {
-  label: string;
-  modal?: Modal$2;
-  params: Params$2;
-  type: string;
-  [property: string]: any;
-};
-type Modal$2 = {
-  cancel: string;
-  confirm: string;
-  content: string;
-  title: string;
-  [property: string]: any;
-};
-type Params$2 = {
-  dyn_id_str: string;
-  dyn_type: number;
-  dynamic_id?: string;
-  rid_str: string;
-  status?: number;
-  type?: number;
-  [property: string]: any;
-};
-type ModuleStat$6 = {
-  comment: Comment$8;
-  forward: Forward$6;
-  like: Like$7;
-  [property: string]: any;
-};
-type Comment$8 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Forward$6 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Like$7 = {
-  count: number;
-  forbidden: boolean;
-  status: boolean;
-  [property: string]: any;
-};
-type Orig$3 = {
-  basic: OrigBasic$3;
-  id_str: string;
-  modules: OrigModules$3;
-  type: string;
-  visible: boolean;
-  [property: string]: any;
-};
-type OrigBasic$3 = {
-  comment_id_str: string;
-  comment_type: number;
-  jump_url: string;
-  like_icon: FluffyLikeIcon$3;
-  rid_str: string;
-  [property: string]: any;
-};
-type FluffyLikeIcon$3 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type OrigModules$3 = {
-  module_author: FluffyModuleAuthor$3;
-  module_dynamic: FluffyModuleDynamic$3;
-  [property: string]: any;
-};
-type FluffyModuleAuthor$3 = {
-  avatar: FluffyAvatar$3;
-  decoration_card: DecorationCard$5;
-  face: string;
-  face_nft: boolean;
-  following: null;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: FluffyOfficialVerify$3;
-  pendant: FluffyPendant$3;
-  pub_action: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: FluffyVip$3;
-  [property: string]: any;
-};
-type FluffyAvatar$3 = {
-  container_size: FluffyContainerSize$3;
-  fallback_layers: FluffyFallbackLayers$3;
-  mid: string;
-  [property: string]: any;
-};
-type FluffyContainerSize$3 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FluffyFallbackLayers$3 = {
-  is_critical_group: boolean;
-  layers: FluffyLayer$3[];
-  [property: string]: any;
-};
-type FluffyLayer$3 = {
-  general_spec: FluffyGeneralSpec$3;
-  layer_config: FluffyLayerConfig$3;
-  resource: FluffyResource$3;
-  visible: boolean;
-  [property: string]: any;
-};
-type FluffyGeneralSpec$3 = {
-  pos_spec: FluffyPosSpec$3;
-  render_spec: FluffyRenderSpec$3;
-  size_spec: FluffySizeSpec$3;
-  [property: string]: any;
-};
-type FluffyPosSpec$3 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type FluffyRenderSpec$3 = {
-  opacity: number;
-  [property: string]: any;
-};
-type FluffySizeSpec$3 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FluffyLayerConfig$3 = {
-  is_critical?: boolean;
-  tags: FluffyTags$3;
-  [property: string]: any;
-};
-type FluffyTags$3 = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: FluffyGENERALCFG$3;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  PENDENT_LAYER?: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type FluffyGENERALCFG$3 = {
-  config_type: number;
-  general_config: FluffyGeneralConfig$3;
-  [property: string]: any;
-};
-type FluffyGeneralConfig$3 = {
-  web_css_style: FluffyWebcssStyle$3;
-  [property: string]: any;
-};
-type FluffyWebcssStyle$3 = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type FluffyResource$3 = {
-  res_image: FluffyResImage$3;
-  res_type: number;
-  [property: string]: any;
-};
-type FluffyResImage$3 = {
-  image_src: FluffyImageSrc$3;
-  [property: string]: any;
-};
-type FluffyImageSrc$3 = {
-  local: number;
-  placeholder?: number;
-  remote?: FluffyRemote$3;
-  src_type: number;
-  [property: string]: any;
-};
-type FluffyRemote$3 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type DecorationCard$5 = {
-  big_card_url: string;
-  card_type: number;
-  card_type_name: string;
-  card_url: string;
-  fan: Fan$5;
-  id: number;
-  image_enhance: string;
-  item_id: number;
-  jump_url: string;
-  name: string;
-  [property: string]: any;
-};
-type Fan$5 = {
-  color: string;
-  color_format: ColorFormat$5;
-  is_fan: number;
-  name: string;
-  num_desc: string;
-  number: number;
-  [property: string]: any;
-};
-type ColorFormat$5 = {
-  colors: string[];
-  end_point: string;
-  gradients: number[];
-  start_point: string;
-  [property: string]: any;
-};
-type FluffyOfficialVerify$3 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type FluffyPendant$3 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type FluffyVip$3 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: FluffyLabel$3;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type FluffyLabel$3 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type FluffyModuleDynamic$3 = {
-  additional: null;
-  desc: null;
-  major: Major$6;
-  topic: null;
-  [property: string]: any;
-};
-type Major$6 = {
-  opus: Opus$3;
-  type: string;
-  [property: string]: any;
-};
-type Opus$3 = {
-  fold_action: string[];
-  jump_url: string;
-  pics: Pic$2[];
-  summary: Summary$4;
-  title: null;
-  [property: string]: any;
-};
-type Pic$2 = {
-  height?: number;
-  live_url?: null;
-  size?: number;
-  url?: string;
-  width?: number;
-  [property: string]: any;
-};
-type Summary$4 = {
-  rich_text_nodes: SummaryRichTextNode$2[];
-  text: string;
-  [property: string]: any;
-};
-type SummaryRichTextNode$2 = {
-  jump_url?: string;
-  orig_text: string;
-  text: string;
-  type: string;
-  [property: string]: any;
-}; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/Forward/DYNAMIC_TYPE_DRAW_V1.d.ts
-type DynamicTypeDraw_V1 = {
-  code: number;
-  data: DataData$12;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type DataData$12 = {
-  item: Item$11;
-  [property: string]: any;
-};
-type Item$11 = {
-  basic: ItemBasic$3;
-  id_str: string;
-  modules: ItemModules$3;
-  orig: Orig$2;
-  type: string;
-  visible: boolean;
-  [property: string]: any;
-};
-type ItemBasic$3 = {
-  comment_id_str: string;
-  comment_type: number;
-  like_icon: PurpleLikeIcon$2;
-  rid_str: string;
-  [property: string]: any;
-};
-type PurpleLikeIcon$2 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type ItemModules$3 = {
-  module_author: PurpleModuleAuthor$2;
-  module_dynamic: PurpleModuleDynamic$2;
-  module_more: ModuleMore$5;
-  module_stat: ModuleStat$5;
-  [property: string]: any;
-};
-type PurpleModuleAuthor$2 = {
-  avatar: PurpleAvatar$2;
-  face: string;
-  face_nft: boolean;
-  following: null;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: PurpleOfficialVerify$2;
-  pendant: PurplePendant$2;
-  pub_action: string;
-  pub_location_text: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: PurpleVip$2;
-  [property: string]: any;
-};
-type PurpleAvatar$2 = {
-  container_size: PurpleContainerSize$2;
-  fallback_layers: PurpleFallbackLayers$2;
-  mid: string;
-  [property: string]: any;
-};
-type PurpleContainerSize$2 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type PurpleFallbackLayers$2 = {
-  is_critical_group: boolean;
-  layers: PurpleLayer$2[];
-  [property: string]: any;
-};
-type PurpleLayer$2 = {
-  general_spec: PurpleGeneralSpec$2;
-  layer_config: PurpleLayerConfig$2;
-  resource: PurpleResource$2;
-  visible: boolean;
-  [property: string]: any;
-};
-type PurpleGeneralSpec$2 = {
-  pos_spec: PurplePosSpec$2;
-  render_spec: PurpleRenderSpec$2;
-  size_spec: PurpleSizeSpec$2;
-  [property: string]: any;
-};
-type PurplePosSpec$2 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type PurpleRenderSpec$2 = {
-  opacity: number;
-  [property: string]: any;
-};
-type PurpleSizeSpec$2 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type PurpleLayerConfig$2 = {
-  is_critical?: boolean;
-  tags: PurpleTags$2;
-  [property: string]: any;
-};
-type PurpleTags$2 = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: PurpleGENERALCFG$2;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type PurpleGENERALCFG$2 = {
-  config_type: number;
-  general_config: PurpleGeneralConfig$2;
-  [property: string]: any;
-};
-type PurpleGeneralConfig$2 = {
-  web_css_style: PurpleWebcssStyle$2;
-  [property: string]: any;
-};
-type PurpleWebcssStyle$2 = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type PurpleResource$2 = {
-  res_image: PurpleResImage$2;
-  res_type: number;
-  [property: string]: any;
-};
-type PurpleResImage$2 = {
-  image_src: PurpleImageSrc$2;
-  [property: string]: any;
-};
-type PurpleImageSrc$2 = {
-  local: number;
-  placeholder?: number;
-  remote?: PurpleRemote$2;
-  src_type: number;
-  [property: string]: any;
-};
-type PurpleRemote$2 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type PurpleOfficialVerify$2 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type PurplePendant$2 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type PurpleVip$2 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: PurpleLabel$2;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type PurpleLabel$2 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type PurpleModuleDynamic$2 = {
-  additional: Additional$2;
-  desc: Desc$3;
-  major: null;
-  topic: null;
-  [property: string]: any;
-};
-type Additional$2 = {
-  common: Common;
-  type: string;
-  [property: string]: any;
-};
-type Common = {
-  button: Button$2;
-  cover: string;
-  desc1: string;
-  desc2: string;
-  head_text: string;
-  id_str: string;
-  jump_url: string;
-  style: number;
-  sub_type: string;
-  title: string;
-  [property: string]: any;
-};
-type Button$2 = {
-  jump_style: JumpStyle$1;
-  jump_url: string;
-  type: number;
-  [property: string]: any;
-};
-type JumpStyle$1 = {
-  icon_url: string;
-  text: string;
-  [property: string]: any;
-};
-type Desc$3 = {
-  rich_text_nodes: DescRichTextNode$1[];
-  text: string;
-  [property: string]: any;
-};
-type DescRichTextNode$1 = {
-  orig_text?: string;
-  text?: string;
-  type?: string;
-  [property: string]: any;
-};
-type ModuleMore$5 = {
-  three_point_items: ThreePointItem$5[];
-  [property: string]: any;
-};
-type ThreePointItem$5 = {
-  label?: string;
-  type?: string;
-  [property: string]: any;
-};
-type ModuleStat$5 = {
-  comment: Comment$7;
-  forward: Forward$5;
-  like: Like$6;
-  [property: string]: any;
-};
-type Comment$7 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Forward$5 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Like$6 = {
-  count: number;
-  forbidden: boolean;
-  status: boolean;
-  [property: string]: any;
-};
-type Orig$2 = {
-  basic: OrigBasic$2;
-  id_str: string;
-  modules: OrigModules$2;
-  type: string;
-  visible: boolean;
-  [property: string]: any;
-};
-type OrigBasic$2 = {
-  comment_id_str: string;
-  comment_type: number;
-  jump_url: string;
-  like_icon: FluffyLikeIcon$2;
-  rid_str: string;
-  [property: string]: any;
-};
-type FluffyLikeIcon$2 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type OrigModules$2 = {
-  module_author: FluffyModuleAuthor$2;
-  module_dynamic: FluffyModuleDynamic$2;
-  [property: string]: any;
-};
-type FluffyModuleAuthor$2 = {
-  avatar: FluffyAvatar$2;
-  decoration_card: DecorationCard$4;
-  face: string;
-  face_nft: boolean;
-  following: null;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: FluffyOfficialVerify$2;
-  pendant: FluffyPendant$2;
-  pub_action: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: FluffyVip$2;
-  [property: string]: any;
-};
-type FluffyAvatar$2 = {
-  container_size: FluffyContainerSize$2;
-  fallback_layers: FluffyFallbackLayers$2;
-  mid: string;
-  [property: string]: any;
-};
-type FluffyContainerSize$2 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FluffyFallbackLayers$2 = {
-  is_critical_group: boolean;
-  layers: FluffyLayer$2[];
-  [property: string]: any;
-};
-type FluffyLayer$2 = {
-  general_spec: FluffyGeneralSpec$2;
-  layer_config: FluffyLayerConfig$2;
-  resource: FluffyResource$2;
-  visible: boolean;
-  [property: string]: any;
-};
-type FluffyGeneralSpec$2 = {
-  pos_spec: FluffyPosSpec$2;
-  render_spec: FluffyRenderSpec$2;
-  size_spec: FluffySizeSpec$2;
-  [property: string]: any;
-};
-type FluffyPosSpec$2 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type FluffyRenderSpec$2 = {
-  opacity: number;
-  [property: string]: any;
-};
-type FluffySizeSpec$2 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FluffyLayerConfig$2 = {
-  is_critical?: boolean;
-  tags: FluffyTags$2;
-  [property: string]: any;
-};
-type FluffyTags$2 = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: FluffyGENERALCFG$2;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  PENDENT_LAYER?: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type FluffyGENERALCFG$2 = {
-  config_type: number;
-  general_config: FluffyGeneralConfig$2;
-  [property: string]: any;
-};
-type FluffyGeneralConfig$2 = {
-  web_css_style: FluffyWebcssStyle$2;
-  [property: string]: any;
-};
-type FluffyWebcssStyle$2 = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type FluffyResource$2 = {
-  res_image: FluffyResImage$2;
-  res_type: number;
-  [property: string]: any;
-};
-type FluffyResImage$2 = {
-  image_src: FluffyImageSrc$2;
-  [property: string]: any;
-};
-type FluffyImageSrc$2 = {
-  local: number;
-  placeholder?: number;
-  remote?: FluffyRemote$2;
-  src_type: number;
-  [property: string]: any;
-};
-type FluffyRemote$2 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type DecorationCard$4 = {
-  big_card_url: string;
-  card_type: number;
-  card_type_name: string;
-  card_url: string;
-  fan: Fan$4;
-  id: number;
-  image_enhance: string;
-  item_id: number;
-  jump_url: string;
-  name: string;
-  [property: string]: any;
-};
-type Fan$4 = {
-  color: string;
-  color_format: ColorFormat$4;
-  is_fan: number;
-  name: string;
-  num_desc: string;
-  number: number;
-  [property: string]: any;
-};
-type ColorFormat$4 = {
-  colors: string[];
-  end_point: string;
-  gradients: number[];
-  start_point: string;
-  [property: string]: any;
-};
-type FluffyOfficialVerify$2 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type FluffyPendant$2 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type FluffyVip$2 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: FluffyLabel$2;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type FluffyLabel$2 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type FluffyModuleDynamic$2 = {
-  additional: null;
-  desc: null;
-  major: Major$5;
-  topic: null;
-  [property: string]: any;
-};
-type Major$5 = {
-  opus: Opus$2;
-  type: string;
-  [property: string]: any;
-};
-type Opus$2 = {
-  fold_action: string[];
-  jump_url: string;
-  pics: Pic$1[];
-  summary: Summary$3;
-  title: null;
-  [property: string]: any;
-};
-type Pic$1 = {
-  aigc?: null;
-  height?: number;
-  live_url?: null;
-  size?: number;
-  url?: string;
-  width?: number;
-  [property: string]: any;
-};
-type Summary$3 = {
-  rich_text_nodes: SummaryRichTextNode$1[];
-  text: string;
-  [property: string]: any;
-};
-type SummaryRichTextNode$1 = {
-  jump_url: string;
-  orig_text: string;
-  rid: string;
-  style: {
-    [key: string]: any;
-  };
-  text: string;
-  type: string;
-  [property: string]: any;
-}; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/Forward/DYNAMIC_TYPE_LIVE_RCMD.d.ts
-type DynamicTypeLiveRcmd = {
-  code: number;
-  data: DataData$11;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type DataData$11 = {
-  item: Item$10;
-  [property: string]: any;
-};
-type Item$10 = {
-  basic: ItemBasic$2;
-  id_str: string;
-  modules: ItemModules$2;
-  orig: Orig$1;
-  type: DynamicType.LIVE_RCMD;
-  visible: boolean;
-  [property: string]: any;
-};
-type ItemBasic$2 = {
-  comment_id_str: string;
-  comment_type: number;
-  editable: boolean;
-  like_icon: PurpleLikeIcon$1;
-  rid_str: string;
-  [property: string]: any;
-};
-type PurpleLikeIcon$1 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type ItemModules$2 = {
-  module_author: PurpleModuleAuthor$1;
-  module_dynamic: PurpleModuleDynamic$1;
-  module_more: ModuleMore$4;
-  module_stat: ModuleStat$4;
-  [property: string]: any;
-};
-type PurpleModuleAuthor$1 = {
-  avatar: PurpleAvatar$1;
-  face: string;
-  face_nft: boolean;
-  following: null;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: PurpleOfficialVerify$1;
-  pendant: PurplePendant$1;
-  pub_action: string;
-  pub_location_text: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: PurpleVip$1;
-  [property: string]: any;
-};
-type PurpleAvatar$1 = {
-  container_size: PurpleContainerSize$1;
-  fallback_layers: PurpleFallbackLayers$1;
-  mid: string;
-  [property: string]: any;
-};
-type PurpleContainerSize$1 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type PurpleFallbackLayers$1 = {
-  is_critical_group: boolean;
-  layers: PurpleLayer$1[];
-  [property: string]: any;
-};
-type PurpleLayer$1 = {
-  general_spec: PurpleGeneralSpec$1;
-  layer_config: PurpleLayerConfig$1;
-  resource: PurpleResource$1;
-  visible: boolean;
-  [property: string]: any;
-};
-type PurpleGeneralSpec$1 = {
-  pos_spec: PurplePosSpec$1;
-  render_spec: PurpleRenderSpec$1;
-  size_spec: PurpleSizeSpec$1;
-  [property: string]: any;
-};
-type PurplePosSpec$1 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type PurpleRenderSpec$1 = {
-  opacity: number;
-  [property: string]: any;
-};
-type PurpleSizeSpec$1 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type PurpleLayerConfig$1 = {
-  is_critical?: boolean;
-  tags: PurpleTags$1;
-  [property: string]: any;
-};
-type PurpleTags$1 = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: PurpleGENERALCFG$1;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type PurpleGENERALCFG$1 = {
-  config_type: number;
-  general_config: PurpleGeneralConfig$1;
-  [property: string]: any;
-};
-type PurpleGeneralConfig$1 = {
-  web_css_style: PurpleWebcssStyle$1;
-  [property: string]: any;
-};
-type PurpleWebcssStyle$1 = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type PurpleResource$1 = {
-  res_image: PurpleResImage$1;
-  res_type: number;
-  [property: string]: any;
-};
-type PurpleResImage$1 = {
-  image_src: PurpleImageSrc$1;
-  [property: string]: any;
-};
-type PurpleImageSrc$1 = {
-  local: number;
-  placeholder?: number;
-  remote?: PurpleRemote$1;
-  src_type: number;
-  [property: string]: any;
-};
-type PurpleRemote$1 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type PurpleOfficialVerify$1 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type PurplePendant$1 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type PurpleVip$1 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: PurpleLabel$1;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type PurpleLabel$1 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type PurpleModuleDynamic$1 = {
-  additional: null;
-  desc: Desc$2;
-  major: null;
-  topic: Topic$1;
-  [property: string]: any;
-};
-type Desc$2 = {
-  rich_text_nodes: RichTextNode$1[];
-  text: string;
-  [property: string]: any;
-};
-type RichTextNode$1 = {
-  emoji?: Emoji$2;
-  orig_text: string;
-  rid?: string;
-  text: string;
-  type: string;
-  [property: string]: any;
-};
-type Emoji$2 = {
-  icon_url: string;
-  size: number;
-  text: string;
-  type: number;
-  [property: string]: any;
-};
-type Topic$1 = {
-  id: number;
-  jump_url: string;
-  name: string;
-  [property: string]: any;
-};
-type ModuleMore$4 = {
-  three_point_items: ThreePointItem$4[];
-  [property: string]: any;
-};
-type ThreePointItem$4 = {
-  label: string;
-  modal?: Modal$1;
-  params: Params$1;
-  type: string;
-  [property: string]: any;
-};
-type Modal$1 = {
-  cancel: string;
-  confirm: string;
-  content: string;
-  title: string;
-  [property: string]: any;
-};
-type Params$1 = {
-  dyn_id_str: string;
-  dyn_type: number;
-  dynamic_id?: string;
-  rid_str: string;
-  status?: number;
-  type?: number;
-  [property: string]: any;
-};
-type ModuleStat$4 = {
-  comment: Comment$6;
-  forward: Forward$4;
-  like: Like$5;
-  [property: string]: any;
-};
-type Comment$6 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Forward$4 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Like$5 = {
-  count: number;
-  forbidden: boolean;
-  status: boolean;
-  [property: string]: any;
-};
-type Orig$1 = {
-  basic: OrigBasic$1;
-  id_str: string;
-  modules: OrigModules$1;
-  type: string;
-  visible: boolean;
-  [property: string]: any;
-};
-type OrigBasic$1 = {
-  comment_id_str: string;
-  comment_type: number;
-  like_icon: FluffyLikeIcon$1;
-  rid_str: string;
-  [property: string]: any;
-};
-type FluffyLikeIcon$1 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type OrigModules$1 = {
-  module_author: FluffyModuleAuthor$1;
-  module_dynamic: FluffyModuleDynamic$1;
-  [property: string]: any;
-};
-type FluffyModuleAuthor$1 = {
-  avatar: FluffyAvatar$1;
-  face: string;
-  face_nft: boolean;
-  following: boolean;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: FluffyOfficialVerify$1;
-  pendant: FluffyPendant$1;
-  pub_action: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: FluffyVip$1;
-  [property: string]: any;
-};
-type FluffyAvatar$1 = {
-  container_size: FluffyContainerSize$1;
-  fallback_layers: FluffyFallbackLayers$1;
-  mid: string;
-  [property: string]: any;
-};
-type FluffyContainerSize$1 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FluffyFallbackLayers$1 = {
-  is_critical_group: boolean;
-  layers: FluffyLayer$1[];
-  [property: string]: any;
-};
-type FluffyLayer$1 = {
-  general_spec: FluffyGeneralSpec$1;
-  layer_config: FluffyLayerConfig$1;
-  resource: FluffyResource$1;
-  visible: boolean;
-  [property: string]: any;
-};
-type FluffyGeneralSpec$1 = {
-  pos_spec: FluffyPosSpec$1;
-  render_spec: FluffyRenderSpec$1;
-  size_spec: FluffySizeSpec$1;
-  [property: string]: any;
-};
-type FluffyPosSpec$1 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type FluffyRenderSpec$1 = {
-  opacity: number;
-  [property: string]: any;
-};
-type FluffySizeSpec$1 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FluffyLayerConfig$1 = {
-  is_critical?: boolean;
-  tags: FluffyTags$1;
-  [property: string]: any;
-};
-type FluffyTags$1 = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: FluffyGENERALCFG$1;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type FluffyGENERALCFG$1 = {
-  config_type: number;
-  general_config: FluffyGeneralConfig$1;
-  [property: string]: any;
-};
-type FluffyGeneralConfig$1 = {
-  web_css_style: FluffyWebcssStyle$1;
-  [property: string]: any;
-};
-type FluffyWebcssStyle$1 = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type FluffyResource$1 = {
-  res_image: FluffyResImage$1;
-  res_type: number;
-  [property: string]: any;
-};
-type FluffyResImage$1 = {
-  image_src: FluffyImageSrc$1;
-  [property: string]: any;
-};
-type FluffyImageSrc$1 = {
-  local: number;
-  placeholder?: number;
-  remote?: FluffyRemote$1;
-  src_type: number;
-  [property: string]: any;
-};
-type FluffyRemote$1 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type FluffyOfficialVerify$1 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type FluffyPendant$1 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type FluffyVip$1 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: FluffyLabel$1;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type FluffyLabel$1 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type FluffyModuleDynamic$1 = {
-  additional: null;
-  desc: null;
-  major: Major$4;
-  topic: null;
-  [property: string]: any;
-};
-type Major$4 = {
-  live_rcmd: LiveRcmd$2;
-  type: string;
-  [property: string]: any;
-};
-type LiveRcmd$2 = {
-  content: string;
-  reserve_type: number;
-  [property: string]: any;
-}; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/Forward/DYNAMIC_TYPE_WORD.d.ts
-type DynamicTypeWord$1 = {
-  code: number;
-  data: DataData$10;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type DataData$10 = {
-  item: Item$9;
-  [property: string]: any;
-};
-type Item$9 = {
-  basic: ItemBasic$1;
-  id_str: string;
-  modules: ItemModules$1;
-  orig: Orig;
-  type: DynamicType.WORD;
-  visible: boolean;
-  [property: string]: any;
-};
-type ItemBasic$1 = {
-  comment_id_str: string;
-  comment_type: number;
-  editable: boolean;
-  like_icon: PurpleLikeIcon;
-  rid_str: string;
-  [property: string]: any;
-};
-type PurpleLikeIcon = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type ItemModules$1 = {
-  module_author: PurpleModuleAuthor;
-  module_dynamic: PurpleModuleDynamic;
-  module_more: ModuleMore$3;
-  module_stat: ModuleStat$3;
-  [property: string]: any;
-};
-type PurpleModuleAuthor = {
-  avatar: PurpleAvatar;
-  face: string;
-  face_nft: boolean;
-  following: null;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: PurpleOfficialVerify;
-  pendant: PurplePendant;
-  pub_action: string;
-  pub_location_text: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: PurpleVip;
-  [property: string]: any;
-};
-type PurpleAvatar = {
-  container_size: PurpleContainerSize;
-  fallback_layers: PurpleFallbackLayers;
-  mid: string;
-  [property: string]: any;
-};
-type PurpleContainerSize = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type PurpleFallbackLayers = {
-  is_critical_group: boolean;
-  layers: PurpleLayer[];
-  [property: string]: any;
-};
-type PurpleLayer = {
-  general_spec: PurpleGeneralSpec;
-  layer_config: PurpleLayerConfig;
-  resource: PurpleResource;
-  visible: boolean;
-  [property: string]: any;
-};
-type PurpleGeneralSpec = {
-  pos_spec: PurplePosSpec;
-  render_spec: PurpleRenderSpec;
-  size_spec: PurpleSizeSpec;
-  [property: string]: any;
-};
-type PurplePosSpec = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type PurpleRenderSpec = {
-  opacity: number;
-  [property: string]: any;
-};
-type PurpleSizeSpec = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type PurpleLayerConfig = {
-  is_critical?: boolean;
-  tags: PurpleTags;
-  [property: string]: any;
-};
-type PurpleTags = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: PurpleGENERALCFG;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type PurpleGENERALCFG = {
-  config_type: number;
-  general_config: PurpleGeneralConfig;
-  [property: string]: any;
-};
-type PurpleGeneralConfig = {
-  web_css_style: PurpleWebcssStyle;
-  [property: string]: any;
-};
-type PurpleWebcssStyle = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type PurpleResource = {
-  res_image: PurpleResImage;
-  res_type: number;
-  [property: string]: any;
-};
-type PurpleResImage = {
-  image_src: PurpleImageSrc;
-  [property: string]: any;
-};
-type PurpleImageSrc = {
-  local: number;
-  placeholder?: number;
-  remote?: PurpleRemote;
-  src_type: number;
-  [property: string]: any;
-};
-type PurpleRemote = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type PurpleOfficialVerify = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type PurplePendant = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type PurpleVip = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: PurpleLabel;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type PurpleLabel = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type PurpleModuleDynamic = {
-  additional: Additional$1;
-  desc: Desc$1;
-  major: null;
-  topic: Topic;
-  [property: string]: any;
-};
-type Additional$1 = {
-  type: string;
-  reserve: Reserve;
-  [property: string]: any;
-};
-type Reserve = {
-  button: Button$1;
-  desc1: Desc1;
-  desc2: Desc2;
-  jump_url: string;
-  reserve_total: number;
-  rid: number;
-  state: number;
-  stype: number;
-  title: string;
-  up_mid: number;
-  [property: string]: any;
-};
-type Button$1 = {
-  check: Check;
-  status: number;
-  type: number;
-  uncheck: Uncheck;
-  [property: string]: any;
-};
-type Check = {
-  icon_url: string;
-  text: string;
-  [property: string]: any;
-};
-type Uncheck = {
-  disable: number;
-  icon_url: string;
-  text: string;
-  toast: string;
-  [property: string]: any;
-};
-type Desc1 = {
-  style: number;
-  text: string;
-  [property: string]: any;
-};
-type Desc2 = {
-  style: number;
-  text: string;
-  visible: boolean;
-  [property: string]: any;
-};
-type Desc$1 = {
-  rich_text_nodes: DescRichTextNode[];
-  text: string;
-  [property: string]: any;
-};
-type DescRichTextNode = {
-  emoji?: Emoji$1;
-  orig_text: string;
-  rid?: string;
-  text: string;
-  type: string;
-  [property: string]: any;
-};
-type Emoji$1 = {
-  icon_url: string;
-  size: number;
-  text: string;
-  type: number;
-  [property: string]: any;
-};
-type Topic = {
-  id: number;
-  jump_url: string;
-  name: string;
-  [property: string]: any;
-};
-type ModuleMore$3 = {
-  three_point_items: ThreePointItem$3[];
-  [property: string]: any;
-};
-type ThreePointItem$3 = {
-  label: string;
-  modal?: Modal;
-  params: Params;
-  type: string;
-  [property: string]: any;
-};
-type Modal = {
-  cancel: string;
-  confirm: string;
-  content: string;
-  title: string;
-  [property: string]: any;
-};
-type Params = {
-  dyn_id_str: string;
-  dyn_type: number;
-  dynamic_id?: string;
-  rid_str: string;
-  status?: number;
-  type?: number;
-  [property: string]: any;
-};
-type ModuleStat$3 = {
-  comment: Comment$5;
-  forward: Forward$3;
-  like: Like$4;
-  [property: string]: any;
-};
-type Comment$5 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Forward$3 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Like$4 = {
-  count: number;
-  forbidden: boolean;
-  status: boolean;
-  [property: string]: any;
-};
-type Orig = {
-  basic: OrigBasic;
-  id_str: string;
-  modules: OrigModules;
-  type: string;
-  visible: boolean;
-  [property: string]: any;
-};
-type OrigBasic = {
-  comment_id_str: string;
-  comment_type: number;
-  jump_url: string;
-  like_icon: FluffyLikeIcon;
-  rid_str: string;
-  [property: string]: any;
-};
-type FluffyLikeIcon = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type OrigModules = {
-  module_author: FluffyModuleAuthor;
-  module_dynamic: FluffyModuleDynamic;
-  [property: string]: any;
-};
-type FluffyModuleAuthor = {
-  avatar: FluffyAvatar;
-  decoration_card: DecorationCard$3;
-  face: string;
-  face_nft: boolean;
-  following: null;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: FluffyOfficialVerify;
-  pendant: FluffyPendant;
-  pub_action: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: FluffyVip;
-  [property: string]: any;
-};
-type FluffyAvatar = {
-  container_size: FluffyContainerSize;
-  fallback_layers: FluffyFallbackLayers;
-  mid: string;
-  [property: string]: any;
-};
-type FluffyContainerSize = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FluffyFallbackLayers = {
-  is_critical_group: boolean;
-  layers: FluffyLayer[];
-  [property: string]: any;
-};
-type FluffyLayer = {
-  general_spec: FluffyGeneralSpec;
-  layer_config: FluffyLayerConfig;
-  resource: FluffyResource;
-  visible: boolean;
-  [property: string]: any;
-};
-type FluffyGeneralSpec = {
-  pos_spec: FluffyPosSpec;
-  render_spec: FluffyRenderSpec;
-  size_spec: FluffySizeSpec;
-  [property: string]: any;
-};
-type FluffyPosSpec = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type FluffyRenderSpec = {
-  opacity: number;
-  [property: string]: any;
-};
-type FluffySizeSpec = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FluffyLayerConfig = {
-  is_critical?: boolean;
-  tags: FluffyTags;
-  [property: string]: any;
-};
-type FluffyTags = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: FluffyGENERALCFG;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  PENDENT_LAYER?: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type FluffyGENERALCFG = {
-  config_type: number;
-  general_config: FluffyGeneralConfig;
-  [property: string]: any;
-};
-type FluffyGeneralConfig = {
-  web_css_style: FluffyWebcssStyle;
-  [property: string]: any;
-};
-type FluffyWebcssStyle = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type FluffyResource = {
-  res_image: FluffyResImage;
-  res_type: number;
-  [property: string]: any;
-};
-type FluffyResImage = {
-  image_src: FluffyImageSrc;
-  [property: string]: any;
-};
-type FluffyImageSrc = {
-  local: number;
-  placeholder?: number;
-  remote?: FluffyRemote;
-  src_type: number;
-  [property: string]: any;
-};
-type FluffyRemote = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type DecorationCard$3 = {
-  big_card_url: string;
-  card_type: number;
-  card_type_name: string;
-  card_url: string;
-  fan: Fan$3;
-  id: number;
-  image_enhance: string;
-  item_id: number;
-  jump_url: string;
-  name: string;
-  [property: string]: any;
-};
-type Fan$3 = {
-  color: string;
-  color_format: ColorFormat$3;
-  is_fan: number;
-  name: string;
-  num_desc: string;
-  number: number;
-  [property: string]: any;
-};
-type ColorFormat$3 = {
-  colors: string[];
-  end_point: string;
-  gradients: number[];
-  start_point: string;
-  [property: string]: any;
-};
-type FluffyOfficialVerify = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type FluffyPendant = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type FluffyVip = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: FluffyLabel;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type FluffyLabel = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type FluffyModuleDynamic = {
-  additional: null;
-  desc: null;
-  major: Major$3;
-  topic: null;
-  [property: string]: any;
-};
-type Major$3 = {
-  opus: Opus$1;
-  type: string;
-  [property: string]: any;
-};
-type Opus$1 = {
-  fold_action: string[];
-  jump_url: string;
-  pics: Pic[];
-  summary: Summary$2;
-  title: null;
-  [property: string]: any;
-};
-type Pic = {
-  height?: number;
-  live_url?: null;
-  size?: number;
-  url?: string;
-  width?: number;
-  [property: string]: any;
-};
-type Summary$2 = {
-  rich_text_nodes: SummaryRichTextNode[];
-  text: string;
-  [property: string]: any;
-};
-type SummaryRichTextNode = {
-  jump_url?: string;
-  orig_text: string;
-  text: string;
-  type: string;
-  [property: string]: any;
-}; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_FORWARD.d.ts
-type FixOrig<O, LiteralType extends string> = O & {
-  type: LiteralType;
-};
-type OriginalDynamicItemMap = {
-  [DynamicType.AV]: DynamicTypeAV$1['data']['item'];
-  [DynamicType.DRAW]: DynamicTypeDraw_V0['data']['item'] | DynamicTypeDraw_V1['data']['item'];
-  [DynamicType.WORD]: DynamicTypeWord$1['data']['item'];
-  [DynamicType.LIVE_RCMD]: DynamicTypeLiveRcmd['data']['item'];
-};
-type ItemBasic = DynamicTypeWord$1['data']['item']['basic'] | DynamicTypeLiveRcmd['data']['item']['basic'] | DynamicTypeDraw_V0['data']['item']['basic'] | DynamicTypeDraw_V1['data']['item']['basic'] | DynamicTypeAV$1['data']['item']['basic'];
-type ItemModules = DynamicTypeWord$1['data']['item']['modules'] | DynamicTypeLiveRcmd['data']['item']['modules'] | DynamicTypeDraw_V0['data']['item']['modules'] | DynamicTypeDraw_V1['data']['item']['modules'] | DynamicTypeAV$1['data']['item']['modules'];
-type DataData$9<T extends keyof OriginalDynamicItemMap> = {
-  item: {
-    basic: ItemBasic;
-    id_str: string;
-    modules: ItemModules;
-    orig: FixOrig<OriginalDynamicItemMap[T]['orig'], T>;
-    type: DynamicType.FORWARD;
-    visible: boolean;
-    [property: string]: any;
-  };
-  [property: string]: any;
-};
-type DynamicTypeForward<T extends keyof OriginalDynamicItemMap> = {
-  code: number;
-  data: DataData$9<T>;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type DynamicTypeForwardUnion = DynamicTypeForward<DynamicType.AV> | DynamicTypeForward<DynamicType.DRAW> | DynamicTypeForward<DynamicType.WORD> | DynamicTypeForward<DynamicType.LIVE_RCMD>; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_LIVE_RCMD_V0.d.ts
-type DynamicTypeLiveRcmd_V0 = {
-  code: number;
-  data: DataData$8;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type DataData$8 = {
-  item: Item$8;
-  [property: string]: any;
-};
-type Item$8 = {
-  basic: Basic$2;
-  id_str: string;
-  modules: Modules$2;
-  type: DynamicType.LIVE_RCMD;
-  visible: boolean;
-  [property: string]: any;
-};
-type Basic$2 = {
-  comment_id_str: string;
-  comment_type: number;
-  like_icon: LikeIcon$2;
-  rid_str: string;
-  [property: string]: any;
-};
-type LikeIcon$2 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type Modules$2 = {
-  module_author: ModuleAuthor$2;
-  module_dynamic: ModuleDynamic$2;
-  module_more: ModuleMore$2;
-  module_stat: ModuleStat$2;
-  [property: string]: any;
-};
-type ModuleAuthor$2 = {
-  avatar: Avatar$3;
-  decoration_card: DecorationCard$2;
-  face: string;
-  face_nft: boolean;
-  following: boolean;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: OfficialVerify$3;
-  pendant: Pendant$3;
-  pub_action: string;
-  pub_location_text: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: Vip$3;
-  [property: string]: any;
-};
-type Avatar$3 = {
-  container_size: ContainerSize$2;
-  fallback_layers: FallbackLayers$2;
-  mid: string;
-  [property: string]: any;
-};
-type ContainerSize$2 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FallbackLayers$2 = {
-  is_critical_group: boolean;
-  layers: Layer$2[];
-  [property: string]: any;
-};
-type Layer$2 = {
-  general_spec: GeneralSpec$2;
-  layer_config: LayerConfig$2;
-  resource: Resource$2;
-  visible: boolean;
-  [property: string]: any;
-};
-type GeneralSpec$2 = {
-  pos_spec: PosSpec$2;
-  render_spec: RenderSpec$2;
-  size_spec: SizeSpec$2;
-  [property: string]: any;
-};
-type PosSpec$2 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type RenderSpec$2 = {
-  opacity: number;
-  [property: string]: any;
-};
-type SizeSpec$2 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type LayerConfig$2 = {
-  is_critical?: boolean;
-  tags: Tags$2;
-  [property: string]: any;
-};
-type Tags$2 = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: GeneralCFG$2;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type GeneralCFG$2 = {
-  config_type: number;
-  general_config: GeneralConfig$2;
-  [property: string]: any;
-};
-type GeneralConfig$2 = {
-  web_css_style: WebcssStyle$2;
-  [property: string]: any;
-};
-type WebcssStyle$2 = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type Resource$2 = {
-  res_image: ResImage$2;
-  res_type: number;
-  [property: string]: any;
-};
-type ResImage$2 = {
-  image_src: ImageSrc$2;
-  [property: string]: any;
-};
-type ImageSrc$2 = {
-  local: number;
-  placeholder?: number;
-  remote?: Remote$2;
-  src_type: number;
-  [property: string]: any;
-};
-type Remote$2 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type DecorationCard$2 = {
-  big_card_url: string;
-  card_type: number;
-  card_type_name: string;
-  card_url: string;
-  fan: Fan$2;
-  id: number;
-  image_enhance: string;
-  item_id: number;
-  jump_url: string;
-  name: string;
-  [property: string]: any;
-};
-type Fan$2 = {
-  color: string;
-  color_format: ColorFormat$2;
-  is_fan: number;
-  name: string;
-  num_desc: string;
-  number: number;
-  [property: string]: any;
-};
-type ColorFormat$2 = {
-  colors: string[];
-  end_point: string;
-  gradients: number[];
-  start_point: string;
-  [property: string]: any;
-};
-type OfficialVerify$3 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type Pendant$3 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type Vip$3 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: Label$3;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type Label$3 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type ModuleDynamic$2 = {
-  additional: null;
-  desc: null;
-  major: Major$2;
-  topic: null;
-  [property: string]: any;
-};
-type Major$2 = {
-  live_rcmd: LiveRcmd$1;
-  type: string;
-  [property: string]: any;
-};
-type LiveRcmd$1 = {
-  content: string;
-  reserve_type: number;
-  [property: string]: any;
-};
-type ModuleMore$2 = {
-  three_point_items: ThreePointItem$2[];
-  [property: string]: any;
-};
-type ThreePointItem$2 = {
-  label?: string;
-  type?: string;
-  [property: string]: any;
-};
-type ModuleStat$2 = {
-  comment: Comment$4;
-  forward: Forward$2;
-  like: Like$3;
-  [property: string]: any;
-};
-type Comment$4 = {
-  count: number;
-  forbidden: boolean;
-  hidden: boolean;
-  [property: string]: any;
-};
-type Forward$2 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Like$3 = {
-  count: number;
-  forbidden: boolean;
-  status: boolean;
-  [property: string]: any;
-}; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_LIVE_RCMD_V1.d.ts
-type DynamicTypeLiveRcmd_V1 = {
-  code: number;
-  data: DataData$7;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type DataData$7 = {
-  item: Item$7;
-  [property: string]: any;
-};
-type Item$7 = {
-  basic: Basic$1;
-  id_str: string;
-  modules: Modules$1;
-  type: DynamicType.LIVE_RCMD;
-  visible: boolean;
-  [property: string]: any;
-};
-type Basic$1 = {
-  comment_id_str: string;
-  comment_type: number;
-  like_icon: LikeIcon$1;
-  rid_str: string;
-  [property: string]: any;
-};
-type LikeIcon$1 = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type Modules$1 = {
-  module_author: ModuleAuthor$1;
-  module_dynamic: ModuleDynamic$1;
-  module_more: ModuleMore$1;
-  module_stat: ModuleStat$1;
-  [property: string]: any;
-};
-type ModuleAuthor$1 = {
-  avatar: Avatar$2;
-  decoration_card: DecorationCard$1;
-  face: string;
-  face_nft: boolean;
-  following: boolean;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: OfficialVerify$2;
-  pendant: Pendant$2;
-  pub_action: string;
-  pub_location_text: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: Vip$2;
-  [property: string]: any;
-};
-type Avatar$2 = {
-  container_size: ContainerSize$1;
-  fallback_layers: FallbackLayers$1;
-  mid: string;
-  [property: string]: any;
-};
-type ContainerSize$1 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FallbackLayers$1 = {
-  is_critical_group: boolean;
-  layers: Layer$1[];
-  [property: string]: any;
-};
-type Layer$1 = {
-  general_spec: GeneralSpec$1;
-  layer_config: LayerConfig$1;
-  resource: Resource$1;
-  visible: boolean;
-  [property: string]: any;
-};
-type GeneralSpec$1 = {
-  pos_spec: PosSpec$1;
-  render_spec: RenderSpec$1;
-  size_spec: SizeSpec$1;
-  [property: string]: any;
-};
-type PosSpec$1 = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type RenderSpec$1 = {
-  opacity: number;
-  [property: string]: any;
-};
-type SizeSpec$1 = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type LayerConfig$1 = {
-  is_critical?: boolean;
-  tags: Tags$1;
-  [property: string]: any;
-};
-type Tags$1 = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: GeneralCFG$1;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type GeneralCFG$1 = {
-  config_type: number;
-  general_config: GeneralConfig$1;
-  [property: string]: any;
-};
-type GeneralConfig$1 = {
-  web_css_style: WebcssStyle$1;
-  [property: string]: any;
-};
-type WebcssStyle$1 = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type Resource$1 = {
-  res_image: ResImage$1;
-  res_type: number;
-  [property: string]: any;
-};
-type ResImage$1 = {
-  image_src: ImageSrc$1;
-  [property: string]: any;
-};
-type ImageSrc$1 = {
-  local: number;
-  placeholder?: number;
-  remote?: Remote$1;
-  src_type: number;
-  [property: string]: any;
-};
-type Remote$1 = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type DecorationCard$1 = {
-  big_card_url: string;
-  card_type: number;
-  card_type_name: string;
-  card_url: string;
-  fan: Fan$1;
-  id: number;
-  image_enhance: string;
-  item_id: number;
-  jump_url: string;
-  name: string;
-  [property: string]: any;
-};
-type Fan$1 = {
-  color: string;
-  color_format: ColorFormat$1;
-  is_fan: number;
-  name: string;
-  num_desc: string;
-  number: number;
-  [property: string]: any;
-};
-type ColorFormat$1 = {
-  colors: string[];
-  end_point: string;
-  gradients: number[];
-  start_point: string;
-  [property: string]: any;
-};
-type OfficialVerify$2 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type Pendant$2 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type Vip$2 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: Label$2;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type Label$2 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type ModuleDynamic$1 = {
-  additional: null;
-  desc: null;
-  major: Major$1;
-  topic: null;
-  [property: string]: any;
-};
-type Major$1 = {
-  live_rcmd: LiveRcmd;
-  type: string;
-  [property: string]: any;
-};
-type LiveRcmd = {
-  content: string;
-  reserve_type: number;
-  [property: string]: any;
-};
-type ModuleMore$1 = {
-  three_point_items: ThreePointItem$1[];
-  [property: string]: any;
-};
-type ThreePointItem$1 = {
-  label?: string;
-  type?: string;
-  [property: string]: any;
-};
-type ModuleStat$1 = {
-  comment: Comment$;
-  forward: Forward$1;
-  like: Like$2;
-  [property: string]: any;
-};
-type Comment$ = {
-  count: number;
-  forbidden: boolean;
-  hidden: boolean;
-  [property: string]: any;
-};
-type Forward$1 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Like$2 = {
-  count: number;
-  forbidden: boolean;
-  status: boolean;
-  [property: string]: any;
-}; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/DYNAMIC_TYPE_WORD.d.ts
-type DynamicTypeWord = {
-  code: number;
-  data: DataData$6;
-  message: string;
-  ttl: number;
-  [property: string]: any;
-};
-type DataData$6 = {
-  item: Item$6;
-  [property: string]: any;
-};
-type Item$6 = {
-  basic: Basic;
-  id_str: string;
-  modules: Modules;
-  type: DynamicType.WORD;
-  visible: boolean;
-  [property: string]: any;
-};
-type Basic = {
-  comment_id_str: string;
-  comment_type: number;
-  jump_url: string;
-  like_icon: LikeIcon;
-  rid_str: string;
-  [property: string]: any;
-};
-type LikeIcon = {
-  action_url: string;
-  end_url: string;
-  id: number;
-  start_url: string;
-  [property: string]: any;
-};
-type Modules = {
-  module_author: ModuleAuthor;
-  module_dynamic: ModuleDynamic;
-  module_more: ModuleMore;
-  module_stat: ModuleStat;
-  [property: string]: any;
-};
-type ModuleAuthor = {
-  avatar: Avatar$1;
-  decoration_card: DecorationCard;
-  face: string;
-  face_nft: boolean;
-  following: boolean;
-  jump_url: string;
-  label: string;
-  mid: number;
-  name: string;
-  official_verify: OfficialVerify$1;
-  pendant: Pendant$1;
-  pub_action: string;
-  pub_location_text: string;
-  pub_time: string;
-  pub_ts: number;
-  type: string;
-  vip: Vip$1;
-  [property: string]: any;
-};
-type Avatar$1 = {
-  container_size: ContainerSize;
-  fallback_layers: FallbackLayers;
-  mid: string;
-  [property: string]: any;
-};
-type ContainerSize = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type FallbackLayers = {
-  is_critical_group: boolean;
-  layers: Layer[];
-  [property: string]: any;
-};
-type Layer = {
-  general_spec: GeneralSpec;
-  layer_config: LayerConfig;
-  resource: Resource;
-  visible: boolean;
-  [property: string]: any;
-};
-type GeneralSpec = {
-  pos_spec: PosSpec;
-  render_spec: RenderSpec;
-  size_spec: SizeSpec;
-  [property: string]: any;
-};
-type PosSpec = {
-  axis_x: number;
-  axis_y: number;
-  coordinate_pos: number;
-  [property: string]: any;
-};
-type RenderSpec = {
-  opacity: number;
-  [property: string]: any;
-};
-type SizeSpec = {
-  height: number;
-  width: number;
-  [property: string]: any;
-};
-type LayerConfig = {
-  is_critical?: boolean;
-  tags: Tags;
-  [property: string]: any;
-};
-type Tags = {
-  AVATAR_LAYER?: {
-    [key: string]: any;
-  };
-  GENERAL_CFG: GeneralCFG;
-  ICON_LAYER: {
-    [key: string]: any;
-  };
-  [property: string]: any;
-};
-type GeneralCFG = {
-  config_type: number;
-  general_config: GeneralConfig;
-  [property: string]: any;
-};
-type GeneralConfig = {
-  web_css_style: WebcssStyle;
-  [property: string]: any;
-};
-type WebcssStyle = {
-  'background-color': string;
-  border: string;
-  borderRadius: string;
-  boxSizing: string;
-  [property: string]: any;
-};
-type Resource = {
-  res_image: ResImage;
-  res_type: number;
-  [property: string]: any;
-};
-type ResImage = {
-  image_src: ImageSrc;
-  [property: string]: any;
-};
-type ImageSrc = {
-  local: number;
-  placeholder?: number;
-  remote?: Remote;
-  src_type: number;
-  [property: string]: any;
-};
-type Remote = {
-  bfs_style: string;
-  url: string;
-  [property: string]: any;
-};
-type DecorationCard = {
-  big_card_url: string;
-  card_type: number;
-  card_type_name: string;
-  card_url: string;
-  fan: Fan;
-  id: number;
-  image_enhance: string;
-  item_id: number;
-  jump_url: string;
-  name: string;
-  [property: string]: any;
-};
-type Fan = {
-  color: string;
-  color_format: ColorFormat;
-  is_fan: number;
-  name: string;
-  num_desc: string;
-  number: number;
-  [property: string]: any;
-};
-type ColorFormat = {
-  colors: string[];
-  end_point: string;
-  gradients: number[];
-  start_point: string;
-  [property: string]: any;
-};
-type OfficialVerify$1 = {
-  desc: string;
-  type: number;
-  [property: string]: any;
-};
-type Pendant$1 = {
-  expire: number;
-  image: string;
-  image_enhance: string;
-  image_enhance_frame: string;
-  n_pid: number;
-  name: string;
-  pid: number;
-  [property: string]: any;
-};
-type Vip$1 = {
-  avatar_subscript: number;
-  avatar_subscript_url: string;
-  due_date: number;
-  label: Label$1;
-  nickname_color: string;
-  status: number;
-  theme_type: number;
-  type: number;
-  [property: string]: any;
-};
-type Label$1 = {
-  bg_color: string;
-  bg_style: number;
-  border_color: string;
-  img_label_uri_hans: string;
-  img_label_uri_hans_static: string;
-  img_label_uri_hant: string;
-  img_label_uri_hant_static: string;
-  label_theme: string;
-  path: string;
-  text: string;
-  text_color: string;
-  use_img_label: boolean;
-  [property: string]: any;
-};
-type ModuleDynamic = {
-  additional: Additional;
-  desc: null;
-  major: Major;
-  topic: null;
-  [property: string]: any;
-};
-type Additional = {
-  type: string;
-  vote: Vote;
-  [property: string]: any;
-};
-type Vote = {
-  button: Button;
-  choice_cnt: number;
-  default_share: number;
-  desc: string;
-  end_time: number;
-  join_num: number;
-  status: number;
-  title: string;
-  type: null;
-  uid: number;
-  vote_id: number;
-  [property: string]: any;
-};
-type Button = {
-  jump_style: JumpStyle;
-  type: number;
-  [property: string]: any;
-};
-type JumpStyle = {
-  text: string;
-  [property: string]: any;
-};
-type Major = {
-  opus: Opus;
-  type: string;
-  [property: string]: any;
-};
-type Opus = {
-  fold_action: string[];
-  jump_url: string;
-  pics: string[];
-  summary: Summary$1;
-  title: null;
-  [property: string]: any;
-};
-type Summary$1 = {
-  rich_text_nodes: RichTextNode[];
-  text: string;
-  [property: string]: any;
-};
-type RichTextNode = {
-  emoji?: Emoji;
-  orig_text: string;
-  rid?: string;
-  text: string;
-  type: string;
-  [property: string]: any;
-};
-type Emoji = {
-  icon_url: string;
-  size: number;
-  text: string;
-  type: number;
-  [property: string]: any;
-};
-type ModuleMore = {
-  three_point_items: ThreePointItem[];
-  [property: string]: any;
-};
-type ThreePointItem = {
-  label?: string;
-  type?: string;
-  [property: string]: any;
-};
-type ModuleStat = {
-  comment: Comment$3;
-  forward: Forward;
-  like: Like$1;
-  [property: string]: any;
-};
-type Comment$3 = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Forward = {
-  count: number;
-  forbidden: boolean;
-  [property: string]: any;
-};
-type Like$1 = {
-  count: number;
-  forbidden: boolean;
-  status: boolean;
-  [property: string]: any;
-}; //#endregion
-//#region src/types/ReturnDataType/Bilibili/Dynamic/index.d.ts
-/**
- * 转发动态种子动态主体类型枚举
- */
-declare enum MajorType {
-  /** 动态失效 */
-  NONE = "MAJOR_TYPE_NONE",
-  /** 图文动态 */
-  OPUS = "MAJOR_TYPE_OPUS",
-  /** 视频 */
-  ARCHIVE = "MAJOR_TYPE_ARCHIVE",
-  /** 剧集更新 */
-  PGC = "MAJOR_TYPE_PGC",
-  /** 课程 */
-  COURSES = "MAJOR_TYPE_COURSES",
-  /** 带图动态 */
-  DRAW = "MAJOR_TYPE_DRAW",
-  /** 文章 */
-  ARTICLE = "MAJOR_TYPE_ARTICLE",
-  /** 音频更新 */
-  MUSIC = "MAJOR_TYPE_MUSIC",
-  /** 一般类型 */
-  COMMON = "MAJOR_TYPE_COMMON",
-  /** 直播间分享 */
-  LIVE = "MAJOR_TYPE_LIVE",
-  /** 媒体列表 */
-  MEDIALIST = "MAJOR_TYPE_MEDIALIST",
-  /** 小程序 */
-  APPLET = "MAJOR_TYPE_APPLET",
-  /** 订阅 */
-  SUBSCRIPTION = "MAJOR_TYPE_SUBSCRIPTION",
-  /** 直播状态 */
-  LIVE_RCMD = "MAJOR_TYPE_LIVE_RCMD",
-  /** 合集更新 */
-  UGC_SEASON = "MAJOR_TYPE_UGC_SEASON",
-  /** 新订阅 */
-  SUBSCRIPTION_NEW = "MAJOR_TYPE_SUBSCRIPTION_NEW",
-  /** 充电相关 */
-  UPOWER_COMMON = "MAJOR_TYPE_UPOWER_COMMON"
-}
-/**
- * 相关内容卡片类型枚举
- * 用于标识动态中附加的相关内容卡片的类型
- */
-declare enum AdditionalType {
-  /** 无相关内容 */
-  NONE = "ADDITIONAL_TYPE_NONE",
-  /** 剧集相关 */
-  PGC = "ADDITIONAL_TYPE_PGC",
-  /** 商品信息 */
-  GOODS = "ADDITIONAL_TYPE_GOODS",
-  /** 投票 */
-  VOTE = "ADDITIONAL_TYPE_VOTE",
-  /** 一般类型 */
-  COMMON = "ADDITIONAL_TYPE_COMMON",
-  /** 比赛信息 */
-  MATCH = "ADDITIONAL_TYPE_MATCH",
-  /** UP主推荐 */
-  UP_RCMD = "ADDITIONAL_TYPE_UP_RCMD",
-  /** 视频跳转 */
-  UGC = "ADDITIONAL_TYPE_UGC",
-  /** 直播预约 */
-  RESERVE = "ADDITIONAL_TYPE_RESERVE",
-  /** 充电专属抽奖 */
-  UPOWER_LOTTERY = "ADDITIONAL_TYPE_UPOWER_LOTTERY"
-} //#endregion
-//#region src/types/ReturnDataType/Bilibili/DynamicCard.d.ts
-type BiliDynamicCard = {
+//#region src/types/ReturnDataType/Bilibili/WorkComments/index.d.ts
+type BiliWorkComments = BiliWorkComments_V0; //#endregion
+//#region src/types/ReturnDataType/Bilibili/DynamicCard/DynamicCard_V0.d.ts
+type BiliDynamicCard_V0 = {
   code: number;
   data: Data$4;
   message: string;
@@ -12655,6 +12447,8 @@ type Relation = {
   status: number;
   [property: string]: any;
 }; //#endregion
+//#region src/types/ReturnDataType/Bilibili/DynamicCard/index.d.ts
+type BiliDynamicCard = BiliDynamicCard_V0; //#endregion
 //#region src/types/ReturnDataType/Bilibili/index.d.ts
 /**
  * B站返回类型映射
@@ -12691,8 +12485,8 @@ interface BilibiliReturnTypeMap {
   validateCaptcha: ValidateCaptcha;
   videoDanmaku: BiliProtobufDanmaku;
 } //#endregion
-//#region src/types/ReturnDataType/Douyin/ArticleWork.d.ts
-type ArticleWork = {
+//#region src/types/ReturnDataType/Douyin/ArticleWork/ArticleWork_V0.d.ts
+type ArticleWork_V0 = {
   aweme_detail: AwemeDetail$3;
   log_pb: LogPb$14;
   status_code: number;
@@ -13414,8 +13208,10 @@ type LogPb$14 = {
   impr_id: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/CommentReply.d.ts
-type CommentReply = {
+//#region src/types/ReturnDataType/Douyin/ArticleWork/index.d.ts
+type ArticleWork = ArticleWork_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/CommentReply/CommentReply_V0.d.ts
+type CommentReply_V0 = {
   comments: Comment$2[];
   cursor: number;
   extra: Extra$7;
@@ -13566,8 +13362,10 @@ type LogPb$13 = {
   impr_id: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/DyDanmakuList.d.ts
-type DyDanmakuList = {
+//#region src/types/ReturnDataType/Douyin/CommentReply/index.d.ts
+type CommentReply = CommentReply_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/DyDanmakuList/DyDanmakuList_V0.d.ts
+type DyDanmakuList_V0 = {
   danmaku_list: DanmakuList[];
   end_time: number;
   extra: DataExtra$1;
@@ -13614,8 +13412,10 @@ type LogPb$12 = {
   impr_id: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/EmojiList.d.ts
-type DyEmojiList = {
+//#region src/types/ReturnDataType/Douyin/DyDanmakuList/index.d.ts
+type DyDanmakuList = DyDanmakuList_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/EmojiList/EmojiList_V0.d.ts
+type DyEmojiList_V0 = {
   emoji_list: EmojiListElement[];
   status_code: number;
   version: number;
@@ -13633,8 +13433,10 @@ type Emojiurl = {
   url_list: string[];
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/EmojiProList.d.ts
-type DyEmojiProList = {
+//#region src/types/ReturnDataType/Douyin/EmojiList/index.d.ts
+type DyEmojiList = DyEmojiList_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/EmojiProList/EmojiProList_V0.d.ts
+type DyEmojiProList_V0 = {
   decision_trees: DecisionTrees;
   diverter_tags: DiverterTags;
   do_not_retry: boolean;
@@ -14175,9 +13977,11 @@ type ReportToggles = {
   plus_panel_diff: number;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/ImageAlbumWork.d.ts
+//#region src/types/ReturnDataType/Douyin/EmojiProList/index.d.ts
+type DyEmojiProList = DyEmojiProList_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/ImageAlbumWork/ImageAlbumWork_V0.d.ts
 /** 图集作品 */
-type DyImageAlbumWork = {
+type DyImageAlbumWork_V0 = {
   aweme_detail: AwemeDetail$2;
   log_pb: LogPb$10;
   status_code: number;
@@ -14863,8 +14667,10 @@ type LogPb$10 = {
   impr_id: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/MusicWork.d.ts
-type DyMusicWork = {
+//#region src/types/ReturnDataType/Douyin/ImageAlbumWork/index.d.ts
+type DyImageAlbumWork = DyImageAlbumWork_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/MusicWork/MusicWork_V0.d.ts
+type DyMusicWork_V0 = {
   extra: Extra$6;
   feature_data: {
     [key: string]: any;
@@ -15092,8 +14898,10 @@ type MediumCoverurl = {
   url_list: string[];
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/SearchInfo/SearchInfoGeneral.d.ts
-type SearchInfoGeneralData = {
+//#region src/types/ReturnDataType/Douyin/MusicWork/index.d.ts
+type DyMusicWork = DyMusicWork_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/SearchInfo/SearchInfoGeneral/SearchInfoGeneral_V0.d.ts
+type SearchInfoGeneralData_V0 = {
   ad_info: {
     [key: string]: any;
   };
@@ -16247,8 +16055,10 @@ type MultiColumnsInfo = {
   is_multi_columns: boolean;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/SearchInfo/SearchInfoUser.d.ts
-type SearchInfoUser = {
+//#region src/types/ReturnDataType/Douyin/SearchInfo/SearchInfoGeneral/index.d.ts
+type SearchInfoGeneralData = SearchInfoGeneralData_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/SearchInfo/SearchInfoUser/SearchInfoUser_V0.d.ts
+type SearchInfoUser_V0 = {
   challenge_list: null;
   cursor: number;
   extra: Extra$4;
@@ -16400,8 +16210,10 @@ type UserTag = {
   type: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/SearchInfo/SearchInfoVideo.d.ts
-type SearchInfoVideo = {
+//#region src/types/ReturnDataType/Douyin/SearchInfo/SearchInfoUser/index.d.ts
+type SearchInfoUser = SearchInfoUser_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/SearchInfo/SearchInfoVideo/SearchInfoVideo_V0.d.ts
+type SearchInfoVideo_V0 = {
   aweme_list: null;
   backtrace: string;
   cursor: number;
@@ -17082,9 +16894,11 @@ type LogPb$6 = {
   impr_id: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/SlidesWork.d.ts
+//#region src/types/ReturnDataType/Douyin/SearchInfo/SearchInfoVideo/index.d.ts
+type SearchInfoVideo = SearchInfoVideo_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/SlidesWork/SlidesWork_V0.d.ts
 /** 合辑作品 */
-type DySlidesWork = {
+type DySlidesWork_V0 = {
   aweme_detail: AwemeDetail$1;
   log_pb: LogPb$5;
   status_code: number;
@@ -17855,8 +17669,10 @@ type LogPb$5 = {
   impr_id: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/SuggestWords.d.ts
-type DySuggestWords = {
+//#region src/types/ReturnDataType/Douyin/SlidesWork/index.d.ts
+type DySlidesWork = DySlidesWork_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/SuggestWords/SuggestWords_V0.d.ts
+type DySuggestWords_V0 = {
   data: Datum$1[];
   errno: string;
   extra: Extra$2;
@@ -17923,8 +17739,10 @@ type TimeCost = {
   stream_inner: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/UserFavoriteList.d.ts
-type UserFavoriteList = {
+//#region src/types/ReturnDataType/Douyin/SuggestWords/index.d.ts
+type DySuggestWords = DySuggestWords_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/UserFavoriteList/UserFavoriteList_V0.d.ts
+type UserFavoriteList_V0 = {
   aweme_list: AwemeList$2[];
   has_more: number;
   log_pb: LogPb$4;
@@ -19004,8 +18822,10 @@ type LogPb$4 = {
   impr_id: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/UserInfo.d.ts
-type DyUserInfo = {
+//#region src/types/ReturnDataType/Douyin/UserFavoriteList/index.d.ts
+type DyUserFavoriteList = UserFavoriteList_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/UserInfo/UserInfo_V0.d.ts
+type DyUserInfo_V0 = {
   extra: Extra$1;
   log_pb: LogPb$3;
   status_code: number;
@@ -19329,8 +19149,10 @@ type WhiteCoverurl = {
   url_list: string[];
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/UserLiveVideos.d.ts
-type DyUserLiveVideos = {
+//#region src/types/ReturnDataType/Douyin/UserInfo/index.d.ts
+type DyUserInfo = DyUserInfo_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/UserLiveVideos/UserLiveVideos_V0.d.ts
+type DyUserLiveVideos_V0 = {
   data: Data$3;
   extra: UserLiveVideosExtra;
   status_code: number;
@@ -21413,8 +21235,10 @@ type UserLiveVideosExtra = {
   now: number;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/UserPostVideos.d.ts
-type DyUserPostVideos = {
+//#region src/types/ReturnDataType/Douyin/UserLiveVideos/index.d.ts
+type DyUserLiveVideos = DyUserLiveVideos_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/UserPostVideos/UserPostVideos_V0.d.ts
+type DyUserPostVideos_V0 = {
   aweme_list: AwemeList$1[];
   has_more: number;
   log_pb: LogPb$2;
@@ -22328,8 +22152,10 @@ type LogPb$2 = {
   impr_id: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/UserRecommendList.d.ts
-type UserRecommendList = {
+//#region src/types/ReturnDataType/Douyin/UserPostVideos/index.d.ts
+type DyUserPostVideos = DyUserPostVideos_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/UserRecommendList/UserRecommendList_V0.d.ts
+type UserRecommendList_V0 = {
   aweme_date: AwemeDate;
   aweme_list: AwemeList[];
   has_more: boolean;
@@ -24218,9 +24044,11 @@ type XiguaTask = {
   is_xigua_task: boolean;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/VideoWork.d.ts
+//#region src/types/ReturnDataType/Douyin/UserRecommendList/index.d.ts
+type UserRecommendList = UserRecommendList_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/VideoWork/VideoWork_V0.d.ts
 /** 单个视频作品 */
-type DyVideoWork = {
+type DyVideoWWork_V0 = {
   aweme_detail: AwemeDetail;
   log_pb: LogPb$1;
   status_code: number;
@@ -24962,8 +24790,10 @@ type LogPb$1 = {
   impr_id: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Douyin/WorkComments.d.ts
-type DyWorkComments = {
+//#region src/types/ReturnDataType/Douyin/VideoWork/index.d.ts
+type DyVideoWork = DyVideoWWork_V0; //#endregion
+//#region src/types/ReturnDataType/Douyin/WorkComments/WorkComments_V0.d.ts
+type DyWorkComments_V0 = {
   comment_common_data: string;
   comment_config: {
     [key: string]: any;
@@ -25284,6 +25114,8 @@ type LogPb = {
   impr_id: string;
   [property: string]: any;
 }; //#endregion
+//#region src/types/ReturnDataType/Douyin/WorkComments/index.d.ts
+type DyWorkComments = DyWorkComments_V0; //#endregion
 //#region src/types/ReturnDataType/Douyin/index.d.ts
 type DySearchInfo = SearchInfoGeneralData | SearchInfoUser | SearchInfoVideo;
 /**
@@ -25300,7 +25132,7 @@ interface DouyinReturnTypeMap {
   comments: DyWorkComments;
   userProfile: DyUserInfo;
   userVideoList: DyUserPostVideos;
-  userFavoriteList: UserFavoriteList;
+  userFavoriteList: DyUserFavoriteList;
   userRecommendList: UserRecommendList;
   suggestWords: DySuggestWords;
   search: DySearchInfo;
@@ -25312,8 +25144,8 @@ interface DouyinReturnTypeMap {
   loginQrcode: any;
   commentReplies: CommentReply;
 } //#endregion
-//#region src/types/ReturnDataType/Kuaishou/EmojiList.d.ts
-type KsEmojiList = {
+//#region src/types/ReturnDataType/Kuaishou/EmojiList/EmojiList_V0.d.ts
+type KsEmojiList_V0 = {
   data: Data$2;
   [property: string]: any;
 };
@@ -25913,8 +25745,10 @@ type IconUrls = {
   '[龙]': string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Kuaishou/LiveRoomDetail.d.ts
-type KsLiveRoomInfo = {
+//#region src/types/ReturnDataType/Kuaishou/EmojiList/index.d.ts
+type KsEmojiList = KsEmojiList_V0; //#endregion
+//#region src/types/ReturnDataType/Kuaishou/LiveRoomDetail/LiveRoomDetail_V0.d.ts
+type KsLiveRoomInfo_V0 = {
   principalId?: string;
   activeIndex: number;
   current: KsLiveRoomPlayItem | null;
@@ -25926,7 +25760,6 @@ type KsLiveRoomInfo = {
   emoji: KsLiveRoomEmojiState;
   [property: string]: any;
 };
-type KsLiveRoomDetail = KsLiveRoomInfo;
 type KsLiveRoomEmojiState = {
   iconUrls: Record<string, string>;
   giftList: KsLiveRoomGift[];
@@ -26029,8 +25862,10 @@ type KsLiveRoomConfig = {
   user?: Record<string, any>;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Kuaishou/OneWork.d.ts
-type KsOneWork = {
+//#region src/types/ReturnDataType/Kuaishou/LiveRoomDetail/index.d.ts
+type KsLiveRoomInfo = KsLiveRoomInfo_V0; //#endregion
+//#region src/types/ReturnDataType/Kuaishou/OneWork/OneWork_V0.d.ts
+type KsOneWork_V0 = {
   data: Data$1;
   [property: string]: any;
 };
@@ -26327,6 +26162,8 @@ type Tag$1 = {
   type: string;
   [property: string]: any;
 }; //#endregion
+//#region src/types/ReturnDataType/Kuaishou/OneWork/index.d.ts
+type KsOneWork = KsOneWork_V0; //#endregion
 //#region src/types/ReturnDataType/Kuaishou/UserCommon.d.ts
 type KsUserProfileUserInfo = {
   id: string;
@@ -26539,8 +26376,8 @@ type KsUserWorkList = {
   result: number;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Kuaishou/WorkComments.d.ts
-type KsWorkComments = {
+//#region src/types/ReturnDataType/Kuaishou/WorkComments/WorkComments_V0.d.ts
+type KsWorkComments_V0 = {
   data: Data;
   [property: string]: any;
 };
@@ -26590,6 +26427,8 @@ type SubComment$1 = {
   timestamp: number;
   [property: string]: any;
 }; //#endregion
+//#region src/types/ReturnDataType/Kuaishou/WorkComments/index.d.ts
+type KsWorkComments = KsWorkComments_V0; //#endregion
 //#region src/types/ReturnDataType/Kuaishou/index.d.ts
 /**
  * 快手返回类型映射
@@ -26602,8 +26441,8 @@ interface KuaishouReturnTypeMap {
   userWorkList: KsUserWorkList;
   liveRoomInfo: KsLiveRoomInfo;
 } //#endregion
-//#region src/types/ReturnDataType/Xiaohongshu/HomeFeed.d.ts
-type HomeFeed = {
+//#region src/types/ReturnDataType/Xiaohongshu/HomeFeed/HomeFeed_V0.d.ts
+type HomeFeed_V0 = {
   code: number;
   data: DataData$5;
   msg: string;
@@ -26669,8 +26508,10 @@ type Capa = {
   duration: number;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Xiaohongshu/NoteComments.d.ts
-type NoteComments = {
+//#region src/types/ReturnDataType/Xiaohongshu/HomeFeed/index.d.ts
+type HomeFeed = HomeFeed_V0; //#endregion
+//#region src/types/ReturnDataType/Xiaohongshu/NoteComments/NoteComments_V0.d.ts
+type NoteComments_V0 = {
   code: number;
   data: DataData$4;
   msg: string;
@@ -26760,8 +26601,10 @@ type CommentUserInfo = {
   xsec_token: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Xiaohongshu/OneNote.d.ts
-type OneNote = {
+//#region src/types/ReturnDataType/Xiaohongshu/NoteComments/index.d.ts
+type NoteComments = NoteComments_V0; //#endregion
+//#region src/types/ReturnDataType/Xiaohongshu/OneNote/OneNote_V0.d.ts
+type OneNote_V0 = {
   code: number;
   data: DataData$3;
   msg: string;
@@ -26850,8 +26693,10 @@ type User$1 = {
   xsec_token: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Xiaohongshu/SearchNotes.d.ts
-type SearchNotes = {
+//#region src/types/ReturnDataType/Xiaohongshu/OneNote/index.d.ts
+type OneNote = OneNote_V0; //#endregion
+//#region src/types/ReturnDataType/Xiaohongshu/SearchNotes/SearchNotes_V0.d.ts
+type SearchNotes_V0 = {
   code: number;
   data: DataData$2;
   msg: string;
@@ -26934,8 +26779,10 @@ type Query = {
   search_word: string;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Xiaohongshu/XiaohongshuEmojiList.d.ts
-type XiaohongshuEmojiList = {
+//#region src/types/ReturnDataType/Xiaohongshu/SearchNotes/index.d.ts
+type SearchNotes = SearchNotes_V0; //#endregion
+//#region src/types/ReturnDataType/Xiaohongshu/XiaohongshuEmojiList/XiaohongshuEmojiList_V0.d.ts
+type XiaohongshuEmojiList_V0 = {
   code: number;
   data: DataData$1;
   msg: string;
@@ -26972,8 +26819,10 @@ type Result$2 = {
   success: boolean;
   [property: string]: any;
 }; //#endregion
-//#region src/types/ReturnDataType/Xiaohongshu/XiaohongshuUserProfile.d.ts
-type XiaohongshuUserProfile = {
+//#region src/types/ReturnDataType/Xiaohongshu/XiaohongshuEmojiList/index.d.ts
+type XiaohongshuEmojiList = XiaohongshuEmojiList_V0; //#endregion
+//#region src/types/ReturnDataType/Xiaohongshu/XiaohongshuUserProfile/XiaohongshuUserProfile_V0.d.ts
+type XiaohongshuUserProfile_V0 = {
   code: number;
   data: DataData;
   msg: string;
@@ -27043,6 +26892,8 @@ type VerifyInfo = {
   redOfficialVerifyType: number;
   [property: string]: any;
 }; //#endregion
+//#region src/types/ReturnDataType/Xiaohongshu/XiaohongshuUserProfile/index.d.ts
+type XiaohongshuUserProfile = XiaohongshuUserProfile_V0; //#endregion
 //#region src/types/ReturnDataType/Xiaohongshu/index.d.ts
 /**
  * 小红书返回类型映射
@@ -30131,4 +29982,4 @@ declare const amagi: typeof Client;
  */
 //#endregion
 //#endregion
-export { APIErrorType, AdditionalType, type AmagiEventMap, type AmagiEventType, type ApiEndpoint, ApiError, type ApiErrorEventData, ApiResponse, type ApiSuccessEventData, ArticleCard, ArticleContent, ArticleInfo, ArticleWork, BaseRequestOptions, BaseResponse, BiliAv2Bv, BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliBv2AV, BiliCheckQrcode, BiliCommentReply, BiliDynamicCard, BiliDynamicInfo, BiliDynamicInfoUnion, BiliEmojiList, BiliLiveRoomDef, BiliLiveRoomDetail, BiliNewLoginQrcode, BiliOneWork, BiliProtobufDanmaku, BiliUserDynamic, BiliUserFullView, BiliUserProfile, BiliVideoPlayurlIsLogin, BiliWorkComments, BilibiliApiRoutes, type BilibiliApplyCaptchaOptions, BilibiliApplyCaptchaParamsSchema, type BilibiliArticleCardOptions, BilibiliArticleCardParamsSchema, BilibiliArticleInfoParamsSchema, type BilibiliArticleOptions, BilibiliArticleParamsSchema, type BilibiliAv2BvOptions, BilibiliAv2BvParamsSchema, type BilibiliBangumiInfoOptions, BilibiliBangumiInfoParamsSchema, type BilibiliBangumiStreamOptions, BilibiliBangumiStreamParamsSchema, type BilibiliBv2AvOptions, BilibiliBv2AvParamsSchema, BilibiliColumnInfoParamsSchema, BilibiliCommentParamsSchema, type BilibiliCommentRepliesOptions, BilibiliCommentReplyParamsSchema, type BilibiliCommentsOptions, type BilibiliDanmakuOptions, BilibiliDanmakuParamsSchema, BilibiliDataOptions, BilibiliDataOptionsMap, type BilibiliDynamicOptions, BilibiliDynamicParamsSchema, BilibiliEmojiParamsSchema, type BilibiliFetcher, BilibiliFetcherMethodKey, BilibiliFetcherMethods, BilibiliInternalMethodKey, BilibiliInternalMethods, BilibiliLiveParamsSchema, type BilibiliLiveRoomOptions, BilibiliLoginParamsSchema, type BilibiliMethodKey, BilibiliMethodMapping, BilibiliMethodOptMap, BilibiliMethodOptionsMap, BilibiliMethodRoutes, BilibiliMethodToFetcher, type BilibiliMethodType, type BilibiliMethodValue, BilibiliQrcodeParamsSchema, type BilibiliQrcodeStatusOptions, BilibiliQrcodeStatusParamsSchema, BilibiliReturnTypeMap, type BilibiliUserOptions, BilibiliUserParamsSchema, type BilibiliValidateCaptchaOptions, BilibiliValidateCaptchaParamsSchema, BilibiliValidationSchemas, BilibiliVideoDownloadParamsSchema, type BilibiliVideoInfoOptions, BilibiliVideoParamsSchema, type BilibiliVideoStreamOptions, BoundBilibiliApi, type BoundBilibiliFetcher, BoundDouyinApi, type BoundDouyinFetcher, BoundKuaishouApi, type BoundKuaishouFetcher, BoundXiaohongshuApi, type BoundXiaohongshuFetcher, ColumnInfo, CommentReply, CommentType, ConditionalReturnType, CookieConfig, CreateApp, DouyinApiRoutes, DouyinCommentParamsSchema, type DouyinCommentRepliesOptions, DouyinCommentReplyParamsSchema, type DouyinCommentsOptions, type DouyinDanmakuOptions, DouyinDanmakuParamsSchema, DouyinDataOptions, DouyinDataOptionsMap, DouyinEmojiListParamsSchema, DouyinEmojiProParamsSchema, type DouyinFetcher, DouyinFetcherMethodKey, DouyinFetcherMethods, DouyinHotWordsParamsSchema, DouyinInternalMethodKey, DouyinInternalMethods, type DouyinLiveRoomOptions, DouyinLiveRoomParamsSchema, type DouyinMethodKey, DouyinMethodMapping, DouyinMethodOptMap, DouyinMethodOptionsMap, DouyinMethodRoutes, DouyinMethodToFetcher, type DouyinMethodType, type DouyinMethodValue, type DouyinMusicOptions, DouyinMusicParamsSchema, type DouyinQrcodeOptions, DouyinQrcodeParamsSchema, DouyinReturnTypeMap, type DouyinSearchOptions, DouyinSearchParamsSchema, type DouyinSuggestWordsOptions, type DouyinUserListOptions, DouyinUserListParamsSchema, type DouyinUserOptions, DouyinUserParamsSchema, DouyinValidationSchemas, type DouyinWorkOptions, DouyinWorkParamsSchema, DyDanmakuList, DyEmojiList, DyEmojiProList, DyImageAlbumWork, DyMusicWork, DySearchInfo, DySlidesWork, DySuggestWords, DyUserInfo, DyUserLiveVideos, DyUserPostVideos, DyVideoWork, DyWorkComments, DynamicType, DynamicTypeAV, DynamicTypeArticle, DynamicTypeDraw, DynamicTypeForward, DynamicTypeForwardUnion, DynamicTypeLiveRcmd_V0, DynamicTypeLiveRcmd_V1, DynamicTypeWord, ErrorResult, ExtractTypeMode, FetcherConfig, HomeFeed, type HttpMethod, type HttpRequestEventData, type HttpResponseEventData, type IBilibiliFetcher, type IBoundBilibiliFetcher, type IBoundDouyinFetcher, type IBoundKuaishouFetcher, type IBoundXiaohongshuFetcher, type IDouyinFetcher, type IKuaishouFetcher, type IXiaohongshuFetcher, type KsBannedStatus, KsEmojiList, KsLiveRoomDetail, KsLiveRoomInfo, KsOneWork, KsUserHomeAuthorInfo, KsUserHomeCategoryMask, KsUserHomeDetail, KsUserHomeFollowButtonState, KsUserHomeFollowState, KsUserHomeHotCategory, KsUserHomeInterestAuthor, KsUserHomeInterestCategory, KsUserHomeProfileState, KsUserHomeTabData, type KsUserHomeWork, KsUserProfile, type KsUserProfileCounts, type KsUserProfileGameInfo, type KsUserProfileLiveInfo, type KsUserProfileSensitiveInfo, type KsUserProfileUserInfo, KsUserWorkList, type KsVerifiedStatus, KsWorkComments, KuaishouApiRoutes, KuaishouCommentParamsSchema, type KuaishouCommentsOptions, KuaishouDataOptions, KuaishouDataOptionsMap, KuaishouEmojiParamsSchema, type KuaishouFetcher, KuaishouFetcherMethodKey, KuaishouFetcherMethods, type KuaishouGraphqlRequest, KuaishouInternalMethodKey, KuaishouInternalMethods, type KuaishouLiveApiRequest, type KuaishouLiveRoomInfoOptions, KuaishouLiveRoomInfoParamsSchema, type KuaishouMethodKey, KuaishouMethodMapping, KuaishouMethodOptMap, KuaishouMethodOptionsMap, KuaishouMethodRoutes, KuaishouMethodToFetcher, type KuaishouMethodType, type KuaishouMethodValue, KuaishouReturnTypeMap, type KuaishouUserProfileOptions, KuaishouUserProfileParamsSchema, type KuaishouUserWorkListOptions, KuaishouUserWorkListParamsSchema, KuaishouValidationSchemas, KuaishouVideoParamsSchema, type KuaishouVideoWorkOptions, type LogEventData, MajorType, MethodMaps, type NetworkErrorEventData, type NetworkRetryEventData, type NetworksConfigType, NoteComments, OmitMethodType, OneNote, Options, type Platform, RequestConfig, Result$1 as Result, SearchInfoGeneralData, SearchInfoUser, SearchInfoVideo, SearchNotes, SuccessResult$1 as SuccessResult, TypeControl, TypeMode, ValidationError, XiaohongshuApiRoutes, type XiaohongshuCommentsOptions, XiaohongshuDataOptions, XiaohongshuDataOptionsMap, XiaohongshuEmojiList, type XiaohongshuFetcher, XiaohongshuFetcherMethodKey, XiaohongshuFetcherMethods, type XiaohongshuHomeFeedOptions, XiaohongshuInternalMethodKey, XiaohongshuInternalMethods, type XiaohongshuMethodKey, XiaohongshuMethodMapping, XiaohongshuMethodOptMap, XiaohongshuMethodOptionsMap, XiaohongshuMethodRoutes, XiaohongshuMethodToFetcher, XiaohongshuMethodType, type XiaohongshuMethodValue, type XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap, type XiaohongshuSearchNotesOptions, type XiaohongshuUserNotesOptions, XiaohongshuUserProfile, type XiaohongshuUserProfileOptions, XiaohongshuValidationSchemas, amagi, amagiClient, amagiEvents, av2bv, bilibili, bilibiliApiUrls, bilibiliErrorCodeMap, bilibiliFetcher, bilibiliUtils, bv2av, createAmagiClient, createBilibiliRoutes, createBilibiliRoutes as registerBilibiliRoutes, createBoundBilibiliApi, createBoundBilibiliFetcher, createBoundDouyinApi, createBoundDouyinFetcher, createBoundKuaishouApi, createBoundKuaishouFetcher, createBoundXiaohongshuApi, createBoundXiaohongshuFetcher, createDouyinRoutes, createDouyinRoutes as registerDouyinRoutes, createErrorResponse, createKuaishouRoutes, createKuaishouRoutes as registerKuaishouRoutes, createSuccessResponse, createXiaohongshuRoutes, createXiaohongshuRoutes as registerXiaohongshuRoutes, douyin, douyinApiUrls, douyinFetcher, douyinSign, douyinUtils, emitApiError, emitApiSuccess, emitHttpRequest, emitHttpResponse, emitLog, emitLogDebug, emitLogError, emitLogInfo, emitLogMark, emitLogWarn, emitNetworkError, emitNetworkRetry, fetchData, fetchResponse, getApiRoute, getBilibiliData, getDouyinData, getEnglishMethodName, getHeadersAndData, getKuaishouData, handleError, httpLogger, initLogger, isNetworkErrorResult, kuaishou, kuaishouApiUrls, kuaishouFetcher, kuaishouSign, kuaishouUtils, logMiddleware, logger, parseDmSegMobileReply, qtparam, toFetcherMethod, validateBilibiliParams, validateDouyinParams, validateKuaishouParams, validateXiaohongshuParams, wbi_sign, xiaohongshu, xiaohongshuApiUrls, xiaohongshuFetcher, xiaohongshuSign, xiaohongshuUtils };
+export { APIErrorType, AdditionalType, type AmagiEventMap, type AmagiEventType, type ApiEndpoint, ApiError, type ApiErrorEventData, ApiResponse, type ApiSuccessEventData, ArticleCard, ArticleContent, ArticleInfo, ArticleWork, BaseRequestOptions, BaseResponse, BiliAv2Bv, BiliBangumiVideoInfo, BiliBangumiVideoPlayurlIsLogin, BiliBangumiVideoPlayurlNoLogin, BiliBiliVideoPlayurlNoLogin, BiliBv2AV, BiliCheckQrcode, BiliCommentReply, BiliDynamicCard, BiliDynamicInfo, BiliDynamicInfoUnion, BiliEmojiList, BiliLiveRoomDef, BiliLiveRoomDetail, BiliNewLoginQrcode, BiliOneWork, BiliProtobufDanmaku, BiliUserDynamic, BiliUserFullView, BiliUserProfile, BiliVideoPlayurlIsLogin, BiliWorkComments, BilibiliApiRoutes, type BilibiliApplyCaptchaOptions, BilibiliApplyCaptchaParamsSchema, type BilibiliArticleCardOptions, BilibiliArticleCardParamsSchema, BilibiliArticleInfoParamsSchema, type BilibiliArticleOptions, BilibiliArticleParamsSchema, type BilibiliAv2BvOptions, BilibiliAv2BvParamsSchema, type BilibiliBangumiInfoOptions, BilibiliBangumiInfoParamsSchema, type BilibiliBangumiStreamOptions, BilibiliBangumiStreamParamsSchema, type BilibiliBv2AvOptions, BilibiliBv2AvParamsSchema, BilibiliColumnInfoParamsSchema, BilibiliCommentParamsSchema, type BilibiliCommentRepliesOptions, BilibiliCommentReplyParamsSchema, type BilibiliCommentsOptions, type BilibiliDanmakuOptions, BilibiliDanmakuParamsSchema, BilibiliDataOptions, BilibiliDataOptionsMap, type BilibiliDynamicOptions, BilibiliDynamicParamsSchema, BilibiliEmojiParamsSchema, type BilibiliFetcher, BilibiliFetcherMethodKey, BilibiliFetcherMethods, BilibiliInternalMethodKey, BilibiliInternalMethods, BilibiliLiveParamsSchema, type BilibiliLiveRoomOptions, BilibiliLoginParamsSchema, type BilibiliMethodKey, BilibiliMethodMapping, BilibiliMethodOptMap, BilibiliMethodOptionsMap, BilibiliMethodRoutes, BilibiliMethodToFetcher, type BilibiliMethodType, type BilibiliMethodValue, BilibiliQrcodeParamsSchema, type BilibiliQrcodeStatusOptions, BilibiliQrcodeStatusParamsSchema, BilibiliReturnTypeMap, type BilibiliUserOptions, BilibiliUserParamsSchema, type BilibiliValidateCaptchaOptions, BilibiliValidateCaptchaParamsSchema, BilibiliValidationSchemas, BilibiliVideoDownloadParamsSchema, type BilibiliVideoInfoOptions, BilibiliVideoParamsSchema, type BilibiliVideoStreamOptions, BoundBilibiliApi, type BoundBilibiliFetcher, BoundDouyinApi, type BoundDouyinFetcher, BoundKuaishouApi, type BoundKuaishouFetcher, BoundXiaohongshuApi, type BoundXiaohongshuFetcher, ColumnInfo, CommentReply, CommentType, ConditionalReturnType, CookieConfig, CreateApp, DouyinApiRoutes, DouyinCommentParamsSchema, type DouyinCommentRepliesOptions, DouyinCommentReplyParamsSchema, type DouyinCommentsOptions, type DouyinDanmakuOptions, DouyinDanmakuParamsSchema, DouyinDataOptions, DouyinDataOptionsMap, DouyinEmojiListParamsSchema, DouyinEmojiProParamsSchema, type DouyinFetcher, DouyinFetcherMethodKey, DouyinFetcherMethods, DouyinHotWordsParamsSchema, DouyinInternalMethodKey, DouyinInternalMethods, type DouyinLiveRoomOptions, DouyinLiveRoomParamsSchema, type DouyinMethodKey, DouyinMethodMapping, DouyinMethodOptMap, DouyinMethodOptionsMap, DouyinMethodRoutes, DouyinMethodToFetcher, type DouyinMethodType, type DouyinMethodValue, type DouyinMusicOptions, DouyinMusicParamsSchema, type DouyinQrcodeOptions, DouyinQrcodeParamsSchema, DouyinReturnTypeMap, type DouyinSearchOptions, DouyinSearchParamsSchema, type DouyinSuggestWordsOptions, type DouyinUserListOptions, DouyinUserListParamsSchema, type DouyinUserOptions, DouyinUserParamsSchema, DouyinValidationSchemas, type DouyinWorkOptions, DouyinWorkParamsSchema, DyDanmakuList, DyEmojiList, DyEmojiProList, DyImageAlbumWork, DyMusicWork, DySearchInfo, DySlidesWork, DySuggestWords, DyUserInfo, DyUserLiveVideos, DyUserPostVideos, DyVideoWork, DyWorkComments, DynamicType, DynamicTypeAV, DynamicTypeArticle, DynamicTypeDraw, DynamicTypeForward, DynamicTypeForwardUnion, DynamicTypeLiveRcmd, DynamicTypeWord, ErrorResult, ExtractTypeMode, FetcherConfig, HomeFeed, type HttpMethod, type HttpRequestEventData, type HttpResponseEventData, type IBilibiliFetcher, type IBoundBilibiliFetcher, type IBoundDouyinFetcher, type IBoundKuaishouFetcher, type IBoundXiaohongshuFetcher, type IDouyinFetcher, type IKuaishouFetcher, type IXiaohongshuFetcher, type KsBannedStatus, KsEmojiList, KsLiveRoomInfo, KsOneWork, type KsUserHomeWork, KsUserProfile, type KsUserProfileCounts, type KsUserProfileGameInfo, type KsUserProfileLiveInfo, type KsUserProfileSensitiveInfo, type KsUserProfileUserInfo, KsUserWorkList, type KsVerifiedStatus, KsWorkComments, KuaishouApiRoutes, KuaishouCommentParamsSchema, type KuaishouCommentsOptions, KuaishouDataOptions, KuaishouDataOptionsMap, KuaishouEmojiParamsSchema, type KuaishouFetcher, KuaishouFetcherMethodKey, KuaishouFetcherMethods, type KuaishouGraphqlRequest, KuaishouInternalMethodKey, KuaishouInternalMethods, type KuaishouLiveApiRequest, type KuaishouLiveRoomInfoOptions, KuaishouLiveRoomInfoParamsSchema, type KuaishouMethodKey, KuaishouMethodMapping, KuaishouMethodOptMap, KuaishouMethodOptionsMap, KuaishouMethodRoutes, KuaishouMethodToFetcher, type KuaishouMethodType, type KuaishouMethodValue, KuaishouReturnTypeMap, type KuaishouUserProfileOptions, KuaishouUserProfileParamsSchema, type KuaishouUserWorkListOptions, KuaishouUserWorkListParamsSchema, KuaishouValidationSchemas, KuaishouVideoParamsSchema, type KuaishouVideoWorkOptions, type LogEventData, MajorType, MethodMaps, type NetworkErrorEventData, type NetworkRetryEventData, type NetworksConfigType, NoteComments, OmitMethodType, OneNote, Options, type Platform, RequestConfig, Result$1 as Result, SearchInfoGeneralData, SearchInfoUser, SearchInfoVideo, SearchNotes, SuccessResult$1 as SuccessResult, TypeControl, TypeMode, ValidationError, XiaohongshuApiRoutes, type XiaohongshuCommentsOptions, XiaohongshuDataOptions, XiaohongshuDataOptionsMap, XiaohongshuEmojiList, type XiaohongshuFetcher, XiaohongshuFetcherMethodKey, XiaohongshuFetcherMethods, type XiaohongshuHomeFeedOptions, XiaohongshuInternalMethodKey, XiaohongshuInternalMethods, type XiaohongshuMethodKey, XiaohongshuMethodMapping, XiaohongshuMethodOptMap, XiaohongshuMethodOptionsMap, XiaohongshuMethodRoutes, XiaohongshuMethodToFetcher, XiaohongshuMethodType, type XiaohongshuMethodValue, type XiaohongshuNoteDetailOptions, XiaohongshuReturnTypeMap, type XiaohongshuSearchNotesOptions, type XiaohongshuUserNotesOptions, XiaohongshuUserProfile, type XiaohongshuUserProfileOptions, XiaohongshuValidationSchemas, amagi, amagiClient, amagiEvents, av2bv, bilibili, bilibiliApiUrls, bilibiliErrorCodeMap, bilibiliFetcher, bilibiliUtils, bv2av, createAmagiClient, createBilibiliRoutes, createBilibiliRoutes as registerBilibiliRoutes, createBoundBilibiliApi, createBoundBilibiliFetcher, createBoundDouyinApi, createBoundDouyinFetcher, createBoundKuaishouApi, createBoundKuaishouFetcher, createBoundXiaohongshuApi, createBoundXiaohongshuFetcher, createDouyinRoutes, createDouyinRoutes as registerDouyinRoutes, createErrorResponse, createKuaishouRoutes, createKuaishouRoutes as registerKuaishouRoutes, createSuccessResponse, createXiaohongshuRoutes, createXiaohongshuRoutes as registerXiaohongshuRoutes, douyin, douyinApiUrls, douyinFetcher, douyinSign, douyinUtils, emitApiError, emitApiSuccess, emitHttpRequest, emitHttpResponse, emitLog, emitLogDebug, emitLogError, emitLogInfo, emitLogMark, emitLogWarn, emitNetworkError, emitNetworkRetry, fetchData, fetchResponse, getApiRoute, getBilibiliData, getDouyinData, getEnglishMethodName, getHeadersAndData, getKuaishouData, handleError, httpLogger, initLogger, isNetworkErrorResult, kuaishou, kuaishouApiUrls, kuaishouFetcher, kuaishouSign, kuaishouUtils, logMiddleware, logger, parseDmSegMobileReply, qtparam, toFetcherMethod, validateBilibiliParams, validateDouyinParams, validateKuaishouParams, validateXiaohongshuParams, wbi_sign, xiaohongshu, xiaohongshuApiUrls, xiaohongshuFetcher, xiaohongshuSign, xiaohongshuUtils };
