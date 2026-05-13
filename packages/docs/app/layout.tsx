@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import type { Metadata } from 'next';
 import SearchDialog from '@/components/search';
 import Script from 'next/script';
+import { LenisProvider } from '@/components/lenis-provider';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -181,9 +182,11 @@ export default async function Layout({
         />
       </head>
       <body className="flex flex-col min-h-screen">
-        <RootProvider search={{ SearchDialog }}>
-          {children}
-        </RootProvider>
+        <LenisProvider>
+          <RootProvider search={{ SearchDialog }}>
+            {children}
+          </RootProvider>
+        </LenisProvider>
       </body>
     </html>
   );

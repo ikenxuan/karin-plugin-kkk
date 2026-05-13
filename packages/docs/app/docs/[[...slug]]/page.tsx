@@ -14,6 +14,7 @@ import { MarkdownCopyButton, ViewOptionsPopover } from '@/components/ai/page-act
 import { TocCopyUrl, TocBottomLinks } from '@/components/toc-extras';
 import type * as PageTree from 'fumadocs-core/page-tree';
 import { PageLastUpdate } from 'fumadocs-ui/page';
+import { DocsPageAnimate } from '@/components/docs-page-animate';
 
 interface PageProps {
   params: Promise<{ slug?: string[] }>;
@@ -83,32 +84,40 @@ export default async function Page(props: PageProps) {
   const filePath = params.slug?.join('/') || 'index';
 
   return (
-    <DocsPage
-      toc={toc}
-      tableOfContent={{
-        style: 'clerk',
-        header: <TocCopyUrl />,
-        footer: <TocBottomLinks />
-      }}
-      full={page.data.full}
-      footer={{ component: <DocsFooter {...navItems} /> }}
-    >
-      <DocsTitle>{page.data.title}</DocsTitle>
-      <DocsDescription>{page.data.description}</DocsDescription>
-      <PageActions pageUrl={page.url} filePath={filePath} />
-      <DocsBody>
-        <MDX
-          components={getMDXComponents({
-            a: createRelativeLink(source, page),
-          })}
-        />
-        {lastModified && (
-           <div className="pt-8 mt-8 border-t">
-               <PageLastUpdate date={new Date(lastModified)} />
-           </div>
-        )}
-      </DocsBody>
-    </DocsPage>
+    <DocsPageAnimate>
+      <DocsPage
+        toc={toc}
+        tableOfContent={{
+          style: 'clerk',
+          header: <TocCopyUrl />,
+          footer: <TocBottomLinks />,
+        }}
+        full={page.data.full}
+        footer={{ component: <DocsFooter {...navItems} /> }}
+      >
+        <div className="docs-animate-entry">
+          <DocsTitle>{page.data.title}</DocsTitle>
+        </div>
+        <div className="docs-animate-entry">
+          <DocsDescription>{page.data.description}</DocsDescription>
+        </div>
+        <div className="docs-animate-entry">
+          <PageActions pageUrl={page.url} filePath={filePath} />
+        </div>
+        <DocsBody className="docs-animate-body">
+          <MDX
+            components={getMDXComponents({
+              a: createRelativeLink(source, page),
+            })}
+          />
+          {lastModified && (
+            <div className="pt-8 mt-8 border-t">
+              <PageLastUpdate date={new Date(lastModified)} />
+            </div>
+          )}
+        </DocsBody>
+      </DocsPage>
+    </DocsPageAnimate>
   );
 }
 
