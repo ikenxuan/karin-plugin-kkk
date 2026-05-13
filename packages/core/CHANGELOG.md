@@ -2,6 +2,21 @@
 
 # Changelog
 
+## [2.30.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.30.3...v2.30.4) (2026-05-13)
+
+
+### 🐛 错误修复
+
+* 更新日志diff二维码链接错误 ([50d1029](https://github.com/ikenxuan/karin-plugin-kkk/commit/50d1029ecb9e30e51767ebbc05d1b10e50b1cde9))
+
+
+### 💄 UI 优化
+
+* 优化更新日志背景配色 ([b49b21f](https://github.com/ikenxuan/karin-plugin-kkk/commit/b49b21f8ad0ea4d61217b683929405c2c586cbae))
+* 更新评论图标为B站官方图标 ([6c53d92](https://github.com/ikenxuan/karin-plugin-kkk/commit/6c53d92158ee1e23dfc6e67821c1d190194a0aae))
+* 细优报错图 ([4385094](https://github.com/ikenxuan/karin-plugin-kkk/commit/4385094a68d1aa5b3688d9339e9f39962f341242))
+* 细优推送列表图片，添加群头像 ([6bfc87c](https://github.com/ikenxuan/karin-plugin-kkk/commit/6bfc87c3d9ef5d09f047b689f4d61e818abd9845))
+
 ## [2.30.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.30.2...v2.30.3) (2026-05-12)
 
 
