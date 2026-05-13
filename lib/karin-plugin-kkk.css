@@ -15128,13 +15128,13 @@
     }
   }
 
-  .bg-cyan-400\/20 {
-    background-color: #00d2ef33;
+  .bg-cyan-400\/40 {
+    background-color: #00d2ef66;
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .bg-cyan-400\/20 {
-      background-color: color-mix(in oklab, var(--color-cyan-400) 20%, transparent);
+    .bg-cyan-400\/40 {
+      background-color: color-mix(in oklab, var(--color-cyan-400) 40%, transparent);
     }
   }
 
@@ -15148,13 +15148,13 @@
     }
   }
 
-  .bg-cyan-500\/20 {
-    background-color: #00b7d733;
+  .bg-cyan-500\/40 {
+    background-color: #00b7d766;
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .bg-cyan-500\/20 {
-      background-color: color-mix(in oklab, var(--color-cyan-500) 20%, transparent);
+    .bg-cyan-500\/40 {
+      background-color: color-mix(in oklab, var(--color-cyan-500) 40%, transparent);
     }
   }
 
@@ -15178,13 +15178,13 @@
     }
   }
 
-  .bg-danger\/25 {
+  .bg-danger\/40 {
     background-color: var(--danger);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .bg-danger\/25 {
-      background-color: color-mix(in oklab, var(--danger) 25%, transparent);
+    .bg-danger\/40 {
+      background-color: color-mix(in oklab, var(--danger) 40%, transparent);
     }
   }
 
@@ -15246,13 +15246,13 @@
     }
   }
 
-  .bg-muted\/20 {
+  .bg-muted\/40 {
     background-color: var(--muted);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .bg-muted\/20 {
-      background-color: color-mix(in oklab, var(--muted) 20%, transparent);
+    .bg-muted\/40 {
+      background-color: color-mix(in oklab, var(--muted) 40%, transparent);
     }
   }
 
@@ -15280,13 +15280,13 @@
     }
   }
 
-  .bg-pink-400\/25 {
-    background-color: #fb64b640;
+  .bg-pink-400\/40 {
+    background-color: #fb64b666;
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .bg-pink-400\/25 {
-      background-color: color-mix(in oklab, var(--color-pink-400) 25%, transparent);
+    .bg-pink-400\/40 {
+      background-color: color-mix(in oklab, var(--color-pink-400) 40%, transparent);
     }
   }
 
@@ -15304,13 +15304,13 @@
     }
   }
 
-  .bg-pink-500\/25 {
-    background-color: #f6339a40;
+  .bg-pink-500\/40 {
+    background-color: #f6339a66;
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .bg-pink-500\/25 {
-      background-color: color-mix(in oklab, var(--color-pink-500) 25%, transparent);
+    .bg-pink-500\/40 {
+      background-color: color-mix(in oklab, var(--color-pink-500) 40%, transparent);
     }
   }
 
@@ -15348,13 +15348,13 @@
     }
   }
 
-  .bg-success\/25 {
+  .bg-success\/40 {
     background-color: var(--success);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .bg-success\/25 {
-      background-color: color-mix(in oklab, var(--success) 25%, transparent);
+    .bg-success\/40 {
+      background-color: color-mix(in oklab, var(--success) 40%, transparent);
     }
   }
 
@@ -15486,13 +15486,13 @@
     }
   }
 
-  .bg-warning\/25 {
+  .bg-warning\/40 {
     background-color: var(--warning);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .bg-warning\/25 {
-      background-color: color-mix(in oklab, var(--warning) 25%, transparent);
+    .bg-warning\/40 {
+      background-color: color-mix(in oklab, var(--warning) 40%, transparent);
     }
   }
 
@@ -16980,13 +16980,13 @@
     color: var(--color-cyan-600);
   }
 
-  .text-cyan-600\/5 {
-    color: #0092b50d;
+  .text-cyan-600\/10 {
+    color: #0092b51a;
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .text-cyan-600\/5 {
-      color: color-mix(in oklab, var(--color-cyan-600) 5%, transparent);
+    .text-cyan-600\/10 {
+      color: color-mix(in oklab, var(--color-cyan-600) 10%, transparent);
     }
   }
 
@@ -16996,16 +16996,6 @@
 
   .text-danger-foreground {
     color: var(--danger-foreground);
-  }
-
-  .text-danger\/5 {
-    color: var(--danger);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .text-danger\/5 {
-      color: color-mix(in oklab, var(--danger) 5%, transparent);
-    }
   }
 
   .text-danger\/10 {
@@ -17194,17 +17184,7 @@
     color: var(--color-green-500);
   }
 
-  .text-muted, .text-muted\/5 {
-    color: var(--muted);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .text-muted\/5 {
-      color: color-mix(in oklab, var(--muted) 5%, transparent);
-    }
-  }
-
-  .text-muted\/10 {
+  .text-muted, .text-muted\/10 {
     color: var(--muted);
   }
 
@@ -17256,13 +17236,13 @@
     color: var(--color-pink-500);
   }
 
-  .text-pink-500\/5 {
-    color: #f6339a0d;
+  .text-pink-500\/10 {
+    color: #f6339a1a;
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .text-pink-500\/5 {
-      color: color-mix(in oklab, var(--color-pink-500) 5%, transparent);
+    .text-pink-500\/10 {
+      color: color-mix(in oklab, var(--color-pink-500) 10%, transparent);
     }
   }
 
@@ -17304,17 +17284,7 @@
     }
   }
 
-  .text-success, .text-success\/5 {
-    color: var(--success);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .text-success\/5 {
-      color: color-mix(in oklab, var(--success) 5%, transparent);
-    }
-  }
-
-  .text-success\/10 {
+  .text-success, .text-success\/10 {
     color: var(--success);
   }
 
@@ -17338,13 +17308,13 @@
     color: #0000;
   }
 
-  .text-warning, .text-warning\/5 {
+  .text-warning, .text-warning-soft {
     color: var(--warning);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .text-warning\/5 {
-      color: color-mix(in oklab, var(--warning) 5%, transparent);
+    .text-warning-soft {
+      color: color-mix(in oklab, var(--warning) 15%, transparent);
     }
   }
 
