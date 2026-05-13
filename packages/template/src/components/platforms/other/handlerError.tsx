@@ -104,56 +104,56 @@ const getLogLevelTheme = (level: LogLevel, isDark: boolean) => {
       borderClass: 'border-muted/20',
       textClass: 'text-muted',
       iconClass: 'text-muted',
-      levelClass: isDark ? 'text-muted/10' : 'text-muted/5',
-      dotClass: 'bg-muted/20'
+      levelClass: isDark ? 'text-muted/10' : 'text-muted/10',
+      dotClass: 'bg-muted/40'
     },
     'DEBU': {
       bgClass: isDark ? 'bg-cyan-400/10' : 'bg-cyan-500/5',
       borderClass: isDark ? 'border-cyan-400/20' : 'border-cyan-500/20',
       textClass: isDark ? 'text-cyan-400' : 'text-cyan-600',
       iconClass: isDark ? 'text-cyan-400' : 'text-cyan-600',
-      levelClass: isDark ? 'text-cyan-400/10' : 'text-cyan-600/5',
-      dotClass: isDark ? 'bg-cyan-400/20' : 'bg-cyan-500/20'
+      levelClass: isDark ? 'text-cyan-400/10' : 'text-cyan-600/10',
+      dotClass: isDark ? 'bg-cyan-400/40' : 'bg-cyan-500/40'
     },
     'MARK': {
       bgClass: isDark ? 'bg-muted/10' : 'bg-muted/5',
       borderClass: 'border-muted/20',
       textClass: 'text-muted',
       iconClass: 'text-muted',
-      levelClass: isDark ? 'text-muted/10' : 'text-muted/5',
-      dotClass: 'bg-muted/20'
+      levelClass: isDark ? 'text-muted/10' : 'text-muted/10',
+      dotClass: 'bg-muted/40'
     },
     'INFO': {
       bgClass: 'bg-success-soft',
       borderClass: 'border-success/25',
       textClass: 'text-success',
       iconClass: 'text-success',
-      levelClass: isDark ? 'text-success/10' : 'text-success/5',
-      dotClass: 'bg-success/25'
+      levelClass: isDark ? 'text-success/10' : 'text-success/10',
+      dotClass: 'bg-success/40'
     },
     'WARN': {
       bgClass: 'bg-warning-soft',
       borderClass: 'border-warning/25',
       textClass: 'text-warning',
       iconClass: 'text-warning',
-      levelClass: isDark ? 'text-warning/10' : 'text-warning/5',
-      dotClass: 'bg-warning/25'
+      levelClass: isDark ? 'text-warning/10' : 'text-warning-soft',
+      dotClass: 'bg-warning/40'
     },
     'ERRO': {
       bgClass: 'bg-danger-soft',
       borderClass: 'border-danger/25',
       textClass: 'text-danger',
       iconClass: 'text-danger',
-      levelClass: isDark ? 'text-danger/10' : 'text-danger/5',
-      dotClass: 'bg-danger/25'
+      levelClass: isDark ? 'text-danger/10' : 'text-danger/10',
+      dotClass: 'bg-danger/40'
     },
     'FATA': {
       bgClass: isDark ? 'bg-pink-400/10' : 'bg-pink-500/5',
       borderClass: isDark ? 'border-pink-400/25' : 'border-pink-500/25',
       textClass: isDark ? 'text-pink-400' : 'text-pink-500',
       iconClass: isDark ? 'text-pink-400' : 'text-pink-500',
-      levelClass: isDark ? 'text-pink-400/10' : 'text-pink-500/5',
-      dotClass: isDark ? 'bg-pink-400/25' : 'bg-pink-500/25'
+      levelClass: isDark ? 'text-pink-400/10' : 'text-pink-500/10',
+      dotClass: isDark ? 'bg-pink-400/40' : 'bg-pink-500/40'
     }
   }
   return themeMap[level] || themeMap['TRAC']
@@ -435,7 +435,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
         {/* 错误堆栈 */}
         <div className='mb-14'>
           <SectionTitle
-            icon={<AlertCircle size={36} style={{ color: primaryColor }} />}
+            icon={<AlertCircle size={36} style={{ color: mutedColor }} />}
             en='Stack Trace'
             zh='错误堆栈'
             color={mutedColor}
@@ -476,7 +476,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
                     <legend className='flex items-center gap-2 ml-4'>
                       {/* 左侧圆角装饰 */}
                       <span
-                        className={`w-3 h-3 rounded-full -mr-1.5 ${theme.dotClass}`}
+                        className={`w-2 h-6 rounded-full -mr-1.5 ${theme.dotClass}`}
                       />
                       <span className='flex items-center gap-2 px-3'>
                         <Clock size={18} className={theme.iconClass} />
@@ -484,14 +484,14 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
                       </span>
                       {/* 右侧圆角装饰 */}
                       <span
-                        className={`w-3 h-3 rounded-full -ml-1.5 ${theme.dotClass}`}
+                        className={`w-2 h-6 rounded-full -ml-1.5 ${theme.dotClass}`}
                       />
                     </legend>
 
                     {/* 日志等级 */}
                     <div className='absolute bottom-2 right-6 pointer-events-none'>
-                      <span className={`text-[56px] font-black uppercase leading-none tracking-tight ${theme.levelClass}`}>
-                        {log.level}
+                      <span className={`text-6xl font-black uppercase leading-none tracking-tight ${theme.levelClass}`}>
+                        {log.level}」
                       </span>
                     </div>
 
@@ -626,7 +626,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
             {data.buildTime && (
               <div className='flex items-center gap-3'>
                 <MdSchedule size={24} />
-                <span>Built Time: {data.buildTime} 距离 {formatDistanceToNow(parse(data.buildTime, 'yyyy年MM月dd日 HH:mm', new Date()), { locale: zhCN })}</span>
+                <span>Built Time: {data.buildTime} 于 {formatDistanceToNow(parse(data.buildTime, 'yyyy年MM月dd日 HH:mm', new Date()), { locale: zhCN })}前</span>
               </div>
             )}
             {data.commitHash && (
