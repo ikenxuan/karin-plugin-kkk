@@ -175,7 +175,7 @@ export const getChangelogImage = async (
     remoteVersion: props.remoteVersion,
     lagVersionCount,
     buildTime,
-    share_url: `https://karin-plugin-kkk-docs.vercel.app/zh-CN/diff?old=${props.localVersion}&new=latest`
+    share_url: `https://karin-plugin-kkk-docs.vercel.app/diff?old=${props.localVersion}&new=latest`
   })
   return img || null
 }
