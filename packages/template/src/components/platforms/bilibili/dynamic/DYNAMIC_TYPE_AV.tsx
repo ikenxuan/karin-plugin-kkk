@@ -1,11 +1,11 @@
 import { renderRichTextToReact } from '@kkk/richtext'
 import { format } from 'date-fns'
-import { Clock, Eye, Hash, MessageCircle, UsersRound } from 'lucide-react'
+import { Clock, Eye, Hash, UsersRound } from 'lucide-react'
 import React from 'react'
 
 import type { BilibiliVideoDynamicProps } from '../../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
-import { CoinIcon, ShareIcon, ThumbUpIcon } from '../Icons'
+import { CoinIcon, CommentIcon, ShareIcon, ThumbUpIcon } from '../Icons'
 import { EnhancedImage, UsernameDisplay } from '../shared'
 
 /**
@@ -107,7 +107,7 @@ const BilibiliVideoDynamicContent: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
               </div>
 
               <div className='flex gap-3 items-center'>
-                <MessageCircle size={48} />
+                <CommentIcon size={48} />
                 <span className='select-text'>{props.data.pinglun}评论</span>
               </div>
 

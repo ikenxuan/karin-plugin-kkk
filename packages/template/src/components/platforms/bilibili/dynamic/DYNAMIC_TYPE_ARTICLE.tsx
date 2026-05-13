@@ -1,10 +1,10 @@
 import { renderRichTextToReact } from '@kkk/richtext'
-import { Bookmark, Clock, Eye, Hash, MessageCircle, UsersRound } from 'lucide-react'
+import { Bookmark, Clock, Eye, Hash, UsersRound } from 'lucide-react'
 import React from 'react'
 
 import type { BilibiliArticleDynamicProps } from '../../../../types/platforms/bilibili/dynamic/article'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
-import { ShareIcon, ThumbUpIcon } from '../Icons'
+import { CommentIcon, ShareIcon, ThumbUpIcon } from '../Icons'
 import { CommentText, DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
 
 /**
@@ -124,7 +124,7 @@ const BilibiliArticleStatus: React.FC<BilibiliArticleDynamicProps> = React.memo(
           <span className='text-[36px] text-foreground/70'>点赞</span>
         </div>
         <div className='flex gap-3 items-center text-[42px]'>
-          <MessageCircle size={32} />
+          <CommentIcon size={32} />
           <span className='font-medium'>{props.data.stats.reply || 0}</span>
           <span className='text-[36px] text-foreground/70'>评论</span>
         </div>

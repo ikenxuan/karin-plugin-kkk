@@ -147,7 +147,7 @@ const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'>
           </div>
 
           {/* 数据统计 */}
-          <div className='flex items-center gap-12 flex-wrap'>
+          <div className='grid grid-cols-2 gap-8'>
             <div className='flex items-center gap-4 text-foreground/50'>
               <Heart size={48} />
               <span className='text-5xl font-medium text-foreground/90'>

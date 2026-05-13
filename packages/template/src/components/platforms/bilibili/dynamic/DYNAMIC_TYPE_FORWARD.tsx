@@ -1,5 +1,5 @@
 import { renderRichTextToReact } from '@kkk/richtext'
-import { Clock, Eye, Hash, MessageCircle, UsersRound } from 'lucide-react'
+import { Clock, Eye, Hash, UsersRound } from 'lucide-react'
 import React from 'react'
 
 import type {
@@ -14,7 +14,7 @@ import type {
 } from '../../../../types/platforms/bilibili'
 import type { DecorationCardData } from '../../../../types/platforms/bilibili/dynamic/normal'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
-import { ShareIcon, ThumbUpIcon } from '../Icons'
+import { CommentIcon, ShareIcon, ThumbUpIcon } from '../Icons'
 import { DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
 
 /**
@@ -375,7 +375,7 @@ const BilibiliForwardStatus: React.FC<BilibiliDynamicStatusProps> = (props) => {
         </div>
         <span>·</span>
         <div className='flex gap-2 items-center'>
-          <MessageCircle size={48} />
+          <CommentIcon size={48} />
           {props.pinglun}评论
         </div>
         <span>·</span>

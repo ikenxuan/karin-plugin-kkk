@@ -1,12 +1,12 @@
 import { renderRichTextToReact } from '@kkk/richtext'
 import { format, fromUnixTime } from 'date-fns'
+import { Calendar } from 'lucide-react'
 import React from 'react'
 
 import { DefaultLayout } from '../../../components/layouts/DefaultLayout'
 import type { BilibiliVideoInfoProps } from '../../../types/platforms/bilibili/videoInfo'
 import { GlowText } from '../../common/GlowImage'
-import { Calendar, MessageCircle } from 'lucide-react'
-import { CoinIcon, PlayIcon, ShareIcon, StarIcon, ThumbUpIcon } from './Icons'
+import { CoinIcon, CommentIcon, PlayIcon, ShareIcon, StarIcon, ThumbUpIcon } from './Icons'
 import { EnhancedImage } from './shared'
 
 const formatNumber = (num: number): string => {
@@ -109,7 +109,7 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
                   </span>
                   {/* 评论 */}
                   <span className="flex items-center gap-1.5">
-                    <MessageCircle size={28} className="text-foreground/20" />
+                    <CommentIcon variant='line' size={28} className="text-foreground/20" />
                     {formatNumber(props.data.stat.reply)}
                   </span>
                 </div>
