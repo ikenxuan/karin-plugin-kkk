@@ -199,6 +199,9 @@ export function PokerCardsSection() {
             );
 
             if (dismissProgress > 0) {
+              // 终止背面可能仍在进行的 rotation 补间，避免与 scroll-driven 的 set 冲突导致闪烁
+              gsap.killTweensOf(back, "rotation");
+
               const backRotation = gsap.utils.mapRange(
                 0,
                 1,
