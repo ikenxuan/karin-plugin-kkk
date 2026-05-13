@@ -333,7 +333,8 @@ interface DouyinUserListProps extends BaseComponentProps {
     /** 是否使用深色主题 */useDarkTheme?: boolean; /** 群组信息 */
     groupInfo: {
       /** 群号 */groupId: string; /** 群名称 */
-      groupName: string;
+      groupName: string; /** 群头像 */
+      groupAvatar: string;
     }; /** 用户列表数据 */
     renderOpt: {
       /** 用户头像图片URL */avatar_img: string; /** 用户名 */
@@ -1297,7 +1298,8 @@ interface BilibiliUserListProps extends BaseComponentProps {
     /** 是否使用深色主题 */useDarkTheme?: boolean; /** 群组信息 */
     groupInfo: {
       /** 群号 */groupId: string; /** 群名称 */
-      groupName: string;
+      groupName: string; /** 群头像 */
+      groupAvatar: string;
     }; /** 用户列表数据 */
     renderOpt: {
       /** 用户头像图片URL */avatar_img: string; /** 用户名 */
