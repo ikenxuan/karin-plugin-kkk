@@ -14,6 +14,8 @@ export interface BilibiliUserListProps extends BaseComponentProps {
       groupId: string
       /** 群名称 */
       groupName: string
+      /** 群头像 */
+      groupAvatar: string
     }
     /** 用户列表数据 */
     renderOpt: {

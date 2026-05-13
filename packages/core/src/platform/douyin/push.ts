@@ -1165,7 +1165,8 @@ export class DouYinpush extends Base {
       renderOpt,
       groupInfo: {
         groupId: groupInfo.groupId || '',
-        groupName: groupInfo.groupName || ''
+        groupName: groupInfo.groupName || '',
+        groupAvatar: groupInfo.avatar || ''
       }
     })
     await this.e.reply(img)

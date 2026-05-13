@@ -1,14 +1,14 @@
+import { Clapperboard, Hash, Heart, Radio, Sparkles, UserPlus, UsersRound } from 'lucide-react'
 import React from 'react'
-import { RiGroupLine, RiHashtag, RiHeart3Line, RiHeartLine, RiLiveLine, RiStarLine, RiUserFollowLine, RiVideoLine } from 'react-icons/ri'
 
 import type { DouyinUserListProps } from '../../../types/platforms/douyin/userlist'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 const pushTypeConfig: Record<string, { label: string; color: string; icon: React.ComponentType<any> }> = {
-  post: { label: '作品更新', color: 'bg-accent/5 text-accent border-accent-soft-hover', icon: RiVideoLine },
-  favorite: { label: '喜欢列表', color: 'bg-danger/5 text-danger border-danger-soft-hover', icon: RiHeartLine },
-  recommend: { label: '推荐列表', color: 'bg-warning/5 text-warning border-warning-soft-hover', icon: RiStarLine },
-  live: { label: '直播状态', color: 'bg-surface-secondary/40 text-accent border-border/20', icon: RiLiveLine }
+  post: { label: '作品更新', color: 'bg-accent/5 text-accent/80 border-accent/12', icon: Clapperboard },
+  favorite: { label: '喜欢列表', color: 'bg-[#d94f50]/5 text-[#b04546] border-[#d94f50]/12', icon: Heart },
+  recommend: { label: '推荐列表', color: 'bg-[#c9943a]/5 text-[#a07d30] border-[#c9943a]/12', icon: Sparkles },
+  live: { label: '直播状态', color: 'bg-[#3aa876]/5 text-[#2e8a5e] border-[#3aa876]/12', icon: Radio }
 }
 
 /**
@@ -62,7 +62,7 @@ const DouyinUserItem: React.FC<DouyinUserListProps['data']['renderOpt'][number]>
               {props.username}
             </h3>
             <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-surface/50 border border-border/50 text-xs font-mono font-bold text-muted">
-              <RiHashtag size={12} className="opacity-70" />
+              <Hash size={12} className="opacity-70" />
               {props.short_id}
             </span>
           </div>
@@ -110,9 +110,9 @@ const DouyinUserItem: React.FC<DouyinUserListProps['data']['renderOpt'][number]>
           {/* 右侧 */}
           <div className="flex-1 flex flex-col gap-2">
             {[
-              { icon: RiGroupLine, value: props.fans, label: '粉丝' },
-              { icon: RiHeart3Line, value: props.total_favorited, label: '获赞' },
-              { icon: RiUserFollowLine, value: props.following_count, label: '关注' }
+              { icon: UsersRound, value: props.fans, label: '粉丝' },
+              { icon: Heart, value: props.total_favorited, label: '获赞' },
+              { icon: UserPlus, value: props.following_count, label: '关注' }
             ].map((item, index) => {
               const StatIcon = item.icon
               return (
@@ -209,9 +209,13 @@ const DouyinUserList: React.FC<DouyinUserListProps> = (props) => {
         <div className="flex justify-between items-end mb-16">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              {/* 纯净风格图标 */}
-              <div className="w-10 h-10 rounded-xl bg-foreground flex items-center justify-center text-background shadow-lg">
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zm-7 5h5v5h-5z" /></svg>
+              {/* 群头像 */}
+              <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg border border-border/30">
+                <img
+                  src={props.data.groupInfo.groupAvatar}
+                  alt="Group Avatar"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <span className="font-mono text-sm font-bold tracking-widest uppercase opacity-50 text-foreground">
                 Douyin Monitor

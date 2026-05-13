@@ -1,4 +1,4 @@
-import { FileText, Hash, Heart, Image as LucideImage, Plus, Radio, Share2, UsersRound, UserPlus, Video } from 'lucide-react'
+import { FileText, Hash, Heart, Image as LucideImage, Radio, Share2, UserPlus, UsersRound, Video } from 'lucide-react'
 import React from 'react'
 
 import type { BilibiliUserListProps } from '../../../types/platforms/bilibili/userlist'
@@ -8,12 +8,12 @@ import { EnhancedImage } from './shared'
 type BilibiliPushType = NonNullable<BilibiliUserListProps['data']['renderOpt'][number]['pushTypes']>[number]
 
 const pushTypeConfig: Record<BilibiliPushType, { label: string, color: string, icon: React.ComponentType<any> }> = {
-  video: { label: '投稿视频', color: 'bg-accent/8 text-accent border-accent/25', icon: Video },
-  draw: { label: '图文动态', color: 'bg-[#23ade5]/10 text-[#23ade5] border-[#23ade5]/25', icon: LucideImage },
-  word: { label: '纯文动态', color: 'bg-warning/10 text-warning border-warning/25', icon: FileText },
-  live: { label: '直播动态', color: 'bg-success/10 text-success border-success/25', icon: Radio },
-  forward: { label: '转发动态', color: 'bg-[#f97316]/10 text-[#f97316] border-[#f97316]/25', icon: Share2 },
-  article: { label: '投稿专栏', color: 'bg-[#7c3aed]/10 text-[#7c3aed] border-[#7c3aed]/25', icon: FileText }
+  video: { label: '投稿视频', color: 'bg-accent/6 text-accent/80 border-accent-soft', icon: Video },
+  draw: { label: '图文动态', color: 'bg-[#23ade5]/5 text-[#1a8fb8] border-[#23ade5]/12', icon: LucideImage },
+  word: { label: '纯文动态', color: 'bg-warning/5 text-warning/80 border-warning/12', icon: FileText },
+  live: { label: '直播动态', color: 'bg-success/5 text-success/80 border-success/12', icon: Radio },
+  forward: { label: '转发动态', color: 'bg-[#f97316]/5 text-[#cc6b1f] border-[#f97316]/12', icon: Share2 },
+  article: { label: '投稿专栏', color: 'bg-[#7c3aed]/5 text-[#6b4fa8] border-[#7c3aed]/12', icon: FileText }
 }
 
 /**
@@ -111,7 +111,7 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
                     : 'bg-surface/45 text-muted border-border/15'
                   }`}
                 >
-                  <config.icon size={18} className={isActive ? '' : 'opacity-50'} />
+                  <config.icon size={18} className={isActive ? '' : 'opacity-40'} />
                   <span className="text-[13px] font-bold tracking-wide leading-tight">
                     {config.label}
                   </span>
@@ -222,9 +222,13 @@ const BilibiliUserList: React.FC<BilibiliUserListProps> = (props) => {
         <div className="flex justify-between items-end mb-16">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              {/* 移除渐变背景图标，改为纯净风格 */}
-              <div className="w-10 h-10 rounded-xl bg-foreground flex items-center justify-center text-background shadow-lg">
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-4.41-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5.5-2.5l7.51-3.49L17.5 6.5 9.99 9.99 6.5 17.5zm5.5-6.6c.61 0 1.1.49 1.1 1.1s-.49 1.1-1.1 1.1-1.1-.49-1.1-1.1.49-1.1 1.1-1.1z" /></svg>
+              {/* 群头像 */}
+              <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg border border-border/30">
+                <EnhancedImage
+                  src={props.data.groupInfo.groupAvatar}
+                  alt="Group Avatar"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <span className="font-mono text-sm font-bold tracking-widest uppercase opacity-50 text-foreground">
                 Subscriber List
