@@ -10,8 +10,8 @@ const InlineCalloutCode: React.FC<React.PropsWithChildren<{ className?: string }
   <span
     className={`inline-flex items-center rounded-[0.55em] px-[0.48em] py-[0.18em] font-semibold ${className ?? ''}`.trim()}
     style={{
-      background: 'color-mix(in oklab, var(--success) 12%, transparent)',
-      color: 'var(--success)'
+      background: 'color-mix(in oklab, #d4af37 14%, transparent)',
+      color: '#d4af37'
     }}
   >
     {children}
@@ -30,28 +30,28 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
 
   const backgroundColors = isDark
     ? {
-      base: '#06110d',
-      primary: 'rgba(70, 184, 145, 0.26)',
-      secondary: 'rgba(135, 214, 84, 0.22)',
-      accent: 'rgba(88, 154, 210, 0.18)',
-      wash: 'rgba(7, 24, 18, 0.8)',
-      tint: 'rgba(162, 224, 103, 0.1)',
-      noiseOpacity: 0.22,
+      base: '#0a0a0a',
+      primary: 'rgba(212, 175, 55, 0.28)',
+      secondary: 'rgba(184, 134, 11, 0.24)',
+      accent: 'rgba(205, 133, 63, 0.20)',
+      wash: 'rgba(10, 10, 10, 0.85)',
+      tint: 'rgba(212, 175, 55, 0.12)',
+      noiseOpacity: 0.20,
       noiseBlend: 'screen' as const,
-      inlineCodeBg: 'rgba(255, 255, 255, 0.08)',
-      inlineCodeText: '#dff3db'
+      inlineCodeBg: 'rgba(255, 215, 0, 0.10)',
+      inlineCodeText: '#f0c040'
     }
     : {
-      base: '#f5fbfc',
-      primary: 'rgba(214, 236, 240, 0.95)',
-      secondary: 'rgba(189, 221, 34, 0.42)',
-      accent: 'rgba(214, 236, 240, 0.72)',
-      wash: 'rgba(255, 255, 255, 0.36)',
-      tint: 'rgba(189, 221, 34, 0.12)',
-      noiseOpacity: 0.16,
+      base: '#faf8f3',
+      primary: 'rgba(212, 175, 55, 0.20)',
+      secondary: 'rgba(184, 134, 11, 0.16)',
+      accent: 'rgba(205, 133, 63, 0.14)',
+      wash: 'rgba(250, 248, 243, 0.65)',
+      tint: 'rgba(212, 175, 55, 0.07)',
+      noiseOpacity: 0.12,
       noiseBlend: 'multiply' as const,
-      inlineCodeBg: 'rgba(15, 23, 42, 0.06)',
-      inlineCodeText: '#314329'
+      inlineCodeBg: 'rgba(184, 134, 11, 0.12)',
+      inlineCodeText: '#8b6914'
     }
 
   return (
@@ -124,7 +124,7 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
         </svg>
       </div>
 
-      <div className='relative px-20 pt-5 pb-0 w-full max-w-none prose prose-lg prose-invert from-surface to-surface'>
+      <div className='relative px-16 pt-5 pb-0 w-full max-w-none prose prose-lg prose-invert from-surface to-surface'>
 
         {props.data.Tip === true ? (
           <>
@@ -166,7 +166,7 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
                 <div className='flex items-center gap-5'>
                   <span className='text-muted text-[1.2em]'>•</span>
                   <span>进入</span>
-                  <InlineCalloutCode className='text-[0.9em]'>Karin WebUI</InlineCalloutCode>
+                  <InlineCalloutCode className='text-[0.9em] font-mono'>Karin WebUI</InlineCalloutCode>
                   <span>→</span>
                   <InlineCalloutCode className='text-[0.9em]'>插件管理</InlineCalloutCode>
                   <span>→</span>
@@ -178,7 +178,7 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
                 <div className='flex items-center gap-5'>
                   <span className='text-muted text-[1.2em]'>•</span>
                   <span>Karin 根目录运行</span>
-                  <InlineCalloutCode className='text-[0.85em] whitespace-nowrap'>
+                  <InlineCalloutCode className='text-[0.85em] whitespace-nowrap font-mono'>
                     pnpm add karin-plugin-kkk@{props.data.remoteVersion} -w
                   </InlineCalloutCode>
                 </div>
@@ -186,7 +186,7 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
             </div>
           </>
         ) : null}
-        <div className='changelog-content'>
+        <div className='changelog-content px-6'>
           <ReactMarkdown
             rehypePlugins={[rehypeHighlight]}
             components={{
@@ -197,12 +197,6 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
               ),
               h2: ({ children, ...props }) => (
                 <div className="relative mt-25 mb-5">
-                  {/* <div
-                    className="absolute -top-13 left-0 text-[11em] font-black text-muted/50 select-none pointer-events-none uppercase leading-none"
-                    aria-hidden="true"
-                  >
-                    {typeof children === 'string' ? children : 'H2'}
-                  </div> */}
                   <h2 className="ml-5 relative z-10 text-[5.28em] text-foreground font-light" {...props}>
                     {children}
                   </h2>
@@ -236,7 +230,7 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
                 </p>
               ),
               ul: ({ children, ...props }) => (
-                <ul className="pl-[5em] mb-[2em] list-disc text-foreground" {...props}>
+                <ul className="pl-[5em] mb-[4em] list-disc text-foreground" {...props}>
                   {children}
                 </ul>
               ),
@@ -271,16 +265,18 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
                   {children}
                 </pre>
               ),
-              a: ({ children, href, ...props }) => (
-                <a
-                  className="inline-flex gap-3 items-baseline cursor-pointer text-foreground/50 hover:underline"
-                  onClick={(e) => e.preventDefault()}
-                  {...props}
-                >
-                  <span>{children}</span>
-                  {/* <ExternalLink className="w-[0.8em] h-auto mb-[-0.1em] opacity-70" /> */}
-                </a>
-              ),
+              a: ({ children, href, ...props }) => {
+                const isVersionLink = href?.includes('/compare/')
+                return (
+                  <a
+                    className={`inline-flex gap-3 items-baseline cursor-pointer font-medium hover:underline ${isVersionLink ? 'text-success' : 'text-foreground/50'}`}
+                    onClick={(e) => e.preventDefault()}
+                    {...props}
+                  >
+                    <span>{children}</span>
+                  </a>
+                )
+              },
               img: ({ ...props }) => (
                 <img className="max-w-full h-auto rounded" {...props} />
               ),
@@ -311,11 +307,11 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
               <img src={qrCodeDataUrl} alt='二维码' className='w-full h-full object-contain' />
             </div>
             <div className='text-4xl text-foreground/60'>
-              <span>查看实际运行代码从</span>
+              <span>扫码查看实际运行代码从</span>
               <span className='font-bold text-foreground/80'> v{props.data.localVersion}</span>
               <span> 到 </span>
               <span className='font-bold text-foreground/80'> v{props.data.remoteVersion}</span>
-              <span> 的 Diff 差异</span>
+              <span> 的差异</span>
             </div>  
           </div>
         )}
