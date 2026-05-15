@@ -384,9 +384,9 @@ export const bilibiliPush = Config.bilibili.push.switch && karin.task('B站推�
 
 export const forcePush = karin.command(/#(抖音|B站)(全部)?强制推送/, handleForcePush, { name: '𝑪𝒊𝒂𝒍𝒍𝒐～(∠・ω< )⌒★', perm: 'master', event: 'message.group' })
 
-export const setdyPush = karin.command(/^#设置抖音推送/, handleSetDouyinPush, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.douyin.push.permission, dsbAdapter: ['qqbot'] })
+export const setdyPush = karin.command(/^#设置抖音推送/, handleSetDouyinPush, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.douyin.push.permission })
 
-export const setbiliPush = karin.command(/^#设置[bB]站推送/, handleSetBilibiliPush, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.bilibili.push.permission, dsbAdapter: ['qqbot'] })
+export const setbiliPush = karin.command(/^#设置[bB]站推送/, handleSetBilibiliPush, { name: 'kkk-推送功能-设置', event: 'message.group', perm: Config.bilibili.push.permission })
 
 export const bilibiliPushList = karin.command(/^#?[bB]站推送列表$/, handleBilibiliPushList, { name: 'kkk-推送功能-列表', event: 'message.group' })
 
@@ -394,6 +394,6 @@ export const douyinPushList = karin.command(/^#?抖音推送列表$/, handleDouy
 
 export const changeBotID = karin.command(/^#kkk设置推送机器人/, handleChangeBotID, { name: 'kkk-推送功能-设置', perm: 'master' })
 
-export const testDouyinPush = karin.command(/^#测试抖音推送\s*(https?:\/\/[^\s]+)?/, handleTestDouyinPush, { name: 'kkk-推送功能-测试', event: 'message.group', perm: Config.douyin.push.permission, dsbAdapter: ['qqbot'], priority: -Infinity - 1 })
+export const testDouyinPush = karin.command(/^#测试抖音推送\s*(https?:\/\/[^\s]+)?/, handleTestDouyinPush, { name: 'kkk-推送功能-测试', event: 'message.group', perm: Config.douyin.push.permission, priority: -Infinity - 1 })
 
 export const globalIgnore = karin.command(/^#kkk推送全局忽略/, handleGlobalIgnore, { name: 'kkk-推送功能-全局忽略', perm: 'master', event: 'message.group' })
