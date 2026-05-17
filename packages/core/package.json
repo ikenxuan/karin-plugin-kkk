@@ -94,7 +94,7 @@
     "vitest": "^4.1.6"
   },
   "peerDependencies": {
-    "@snapka/puppeteer": ">=0.1.5",
+    "@karinjs/plugin-puppeteer": "*",
     "@types/react": "*"
   },
   "engines": {

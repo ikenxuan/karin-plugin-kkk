@@ -235,9 +235,6 @@ importers:
       '@ikenxuan/watermark':
         specifier: ^1.0.11
         version: 1.0.11
-      '@snapka/puppeteer':
-        specifier: '>=0.1.5'
-        version: 0.2.7
       '@types/react':
         specifier: '*'
         version: 19.2.14
@@ -642,11 +639,6 @@ packages:
 
   '@antfu/install-pkg@1.1.0':
     resolution: {integrity: sha512-MGQsmw10ZyI+EJo45CdSER4zEb+p31LpDAFp2Z3gkSd1yqVZGi0Ebx++YTEMonJy4oChEMLsxZ64j8FH6sSqtQ==}
-
-  '@antfu/ni@30.1.0':
-    resolution: {integrity: sha512-3VuAbPjgY52rQNn4wABaXMhBU2Oq91uy6L8nX49eJ35OLI68CyckGU+HZxcaHix4ymuGM2nFL1D6sLpgODK5xw==}
-    engines: {node: '>=20.19.0'}
-    hasBin: true
 
   '@anthropic-ai/sdk@0.95.2':
     resolution: {integrity: sha512-Egddwo3sheo1PzUrMkZnH6VkQYwS0h/b/i8vSK8Ta9M45UQipAMeDFH57dYuDAfXMEUUGeKw6CMlremgMZgrSQ==}
@@ -3363,8 +3355,8 @@ packages:
       react: 19.2.6
       react-dom: 19.2.6
 
-  '@react-grab/cli@0.1.33':
-    resolution: {integrity: sha512-UOc3PwN11Osw0NzaxRLK8trP4X+5iW1Dst3gvHRCafe3wXHyadzHYH8H1hdkcXdlIx3gsoD9ASJ+G/JH+A/jqA==}
+  '@react-grab/cli@0.1.34':
+    resolution: {integrity: sha512-L2eAxN46Vq2Ss3nDegrH7wQVMeWH03ahawp+OdzUtQWqL3cq6Bt149q9XhY3cWc9fJsxuWjLfCn+3T9uApIlBA==}
     hasBin: true
 
   '@react-spectrum/button@3.18.0':
@@ -5169,6 +5161,11 @@ packages:
     peerDependencies:
       react: 19.2.6
 
+  bippy@0.5.40:
+    resolution: {integrity: sha512-3QPSDG5tgd7FCIkcKsUqmbGdlHxBxP7II5drXPNp1I0rpA9+4+/VjQOigDTbzeqTi6Xkaf1Dq7x4E8vbOuwOkA==}
+    peerDependencies:
+      react: 19.2.6
+
   birpc@4.0.0:
     resolution: {integrity: sha512-LShSxJP0KTmd101b6DRyGBj57LZxSDYWKitQNW/mi8GRMvZb078Uf9+pveax1DrVL89vm7mWe+TovdI/UDOuPw==}
 
@@ -6605,9 +6602,6 @@ packages:
 
   fuzzysort@3.1.0:
     resolution: {integrity: sha512-sR9BNCjBg6LNgwvxlBd0sBABvQitkLzoVY9MYYROQVX/FvfJ4Mai9LsGhDgd8qYdds0bY77VzYd5iuB+v5rwQQ==}
-
-  fzf@0.5.2:
-    resolution: {integrity: sha512-Tt4kuxLXFKHy8KT40zwsUPUkg1CrsgY25FxA2U/j/0WgEDCk3ddc/zLTCCcbSHX9FcKtLuVaDGtGE/STWC+j3Q==}
 
   generative-bayesian-network@2.1.82:
     resolution: {integrity: sha512-DH4NrmQheoMaJErdVv2IzaqkbOYSDQZmiZTV6UPDJYRDK2EyPpIQ88XRcYdPeFrUjS1N0Jj25H3HUywoJ1dbow==}
@@ -8542,8 +8536,8 @@ packages:
   react-fast-compare@3.2.2:
     resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
 
-  react-grab@0.1.33:
-    resolution: {integrity: sha512-ER919JMsE4TTrb2CpEivqsIjNMSycD4HtS8v7mS3pq67U7WL1K3+C8m9AYOwW4dpuYh+EanC2eJBmfuczHJZ0A==}
+  react-grab@0.1.34:
+    resolution: {integrity: sha512-jtdOdv0kb90oqL+pMszSh9DOLgVRaX4ZE6XN4GkDEpNNUqveQfZT014+EeJraljpqQfuWKW+96NrrRqUD93D2g==}
     hasBin: true
     peerDependencies:
       react: 19.2.6
@@ -10495,13 +10489,6 @@ snapshots:
     dependencies:
       package-manager-detector: 1.6.0
       tinyexec: 1.1.2
-
-  '@antfu/ni@30.1.0':
-    dependencies:
-      fzf: 0.5.2
-      package-manager-detector: 1.6.0
-      tinyexec: 1.1.2
-      tinyglobby: 0.2.16
 
   '@anthropic-ai/sdk@0.95.2(zod@4.4.3)':
     dependencies:
@@ -13379,16 +13366,17 @@ snapshots:
       react-aria: 3.48.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react-dom: 19.2.6(react@19.2.6)
 
-  '@react-grab/cli@0.1.33':
+  '@react-grab/cli@0.1.34':
     dependencies:
-      '@antfu/ni': 30.1.0
       commander: 14.0.3
       ignore: 7.0.5
       jsonc-parser: 3.3.1
       ora: 9.4.0
+      package-manager-detector: 1.6.0
       picocolors: 1.1.1
       prompts: 2.4.2
       smol-toml: 1.6.1
+      tinyexec: 1.1.2
 
   '@react-spectrum/button@3.18.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
@@ -14789,23 +14777,6 @@ snapshots:
     dependencies:
       valibot: 1.4.0(typescript@6.0.3)
 
-  '@vitejs/devtools-kit@0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@3.25.76))(typescript@6.0.3)(vite@8.0.12)':
-    dependencies:
-      birpc: 4.0.0
-      devframe: 0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@3.25.76))(typescript@6.0.3)
-      logs-sdk: 0.0.6
-      mlly: 1.8.2
-      pathe: 2.0.3
-      perfect-debounce: 2.1.0
-      tinyexec: 1.1.2
-      vite: 8.0.12(@types/node@24.12.2)(@vitejs/devtools@0.1.22)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
-    transitivePeerDependencies:
-      - '@modelcontextprotocol/sdk'
-      - bufferutil
-      - typescript
-      - utf-8-validate
-    optional: true
-
   '@vitejs/devtools-kit@0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(typescript@6.0.3)(vite@8.0.12)':
     dependencies:
       birpc: 4.0.0
@@ -14815,7 +14786,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.1.0
       tinyexec: 1.1.2
-      vite: 8.0.12(@types/node@24.12.2)(@vitejs/devtools@0.1.22)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 8.0.12(@types/node@25.6.0)(@vitejs/devtools@0.1.22)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - '@modelcontextprotocol/sdk'
       - bufferutil
@@ -14837,60 +14808,6 @@ snapshots:
       - bufferutil
       - typescript
       - utf-8-validate
-    optional: true
-
-  '@vitejs/devtools-rolldown@0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@3.25.76))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.12)(vue@3.5.34(typescript@6.0.3))':
-    dependencies:
-      '@floating-ui/dom': 1.7.6
-      '@pnpm/read-project-manifest': 1001.2.6(@pnpm/logger@1001.0.1)
-      '@rolldown/debug': 1.0.0
-      '@vitejs/devtools-kit': 0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@3.25.76))(typescript@6.0.3)(vite@8.0.12)
-      birpc: 4.0.0
-      cac: 7.0.0
-      d3-shape: 3.2.0
-      devframe: 0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@3.25.76))(typescript@6.0.3)
-      diff: 9.0.0
-      get-port-please: 3.2.0
-      h3: 1.15.11
-      logs-sdk: 0.0.6
-      mlly: 1.8.2
-      mrmime: 2.0.1
-      p-limit: 7.3.0
-      pathe: 2.0.3
-      publint: 0.3.20
-      split2: 4.2.0
-      tinyglobby: 0.2.16
-      unconfig: 7.5.0
-      unstorage: 1.17.5
-      vue-virtual-scroller: 3.0.3(vue@3.5.34(typescript@6.0.3))
-      ws: 8.20.0
-    transitivePeerDependencies:
-      - '@azure/app-configuration'
-      - '@azure/cosmos'
-      - '@azure/data-tables'
-      - '@azure/identity'
-      - '@azure/keyvault-secrets'
-      - '@azure/storage-blob'
-      - '@capacitor/preferences'
-      - '@deno/kv'
-      - '@modelcontextprotocol/sdk'
-      - '@netlify/blobs'
-      - '@planetscale/database'
-      - '@pnpm/logger'
-      - '@upstash/redis'
-      - '@vercel/blob'
-      - '@vercel/functions'
-      - '@vercel/kv'
-      - aws4fetch
-      - bufferutil
-      - db0
-      - idb-keyval
-      - ioredis
-      - typescript
-      - uploadthing
-      - utf-8-validate
-      - vite
-      - vue
     optional: true
 
   '@vitejs/devtools-rolldown@0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.12)(vue@3.5.34(typescript@6.0.3))':
@@ -15000,50 +14917,6 @@ snapshots:
       - vue
     optional: true
 
-  '@vitejs/devtools@0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@3.25.76))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.12)':
-    dependencies:
-      '@vitejs/devtools-kit': 0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@3.25.76))(typescript@6.0.3)(vite@8.0.12)
-      '@vitejs/devtools-rolldown': 0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@3.25.76))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.12)(vue@3.5.34(typescript@6.0.3))
-      birpc: 4.0.0
-      cac: 7.0.0
-      devframe: 0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@3.25.76))(typescript@6.0.3)
-      h3: 1.15.11
-      logs-sdk: 0.0.6
-      mlly: 1.8.2
-      obug: 2.1.1
-      pathe: 2.0.3
-      perfect-debounce: 2.1.0
-      tinyexec: 1.1.2
-      vite: 8.0.12(@types/node@24.12.2)(@vitejs/devtools@0.1.22)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
-      vue: 3.5.34(typescript@6.0.3)
-      ws: 8.20.0
-    transitivePeerDependencies:
-      - '@azure/app-configuration'
-      - '@azure/cosmos'
-      - '@azure/data-tables'
-      - '@azure/identity'
-      - '@azure/keyvault-secrets'
-      - '@azure/storage-blob'
-      - '@capacitor/preferences'
-      - '@deno/kv'
-      - '@modelcontextprotocol/sdk'
-      - '@netlify/blobs'
-      - '@planetscale/database'
-      - '@pnpm/logger'
-      - '@upstash/redis'
-      - '@vercel/blob'
-      - '@vercel/functions'
-      - '@vercel/kv'
-      - aws4fetch
-      - bufferutil
-      - db0
-      - idb-keyval
-      - ioredis
-      - typescript
-      - uploadthing
-      - utf-8-validate
-    optional: true
-
   '@vitejs/devtools@0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.12)':
     dependencies:
       '@vitejs/devtools-kit': 0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(typescript@6.0.3)(vite@8.0.12)
@@ -15058,7 +14931,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.1.0
       tinyexec: 1.1.2
-      vite: 8.0.12(@types/node@24.12.2)(@vitejs/devtools@0.1.22)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 8.0.12(@types/node@25.6.0)(@vitejs/devtools@0.1.22)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
       vue: 3.5.34(typescript@6.0.3)
       ws: 8.20.0
     transitivePeerDependencies:
@@ -15580,6 +15453,10 @@ snapshots:
   binary-extensions@2.3.0: {}
 
   bippy@0.5.39(react@19.2.6):
+    dependencies:
+      react: 19.2.6
+
+  bippy@0.5.40(react@19.2.6):
     dependencies:
       react: 19.2.6
 
@@ -16248,25 +16125,6 @@ snapshots:
   detect-newline@4.0.1: {}
 
   detect-node-es@1.1.0: {}
-
-  devframe@0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@3.25.76))(typescript@6.0.3):
-    dependencies:
-      '@valibot/to-json-schema': 1.7.0(valibot@1.4.0(typescript@6.0.3))
-      birpc: 4.0.0
-      cac: 7.0.0
-      h3: 1.15.11
-      logs-sdk: 0.0.6
-      mrmime: 2.0.1
-      pathe: 2.0.3
-      valibot: 1.4.0(typescript@6.0.3)
-      ws: 8.20.0
-    optionalDependencies:
-      '@modelcontextprotocol/sdk': 1.29.0(zod@3.25.76)
-    transitivePeerDependencies:
-      - bufferutil
-      - typescript
-      - utf-8-validate
-    optional: true
 
   devframe@0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(typescript@6.0.3):
     dependencies:
@@ -17315,8 +17173,6 @@ snapshots:
   functions-have-names@1.2.3: {}
 
   fuzzysort@3.1.0: {}
-
-  fzf@0.5.2: {}
 
   generative-bayesian-network@2.1.82:
     dependencies:
@@ -19790,10 +19646,10 @@ snapshots:
 
   react-fast-compare@3.2.2: {}
 
-  react-grab@0.1.33(react@19.2.6):
+  react-grab@0.1.34(react@19.2.6):
     dependencies:
-      '@react-grab/cli': 0.1.33
-      bippy: 0.5.39(react@19.2.6)
+      '@react-grab/cli': 0.1.34
+      bippy: 0.5.40(react@19.2.6)
     optionalDependencies:
       react: 19.2.6
 
@@ -19877,7 +19733,7 @@ snapshots:
       prompts: 2.4.2
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
-      react-grab: 0.1.33(react@19.2.6)
+      react-grab: 0.1.34(react@19.2.6)
     optionalDependencies:
       esbuild: 0.28.0
       unplugin: 2.1.0
@@ -21692,7 +21548,7 @@ snapshots:
       tinyglobby: 0.2.16
     optionalDependencies:
       '@types/node': 24.12.2
-      '@vitejs/devtools': 0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@3.25.76))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.12)
+      '@vitejs/devtools': 0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.12)
       esbuild: 0.28.0
       fsevents: 2.3.3
       jiti: 2.6.1
