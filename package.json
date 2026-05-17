@@ -58,7 +58,7 @@
     "fingerprint-injector": "^2.1.82"
   },
   "peerDependencies": {
-    "@snapka/puppeteer": ">=0.1.5",
+    "@karinjs/plugin-puppeteer": "*",
     "@types/react": "*"
   },
   "engines": {
