@@ -112,7 +112,7 @@ export const Render = async <P extends DynamicRenderPath> (
   const renderResult = await render.render({
     name: `${Root.pluginName}/${templateType}`,
     file: result.htmlPath,
-    multiPage: Config.app.multiPageRender ? Config.app.multiPageHeight : false,
+    multiPage: (Config.app.multiPageRender && event.bot.adapter.name !== 'QQ Official Bot') ? Config.app.multiPageHeight : false,
     selector: '#container',
     fullPage: false,
     type: 'png',
