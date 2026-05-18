@@ -1,4 +1,4 @@
-import { embedWatermarkToPngBytes, extractWatermarkFromPngBytes } from '@ikenxuan/watermark'
+import { embedWatermarkToPngBytes } from '@ikenxuan/watermark'
 import { logger } from 'node-karin'
 
 
@@ -34,7 +34,6 @@ import { logger } from 'node-karin'
 
 /**
  * 将隐水印嵌入到 PNG 图片中
- * 
  * @param pngBytes - PNG 图片的 Buffer 或 Uint8Array
  * @param watermarkText - 要嵌入的水印文本
  * @returns 嵌入水印后的 PNG Buffer，失败返回 null
@@ -44,34 +43,37 @@ export const embedWatermark = (
   watermarkText: string
 ): Buffer | null => {
   // const start = Date.now()
+
   try {
     const input = pngBytes instanceof Buffer ? pngBytes : Buffer.from(pngBytes)
     const result = embedWatermarkToPngBytes(input, watermarkText)
-    const resultBuffer = result instanceof Buffer ? result : Buffer.from(result)
-    // logger.info(`嵌入隐水印耗时: ${Date.now() - start}ms`)
+    const resultBuffer = result instanceof Buffer ? result : Buffer.from(result.buffer)
+    // const duration = Date.now() - start
+    // logger.info(`[embedWatermark] 嵌入隐水印成功，耗时: ${duration}ms，输出大小: ${resultBuffer.length} bytes`)
 
     return resultBuffer
-  } catch (error) {
-    logger.error('嵌入隐水印失败:', error)
+  } catch {
+    // const duration = Date.now() - start
+    // logger.error(`[embedWatermark] 嵌入隐水印失败，耗时: ${duration}ms`)
     return null
   }
 }
 
 /**
  * 从 PNG 图片中提取隐水印文本
- * 
+ *
  * @param pngBytes - PNG 图片的 Buffer 或 Uint8Array
  * @returns 提取出的水印文本，失败返回 null
  */
-export const extractWatermark = (
-  pngBytes: Buffer | Uint8Array
-): string | null => {
-  try {
-    const input = pngBytes instanceof Buffer ? pngBytes : Buffer.from(pngBytes)
-    const result = extractWatermarkFromPngBytes(input)
-    return result
-  } catch (error) {
-    logger.error('提取隐水印失败:', error)
-    return null
-  }
-}
+// export const extractWatermark = (
+//   pngBytes: Buffer | Uint8Array
+// ): string | null => {
+//   try {
+//     const input = pngBytes instanceof Buffer ? pngBytes : Buffer.from(pngBytes)
+//     const result = extractWatermarkFromPngBytes(input)
+//     return result
+//   } catch (error) {
+//     logger.error('提取隐水印失败:', error)
+//     return null
+//   }
+// }

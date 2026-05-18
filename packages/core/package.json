@@ -65,7 +65,7 @@
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../template/src/dev/mock-server.ts\" --include \"../template/src/main.ts\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
-    "@ikenxuan/watermark": "^1.0.11",
+    "@ikenxuan/watermark": "https://pkg.pr.new/@ikenxuan/watermark@2e0edc2",
     "fingerprint-injector": "^2.1.82"
   },
   "devDependencies": {
@@ -124,5 +124,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-05-13T06:10:07.487Z"
+  "timestamp": "2026-05-18T19:48:00.024Z"
 }

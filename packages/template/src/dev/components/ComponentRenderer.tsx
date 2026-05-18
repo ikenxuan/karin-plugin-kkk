@@ -3,7 +3,7 @@ import { AlertTriangle, Info, Zap } from 'lucide-react'
 import React from 'react'
 
 import { getComponentConfig } from '../../config/config'
-import { version } from '../../services/DataService'
+import { version, watermarkTextBitSize } from '../../services/DataService'
 import { PlatformType } from '../../types/platforms'
 
 interface ComponentRendererProps {
@@ -288,6 +288,7 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
     data: renderData,
     qrCodeDataUrl,
     version: versionEnabled ? version : undefined,
+    watermarkTextBitSize,
     scale: 1
   }
 

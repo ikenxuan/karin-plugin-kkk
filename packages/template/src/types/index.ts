@@ -36,7 +36,9 @@ export interface RenderRequest<T = Record<string, unknown>> {
     frameworkVersion: string
     /** 是否有可用更新 */
     hasUpdate?: boolean
-  }
+  },
+  /** 水印比特大小 */
+  watermarkTextBitSize: number
   /** 渲染数据 */
   data: T & {
     /** 是否使用深色主题 */
@@ -63,6 +65,8 @@ export interface RenderResponse {
  * @template T 子组件的数据类型
  */
 export interface BaseComponentProps<T = Record<string, any>> extends Pick<RenderRequest, 'version' | 'scale'> {
+  /** 水印比特大小 */
+  watermarkTextBitSize?: RenderRequest['watermarkTextBitSize']
   /** 渲染数据 - 子组件的具体参数 */
   data: {
     /** 是否使用深色主题 */
@@ -167,7 +171,7 @@ interface PathToDataTypeMap {
   'other/changelog': import('./platforms/other/changelog').ChangelogProps['data']
   'other/version_warning': import('./platforms/other/VersionWarningProps').VersionWarningProps['data']
   'other/qrlogin': import('./platforms/other/qrlogin').QrLoginProps['data']
-  
+
   // 统计相关路径
   'statistics/group': import('./platforms/other/statistics').GroupStatisticsProps['data']
   'statistics/global': import('./platforms/other/statistics').GlobalStatisticsProps['data']

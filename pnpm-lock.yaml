@@ -233,8 +233,8 @@ importers:
   packages/core:
     dependencies:
       '@ikenxuan/watermark':
-        specifier: ^1.0.11
-        version: 1.0.11
+        specifier: https://pkg.pr.new/@ikenxuan/watermark@2e0edc2
+        version: https://pkg.pr.new/@ikenxuan/watermark@2e0edc2
       '@types/react':
         specifier: '*'
         version: 19.2.14
@@ -1597,30 +1597,33 @@ packages:
     peerDependencies:
       react: 19.2.6
 
-  '@ikenxuan/watermark-darwin-arm64@1.0.11':
-    resolution: {integrity: sha512-1ZrcRBd8qajiW+p+24nWZ+BpVt/9J4U9+/6aM6Es96Gb0I5W6pcjmKX8VjbpNa7QAw8OL4N1BgdrFEiNgZJo3g==}
+  '@ikenxuan/watermark-darwin-arm64@https://pkg.pr.new/ikenxuan/watermark/@ikenxuan/watermark-darwin-arm64@2e0edc2160d6bd4c8084059e0ae049d22977cb03':
+    resolution: {integrity: sha512-eM2yJEkEd9T600ZgVc/FKb295+TXmIb3v6PNXoGawarxsLJ3FkNyXzjSWvCHlXhiOmfgxI1mXMZTaqKEQ7G3ew==, tarball: https://pkg.pr.new/ikenxuan/watermark/@ikenxuan/watermark-darwin-arm64@2e0edc2160d6bd4c8084059e0ae049d22977cb03}
+    version: 1.0.11
     cpu: [arm64]
     os: [darwin]
 
-  '@ikenxuan/watermark-linux-arm64-gnu@1.0.11':
-    resolution: {integrity: sha512-BeepGPHB6KkL66+LkVfb9eESWHCeXlrUqUPmqHuL53qoEXTfqIcXcXdD8r4beyammJFtTYNRxUJ4xPyglG9caw==}
+  '@ikenxuan/watermark-linux-arm64-gnu@https://pkg.pr.new/ikenxuan/watermark/@ikenxuan/watermark-linux-arm64-gnu@2e0edc2160d6bd4c8084059e0ae049d22977cb03':
+    resolution: {integrity: sha512-f/7mQfpku1ZO0lrgHfPkGMEH1yTvgtZHFFJeaOuod0WMJRyrgfxCmFmlJxcvLcd3hTGd31/ffusyZwLRCQLdqA==, tarball: https://pkg.pr.new/ikenxuan/watermark/@ikenxuan/watermark-linux-arm64-gnu@2e0edc2160d6bd4c8084059e0ae049d22977cb03}
+    version: 1.0.11
     cpu: [arm64]
     os: [linux]
-    libc: [glibc]
 
-  '@ikenxuan/watermark-linux-x64-gnu@1.0.11':
-    resolution: {integrity: sha512-zM2lukDA39MoNP1NPggTNUkd5lFz0c03BPwSopLlvRBxbS40lBW5sXsnQeBwqEFEMvcTid7p1wnraH3ZqxplQA==}
+  '@ikenxuan/watermark-linux-x64-gnu@https://pkg.pr.new/ikenxuan/watermark/@ikenxuan/watermark-linux-x64-gnu@2e0edc2160d6bd4c8084059e0ae049d22977cb03':
+    resolution: {integrity: sha512-2JStfRXHIdIIy2g+z3A+ZBwF2zNBoisZx4HHj33zz+gTELLML8IBG7IX504dMDc0PU1pe67YdRg1iflx8NImoQ==, tarball: https://pkg.pr.new/ikenxuan/watermark/@ikenxuan/watermark-linux-x64-gnu@2e0edc2160d6bd4c8084059e0ae049d22977cb03}
+    version: 1.0.11
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
 
-  '@ikenxuan/watermark-win32-x64-msvc@1.0.11':
-    resolution: {integrity: sha512-2s51s0ROizCaGL/4oyQv4Pjp7128g/gup95xII8/vDHs/TOEfVB4pshYcCaUqTK+Zl+yZbc+3LX0KEE0oV04yQ==}
+  '@ikenxuan/watermark-win32-x64-msvc@https://pkg.pr.new/ikenxuan/watermark/@ikenxuan/watermark-win32-x64-msvc@2e0edc2160d6bd4c8084059e0ae049d22977cb03':
+    resolution: {integrity: sha512-f5E8HFdG/ifaE55crSLelQqaOrgkH0NOfUrIlNoa3l4EMG5e4V6T8q7ui9jdjrxvHTkCWdfC6oAGEneIxfjDdg==, tarball: https://pkg.pr.new/ikenxuan/watermark/@ikenxuan/watermark-win32-x64-msvc@2e0edc2160d6bd4c8084059e0ae049d22977cb03}
+    version: 1.0.11
     cpu: [x64]
     os: [win32]
 
-  '@ikenxuan/watermark@1.0.11':
-    resolution: {integrity: sha512-1fPsSeSpNkb/vIp5RZOv5UR9PHKuZf0uoQ/pdAvn/ySG/6npZQS3UuUuBB/DGRM0ntZDukjA3XWlsfZI7gDSKQ==}
+  '@ikenxuan/watermark@https://pkg.pr.new/@ikenxuan/watermark@2e0edc2':
+    resolution: {integrity: sha512-EDNDPS/rtavDBhig8X8N5ZRgrhVCD6dbLNp8qP28lq2iSM0SS8YFnM2s+5o4S2HmehG76WGtfRDI+89RDCDqJQ==, tarball: https://pkg.pr.new/@ikenxuan/watermark@2e0edc2}
+    version: 1.0.11
 
   '@ikenxuan/xhshow-ts@1.0.6':
     resolution: {integrity: sha512-2Qo2tWzU6grC7bsTwohnp9KJA9wqDTAb2bbhaBOqBdAlM44zp9qlSAe2+UTYqDZaxrpne8SCT11biizVUJuosQ==}
@@ -3355,8 +3358,8 @@ packages:
       react: 19.2.6
       react-dom: 19.2.6
 
-  '@react-grab/cli@0.1.34':
-    resolution: {integrity: sha512-L2eAxN46Vq2Ss3nDegrH7wQVMeWH03ahawp+OdzUtQWqL3cq6Bt149q9XhY3cWc9fJsxuWjLfCn+3T9uApIlBA==}
+  '@react-grab/cli@0.1.37':
+    resolution: {integrity: sha512-1ln28VkVHUbd5qy+ccXG68voWc0mgZMhBnwG0umxfD+wbkXUcvRzVrLjSqao7N8hCrDqp+Pt5j9Tsqef+9yQQQ==}
     hasBin: true
 
   '@react-spectrum/button@3.18.0':
@@ -5161,8 +5164,8 @@ packages:
     peerDependencies:
       react: 19.2.6
 
-  bippy@0.5.40:
-    resolution: {integrity: sha512-3QPSDG5tgd7FCIkcKsUqmbGdlHxBxP7II5drXPNp1I0rpA9+4+/VjQOigDTbzeqTi6Xkaf1Dq7x4E8vbOuwOkA==}
+  bippy@0.5.41:
+    resolution: {integrity: sha512-jCP2pXXLhXqPrAN+iSEFZmLI4uUM4fjSqajh0K+TmM062VehfDT3ZJNkrTGyN701Z5XMejs9qAudSqkMGhSMKg==}
     peerDependencies:
       react: 19.2.6
 
@@ -8536,8 +8539,8 @@ packages:
   react-fast-compare@3.2.2:
     resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
 
-  react-grab@0.1.34:
-    resolution: {integrity: sha512-jtdOdv0kb90oqL+pMszSh9DOLgVRaX4ZE6XN4GkDEpNNUqveQfZT014+EeJraljpqQfuWKW+96NrrRqUD93D2g==}
+  react-grab@0.1.37:
+    resolution: {integrity: sha512-XVAc/qPyxsDT8Putu9UnP7iVHmAORMzvaN/3GDTOfbuLIRXWdOt7vebPOzM9RVTVUjucXv0135JI++kSVPSfYg==}
     hasBin: true
     peerDependencies:
       react: 19.2.6
@@ -11474,24 +11477,24 @@ snapshots:
     dependencies:
       react: 19.2.6
 
-  '@ikenxuan/watermark-darwin-arm64@1.0.11':
+  '@ikenxuan/watermark-darwin-arm64@https://pkg.pr.new/ikenxuan/watermark/@ikenxuan/watermark-darwin-arm64@2e0edc2160d6bd4c8084059e0ae049d22977cb03':
     optional: true
 
-  '@ikenxuan/watermark-linux-arm64-gnu@1.0.11':
+  '@ikenxuan/watermark-linux-arm64-gnu@https://pkg.pr.new/ikenxuan/watermark/@ikenxuan/watermark-linux-arm64-gnu@2e0edc2160d6bd4c8084059e0ae049d22977cb03':
     optional: true
 
-  '@ikenxuan/watermark-linux-x64-gnu@1.0.11':
+  '@ikenxuan/watermark-linux-x64-gnu@https://pkg.pr.new/ikenxuan/watermark/@ikenxuan/watermark-linux-x64-gnu@2e0edc2160d6bd4c8084059e0ae049d22977cb03':
     optional: true
 
-  '@ikenxuan/watermark-win32-x64-msvc@1.0.11':
+  '@ikenxuan/watermark-win32-x64-msvc@https://pkg.pr.new/ikenxuan/watermark/@ikenxuan/watermark-win32-x64-msvc@2e0edc2160d6bd4c8084059e0ae049d22977cb03':
     optional: true
 
-  '@ikenxuan/watermark@1.0.11':
+  '@ikenxuan/watermark@https://pkg.pr.new/@ikenxuan/watermark@2e0edc2':
     optionalDependencies:
-      '@ikenxuan/watermark-darwin-arm64': 1.0.11
-      '@ikenxuan/watermark-linux-arm64-gnu': 1.0.11
-      '@ikenxuan/watermark-linux-x64-gnu': 1.0.11
-      '@ikenxuan/watermark-win32-x64-msvc': 1.0.11
+      '@ikenxuan/watermark-darwin-arm64': https://pkg.pr.new/ikenxuan/watermark/@ikenxuan/watermark-darwin-arm64@2e0edc2160d6bd4c8084059e0ae049d22977cb03
+      '@ikenxuan/watermark-linux-arm64-gnu': https://pkg.pr.new/ikenxuan/watermark/@ikenxuan/watermark-linux-arm64-gnu@2e0edc2160d6bd4c8084059e0ae049d22977cb03
+      '@ikenxuan/watermark-linux-x64-gnu': https://pkg.pr.new/ikenxuan/watermark/@ikenxuan/watermark-linux-x64-gnu@2e0edc2160d6bd4c8084059e0ae049d22977cb03
+      '@ikenxuan/watermark-win32-x64-msvc': https://pkg.pr.new/ikenxuan/watermark/@ikenxuan/watermark-win32-x64-msvc@2e0edc2160d6bd4c8084059e0ae049d22977cb03
 
   '@ikenxuan/xhshow-ts@1.0.6':
     dependencies:
@@ -13366,7 +13369,7 @@ snapshots:
       react-aria: 3.48.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react-dom: 19.2.6(react@19.2.6)
 
-  '@react-grab/cli@0.1.34':
+  '@react-grab/cli@0.1.37':
     dependencies:
       commander: 14.0.3
       ignore: 7.0.5
@@ -14786,7 +14789,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.1.0
       tinyexec: 1.1.2
-      vite: 8.0.12(@types/node@25.6.0)(@vitejs/devtools@0.1.22)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 8.0.12(@types/node@24.12.2)(@vitejs/devtools@0.1.22)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - '@modelcontextprotocol/sdk'
       - bufferutil
@@ -14802,7 +14805,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.1.0
       tinyexec: 1.1.2
-      vite: 8.0.12(@types/node@24.12.2)(@vitejs/devtools@0.1.22)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 8.0.12(@types/node@25.6.0)(@vitejs/devtools@0.1.22)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - '@modelcontextprotocol/sdk'
       - bufferutil
@@ -14931,7 +14934,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.1.0
       tinyexec: 1.1.2
-      vite: 8.0.12(@types/node@25.6.0)(@vitejs/devtools@0.1.22)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 8.0.12(@types/node@24.12.2)(@vitejs/devtools@0.1.22)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
       vue: 3.5.34(typescript@6.0.3)
       ws: 8.20.0
     transitivePeerDependencies:
@@ -14974,7 +14977,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.1.0
       tinyexec: 1.1.2
-      vite: 8.0.12(@types/node@24.12.2)(@vitejs/devtools@0.1.22)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 8.0.12(@types/node@25.6.0)(@vitejs/devtools@0.1.22)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
       vue: 3.5.34(typescript@6.0.3)
       ws: 8.20.0
     transitivePeerDependencies:
@@ -15456,7 +15459,7 @@ snapshots:
     dependencies:
       react: 19.2.6
 
-  bippy@0.5.40(react@19.2.6):
+  bippy@0.5.41(react@19.2.6):
     dependencies:
       react: 19.2.6
 
@@ -19646,10 +19649,10 @@ snapshots:
 
   react-fast-compare@3.2.2: {}
 
-  react-grab@0.1.34(react@19.2.6):
+  react-grab@0.1.37(react@19.2.6):
     dependencies:
-      '@react-grab/cli': 0.1.34
-      bippy: 0.5.40(react@19.2.6)
+      '@react-grab/cli': 0.1.37
+      bippy: 0.5.41(react@19.2.6)
     optionalDependencies:
       react: 19.2.6
 
@@ -19733,7 +19736,7 @@ snapshots:
       prompts: 2.4.2
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
-      react-grab: 0.1.34(react@19.2.6)
+      react-grab: 0.1.37(react@19.2.6)
     optionalDependencies:
       esbuild: 0.28.0
       unplugin: 2.1.0
@@ -21548,7 +21551,7 @@ snapshots:
       tinyglobby: 0.2.16
     optionalDependencies:
       '@types/node': 24.12.2
-      '@vitejs/devtools': 0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.12)
+      '@vitejs/devtools': 0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.12)
       esbuild: 0.28.0
       fsevents: 2.3.3
       jiti: 2.6.1
@@ -21564,7 +21567,7 @@ snapshots:
       tinyglobby: 0.2.16
     optionalDependencies:
       '@types/node': 25.6.0
-      '@vitejs/devtools': 0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.12)
+      '@vitejs/devtools': 0.1.22(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.12)
       esbuild: 0.28.0
       fsevents: 2.3.3
       jiti: 2.6.1

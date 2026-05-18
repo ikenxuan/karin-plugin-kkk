@@ -24,6 +24,8 @@ interface DefaultLayoutProps extends Omit<BaseComponentProps<Record<string, any>
   scale?: number
   /** 自定义样式 */
   style?: React.CSSProperties
+  /** 水印比特大小 */
+  watermarkTextBitSize?: number
 }
 
 /**
@@ -37,7 +39,8 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
   data,
   scale = 3,
   className = '',
-  style = {}
+  style = {},
+  watermarkTextBitSize
 }) => {
   const { useDarkTheme } = data
 
@@ -161,9 +164,20 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
               </>
             )}
           </div>
+
+          {/* ID */}
+          {typeof watermarkTextBitSize === 'number' && (
+            <div className='flex justify-center'>
+              <span className='text-xs font-mono text-foreground/30'>ID: {watermarkTextBitSize}</span>
+            </div>
+          )}
         </div>
       ) : (
-        <div className='h-24' />
+        <div className='flex items-center justify-center h-24'>
+          {typeof watermarkTextBitSize === 'number' && (
+            <span className='text-xs font-mono text-foreground/30'>ID: {watermarkTextBitSize}</span>
+          )}
+        </div>
       )}
     </div>
   )

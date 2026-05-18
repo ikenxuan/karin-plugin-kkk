@@ -231,6 +231,7 @@ class ComponentRendererFactory {
       data: request.data,
       version: request.version,
       scale: request.scale,
+      watermarkTextBitSize: request.watermarkTextBitSize,
       ...extraProps
     }
 
