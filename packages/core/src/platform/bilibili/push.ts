@@ -256,8 +256,6 @@ export class Bilibilipush extends Base {
 
       if (!skip) {
         const userINFO = await this.amagi.bilibili.fetcher.fetchUserCard({ host_mid: data[dynamicId].host_mid, typeMode: 'strict' })
-        let emojiDATA = await this.amagi.bilibili.fetcher.fetchEmojiList({ typeMode: 'strict' }) as any
-        emojiDATA = extractEmojisData(emojiDATA.data.data.packages)
         switch (data[dynamicId].dynamic_type) {
           /** 处理图文动态 */
           case DynamicType.DRAW: {
@@ -651,9 +649,10 @@ export class Bilibilipush extends Base {
                     videoList: BiliVideoPlayurlIsLogin['data']['dash']['video']
                   }
                   let videoSize = ''
+                  const videoInfo = await this.amagi.bilibili.fetcher.fetchVideoInfo({ bvid: data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.bvid, typeMode: 'strict' })
                   const playUrlData = await this.amagi.bilibili.fetcher.fetchVideoStreamUrl({
                     avid: parseInt(data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.aid),
-                    cid: data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.cid,
+                    cid: videoInfo.data.data.cid,
                     typeMode: 'strict'
                   }) as Result<BiliVideoPlayurlIsLogin>
                   /** 提取出视频流信息对象，并排除清晰度重复的视频流 */
@@ -1264,25 +1263,6 @@ export class Bilibilipush extends Base {
 const br = (data: string): string => {
   // 使用正则表达式将所有换行符替换为<br>
   return (data = data.replace(/\n/g, '<br>'))
-}
-
-/**
- * 处理并提取表情数据，返回一个包含表情名称和URL的对象数组。
- * @param data 表情数据的数组，每个元素包含一个表情包的信息。
- * @returns 返回一个对象数组，每个对象包含text(表情名称)和url(表情图片地址)属性。
- */
-const extractEmojisData = (data: any[]) => {
-  const emojisData: { text: string; url: string }[] = []
-
-  // 遍历data数组中的每个表情包
-  data.forEach((packages) => {
-    // 遍历每个表情包中的每个表情
-    packages.emote.forEach((emote: { text: string; url: string }) => {
-      emojisData.push({ text: emote.text, url: emote.url })
-    })
-  })
-
-  return emojisData
 }
 
 /**

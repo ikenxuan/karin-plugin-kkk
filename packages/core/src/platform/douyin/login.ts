@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import { platform } from 'node:os'
 import path from 'node:path'
 
-import { snapka } from '@snapka/puppeteer'
+import { snapka } from '@karinjs/plugin-puppeteer'
 import { newInjectedPage } from 'fingerprint-injector'
 import { karin, karinPathTemp, logger, Message } from 'node-karin'
 
