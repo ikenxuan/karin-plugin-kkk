@@ -2219,6 +2219,8 @@ interface RenderRequest<T = Record<string, unknown>> {
     frameworkVersion: string; /** 是否有可用更新 */
     hasUpdate?: boolean;
   };
+  /** 水印比特大小 */
+  watermarkTextBitSize: number;
   /** 渲染数据 */
   data: T & {
     /** 是否使用深色主题 */useDarkTheme?: boolean; /** 二维码分享链接 */
@@ -2241,6 +2243,8 @@ interface RenderResponse {
  * @template T 子组件的数据类型
  */
 interface BaseComponentProps<T = Record<string, any>> extends Pick<RenderRequest, 'version' | 'scale'> {
+  /** 水印比特大小 */
+  watermarkTextBitSize?: RenderRequest['watermarkTextBitSize'];
   /** 渲染数据 - 子组件的具体参数 */
   data: {
     /** 是否使用深色主题 */useDarkTheme?: boolean;
