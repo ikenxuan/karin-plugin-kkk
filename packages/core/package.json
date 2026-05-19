@@ -65,7 +65,7 @@
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../template/src/dev/mock-server.ts\" --include \"../template/src/main.ts\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
-    "@ikenxuan/watermark": "https://pkg.pr.new/@ikenxuan/watermark@2e0edc2",
+    "@ikenxuan/watermark": "1.1.5",
     "fingerprint-injector": "^2.1.82"
   },
   "devDependencies": {
@@ -79,8 +79,8 @@
     "@types/heic-decode": "^2.0.0",
     "@types/pngjs": "^6.0.5",
     "cookie": "^1.1.1",
-    "date-fns": "^4.1.0",
-    "dompurify": "^3.4.2",
+    "date-fns": "^4.2.1",
+    "dompurify": "^3.4.5",
     "happy-dom": "^20.9.0",
     "heic-decode": "^2.1.0",
     "http-proxy-middleware": "4.0.0",
@@ -125,5 +125,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-05-19T10:27:09.246Z"
+  "timestamp": "2026-05-19T13:19:14.599Z"
 }
