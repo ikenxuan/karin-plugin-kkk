@@ -62,31 +62,55 @@ class Tools {
    * @param e event 消息事件
    * @returns 被引用的消息
    */
+  /**
+   * 尝试从图片 URL 识别二维码并返回支持的平台链接
+   * @param imageUrl 图片 URL
+   * @param source 来源描述（用于日志）
+   * @returns 识别到的平台链接，或 null
+   */
+  private async tryScanImageQrCode (imageUrl: string, source: string): Promise<string | null> {
+    try {
+      logger.debug(`检测到${source}为图片，尝试识别二维码...`)
+      const qrContent = await QRCodeScanner.scanFromUrl(imageUrl)
+      if (qrContent && QRCodeScanner.isSupportedPlatform(qrContent)) {
+        logger.debug(`从${source}二维码中识别到支持的平台链接: ${qrContent}`)
+        return qrContent
+      } else if (qrContent) {
+        logger.debug(`识别到二维码内容但不是支持的平台: ${qrContent}`)
+      }
+    } catch (error) {
+      logger.error(`识别${source}二维码时发生错误:`, error)
+    }
+    return null
+  }
+
   async getReplyMessage (e: Message): Promise<string> {
     if (e.replyId) {
       const reply = await e.bot.getMsg(e.contact, e.replyId)
       for (const v of reply.elements) {
         if (v.type === 'text') {
+          try {
+            const parsed = JSON.parse(v.text)
+            if (parsed.type === 'markdown' && parsed.data?.content) {
+              const content = parsed.data.content
+              // 尝试从 markdown 中提取图片链接并识别二维码
+              const imageRegex = /!\[.*?\]\((.*?)\)/g
+              let match: RegExpExecArray | null
+              while ((match = imageRegex.exec(content)) !== null) {
+                const qrResult = await this.tryScanImageQrCode(match[1], '引用消息中的 markdown 图片')
+                if (qrResult) return qrResult
+              }
+              return content
+            }
+          } catch {
+            // 不是 JSON 格式，按普通文本处理
+          }
           return v.text
         } else if (v.type === 'json') {
           return v.data
         } else if (v.type === 'image') {
-          // 如果是图片类型，尝试识别二维码
-          try {
-            logger.debug('检测到引用消息为图片，尝试识别二维码...')
-            const imageUrl = v.file
-            if (imageUrl) {
-              const qrContent = await QRCodeScanner.scanFromUrl(imageUrl)
-              if (qrContent && QRCodeScanner.isSupportedPlatform(qrContent)) {
-                logger.debug(`从图片二维码中识别到支持的平台链接: ${qrContent}`)
-                return qrContent
-              } else if (qrContent) {
-                logger.debug(`识别到二维码内容但不是支持的平台: ${qrContent}`)
-              }
-            }
-          } catch (error) {
-            logger.error('识别图片二维码时发生错误:', error)
-          }
+          const qrResult = await this.tryScanImageQrCode(v.file, '引用消息')
+          if (qrResult) return qrResult
         }
       }
     }

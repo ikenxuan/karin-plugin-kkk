@@ -1,5 +1,4 @@
 import { embedWatermarkToPngBytes } from '@ikenxuan/watermark'
-import { logger } from 'node-karin'
 
 
 /**

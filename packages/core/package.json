@@ -70,6 +70,7 @@
   },
   "devDependencies": {
     "@ikenxuan/amagi": "workspace:*",
+    "@karinjs/adapter-qqbot": "https://pkg.pr.new/@karinjs/adapter-qqbot@7e6e892",
     "@karinjs/plugin-adapter-discordbot": "https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687",
     "@karinjs/plugin-adapter-milky": "^1.2.5",
     "@karinjs/plugin-puppeteer": "^2.3.1",
