@@ -2134,6 +2134,16 @@ interface QrLoginProps {
   useDarkTheme?: boolean;
 }
 //#endregion
+//#region ../template/src/types/platforms/other/livePhotoTip.d.ts
+interface LivePhotoTipProps extends BaseComponentProps {
+  data: {
+    /** 提示标题 */title?: string; /** 附加说明 */
+    description?: string;
+  } & {
+    /** 是否使用深色主题 */useDarkTheme?: boolean;
+  };
+}
+//#endregion
 //#region ../template/src/types/platforms/other/statistics.d.ts
 /**
  * 群组解析统计数据接口
@@ -2246,9 +2256,9 @@ interface BaseComponentProps<T = Record<string, any>> extends Pick<RenderRequest
   /** 水印比特大小 */
   watermarkTextBitSize?: RenderRequest['watermarkTextBitSize'];
   /** 渲染数据 - 子组件的具体参数 */
-  data: {
+  data: T & {
     /** 是否使用深色主题 */useDarkTheme?: boolean;
-  } & T;
+  };
 }
 /**
  * 抖音平台组件ID
@@ -2269,7 +2279,7 @@ type XiaohongshuComponentIds = 'noteInfo' | 'comment';
 /**
  * 其他平台组件ID
  */
-type OtherComponentIds = 'help' | 'handlerError' | 'changelog' | 'version_warning' | 'qrlogin';
+type OtherComponentIds = 'help' | 'handlerError' | 'changelog' | 'version_warning' | 'qrlogin' | 'live-photo-tip';
 /**
  * 统计平台组件ID
  */
@@ -2314,6 +2324,7 @@ interface PathToDataTypeMap {
   'other/changelog': ChangelogProps['data'];
   'other/version_warning': VersionWarningProps['data'];
   'other/qrlogin': QrLoginProps['data'];
+  'other/live-photo-tip': LivePhotoTipProps['data'];
   'statistics/group': GroupStatisticsProps['data'];
   'statistics/global': GlobalStatisticsProps['data'];
 }
@@ -2333,7 +2344,7 @@ interface DataTypeMap {
   /** 快手平台数据类型 */
   kuaishou: KuaishouCommentProps['data'];
   /** 其他类型数据 */
-  other: HelpProps['data'];
+  other: HelpProps['data'] | LivePhotoTipProps['data'];
 }
 /**
  * 渲染请求接口

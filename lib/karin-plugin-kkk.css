@@ -11997,6 +11997,10 @@
     top: -40%;
   }
 
+  .top-\[20\%\] {
+    top: 20%;
+  }
+
   .top-\[50\%\] {
     top: 50%;
   }
@@ -12129,6 +12133,10 @@
     right: -50%;
   }
 
+  .right-\[10\%\] {
+    right: 10%;
+  }
+
   .-bottom-1 {
     bottom: calc(var(--spacing) * -1);
   }
@@ -12233,6 +12241,10 @@
     bottom: calc(var(--spacing) * 35);
   }
 
+  .bottom-40 {
+    bottom: calc(var(--spacing) * 40);
+  }
+
   .bottom-50 {
     bottom: calc(var(--spacing) * 50);
   }
@@ -12247,6 +12259,10 @@
 
   .bottom-\[-40\%\] {
     bottom: -40%;
+  }
+
+  .bottom-\[15\%\] {
+    bottom: 15%;
   }
 
   .-left-2 {
@@ -12305,6 +12321,10 @@
     left: calc(var(--spacing) * 8);
   }
 
+  .left-10 {
+    left: calc(var(--spacing) * 10);
+  }
+
   .left-12 {
     left: calc(var(--spacing) * 12);
   }
@@ -12323,6 +12343,10 @@
 
   .left-18 {
     left: calc(var(--spacing) * 18);
+  }
+
+  .left-20 {
+    left: calc(var(--spacing) * 20);
   }
 
   .left-28 {
@@ -12918,6 +12942,10 @@
     height: calc(var(--spacing) * .5);
   }
 
+  .h-0\.75 {
+    height: calc(var(--spacing) * .75);
+  }
+
   .h-1 {
     height: calc(var(--spacing) * 1);
   }
@@ -13110,6 +13138,10 @@
     height: calc(var(--spacing) * 110);
   }
 
+  .h-112\.5 {
+    height: calc(var(--spacing) * 112.5);
+  }
+
   .h-120 {
     height: calc(var(--spacing) * 120);
   }
@@ -13298,6 +13330,10 @@
     min-height: calc(var(--spacing) * 115);
   }
 
+  .min-h-360 {
+    min-height: calc(var(--spacing) * 360);
+  }
+
   .min-h-500 {
     min-height: calc(var(--spacing) * 500);
   }
@@ -13414,6 +13450,10 @@
     width: calc(var(--spacing) * 25);
   }
 
+  .w-26 {
+    width: calc(var(--spacing) * 26);
+  }
+
   .w-28 {
     width: calc(var(--spacing) * 28);
   }
@@ -13474,6 +13514,10 @@
     width: calc(var(--spacing) * 56);
   }
 
+  .w-58 {
+    width: calc(var(--spacing) * 58);
+  }
+
   .w-60 {
     width: calc(var(--spacing) * 60);
   }
@@ -13484,6 +13528,10 @@
 
   .w-65 {
     width: calc(var(--spacing) * 65);
+  }
+
+  .w-68 {
+    width: calc(var(--spacing) * 68);
   }
 
   .w-72 {
@@ -17411,6 +17459,10 @@
 
   .opacity-25 {
     opacity: .25;
+  }
+
+  .opacity-30 {
+    opacity: .3;
   }
 
   .opacity-40 {
