@@ -2,6 +2,41 @@
 
 # Changelog
 
+## [2.31.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.30.4...v2.31.0) (2026-05-19)
+
+
+### ✨ 新功能
+
+* 设置xx推送尝试开放qqbot ([da3abe8](https://github.com/ikenxuan/karin-plugin-kkk/commit/da3abe8b9542dbb5687625219c7912bb3837c4cd))
+
+
+### 🐛 错误修复
+
+* obv11 获取引用markdown消息无法解析的问题 ([90f2212](https://github.com/ikenxuan/karin-plugin-kkk/commit/90f221235ea6ff7d66febf7e25ac02a176265d0e))
+* 细优 ([cccbf12](https://github.com/ikenxuan/karin-plugin-kkk/commit/cccbf12b17f943b380aa094a3d17ec48fff4ada4))
+
+
+### 💄 UI 优化
+
+* **B站:** 间距 ([f5932fd](https://github.com/ikenxuan/karin-plugin-kkk/commit/f5932fd1120a6d6b3f3b00fcf5ca81d0d5ee96d1))
+
+
+### 🧰 其他更新
+
+* other/live-photo-tip ([90d01b4](https://github.com/ikenxuan/karin-plugin-kkk/commit/90d01b42ee12177b6a011dc566ebdef8b097d8e5))
+* 更新 ([7b70cae](https://github.com/ikenxuan/karin-plugin-kkk/commit/7b70cae064fe8381ad9f3037ec26b4d660b896fa))
+
+
+### 📦 依赖更新
+
+* update ([c2bfa4c](https://github.com/ikenxuan/karin-plugin-kkk/commit/c2bfa4cd54f01751a954c9b9efb5805c64baa861))
+* 对等依赖 ([18467a2](https://github.com/ikenxuan/karin-plugin-kkk/commit/18467a21a24ca58ead06f9fd14db69f85872693e))
+
+
+### 💯 细节优化
+
+* 兼容性提高 ([2706a64](https://github.com/ikenxuan/karin-plugin-kkk/commit/2706a64b916b99c2d27d37e2864ca5805fb0f15b))
+
 ## [2.30.4](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.30.3...v2.30.4) (2026-05-13)
 
 
