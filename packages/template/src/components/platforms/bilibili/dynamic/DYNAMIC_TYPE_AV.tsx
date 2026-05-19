@@ -15,7 +15,7 @@ const BilibiliVideoDynamicHeader: React.FC = () => {
   return (
     <>
       {/* 间距 */}
-      <div className='h-20' />
+      <div className='h-25' />
 
       {/* B站Logo和标语 */}
       <div className='flex items-center pl-20 text-6xl text-muted'>

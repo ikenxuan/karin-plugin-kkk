@@ -193,7 +193,7 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
           </div>
         )
         : (
-          <div className={`grid gap-3 p-4 ${content.image_url?.length === 4 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+          <div className={`grid gap-3 ${content.image_url?.length === 4 ? 'grid-cols-2' : 'grid-cols-3'}`}>
             {content.image_url?.map((img, index) => {
               const total = content.image_url?.length || 0
               const cols = total === 4 ? 2 : 3
@@ -489,7 +489,7 @@ export const BilibiliForwardDynamic: React.FC<BilibiliForwardDynamicProps> = Rea
     <DefaultLayout {...props}>
       <div className='p-4'>
         {/* 间距 */}
-        <div className='h-15' />
+        <div className='h-25' />
 
         {/* 用户信息 */}
         <BilibiliForwardUserInfo
