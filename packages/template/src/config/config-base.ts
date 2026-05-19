@@ -343,6 +343,14 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
         enabled: true,
         componentPath: 'platforms/other/qrlogin',
         exportName: 'QrLogin'
+      },
+      {
+        id: 'live-photo-tip',
+        name: '实况图提示',
+        description: '实况照片保存提示图片',
+        enabled: true,
+        componentPath: 'platforms/other/LivePhotoTip',
+        exportName: 'LivePhotoTip'
       }
     ]
   },

@@ -68,10 +68,10 @@ export interface BaseComponentProps<T = Record<string, any>> extends Pick<Render
   /** 水印比特大小 */
   watermarkTextBitSize?: RenderRequest['watermarkTextBitSize']
   /** 渲染数据 - 子组件的具体参数 */
-  data: {
+  data: T & {
     /** 是否使用深色主题 */
     useDarkTheme?: boolean
-  } & T
+  }
 }
 
 /**
@@ -108,7 +108,7 @@ type XiaohongshuComponentIds = 'noteInfo' | 'comment'
 /**
  * 其他平台组件ID
  */
-type OtherComponentIds = 'help' | 'handlerError' | 'changelog' | 'version_warning' | 'qrlogin'
+type OtherComponentIds = 'help' | 'handlerError' | 'changelog' | 'version_warning' | 'qrlogin' | 'live-photo-tip'
 
 /**
  * 统计平台组件ID
@@ -171,6 +171,7 @@ interface PathToDataTypeMap {
   'other/changelog': import('./platforms/other/changelog').ChangelogProps['data']
   'other/version_warning': import('./platforms/other/VersionWarningProps').VersionWarningProps['data']
   'other/qrlogin': import('./platforms/other/qrlogin').QrLoginProps['data']
+  'other/live-photo-tip': import('./platforms/other/livePhotoTip').LivePhotoTipProps['data']
 
   // 统计相关路径
   'statistics/group': import('./platforms/other/statistics').GroupStatisticsProps['data']
@@ -197,7 +198,7 @@ export interface DataTypeMap {
   /** 快手平台数据类型 */
   kuaishou: import('./platforms/kuaishou').KuaishouCommentProps['data']
   /** 其他类型数据 */
-  other: import('./platforms/other/help').HelpProps['data']
+  other: import('./platforms/other/help').HelpProps['data'] | import('./platforms/other/livePhotoTip').LivePhotoTipProps['data']
 }
 
 /**

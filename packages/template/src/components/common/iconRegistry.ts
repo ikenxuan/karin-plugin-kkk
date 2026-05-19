@@ -1,4 +1,4 @@
-import { SiAnthropic, SiBilibili, SiGithub } from '@icons-pack/react-simple-icons'
+import { SiAnthropic, SiBilibili, SiGithub, SiGooglephotos, SiHonor, SiHuawei, SiOppo, SiSamsung, SiVivo, SiXiaomi } from '@icons-pack/react-simple-icons'
 import { Play as PhPlay, Question } from '@phosphor-icons/react'
 import {
   AlertCircle, AlertTriangle, BarChart3, BellRing, Bookmark, Bot, Box,
@@ -164,11 +164,18 @@ export const iconRegistry: Record<string, ComponentType<any>> = {
   // === fa6-brands (1 icon) ===
   'fa6-brands:tiktok': FaTiktok,
 
-  // === simple-icons (4 icons) ===
+  // === simple-icons (11 icons) ===
   'simple-icons:github': SiGithub,
   'simple-icons:bilibili': SiBilibili,
   'simple-icons:openai': Sparkles,
   'simple-icons:anthropic': SiAnthropic,
+  'simple-icons:googlephotos': SiGooglephotos,
+  'simple-icons:xiaomi': SiXiaomi,
+  'simple-icons:oppo': SiOppo,
+  'simple-icons:huawei': SiHuawei,
+  'simple-icons:honor': SiHonor,
+  'simple-icons:vivo': SiVivo,
+  'simple-icons:samsung': SiSamsung,
 
   // === tabler (2 icons) mapped to lucide-react ===
   'tabler:message-circle': MessageCircle,

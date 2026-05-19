@@ -39,6 +39,7 @@ import { GroupStatistics } from '../components/platforms/other/GroupStatistics'
 import { handlerError } from '../components/platforms/other/handlerError'
 // Other components
 import Help from '../components/platforms/other/Help'
+import { LivePhotoTip } from '../components/platforms/other/LivePhotoTip'
 import { QrLogin } from '../components/platforms/other/qrlogin'
 import { VersionWarning } from '../components/platforms/other/VersionWarning'
 import { XiaohongshuComment } from '../components/platforms/xiaohongshu/Comment'
@@ -284,6 +285,10 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
           case 'qrlogin':
             return createComponentConfig(baseComponent, {
               component: QrLogin
+            })
+          case 'live-photo-tip':
+            return createComponentConfig(baseComponent, {
+              component: LivePhotoTip
             })
           default:
             return createComponentConfig(baseComponent)

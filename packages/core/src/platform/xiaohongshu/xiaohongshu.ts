@@ -238,14 +238,11 @@ export class Xiaohongshu extends Base {
       
       // 如果生成了实况图，添加提示文字
       if (hasGeneratedLivePhoto) {
-        const systemTips: Record<string, string> = {
-          google: 'Google 相册',
-          xiaomi: '小米相册（支持实况照片的任何版本）、Google 相册',
-          oppo: 'OPPO 相册、小米相册（较新版本）、Google 相册',
-          huawei_honor: '华为/荣耀相册（理论可行但未实测）'
-        }
-        const tip = systemTips[Config.app.livePhotoSystem] || 'Google 相册'
-        processedImages.push(segment.text(`💡 提示：保存原图到 ${tip} 即可识别为实况图`))
+        const tipImg = await Render(this.e, 'other/live-photo-tip', {
+          title: '实况照片已生成',
+          description: '保存原图到相册即可识别为实况图'
+        })
+        processedImages.push(...tipImg)
       }
       
       const res = common.makeForward(
