@@ -54,7 +54,7 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
-    "@ikenxuan/watermark": "https://pkg.pr.new/@ikenxuan/watermark@2e0edc2",
+    "@ikenxuan/watermark": "1.1.5",
     "fingerprint-injector": "^2.1.82"
   },
   "peerDependencies": {
@@ -88,5 +88,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-05-19T10:27:09.246Z"
+  "timestamp": "2026-05-19T13:19:14.599Z"
 }
