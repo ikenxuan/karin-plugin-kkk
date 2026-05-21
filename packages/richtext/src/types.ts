@@ -31,6 +31,7 @@ export type RichTextBlockNode =
   | RichTextListItemNode
   | RichTextCodeBlockNode
   | RichTextLinkCardNode
+  | RichTextHorizontalRuleNode
 
 /**
  * 富文本文档。
@@ -176,6 +177,13 @@ export interface RichTextImageNode {
   src: string
   /** 替代文本 */
   alt?: string
+  /** 图片下方注释/说明文字 */
+  caption?: string
+}
+
+/** 水平分隔线节点。 */
+export interface RichTextHorizontalRuleNode {
+  type: 'horizontalRule'
 }
 
 /** 引用块节点。 */

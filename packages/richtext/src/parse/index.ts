@@ -20,6 +20,7 @@ import type {
   RichTextWebLinkNode,
   RichTextVoteNode,
   RichTextViewPictureNode,
+  RichTextHorizontalRuleNode,
   RichTextInlineStyle
 } from '../types'
 
@@ -115,10 +116,16 @@ export const createParagraphNode = (nodes: RichTextNode[]): RichTextParagraphNod
 })
 
 /** 创建图片节点。 */
-export const createImageNode = (src: string, alt?: string): RichTextImageNode => ({
+export const createImageNode = (src: string, alt?: string, caption?: string): RichTextImageNode => ({
   type: 'image',
   src,
-  alt
+  alt,
+  caption
+})
+
+/** 创建水平分隔线节点。 */
+export const createHorizontalRuleNode = (): RichTextHorizontalRuleNode => ({
+  type: 'horizontalRule'
 })
 
 /** 创建引用块节点。 */
@@ -215,6 +222,7 @@ export const extractRichTextPlainText = (document: RichTextDocument): string => 
       case 'list':
         return node.items.map(extractFromNode).join('')
       case 'lineBreak':
+      case 'horizontalRule':
         return ''
       case 'image':
         return ''

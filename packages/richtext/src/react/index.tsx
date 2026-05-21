@@ -472,17 +472,31 @@ const renderNodeToReact = (
         return null
       }
       return (
-        <img
-          key={`image-${index}`}
-          className='rounded-4xl'
-          src={safeSrc}
-          alt={node.alt || ''}
-          referrerPolicy='no-referrer'
-          crossOrigin='anonymous'
-          data-richtext-node='image'
-        />
+        <div key={`image-${index}`} data-richtext-node='image'>
+          <img
+            className='rounded-4xl'
+            src={safeSrc}
+            alt={node.alt || ''}
+            referrerPolicy='no-referrer'
+            crossOrigin='anonymous'
+          />
+          {node.caption && (
+            <div className='mt-6 text-center text-[36px] text-foreground/60 select-text'>
+              {node.caption}
+            </div>
+          )}
+        </div>
       )
     }
+
+    case 'horizontalRule':
+      return (
+        <div
+          key={`hr-${index}`}
+          className='my-16 w-full h-px bg-border'
+          data-richtext-node='horizontalRule'
+        />
+      )
 
     case 'blockquote':
       return (

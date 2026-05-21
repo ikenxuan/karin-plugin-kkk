@@ -5,6 +5,7 @@ import {
   createCodeBlockNode,
   createEmojiNode,
   createHeadingNode,
+  createHorizontalRuleNode,
   createImageNode,
   createLineBreakNode,
   createLinkCardNode,
@@ -368,10 +369,17 @@ const parseOpusToRichText = (opus: ArticleContent['data']['opus'], useDarkTheme?
       if (Array.isArray(pics)) {
         for (const pic of pics) {
           if (pic.url) {
-            nodes.push(createImageNode(fixImageUrl(pic.url), pic.alt || '专栏图片'))
+            nodes.push(createImageNode(fixImageUrl(pic.url), pic.alt || '专栏图片', pic.comment))
           }
         }
       }
+      continue
+    }
+
+    // 分隔线段落
+    if (paraType === 3) {
+      flushList()
+      nodes.push(createHorizontalRuleNode())
       continue
     }
 
@@ -411,7 +419,7 @@ const parseOpusToRichText = (opus: ArticleContent['data']['opus'], useDarkTheme?
     const textNodes = paragraph.text?.nodes
     if (!Array.isArray(textNodes) || textNodes.length === 0) {
       // 既不是已知块级类型，也没有文本节点——记录未适配的段落类型
-      const knownTypes = [1, 2, 4, 7, 8, 9]
+      const knownTypes = [1, 2, 3, 4, 7, 8, 9]
       if (!knownTypes.includes(paraType)) {
         logger.error(`[bilibili] opus 富文本遇到未适配的 para_type: ${paraType}，段落数据: ${JSON.stringify(paragraph).slice(0, 500)}`)
       }
