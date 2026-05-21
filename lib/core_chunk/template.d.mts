@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { O as RichTextDocument } from "./index-CN7AJkHp.mjs";
+import { k as RichTextDocument } from "./index-DNlQJ2Zs.mjs";
 import { EventEmitter } from "node:events";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import React$1 from "react";

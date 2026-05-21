@@ -10,7 +10,7 @@ type RichTextNode = RichTextInlineNode | RichTextBlockNode;
 /** 行内节点。 */
 type RichTextInlineNode = RichTextTextNode | RichTextEmojiNode | RichTextMentionNode | RichTextSearchKeywordNode | RichTextLineBreakNode | RichTextTopicNode | RichTextAtNode | RichTextLotteryNode | RichTextWebLinkNode | RichTextVoteNode | RichTextViewPictureNode;
 /** 块级节点。 */
-type RichTextBlockNode = RichTextHeadingNode | RichTextParagraphNode | RichTextImageNode | RichTextBlockquoteNode | RichTextListNode | RichTextListItemNode | RichTextCodeBlockNode | RichTextLinkCardNode;
+type RichTextBlockNode = RichTextHeadingNode | RichTextParagraphNode | RichTextImageNode | RichTextBlockquoteNode | RichTextListNode | RichTextListItemNode | RichTextCodeBlockNode | RichTextLinkCardNode | RichTextHorizontalRuleNode;
 /**
  * 富文本文档。
  *
@@ -140,6 +140,12 @@ interface RichTextImageNode {
   src: string;
   /** 替代文本 */
   alt?: string;
+  /** 图片下方注释/说明文字 */
+  caption?: string;
+}
+/** 水平分隔线节点。 */
+interface RichTextHorizontalRuleNode {
+  type: 'horizontalRule';
 }
 /** 引用块节点。 */
 interface RichTextBlockquoteNode {
@@ -266,7 +272,9 @@ declare const createHeadingNode: (level: 1 | 2 | 3 | 4 | 5 | 6, nodes: RichTextN
 /** 创建段落节点。 */
 declare const createParagraphNode: (nodes: RichTextNode[]) => RichTextParagraphNode;
 /** 创建图片节点。 */
-declare const createImageNode: (src: string, alt?: string) => RichTextImageNode;
+declare const createImageNode: (src: string, alt?: string, caption?: string) => RichTextImageNode;
+/** 创建水平分隔线节点。 */
+declare const createHorizontalRuleNode: () => RichTextHorizontalRuleNode;
 /** 创建引用块节点。 */
 declare const createBlockquoteNode: (nodes: RichTextNode[]) => RichTextBlockquoteNode;
 /** 创建列表节点。 */
@@ -313,4 +321,4 @@ declare const createRichTextDocument: (nodes: RichTextNode[], options?: {
  */
 declare const renderRichTextToReact: (document: RichTextDocument, options?: RichTextRenderOptions) => ReactNode;
 //#endregion
-export { RichTextEmojiNode as A, RichTextMentionNode as B, normalizeRichTextNodes as C, RichTextCodeBlockNode as D, RichTextBlockquoteNode as E, RichTextLineBreakNode as F, RichTextSearchKeywordNode as G, RichTextNodeStyleConfig as H, RichTextLinkCardNode as I, RichTextTopicNode as J, RichTextSearchKeywordStyleConfig as K, RichTextListItemNode as L, RichTextImageNode as M, RichTextInlineNode as N, RichTextDocument as O, RichTextInlineStyle as P, RichTextListNode as R, extractRichTextPlainText as S, RichTextBlockNode as T, RichTextParagraphNode as U, RichTextNode as V, RichTextRenderOptions as W, RichTextVoteNode as X, RichTextViewPictureNode as Y, RichTextWebLinkNode as Z, createTextNode as _, createEmojiNode as a, createVoteNode as b, createLineBreakNode as c, createListNode as d, createLotteryNode as f, createSearchKeywordNode as g, createRichTextDocument as h, createCodeBlockNode as i, RichTextHeadingNode as j, RichTextEmojiDefinition as k, createLinkCardNode as l, createParagraphNode as m, createAtNode as n, createHeadingNode as o, createMentionNode as p, RichTextTextNode as q, createBlockquoteNode as r, createImageNode as s, renderRichTextToReact as t, createListItemNode as u, createTopicNode as v, RichTextAtNode as w, createWebLinkNode as x, createViewPictureNode as y, RichTextLotteryNode as z };
+export { RichTextWebLinkNode as $, RichTextEmojiDefinition as A, RichTextListNode as B, extractRichTextPlainText as C, RichTextBlockquoteNode as D, RichTextBlockNode as E, RichTextInlineNode as F, RichTextParagraphNode as G, RichTextMentionNode as H, RichTextInlineStyle as I, RichTextSearchKeywordStyleConfig as J, RichTextRenderOptions as K, RichTextLineBreakNode as L, RichTextHeadingNode as M, RichTextHorizontalRuleNode as N, RichTextCodeBlockNode as O, RichTextImageNode as P, RichTextVoteNode as Q, RichTextLinkCardNode as R, createWebLinkNode as S, RichTextAtNode as T, RichTextNode as U, RichTextLotteryNode as V, RichTextNodeStyleConfig as W, RichTextTopicNode as X, RichTextTextNode as Y, RichTextViewPictureNode as Z, createSearchKeywordNode as _, createEmojiNode as a, createViewPictureNode as b, createImageNode as c, createListItemNode as d, createListNode as f, createRichTextDocument as g, createParagraphNode as h, createCodeBlockNode as i, RichTextEmojiNode as j, RichTextDocument as k, createLineBreakNode as l, createMentionNode as m, createAtNode as n, createHeadingNode as o, createLotteryNode as p, RichTextSearchKeywordNode as q, createBlockquoteNode as r, createHorizontalRuleNode as s, renderRichTextToReact as t, createLinkCardNode as u, createTextNode as v, normalizeRichTextNodes as w, createVoteNode as x, createTopicNode as y, RichTextListItemNode as z };
