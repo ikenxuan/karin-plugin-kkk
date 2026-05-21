@@ -1144,6 +1144,8 @@ interface OriginalContentWord {
   decoration_card?: DecorationCardData;
   /** 动态文本内容（富文本文档） */
   text: RichTextDocument;
+  /** 相关内容卡片 */
+  additional?: BilibiliAdditionalData;
 }
 /**
  * 原始内容直播推荐类型接口
