@@ -828,7 +828,7 @@ export class Bilibili extends Base {
                   create_time: TimeFormatter.toRelative(dynamicInfo.data.data.item.modules.module_author.pub_ts),
                   avatar_url: dynamicInfo.data.data.item.modules.module_author.face,
                   frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
-                  share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
+                  share_url: 'https://www.bilibili.com/video/' + bvid,
                   usernameMeta: getUsernameMetadata(userProfileData.data.data.card),
                   fans: Count(userProfileData.data.data.follower),
                   user_shortid: userProfileData.data.data.card.mid,
