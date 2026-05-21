@@ -1,7 +1,7 @@
 import type { RichTextDocument } from '@kkk/richtext'
 
 import type { BaseComponentProps } from '../../../index'
-import type { DecorationCardData, UsernameMetadata } from './normal'
+import type { BilibiliDynamicBaseData, DecorationCardData, UsernameMetadata } from './normal'
 
 /**
  * 原始内容AV类型接口
@@ -129,43 +129,11 @@ export interface BilibiliForwardContentProps {
  */
 export interface BilibiliForwardDynamicProps extends BaseComponentProps {
   /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */
-    useDarkTheme?: boolean
-    /** 用户头像URL */
-    avatar_url: string
-    /** 头像框 */
-    frame?: string
-    /** 用户名元数据 */
-    usernameMeta: UsernameMetadata
-    /** 动态创建时间 */
-    create_time: string
-    /** 装饰卡片 */
-    decoration_card?: DecorationCardData
+  data: BilibiliDynamicBaseData & {
     /** 动态文本内容（富文本文档） */
     text: RichTextDocument
     /** 原始内容 */
     original_content: BilibiliForwardOriginalContentProps['original_content']
-    /** 点赞数 */
-    dianzan: string | number
-    /** 评论数 */
-    pinglun: string | number
-    /** 分享数 */
-    share: string | number
-    /** 渲染时间 */
-    render_time: string
-    /** 用户短ID */
-    user_shortid: string | number
-    /** 获赞总数 */
-    total_favorited: string | number
-    /** 关注数 */
-    following_count: string | number
-    /** 粉丝数 */
-    fans: string | number
-    /** 动态类型 */
-    dynamicTYPE: string
-    /** 分享链接 */
-    share_url: string
     /** 图片URL */
     imgList: string[] | null
   }

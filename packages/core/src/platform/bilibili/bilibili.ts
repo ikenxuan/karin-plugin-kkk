@@ -554,9 +554,10 @@ export class Bilibili extends Base {
               following_count: Count(userProfileData.data.data.card.attention),
               decoration_card: generateDecorationCard(dynamicInfo.data.data.item.modules.module_author.decoration_card),
               render_time: TimeFormatter.now(),
-              dynamicTYPE: '图文动态',
+              dynamicTYPE: '图文动态解析',
               imageLayout: Config.bilibili.imageLayout,
-              additional: parseAdditionalCard(dynamicInfo.data.data.item.modules.module_dynamic.additional)
+              additional: parseAdditionalCard(dynamicInfo.data.data.item.modules.module_dynamic.additional),
+              dynamic_id: dynamicInfo.data.data.item.id_str
             }))
             break
           }
@@ -596,8 +597,9 @@ export class Bilibili extends Base {
                 following_count: Count(userProfileData.data.data.card.attention),
                 decoration_card: generateDecorationCard(dynamicInfo.data.data.item.modules.module_author.decoration_card),
                 render_time: TimeFormatter.now(),
-                dynamicTYPE: '纯文动态',
-                additional: parseAdditionalCard(dynamicInfo.data.data.item.modules.module_dynamic.additional)
+                dynamicTYPE: '纯文动态解析',
+                additional: parseAdditionalCard(dynamicInfo.data.data.item.modules.module_dynamic.additional),
+                dynamic_id: dynamicInfo.data.data.item.id_str
               })
             )
             break
@@ -758,7 +760,8 @@ export class Bilibili extends Base {
                 dynamicTYPE: '转发动态解析',
                 decoration_card: generateDecorationCard(dynamicInfo.data.data.item.modules.module_author.decoration_card),
                 render_time: TimeFormatter.now(),
-                original_content: { [dynamicInfo.data.data.item.orig.type]: data }
+                original_content: { [dynamicInfo.data.data.item.orig.type]: data },
+                dynamic_id: dynamicInfo.data.data.item.id_str
               })
             )
             break
@@ -790,6 +793,23 @@ export class Bilibili extends Base {
                 }
               }
 
+              // 处理话题
+              if ('topic' in dynamicInfo.data.data.item.modules.module_dynamic && dynamicInfo.data.data.item.modules.module_dynamic.topic !== null) {
+                const name = (dynamicInfo.data.data.item.modules.module_dynamic.topic as { name: string }).name
+                dynamicInfo.data.data.item.modules.module_dynamic.desc.rich_text_nodes.unshift({
+                  orig_text: name,
+                  jump_url: '',
+                  text: name,
+                  type: 'topic'
+                })
+                dynamicInfo.data.data.item.modules.module_dynamic.desc.text = `${name}\n\n` + dynamicInfo.data.data.item.modules.module_dynamic.desc.text
+              }
+
+              const dynamicText = buildBilibiliDynamicRichText(
+                dynamicInfo.data.data.item.modules.module_dynamic.desc?.text ?? '',
+                dynamicInfo.data.data.item.modules.module_dynamic.desc?.rich_text_nodes ?? []
+              )
+
               img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {
                   image_url: INFODATA.data.data.pic,
@@ -797,27 +817,29 @@ export class Bilibili extends Base {
                   desc: INFODATA.data.data.desc_v2?.length
                     ? buildBilibiliVideoDescRichText(INFODATA.data.data.desc_v2)
                     : buildBilibiliDynamicRichText(INFODATA.data.data.desc || '', []),
+                  dynamic_text: dynamicText,
                   dianzan: Count(INFODATA.data.data.stat.like),
                   pinglun: Count(INFODATA.data.data.stat.reply),
                   share: Count(INFODATA.data.data.stat.share),
                   view: Count(INFODATA.data.data.stat.view),
                   coin: Count(INFODATA.data.data.stat.coin),
                   duration_text: dynamicInfo.data.data.item.modules.module_dynamic.major.archive.duration_text,
-                  create_time: TimeFormatter.toDateTime(INFODATA.data.data.ctime),
-                  avatar_url: userProfileData.data.data.card.face,
+                  page_length: INFODATA.data.data.pages.length,
+                  create_time: TimeFormatter.toRelative(dynamicInfo.data.data.item.modules.module_author.pub_ts),
+                  avatar_url: dynamicInfo.data.data.item.modules.module_author.face,
                   frame: dynamicInfo.data.data.item.modules.module_author.pendant.image,
-                  share_url: 'https://www.bilibili.com/video/' + bvid,
+                  share_url: 'https://t.bilibili.com/' + dynamicInfo.data.data.item.id_str,
                   usernameMeta: getUsernameMetadata(userProfileData.data.data.card),
                   fans: Count(userProfileData.data.data.follower),
                   user_shortid: userProfileData.data.data.card.mid,
                   total_favorited: Count(userProfileData.data.data.like_num),
                   following_count: Count(userProfileData.data.data.card.attention),
+                  decoration_card: generateDecorationCard(dynamicInfo.data.data.item.modules.module_author.decoration_card),
                   render_time: TimeFormatter.now(),
-                  dynamicTYPE: '视频动态',
+                  dynamicTYPE: '视频动态解析',
                   dynamic_id: dynamicInfo.data.data.item.id_str,
                   staff
-                }
-              )
+                } )
               this.e.reply(img)
             }
             break
@@ -838,7 +860,7 @@ export class Bilibili extends Base {
                 create_time: TimeFormatter.toDateTime(dynamicInfo.data.data.item.modules.module_author.pub_ts),
                 now_time: TimeFormatter.now(),
                 share_url: 'https://live.bilibili.com/' + liveInfo.live_play_info.room_id,
-                dynamicTYPE: '直播动态'
+                dynamicTYPE: '直播动态解析'
               }
             )
             this.e.reply(img)
@@ -1028,7 +1050,7 @@ export class Bilibili extends Base {
             create_time: liveInfo.data.data.live_time === '-62170012800' ? '获取失败' : liveInfo.data.data.live_time,
             now_time: TimeFormatter.now(),
             share_url: 'https://live.bilibili.com/' + liveInfo.data.data.room_id,
-            dynamicTYPE: '直播'
+            dynamicTYPE: '直播动态解析'
           }
         )
         this.e.reply(img)

@@ -27,62 +27,11 @@ export interface UsernameMetadata {
 }
 
 /**
- * B站普通动态组件属性接口
+ * B站动态基础数据接口（所有动态类型共有的字段）
  */
-export interface BilibiliDynamicProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */
-    useDarkTheme?: boolean
-    /** 用户头像URL */
-    avatar_url: string
-    /** 头像框 */
-    frame?: string
-    /** 用户名元数据 */
-    usernameMeta: UsernameMetadata
-    /** 动态创建时间 */
-    create_time: string
-    /** 装饰卡片 */
-    decoration_card?: DecorationCardData
-    /** 图文动态标题 */
-    title?: string
-    /** 动态文本内容（富文本文档） */
-    text: RichTextDocument | null
-    /** 图片URL数组 */
-    image_url: Array<{ image_src: string }>
-    /** 点赞数 */
-    dianzan: string | number
-    /** 评论数 */
-    pinglun: string | number
-    /** 分享数 */
-    share: string | number
-    /** 渲染时间 */
-    render_time: string
-    /** 用户短ID */
-    user_shortid: string | number
-    /** 获赞总数 */
-    total_favorited: string | number
-    /** 关注数 */
-    following_count: string | number
-    /** 粉丝数 */
-    fans: string | number
-    /** 动态类型 */
-    dynamicTYPE: string
-    /** 分享链接 */
-    share_url: string
-    /** 图片布局方式 */
-    imageLayout: string
-    /** 相关内容卡片 */
-    additional?: BilibiliAdditionalData
-  }
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string
-}
-
-/**
- * B站动态用户信息组件属性接口
- */
-export interface BilibiliDynamicUserInfoProps {
+export interface BilibiliDynamicBaseData {
+  /** 是否使用深色主题 */
+  useDarkTheme?: boolean
   /** 用户头像URL */
   avatar_url: string
   /** 头像框 */
@@ -93,8 +42,49 @@ export interface BilibiliDynamicUserInfoProps {
   create_time: string
   /** 装饰卡片 */
   decoration_card?: DecorationCardData
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
+  /** 点赞数 */
+  dianzan: string | number
+  /** 评论数 */
+  pinglun: string | number
+  /** 分享数 */
+  share: string | number
+  /** 渲染时间 */
+  render_time: string
+  /** 用户短ID */
+  user_shortid: string | number
+  /** 获赞总数 */
+  total_favorited: string | number
+  /** 关注数 */
+  following_count: string | number
+  /** 粉丝数 */
+  fans: string | number
+  /** 动态类型 */
+  dynamicTYPE: string
+  /** 动态ID */
+  dynamic_id: string
+  /** 分享链接 */
+  share_url: string
+}
+
+/**
+ * B站普通动态组件属性接口
+ */
+export interface BilibiliDynamicProps extends BaseComponentProps {
+  /** 渲染请求数据 */
+  data: BilibiliDynamicBaseData & {
+    /** 图文动态标题 */
+    title?: string
+    /** 动态文本内容（富文本文档） */
+    text: RichTextDocument | null
+    /** 图片URL数组 */
+    image_url: Array<{ image_src: string }>
+    /** 图片布局方式 */
+    imageLayout: string
+    /** 相关内容卡片 */
+    additional?: BilibiliAdditionalData
+  }
+  /** 预生成的二维码数据URL */
+  qrCodeDataUrl?: string
 }
 
 /**
@@ -239,41 +229,9 @@ export interface BilibiliDynamicFooterProps {
  */
 export interface BilibiliWordDynamicProps extends BaseComponentProps {
   /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */
-    useDarkTheme?: boolean
-    /** 用户头像URL */
-    avatar_url: string
-    /** 头像框 */
-    frame?: string
-    /** 用户名元数据 */
-    usernameMeta: UsernameMetadata
-    /** 动态创建时间 */
-    create_time: string
-    /** 装饰卡片 */
-    decoration_card?: DecorationCardData
+  data: BilibiliDynamicBaseData & {
     /** 动态文本内容（富文本文档） */
     text: RichTextDocument | null
-    /** 点赞数 */
-    dianzan: string | number
-    /** 评论数 */
-    pinglun: string | number
-    /** 分享数 */
-    share: string | number
-    /** 渲染时间 */
-    render_time: string
-    /** 用户短ID */
-    user_shortid: string | number
-    /** 获赞总数 */
-    total_favorited: string | number
-    /** 关注数 */
-    following_count: string | number
-    /** 粉丝数 */
-    fans: string | number
-    /** 动态类型 */
-    dynamicTYPE: string
-    /** 分享链接 */
-    share_url: string
     /** 相关内容卡片 */
     additional?: BilibiliAdditionalData
   }

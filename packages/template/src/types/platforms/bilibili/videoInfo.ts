@@ -1,6 +1,7 @@
 import type { RichTextDocument } from '@kkk/richtext'
 
 import type { BaseComponentProps } from '../../index'
+import type { UsernameMetadata } from './dynamic/normal'
 
 /**
  * B站视频统计数据接口
@@ -32,18 +33,6 @@ export interface BilibiliVideoStat {
   evaluation: string
   /** VT标识 */
   vt: number
-}
-
-/**
- * 用户名元数据接口
- */
-export interface UsernameMetadata {
-  /** 用户名 */
-  name: string
-  /** VIP状态 */
-  vipStatus: number
-  /** 昵称颜色 */
-  nicknameColor: string | null
 }
 
 /**

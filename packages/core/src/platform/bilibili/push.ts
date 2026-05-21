@@ -295,7 +295,8 @@ export class Bilibilipush extends Base {
                 render_time: TimeFormatter.now(),
                 imageLayout: Config.bilibili.imageLayout,
                 additional: parseAdditionalCard(data[dynamicId].Dynamic_Data.modules.module_dynamic.additional),
-                dynamicTYPE: '图文动态推送'
+                dynamicTYPE: '图文动态推送',
+                dynamic_id: dynamicId
               }
             )
             break
@@ -336,7 +337,8 @@ export class Bilibilipush extends Base {
               decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decoration_card),
               render_time: TimeFormatter.now(),
               additional: parseAdditionalCard(data[dynamicId].Dynamic_Data.modules.module_dynamic.additional),
-              dynamicTYPE: '纯文动态推送'
+              dynamicTYPE: '纯文动态推送',
+              dynamic_id: dynamicId
             })
             break
           }
@@ -375,6 +377,23 @@ export class Bilibilipush extends Base {
                 }
               }
 
+              // 处理话题
+              if ('topic' in data[dynamicId].Dynamic_Data.modules.module_dynamic && data[dynamicId].Dynamic_Data.modules.module_dynamic.topic !== null) {
+                const name = (data[dynamicId].Dynamic_Data.modules.module_dynamic.topic as { name: string }).name
+                data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.rich_text_nodes.unshift({
+                  orig_text: name,
+                  jump_url: '',
+                  text: name,
+                  type: 'topic'
+                })
+                data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.text = `${name}\n\n` + data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.text
+              }
+
+              const dynamicText = buildBilibiliDynamicRichText(
+                data[dynamicId].Dynamic_Data.modules.module_dynamic.desc?.text ?? '',
+                data[dynamicId].Dynamic_Data.modules.module_dynamic.desc?.rich_text_nodes ?? []
+              )
+
               img = await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_AV',
                 {
                   image_url: INFODATA.data.data.pic,
@@ -382,12 +401,14 @@ export class Bilibilipush extends Base {
                   desc: INFODATA.data.data.desc_v2?.length
                     ? buildBilibiliVideoDescRichText(INFODATA.data.data.desc_v2)
                     : buildBilibiliDynamicRichText(INFODATA.data.data.desc || '', []),
+                  dynamic_text: dynamicText,
                   dianzan: Count(INFODATA.data.data.stat.like),
                   pinglun: Count(INFODATA.data.data.stat.reply),
                   share: Count(INFODATA.data.data.stat.share),
                   view: Count(INFODATA.data.data.stat.view),
                   coin: Count(INFODATA.data.data.stat.coin),
                   duration_text: data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.archive?.duration_text ?? '0:00',
+                  page_length: INFODATA.data.data.pages.length,
                   create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.modules.module_author.pub_ts),
                   avatar_url: userINFO.data.data.card.face,
                   frame: data[dynamicId].Dynamic_Data.modules.module_author.pendant.image,
@@ -575,7 +596,8 @@ export class Bilibilipush extends Base {
               decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decoration_card),
               render_time: TimeFormatter.now(),
               original_content: { [data[dynamicId].Dynamic_Data.orig.type]: param },
-              imgList: imgList.length > 0 ? imgList : null
+              imgList: imgList.length > 0 ? imgList : null,
+              dynamic_id: dynamicId
             })
             break
           }

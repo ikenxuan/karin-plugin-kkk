@@ -1,11 +1,8 @@
 import { renderRichTextToReact } from '@kkk/richtext'
-import { Clock, Eye, Hash, UsersRound } from 'lucide-react'
+import { Clock } from 'lucide-react'
 import React from 'react'
 
 import type {
-  BilibiliDynamicFooterProps,
-  BilibiliDynamicStatusProps,
-  BilibiliDynamicUserInfoProps,
   BilibiliForwardDynamicProps,
   OriginalContentAV,
   OriginalContentDraw,
@@ -14,49 +11,8 @@ import type {
 } from '../../../../types/platforms/bilibili'
 import type { DecorationCardData } from '../../../../types/platforms/bilibili/dynamic/normal'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
-import { CommentIcon, ShareIcon, ThumbUpIcon } from '../Icons'
 import { DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
-
-/**
- * B站转发动态用户信息组件
- */
-const BilibiliForwardUserInfo: React.FC<BilibiliDynamicUserInfoProps> = (props) => {
-  return (
-    <div className='flex gap-10 items-center justify-between px-0 pb-0 pl-24 pr-10'>
-      <div className='flex gap-10 items-center'>
-        <div className='relative'>
-          <EnhancedImage
-            src={props.avatar_url}
-            alt='头像'
-            className='w-36 h-36 rounded-full shadow-medium'
-            isCircular
-          />
-          {props.frame && (
-            <EnhancedImage
-              src={props.frame}
-              alt='头像框'
-              className='absolute inset-0 transform scale-180'
-            />
-          )}
-        </div>
-        <div className='flex flex-col gap-8 text-7xl'>
-          <div className='text-6xl font-bold select-text text-foreground'>
-            <UsernameDisplay metadata={props.usernameMeta} />
-          </div>
-          <div className='flex gap-2 items-center text-4xl font-normal whitespace-nowrap text-muted'>
-            <Clock size={36} />
-            {props.create_time}
-          </div>
-        </div>
-      </div>
-      {props.decoration_card && (
-        <div className='shrink-0'>
-          <DecorationCard data={props.decoration_card} />
-        </div>
-      )}
-    </div>
-  )
-}
+import { BilibiliDynamicFooter, BilibiliDynamicStatus, BilibiliDynamicUserInfo } from './CommonComponents'
 
 /**
  * 原始内容用户信息组件
@@ -69,7 +25,7 @@ const OriginalUserInfo: React.FC<{
   decoration_card?: DecorationCardData
 }> = (props) => {
   return (
-    <div className='flex justify-between items-center pt-5 pb-10 pl-10 pr-0'>
+    <div className='flex justify-between items-center pt-6 pb-10 pl-6 pr-0'>
       <div className='flex gap-10 items-center min-w-0'>
         <div className='relative shrink-0'>
           <EnhancedImage
@@ -154,7 +110,7 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
  */
 const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ content }) => {
   return (
-    <div className='px-12 py-8 mt-4 w-full rounded-8xl bg-surface-secondary'>
+    <div className='px-12 py-12 mt-4 w-full rounded-8xl bg-surface-secondary'>
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -182,7 +138,7 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
 
       {content.image_url && content.image_url.length === 1
         ? (
-          <div className='flex justify-center py-11 pb-4'>
+          <div className='flex justify-center py-11 pb-0'>
             <div className='flex overflow-hidden flex-col items-center w-full rounded-4xl shadow-large'>
               <EnhancedImage
                 src={content.image_url[0].image_src}
@@ -216,12 +172,11 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
                   <EnhancedImage
                     src={img.image_src}
                     alt={`图片${index + 1}`}
-                    className='object-cover absolute top-0 left-0 w-full h-full'
+                    className='object-cover  w-full h-full'
                   />
                 </div>
               )
             })}
-            <div className='col-span-full h-2' />
           </div>
         )}
     </div>
@@ -363,125 +318,6 @@ const BilibiliForwardContent: React.FC<BilibiliForwardDynamicProps['data']> = (p
 }
 
 /**
- * B站转发动态状态组件
- */
-const BilibiliForwardStatus: React.FC<BilibiliDynamicStatusProps> = (props) => {
-  return (
-    <div className='flex flex-col gap-10 px-20 w-full leading-relaxed'>
-      <div className='flex gap-6 items-center text-5xl font-light tracking-normal select-text text-foreground/70'>
-        <div className='flex gap-2 items-center'>
-          <ThumbUpIcon size={48} />
-          {props.dianzan}点赞
-        </div>
-        <span>·</span>
-        <div className='flex gap-2 items-center'>
-          <CommentIcon size={48} />
-          {props.pinglun}评论
-        </div>
-        <span>·</span>
-        <div className='flex gap-2 items-center'>
-          <ShareIcon size={48} />
-          {props.share}分享
-        </div>
-      </div>
-      <div className='flex gap-2 items-center text-5xl font-light tracking-normal select-text text-foreground/70'>
-        <Clock size={48} />
-        图片生成于: {props.render_time}
-      </div>
-      <div className='h-3' />
-    </div>
-  )
-}
-
-/**
- * B站转发动态底部信息组件
- */
-const BilibiliForwardFooter: React.FC<BilibiliDynamicFooterProps & { avatar_url: string; frame?: string; usernameMeta: { name: string; vipStatus: number; nicknameColor: string | null } }> = (props) => {
-  return (
-    <div className='flex justify-between items-start px-20 pb-20'>
-      {/* 左侧：用户信息 */}
-      <div className='flex flex-col gap-12'>
-        {/* 头像和用户名/UID */}
-        <div className='flex gap-12 items-start'>
-          {/* 头像 */}
-          <div className='relative shrink-0'>
-            <EnhancedImage
-              src={props.avatar_url}
-              alt='头像'
-              className='rounded-full shadow-medium w-35 h-auto'
-              isCircular
-            />
-            {props.frame && (
-              <EnhancedImage
-                src={props.frame}
-                alt='头像框'
-                className='absolute inset-0 transform scale-180'
-              />
-            )}
-          </div>
-
-          {/* 用户名和UID - 纵向排列 */}
-          <div className='flex flex-col gap-5'>
-            <div className='text-7xl font-bold select-text text-foreground'>
-              <UsernameDisplay metadata={props.usernameMeta} />
-            </div>
-            <div className='flex gap-2 items-center text-4xl text-muted'>
-              <Hash size={32} />
-              <span className='select-text'>UID: {props.user_shortid}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* 用户统计信息 */}
-        <div className='text-3xl flex gap-6 items-center text-foreground/70'>
-          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
-            <div className='flex gap-1 items-center'>
-              <ThumbUpIcon size={28} />
-              <span className='text-muted'>获赞</span>
-            </div>
-            <div className='w-full h-px bg-border' />
-            <span className='select-text font-medium text-4xl'>{props.total_favorited}</span>
-          </div>
-          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
-            <div className='flex gap-1 items-center'>
-              <Eye size={28} />
-              <span className='text-muted'>关注</span>
-            </div>
-            <div className='w-full h-px bg-border' />
-            <span className='select-text font-medium text-4xl'>{props.following_count}</span>
-          </div>
-          <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
-            <div className='flex gap-1 items-center'>
-              <UsersRound size={28} />
-              <span className='text-muted'>粉丝</span>
-            </div>
-            <div className='w-full h-px bg-border' />
-            <span className='select-text font-medium text-4xl'>{props.fans}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 右侧：二维码 */}
-      <div className='flex flex-col items-center gap-4'>
-        {props.qrCodeDataUrl
-          ? (
-            <img
-              src={props.qrCodeDataUrl}
-              alt='二维码'
-              className='h-auto w-75 rounded-2xl'
-            />
-          )
-          : (
-            <div className='flex justify-center items-center rounded-2xl bg-surface w-100 h-100'>
-              <span className='text-muted'>二维码</span>
-            </div>
-          )}
-      </div>
-    </div>
-  )
-}
-
-/**
  * B站转发动态组件
  */
 export const BilibiliForwardDynamic: React.FC<BilibiliForwardDynamicProps> = React.memo((props) => {
@@ -492,13 +328,7 @@ export const BilibiliForwardDynamic: React.FC<BilibiliForwardDynamicProps> = Rea
         <div className='h-25' />
 
         {/* 用户信息 */}
-        <BilibiliForwardUserInfo
-          avatar_url={props.data.avatar_url}
-          frame={props.data.frame}
-          usernameMeta={props.data.usernameMeta}
-          create_time={props.data.create_time}
-          decoration_card={props.data.decoration_card}
-        />
+        <BilibiliDynamicUserInfo {...props.data} />
 
         {/* 间距 */}
         <div className='h-15' />
@@ -512,18 +342,13 @@ export const BilibiliForwardDynamic: React.FC<BilibiliForwardDynamicProps> = Rea
         <div className='h-25' />
 
         {/* 动态状态 */}
-        <BilibiliForwardStatus
-          dianzan={props.data.dianzan}
-          pinglun={props.data.pinglun}
-          share={props.data.share}
-          render_time={props.data.render_time}
-        />
+        <BilibiliDynamicStatus {...props.data} />
 
         {/* 间距 */}
         <div className='h-23' />
 
         {/* 底部信息 */}
-        <BilibiliForwardFooter
+        <BilibiliDynamicFooter
           avatar_url={props.data.avatar_url}
           frame={props.data.frame}
           usernameMeta={props.data.usernameMeta}
@@ -534,6 +359,7 @@ export const BilibiliForwardDynamic: React.FC<BilibiliForwardDynamicProps> = Rea
           dynamicTYPE={props.data.dynamicTYPE}
           share_url={props.data.share_url}
           qrCodeDataUrl={props.qrCodeDataUrl}
+          showUidHash
         />
       </div>
     </DefaultLayout>
