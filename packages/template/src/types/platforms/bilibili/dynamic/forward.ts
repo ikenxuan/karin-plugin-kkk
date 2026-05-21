@@ -1,7 +1,7 @@
 import type { RichTextDocument } from '@kkk/richtext'
 
 import type { BaseComponentProps } from '../../../index'
-import type { BilibiliDynamicBaseData, DecorationCardData, UsernameMetadata } from './normal'
+import type { BilibiliAdditionalData, BilibiliDynamicBaseData, DecorationCardData, UsernameMetadata } from './normal'
 
 /**
  * 原始内容AV类型接口
@@ -66,7 +66,9 @@ export interface OriginalContentWord {
   /** 装饰卡片 */
   decoration_card?: DecorationCardData
   /** 动态文本内容（富文本文档） */
-  text: RichTextDocument
+  text: RichTextDocument,
+  /** 相关内容卡片 */
+  additional?: BilibiliAdditionalData
 }
 
 /**

@@ -12,6 +12,7 @@ import type {
 import type { DecorationCardData } from '../../../../types/platforms/bilibili/dynamic/normal'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
+import { BilibiliAdditionalCard } from './AdditionalCard'
 import { BilibiliDynamicFooter, BilibiliDynamicStatus, BilibiliDynamicUserInfo } from './CommonComponents'
 
 /**
@@ -210,6 +211,7 @@ const OriginalWordContent: React.FC<{ content: OriginalContentWord }> = ({ conte
           })}
         </div>
       </div>
+      <BilibiliAdditionalCard additional={content.additional} gap={false} className='pb-4' />
     </div>
   )
 }

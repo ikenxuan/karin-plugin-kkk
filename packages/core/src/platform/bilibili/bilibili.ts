@@ -714,7 +714,8 @@ export class Bilibili extends Base {
                   avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
                   text: buildBilibiliDynamicRichText(dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.text, dynamicInfo.data.data.item.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes),
                   decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decoration_card),
-                  frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image
+                  frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image,
+                  additional: parseAdditionalCard(dynamicInfo.data.data.item.orig.modules.module_dynamic.additional)
                 }
                 break
               }

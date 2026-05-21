@@ -1,4 +1,5 @@
 import { Button } from '@heroui/react'
+import clsx from 'clsx'
 import { BarChart3, BellRing, Gamepad2, Gift } from 'lucide-react'
 import React from 'react'
 
@@ -12,7 +13,7 @@ export const BilibiliReserveCard: React.FC<{ reserve: NonNullable<BilibiliAdditi
   if (!reserve) return null
 
   return (
-    <div className='overflow-hidden rounded-2xl bg-surface'>
+    <div className='overflow-hidden rounded-4xl bg-surface'>
       <div className='flex gap-8 justify-between items-center px-10 py-10'>
         <div className='flex flex-col gap-4 flex-1'>
           <div className='text-5xl font-normal text-foreground select-text leading-tight'>
@@ -55,7 +56,7 @@ export const BilibiliVoteCard: React.FC<{ vote: NonNullable<BilibiliAdditionalDa
   const isEnded = vote.status === 4
 
   return (
-    <div className='overflow-hidden rounded-2xl bg-surface'>
+    <div className='overflow-hidden rounded-4xl bg-surface'>
       <div className='flex gap-8 items-center px-10 py-8'>
         <div className='shrink-0'>
           <BarChart3 size={56} />
@@ -160,7 +161,7 @@ export const BilibiliUgcCard: React.FC<{ ugc: NonNullable<BilibiliAdditionalData
           <EnhancedImage
             src={ugc.cover}
             alt={ugc.title}
-            className='h-52 w-auto rounded-2xl'
+            className='h-52 w-auto rounded-4xl'
           />
           <div className='absolute bottom-7 right-7 px-3 py-1 rounded-lg bg-black/70 text-white text-3xl'>
             {ugc.duration}
@@ -183,11 +184,18 @@ export const BilibiliUgcCard: React.FC<{ ugc: NonNullable<BilibiliAdditionalData
 /**
  * B站相关卡片容器组件
  */
-export const BilibiliAdditionalCard: React.FC<{ additional: BilibiliAdditionalData | undefined }> = ({ additional }) => {
+export const BilibiliAdditionalCard: React.FC<{ 
+  additional: BilibiliAdditionalData | undefined, 
+  gap?: boolean,
+  className?: string
+}> = ({ additional, gap = true, className }) => {
   if (!additional) return null
 
   return (
-    <div className='px-20 pb-20'>
+    <div className={clsx(
+      gap && 'px-20 pb-20',
+      className
+    )}>
       {additional.type === 'ADDITIONAL_TYPE_RESERVE' && additional.reserve && (
         <BilibiliReserveCard reserve={additional.reserve} />
       )}
