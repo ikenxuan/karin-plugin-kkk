@@ -17068,7 +17068,17 @@
     }
   }
 
-  .text-default-foreground, .text-default-foreground\/70 {
+  .text-default-foreground, .text-default-foreground\/50 {
+    color: var(--default-foreground);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .text-default-foreground\/50 {
+      color: color-mix(in oklab, var(--default-foreground) 50%, transparent);
+    }
+  }
+
+  .text-default-foreground\/70 {
     color: var(--default-foreground);
   }
 
