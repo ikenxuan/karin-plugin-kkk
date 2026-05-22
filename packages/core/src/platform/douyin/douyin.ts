@@ -732,7 +732,7 @@ export class DouYin extends Base {
                 Region: aweme.region,
                 suggestWrod: suggest,
                 Resolution: isVideo && video ? `${video.bit_rate[0].play_addr.width} x ${video.bit_rate[0].play_addr.height}` : null,
-                maxDepth: Config.douyin.subCommentDepth,
+                maxDepth: 6,
                 Author: aweme.author.nickname,
                 AuthorAvatar: aweme.author.avatar_thumb.url_list[0],
                 Statistics: {

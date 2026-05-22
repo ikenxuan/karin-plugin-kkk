@@ -54,15 +54,6 @@ export const douyinConfigSchema: SectionSchema = {
       rules: [{ min: 1, max: 20 }]
     },
     {
-      key: 'subCommentDepth',
-      type: 'input',
-      inputType: 'number',
-      label: '次级评论解析深度',
-      description: '次级评论解析深度',
-      disabled: $or($not('switch'), $not($includes('sendContent', 'comment'))),
-      rules: [{ min: 1, max: 6, error: '嵌套深度最高只有 6 层，超过 6 层的评论会被强制截断' }]
-    },
-    {
       key: 'commentImageCollection',
       type: 'switch',
       label: '是否收集评论区的图片',

@@ -9,11 +9,8 @@ export interface douyinConfig {
   /** 抖音评论数量，范围1 ~ x 条 */
   numcomment: number
 
-  /** 次级评论请求数量，范围1 ~ x 条，最高尽量 8 条左右，当前逻辑不仅无法判断请求的来的评论的嵌套深度，而且「subCommentDepth」会限制嵌套深度，超过深度的评论会被截断 */
+  /** 次级评论请求数量，范围1 ~ x 条，最高尽量 8 条左右，当前逻辑无法判断请求的来的评论的嵌套深度，超过深度的评论会被截断 */
   subCommentLimit: number
-
-  /** 次级评论嵌套深度，范围1 ~ 6 层 */
-  subCommentDepth: number
 
   /** 是否收集评论区的图片 */
   commentImageCollection: boolean
