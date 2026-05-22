@@ -15,9 +15,6 @@ export interface douyinConfig {
   /** 次级评论嵌套深度，范围1 ~ 6 层 */
   subCommentDepth: number
 
-  /** 评论图是否显示真实评论数量，关闭则显示解析到的评论数量 */
-  realCommentCount: boolean
-
   /** 是否收集评论区的图片 */
   commentImageCollection: boolean
 

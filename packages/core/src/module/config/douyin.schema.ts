@@ -69,13 +69,6 @@ export const douyinConfigSchema: SectionSchema = {
       description: '开启后将收集评论区的图片，以合并转发的形式返回',
       disabled: $or($not('switch'), $not($includes('sendContent', 'comment')))
     },
-    {
-      key: 'realCommentCount',
-      type: 'switch',
-      label: '显示真实评论数量',
-      description: '评论图是否显示真实评论数量，关闭则显示解析到的评论数量',
-      disabled: $or($not('switch'), $not($includes('sendContent', 'comment')))
-    },
     { type: 'divider', title: '渲染与画质设置' },
     {
       key: 'liveImageMergeMode',

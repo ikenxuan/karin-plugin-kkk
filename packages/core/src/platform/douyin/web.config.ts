@@ -74,12 +74,6 @@ export const DouyinWeb = (all: ConfigType) => {
               defaultSelected: all.douyin.commentImageCollection,
               isDisabled: !all.douyin.sendContent.includes('comment') || !all.douyin.switch
             }),
-            components.switch.create('realCommentCount', {
-              label: '显示真实评论数量',
-              description: '评论图是否显示真实评论数量，关闭则显示解析到的评论数量',
-              defaultSelected: all.douyin.realCommentCount,
-              isDisabled: !all.douyin.sendContent.includes('comment') || !all.douyin.switch
-            }),
             components.divider.create('divider-dy-render', {
               description: '渲染与画质设置',
               descPosition: 20

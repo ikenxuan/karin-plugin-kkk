@@ -722,7 +722,7 @@ export class DouYin extends Base {
               {
                 Type: isArticle ? '文章' : isVideo ? '视频' : this.is_slides ? '合辑' : '图集',
                 CommentsData: douyinCommentsRes.CommentsData,
-                CommentLength: Config.douyin.realCommentCount ? aweme.statistics.comment_count : douyinCommentsRes.CommentsData.length ?? 0,
+                CommentLength: douyinCommentsRes.CommentsData.length ?? 0,
                 share_url: isVideo
                   ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${aweme.video.play_addr.uri}&ratio=1080p&line=0`
                   : aweme.share_url,
