@@ -217,7 +217,7 @@ export const BilibiliVideoDynamic: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
                   webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
                   vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
                   viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
-                }) : <span>投稿了视频</span>}
+                }) : <span className='text-default-foreground/50'>投稿了视频</span>}
               </div>
             </div>
             <div className='h-15' />
@@ -228,15 +228,15 @@ export const BilibiliVideoDynamic: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
         <BilibiliVideoContent {...props} />
 
         <div className='h-15' />
-        
-        {/* 共创者信息 */}
-        <BilibiliVideoStaff {...props} />
 
         {/* 动态状态 */}
         <BilibiliDynamicStatus {...props.data} />
 
         {/* 间距 */}
         <div className='h-23' />
+
+        {/* 共创者信息 */}
+        <BilibiliVideoStaff {...props} />
 
         {/* 底部信息 */}
         <BilibiliDynamicFooter

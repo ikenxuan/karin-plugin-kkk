@@ -80,7 +80,6 @@ export const BilibiliDynamicStatus: React.FC<BilibiliDynamicBaseData> = (props) 
         <Link size={46} />
         <span>https://t.bilibili.com/{props.dynamic_id}</span>
       </div>
-      <div className='h-3' />
     </div>
   )
 }
