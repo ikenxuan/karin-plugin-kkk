@@ -518,15 +518,13 @@ export class Bilibili extends Base {
               }
             }
 
-            if ('topic' in dynamicInfo.data.data.item.modules.module_dynamic && dynamicInfo.data.data.item.modules.module_dynamic.topic !== null) {
-              const name = (dynamicInfo.data.data.item.modules.module_dynamic.topic as { name: string }).name
-              dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.rich_text_nodes.unshift({
-                orig_text: name,
-                jump_url: '',
-                text: name,
-                type: 'topic'
-              })
-              dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text = `${name}\n` + dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text
+            const md = dynamicInfo.data.data.item.modules.module_dynamic
+            if (md.topic) {
+              const { name } = md.topic
+              const summary = md.major.opus.summary
+              summary.rich_text_nodes ??= []
+              summary.rich_text_nodes.unshift({ orig_text: name, jump_url: '', text: name, type: 'topic' })
+              summary.text = summary.text ? `${name}\n${summary.text}` : name
             }
             this.e.reply(await Render(this.e, 'bilibili/dynamic/DYNAMIC_TYPE_DRAW', {
               image_url: Object.values(dynamicInfo.data.data.item.modules.module_dynamic.major.opus.pics)
@@ -564,15 +562,13 @@ export class Bilibili extends Base {
           /** 纯文 */
           case DynamicType.WORD: {
             // 处理话题
-            if ('topic' in dynamicInfo.data.data.item.modules.module_dynamic && dynamicInfo.data.data.item.modules.module_dynamic.topic !== null) {
-              const name = (dynamicInfo.data.data.item.modules.module_dynamic.topic as { name: string }).name
-              dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.rich_text_nodes.unshift({
-                orig_text: name,
-                jump_url: '',
-                text: name,
-                type: 'topic'
-              })
-              dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text = `${name}\n\n` + dynamicInfo.data.data.item.modules.module_dynamic.major.opus.summary.text
+            const md = dynamicInfo.data.data.item.modules.module_dynamic
+            if (md.topic) {
+              const { name } = md.topic
+              const summary = md.major.opus.summary
+              summary.rich_text_nodes ??= []
+              summary.rich_text_nodes.unshift({ orig_text: name, jump_url: '', text: name, type: 'topic' })
+              summary.text = summary.text ? `${name}\n\n${summary.text}` : name
             }
 
             const text = buildBilibiliDynamicRichText(
@@ -607,15 +603,13 @@ export class Bilibili extends Base {
           /** 转发动态 */
           case DynamicType.FORWARD: {
             // 处理话题
-            if ('topic' in dynamicInfo.data.data.item.modules.module_dynamic && dynamicInfo.data.data.item.modules.module_dynamic.topic !== null) {
-              const name = (dynamicInfo.data.data.item.modules.module_dynamic.topic as { name: string }).name
-              dynamicInfo.data.data.item.modules.module_dynamic.desc.rich_text_nodes.unshift({
-                orig_text: name,
-                jump_url: '',
-                text: name,
-                type: 'topic'
-              })
-              dynamicInfo.data.data.item.modules.module_dynamic.desc.text = `${name}\n\n` + dynamicInfo.data.data.item.modules.module_dynamic.desc.text
+            const md = dynamicInfo.data.data.item.modules.module_dynamic
+            if (md.topic) {
+              const { name } = md.topic
+              const desc = md.desc
+              desc.rich_text_nodes ??= []
+              desc.rich_text_nodes.unshift({ orig_text: name, jump_url: '', text: name, type: 'topic' })
+              desc.text = desc.text ? `${name}\n\n${desc.text}` : name
             }
 
             const text = buildBilibiliDynamicRichText(
@@ -655,22 +649,14 @@ export class Bilibili extends Base {
               // 转发图文动态
               case DynamicType.DRAW: {
                 // 处理话题
-                if ('topic' in dynamicInfo.data.data.item.orig.modules.module_dynamic && dynamicInfo.data.data.item.orig.modules.module_dynamic.topic !== null) {
-                  const name = (dynamicInfo.data.data.item.orig.modules.module_dynamic.topic as { name: string }).name
-                  const origSummary = dynamicInfo.data.data.item.orig.modules.module_dynamic.major?.opus?.summary
-                  if (origSummary) {
-                    if (!origSummary.rich_text_nodes) {
-                      origSummary.rich_text_nodes = []
-                    }
-                    origSummary.rich_text_nodes.unshift({
-                      orig_text: name,
-                      jump_url: '',
-                      text: name,
-                      type: 'topic',
-                      rid: '',
-                      style: { '1114514': '1919810' }
-                    })
-                    origSummary.text = `${name}\n` + (origSummary.text || '')
+                const origMd = dynamicInfo.data.data.item.orig.modules.module_dynamic
+                if (origMd.topic) {
+                  const { name } = origMd.topic
+                  const summary = origMd.major?.opus?.summary
+                  if (summary) {
+                    summary.rich_text_nodes ??= []
+                    summary.rich_text_nodes.unshift({ orig_text: name, jump_url: '', text: name, type: 'topic', rid: '', style: { '1114514': '1919810' } })
+                    summary.text = summary.text ? `${name}\n${summary.text}` : name
                   }
                 }
 
@@ -691,20 +677,14 @@ export class Bilibili extends Base {
               // 转发纯文动态
               case DynamicType.WORD: {
                 // 处理话题
-                if ('topic' in dynamicInfo.data.data.item.orig.modules.module_dynamic && dynamicInfo.data.data.item.orig.modules.module_dynamic.topic !== null) {
-                  const name = (dynamicInfo.data.data.item.orig.modules.module_dynamic.topic as { name: string }).name
-                  const origSummary = dynamicInfo.data.data.item.orig.modules.module_dynamic.major?.opus?.summary
-                  if (origSummary) {
-                    if (!origSummary.rich_text_nodes) {
-                      origSummary.rich_text_nodes = []
-                    }
-                    origSummary.rich_text_nodes.unshift({
-                      orig_text: name,
-                      jump_url: '',
-                      text: name,
-                      type: 'topic'
-                    })
-                    origSummary.text = `${name}\n` + (origSummary.text || '')
+                const origMd = dynamicInfo.data.data.item.orig.modules.module_dynamic
+                if (origMd.topic) {
+                  const { name } = origMd.topic
+                  const summary = origMd.major?.opus?.summary
+                  if (summary) {
+                    summary.rich_text_nodes ??= []
+                    summary.rich_text_nodes.unshift({ orig_text: name, jump_url: '', text: name, type: 'topic' })
+                    summary.text = summary.text ? `${name}\n${summary.text}` : name
                   }
                 }
 
@@ -795,15 +775,12 @@ export class Bilibili extends Base {
               }
 
               // 处理话题
-              if ('topic' in dynamicInfo.data.data.item.modules.module_dynamic && dynamicInfo.data.data.item.modules.module_dynamic.topic !== null) {
-                const name = (dynamicInfo.data.data.item.modules.module_dynamic.topic as { name: string }).name
-                dynamicInfo.data.data.item.modules.module_dynamic.desc.rich_text_nodes.unshift({
-                  orig_text: name,
-                  jump_url: '',
-                  text: name,
-                  type: 'topic'
-                })
-                dynamicInfo.data.data.item.modules.module_dynamic.desc.text = `${name}\n\n` + dynamicInfo.data.data.item.modules.module_dynamic.desc.text
+              const md = dynamicInfo.data.data.item.modules.module_dynamic
+              if (md.topic) {
+                const { name } = md.topic
+                md.desc ??= { rich_text_nodes: [], text: '' }
+                md.desc.rich_text_nodes.unshift({ orig_text: name, jump_url: '', text: name, type: 'topic' })
+                md.desc.text = md.desc.text ? `${name}\n\n${md.desc.text}` : name
               }
 
               const dynamicText = buildBilibiliDynamicRichText(

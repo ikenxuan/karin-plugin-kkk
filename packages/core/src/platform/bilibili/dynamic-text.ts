@@ -130,6 +130,84 @@ export const buildBilibiliDynamicRichText = (
     return createRichTextDocument(nodes, { platform: 'bilibili' })
   }
 
+  // 辅助函数：根据单个 richTextNode 创建对应的富文本节点
+  const buildNodesFromTag = (tag: typeof richTextNodes[number]): Array<(typeof nodes)[number]> => {
+    const matchText = tag.orig_text || tag.text || ''
+    if (!matchText) return []
+
+    const result: Array<(typeof nodes)[number]> = []
+    switch (tag.type) {
+      case 'RICH_TEXT_NODE_TYPE_TEXT': {
+        const parts = matchText.split(/(\r?\n)/)
+        for (const part of parts) {
+          if (part === '\r\n' || part === '\n') {
+            result.push(createLineBreakNode())
+          } else if (part) {
+            result.push(...parseTextWithUrls(part))
+          }
+        }
+        break
+      }
+
+      case 'topic':
+      case 'RICH_TEXT_NODE_TYPE_TOPIC':
+        result.push(createTopicNode(matchText))
+        break
+
+      case 'RICH_TEXT_NODE_TYPE_AT':
+        result.push(createAtNode(matchText))
+        break
+
+      case 'RICH_TEXT_NODE_TYPE_LOTTERY':
+        result.push(createLotteryNode(matchText))
+        break
+
+      case 'RICH_TEXT_NODE_TYPE_WEB':
+        result.push(createWebLinkNode(tag.text || matchText, matchText))
+        break
+
+      case 'RICH_TEXT_NODE_TYPE_EMOJI': {
+        const emojiUrl = tag.emoji?.gif_url || tag.emoji?.icon_url
+        const scale = tag.emoji?.size === 2 || tag.emoji?.size === 3 ? 2 : undefined
+        if (emojiUrl) {
+          result.push(createEmojiNode(matchText, emojiUrl, { scale }))
+        } else {
+          result.push(createTextNode(matchText))
+        }
+        break
+      }
+
+      case 'RICH_TEXT_NODE_TYPE_VOTE':
+        result.push(createVoteNode(tag.text || matchText))
+        break
+
+      case 'RICH_TEXT_NODE_TYPE_VIEW_PICTURE':
+        result.push(createViewPictureNode(matchText))
+        break
+
+      default: {
+        const parts = matchText.split(/(\r?\n)/)
+        for (const part of parts) {
+          if (part === '\r\n' || part === '\n') {
+            result.push(createLineBreakNode())
+          } else if (part) {
+            result.push(...parseTextWithUrls(part))
+          }
+        }
+        break
+      }
+    }
+    return result
+  }
+
+  // text 为空字符串时，直接按 richTextNodes 顺序构建节点，无需在 text 中查找位置
+  if (!text) {
+    for (const tag of richTextNodes) {
+      nodes.push(...buildNodesFromTag(tag))
+    }
+    return createRichTextDocument(nodes, { platform: 'bilibili' })
+  }
+
   // 搜索函数：从给定起始位置开始查找子串在 text 中的位置
   const findInText = (searchText: string, startPos: number): number => {
     return text.indexOf(searchText, startPos)
@@ -158,71 +236,7 @@ export const buildBilibiliDynamicRichText = (
       }
     }
 
-    // 根据节点类型创建对应的 RichTextNode
-    switch (tag.type) {
-      case 'RICH_TEXT_NODE_TYPE_TEXT': {
-        // TEXT 类型的 orig_text 可能包含换行符，需要单独处理
-        const parts = matchText.split(/(\r?\n)/)
-        for (const part of parts) {
-          if (part === '\r\n' || part === '\n') {
-            nodes.push(createLineBreakNode())
-          } else if (part) {
-            nodes.push(...parseTextWithUrls(part))
-          }
-        }
-        break
-      }
-
-      case 'topic':
-      case 'RICH_TEXT_NODE_TYPE_TOPIC':
-        nodes.push(createTopicNode(matchText))
-        break
-
-      case 'RICH_TEXT_NODE_TYPE_AT':
-        nodes.push(createAtNode(matchText))
-        break
-
-      case 'RICH_TEXT_NODE_TYPE_LOTTERY':
-        nodes.push(createLotteryNode(matchText))
-        break
-
-      case 'RICH_TEXT_NODE_TYPE_WEB':
-        nodes.push(createWebLinkNode(tag.text || matchText, matchText))
-        break
-
-      case 'RICH_TEXT_NODE_TYPE_EMOJI': {
-        const emojiUrl = tag.emoji?.gif_url || tag.emoji?.icon_url
-        const scale = (tag.emoji?.size === 2 || tag.emoji?.size === 3) ? 2 : undefined
-        if (emojiUrl) {
-          nodes.push(createEmojiNode(matchText, emojiUrl, { scale }))
-        } else {
-          nodes.push(createTextNode(matchText))
-        }
-        break
-      }
-
-      case 'RICH_TEXT_NODE_TYPE_VOTE':
-        nodes.push(createVoteNode(tag.text || matchText))
-        break
-
-      case 'RICH_TEXT_NODE_TYPE_VIEW_PICTURE':
-        nodes.push(createViewPictureNode(matchText))
-        break
-
-      default: {
-        // 未知类型兜底：尝试识别其中的 URL
-        const parts = matchText.split(/(\r?\n)/)
-        for (const part of parts) {
-          if (part === '\r\n' || part === '\n') {
-            nodes.push(createLineBreakNode())
-          } else if (part) {
-            nodes.push(...parseTextWithUrls(part))
-          }
-        }
-        break
-      }
-    }
-
+    nodes.push(...buildNodesFromTag(tag))
     currentPos = matchPos + matchText.length
   }
 

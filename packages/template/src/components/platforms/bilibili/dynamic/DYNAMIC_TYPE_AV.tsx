@@ -22,7 +22,7 @@ const BilibiliVideoContent: React.FC<Omit<BilibiliVideoDynamicProps, 'templateTy
         {/* 视频封面 */}
         {props.data.image_url && (
           <>
-            <div className='flex flex-col items-center'>
+            <div className='items-center'>
               <div className='flex overflow-hidden relative flex-col flex-1 items-center rounded-5xl shadow-large'>
                 <EnhancedImage
                   src={props.data.image_url}
@@ -210,14 +210,14 @@ export const BilibiliVideoDynamic: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
                   overflowWrap: 'break-word'
                 }}
               >
-                {renderRichTextToReact(props.data.dynamic_text, {
+                {props.data.dynamic_text.nodes.length > 0 ? renderRichTextToReact(props.data.dynamic_text, {
                   at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
                   topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
                   lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
                   webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
                   vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
                   viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
-                })}
+                }) : <span>投稿了视频</span>}
               </div>
             </div>
             <div className='h-15' />

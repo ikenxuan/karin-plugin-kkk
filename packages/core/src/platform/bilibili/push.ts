@@ -305,14 +305,12 @@ export class Bilibilipush extends Base {
           case DynamicType.WORD: {
             // 处理话题
             if ('topic' in data[dynamicId].Dynamic_Data.orig.modules.module_dynamic && data[dynamicId].Dynamic_Data.modules.module_dynamic.topic !== null) {
-              const name = (data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.topic as { name: string; id: number }).name
-              data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus.summary.rich_text_nodes.unshift({
-                orig_text: name,
-                text: name,
-                type: 'topic',
-                rid: (data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.topic as { id: number }).id.toString()
-              })
-              data[dynamicId].Dynamic_Data.modules.module_dynamic.major!.opus.summary.text = `${name}\n\n` + data[dynamicId].Dynamic_Data.modules.module_dynamic.major?.opus?.summary?.text
+              const md = data[dynamicId].Dynamic_Data.modules.module_dynamic
+              const { name } = md.topic as unknown as { name: string; id: number }
+              const summary = md.major!.opus.summary
+              summary.rich_text_nodes ??= []
+              summary.rich_text_nodes.unshift({ orig_text: name, text: name, type: 'topic', rid: (md.topic as unknown as { id: number }).id.toString() })
+              summary.text = summary.text ? `${name}\n\n${summary.text}` : name
             }
 
             const text = buildBilibiliDynamicRichText(
@@ -378,15 +376,12 @@ export class Bilibilipush extends Base {
               }
 
               // 处理话题
-              if ('topic' in data[dynamicId].Dynamic_Data.modules.module_dynamic && data[dynamicId].Dynamic_Data.modules.module_dynamic.topic !== null) {
-                const name = (data[dynamicId].Dynamic_Data.modules.module_dynamic.topic as { name: string }).name
-                data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.rich_text_nodes.unshift({
-                  orig_text: name,
-                  jump_url: '',
-                  text: name,
-                  type: 'topic'
-                })
-                data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.text = `${name}\n\n` + data[dynamicId].Dynamic_Data.modules.module_dynamic.desc.text
+              const md = data[dynamicId].Dynamic_Data.modules.module_dynamic
+              if (md.topic) {
+                const { name } = md.topic
+                md.desc ??= { rich_text_nodes: [], text: '' }
+                md.desc.rich_text_nodes.unshift({ orig_text: name, jump_url: '', text: name, type: 'topic' })
+                md.desc.text = md.desc.text ? `${name}\n\n${md.desc.text}` : name
               }
 
               const dynamicText = buildBilibiliDynamicRichText(
@@ -450,15 +445,13 @@ export class Bilibilipush extends Base {
           /** 处理转发动态 */
           case DynamicType.FORWARD: {
             // 处理话题
-            if ('topic' in data[dynamicId].Dynamic_Data.modules.module_dynamic && data[dynamicId].Dynamic_Data.modules.module_dynamic.topic !== null) {
-              const name = (data[dynamicId].Dynamic_Data.modules.module_dynamic.topic as { name: string }).name
-              data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.rich_text_nodes.unshift({
-                orig_text: name,
-                jump_url: '',
-                text: name,
-                type: 'topic'
-              })
-              data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.text = `${name}\n\n` + data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.text
+            const md = data[dynamicId].Dynamic_Data.modules.module_dynamic
+            if (md.topic) {
+              const { name } = md.topic
+              const desc = md.desc!
+              desc.rich_text_nodes ??= []
+              desc.rich_text_nodes.unshift({ orig_text: name, jump_url: '', text: name, type: 'topic' })
+              desc.text = desc.text ? `${name}\n\n${desc.text}` : name
             }
 
             const text = buildBilibiliDynamicRichText(data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.text, data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.rich_text_nodes)
@@ -494,22 +487,14 @@ export class Bilibilipush extends Base {
               }
               case DynamicType.DRAW: {
                 // 处理话题
-                if ('topic' in data[dynamicId].Dynamic_Data.orig.modules.module_dynamic && data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.topic !== null) {
-                  const name = (data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.topic as { name: string; id: number }).name
-                  const origSummary = data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major?.opus?.summary
-                  if (origSummary) {
-                    if (!origSummary.rich_text_nodes) {
-                      origSummary.rich_text_nodes = []
-                    }
-                    origSummary.rich_text_nodes.unshift({
-                      orig_text: name,
-                      text: name,
-                      type: 'topic',
-                      rid: (data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.topic as { id: number }).id.toString(),
-                      jump_url: '114514',
-                      style: { '114514': '1919810' }
-                    })
-                    origSummary.text = `${name}\n` + (origSummary.text || '')
+                const origMd = data[dynamicId].Dynamic_Data.orig.modules.module_dynamic
+                if (origMd.topic) {
+                  const { name } = origMd.topic as { name: string; id: number }
+                  const summary = origMd.major?.opus?.summary
+                  if (summary) {
+                    summary.rich_text_nodes ??= []
+                    summary.rich_text_nodes.unshift({ orig_text: name, text: name, type: 'topic', rid: (origMd.topic as { id: number }).id.toString(), jump_url: '114514', style: { '114514': '1919810' } })
+                    summary.text = summary.text ? `${name}\n${summary.text}` : name
                   }
                 }
 
@@ -529,20 +514,14 @@ export class Bilibilipush extends Base {
               }
               case DynamicType.WORD: {
                 // 处理话题
-                if ('topic' in data[dynamicId].Dynamic_Data.orig.modules.module_dynamic && data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.topic !== null) {
-                  const name = (data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.topic as { name: string; id: number }).name
-                  const origSummary = data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major?.opus?.summary
-                  if (origSummary) {
-                    if (!origSummary.rich_text_nodes) {
-                      origSummary.rich_text_nodes = []
-                    }
-                    origSummary.rich_text_nodes.unshift({
-                      orig_text: name,
-                      text: name,
-                      type: 'topic',
-                      rid: (data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.topic as { id: number }).id.toString()
-                    })
-                    origSummary.text = `${name}\n` + (origSummary.text || '')
+                const origMd = data[dynamicId].Dynamic_Data.orig.modules.module_dynamic
+                if (origMd.topic) {
+                  const { name } = origMd.topic as { name: string; id: number }
+                  const summary = origMd.major?.opus?.summary
+                  if (summary) {
+                    summary.rich_text_nodes ??= []
+                    summary.rich_text_nodes.unshift({ orig_text: name, text: name, type: 'topic', rid: (origMd.topic as { id: number }).id.toString() })
+                    summary.text = summary.text ? `${name}\n${summary.text}` : name
                   }
                 }
 
