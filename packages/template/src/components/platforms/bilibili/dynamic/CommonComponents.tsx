@@ -1,5 +1,5 @@
-import { ClockIcon } from '@phosphor-icons/react'
-import { Link, UsersRound } from 'lucide-react'
+import { ClockIcon, UsersIcon } from '@phosphor-icons/react'
+import { Link } from 'lucide-react'
 import React from 'react'
 
 import type {
@@ -76,7 +76,7 @@ export const BilibiliDynamicStatus: React.FC<BilibiliDynamicBaseData> = (props) 
         <ClockIcon size={52} weight='fill' />
         图片生成于: {props.render_time}
       </div>
-      <div className='flex gap-2 items-center text-5xl font-light tracking-normal select-texttext-[#006A9E] dark:text-[#58B0D5]'>
+      <div className='flex gap-2 items-center text-5xl font-light tracking-normal select-text text-[#006A9E] dark:text-[#58B0D5]'>
         <Link size={46} />
         <span>https://t.bilibili.com/{props.dynamic_id}</span>
       </div>
@@ -135,7 +135,7 @@ export const BilibiliDynamicFooter: React.FC<
         <div className='text-3xl flex gap-6 items-center text-foreground/70'>
           <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
-              <ThumbUpIcon size={28} />
+              <ThumbUpIcon size={36} />
               <span className='text-muted'>获赞</span>
             </div>
             <div className='w-full h-px bg-border' />
@@ -143,7 +143,7 @@ export const BilibiliDynamicFooter: React.FC<
           </div>
           <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
-              <ViewIcon size={28} />
+              <ViewIcon size={36} />
               <span className='text-muted'>关注</span>
             </div>
             <div className='w-full h-px bg-border' />
@@ -151,7 +151,7 @@ export const BilibiliDynamicFooter: React.FC<
           </div>
           <div className='flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface'>
             <div className='flex gap-1 items-center'>
-              <UsersRound size={28} />
+              <UsersIcon size={36} weight='fill' />
               <span className='text-muted'>粉丝</span>
             </div>
             <div className='w-full h-px bg-border' />
