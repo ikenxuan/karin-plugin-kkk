@@ -595,13 +595,12 @@ export class DouYin extends Base {
             Config.douyin.videoQuality,
             Config.douyin.maxAutoVideoSize
           )
-          g_video_url = await new Networks({
-            url: video.bit_rate[0].play_addr.url_list[2],
-            headers: {
-              ...this.headers,
-              Referer: video.bit_rate[0].play_addr.url_list[0]
-            }
-          }).getLongLink()
+          // url_list[2] 是 www.douyin.com/aweme/v1/play 的包装 URL，会按 Douyin 负载均衡 302
+          // 到任意 CDN，部分 CDN（如 cjjd14.com、n98-v-ncdnon）返回非 MP4 乱码字节。
+          // 直接用 url_list[0] 的签名直链规避包装跳转。
+          g_video_url = video.bit_rate[0].play_addr.url_list[0]
+            ?? video.bit_rate[0].play_addr.url_list[1]
+            ?? video.bit_rate[0].play_addr.url_list[2]
           const title = VideoData.data.aweme_detail.preview_title.substring(0, 80).replace(/[\\/:*?"<>|\r\n]/g, ' ') // video title
           g_title = title
           mp4size = (video.bit_rate[0].play_addr.data_size / (1024 * 1024)).toFixed(2)
