@@ -81,7 +81,7 @@ const FansMedal: React.FC<{ detail: FansDetail }> = ({ detail }) => {
  */
 const TopBadge: React.FC = () => {
   return (
-    <span 
+    <span
       className={clsx(
         'inline-flex justify-center items-center',
         'px-4 py-2 mr-4 mb-1 rounded-xl',
@@ -199,16 +199,17 @@ const renderBilibiliUserName = (
 ) => {
   return (
     <span
-      className='inline-block leading-[1.2]'
+      className='inline-block leading-[1.2] font-medium whitespace-nowrap'
       style={{
         color: unameColor ?? '#888',
-        fontWeight: vipstatus === 1 ? 700 : undefined
+        fontWeight: vipstatus === 1 ? 500 : undefined
       }}
     >
       {uname}
     </span>
   )
 }
+
 
 const BilibiliLogo: React.FC = () => {
   const [hasError, setHasError] = useState(false)
@@ -664,7 +665,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
                               {idx === 1 && subReply.pictures.length > 2 && (
                                 <div className='absolute bottom-10 right-10'>
                                   {/* 悬浮按钮背景 */}
-                                  <div 
+                                  <div
                                     className='flex items-center justify-center px-8 py-6 rounded-[18px] shadow-xl'
                                     style={{
                                       backgroundColor: 'rgba(0, 0, 0, 0.7)'
