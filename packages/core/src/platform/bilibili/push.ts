@@ -22,6 +22,7 @@ import karin, {
 import { BilibiliUserListProps } from 'template/types/platforms/bilibili'
 
 import {
+  applyWatermarkToImages,
   Base,
   baseHeaders,
   bilibiliDB,
@@ -297,7 +298,8 @@ export class Bilibilipush extends Base {
                 additional: parseAdditionalCard(data[dynamicId].Dynamic_Data.modules.module_dynamic.additional),
                 dynamicTYPE: '图文动态推送',
                 dynamic_id: dynamicId
-              }
+              },
+              { skipWatermark: true }
             )
             break
           }
@@ -337,7 +339,7 @@ export class Bilibilipush extends Base {
               additional: parseAdditionalCard(data[dynamicId].Dynamic_Data.modules.module_dynamic.additional),
               dynamicTYPE: '纯文动态推送',
               dynamic_id: dynamicId
-            })
+            }, { skipWatermark: true })
             break
           }
           /** 处理视频动态 */
@@ -417,7 +419,8 @@ export class Bilibilipush extends Base {
                   dynamicTYPE: '视频动态推送',
                   dynamic_id: dynamicId,
                   staff
-                }
+                },
+                { skipWatermark: true }
               )
             }
             break
@@ -438,7 +441,8 @@ export class Bilibilipush extends Base {
                 now_time: TimeFormatter.now(),
                 share_url: 'https://live.bilibili.com/' + liveInfo.live_play_info.room_id,
                 dynamicTYPE: '直播动态推送'
-              }
+              },
+              { skipWatermark: true }
             )
             break
           }
@@ -577,7 +581,7 @@ export class Bilibilipush extends Base {
               original_content: { [data[dynamicId].Dynamic_Data.orig.type]: param },
               imgList: imgList.length > 0 ? imgList : null,
               dynamic_id: dynamicId
-            })
+            }, { skipWatermark: true })
             break
           }
           /** 文章/专栏动态 */
@@ -619,7 +623,8 @@ export class Bilibilipush extends Base {
                 // 分享链接
                 share_url: articleContent.dyn_id_str ? `https://www.bilibili.com/opus/${articleContent.dyn_id_str}` : `https://www.bilibili.com/read/cv${articleContent.id}`,
                 dynamicTYPE: '专栏动态推送'
-              }
+              },
+              { skipWatermark: true }
             )
             break
           }
@@ -640,7 +645,14 @@ export class Bilibilipush extends Base {
           const { groupId, botId } = target
           const bot = karin.getBot(botId) as AdapterType
           const Contact = karin.contactGroup(groupId)
-          status = await karin.sendMsg(botId, Contact, img ? [...img] : [])
+
+          // 为当前目标注入 bot 并应用水印
+          const eventWithBot = this.e as Message & { bot?: AdapterType, selfId?: string }
+          eventWithBot.bot = bot
+          eventWithBot.selfId = botId
+          const watermarkedImg = img ? applyWatermarkToImages(img, this.e) : []
+
+          status = await karin.sendMsg(botId, Contact, [...watermarkedImg])
           if (Config.bilibili.push.parsedynamic && status.messageId) {
             switch (data[dynamicId].dynamic_type) {
               case 'DYNAMIC_TYPE_AV': {

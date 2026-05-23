@@ -7,6 +7,7 @@ import karin, { common, logger, segment } from 'node-karin'
 import { DouyinUserListProps } from 'template/types/platforms/douyin'
 
 import {
+  applyWatermarkToImages,
   Base,
   baseHeaders,
   buildGoogleMotionPhoto,
@@ -20,8 +21,7 @@ import {
   loopVideoWithTransition,
   Networks,
   processImageUrl,
-  Render
-} from '@/module'
+  Render } from '@/module'
 import { Config } from '@/module/utils/Config'
 import { DouyinIdData, douyinProcessVideos, getDouyinID } from '@/platform/douyin'
 import { getWorkCoverUrl, getWorkTypeDisplayName, getWorkTypeInfo } from '@/platform/douyin/workType'
@@ -253,7 +253,7 @@ export class DouYinpush extends Base {
             total_favorited: this.count(Detail_Data.user_info.data.user.total_favorited),
             //@ts-ignore
             has_commerce_goods: liveItem.has_commerce_goods
-          })
+          }, { skipWatermark: true })
         } else {
           // 处理普通作品推送
           const realUrl = Config.douyin.push.shareType === 'web' && await new Networks({
@@ -294,7 +294,7 @@ export class DouYinpush extends Base {
               author_avatar: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + authorUserInfo.data.user.avatar_larger.uri,
               author_douyin_id: (authorUserInfo.data.user.unique_id === '' ? authorUserInfo.data.user.short_id : authorUserInfo.data.user.unique_id),
               share_url: Config.douyin.push.shareType === 'web' ? realUrl : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
-            })
+            }, { skipWatermark: true })
           } else if (pushItem.pushType === 'recommend') {
             // 推荐列表模板
             // 获取作者用户信息（如果有的话）
@@ -324,7 +324,7 @@ export class DouYinpush extends Base {
               author_avatar: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + authorUserInfo.data.user.avatar_larger.uri,
               author_douyin_id: (authorUserInfo.data.user.unique_id === '' ? authorUserInfo.data.user.short_id : authorUserInfo.data.user.unique_id),
               share_url: Config.douyin.push.shareType === 'web' ? realUrl : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
-            })
+            }, { skipWatermark: true })
           } else {
             // 作品列表模板（post）
             const dynamicTypeLabel = '作品动态推送'
@@ -370,7 +370,7 @@ export class DouYinpush extends Base {
 
                 // 主题
                 useDarkTheme: false
-              })
+              }, { skipWatermark: true })
             } else {
               // 视频或图文作品
               img = await Render(this.e, workTypeInfo.templatePath, {
@@ -449,7 +449,7 @@ export class DouYinpush extends Base {
                     )
                   }
                 })()
-              })
+              }, { skipWatermark: true })
             }
           }
         }
@@ -462,8 +462,16 @@ export class DouYinpush extends Base {
 
         if (!skip) {
           const Contact = karin.contactGroup(groupId)
+
+          // 为当前目标注入 bot 并应用水印
+          const bot = karin.getBot(botId) as AdapterType
+          const eventWithBot = this.e as Message & { bot?: AdapterType, selfId?: string }
+          eventWithBot.bot = bot
+          eventWithBot.selfId = botId
+          const watermarkedImg = img ? applyWatermarkToImages(img, this.e) : []
+
           // 发送消息
-          status = await karin.sendMsg(botId, Contact, img ? [...img] : [])
+          status = await karin.sendMsg(botId, Contact, [...watermarkedImg])
 
           // 如果是直播推送，更新直播状态
           if (pushItem.pushType === 'live' && 'room_data' in pushItem.Detail_Data && status.message_id) {

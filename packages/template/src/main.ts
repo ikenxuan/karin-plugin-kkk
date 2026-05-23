@@ -37,7 +37,7 @@ interface RenderState {
  * 提供插件执行时所需的所有上下文信息
  * @template T 渲染数据类型
  */
-interface PluginContext<T extends Record<string, unknown> = Record<string, unknown>> {
+interface PluginContext<T = Record<string, unknown>> {
   /** 渲染请求对象 */
   request: RenderRequest<T>
   /** 输出目录路径 */
@@ -53,7 +53,7 @@ interface PluginContext<T extends Record<string, unknown> = Record<string, unkno
  * 定义插件的生命周期钩子和配置
  * @template T 渲染数据类型
  */
-interface TemplatePlugin<T extends Record<string, unknown> = Record<string, unknown>> {
+interface TemplatePlugin<T = Record<string, unknown>> {
   /** 插件名称，用于标识和调试 */
   name: string
   /** 插件执行时机，默认为 'normal' */
@@ -153,7 +153,7 @@ class PluginContainer {
    * @param request 渲染请求
    * @returns 是否应用插件
    */
-  private shouldApply<T extends Record<string, unknown>> (plugin: TemplatePlugin<T>, request: RenderRequest<T>): boolean {
+  private shouldApply (plugin: TemplatePlugin, request: RenderRequest<any>): boolean {
     try {
       return plugin.apply ? plugin.apply(request) : true
     } catch (err) {
@@ -166,7 +166,7 @@ class PluginContainer {
    * 执行渲染前插件
    * @param ctx 插件上下文
    */
-  async runBefore<T extends Record<string, unknown>> (ctx: PluginContext<T>): Promise<void> {
+  async runBefore (ctx: PluginContext<any>): Promise<void> {
     for (const plugin of this.plugins) {
       if (this.shouldApply(plugin, ctx.request)) {
         await plugin.beforeRender?.(ctx)
@@ -178,7 +178,7 @@ class PluginContainer {
    * 执行渲染时插件
    * @param ctx 插件上下文
    */
-  async runDuring<T extends Record<string, unknown>> (ctx: PluginContext<T>): Promise<void> {
+  async runDuring (ctx: PluginContext<any>): Promise<void> {
     for (const plugin of this.plugins) {
       if (this.shouldApply(plugin, ctx.request)) {
         await plugin.render?.(ctx)
@@ -190,7 +190,7 @@ class PluginContainer {
    * 执行渲染后插件
    * @param ctx 插件上下文
    */
-  async runAfter<T extends Record<string, unknown>> (ctx: PluginContext<T>): Promise<void> {
+  async runAfter (ctx: PluginContext<any>): Promise<void> {
     for (const plugin of this.plugins) {
       if (this.shouldApply(plugin, ctx.request)) {
         await plugin.afterRender?.(ctx)
@@ -211,7 +211,7 @@ class ComponentRendererFactory {
    * @returns React 组件元素
    * @throws 当组件未找到或数据验证失败时抛出错误
    */
-  static async createComponent<T extends Record<string, unknown>> (
+  static async createComponent<T> (
     request: RenderRequest<T>,
     extraProps: Record<string, unknown> = {}
   ): Promise<React.ReactElement> {
@@ -781,7 +781,7 @@ class SSRRender {
    * @param request 渲染请求参数
    * @returns 渲染结果
    */
-  public async render<T extends Record<string, unknown>> (request: RenderRequest<T>): Promise<RenderResponse> {
+  public async render<T> (request: RenderRequest<T>): Promise<RenderResponse> {
     try {
       logger.debug('[SSR] 开始渲染组件，预设模板:', `${logger.yellow(`${request.templateType}/`)}${request.templateName}`)
 
