@@ -2349,7 +2349,7 @@ interface RenderState {
  * 提供插件执行时所需的所有上下文信息
  * @template T 渲染数据类型
  */
-interface PluginContext<T extends Record<string, unknown> = Record<string, unknown>> {
+interface PluginContext<T = Record<string, unknown>> {
   /** 渲染请求对象 */
   request: RenderRequest<T>;
   /** 输出目录路径 */
@@ -2364,7 +2364,7 @@ interface PluginContext<T extends Record<string, unknown> = Record<string, unkno
  * 定义插件的生命周期钩子和配置
  * @template T 渲染数据类型
  */
-interface TemplatePlugin<T extends Record<string, unknown> = Record<string, unknown>> {
+interface TemplatePlugin<T = Record<string, unknown>> {
   /** 插件名称，用于标识和调试 */
   name: string;
   /** 插件执行时机，默认为 'normal' */
