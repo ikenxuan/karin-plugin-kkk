@@ -1,5 +1,6 @@
 import { renderRichTextToReact } from '@kkk/richtext'
 import { ClockIcon } from '@phosphor-icons/react'
+import clsx from 'clsx'
 import React from 'react'
 
 import type { BilibiliVideoDynamicProps } from '../../../../types/platforms/bilibili'
@@ -233,7 +234,10 @@ export const BilibiliVideoDynamic: React.FC<Omit<BilibiliVideoDynamicProps, 'tem
         <BilibiliDynamicStatus {...props.data} />
 
         {/* 间距 */}
-        <div className='h-23' />
+        <div className={clsx(
+          props.data.staff && props.data.staff.length > 0 && 'h-23',
+          !props.data.staff && 'h-40'
+        )} />
 
         {/* 共创者信息 */}
         <BilibiliVideoStaff {...props} />
