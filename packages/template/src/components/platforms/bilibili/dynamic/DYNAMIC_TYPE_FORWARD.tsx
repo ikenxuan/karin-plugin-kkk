@@ -347,7 +347,7 @@ export const BilibiliForwardDynamic: React.FC<BilibiliForwardDynamicProps> = Rea
         <BilibiliDynamicStatus {...props.data} />
 
         {/* 间距 */}
-        <div className='h-23' />
+        <div className='h-40' />
 
         {/* 底部信息 */}
         <BilibiliDynamicFooter
