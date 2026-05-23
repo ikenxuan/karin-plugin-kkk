@@ -2,6 +2,40 @@
 
 # Changelog
 
+## [2.31.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.31.0...v2.31.1) (2026-05-23)
+
+
+### 🐛 错误修复
+
+* **抖音:** 视频索引错误导致断点续传损坏视频文件 ([aa72ba8](https://github.com/ikenxuan/karin-plugin-kkk/commit/aa72ba84a6d463f52afac7ac5526ed19c0b00f22))
+
+
+### 💄 UI 优化
+
+* update icon ([ede8e9c](https://github.com/ikenxuan/karin-plugin-kkk/commit/ede8e9c3533700ad5cb484f1e86ae3162b31cab7))
+* 修复 B站视频动态组件中共创者信息的显示位置和样式 ([d2e965c](https://github.com/ikenxuan/karin-plugin-kkk/commit/d2e965cc38aeccaf453aefc40bd9e5e6821efe14))
+* 提取部分公共组件、视频动态添加原动态正文信息。 ([33ec0f2](https://github.com/ikenxuan/karin-plugin-kkk/commit/33ec0f2d7e186c1a74bef6157ded869c68908d3d))
+* 添加水平分隔线节点及相关功能，支持图片下方注释 ([19e2d24](https://github.com/ikenxuan/karin-plugin-kkk/commit/19e2d244a2f6486fbc871cd2431b5d5584f3e78f))
+* 添加额外内容卡片支持，更新相关组件和类型定义 ([c6145f5](https://github.com/ikenxuan/karin-plugin-kkk/commit/c6145f503bca76b462e0f7a0c248019d8ca48a57))
+* 细优 ([9261164](https://github.com/ikenxuan/karin-plugin-kkk/commit/92611644f35f75dbad5090b97215e0aed65dda0c))
+* 间距 ([92bf6ad](https://github.com/ikenxuan/karin-plugin-kkk/commit/92bf6adbf68f13ca11350429ccdc9d23f121d7bb))
+
+
+### ♻️ 代码重构
+
+* 优化 Bilibili 动态处理逻辑，简化代码结构；调整视频内容组件样式 ([15bc5db](https://github.com/ikenxuan/karin-plugin-kkk/commit/15bc5db4702a8daa114f17978fb0b838d8a366d7))
+
+
+### ⚙️ 配置变更
+
+* 移除次级评论解析深度相关配置及逻辑，更新文档说明 ([f07f91c](https://github.com/ikenxuan/karin-plugin-kkk/commit/f07f91c005fd6f97d9597ac2838fca8c30c62b4d))
+* 移除真实评论数量相关配置及逻辑 ([af75c69](https://github.com/ikenxuan/karin-plugin-kkk/commit/af75c69ba0772739679314fc2fc2852d56827c76))
+
+
+### 💯 细节优化
+
+* 1 ([4509fb0](https://github.com/ikenxuan/karin-plugin-kkk/commit/4509fb08b658c0e085b068a4b1e05fc177834eea))
+
 ## [2.31.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.30.4...v2.31.0) (2026-05-19)
 
 
