@@ -26,7 +26,7 @@ const OriginalUserInfo: React.FC<{
   decoration_card?: DecorationCardData
 }> = (props) => {
   return (
-    <div className='flex justify-between items-center pt-6 pb-10 pl-6 pr-0'>
+    <div className='flex justify-between items-center pl-8 pr-0'>
       <div className='flex gap-10 items-center min-w-0'>
         <div className='relative shrink-0'>
           <EnhancedImage
@@ -67,6 +67,9 @@ const OriginalUserInfo: React.FC<{
 const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }) => {
   return (
     <div className='px-12 py-8 mt-4 w-full rounded-8xl bg-surface-secondary'>
+
+      <div className='h-10' />
+
       <OriginalUserInfo
         avatar_url={content.avatar_url}
         frame={content.frame}
@@ -75,8 +78,10 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
         decoration_card={content.decoration_card}
       />
 
-      <div className='flex flex-col items-center py-11'>
-        <div className='flex overflow-hidden relative flex-col items-center w-11/12 rounded-4xl rounded-10 aspect-video shadow-large'>
+      <div className='h-15' />
+
+      <div className='flex flex-col items-center'>
+        <div className='flex overflow-hidden relative flex-col items-center w-full rounded-4xl rounded-10 aspect-video shadow-large'>
           <EnhancedImage
             src={content.cover}
             alt='视频封面'
@@ -92,7 +97,9 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
         </div>
       </div>
 
-      <div className='pb-10 pl-8 text-6xl font-bold select-text leading-20 text-foreground'>
+      <div className='h-10' />
+
+      <div className='pl-2 text-6xl font-bold select-text leading-20 text-foreground'>
         {content.title && renderRichTextToReact(content.title, {
           at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
           topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
@@ -102,6 +109,9 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
           viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
         })}
       </div>
+
+      <div className='h-4' />
+
     </div>
   )
 }
