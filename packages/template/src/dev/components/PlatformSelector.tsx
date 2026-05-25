@@ -32,7 +32,7 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
       <Card.Content className='space-y-4 px-4 pb-4'>
         <Tabs
           selectedKey={selectedPlatform}
-          // variant='secondary'
+          variant='primary'
           onSelectionChange={(key) => onPlatformChange(key as PlatformType)}
         >
           <Tabs.ListContainer>

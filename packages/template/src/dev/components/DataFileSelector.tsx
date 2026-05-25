@@ -1,4 +1,5 @@
 import { Button, Card, Chip, Label, ListBox, Select } from '@heroui/react'
+import { useEventListener } from 'ahooks'
 import { Edit, Sparkles } from 'lucide-react'
 import React, { useEffect } from 'react'
 
@@ -41,24 +42,18 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
   /**
    * 监听 WebSocket 事件，自动刷新文件列表
    */
-  useEffect(() => {
-    const handleMessage = (event: Event) => {
-      const messageEvent = event as CustomEvent
-      if (messageEvent.detail?.type === 'custom' && messageEvent.detail?.event === 'dev-data-updated') {
-        onRefreshFiles?.()
-      }
+  useEventListener('message', (event: Event) => {
+    const messageEvent = event as CustomEvent
+    if (messageEvent.detail?.type === 'custom' && messageEvent.detail?.event === 'dev-data-updated') {
+      onRefreshFiles?.()
     }
+  })
 
+  useEffect(() => {
     if (import.meta.hot) {
       import.meta.hot.on('dev-data-updated', () => {
         onRefreshFiles?.()
       })
-    }
-
-    window.addEventListener('message', handleMessage)
-
-    return () => {
-      window.removeEventListener('message', handleMessage)
     }
   }, [onRefreshFiles])
 

@@ -1095,6 +1095,9 @@ importers:
       '@zumer/snapdom':
         specifier: ^2.12.0
         version: 2.12.0
+      ahooks:
+        specifier: ^3.9.7
+        version: 3.9.7(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       axios:
         specifier: 1.16.1
         version: 1.16.1
@@ -6209,9 +6212,6 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [win32]
-
-  '@rolldown/debug@1.0.1':
-    resolution: {integrity: sha512-ovyIps5Q+wp/6TAiVWqP9mWxJ9hWaP05JevNys17UB4/NNK/3EDTtOen7wCNsjoxoZCP5MR268CkyMkD5klcvw==}
 
   '@rolldown/debug@1.0.2':
     resolution: {integrity: sha512-W3V3SWZVRdEWWb8u4Ppci2sQlzj0S0rh/U8BaUmbrzHZ58jz1+UPLxwCZqSqB6UkbbcE1nMu/rXlSXTQ2tszSw==}
@@ -14089,11 +14089,6 @@ packages:
   vscode-uri@3.1.0:
     resolution: {integrity: sha512-/BpdSx+yCQGnCvecbyXdxHDkuk55/G3xwnC0GqY4gmQ3j+A+g8kzzgB4Nk/SINjqn6+waqw3EgbVF2QKExkRxQ==}
 
-  vue-virtual-scroller@3.0.3:
-    resolution: {integrity: sha512-nLWjtpPf/GyvIEEIWAuzevmTlC/aVf0yOcNkXDTUxZWyshsK6B6vc8R8wo9Nb8bpjy7wbi1zPMhzTKwUvWHQmg==}
-    peerDependencies:
-      vue: ^3.3.0
-
   vue-virtual-scroller@3.0.4:
     resolution: {integrity: sha512-3qh3c9VUVysuXynaa4fVZ3ncx3VgD7EPRiQcj+jUVZl5u/TTkD3c27XvSEu3JGJfsJt/vVTVziZ3djiiHtW4cQ==}
     peerDependencies:
@@ -20400,9 +20395,6 @@ snapshots:
   '@rolldown/binding-win32-x64-msvc@1.0.2':
     optional: true
 
-  '@rolldown/debug@1.0.1':
-    optional: true
-
   '@rolldown/debug@1.0.2': {}
 
   '@rolldown/pluginutils@1.0.0': {}
@@ -21895,7 +21887,7 @@ snapshots:
     dependencies:
       '@floating-ui/dom': 1.7.6
       '@pnpm/read-project-manifest': 1001.2.6(@pnpm/logger@1001.0.1)
-      '@rolldown/debug': 1.0.1
+      '@rolldown/debug': 1.0.2
       '@vitejs/devtools-kit': 0.1.24(@modelcontextprotocol/sdk@1.29.0(zod@3.25.76))(typescript@6.0.3)(vite@8.0.14)
       birpc: 4.0.0
       cac: 7.0.0
@@ -21914,7 +21906,7 @@ snapshots:
       tinyglobby: 0.2.16
       unconfig: 7.5.0
       unstorage: 1.17.5
-      vue-virtual-scroller: 3.0.3(vue@3.5.34(typescript@6.0.3))
+      vue-virtual-scroller: 3.0.4(vue@3.5.34(typescript@6.0.3))
       ws: 8.20.1
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -21950,7 +21942,7 @@ snapshots:
     dependencies:
       '@floating-ui/dom': 1.7.6
       '@pnpm/read-project-manifest': 1001.2.6(@pnpm/logger@1001.0.1)
-      '@rolldown/debug': 1.0.1
+      '@rolldown/debug': 1.0.2
       '@vitejs/devtools-kit': 0.1.24(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(typescript@6.0.3)(vite@8.0.14)
       birpc: 4.0.0
       cac: 7.0.0
@@ -21969,7 +21961,7 @@ snapshots:
       tinyglobby: 0.2.16
       unconfig: 7.5.0
       unstorage: 1.17.5
-      vue-virtual-scroller: 3.0.3(vue@3.5.34(typescript@6.0.3))
+      vue-virtual-scroller: 3.0.4(vue@3.5.34(typescript@6.0.3))
       ws: 8.20.1
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -30507,11 +30499,6 @@ snapshots:
       - msw
 
   vscode-uri@3.1.0: {}
-
-  vue-virtual-scroller@3.0.3(vue@3.5.34(typescript@6.0.3)):
-    dependencies:
-      vue: 3.5.34(typescript@6.0.3)
-    optional: true
 
   vue-virtual-scroller@3.0.4(vue@3.5.34(typescript@6.0.3)):
     dependencies:

@@ -1,4 +1,5 @@
 import { toast } from '@heroui/react'
+import { useEventListener } from 'ahooks'
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { type ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 
@@ -432,28 +433,15 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   /**
    * 监听拖拽状态，更新鼠标指针
    */
-  useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
-
-    const handleMouseDown = () => {
-      if (!isCtrlPressed) {
-        setIsPanning(true)
-      }
+  useEventListener('mousedown', () => {
+    if (!isCtrlPressed) {
+      setIsPanning(true)
     }
+  }, { target: containerRef })
 
-    const handleMouseUp = () => {
-      setIsPanning(false)
-    }
-
-    container.addEventListener('mousedown', handleMouseDown)
-    window.addEventListener('mouseup', handleMouseUp)
-
-    return () => {
-      container.removeEventListener('mousedown', handleMouseDown)
-      window.removeEventListener('mouseup', handleMouseUp)
-    }
-  }, [isCtrlPressed])
+  useEventListener('mouseup', () => {
+    setIsPanning(false)
+  })
 
   /**
    * 暴露给父组件的方法

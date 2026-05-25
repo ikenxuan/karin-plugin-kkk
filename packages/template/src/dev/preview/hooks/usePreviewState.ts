@@ -1,3 +1,4 @@
+import { useInterval } from 'ahooks'
 import React from 'react'
 
 import { previewDefaults } from '../constants'
@@ -70,23 +71,18 @@ export const usePreviewState = (): PreviewState => {
     }
   }, [params.eventsUrl])
 
-  React.useEffect(() => {
-    const timer = window.setInterval(() => {
-      setState((prev) => {
-        if (!prev.removeCache || !prev.expireAt) {
-          return prev
-        }
-        if (prev.removed) {
-          return { ...prev, remainingMs: 0 }
-        }
-        const now = Date.now()
-        return { ...prev, remainingMs: Math.max(prev.expireAt - now, 0) }
-      })
-    }, 1000)
-    return () => {
-      window.clearInterval(timer)
-    }
-  }, [])
+  useInterval(() => {
+    setState((prev) => {
+      if (!prev.removeCache || !prev.expireAt) {
+        return prev
+      }
+      if (prev.removed) {
+        return { ...prev, remainingMs: 0 }
+      }
+      const now = Date.now()
+      return { ...prev, remainingMs: Math.max(prev.expireAt - now, 0) }
+    })
+  }, 1000)
 
   return state
 }

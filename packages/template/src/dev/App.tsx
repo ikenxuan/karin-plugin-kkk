@@ -1,5 +1,6 @@
 import { Breadcrumbs, Button, ButtonGroup, ScrollShadow, Toolbar } from '@heroui/react'
 import { SiGithub } from '@icons-pack/react-simple-icons'
+import { useEventListener, useLocalStorageState } from 'ahooks'
 import { Camera, Info, Moon, Palette, RefreshCw, Sun } from 'lucide-react'
 import React from 'react'
 import { MdFitScreen, MdInfoOutline } from 'react-icons/md'
@@ -137,31 +138,15 @@ export const App: React.FC = () => {
   const [isEditorOpen, setIsEditorOpen] = React.useState(false)
   const [isPanelThemeModalOpen, setIsPanelThemeModalOpen] = React.useState(false)
   const [isAIGenerateOpen, setIsAIGenerateOpen] = React.useState(false)
-  const [isDarkMode, setIsDarkMode] = React.useState(() => {
-    const saved = localStorage.getItem('dev-panel-dark-mode')
-    return saved !== null ? saved === 'true' : false
+  const [isDarkMode, setIsDarkMode] = useLocalStorageState('dev-panel-dark-mode', { defaultValue: false })
+  const [panelAccentOverride, setPanelAccentOverride] = useLocalStorageState<string | undefined>(PANEL_ACCENT_STORAGE_KEY, {
+    defaultValue: undefined,
+    serializer: (v) => v ?? '',
+    deserializer: (v) => v ? normalizeHexColor(v) : undefined
   })
-  const [panelAccentOverride, setPanelAccentOverride] = React.useState<string | null>(() => {
-    const saved = localStorage.getItem(PANEL_ACCENT_STORAGE_KEY)
-    return saved ? normalizeHexColor(saved) : null
-  })
-  
+
   // 版本信息开关状态
   const [versionEnabled, setVersionEnabled] = React.useState(() => getVersionEnabled())
-
-  // 保存深色模式设置
-  React.useEffect(() => {
-    localStorage.setItem('dev-panel-dark-mode', String(isDarkMode))
-  }, [isDarkMode])
-
-  React.useEffect(() => {
-    if (panelAccentOverride) {
-      localStorage.setItem(PANEL_ACCENT_STORAGE_KEY, panelAccentOverride)
-      return
-    }
-
-    localStorage.removeItem(PANEL_ACCENT_STORAGE_KEY)
-  }, [panelAccentOverride])
 
   React.useEffect(() => {
     const nextTheme = isDarkMode ? 'dark' : 'light'
@@ -192,23 +177,18 @@ export const App: React.FC = () => {
 
 
   // 监听浏览器前进后退按钮
-  React.useEffect(() => {
-    const handlePopState = () => {
-      const params = parseURLParams()
-      if (params.platform && params.template) {
-        if (isValidPlatformTemplate(params.platform, params.template)) {
-          setSelectedPlatform(params.platform)
-          setSelectedTemplate(params.template)
-          if (params.dataFile) {
-            setSelectedDataFile(params.dataFile)
-          }
+  useEventListener('popstate', () => {
+    const params = parseURLParams()
+    if (params.platform && params.template) {
+      if (isValidPlatformTemplate(params.platform, params.template)) {
+        setSelectedPlatform(params.platform)
+        setSelectedTemplate(params.template)
+        if (params.dataFile) {
+          setSelectedDataFile(params.dataFile)
         }
       }
     }
-
-    window.addEventListener('popstate', handlePopState)
-    return () => window.removeEventListener('popstate', handlePopState)
-  }, [])
+  })
 
   // 当平台、模板或数据文件状态变化时更新URL
   React.useEffect(() => {
@@ -216,35 +196,20 @@ export const App: React.FC = () => {
   }, [selectedPlatform, selectedTemplate, selectedDataFile])
 
   // 全局屏蔽空格键，防止误触开关
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // 屏蔽空格键，除非在输入框、文本域等可编辑元素中
-      if (e.code === 'Space' || e.key === ' ') {
-        const target = e.target as HTMLElement
-        
-        // 检查是否在可编辑元素中
-        const isEditable = 
-          target.tagName === 'INPUT' ||
-          target.tagName === 'TEXTAREA' ||
-          target.isContentEditable
-        
-        // 检查是否在 Monaco Editor 中
-        const isInMonaco = target.closest('.monaco-editor') !== null
-        
-        if (!isEditable && !isInMonaco) {
-          e.preventDefault()
-          e.stopPropagation()
-        }
+  useEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.code === 'Space' || e.key === ' ') {
+      const target = e.target as HTMLElement
+      const isEditable =
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
+      const isInMonaco = target.closest('.monaco-editor') !== null
+      if (!isEditable && !isInMonaco) {
+        e.preventDefault()
+        e.stopPropagation()
       }
     }
-
-    // 在捕获阶段拦截，优先级最高
-    document.addEventListener('keydown', handleKeyDown, true)
-    
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown, true)
-    }
-  }, [])
+  }, { target: () => document, capture: true })
 
   /**
    * 处理平台变更
@@ -770,14 +735,14 @@ export const App: React.FC = () => {
       />
       <PanelThemeControls
         isDarkMode={isDarkMode}
-        isMonochromeAccent={panelAccentOverride === null}
+        isMonochromeAccent={!panelAccentOverride}
         isOpen={isPanelThemeModalOpen}
         panelAccent={resolvedPanelAccent}
         panelTheme={shellTheme}
         panelThemeStyle={panelThemeStyle}
         onAccentChange={(hex) => setPanelAccentOverride(normalizeHexColor(hex))}
         onOpenChange={setIsPanelThemeModalOpen}
-        onResetAccent={() => setPanelAccentOverride(null)}
+        onResetAccent={() => setPanelAccentOverride(undefined)}
         onThemeModeChange={setIsDarkMode}
       />
       <MockDataEditorModal

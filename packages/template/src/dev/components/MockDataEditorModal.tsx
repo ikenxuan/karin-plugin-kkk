@@ -1,4 +1,5 @@
 import { Button, Modal } from '@heroui/react'
+import { useKeyPress } from 'ahooks'
 import { Save } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 
@@ -45,24 +46,13 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
   }, [isOpen, initialData])
 
   // 监听 Ctrl+S 快捷键，拦截浏览器默认保存行为
-  useEffect(() => {
-    if (!isOpen) return
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-        e.preventDefault()
-        e.stopPropagation()
-        if (!isSaving && !hasError) {
-          handleSave()
-        }
-      }
+  useKeyPress(['ctrl.s', 'meta.s'], (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!isSaving && !hasError) {
+      handleSave()
     }
-
-    document.addEventListener('keydown', handleKeyDown, true)
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown, true)
-    }
-  }, [isOpen, isSaving, currentData, hasError])
+  }, { events: ['keydown'], exactMatch: true, useCapture: true, target: () => isOpen ? document : null })
 
   const handleSave = async () => {
     try {

@@ -8,8 +8,9 @@ import {
   TextField,
   toast
 } from '@heroui/react'
+import { useMount } from 'ahooks'
 import { Bot, CheckCircle2, Eye, EyeOff, Pencil, Plus, Save, Sparkles, Trash2 } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import type { AIProvider, APIFormat } from '../types/ai'
 import { API_FORMAT_TEMPLATES } from '../types/ai'
@@ -62,9 +63,7 @@ export const AIConfigPopover: React.FC<AIConfigPopoverProps> = ({
     setDefaultPromptState(config.defaultPrompt ?? '')
   }
 
-  useEffect(() => {
-    refresh()
-  }, [])
+  useMount(refresh)
 
   const activeProvider = providers.find(p => p.id === activeId)
 
