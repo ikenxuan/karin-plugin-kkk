@@ -13406,10 +13406,6 @@
     width: calc(var(--spacing) * 11);
   }
 
-  .w-11\/12 {
-    width: 91.6667%;
-  }
-
   .w-12 {
     width: calc(var(--spacing) * 12);
   }
@@ -16145,10 +16141,6 @@
 
   .pt-5 {
     padding-top: calc(var(--spacing) * 5);
-  }
-
-  .pt-6 {
-    padding-top: calc(var(--spacing) * 6);
   }
 
   .pt-8 {
