@@ -2,13 +2,12 @@ import { Chip } from '@heroui/react'
 import { Calendar, Clock, Crown, Hash, Play, Share2, Shield, Star, Users } from 'lucide-react'
 import React from 'react'
 
-import { cn } from '@/utils/cn'
-
 import type {
   BangumiBilibiliData,
   BangumiBilibiliHeaderProps,
   BilibiliBangumiProps
 } from '../../../../types/platforms/bilibili'
+import { cn } from '../../../../utils/cn'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { EnhancedImage } from '../shared'
 

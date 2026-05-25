@@ -2,9 +2,8 @@ import { renderRichTextToReact } from '@kkk/richtext'
 import { ClockIcon } from '@phosphor-icons/react'
 import React from 'react'
 
-import { cn } from '@/utils/cn'
-
 import type { BilibiliVideoDynamicProps } from '../../../../types/platforms/bilibili'
+import { cn } from '../../../../utils/cn'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { CoinIcon, ViewIcon } from '../Icons'
 import { EnhancedImage } from '../shared'

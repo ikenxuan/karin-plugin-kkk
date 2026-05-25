@@ -5,13 +5,12 @@ import { zhCN } from 'date-fns/locale'
 import { CircleEllipsis, Heart, MessageCircle, QrCode, Search, Share2, Star } from 'lucide-react'
 import React, { type ReactNode } from 'react'
 
-import { cn } from '@/utils/cn'
-
 import type { QRCodeSectionProps } from '../../../types'  
 import type {
   DouyinCommentProps,
   DouyinSubComment
 } from '../../../types/platforms/douyin'
+import { cn } from '../../../utils/cn'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 const douyinMentionClassName = 'text-[#04498d] dark:text-[#face15]'

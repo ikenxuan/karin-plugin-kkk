@@ -2,9 +2,8 @@ import { Button } from '@heroui/react'
 import { BarChart3, BellRing, Gamepad2, Gift } from 'lucide-react'
 import React from 'react'
 
-import { cn } from '@/utils/cn'
-
 import type { BilibiliAdditionalData } from '../../../../types/platforms/bilibili'
+import { cn } from '../../../../utils/cn'
 import { EnhancedImage } from '../shared'
 
 /**

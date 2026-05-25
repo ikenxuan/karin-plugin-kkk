@@ -1,9 +1,8 @@
 import { AlertTriangle, CheckCircle, CircleFadingArrowUp, Info, Zap } from 'lucide-react'
 import React from 'react'
 
-import { cn } from '@/utils/cn'
-
 import type { BaseComponentProps, RenderRequest } from '../../types'
+import { cn } from '../../utils/cn'
 import { GlowImage } from '../common/GlowImage'
 import { RolldownLogo } from '../common/RolldownLogo'
 import { ViteLogo } from '../common/ViteLogo'

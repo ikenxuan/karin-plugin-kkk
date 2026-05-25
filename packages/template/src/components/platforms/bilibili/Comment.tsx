@@ -3,13 +3,12 @@ import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from '
 import { zhCN } from 'date-fns/locale'
 import React, { type ReactNode, useEffect, useMemo, useState } from 'react'
 
-import { cn } from '@/utils/cn'
-
 import type {
   BilibiliCommentProps,
   QRCodeSectionProps
 } from '../../../types/platforms/bilibili'
 import type { FansDetail } from '../../../types/platforms/bilibili/comment'
+import { cn } from '../../../utils/cn'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 import { ThumbUpIcon } from './Icons'
 

@@ -2,9 +2,8 @@
 import { Puzzle } from 'lucide-react'
 import React from 'react'
 
-import { cn } from '@/utils/cn'
-
 import type { VersionWarningProps } from '../../../types/platforms/other/VersionWarningProps'
+import { cn } from '../../../utils/cn'
 import { GlowImage } from '../../common/GlowImage'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 

@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 
-import { cn } from '@/utils/cn'
-
 import type { DecorationCardData, UsernameMetadata } from '../../../types/platforms/bilibili/dynamic/normal'
+import { cn } from '../../../utils/cn'
 
 /**
  * 用户名渲染组件
