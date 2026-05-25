@@ -33,19 +33,16 @@
   ],
   // "eslint.trace.server": "verbose",
   "files.autoSave": "off",
-  "javascript.preferences.quoteStyle": "single",
-  "typescript.preferences.quoteStyle": "single",
-  "javascript.format.semicolons": "remove",
-  "typescript.format.semicolons": "remove",
-  "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
-  "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
-  "typescript.format.insertSpaceAfterConstructor": true,
-  "javascript.format.insertSpaceAfterConstructor": true,
-  "typescript.autoClosingTags": false,
+  "js/ts..preferences.quoteStyle": "single",
+  "js/ts..format.semicolons": "remove",
+  "js/ts..format.insertSpaceBeforeFunctionParenthesis": true,
+  "js/ts..format.insertSpaceAfterConstructor": true,
+  "js/ts..autoClosingTags": false,
   "java.configuration.updateBuildConfiguration": "disabled",
   "java.compile.nullAnalysis.mode": "disabled",
   "rust-analyzer.linkedProjects": [
     "packages/watermark/Cargo.toml"
   ],
-  "chatgpt.openOnStartup": true
+  "chatgpt.openOnStartup": true,
+  "js/ts.experimental.useTsgo": true
 }
