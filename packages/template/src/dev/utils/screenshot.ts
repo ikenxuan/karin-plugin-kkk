@@ -41,8 +41,8 @@ export const captureScreenshot = async (options: ScreenshotOptions): Promise<Scr
   console.log('开始使用 SnapDOM 截图...')
 
   try {
-    // 找到实际要截图的内容元素（.shadow-2xl 容器）
-    const actualContent = element.querySelector('.shadow-2xl') as HTMLElement
+    // 找到实际要截图的内容元素（.shadow-5xl 容器）
+    const actualContent = element.querySelector('.shadow-5xl') as HTMLElement
     const targetElement = actualContent || element
     
     // 获取元素实际尺寸
@@ -58,7 +58,7 @@ export const captureScreenshot = async (options: ScreenshotOptions): Promise<Scr
         width: 800,
         height: 600,
         fontSize: 36,
-        fontColor: isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)',
+        fontColor: isDarkMode ? 'rgba(255, 255, 255, 1)' : 'rgba(0, 0, 0, 1)',
         fontWeight: 'bold',
         opacity: 0.1,
         mode: 'interval'

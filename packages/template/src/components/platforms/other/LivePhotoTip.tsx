@@ -214,7 +214,7 @@ export const LivePhotoTip: React.FC<Omit<LivePhotoTipProps, 'templateType' | 'te
       </div>
 
       {/* 内容层 - 正方形 */}
-      <div className='relative z-10 flex flex-col min-h-360 px-20 py-16'>
+      <div className='relative z-10 flex flex-col min-h-360 px-16 py-16'>
         {/* 顶部标签 */}
         {/* <div className='flex items-center gap-3 mb-10'>
           <div className='w-2.5 h-2.5 rounded-full' style={{ backgroundColor: primaryColor }} />
@@ -232,14 +232,14 @@ export const LivePhotoTip: React.FC<Omit<LivePhotoTipProps, 'templateType' | 'te
               background: 'radial-gradient(circle, ' + (isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)') + ' 0%, transparent 70%)'
             }}
           >
-            <ArrowDownToLine className='w-20 h-auto' style={{ color: primaryColor }} />
+            <ArrowDownToLine className='w-30 h-auto' style={{ color: primaryColor }} />
           </div>
           <div>
             <h1 className='text-4xl font-bold leading-tight' style={{ color: accentColor }}>
               保存原图
             </h1>
-            <p className='text-2xl mt-1' style={{ color: mutedColor }}>
-              长按选择「保存原图」即可识别为实况照片
+            <p className='text-5xl mt-1' style={{ color: mutedColor }}>
+              点击「查看原图」后保存到相册即可识别为实况照片
             </p>
           </div>
         </div>

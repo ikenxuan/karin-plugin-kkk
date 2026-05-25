@@ -20,6 +20,8 @@ interface ScreenshotPreviewModalProps {
   isCapturing?: boolean
   /** 当前组件的深色模式状态 */
   componentDarkMode?: boolean
+  /** 面板主题变量 */
+  panelThemeStyle?: React.CSSProperties
 }
 
 export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
@@ -29,7 +31,8 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
   isDarkMode = false,
   onRetakeScreenshot,
   isCapturing = false,
-  componentDarkMode = false
+  componentDarkMode = false,
+  panelThemeStyle
 }) => {
   const [scale, setScale] = useState(1)
   const transformWrapperRef = useRef<ReactZoomPanPinchRef | null>(null)
@@ -41,8 +44,8 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
   const [watermarkEnabled, setWatermarkEnabledState] = useState(() => getWatermarkEnabled())
   const [tempDarkMode, setTempDarkMode] = useState(componentDarkMode)
 
-  const actionButtonClass = 'h-9 rounded-2xl border border-black/10 bg-black/3 text-foreground shadow-none hover:bg-black/5 dark:border-white/10 dark:bg-white/4 dark:hover:bg-white/6'
-  const primaryActionClass = 'h-9 rounded-2xl border border-black bg-black text-white shadow-none hover:bg-black/90 dark:border-white dark:bg-white dark:text-black dark:hover:bg-white/90'
+  const actionButtonClass = 'h-9 rounded-2xl border border-border bg-default text-foreground shadow-none hover:bg-default-hover'
+  const primaryActionClass = 'h-9 rounded-2xl bg-accent text-accent-foreground shadow-none hover:bg-accent-hover'
 
   useEffect(() => {
     if (isOpen) {
@@ -187,12 +190,6 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
     }
   }
 
-  const previewSurface = isDarkMode ? '#050505' : '#ffffff'
-  const previewBorder = isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)'
-  const scaleBadgeBg = isDarkMode ? 'rgba(9, 9, 11, 0.9)' : 'rgba(255, 255, 255, 0.9)'
-  const scaleBadgeBorder = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.08)'
-  const scaleBadgeText = isDarkMode ? 'rgba(250,250,250,1)' : 'rgba(15,23,42,1)'
-
   const renderSwitch = (
     checked: boolean,
     onChange: (checked: boolean) => void,
@@ -213,7 +210,8 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
 
   return (
     <Modal.Backdrop
-      className='bg-black/48 dark:bg-black/72'
+      className={`${isDarkMode ? 'dark' : 'light'} bg-black/48 dark:bg-black/72`}
+      data-theme={isDarkMode ? 'dark' : 'light'}
       isDismissable
       isOpen={isOpen}
       onOpenChange={(open) => {
@@ -221,39 +219,31 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
           onClose()
         }
       }}
+      style={panelThemeStyle}
       variant='blur'
     >
       <Modal.Container className='' size='cover'>
         <Modal.Dialog
-          className={`flex h-[min(92vh,1100px)] max-h-[92vh] flex-col overflow-hidden rounded-4xl border border-black/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-zinc-950 dark:shadow-[0_28px_84px_rgba(0,0,0,0.55)] ${isDarkMode ? 'dark' : 'light'}`}
+          className='flex h-[min(92vh,1100px)] max-h-[92vh] flex-col overflow-hidden rounded-4xl border border-border bg-surface shadow-lg'
         >
           <Modal.Body className='flex-1 overflow-hidden'>
             <div
               ref={containerRef}
-              className='relative h-full overflow-hidden rounded-3xl border'
-              style={{
-                backgroundColor: previewSurface,
-                borderColor: previewBorder
-              }}
+              className='relative h-full overflow-hidden rounded-3xl border border-border bg-background'
             >
               <div
                 className='pointer-events-none absolute inset-0 opacity-60'
                 style={{
-                  backgroundImage: isDarkMode
-                    ? 'repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0px, transparent 1px, transparent 22px), repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0px, transparent 1px, transparent 22px)'
-                    : 'repeating-linear-gradient(0deg, rgba(15,23,42,0.04) 0px, transparent 1px, transparent 22px), repeating-linear-gradient(90deg, rgba(15,23,42,0.04) 0px, transparent 1px, transparent 22px)'
+                  backgroundImage: 'repeating-linear-gradient(0deg, color-mix(in oklab, var(--separator) 88%, transparent) 0px, transparent 1px, transparent 22px), repeating-linear-gradient(90deg, color-mix(in oklab, var(--separator) 88%, transparent) 0px, transparent 1px, transparent 22px)'
                 }}
               />
 
               <div
-                className='pointer-events-none absolute left-4 top-4 z-50 rounded-2xl border px-3 py-1.5 text-xs font-semibold backdrop-blur-sm'
+                className='pointer-events-none absolute left-4 top-4 z-50 rounded-2xl border border-border bg-surface/90 px-3 py-1.5 text-xs font-semibold text-foreground backdrop-blur-sm'
                 style={{
                   opacity: showScaleIndicator ? 1 : 0,
                   transform: showScaleIndicator ? 'translateY(0)' : 'translateY(-10px)',
-                  transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  backgroundColor: scaleBadgeBg,
-                  borderColor: scaleBadgeBorder,
-                  color: scaleBadgeText
+                  transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                 }}
               >
                 {Math.round(scale * 100)}%
@@ -310,7 +300,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
             </div>
           </Modal.Body>
 
-          <Modal.Footer className='flex flex-col gap-4 border-t border-black/8 bg-white/88 px-4 py-4 dark:border-white/10 dark:bg-zinc-950/88 sm:flex-row sm:items-center sm:justify-between'>
+          <Modal.Footer className='flex flex-col gap-4 border-t border-border bg-surface/88 px-4 py-4 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between'>
             <div className='flex flex-wrap items-center gap-3'>
               {/* <div className='text-xs font-medium text-muted'>
                 滚轮缩放 · 拖拽移动 · 双击适应

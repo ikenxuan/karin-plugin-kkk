@@ -732,6 +732,7 @@ export const App: React.FC = () => {
         onRetakeScreenshot={handleCapture}
         isCapturing={isCapturing}
         componentDarkMode={templateData?.useDarkTheme || false}
+        panelThemeStyle={panelThemeStyle}
       />
       <PanelThemeControls
         isDarkMode={isDarkMode}
@@ -756,6 +757,8 @@ export const App: React.FC = () => {
         selectedDataFile={selectedDataFile}
         onDataFileChange={handleDataFileChange}
         isDarkMode={isDarkMode}
+        panelTheme={shellTheme}
+        panelThemeStyle={panelThemeStyle}
       />
       <AIGenerateModal
         isOpen={isAIGenerateOpen}

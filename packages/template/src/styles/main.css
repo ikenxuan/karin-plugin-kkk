@@ -16,7 +16,7 @@
 @source '../**/*.{js,ts,jsx,tsx,html}';
 
 @custom-variant dark {
-  &:is(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *) {
+  &:is(.dark, .dark *:not(:is(.light *, [data-theme="light"] *)), [data-theme="dark"], [data-theme="dark"] *:not(:is(.light *, [data-theme="light"] *))) {
     @slot;
   }
   @media (prefers-color-scheme: dark) {

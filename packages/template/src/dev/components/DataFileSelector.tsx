@@ -123,7 +123,7 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
         </Select>
       </Card.Content>
 
-      <Card.Footer className='flex flex-col gap-2 px-4 pb-4 pt-0'>
+      <Card.Footer className='flex flex-col gap-4  px-4 pb-4 pt-0'>
         <Button
           className='w-full justify-center'
           isDisabled={!onAIGenerate}

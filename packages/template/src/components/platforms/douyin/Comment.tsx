@@ -402,7 +402,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
                 </span>
                 {reply.label_text !== '' && (
                   <div className={cn(
-                    'inline-flex shrink-0 items-center px-3 py-1 text-3xl rounded-lg mr-2',
+                    'px-4 py-1 text-3xl rounded-xl mr-2',
                     reply.label_text === '作者' ?
                       'bg-[#fe2c55] text-white' :
                       'bg-surface text-muted'

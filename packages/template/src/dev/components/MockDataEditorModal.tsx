@@ -16,6 +16,8 @@ interface MockDataEditorModalProps {
   selectedDataFile: string
   onDataFileChange: (filename: string) => void
   isDarkMode?: boolean
+  panelTheme?: 'light' | 'dark'
+  panelThemeStyle?: React.CSSProperties
 }
 
 /**
@@ -31,7 +33,9 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
   availableDataFiles,
   selectedDataFile,
   onDataFileChange,
-  isDarkMode = false
+  isDarkMode = false,
+  panelTheme = 'light',
+  panelThemeStyle
 }) => {
   const [currentData, setCurrentData] = useState<any>(initialData)
   const [isSaving, setIsSaving] = useState(false)
@@ -68,6 +72,8 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
 
   return (
     <Modal.Backdrop
+      className={panelTheme}
+      data-theme={panelTheme}
       isDismissable
       isOpen={isOpen}
       onOpenChange={(open) => {
@@ -75,6 +81,7 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
           onClose()
         }
       }}
+      style={panelThemeStyle}
       variant='blur'
     >
       <Modal.Container className='p-2 sm:p-4' size='cover'>
@@ -95,7 +102,6 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
 
           <Modal.Footer className='flex justify-end gap-4'>
             <Button
-              variant='tertiary'
               size='lg'
               onPress={onClose}
             >
@@ -106,7 +112,6 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
               isPending={isSaving}
               onPress={handleSave}
               size='lg'
-              variant='danger-soft'
             >
               {({ isPending }) => (
                 <span className='flex items-center gap-1.5'>
