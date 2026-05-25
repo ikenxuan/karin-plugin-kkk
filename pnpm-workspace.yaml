@@ -1,6 +1,8 @@
 packages:
   - packages/*
   - packages/amagi/packages/core
+  - Karin/packages/*
+  - Karin
   - '!packages/next-web'
 
 onlyBuiltDependencies:

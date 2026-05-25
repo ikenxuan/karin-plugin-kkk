@@ -45,6 +45,7 @@
     },
     "onlyBuiltDependencies": [
       "@heroui/shared-utils",
+      "@karinjs/node-pty",
       "@karinjs/sqlite3-cjs",
       "@parcel/watcher",
       "@swc/core",
@@ -55,7 +56,6 @@
       "javascript-obfuscator",
       "jpegtran-bin",
       "mozjpeg",
-      "msw",
       "optipng-bin",
       "pngquant-bin",
       "protobufjs",

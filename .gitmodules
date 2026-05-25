@@ -1,3 +1,6 @@
 [submodule "packages/amagi"]
 	path = packages/amagi
 	url = https://github.com/ikenxuan/amagi
+[submodule "Karin"]
+	path = Karin
+	url = https://github.com/KarinJS/Karin.git
