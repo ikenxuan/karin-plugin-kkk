@@ -1,8 +1,9 @@
 import { renderRichTextToReact } from '@kkk/richtext'
-import clsx from 'clsx'
 import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import React, { type ReactNode, useEffect, useMemo, useState } from 'react'
+
+import { cn } from '@/utils/cn'
 
 import type {
   BilibiliCommentProps,
@@ -37,7 +38,7 @@ const FansMedal: React.FC<{ detail: FansDetail }> = ({ detail }) => {
 
   return (
     <div
-      className={clsx(
+      className={cn(
         'inline-flex items-center shrink-0',
         'h-14 rounded-full border'
       )}
@@ -55,7 +56,7 @@ const FansMedal: React.FC<{ detail: FansDetail }> = ({ detail }) => {
           crossOrigin='anonymous'
         />
       )}
-      <div className={clsx(
+      <div className={cn(
         'flex items-center',
         detail.first_icon ? 'pr-4' : 'px-4'
       )}>
@@ -82,7 +83,7 @@ const FansMedal: React.FC<{ detail: FansDetail }> = ({ detail }) => {
 const TopBadge: React.FC = () => {
   return (
     <span
-      className={clsx(
+      className={cn(
         'inline-flex justify-center items-center',
         'px-4 py-2 mr-4 mb-1 rounded-xl',
         'text-[45px] font-light leading-none',
@@ -335,7 +336,7 @@ const CommentItemComponent: React.FC<BilibiliCommentProps['data']['CommentsData'
 }) => {
   return (
 
-    <div className={clsx(
+    <div className={cn(
       'flex relative px-10 py-10 max-w-full',
       { 'pb-0': isLast }
     )}>

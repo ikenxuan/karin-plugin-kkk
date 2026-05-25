@@ -1,6 +1,7 @@
-import clsx from 'clsx'
 import { AlertTriangle, CheckCircle, CircleFadingArrowUp, Info, Zap } from 'lucide-react'
 import React from 'react'
+
+import { cn } from '@/utils/cn'
 
 import type { BaseComponentProps, RenderRequest } from '../../types'
 import { GlowImage } from '../common/GlowImage'
@@ -46,7 +47,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
 
   return (
     <div
-      className={clsx(
+      className={cn(
         'w-360 shrink-0 bg-background text-foreground font-[HarmonyOSHans-Regular]',
         useDarkTheme ? 'dark' : 'light',
         className
@@ -107,14 +108,14 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                 {!version.hasUpdate && version.releaseType === 'Stable' && <CheckCircle strokeWidth={3} className="w-4 h-4" />}
                 {!version.hasUpdate && version.releaseType === 'Preview' && <AlertTriangle strokeWidth={3} className="w-4 h-4 text-warning" />}
                 {!version.hasUpdate && version.releaseType !== 'Stable' && version.releaseType !== 'Preview' && <Info strokeWidth={3} className="w-4 h-4" />}
-                <span className={clsx(
+                <span className={cn(
                   version.hasUpdate && 'text-success',
                   !version.hasUpdate && version.releaseType === 'Preview' && 'text-warning'
                 )}>
                   {version.hasUpdate ? '有可用更新' : version.releaseType}
                 </span>
               </div>
-              <span className={clsx(
+              <span className={cn(
                 'text-5xl font-bold tracking-wide',
                 version.hasUpdate && 'text-success',
                 !version.hasUpdate && version.releaseType === 'Preview' && 'text-warning'

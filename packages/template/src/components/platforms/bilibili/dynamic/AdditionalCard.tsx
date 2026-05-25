@@ -1,7 +1,8 @@
 import { Button } from '@heroui/react'
-import clsx from 'clsx'
 import { BarChart3, BellRing, Gamepad2, Gift } from 'lucide-react'
 import React from 'react'
+
+import { cn } from '@/utils/cn'
 
 import type { BilibiliAdditionalData } from '../../../../types/platforms/bilibili'
 import { EnhancedImage } from '../shared'
@@ -192,7 +193,7 @@ export const BilibiliAdditionalCard: React.FC<{
   if (!additional) return null
 
   return (
-    <div className={clsx(
+    <div className={cn(
       gap && 'px-20 pb-20',
       className
     )}>

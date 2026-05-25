@@ -1,7 +1,8 @@
 ﻿import { Chip } from '@heroui/react'
-import clsx from 'clsx'
 import { Puzzle } from 'lucide-react'
 import React from 'react'
+
+import { cn } from '@/utils/cn'
 
 import type { VersionWarningProps } from '../../../types/platforms/other/VersionWarningProps'
 import { GlowImage } from '../../common/GlowImage'
@@ -230,7 +231,7 @@ export const VersionWarning: React.FC<VersionWarningProps> = (props) => {
                   <div className="flex items-center justify-center w-10 h-10 rounded-xl" style={{ backgroundColor: isDark ? 'rgba(251,146,60,0.15)' : 'rgba(194,65,12,0.1)' }}>
                     <span className="text-[28px] font-black" style={{ color: accentColor }}>2</span>
                   </div>
-                  <Puzzle className={clsx('w-10 h-auto')} style={{ color: mutedColor }} />
+                  <Puzzle className={cn('w-10 h-auto')} style={{ color: mutedColor }} />
                   <span className="text-[32px] font-bold" style={{ color: mutedColor }}>
                     使用 basic 插件命令更新
                   </span>

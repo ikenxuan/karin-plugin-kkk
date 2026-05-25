@@ -1,10 +1,11 @@
 import { createRichTextDocument, renderRichTextToReact } from '@kkk/richtext'
 import { PlayIcon } from '@phosphor-icons/react'
-import clsx from 'clsx'
 import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import { CircleEllipsis, Heart, MessageCircle, QrCode, Search, Share2, Star } from 'lucide-react'
 import React, { type ReactNode } from 'react'
+
+import { cn } from '@/utils/cn'
 
 import type { QRCodeSectionProps } from '../../../types'  
 import type {
@@ -388,20 +389,20 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
             </div>
 
             {/* 内部第2列：头部、内容、操作 */}
-            <div className={clsx(
+            <div className={cn(
               'flex flex-col pl-6 min-w-0 gap-2',
               isLast && reply.children.length === 0 ? 'pb-16' : 'pb-6'
             )}>
               {/* 第1行：头部 */}
               <div className='flex flex-nowrap items-center content-center w-full overflow-hidden'>
-                <span className={clsx(
+                <span className={cn(
                   'mr-2 text-4xl font-normal text-muted',
                   isNicknameLonger ? 'min-w-0 truncate shrink' : 'shrink-0'
                 )}>
                   {reply.nickname}
                 </span>
                 {reply.label_text !== '' && (
-                  <div className={clsx(
+                  <div className={cn(
                     'inline-flex shrink-0 items-center px-3 py-1 text-3xl rounded-lg mr-2',
                     reply.label_text === '作者' ?
                       'bg-[#fe2c55] text-white' :
@@ -411,12 +412,12 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
                   </div>
                 )}
                 {reply.reply_to_username && (
-                  <div className={clsx(
+                  <div className={cn(
                     'flex items-center',
                     !isNicknameLonger ? 'overflow-hidden min-w-0 shrink' : 'shrink-0'
                   )}>
                     <PlayIcon weight="fill" className='w-7 h-auto mr-3.5 mx-1 text-muted shrink-0' />
-                    <span className={clsx(
+                    <span className={cn(
                       'text-4xl font-normal text-muted',
                       !isNicknameLonger && 'truncate'
                     )}>
@@ -494,7 +495,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
  */
 const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][number] & { isLast?: boolean; maxDepth?: number }> = (props) => {
   return (
-    <div className={clsx(
+    <div className={cn(
       'flex flex-col px-6 pt-8',
       { 'pb-0': props.isLast, 'pb-10': !props.isLast }
     )}>

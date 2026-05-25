@@ -1,7 +1,8 @@
 import { Chip } from '@heroui/react'
-import clsx from 'clsx'
 import { Calendar, Clock, Crown, Hash, Play, Share2, Shield, Star, Users } from 'lucide-react'
 import React from 'react'
+
+import { cn } from '@/utils/cn'
 
 import type {
   BangumiBilibiliData,
@@ -357,7 +358,7 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliData> = (props) => {
                       {day}
                     </div>
                     {!isLastOfAll && (
-                      <div className={clsx(
+                      <div className={cn(
                         'mt-8 w-1 bg-divider',
                         episodesInSameDate > 1 ? 'h-110' : 'h-95'
                       )} />
@@ -369,7 +370,7 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliData> = (props) => {
                     <div className='w-1 h-10 bg-divider' />
                     <div className='my-2 w-4 h-4 rounded-full bg-divider' />
                     {(!isLastOfAll || episodesInSameDate > 1) && (
-                      <div className={clsx(
+                      <div className={cn(
                         'w-1 bg-divider',
                         isLastOfDate ? 'h-110' : 'h-130'
                       )} />
@@ -379,7 +380,7 @@ const BangumiBilibiliEpisodes: React.FC<BangumiBilibiliData> = (props) => {
               </div>
 
               {/* 剧集内容 */}
-              <div className={clsx(
+              <div className={cn(
                 'flex-1 min-w-0', 
                 (!isLastOfAll && isLastOfDate) && 'mb-20'
               )}>
