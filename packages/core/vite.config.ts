@@ -48,6 +48,7 @@ export default defineConfig({
   },
   assetsInclude: ['**/*.wasm'],
   build: {
+    assetsInlineLimit: 10 * 1024 * 1024,
     target: 'node22',
     lib: {
       formats: ['es'],
@@ -65,7 +66,8 @@ export default defineConfig({
         ...[/^@karinjs\//],
         'fingerprint-injector',
         '@snapka/puppeteer',
-        '@ikenxuan/watermark'
+        '@ikenxuan/watermark',
+        '@ikenxuan/qrcode'
       ],
       output: {
         format: 'esm',

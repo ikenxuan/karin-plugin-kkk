@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 
 import type { ChangelogProps } from '../../../types/platforms/other/changelog'
+import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 const InlineCalloutCode: React.FC<React.PropsWithChildren<{ className?: string }>> = ({ children, className }) => (
@@ -26,7 +27,7 @@ const InlineCalloutCode: React.FC<React.PropsWithChildren<{ className?: string }
  */
 export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: boolean } }, 'templateType' | 'templateName'>> = React.memo((props) => {
   const isDark = props.data.useDarkTheme ?? false
-  const { qrCodeDataUrl } = props as any
+  const share_url = (props as any).data?.share_url || ''
 
   const backgroundColors = isDark
     ? {
@@ -301,10 +302,10 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
           </ReactMarkdown>
         </div>
 
-        {qrCodeDataUrl && (
+        {share_url && (
           <div className='flex flex-col items-center gap-12 py-8'>
             <div className='w-120 h-auto'>
-              <img src={qrCodeDataUrl} alt='二维码' className='w-full h-full object-contain' />
+              <img src={generateQRCode(share_url, isDark)} alt='二维码' className='w-full h-full object-contain' />
             </div>
             <div className='text-4xl text-foreground/60'>
               <span>扫码查看实际运行代码从</span>

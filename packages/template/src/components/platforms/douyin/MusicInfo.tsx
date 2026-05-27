@@ -8,6 +8,7 @@ import type {
   MusicInfoProps,
   MusicQRCodeProps
 } from '../../../types/platforms/douyin/musicinfo'
+import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
@@ -144,7 +145,7 @@ const MusicAuthorInfoSection: React.FC<MusicAuthorInfoProps> = ({
  * @param props 组件属性
  * @returns JSX元素
  */
-const MusicQRCodeSection: React.FC<MusicQRCodeProps> = ({ qrCodeDataUrl }) => {
+const MusicQRCodeSection: React.FC<MusicQRCodeProps> = ({ share_url, useDarkTheme }) => {
   return (
     <div className='flex flex-col-reverse items-center -mb-12 mr-18'>
       <div className='flex items-center gap-2 text-[45px] text-right mt-5 text-muted select-text'>
@@ -153,7 +154,7 @@ const MusicQRCodeSection: React.FC<MusicQRCodeProps> = ({ qrCodeDataUrl }) => {
       </div>
       <div className='p-2.5 rounded-sm border-[7px] border-dashed border-border'>
         <img
-          src={qrCodeDataUrl}
+          src={generateQRCode(share_url, useDarkTheme)}
           alt='二维码'
           className='w-87.5 h-87.5 select-text'
         />
@@ -168,7 +169,7 @@ const MusicQRCodeSection: React.FC<MusicQRCodeProps> = ({ qrCodeDataUrl }) => {
  * @returns JSX元素
  */
 export const DouyinMusicInfo: React.FC<Omit<DouyinMusicInfoProps, 'templateType' | 'templateName'>> = (props) => {
-  const { data, qrCodeDataUrl } = props
+  const { data } = props
 
   return (
     <DefaultLayout {...props}>
@@ -176,8 +177,8 @@ export const DouyinMusicInfo: React.FC<Omit<DouyinMusicInfoProps, 'templateType'
         <DouyinHeader useDarkTheme={data.useDarkTheme} />
 
         {/* 音乐封面 */}
-        <MusicCoverSection 
-          imageUrl={data.image_url} 
+        <MusicCoverSection
+          imageUrl={data.image_url}
           description={data.desc}
           useDarkTheme={data.useDarkTheme}
         />
@@ -210,7 +211,7 @@ export const DouyinMusicInfo: React.FC<Omit<DouyinMusicInfoProps, 'templateType'
             useDarkTheme={data.useDarkTheme}
           />
           <MusicQRCodeSection
-            qrCodeDataUrl={qrCodeDataUrl}
+            share_url={data.share_url}
             useDarkTheme={data.useDarkTheme}
           />
         </div>

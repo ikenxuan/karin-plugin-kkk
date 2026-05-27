@@ -5,30 +5,24 @@ import type { BaseComponentProps } from '../../index'
 /**
  * 小红书评论组件属性接口
  */
-export interface XiaohongshuCommentProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */
-    useDarkTheme?: boolean
-    /** 笔记类型：图文/视频 */
-    Type: '图文' | '视频'
-    /** 评论数量 */
-    CommentLength: number
-    /** 图片数量 */
-    ImageLength?: number
-    /** 分享链接 */
-    share_url: string
-    /** 评论数据 - 简化为直接的评论数组 */
-    CommentsData: XiaohongshuCommentItem[]
-  }
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string
+export interface XiaohongshuCommentProps extends BaseComponentProps<{
+  /** 笔记类型：图文/视频 */
+  Type: '图文' | '视频'
+  /** 评论数量 */
+  CommentLength: number
+  /** 图片数量 */
+  ImageLength?: number
+  /** 分享链接 */
+  share_url: string
+  /** 评论数据 - 简化为直接的评论数组 */
+  CommentsData: XiaohongshuCommentItem[]
+}> {
 }
 
 /**
  * 小红书评论项数据接口
  */
-export interface XiaohongshuCommentItem {
+interface XiaohongshuCommentItem {
   /** 评论ID */
   id: string
   /** 笔记ID */
@@ -76,7 +70,7 @@ export interface XiaohongshuCommentItem {
 /**
  * 小红书子评论数据接口
  */
-export interface XiaohongshuSubComment {
+interface XiaohongshuSubComment {
   /** 子评论ID */
   id: string
   /** 笔记ID */
@@ -116,33 +110,4 @@ export interface XiaohongshuSubComment {
       xsec_token: string
     }
   }
-}
-
-/**
- * 小红书二维码区域组件属性接口
- */
-export interface XiaohongshuQRCodeSectionProps {
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string
-}
-
-/**
- * 小红书笔记信息头部组件属性接口
- */
-export interface XiaohongshuNoteInfoHeaderProps {
-  /** 笔记类型：图文/视频 */
-  type: '图文' | '视频'
-  /** 评论数量 */
-  commentLength: number
-  /** 图片数量 */
-  imageLength?: number
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
-}
-
-export interface XiaohongshuCommentItemComponentProps {
-  /** 评论数据 */
-  comment: XiaohongshuCommentItem
 }

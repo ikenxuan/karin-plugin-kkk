@@ -17,7 +17,7 @@ const formatDuration = (ms: number): string => {
   return `${m}:${s.toString().padStart(2, '0')}`
 }
 
-export const DouyinVideoInfo: React.FC<Omit<DouyinVideoInfoProps, 'templateType' | 'templateName'>> = React.memo(
+export const DouyinVideoInfo: React.FC<DouyinVideoInfoProps> = React.memo(
   (props) => {
     const duration = useMemo(
       () => (props.data.video ? formatDuration(props.data.video.duration) : null),

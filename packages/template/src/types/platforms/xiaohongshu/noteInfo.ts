@@ -5,7 +5,7 @@ import type { BaseComponentProps } from '../../index'
 /**
  * 小红书笔记统计信息接口
  */
-export interface XiaohongshuNoteStatistics {
+interface XiaohongshuNoteStatistics {
   /** 分享数 */
   share_count: string | number
   /** 是否已关注 */
@@ -27,7 +27,7 @@ export interface XiaohongshuNoteStatistics {
 /**
  * 小红书作者信息接口
  */
-export interface XiaohongshuAuthor {
+interface XiaohongshuAuthor {
   /** xsec_token */
   xsec_token?: string
   /** 用户ID */
@@ -41,7 +41,7 @@ export interface XiaohongshuAuthor {
 /**
  * 小红书笔记信息数据接口
  */
-export interface XiaohongshuNoteInfoData {
+interface XiaohongshuNoteInfoData {
   /** 笔记标题 */
   title: string
   /** 笔记描述 */
@@ -58,14 +58,9 @@ export interface XiaohongshuNoteInfoData {
   time: number
   /** IP位置 */
   ip_location: string
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
 }
 
 /**
  * 小红书笔记信息组件属性接口
  */
-export interface XiaohongshuNoteInfoProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: XiaohongshuNoteInfoData
-}
+export interface XiaohongshuNoteInfoProps extends BaseComponentProps<XiaohongshuNoteInfoData> { }

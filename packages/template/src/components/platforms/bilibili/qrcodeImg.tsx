@@ -4,6 +4,7 @@ import React from 'react'
 import { RiArrowRightFill } from 'react-icons/ri'
 
 import type { BilibiliQrcodeImgProps } from '../../../types/platforms/bilibili'
+import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
@@ -13,7 +14,7 @@ import { DefaultLayout } from '../../layouts/DefaultLayout'
  */
 export const BilibiliQrcodeImg: React.FC<BilibiliQrcodeImgProps> = React.memo((props) => {
   const isDark = props.data?.useDarkTheme ?? false
-  const { qrCodeDataUrl } = props
+  const qrCodeDataUrl = generateQRCode(props.data.share_url, isDark)
 
   const theme = {
     bg: isDark ? '#000000' : '#FFFFFF',

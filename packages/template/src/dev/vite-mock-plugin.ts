@@ -330,63 +330,63 @@ export function mockApiPlugin (): Plugin {
           }
 
           // 二维码生成 API: /api/qrcode
-          if (method === 'GET' && url.startsWith('/qrcode')) {
-            const urlParams = new URLSearchParams(url.split('?')[1] || '')
-            const targetUrl = urlParams.get('url') || 'https://example.com'
-            const useDarkTheme = urlParams.get('useDarkTheme') === 'true'
+          // if (method === 'GET' && url.startsWith('/qrcode')) {
+          //   const urlParams = new URLSearchParams(url.split('?')[1] || '')
+          //   const targetUrl = urlParams.get('url') || 'https://example.com'
+          //   const useDarkTheme = urlParams.get('useDarkTheme') === 'true'
 
-            try {
-              const { JSDOM } = await import('jsdom')
+          //   try {
+          //     const { JSDOM } = await import('jsdom')
 
-              const qrCode = new QRCodeStyling({
-                jsdom: JSDOM,
-                type: 'svg',
-                shape: 'square',
-                width: 2000,
-                height: 2000,
-                data: targetUrl,
-                margin: 0,
-                qrOptions: {
-                  typeNumber: 0,
-                  mode: 'Byte',
-                  errorCorrectionLevel: 'L'
-                },
-                imageOptions: {
-                  hideBackgroundDots: false,
-                  imageSize: 0.4,
-                  margin: 0
-                },
-                dotsOptions: {
-                  type: 'rounded',
-                  color: useDarkTheme ? '#C3C3C3' : '#3A3A3A',  
-                  roundSize: false
-                },
-                backgroundOptions: {
-                  color: 'transparent'
-                },
-                cornersSquareOptions: {
-                  type: 'extra-rounded',
-                  color: useDarkTheme ? '#C3C3C3' : '#3A3A3A'
-                },
-                cornersDotOptions: {
-                  color: useDarkTheme ? '#C3C3C3' : '#3A3A3A'
-                }
-              })
-              const buffer = await qrCode.getRawData('svg')
+          //     const qrCode = new QRCodeStyling({
+          //       jsdom: JSDOM,
+          //       type: 'svg',
+          //       shape: 'square',
+          //       width: 2000,
+          //       height: 2000,
+          //       data: targetUrl,
+          //       margin: 0,
+          //       qrOptions: {
+          //         typeNumber: 0,
+          //         mode: 'Byte',
+          //         errorCorrectionLevel: 'L'
+          //       },
+          //       imageOptions: {
+          //         hideBackgroundDots: false,
+          //         imageSize: 0.4,
+          //         margin: 0
+          //       },
+          //       dotsOptions: {
+          //         type: 'rounded',
+          //         color: useDarkTheme ? '#C3C3C3' : '#3A3A3A',
+          //         roundSize: false
+          //       },
+          //       backgroundOptions: {
+          //         color: 'transparent'
+          //       },
+          //       cornersSquareOptions: {
+          //         type: 'extra-rounded',
+          //         color: useDarkTheme ? '#C3C3C3' : '#3A3A3A'
+          //       },
+          //       cornersDotOptions: {
+          //         color: useDarkTheme ? '#C3C3C3' : '#3A3A3A'
+          //       }
+          //     })
+          //     const buffer = await qrCode.getRawData('svg')
 
-              const dataUrl = buffer && `data:image/svg+xml;base64,${buffer.toString('base64')}`
-              res.setHeader('Content-Type', 'application/json')
-              res.end(JSON.stringify({ dataUrl }))
-            } catch (error) {
-              res.statusCode = 500
-              res.setHeader('Content-Type', 'application/json')
-              res.end(JSON.stringify({
-                error: '生成二维码失败',
-                details: error instanceof Error ? error.message : '未知错误'
-              }))
-            }
-            return
-          }
+          //     const dataUrl = buffer && `data:image/svg+xml;base64,${buffer.toString('base64')}`
+          //     res.setHeader('Content-Type', 'application/json')
+          //     res.end(JSON.stringify({ dataUrl }))
+          //   } catch (error) {
+          //     res.statusCode = 500
+          //     res.setHeader('Content-Type', 'application/json')
+          //     res.end(JSON.stringify({
+          //       error: '生成二维码失败',
+          //       details: error instanceof Error ? error.message : '未知错误'
+          //     }))
+          //   }
+          //   return
+          // }
 
           // 如果没有匹配的路由，继续到下一个中间件
           next()

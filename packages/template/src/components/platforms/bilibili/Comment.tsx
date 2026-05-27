@@ -9,6 +9,7 @@ import type {
 } from '../../../types/platforms/bilibili'
 import type { FansDetail } from '../../../types/platforms/bilibili/comment'
 import { cn } from '../../../utils/cn'
+import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 import { ThumbUpIcon } from './Icons'
 
@@ -238,20 +239,13 @@ const BilibiliLogo: React.FC = () => {
  * @returns JSX元素
  */
 const QRCodeSection: React.FC<QRCodeSectionProps> = ({
-  qrCodeDataUrl
+  share_url,
+  useDarkTheme
 }) => {
   return (
     <div className='flex flex-col items-center'>
       <div className='flex justify-center items-center w-100 h-100 p-4'>
-        {qrCodeDataUrl
-          ? (
-            <img src={qrCodeDataUrl} alt='二维码' className='object-contain w-full h-full rounded-lg' />
-          )
-          : (
-            <div className='flex flex-col justify-center items-center text-muted'>
-              <span className='text-lg'>二维码生成失败</span>
-            </div>
-          )}
+        <img src={generateQRCode(share_url, useDarkTheme)} alt='二维码' className='object-contain w-full h-full rounded-lg' />
       </div>
     </div>
   )
@@ -262,7 +256,7 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
  * @param props 组件属性
  * @returns JSX元素
  */
-const VideoInfoHeader: React.FC<Omit<BilibiliCommentProps['data'], 'CommentsData'> & { qrCodeDataUrl: string }> = (props) => {
+const VideoInfoHeader: React.FC<Omit<BilibiliCommentProps['data'], 'CommentsData'>> = (props) => {
   return (
     <div className='max-w-350 mx-auto px-10 py-8'>
       <div className='flex gap-16 justify-between items-start'>
@@ -317,7 +311,7 @@ const VideoInfoHeader: React.FC<Omit<BilibiliCommentProps['data'], 'CommentsData
 
         {/* 右侧二维码区域 */}
         <div className='shrink-0'>
-          <QRCodeSection qrCodeDataUrl={props.qrCodeDataUrl} />
+          <QRCodeSection share_url={props.share_url} useDarkTheme={props.useDarkTheme} />
         </div>
       </div>
     </div>
@@ -746,7 +740,6 @@ export const BilibiliComment: React.FC<Omit<BilibiliCommentProps, 'templateType'
         {/* 视频信息头部 */}
         <VideoInfoHeader
           {...processedData}
-          qrCodeDataUrl={props.qrCodeDataUrl}
         />
 
         {/* 评论列表 */}

@@ -55,8 +55,9 @@
     "react-resizable-panels": "^4.11.2",
     "react-zoom-pan-pinch": "^4.0.3",
     "rehype-highlight": "^7.0.2",
-    "tailwind-merge": "^3.6.0",
-    "victory": "^37.3.6"
+    "tailwind-merge": "3.6.0",
+    "victory": "^37.3.6",
+    "@ikenxuan/qrcode": "^1.1.0"
   },
   "devDependencies": {
     "@types/express": "5.0.6",

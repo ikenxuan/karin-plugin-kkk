@@ -1,14 +1,4 @@
 /**
- * 二维码区域组件属性接口
- */
-export interface QRCodeSectionProps {
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
-}
-
-/**
  * 渲染请求参数接口
  */
 export interface RenderRequest<T = Record<string, unknown>> {
@@ -19,7 +9,7 @@ export interface RenderRequest<T = Record<string, unknown>> {
   /** 缩放比例 */
   scale?: number
   /** 是否使用深色主题 */
-  useDarkTheme?: boolean
+  useDarkTheme: boolean
   /** 版本信息 */
   version?: {
     /** 框架插件 */
@@ -70,7 +60,7 @@ export interface BaseComponentProps<T = Record<string, any>> extends Pick<Render
   /** 渲染数据 - 子组件的具体参数 */
   data: T & {
     /** 是否使用深色主题 */
-    useDarkTheme?: boolean
+    useDarkTheme: boolean
   }
 }
 

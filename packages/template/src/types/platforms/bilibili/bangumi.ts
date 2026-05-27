@@ -169,11 +169,7 @@ export interface BangumiBilibiliData {
 /**
  * B站番剧组件属性接口
  */
-export interface BilibiliBangumiProps extends BaseComponentProps {
-  /** 番剧数据 */
-  data: BangumiBilibiliData
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string
+export interface BilibiliBangumiProps extends BaseComponentProps<BangumiBilibiliData> {
 }
 
 /**
@@ -200,6 +196,4 @@ export interface BangumiBilibiliHeaderProps {
   copyright: string
   /** 季度ID */
   seasonID: number
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
 }

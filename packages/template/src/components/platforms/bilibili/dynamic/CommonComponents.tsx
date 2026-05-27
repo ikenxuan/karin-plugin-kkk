@@ -6,6 +6,7 @@ import type {
   BilibiliDynamicBaseData,
   BilibiliDynamicFooterProps
 } from '../../../../types/platforms/bilibili'
+import { generateQRCode } from '../../../../utils/QRcode'
 import { CommentIcon, ShareIcon, ThumbUpIcon, ViewIcon } from '../Icons'
 import { DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
 
@@ -87,14 +88,7 @@ export const BilibiliDynamicStatus: React.FC<BilibiliDynamicBaseData> = (props) 
 /**
  * B站动态底部信息组件
  */
-export const BilibiliDynamicFooter: React.FC<
-  BilibiliDynamicFooterProps & {
-    avatar_url: string
-    frame?: string
-    usernameMeta: { name: string; vipStatus: number; nicknameColor: string | null }
-    showUidHash?: boolean
-  }
-> = (props) => {
+export const BilibiliDynamicFooter: React.FC<BilibiliDynamicFooterProps> = (props) => {
   return (
     <div className='flex justify-between items-start px-20 pb-20'>
       {/* 左侧：用户信息 */}
@@ -124,7 +118,6 @@ export const BilibiliDynamicFooter: React.FC<
               <UsernameDisplay metadata={props.usernameMeta} />
             </div>
             <div className='flex gap-2 items-center text-4xl text-muted'>
-              {props.showUidHash && <span className='text-muted'>#</span>}
               <span className='text-muted select-text'>UID: {props.user_shortid}</span>
             </div>
           </div>
@@ -161,19 +154,11 @@ export const BilibiliDynamicFooter: React.FC<
 
       {/* 右侧：二维码 */}
       <div className='flex flex-col items-center gap-4'>
-        {props.qrCodeDataUrl
-          ? (
-            <img
-              src={props.qrCodeDataUrl}
-              alt='二维码'
-              className='h-auto w-75 rounded-2xl'
-            />
-          )
-          : (
-            <div className='flex justify-center items-center rounded-2xl bg-surface w-100 h-100'>
-              <span className='text-muted'>二维码</span>
-            </div>
-          )}
+        <img
+          src={generateQRCode(props.share_url, props.useDarkTheme)}
+          alt='二维码'
+          className='h-auto w-75 rounded-2xl'
+        />
       </div>
     </div>
   )

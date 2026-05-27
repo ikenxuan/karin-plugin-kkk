@@ -71,18 +71,12 @@ export interface BilibiliVideoInfoData {
   pic: string
   /** UP主信息 */
   owner: BilibiliVideoOwner
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
 }
 
 /**
  * B站视频信息组件属性接口
  */
-export interface BilibiliVideoInfoProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: BilibiliVideoInfoData
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string
+export interface BilibiliVideoInfoProps extends BaseComponentProps<BilibiliVideoInfoData> {
 }
 
 /**
@@ -95,8 +89,6 @@ export interface VideoStatItemProps {
   label: string
   /** 数值 */
   value: number | string
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
 }
 
 /**
@@ -109,8 +101,6 @@ export interface VideoHeaderProps {
   owner: BilibiliVideoOwner
   /** 创建时间戳 */
   ctime: number
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
 }
 
 /**
@@ -119,8 +109,4 @@ export interface VideoHeaderProps {
 export interface QRCodeSectionProps {
   /** 分享链接 */
   share_url: string
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
 }

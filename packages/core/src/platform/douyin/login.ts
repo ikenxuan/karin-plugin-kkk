@@ -180,8 +180,8 @@ export const douyinLogin = async (e: Message) => {
   try {
     // 根据解码结果选择传递方式
     const renderData = qrCodeData.url
-      ? { share_url: qrCodeData.url } // 解码成功，传递URL让插件生成自定义二维码
-      : { qrCodeDataUrl: qrCodeData.originalImage } // 解码失败，直接使用原始图片
+      ? { share_url: qrCodeData.url } // 解码成功，传递URL让组件内部生成自定义二维码
+      : { share_url: qrCodeData.originalImage } // 解码失败，直接使用原始图片URL
 
     const loginQRcode = await Render(e, 'douyin/qrcodeImg', renderData)
 

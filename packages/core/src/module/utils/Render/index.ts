@@ -14,7 +14,7 @@ import { Common, Root } from '@/module'
 import { Config } from '@/module/utils/Config'
 
 import { isSemverGreater } from '../semver'
-import { createPosterPalettePlugin, createQrCodePlugin } from './plugins'
+import { createPosterPalettePlugin } from './plugins'
 import { embedWatermark } from './wm'
 
 type ImageMetadata = {
@@ -36,12 +36,12 @@ type ImageMetadata = {
 export const Render = async <P extends DynamicRenderPath> (
   event: Message,
   path: P,
-  data?: ExtractDataTypeFromPath<P>,
-  options?: { 
+  data?: Omit<ExtractDataTypeFromPath<P>, 'useDarkTheme'>,
+  options?: {
     /**
      * 是否跳过水印嵌入
      */
-    skipWatermark?: boolean 
+    skipWatermark?: boolean
   }
 ): Promise<ImageElement[]> => {
   const pathParts = path.split('/')
@@ -110,7 +110,6 @@ export const Render = async <P extends DynamicRenderPath> (
     request: renderRequest,
     outputDir,
     plugins: [
-      createQrCodePlugin(),
       createPosterPalettePlugin()
     ]
   }).then((res) => {

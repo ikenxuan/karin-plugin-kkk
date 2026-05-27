@@ -30,8 +30,6 @@ export interface UsernameMetadata {
  * B站动态基础数据接口（所有动态类型共有的字段）
  */
 export interface BilibiliDynamicBaseData {
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
   /** 用户头像URL */
   avatar_url: string
   /** 头像框 */
@@ -69,22 +67,18 @@ export interface BilibiliDynamicBaseData {
 /**
  * B站普通动态组件属性接口
  */
-export interface BilibiliDynamicProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: BilibiliDynamicBaseData & {
-    /** 图文动态标题 */
-    title?: string
-    /** 动态文本内容（富文本文档） */
-    text: RichTextDocument | null
-    /** 图片URL数组 */
-    image_url: Array<{ image_src: string }>
-    /** 图片布局方式 */
-    imageLayout: string
-    /** 相关内容卡片 */
-    additional?: BilibiliAdditionalData
-  }
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string
+export interface BilibiliDynamicProps extends BaseComponentProps<BilibiliDynamicBaseData & {
+  /** 图文动态标题 */
+  title?: string
+  /** 动态文本内容（富文本文档） */
+  text: RichTextDocument | null
+  /** 图片URL数组 */
+  image_url: Array<{ image_src: string }>
+  /** 图片布局方式 */
+  imageLayout: string
+  /** 相关内容卡片 */
+  additional?: BilibiliAdditionalData
+}> {
 }
 
 /**
@@ -217,26 +211,33 @@ export interface BilibiliDynamicFooterProps {
   dynamicTYPE: string
   /** 分享链接 */
   share_url: string
-  /** 二维码数据URL */
-  qrCodeDataUrl?: string
+  /** 头像URL */
+  avatar_url: string
+  /** 头像框URL */
+  frame?: string
+  /** 用户名元数据 */
+  usernameMeta: {
+    /** 用户名 */
+    name: string
+    /** VIP状态，1为年度大会员 */
+    vipStatus: number
+    /** 昵称颜色 */
+    nicknameColor: string | null
+  }
   /** 是否使用深色主题 */
-  useDarkTheme?: boolean
+  useDarkTheme: boolean
 }
 
 
 /**
  * B站纯文动态组件属性接口
  */
-export interface BilibiliWordDynamicProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: BilibiliDynamicBaseData & {
-    /** 动态文本内容（富文本文档） */
-    text: RichTextDocument | null
-    /** 相关内容卡片 */
-    additional?: BilibiliAdditionalData
-  }
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string
+export interface BilibiliWordDynamicProps extends BaseComponentProps<BilibiliDynamicBaseData & {
+  /** 动态文本内容（富文本文档） */
+  text: RichTextDocument | null
+  /** 相关内容卡片 */
+  additional?: BilibiliAdditionalData
+}> {
 }
 
 /**
@@ -245,8 +246,6 @@ export interface BilibiliWordDynamicProps extends BaseComponentProps {
 export interface BilibiliWordContentProps {
   /** 动态文本内容（富文本文档） */
   text: RichTextDocument | null
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
   /** 相关内容卡片 */
   additional?: BilibiliAdditionalData
 }

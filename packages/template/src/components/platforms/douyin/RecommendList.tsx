@@ -4,6 +4,7 @@ import React from 'react'
 import { RiHeart3Fill, RiMessage3Fill, RiShareForwardFill, RiStarFill, RiThumbUpFill } from 'react-icons/ri'
 
 import type { DouyinRecommendListProps } from '../../../types/platforms/douyin'
+import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
@@ -125,9 +126,7 @@ export const DouyinRecommendList: React.FC<DouyinRecommendListProps> = (props) =
             
             <div className="h-px w-full bg-linear-to-r from-surface-secondary via-border to-transparent"></div>
             <div className="flex items-end gap-6">
-              {props.qrCodeDataUrl && (
-                <img src={props.qrCodeDataUrl} className="w-65 h-auto rounded-2xl mix-blend-multiply" alt="QR" />
-              )}
+              <img src={generateQRCode(props.data.share_url, props.data.useDarkTheme)} className="w-65 h-auto rounded-2xl mix-blend-multiply" alt="QR" />
               <div className="flex flex-col justify-end h-56 pb-2">
                 <span className="text-muted text-sm font-mono mb-2">SCAN TO VIEW</span>
                 <span className="text-3xl font-bold text-foreground/80 leading-none">
