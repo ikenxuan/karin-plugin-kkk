@@ -830,14 +830,14 @@ importers:
   packages/core:
     dependencies:
       '@ikenxuan/qrcode':
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: 1.2.0
+        version: 1.2.0
       '@ikenxuan/watermark':
         specifier: 1.1.5
-        version: 1.1.5(@react-spectrum/provider@3.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(tailwind-merge@3.4.0)(tailwindcss@4.3.0)
+        version: 1.1.5(@react-spectrum/provider@3.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(tailwind-merge@3.4.0)(tailwindcss@4.3.0)
       '@types/react':
         specifier: '*'
-        version: 19.2.14
+        version: 19.2.15
       fingerprint-injector:
         specifier: ^2.1.82
         version: 2.1.82(playwright@1.60.0)
@@ -866,9 +866,6 @@ importers:
       '@types/heic-decode':
         specifier: ^2.0.0
         version: 2.0.0
-      '@types/pngjs':
-        specifier: ^6.0.5
-        version: 6.0.5
       cookie:
         specifier: ^1.1.1
         version: 1.1.1
@@ -884,12 +881,6 @@ importers:
       jpeg-js:
         specifier: ^0.4.4
         version: 0.4.4
-      jsqr:
-        specifier: ^1.4.0
-        version: 1.4.0
-      pngjs:
-        specifier: ^7.0.0
-        version: 7.0.0
       template:
         specifier: workspace:*
         version: link:../template
@@ -2978,6 +2969,9 @@ packages:
 
   '@ikenxuan/qrcode@1.1.0':
     resolution: {integrity: sha512-EVvyJoZOdrkQtzVE2erxiqHnDAnR5fFimyvWnEYnb6wnOUZMwnSmGJ52zosiJlzGZirGPxogak6bkqLsU/3Cog==}
+
+  '@ikenxuan/qrcode@1.2.0':
+    resolution: {integrity: sha512-VSQV+SvzqnG/EEgv/bCbokZR1ZUMBlV0UTbgF1veD1yZ9wHh8+Uzb/MZDinZnv6leNeXhEtkUx/shxEjN7jGxQ==}
 
   '@ikenxuan/watermark-darwin-arm64@1.1.5':
     resolution: {integrity: sha512-Qz1nZRKBuRR6IA2bC+0HWirlO+syfKDpQrHLuXDKU8hJFlEt31VODc2Tr5Vigaw/2cHdgY7++Q2jJtvjwDqK9g==}
@@ -7032,9 +7026,6 @@ packages:
   '@types/parse-json@4.0.2':
     resolution: {integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw==}
 
-  '@types/pngjs@6.0.5':
-    resolution: {integrity: sha512-0k5eKfrA83JOZPppLtS2C7OUtyNAl2wKNxfyYl9Q5g9lPkgBl/9hNyAu6HuEH2J4XmIv2znEpkDd0SaZVxW6iQ==}
-
   '@types/prompts@2.4.9':
     resolution: {integrity: sha512-qTxFi6Buiu8+50/+3DGIWLHM6QuWsEKugJnnP6iv2Mc4ncxE4A/OJkjuVOA+5X0X1S/nq5VJRa8Lu+nwcvbrKA==}
 
@@ -10469,9 +10460,6 @@ packages:
     resolution: {integrity: sha512-MT/xP0CrubFRNLNKvxJ2BYfy53Zkm++5bX9dtuPbqAeQpTVe0MQTFhao8+Cp//EmJp244xt6Drw/GVEGCUj40g==}
     engines: {node: '>=12', npm: '>=6'}
 
-  jsqr@1.4.0:
-    resolution: {integrity: sha512-dxLob7q65Xg2DvstYkRpkYtmKm2sPJ9oFhrhmudT1dZvNFFTlroai3AWSpLey/w5vMcLBXRgOJsbXpdN9HzU/A==}
-
   jsx-ast-utils@3.3.5:
     resolution: {integrity: sha512-ZZow9HBI5O6EPgSJLUb8n2NKgmVWTwCvHGwFuJlMjvLFqlGG6pjirPhtdsseaLZjSibD8eegzmYpUZwoIlj2cQ==}
     engines: {node: '>=4.0'}
@@ -11610,10 +11598,6 @@ packages:
   pngjs@5.0.0:
     resolution: {integrity: sha512-40QW5YalBNfQo5yRYmiw7Yz6TKKVr3h6970B2YE+3fQpsWcrbj1PzJgxeJ19DRQjhMbKPIuMY8rFaXc8moolVw==}
     engines: {node: '>=10.13.0'}
-
-  pngjs@7.0.0:
-    resolution: {integrity: sha512-LKWqWJRhstyYo9pGvgor/ivk2w94eSjE3RGVuzLGlr3NmD8bf7RcYGze1mNdEHRP6TRP6rMuDHk5t44hnTRyow==}
-    engines: {node: '>=14.19.0'}
 
   points-on-curve@0.2.0:
     resolution: {integrity: sha512-0mYKnYYe9ZcqMCWhUjItv/oHjvgEsfKvnUTg8sAtnHr3GVy7rGkXCb6d5cSyqrWqL4k81b9CPg3urd+T7aop3A==}
@@ -16003,10 +15987,10 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
 
-  '@heroui/react@3.0.5(@react-spectrum/provider@3.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)':
+  '@heroui/react@3.0.5(@react-spectrum/provider@3.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)':
     dependencies:
       '@heroui/styles': 3.0.5(tailwind-merge@3.4.0)(tailwindcss@4.3.0)
-      '@radix-ui/react-avatar': 1.1.11(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@radix-ui/react-avatar': 1.1.11(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@react-aria/i18n': 3.13.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@react-aria/ssr': 3.10.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@react-aria/utils': 3.34.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -16575,6 +16559,8 @@ snapshots:
 
   '@ikenxuan/qrcode@1.1.0': {}
 
+  '@ikenxuan/qrcode@1.2.0': {}
+
   '@ikenxuan/watermark-darwin-arm64@1.1.5':
     optional: true
 
@@ -16587,10 +16573,10 @@ snapshots:
   '@ikenxuan/watermark-win32-x64-msvc@1.1.5':
     optional: true
 
-  '@ikenxuan/watermark@1.1.5(@react-spectrum/provider@3.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(tailwind-merge@3.4.0)(tailwindcss@4.3.0)':
+  '@ikenxuan/watermark@1.1.5(@react-spectrum/provider@3.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(tailwind-merge@3.4.0)(tailwindcss@4.3.0)':
     dependencies:
       '@gsap/react': 2.1.2(gsap@3.15.0)(react@19.2.6)
-      '@heroui/react': 3.0.5(@react-spectrum/provider@3.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)
+      '@heroui/react': 3.0.5(@react-spectrum/provider@3.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)
       '@heroui/styles': 3.0.5(tailwind-merge@3.4.0)(tailwindcss@4.3.0)
       '@tauri-apps/api': 2.11.0
       '@tauri-apps/plugin-dialog': 2.7.1
@@ -21252,15 +21238,10 @@ snapshots:
   '@types/node@25.6.0':
     dependencies:
       undici-types: 7.19.2
-    optional: true
 
   '@types/normalize-package-data@2.4.4': {}
 
   '@types/parse-json@4.0.2': {}
-
-  '@types/pngjs@6.0.5':
-    dependencies:
-      '@types/node': 24.12.4
 
   '@types/prompts@2.4.9':
     dependencies:
@@ -21321,7 +21302,7 @@ snapshots:
 
   '@types/set-cookie-parser@2.4.10':
     dependencies:
-      '@types/node': 24.12.4
+      '@types/node': 25.6.0
 
   '@types/stats.js@0.17.4': {}
 
@@ -21880,7 +21861,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.1.0
       tinyexec: 1.1.2
-      vite: 8.0.14(@types/node@24.12.2)(@vitejs/devtools@0.2.0)(esbuild@0.28.0)(jiti@2.6.1)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.8.3)
+      vite: 8.0.14(@types/node@24.12.2)(@vitejs/devtools@0.2.0)(esbuild@0.28.0)(jiti@2.6.1)(sass@1.100.0)(terser@5.48.0)(tsx@4.21.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - '@modelcontextprotocol/sdk'
       - bufferutil
@@ -22254,7 +22235,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.1.0
       tinyexec: 1.1.2
-      vite: 8.0.14(@types/node@24.12.2)(@vitejs/devtools@0.2.0)(esbuild@0.28.0)(jiti@2.6.1)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.8.3)
+      vite: 8.0.14(@types/node@24.12.2)(@vitejs/devtools@0.2.0)(esbuild@0.28.0)(jiti@2.6.1)(sass@1.100.0)(terser@5.48.0)(tsx@4.21.0)(yaml@2.8.3)
       vue: 3.5.34(typescript@6.0.3)
       ws: 8.20.1
     transitivePeerDependencies:
@@ -22451,7 +22432,7 @@ snapshots:
       '@vue/shared': 3.5.34
       estree-walker: 2.0.2
       magic-string: 0.30.21
-      postcss: 8.5.14
+      postcss: 8.5.15
       source-map-js: 1.2.1
 
   '@vue/compiler-ssr@3.5.34':
@@ -25801,8 +25782,6 @@ snapshots:
       ms: 2.1.3
       semver: 7.8.0
 
-  jsqr@1.4.0: {}
-
   jsx-ast-utils@3.3.5:
     dependencies:
       array-includes: 3.1.9
@@ -27344,8 +27323,6 @@ snapshots:
       queue-lit: 1.5.2
 
   pngjs@5.0.0: {}
-
-  pngjs@7.0.0: {}
 
   points-on-curve@0.2.0: {}
 
@@ -29744,8 +29721,7 @@ snapshots:
 
   undici-types@7.16.0: {}
 
-  undici-types@7.19.2:
-    optional: true
+  undici-types@7.19.2: {}
 
   undici-types@7.25.0: {}
 
@@ -30376,7 +30352,7 @@ snapshots:
       yaml: 2.8.3
     optional: true
 
-  vite@8.0.14(@types/node@24.12.2)(@vitejs/devtools@0.2.0)(esbuild@0.28.0)(jiti@2.6.1)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.8.3):
+  vite@8.0.14(@types/node@24.12.2)(@vitejs/devtools@0.2.0)(esbuild@0.28.0)(jiti@2.6.1)(sass@1.100.0)(terser@5.48.0)(tsx@4.21.0)(yaml@2.8.3):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.4
@@ -30391,7 +30367,7 @@ snapshots:
       jiti: 2.6.1
       sass: 1.100.0
       terser: 5.48.0
-      tsx: 4.22.3
+      tsx: 4.21.0
       yaml: 2.8.3
     optional: true
 

@@ -1,6 +1,7 @@
-import jpeg from 'jpeg-js'
+import { inflateSync } from 'node:zlib'
+
 import { logger } from 'node-karin'
-import { PNG } from 'pngjs'
+import axios from 'node-karin/axios'
 import type { Plugin } from 'template'
 import type { BilibiliPosterPalette } from 'template/types/platforms/bilibili/dynamic/live'
 
@@ -24,7 +25,7 @@ const clamp = (value: number, min: number, max: number): number => {
 
 const buildProxyImageUrl = (url: string): string => {
   if (!url || !url.startsWith('http')) return url
-  return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=96&h=96&fit=cover&output=jpg`
+  return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=96&h=96&fit=cover&output=png`
 }
 
 const mixRgb = (a: RGB, b: RGB, weight: number): RGB => {
@@ -106,22 +107,82 @@ const tuneRgb = (rgb: RGB, saturationMin: number, lightnessTarget: number): RGB 
   return hslToRgb(h, Math.max(s, saturationMin), clamp(lightnessTarget, 0, 1))
 }
 
-const decodeImageToPixels = (buffer: Buffer, contentType: string): { data: Uint8Array | Uint8ClampedArray; width: number; height: number } => {
-  if (contentType.includes('png')) {
-    const decoded = PNG.sync.read(buffer)
-    return {
-      data: decoded.data,
-      width: decoded.width,
-      height: decoded.height
+const decodePngToPixels = (buffer: Buffer): { data: Buffer; width: number; height: number } | null => {
+  if (buffer[0] !== 0x89 || buffer[1] !== 0x50) return null
+  let offset = 8
+  let width = 0
+  let height = 0
+  let bitDepth = 0
+  let colorType = 0
+  const idatChunks: Buffer[] = []
+
+  while (offset < buffer.length) {
+    const length = buffer.readUInt32BE(offset)
+    const type = buffer.toString('ascii', offset + 4, offset + 8)
+    const chunkData = buffer.subarray(offset + 8, offset + 8 + length)
+
+    if (type === 'IHDR') {
+      width = chunkData.readUInt32BE(0)
+      height = chunkData.readUInt32BE(4)
+      bitDepth = chunkData[8]
+      colorType = chunkData[9]
+    } else if (type === 'IDAT') {
+      idatChunks.push(chunkData)
+    } else if (type === 'IEND') {
+      break
     }
+    offset += 12 + length
   }
 
-  const decoded = jpeg.decode(buffer, { useTArray: true })
-  return {
-    data: decoded.data,
-    width: decoded.width,
-    height: decoded.height
+  if (!width || !height || bitDepth !== 8) return null
+  const channels = colorType === 6 ? 4 : colorType === 2 ? 3 : 0
+  if (!channels) return null
+
+  const raw = inflateSync(Buffer.concat(idatChunks))
+  const stride = width * channels
+  const pixels = Buffer.alloc(width * height * 4)
+
+  const prevRow = Buffer.alloc(stride)
+  let rawOffset = 0
+
+  for (let y = 0; y < height; y++) {
+    const filter = raw[rawOffset++]
+    const curRow = Buffer.alloc(stride)
+
+    for (let x = 0; x < stride; x++) {
+      const val = raw[rawOffset++]
+      const a = x >= channels ? curRow[x - channels] : 0
+      const b = prevRow[x]
+      const c = x >= channels ? prevRow[x - channels] : 0
+
+      switch (filter) {
+        case 0: curRow[x] = val; break
+        case 1: curRow[x] = (val + a) & 0xff; break
+        case 2: curRow[x] = (val + b) & 0xff; break
+        case 3: curRow[x] = (val + ((a + b) >> 1)) & 0xff; break
+        case 4: {
+          const p = a + b - c
+          const pa = Math.abs(p - a)
+          const pb = Math.abs(p - b)
+          const pc = Math.abs(p - c)
+          curRow[x] = (val + (pa <= pb && pa <= pc ? a : pb <= pc ? b : c)) & 0xff
+          break
+        }
+      }
+    }
+
+    for (let x = 0; x < width; x++) {
+      const pi = (y * width + x) * 4
+      const ci = x * channels
+      pixels[pi] = curRow[ci]
+      pixels[pi + 1] = curRow[ci + 1]
+      pixels[pi + 2] = curRow[ci + 2]
+      pixels[pi + 3] = channels === 4 ? curRow[ci + 3] : 255
+    }
+    curRow.copy(prevRow)
   }
+
+  return { data: pixels, width, height }
 }
 
 const createPosterPalette = (seed: PosterPaletteSeed, isDark: boolean): BilibiliPosterPalette => {
@@ -150,8 +211,9 @@ const createPosterPalette = (seed: PosterPaletteSeed, isDark: boolean): Bilibili
   }
 }
 
-const extractPosterPaletteSeedFromBuffer = (buffer: Buffer, contentType: string): PosterPaletteSeed | null => {
-  const decoded = decodeImageToPixels(buffer, contentType)
+const extractPosterPaletteSeedFromBuffer = (buffer: Buffer): PosterPaletteSeed | null => {
+  const decoded = decodePngToPixels(buffer)
+  if (!decoded) return null
   const { data } = decoded
 
   let weightedR = 0
@@ -221,19 +283,15 @@ export const createPosterPalettePlugin = (): Plugin => {
 
       for (const candidate of candidates) {
         try {
-          const response = await fetch(candidate, {
+          const response = await axios.get<ArrayBuffer>(candidate, {
+            responseType: 'arraybuffer',
             headers: {
-              accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+              accept: 'image/png,image/apng,image/*,*/*;q=0.8'
             }
           })
 
-          if (!response.ok) {
-            continue
-          }
-
-          const buffer = Buffer.from(await response.arrayBuffer())
-          const contentType = response.headers.get('content-type') || 'image/jpeg'
-          const paletteSeed = extractPosterPaletteSeedFromBuffer(buffer, contentType)
+          const buffer = Buffer.from(response.data)
+          const paletteSeed = extractPosterPaletteSeedFromBuffer(buffer)
 
           if (paletteSeed) {
             const lightPalette = createPosterPalette(paletteSeed, false)

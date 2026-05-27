@@ -65,7 +65,7 @@
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../template/src/dev/mock-server.ts\" --include \"../template/src/main.ts\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
-    "@ikenxuan/qrcode": "^1.1.0",
+    "@ikenxuan/qrcode": "1.2.0",
     "@ikenxuan/watermark": "1.1.5",
     "fingerprint-injector": "^2.1.82"
   },
@@ -78,14 +78,11 @@
     "@kkk/richtext": "workspace:*",
     "@types/express": "5.0.6",
     "@types/heic-decode": "^2.0.0",
-    "@types/pngjs": "^6.0.5",
     "cookie": "^1.1.1",
     "date-fns": "^4.3.0",
     "heic-decode": "^2.1.0",
     "http-proxy-middleware": "4.0.0",
     "jpeg-js": "^0.4.4",
-    "jsqr": "^1.4.0",
-    "pngjs": "^7.0.0",
     "template": "workspace:*",
     "tsdown": "^0.22.0",
     "vite-plugin-top-level-await": "^1.6.0",
