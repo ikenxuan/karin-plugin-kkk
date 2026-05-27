@@ -1,6 +1,8 @@
 import Client, {
   createBilibiliRoutes,
-  createDouyinRoutes
+  createDouyinRoutes,
+  createKuaishouRoutes,
+  createXiaohongshuRoutes
 } from '@ikenxuan/amagi'
 // import history from 'connect-history-api-fallback'
 import * as cors from 'cors'
@@ -42,11 +44,15 @@ app.use(express.urlencoded({ extended: true }))
 if (Config.app.APIServer && Config.app.APIServerMount) {
   app.use('/amagi/api/bilibili', createBilibiliRoutes(Config.cookies.bilibili))
   app.use('/amagi/api/douyin', createDouyinRoutes(Config.cookies.douyin))
+  app.use('/amagi/api/kuaishou', createKuaishouRoutes(Config.cookies.kuaishou))
+  app.use('/amagi/api/xiaohongshu', createXiaohongshuRoutes(Config.cookies.xiaohongshu))
 } else if (Config.app.APIServer) {
   const amagiServer = new Client({
     cookies: {
       bilibili: Config.cookies.bilibili,
-      douyin: Config.cookies.douyin
+      douyin: Config.cookies.douyin,
+      kuaishou: Config.cookies.kuaishou,
+      xiaohongshu: Config.cookies.xiaohongshu
     }
   })
   amagiServer.startServer(Config.app.APIServerPort)

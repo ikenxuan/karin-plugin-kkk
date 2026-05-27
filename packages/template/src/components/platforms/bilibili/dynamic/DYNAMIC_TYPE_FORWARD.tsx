@@ -80,20 +80,31 @@ const OriginalAVContent: React.FC<{ content: OriginalContentAV }> = ({ content }
 
       <div className='h-15' />
 
-      <div className='flex flex-col items-center'>
-        <div className='flex overflow-hidden relative flex-col items-center w-full rounded-4xl rounded-10 aspect-video shadow-large'>
-          <EnhancedImage
-            src={content.cover}
-            alt='视频封面'
-            className='object-cover object-center absolute'
-          />
-          <div className='absolute right-0 bottom-0 left-0 h-1/2 bg-linear-to-t to-transparent pointer-events-none from-black/75' />
-          <div className='absolute right-5 left-12 bottom-14 z-10 text-4xl font-light text-white select-text'>
-            <span className='px-4 py-2 mr-3 text-4xl text-white rounded-2xl bg-black/50'>
-              {content.duration_text}
-            </span>
-            {content.play}观看   {content.danmaku}弹幕
-          </div>
+      <div className='relative items-center text-5xl tracking-wider wrap-break-word text-muted leading-relaxed'>
+        {content.text.nodes.length > 0 && renderRichTextToReact(content.text, {
+          at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+        })}
+      </div>
+
+      {content.text.nodes.length > 0 && <div className='h-5' />}
+
+      <div className='flex overflow-hidden relative flex-col items-center w-full rounded-5xl aspect-video'>
+        <EnhancedImage
+          src={content.cover}
+          alt='视频封面'
+          className='w-full h-full'
+        />
+        <div className='absolute right-0 bottom-0 left-0 h-1/2 bg-linear-to-t to-transparent pointer-events-none from-black/75' />
+        <div className='absolute right-5 left-12 bottom-14 z-10 text-4xl font-light text-white select-text'>
+          <span className='px-4 py-2 mr-3 text-4xl text-white rounded-2xl bg-black/50'>
+            {content.duration_text}
+          </span>
+          {content.play}观看   {content.danmaku}弹幕
         </div>
       </div>
 

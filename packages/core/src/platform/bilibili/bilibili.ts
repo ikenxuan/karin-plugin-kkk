@@ -25,6 +25,7 @@ import karin, {
   segment,
   SendMessage
 } from 'node-karin'
+import type { BilibiliForwardOriginalContentProps } from 'template/types/platforms/bilibili/dynamic/forward'
 import { DecorationCardData } from 'template/types/platforms/bilibili/dynamic/normal'
 
 import {
@@ -626,24 +627,25 @@ export class Bilibili extends Base {
                 }
               }
             }
-            let data = {}
+            let original_content: BilibiliForwardOriginalContentProps['original_content'] = {}
             switch (dynamicInfo.data.data.item.orig.type) {
               // 转发视频动态
               case DynamicType.AV: {
-                data = {
+                const desc = dynamicInfo.data.data.item.orig.modules.module_dynamic?.desc || { text: '', rich_text_nodes: [] }
+
+                original_content = { DYNAMIC_TYPE_AV: {
                   usernameMeta: getUsernameMetadata(dynamicInfo.data.data.item.orig.modules.module_author),
-                  pub_action: dynamicInfo.data.data.item.orig.modules.module_author.pub_action,
                   avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
                   duration_text: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.duration_text,
+                  text: buildBilibiliDynamicRichText(desc.text, desc.rich_text_nodes),
                   title: buildBilibiliDynamicRichText(dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.title, []),
                   danmaku: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.stat.danmaku,
-                  view: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.stat.view,
                   play: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.stat.play,
                   cover: dynamicInfo.data.data.item.orig.modules.module_dynamic.major.archive.cover,
                   create_time: TimeFormatter.toDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
                   decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decoration_card),
                   frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image
-                }
+                } }
                 break
               }
               // 转发图文动态
@@ -660,8 +662,8 @@ export class Bilibili extends Base {
                   }
                 }
 
-                data = {
-                  title: dynamicInfo.data.data.item.orig.modules.module_dynamic.major?.opus?.title ?? null,
+                original_content = { DYNAMIC_TYPE_DRAW: {
+                  title: dynamicInfo.data.data.item.orig.modules.module_dynamic.major?.opus?.title ?? undefined,
                   usernameMeta: getUsernameMetadata(dynamicInfo.data.data.item.orig.modules.module_author),
                   create_time: TimeFormatter.toDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
                   avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
@@ -671,7 +673,7 @@ export class Bilibili extends Base {
                     .map(item => ({ image_src: item.url })),
                   decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decoration_card),
                   frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image
-                }
+                } }
                 break
               }
               // 转发纯文动态
@@ -688,7 +690,7 @@ export class Bilibili extends Base {
                   }
                 }
 
-                data = {
+                original_content = { DYNAMIC_TYPE_WORD: {
                   usernameMeta: getUsernameMetadata(dynamicInfo.data.data.item.orig.modules.module_author),
                   create_time: TimeFormatter.toDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
                   avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
@@ -696,13 +698,13 @@ export class Bilibili extends Base {
                   decoration_card: generateDecorationCard(dynamicInfo.data.data.item.orig.modules.module_author.decoration_card),
                   frame: dynamicInfo.data.data.item.orig.modules.module_author.pendant.image,
                   additional: parseAdditionalCard(dynamicInfo.data.data.item.orig.modules.module_dynamic.additional)
-                }
+                } }
                 break
               }
               // 转发直播开始动态
               case DynamicType.LIVE_RCMD: {
                 const liveData = JSON.parse(dynamicInfo.data.data.item.orig.modules.module_dynamic.major.live_rcmd.content)
-                data = {
+                original_content = { DYNAMIC_TYPE_LIVE_RCMD: {
                   usernameMeta: getUsernameMetadata(dynamicInfo.data.data.item.orig.modules.module_author),
                   create_time: TimeFormatter.toDateTime(dynamicInfo.data.data.item.orig.modules.module_author.pub_ts),
                   avatar_url: dynamicInfo.data.data.item.orig.modules.module_author.face,
@@ -713,7 +715,7 @@ export class Bilibili extends Base {
                   area_name: liveData.live_play_info.area_name,
                   title: buildBilibiliDynamicRichText(liveData.live_play_info.title, []),
                   online: liveData.live_play_info.online
-                }
+                } }
                 break
               }
               // 其他类型动态未适配
@@ -741,7 +743,7 @@ export class Bilibili extends Base {
                 dynamicTYPE: '转发动态解析',
                 decoration_card: generateDecorationCard(dynamicInfo.data.data.item.modules.module_author.decoration_card),
                 render_time: TimeFormatter.now(),
-                original_content: { [dynamicInfo.data.data.item.orig.type]: data },
+                original_content,
                 dynamic_id: dynamicInfo.data.data.item.id_str
               })
             )
