@@ -2,6 +2,45 @@
 
 # Changelog
 
+## [2.31.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.31.1...v2.31.2) (2026-05-27)
+
+
+### 🐛 错误修复
+
+* cn ([80bbe06](https://github.com/ikenxuan/karin-plugin-kkk/commit/80bbe06b7e92da7c90c5bd941e0109ca3d50497d))
+* theme ([40b97d5](https://github.com/ikenxuan/karin-plugin-kkk/commit/40b97d599a2baaf271cda5af262aed3ae92fab9c))
+* 修复二维码生成使用错误的属性 ([43396cc](https://github.com/ikenxuan/karin-plugin-kkk/commit/43396cc92a6f630c9c8daf1a52ebfc56f44aebc2))
+* 细优 ([705faca](https://github.com/ikenxuan/karin-plugin-kkk/commit/705faca5de99b3b38ff7b9bdd5dd677b5d609221))
+
+
+### 💄 UI 优化
+
+* **bilibili:** 优化部分间距 ([129b53a](https://github.com/ikenxuan/karin-plugin-kkk/commit/129b53a95f08bf23052da4019c66fb1bd617d5d5))
+* 细节优化 ([3f5d40c](https://github.com/ikenxuan/karin-plugin-kkk/commit/3f5d40cbbf8789e68fdb9321a08958783a385192))
+* 间距 ([83c5d09](https://github.com/ikenxuan/karin-plugin-kkk/commit/83c5d09fcbd6b86995787c1ef6d638a21bf9a3c1))
+
+
+### 🧰 其他更新
+
+* use ahooks ([bd7857c](https://github.com/ikenxuan/karin-plugin-kkk/commit/bd7857ca3fb604d606e5c067fa0ac64c7f736474))
+
+
+### ♻️ 代码重构
+
+* 引用解析时扫码使用 @ikenxuan/qrcode 的实现 ([#309](https://github.com/ikenxuan/karin-plugin-kkk/issues/309)) ([6fecaaa](https://github.com/ikenxuan/karin-plugin-kkk/commit/6fecaaa01b04aae68d938dc8c5a971cc8d513eef))
+* 替换二维码生成实现 ([#308](https://github.com/ikenxuan/karin-plugin-kkk/issues/308)) ([c211d4e](https://github.com/ikenxuan/karin-plugin-kkk/commit/c211d4ee2075d5d4e98ba9416c37a05daaa762f2))
+
+
+### 📦 依赖更新
+
+* update ([f9a0f48](https://github.com/ikenxuan/karin-plugin-kkk/commit/f9a0f48def45a8a77dd08969da26dc38c2b16960))
+
+
+### 💯 细节优化
+
+* add tailwind-merge ([6fd58ef](https://github.com/ikenxuan/karin-plugin-kkk/commit/6fd58ef8c303ba8595000bf04b16f9f912eb2fbc))
+* 添加debug日志 ([c7d8c6d](https://github.com/ikenxuan/karin-plugin-kkk/commit/c7d8c6db074891faf64df95ac4be21974092e08b))
+
 ## [2.31.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.31.0...v2.31.1) (2026-05-23)
 
 
