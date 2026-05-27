@@ -15,8 +15,6 @@ interface ComponentRendererProps {
   dataFile?: string
   /** 当前数据 */
   data: any
-  /** 二维码数据URL */
-  qrCodeDataUrl: string
   /** 加载错误 */
   loadError?: Error | null
   /** 组件加载完成回调 */
@@ -88,7 +86,7 @@ class ComponentErrorBoundary extends React.Component<{ children: React.ReactNode
  * @param props 组件属性
  * @returns JSX元素
  */
-const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, templateId, dataFile, data, qrCodeDataUrl, loadError, onLoadComplete, versionEnabled = true }) => {
+const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, templateId, dataFile, data, loadError, onLoadComplete, versionEnabled = true }) => {
   const { renderData, extraProps } = React.useMemo(() => splitPreviewPayload(data), [data])
   const componentConfig = getComponentConfig(platform, templateId)
 
@@ -286,7 +284,6 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
   const commonProps = {
     ...extraProps,
     data: renderData,
-    qrCodeDataUrl,
     version: versionEnabled ? version : undefined,
     watermarkTextBitSize,
     scale: 1

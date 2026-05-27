@@ -360,19 +360,7 @@ export const BilibiliForwardDynamic: React.FC<BilibiliForwardDynamicProps> = Rea
         <div className='h-40' />
 
         {/* 底部信息 */}
-        <BilibiliDynamicFooter
-          avatar_url={props.data.avatar_url}
-          frame={props.data.frame}
-          usernameMeta={props.data.usernameMeta}
-          user_shortid={props.data.user_shortid}
-          total_favorited={props.data.total_favorited}
-          following_count={props.data.following_count}
-          fans={props.data.fans}
-          dynamicTYPE={props.data.dynamicTYPE}
-          share_url={props.data.share_url}
-          qrCodeDataUrl={props.qrCodeDataUrl}
-          showUidHash
-        />
+        <BilibiliDynamicFooter {...props.data} />
       </div>
     </DefaultLayout>
   )

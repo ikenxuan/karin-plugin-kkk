@@ -127,7 +127,6 @@ export const App: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = React.useState<string>(initialTemplate)
   const [templateData, setTemplateData] = React.useState<any>(null)
   const [loadError, setLoadError] = React.useState<Error | null>(null)
-  const [qrCodeDataUrl, setQrCodeDataUrl] = React.useState<string>('')
   const [scale, setScale] = React.useState(0.5)
   const [availableDataFiles, setAvailableDataFiles] = React.useState<string[]>([])
   const [selectedDataFile, setSelectedDataFile] = React.useState<string>(urlParams.dataFile || 'default.json')
@@ -271,16 +270,6 @@ export const App: React.FC = () => {
         filename || selectedDataFile
       )
       setTemplateData(data || {})
-
-      // 生成二维码，传递正确的主题参数
-      if (data?.share_url) {
-        try {
-          const qrDataUrl = await dataService.generateQRCode(data.share_url, data.useDarkTheme || false)
-          setQrCodeDataUrl(qrDataUrl)
-        } catch (qrError) {
-          console.warn('生成二维码失败:', qrError)
-        }
-      }
     } catch (error) {
       console.error('加载数据失败:', error)
       setLoadError(error instanceof Error ? error : new Error(String(error)))
@@ -289,14 +278,6 @@ export const App: React.FC = () => {
         const defaultData = await dataService.getTemplateData(selectedPlatform, selectedTemplate)
         setTemplateData(defaultData || {})
         setLoadError(null)
-        if (defaultData?.share_url) {
-          try {
-            const qrDataUrl = await dataService.generateQRCode(defaultData.share_url, defaultData.useDarkTheme || false)
-            setQrCodeDataUrl(qrDataUrl)
-          } catch (qrError) {
-            console.warn('生成二维码失败:', qrError)
-          }
-        }
       } catch (defaultError) {
         console.error('加载默认数据也失败:', defaultError)
         // 设置最终的错误状态
@@ -314,16 +295,6 @@ export const App: React.FC = () => {
     if (templateData) {
       const newData = { ...templateData, useDarkTheme: checked }
       setTemplateData(newData)
-
-      // 如果有分享链接，重新生成二维码
-      if (newData.share_url) {
-        try {
-          const qrDataUrl = await dataService.generateQRCode(newData.share_url, checked)
-          setQrCodeDataUrl(qrDataUrl)
-        } catch (error) {
-          console.error('重新生成二维码失败:', error)
-        }
-      }
     }
   }
 
@@ -712,7 +683,6 @@ export const App: React.FC = () => {
                   dataFile={selectedDataFile}
                   data={templateData}
                   loadError={loadError}
-                  qrCodeDataUrl={qrCodeDataUrl}
                   scale={scale}
                   onScaleChange={setScale}
                   onComponentLoadComplete={handleComponentLoadComplete}

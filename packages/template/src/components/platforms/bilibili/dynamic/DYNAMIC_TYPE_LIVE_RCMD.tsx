@@ -5,6 +5,7 @@ import React from 'react'
 import type {
   BilibiliLiveDynamicProps,
   BilibiliPosterPalette } from '../../../../types/platforms/bilibili'
+import { generateQRCode } from '../../../../utils/QRcode'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { EnhancedImage, UsernameDisplay } from '../shared'
 
@@ -71,7 +72,7 @@ const getSingleLineFontSize = (content: string, base: number, min: number): numb
 }
 
 export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templateType' | 'templateName'>> = React.memo((props) => {
-  const { data, qrCodeDataUrl } = props
+  const { data } = props
   const isDark = data.useDarkTheme === true
   const palette = props.posterPalettes
     ? (isDark ? props.posterPalettes.dark : props.posterPalettes.light)
@@ -491,10 +492,10 @@ export const BilibiliLiveDynamic: React.FC<Omit<BilibiliLiveDynamicProps, 'templ
                 className='absolute right-22 top-1/2 h-52 w-52 -translate-y-1/2 rounded-full blur-[48px]'
                 style={{ backgroundColor: withAlphaFromCss(accentColor, isDark ? 0.16 : 0.10) }}
               />
-              {qrCodeDataUrl
+              {data.share_url
                 ? (
                   <img
-                    src={qrCodeDataUrl}
+                    src={generateQRCode(data.share_url, isDark)}
                     alt='二维码'
                     className='relative h-100 w-100 object-contain drop-shadow-[0_20px_38px_rgba(0,0,0,0.18)]'
                   />

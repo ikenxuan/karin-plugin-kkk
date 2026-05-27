@@ -1,8 +1,8 @@
 import type { BaseComponentProps } from '../../index'
 
-export interface VersionWarningProps extends BaseComponentProps {
+export interface VersionWarningProps extends BaseComponentProps<{
   /** 插件构建时的 karin 版本 */
   requireVersion: string
   /** 当前运行的 karin 版本 */
   currentVersion: string
-}
+}> {}

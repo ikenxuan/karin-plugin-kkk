@@ -1,22 +1,10 @@
-/**
- * 二维码组件属性接口
- */
-export interface QRCodeSectionProps {
-  /** 二维码数据URL */
-  qrCodeDataUrl?: string
-}
-
+import type { BaseComponentProps } from '../../index'
 
 /** B站二维码登录组件属性 */
-export interface BilibiliQrcodeImgProps {
-  data: {
-    /** 分享链接 */
-    share_url: string
-    /** 是否使用深色主题 */
-    useDarkTheme?: boolean
-  }
-  /** 二维码数据URL */
-  qrCodeDataUrl?: string
+export interface BilibiliQrcodeImgProps extends BaseComponentProps<{
+  /** 分享链接 */
+  share_url: string
+}> {
 }
 
 export * from './bangumi'

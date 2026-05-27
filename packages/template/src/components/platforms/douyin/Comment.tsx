@@ -2,15 +2,15 @@ import { createRichTextDocument, renderRichTextToReact } from '@kkk/richtext'
 import { PlayIcon } from '@phosphor-icons/react'
 import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
-import { CircleEllipsis, Heart, MessageCircle, QrCode, Search, Share2, Star } from 'lucide-react'
+import { CircleEllipsis, Heart, MessageCircle, Search, Share2, Star } from 'lucide-react'
 import React, { type ReactNode } from 'react'
 
-import type { QRCodeSectionProps } from '../../../types'  
 import type {
   DouyinCommentProps,
   DouyinSubComment
 } from '../../../types/platforms/douyin'
 import { cn } from '../../../utils/cn'
+import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 const douyinMentionClassName = 'text-[#04498d] dark:text-[#face15]'
@@ -86,22 +86,11 @@ const formatPublishTime = (timestamp: number): string => {
  * @param props 组件属性
  * @returns JSX元素
  */
-const QRCodeSection: React.FC<QRCodeSectionProps> = ({
-  qrCodeDataUrl
-}) => {
+const QRCodeSection: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'>> = (props) => {
   return (
     <div className='flex flex-col items-center'>
       <div className='flex justify-center items-center w-100 h-100 p-4'>
-        {qrCodeDataUrl
-          ? (
-            <img src={qrCodeDataUrl} alt='二维码' className='object-contain w-full h-full rounded-lg' />
-          )
-          : (
-            <div className='flex flex-col justify-center items-center text-muted'>
-              <QrCode width={80} className='mb-4' />
-              <span className='text-lg'>二维码生成失败</span>
-            </div>
-          )}
+        <img src={generateQRCode(props.share_url, props.useDarkTheme)} alt='二维码' className='object-contain w-full h-full rounded-lg' />
       </div>
     </div>
   )
@@ -112,7 +101,7 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = ({
  * @param props 组件属性
  * @returns JSX元素
  */
-const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'> & { qrCodeDataUrl: string }> = (props) => {
+const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'>> = (props) => {
   return (
     <div className='max-w-350 mx-auto px-10 pt-14'>
       <div className='flex items-start justify-between gap-10'>
@@ -203,7 +192,7 @@ const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'>
 
         {/* 右侧二维码 */}
         <div className='shrink-0'>
-          <QRCodeSection qrCodeDataUrl={props.qrCodeDataUrl} />
+          <QRCodeSection {...props} />
         </div>
       </div>
     </div>
@@ -629,7 +618,6 @@ export const DouyinComment: React.FC<Omit<DouyinCommentProps, 'templateType' | '
         {/* 视频信息头部 */}
         <VideoInfoHeader
           {...props.data}
-          qrCodeDataUrl={props.qrCodeDataUrl}
         />
 
         {/* 推荐搜索词 */}

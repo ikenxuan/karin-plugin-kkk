@@ -3,6 +3,7 @@ import { Bookmark, Clock, Eye, Hash, UsersRound } from 'lucide-react'
 import React from 'react'
 
 import type { BilibiliArticleDynamicProps } from '../../../../types/platforms/bilibili/dynamic/article'
+import { generateQRCode } from '../../../../utils/QRcode'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { CommentIcon, ShareIcon, ThumbUpIcon } from '../Icons'
 import { CommentText, DecorationCard, EnhancedImage, UsernameDisplay } from '../shared'
@@ -227,19 +228,11 @@ const BilibiliArticleFooter: React.FC<BilibiliArticleDynamicProps> = React.memo(
 
       {/* 右侧：二维码 */}
       <div className='flex flex-col items-center gap-4'>
-        {props.qrCodeDataUrl
-          ? (
-            <img
-              src={props.qrCodeDataUrl}
-              alt='二维码'
-              className='h-auto w-75 rounded-2xl'
-            />
-          )
-          : (
-            <div className='flex justify-center items-center rounded-2xl bg-surface w-100 h-100'>
-              <span className='text-muted'>二维码</span>
-            </div>
-          )}
+        <img
+          src={generateQRCode(props.data.share_url, props.data.useDarkTheme)}
+          alt='二维码'
+          className='h-auto w-75 rounded-2xl'
+        />
       </div>
     </div>
   )

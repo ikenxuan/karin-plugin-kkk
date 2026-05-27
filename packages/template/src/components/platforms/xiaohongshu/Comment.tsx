@@ -1,21 +1,19 @@
 import { renderRichTextToReact } from '@kkk/richtext'
 import { differenceInSeconds, format, formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
-import { Heart, MessageCircle, QrCode } from 'lucide-react'
+import { Heart, MessageCircle } from 'lucide-react'
 import React from 'react'
 
 import type {
-  XiaohongshuCommentItemComponentProps,
-  XiaohongshuCommentProps,
-  XiaohongshuNoteInfoHeaderProps,
-  XiaohongshuQRCodeSectionProps
+  XiaohongshuCommentProps
 } from '../../../types/platforms/xiaohongshu'
+import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 const xiaohongshuMentionClassName = 'text-[#13386c] dark:text-[#c7daef]'
 
 const renderXiaohongshuCommentRichText = (
-  content: XiaohongshuCommentItemComponentProps['comment']['content']
+  content: XiaohongshuCommentProps['data']['CommentsData'][0]['content']
 ) => {
   return renderRichTextToReact(content, {
     mention: { className: xiaohongshuMentionClassName }
@@ -54,46 +52,11 @@ const formatXiaohongshuLikeCount = (count: string): string => {
 }
 
 /**
- * 二维码区域组件
- * @param props 组件属性
- * @returns JSX元素
- */
-const QRCodeSection: React.FC<XiaohongshuQRCodeSectionProps> = ({
-  qrCodeDataUrl
-}) => {
-  return (
-    <div className='flex flex-col justify-center items-center p-5'>
-      <div className='flex overflow-hidden justify-center items-center bg-white w-110 h-110'>
-        {qrCodeDataUrl
-          ? (
-            <img
-              src={qrCodeDataUrl}
-              alt='二维码'
-              className='object-contain'
-            />
-          )
-          : (
-            <QrCode width={200} className='text-muted' />
-          )}
-      </div>
-      <p className='mt-5 text-[40px] text-muted text-center'>
-        扫码查看原笔记
-      </p>
-    </div>
-  )
-}
-
-/**
  * 笔记信息头部组件
  * @param props 组件属性
  * @returns JSX元素
  */
-const NoteInfoHeader: React.FC<XiaohongshuNoteInfoHeaderProps> = ({
-  type,
-  commentLength,
-  imageLength,
-  qrCodeDataUrl
-}) => {
+const NoteInfoHeader: React.FC<XiaohongshuCommentProps['data']> = (props) => {
   return (
     <div className='flex justify-between items-center max-w-300 mx-auto p-5'>
       <div className='flex flex-col justify-center items-start'>
@@ -117,21 +80,30 @@ const NoteInfoHeader: React.FC<XiaohongshuNoteInfoHeaderProps> = ({
         {/* 文字信息区域 */}
         <div className='mt-8 space-y-4 text-left text-muted'>
           <div className='tracking-[6px] text-[45px] select-text'>
-            笔记类型：{type}
+            笔记类型：{props.Type}
           </div>
           <div className='tracking-[6px] text-[45px] select-text'>
-            评论数量：{commentLength}条
+            评论数量：{props.CommentLength}条
           </div>
-          {type === '图文' && imageLength && (
+          {props.Type === '图文' && props.ImageLength && (
             <div className='tracking-[6px] text-[45px] select-text'>
-              图片数量：{imageLength}张
+              图片数量：{props.ImageLength}张
             </div>
           )}
         </div>
       </div>
-      <QRCodeSection
-        qrCodeDataUrl={qrCodeDataUrl}
-      />
+      <div className='flex flex-col justify-center items-center p-5'>
+        <div className='flex overflow-hidden justify-center items-center bg-white w-110 h-110'>
+          <img
+            src={generateQRCode(props.share_url, props.useDarkTheme)}
+            alt='二维码'
+            className='object-contain'
+          />
+        </div>
+        <p className='mt-5 text-[40px] text-muted text-center'>
+          扫码查看原笔记
+        </p>
+      </div>
     </div>
   )
 }
@@ -141,12 +113,12 @@ const NoteInfoHeader: React.FC<XiaohongshuNoteInfoHeaderProps> = ({
  * @param props 组件属性
  * @returns JSX元素
  */
-const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { isLast?: boolean }> = ({ comment, isLast = false }) => {
+const CommentItemComponent: React.FC<XiaohongshuCommentProps['data']['CommentsData'][0] & { isLast?: boolean }> = ({ ...props }, isLast = false) => {
   return (
     <div className={`flex px-10 pt-15 ${isLast ? 'pb-0' : 'pb-15'}`}>
       {/* 用户头像 */}
       <img
-        src={comment.user_info.image}
+        src={props.user_info.image}
         className='mb-12.5 w-[187.5px] h-[187.5px] rounded-full mr-8 object-cover shadow-lg'
         alt='用户头像'
       />
@@ -155,8 +127,8 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
       <div className='flex-1'>
         {/* 用户信息 */}
         <div className='mb-12.5 text-[50px] text-foreground/70 relative flex items-center select-text'>
-          <span className='text-5xl'>{comment.user_info.nickname}</span>
-          {comment.show_tags && comment.show_tags.length > 0 && comment.show_tags.map((tag, index) => {
+          <span className='text-5xl'>{props.user_info.nickname}</span>
+          {props.show_tags && props.show_tags.length > 0 && props.show_tags.map((tag, index) => {
             if (tag === 'is_author') {
               return (
                 <div key={index} className='inline-block px-6 py-3 ml-3 text-4xl rounded-full bg-surface text-muted'>
@@ -183,15 +155,15 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
             overflowWrap: 'break-word'
           }}
         >
-          {renderXiaohongshuCommentRichText(comment.content)}
+          {renderXiaohongshuCommentRichText(props.content)}
         </div>
 
         {/* 评论图片 */}
-        {comment.pictures && comment.pictures.length > 0 && (
+        {props.pictures && props.pictures.length > 0 && (
           <div className='flex my-5 overflow-hidden shadow-md rounded-2xl w-[95%] flex-1'>
             <img
               className='object-contain w-full h-full rounded-2xl'
-              src={comment.pictures[0].url_default}
+              src={props.pictures[0].url_default}
               alt='评论图片'
             />
           </div>
@@ -200,12 +172,12 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
         {/* 底部信息和操作区域 */}
         <div className='flex justify-between items-center mt-6 text-muted'>
           <div className='flex items-center space-x-6 select-text'>
-            <span className='text-[45px]'>{formatXiaohongshuCommentTime(comment.create_time)}</span>
-            <span className='text-[45px]'>{comment.ip_location}</span>
-            {parseInt(comment.sub_comment_count) > 0
+            <span className='text-[45px]'>{formatXiaohongshuCommentTime(props.create_time)}</span>
+            <span className='text-[45px]'>{props.ip_location}</span>
+            {parseInt(props.sub_comment_count) > 0
               ? (
                 <span className='text-[40px] text-foreground/70'>
-                  共{comment.sub_comment_count}条回复
+                  共{props.sub_comment_count}条回复
                 </span>
               )
               : (
@@ -216,8 +188,8 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
           <div className='flex items-center space-x-6'>
             {/* 点赞按钮 */}
             <div className='flex items-center space-x-2 transition-colors cursor-pointer'>
-              <Heart size={60} className={comment.liked ? 'text-red-500 fill-current' : 'text-muted'} />
-              <span className='text-[50px] select-text'>{formatXiaohongshuLikeCount(comment.like_count)}</span>
+              <Heart size={60} className={props.liked ? 'text-red-500 fill-current' : 'text-muted'} />
+              <span className='text-[50px] select-text'>{formatXiaohongshuLikeCount(props.like_count)}</span>
             </div>
 
             {/* 回复按钮 */}
@@ -228,10 +200,10 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
         </div>
 
         {/* 子评论 */}
-        {comment.sub_comments && comment.sub_comments.length > 0 && (
+        {props.sub_comments && props.sub_comments.length > 0 && (
           <div className='pl-6 mt-6'>
-            {comment.sub_comments.map((subComment, index) => (
-              <div key={subComment.id} className={`py-4 ${index !== comment.sub_comments.length - 1 ? 'border-b border-divider' : ''}`}>
+            {props.sub_comments.map((subComment, index) => (
+              <div key={subComment.id} className={`py-4 ${index !== props.sub_comments.length - 1 ? 'border-b border-divider' : ''}`}>
                 <div className='flex items-start space-x-4'>
                   <img
                     src={subComment.user_info.image}
@@ -286,17 +258,12 @@ const CommentItemComponent: React.FC<XiaohongshuCommentItemComponentProps & { is
  * @param props 组件属性
  * @returns JSX元素
  */
-export const XiaohongshuComment: React.FC<Omit<XiaohongshuCommentProps, 'templateType' | 'templateName'>> = React.memo((props) => {
+export const XiaohongshuComment: React.FC<XiaohongshuCommentProps> = React.memo(props => {
   return (
     <DefaultLayout {...props}>
       <div className='h-30' />
       {/* 页面头部 */}
-      <NoteInfoHeader
-        type={props.data.Type}
-        commentLength={props.data.CommentLength}
-        imageLength={props.data.ImageLength}
-        qrCodeDataUrl={props.qrCodeDataUrl}
-      />
+      <NoteInfoHeader {...props.data} />
 
       {/* 评论列表 */}
       <div className='overflow-auto mx-20 max-w-full'>
@@ -306,7 +273,7 @@ export const XiaohongshuComment: React.FC<Omit<XiaohongshuCommentProps, 'templat
               {props.data.CommentsData.map((comment, index) => (
                 <CommentItemComponent
                   key={comment.id}
-                  comment={comment}
+                  {...comment}
                   isLast={index === props.data.CommentsData.length - 1}
                 />
               ))}

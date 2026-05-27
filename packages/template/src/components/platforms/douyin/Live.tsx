@@ -4,6 +4,7 @@ import React from 'react'
 import type {
   DouyinLiveProps
 } from '../../../types/platforms/douyin'
+import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 const coverMaskStyle: React.CSSProperties = {
@@ -151,7 +152,7 @@ const InfoSection: React.FC<{ data: DouyinLiveProps['data'] }> = ({ data }) => {
 /**
  * 底部区域 - 主播信息 + 二维码 + 抖音Logo
  */
-const BottomSection: React.FC<{ data: DouyinLiveProps['data']; qrCodeDataUrl: string }> = ({ data, qrCodeDataUrl }) => {
+const BottomSection: React.FC<{ data: DouyinLiveProps['data'] }> = ({ data }) => {
   return (
     <div className="flex justify-between items-end px-16 pt-24 pb-16">
       {/* 左侧：主播信息 */}
@@ -211,9 +212,9 @@ const BottomSection: React.FC<{ data: DouyinLiveProps['data']; qrCodeDataUrl: st
           alt="抖音"
           className="w-60 h-auto opacity-80 dark:opacity-70"
         />
-        {qrCodeDataUrl ? (
+        {generateQRCode(data.share_url, data.useDarkTheme) ? (
           <img
-            src={qrCodeDataUrl}
+            src={generateQRCode(data.share_url, data.useDarkTheme)}
             alt="二维码"
             className="h-auto w-75"
           />
@@ -232,7 +233,6 @@ const BottomSection: React.FC<{ data: DouyinLiveProps['data']; qrCodeDataUrl: st
  * 抖音直播组件
  */
 export const DouyinLive: React.FC<Omit<DouyinLiveProps, 'templateType' | 'templateName'>> = (props) => {
-  const { qrCodeDataUrl } = props
   const d = props.data
 
   return (
@@ -242,7 +242,7 @@ export const DouyinLive: React.FC<Omit<DouyinLiveProps, 'templateType' | 'templa
       <div className="relative z-10">
         <CoverSection imageUrl={d.image_url} />
         <InfoSection data={d} />
-        <BottomSection data={d} qrCodeDataUrl={qrCodeDataUrl} />
+        <BottomSection data={d} />
       </div>
     </DefaultLayout>
   )

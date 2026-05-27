@@ -67,44 +67,38 @@ export type AdapterInfo = Omit<KarinAdapterInfo, 'index' | 'secret' | 'connectTi
 /**
  * API错误组件属性接口
  */
-export interface ApiErrorProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */
-    useDarkTheme?: boolean
-    /** 错误类型 */
-    type: 'business_error'
-    /** 平台名称 */
-    platform: 'douyin' | 'bilibili' | 'kuaishou' | 'system' | 'unknown'
-    /** 错误信息 */
-    error: BusinessError
-    /** 调用的方法名 */
-    method: string
-    /** 错误发生时间 */
-    timestamp: string
-    /** 收集到的日志信息 */
-    logs?: LogEntry[]
-    /** 触发命令 */
-    triggerCommand?: string
-    /** 框架版本 */
-    frameworkVersion: string
-    /** 插件版本 */
-    pluginVersion: string
-    /** 构建时间 */
-    buildTime?: string
-    /** Commit ID */
-    commitHash?: string
-    /** 适配器信息 */
-    adapterInfo?: AdapterInfo
-    /** 是否为验证流程 */
-    isVerification?: boolean
-    /** 验证链接 */
-    verificationUrl?: string
-    /** 分享链接（用于生成二维码） */
-    share_url?: string
-  }
-  /** 分享链接二维码 */
-  qrCodeDataUrl?: string
+export interface ApiErrorProps extends BaseComponentProps<{
+  /** 错误类型 */
+  type: 'business_error'
+  /** 平台名称 */
+  platform: 'douyin' | 'bilibili' | 'kuaishou' | 'system' | 'unknown'
+  /** 错误信息 */
+  error: BusinessError
+  /** 调用的方法名 */
+  method: string
+  /** 错误发生时间 */
+  timestamp: string
+  /** 收集到的日志信息 */
+  logs?: LogEntry[]
+  /** 触发命令 */
+  triggerCommand?: string
+  /** 框架版本 */
+  frameworkVersion: string
+  /** 插件版本 */
+  pluginVersion: string
+  /** 构建时间 */
+  buildTime?: string
+  /** Commit ID */
+  commitHash?: string
+  /** 适配器信息 */
+  adapterInfo?: AdapterInfo
+  /** 是否为验证流程 */
+  isVerification?: boolean
+  /** 验证链接 */
+  verificationUrl?: string
+  /** 分享链接（用于生成二维码） */
+  share_url?: string
+}> {
 }
 
 /**

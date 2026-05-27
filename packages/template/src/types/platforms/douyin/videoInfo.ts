@@ -1,7 +1,7 @@
 /**
  * 抖音视频统计信息接口
  */
-export interface DouyinVideoStatistics {
+interface DouyinVideoStatistics {
   /** 点赞数 */
   admire_count: number
   /** 视频ID */
@@ -23,7 +23,7 @@ export interface DouyinVideoStatistics {
 /**
  * 抖音作者信息接口
  */
-export interface DouyinAuthor {
+interface DouyinAuthor {
   /** 作者名称 */
   name: string
   /** 作者头像URL */
@@ -35,7 +35,7 @@ export interface DouyinAuthor {
 /**
  * 抖音用户主页扩展信息接口
  */
-export interface DouyinUserProfile {
+interface DouyinUserProfile {
   /** IP属地 */
   ip_location: string
   /** 粉丝数 */
@@ -53,7 +53,7 @@ export interface DouyinUserProfile {
 /**
  * 抖音视频信息数据接口
  */
-export interface DouyinVideoInfoData {
+interface DouyinVideoInfoData {
   /** 视频描述 */
   desc: string
   /** 统计信息 */
@@ -94,12 +94,6 @@ export interface DouyinVideoInfoData {
  * 抖音视频信息组件属性接口
  */
 export interface DouyinVideoInfoProps {
-  /** 模板类型 */
-  templateType: string
-  /** 模板名称 */
-  templateName: string
   /** 视频数据 */
   data: DouyinVideoInfoData
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
 }

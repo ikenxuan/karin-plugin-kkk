@@ -817,7 +817,7 @@ export class Bilibili extends Base {
                   dynamicTYPE: '视频动态解析',
                   dynamic_id: dynamicInfo.data.data.item.id_str,
                   staff
-                } )
+                })
               this.e.reply(img)
             }
             break

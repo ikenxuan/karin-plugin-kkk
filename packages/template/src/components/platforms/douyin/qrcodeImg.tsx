@@ -3,6 +3,7 @@ import React from 'react'
 import { RiArrowRightFill, RiTiktokFill } from 'react-icons/ri'
 
 import type { DouyinQrcodeImgProps } from '../../../types/platforms/douyin'
+import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 /**
@@ -12,7 +13,7 @@ import { DefaultLayout } from '../../layouts/DefaultLayout'
  */
 export const DouyinQrcodeImg: React.FC<DouyinQrcodeImgProps> = React.memo((props) => {
   const isDark = props.data?.useDarkTheme ?? false
-  const qrCodeImage = props.data.qrCodeDataUrl || (props as any).qrCodeDataUrl
+  const qrCodeImage = generateQRCode(props.data.qr_url || '', isDark)
 
   const theme = {
     bg: isDark ? '#000000' : '#FFFFFF',

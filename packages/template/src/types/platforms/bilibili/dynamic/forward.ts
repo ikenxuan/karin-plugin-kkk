@@ -122,23 +122,17 @@ export interface BilibiliForwardContentProps {
   text: RichTextDocument
   /** 原始内容 */
   original_content: BilibiliForwardOriginalContentProps['original_content']
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean
 }
 
 /**
  * B站转发动态组件属性接口
  */
-export interface BilibiliForwardDynamicProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: BilibiliDynamicBaseData & {
-    /** 动态文本内容（富文本文档） */
-    text: RichTextDocument
-    /** 原始内容 */
-    original_content: BilibiliForwardOriginalContentProps['original_content']
-    /** 图片URL */
-    imgList: string[] | null
-  }
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string
+export interface BilibiliForwardDynamicProps extends BaseComponentProps<BilibiliDynamicBaseData & {
+  /** 动态文本内容（富文本文档） */
+  text: RichTextDocument
+  /** 原始内容 */
+  original_content: BilibiliForwardOriginalContentProps['original_content']
+  /** 图片URL */
+  imgList: string[] | null
+}> {
 }

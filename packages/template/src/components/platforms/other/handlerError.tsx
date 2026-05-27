@@ -7,6 +7,7 @@ import React from 'react'
 import { MdSchedule } from 'react-icons/md'
 
 import type { ApiErrorProps, BusinessError, LogLevel } from '../../../types/platforms/other/handlerError'
+import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 import { getRandomErrorTitle } from './errorTitles'
 
@@ -191,7 +192,7 @@ const SectionTitle: React.FC<{ icon: React.ReactNode; en: string; zh: string; co
  * API错误显示组件 - 手机端 Apple 风格
  */
 export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templateName'>> = (props) => {
-  const { data, qrCodeDataUrl } = props
+  const { data } = props
   const isDark = data.useDarkTheme === true
   const isBusinessError = data.type === 'business_error'
   const businessError = isBusinessError ? data.error as BusinessError : null
@@ -386,7 +387,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
         </div>
 
         {/* 验证二维码 */}
-        {data.isVerification && qrCodeDataUrl && (
+        {data.isVerification && data.verificationUrl && (
           <div
             className='mb-16 p-12 rounded-[40px]'
             style={{ backgroundColor: isDark ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.6)' }}
@@ -396,7 +397,7 @@ export const handlerError: React.FC<Omit<ApiErrorProps, 'templateType' | 'templa
               <span className='text-3xl font-semibold' style={{ color: accentColor }}>人机验证</span>
             </div>
             <div className='flex gap-16 items-center'>
-              <img src={qrCodeDataUrl} alt='验证二维码' className='w-64 h-64 rounded-3xl' />
+              <img src={generateQRCode(data.verificationUrl, isDark)} alt='验证二维码' className='w-64 h-64 rounded-3xl' />
               <div className='space-y-6'>
                 <p className='text-3xl' style={{ color: secondaryColor }}>请在 120 秒内完成验证</p>
                 <ol className='space-y-4 text-2xl' style={{ color: mutedColor }}>

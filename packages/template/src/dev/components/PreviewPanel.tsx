@@ -22,8 +22,6 @@ interface PreviewPanelProps {
   data: any
   /** 加载错误 */
   loadError: Error | null
-  /** 二维码数据URL */
-  qrCodeDataUrl: string
   /** 缩放比例 */
   scale: number
   /** 缩放变化回调 */
@@ -55,7 +53,6 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
   dataFile,
   data,
   loadError,
-  qrCodeDataUrl,
   scale,
   onScaleChange,
   onComponentLoadComplete,
@@ -88,11 +85,10 @@ export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
     templateId,
     dataFile,
     data,
-    qrCodeDataUrl,
     loadError,
     onLoadComplete: onComponentLoadComplete,
     versionEnabled
-  }), [platform, templateId, dataFile, data, qrCodeDataUrl, loadError, onComponentLoadComplete, versionEnabled])
+  }), [platform, templateId, dataFile, data, loadError, onComponentLoadComplete, versionEnabled])
 
   /**
    * 截图功能

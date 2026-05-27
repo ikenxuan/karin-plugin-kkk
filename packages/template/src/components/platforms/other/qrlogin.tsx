@@ -2,6 +2,7 @@ import { AlertTriangle, QrCode, Smartphone } from 'lucide-react'
 import React from 'react'
 
 import type { QrLoginProps } from '../../../types/platforms/other'
+import { generateQRCode } from '../../../utils/QRcode'
 import { GlowImage } from '../../common/GlowImage'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
@@ -11,7 +12,7 @@ import { DefaultLayout } from '../../layouts/DefaultLayout'
  * @returns JSX元素
  */
 export const QrLogin: React.FC<Omit<QrLoginProps, 'templateType' | 'templateName'>> = React.memo((props) => {
-  const qrCodeDataUrl = props.qrCodeDataUrl
+  const qrCodeDataUrl = props.data.qr_url ? generateQRCode(props.data.qr_url, props.data.useDarkTheme ?? false) : ''
   const isDark = props.data.useDarkTheme ?? false
 
   // 使用蓝紫色系弥散渐变
