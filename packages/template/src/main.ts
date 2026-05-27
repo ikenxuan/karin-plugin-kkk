@@ -784,6 +784,7 @@ class SSRRender {
   public async render<T> (request: RenderRequest<T>): Promise<RenderResponse> {
     try {
       logger.debug('[SSR] 开始渲染组件，预设模板:', `${logger.yellow(`${request.templateType}/`)}${request.templateName}`)
+      const startTime = Date.now()
 
       const ctx: PluginContext<T> = {
         request,
@@ -835,6 +836,8 @@ class SSRRender {
         )
       }
 
+      const endTime = Date.now()
+      logger.debug(`[SSR] ${logger.yellow(`${request.templateType}/`)}${request.templateName} Done! ${(endTime - startTime) >= 1000 ? logger.green(`${((endTime - startTime) / 1000).toFixed(2)} s`) : logger.green(`${endTime - startTime} ms`)}`)
       return {
         success: true,
         htmlPath: filePath
