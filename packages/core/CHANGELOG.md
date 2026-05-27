@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.32.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.32.0...v2.32.1) (2026-05-27)
+
+
+### 🐛 错误修复
+
+* **bilibili:** 推送爆了 ([cd87724](https://github.com/ikenxuan/karin-plugin-kkk/commit/cd8772438ed7c3a2c558f9a1b4455079e4a58f2c))
+
 ## [2.32.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.31.2...v2.32.0) (2026-05-27)
 
 
