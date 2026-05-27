@@ -147,16 +147,16 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
           {layoutType === 'vertical' && (
             props.image_url.map((img, index) => (
               <React.Fragment key={index}>
-                <div className='flex flex-col items-center'>
+                <div className='flex items-center'>
                   <div className='flex overflow-hidden flex-col flex-1 items-center rounded-4xl shadow-large'>
                     <EnhancedImage
                       src={img.image_src}
                       alt='封面'
-                      className='object-contain w-full h-full rounded-3xl'
+                      className='object-contain w-full h-full rounded-5xl'
                     />
                   </div>
                 </div>
-                <div className='h-18' />
+                <div className='h-10' />
               </React.Fragment>
             ))
           )}

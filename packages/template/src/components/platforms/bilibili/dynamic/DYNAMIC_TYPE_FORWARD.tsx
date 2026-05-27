@@ -130,21 +130,21 @@ const OriginalDrawContent: React.FC<{ content: OriginalContentDraw }> = ({ conte
         decoration_card={content.decoration_card}
       />
 
-      <div className='py-4'>
-        <div className='text-5xl leading-relaxed text-foreground wrap-break-word'>
-          {content.title && (
-            <span className='text-6xl font-bold'>{content.title}<br /><br /></span>
-          )}
-          {content.text && renderRichTextToReact(content.text, {
-            at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-            topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-            lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-            webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-            vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-            viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-            iconScale: 0.8
-          })}
-        </div>
+      <div className='h-15' />
+        
+      <div className='text-5xl leading-relaxed text-foreground wrap-break-word'>
+        {content.title && (
+          <span className='text-6xl font-bold'>{content.title}<br /><br /></span>
+        )}
+        {content.text && renderRichTextToReact(content.text, {
+          at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+          iconScale: 0.8
+        })}
       </div>
 
       {content.image_url && content.image_url.length === 1
