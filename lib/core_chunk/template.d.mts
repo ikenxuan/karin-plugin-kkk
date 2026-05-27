@@ -28,84 +28,72 @@ interface ArticleImage {
 /**
  * 抖音文章作品组件属性接口
  */
-interface DouyinArticleWorkProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 文章标题 */
-    title: string; /** 文章Markdown内容 */
-    markdown: string; /** 文章图片列表 */
-    images: ArticleImage[]; /** 阅读时间(分钟) */
-    read_time: number; /** 点赞数 */
-    dianzan: string; /** 评论数 */
-    pinglun: string; /** 收藏数 */
-    shouchang: string; /** 分享数 */
-    share: string; /** 创建时间 */
-    create_time: string; /** 用户头像URL */
-    avater_url: string; /** 用户名 */
-    username: string; /** 抖音号 */
-    抖音号: string; /** 获赞数 */
-    获赞: string; /** 关注数 */
-    关注: string; /** 粉丝数 */
-    粉丝: string; /** 分享链接 */
-    share_url: string;
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string;
-}
+interface DouyinArticleWorkProps extends BaseComponentProps<{
+  /** 文章标题 */title: string; /** 文章Markdown内容 */
+  markdown: string; /** 文章图片列表 */
+  images: ArticleImage[]; /** 阅读时间(分钟) */
+  read_time: number; /** 点赞数 */
+  dianzan: string; /** 评论数 */
+  pinglun: string; /** 收藏数 */
+  shouchang: string; /** 分享数 */
+  share: string; /** 创建时间 */
+  create_time: string; /** 用户头像URL */
+  avater_url: string; /** 用户名 */
+  username: string; /** 抖音号 */
+  抖音号: string; /** 获赞数 */
+  获赞: string; /** 关注数 */
+  关注: string; /** 粉丝数 */
+  粉丝: string; /** 分享链接 */
+  share_url: string;
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/douyin/comment.d.ts
 /**
  * 抖音评论组件属性接口
  */
-interface DouyinCommentProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 作品类型：视频/图集/合辑/文章 */
-    Type: '视频' | '图集' | '合辑' | '文章'; /** 评论数量 */
-    CommentLength: number; /** 视频大小(MB) */
-    VideoSize?: string; /** 视频帧率(Hz) */
-    VideoFPS?: number; /** 图片数量 */
-    ImageLength?: number; /** 区域 */
-    Region: string; /** 相关搜索（大家都在搜） */
-    suggestWrod: string[]; /** 视频分辨率 */
-    Resolution: string | null; /** 分享链接 */
-    share_url: string; /** 作者昵称 */
-    Author: string; /** 作者头像 */
-    AuthorAvatar: string; /** 作品统计 */
-    Statistics: {
-      digg_count: number;
-      comment_count: number;
-      share_count: number;
-      collect_count: number;
-    }; /** 发布时间戳（秒） */
-    CreateTime: number; /** 评论数据列表 */
-    CommentsData: Array<{
-      /** 评论ID */id?: number; /** 评论CID */
-      cid?: string; /** 作品ID */
-      aweme_id?: string; /** 用户头像URL */
-      userimageurl: string; /** 用户昵称 */
-      nickname: string; /** 标签类型 (1=作者) */
-      label_type?: number; /** 状态标签 */
-      status_label?: string; /** 评论内容 */
-      text: RichTextDocument; /** 评论图片 */
-      commentimage?: string; /** 贴纸 */
-      sticker?: string; /** 创建时间戳（秒） */
-      create_time: number; /** IP标签 */
-      ip_label: string; /** 点赞数 */
-      digg_count: number; /** 搜索文本 */
-      search_text?: Array<{
-        /** 搜索文本内容 */search_text: string; /** 搜索查询ID */
-        search_query_id: string;
-      }> | null; /** 是否@用户ID */
-      is_At_user_id?: any; /** 回复评论数据 */
-      replyComment?: DouyinSubComment[]; /** 作者是否点赞 */
-      is_author_digged?: boolean;
-    }>; /** 最大嵌套层级 */
-    maxDepth?: number;
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string;
-}
+interface DouyinCommentProps extends BaseComponentProps<{
+  /** 作品类型：视频/图集/合辑/文章 */Type: '视频' | '图集' | '合辑' | '文章'; /** 评论数量 */
+  CommentLength: number; /** 视频大小(MB) */
+  VideoSize?: string; /** 视频帧率(Hz) */
+  VideoFPS?: number; /** 图片数量 */
+  ImageLength?: number; /** 区域 */
+  Region: string; /** 相关搜索（大家都在搜） */
+  suggestWrod: string[]; /** 视频分辨率 */
+  Resolution: string | null; /** 分享链接 */
+  share_url: string; /** 作者昵称 */
+  Author: string; /** 作者头像 */
+  AuthorAvatar: string; /** 作品统计 */
+  Statistics: {
+    digg_count: number;
+    comment_count: number;
+    share_count: number;
+    collect_count: number;
+  }; /** 发布时间戳（秒） */
+  CreateTime: number; /** 评论数据列表 */
+  CommentsData: Array<{
+    /** 评论ID */id?: number; /** 评论CID */
+    cid?: string; /** 作品ID */
+    aweme_id?: string; /** 用户头像URL */
+    userimageurl: string; /** 用户昵称 */
+    nickname: string; /** 标签类型 (1=作者) */
+    label_type?: number; /** 状态标签 */
+    status_label?: string; /** 评论内容 */
+    text: RichTextDocument; /** 评论图片 */
+    commentimage?: string; /** 贴纸 */
+    sticker?: string; /** 创建时间戳（秒） */
+    create_time: number; /** IP标签 */
+    ip_label: string; /** 点赞数 */
+    digg_count: number; /** 搜索文本 */
+    search_text?: Array<{
+      /** 搜索文本内容 */search_text: string; /** 搜索查询ID */
+      search_query_id: string;
+    }> | null; /** 是否@用户ID */
+    is_At_user_id?: any; /** 回复评论数据 */
+    replyComment?: DouyinSubComment[]; /** 作者是否点赞 */
+    is_author_digged?: boolean;
+  }>; /** 最大嵌套层级 */
+  maxDepth?: number;
+}> {}
 /**
  * 抖音子评论数据接口
  */
@@ -140,214 +128,174 @@ interface DouyinSubComment {
 /**
  * 抖音动态组件属性接口
  */
-interface DouyinDynamicProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 图片URL */
-    image_url: string; /** 描述内容 */
-    desc: string; /** 点赞数 */
-    dianzan: string; /** 评论数 */
-    pinglun: string; /** 收藏数 */
-    shouchang: string; /** 分享数 */
-    share: string; /** 创建时间 */
-    create_time: string; /** 用户头像URL */
-    avater_url: string; /** 用户名 */
-    username: string; /** 抖音号 */
-    抖音号: string; /** 获赞数 */
-    获赞: string; /** 关注数 */
-    关注: string; /** 粉丝数 */
-    粉丝: string; /** 分享链接 */
-    share_url: string; /** 动态类型 */
-    dynamicTYPE?: string; /** 合作信息 */
-    cooperation_info?: {
-      co_creator_nums: number;
-      co_creators: Array<{
-        avatar_url?: string;
-        nickname: string;
-        role_title: string;
-      }>;
-    };
+interface DouyinDynamicProps extends BaseComponentProps<{
+  /** 图片URL */image_url: string; /** 描述内容 */
+  desc: string; /** 点赞数 */
+  dianzan: string; /** 评论数 */
+  pinglun: string; /** 收藏数 */
+  shouchang: string; /** 分享数 */
+  share: string; /** 创建时间 */
+  create_time: string; /** 用户头像URL */
+  avater_url: string; /** 用户名 */
+  username: string; /** 抖音号 */
+  抖音号: string; /** 获赞数 */
+  获赞: string; /** 关注数 */
+  关注: string; /** 粉丝数 */
+  粉丝: string; /** 分享链接 */
+  share_url: string; /** 动态类型 */
+  dynamicTYPE?: string; /** 合作信息 */
+  cooperation_info?: {
+    co_creator_nums: number;
+    co_creators: Array<{
+      avatar_url?: string;
+      nickname: string;
+      role_title: string;
+    }>;
   };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string;
-}
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/douyin/favorite-list.d.ts
 /**
  * 抖音喜欢列表组件属性接口
  * 用于展示"谁喜欢了谁的作品"
  */
-interface DouyinFavoriteListProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 作品封面图片URL */
-    image_url: string; /** 作品描述内容 */
-    desc: string; /** 点赞数 */
-    dianzan: string; /** 评论数 */
-    pinglun: string; /** 收藏数 */
-    shouchang: string; /** 分享数 */
-    share: string; /** 推荐数 */
-    tuijian: string; /** 作品创建时间 */
-    create_time: string; /** 点赞者（订阅者）用户名 */
-    liker_username: string; /** 点赞者头像URL */
-    liker_avatar: string; /** 点赞者抖音号 */
-    liker_douyin_id: string; /** 作品作者用户名 */
-    author_username: string; /** 作品作者头像URL */
-    author_avatar: string; /** 作品作者抖音号 */
-    author_douyin_id: string; /** 分享链接 */
-    share_url: string;
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string;
-}
+interface DouyinFavoriteListProps extends BaseComponentProps<{
+  /** 作品封面图片URL */image_url: string; /** 作品描述内容 */
+  desc: string; /** 点赞数 */
+  dianzan: string; /** 评论数 */
+  pinglun: string; /** 收藏数 */
+  shouchang: string; /** 分享数 */
+  share: string; /** 推荐数 */
+  tuijian: string; /** 作品创建时间 */
+  create_time: string; /** 点赞者（订阅者）用户名 */
+  liker_username: string; /** 点赞者头像URL */
+  liker_avatar: string; /** 点赞者抖音号 */
+  liker_douyin_id: string; /** 作品作者用户名 */
+  author_username: string; /** 作品作者头像URL */
+  author_avatar: string; /** 作品作者抖音号 */
+  author_douyin_id: string; /** 分享链接 */
+  share_url: string;
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/douyin/imageWork.d.ts
 /**
  * 抖音图文作品组件属性接口
  */
-interface DouyinImageWorkProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 图文封面URL */
-    image_url: string; /** 描述内容 */
-    desc: string; /** 点赞数 */
-    dianzan: string; /** 评论数 */
-    pinglun: string; /** 收藏数 */
-    shouchang: string; /** 分享数 */
-    share: string; /** 创建时间 */
-    create_time: string; /** 用户头像URL */
-    avater_url: string; /** 用户名 */
-    username: string; /** 抖音号 */
-    抖音号: string; /** 获赞数 */
-    获赞: string; /** 关注数 */
-    关注: string; /** 粉丝数 */
-    粉丝: string; /** 分享链接 */
-    share_url: string; /** 动态类型 */
-    dynamicTYPE?: string; /** 合作信息 */
-    cooperation_info?: {
-      co_creator_nums: number;
-      co_creators: Array<{
-        avatar_url?: string;
-        nickname: string;
-        role_title: string;
-      }>;
-    };
+interface DouyinImageWorkProps extends BaseComponentProps<{
+  /** 图文封面URL */image_url: string; /** 描述内容 */
+  desc: string; /** 点赞数 */
+  dianzan: string; /** 评论数 */
+  pinglun: string; /** 收藏数 */
+  shouchang: string; /** 分享数 */
+  share: string; /** 创建时间 */
+  create_time: string; /** 用户头像URL */
+  avater_url: string; /** 用户名 */
+  username: string; /** 抖音号 */
+  抖音号: string; /** 获赞数 */
+  获赞: string; /** 关注数 */
+  关注: string; /** 粉丝数 */
+  粉丝: string; /** 分享链接 */
+  share_url: string; /** 动态类型 */
+  dynamicTYPE?: string; /** 合作信息 */
+  cooperation_info?: {
+    co_creator_nums: number;
+    co_creators: Array<{
+      avatar_url?: string;
+      nickname: string;
+      role_title: string;
+    }>;
   };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string;
-}
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/douyin/live.d.ts
 /**
  * 抖音直播组件属性接口
  */
-interface DouyinLiveProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 直播封面图片URL */
-    image_url: string; /** 直播标题/描述 */
-    text: string; /** 直播分区标题 */
-    partition_title: string; /** 房间号 */
-    room_id: string; /** 总观看次数 */
-    total_viewers: string; /** 在线观众数 */
-    online_viewers: string; /** 用户头像URL */
-    avater_url: string; /** 用户名 */
-    username: string; /** 粉丝数 */
-    fans: string; /** 动态类型 */
-    dynamicTYPE: string; /** 分享链接 */
-    share_url: string; /** 点赞数 */
-    like_count: string; /** 在线人数文本 */
-    user_count_str: string; /** 直播分辨率 */
-    resolution: string; /** 主播签名 */
-    signature: string; /** 城市 */
-    city: string; /** 作品数 */
-    aweme_count: string; /** 关注数 */
-    following_count: string; /** 获赞数 */
-    total_favorited: string; /** 是否有商品 */
-    has_commerce_goods: boolean;
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string;
-}
+interface DouyinLiveProps extends BaseComponentProps<{
+  /** 直播封面图片URL */image_url: string; /** 直播标题/描述 */
+  text: string; /** 直播分区标题 */
+  partition_title: string; /** 房间号 */
+  room_id: string; /** 总观看次数 */
+  total_viewers: string; /** 在线观众数 */
+  online_viewers: string; /** 用户头像URL */
+  avater_url: string; /** 用户名 */
+  username: string; /** 粉丝数 */
+  fans: string; /** 动态类型 */
+  dynamicTYPE: string; /** 分享链接 */
+  share_url: string; /** 点赞数 */
+  like_count: string; /** 在线人数文本 */
+  user_count_str: string; /** 直播分辨率 */
+  resolution: string; /** 主播签名 */
+  signature: string; /** 城市 */
+  city: string; /** 作品数 */
+  aweme_count: string; /** 关注数 */
+  following_count: string; /** 获赞数 */
+  total_favorited: string; /** 是否有商品 */
+  has_commerce_goods: boolean;
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/douyin/musicinfo.d.ts
 /**
  * 抖音音乐信息组件属性接口
  */
-interface DouyinMusicInfoProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 音乐封面图片URL */
-    image_url: string; /** 音乐描述/标题 */
-    desc: string; /** 音乐ID */
-    music_id: string; /** 创建时间 */
-    create_time: string; /** 使用该音乐的用户数量 */
-    user_count: string; /** 用户头像URL */
-    avater_url: string; /** 用户名 */
-    username: string; /** 用户短ID */
-    user_shortid: string; /** 获赞数 */
-    total_favorited: number; /** 关注数 */
-    following_count: number; /** 粉丝数 */
-    fans: number; /** 分享链接 */
-    share_url: string;
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string;
-}
+interface DouyinMusicInfoProps extends BaseComponentProps<{
+  /** 音乐封面图片URL */image_url: string; /** 音乐描述/标题 */
+  desc: string; /** 音乐ID */
+  music_id: string; /** 创建时间 */
+  create_time: string; /** 使用该音乐的用户数量 */
+  user_count: string; /** 用户头像URL */
+  avater_url: string; /** 用户名 */
+  username: string; /** 用户短ID */
+  user_shortid: string; /** 获赞数 */
+  total_favorited: number; /** 关注数 */
+  following_count: number; /** 粉丝数 */
+  fans: number; /** 分享链接 */
+  share_url: string;
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/douyin/recommend-list.d.ts
 /**
  * 抖音推荐列表组件属性接口
  */
-interface DouyinRecommendListProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 图片URL */
-    image_url: string; /** 描述内容 */
-    desc: string; /** 点赞数 */
-    dianzan: string; /** 评论数 */
-    pinglun: string; /** 收藏数 */
-    shouchang: string; /** 推荐数 */
-    tuijian: string; /** 分享数 */
-    share: string; /** 创建时间 */
-    create_time: string; /** 推荐者（订阅者）用户名 */
-    recommender_username: string; /** 推荐者头像URL */
-    recommender_avatar: string; /** 推荐者抖音号 */
-    recommender_douyin_id: string; /** 作品作者用户名 */
-    author_username: string; /** 作品作者头像URL */
-    author_avatar: string; /** 作品作者抖音号 */
-    author_douyin_id: string; /** 分享链接 */
-    share_url: string;
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string;
-}
+interface DouyinRecommendListProps extends BaseComponentProps<{
+  /** 图片URL */image_url: string; /** 描述内容 */
+  desc: string; /** 点赞数 */
+  dianzan: string; /** 评论数 */
+  pinglun: string; /** 收藏数 */
+  shouchang: string; /** 推荐数 */
+  tuijian: string; /** 分享数 */
+  share: string; /** 创建时间 */
+  create_time: string; /** 推荐者（订阅者）用户名 */
+  recommender_username: string; /** 推荐者头像URL */
+  recommender_avatar: string; /** 推荐者抖音号 */
+  recommender_douyin_id: string; /** 作品作者用户名 */
+  author_username: string; /** 作品作者头像URL */
+  author_avatar: string; /** 作品作者抖音号 */
+  author_douyin_id: string; /** 分享链接 */
+  share_url: string;
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/douyin/userlist.d.ts
 /**
  * 抖音用户列表组件属性接口
  */
-interface DouyinUserListProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 群组信息 */
-    groupInfo: {
-      /** 群号 */groupId: string; /** 群名称 */
-      groupName: string; /** 群头像 */
-      groupAvatar: string;
-    }; /** 用户列表数据 */
-    renderOpt: {
-      /** 用户头像图片URL */avatar_img: string; /** 用户名 */
-      username: string; /** 抖音短ID */
-      short_id: string; /** 粉丝数 */
-      fans: string; /** 获赞总数 */
-      total_favorited: string; /** 关注数 */
-      following_count: string; /** 全局推送开关状态 */
-      switch: boolean; /** 推送类型列表 */
-      pushTypes: string[];
-    }[];
-  };
-}
+interface DouyinUserListProps extends BaseComponentProps<{
+  /** 群组信息 */groupInfo: {
+    /** 群号 */groupId: string; /** 群名称 */
+    groupName: string; /** 群头像 */
+    groupAvatar: string;
+  }; /** 用户列表数据 */
+  renderOpt: {
+    /** 用户头像图片URL */avatar_img: string; /** 用户名 */
+    username: string; /** 抖音短ID */
+    short_id: string; /** 粉丝数 */
+    fans: string; /** 获赞总数 */
+    total_favorited: string; /** 关注数 */
+    following_count: string; /** 全局推送开关状态 */
+    switch: boolean; /** 推送类型列表 */
+    pushTypes: string[];
+  }[];
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/douyin/UserVideoList.d.ts
 /**
@@ -386,13 +334,11 @@ type UserVideoListData = {
     verified: boolean; /** IP属地 */
     ip_location: string;
   }; /** 视频列表 */
-  videos: VideoListItem[]; /** 超时秒数 */
+  videos: Array<VideoListItem>; /** 超时秒数 */
   timeoutSeconds?: number;
 };
 interface DouyinUserVideoListProps {
-  data: UserVideoListData & {
-    useDarkTheme?: boolean;
-  };
+  data: UserVideoListData;
 }
 //#endregion
 //#region ../template/src/types/platforms/douyin/videoInfo.d.ts
@@ -488,58 +434,45 @@ interface DouyinVideoInfoData {
  * 抖音视频信息组件属性接口
  */
 interface DouyinVideoInfoProps {
-  /** 模板类型 */
-  templateType: string;
-  /** 模板名称 */
-  templateName: string;
   /** 视频数据 */
   data: DouyinVideoInfoData;
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean;
 }
 //#endregion
 //#region ../template/src/types/platforms/douyin/videoWork.d.ts
 /**
  * 抖音视频作品组件属性接口
  */
-interface DouyinVideoWorkProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 视频封面URL */
-    image_url: string; /** 描述内容 */
-    desc: string; /** 点赞数 */
-    dianzan: string; /** 评论数 */
-    pinglun: string; /** 收藏数 */
-    shouchang: string; /** 分享数 */
-    share: string; /** 创建时间 */
-    create_time: string; /** 用户头像URL */
-    avater_url: string; /** 用户名 */
-    username: string; /** 抖音号 */
-    抖音号: string; /** 获赞数 */
-    获赞: string; /** 关注数 */
-    关注: string; /** 粉丝数 */
-    粉丝: string; /** 分享链接 */
-    share_url: string; /** 动态类型 */
-    dynamicTYPE?: string; /** 合作信息 */
-    cooperation_info?: {
-      co_creator_nums: number;
-      co_creators: Array<{
-        avatar_url?: string;
-        nickname: string;
-        role_title: string;
-      }>;
-      subscriber_role?: string;
-    };
+interface DouyinVideoWorkProps extends BaseComponentProps<{
+  /** 视频封面URL */image_url: string; /** 描述内容 */
+  desc: string; /** 点赞数 */
+  dianzan: string; /** 评论数 */
+  pinglun: string; /** 收藏数 */
+  shouchang: string; /** 分享数 */
+  share: string; /** 创建时间 */
+  create_time: string; /** 用户头像URL */
+  avater_url: string; /** 用户名 */
+  username: string; /** 抖音号 */
+  抖音号: string; /** 获赞数 */
+  获赞: string; /** 关注数 */
+  关注: string; /** 粉丝数 */
+  粉丝: string; /** 分享链接 */
+  share_url: string; /** 动态类型 */
+  dynamicTYPE?: string; /** 合作信息 */
+  cooperation_info?: {
+    co_creator_nums: number;
+    co_creators: Array<{
+      avatar_url?: string;
+      nickname: string;
+      role_title: string;
+    }>;
+    subscriber_role?: string;
   };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string;
-}
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/douyin/index.d.ts
 /** 抖音二维码登录组件属性 */
 interface DouyinQrcodeImgProps extends BaseComponentProps<{
-  /** 二维码数据URL（插件生成的自定义二维码，或原始二维码图片） */qrCodeDataUrl?: string; /** 分享链接（用于生成自定义二维码） */
-  share_url?: string;
+  /** 分享链接（用于生成自定义二维码） */share_url?: string;
 }> {
   /** 是否使用深色主题 */
   useDarkTheme?: boolean;
@@ -707,34 +640,23 @@ interface BangumiBilibiliData {
 /**
  * B站番剧组件属性接口
  */
-interface BilibiliBangumiProps extends BaseComponentProps {
-  /** 番剧数据 */
-  data: BangumiBilibiliData;
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string;
-}
+interface BilibiliBangumiProps extends BaseComponentProps<BangumiBilibiliData> {}
 //#endregion
 //#region ../template/src/types/platforms/bilibili/comment.d.ts
 /**
  * B站评论组件属性接口
  */
-interface BilibiliCommentProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 作品类型：视频/图集/动态 */
-    Type: '视频' | '动态'; /** 评论数量 */
-    CommentLength: string; /** 视频大小(MB) */
-    VideoSize?: string; /** 视频画质 */
-    Clarity?: string; /** 图片数量 */
-    ImageLength?: number; /** 分享链接 */
-    shareurl: string; /** 分享URL */
-    share_url: string; /** 视频分辨率 */
-    Resolution: string | null; /** 评论数据 */
-    CommentsData: CommentItem[];
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string;
-}
+interface BilibiliCommentProps extends BaseComponentProps<{
+  /** 作品类型：视频/图集/动态 */Type: '视频' | '动态'; /** 评论数量 */
+  CommentLength: string; /** 视频大小(MB) */
+  VideoSize?: string; /** 视频画质 */
+  Clarity?: string; /** 图片数量 */
+  ImageLength?: number; /** 分享链接 */
+  shareurl: string; /** 分享URL */
+  share_url: string; /** 视频分辨率 */
+  Resolution: string | null; /** 评论数据 */
+  CommentsData: CommentItem[];
+}> {}
 /**
  * 粉丝卡片信息接口
  */
@@ -895,8 +817,6 @@ interface UsernameMetadata {
  * B站动态基础数据接口（所有动态类型共有的字段）
  */
 interface BilibiliDynamicBaseData {
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean;
   /** 用户头像URL */
   avatar_url: string;
   /** 头像框 */
@@ -933,20 +853,15 @@ interface BilibiliDynamicBaseData {
 /**
  * B站普通动态组件属性接口
  */
-interface BilibiliDynamicProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: BilibiliDynamicBaseData & {
-    /** 图文动态标题 */title?: string; /** 动态文本内容（富文本文档） */
-    text: RichTextDocument | null; /** 图片URL数组 */
-    image_url: Array<{
-      image_src: string;
-    }>; /** 图片布局方式 */
-    imageLayout: string; /** 相关内容卡片 */
-    additional?: BilibiliAdditionalData;
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string;
-}
+interface BilibiliDynamicProps extends BaseComponentProps<BilibiliDynamicBaseData & {
+  /** 图文动态标题 */title?: string; /** 动态文本内容（富文本文档） */
+  text: RichTextDocument | null; /** 图片URL数组 */
+  image_url: Array<{
+    image_src: string;
+  }>; /** 图片布局方式 */
+  imageLayout: string; /** 相关内容卡片 */
+  additional?: BilibiliAdditionalData;
+}> {}
 /**
  * B站预约卡片数据接口
  */
@@ -1025,59 +940,48 @@ interface BilibiliAdditionalData {
 /**
  * B站纯文动态组件属性接口
  */
-interface BilibiliWordDynamicProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: BilibiliDynamicBaseData & {
-    /** 动态文本内容（富文本文档） */text: RichTextDocument | null; /** 相关内容卡片 */
-    additional?: BilibiliAdditionalData;
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string;
-}
+interface BilibiliWordDynamicProps extends BaseComponentProps<BilibiliDynamicBaseData & {
+  /** 动态文本内容（富文本文档） */text: RichTextDocument | null; /** 相关内容卡片 */
+  additional?: BilibiliAdditionalData;
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/bilibili/dynamic/article.d.ts
 /**
  * B站专栏动态组件属性接口
  */
-interface BilibiliArticleDynamicProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 用户头像URL */
-    avatar_url: string; /** 头像框 */
-    frame?: string; /** 用户名元数据 */
-    usernameMeta: UsernameMetadata; /** 动态创建时间 */
-    create_time: string; /** 装饰卡片 */
-    decoration_card?: DecorationCardData; /** 专栏标题 */
-    title: string; /** 专栏摘要 */
-    summary: string; /** 专栏封面图片URL */
-    banner_url?: string; /** 专栏分类 */
-    categories: Array<{
-      id: number;
-      name: string;
-      parent_id: number;
-    }>; /** 专栏字数 */
-    words: number; /** 专栏统计数据 */
-    stats: {
-      /** 阅读数 */view: number; /** 点赞数 */
-      like: number; /** 收藏数 */
-      favorite: number; /** 评论数 */
-      reply: number; /** 分享数 */
-      share: number; /** 投币数 */
-      coin: number; /** 转发动态 */
-      dynamic: number;
-    }; /** 专栏正文（richtext 格式） */
-    body: RichTextDocument; /** 渲染时间 */
-    render_time: string; /** 动态类型 */
-    dynamicTYPE: string; /** 分享链接 */
-    share_url: string; /** 用户短ID */
-    user_shortid: string | number; /** 获赞总数 */
-    total_favorited: string | number; /** 关注数 */
-    following_count: string | number; /** 粉丝数 */
-    fans: string | number;
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string;
-}
+interface BilibiliArticleDynamicProps extends BaseComponentProps<{
+  /** 用户头像URL */avatar_url: string; /** 头像框 */
+  frame?: string; /** 用户名元数据 */
+  usernameMeta: UsernameMetadata; /** 动态创建时间 */
+  create_time: string; /** 装饰卡片 */
+  decoration_card?: DecorationCardData; /** 专栏标题 */
+  title: string; /** 专栏摘要 */
+  summary: string; /** 专栏封面图片URL */
+  banner_url?: string; /** 专栏分类 */
+  categories: Array<{
+    id: number;
+    name: string;
+    parent_id: number;
+  }>; /** 专栏字数 */
+  words: number; /** 专栏统计数据 */
+  stats: {
+    /** 阅读数 */view: number; /** 点赞数 */
+    like: number; /** 收藏数 */
+    favorite: number; /** 评论数 */
+    reply: number; /** 分享数 */
+    share: number; /** 投币数 */
+    coin: number; /** 转发动态 */
+    dynamic: number;
+  }; /** 专栏正文（richtext 格式） */
+  body: RichTextDocument; /** 渲染时间 */
+  render_time: string; /** 动态类型 */
+  dynamicTYPE: string; /** 分享链接 */
+  share_url: string; /** 用户短ID */
+  user_shortid: string | number; /** 获赞总数 */
+  total_favorited: string | number; /** 关注数 */
+  following_count: string | number; /** 粉丝数 */
+  fans: string | number;
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/bilibili/dynamic/forward.d.ts
 /**
@@ -1187,16 +1091,11 @@ interface BilibiliForwardOriginalContentProps {
 /**
  * B站转发动态组件属性接口
  */
-interface BilibiliForwardDynamicProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: BilibiliDynamicBaseData & {
-    /** 动态文本内容（富文本文档） */text: RichTextDocument; /** 原始内容 */
-    original_content: BilibiliForwardOriginalContentProps['original_content']; /** 图片URL */
-    imgList: string[] | null;
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string;
-}
+interface BilibiliForwardDynamicProps extends BaseComponentProps<BilibiliDynamicBaseData & {
+  /** 动态文本内容（富文本文档） */text: RichTextDocument; /** 原始内容 */
+  original_content: BilibiliForwardOriginalContentProps['original_content']; /** 图片URL */
+  imgList: string[] | null;
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/bilibili/dynamic/live.d.ts
 interface BilibiliPosterPalette {
@@ -1215,24 +1114,19 @@ interface BilibiliPosterPalettes {
 /**
  * B站直播动态组件属性接口
  */
-interface BilibiliLiveDynamicProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 直播封面 */
-    image_url: string; /** 直播标题 */
-    text: RichTextDocument; /** 直播房间信息（分区 | 房间号） */
-    liveinf: string; /** 用户名元数据 */
-    usernameMeta: UsernameMetadata; /** 用户头像URL */
-    avatar_url: string; /** 头像框 */
-    frame?: string; /** 粉丝数 */
-    fans: string; /** 时间信息 */
-    create_time: string; /** 直播开始时间 */
-    now_time: string; /** 分享和配置 */
-    share_url: string; /** 动态类型 */
-    dynamicTYPE: string;
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string;
+interface BilibiliLiveDynamicProps extends BaseComponentProps<{
+  /** 直播封面 */image_url: string; /** 直播标题 */
+  text: RichTextDocument; /** 直播房间信息（分区 | 房间号） */
+  liveinf: string; /** 用户名元数据 */
+  usernameMeta: UsernameMetadata; /** 用户头像URL */
+  avatar_url: string; /** 头像框 */
+  frame?: string; /** 粉丝数 */
+  fans: string; /** 时间信息 */
+  create_time: string; /** 直播开始时间 */
+  now_time: string; /** 分享和配置 */
+  share_url: string; /** 动态类型 */
+  dynamicTYPE: string;
+}> {
   /** 服务端预计算的海报色板（亮色/深色） */
   posterPalettes?: BilibiliPosterPalettes;
   /** 服务端预计算的海报色板 */
@@ -1243,54 +1137,45 @@ interface BilibiliLiveDynamicProps extends BaseComponentProps {
 /**
  * B站视频动态组件属性接口
  */
-interface BilibiliVideoDynamicProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: BilibiliDynamicBaseData & {
-    /** 视频标题 */text: RichTextDocument; /** 视频描述 */
-    desc: RichTextDocument; /** 动态正文（富文本文档） */
-    dynamic_text: RichTextDocument | null; /** 视频封面图片URL */
-    image_url: string; /** 硬币数 */
-    coin: string | number; /** 浏览量 */
-    view: string | number; /** 视频时长 */
-    duration_text: string; /** 视频分P数量 */
-    page_length: number; /** 共创者列表 (可选) */
-    staff?: Array<{
-      /** 用户ID */mid: number; /** 职位标题 (UP主/参演) */
-      title: string; /** 用户名 */
-      name: string; /** 头像URL */
-      face: string; /** 粉丝数 */
-      follower: number;
-    }>;
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string;
-}
+interface BilibiliVideoDynamicProps extends BaseComponentProps<BilibiliDynamicBaseData & {
+  /** 视频标题 */text: RichTextDocument; /** 视频描述 */
+  desc: RichTextDocument; /** 动态正文（富文本文档） */
+  dynamic_text: RichTextDocument | null; /** 视频封面图片URL */
+  image_url: string; /** 硬币数 */
+  coin: string | number; /** 浏览量 */
+  view: string | number; /** 视频时长 */
+  duration_text: string; /** 视频分P数量 */
+  page_length: number; /** 共创者列表 (可选) */
+  staff?: Array<{
+    /** 用户ID */mid: number; /** 职位标题 (UP主/参演) */
+    title: string; /** 用户名 */
+    name: string; /** 头像URL */
+    face: string; /** 粉丝数 */
+    follower: number;
+  }>;
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/bilibili/userlist.d.ts
 /**
  * B站用户列表组件属性接口
  */
-interface BilibiliUserListProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 群组信息 */
-    groupInfo: {
-      /** 群号 */groupId: string; /** 群名称 */
-      groupName: string; /** 群头像 */
-      groupAvatar: string;
-    }; /** 用户列表数据 */
-    renderOpt: {
-      /** 用户头像图片URL */avatar_img: string; /** 用户名 */
-      username: string; /** 用户UID */
-      host_mid: string; /** 粉丝数 */
-      fans: string; /** 获赞总数 */
-      total_favorited: string; /** 关注数 */
-      following_count: string; /** 全局推送开关状态 */
-      switch: boolean; /** 推送类型列表 */
-      pushTypes?: ('video' | 'draw' | 'word' | 'live' | 'forward' | 'article')[];
-    }[];
-  };
-}
+interface BilibiliUserListProps extends BaseComponentProps<{
+  /** 群组信息 */groupInfo: {
+    /** 群号 */groupId: string; /** 群名称 */
+    groupName: string; /** 群头像 */
+    groupAvatar: string;
+  }; /** 用户列表数据 */
+  renderOpt: {
+    /** 用户头像图片URL */avatar_img: string; /** 用户名 */
+    username: string; /** 用户UID */
+    host_mid: string; /** 粉丝数 */
+    fans: string; /** 获赞总数 */
+    total_favorited: string; /** 关注数 */
+    following_count: string; /** 全局推送开关状态 */
+    switch: boolean; /** 推送类型列表 */
+    pushTypes?: ('video' | 'draw' | 'word' | 'live' | 'forward' | 'article')[];
+  }[];
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/bilibili/videoInfo.d.ts
 /**
@@ -1359,50 +1244,32 @@ interface BilibiliVideoInfoData {
   pic: string;
   /** UP主信息 */
   owner: BilibiliVideoOwner;
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean;
 }
 /**
  * B站视频信息组件属性接口
  */
-interface BilibiliVideoInfoProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: BilibiliVideoInfoData;
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl?: string;
-}
+interface BilibiliVideoInfoProps extends BaseComponentProps<BilibiliVideoInfoData> {}
 //#endregion
 //#region ../template/src/types/platforms/bilibili/index.d.ts
 /** B站二维码登录组件属性 */
-interface BilibiliQrcodeImgProps {
-  data: {
-    /** 分享链接 */share_url: string; /** 是否使用深色主题 */
-    useDarkTheme?: boolean;
-  };
-  /** 二维码数据URL */
-  qrCodeDataUrl?: string;
-}
+interface BilibiliQrcodeImgProps extends BaseComponentProps<{
+  /** 分享链接 */share_url: string;
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/kuaishou/comment.d.ts
 /**
  * 快手评论组件属性接口
  */
-interface KuaishouCommentProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 作品类型：视频/图集 */
-    Type: '视频' | '图集'; /** 评论数量 */
-    CommentLength: number; /** 视频大小(MB) */
-    VideoSize?: string; /** 点赞数量 */
-    likeCount?: number; /** 观看次数 */
-    viewCount?: number; /** 图片数量 */
-    ImageLength?: number; /** 分享链接 */
-    share_url: string; /** 评论数据 */
-    CommentsData: KuaishouCommentItem[];
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string;
-}
+interface KuaishouCommentProps extends BaseComponentProps<{
+  /** 作品类型：视频/图集 */Type: '视频' | '图集'; /** 评论数量 */
+  CommentLength: number; /** 视频大小(MB) */
+  VideoSize?: string; /** 点赞数量 */
+  likeCount?: number; /** 观看次数 */
+  viewCount?: number; /** 图片数量 */
+  ImageLength?: number; /** 分享链接 */
+  share_url: string; /** 评论数据 */
+  CommentsData: KuaishouCommentItem[];
+}> {}
 /**
  * 快手评论项数据接口
  */
@@ -1435,19 +1302,13 @@ interface KuaishouCommentItem {
 /**
  * 小红书评论组件属性接口
  */
-interface XiaohongshuCommentProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 笔记类型：图文/视频 */
-    Type: '图文' | '视频'; /** 评论数量 */
-    CommentLength: number; /** 图片数量 */
-    ImageLength?: number; /** 分享链接 */
-    share_url: string; /** 评论数据 - 简化为直接的评论数组 */
-    CommentsData: XiaohongshuCommentItem[];
-  };
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string;
-}
+interface XiaohongshuCommentProps extends BaseComponentProps<{
+  /** 笔记类型：图文/视频 */Type: '图文' | '视频'; /** 评论数量 */
+  CommentLength: number; /** 图片数量 */
+  ImageLength?: number; /** 分享链接 */
+  share_url: string; /** 评论数据 - 简化为直接的评论数组 */
+  CommentsData: XiaohongshuCommentItem[];
+}> {}
 /**
  * 小红书评论项数据接口
  */
@@ -1595,34 +1456,25 @@ interface XiaohongshuNoteInfoData {
   time: number;
   /** IP位置 */
   ip_location: string;
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean;
 }
 /**
  * 小红书笔记信息组件属性接口
  */
-interface XiaohongshuNoteInfoProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: XiaohongshuNoteInfoData;
-}
+interface XiaohongshuNoteInfoProps extends BaseComponentProps<XiaohongshuNoteInfoData> {}
 //#endregion
 //#region ../template/src/types/platforms/other/help.d.ts
 /**
  * 帮助页面组件属性接口
  */
-interface HelpProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 页面标题 */
-    title?: string; /** 角色：主人/普通 */
-    role?: 'master' | 'member'; /** 菜单数据：按角色筛选后的分组 */
-    menu?: MenuGroup[]; /** 简单的列表数据 (用于 Help.tsx 渲染) */
-    list: {
-      title: string;
-      description: string;
-    }[];
-  };
-}
+interface HelpProps extends BaseComponentProps<{
+  /** 页面标题 */title?: string; /** 角色：主人/普通 */
+  role?: 'master' | 'member'; /** 菜单数据：按角色筛选后的分组 */
+  menu?: MenuGroup[]; /** 简单的列表数据 (用于 Help.tsx 渲染) */
+  list: {
+    title: string;
+    description: string;
+  }[];
+}> {}
 /**
  * 菜单项接口
  */
@@ -2038,142 +1890,105 @@ type AdapterInfo = Omit<AdapterInfo$1, 'index' | 'secret' | 'connectTime' | 'add
 /**
  * API错误组件属性接口
  */
-interface ApiErrorProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 错误类型 */
-    type: 'business_error'; /** 平台名称 */
-    platform: 'douyin' | 'bilibili' | 'kuaishou' | 'system' | 'unknown'; /** 错误信息 */
-    error: BusinessError; /** 调用的方法名 */
-    method: string; /** 错误发生时间 */
-    timestamp: string; /** 收集到的日志信息 */
-    logs?: LogEntry[]; /** 触发命令 */
-    triggerCommand?: string; /** 框架版本 */
-    frameworkVersion: string; /** 插件版本 */
-    pluginVersion: string; /** 构建时间 */
-    buildTime?: string; /** Commit ID */
-    commitHash?: string; /** 适配器信息 */
-    adapterInfo?: AdapterInfo; /** 是否为验证流程 */
-    isVerification?: boolean; /** 验证链接 */
-    verificationUrl?: string; /** 分享链接（用于生成二维码） */
-    share_url?: string;
-  };
-  /** 分享链接二维码 */
-  qrCodeDataUrl?: string;
-}
+interface ApiErrorProps extends BaseComponentProps<{
+  /** 错误类型 */type: 'business_error'; /** 平台名称 */
+  platform: 'douyin' | 'bilibili' | 'kuaishou' | 'system' | 'unknown'; /** 错误信息 */
+  error: BusinessError; /** 调用的方法名 */
+  method: string; /** 错误发生时间 */
+  timestamp: string; /** 收集到的日志信息 */
+  logs?: LogEntry[]; /** 触发命令 */
+  triggerCommand?: string; /** 框架版本 */
+  frameworkVersion: string; /** 插件版本 */
+  pluginVersion: string; /** 构建时间 */
+  buildTime?: string; /** Commit ID */
+  commitHash?: string; /** 适配器信息 */
+  adapterInfo?: AdapterInfo; /** 是否为验证流程 */
+  isVerification?: boolean; /** 验证链接 */
+  verificationUrl?: string; /** 分享链接（用于生成二维码） */
+  share_url?: string;
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/other/changelog.d.ts
 /**
  * 更新日志组件属性接口
  */
-interface ChangelogProps extends BaseComponentProps {
-  /** 渲染请求数据 */
-  data: {
-    /** 是否包含更新提示 */Tip?: boolean; /** 后端传入的 Markdown 源码 */
-    markdown: string; /** 本地版本号 */
-    localVersion: string; /** 远程版本号 */
-    remoteVersion: string; /** 落后的版本数量 */
-    lagVersionCount?: number; /** 构建时间 */
-    buildTime?: string; /** 版本差异对比页面分享链接 */
-    share_url?: string;
-  };
-}
+interface ChangelogProps extends BaseComponentProps<{
+  /** 是否包含更新提示 */Tip?: boolean; /** 后端传入的 Markdown 源码 */
+  markdown: string; /** 本地版本号 */
+  localVersion: string; /** 远程版本号 */
+  remoteVersion: string; /** 落后的版本数量 */
+  lagVersionCount?: number; /** 构建时间 */
+  buildTime?: string; /** 版本差异对比页面分享链接 */
+  share_url?: string;
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/other/VersionWarningProps.d.ts
-interface VersionWarningProps extends BaseComponentProps {
-  /** 插件构建时的 karin 版本 */
-  requireVersion: string;
-  /** 当前运行的 karin 版本 */
+interface VersionWarningProps extends BaseComponentProps<{
+  /** 插件构建时的 karin 版本 */requireVersion: string; /** 当前运行的 karin 版本 */
   currentVersion: string;
-}
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/other/qrlogin.d.ts
 /** APP 扫码登录组件属性 */
-interface QrLoginProps {
-  data: {
-    /** 服务器地址 */serverUrl: string; /** 分享链接（用于生成二维码） */
-    share_url: string; /** 是否使用深色主题 */
-    useDarkTheme?: boolean;
-  };
-  /** 二维码数据URL（由 createQrCodePlugin 自动生成，作为顶级 prop） */
-  qrCodeDataUrl?: string;
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean;
-}
+interface QrLoginProps extends BaseComponentProps<{
+  /** 服务器地址 */serverUrl: string; /** 分享链接（用于生成二维码） */
+  share_url: string;
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/other/livePhotoTip.d.ts
-interface LivePhotoTipProps extends BaseComponentProps {
-  data: {
-    /** 提示标题 */title?: string; /** 附加说明 */
-    description?: string;
-  } & {
-    /** 是否使用深色主题 */useDarkTheme?: boolean;
-  };
-}
+interface LivePhotoTipProps extends BaseComponentProps<{
+  /** 提示标题 */title?: string; /** 附加说明 */
+  description?: string;
+}> {}
 //#endregion
 //#region ../template/src/types/platforms/other/statistics.d.ts
 /**
  * 群组解析统计数据接口
  */
-interface GroupStatisticsProps extends BaseComponentProps {
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 群组ID */
-    groupId: string; /** 群组名称 */
-    groupName?: string; /** 群组人数 */
-    groupMemberCount?: number; /** 群组头像 */
-    groupAvatar?: string; /** 群组总解析次数 */
-    groupTotalParses: number; /** 群组唯一用户数 */
-    groupUniqueUsers: number; /** 各平台解析数据 */
-    platformData: {
-      douyin: number;
-      bilibili: number;
-      kuaishou: number;
-      xiaohongshu: number;
-    }; /** 全局总群组数 */
-    globalTotalGroups: number; /** 全局总解析次数 */
-    globalTotalParses: number;
-  };
-}
+interface GroupStatisticsProps extends BaseComponentProps<{
+  /** 群组ID */groupId: string; /** 群组名称 */
+  groupName?: string; /** 群组人数 */
+  groupMemberCount?: number; /** 群组头像 */
+  groupAvatar?: string; /** 群组总解析次数 */
+  groupTotalParses: number; /** 群组唯一用户数 */
+  groupUniqueUsers: number; /** 各平台解析数据 */
+  platformData: {
+    douyin: number;
+    bilibili: number;
+    kuaishou: number;
+    xiaohongshu: number;
+  }; /** 全局总群组数 */
+  globalTotalGroups: number; /** 全局总解析次数 */
+  globalTotalParses: number;
+}> {}
 /**
  * 全局解析统计数据接口
  */
-interface GlobalStatisticsProps extends BaseComponentProps {
-  data: {
-    /** 是否使用深色主题 */useDarkTheme?: boolean; /** 所有统计数据 */
-    allStats: Array<{
-      id: number;
-      groupId: string;
-      userId: string;
-      platform: 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu';
-      parseCount: number;
-      createdAt: string;
-      updatedAt: string;
-    }>; /** 历史数据（最近30天） */
-    historyData: Array<{
-      date: string;
-      totalParses: number;
-      douyin: number;
-      bilibili: number;
-      kuaishou: number;
-      xiaohongshu: number;
-    }>; /** 群组信息映射 */
-    groupInfoMap: Record<string, {
-      groupName?: string;
-      groupAvatar?: string;
-    }>;
-  };
-}
+interface GlobalStatisticsProps extends BaseComponentProps<{
+  /** 所有统计数据 */allStats: Array<{
+    id: number;
+    groupId: string;
+    userId: string;
+    platform: 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu';
+    parseCount: number;
+    createdAt: string;
+    updatedAt: string;
+  }>; /** 历史数据（最近30天） */
+  historyData: Array<{
+    date: string;
+    totalParses: number;
+    douyin: number;
+    bilibili: number;
+    kuaishou: number;
+    xiaohongshu: number;
+  }>; /** 群组信息映射 */
+  groupInfoMap: Record<string, {
+    groupName?: string;
+    groupAvatar?: string;
+  }>;
+}> {}
 //#endregion
 //#region ../template/src/types/index.d.ts
-/**
- * 二维码区域组件属性接口
- */
-interface QRCodeSectionProps {
-  /** 预生成的二维码数据URL */
-  qrCodeDataUrl: string;
-  /** 是否使用深色主题 */
-  useDarkTheme?: boolean;
-}
 /**
  * 渲染请求参数接口
  */
@@ -2185,7 +2000,7 @@ interface RenderRequest<T = Record<string, unknown>> {
   /** 缩放比例 */
   scale?: number;
   /** 是否使用深色主题 */
-  useDarkTheme?: boolean;
+  useDarkTheme: boolean;
   /** 版本信息 */
   version?: {
     /** 框架插件 */plugin: string; /** 插件名称 */
@@ -2224,7 +2039,7 @@ interface BaseComponentProps<T = Record<string, any>> extends Pick<RenderRequest
   watermarkTextBitSize?: RenderRequest['watermarkTextBitSize'];
   /** 渲染数据 - 子组件的具体参数 */
   data: T & {
-    /** 是否使用深色主题 */useDarkTheme?: boolean;
+    /** 是否使用深色主题 */useDarkTheme: boolean;
   };
 }
 /**
@@ -2508,4 +2323,4 @@ type VideoPreviewRenderOptions = {
 };
 declare const renderVideoPreviewPage: (options: VideoPreviewRenderOptions) => string;
 //#endregion
-export { BaseComponentProps, type DataTypeMap, DynamicRenderPath, ExtractDataTypeFromPath, type Plugin, type PluginContext, type PluginFactory, QRCodeSectionProps, type ReactServerRenderOptions, RenderRequest, RenderResponse, type TypedRenderRequest, reactServerRender as default, reactServerRender, renderVideoPreviewPage };
+export { BaseComponentProps, type DataTypeMap, DynamicRenderPath, ExtractDataTypeFromPath, type Plugin, type PluginContext, type PluginFactory, type ReactServerRenderOptions, RenderRequest, RenderResponse, type TypedRenderRequest, reactServerRender as default, reactServerRender, renderVideoPreviewPage };

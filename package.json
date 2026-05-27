@@ -54,6 +54,7 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
+    "@ikenxuan/qrcode": "^1.1.0",
     "@ikenxuan/watermark": "1.1.5",
     "fingerprint-injector": "^2.1.82"
   },
@@ -88,5 +89,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-05-25T17:07:05.459Z"
+  "timestamp": "2026-05-27T00:00:10.462Z"
 }
