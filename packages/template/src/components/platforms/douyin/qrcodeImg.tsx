@@ -13,7 +13,7 @@ import { DefaultLayout } from '../../layouts/DefaultLayout'
  */
 export const DouyinQrcodeImg: React.FC<DouyinQrcodeImgProps> = React.memo((props) => {
   const isDark = props.data?.useDarkTheme ?? false
-  const qrCodeImage = generateQRCode(props.data.qr_url || '', isDark)
+  const qrCodeImage = generateQRCode(props.data.share_url || '', isDark)
 
   const theme = {
     bg: isDark ? '#000000' : '#FFFFFF',
