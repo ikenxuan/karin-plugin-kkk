@@ -1008,6 +1008,8 @@ interface OriginalContentAV {
   danmaku: string;
   /** 视频标题 */
   title: RichTextDocument;
+  /** 动态文本内容（富文本文档） */
+  text: RichTextDocument;
 }
 /**
  * 原始内容图文类型接口
