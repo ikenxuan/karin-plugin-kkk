@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.32.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.31.2...v2.32.0) (2026-05-27)
+
+
+### ✨ 新功能
+
+* **bilibili:** 转发视频动态添加更多信息 ([1871976](https://github.com/ikenxuan/karin-plugin-kkk/commit/1871976482daa3f7fc32d9c1af863c9e946abbcf))
+
 ## [2.31.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.31.1...v2.31.2) (2026-05-27)
 
 
