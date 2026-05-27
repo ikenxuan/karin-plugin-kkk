@@ -20,6 +20,7 @@ import karin, {
   segment
 } from 'node-karin'
 import { BilibiliUserListProps } from 'template/types/platforms/bilibili'
+import type { BilibiliForwardOriginalContentProps } from 'template/types/platforms/bilibili/dynamic/forward'
 
 import {
   applyWatermarkToImages,
@@ -459,7 +460,6 @@ export class Bilibilipush extends Base {
             }
 
             const text = buildBilibiliDynamicRichText(data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.text, data[dynamicId].Dynamic_Data.modules.module_dynamic.desc!.rich_text_nodes)
-            let param = {}
             /** 富文本节点：查看图片 */
             const imgList = []
             if (data[dynamicId].Dynamic_Data.modules.module_dynamic.desc) {
@@ -471,21 +471,25 @@ export class Bilibilipush extends Base {
                 }
               }
             }
+
+            let original_content: BilibiliForwardOriginalContentProps['original_content'] = {}
             switch (data[dynamicId].Dynamic_Data.orig.type) {
               case DynamicType.AV: {
-                param = {
+                const desc = data[dynamicId].Dynamic_Data.orig.modules.module_dynamic?.desc || { text: '', rich_text_nodes: [] }
+
+                original_content = { DYNAMIC_TYPE_AV: {
                   usernameMeta: getUsernameMetadata(data[dynamicId].Dynamic_Data.orig.modules.module_author),
-                  pub_action: data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_action,
                   avatar_url: data[dynamicId].Dynamic_Data.orig.modules.module_author.face,
                   duration_text: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.archive?.duration_text,
+                  text: buildBilibiliDynamicRichText(desc.text, desc.rich_text_nodes),
                   title: buildBilibiliDynamicRichText(data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.archive?.title ?? '', []),
                   danmaku: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.archive?.stat.danmaku,
-                  view: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.archive?.stat.view,
                   play: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.archive?.stat.play,
                   cover: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.archive?.cover,
                   create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
                   decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.orig.modules.module_author.decoration_card),
                   frame: data[dynamicId].Dynamic_Data.orig.modules.module_author.pendant.image
+                } 
                 }
                 break
               }
@@ -502,17 +506,19 @@ export class Bilibilipush extends Base {
                   }
                 }
 
-                param = {
-                  title: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major?.opus?.title ?? null,
-                  usernameMeta: getUsernameMetadata(data[dynamicId].Dynamic_Data.orig.modules.module_author),
-                  create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
-                  avatar_url: data[dynamicId].Dynamic_Data.orig.modules.module_author.face,
-                  text: buildBilibiliDynamicRichText(data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.opus.summary.text, data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes),
-                  image_url: Object.values(data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.opus.pics)
-                    .filter((item): item is { url: string } => typeof item?.url === 'string')
-                    .map(item => ({ image_src: item.url })),
-                  decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.orig.modules.module_author.decoration_card),
-                  frame: data[dynamicId].Dynamic_Data.orig.modules.module_author.pendant.image
+                original_content = {
+                  DYNAMIC_TYPE_DRAW: {
+                    title: data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major?.opus?.title || '图文动态',
+                    usernameMeta: getUsernameMetadata(data[dynamicId].Dynamic_Data.orig.modules.module_author),
+                    create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
+                    avatar_url: data[dynamicId].Dynamic_Data.orig.modules.module_author.face,
+                    text: buildBilibiliDynamicRichText(data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.opus.summary.text, data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes),
+                    image_url: Object.values(data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.opus.pics)
+                      .filter((item): item is { url: string } => typeof item?.url === 'string')
+                      .map(item => ({ image_src: item.url })),
+                    decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.orig.modules.module_author.decoration_card),
+                    frame: data[dynamicId].Dynamic_Data.orig.modules.module_author.pendant.image
+                  } 
                 }
                 break
               }
@@ -529,29 +535,33 @@ export class Bilibilipush extends Base {
                   }
                 }
 
-                param = {
-                  usernameMeta: getUsernameMetadata(data[dynamicId].Dynamic_Data.orig.modules.module_author),
-                  create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
-                  avatar_url: data[dynamicId].Dynamic_Data.orig.modules.module_author.face,
-                  text: buildBilibiliDynamicRichText(data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.opus.summary.text, data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes),
-                  decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.orig.modules.module_author.decoration_card),
-                  frame: data[dynamicId].Dynamic_Data.orig.modules.module_author.pendant.image
+                original_content = {
+                  DYNAMIC_TYPE_WORD: {
+                    usernameMeta: getUsernameMetadata(data[dynamicId].Dynamic_Data.orig.modules.module_author),
+                    create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
+                    avatar_url: data[dynamicId].Dynamic_Data.orig.modules.module_author.face,
+                    text: buildBilibiliDynamicRichText(data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.opus.summary.text, data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.opus.summary.rich_text_nodes),
+                    decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.orig.modules.module_author.decoration_card),
+                    frame: data[dynamicId].Dynamic_Data.orig.modules.module_author.pendant.image
+                  }
                 }
                 break
               }
               case DynamicType.LIVE_RCMD: {
                 const liveData = JSON.parse(data[dynamicId].Dynamic_Data.orig.modules.module_dynamic.major.live_rcmd.content)
-                param = {
-                  usernameMeta: getUsernameMetadata(data[dynamicId].Dynamic_Data.orig.modules.module_author),
-                  create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
-                  avatar_url: data[dynamicId].Dynamic_Data.orig.modules.module_author.face,
-                  decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.orig.modules.module_author.decoration_card),
-                  frame: data[dynamicId].Dynamic_Data.orig.modules.module_author.pendant.image,
-                  cover: liveData.live_play_info.cover,
-                  text_large: liveData.live_play_info.watched_show.text_large,
-                  area_name: liveData.live_play_info.area_name,
-                  title: buildBilibiliDynamicRichText(liveData.live_play_info.title, []),
-                  online: liveData.live_play_info.online
+                original_content = { 
+                  DYNAMIC_TYPE_LIVE_RCMD: {
+                    usernameMeta: getUsernameMetadata(data[dynamicId].Dynamic_Data.orig.modules.module_author),
+                    create_time: TimeFormatter.toDateTime(data[dynamicId].Dynamic_Data.orig.modules.module_author.pub_ts),
+                    avatar_url: data[dynamicId].Dynamic_Data.orig.modules.module_author.face,
+                    decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.orig.modules.module_author.decoration_card),
+                    frame: data[dynamicId].Dynamic_Data.orig.modules.module_author.pendant.image,
+                    cover: liveData.live_play_info.cover,
+                    text_large: liveData.live_play_info.watched_show.text_large,
+                    area_name: liveData.live_play_info.area_name,
+                    title: buildBilibiliDynamicRichText(liveData.live_play_info.title, []),
+                    online: liveData.live_play_info.online
+                  }
                 }
                 break
               }
@@ -578,7 +588,7 @@ export class Bilibilipush extends Base {
               dynamicTYPE: '转发动态推送',
               decoration_card: generateDecorationCard(data[dynamicId].Dynamic_Data.modules.module_author.decoration_card),
               render_time: TimeFormatter.now(),
-              original_content: { [data[dynamicId].Dynamic_Data.orig.type]: param },
+              original_content,
               imgList: imgList.length > 0 ? imgList : null,
               dynamic_id: dynamicId
             }, { skipWatermark: true })
