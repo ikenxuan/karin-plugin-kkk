@@ -34,8 +34,8 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.99.0",
-    "@heroui/react": "3.0.2",
-    "@heroui/styles": "3.0.2",
+    "@heroui/react": "3.1.0",
+    "@heroui/styles": "3.1.0",
     "@icons-pack/react-simple-icons": "^13.13.0",
     "@kkk/richtext": "workspace:*",
     "@monaco-editor/react": "^4.7.0",
