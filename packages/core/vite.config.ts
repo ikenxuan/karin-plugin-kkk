@@ -66,7 +66,8 @@ export default defineConfig({
         ...[/^@karinjs\//],
         'fingerprint-injector',
         '@snapka/puppeteer',
-        '@ikenxuan/watermark'
+        '@ikenxuan/watermark',
+        '@ikenxuan/qrcode'
       ],
       output: {
         format: 'esm',

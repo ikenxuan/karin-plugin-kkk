@@ -65,6 +65,7 @@
     "watch": "cross-env EBV_FILE=\"development.env\" tsx watch --include \"src/**/*.ts\" --include \"../template/src/dev/mock-server.ts\" --include \"../template/src/main.ts\" src/app.ts --trace-deprecation"
   },
   "dependencies": {
+    "@ikenxuan/qrcode": "^1.1.0",
     "@ikenxuan/watermark": "1.1.5",
     "fingerprint-injector": "^2.1.82"
   },

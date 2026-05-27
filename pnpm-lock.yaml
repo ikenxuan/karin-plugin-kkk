@@ -829,6 +829,9 @@ importers:
 
   packages/core:
     dependencies:
+      '@ikenxuan/qrcode':
+        specifier: ^1.1.0
+        version: 1.1.0
       '@ikenxuan/watermark':
         specifier: 1.1.5
         version: 1.1.5(@react-spectrum/provider@3.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(tailwind-merge@3.4.0)(tailwindcss@4.3.0)
@@ -21877,7 +21880,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.1.0
       tinyexec: 1.1.2
-      vite: 8.0.14(@types/node@24.12.2)(@vitejs/devtools@0.2.0)(esbuild@0.28.0)(jiti@2.6.1)(sass@1.100.0)(terser@5.48.0)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 8.0.14(@types/node@24.12.2)(@vitejs/devtools@0.2.0)(esbuild@0.28.0)(jiti@2.6.1)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.8.3)
     transitivePeerDependencies:
       - '@modelcontextprotocol/sdk'
       - bufferutil
@@ -22251,7 +22254,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.1.0
       tinyexec: 1.1.2
-      vite: 8.0.14(@types/node@24.12.2)(@vitejs/devtools@0.2.0)(esbuild@0.28.0)(jiti@2.6.1)(sass@1.100.0)(terser@5.48.0)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 8.0.14(@types/node@24.12.2)(@vitejs/devtools@0.2.0)(esbuild@0.28.0)(jiti@2.6.1)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.8.3)
       vue: 3.5.34(typescript@6.0.3)
       ws: 8.20.1
     transitivePeerDependencies:
@@ -29401,7 +29404,7 @@ snapshots:
       unconfig-core: 7.5.0
       unrun: 0.2.37(synckit@0.11.12)
     optionalDependencies:
-      '@vitejs/devtools': 0.2.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.14)
+      '@vitejs/devtools': 0.2.0(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.14)
       publint: 0.3.21
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -30373,7 +30376,7 @@ snapshots:
       yaml: 2.8.3
     optional: true
 
-  vite@8.0.14(@types/node@24.12.2)(@vitejs/devtools@0.2.0)(esbuild@0.28.0)(jiti@2.6.1)(sass@1.100.0)(terser@5.48.0)(tsx@4.21.0)(yaml@2.8.3):
+  vite@8.0.14(@types/node@24.12.2)(@vitejs/devtools@0.2.0)(esbuild@0.28.0)(jiti@2.6.1)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.8.3):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.4
@@ -30388,7 +30391,7 @@ snapshots:
       jiti: 2.6.1
       sass: 1.100.0
       terser: 5.48.0
-      tsx: 4.21.0
+      tsx: 4.22.3
       yaml: 2.8.3
     optional: true
 
