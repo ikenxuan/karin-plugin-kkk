@@ -1,13 +1,10 @@
-import { format, fromUnixTime } from 'date-fns'
 import karin, { logger } from 'node-karin'
 
-import { Common, Networks, Render } from '@/module'
 import { bilibiliDB, douyinDB } from '@/module/db'
 import { bilibiliFetcher, douyinFetcher } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 import { Bilibilipush, DouYinpush, getBilibiliID, getDouyinID } from '@/platform'
-import { getWorkCoverUrl, getWorkTypeInfo } from '@/platform/douyin/workType'
 
 // 包装抖音推送任务
 const handleDouyinPush = wrapWithErrorHandler(async () => {
@@ -156,131 +153,6 @@ const handleChangeBotID = wrapWithErrorHandler(async (e) => {
   businessName: '设置推送机器人'
 })
 
-// 包装测试推送命令
-const handleTestDouyinPush = wrapWithErrorHandler(async (e) => {
-  const url = String(e.msg.match(/(http|https):\/\/.*\.(douyin|iesdouyin)\.com\/[^ ]+/g))
-  const iddata = await getDouyinID(e, url)
-  const workInfo = await douyinFetcher.parseWork({ aweme_id: iddata.aweme_id, typeMode: 'strict' })
-  const userProfile = await douyinFetcher.fetchUserProfile({ sec_uid: workInfo.data.aweme_detail.author.sec_uid, typeMode: 'strict' })
-
-  const realUrl = Config.douyin.push.shareType === 'web' && await new Networks({
-    url: workInfo.data.aweme_detail.share_url,
-    headers: {
-      'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
-      Accept: '*/*',
-      'Accept-Encoding': 'gzip, deflate, br',
-      Connection: 'keep-alive'
-    }
-  }).getLocation()
-
-  // 获取作品类型信息
-  const workTypeInfo = getWorkTypeInfo(workInfo.data.aweme_detail)
-
-  // 获取封面 URL
-  const coverUrl = getWorkCoverUrl(workTypeInfo, workInfo.data.aweme_detail as any)
-
-  // 如果是文章类型，使用文章模板
-  if (workTypeInfo.isArticle) {
-    const content = JSON.parse(workInfo.data.aweme_detail.article_info.article_content)
-    const fe_data = JSON.parse(workInfo.data.aweme_detail.article_info.fe_data)
-
-    const img = await Render(e, 'douyin/article-work', {
-      title: workInfo.data.aweme_detail.article_info.article_title,
-      markdown: content.markdown,
-      images: fe_data.image_list || [],
-      read_time: fe_data.read_time || 0,
-
-      // 互动数据
-      dianzan: Common.count(workInfo.data.aweme_detail.statistics.digg_count),
-      pinglun: Common.count(workInfo.data.aweme_detail.statistics.comment_count),
-      shouchang: Common.count(workInfo.data.aweme_detail.statistics.collect_count),
-      share: Common.count(workInfo.data.aweme_detail.statistics.share_count),
-
-      // 时间信息
-      create_time: format(fromUnixTime(workInfo.data.aweme_detail.create_time), 'yyyy-MM-dd HH:mm'),
-
-      // 用户信息
-      avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userProfile.data.user.avatar_larger.uri,
-      username: workInfo.data.aweme_detail.author.nickname,
-      抖音号: userProfile.data.user.unique_id === '' ? userProfile.data.user.short_id : userProfile.data.user.unique_id,
-      获赞: Common.count(userProfile.data.user.total_favorited),
-      关注: Common.count(userProfile.data.user.following_count),
-      粉丝: Common.count(userProfile.data.user.follower_count),
-
-      // 分享链接
-      share_url: workInfo.data.aweme_detail.share_url,
-
-      // 主题
-      useDarkTheme: false
-    })
-
-    e.reply(img)
-    return true
-  }
-
-  const img = await Render(e, workTypeInfo.templatePath, {
-    image_url: coverUrl,
-    desc: workInfo.data.aweme_detail.desc,
-    dianzan: Common.count(workInfo.data.aweme_detail.statistics.digg_count),
-    pinglun: Common.count(workInfo.data.aweme_detail.statistics.comment_count),
-    share: Common.count(workInfo.data.aweme_detail.statistics.share_count),
-    shouchang: Common.count(workInfo.data.aweme_detail.statistics.collect_count),
-    create_time: format(fromUnixTime(workInfo.data.aweme_detail.create_time), 'yyyy-MM-dd HH:mm'),
-    avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userProfile.data.user.avatar_larger.uri,
-    share_url: Config.douyin.push.shareType === 'web' ? realUrl : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${workInfo.data.aweme_detail.video.play_addr.uri}&ratio=1080p&line=0`,
-    username: workInfo.data.aweme_detail.author.nickname,
-    抖音号: userProfile.data.user.unique_id === '' ? userProfile.data.user.short_id : userProfile.data.user.unique_id,
-    粉丝: Common.count(userProfile.data.user.follower_count),
-    获赞: Common.count(userProfile.data.user.total_favorited),
-    关注: Common.count(userProfile.data.user.following_count),
-    cooperation_info: (() => {
-      const raw = workInfo.data.aweme_detail.cooperation_info
-      if (!raw) return undefined
-
-      const rawCreators = Array.isArray(raw.co_creators) ? raw.co_creators : []
-
-      // 作者标识，用于对比是否在共创列表中
-      const author = workInfo.data.aweme_detail.author
-      const authorUid = author?.uid
-      const authorSecUid = author?.sec_uid
-      const authorNickname = author?.nickname
-
-      const authorInCreators = rawCreators.some((c: { uid: string; sec_uid: string; nickname: string }) =>
-        (authorUid && c.uid && c.uid === authorUid) ||
-        (authorSecUid && c.sec_uid && c.sec_uid === authorSecUid) ||
-        (authorNickname && c.nickname && c.nickname === authorNickname)
-      )
-
-      // 只保留：头像链接一条、名字、职位（使用 avatar_url 字段）
-      const co_creators = rawCreators.map((c: { avatar_thumb: { url_list: (string | undefined)[]; uri: any }; nickname: any; role_title: any }) => {
-        const firstUrl =
-          c.avatar_thumb?.url_list?.[0] ??
-          (c.avatar_thumb?.uri ? `https://p3.douyinpic.com/${c.avatar_thumb.uri}` : undefined)
-
-        return {
-          avatar_url: firstUrl,
-          nickname: c.nickname,
-          role_title: c.role_title
-        }
-      })
-
-      // 基础人数取接口给的 co_creator_nums 与列表长度的较大值
-      const baseCount = Math.max(Number(raw.co_creator_nums || 0), co_creators.length)
-      const teamCount = baseCount + (authorInCreators ? 0 : 1)
-
-      return {
-        co_creator_nums: teamCount,
-        co_creators
-      }
-    })()
-  })
-
-  e.reply(img)
-  return true
-}, {
-  businessName: '测试抖音推送'
-})
-
 // 包装全局忽略命令
 const handleGlobalIgnore = wrapWithErrorHandler(async (e) => {
   const url = e.msg.replace(/^#kkk推送全局忽略/, '').trim()
@@ -343,8 +215,8 @@ const handleGlobalIgnore = wrapWithErrorHandler(async (e) => {
     }
 
     // 获取动态详情以获取 host_mid
-    const dynamicInfo = await bilibiliFetcher.fetchDynamicCard({ dynamic_id: idData.dynamic_id, typeMode: 'strict' })
-    const host_mid = dynamicInfo.data?.data?.card?.desc?.uid
+    const dynamicInfo = await bilibiliFetcher.fetchDynamicDetail({ dynamic_id: idData.dynamic_id, typeMode: 'strict' })
+    const host_mid = dynamicInfo.data.data.item.modules.module_author.mid
 
     if (!host_mid) {
       await e.reply('无法获取该动态作者信息')
@@ -394,6 +266,4 @@ export const douyinPushList = karin.command(/^#?抖音推送列表$/, handleDouy
 
 export const changeBotID = karin.command(/^#kkk设置推送机器人/, handleChangeBotID, { name: 'kkk-推送功能-设置', perm: 'master' })
 
-export const testDouyinPush = karin.command(/^#测试抖音推送\s*(https?:\/\/[^\s]+)?/, handleTestDouyinPush, { name: 'kkk-推送功能-测试', event: 'message.group', perm: Config.douyin.push.permission, priority: -Infinity - 1 })
-
-export const globalIgnore = karin.command(/^#kkk推送全局忽略/, handleGlobalIgnore, { name: 'kkk-推送功能-全局忽略', perm: 'master', event: 'message.group' })
+export const globalIgnore = karin.command(/^#kkk推送全局忽略/, handleGlobalIgnore, { name: 'kkk-推送功能-全局忽略', perm: 'master', event: 'message.group', priority: 1 })
