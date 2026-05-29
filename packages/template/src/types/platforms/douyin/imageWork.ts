@@ -4,8 +4,15 @@ import type { BaseComponentProps } from '../../index'
  * 抖音图文作品组件属性接口
  */
 export interface DouyinImageWorkProps extends BaseComponentProps<{
-  /** 图文封面URL */
+  /** 图文封面URL（首图，兼容旧数据） */
   image_url: string
+  /** 图文图片列表（排除封面后的预览图，最多 3 张） */
+  image_list?: {
+    /** 图片 URL 列表（已排除封面首图，按原顺序排列） */
+    images: string[]
+    /** 作品总图片数（包含封面） */
+    total_count: number
+  }
   /** 描述内容 */
   desc: string
   /** 点赞数 */

@@ -96,6 +96,27 @@ function cdnAvatar (uri: string): string {
 }
 
 /**
+ * 构建图文作品图片列表
+ * 从作品详情中提取全部图片 URL（排除封面首图），优先取中分辨率 url_list[1]
+ * 限制最多返回 3 张预览图，并提供作品总图数供前端视觉锚点使用
+ * @param images - 作品原始图片数组，每项包含 url_list（多分辨率 URL）
+ * @returns 图片列表数据，若作品无多图则返回 undefined
+ */
+function buildImageList (images: Array<{ url_list: string[] }> | null | undefined): {
+  images: string[]
+  total_count: number
+} | undefined {
+  if (!images || images.length <= 1) return undefined
+
+  const total_count = images.length
+  const previews = images.slice(1, 4).map(
+    (img) => img.url_list[1] ?? img.url_list[0] ?? img.url_list[2] ?? ''
+  ).filter(Boolean)
+
+  return { images: previews, total_count }
+}
+
+/**
  * 获取用户抖音号
  * @param user - 用户对象，包含 unique_id 和 short_id
  * @returns 优先返回抖音号（unique_id），为空则返回短 ID
@@ -187,8 +208,12 @@ export async function renderWorkImage (options: RenderWorkImageOptions): Promise
     }
 
     case DouyinWorkMainType.IMAGE: {
+      const cover = Detail_Data.images?.[0]?.url_list[2]
+        ?? Detail_Data.images?.[0]?.url_list[1]
+        ?? coverUrl
       return await Render(e, 'douyin/image-work', {
-        image_url: coverUrl,
+        image_url: cover,
+        image_list: buildImageList(Detail_Data.images),
         desc: desc(Detail_Data.desc),
         dianzan: Count(Detail_Data.statistics.digg_count),
         pinglun: Count(Detail_Data.statistics.comment_count),
