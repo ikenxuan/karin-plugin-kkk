@@ -2,6 +2,20 @@
 
 # Changelog
 
+## [2.32.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.32.1...v2.32.2) (2026-05-28)
+
+
+### 🐛 错误修复
+
+* **bilibili:** 修复推送项中的装饰卡片字段名称 ([cfd0ee3](https://github.com/ikenxuan/karin-plugin-kkk/commit/cfd0ee3eabfc26264898fb500d71931f529d7592))
+* 添加一个bug ([35d95c2](https://github.com/ikenxuan/karin-plugin-kkk/commit/35d95c2a011d4f31b6c9b88937242f3cf15538f1))
+
+
+### 📦 依赖更新
+
+* update ([38acf3d](https://github.com/ikenxuan/karin-plugin-kkk/commit/38acf3d86338b6b220ceb89e7cb63500844811fe))
+* update ([#313](https://github.com/ikenxuan/karin-plugin-kkk/issues/313)) ([23c7b7d](https://github.com/ikenxuan/karin-plugin-kkk/commit/23c7b7d53975e5cd6b11ecc41acb0cc21a82d48d))
+
 ## [2.32.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.32.0...v2.32.1) (2026-05-27)
 
 
