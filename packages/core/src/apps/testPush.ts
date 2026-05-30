@@ -166,8 +166,8 @@ const handleTestPush = wrapWithErrorHandler(async (e) => {
   businessName: '测试抖音推送'
 })
 
-/** 注册测试推送命令，仅在开发环境下生效 */
-export const testPush = process.env.NODE_ENV === 'development' && Config.douyin.switch && karin.command(/^#测试抖音(作品|喜欢列表|推荐列表|直播状态)推送/, handleTestPush, {
+/** 注册测试推送命令 */
+export const testPush = Config.douyin.switch && karin.command(/^#测试抖音(作品|喜欢列表|推荐列表|直播状态)推送/, handleTestPush, {
   name: 'kkk-测试抖音推送',
   perm: 'master'
 })
