@@ -1,7 +1,7 @@
 import React, { type CSSProperties, type ReactNode } from 'react'
 
 import type { RichTextDocument, RichTextInlineStyle, RichTextNode, RichTextRenderOptions } from '../types'
-import clsx from 'clsx'
+import { cn } from './cn'
 
 /**
  * 限制图片来源协议。
@@ -74,7 +74,7 @@ const SearchKeywordIcon = ({ className }: { className?: string }) => {
 /** 话题图标 */
 const TopicIcon = ({ className }: { className?: string }) => (
   <svg
-    className={clsx(className, 'inline-block w-16 mb-4 mr-4 align-middle')}
+    className={cn(className, 'inline-block w-16 mb-4 mr-4 align-middle')}
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 16 16"
   >
@@ -103,7 +103,7 @@ const TopicIcon = ({ className }: { className?: string }) => (
 /** 抽奖图标 */
 const LotteryIcon = ({ className }: { className?: string }) => (
   <svg
-    className={clsx(className, 'inline-block w-16 h-auto mb-4 mr-2 align-middle')}
+    className={cn(className, 'inline-block w-16 h-auto mb-4 mr-2 align-middle')}
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 18 18"
   >
@@ -138,7 +138,7 @@ const LotteryIcon = ({ className }: { className?: string }) => (
 /** 网页链接图标 */
 const WebLinkIcon = ({ className }: { className?: string }) => (
   <svg
-    className={clsx(className, 'inline-block w-14 mb-3 mr-2 align-middle')}
+    className={cn(className, 'inline-block w-14 mb-3 mr-2 align-middle')}
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 18 18"
   >
@@ -158,7 +158,7 @@ const WebLinkIcon = ({ className }: { className?: string }) => (
 /** 投票图标 */
 const VoteIcon = ({ className }: { className?: string }) => (
   <svg
-    className={clsx(className, 'inline-block w-20 mb-2 align-middle')}
+    className={cn(className, 'inline-block w-20 mb-2 align-middle')}
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 18 18"
   >
@@ -183,7 +183,7 @@ const VoteIcon = ({ className }: { className?: string }) => (
 /** 查看图片图标 */
 const ViewPictureIcon = ({ className }: { className?: string }) => (
   <svg
-    className={clsx(className, 'inline-block w-20 align-middle')}
+    className={cn(className, 'inline-block w-20 align-middle')}
     xmlns='http://www.w3.org/2000/svg'
     viewBox='0 0 22 22'
     width='22'
@@ -405,7 +405,7 @@ const renderNodeToReact = (
       return (
         <a
           key={`weblink-${index}`}
-          className={clsx(options.webLink?.className, 'break-all')}
+          className={cn(options.webLink?.className, 'break-all')}
           href={node.jumpUrl}
           target='_blank'
           rel='noopener noreferrer'
@@ -548,7 +548,7 @@ const renderNodeToReact = (
       return (
         <div
           key={`codeblock-${index}`}
-          className={clsx(
+          className={cn(
             'bg-surface rounded-4xl my-8 border border-border',
             options.codeBlock?.className
           )}
