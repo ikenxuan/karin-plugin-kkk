@@ -192,6 +192,7 @@ export class DouYinpush extends Base {
     for (const awemeId in data) {
       const pushItem = data[awemeId]
       const actualAwemeId = awemeId.replace(/^(post|favorite|recommend|live)_/, '') // 移除推送类型前缀
+      const shareUrl = pushItem.Detail_Data.share_url ?? `https://live.douyin.com/${pushItem.Detail_Data.room_data?.owner.web_rid}`
       let pushTypeLabel: string
       switch (pushItem.pushType) {
         case 'post': pushTypeLabel = '作品列表'; break
@@ -205,7 +206,9 @@ export class DouYinpush extends Base {
         ${logger.blue('博主')}: ${logger.green(pushItem.remark)} 
         ${logger.blue('推送类型')}: ${logger.magenta(pushTypeLabel)}
         ${logger.cyan('作品id')}：${logger.yellow(actualAwemeId)}
-        ${logger.cyan('访问地址')}：${logger.green('https://www.douyin.com/video/' + actualAwemeId)}`)
+        ${logger.cyan('访问地址')}：${logger.green('https://www.douyin.com/video/' + actualAwemeId)}
+        ${logger.cyan('分享链接')}: ${logger.green(shareUrl)}
+        `)
 
       const Detail_Data = pushItem.Detail_Data
       const skip = await skipDynamic(pushItem)
