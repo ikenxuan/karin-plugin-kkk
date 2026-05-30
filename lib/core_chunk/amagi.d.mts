@@ -1,4 +1,4 @@
-import { t as ChalkInstance } from "./index-_BS3nWFN.mjs";
+import { t as ChalkInstance } from "./index-_og592jD.mjs";
 import { EventEmitter } from "node:events";
 import { AxiosRequestConfig, AxiosResponse, RawAxiosResponseHeaders } from "axios";
 import express from "express";
