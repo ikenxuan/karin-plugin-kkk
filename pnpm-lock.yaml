@@ -833,8 +833,8 @@ importers:
         specifier: 1.2.0
         version: 1.2.0
       '@ikenxuan/watermark':
-        specifier: 1.1.5
-        version: 1.1.5(@react-spectrum/provider@3.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(tailwind-merge@3.4.0)(tailwindcss@4.3.0)
+        specifier: 1.1.6
+        version: 1.1.6
       '@types/react':
         specifier: '*'
         version: 19.2.15
@@ -2285,12 +2285,6 @@ packages:
       react:
         optional: true
 
-  '@gsap/react@2.1.2':
-    resolution: {integrity: sha512-JqliybO1837UcgH2hVOM4VO+38APk3ECNrsuSM4MuXp+rbf+/2IG2K1YJiqfTcXQHH7XlA0m3ykniFYstfq0Iw==}
-    peerDependencies:
-      gsap: ^3.12.5
-      react: 19.2.6
-
   '@gwhitney/detect-indent@7.0.1':
     resolution: {integrity: sha512-7bQW+gkKa2kKZPeJf6+c6gFK9ARxQfn+FKy9ScTBppyKRWH2KzsmweXUoklqeEiHiNVWaeP5csIdsNq6w7QhzA==}
     engines: {node: '>=12.20'}
@@ -2596,13 +2590,6 @@ packages:
       react-dom: 19.2.6
       tailwindcss: '>=4.0.0'
 
-  '@heroui/react@3.0.5':
-    resolution: {integrity: sha512-kBb3aUcSAJOraPOb2MbOS1yNUcSCc6vnl0zTtzuWvJZabWgSff5Y9FNyXNjk/d56vm2ermfXa/gfBYqTUtRTzA==}
-    peerDependencies:
-      react: 19.2.6
-      react-dom: 19.2.6
-      tailwindcss: '>=4.0.0'
-
   '@heroui/react@3.1.0':
     resolution: {integrity: sha512-q+K3Kz5h2ceOEMPuNORLGX1Pqh4McN30y31eykzZZjLbmta4nwi4sDMVAv7/w8QWnWVDOucusXz5x9s5N656nA==}
     peerDependencies:
@@ -2694,11 +2681,6 @@ packages:
 
   '@heroui/styles@3.0.3':
     resolution: {integrity: sha512-DtN5QWfLVxy6DSDNgtUuHVU/h4G+dfoDHHxGVZRW6plCEh1Rc5Yc7YW7b8JBiYCknSRx/fqLXpas3Fe5Q5XJSw==}
-    peerDependencies:
-      tailwindcss: '>=4.0.0'
-
-  '@heroui/styles@3.0.5':
-    resolution: {integrity: sha512-5DI5sa7GGe1Uw8PCBhooAIGoqZbcR0ilamPjzgv94qVgolGs9+FqbeNp2bcbyoHJn9+HLKQMYiIa44LwH0VLww==}
     peerDependencies:
       tailwindcss: '>=4.0.0'
 
@@ -2975,30 +2957,30 @@ packages:
   '@ikenxuan/qrcode@1.2.0':
     resolution: {integrity: sha512-VSQV+SvzqnG/EEgv/bCbokZR1ZUMBlV0UTbgF1veD1yZ9wHh8+Uzb/MZDinZnv6leNeXhEtkUx/shxEjN7jGxQ==}
 
-  '@ikenxuan/watermark-darwin-arm64@1.1.5':
-    resolution: {integrity: sha512-Qz1nZRKBuRR6IA2bC+0HWirlO+syfKDpQrHLuXDKU8hJFlEt31VODc2Tr5Vigaw/2cHdgY7++Q2jJtvjwDqK9g==}
+  '@ikenxuan/watermark-darwin-arm64@1.1.6':
+    resolution: {integrity: sha512-7Swe+ABcwwgZCuQ64j5G9cVBKFYx+jdSk4g3y3uMtJwg/+vIavN1hfrFM/SWmrxH68z12ruyd0hPd2TJQAZRIg==}
     cpu: [arm64]
     os: [darwin]
 
-  '@ikenxuan/watermark-linux-arm64-gnu@1.1.5':
-    resolution: {integrity: sha512-gpp4g4kuVWWZmgkJIUWSsGchJcGG50RkogThXtOPTF0lagZKv96K1dWUnB4SXitVs2Qw0fSHiOfAY5MiVGgjFw==}
+  '@ikenxuan/watermark-linux-arm64-gnu@1.1.6':
+    resolution: {integrity: sha512-hAEE5lPFsQBwM4QnqRfzFMVG1WTVdzhGbuISGRAyJgbk8qbgZn3NAhKe/ILbEitcRQJdAO0kVJZfaQyNnCVdkw==}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@ikenxuan/watermark-linux-x64-gnu@1.1.5':
-    resolution: {integrity: sha512-pUNZ/Y1d4RGBXC9HI8x7g5Jo8+XiscZp9yNwVP1sIupc/1N4j39PIrWBmb0XnYNaJIKLD+rPP/RJSu1P7mtNtg==}
+  '@ikenxuan/watermark-linux-x64-gnu@1.1.6':
+    resolution: {integrity: sha512-p6CbXSjypeLwpEedzPN9nVyR55bQw3aEcuyPCN1gyMVdqwLRHiX0j+sFkdo6Bx+EOYE2ELS0eElRmK9xdW+BlQ==}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@ikenxuan/watermark-win32-x64-msvc@1.1.5':
-    resolution: {integrity: sha512-9UPfe+4vh3jUhrUW5by+GqUMsWwfkhXFNZNQZhT33Cjw2LRMkwjsURpE0gdRGf77X617rijY+pO/fz/u+WezYA==}
+  '@ikenxuan/watermark-win32-x64-msvc@1.1.6':
+    resolution: {integrity: sha512-J6jv5HjcyJbiNZL4VptbBknyDMyPngnTWuGCQ0otYas1exAxJ1PjHrjWCdpxFM27IIAwzWpO8wo/kznudCGurg==}
     cpu: [x64]
     os: [win32]
 
-  '@ikenxuan/watermark@1.1.5':
-    resolution: {integrity: sha512-kkYgN2CwYfGzz2ULDBCO12vKowSb6jk0+bzYaEJvdZOzM+dL3xp8Kj1zWSXfpajI5zzOb02VxkiDXPOKvx5KMw==}
+  '@ikenxuan/watermark@1.1.6':
+    resolution: {integrity: sha512-2/N1BSuw9ijtCmzhsc2OyHxs3X5XS4079tTFNy4CB8ko7Wl537uqxZkpI2KXo4TO9LDZ4lxfKCm7oNgousp7/w==}
 
   '@ikenxuan/xhshow-ts@1.0.6':
     resolution: {integrity: sha512-2Qo2tWzU6grC7bsTwohnp9KJA9wqDTAb2bbhaBOqBdAlM44zp9qlSAe2+UTYqDZaxrpne8SCT11biizVUJuosQ==}
@@ -5439,8 +5421,8 @@ packages:
       react: 19.2.6
       react-dom: 19.2.6
 
-  '@react-grab/cli@0.1.37':
-    resolution: {integrity: sha512-1ln28VkVHUbd5qy+ccXG68voWc0mgZMhBnwG0umxfD+wbkXUcvRzVrLjSqao7N8hCrDqp+Pt5j9Tsqef+9yQQQ==}
+  '@react-grab/cli@0.1.39':
+    resolution: {integrity: sha512-+2Q9W0OE0MwPb4mBmwZPSs9QgHN0fhf2SVqNuib7tr5JmzEtDo1SWSsFjQ50QiwRTJzIY8I5IZTg6vVb1jOFLw==}
     hasBin: true
 
   '@react-spectrum/button@3.18.0':
@@ -6946,15 +6928,6 @@ packages:
 
   '@tanstack/virtual-core@3.15.0':
     resolution: {integrity: sha512-0AwPGx0I8QxPYjAxShT/+z+ZOe9u8mW5rsXvivCTjRfRmz9a43+3mRyi4wwlyoUqOC56q/jatKa0Bh9M99BEHQ==}
-
-  '@tauri-apps/api@2.11.0':
-    resolution: {integrity: sha512-7CinYODhky9lmO23xHnUFv0Xt43fbtWMyxZcLcRBlFkcgXKuEirBvHpmtJ89YMhyeGcq20Wuc47Fa4XjyniywA==}
-
-  '@tauri-apps/plugin-dialog@2.7.1':
-    resolution: {integrity: sha512-OK1UBXYt+ojcmxMktzzuyonYIFta8CmAASpX+CA+DTGK24KlHjhYI6x2iOJ/TjZF4N7/ACK1oFmEOjIY9IhzOQ==}
-
-  '@tauri-apps/plugin-shell@2.3.5':
-    resolution: {integrity: sha512-jewtULhiQ7lI7+owCKAjc8tYLJr92U16bPOeAa472LHJdgaibLP83NcfAF2e+wkEcA53FxKQAZ7byDzs2eeizg==}
 
   '@tootallnate/quickjs-emscripten@0.23.0':
     resolution: {integrity: sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==}
@@ -11688,8 +11661,8 @@ packages:
   oxc-resolver@11.19.1:
     resolution: {integrity: sha512-qE/CIg/spwrTBFt5aKmwe3ifeDdLfA2NESN30E42X/lII5ClF8V7Wt6WIJhcGZjp0/Q+nQ+9vgxGk//xZNX2hg==}
 
-  oxlint-plugin-react-doctor@0.2.9:
-    resolution: {integrity: sha512-wnmC4OBbog9IQuZY2evNNe1P5IacUDLnYqOOpOSq8Adb+kjFmNxPPG8SMH+/OWkKld3NVC5KMM2pSw+oxnEIUw==}
+  oxlint-plugin-react-doctor@0.2.14:
+    resolution: {integrity: sha512-E3Xb6NFycmmyJlLE7wNLN1kScunwsiHAwf1XCOUSgnSB7sV4dvQbcAVTVoOz2n1yGSPOmcMwBdLPTepVNBZ+OQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
 
   oxlint@1.67.0:
@@ -12218,8 +12191,8 @@ packages:
       react: 19.2.6
       react-dom: 19.2.6
 
-  react-doctor@0.2.9:
-    resolution: {integrity: sha512-lfTA5OOQmy95nreKad+UueFAsVLxtjRTwZQpo50VAfsFytpDjiAb+caB2DV+Tdga8pk9th18DUZjTuSDWFFvZQ==}
+  react-doctor@0.2.14:
+    resolution: {integrity: sha512-IsdCwvd9SFCnsvcS5mKzhEA2FauW0xc2yZlrHCjfRzUEleXeDzKXRhhLXXxg9cZHzjBQl49Rkqo/+t3XwPDR4A==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
 
@@ -12248,8 +12221,8 @@ packages:
   react-fast-compare@3.2.2:
     resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
 
-  react-grab@0.1.37:
-    resolution: {integrity: sha512-XVAc/qPyxsDT8Putu9UnP7iVHmAORMzvaN/3GDTOfbuLIRXWdOt7vebPOzM9RVTVUjucXv0135JI++kSVPSfYg==}
+  react-grab@0.1.39:
+    resolution: {integrity: sha512-5ZzlW7YDLVeR/244ZHB7eukEjE3X0g4wT1uVYHq39HwoNcWeQWKpwYfptIBeydDhcgPBggMaXxQaqZJkyqM4xA==}
     hasBin: true
     peerDependencies:
       react: 19.2.6
@@ -15685,11 +15658,6 @@ snapshots:
     optionalDependencies:
       react: 19.2.6
 
-  '@gsap/react@2.1.2(gsap@3.15.0)(react@19.2.6)':
-    dependencies:
-      gsap: 3.15.0
-      react: 19.2.6
-
   '@gwhitney/detect-indent@7.0.1': {}
 
   '@heroui/accordion@2.2.29(@heroui/system@2.4.28(@heroui/theme@2.4.26(tailwindcss@3.4.19(tsx@4.22.3)(yaml@2.9.0)))(@react-spectrum/provider@3.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(framer-motion@11.18.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@heroui/theme@2.4.26(tailwindcss@3.4.19(tsx@4.22.3)(yaml@2.9.0)))(@react-spectrum/provider@3.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(framer-motion@11.18.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
@@ -16292,28 +16260,6 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
 
-  '@heroui/react@3.0.5(@react-spectrum/provider@3.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)':
-    dependencies:
-      '@heroui/styles': 3.0.5(tailwind-merge@3.4.0)(tailwindcss@4.3.0)
-      '@radix-ui/react-avatar': 1.1.11(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@react-aria/i18n': 3.13.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@react-aria/ssr': 3.10.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@react-aria/utils': 3.34.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@react-stately/utils': 3.12.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@react-types/color': 3.2.0(@react-spectrum/provider@3.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@react-types/shared': 3.34.0(react@19.2.6)
-      input-otp: 1.4.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      react: 19.2.6
-      react-aria-components: 1.17.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      react-dom: 19.2.6(react@19.2.6)
-      tailwind-merge: 3.4.0
-      tailwind-variants: 3.2.2(tailwind-merge@3.4.0)(tailwindcss@4.3.0)
-      tailwindcss: 4.3.0
-    transitivePeerDependencies:
-      - '@react-spectrum/provider'
-      - '@types/react'
-      - '@types/react-dom'
-
   '@heroui/react@3.1.0(@react-spectrum/provider@3.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)':
     dependencies:
       '@heroui/styles': 3.1.0(tailwind-merge@3.4.0)(tailwindcss@4.3.0)
@@ -16466,14 +16412,6 @@ snapshots:
   '@heroui/styles@3.0.3(tailwind-merge@3.6.0)(tailwindcss@4.3.0)':
     dependencies:
       tailwind-variants: 3.2.2(tailwind-merge@3.6.0)(tailwindcss@4.3.0)
-      tailwindcss: 4.3.0
-      tw-animate-css: 1.4.0
-    transitivePeerDependencies:
-      - tailwind-merge
-
-  '@heroui/styles@3.0.5(tailwind-merge@3.4.0)(tailwindcss@4.3.0)':
-    dependencies:
-      tailwind-variants: 3.2.2(tailwind-merge@3.4.0)(tailwindcss@4.3.0)
       tailwindcss: 4.3.0
       tw-animate-css: 1.4.0
     transitivePeerDependencies:
@@ -16888,42 +16826,24 @@ snapshots:
 
   '@ikenxuan/qrcode@1.2.0': {}
 
-  '@ikenxuan/watermark-darwin-arm64@1.1.5':
+  '@ikenxuan/watermark-darwin-arm64@1.1.6':
     optional: true
 
-  '@ikenxuan/watermark-linux-arm64-gnu@1.1.5':
+  '@ikenxuan/watermark-linux-arm64-gnu@1.1.6':
     optional: true
 
-  '@ikenxuan/watermark-linux-x64-gnu@1.1.5':
+  '@ikenxuan/watermark-linux-x64-gnu@1.1.6':
     optional: true
 
-  '@ikenxuan/watermark-win32-x64-msvc@1.1.5':
+  '@ikenxuan/watermark-win32-x64-msvc@1.1.6':
     optional: true
 
-  '@ikenxuan/watermark@1.1.5(@react-spectrum/provider@3.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(tailwind-merge@3.4.0)(tailwindcss@4.3.0)':
-    dependencies:
-      '@gsap/react': 2.1.2(gsap@3.15.0)(react@19.2.6)
-      '@heroui/react': 3.0.5(@react-spectrum/provider@3.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)
-      '@heroui/styles': 3.0.5(tailwind-merge@3.4.0)(tailwindcss@4.3.0)
-      '@tauri-apps/api': 2.11.0
-      '@tauri-apps/plugin-dialog': 2.7.1
-      '@tauri-apps/plugin-shell': 2.3.5
-      gsap: 3.15.0
-      lucide-react: 1.16.0(react@19.2.6)
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
-      react-zoom-pan-pinch: 4.0.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+  '@ikenxuan/watermark@1.1.6':
     optionalDependencies:
-      '@ikenxuan/watermark-darwin-arm64': 1.1.5
-      '@ikenxuan/watermark-linux-arm64-gnu': 1.1.5
-      '@ikenxuan/watermark-linux-x64-gnu': 1.1.5
-      '@ikenxuan/watermark-win32-x64-msvc': 1.1.5
-    transitivePeerDependencies:
-      - '@react-spectrum/provider'
-      - '@types/react'
-      - '@types/react-dom'
-      - tailwind-merge
-      - tailwindcss
+      '@ikenxuan/watermark-darwin-arm64': 1.1.6
+      '@ikenxuan/watermark-linux-arm64-gnu': 1.1.6
+      '@ikenxuan/watermark-linux-x64-gnu': 1.1.6
+      '@ikenxuan/watermark-win32-x64-msvc': 1.1.6
 
   '@ikenxuan/xhshow-ts@1.0.6':
     dependencies:
@@ -19774,8 +19694,9 @@ snapshots:
       react-aria: 3.48.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react-dom: 19.2.6(react@19.2.6)
 
-  '@react-grab/cli@0.1.37':
+  '@react-grab/cli@0.1.39':
     dependencies:
+      agent-install: 0.0.5
       commander: 14.0.3
       ignore: 7.0.5
       jsonc-parser: 3.3.1
@@ -21288,16 +21209,6 @@ snapshots:
   '@tanstack/virtual-core@3.11.3': {}
 
   '@tanstack/virtual-core@3.15.0': {}
-
-  '@tauri-apps/api@2.11.0': {}
-
-  '@tauri-apps/plugin-dialog@2.7.1':
-    dependencies:
-      '@tauri-apps/api': 2.11.0
-
-  '@tauri-apps/plugin-shell@2.3.5':
-    dependencies:
-      '@tauri-apps/api': 2.11.0
 
   '@tootallnate/quickjs-emscripten@0.23.0': {}
 
@@ -27803,7 +27714,7 @@ snapshots:
       - '@emnapi/runtime'
     optional: true
 
-  oxlint-plugin-react-doctor@0.2.9:
+  oxlint-plugin-react-doctor@0.2.14:
     dependencies:
       '@typescript-eslint/types': 8.60.0
       eslint-scope: 9.1.2
@@ -28410,7 +28321,7 @@ snapshots:
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
 
-  react-doctor@0.2.9(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(eslint@9.39.4(jiti@2.6.1)):
+  react-doctor@0.2.14(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(eslint@9.39.4(jiti@2.6.1)):
     dependencies:
       '@effect/platform-node-shared': 4.0.0-beta.70(effect@4.0.0-beta.70)
       agent-install: 0.0.5
@@ -28419,7 +28330,7 @@ snapshots:
       effect: 4.0.0-beta.70
       eslint-plugin-react-hooks: 7.1.1(eslint@9.39.4(jiti@2.6.1))
       oxlint: 1.67.0
-      oxlint-plugin-react-doctor: 0.2.9
+      oxlint-plugin-react-doctor: 0.2.14
       prompts: 2.4.2
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -28457,9 +28368,9 @@ snapshots:
 
   react-fast-compare@3.2.2: {}
 
-  react-grab@0.1.37(react@19.2.6):
+  react-grab@0.1.39(react@19.2.6):
     dependencies:
-      '@react-grab/cli': 0.1.37
+      '@react-grab/cli': 0.1.39
       bippy: 0.5.41(react@19.2.6)
     optionalDependencies:
       react: 19.2.6
@@ -28663,9 +28574,9 @@ snapshots:
       preact: 10.29.1
       prompts: 2.4.2
       react: 19.2.6
-      react-doctor: 0.2.9(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(eslint@9.39.4(jiti@2.6.1))
+      react-doctor: 0.2.14(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(eslint@9.39.4(jiti@2.6.1))
       react-dom: 19.2.6(react@19.2.6)
-      react-grab: 0.1.37(react@19.2.6)
+      react-grab: 0.1.39(react@19.2.6)
     optionalDependencies:
       esbuild: 0.28.0
       unplugin: 3.0.0

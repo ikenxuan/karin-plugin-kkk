@@ -1,3 +1,5 @@
+import type { RichTextDocument } from '@kkk/richtext'
+
 import type { BaseComponentProps } from '../../index'
 
 /**
@@ -6,8 +8,30 @@ import type { BaseComponentProps } from '../../index'
 export interface DouyinVideoWorkProps extends BaseComponentProps<{
   /** 视频封面URL */
   image_url: string
+  /** 标题（从描述中按首个句号拆分） */
+  title?: string
   /** 描述内容 */
   desc: string
+  /** 富文本描述（去除标题后的正文，含 topic/lineBreak 节点） */
+  rich_desc?: RichTextDocument
+  /** IP 属地 */
+  ip_location?: string
+  /** 热点搜索词 */
+  suggest_word?: {
+    hint_text: string
+    word: string
+  }
+  /** 背景音乐信息 */
+  music?: {
+    /** 音乐作者 */
+    author: string
+    /** 音乐标题 */
+    title: string
+    /** 音乐封面 URL */
+    cover?: string
+  }
+  /** 视频时长（毫秒） */
+  duration?: number
   /** 点赞数 */
   dianzan: string
   /** 评论数 */
@@ -16,8 +40,8 @@ export interface DouyinVideoWorkProps extends BaseComponentProps<{
   shouchang: string
   /** 分享数 */
   share: string
-  /** 创建时间 */
-  create_time: string
+  /** 创建时间（Unix 时间戳，秒） */
+  create_time: number
   /** 用户头像URL */
   avater_url: string
   /** 用户名 */

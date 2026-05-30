@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 
 import type { DySearchInfo } from '@ikenxuan/amagi'
-import { format, fromUnixTime } from 'date-fns'
+import { format } from 'date-fns'
 import type { AdapterType, ImageElement, Message } from 'node-karin'
 import karin, { common, logger, segment } from 'node-karin'
 import { DouyinUserListProps } from 'template/types/platforms/douyin'
@@ -24,13 +24,14 @@ import {
   Render } from '@/module'
 import { Config } from '@/module/utils/Config'
 import { DouyinIdData, douyinProcessVideos, getDouyinID } from '@/platform/douyin'
-import { getWorkCoverUrl, getWorkTypeDisplayName, getWorkTypeInfo } from '@/platform/douyin/workType'
+import { getWorkTypeDisplayName, getWorkTypeInfo } from '@/platform/douyin/workType'
 import type { douyinPushItem } from '@/types/config/pushlist'
 
 import { processFavoriteList } from './push/favorite'
 import { processLiveStream } from './push/live'
 import { processPostList } from './push/post'
 import { processRecommendList } from './push/recommend'
+import { renderFavoriteImage, renderLiveImage, renderRecommendImage, renderWorkImage } from './push/render'
 import { type DouyinPushItem, type WillBePushList } from './push/types'
 
 // Re-export types for backward compatibility
@@ -191,9 +192,13 @@ export class DouYinpush extends Base {
     for (const awemeId in data) {
       const pushItem = data[awemeId]
       const actualAwemeId = awemeId.replace(/^(post|favorite|recommend|live)_/, '') // 移除推送类型前缀
-      const pushTypeLabel = pushItem.pushType === 'post' ? '作品列表' :
-        pushItem.pushType === 'favorite' ? '喜欢列表' :
-          pushItem.pushType === 'recommend' ? '推荐列表' : '直播'
+      let pushTypeLabel: string
+      switch (pushItem.pushType) {
+        case 'post': pushTypeLabel = '作品列表'; break
+        case 'favorite': pushTypeLabel = '喜欢列表'; break
+        case 'recommend': pushTypeLabel = '推荐列表'; break
+        default: pushTypeLabel = '直播'; break
+      }
 
       logger.mark(`
         ${logger.blue('开始处理并渲染抖音动态图片')}
@@ -214,243 +219,66 @@ export class DouYinpush extends Base {
       }
 
       if (!skip) {
-        if (pushItem.pushType === 'live' && 'room_data' in pushItem.Detail_Data && Detail_Data.live_data) {
-          // 处理直播推送
-          const liveItem = Detail_Data.live_data.data.data.data[0]
-          //@ts-ignore
-          const streamExtra = liveItem.stream_url.extra
-          const resolution = streamExtra
-            ? `${streamExtra.width}x${streamExtra.height}`
-            //@ts-ignore
-            : liveItem.stream_url.default_resolution
+        const realUrl = pushItem.pushType !== 'live' && Config.douyin.push.shareType === 'web' && await new Networks({
+          url: Detail_Data.share_url,
+          headers: {
+            'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+            Accept: '*/*',
+            'Accept-Encoding': 'gzip, deflate, br',
+            Connection: 'keep-alive'
+          }
+        }).getLocation()
 
-          img = await Render(this.e, 'douyin/live', {
-            //@ts-ignore
-            image_url: liveItem.cover.url_list[0],
-            //@ts-ignore
-            text: liveItem.title,
-            partition_title: Detail_Data.live_data.data.data.partition_road_map?.partition?.title || '未知分区',
-            room_id: Detail_Data.room_data.owner.web_rid,
-            //@ts-ignore
-            online_viewers: this.count(liveItem.room_view_stats.display_value),
-            //@ts-ignore
-            total_viewers: liveItem.stats.total_user_str,
-            username: Detail_Data.user_info.data.user.nickname,
-            avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
-            fans: this.count(Detail_Data.user_info.data.user.follower_count),
-            share_url: 'https://live.douyin.com/' + Detail_Data.room_data.owner.web_rid,
-            dynamicTYPE: '直播动态推送',
-            //@ts-ignore
-            like_count: this.count(liveItem.like_count),
-            //@ts-ignore
-            user_count_str: liveItem.user_count_str,
-            resolution,
-            signature: Detail_Data.user_info.data.user.signature,
-            //@ts-ignore
-            city: Detail_Data.user_info.data.user.city,
-            aweme_count: this.count(Detail_Data.user_info.data.user.aweme_count),
-            following_count: this.count(Detail_Data.user_info.data.user.following_count),
-            total_favorited: this.count(Detail_Data.user_info.data.user.total_favorited),
-            //@ts-ignore
-            has_commerce_goods: liveItem.has_commerce_goods
-          }, { skipWatermark: true })
-        } else {
-          // 处理普通作品推送
-          const realUrl = Config.douyin.push.shareType === 'web' && await new Networks({
-            url: Detail_Data.share_url,
-            headers: {
-              'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
-              Accept: '*/*',
-              'Accept-Encoding': 'gzip, deflate, br',
-              Connection: 'keep-alive'
-            }
-          }).getLocation()
+        switch (pushItem.pushType) {
+          case 'live': {
+            if (!('room_data' in pushItem.Detail_Data && Detail_Data.live_data)) break
+            img = await renderLiveImage({
+              e: this.e,
+              Detail_Data,
+              skipWatermark: true,
+              dynamicTypeLabel: '直播动态推送'
+            })
+            break
+          }
 
-          // 根据推送类型选择不同的渲染模板和数据
-          if (pushItem.pushType === 'favorite') {
-            // 喜欢列表模板：需要显示"谁喜欢了谁的作品"
-            // 获取作者用户信息（如果有的话）
-            const authorUserInfo = 'author_user_info' in Detail_Data ? Detail_Data.author_user_info : undefined
+          case 'favorite': {
+            const shareLink = Config.douyin.push.shareType === 'web' ? realUrl! : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
+            img = await renderFavoriteImage({
+              e: this.e,
+              Detail_Data,
+              create_time: pushItem.create_time,
+              shareLink,
+              remark: pushItem.remark,
+              skipWatermark: true
+            })
+            break
+          }
 
-            // 获取作品类型信息和封面
-            const workTypeInfo = getWorkTypeInfo(Detail_Data as any)
-            const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data as any)
+          case 'recommend': {
+            const shareLink = Config.douyin.push.shareType === 'web' ? realUrl! : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
+            img = await renderRecommendImage({
+              e: this.e,
+              Detail_Data,
+              create_time: pushItem.create_time,
+              shareLink,
+              remark: pushItem.remark,
+              skipWatermark: true
+            })
+            break
+          }
 
-            img = await Render(this.e, 'douyin/favorite-list', {
-              image_url: coverUrl,
-              desc: this.desc(Detail_Data, Detail_Data.desc),
-              dianzan: this.count(Detail_Data.statistics.digg_count),
-              pinglun: this.count(Detail_Data.statistics.comment_count),
-              share: this.count(Detail_Data.statistics.share_count),
-              shouchang: this.count(Detail_Data.statistics.collect_count),
-              tuijian: this.count(Detail_Data.statistics.recommend_count),
-              create_time: format(fromUnixTime(pushItem.create_time), 'yyyy-MM-dd HH:mm'),
-              // 点赞者信息（订阅者）
-              liker_username: pushItem.remark,
-              liker_avatar: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
-              liker_douyin_id: Detail_Data.user_info.data.user.unique_id === '' ? Detail_Data.user_info.data.user.short_id : Detail_Data.user_info.data.user.unique_id,
-              // 作品作者信息
-              author_username: Detail_Data.author.nickname,
-              author_avatar: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + authorUserInfo.data.user.avatar_larger.uri,
-              author_douyin_id: (authorUserInfo.data.user.unique_id === '' ? authorUserInfo.data.user.short_id : authorUserInfo.data.user.unique_id),
-              share_url: Config.douyin.push.shareType === 'web' ? realUrl : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
-            }, { skipWatermark: true })
-          } else if (pushItem.pushType === 'recommend') {
-            // 推荐列表模板
-            // 获取作者用户信息（如果有的话）
-            const authorUserInfo = 'author_user_info' in Detail_Data ? Detail_Data.author_user_info : undefined
+          case 'post':
+          default: {
+            const shareLink = Config.douyin.push.shareType === 'web' ? realUrl! : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
 
-            // 获取作品类型信息和封面
-            const workTypeInfo = getWorkTypeInfo(Detail_Data as any)
-            const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data as any)
-
-            img = await Render(this.e, 'douyin/recommend-list', {
-              image_url: coverUrl,
-              desc: this.desc(Detail_Data, Detail_Data.desc),
-              dianzan: this.count(Detail_Data.statistics.digg_count),
-              pinglun: this.count(Detail_Data.statistics.comment_count),
-              share: this.count(Detail_Data.statistics.share_count),
-              shouchang: this.count(Detail_Data.statistics.collect_count),
-              tuijian: this.count(Detail_Data.statistics.recommend_count),
-              create_time: format(fromUnixTime(pushItem.create_time), 'yyyy-MM-dd HH:mm'),
-
-              // 推荐者信息（订阅者）
-              recommender_username: pushItem.remark,
-              recommender_avatar: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
-              recommender_douyin_id: Detail_Data.user_info.data.user.unique_id === '' ? Detail_Data.user_info.data.user.short_id : Detail_Data.user_info.data.user.unique_id,
-
-              // 作品作者信息
-              author_username: Detail_Data.author.nickname,
-              author_avatar: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + authorUserInfo.data.user.avatar_larger.uri,
-              author_douyin_id: (authorUserInfo.data.user.unique_id === '' ? authorUserInfo.data.user.short_id : authorUserInfo.data.user.unique_id),
-              share_url: Config.douyin.push.shareType === 'web' ? realUrl : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
-            }, { skipWatermark: true })
-          } else {
-            // 作品列表模板（post）
-            const dynamicTypeLabel = '作品动态推送'
-
-            // 获取作品类型信息
-            const workTypeInfo = getWorkTypeInfo(Detail_Data as any)
-
-            // 获取封面 URL
-            const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data as any)
-
-            // 如果是文章类型，使用文章模板
-            if (workTypeInfo.isArticle) {
-              // 解析文章内容
-              const content = JSON.parse(Detail_Data.article_info.article_content)
-              const fe_data = JSON.parse(Detail_Data.article_info.fe_data)
-
-              // 渲染文章模板
-              img = await Render(this.e, 'douyin/article-work', {
-                title: Detail_Data.article_info.article_title,
-                markdown: content.markdown,
-                images: fe_data.image_list || [],
-                read_time: fe_data.read_time || 0,
-
-                // 互动数据
-                dianzan: this.count(Detail_Data.statistics.digg_count),
-                pinglun: this.count(Detail_Data.statistics.comment_count),
-                shouchang: this.count(Detail_Data.statistics.collect_count),
-                share: this.count(Detail_Data.statistics.share_count),
-
-                // 时间信息
-                create_time: format(fromUnixTime(pushItem.create_time), 'yyyy-MM-dd HH:mm'),
-
-                // 用户信息
-                avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
-                username: Detail_Data.author.nickname,
-                抖音号: Detail_Data.user_info.data.user.unique_id === '' ? Detail_Data.user_info.data.user.short_id : Detail_Data.user_info.data.user.unique_id,
-                获赞: this.count(Detail_Data.user_info.data.user.total_favorited),
-                关注: this.count(Detail_Data.user_info.data.user.following_count),
-                粉丝: this.count(Detail_Data.user_info.data.user.follower_count),
-
-                // 分享链接
-                share_url: Detail_Data.share_url,
-
-                // 主题
-                useDarkTheme: false
-              }, { skipWatermark: true })
-            } else {
-              // 视频或图文作品
-              img = await Render(this.e, workTypeInfo.templatePath, {
-                image_url: coverUrl,
-                desc: this.desc(Detail_Data, Detail_Data.desc),
-                dianzan: this.count(Detail_Data.statistics.digg_count),
-                pinglun: this.count(Detail_Data.statistics.comment_count),
-                share: this.count(Detail_Data.statistics.share_count),
-                shouchang: this.count(Detail_Data.statistics.collect_count),
-                create_time: format(fromUnixTime(pushItem.create_time), 'yyyy-MM-dd HH:mm'),
-                avater_url: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + Detail_Data.user_info.data.user.avatar_larger.uri,
-                share_url: Config.douyin.push.shareType === 'web' ? realUrl : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`,
-                username: Detail_Data.user_info.data.user.nickname,
-                抖音号: Detail_Data.user_info.data.user.unique_id === '' ? Detail_Data.user_info.data.user.short_id : Detail_Data.user_info.data.user.unique_id,
-                粉丝: this.count(Detail_Data.user_info.data.user.follower_count),
-                获赞: this.count(Detail_Data.user_info.data.user.total_favorited),
-                关注: this.count(Detail_Data.user_info.data.user.following_count),
-                dynamicTYPE: dynamicTypeLabel,
-                cooperation_info: (() => {
-                  const raw = Detail_Data.cooperation_info
-                  if (!raw) return undefined
-
-                  const rawCreators = Array.isArray(raw.co_creators) ? raw.co_creators : []
-
-                  // 订阅者信息（user_info）
-                  const subscriberUid = Detail_Data.user_info.data.user.uid
-                  const subscriberSecUid = Detail_Data.user_info.data.user.sec_uid
-
-                  // 查找订阅者在共创列表中的职位
-                  const subscriberInCreators = rawCreators.find((c: { uid: string; sec_uid: string }) =>
-                    (subscriberUid && c.uid && c.uid === subscriberUid) ||
-                    (subscriberSecUid && c.sec_uid && c.sec_uid === subscriberSecUid)
-                  )
-
-                  // 简化共创者信息：只保留头像链接、名字、职位（使用 avatar_url）
-                  const co_creators = rawCreators.map((c: {
-                    avatar_thumb: { url_list: (string | undefined)[]; uri: any }
-                    nickname: any
-                    role_title: any
-                  }) => {
-                    const avatarUrl = c.avatar_thumb?.url_list?.[0] ??
-                      (c.avatar_thumb?.uri ? `https://p3.douyinpic.com/${c.avatar_thumb.uri}` : undefined)
-
-                    return {
-                      avatar_url: avatarUrl,
-                      nickname: c.nickname,
-                      role_title: c.role_title
-                    }
-                  })
-
-                  if (
-                    Detail_Data.author &&
-                    !rawCreators.some((c: { uid: string; sec_uid: string; nickname: string }) =>
-                      (Detail_Data.author?.uid && c.uid && c.uid === Detail_Data.author.uid) ||
-                      (Detail_Data.author?.sec_uid && c.sec_uid && c.sec_uid === Detail_Data.author.sec_uid) ||
-                      (Detail_Data.author?.nickname && c.nickname && c.nickname === Detail_Data.author.nickname)
-                    )
-                  ) {
-                    co_creators.unshift({
-                      avatar_url: Detail_Data.author.avatar_thumb?.url_list?.[0] ??
-                        (Detail_Data.author.avatar_thumb?.uri ? `https://p3.douyinpic.com/${Detail_Data.author.avatar_thumb.uri}` : undefined),
-                      nickname: Detail_Data.author.nickname,
-                      role_title: '作者'
-                    })
-                  }
-
-                  return {
-                    co_creator_nums: Math.max(Number(raw.co_creator_nums || 0), co_creators.length),
-                    co_creators,
-                    subscriber_role: subscriberInCreators?.role_title ?? (
-                      (subscriberUid && Detail_Data.author?.uid && subscriberUid === Detail_Data.author.uid) ||
-                        (subscriberSecUid && Detail_Data.author?.sec_uid && subscriberSecUid === Detail_Data.author.sec_uid) ||
-                        (Detail_Data.user_info.data.user.nickname && Detail_Data.author?.nickname && Detail_Data.user_info.data.user.nickname === Detail_Data.author.nickname)
-                        ? '作者'
-                        : undefined
-                    )
-                  }
-                })()
-              }, { skipWatermark: true })
-            }
+            img = await renderWorkImage({
+              e: this.e,
+              Detail_Data,
+              create_time: pushItem.create_time,
+              shareLink,
+              skipWatermark: true
+            })
+            break
           }
         }
       }
@@ -1255,18 +1083,8 @@ export class DouYinpush extends Base {
   }
 
   /**
-   * 处理作品描述
-   */
-  desc (Detail_Data: any, desc: string) {
-    if (desc === '') {
-      return '该作品没有描述'
-    }
-    return desc
-  }
-
-  /**
-   * 格式化数字
-   */
+    * 格式化数字
+    */
   count (num: number) {
     if (num > 10000) {
       return (num / 10000).toFixed(1) + '万'

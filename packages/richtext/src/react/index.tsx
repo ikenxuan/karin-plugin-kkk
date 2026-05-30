@@ -364,6 +364,17 @@ const renderNodeToReact = (
         </span>
       )
 
+    case 'hashtag':
+      return (
+        <span
+          key={`hashtag-${index}`}
+          className={options.hashtag?.className}
+          data-richtext-node='hashtag'
+        >
+          {node.text}
+        </span>
+      )
+
     case 'at':
       return (
         <span

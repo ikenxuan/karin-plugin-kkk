@@ -59,12 +59,13 @@ export const handleBusinessError = async (
 }
 
 export const wrapWithErrorHandler = <R> (
-  fn: (e: Message, next?: () => unknown) => R | Promise<R>,
+  fn: (e: Message, next: () => unknown) => R | Promise<R>,
   options: ErrorHandlerOptions
 ) => {
   return async (e?: Message, next?: () => unknown): Promise<R> => {
     const rawEvent = e
     const normalizedEvent = await injectBotToEventForPushTask(rawEvent, options.businessName)
+    const normalizedNext = next ?? (() => undefined)
     const shouldHandleEmoji = Boolean(rawEvent) && !isPushTask(rawEvent, options.businessName)
     const emojiManager = shouldHandleEmoji ? new EmojiReactionManager(rawEvent as Message) : undefined
     let processingTimer: NodeJS.Timeout | null = null
@@ -77,7 +78,7 @@ export const wrapWithErrorHandler = <R> (
       }, 1500)
     }
 
-    const ctx = logger.runContext(async () => fn(normalizedEvent, next))
+    const ctx = logger.runContext(async () => fn(normalizedEvent, normalizedNext))
 
     try {
       const result = await ctx.run()
