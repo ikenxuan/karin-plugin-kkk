@@ -18,9 +18,9 @@ const reg = {
 }
 
 // 包装抖音处理函数
-const handleDouyin = wrapWithErrorHandler(async (e) => {
+const handleDouyin = wrapWithErrorHandler(async (e, next) => {
   if (e.msg.startsWith('#测试')) {
-    return false
+    return next()
   }
 
   // 判断是否为弹幕解析（通过 #弹幕解析 命令触发）
@@ -29,7 +29,7 @@ const handleDouyin = wrapWithErrorHandler(async (e) => {
   const urlMatch = e.msg.match(/(https?:\/\/[^\s]*\.(douyin|iesdouyin)\.com[^\s]*)/gi)
   if (!urlMatch) {
     logger.warn(`未能在消息中找到有效的抖音链接: ${e.msg}`)
-    return true
+    return next()
   }
   const url = String(urlMatch[0])
   const iddata = await getDouyinID(e, url)
@@ -47,13 +47,13 @@ const handleDouyin = wrapWithErrorHandler(async (e) => {
     }
   }
   
-  return true
+  return
 }, {
   businessName: '抖音视频解析'
 })
 
 // 包装B站处理函数
-const handleBilibili = wrapWithErrorHandler(async (e) => {
+const handleBilibili = wrapWithErrorHandler(async (e, next) => {
   e.msg = e.msg.replace(/\\/g, '') // 移除消息中的反斜杠
 
   // 判断是否为弹幕解析（通过 #弹幕解析 命令触发）
@@ -74,7 +74,7 @@ const handleBilibili = wrapWithErrorHandler(async (e) => {
   }
   if (!url) {
     logger.warn(`未能在消息中找到有效的B站分享链接、BV号或AV号: ${e.msg}`)
-    return true
+    return next()
   }
   const iddata = await getBilibiliID(url)
   await new Bilibili(e, iddata, { forceBurnDanmaku }).BilibiliHandler(iddata)
@@ -91,7 +91,7 @@ const handleBilibili = wrapWithErrorHandler(async (e) => {
     }
   }
   
-  return true
+  return
 }, {
   businessName: 'B站视频解析'
 })
@@ -119,13 +119,13 @@ const handleKuaishou = wrapWithErrorHandler(async (e) => {
 })
 
 // 包装小红书处理函数
-const handleXiaohongshu = wrapWithErrorHandler(async (e) => {
+const handleXiaohongshu = wrapWithErrorHandler(async (e, next) => {
   const cleaned = e.msg.replaceAll('\\', '')
   const m = cleaned.match(/https?:\/\/[^\s"'<>]+/)
   const url = m?.[0]
   if (!url) {
     logger.warn(`未能在消息中找到有效链接: ${e.msg}`)
-    return true
+    return next()
   }
   const iddata = await getXiaohongshuID(url)
   await new Xiaohongshu(e, iddata).XiaohongshuHandler(iddata)
@@ -142,7 +142,7 @@ const handleXiaohongshu = wrapWithErrorHandler(async (e) => {
     }
   }
   
-  return true
+  return
 }, {
   businessName: '小红书视频解析'
 })
