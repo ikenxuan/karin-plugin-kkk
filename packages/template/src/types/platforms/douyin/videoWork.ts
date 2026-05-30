@@ -8,12 +8,10 @@ import type { BaseComponentProps } from '../../index'
 export interface DouyinVideoWorkProps extends BaseComponentProps<{
   /** 视频封面URL */
   image_url: string
-  /** 标题（从描述中按首个句号拆分） */
-  title?: string
-  /** 描述内容 */
-  desc: string
-  /** 富文本描述（去除标题后的正文，含 topic/lineBreak 节点） */
-  rich_desc?: RichTextDocument
+  /** 标题（视频作品主文案，含有效 @ 用户与 topic 节点） */
+  title?: RichTextDocument
+  /** 描述内容（视频作品通常为空文档） */
+  desc: RichTextDocument
   /** IP 属地 */
   ip_location?: string
   /** 热点搜索词 */

@@ -142,28 +142,33 @@ const DouyinVideoCover: React.FC<Props> = (props) => {
 }
 
 const DouyinDynamicContent: React.FC<Props> = (props) => {
-  const { title, desc, rich_desc } = props.data
-  const bodyNode = rich_desc
-    ? renderRichTextToReact(rich_desc, {
-      hashtag: {
-        className: 'text-[#04498d] dark:text-[#face15] font-medium'
-      }
-    })
-    : desc
+  const { title, desc } = props.data
+  const richTextOptions = {
+    hashtag: {
+      className: 'text-[#04498d] dark:text-[#face15] font-medium'
+    },
+    mention: {
+      className: 'text-[#04498d] dark:text-[#face15] font-medium'
+    }
+  }
+  const hasTitle = Boolean(title?.nodes.length)
+  const hasDesc = desc.nodes.length > 0
 
   return (
     <div className='flex flex-col px-20 w-full leading-relaxed'>
-      {title && (
-        <div className='text-[72px] font-bold leading-tight mb-8 text-foreground select-text' style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
-          {title}
+      {hasTitle && title && (
+        <div className='text-[72px] leading-tight mb-8 text-foreground select-text' style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+          {renderRichTextToReact(title, richTextOptions)}
         </div>
       )}
-      <div
-        className='text-[56px] tracking-[0.5px] leading-[1.7] whitespace-pre-wrap text-foreground select-text'
-        style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
-      >
-        {bodyNode}
-      </div>
+      {hasDesc && (
+        <div
+          className='text-[56px] tracking-[0.5px] leading-[1.7] whitespace-pre-wrap text-foreground select-text'
+          style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
+        >
+          {renderRichTextToReact(desc, richTextOptions)}
+        </div>
+      )}
     </div>
   )
 }

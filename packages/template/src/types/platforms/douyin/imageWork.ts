@@ -21,12 +21,10 @@ export interface DouyinImageWorkProps extends BaseComponentProps<{
     /** 作品总图片数（包含封面） */
     total_count: number
   }
-  /** 标题（从描述中按首个句号拆分） */
-  title?: string
-  /** 描述内容 */
-  desc: string
-  /** 富文本描述（去除标题后的正文，含 topic/lineBreak 节点） */
-  rich_desc?: RichTextDocument
+  /** 标题（从描述中按首个句号拆分，含有效 @ 用户与 topic 节点） */
+  title?: RichTextDocument
+  /** 描述内容（去除标题后的正文，含有效 @ 用户、topic/lineBreak 节点） */
+  desc: RichTextDocument
   /** IP 属地 */
   ip_location?: string
   /** 热点搜索词 */

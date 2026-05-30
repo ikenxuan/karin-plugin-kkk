@@ -1,6 +1,7 @@
 import {
   createHashtagNode,
   createLineBreakNode,
+  createMentionNode,
   createRichTextDocument,
   createTextNode,
   type RichTextDocument,
@@ -10,6 +11,7 @@ import { format, fromUnixTime } from 'date-fns'
 import type { ImageElement, Message } from 'node-karin'
 
 import { Count, Render } from '@/module/utils'
+import { douyinFetcher } from '@/module/utils/amagiClient'
 
 import { DouyinWorkMainType, type DouyinWorkTypeInfo, getWorkCoverUrl, getWorkTypeInfo } from '../workType'
 
@@ -198,45 +200,145 @@ function splitTitleAndBody (desc: string): { title: string; body: string } {
   return { title, body }
 }
 
+type DouyinDescTextExtra = {
+  start?: number
+  end?: number
+  hashtag_name?: string
+  hashtag_id?: string
+  sec_uid?: string
+  type?: number
+}
+
+type DouyinDescRichTextToken = {
+  start: number
+  end: number
+  kind: 'hashtag' | 'mention'
+  text: string
+  userId?: string
+}
+
+type DouyinMentionToken = {
+  start: number
+  end: number
+  text: string
+  userId: string
+}
+
 /**
  * 根据抖音作品描述和 text_extra 构建富文本文档
- * 普通正文走 text 节点，换行走 lineBreak 节点，hashtag 走纯文字高亮节点。
- * @param body - 去除标题后的正文部分
- * @param textExtra - 抖音作品 text_extra 数组（含 hashtag 起止位置与 hashtag_name）
- * @param titleOffset - 正文在原始 desc 中的起始偏移字符数
+ * 普通正文走 text 节点，换行走 lineBreak 节点，hashtag 与有效 @ 用户走高亮节点。
+ * @param body - 需要编排的文本片段
+ * @param textExtra - 抖音作品 text_extra 数组
+ * @param titleOffset - 当前片段在原始 desc 中的起始偏移字符数
+ * @param mentionCache - 本次渲染内复用的 @ 校验结果，避免重复请求同一个用户主页
  * @returns 构建好的 RichTextDocument
  */
-function buildDescRichText (
-  body: string,
-  textExtra?: Array<{ start: number; end: number; hashtag_name?: string; hashtag_id?: string; type?: number }>,
-  titleOffset = 0
-): RichTextDocument {
-  if (!body) return createRichTextDocument([], { platform: 'douyin' })
+async function buildDescRichText (
+  text: string,
+  textExtra?: DouyinDescTextExtra[],
+  titleOffset = 0,
+  mentionCache: Map<string, string | null> = new Map()
+): Promise<RichTextDocument> {
+  if (!text) return createRichTextDocument([], { platform: 'douyin' })
 
-  const hashtags = (textExtra ?? [])
+  const tokens = [
+    ...extractHashtagTokens(text, textExtra, titleOffset),
+    ...(await resolveMentionTokens(text, textExtra, titleOffset, mentionCache)).map((item) => ({
+      start: item.start,
+      end: item.end,
+      kind: 'mention' as const,
+      text: item.text,
+      userId: item.userId
+    }))
+  ].sort((a, b) => a.start - b.start || (b.end - b.start) - (a.end - a.start))
+
+  const nodes: RichTextNode[] = []
+  let cursor = 0
+
+  for (const token of tokens) {
+    if (token.start < cursor) continue
+    const before = text.slice(cursor, token.start)
+    appendTextSegments(before, nodes)
+    if (token.kind === 'hashtag') {
+      nodes.push(createHashtagNode(token.text))
+    } else {
+      nodes.push(createMentionNode(token.text, token.userId))
+    }
+    cursor = token.end
+  }
+
+  appendTextSegments(text.slice(cursor), nodes)
+  return createRichTextDocument(nodes, { platform: 'douyin' })
+}
+
+function extractHashtagTokens (
+  body: string,
+  textExtra: DouyinDescTextExtra[] | undefined,
+  titleOffset = 0
+): DouyinDescRichTextToken[] {
+  return (textExtra ?? [])
     .filter((item): item is { start: number; end: number; hashtag_name: string; hashtag_id?: string; type: number } =>
       item.type === 1 && !!item.hashtag_name && typeof item.start === 'number' && typeof item.end === 'number')
     .map((item) => ({
       start: item.start - titleOffset,
       end: item.end - titleOffset,
-      name: '#' + item.hashtag_name
+      kind: 'hashtag' as const,
+      text: '#' + item.hashtag_name
     }))
     .filter((item) => item.start >= 0 && item.end > item.start && item.end <= body.length)
-    .sort((a, b) => a.start - b.start)
+    .filter((item) => body.slice(item.start, item.end) === item.text)
+}
 
-  const nodes: RichTextNode[] = []
-  let cursor = 0
+/**
+ * 根据 text_extra 中的 sec_uid 反查当前昵称，并只在原文片段完全等于 @昵称 时生成 mention。
+ * 这样可以过滤掉失效、改名或 text_extra 范围异常的 @。
+ */
+async function resolveMentionTokens (
+  text: string,
+  textExtra: DouyinDescTextExtra[] | undefined,
+  titleOffset: number,
+  mentionCache: Map<string, string | null>
+): Promise<DouyinMentionToken[]> {
+  const candidates = (textExtra ?? [])
+    .filter((item): item is { start: number; end: number; sec_uid: string; type: number } =>
+      item.type === 0 &&
+      typeof item.start === 'number' &&
+      typeof item.end === 'number' &&
+      typeof item.sec_uid === 'string' &&
+      item.sec_uid.length > 0)
+    .map((item) => ({
+      start: item.start - titleOffset,
+      end: item.end - titleOffset,
+      sec_uid: item.sec_uid
+    }))
+    .filter((item) => item.start >= 0 && item.end > item.start && item.end <= text.length)
 
-  for (const tag of hashtags) {
-    if (tag.start < cursor) continue
-    const before = body.slice(cursor, tag.start)
-    appendTextSegments(before, nodes)
-    nodes.push(createHashtagNode(tag.name))
-    cursor = tag.end
-  }
+  if (candidates.length === 0) return []
 
-  appendTextSegments(body.slice(cursor), nodes)
-  return createRichTextDocument(nodes, { platform: 'douyin' })
+  const uniqueSecUids = [...new Set(candidates.map(item => item.sec_uid))]
+  await Promise.all(uniqueSecUids.map(async (secUid) => {
+    if (mentionCache.has(secUid)) return
+    try {
+      const userInfo = await douyinFetcher.fetchUserProfile({ sec_uid: secUid, typeMode: 'strict' })
+      const user = userInfo.data.user
+      const nickname = user.nickname?.trim()
+      mentionCache.set(secUid, user.sec_uid === secUid && nickname ? `@${nickname}` : null)
+    } catch {
+      mentionCache.set(secUid, null)
+    }
+  }))
+
+  return candidates.flatMap((item): DouyinMentionToken[] => {
+    const mentionText = mentionCache.get(item.sec_uid)
+    if (!mentionText) return []
+    if (text.slice(item.start, item.end) !== mentionText) return []
+    return [{
+      start: item.start,
+      end: item.end,
+      text: mentionText,
+      userId: item.sec_uid
+    }]
+  })
 }
 
 /**
@@ -406,6 +508,7 @@ export async function renderWorkImage (options: RenderWorkImageOptions): Promise
   const avatarUrl = cdnAvatar(user.avatar_larger.uri)
   const authorNickname = Detail_Data.author?.nickname ?? user.nickname
   const cooperationInfo = buildCooperationInfo(Detail_Data)
+  const mentionCache = new Map<string, string | null>()
 
   const renderOpts = skipWatermark ? { skipWatermark: true } : undefined
 
@@ -435,17 +538,13 @@ export async function renderWorkImage (options: RenderWorkImageOptions): Promise
 
     case DouyinWorkMainType.VIDEO: {
       const rawDesc = Detail_Data.desc ?? ''
-      const { title, body } = splitTitleAndBody(rawDesc)
-      const titleOffset = rawDesc.length - body.length
-      const richDesc = title || body
-        ? buildDescRichText(desc(body), Detail_Data.text_extra, titleOffset)
-        : undefined
+      const title = await buildDescRichText(desc(rawDesc), Detail_Data.text_extra, 0, mentionCache)
+      const emptyDesc = createRichTextDocument([], { platform: 'douyin' })
 
       return await Render(e, 'douyin/video-work', {
         image_url: coverUrl,
-        title: title || undefined,
-        desc: desc(rawDesc),
-        rich_desc: richDesc,
+        title,
+        desc: emptyDesc,
         ip_location: extractIpLocation(Detail_Data),
         suggest_word: extractSuggestWord(Detail_Data),
         music: buildMusicInfo(Detail_Data.music),
@@ -472,16 +571,17 @@ export async function renderWorkImage (options: RenderWorkImageOptions): Promise
         ?? Detail_Data.images?.[0]?.url_list[1]
         ?? coverUrl
       const rawDesc = Detail_Data.desc ?? ''
-      const { title, body } = splitTitleAndBody(rawDesc)
-      const titleOffset = rawDesc.length - body.length
-      const richDesc = title || body
-        ? buildDescRichText(desc(body), Detail_Data.text_extra, titleOffset)
+      const splitDesc = splitTitleAndBody(rawDesc)
+      const titleOffset = rawDesc.length - splitDesc.body.length
+      const title = splitDesc.title
+        ? await buildDescRichText(splitDesc.title, Detail_Data.text_extra, 0, mentionCache)
         : undefined
+      const bodyText = splitDesc.title && !splitDesc.body ? '' : desc(splitDesc.body)
+      const richDesc = await buildDescRichText(bodyText, Detail_Data.text_extra, titleOffset, mentionCache)
       return await Render(e, 'douyin/image-work', {
         image_list: buildImageList(Detail_Data.images, cover),
-        title: title || undefined,
-        desc: desc(rawDesc),
-        rich_desc: richDesc,
+        title,
+        desc: richDesc,
         ip_location: extractIpLocation(Detail_Data),
         suggest_word: extractSuggestWord(Detail_Data),
         music: buildMusicInfo(Detail_Data.music),
