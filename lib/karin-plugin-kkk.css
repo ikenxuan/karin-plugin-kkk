@@ -12570,6 +12570,10 @@
     top: calc(var(--spacing) * 6);
   }
 
+  .top-7 {
+    top: calc(var(--spacing) * 7);
+  }
+
   .top-8 {
     top: calc(var(--spacing) * 8);
   }
@@ -12944,6 +12948,10 @@
 
   .left-4 {
     left: calc(var(--spacing) * 4);
+  }
+
+  .left-7 {
+    left: calc(var(--spacing) * 7);
   }
 
   .left-8 {
@@ -14049,6 +14057,10 @@
 
   .w-16 {
     width: calc(var(--spacing) * 16);
+  }
+
+  .w-18 {
+    width: calc(var(--spacing) * 18);
   }
 
   .w-20 {
@@ -15529,6 +15541,16 @@
     }
   }
 
+  .border-white\/20 {
+    border-color: #fff3;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .border-white\/20 {
+      border-color: color-mix(in oklab, var(--color-white) 20%, transparent);
+    }
+  }
+
   .border-white\/50 {
     border-color: #ffffff80;
   }
@@ -15685,6 +15707,16 @@
     }
   }
 
+  .bg-black\/45 {
+    background-color: #00000073;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-black\/45 {
+      background-color: color-mix(in oklab, var(--color-black) 45%, transparent);
+    }
+  }
+
   .bg-black\/48 {
     background-color: #0000007a;
   }
@@ -15833,7 +15865,17 @@
     }
   }
 
-  .bg-foreground, .bg-foreground\/70 {
+  .bg-foreground, .bg-foreground\/5 {
+    background-color: var(--foreground);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-foreground\/5 {
+      background-color: color-mix(in oklab, var(--foreground) 5%, transparent);
+    }
+  }
+
+  .bg-foreground\/70 {
     background-color: var(--foreground);
   }
 
@@ -16144,6 +16186,16 @@
   @supports (color: color-mix(in lab, red, red)) {
     .bg-white\/10 {
       background-color: color-mix(in oklab, var(--color-white) 10%, transparent);
+    }
+  }
+
+  .bg-white\/15 {
+    background-color: #ffffff26;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-white\/15 {
+      background-color: color-mix(in oklab, var(--color-white) 15%, transparent);
     }
   }
 
@@ -16474,6 +16526,10 @@
     object-fit: cover;
   }
 
+  .object-center {
+    object-position: center;
+  }
+
   .p-0 {
     padding: calc(var(--spacing) * 0);
   }
@@ -16648,6 +16704,10 @@
 
   .py-3 {
     padding-block: calc(var(--spacing) * 3);
+  }
+
+  .py-3\.5 {
+    padding-block: calc(var(--spacing) * 3.5);
   }
 
   .py-4 {
@@ -17244,6 +17304,11 @@
   .leading-\[1\.6\] {
     --tw-leading: 1.6;
     line-height: 1.6;
+  }
+
+  .leading-\[1\.7\] {
+    --tw-leading: 1.7;
+    line-height: 1.7;
   }
 
   .leading-\[1\.08\] {
@@ -17991,6 +18056,16 @@
     }
   }
 
+  .text-white\/85 {
+    color: #ffffffd9;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .text-white\/85 {
+      color: color-mix(in oklab, var(--color-white) 85%, transparent);
+    }
+  }
+
   .text-white\/90 {
     color: #ffffffe6;
   }
@@ -18104,6 +18179,10 @@
 
   .opacity-\[0\.45\] {
     opacity: .45;
+  }
+
+  .mix-blend-difference {
+    mix-blend-mode: difference;
   }
 
   .mix-blend-multiply {
@@ -18612,6 +18691,28 @@
     @supports (color: color-mix(in lab, red, red)) {
       .dark\:bg-black\/72:not(:is(.light, .light *, [data-theme="light"], [data-theme="light"] *)) {
         background-color: color-mix(in oklab, var(--color-black) 72%, transparent);
+      }
+    }
+  }
+
+  .dark\:bg-foreground\/10:is(.dark, .dark :not(:is(.dark .light *, .dark [data-theme="light"] *)), [data-theme="dark"], [data-theme="dark"] :not(:is([data-theme="dark"] .light *, [data-theme="dark"] [data-theme="light"] *))) {
+    background-color: var(--foreground);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .dark\:bg-foreground\/10:is(.dark, .dark :not(:is(.dark .light *, .dark [data-theme="light"] *)), [data-theme="dark"], [data-theme="dark"] :not(:is([data-theme="dark"] .light *, [data-theme="dark"] [data-theme="light"] *))) {
+      background-color: color-mix(in oklab, var(--foreground) 10%, transparent);
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .dark\:bg-foreground\/10:not(:is(.light, .light *, [data-theme="light"], [data-theme="light"] *)) {
+      background-color: var(--foreground);
+    }
+
+    @supports (color: color-mix(in lab, red, red)) {
+      .dark\:bg-foreground\/10:not(:is(.light, .light *, [data-theme="light"], [data-theme="light"] *)) {
+        background-color: color-mix(in oklab, var(--foreground) 10%, transparent);
       }
     }
   }
