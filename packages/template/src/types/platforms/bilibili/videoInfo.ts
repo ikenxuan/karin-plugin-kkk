@@ -109,4 +109,6 @@ export interface VideoHeaderProps {
 export interface QRCodeSectionProps {
   /** 分享链接 */
   share_url: string
+  /** 是否使用深色主题 */
+  useDarkTheme: boolean
 }

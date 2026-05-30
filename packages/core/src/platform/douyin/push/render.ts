@@ -1,9 +1,17 @@
+import {
+  createHashtagNode,
+  createLineBreakNode,
+  createRichTextDocument,
+  createTextNode,
+  type RichTextDocument,
+  type RichTextNode
+} from '@kkk/richtext'
 import { format, fromUnixTime } from 'date-fns'
 import type { ImageElement, Message } from 'node-karin'
 
 import { Count, Render } from '@/module/utils'
 
-import { DouyinWorkMainType, getWorkCoverUrl, getWorkTypeInfo } from '../workType'
+import { DouyinWorkMainType, type DouyinWorkTypeInfo, getWorkCoverUrl, getWorkTypeInfo } from '../workType'
 
 /**
  * 处理作品描述
@@ -95,25 +103,250 @@ function cdnAvatar (uri: string): string {
   return 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + uri
 }
 
+/** 图文内单张媒体的模板类型。 */
+type ImageMediaType = 'static' | 'live' | 'clip'
+
 /**
- * 构建图文作品图片列表
- * 从作品详情中提取全部图片 URL（排除封面首图），优先取中分辨率 url_list[1]
- * 限制最多返回 3 张预览图，并提供作品总图数供前端视觉锚点使用
- * @param images - 作品原始图片数组，每项包含 url_list（多分辨率 URL）
- * @returns 图片列表数据，若作品无多图则返回 undefined
+ * 解析图文/合辑中单张图片的媒体类型。
+ * clip_type 规则参考普通解析逻辑：2/空为静态图，5 为实况动图，4 为短片。
+ * @param image - 抖音 images 数组中的单项
+ * @returns 模板可识别的媒体类型
  */
-function buildImageList (images: Array<{ url_list: string[] }> | null | undefined): {
-  images: string[]
+function getImageMediaType (image: { clip_type?: number } | null | undefined): ImageMediaType {
+  switch (image?.clip_type) {
+    case 4:
+      return 'clip'
+    case 5:
+      return 'live'
+    case 2:
+    case undefined:
+    default:
+      return 'static'
+  }
+}
+
+/**
+ * 构建图文作品图片列表。
+ * 第一项为封面，后续最多保留 2 张预览图，并在每项上携带媒体类型。
+ * @param images - 作品原始图片数组，每项包含 url_list（多分辨率 URL）
+ * @param fallbackCover - images 缺失时使用的兜底封面
+ * @returns 图片列表数据
+ */
+function buildImageList (
+  images: Array<{ url_list: string[]; clip_type?: number }> | null | undefined,
+  fallbackCover: string
+): {
+  images: Array<{
+    url: string
+    media_type: ImageMediaType
+  }>
   total_count: number
-} | undefined {
-  if (!images || images.length <= 1) return undefined
+} {
+  if (!images || images.length === 0) {
+    return {
+      images: fallbackCover
+        ? [{ url: fallbackCover, media_type: 'static' }]
+        : [],
+      total_count: fallbackCover ? 1 : 0
+    }
+  }
 
-  const total_count = images.length
-  const previews = images.slice(1, 4).map(
-    (img) => img.url_list[1] ?? img.url_list[0] ?? img.url_list[2] ?? ''
-  ).filter(Boolean)
+  const usedUrls = new Set<string>()
+  const imageItems = images.map((img, index) => ({
+    url: index === 0
+      ? (img.url_list[2] ?? img.url_list[1] ?? img.url_list[0] ?? fallbackCover)
+      : (img.url_list[1] ?? img.url_list[0] ?? img.url_list[2] ?? ''),
+    media_type: getImageMediaType(img)
+  })).filter((item) => {
+    if (!item.url) return false
+    const key = normalizeImageUrl(item.url)
+    if (usedUrls.has(key)) return false
+    usedUrls.add(key)
+    return true
+  }).slice(0, 3)
 
-  return { images: previews, total_count }
+  return {
+    images: imageItems,
+    total_count: images.length
+  }
+}
+
+/**
+ * 去掉签名参数，避免同一张图因 CDN 查询参数不同被重复放入预览列表。
+ * @param url - 原始图片 URL
+ * @returns 用于去重的稳定 URL key
+ */
+function normalizeImageUrl (url: string): string {
+  try {
+    const parsed = new URL(url)
+    return `${parsed.host}${parsed.pathname}`
+  } catch {
+    return url.split('?')[0]
+  }
+}
+
+/**
+ * 将作品描述按首句句号/感叹号/问号拆分为标题和正文
+ * @param desc - 原始描述文本
+ * @returns `{ title, body }`，若无句点分隔符则 title 为空字符串
+ */
+function splitTitleAndBody (desc: string): { title: string; body: string } {
+  const match = desc.match(/^[^。！？!?\n]*[。！？!?]/)
+  if (!match) return { title: '', body: desc }
+  const title = match[0].replace(/[。！？!?]$/, '')
+  const body = desc.slice(match[0].length)
+  return { title, body }
+}
+
+/**
+ * 根据抖音作品描述和 text_extra 构建富文本文档
+ * 普通正文走 text 节点，换行走 lineBreak 节点，hashtag 走纯文字高亮节点。
+ * @param body - 去除标题后的正文部分
+ * @param textExtra - 抖音作品 text_extra 数组（含 hashtag 起止位置与 hashtag_name）
+ * @param titleOffset - 正文在原始 desc 中的起始偏移字符数
+ * @returns 构建好的 RichTextDocument
+ */
+function buildDescRichText (
+  body: string,
+  textExtra?: Array<{ start: number; end: number; hashtag_name?: string; hashtag_id?: string; type?: number }>,
+  titleOffset = 0
+): RichTextDocument {
+  if (!body) return createRichTextDocument([], { platform: 'douyin' })
+
+  const hashtags = (textExtra ?? [])
+    .filter((item): item is { start: number; end: number; hashtag_name: string; hashtag_id?: string; type: number } =>
+      item.type === 1 && !!item.hashtag_name && typeof item.start === 'number' && typeof item.end === 'number')
+    .map((item) => ({
+      start: item.start - titleOffset,
+      end: item.end - titleOffset,
+      name: '#' + item.hashtag_name
+    }))
+    .filter((item) => item.start >= 0 && item.end > item.start && item.end <= body.length)
+    .sort((a, b) => a.start - b.start)
+
+  const nodes: RichTextNode[] = []
+  let cursor = 0
+
+  for (const tag of hashtags) {
+    if (tag.start < cursor) continue
+    const before = body.slice(cursor, tag.start)
+    appendTextSegments(before, nodes)
+    nodes.push(createHashtagNode(tag.name))
+    cursor = tag.end
+  }
+
+  appendTextSegments(body.slice(cursor), nodes)
+  return createRichTextDocument(nodes, { platform: 'douyin' })
+}
+
+/**
+ * 将文本按换行拆分为 text 节点和 lineBreak 节点并推入目标数组
+ */
+function appendTextSegments (
+  text: string,
+  target: RichTextNode[]
+) {
+  if (!text) return
+  const parts = text.split(/(\r?\n)/)
+  for (const part of parts) {
+    if (part === '\r\n' || part === '\n') {
+      target.push(createLineBreakNode())
+    } else if (part) {
+      target.push(createTextNode(part))
+    }
+  }
+}
+
+/**
+ * 提取博主 IP 属地
+ * @param Detail_Data - 作品详情数据
+ * @returns IP 属地文本（如 "重庆"），不存在时返回 undefined
+ */
+function extractIpLocation (Detail_Data: any): string | undefined {
+  let raw: string | undefined = Detail_Data.user_info?.data?.user?.ip_location
+  if (!raw) raw = Detail_Data.ip_location
+  if (!raw || typeof raw !== 'string') return undefined
+  const label = raw.replace(/^IP属地[：:]?\s*/, '').trim()
+  return label || undefined
+}
+
+/**
+ * 从 suggest_words 中随机选择一条热点词
+ * @param Detail_Data - 作品详情数据
+ * @returns `{ hint_text, word }` 或 undefined
+ */
+function extractSuggestWord (Detail_Data: any): { hint_text: string; word: string } | undefined {
+  const groups = Detail_Data.suggest_words?.suggest_words
+  if (!Array.isArray(groups) || groups.length === 0) return undefined
+  const group = groups[0]
+  const words: Array<{ word?: string }> = Array.isArray(group?.words) ? group.words : []
+  if (words.length === 0) return undefined
+  const pick = words[Math.floor(Math.random() * words.length)]
+  if (!pick?.word) return undefined
+  return {
+    hint_text: group.hint_text ?? '大家都在搜：',
+    word: pick.word
+  }
+}
+
+/**
+ * 从抖音图片对象中提取第一个可用 URL。
+ * @param images - 可能存在的多种封面对象
+ * @returns 可直接渲染的图片 URL，不存在时返回 undefined
+ */
+function pickImageUrl (...images: any[]): string | undefined {
+  for (const image of images) {
+    const url = image?.url_list?.find((item: unknown): item is string => typeof item === 'string' && item.length > 0)
+    if (url) return url
+  }
+  return undefined
+}
+
+/**
+ * 安全解析 music.extra JSON。
+ * @param extra - 抖音 music.extra 原始字符串
+ * @returns 解析后的对象，解析失败时返回空对象
+ */
+function parseMusicExtra (extra: unknown): Record<string, any> {
+  if (typeof extra !== 'string' || extra.length === 0) return {}
+  try {
+    return JSON.parse(extra)
+  } catch {
+    return {}
+  }
+}
+
+/**
+ * 构建图文作品 BGM 展示信息。
+ * 优先使用 matched_pgc_sound 的标准曲目信息，再回退到原声/作者字段和 extra 中的映射标题。
+ * @param music - 抖音作品 music 字段
+ * @returns 可传给模板的音乐信息；无有效音乐数据时返回 undefined
+ */
+function buildMusicInfo (music: any): { author: string; title: string; cover?: string } | undefined {
+  if (!music || typeof music !== 'object') return undefined
+
+  const extra = parseMusicExtra(music.extra)
+  const matched = music.matched_pgc_sound
+  const title = matched?.title || matched?.mixed_title || extra.music_display_mapping_title || music.title
+  const author = matched?.author || matched?.mixed_author || music.author || music.owner_nickname
+  const cover = pickImageUrl(
+    matched?.cover_medium,
+    music.cover_hd,
+    music.cover_large,
+    music.cover_medium,
+    music.cover_thumb,
+    music.avatar_large,
+    music.avatar_medium,
+    music.avatar_thumb
+  )
+
+  if (!title && !author && !cover) return undefined
+
+  return {
+    title: title || '未知音乐',
+    author: author || '未知作者',
+    cover
+  }
 }
 
 /**
@@ -142,16 +375,30 @@ export interface RenderWorkImageOptions {
 }
 
 /**
+ * 根据作品类型计算默认推送标签
+ * @param workTypeInfo - 作品类型信息
+ * @returns 视频/图文/合辑/文章/直播 之一的推送标签
+ */
+function getDefaultPushLabel (workTypeInfo: DouyinWorkTypeInfo): string {
+  if (workTypeInfo.isVideo) return '视频作品推送'
+  if (workTypeInfo.isArticle) return '文章作品推送'
+  if (workTypeInfo.isCollection) return '合辑作品推送'
+  if (workTypeInfo.isImage) return '图文作品推送'
+  if (workTypeInfo.isLive) return '直播动态推送'
+  return '作品动态推送'
+}
+
+/**
  * 渲染作品推送图片
- * 根据作品类型（文章/视频/图文）自动选择对应模板进行渲染
- * 支持视频、图集、文章三种作品类型，未知类型返回空数组
+ * 根据作品类型（文章/视频/图文/合辑）自动选择对应模板进行渲染
+ * 推送类型标签按优先级：调用方显式传入 → 根据作品主/子类型自动计算
  * @param options - 渲染参数
  * @returns 渲染后的图片元素数组
  */
 export async function renderWorkImage (options: RenderWorkImageOptions): Promise<ImageElement[]> {
   const { e, Detail_Data, create_time, shareLink, skipWatermark = false } = options
-  const dynamicTypeLabel = options.dynamicTypeLabel ?? '作品动态推送'
   const workTypeInfo = getWorkTypeInfo(Detail_Data)
+  const dynamicTypeLabel = options.dynamicTypeLabel ?? getDefaultPushLabel(workTypeInfo)
   const coverUrl = getWorkCoverUrl(workTypeInfo, Detail_Data)
   const formatTime = format(fromUnixTime(create_time), 'yyyy-MM-dd HH:mm')
   const user = Detail_Data.user_info.data.user
@@ -187,14 +434,27 @@ export async function renderWorkImage (options: RenderWorkImageOptions): Promise
     }
 
     case DouyinWorkMainType.VIDEO: {
+      const rawDesc = Detail_Data.desc ?? ''
+      const { title, body } = splitTitleAndBody(rawDesc)
+      const titleOffset = rawDesc.length - body.length
+      const richDesc = title || body
+        ? buildDescRichText(desc(body), Detail_Data.text_extra, titleOffset)
+        : undefined
+
       return await Render(e, 'douyin/video-work', {
         image_url: coverUrl,
-        desc: desc(Detail_Data.desc),
+        title: title || undefined,
+        desc: desc(rawDesc),
+        rich_desc: richDesc,
+        ip_location: extractIpLocation(Detail_Data),
+        suggest_word: extractSuggestWord(Detail_Data),
+        music: buildMusicInfo(Detail_Data.music),
+        duration: Detail_Data.duration,
         dianzan: Count(Detail_Data.statistics.digg_count),
         pinglun: Count(Detail_Data.statistics.comment_count),
         share: Count(Detail_Data.statistics.share_count),
         shouchang: Count(Detail_Data.statistics.collect_count),
-        create_time: formatTime,
+        create_time,
         avater_url: avatarUrl,
         share_url: shareLink,
         username: user.nickname,
@@ -211,15 +471,25 @@ export async function renderWorkImage (options: RenderWorkImageOptions): Promise
       const cover = Detail_Data.images?.[0]?.url_list[2]
         ?? Detail_Data.images?.[0]?.url_list[1]
         ?? coverUrl
+      const rawDesc = Detail_Data.desc ?? ''
+      const { title, body } = splitTitleAndBody(rawDesc)
+      const titleOffset = rawDesc.length - body.length
+      const richDesc = title || body
+        ? buildDescRichText(desc(body), Detail_Data.text_extra, titleOffset)
+        : undefined
       return await Render(e, 'douyin/image-work', {
-        image_url: cover,
-        image_list: buildImageList(Detail_Data.images),
-        desc: desc(Detail_Data.desc),
+        image_list: buildImageList(Detail_Data.images, cover),
+        title: title || undefined,
+        desc: desc(rawDesc),
+        rich_desc: richDesc,
+        ip_location: extractIpLocation(Detail_Data),
+        suggest_word: extractSuggestWord(Detail_Data),
+        music: buildMusicInfo(Detail_Data.music),
         dianzan: Count(Detail_Data.statistics.digg_count),
         pinglun: Count(Detail_Data.statistics.comment_count),
         share: Count(Detail_Data.statistics.share_count),
         shouchang: Count(Detail_Data.statistics.collect_count),
-        create_time: formatTime,
+        create_time,
         avater_url: avatarUrl,
         share_url: shareLink,
         username: user.nickname,

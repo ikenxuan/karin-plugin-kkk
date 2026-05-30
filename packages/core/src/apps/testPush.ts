@@ -54,7 +54,7 @@ const handleTestPush = wrapWithErrorHandler(async (e) => {
       const shareLink = Detail_Data.video?.play_addr?.uri
         ? `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
         : Detail_Data.share_url || url
-      const img = await renderWorkImage({ e, Detail_Data, create_time: aweme.create_time, shareLink, dynamicTypeLabel: '测试推送' })
+      const img = await renderWorkImage({ e, Detail_Data, create_time: aweme.create_time, shareLink })
       if (img.length === 0) {
         await e.reply('未能识别该作品类型，无法渲染推送图片')
         return true
@@ -150,7 +150,7 @@ const handleTestPush = wrapWithErrorHandler(async (e) => {
         typeMode: 'strict'
       })
       const Detail_Data = { user_info: userinfo, room_data, live_data: liveInfo }
-      const img = await renderLiveImage({ e, Detail_Data, dynamicTypeLabel: '测试推送' })
+      const img = await renderLiveImage({ e, Detail_Data })
       if (!img.length) {
         await e.reply('渲染直播状态推送图片失败')
         return true

@@ -3,6 +3,7 @@ import type {
   RichTextCodeBlockNode,
   RichTextDocument,
   RichTextEmojiNode,
+  RichTextHashtagNode,
   RichTextHeadingNode,
   RichTextImageNode,
   RichTextLineBreakNode,
@@ -168,6 +169,16 @@ export const createLinkCardNode = (
 })
 
 /**
+ * 创建 hashtag 节点。
+ *
+ * 纯文本高亮，不带任何图标。适用于抖音等平台的 #话题# 展示。
+ */
+export const createHashtagNode = (text: string): RichTextHashtagNode => ({
+  type: 'hashtag',
+  text
+})
+
+/**
  * 合并相邻文本节点并丢弃空文本节点。
  *
  * 这样 core 可以按匹配过程简单 push 节点，最后统一整理，避免前端拿到碎片过多的数据。
@@ -212,6 +223,7 @@ export const extractRichTextPlainText = (document: RichTextDocument): string => 
       case 'webLink':
       case 'vote':
       case 'viewPicture':
+      case 'hashtag':
       case 'emoji':
         return 'text' in node ? (node as any).text ?? '' : (node as any).name ?? ''
       case 'heading':

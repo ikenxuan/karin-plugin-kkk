@@ -276,8 +276,7 @@ export class DouYinpush extends Base {
               Detail_Data,
               create_time: pushItem.create_time,
               shareLink,
-              skipWatermark: true,
-              dynamicTypeLabel: '作品动态推送'
+              skipWatermark: true
             })
             break
           }

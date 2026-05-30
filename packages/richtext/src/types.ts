@@ -20,6 +20,7 @@ export type RichTextInlineNode =
   | RichTextWebLinkNode
   | RichTextVoteNode
   | RichTextViewPictureNode
+  | RichTextHashtagNode
 
 /** 块级节点。 */
 export type RichTextBlockNode =
@@ -154,6 +155,18 @@ export interface RichTextViewPictureNode {
   text: string
 }
 
+/**
+ * Hashtag 话题节点。
+ *
+ * 纯文本高亮，不带任何图标。用于抖音等平台的 #话题# 标签展示。
+ * 与 topic 节点的区别：topic 带有 B站风格的 # 图标，hashtag 只做纯文字高亮。
+ */
+export interface RichTextHashtagNode {
+  type: 'hashtag'
+  /** 话题文本（包含 # 号） */
+  text: string
+}
+
 /** 标题节点。 */
 export interface RichTextHeadingNode {
   type: 'heading'
@@ -285,6 +298,8 @@ export interface RichTextRenderOptions {
   codeBlock?: RichTextNodeStyleConfig
   /** 链接卡片节点 */
   linkCard?: RichTextNodeStyleConfig
+  /** hashtag 话题节点 */
+  hashtag?: RichTextNodeStyleConfig
   /** 图标缩放比例，默认 1。用于在不同字体大小下保持图标比例一致。 */
   iconScale?: number
 }
