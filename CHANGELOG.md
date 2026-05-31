@@ -2,6 +2,24 @@
 
 # Changelog
 
+## [2.32.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.32.2...v2.32.3) (2026-05-30)
+
+
+### 💄 UI 优化
+
+* **dy:** 重写部分组件样式 ([#314](https://github.com/ikenxuan/karin-plugin-kkk/issues/314)) ([62bdd2e](https://github.com/ikenxuan/karin-plugin-kkk/commit/62bdd2e05d63bf9163018e34aa337128699470c9))
+
+
+### 📦 依赖更新
+
+* update ([ec65953](https://github.com/ikenxuan/karin-plugin-kkk/commit/ec659530189b6c0eaf8307fd769984daa6f497e6))
+
+
+### 💯 细节优化
+
+* 114514 ([98f1bb9](https://github.com/ikenxuan/karin-plugin-kkk/commit/98f1bb93c73bf6b05691cc6dfbe2c5e4e642901a))
+* **douyin:** 支持富文本描述和提及功能，优化抖音作品展示 ([e643238](https://github.com/ikenxuan/karin-plugin-kkk/commit/e643238d6bb28c62572dc0afbfe2dc032c2fa690))
+
 ## [2.32.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.32.1...v2.32.2) (2026-05-28)
 
 
