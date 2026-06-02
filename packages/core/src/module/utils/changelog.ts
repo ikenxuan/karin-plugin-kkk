@@ -84,7 +84,7 @@ const getRemoteBuildMetadata = async (version: string) => {
  */
 export const getChangelogImage = async (
   ctx: Message,
-  props: Omit<ChangelogProps['data'], 'markdown'> & { isRemote?: boolean }
+  props: Omit<ChangelogProps['data'], 'markdown' | 'useDarkTheme'> & { isRemote?: boolean }
 ) => {
   let changelog = ''
   let buildTime: string | undefined
