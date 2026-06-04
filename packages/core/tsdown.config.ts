@@ -8,7 +8,7 @@ export default defineConfig({
   root: 'src/export',
   deps: {
     onlyBundle: false,
-    neverBundle: ['axios']
+    neverBundle: ['axios', 'zod']
   },
   dts: {
     emitDtsOnly: true,
