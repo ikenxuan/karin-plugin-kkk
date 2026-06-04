@@ -25,6 +25,14 @@ export interface BiliDanmakuElem {
   content: string
 }
 
+/** 热门弹幕项（相同内容的弹幕聚合） */
+export interface HotDanmakuItem {
+  /** 弹幕内容 */
+  content: string
+  /** 出现次数 */
+  count: number
+}
+
 /** B站横屏转竖屏模式 */
 export type BiliVerticalMode = 'off' | 'standard' | 'force'
 
@@ -242,6 +250,35 @@ export async function getBiliFrameRate (path: string): Promise<number> {
   return 30
 }
 
+
+// ==================== 热门弹幕统计 ====================
+
+/**
+ * 统计用于视频信息封面展示的弹幕（相同内容聚合）
+ * @param danmakuList 弹幕列表
+ * @param topN 返回的条数，默认 5
+ * @returns 重复弹幕优先，不足时用真实弹幕按出现顺序补齐
+ */
+export function getHotDanmaku (danmakuList: BiliDanmakuElem[], topN = 5): HotDanmakuItem[] {
+  const counter = new Map<string, number>()
+  const firstSeen = new Map<string, number>()
+  const sortedDanmaku = [...danmakuList].sort((a, b) => a.progress - b.progress)
+
+  for (const dm of sortedDanmaku) {
+    const content = dm.content?.trim()
+    if (!content) continue
+    if (!firstSeen.has(content)) firstSeen.set(content, dm.progress)
+    counter.set(content, (counter.get(content) ?? 0) + 1)
+  }
+
+  return [...counter.entries()]
+    .map(([content, count]) => ({ content, count }))
+    .sort((a, b) => {
+      if (b.count !== a.count) return b.count - a.count
+      return (firstSeen.get(a.content) ?? 0) - (firstSeen.get(b.content) ?? 0)
+    })
+    .slice(0, topN)
+}
 
 // ==================== ASS 生成 ====================
 

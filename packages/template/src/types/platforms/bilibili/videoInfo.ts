@@ -52,6 +52,16 @@ export interface BilibiliVideoOwner {
 }
 
 /**
+ * 热门弹幕项接口（相同内容的弹幕聚合）
+ */
+export interface BilibiliHotDanmaku {
+  /** 弹幕内容 */
+  content: string
+  /** 出现次数 */
+  count: number
+}
+
+/**
  * B站视频信息数据接口
  */
 export interface BilibiliVideoInfoData {
@@ -71,6 +81,8 @@ export interface BilibiliVideoInfoData {
   pic: string
   /** UP主信息 */
   owner: BilibiliVideoOwner
+  /** 出现次数最多的热门弹幕（可选，按次数降序） */
+  hotDanmaku?: BilibiliHotDanmaku[]
 }
 
 /**

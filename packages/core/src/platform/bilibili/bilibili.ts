@@ -57,6 +57,7 @@ import {
 import {
   type BiliDanmakuElem,
   burnBiliDanmaku,
+  getHotDanmaku,
   mergeAndBurnBili
 } from '@/platform/bilibili/danmaku'
 import {
@@ -149,6 +150,11 @@ export class Bilibili extends Base {
               host_mid: infoData.data.data.owner.mid,
               typeMode: 'strict'
             })
+            // 获取弹幕并统计出现次数最多的几条，用于模板展示
+            const danmakuCid = iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid
+            const danmakuDuration = iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.duration ?? infoData.data.data.duration) : infoData.data.data.duration
+            const infoDanmakuList = await this.fetchVideoDanmakuList(danmakuCid, danmakuDuration)
+            const hotDanmaku = getHotDanmaku(infoDanmakuList, 20)
             const img = await Render(this.e, 'bilibili/videoInfo', {
               share_url: 'https://b23.tv/' + infoData.data.data.bvid,
               title: infoData.data.data.title,
@@ -159,6 +165,7 @@ export class Bilibili extends Base {
               bvid: infoData.data.data.bvid,
               ctime: infoData.data.data.ctime,
               pic: infoData.data.data.pic,
+              hotDanmaku,
               owner: {
                 ...infoData.data.data.owner,
                 usernameMeta: getUsernameMetadata(userProfileData.data.data.card),
@@ -265,25 +272,9 @@ export class Bilibili extends Base {
             // 获取弹幕数据
             let danmakuList: BiliDanmakuElem[] = []
             if (this.forceBurnDanmaku || Config.bilibili.burnDanmaku) {
-              try {
-                const cid = iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid
-                // 获取视频时长（秒），计算需要获取的弹幕分段数（每6分钟一段）
-                const duration = iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.duration ?? infoData.data.data.duration) : infoData.data.data.duration
-                const segmentCount = Math.ceil(duration / 360) // 360秒 = 6分钟
-                logger.debug(`视频时长: ${duration}秒, 需要获取 ${segmentCount} 个弹幕分段`)
-
-                // 并行获取所有分段的弹幕
-                const danmakuPromises = Array.from({ length: segmentCount }, (_, i) =>
-                  this.amagi.bilibili.fetcher.fetchVideoDanmaku({ cid, segment_index: i + 1, typeMode: 'strict' })
-                    .then(res => res.data?.data?.elems || [])
-                    .catch(() => [] as BiliDanmakuElem[])
-                )
-                const danmakuSegments = await Promise.all(danmakuPromises)
-                danmakuList = danmakuSegments.flat()
-                logger.debug(`获取到 ${danmakuList.length} 条弹幕（${segmentCount} 个分段）`)
-              } catch (err) {
-                logger.warn('获取弹幕失败，将不烧录弹幕', err)
-              }
+              const cid = iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid
+              const duration = iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.duration ?? infoData.data.data.duration) : infoData.data.data.duration
+              danmakuList = await this.fetchVideoDanmakuList(cid, duration)
             }
             await this.getvideo(
               Config.bilibili.videoQuality !== 0 && Config.bilibili.videoQuality < 64
@@ -1038,6 +1029,31 @@ export class Bilibili extends Base {
       }
       default:
         break
+    }
+  }
+
+  /**
+   * 获取视频弹幕列表（按每 6 分钟一段并行拉取所有分段）
+   * @param cid 视频分P的 cid
+   * @param duration 视频时长（秒）
+   * @returns 合并后的弹幕列表
+   */
+  async fetchVideoDanmakuList (cid: number, duration: number): Promise<BiliDanmakuElem[]> {
+    try {
+      const segmentCount = Math.ceil(duration / 360) // 360秒 = 6分钟
+      logger.debug(`视频时长: ${duration}秒, 需要获取 ${segmentCount} 个弹幕分段`)
+      const danmakuPromises = Array.from({ length: segmentCount }, (_, i) =>
+        this.amagi.bilibili.fetcher.fetchVideoDanmaku({ cid, segment_index: i + 1, typeMode: 'strict' })
+          .then(res => res.data?.data?.elems || [])
+          .catch(() => [] as BiliDanmakuElem[])
+      )
+      const danmakuSegments = await Promise.all(danmakuPromises)
+      const danmakuList = danmakuSegments.flat()
+      logger.debug(`获取到 ${danmakuList.length} 条弹幕（${segmentCount} 个分段）`)
+      return danmakuList
+    } catch (err) {
+      logger.warn('获取弹幕失败', err)
+      return []
     }
   }
 

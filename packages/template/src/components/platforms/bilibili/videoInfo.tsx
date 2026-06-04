@@ -4,7 +4,7 @@ import { Calendar } from 'lucide-react'
 import React from 'react'
 
 import { DefaultLayout } from '../../../components/layouts/DefaultLayout'
-import type { BilibiliVideoInfoProps } from '../../../types/platforms/bilibili/videoInfo'
+import type { BilibiliHotDanmaku, BilibiliVideoInfoProps } from '../../../types/platforms/bilibili/videoInfo'
 import { GlowText } from '../../common/GlowImage'
 import { CoinIcon, CommentIcon, PlayIcon, ShareIcon, StarIcon, ThumbUpIcon } from './Icons'
 import { EnhancedImage } from './shared'
@@ -70,6 +70,46 @@ const AmbientBackground: React.FC<{ pic: string }> = React.memo(({ pic }) => (
 
 AmbientBackground.displayName = 'AmbientBackground'
 
+const MAX_DANMAKU_ROWS = 4
+
+/**
+ * 封面弹幕层：模拟视频平台截图中的滚动弹幕轨道，行数由 MAX_DANMAKU_ROWS 控制。
+ */
+const DanmakuOverlay: React.FC<{ items: BilibiliHotDanmaku[] }> = React.memo(({ items }) => {
+  if (!items.length) return null
+
+  return (
+    <div
+      className="pointer-events-none absolute inset-x-0 top-0 z-20 overflow-hidden px-16"
+      style={{
+        height: `calc(${MAX_DANMAKU_ROWS} * 20rem)`,
+        maskImage: 'linear-gradient(to right, transparent 0, black 3rem, black calc(100% - 10rem), transparent 100%)',
+        WebkitMaskImage: 'linear-gradient(to right, transparent 0, black 3rem, black calc(100% - 10rem), transparent 100%)'
+      }}
+    >
+      {/* <div className="absolute inset-x-0 -top-10 bottom-0 bg-linear-to-b from-black/60 via-black/12 to-transparent" /> */}
+      <div className="relative pt-8 overflow-visible whitespace-normal text-[0] leading-16">
+        {items.map((item, index) => (
+          <span
+            key={`${item.content}-${index}`}
+            className="mr-20 inline-block shrink-0 whitespace-nowrap align-top text-4xl font-black leading-16 text-white"
+            style={{
+              marginLeft: index === 0 ? undefined : `${((index * 5 + item.content.length * 3) % 5) * 2}rem`,
+              opacity: Math.max(0.2, 1 - index * 0.025),
+              textShadow: '0 3px 8px rgba(0,0,0,0.85), 0 0 2px rgba(0,0,0,0.95)',
+              WebkitTextStroke: '1px rgba(0,0,0,0.58)'
+            }}
+          >
+            {item.content}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+})
+
+DanmakuOverlay.displayName = 'DanmakuOverlay'
+
 export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateType' | 'templateName'>> = React.memo(
   (props) => {
     return (
@@ -79,13 +119,14 @@ export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateT
 
         <div className="relative z-10">
           {/* 封面：全宽，底部极轻微溶解，不接文字 */}
-          <div style={coverMaskStyle}>
+          <div className="relative overflow-hidden" style={coverMaskStyle}>
             <EnhancedImage
               src={props.data.pic}
               alt={props.data.title}
               className="object-cover w-full"
               placeholder="视频封面"
             />
+            {props.data.hotDanmaku && <DanmakuOverlay items={props.data.hotDanmaku} />}
           </div>
 
           {/* 内容区：压在封面溶解区域之上 */}
