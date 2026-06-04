@@ -13312,6 +13312,10 @@
     margin-right: calc(var(--spacing) * 18);
   }
 
+  .mr-20 {
+    margin-right: calc(var(--spacing) * 20);
+  }
+
   .mr-21 {
     margin-right: calc(var(--spacing) * 21);
   }
@@ -16283,6 +16287,20 @@
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
 
+  .from-black\/60 {
+    --tw-gradient-from: #0009;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .from-black\/60 {
+      --tw-gradient-from: color-mix(in oklab, var(--color-black) 60%, transparent);
+    }
+  }
+
+  .from-black\/60 {
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+
   .from-black\/75 {
     --tw-gradient-from: #000000bf;
   }
@@ -16367,6 +16385,21 @@
   .from-transparent {
     --tw-gradient-from: transparent;
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+
+  .via-black\/12 {
+    --tw-gradient-via: #0000001f;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .via-black\/12 {
+      --tw-gradient-via: color-mix(in oklab, var(--color-black) 12%, transparent);
+    }
+  }
+
+  .via-black\/12 {
+    --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-via-stops);
   }
 
   .via-black\/50 {
@@ -16978,6 +17011,10 @@
     vertical-align: text-bottom;
   }
 
+  .align-top {
+    vertical-align: top;
+  }
+
   .font-\[HarmonyOSHans-Regular\] {
     font-family: HarmonyOSHans-Regular;
   }
@@ -17274,6 +17311,11 @@
   .leading-10 {
     --tw-leading: calc(var(--spacing) * 10);
     line-height: calc(var(--spacing) * 10);
+  }
+
+  .leading-16 {
+    --tw-leading: calc(var(--spacing) * 16);
+    line-height: calc(var(--spacing) * 16);
   }
 
   .leading-20 {
@@ -17598,6 +17640,10 @@
 
   .text-\[\#ff799e\] {
     color: #ff799e;
+  }
+
+  .text-\[0\] {
+    color: 0;
   }
 
   .text-accent {

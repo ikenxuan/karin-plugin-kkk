@@ -1258,6 +1258,15 @@ interface BilibiliVideoOwner {
   frame?: string;
 }
 /**
+ * 热门弹幕项接口（相同内容的弹幕聚合）
+ */
+interface BilibiliHotDanmaku {
+  /** 弹幕内容 */
+  content: string;
+  /** 出现次数 */
+  count: number;
+}
+/**
  * B站视频信息数据接口
  */
 interface BilibiliVideoInfoData {
@@ -1277,6 +1286,8 @@ interface BilibiliVideoInfoData {
   pic: string;
   /** UP主信息 */
   owner: BilibiliVideoOwner;
+  /** 出现次数最多的热门弹幕（可选，按次数降序） */
+  hotDanmaku?: BilibiliHotDanmaku[];
 }
 /**
  * B站视频信息组件属性接口
