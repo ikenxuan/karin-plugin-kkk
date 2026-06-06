@@ -2,6 +2,23 @@
 
 # Changelog
 
+## [2.33.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.32.3...v2.33.0) (2026-06-04)
+
+
+### ✨ 新功能
+
+* **bilibili:** 视频信息添加悬浮弹幕于封面图上 ([d40789e](https://github.com/ikenxuan/karin-plugin-kkk/commit/d40789e1c3e7738f871f003dafbd5a26a71be175))
+
+
+### 🐛 错误修复
+
+* type ([5da44cf](https://github.com/ikenxuan/karin-plugin-kkk/commit/5da44cf427c9dc2b89ffffcfb9ef77968155b718))
+
+
+### 📦 依赖更新
+
+* update ([dcbdad5](https://github.com/ikenxuan/karin-plugin-kkk/commit/dcbdad57f54e5f0a99b88b4898b3711b9d36c423))
+
 ## [2.32.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.32.2...v2.32.3) (2026-05-30)
 
 
