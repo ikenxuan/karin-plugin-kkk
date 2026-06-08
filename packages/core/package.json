@@ -54,7 +54,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "cross-env NODE_ENV=production vite build && tsdown",
+    "build": "cross-env NODE_ENV=production vite build && tsdown && pnpm --filter web run build",
     "build:check": "tsc --noEmit && pnpm build",
     "dev": "cross-env EBV_FILE=\"development.env\" node --import tsx src/app.ts --trace-deprecation",
     "lint": "eslint . --fix",
@@ -87,7 +87,7 @@
     "http-proxy-middleware": "4.0.0",
     "jpeg-js": "^0.4.4",
     "template": "workspace:*",
-    "tsdown": "^0.22.1",
+    "tsdown": "^0.22.2",
     "vite-plugin-top-level-await": "^1.6.0",
     "vite-plugin-wasm": "^3.6.0",
     "vitest": "^4.1.8"
@@ -123,5 +123,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-06-04T11:54:45.083Z"
+  "timestamp": "2026-06-08T08:47:25.245Z"
 }

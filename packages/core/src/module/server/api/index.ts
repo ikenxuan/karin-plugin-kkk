@@ -17,7 +17,6 @@ import {
   updateConfigModule } from './config'
 import { getGroups } from './groups'
 import { resolveLink } from './link'
-import { getFullSchema, getModuleSchemaApi } from './schema'
 
 const apiRouter = express.Router()
 
@@ -44,10 +43,6 @@ apiRouter.put('/config/:module', ...authMiddlewares, updateConfigModule)
 apiRouter.post('/config/:module', ...authMiddlewares, updateConfigModule)
 apiRouter.patch('/config/:module', ...authMiddlewares, patchConfigItem)
 
-// 配置 Schema API
-apiRouter.get('/schema', ...authMiddlewares, getFullSchema)
-apiRouter.get('/schema/:module', ...authMiddlewares, getModuleSchemaApi)
-
 // 平台路由
 apiRouter.use('/platforms/douyin', ...authMiddlewares, douyinApiRouter)
 apiRouter.use('/platforms/bilibili', ...authMiddlewares, bilibiliApiRouter)
@@ -57,4 +52,3 @@ export * from './bots'
 export * from './config'
 export * from './groups'
 export * from './link'
-export * from './schema'

@@ -4,6 +4,7 @@
  */
 import type { Request, Response } from 'node-karin/express'
 
+import { reloadAmagiConfig } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
 import type { ConfigType } from '@/types'
 
@@ -100,6 +101,10 @@ export const updateConfigModule = async (req: Request, res: Response) => {
         await Config.syncConfigToDatabase()
       }
 
+      if (module === 'cookies' || module === 'request') {
+        reloadAmagiConfig()
+      }
+
       // 返回更新后的配置
       const updatedConfig = await Config.All()
       res.json({
@@ -186,12 +191,25 @@ export const updateAllConfig = async (req: Request, res: Response) => {
       })
     }
 
+    const oldConfig = await Config.All()
     const results: { module: string; success: boolean; error?: string }[] = []
+    let needReloadAmagi = false
 
     for (const [module, config] of Object.entries(newConfig)) {
       try {
-        const success = await Config.ModifyPro(module as keyof ConfigType, config)
+        if (!(module in oldConfig)) {
+          results.push({ module, success: false, error: `配置模块 "${module}" 不存在` })
+          continue
+        }
+
+        const moduleName = module as keyof ConfigType
+        const success = await Config.ModifyPro(moduleName, config)
         results.push({ module, success })
+
+        // cookies 与 request 会影响 amagi 客户端运行态，保存后需要立即重载。
+        if (success && (moduleName === 'cookies' || moduleName === 'request')) {
+          needReloadAmagi = true
+        }
       } catch (error: any) {
         results.push({ module, success: false, error: error.message })
       }
@@ -200,6 +218,10 @@ export const updateAllConfig = async (req: Request, res: Response) => {
     // 同步数据库
     if ('pushlist' in newConfig) {
       await Config.syncConfigToDatabase()
+    }
+
+    if (needReloadAmagi) {
+      reloadAmagiConfig()
     }
 
     const allSuccess = results.every(r => r.success)

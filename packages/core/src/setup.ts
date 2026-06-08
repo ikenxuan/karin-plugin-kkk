@@ -77,3 +77,4 @@ await initAllDatabases().catch((err) => {
 mkdirSync(`${karinPathBase}/${Root.pluginName}/data`)
 mkdirSync(Common.tempDri.images)
 mkdirSync(Common.tempDri.video)
+
