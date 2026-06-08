@@ -4,25 +4,24 @@
  */
 
 import { Surface } from '@heroui/react'
-import { useBoolean, useMemoizedFn, useSetState } from 'ahooks'
+import { useBoolean, useMemoizedFn } from 'ahooks'
 import MobileDrawer from '../components/mobile/MobileDrawer'
 import MobileTopBar from '../components/mobile/MobileTopBar'
 import MobileContent from '../components/mobile/MobileContent'
+import type { MainLayoutProps } from '../types/navigation'
 
 /**
  * 移动端主布局
  */
-const MobileLayout = () => {
+const MobileLayout = ({ activeMenu, onMenuChange }: MainLayoutProps) => {
   // 抽屉菜单显示状态
   const [drawerOpen, { setTrue: openDrawer, setFalse: closeDrawer }] = useBoolean(false)
-  // 当前选中的菜单项
-  const [state, setState] = useSetState({ activeMenu: 'config' })
 
   /**
    * 菜单项点击处理
    */
-  const handleMenuChange = useMemoizedFn((menu: string) => {
-    setState({ activeMenu: menu })
+  const handleMenuChange = useMemoizedFn((menu: Parameters<MainLayoutProps['onMenuChange']>[0]) => {
+    onMenuChange(menu)
     closeDrawer() // 选择后关闭抽屉
   })
 
@@ -40,13 +39,13 @@ const MobileLayout = () => {
       <MobileDrawer
         open={drawerOpen}
         onClose={closeDrawer}
-        activeMenu={state.activeMenu}
+        activeMenu={activeMenu}
         onMenuChange={handleMenuChange}
       />
 
       {/* 主内容区 */}
       <main className="scrollbar flex-1 overflow-y-auto p-4" id="main-content">
-        <MobileContent activeMenu={state.activeMenu} />
+        <MobileContent activeMenu={activeMenu} />
       </main>
     </Surface>
   )

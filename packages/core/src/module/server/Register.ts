@@ -25,6 +25,26 @@ const proxyOptions: httpProxy.Options = {
 }
 
 const webDistPath = path.join(Root.pluginPath, 'lib', 'web')
+const webIndexPath = path.join(webDistPath, 'index.html')
+const webDevPort = 5176
+const webDevUrl = `http://127.0.0.1:${webDevPort}`
+let missingWebWarned = false
+
+const hasWebDist = () => {
+  return fs.existsSync(webIndexPath)
+}
+
+const sendMissingWeb = (res: express.Response) => {
+  const message = `[karin-plugin-kkk] Web UI not found: ${webIndexPath}. Run "pnpm --filter web run build" or start "pnpm --filter web run dev".`
+
+  if (!missingWebWarned) {
+    logger.warn(message)
+    missingWebWarned = true
+  }
+
+  res.status(503).type('text/plain').send(message)
+}
+
 server.use(cors.default())
 server.use('/', httpProxy.createProxyMiddleware(proxyOptions))
 // TODO: 后续将此反代放到 karin 中
@@ -73,8 +93,7 @@ app.get('/video/:filename/events', videoPreviewEventsRouter)
 app.use('/v1', apiRouter)
 
 const staticRouter = express.Router()
-
-staticRouter.use(express.static(webDistPath, {
+const webStatic = express.static(webDistPath, {
   redirect: false,
   setHeaders: (res, filePath) => {
     // HTML 不缓存，资源文件长期缓存，避免生产环境更新后入口仍旧命中旧版本。
@@ -84,15 +103,39 @@ staticRouter.use(express.static(webDistPath, {
     }
     res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
   }
-}))
+})
+const webDevProxy = httpProxy.createProxyMiddleware({
+  target: webDevUrl,
+  changeOrigin: true,
+  ws: true,
+  pathRewrite: (reqPath) => `/kkk${reqPath}`
+})
 
-staticRouter.use((_req, res, next) => {
-  const indexPath = path.join(webDistPath, 'index.html')
-  if (!fs.existsSync(indexPath)) {
-    return next()
+staticRouter.use(async (req, res, next) => {
+  if (hasWebDist()) {
+    webStatic(req, res, next)
+    return
   }
+
+  if (process.env.NODE_ENV !== 'production') {
+    const isDevServerRunning = !(await checkPort(webDevPort))
+    if (isDevServerRunning) {
+      webDevProxy(req, res, next)
+      return
+    }
+  }
+
+  sendMissingWeb(res)
+})
+
+staticRouter.use((_req, res) => {
+  if (!hasWebDist()) {
+    sendMissingWeb(res)
+    return
+  }
+
   res.setHeader('Cache-Control', 'no-cache')
-  return res.sendFile(indexPath)
+  return res.sendFile(webIndexPath)
 })
 
 /** 将子路由挂载到主路由上 */

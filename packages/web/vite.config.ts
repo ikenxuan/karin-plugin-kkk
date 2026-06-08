@@ -8,13 +8,13 @@ import { codeInspectorPlugin } from 'code-inspector-plugin'
 export default defineConfig({
   base: '/kkk/',
   plugins: [
-    react(), 
+    react(),
     tailwindcss(),
     codeInspectorPlugin({
-        bundler: 'vite',
-        showSwitch: true,
-        hotKeys: ['shiftKey', 'altKey']
-      }),
+      bundler: 'vite',
+      showSwitch: true,
+      hotKeys: ['shiftKey', 'altKey']
+    }),
   ],
   resolve: {
     alias: {
@@ -23,7 +23,7 @@ export default defineConfig({
   },
   server: {
     host: true,
-    port: 5173,
+    port: 5176,
     proxy: {
       '/api/kkk': {
         target: 'http://localhost:7777',

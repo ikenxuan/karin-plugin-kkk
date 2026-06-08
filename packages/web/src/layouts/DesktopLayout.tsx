@@ -4,13 +4,14 @@
  */
 
 import { Surface } from '@heroui/react'
-import { useBoolean, useMemoizedFn, useSetState } from 'ahooks'
+import { useBoolean } from 'ahooks'
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { Settings, FileText } from 'lucide-react'
 import Sidebar from '../components/desktop/Sidebar'
 import TopBar from '../components/desktop/TopBar'
 import MainContent from '../components/desktop/MainContent'
+import type { MainLayoutProps } from '../types/navigation'
 
 /**
  * 菜单项配置
@@ -23,20 +24,11 @@ const menuItems = [
 /**
  * 桌面端主布局
  */
-const DesktopLayout = () => {
+const DesktopLayout = ({ activeMenu, onMenuChange }: MainLayoutProps) => {
   // 侧边栏折叠状态
   const [sidebarCollapsed, { toggle: toggleSidebar }] = useBoolean(false)
-  // 当前选中的菜单项
-  const [state, setState] = useSetState({ activeMenu: 'config' })
   // 侧边栏 ref
   const sidebarRef = useRef<HTMLElement>(null)
-
-  /**
-   * 切换桌面端当前菜单项。
-   */
-  const handleMenuChange = useMemoizedFn((menu: string) => {
-    setState({ activeMenu: menu })
-  })
 
   /**
    * 侧边栏展开/收起动画
@@ -89,8 +81,8 @@ const DesktopLayout = () => {
       >
         <Sidebar
           collapsed={sidebarCollapsed}
-          activeMenu={state.activeMenu}
-          onMenuChange={handleMenuChange}
+          activeMenu={activeMenu}
+          onMenuChange={onMenuChange}
           onToggleCollapse={toggleSidebar}
         />
       </aside>
@@ -102,14 +94,14 @@ const DesktopLayout = () => {
           <TopBar
             onToggleSidebar={toggleSidebar}
             sidebarCollapsed={sidebarCollapsed}
-            currentMenuLabel={menuItems.find(item => item.id === state.activeMenu)?.label}
+            currentMenuLabel={menuItems.find(item => item.id === activeMenu)?.label}
           />
         </header>
 
         {/* 主内容区 */}
         <main className="scrollbar flex-1 overflow-y-auto p-6" id="main-content">
           <Surface data-scrollbar="thin">
-            <MainContent activeMenu={state.activeMenu} />
+            <MainContent activeMenu={activeMenu} />
           </Surface>
         </main>
       </div>

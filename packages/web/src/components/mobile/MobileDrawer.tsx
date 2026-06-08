@@ -8,12 +8,13 @@ import { Button, Drawer, cn, Avatar } from '@heroui/react'
 import { useMemoizedFn } from 'ahooks'
 import { clearAuthTokens } from '../../auth/token'
 import { USER_AVATAR_URL } from '../../constants/user'
+import type { MainMenuKey } from '../../types/navigation'
 
 interface MobileDrawerProps {
   open: boolean
   onClose: () => void
-  activeMenu: string
-  onMenuChange: (menu: string) => void
+  activeMenu: MainMenuKey
+  onMenuChange: (menu: MainMenuKey) => void
 }
 
 /**
@@ -113,7 +114,7 @@ const MobileDrawer = ({ open, onClose, activeMenu, onMenuChange }: MobileDrawerP
                       variant={isActive ? 'tertiary' : 'ghost'}
                       aria-label={item.label}
                       aria-current={isActive ? 'page' : undefined}
-                      onPress={() => onMenuChange(item.id)}
+                      onPress={() => onMenuChange(item.id as MainMenuKey)}
                     >
                       <Icon size={20} className={cn("shrink-0 mr-3", !isActive && "text-muted")} aria-hidden="true" />
                       <span className={cn("truncate", isActive && "font-semibold")}>{item.label}</span>

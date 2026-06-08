@@ -1,9 +1,11 @@
 import { useEffect, type ComponentType } from 'react'
-import { Description, Spinner, Surface, Toast } from '@heroui/react'
+import { Description, ScrollShadow, Spinner, Surface, Toast } from '@heroui/react'
 import { useMemoizedFn, useSetState } from 'ahooks'
 import LoginPanel from './components/common/LoginPanel'
 import { authChangedEventName, hasAuthToken } from './auth/token'
 import { detectDevice, type DeviceLayout } from './utils/device'
+import ConfigPanel from './components/common/ConfigPanel'
+import type { MainLayoutProps, MainMenuKey } from './types/navigation'
 
 /**
  * 加载 PC 端布局。
@@ -18,7 +20,42 @@ const MobileApp = () => import('./layouts/MobileLayout')
 type RootState = {
   authenticated: boolean
   device: DeviceLayout
-  LayoutComponent: ComponentType | null
+  route: AppRoute
+  LayoutComponent: ComponentType<MainLayoutProps> | null
+}
+
+type AppRoute = 'login' | 'config' | 'about' | 'karin-config'
+
+const routePaths: Record<AppRoute, string> = {
+  login: '/kkk/login',
+  config: '/kkk/config',
+  about: '/kkk/about',
+  'karin-config': '/kkk/karin-config'
+}
+
+const routeMenuMap: Record<Exclude<AppRoute, 'login' | 'karin-config'>, MainMenuKey> = {
+  config: 'config',
+  about: 'about'
+}
+
+const menuRouteMap: Record<MainMenuKey, AppRoute> = {
+  config: 'config',
+  about: 'about'
+}
+
+const normalizePath = (path: string) => {
+  const nextPath = path.replace(/\/+$/, '')
+  return nextPath || '/'
+}
+
+const getRouteFromLocation = (): AppRoute => {
+  const pathname = normalizePath(window.location.pathname)
+
+  if (pathname === normalizePath(routePaths.login)) return 'login'
+  if (pathname === normalizePath(routePaths.about)) return 'about'
+  if (pathname === normalizePath(routePaths['karin-config'])) return 'karin-config'
+
+  return 'config'
 }
 
 /**
@@ -28,9 +65,22 @@ const App = () => {
   const [state, setState] = useSetState<RootState>({
     authenticated: hasAuthToken(),
     device: detectDevice(),
-    LayoutComponent: null as ComponentType | null
+    route: getRouteFromLocation(),
+    LayoutComponent: null as ComponentType<MainLayoutProps> | null
   })
-  const { authenticated, device, LayoutComponent } = state
+  const { authenticated, device, route, LayoutComponent } = state
+
+  const navigateToRoute = useMemoizedFn((nextRoute: AppRoute, replace = false) => {
+    const nextPath = routePaths[nextRoute]
+    const currentPath = normalizePath(window.location.pathname)
+
+    if (currentPath !== normalizePath(nextPath)) {
+      const method = replace ? 'replaceState' : 'pushState'
+      window.history[method](null, '', nextPath)
+    }
+
+    setState({ route: nextRoute })
+  })
 
   useEffect(() => {
     /**
@@ -48,6 +98,28 @@ const App = () => {
       window.removeEventListener('storage', handleAuthChange)
     }
   }, [setState])
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setState({ route: getRouteFromLocation() })
+    }
+
+    window.addEventListener('popstate', handlePopState)
+
+    if (normalizePath(window.location.pathname) === '/kkk') {
+      navigateToRoute('config', true)
+    }
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [navigateToRoute, setState])
+
+  useEffect(() => {
+    if (authenticated && route === 'login') {
+      navigateToRoute('config', true)
+    }
+  }, [authenticated, navigateToRoute, route])
 
   /**
    * 同步页面宽度变化后的设备布局。
@@ -122,10 +194,37 @@ const App = () => {
    */
   const handleLogin = useMemoizedFn(() => {
     setState({ authenticated: true })
+    if (route === 'login') {
+      navigateToRoute('config', true)
+    }
+  })
+
+  const handleMenuChange = useMemoizedFn((menu: MainMenuKey) => {
+    navigateToRoute(menuRouteMap[menu])
   })
 
   if (!authenticated) {
     return <LoginPanel onLogin={handleLogin} />
+  }
+
+  if (route === 'login') {
+    return (
+      <Surface className="flex min-h-screen items-center justify-center gap-4">
+        <Spinner size="sm" aria-label="正在进入配置页" />
+        <Description>正在进入配置页</Description>
+      </Surface>
+    )
+  }
+
+  if (route === 'karin-config') {
+    return (
+      <Surface className="h-screen overflow-hidden">
+        <Toast.Provider placement="top" />
+        <ScrollShadow hideScrollBar className="h-full px-3 py-3 sm:px-5 sm:py-4" size={56}>
+          <ConfigPanel device={device} variant="karin" />
+        </ScrollShadow>
+      </Surface>
+    )
   }
 
   // 加载中状态
@@ -141,7 +240,7 @@ const App = () => {
   return (
     <div>
       <Toast.Provider placement="top" />
-      <LayoutComponent />
+      <LayoutComponent activeMenu={routeMenuMap[route]} onMenuChange={handleMenuChange} />
     </div>
   )
 }

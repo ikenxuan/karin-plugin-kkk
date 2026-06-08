@@ -19,11 +19,14 @@ import { setValue } from './config-panel/utils'
 import { validateConfig } from './config-panel/validation'
 import type { ConfigFileKey, ConfigPath, DeviceLayout } from './config-panel/types'
 
+type ConfigPanelVariant = 'standalone' | 'karin'
+
 interface ConfigPanelProps {
   device?: DeviceLayout
+  variant?: ConfigPanelVariant
 }
 
-const ConfigPanel = ({ device = 'desktop' }: ConfigPanelProps) => {
+const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanelProps) => {
   const panelRef = useRef<HTMLDivElement>(null)
   const [state, setPanelState] = useSetState({
     config: null as ConfigType | null,
@@ -98,6 +101,33 @@ const ConfigPanel = ({ device = 'desktop' }: ConfigPanelProps) => {
     handleSave()
   })
 
+  useEffect(() => {
+    const container = panelRef.current?.querySelector<HTMLElement>('[data-config-tabs-scroll="true"]')
+    if (!container) return
+
+    const handleTabsWheel = (event: WheelEvent) => {
+      const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY)
+        ? event.deltaX
+        : event.deltaY
+
+      if (!delta) return
+
+      event.preventDefault()
+      event.stopPropagation()
+      event.stopImmediatePropagation()
+
+      if (container.scrollWidth <= container.clientWidth) return
+
+      container.scrollLeft += delta
+    }
+
+    container.addEventListener('wheel', handleTabsWheel, { passive: false })
+
+    return () => {
+      container.removeEventListener('wheel', handleTabsWheel)
+    }
+  }, [config])
+
   const animateCurrentPanel = useMemoizedFn(() => {
     if (!panelRef.current) return
 
@@ -141,12 +171,14 @@ const ConfigPanel = ({ device = 'desktop' }: ConfigPanelProps) => {
 
   return (
     <div ref={panelRef} className={classes.root}>
-      <div className={classes.header}>
-        <div className={classes.headerCopy}>
-          <h2 className="text-2xl font-bold">配置管理</h2>
-          <Description>直接读取并写回 Karin 插件配置文件，未展示字段会原样保留。</Description>
+      {variant === 'standalone' ? (
+        <div className={classes.header}>
+          <div className={classes.headerCopy}>
+            <h2 className="text-2xl font-bold">配置管理</h2>
+            <Description>直接读取并写回 Karin 插件配置文件，未展示字段会原样保留。</Description>
+          </div>
         </div>
-      </div>
+      ) : null}
       <div className={classes.floatingActions}>
         <Tooltip delay={0}>
           <Tooltip.Trigger aria-label="重新读取配置">
@@ -166,13 +198,17 @@ const ConfigPanel = ({ device = 'desktop' }: ConfigPanelProps) => {
       </div>
 
       <Form className={classes.form} onSubmit={handleFormSubmit}>
-        <Tabs selectedKey={activeFile} onSelectionChange={handleTabChange}>
-          <Tabs.ListContainer className={classes.tabsListContainer} data-scrollbar="none">
+        <Tabs className="w-full min-w-0 max-w-full" selectedKey={activeFile} onSelectionChange={handleTabChange}>
+          <Tabs.ListContainer
+            className={classes.tabsListContainer}
+            data-config-tabs-scroll="true"
+            data-scrollbar="none"
+          >
             <Tabs.List aria-label="配置文件选择" className={classes.tabsList}>
               {configFiles.map((item, index) => (
                 <Tabs.Tab key={item.key} id={item.key}>
                   {index > 0 ? <Tabs.Separator /> : null}
-                  <span>{item.label}</span>
+                  <span className="whitespace-nowrap">{item.label}</span>
                   <Tabs.Indicator />
                 </Tabs.Tab>
               ))}

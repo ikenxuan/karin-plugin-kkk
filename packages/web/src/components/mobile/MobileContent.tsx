@@ -4,9 +4,10 @@
 
 import ConfigPanel from '../common/ConfigPanel'
 import AboutPanel from '../common/AboutPanel'
+import type { MainMenuKey } from '../../types/navigation'
 
 interface MobileContentProps {
-  activeMenu: string
+  activeMenu: MainMenuKey
 }
 
 /**
