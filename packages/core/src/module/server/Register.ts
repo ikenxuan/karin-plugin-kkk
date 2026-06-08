@@ -26,23 +26,17 @@ const proxyOptions: httpProxy.Options = {
 
 const webDistPath = path.join(Root.pluginPath, 'lib', 'web')
 const webIndexPath = path.join(webDistPath, 'index.html')
-const webDevPort = 5176
-const webDevUrl = `http://127.0.0.1:${webDevPort}`
-let missingWebWarned = false
 
-const hasWebDist = () => {
-  return fs.existsSync(webIndexPath)
-}
-
-const sendMissingWeb = (res: express.Response) => {
-  const message = `[karin-plugin-kkk] Web UI not found: ${webIndexPath}. Run "pnpm --filter web run build" or start "pnpm --filter web run dev".`
-
-  if (!missingWebWarned) {
-    logger.warn(message)
-    missingWebWarned = true
+const sendWebIndex = (res: express.Response) => {
+  try {
+    const html = fs.readFileSync(webIndexPath, 'utf-8')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.type('html').send(html)
+  } catch (error) {
+    const message = `[karin-plugin-kkk] Failed to read Web UI entry: ${webIndexPath}`
+    logger.error(error instanceof Error ? `${message}\n${error.stack ?? error.message}` : `${message}\n${String(error)}`)
+    res.status(500).type('text/plain').send(message)
   }
-
-  res.status(503).type('text/plain').send(message)
 }
 
 server.use(cors.default())
@@ -104,38 +98,10 @@ const webStatic = express.static(webDistPath, {
     res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
   }
 })
-const webDevProxy = httpProxy.createProxyMiddleware({
-  target: webDevUrl,
-  changeOrigin: true,
-  ws: true,
-  pathRewrite: (reqPath) => `/kkk${reqPath}`
-})
 
-staticRouter.use(async (req, res, next) => {
-  if (hasWebDist()) {
-    webStatic(req, res, next)
-    return
-  }
-
-  if (process.env.NODE_ENV !== 'production') {
-    const isDevServerRunning = !(await checkPort(webDevPort))
-    if (isDevServerRunning) {
-      webDevProxy(req, res, next)
-      return
-    }
-  }
-
-  sendMissingWeb(res)
-})
-
+staticRouter.use(webStatic)
 staticRouter.use((_req, res) => {
-  if (!hasWebDist()) {
-    sendMissingWeb(res)
-    return
-  }
-
-  res.setHeader('Cache-Control', 'no-cache')
-  return res.sendFile(webIndexPath)
+  sendWebIndex(res)
 })
 
 /** 将子路由挂载到主路由上 */
