@@ -175,7 +175,7 @@ jobs:
       - name: 🔨 执行完整项目构建
         run: |
           echo "开始构建所有包..."
-          pnpm build:core
+          pnpm build
           if [ $? -ne 0 ]; then
             echo "❌ 构建失败，退出工作流"
             exit 1
