@@ -175,10 +175,6 @@ importers:
   Karin/packages/cli: {}
 
   Karin/packages/cli-Internal:
-    dependencies:
-      yaml:
-        specifier: 2.7.0
-        version: 2.7.0
     devDependencies:
       commander:
         specifier: ^13.1.0
@@ -186,6 +182,9 @@ importers:
       tsdown:
         specifier: ^0.22.2
         version: 0.22.2(@vitejs/devtools@0.3.1)(oxc-resolver@11.19.1(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0))(publint@0.3.21)(tsx@4.22.4)(typescript@6.0.3)(unrun@0.2.37(synckit@0.11.12))
+      yaml:
+        specifier: 2.7.0
+        version: 2.7.0
 
   Karin/packages/core:
     dependencies:
@@ -1170,7 +1169,7 @@ importers:
     dependencies:
       '@heroui/styles':
         specifier: ^3.1.0
-        version: 3.1.0(tailwind-merge@3.6.0)(tailwindcss@4.3.0)
+        version: 3.1.0(tailwind-merge@3.4.0)(tailwindcss@4.3.0)
       axios:
         specifier: ^1.17.0
         version: 1.17.0
