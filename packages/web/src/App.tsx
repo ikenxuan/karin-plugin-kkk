@@ -6,6 +6,7 @@ import { authChangedEventName, hasAuthToken } from './auth/token'
 import { detectDevice, type DeviceLayout } from './utils/device'
 import ConfigPanel from './components/common/ConfigPanel'
 import type { MainLayoutProps, MainMenuKey } from './types/navigation'
+import { useTheme } from './hooks/useTheme'
 
 /**
  * 加载 PC 端布局。
@@ -62,6 +63,8 @@ const getRouteFromLocation = (): AppRoute => {
  * 根组件，负责登录态同步、设备检测和布局分发。
  */
 const App = () => {
+  useTheme()
+
   const [state, setState] = useSetState<RootState>({
     authenticated: hasAuthToken(),
     device: detectDevice(),

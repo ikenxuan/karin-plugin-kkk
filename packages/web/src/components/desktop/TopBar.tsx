@@ -4,6 +4,7 @@
 
 import { Button } from '@heroui/react'
 import { Menu, Package, PanelLeftClose } from 'lucide-react'
+import ThemeSwitch from '../common/ThemeSwitch'
 
 interface TopBarProps {
   onToggleSidebar: () => void
@@ -45,6 +46,8 @@ const TopBar = ({ onToggleSidebar, sidebarCollapsed, currentMenuLabel }: TopBarP
           <h1 className="truncate text-lg font-semibold">{currentMenuLabel || '配置管理面板'}</h1>
         )}
       </div>
+
+      <ThemeSwitch />
     </div>
   )
 }

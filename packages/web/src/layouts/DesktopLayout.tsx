@@ -3,7 +3,6 @@
  * 包含侧边栏、顶部菜单栏和主内容区三个板块
  */
 
-import { Surface } from '@heroui/react'
 import { useBoolean } from 'ahooks'
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
@@ -100,9 +99,9 @@ const DesktopLayout = ({ activeMenu, onMenuChange }: MainLayoutProps) => {
 
         {/* 主内容区 */}
         <main className="scrollbar flex-1 overflow-y-auto p-6" id="main-content">
-          <Surface data-scrollbar="thin">
+          <div data-scrollbar="thin">
             <MainContent activeMenu={activeMenu} />
-          </Surface>
+          </div>
         </main>
       </div>
     </div>
