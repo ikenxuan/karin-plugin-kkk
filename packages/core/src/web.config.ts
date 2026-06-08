@@ -26,8 +26,7 @@ export const webConfig = defineConfig({
     ]
   },
   page: {
-    // url: 'http://localhost:5176/kkk/karin-config',
-    url: '/kkk/karin-config',
+    url: process.env.NODE_ENV === 'development' ? 'http://localhost:5176/kkk/karin-config' : '/kkk/karin-config',
     title: 'kkk插件配置管理',
     description: '使用 kkk 插件自带的配置管理页面'
   }
