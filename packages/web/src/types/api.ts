@@ -3,7 +3,8 @@
  */
 
 export interface ApiResponse<T = unknown> {
-  success: boolean
+  success?: boolean
+  code?: number
   data?: T
   message?: string
   error?: string

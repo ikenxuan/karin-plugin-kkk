@@ -29,6 +29,32 @@ export interface GroupBriefInfo {
 }
 
 /**
+ * 群组详情接口
+ */
+export interface GroupDetailInfo extends GroupBriefInfo {
+  botId: string
+  botName: string
+  botAvatar: string
+  memberCount?: number
+  isOnline: boolean
+}
+
+const getOnlineBotById = (botId: string) => {
+  return karin.getAllBotList().find(item => item.bot.account.selfId === botId)?.bot
+}
+
+const getBotAvatar = async (bot: ReturnType<typeof getOnlineBotById>, botId: string) => {
+  if (!bot) return ''
+
+  try {
+    return await bot.getAvatarUrl(botId) || ''
+  } catch (e) {
+    logger.warn(`[BotsAPI] 获取 Bot 头像失败 ${botId}:`, e)
+    return ''
+  }
+}
+
+/**
  * 获取所有在线 Bot 列表
  * GET /api/v1/bots
  */
@@ -61,6 +87,38 @@ export const getBots: RequestHandler = async (_req, res) => {
   } catch (error) {
     logger.error('[BotsAPI] 获取 Bot 列表失败:', error)
     return createServerErrorResponse(res, '获取 Bot 列表失败')
+  }
+}
+
+/**
+ * 获取指定 Bot 信息
+ * GET /api/v1/bots/:botId
+ */
+export const getBotInfo: RequestHandler = async (req, res) => {
+  try {
+    const { botId } = req.params
+
+    if (!botId) {
+      return createServerErrorResponse(res, '缺少 botId 参数')
+    }
+
+    const bot = getOnlineBotById(botId)
+
+    if (!bot || bot.account.name === 'console') {
+      return createServerErrorResponse(res, 'Bot 不存在或不在线')
+    }
+
+    const botInfo: BotInfo = {
+      id: bot.account.selfId,
+      name: bot.account.name || bot.account.selfId,
+      avatar: await getBotAvatar(bot, bot.account.selfId),
+      isOnline: true
+    }
+
+    return createSuccessResponse(res, botInfo)
+  } catch (error) {
+    logger.error('[BotsAPI] 获取 Bot 信息失败:', error)
+    return createServerErrorResponse(res, '获取 Bot 信息失败')
   }
 }
 
@@ -106,6 +164,55 @@ export const getBotGroups: RequestHandler = async (req, res) => {
   } catch (error) {
     logger.error('[BotsAPI] 获取 Bot 群列表失败:', error)
     return createServerErrorResponse(res, '获取群列表失败')
+  }
+}
+
+/**
+ * 获取指定 Bot 下的群信息
+ * GET /api/v1/bots/:botId/groups/:groupId
+ */
+export const getBotGroupInfo: RequestHandler = async (req, res) => {
+  try {
+    const { botId, groupId } = req.params
+
+    if (!botId || !groupId) {
+      return createServerErrorResponse(res, '缺少 botId 或 groupId 参数')
+    }
+
+    const bot = getOnlineBotById(botId)
+
+    if (!bot) {
+      return createServerErrorResponse(res, 'Bot 不存在或不在线')
+    }
+
+    let groupName = groupId
+    let groupAvatar = ''
+    let memberCount: number | undefined
+
+    try {
+      const groupInfo = await bot.getGroupInfo(groupId)
+      groupName = groupInfo?.groupName || groupName
+      memberCount = groupInfo?.memberCount
+      groupAvatar = await bot.getGroupAvatarUrl(groupId) || ''
+    } catch (e) {
+      logger.warn(`[BotsAPI] 获取群组信息失败 ${groupId}:`, e)
+    }
+
+    const groupDetail: GroupDetailInfo = {
+      id: groupId,
+      name: groupName,
+      avatar: groupAvatar,
+      botId: bot.account.selfId,
+      botName: bot.account.name || bot.account.selfId,
+      botAvatar: await getBotAvatar(bot, bot.account.selfId),
+      memberCount,
+      isOnline: true
+    }
+
+    return createSuccessResponse(res, groupDetail)
+  } catch (error) {
+    logger.error('[BotsAPI] 获取 Bot 群信息失败:', error)
+    return createServerErrorResponse(res, '获取群信息失败')
   }
 }
 

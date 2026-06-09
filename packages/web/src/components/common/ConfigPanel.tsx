@@ -65,6 +65,10 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
     return Object.values(validationErrors).some(Boolean)
   }, [validationErrors])
 
+  const saveActionActive = useMemo(() => {
+    return hasChanges && !hasValidationError && !loading
+  }, [hasChanges, hasValidationError, loading])
+
   const updateConfigValue = useMemoizedFn((path: ConfigPath, value: unknown) => {
     setPanelState((current) => {
       if (!current.config) return null
@@ -169,17 +173,9 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
     updateConfigValue
   })
 
-  return (
-    <div ref={panelRef} className={classes.root}>
-      {variant === 'standalone' ? (
-        <div className={classes.header}>
-          <div className={classes.headerCopy}>
-            <h2 className="text-2xl font-bold">配置管理</h2>
-            <Description>直接读取并写回 Karin 插件配置文件，未展示字段会原样保留。</Description>
-          </div>
-        </div>
-      ) : null}
-      <div className={classes.floatingActions}>
+  const actionControls = (
+    <div className={classes.floatingActions}>
+      <div className={classes.actionControls}>
         <Tooltip delay={0}>
           <Tooltip.Trigger aria-label="重新读取配置">
             <Button isIconOnly size={controlSize} variant="secondary" isDisabled={loading || saving} onPress={handleReset}>
@@ -191,12 +187,30 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
             重新读取
           </Tooltip.Content>
         </Tooltip>
-        <Button size={controlSize} isDisabled={!hasChanges || hasValidationError || loading} isPending={saving} onPress={handleSave} variant="tertiary">
+        <Button
+          size={controlSize}
+          isDisabled={!saveActionActive}
+          isPending={saving}
+          onPress={handleSave}
+          variant="primary"
+        >
           <Save size={16} aria-hidden="true" />
           <span>保存</span>
         </Button>
       </div>
+    </div>
+  )
 
+  return (
+    <div ref={panelRef} className={classes.root}>
+      {variant === 'standalone' ? (
+        <div className={classes.header}>
+          <div className={classes.headerCopy}>
+            <h2 className="text-2xl font-bold">配置管理</h2>
+            <Description>直接读取并写回 Karin 插件配置文件，未展示字段会原样保留。</Description>
+          </div>
+        </div>
+      ) : null}
       <Form className={classes.form} onSubmit={handleFormSubmit}>
         <Tabs className="w-full min-w-0 max-w-full" selectedKey={activeFile} onSelectionChange={handleTabChange}>
           <Tabs.ListContainer
@@ -216,14 +230,17 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
           </Tabs.ListContainer>
         </Tabs>
 
-        <ActiveConfigPage
-          activeFile={activeFile}
-          classes={classes}
-          config={config}
-          device={device}
-          renderers={renderers}
-          updateConfigValue={updateConfigValue}
-        />
+        <div className="relative min-w-0 max-w-full">
+          {actionControls}
+          <ActiveConfigPage
+            activeFile={activeFile}
+            classes={classes}
+            config={config}
+            device={device}
+            renderers={renderers}
+            updateConfigValue={updateConfigValue}
+          />
+        </div>
       </Form>
     </div>
   )

@@ -267,9 +267,11 @@ export const createConfigFieldRenderers = ({
     renderSelectField,
     renderCheckboxGroup,
     renderPageHeader: (title, description) => (
-      <div className="mb-6" data-config-section>
+      <div className={`mb-6 ${device === 'mobile' ? 'pr-36' : ''}`} data-config-section>
         <h2 className="text-2xl font-bold">{title}</h2>
-        <Description className="mt-1">{description}</Description>
+        <div className="mt-2.5">
+          <Description>{description}</Description>
+        </div>
       </div>
     ),
     renderSubSection: (title, children) => (

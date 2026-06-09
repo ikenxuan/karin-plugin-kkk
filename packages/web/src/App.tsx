@@ -1,5 +1,5 @@
 import { useEffect, type ComponentType } from 'react'
-import { Description, ScrollShadow, Spinner, Surface, Toast } from '@heroui/react'
+import { cn, Description, ScrollShadow, Spinner, Surface, Toast } from '@heroui/react'
 import { useMemoizedFn, useSetState } from 'ahooks'
 import LoginPanel from './components/common/LoginPanel'
 import { authChangedEventName, hasAuthToken } from './auth/token'
@@ -223,7 +223,19 @@ const App = () => {
     return (
       <Surface className="h-screen overflow-hidden">
         <Toast.Provider placement="top" />
-        <ScrollShadow hideScrollBar className="h-full px-3 py-3 sm:px-5 sm:py-4" size={56}>
+        <ScrollShadow
+          hideScrollBar
+          className={cn(
+            'h-full px-3 py-3 sm:px-5 sm:py-4',
+            device === 'mobile' && [
+              'data-[top-scroll=true]:[mask-image:none]',
+              'data-[top-scroll=true]:[-webkit-mask-image:none]',
+              'data-[top-bottom-scroll=true]:[mask-image:linear-gradient(180deg,black_calc(100%_-_var(--scroll-shadow-size)),transparent)]',
+              'data-[top-bottom-scroll=true]:[-webkit-mask-image:linear-gradient(180deg,black_calc(100%_-_var(--scroll-shadow-size)),transparent)]',
+            ]
+          )}
+          size={56}
+        >
           <ConfigPanel device={device} variant="karin" />
         </ScrollShadow>
       </Surface>

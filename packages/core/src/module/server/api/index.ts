@@ -8,7 +8,7 @@ import { bilibiliApiRouter } from '@/platform/bilibili/api'
 import { douyinApiRouter } from '@/platform/douyin/api'
 
 import { signatureVerificationMiddleware } from '../auth'
-import { getBotGroups, getBots, getGroupsBatch } from './bots'
+import { getBotGroupInfo, getBotGroups, getBotInfo, getBots, getGroupsBatch } from './bots'
 import {
   getAllConfig,
   getConfigModule,
@@ -25,7 +25,9 @@ const authMiddlewares = [authMiddleware, signatureVerificationMiddleware]
 
 // Bot 管理
 apiRouter.get('/bots', ...authMiddlewares, getBots)
+apiRouter.get('/bots/:botId', ...authMiddlewares, getBotInfo)
 apiRouter.get('/bots/:botId/groups', ...authMiddlewares, getBotGroups)
+apiRouter.get('/bots/:botId/groups/:groupId', ...authMiddlewares, getBotGroupInfo)
 
 // 群组管理
 apiRouter.get('/groups', ...authMiddlewares, getGroups)
