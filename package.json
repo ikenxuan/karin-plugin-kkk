@@ -3,20 +3,39 @@
   "version": "2.34.0",
   "description": "Karin 的「抖音」「B 站」视频解析/动态推送插件",
   "keywords": [
-    "karin-plugin",
-    "karin"
+    "karin",
+    "karin-plugin"
   ],
   "homepage": "https://github.com/ikenxuan/karin-plugin-kkk",
   "bugs": {
     "url": "https://github.com/ikenxuan/karin-plugin-kkk/issues"
   },
+  "license": "GPL-3.0-only",
+  "author": "ikenxuan",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ikenxuan/karin-plugin-kkk.git"
   },
-  "license": "GPL-3.0-only",
-  "author": "ikenxuan",
+  "files": [
+    "config/",
+    "lib/",
+    "resources/",
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "CHANGELOG.md"
+  ],
   "type": "module",
+  "typesVersions": {
+    "*": {
+      "template": [
+        "./lib/core_chunk/template.d.mts"
+      ],
+      "amagi": [
+        "./lib/core_chunk/amagi.d.mts"
+      ]
+    }
+  },
   "exports": {
     ".": {
       "default": "./lib/index.js"
@@ -34,25 +53,10 @@
       "import": "./lib/core_chunk/amagi.js"
     }
   },
-  "typesVersions": {
-    "*": {
-      "template": [
-        "./lib/core_chunk/template.d.mts"
-      ],
-      "amagi": [
-        "./lib/core_chunk/amagi.d.mts"
-      ]
-    }
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   },
-  "files": [
-    "config/",
-    "lib/",
-    "resources/",
-    "LICENSE",
-    "package.json",
-    "README.md",
-    "CHANGELOG.md"
-  ],
   "dependencies": {
     "@ikenxuan/qrcode": "1.2.0",
     "@ikenxuan/watermark": "1.1.6",
@@ -64,10 +68,6 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
   },
   "karin": {
     "engines": ">=1.14.0",
@@ -89,5 +89,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-06-11T07:36:05.399Z"
+  "timestamp": "2026-06-11T15:14:59.983Z"
 }

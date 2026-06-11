@@ -7,7 +7,7 @@ sendContent:
   - 'comment'
   - 'image'
   - 'video'
-  
+
 # 小红书评论数量（预留）
 numcomment: 10
 

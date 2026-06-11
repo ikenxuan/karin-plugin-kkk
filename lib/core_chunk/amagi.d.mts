@@ -1345,7 +1345,7 @@ declare const xiaohongshuApiUrls: {
    * @param data - 请求参数
    * @returns 完整的接口URL
    */
-  emojiList(data: XiaohongshuMethodOptionsWithoutMethodType["EmojiListParams"]): {
+  emojiList(_data: XiaohongshuMethodOptionsWithoutMethodType["EmojiListParams"]): {
     apiPath: string;
     Url: string;
   };
@@ -5211,7 +5211,7 @@ type Item$12 = {
   id_str: string;
   modules: ItemModules$5;
   orig: Orig$4;
-  type: string;
+  type: DynamicType.AV;
   visible: boolean;
   [property: string]: any;
 };
@@ -24075,7 +24075,7 @@ type DySearchInfo = SearchInfoGeneralData | SearchInfoUser | SearchInfoVideo;
  * 将 methodType 映射到对应的返回数据类型
  */
 interface DouyinReturnTypeMap {
-  parseWork: DyVideoWork | DyImageAlbumWork | DySlidesWork | DyImageAlbumWork & ArticleWork;
+  parseWork: DyVideoWork | DyImageAlbumWork | DySlidesWork | (DyImageAlbumWork & ArticleWork);
   textWork: ArticleWork;
   videoWork: DyVideoWork;
   imageAlbumWork: DyImageAlbumWork;
@@ -26005,14 +26005,14 @@ declare const XiaohongshuFetcherMethods: {
   readonly SEARCH_NOTES: "searchNotes";
   readonly EMOJI_LIST: "fetchEmojiList";
 };
-type BilibiliInternalMethodKey = typeof BilibiliInternalMethods[keyof typeof BilibiliInternalMethods];
-type BilibiliFetcherMethodKey = typeof BilibiliFetcherMethods[keyof typeof BilibiliFetcherMethods];
-type DouyinInternalMethodKey = typeof DouyinInternalMethods[keyof typeof DouyinInternalMethods];
-type DouyinFetcherMethodKey = typeof DouyinFetcherMethods[keyof typeof DouyinFetcherMethods];
-type KuaishouInternalMethodKey = typeof KuaishouInternalMethods[keyof typeof KuaishouInternalMethods];
-type KuaishouFetcherMethodKey = typeof KuaishouFetcherMethods[keyof typeof KuaishouFetcherMethods];
-type XiaohongshuInternalMethodKey = typeof XiaohongshuInternalMethods[keyof typeof XiaohongshuInternalMethods];
-type XiaohongshuFetcherMethodKey = typeof XiaohongshuFetcherMethods[keyof typeof XiaohongshuFetcherMethods];
+type BilibiliInternalMethodKey = (typeof BilibiliInternalMethods)[keyof typeof BilibiliInternalMethods];
+type BilibiliFetcherMethodKey = (typeof BilibiliFetcherMethods)[keyof typeof BilibiliFetcherMethods];
+type DouyinInternalMethodKey = (typeof DouyinInternalMethods)[keyof typeof DouyinInternalMethods];
+type DouyinFetcherMethodKey = (typeof DouyinFetcherMethods)[keyof typeof DouyinFetcherMethods];
+type KuaishouInternalMethodKey = (typeof KuaishouInternalMethods)[keyof typeof KuaishouInternalMethods];
+type KuaishouFetcherMethodKey = (typeof KuaishouFetcherMethods)[keyof typeof KuaishouFetcherMethods];
+type XiaohongshuInternalMethodKey = (typeof XiaohongshuInternalMethods)[keyof typeof XiaohongshuInternalMethods];
+type XiaohongshuFetcherMethodKey = (typeof XiaohongshuFetcherMethods)[keyof typeof XiaohongshuFetcherMethods];
 /** B站：内部中文方法名 -> Fetcher 英文方法名 */
 declare const BilibiliMethodToFetcher: Record<BilibiliInternalMethodKey, BilibiliFetcherMethodKey>;
 /** 抖音：内部中文方法名 -> Fetcher 英文方法名 */
@@ -28719,7 +28719,7 @@ declare const DouyinMethodMapping: {
   readonly 弹幕数据: "fetchDanmakuList";
 };
 type DouyinMethodKey = keyof typeof DouyinMethodMapping;
-type DouyinMethodValue = typeof DouyinMethodMapping[DouyinMethodKey];
+type DouyinMethodValue = (typeof DouyinMethodMapping)[DouyinMethodKey];
 declare const BilibiliMethodMapping: {
   readonly 单个视频作品数据: "fetchVideoInfo";
   readonly 单个视频下载信息数据: "fetchVideoStreamUrl";
@@ -28750,7 +28750,7 @@ declare const BilibiliMethodMapping: {
   readonly 验证验证码结果: "validateCaptchaResult";
 };
 type BilibiliMethodKey = keyof typeof BilibiliMethodMapping;
-type BilibiliMethodValue = typeof BilibiliMethodMapping[BilibiliMethodKey];
+type BilibiliMethodValue = (typeof BilibiliMethodMapping)[BilibiliMethodKey];
 declare const KuaishouMethodMapping: {
   readonly 单个视频作品数据: "fetchVideoWork";
   readonly 评论数据: "fetchWorkComments";
@@ -28760,7 +28760,7 @@ declare const KuaishouMethodMapping: {
   readonly Emoji数据: "fetchEmojiList";
 };
 type KuaishouMethodKey = keyof typeof KuaishouMethodMapping;
-type KuaishouMethodValue = typeof KuaishouMethodMapping[KuaishouMethodKey];
+type KuaishouMethodValue = (typeof KuaishouMethodMapping)[KuaishouMethodKey];
 declare const XiaohongshuMethodMapping: {
   readonly 首页推荐数据: "fetchHomeFeed";
   readonly 单个笔记数据: "fetchNoteDetail";
@@ -28771,7 +28771,7 @@ declare const XiaohongshuMethodMapping: {
   readonly 搜索笔记: "searchNotes";
 };
 type XiaohongshuMethodKey = keyof typeof XiaohongshuMethodMapping;
-type XiaohongshuMethodValue = typeof XiaohongshuMethodMapping[XiaohongshuMethodKey];
+type XiaohongshuMethodValue = (typeof XiaohongshuMethodMapping)[XiaohongshuMethodKey];
 /**
  * Douyin HTTP API 路由
  *
