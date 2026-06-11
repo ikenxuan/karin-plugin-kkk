@@ -225,7 +225,7 @@ export const extractRichTextPlainText = (document: RichTextDocument): string => 
       case 'viewPicture':
       case 'hashtag':
       case 'emoji':
-        return 'text' in node ? (node as any).text ?? '' : (node as any).name ?? ''
+        return 'text' in node ? ((node as any).text ?? '') : ((node as any).name ?? '')
       case 'heading':
       case 'paragraph':
       case 'blockquote':
@@ -255,10 +255,7 @@ export const extractRichTextPlainText = (document: RichTextDocument): string => 
  *
  * 这里不会生成任何 HTML，只返回可序列化 JSON，适合作为 core 到 template 的数据边界。
  */
-export const createRichTextDocument = (
-  nodes: RichTextNode[],
-  options: { platform?: string } = {}
-): RichTextDocument => ({
+export const createRichTextDocument = (nodes: RichTextNode[], options: { platform?: string } = {}): RichTextDocument => ({
   version: 1,
   platform: options.platform,
   nodes: normalizeRichTextNodes(nodes)

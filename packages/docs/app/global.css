@@ -3,7 +3,7 @@
 @import 'fumadocs-ui/css/black.css';
 @import 'fumadocs-ui/css/preset.css';
 @import 'fumadocs-twoslash/twoslash.css';
-@import "tw-animate-css";
+@import 'tw-animate-css';
 
 /* HeroUI 样式 */
 @source '../**/*.{js,ts,jsx,tsx,html}';
@@ -24,7 +24,7 @@ b {
 }
 
 @theme {
-  --animate-spotlight: spotlight 2s ease .75s 1 forwards;
+  --animate-spotlight: spotlight 2s ease 0.75s 1 forwards;
 
   @keyframes spotlight {
     0% {
@@ -33,17 +33,17 @@ b {
     }
     100% {
       opacity: 1;
-      transform: translate(-50%,-40%) scale(1);
+      transform: translate(-50%, -40%) scale(1);
     }
   }
 }
 
 /* 移动端侧边栏 footer 按钮间距 */
 @media (max-width: 767px) {
-  aside [class*="border-t"][class*="flex-row"][class*="justify-end"] > * {
+  aside [class*='border-t'][class*='flex-row'][class*='justify-end'] > * {
     margin-left: 2rem;
   }
-  aside [class*="border-t"][class*="flex-row"][class*="justify-end"] > *:first-child {
+  aside [class*='border-t'][class*='flex-row'][class*='justify-end'] > *:first-child {
     margin-left: 0;
   }
 }
@@ -112,7 +112,8 @@ b {
   --accent-foreground: oklch(0.205 0 0);
 }
 
-::view-transition-old(root), ::view-transition-new(root) {
-    animation: none;
-    mix-blend-mode: normal;
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }

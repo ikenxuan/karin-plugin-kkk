@@ -7,7 +7,7 @@ import { EnhancedImage } from './shared'
 
 type BilibiliPushType = NonNullable<BilibiliUserListProps['data']['renderOpt'][number]['pushTypes']>[number]
 
-const pushTypeConfig: Record<BilibiliPushType, { label: string, color: string, icon: React.ComponentType<any> }> = {
+const pushTypeConfig: Record<BilibiliPushType, { label: string; color: string; icon: React.ComponentType<any> }> = {
   video: { label: '投稿视频', color: 'bg-accent/6 text-accent/80 border-accent-soft', icon: Video },
   draw: { label: '图文动态', color: 'bg-[#23ade5]/5 text-[#1a8fb8] border-[#23ade5]/12', icon: LucideImage },
   word: { label: '纯文动态', color: 'bg-warning/5 text-warning/80 border-warning/12', icon: FileText },
@@ -23,9 +23,9 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
   const activePushTypes = new Set<BilibiliPushType>(props.pushTypes ?? (Object.keys(pushTypeConfig) as BilibiliPushType[]))
 
   return (
-    <li className='relative group overflow-hidden rounded-4xl bg-surface/60 border border-border/50 backdrop-blur-xl shadow-xl'>
+    <li className="relative group overflow-hidden rounded-4xl bg-surface/60 border border-border/50 backdrop-blur-xl shadow-xl">
       {/* 渐进式模糊背景 - Progressive Blur Background */}
-      <div className='absolute inset-0 pointer-events-none z-0 overflow-hidden'>
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
         <EnhancedImage
           src={props.avatar_img}
           alt=""
@@ -38,18 +38,18 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
       </div>
 
       {/* SVG 噪点 (作为卡片内层叠加) */}
-      <div className='absolute inset-0 pointer-events-none z-0 opacity-[0.08] mix-blend-overlay'>
-        <svg className='w-full h-full' xmlns='http://www.w3.org/2000/svg'>
-          <filter id='cardNoise' x='0%' y='0%' width='100%' height='100%'>
-            <feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch' result='noise' />
-            <feColorMatrix type='saturate' values='0' result='gray' />
+      <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.08] mix-blend-overlay">
+        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+          <filter id="cardNoise" x="0%" y="0%" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch" result="noise" />
+            <feColorMatrix type="saturate" values="0" result="gray" />
             <feComponentTransfer>
-              <feFuncR type='discrete' tableValues='0 1' />
-              <feFuncG type='discrete' tableValues='0 1' />
-              <feFuncB type='discrete' tableValues='0 1' />
+              <feFuncR type="discrete" tableValues="0 1" />
+              <feFuncG type="discrete" tableValues="0 1" />
+              <feFuncB type="discrete" tableValues="0 1" />
             </feComponentTransfer>
           </filter>
-          <rect width='100%' height='100%' filter='url(#cardNoise)' />
+          <rect width="100%" height="100%" filter="url(#cardNoise)" />
         </svg>
       </div>
 
@@ -60,24 +60,17 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
           <div className="relative shrink-0">
             {/* 头像容器 - 纯净玻璃态 */}
             <div className="w-20 h-20 rounded-full p-1 bg-surface/20 backdrop-blur-md border border-border/30 shadow-lg">
-              <EnhancedImage
-                src={props.avatar_img}
-                alt="Avatar"
-                className="w-full h-full rounded-full object-cover"
-              />
+              <EnhancedImage src={props.avatar_img} alt="Avatar" className="w-full h-full rounded-full object-cover" />
             </div>
 
             {/* 状态徽章 - 扁平化/微立体 */}
             <div
-              className={`absolute -bottom-1 -right-1 px-2.5 py-1 rounded-full border-2 border-background flex items-center gap-1.5 shadow-md ${props.switch
-                ? 'bg-success text-white'
-                : 'bg-danger text-danger-foreground'
+              className={`absolute -bottom-1 -right-1 px-2.5 py-1 rounded-full border-2 border-background flex items-center gap-1.5 shadow-md ${
+                props.switch ? 'bg-success text-white' : 'bg-danger text-danger-foreground'
               }`}
             >
               <div className={`w-1.5 h-1.5 rounded-full ${props.switch ? 'bg-white' : 'bg-border'}`} />
-              <span className="text-[10px] font-bold uppercase tracking-wider leading-none">
-                {props.switch ? 'ON' : 'OFF'}
-              </span>
+              <span className="text-[10px] font-bold uppercase tracking-wider leading-none">{props.switch ? 'ON' : 'OFF'}</span>
             </div>
           </div>
 
@@ -100,21 +93,18 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
 
         <div className="grid grid-cols-[minmax(0,1.15fr)_minmax(0,0.95fr)] gap-3 items-stretch min-h-39">
           <div className="grid grid-cols-3 gap-2 auto-rows-fr h-full">
-            {(Object.entries(pushTypeConfig) as [BilibiliPushType, typeof pushTypeConfig[BilibiliPushType]][]).map(([type, config]) => {
+            {(Object.entries(pushTypeConfig) as [BilibiliPushType, (typeof pushTypeConfig)[BilibiliPushType]][]).map(([type, config]) => {
               const isActive = activePushTypes.has(type)
 
               return (
                 <div
                   key={type}
-                  className={`h-full min-h-18.5 px-2.5 py-2.5 rounded-xl border backdrop-blur-sm flex flex-col justify-between transition-colors duration-200 ${isActive
-                    ? config.color
-                    : 'bg-surface/45 text-muted border-border/15'
+                  className={`h-full min-h-18.5 px-2.5 py-2.5 rounded-xl border backdrop-blur-sm flex flex-col justify-between transition-colors duration-200 ${
+                    isActive ? config.color : 'bg-surface/45 text-muted border-border/15'
                   }`}
                 >
                   <config.icon size={18} className={isActive ? '' : 'opacity-40'} />
-                  <span className="text-[13px] font-bold tracking-wide leading-tight">
-                    {config.label}
-                  </span>
+                  <span className="text-[13px] font-bold tracking-wide leading-tight">{config.label}</span>
                 </div>
               )
             })}
@@ -134,12 +124,8 @@ const BilibiliUserItem: React.FC<BilibiliUserListProps['data']['renderOpt'][numb
                 >
                   <StatIcon size={18} className="text-muted shrink-0" />
                   <div className="flex items-baseline gap-2 flex-1 min-w-0">
-                    <span className="text-[15px] font-bold font-mono text-foreground truncate">
-                      {item.value}
-                    </span>
-                    <span className="text-xs text-muted font-medium shrink-0">
-                      {item.label}
-                    </span>
+                    <span className="text-[15px] font-bold font-mono text-foreground truncate">{item.value}</span>
+                    <span className="text-xs text-muted font-medium shrink-0">{item.label}</span>
                   </div>
                 </div>
               )
@@ -217,26 +203,17 @@ const BilibiliUserList: React.FC<BilibiliUserListProps> = (props) => {
 
       {/* 主要内容区域 */}
       <div className="relative z-10 px-24 py-20 flex flex-col min-h-screen">
-
         {/* 极简头部 */}
         <div className="flex justify-between items-end mb-16">
           <div>
             <div className="flex items-center gap-3 mb-4">
               {/* 群头像 */}
               <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg border border-border/30">
-                <EnhancedImage
-                  src={props.data.groupInfo.groupAvatar}
-                  alt="Group Avatar"
-                  className="w-full h-full object-cover"
-                />
+                <EnhancedImage src={props.data.groupInfo.groupAvatar} alt="Group Avatar" className="w-full h-full object-cover" />
               </div>
-              <span className="font-mono text-sm font-bold tracking-widest uppercase opacity-50 text-foreground">
-                Subscriber List
-              </span>
+              <span className="font-mono text-sm font-bold tracking-widest uppercase opacity-50 text-foreground">Subscriber List</span>
             </div>
-            <h1 className="text-7xl font-black text-foreground tracking-tighter mb-2">
-              {props.data.groupInfo.groupName}
-            </h1>
+            <h1 className="text-7xl font-black text-foreground tracking-tighter mb-2">{props.data.groupInfo.groupName}</h1>
             <p className="font-mono text-xl opacity-40 text-foreground flex items-center gap-2">
               <span>GROUP_ID</span>
               <span className="w-12 h-px bg-current opacity-50" />
@@ -249,19 +226,14 @@ const BilibiliUserList: React.FC<BilibiliUserListProps> = (props) => {
             <div className="text-8xl font-black text-transparent bg-clip-text bg-linear-to-b from-foreground to-muted leading-none">
               {String(props.data.renderOpt.length).padStart(2, '0')}
             </div>
-            <div className="text-sm font-bold tracking-[0.3em] uppercase opacity-40 mt-2 text-foreground">
-              Total Users
-            </div>
+            <div className="text-sm font-bold tracking-[0.3em] uppercase opacity-40 mt-2 text-foreground">Total Users</div>
           </div>
         </div>
 
         {/* 用户列表网格 - 调整为两列大卡片 */}
         <ul className="grid grid-cols-2 gap-x-10 gap-y-10">
           {props.data.renderOpt.map((user, index) => (
-            <BilibiliUserItem
-              key={`${user.host_mid}-${index}`}
-              {...user}
-            />
+            <BilibiliUserItem key={`${user.host_mid}-${index}`} {...user} />
           ))}
         </ul>
       </div>

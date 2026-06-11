@@ -4,10 +4,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import {
-  createNotFoundResponse,
-  logger
-} from 'node-karin'
+import { createNotFoundResponse, logger } from 'node-karin'
 import type { RequestHandler } from 'node-karin/express'
 import { renderVideoPreviewPage } from 'template'
 
@@ -45,7 +42,7 @@ export const getVideoStream: RequestHandler = (req, res) => {
         return
       }
 
-      const chunksize = (end - start) + 1
+      const chunksize = end - start + 1
       const file = fs.createReadStream(videoPath, { start, end })
       const head = {
         'Content-Range': `bytes ${start}-${end}/${fileSize}`,

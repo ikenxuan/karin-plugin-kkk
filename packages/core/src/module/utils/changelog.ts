@@ -28,9 +28,7 @@ const getLagVersionCount = (changelog: string, localVersion: string, remoteVersi
 
   if (!local || !remote || !isSemverGreater(remote, local)) return 0
 
-  const versions = Object.keys(parseChangelog(changelog))
-    .map(versionCore)
-    .filter(Boolean)
+  const versions = Object.keys(parseChangelog(changelog)).map(versionCore).filter(Boolean)
 
   const uniqueVersions = [...new Set(versions)]
   return uniqueVersions.filter((version) => {
@@ -57,13 +55,12 @@ const getRemoteBuildMetadata = async (version: string) => {
   ]
 
   const requests = urls.map((url) =>
-    axios.get(url, { timeout: 10000, headers: baseHeaders })
-      .then((res) => {
-        if (res.data && typeof res.data === 'object') {
-          return res.data
-        }
-        throw new Error('Invalid metadata')
-      })
+    axios.get(url, { timeout: 10000, headers: baseHeaders }).then((res) => {
+      if (res.data && typeof res.data === 'object') {
+        return res.data
+      }
+      throw new Error('Invalid metadata')
+    })
   )
 
   try {
@@ -89,9 +86,7 @@ export const getChangelogImage = async (
   let changelog = ''
   let buildTime: string | undefined
   let lagVersionCount = 0
-  const event = ('bot' in (ctx as any))
-    ? (ctx as Message)
-    : ({ bot: ctx } as unknown as Message)
+  const event = 'bot' in (ctx as any) ? (ctx as Message) : ({ bot: ctx } as unknown as Message)
 
   if (props.Tip || props.isRemote) {
     const urls = [
@@ -119,13 +114,12 @@ export const getChangelogImage = async (
 
     // 并发竞速获取 CHANGELOG
     const requests = urls.map((url) =>
-      axios.get(url, { timeout: 10000, headers: baseHeaders })
-        .then((res) => {
-          if (typeof res.data === 'string' && res.data.length > 0) {
-            return res.data as string
-          }
-          throw new Error('Invalid changelog content')
-        })
+      axios.get(url, { timeout: 10000, headers: baseHeaders }).then((res) => {
+        if (typeof res.data === 'string' && res.data.length > 0) {
+          return res.data as string
+        }
+        throw new Error('Invalid changelog content')
+      })
     )
     try {
       changelog = await Promise.any(requests)

@@ -1,9 +1,9 @@
+import { authClient } from '../auth/request'
 /**
  * 配置相关 API 接口
  */
 import type { ApiResponse } from '../types/api'
 import type { ConfigType } from '../types/config'
-import { authClient } from '../auth/request'
 
 /** API 基础 URL */
 const API_BASE_URL = '/kkk/v1'

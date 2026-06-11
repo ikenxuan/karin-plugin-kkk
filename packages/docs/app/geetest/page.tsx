@@ -1,66 +1,64 @@
-'use client';
-import { useState, useEffect, useMemo, Suspense } from 'react';
-import type { Key } from 'react';
-import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { Tabs, Toast } from '@heroui/react';
-import { Geetest3Panel } from '@/components/geetest/Geetest3Panel';
-import { Geetest4Panel } from '@/components/geetest/Geetest4Panel';
-import type { GeetestVersion } from '@/components/geetest/types';
+'use client'
+import { Tabs, Toast } from '@heroui/react'
+import Link from 'next/link'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { useState, useEffect, useMemo, Suspense } from 'react'
+import type { Key } from 'react'
+
+import { Geetest3Panel } from '@/components/geetest/Geetest3Panel'
+import { Geetest4Panel } from '@/components/geetest/Geetest4Panel'
+import type { GeetestVersion } from '@/components/geetest/types'
 
 function GeetestAppContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
+  const searchParams = useSearchParams()
+  const router = useRouter()
 
   const urlParams = useMemo(() => {
-    const versionParam = searchParams.get('v') || searchParams.get('version');
-    let version: GeetestVersion = 'v3';
+    const versionParam = searchParams.get('v') || searchParams.get('version')
+    let version: GeetestVersion = 'v3'
     if (versionParam === '4' || versionParam === 'v4') {
-      version = 'v4';
+      version = 'v4'
     }
     return {
       version,
       hasVersionParam: Boolean(versionParam),
       gt: searchParams.get('gt') || undefined,
       challenge: searchParams.get('challenge') || undefined,
-      captchaId: searchParams.get('captcha_id') || searchParams.get('captchaId') || undefined,
-    };
-  }, [searchParams]);
+      captchaId: searchParams.get('captcha_id') || searchParams.get('captchaId') || undefined
+    }
+  }, [searchParams])
 
-  const [version, setVersion] = useState<GeetestVersion>(urlParams.version);
+  const [version, setVersion] = useState<GeetestVersion>(urlParams.version)
 
   useEffect(() => {
     if (!urlParams.hasVersionParam) {
-      const newParams = new URLSearchParams(searchParams.toString());
-      newParams.set('v', version === 'v3' ? '3' : '4');
-      router.replace(`/geetest?${newParams.toString()}`);
+      const newParams = new URLSearchParams(searchParams.toString())
+      newParams.set('v', version === 'v3' ? '3' : '4')
+      router.replace(`/geetest?${newParams.toString()}`)
     }
-  }, [urlParams.hasVersionParam, version, searchParams, router]);
+  }, [urlParams.hasVersionParam, version, searchParams, router])
 
   const handleVersionChange = (newVersion: GeetestVersion) => {
-    if (newVersion === version) return;
+    if (newVersion === version) return
 
-    setVersion(newVersion);
-    const newParams = new URLSearchParams(searchParams.toString());
-    newParams.set('v', newVersion === 'v3' ? '3' : '4');
+    setVersion(newVersion)
+    const newParams = new URLSearchParams(searchParams.toString())
+    newParams.set('v', newVersion === 'v3' ? '3' : '4')
     if (newVersion === 'v3') {
-      newParams.delete('captcha_id');
-      newParams.delete('captchaId');
+      newParams.delete('captcha_id')
+      newParams.delete('captchaId')
     } else {
-      newParams.delete('gt');
-      newParams.delete('challenge');
+      newParams.delete('gt')
+      newParams.delete('challenge')
     }
-    router.replace(`/geetest?${newParams.toString()}`);
-  };
+    router.replace(`/geetest?${newParams.toString()}`)
+  }
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-6 gap-6">
       <Toast.Provider placement="top" />
       <div className="w-full max-w-md flex justify-between items-center">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors"
-        >
+        <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
@@ -90,17 +88,17 @@ function GeetestAppContent() {
           <Tabs
             selectedKey={version}
             onSelectionChange={(key: Key) => handleVersionChange(key as GeetestVersion)}
-            className='w-full max-w-md'
+            className="w-full max-w-md"
           >
             <Tabs.ListContainer>
               <Tabs.List aria-label="极验版本切换" className="grid w-full grid-cols-2 gap-2">
                 <Tabs.Tab id="v3" className="h-8 text-sm">
                   极验3
-                  <Tabs.Indicator/>
+                  <Tabs.Indicator />
                 </Tabs.Tab>
                 <Tabs.Tab id="v4" className="h-8 text-sm">
                   极验4
-                  <Tabs.Indicator/>
+                  <Tabs.Indicator />
                 </Tabs.Tab>
               </Tabs.List>
             </Tabs.ListContainer>
@@ -120,7 +118,7 @@ function GeetestAppContent() {
         <p>验证成功后结果会自动复制到剪贴板</p>
       </div>
     </div>
-  );
+  )
 }
 
 export default function GeetestPage() {
@@ -128,5 +126,5 @@ export default function GeetestPage() {
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center">加载中...</div>}>
       <GeetestAppContent />
     </Suspense>
-  );
+  )
 }

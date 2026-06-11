@@ -37,22 +37,19 @@ export const DouyinQrcodeImg: React.FC<DouyinQrcodeImgProps> = React.memo((props
       {/* 1. 弥散模糊效果 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* 左上角主光辉 */}
-        <div 
+        <div
           className="absolute top-[-40%] left-[-50%] w-400 h-600 rounded-full blur-[200px] opacity-25"
           style={{ background: theme.gradientTL }}
         />
         {/* 右下角氛围光 */}
-        <div 
+        <div
           className="absolute top-[80%] right-[-50%] w-400 h-600 rounded-full blur-[200px] opacity-25"
           style={{ background: theme.gradientBR }}
         />
       </div>
 
       {/* 2. 单色噪点层 */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ opacity: isDark ? 0.16 : 0.2 }}
-      >
+      <div className="absolute inset-0 pointer-events-none" style={{ opacity: isDark ? 0.16 : 0.2 }}>
         <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
           <filter id="pixelNoise" x="0%" y="0%" width="100%" height="100%">
             <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch" result="noise" />
@@ -68,16 +65,13 @@ export const DouyinQrcodeImg: React.FC<DouyinQrcodeImgProps> = React.memo((props
       </div>
 
       <div className="relative z-10 flex flex-col items-center justify-center h-full py-40 px-24 space-y-32">
-        
         {/* 标题区 */}
         <div className="text-center space-y-12">
           {/* Title */}
           <h1 className="text-8xl font-bold tracking-tight">
-            <span className="bg-linear-to-r from-foreground to-muted bg-clip-text text-transparent">
-              扫码登录
-            </span>
+            <span className="bg-linear-to-r from-foreground to-muted bg-clip-text text-transparent">扫码登录</span>
           </h1>
-          
+
           {/* 操作步骤 */}
           <div className="flex items-start justify-center gap-10 opacity-90" style={{ color: theme.text }}>
             {/* Step 1 */}
@@ -108,19 +102,15 @@ export const DouyinQrcodeImg: React.FC<DouyinQrcodeImgProps> = React.memo((props
 
         {/* 二维码 */}
         <div className="relative group">
-          <div 
+          <div
             className="relative p-4"
-            style={{ 
+            style={{
               width: '800px',
               height: '800px'
             }}
           >
             {qrCodeImage ? (
-              <img
-                src={qrCodeImage}
-                alt="QR Code"
-                className="w-full h-full object-contain"
-              />
+              <img src={qrCodeImage} alt="QR Code" className="w-full h-full object-contain" />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center gap-8">
                 <div className="w-24 h-24 border-4 border-gray-200 border-t-black rounded-full animate-spin" />
@@ -143,7 +133,9 @@ export const DouyinQrcodeImg: React.FC<DouyinQrcodeImgProps> = React.memo((props
             <div className="flex items-center justify-center w-16 h-16 mb-2">
               <Smartphone size={64} style={{ color: theme.text }} strokeWidth={1} />
             </div>
-            <h3 className="text-[40px] font-bold" style={{ color: theme.text }}>扫码登录说明</h3>
+            <h3 className="text-[40px] font-bold" style={{ color: theme.text }}>
+              扫码登录说明
+            </h3>
             <p className="text-[24px] leading-relaxed opacity-60" style={{ color: theme.text }}>
               抖音目前仅禁止相册扫码，无法通过截图在本机自助登录，请在另一台设备上展示二维码，并使用手机抖音扫码完成登录。
             </p>
@@ -153,13 +145,14 @@ export const DouyinQrcodeImg: React.FC<DouyinQrcodeImgProps> = React.memo((props
             <div className="flex items-center justify-center w-16 h-16 mb-2">
               <ShieldCheck size={64} style={{ color: theme.text }} strokeWidth={1} />
             </div>
-            <h3 className="text-[40px] font-bold" style={{ color: theme.text }}>安全承诺</h3>
+            <h3 className="text-[40px] font-bold" style={{ color: theme.text }}>
+              安全承诺
+            </h3>
             <p className="text-[24px] leading-relaxed opacity-60" style={{ color: theme.text }}>
               扫码后仅会在本地获取您的登录凭据（CK），用于视频解析等相关业务，不会上传至任何第三方，也不会用于与本工具无关的操作，请在可信环境下使用本功能。
             </p>
           </div>
         </div>
-
       </div>
     </DefaultLayout>
   )

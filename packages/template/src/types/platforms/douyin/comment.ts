@@ -81,8 +81,7 @@ export interface DouyinCommentProps extends BaseComponentProps<{
   }>
   /** 最大嵌套层级 */
   maxDepth?: number
-}> {
-}
+}> {}
 
 /**
  * 抖音子评论数据接口

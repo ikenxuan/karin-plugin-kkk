@@ -1,5 +1,5 @@
-import { gunzipSync } from 'fflate'
 import { diffChars, diffLines, diffWords } from 'diff'
+import { gunzipSync } from 'fflate'
 
 export type DiffGranularity = 'word' | 'char'
 
@@ -51,7 +51,7 @@ export interface PackageDiffResult {
 }
 
 /** 从 npm registry 获取版本列表（稳定版本） */
-export async function fetchVersions (): Promise<string[]> {
+export async function fetchVersions(): Promise<string[]> {
   const res = await fetch(`${REGISTRY_URL}/${PKG_NAME}`)
   if (!res.ok) throw new Error('获取版本列表失败')
   const data = await res.json()
@@ -62,7 +62,7 @@ export async function fetchVersions (): Promise<string[]> {
 }
 
 /** semver 比较 */
-function compareSemver (a: string, b: string): number {
+function compareSemver(a: string, b: string): number {
   const ap = a.split('.').map(Number)
   const bp = b.split('.').map(Number)
   for (let i = 0; i < 3; i++) {
@@ -72,7 +72,7 @@ function compareSemver (a: string, b: string): number {
 }
 
 /** 解析 tar 归档（POSIX ustar） */
-function parseTar (data: Uint8Array): Map<string, Uint8Array> {
+function parseTar(data: Uint8Array): Map<string, Uint8Array> {
   const files = new Map<string, Uint8Array>()
   let offset = 0
 
@@ -135,11 +135,8 @@ function parseTar (data: Uint8Array): Map<string, Uint8Array> {
 }
 
 /** 下载并解压 tarball */
-async function downloadTarball (version: string): Promise<Map<string, Uint8Array>> {
-  const urls = [
-    `${MIRROR_URL}/${PKG_NAME}/-/${PKG_NAME}-${version}.tgz`,
-    `${REGISTRY_URL}/${PKG_NAME}/-/${PKG_NAME}-${version}.tgz`
-  ]
+async function downloadTarball(version: string): Promise<Map<string, Uint8Array>> {
+  const urls = [`${MIRROR_URL}/${PKG_NAME}/-/${PKG_NAME}-${version}.tgz`, `${REGISTRY_URL}/${PKG_NAME}/-/${PKG_NAME}-${version}.tgz`]
 
   for (const url of urls) {
     try {
@@ -157,7 +154,7 @@ async function downloadTarball (version: string): Promise<Map<string, Uint8Array
 }
 
 /** 对 lib/ 下的 hashed JS 文件名提取 base name，用于跨版本匹配同一文件 */
-function getBaseName (path: string): string {
+function getBaseName(path: string): string {
   // 仅对 lib/ 目录下的 .js 文件做 hash 剥离，如 amagiClient-SgOj0Cnj.js → amagiClient.js
   if (path.startsWith('lib/') && path.endsWith('.js')) {
     return path.replace(/-[A-Za-z0-9_-]+\.js$/, '.js')
@@ -168,7 +165,11 @@ function getBaseName (path: string): string {
 const CONTEXT_LINES = 3
 const MAX_WORD_DIFF_LINE_LENGTH = 500
 
-function computeWordDiff (oldContent: string, newContent: string, granularity: DiffGranularity = 'word'): { left: WordDiff[]; right: WordDiff[] } {
+function computeWordDiff(
+  oldContent: string,
+  newContent: string,
+  granularity: DiffGranularity = 'word'
+): { left: WordDiff[]; right: WordDiff[] } {
   const parts = granularity === 'char' ? diffChars(oldContent, newContent) : diffWords(oldContent, newContent)
   const left: WordDiff[] = []
   const right: WordDiff[] = []
@@ -192,7 +193,11 @@ interface NumberedLine {
   newLineNum?: number
 }
 
-export function computeFileDiff (oldContent: string, newContent: string, granularity: DiffGranularity = 'word'): { rows: DiffRow[]; additions: number; deletions: number } {
+export function computeFileDiff(
+  oldContent: string,
+  newContent: string,
+  granularity: DiffGranularity = 'word'
+): { rows: DiffRow[]; additions: number; deletions: number } {
   const lineDiff = diffLines(oldContent, newContent)
 
   const allLines: NumberedLine[] = []
@@ -214,9 +219,7 @@ export function computeFileDiff (oldContent: string, newContent: string, granula
   }
 
   // 计算保留范围
-  const changeIndices = allLines
-    .map((line, idx) => line.type !== 'context' ? idx : -1)
-    .filter((idx): idx is number => idx !== -1)
+  const changeIndices = allLines.map((line, idx) => (line.type !== 'context' ? idx : -1)).filter((idx): idx is number => idx !== -1)
 
   const ranges: Array<{ start: number; end: number }> = []
   for (const idx of changeIndices) {
@@ -244,8 +247,10 @@ export function computeFileDiff (oldContent: string, newContent: string, granula
       let newCount = 0
       for (let k = range.start; k <= range.end; k++) {
         const ln = allLines[k]
-        if (ln.type === 'context') { oldCount++; newCount++ }
-        else if (ln.type === 'remove') oldCount++
+        if (ln.type === 'context') {
+          oldCount++
+          newCount++
+        } else if (ln.type === 'remove') oldCount++
         else if (ln.type === 'add') newCount++
       }
       rows.push({ type: 'skip', oldStart, oldCount, newStart, newCount })
@@ -278,8 +283,7 @@ export function computeFileDiff (oldContent: string, newContent: string, granula
         const pairCount = Math.min(removes.length, adds.length)
         for (let j = 0; j < pairCount; j++) {
           const shouldWordDiff =
-            removes[j].content.length <= MAX_WORD_DIFF_LINE_LENGTH &&
-            adds[j].content.length <= MAX_WORD_DIFF_LINE_LENGTH
+            removes[j].content.length <= MAX_WORD_DIFF_LINE_LENGTH && adds[j].content.length <= MAX_WORD_DIFF_LINE_LENGTH
 
           if (shouldWordDiff) {
             const { left, right } = computeWordDiff(removes[j].content, adds[j].content, granularity)
@@ -325,7 +329,7 @@ export interface DiffSource {
   newContent?: Uint8Array
 }
 
-function areUint8ArraysEqual (a: Uint8Array, b: Uint8Array): boolean {
+function areUint8ArraysEqual(a: Uint8Array, b: Uint8Array): boolean {
   if (a.length !== b.length) return false
   for (let i = 0; i < a.length; i++) {
     if (a[i] !== b[i]) return false
@@ -335,14 +339,11 @@ function areUint8ArraysEqual (a: Uint8Array, b: Uint8Array): boolean {
 
 /** 轻量级 diff：只返回文件列表和状态，modified 文件的 rows 为空，避免阻塞主线程
  *  同时返回 diffSources，供调用方异步计算详细 diff */
-export async function computePackageDiffLite (
+export async function computePackageDiffLite(
   oldVersion: string,
   newVersion: string
 ): Promise<{ result: PackageDiffResult; diffSources: Map<string, DiffSource> }> {
-  const [oldFiles, newFiles] = await Promise.all([
-    downloadTarball(oldVersion),
-    downloadTarball(newVersion)
-  ])
+  const [oldFiles, newFiles] = await Promise.all([downloadTarball(oldVersion), downloadTarball(newVersion)])
 
   // 使用 base name 做匹配：lib/ 下的 hash 文件名按前缀聚合
   const oldByBase = new Map<string, { path: string; content: Uint8Array }>()

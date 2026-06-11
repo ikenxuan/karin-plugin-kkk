@@ -3,9 +3,9 @@ title: 贡献指南
 description: 欢迎参与 karin-plugin-kkk 的开发与贡献
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
-import { Steps, Step } from 'fumadocs-ui/components/steps';
-import { Mermaid } from '@/components/Mermaid';
+import { Callout } from 'fumadocs-ui/components/callout'
+import { Steps, Step } from 'fumadocs-ui/components/steps'
+import { Mermaid } from '@/components/Mermaid'
 
 # 贡献指南
 
@@ -31,7 +31,8 @@ import { Mermaid } from '@/components/Mermaid';
 - `packages/docs`: 文档站点，基于 [Next.js](https://nextjs.org/) 和 [Fumadocs](https://fumadocs.vercel.app/)。
 
 <Callout type="warn">
-`packages/amagi` 是一个 **Git 子模块**。如果你需要修改 API 相关的逻辑（如签名算法），请**不要直接修改该目录**。你需要前往 [amagi 仓库](https://github.com/ikenxuan/amagi) 提交 Pull Request。
+  `packages/amagi` 是一个 **Git 子模块**。如果你需要修改 API 相关的逻辑（如签名算法），请**不要直接修改该目录**。你需要前往 [amagi
+  仓库](https://github.com/ikenxuan/amagi) 提交 Pull Request。
 </Callout>
 
 ## 架构说明
@@ -74,6 +75,7 @@ flowchart TB
     Apps --> Platform
     Platform --> Module
     Platform --> Amagi
+
 `} />
 
 ### 消息处理流程
@@ -94,20 +96,21 @@ sequenceDiagram
     QQ->>Adapter: 消息上报
     Adapter->>Karin: 标准化消息
     Karin->>Plugin: 触发命令匹配
-    
+
     Plugin->>Plugin: 解析链接获取ID
     Plugin->>Platform: 请求作品数据
     Platform-->>Plugin: 返回视频/图文数据
     Plugin->>Platform: 请求评论数据
     Platform-->>Plugin: 返回评论列表
-    
+
     Plugin->>Render: 渲染评论图片
     Render-->>Plugin: 返回图片
-    
+
     Plugin->>Karin: 发送消息
     Karin->>Adapter: 转发消息
     Adapter->>QQ: 发送到群聊
     QQ->>User: 展示解析结果
+
 `} />
 
 ### 核心模块说明
@@ -170,6 +173,7 @@ flowchart LR
     Transform --> Video
     Transform --> Image
     Transform --> Info
+
 `} />
 
 ## 开发流程
@@ -215,11 +219,13 @@ pnpm install
 根据你要修改的内容，启动相应的开发环境：
 
 - **开发插件核心 (`packages/core`)**:
+
   ```bash
   pnpm watch
   ```
 
 - **开发模板 (`packages/template`)**:
+
   ```bash
   pnpm template
   ```
@@ -243,6 +249,7 @@ pnpm install
 ```
 
 例如：
+
 - `feat(core): 支持解析新的分享链接`
 - `fix(template): 修复动态卡片样式错乱`
 - `docs: 更新贡献指南`

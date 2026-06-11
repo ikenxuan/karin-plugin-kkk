@@ -1,13 +1,13 @@
 name: 🐛 Bug 报告
 description: 报告项目中的错误或问题
-title: "Bug: "
-labels: ["bug"]
+title: 'Bug: '
+labels: ['bug']
 body:
   - type: markdown
     attributes:
       value: |
         ## 感谢你提交 Bug 报告！
-        
+
         > ⚠️ **请务必修改上方标题**，简要描述你遇到的问题（例如：`Bug: 解析抖音视频时报错`）
         > 
         > 标题格式不正确的 issue 可能会被直接关闭

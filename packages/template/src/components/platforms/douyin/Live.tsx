@@ -1,9 +1,7 @@
 import { Eye, FileVideo, Heart, MapPin, Monitor, ShoppingBag, UserPlus, Users } from 'lucide-react'
 import React from 'react'
 
-import type {
-  DouyinLiveProps
-} from '../../../types/platforms/douyin'
+import type { DouyinLiveProps } from '../../../types/platforms/douyin'
 import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
@@ -66,16 +64,10 @@ const CoverSection: React.FC<{ imageUrl: string }> = ({ imageUrl }) => {
   return (
     <div className="relative">
       <div style={coverMaskStyle}>
-        <img
-          className="object-cover w-full"
-          src={imageUrl}
-          alt="直播封面"
-        />
+        <img className="object-cover w-full" src={imageUrl} alt="直播封面" />
       </div>
       <div className="absolute right-20 top-20 pointer-events-none select-none">
-        <span className="text-7xl font-black tracking-[0.15em] uppercase text-white/20">
-          直播中
-        </span>
+        <span className="text-7xl font-black tracking-[0.15em] uppercase text-white/20">直播中</span>
       </div>
     </div>
   )
@@ -88,15 +80,11 @@ const InfoSection: React.FC<{ data: DouyinLiveProps['data'] }> = ({ data }) => {
   return (
     <div className="flex flex-col gap-8 px-16 pt-12">
       {/* 直播标题 - 视觉锚点 */}
-      <h1 className="text-[80px] font-black leading-tight text-foreground tracking-tight select-text">
-        {data.text}
-      </h1>
+      <h1 className="text-[80px] font-black leading-tight text-foreground tracking-tight select-text">{data.text}</h1>
 
       {/* 直播中 + 分区 + 房间号 */}
       <div className="flex items-center gap-4 text-3xl text-foreground/30">
-        <span className="text-danger/60 font-black tracking-wider text-[32px]">
-          直播中
-        </span>
+        <span className="text-danger/60 font-black tracking-wider text-[32px]">直播中</span>
         <span>/</span>
         <span>{data.partition_title}</span>
         <span>/</span>
@@ -132,11 +120,7 @@ const InfoSection: React.FC<{ data: DouyinLiveProps['data'] }> = ({ data }) => {
       </div>
 
       {/* 签名 */}
-      {data.signature && (
-        <div className="text-5xl leading-relaxed text-foreground/75 select-text">
-          {data.signature}
-        </div>
-      )}
+      {data.signature && <div className="text-5xl leading-relaxed text-foreground/75 select-text">{data.signature}</div>}
 
       {/* 城市 */}
       {data.city && (
@@ -160,17 +144,11 @@ const BottomSection: React.FC<{ data: DouyinLiveProps['data'] }> = ({ data }) =>
         <div className="flex gap-10 items-center">
           <div className="relative shrink-0">
             <div className="flex justify-center items-center bg-white rounded-full w-35 h-35">
-              <img
-                src={data.avater_url}
-                alt="头像"
-                className="rounded-full w-33 h-33"
-              />
+              <img src={data.avater_url} alt="头像" className="rounded-full w-33 h-33" />
             </div>
           </div>
           <div className="flex flex-col gap-3">
-            <div className="text-7xl font-bold text-foreground select-text">
-              @{data.username}
-            </div>
+            <div className="text-7xl font-bold text-foreground select-text">@{data.username}</div>
             <div className="flex items-center gap-3 text-4xl text-foreground/50">
               <span className="text-foreground/50 font-black tracking-wider text-3xl">直播中</span>
               <span className="text-foreground/40">·</span>
@@ -213,11 +191,7 @@ const BottomSection: React.FC<{ data: DouyinLiveProps['data'] }> = ({ data }) =>
           className="w-60 h-auto opacity-80 dark:opacity-70"
         />
         {generateQRCode(data.share_url, data.useDarkTheme) ? (
-          <img
-            src={generateQRCode(data.share_url, data.useDarkTheme)}
-            alt="二维码"
-            className="h-auto w-75"
-          />
+          <img src={generateQRCode(data.share_url, data.useDarkTheme)} alt="二维码" className="h-auto w-75" />
         ) : (
           <div className="flex justify-center items-center bg-surface w-75 h-75">
             <span className="text-foreground/50">二维码</span>

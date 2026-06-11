@@ -1,18 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
-import {
-  Button,
-  Description,
-  Label,
-  Spinner
-} from '@heroui/react'
+import { Button, Description, Label, Spinner } from '@heroui/react'
 import { Pencil, TriangleAlert } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+
 import { getPushMappingsBatch, type GroupMappingInfo } from '../../api/pushTargets'
-import GroupMappingDrawer from './GroupMappingDrawer'
 import DisabledFieldHint from './DisabledFieldHint'
-import {
-  normalizeTargetValues,
-  parseTargetValue
-} from './targetUtils'
+import GroupMappingDrawer from './GroupMappingDrawer'
+import { normalizeTargetValues, parseTargetValue } from './targetUtils'
 import type { PushTargetMapping, PushlistDevice } from './types'
 
 interface GroupMappingsFieldProps {
@@ -51,9 +44,7 @@ const GroupMappingsField = ({ value, disabled, itemLabel, device, onChange }: Gr
     return normalizedValues
       .map((item) => {
         const parsed = parseTargetValue(item)
-        const detail = parsed
-          ? details.find((info) => info.groupId === parsed.groupId && info.botId === parsed.botId)
-          : undefined
+        const detail = parsed ? details.find((info) => info.groupId === parsed.groupId && info.botId === parsed.botId) : undefined
 
         return toMapping(item, detail)
       })
@@ -61,9 +52,7 @@ const GroupMappingsField = ({ value, disabled, itemLabel, device, onChange }: Gr
   }, [details, normalizedValues])
 
   useEffect(() => {
-    const parsedTargets = normalizedValues
-      .map(parseTargetValue)
-      .filter((item): item is { groupId: string; botId: string } => Boolean(item))
+    const parsedTargets = normalizedValues.map(parseTargetValue).filter((item): item is { groupId: string; botId: string } => Boolean(item))
 
     getPushMappingsBatch(parsedTargets)
       .then(setDetails)
@@ -73,9 +62,7 @@ const GroupMappingsField = ({ value, disabled, itemLabel, device, onChange }: Gr
 
   const handleApply = (nextValues: string[]) => onChange(normalizeTargetValues(nextValues))
   const disabledMessage = `开启【${itemLabel}】的推送开关后才能编辑此字段`
-  const targetCountText = normalizedValues.length > 0
-    ? `已配置 ${normalizedValues.length} 个推送目标`
-    : '还没有配置推送目标'
+  const targetCountText = normalizedValues.length > 0 ? `已配置 ${normalizedValues.length} 个推送目标` : '还没有配置推送目标'
   const manageButton = (
     <Button
       isDisabled={disabled}

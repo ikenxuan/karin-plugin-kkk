@@ -83,7 +83,7 @@ export const $compare = (
   type: 'compare',
   operator,
   left: typeof left === 'string' ? $var(left) : left,
-  right: typeof right === 'string' ? $var(right) : (typeof right === 'object' ? right : $literal(right))
+  right: typeof right === 'string' ? $var(right) : typeof right === 'object' ? right : $literal(right)
 })
 
 /** 创建逻辑非 */
@@ -95,13 +95,13 @@ export const $not = (condition: ConditionExpression | string): ConditionNot => (
 /** 创建逻辑与 */
 export const $and = (...conditions: (ConditionExpression | string)[]): ConditionAnd => ({
   type: 'and',
-  conditions: conditions.map(c => typeof c === 'string' ? $var(c) : c)
+  conditions: conditions.map((c) => (typeof c === 'string' ? $var(c) : c))
 })
 
 /** 创建逻辑或 */
 export const $or = (...conditions: (ConditionExpression | string)[]): ConditionOr => ({
   type: 'or',
-  conditions: conditions.map(c => typeof c === 'string' ? $var(c) : c)
+  conditions: conditions.map((c) => (typeof c === 'string' ? $var(c) : c))
 })
 
 /** 创建数组包含检查 */
@@ -112,12 +112,10 @@ export const $includes = (field: string, value: string | number): ConditionInclu
 })
 
 /** 快捷方式：字段等于某值 */
-export const $eq = (field: string, value: string | number | boolean): ConditionCompare =>
-  $compare(field, '===', value)
+export const $eq = (field: string, value: string | number | boolean): ConditionCompare => $compare(field, '===', value)
 
 /** 快捷方式：字段不等于某值 */
-export const $ne = (field: string, value: string | number | boolean): ConditionCompare =>
-  $compare(field, '!==', value)
+export const $ne = (field: string, value: string | number | boolean): ConditionCompare => $compare(field, '!==', value)
 
 // ==================== 配置项 Schema ====================
 

@@ -17,7 +17,14 @@ const __dirname = dirname(__filename)
 // 读取 amagi 的版本号
 const amagiPkg = JSON.parse(fs.readFileSync(resolve(__dirname, '../amagi/packages/core/package.json'), 'utf-8'))
 
-const entry: string[] = ['src/index.ts', 'src/root.ts', 'src/web.config.ts', 'src/export/template.ts', 'src/export/richtext.ts', 'src/export/amagi.ts']
+const entry: string[] = [
+  'src/index.ts',
+  'src/root.ts',
+  'src/web.config.ts',
+  'src/export/template.ts',
+  'src/export/richtext.ts',
+  'src/export/amagi.ts'
+]
 
 const getFiles = (dir: string) => {
   fs.readdirSync(dir).forEach((file) => {
@@ -41,8 +48,8 @@ const mainSrcPrefixes = [
 
 export default defineConfig({
   define: {
-    __dirname: 'new URL(\'.\', import.meta.url).pathname',
-    __filename: 'new URL(\'\', import.meta.url).pathname',
+    __dirname: "new URL('.', import.meta.url).pathname",
+    __filename: "new URL('', import.meta.url).pathname",
     __REQUIRE_KARIN_VERSION__: JSON.stringify(karinVersion),
     __VERSION__: JSON.stringify(amagiPkg.version)
   },
@@ -95,10 +102,7 @@ export default defineConfig({
           if (chunkInfo.name === 'index' || chunkInfo.name === 'root') {
             return `${chunkInfo.name}.js`
           }
-          if (
-            chunkInfo.name === 'web.config' ||
-            chunkInfo.facadeModuleId?.replace(/\\/g, '/').endsWith('/src/web.config.ts')
-          ) {
+          if (chunkInfo.name === 'web.config' || chunkInfo.facadeModuleId?.replace(/\\/g, '/').endsWith('/src/web.config.ts')) {
             return 'web.config.js'
           }
           if (chunkInfo.facadeModuleId?.replace(/\\/g, '/').includes('src/apps')) {
@@ -129,14 +133,7 @@ export default defineConfig({
       { find: 'template', replacement: resolve(__dirname, '../template/src/client.ts') },
       { find: '@ikenxuan/amagi', replacement: resolve(__dirname, '../amagi/packages/core/src/index.ts') },
       { find: 'amagi', replacement: resolve(__dirname, '../amagi/packages/core/src') }
-
     ]
   },
-  plugins: [
-    react(),
-    tailwindcss(),
-    injectStartTimerPlugin(),
-    generateBuildMetadataPlugin(__dirname),
-    copyTemplateAssetsPlugin(__dirname)
-  ]
+  plugins: [react(), tailwindcss(), injectStartTimerPlugin(), generateBuildMetadataPlugin(__dirname), copyTemplateAssetsPlugin(__dirname)]
 })

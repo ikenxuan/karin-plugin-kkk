@@ -47,514 +47,532 @@ export interface PreviewPanelRef {
 /**
  * 预览面板组件
  */
-export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(({
-  platform,
-  templateId,
-  dataFile,
-  data,
-  loadError,
-  scale,
-  onScaleChange,
-  onComponentLoadComplete,
-  isPanelDarkMode = false,
-  versionEnabled = true
-}, ref) => {
-  // 截图相关
-  const [isCapturing, setIsCapturing] = useState(false)
-  const previewContentRef = useRef<HTMLDivElement>(null)
-  const transformWrapperRef = useRef<ReactZoomPanPinchRef | null>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  
-  // Ctrl 键状态
-  const [isCtrlPressed, setIsCtrlPressed] = useState(false)
-  
-  // 拖拽状态
-  const [isPanning, setIsPanning] = useState(false)
-  
-  // 缩放提示显示状态
-  const [showScaleIndicator, setShowScaleIndicator] = useState(false)
-  const scaleIndicatorTimeoutRef = useRef<number | null>(null)
-  const panelTheme = isPanelDarkMode ? 'dark' : 'light'
-  const componentTheme = data?.useDarkTheme === true ? 'dark' : 'light'
+export const PreviewPanel = forwardRef<PreviewPanelRef, PreviewPanelProps>(
+  (
+    {
+      platform,
+      templateId,
+      dataFile,
+      data,
+      loadError,
+      scale,
+      onScaleChange,
+      onComponentLoadComplete,
+      isPanelDarkMode = false,
+      versionEnabled = true
+    },
+    ref
+  ) => {
+    // 截图相关
+    const [isCapturing, setIsCapturing] = useState(false)
+    const previewContentRef = useRef<HTMLDivElement>(null)
+    const transformWrapperRef = useRef<ReactZoomPanPinchRef | null>(null)
+    const containerRef = useRef<HTMLDivElement>(null)
 
-  /**
-   * ComponentRenderer 的 props
-   */
-  const componentRendererProps = useMemo(() => ({
-    platform,
-    templateId,
-    dataFile,
-    data,
-    loadError,
-    onLoadComplete: onComponentLoadComplete,
-    versionEnabled
-  }), [platform, templateId, dataFile, data, loadError, onComponentLoadComplete, versionEnabled])
+    // Ctrl 键状态
+    const [isCtrlPressed, setIsCtrlPressed] = useState(false)
 
-  /**
-   * 截图功能
-   * @param tempDarkMode 临时深色模式（可选）
-   */
-  const captureScreenshot = useCallback(async (tempDarkMode?: boolean) => {
-    if (!previewContentRef.current || isCapturing) return null
+    // 拖拽状态
+    const [isPanning, setIsPanning] = useState(false)
 
-    setIsCapturing(true)
+    // 缩放提示显示状态
+    const [showScaleIndicator, setShowScaleIndicator] = useState(false)
+    const scaleIndicatorTimeoutRef = useRef<number | null>(null)
+    const panelTheme = isPanelDarkMode ? 'dark' : 'light'
+    const componentTheme = data?.useDarkTheme === true ? 'dark' : 'light'
 
-    try {
-      // 获取当前的 transform 状态
-      const transformState = transformWrapperRef.current?.state
-      
-      // 检测当前内容是否为深色模式
-      const contentElement = previewContentRef.current
-      let isDarkMode = contentElement.dataset.theme === 'dark' || data?.useDarkTheme === true
-      
-      // 如果提供了临时深色模式，临时修改 DOM
-      let needsRestore = false
-      let originalClassName = ''
-      let originalTheme = ''
-      
-      if (tempDarkMode !== undefined && tempDarkMode !== isDarkMode) {
-        // 找到实际的内容容器
-        const themeElement = (contentElement.querySelector('#container') as HTMLElement | null) ?? contentElement
-        originalClassName = themeElement.className
-        originalTheme = themeElement.dataset.theme ?? ''
-        themeElement.classList.remove('light', 'dark')
-        themeElement.classList.add(tempDarkMode ? 'dark' : 'light')
-        themeElement.dataset.theme = tempDarkMode ? 'dark' : 'light'
+    /**
+     * ComponentRenderer 的 props
+     */
+    const componentRendererProps = useMemo(
+      () => ({
+        platform,
+        templateId,
+        dataFile,
+        data,
+        loadError,
+        onLoadComplete: onComponentLoadComplete,
+        versionEnabled
+      }),
+      [platform, templateId, dataFile, data, loadError, onComponentLoadComplete, versionEnabled]
+    )
 
-        isDarkMode = tempDarkMode
-        needsRestore = true
+    /**
+     * 截图功能
+     * @param tempDarkMode 临时深色模式（可选）
+     */
+    const captureScreenshot = useCallback(
+      async (tempDarkMode?: boolean) => {
+        if (!previewContentRef.current || isCapturing) return null
 
-        // 等待一帧，确保样式应用
-        await new Promise(resolve => requestAnimationFrame(resolve))
-        await new Promise(resolve => setTimeout(resolve, 50))
-      }
-      
-      // 获取水印配置
-      const enableWatermark = getWatermarkEnabled()
-      
-      const result = await captureScreenshotUtil({
-        element: previewContentRef.current,
-        scale: transformState?.scale || scale,
-        panOffset: {
-          x: transformState?.positionX || 0,
-          y: transformState?.positionY || 0
-        },
-        isDarkMode,
-        enableWatermark
-      })
-      
-      // 恢复原始 class
-      if (needsRestore) {
-        const themeElement = (contentElement.querySelector('#container') as HTMLElement | null) ?? contentElement
-        themeElement.className = originalClassName
-        if (originalTheme) {
-          themeElement.dataset.theme = originalTheme
-        } else {
-          themeElement.removeAttribute('data-theme')
+        setIsCapturing(true)
+
+        try {
+          // 获取当前的 transform 状态
+          const transformState = transformWrapperRef.current?.state
+
+          // 检测当前内容是否为深色模式
+          const contentElement = previewContentRef.current
+          let isDarkMode = contentElement.dataset.theme === 'dark' || data?.useDarkTheme === true
+
+          // 如果提供了临时深色模式，临时修改 DOM
+          let needsRestore = false
+          let originalClassName = ''
+          let originalTheme = ''
+
+          if (tempDarkMode !== undefined && tempDarkMode !== isDarkMode) {
+            // 找到实际的内容容器
+            const themeElement = (contentElement.querySelector('#container') as HTMLElement | null) ?? contentElement
+            originalClassName = themeElement.className
+            originalTheme = themeElement.dataset.theme ?? ''
+            themeElement.classList.remove('light', 'dark')
+            themeElement.classList.add(tempDarkMode ? 'dark' : 'light')
+            themeElement.dataset.theme = tempDarkMode ? 'dark' : 'light'
+
+            isDarkMode = tempDarkMode
+            needsRestore = true
+
+            // 等待一帧，确保样式应用
+            await new Promise((resolve) => requestAnimationFrame(resolve))
+            await new Promise((resolve) => setTimeout(resolve, 50))
+          }
+
+          // 获取水印配置
+          const enableWatermark = getWatermarkEnabled()
+
+          const result = await captureScreenshotUtil({
+            element: previewContentRef.current,
+            scale: transformState?.scale || scale,
+            panOffset: {
+              x: transformState?.positionX || 0,
+              y: transformState?.positionY || 0
+            },
+            isDarkMode,
+            enableWatermark
+          })
+
+          // 恢复原始 class
+          if (needsRestore) {
+            const themeElement = (contentElement.querySelector('#container') as HTMLElement | null) ?? contentElement
+            themeElement.className = originalClassName
+            if (originalTheme) {
+              themeElement.dataset.theme = originalTheme
+            } else {
+              themeElement.removeAttribute('data-theme')
+            }
+          }
+
+          return result
+        } catch (error) {
+          console.error('截图失败:', error)
+          toast.danger('截图失败', {
+            description: '请重试或检查浏览器控制台',
+            timeout: 3000
+          })
+          return null
+        } finally {
+          setIsCapturing(false)
         }
-      }
-      
-      return result
-    } catch (error) {
-      console.error('截图失败:', error)
-      toast.danger('截图失败', {
-        description: '请重试或检查浏览器控制台',
-        timeout: 3000
-      })
-      return null
-    } finally {
-      setIsCapturing(false)
-    }
-  }, [scale, isCapturing, data])
+      },
+      [scale, isCapturing, data]
+    )
 
-  /**
-   * 适应画布大小 - 计算合适的缩放比例以完整显示组件
-   */
-  const handleFitToCanvas = useCallback(() => {
-    if (!transformWrapperRef.current || !previewContentRef.current) return
-    
-    const transformInstance = transformWrapperRef.current
-    const container = transformInstance.instance?.wrapperComponent
-    const contentWrapper = previewContentRef.current
-    
-    if (!container || !contentWrapper) return
-    
-    // 查找实际的内容元素（ComponentRenderer 内部的 div）
-    const actualContent = contentWrapper.querySelector('.shadow-2xl') as HTMLElement
-    if (!actualContent) {
-      // 如果找不到 .shadow-2xl 元素，使用 contentWrapper 本身
-      console.warn('未找到 .shadow-2xl 元素，使用 contentWrapper')
-      return
-    }
-    
-    // 获取容器尺寸
-    const containerRect = container.getBoundingClientRect()
-    
-    // 获取内容的实际尺寸
-    const contentRect = actualContent.getBoundingClientRect()
-    const contentWidth = Math.max(actualContent.scrollWidth, contentRect.width)
-    const contentHeight = Math.max(actualContent.scrollHeight, contentRect.height)
-    
-    // 验证尺寸是否有效
-    if (contentWidth <= 0 || contentHeight <= 0) {
-      console.warn('内容尺寸无效:', { contentWidth, contentHeight })
-      return
-    }
-    
-    // 预留边距
-    const padding = 40
-    const availableWidth = containerRect.width - padding * 2
-    const availableHeight = containerRect.height - padding * 2
-    
-    // 计算适应宽度和高度的缩放比例
-    const scaleX = availableWidth / contentWidth
-    const scaleY = availableHeight / contentHeight
-    
-    // 取较小的缩放比例，确保内容完整显示
-    const fitScale = Math.min(scaleX, scaleY, 5) // 不超过最大缩放
-    const finalScale = Math.max(0.01, fitScale) // 不低于最小缩放
-    
-    // 计算缩放后内容的尺寸
-    const scaledWidth = contentWidth * finalScale
-    const scaledHeight = contentHeight * finalScale
-    
-    // 计算居中位置
-    const positionX = (containerRect.width - scaledWidth) / 2
-    const positionY = (containerRect.height - scaledHeight) / 2
-    
-    // 使用 setTransform 直接设置位置和缩放
-    transformInstance.setTransform(positionX, positionY, finalScale, 300, 'easeOut')
-  }, [])
+    /**
+     * 适应画布大小 - 计算合适的缩放比例以完整显示组件
+     */
+    const handleFitToCanvas = useCallback(() => {
+      if (!transformWrapperRef.current || !previewContentRef.current) return
 
-  /**
-   * 监听双击事件，调用适应画布
-   */
-  useEffect(() => {
-    const container = transformWrapperRef.current?.instance?.wrapperComponent
-    if (!container) return
+      const transformInstance = transformWrapperRef.current
+      const container = transformInstance.instance?.wrapperComponent
+      const contentWrapper = previewContentRef.current
 
-    const handleDoubleClick = (e: MouseEvent) => {
-      e.preventDefault()
-      handleFitToCanvas()
-    }
+      if (!container || !contentWrapper) return
 
-    container.addEventListener('dblclick', handleDoubleClick)
-    return () => {
-      container.removeEventListener('dblclick', handleDoubleClick)
-    }
-  }, [handleFitToCanvas])
-
-  /**
-   * 监听 Ctrl/Alt 键，控制文本选择
-   * 按住 Ctrl 或 Alt 时启用文本选择，但不干扰组合键
-   */
-  useEffect(() => {
-    let isCtrlDown = false
-    let isAltDown = false
-    let hasOtherKeyPressed = false
-    let timeoutId: number | null = null
-    
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // 防止在输入框中触发
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+      // 查找实际的内容元素（ComponentRenderer 内部的 div）
+      const actualContent = contentWrapper.querySelector('.shadow-2xl') as HTMLElement
+      if (!actualContent) {
+        // 如果找不到 .shadow-2xl 元素，使用 contentWrapper 本身
+        console.warn('未找到 .shadow-2xl 元素，使用 contentWrapper')
         return
       }
-      
-      if (e.key === 'Control') {
-        isCtrlDown = true
-        hasOtherKeyPressed = false
-        // 短延迟启用文本选择，给组合键一个机会
-        timeoutId = window.setTimeout(() => {
-          if ((isCtrlDown || isAltDown) && !hasOtherKeyPressed) {
-            setIsCtrlPressed(true)
-          }
-        }, 10)
-      } else if (e.key === 'Alt') {
-        // 阻止 Alt 键的默认行为（Windows 菜单栏激活）
+
+      // 获取容器尺寸
+      const containerRect = container.getBoundingClientRect()
+
+      // 获取内容的实际尺寸
+      const contentRect = actualContent.getBoundingClientRect()
+      const contentWidth = Math.max(actualContent.scrollWidth, contentRect.width)
+      const contentHeight = Math.max(actualContent.scrollHeight, contentRect.height)
+
+      // 验证尺寸是否有效
+      if (contentWidth <= 0 || contentHeight <= 0) {
+        console.warn('内容尺寸无效:', { contentWidth, contentHeight })
+        return
+      }
+
+      // 预留边距
+      const padding = 40
+      const availableWidth = containerRect.width - padding * 2
+      const availableHeight = containerRect.height - padding * 2
+
+      // 计算适应宽度和高度的缩放比例
+      const scaleX = availableWidth / contentWidth
+      const scaleY = availableHeight / contentHeight
+
+      // 取较小的缩放比例，确保内容完整显示
+      const fitScale = Math.min(scaleX, scaleY, 5) // 不超过最大缩放
+      const finalScale = Math.max(0.01, fitScale) // 不低于最小缩放
+
+      // 计算缩放后内容的尺寸
+      const scaledWidth = contentWidth * finalScale
+      const scaledHeight = contentHeight * finalScale
+
+      // 计算居中位置
+      const positionX = (containerRect.width - scaledWidth) / 2
+      const positionY = (containerRect.height - scaledHeight) / 2
+
+      // 使用 setTransform 直接设置位置和缩放
+      transformInstance.setTransform(positionX, positionY, finalScale, 300, 'easeOut')
+    }, [])
+
+    /**
+     * 监听双击事件，调用适应画布
+     */
+    useEffect(() => {
+      const container = transformWrapperRef.current?.instance?.wrapperComponent
+      if (!container) return
+
+      const handleDoubleClick = (e: MouseEvent) => {
         e.preventDefault()
-        isAltDown = true
-        hasOtherKeyPressed = false
-        // 短延迟启用文本选择，给组合键一个机会
-        timeoutId = window.setTimeout(() => {
-          if ((isCtrlDown || isAltDown) && !hasOtherKeyPressed) {
-            setIsCtrlPressed(true)
+        handleFitToCanvas()
+      }
+
+      container.addEventListener('dblclick', handleDoubleClick)
+      return () => {
+        container.removeEventListener('dblclick', handleDoubleClick)
+      }
+    }, [handleFitToCanvas])
+
+    /**
+     * 监听 Ctrl/Alt 键，控制文本选择
+     * 按住 Ctrl 或 Alt 时启用文本选择，但不干扰组合键
+     */
+    useEffect(() => {
+      let isCtrlDown = false
+      let isAltDown = false
+      let hasOtherKeyPressed = false
+      let timeoutId: number | null = null
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        // 防止在输入框中触发
+        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+          return
+        }
+
+        if (e.key === 'Control') {
+          isCtrlDown = true
+          hasOtherKeyPressed = false
+          // 短延迟启用文本选择，给组合键一个机会
+          timeoutId = window.setTimeout(() => {
+            if ((isCtrlDown || isAltDown) && !hasOtherKeyPressed) {
+              setIsCtrlPressed(true)
+            }
+          }, 10)
+        } else if (e.key === 'Alt') {
+          // 阻止 Alt 键的默认行为（Windows 菜单栏激活）
+          e.preventDefault()
+          isAltDown = true
+          hasOtherKeyPressed = false
+          // 短延迟启用文本选择，给组合键一个机会
+          timeoutId = window.setTimeout(() => {
+            if ((isCtrlDown || isAltDown) && !hasOtherKeyPressed) {
+              setIsCtrlPressed(true)
+            }
+          }, 10)
+        } else if ((isCtrlDown || isAltDown) && e.key !== 'Control' && e.key !== 'Alt') {
+          // 如果按下了其他键盘按键（如 Ctrl+1 或 Alt+1），标记为组合键
+          hasOtherKeyPressed = true
+          setIsCtrlPressed(false)
+          if (timeoutId !== null) {
+            clearTimeout(timeoutId)
+            timeoutId = null
           }
-        }, 10)
-      } else if ((isCtrlDown || isAltDown) && e.key !== 'Control' && e.key !== 'Alt') {
-        // 如果按下了其他键盘按键（如 Ctrl+1 或 Alt+1），标记为组合键
-        hasOtherKeyPressed = true
+        }
+      }
+
+      const handleKeyUp = (e: KeyboardEvent) => {
+        if (e.key === 'Control') {
+          isCtrlDown = false
+          // 如果 Alt 也没按，取消文本选择
+          if (!isAltDown) {
+            hasOtherKeyPressed = false
+            setIsCtrlPressed(false)
+            if (timeoutId !== null) {
+              clearTimeout(timeoutId)
+              timeoutId = null
+            }
+          }
+        } else if (e.key === 'Alt') {
+          // 阻止 Alt 键的默认行为
+          e.preventDefault()
+          isAltDown = false
+          // 如果 Ctrl 也没按，取消文本选择
+          if (!isCtrlDown) {
+            hasOtherKeyPressed = false
+            setIsCtrlPressed(false)
+            if (timeoutId !== null) {
+              clearTimeout(timeoutId)
+              timeoutId = null
+            }
+          }
+        }
+      }
+
+      const handleBlur = () => {
+        isCtrlDown = false
+        isAltDown = false
+        hasOtherKeyPressed = false
         setIsCtrlPressed(false)
         if (timeoutId !== null) {
           clearTimeout(timeoutId)
           timeoutId = null
         }
       }
-    }
 
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'Control') {
-        isCtrlDown = false
-        // 如果 Alt 也没按，取消文本选择
-        if (!isAltDown) {
-          hasOtherKeyPressed = false
-          setIsCtrlPressed(false)
-          if (timeoutId !== null) {
-            clearTimeout(timeoutId)
-            timeoutId = null
-          }
+      window.addEventListener('keydown', handleKeyDown)
+      window.addEventListener('keyup', handleKeyUp)
+      window.addEventListener('blur', handleBlur)
+
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown)
+        window.removeEventListener('keyup', handleKeyUp)
+        window.removeEventListener('blur', handleBlur)
+        if (timeoutId !== null) {
+          clearTimeout(timeoutId)
         }
-      } else if (e.key === 'Alt') {
-        // 阻止 Alt 键的默认行为
+      }
+    }, [])
+
+    /**
+     * 在容器上监听滚轮事件，转发给 TransformWrapper
+     */
+    useEffect(() => {
+      const container = containerRef.current
+      if (!container || !transformWrapperRef.current) return
+
+      const handleWheel = (e: WheelEvent) => {
+        // 阻止默认滚动
         e.preventDefault()
-        isAltDown = false
-        // 如果 Ctrl 也没按，取消文本选择
-        if (!isCtrlDown) {
-          hasOtherKeyPressed = false
-          setIsCtrlPressed(false)
-          if (timeoutId !== null) {
-            clearTimeout(timeoutId)
-            timeoutId = null
-          }
+
+        // 获取 transform 实例
+        const transformRef = transformWrapperRef.current
+        const instance = transformRef?.instance
+        const transformState = transformRef?.state
+        if (!instance || !transformState || !transformRef) return
+
+        // 计算缩放增量
+        const delta = -e.deltaY * 0.001 // 缩放因子
+        const scaleFactor = 1 + delta
+        const newScale = Math.min(Math.max(transformState.scale * scaleFactor, 0.01), 5)
+
+        // 获取鼠标相对于容器的位置
+        const rect = container.getBoundingClientRect()
+        const mouseX = e.clientX - rect.left
+        const mouseY = e.clientY - rect.top
+
+        // 计算缩放中心点
+        const { positionX, positionY, scale } = transformState
+        const scaleDiff = newScale - scale
+
+        // 以鼠标位置为中心缩放
+        const newPositionX = positionX - (mouseX - positionX) * (scaleDiff / scale)
+        const newPositionY = positionY - (mouseY - positionY) * (scaleDiff / scale)
+
+        // 应用变换
+        transformRef.setTransform(newPositionX, newPositionY, newScale, 0, 'easeOut')
+
+        // 显示缩放提示
+        setShowScaleIndicator(true)
+
+        // 清除之前的定时器
+        if (scaleIndicatorTimeoutRef.current !== null) {
+          clearTimeout(scaleIndicatorTimeoutRef.current)
+        }
+
+        // 1秒后隐藏提示
+        scaleIndicatorTimeoutRef.current = window.setTimeout(() => {
+          setShowScaleIndicator(false)
+        }, 1000)
+      }
+
+      container.addEventListener('wheel', handleWheel, { passive: false })
+
+      return () => {
+        container.removeEventListener('wheel', handleWheel)
+        if (scaleIndicatorTimeoutRef.current !== null) {
+          clearTimeout(scaleIndicatorTimeoutRef.current)
         }
       }
-    }
+    }, [])
 
-    const handleBlur = () => {
-      isCtrlDown = false
-      isAltDown = false
-      hasOtherKeyPressed = false
-      setIsCtrlPressed(false)
-      if (timeoutId !== null) {
-        clearTimeout(timeoutId)
-        timeoutId = null
+    /**
+     * 根据 Ctrl 键状态动态控制拖拽
+     */
+    useEffect(() => {
+      if (!transformWrapperRef.current?.instance) return
+
+      const instance = transformWrapperRef.current.instance
+
+      if (isCtrlPressed) {
+        // 完全禁用所有交互
+        instance.setup.disabled = true
+      } else {
+        // 恢复交互
+        instance.setup.disabled = false
       }
-    }
+    }, [isCtrlPressed])
 
-    window.addEventListener('keydown', handleKeyDown)
-    window.addEventListener('keyup', handleKeyUp)
-    window.addEventListener('blur', handleBlur)
+    /**
+     * 监听拖拽状态，更新鼠标指针
+     */
+    useEventListener(
+      'mousedown',
+      () => {
+        if (!isCtrlPressed) {
+          setIsPanning(true)
+        }
+      },
+      { target: containerRef }
+    )
 
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-      window.removeEventListener('keyup', handleKeyUp)
-      window.removeEventListener('blur', handleBlur)
-      if (timeoutId !== null) {
-        clearTimeout(timeoutId)
-      }
-    }
-  }, [])
+    useEventListener('mouseup', () => {
+      setIsPanning(false)
+    })
 
-  /**
-   * 在容器上监听滚轮事件，转发给 TransformWrapper
-   */
-  useEffect(() => {
-    const container = containerRef.current
-    if (!container || !transformWrapperRef.current) return
+    /**
+     * 暴露给父组件的方法
+     */
+    useImperativeHandle(
+      ref,
+      () => ({
+        captureScreenshot,
+        fitToCanvas: handleFitToCanvas
+      }),
+      [captureScreenshot, handleFitToCanvas]
+    )
 
-    const handleWheel = (e: WheelEvent) => {
-      // 阻止默认滚动
-      e.preventDefault()
-      
-      // 获取 transform 实例
-      const transformRef = transformWrapperRef.current
-      const instance = transformRef?.instance
-      const transformState = transformRef?.state
-      if (!instance || !transformState || !transformRef) return
-
-      // 计算缩放增量
-      const delta = -e.deltaY * 0.001 // 缩放因子
-      const scaleFactor = 1 + delta
-      const newScale = Math.min(
-        Math.max(transformState.scale * scaleFactor, 0.01),
-        5
-      )
-
-      // 获取鼠标相对于容器的位置
-      const rect = container.getBoundingClientRect()
-      const mouseX = e.clientX - rect.left
-      const mouseY = e.clientY - rect.top
-
-      // 计算缩放中心点
-      const { positionX, positionY, scale } = transformState
-      const scaleDiff = newScale - scale
-      
-      // 以鼠标位置为中心缩放
-      const newPositionX = positionX - (mouseX - positionX) * (scaleDiff / scale)
-      const newPositionY = positionY - (mouseY - positionY) * (scaleDiff / scale)
-
-      // 应用变换
-      transformRef.setTransform(newPositionX, newPositionY, newScale, 0, 'easeOut')
-      
-      // 显示缩放提示
-      setShowScaleIndicator(true)
-      
-      // 清除之前的定时器
-      if (scaleIndicatorTimeoutRef.current !== null) {
-        clearTimeout(scaleIndicatorTimeoutRef.current)
-      }
-      
-      // 1秒后隐藏提示
-      scaleIndicatorTimeoutRef.current = window.setTimeout(() => {
-        setShowScaleIndicator(false)
-      }, 1000)
-    }
-
-    container.addEventListener('wheel', handleWheel, { passive: false })
-
-    return () => {
-      container.removeEventListener('wheel', handleWheel)
-      if (scaleIndicatorTimeoutRef.current !== null) {
-        clearTimeout(scaleIndicatorTimeoutRef.current)
-      }
-    }
-  }, [])
-
-  /**
-   * 根据 Ctrl 键状态动态控制拖拽
-   */
-  useEffect(() => {
-    if (!transformWrapperRef.current?.instance) return
-
-    const instance = transformWrapperRef.current.instance
-    
-    if (isCtrlPressed) {
-      // 完全禁用所有交互
-      instance.setup.disabled = true
-    } else {
-      // 恢复交互
-      instance.setup.disabled = false
-    }
-  }, [isCtrlPressed])
-
-  /**
-   * 监听拖拽状态，更新鼠标指针
-   */
-  useEventListener('mousedown', () => {
-    if (!isCtrlPressed) {
-      setIsPanning(true)
-    }
-  }, { target: containerRef })
-
-  useEventListener('mouseup', () => {
-    setIsPanning(false)
-  })
-
-  /**
-   * 暴露给父组件的方法
-   */
-  useImperativeHandle(ref, () => ({
-    captureScreenshot,
-    fitToCanvas: handleFitToCanvas
-  }), [captureScreenshot, handleFitToCanvas])
-
-  return (
-    <div className={`flex h-full flex-col ${panelTheme}`} data-theme={panelTheme}>
-      {/* 预览容器 */}
-      <div
-        ref={containerRef}
-        className='relative h-full w-full overflow-hidden bg-background'
-        // style={{
-        //   backgroundImage: 'radial-gradient(circle at top, color-mix(in oklab, var(--foreground) 5%, transparent) 0%, transparent 34%), linear-gradient(180deg, var(--background) 0%, var(--color-background-secondary, var(--background)) 100%)'
-        // }}
-      >
-        {/* 网格背景 */}
+    return (
+      <div className={`flex h-full flex-col ${panelTheme}`} data-theme={panelTheme}>
+        {/* 预览容器 */}
         <div
-          className='pointer-events-none absolute inset-0'
-          style={{
-            backgroundImage: `repeating-linear-gradient(0deg, color-mix(in oklab, var(--separator) 88%, transparent) 0px, color-mix(in oklab, var(--separator) 88%, transparent) 1px, transparent 1px, transparent 18px),
-                 repeating-linear-gradient(90deg, color-mix(in oklab, var(--separator) 88%, transparent) 0px, color-mix(in oklab, var(--separator) 88%, transparent) 1px, transparent 1px, transparent 18px)`
-          }}
-        />
-
-        {/* react-zoom-pan-pinch 包装器 */}
-        <div style={{ 
-          width: '100%', 
-          height: '100%',
-          position: 'relative'
-        }}>
-          {/* 缩放比例显示 - 左上角 */}
-          <div 
-            className="pointer-events-none absolute left-3 top-3 z-50 rounded-lg border border-border bg-surface px-2.5 py-1 text-[11px] font-medium text-foreground shadow-none backdrop-blur-sm"
+          ref={containerRef}
+          className="relative h-full w-full overflow-hidden bg-background"
+          // style={{
+          //   backgroundImage: 'radial-gradient(circle at top, color-mix(in oklab, var(--foreground) 5%, transparent) 0%, transparent 34%), linear-gradient(180deg, var(--background) 0%, var(--color-background-secondary, var(--background)) 100%)'
+          // }}
+        >
+          {/* 网格背景 */}
+          <div
+            className="pointer-events-none absolute inset-0"
             style={{
-              opacity: showScaleIndicator ? 1 : 0,
-              transform: showScaleIndicator ? 'translateY(0)' : 'translateY(-10px)',
-              transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+              backgroundImage: `repeating-linear-gradient(0deg, color-mix(in oklab, var(--separator) 88%, transparent) 0px, color-mix(in oklab, var(--separator) 88%, transparent) 1px, transparent 1px, transparent 18px),
+                 repeating-linear-gradient(90deg, color-mix(in oklab, var(--separator) 88%, transparent) 0px, color-mix(in oklab, var(--separator) 88%, transparent) 1px, transparent 1px, transparent 18px)`
+            }}
+          />
+
+          {/* react-zoom-pan-pinch 包装器 */}
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              position: 'relative'
             }}
           >
-            {Math.round(scale * 100)}%
-          </div>
-          
-          {/* Ctrl 模式下的选择覆盖层 */}
-          {isCtrlPressed && (
+            {/* 缩放比例显示 - 左上角 */}
             <div
+              className="pointer-events-none absolute left-3 top-3 z-50 rounded-lg border border-border bg-surface px-2.5 py-1 text-[11px] font-medium text-foreground shadow-none backdrop-blur-sm"
               style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                zIndex: 9999,
-                pointerEvents: 'none',
-                userSelect: 'text',
-                WebkitUserSelect: 'text',
-                cursor: 'text'
-              }}
-            />
-          )}
-          
-          <TransformWrapper
-            ref={transformWrapperRef}
-            initialScale={1}
-            minScale={0.01}
-            maxScale={5}
-            centerOnInit
-            limitToBounds={false}
-            disablePadding={true}
-            disabled={isCtrlPressed}
-            wheel={{
-              step: 0.02,
-              disabled: true // 禁用库自带的滚轮处理，使用我们自定义的
-            }}
-            panning={{
-              velocityDisabled: false,
-              disabled: false
-            }}
-            doubleClick={{
-              disabled: true
-            }}
-            onTransform={(_ref, state) => {
-              if (state.scale !== scale) {
-                onScaleChange(state.scale)
-              }
-            }}
-          >
-            <TransformComponent
-              wrapperClass="w-full! h-full!"
-              contentClass="w-full! h-full! flex items-center justify-center"
-              contentStyle={{
-                transition: 'transform 0.3s ease-out', // 添加平滑过渡
-                willChange: 'transform' // 优化性能
+                opacity: showScaleIndicator ? 1 : 0,
+                transform: showScaleIndicator ? 'translateY(0)' : 'translateY(-10px)',
+                transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
               }}
             >
-              <div 
-                ref={previewContentRef}
-                className={componentTheme}
-                data-theme={componentTheme}
+              {Math.round(scale * 100)}%
+            </div>
+
+            {/* Ctrl 模式下的选择覆盖层 */}
+            {isCtrlPressed && (
+              <div
                 style={{
-                  userSelect: isCtrlPressed ? 'text' : 'none',
-                  WebkitUserSelect: isCtrlPressed ? 'text' : 'none',
-                  cursor: isCtrlPressed ? 'text' : (isPanning ? 'grabbing' : 'grab'),
-                  pointerEvents: 'auto'
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  zIndex: 9999,
+                  pointerEvents: 'none',
+                  userSelect: 'text',
+                  WebkitUserSelect: 'text',
+                  cursor: 'text'
+                }}
+              />
+            )}
+
+            <TransformWrapper
+              ref={transformWrapperRef}
+              initialScale={1}
+              minScale={0.01}
+              maxScale={5}
+              centerOnInit
+              limitToBounds={false}
+              disablePadding={true}
+              disabled={isCtrlPressed}
+              wheel={{
+                step: 0.02,
+                disabled: true // 禁用库自带的滚轮处理，使用我们自定义的
+              }}
+              panning={{
+                velocityDisabled: false,
+                disabled: false
+              }}
+              doubleClick={{
+                disabled: true
+              }}
+              onTransform={(_ref, state) => {
+                if (state.scale !== scale) {
+                  onScaleChange(state.scale)
+                }
+              }}
+            >
+              <TransformComponent
+                wrapperClass="w-full! h-full!"
+                contentClass="w-full! h-full! flex items-center justify-center"
+                contentStyle={{
+                  transition: 'transform 0.3s ease-out', // 添加平滑过渡
+                  willChange: 'transform' // 优化性能
                 }}
               >
-                <ComponentRenderer {...componentRendererProps} />
-              </div>
-            </TransformComponent>
-          </TransformWrapper>
+                <div
+                  ref={previewContentRef}
+                  className={componentTheme}
+                  data-theme={componentTheme}
+                  style={{
+                    userSelect: isCtrlPressed ? 'text' : 'none',
+                    WebkitUserSelect: isCtrlPressed ? 'text' : 'none',
+                    cursor: isCtrlPressed ? 'text' : isPanning ? 'grabbing' : 'grab',
+                    pointerEvents: 'auto'
+                  }}
+                >
+                  <ComponentRenderer {...componentRendererProps} />
+                </div>
+              </TransformComponent>
+            </TransformWrapper>
+          </div>
         </div>
       </div>
-    </div>
-  )
-})
+    )
+  }
+)
 
 PreviewPanel.displayName = 'PreviewPanel'

@@ -1,7 +1,7 @@
 interface Sponsor {
-  name: string;
-  amount: number;
-  note?: string;
+  name: string
+  amount: number
+  note?: string
 }
 
 const sponsors: Sponsor[] = [
@@ -15,28 +15,28 @@ const sponsors: Sponsor[] = [
   { name: '雾里', amount: 5.2 },
   { name: '雾里', amount: 5.2 },
   { name: '雾里', amount: 5.2 },
-  { name: '止语语', amount: 50 },
-];
+  { name: '止语语', amount: 50 }
+]
 
 function mergeSponsors(list: Sponsor[]) {
-  const map = new Map<string, { amount: number; notes: string[] }>();
+  const map = new Map<string, { amount: number; notes: string[] }>()
   for (const s of list) {
-    const existing = map.get(s.name) || { amount: 0, notes: [] };
-    existing.amount += s.amount;
-    if (s.note) existing.notes.push(s.note);
-    map.set(s.name, existing);
+    const existing = map.get(s.name) || { amount: 0, notes: [] }
+    existing.amount += s.amount
+    if (s.note) existing.notes.push(s.note)
+    map.set(s.name, existing)
   }
   return Array.from(map.entries())
     .map(([name, { amount, notes }]) => ({
       name,
       amount,
-      note: notes.filter(Boolean).join('、'),
+      note: notes.filter(Boolean).join('、')
     }))
-    .sort((a, b) => b.amount - a.amount);
+    .sort((a, b) => b.amount - a.amount)
 }
 
 export function SponsorList() {
-  const merged = mergeSponsors(sponsors);
+  const merged = mergeSponsors(sponsors)
 
   return (
     <div className="my-4 overflow-hidden rounded-lg">
@@ -59,5 +59,5 @@ export function SponsorList() {
         </tbody>
       </table>
     </div>
-  );
+  )
 }

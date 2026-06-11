@@ -50,13 +50,17 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
   }, [isOpen, initialData])
 
   // 监听 Ctrl+S 快捷键，拦截浏览器默认保存行为
-  useKeyPress(['ctrl.s', 'meta.s'], (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (!isSaving && !hasError) {
-      handleSave()
-    }
-  }, { events: ['keydown'], exactMatch: true, useCapture: true, target: () => isOpen ? document : null })
+  useKeyPress(
+    ['ctrl.s', 'meta.s'],
+    (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (!isSaving && !hasError) {
+        handleSave()
+      }
+    },
+    { events: ['keydown'], exactMatch: true, useCapture: true, target: () => (isOpen ? document : null) }
+  )
 
   const handleSave = async () => {
     try {
@@ -82,10 +86,10 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
         }
       }}
       style={panelThemeStyle}
-      variant='blur'
+      variant="blur"
     >
-      <Modal.Container className='p-2 sm:p-4' size='cover'>
-        <Modal.Dialog className='max-h-[92vh] overflow-hidden flex flex-col gap-10'>
+      <Modal.Container className="p-2 sm:p-4" size="cover">
+        <Modal.Dialog className="max-h-[92vh] overflow-hidden flex flex-col gap-10">
           <JsonEditor
             data={currentData}
             onChange={(data) => {
@@ -100,21 +104,13 @@ export const MockDataEditorModal: React.FC<MockDataEditorModalProps> = ({
             isDarkMode={isDarkMode}
           />
 
-          <Modal.Footer className='flex justify-end gap-4'>
-            <Button
-              size='lg'
-              onPress={onClose}
-            >
+          <Modal.Footer className="flex justify-end gap-4">
+            <Button size="lg" onPress={onClose}>
               取消
             </Button>
-            <Button
-              isDisabled={hasError}
-              isPending={isSaving}
-              onPress={handleSave}
-              size='lg'
-            >
+            <Button isDisabled={hasError} isPending={isSaving} onPress={handleSave} size="lg">
               {({ isPending }) => (
-                <span className='flex items-center gap-1.5'>
+                <span className="flex items-center gap-1.5">
                   <Save size={14} />
                   {isPending ? '保存中...' : '保存并重载'}
                 </span>

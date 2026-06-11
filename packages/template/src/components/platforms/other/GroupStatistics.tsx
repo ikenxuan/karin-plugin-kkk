@@ -39,17 +39,17 @@ export const GroupStatistics: React.FC<GroupStatisticsProps> = (props) => {
   }
 
   // 弥散光颜色配置
-  const glowColors = useDarkTheme 
+  const glowColors = useDarkTheme
     ? {
-      primary: 'rgba(236, 72, 153, 0.4)',
-      secondary: 'rgba(139, 92, 246, 0.3)',
-      accent: 'rgba(59, 130, 246, 0.25)'
-    }
+        primary: 'rgba(236, 72, 153, 0.4)',
+        secondary: 'rgba(139, 92, 246, 0.3)',
+        accent: 'rgba(59, 130, 246, 0.25)'
+      }
     : {
-      primary: 'rgba(244, 114, 182, 0.5)',
-      secondary: 'rgba(167, 139, 250, 0.4)',
-      accent: 'rgba(96, 165, 250, 0.3)'
-    }
+        primary: 'rgba(244, 114, 182, 0.5)',
+        secondary: 'rgba(167, 139, 250, 0.4)',
+        accent: 'rgba(96, 165, 250, 0.3)'
+      }
 
   // 计算最大值和总数
   const maxCount = Math.max(...Object.values(props.data.platformData))
@@ -66,10 +66,7 @@ export const GroupStatistics: React.FC<GroupStatisticsProps> = (props) => {
     }))
 
   return (
-    <DefaultLayout 
-      {...props}
-      className="relative overflow-hidden bg-surface"
-    >
+    <DefaultLayout {...props} className="relative overflow-hidden bg-surface">
       {/* 弥散光背景层 */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div
@@ -116,9 +113,7 @@ export const GroupStatistics: React.FC<GroupStatisticsProps> = (props) => {
 
       {/* 背景大字装饰 */}
       <div className="absolute top-30 right-15 pointer-events-none select-none opacity-[0.03] z-0">
-        <span className="text-[200px] font-black tracking-tighter leading-none block text-right text-foreground">
-          STATS
-        </span>
+        <span className="text-[200px] font-black tracking-tighter leading-none block text-right text-foreground">STATS</span>
       </div>
 
       {/* 装饰性图形 */}
@@ -137,34 +132,25 @@ export const GroupStatistics: React.FC<GroupStatisticsProps> = (props) => {
 
       {/* 主要内容区域 */}
       <div className="relative z-10 p-18 flex flex-col min-h-[calc(100vh-200px)]">
-        
         {/* 头部区域 */}
         <div className="mb-20 border-b-4 border-border/30 pb-10">
           <div className="flex items-center gap-5 opacity-60 mb-8">
             <span className="w-4 h-4 rounded-full bg-pink-500 animate-pulse" />
-            <span className="text-3xl font-mono tracking-widest text-muted/80">
-              GROUP_ANALYTICS
-            </span>
+            <span className="text-3xl font-mono tracking-widest text-muted/80">GROUP_ANALYTICS</span>
           </div>
           <div className="flex items-center gap-8 mb-6">
             {props.data.groupAvatar && (
-              <img 
-                src={props.data.groupAvatar} 
-                alt="群头像"
-                className="w-32 h-32 rounded-2xl object-cover border-4 border-border/50"
-              />
+              <img src={props.data.groupAvatar} alt="群头像" className="w-32 h-32 rounded-2xl object-cover border-4 border-border/50" />
             )}
             <div className="flex-1">
-              <h1 className="text-[8rem] font-black leading-none tracking-tighter text-foreground/90">
-                解析统计
-              </h1>
+              <h1 className="text-[8rem] font-black leading-none tracking-tighter text-foreground/90">解析统计</h1>
             </div>
           </div>
           <div className="flex items-center gap-2 text-5xl font-bold text-foreground/70">
-            <span>{props.data.groupName}({props.data.groupId})</span>
-            {props.data.groupMemberCount && (
-              <span>({props.data.groupMemberCount})</span>
-            )}
+            <span>
+              {props.data.groupName}({props.data.groupId})
+            </span>
+            {props.data.groupMemberCount && <span>({props.data.groupMemberCount})</span>}
           </div>
         </div>
 
@@ -173,47 +159,27 @@ export const GroupStatistics: React.FC<GroupStatisticsProps> = (props) => {
           <div className="flex items-center gap-8 mb-16">
             <div className="w-5 h-24 rounded-full bg-pink-500" />
             <div className="flex flex-col">
-              <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">
-                数据概览
-              </h2>
-              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">
-                OVERVIEW
-              </span>
+              <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">数据概览</h2>
+              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">OVERVIEW</span>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-16">
             <div className="relative p-16 rounded-3xl bg-surface/40 backdrop-blur-md border-2 border-border/40">
-              <div className="text-4xl font-black text-foreground/90 mb-3">
-                本群解析
-              </div>
-              <div className="text-xl font-medium tracking-widest uppercase text-muted/70 mb-8 opacity-60">
-                GROUP TOTAL
-              </div>
+              <div className="text-4xl font-black text-foreground/90 mb-3">本群解析</div>
+              <div className="text-xl font-medium tracking-widest uppercase text-muted/70 mb-8 opacity-60">GROUP TOTAL</div>
               <div className="flex items-baseline gap-3">
-                <div className="text-[7rem] font-black leading-none text-foreground/90">
-                  {props.data.groupTotalParses}
-                </div>
-                <div className="text-4xl font-medium text-foreground/80 pb-2">
-                  次
-                </div>
+                <div className="text-[7rem] font-black leading-none text-foreground/90">{props.data.groupTotalParses}</div>
+                <div className="text-4xl font-medium text-foreground/80 pb-2">次</div>
               </div>
             </div>
 
             <div className="relative p-16 rounded-3xl bg-surface/40 backdrop-blur-md border-2 border-border/40">
-              <div className="text-4xl font-black text-foreground/90 mb-3">
-                使用用户
-              </div>
-              <div className="text-xl font-medium tracking-widest uppercase text-muted/70 mb-8 opacity-60">
-                UNIQUE USERS
-              </div>
+              <div className="text-4xl font-black text-foreground/90 mb-3">使用用户</div>
+              <div className="text-xl font-medium tracking-widest uppercase text-muted/70 mb-8 opacity-60">UNIQUE USERS</div>
               <div className="flex items-baseline gap-3">
-                <div className="text-[7rem] font-black leading-none text-foreground/90">
-                  {props.data.groupUniqueUsers}
-                </div>
-                <div className="text-4xl font-medium text-foreground/80 pb-2">
-                  人
-                </div>
+                <div className="text-[7rem] font-black leading-none text-foreground/90">{props.data.groupUniqueUsers}</div>
+                <div className="text-4xl font-medium text-foreground/80 pb-2">人</div>
               </div>
             </div>
           </div>
@@ -225,12 +191,8 @@ export const GroupStatistics: React.FC<GroupStatisticsProps> = (props) => {
             <div className="flex items-center gap-8 mb-16">
               <div className="w-5 h-24 rounded-full bg-blue-500" />
               <div className="flex flex-col">
-                <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">
-                  平台分布
-                </h2>
-                <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">
-                  DISTRIBUTION
-                </span>
+                <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">平台分布</h2>
+                <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">DISTRIBUTION</span>
               </div>
             </div>
 
@@ -246,7 +208,7 @@ export const GroupStatistics: React.FC<GroupStatisticsProps> = (props) => {
                     innerRadius={220}
                     radius={320}
                     padAngle={3}
-                    colorScale={pieChartData.map(d => d.fill)}
+                    colorScale={pieChartData.map((d) => d.fill)}
                     style={{
                       labels: {
                         fontSize: 40,
@@ -272,19 +234,12 @@ export const GroupStatistics: React.FC<GroupStatisticsProps> = (props) => {
 
                   return (
                     <div key={platform} className="flex items-center gap-8">
-                      <div 
-                        className="w-14 h-14 rounded-lg shrink-0"
-                        style={{ backgroundColor: config.color }}
-                      />
+                      <div className="w-14 h-14 rounded-lg shrink-0" style={{ backgroundColor: config.color }} />
                       <div className="flex-1">
-                        <div className="text-4xl font-bold text-foreground/90 mb-2">
-                          {config.name}
-                        </div>
-                        <div className="text-2xl text-foreground/80 mb-2">
-                          {config.nameEn}
-                        </div>
+                        <div className="text-4xl font-bold text-foreground/90 mb-2">{config.name}</div>
+                        <div className="text-2xl text-foreground/80 mb-2">{config.nameEn}</div>
                         <div className="text-3xl text-foreground/80">
-                          <span className="font-black text-foreground/90">{count}</span> 次 
+                          <span className="font-black text-foreground/90">{count}</span> 次
                           <span className="text-2xl ml-2">({percentage.toFixed(1)}%)</span>
                         </div>
                       </div>
@@ -301,12 +256,8 @@ export const GroupStatistics: React.FC<GroupStatisticsProps> = (props) => {
           <div className="flex items-center gap-8 mb-16">
             <div className="w-5 h-24 rounded-full bg-violet-500" />
             <div className="flex flex-col">
-              <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">
-                平台详情
-              </h2>
-              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">
-                PLATFORMS
-              </span>
+              <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">平台详情</h2>
+              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">PLATFORMS</span>
             </div>
           </div>
 
@@ -318,27 +269,17 @@ export const GroupStatistics: React.FC<GroupStatisticsProps> = (props) => {
               return (
                 <div key={platform} className="relative">
                   <div className="flex items-center gap-8 mb-6">
-                    <img 
-                      src={config.logo} 
-                      alt={config.name}
-                      className="h-24 w-auto object-contain"
-                    />
+                    <img src={config.logo} alt={config.name} className="h-24 w-auto object-contain" />
                     <div className="flex-1">
-                      <div className="text-4xl font-bold text-foreground mb-2">
-                        {config.name}
-                      </div>
-                      <div className="text-2xl text-foreground/70">
-                        {config.nameEn}
-                      </div>
+                      <div className="text-4xl font-bold text-foreground mb-2">{config.name}</div>
+                      <div className="text-2xl text-foreground/70">{config.nameEn}</div>
                     </div>
-                    <div className="text-[5rem] font-black text-foreground">
-                      {count}
-                    </div>
+                    <div className="text-[5rem] font-black text-foreground">{count}</div>
                   </div>
                   <div className="relative h-18 bg-surface-secondary rounded-full overflow-hidden">
                     <div
                       className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
-                      style={{ 
+                      style={{
                         width: `${percentage}%`,
                         backgroundColor: config.color
                       }}
@@ -353,16 +294,13 @@ export const GroupStatistics: React.FC<GroupStatisticsProps> = (props) => {
         {/* 底部信息 */}
         <div className="mt-auto pt-20 border-t-2 border-border">
           <div className="text-center">
-            <div className="text-3xl font-mono tracking-widest text-muted mb-4">
-              TOTAL SERVICE
-            </div>
+            <div className="text-3xl font-mono tracking-widest text-muted mb-4">TOTAL SERVICE</div>
             <div className="text-4xl font-medium text-foreground/70">
-              累计服务 <span className="font-black text-foreground">{props.data.globalTotalGroups}</span> 个群组 · 
-              解析 <span className="font-black text-foreground">{props.data.globalTotalParses}</span> 次
+              累计服务 <span className="font-black text-foreground">{props.data.globalTotalGroups}</span> 个群组 · 解析{' '}
+              <span className="font-black text-foreground">{props.data.globalTotalParses}</span> 次
             </div>
           </div>
         </div>
-
       </div>
     </DefaultLayout>
   )

@@ -1,12 +1,13 @@
-import { useEffect, type ComponentType } from 'react'
 import { cn, Description, ScrollShadow, Spinner, Surface, Toast } from '@heroui/react'
 import { useMemoizedFn, useSetState } from 'ahooks'
-import LoginPanel from './components/common/LoginPanel'
+import { useEffect, type ComponentType } from 'react'
+
 import { authChangedEventName, hasAuthToken } from './auth/token'
-import { detectDevice, type DeviceLayout } from './utils/device'
 import ConfigPanel from './components/common/ConfigPanel'
-import type { MainLayoutProps, MainMenuKey } from './types/navigation'
+import LoginPanel from './components/common/LoginPanel'
 import { useTheme } from './hooks/useTheme'
+import type { MainLayoutProps, MainMenuKey } from './types/navigation'
+import { detectDevice, type DeviceLayout } from './utils/device'
 
 /**
  * 加载 PC 端布局。
@@ -130,7 +131,7 @@ const App = () => {
   const syncDevice = useMemoizedFn(() => {
     const nextDevice = detectDevice()
 
-    setState(current => {
+    setState((current) => {
       if (current.device === nextDevice) {
         return null
       }
@@ -228,10 +229,10 @@ const App = () => {
           className={cn(
             'h-full px-3 py-3 sm:px-5 sm:py-4',
             device === 'mobile' && [
-              'data-[top-scroll=true]:[mask-image:none]',
+              'data-[top-scroll=true]:mask-none',
               'data-[top-scroll=true]:[-webkit-mask-image:none]',
-              'data-[top-bottom-scroll=true]:[mask-image:linear-gradient(180deg,black_calc(100%_-_var(--scroll-shadow-size)),transparent)]',
-              'data-[top-bottom-scroll=true]:[-webkit-mask-image:linear-gradient(180deg,black_calc(100%_-_var(--scroll-shadow-size)),transparent)]',
+              'data-[top-bottom-scroll=true]:mask-[linear-gradient(180deg,black_calc(100%-var(--scroll-shadow-size)),transparent)]',
+              'data-[top-bottom-scroll=true]:[-webkit-mask-image:linear-gradient(180deg,black_calc(100%-var(--scroll-shadow-size)),transparent)]'
             ]
           )}
           size={56}

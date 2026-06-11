@@ -2,9 +2,9 @@
  * 移动端主内容区组件
  */
 
-import ConfigPanel from '../common/ConfigPanel'
-import AboutPanel from '../common/AboutPanel'
 import type { MainMenuKey } from '../../types/navigation'
+import AboutPanel from '../common/AboutPanel'
+import ConfigPanel from '../common/ConfigPanel'
 
 interface MobileContentProps {
   activeMenu: MainMenuKey
@@ -28,11 +28,7 @@ const MobileContent = ({ activeMenu }: MobileContentProps) => {
     }
   }
 
-  return (
-    <div className="w-full max-w-2xl mx-auto">
-      {renderContent()}
-    </div>
-  )
+  return <div className="w-full max-w-2xl mx-auto">{renderContent()}</div>
 }
 
 export default MobileContent

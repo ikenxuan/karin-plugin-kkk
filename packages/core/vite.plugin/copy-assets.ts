@@ -20,7 +20,7 @@ const copyDirectory = (sourceDir: string, targetDir: string) => {
 
   const files = fs.readdirSync(sourceDir)
 
-  files.forEach(file => {
+  files.forEach((file) => {
     const sourcePath = resolve(sourceDir, file)
     const targetPath = resolve(targetDir, file)
 

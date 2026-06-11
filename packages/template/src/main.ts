@@ -83,19 +83,12 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> => {
 }
 
 const toSerializableValue = (value: unknown): unknown => {
-  if (
-    value == null ||
-    typeof value === 'string' ||
-    typeof value === 'number' ||
-    typeof value === 'boolean'
-  ) {
+  if (value == null || typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
     return value
   }
 
   if (Array.isArray(value)) {
-    return value
-      .map(item => toSerializableValue(item))
-      .filter(item => item !== undefined)
+    return value.map((item) => toSerializableValue(item)).filter((item) => item !== undefined)
   }
 
   if (!isPlainObject(value)) {
@@ -114,10 +107,7 @@ const toSerializableValue = (value: unknown): unknown => {
   return output
 }
 
-const buildDevPreviewPayload = <T extends Record<string, unknown>> (
-  data: T,
-  extraProps: Record<string, unknown>
-): DevPreviewPayload<T> => {
+const buildDevPreviewPayload = <T extends Record<string, unknown>>(data: T, extraProps: Record<string, unknown>): DevPreviewPayload<T> => {
   const payload: DevPreviewPayload<T> = { ...data }
   const serializableProps = toSerializableValue(extraProps)
 
@@ -142,9 +132,9 @@ type PluginFactory<T = Record<string, unknown>> = (options?: T) => Plugin
 class PluginContainer {
   private plugins: TemplatePlugin[] = []
 
-  constructor (plugins: TemplatePlugin[]) {
+  constructor(plugins: TemplatePlugin[]) {
     const order = { pre: -1, normal: 0, post: 1 }
-    this.plugins = [...plugins].sort((a, b) => (order[a.enforce ?? 'normal']) - (order[b.enforce ?? 'normal']))
+    this.plugins = [...plugins].sort((a, b) => order[a.enforce ?? 'normal'] - order[b.enforce ?? 'normal'])
   }
 
   /**
@@ -153,7 +143,7 @@ class PluginContainer {
    * @param request 渲染请求
    * @returns 是否应用插件
    */
-  private shouldApply (plugin: TemplatePlugin, request: RenderRequest<any>): boolean {
+  private shouldApply(plugin: TemplatePlugin, request: RenderRequest<any>): boolean {
     try {
       return plugin.apply ? plugin.apply(request) : true
     } catch (err) {
@@ -166,7 +156,7 @@ class PluginContainer {
    * 执行渲染前插件
    * @param ctx 插件上下文
    */
-  async runBefore (ctx: PluginContext<any>): Promise<void> {
+  async runBefore(ctx: PluginContext<any>): Promise<void> {
     for (const plugin of this.plugins) {
       if (this.shouldApply(plugin, ctx.request)) {
         await plugin.beforeRender?.(ctx)
@@ -178,7 +168,7 @@ class PluginContainer {
    * 执行渲染时插件
    * @param ctx 插件上下文
    */
-  async runDuring (ctx: PluginContext<any>): Promise<void> {
+  async runDuring(ctx: PluginContext<any>): Promise<void> {
     for (const plugin of this.plugins) {
       if (this.shouldApply(plugin, ctx.request)) {
         await plugin.render?.(ctx)
@@ -190,7 +180,7 @@ class PluginContainer {
    * 执行渲染后插件
    * @param ctx 插件上下文
    */
-  async runAfter (ctx: PluginContext<any>): Promise<void> {
+  async runAfter(ctx: PluginContext<any>): Promise<void> {
     for (const plugin of this.plugins) {
       if (this.shouldApply(plugin, ctx.request)) {
         await plugin.afterRender?.(ctx)
@@ -211,10 +201,7 @@ class ComponentRendererFactory {
    * @returns React 组件元素
    * @throws 当组件未找到或数据验证失败时抛出错误
    */
-  static async createComponent<T> (
-    request: RenderRequest<T>,
-    extraProps: Record<string, unknown> = {}
-  ): Promise<React.ReactElement> {
+  static async createComponent<T>(request: RenderRequest<T>, extraProps: Record<string, unknown> = {}): Promise<React.ReactElement> {
     const { templateType, templateName } = request
 
     const registryItem = ComponentAutoRegistry.get(templateType, templateName)
@@ -238,7 +225,7 @@ class ComponentRendererFactory {
     // 处理嵌套模板名称（如 dynamic/DYNAMIC_TYPE_DRAW）
     if (templateName.includes('/')) {
       const subType = templateName.split('/')[1]
-        ; (props as Record<string, unknown>).subType = subType
+      ;(props as Record<string, unknown>).subType = subType
     }
 
     return React.createElement(registryItem.component, props)
@@ -255,7 +242,7 @@ class ResourcePathManager {
   private static initialized = false
   private isDevelopment: boolean
 
-  constructor () {
+  constructor() {
     this.NODE_ENV = process.env.NODE_ENV || 'production'
     this.isDevelopment = this.NODE_ENV === 'development'
     this.packageDir = this.getPackageDir()
@@ -266,7 +253,7 @@ class ResourcePathManager {
    * 获取包目录路径
    * @returns 包目录的绝对路径
    */
-  private getPackageDir (): string {
+  private getPackageDir(): string {
     const cwd = process.cwd()
 
     // 优先尝试从 import.meta.url 获取路径（适用于所有环境）
@@ -287,7 +274,7 @@ class ResourcePathManager {
    * @param cwd 当前工作目录
    * @returns 开发环境目录路径，如果找不到返回 null
    */
-  private findDevelopmentDir (cwd: string): string | null {
+  private findDevelopmentDir(cwd: string): string | null {
     let currentDir = cwd
     while (currentDir !== path.dirname(currentDir)) {
       const renderDir = path.join(currentDir, 'render')
@@ -310,15 +297,13 @@ class ResourcePathManager {
    * 通过 import.meta.url 获取 npm 包的安装目录
    * @returns npm 包的安装目录路径
    */
-  private getPackageDirFromImportMeta (): string {
+  private getPackageDirFromImportMeta(): string {
     try {
       const currentModuleUrl = import.meta.url
 
       // 转换为文件路径
       const currentModulePath = new URL(currentModuleUrl).pathname
-      const normalizedPath = process.platform === 'win32'
-        ? currentModulePath.slice(1)
-        : currentModulePath
+      const normalizedPath = process.platform === 'win32' ? currentModulePath.slice(1) : currentModulePath
 
       const pluginDir = this.extractPluginDirFromPnpmPath(normalizedPath)
       if (pluginDir) {
@@ -340,7 +325,6 @@ class ResourcePathManager {
         logger.debug(logger.yellow('无法找到插件目录，使用当前项目工作目录'))
       }
       return process.cwd()
-
     } catch (error) {
       logger.error('获取 import.meta.url 失败:', error)
       return process.cwd()
@@ -352,7 +336,7 @@ class ResourcePathManager {
    * @param pnpmPath pnpm 的符号链接路径
    * @returns 插件目录路径，如果无法提取则返回 null
    */
-  private extractPluginDirFromPnpmPath (pnpmPath: string): string | null {
+  private extractPluginDirFromPnpmPath(pnpmPath: string): string | null {
     const pnpmIndex = pnpmPath.indexOf('.pnpm')
     if (pnpmIndex === -1) return null
 
@@ -376,7 +360,7 @@ class ResourcePathManager {
    * 通过扫描当前工作目录查找插件目录
    * @returns 插件目录路径，如果找不到则返回 null
    */
-  private findPluginDirByScanning (): string | null {
+  private findPluginDirByScanning(): string | null {
     const cwd = process.cwd()
     const pluginsDir = path.join(cwd, 'plugins')
 
@@ -395,10 +379,9 @@ class ResourcePathManager {
    * @param pluginsDir 插件目录路径
    * @returns 找到的插件目录路径，如果找不到则返回 null
    */
-  private findKarinPluginInDir (pluginsDir: string): string | null {
+  private findKarinPluginInDir(pluginsDir: string): string | null {
     try {
-      const pluginDirs = fs.readdirSync(pluginsDir, { withFileTypes: true })
-        .filter(dirent => dirent.isDirectory())
+      const pluginDirs = fs.readdirSync(pluginsDir, { withFileTypes: true }).filter((dirent) => dirent.isDirectory())
 
       for (const pluginDir of pluginDirs) {
         const pluginPath = path.join(pluginsDir, pluginDir.name)
@@ -424,7 +407,7 @@ class ResourcePathManager {
    * 检测当前是否运行在插件模式
    * @returns 如果是插件模式返回 true，否则返回 false
    */
-  private isPluginMode (): boolean {
+  private isPluginMode(): boolean {
     // 检测方法1：检查路径中是否包含 plugins 目录
     const hasPluginsInPath = this.packageDir.includes('plugins')
 
@@ -442,7 +425,7 @@ class ResourcePathManager {
    * 统一处理开发和生产环境的资源路径
    * @returns 静态资源路径配置对象
    */
-  getResourcePaths (): { cssDir: string; imageDir: string } {
+  getResourcePaths(): { cssDir: string; imageDir: string } {
     // 尝试多个可能的路径位置
     const possiblePaths = this.getPossibleResourcePaths()
 
@@ -492,7 +475,7 @@ class ResourcePathManager {
    * 获取所有可能的资源路径
    * @returns 可能的 CSS 和图片路径列表
    */
-  private getPossibleResourcePaths (): { cssPaths: string[]; imagePaths: string[] } {
+  private getPossibleResourcePaths(): { cssPaths: string[]; imagePaths: string[] } {
     const cssPaths: string[] = []
     const imagePaths: string[] = []
 
@@ -506,25 +489,14 @@ class ResourcePathManager {
     // 2. 开发环境 monorepo 结构路径
     if (this.isDevelopment) {
       const parentDir = path.dirname(this.packageDir)
-      cssPaths.push(
-        path.join(parentDir, 'core', 'lib'),
-        path.join(this.packageDir, '../core/lib')
-      )
-      imagePaths.push(
-        path.join(parentDir, 'core', 'resources', 'image'),
-        path.join(this.packageDir, '../core/resources/image')
-      )
+      cssPaths.push(path.join(parentDir, 'core', 'lib'), path.join(this.packageDir, '../core/lib'))
+      imagePaths.push(path.join(parentDir, 'core', 'resources', 'image'), path.join(this.packageDir, '../core/resources/image'))
     }
 
     // 3. 插件模式路径
     if (this.isPluginMode()) {
-      cssPaths.push(
-        path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'lib'),
-        path.join(this.packageDir, 'lib')
-      )
-      imagePaths.push(
-        path.join(this.packageDir, 'resources', 'image')
-      )
+      cssPaths.push(path.join(this.packageDir, 'node_modules', 'karin-plugin-kkk', 'lib'), path.join(this.packageDir, 'lib'))
+      imagePaths.push(path.join(this.packageDir, 'resources', 'image'))
     }
 
     // 4. 独立模式路径
@@ -546,14 +518,12 @@ class ResourcePathManager {
    * 从当前模块路径向上查找 karin-plugin-kkk 包
    * @returns karin-plugin-kkk 包的路径，如果找不到返回 null
    */
-  private findKarinPluginKkkPackage (): string | null {
+  private findKarinPluginKkkPackage(): string | null {
     try {
       // 从当前模块路径开始向上查找
       const currentModuleUrl = import.meta.url
       const currentModulePath = new URL(currentModuleUrl).pathname
-      const normalizedPath = process.platform === 'win32'
-        ? currentModulePath.slice(1)
-        : currentModulePath
+      const normalizedPath = process.platform === 'win32' ? currentModulePath.slice(1) : currentModulePath
 
       let currentDir = path.dirname(normalizedPath)
 
@@ -608,31 +578,43 @@ class ResourcePathManager {
 class HtmlWrapper {
   private resourceManager: ResourcePathManager
 
-  constructor (resourceManager: ResourcePathManager) {
+  constructor(resourceManager: ResourcePathManager) {
     this.resourceManager = resourceManager
   }
 
-  private getAssetMimeType (assetPath: string): string {
+  private getAssetMimeType(assetPath: string): string {
     const ext = path.extname(assetPath).toLowerCase()
 
     switch (ext) {
-      case '.woff2': return 'font/woff2'
-      case '.woff': return 'font/woff'
-      case '.ttf': return 'font/ttf'
-      case '.otf': return 'font/otf'
-      case '.eot': return 'application/vnd.ms-fontobject'
-      case '.svg': return 'image/svg+xml'
-      case '.png': return 'image/png'
+      case '.woff2':
+        return 'font/woff2'
+      case '.woff':
+        return 'font/woff'
+      case '.ttf':
+        return 'font/ttf'
+      case '.otf':
+        return 'font/otf'
+      case '.eot':
+        return 'application/vnd.ms-fontobject'
+      case '.svg':
+        return 'image/svg+xml'
+      case '.png':
+        return 'image/png'
       case '.jpg':
-      case '.jpeg': return 'image/jpeg'
-      case '.gif': return 'image/gif'
-      case '.webp': return 'image/webp'
-      case '.avif': return 'image/avif'
-      default: return 'application/octet-stream'
+      case '.jpeg':
+        return 'image/jpeg'
+      case '.gif':
+        return 'image/gif'
+      case '.webp':
+        return 'image/webp'
+      case '.avif':
+        return 'image/avif'
+      default:
+        return 'application/octet-stream'
     }
   }
 
-  private toDataUri (assetPath: string): string | null {
+  private toDataUri(assetPath: string): string | null {
     if (!fs.existsSync(assetPath)) {
       logger.warn('未找到静态资源文件，跳过内联:', assetPath)
       return null
@@ -648,7 +630,7 @@ class HtmlWrapper {
    * @param cssFilePath CSS文件的完整路径
    * @returns 处理后的CSS内容字符串
    */
-  private loadInlineCss (cssFilePath: string): string {
+  private loadInlineCss(cssFilePath: string): string {
     if (!fs.existsSync(cssFilePath)) {
       logger.warn('未找到 CSS 文件，跳过内联:', cssFilePath)
       return ''
@@ -657,19 +639,16 @@ class HtmlWrapper {
     const cssDir = path.dirname(cssFilePath)
     const cssContent = fs.readFileSync(cssFilePath, 'utf-8')
 
-    return cssContent.replace(
-      /url\((['"]?)(?!data:|https?:|file:|#)([^)'"]+)\1\)/g,
-      (_match, quote: string, assetPath: string) => {
-        const normalizedAssetPath = assetPath.trim()
-        if (!normalizedAssetPath || normalizedAssetPath.startsWith('/')) {
-          return `url(${quote}${normalizedAssetPath}${quote})`
-        }
-
-        const absoluteAssetPath = path.resolve(cssDir, normalizedAssetPath)
-        const dataUri = this.toDataUri(absoluteAssetPath)
-        return dataUri ? `url(${quote}${dataUri}${quote})` : `url(${quote}${normalizedAssetPath}${quote})`
+    return cssContent.replace(/url\((['"]?)(?!data:|https?:|file:|#)([^)'"]+)\1\)/g, (_match, quote: string, assetPath: string) => {
+      const normalizedAssetPath = assetPath.trim()
+      if (!normalizedAssetPath || normalizedAssetPath.startsWith('/')) {
+        return `url(${quote}${normalizedAssetPath}${quote})`
       }
-    )
+
+      const absoluteAssetPath = path.resolve(cssDir, normalizedAssetPath)
+      const dataUri = this.toDataUri(absoluteAssetPath)
+      return dataUri ? `url(${quote}${dataUri}${quote})` : `url(${quote}${normalizedAssetPath}${quote})`
+    })
   }
 
   /**
@@ -678,13 +657,11 @@ class HtmlWrapper {
    * @param includeFonts 是否包含字体样式文件，默认为true
    * @returns 合并后的CSS样式内容字符串
    */
-  getInlineStyles (_htmlFilePath: string, includeFonts: boolean = true): string {
+  getInlineStyles(_htmlFilePath: string, includeFonts: boolean = true): string {
     const { cssDir, imageDir } = this.resourceManager.getResourcePaths()
     const fontDir = path.join(path.dirname(imageDir), 'font')
 
-    const styleFiles = [
-      path.join(cssDir, 'karin-plugin-kkk.css')
-    ]
+    const styleFiles = [path.join(cssDir, 'karin-plugin-kkk.css')]
 
     if (includeFonts) {
       styleFiles.unshift(
@@ -695,7 +672,7 @@ class HtmlWrapper {
     }
 
     return styleFiles
-      .map(filePath => this.loadInlineCss(filePath))
+      .map((filePath) => this.loadInlineCss(filePath))
       .filter(Boolean)
       .join('\n')
   }
@@ -707,7 +684,7 @@ class HtmlWrapper {
    * @param isDark 是否使用深色主题
    * @returns 完整的 HTML 文档字符串
    */
-  wrapContent (htmlContent: string, htmlFilePath: string, isDark: boolean = false): string {
+  wrapContent(htmlContent: string, htmlFilePath: string, isDark: boolean = false): string {
     const htmlDir = path.dirname(htmlFilePath)
     const { imageDir } = this.resourceManager.getResourcePaths()
     const inlineStyles = this.getInlineStyles(htmlFilePath)
@@ -757,7 +734,6 @@ class HtmlWrapper {
   }
 }
 
-
 /**
  * SSR 渲染类
  * 负责服务端渲染的核心逻辑
@@ -768,7 +744,7 @@ class SSRRender {
   private htmlWrapper: HtmlWrapper
   private pluginContainer: PluginContainer
 
-  constructor (options: { plugins?: Plugin[], outputDir: string }) {
+  constructor(options: { plugins?: Plugin[]; outputDir: string }) {
     const { plugins = [], outputDir } = options
     this.resourceManager = new ResourcePathManager()
     this.htmlWrapper = new HtmlWrapper(this.resourceManager)
@@ -781,7 +757,7 @@ class SSRRender {
    * @param request 渲染请求参数
    * @returns 渲染结果
    */
-  public async render<T> (request: RenderRequest<T>): Promise<RenderResponse> {
+  public async render<T>(request: RenderRequest<T>): Promise<RenderResponse> {
     try {
       logger.debug('[SSR] 开始渲染组件，预设模板:', `${logger.yellow(`${request.templateType}/`)}${request.templateName}`)
       const startTime = Date.now()
@@ -797,10 +773,7 @@ class SSRRender {
       await this.pluginContainer.runBefore(ctx)
 
       // 创建组件（仅透传插件产生的 props）
-      let component = await ComponentRendererFactory.createComponent(
-        request,
-        ctx.state.props
-      )
+      let component = await ComponentRendererFactory.createComponent(request, ctx.state.props)
 
       ctx.state.component = component
 
@@ -820,24 +793,18 @@ class SSRRender {
       const filePath = path.join(this.outputDir, fileName)
 
       // 包装并写入
-      const fullHtml = this.htmlWrapper.wrapContent(
-        ctx.state.html ?? htmlContent,
-        filePath,
-        request.data.useDarkTheme ?? false
-      )
+      const fullHtml = this.htmlWrapper.wrapContent(ctx.state.html ?? htmlContent, filePath, request.data.useDarkTheme ?? false)
 
       fs.writeFileSync(filePath, fullHtml, 'utf-8')
 
       if (process.env.NODE_ENV === 'development') {
-        DevDataManager.saveRenderData(
-          request.templateType,
-          request.templateName,
-          buildDevPreviewPayload(request.data, ctx.state.props)
-        )
+        DevDataManager.saveRenderData(request.templateType, request.templateName, buildDevPreviewPayload(request.data, ctx.state.props))
       }
 
       const endTime = Date.now()
-      logger.debug(`[SSR] ${logger.yellow(`${request.templateType}/`)}${request.templateName} Done! ${(endTime - startTime) >= 1000 ? logger.green(`${((endTime - startTime) / 1000).toFixed(2)} s`) : logger.green(`${endTime - startTime} ms`)}`)
+      logger.debug(
+        `[SSR] ${logger.yellow(`${request.templateType}/`)}${request.templateName} Done! ${endTime - startTime >= 1000 ? logger.green(`${((endTime - startTime) / 1000).toFixed(2)} s`) : logger.green(`${endTime - startTime} ms`)}`
+      )
       return {
         success: true,
         htmlPath: filePath
@@ -868,11 +835,11 @@ interface ReactServerRenderOptions<K extends keyof DataTypeMap> {
 
 /**
  * SSR 预渲染组件为 HTML 的具体实现
- * 
+ *
  * @template K 模板类型键，用于类型推断
  * @param options 渲染配置选项
  * @returns 渲染结果 Promise
- * 
+ *
  * # Example
  * ```typescript
  * // 基础使用
@@ -884,7 +851,7 @@ interface ReactServerRenderOptions<K extends keyof DataTypeMap> {
  *   },
  *   outputDir: './output'
  * })
- * 
+ *
  * // 使用插件
  * const result = await reactServerRender({
  *   request: renderRequest,
@@ -893,14 +860,8 @@ interface ReactServerRenderOptions<K extends keyof DataTypeMap> {
  * })
  * ```
  */
-const reactServerRender = async <K extends keyof DataTypeMap> (
-  options: ReactServerRenderOptions<K>
-): Promise<RenderResponse> => {
-  const {
-    request,
-    outputDir,
-    plugins = []
-  } = options
+const reactServerRender = async <K extends keyof DataTypeMap>(options: ReactServerRenderOptions<K>): Promise<RenderResponse> => {
+  const { request, outputDir, plugins = [] } = options
 
   // 确保输出目录存在
   if (!fs.existsSync(outputDir)) {
@@ -940,9 +901,7 @@ const escapeVideoPreviewJson = (data: unknown): string => {
 
 export const renderVideoPreviewPage = (options: VideoPreviewRenderOptions): string => {
   const serverNow = Date.now()
-  const remainingMs = options.removeCache && options.expireAt
-    ? Math.max(options.expireAt - serverNow, 0)
-    : null
+  const remainingMs = options.removeCache && options.expireAt ? Math.max(options.expireAt - serverNow, 0) : null
   const state: VideoPreviewState = {
     ...options,
     eventsUrl: options.eventsUrl ?? '',
@@ -1025,14 +984,7 @@ export const renderVideoPreviewPage = (options: VideoPreviewRenderOptions): stri
 </html>`
 }
 
-export type {
-  DataTypeMap,
-  Plugin,
-  PluginContext,
-  PluginFactory,
-  ReactServerRenderOptions,
-  TypedRenderRequest
-}
+export type { DataTypeMap, Plugin, PluginContext, PluginFactory, ReactServerRenderOptions, TypedRenderRequest }
 
 export { reactServerRender }
 export default reactServerRender

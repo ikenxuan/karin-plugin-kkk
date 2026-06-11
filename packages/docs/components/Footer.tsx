@@ -1,15 +1,12 @@
-import { FaGithub } from 'react-icons/fa';
-import { IoHeart } from 'react-icons/io5';
+import { FaGithub } from 'react-icons/fa'
+import { IoHeart } from 'react-icons/io5'
 
 export function Footer() {
   return (
     <footer className="py-3 mt-4 text-xs border-t border-fd-border text-fd-muted-foreground">
       <div className="flex flex-wrap gap-y-1 gap-x-4 justify-center items-center">
         <span>© 2024-present ikenxuan · GPL-3.0</span>
-        <a
-          href="/docs/guide/afdian"
-          className="flex gap-1 items-center transition-colors hover:text-fd-foreground"
-        >
+        <a href="/docs/guide/afdian" className="flex gap-1 items-center transition-colors hover:text-fd-foreground">
           <IoHeart className="text-danger-400 size-3" />
           <span>支持作者</span>
         </a>
@@ -24,5 +21,5 @@ export function Footer() {
         </a>
       </div>
     </footer>
-  );
+  )
 }

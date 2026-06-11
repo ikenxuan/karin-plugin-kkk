@@ -2,9 +2,14 @@
   "name": "@kkk/richtext",
   "version": "0.1.0",
   "description": "Rich text intermediate representation for karin-plugin-kkk — shared between core and template",
-  "author": "ikenxuan",
   "license": "GPL-3.0-only",
+  "author": "ikenxuan",
+  "files": [
+    "src/"
+  ],
   "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "exports": {
     ".": {
       "types": "./src/index.ts",
@@ -23,11 +28,10 @@
       "import": "./src/react/index.tsx"
     }
   },
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "files": [
-    "src/"
-  ],
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.6.0"
+  },
   "peerDependencies": {
     "react": "*"
   },
@@ -35,9 +39,5 @@
     "react": {
       "optional": true
     }
-  },
-  "dependencies": {
-    "clsx": "^2.1.1",
-    "tailwind-merge": "^3.6.0"
   }
 }

@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-import { spawn, execSync } from 'node:child_process'
+import { spawn } from 'node:child_process'
 import { statSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { gzipSync } from 'node:zlib'
+
 import pc from 'picocolors'
 
 const TARGETS: Record<string, string[]> = {
@@ -18,7 +19,7 @@ function formatTime(ms: number): string {
 
 async function buildTarget(name: string, command: string[]): Promise<{ success: boolean; duration: number }> {
   const startTime = Date.now()
-  
+
   return new Promise((resolve) => {
     const [cmd, ...args] = command
     const child = spawn(cmd, args, {
@@ -40,12 +41,12 @@ async function buildTarget(name: string, command: string[]): Promise<{ success: 
 
 async function main() {
   const args = process.argv.slice(2)
-  
+
   if (args.length === 0 || args[0] !== 'build') {
     console.log(pc.bold(pc.red('\n ✖ 错误: 缺少构建命令\n')))
     console.log(pc.gray('  用法: kkk build <target1> [target2] ...'))
     console.log(pc.gray('  可用的构建目标:'))
-    Object.keys(TARGETS).forEach(key => {
+    Object.keys(TARGETS).forEach((key) => {
       console.log(pc.gray(`    • ${key}`))
     })
     console.log()
@@ -53,18 +54,18 @@ async function main() {
   }
 
   const targets = args.slice(1)
-  
+
   if (targets.length === 0) {
     console.log(pc.bold(pc.red('\n ✖ 错误: 必须指定至少一个构建目标\n')))
     process.exit(1)
   }
 
   // 验证目标
-  const invalidTargets = targets.filter(t => !TARGETS[t])
+  const invalidTargets = targets.filter((t) => !TARGETS[t])
   if (invalidTargets.length > 0) {
     console.log(pc.bold(pc.red(`\n ✖ 错误: 无效的构建目标: ${invalidTargets.join(', ')}\n`)))
     console.log(pc.gray('  可用的构建目标:'))
-    Object.keys(TARGETS).forEach(key => {
+    Object.keys(TARGETS).forEach((key) => {
       console.log(pc.gray(`    • ${key}`))
     })
     console.log()
@@ -85,7 +86,7 @@ async function main() {
     console.log(pc.bold(pc.blue(`  ▶ ${target.padEnd(12)}`)) + pc.gray('构建中...'))
     const result = await buildTarget(target, TARGETS[target])
     results.push({ name: target, ...result })
-    
+
     if (result.success) {
       console.log(pc.bold(pc.green(`  ✓ ${target.padEnd(12)}`)) + pc.green(`${formatTime(result.duration)}`))
     } else {
@@ -95,20 +96,20 @@ async function main() {
   }
 
   const totalDuration = Date.now() - totalStartTime
-  const allSuccess = results.every(r => r.success)
+  const allSuccess = results.every((r) => r.success)
 
   console.log()
   console.log(pc.bold(pc.cyan('  ┌───────────────────────────────────────────┐')))
   console.log(pc.bold(pc.cyan('  │  📊  构建统计                               │')))
   console.log(pc.bold(pc.cyan('  ├───────────────────────────────────────────┤')))
-  
-  results.forEach(r => {
+
+  results.forEach((r) => {
     const status = r.success ? pc.green('✓') : pc.red('✗')
     const time = formatTime(r.duration)
     const name = r.name.padEnd(20)
     console.log(pc.bold(pc.cyan('  │ ')) + status + '  ' + pc.cyan(name) + pc.gray(time.padStart(8)) + pc.bold(pc.cyan('  │')))
   })
-  
+
   console.log(pc.bold(pc.cyan('  ├───────────────────────────────────────────┤')))
   const totalTime = formatTime(totalDuration)
   console.log(pc.bold(pc.cyan('  │ ')) + '   ' + pc.gray('总耗时'.padEnd(20)) + pc.cyan(totalTime.padStart(8)) + pc.bold(pc.cyan('  │')))
@@ -165,9 +166,8 @@ function getFileSize(filePath: string): number {
 
 function getCompressedSize(dir: string): number {
   try {
-    const entries = readdirSync(dir, { withFileTypes: true })
     let buffers: Buffer[] = []
-    
+
     const walk = (dirPath: string) => {
       const items = readdirSync(dirPath, { withFileTypes: true })
       for (const item of items) {
@@ -179,7 +179,7 @@ function getCompressedSize(dir: string): number {
         }
       }
     }
-    
+
     walk(dir)
     return gzipSync(Buffer.concat(buffers)).length
   } catch {
@@ -189,13 +189,13 @@ function getCompressedSize(dir: string): number {
 
 async function printCorePackageSize() {
   const coreDir = 'packages/core'
-  
+
   // 根据 package.json 的 files 字段统计
   const files = ['config/', 'lib/', 'resources/', 'LICENSE', 'package.json', 'README.md', 'CHANGELOG.md']
-  
+
   let totalSize = 0
   const details: Array<{ name: string; size: number }> = []
-  
+
   for (const file of files) {
     const fullPath = join(coreDir, file)
     let size = 0
@@ -209,20 +209,20 @@ async function printCorePackageSize() {
       totalSize += size
     }
   }
-  
+
   console.log()
   console.log(pc.bold(pc.cyan('  ┌───────────────────────────────────────────┐')))
   console.log(pc.bold(pc.cyan('  │  📦  Package 大小统计                      │')))
   console.log(pc.bold(pc.cyan('  ├───────────────────────────────────────────┤')))
-  
-  details.forEach(d => {
+
+  details.forEach((d) => {
     const size = formatSize(d.size)
     const name = d.name.padEnd(25)
     console.log(pc.bold(pc.cyan('  │  ')) + name + pc.gray(size.padStart(10)) + pc.bold(pc.cyan('  │')))
   })
-  
+
   console.log(pc.bold(pc.cyan('  ├───────────────────────────────────────────┤')))
-  
+
   // 计算实际压缩后的大小
   let compressedSize = 0
   for (const file of files) {
@@ -238,11 +238,11 @@ async function printCorePackageSize() {
       }
     }
   }
-  
+
   const uncompressed = formatSize(totalSize)
   const compressed = formatSize(compressedSize)
   const ratio = ((1 - compressedSize / totalSize) * 100).toFixed(1)
-  
+
   console.log(pc.bold(pc.cyan('  │  ')) + pc.gray('未压缩').padEnd(25) + uncompressed.padStart(10) + pc.bold(pc.cyan('  │')))
   console.log(pc.bold(pc.cyan('  │  ')) + pc.cyan('Gzip 压缩').padEnd(25) + pc.green(compressed.padStart(10)) + pc.bold(pc.cyan('  │')))
   console.log(pc.bold(pc.cyan('  │  ')) + pc.gray('压缩率').padEnd(25) + pc.gray((ratio + '%').padStart(10)) + pc.bold(pc.cyan('  │')))

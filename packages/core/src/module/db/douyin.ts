@@ -127,15 +127,14 @@ export class DouyinDBBase {
   private db!: sqlite3Types['Database']
   private dbPath: string
 
-  constructor () {
+  constructor() {
     this.dbPath = path.join(`${karinPathBase}/${Root.pluginName}/data`, 'douyin.db')
-
   }
 
   /**
    * 初始化数据库
    */
-  async init (): Promise<DouyinDBBase> {
+  async init(): Promise<DouyinDBBase> {
     try {
       logger.debug(logger.green('--------------------------[DouyinDB] 开始初始化数据库--------------------------'))
       logger.debug('[DouyinDB] 正在连接数据库...')
@@ -168,22 +167,22 @@ export class DouyinDBBase {
   /**
    * 数据库迁移
    */
-  private async migrate (): Promise<void> {
+  private async migrate(): Promise<void> {
     try {
       // 检查 AwemeCaches 表是否有 pushType 字段
       try {
         await this.runQuery('SELECT pushType FROM AwemeCaches LIMIT 1')
       } catch {
         logger.info('[DouyinDB] 检测到 AwemeCaches 表缺少 pushType 字段，开始执行迁移...')
-        
+
         // 1. 添加 pushType 字段（默认值为 'post'）
-        await this.runQuery('ALTER TABLE AwemeCaches ADD COLUMN pushType TEXT DEFAULT \'post\'')
-        
+        await this.runQuery("ALTER TABLE AwemeCaches ADD COLUMN pushType TEXT DEFAULT 'post'")
+
         // 2. 由于 SQLite 不支持修改 UNIQUE 约束，我们需要重建表
         // 步骤：重命名旧表 -> 创建新表 -> 复制数据 -> 删除旧表
-        
+
         await this.runQuery('ALTER TABLE AwemeCaches RENAME TO AwemeCaches_old')
-        
+
         await this.runQuery(`
           CREATE TABLE IF NOT EXISTS AwemeCaches (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -197,31 +196,29 @@ export class DouyinDBBase {
             UNIQUE(aweme_id, sec_uid, groupId, pushType)
           )
         `)
-        
+
         await this.runQuery(`
           INSERT INTO AwemeCaches (id, aweme_id, sec_uid, groupId, pushType, createdAt, updatedAt)
           SELECT id, aweme_id, sec_uid, groupId, pushType, createdAt, updatedAt
           FROM AwemeCaches_old
         `)
-        
+
         await this.runQuery('DROP TABLE AwemeCaches_old')
-        
+
         logger.info('[DouyinDB] AwemeCaches 表迁移完成')
       }
-      
+
       // 检查并修复外键约束问题
       try {
         // 尝试获取表结构
-        const tableInfo = await this.allQuery<{ sql: string }>(
-          'SELECT sql FROM sqlite_master WHERE type=\'table\' AND name=\'AwemeCaches\''
-        )
-        
+        const tableInfo = await this.allQuery<{ sql: string }>("SELECT sql FROM sqlite_master WHERE type='table' AND name='AwemeCaches'")
+
         if (tableInfo.length > 0 && tableInfo[0].sql.includes('FOREIGN KEY (groupId) REFERENCES Groups(id)')) {
           logger.info('[DouyinDB] 检测到 AwemeCaches 表存在错误的外键约束，开始修复...')
-          
+
           // 重建表以移除错误的外键约束
           await this.runQuery('ALTER TABLE AwemeCaches RENAME TO AwemeCaches_old')
-          
+
           await this.runQuery(`
             CREATE TABLE IF NOT EXISTS AwemeCaches (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -235,15 +232,15 @@ export class DouyinDBBase {
               UNIQUE(aweme_id, sec_uid, groupId, pushType)
             )
           `)
-          
+
           await this.runQuery(`
             INSERT INTO AwemeCaches (id, aweme_id, sec_uid, groupId, pushType, createdAt, updatedAt)
             SELECT id, aweme_id, sec_uid, groupId, pushType, createdAt, updatedAt
             FROM AwemeCaches_old
           `)
-          
+
           await this.runQuery('DROP TABLE AwemeCaches_old')
-          
+
           logger.info('[DouyinDB] AwemeCaches 表外键约束修复完成')
         }
       } catch (error) {
@@ -258,7 +255,7 @@ export class DouyinDBBase {
   /**
    * 创建数据库表结构
    */
-  private async createTables (): Promise<void> {
+  private async createTables(): Promise<void> {
     const queries = [
       // 创建机器人表
       `CREATE TABLE IF NOT EXISTS Bots (
@@ -355,7 +352,7 @@ export class DouyinDBBase {
   /**
    * 执行SQL查询
    */
-  private runQuery (sql: string, params: any[] = []): Promise<any> {
+  private runQuery(sql: string, params: any[] = []): Promise<any> {
     return new Promise((resolve, reject) => {
       this.db.run(sql, params, function (err) {
         if (err) {
@@ -401,15 +398,12 @@ export class DouyinDBBase {
    * 获取或创建机器人记录
    * @param botId 机器人ID
    */
-  async getOrCreateBot (botId: string): Promise<Bot> {
+  async getOrCreateBot(botId: string): Promise<Bot> {
     let bot = await this.getQuery<Bot>('SELECT * FROM Bots WHERE id = ?', [botId])
 
     if (!bot) {
       const now = new Date().toISOString()
-      await this.runQuery(
-        'INSERT INTO Bots (id, createdAt, updatedAt) VALUES (?, ?, ?)',
-        [botId, now, now]
-      )
+      await this.runQuery('INSERT INTO Bots (id, createdAt, updatedAt) VALUES (?, ?, ?)', [botId, now, now])
       bot = { id: botId, createdAt: now, updatedAt: now }
     }
 
@@ -421,17 +415,14 @@ export class DouyinDBBase {
    * @param groupId 群组ID
    * @param botId 机器人ID
    */
-  async getOrCreateGroup (groupId: string, botId: string): Promise<Group> {
+  async getOrCreateGroup(groupId: string, botId: string): Promise<Group> {
     await this.getOrCreateBot(botId)
 
     let group = await this.getQuery<Group>('SELECT * FROM Groups WHERE id = ? AND botId = ?', [groupId, botId])
 
     if (!group) {
       const now = new Date().toISOString()
-      await this.runQuery(
-        'INSERT INTO Groups (id, botId, createdAt, updatedAt) VALUES (?, ?, ?, ?)',
-        [groupId, botId, now, now]
-      )
+      await this.runQuery('INSERT INTO Groups (id, botId, createdAt, updatedAt) VALUES (?, ?, ?, ?)', [groupId, botId, now, now])
       group = { id: groupId, botId, createdAt: now, updatedAt: now }
     }
 
@@ -444,7 +435,7 @@ export class DouyinDBBase {
    * @param short_id 抖音号
    * @param remark 用户昵称
    */
-  async getOrCreateDouyinUser (sec_uid: string, short_id: string = '', remark: string = ''): Promise<DouyinUser> {
+  async getOrCreateDouyinUser(sec_uid: string, short_id: string = '', remark: string = ''): Promise<DouyinUser> {
     let user = await this.getQuery<DouyinUser>('SELECT * FROM DouyinUsers WHERE sec_uid = ?', [sec_uid])
 
     if (!user) {
@@ -488,10 +479,7 @@ export class DouyinDBBase {
         params.push(now)
         params.push(sec_uid)
 
-        await this.runQuery(
-          `UPDATE DouyinUsers SET ${updates.join(', ')} WHERE sec_uid = ?`,
-          params
-        )
+        await this.runQuery(`UPDATE DouyinUsers SET ${updates.join(', ')} WHERE sec_uid = ?`, params)
         user.updatedAt = now
       }
     }
@@ -507,7 +495,13 @@ export class DouyinDBBase {
    * @param short_id 抖音号
    * @param remark 用户昵称
    */
-  async subscribeDouyinUser (groupId: string, botId: string, sec_uid: string, short_id: string = '', remark: string = ''): Promise<GroupUserSubscription> {
+  async subscribeDouyinUser(
+    groupId: string,
+    botId: string,
+    sec_uid: string,
+    short_id: string = '',
+    remark: string = ''
+  ): Promise<GroupUserSubscription> {
     await this.getOrCreateGroup(groupId, botId)
     await this.getOrCreateDouyinUser(sec_uid, short_id, remark)
 
@@ -518,10 +512,12 @@ export class DouyinDBBase {
 
     if (!subscription) {
       const now = new Date().toISOString()
-      await this.runQuery(
-        'INSERT INTO GroupUserSubscriptions (groupId, sec_uid, createdAt, updatedAt) VALUES (?, ?, ?, ?)',
-        [groupId, sec_uid, now, now]
-      )
+      await this.runQuery('INSERT INTO GroupUserSubscriptions (groupId, sec_uid, createdAt, updatedAt) VALUES (?, ?, ?, ?)', [
+        groupId,
+        sec_uid,
+        now,
+        now
+      ])
       subscription = { groupId, sec_uid, createdAt: now, updatedAt: now }
     }
 
@@ -533,17 +529,11 @@ export class DouyinDBBase {
    * @param groupId 群组ID
    * @param sec_uid 抖音用户sec_uid
    */
-  async unsubscribeDouyinUser (groupId: string, sec_uid: string): Promise<boolean> {
-    const result = await this.runQuery(
-      'DELETE FROM GroupUserSubscriptions WHERE groupId = ? AND sec_uid = ?',
-      [groupId, sec_uid]
-    )
+  async unsubscribeDouyinUser(groupId: string, sec_uid: string): Promise<boolean> {
+    const result = await this.runQuery('DELETE FROM GroupUserSubscriptions WHERE groupId = ? AND sec_uid = ?', [groupId, sec_uid])
 
     // 清除相关的作品缓存
-    await this.runQuery(
-      'DELETE FROM AwemeCaches WHERE groupId = ? AND sec_uid = ?',
-      [groupId, sec_uid]
-    )
+    await this.runQuery('DELETE FROM AwemeCaches WHERE groupId = ? AND sec_uid = ?', [groupId, sec_uid])
 
     // 检查该用户是否还有其他群组订阅
     const remainingSubscriptions = await this.getQuery<{ count: number }>(
@@ -554,16 +544,16 @@ export class DouyinDBBase {
     // 如果没有任何群组订阅该用户，删除用户记录及相关数据
     if (remainingSubscriptions && remainingSubscriptions.count === 0) {
       logger.info(`[DouyinDB] 用户 ${sec_uid} 已无任何群组订阅，清理相关数据`)
-      
+
       // 删除用户记录
       await this.runQuery('DELETE FROM DouyinUsers WHERE sec_uid = ?', [sec_uid])
-      
+
       // 删除过滤词
       await this.runQuery('DELETE FROM FilterWords WHERE sec_uid = ?', [sec_uid])
-      
+
       // 删除过滤标签
       await this.runQuery('DELETE FROM FilterTags WHERE sec_uid = ?', [sec_uid])
-      
+
       // 删除所有相关的作品缓存（所有群组的）
       await this.runQuery('DELETE FROM AwemeCaches WHERE sec_uid = ?', [sec_uid])
     }
@@ -578,7 +568,7 @@ export class DouyinDBBase {
    * @param groupId 群组ID
    * @param pushType 推送类型：post(作品列表)、favorite(喜欢列表)、recommend(推荐列表)、live(直播)
    */
-  async addAwemeCache (aweme_id: string, sec_uid: string, groupId: string, pushType: string = 'post'): Promise<AwemeCache> {
+  async addAwemeCache(aweme_id: string, sec_uid: string, groupId: string, pushType: string = 'post'): Promise<AwemeCache> {
     let cache = await this.getQuery<AwemeCache>(
       'SELECT * FROM AwemeCaches WHERE aweme_id = ? AND sec_uid = ? AND groupId = ? AND pushType = ?',
       [aweme_id, sec_uid, groupId, pushType]
@@ -611,7 +601,7 @@ export class DouyinDBBase {
    * @param groupId 群组ID
    * @param pushType 推送类型：post(作品列表)、favorite(喜欢列表)、recommend(推荐列表)、live(直播)
    */
-  async isAwemePushed (aweme_id: string, sec_uid: string, groupId: string, pushType: string = 'post'): Promise<boolean> {
+  async isAwemePushed(aweme_id: string, sec_uid: string, groupId: string, pushType: string = 'post'): Promise<boolean> {
     const result = await this.getQuery<{ count: number }>(
       'SELECT COUNT(*) as count FROM AwemeCaches WHERE aweme_id = ? AND sec_uid = ? AND groupId = ? AND pushType = ?',
       [aweme_id, sec_uid, groupId, pushType]
@@ -626,7 +616,7 @@ export class DouyinDBBase {
    * @param groupId 群组ID
    * @param pushType 推送类型
    */
-  async hasHistory (sec_uid: string, groupId: string, pushType: string): Promise<boolean> {
+  async hasHistory(sec_uid: string, groupId: string, pushType: string): Promise<boolean> {
     const result = await this.getQuery<{ count: number }>(
       'SELECT COUNT(*) as count FROM AwemeCaches WHERE sec_uid = ? AND groupId = ? AND pushType = ? LIMIT 1',
       [sec_uid, groupId, pushType]
@@ -638,7 +628,7 @@ export class DouyinDBBase {
    * 获取机器人管理的所有群组
    * @param botId 机器人ID
    */
-  async getBotGroups (botId: string): Promise<Group[]> {
+  async getBotGroups(botId: string): Promise<Group[]> {
     return await this.allQuery<Group>('SELECT * FROM Groups WHERE botId = ?', [botId])
   }
 
@@ -648,20 +638,17 @@ export class DouyinDBBase {
    * @param oldBotId 旧的机器人ID
    * @param newBotId 新的机器人ID
    */
-  async updateGroupBotId (groupId: string, oldBotId: string, newBotId: string): Promise<void> {
+  async updateGroupBotId(groupId: string, oldBotId: string, newBotId: string): Promise<void> {
     await this.getOrCreateBot(newBotId)
     const now = new Date().toISOString()
-    await this.runQuery(
-      'UPDATE Groups SET botId = ?, updatedAt = ? WHERE id = ? AND botId = ?',
-      [newBotId, now, groupId, oldBotId]
-    )
+    await this.runQuery('UPDATE Groups SET botId = ?, updatedAt = ? WHERE id = ? AND botId = ?', [newBotId, now, groupId, oldBotId])
   }
 
   /**
    * 获取群组订阅的所有抖音用户
    * @param groupId 群组ID
    */
-  async getGroupSubscriptions (groupId: string): Promise<(GroupUserSubscription & { douyinUser: DouyinUser })[]> {
+  async getGroupSubscriptions(groupId: string): Promise<(GroupUserSubscription & { douyinUser: DouyinUser })[]> {
     const subscriptions = await this.allQuery<any>(
       `SELECT 
         gus.groupId, gus.sec_uid, gus.createdAt, gus.updatedAt,
@@ -673,7 +660,7 @@ export class DouyinDBBase {
       [groupId]
     )
 
-    return subscriptions.map(sub => ({
+    return subscriptions.map((sub) => ({
       groupId: sub.groupId,
       sec_uid: sub.sec_uid,
       createdAt: sub.createdAt,
@@ -694,7 +681,7 @@ export class DouyinDBBase {
    * 获取抖音用户的所有订阅群组
    * @param sec_uid 抖音用户sec_uid
    */
-  async getUserSubscribedGroups (sec_uid: string): Promise<Group[]> {
+  async getUserSubscribedGroups(sec_uid: string): Promise<Group[]> {
     return await this.allQuery<Group>(
       `SELECT g.* FROM Groups g
       INNER JOIN GroupUserSubscriptions gus ON g.id = gus.groupId
@@ -708,7 +695,7 @@ export class DouyinDBBase {
    * @param sec_uid 抖音用户sec_uid
    * @param groupId 群组ID
    */
-  async isSubscribed (sec_uid: string, groupId: string): Promise<boolean> {
+  async isSubscribed(sec_uid: string, groupId: string): Promise<boolean> {
     const result = await this.getQuery<{ count: number }>(
       'SELECT COUNT(*) as count FROM GroupUserSubscriptions WHERE sec_uid = ? AND groupId = ?',
       [sec_uid, groupId]
@@ -722,7 +709,7 @@ export class DouyinDBBase {
    * @param sec_uid 抖音用户sec_uid
    * @returns 返回用户信息，如果不存在则返回null
    */
-  async getDouyinUser (sec_uid: string): Promise<DouyinUser | null> {
+  async getDouyinUser(sec_uid: string): Promise<DouyinUser | null> {
     const user = await this.getQuery<DouyinUser>('SELECT * FROM DouyinUsers WHERE sec_uid = ?', [sec_uid])
 
     if (user) {
@@ -737,15 +724,12 @@ export class DouyinDBBase {
    * @param sec_uid 抖音用户sec_uid
    * @param living 是否正在直播
    */
-  async updateLiveStatus (sec_uid: string, living: boolean): Promise<boolean> {
+  async updateLiveStatus(sec_uid: string, living: boolean): Promise<boolean> {
     const user = await this.getDouyinUser(sec_uid)
     if (!user) return false
 
     const now = new Date().toISOString()
-    const result = await this.runQuery(
-      'UPDATE DouyinUsers SET living = ?, updatedAt = ? WHERE sec_uid = ?',
-      [living ? 1 : 0, now, sec_uid]
-    )
+    const result = await this.runQuery('UPDATE DouyinUsers SET living = ?, updatedAt = ? WHERE sec_uid = ?', [living ? 1 : 0, now, sec_uid])
 
     return result.changes > 0
   }
@@ -754,7 +738,7 @@ export class DouyinDBBase {
    * 获取用户直播状态
    * @param sec_uid 抖音用户sec_uid
    */
-  async getLiveStatus (sec_uid: string): Promise<{ living: boolean }> {
+  async getLiveStatus(sec_uid: string): Promise<{ living: boolean }> {
     const user = await this.getDouyinUser(sec_uid)
     return { living: user?.living || false }
   }
@@ -763,7 +747,7 @@ export class DouyinDBBase {
    * 批量同步配置文件中的订阅到数据库
    * @param configItems 配置文件中的订阅项
    */
-  async syncConfigSubscriptions (configItems: douyinPushItem[]): Promise<void> {
+  async syncConfigSubscriptions(configItems: douyinPushItem[]): Promise<void> {
     // 1. 收集配置文件中的所有订阅关系
     const configSubscriptions: Map<string, Set<string>> = new Map()
 
@@ -850,8 +834,8 @@ export class DouyinDBBase {
    * 通过ID获取群组信息
    * @param groupId 群组ID
    */
-  async getGroupById (groupId: string): Promise<Group | null> {
-    return await this.getQuery<Group>('SELECT * FROM Groups WHERE id = ?', [groupId]) || null
+  async getGroupById(groupId: string): Promise<Group | null> {
+    return (await this.getQuery<Group>('SELECT * FROM Groups WHERE id = ?', [groupId])) || null
   }
 
   /**
@@ -859,14 +843,11 @@ export class DouyinDBBase {
    * @param sec_uid 抖音用户sec_uid
    * @param filterMode 过滤模式
    */
-  async updateFilterMode (sec_uid: string, filterMode: 'blacklist' | 'whitelist'): Promise<DouyinUser> {
+  async updateFilterMode(sec_uid: string, filterMode: 'blacklist' | 'whitelist'): Promise<DouyinUser> {
     const user = await this.getOrCreateDouyinUser(sec_uid)
     const now = new Date().toISOString()
 
-    await this.runQuery(
-      'UPDATE DouyinUsers SET filterMode = ?, updatedAt = ? WHERE sec_uid = ?',
-      [filterMode, now, sec_uid]
-    )
+    await this.runQuery('UPDATE DouyinUsers SET filterMode = ?, updatedAt = ? WHERE sec_uid = ?', [filterMode, now, sec_uid])
 
     return { ...user, filterMode, updatedAt: now }
   }
@@ -876,20 +857,19 @@ export class DouyinDBBase {
    * @param sec_uid 抖音用户sec_uid
    * @param word 过滤词
    */
-  async addFilterWord (sec_uid: string, word: string): Promise<FilterWord> {
+  async addFilterWord(sec_uid: string, word: string): Promise<FilterWord> {
     await this.getOrCreateDouyinUser(sec_uid)
 
-    let filterWord = await this.getQuery<FilterWord>(
-      'SELECT * FROM FilterWords WHERE sec_uid = ? AND word = ?',
-      [sec_uid, word]
-    )
+    let filterWord = await this.getQuery<FilterWord>('SELECT * FROM FilterWords WHERE sec_uid = ? AND word = ?', [sec_uid, word])
 
     if (!filterWord) {
       const now = new Date().toISOString()
-      const result = await this.runQuery(
-        'INSERT INTO FilterWords (sec_uid, word, createdAt, updatedAt) VALUES (?, ?, ?, ?)',
-        [sec_uid, word, now, now]
-      )
+      const result = await this.runQuery('INSERT INTO FilterWords (sec_uid, word, createdAt, updatedAt) VALUES (?, ?, ?, ?)', [
+        sec_uid,
+        word,
+        now,
+        now
+      ])
       filterWord = {
         id: result.lastID,
         sec_uid,
@@ -907,11 +887,8 @@ export class DouyinDBBase {
    * @param sec_uid 抖音用户sec_uid
    * @param word 过滤词
    */
-  async removeFilterWord (sec_uid: string, word: string): Promise<boolean> {
-    const result = await this.runQuery(
-      'DELETE FROM FilterWords WHERE sec_uid = ? AND word = ?',
-      [sec_uid, word]
-    )
+  async removeFilterWord(sec_uid: string, word: string): Promise<boolean> {
+    const result = await this.runQuery('DELETE FROM FilterWords WHERE sec_uid = ? AND word = ?', [sec_uid, word])
     return result.changes > 0
   }
 
@@ -920,20 +897,19 @@ export class DouyinDBBase {
    * @param sec_uid 抖音用户sec_uid
    * @param tag 过滤标签
    */
-  async addFilterTag (sec_uid: string, tag: string): Promise<FilterTag> {
+  async addFilterTag(sec_uid: string, tag: string): Promise<FilterTag> {
     await this.getOrCreateDouyinUser(sec_uid)
 
-    let filterTag = await this.getQuery<FilterTag>(
-      'SELECT * FROM FilterTags WHERE sec_uid = ? AND tag = ?',
-      [sec_uid, tag]
-    )
+    let filterTag = await this.getQuery<FilterTag>('SELECT * FROM FilterTags WHERE sec_uid = ? AND tag = ?', [sec_uid, tag])
 
     if (!filterTag) {
       const now = new Date().toISOString()
-      const result = await this.runQuery(
-        'INSERT INTO FilterTags (sec_uid, tag, createdAt, updatedAt) VALUES (?, ?, ?, ?)',
-        [sec_uid, tag, now, now]
-      )
+      const result = await this.runQuery('INSERT INTO FilterTags (sec_uid, tag, createdAt, updatedAt) VALUES (?, ?, ?, ?)', [
+        sec_uid,
+        tag,
+        now,
+        now
+      ])
       filterTag = {
         id: result.lastID,
         sec_uid,
@@ -951,11 +927,8 @@ export class DouyinDBBase {
    * @param sec_uid 抖音用户sec_uid
    * @param tag 过滤标签
    */
-  async removeFilterTag (sec_uid: string, tag: string): Promise<boolean> {
-    const result = await this.runQuery(
-      'DELETE FROM FilterTags WHERE sec_uid = ? AND tag = ?',
-      [sec_uid, tag]
-    )
+  async removeFilterTag(sec_uid: string, tag: string): Promise<boolean> {
+    const result = await this.runQuery('DELETE FROM FilterTags WHERE sec_uid = ? AND tag = ?', [sec_uid, tag])
     return result.changes > 0
   }
 
@@ -963,25 +936,25 @@ export class DouyinDBBase {
    * 获取用户的所有过滤词
    * @param sec_uid 抖音用户sec_uid
    */
-  async getFilterWords (sec_uid: string): Promise<string[]> {
+  async getFilterWords(sec_uid: string): Promise<string[]> {
     const filterWords = await this.allQuery<FilterWord>('SELECT * FROM FilterWords WHERE sec_uid = ?', [sec_uid])
-    return filterWords.map(word => word.word)
+    return filterWords.map((word) => word.word)
   }
 
   /**
    * 获取用户的所有过滤标签
    * @param sec_uid 抖音用户sec_uid
    */
-  async getFilterTags (sec_uid: string): Promise<string[]> {
+  async getFilterTags(sec_uid: string): Promise<string[]> {
     const filterTags = await this.allQuery<FilterTag>('SELECT * FROM FilterTags WHERE sec_uid = ?', [sec_uid])
-    return filterTags.map(tag => tag.tag)
+    return filterTags.map((tag) => tag.tag)
   }
 
   /**
    * 获取用户的过滤配置
    * @param sec_uid 抖音用户sec_uid
    */
-  async getFilterConfig (sec_uid: string): Promise<{ filterMode: 'blacklist' | 'whitelist', filterWords: string[], filterTags: string[] }> {
+  async getFilterConfig(sec_uid: string): Promise<{ filterMode: 'blacklist' | 'whitelist'; filterWords: string[]; filterTags: string[] }> {
     const user = await this.getOrCreateDouyinUser(sec_uid)
     const filterWords = await this.getFilterWords(sec_uid)
     const filterTags = await this.getFilterTags(sec_uid)
@@ -998,7 +971,7 @@ export class DouyinDBBase {
    * @param PushItem 推送项
    * @param tags 标签列表
    */
-  async shouldFilter (PushItem: DouyinPushItem, tags: string[] = []): Promise<boolean> {
+  async shouldFilter(PushItem: DouyinPushItem, tags: string[] = []): Promise<boolean> {
     // 使用 PushItem.sec_uid 而不是 PushItem.Detail_Data.sec_uid
     const sec_uid = PushItem.sec_uid
     if (!sec_uid) {
@@ -1016,12 +989,10 @@ export class DouyinDBBase {
     const desc = PushItem.Detail_Data.desc ?? ''
 
     // 检查内容中是否包含过滤词
-    const hasFilterWord = filterWords.some(word => desc.includes(word))
+    const hasFilterWord = filterWords.some((word) => desc.includes(word))
 
     // 检查标签中是否包含过滤标签
-    const hasFilterTag = filterTags.some(filterTag =>
-      tags.some(tag => tag === filterTag)
-    )
+    const hasFilterTag = filterTags.some((filterTag) => tags.some((tag) => tag === filterTag))
 
     logger.debug(`
       作者：${PushItem.remark}
@@ -1029,7 +1000,7 @@ export class DouyinDBBase {
       命中词：[${filterWords.join('], [')}]
       命中标签：[${filterTags.join('], [')}]
       过滤模式：${filterMode}
-      是否过滤：${(hasFilterWord || hasFilterTag) ? logger.red(`${hasFilterWord || hasFilterTag}`) : logger.green(`${hasFilterWord || hasFilterTag}`)}
+      是否过滤：${hasFilterWord || hasFilterTag ? logger.red(`${hasFilterWord || hasFilterTag}`) : logger.green(`${hasFilterWord || hasFilterTag}`)}
       作品地址：${logger.green(`https://www.douyin.com/video/${PushItem.Detail_Data.aweme_id}`)}
       `)
 
@@ -1071,20 +1042,17 @@ export class DouyinDBBase {
    * @param days 保留最近几天的记录
    * @returns 删除的记录数量
    */
-  async cleanOldAwemeCache (days: number = 7): Promise<number> {
+  async cleanOldAwemeCache(days: number = 7): Promise<number> {
     const cutoffDate = new Date()
     cutoffDate.setDate(cutoffDate.getDate() - days)
     const cutoffDateStr = cutoffDate.toISOString()
 
-    const result = await this.runQuery(
-      'DELETE FROM AwemeCaches WHERE createdAt < ?',
-      [cutoffDateStr]
-    )
+    const result = await this.runQuery('DELETE FROM AwemeCaches WHERE createdAt < ?', [cutoffDateStr])
     return result.changes ?? 0
   }
 
   /** 为了向后兼容，保留groupRepository和awemeCacheRepository属性 */
-  get groupRepository () {
+  get groupRepository() {
     return {
       find: async (options?: {
         where?: {
@@ -1100,18 +1068,20 @@ export class DouyinDBBase {
     }
   }
 
-  get awemeCacheRepository () {
+  get awemeCacheRepository() {
     return {
-      find: async <T = AwemeCache & { createdAt: Date, updatedAt: Date }>(options: {
-        where?: {
-          groupId?: string
-          sec_uid?: string
-          aweme_id?: string
-        }
-        order?: Record<string, 'ASC' | 'DESC'>
-        take?: number
-        relations?: string[]
-      } = {}): Promise<T[]> => {
+      find: async <T = AwemeCache & { createdAt: Date; updatedAt: Date }>(
+        options: {
+          where?: {
+            groupId?: string
+            sec_uid?: string
+            aweme_id?: string
+          }
+          order?: Record<string, 'ASC' | 'DESC'>
+          take?: number
+          relations?: string[]
+        } = {}
+      ): Promise<T[]> => {
         const { where = {}, order, take, relations } = options
         let sql = 'SELECT * FROM AwemeCaches'
         const params: string[] = []
@@ -1176,53 +1146,34 @@ export class DouyinDBBase {
         }
 
         // 转换日期字符串为Date对象
-        return caches.map(cache => ({
+        return caches.map((cache) => ({
           ...cache,
           createdAt: new Date(cache.createdAt),
           updatedAt: new Date(cache.updatedAt)
         })) as T[]
       },
-      delete: async (conditions: {
-        groupId?: string
-        sec_uid?: string
-        aweme_id?: string
-      }) => {
+      delete: async (conditions: { groupId?: string; sec_uid?: string; aweme_id?: string }) => {
         const { groupId, sec_uid, aweme_id } = conditions
 
         // 优先处理 aweme_id + groupId 的精确删除（单条记录）
         if (aweme_id && groupId) {
-          const result = await this.runQuery(
-            'DELETE FROM AwemeCaches WHERE aweme_id = ? AND groupId = ?',
-            [aweme_id, groupId]
-          )
+          const result = await this.runQuery('DELETE FROM AwemeCaches WHERE aweme_id = ? AND groupId = ?', [aweme_id, groupId])
           return { affected: result.changes }
         }
         if (groupId && sec_uid) {
-          const result = await this.runQuery(
-            'DELETE FROM AwemeCaches WHERE groupId = ? AND sec_uid = ?',
-            [groupId, sec_uid]
-          )
+          const result = await this.runQuery('DELETE FROM AwemeCaches WHERE groupId = ? AND sec_uid = ?', [groupId, sec_uid])
           return { affected: result.changes }
         }
         if (groupId) {
-          const result = await this.runQuery(
-            'DELETE FROM AwemeCaches WHERE groupId = ?',
-            [groupId]
-          )
+          const result = await this.runQuery('DELETE FROM AwemeCaches WHERE groupId = ?', [groupId])
           return { affected: result.changes }
         }
         if (sec_uid) {
-          const result = await this.runQuery(
-            'DELETE FROM AwemeCaches WHERE sec_uid = ?',
-            [sec_uid]
-          )
+          const result = await this.runQuery('DELETE FROM AwemeCaches WHERE sec_uid = ?', [sec_uid])
           return { affected: result.changes }
         }
         if (aweme_id) {
-          const result = await this.runQuery(
-            'DELETE FROM AwemeCaches WHERE aweme_id = ?',
-            [aweme_id]
-          )
+          const result = await this.runQuery('DELETE FROM AwemeCaches WHERE aweme_id = ?', [aweme_id])
           return { affected: result.changes }
         }
         return { affected: 0 }
@@ -1236,7 +1187,7 @@ export class DouyinDBBase {
    * @param sec_uid 用户sec_uid
    * @param pushType 推送类型
    */
-  async isAwemeInList (aweme_id: string, sec_uid: string, pushType: string): Promise<boolean> {
+  async isAwemeInList(aweme_id: string, sec_uid: string, pushType: string): Promise<boolean> {
     const result = await this.getQuery<{ count: number }>(
       'SELECT COUNT(*) as count FROM ListSnapshots WHERE aweme_id = ? AND sec_uid = ? AND pushType = ?',
       [aweme_id, sec_uid, pushType]
@@ -1250,15 +1201,12 @@ export class DouyinDBBase {
    * @param pushType 推送类型
    * @param aweme_ids 作品ID列表
    */
-  async updateListSnapshot (sec_uid: string, pushType: string, aweme_ids: string[]): Promise<void> {
+  async updateListSnapshot(sec_uid: string, pushType: string, aweme_ids: string[]): Promise<void> {
     const now = new Date().toISOString()
-    
+
     // 先删除该用户该类型的所有旧快照
-    await this.runQuery(
-      'DELETE FROM ListSnapshots WHERE sec_uid = ? AND pushType = ?',
-      [sec_uid, pushType]
-    )
-    
+    await this.runQuery('DELETE FROM ListSnapshots WHERE sec_uid = ? AND pushType = ?', [sec_uid, pushType])
+
     // 插入新快照
     for (const aweme_id of aweme_ids) {
       await this.runQuery(

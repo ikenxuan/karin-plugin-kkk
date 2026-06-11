@@ -156,10 +156,18 @@ const decodePngToPixels = (buffer: Buffer): { data: Buffer; width: number; heigh
       const c = x >= channels ? prevRow[x - channels] : 0
 
       switch (filter) {
-        case 0: curRow[x] = val; break
-        case 1: curRow[x] = (val + a) & 0xff; break
-        case 2: curRow[x] = (val + b) & 0xff; break
-        case 3: curRow[x] = (val + ((a + b) >> 1)) & 0xff; break
+        case 0:
+          curRow[x] = val
+          break
+        case 1:
+          curRow[x] = (val + a) & 0xff
+          break
+        case 2:
+          curRow[x] = (val + b) & 0xff
+          break
+        case 3:
+          curRow[x] = (val + ((a + b) >> 1)) & 0xff
+          break
         case 4: {
           const p = a + b - c
           const pa = Math.abs(p - a)
@@ -189,16 +197,8 @@ const createPosterPalette = (seed: PosterPaletteSeed, isDark: boolean): Bilibili
   const { dominant, vividCandidate } = seed
   const tunedPrimary = tuneRgb(dominant, 0.46, isDark ? 0.66 : 0.46)
   const tunedAccent = tuneRgb(vividCandidate, 0.58, isDark ? 0.72 : 0.58)
-  const bgBase = mixRgb(
-    tunedPrimary,
-    isDark ? { r: 7, g: 15, b: 24 } : { r: 255, g: 255, b: 255 },
-    isDark ? 0.78 : 0.88
-  )
-  const deepColor = mixRgb(
-    tunedAccent,
-    isDark ? { r: 234, g: 249, b: 255 } : { r: 11, g: 32, b: 42 },
-    0.62
-  )
+  const bgBase = mixRgb(tunedPrimary, isDark ? { r: 7, g: 15, b: 24 } : { r: 255, g: 255, b: 255 }, isDark ? 0.78 : 0.88)
+  const deepColor = mixRgb(tunedAccent, isDark ? { r: 234, g: 249, b: 255 } : { r: 11, g: 32, b: 42 }, 0.62)
 
   return {
     bgColor: rgbToCss(bgBase),
@@ -267,10 +267,10 @@ export const createPosterPalettePlugin = (): Plugin => {
   return {
     name: '封面动态取色',
     enforce: 'pre',
-    apply (request: ApplyRequest) {
+    apply(request: ApplyRequest) {
       return request.templateType === 'bilibili' && request.templateName === 'dynamic/DYNAMIC_TYPE_LIVE_RCMD'
     },
-    async beforeRender (ctx: BeforeRenderContext) {
+    async beforeRender(ctx: BeforeRenderContext) {
       const data = ctx.request.data || {}
       const imageUrl = typeof data.image_url === 'string' ? data.image_url : ''
 

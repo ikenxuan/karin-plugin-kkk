@@ -9,7 +9,7 @@ export const isConfigRecord = (value: unknown): value is ConfigRecord => {
   return Boolean(value && typeof value === 'object')
 }
 
-export const getValue = <T,>(source: ConfigType | null, path: ConfigPath, fallback: T): T => {
+export const getValue = <T>(source: ConfigType | null, path: ConfigPath, fallback: T): T => {
   if (!source) return fallback
 
   const result = path.reduce<unknown>((current, key) => {

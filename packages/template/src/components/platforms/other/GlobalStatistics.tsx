@@ -41,47 +41,50 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
   // 弥散光颜色配置
   const glowColors = useDarkTheme
     ? {
-      primary: 'rgba(236, 72, 153, 0.4)',
-      secondary: 'rgba(139, 92, 246, 0.3)',
-      accent: 'rgba(59, 130, 246, 0.25)'
-    }
+        primary: 'rgba(236, 72, 153, 0.4)',
+        secondary: 'rgba(139, 92, 246, 0.3)',
+        accent: 'rgba(59, 130, 246, 0.25)'
+      }
     : {
-      primary: 'rgba(244, 114, 182, 0.5)',
-      secondary: 'rgba(167, 139, 250, 0.4)',
-      accent: 'rgba(96, 165, 250, 0.3)'
-    }
+        primary: 'rgba(244, 114, 182, 0.5)',
+        secondary: 'rgba(167, 139, 250, 0.4)',
+        accent: 'rgba(96, 165, 250, 0.3)'
+      }
 
   // 计算总群组数
-  const totalGroups = new Set(props.data.allStats.map(s => s.groupId)).size
+  const totalGroups = new Set(props.data.allStats.map((s) => s.groupId)).size
 
   // 计算总用户数
-  const totalUsers = new Set(props.data.allStats.map(s => s.userId)).size
+  const totalUsers = new Set(props.data.allStats.map((s) => s.userId)).size
 
   // 计算总解析次数
   const totalParses = props.data.allStats.reduce((sum, s) => sum + s.parseCount, 0)
 
   // 计算各平台统计
   const platformStats = {
-    douyin: props.data.allStats.filter(s => s.platform === 'douyin').reduce((sum, s) => sum + s.parseCount, 0),
-    bilibili: props.data.allStats.filter(s => s.platform === 'bilibili').reduce((sum, s) => sum + s.parseCount, 0),
-    kuaishou: props.data.allStats.filter(s => s.platform === 'kuaishou').reduce((sum, s) => sum + s.parseCount, 0),
-    xiaohongshu: props.data.allStats.filter(s => s.platform === 'xiaohongshu').reduce((sum, s) => sum + s.parseCount, 0)
+    douyin: props.data.allStats.filter((s) => s.platform === 'douyin').reduce((sum, s) => sum + s.parseCount, 0),
+    bilibili: props.data.allStats.filter((s) => s.platform === 'bilibili').reduce((sum, s) => sum + s.parseCount, 0),
+    kuaishou: props.data.allStats.filter((s) => s.platform === 'kuaishou').reduce((sum, s) => sum + s.parseCount, 0),
+    xiaohongshu: props.data.allStats.filter((s) => s.platform === 'xiaohongshu').reduce((sum, s) => sum + s.parseCount, 0)
   }
 
   // 按群组聚合数据
-  const groupMap = new Map<string, {
-    groupId: string
-    groupName?: string
-    groupAvatar?: string
-    totalParses: number
-    uniqueUsers: number
-    platforms: {
-      douyin: number
-      bilibili: number
-      kuaishou: number
-      xiaohongshu: number
+  const groupMap = new Map<
+    string,
+    {
+      groupId: string
+      groupName?: string
+      groupAvatar?: string
+      totalParses: number
+      uniqueUsers: number
+      platforms: {
+        douyin: number
+        bilibili: number
+        kuaishou: number
+        xiaohongshu: number
+      }
     }
-  }>()
+  >()
 
   for (const stat of props.data.allStats) {
     if (!groupMap.has(stat.groupId)) {
@@ -108,9 +111,7 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
 
   // 计算每个群组的唯一用户数
   for (const [groupId, groupData] of groupMap.entries()) {
-    const uniqueUsers = new Set(
-      props.data.allStats.filter(s => s.groupId === groupId).map(s => s.userId)
-    )
+    const uniqueUsers = new Set(props.data.allStats.filter((s) => s.groupId === groupId).map((s) => s.userId))
     groupData.uniqueUsers = uniqueUsers.size
   }
 
@@ -149,7 +150,7 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
   }))
 
   // 保存日期标签用于格式化
-  const dateLabels = props.data.historyData.map(item => item.date.substring(5))
+  const dateLabels = props.data.historyData.map((item) => item.date.substring(5))
 
   // 智能选择 X 轴刻度 - 确保首尾都显示
   const getXAxisTicks = () => {
@@ -184,7 +185,7 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
   }
 
   // 计算 Y 轴的最大值（向上取整到更合理的刻度）
-  const maxYValue = lineChartDataWithIndex.length > 0 ? Math.max(...lineChartDataWithIndex.map(d => d.y)) : 10
+  const maxYValue = lineChartDataWithIndex.length > 0 ? Math.max(...lineChartDataWithIndex.map((d) => d.y)) : 10
   const yDomainMax = Math.ceil(maxYValue * 1.1) // 改为 1.1 倍，留白更少
 
   // 格式化 Y 轴数字
@@ -206,10 +207,7 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
   }
 
   return (
-    <DefaultLayout
-      {...props}
-      className="relative overflow-hidden bg-surface"
-    >
+    <DefaultLayout {...props} className="relative overflow-hidden bg-surface">
       {/* 弥散光背景层 */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div
@@ -256,9 +254,7 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
 
       {/* 背景大字装饰 */}
       <div className="absolute top-30 right-15 pointer-events-none select-none opacity-[0.03] z-0">
-        <span className="text-[200px] font-black tracking-tighter leading-none block text-right text-foreground">
-          GLOBAL
-        </span>
+        <span className="text-[200px] font-black tracking-tighter leading-none block text-right text-foreground">GLOBAL</span>
       </div>
 
       {/* 装饰性图形 */}
@@ -277,21 +273,14 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
 
       {/* 主要内容区域 */}
       <div className="relative z-10 p-18 flex flex-col min-h-[calc(100vh-200px)]">
-
         {/* 头部区域 */}
         <div className="mb-20 border-b-4 border-border/30 pb-16">
           <div className="flex items-center gap-5 opacity-60 mb-8">
             <span className="w-4 h-4 rounded-full bg-indigo-500 animate-pulse" />
-            <span className="text-3xl font-mono tracking-widest text-muted/80">
-              GLOBAL_ANALYTICS
-            </span>
+            <span className="text-3xl font-mono tracking-widest text-muted/80">GLOBAL_ANALYTICS</span>
           </div>
-          <h1 className="text-[8rem] font-black leading-none tracking-tighter text-foreground/90 mb-6">
-            全局解析统计
-          </h1>
-          <div className="text-5xl font-bold text-foreground/80">
-            全局数据概览
-          </div>
+          <h1 className="text-[8rem] font-black leading-none tracking-tighter text-foreground/90 mb-6">全局解析统计</h1>
+          <div className="text-5xl font-bold text-foreground/80">全局数据概览</div>
         </div>
 
         {/* 核心数据卡片 */}
@@ -299,12 +288,8 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
           <div className="flex items-center gap-8 mb-16">
             <div className="w-5 h-24 rounded-full bg-indigo-500" />
             <div className="flex flex-col">
-              <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">
-                数据概览
-              </h2>
-              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">
-                OVERVIEW
-              </span>
+              <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">数据概览</h2>
+              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">OVERVIEW</span>
             </div>
           </div>
 
@@ -314,22 +299,17 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
               { title: '使用用户', titleEn: 'USERS', value: totalUsers, unit: '人' },
               { title: '总解析', titleEn: 'PARSES', value: totalParses, unit: '次' }
             ].map((card) => (
-              <div key={card.titleEn} className="relative rounded-3xl bg-surface/40 backdrop-blur-md border-2 border-border/40 overflow-hidden">
+              <div
+                key={card.titleEn}
+                className="relative rounded-3xl bg-surface/40 backdrop-blur-md border-2 border-border/40 overflow-hidden"
+              >
                 <div className="p-6 border-border/40">
-                  <div className="text-3xl font-black text-foreground/90">
-                    {card.title}
-                  </div>
-                  <div className="text-lg font-medium tracking-widest uppercase text-muted/70 mt-1 opacity-60">
-                    {card.titleEn}
-                  </div>
+                  <div className="text-3xl font-black text-foreground/90">{card.title}</div>
+                  <div className="text-lg font-medium tracking-widest uppercase text-muted/70 mt-1 opacity-60">{card.titleEn}</div>
                 </div>
                 <div className="p-10 pt-2 flex items-end justify-between">
-                  <div className="text-[4.5rem] font-black leading-none text-foreground/90">
-                    {formatNumber(card.value)}
-                  </div>
-                  <div className="text-3xl font-medium text-foreground/80 pb-1">
-                    {card.unit}
-                  </div>
+                  <div className="text-[4.5rem] font-black leading-none text-foreground/90">{formatNumber(card.value)}</div>
+                  <div className="text-3xl font-medium text-foreground/80 pb-1">{card.unit}</div>
                 </div>
               </div>
             ))}
@@ -342,12 +322,8 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
             <div className="flex items-center gap-8 mb-16">
               <div className="w-5 h-24 rounded-full bg-blue-500" />
               <div className="flex flex-col">
-                <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">
-                  趋势分析
-                </h2>
-                <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">
-                  TREND ANALYSIS
-                </span>
+                <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">趋势分析</h2>
+                <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">TREND ANALYSIS</span>
               </div>
             </div>
 
@@ -421,7 +397,7 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
                   <VictoryLine
                     data={lineChartDataWithIndex}
                     style={{
-                      data: { 
+                      data: {
                         stroke: '#8b5cf6',
                         strokeWidth: 4
                       }
@@ -481,12 +457,8 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
           <div className="flex items-center gap-8 mb-16">
             <div className="w-5 h-24 rounded-full bg-violet-500" />
             <div className="flex flex-col">
-              <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">
-                平台详情
-              </h2>
-              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">
-                PLATFORMS
-              </span>
+              <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">平台详情</h2>
+              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">PLATFORMS</span>
             </div>
           </div>
 
@@ -512,9 +484,7 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
                   innerRadius={220}
                   radius={320}
                   padAngle={3}
-                  colorScale={Object.keys(platformStats).map(
-                    platform => platformConfig[platform as keyof typeof platformConfig].color
-                  )}
+                  colorScale={Object.keys(platformStats).map((platform) => platformConfig[platform as keyof typeof platformConfig].color)}
                   style={{
                     labels: {
                       fontSize: 40,
@@ -538,17 +508,10 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
 
                 return (
                   <div key={platform} className="flex items-center gap-8">
-                    <div
-                      className="w-14 h-14 rounded-lg shrink-0"
-                      style={{ backgroundColor: config.color }}
-                    />
+                    <div className="w-14 h-14 rounded-lg shrink-0" style={{ backgroundColor: config.color }} />
                     <div className="flex-1">
-                      <div className="text-4xl font-bold text-foreground/90 mb-2">
-                        {config.name}
-                      </div>
-                      <div className="text-2xl text-foreground/80 mb-2">
-                        {config.nameEn}
-                      </div>
+                      <div className="text-4xl font-bold text-foreground/90 mb-2">{config.name}</div>
+                      <div className="text-2xl text-foreground/80 mb-2">{config.nameEn}</div>
                       <div className="text-3xl text-foreground/80">
                         <span className="font-black text-foreground/90">{formatWithCommas(count)}</span> 次
                         <span className="text-2xl ml-2">({percentage}%)</span>
@@ -566,12 +529,8 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
           <div className="flex items-center gap-8 mb-16">
             <div className="w-5 h-24 rounded-full bg-yellow-500" />
             <div className="flex flex-col">
-              <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">
-                群组排行
-              </h2>
-              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">
-                TOP GROUPS
-              </span>
+              <h2 className="text-[5rem] font-black tracking-tight leading-none text-foreground/90">群组排行</h2>
+              <span className="text-2xl font-medium tracking-[0.15em] uppercase text-muted/70 mt-2">TOP GROUPS</span>
             </div>
           </div>
 
@@ -594,19 +553,11 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
                   {/* 群组信息 */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-4 mb-3">
-                      <div className="text-4xl font-black text-foreground/90">
-                        {group.groupName || `群组 ${group.groupId}`}
-                      </div>
+                      <div className="text-4xl font-black text-foreground/90">{group.groupName || `群组 ${group.groupId}`}</div>
                       {/* 前三名奖杯图标 */}
-                      {index === 0 && (
-                        <RiTrophyFill size={48} className="text-yellow-400 shrink-0" />
-                      )}
-                      {index === 1 && (
-                        <RiTrophyFill size={48} className="text-gray-400 shrink-0" />
-                      )}
-                      {index === 2 && (
-                        <RiTrophyFill size={48} className="text-orange-400 shrink-0" />
-                      )}
+                      {index === 0 && <RiTrophyFill size={48} className="text-yellow-400 shrink-0" />}
+                      {index === 1 && <RiTrophyFill size={48} className="text-gray-400 shrink-0" />}
+                      {index === 2 && <RiTrophyFill size={48} className="text-orange-400 shrink-0" />}
                     </div>
                     <div className="text-2xl text-foreground/80 mb-4">
                       {group.groupId} · {formatWithCommas(group.uniqueUsers)} 人使用
@@ -617,14 +568,8 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
                         const config = platformConfig[platform as keyof typeof platformConfig]
                         return (
                           <div key={platform} className="flex items-center gap-3">
-                            <img
-                              src={config.logo}
-                              alt={config.name}
-                              className="h-10 w-auto object-contain"
-                            />
-                            <span className="text-3xl font-bold text-foreground/80">
-                              {formatWithCommas(count)}
-                            </span>
+                            <img src={config.logo} alt={config.name} className="h-10 w-auto object-contain" />
+                            <span className="text-3xl font-bold text-foreground/80">{formatWithCommas(count)}</span>
                           </div>
                         )
                       })}
@@ -633,12 +578,8 @@ export const GlobalStatistics: React.FC<GlobalStatisticsProps> = (props) => {
 
                   {/* 总次数 */}
                   <div className="shrink-0 text-right">
-                    <div className="text-[5rem] font-black text-foreground/90 leading-none">
-                      {formatWithCommas(group.totalParses)}
-                    </div>
-                    <div className="text-3xl text-foreground/80 mt-2">
-                      次
-                    </div>
+                    <div className="text-[5rem] font-black text-foreground/90 leading-none">{formatWithCommas(group.totalParses)}</div>
+                    <div className="text-3xl text-foreground/80 mt-2">次</div>
                   </div>
                 </div>
               )

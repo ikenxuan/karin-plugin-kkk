@@ -24,8 +24,7 @@ export interface BilibiliCommentProps extends BaseComponentProps<{
   Resolution: string | null
   /** 评论数据 */
   CommentsData: CommentItem[]
-}> {
-}
+}> {}
 
 /**
  * 粉丝卡片信息接口

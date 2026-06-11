@@ -15,7 +15,7 @@ export class AmagiError extends Error {
   data: any
   rawError: any
 
-  constructor (code: number, message: string, data: any, rawError: any) {
+  constructor(code: number, message: string, data: any, rawError: any) {
     super(message)
     this.name = 'AmagiError'
     this.code = code
@@ -29,7 +29,7 @@ export class AmagiBase {
   /** 解析库实例 */
   amagi: AmagiClient
 
-  constructor () {
+  constructor() {
     const client = this.createAmagiClient()
     this.amagi = this.wrapAmagiClient(client)
   }
@@ -55,9 +55,9 @@ export class AmagiBase {
    * 重载配置 - 重新创建 Amagi Client 实例
    * 当配置文件中的 cookies 或 request 配置更新后，调用此方法使新配置生效
    */
-  reloadConfig () {
+  reloadConfig() {
     logger.debug('[AmagiClient] 检测到配置变化，正在重载...')
-    
+
     // 记录旧配置（用于调试）
     const oldCookies = {
       douyin: Config.cookies.douyin?.substring(0, 20) + '...',
@@ -65,11 +65,11 @@ export class AmagiBase {
       kuaishou: Config.cookies.kuaishou?.substring(0, 20) + '...',
       xiaohongshu: Config.cookies.xiaohongshu?.substring(0, 20) + '...'
     }
-    
+
     // 重新创建客户端实例
     const client = this.createAmagiClient()
     this.amagi = this.wrapAmagiClient(client)
-    
+
     // 记录新配置（用于调试）
     const newCookies = {
       douyin: Config.cookies.douyin?.substring(0, 20) + '...',
@@ -77,17 +77,16 @@ export class AmagiBase {
       kuaishou: Config.cookies.kuaishou?.substring(0, 20) + '...',
       xiaohongshu: Config.cookies.xiaohongshu?.substring(0, 20) + '...'
     }
-    
+
     logger.debug('[AmagiClient] 配置重载完成')
     logger.debug(`[AmagiClient] Cookie 变化对比:\n${util.inspect({ 旧配置: oldCookies, 新配置: newCookies }, { colors: true, depth: 2 })}`)
   }
 
   /** 包装解析库实例，递归代理所有嵌套对象的方法 */
   protected wrapAmagiClient = (client: AmagiClient): AmagiClient => {
-
     const createProxy = (target: any): any => {
       return new Proxy(target, {
-        get (obj: any, prop: string | symbol) {
+        get(obj: any, prop: string | symbol) {
           const value = obj[prop]
 
           // 如果是对象（非 null），递归代理
@@ -156,10 +155,7 @@ export const SOFT_ERROR_CODES = {
  * @param fn           - 经过代理包装的 amagi 方法调用
  * @param allowedCodes - 不应抛出异常的错误码列表
  */
-export const softFetch = async <T>(
-  fn: () => Promise<Result<T>>,
-  allowedCodes: number[]
-): Promise<Result<T>> => {
+export const softFetch = async <T>(fn: () => Promise<Result<T>>, allowedCodes: number[]): Promise<Result<T>> => {
   try {
     return await fn()
   } catch (err) {
@@ -179,7 +175,7 @@ export const softFetch = async <T>(
 /** 获取已初始化的解析库实例（单例） */
 const createLiveProxy = <T extends object>(getter: () => T): T => {
   return new Proxy({} as T, {
-    get (_target, prop: string | symbol) {
+    get(_target, prop: string | symbol) {
       const current = getter()
       const value = Reflect.get(current, prop)
 

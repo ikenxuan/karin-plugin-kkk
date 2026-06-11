@@ -2,10 +2,11 @@
  * 移动端抽屉菜单组件
  */
 
-import { useEffect } from 'react'
-import { X, Settings, FileText, HelpCircle, LogOut } from 'lucide-react'
 import { Button, Drawer, cn, Avatar } from '@heroui/react'
 import { useMemoizedFn } from 'ahooks'
+import { X, Settings, FileText, HelpCircle, LogOut } from 'lucide-react'
+import { useEffect } from 'react'
+
 import { clearAuthTokens } from '../../auth/token'
 import { USER_AVATAR_URL } from '../../constants/user'
 import type { MainMenuKey } from '../../types/navigation'
@@ -22,7 +23,7 @@ interface MobileDrawerProps {
  */
 const menuItems = [
   { id: 'config', label: '配置管理', icon: Settings },
-  { id: 'about', label: '关于插件', icon: FileText },
+  { id: 'about', label: '关于插件', icon: FileText }
 ]
 
 /**
@@ -72,14 +73,17 @@ const MobileDrawer = ({ open, onClose, activeMenu, onMenuChange }: MobileDrawerP
   }, [open])
 
   return (
-    <Drawer isOpen={open} onOpenChange={(isOpen) => {
-      if (!isOpen) onClose()
-    }}>
+    <Drawer
+      isOpen={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onClose()
+      }}
+    >
       <Drawer.Backdrop isDismissable className="backdrop-blur-sm">
         <Drawer.Content placement="right">
-          <Drawer.Dialog className='px-4'>
+          <Drawer.Dialog className="px-4">
             <Drawer.Header className="flex items-center justify-between pb-4">
-              <Drawer.CloseTrigger aria-label="关闭菜单" className='mr-2'>
+              <Drawer.CloseTrigger aria-label="关闭菜单" className="mr-2">
                 <X size={24} aria-hidden="true" />
               </Drawer.CloseTrigger>
             </Drawer.Header>
@@ -116,8 +120,8 @@ const MobileDrawer = ({ open, onClose, activeMenu, onMenuChange }: MobileDrawerP
                       aria-current={isActive ? 'page' : undefined}
                       onPress={() => onMenuChange(item.id as MainMenuKey)}
                     >
-                      <Icon size={20} className={cn("shrink-0 mr-3", !isActive && "text-muted")} aria-hidden="true" />
-                      <span className={cn("truncate", isActive && "font-semibold")}>{item.label}</span>
+                      <Icon size={20} className={cn('shrink-0 mr-3', !isActive && 'text-muted')} aria-hidden="true" />
+                      <span className={cn('truncate', isActive && 'font-semibold')}>{item.label}</span>
                     </Button>
                   )
                 })}
@@ -125,25 +129,11 @@ const MobileDrawer = ({ open, onClose, activeMenu, onMenuChange }: MobileDrawerP
 
               {/* 底部操作区域 */}
               <div className="flex shrink-0 flex-col gap-2">
-                <Button
-                  fullWidth
-                  className="justify-start"
-                  size="lg"
-                  variant="ghost"
-                  aria-label="查看帮助文档"
-                  onPress={handleOpenDocs}
-                >
+                <Button fullWidth className="justify-start" size="lg" variant="ghost" aria-label="查看帮助文档" onPress={handleOpenDocs}>
                   <HelpCircle size={20} className="shrink-0 mr-3 text-muted" aria-hidden="true" />
                   <span className="truncate">帮助文档</span>
                 </Button>
-                <Button
-                  fullWidth
-                  className="justify-start"
-                  size="lg"
-                  variant="ghost"
-                  aria-label="登出"
-                  onPress={handleLogout}
-                >
+                <Button fullWidth className="justify-start" size="lg" variant="ghost" aria-label="登出" onPress={handleLogout}>
                   <LogOut size={20} className="shrink-0 mr-3 text-muted" aria-hidden="true" />
                   <span className="truncate">登出</span>
                 </Button>

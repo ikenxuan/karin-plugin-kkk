@@ -88,8 +88,7 @@ export interface BilibiliVideoInfoData {
 /**
  * B站视频信息组件属性接口
  */
-export interface BilibiliVideoInfoProps extends BaseComponentProps<BilibiliVideoInfoData> {
-}
+export interface BilibiliVideoInfoProps extends BaseComponentProps<BilibiliVideoInfoData> {}
 
 /**
  * 视频统计项组件属性接口

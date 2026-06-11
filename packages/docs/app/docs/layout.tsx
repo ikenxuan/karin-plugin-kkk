@@ -1,20 +1,17 @@
-import { source } from '@/lib/source'
 import { DocsLayout } from 'fumadocs-ui/layouts/notebook'
-import { baseOptions } from '@/lib/layout.shared'
-import { KKKLogo } from '@/components/kkk-logo'
-import { GitHubLink } from '@/components/github-link'
-import { SidebarFooter } from '@/components/sidebar-footer'
-import { ChangelogDropdown } from '@/components/changelog-dropdown'
-import { getChangelog } from '@/lib/changelog'
-import { MirrorSiteDropdown } from '@/components/mirror-site-dropdown'
 
-export default async function Layout ({
-  children
-}: {
-  children: React.ReactNode
-}) {
-  const changelogData = await getChangelog();
-  const latestVersion = changelogData.v2.latest || 'v2.x.x';
+import { ChangelogDropdown } from '@/components/changelog-dropdown'
+import { GitHubLink } from '@/components/github-link'
+import { KKKLogo } from '@/components/kkk-logo'
+import { MirrorSiteDropdown } from '@/components/mirror-site-dropdown'
+import { SidebarFooter } from '@/components/sidebar-footer'
+import { getChangelog } from '@/lib/changelog'
+import { baseOptions } from '@/lib/layout.shared'
+import { source } from '@/lib/source'
+
+export default async function Layout({ children }: { children: React.ReactNode }) {
+  const changelogData = await getChangelog()
+  const latestVersion = changelogData.v2.latest || 'v2.x.x'
 
   return (
     <DocsLayout
@@ -38,8 +35,8 @@ export default async function Layout ({
             <GitHubLink />
           </div>
         ),
-        mode: "top",
-        title: <KKKLogo />,
+        mode: 'top',
+        title: <KKKLogo />
       }}
     >
       {children}

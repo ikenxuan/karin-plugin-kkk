@@ -1,6 +1,6 @@
-import { useState } from 'react'
 import { Button, Chip, Description, FieldError, Input, Label, TextField } from '@heroui/react'
 import { Plus, Trash2 } from 'lucide-react'
+import { useState } from 'react'
 
 interface ChipListProps {
   label: string
@@ -69,11 +69,7 @@ const ChipList = ({ label, description, items, onAdd, onRemove, disabled = false
             <Chip key={item} color="accent" variant="soft">
               <span>{item}</span>
               {!disabled ? (
-                <button
-                  type="button"
-                  className="ml-1 rounded-full p-0.5 hover:bg-black/10"
-                  onClick={() => onRemove(item)}
-                >
+                <button type="button" className="ml-1 rounded-full p-0.5 hover:bg-black/10" onClick={() => onRemove(item)}>
                   <Trash2 className="size-3" />
                 </button>
               ) : null}
@@ -90,4 +86,3 @@ const ChipList = ({ label, description, items, onAdd, onRemove, disabled = false
 }
 
 export default ChipList
-

@@ -50,5 +50,4 @@ export interface DouyinArticleWorkProps extends BaseComponentProps<{
   粉丝: string
   /** 分享链接 */
   share_url: string
-}> {
-}
+}> {}

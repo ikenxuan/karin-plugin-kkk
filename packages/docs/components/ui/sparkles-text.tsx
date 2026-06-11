@@ -1,16 +1,17 @@
-"use client";
-import { type CSSProperties, type ReactElement, useEffect, useState } from "react";
-import { motion } from "motion/react";
-import { cn } from "@/lib/cn";
+'use client'
+import { motion } from 'motion/react'
+import { type CSSProperties, type ReactElement, useEffect, useState } from 'react'
+
+import { cn } from '@/lib/cn'
 
 interface Sparkle {
-  id: string;
-  x: string;
-  y: string;
-  color: string;
-  delay: number;
-  scale: number;
-  lifespan: number;
+  id: string
+  x: string
+  y: string
+  color: string
+  delay: number
+  scale: number
+  lifespan: number
 }
 
 const Sparkle: React.FC<Sparkle> = ({ id, x, y, color, scale }) => {
@@ -21,7 +22,7 @@ const Sparkle: React.FC<Sparkle> = ({ id, x, y, color, scale }) => {
       style={{ left: x, top: y }}
       initial={{ opacity: 0, scale: 0 }}
       animate={{ opacity: [0, 1, 0], scale: [0, scale, 0], rotate: [0, 180] }}
-      transition={{ duration: 1.5, ease: "easeInOut" }}
+      transition={{ duration: 1.5, ease: 'easeInOut' }}
       width="16"
       height="16"
       viewBox="0 0 21 21"
@@ -31,71 +32,69 @@ const Sparkle: React.FC<Sparkle> = ({ id, x, y, color, scale }) => {
         fill={color}
       />
     </motion.svg>
-  );
-};
+  )
+}
 
 interface SparklesTextProps {
-  as?: ReactElement;
-  className?: string;
-  children: React.ReactNode;
-  sparklesCount?: number;
-  colors?: { first: string; second: string };
+  as?: ReactElement
+  className?: string
+  children: React.ReactNode
+  sparklesCount?: number
+  colors?: { first: string; second: string }
 }
 
 export const SparklesText: React.FC<SparklesTextProps> = ({
   children,
-  colors = { first: "#9E7AFF", second: "#FE8BBB" },
+  colors = { first: '#9E7AFF', second: '#FE8BBB' },
   className,
   sparklesCount = 10,
   ...props
 }) => {
-  const [sparkles, setSparkles] = useState<Sparkle[]>([]);
+  const [sparkles, setSparkles] = useState<Sparkle[]>([])
 
   useEffect(() => {
-    let counter = 0;
-    const ANIMATION_DURATION = 1.5;
+    let counter = 0
+    const ANIMATION_DURATION = 1.5
 
     const generateStar = (initialLifespan?: number): Sparkle => {
-      counter++;
-      const starX = `${Math.random() * 100}%`;
-      const starY = `${Math.random() * 100}%`;
-      const color = Math.random() > 0.5 ? colors.first : colors.second;
-      const delay = 0;
-      const scale = Math.random() * 0.8 + 0.4;
-      const lifespan = initialLifespan ?? ANIMATION_DURATION;
-      const id = `sparkle-${counter}-${Date.now()}-${Math.random()}`;
-      return { id, x: starX, y: starY, color, delay, scale, lifespan };
-    };
+      counter++
+      const starX = `${Math.random() * 100}%`
+      const starY = `${Math.random() * 100}%`
+      const color = Math.random() > 0.5 ? colors.first : colors.second
+      const delay = 0
+      const scale = Math.random() * 0.8 + 0.4
+      const lifespan = initialLifespan ?? ANIMATION_DURATION
+      const id = `sparkle-${counter}-${Date.now()}-${Math.random()}`
+      return { id, x: starX, y: starY, color, delay, scale, lifespan }
+    }
 
     const initializeStars = () => {
-      const newSparkles = Array.from({ length: sparklesCount }, () =>
-        generateStar(Math.random() * ANIMATION_DURATION)
-      );
-      setSparkles(newSparkles);
-    };
+      const newSparkles = Array.from({ length: sparklesCount }, () => generateStar(Math.random() * ANIMATION_DURATION))
+      setSparkles(newSparkles)
+    }
 
     const updateStars = () => {
       setSparkles((currentSparkles) =>
         currentSparkles.map((star) => {
-          if (star.lifespan <= 0) return generateStar();
-          return { ...star, lifespan: star.lifespan - 0.1 };
+          if (star.lifespan <= 0) return generateStar()
+          return { ...star, lifespan: star.lifespan - 0.1 }
         })
-      );
-    };
+      )
+    }
 
-    initializeStars();
-    const interval = setInterval(updateStars, 100);
-    return () => clearInterval(interval);
-  }, [colors.first, colors.second, sparklesCount]);
+    initializeStars()
+    const interval = setInterval(updateStars, 100)
+    return () => clearInterval(interval)
+  }, [colors.first, colors.second, sparklesCount])
 
   return (
     <div
-      className={cn("relative inline-block", className)}
+      className={cn('relative inline-block', className)}
       {...props}
       style={
         {
-          "--sparkles-first-color": `${colors.first}`,
-          "--sparkles-second-color": `${colors.second}`,
+          '--sparkles-first-color': `${colors.first}`,
+          '--sparkles-second-color': `${colors.second}`
         } as CSSProperties
       }
     >
@@ -104,5 +103,5 @@ export const SparklesText: React.FC<SparklesTextProps> = ({
       ))}
       {children}
     </div>
-  );
-};
+  )
+}

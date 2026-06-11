@@ -17,15 +17,7 @@ interface TargetSelectProps {
   onSelect: (id: string) => void
 }
 
-const TargetSelect = ({
-  label,
-  description,
-  placeholder,
-  disabled = false,
-  items,
-  selectedId,
-  onSelect
-}: TargetSelectProps) => (
+const TargetSelect = ({ label, description, placeholder, disabled = false, items, selectedId, onSelect }: TargetSelectProps) => (
   <Select
     fullWidth
     allowsEmptyCollection

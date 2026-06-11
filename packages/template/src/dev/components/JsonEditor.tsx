@@ -95,7 +95,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
       setError('')
       onErrorChange?.(false)
     }
-  }, [data, isFormatted])
+  }, [data, isFormatted, onErrorChange])
 
   const parseJavaScriptObject = (text: string): any => {
     try {
@@ -198,13 +198,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   const renderIconButton = (label: string, icon: React.ReactNode, onPress: () => void, disabled = false) => (
     <Tooltip delay={300}>
       <Tooltip.Trigger>
-        <Button
-          isDisabled={disabled}
-          isIconOnly
-          onPress={onPress}
-          size='sm'
-          variant='ghost'
-        >
+        <Button isDisabled={disabled} isIconOnly onPress={onPress} size="sm" variant="ghost">
           {icon}
         </Button>
       </Tooltip.Trigger>
@@ -216,44 +210,44 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   )
 
   return (
-    <div className='flex h-full w-full flex-col'>
+    <div className="flex h-full w-full flex-col">
       {/* 工具栏 */}
-      <div className='flex shrink-0 items-center justify-between gap-3 border-b border-divider px-4 py-2.5'>
-        <div className='flex items-center gap-2'>
-          <div className='flex items-center gap-1.5'>
-            <Code size={16} className='text-default-500' />
-            <span className='text-lg font-semibold'>数据编辑器</span>
+      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-divider px-4 py-2.5">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            <Code size={16} className="text-default-500" />
+            <span className="text-lg font-semibold">数据编辑器</span>
           </div>
 
-          <div className='w-px h-4 bg-default-200' />
+          <div className="w-px h-4 bg-default-200" />
 
-          <div className='flex gap-4'>
-            <Button variant='tertiary' size='sm' isDisabled={readonly} onPress={formatJson}>
+          <div className="flex gap-4">
+            <Button variant="tertiary" size="sm" isDisabled={readonly} onPress={formatJson}>
               格式化
             </Button>
-            <Button variant='tertiary' size='sm' isDisabled={readonly} onPress={compressJson}>
+            <Button variant="tertiary" size="sm" isDisabled={readonly} onPress={compressJson}>
               压缩
             </Button>
           </div>
         </div>
 
-        <div className='flex items-center gap-2'>
+        <div className="flex items-center gap-2">
           {availableDataFiles.length > 0 && (
             <>
-              <div className='flex items-center gap-1.5'>
+              <div className="flex items-center gap-1.5">
                 <Select
-                  aria-label='选择数据文件'
-                  className='w-48'
-                  placeholder='选择数据文件'
+                  aria-label="选择数据文件"
+                  className="w-48"
+                  placeholder="选择数据文件"
                   value={selectedDataFile ?? null}
-                  variant='secondary'
+                  variant="secondary"
                   onChange={(value) => {
                     if (typeof value === 'string' && value && onDataFileChange) {
                       onDataFileChange(value)
                     }
                   }}
                 >
-                  <Label className='sr-only'>选择数据文件</Label>
+                  <Label className="sr-only">选择数据文件</Label>
                   <Select.Trigger>
                     <Select.Value />
                     <Select.Indicator />
@@ -261,11 +255,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
                   <Select.Popover>
                     <ListBox>
                       {availableDataFiles.map((filename) => (
-                        <ListBox.Item
-                          key={filename}
-                          id={filename}
-                          textValue={filename.replace('.json', '')}
-                        >
+                        <ListBox.Item key={filename} id={filename} textValue={filename.replace('.json', '')}>
                           {filename.replace('.json', '')}
                           <ListBox.ItemIndicator />
                         </ListBox.Item>
@@ -274,11 +264,11 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
                   </Select.Popover>
                 </Select>
               </div>
-              <div className='w-px h-4 bg-default-200' />
+              <div className="w-px h-4 bg-default-200" />
             </>
           )}
 
-          <div className='flex gap-1'>
+          <div className="flex gap-1">
             {renderIconButton('复制', <Copy size={14} />, copyToClipboard)}
             {renderIconButton('导入', <Upload size={14} />, importJson, readonly)}
             {renderIconButton('导出', <Download size={14} />, exportJson)}
@@ -288,22 +278,22 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
 
       {/* 错误提示 */}
       {error && (
-        <div className='shrink-0 border-b border-danger px-4 py-2 text-danger'>
-          <div className='flex items-center gap-2'>
-            <svg className='h-4 w-4 shrink-0' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
+        <div className="shrink-0 border-b border-danger px-4 py-2 text-danger">
+          <div className="flex items-center gap-2">
+            <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span className='text-xs'>{error}</span>
+            <span className="text-xs">{error}</span>
           </div>
         </div>
       )}
 
       {/* 编辑器 */}
-      <div className='relative min-h-0 flex-1'>
+      <div className="relative min-h-0 flex-1">
         <Editor
           beforeMount={handleEditorWillMount}
-          defaultLanguage='json'
-          height='100%'
+          defaultLanguage="json"
+          height="100%"
           options={{
             minimap: { enabled: true },
             fontSize: 14,

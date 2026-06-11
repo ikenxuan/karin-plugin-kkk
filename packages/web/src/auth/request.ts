@@ -1,14 +1,8 @@
 import axios from 'axios'
 import type { AxiosError, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
+
 import { sha256, signKkkRequest } from './crypto'
-import {
-  clearAuthTokens,
-  getAccessToken,
-  getRefreshToken,
-  getUserId,
-  setAccessToken,
-  setAuthTokens
-} from './token'
+import { clearAuthTokens, getAccessToken, getRefreshToken, getUserId, setAccessToken, setAuthTokens } from './token'
 
 interface KarinResponse<T> {
   code: number
@@ -148,12 +142,16 @@ authClient.interceptors.response.use(
  */
 export const loginWithAuthKey = async (authKey: string) => {
   const authorization = await sha256(authKey)
-  const response = await axios.post<KarinResponse<LoginTokens>>('/api/v1/login', { authorization }, {
-    timeout: 10000,
-    headers: {
-      'Content-Type': 'application/json'
+  const response = await axios.post<KarinResponse<LoginTokens>>(
+    '/api/v1/login',
+    { authorization },
+    {
+      timeout: 10000,
+      headers: {
+        'Content-Type': 'application/json'
+      }
     }
-  })
+  )
 
   if (!response.data.data?.accessToken || !response.data.data.userId || !response.data.data.refreshToken) {
     throw new Error(response.data.message || '登录失败')

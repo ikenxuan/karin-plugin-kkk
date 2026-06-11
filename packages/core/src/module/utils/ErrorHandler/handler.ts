@@ -58,10 +58,7 @@ export const handleBusinessError = async (
   return undefined
 }
 
-export const wrapWithErrorHandler = <R> (
-  fn: (e: Message, next: () => unknown) => R | Promise<R>,
-  options: ErrorHandlerOptions
-) => {
+export const wrapWithErrorHandler = <R>(fn: (e: Message, next: () => unknown) => R | Promise<R>, options: ErrorHandlerOptions) => {
   return async (e?: Message, next?: () => unknown): Promise<R> => {
     const rawEvent = e
     const normalizedEvent = await injectBotToEventForPushTask(rawEvent, options.businessName)
@@ -74,7 +71,7 @@ export const wrapWithErrorHandler = <R> (
     if (emojiManager) {
       await emojiManager.add('EYES')
       processingTimer = setTimeout(() => {
-        emojiManager.add('PROCESSING').catch(() => { })
+        emojiManager.add('PROCESSING').catch(() => {})
       }, 1500)
     }
 
@@ -85,7 +82,7 @@ export const wrapWithErrorHandler = <R> (
 
       if (emojiManager) {
         successTimer = setTimeout(() => {
-          emojiManager.replace('PROCESSING', 'SUCCESS').catch(() => { })
+          emojiManager.replace('PROCESSING', 'SUCCESS').catch(() => {})
         }, 1500)
       }
 
@@ -102,7 +99,7 @@ export const wrapWithErrorHandler = <R> (
         await emojiManager.add('ERROR')
       }
 
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise((resolve) => setTimeout(resolve, 100))
       const structuredLogs = parseLogsToStructured(ctx.logs())
 
       const result = await handleBusinessError(error as Error, options, structuredLogs, normalizedEvent)

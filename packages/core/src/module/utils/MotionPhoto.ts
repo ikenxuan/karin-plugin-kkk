@@ -10,32 +10,38 @@ import { Common } from './Common'
 import { Config } from './Config'
 
 const xmpHeaderBuffer = Buffer.from('http://ns.adobe.com/xap/1.0/\u0000', 'utf8')
-const oppoExifHex = 'FFE100724578696600004D4D002A0000000800040100000400000001000005A001010004000000010000043C87690004000000010000003E011200030000000100000000000000000002928600020000000E0000005C920800040000000100000000000000006F706C75735F3833383836303800'
-const xiaomiExifHex = 'FFE1007E4578696600004D4D002A0000000800040100000400000001000005A001010004000000010000043C01120003000000010000000087690004000000010000003E000000000003889700010000000101000000920800040000000100000000928600020000000E00000068000000006F706C75735F3833383836303800'
+const oppoExifHex =
+  'FFE100724578696600004D4D002A0000000800040100000400000001000005A001010004000000010000043C87690004000000010000003E011200030000000100000000000000000002928600020000000E0000005C920800040000000100000000000000006F706C75735F3833383836303800'
+const xiaomiExifHex =
+  'FFE1007E4578696600004D4D002A0000000800040100000400000001000005A001010004000000010000043C01120003000000010000000087690004000000010000003E000000000003889700010000000101000000920800040000000100000000928600020000000E00000068000000006F706C75735F3833383836303800'
 const huaweiHonorLiveIdFallback = 1915884
 
 type MotionPhotoSystem = 'google' | 'xiaomi' | 'oppo' | 'huawei_honor'
 
 const isJpegBuffer = (fileBuffer: Buffer): boolean => {
-  return fileBuffer.length > 2 && fileBuffer[0] === 0xFF && fileBuffer[1] === 0xD8
+  return fileBuffer.length > 2 && fileBuffer[0] === 0xff && fileBuffer[1] === 0xd8
 }
 
-const getJpegDimensions = (jpegBuffer: Buffer): { width: number, height: number } | null => {
+const getJpegDimensions = (jpegBuffer: Buffer): { width: number; height: number } | null => {
   let offset = 2
   while (offset + 9 < jpegBuffer.length) {
-    if (jpegBuffer[offset] !== 0xFF) {
+    if (jpegBuffer[offset] !== 0xff) {
       offset += 1
       continue
     }
     const marker = jpegBuffer[offset + 1]
-    if (marker === 0xD8 || marker === 0xD9 || marker === 0x01 || (marker >= 0xD0 && marker <= 0xD7)) {
+    if (marker === 0xd8 || marker === 0xd9 || marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) {
       offset += 2
       continue
     }
     if (offset + 3 >= jpegBuffer.length) return null
     const segmentLength = jpegBuffer.readUInt16BE(offset + 2)
     if (segmentLength < 2 || offset + 2 + segmentLength > jpegBuffer.length) return null
-    const isSofMarker = (marker >= 0xC0 && marker <= 0xC3) || (marker >= 0xC5 && marker <= 0xC7) || (marker >= 0xC9 && marker <= 0xCB) || (marker >= 0xCD && marker <= 0xCF)
+    const isSofMarker =
+      (marker >= 0xc0 && marker <= 0xc3) ||
+      (marker >= 0xc5 && marker <= 0xc7) ||
+      (marker >= 0xc9 && marker <= 0xcb) ||
+      (marker >= 0xcd && marker <= 0xcf)
     if (isSofMarker && segmentLength >= 7) {
       const height = jpegBuffer.readUInt16BE(offset + 5)
       const width = jpegBuffer.readUInt16BE(offset + 7)
@@ -53,14 +59,14 @@ const hasExifApp1 = (jpegBuffer: Buffer): boolean => {
 
 const buildExifSegment = (hex: string, width: number, height: number): Buffer => {
   const exifBuffer = Buffer.from(hex, 'hex')
-  exifBuffer[28] = (width >> 24) & 0xFF
-  exifBuffer[29] = (width >> 16) & 0xFF
-  exifBuffer[30] = (width >> 8) & 0xFF
-  exifBuffer[31] = width & 0xFF
-  exifBuffer[40] = (height >> 24) & 0xFF
-  exifBuffer[41] = (height >> 16) & 0xFF
-  exifBuffer[42] = (height >> 8) & 0xFF
-  exifBuffer[43] = height & 0xFF
+  exifBuffer[28] = (width >> 24) & 0xff
+  exifBuffer[29] = (width >> 16) & 0xff
+  exifBuffer[30] = (width >> 8) & 0xff
+  exifBuffer[31] = width & 0xff
+  exifBuffer[40] = (height >> 24) & 0xff
+  exifBuffer[41] = (height >> 16) & 0xff
+  exifBuffer[42] = (height >> 8) & 0xff
+  exifBuffer[43] = height & 0xff
   return exifBuffer
 }
 
@@ -78,20 +84,25 @@ const resolveMotionPhotoSystem = (): MotionPhotoSystem => {
   return 'google'
 }
 
-const buildMotionPhotoXmp = (videoLength: number, presentationTimestampUs: number, system: MotionPhotoSystem, hdrGainMapLength?: number): string => {
+const buildMotionPhotoXmp = (
+  videoLength: number,
+  presentationTimestampUs: number,
+  system: MotionPhotoSystem,
+  hdrGainMapLength?: number
+): string => {
   if (system === 'oppo') {
     // OPPO 支持 HDR GainMap 的完整 XMP 数据
     const containerItems = [
       '<rdf:li rdf:parseType="Resource"><Container:Item Item:Mime="image/jpeg" Item:Semantic="Primary" Item:Length="0" Item:Padding="0" /></rdf:li>'
     ]
-    
+
     // 如果有 HDR GainMap 数据，添加 GainMap 项
     if (hdrGainMapLength && hdrGainMapLength > 0) {
       containerItems.push(
         `<rdf:li rdf:parseType="Resource"><Container:Item Item:Mime="image/jpeg" Item:Semantic="GainMap" Item:Length="${hdrGainMapLength}" Item:Padding="0" /></rdf:li>`
       )
     }
-    
+
     // 添加视频项
     containerItems.push(
       `<rdf:li rdf:parseType="Resource"><Container:Item Item:Mime="video/mp4" Item:Semantic="MotionPhoto" Item:Length="${videoLength}" /></rdf:li>`
@@ -170,8 +181,8 @@ const injectXmpToJpeg = (jpegBuffer: Buffer, xmpPacket: string, system: MotionPh
   }
 
   const app1Segment = Buffer.alloc(4)
-  app1Segment[0] = 0xFF
-  app1Segment[1] = 0xE1
+  app1Segment[0] = 0xff
+  app1Segment[1] = 0xe1
   app1Segment.writeUInt16BE(app1Length, 2)
 
   const dimensions = getJpegDimensions(jpegBuffer)
@@ -179,13 +190,7 @@ const injectXmpToJpeg = (jpegBuffer: Buffer, xmpPacket: string, system: MotionPh
   const needExif = !hasExifApp1(jpegBuffer) && dimensions !== null && exifHex !== null
   const exifSegment = needExif ? buildExifSegment(exifHex, dimensions.width, dimensions.height) : null
 
-  return Buffer.concat([
-    jpegBuffer.subarray(0, 2),
-    ...(exifSegment ? [exifSegment] : []),
-    app1Segment,
-    xmpPayload,
-    jpegBuffer.subarray(2)
-  ])
+  return Buffer.concat([jpegBuffer.subarray(0, 2), ...(exifSegment ? [exifSegment] : []), app1Segment, xmpPayload, jpegBuffer.subarray(2)])
 }
 
 const readOrConvertToJpeg = async (imagePath: string): Promise<Buffer> => {
@@ -217,24 +222,24 @@ const detectHdrGainMap = (imageBuffer: Buffer): number => {
     // 查找XMP数据段
     const xmpStart = imageBuffer.indexOf('http://ns.adobe.com/xap/1.0/')
     if (xmpStart === -1) return 0
-    
+
     // 查找HDR GainMap相关标记
     const hdrGainMapMarker = 'Item:Semantic="GainMap"'
     const gainMapIndex = imageBuffer.indexOf(hdrGainMapMarker, xmpStart)
     if (gainMapIndex === -1) return 0
-    
+
     // 尝试提取GainMap长度
     const lengthPattern = /Item:Length="(\d+)"/
     const xmpSection = imageBuffer.subarray(xmpStart, xmpStart + 4096).toString('utf8')
     const gainMapSection = xmpSection.substring(xmpSection.indexOf(hdrGainMapMarker))
     const lengthMatch = gainMapSection.match(lengthPattern)
-    
+
     if (lengthMatch && lengthMatch[1]) {
       const length = parseInt(lengthMatch[1], 10)
       logger.debug(`检测到HDR GainMap，长度: ${length}`)
       return length
     }
-    
+
     // 如果找到GainMap标记但无法提取长度，返回默认值
     logger.debug('检测到HDR GainMap标记，但无法提取长度，使用默认值')
     return 463255 // 使用你提供的示例中的默认长度
@@ -258,26 +263,27 @@ export const buildGoogleMotionPhoto = async (options: GoogleMotionPhotoOptions):
     const system = resolveMotionPhotoSystem()
     const imageBuffer = await readOrConvertToJpeg(imagePath)
     const videoBuffer = fs.readFileSync(videoPath)
-    const resolvedPresentationTimestampUs = presentationTimestampUs === undefined || presentationTimestampUs < 0
-      ? 0
-      : presentationTimestampUs
-    
+    const resolvedPresentationTimestampUs =
+      presentationTimestampUs === undefined || presentationTimestampUs < 0 ? 0 : presentationTimestampUs
+
     // 自动检测HDR GainMap（仅对OPPO系统）
-    const detectedHdrGainMapLength = system === 'oppo' 
-      ? (hdrGainMapLength ?? detectHdrGainMap(imageBuffer))
-      : 0
-    
-    const huaweiHonorFooter = Buffer.from(`v2_f35              409:1000            LIVE_${resolvedPresentationTimestampUs > 0 ? Math.floor(resolvedPresentationTimestampUs) : huaweiHonorLiveIdFallback}`, 'utf8')
-    const outputBuffer = system === 'huawei_honor'
-      ? Buffer.concat([imageBuffer, huaweiHonorFooter])
-      : (() => {
-        const xmpPacket = buildMotionPhotoXmp(videoBuffer.length, resolvedPresentationTimestampUs, system, detectedHdrGainMapLength)
-        const jpegWithXmp = injectXmpToJpeg(imageBuffer, xmpPacket, system)
-        return Buffer.concat([jpegWithXmp, videoBuffer])
-      })()
+    const detectedHdrGainMapLength = system === 'oppo' ? (hdrGainMapLength ?? detectHdrGainMap(imageBuffer)) : 0
+
+    const huaweiHonorFooter = Buffer.from(
+      `v2_f35              409:1000            LIVE_${resolvedPresentationTimestampUs > 0 ? Math.floor(resolvedPresentationTimestampUs) : huaweiHonorLiveIdFallback}`,
+      'utf8'
+    )
+    const outputBuffer =
+      system === 'huawei_honor'
+        ? Buffer.concat([imageBuffer, huaweiHonorFooter])
+        : (() => {
+            const xmpPacket = buildMotionPhotoXmp(videoBuffer.length, resolvedPresentationTimestampUs, system, detectedHdrGainMapLength)
+            const jpegWithXmp = injectXmpToJpeg(imageBuffer, xmpPacket, system)
+            return Buffer.concat([jpegWithXmp, videoBuffer])
+          })()
     fs.mkdirSync(path.dirname(outputPath), { recursive: true })
     fs.writeFileSync(outputPath, outputBuffer)
-    
+
     if (system === 'oppo' && detectedHdrGainMapLength > 0) {
       logger.debug(`Motion Photo 封面生成成功(${system} with HDR): ${outputPath}`)
     } else {

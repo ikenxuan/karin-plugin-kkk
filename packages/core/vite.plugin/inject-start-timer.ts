@@ -9,9 +9,7 @@ export const injectStartTimerPlugin = (): Plugin => {
   return {
     name: 'inject-start-timer',
     renderChunk(code, chunk) {
-      const isMainEntry =
-        chunk.name === 'index' ||
-        (chunk.facadeModuleId?.replace(/\\/g, '/').endsWith('/src/index.ts') ?? false)
+      const isMainEntry = chunk.name === 'index' || (chunk.facadeModuleId?.replace(/\\/g, '/').endsWith('/src/index.ts') ?? false)
 
       if (!isMainEntry) return null
 

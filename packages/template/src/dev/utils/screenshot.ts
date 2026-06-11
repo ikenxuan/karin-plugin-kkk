@@ -44,7 +44,7 @@ export const captureScreenshot = async (options: ScreenshotOptions): Promise<Scr
     // 找到实际要截图的内容元素（.shadow-5xl 容器）
     const actualContent = element.querySelector('.shadow-5xl') as HTMLElement
     const targetElement = actualContent || element
-    
+
     // 获取元素实际尺寸
     const rect = targetElement.getBoundingClientRect()
     console.log(`截图目标尺寸: ${rect.width}x${rect.height}`)
@@ -63,27 +63,27 @@ export const captureScreenshot = async (options: ScreenshotOptions): Promise<Scr
         opacity: 0.1,
         mode: 'interval'
       })
-      
+
       // 等待水印渲染完成
-      await new Promise(resolve => setTimeout(resolve, 200))
+      await new Promise((resolve) => setTimeout(resolve, 200))
     }
 
     // 临时处理空元素，防止 snapdom 忽略它们的高度
-    const emptyElements: Array<{ 
+    const emptyElements: Array<{
       element: HTMLElement
       originalHTML: string
       computedHeight: string
     }> = []
-    
+
     const allElements = targetElement.querySelectorAll('*')
     allElements.forEach((el) => {
       const htmlEl = el as HTMLElement
-      
+
       // 检查是否是空元素（没有子元素且没有文本内容）
       if (htmlEl.children.length === 0 && !htmlEl.textContent?.trim()) {
         const computedStyle = window.getComputedStyle(htmlEl)
         const height = computedStyle.height
-        
+
         // 如果元素有明确的高度（不是 auto 或 0px）
         if (height && height !== 'auto' && height !== '0px') {
           emptyElements.push({
@@ -91,7 +91,7 @@ export const captureScreenshot = async (options: ScreenshotOptions): Promise<Scr
             originalHTML: htmlEl.innerHTML,
             computedHeight: height
           })
-          
+
           // 添加一个透明的占位元素，保持高度
           htmlEl.innerHTML = `<div style="height: ${height}; width: 100%; opacity: 0; pointer-events: none;"></div>`
         }
@@ -157,7 +157,6 @@ export const captureScreenshot = async (options: ScreenshotOptions): Promise<Scr
         }
       }
     }
-
   } catch (error) {
     console.error('截图失败:', error)
     throw error

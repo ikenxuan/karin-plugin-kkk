@@ -9,8 +9,8 @@ import { karinPathTemp } from 'node-karin/root'
 
 import { Config } from '@/module/utils/Config'
 
-import { Root } from '../../root'
 import { Count } from '..'
+import { Root } from '../../root'
 
 type VideoPreviewInfo = {
   filename: string
@@ -42,7 +42,7 @@ class Tools {
   /**
    * 初始化工具实例并启动预览状态的后台清理任务。
    */
-  constructor () {
+  constructor() {
     this.tempDri = {
       /** 插件缓存目录 */
       default: `${karinPathTemp}/${Root.pluginName}/`.replace(/\\/g, '/'),
@@ -69,7 +69,7 @@ class Tools {
    * @param source 来源描述（用于日志）
    * @returns 识别到的平台链接，或 null
    */
-  private async tryScanImageQrCode (imageUrl: string, source: string): Promise<string | null> {
+  private async tryScanImageQrCode(imageUrl: string, source: string): Promise<string | null> {
     try {
       logger.debug(`检测到${source}为图片，尝试识别二维码...`)
       const response = await axios.get(imageUrl, { responseType: 'arraybuffer' })
@@ -82,7 +82,7 @@ class Tools {
         /(快手.*快手|v\.kuaishou\.com|kuaishou\.com)/, // 快手
         /(xiaohongshu\.com|xhslink\.com)/ // 小红书
       ]
-      if (qrContent && patterns.some(pattern => pattern.test(qrContent))) {
+      if (qrContent && patterns.some((pattern) => pattern.test(qrContent))) {
         logger.debug(`从${source}二维码中识别到支持的平台链接: ${qrContent}`)
         return qrContent
       } else if (qrContent) {
@@ -94,7 +94,7 @@ class Tools {
     return null
   }
 
-  async getReplyMessage (e: Message): Promise<string> {
+  async getReplyMessage(e: Message): Promise<string> {
     if (e.replyId) {
       const reply = await e.bot.getMsg(e.contact, e.replyId)
       for (const v of reply.elements) {
@@ -128,18 +128,31 @@ class Tools {
   }
 
   /**
- * 将中文数字转换为阿拉伯数字的函数
- * @param chineseNumber 数字的中文
- * @returns 中文数字对应的阿拉伯数字映射
- */
-  chineseToArabic (chineseNumber: string): number {
+   * 将中文数字转换为阿拉伯数字的函数
+   * @param chineseNumber 数字的中文
+   * @returns 中文数字对应的阿拉伯数字映射
+   */
+  chineseToArabic(chineseNumber: string): number {
     // 映射表，定义基础的中文数字
     const chineseToArabicMap: Record<string, number> = {
-      零: 0, 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9
+      零: 0,
+      一: 1,
+      二: 2,
+      三: 3,
+      四: 4,
+      五: 5,
+      六: 6,
+      七: 7,
+      八: 8,
+      九: 9
     }
     // 对应中文单位映射
     const units: Record<string, number> = {
-      十: 10, 百: 100, 千: 1000, 万: 10000, 亿: 100000000
+      十: 10,
+      百: 100,
+      千: 1000,
+      万: 10000,
+      亿: 100000000
     }
     let result = 0
     let temp = 0 // 存储每一段的临时结果
@@ -170,28 +183,30 @@ class Tools {
   }
 
   /**
- * 格式化cookie字符串
- * @param cookies cookie数组
- * @returns 格式化后的cookie字符串
- */
-  formatCookies (cookies: any[]): string {
-    return cookies.map(cookie => {
-      // 分割每个cookie字符串以获取名称和值
-      const [nameValue] = cookie.split(';').map((part: string) => part.trim())
-      const [name, value] = nameValue.split('=')
+   * 格式化cookie字符串
+   * @param cookies cookie数组
+   * @returns 格式化后的cookie字符串
+   */
+  formatCookies(cookies: any[]): string {
+    return cookies
+      .map((cookie) => {
+        // 分割每个cookie字符串以获取名称和值
+        const [nameValue] = cookie.split(';').map((part: string) => part.trim())
+        const [name, value] = nameValue.split('=')
 
-      // 重新组合名称和值，忽略其他属性
-      return `${name}=${value}`
-    }).join('; ')
+        // 重新组合名称和值，忽略其他属性
+        return `${name}=${value}`
+      })
+      .join('; ')
   }
 
   /**
- * 计算目标视频平均码率（单位：Kbps）
- * @param targetSizeMB 目标视频大小（MB）
- * @param duration 视频时长（秒）
- * @returns
- */
-  calculateBitrate (targetSizeMB: number, duration: number): number {
+   * 计算目标视频平均码率（单位：Kbps）
+   * @param targetSizeMB 目标视频大小（MB）
+   * @param duration 视频时长（秒）
+   * @returns
+   */
+  calculateBitrate(targetSizeMB: number, duration: number): number {
     // 将目标大小转换为字节
     const targetSizeBytes = targetSizeMB * 1024 * 1024 // 转换为字节
     // 计算比特率并返回单位 Mbps
@@ -203,7 +218,7 @@ class Tools {
    * @param filePath 视频文件绝对路径
    * @returns
    */
-  async getVideoFileSize (filePath: string): Promise<number> {
+  async getVideoFileSize(filePath: string): Promise<number> {
     try {
       const stats = await fs.promises.stat(filePath) // 获取文件信息
       const fileSizeInBytes = stats.size // 文件大小（字节）
@@ -221,7 +236,7 @@ class Tools {
    * @param force 是否强制删除，默认 `false`
    * @returns
    */
-  async removeFile (path: string, force = false): Promise<boolean> {
+  async removeFile(path: string, force = false): Promise<boolean> {
     path = path.replace(/\\/g, '/')
     if (Config.app.removeCache) {
       try {
@@ -252,7 +267,7 @@ class Tools {
    * @param ttlMs 预览状态的生存时间，单位为毫秒。
    * @returns 当前注册后的预览状态对象。
    */
-  registerVideoPreview (filePath: string, removeCache: boolean, ttlMs: number): VideoPreviewInfo {
+  registerVideoPreview(filePath: string, removeCache: boolean, ttlMs: number): VideoPreviewInfo {
     this.pruneVideoPreviewState()
     const filename = path.basename(filePath)
     const createdAt = Date.now()
@@ -273,7 +288,7 @@ class Tools {
    * @param filename 预览文件名。
    * @returns 命中的预览状态；未命中时返回 `null`。
    */
-  getVideoPreview (filename: string): VideoPreviewInfo | null {
+  getVideoPreview(filename: string): VideoPreviewInfo | null {
     this.pruneVideoPreviewState()
     return this.videoPreviewState.get(filename) ?? null
   }
@@ -283,11 +298,10 @@ class Tools {
    * @param filePathOrFilename 视频绝对路径或文件名。
    * @returns 更新后的预览状态；若不存在则返回 `null`。
    */
-  markVideoPreviewRemoved (filePathOrFilename: string): VideoPreviewInfo | null {
+  markVideoPreviewRemoved(filePathOrFilename: string): VideoPreviewInfo | null {
     this.pruneVideoPreviewState()
-    const filename = filePathOrFilename.includes('/') || filePathOrFilename.includes('\\')
-      ? path.basename(filePathOrFilename)
-      : filePathOrFilename
+    const filename =
+      filePathOrFilename.includes('/') || filePathOrFilename.includes('\\') ? path.basename(filePathOrFilename) : filePathOrFilename
     const info = this.videoPreviewState.get(filename)
     if (!info) {
       return null
@@ -305,13 +319,13 @@ class Tools {
    * 清理过期或已删除的视频预览状态，避免全局缓存持续增长。
    * @param now 当前时间戳，默认使用 `Date.now()`。
    */
-  private pruneVideoPreviewState (now = Date.now()) {
+  private pruneVideoPreviewState(now = Date.now()) {
     for (const [filename, info] of this.videoPreviewState) {
       const fileMissing = !fs.existsSync(info.filePath)
-      const shouldMarkRemoved = !info.removedAt && (
-        (info.removeCache && typeof info.expireAt === 'number' && now >= info.expireAt && fileMissing) ||
-        (!info.removeCache && fileMissing)
-      )
+      const shouldMarkRemoved =
+        !info.removedAt &&
+        ((info.removeCache && typeof info.expireAt === 'number' && now >= info.expireAt && fileMissing) ||
+          (!info.removeCache && fileMissing))
 
       if (shouldMarkRemoved) {
         const removedAt = now
@@ -333,10 +347,11 @@ class Tools {
    * 评论图、推送图是否使用深色模式
    * @returns
    */
-  useDarkTheme (): boolean {
+  useDarkTheme(): boolean {
     let dark = true
     const configTheme = Config.app.Theme
-    if (configTheme === 0) { // 自动
+    if (configTheme === 0) {
+      // 自动
       const currentHour = new Date().getHours()
       if (currentHour >= 6 && currentHour < 18) {
         dark = false
@@ -355,7 +370,7 @@ class Tools {
    * @param res 响应对象
    * @returns 返回安全解析后的路径
    */
-  validateVideoRequest (filename: string | undefined, res: Response): string | null {
+  validateVideoRequest(filename: string | undefined, res: Response): string | null {
     // 1. 基础校验
     if (!filename) {
       createNotFoundResponse(res, '无效的文件名')
@@ -395,7 +410,7 @@ class Tools {
    * @param num 数字
    * @returns 格式化后的字符串
    */
-  count (num: number) {
+  count(num: number) {
     return Count(num)
   }
 
@@ -404,9 +419,9 @@ class Tools {
    * @param sizeInMB 文件大小（MB）
    * @returns 格式化后的文件大小字符串（带单位）
    */
-  formatFileSize (sizeInMB: number | string): string {
+  formatFileSize(sizeInMB: number | string): string {
     const size = typeof sizeInMB === 'string' ? parseFloat(sizeInMB) : sizeInMB
-    
+
     if (size < 1024) {
       return `${size.toFixed(2)}MB`
     } else if (size < 1024 * 1024) {

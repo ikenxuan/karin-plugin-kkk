@@ -1,28 +1,29 @@
-'use client';
+'use client'
 
-import Link from 'next/link';
-import { Icon } from '@iconify/react';
-import { useState, useRef, useEffect } from 'react';
-import { cn } from '@/lib/cn';
+import { Icon } from '@iconify/react'
+import Link from 'next/link'
+import { useState, useRef, useEffect } from 'react'
+
+import { cn } from '@/lib/cn'
 
 interface SidebarFooterProps {
-  latestVersion?: string;
-  currentVersion?: string;
+  latestVersion?: string
+  currentVersion?: string
 }
 
 export function SidebarFooter({ latestVersion = 'v2.x.x', currentVersion = 'v2' }: SidebarFooterProps) {
-  const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setOpen(false);
+        setOpen(false)
       }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   return (
     <div className="md:hidden relative" ref={containerRef}>
@@ -36,9 +37,7 @@ export function SidebarFooter({ latestVersion = 'v2.x.x', currentVersion = 'v2' 
 
       {open && (
         <div className="absolute bottom-full right-0 mb-1 min-w-28 rounded-lg border bg-fd-popover p-1 text-fd-popover-foreground shadow-md z-50">
-          <p className="mb-1 p-1.5 text-xs font-medium text-fd-muted-foreground">
-            更新日志
-          </p>
+          <p className="mb-1 p-1.5 text-xs font-medium text-fd-muted-foreground">更新日志</p>
           <Link
             href="/changelog?version=v2"
             onClick={() => setOpen(false)}
@@ -72,5 +71,5 @@ export function SidebarFooter({ latestVersion = 'v2.x.x', currentVersion = 'v2' 
         </div>
       )}
     </div>
-  );
+  )
 }

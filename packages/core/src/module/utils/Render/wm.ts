@@ -1,6 +1,5 @@
 import { embedWatermarkToPngBytes } from '@ikenxuan/watermark'
 
-
 /**
  * 使用 exiftool 写入图片详细信息
  *
@@ -22,7 +21,7 @@ import { embedWatermarkToPngBytes } from '@ikenxuan/watermark'
 //         Copyright: Root.pkg.license,
 //         CreatorTool: `${Root.pluginName} v${Root.pluginVersion}`,
 //         CreateDate: format(new Date(Date.now()), 'yyyy:MM:dd HH:mm')
-//       }, 
+//       },
 //       { writeArgs: ['-overwrite_original'] }
 //     )
 //     return await fs.readFile(inputPath)
@@ -37,10 +36,7 @@ import { embedWatermarkToPngBytes } from '@ikenxuan/watermark'
  * @param watermarkText - 要嵌入的水印文本
  * @returns 嵌入水印后的 PNG Buffer，失败返回 null
  */
-export const embedWatermark = (
-  pngBytes: Buffer | Uint8Array,
-  watermarkText: string
-): Buffer | null => {
+export const embedWatermark = (pngBytes: Buffer | Uint8Array, watermarkText: string): Buffer | null => {
   // const start = Date.now()
 
   try {

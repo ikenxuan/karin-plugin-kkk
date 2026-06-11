@@ -26,13 +26,7 @@ interface PanelThemeControlsProps {
   onThemeModeChange: (isDarkMode: boolean) => void
 }
 
-const accentPresets = [
-  '#111111',
-  '#3f3f46',
-  '#0a72ef',
-  '#de1d8d',
-  '#ff5b4f'
-]
+const accentPresets = ['#111111', '#3f3f46', '#0a72ef', '#de1d8d', '#ff5b4f']
 
 export const PanelThemeControls: React.FC<PanelThemeControlsProps> = ({
   isOpen,
@@ -53,30 +47,28 @@ export const PanelThemeControls: React.FC<PanelThemeControlsProps> = ({
       isDismissable
       isOpen={isOpen}
       style={panelThemeStyle}
-      variant='blur'
+      variant="blur"
       onOpenChange={onOpenChange}
     >
-      <Modal.Container className='p-4 sm:p-6' placement='center' size='sm'>
-        <Modal.Dialog className='sm:max-w-120'>
+      <Modal.Container className="p-4 sm:p-6" placement="center" size="sm">
+        <Modal.Dialog className="sm:max-w-120">
           <Modal.CloseTrigger />
           <Modal.Header>
-            <Modal.Icon className='bg-default text-foreground'>
+            <Modal.Icon className="bg-default text-foreground">
               <Palette size={20} />
             </Modal.Icon>
             <Modal.Heading>面板主题</Modal.Heading>
           </Modal.Header>
 
-          <Modal.Body className='space-y-6'>
-            <div className='space-y-1'>
-              <p className='text-sm font-medium text-foreground'>默认是 Next.js 风格的黑白基底。</p>
-              <p className='text-sm text-muted'>只在你主动设置时，才为开发面板启用自定义主色。</p>
+          <Modal.Body className="space-y-6">
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-foreground">默认是 Next.js 风格的黑白基底。</p>
+              <p className="text-sm text-muted">只在你主动设置时，才为开发面板启用自定义主色。</p>
             </div>
 
-            <div className='space-y-3'>
-              <Label className='text-[10px] font-semibold tracking-[0.18em] text-muted uppercase'>
-                Mode
-              </Label>
-              <div className='grid grid-cols-2 gap-2'>
+            <div className="space-y-3">
+              <Label className="text-[10px] font-semibold tracking-[0.18em] text-muted uppercase">Mode</Label>
+              <div className="grid grid-cols-2 gap-2">
                 <Button onPress={() => onThemeModeChange(false)} variant={isDarkMode ? 'secondary' : 'primary'}>
                   <Sun size={16} />
                   浅色
@@ -88,22 +80,18 @@ export const PanelThemeControls: React.FC<PanelThemeControlsProps> = ({
               </div>
             </div>
 
-            <div className='space-y-3'>
-              <div className='flex items-center justify-between gap-3'>
-                <Label className='text-[10px] font-semibold tracking-[0.18em] text-muted uppercase'>
-                  Accent
-                </Label>
-                <span className='text-xs font-medium text-muted'>
-                  {isMonochromeAccent ? '默认黑白' : panelAccent.toUpperCase()}
-                </span>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-3">
+                <Label className="text-[10px] font-semibold tracking-[0.18em] text-muted uppercase">Accent</Label>
+                <span className="text-xs font-medium text-muted">{isMonochromeAccent ? '默认黑白' : panelAccent.toUpperCase()}</span>
               </div>
 
               <ColorSwatchPicker
-                aria-label='面板主题预设色'
-                className='flex flex-wrap gap-2'
-                size='sm'
+                aria-label="面板主题预设色"
+                className="flex flex-wrap gap-2"
+                size="sm"
                 value={parseColor(panelAccent)}
-                variant='square'
+                variant="square"
                 onChange={(color) => onAccentChange(color.toString('hex'))}
               >
                 {accentPresets.map((color) => (
@@ -116,42 +104,36 @@ export const PanelThemeControls: React.FC<PanelThemeControlsProps> = ({
             </div>
 
             <ColorPicker value={parseColor(panelAccent)} onChange={(color) => onAccentChange(color.toString('hex'))}>
-              <ColorPicker.Trigger className='flex w-full items-center gap-3 rounded-2xl bg-default px-3 py-3 text-left'>
-                <ColorSwatch className='rounded-lg' size='lg' />
-                <div className='flex min-w-0 flex-1 flex-col'>
-                  <Label className='text-sm font-medium text-foreground'>自定义主色</Label>
-                  <span className='truncate text-xs text-muted'>{panelAccent.toUpperCase()}</span>
+              <ColorPicker.Trigger className="flex w-full items-center gap-3 rounded-2xl bg-default px-3 py-3 text-left">
+                <ColorSwatch className="rounded-lg" size="lg" />
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <Label className="text-sm font-medium text-foreground">自定义主色</Label>
+                  <span className="truncate text-xs text-muted">{panelAccent.toUpperCase()}</span>
                 </div>
               </ColorPicker.Trigger>
 
-              <ColorPicker.Popover className='p-0'>
+              <ColorPicker.Popover className="p-0">
                 <div
                   className={`${panelTheme} flex w-72 flex-col gap-3 rounded-2xl bg-overlay p-3`}
                   data-theme={panelTheme}
                   style={panelThemeStyle}
                 >
-                  <ColorArea
-                    aria-label='颜色选择区域'
-                    className='max-w-full'
-                    colorSpace='hsb'
-                    xChannel='saturation'
-                    yChannel='brightness'
-                  >
+                  <ColorArea aria-label="颜色选择区域" className="max-w-full" colorSpace="hsb" xChannel="saturation" yChannel="brightness">
                     <ColorArea.Thumb />
                   </ColorArea>
 
-                  <ColorSlider aria-label='色相滑块' channel='hue' className='gap-1' colorSpace='hsb'>
-                    <Label className='text-xs font-medium text-foreground'>Hue</Label>
-                    <ColorSlider.Output className='text-xs text-muted' />
+                  <ColorSlider aria-label="色相滑块" channel="hue" className="gap-1" colorSpace="hsb">
+                    <Label className="text-xs font-medium text-foreground">Hue</Label>
+                    <ColorSlider.Output className="text-xs text-muted" />
                     <ColorSlider.Track>
                       <ColorSlider.Thumb />
                     </ColorSlider.Track>
                   </ColorSlider>
 
-                  <ColorField aria-label='主题色数值'>
-                    <ColorField.Group variant='secondary'>
+                  <ColorField aria-label="主题色数值">
+                    <ColorField.Group variant="secondary">
                       <ColorField.Prefix>
-                        <ColorSwatch size='xs' />
+                        <ColorSwatch size="xs" />
                       </ColorField.Prefix>
                       <ColorField.Input />
                     </ColorField.Group>
@@ -162,17 +144,11 @@ export const PanelThemeControls: React.FC<PanelThemeControlsProps> = ({
           </Modal.Body>
 
           <Modal.Footer>
-            <Button
-              isDisabled={isMonochromeAccent}
-              onPress={onResetAccent}
-              variant='secondary'
-            >
+            <Button isDisabled={isMonochromeAccent} onPress={onResetAccent} variant="secondary">
               <RotateCcw size={16} />
               恢复黑白
             </Button>
-            <Button onPress={() => onOpenChange(false)}>
-              完成
-            </Button>
+            <Button onPress={() => onOpenChange(false)}>完成</Button>
           </Modal.Footer>
         </Modal.Dialog>
       </Modal.Container>

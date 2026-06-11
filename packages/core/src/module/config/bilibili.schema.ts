@@ -280,7 +280,8 @@ export const bilibiliConfigSchema: SectionSchema = {
       type: 'input',
       inputType: 'number',
       label: '视频动态的视频体积上限（MB）',
-      description: '根据该值自动选择分辨率进行下载。仅在「解析视频动态时的画质偏好」 为 "自动选择" 且「作品解析」开启时生效，仅对视频动态有效',
+      description:
+        '根据该值自动选择分辨率进行下载。仅在「解析视频动态时的画质偏好」 为 "自动选择" 且「作品解析」开启时生效，仅对视频动态有效',
       disabled: $or($not('push.switch'), $not('push.parsedynamic'), $ne('push.pushVideoQuality', 0)),
       color: 'warning',
       rules: [{ min: 1, max: 20000 }]

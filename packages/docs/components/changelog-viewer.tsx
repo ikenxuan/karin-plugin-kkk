@@ -1,17 +1,18 @@
-'use client';
+'use client'
 
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { Icon } from '@iconify/react';
-import { cn } from '@/lib/cn';
+import { Icon } from '@iconify/react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+
+import { cn } from '@/lib/cn'
 
 interface ChangelogItem {
-  version: string;
-  content: string;
+  version: string
+  content: string
 }
 
 interface ChangelogViewerProps {
-  items: ChangelogItem[];
+  items: ChangelogItem[]
 }
 
 export function ChangelogViewer({ items }: ChangelogViewerProps) {
@@ -20,7 +21,7 @@ export function ChangelogViewer({ items }: ChangelogViewerProps) {
       <div className="space-y-12">
         {items.map((item) => (
           <div key={item.version} id={`version-${item.version}`} className="mb-20 scroll-mt-24">
-            <ReactMarkdown 
+            <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
                 h1: ({ children, ...props }) => (
@@ -77,24 +78,27 @@ export function ChangelogViewer({ items }: ChangelogViewerProps) {
                   </li>
                 ),
                 blockquote: ({ children, ...props }) => (
-                  <blockquote className="py-2 pl-4 mb-4 rounded-r border-l-4 border-fd-primary/50 text-fd-muted-foreground bg-fd-secondary/30" {...props}>
+                  <blockquote
+                    className="py-2 pl-4 mb-4 rounded-r border-l-4 border-fd-primary/50 text-fd-muted-foreground bg-fd-secondary/30"
+                    {...props}
+                  >
                     {children}
                   </blockquote>
                 ),
                 code: ({ children, className, ...props }) => {
-                   const isInline = !className?.includes('language-');
-                   return (
-                      <code
-                        className={cn(
-                          "relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm",
-                          isInline ? "bg-fd-secondary text-fd-secondary-foreground" : "block bg-transparent p-0",
-                          className
-                        )}
-                        {...props}
-                      >
-                        {children}
-                      </code>
-                   );
+                  const isInline = !className?.includes('language-')
+                  return (
+                    <code
+                      className={cn(
+                        'relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm',
+                        isInline ? 'bg-fd-secondary text-fd-secondary-foreground' : 'block bg-transparent p-0',
+                        className
+                      )}
+                      {...props}
+                    >
+                      {children}
+                    </code>
+                  )
                 },
                 pre: ({ children, ...props }) => (
                   <pre className="overflow-x-auto p-4 mb-4 font-mono text-sm rounded-lg border bg-fd-secondary border-fd-border" {...props}>
@@ -139,12 +143,8 @@ export function ChangelogViewer({ items }: ChangelogViewerProps) {
             </ReactMarkdown>
           </div>
         ))}
-        {items.length === 0 && (
-          <div className="py-12 text-center text-muted-foreground">
-            No changelogs found for this version range.
-          </div>
-        )}
+        {items.length === 0 && <div className="py-12 text-center text-muted-foreground">No changelogs found for this version range.</div>}
       </div>
     </div>
-  );
+  )
 }

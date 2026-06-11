@@ -1,6 +1,7 @@
-import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
-import { KKKLogo } from '@/components/kkk-logo';
-import { ChangelogDropdown } from '@/components/changelog-dropdown';
+import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared'
+
+import { ChangelogDropdown } from '@/components/changelog-dropdown'
+import { KKKLogo } from '@/components/kkk-logo'
 
 export function baseOptions(): BaseLayoutProps {
   return {
@@ -12,6 +13,6 @@ export function baseOptions(): BaseLayoutProps {
         </div>
       ),
       transparentMode: 'always'
-    },
-  };
+    }
+  }
 }

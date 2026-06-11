@@ -109,9 +109,7 @@ export function getWorkTypeInfo(data: {
 
   // 图文类型（有 images 数组）
   if (data.images && data.images.length > 0) {
-    const subType = data.is_slides === true 
-      ? DouyinImageSubType.COLLECTION 
-      : DouyinImageSubType.GALLERY
+    const subType = data.is_slides === true ? DouyinImageSubType.COLLECTION : DouyinImageSubType.GALLERY
 
     return {
       mainType: DouyinWorkMainType.IMAGE,
@@ -158,12 +156,7 @@ export function getWorkCoverUrl(
 ): string {
   // 视频封面
   if (workTypeInfo.isVideo && data.video) {
-    return (
-      data.video.animated_cover?.url_list[0] ??
-      data.video.cover_original_scale?.url_list[0] ??
-      data.video.cover?.url_list[0] ??
-      ''
-    )
+    return data.video.animated_cover?.url_list[0] ?? data.video.cover_original_scale?.url_list[0] ?? data.video.cover?.url_list[0] ?? ''
   }
 
   // 图文封面
@@ -199,12 +192,9 @@ export function getWorkTypeDisplayName(workTypeInfo: DouyinWorkTypeInfo): string
 /**
  * 判断是否需要特殊处理（如 live 图）
  */
-export function needsSpecialImageProcessing(
-  workTypeInfo: DouyinWorkTypeInfo,
-  images?: Array<{ clip_type?: number }>
-): boolean {
+export function needsSpecialImageProcessing(workTypeInfo: DouyinWorkTypeInfo, images?: Array<{ clip_type?: number }>): boolean {
   if (!workTypeInfo.isImage || !images) return false
-  
+
   // 检查是否包含 live 图（clip_type !== 2）
-  return images.some(item => item.clip_type !== 2 && item.clip_type !== undefined)
+  return images.some((item) => item.clip_type !== 2 && item.clip_type !== undefined)
 }

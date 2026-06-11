@@ -33,11 +33,13 @@ export const bilibiliLogin = async (e: Message) => {
    * 批量撤回消息
    */
   const recallMessages = async () => {
-    await Promise.all(messageIds.map(async (id) => {
-      try {
-        await e.bot.recallMsg(e.contact, id)
-      } catch { }
-    }))
+    await Promise.all(
+      messageIds.map(async (id) => {
+        try {
+          await e.bot.recallMsg(e.contact, id)
+        } catch {}
+      })
+    )
   }
 
   const handleLoginSuccess = async (responseData: Result<BiliCheckQrcode>) => {
@@ -65,7 +67,7 @@ export const bilibiliLogin = async (e: Message) => {
     // 撤回原二维码消息
     try {
       await e.bot.recallMsg(e.contact, qrcodeMsg.messageId)
-    } catch { }
+    } catch {}
 
     // 从消息ID列表中移除已撤回的消息
     const index = messageIds.indexOf(qrcodeMsg.messageId)

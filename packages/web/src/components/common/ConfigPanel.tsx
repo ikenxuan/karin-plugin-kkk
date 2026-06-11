@@ -3,22 +3,23 @@
  * 配置项直接在前端硬编码，不依赖 Karin schema 数据。
  */
 
-import { useEffect, useMemo, useRef, type FormEvent, type Key } from 'react'
 import { Button, Description, Form, Spinner, Tabs, Tooltip, toast } from '@heroui/react'
 import { useMemoizedFn, useRequest, useSetState, useUpdateEffect } from 'ahooks'
 import equal from 'fast-deep-equal'
 import gsap from 'gsap'
 import { RotateCcw, Save } from 'lucide-react'
+import { useEffect, useMemo, useRef, type FormEvent, type Key } from 'react'
+
 import { getConfig, saveConfig } from '../../api/config'
 import type { ConfigType } from '../../types/config'
 import { fadeInFrom, fadeInTo, getAnimationDuration, getStaggerDelay } from '../../utils/animations'
-import ActiveConfigPage from './config-panel/pages/ActiveConfigPage'
-import { configFiles } from './config-panel/options'
-import { getLayoutClasses } from './config-panel/layout'
 import { createConfigFieldRenderers } from './config-panel/fieldRenderers'
+import { getLayoutClasses } from './config-panel/layout'
+import { configFiles } from './config-panel/options'
+import ActiveConfigPage from './config-panel/pages/ActiveConfigPage'
+import type { ConfigFileKey, ConfigPath, DeviceLayout } from './config-panel/types'
 import { setValue } from './config-panel/utils'
 import { validateConfig } from './config-panel/validation'
-import type { ConfigFileKey, ConfigPath, DeviceLayout } from './config-panel/types'
 
 type ConfigPanelVariant = 'standalone' | 'karin'
 
@@ -88,7 +89,7 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
     toast.promise(savePromise, {
       loading: '正在保存配置...',
       success: '配置已保存',
-      error: (error) => error instanceof Error ? error.message : '保存配置失败'
+      error: (error) => (error instanceof Error ? error.message : '保存配置失败')
     })
   })
 
@@ -110,9 +111,7 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
     if (!container) return
 
     const handleTabsWheel = (event: WheelEvent) => {
-      const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY)
-        ? event.deltaX
-        : event.deltaY
+      const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY
 
       if (!delta) return
 
@@ -135,15 +134,11 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
   const animateCurrentPanel = useMemoizedFn(() => {
     if (!panelRef.current) return
 
-    gsap.fromTo(
-      panelRef.current.querySelectorAll('[data-config-section]'),
-      fadeInFrom,
-      {
-        ...fadeInTo,
-        duration: getAnimationDuration(0.35),
-        stagger: getStaggerDelay(0.03)
-      }
-    )
+    gsap.fromTo(panelRef.current.querySelectorAll('[data-config-section]'), fadeInFrom, {
+      ...fadeInTo,
+      duration: getAnimationDuration(0.35),
+      stagger: getStaggerDelay(0.03)
+    })
   })
 
   useEffect(() => {
@@ -187,13 +182,7 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
             重新读取
           </Tooltip.Content>
         </Tooltip>
-        <Button
-          size={controlSize}
-          isDisabled={!saveActionActive}
-          isPending={saving}
-          onPress={handleSave}
-          variant="primary"
-        >
+        <Button size={controlSize} isDisabled={!saveActionActive} isPending={saving} onPress={handleSave} variant="primary">
           <Save size={16} aria-hidden="true" />
           <span>保存</span>
         </Button>
@@ -213,11 +202,7 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
       ) : null}
       <Form className={classes.form} onSubmit={handleFormSubmit}>
         <Tabs className="w-full min-w-0 max-w-full" selectedKey={activeFile} onSelectionChange={handleTabChange}>
-          <Tabs.ListContainer
-            className={classes.tabsListContainer}
-            data-config-tabs-scroll="true"
-            data-scrollbar="none"
-          >
+          <Tabs.ListContainer className={classes.tabsListContainer} data-config-tabs-scroll="true" data-scrollbar="none">
             <Tabs.List aria-label="配置文件选择" className={classes.tabsList}>
               {configFiles.map((item, index) => (
                 <Tabs.Tab key={item.key} id={item.key}>

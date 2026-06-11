@@ -4,7 +4,19 @@ import { format } from 'date-fns'
 import { common, type Message, segment } from 'node-karin'
 import { logger } from 'node-karin'
 
-import { Base, baseHeaders, buildGoogleMotionPhoto, Common, downloadFile, type downLoadFileOptions, downloadVideo, type LiveImageMergeOptions, loopVideoWithTransition, processImageUrl, Render } from '@/module'
+import {
+  Base,
+  baseHeaders,
+  buildGoogleMotionPhoto,
+  Common,
+  downloadFile,
+  type downLoadFileOptions,
+  downloadVideo,
+  type LiveImageMergeOptions,
+  loopVideoWithTransition,
+  processImageUrl,
+  Render
+} from '@/module'
 import { Config } from '@/module/utils/Config'
 
 import { buildXiaohongshuRichText, xiaohongshuComments } from './comments'
@@ -33,17 +45,19 @@ export class Xiaohongshu extends Base {
   e: Message
   type: XiaohongshuIdData['type']
 
-  constructor (e: Message, iddata: XiaohongshuIdData) {
+  constructor(e: Message, iddata: XiaohongshuIdData) {
     super(e)
     this.e = e
     this.type = iddata?.type
   }
 
-  async XiaohongshuHandler (data: XiaohongshuIdData) {
+  async XiaohongshuHandler(data: XiaohongshuIdData) {
     if (Config.cookies.xiaohongshu === '') {
       throw new Error('我还没有小红书的 Cookies，暂时无法解析呢 ~')
     }
-    Config.app.parseTip && await this.e.reply('检测到小红书链接，开始解析')
+    if (Config.app.parseTip) {
+      await this.e.reply('检测到小红书链接，开始解析')
+    }
     const NoteData = await this.amagi.xiaohongshu.fetcher.fetchNoteDetail({
       typeMode: 'strict',
       note_id: data.note_id,
@@ -53,29 +67,24 @@ export class Xiaohongshu extends Base {
     const formattedEmojis = XiaohongshuEmoji(EmojiList)
 
     // 笔记信息
-    if (Config.xiaohongshu.sendContent.some(item => item === 'info')) {
-      const noteInfoImg = await Render(this.e, 'xiaohongshu/noteInfo',
-        {
-          title: NoteData.data.data.items[0].note_card!.title,
-          desc: buildXiaohongshuRichText(
-            NoteData.data.data.items[0].note_card!.desc,
-            formattedEmojis,
-            [],
-            { stripTopicMarker: true }
-          ),
-          statistics: NoteData.data.data.items[0].note_card!.interact_info,
-          note_id: NoteData.data.data.items[0].note_card!.note_id,
-          author: NoteData.data.data.items[0].note_card!.user,
-          image_url: NoteData.data.data.items[0].note_card!.image_list[0].url_default,
-          time: NoteData.data.data.items[0].note_card!.time,
-          ip_location: NoteData.data.data.items[0].note_card!.ip_location
-        }
-      )
+    if (Config.xiaohongshu.sendContent.some((item) => item === 'info')) {
+      const noteInfoImg = await Render(this.e, 'xiaohongshu/noteInfo', {
+        title: NoteData.data.data.items[0].note_card!.title,
+        desc: buildXiaohongshuRichText(NoteData.data.data.items[0].note_card!.desc, formattedEmojis, [], {
+          stripTopicMarker: true
+        }),
+        statistics: NoteData.data.data.items[0].note_card!.interact_info,
+        note_id: NoteData.data.data.items[0].note_card!.note_id,
+        author: NoteData.data.data.items[0].note_card!.user,
+        image_url: NoteData.data.data.items[0].note_card!.image_list[0].url_default,
+        time: NoteData.data.data.items[0].note_card!.time,
+        ip_location: NoteData.data.data.items[0].note_card!.ip_location
+      })
       this.e.reply(noteInfoImg)
     }
 
     // 评论列表
-    if (Config.xiaohongshu.sendContent.some(item => item === 'comment')) {
+    if (Config.xiaohongshu.sendContent.some((item) => item === 'comment')) {
       const CommentData = await this.amagi.xiaohongshu.fetcher.fetchNoteComments({
         typeMode: 'strict',
         note_id: data.note_id,
@@ -88,26 +97,24 @@ export class Xiaohongshu extends Base {
         // 使用简化的评论处理函数，直接返回评论数组
         const processedComments = await xiaohongshuComments(CommentData.data, formattedEmojis)
 
-        const commentListImg = await Render(this.e, 'xiaohongshu/comment',
-          {
-            Type: NoteData.data.data.items[0].note_card!.video ? '视频' : '图文',
-            CommentsData: processedComments,
-            CommentLength: processedComments.length,
-            ImageLength: NoteData.data.data.items[0].note_card!.image_list?.length || 0,
-            share_url: `https://www.xiaohongshu.com/discovery/item/${data.note_id}?source=webshare&xhsshare=pc_web&xsec_token=${data.xsec_token}&xsec_source=pc_share`
-          }
-        )
+        const commentListImg = await Render(this.e, 'xiaohongshu/comment', {
+          Type: NoteData.data.data.items[0].note_card!.video ? '视频' : '图文',
+          CommentsData: processedComments,
+          CommentLength: processedComments.length,
+          ImageLength: NoteData.data.data.items[0].note_card!.image_list?.length || 0,
+          share_url: `https://www.xiaohongshu.com/discovery/item/${data.note_id}?source=webshare&xhsshare=pc_web&xsec_token=${data.xsec_token}&xsec_source=pc_share`
+        })
         this.e.reply(commentListImg)
       }
     }
-    
+
     // 图片笔记
     if (!NoteData.data.data.items[0].note_card!.video && Config.xiaohongshu.sendContent.includes('image')) {
       const processedImages: any[] = []
       const title = NoteData.data.data.items[0].note_card!.title
       const temp: Array<{ filepath: string; totalBytes: number }> = []
       let hasGeneratedLivePhoto = false // 标记是否生成了实况图
-      
+
       // 获取实况图配置
       const livePhotoMode = Config.app.livePhotoMode ?? 'video_and_livephoto'
       const shouldGenerateVideo = livePhotoMode === 'video_and_livephoto' || livePhotoMode === 'video_only'
@@ -133,15 +140,15 @@ export class Xiaohongshu extends Base {
               Cookie: Config.cookies.xiaohongshu
             } as downLoadFileOptions['headers']
           })
-          
+
           let staticImgPath = ''
           if (staticImg.filepath) {
             staticImgPath = staticImg.filepath
           }
-          
+
           // 获取实况图视频流
           const livePhotoVideo = xiaohongshuGetLivePhotoVideo(item.stream)
-          
+
           if (livePhotoVideo) {
             // 下载实况图视频
             const livePhotoPath = Common.tempDri.video + `livephoto_${Date.now()}_${index}.mp4`
@@ -154,14 +161,14 @@ export class Xiaohongshu extends Base {
                 Cookie: Config.cookies.xiaohongshu
               }
             })
-            
+
             if (livePhoto.filepath) {
               // 生成视频（优先）
               if (shouldGenerateVideo) {
                 const outputPath = Common.tempDri.video + `xhs_live_${Date.now()}_${index}.mp4`
                 const transitionEnabled = loopCount > 1 && Boolean(staticImgPath)
                 const safeStaticPath = staticImgPath || livePhoto.filepath
-                
+
                 const result = await loopVideoWithTransition({
                   inputPath: livePhoto.filepath,
                   outputPath,
@@ -171,24 +178,25 @@ export class Xiaohongshu extends Base {
                   mergeMode,
                   context: bgmContext ?? undefined
                 })
-                
+
                 const success = result.success
                 if (mergeMode === 'continuous' && result.context) {
                   bgmContext = result.context
                 }
-                
+
                 if (success) {
                   const filePath = Common.tempDri.video + `tmp_${Date.now()}.mp4`
                   fs.renameSync(outputPath, filePath)
                   logger.mark(`小红书实况图视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
                   temp.push({ filepath: filePath, totalBytes: 0 })
-                  const videoPath = Config.upload.videoSendMode === 'base64'
-                    ? `base64://${(fs.readFileSync(filePath)).toString('base64')}`
-                    : `file://${filePath}`
+                  const videoPath =
+                    Config.upload.videoSendMode === 'base64'
+                      ? `base64://${fs.readFileSync(filePath).toString('base64')}`
+                      : `file://${filePath}`
                   processedImages.push(segment.video(videoPath))
                 }
               }
-              
+
               // 生成实况图（在视频之后）
               if (shouldGenerateLivePhoto) {
                 let hasPushedMotionPhotoCover = false
@@ -199,32 +207,33 @@ export class Xiaohongshu extends Base {
                     videoPath: livePhoto.filepath,
                     outputPath: motionPhotoCoverPath
                   })
-                  
+
                   if (motionPhotoCreated) {
                     temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
-                    const motionPhotoCover = Config.upload.imageSendMode === 'base64'
-                      ? `base64://${(fs.readFileSync(motionPhotoCoverPath)).toString('base64')}`
-                      : `file://${motionPhotoCoverPath}`
+                    const motionPhotoCover =
+                      Config.upload.imageSendMode === 'base64'
+                        ? `base64://${fs.readFileSync(motionPhotoCoverPath).toString('base64')}`
+                        : `file://${motionPhotoCoverPath}`
                     processedImages.push(segment.image(motionPhotoCover))
                     hasPushedMotionPhotoCover = true
                     hasGeneratedLivePhoto = true // 标记已生成实况图
                     logger.debug(`小红书实况图生成成功: ${motionPhotoCoverPath}`)
                   }
                 }
-                
+
                 // 如果实况图生成失败，使用普通图片
                 if (!hasPushedMotionPhotoCover) {
                   const imageUrl = await processImageUrl(item.url_default, title, index)
                   processedImages.push(segment.image(imageUrl))
                 }
               }
-              
+
               // 清理临时视频文件
               logger.mark('正在尝试删除缓存文件')
               await Common.removeFile(livePhoto.filepath, true)
             }
           }
-          
+
           // 清理临时静态图片文件
           if (staticImgPath) {
             temp.push({ filepath: staticImgPath, totalBytes: 0 })
@@ -235,7 +244,7 @@ export class Xiaohongshu extends Base {
           processedImages.push(segment.image(imageUrl))
         }
       }
-      
+
       // 如果生成了实况图，添加提示文字
       if (hasGeneratedLivePhoto) {
         const tipImg = await Render(this.e, 'other/live-photo-tip', {
@@ -244,13 +253,13 @@ export class Xiaohongshu extends Base {
         })
         processedImages.push(...tipImg)
       }
-      
+
       const res = common.makeForward(
         processedImages,
         Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
         Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
       )
-      
+
       if (processedImages.length === 1) {
         await this.e.reply(processedImages[0])
       } else if (processedImages.length > 1) {
@@ -321,7 +330,7 @@ export const xiaohongshuGetLivePhotoVideo = (streamData: any): XhsVideoStream | 
 
   // 按兼容性优先级收集所有视频流：h264 > h265 > av1 > h266
   const codecPriority = ['h264', 'h265', 'av1', 'h266']
-  
+
   for (const codec of codecPriority) {
     if (streamData[codec] && Array.isArray(streamData[codec]) && streamData[codec].length > 0) {
       // 选择第一个可用的视频流（实况图通常只有一个流）
@@ -342,11 +351,7 @@ export const xiaohongshuGetLivePhotoVideo = (streamData: any): XhsVideoStream | 
  * @param maxAutoVideoSize 自动模式下的最大文件大小（MB）
  * @returns 选择的视频流
  */
-export const xiaohongshuProcessVideos = (
-  streamData: any,
-  videoQuality: string,
-  maxAutoVideoSize?: number
-): XhsVideoStream | null => {
+export const xiaohongshuProcessVideos = (streamData: any, videoQuality: string, maxAutoVideoSize?: number): XhsVideoStream | null => {
   if (!streamData) {
     logger.warn('没有找到视频流数据')
     return null
@@ -387,7 +392,7 @@ export const xiaohongshuProcessVideos = (
   // 按画质分组，并在每组内按文件大小排序（大的在前）
   const videosByQuality = new Map<string, XhsVideoStream[]>()
 
-  allVideos.forEach(video => {
+  allVideos.forEach((video) => {
     const quality = getQualityLevel(video.width, video.height)
     if (!videosByQuality.has(quality)) {
       videosByQuality.set(quality, [])
@@ -411,9 +416,11 @@ export const xiaohongshuProcessVideos = (
       const qualityVideos = videosByQuality.get(quality)
       if (qualityVideos && qualityVideos.length > 0) {
         // 选择该画质下文件大小最大但不超过限制的视频
-        const suitableVideo = qualityVideos.find(video => video.size <= sizeLimitBytes)
+        const suitableVideo = qualityVideos.find((video) => video.size <= sizeLimitBytes)
         if (suitableVideo) {
-          logger.debug(`自动选择画质: ${quality}, 文件大小: ${(suitableVideo.size / (1024 * 1024)).toFixed(2)}MB, 编码: ${suitableVideo.video_codec}`)
+          logger.debug(
+            `自动选择画质: ${quality}, 文件大小: ${(suitableVideo.size / (1024 * 1024)).toFixed(2)}MB, 编码: ${suitableVideo.video_codec}`
+          )
           return suitableVideo
         }
       }
@@ -421,12 +428,14 @@ export const xiaohongshuProcessVideos = (
 
     // 如果没有找到符合大小限制的视频，选择最小的视频
     let smallestVideo = allVideos[0]
-    allVideos.forEach(video => {
+    allVideos.forEach((video) => {
       if (video.size < smallestVideo.size) {
         smallestVideo = video
       }
     })
-    logger.debug(`未找到符合大小限制的视频，选择最小视频: ${(smallestVideo.size / (1024 * 1024)).toFixed(2)}MB, 编码: ${smallestVideo.video_codec}`)
+    logger.debug(
+      `未找到符合大小限制的视频，选择最小视频: ${(smallestVideo.size / (1024 * 1024)).toFixed(2)}MB, 编码: ${smallestVideo.video_codec}`
+    )
     return smallestVideo
   }
 
@@ -436,7 +445,9 @@ export const xiaohongshuProcessVideos = (
 
   if (targetVideos && targetVideos.length > 0) {
     // 选择该画质下文件大小最大的视频（通常意味着更高的码率和质量）
-    logger.debug(`选择固定画质: ${targetQuality}, 文件大小: ${(targetVideos[0].size / (1024 * 1024)).toFixed(2)}MB, 编码: ${targetVideos[0].video_codec}`)
+    logger.debug(
+      `选择固定画质: ${targetQuality}, 文件大小: ${(targetVideos[0].size / (1024 * 1024)).toFixed(2)}MB, 编码: ${targetVideos[0].video_codec}`
+    )
     return targetVideos[0]
   }
 
@@ -495,4 +506,3 @@ export const XiaohongshuEmoji = (data: any) => {
 
   return ListArray
 }
-

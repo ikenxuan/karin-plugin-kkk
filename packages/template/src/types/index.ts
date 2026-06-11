@@ -26,7 +26,7 @@ export interface RenderRequest<T = Record<string, unknown>> {
     frameworkVersion: string
     /** 是否有可用更新 */
     hasUpdate?: boolean
-  },
+  }
   /** 水印比特大小 */
   watermarkTextBitSize: number
   /** 渲染数据 */
@@ -67,7 +67,21 @@ export interface BaseComponentProps<T = Record<string, any>> extends Pick<Render
 /**
  * 抖音平台组件ID
  */
-type DouyinComponentIds = 'article-work' | 'comment' | 'dynamic' | 'favorite-list' | 'image-work' | 'live' | 'musicinfo' | 'recommend-list' | 'user_profile' | 'userlist' | 'video-work' | 'videoInfo' | 'user_videolist' | 'qrcodeImg'
+type DouyinComponentIds =
+  | 'article-work'
+  | 'comment'
+  | 'dynamic'
+  | 'favorite-list'
+  | 'image-work'
+  | 'live'
+  | 'musicinfo'
+  | 'recommend-list'
+  | 'user_profile'
+  | 'userlist'
+  | 'video-work'
+  | 'videoInfo'
+  | 'user_videolist'
+  | 'qrcodeImg'
 
 /**
  * B站平台组件ID
@@ -172,19 +186,26 @@ interface PathToDataTypeMap {
  * 从路径字符串中提取数据类型的工具类型
  * @template P 路径字符串
  */
-export type ExtractDataTypeFromPath<P extends string> = P extends keyof PathToDataTypeMap
-  ? PathToDataTypeMap[P]
-  : Record<string, any>
-
+export type ExtractDataTypeFromPath<P extends string> = P extends keyof PathToDataTypeMap ? PathToDataTypeMap[P] : Record<string, any>
 
 /**
  * 模板类型到数据类型的映射接口
  */
 export interface DataTypeMap {
   /** 抖音平台数据类型 */
-  douyin: import('./platforms/douyin').DouyinCommentProps['data'] | import('./platforms/douyin').DouyinDynamicProps['data'] | import('./platforms/douyin').DouyinFavoriteListProps['data'] | import('./platforms/douyin').DouyinLiveProps['data'] | import('./platforms/douyin').DouyinMusicInfoProps['data'] | import('./platforms/douyin').DouyinQrcodeImgProps['data'] | import('./platforms/douyin').DouyinRecommendListProps['data'] | import('./platforms/douyin/UserVideoList').DouyinUserVideoListProps['data']
+  douyin:
+    | import('./platforms/douyin').DouyinCommentProps['data']
+    | import('./platforms/douyin').DouyinDynamicProps['data']
+    | import('./platforms/douyin').DouyinFavoriteListProps['data']
+    | import('./platforms/douyin').DouyinLiveProps['data']
+    | import('./platforms/douyin').DouyinMusicInfoProps['data']
+    | import('./platforms/douyin').DouyinQrcodeImgProps['data']
+    | import('./platforms/douyin').DouyinRecommendListProps['data']
+    | import('./platforms/douyin/UserVideoList').DouyinUserVideoListProps['data']
   /** B站平台数据类型 */
-  bilibili: import('./platforms/bilibili').BilibiliCommentProps['data'] | import('./platforms/bilibili/dynamic/forward').BilibiliForwardDynamicProps['data']
+  bilibili:
+    | import('./platforms/bilibili').BilibiliCommentProps['data']
+    | import('./platforms/bilibili/dynamic/forward').BilibiliForwardDynamicProps['data']
   /** 快手平台数据类型 */
   kuaishou: import('./platforms/kuaishou').KuaishouCommentProps['data']
   /** 其他类型数据 */

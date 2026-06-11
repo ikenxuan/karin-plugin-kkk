@@ -8,14 +8,11 @@ export { buildGoogleMotionPhoto } from './MotionPhoto'
 
 // ==================== 媒体信息 ====================
 
-/** 
+/**
  * 修复 m4s 文件为标准 MP4 格式
  * B站的 DASH 流使用 m4s 格式，缺少 moov atom，需要转换
  */
-export async function fixM4sFile (
-  inputPath: string,
-  outputPath: string
-): Promise<boolean> {
+export async function fixM4sFile(inputPath: string, outputPath: string): Promise<boolean> {
   // 使用 -c copy 直接复制流，只重新封装容器
   const result = await ffmpeg(`-y -i "${inputPath}" -c copy -movflags +faststart "${outputPath}"`)
   if (result.status) {
@@ -31,7 +28,7 @@ export async function fixM4sFile (
  * @param path 媒体路径
  * @returns 媒体时长（秒）
  */
-export async function getMediaDuration (path: string): Promise<number> {
+export async function getMediaDuration(path: string): Promise<number> {
   const { stdout } = await ffprobe(`-v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${path}"`)
   return Number.parseFloat(stdout.trim())
 }
@@ -41,11 +38,13 @@ export async function getMediaDuration (path: string): Promise<number> {
  * @param path 媒体路径
  */
 export const getMediaFrameRate = async (path: string): Promise<number> => {
-  const { stdout } = await ffprobe(`-v error -select_streams v:0 -show_entries stream=avg_frame_rate -of default=noprint_wrappers=1:nokey=1 "${path}"`)
+  const { stdout } = await ffprobe(
+    `-v error -select_streams v:0 -show_entries stream=avg_frame_rate -of default=noprint_wrappers=1:nokey=1 "${path}"`
+  )
   const rate = stdout.trim()
   if (!rate) return 30
   if (rate.includes('/')) {
-    const [num, den] = rate.split('/', 2).map(value => Number(value))
+    const [num, den] = rate.split('/', 2).map((value) => Number(value))
     if (!num || !den) return 30
     return Math.round((num / den) * 100) / 100
   }
@@ -55,19 +54,13 @@ export const getMediaFrameRate = async (path: string): Promise<number> => {
 }
 
 /** 重放视频（不添加 BGM） */
-export async function loopVideo (
-  inputPath: string,
-  outputPath: string,
-  loopCount: number
-): Promise<boolean> {
+export async function loopVideo(inputPath: string, outputPath: string, loopCount: number): Promise<boolean> {
   if (loopCount <= 1) {
     fs.copyFileSync(inputPath, outputPath)
     return true
   }
 
-  const result = await ffmpeg(
-    `-y -stream_loop ${loopCount - 1} -i "${inputPath}" -c copy "${outputPath}"`
-  )
+  const result = await ffmpeg(`-y -stream_loop ${loopCount - 1} -i "${inputPath}" -c copy "${outputPath}"`)
 
   if (result.status) {
     logger.debug(`视频重放成功: ${outputPath}`)
@@ -98,7 +91,9 @@ export const loopVideoWithTransition = async (
 
   /** 步骤 2：计算时长与过渡参数 */
   /** 原始视频时长（秒，使用高精度，避免分段累计误差） */
-  const { stdout: durationStdout } = await ffprobe(`-v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${inputPath}"`)
+  const { stdout: durationStdout } = await ffprobe(
+    `-v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${inputPath}"`
+  )
   const duration = Number(durationStdout.trim()) || 0
   /** 视频帧率（fps） */
   const videoFps = await getMediaFrameRate(inputPath)
@@ -208,7 +203,7 @@ export const loopVideoWithTransition = async (
     const audioDurationMode = 'longest'
     const result = await ffmpeg(
       `-y ${inputArgs} ${bgmInputArgs} -filter_complex "${filterComplex};[0:a][${bgmInputIndex}:a]amix=inputs=2:duration=${audioDurationMode}:dropout_transition=3[aout]" ` +
-      `-map "[outv]" -map "[aout]" -c:v libx264 -c:a aac -b:a 192k -pix_fmt yuv420p -shortest "${outputPath}"`
+        `-map "[outv]" -map "[aout]" -c:v libx264 -c:a aac -b:a 192k -pix_fmt yuv420p -shortest "${outputPath}"`
     )
 
     if (result.status) {
@@ -249,15 +244,10 @@ export const loopVideoWithTransition = async (
   }
 }
 
-
 // ==================== 视频合并 ====================
 
 /** 合并视频和音频（直接复制流） */
-export async function mergeVideoAudio (
-  videoPath: string,
-  audioPath: string,
-  resultPath: string
-): Promise<boolean> {
+export async function mergeVideoAudio(videoPath: string, audioPath: string, resultPath: string): Promise<boolean> {
   const result = await ffmpeg(`-y -i "${videoPath}" -i "${audioPath}" -c copy "${resultPath}"`)
   if (result.status) {
     logger.debug(`视频合成成功: ${resultPath}`)
@@ -280,7 +270,7 @@ export interface CompressVideoOptions {
 }
 
 /** 压缩视频 */
-export async function compressVideo (options: CompressVideoOptions): Promise<boolean> {
+export async function compressVideo(options: CompressVideoOptions): Promise<boolean> {
   const {
     inputPath,
     outputPath,
@@ -293,9 +283,9 @@ export async function compressVideo (options: CompressVideoOptions): Promise<boo
 
   const result = await ffmpeg(
     `-y -i "${inputPath}" -b:v ${targetBitrate}k -maxrate ${maxRate}k -bufsize ${bufSize}k ` +
-    `-crf ${crf} -preset medium -c:v libx264 ` +
-    '-vf "scale=\'if(gte(iw/ih,16/9),1280,-1)\':\'if(gte(iw/ih,16/9),-1,720)\',scale=ceil(iw/2)*2:ceil(ih/2)*2" ' +
-    `"${outputPath}"`
+      `-crf ${crf} -preset medium -c:v libx264 ` +
+      "-vf \"scale='if(gte(iw/ih,16/9),1280,-1)':'if(gte(iw/ih,16/9),-1,720)',scale=ceil(iw/2)*2:ceil(ih/2)*2\" " +
+      `"${outputPath}"`
   )
 
   if (result.status) {

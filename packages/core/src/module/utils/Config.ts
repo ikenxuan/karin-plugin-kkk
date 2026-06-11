@@ -10,7 +10,6 @@ import type { bilibiliPushItem, douyinPushItem, pushlistConfig } from '@/types/c
 
 import { Root } from '../../root'
 
-
 type ConfigDirType = 'config' | 'default_config'
 
 class Cfg {
@@ -19,13 +18,13 @@ class Cfg {
   /** 默认配置文件路径 */
   private defCfgPath: string
 
-  constructor () {
+  constructor() {
     this.dirCfgPath = `${karinPathBase}/${Root.pluginName}/config`
     this.defCfgPath = `${Root.pluginPath}/config/default_config/`
   }
 
   /** 初始化配置 */
-  initCfg () {
+  initCfg() {
     copyConfigSync(this.defCfgPath, this.dirCfgPath)
 
     const files = filesByExt(this.dirCfgPath, '.yaml', 'name')
@@ -44,22 +43,26 @@ class Cfg {
      */
     setTimeout(() => {
       const list = filesByExt(this.dirCfgPath, '.yaml', 'abs')
-      list.forEach((file) => watch(file, (_old, _now) => {
-        // logger.info('旧数据:', old);
-        // logger.info('新数据:', now);
-        
-        // 检查是否是 cookies 或 request 配置文件变化
-        const fileName = path.basename(file, '.yaml')
-        if (fileName === 'cookies' || fileName === 'request') {
-          logger.debug(`[Config] 检测到 ${fileName} 配置变化，正在重载 Amagi Client...`)
-          // 动态导入避免循环依赖
-          import('../utils/amagiClient').then(({ reloadAmagiConfig }) => {
-            reloadAmagiConfig()
-          }).catch((error) => {
-            logger.error(`[Config] 重载 Amagi Client 失败: ${error}`)
-          })
-        }
-      }))
+      list.forEach((file) =>
+        watch(file, (_old, _now) => {
+          // logger.info('旧数据:', old);
+          // logger.info('新数据:', now);
+
+          // 检查是否是 cookies 或 request 配置文件变化
+          const fileName = path.basename(file, '.yaml')
+          if (fileName === 'cookies' || fileName === 'request') {
+            logger.debug(`[Config] 检测到 ${fileName} 配置变化，正在重载 Amagi Client...`)
+            // 动态导入避免循环依赖
+            import('../utils/amagiClient')
+              .then(({ reloadAmagiConfig }) => {
+                reloadAmagiConfig()
+              })
+              .catch((error) => {
+                logger.error(`[Config] 重载 Amagi Client 失败: ${error}`)
+              })
+          }
+        })
+      )
     }, 2000)
 
     return this
@@ -70,14 +73,14 @@ class Cfg {
    * @param name 配置文件名
    * @returns 返回合并后的配置
    */
-  getDefOrConfig (name: keyof ConfigType) {
+  getDefOrConfig(name: keyof ConfigType) {
     const def = this.getYaml('default_config', name)
     const config = this.getYaml('config', name)
     return { ...def, ...config }
   }
 
   /** 获取所有配置文件 */
-  async All (): Promise<ConfigType> {
+  async All(): Promise<ConfigType> {
     const { getDouyinDB, getBilibiliDB } = await import('../db')
     const douyinDB = await getDouyinDB()
     const bilibiliDB = await getBilibiliDB()
@@ -90,7 +93,7 @@ class Cfg {
       const fileName = path.basename(file, '.yaml') as keyof ConfigType
 
       // 加载配置并合并
-      allConfig[fileName] = this.getDefOrConfig(fileName) || {} as ConfigType[keyof ConfigType]
+      allConfig[fileName] = this.getDefOrConfig(fileName) || ({} as ConfigType[keyof ConfigType])
     }
 
     // 从数据库获取过滤配置并合并到推送列表中
@@ -101,7 +104,9 @@ class Cfg {
             const filterWords = await douyinDB.getFilterWords(item.sec_uid)
             const filterTags = await douyinDB.getFilterTags(item.sec_uid)
             const userInfo = await douyinDB.getDouyinUser(item.sec_uid)
-            if (userInfo) item.filterMode = (userInfo.filterMode as 'blacklist' | 'whitelist' || 'blacklist') || 'blacklist'
+            if (userInfo) {
+              item.filterMode = (userInfo.filterMode as 'blacklist' | 'whitelist') || 'blacklist'
+            }
             item.Keywords = filterWords
             item.Tags = filterTags
           }
@@ -111,7 +116,9 @@ class Cfg {
             const filterWords = await bilibiliDB.getFilterWords(item.host_mid)
             const filterTags = await bilibiliDB.getFilterTags(item.host_mid)
             const userInfo = await bilibiliDB.getOrCreateBilibiliUser(item.host_mid)
-            if (userInfo) item.filterMode = (userInfo.filterMode as 'blacklist' | 'whitelist' || 'blacklist') || 'blacklist'
+            if (userInfo) {
+              item.filterMode = (userInfo.filterMode as 'blacklist' | 'whitelist') || 'blacklist'
+            }
             item.Keywords = filterWords
             item.Tags = filterTags
           }
@@ -130,11 +137,8 @@ class Cfg {
    * @param name 配置文件名
    * @returns 返回 YAML 文件内容
    */
-  private getYaml<T extends keyof ConfigType> (type: ConfigDirType, name: T): ConfigType[T] {
-    const file =
-      type === 'config'
-        ? `${this.dirCfgPath}/${name}.yaml`
-        : `${this.defCfgPath}/${name}.yaml`
+  private getYaml<T extends keyof ConfigType>(type: ConfigDirType, name: T): ConfigType[T] {
+    const file = type === 'config' ? `${this.dirCfgPath}/${name}.yaml` : `${this.defCfgPath}/${name}.yaml`
 
     // 自动管理缓存 无需手动清除 如无缓存 则会自动导入并加载
     return requireFileSync(file, { force: true })
@@ -147,16 +151,8 @@ class Cfg {
    * @param value 值
    * @param type 配置文件类型，默认为用户配置文件 `config`
    */
-  Modify (
-    name: keyof ConfigType,
-    key: string,
-    value: any,
-    type: ConfigDirType = 'config'
-  ) {
-    const path =
-      type === 'config'
-        ? `${this.dirCfgPath}/${name}.yaml`
-        : `${this.defCfgPath}/${name}.yaml`
+  Modify(name: keyof ConfigType, key: string, value: any, type: ConfigDirType = 'config') {
+    const path = type === 'config' ? `${this.dirCfgPath}/${name}.yaml` : `${this.defCfgPath}/${name}.yaml`
 
     // 读取 YAML 文件
     const yamlData = YAML.parseDocument(fs.readFileSync(path, 'utf8'))
@@ -174,20 +170,13 @@ class Cfg {
    * @param config 完整的配置对象
    * @param type 配置文件类型，默认为用户配置文件 `config`
    */
-  async ModifyPro<T extends keyof ConfigType> (
-    name: T,
-    config: ConfigType[T],
-    type: ConfigDirType = 'config'
-  ) {
+  async ModifyPro<T extends keyof ConfigType>(name: T, config: ConfigType[T], type: ConfigDirType = 'config') {
     // 动态引入，避免顶层 await 循环依赖
     const { getDouyinDB, getBilibiliDB } = await import('../db')
     const douyinDB = await getDouyinDB()
     const bilibiliDB = await getBilibiliDB()
 
-    const filePath =
-      type === 'config'
-        ? `${this.dirCfgPath}/${name}.yaml`
-        : `${this.defCfgPath}/${name}.yaml`
+    const filePath = type === 'config' ? `${this.dirCfgPath}/${name}.yaml` : `${this.defCfgPath}/${name}.yaml`
 
     try {
       // 1. 读取现有文件（包含注释）
@@ -201,7 +190,7 @@ class Cfg {
 
         // 处理抖音配置
         if ('douyin' in cleanedConfig) {
-          cleanedConfig.douyin = cleanedConfig.douyin.map(item => {
+          cleanedConfig.douyin = cleanedConfig.douyin.map((item) => {
             const { Keywords, Tags, filterMode, ...rest } = item
             return rest as Omit<douyinPushItem, 'Keywords' | 'Tags' | 'filterMode'>
           })
@@ -209,7 +198,7 @@ class Cfg {
 
         // 处理B站配置
         if ('bilibili' in cleanedConfig) {
-          cleanedConfig.bilibili = cleanedConfig.bilibili.map(item => {
+          cleanedConfig.bilibili = cleanedConfig.bilibili.map((item) => {
             const { Keywords, Tags, filterMode, ...rest } = item
             return rest as Omit<bilibiliPushItem, 'Keywords' | 'Tags' | 'filterMode'>
           })
@@ -248,7 +237,7 @@ class Cfg {
    * @param db 数据库实例
    * @param idField ID字段名称
    */
-  private async syncFilterConfigToDb (items: any[], db: any, idField: string) {
+  private async syncFilterConfigToDb(items: any[], db: any, idField: string) {
     for (const item of items) {
       const id = item[idField]
       if (!id) continue
@@ -303,7 +292,7 @@ class Cfg {
    * @param target 目标节点（保留注释的原始节点）
    * @param source 源节点（提供新值的节点）
    */
-  private deepMergeYaml (target: any, source: any) {
+  private deepMergeYaml(target: any, source: any) {
     if (YAML.isMap(target) && YAML.isMap(source)) {
       for (const pair of source.items) {
         const key = pair.key
@@ -326,7 +315,7 @@ class Cfg {
     }
   }
 
-  mergeObjectsWithPriority (
+  mergeObjectsWithPriority(
     userDoc: YAML.Document.Parsed,
     defaultDoc: YAML.Document.Parsed
   ): { result: YAML.Document.Parsed; differences: boolean } {
@@ -369,7 +358,7 @@ class Cfg {
    * 同步配置到数据库
    * 这个方法应该在所有模块都初始化完成后调用
    */
-  async syncConfigToDatabase () {
+  async syncConfigToDatabase() {
     try {
       // 动态引入，避免顶层 await 循环依赖
       const { getDouyinDB, getBilibiliDB } = await import('../db')
@@ -400,7 +389,7 @@ let configInstance: Config$ | null = null
 const getConfigInstance = (): Config$ => {
   if (!configInstance) {
     configInstance = new Proxy(new Cfg().initCfg(), {
-      get (target, prop: string) {
+      get(target, prop: string) {
         if (prop in target) return target[prop as keyof Cfg]
         return target.getDefOrConfig(prop as keyof ConfigType)
       }
@@ -413,7 +402,7 @@ const getConfigInstance = (): Config$ => {
  * 配置对象代理
  */
 export const Config: Config$ = new Proxy({} as Config$, {
-  get (target, prop: string) {
+  get(target, prop: string) {
     return getConfigInstance()[prop as keyof Config$]
   }
 })

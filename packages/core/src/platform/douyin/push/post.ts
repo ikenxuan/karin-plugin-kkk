@@ -12,7 +12,7 @@ import type { DouyinPushItem } from './types'
  * 按照作品发布时间进行过滤，只推送24小时内的作品
  * @returns 返回需要推送的作品项数组
  */
-export async function processPostList (
+export async function processPostList(
   contentList: any[],
   sec_uid: string,
   userinfo: Result<DyUserInfo>,

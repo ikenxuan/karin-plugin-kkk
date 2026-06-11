@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
 import { Button, Description, Drawer } from '@heroui/react'
 import { Plus } from 'lucide-react'
-import { formatTargetValue, normalizeTargetValues, parseTargetValue } from './targetUtils'
+import { useMemo, useState } from 'react'
+
 import GroupMappingDraftList from './GroupMappingDraftList'
 import GroupMappingEditorDrawer from './GroupMappingEditorDrawer'
+import { formatTargetValue, normalizeTargetValues, parseTargetValue } from './targetUtils'
 import type { PushTargetMapping, PushlistDevice } from './types'
 
 interface GroupMappingDrawerProps {
@@ -22,11 +23,7 @@ interface DraftMappingResult {
   mappings: PushTargetMapping[]
 }
 
-const toDraftMappings = (
-  values: string[],
-  mappings: PushTargetMapping[],
-  localDetails: MappingDetails
-): DraftMappingResult => {
+const toDraftMappings = (values: string[], mappings: PushTargetMapping[], localDetails: MappingDetails): DraftMappingResult => {
   const normalizedValues = normalizeTargetValues(values)
   const draftMappings = normalizedValues
     .map((value) => {
@@ -51,14 +48,7 @@ const toDraftMappings = (
   return { values: normalizedValues, mappings: draftMappings }
 }
 
-const GroupMappingDrawer = ({
-  isOpen,
-  values,
-  mappings,
-  device,
-  onOpenChange,
-  onApply
-}: GroupMappingDrawerProps) => {
+const GroupMappingDrawer = ({ isOpen, values, mappings, device, onOpenChange, onApply }: GroupMappingDrawerProps) => {
   const [draftValues, setDraftValues] = useState(() => normalizeTargetValues(values))
   const [localDetails, setLocalDetails] = useState<MappingDetails>({})
   const [editingValue, setEditingValue] = useState<string | null>(null)
@@ -132,8 +122,12 @@ const GroupMappingDrawer = ({
               />
             </Drawer.Body>
             <Drawer.Footer>
-              <Button size={device === 'mobile' ? 'sm' : 'md'} slot="close" variant="secondary">取消</Button>
-              <Button size={device === 'mobile' ? 'sm' : 'md'} onPress={finish}>完成</Button>
+              <Button size={device === 'mobile' ? 'sm' : 'md'} slot="close" variant="secondary">
+                取消
+              </Button>
+              <Button size={device === 'mobile' ? 'sm' : 'md'} onPress={finish}>
+                完成
+              </Button>
             </Drawer.Footer>
           </Drawer.Dialog>
         </Drawer.Content>

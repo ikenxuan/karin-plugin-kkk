@@ -4,6 +4,15 @@
   "description": "React模板渲染服务包",
   "author": "ikenxuan",
   "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -16,19 +25,9 @@
       "import": "./dist/server.js"
     }
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*"
-      ]
-    }
-  },
   "scripts": {
     "build": "cross-env NODE_ENV=production vite build",
     "dev": "vite dev",
-    "lint": "eslint . --fix",
     "preview": "vite preview",
     "sort": "sort-package-json"
   },

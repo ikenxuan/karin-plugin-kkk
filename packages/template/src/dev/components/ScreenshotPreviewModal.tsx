@@ -190,20 +190,15 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
     }
   }
 
-  const renderSwitch = (
-    checked: boolean,
-    onChange: (checked: boolean) => void,
-    label: string,
-    icon: React.ReactNode
-  ) => (
-    <Switch className='gap-4' isSelected={checked} onChange={onChange} size='lg'>
+  const renderSwitch = (checked: boolean, onChange: (checked: boolean) => void, label: string, icon: React.ReactNode) => (
+    <Switch className="gap-4" isSelected={checked} onChange={onChange} size="lg">
       <Switch.Control>
         <Switch.Thumb>
           <Switch.Icon>{icon}</Switch.Icon>
         </Switch.Thumb>
       </Switch.Control>
       <Switch.Content>
-        <Label className='text-xs font-medium text-foreground/70'>{label}</Label>
+        <Label className="text-xs font-medium text-foreground/70">{label}</Label>
       </Switch.Content>
     </Switch>
   )
@@ -220,26 +215,22 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
         }
       }}
       style={panelThemeStyle}
-      variant='blur'
+      variant="blur"
     >
-      <Modal.Container className='' size='cover'>
-        <Modal.Dialog
-          className='flex h-[min(92vh,1100px)] max-h-[92vh] flex-col overflow-hidden rounded-4xl border border-border bg-surface shadow-lg'
-        >
-          <Modal.Body className='flex-1 overflow-hidden'>
-            <div
-              ref={containerRef}
-              className='relative h-full overflow-hidden rounded-3xl border border-border bg-background'
-            >
+      <Modal.Container className="" size="cover">
+        <Modal.Dialog className="flex h-[min(92vh,1100px)] max-h-[92vh] flex-col overflow-hidden rounded-4xl border border-border bg-surface shadow-lg">
+          <Modal.Body className="flex-1 overflow-hidden">
+            <div ref={containerRef} className="relative h-full overflow-hidden rounded-3xl border border-border bg-background">
               <div
-                className='pointer-events-none absolute inset-0 opacity-60'
+                className="pointer-events-none absolute inset-0 opacity-60"
                 style={{
-                  backgroundImage: 'repeating-linear-gradient(0deg, color-mix(in oklab, var(--separator) 88%, transparent) 0px, transparent 1px, transparent 22px), repeating-linear-gradient(90deg, color-mix(in oklab, var(--separator) 88%, transparent) 0px, transparent 1px, transparent 22px)'
+                  backgroundImage:
+                    'repeating-linear-gradient(0deg, color-mix(in oklab, var(--separator) 88%, transparent) 0px, transparent 1px, transparent 22px), repeating-linear-gradient(90deg, color-mix(in oklab, var(--separator) 88%, transparent) 0px, transparent 1px, transparent 22px)'
                 }}
               />
 
               <div
-                className='pointer-events-none absolute left-4 top-4 z-50 rounded-2xl border border-border bg-surface/90 px-3 py-1.5 text-xs font-semibold text-foreground backdrop-blur-sm'
+                className="pointer-events-none absolute left-4 top-4 z-50 rounded-2xl border border-border bg-surface/90 px-3 py-1.5 text-xs font-semibold text-foreground backdrop-blur-sm"
                 style={{
                   opacity: showScaleIndicator ? 1 : 0,
                   transform: showScaleIndicator ? 'translateY(0)' : 'translateY(-10px)',
@@ -249,7 +240,7 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
                 {Math.round(scale * 100)}%
               </div>
 
-              <div className='relative h-full w-full'>
+              <div className="relative h-full w-full">
                 <TransformWrapper
                   ref={transformWrapperRef}
                   centerOnInit
@@ -276,16 +267,16 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
                   }}
                 >
                   <TransformComponent
-                    contentClass='flex h-full! w-full! items-center justify-center'
+                    contentClass="flex h-full! w-full! items-center justify-center"
                     contentStyle={{
                       transition: 'transform 0.3s ease-out',
                       willChange: 'transform'
                     }}
-                    wrapperClass='h-full! w-full!'
+                    wrapperClass="h-full! w-full!"
                   >
                     <img
-                      alt='Screenshot Preview'
-                      className='object-contain'
+                      alt="Screenshot Preview"
+                      className="object-contain"
                       draggable={false}
                       src={imageUrl}
                       style={{
@@ -300,8 +291,8 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
             </div>
           </Modal.Body>
 
-          <Modal.Footer className='flex flex-col gap-4 border-t border-border bg-surface/88 px-4 py-4 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between'>
-            <div className='flex flex-wrap items-center gap-3'>
+          <Modal.Footer className="flex flex-col gap-4 border-t border-border bg-surface/88 px-4 py-4 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-wrap items-center gap-3">
               {/* <div className='text-xs font-medium text-muted'>
                 滚轮缩放 · 拖拽移动 · 双击适应
               </div> */}
@@ -319,14 +310,14 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
               )}
             </div>
 
-            <div className='flex flex-wrap items-center justify-end gap-2'>
+            <div className="flex flex-wrap items-center justify-end gap-2">
               <Button
                 className={actionButtonClass}
                 isDisabled={isCapturing || !onRetakeScreenshot}
                 isPending={isCapturing}
                 onPress={handleRetake}
-                size='lg'
-                variant='secondary'
+                size="lg"
+                variant="secondary"
               >
                 {({ isPending }) => (
                   <>
@@ -336,42 +327,22 @@ export const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
                 )}
               </Button>
 
-              <Button
-                className={actionButtonClass}
-                onPress={handleFitToCanvas}
-                size='lg'
-                variant='secondary'
-              >
+              <Button className={actionButtonClass} onPress={handleFitToCanvas} size="lg" variant="secondary">
                 <Maximize size={16} />
                 适应画布
               </Button>
 
-              <Button
-                className={actionButtonClass}
-                onPress={handleCopy}
-                size='lg'
-                variant='secondary'
-              >
+              <Button className={actionButtonClass} onPress={handleCopy} size="lg" variant="secondary">
                 <Copy size={16} />
                 复制
               </Button>
 
-              <Button
-                className={primaryActionClass}
-                onPress={handleDownload}
-                size='lg'
-                variant='secondary'
-              >
+              <Button className={primaryActionClass} onPress={handleDownload} size="lg" variant="secondary">
                 <Download size={16} />
                 下载
               </Button>
 
-              <Button
-                className={actionButtonClass}
-                onPress={onClose}
-                size='lg'
-                variant='secondary'
-              >
+              <Button className={actionButtonClass} onPress={onClose} size="lg" variant="secondary">
                 <X size={16} />
                 关闭
               </Button>

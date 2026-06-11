@@ -1,7 +1,8 @@
 import { Button, Description, Label, Tooltip } from '@heroui/react'
 import { Pencil, Trash2 } from 'lucide-react'
-import { formatTargetValue } from './targetUtils'
+
 import TargetMappingDisplay from './TargetMappingDisplay'
+import { formatTargetValue } from './targetUtils'
 import type { PushTargetMapping, PushlistDevice } from './types'
 
 interface GroupMappingDraftListProps {
@@ -19,7 +20,11 @@ const GroupMappingDraftList = ({ device, mappings, onEdit, onRemove }: GroupMapp
     </div>
 
     {mappings.length > 0 ? (
-      <div className={device === 'mobile' ? 'flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pb-2' : 'flex max-h-72 flex-col gap-2 overflow-y-auto'}>
+      <div
+        className={
+          device === 'mobile' ? 'flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pb-2' : 'flex max-h-72 flex-col gap-2 overflow-y-auto'
+        }
+      >
         {mappings.map((mapping) => {
           const value = formatTargetValue(mapping)
 

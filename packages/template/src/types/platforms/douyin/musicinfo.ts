@@ -28,8 +28,7 @@ export interface DouyinMusicInfoProps extends BaseComponentProps<{
   fans: number
   /** 分享链接 */
   share_url: string
-}> {
-}
+}> {}
 
 /**
  * 音乐封面组件属性接口

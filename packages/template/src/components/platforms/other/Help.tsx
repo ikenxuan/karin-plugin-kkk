@@ -31,18 +31,11 @@ const MenuItemComponent: React.FC<{
   return (
     <div className="flex flex-row gap-8 py-2 relative">
       <div className="pt-2 shrink-0 relative">
-        <IconComponent
-          className="w-16 h-16 relative z-10 text-foreground"
-          style={{ color: iconColor }}
-        />
+        <IconComponent className="w-16 h-16 relative z-10 text-foreground" style={{ color: iconColor }} />
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className="mb-3 text-4xl font-black leading-tight tracking-wide text-foreground">
-          {item.title}
-        </h3>
-        <p className="text-2xl font-medium leading-relaxed whitespace-pre-line text-muted">
-          {item.description}
-        </p>
+        <h3 className="mb-3 text-4xl font-black leading-tight tracking-wide text-foreground">{item.title}</h3>
+        <p className="text-2xl font-medium leading-relaxed whitespace-pre-line text-muted">{item.description}</p>
       </div>
     </div>
   )
@@ -57,27 +50,17 @@ const MenuGroupComponent: React.FC<{
   /** 主题色 */
   themeColor: string
 }> = ({ group, themeColor }) => {
-
   return (
     <div className="relative py-8">
       {/* 分组标题 */}
       <div className="flex items-center gap-6 mb-16">
-        <div 
-          className="w-3 h-16 rounded-full"
-          style={{ backgroundColor: themeColor }}
-        />
-        <h2 className="m-0 text-[4rem] font-black tracking-tight uppercase leading-none text-foreground">
-          {group.title}
-        </h2>
+        <div className="w-3 h-16 rounded-full" style={{ backgroundColor: themeColor }} />
+        <h2 className="m-0 text-[4rem] font-black tracking-tight uppercase leading-none text-foreground">{group.title}</h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-24 gap-y-16">
         {group.items.map((item, idx) => (
-          <MenuItemComponent 
-            key={idx} 
-            item={item} 
-            themeColor={themeColor}
-          />
+          <MenuItemComponent key={idx} item={item} themeColor={themeColor} />
         ))}
       </div>
 
@@ -89,11 +72,7 @@ const MenuGroupComponent: React.FC<{
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-24 gap-y-16">
             {sub.items.map((item, idx) => (
-              <MenuItemComponent 
-                key={idx} 
-                item={item} 
-                themeColor={themeColor}
-              />
+              <MenuItemComponent key={idx} item={item} themeColor={themeColor} />
             ))}
           </div>
         </div>
@@ -111,27 +90,25 @@ export const Help: React.FC<Omit<HelpProps, 'templateType' | 'templateName'>> = 
   const isDark = props.data?.useDarkTheme ?? false
 
   // 弥散光颜色配置
-  const glowColors = isDark 
+  const glowColors = isDark
     ? {
-      primary: 'rgba(59, 130, 246, 0.4)', // Blue
-      secondary: 'rgba(139, 92, 246, 0.3)', // Violet
-      accent: 'rgba(6, 182, 212, 0.25)' // Cyan
-    }
+        primary: 'rgba(59, 130, 246, 0.4)', // Blue
+        secondary: 'rgba(139, 92, 246, 0.3)', // Violet
+        accent: 'rgba(6, 182, 212, 0.25)' // Cyan
+      }
     : {
-      primary: 'rgba(56, 189, 248, 0.5)', // Sky
-      secondary: 'rgba(167, 139, 250, 0.4)', // Violet
-      accent: 'rgba(45, 212, 191, 0.3)' // Teal
-    }
+        primary: 'rgba(56, 189, 248, 0.5)', // Sky
+        secondary: 'rgba(167, 139, 250, 0.4)', // Violet
+        accent: 'rgba(45, 212, 191, 0.3)' // Teal
+      }
 
   // 内容主题色轮换
-  const contentColors = isDark 
+  const contentColors = isDark
     ? ['#60a5fa', '#a78bfa', '#2dd4bf'] // Blue-400, Violet-400, Teal-400
     : ['#2563eb', '#7c3aed', '#0d9488'] // Blue-600, Violet-600, Teal-600
 
   return (
-    <DefaultLayout 
-      {...props}
-    >
+    <DefaultLayout {...props}>
       {/* 1. 弥散光背景层 */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div
@@ -174,7 +151,7 @@ export const Help: React.FC<Omit<HelpProps, 'templateType' | 'templateName'>> = 
       <div className="absolute top-30 right-15 pointer-events-none select-none opacity-[0.03] z-0">
         <span
           className="text-[200px] font-black tracking-tighter leading-none block text-right text-foreground"
-          style={{ 
+          style={{
             writingMode: 'vertical-rl',
             textOrientation: 'mixed'
           }}
@@ -203,9 +180,9 @@ export const Help: React.FC<Omit<HelpProps, 'templateType' | 'templateName'>> = 
         {/* 左侧边缘 */}
         <div className="absolute top-1/2 -translate-y-1/2 left-0 w-8 h-64 flex flex-col justify-between opacity-10">
           {[...Array(20)].map((_, i) => (
-            <div 
-              key={i} 
-              className="w-full bg-foreground" 
+            <div
+              key={i}
+              className="w-full bg-foreground"
               style={{ height: Math.random() > 0.5 ? '4px' : '2px', width: Math.random() * 100 + '%' }}
             />
           ))}
@@ -217,7 +194,8 @@ export const Help: React.FC<Omit<HelpProps, 'templateType' | 'templateName'>> = 
         {/* 底部装饰 */}
         <div className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none">
           {/* 左下角装饰条纹 */}
-          <div className="absolute bottom-0 left-0 w-130 h-100 opacity-[0.04]"
+          <div
+            className="absolute bottom-0 left-0 w-130 h-100 opacity-[0.04]"
             style={{
               background: `repeating-linear-gradient(45deg, ${isDark ? '#fff' : '#000'}, ${isDark ? '#fff' : '#000'} 5px, transparent 2px, transparent 10px)`
             }}
@@ -229,28 +207,19 @@ export const Help: React.FC<Omit<HelpProps, 'templateType' | 'templateName'>> = 
 
       {/* 5. 主要内容区域 */}
       <div className="relative z-10 p-18 flex flex-col min-h-[calc(100vh-200px)]">
-        
         {/* 头部区域 */}
         <div className="flex justify-between items-end mb-24 border-b-4 border-foreground/10 pb-8">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-3 opacity-60">
               <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-              <span className="text-sm font-mono tracking-widest text-muted">
-                SYSTEM_READY
-              </span>
+              <span className="text-sm font-mono tracking-widest text-muted">SYSTEM_READY</span>
             </div>
-            <h1 className="text-[5rem] font-black leading-none tracking-tighter text-foreground">
-              COMMANDS
-            </h1>
+            <h1 className="text-[5rem] font-black leading-none tracking-tighter text-foreground">COMMANDS</h1>
           </div>
-          
+
           <div className="text-right pb-2 opacity-80">
-            <div className="text-xs font-bold tracking-[0.2em] uppercase text-muted mb-1">
-              CURRENT MODULE
-            </div>
-            <div className="text-2xl font-bold text-foreground">
-              {title}
-            </div>
+            <div className="text-xs font-bold tracking-[0.2em] uppercase text-muted mb-1">CURRENT MODULE</div>
+            <div className="text-2xl font-bold text-foreground">{title}</div>
           </div>
         </div>
 
@@ -260,16 +229,9 @@ export const Help: React.FC<Omit<HelpProps, 'templateType' | 'templateName'>> = 
             // 轮换颜色
             const themeColor = contentColors[index % contentColors.length]
 
-            return (
-              <MenuGroupComponent 
-                key={index} 
-                group={group} 
-                themeColor={themeColor}
-              />
-            )
+            return <MenuGroupComponent key={index} group={group} themeColor={themeColor} />
           })}
         </div>
-
       </div>
     </DefaultLayout>
   )

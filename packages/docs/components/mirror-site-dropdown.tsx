@@ -1,72 +1,72 @@
-'use client';
+'use client'
 
-import { Dropdown, DropdownItem, DropdownMenu, DropdownPopover, DropdownTrigger, Link } from '@heroui/react';
-import { Icon } from '@iconify/react';
-import { useEffect, useMemo, useState } from 'react';
+import { Dropdown, DropdownItem, DropdownMenu, DropdownPopover, DropdownTrigger, Link } from '@heroui/react'
+import { Icon } from '@iconify/react'
+import { useEffect, useMemo, useState } from 'react'
 
 type MirrorSite = {
-  key: string;
-  label: string;
-  origin: string;
-};
+  key: string
+  label: string
+  origin: string
+}
 
 const mirrorSiteList: readonly MirrorSite[] = [
   {
     key: 'official',
     label: '主站',
-    origin: 'https://karin-plugin-kkk-docs.vercel.app',
+    origin: 'https://karin-plugin-kkk-docs.vercel.app'
   },
   {
     key: 'netlify',
     label: 'Netlify 镜像',
-    origin: 'https://karin-plugin-kkk-docs.netlify.app',
+    origin: 'https://karin-plugin-kkk-docs.netlify.app'
   },
   {
     key: 'cdn',
     label: 'CDN 镜像 1',
-    origin: 'https://kkk.karinjs.com',
+    origin: 'https://kkk.karinjs.com'
   },
   {
     key: 'cdn1',
     label: 'CDN 镜像 2',
-    origin: 'https://kkk.qwqo.cn',
-  },
-];
+    origin: 'https://kkk.qwqo.cn'
+  }
+]
 
 const getHostname = (origin: string) => {
   try {
-    return new URL(origin).host.toLowerCase();
+    return new URL(origin).host.toLowerCase()
   } catch {
-    return '';
+    return ''
   }
-};
+}
 
 const createTargetUrl = (origin: string) => {
-  const currentUrl = new URL(window.location.href);
-  const targetUrl = new URL(origin);
-  targetUrl.pathname = currentUrl.pathname;
-  targetUrl.search = currentUrl.search;
-  targetUrl.hash = currentUrl.hash;
-  return targetUrl.toString();
-};
+  const currentUrl = new URL(window.location.href)
+  const targetUrl = new URL(origin)
+  targetUrl.pathname = currentUrl.pathname
+  targetUrl.search = currentUrl.search
+  targetUrl.hash = currentUrl.hash
+  return targetUrl.toString()
+}
 
 export const MirrorSiteDropdown = () => {
-  const [currentHost, setCurrentHost] = useState('');
-  const [currentHref, setCurrentHref] = useState('');
+  const [currentHost, setCurrentHost] = useState('')
+  const [currentHref, setCurrentHref] = useState('')
 
   useEffect(() => {
-    setCurrentHost(window.location.host.toLowerCase());
-    setCurrentHref(window.location.href);
-  }, []);
+    setCurrentHost(window.location.host.toLowerCase())
+    setCurrentHref(window.location.href)
+  }, [])
 
   const availableSites = useMemo(() => {
-    if (!currentHost) return mirrorSiteList;
-    const isCurrentInMirrorList = mirrorSiteList.some((site) => getHostname(site.origin) === currentHost);
-    if (!isCurrentInMirrorList) return mirrorSiteList;
-    return mirrorSiteList.filter((site) => getHostname(site.origin) !== currentHost);
-  }, [currentHost]);
+    if (!currentHost) return mirrorSiteList
+    const isCurrentInMirrorList = mirrorSiteList.some((site) => getHostname(site.origin) === currentHost)
+    if (!isCurrentInMirrorList) return mirrorSiteList
+    return mirrorSiteList.filter((site) => getHostname(site.origin) !== currentHost)
+  }, [currentHost])
 
-  if (!availableSites.length) return null;
+  if (!availableSites.length) return null
 
   return (
     <Dropdown>
@@ -94,5 +94,5 @@ export const MirrorSiteDropdown = () => {
         </DropdownMenu>
       </DropdownPopover>
     </Dropdown>
-  );
-};
+  )
+}

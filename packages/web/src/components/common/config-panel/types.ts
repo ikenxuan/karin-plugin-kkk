@@ -33,16 +33,7 @@ export type NumberValidationRule = {
 
 export type DeviceLayout = 'desktop' | 'mobile'
 
-export type ConfigFileKey =
-  | 'cookies'
-  | 'app'
-  | 'upload'
-  | 'request'
-  | 'douyin'
-  | 'bilibili'
-  | 'kuaishou'
-  | 'xiaohongshu'
-  | 'pushlist'
+export type ConfigFileKey = 'cookies' | 'app' | 'upload' | 'request' | 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu' | 'pushlist'
 
 export type ConfigDescription = ReactNode | ConfigHelp
 
@@ -54,18 +45,8 @@ export interface ConfigHelp {
 }
 
 export interface ConfigFieldRenderers {
-  renderSwitch: (
-    path: ConfigPath,
-    label: string,
-    help?: ConfigDescription,
-    disabled?: boolean
-  ) => ReactNode
-  renderTextField: (
-    path: ConfigPath,
-    label: string,
-    help: ConfigDescription,
-    options?: TextFieldOptions
-  ) => ReactNode
+  renderSwitch: (path: ConfigPath, label: string, help?: ConfigDescription, disabled?: boolean) => ReactNode
+  renderTextField: (path: ConfigPath, label: string, help: ConfigDescription, options?: TextFieldOptions) => ReactNode
   renderSelectField: (
     path: ConfigPath,
     label: string,
@@ -74,13 +55,7 @@ export interface ConfigFieldRenderers {
     parser?: (value: string) => unknown,
     disabled?: boolean
   ) => ReactNode
-  renderCheckboxGroup: (
-    path: ConfigPath,
-    label: string,
-    help: ConfigDescription,
-    options: SelectOption[],
-    disabled?: boolean
-  ) => ReactNode
+  renderCheckboxGroup: (path: ConfigPath, label: string, help: ConfigDescription, options: SelectOption[], disabled?: boolean) => ReactNode
   renderPageHeader: (title: string, description: string) => ReactNode
   renderSubSection: (title: string, children: ReactNode) => ReactNode
 }

@@ -85,4 +85,3 @@ export function getConfigSchema(): ConfigSchema {
 export function getModuleSchema(moduleKey: string): SectionSchema | undefined {
   return allSectionSchemas[moduleKey]
 }
-

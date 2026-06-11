@@ -4,6 +4,7 @@
 
 import { Button } from '@heroui/react'
 import { Menu, Package } from 'lucide-react'
+
 import ThemeSwitch from '../common/ThemeSwitch'
 
 interface MobileTopBarProps {
@@ -25,14 +26,7 @@ const MobileTopBar = ({ onOpenDrawer }: MobileTopBarProps) => {
       </div>
 
       {/* 右侧：菜单按钮 */}
-      <Button
-        isIconOnly
-        className="shrink-0"
-        variant="ghost"
-        onPress={onOpenDrawer}
-        aria-label="打开菜单"
-        aria-expanded={false}
-      >
+      <Button isIconOnly className="shrink-0" variant="ghost" onPress={onOpenDrawer} aria-label="打开菜单" aria-expanded={false}>
         <Menu size={24} aria-hidden="true" />
       </Button>
     </div>

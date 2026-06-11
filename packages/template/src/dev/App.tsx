@@ -25,7 +25,10 @@ const normalizeHexColor = (value: string) => {
   const normalized = value.trim().replace('#', '')
 
   if (normalized.length === 3) {
-    return `#${normalized.split('').map(char => `${char}${char}`).join('')}`.toLowerCase()
+    return `#${normalized
+      .split('')
+      .map((char) => `${char}${char}`)
+      .join('')}`.toLowerCase()
   }
 
   return `#${normalized.slice(0, 6)}`.toLowerCase()
@@ -99,7 +102,7 @@ const updateURLParams = (platform: PlatformType, template: string, dataFile?: st
  */
 const isValidPlatformTemplate = (platform: PlatformType, componentId: string): boolean => {
   const enabledComponents = getEnabledComponents(platform)
-  return enabledComponents.some(component => component.id === componentId)
+  return enabledComponents.some((component) => component.id === componentId)
 }
 
 /**
@@ -119,9 +122,10 @@ export const App: React.FC = () => {
   // 从URL参数初始化状态
   const urlParams = parseURLParams()
   const initialPlatform = urlParams.platform || PlatformType.DOUYIN
-  const initialTemplate = urlParams.template && isValidPlatformTemplate(initialPlatform, urlParams.template)
-    ? urlParams.template
-    : getDefaultTemplate(initialPlatform)
+  const initialTemplate =
+    urlParams.template && isValidPlatformTemplate(initialPlatform, urlParams.template)
+      ? urlParams.template
+      : getDefaultTemplate(initialPlatform)
 
   const [selectedPlatform, setSelectedPlatform] = React.useState<PlatformType>(initialPlatform)
   const [selectedTemplate, setSelectedTemplate] = React.useState<string>(initialTemplate)
@@ -132,7 +136,11 @@ export const App: React.FC = () => {
   const [selectedDataFile, setSelectedDataFile] = React.useState<string>(urlParams.dataFile || 'default.json')
   const [isCapturing, setIsCapturing] = React.useState(false)
 
-  const [screenshotResult, setScreenshotResult] = React.useState<{ blob: Blob; download: () => void; copyToClipboard: () => Promise<void> } | null>(null)
+  const [screenshotResult, setScreenshotResult] = React.useState<{
+    blob: Blob
+    download: () => void
+    copyToClipboard: () => Promise<void>
+  } | null>(null)
   const [isScreenshotModalOpen, setIsScreenshotModalOpen] = React.useState(false)
   const [isEditorOpen, setIsEditorOpen] = React.useState(false)
   const [isPanelThemeModalOpen, setIsPanelThemeModalOpen] = React.useState(false)
@@ -141,7 +149,7 @@ export const App: React.FC = () => {
   const [panelAccentOverride, setPanelAccentOverride] = useLocalStorageState<string | undefined>(PANEL_ACCENT_STORAGE_KEY, {
     defaultValue: undefined,
     serializer: (v) => v ?? '',
-    deserializer: (v) => v ? normalizeHexColor(v) : undefined
+    deserializer: (v) => (v ? normalizeHexColor(v) : undefined)
   })
 
   // 版本信息开关状态
@@ -161,7 +169,7 @@ export const App: React.FC = () => {
     root.style.colorScheme = nextTheme
     body.style.colorScheme = nextTheme
   }, [isDarkMode])
-  
+
   // 切换版本信息开关
   const handleToggleVersion = () => {
     const newValue = toggleVersionEnabled()
@@ -169,11 +177,12 @@ export const App: React.FC = () => {
   }
 
   const dataService = DataService.getInstance()
-  const previewPanelRef = React.useRef<{ 
-    captureScreenshot: (tempDarkMode?: boolean) => Promise<{ blob: Blob; download: () => void; copyToClipboard: () => Promise<void> } | null>; 
-    fitToCanvas: () => void 
+  const previewPanelRef = React.useRef<{
+    captureScreenshot: (
+      tempDarkMode?: boolean
+    ) => Promise<{ blob: Blob; download: () => void; copyToClipboard: () => Promise<void> } | null>
+    fitToCanvas: () => void
   }>(null)
-
 
   // 监听浏览器前进后退按钮
   useEventListener('popstate', () => {
@@ -195,20 +204,21 @@ export const App: React.FC = () => {
   }, [selectedPlatform, selectedTemplate, selectedDataFile])
 
   // 全局屏蔽空格键，防止误触开关
-  useEventListener('keydown', (e: KeyboardEvent) => {
-    if (e.code === 'Space' || e.key === ' ') {
-      const target = e.target as HTMLElement
-      const isEditable =
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.isContentEditable
-      const isInMonaco = target.closest('.monaco-editor') !== null
-      if (!isEditable && !isInMonaco) {
-        e.preventDefault()
-        e.stopPropagation()
+  useEventListener(
+    'keydown',
+    (e: KeyboardEvent) => {
+      if (e.code === 'Space' || e.key === ' ') {
+        const target = e.target as HTMLElement
+        const isEditable = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable
+        const isInMonaco = target.closest('.monaco-editor') !== null
+        if (!isEditable && !isInMonaco) {
+          e.preventDefault()
+          e.stopPropagation()
+        }
       }
-    }
-  }, { target: () => document, capture: true })
+    },
+    { target: () => document, capture: true }
+  )
 
   /**
    * 处理平台变更
@@ -239,7 +249,7 @@ export const App: React.FC = () => {
     try {
       const files = await dataService.getAvailableDataFiles(selectedPlatform, selectedTemplate)
       setAvailableDataFiles(files)
-      
+
       // 确保选中的文件仍然有效，否则重置为 default.json
       if (files.length > 0) {
         if (files.includes(selectedDataFile)) {
@@ -254,38 +264,37 @@ export const App: React.FC = () => {
     } catch (error) {
       console.error('加载文件列表失败:', error)
     }
-  }, [selectedPlatform, selectedTemplate, selectedDataFile])
+  }, [selectedPlatform, selectedTemplate, selectedDataFile, dataService])
 
   /**
    * 加载模板数据
    */
-  const loadData = async (filename?: string) => {
-    try {
-      setLoadError(null)
-      setTemplateData(null)
-      // 加载模板数据
-      const data = await dataService.getTemplateData(
-        selectedPlatform,
-        selectedTemplate,
-        filename || selectedDataFile
-      )
-      setTemplateData(data || {})
-    } catch (error) {
-      console.error('加载数据失败:', error)
-      setLoadError(error instanceof Error ? error : new Error(String(error)))
-      // 如果加载失败，尝试加载默认数据
+  const loadData = React.useCallback(
+    async (filename?: string) => {
       try {
-        const defaultData = await dataService.getTemplateData(selectedPlatform, selectedTemplate)
-        setTemplateData(defaultData || {})
         setLoadError(null)
-      } catch (defaultError) {
-        console.error('加载默认数据也失败:', defaultError)
-        // 设置最终的错误状态
-        setLoadError(defaultError instanceof Error ? defaultError : new Error(String(defaultError)))
         setTemplateData(null)
+        // 加载模板数据
+        const data = await dataService.getTemplateData(selectedPlatform, selectedTemplate, filename || selectedDataFile)
+        setTemplateData(data || {})
+      } catch (error) {
+        console.error('加载数据失败:', error)
+        setLoadError(error instanceof Error ? error : new Error(String(error)))
+        // 如果加载失败，尝试加载默认数据
+        try {
+          const defaultData = await dataService.getTemplateData(selectedPlatform, selectedTemplate)
+          setTemplateData(defaultData || {})
+          setLoadError(null)
+        } catch (defaultError) {
+          console.error('加载默认数据也失败:', defaultError)
+          // 设置最终的错误状态
+          setLoadError(defaultError instanceof Error ? defaultError : new Error(String(defaultError)))
+          setTemplateData(null)
+        }
       }
-    }
-  }
+    },
+    [dataService, selectedPlatform, selectedTemplate, selectedDataFile]
+  )
 
   /**
    * 处理主题切换
@@ -387,14 +396,14 @@ export const App: React.FC = () => {
     }
 
     loadFilesAndData()
-  }, [selectedPlatform, selectedTemplate])
+  }, [selectedPlatform, selectedTemplate, dataService])
 
   // 当数据文件变更时加载数据
   React.useEffect(() => {
     if (selectedDataFile) {
       loadData(selectedDataFile)
     }
-  }, [selectedDataFile, selectedPlatform, selectedTemplate])
+  }, [selectedDataFile, selectedPlatform, selectedTemplate, loadData])
 
   // 标记是否需要在加载完成后自动适应画布
   const shouldAutoFitRef = React.useRef(false)
@@ -425,7 +434,7 @@ export const App: React.FC = () => {
         try {
           const files = await dataService.getAvailableDataFiles(selectedPlatform, selectedTemplate)
           setAvailableDataFiles(files)
-          
+
           // 重新加载当前选中的数据文件
           if (selectedDataFile) {
             loadData(selectedDataFile)
@@ -442,7 +451,7 @@ export const App: React.FC = () => {
     return () => {
       import.meta.hot?.off('dev-data-updated', handleDevDataUpdated)
     }
-  }, [selectedPlatform, selectedTemplate, selectedDataFile])
+  }, [selectedPlatform, selectedTemplate, selectedDataFile, dataService, loadData])
 
   const shellTheme = isDarkMode ? 'dark' : 'light'
   const componentTheme = templateData?.useDarkTheme ? 'dark' : 'light'
@@ -453,77 +462,76 @@ export const App: React.FC = () => {
   const resolvedPanelAccentSoftHover = `color-mix(in oklab, ${resolvedPanelAccent} 20%, transparent)`
   const resolvedPanelDefault = isDarkMode ? '#18181b' : '#f4f4f5'
   const resolvedPanelDefaultHover = isDarkMode ? '#232326' : '#ededed'
-  const panelThemeStyle = React.useMemo<CSSVariableStyle>(() => ({
-    '--background': isDarkMode ? '#09090b' : '#fafafa',
-    '--foreground': isDarkMode ? '#fafafa' : '#09090b',
-    '--surface': isDarkMode ? '#111113' : '#ffffff',
-    '--surface-foreground': isDarkMode ? '#fafafa' : '#09090b',
-    '--surface-secondary': isDarkMode ? '#18181b' : '#f5f5f5',
-    '--surface-secondary-foreground': isDarkMode ? '#fafafa' : '#09090b',
-    '--surface-tertiary': isDarkMode ? '#232326' : '#efefef',
-    '--surface-tertiary-foreground': isDarkMode ? '#fafafa' : '#09090b',
-    '--overlay': isDarkMode ? '#111113' : '#ffffff',
-    '--overlay-foreground': isDarkMode ? '#fafafa' : '#09090b',
-    '--muted': isDarkMode ? '#a1a1aa' : '#71717a',
-    '--scrollbar': isDarkMode ? '#3f3f46' : '#d4d4d8',
-    '--default': resolvedPanelDefault,
-    '--default-foreground': isDarkMode ? '#fafafa' : '#09090b',
-    '--segment': isDarkMode ? '#18181b' : '#f4f4f5',
-    '--segment-foreground': isDarkMode ? '#fafafa' : '#09090b',
-    '--border': isDarkMode ? '#27272a' : '#e4e4e7',
-    '--separator': isDarkMode ? '#232326' : '#ededed',
-    '--accent': resolvedPanelAccent,
-    '--accent-foreground': resolvedPanelAccentForeground,
-    '--accent-soft': resolvedPanelAccentSoft,
-    '--accent-soft-foreground': resolvedPanelAccent,
-    '--backdrop': isDarkMode ? 'rgba(0, 0, 0, 0.72)' : 'rgba(250, 250, 250, 0.82)',
-    '--focus': resolvedPanelAccent,
-    '--link': resolvedPanelAccent,
-    '--field-background': isDarkMode ? '#111113' : '#ffffff',
-    '--field-foreground': isDarkMode ? '#fafafa' : '#09090b',
-    '--field-placeholder': isDarkMode ? '#71717a' : '#a1a1aa',
-    '--field-border': isDarkMode ? '#27272a' : '#e4e4e7',
-    '--field-border-width': '1px',
-    '--color-accent': resolvedPanelAccent,
-    '--color-accent-hover': resolvedPanelAccentHover,
-    '--color-accent-foreground': resolvedPanelAccentForeground,
-    '--color-accent-soft': resolvedPanelAccentSoft,
-    '--color-accent-soft-hover': resolvedPanelAccentSoftHover,
-    '--color-accent-soft-foreground': resolvedPanelAccent,
-    '--color-default': resolvedPanelDefault,
-    '--color-default-hover': resolvedPanelDefaultHover,
-    '--color-default-foreground': isDarkMode ? '#fafafa' : '#09090b',
-    '--surface-shadow': 'none',
-    '--overlay-shadow': 'none',
-    '--field-shadow': 'none'
-  }), [
-    isDarkMode,
-    resolvedPanelAccent,
-    resolvedPanelAccentForeground,
-    resolvedPanelAccentHover,
-    resolvedPanelAccentSoft,
-    resolvedPanelAccentSoftHover,
-    resolvedPanelDefault,
-    resolvedPanelDefaultHover
-  ])
+  const panelThemeStyle = React.useMemo<CSSVariableStyle>(
+    () => ({
+      '--background': isDarkMode ? '#09090b' : '#fafafa',
+      '--foreground': isDarkMode ? '#fafafa' : '#09090b',
+      '--surface': isDarkMode ? '#111113' : '#ffffff',
+      '--surface-foreground': isDarkMode ? '#fafafa' : '#09090b',
+      '--surface-secondary': isDarkMode ? '#18181b' : '#f5f5f5',
+      '--surface-secondary-foreground': isDarkMode ? '#fafafa' : '#09090b',
+      '--surface-tertiary': isDarkMode ? '#232326' : '#efefef',
+      '--surface-tertiary-foreground': isDarkMode ? '#fafafa' : '#09090b',
+      '--overlay': isDarkMode ? '#111113' : '#ffffff',
+      '--overlay-foreground': isDarkMode ? '#fafafa' : '#09090b',
+      '--muted': isDarkMode ? '#a1a1aa' : '#71717a',
+      '--scrollbar': isDarkMode ? '#3f3f46' : '#d4d4d8',
+      '--default': resolvedPanelDefault,
+      '--default-foreground': isDarkMode ? '#fafafa' : '#09090b',
+      '--segment': isDarkMode ? '#18181b' : '#f4f4f5',
+      '--segment-foreground': isDarkMode ? '#fafafa' : '#09090b',
+      '--border': isDarkMode ? '#27272a' : '#e4e4e7',
+      '--separator': isDarkMode ? '#232326' : '#ededed',
+      '--accent': resolvedPanelAccent,
+      '--accent-foreground': resolvedPanelAccentForeground,
+      '--accent-soft': resolvedPanelAccentSoft,
+      '--accent-soft-foreground': resolvedPanelAccent,
+      '--backdrop': isDarkMode ? 'rgba(0, 0, 0, 0.72)' : 'rgba(250, 250, 250, 0.82)',
+      '--focus': resolvedPanelAccent,
+      '--link': resolvedPanelAccent,
+      '--field-background': isDarkMode ? '#111113' : '#ffffff',
+      '--field-foreground': isDarkMode ? '#fafafa' : '#09090b',
+      '--field-placeholder': isDarkMode ? '#71717a' : '#a1a1aa',
+      '--field-border': isDarkMode ? '#27272a' : '#e4e4e7',
+      '--field-border-width': '1px',
+      '--color-accent': resolvedPanelAccent,
+      '--color-accent-hover': resolvedPanelAccentHover,
+      '--color-accent-foreground': resolvedPanelAccentForeground,
+      '--color-accent-soft': resolvedPanelAccentSoft,
+      '--color-accent-soft-hover': resolvedPanelAccentSoftHover,
+      '--color-accent-soft-foreground': resolvedPanelAccent,
+      '--color-default': resolvedPanelDefault,
+      '--color-default-hover': resolvedPanelDefaultHover,
+      '--color-default-foreground': isDarkMode ? '#fafafa' : '#09090b',
+      '--surface-shadow': 'none',
+      '--overlay-shadow': 'none',
+      '--field-shadow': 'none'
+    }),
+    [
+      isDarkMode,
+      resolvedPanelAccent,
+      resolvedPanelAccentForeground,
+      resolvedPanelAccentHover,
+      resolvedPanelAccentSoft,
+      resolvedPanelAccentSoftHover,
+      resolvedPanelDefault,
+      resolvedPanelDefaultHover
+    ]
+  )
   const templateParts = selectedTemplate.split('/')
   const dataFileLabel = selectedDataFile.replace(/\.json$/, '')
-  
+
   return (
     <div className={shellTheme} data-theme={shellTheme} style={panelThemeStyle}>
-      <div className='h-screen overflow-hidden bg-background text-foreground transition-colors duration-300'>
-        <Group orientation='horizontal' className='h-full w-full'>
-          <Panel defaultSize='18%' minSize='16%' maxSize='28%' id='sidebar'>
-            <aside className='flex h-full min-w-0 flex-col border-r border-border'>
-              <div className='flex min-h-14 shrink-0 items-center border-b border-border px-4 py-2'>
-                <div className='flex w-full items-center justify-between gap-3'>
-                  <div className='flex min-w-0 items-center gap-3'>
-                    <div className='flex size-9 shrink-0 items-center justify-center text-foreground'>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 230 221"
-                        className='h-10 w-10'
-                      >
+      <div className="h-screen overflow-hidden bg-background text-foreground transition-colors duration-300">
+        <Group orientation="horizontal" className="h-full w-full">
+          <Panel defaultSize="18%" minSize="16%" maxSize="28%" id="sidebar">
+            <aside className="flex h-full min-w-0 flex-col border-r border-border">
+              <div className="flex min-h-14 shrink-0 items-center border-b border-border px-4 py-2">
+                <div className="flex w-full items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex size-9 shrink-0 items-center justify-center text-foreground">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 221" className="h-10 w-10">
                         <path
                           d="M132.75,87.37l-53.72-53.37c-4.66-4.63-1.38-12.58,5.18-12.58h115.13c6.57,0,9.84,7.95,5.18,12.58l-53.72,53.37c-4.99,4.96-13.06,4.96-18.05,0Z"
                           fill="currentColor"
@@ -539,30 +547,28 @@ export const App: React.FC = () => {
                       </svg>
                     </div>
 
-                    <div className='min-w-0'>
-                      <div className='text-[10px] font-semibold tracking-[0.24em] text-muted'>
-                        karin-plugin-kkk
-                      </div>
-                      <div className='truncate text-sm font-semibold leading-tight tracking-[-0.02em] text-foreground'>
+                    <div className="min-w-0">
+                      <div className="text-[10px] font-semibold tracking-[0.24em] text-muted">karin-plugin-kkk</div>
+                      <div className="truncate text-sm font-semibold leading-tight tracking-[-0.02em] text-foreground">
                         图片模板开发面板
                       </div>
                     </div>
                   </div>
 
                   <Button
-                    aria-label='GitHub 仓库'
+                    aria-label="GitHub 仓库"
                     isIconOnly
                     onPress={() => window.open('https://github.com/ikenxuan/karin-plugin-kkk', '_blank', 'noopener,noreferrer')}
-                    size='lg'
-                    variant='ghost'
+                    size="lg"
+                    variant="ghost"
                   >
                     <SiGithub size={24} />
                   </Button>
                 </div>
               </div>
 
-              <ScrollShadow className='min-h-0 flex-1 px-4 py-4' hideScrollBar size={56}>
-                <div className='space-y-4 pb-6'>
+              <ScrollShadow className="min-h-0 flex-1 px-4 py-4" hideScrollBar size={56}>
+                <div className="space-y-4 pb-6">
                   <PlatformSelector
                     selectedPlatform={selectedPlatform}
                     selectedTemplate={selectedTemplate}
@@ -589,35 +595,29 @@ export const App: React.FC = () => {
 
           <Separator />
 
-          <Panel defaultSize='82%' minSize='64%' id='preview'>
-            <section className='flex h-full min-w-0 flex-col bg-background'>
-              <div className='flex h-14 shrink-0 items-center border-b border-border px-4'>
-                <div className='flex w-full min-w-0 items-center justify-between gap-3'>
-                  <div className='min-w-0 flex-1 space-y-0.5'>
-                    <div className='overflow-hidden'>
-                      <Breadcrumbs isDisabled className='gap-1 text-sm text-muted'>
-                        <Breadcrumbs.Item href='#'>{selectedPlatform}</Breadcrumbs.Item>
+          <Panel defaultSize="82%" minSize="64%" id="preview">
+            <section className="flex h-full min-w-0 flex-col bg-background">
+              <div className="flex h-14 shrink-0 items-center border-b border-border px-4">
+                <div className="flex w-full min-w-0 items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1 space-y-0.5">
+                    <div className="overflow-hidden">
+                      <Breadcrumbs isDisabled className="gap-1 text-sm text-muted">
+                        <Breadcrumbs.Item href="#">{selectedPlatform}</Breadcrumbs.Item>
                         {templateParts.map((part, index) => (
-                          <Breadcrumbs.Item
-                            key={`${part}-${index}`}
-                            href={index === templateParts.length - 1 ? undefined : '#'}
-                          >
+                          <Breadcrumbs.Item key={`${part}-${index}`} href={index === templateParts.length - 1 ? undefined : '#'}>
                             {part}
                           </Breadcrumbs.Item>
                         ))}
                       </Breadcrumbs>
                     </div>
-                    <div className='mt-1 truncate text-[11px] leading-tight text-muted'>
-                      数据文件：{dataFileLabel} · 面板：{shellTheme === 'dark' ? '深色' : '浅色'} · 子组件：{componentTheme === 'dark' ? '深色' : '浅色'} · 版本信息：{versionEnabled ? '显示' : '隐藏'}
+                    <div className="mt-1 truncate text-[11px] leading-tight text-muted">
+                      数据文件：{dataFileLabel} · 面板：{shellTheme === 'dark' ? '深色' : '浅色'} · 子组件：
+                      {componentTheme === 'dark' ? '深色' : '浅色'} · 版本信息：{versionEnabled ? '显示' : '隐藏'}
                     </div>
                   </div>
 
-                  <Toolbar
-                    aria-label='预览操作'
-                    className='shrink-0 gap-1 rounded-xl border border-border bg-surface p-1'
-                    isAttached
-                  >
-                    <ButtonGroup size='sm' variant='secondary'>
+                  <Toolbar aria-label="预览操作" className="shrink-0 gap-1 rounded-xl border border-border bg-surface p-1" isAttached>
+                    <ButtonGroup size="sm" variant="secondary">
                       <Button onPress={() => loadData(selectedDataFile)}>
                         <RefreshCw size={16} />
                         重载
@@ -634,48 +634,32 @@ export const App: React.FC = () => {
                       </Button>
                     </ButtonGroup>
 
-                    <Button
-                      onPress={() => setIsPanelThemeModalOpen(true)}
-                      size='sm'
-                      variant='secondary'
-                    >
+                    <Button onPress={() => setIsPanelThemeModalOpen(true)} size="sm" variant="secondary">
                       <Palette size={16} />
                       面板主题
                     </Button>
 
                     <AIConfigPopover panelTheme={shellTheme} panelThemeStyle={panelThemeStyle} />
 
-                    <Button
-                      onPress={handleToggleVersion}
-                      size='sm'
-                      variant='secondary'
-                    >
-                      {versionEnabled ? (
-                        <Info size={16} />
-                      ) : (
-                        <MdInfoOutline size={16} />
-                      )}
+                    <Button onPress={handleToggleVersion} size="sm" variant="secondary">
+                      {versionEnabled ? <Info size={16} /> : <MdInfoOutline size={16} />}
                       {versionEnabled ? '版本信息' : '隐藏版本'}
                     </Button>
 
                     <Button
                       isDisabled={!templateData}
                       onPress={() => handleThemeChange(!templateData?.useDarkTheme)}
-                      size='sm'
-                      variant='primary'
+                      size="sm"
+                      variant="primary"
                     >
-                      {templateData?.useDarkTheme ? (
-                        <Sun size={16} />
-                      ) : (
-                        <Moon size={16} />
-                      )}
+                      {templateData?.useDarkTheme ? <Sun size={16} /> : <Moon size={16} />}
                       组件{componentTheme === 'dark' ? '深色' : '浅色'}
                     </Button>
                   </Toolbar>
                 </div>
               </div>
 
-              <div className='min-h-0 flex-1'>
+              <div className="min-h-0 flex-1">
                 <PreviewPanel
                   ref={previewPanelRef}
                   platform={selectedPlatform}

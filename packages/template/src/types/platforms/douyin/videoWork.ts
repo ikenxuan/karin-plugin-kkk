@@ -66,5 +66,4 @@ export interface DouyinVideoWorkProps extends BaseComponentProps<{
     }>
     subscriber_role?: string
   }
-}> {
-}
+}> {}

@@ -1,15 +1,10 @@
 import { Accordion, Description, Input, Label, Switch, TextField } from '@heroui/react'
 import { ChevronDown } from 'lucide-react'
+
 import DisabledFieldHint from './DisabledFieldHint'
-import {
-  DeletePushItemButton,
-  FilterModeField,
-  GroupIdsField,
-  KeywordTagFields,
-  PushTypeField
-} from './PushlistFields'
-import { bilibiliPushTypeOptions } from './options'
 import { getPushlistGridClass } from './layout'
+import { bilibiliPushTypeOptions } from './options'
+import { DeletePushItemButton, FilterModeField, GroupIdsField, KeywordTagFields, PushTypeField } from './PushlistFields'
 import type { BilibiliPushItem, BilibiliPushType, PushlistDevice } from './types'
 
 interface BilibiliPushItemPanelProps {
@@ -44,9 +39,7 @@ const BilibiliPushItemPanel = ({ item, index, list, onChange, device }: Bilibili
               </Switch>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="font-medium">
-                {item.remark || `UID: ${item.host_mid}` || `推送项 ${index + 1}`}
-              </span>
+              <span className="font-medium">{item.remark || `UID: ${item.host_mid}` || `推送项 ${index + 1}`}</span>
               <Description className="text-xs">B站 UID: {item.host_mid}</Description>
             </div>
           </div>
@@ -75,12 +68,7 @@ const BilibiliPushItemPanel = ({ item, index, list, onChange, device }: Bilibili
               </DisabledFieldHint>
 
               <DisabledFieldHint disabled={disabled} device={device} message={disabledMessage}>
-                <TextField
-                  fullWidth
-                  isDisabled={disabled}
-                  value={item.remark}
-                  onChange={(value) => updateItem({ remark: value })}
-                >
+                <TextField fullWidth isDisabled={disabled} value={item.remark} onChange={(value) => updateItem({ remark: value })}>
                   <Label>备注名称</Label>
                   <Input placeholder="可选，用于识别该推送项" />
                   <Description>方便识别的名称，如：UP主昵称</Description>
@@ -128,4 +116,3 @@ const BilibiliPushItemPanel = ({ item, index, list, onChange, device }: Bilibili
 }
 
 export default BilibiliPushItemPanel
-

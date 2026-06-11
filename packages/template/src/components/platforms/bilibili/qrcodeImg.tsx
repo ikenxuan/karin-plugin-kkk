@@ -45,22 +45,19 @@ export const BilibiliQrcodeImg: React.FC<BilibiliQrcodeImgProps> = React.memo((p
       {/* 1. 弥散模糊效果 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* 右上角主光辉 */}
-        <div 
+        <div
           className="absolute top-[-40%] right-[-50%] w-400 h-600 rounded-full blur-[200px] opacity-25"
           style={{ background: theme.gradientBR }}
         />
         {/* 左下角氛围光 */}
-        <div 
+        <div
           className="absolute bottom-[-40%] left-[-50%] w-400 h-600 rounded-full blur-[200px] opacity-25"
           style={{ background: theme.gradientTL }}
         />
       </div>
 
       {/* 2. 单色噪点层 */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ opacity: isDark ? 0.16 : 0.2 }}
-      >
+      <div className="absolute inset-0 pointer-events-none" style={{ opacity: isDark ? 0.16 : 0.2 }}>
         <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
           <filter id="pixelNoise" x="0%" y="0%" width="100%" height="100%">
             <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch" result="noise" />
@@ -76,12 +73,11 @@ export const BilibiliQrcodeImg: React.FC<BilibiliQrcodeImgProps> = React.memo((p
       </div>
 
       <div className="relative z-10 flex flex-col items-center justify-center h-full py-40 px-24 space-y-32">
-        
         {/* 标题区 */}
         <div className="text-center space-y-12">
           {/* Title */}
           <h1 className="text-8xl font-bold tracking-tight">
-            <span 
+            <span
               className="bg-clip-text text-transparent"
               style={{
                 backgroundImage: `linear-gradient(to right, ${theme.text}, ${theme.subText})`
@@ -90,7 +86,7 @@ export const BilibiliQrcodeImg: React.FC<BilibiliQrcodeImgProps> = React.memo((p
               B站扫码登录
             </span>
           </h1>
-          
+
           {/* 操作步骤 */}
           <div className="flex items-start justify-center gap-10 opacity-90" style={{ color: theme.text }}>
             {/* Step 1 */}
@@ -121,19 +117,15 @@ export const BilibiliQrcodeImg: React.FC<BilibiliQrcodeImgProps> = React.memo((p
 
         {/* 二维码 */}
         <div className="relative group">
-          <div 
+          <div
             className="relative p-4"
-            style={{ 
+            style={{
               width: '800px',
               height: '800px'
             }}
           >
             {qrCodeDataUrl ? (
-              <img
-                src={qrCodeDataUrl}
-                alt="QR Code"
-                className="w-full h-full object-contain"
-              />
+              <img src={qrCodeDataUrl} alt="QR Code" className="w-full h-full object-contain" />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center gap-8">
                 <div className="w-24 h-24 border-4 border-gray-200 rounded-full animate-spin" style={{ borderTopColor: theme.accent }} />
@@ -145,7 +137,10 @@ export const BilibiliQrcodeImg: React.FC<BilibiliQrcodeImgProps> = React.memo((p
           {/* 倒计时 */}
           <div className="absolute -bottom-24 left-0 right-0 text-center">
             <p className="text-[28px] font-medium tracking-wide flex items-center justify-center gap-3" style={{ color: theme.subText }}>
-              <span className="h-6 w-1.5 rounded-full shadow-[0_0_8px_rgba(255,102,153,0.8)]" style={{ backgroundColor: theme.accent }}></span>
+              <span
+                className="h-6 w-1.5 rounded-full shadow-[0_0_8px_rgba(255,102,153,0.8)]"
+                style={{ backgroundColor: theme.accent }}
+              ></span>
               此二维码 120 秒内有效，请及时扫码登录。
             </p>
           </div>
@@ -157,7 +152,9 @@ export const BilibiliQrcodeImg: React.FC<BilibiliQrcodeImgProps> = React.memo((p
             <div className="flex items-center justify-center w-16 h-16 mb-2">
               <AlertTriangle size={64} style={{ color: theme.text }} strokeWidth={1.5} />
             </div>
-            <h3 className="text-[40px] font-bold" style={{ color: theme.text }}>免责声明</h3>
+            <h3 className="text-[40px] font-bold" style={{ color: theme.text }}>
+              免责声明
+            </h3>
             <div className="text-[24px] leading-relaxed opacity-60 space-y-2 max-w-3xl" style={{ color: theme.text }}>
               {disclaimer.map((line, index) => (
                 <p key={index}>{line}</p>
@@ -165,7 +162,6 @@ export const BilibiliQrcodeImg: React.FC<BilibiliQrcodeImgProps> = React.memo((p
             </div>
           </div>
         </div>
-
       </div>
     </DefaultLayout>
   )

@@ -3,8 +3,9 @@
  */
 
 import { Avatar, Button, Popover, Separator, cn } from '@heroui/react'
-import { Settings, FileText, HelpCircle, LogOut } from 'lucide-react'
 import { useMemoizedFn } from 'ahooks'
+import { Settings, FileText, HelpCircle, LogOut } from 'lucide-react'
+
 import { clearAuthTokens } from '../../auth/token'
 import { USER_AVATAR_URL } from '../../constants/user'
 import type { MainMenuKey } from '../../types/navigation'
@@ -21,7 +22,7 @@ interface SidebarProps {
  */
 const menuItems = [
   { id: 'config', label: '配置管理', icon: Settings },
-  { id: 'about', label: '关于插件', icon: FileText },
+  { id: 'about', label: '关于插件', icon: FileText }
 ]
 
 /**
@@ -77,9 +78,7 @@ const Sidebar = ({ collapsed, activeMenu, onMenuChange }: SidebarProps) => {
                 </div>
               </div>
               <Separator className="my-2" />
-              <p className="text-xs text-muted">
-                当前身份：管理员
-              </p>
+              <p className="text-xs text-muted">当前身份：管理员</p>
             </Popover.Dialog>
           </Popover.Content>
         </Popover>
@@ -102,8 +101,8 @@ const Sidebar = ({ collapsed, activeMenu, onMenuChange }: SidebarProps) => {
               aria-current={isActive ? 'page' : undefined}
               onPress={() => onMenuChange(item.id as MainMenuKey)}
             >
-              <Icon size={20} className={cn("shrink-0 mr-3", !isActive && "text-muted")} aria-hidden="true" />
-              <span className={cn("truncate", isActive && "font-medium")}>{item.label}</span>
+              <Icon size={20} className={cn('shrink-0 mr-3', !isActive && 'text-muted')} aria-hidden="true" />
+              <span className={cn('truncate', isActive && 'font-medium')}>{item.label}</span>
             </Button>
           )
         })}
@@ -111,25 +110,11 @@ const Sidebar = ({ collapsed, activeMenu, onMenuChange }: SidebarProps) => {
 
       {/* 底部操作区域 - 固定在底部 */}
       <div className="flex shrink-0 flex-col gap-1 px-3 py-3">
-        <Button
-          fullWidth
-          className="justify-start"
-          size="lg"
-          variant="ghost"
-          aria-label="查看帮助文档"
-          onPress={handleOpenDocs}
-        >
+        <Button fullWidth className="justify-start" size="lg" variant="ghost" aria-label="查看帮助文档" onPress={handleOpenDocs}>
           <HelpCircle size={20} className="shrink-0 mr-3 text-muted" aria-hidden="true" />
           <span className="truncate">帮助文档</span>
         </Button>
-        <Button
-          fullWidth
-          className="justify-start"
-          size="lg"
-          variant="ghost"
-          aria-label="登出"
-          onPress={handleLogout}
-        >
+        <Button fullWidth className="justify-start" size="lg" variant="ghost" aria-label="登出" onPress={handleLogout}>
           <LogOut size={20} className="shrink-0 mr-3 text-muted" aria-hidden="true" />
           <span className="truncate">登出</span>
         </Button>

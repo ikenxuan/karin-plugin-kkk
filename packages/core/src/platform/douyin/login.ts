@@ -86,12 +86,12 @@ export const douyinLogin = async (e: Message) => {
     return 'linux'
   }
 
-  const page = await newInjectedPage(puppeteer.browser, {
+  const page = (await newInjectedPage(puppeteer.browser, {
     fingerprintOptions: {
       devices: ['desktop'],
       operatingSystems: [getOperatingSystem()]
     }
-  }) as Page
+  })) as Page
 
   // 激进地拦截资源，只保留必要的 HTML、JS 和二维码图片
   await page.setRequestInterception(true)
@@ -115,7 +115,9 @@ export const douyinLogin = async (e: Message) => {
       url.includes('/video/') || // 通用视频路径
       url.includes('v.douyin.com') || // 抖音视频域名
       // 阻止大图片但保留二维码
-      (resourceType === 'image' && !url.includes('qrcode') && !url.includes('data:image') &&
+      (resourceType === 'image' &&
+        !url.includes('qrcode') &&
+        !url.includes('data:image') &&
         (url.includes('.jpg') || url.includes('.jpeg') || url.includes('.webp')))
 
     if (shouldBlock) {
@@ -143,9 +145,9 @@ export const douyinLogin = async (e: Message) => {
 
     // 禁用 IntersectionObserver（防止懒加载触发）
     window.IntersectionObserver = class {
-      observe () { }
-      unobserve () { }
-      disconnect () { }
+      observe() {}
+      unobserve() {}
+      disconnect() {}
     } as any
   })
 
@@ -158,9 +160,7 @@ export const douyinLogin = async (e: Message) => {
     logger.mark('开始等待二维码加载...')
     qrCodeData = await Promise.race([
       waitQrcode(page),
-      new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('QR_CODE_TIMEOUT')), 60000)
-      )
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('QR_CODE_TIMEOUT')), 60000))
     ])
     logger.mark('二维码获取成功')
   } catch (error: any) {
@@ -206,7 +206,7 @@ export const douyinLogin = async (e: Message) => {
         await page.evaluate(() => {
           // 尝试触发浏览器的垃圾回收
           if ((window as any).gc) {
-            (window as any).gc()
+            ;(window as any).gc()
           }
         })
       } catch {
@@ -223,9 +223,11 @@ export const douyinLogin = async (e: Message) => {
         const timer = setTimeout(async () => {
           logger.warn('扫码登录超时（2分钟），撤回二维码消息')
           // 撤回二维码消息
-          await Promise.all(msg_id.map(async (id) => {
-            await e.bot.recallMsg(e.contact, id)
-          }))
+          await Promise.all(
+            msg_id.map(async (id) => {
+              await e.bot.recallMsg(e.contact, id)
+            })
+          )
           resolve(false)
         }, 120 * 1000)
 
@@ -272,11 +274,11 @@ export const douyinLogin = async (e: Message) => {
                 logger.debug('开始获取 cookies...')
                 const cookies = await puppeteer.browser.cookies()
                 logger.debug(`获取到 ${cookies.length} 个 cookies`)
-                const cookieString = cookies.map(cookie => `${cookie.name}=${cookie.value}`).join('; ')
+                const cookieString = cookies.map((cookie) => `${cookie.name}=${cookie.value}`).join('; ')
 
                 // 检测关键 cookie 参数
-                const hasSessionidSs = cookies.some(cookie => cookie.name === 'sessionid_ss')
-                const hasTtwid = cookies.some(cookie => cookie.name === 'ttwid')
+                const hasSessionidSs = cookies.some((cookie) => cookie.name === 'sessionid_ss')
+                const hasTtwid = cookies.some((cookie) => cookie.name === 'ttwid')
                 logger.mark(`Cookie 参数检测: sessionid_ss=${hasSessionidSs}, ttwid=${hasTtwid}`)
 
                 if (!hasSessionidSs || !hasTtwid) {
@@ -291,9 +293,11 @@ export const douyinLogin = async (e: Message) => {
                 await e.reply('登录成功！用户登录凭证已保存至cookies.yaml', { reply: true })
 
                 // 批量撤回之前的消息
-                await Promise.all(msg_id.map(async (id) => {
-                  await e.bot.recallMsg(e.contact, id)
-                }))
+                await Promise.all(
+                  msg_id.map(async (id) => {
+                    await e.bot.recallMsg(e.contact, id)
+                  })
+                )
 
                 logger.mark('关闭浏览器...')
                 await puppeteer.browser.close()
@@ -313,9 +317,11 @@ export const douyinLogin = async (e: Message) => {
                 scannedHandled = true
                 logger.mark('检测到二维码已被扫描')
                 // 撤回二维码消息
-                await Promise.all(msg_id.map(async (id) => {
-                  await e.bot.recallMsg(e.contact, id)
-                }))
+                await Promise.all(
+                  msg_id.map(async (id) => {
+                    await e.bot.recallMsg(e.contact, id)
+                  })
+                )
                 // 清空消息ID列表，避免重复撤回
                 msg_id.length = 0
                 // 发送授权提示
@@ -330,14 +336,14 @@ export const douyinLogin = async (e: Message) => {
                 clearTimeout(timer) // 清除扫码超时，进入2FA阶段
 
                 // 使用立即执行的异步函数，不阻塞响应监听
-                ; (async () => {
+                ;(async () => {
                   try {
                     // 等待二次验证弹窗出现
                     await page.waitForSelector('#uc-second-verify', { timeout: 5000 })
 
                     // 点击"接收短信验证码"按钮
                     const clicked = await page.evaluate(() => {
-                      const xpath = '//text()[contains(., \'接收短信验证码\')]/ancestor::*[1]'
+                      const xpath = "//text()[contains(., '接收短信验证码')]/ancestor::*[1]"
                       const result = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
                       const element = result.singleNodeValue as HTMLElement
                       if (element) {
@@ -352,11 +358,14 @@ export const douyinLogin = async (e: Message) => {
                     }
 
                     // 等待输入框出现
-                    await new Promise(resolve => setTimeout(resolve, 2000))
+                    await new Promise((resolve) => setTimeout(resolve, 2000))
                     const inputSelector = '#uc-second-verify input'
                     await page.waitForSelector(inputSelector, { timeout: 10000 })
 
-                    const tipMsg = await e.reply('此次验证需要进行 2FA\n6 位数的验证码已发送至扫码设备绑定的手机号\n请在 60 秒内发送此验证码以通过 2FA', { reply: true })
+                    const tipMsg = await e.reply(
+                      '此次验证需要进行 2FA\n6 位数的验证码已发送至扫码设备绑定的手机号\n请在 60 秒内发送此验证码以通过 2FA',
+                      { reply: true }
+                    )
                     msg_id.push(tipMsg.messageId)
 
                     // 验证码验证逻辑（最多2次机会）
@@ -371,9 +380,7 @@ export const douyinLogin = async (e: Message) => {
                       // 阶段3: 等待用户输入2FA验证码 (60秒超时)
                       const ctx = await Promise.race([
                         karin.ctx(e, { reply: true }),
-                        new Promise<never>((_, reject) =>
-                          setTimeout(() => reject(new Error('2FA_TIMEOUT')), 60000)
-                        )
+                        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('2FA_TIMEOUT')), 60000))
                       ]).catch(async (error) => {
                         if (error.message === '2FA_TIMEOUT') {
                           logger.warn('2FA验证码输入超时')
@@ -381,9 +388,11 @@ export const douyinLogin = async (e: Message) => {
                           if (gcInterval) clearInterval(gcInterval)
                           await puppeteer.browser.close()
                           // 撤回所有之前的消息
-                          await Promise.all(msg_id.map(async (id) => {
-                            await e.bot.recallMsg(e.contact, id)
-                          }))
+                          await Promise.all(
+                            msg_id.map(async (id) => {
+                              await e.bot.recallMsg(e.contact, id)
+                            })
+                          )
                           await e.reply('验证码验证码输入超时，登录失败', { reply: true })
                           resolve(true) // 返回true表示已处理完成
                         }
@@ -438,9 +447,9 @@ export const douyinLogin = async (e: Message) => {
                       // 点击"验证"按钮
                       await page.evaluate(() => {
                         const elements = Array.from(document.querySelectorAll('*'))
-                        const verifyBtn = elements.find(el => el.textContent?.trim() === '验证')
+                        const verifyBtn = elements.find((el) => el.textContent?.trim() === '验证')
                         if (verifyBtn) {
-                          (verifyBtn as HTMLElement).click()
+                          ;(verifyBtn as HTMLElement).click()
                         }
                       })
 
@@ -451,7 +460,9 @@ export const douyinLogin = async (e: Message) => {
 
                       if (!verifySuccess && verifyAttempts < maxAttempts) {
                         // 还有重试机会
-                        const retryMsg = await e.reply('验证码错误，请重新发送正确的 6 位数验证码（剩余机会：1次）', { reply: true })
+                        const retryMsg = await e.reply('验证码错误，请重新发送正确的 6 位数验证码（剩余机会：1次）', {
+                          reply: true
+                        })
                         msg_id.push(retryMsg.messageId)
                       } else if (!verifySuccess && verifyAttempts >= maxAttempts) {
                         // 没有机会了
@@ -460,9 +471,11 @@ export const douyinLogin = async (e: Message) => {
                         if (gcInterval) clearInterval(gcInterval)
                         await puppeteer.browser.close()
                         // 撤回所有之前的消息
-                        await Promise.all(msg_id.map(async (id) => {
-                          await e.bot.recallMsg(e.contact, id)
-                        }))
+                        await Promise.all(
+                          msg_id.map(async (id) => {
+                            await e.bot.recallMsg(e.contact, id)
+                          })
+                        )
                         await e.reply('验证码错误，登录失败', { reply: true })
                         resolve(true) // 返回true表示已处理完成，避免外层再次处理
                         return
@@ -478,9 +491,11 @@ export const douyinLogin = async (e: Message) => {
                     if (gcInterval) clearInterval(gcInterval)
                     await puppeteer.browser.close()
                     // 撤回所有之前的消息
-                    await Promise.all(msg_id.map(async (id) => {
-                      await e.bot.recallMsg(e.contact, id)
-                    }))
+                    await Promise.all(
+                      msg_id.map(async (id) => {
+                        await e.bot.recallMsg(e.contact, id)
+                      })
+                    )
                     await e.reply('二次验证处理失败，登录失败', { reply: true })
                     resolve(true) // 返回true表示已处理完成
                   }
@@ -525,16 +540,16 @@ const waitQrcode = async (page: Page): Promise<{ url: string | null; originalIma
     throw new Error('加载超时了，或者遇到验证码了。。。')
   }
   logger.debug('二维码加载完成')
-  await new Promise(resolve => setTimeout(resolve, 1000))
+  await new Promise((resolve) => setTimeout(resolve, 1000))
 
   // 获取原始二维码图片的 src
   const images = await page.$$eval('img', (imgs) => {
-    return imgs.map(img => ({
+    return imgs.map((img) => ({
       src: img.src,
       ariaLabel: img.getAttribute('aria-label')
     }))
   })
-  const qrCodeImages = images.filter(img => img.ariaLabel === '二维码')
+  const qrCodeImages = images.filter((img) => img.ariaLabel === '二维码')
   if (qrCodeImages.length === 0) {
     throw new Error('未找到二维码')
   }

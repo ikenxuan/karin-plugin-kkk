@@ -11,7 +11,10 @@ export const PreviewInfoCard: React.FC<PreviewInfoCardProps> = ({ state }) => {
   const status = buildStatus(state)
 
   return (
-    <div className="relative z-10 mt-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between" style={{ mixBlendMode: 'difference', color: '#ffffff' }}>
+    <div
+      className="relative z-10 mt-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
+      style={{ mixBlendMode: 'difference', color: '#ffffff' }}
+    >
       <div>
         <div className="text-xs uppercase tracking-[0.2em]">删除倒计时</div>
         <div className="mt-2 text-5xl font-semibold" id="preview-countdown">

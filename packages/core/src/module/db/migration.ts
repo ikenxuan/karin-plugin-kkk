@@ -110,11 +110,11 @@ export class MigrationManager {
    * 记录迁移执行
    */
   private async recordMigration(db: sqlite3Types['Database'], migration: Migration): Promise<void> {
-    await this.runQuery(
-      db,
-      'INSERT INTO _migrations (version, name, executedAt) VALUES (?, ?, ?)',
-      [migration.version, migration.name, new Date().toISOString()]
-    )
+    await this.runQuery(db, 'INSERT INTO _migrations (version, name, executedAt) VALUES (?, ?, ?)', [
+      migration.version,
+      migration.name,
+      new Date().toISOString()
+    ])
   }
 
   /**
@@ -156,10 +156,10 @@ export class MigrationManager {
 
     // 获取已执行的迁移
     const executedMigrations = await this.getExecutedMigrations(db)
-    const executedVersions = new Set(executedMigrations.map(m => m.version))
+    const executedVersions = new Set(executedMigrations.map((m) => m.version))
 
     // 验证迁移版本号是否连续且唯一
-    const versions = migrations.map(m => m.version)
+    const versions = migrations.map((m) => m.version)
     const uniqueVersions = new Set(versions)
     if (versions.length !== uniqueVersions.size) {
       throw new Error('[Migration] 迁移版本号必须唯一')
@@ -169,7 +169,7 @@ export class MigrationManager {
     const sortedMigrations = [...migrations].sort((a, b) => a.version - b.version)
 
     // 执行未执行的迁移
-    const pendingMigrations = sortedMigrations.filter(m => !executedVersions.has(m.version))
+    const pendingMigrations = sortedMigrations.filter((m) => !executedVersions.has(m.version))
 
     if (pendingMigrations.length === 0) {
       logger.debug('[Migration] 数据库已是最新版本，无需迁移')
@@ -191,10 +191,7 @@ export class MigrationManager {
   async getCurrentVersion(db: sqlite3Types['Database']): Promise<number> {
     try {
       await this.initMigrationTable(db)
-      const result = await this.getQuery<{ version: number }>(
-        db,
-        'SELECT MAX(version) as version FROM _migrations'
-      )
+      const result = await this.getQuery<{ version: number }>(db, 'SELECT MAX(version) as version FROM _migrations')
       return result?.version || 0
     } catch {
       return 0
@@ -214,7 +211,7 @@ export class MigrationManager {
 
     // 获取需要回滚的迁移（降序）
     const migrationsToRollback = migrations
-      .filter(m => m.version > targetVersion && m.version <= currentVersion)
+      .filter((m) => m.version > targetVersion && m.version <= currentVersion)
       .sort((a, b) => b.version - a.version)
 
     logger.info(`[Migration] 开始回滚到版本 ${targetVersion}`)

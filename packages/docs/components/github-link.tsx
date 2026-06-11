@@ -1,16 +1,16 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { Button, Link } from "@heroui/react"
-import { FaGithub } from "react-icons/fa"
+import { Button, Link } from '@heroui/react'
+import * as React from 'react'
+import { FaGithub } from 'react-icons/fa'
 
-const GITHUB_REPO = "ikenxuan/karin-plugin-kkk"
+const GITHUB_REPO = 'ikenxuan/karin-plugin-kkk'
 
-function formatStars (stars: number) {
+function formatStars(stars: number) {
   return stars >= 1000 ? `${(stars / 1000).toFixed(1)}k` : String(stars)
 }
 
-function StarsCount () {
+function StarsCount() {
   const [stars, setStars] = React.useState<number | null>(null)
 
   React.useEffect(() => {
@@ -35,29 +35,16 @@ function StarsCount () {
     return null // Or return a static fallback icon/text if preferred, but hiding the count is cleaner on error
   }
 
-  return (
-    <span className="pt-px">
-      {formatStars(stars)}
-    </span>
-  )
+  return <span className="pt-px">{formatStars(stars)}</span>
 }
 
-export function GitHubLink () {
+export function GitHubLink() {
   return (
-
-    <Link
-      href={`https://github.com/${GITHUB_REPO}`}
-      target="_blank"
-      className="no-underline"
-    >
-      <Button
-        variant="ghost"
-        size="sm"
-      >
+    <Link href={`https://github.com/${GITHUB_REPO}`} target="_blank" className="no-underline">
+      <Button variant="ghost" size="sm">
         <FaGithub size={20} />
         <StarsCount />
       </Button>
     </Link>
-
   )
 }

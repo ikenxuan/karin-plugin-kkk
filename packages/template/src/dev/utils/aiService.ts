@@ -13,20 +13,36 @@ import { getActiveProvider, getAIConfig } from './aiConfig'
 export const extractJsonFromText = (text: string): any => {
   if (!text) throw new Error('AI 响应内容为空')
   const trimmed = text.trim()
-  try { return JSON.parse(trimmed) } catch { /* ignore */ }
+  try {
+    return JSON.parse(trimmed)
+  } catch {
+    /* ignore */
+  }
   const codeBlock = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i)
   if (codeBlock?.[1]) {
-    try { return JSON.parse(codeBlock[1].trim()) } catch { /* ignore */ }
+    try {
+      return JSON.parse(codeBlock[1].trim())
+    } catch {
+      /* ignore */
+    }
   }
   const firstBrace = trimmed.indexOf('{')
   const lastBrace = trimmed.lastIndexOf('}')
   if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
-    try { return JSON.parse(trimmed.slice(firstBrace, lastBrace + 1)) } catch { /* ignore */ }
+    try {
+      return JSON.parse(trimmed.slice(firstBrace, lastBrace + 1))
+    } catch {
+      /* ignore */
+    }
   }
   const firstBracket = trimmed.indexOf('[')
   const lastBracket = trimmed.lastIndexOf(']')
   if (firstBracket !== -1 && lastBracket !== -1 && lastBracket > firstBracket) {
-    try { return JSON.parse(trimmed.slice(firstBracket, lastBracket + 1)) } catch { /* ignore */ }
+    try {
+      return JSON.parse(trimmed.slice(firstBracket, lastBracket + 1))
+    } catch {
+      /* ignore */
+    }
   }
   throw new Error('无法从 AI 响应中解析出 JSON 数据')
 }
@@ -36,7 +52,9 @@ const sampleReferenceJson = (data: any, maxLength = 6000): string => {
   try {
     const str = JSON.stringify(data, null, 2)
     return str.length <= maxLength ? str : `${str.slice(0, maxLength)}\n... (已截断)`
-  } catch { return '' }
+  } catch {
+    return ''
+  }
 }
 
 export const buildPrompt = (options: AIGenerateOptions, extra?: string): { system: string; user: string } => {
@@ -51,7 +69,9 @@ export const buildPrompt = (options: AIGenerateOptions, extra?: string): { syste
     '4. 数组保持示例的元素数量级，必要时可适度增减但不少于 1 项。',
     '5. 不能编造原本不存在的字段，也不能删除必需字段。',
     extra ? `补充指引：${extra}` : ''
-  ].filter(Boolean).join('\n')
+  ]
+    .filter(Boolean)
+    .join('\n')
 
   const userParts: string[] = []
   userParts.push(`目标平台：${platform}`)
@@ -133,21 +153,21 @@ export async function* streamGenerateMockData(
 
   const apiBody = isClaude
     ? {
-      model: provider.model,
-      max_tokens: 4096,
-      system,
-      messages: [{ role: 'user', content: user }],
-      stream: true
-    }
+        model: provider.model,
+        max_tokens: 4096,
+        system,
+        messages: [{ role: 'user', content: user }],
+        stream: true
+      }
     : {
-      model: provider.model,
-      messages: [
-        { role: 'system', content: system },
-        { role: 'user', content: user }
-      ],
-      temperature: 0.7,
-      stream: true
-    }
+        model: provider.model,
+        messages: [
+          { role: 'system', content: system },
+          { role: 'user', content: user }
+        ],
+        temperature: 0.7,
+        stream: true
+      }
 
   const resp = await fetch('/__ai_proxy__', {
     method: 'POST',
@@ -233,20 +253,20 @@ const callProxy = async (
 
   const apiBody = isClaude
     ? {
-      model: provider.model,
-      max_tokens: 4096,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userPrompt }]
-    }
+        model: provider.model,
+        max_tokens: 4096,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }]
+      }
     : {
-      model: provider.model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
-      ],
-      temperature: 0.7,
-      response_format: { type: 'json_object' }
-    }
+        model: provider.model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.7,
+        response_format: { type: 'json_object' }
+      }
 
   const resp = await fetch('/__ai_proxy__', {
     method: 'POST',
@@ -294,10 +314,7 @@ const callProxy = async (
 /**
  * 生成 mock 数据（非流式，使用指定供应商）
  */
-export const generateMockDataWithProvider = async (
-  provider: AIProvider,
-  options: AIGenerateOptions
-): Promise<AIGenerateResult> => {
+export const generateMockDataWithProvider = async (provider: AIProvider, options: AIGenerateOptions): Promise<AIGenerateResult> => {
   const config = getAIConfig()
   const { system, user } = buildPrompt(options, config.defaultPrompt)
   const { content, model } = await callProxy(provider, system, user, options.signal)
@@ -319,16 +336,13 @@ export const generateMockData = async (options: AIGenerateOptions): Promise<AIGe
  */
 export const testProvider = async (provider: AIProvider, signal?: AbortSignal): Promise<{ ok: boolean; message: string }> => {
   try {
-    const { content } = await callProxy(
-      provider,
-      '你是一个连通性测试助手，请严格按要求回复。',
-      '请仅回复 JSON：{"ok": true}',
-      signal
-    )
+    const { content } = await callProxy(provider, '你是一个连通性测试助手，请严格按要求回复。', '请仅回复 JSON：{"ok": true}', signal)
     try {
       const parsed = extractJsonFromText(content)
       if (parsed?.ok === true) return { ok: true, message: '连接成功，模型响应正常' }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     return { ok: true, message: `连接成功，模型已返回内容（${content.slice(0, 60)}...）` }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)

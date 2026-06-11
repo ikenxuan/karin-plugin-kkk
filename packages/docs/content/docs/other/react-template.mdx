@@ -3,18 +3,17 @@ title: 现代化模板渲染
 description: 基于 React 与 TailwindCSS 的模板开发方案
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
-import { Mermaid } from '@/components/Mermaid';
+import { Callout } from 'fumadocs-ui/components/callout'
+import { Mermaid } from '@/components/Mermaid'
 
 本插件采用 **React + TailwindCSS** 技术栈进行图片渲染，将现代前端的工程化能力引入模板开发。
 
 相比传统模板引擎在维护上的痛点——逻辑与视图耦合、全局 CSS 冲突、缺乏类型检查——本方案通过**组件化构建**、**原子化样式**和**类型安全**三条路径彻底解决了这些问题。
 
 <Callout type="warn" title="传统方案的维护陷阱">
-基于 `art-template` 的模板在项目迭代中往往会陷入维护泥潭：
-- **逻辑黑洞**：业务逻辑混杂在 HTML 模板中，难以阅读和剥离。
-- **样式冲突**：全局 CSS 类名随时间推移不断堆积，修改一处可能导致多处崩坏。
-- **重构风险**：缺乏类型检查，修改字段名就像在"排雷"，只能祈祷运行时不出错。
+  基于 `art-template` 的模板在项目迭代中往往会陷入维护泥潭： - **逻辑黑洞**：业务逻辑混杂在 HTML 模板中，难以阅读和剥离。 -
+  **样式冲突**：全局 CSS 类名随时间推移不断堆积，修改一处可能导致多处崩坏。 -
+  **重构风险**：缺乏类型检查，修改字段名就像在"排雷"，只能祈祷运行时不出错。
 </Callout>
 
 ## 架构概览
@@ -55,6 +54,7 @@ flowchart TB
     R3 --> T1
     T1 --> T2 --> T3
     T3 --> O1 --> O2 --> O3
+
 `} />
 
 整个渲染链路分为四层：
@@ -72,6 +72,7 @@ flowchart TB
 不同平台的文本描述格式差异很大：抖音的富文本是一段带特殊标记的字符串，B 站则提供了结构化的内容节点。如果在 template 侧分别解析，会导致平台逻辑泄漏到渲染层，维护成本极高。
 
 富文本文档将这一问题收拢到 core 层：core 负责把各平台的异构数据转换成统一的 JSON 节点树，template 只负责渲染。
+
 </Callout>
 
 ### 节点类型
@@ -80,30 +81,30 @@ flowchart TB
 
 **行内节点**用于描述段落内的文本片段：
 
-| 节点类型 | 用途 | 示例 |
-| :--- | :--- | :--- |
-| `text` | 普通文本，支持粗体/斜体/颜色/超链接 | 评论正文 |
-| `emoji` | 平台表情包图片 | [doge] |
-| `mention` / `at` | @用户 | @某某 |
-| `searchKeyword` | 搜索词高亮 | 带搜索图标的蓝色高亮文本 |
-| `topic` | 话题标签 | #某某话题# |
-| `lottery` | 抽奖信息 | 带抽奖图标的文本 |
-| `webLink` | 网页链接 | 带链接图标的标题 |
-| `vote` | 投票 | 带投票图标的标题 |
-| `viewPicture` | 查看图片提示 | 带相册图标的提示文本 |
-| `lineBreak` | 换行 | `<br />` |
+| 节点类型         | 用途                                | 示例                     |
+| :--------------- | :---------------------------------- | :----------------------- |
+| `text`           | 普通文本，支持粗体/斜体/颜色/超链接 | 评论正文                 |
+| `emoji`          | 平台表情包图片                      | [doge]                   |
+| `mention` / `at` | @用户                               | @某某                    |
+| `searchKeyword`  | 搜索词高亮                          | 带搜索图标的蓝色高亮文本 |
+| `topic`          | 话题标签                            | #某某话题#               |
+| `lottery`        | 抽奖信息                            | 带抽奖图标的文本         |
+| `webLink`        | 网页链接                            | 带链接图标的标题         |
+| `vote`           | 投票                                | 带投票图标的标题         |
+| `viewPicture`    | 查看图片提示                        | 带相册图标的提示文本     |
+| `lineBreak`      | 换行                                | `<br />`                 |
 
 **块级节点**用于描述文档结构：
 
-| 节点类型 | 用途 |
-| :--- | :--- |
-| `heading` | 标题（1-6 级） |
-| `paragraph` | 段落 |
-| `image` | 图片 |
-| `blockquote` | 引用块 |
-| `list` / `listItem` | 有序/无序列表 |
-| `codeBlock` | 代码块（带语法高亮和行号） |
-| `linkCard` | 链接卡片 |
+| 节点类型            | 用途                       |
+| :------------------ | :------------------------- |
+| `heading`           | 标题（1-6 级）             |
+| `paragraph`         | 段落                       |
+| `image`             | 图片                       |
+| `blockquote`        | 引用块                     |
+| `list` / `listItem` | 有序/无序列表              |
+| `codeBlock`         | 代码块（带语法高亮和行号） |
+| `linkCard`          | 链接卡片                   |
 
 ### 在 core 中使用
 
@@ -112,13 +113,16 @@ flowchart TB
 ```ts twoslash
 import { createTextNode, createEmojiNode, createParagraphNode, createRichTextDocument } from '@kkk/richtext'
 
-const doc = createRichTextDocument([
-  createParagraphNode([
-    createTextNode('这条视频太棒了', { bold: true }),
-    createEmojiNode('doge', 'https://example.com/doge.png'),
-    createTextNode('！推荐大家看看。')
-  ])
-], { platform: 'douyin' })
+const doc = createRichTextDocument(
+  [
+    createParagraphNode([
+      createTextNode('这条视频太棒了', { bold: true }),
+      createEmojiNode('doge', 'https://example.com/doge.png'),
+      createTextNode('！推荐大家看看。')
+    ])
+  ],
+  { platform: 'douyin' }
+)
 ```
 
 core 侧只需要导入**类型**和**节点创建方法**，不依赖 React 运行时，输出的是可序列化的纯 JSON。
@@ -134,20 +138,22 @@ import { renderRichTextToReact } from '@kkk/richtext/react'
 const content = renderRichTextToReact(document, {
   mention: { className: 'text-blue-500' },
   topic: { className: 'text-pink-500' },
-  searchKeyword: { className: 'text-blue-600 bg-blue-100', iconClassName: 'text-blue-400' },
+  searchKeyword: { className: 'text-blue-600 bg-blue-100', iconClassName: 'text-blue-400' }
 })
 
 return <div className="text-base leading-relaxed">{content}</div>
 ```
 
 渲染器会自动处理以下细节：
+
 - **文本转义**：React 自动转义文本内容，防止 XSS。
 - **图片安全**：对 `emoji` 和 `image` 节点的 `src` 做协议白名单校验（仅允许 `http://`、`https://` 和 `data:image/*;base64`）。
 - **URL 自动识别**：`text` 节点中的链接会被自动包裹为可点击的超链接。
 - **行内样式**：支持 `bold`、`italic`、`strike`、`color`、`fontSize`、`link` 等行内样式。
 
 <Callout type="info" title="为什么不用 dangerouslySetInnerHTML？">
-平台返回的富文本描述往往包含未经校验的 HTML。使用 `renderRichTextToReact` 将结构化 JSON 映射为 React 节点，可以避免直接注入 HTML 带来的安全风险，同时让样式完全由 Tailwind 接管。
+  平台返回的富文本描述往往包含未经校验的 HTML。使用 `renderRichTextToReact` 将结构化 JSON 映射为 React 节点，可以避免直接注入 HTML
+  带来的安全风险，同时让样式完全由 Tailwind 接管。
 </Callout>
 
 ### 节点归一化
@@ -262,6 +268,7 @@ flowchart TB
     J1 --> J2 --> J3 --> J4
     J4 --> J5 & J6
     J5 & J6 --> J7 --> J8 --> J9 --> J10 --> J11 --> J12
+
 `} />
 
 **入口与初始化**：`reactServerRender` 接收渲染请求、输出目录和插件数组，首先确保输出目录存在，然后通过 `ComponentAutoRegistry` 扫描配置文件，按平台分组懒加载组件模块并绑定数据验证函数，最终存入 Map 注册表。
@@ -273,7 +280,7 @@ flowchart TB
 **输出阶段**：生成带时间戳的安全文件名 → `HtmlWrapper.wrapContent` 计算 CSS 和图片的相对路径、替换图片 src、注入 DOCTYPE/meta/CSS link/主题类名 → 写入文件系统 → 返回 HTML 文件路径供 Karin 框架截图。
 
 <Callout type="info" title="性能优化">
-SSR 直接输出包含完整样式与内容的 HTML，Puppeteer 打开页面后**无需等待 JavaScript 加载与执行**即可立即截图，显著降低了渲染耗时与内存占用。
+  SSR 直接输出包含完整样式与内容的 HTML，Puppeteer 打开页面后**无需等待 JavaScript 加载与执行**即可立即截图，显著降低了渲染耗时与内存占用。
 </Callout>
 
 ## 生态复用

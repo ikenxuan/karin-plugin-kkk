@@ -10,7 +10,7 @@ import { Render } from '@/module/utils/Render'
  * 获取本机局域网 IP 地址
  * 优先返回常见局域网网段的 IP（192.168.x.x, 10.x.x.x, 172.16-31.x.x）
  */
-function getLocalIP (): string {
+function getLocalIP(): string {
   const interfaces = os.networkInterfaces()
   const candidates: string[] = []
 
@@ -25,7 +25,7 @@ function getLocalIP (): string {
   }
 
   // 优先选择常见局域网网段
-  const preferredIP = candidates.find(ip => {
+  const preferredIP = candidates.find((ip) => {
     // 192.168.x.x
     if (ip.startsWith('192.168.')) return true
     // 10.x.x.x
@@ -45,14 +45,8 @@ function getLocalIP (): string {
  * 获取公网 IP 地址
  * 通过多个公共 API 尝试获取
  */
-async function getPublicIP (): Promise<string | null> {
-  const apis = [
-    '4.ipw.cn',
-    'https://api.ipify.org',
-    'https://icanhazip.com',
-    'https://ifconfig.me/ip',
-    'https://api.ip.sb/ip'
-  ]
+async function getPublicIP(): Promise<string | null> {
+  const apis = ['4.ipw.cn', 'https://api.ipify.org', 'https://icanhazip.com', 'https://ifconfig.me/ip', 'https://api.ip.sb/ip']
 
   for (const api of apis) {
     try {
@@ -80,7 +74,7 @@ async function getPublicIP (): Promise<string | null> {
 /**
  * 根据配置获取服务器地址
  */
-async function getHostByConfig (): Promise<string> {
+async function getHostByConfig(): Promise<string> {
   const addrType = Config.app.qrLoginAddrType || 'lan'
 
   if (addrType === 'external') {
@@ -105,57 +99,60 @@ async function getHostByConfig (): Promise<string> {
 /**
  * 生成登录二维码（仅私发给主人）
  */
-const handleQrLogin = wrapWithErrorHandler(async (e) => {
-  const bot = karin.getBot(e.selfId)
-  const userId = e.userId
+const handleQrLogin = wrapWithErrorHandler(
+  async (e) => {
+    const bot = karin.getBot(e.selfId)
+    const userId = e.userId
 
-  // 先检查好友关系，避免渲染后无法发送浪费资源
-  if (e.isGroup) {
-    const friendList = await bot?.getFriendList()
-    const isFriend = friendList?.some(f => f.userId === userId)
-    if (!isFriend) {
-      await e.reply('请先添加 Bot 为好友后再试')
+    // 先检查好友关系，避免渲染后无法发送浪费资源
+    if (e.isGroup) {
+      const friendList = await bot?.getFriendList()
+      const isFriend = friendList?.some((f) => f.userId === userId)
+      if (!isFriend) {
+        await e.reply('请先添加 Bot 为好友后再试')
+        return true
+      }
+    }
+
+    const port = process.env.HTTP_PORT || '7777'
+    const authKey = process.env.HTTP_AUTH_KEY || ''
+    const host = await getHostByConfig()
+    const protocol = 'http'
+
+    if (!authKey) {
+      await e.reply('未配置 HTTP_AUTH_KEY 环境变量，无法生成登录二维码')
       return true
     }
-  }
 
-  const port = process.env.HTTP_PORT || '7777'
-  const authKey = process.env.HTTP_AUTH_KEY || ''
-  const host = await getHostByConfig()
-  const protocol = 'http'
+    // 构建二维码数据（JSON 格式，包含服务器信息）
+    const qrData = JSON.stringify({
+      protocol,
+      host,
+      port,
+      authKey
+    })
 
-  if (!authKey) {
-    await e.reply('未配置 HTTP_AUTH_KEY 环境变量，无法生成登录二维码')
+    const serverUrl = `${protocol}://${host}:${port}`
+
+    // 使用模板系统渲染二维码图片
+    const images = await Render(e, 'other/qrlogin', {
+      share_url: qrData,
+      serverUrl
+    })
+
+    // 私发给触发命令的用户
+    await karin.sendMaster(e.selfId, userId, images)
+
+    // 如果是群聊触发，提示已私发
+    if (e.isGroup) {
+      await e.reply('登录二维码已私聊发送，请查收~')
+    }
+
     return true
+  },
+  {
+    businessName: 'APP扫码登录'
   }
-
-  // 构建二维码数据（JSON 格式，包含服务器信息）
-  const qrData = JSON.stringify({
-    protocol,
-    host,
-    port,
-    authKey
-  })
-
-  const serverUrl = `${protocol}://${host}:${port}`
-
-  // 使用模板系统渲染二维码图片
-  const images = await Render(e, 'other/qrlogin', {
-    share_url: qrData,
-    serverUrl
-  })
-
-  // 私发给触发命令的用户
-  await karin.sendMaster(e.selfId, userId, images)
-
-  // 如果是群聊触发，提示已私发
-  if (e.isGroup) {
-    await e.reply('登录二维码已私聊发送，请查收~')
-  }
-
-  return true
-}, {
-  businessName: 'APP扫码登录'
-})
+)
 
 export const qrLogin = karin.command(/^#?(kkk)?登录$/i, handleQrLogin, { perm: 'master', name: 'kkk-APP扫码登录' })

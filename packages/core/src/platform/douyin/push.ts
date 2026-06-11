@@ -21,7 +21,8 @@ import {
   loopVideoWithTransition,
   Networks,
   processImageUrl,
-  Render } from '@/module'
+  Render
+} from '@/module'
 import { Config } from '@/module/utils/Config'
 import { DouyinIdData, douyinProcessVideos, getDouyinID } from '@/platform/douyin'
 import { getWorkTypeDisplayName, getWorkTypeInfo } from '@/platform/douyin/workType'
@@ -52,21 +53,21 @@ export class DouYinpush extends Base {
    * @default false
    * @returns
    */
-  constructor (e = {} as Message, force: boolean = false) {
+  constructor(e = {} as Message, force: boolean = false) {
     super(e)
     this.headers!.Referer = 'https://www.douyin.com'
     this.headers!.Cookie = Config.cookies.douyin
     this.force = force
   }
 
-  private injectBotToEventForRender (targets: Array<{ groupId: string, botId: string }>): void {
-    const targetBotId = targets.find(item => item.botId)?.botId
+  private injectBotToEventForRender(targets: Array<{ groupId: string; botId: string }>): void {
+    const targetBotId = targets.find((item) => item.botId)?.botId
     if (!targetBotId) return
 
     const bot = karin.getBot(targetBotId) as AdapterType | undefined
     if (!bot) return
 
-    const eventWithBot = this.e as Message & { bot?: AdapterType, selfId?: string }
+    const eventWithBot = this.e as Message & { bot?: AdapterType; selfId?: string }
     eventWithBot.bot = bot
     eventWithBot.selfId = eventWithBot.selfId ?? targetBotId
   }
@@ -74,7 +75,7 @@ export class DouYinpush extends Base {
   /**
    * 执行主要的操作流程
    */
-  async action () {
+  async action() {
     await this.syncConfigToDatabase()
 
     // 清理旧的作品缓存记录
@@ -110,7 +111,7 @@ export class DouYinpush extends Base {
    * 检查并补全配置文件中缺失的字段
    * @param pushList 推送配置列表
    */
-  private async ensureConfigFields (pushList: douyinPushItem[]): Promise<void> {
+  private async ensureConfigFields(pushList: douyinPushItem[]): Promise<void> {
     if (!pushList || pushList.length === 0) return
 
     let hasChanges = false
@@ -175,7 +176,7 @@ export class DouYinpush extends Base {
    * @param registeredBotIds 已注册的 bot ID 列表
    * @returns 过滤后的推送配置列表
    */
-  private filterPushListByRegisteredBots (pushList: douyinPushItem[], registeredBotIds: string[]): douyinPushItem[] {
+  private filterPushListByRegisteredBots(pushList: douyinPushItem[], registeredBotIds: string[]): douyinPushItem[] {
     if (!pushList || pushList.length === 0) return []
 
     const registeredSet = new Set(registeredBotIds)
@@ -183,7 +184,7 @@ export class DouYinpush extends Base {
 
     for (const item of pushList) {
       // 过滤 group_id 中未注册的 bot
-      const filteredGroupIds = item.group_id.filter(groupWithBot => {
+      const filteredGroupIds = item.group_id.filter((groupWithBot) => {
         const botId = groupWithBot.split(':')[1]
         const isRegistered = registeredSet.has(botId)
         if (!isRegistered) {
@@ -209,7 +210,7 @@ export class DouYinpush extends Base {
   /**
    * 同步配置文件中的订阅信息到数据库
    */
-  async syncConfigToDatabase () {
+  async syncConfigToDatabase() {
     // 如果配置文件中没有抖音推送列表，直接返回
     if (!Config.pushlist.douyin || Config.pushlist.douyin.length === 0) {
       return
@@ -218,7 +219,7 @@ export class DouYinpush extends Base {
     await douyinDB.syncConfigSubscriptions(Config.pushlist.douyin)
   }
 
-  async getdata (data: WillBePushList) {
+  async getdata(data: WillBePushList) {
     if (Object.keys(data).length === 0) return true
 
     for (const awemeId in data) {
@@ -227,10 +228,18 @@ export class DouYinpush extends Base {
       const shareUrl = pushItem.Detail_Data.share_url ?? `https://live.douyin.com/${pushItem.Detail_Data.room_data?.owner.web_rid}`
       let pushTypeLabel: string
       switch (pushItem.pushType) {
-        case 'post': pushTypeLabel = '作品列表'; break
-        case 'favorite': pushTypeLabel = '喜欢列表'; break
-        case 'recommend': pushTypeLabel = '推荐列表'; break
-        default: pushTypeLabel = '直播'; break
+        case 'post':
+          pushTypeLabel = '作品列表'
+          break
+        case 'favorite':
+          pushTypeLabel = '喜欢列表'
+          break
+        case 'recommend':
+          pushTypeLabel = '推荐列表'
+          break
+        default:
+          pushTypeLabel = '直播'
+          break
       }
 
       logger.mark(`
@@ -244,25 +253,34 @@ export class DouYinpush extends Base {
 
       const Detail_Data = pushItem.Detail_Data
       const skip = await skipDynamic(pushItem)
-      skip && logger.warn(`作品 https://www.douyin.com/video/${actualAwemeId} 已被处理，跳过`)
+      if (skip) {
+        logger.warn(`作品 https://www.douyin.com/video/${actualAwemeId} 已被处理，跳过`)
+      }
       let img: ImageElement[] = []
       let iddata: DouyinIdData = { type: 'one_work' }
       this.injectBotToEventForRender(pushItem.targets)
 
       if (!skip) {
-        iddata = await getDouyinID(this.e, Detail_Data.share_url ?? 'https://live.douyin.com/' + Detail_Data.room_data?.owner.web_rid, false)
+        iddata = await getDouyinID(
+          this.e,
+          Detail_Data.share_url ?? 'https://live.douyin.com/' + Detail_Data.room_data?.owner.web_rid,
+          false
+        )
       }
 
       if (!skip) {
-        const realUrl = pushItem.pushType !== 'live' && Config.douyin.push.shareType === 'web' && await new Networks({
-          url: Detail_Data.share_url,
-          headers: {
-            'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
-            Accept: '*/*',
-            'Accept-Encoding': 'gzip, deflate, br',
-            Connection: 'keep-alive'
-          }
-        }).getLocation()
+        const realUrl =
+          pushItem.pushType !== 'live' &&
+          Config.douyin.push.shareType === 'web' &&
+          (await new Networks({
+            url: Detail_Data.share_url,
+            headers: {
+              'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+              Accept: '*/*',
+              'Accept-Encoding': 'gzip, deflate, br',
+              Connection: 'keep-alive'
+            }
+          }).getLocation())
 
         switch (pushItem.pushType) {
           case 'live': {
@@ -277,7 +295,10 @@ export class DouYinpush extends Base {
           }
 
           case 'favorite': {
-            const shareLink = Config.douyin.push.shareType === 'web' ? realUrl! : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
+            const shareLink =
+              Config.douyin.push.shareType === 'web'
+                ? realUrl!
+                : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
             img = await renderFavoriteImage({
               e: this.e,
               Detail_Data,
@@ -290,7 +311,10 @@ export class DouYinpush extends Base {
           }
 
           case 'recommend': {
-            const shareLink = Config.douyin.push.shareType === 'web' ? realUrl! : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
+            const shareLink =
+              Config.douyin.push.shareType === 'web'
+                ? realUrl!
+                : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
             img = await renderRecommendImage({
               e: this.e,
               Detail_Data,
@@ -304,7 +328,10 @@ export class DouYinpush extends Base {
 
           case 'post':
           default: {
-            const shareLink = Config.douyin.push.shareType === 'web' ? realUrl! : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
+            const shareLink =
+              Config.douyin.push.shareType === 'web'
+                ? realUrl!
+                : `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
 
             img = await renderWorkImage({
               e: this.e,
@@ -328,7 +355,7 @@ export class DouYinpush extends Base {
 
           // 为当前目标注入 bot 并应用水印
           const bot = karin.getBot(botId) as AdapterType
-          const eventWithBot = this.e as Message & { bot?: AdapterType, selfId?: string }
+          const eventWithBot = this.e as Message & { bot?: AdapterType; selfId?: string }
           eventWithBot.bot = bot
           eventWithBot.selfId = botId
           const watermarkedImg = img ? applyWatermarkToImages(img, this.e) : []
@@ -363,14 +390,19 @@ export class DouYinpush extends Base {
                   headers: douyinBaseHeaders
                 }).getLongLink()
                 // 下载视频
-                await downloadVideo(this.e, {
-                  video_url: downloadUrl,
-                  title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${Detail_Data.desc}.mp4` }
-                }, { active: true, activeOption: { uin: botId, group_id: groupId } })
+                await downloadVideo(
+                  this.e,
+                  {
+                    video_url: downloadUrl,
+                    title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${Detail_Data.desc}.mp4` }
+                  },
+                  { active: true, activeOption: { uin: botId, group_id: groupId } }
+                )
               } catch (error) {
                 throw new Error(`下载视频失败: ${error}`)
               }
-            } else if (workTypeInfo.isImage && iddata.type === 'one_work') { // 如果新作品是图集或合辑
+            } else if (workTypeInfo.isImage && iddata.type === 'one_work') {
+              // 如果新作品是图集或合辑
               // 判断是否为合辑（is_slides）
               const isSlides = Detail_Data.is_slides === true
 
@@ -395,13 +427,10 @@ export class DouYinpush extends Base {
                     mp3Path = Detail_Data.music.play_url.uri
                   }
 
-                  liveimgbgm = await downloadFile(
-                    mp3Path,
-                    {
-                      title: `Douyin_tmp_A_${Date.now()}.mp3`,
-                      headers: douyinBaseHeaders
-                    }
-                  )
+                  liveimgbgm = await downloadFile(mp3Path, {
+                    title: `Douyin_tmp_A_${Date.now()}.mp3`,
+                    headers: douyinBaseHeaders
+                  })
                   temp.push(liveimgbgm)
                 }
 
@@ -472,9 +501,10 @@ export class DouYinpush extends Base {
                         fs.renameSync(outputPath, filePath)
                         logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
                         temp.push({ filepath: filePath, totalBytes: 0 })
-                        const videoPath = Config.upload.videoSendMode === 'base64'
-                          ? `base64://${(fs.readFileSync(filePath)).toString('base64')}`
-                          : `file://${filePath}`
+                        const videoPath =
+                          Config.upload.videoSendMode === 'base64'
+                            ? `base64://${fs.readFileSync(filePath).toString('base64')}`
+                            : `file://${filePath}`
                         images.push(segment.video(videoPath))
                       }
                     }
@@ -483,7 +513,8 @@ export class DouYinpush extends Base {
                     if (shouldGenerateLivePhoto && item.clip_type === 5 && item.url_list?.[0]) {
                       let hasPushedMotionPhotoCover = false
                       if (staticImgPath) {
-                        const motionPhotoCoverPath = Common.tempDri.images + `MVIMG_${format(new Date(), 'yyyyMMdd_HHmmss_SSS')}_${index}.jpg`
+                        const motionPhotoCoverPath =
+                          Common.tempDri.images + `MVIMG_${format(new Date(), 'yyyyMMdd_HHmmss_SSS')}_${index}.jpg`
                         const motionPhotoCreated = await buildGoogleMotionPhoto({
                           imagePath: staticImgPath,
                           videoPath: liveimg.filepath,
@@ -491,9 +522,10 @@ export class DouYinpush extends Base {
                         })
                         if (motionPhotoCreated) {
                           temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
-                          const motionPhotoCover = Config.upload.imageSendMode === 'base64'
-                            ? `base64://${(fs.readFileSync(motionPhotoCoverPath)).toString('base64')}`
-                            : `file://${motionPhotoCoverPath}`
+                          const motionPhotoCover =
+                            Config.upload.imageSendMode === 'base64'
+                              ? `base64://${fs.readFileSync(motionPhotoCoverPath).toString('base64')}`
+                              : `file://${motionPhotoCoverPath}`
                           images.push(segment.image(motionPhotoCover))
                           hasPushedMotionPhotoCover = true
                         }
@@ -561,13 +593,10 @@ export class DouYinpush extends Base {
                       mp3Path = Detail_Data.music.play_url.uri
                     }
 
-                    liveimgbgm = await downloadFile(
-                      mp3Path,
-                      {
-                        title: `Douyin_tmp_A_${Date.now()}.mp3`,
-                        headers: douyinBaseHeaders
-                      }
-                    )
+                    liveimgbgm = await downloadFile(mp3Path, {
+                      title: `Douyin_tmp_A_${Date.now()}.mp3`,
+                      headers: douyinBaseHeaders
+                    })
                     temp.push(liveimgbgm)
                   }
 
@@ -634,9 +663,10 @@ export class DouYinpush extends Base {
                           fs.renameSync(outputPath, filePath)
                           logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
                           temp.push({ filepath: filePath, totalBytes: 0 })
-                          const videoPath = Config.upload.videoSendMode === 'base64'
-                            ? `base64://${(fs.readFileSync(filePath)).toString('base64')}`
-                            : `file://${filePath}`
+                          const videoPath =
+                            Config.upload.videoSendMode === 'base64'
+                              ? `base64://${fs.readFileSync(filePath).toString('base64')}`
+                              : `file://${filePath}`
                           processedImages.push(segment.video(videoPath))
                         }
                       }
@@ -645,7 +675,8 @@ export class DouYinpush extends Base {
                       if (shouldGenerateLivePhoto && item.clip_type === 5 && item.url_list?.[0]) {
                         let hasPushedMotionPhotoCover = false
                         if (staticImgPath) {
-                          const motionPhotoCoverPath = Common.tempDri.images + `MVIMG_${format(new Date(), 'yyyyMMdd_HHmmss_SSS')}_${index}.jpg`
+                          const motionPhotoCoverPath =
+                            Common.tempDri.images + `MVIMG_${format(new Date(), 'yyyyMMdd_HHmmss_SSS')}_${index}.jpg`
                           const motionPhotoCreated = await buildGoogleMotionPhoto({
                             imagePath: staticImgPath,
                             videoPath: liveimg.filepath,
@@ -653,9 +684,10 @@ export class DouYinpush extends Base {
                           })
                           if (motionPhotoCreated) {
                             temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
-                            const motionPhotoCover = Config.upload.imageSendMode === 'base64'
-                              ? `base64://${(fs.readFileSync(motionPhotoCoverPath)).toString('base64')}`
-                              : `file://${motionPhotoCoverPath}`
+                            const motionPhotoCover =
+                              Config.upload.imageSendMode === 'base64'
+                                ? `base64://${fs.readFileSync(motionPhotoCoverPath).toString('base64')}`
+                                : `file://${motionPhotoCoverPath}`
                             processedImages.push(segment.image(motionPhotoCover))
                             hasPushedMotionPhotoCover = true
                           }
@@ -743,12 +775,12 @@ export class DouYinpush extends Base {
    * 根据配置文件获取用户当天的作品列表。
    * @returns 将要推送的列表
    */
-  async getDynamicList (userList: douyinPushItem[]): Promise<WillBePushList> {
+  async getDynamicList(userList: douyinPushItem[]): Promise<WillBePushList> {
     const willbepushlist: WillBePushList = {}
 
     try {
       /** 过滤掉不启用的订阅项 */
-      const filteredUserList = userList.filter(item => item.switch !== false)
+      const filteredUserList = userList.filter((item) => item.switch !== false)
       for (const item of filteredUserList) {
         await common.sleep(2000)
 
@@ -764,7 +796,7 @@ export class DouYinpush extends Base {
 
         const userinfo = await this.amagi.douyin.fetcher.fetchUserProfile({ sec_uid, typeMode: 'strict' })
 
-        const targets = item.group_id.map(groupWithBot => {
+        const targets = item.group_id.map((groupWithBot) => {
           const [groupId, botId] = groupWithBot.split(':')
           return { groupId, botId }
         })
@@ -798,19 +830,33 @@ export class DouYinpush extends Base {
           switch (pushType) {
             case 'post':
               listName = '作品列表'
-              const videolist = await this.amagi.douyin.fetcher.fetchUserVideoList({ sec_uid, number: 15, typeMode: 'strict' })
+              const videolist = await this.amagi.douyin.fetcher.fetchUserVideoList({
+                sec_uid,
+                number: 15,
+                typeMode: 'strict'
+              })
               contentList = videolist.data.aweme_list || []
               break
             case 'favorite':
               listName = '喜欢列表'
-              const favoritelist = await this.amagi.douyin.fetcher.fetchUserFavoriteList({ sec_uid, number: 15, typeMode: 'strict' })
-              if (favoritelist.data.aweme_list.length === 0) logger.warn(`${item.remark}(${item.short_id}) 获取到的喜欢列表数量为零！此博主可能未公开他/她的喜欢列表`)
+              const favoritelist = await this.amagi.douyin.fetcher.fetchUserFavoriteList({
+                sec_uid,
+                number: 15,
+                typeMode: 'strict'
+              })
+              if (favoritelist.data.aweme_list.length === 0)
+                logger.warn(`${item.remark}(${item.short_id}) 获取到的喜欢列表数量为零！此博主可能未公开他/她的喜欢列表`)
               contentList = favoritelist.data.aweme_list || []
               break
             case 'recommend':
               listName = '推荐列表'
-              const recommendlist = await this.amagi.douyin.fetcher.fetchUserRecommendList({ sec_uid, number: 15, typeMode: 'strict' })
-              if (recommendlist.data.aweme_list.length === 0) logger.warn(`${item.remark}(${item.short_id}) 获取到的推荐列表数量为零！此博主可能未公开他/她的推荐列表`)
+              const recommendlist = await this.amagi.douyin.fetcher.fetchUserRecommendList({
+                sec_uid,
+                number: 15,
+                typeMode: 'strict'
+              })
+              if (recommendlist.data.aweme_list.length === 0)
+                logger.warn(`${item.remark}(${item.short_id}) 获取到的推荐列表数量为零！此博主可能未公开他/她的推荐列表`)
               contentList = recommendlist.data.aweme_list || []
               break
           }
@@ -848,14 +894,14 @@ export class DouYinpush extends Base {
   }
 
   /**
- * 检查作品是否已经推送过
- * @param aweme_id 作品ID
- * @param sec_uid 用户sec_uid
- * @param groupIds 群组ID列表
- * @param pushType 推送类型
- * @returns 是否已经推送过
- */
-  async checkIfAlreadyPushed (aweme_id: string, sec_uid: string, groupIds: string[], pushType: string = 'post'): Promise<boolean> {
+   * 检查作品是否已经推送过
+   * @param aweme_id 作品ID
+   * @param sec_uid 用户sec_uid
+   * @param groupIds 群组ID列表
+   * @param pushType 推送类型
+   * @returns 是否已经推送过
+   */
+  async checkIfAlreadyPushed(aweme_id: string, sec_uid: string, groupIds: string[], pushType: string = 'post'): Promise<boolean> {
     for (const groupId of groupIds) {
       const isPushed = await douyinDB.isAwemePushed(aweme_id, sec_uid, groupId, pushType)
       if (!isPushed) {
@@ -870,7 +916,7 @@ export class DouYinpush extends Base {
    * @param data 抖音的搜索结果数据。需要接口返回的原始数据
    * @returns 操作成功或失败的消息字符串。
    */
-  async setting (data: DySearchInfo): Promise<void> {
+  async setting(data: DySearchInfo): Promise<void> {
     const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
     const config = Config.pushlist // 读取配置文件
     const groupId = 'groupId' in this.e && this.e.groupId ? this.e.groupId : ''
@@ -901,7 +947,7 @@ export class DouYinpush extends Base {
 
       /** 处理抖音号 */
       let user_shortid
-      UserInfoData.data.user.unique_id === '' ? (user_shortid = UserInfoData.data.user.short_id) : (user_shortid = UserInfoData.data.user.unique_id)
+      user_shortid = UserInfoData.data.user.unique_id === '' ? UserInfoData.data.user.short_id : UserInfoData.data.user.unique_id
 
       // 初始化 douyin 数组
       config.douyin ??= []
@@ -946,7 +992,9 @@ export class DouYinpush extends Base {
 
           // 保存配置到文件
           Config.Modify('pushlist', 'douyin', config.douyin)
-          await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n删除成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}`)
+          await this.e.reply(
+            `群：${groupInfo.groupName}(${groupId})\n删除成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}`
+          )
           logger.info(`\n删除成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.data.user.sec_uid}`)
         } else {
           // 否则，将新的 group_id 添加到该 sec_uid 对应的数组中
@@ -964,7 +1012,9 @@ export class DouYinpush extends Base {
 
           // 保存配置到文件
           Config.Modify('pushlist', 'douyin', config.douyin)
-          await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}`)
+          await this.e.reply(
+            `群：${groupInfo.groupName}(${groupId})\n添加成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}`
+          )
           if (Config.douyin.push.switch === false) await this.e.reply('请发送「#设置抖音推送开启」以进行推送')
           logger.info(`\n设置成功！${UserInfoData.data.user.nickname}\n抖音号：${user_shortid}\nsec_uid${UserInfoData.data.user.sec_uid}`)
         }
@@ -998,7 +1048,7 @@ export class DouYinpush extends Base {
   }
 
   /** 渲染推送列表图片 */
-  async renderPushList (): Promise<void> {
+  async renderPushList(): Promise<void> {
     await this.syncConfigToDatabase()
     const groupInfo = await this.e.bot.getGroupInfo('groupId' in this.e && this.e.groupId ? this.e.groupId : '')
 
@@ -1006,7 +1056,9 @@ export class DouYinpush extends Base {
     const subscriptions = await douyinDB.getGroupSubscriptions(groupInfo.groupId)
 
     if (subscriptions.length === 0) {
-      await this.e.reply(`当前群：${groupInfo.groupName}(${groupInfo.groupId})\n没有设置任何抖音博主推送！\n可使用「#设置抖音推送 + 抖音号」进行设置`)
+      await this.e.reply(
+        `当前群：${groupInfo.groupName}(${groupInfo.groupId})\n没有设置任何抖音博主推送！\n可使用「#设置抖音推送 + 抖音号」进行设置`
+      )
       return
     }
 
@@ -1047,7 +1099,7 @@ export class DouYinpush extends Base {
    * 强制推送
    * @param data 处理完成的推送列表
    */
-  async forcepush (data: WillBePushList) {
+  async forcepush(data: WillBePushList) {
     const currentGroupId = 'groupId' in this.e && this.e.groupId ? this.e.groupId : ''
     const currentBotId = this.e.selfId
 
@@ -1055,7 +1107,7 @@ export class DouYinpush extends Base {
     if (!this.e.msg.includes('全部')) {
       // 获取当前群组订阅的所有抖音用户
       const subscriptions = await douyinDB.getGroupSubscriptions(currentGroupId)
-      const subscribedUids = subscriptions.map(sub => sub.sec_uid)
+      const subscribedUids = subscriptions.map((sub) => sub.sec_uid)
 
       // 创建一个新的推送列表，只包含当前群组订阅的用户的作品
       const filteredData: WillBePushList = {}
@@ -1066,10 +1118,12 @@ export class DouYinpush extends Base {
           // 复制该作品到过滤后的列表，并将目标设置为当前群组
           filteredData[awemeId] = {
             ...data[awemeId],
-            targets: [{
-              groupId: currentGroupId,
-              botId: currentBotId
-            }]
+            targets: [
+              {
+                groupId: currentGroupId,
+                botId: currentBotId
+              }
+            ]
           }
         }
       }
@@ -1083,9 +1137,9 @@ export class DouYinpush extends Base {
   }
 
   /**
- * 检查并更新备注信息
- */
-  async checkremark () {
+   * 检查并更新备注信息
+   */
+  async checkremark() {
     // 读取配置文件内容
     const config = Config.pushlist
     const updateList: { sec_uid: string }[] = []
@@ -1124,9 +1178,9 @@ export class DouYinpush extends Base {
   }
 
   /**
-    * 格式化数字
-    */
-  count (num: number) {
+   * 格式化数字
+   */
+  count(num: number) {
     if (num > 10000) {
       return (num / 10000).toFixed(1) + '万'
     }
@@ -1135,10 +1189,10 @@ export class DouYinpush extends Base {
 }
 
 /**
-* 判断标题是否有屏蔽词或屏蔽标签
-* @param PushItem 推送项
-* @returns 是否应该跳过推送
-*/
+ * 判断标题是否有屏蔽词或屏蔽标签
+ * @param PushItem 推送项
+ * @returns 是否应该跳过推送
+ */
 const skipDynamic = async (PushItem: DouyinPushItem): Promise<boolean> => {
   // 如果是直播动态，不跳过
   if ('liveStatus' in PushItem.Detail_Data) {

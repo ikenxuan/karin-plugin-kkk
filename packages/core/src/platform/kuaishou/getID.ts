@@ -4,7 +4,7 @@ import { Networks } from '@/module'
 import type { KuaishouDataTypes } from '@/types'
 
 export interface ExtendedKuaishouOptionsType {
-  type: KuaishouDataTypes[keyof KuaishouDataTypes],
+  type: KuaishouDataTypes[keyof KuaishouDataTypes]
   [x: string]: any
 }
 
@@ -41,6 +41,8 @@ export const getKuaishouID = async (url: string, log = true) => {
     }
   }
 
-  log && console.log(result)
+  if (log) {
+    console.log(result)
+  }
   return result
 }

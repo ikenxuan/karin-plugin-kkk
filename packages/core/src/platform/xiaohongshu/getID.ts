@@ -19,7 +19,11 @@ export const getXiaohongshuID = async (url: string, log = true): Promise<Xiaohon
   const longLink = resp?.request?.res?.responseUrl ?? url
   // 安全解码：如果最终地址里包含百分号编码的真实链接，解码后才能命中正则
   const normalizedLink = (() => {
-    try { return decodeURIComponent(longLink) } catch { return longLink }
+    try {
+      return decodeURIComponent(longLink)
+    } catch {
+      return longLink
+    }
   })()
 
   const effectiveLink = (() => {
@@ -28,18 +32,30 @@ export const getXiaohongshuID = async (url: string, log = true): Promise<Xiaohon
       if (u.pathname.startsWith('/404')) {
         const rp = u.searchParams.get('redirectPath')
         if (rp) {
-          try { return decodeURIComponent(rp) } catch { return rp }
+          try {
+            return decodeURIComponent(rp)
+          } catch {
+            return rp
+          }
         }
       }
       const mm = /[?&]redirectPath=([^&#]+)/.exec(normalizedLink)
       if (mm?.[1]) {
-        try { return decodeURIComponent(mm[1]) } catch { return mm[1] }
+        try {
+          return decodeURIComponent(mm[1])
+        } catch {
+          return mm[1]
+        }
       }
       return normalizedLink
     } catch {
       const mm = /[?&]redirectPath=([^&#]+)/.exec(normalizedLink)
       if (mm?.[1]) {
-        try { return decodeURIComponent(mm[1]) } catch { return mm[1] }
+        try {
+          return decodeURIComponent(mm[1])
+        } catch {
+          return mm[1]
+        }
       }
       return normalizedLink
     }
@@ -94,6 +110,8 @@ export const getXiaohongshuID = async (url: string, log = true): Promise<Xiaohon
     throw new Error('无法从链接中提取小红书笔记ID')
   }
 
-  log && console.log(result)
+  if (log) {
+    console.log(result)
+  }
   return result
 }

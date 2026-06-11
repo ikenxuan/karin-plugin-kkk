@@ -4,12 +4,13 @@
  */
 
 import { useBoolean } from 'ahooks'
-import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { Settings, FileText } from 'lucide-react'
+import { useEffect, useRef } from 'react'
+
+import MainContent from '../components/desktop/MainContent'
 import Sidebar from '../components/desktop/Sidebar'
 import TopBar from '../components/desktop/TopBar'
-import MainContent from '../components/desktop/MainContent'
 import type { MainLayoutProps } from '../types/navigation'
 
 /**
@@ -17,7 +18,7 @@ import type { MainLayoutProps } from '../types/navigation'
  */
 const menuItems = [
   { id: 'config', label: '配置管理', icon: Settings },
-  { id: 'about', label: '关于插件', icon: FileText },
+  { id: 'about', label: '关于插件', icon: FileText }
 ]
 
 /**
@@ -47,7 +48,7 @@ const DesktopLayout = ({ activeMenu, onMenuChange }: MainLayoutProps) => {
           if (sidebarRef.current) {
             sidebarRef.current.style.display = 'none'
           }
-        },
+        }
       })
     } else {
       // 展开动画 - 先显示再动画
@@ -57,14 +58,14 @@ const DesktopLayout = ({ activeMenu, onMenuChange }: MainLayoutProps) => {
         {
           width: 0,
           opacity: 0,
-          borderRightWidth: 0,
+          borderRightWidth: 0
         },
         {
           width: 260,
           opacity: 1,
           borderRightWidth: 1,
           duration: 0.3,
-          ease: 'power2.inOut',
+          ease: 'power2.inOut'
         }
       )
     }
@@ -73,17 +74,8 @@ const DesktopLayout = ({ activeMenu, onMenuChange }: MainLayoutProps) => {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* 侧边栏 - 始终渲染以支持动画 */}
-      <aside
-        ref={sidebarRef}
-        className="flex h-full w-65 shrink-0 flex-col border-r border-default-100"
-        aria-label="侧边栏导航"
-      >
-        <Sidebar
-          collapsed={sidebarCollapsed}
-          activeMenu={activeMenu}
-          onMenuChange={onMenuChange}
-          onToggleCollapse={toggleSidebar}
-        />
+      <aside ref={sidebarRef} className="flex h-full w-65 shrink-0 flex-col border-r border-default-100" aria-label="侧边栏导航">
+        <Sidebar collapsed={sidebarCollapsed} activeMenu={activeMenu} onMenuChange={onMenuChange} onToggleCollapse={toggleSidebar} />
       </aside>
 
       {/* 主体区域 */}
@@ -93,7 +85,7 @@ const DesktopLayout = ({ activeMenu, onMenuChange }: MainLayoutProps) => {
           <TopBar
             onToggleSidebar={toggleSidebar}
             sidebarCollapsed={sidebarCollapsed}
-            currentMenuLabel={menuItems.find(item => item.id === activeMenu)?.label}
+            currentMenuLabel={menuItems.find((item) => item.id === activeMenu)?.label}
           />
         </header>
 

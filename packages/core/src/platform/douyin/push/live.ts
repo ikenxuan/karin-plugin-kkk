@@ -13,7 +13,7 @@ export async function processLiveStream(
   sec_uid: string,
   userinfo: any,
   item: any,
-  targets: Array<{ groupId: string, botId: string }>,
+  targets: Array<{ groupId: string; botId: string }>,
   amagi: any
 ): Promise<DouyinPushItem | null> {
   const pushType = 'live'
@@ -23,16 +23,16 @@ export async function processLiveStream(
 
   // 检查用户是否正在直播
   if (userinfo.data.user.live_status === 1) {
-    const UserInfoData = await amagi.douyin.fetcher.fetchUserProfile({ 
-      sec_uid: userinfo.data.user.sec_uid, 
-      typeMode: 'strict' 
+    const UserInfoData = await amagi.douyin.fetcher.fetchUserProfile({
+      sec_uid: userinfo.data.user.sec_uid,
+      typeMode: 'strict'
     })
 
     if (!UserInfoData.data.user?.live_status || UserInfoData.data.user.live_status !== 1) {
       logger.error((UserInfoData?.data?.user?.nickname ?? '用户') + '当前未在直播')
       return null
     }
-    
+
     if (!UserInfoData.data.user.room_data) {
       logger.error('未获取到直播间信息！')
       return null

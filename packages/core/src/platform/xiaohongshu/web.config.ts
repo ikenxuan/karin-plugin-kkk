@@ -51,7 +51,7 @@ export const XiaohongshuWeb = (all: ConfigType) => {
               label: '评论解析数量',
               defaultValue: all.xiaohongshu.numcomment.toString(),
               rules: [{ min: 1 }],
-              isDisabled: !all.xiaohongshu.sendContent.some(content => content === 'comment') || !all.xiaohongshu.switch
+              isDisabled: !all.xiaohongshu.sendContent.some((content) => content === 'comment') || !all.xiaohongshu.switch
             }),
             components.divider.create('divider-xiaohongshu-render', {
               description: '渲染与画质设置',

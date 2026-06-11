@@ -40,11 +40,7 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
     <div className="bg-surface rounded-3xl overflow-hidden flex flex-col h-full">
       {/* 视频封面 - 固定 3:4 比例 */}
       <div className="relative bg-foreground overflow-hidden" style={{ aspectRatio: '3 / 4' }}>
-        <img
-          src={video.cover}
-          alt={video.title}
-          className="w-full h-full object-cover"
-        />
+        <img src={video.cover} alt={video.title} className="w-full h-full object-cover" />
 
         {/* 左上角索引标签 */}
         {video.index && (
@@ -86,10 +82,7 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
       {/* 视频信息 */}
       <div className="p-4 px-8 pb-8 flex flex-col flex-1">
         {/* 标题 */}
-        <h3
-          ref={titleRef}
-          className="text-4xl font-semibold text-foreground line-clamp-2 my-2"
-        >
+        <h3 ref={titleRef} className="text-4xl font-semibold text-foreground line-clamp-2 my-2">
           {video.title || '无标题'}
         </h3>
 
@@ -131,36 +124,27 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
  * 抖音用户视频列表页面组件
  */
 export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) => {
-
   return (
     <DefaultLayout {...prpos}>
       {/* 头部背景图片 - 占满宽度 */}
       {prpos.data.user.head_image && (
         <div className="relative w-full overflow-hidden">
-          <img
-            src={prpos.data.user.head_image}
-            alt="头部背景"
-            className="w-full h-auto object-cover"
-          />
+          <img src={prpos.data.user.head_image} alt="头部背景" className="w-full h-auto object-cover" />
           {/* 渐变遮罩 - 从图片渐变到 bg-surface */}
-          <div
-            className="absolute inset-0 bg-linear-to-b from-transparent via-surface/40 to-surface"
-          />
+          <div className="absolute inset-0 bg-linear-to-b from-transparent via-surface/40 to-surface" />
         </div>
       )}
 
       <div className="flex justify-center">
         <div className="px-20">
           {/* 用户信息头部 */}
-          <div className={`bg-surface/60 backdrop-blur-xl mb-30 rounded-4xl p-10 relative ${prpos.data.user.head_image ? '-mt-170' : 'mt-35'}`}>
+          <div
+            className={`bg-surface/60 backdrop-blur-xl mb-30 rounded-4xl p-10 relative ${prpos.data.user.head_image ? '-mt-170' : 'mt-35'}`}
+          >
             {/* 上部分：头像、名称、抖音号、IP、用户统计 */}
             <div className="flex items-start gap-8 pb-8 border-b border-border mb-8">
               {/* 用户头像 */}
-              <img
-                src={prpos.data.user.avatar}
-                alt={prpos.data.user.nickname}
-                className="w-45 h-auto rounded-2xl object-cover shrink-0"
-              />
+              <img src={prpos.data.user.avatar} alt={prpos.data.user.nickname} className="w-45 h-auto rounded-2xl object-cover shrink-0" />
               {/* 用户信息 */}
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-4">
@@ -170,8 +154,14 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
 
                 {/* 抖音号和 IP 属地 */}
                 <div className="flex gap-6 mb-6 text-2xl text-muted">
-                  <span className="flex items-center gap-2"><FaTiktok size={24} /> 抖音号：{prpos.data.user.short_id}</span>
-                  {prpos.data.user.ip_location && <span className="flex items-center gap-1"><MdLocationOn size={28} /> {prpos.data.user.ip_location}</span>}
+                  <span className="flex items-center gap-2">
+                    <FaTiktok size={24} /> 抖音号：{prpos.data.user.short_id}
+                  </span>
+                  {prpos.data.user.ip_location && (
+                    <span className="flex items-center gap-1">
+                      <MdLocationOn size={28} /> {prpos.data.user.ip_location}
+                    </span>
+                  )}
                 </div>
 
                 {/* 用户统计 */}
@@ -196,9 +186,7 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
             </div>
 
             {/* 下部分：用户签名 */}
-            <p className="text-3xl text-foreground/80 line-clamp-3">
-              {prpos.data.user.signature || '这个用户很懒，还没有签名'}
-            </p>
+            <p className="text-3xl text-foreground/80 line-clamp-3">{prpos.data.user.signature || '这个用户很懒，还没有签名'}</p>
           </div>
 
           {/* 提示信息卡片 */}
@@ -206,7 +194,10 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
             <div className="bg-surface/60 backdrop-blur-xl mb-8 rounded-4xl p-6 border border-border/50 shadow-sm flex justify-center items-center">
               <p className="text-3xl text-foreground/80 font-medium flex items-center gap-3">
                 <MdLightbulbOutline size={40} className="text-warning" />
-                <span>请在 {prpos.data.timeoutSeconds} 秒内发送 <span className="text-accent font-bold">1~{prpos.data.videos.length}</span> 之间的数字解析对应作品。例如发送“1”解析第一个作品</span>
+                <span>
+                  请在 {prpos.data.timeoutSeconds} 秒内发送 <span className="text-accent font-bold">1~{prpos.data.videos.length}</span>{' '}
+                  之间的数字解析对应作品。例如发送“1”解析第一个作品
+                </span>
               </p>
             </div>
           )}
@@ -215,7 +206,7 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
           {prpos.data.videos.length > 0 ? (
             <>
               <div className="grid grid-cols-2 gap-6 mb-8">
-                {prpos.data.videos.map(video => (
+                {prpos.data.videos.map((video) => (
                   <VideoCard key={video.aweme_id} video={video} />
                 ))}
               </div>

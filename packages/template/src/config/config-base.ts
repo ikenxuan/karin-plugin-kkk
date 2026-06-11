@@ -385,8 +385,8 @@ export const baseComponentConfigs: BasePlatformConfig[] = [
  * @param platform 平台类型
  * @returns 平台配置
  */
-export function getBasePlatformConfig (platform: PlatformType): BasePlatformConfig | undefined {
-  return baseComponentConfigs.find(config => config.type === platform)
+export function getBasePlatformConfig(platform: PlatformType): BasePlatformConfig | undefined {
+  return baseComponentConfigs.find((config) => config.type === platform)
 }
 
 /**
@@ -394,7 +394,7 @@ export function getBasePlatformConfig (platform: PlatformType): BasePlatformConf
  * @param platform 平台类型
  * @returns 启用的组件配置列表
  */
-export function getBaseEnabledComponents (platform: PlatformType): BaseComponentConfig[] {
+export function getBaseEnabledComponents(platform: PlatformType): BaseComponentConfig[] {
   const config = getBasePlatformConfig(platform)
-  return config?.components.filter(component => component.enabled) || []
+  return config?.components.filter((component) => component.enabled) || []
 }

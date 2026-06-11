@@ -1,17 +1,17 @@
-import { defineConfig, defineDocs } from 'fumadocs-mdx/config';
-import { transformerTwoslash } from 'fumadocs-twoslash';
-import { rehypeCodeDefaultOptions } from 'fumadocs-core/mdx-plugins';
-import lastModified from 'fumadocs-mdx/plugins/last-modified';
+import { rehypeCodeDefaultOptions } from 'fumadocs-core/mdx-plugins'
+import { defineConfig, defineDocs } from 'fumadocs-mdx/config'
+import lastModified from 'fumadocs-mdx/plugins/last-modified'
+import { transformerTwoslash } from 'fumadocs-twoslash'
 
 export const docs = defineDocs({
   dir: 'content/docs',
   docs: {
     async: true,
     postprocess: {
-      includeProcessedMarkdown: true,
-    },
-  },
-});
+      includeProcessedMarkdown: true
+    }
+  }
+})
 
 export default defineConfig({
   plugins: [lastModified()],
@@ -19,12 +19,9 @@ export default defineConfig({
     rehypeCodeOptions: {
       themes: {
         light: 'github-light',
-        dark: 'github-dark',
+        dark: 'github-dark'
       },
-      transformers: [
-        ...(rehypeCodeDefaultOptions.transformers ?? []) as any[],
-        transformerTwoslash(),
-      ],
-    },
-  },
-});
+      transformers: [...((rehypeCodeDefaultOptions.transformers ?? []) as any[]), transformerTwoslash()]
+    }
+  }
+})

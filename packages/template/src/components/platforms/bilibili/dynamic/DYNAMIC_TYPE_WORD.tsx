@@ -1,10 +1,7 @@
 import { renderRichTextToReact } from '@kkk/richtext'
 import React from 'react'
 
-import type {
-  BilibiliWordContentProps,
-  BilibiliWordDynamicProps
-} from '../../../../types/platforms/bilibili'
+import type { BilibiliWordContentProps, BilibiliWordDynamicProps } from '../../../../types/platforms/bilibili'
 import { DefaultLayout } from '../../../layouts/DefaultLayout'
 import { BilibiliAdditionalCard } from './AdditionalCard'
 import { BilibiliDynamicFooter, BilibiliDynamicStatus, BilibiliDynamicUserInfo } from './CommonComponents'
@@ -16,30 +13,29 @@ const BilibiliWordContent: React.FC<BilibiliWordContentProps> = (props) => {
   return (
     <>
       {/* 文本内容 */}
-      <div className='flex flex-col px-20 w-full leading-relaxed'>
+      <div className="flex flex-col px-20 w-full leading-relaxed">
         <div
-          className='text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-foreground mb-5 select-text'
+          className="text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-foreground mb-5 select-text"
           style={{
             wordBreak: 'break-word',
             overflowWrap: 'break-word'
           }}
         >
-          {props.text && renderRichTextToReact(props.text, {
-            at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-            topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-            lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-            webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-            vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-            viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
-          })}
+          {props.text &&
+            renderRichTextToReact(props.text, {
+              at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+              topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+              lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+              webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+              vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+              viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+            })}
         </div>
-        <div className='h-15' />
+        <div className="h-15" />
       </div>
 
       {/* 相关卡片 */}
-      {props.additional && (
-        <BilibiliAdditionalCard additional={props.additional} />
-      )}
+      {props.additional && <BilibiliAdditionalCard additional={props.additional} />}
     </>
   )
 }
@@ -50,17 +46,14 @@ const BilibiliWordContent: React.FC<BilibiliWordContentProps> = (props) => {
 export const BilibiliWordDynamic: React.FC<Omit<BilibiliWordDynamicProps, 'templateType' | 'templateName'>> = React.memo((props) => {
   return (
     <DefaultLayout {...props}>
-      <div className='p-4'>
-        <div className='h-25' />
+      <div className="p-4">
+        <div className="h-25" />
         <BilibiliDynamicUserInfo {...props.data} />
-        <div className='h-15' />
-        <BilibiliWordContent
-          text={props.data.text}
-          additional={props.data.additional}
-        />
+        <div className="h-15" />
+        <BilibiliWordContent text={props.data.text} additional={props.data.additional} />
         <BilibiliDynamicStatus {...props.data} />
 
-        <div className='h-23' />
+        <div className="h-23" />
         <BilibiliDynamicFooter {...props.data} />
       </div>
     </DefaultLayout>

@@ -9,10 +9,7 @@ import {
   type RichTextEmojiDefinition,
   type RichTextNode
 } from '@kkk/richtext'
-import type {
-  XiaohongshuCommentItem,
-  XiaohongshuSubComment
-} from 'template/types/platforms/xiaohongshu/comment'
+import type { XiaohongshuCommentItem, XiaohongshuSubComment } from 'template/types/platforms/xiaohongshu/comment'
 
 import { Config } from '@/module/utils/Config'
 
@@ -21,16 +18,13 @@ import { Config } from '@/module/utils/Config'
  *
  * 这里直接输出结构化评论 JSON，正文部分使用 richtext 文档，避免后端拼接 HTML。
  */
-export const xiaohongshuComments = (
-  data: NoteComments,
-  emojiData: RichTextEmojiDefinition[]
-): XiaohongshuCommentItem[] => {
+export const xiaohongshuComments = (data: NoteComments, emojiData: RichTextEmojiDefinition[]): XiaohongshuCommentItem[] => {
   const rawComments = data?.data?.comments
   if (!Array.isArray(rawComments) || rawComments.length === 0) {
     return []
   }
 
-  const comments = rawComments.map(comment => {
+  const comments = rawComments.map((comment) => {
     const showTags = normalizeTagNames(comment.show_tags)
 
     return {
@@ -46,7 +40,7 @@ export const xiaohongshuComments = (
       sub_comment_count: comment.sub_comment_count,
       sub_comments: buildXiaohongshuSubComments(comment.sub_comments, emojiData),
       show_tags: showTags,
-      at_users: normalizeAtUsers(comment.at_users).map(item => item.text),
+      at_users: normalizeAtUsers(comment.at_users).map((item) => item.text),
       status: comment.status
     }
   })
@@ -64,7 +58,7 @@ const buildXiaohongshuSubComments = (
     return []
   }
 
-  return subComments.map(subComment => ({
+  return subComments.map((subComment) => ({
     id: subComment.id,
     note_id: subComment.note_id,
     content: buildXiaohongshuRichText(subComment.content, emojiData, subComment.at_users),
@@ -75,7 +69,7 @@ const buildXiaohongshuSubComments = (
     liked: subComment.liked,
     pictures: Array.isArray(subComment.pictures) ? subComment.pictures : [],
     show_tags: normalizeTagNames(subComment.show_tags),
-    at_users: normalizeAtUsers(subComment.at_users).map(item => item.text),
+    at_users: normalizeAtUsers(subComment.at_users).map((item) => item.text),
     status: subComment.status,
     target_comment: subComment.target_comment
   }))
@@ -126,7 +120,7 @@ export const buildXiaohongshuRichText = (
       continue
     }
 
-    const matchedMention = mentionTokens.find(item => normalizedText.startsWith(item.text, index))
+    const matchedMention = mentionTokens.find((item) => normalizedText.startsWith(item.text, index))
     if (matchedMention) {
       pushBuffer()
       nodes.push(createMentionNode(matchedMention.text, matchedMention.userId))
@@ -134,7 +128,7 @@ export const buildXiaohongshuRichText = (
       continue
     }
 
-    const matchedEmoji = emojiTokens.find(item => normalizedText.startsWith(item.name, index))
+    const matchedEmoji = emojiTokens.find((item) => normalizedText.startsWith(item.name, index))
     if (matchedEmoji) {
       pushBuffer()
       nodes.push(createEmojiNode(matchedEmoji.name, matchedEmoji.url))
@@ -171,7 +165,7 @@ const normalizeTagNames = (tags: unknown): string[] => {
   }
 
   return tags
-    .map(tag => {
+    .map((tag) => {
       if (typeof tag === 'string') {
         return tag
       }
@@ -192,17 +186,19 @@ const normalizeAtUsers = (atUsers: unknown): Array<{ text: string; userId?: stri
   }
 
   return atUsers
-    .map(item => {
+    .map((item) => {
       if (typeof item === 'string' && item.trim()) {
         const nickname = item.trim().replace(/^@/, '')
         return { text: `@${nickname}` }
       }
 
       if (item && typeof item === 'object') {
-        const nickname = (item as { nickname?: string; user_info?: { nickname?: string } }).nickname
-          ?? (item as { user_info?: { nickname?: string } }).user_info?.nickname
-        const userId = (item as { user_id?: string; user_info?: { user_id?: string } }).user_id
-          ?? (item as { user_info?: { user_id?: string } }).user_info?.user_id
+        const nickname =
+          (item as { nickname?: string; user_info?: { nickname?: string } }).nickname ??
+          (item as { user_info?: { nickname?: string } }).user_info?.nickname
+        const userId =
+          (item as { user_id?: string; user_info?: { user_id?: string } }).user_id ??
+          (item as { user_info?: { user_id?: string } }).user_info?.user_id
 
         if (typeof nickname === 'string' && nickname.trim()) {
           return {

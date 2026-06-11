@@ -1,8 +1,6 @@
 import type { PushTargetMapping } from './types'
 
-export const formatTargetValue = (mapping: Pick<PushTargetMapping, 'groupId' | 'botId'>) => (
-  `${mapping.groupId}:${mapping.botId}`
-)
+export const formatTargetValue = (mapping: Pick<PushTargetMapping, 'groupId' | 'botId'>) => `${mapping.groupId}:${mapping.botId}`
 
 export const parseTargetValue = (value: string): Pick<PushTargetMapping, 'groupId' | 'botId'> | null => {
   const [groupId, botId, extra] = value.split(':')
@@ -33,4 +31,3 @@ export const getTargetDisplayName = (mapping: PushTargetMapping) => {
   const bot = mapping.botName || mapping.botId
   return `${group} -> ${bot}`
 }
-

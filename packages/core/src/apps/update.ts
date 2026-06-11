@@ -1,13 +1,4 @@
-import karin, {
-  checkPkgUpdate,
-  config,
-  db,
-  hooks,
-  Message,
-  restart,
-  segment,
-  updatePkg
-} from 'node-karin'
+import karin, { checkPkgUpdate, config, db, hooks, Message, restart, segment, updatePkg } from 'node-karin'
 
 import { Root } from '@/module'
 import { getChangelogImage } from '@/module/utils/changelog'
@@ -29,10 +20,7 @@ const Handler = async () => {
   //   return true
   // }
 
-  let upd:
-    | { status: 'yes'; local: string; remote: string }
-    | { status: 'no'; local: string }
-    | { status: 'error'; error: Error }
+  let upd: { status: 'yes'; local: string; remote: string } | { status: 'no'; local: string } | { status: 'error'; error: Error }
 
   try {
     upd = await checkPkgUpdate(Root.pluginName, { compare: 'semver' })
@@ -65,18 +53,17 @@ const Handler = async () => {
         // 远程版本比锁定版本新，继续推送并更新锁定版本
       }
     }
-  } catch { }
+  } catch {}
 
   // 设置锁为当前远程版本，确保只推送一次
   try {
     await db.set(UPDATE_LOCK_KEY, upd.remote)
-  } catch { }
+  } catch {}
 
-  const masters = config.master().filter(id => id !== 'console')
+  const masters = config.master().filter((id) => id !== 'console')
   if (masters.length === 0) return true
 
-  const botItems = karin.getAllBotList()
-    .filter(b => b.bot.account.name !== 'console')
+  const botItems = karin.getAllBotList().filter((b) => b.bot.account.name !== 'console')
   if (botItems.length === 0) return true
 
   // 预取好友列表（并发）
@@ -93,9 +80,9 @@ const Handler = async () => {
   )
 
   // 为每个主人选择可用 Bot（好友命中）
-  const masterToBot = new Map<string, typeof botItems[number]['bot']>()
+  const masterToBot = new Map<string, (typeof botItems)[number]['bot']>()
   for (const owner of masters) {
-    const matched = botItems.find(it => (friendsMap.get(it.bot.account.selfId) || []).some(f => f.userId === owner))
+    const matched = botItems.find((it) => (friendsMap.get(it.bot.account.selfId) || []).some((f) => f.userId === owner))
     if (matched) {
       masterToBot.set(owner, matched.bot)
     }
@@ -113,10 +100,7 @@ const Handler = async () => {
       Tip: true
     })
     if (img && img.length > 0) {
-      botToImage.set(item.bot.account.selfId, [
-        segment.text('karin-plugin-kkk 有新的更新！'),
-        ...img
-      ])
+      botToImage.set(item.bot.account.selfId, [segment.text('karin-plugin-kkk 有新的更新！'), ...img])
     }
   }
 
@@ -137,106 +121,117 @@ const Handler = async () => {
   if (storedMsgId) {
     try {
       await db.set(UPDATE_MSGID_KEY, storedMsgId)
-    } catch { }
+    } catch {}
   }
   return true
 }
 
-const handleUpdateHook = wrapWithErrorHandler(async (e: Message) => {
-  e.reply('开始更新 karin-plugin-kkk ...', { reply: true })
-  const upd = await checkPkgUpdate(Root.pluginName, { compare: 'semver' })
-  if (upd.status === 'yes') {
+const handleUpdateHook = wrapWithErrorHandler(
+  async (e: Message) => {
+    e.reply('开始更新 karin-plugin-kkk ...', { reply: true })
+    const upd = await checkPkgUpdate(Root.pluginName, { compare: 'semver' })
+    if (upd.status === 'yes') {
+      const result = await updatePkg(Root.pluginName)
+      if (result.status === 'ok') {
+        const msgResult = await e.reply(`${Root.pluginName} 更新成功！\n${result.local} -> ${result.remote}\n开始执行重启......`)
+        if (msgResult.messageId) {
+          try {
+            await db.del(UPDATE_MSGID_KEY)
+            await db.del(UPDATE_LOCK_KEY)
+          } catch {}
+        }
+        await restart(e.selfId, e.contact, msgResult.messageId)
+      } else {
+        e.reply(`${Root.pluginName} 更新失败: ${result.data ?? '更新执行失败'}`)
+      }
+    } else if (upd.status === 'no') {
+      e.reply('未检测到可更新版本。')
+    } else {
+      e.reply(`${Root.pluginName} 更新失败: ${upd.error?.message ?? String(upd.error)}`)
+    }
+  },
+  {
+    businessName: '更新Hook'
+  }
+)
+
+export const kkkUpdate = hooks.message.friend(
+  async (e, next) => {
+    if (e.msg.includes('更新')) {
+      const msgId = (await db.get(UPDATE_MSGID_KEY)) as string
+      if (e.replyId === msgId) {
+        await handleUpdateHook(e)
+      }
+    }
+    next()
+  },
+  { priority: 100 }
+)
+
+const handleKkkUpdate = wrapWithErrorHandler(
+  async (e: Message) => {
+    const upd = await checkPkgUpdate(Root.pluginName, { compare: 'semver' })
+    if (upd.status === 'error') {
+      e.reply(`获取远程版本失败：${upd.error?.message ?? String(upd.error)}`)
+      return
+    }
+    if (upd.status === 'no') {
+      e.reply(`当前已是最新版本：${upd.local}`, { reply: true })
+      return
+    }
+
+    // 防守性校验：远程必须严格大于本地，否则视为无更新
+    if (upd.status === 'yes' && !isSemverGreater(upd.remote, upd.local)) {
+      e.reply(`当前已是最新或预览版本：${upd.local}`, { reply: true })
+      return
+    }
+
+    const ChangeLogImg = await getChangelogImage(e, {
+      localVersion: Root.pluginVersion,
+      remoteVersion: upd.remote,
+      Tip: false,
+      isRemote: true
+    })
+    if (ChangeLogImg) {
+      e.reply([segment.text(`${Root.pluginName} 的更新日志：`), ...ChangeLogImg], { reply: true })
+    } else {
+      e.reply('获取更新日志失败，更新进程继续......', { reply: true })
+    }
+
+    // 执行更新并重启
     const result = await updatePkg(Root.pluginName)
     if (result.status === 'ok') {
-      const msgResult = await e.reply(
-        `${Root.pluginName} 更新成功！\n${result.local} -> ${result.remote}\n开始执行重启......`
-      )
+      const msgResult = await e.reply(`${Root.pluginName} 更新成功！\n${result.local} -> ${result.remote}\n开始执行重启......`)
       if (msgResult.messageId) {
         try {
           await db.del(UPDATE_MSGID_KEY)
           await db.del(UPDATE_LOCK_KEY)
-        } catch { }
+        } catch {}
       }
       await restart(e.selfId, e.contact, msgResult.messageId)
     } else {
       e.reply(`${Root.pluginName} 更新失败: ${result.data ?? '更新执行失败'}`)
     }
-  } else if (upd.status === 'no') {
-    e.reply('未检测到可更新版本。')
-  } else {
-    e.reply(`${Root.pluginName} 更新失败: ${upd.error?.message ?? String(upd.error)}`)
+  },
+  {
+    businessName: 'KKK更新'
   }
-}, {
-  businessName: '更新Hook'
-})
-
-export const kkkUpdate = hooks.message.friend(async (e, next) => {
-  if (e.msg.includes('更新')) {
-    const msgId = (await db.get(UPDATE_MSGID_KEY)) as string
-    if (e.replyId === msgId) {
-      await handleUpdateHook(e)
-    }
-  }
-  next()
-}, { priority: 100 })
-
-const handleKkkUpdate = wrapWithErrorHandler(async (e: Message) => {
-  const upd = await checkPkgUpdate(Root.pluginName, { compare: 'semver' })
-  if (upd.status === 'error') {
-    e.reply(`获取远程版本失败：${upd.error?.message ?? String(upd.error)}`)
-    return
-  }
-  if (upd.status === 'no') {
-    e.reply(`当前已是最新版本：${upd.local}`, { reply: true })
-    return
-  }
-
-  // 防守性校验：远程必须严格大于本地，否则视为无更新
-  if (upd.status === 'yes' && !isSemverGreater(upd.remote, upd.local)) {
-    e.reply(`当前已是最新或预览版本：${upd.local}`, { reply: true })
-    return
-  }
-
-  const ChangeLogImg = await getChangelogImage(e, {
-    localVersion: Root.pluginVersion,
-    remoteVersion: upd.remote,
-    Tip: false,
-    isRemote: true
-  })
-  if (ChangeLogImg) {
-    e.reply([segment.text(`${Root.pluginName} 的更新日志：`), ...ChangeLogImg], { reply: true })
-  } else {
-    e.reply('获取更新日志失败，更新进程继续......', { reply: true })
-  }
-
-  // 执行更新并重启
-  const result = await updatePkg(Root.pluginName)
-  if (result.status === 'ok') {
-    const msgResult = await e.reply(
-      `${Root.pluginName} 更新成功！\n${result.local} -> ${result.remote}\n开始执行重启......`
-    )
-    if (msgResult.messageId) {
-      try {
-        await db.del(UPDATE_MSGID_KEY)
-        await db.del(UPDATE_LOCK_KEY)
-      } catch { }
-    }
-    await restart(e.selfId, e.contact, msgResult.messageId)
-  } else {
-    e.reply(`${Root.pluginName} 更新失败: ${result.data ?? '更新执行失败'}`)
-  }
-}, {
-  businessName: 'KKK更新'
-})
+)
 
 export const kkkUpdateCommand = karin.command(/^#?kkk更新$/, handleKkkUpdate, { name: 'kkk-更新' })
 
-export const kkkUpdateTest = process.env.NODE_ENV === 'development' && karin.command('test', async (_e: Message, next) => {
-  await db.del(UPDATE_MSGID_KEY)
-  await db.del(UPDATE_LOCK_KEY)
-  await Handler()  
-  next()
-}, { name: 'kkk-更新检测-测试' })
+export const kkkUpdateTest =
+  process.env.NODE_ENV === 'development' &&
+  karin.command(
+    'test',
+    async (_e: Message, next) => {
+      await db.del(UPDATE_MSGID_KEY)
+      await db.del(UPDATE_LOCK_KEY)
+      await Handler()
+      next()
+    },
+    { name: 'kkk-更新检测-测试' }
+  )
 
 export const update = karin.task('kkk-更新检测', '*/3 * * * *', Handler, {
   name: 'kkk-更新检测',

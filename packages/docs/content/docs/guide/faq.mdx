@@ -3,8 +3,8 @@ title: 常见问题
 description: FAQ
 ---
 
-import { Accordions, Accordion } from 'fumadocs-ui/components/accordion';
-import { Callout } from 'fumadocs-ui/components/callout';
+import { Accordions, Accordion } from 'fumadocs-ui/components/accordion'
+import { Callout } from 'fumadocs-ui/components/callout'
 
 <Accordions>
 
@@ -23,37 +23,44 @@ import { Callout } from 'fumadocs-ui/components/callout';
 当日志出现 `Error: ENOENT: no such file or directory, copyfile`，说明**协议端在容器里找不到文件**。这不只会出现在合并转发，**只要有文件上传**（图片、语音、视频）都有可能出现。
 
 **先理解“宿主机路径”和“容器路径”**
+
 - **宿主机路径**：你的服务器真实路径，比如 `/root/karin/@karinjs/...`
 - **容器路径**：Docker 里的路径，比如 `/app/.config/QQ/NapCat/temp/...`
 
 日志里一般会同时出现两段路径：
+
 1. **源文件路径**（宿主机路径）：`/home/xxx/karin/@karinjs/...`
 2. **目标路径**（容器路径）：`/app/.config/QQ/NapCat/temp/...`
 
 **只要“源文件路径”在容器里不存在，就会报这个错。**
 
 **小白操作步骤（以 Linux 宿主机为例）**
+
 1. 在服务器上找到 Karin 的目录，比如：`/root/karin`
 2. 找到karin的数据目录：`/root/karin/@karinjs`
 3. 把这个目录挂载进 Docker，并且**容器内路径必须和日志里源文件路径一致**
 
 示例：如果日志里的源文件路径是 `/root/karin/@karinjs/...`，就这样挂载：
+
 ```
 -v /root/karin/@karinjs:/root/karin/@karinjs
 ```
 
 **如果你用 docker-compose**
+
 ```
 volumes:
   - /root/karin/@karinjs:/root/karin/@karinjs
 ```
 
 **路径关系说明（一定要一致）**
+
 - 服务器路径：`/root/karin/@karinjs`
 - Docker 内路径：`/root/karin/@karinjs`
 - 两边必须一模一样，**不能只挂到别的路径**
 
 **重要检查点**
+
 1. 服务器上这个目录真实存在
 2. 容器内路径和日志里的源文件路径完全一致
 3. 改完挂载后重启协议端容器
@@ -67,10 +74,15 @@ volumes:
 这是 B站的风控机制，需要手动完成极验验证。
 
 <Callout type="info">
-使用 <LinkPreview url="/geetest" className="font-bold text-fd-primary hover:underline">极验验证器</LinkPreview> 工具手动完成验证，验证成功后结果会自动复制。
+  使用{' '}
+  <LinkPreview url="/geetest" className="font-bold text-fd-primary hover:underline">
+    极验验证器
+  </LinkPreview>{' '}
+  工具手动完成验证，验证成功后结果会自动复制。
 </Callout>
 
 **使用步骤：**
+
 1. 打开 <LinkPreview url="/geetest" className="font-bold text-fd-primary hover:underline">极验验证器</LinkPreview>
 2. 输入错误信息中的 `gt` 和 `challenge` 值
 3. 点击「生成验证码」完成验证
@@ -123,12 +135,12 @@ volumes:
 
 <Accordion title="支持哪些平台？">
 
-| 平台 | 解析 | 评论 | 推送 | 扫码登录 |
-|-----|:---:|:---:|:---:|:---:|
-| 抖音 | ✓ | ✓ | ✓ | ✓ |
-| B站 | ✓ | ✓ | ✓ | ✓ |
-| 快手 | ✓ | ✓ | — | — |
-| 小红书 | ✓ | ✓ | — | — |
+| 平台   | 解析 | 评论 | 推送 | 扫码登录 |
+| ------ | :--: | :--: | :--: | :------: |
+| 抖音   |  ✓   |  ✓   |  ✓   |    ✓     |
+| B站    |  ✓   |  ✓   |  ✓   |    ✓     |
+| 快手   |  ✓   |  ✓   |  —   |    —     |
+| 小红书 |  ✓   |  ✓   |  —   |    —     |
 
 </Accordion>
 

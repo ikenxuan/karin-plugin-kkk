@@ -22,8 +22,7 @@ export interface KuaishouCommentProps extends BaseComponentProps<{
   share_url: string
   /** 评论数据 */
   CommentsData: KuaishouCommentItem[]
-}> {
-}
+}> {}
 
 /**
  * 快手评论项数据接口

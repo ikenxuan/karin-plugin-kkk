@@ -1,7 +1,8 @@
-import type { FormEvent } from 'react'
 import { Button, Card, Description, Form, Input, Label, Spinner, Surface, TextField } from '@heroui/react'
 import { useBoolean, useMemoizedFn, useSetState } from 'ahooks'
 import { Eye, EyeOff, KeyRound, LogIn } from 'lucide-react'
+import type { FormEvent } from 'react'
+
 import { loginWithAuthKey } from '../../auth/request'
 
 interface LoginPanelProps {
@@ -49,9 +50,7 @@ const LoginPanel = ({ onLogin }: LoginPanelProps) => {
           <KeyRound className="size-8 shrink-0" aria-hidden="true" />
           <div className="min-w-0">
             <Card.Title>Karin 鉴权</Card.Title>
-            <Card.Description>
-              使用 Karin HTTP 鉴权密钥登录后管理 KKK 配置。
-            </Card.Description>
+            <Card.Description>使用 Karin HTTP 鉴权密钥登录后管理 KKK 配置。</Card.Description>
           </div>
         </Card.Header>
         <Card.Content className="p-6">
@@ -75,13 +74,7 @@ const LoginPanel = ({ onLogin }: LoginPanelProps) => {
                   placeholder="请输入 Karin 的 HTTP_AUTH_KEY"
                   type={showKey ? 'text' : 'password'}
                 />
-                <Button
-                  isIconOnly
-                  aria-label={iconButtonLabel}
-                  type="button"
-                  variant="tertiary"
-                  onPress={toggleShowKey}
-                >
+                <Button isIconOnly aria-label={iconButtonLabel} type="button" variant="tertiary" onPress={toggleShowKey}>
                   {showKey ? <EyeOff className="size-4" aria-hidden="true" /> : <Eye className="size-4" aria-hidden="true" />}
                 </Button>
               </div>

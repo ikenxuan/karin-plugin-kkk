@@ -35,7 +35,7 @@ const copyDirectory = (sourceDir: string, targetDir: string) => {
 
   const files = readdirSync(sourceDir)
 
-  files.forEach(file => {
+  files.forEach((file) => {
     const sourcePath = resolve(sourceDir, file)
     const targetPath = resolve(targetDir, file)
 
@@ -55,14 +55,11 @@ const fontProxyPlugin = () => {
   return {
     name: 'font-proxy-plugin',
     enforce: 'pre' as const,
-    transform (code: string, id: string) {
+    transform(code: string, id: string) {
       // 只要是 CSS 文件，或者内容中包含目标字符串，就尝试替换
       // 忽略 query 参数，例如 font.css?direct
       const cleanId = id.split('?')[0]
-      if (
-        (cleanId.endsWith('.css') || cleanId.endsWith('.scss') || cleanId.endsWith('.less')) &&
-        code.includes('http://localhost:3780')
-      ) {
+      if ((cleanId.endsWith('.css') || cleanId.endsWith('.scss') || cleanId.endsWith('.less')) && code.includes('http://localhost:3780')) {
         return code.replace(/http:\/\/localhost:3780/g, '')
       }
     }
@@ -126,7 +123,7 @@ export default defineConfig(({ command }) => {
             changeOrigin: true,
             secure: false,
             headers: {
-              'Referer': 'https://developer.huawei.com/'
+              Referer: 'https://developer.huawei.com/'
             }
           }
         }
@@ -155,7 +152,7 @@ export default defineConfig(({ command }) => {
       ...baseConfig.plugins,
       {
         name: 'copy-assets-to-core',
-        writeBundle () {
+        writeBundle() {
           // 复制CSS文件
           const sourceFile = resolve(__dirname, 'dist/main.css')
           const targetFile = resolve(__dirname, '../core/lib/karin-plugin-kkk.css')
@@ -195,7 +192,7 @@ export default defineConfig(({ command }) => {
           'cors',
           ...builtinModules,
           ...builtinModules.map((mod) => `node:${mod}`),
-          ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js', '/template'].map(p => `node-karin${p}`)
+          ...['', '/express', '/root', '/lodash', '/yaml', '/axios', '/log4js', '/template'].map((p) => `node-karin${p}`)
         ],
         output: {
           format: 'es',
@@ -206,10 +203,16 @@ export default defineConfig(({ command }) => {
             }
 
             // 主要依赖文件放到deps目录
-            if (id.includes('/src/main.ts') || id.includes('\\src\\main.ts') ||
-              id.includes('/src/utils/') || id.includes('\\src\\utils\\') ||
-              id.includes('/src/config/') || id.includes('\\src\\config\\') ||
-              id.includes('/src/types/') || id.includes('\\src\\types\\')) {
+            if (
+              id.includes('/src/main.ts') ||
+              id.includes('\\src\\main.ts') ||
+              id.includes('/src/utils/') ||
+              id.includes('\\src\\utils\\') ||
+              id.includes('/src/config/') ||
+              id.includes('\\src\\config\\') ||
+              id.includes('/src/types/') ||
+              id.includes('\\src\\types\\')
+            ) {
               return 'deps/main'
             }
 

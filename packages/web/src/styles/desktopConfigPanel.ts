@@ -38,7 +38,8 @@ export const desktopConfigPanelClasses: ConfigPanelLayoutClasses = {
   field: 'flex min-w-0 flex-col gap-2',
   choiceGrid: 'grid grid-cols-2 gap-3',
   divider: 'col-span-full flex min-w-0 flex-col gap-2 pt-3',
-  tabsListContainer: 'w-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden overscroll-x-contain overscroll-y-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+  tabsListContainer:
+    'w-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden overscroll-x-contain overscroll-y-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
   tabsList: 'w-fit min-w-max *:w-fit *:min-w-fit *:flex-none *:shrink-0 *:whitespace-nowrap',
   topLevelFields: 'mb-4 space-y-4 px-2'
 }

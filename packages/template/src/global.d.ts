@@ -66,4 +66,4 @@ declare module '*.woff2' {
   export default content
 }
 
-export { }
+export {}

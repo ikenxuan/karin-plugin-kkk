@@ -59,59 +59,47 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
 
   const formatFileName = (filename: string) => filename.replace('.json', '')
   return (
-    <Card
-      className='w-full border border-border shadow-none'
-      variant='default'
-    >
-      <Card.Header className='flex-col items-start gap-3 px-4 pb-3 pt-4'>
-        <div className='flex w-full items-start justify-between gap-3'>
-          <div className='flex items-center gap-2.5'>
+    <Card className="w-full border border-border shadow-none" variant="default">
+      <Card.Header className="flex-col items-start gap-3 px-4 pb-3 pt-4">
+        <div className="flex w-full items-start justify-between gap-3">
+          <div className="flex items-center gap-2.5">
             <div>
-              <Card.Title className='text-sm font-semibold text-foreground'>数据文件</Card.Title>
-              <Card.Description className='mt-1 text-xs text-muted'>
-                切换并编辑当前模板使用的 mock 数据
-              </Card.Description>
+              <Card.Title className="text-sm font-semibold text-foreground">数据文件</Card.Title>
+              <Card.Description className="mt-1 text-xs text-muted">切换并编辑当前模板使用的 mock 数据</Card.Description>
             </div>
           </div>
-          <Chip className='shrink-0 tracking-[0.16em] uppercase' size='md' variant='soft'>
+          <Chip className="shrink-0 tracking-[0.16em] uppercase" size="md" variant="soft">
             加载了 {availableDataFiles.length} 个数据文件
           </Chip>
         </div>
       </Card.Header>
 
-      <Card.Content className='px-4 pb-4'>
+      <Card.Content className="px-4 pb-4">
         <Select
-          className='w-full'
+          className="w-full"
           isDisabled={availableDataFiles.length === 0}
-          placeholder='选择预设数据'
+          placeholder="选择预设数据"
           value={selectedDataFile && availableDataFiles.includes(selectedDataFile) ? selectedDataFile : null}
-          variant='secondary'
+          variant="secondary"
           onChange={(value) => {
             if (typeof value === 'string' && value) {
               onDataFileChange(value)
             }
           }}
         >
-          <Label className='mb-2 text-[10px] font-semibold tracking-[0.18em] text-muted uppercase'>
-            选择数据文件
-          </Label>
-          <Select.Trigger className='px-3 py-2.5'>
-            <Select.Value className='text-sm font-medium text-foreground' />
-            <Select.Indicator className='text-muted' />
+          <Label className="mb-2 text-[10px] font-semibold tracking-[0.18em] text-muted uppercase">选择数据文件</Label>
+          <Select.Trigger className="px-3 py-2.5">
+            <Select.Value className="text-sm font-medium text-foreground" />
+            <Select.Indicator className="text-muted" />
           </Select.Trigger>
-          <Select.Popover className='p-0'>
+          <Select.Popover className="p-0">
             <div className={panelTheme} data-theme={panelTheme} style={panelThemeStyle}>
-              <ListBox className='p-1'>
+              <ListBox className="p-1">
                 {availableDataFiles.map((filename) => {
                   const label = formatFileName(filename)
 
                   return (
-                    <ListBox.Item
-                      key={filename}
-                      className='px-3 py-2 text-sm'
-                      id={filename}
-                      textValue={label}
-                    >
+                    <ListBox.Item key={filename} className="px-3 py-2 text-sm" id={filename} textValue={label}>
                       {label}
                       <ListBox.ItemIndicator />
                     </ListBox.Item>
@@ -123,24 +111,12 @@ export const DataFileSelector: React.FC<DataFileSelectorProps> = ({
         </Select>
       </Card.Content>
 
-      <Card.Footer className='flex flex-col gap-4  px-4 pb-4 pt-0'>
-        <Button
-          className='w-full justify-center'
-          isDisabled={!onAIGenerate}
-          onPress={onAIGenerate}
-          size='md'
-          variant='secondary'
-        >
+      <Card.Footer className="flex flex-col gap-4  px-4 pb-4 pt-0">
+        <Button className="w-full justify-center" isDisabled={!onAIGenerate} onPress={onAIGenerate} size="md" variant="secondary">
           <Sparkles size={14} />
           AI 生成
         </Button>
-        <Button
-          className='w-full justify-center'
-          isDisabled={!onEdit}
-          onPress={onEdit}
-          size='md'
-          variant='primary'
-        >
+        <Button className="w-full justify-center" isDisabled={!onEdit} onPress={onEdit} size="md" variant="primary">
           <Edit size={14} />
           编辑数据
         </Button>

@@ -2,12 +2,7 @@ import pathModule from 'node:path'
 
 import type { ImageElement, Message } from 'node-karin'
 import { db, karinPathHtml, logger, render, segment } from 'node-karin'
-import type {
-  DataTypeMap,
-  DynamicRenderPath,
-  ExtractDataTypeFromPath,
-  TypedRenderRequest
-} from 'template'
+import type { DataTypeMap, DynamicRenderPath, ExtractDataTypeFromPath, TypedRenderRequest } from 'template'
 import reactServerRender from 'template'
 
 import { Common, Root } from '@/module'
@@ -25,7 +20,7 @@ type ImageMetadata = {
 /**
  * 渲染函数
  * 将指定路径的模板渲染为图片元素数组
- * 
+ *
  * @param event 消息事件对象，用于获取机器人账号信息
  * @template P 渲染路径，必须是有效的动态路径
  * @param path 渲染路径，格式为 "平台/组件ID" 或 "平台/分类/组件ID"
@@ -33,7 +28,7 @@ type ImageMetadata = {
  * @options 渲染选项
  * @returns 渲染结果图片元素数组的 Promise
  */
-export const Render = async <P extends DynamicRenderPath> (
+export const Render = async <P extends DynamicRenderPath>(
   event: Message,
   path: P,
   data?: Omit<ExtractDataTypeFromPath<P>, 'useDarkTheme'>,
@@ -50,7 +45,7 @@ export const Render = async <P extends DynamicRenderPath> (
 
   if (pathParts.length === 2) {
     // 二级路径：platform/templateName
-    [templateType, templateName] = pathParts
+    ;[templateType, templateName] = pathParts
   } else if (pathParts.length === 3) {
     // 三级路径：platform/category/templateName
     templateType = pathParts[0]
@@ -89,15 +84,17 @@ export const Render = async <P extends DynamicRenderPath> (
     templateName,
     scale: Math.min(2, Math.max(0.5, Number(Config.app.renderScale) / 100)),
     useDarkTheme: Common.useDarkTheme(),
-    version: Config.app.RemoveWatermark ? undefined : {
-      plugin: 'karin-plugin',
-      pluginName: 'kkk',
-      pluginVersion: Root.pluginVersion,
-      releaseType: /^\d+\.\d+\.\d+$/.test(Root.pluginVersion) ? 'Stable' : 'Preview',
-      poweredBy: 'Karin',
-      frameworkVersion: Root.karinVersion,
-      hasUpdate
-    },
+    version: Config.app.RemoveWatermark
+      ? undefined
+      : {
+          plugin: 'karin-plugin',
+          pluginName: 'kkk',
+          pluginVersion: Root.pluginVersion,
+          releaseType: /^\d+\.\d+\.\d+$/.test(Root.pluginVersion) ? 'Stable' : 'Preview',
+          poweredBy: 'Karin',
+          frameworkVersion: Root.karinVersion,
+          hasUpdate
+        },
     watermarkTextBitSize,
     data: {
       ...data,
@@ -109,27 +106,24 @@ export const Render = async <P extends DynamicRenderPath> (
   const result = await reactServerRender({
     request: renderRequest,
     outputDir,
-    plugins: [
-      createPosterPalettePlugin()
-    ]
-  }).then((res) => {
-    if (!res.success || !res.htmlPath) {
-      throw new Error(res.error)
-    }
-    return res
-  }).catch((err: unknown) => {
-    const message = err instanceof Error ? err.message : '未知错误'
-    throw new Error(`SSR渲染失败: ${message}`)
+    plugins: [createPosterPalettePlugin()]
   })
+    .then((res) => {
+      if (!res.success || !res.htmlPath) {
+        throw new Error(res.error)
+      }
+      return res
+    })
+    .catch((err: unknown) => {
+      const message = err instanceof Error ? err.message : '未知错误'
+      throw new Error(`SSR渲染失败: ${message}`)
+    })
 
   // 截图渲染
   const renderResult = await render.render({
     name: `${Root.pluginName}/${templateType}`,
     file: result.htmlPath,
-    multiPage: (
-      Config.app.multiPageRender &&
-      event.bot.adapter.protocol !== 'qqbot'
-    ) ? Config.app.multiPageHeight : false,
+    multiPage: Config.app.multiPageRender && event.bot.adapter.protocol !== 'qqbot' ? Config.app.multiPageHeight : false,
     selector: '#container',
     fullPage: false,
     type: 'png',
@@ -142,7 +136,7 @@ export const Render = async <P extends DynamicRenderPath> (
 
   const ret: ImageElement[] = []
   const images = Array.isArray(renderResult) ? renderResult : [renderResult]
-  const imageStats: Array<{ index: number, type: 'png', sizeMb: string, dimensions: string }> = []
+  const imageStats: Array<{ index: number; type: 'png'; sizeMb: string; dimensions: string }> = []
 
   for (const image of images) {
     const imageBuffer = Buffer.from(image, 'base64')
@@ -153,9 +147,7 @@ export const Render = async <P extends DynamicRenderPath> (
       finalImageBuffer = embedWatermark(imageBuffer, watermarkText) ?? imageBuffer
     }
     const metadata = getImageMetadata(finalImageBuffer)
-    const dimensions = metadata.width && metadata.height
-      ? `${metadata.width}x${metadata.height}`
-      : 'unknown'
+    const dimensions = metadata.width && metadata.height ? `${metadata.width}x${metadata.height}` : 'unknown'
 
     imageStats.push({
       index: ret.length,
@@ -164,14 +156,12 @@ export const Render = async <P extends DynamicRenderPath> (
       dimensions
     })
 
-    ret.push(
-      segment.image(
-        'base64://' + finalImageBuffer.toString('base64')
-      )
-    )
+    ret.push(segment.image('base64://' + finalImageBuffer.toString('base64')))
   }
 
-  const statsText = imageStats.map((stat, i) => `  [${i + 1}] 类型: ${stat.type}, 大小: ${stat.sizeMb}MB, 尺寸: ${stat.dimensions}`).join('\n')
+  const statsText = imageStats
+    .map((stat, i) => `  [${i + 1}] 类型: ${stat.type}, 大小: ${stat.sizeMb}MB, 尺寸: ${stat.dimensions}`)
+    .join('\n')
   logger.debug(`[Render] 图片处理完成，准备入队发送:\n共 ${imageStats.length} 张图片:\n${statsText}`)
   return ret
 }
@@ -182,7 +172,7 @@ export const Render = async <P extends DynamicRenderPath> (
  * @returns 图片元数据对象
  */
 const getImageMetadata = (buffer: Buffer): ImageMetadata => {
-  if (buffer.length >= 24 && buffer.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]))) {
+  if (buffer.length >= 24 && buffer.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) {
     return {
       width: buffer.readUInt32BE(16),
       height: buffer.readUInt32BE(20)
@@ -196,10 +186,7 @@ const getImageMetadata = (buffer: Buffer): ImageMetadata => {
  * 对已渲染的图片元素数组应用水印
  * 用于推送场景：渲染一次，按目标群逐个嵌入不同 bot 的水印
  */
-export const applyWatermarkToImages = (
-  images: ImageElement[],
-  event: Message
-): ImageElement[] => {
+export const applyWatermarkToImages = (images: ImageElement[], event: Message): ImageElement[] => {
   if (Config.app.RemoveWatermark) return images
 
   const watermarkText = JSON.stringify({
@@ -208,7 +195,7 @@ export const applyWatermarkToImages = (
     c: `Sent by ${event?.bot?.account.selfId ?? 'unknown'}|${event?.bot?.account.name ?? 'unknown'}`
   })
 
-  return images.map(img => {
+  return images.map((img) => {
     const base64Data = img.file.replace(/^base64:\/\//, '')
     const buffer = Buffer.from(base64Data, 'base64')
     const watermarked = embedWatermark(buffer, watermarkText) ?? buffer

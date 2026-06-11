@@ -15,15 +15,12 @@ import { isPushTask } from './utils'
  * @remarks
  * 仅当配置 `errorLogSendTo` 包含 `'trigger'` 且存在 event 时发送
  */
-export const sendErrorToTrigger = async (
-  ctx: ErrorContext,
-  img: Awaited<ReturnType<typeof renderErrorImage>>
-) => {
+export const sendErrorToTrigger = async (ctx: ErrorContext, img: Awaited<ReturnType<typeof renderErrorImage>>) => {
   const { event, options } = ctx
 
   if (!event) return
   if (isPushTask(event, options.businessName)) return
-  if (!Config.app.errorLogSendTo.some(item => item === 'trigger')) return
+  if (!Config.app.errorLogSendTo.some((item) => item === 'trigger')) return
 
   try {
     await event.reply(img)
@@ -49,21 +46,17 @@ export const sendErrorToTrigger = async (
  * await sendErrorToMaster(ctx, img, '自定义前缀消息')
  * ```
  */
-export const sendErrorToMaster = async (
-  ctx: ErrorContext,
-  img: Awaited<ReturnType<typeof renderErrorImage>>,
-  customPrefix?: string
-) => {
+export const sendErrorToMaster = async (ctx: ErrorContext, img: Awaited<ReturnType<typeof renderErrorImage>>, customPrefix?: string) => {
   const { options, event } = ctx
 
-  if (!Config.app.errorLogSendTo.some(item => item === 'master')) return
+  if (!Config.app.errorLogSendTo.some((item) => item === 'master')) return
 
   const isPush = isPushTask(event, options.businessName)
   const target = await resolveSingleMasterTarget(event, isPush)
   if (!target) return
 
   try {
-    const prefix = customPrefix || await buildErrorPrefix(ctx, isPush, target.botId)
+    const prefix = customPrefix || (await buildErrorPrefix(ctx, isPush, target.botId))
     await karin.sendMaster(target.botId, target.master, [segment.text(prefix), ...img])
   } catch (err) {
     logger.error(`[ErrorHandler] 发送错误消息给主人失败: ${err}`)
@@ -95,13 +88,13 @@ export const sendErrorToAllMasters = async (
 ) => {
   const { options, event } = ctx
 
-  if (!Config.app.errorLogSendTo.some(item => item === 'allMasters')) return
+  if (!Config.app.errorLogSendTo.some((item) => item === 'allMasters')) return
 
   const isPush = isPushTask(event, options.businessName)
   const targets = await resolveAllMasterTargets(event, isPush)
   if (targets.length === 0) return
 
-  const prefix = customPrefix || await buildErrorPrefix(ctx, isPush, targets[0].botId)
+  const prefix = customPrefix || (await buildErrorPrefix(ctx, isPush, targets[0].botId))
   const notifiedSet = new Set<string>()
 
   for (const target of targets) {
@@ -124,12 +117,12 @@ export const sendErrorToAllMasters = async (
  * @param event - 错误事件上下文
  * @param isPush - 是否为推送任务
  *
- * @returns 
+ * @returns
  */
 const resolveSingleMasterTarget = async (
   event: ErrorContext['event'],
   isPush: boolean
-): Promise<{ master: string, botId: string } | undefined> => {
+): Promise<{ master: string; botId: string } | undefined> => {
   if (isPush) {
     const bindings = await getReachableMasterBots()
     const matched = bindings[0]
@@ -140,7 +133,7 @@ const resolveSingleMasterTarget = async (
     }
   }
 
-  const master = config.master().find(item => item !== 'console')
+  const master = config.master().find((item) => item !== 'console')
   const botId = event?.bot?.account.selfId ?? event?.selfId
   if (!master || !botId) return undefined
 
@@ -150,13 +143,13 @@ const resolveSingleMasterTarget = async (
 const resolveAllMasterTargets = async (
   event: ErrorContext['event'],
   isPush: boolean
-): Promise<Array<{ master: string, botId: string }>> => {
-  const masters = config.master().filter(item => item !== 'console')
+): Promise<Array<{ master: string; botId: string }>> => {
+  const masters = config.master().filter((item) => item !== 'console')
   if (masters.length === 0) return []
 
   if (isPush) {
     const bindings = await getReachableMasterBots(masters)
-    return bindings.map(item => ({
+    return bindings.map((item) => ({
       master: item.master,
       botId: item.bot.account.selfId
     }))
@@ -165,14 +158,10 @@ const resolveAllMasterTargets = async (
   const botId = event?.bot?.account.selfId ?? event?.selfId
   if (!botId) return []
 
-  return masters.map(master => ({ master, botId }))
+  return masters.map((master) => ({ master, botId }))
 }
 
-const buildErrorPrefix = async (
-  ctx: ErrorContext,
-  isPush: boolean,
-  botId: string
-): Promise<string> => {
+const buildErrorPrefix = async (ctx: ErrorContext, isPush: boolean, botId: string): Promise<string> => {
   const { options, event } = ctx
 
   if (isPush) {

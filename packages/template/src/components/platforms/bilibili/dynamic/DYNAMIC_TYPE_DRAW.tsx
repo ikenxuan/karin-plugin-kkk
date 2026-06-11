@@ -36,43 +36,42 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
   return (
     <>
       {/* 文本内容 */}
-      <div className='flex flex-col px-20 w-full leading-relaxed'>
+      <div className="flex flex-col px-20 w-full leading-relaxed">
         {/* 标题 */}
         {props.title && (
-          <div className='mb-8'>
-            <h2 className='text-[72px] font-bold leading-[1.4] text-foreground select-text'>
-              {props.title}
-            </h2>
+          <div className="mb-8">
+            <h2 className="text-[72px] font-bold leading-[1.4] text-foreground select-text">{props.title}</h2>
           </div>
         )}
 
-        <div className='relative items-center text-5xl tracking-wider wrap-break-word text-foreground'>
+        <div className="relative items-center text-5xl tracking-wider wrap-break-word text-foreground">
           <div
-            className='text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-foreground select-text'
+            className="text-[60px] tracking-[0.5px] leading-[1.6] whitespace-pre-wrap text-foreground select-text"
             style={{
               wordBreak: 'break-word',
               overflowWrap: 'break-word'
             }}
           >
-            {props.text && renderRichTextToReact(props.text, {
-              at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-              topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-              lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-              webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-              vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-              viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
-            })}
+            {props.text &&
+              renderRichTextToReact(props.text, {
+                at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+                topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+                lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+                webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+                vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+                viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+              })}
           </div>
         </div>
-        <div className='h-15' />
+        <div className="h-15" />
       </div>
 
       {/* 图片内容 */}
       {props.image_url && Array.isArray(props.image_url) && props.image_url.length > 0 && (
-        <div className='px-20'>
+        <div className="px-20">
           {/* 九宫格布局 */}
           {layoutType === 'grid' && (
-            <div className='grid grid-cols-3 gap-3 w-full'>
+            <div className="grid grid-cols-3 gap-3 w-full">
               {props.image_url.slice(0, 9).map((img, index) => {
                 const total = Math.min(props.image_url?.length || 0, 9)
                 const cols = 3
@@ -83,93 +82,79 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
                 const lastRowLastCol = (total - 1) % cols
 
                 const cornerClasses = [
-                  'overflow-hidden', 'aspect-square', 'shadow-medium', 'rounded-2xl',
+                  'overflow-hidden',
+                  'aspect-square',
+                  'shadow-medium',
+                  'rounded-2xl',
                   row === 0 && col === 0 ? 'rounded-tl-4xl' : '',
                   row === 0 && col === firstRowLastCol ? 'rounded-tr-4xl' : '',
                   row === lastRow && col === 0 ? 'rounded-bl-4xl' : '',
                   row === lastRow && col === lastRowLastCol ? 'rounded-br-4xl' : ''
-                ].filter(Boolean).join(' ')
+                ]
+                  .filter(Boolean)
+                  .join(' ')
 
                 return (
                   <div key={index} className={cornerClasses}>
-                    <EnhancedImage
-                      src={img.image_src}
-                      alt={`图片${index + 1}`}
-                      className='object-cover w-full h-full'
-                    />
+                    <EnhancedImage src={img.image_src} alt={`图片${index + 1}`} className="object-cover w-full h-full" />
                   </div>
                 )
               })}
             </div>
           )}
-          
+
           {/* 瀑布流布局 */}
           {layoutType === 'waterfall' && (
-            <div className='flex gap-4 w-full'>
+            <div className="flex gap-4 w-full">
               {/* 左列 */}
-              <div className='flex flex-col flex-1 gap-4'>
+              <div className="flex flex-col flex-1 gap-4">
                 {props.image_url
                   .filter((_, index) => index % 2 === 0)
                   .map((img, arrayIndex) => {
                     const originalIndex = arrayIndex * 2
                     return (
-                      <div key={originalIndex} className='overflow-hidden rounded-3xl shadow-medium'>
-                        <EnhancedImage
-                          src={img.image_src}
-                          alt={`图片${originalIndex + 1}`}
-                          className='object-cover w-full h-auto'
-                        />
+                      <div key={originalIndex} className="overflow-hidden rounded-3xl shadow-medium">
+                        <EnhancedImage src={img.image_src} alt={`图片${originalIndex + 1}`} className="object-cover w-full h-auto" />
                       </div>
                     )
                   })}
               </div>
               {/* 右列 */}
-              <div className='flex flex-col flex-1 gap-4'>
+              <div className="flex flex-col flex-1 gap-4">
                 {props.image_url
                   .filter((_, index) => index % 2 === 1)
                   .map((img, arrayIndex) => {
                     const originalIndex = arrayIndex * 2 + 1
                     return (
-                      <div key={originalIndex} className='overflow-hidden rounded-3xl shadow-medium'>
-                        <EnhancedImage
-                          src={img.image_src}
-                          alt={`图片${originalIndex + 1}`}
-                          className='object-cover w-full h-auto'
-                        />
+                      <div key={originalIndex} className="overflow-hidden rounded-3xl shadow-medium">
+                        <EnhancedImage src={img.image_src} alt={`图片${originalIndex + 1}`} className="object-cover w-full h-auto" />
                       </div>
                     )
                   })}
               </div>
             </div>
           )}
-          
+
           {/* 垂直布局（逐张上下排列） */}
-          {layoutType === 'vertical' && (
+          {layoutType === 'vertical' &&
             props.image_url.map((img, index) => (
               <React.Fragment key={index}>
-                <div className='flex items-center'>
-                  <div className='flex overflow-hidden flex-col flex-1 items-center rounded-4xl shadow-large'>
-                    <EnhancedImage
-                      src={img.image_src}
-                      alt='封面'
-                      className='object-contain w-full h-full rounded-5xl'
-                    />
+                <div className="flex items-center">
+                  <div className="flex overflow-hidden flex-col flex-1 items-center rounded-4xl shadow-large">
+                    <EnhancedImage src={img.image_src} alt="封面" className="object-contain w-full h-full rounded-5xl" />
                   </div>
                 </div>
-                <div className='h-10' />
+                <div className="h-10" />
               </React.Fragment>
-            ))
-          )}
-          
+            ))}
+
           {/* 底部间距 */}
-          {(layoutType === 'waterfall' || layoutType === 'grid') && <div className='h-18' />}
+          {(layoutType === 'waterfall' || layoutType === 'grid') && <div className="h-18" />}
         </div>
       )}
 
       {/* 相关卡片 - 放在图片底部 */}
-      {props.additional && (
-        <BilibiliAdditionalCard additional={props.additional} />
-      )}
+      {props.additional && <BilibiliAdditionalCard additional={props.additional} />}
     </>
   )
 }
@@ -180,15 +165,15 @@ const BilibiliDynamicContent: React.FC<BilibiliDynamicContentProps> = (props) =>
 export const BilibiliDrawDynamic: React.FC<Omit<BilibiliDynamicProps, 'templateType' | 'templateName'>> = React.memo((props) => {
   return (
     <DefaultLayout {...props}>
-      <div className='p-4'>
+      <div className="p-4">
         {/* 间距 */}
-        <div className='h-25' />
+        <div className="h-25" />
 
         {/* 用户信息 */}
         <BilibiliDynamicUserInfo {...props.data} />
 
         {/* 间距 */}
-        <div className='h-15' />
+        <div className="h-15" />
 
         {/* 动态内容 */}
         <BilibiliDynamicContent
@@ -203,7 +188,7 @@ export const BilibiliDrawDynamic: React.FC<Omit<BilibiliDynamicProps, 'templateT
         <BilibiliDynamicStatus {...props.data} />
 
         {/* 间距 */}
-        <div className='h-40' />
+        <div className="h-40" />
 
         {/* 底部信息 */}
         <BilibiliDynamicFooter {...props.data} />

@@ -12,17 +12,11 @@ export const UsernameDisplay: React.FC<{
   className?: string
   style?: React.CSSProperties
 }> = ({ metadata, className, style }) => {
-  const vipColor = metadata.vipStatus === 1
-    ? (metadata.nicknameColor ?? '#FB7299')
-    : null
+  const vipColor = metadata.vipStatus === 1 ? (metadata.nicknameColor ?? '#FB7299') : null
 
   return (
     <span
-      className={cn(
-        !vipColor && 'text-foreground',
-        'font-bold',
-        className
-      )}
+      className={cn(!vipColor && 'text-foreground', 'font-bold', className)}
       style={{ ...style, ...(vipColor ? { color: vipColor } : {}) }}
     >
       {metadata.name}
@@ -43,10 +37,7 @@ export const processCommentHTML = (htmlContent: string): string => {
   let processed = htmlContent
 
   // 使用正则表达式匹配所有img标签并添加防盗链属性
-  processed = processed.replace(
-    /<img([^>]*?)>/gi,
-    '<img$1 referrerpolicy="no-referrer" crossorigin="anonymous">'
-  )
+  processed = processed.replace(/<img([^>]*?)>/gi, '<img$1 referrerpolicy="no-referrer" crossorigin="anonymous">')
 
   // 替换不可见的分隔符字符 ¨ (U+00A8) 为更明显的点 • (U+2022)
   // ·  •  ●  -
@@ -75,13 +66,7 @@ interface CommentTextProps {
 export const CommentText: React.FC<CommentTextProps> = ({ content, className, style }) => {
   const processedContent = processCommentHTML(content)
 
-  return (
-    <div
-      className={className}
-      style={style}
-      dangerouslySetInnerHTML={{ __html: processedContent }}
-    />
-  )
+  return <div className={className} style={style} dangerouslySetInnerHTML={{ __html: processedContent }} />
 }
 
 /**
@@ -109,13 +94,7 @@ interface EnhancedImageProps {
  * 2. 支持圆形和方形两种样式
  * 3. 自动处理防盗链(添加referrerPolicy和crossOrigin属性)
  */
-export const EnhancedImage: React.FC<EnhancedImageProps> = ({
-  src,
-  alt,
-  className = '',
-  placeholder,
-  isCircular = false
-}) => {
+export const EnhancedImage: React.FC<EnhancedImageProps> = ({ src, alt, className = '', placeholder, isCircular = false }) => {
   const [hasError, setHasError] = useState(false)
 
   /**
@@ -128,21 +107,12 @@ export const EnhancedImage: React.FC<EnhancedImageProps> = ({
   if (!src || hasError) {
     return (
       <div className={`${className} ${isCircular ? 'rounded-full' : 'rounded-md'} bg-surface-secondary flex items-center justify-center`}>
-        <span className='text-sm text-muted'>{placeholder || alt}</span>
+        <span className="text-sm text-muted">{placeholder || alt}</span>
       </div>
     )
   }
 
-  return (
-    <img
-      src={src}
-      alt={alt}
-      className={className}
-      onError={handleError}
-      referrerPolicy='no-referrer'
-      crossOrigin='anonymous'
-    />
-  )
+  return <img src={src} alt={alt} className={className} onError={handleError} referrerPolicy="no-referrer" crossOrigin="anonymous" />
 }
 
 /**
@@ -159,13 +129,12 @@ const proxyImageUrl = (url: string): string => {
 export const DecorationCard: React.FC<{ data: DecorationCardData | undefined }> = ({ data }) => {
   if (!data) return null
 
-  const gradientStyle = data.colors.length > 0
-    ? `linear-gradient(135deg, ${data.colors.join(', ')} 0%, ${data.colors.join(', ')} 100%)`
-    : undefined
+  const gradientStyle =
+    data.colors.length > 0 ? `linear-gradient(135deg, ${data.colors.join(', ')} 0%, ${data.colors.join(', ')} 100%)` : undefined
 
   return (
     <div
-      className='flex items-center justify-end font-[bilifont]'
+      className="flex items-center justify-end font-[bilifont]"
       style={{
         width: '500px',
         height: '150px',
@@ -177,7 +146,7 @@ export const DecorationCard: React.FC<{ data: DecorationCardData | undefined }> 
     >
       {gradientStyle && data.text && (
         <span
-          className='mr-40 text-3xl'
+          className="mr-40 text-3xl"
           style={{
             color: 'transparent',
             backgroundClip: 'text',

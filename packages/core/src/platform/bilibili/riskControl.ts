@@ -23,7 +23,7 @@ export const bilibiliRiskControlStrategy: ErrorStrategy = {
     return error instanceof AmagiError && error.code === -352 && !!error.data?.data?.v_voucher && !!event
   },
 
-  async handle (ctx) {
+  async handle(ctx) {
     const { error, event } = ctx
     if (!event) return 'continue'
 
@@ -50,8 +50,11 @@ export const bilibiliRiskControlStrategy: ErrorStrategy = {
       platform: 'bilibili',
       errorName: 'BilibiliRiskControl',
       errorMessage: 'B站风控验证',
-      stack: util.inspect(error, { depth: 1, colors: true })
+      stack: util
+        .inspect(error, { depth: 1, colors: true })
+        // oxlint-disable-next-line no-control-regex
         .replace(/\x1b\[90m/g, '\x1b[90;2m')
+        // oxlint-disable-next-line no-control-regex
         .replace(/\x1b\[32m/g, '\x1b[31m'),
       isVerification: true,
       verificationUrl: verifyUrl,

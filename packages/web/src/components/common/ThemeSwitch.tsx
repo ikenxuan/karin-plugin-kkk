@@ -1,5 +1,6 @@
 import { Button, Tooltip } from '@heroui/react'
 import { Moon, Sun } from 'lucide-react'
+
 import { useTheme } from '../../hooks/useTheme'
 
 interface ThemeSwitchProps {
@@ -20,9 +21,7 @@ const ThemeSwitch = ({ className }: ThemeSwitchProps) => {
       >
         {isDark ? <Sun size={20} aria-hidden="true" /> : <Moon size={20} aria-hidden="true" />}
       </Button>
-      <Tooltip.Content>
-        {isDark ? '浅色模式' : '深色模式'}
-      </Tooltip.Content>
+      <Tooltip.Content>{isDark ? '浅色模式' : '深色模式'}</Tooltip.Content>
     </Tooltip>
   )
 }

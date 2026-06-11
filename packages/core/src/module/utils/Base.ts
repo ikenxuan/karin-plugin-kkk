@@ -42,7 +42,6 @@ type downloadFileOptions = {
   filetype?: string
   /** 自定义请求头，将使用该请求头下载文件。 */
   headers?: object
-
 }
 
 export type fileInfo = {
@@ -63,9 +62,11 @@ export type fileInfo = {
  * @property [method] - 每个HTTP方法(小写)对应的请求头
  * @property common - 通用请求头
  */
-type MethodsHeaders = Partial<{
-  [Key in Method as Lowercase<Key>]: AxiosHeaders
-} & { common: AxiosHeaders }>
+type MethodsHeaders = Partial<
+  {
+    [Key in Method as Lowercase<Key>]: AxiosHeaders
+  } & { common: AxiosHeaders }
+>
 
 /**
  * 下载文件的配置选项接口
@@ -100,7 +101,7 @@ export class Base extends AmagiBase {
    * 构造函数：初始化事件与请求头
    * @param e 消息事件对象
    */
-  constructor (e: Message) {
+  constructor(e: Message) {
     super()
     this.e = e
     this.headers = baseHeaders
@@ -118,25 +119,25 @@ type PlatformBotStats = {
 /**
  * 统计每个平台使用最多的机器人ID和使用次数
  * @param pushList - 推送列表配置
- * @returns 
+ * @returns
  */
-export const statBotId = (pushList: pushlistConfig): { douyin: PlatformBotStats, bilibili: PlatformBotStats } => {
+export const statBotId = (pushList: pushlistConfig): { douyin: PlatformBotStats; bilibili: PlatformBotStats } => {
   const platformBotCount = {
     douyin: new Map<string, number>(),
     bilibili: new Map<string, number>()
   }
 
   // 统计抖音平台机器人使用次数
-  pushList.douyin.forEach(item => {
-    item.group_id.forEach(gid => {
+  pushList.douyin.forEach((item) => {
+    item.group_id.forEach((gid) => {
       const botId = gid.split(':')[1]
       platformBotCount.douyin.set(botId, (platformBotCount.douyin.get(botId) ?? 0) + 1)
     })
   })
 
   // 统计B站平台机器人使用次数
-  pushList.bilibili.forEach(item => {
-    item.group_id.forEach(gid => {
+  pushList.bilibili.forEach((item) => {
+    item.group_id.forEach((gid) => {
       const botId = gid.split(':')[1]
       platformBotCount.bilibili.set(botId, (platformBotCount.bilibili.get(botId) ?? 0) + 1)
     })
@@ -209,11 +210,17 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
   }
 
   // 判断是否需要压缩后再上传
-  if (Config.upload.compress && (file.totalBytes > Config.upload.compresstrigger)) {
+  if (Config.upload.compress && file.totalBytes > Config.upload.compresstrigger) {
     const Duration = await getMediaDuration(file.filepath)
-    logger.warn(logger.yellow(`视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.upload.compresstrigger} MB），正在进行压缩至${Config.upload.compressvalue} MB...`))
+    logger.warn(
+      logger.yellow(
+        `视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.upload.compresstrigger} MB），正在进行压缩至${Config.upload.compressvalue} MB...`
+      )
+    )
     const message = [
-      segment.text(`视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.upload.compresstrigger} MB），正在进行压缩至${Config.upload.compressvalue} MB...`),
+      segment.text(
+        `视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.upload.compresstrigger} MB），正在进行压缩至${Config.upload.compressvalue} MB...`
+      ),
       options?.message_id ? segment.reply(options.message_id) : segment.text('')
     ]
 
@@ -228,7 +235,9 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
     const endTime = Date.now()
     // 再次检查大小
     newFileSize = await Common.getVideoFileSize(file.filepath)
-    logger.debug(`原始视频大小为: ${file.totalBytes.toFixed(1)} MB, ${logger.green(`经 FFmpeg 压缩后最终视频大小为: ${newFileSize.toFixed(1)} MB，原视频文件已删除`)}`)
+    logger.debug(
+      `原始视频大小为: ${file.totalBytes.toFixed(1)} MB, ${logger.green(`经 FFmpeg 压缩后最终视频大小为: ${newFileSize.toFixed(1)} MB，原视频文件已删除`)}`
+    )
 
     const message2 = [
       segment.text(`压缩后最终视频大小为: ${newFileSize.toFixed(1)} MB，压缩耗时：${((endTime - startTime) / 1000).toFixed(1)} 秒`),
@@ -239,7 +248,7 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
 
   // 判断是否使用群文件上传
   if (options) {
-    options.useGroupFile = Config.upload.usegroupfile && (newFileSize > Config.upload.groupfilevalue)
+    options.useGroupFile = Config.upload.usegroupfile && newFileSize > Config.upload.groupfilevalue
   }
 
   if (Config.upload.videoSendMode === 'base64' && !options?.useGroupFile) {
@@ -251,23 +260,28 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
   try {
     // 是主动消息
     if (options?.active) {
-      if (options.useGroupFile) { // 是群文件
+      if (options.useGroupFile) {
+        // 是群文件
         const bot = karin.getBot(String(options.activeOption?.uin))!
         logger.mark(`${logger.blue('主动消息:')} 视频大小: ${newFileSize.toFixed(1)}MB 正在通过${logger.yellow('bot.uploadFile')}回复...`)
         await bot.uploadFile(contact, File, file.originTitle ? `${file.originTitle}.mp4` : `${File.split('/').pop()}`)
-      } else { // 不是群文件
+      } else {
+        // 不是群文件
         logger.mark(`${logger.blue('主动消息:')} 视频大小: ${newFileSize.toFixed(1)}MB 正在通过${logger.yellow('karin.sendMsg')}回复...`)
         const status = await karin.sendMsg(selfId, contact, [segment.video(File)])
-        status.messageId ? sendStatus = true : sendStatus = false
+        sendStatus = status.messageId ? true : false
       }
-    } else { // 不是主动消息
-      if (options?.useGroupFile) { // 是文件
+    } else {
+      // 不是主动消息
+      if (options?.useGroupFile) {
+        // 是文件
         logger.mark(`${logger.blue('被动消息:')} 视频大小: ${newFileSize.toFixed(1)}MB 正在通过${logger.yellow('e.bot.uploadFile')}回复...`)
         await event.bot.uploadFile(event.contact, File, file.originTitle ? `${file.originTitle}.mp4` : `${File.split('/').pop()}`)
-      } else { // 不是文件
+      } else {
+        // 不是文件
         logger.mark(`${logger.blue('被动消息:')} 视频大小: ${newFileSize.toFixed(1)}MB 正在通过${logger.yellow('e.reply')}回复...`)
         const status = await event.reply(segment.video(File) || videoUrl)
-        status.messageId ? sendStatus = true : sendStatus = false
+        sendStatus = status.messageId ? true : false
       }
     }
     return sendStatus
@@ -280,14 +294,21 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
   } finally {
     const filePath = file.filepath
     Common.registerVideoPreview(filePath, Config.app.removeCache, 30 * 60 * 1000)
-    logger.mark(`临时预览地址：http://localhost:${process.env.HTTP_PORT!}/kkk/ssr/video/${encodeURIComponent(filePath.split('/').pop() ?? '')}`)
-    Config.app.removeCache && logger.info(`文件 ${filePath} 将在 30 分钟后删除`)
-    setTimeout(async () => {
-      const removed = await Common.removeFile(filePath)
-      if (removed) {
-        Common.markVideoPreviewRemoved(filePath)
-      }
-    }, 30 * 60 * 1000)
+    logger.mark(
+      `临时预览地址：http://localhost:${process.env.HTTP_PORT!}/kkk/ssr/video/${encodeURIComponent(filePath.split('/').pop() ?? '')}`
+    )
+    if (Config.app.removeCache) {
+      logger.info(`文件 ${filePath} 将在 30 分钟后删除`)
+    }
+    setTimeout(
+      async () => {
+        const removed = await Common.removeFile(filePath)
+        if (removed) {
+          Common.markVideoPreviewRemoved(filePath)
+        }
+      },
+      30 * 60 * 1000
+    )
   }
 }
 
@@ -300,14 +321,20 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
  */
 export const downloadVideo = async (event: Message, downloadOpt: downloadFileOptions, uploadOpt?: uploadFileOptions): Promise<boolean> => {
   /** 获取文件大小 */
-  const fileHeaders = await new Networks({ url: downloadOpt.video_url, headers: downloadOpt.headers ?? baseHeaders }).getHeaders()
+  const fileHeaders = await new Networks({
+    url: downloadOpt.video_url,
+    headers: downloadOpt.headers ?? baseHeaders
+  }).getHeaders()
   const fileSizeContent = extractTotalBytesFromHeaders(fileHeaders)
   const fileSizeInMB = (fileSizeContent / (1024 * 1024)).toFixed(2)
   const fileSize = parseInt(parseFloat(fileSizeInMB).toFixed(2))
   if (fileSizeContent > 0 && Config.upload.usefilelimit && fileSize > Config.upload.filelimit) {
-    const message = segment.text(`视频：「${downloadOpt.title.originTitle ??
-      'Error: 文件名获取失败'}」大小 (${fileSizeInMB} MB) 超出最大限制（设定值：${Config.upload.filelimit} MB），已取消上传`)
-    const selfId = event.selfId || uploadOpt?.activeOption?.uin as string
+    const message = segment.text(
+      `视频：「${
+        downloadOpt.title.originTitle ?? 'Error: 文件名获取失败'
+      }」大小 (${fileSizeInMB} MB) 超出最大限制（设定值：${Config.upload.filelimit} MB），已取消上传`
+    )
+    const selfId = event.selfId || (uploadOpt?.activeOption?.uin as string)
     const contact = event.contact || karin.contactGroup(uploadOpt?.activeOption?.group_id as string) || karin.contactFriend(selfId)
 
     await karin.sendMsg(selfId, contact, message)
@@ -316,7 +343,7 @@ export const downloadVideo = async (event: Message, downloadOpt: downloadFileOpt
 
   // 下载文件，视频URL，标题和自定义headers
   let res = await downloadFile(downloadOpt.video_url, {
-    title: Config.app.removeCache ? downloadOpt.title.timestampTitle as string : processFilename(downloadOpt.title.originTitle!, 50),
+    title: Config.app.removeCache ? (downloadOpt.title.timestampTitle as string) : processFilename(downloadOpt.title.originTitle!, 50),
     headers: downloadOpt.headers ?? baseHeaders
   })
   res = { ...res, ...downloadOpt.title }
@@ -379,9 +406,8 @@ export const downloadFile = async (videoUrl: string, opt: downLoadFileOptions): 
       // 计算剩余时间
       const remainingBytes = totalBytes - downloadedBytes // 剩余字节数
       const remainingTime = remainingBytes / speed // 剩余时间（秒）
-      const formattedRemainingTime = remainingTime > 60
-        ? `${Math.floor(remainingTime / 60)}min ${Math.floor(remainingTime % 60)}s`
-        : `${remainingTime.toFixed(0)}s`
+      const formattedRemainingTime =
+        remainingTime > 60 ? `${Math.floor(remainingTime / 60)}min ${Math.floor(remainingTime % 60)}s` : `${remainingTime.toFixed(0)}s`
 
       // 计算已下载和总下载的文件大小（MB）
       const downloadedSizeMB = (downloadedBytes / 1048576).toFixed(1)
@@ -397,7 +423,9 @@ export const downloadFile = async (videoUrl: string, opt: downLoadFileOptions): 
   } catch (error) {
     // 检查是否为网络环境变化或服务器风控导致的错误
     const errorMessage = error instanceof Error ? error.message : String(error)
-    const isNetworkChangeError = /ECONNRESET|ETIMEDOUT|ECONNABORTED|aborted|timeout|network|连接被重置|连接超时|连接中止/i.test(errorMessage)
+    const isNetworkChangeError = /ECONNRESET|ETIMEDOUT|ECONNABORTED|aborted|timeout|network|连接被重置|连接超时|连接中止/i.test(
+      errorMessage
+    )
 
     if (isNetworkChangeError) {
       logger.error('下载失败，可能是由于网络环境变化（如代理切换、VPN切换）或服务器风控导致')

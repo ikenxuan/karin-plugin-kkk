@@ -7,7 +7,6 @@ import { GlowImage } from '../common/GlowImage'
 import { RolldownLogo } from '../common/RolldownLogo'
 import { ViteLogo } from '../common/ViteLogo'
 
-
 /**
  * 默认布局组件属性接口
  */
@@ -52,7 +51,7 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
         className
       )}
       data-theme={useDarkTheme ? 'dark' : 'light'}
-      id='container'
+      id="container"
       style={{
         transform: `scale(${scale})`,
         transformOrigin: 'top left',
@@ -64,18 +63,13 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
     >
       {children}
       {version ? (
-        <div className='relative z-50 pt-32 pb-20 text-foreground/80'>
+        <div className="relative z-50 pt-32 pb-20 text-foreground/80">
           {/* 版本信息：插件、框架、构建工具 */}
-          <div className='flex relative justify-center items-center space-x-8'>
+          <div className="flex relative justify-center items-center space-x-8">
             {/* 插件信息 */}
-            <div className='flex items-end space-x-8'>
+            <div className="flex items-end space-x-8">
               <GlowImage glowStrength={useDarkTheme ? 1 : 0} blurRadius={20}>
-                <svg
-                  id="114514"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 230 221"
-                  className="w-auto h-18"
-                >
+                <svg id="114514" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 221" className="w-auto h-18">
                   <path
                     id="_1"
                     d="M132.75,87.37l-53.72-53.37c-4.66-4.63-1.38-12.58,5.18-12.58h115.13c6.57,0,9.84,7.95,5.18,12.58l-53.72,53.37c-4.99,4.96-13.06,4.96-18.05,0Z"
@@ -93,40 +87,48 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                 </svg>
               </GlowImage>
 
-              <div className='flex flex-col items-start opacity-90'>
-                <div className='flex items-center mb-1 space-x-2 text-sm font-bold uppercase text-foreground/80'>
+              <div className="flex flex-col items-start opacity-90">
+                <div className="flex items-center mb-1 space-x-2 text-sm font-bold uppercase text-foreground/80">
                   <span>{version.plugin}</span>
                 </div>
-                <span className='text-5xl font-black'>{version.pluginName}</span>
+                <span className="text-5xl font-black">{version.pluginName}</span>
               </div>
             </div>
 
-            <div className='flex flex-col items-start opacity-90'>
-              <div className='flex items-center mb-1 space-x-2 text-sm font-bold tracking-widest uppercase text-foreground/80'>
+            <div className="flex flex-col items-start opacity-90">
+              <div className="flex items-center mb-1 space-x-2 text-sm font-bold tracking-widest uppercase text-foreground/80">
                 {version.hasUpdate && <CircleFadingArrowUp strokeWidth={3} className="w-4 h-4 text-success" />}
                 {!version.hasUpdate && version.releaseType === 'Stable' && <CheckCircle strokeWidth={3} className="w-4 h-4" />}
-                {!version.hasUpdate && version.releaseType === 'Preview' && <AlertTriangle strokeWidth={3} className="w-4 h-4 text-warning" />}
-                {!version.hasUpdate && version.releaseType !== 'Stable' && version.releaseType !== 'Preview' && <Info strokeWidth={3} className="w-4 h-4" />}
-                <span className={cn(
-                  version.hasUpdate && 'text-success',
-                  !version.hasUpdate && version.releaseType === 'Preview' && 'text-warning'
-                )}>
+                {!version.hasUpdate && version.releaseType === 'Preview' && (
+                  <AlertTriangle strokeWidth={3} className="w-4 h-4 text-warning" />
+                )}
+                {!version.hasUpdate && version.releaseType !== 'Stable' && version.releaseType !== 'Preview' && (
+                  <Info strokeWidth={3} className="w-4 h-4" />
+                )}
+                <span
+                  className={cn(
+                    version.hasUpdate && 'text-success',
+                    !version.hasUpdate && version.releaseType === 'Preview' && 'text-warning'
+                  )}
+                >
                   {version.hasUpdate ? '有可用更新' : version.releaseType}
                 </span>
               </div>
-              <span className={cn(
-                'text-5xl font-bold tracking-wide',
-                version.hasUpdate && 'text-success',
-                !version.hasUpdate && version.releaseType === 'Preview' && 'text-warning'
-              )}>
+              <span
+                className={cn(
+                  'text-5xl font-bold tracking-wide',
+                  version.hasUpdate && 'text-success',
+                  !version.hasUpdate && version.releaseType === 'Preview' && 'text-warning'
+                )}
+              >
                 v{version.pluginVersion}
               </span>
             </div>
 
-            <div className='w-1 h-14 opacity-90 bg-foreground' />
+            <div className="w-1 h-14 opacity-90 bg-foreground" />
 
             {/* 框架信息 */}
-            <div className='flex items-end space-x-8'>
+            <div className="flex items-end space-x-8">
               <GlowImage
                 src="/image/frame-logo.png"
                 alt="logo"
@@ -134,14 +136,14 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
                 glowStrength={useDarkTheme ? 1 : 0}
                 blurRadius={40}
               />
-              <div className='flex flex-col items-start'>
-                <div className='flex items-center mb-1 space-x-2 text-sm font-bold tracking-widest uppercase text-foreground/80'>
+              <div className="flex flex-col items-start">
+                <div className="flex items-center mb-1 space-x-2 text-sm font-bold tracking-widest uppercase text-foreground/80">
                   <Zap strokeWidth={3} className="w-4 h-4 opacity-90" />
-                  <span className='opacity-90'>Power By</span>
+                  <span className="opacity-90">Power By</span>
                 </div>
-                <div className='flex items-end space-x-2'>
-                  <span className='text-5xl font-black leading-none opacity-90'>{version.poweredBy}</span>
-                  <span className='pb-1 text-2xl font-bold leading-none opacity-90'>v{version.frameworkVersion}</span>
+                <div className="flex items-end space-x-2">
+                  <span className="text-5xl font-black leading-none opacity-90">{version.poweredBy}</span>
+                  <span className="pb-1 text-2xl font-bold leading-none opacity-90">v{version.frameworkVersion}</span>
                 </div>
               </div>
             </div>
@@ -149,10 +151,10 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
             {/* 构建工具信息 */}
             {version.releaseType === 'Stable' && (
               <>
-                <div className='w-1 h-14 opacity-90 bg-foreground/70' />
+                <div className="w-1 h-14 opacity-90 bg-foreground/70" />
 
-                <div className='flex flex-col items-start space-y-4'>
-                  <div className='flex items-end space-x-2'>
+                <div className="flex flex-col items-start space-y-4">
+                  <div className="flex items-end space-x-2">
                     <GlowImage glowStrength={useDarkTheme ? 1 : 0} blurRadius={6}>
                       <RolldownLogo className="w-auto h-4" />
                     </GlowImage>
@@ -167,15 +169,15 @@ export const DefaultLayout: React.FC<Omit<DefaultLayoutProps, 'templateType' | '
 
           {/* Restore ID */}
           {typeof watermarkTextBitSize === 'number' && (
-            <div className='flex justify-center'>
-              <span className='text-xs font-mono text-foreground/30'>Restore ID: {watermarkTextBitSize}</span>
+            <div className="flex justify-center">
+              <span className="text-xs font-mono text-foreground/30">Restore ID: {watermarkTextBitSize}</span>
             </div>
           )}
         </div>
       ) : (
-        <div className='flex items-center justify-center h-24'>
+        <div className="flex items-center justify-center h-24">
           {typeof watermarkTextBitSize === 'number' && (
-            <span className='text-xs font-mono text-foreground/30'>Restore ID: {watermarkTextBitSize}</span>
+            <span className="text-xs font-mono text-foreground/30">Restore ID: {watermarkTextBitSize}</span>
           )}
         </div>
       )}

@@ -12,19 +12,19 @@ on:
         options:
           - preview
           - production
-      
+
       # 手动发布版本号（仅生产模式需要）
       manual_version:
         description: '手动指定版本号 (如: 1.2.3，仅生产模式有效)'
         required: false
         type: string
-      
+
       # 发布说明
       release_notes:
         description: '发布说明 (可选)'
         required: false
         type: string
-      
+
       # 是否强制发布到 NPM
       force_npm_publish:
         description: '强制发布到 NPM (仅生产模式)'
@@ -92,24 +92,24 @@ jobs:
             echo "❌ 生产模式必须指定版本号" >&2
             exit 1
           fi
-          
+
           # 验证版本号格式
           if ! echo "${{ inputs.manual_version }}" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$'; then
             echo "❌ 版本号格式错误，应为 x.y.z 格式" >&2
             exit 1
           fi
-          
+
           echo "releases_created=true" >> $GITHUB_OUTPUT
           echo "core_release_created=true" >> $GITHUB_OUTPUT
           echo "core_tag_name=v${{ inputs.manual_version }}" >> $GITHUB_OUTPUT
-          
+
           echo "✅ 手动生产发布已配置：v${{ inputs.manual_version }}"
 
       - name: 🏷️ 获取版本信息
         id: get-version-info
         run: |
           cd packages/core
-          
+
           # 处理手动生产模式
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.run_mode }}" = "production" ]; then
             # 手动更新 package.json 版本号
@@ -134,7 +134,7 @@ jobs:
               echo "release_tag_name=" >> $GITHUB_OUTPUT
             fi
           fi
-          
+
           echo "core_version=$CORE_VERSION" >> $GITHUB_OUTPUT
           echo "📦 当前版本：$CORE_VERSION"
 
@@ -149,7 +149,7 @@ jobs:
       package_short_name: ${{ steps.package-info.outputs.short_name }}
       commit_hash: ${{ steps.git-info.outputs.commit_hash }}
       short_commit_hash: ${{ steps.git-info.outputs.short_commit_hash }}
-    
+
     steps:
       - name: 📥 检出源代码
         uses: actions/checkout@v4
@@ -296,7 +296,7 @@ jobs:
         working-directory: packages/core
         run: |
           pnpm publish --no-git-checks --provenance
-          
+
           echo "name=$(npm pkg get name | tr -d '"')" >> $GITHUB_OUTPUT
           echo "version=$(npm pkg get version | tr -d '"')" >> $GITHUB_OUTPUT
 
@@ -306,7 +306,7 @@ jobs:
           echo "- **包名:** \`${{ steps.publish-to-npm.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **版本:** \`${{ steps.publish-to-npm.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **模式:** ${{ github.event_name == 'workflow_dispatch' && inputs.run_mode == 'production' && '🎯 手动生产发布' || '🤖 自动发布' }}" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ "${{ needs.version-release.outputs.manual_release_notes }}" != "" ]; then
             echo "- **发布说明:** ${{ needs.version-release.outputs.manual_release_notes }}" >> $GITHUB_STEP_SUMMARY
           fi
@@ -347,12 +347,12 @@ jobs:
           # 读取原始包名
           ORIGINAL_NAME=$(node -p "require('./package.json').name")
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          
+
           # 构造新包名 @owner/name
           NEW_NAME="@$OWNER/$ORIGINAL_NAME"
-          
+
           echo "📦 修改包名: $ORIGINAL_NAME -> $NEW_NAME"
-          
+
           # 修改 package.json
           node -e "
             const fs = require('fs');
@@ -373,7 +373,7 @@ jobs:
           echo "## 📦 GitHub Packages 发布成功" >> $GITHUB_STEP_SUMMARY
           PKG_NAME=$(node -p "require('./packages/core/package.json').name")
           VERSION=$(node -p "require('./packages/core/package.json').version")
-          
+
           echo "- **包名:** \`$PKG_NAME\`" >> $GITHUB_STEP_SUMMARY
           echo "- **版本:** \`$VERSION\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -405,7 +405,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.unified-build.outputs.build_success == 'true'
     outputs:
       build_completed: ${{ steps.build-success.outputs.completed }}
-    
+
     steps:
       - name: 📥 检出源代码
         uses: actions/checkout@v4
@@ -418,11 +418,11 @@ jobs:
         with:
           name: build-branch-artifacts
           path: ${{ runner.temp }}/build-artifacts/
-      
+
       - name: ✅ 标记构建完成
         id: build-success
         run: echo "completed=true" >> $GITHUB_OUTPUT
-      
+
       - name: ⚙️ 配置 Git 用户信息
         run: |
           git config --global user.name "github-actions[bot]"
@@ -444,7 +444,7 @@ jobs:
           fi
 
       - name: 🌿 初始化构建分支
-        run: |          
+        run: |
           if [ "${{ env.branch_exists }}" = "false" ]; then
             git checkout --orphan build
             git reset --hard
@@ -490,7 +490,7 @@ jobs:
     outputs:
       pkg_version: ${{ steps.version-gen.outputs.version }}
       pnpm_install_cmd: ${{ steps.publish_pkg.outputs.pnpm_install_cmd }}
-    
+
     steps:
       - name: 📥 检出源代码
         uses: actions/checkout@v4
@@ -537,7 +537,7 @@ jobs:
           # 2) 获取release-please输出的版本作为参考
           RELEASE_VERSION="${{ needs.version-release.outputs.core_version }}"
           PKG_VERSION=$(node -p "require('./package.json').version" 2>/dev/null || echo "")
-          
+
           # 3) 选择最高的版本作为基准（确保不会倒退）
           compare_versions() {
             local v1=$1 v2=$2
@@ -552,7 +552,7 @@ jobs:
             done
             return 0  # v1 == v2
           }
-          
+
           # 选择最高版本作为基准
           FINAL_BASE="$BASE_VERSION"
           if [ -n "$RELEASE_VERSION" ] && echo "$RELEASE_VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' >/dev/null; then
@@ -567,7 +567,7 @@ jobs:
               2) FINAL_BASE="$PKG_VERSION" ;;  # PKG_VERSION更高
             esac
           fi
-          
+
           echo "🏷️ 基准版本选择："
           echo "  - Git标签版本: $BASE_VERSION"
           echo "  - Release版本: $RELEASE_VERSION"
@@ -660,16 +660,16 @@ jobs:
         working-directory: packages/core
         run: |
           pnpm pkg delete devDependencies
-          pnpm pkg delete scripts 
+          pnpm pkg delete scripts
 
       - name: 🚀 发布预览包
         id: publish_pkg
         working-directory: packages/core
         run: |
           npx --yes pkg-pr-new publish --json output.json --comment=off --compact --packageManager=pnpm > pkg-output.txt 2>&1
-          
+
           ACTUAL_INSTALL_URL=$(grep -oE 'https://pkg\.pr\.new/[^[:space:]`]+' pkg-output.txt | head -n 1 || echo "")
-          
+
           if [ ! -z "$ACTUAL_INSTALL_URL" ]; then
             # 尝试提取短链接格式 (package@sha)
             if [[ "$ACTUAL_INSTALL_URL" =~ https://pkg\.pr\.new/[^/]+/[^/]+/([^/]+@.+) ]]; then
@@ -679,7 +679,7 @@ jobs:
           else
             PNPM_INSTALL_CMD="未找到安装命令"
           fi
-          
+
           echo "pnpm_install_cmd=$PNPM_INSTALL_CMD" >> $GITHUB_OUTPUT
 
       - name: 💬 发布 PR 评论
@@ -688,11 +688,11 @@ jobs:
         with:
           message: |
             ## 📦 预览包发布成功
-            
+
             ### 🏷️ 包信息
             - **版本:** `${{ steps.version-gen.outputs.version }}`
             - **提交:** [`${{ needs.unified-build.outputs.short_commit_hash }}`](https://github.com/${{ github.repository }}/tree/${{ needs.unified-build.outputs.commit_hash }})
-            
+
             ### 📥 安装命令
             ```bash
             ${{ steps.publish_pkg.outputs.pnpm_install_cmd }}
@@ -712,11 +712,11 @@ jobs:
         run: |
           echo "# 🚀 PR 构建完成摘要" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           echo "## 📦 NPM 预览包" >> $GITHUB_STEP_SUMMARY
           echo "- **版本:** \`${{ needs.preview-package-publish.outputs.pkg_version }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           echo "### 📥 安装命令" >> $GITHUB_STEP_SUMMARY
           echo '```bash' >> $GITHUB_STEP_SUMMARY
           echo "${{ needs.preview-package-publish.outputs.pnpm_install_cmd }}" >> $GITHUB_STEP_SUMMARY
@@ -734,7 +734,7 @@ jobs:
         run: |
           echo "# 🚀 Main分支构建完成摘要" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           # NPM 预览包信息
           echo "## 📦 NPM 预览包" >> $GITHUB_STEP_SUMMARY
           echo "- **版本:** \`${{ needs.preview-package-publish.outputs.pkg_version }}\`" >> $GITHUB_STEP_SUMMARY
@@ -744,7 +744,7 @@ jobs:
           echo "${{ needs.preview-package-publish.outputs.pnpm_install_cmd }}" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           # 构建信息
           echo "## ℹ️ 构建信息" >> $GITHUB_STEP_SUMMARY
           echo "- **提交:** [\`${{ needs.unified-build.outputs.short_commit_hash }}\`](https://github.com/${{ github.repository }}/commit/${{ needs.unified-build.outputs.commit_hash }})" >> $GITHUB_STEP_SUMMARY
@@ -761,7 +761,7 @@ jobs:
         run: |
           echo "# 🚀 完整构建摘要" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           # NPM 包信息
           if [ "${{ needs.preview-package-publish.result }}" = "success" ]; then
             echo "## � NPM 预览包" >> $GITHUB_STEP_SUMMARY

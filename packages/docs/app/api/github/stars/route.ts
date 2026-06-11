@@ -3,12 +3,12 @@ import { NextResponse } from 'next/server'
 const GITHUB_REPO = 'ikenxuan/karin-plugin-kkk'
 const CACHE_DURATION = 3600 // 1 hour
 
-export async function GET () {
+export async function GET() {
   try {
     const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}`, {
       next: { revalidate: CACHE_DURATION },
       headers: {
-        'Accept': 'application/vnd.github.v3+json',
+        Accept: 'application/vnd.github.v3+json',
         // Optional: Add GITHUB_TOKEN if configured in env
         ...(process.env.GITHUB_TOKEN && { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` })
       }
@@ -24,7 +24,7 @@ export async function GET () {
 
     const data = await res.json()
     return NextResponse.json({ stars: data.stargazers_count })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }

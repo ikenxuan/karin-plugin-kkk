@@ -13,7 +13,7 @@ export class ThrottleStream extends Transform {
    * 创建限速流
    * @param bytesPerSecond 每秒允许通过的字节数
    */
-  constructor (bytesPerSecond: number) {
+  constructor(bytesPerSecond: number) {
     super()
     this.bytesPerSecond = bytesPerSecond
     this.startTime = Date.now()
@@ -24,7 +24,7 @@ export class ThrottleStream extends Transform {
    * 动态调整速度限制
    * @param newSpeed 新的速度限制 (bytes/s)
    */
-  setSpeed (newSpeed: number): void {
+  setSpeed(newSpeed: number): void {
     this.bytesPerSecond = newSpeed
     // 重置计时，避免突然的速度变化导致长时间等待
     this.startTime = Date.now()
@@ -34,20 +34,20 @@ export class ThrottleStream extends Transform {
   /**
    * 获取当前速度限制
    */
-  getSpeed (): number {
+  getSpeed(): number {
     return this.bytesPerSecond
   }
 
   /**
    * 获取当前实际速度
    */
-  getCurrentSpeed (): number {
+  getCurrentSpeed(): number {
     const elapsed = (Date.now() - this.startTime) / 1000
     if (elapsed <= 0) return 0
     return this.totalBytes / elapsed
   }
 
-  _transform (chunk: Buffer, _encoding: BufferEncoding, callback: TransformCallback): void {
+  _transform(chunk: Buffer, _encoding: BufferEncoding, callback: TransformCallback): void {
     this.totalBytes += chunk.length
 
     // 计算已经过的时间
@@ -70,7 +70,7 @@ export class ThrottleStream extends Transform {
     }
   }
 
-  _flush (callback: TransformCallback): void {
+  _flush(callback: TransformCallback): void {
     callback()
   }
 }

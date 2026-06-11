@@ -94,6 +94,8 @@ export const getDouyinID = async (event: Message, url: string, log = true): Prom
       break
   }
 
-  log && console.log(result)
+  if (log) {
+    console.log(result)
+  }
   return result
 }

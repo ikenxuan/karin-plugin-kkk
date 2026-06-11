@@ -1,28 +1,31 @@
-import { RootProvider } from 'fumadocs-ui/provider/next';
-import './global.css';
-import { Inter } from 'next/font/google';
-import type { Metadata } from 'next';
-import SearchDialog from '@/components/search';
-import Script from 'next/script';
-import { LenisProvider } from '@/components/lenis-provider';
+import { RootProvider } from 'fumadocs-ui/provider/next'
+
+import './global.css'
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import Script from 'next/script'
+
+import { LenisProvider } from '@/components/lenis-provider'
+import SearchDialog from '@/components/search'
 
 const inter = Inter({
-  subsets: ['latin'],
-});
+  subsets: ['latin']
+})
 
 export const siteInfo = {
   name: 'karin-plugin-kkk',
   description: '多平台短视频/图文内容解析与推送',
   url: 'https://kkk.karinjs.com',
-  image: 'https://kkk.karinjs.com/og-image.png',
-};
+  image: 'https://kkk.karinjs.com/og-image.png'
+}
 
 export const metadata: Metadata = {
   title: {
     default: 'karin-plugin-kkk 文档 - 多平台短视频解析与推送插件',
-    template: '%s | karin-plugin-kkk 文档',
+    template: '%s | karin-plugin-kkk 文档'
   },
-  description: '专业的多平台短视频/图文内容解析与推送插件，支持抖音、B站、快手、小红书等平台。提供无水印视频下载、评论区渲染、动态推送、弹幕烧录、动态照片解析等功能。基于 Karin 框架开发，开源免费。',
+  description:
+    '专业的多平台短视频/图文内容解析与推送插件，支持抖音、B站、快手、小红书等平台。提供无水印视频下载、评论区渲染、动态推送、弹幕烧录、动态照片解析等功能。基于 Karin 框架开发，开源免费。',
   keywords: [
     'karin-plugin-kkk',
     'karin插件',
@@ -44,7 +47,7 @@ export const metadata: Metadata = {
     'Karin框架',
     'QQ机器人',
     '自动化推送',
-    '开源插件',
+    '开源插件'
   ],
   authors: [{ name: 'ikenxuan', url: 'https://github.com/ikenxuan' }],
   creator: 'ikenxuan',
@@ -56,22 +59,23 @@ export const metadata: Metadata = {
     url: 'https://kkk.karinjs.com',
     siteName: 'karin-plugin-kkk 文档',
     title: 'karin-plugin-kkk - 多平台短视频解析与推送插件',
-    description: '专业的多平台短视频/图文内容解析与推送插件，支持抖音、B站、快手、小红书。提供无水印视频下载、评论区渲染、动态推送、弹幕烧录等功能。',
+    description:
+      '专业的多平台短视频/图文内容解析与推送插件，支持抖音、B站、快手、小红书。提供无水印视频下载、评论区渲染、动态推送、弹幕烧录等功能。',
     images: [
       {
         url: 'https://kkk.karinjs.com/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'karin-plugin-kkk - 多平台短视频解析与推送插件',
-      },
-    ],
+        alt: 'karin-plugin-kkk - 多平台短视频解析与推送插件'
+      }
+    ]
   },
   twitter: {
     card: 'summary_large_image',
     title: 'karin-plugin-kkk - 多平台短视频解析与推送插件',
     description: '专业的多平台短视频/图文内容解析与推送插件，支持抖音、B站、快手、小红书。',
     images: ['https://kkk.karinjs.com/og-image.png'],
-    creator: '@ikenxuan',
+    creator: '@ikenxuan'
   },
   robots: {
     index: true,
@@ -81,29 +85,24 @@ export const metadata: Metadata = {
       follow: true,
       'max-video-preview': -1,
       'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
+      'max-snippet': -1
+    }
   },
   icons: {
     icon: [
       { url: '/icon-light.svg', media: '(prefers-color-scheme: light)' },
-      { url: '/icon-dark.svg', media: '(prefers-color-scheme: dark)' },
+      { url: '/icon-dark.svg', media: '(prefers-color-scheme: dark)' }
     ],
-    apple: '/apple-touch-icon.png',
+    apple: '/apple-touch-icon.png'
   },
   alternates: {
-    canonical: 'https://kkk.karinjs.com',
+    canonical: 'https://kkk.karinjs.com'
   },
-  verification: {
-  },
-  category: 'technology',
-};
+  verification: {},
+  category: 'technology'
+}
 
-export default async function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function Layout({ children }: { children: React.ReactNode }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
@@ -115,17 +114,17 @@ export default async function Layout({
     author: {
       '@type': 'Person',
       name: 'ikenxuan',
-      url: 'https://github.com/ikenxuan',
+      url: 'https://github.com/ikenxuan'
     },
     offers: {
       '@type': 'Offer',
       price: '0',
-      priceCurrency: 'CNY',
+      priceCurrency: 'CNY'
     },
     aggregateRating: {
       '@type': 'AggregateRating',
       ratingValue: '5',
-      ratingCount: '100',
+      ratingCount: '100'
     },
     featureList: [
       '抖音视频解析',
@@ -136,9 +135,9 @@ export default async function Layout({
       '评论区渲染',
       '动态推送',
       '弹幕烧录',
-      '动态照片解析',
-    ],
-  };
+      '动态照片解析'
+    ]
+  }
 
   const organizationJsonLd = {
     '@context': 'https://schema.org',
@@ -146,10 +145,8 @@ export default async function Layout({
     name: 'karin-plugin-kkk',
     url: 'https://kkk.karinjs.com',
     logo: 'https://kkk.karinjs.com/icon-light.svg',
-    sameAs: [
-      'https://github.com/ikenxuan/karin-plugin-kkk',
-    ],
-  };
+    sameAs: ['https://github.com/ikenxuan/karin-plugin-kkk']
+  }
 
   const websiteJsonLd = {
     '@context': 'https://schema.org',
@@ -159,35 +156,24 @@ export default async function Layout({
     potentialAction: {
       '@type': 'SearchAction',
       target: 'https://kkk.karinjs.com/search?q={search_term_string}',
-      'query-input': 'required name=search_term_string',
-    },
-  };
+      'query-input': 'required name=search_term_string'
+    }
+  }
 
   return (
     <html lang="zh-CN" className={inter.className} suppressHydrationWarning>
       <head>
         <Script src="https://static.geetest.com/static/js/gt.0.5.0.js" strategy="beforeInteractive" />
         <Script src="https://static.geetest.com/v4/gt4.js" strategy="beforeInteractive" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
-        />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
       </head>
       <body className="flex flex-col min-h-screen">
         <LenisProvider>
-          <RootProvider search={{ SearchDialog }}>
-            {children}
-          </RootProvider>
+          <RootProvider search={{ SearchDialog }}>{children}</RootProvider>
         </LenisProvider>
       </body>
     </html>
-  );
+  )
 }

@@ -3,7 +3,7 @@ title: 全局错误处理机制
 description: 自动错误捕获与可视化反馈系统
 ---
 
-import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion'
 
 你在使用 其他的一些视频解析工具时，可能会遇到命令偶尔报错，想第一时间知道是哪里炸了，可是你**没有时间**去排查，即使你有时间，也要**进入服务器**查看对应的上下文日志、调用栈等信息，才能定位问题，并把问题通过 Github Issue 或者 聊天群聊报告给开发者。
 
@@ -13,14 +13,16 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 ## 架构概览
 
-<Mermaid chart={`
+<Mermaid
+  chart={`
 flowchart LR
     A[命令触发] --> B[wrapWithErrorHandler]
     B --> C[logger.runContext]
     C --> D[业务逻辑]
     D -->|异常| E[捕获 + 日志收集]
     E --> F[渲染错误图片]
-`} />
+`}
+/>
 
 ## 机制特性
 
@@ -32,7 +34,9 @@ flowchart LR
 // @noErrors
 import karin, { type Message } from 'node-karin'
 // ---cut-start---
-interface ErrorHandlerOptions { businessName: string }
+interface ErrorHandlerOptions {
+  businessName: string
+}
 declare function wrapWithErrorHandler(
   fn: (e: Message, next: () => unknown) => Promise<boolean>,
   options: ErrorHandlerOptions
@@ -58,9 +62,11 @@ karin.command(/^#命令$/, handler)
 // @noErrors
 import { logger } from 'node-karin'
 
-const ctx = logger.runContext(async () => { /* 业务逻辑 */ })
+const ctx = logger.runContext(async () => {
+  /* 业务逻辑 */
+})
 await ctx.run()
-const logs = ctx.logs()  // 获取执行期间的日志
+const logs = ctx.logs() // 获取执行期间的日志
 ```
 
 ## 错误图片示例

@@ -74,7 +74,7 @@ export interface ExtendedPlatformConfig extends BasePlatformConfig {
  * @param extensions 扩展配置
  * @returns 完整的组件配置
  */
-function createComponentConfig (
+function createComponentConfig(
   baseConfig: BaseComponentConfig,
   extensions: Partial<Pick<ComponentConfig, 'validateData' | 'component' | 'lazyComponent'>> = {}
 ): ComponentConfig {
@@ -87,7 +87,7 @@ function createComponentConfig (
 /**
  * 统一组件配置
  */
-export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.map(basePlatform => {
+export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.map((basePlatform) => {
   const platform: ExtendedPlatformConfig = {
     ...basePlatform,
     components: []
@@ -96,7 +96,7 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
   // 根据平台类型添加组件和验证逻辑
   switch (basePlatform.type) {
     case PlatformType.DOUYIN:
-      platform.components = basePlatform.components.map(baseComponent => {
+      platform.components = basePlatform.components.map((baseComponent) => {
         switch (baseComponent.id) {
           case 'comment':
             return createComponentConfig(baseComponent, {
@@ -169,7 +169,7 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
       break
 
     case PlatformType.BILIBILI:
-      platform.components = basePlatform.components.map(baseComponent => {
+      platform.components = basePlatform.components.map((baseComponent) => {
         switch (baseComponent.id) {
           case 'comment':
             return createComponentConfig(baseComponent, {
@@ -233,7 +233,7 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
       break
 
     case PlatformType.KUAISHOU:
-      platform.components = basePlatform.components.map(baseComponent => {
+      platform.components = basePlatform.components.map((baseComponent) => {
         switch (baseComponent.id) {
           case 'comment':
             return createComponentConfig(baseComponent, {
@@ -247,7 +247,7 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
       break
 
     case PlatformType.XIAOHONGSHU:
-      platform.components = basePlatform.components.map(baseComponent => {
+      platform.components = basePlatform.components.map((baseComponent) => {
         switch (baseComponent.id) {
           case 'noteInfo':
             return createComponentConfig(baseComponent, {
@@ -264,7 +264,7 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
       break
 
     case PlatformType.OTHER:
-      platform.components = basePlatform.components.map(baseComponent => {
+      platform.components = basePlatform.components.map((baseComponent) => {
         switch (baseComponent.id) {
           case 'help':
             return createComponentConfig(baseComponent, {
@@ -297,7 +297,7 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
       break
 
     case PlatformType.STATISTICS:
-      platform.components = basePlatform.components.map(baseComponent => {
+      platform.components = basePlatform.components.map((baseComponent) => {
         switch (baseComponent.id) {
           case 'group':
             return createComponentConfig(baseComponent, {
@@ -314,9 +314,7 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
       break
 
     default:
-      platform.components = basePlatform.components.map(baseComponent =>
-        createComponentConfig(baseComponent)
-      )
+      platform.components = basePlatform.components.map((baseComponent) => createComponentConfig(baseComponent))
   }
 
   return platform
@@ -327,8 +325,8 @@ export const componentConfigs: ExtendedPlatformConfig[] = baseComponentConfigs.m
  * @param platform 平台类型
  * @returns 平台配置
  */
-export function getPlatformConfig (platform: PlatformType): ExtendedPlatformConfig | undefined {
-  return componentConfigs.find(config => config.type === platform)
+export function getPlatformConfig(platform: PlatformType): ExtendedPlatformConfig | undefined {
+  return componentConfigs.find((config) => config.type === platform)
 }
 
 /**
@@ -336,9 +334,9 @@ export function getPlatformConfig (platform: PlatformType): ExtendedPlatformConf
  * @param platform 平台类型
  * @returns 启用的组件配置列表
  */
-export function getEnabledComponents (platform: PlatformType): ComponentConfig[] {
+export function getEnabledComponents(platform: PlatformType): ComponentConfig[] {
   const config = getPlatformConfig(platform)
-  return config?.components.filter(component => component.enabled) || []
+  return config?.components.filter((component) => component.enabled) || []
 }
 
 /**
@@ -347,19 +345,17 @@ export function getEnabledComponents (platform: PlatformType): ComponentConfig[]
  * @param componentId 组件ID
  * @returns 组件配置
  */
-export function getComponentConfig (platform: PlatformType, componentId: string): ComponentConfig | undefined {
+export function getComponentConfig(platform: PlatformType, componentId: string): ComponentConfig | undefined {
   const platformConfig = getPlatformConfig(platform)
-  return platformConfig?.components.find(component => component.id === componentId)
+  return platformConfig?.components.find((component) => component.id === componentId)
 }
 
 /**
  * 获取所有启用的组件配置（扁平化）
  * @returns 所有启用的组件配置
  */
-export function getAllEnabledComponents (): Array<ComponentConfig & { platform: PlatformType }> {
-  return componentConfigs.flatMap(platformConfig =>
-    platformConfig.components
-      .filter(component => component.enabled)
-      .map(component => ({ ...component, platform: platformConfig.type }))
+export function getAllEnabledComponents(): Array<ComponentConfig & { platform: PlatformType }> {
+  return componentConfigs.flatMap((platformConfig) =>
+    platformConfig.components.filter((component) => component.enabled).map((component) => ({ ...component, platform: platformConfig.type }))
   )
 }

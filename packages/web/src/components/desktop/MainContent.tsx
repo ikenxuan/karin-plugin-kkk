@@ -2,9 +2,9 @@
  * PC端主内容区组件
  */
 
-import ConfigPanel from '../common/ConfigPanel'
-import AboutPanel from '../common/AboutPanel'
 import type { MainMenuKey } from '../../types/navigation'
+import AboutPanel from '../common/AboutPanel'
+import ConfigPanel from '../common/ConfigPanel'
 
 interface MainContentProps {
   activeMenu: MainMenuKey
@@ -28,11 +28,7 @@ const MainContent = ({ activeMenu }: MainContentProps) => {
     }
   }
 
-  return (
-    <div className="mx-auto w-full max-w-7xl px-4">
-      {renderContent()}
-    </div>
-  )
+  return <div className="mx-auto w-full max-w-7xl px-4">{renderContent()}</div>
 }
 
 export default MainContent

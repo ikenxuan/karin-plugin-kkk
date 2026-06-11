@@ -69,7 +69,7 @@ export class StatisticsDBBase {
   private dbPath: string
   private migrationManager: MigrationManager
 
-  constructor () {
+  constructor() {
     this.dbPath = path.join(`${karinPathBase}/${Root.pluginName}/data`, 'statistics.db')
     this.migrationManager = new MigrationManager(this.dbPath)
   }
@@ -77,7 +77,7 @@ export class StatisticsDBBase {
   /**
    * 初始化数据库
    */
-  async init (): Promise<StatisticsDBBase> {
+  async init(): Promise<StatisticsDBBase> {
     try {
       logger.debug(logger.green('--------------------------[StatisticsDB] 开始初始化数据库--------------------------'))
       logger.debug('[StatisticsDB] 正在连接数据库...')
@@ -109,7 +109,7 @@ export class StatisticsDBBase {
   /**
    * 创建数据库表结构
    */
-  private async createTables (): Promise<void> {
+  private async createTables(): Promise<void> {
     const queries = [
       // 创建解析统计表
       `CREATE TABLE IF NOT EXISTS ParseStatistics (
@@ -151,18 +151,12 @@ export class StatisticsDBBase {
   /**
    * 初始化全局统计数据
    */
-  private async initGlobalStatistics (): Promise<void> {
+  private async initGlobalStatistics(): Promise<void> {
     const keys = ['totalGroups', 'totalParses']
     for (const key of keys) {
-      const exists = await this.getQuery<GlobalStatistics>(
-        'SELECT * FROM GlobalStatistics WHERE key = ?',
-        [key]
-      )
+      const exists = await this.getQuery<GlobalStatistics>('SELECT * FROM GlobalStatistics WHERE key = ?', [key])
       if (!exists) {
-        await this.runQuery(
-          'INSERT INTO GlobalStatistics (key, value, updatedAt) VALUES (?, ?, ?)',
-          [key, '0', new Date().toISOString()]
-        )
+        await this.runQuery('INSERT INTO GlobalStatistics (key, value, updatedAt) VALUES (?, ?, ?)', [key, '0', new Date().toISOString()])
       }
     }
   }
@@ -170,7 +164,7 @@ export class StatisticsDBBase {
   /**
    * 执行SQL查询
    */
-  private runQuery (sql: string, params: any[] = []): Promise<any> {
+  private runQuery(sql: string, params: any[] = []): Promise<any> {
     return new Promise((resolve, reject) => {
       this.db.run(sql, params, function (err) {
         if (err) {
@@ -218,7 +212,7 @@ export class StatisticsDBBase {
    * @param userId 用户ID
    * @param platform 平台类型
    */
-  async recordParse (groupId: string, userId: string, platform: 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu'): Promise<void> {
+  async recordParse(groupId: string, userId: string, platform: 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu'): Promise<void> {
     const now = new Date().toISOString()
     const today = new Date().toISOString().split('T')[0]
 
@@ -263,24 +257,25 @@ export class StatisticsDBBase {
    * @param date 日期 (YYYY-MM-DD)
    * @param platform 平台类型
    */
-  private async updateDailyHistory (date: string, platform: 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu'): Promise<void> {
+  private async updateDailyHistory(date: string, platform: 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu'): Promise<void> {
     const now = new Date().toISOString()
 
     try {
-      const existing = await this.getQuery<ParseHistory>(
-        'SELECT * FROM ParseHistory WHERE date = ?',
-        [date]
-      )
+      const existing = await this.getQuery<ParseHistory>('SELECT * FROM ParseHistory WHERE date = ?', [date])
 
       if (existing) {
-        await this.runQuery(
-          `UPDATE ParseHistory SET totalParses = totalParses + 1, ${platform} = ${platform} + 1 WHERE date = ?`,
-          [date]
-        )
+        await this.runQuery(`UPDATE ParseHistory SET totalParses = totalParses + 1, ${platform} = ${platform} + 1 WHERE date = ?`, [date])
       } else {
         await this.runQuery(
           'INSERT INTO ParseHistory (date, totalParses, douyin, bilibili, kuaishou, xiaohongshu, createdAt) VALUES (?, 1, ?, ?, ?, ?, ?)',
-          [date, platform === 'douyin' ? 1 : 0, platform === 'bilibili' ? 1 : 0, platform === 'kuaishou' ? 1 : 0, platform === 'xiaohongshu' ? 1 : 0, now]
+          [
+            date,
+            platform === 'douyin' ? 1 : 0,
+            platform === 'bilibili' ? 1 : 0,
+            platform === 'kuaishou' ? 1 : 0,
+            platform === 'xiaohongshu' ? 1 : 0,
+            now
+          ]
         )
       }
     } catch (error) {
@@ -292,22 +287,17 @@ export class StatisticsDBBase {
    * 获取最近N天的解析历史
    * @param days 天数，默认30天
    */
-  async getRecentHistory (days: number = 30): Promise<ParseHistory[]> {
-    return await this.allQuery<ParseHistory>(
-      'SELECT * FROM ParseHistory ORDER BY date DESC LIMIT ?',
-      [days]
-    )
+  async getRecentHistory(days: number = 30): Promise<ParseHistory[]> {
+    return await this.allQuery<ParseHistory>('SELECT * FROM ParseHistory ORDER BY date DESC LIMIT ?', [days])
   }
 
   /**
    * 从现有统计数据同步历史记录（用于迁移后的数据修复）
    */
-  async syncHistoryFromStats (): Promise<void> {
+  async syncHistoryFromStats(): Promise<void> {
     try {
       // 检查 ParseHistory 表是否为空
-      const historyCount = await this.getQuery<{ count: number }>(
-        'SELECT COUNT(*) as count FROM ParseHistory'
-      )
+      const historyCount = await this.getQuery<{ count: number }>('SELECT COUNT(*) as count FROM ParseHistory')
 
       // 如果已有历史数据，不需要同步
       if (historyCount && historyCount.count > 0) {
@@ -318,16 +308,19 @@ export class StatisticsDBBase {
       const allStats = await this.getAllStatistics()
 
       // 按日期和平台聚合
-      const dateMap = new Map<string, {
-        douyin: number
-        bilibili: number
-        kuaishou: number
-        xiaohongshu: number
-      }>()
+      const dateMap = new Map<
+        string,
+        {
+          douyin: number
+          bilibili: number
+          kuaishou: number
+          xiaohongshu: number
+        }
+      >()
 
       for (const stat of allStats) {
         const date = stat.createdAt.split('T')[0]
-        
+
         if (!dateMap.has(date)) {
           dateMap.set(date, {
             douyin: 0,
@@ -344,7 +337,7 @@ export class StatisticsDBBase {
       // 插入历史记录
       for (const [date, platforms] of dateMap.entries()) {
         const totalParses = platforms.douyin + platforms.bilibili + platforms.kuaishou + platforms.xiaohongshu
-        
+
         await this.runQuery(
           'INSERT OR IGNORE INTO ParseHistory (date, totalParses, douyin, bilibili, kuaishou, xiaohongshu, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)',
           [date, totalParses, platforms.douyin, platforms.bilibili, platforms.kuaishou, platforms.xiaohongshu, new Date().toISOString()]
@@ -361,102 +354,89 @@ export class StatisticsDBBase {
    * 获取群组的解析统计
    * @param groupId 群组ID
    */
-  async getGroupStatistics (groupId: string): Promise<ParseStatistics[]> {
-    return await this.allQuery<ParseStatistics>(
-      'SELECT * FROM ParseStatistics WHERE groupId = ? ORDER BY platform, userId',
-      [groupId]
-    )
+  async getGroupStatistics(groupId: string): Promise<ParseStatistics[]> {
+    return await this.allQuery<ParseStatistics>('SELECT * FROM ParseStatistics WHERE groupId = ? ORDER BY platform, userId', [groupId])
   }
 
   /**
    * 获取群组的唯一用户数
    * @param groupId 群组ID
    */
-  async getGroupUniqueUsers (groupId: string): Promise<number> {
-    const result = await this.getQuery<{ count: number }>(
-      'SELECT COUNT(DISTINCT userId) as count FROM ParseStatistics WHERE groupId = ?',
-      [groupId]
-    )
+  async getGroupUniqueUsers(groupId: string): Promise<number> {
+    const result = await this.getQuery<{ count: number }>('SELECT COUNT(DISTINCT userId) as count FROM ParseStatistics WHERE groupId = ?', [
+      groupId
+    ])
     return result?.count || 0
   }
 
   /**
    * 获取全局唯一用户数
    */
-  async getTotalUniqueUsers (): Promise<number> {
-    const result = await this.getQuery<{ count: number }>(
-      'SELECT COUNT(DISTINCT userId) as count FROM ParseStatistics'
-    )
+  async getTotalUniqueUsers(): Promise<number> {
+    const result = await this.getQuery<{ count: number }>('SELECT COUNT(DISTINCT userId) as count FROM ParseStatistics')
     return result?.count || 0
   }
 
   /**
    * 获取所有群组的解析统计
    */
-  async getAllStatistics (): Promise<ParseStatistics[]> {
-    return await this.allQuery<ParseStatistics>(
-      'SELECT * FROM ParseStatistics ORDER BY groupId, platform'
-    )
+  async getAllStatistics(): Promise<ParseStatistics[]> {
+    return await this.allQuery<ParseStatistics>('SELECT * FROM ParseStatistics ORDER BY groupId, platform')
   }
 
   /**
    * 获取平台总解析次数
    * @param platform 平台类型
    */
-  async getPlatformTotalParses (platform: 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu'): Promise<number> {
-    const result = await this.getQuery<{ total: number }>(
-      'SELECT SUM(parseCount) as total FROM ParseStatistics WHERE platform = ?',
-      [platform]
-    )
+  async getPlatformTotalParses(platform: 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu'): Promise<number> {
+    const result = await this.getQuery<{ total: number }>('SELECT SUM(parseCount) as total FROM ParseStatistics WHERE platform = ?', [
+      platform
+    ])
     return result?.total || 0
   }
 
   /**
    * 获取总群组数
    */
-  async getTotalGroups (): Promise<number> {
-    const result = await this.getQuery<{ count: number }>(
-      'SELECT COUNT(DISTINCT groupId) as count FROM ParseStatistics'
-    )
+  async getTotalGroups(): Promise<number> {
+    const result = await this.getQuery<{ count: number }>('SELECT COUNT(DISTINCT groupId) as count FROM ParseStatistics')
     return result?.count || 0
   }
 
   /**
    * 获取总解析次数
    */
-  async getTotalParses (): Promise<number> {
-    const result = await this.getQuery<GlobalStatistics>(
-      'SELECT value FROM GlobalStatistics WHERE key = ?',
-      ['totalParses']
-    )
+  async getTotalParses(): Promise<number> {
+    const result = await this.getQuery<GlobalStatistics>('SELECT value FROM GlobalStatistics WHERE key = ?', ['totalParses'])
     return parseInt(result?.value || '0', 10)
   }
 
   /**
    * 增加总群组数
    */
-  private async incrementTotalGroups (): Promise<void> {
+  private async incrementTotalGroups(): Promise<void> {
     const totalGroups = await this.getTotalGroups()
-    await this.runQuery(
-      'UPDATE GlobalStatistics SET value = ?, updatedAt = ? WHERE key = ?',
-      [totalGroups.toString(), new Date().toISOString(), 'totalGroups']
-    )
+    await this.runQuery('UPDATE GlobalStatistics SET value = ?, updatedAt = ? WHERE key = ?', [
+      totalGroups.toString(),
+      new Date().toISOString(),
+      'totalGroups'
+    ])
   }
 
   /**
    * 增加总解析次数
    */
-  private async incrementTotalParses (): Promise<void> {
-    await this.runQuery(
-      'UPDATE GlobalStatistics SET value = value + 1, updatedAt = ? WHERE key = ?',
-      [new Date().toISOString(), 'totalParses']
-    )
+  private async incrementTotalParses(): Promise<void> {
+    await this.runQuery('UPDATE GlobalStatistics SET value = value + 1, updatedAt = ? WHERE key = ?', [
+      new Date().toISOString(),
+      'totalParses'
+    ])
   }
 
   /**
    * 获取全局统计摘要
    */
-  async getGlobalSummary (): Promise<{
+  async getGlobalSummary(): Promise<{
     totalGroups: number
     totalParses: number
     platformStats: {

@@ -3,8 +3,8 @@ title: 弹幕烧录
 description: 将弹幕硬编码到视频中
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
-import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+import { Callout } from 'fumadocs-ui/components/callout'
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion'
 
 <Callout type="warn">
 **性能警告**：弹幕烧录需要对视频进行完整的重新编码，这是一个非常消耗资源的操作。
@@ -13,16 +13,17 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 - **软件编码**：如果没有可用的硬件编码器，将回退到 CPU 软编码。此时处理一个几分钟的视频可能需要数分钟甚至更久，期间会占用大量 CPU 资源，**在服务器/云主机上使用可能导致资源耗尽或被限流**。
 
 建议在开启此功能前，先确认你的运行环境是否支持硬件加速。
+
 </Callout>
 
 当前版本已经支持将弹幕**硬编码**到视频画面中，生成可直接分享的带弹幕视频。目前只支持 **B站** 和 **抖音**。
 
 ## 支持平台
 
-| 平台 | 弹幕类型 | 说明 |
-|------|---------|------|
-| B站 | 滚动、顶部、底部 | 支持彩色弹幕、多种字号 |
-| 抖音 | 滚动 | 仅支持纯文字弹幕 |
+| 平台 | 弹幕类型         | 说明                   |
+| ---- | ---------------- | ---------------------- |
+| B站  | 滚动、顶部、底部 | 支持彩色弹幕、多种字号 |
+| 抖音 | 滚动             | 仅支持纯文字弹幕       |
 
 ## 效果预览
 
@@ -49,6 +50,7 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 其中 `#弹幕解析` 适合“平时默认关闭，偶尔按需烧录”的场景。
 
 处理流程：
+
 1. 解析视频链接，获取视频和弹幕数据
 2. 生成 ASS 字幕文件（自动计算轨道、防碰撞）
 3. 使用 FFmpeg 将弹幕烧录到视频
@@ -70,43 +72,43 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 ### 支持的硬件编码器
 
-| 显卡 | 编码器 | 要求 |
-|------|--------|------|
-| NVIDIA | NVENC | GTX 600 系列及以上，需安装显卡驱动 |
-| Intel | QSV | 6 代酷睿及以上核显，需安装核显驱动 |
-| AMD | AMF | RX 400 系列及以上，需安装显卡驱动 |
+| 显卡   | 编码器 | 要求                               |
+| ------ | ------ | ---------------------------------- |
+| NVIDIA | NVENC  | GTX 600 系列及以上，需安装显卡驱动 |
+| Intel  | QSV    | 6 代酷睿及以上核显，需安装核显驱动 |
+| AMD    | AMF    | RX 400 系列及以上，需安装显卡驱动  |
 
 ### 驱动安装
 
-<Callout type="warn">
-作者开发只测试了开发环境下的 Nvidia 显卡，Intel 与 AMD 平台下未进行测试。
-</Callout>
-<Callout type="info">
-大多数情况下，只要你的电脑能正常显示画面，驱动就已经装好了。如果硬件加速不生效，可以尝试更新驱动。
-</Callout>
+<Callout type="warn">作者开发只测试了开发环境下的 Nvidia 显卡，Intel 与 AMD 平台下未进行测试。</Callout>
+<Callout type="info">大多数情况下，只要你的电脑能正常显示画面，驱动就已经装好了。如果硬件加速不生效，可以尝试更新驱动。</Callout>
 
 <Accordions>
   <Accordion title="NVIDIA 显卡">
     前往 NVIDIA 官网下载并安装最新驱动：
-    
-    <LinkPreview url="https://www.nvidia.cn/drivers/lookup/" className="font-medium text-fd-primary hover:underline">www.nvidia.cn/drivers/lookup</LinkPreview>
-    
+    <LinkPreview url="https://www.nvidia.cn/drivers/lookup/" className="font-medium text-fd-primary hover:underline">
+      www.nvidia.cn/drivers/lookup
+    </LinkPreview>
     安装完成后重启电脑即可。
   </Accordion>
   <Accordion title="Intel 核显">
     前往 Intel 官网下载并安装核显驱动：
-    
-    <LinkPreview url="https://www.intel.cn/content/www/cn/zh/download-center/home.html" className="font-medium text-fd-primary hover:underline">Intel 下载中心</LinkPreview>
-    
+    <LinkPreview
+      url="https://www.intel.cn/content/www/cn/zh/download-center/home.html"
+      className="font-medium text-fd-primary hover:underline"
+    >
+      Intel 下载中心
+    </LinkPreview>
     或使用 Intel 驱动程序和支持助理自动检测安装：
-    
-    <LinkPreview url="https://www.intel.cn/content/www/cn/zh/support/detect.html" className="font-medium text-fd-primary hover:underline">Intel 驱动程序和支持助理</LinkPreview>
+    <LinkPreview url="https://www.intel.cn/content/www/cn/zh/support/detect.html" className="font-medium text-fd-primary hover:underline">
+      Intel 驱动程序和支持助理
+    </LinkPreview>
   </Accordion>
   <Accordion title="AMD 显卡">
     前往 AMD 官网下载并安装最新驱动：
-    
-    <LinkPreview url="https://www.amd.com/zh-cn/support/download/drivers.html" className="font-medium text-fd-primary hover:underline">AMD 驱动下载</LinkPreview>
-    
+    <LinkPreview url="https://www.amd.com/zh-cn/support/download/drivers.html" className="font-medium text-fd-primary hover:underline">
+      AMD 驱动下载
+    </LinkPreview>
     安装完成后重启电脑即可。
   </Accordion>
 </Accordions>
@@ -130,6 +132,4 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 - 竖屏适配（`verticalMode`）
 - 视频编码格式（`videoCodec`）
 
-<Callout type="info">
-抖音和 B站的字段名称基本一致，但默认画质、竖屏适配说明和视频来源处理逻辑并不完全相同，建议分别调试。
-</Callout>
+<Callout type="info">抖音和 B站的字段名称基本一致，但默认画质、竖屏适配说明和视频来源处理逻辑并不完全相同，建议分别调试。</Callout>

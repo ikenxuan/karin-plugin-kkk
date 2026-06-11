@@ -43,5 +43,4 @@ export interface DouyinDynamicProps extends BaseComponentProps<{
       role_title: string
     }>
   }
-}> {
-}
+}> {}

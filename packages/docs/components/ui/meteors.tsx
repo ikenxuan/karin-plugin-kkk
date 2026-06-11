@@ -1,15 +1,16 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { cn } from "@/lib/cn";
+'use client'
+import React, { useEffect, useState } from 'react'
+
+import { cn } from '@/lib/cn'
 
 interface MeteorsProps {
-  number?: number;
-  minDelay?: number;
-  maxDelay?: number;
-  minDuration?: number;
-  maxDuration?: number;
-  angle?: number;
-  className?: string;
+  number?: number
+  minDelay?: number
+  maxDelay?: number
+  minDuration?: number
+  maxDuration?: number
+  angle?: number
+  className?: string
 }
 
 export const Meteors = ({
@@ -19,20 +20,20 @@ export const Meteors = ({
   minDuration = 2,
   maxDuration = 10,
   angle = 215,
-  className,
+  className
 }: MeteorsProps) => {
-  const [meteorStyles, setMeteorStyles] = useState<Array<React.CSSProperties>>([]);
+  const [meteorStyles, setMeteorStyles] = useState<Array<React.CSSProperties>>([])
 
   useEffect(() => {
     const styles = [...new Array(number)].map(() => ({
-      "--angle": -angle + "deg",
-      top: "-5%",
+      '--angle': -angle + 'deg',
+      top: '-5%',
       left: `calc(0% + ${Math.floor(Math.random() * window.innerWidth)}px)`,
-      animationDelay: Math.random() * (maxDelay - minDelay) + minDelay + "s",
-      animationDuration: Math.floor(Math.random() * (maxDuration - minDuration) + minDuration) + "s",
-    }));
-    setMeteorStyles(styles);
-  }, [number, minDelay, maxDelay, minDuration, maxDuration, angle]);
+      animationDelay: Math.random() * (maxDelay - minDelay) + minDelay + 's',
+      animationDuration: Math.floor(Math.random() * (maxDuration - minDuration) + minDuration) + 's'
+    }))
+    setMeteorStyles(styles)
+  }, [number, minDelay, maxDelay, minDuration, maxDuration, angle])
 
   return (
     <>
@@ -41,7 +42,7 @@ export const Meteors = ({
           key={idx}
           style={{ ...style }}
           className={cn(
-            "animate-meteor pointer-events-none absolute size-0.5 rotate-(--angle) rounded-full bg-foreground/80 shadow-[0_0_0_1px_color-mix(in_oklab,var(--foreground)_20%,transparent)]",
+            'animate-meteor pointer-events-none absolute size-0.5 rotate-(--angle) rounded-full bg-foreground/80 shadow-[0_0_0_1px_color-mix(in_oklab,var(--foreground)_20%,transparent)]',
             className
           )}
         >
@@ -49,5 +50,5 @@ export const Meteors = ({
         </span>
       ))}
     </>
-  );
-};
+  )
+}

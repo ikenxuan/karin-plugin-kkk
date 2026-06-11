@@ -64,5 +64,4 @@ export interface BilibiliArticleDynamicProps extends BaseComponentProps<{
   following_count: string | number
   /** 粉丝数 */
   fans: string | number
-}> {
-}
+}> {}

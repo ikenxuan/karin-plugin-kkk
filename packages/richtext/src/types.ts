@@ -3,9 +3,7 @@
  *
  * 后端只需要生产这些纯 JSON 节点，前端可以再按 React、HTML、Canvas 等不同目标渲染。
  */
-export type RichTextNode =
-  | RichTextInlineNode
-  | RichTextBlockNode
+export type RichTextNode = RichTextInlineNode | RichTextBlockNode
 
 /** 行内节点。 */
 export type RichTextInlineNode =

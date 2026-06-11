@@ -40,7 +40,7 @@ export const AIGenerateModal: React.FC<AIGenerateModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       const config = getAIConfig()
-      const p = config.providers.find(x => x.id === config.activeProviderId) ?? null
+      const p = config.providers.find((x) => x.id === config.activeProviderId) ?? null
       setProvider(p)
       setPrompt('')
       setStreamText('')
@@ -53,10 +53,7 @@ export const AIGenerateModal: React.FC<AIGenerateModalProps> = ({
   const fullPrompt = useMemo(() => {
     if (!isOpen) return null
     const config = getAIConfig()
-    return buildPrompt(
-      { platform, templateId, componentName, referenceData, userPrompt: prompt.trim() || undefined },
-      config.defaultPrompt
-    )
+    return buildPrompt({ platform, templateId, componentName, referenceData, userPrompt: prompt.trim() || undefined }, config.defaultPrompt)
   }, [isOpen, platform, templateId, componentName, referenceData, prompt])
 
   const handleGenerate = async () => {
@@ -155,29 +152,31 @@ export const AIGenerateModal: React.FC<AIGenerateModalProps> = ({
       isDismissable={!isGenerating}
       isOpen={isOpen}
       style={panelThemeStyle}
-      variant='blur'
-      onOpenChange={open => { if (!open && !isGenerating) onClose() }}
+      variant="blur"
+      onOpenChange={(open) => {
+        if (!open && !isGenerating) onClose()
+      }}
     >
-      <Modal.Container size='cover'>
-        <Modal.Dialog className='flex h-[min(85vh,900px)] max-h-[85vh] flex-col overflow-hidden'>
+      <Modal.Container size="cover">
+        <Modal.Dialog className="flex h-[min(85vh,900px)] max-h-[85vh] flex-col overflow-hidden">
           <Modal.CloseTrigger />
           <Modal.Header>
-            <Modal.Icon className='bg-default'>
+            <Modal.Icon className="bg-default">
               <WandSparkles size={20} />
             </Modal.Icon>
             <Modal.Heading>AI 生成 Mock 数据</Modal.Heading>
             {!noProvider && (
-              <div className='ml-auto flex items-center gap-2'>
-                <Chip size='lg' variant='soft'>
+              <div className="ml-auto flex items-center gap-2">
+                <Chip size="lg" variant="soft">
                   <LayoutTemplate size={14} />
                   {platform}
                 </Chip>
-                <Chip size='lg' variant='soft'>
+                <Chip size="lg" variant="soft">
                   <Box size={14} />
                   {componentName ?? templateId}
                 </Chip>
                 {provider && (
-                  <Chip size='lg' variant='soft'>
+                  <Chip size="lg" variant="soft">
                     <Cpu size={14} />
                     {provider.model}
                   </Chip>
@@ -186,81 +185,75 @@ export const AIGenerateModal: React.FC<AIGenerateModalProps> = ({
             )}
           </Modal.Header>
 
-          <Modal.Body className='flex-1 overflow-hidden'>
+          <Modal.Body className="flex-1 overflow-hidden">
             {noProvider ? (
-              <div className='flex flex-col items-center justify-center gap-3 py-12'>
-                <Settings2 size={32} className='text-default-400' />
-                <p className='text-sm font-medium'>尚未配置 AI 供应商</p>
-                <p className='text-xs text-default-400'>请先在顶部导航栏的「AI 配置」中完成设置。</p>
+              <div className="flex flex-col items-center justify-center gap-3 py-12">
+                <Settings2 size={32} className="text-default-400" />
+                <p className="text-sm font-medium">尚未配置 AI 供应商</p>
+                <p className="text-xs text-default-400">请先在顶部导航栏的「AI 配置」中完成设置。</p>
               </div>
             ) : (
-              <div className='flex h-full gap-3'>
+              <div className="flex h-full gap-3">
                 {/* 左侧：提示词区域 */}
-                <div className='flex w-[42%] flex-col gap-3'>
+                <div className="flex w-[42%] flex-col gap-3">
                   {/* 补充要求 */}
                   <div>
-                    <Label className='text-xs font-medium text-default-foreground'>补充要求（可选）</Label>
+                    <Label className="text-xs font-medium text-default-foreground">补充要求（可选）</Label>
                     <textarea
                       value={prompt}
-                      onChange={e => setPrompt(e.target.value)}
-                      placeholder='例如：生成一条带 3 张图片的小红书笔记'
+                      onChange={(e) => setPrompt(e.target.value)}
+                      placeholder="例如：生成一条带 3 张图片的小红书笔记"
                       disabled={isGenerating}
                       rows={2}
-                      className='mt-1.5 w-full resize-none rounded-lg border border-default-200 bg-default-100 px-2.5 py-1.5 text-xs text-default-foreground placeholder:text-default-400 focus:border-default-400 focus:outline-none disabled:opacity-60'
+                      className="mt-1.5 w-full resize-none rounded-lg border border-default-200 bg-default-100 px-2.5 py-1.5 text-xs text-default-foreground placeholder:text-default-400 focus:border-default-400 focus:outline-none disabled:opacity-60"
                     />
                   </div>
 
                   {/* System Prompt */}
-                  <Card className='flex flex-1 flex-col overflow-hidden'>
-                    <Card.Header className='border-b border-default-200 py-2'>
-                      <Card.Title className='text-xs font-medium text-default-foreground/70'>System Prompt</Card.Title>
+                  <Card className="flex flex-1 flex-col overflow-hidden">
+                    <Card.Header className="border-b border-default-200 py-2">
+                      <Card.Title className="text-xs font-medium text-default-foreground/70">System Prompt</Card.Title>
                     </Card.Header>
-                    <Card.Content className='flex-1 overflow-hidden p-0'>
-                      <ScrollShadow className='h-full p-3' size={40}>
-                        <pre className='whitespace-pre-wrap text-xs leading-relaxed text-default-foreground'>
-                          {fullPrompt?.system}
-                        </pre>
+                    <Card.Content className="flex-1 overflow-hidden p-0">
+                      <ScrollShadow className="h-full p-3" size={40}>
+                        <pre className="whitespace-pre-wrap text-xs leading-relaxed text-default-foreground">{fullPrompt?.system}</pre>
                       </ScrollShadow>
                     </Card.Content>
                   </Card>
 
                   {/* User Prompt */}
-                  <Card className='flex flex-1 flex-col overflow-hidden'>
-                    <Card.Header className='border-b border-default-200 py-2'>
-                      <Card.Title className='text-xs font-medium text-default-foreground/70'>User Prompt</Card.Title>
+                  <Card className="flex flex-1 flex-col overflow-hidden">
+                    <Card.Header className="border-b border-default-200 py-2">
+                      <Card.Title className="text-xs font-medium text-default-foreground/70">User Prompt</Card.Title>
                     </Card.Header>
-                    <Card.Content className='flex-1 overflow-hidden p-0'>
-                      <ScrollShadow className='h-full p-3' size={40}>
-                        <pre className='whitespace-pre-wrap text-xs leading-relaxed text-default-foreground'>
-                          {fullPrompt?.user}
-                        </pre>
+                    <Card.Content className="flex-1 overflow-hidden p-0">
+                      <ScrollShadow className="h-full p-3" size={40}>
+                        <pre className="whitespace-pre-wrap text-xs leading-relaxed text-default-foreground">{fullPrompt?.user}</pre>
                       </ScrollShadow>
                     </Card.Content>
                   </Card>
                 </div>
 
                 {/* 右侧：生成结果 */}
-                <Card className='flex flex-1 flex-col overflow-hidden'>
-                  <Card.Header className='flex items-center justify-between border-b border-default-200 py-2'>
-                    <Card.Title className='text-xs font-medium text-default-foreground/70'>
+                <Card className="flex flex-1 flex-col overflow-hidden">
+                  <Card.Header className="flex items-center justify-between border-b border-default-200 py-2">
+                    <Card.Title className="text-xs font-medium text-default-foreground/70">
                       {resultData ? '生成结果' : isGenerating ? '生成中...' : '输出'}
                     </Card.Title>
                     {isGenerating && (
-                      <span className='flex items-center gap-1.5 text-xs text-default-400'>
-                        <Loader2 size={12} className='animate-spin' />
+                      <span className="flex items-center gap-1.5 text-xs text-default-400">
+                        <Loader2 size={12} className="animate-spin" />
                         {streamText.length} 字符
                       </span>
                     )}
                   </Card.Header>
-                  <Card.Content className='flex-1 overflow-hidden p-0'>
-                    <ScrollShadow className='h-full p-3' size={40}>
+                  <Card.Content className="flex-1 overflow-hidden p-0">
+                    <ScrollShadow className="h-full p-3" size={40}>
                       {displayText ? (
-                        <pre className='whitespace-pre-wrap text-xs leading-relaxed text-default-foreground'>
-                          {displayText}
-                        </pre>
+                        <pre className="whitespace-pre-wrap text-xs leading-relaxed text-default-foreground">{displayText}</pre>
                       ) : (
-                        <div className='flex h-full flex-col items-center justify-center gap-2 text-xs text-default-400'>
-                          <Sparkles size={20} className='opacity-40' />
+                        <div className="flex h-full flex-col items-center justify-center gap-2 text-xs text-default-400">
+                          <Sparkles size={20} className="opacity-40" />
                           <span>点击「开始生成」生成 mock 数据</span>
                         </div>
                       )}
@@ -272,34 +265,30 @@ export const AIGenerateModal: React.FC<AIGenerateModalProps> = ({
 
             {/* 错误提示 */}
             {error && (
-              <div className='mt-3 flex items-start gap-2 rounded-lg bg-danger-50 p-2.5 text-xs text-danger'>
-                <AlertTriangle size={16} className='shrink-0' />
-                <span className='break-all'>{error}</span>
+              <div className="mt-3 flex items-start gap-2 rounded-lg bg-danger-50 p-2.5 text-xs text-danger">
+                <AlertTriangle size={16} className="shrink-0" />
+                <span className="break-all">{error}</span>
               </div>
             )}
           </Modal.Body>
 
           {!noProvider && (
             <Modal.Footer>
-              <Button onPress={onClose} variant='tertiary' isDisabled={isGenerating}>
+              <Button onPress={onClose} variant="tertiary" isDisabled={isGenerating}>
                 关闭
               </Button>
               {isGenerating ? (
-                <Button onPress={handleStop} variant='secondary'>
+                <Button onPress={handleStop} variant="secondary">
                   <Square size={16} />
                   停止生成
                 </Button>
               ) : (
-                <Button onPress={handleGenerate} variant='secondary'>
+                <Button onPress={handleGenerate} variant="secondary">
                   <WandSparkles size={16} />
                   {streamText ? '重新生成' : '开始生成'}
                 </Button>
               )}
-              <Button
-                isDisabled={!streamText || isGenerating}
-                onPress={handleApply}
-                variant='primary'
-              >
+              <Button isDisabled={!streamText || isGenerating} onPress={handleApply} variant="primary">
                 <Check size={16} />
                 确认应用
               </Button>

@@ -62,7 +62,7 @@ export interface LogEntry {
 /**
  * 适配器信息接口
  */
-export type AdapterInfo = Omit<KarinAdapterInfo, 'index' | 'secret' | 'connectTime' | 'address'> 
+export type AdapterInfo = Omit<KarinAdapterInfo, 'index' | 'secret' | 'connectTime' | 'address'>
 
 /**
  * API错误组件属性接口
@@ -98,8 +98,7 @@ export interface ApiErrorProps extends BaseComponentProps<{
   verificationUrl?: string
   /** 分享链接（用于生成二维码） */
   share_url?: string
-}> {
-}
+}> {}
 
 /**
  * 平台配置映射表

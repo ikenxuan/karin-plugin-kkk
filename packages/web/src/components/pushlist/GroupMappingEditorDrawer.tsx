@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
 import { Button, Description, Drawer, Label, Spinner } from '@heroui/react'
+import { useEffect, useMemo, useState } from 'react'
+
 import { getPushBotGroups, getPushBots, type BotInfo, type GroupBriefInfo } from '../../api/pushTargets'
 import TargetSelect from './TargetSelect'
 import type { PushTargetMapping, PushlistDevice } from './types'
@@ -12,13 +13,7 @@ interface GroupMappingEditorDrawerProps {
   onConfirm: (mapping: PushTargetMapping) => void
 }
 
-const GroupMappingEditorDrawer = ({
-  isOpen,
-  device,
-  initialMapping,
-  onOpenChange,
-  onConfirm
-}: GroupMappingEditorDrawerProps) => {
+const GroupMappingEditorDrawer = ({ isOpen, device, initialMapping, onOpenChange, onConfirm }: GroupMappingEditorDrawerProps) => {
   const [bots, setBots] = useState<BotInfo[]>([])
   const [groups, setGroups] = useState<GroupBriefInfo[]>([])
   const [selectedBotId, setSelectedBotId] = useState(initialMapping?.botId || '')
@@ -29,22 +24,26 @@ const GroupMappingEditorDrawer = ({
 
   const selectedBot = useMemo(() => bots.find((bot) => bot.id === selectedBotId), [bots, selectedBotId])
   const selectedGroup = useMemo(() => groups.find((group) => group.id === selectedGroupId), [groups, selectedGroupId])
-  const botOptions = useMemo(() => (
-    bots.map((bot) => ({
-      id: bot.id,
-      name: bot.name,
-      avatar: bot.avatar,
-      description: bot.id
-    }))
-  ), [bots])
-  const groupOptions = useMemo(() => (
-    groups.map((group) => ({
-      id: group.id,
-      name: group.name,
-      avatar: group.avatar,
-      description: group.id
-    }))
-  ), [groups])
+  const botOptions = useMemo(
+    () =>
+      bots.map((bot) => ({
+        id: bot.id,
+        name: bot.name,
+        avatar: bot.avatar,
+        description: bot.id
+      })),
+    [bots]
+  )
+  const groupOptions = useMemo(
+    () =>
+      groups.map((group) => ({
+        id: group.id,
+        name: group.name,
+        avatar: group.avatar,
+        description: group.id
+      })),
+    [groups]
+  )
   const canConfirm = Boolean(selectedBotId && selectedGroupId)
 
   useEffect(() => {
@@ -64,9 +63,7 @@ const GroupMappingEditorDrawer = ({
     getPushBotGroups(selectedBotId)
       .then((nextGroups) => {
         setGroups(nextGroups)
-        setSelectedGroupId((current) => (
-          nextGroups.some((group) => group.id === current) ? current : ''
-        ))
+        setSelectedGroupId((current) => (nextGroups.some((group) => group.id === current) ? current : ''))
       })
       .catch((requestError) => {
         setError(requestError instanceof Error ? requestError.message : '获取群列表失败')
@@ -103,7 +100,7 @@ const GroupMappingEditorDrawer = ({
             <Drawer.Heading>{title}</Drawer.Heading>
             <Description>先选择 Bot，再选择该 Bot 加入的群。</Description>
           </Drawer.Header>
-          <Drawer.Body className='flex flex-col gap-4'>
+          <Drawer.Body className="flex flex-col gap-4">
             <TargetSelect
               description="Karin 当前已注册且在线的 Bot。"
               disabled={loadingBots}
@@ -149,7 +146,9 @@ const GroupMappingEditorDrawer = ({
             {error ? <Description className="text-danger">{error}</Description> : null}
           </Drawer.Body>
           <Drawer.Footer>
-            <Button size={device === 'mobile' ? 'sm' : 'md'} slot="close" variant="secondary">取消</Button>
+            <Button size={device === 'mobile' ? 'sm' : 'md'} slot="close" variant="secondary">
+              取消
+            </Button>
             <Button size={device === 'mobile' ? 'sm' : 'md'} isDisabled={!canConfirm} onPress={confirm}>
               {initialMapping ? '保存' : '添加'}
             </Button>

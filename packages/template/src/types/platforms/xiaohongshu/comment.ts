@@ -16,8 +16,7 @@ export interface XiaohongshuCommentProps extends BaseComponentProps<{
   share_url: string
   /** 评论数据 - 简化为直接的评论数组 */
   CommentsData: XiaohongshuCommentItem[]
-}> {
-}
+}> {}
 
 /**
  * 小红书评论项数据接口

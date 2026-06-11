@@ -17,7 +17,7 @@ export async function processRecommendList(
   sec_uid: string,
   userinfo: Result<DyUserInfo>,
   item: douyinPushItem,
-  targets: Array<{ groupId: string, botId: string }>,
+  targets: Array<{ groupId: string; botId: string }>,
   force: boolean = false
 ): Promise<DouyinPushItem[]> {
   const pushType = 'recommend'
@@ -33,7 +33,7 @@ export async function processRecommendList(
 
   for (const [index, aweme] of contentList.entries()) {
     // 过滤掉已经推送过的群组
-    const validTargets: Array<{ groupId: string, botId: string }> = []
+    const validTargets: Array<{ groupId: string; botId: string }> = []
     for (const target of targets) {
       const isPushed = await douyinDB.isAwemePushed(aweme.aweme_id, sec_uid, target.groupId, pushType)
       if (!isPushed) {
@@ -83,12 +83,16 @@ export async function processRecommendList(
       avatar_img: 'https://p3-pc.douyinpic.com/aweme/1080x1080/' + userinfo.data.user.avatar_larger.uri,
       living: false
     })
-    
+
     logger.debug(`发现新${listName}作品：${aweme.aweme_id}`)
   }
-  
+
   // 更新列表快照
-  await douyinDB.updateListSnapshot(sec_uid, pushType, contentList.map(a => a.aweme_id))
-  
+  await douyinDB.updateListSnapshot(
+    sec_uid,
+    pushType,
+    contentList.map((a) => a.aweme_id)
+  )
+
   return result
 }

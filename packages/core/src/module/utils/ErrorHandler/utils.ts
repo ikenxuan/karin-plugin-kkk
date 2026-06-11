@@ -21,7 +21,7 @@ import { Config } from '../Config'
 export const parseLogsToStructured = (logs: string[]): ApiErrorProps['data']['logs'] => {
   const logRegex = /\[(\d{2}:\d{2}:\d{2}\.\d{3})\]\[([A-Z]{4})\]\s(.+)/s
   return logs
-    .map(log => {
+    .map((log) => {
       const match = log.match(logRegex)
       if (match) {
         return {
@@ -33,7 +33,7 @@ export const parseLogsToStructured = (logs: string[]): ApiErrorProps['data']['lo
       }
       return { timestamp: '', level: 'INFO' as const, message: log, raw: log }
     })
-    .filter(log => log.level !== 'TRAC')
+    .filter((log) => log.level !== 'TRAC')
 }
 
 /**
@@ -82,23 +82,19 @@ export const getPushTaskBotId = (): string => {
  * @param businessName - 业务名称
  * @returns 包含机器人实例的消息事件对象
  */
-export const injectBotToEventForPushTask = async (
-  event: Message | undefined,
-  businessName: string
-): Promise<Message> => {
+export const injectBotToEventForPushTask = async (event: Message | undefined, businessName: string): Promise<Message> => {
   if (!isPushTask(event, businessName)) return event as Message
   if (event?.bot) return event
 
   const preferredBotId = typeof event?.selfId === 'string' ? event.selfId : getPushTaskBotId()
-  const bot = (preferredBotId
-    ? karin.getBot(preferredBotId)
-    : undefined) as AdapterType | undefined ?? await resolveUsableBot(preferredBotId)
+  const bot =
+    ((preferredBotId ? karin.getBot(preferredBotId) : undefined) as AdapterType | undefined) ?? (await resolveUsableBot(preferredBotId))
 
   if (!bot) {
     throw new Error(`[ErrorHandler] push 任务缺少可用 bot 实例: ${businessName}`)
   }
 
-  const normalizedEvent = (event ?? {}) as Message & { bot?: AdapterType, selfId?: string }
+  const normalizedEvent = (event ?? {}) as Message & { bot?: AdapterType; selfId?: string }
   normalizedEvent.bot = bot
   normalizedEvent.selfId = normalizedEvent.selfId ?? bot.account.selfId
   return normalizedEvent

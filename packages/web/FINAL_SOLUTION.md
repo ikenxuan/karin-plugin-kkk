@@ -11,13 +11,13 @@
 **最终解决方案：** 使用手动实现的标签切换，完全绕过 Tabs 组件
 
 ```tsx
-{/* 手动标签按钮 */}
-<div className="flex border-b border-gray-200">
+{
+  /* 手动标签按钮 */
+}
+;<div className="flex border-b border-gray-200">
   <button
     className={`px-6 py-3 font-medium ${
-      activeTab === 'douyin'
-        ? 'border-b-2 border-blue-500 text-blue-600'
-        : 'text-gray-600 hover:text-gray-900'
+      activeTab === 'douyin' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600 hover:text-gray-900'
     }`}
     onClick={() => setActiveTab('douyin')}
   >
@@ -25,9 +25,7 @@
   </button>
   <button
     className={`px-6 py-3 font-medium ${
-      activeTab === 'bilibili'
-        ? 'border-b-2 border-blue-500 text-blue-600'
-        : 'text-gray-600 hover:text-gray-900'
+      activeTab === 'bilibili' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600 hover:text-gray-900'
     }`}
     onClick={() => setActiveTab('bilibili')}
   >
@@ -35,12 +33,19 @@
   </button>
 </div>
 
-{/* 条件渲染内容 */}
-{activeTab === 'douyin' && <div>抖音内容</div>}
-{activeTab === 'bilibili' && <div>B站内容</div>}
+{
+  /* 条件渲染内容 */
+}
+{
+  activeTab === 'douyin' && <div>抖音内容</div>
+}
+{
+  activeTab === 'bilibili' && <div>B站内容</div>
+}
 ```
 
 **优势：**
+
 - ✅ 完全可控，逻辑清晰
 - ✅ 无依赖外部组件问题
 - ✅ 性能更好（条件渲染）
@@ -60,11 +65,7 @@
 <Chip variant="soft" color="accent">
   <span>{item}</span>
   {!disabled && (
-    <button
-      type="button"
-      onClick={() => onRemove(item)}
-      className="ml-1 rounded-full p-0.5 hover:bg-black/10"
-    >
+    <button type="button" onClick={() => onRemove(item)} className="ml-1 rounded-full p-0.5 hover:bg-black/10">
       <Trash2 className="size-3" />
     </button>
   )}
@@ -72,6 +73,7 @@
 ```
 
 **效果：**
+
 - ✅ 删除按钮正常工作
 - ✅ 禁用状态下隐藏删除按钮
 - ✅ Hover 效果友好
@@ -81,6 +83,7 @@
 ### 3. 其他已修复的问题
 
 #### 3.1 重复验证和错误提示
+
 ```tsx
 const handleAdd = () => {
   if (!trimmed) {
@@ -96,6 +99,7 @@ const handleAdd = () => {
 ```
 
 #### 3.2 开关禁用逻辑
+
 ```tsx
 const disabled = !item.switch
 
@@ -106,15 +110,10 @@ const disabled = !item.switch
 ```
 
 #### 3.3 开关点击不触发手风琴展开
+
 ```tsx
-<div
-  onPointerDown={(e) => e.stopPropagation()}
-  onClick={(e) => e.stopPropagation()}
->
-  <Switch
-    isSelected={item.switch}
-    onChange={(isSelected) => updateItem({ switch: isSelected })}
-  />
+<div onPointerDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
+  <Switch isSelected={item.switch} onChange={(isSelected) => updateItem({ switch: isSelected })} />
 </div>
 ```
 
@@ -123,6 +122,7 @@ const disabled = !item.switch
 ## 📊 最终效果
 
 ### 标签切换
+
 ```
 [抖音推送]  B站推送   ← 点击抖音
 ─────────
@@ -134,6 +134,7 @@ const disabled = !item.switch
 ```
 
 ### 关键词/标签管理
+
 ```
 关键词
 [输入框______________] [➕]
@@ -148,6 +149,7 @@ const disabled = !item.switch
 ```
 
 ### 开关和配置项状态
+
 ```
 开关状态：  开启        关闭
           [●]         [○]
@@ -231,11 +233,7 @@ const ChipList = ({
             <Chip key={item} variant="soft" color="accent">
               <span>{item}</span>
               {!disabled && (
-                <button
-                  type="button"
-                  onClick={() => onRemove(item)}
-                  className="ml-1 rounded-full p-0.5 hover:bg-black/10"
-                >
+                <button type="button" onClick={() => onRemove(item)} className="ml-1 rounded-full p-0.5 hover:bg-black/10">
                   <Trash2 className="size-3" />
                 </button>
               )}

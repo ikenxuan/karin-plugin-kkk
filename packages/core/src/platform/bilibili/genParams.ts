@@ -14,18 +14,16 @@ export const genParams = async (apiURL: string): Promise<string> => {
   const genSign = await wbi_sign(apiURL, Config.cookies.bilibili)
 
   const qn = [6, 16, 32, 64, 74, 80, 112, 116, 120, 125, 126, 127]
-  let isvip
-  loginInfo.data.data.vipStatus === 1 ? (isvip = true) : (isvip = false)
+  const isvip = loginInfo.data.data.vipStatus === 1
   if (isvip) {
     return `&fnval=16&fourk=1&${genSign}`
   } else return `&qn=${qn[3]}&fnval=16`
 }
 
-export const checkCk = async (): Promise<{ Status: 'isLogin' | '!isLogin', isVIP: boolean }> => {
+export const checkCk = async (): Promise<{ Status: 'isLogin' | '!isLogin'; isVIP: boolean }> => {
   if (Config.cookies.bilibili === '' || Config.cookies.bilibili === null) return { Status: '!isLogin', isVIP: false }
   const loginInfo = await bilibiliFetcher.fetchLoginStatus({ typeMode: 'strict' })
-  let isVIP
-  loginInfo.data.data.vipStatus === 1 ? (isVIP = true) : (isVIP = false)
+  const isVIP = loginInfo.data.data.vipStatus === 1
   if (isVIP) {
     return { Status: 'isLogin', isVIP }
   } else return { Status: 'isLogin', isVIP }

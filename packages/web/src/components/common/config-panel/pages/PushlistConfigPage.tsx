@@ -1,12 +1,7 @@
-import type { ConfigPageProps } from './pageTypes'
 import PushlistManager, { type BilibiliPushItem, type DouyinPushItem } from '../../../pushlist/PushlistManager'
+import type { ConfigPageProps } from './pageTypes'
 
-const PushlistConfigPage = ({
-  config,
-  device,
-  renderers,
-  updateConfigValue
-}: ConfigPageProps) => {
+const PushlistConfigPage = ({ config, device, renderers, updateConfigValue }: ConfigPageProps) => {
   const { renderPageHeader } = renderers
 
   return (

@@ -53,11 +53,7 @@ export class ImageDownloader {
    * @param index - 图片索引（用于多图场景）
    * @returns 处理后的图片路径（HTTP URL / file:// 协议 / base64://）
    */
-  async processImage(
-    imageUrl: string,
-    title?: string,
-    index?: number
-  ): Promise<string> {
+  async processImage(imageUrl: string, title?: string, index?: number): Promise<string> {
     const mode = Config.upload.imageSendMode
 
     switch (mode) {
@@ -74,7 +70,7 @@ export class ImageDownloader {
         // file 协议模式：下载到本地并返回 file:// 协议
         try {
           const result = await this.downloadImage(imageUrl, title, index)
-          
+
           // 如果需要自动删除，设置延迟删除任务
           if (result.shouldDelete) {
             this.scheduleDelete(result.filePath)
@@ -130,7 +126,6 @@ export class ImageDownloader {
     }
   }
 
-
   /**
    * 下载图片到本地
    * @param imageUrl - 图片 URL
@@ -138,11 +133,7 @@ export class ImageDownloader {
    * @param index - 图片索引
    * @returns 下载结果
    */
-  private async downloadImage(
-    imageUrl: string,
-    title?: string,
-    index?: number
-  ): Promise<ImageDownloadResult> {
+  private async downloadImage(imageUrl: string, title?: string, index?: number): Promise<ImageDownloadResult> {
     // 生成文件名
     const filename = this.generateFilename(imageUrl, title, index)
     const filePath = path.join(this.tempDir, filename)
@@ -167,10 +158,7 @@ export class ImageDownloader {
    * @param retryCount - 当前重试次数
    * @returns Axios 响应
    */
-  private async downloadWithRetry(
-    imageUrl: string,
-    retryCount: number = 0
-  ): Promise<any> {
+  private async downloadWithRetry(imageUrl: string, retryCount: number = 0): Promise<any> {
     try {
       const response = await this.axiosInstance.get(imageUrl, {
         responseType: 'arraybuffer',
@@ -185,10 +173,7 @@ export class ImageDownloader {
     } catch (error) {
       if (retryCount < this.maxRetries) {
         const delay = this.retryDelay * Math.pow(2, retryCount) // 指数退避
-        logger.warn(
-          `图片下载失败，${delay}ms 后进行第 ${retryCount + 1}/${this.maxRetries} 次重试: ${imageUrl.substring(0, 50)}...`,
-          error
-        )
+        logger.warn(`图片下载失败，${delay}ms 后进行第 ${retryCount + 1}/${this.maxRetries} 次重试: ${imageUrl.substring(0, 50)}...`, error)
 
         // 等待后重试
         await this.sleep(delay)
@@ -206,9 +191,8 @@ export class ImageDownloader {
    * @param ms - 延迟毫秒数
    */
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise((resolve) => setTimeout(resolve, ms))
   }
-
 
   /**
    * 生成文件名
@@ -217,14 +201,10 @@ export class ImageDownloader {
    * @param index - 图片索引
    * @returns 文件名
    */
-  private generateFilename(
-    imageUrl: string,
-    title?: string,
-    index?: number
-  ): string {
+  private generateFilename(imageUrl: string, title?: string, index?: number): string {
     // 获取文件扩展名
     const ext = this.getExtension(imageUrl)
-    
+
     // 根据 removeCache 配置决定文件名
     if (Config.app.removeCache) {
       // 使用时间戳
@@ -249,7 +229,7 @@ export class ImageDownloader {
       const urlObj = new URL(url)
       const pathname = urlObj.pathname
       const ext = path.extname(pathname)
-      
+
       // 如果有扩展名且是常见图片格式，使用它
       if (ext && /^\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(ext)) {
         return ext
@@ -257,7 +237,7 @@ export class ImageDownloader {
     } catch {
       // URL 解析失败，继续使用默认扩展名
     }
-    
+
     // 默认使用 .jpg
     return '.jpg'
   }
@@ -269,11 +249,14 @@ export class ImageDownloader {
   private scheduleDelete(filePath: string): void {
     // 移除 file:// 协议前缀
     const actualPath = filePath.replace(/^file:\/\//, '')
-    
+
     // 10 分钟后删除文件
-    setTimeout(() => {
-      this.deleteFile(actualPath)
-    }, 10 * 60 * 1000)
+    setTimeout(
+      () => {
+        this.deleteFile(actualPath)
+      },
+      10 * 60 * 1000
+    )
   }
 
   /**
@@ -297,13 +280,8 @@ export class ImageDownloader {
    * @param title - 作品标题
    * @returns 处理后的图片路径数组
    */
-  async processImages(
-    imageUrls: string[],
-    title?: string
-  ): Promise<string[]> {
-    const results = await Promise.all(
-      imageUrls.map((url, index) => this.processImage(url, title, index))
-    )
+  async processImages(imageUrls: string[], title?: string): Promise<string[]> {
+    const results = await Promise.all(imageUrls.map((url, index) => this.processImage(url, title, index)))
     return results
   }
 }

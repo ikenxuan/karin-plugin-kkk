@@ -1,11 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Spinner } from '@heroui/react'
-import { cn } from '@/lib/cn'
-import { getHighlighter, getThemeName } from '@/lib/shiki'
-import type { FileDiffResult, WordDiff } from '@/lib/diff-client'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { HighlighterCore, ThemedToken } from 'shiki/core'
+
+import { cn } from '@/lib/cn'
+import type { FileDiffResult, WordDiff } from '@/lib/diff-client'
+import { getHighlighter, getThemeName } from '@/lib/shiki'
 
 interface CodeDiffViewerProps {
   data: FileDiffResult
@@ -22,19 +23,11 @@ const WordDiffSpan = ({ diff, side, children }: { diff: WordDiff; side: 'left' |
   if (diff.type === 'equal') return <>{children ?? diff.value}</>
 
   if (diff.type === 'remove' && side === 'left') {
-    return (
-      <span className="rounded px-0.5 bg-diff-word-remove text-danger-foreground">
-        {children ?? diff.value}
-      </span>
-    )
+    return <span className="rounded px-0.5 bg-diff-word-remove text-danger-foreground">{children ?? diff.value}</span>
   }
 
   if (diff.type === 'add' && side === 'right') {
-    return (
-      <span className="rounded px-0.5 bg-diff-word-add text-success-foreground">
-        {children ?? diff.value}
-      </span>
-    )
+    return <span className="rounded px-0.5 bg-diff-word-add text-success-foreground">{children ?? diff.value}</span>
   }
 
   return <>{children ?? diff.value}</>
@@ -152,7 +145,7 @@ export const CodeDiffViewer = ({ data, isMobile = false, wrap = true }: CodeDiff
 
     const opposite = isLeft ? 'right' : 'left'
     container.querySelectorAll(`[data-diff-side="${opposite}"]`).forEach((el) => {
-      (el as HTMLElement).style.userSelect = 'none'
+      ;(el as HTMLElement).style.userSelect = 'none'
     })
   }, [])
 
@@ -161,7 +154,7 @@ export const CodeDiffViewer = ({ data, isMobile = false, wrap = true }: CodeDiff
       const container = scrollRef.current
       if (!container) return
       container.querySelectorAll('[data-diff-side]').forEach((el) => {
-        (el as HTMLElement).style.userSelect = ''
+        ;(el as HTMLElement).style.userSelect = ''
       })
     }
 
@@ -192,12 +185,14 @@ export const CodeDiffViewer = ({ data, isMobile = false, wrap = true }: CodeDiff
 
     const theme = getThemeName(isDark)
 
-    const leftResult = leftLines.length > 0
-      ? highlighter.codeToTokens(leftLines.join('\n'), { lang: 'javascript', theme })
-      : { tokens: [] as ThemedToken[][] }
-    const rightResult = rightLines.length > 0
-      ? highlighter.codeToTokens(rightLines.join('\n'), { lang: 'javascript', theme })
-      : { tokens: [] as ThemedToken[][] }
+    const leftResult =
+      leftLines.length > 0
+        ? highlighter.codeToTokens(leftLines.join('\n'), { lang: 'javascript', theme })
+        : { tokens: [] as ThemedToken[][] }
+    const rightResult =
+      rightLines.length > 0
+        ? highlighter.codeToTokens(rightLines.join('\n'), { lang: 'javascript', theme })
+        : { tokens: [] as ThemedToken[][] }
 
     const leftByRow = new Map<number, ThemedToken[]>()
     const rightByRow = new Map<number, ThemedToken[]>()
@@ -239,7 +234,8 @@ export const CodeDiffViewer = ({ data, isMobile = false, wrap = true }: CodeDiff
   }, [rows, containerWidth, wrap])
 
   const findIndexByOffset = useCallback((target: number, offsets: number[]): number => {
-    let lo = 0, hi = offsets.length - 1
+    let lo = 0,
+      hi = offsets.length - 1
     while (lo < hi) {
       const mid = (lo + hi) >> 1
       if (offsets[mid] <= target) lo = mid + 1
@@ -269,7 +265,7 @@ export const CodeDiffViewer = ({ data, isMobile = false, wrap = true }: CodeDiff
     overflowWrap: wrap ? 'break-word' : 'normal'
   }
 
-  const getCellBg = (row: typeof rows[0], side: 'left' | 'right'): string => {
+  const getCellBg = (row: (typeof rows)[0], side: 'left' | 'right'): string => {
     if (row.type === 'equal' || row.type === 'skip') return 'bg-background'
     if (side === 'left') {
       if (!row.left) return 'bg-surface-secondary'
@@ -283,14 +279,14 @@ export const CodeDiffViewer = ({ data, isMobile = false, wrap = true }: CodeDiff
     return 'bg-background'
   }
 
-  const getLineNumColor = (row: typeof rows[0], side: 'left' | 'right'): string => {
+  const getLineNumColor = (row: (typeof rows)[0], side: 'left' | 'right'): string => {
     if (row.type === 'equal') return 'text-muted'
     if (side === 'left' && (row.type === 'remove' || row.type === 'change')) return 'text-danger'
     if (side === 'right' && (row.type === 'add' || row.type === 'change')) return 'text-success'
     return 'text-muted'
   }
 
-  const renderCellContent = (sideData: typeof rows[0]['left'], side: 'left' | 'right', rowIndex: number) => {
+  const renderCellContent = (sideData: (typeof rows)[0]['left'], side: 'left' | 'right', rowIndex: number) => {
     if (!sideData) return null
 
     // wordDiff 行优先显示差异背景，内部不做语法高亮
@@ -302,9 +298,7 @@ export const CodeDiffViewer = ({ data, isMobile = false, wrap = true }: CodeDiff
       ))
     }
 
-    const tokens = side === 'left'
-      ? highlighted?.leftByRow.get(rowIndex)
-      : highlighted?.rightByRow.get(rowIndex)
+    const tokens = side === 'left' ? highlighted?.leftByRow.get(rowIndex) : highlighted?.rightByRow.get(rowIndex)
 
     if (tokens && tokens.length > 0) {
       return tokens.map((token, idx) => (
@@ -333,109 +327,34 @@ export const CodeDiffViewer = ({ data, isMobile = false, wrap = true }: CodeDiff
     </div>
   )
 
-  const content = rows.length === 0 ? (
-    status === 'unchanged' ? (
-      <div className="flex items-center justify-center py-12 text-sm text-muted">
-        没有可显示的差异
-      </div>
-    ) : (
-      <div className="flex items-center justify-center py-12 text-sm gap-2 text-muted">
-        <Spinner size="sm" aria-label="加载中" />
-        正在计算差异...
-      </div>
-    )
-  ) : wrap ? (
-    <div style={{ height: totalHeight }}>
-      <div style={{ height: topPadding }} />
-      {visibleRows.map((row, idx) => {
-        const actualIndex = startIndex + idx
-        if (row.type === 'skip') {
-          const headerText = `@@ -${row.oldStart},${row.oldCount} +${row.newStart},${row.newCount} @@`
-          return (
-            <div
-              key={`skip-${actualIndex}`}
-              className="flex items-center h-6 bg-diff-accent-bg border-y border-diff-accent-border pl-12.5"
-            >
-              <span className="font-mono text-xs select-none text-accent">
-                {headerText}
-              </span>
-            </div>
-          )
-        }
-        return (
-          <div key={`row-${actualIndex}`} className="flex min-h-6">
-            <div
-              data-diff-side="left"
-              className={cn(
-                'shrink-0 text-right whitespace-nowrap select-none w-12.5 border-r border-diff-border',
-                getLineNumColor(row, 'left'),
-                getCellBg(row, 'left'),
-                cellBaseClass
-              )}
-              style={cellBaseStyle}
-            >
-              {row.left?.lineNum ?? '—'}
-            </div>
-            <div
-              data-diff-side="left"
-              className={cn(
-                'flex-1 border-r border-border text-foreground',
-                getCellBg(row, 'left'),
-                cellBaseClass
-              )}
-              style={cellBaseStyle}
-            >
-              {renderCellContent(row.left, 'left', actualIndex)}
-            </div>
-            <div
-              data-diff-side="right"
-              className={cn(
-                'shrink-0 text-right whitespace-nowrap select-none w-12.5 border-r border-diff-border',
-                getLineNumColor(row, 'right'),
-                getCellBg(row, 'right'),
-                cellBaseClass
-              )}
-              style={cellBaseStyle}
-            >
-              {row.right?.lineNum ?? '—'}
-            </div>
-            <div
-              data-diff-side="right"
-              className={cn(
-                'flex-1 text-foreground',
-                getCellBg(row, 'right'),
-                cellBaseClass
-              )}
-              style={cellBaseStyle}
-            >
-              {renderCellContent(row.right, 'right', actualIndex)}
-            </div>
-          </div>
-        )
-      })}
-      <div style={{ height: bottomPadding }} />
-    </div>
-  ) : (
-    <div className="flex" style={{ height: totalHeight }}>
-      {/* 左侧 */}
-      <div ref={leftPaneRef} className="w-1/2 overflow-auto shrink-0">
+  const content =
+    rows.length === 0 ? (
+      status === 'unchanged' ? (
+        <div className="flex items-center justify-center py-12 text-sm text-muted">没有可显示的差异</div>
+      ) : (
+        <div className="flex items-center justify-center py-12 text-sm gap-2 text-muted">
+          <Spinner size="sm" aria-label="加载中" />
+          正在计算差异...
+        </div>
+      )
+    ) : wrap ? (
+      <div style={{ height: totalHeight }}>
         <div style={{ height: topPadding }} />
         {visibleRows.map((row, idx) => {
           const actualIndex = startIndex + idx
           if (row.type === 'skip') {
+            const headerText = `@@ -${row.oldStart},${row.oldCount} +${row.newStart},${row.newCount} @@`
             return (
               <div
-                key={`skip-l-${actualIndex}`}
-                className="flex items-center h-6 min-w-full w-max bg-diff-accent-bg border-y border-diff-accent-border pl-12.5"
+                key={`skip-${actualIndex}`}
+                className="flex items-center h-6 bg-diff-accent-bg border-y border-diff-accent-border pl-12.5"
               >
-                <span className="font-mono text-xs select-none text-accent">
-                  @@ -{row.oldStart},{row.oldCount} +{row.newStart},{row.newCount} @@
-                </span>
+                <span className="font-mono text-xs select-none text-accent">{headerText}</span>
               </div>
             )
           }
           return (
-            <div key={`row-l-${actualIndex}`} className="flex min-h-6 min-w-full w-max">
+            <div key={`row-${actualIndex}`} className="flex min-h-6">
               <div
                 data-diff-side="left"
                 className={cn(
@@ -450,48 +369,11 @@ export const CodeDiffViewer = ({ data, isMobile = false, wrap = true }: CodeDiff
               </div>
               <div
                 data-diff-side="left"
-                className={cn(
-                  'flex-1 text-foreground',
-                  getCellBg(row, 'left'),
-                  cellBaseClass
-                )}
-                style={{ ...cellBaseStyle, flex: '1 0 auto' }}
+                className={cn('flex-1 border-r border-border text-foreground', getCellBg(row, 'left'), cellBaseClass)}
+                style={cellBaseStyle}
               >
                 {renderCellContent(row.left, 'left', actualIndex)}
               </div>
-            </div>
-          )
-        })}
-        <div style={{ height: bottomPadding }} />
-        <div
-          aria-hidden="true"
-          className="invisible pointer-events-none"
-          style={{ height: 1, width: Math.max(leftScrollWidth, rightScrollWidth) }}
-        />
-      </div>
-
-      {/* 中间分割线 */}
-      <div className="w-px shrink-0 bg-border" />
-
-      {/* 右侧 */}
-      <div ref={rightPaneRef} className="w-1/2 overflow-auto shrink-0">
-        <div style={{ height: topPadding }} />
-        {visibleRows.map((row, idx) => {
-          const actualIndex = startIndex + idx
-          if (row.type === 'skip') {
-            return (
-              <div
-                key={`skip-r-${actualIndex}`}
-                className="flex items-center h-6 min-w-full w-max bg-diff-accent-bg border-y border-diff-accent-border pl-12.5"
-              >
-                <span className="font-mono text-xs select-none text-accent">
-                  @@ -{row.oldStart},{row.oldCount} +{row.newStart},{row.newCount} @@
-                </span>
-              </div>
-            )
-          }
-          return (
-            <div key={`row-r-${actualIndex}`} className="flex min-h-6 min-w-full w-max">
               <div
                 data-diff-side="right"
                 className={cn(
@@ -506,12 +388,8 @@ export const CodeDiffViewer = ({ data, isMobile = false, wrap = true }: CodeDiff
               </div>
               <div
                 data-diff-side="right"
-                className={cn(
-                  'flex-1 text-foreground',
-                  getCellBg(row, 'right'),
-                  cellBaseClass
-                )}
-                style={{ ...cellBaseStyle, flex: '1 0 auto' }}
+                className={cn('flex-1 text-foreground', getCellBg(row, 'right'), cellBaseClass)}
+                style={cellBaseStyle}
               >
                 {renderCellContent(row.right, 'right', actualIndex)}
               </div>
@@ -519,26 +397,117 @@ export const CodeDiffViewer = ({ data, isMobile = false, wrap = true }: CodeDiff
           )
         })}
         <div style={{ height: bottomPadding }} />
-        <div
-          aria-hidden="true"
-          className="invisible pointer-events-none"
-          style={{ height: 1, width: Math.max(leftScrollWidth, rightScrollWidth) }}
-        />
       </div>
-    </div>
-  )
+    ) : (
+      <div className="flex" style={{ height: totalHeight }}>
+        {/* 左侧 */}
+        <div ref={leftPaneRef} className="w-1/2 overflow-auto shrink-0">
+          <div style={{ height: topPadding }} />
+          {visibleRows.map((row, idx) => {
+            const actualIndex = startIndex + idx
+            if (row.type === 'skip') {
+              return (
+                <div
+                  key={`skip-l-${actualIndex}`}
+                  className="flex items-center h-6 min-w-full w-max bg-diff-accent-bg border-y border-diff-accent-border pl-12.5"
+                >
+                  <span className="font-mono text-xs select-none text-accent">
+                    @@ -{row.oldStart},{row.oldCount} +{row.newStart},{row.newCount} @@
+                  </span>
+                </div>
+              )
+            }
+            return (
+              <div key={`row-l-${actualIndex}`} className="flex min-h-6 min-w-full w-max">
+                <div
+                  data-diff-side="left"
+                  className={cn(
+                    'shrink-0 text-right whitespace-nowrap select-none w-12.5 border-r border-diff-border',
+                    getLineNumColor(row, 'left'),
+                    getCellBg(row, 'left'),
+                    cellBaseClass
+                  )}
+                  style={cellBaseStyle}
+                >
+                  {row.left?.lineNum ?? '—'}
+                </div>
+                <div
+                  data-diff-side="left"
+                  className={cn('flex-1 text-foreground', getCellBg(row, 'left'), cellBaseClass)}
+                  style={{ ...cellBaseStyle, flex: '1 0 auto' }}
+                >
+                  {renderCellContent(row.left, 'left', actualIndex)}
+                </div>
+              </div>
+            )
+          })}
+          <div style={{ height: bottomPadding }} />
+          <div
+            aria-hidden="true"
+            className="invisible pointer-events-none"
+            style={{ height: 1, width: Math.max(leftScrollWidth, rightScrollWidth) }}
+          />
+        </div>
+
+        {/* 中间分割线 */}
+        <div className="w-px shrink-0 bg-border" />
+
+        {/* 右侧 */}
+        <div ref={rightPaneRef} className="w-1/2 overflow-auto shrink-0">
+          <div style={{ height: topPadding }} />
+          {visibleRows.map((row, idx) => {
+            const actualIndex = startIndex + idx
+            if (row.type === 'skip') {
+              return (
+                <div
+                  key={`skip-r-${actualIndex}`}
+                  className="flex items-center h-6 min-w-full w-max bg-diff-accent-bg border-y border-diff-accent-border pl-12.5"
+                >
+                  <span className="font-mono text-xs select-none text-accent">
+                    @@ -{row.oldStart},{row.oldCount} +{row.newStart},{row.newCount} @@
+                  </span>
+                </div>
+              )
+            }
+            return (
+              <div key={`row-r-${actualIndex}`} className="flex min-h-6 min-w-full w-max">
+                <div
+                  data-diff-side="right"
+                  className={cn(
+                    'shrink-0 text-right whitespace-nowrap select-none w-12.5 border-r border-diff-border',
+                    getLineNumColor(row, 'right'),
+                    getCellBg(row, 'right'),
+                    cellBaseClass
+                  )}
+                  style={cellBaseStyle}
+                >
+                  {row.right?.lineNum ?? '—'}
+                </div>
+                <div
+                  data-diff-side="right"
+                  className={cn('flex-1 text-foreground', getCellBg(row, 'right'), cellBaseClass)}
+                  style={{ ...cellBaseStyle, flex: '1 0 auto' }}
+                >
+                  {renderCellContent(row.right, 'right', actualIndex)}
+                </div>
+              </div>
+            )
+          })}
+          <div style={{ height: bottomPadding }} />
+          <div
+            aria-hidden="true"
+            className="invisible pointer-events-none"
+            style={{ height: 1, width: Math.max(leftScrollWidth, rightScrollWidth) }}
+          />
+        </div>
+      </div>
+    )
 
   if (isMobile) {
     return (
       <div className="flex flex-col h-full">
-        <div className="shrink-0 sticky top-0 z-10 bg-surface-secondary border-b border-border">
-          {header}
-        </div>
-        <div
-          ref={scrollRef}
-          className="flex-1 overflow-auto bg-background text-foreground"
-          onMouseDown={handleMouseDown}
-        >
+        <div className="shrink-0 sticky top-0 z-10 bg-surface-secondary border-b border-border">{header}</div>
+        <div ref={scrollRef} className="flex-1 overflow-auto bg-background text-foreground" onMouseDown={handleMouseDown}>
           {content}
         </div>
       </div>
@@ -547,9 +516,7 @@ export const CodeDiffViewer = ({ data, isMobile = false, wrap = true }: CodeDiff
 
   return (
     <div ref={scrollRef} className="h-full overflow-auto bg-background text-foreground" onMouseDown={handleMouseDown}>
-      <div className="bg-surface-secondary border-b border-border sticky top-0 z-10">
-        {header}
-      </div>
+      <div className="bg-surface-secondary border-b border-border sticky top-0 z-10">{header}</div>
       {content}
     </div>
   )

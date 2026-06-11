@@ -3,10 +3,7 @@ import { type KuaishouDataOptionsMap } from '@ikenxuan/amagi'
 import { kuaishouFetcher } from '@/module/utils/amagiClient'
 import { KuaishouDataTypes } from '@/types'
 
-export const fetchKuaishouData = async <T extends keyof KuaishouDataTypes> (
-  type: T,
-  opt?: any
-) => {
+export const fetchKuaishouData = async <T extends keyof KuaishouDataTypes>(type: T, opt?: any) => {
   switch (type) {
     case 'one_work': {
       const VideoData = await kuaishouFetcher.fetchVideoWork({

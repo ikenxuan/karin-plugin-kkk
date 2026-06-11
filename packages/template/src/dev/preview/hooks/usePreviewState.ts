@@ -26,9 +26,7 @@ const getPreviewParams = (): PreviewParams => {
 }
 
 const createInitialState = (params: PreviewParams): PreviewState => {
-  const remainingMs = params.removeCache && params.expireAt
-    ? Math.max(params.expireAt - Date.now(), 0)
-    : null
+  const remainingMs = params.removeCache && params.expireAt ? Math.max(params.expireAt - Date.now(), 0) : null
   return {
     ...params,
     remainingMs,
@@ -38,7 +36,7 @@ const createInitialState = (params: PreviewParams): PreviewState => {
 
 export const usePreviewState = (): PreviewState => {
   const params = getPreviewParams()
-  const ssrState = typeof window !== 'undefined' && (window as any).__VIDEO_PREVIEW__ as Partial<PreviewState> | undefined
+  const ssrState = typeof window !== 'undefined' && ((window as any).__VIDEO_PREVIEW__ as Partial<PreviewState> | undefined)
   const [state, setState] = React.useState<PreviewState>(() => createInitialState(params))
 
   React.useEffect(() => {

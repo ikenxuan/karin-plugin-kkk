@@ -5,9 +5,10 @@
 
 import { Surface } from '@heroui/react'
 import { useBoolean, useMemoizedFn } from 'ahooks'
+
+import MobileContent from '../components/mobile/MobileContent'
 import MobileDrawer from '../components/mobile/MobileDrawer'
 import MobileTopBar from '../components/mobile/MobileTopBar'
-import MobileContent from '../components/mobile/MobileContent'
 import type { MainLayoutProps } from '../types/navigation'
 
 /**
@@ -36,12 +37,7 @@ const MobileLayout = ({ activeMenu, onMenuChange }: MainLayoutProps) => {
       </header>
 
       {/* 抽屉菜单 */}
-      <MobileDrawer
-        open={drawerOpen}
-        onClose={closeDrawer}
-        activeMenu={activeMenu}
-        onMenuChange={handleMenuChange}
-      />
+      <MobileDrawer open={drawerOpen} onClose={closeDrawer} activeMenu={activeMenu} onMenuChange={handleMenuChange} />
 
       {/* 主内容区 */}
       <main className="scrollbar flex-1 overflow-y-auto p-4" id="main-content">

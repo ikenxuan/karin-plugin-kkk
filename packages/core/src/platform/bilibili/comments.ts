@@ -19,7 +19,10 @@ import { Config } from '@/module/utils/Config'
  * @param host_mid UP主的ID
  * @returns 处理后的评论数据数组和图片URL数组
  */
-export const bilibiliComments = (commentsData: BiliWorkComments, host_mid: string): { comments: CommentItem[] | [], image_urls: string[] } => {
+export const bilibiliComments = (
+  commentsData: BiliWorkComments,
+  host_mid: string
+): { comments: CommentItem[] | []; image_urls: string[] } => {
   if (!commentsData || commentsData.code === 404) {
     return { comments: [], image_urls: [] }
   }
@@ -29,18 +32,22 @@ export const bilibiliComments = (commentsData: BiliWorkComments, host_mid: strin
   const topReply = commentsData.data.top?.upper
 
   if (topReply) {
-    comments.push(buildCommentItem(topReply, host_mid, image_urls, {
-      id: 0,
-      isTop: true
-    }))
+    comments.push(
+      buildCommentItem(topReply, host_mid, image_urls, {
+        id: 0,
+        isTop: true
+      })
+    )
   }
 
   const replies = commentsData.data.replies ?? []
   replies.forEach((reply, index) => {
-    comments.push(buildCommentItem(reply, host_mid, image_urls, {
-      id: index + 1,
-      isTop: false
-    }))
+    comments.push(
+      buildCommentItem(reply, host_mid, image_urls, {
+        id: index + 1,
+        isTop: false
+      })
+    )
   })
 
   const sortedComments = comments
@@ -103,8 +110,8 @@ const buildSubReplies = (
   }
 
   return replies
-    .filter(reply => Boolean(reply.content) && Boolean(reply.member))
-    .map(reply => buildSubCommentItem(reply, hostMid, imageUrls))
+    .filter((reply) => Boolean(reply.content) && Boolean(reply.member))
+    .map((reply) => buildSubCommentItem(reply, hostMid, imageUrls))
 }
 
 const buildSubCommentItem = (
@@ -145,11 +152,7 @@ const buildSubCommentItem = (
  * - 换行符；
  * - `¨` 这种接口里的分隔符字符。
  */
-const buildBilibiliRichText = (
-  text: string,
-  emote: unknown,
-  members: unknown
-): RichTextDocument => {
+const buildBilibiliRichText = (text: string, emote: unknown, members: unknown): RichTextDocument => {
   const normalizedText = normalizeBilibiliText(text)
   const emojiTokens = extractEmojiTokens(emote)
   const mentionTokens = extractMentionTokens(members)
@@ -179,7 +182,7 @@ const buildBilibiliRichText = (
       continue
     }
 
-    const matchedMention = mentionTokens.find(item => normalizedText.startsWith(item.text, index))
+    const matchedMention = mentionTokens.find((item) => normalizedText.startsWith(item.text, index))
     if (matchedMention) {
       pushBuffer()
       nodes.push(createMentionNode(matchedMention.text, matchedMention.userId))
@@ -187,12 +190,14 @@ const buildBilibiliRichText = (
       continue
     }
 
-    const matchedEmoji = emojiTokens.find(item => normalizedText.startsWith(item.name, index))
+    const matchedEmoji = emojiTokens.find((item) => normalizedText.startsWith(item.name, index))
     if (matchedEmoji) {
       pushBuffer()
-      nodes.push(createEmojiNode(matchedEmoji.name, matchedEmoji.url, {
-        scale: matchedEmoji.scale
-      }))
+      nodes.push(
+        createEmojiNode(matchedEmoji.name, matchedEmoji.url, {
+          scale: matchedEmoji.scale
+        })
+      )
       index += matchedEmoji.name.length
       continue
     }
@@ -256,18 +261,15 @@ const extractMentionTokens = (members: unknown): Array<{ text: string; userId?: 
 
   return members
     .filter((item): item is { uname?: string; mid?: string | number } => typeof item === 'object' && item !== null)
-    .filter(item => Boolean(item.uname))
-    .map(item => ({
+    .filter((item) => Boolean(item.uname))
+    .map((item) => ({
       text: `@${item.uname}`,
       userId: item.mid?.toString()
     }))
     .sort((a, b) => b.text.length - a.text.length)
 }
 
-const extractPictureUrls = (
-  pictures: unknown,
-  imageUrls: string[]
-): string[] => {
+const extractPictureUrls = (pictures: unknown, imageUrls: string[]): string[] => {
   if (!Array.isArray(pictures)) {
     return []
   }
@@ -347,9 +349,7 @@ const extractFanCard = (member: unknown) => {
   let gradientStyle = ''
   const colorFormat = (fan as { color_format?: { colors?: string[]; gradients?: number[] } }).color_format
   if (Array.isArray(colorFormat?.colors) && Array.isArray(colorFormat.gradients)) {
-    const colorStops = colorFormat.colors
-      .map((color, index) => `${color} ${colorFormat.gradients?.[index] ?? 0}%`)
-      .join(', ')
+    const colorStops = colorFormat.colors.map((color, index) => `${color} ${colorFormat.gradients?.[index] ?? 0}%`).join(', ')
     gradientStyle = `linear-gradient(135deg, ${colorStops})`
   } else if (typeof (fan as { color?: unknown }).color === 'string') {
     gradientStyle = (fan as { color: string }).color

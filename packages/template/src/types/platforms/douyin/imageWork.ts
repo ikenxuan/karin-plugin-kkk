@@ -76,5 +76,4 @@ export interface DouyinImageWorkProps extends BaseComponentProps<{
       role_title: string
     }>
   }
-}> {
-}
+}> {}

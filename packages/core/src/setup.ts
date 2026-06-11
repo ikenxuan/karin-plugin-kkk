@@ -1,6 +1,5 @@
 import '@/module/server'
 import '@/platform/bilibili/riskControl'
-
 import karin, { AdapterType, BOT_CONNECT, config, ImageElement, logger, Message, mkdirSync, SendMessage } from 'node-karin'
 import { karinPathBase } from 'node-karin/root'
 
@@ -28,14 +27,13 @@ if (process.env.NODE_ENV !== 'development' && isSemverGreater(requireVersion, Ro
     if (botId === 'console') return
 
     // 增加延迟，确保 bot 完全初始化
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    await new Promise((resolve) => setTimeout(resolve, 2000))
     const masters = config.master()
 
     logger.info(`[karin-plugin-kkk] 监测到 Bot 连接: ${botId}, 准备发送版本警告`)
 
     // 生成警告图片
     let warningImage: ImageElement[] | null = null
-
 
     for (const master of masters) {
       if (master === 'console') continue
@@ -77,4 +75,3 @@ await initAllDatabases().catch((err) => {
 mkdirSync(`${karinPathBase}/${Root.pluginName}/data`)
 mkdirSync(Common.tempDri.images)
 mkdirSync(Common.tempDri.video)
-

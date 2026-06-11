@@ -53,8 +53,11 @@ export interface GlobalStatisticsProps extends BaseComponentProps<{
     xiaohongshu: number
   }>
   /** 群组信息映射 */
-  groupInfoMap: Record<string, {
-    groupName?: string
-    groupAvatar?: string
-  }>
+  groupInfoMap: Record<
+    string,
+    {
+      groupName?: string
+      groupAvatar?: string
+    }
+  >
 }> {}

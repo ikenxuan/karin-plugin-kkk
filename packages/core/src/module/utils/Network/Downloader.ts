@@ -15,12 +15,7 @@ import {
   sanitizeHeaders
 } from './helpers'
 import { ThrottleStream } from './ThrottleStream'
-import type {
-  CustomAxiosRequestConfig,
-  DownloadResult,
-  ProgressCallback,
-  ThrottleConfig
-} from './types'
+import type { CustomAxiosRequestConfig, DownloadResult, ProgressCallback, ThrottleConfig } from './types'
 import { DEFAULT_THROTTLE_CONFIG } from './types'
 
 /**
@@ -38,7 +33,7 @@ export class Downloader {
   private currentSpeed: number
   private consecutiveResets: number
 
-  constructor (
+  constructor(
     axiosInstance: AxiosInstance,
     url: string,
     filepath: string,
@@ -63,10 +58,7 @@ export class Downloader {
    * @param progressCallback 进度回调
    * @param retryCount 当前重试次数
    */
-  async download (
-    progressCallback: ProgressCallback,
-    retryCount = 0
-  ): Promise<DownloadResult> {
+  async download(progressCallback: ProgressCallback, retryCount = 0): Promise<DownloadResult> {
     // URL 校验
     if (!this.url || !/^https?:\/\//i.test(this.url)) {
       const sanitized = sanitizeHeaders(this.headers)
@@ -165,7 +157,7 @@ export class Downloader {
           response.data.on('data', (chunk: Buffer) => {
             errorBody += chunk.toString()
           })
-          await new Promise(resolve => setTimeout(resolve, 100))
+          await new Promise((resolve) => setTimeout(resolve, 100))
           logger.error(`响应内容: ${errorBody}`)
         }
 
@@ -235,7 +227,7 @@ export class Downloader {
 
       // 创建计数流
       const counterStream = new Transform({
-        transform (chunk, encoding, callback) {
+        transform(chunk, encoding, callback) {
           downloadedBytes += chunk.length
           callback(null, chunk)
         }
@@ -278,7 +270,9 @@ export class Downloader {
 
         if (actualSize < expectedSize) {
           logger.warn(`文件大小不匹配: 实际 ${formatBytes(actualSize)}, 预期 ${formatBytes(expectedSize)}`)
-          logger.warn(`差异: ${formatBytes(expectedSize - actualSize)} (${((expectedSize - actualSize) / expectedSize * 100).toFixed(2)}%)`)
+          logger.warn(
+            `差异: ${formatBytes(expectedSize - actualSize)} (${(((expectedSize - actualSize) / expectedSize) * 100).toFixed(2)}%)`
+          )
 
           // 如果差异大于 10KB，认为下载不完整
           if (expectedSize - actualSize > 10 * 1024) {
@@ -314,13 +308,12 @@ export class Downloader {
       // 如果是断流错误，自动降速
       if (isThrottling && this.throttleConfig.enabled) {
         this.consecutiveResets++
-        const newSpeed = Math.max(
-          this.currentSpeed * this.throttleConfig.autoReduceRatio,
-          this.throttleConfig.minSpeed
-        )
+        const newSpeed = Math.max(this.currentSpeed * this.throttleConfig.autoReduceRatio, this.throttleConfig.minSpeed)
 
         if (newSpeed < this.currentSpeed) {
-          logger.warn(`检测到服务器断流 (连续 ${this.consecutiveResets} 次)，自动降速: ${formatBytes(this.currentSpeed)}/s -> ${formatBytes(newSpeed)}/s`)
+          logger.warn(
+            `检测到服务器断流 (连续 ${this.consecutiveResets} 次)，自动降速: ${formatBytes(this.currentSpeed)}/s -> ${formatBytes(newSpeed)}/s`
+          )
           this.currentSpeed = newSpeed
         } else {
           logger.warn(`已达到最低速度限制 ${formatBytes(this.throttleConfig.minSpeed)}/s，无法继续降速`)
@@ -354,7 +347,7 @@ export class Downloader {
           logger.warn(`正在重试下载... (${retryCount + 1}/${this.maxRetries})，将在 ${nextDelay / 1000} 秒后重试`)
         }
 
-        await new Promise(resolve => setTimeout(resolve, nextDelay))
+        await new Promise((resolve) => setTimeout(resolve, nextDelay))
         return this.download(progressCallback, retryCount + 1)
       } else {
         // 最终失败处理
@@ -388,7 +381,7 @@ export class Downloader {
    * 手动设置下载速度
    * @param speed 速度 (bytes/s)
    */
-  setSpeed (speed: number): void {
+  setSpeed(speed: number): void {
     this.currentSpeed = Math.max(speed, this.throttleConfig.minSpeed)
     logger.debug(`手动设置下载速度: ${formatBytes(this.currentSpeed)}/s`)
   }
@@ -396,7 +389,7 @@ export class Downloader {
   /**
    * 获取当前速度设置
    */
-  getSpeed (): number {
+  getSpeed(): number {
     return this.currentSpeed
   }
 }

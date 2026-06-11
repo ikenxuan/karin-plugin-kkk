@@ -20,11 +20,7 @@ const getNumberError = (value: unknown, rule: NumberValidationRule): string => {
   return ''
 }
 
-const addNumberValidation = (
-  errors: Record<string, string>,
-  config: ConfigType,
-  rule: NumberValidationRule
-) => {
+const addNumberValidation = (errors: Record<string, string>, config: ConfigType, rule: NumberValidationRule) => {
   if (rule.disabled) return
   const error = getNumberError(getValue(config, rule.path, 0), rule)
   if (error) errors[toPathKey(rule.path)] = error
@@ -34,11 +30,7 @@ const isValidGroupBinding = (value: unknown): value is string => {
   return typeof value === 'string' && /.+:.+/.test(value)
 }
 
-const validatePushList = (
-  errors: Record<string, string>,
-  key: 'douyin' | 'bilibili',
-  items: unknown
-) => {
+const validatePushList = (errors: Record<string, string>, key: 'douyin' | 'bilibili', items: unknown) => {
   if (!Array.isArray(items)) {
     errors[`pushlist.${key}`] = `${key} 推送列表必须是数组`
     return
@@ -96,28 +88,137 @@ export const validateConfig = (config: ConfigType | null): Record<string, string
   const numberRules: NumberValidationRule[] = [
     { path: ['app', 'renderScale'], label: '渲染精度', min: 50, max: 200 },
     { path: ['app', 'RenderWaitTime'], label: '渲染图片的等待时间', min: 0 },
-    { path: ['app', 'multiPageHeight'], label: '分页渲染时，每页的高度', min: 1000, max: 20000, disabled: !getValue<boolean>(config, ['app', 'multiPageRender'], true), error: '请输入一个范围在 1000 到 20000 之间的数字' },
-    { path: ['app', 'APIServerPort'], label: 'API服务端口', min: 1024, max: 65535, disabled: appApiServerMount, error: '请输入一个范围在 1024 到 65535 之间的数字' },
-    { path: ['upload', 'groupfilevalue'], label: '群文件上传阈值', min: 1, disabled: !uploadUseGroupFile || uploadVideoSendMode === 'base64' },
+    {
+      path: ['app', 'multiPageHeight'],
+      label: '分页渲染时，每页的高度',
+      min: 1000,
+      max: 20000,
+      disabled: !getValue<boolean>(config, ['app', 'multiPageRender'], true),
+      error: '请输入一个范围在 1000 到 20000 之间的数字'
+    },
+    {
+      path: ['app', 'APIServerPort'],
+      label: 'API服务端口',
+      min: 1024,
+      max: 65535,
+      disabled: appApiServerMount,
+      error: '请输入一个范围在 1024 到 65535 之间的数字'
+    },
+    {
+      path: ['upload', 'groupfilevalue'],
+      label: '群文件上传阈值',
+      min: 1,
+      disabled: !uploadUseGroupFile || uploadVideoSendMode === 'base64'
+    },
     { path: ['upload', 'filelimit'], label: '视频拦截阈值', min: 1, disabled: !uploadUseFileLimit },
     { path: ['upload', 'compresstrigger'], label: '压缩触发阈值', min: 1, disabled: !uploadCompress },
     { path: ['upload', 'compressvalue'], label: '压缩后的值', min: 1, disabled: !uploadCompress },
-    { path: ['upload', 'downloadMaxSpeed'], label: '最大下载速度', min: 1, max: 1000, disabled: !uploadDownloadThrottle, error: '请输入一个范围在 1 到 1000 之间的数字' },
-    { path: ['upload', 'downloadMinSpeed'], label: '最低下载速度', min: 0.1, max: 100, disabled: !uploadDownloadThrottle || !uploadDownloadAutoReduce, error: '请输入一个范围在 0.1 到 100 之间的数字' },
-    { path: ['request', 'timeout'], label: '请求超时时间', min: 1000, max: 300000, error: '请输入一个范围在 1000 到 300000 之间的数字' },
-    { path: ['request', 'proxy', 'port'], label: '代理端口', min: 1, max: 65535, disabled: !proxyEnabled, error: '请输入一个范围在 1 到 65535 之间的数字' },
-    { path: ['douyin', 'numcomment'], label: '评论解析数量', min: 1, disabled: !douyinEnabled || !includesValue(douyinSendContent, 'comment') },
-    { path: ['douyin', 'subCommentLimit'], label: '次级评论解析数量', min: 1, max: 20, disabled: !douyinEnabled || !includesValue(douyinSendContent, 'comment') },
-    { path: ['douyin', 'maxAutoVideoSize'], label: '视频体积上限（MB）', min: 1, max: 20000, disabled: !douyinEnabled || douyinVideoQuality !== 'adapt' },
-    { path: ['douyin', 'danmakuOpacity'], label: '弹幕透明度', min: 0, max: 100, disabled: !douyinEnabled || !douyinBurnDanmaku },
-    { path: ['douyin', 'push', 'pushMaxAutoVideoSize'], label: '推送视频体积上限（MB）', min: 1, max: 20000, disabled: !douyinPushEnabled || douyinPushQuality !== 'adapt' },
-    { path: ['bilibili', 'numcomment'], label: '评论解析数量', min: 1, disabled: !bilibiliEnabled || !includesValue(bilibiliSendContent, 'comment') },
-    { path: ['bilibili', 'maxAutoVideoSize'], label: '视频体积上限（MB）', min: 1, max: 20000, disabled: !bilibiliEnabled || Number(bilibiliVideoQuality) !== 0 },
-    { path: ['bilibili', 'danmakuOpacity'], label: '弹幕透明度', min: 0, max: 100, disabled: !bilibiliEnabled || !bilibiliBurnDanmaku },
-    { path: ['bilibili', 'push', 'pushMaxAutoVideoSize'], label: '视频动态的视频体积上限（MB）', min: 1, max: 20000, disabled: !bilibiliPushEnabled || !bilibiliPushParsedynamic || Number(bilibiliPushQuality) !== 0 },
+    {
+      path: ['upload', 'downloadMaxSpeed'],
+      label: '最大下载速度',
+      min: 1,
+      max: 1000,
+      disabled: !uploadDownloadThrottle,
+      error: '请输入一个范围在 1 到 1000 之间的数字'
+    },
+    {
+      path: ['upload', 'downloadMinSpeed'],
+      label: '最低下载速度',
+      min: 0.1,
+      max: 100,
+      disabled: !uploadDownloadThrottle || !uploadDownloadAutoReduce,
+      error: '请输入一个范围在 0.1 到 100 之间的数字'
+    },
+    {
+      path: ['request', 'timeout'],
+      label: '请求超时时间',
+      min: 1000,
+      max: 300000,
+      error: '请输入一个范围在 1000 到 300000 之间的数字'
+    },
+    {
+      path: ['request', 'proxy', 'port'],
+      label: '代理端口',
+      min: 1,
+      max: 65535,
+      disabled: !proxyEnabled,
+      error: '请输入一个范围在 1 到 65535 之间的数字'
+    },
+    {
+      path: ['douyin', 'numcomment'],
+      label: '评论解析数量',
+      min: 1,
+      disabled: !douyinEnabled || !includesValue(douyinSendContent, 'comment')
+    },
+    {
+      path: ['douyin', 'subCommentLimit'],
+      label: '次级评论解析数量',
+      min: 1,
+      max: 20,
+      disabled: !douyinEnabled || !includesValue(douyinSendContent, 'comment')
+    },
+    {
+      path: ['douyin', 'maxAutoVideoSize'],
+      label: '视频体积上限（MB）',
+      min: 1,
+      max: 20000,
+      disabled: !douyinEnabled || douyinVideoQuality !== 'adapt'
+    },
+    {
+      path: ['douyin', 'danmakuOpacity'],
+      label: '弹幕透明度',
+      min: 0,
+      max: 100,
+      disabled: !douyinEnabled || !douyinBurnDanmaku
+    },
+    {
+      path: ['douyin', 'push', 'pushMaxAutoVideoSize'],
+      label: '推送视频体积上限（MB）',
+      min: 1,
+      max: 20000,
+      disabled: !douyinPushEnabled || douyinPushQuality !== 'adapt'
+    },
+    {
+      path: ['bilibili', 'numcomment'],
+      label: '评论解析数量',
+      min: 1,
+      disabled: !bilibiliEnabled || !includesValue(bilibiliSendContent, 'comment')
+    },
+    {
+      path: ['bilibili', 'maxAutoVideoSize'],
+      label: '视频体积上限（MB）',
+      min: 1,
+      max: 20000,
+      disabled: !bilibiliEnabled || Number(bilibiliVideoQuality) !== 0
+    },
+    {
+      path: ['bilibili', 'danmakuOpacity'],
+      label: '弹幕透明度',
+      min: 0,
+      max: 100,
+      disabled: !bilibiliEnabled || !bilibiliBurnDanmaku
+    },
+    {
+      path: ['bilibili', 'push', 'pushMaxAutoVideoSize'],
+      label: '视频动态的视频体积上限（MB）',
+      min: 1,
+      max: 20000,
+      disabled: !bilibiliPushEnabled || !bilibiliPushParsedynamic || Number(bilibiliPushQuality) !== 0
+    },
     { path: ['kuaishou', 'numcomment'], label: '评论解析数量', min: 1, disabled: !kuaishouEnabled || !kuaishouComment },
-    { path: ['xiaohongshu', 'numcomment'], label: '评论解析数量', min: 1, disabled: !xiaohongshuEnabled || !includesValue(xiaohongshuSendContent, 'comment') },
-    { path: ['xiaohongshu', 'maxAutoVideoSize'], label: '视频体积上限（MB）', min: 1, max: 20000, disabled: !xiaohongshuEnabled || xiaohongshuVideoQuality !== 'adapt' }
+    {
+      path: ['xiaohongshu', 'numcomment'],
+      label: '评论解析数量',
+      min: 1,
+      disabled: !xiaohongshuEnabled || !includesValue(xiaohongshuSendContent, 'comment')
+    },
+    {
+      path: ['xiaohongshu', 'maxAutoVideoSize'],
+      label: '视频体积上限（MB）',
+      min: 1,
+      max: 20000,
+      disabled: !xiaohongshuEnabled || xiaohongshuVideoQuality !== 'adapt'
+    }
   ]
 
   numberRules.forEach((rule) => addNumberValidation(errors, config, rule))

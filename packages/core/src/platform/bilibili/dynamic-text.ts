@@ -37,13 +37,10 @@ export interface UsernameMetadata {
 /**
  * 检查用户VIP状态并返回用户名元数据
  */
-export const getUsernameMetadata = (member: {
-  name?: string
-  vip?: { status?: number; nickname_color?: string }
-}): UsernameMetadata => {
+export const getUsernameMetadata = (member: { name?: string; vip?: { status?: number; nickname_color?: string } }): UsernameMetadata => {
   const vip = member.vip
   const vipStatus = vip?.status ?? 0
-  const nicknameColor = (vipStatus === 1 && vip?.nickname_color && vip?.nickname_color !== '') ? vip?.nickname_color : null
+  const nicknameColor = vipStatus === 1 && vip?.nickname_color && vip?.nickname_color !== '' ? vip?.nickname_color : null
   const name = member.name ?? ''
 
   return {
@@ -114,7 +111,19 @@ export const buildBilibiliDynamicRichText = (
     }
   }>
 ): RichTextDocument => {
-  const nodes: Array<ReturnType<typeof createTextNode | typeof createEmojiNode | typeof createTopicNode | typeof createAtNode | typeof createLotteryNode | typeof createWebLinkNode | typeof createVoteNode | typeof createViewPictureNode | typeof createLineBreakNode>> = []
+  const nodes: Array<
+    ReturnType<
+      | typeof createTextNode
+      | typeof createEmojiNode
+      | typeof createTopicNode
+      | typeof createAtNode
+      | typeof createLotteryNode
+      | typeof createWebLinkNode
+      | typeof createVoteNode
+      | typeof createViewPictureNode
+      | typeof createLineBreakNode
+    >
+  > = []
 
   if (!richTextNodes || !Array.isArray(richTextNodes) || richTextNodes.length === 0) {
     if (text) {
@@ -131,7 +140,7 @@ export const buildBilibiliDynamicRichText = (
   }
 
   // 辅助函数：根据单个 richTextNode 创建对应的富文本节点
-  const buildNodesFromTag = (tag: typeof richTextNodes[number]): Array<(typeof nodes)[number]> => {
+  const buildNodesFromTag = (tag: (typeof richTextNodes)[number]): Array<(typeof nodes)[number]> => {
     const matchText = tag.orig_text || tag.text || ''
     if (!matchText) return []
 
@@ -263,9 +272,7 @@ export const buildBilibiliDynamicRichText = (
  * - type: 1 → 纯文本（含换行、链接）
  * - type: 2 → @提及（biz_id 为用户ID）
  */
-export const buildBilibiliVideoDescRichText = (
-  descV2: Array<{ raw_text?: string; type?: number; biz_id?: number }>
-): RichTextDocument => {
+export const buildBilibiliVideoDescRichText = (descV2: Array<{ raw_text?: string; type?: number; biz_id?: number }>): RichTextDocument => {
   const nodes: RichTextNode[] = []
   for (const item of descV2) {
     const rawText = item.raw_text || ''
@@ -403,14 +410,12 @@ const parseOpusToRichText = (opus: ArticleContent['data']['opus'], useDarkTheme?
       const linkCard = paragraph.link_card
       const card = linkCard?.card
       if (card?.link) {
-        nodes.push(createLinkCardNode(
-          card.show_text || linkCard?.default_text || '链接卡片',
-          card.link,
-          {
+        nodes.push(
+          createLinkCardNode(card.show_text || linkCard?.default_text || '链接卡片', card.link, {
             cardType: String(card.link_type || ''),
             meta: { bizId: card.biz_id, contentCard: card.content_card }
-          }
-        ))
+          })
+        )
       } else {
         logger.error(`[bilibili] opus 富文本遇到 para_type=7 但缺少 link_card 数据: ${JSON.stringify(paragraph).slice(0, 500)}`)
       }
@@ -442,22 +447,14 @@ const parseOpusToRichText = (opus: ArticleContent['data']['opus'], useDarkTheme?
 
     // 检查是否是标题段落（通过 format.heading_type、header 样式、或字体大小模拟）
     const headingType = paragraph.format?.heading_type
-    const hasHeaderStyle = textNodes.some(
-      n => n.word?.style?.header && n.node_type === 1
-    )
+    const hasHeaderStyle = textNodes.some((n) => n.word?.style?.header && n.node_type === 1)
     // B站有些文章通过 font_size / font_level 模拟标题（para_type 仍为 1）
-    const hasLargeFont = textNodes.some(
-      n => n.node_type === 1 && n.word?.font_size && n.word.font_size >= 20
-    )
-    const hasXLargeLevel = textNodes.some(
-      n => n.node_type === 1 && ['xLarge', 'large'].includes(n.word?.font_level)
-    )
+    const hasLargeFont = textNodes.some((n) => n.node_type === 1 && n.word?.font_size && n.word.font_size >= 20)
+    const hasXLargeLevel = textNodes.some((n) => n.node_type === 1 && ['xLarge', 'large'].includes(n.word?.font_level))
     const isHeading = paraType === 9 || headingType !== undefined || hasHeaderStyle || hasLargeFont || hasXLargeLevel
     // 根据 font_size 推断标题级别（用于纯字体模拟的标题）
     const inferredHeadingLevel = (): number => {
-      const sizes = textNodes
-        .filter(n => n.node_type === 1 && n.word?.font_size)
-        .map(n => n.word.font_size)
+      const sizes = textNodes.filter((n) => n.node_type === 1 && n.word?.font_size).map((n) => n.word.font_size)
       if (sizes.length === 0) return 2
       const maxSize = Math.max(...sizes)
       if (maxSize >= 26) return 1
@@ -467,9 +464,7 @@ const parseOpusToRichText = (opus: ArticleContent['data']['opus'], useDarkTheme?
     }
 
     // 检查段落中是否有 list 样式
-    const hasList = textNodes.some(
-      n => n.word?.style?.list && n.node_type === 1
-    )
+    const hasList = textNodes.some((n) => n.word?.style?.list && n.node_type === 1)
     // 检查是否是引用段落
     const isBlockquote = paraType === 4
 
@@ -483,7 +478,7 @@ const parseOpusToRichText = (opus: ArticleContent['data']['opus'], useDarkTheme?
       if (typeof headingType === 'number' && headingType >= 1 && headingType <= 6) {
         level = headingType
       } else if (hasHeaderStyle) {
-        const headerNode = textNodes.find(n => n.word?.style?.header)
+        const headerNode = textNodes.find((n) => n.word?.style?.header)
         const headerLevel = headerNode?.word?.style?.header
         if (typeof headerLevel === 'number' && headerLevel >= 1 && headerLevel <= 6) {
           level = headerLevel
@@ -495,7 +490,7 @@ const parseOpusToRichText = (opus: ArticleContent['data']['opus'], useDarkTheme?
       nodes.push(createBlockquoteNode(inlineNodes))
     } else if (hasList) {
       // 确定列表类型（bullet / ordered）
-      const listNode = textNodes.find(n => n.word?.style?.list)
+      const listNode = textNodes.find((n) => n.word?.style?.list)
       const listType = listNode?.word?.style?.list
       const ordered = listType === 'ordered'
 
@@ -666,7 +661,7 @@ const parseHtmlContentToRichText = (content: string): RichTextDocument => {
         pushBlock(createBlockquoteNode([...(frame?.nodes || []), ...inlineNodes]))
       } else if (tag === 'ul' || tag === 'ol') {
         const frame = stack.pop()
-        const items = (frame?.nodes || []).filter(n => n.type === 'listItem')
+        const items = (frame?.nodes || []).filter((n) => n.type === 'listItem')
         pushBlock(createListNode(tag === 'ol', items as any))
       }
     }

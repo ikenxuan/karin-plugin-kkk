@@ -3,19 +3,19 @@ title: 评论区渲染
 description: 将评论区内容渲染为精美图片
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
-import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+import { Callout } from 'fumadocs-ui/components/callout'
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion'
 
 将各平台的评论区内容渲染为图片发送，方便在群聊中快速预览热评和用户讨论。
 
 ## 支持平台
 
-| 平台 | 楼中楼深度 | 特色功能 |
-|------|-----------|---------|
-| 抖音 | 最多 6 层 | 完整对话嵌套、自动缩进 |
-| B站 | 1 层 | 粉丝勋章、用户等级 |
-| 小红书 | 1 层 | 图片评论 |
-| 快手 | 仅主评论 | - |
+| 平台   | 楼中楼深度 | 特色功能               |
+| ------ | ---------- | ---------------------- |
+| 抖音   | 最多 6 层  | 完整对话嵌套、自动缩进 |
+| B站    | 1 层       | 粉丝勋章、用户等级     |
+| 小红书 | 1 层       | 图片评论               |
+| 快手   | 仅主评论   | -                      |
 
 ## 楼中楼说明
 
@@ -28,29 +28,23 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 ## 效果预览
 
 <Accordions>
-  <Accordion title="抖音评论渲染">
-    ![抖音评论示例](/douyin-comments-demo.png)
-  </Accordion>
-  <Accordion title="B站评论渲染">
-    ![B站评论示例](/bilibili-comments-demo.png)
-  </Accordion>
-  <Accordion title="小红书评论渲染">
-    ![小红书评论示例](/xiaohongshu-comments-demo.png)
-  </Accordion>
-  <Accordion title="快手评论渲染">
-    ![快手评论示例](/kuaishou-comments-demo.png)
-  </Accordion>
+  <Accordion title="抖音评论渲染">![抖音评论示例](/douyin-comments-demo.png)</Accordion>
+  <Accordion title="B站评论渲染">![B站评论示例](/bilibili-comments-demo.png)</Accordion>
+  <Accordion title="小红书评论渲染">![小红书评论示例](/xiaohongshu-comments-demo.png)</Accordion>
+  <Accordion title="快手评论渲染">![快手评论示例](/kuaishou-comments-demo.png)</Accordion>
 </Accordions>
 
 ## 功能特性
 
 ### 内容还原
+
 - **表情包解析**：支持各平台自带表情（抖音表情、B站小电视等）
 - **图片评论**：显示评论中的图片，HEIC 格式自动转 JPG
 - **特殊文本**：高亮显示 @用户、#话题
 - **粉丝勋章**：B站评论显示用户粉丝勋章和等级
 
 ### 智能排版
+
 - **置顶评论**：自动识别并置顶作者置顶的评论
 - **长文优化**：长评论自动优化排版，保证阅读体验
 - **对话嵌套**：抖音支持完整对话树，直观展示讨论结构

@@ -14,21 +14,18 @@ export const DouyinRecommendList: React.FC<DouyinRecommendListProps> = (props) =
   const isDark = props.data.useDarkTheme ?? false
 
   // 弥散光颜色配置 - 绿色 + 蓝色
-  const glowColors = isDark 
+  const glowColors = isDark
     ? {
-      primary: 'rgba(16, 185, 129, 0.15)', // Emerald-500 (Green)
-      secondary: 'rgba(59, 130, 246, 0.15)' // Blue-500 (Blue)
-    }
+        primary: 'rgba(16, 185, 129, 0.15)', // Emerald-500 (Green)
+        secondary: 'rgba(59, 130, 246, 0.15)' // Blue-500 (Blue)
+      }
     : {
-      primary: 'rgba(34, 197, 94, 0.25)', // Green-500
-      secondary: 'rgba(59, 130, 246, 0.25)' // Blue-500
-    }
+        primary: 'rgba(34, 197, 94, 0.25)', // Green-500
+        secondary: 'rgba(59, 130, 246, 0.25)' // Blue-500
+      }
 
   return (
-    <DefaultLayout 
-      {...props}
-      className="relative overflow-hidden bg-surface"
-    >
+    <DefaultLayout {...props} className="relative overflow-hidden bg-surface">
       {/* 1. 弥散光背景层 */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div
@@ -54,19 +51,15 @@ export const DouyinRecommendList: React.FC<DouyinRecommendListProps> = (props) =
 
       {/* 3. 主要内容区域 */}
       <div className="relative z-20 p-12 pb-0 grid grid-cols-12 gap-12 min-h-screen items-stretch">
-        
         {/* 左侧 */}
         <div className="col-span-4 flex flex-col justify-between py-8">
-          
           {/* 顶部 Branding */}
           <div className="flex flex-col gap-1 select-none">
             <span className="text-6xl font-black text-foreground/10 tracking-tighter leading-none">DOUYIN</span>
             <span className="text-6xl font-black text-emerald-500/20 tracking-tighter leading-none">RECOMMEND</span>
             <div className="flex items-center gap-3 mt-2">
               <div className="h-1.5 w-16 bg-emerald-500 rounded-full"></div>
-              <span className="text-base text-muted font-mono tracking-widest uppercase">
-                Push Notification
-              </span>
+              <span className="text-base text-muted font-mono tracking-widest uppercase">Push Notification</span>
             </div>
           </div>
 
@@ -74,7 +67,7 @@ export const DouyinRecommendList: React.FC<DouyinRecommendListProps> = (props) =
           <div className="flex flex-col gap-10 relative">
             {/* 装饰图形 */}
             <div className="absolute -left-8 top-10 w-16 h-16 rounded-full border-4 border-emerald-300/30 animate-[bounce_4s_infinite]"></div>
-            
+
             {/* 装饰图形 */}
             <div className="absolute right-10 -top-4 w-6 h-6 rounded-full bg-blue-300/40"></div>
 
@@ -82,9 +75,9 @@ export const DouyinRecommendList: React.FC<DouyinRecommendListProps> = (props) =
               <div className="absolute -inset-8 bg-linear-to-br from-emerald-400 to-blue-400 rounded-full blur-2xl opacity-40 animate-pulse"></div>
               {/* 装饰图形 */}
               <div className="absolute -inset-4 rounded-full border-2 border-dashed border-emerald-400/30 animate-[spin_10s_linear_infinite]"></div>
-              
-              <img 
-                src={props.data.recommender_avatar} 
+
+              <img
+                src={props.data.recommender_avatar}
                 className="relative w-64 h-64 rounded-full border-[6px] border-white object-cover shadow-2xl"
                 alt="Recommender"
               />
@@ -102,10 +95,8 @@ export const DouyinRecommendList: React.FC<DouyinRecommendListProps> = (props) =
                   <path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6-4.8-6 4.8 2.4-7.2-6-4.8h7.6z" />
                 </svg>
               </span>
-              <div className="px-6 py-6 pt-0 rounded-full text-2xl text-muted font-mono">
-                @{props.data.recommender_douyin_id}
-              </div>
-              
+              <div className="px-6 py-6 pt-0 rounded-full text-2xl text-muted font-mono">@{props.data.recommender_douyin_id}</div>
+
               <div className="mt-6 flex flex-col items-center gap-2 text-emerald-500">
                 <div className="flex items-center gap-3">
                   <RiThumbUpFill size={40} className="fill-current" />
@@ -123,33 +114,31 @@ export const DouyinRecommendList: React.FC<DouyinRecommendListProps> = (props) =
           <div className="flex flex-col gap-8 relative">
             {/* 装饰图形 */}
             <div className="absolute left-4 bottom-4 w-32 h-32 bg-emerald-500/5 rounded-2xl -z-10 rotate-12"></div>
-            
+
             <div className="h-px w-full bg-linear-to-r from-surface-secondary via-border to-transparent"></div>
             <div className="flex items-end gap-6">
-              <img src={generateQRCode(props.data.share_url, props.data.useDarkTheme)} className="w-65 h-auto rounded-2xl mix-blend-multiply" alt="QR" />
+              <img
+                src={generateQRCode(props.data.share_url, props.data.useDarkTheme)}
+                className="w-65 h-auto rounded-2xl mix-blend-multiply"
+                alt="QR"
+              />
               <div className="flex flex-col justify-end h-56 pb-2">
                 <span className="text-muted text-sm font-mono mb-2">SCAN TO VIEW</span>
-                <span className="text-3xl font-bold text-foreground/80 leading-none">
-                  {format(new Date(), 'HH:mm')}
-                </span>
-                <span className="text-lg text-muted font-medium">
-                  {format(new Date(), 'yyyy.MM.dd')}
-                </span>
+                <span className="text-3xl font-bold text-foreground/80 leading-none">{format(new Date(), 'HH:mm')}</span>
+                <span className="text-lg text-muted font-medium">{format(new Date(), 'yyyy.MM.dd')}</span>
               </div>
             </div>
           </div>
-
         </div>
 
         {/* 右侧 */}
         <div className="col-span-8 h-full">
           <div className="h-full bg-surface/60 backdrop-blur-xl rounded-[3rem] p-10 border border-border flex flex-col gap-8 shadow-2xl relative overflow-hidden">
-            
             {/* 作者信息栏 */}
             <div className="flex items-center justify-between z-10">
               <div className="flex items-center gap-6 flex-1 min-w-0 mr-6">
-                <img 
-                  src={props.data.author_avatar} 
+                <img
+                  src={props.data.author_avatar}
                   className="w-24 h-24 rounded-full border-2 border-surface shadow-md shrink-0"
                   alt="Author"
                 />
@@ -157,9 +146,7 @@ export const DouyinRecommendList: React.FC<DouyinRecommendListProps> = (props) =
                   <span className="text-4xl font-bold text-foreground/90 truncate" title={props.data.author_username}>
                     {props.data.author_username}
                   </span>
-                  <span className="text-xl text-muted font-mono truncate">
-                    抖音号: {props.data.author_douyin_id}
-                  </span>
+                  <span className="text-xl text-muted font-mono truncate">抖音号: {props.data.author_douyin_id}</span>
                 </div>
               </div>
               <div className="px-6 py-3 bg-surface/80 backdrop-blur-md rounded-full text-muted font-medium text-lg shrink-0">
@@ -169,16 +156,12 @@ export const DouyinRecommendList: React.FC<DouyinRecommendListProps> = (props) =
 
             {/* 封面图 */}
             <div className="flex-1 relative rounded-[2.5rem] overflow-hidden group shadow-inner bg-black/5">
-              <img 
-                src={props.data.image_url} 
-                className="w-full h-full object-cover transition-transform duration-700"
-                alt="Cover"
-              />
+              <img src={props.data.image_url} className="w-full h-full object-cover transition-transform duration-700" alt="Cover" />
               {/* 描述遮罩 */}
               <div className="absolute inset-x-0 bottom-0 pt-40 pb-12 px-12 bg-linear-to-t from-black/90 via-black/50 to-transparent">
                 <div className="flex gap-6 items-start">
                   <Quote size={48} className="text-emerald-500/90 shrink-0 rotate-180 mt-2" />
-                  <div 
+                  <div
                     className="text-white text-4xl font-medium leading-relaxed line-clamp-3 drop-shadow-lg tracking-wide"
                     dangerouslySetInnerHTML={{ __html: props.data.desc || '分享视频' }}
                   />
@@ -194,10 +177,8 @@ export const DouyinRecommendList: React.FC<DouyinRecommendListProps> = (props) =
               <StatItem icon={RiStarFill} value={props.data.shouchang} />
               <StatItem icon={RiShareForwardFill} value={props.data.share} />
             </div>
-
           </div>
         </div>
-
       </div>
     </DefaultLayout>
   )

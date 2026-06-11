@@ -1,12 +1,7 @@
 /**
  * 主路由注册
  */
-import Client, {
-  createBilibiliRoutes,
-  createDouyinRoutes,
-  createKuaishouRoutes,
-  createXiaohongshuRoutes
-} from '@ikenxuan/amagi'
+import Client, { createBilibiliRoutes, createDouyinRoutes, createKuaishouRoutes, createXiaohongshuRoutes } from '@ikenxuan/amagi'
 import * as cors from 'cors'
 import * as httpProxy from 'http-proxy-middleware'
 import { app as karinApp, checkPort, logger } from 'node-karin'

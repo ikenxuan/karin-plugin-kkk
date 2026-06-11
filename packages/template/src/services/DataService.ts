@@ -29,7 +29,7 @@ export class DataService {
    * 获取单例实例
    * @returns DataService实例
    */
-  static getInstance (): DataService {
+  static getInstance(): DataService {
     if (!DataService.instance) {
       DataService.instance = new DataService()
     }
@@ -43,11 +43,9 @@ export class DataService {
    * @param filename 数据文件名（可选）
    * @returns 模板数据
    */
-  async getTemplateData (platform: PlatformType, templateId: string, filename?: string): Promise<any> {
+  async getTemplateData(platform: PlatformType, templateId: string, filename?: string): Promise<any> {
     try {
-      const url = filename
-        ? `/data/${platform}/${templateId}/${filename}`
-        : `/data/${platform}/${templateId}`
+      const url = filename ? `/data/${platform}/${templateId}/${filename}` : `/data/${platform}/${templateId}`
       const response = await this.axiosInstance.get(url)
       return response.data
     } catch (error) {
@@ -63,11 +61,9 @@ export class DataService {
    * @param data 数据对象
    * @param filename 文件名（可选）
    */
-  async saveTemplateData (platform: PlatformType, templateId: string, data: any, filename?: string): Promise<void> {
+  async saveTemplateData(platform: PlatformType, templateId: string, data: any, filename?: string): Promise<void> {
     try {
-      const url = filename
-        ? `/data/${platform}/${templateId}/files/${filename}`
-        : `/data/${platform}/${templateId}`
+      const url = filename ? `/data/${platform}/${templateId}/files/${filename}` : `/data/${platform}/${templateId}`
       await this.axiosInstance.post(url, data)
     } catch (error) {
       console.error(`保存${platform}/${templateId}数据失败:`, error)
@@ -81,7 +77,7 @@ export class DataService {
    * @param templateId 模板ID
    * @returns 文件名列表
    */
-  async getAvailableDataFiles (platform: PlatformType, templateId: string): Promise<string[]> {
+  async getAvailableDataFiles(platform: PlatformType, templateId: string): Promise<string[]> {
     try {
       const response = await this.axiosInstance.get(`/data/${platform}/${templateId}/files`)
       return response.data.files || []
@@ -97,7 +93,7 @@ export class DataService {
    * @param templateId 模板ID
    * @param filename 文件名
    */
-  async deleteDataFile (platform: PlatformType, templateId: string, filename: string): Promise<void> {
+  async deleteDataFile(platform: PlatformType, templateId: string, filename: string): Promise<void> {
     try {
       await this.axiosInstance.delete(`/data/${platform}/${templateId}/${filename}`)
     } catch (error) {
@@ -112,7 +108,7 @@ export class DataService {
    * @param useDarkTheme 是否使用深色主题
    * @returns 二维码数据URL
    */
-  async generateQRCode (url: string, useDarkTheme: boolean = false): Promise<string> {
+  async generateQRCode(url: string, useDarkTheme: boolean = false): Promise<string> {
     try {
       const response = await this.axiosInstance.get('/qrcode', {
         params: { url, useDarkTheme }

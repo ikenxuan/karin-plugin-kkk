@@ -10,63 +10,87 @@ import { bilibiliLogin } from '@/platform'
 import { douyinLogin } from '@/platform/douyin/login'
 
 // 包装缓存清理任务
-const handleCacheCleanup = wrapWithErrorHandler(async () => {
-  const twoHoursAgo = Date.now() - 2 * 60 * 60 * 1000 // 2小时前的时间戳
+const handleCacheCleanup = wrapWithErrorHandler(
+  async () => {
+    const twoHoursAgo = Date.now() - 2 * 60 * 60 * 1000 // 2小时前的时间戳
 
-  // 清理视频缓存
-  const videoDeleted = removeOldFiles(Common.tempDri.video, twoHoursAgo)
-  logger.debug(`${Common.tempDri.video} 目录下已删除 ${videoDeleted} 个文件`)
+    // 清理视频缓存
+    const videoDeleted = removeOldFiles(Common.tempDri.video, twoHoursAgo)
+    logger.debug(`${Common.tempDri.video} 目录下已删除 ${videoDeleted} 个文件`)
 
-  // 如果启用了本地下载图片，也清理图片缓存目录
-  if (Config.upload.imageSendMode === 'file') {
-    const imageDeleted = removeOldFiles(Common.tempDri.images, twoHoursAgo)
-    logger.debug(`${Common.tempDri.images} 目录下已删除 ${imageDeleted} 个文件`)
+    // 如果启用了本地下载图片，也清理图片缓存目录
+    if (Config.upload.imageSendMode === 'file') {
+      const imageDeleted = removeOldFiles(Common.tempDri.images, twoHoursAgo)
+      logger.debug(`${Common.tempDri.images} 目录下已删除 ${imageDeleted} 个文件`)
+    }
+  },
+  {
+    businessName: '缓存自动删除'
   }
-}, {
-  businessName: '缓存自动删除'
-})
+)
 
 export const task = Config.app.removeCache && karin.task('[kkk-缓存自动删除]', '*/30 * * * *', handleCacheCleanup, { log: false })
 
 // 包装B站登录命令
-const handleBilibiliLogin = wrapWithErrorHandler(async (e) => {
-  // await e.reply('暂时不可用')
-  // return true
-  await bilibiliLogin(e)
-  return true
-}, {
-  businessName: 'B站登录'
-})
+const handleBilibiliLogin = wrapWithErrorHandler(
+  async (e) => {
+    // await e.reply('暂时不可用')
+    // return true
+    await bilibiliLogin(e)
+    return true
+  },
+  {
+    businessName: 'B站登录'
+  }
+)
 
 // 包装抖音登录命令
-const handleDouyinLogin = wrapWithErrorHandler(async (e) => {
-  // await e.reply('暂时不可用')
-  // return true
-  await douyinLogin(e)
-  return true
-}, {
-  businessName: '抖音登录'
-})
+const handleDouyinLogin = wrapWithErrorHandler(
+  async (e) => {
+    // await e.reply('暂时不可用')
+    // return true
+    await douyinLogin(e)
+    return true
+  },
+  {
+    businessName: '抖音登录'
+  }
+)
 
 // 包装B站登录命令
-const handlTestWrapWithErrorHandler = wrapWithErrorHandler(async (_e) => {
-  logger.trace('测试跟踪日志')
-  logger.debug('测试调试日志')
-  logger.info('测试信息日志')
-  logger.mark('测试标记日志')
-  logger.warn('测试警告日志')
-  logger.error('测试错误日志')
-  logger.fatal('测试致命日志')
-  throw Error('测试异常')
-}, {
-  businessName: '测试命令-错误捕获'
+const handlTestWrapWithErrorHandler = wrapWithErrorHandler(
+  async (_e) => {
+    logger.trace('测试跟踪日志')
+    logger.debug('测试调试日志')
+    logger.info('测试信息日志')
+    logger.mark('测试标记日志')
+    logger.warn('测试警告日志')
+    logger.error('测试错误日志')
+    logger.fatal('测试致命日志')
+    throw Error('测试异常')
+  },
+  {
+    businessName: '测试命令-错误捕获'
+  }
+)
+
+export const biLogin = karin.command(/^#?(kkk)?\s*B站\s*(扫码)?\s*登录$/i, handleBilibiliLogin, {
+  perm: Config.bilibili.loginPerm,
+  name: 'kkk-ck管理'
 })
 
-export const biLogin = karin.command(/^#?(kkk)?\s*B站\s*(扫码)?\s*登录$/i, handleBilibiliLogin, { perm: Config.bilibili.loginPerm, name: 'kkk-ck管理' })
+export const dylogin = karin.command(/^#?(kkk)?抖音(扫码)?登录$/, handleDouyinLogin, {
+  perm: Config.douyin.loginPerm,
+  name: 'kkk-ck管理'
+})
 
-export const dylogin = karin.command(/^#?(kkk)?抖音(扫码)?登录$/, handleDouyinLogin, { perm: Config.douyin.loginPerm, name: 'kkk-ck管理' })
-
-export const testWrapWithErrorHandler = process.env.NODE_ENV === 'development' ? karin.command(/^#?(kkk)?\s*测试\s*错误捕获$/i, handlTestWrapWithErrorHandler, { perm: Config.bilibili.loginPerm, name: 'kkk-测试命令-错误捕获' }) : null 
+export const testWrapWithErrorHandler =
+  process.env.NODE_ENV === 'development'
+    ? karin.command(/^#?(kkk)?\s*测试\s*错误捕获$/i, handlTestWrapWithErrorHandler, {
+        perm: Config.bilibili.loginPerm,
+        name: 'kkk-测试命令-错误捕获'
+      })
+    : null
 
 // 删除指定时间之前的文件
 export const removeOldFiles = (dir: string, beforeTimestamp: number): number => {

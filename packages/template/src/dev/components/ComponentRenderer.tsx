@@ -40,16 +40,17 @@ const splitPreviewPayload = (payload: PreviewPayload | null | undefined) => {
 
   return {
     renderData,
-    extraProps: __extraProps && typeof __extraProps === 'object' && !Array.isArray(__extraProps)
-      ? __extraProps
-      : {}
+    extraProps: __extraProps && typeof __extraProps === 'object' && !Array.isArray(__extraProps) ? __extraProps : {}
   }
 }
 
 /**
  * 错误边界
  */
-class ComponentErrorBoundary extends React.Component<{ children: React.ReactNode; onError?: (error: Error) => void }, { hasError: boolean; error: Error | null }> {
+class ComponentErrorBoundary extends React.Component<
+  { children: React.ReactNode; onError?: (error: Error) => void },
+  { hasError: boolean; error: Error | null }
+> {
   constructor(props: any) {
     super(props)
     this.state = { hasError: false, error: null }
@@ -86,7 +87,15 @@ class ComponentErrorBoundary extends React.Component<{ children: React.ReactNode
  * @param props 组件属性
  * @returns JSX元素
  */
-const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, templateId, dataFile, data, loadError, onLoadComplete, versionEnabled = true }) => {
+const ComponentRendererInner: React.FC<ComponentRendererProps> = ({
+  platform,
+  templateId,
+  dataFile,
+  data,
+  loadError,
+  onLoadComplete,
+  versionEnabled = true
+}) => {
   const { renderData, extraProps } = React.useMemo(() => splitPreviewPayload(data), [data])
   const componentConfig = getComponentConfig(platform, templateId)
 
@@ -233,7 +242,10 @@ const ComponentRendererInner: React.FC<ComponentRendererProps> = ({ platform, te
                 <AlertTriangle size={28} className="text-white" strokeWidth={2.5} />
                 <div className="text-2xl font-bold text-white uppercase tracking-wider">错误信息</div>
               </div>
-              <div className="text-3xl font-semibold text-white bg-black/20 backdrop-blur-sm rounded-[40px] px-12 py-10" style={{ wordBreak: 'break-word' }}>
+              <div
+                className="text-3xl font-semibold text-white bg-black/20 backdrop-blur-sm rounded-[40px] px-12 py-10"
+                style={{ wordBreak: 'break-word' }}
+              >
                 {loadError.message}
               </div>
             </div>

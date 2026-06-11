@@ -19,7 +19,7 @@ export const getBilibiliID = async (url: string) => {
   if (/\/read\/cv\d+/.test(url) && url.includes('opus_fallback')) {
     url = url.split('?')[0]
   }
-  
+
   const resp = await axios.get(url, {
     headers: {
       'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'

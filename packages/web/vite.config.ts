@@ -1,8 +1,9 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
+
+import tailwindcss from '@tailwindcss/vite'
+import react from '@vitejs/plugin-react'
 import { codeInspectorPlugin } from 'code-inspector-plugin'
+import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -14,7 +15,7 @@ export default defineConfig({
       bundler: 'vite',
       showSwitch: true,
       hotKeys: ['shiftKey', 'altKey']
-    }),
+    })
   ],
   resolve: {
     alias: {
@@ -27,16 +28,16 @@ export default defineConfig({
     proxy: {
       '/kkk/v1': {
         target: 'http://localhost:7777',
-        changeOrigin: true,
+        changeOrigin: true
       },
       '/api/v1': {
         target: 'http://localhost:7777',
-        changeOrigin: true,
+        changeOrigin: true
       }
     }
   },
   build: {
     outDir: '../core/lib/web',
-    emptyOutDir: true,
+    emptyOutDir: true
   }
 })

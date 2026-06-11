@@ -1,15 +1,10 @@
 import { Accordion, Description, Input, Label, Switch, TextField } from '@heroui/react'
 import { ChevronDown } from 'lucide-react'
+
 import DisabledFieldHint from './DisabledFieldHint'
-import {
-  DeletePushItemButton,
-  FilterModeField,
-  GroupIdsField,
-  KeywordTagFields,
-  PushTypeField
-} from './PushlistFields'
-import { douyinPushTypeOptions } from './options'
 import { getPushlistGridClass } from './layout'
+import { douyinPushTypeOptions } from './options'
+import { DeletePushItemButton, FilterModeField, GroupIdsField, KeywordTagFields, PushTypeField } from './PushlistFields'
 import type { DouyinPushItem, DouyinPushType, PushlistDevice } from './types'
 
 interface DouyinPushItemPanelProps {
@@ -44,9 +39,7 @@ const DouyinPushItemPanel = ({ item, index, list, onChange, device }: DouyinPush
               </Switch>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="font-medium">
-                {item.remark || item.short_id || item.sec_uid || `推送项 ${index + 1}`}
-              </span>
+              <span className="font-medium">{item.remark || item.short_id || item.sec_uid || `推送项 ${index + 1}`}</span>
               <Description className="text-xs">
                 {item.short_id && `抖音号: ${item.short_id}`}
                 {item.sec_uid && !item.short_id && `sec_uid: ${item.sec_uid.slice(0, 20)}...`}
@@ -63,12 +56,7 @@ const DouyinPushItemPanel = ({ item, index, list, onChange, device }: DouyinPush
           <div className="space-y-4">
             <div className={getPushlistGridClass(device)}>
               <DisabledFieldHint disabled={disabled} device={device} message={disabledMessage}>
-                <TextField
-                  fullWidth
-                  isDisabled={disabled}
-                  value={item.sec_uid}
-                  onChange={(value) => updateItem({ sec_uid: value })}
-                >
+                <TextField fullWidth isDisabled={disabled} value={item.sec_uid} onChange={(value) => updateItem({ sec_uid: value })}>
                   <Label>sec_uid</Label>
                   <Input placeholder="选填，会根据抖音号自动获取" />
                   <Description>用户的 sec_uid，可从分享链接获取。选填，推送时会自动获取</Description>
@@ -91,12 +79,7 @@ const DouyinPushItemPanel = ({ item, index, list, onChange, device }: DouyinPush
             </div>
 
             <DisabledFieldHint disabled={disabled} device={device} message={disabledMessage}>
-              <TextField
-                fullWidth
-                isDisabled={disabled}
-                value={item.remark}
-                onChange={(value) => updateItem({ remark: value })}
-              >
+              <TextField fullWidth isDisabled={disabled} value={item.remark} onChange={(value) => updateItem({ remark: value })}>
                 <Label>备注名称</Label>
                 <Input placeholder="可选，用于识别该推送项" />
                 <Description>方便识别的名称，如：博主昵称</Description>
@@ -143,4 +126,3 @@ const DouyinPushItemPanel = ({ item, index, list, onChange, device }: DouyinPush
 }
 
 export default DouyinPushItemPanel
-

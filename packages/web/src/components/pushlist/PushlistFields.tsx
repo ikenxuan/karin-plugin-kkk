@@ -1,18 +1,11 @@
-import {
-  Button,
-  Checkbox,
-  CheckboxGroup,
-  Description,
-  Label,
-  ListBox,
-  Select,
-} from '@heroui/react'
+import { Button, Checkbox, CheckboxGroup, Description, Label, ListBox, Select } from '@heroui/react'
 import { Trash2 } from 'lucide-react'
+
 import ChipList from './ChipList'
 import DisabledFieldHint from './DisabledFieldHint'
 import GroupMappingsField from './GroupMappingsField'
-import { filterModeOptions } from './options'
 import { getPushlistGridClass } from './layout'
+import { filterModeOptions } from './options'
 import type { PushFilterMode, PushlistDevice, PushTypeOption } from './types'
 
 interface CommonDisabledFieldProps {
@@ -27,13 +20,7 @@ interface GroupIdsFieldProps extends CommonDisabledFieldProps {
 }
 
 export const GroupIdsField = ({ disabled, itemLabel, device, value, onChange }: GroupIdsFieldProps) => (
-  <GroupMappingsField
-    disabled={disabled}
-    device={device}
-    itemLabel={itemLabel}
-    value={value}
-    onChange={onChange}
-  />
+  <GroupMappingsField disabled={disabled} device={device} itemLabel={itemLabel} value={value} onChange={onChange} />
 )
 
 interface PushTypeFieldProps<T extends string> extends CommonDisabledFieldProps {
@@ -42,24 +29,9 @@ interface PushTypeFieldProps<T extends string> extends CommonDisabledFieldProps 
   onChange: (values: T[]) => void
 }
 
-export const PushTypeField = <T extends string>({
-  disabled,
-  itemLabel,
-  device,
-  options,
-  value,
-  onChange
-}: PushTypeFieldProps<T>) => (
-  <DisabledFieldHint
-    disabled={disabled}
-    device={device}
-    message={`开启【${itemLabel}】的推送开关后才能编辑此字段`}
-  >
-    <CheckboxGroup
-      isDisabled={disabled}
-      value={value}
-      onChange={(values) => onChange(values as T[])}
-    >
+export const PushTypeField = <T extends string>({ disabled, itemLabel, device, options, value, onChange }: PushTypeFieldProps<T>) => (
+  <DisabledFieldHint disabled={disabled} device={device} message={`开启【${itemLabel}】的推送开关后才能编辑此字段`}>
+    <CheckboxGroup isDisabled={disabled} value={value} onChange={(values) => onChange(values as T[])}>
       <Label>推送类型</Label>
       <Description>选择要推送的内容类型</Description>
       <div className={`mt-2 ${getPushlistGridClass(device)}`}>
@@ -85,11 +57,7 @@ interface FilterModeFieldProps extends CommonDisabledFieldProps {
 }
 
 export const FilterModeField = ({ disabled, itemLabel, device, value, onChange }: FilterModeFieldProps) => (
-  <DisabledFieldHint
-    disabled={disabled}
-    device={device}
-    message={`开启【${itemLabel}】的推送开关后才能编辑此字段`}
-  >
+  <DisabledFieldHint disabled={disabled} device={device} message={`开启【${itemLabel}】的推送开关后才能编辑此字段`}>
     <Select
       fullWidth
       isDisabled={disabled}

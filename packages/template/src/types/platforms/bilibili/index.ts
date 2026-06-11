@@ -4,8 +4,7 @@ import type { BaseComponentProps } from '../../index'
 export interface BilibiliQrcodeImgProps extends BaseComponentProps<{
   /** 分享链接 */
   share_url: string
-}> {
-}
+}> {}
 
 export * from './bangumi'
 export * from './comment'

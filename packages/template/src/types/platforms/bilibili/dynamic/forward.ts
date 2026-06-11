@@ -26,7 +26,7 @@ export interface OriginalContentAV {
   /** 弹幕数 */
   danmaku: string
   /** 视频标题 */
-  title: RichTextDocument,
+  title: RichTextDocument
   /** 动态文本内容（富文本文档） */
   text: RichTextDocument
 }
@@ -68,7 +68,7 @@ export interface OriginalContentWord {
   /** 装饰卡片 */
   decoration_card?: DecorationCardData
   /** 动态文本内容（富文本文档） */
-  text: RichTextDocument,
+  text: RichTextDocument
   /** 相关内容卡片 */
   additional?: BilibiliAdditionalData
 }
@@ -129,12 +129,13 @@ export interface BilibiliForwardContentProps {
 /**
  * B站转发动态组件属性接口
  */
-export interface BilibiliForwardDynamicProps extends BaseComponentProps<BilibiliDynamicBaseData & {
-  /** 动态文本内容（富文本文档） */
-  text: RichTextDocument
-  /** 原始内容 */
-  original_content: BilibiliForwardOriginalContentProps['original_content']
-  /** 图片URL */
-  imgList: string[] | null
-}> {
-}
+export interface BilibiliForwardDynamicProps extends BaseComponentProps<
+  BilibiliDynamicBaseData & {
+    /** 动态文本内容（富文本文档） */
+    text: RichTextDocument
+    /** 原始内容 */
+    original_content: BilibiliForwardOriginalContentProps['original_content']
+    /** 图片URL */
+    imgList: string[] | null
+  }
+> {}

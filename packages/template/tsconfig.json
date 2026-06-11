@@ -11,9 +11,7 @@
   "compilerOptions": {
     "composite": true,
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     }
   }
 }

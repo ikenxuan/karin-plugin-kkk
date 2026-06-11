@@ -1,57 +1,41 @@
-'use client';
-import { useEffect, useRef } from 'react';
-import { Button, Input, Label, Separator, Spinner, TextField, toast } from '@heroui/react';
-import gsap from 'gsap';
-import { useGeetest4 } from './useGeetest4';
+'use client'
+import { Button, Input, Label, Separator, Spinner, TextField, toast } from '@heroui/react'
+import gsap from 'gsap'
+import { useEffect, useRef } from 'react'
+
+import { useGeetest4 } from './useGeetest4'
 
 interface Geetest4PanelProps {
-  initialCaptchaId?: string;
+  initialCaptchaId?: string
 }
 
 export function Geetest4Panel({ initialCaptchaId }: Geetest4PanelProps) {
-  const resultRef = useRef<HTMLDivElement>(null);
-  const {
-    captchaId,
-    result,
-    isLoading,
-    isSuccess,
-    setCaptchaId,
-    handleGenerate,
-    handleCopyResult,
-    handleReset,
-  } = useGeetest4();
+  const resultRef = useRef<HTMLDivElement>(null)
+  const { captchaId, result, isLoading, isSuccess, setCaptchaId, handleGenerate, handleCopyResult, handleReset } = useGeetest4()
 
   useEffect(() => {
-    if (initialCaptchaId) setCaptchaId(initialCaptchaId);
-  }, [initialCaptchaId, setCaptchaId]);
+    if (initialCaptchaId) setCaptchaId(initialCaptchaId)
+  }, [initialCaptchaId, setCaptchaId])
 
   useEffect(() => {
     if (result) {
-      const text = `lot_number=${result.lot_number}&captcha_output=${result.captcha_output}&pass_token=${result.pass_token}&gen_time=${result.gen_time}`;
+      const text = `lot_number=${result.lot_number}&captcha_output=${result.captcha_output}&pass_token=${result.pass_token}&gen_time=${result.gen_time}`
       navigator.clipboard.writeText(text).then(
         () => toast.success('已自动复制到剪贴板'),
         () => {}
-      );
+      )
 
       if (resultRef.current) {
-        gsap.fromTo(
-          resultRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }
-        );
+        gsap.fromTo(resultRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' })
       }
     }
-  }, [result]);
+  }, [result])
 
   return (
     <div className="flex flex-col gap-5">
       <TextField>
         <Label>CAPTCHA_ID</Label>
-        <Input
-          placeholder="请输入 captcha_id"
-          value={captchaId}
-          onChange={(event) => setCaptchaId(event.target.value)}
-        />
+        <Input placeholder="请输入 captcha_id" value={captchaId} onChange={(event) => setCaptchaId(event.target.value)} />
       </TextField>
 
       {isLoading ? (
@@ -103,5 +87,5 @@ export function Geetest4Panel({ initialCaptchaId }: Geetest4PanelProps) {
 
       <div className="min-h-[100px]" />
     </div>
-  );
+  )
 }

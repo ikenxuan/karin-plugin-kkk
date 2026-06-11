@@ -9,7 +9,7 @@ const entryFile = resolve(__dirname, '../lib/index.js')
 
 describe('Entry File', () => {
   it('should load lib/index.js without throwing errors', async () => {
-    const result = await new Promise<{ code: number | null, error?: string }>((resolve) => {
+    const result = await new Promise<{ code: number | null; error?: string }>((resolve) => {
       const child = spawn(process.execPath, [entryFile], {
         stdio: ['ignore', 'pipe', 'pipe'],
         timeout: 10000

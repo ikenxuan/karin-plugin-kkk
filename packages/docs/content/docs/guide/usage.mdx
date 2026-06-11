@@ -3,7 +3,7 @@ title: 使用指南
 description: 详细的功能说明与命令使用指南
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
+import { Callout } from 'fumadocs-ui/components/callout'
 
 ## 解析功能
 
@@ -19,9 +19,7 @@ import { Callout } from 'fumadocs-ui/components/callout';
 - 快手支持链接和分享口令文本
 - 小红书支持 `xiaohongshu.com` / `xhslink.com`
 
-<Callout type="info">
-如果你在 WebUI 里关闭了“默认解析（`videoTool`）”，插件就会按你设置的“自定义优先级（`priority`）”工作。
-</Callout>
+<Callout type="info">如果你在 WebUI 里关闭了“默认解析（`videoTool`）”，插件就会按你设置的“自定义优先级（`priority`）”工作。</Callout>
 
 ### 手动解析
 
@@ -32,23 +30,21 @@ import { Callout } from 'fumadocs-ui/components/callout';
 #kkk解析
 ```
 
-<Callout type="info">
-`#弹幕解析` 也属于引用解析命令，但它只对抖音 / B站生效，并会强制进入弹幕烧录流程。
-</Callout>
+<Callout type="info">`#弹幕解析` 也属于引用解析命令，但它只对抖音 / B站生效，并会强制进入弹幕烧录流程。</Callout>
 
 ---
 
 ## 常用命令
 
-| 命令 | 作用 |
-|---|---|
-| `#kkk帮助` | 查看帮助菜单 |
-| `#kkk版本` / `#kkk更新日志` | 查看当前版本的更新日志 |
-| `#kkk更新` | 执行插件更新 |
-| `#kkk解析统计` | 查看当前群解析统计 |
-| `#kkk全局解析统计` | 查看全局解析统计，仅主人可用 |
-| `#抖音登录` | 获取抖音 Cookie |
-| `#B站登录` | 获取 B站 Cookie |
+| 命令                        | 作用                         |
+| --------------------------- | ---------------------------- |
+| `#kkk帮助`                  | 查看帮助菜单                 |
+| `#kkk版本` / `#kkk更新日志` | 查看当前版本的更新日志       |
+| `#kkk更新`                  | 执行插件更新                 |
+| `#kkk解析统计`              | 查看当前群解析统计           |
+| `#kkk全局解析统计`          | 查看全局解析统计，仅主人可用 |
+| `#抖音登录`                 | 获取抖音 Cookie              |
+| `#B站登录`                  | 获取 B站 Cookie              |
 
 ## 动态推送
 
@@ -98,13 +94,9 @@ import { Callout } from 'fumadocs-ui/components/callout';
 #B站登录
 ```
 
-<Callout type="info">
-这两个命令谁能用，取决于各平台配置页里的“谁可以触发扫码登录（`loginPerm`）”，修改后通常需要重启。
-</Callout>
+<Callout type="info">这两个命令谁能用，取决于各平台配置页里的“谁可以触发扫码登录（`loginPerm`）”，修改后通常需要重启。</Callout>
 
-<Callout type="warn">
-扫码登录拿到的 Cookie 会自动写入配置。它们只用于请求平台官方接口，不会被插件上传到第三方。
-</Callout>
+<Callout type="warn">扫码登录拿到的 Cookie 会自动写入配置。它们只用于请求平台官方接口，不会被插件上传到第三方。</Callout>
 
 ## 统计与排障
 

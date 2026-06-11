@@ -57,8 +57,8 @@ pnpm --filter web run build
 `src/index.css` 只导入 Tailwind CSS v4 和 HeroUI 样式：
 
 ```css
-@import "tailwindcss";
-@import "@heroui/styles";
+@import 'tailwindcss';
+@import '@heroui/styles';
 ```
 
 组件视觉由 HeroUI 组件和语义 props 承担，Tailwind 只用于布局、间距和尺寸。

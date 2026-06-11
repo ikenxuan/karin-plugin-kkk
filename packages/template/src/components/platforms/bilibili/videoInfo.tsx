@@ -110,130 +110,112 @@ const DanmakuOverlay: React.FC<{ items: BilibiliHotDanmaku[] }> = React.memo(({ 
 
 DanmakuOverlay.displayName = 'DanmakuOverlay'
 
-export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateType' | 'templateName'>> = React.memo(
-  (props) => {
-    return (
-      <DefaultLayout {...props} className="relative overflow-hidden">
-        {/* 全局氛围层 */}
-        <AmbientBackground pic={props.data.pic} />
+export const BilibiliVideoInfo: React.FC<Omit<BilibiliVideoInfoProps, 'templateType' | 'templateName'>> = React.memo((props) => {
+  return (
+    <DefaultLayout {...props} className="relative overflow-hidden">
+      {/* 全局氛围层 */}
+      <AmbientBackground pic={props.data.pic} />
 
-        <div className="relative z-10">
-          {/* 封面：全宽，底部极轻微溶解，不接文字 */}
-          <div className="relative overflow-hidden" style={coverMaskStyle}>
-            <EnhancedImage
-              src={props.data.pic}
-              alt={props.data.title}
-              className="object-cover w-full"
-              placeholder="视频封面"
-            />
-            {props.data.hotDanmaku && <DanmakuOverlay items={props.data.hotDanmaku} />}
+      <div className="relative z-10">
+        {/* 封面：全宽，底部极轻微溶解，不接文字 */}
+        <div className="relative overflow-hidden" style={coverMaskStyle}>
+          <EnhancedImage src={props.data.pic} alt={props.data.title} className="object-cover w-full" placeholder="视频封面" />
+          {props.data.hotDanmaku && <DanmakuOverlay items={props.data.hotDanmaku} />}
+        </div>
+
+        {/* 内容区：压在封面溶解区域之上 */}
+        <div className="flex flex-col gap-10 px-16 pt-20">
+          {/* 标题区 */}
+          <div className="flex flex-col gap-5">
+            <h1 className="text-[80px] font-black leading-tight text-foreground tracking-tight">{props.data.title}</h1>
+            <div className="flex justify-between items-center gap-4">
+              <div className="flex items-center gap-6 text-3xl text-foreground/30">
+                {/* 时间 */}
+                <div className="flex items-center gap-2">
+                  <Calendar size={32} className="text-foreground/20" />
+                  <span>{format(fromUnixTime(props.data.ctime), 'yyyy-MM-dd HH:mm')}</span>
+                </div>
+                {/* 播放 */}
+                <span className="flex items-center gap-1.5">
+                  <PlayIcon size={28} className="text-foreground/20" />
+                  {formatNumber(props.data.stat.view)}
+                </span>
+                {/* 评论 */}
+                <span className="flex items-center gap-1.5">
+                  <CommentIcon variant="line" size={28} className="text-foreground/20" />
+                  {formatNumber(props.data.stat.reply)}
+                </span>
+              </div>
+              {/* BV号 */}
+              <span className="font-mono text-3xl text-foreground/30">稿件BV号：{props.data.bvid}</span>
+            </div>
           </div>
 
-          {/* 内容区：压在封面溶解区域之上 */}
-          <div className="flex flex-col gap-10 px-16 pt-20">
-            {/* 标题区 */}
-            <div className="flex flex-col gap-5">
-              <h1 className="text-[80px] font-black leading-tight text-foreground tracking-tight">
-                {props.data.title}
-              </h1>
-              <div className="flex justify-between items-center gap-4">
-                <div className="flex items-center gap-6 text-3xl text-foreground/30">
-                  {/* 时间 */}
-                  <div className='flex items-center gap-2'>
-                    <Calendar size={32} className="text-foreground/20" />
-                    <span>{format(fromUnixTime(props.data.ctime), 'yyyy-MM-dd HH:mm')}</span>
-                  </div>
-                  {/* 播放 */}
-                  <span className="flex items-center gap-1.5">
-                    <PlayIcon size={28} className="text-foreground/20" />
-                    {formatNumber(props.data.stat.view)}
-                  </span>
-                  {/* 评论 */}
-                  <span className="flex items-center gap-1.5">
-                    <CommentIcon variant='line' size={28} className="text-foreground/20" />
-                    {formatNumber(props.data.stat.reply)}
-                  </span>
-                </div>
-                {/* BV号 */}
-                <span className="font-mono text-3xl text-foreground/30">稿件BV号：{props.data.bvid}</span>
-              </div>
-              
+          {/* 视频简介 */}
+          {props.data.desc && (
+            <div className="text-5xl leading-relaxed text-foreground/75 pb-10">
+              {renderRichTextToReact(props.data.desc, {
+                at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+                topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+                lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+                webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+                vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
+                viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
+              })}
             </div>
+          )}
 
-            {/* 视频简介 */}
-            {props.data.desc && (
-              <div className="text-5xl leading-relaxed text-foreground/75 pb-10">
-                {renderRichTextToReact(props.data.desc, {
-                  at: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-                  topic: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-                  lottery: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-                  webLink: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-                  vote: { className: 'text-[#006A9E] dark:text-[#58B0D5]' },
-                  viewPicture: { className: 'text-[#006A9E] dark:text-[#58B0D5]' }
-                })}
-              </div>
-            )}
-
-            {/* 互动数据：点赞 / 投币 / 收藏 / 分享 */}
-            <div className="flex justify-around items-center">
-              <div className="flex items-center gap-5 text-5xl">
-                <ThumbUpIcon size={90} className="text-foreground/30" />
-                <span className="tabular-nums text-foreground">{formatNumber(props.data.stat.like)}</span>
-              </div>
-              <div className="flex items-center gap-5 text-5xl">
-                <CoinIcon size={90} className="text-foreground/30" />
-                <span className="tabular-nums text-foreground">{formatNumber(props.data.stat.coin)}</span>
-              </div>
-              <div className="flex items-center gap-5 text-5xl">
-                <StarIcon size={90} className="text-foreground/30" />
-                <span className="tabular-nums text-foreground">{formatNumber(props.data.stat.favorite)}</span>
-              </div>
-              <div className="flex items-center gap-5 text-5xl">
-                <ShareIcon size={90} className="text-foreground/30" />
-                <span className="tabular-nums text-foreground">{formatNumber(props.data.stat.share)}</span>
-              </div>
+          {/* 互动数据：点赞 / 投币 / 收藏 / 分享 */}
+          <div className="flex justify-around items-center">
+            <div className="flex items-center gap-5 text-5xl">
+              <ThumbUpIcon size={90} className="text-foreground/30" />
+              <span className="tabular-nums text-foreground">{formatNumber(props.data.stat.like)}</span>
             </div>
+            <div className="flex items-center gap-5 text-5xl">
+              <CoinIcon size={90} className="text-foreground/30" />
+              <span className="tabular-nums text-foreground">{formatNumber(props.data.stat.coin)}</span>
+            </div>
+            <div className="flex items-center gap-5 text-5xl">
+              <StarIcon size={90} className="text-foreground/30" />
+              <span className="tabular-nums text-foreground">{formatNumber(props.data.stat.favorite)}</span>
+            </div>
+            <div className="flex items-center gap-5 text-5xl">
+              <ShareIcon size={90} className="text-foreground/30" />
+              <span className="tabular-nums text-foreground">{formatNumber(props.data.stat.share)}</span>
+            </div>
+          </div>
 
-            <div />
+          <div />
 
-            {/* UP主信息：头像左，文字右，利用 flex 自然撑开宽度 */}
-            <div className="flex gap-10 items-center ml-6">
-              <div className="relative shrink-0 w-56 h-56 flex items-center justify-center">
-                <EnhancedImage
-                  src={props.data.owner.face}
-                  alt={props.data.owner.name}
-                  className="object-cover w-44 h-44 rounded-full"
-                  placeholder={props.data.owner.name.charAt(0)}
-                  isCircular
-                />
-                {props.data.owner.frame && (
-                  <EnhancedImage
-                    src={props.data.owner.frame}
-                    alt="头像框"
-                    className="absolute inset-0 scale-138"
-                  />
-                )}
-              </div>
-              <div className="flex flex-col gap-8 min-w-0 flex-1">
-                <GlowText glowStrength={props.data.useDarkTheme ? 1 : 0}>
-                  <p
-                    className="text-7xl font-bold truncate"
-                    style={props.data.owner.usernameMeta?.nicknameColor
-                      ? { color: props.data.owner.usernameMeta.nicknameColor }
-                      : undefined}
-                  >
-                    {props.data.owner.usernameMeta?.name ?? props.data.owner.name}
-                  </p>
-                </GlowText>
-                <p className="text-5xl text-scrollbar">UID: {props.data.owner.mid}</p>
-              </div>
+          {/* UP主信息：头像左，文字右，利用 flex 自然撑开宽度 */}
+          <div className="flex gap-10 items-center ml-6">
+            <div className="relative shrink-0 w-56 h-56 flex items-center justify-center">
+              <EnhancedImage
+                src={props.data.owner.face}
+                alt={props.data.owner.name}
+                className="object-cover w-44 h-44 rounded-full"
+                placeholder={props.data.owner.name.charAt(0)}
+                isCircular
+              />
+              {props.data.owner.frame && <EnhancedImage src={props.data.owner.frame} alt="头像框" className="absolute inset-0 scale-138" />}
+            </div>
+            <div className="flex flex-col gap-8 min-w-0 flex-1">
+              <GlowText glowStrength={props.data.useDarkTheme ? 1 : 0}>
+                <p
+                  className="text-7xl font-bold truncate"
+                  style={props.data.owner.usernameMeta?.nicknameColor ? { color: props.data.owner.usernameMeta.nicknameColor } : undefined}
+                >
+                  {props.data.owner.usernameMeta?.name ?? props.data.owner.name}
+                </p>
+              </GlowText>
+              <p className="text-5xl text-scrollbar">UID: {props.data.owner.mid}</p>
             </div>
           </div>
         </div>
-      </DefaultLayout>
-    )
-  }
-)
+      </div>
+    </DefaultLayout>
+  )
+})
 
 BilibiliVideoInfo.displayName = 'BilibiliVideoInfo'
 

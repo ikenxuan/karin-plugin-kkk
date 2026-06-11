@@ -1,9 +1,4 @@
-import type {
-  BilibiliPushType,
-  DouyinPushType,
-  PushFilterModeOption,
-  PushTypeOption
-} from './types'
+import type { BilibiliPushType, DouyinPushType, PushFilterModeOption, PushTypeOption } from './types'
 
 export const douyinPushTypeOptions: Array<PushTypeOption<DouyinPushType>> = [
   { label: '作品列表', value: 'post', description: '推送用户发布的作品' },
@@ -25,4 +20,3 @@ export const filterModeOptions: PushFilterModeOption[] = [
   { label: '黑名单', value: 'blacklist', description: '命中关键词/标签则不推送' },
   { label: '白名单', value: 'whitelist', description: '只推送命中关键词/标签的内容' }
 ]
-

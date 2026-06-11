@@ -25,22 +25,12 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
   onTemplateChange
 }) => {
   return (
-    <Card
-      className='w-full border border-border shadow-none'
-      variant='default'
-    >
-      <Card.Content className='space-y-4 px-4 pb-4'>
-        <Tabs
-          selectedKey={selectedPlatform}
-          variant='primary'
-          onSelectionChange={(key) => onPlatformChange(key as PlatformType)}
-        >
+    <Card className="w-full border border-border shadow-none" variant="default">
+      <Card.Content className="space-y-4 px-4 pb-4">
+        <Tabs selectedKey={selectedPlatform} variant="primary" onSelectionChange={(key) => onPlatformChange(key as PlatformType)}>
           <Tabs.ListContainer>
-            <Tabs.List
-              aria-label='平台选择'
-              className='w-full *:flex-1 *:justify-center *:px-3 *:py-2 *:text-xs *:font-medium'
-            >
-              {componentConfigs.map(config => (
+            <Tabs.List aria-label="平台选择" className="w-full *:flex-1 *:justify-center *:px-3 *:py-2 *:text-xs *:font-medium">
+              {componentConfigs.map((config) => (
                 <Tabs.Tab key={config.type} id={config.type}>
                   {config.name}
                   <Tabs.Indicator />
@@ -49,17 +39,15 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
             </Tabs.List>
           </Tabs.ListContainer>
 
-          {componentConfigs.map(config => (
-            <Tabs.Panel key={config.type} className='pt-3' id={config.type}>
-              <Label className='mb-2 block px-0.5 text-[10px] font-semibold tracking-[0.18em] text-muted uppercase'>
-                组件
-              </Label>
+          {componentConfigs.map((config) => (
+            <Tabs.Panel key={config.type} className="pt-3" id={config.type}>
+              <Label className="mb-2 block px-0.5 text-[10px] font-semibold tracking-[0.18em] text-muted uppercase">组件</Label>
 
-              <ScrollShadow className='max-h-[calc(100vh-26rem)] pe-1' hideScrollBar size={48}>
+              <ScrollShadow className="max-h-[calc(100vh-26rem)] pe-1" hideScrollBar size={48}>
                 <ListBox
                   aria-label={`${config.name}组件列表`}
                   selectedKeys={new Set([selectedTemplate])}
-                  selectionMode='single'
+                  selectionMode="single"
                   onSelectionChange={(keys) => {
                     const key = Array.from(keys as Set<React.Key>)[0]
                     if (typeof key === 'string') {
@@ -68,21 +56,12 @@ export const PlatformSelector: React.FC<PlatformSelectorProps> = ({
                   }}
                 >
                   {config.components
-                    .filter(component => component.enabled)
-                    .map(component => (
-                      <ListBox.Item
-                        key={component.id}
-                        className='px-3 py-2.5'
-                        id={component.id}
-                        textValue={component.name}
-                      >
-                        <div className='flex min-w-0 flex-1 flex-col'>
-                          <Label className='truncate text-sm font-medium text-foreground'>
-                            {component.name}
-                          </Label>
-                          <Description className='truncate text-xs text-muted'>
-                            {component.id}
-                          </Description>
+                    .filter((component) => component.enabled)
+                    .map((component) => (
+                      <ListBox.Item key={component.id} className="px-3 py-2.5" id={component.id} textValue={component.name}>
+                        <div className="flex min-w-0 flex-1 flex-col">
+                          <Label className="truncate text-sm font-medium text-foreground">{component.name}</Label>
+                          <Description className="truncate text-xs text-muted">{component.id}</Description>
                         </div>
                         <ListBox.ItemIndicator />
                       </ListBox.Item>

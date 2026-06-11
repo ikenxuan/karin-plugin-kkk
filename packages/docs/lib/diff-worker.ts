@@ -32,7 +32,11 @@ export interface ComputeResult {
 const CONTEXT_LINES = 3
 const MAX_WORD_DIFF_LINE_LENGTH = 500
 
-function computeWordDiff (oldContent: string, newContent: string, granularity: DiffGranularity = 'word'): { left: WordDiff[]; right: WordDiff[] } {
+function computeWordDiff(
+  oldContent: string,
+  newContent: string,
+  granularity: DiffGranularity = 'word'
+): { left: WordDiff[]; right: WordDiff[] } {
   const parts = granularity === 'char' ? diffChars(oldContent, newContent) : diffWords(oldContent, newContent)
   const left: WordDiff[] = []
   const right: WordDiff[] = []
@@ -56,7 +60,7 @@ interface NumberedLine {
   newLineNum?: number
 }
 
-function computeFileDiff (oldContent: string, newContent: string, granularity: DiffGranularity = 'word'): ComputeResult {
+function computeFileDiff(oldContent: string, newContent: string, granularity: DiffGranularity = 'word'): ComputeResult {
   const lineDiff = diffLines(oldContent, newContent)
 
   const allLines: NumberedLine[] = []
@@ -77,9 +81,7 @@ function computeFileDiff (oldContent: string, newContent: string, granularity: D
     }
   }
 
-  const changeIndices = allLines
-    .map((line, idx) => line.type !== 'context' ? idx : -1)
-    .filter((idx): idx is number => idx !== -1)
+  const changeIndices = allLines.map((line, idx) => (line.type !== 'context' ? idx : -1)).filter((idx): idx is number => idx !== -1)
 
   const ranges: Array<{ start: number; end: number }> = []
   for (const idx of changeIndices) {
@@ -107,8 +109,10 @@ function computeFileDiff (oldContent: string, newContent: string, granularity: D
       let newCount = 0
       for (let k = range.start; k <= range.end; k++) {
         const ln = allLines[k]
-        if (ln.type === 'context') { oldCount++; newCount++ }
-        else if (ln.type === 'remove') oldCount++
+        if (ln.type === 'context') {
+          oldCount++
+          newCount++
+        } else if (ln.type === 'remove') oldCount++
         else if (ln.type === 'add') newCount++
       }
       rows.push({ type: 'skip', oldStart, oldCount, newStart, newCount })
@@ -141,8 +145,7 @@ function computeFileDiff (oldContent: string, newContent: string, granularity: D
         const pairCount = Math.min(removes.length, adds.length)
         for (let j = 0; j < pairCount; j++) {
           const shouldWordDiff =
-            removes[j].content.length <= MAX_WORD_DIFF_LINE_LENGTH &&
-            adds[j].content.length <= MAX_WORD_DIFF_LINE_LENGTH
+            removes[j].content.length <= MAX_WORD_DIFF_LINE_LENGTH && adds[j].content.length <= MAX_WORD_DIFF_LINE_LENGTH
 
           if (shouldWordDiff) {
             const { left, right } = computeWordDiff(removes[j].content, adds[j].content, granularity)

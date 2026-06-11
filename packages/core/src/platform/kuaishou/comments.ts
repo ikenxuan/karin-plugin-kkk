@@ -18,16 +18,13 @@ import { Config } from '@/module/utils/Config'
  *
  * 这里不再拼 HTML，而是输出共享富文本 JSON，交给 template 侧渲染 React 节点。
  */
-export const kuaishouComments = async (
-  data: KsWorkComments,
-  emojiData: RichTextEmojiDefinition[]
-): Promise<KuaishouCommentItem[]> => {
+export const kuaishouComments = async (data: KsWorkComments, emojiData: RichTextEmojiDefinition[]): Promise<KuaishouCommentItem[]> => {
   const rootComments = data?.data?.visionCommentList?.rootComments
   if (!Array.isArray(rootComments) || rootComments.length === 0) {
     return []
   }
 
-  const comments = rootComments.map(comment => ({
+  const comments = rootComments.map((comment) => ({
     cid: comment.commentId,
     aweme_id: comment.commentId,
     nickname: comment.authorName,
@@ -38,9 +35,7 @@ export const kuaishouComments = async (
     reply_comment_total: comment.subCommentCount ?? 0
   }))
 
-  return comments
-    .sort((a, b) => b.digg_count - a.digg_count)
-    .slice(0, Math.min(comments.length, Config.kuaishou.numcomment))
+  return comments.sort((a, b) => b.digg_count - a.digg_count).slice(0, Math.min(comments.length, Config.kuaishou.numcomment))
 }
 
 /**
@@ -51,10 +46,7 @@ export const kuaishouComments = async (
  * - `@昵称(uid)` 形式的提及；
  * - 评论里的换行与空格。
  */
-const buildKuaishouRichText = (
-  text: string,
-  emojiData: RichTextEmojiDefinition[]
-): RichTextDocument => {
+const buildKuaishouRichText = (text: string, emojiData: RichTextEmojiDefinition[]): RichTextDocument => {
   const normalizedText = typeof text === 'string' ? text : String(text || '')
   const emojiTokens = [...emojiData].sort((a, b) => b.name.length - a.name.length)
   const nodes: RichTextNode[] = []
@@ -93,7 +85,7 @@ const buildKuaishouRichText = (
       continue
     }
 
-    const matchedEmoji = emojiTokens.find(item => normalizedText.startsWith(item.name, index))
+    const matchedEmoji = emojiTokens.find((item) => normalizedText.startsWith(item.name, index))
     if (matchedEmoji) {
       pushBuffer()
       nodes.push(createEmojiNode(matchedEmoji.name, matchedEmoji.url))

@@ -33,10 +33,7 @@ export class ComponentAutoRegistry {
     }
 
     // 计算总数
-    this.registrationProgress.total = componentConfigs.reduce(
-      (sum, p) => sum + p.components.filter(c => c.enabled).length,
-      0
-    )
+    this.registrationProgress.total = componentConfigs.reduce((sum, p) => sum + p.components.filter((c) => c.enabled).length, 0)
     this.registrationProgress.completed = 0
 
     // 使用 stdout 实现单行更新
@@ -61,7 +58,7 @@ export class ComponentAutoRegistry {
 
     // 串行注册各平台（平台内并行），这样进度更清晰
     for (const platformConfig of componentConfigs) {
-      const enabledCount = platformConfig.components.filter(c => c.enabled).length
+      const enabledCount = platformConfig.components.filter((c) => c.enabled).length
       if (enabledCount > 0) {
         this.registrationProgress.currentPlatform = platformConfig.type
         updateProgress() // 立即显示当前平台
@@ -88,11 +85,8 @@ export class ComponentAutoRegistry {
    * @param platformConfig 平台配置
    * @param onProgress 进度回调
    */
-  private static async registerPlatformComponents(
-    platformConfig: ExtendedPlatformConfig,
-    onProgress?: () => void
-  ): Promise<void> {
-    const enabledComponents = platformConfig.components.filter(c => c.enabled)
+  private static async registerPlatformComponents(platformConfig: ExtendedPlatformConfig, onProgress?: () => void): Promise<void> {
+    const enabledComponents = platformConfig.components.filter((c) => c.enabled)
 
     if (enabledComponents.length === 0) {
       return

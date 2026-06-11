@@ -65,11 +65,7 @@ export const appConfigSchema: SectionSchema = {
       inputType: 'number',
       label: '渲染图片的等待时间',
       description: os.platform() === 'linux' ? '单位：秒，Linux系统下不能为0' : '单位：秒，传递 0 可禁用',
-      rules: [
-        os.platform() === 'linux'
-          ? { min: 1, error: 'Linux系统下渲染等待时间不能为0' }
-          : { min: 0 }
-      ]
+      rules: [os.platform() === 'linux' ? { min: 1, error: 'Linux系统下渲染等待时间不能为0' } : { min: 0 }]
     },
     {
       key: 'multiPageRender',
@@ -94,8 +90,16 @@ export const appConfigSchema: SectionSchema = {
       description: '解析遇到实况图时的处理和发送方式。注意：生成视频性能开销大，2C2G 服务器单张约需 20 秒',
       orientation: 'horizontal',
       options: [
-        { label: '视频 + 实况图', value: 'video_and_livephoto', description: '生成并发送仿 iPhone Live Photo 播放效果的视频（播放三次）+ 对应系统的实况图' },
-        { label: '仅视频', value: 'video_only', description: '仅生成并发送仿 iPhone Live Photo 播放效果的视频（播放三次）' },
+        {
+          label: '视频 + 实况图',
+          value: 'video_and_livephoto',
+          description: '生成并发送仿 iPhone Live Photo 播放效果的视频（播放三次）+ 对应系统的实况图'
+        },
+        {
+          label: '仅视频',
+          value: 'video_only',
+          description: '仅生成并发送仿 iPhone Live Photo 播放效果的视频（播放三次）'
+        },
         { label: '仅实况图', value: 'livephoto_only', description: '仅生成并发送对应系统的实况图，性能开销小' }
       ]
     },

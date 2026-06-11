@@ -63,4 +63,4 @@ interface XiaohongshuNoteInfoData {
 /**
  * 小红书笔记信息组件属性接口
  */
-export interface XiaohongshuNoteInfoProps extends BaseComponentProps<XiaohongshuNoteInfoData> { }
+export interface XiaohongshuNoteInfoProps extends BaseComponentProps<XiaohongshuNoteInfoData> {}

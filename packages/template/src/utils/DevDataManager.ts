@@ -45,7 +45,7 @@ export class DevDataManager {
    * 检查是否在开发环境
    * @returns 是否在开发环境
    */
-  private static isDevEnvironment (): boolean {
+  private static isDevEnvironment(): boolean {
     return process.env.NODE_ENV === 'development'
   }
 
@@ -53,7 +53,7 @@ export class DevDataManager {
    * 确保目录存在
    * @param dirPath 目录路径
    */
-  private static ensureDir (dirPath: string): void {
+  private static ensureDir(dirPath: string): void {
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true })
     }
@@ -65,7 +65,7 @@ export class DevDataManager {
    * @param templateName 模板名称
    * @returns 完整的目录路径
    */
-  static getTemplateDataDir (platform: string, templateName: string): string {
+  static getTemplateDataDir(platform: string, templateName: string): string {
     if (!devDataDir) {
       // 在非开发环境下，返回一个临时目录路径，但不抛出错误
       logger.debug('DevDataManager: 当前不在开发环境，数据保存功能将被禁用')
@@ -81,7 +81,7 @@ export class DevDataManager {
    * 格式：YYYY-MM-DD HHhmmss.json
    * @returns 版本化文件名
    */
-  private static generateVersionedFilename (): string {
+  private static generateVersionedFilename(): string {
     const now = new Date()
     const year = now.getFullYear()
     const month = String(now.getMonth() + 1).padStart(2, '0')
@@ -97,7 +97,7 @@ export class DevDataManager {
    * @param dir 模板数据目录
    * @returns 版本记录文件路径
    */
-  private static getVersionsFilePath (dir: string): string {
+  private static getVersionsFilePath(dir: string): string {
     return path.join(dir, 'versions.json')
   }
 
@@ -106,7 +106,7 @@ export class DevDataManager {
    * @param dir 模板数据目录
    * @returns 版本记录对象
    */
-  private static readVersionsFile (dir: string): VersionsFile {
+  private static readVersionsFile(dir: string): VersionsFile {
     try {
       const filePath = this.getVersionsFilePath(dir)
       if (fs.existsSync(filePath)) {
@@ -125,7 +125,7 @@ export class DevDataManager {
    * @param dir 模板数据目录
    * @param versionsData 版本记录数据
    */
-  private static writeVersionsFile (dir: string, versionsData: VersionsFile): void {
+  private static writeVersionsFile(dir: string, versionsData: VersionsFile): void {
     try {
       const filePath = this.getVersionsFilePath(dir)
       fs.writeFileSync(filePath, JSON.stringify(versionsData, null, 2), 'utf-8')
@@ -139,7 +139,7 @@ export class DevDataManager {
    * @param dir 模板数据目录
    * @param versionsData 版本记录数据
    */
-  private static cleanupOldVersions (dir: string, versionsData: VersionsFile): void {
+  private static cleanupOldVersions(dir: string, versionsData: VersionsFile): void {
     try {
       // 如果版本数超过限制，删除最旧的
       while (versionsData.versions.length > MAX_VERSIONS_PER_TEMPLATE) {
@@ -169,11 +169,7 @@ export class DevDataManager {
    * @param data 要保存的数据
    * @returns 是否保存成功
    */
-  static saveRenderData (
-    platform: string,
-    templateName: string,
-    data: any
-  ): boolean {
+  static saveRenderData(platform: string, templateName: string, data: any): boolean {
     // 只在开发环境下保存
     if (!this.isDevEnvironment()) {
       return false
@@ -231,7 +227,7 @@ export class DevDataManager {
    * @param templateName 模板名称
    * @returns 版本记录列表
    */
-  static getVersions (platform: string, templateName: string): VersionRecord[] {
+  static getVersions(platform: string, templateName: string): VersionRecord[] {
     try {
       const dir = this.getTemplateDataDir(platform, templateName)
       const versionsData = this.readVersionsFile(dir)
@@ -249,7 +245,7 @@ export class DevDataManager {
    * @param versionFile 版本文件名（可选，不指定则获取 default.json）
    * @returns 数据对象或 null
    */
-  static getVersionData (platform: string, templateName: string, versionFile?: string): any {
+  static getVersionData(platform: string, templateName: string, versionFile?: string): any {
     try {
       const dir = this.getTemplateDataDir(platform, templateName)
       const filename = versionFile || 'default.json'
@@ -268,7 +264,7 @@ export class DevDataManager {
    * 获取开发数据目录路径
    * @returns 开发数据目录的完整路径
    */
-  static getDevDataDir (): string {
+  static getDevDataDir(): string {
     return devDataDir
   }
 
@@ -276,7 +272,7 @@ export class DevDataManager {
    * 检查开发数据目录是否存在
    * @returns 是否存在
    */
-  static hasDevDataDir (): boolean {
+  static hasDevDataDir(): boolean {
     return fs.existsSync(devDataDir)
   }
 }

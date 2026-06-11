@@ -12,12 +12,12 @@ import type { DouyinPushItem } from './types'
  * 通过对比aweme_id判断是否有新增的喜欢作品
  * @returns 返回需要推送的作品项数组
  */
-export async function processFavoriteList (
+export async function processFavoriteList(
   contentList: any[],
   sec_uid: string,
   userinfo: Result<DyUserInfo>,
   item: douyinPushItem,
-  targets: Array<{ groupId: string, botId: string }>,
+  targets: Array<{ groupId: string; botId: string }>,
   force: boolean = false
 ): Promise<DouyinPushItem[]> {
   const pushType = 'favorite'
@@ -33,7 +33,7 @@ export async function processFavoriteList (
 
   for (const [index, aweme] of contentList.entries()) {
     // 过滤掉已经推送过的群组
-    const validTargets: Array<{ groupId: string, botId: string }> = []
+    const validTargets: Array<{ groupId: string; botId: string }> = []
     for (const target of targets) {
       const isPushed = await douyinDB.isAwemePushed(aweme.aweme_id, sec_uid, target.groupId, pushType)
       if (!isPushed) {
@@ -88,7 +88,11 @@ export async function processFavoriteList (
   }
 
   // 更新列表快照
-  await douyinDB.updateListSnapshot(sec_uid, pushType, contentList.map(a => a.aweme_id))
+  await douyinDB.updateListSnapshot(
+    sec_uid,
+    pushType,
+    contentList.map((a) => a.aweme_id)
+  )
 
   return result
 }

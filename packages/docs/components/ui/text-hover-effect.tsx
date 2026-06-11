@@ -1,53 +1,46 @@
-"use client";
-import { useRef, useEffect, useState, useId, useCallback } from "react";
-import { motion } from "motion/react";
+'use client'
+import { motion } from 'motion/react'
+import { useRef, useEffect, useState, useId, useCallback } from 'react'
 
-export const TextHoverEffect = ({
-  text,
-  duration,
-}: {
-  text: string;
-  duration?: number;
-  automatic?: boolean;
-}) => {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const [maskPosition, setMaskPosition] = useState({ cx: "-50%", cy: "-50%" });
+export const TextHoverEffect = ({ text, duration }: { text: string; duration?: number; automatic?: boolean }) => {
+  const svgRef = useRef<SVGSVGElement>(null)
+  const [maskPosition, setMaskPosition] = useState({ cx: '-50%', cy: '-50%' })
 
-  const uniqueId = useId();
-  const gradientId = `textGradient-${uniqueId}`;
-  const maskId = `revealMask-${uniqueId}`;
-  const textMaskId = `textMask-${uniqueId}`;
+  const uniqueId = useId()
+  const gradientId = `textGradient-${uniqueId}`
+  const maskId = `revealMask-${uniqueId}`
+  const textMaskId = `textMask-${uniqueId}`
 
-  const fontSize = 100;
-  const textWidth = text.length * fontSize * 0.72;
-  const viewBoxWidth = textWidth + 4;
-  const viewBoxHeight = fontSize * 1.1;
-  const strokeWidth = 0.1;
+  const fontSize = 100
+  const textWidth = text.length * fontSize * 0.72
+  const viewBoxWidth = textWidth + 4
+  const viewBoxHeight = fontSize * 1.1
+  const strokeWidth = 0.1
 
   const updateMaskPosition = useCallback((clientX: number, clientY: number) => {
     if (svgRef.current) {
-      const svgRect = svgRef.current.getBoundingClientRect();
-      const cxPercentage = ((clientX - svgRect.left) / svgRect.width) * 100;
-      const cyPercentage = ((clientY - svgRect.top) / svgRect.height) * 100;
+      const svgRect = svgRef.current.getBoundingClientRect()
+      const cxPercentage = ((clientX - svgRect.left) / svgRect.width) * 100
+      const cyPercentage = ((clientY - svgRect.top) / svgRect.height) * 100
       setMaskPosition({
         cx: `${cxPercentage}%`,
-        cy: `${cyPercentage}%`,
-      });
+        cy: `${cyPercentage}%`
+      })
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      updateMaskPosition(e.clientX, e.clientY);
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [updateMaskPosition]);
+      updateMaskPosition(e.clientX, e.clientY)
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [updateMaskPosition])
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    updateMaskPosition(touch.clientX, touch.clientY);
-  };
+    const touch = e.touches[0]
+    updateMaskPosition(touch.clientX, touch.clientY)
+  }
 
   return (
     <svg
@@ -70,7 +63,7 @@ export const TextHoverEffect = ({
           gradientUnits="userSpaceOnUse"
           r="30%"
           animate={maskPosition}
-          transition={{ duration: duration ?? 0.15, ease: "easeOut" }}
+          transition={{ duration: duration ?? 0.15, ease: 'easeOut' }}
         >
           <stop offset="0%" stopColor="white" />
           <stop offset="100%" stopColor="black" />
@@ -89,7 +82,7 @@ export const TextHoverEffect = ({
         style={{ fontSize: `${fontSize}px` }}
         initial={{ strokeDashoffset: 1000, strokeDasharray: 1000 }}
         animate={{ strokeDashoffset: 0, strokeDasharray: 1000 }}
-        transition={{ duration: 2.5, ease: "easeInOut" }}
+        transition={{ duration: 2.5, ease: 'easeInOut' }}
       >
         {text}
       </motion.text>
@@ -107,5 +100,5 @@ export const TextHoverEffect = ({
         {text}
       </text>
     </svg>
-  );
-};
+  )
+}

@@ -1,5 +1,6 @@
-import type { ReactNode } from 'react'
 import { Popover, Tooltip } from '@heroui/react'
+import type { ReactNode } from 'react'
+
 import type { PushlistDevice } from './types'
 
 interface DisabledFieldHintProps {
@@ -15,9 +16,7 @@ const DisabledFieldHint = ({ children, disabled, message, device }: DisabledFiel
   if (device === 'mobile') {
     return (
       <Popover>
-        <Popover.Trigger className="w-full cursor-not-allowed">
-          {children}
-        </Popover.Trigger>
+        <Popover.Trigger className="w-full cursor-not-allowed">{children}</Popover.Trigger>
         <Popover.Content placement="bottom">
           <Popover.Arrow />
           <div className="px-3 py-2">
@@ -30,9 +29,7 @@ const DisabledFieldHint = ({ children, disabled, message, device }: DisabledFiel
 
   return (
     <Tooltip delay={0}>
-      <Tooltip.Trigger className="w-full cursor-not-allowed">
-        {children}
-      </Tooltip.Trigger>
+      <Tooltip.Trigger className="w-full cursor-not-allowed">{children}</Tooltip.Trigger>
       <Tooltip.Content showArrow placement="top">
         <Tooltip.Arrow />
         {message}
@@ -42,4 +39,3 @@ const DisabledFieldHint = ({ children, disabled, message, device }: DisabledFiel
 }
 
 export default DisabledFieldHint
-

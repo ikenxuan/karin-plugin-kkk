@@ -43,9 +43,7 @@ export const sanitizeIP = (text: string): string => {
  * @param headers 原始请求头
  * @returns 脱敏后的请求头（敏感字段直接删除）
  */
-export const sanitizeHeaders = (
-  headers: Record<string, string> | AxiosRequestConfig['headers']
-): Record<string, string> => {
+export const sanitizeHeaders = (headers: Record<string, string> | AxiosRequestConfig['headers']): Record<string, string> => {
   if (!headers) return {}
 
   const sanitized: Record<string, string> = {}
@@ -56,11 +54,11 @@ export const sanitizeHeaders = (
     const lowerKey = key.toLowerCase()
 
     // 敏感字段直接跳过，不添加到结果中
-    if (sensitiveKeys.some(sk => lowerKey.includes(sk))) {
+    if (sensitiveKeys.some((sk) => lowerKey.includes(sk))) {
       continue
     }
     // IP 相关字段也直接跳过
-    if (ipSensitiveKeys.some(sk => lowerKey.includes(sk))) {
+    if (ipSensitiveKeys.some((sk) => lowerKey.includes(sk))) {
       continue
     }
     // 其他字段保留
@@ -88,7 +86,7 @@ export const isRecoverableNetworkError = (error: any): boolean => {
     }
 
     const errorMessage = error.message?.toLowerCase() || ''
-    if (RECOVERABLE_KEYWORDS.some(keyword => errorMessage.includes(keyword.toLowerCase()))) {
+    if (RECOVERABLE_KEYWORDS.some((keyword) => errorMessage.includes(keyword.toLowerCase()))) {
       return true
     }
   }
@@ -96,7 +94,7 @@ export const isRecoverableNetworkError = (error: any): boolean => {
   // 检查普通 Error
   if (error instanceof Error) {
     const errorMessage = error.message?.toLowerCase() || ''
-    if (RECOVERABLE_KEYWORDS.some(keyword => errorMessage.includes(keyword.toLowerCase()))) {
+    if (RECOVERABLE_KEYWORDS.some((keyword) => errorMessage.includes(keyword.toLowerCase()))) {
       return true
     }
   }
@@ -111,7 +109,7 @@ export const isRecoverableNetworkError = (error: any): boolean => {
  */
 export const isThrottlingError = (error: any): boolean => {
   const code = error?.code || (error instanceof AxiosError ? error.code : null)
-  
+
   // ECONNRESET 是最常见的断流错误
   if (code === 'ECONNRESET') {
     return true
@@ -120,8 +118,8 @@ export const isThrottlingError = (error: any): boolean => {
   // 检查错误消息
   const message = error?.message?.toLowerCase() || ''
   const throttlingKeywords = ['connection reset', 'socket hang up', 'econnreset']
-  
-  return throttlingKeywords.some(keyword => message.includes(keyword))
+
+  return throttlingKeywords.some((keyword) => message.includes(keyword))
 }
 
 /**
@@ -131,11 +129,7 @@ export const isThrottlingError = (error: any): boolean => {
  * @param maxDelay 最大延迟（毫秒）
  * @returns 延迟时间（毫秒）
  */
-export const calculateBackoffDelay = (
-  retryCount: number,
-  baseDelay = 1000,
-  maxDelay = 8000
-): number => {
+export const calculateBackoffDelay = (retryCount: number, baseDelay = 1000, maxDelay = 8000): number => {
   return Math.min(2 ** retryCount * baseDelay, maxDelay)
 }
 
@@ -156,9 +150,7 @@ export const formatBytes = (bytes: number): string => {
  * @param headers 响应头
  * @returns 文件总大小，无法提取时返回 0
  */
-export const extractTotalBytesFromHeaders = (
-  headers?: Record<string, unknown> | null
-): number => {
+export const extractTotalBytesFromHeaders = (headers?: Record<string, unknown> | null): number => {
   if (!headers) return 0
 
   const contentRange = headers['content-range']
@@ -181,11 +173,11 @@ export const extractTotalBytesFromHeaders = (
  * @returns 安全的文件名
  */
 export const sanitizeFilename = (filename: string): string => {
-  // 移除或替换不安全的字符
+  // 替换非法符号 + 控制字符
   return filename
-    .replace(/[<>:"/\\|?*\x00-\x1f]/g, '_') // 替换非法字符
-    .replace(/^\.+/, '') // 移除开头的点
-    .replace(/\.+$/, '') // 移除结尾的点
-    .replace(/\s+/g, '_') // 替换空格为下划线
-    .substring(0, 200) // 限制长度
+    .replace(/[<>:"/\\|?*\p{Cc}]/gu, '_')
+    .replace(/^\.+/, '')
+    .replace(/\.+$/, '')
+    .replace(/\s+/g, '_')
+    .substring(0, 200)
 }

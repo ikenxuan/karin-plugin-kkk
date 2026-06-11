@@ -1,17 +1,95 @@
-import { SiAnthropic, SiBilibili, SiGithub, SiGooglephotos, SiHonor, SiHuawei, SiOppo, SiSamsung, SiVivo, SiXiaomi } from '@icons-pack/react-simple-icons'
+import {
+  SiAnthropic,
+  SiBilibili,
+  SiGithub,
+  SiGooglephotos,
+  SiHonor,
+  SiHuawei,
+  SiOppo,
+  SiSamsung,
+  SiVivo,
+  SiXiaomi
+} from '@icons-pack/react-simple-icons'
 import { Play as PhPlay, Question } from '@phosphor-icons/react'
 import {
-  AlertCircle, AlertTriangle, BarChart3, BellRing, Bookmark, Bot, Box,
-  Calendar, Camera, Check, CheckCircle, CheckCircle2, CircleEllipsis,
-  CircleFadingArrowUp, Clock, Code, Copy, CornerDownLeft, Cpu, Crown,
-  Download, Edit, ExternalLink, Eye, EyeOff, FileText, FileVideo,
-  Gamepad2, Gift, GitBranch, Hash, Heart, HelpCircle, Image, Info,
-  LayoutTemplate, Loader2, MapPin, Maximize, Menu, MessageCircle,
-  Monitor, Moon, Music, Palette, Pencil, Play, Plus, Puzzle, QrCode,
-  Quote, Radio, RefreshCw, RotateCcw, Save, ScanLine, Search, Settings2,
-  Share2, Shield, ShieldCheck, ShoppingBag, Smartphone, Sparkles, Square,
-  Star, Sun, Terminal, Trash2, Upload, User, UserPlus, Users, UsersRound,
-  Video, WandSparkles, X, Zap
+  AlertCircle,
+  AlertTriangle,
+  BarChart3,
+  BellRing,
+  Bookmark,
+  Bot,
+  Box,
+  Calendar,
+  Camera,
+  Check,
+  CheckCircle,
+  CheckCircle2,
+  CircleEllipsis,
+  CircleFadingArrowUp,
+  Clock,
+  Code,
+  Copy,
+  CornerDownLeft,
+  Cpu,
+  Crown,
+  Download,
+  Edit,
+  ExternalLink,
+  Eye,
+  EyeOff,
+  FileText,
+  FileVideo,
+  Gamepad2,
+  Gift,
+  GitBranch,
+  Hash,
+  Heart,
+  HelpCircle,
+  Image,
+  Info,
+  LayoutTemplate,
+  Loader2,
+  MapPin,
+  Maximize,
+  Menu,
+  MessageCircle,
+  Monitor,
+  Moon,
+  Music,
+  Palette,
+  Pencil,
+  Play,
+  Plus,
+  Puzzle,
+  QrCode,
+  Quote,
+  Radio,
+  RefreshCw,
+  RotateCcw,
+  Save,
+  ScanLine,
+  Search,
+  Settings2,
+  Share2,
+  Shield,
+  ShieldCheck,
+  ShoppingBag,
+  Smartphone,
+  Sparkles,
+  Square,
+  Star,
+  Sun,
+  Terminal,
+  Trash2,
+  Upload,
+  User,
+  UserPlus,
+  Users,
+  UsersRound,
+  Video,
+  WandSparkles,
+  X,
+  Zap
 } from 'lucide-react'
 import type { ComponentType } from 'react'
 import { AiFillHeart, AiFillPushpin, AiFillStar, AiOutlineVideoCamera } from 'react-icons/ai'
@@ -19,10 +97,24 @@ import { BiImage } from 'react-icons/bi'
 import { FaCommentDots, FaMusic, FaTiktok, FaUserGroup } from 'react-icons/fa6'
 import { MdFitScreen, MdInfoOutline, MdLightbulbOutline, MdLocationOn, MdSchedule } from 'react-icons/md'
 import {
-  RiArrowRightFill, RiGroupLine, RiHashtag, RiHeart3Fill, RiHeart3Line,
-  RiHeartLine, RiLiveLine, RiMessage3Fill, RiPieChart2Fill, RiShareForwardFill,
-  RiStarFill, RiStarLine, RiThumbUpFill, RiTiktokFill, RiTrophyFill,
-  RiUserFollowLine, RiVerifiedBadgeFill, RiVideoLine
+  RiArrowRightFill,
+  RiGroupLine,
+  RiHashtag,
+  RiHeart3Fill,
+  RiHeart3Line,
+  RiHeartLine,
+  RiLiveLine,
+  RiMessage3Fill,
+  RiPieChart2Fill,
+  RiShareForwardFill,
+  RiStarFill,
+  RiStarLine,
+  RiThumbUpFill,
+  RiTiktokFill,
+  RiTrophyFill,
+  RiUserFollowLine,
+  RiVerifiedBadgeFill,
+  RiVideoLine
 } from 'react-icons/ri'
 
 /**
@@ -197,6 +289,6 @@ export const iconRegistry: Record<string, ComponentType<any>> = {
 
 export const DEFAULT_FALLBACK_ICON = HelpCircle
 
-export function resolveIcon (iconName: string): ComponentType<any> {
+export function resolveIcon(iconName: string): ComponentType<any> {
   return iconRegistry[iconName] ?? DEFAULT_FALLBACK_ICON
 }

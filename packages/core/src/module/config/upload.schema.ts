@@ -14,7 +14,8 @@ export const uploadConfigSchema: SectionSchema = {
       key: 'videoSendMode',
       type: 'radio',
       label: '本地视频发送方式',
-      description: '选择发送本地视频的方式：\n• File - 使用 file 协议发送（需 Karin 与协议端同系统）\n• Base64 - 转 base64 发送（传输数据量增大 1/3，不在同一网络环境可能导致额外带宽成本，适合 karin 和协议端不在同一网络环境）',
+      description:
+        '选择发送本地视频的方式：\n• File - 使用 file 协议发送（需 Karin 与协议端同系统）\n• Base64 - 转 base64 发送（传输数据量增大 1/3，不在同一网络环境可能导致额外带宽成本，适合 karin 和协议端不在同一网络环境）',
       disabled: $var('usegroupfile'),
       options: [
         { label: 'File 协议（本地文件）', value: 'file' },
@@ -41,7 +42,8 @@ export const uploadConfigSchema: SectionSchema = {
       key: 'imageSendMode',
       type: 'radio',
       label: '网络图片发送方式',
-      description: '选择发送网络图片的方式：\n• URL - 直接传递链接给上游（可能因上游网络问题超时）\n• File - 下载后用 file 协议发送（需 Karin 与协议端同系统）\n• Base64 - 转 base64 发送（传输数据量增大 1/3，不在同一网络环境可能导致额外带宽成本）',
+      description:
+        '选择发送网络图片的方式：\n• URL - 直接传递链接给上游（可能因上游网络问题超时）\n• File - 下载后用 file 协议发送（需 Karin 与协议端同系统）\n• Base64 - 转 base64 发送（传输数据量增大 1/3，不在同一网络环境可能导致额外带宽成本）',
       options: [
         { label: 'URL 链接（直接传递）', value: 'url' },
         { label: 'File 协议（本地文件）', value: 'file' },
@@ -69,7 +71,8 @@ export const uploadConfigSchema: SectionSchema = {
       key: 'compress',
       type: 'switch',
       label: '压缩视频',
-      description: '开启后会将视频文件压缩后再上传，适合上传大文件，任务过程中会吃满CPU，对低配服务器不友好。需配置「压缩触发阈值」与「压缩后的值」'
+      description:
+        '开启后会将视频文件压缩后再上传，适合上传大文件，任务过程中会吃满CPU，对低配服务器不友好。需配置「压缩触发阈值」与「压缩后的值」'
     },
     {
       key: 'compresstrigger',

@@ -71,22 +71,22 @@ const SOFTWARE_FALLBACK: Record<DouyinVideoCodec, string> = {
 
 const cachedEncoders: Partial<Record<DouyinVideoCodec, string>> = {}
 
-async function detectEncoder (codec: DouyinVideoCodec): Promise<string> {
+async function detectEncoder(codec: DouyinVideoCodec): Promise<string> {
   if (cachedEncoders[codec]) return cachedEncoders[codec]!
 
   logger.debug(`[DouyinDanmaku] 开始检测 ${codec.toUpperCase()} 编码器...`)
 
   for (const encoder of ENCODER_PRIORITY[codec]) {
     try {
-      const result = await ffmpeg(
-        `-f lavfi -i color=c=black:s=320x240:d=0.1 -c:v ${encoder} -f null -`
-      )
+      const result = await ffmpeg(`-f lavfi -i color=c=black:s=320x240:d=0.1 -c:v ${encoder} -f null -`)
       if (result.status) {
         cachedEncoders[codec] = encoder
         logger.info(`[DouyinDanmaku] 使用 ${codec.toUpperCase()} 编码器: ${encoder}`)
         return encoder
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   const fallback = SOFTWARE_FALLBACK[codec]
@@ -96,7 +96,7 @@ async function detectEncoder (codec: DouyinVideoCodec): Promise<string> {
 }
 
 /** 获取视频平均码率（kbps） */
-async function getVideoBitrate (path: string): Promise<number> {
+async function getVideoBitrate(path: string): Promise<number> {
   // 用文件大小和时长计算平均码率，这是最准确的方式
   try {
     const fileSize = fs.statSync(path).size
@@ -105,14 +105,20 @@ async function getVideoBitrate (path: string): Promise<number> {
     if (duration > 0 && fileSize > 0) {
       return Math.round((fileSize * 8) / duration / 1000)
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 
   // 尝试从流信息获取
   try {
-    const { stdout } = await ffprobe(`-v error -select_streams v:0 -show_entries stream=bit_rate -of default=noprint_wrappers=1:nokey=1 "${path}"`)
+    const { stdout } = await ffprobe(
+      `-v error -select_streams v:0 -show_entries stream=bit_rate -of default=noprint_wrappers=1:nokey=1 "${path}"`
+    )
     const bitrate = parseInt(stdout.trim())
     if (bitrate > 0) return Math.round(bitrate / 1000)
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 
   return 0
 }
@@ -120,7 +126,7 @@ async function getVideoBitrate (path: string): Promise<number> {
 /**
  * 获取编码器参数
  */
-function getEncoderParams (encoder: string, targetBitrate?: number): string {
+function getEncoderParams(encoder: string, targetBitrate?: number): string {
   const threads = Math.max(1, Math.floor(os.cpus().length / 2))
 
   // 有码率时用目标码率模式
@@ -134,16 +140,20 @@ function getEncoderParams (encoder: string, targetBitrate?: number): string {
     if (encoder === 'h264_nvenc') return `-c:v h264_nvenc -preset p4 -rc vbr -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize}`
     if (encoder === 'h264_qsv') return `-c:v h264_qsv -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize}`
     if (encoder === 'h264_amf') return `-c:v h264_amf -quality balanced -rc vbr_peak -b:v ${bitrateK} -maxrate ${maxrate}`
-    if (encoder === 'libx264') return `-c:v libx264 -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize} -threads ${threads}`
+    if (encoder === 'libx264')
+      return `-c:v libx264 -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize} -threads ${threads}`
     if (encoder === 'hevc_nvenc') return `-c:v hevc_nvenc -preset p4 -rc vbr -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize}`
     if (encoder === 'hevc_qsv') return `-c:v hevc_qsv -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize}`
     if (encoder === 'hevc_amf') return `-c:v hevc_amf -quality balanced -rc vbr_peak -b:v ${bitrateK} -maxrate ${maxrate}`
-    if (encoder === 'libx265') return `-c:v libx265 -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize} -threads ${threads}`
+    if (encoder === 'libx265')
+      return `-c:v libx265 -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize} -threads ${threads}`
     if (encoder === 'av1_nvenc') return `-c:v av1_nvenc -preset p4 -rc vbr -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize}`
     if (encoder === 'av1_qsv') return `-c:v av1_qsv -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize}`
     if (encoder === 'av1_amf') return `-c:v av1_amf -quality balanced -rc vbr_peak -b:v ${bitrateK} -maxrate ${maxrate}`
-    if (encoder === 'libsvtav1') return `-c:v libsvtav1 -preset 6 -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize} -threads ${threads}`
-    if (encoder === 'libaom-av1') return `-c:v libaom-av1 -cpu-used 4 -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize} -threads ${threads}`
+    if (encoder === 'libsvtav1')
+      return `-c:v libsvtav1 -preset 6 -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize} -threads ${threads}`
+    if (encoder === 'libaom-av1')
+      return `-c:v libaom-av1 -cpu-used 4 -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize} -threads ${threads}`
     return `-c:v libx265 -preset medium -b:v ${bitrateK} -maxrate ${maxrate} -bufsize ${bufsize} -threads ${threads}`
   }
 
@@ -183,46 +193,53 @@ const estimateWidth = (text: string, fontSize: number): number => {
   return w
 }
 
-const escapeASS = (text: string): string =>
-  text.replace(/\\/g, '\\\\').replace(/\{/g, '\\{').replace(/\}/g, '\\}').replace(/\n/g, '\\N')
+const escapeASS = (text: string): string => text.replace(/\\/g, '\\\\').replace(/\{/g, '\\{').replace(/\}/g, '\\}').replace(/\n/g, '\\N')
 
-const escapeWinPath = (path: string): string =>
-  path.replace(/\\/g, '/').replace(/:/g, '\\:')
+const escapeWinPath = (path: string): string => path.replace(/\\/g, '/').replace(/:/g, '\\:')
 
 const isLandscape = (w: number, h: number) => w > h
 
 // ==================== FFprobe 工具 ====================
 
-export async function getDouyinResolution (path: string): Promise<{ width: number; height: number }> {
+export async function getDouyinResolution(path: string): Promise<{ width: number; height: number }> {
   try {
     const { stdout } = await ffprobe(`-v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "${path}"`)
     const [w, h] = stdout.trim().split('x').map(Number)
     if (w && h) return { width: w, height: h }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   try {
     const result = await ffmpeg(`-i "${path}" -f null -`, { timeout: 5000 })
     const stderr = result.stderr || ''
     const match = stderr.match(/(\d{3,4})x(\d{3,4})/)
     if (match) return { width: parseInt(match[1]), height: parseInt(match[2]) }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return { width: 1080, height: 1920 } // 抖音默认竖屏
 }
 
-export async function getDouyinFrameRate (path: string): Promise<number> {
+export async function getDouyinFrameRate(path: string): Promise<number> {
   try {
-    const { stdout } = await ffprobe(`-v error -select_streams v:0 -show_entries stream=r_frame_rate -of default=noprint_wrappers=1:nokey=1 "${path}"`)
+    const { stdout } = await ffprobe(
+      `-v error -select_streams v:0 -show_entries stream=r_frame_rate -of default=noprint_wrappers=1:nokey=1 "${path}"`
+    )
     const [num, den] = stdout.trim().split('/').map(Number)
     if (den > 0) return num / den
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   try {
     const result = await ffmpeg(`-i "${path}" -f null -`, { timeout: 5000 })
     const stderr = result.stderr || ''
     const fpsMatch = stderr.match(/(\d+(?:\.\d+)?)\s*fps/)
     if (fpsMatch) return parseFloat(fpsMatch[1])
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return 30
 }
-
 
 // ==================== ASS 生成 ====================
 
@@ -243,19 +260,13 @@ const FONT_SIZE_MAP: Record<DouyinDanmakuFontSize, { base: number; trackH: numbe
   large: { base: 40, trackH: 46 }
 }
 
-export function generateDouyinASS (
+export function generateDouyinASS(
   danmakuList: DouyinDanmakuElem[],
   width: number,
   height: number,
   options: DouyinDanmakuOptions = {}
 ): string {
-  const {
-    scrollTime = 8,
-    danmakuOpacity = 70,
-    fontName = 'Microsoft YaHei',
-    danmakuArea = 0.5,
-    danmakuFontSize = 'medium'
-  } = options
+  const { scrollTime = 8, danmakuOpacity = 70, fontName = 'Microsoft YaHei', danmakuArea = 0.5, danmakuFontSize = 'medium' } = options
 
   const fontScale = height / 1080
   const sizeConfig = FONT_SIZE_MAP[danmakuFontSize]
@@ -267,7 +278,10 @@ export function generateDouyinASS (
   const trackCount = Math.max(1, Math.floor((areaHeight - fontSize) / trackH))
   const minGap = Math.round(15 * fontScale)
   // 将 0-100 的透明度转换为 ASS 的 alpha 值（0-255，0为不透明，255为完全透明）
-  const alpha = Math.round((100 - Math.max(0, Math.min(100, danmakuOpacity))) * 2.55).toString(16).padStart(2, '0').toUpperCase()
+  const alpha = Math.round((100 - Math.max(0, Math.min(100, danmakuOpacity))) * 2.55)
+    .toString(16)
+    .padStart(2, '0')
+    .toUpperCase()
 
   let ass = `[Script Info]
 Title: Douyin Danmaku
@@ -302,7 +316,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
   }
 
   // 过滤并排序弹幕
-  const validDanmaku = danmakuList.filter(dm => dm.text && dm.text.trim())
+  const validDanmaku = danmakuList.filter((dm) => dm.text && dm.text.trim())
   const sorted = [...validDanmaku].sort((a, b) => a.offset_time - b.offset_time)
 
   for (const dm of sorted) {
@@ -368,7 +382,7 @@ const MAX_OUTPUT_WIDTH = 2160
  * 计算画布尺寸（竖屏适配）
  * 抖音视频大多是竖屏，但也可能有横屏视频需要转竖屏
  */
-function calcCanvas (origW: number, origH: number, verticalMode: DouyinVerticalMode): CanvasInfo {
+function calcCanvas(origW: number, origH: number, verticalMode: DouyinVerticalMode): CanvasInfo {
   if (verticalMode === 'off') {
     return { width: origW, height: origH, offsetY: 0, isVertical: false }
   }
@@ -411,7 +425,7 @@ function calcCanvas (origW: number, origH: number, verticalMode: DouyinVerticalM
 /**
  * 构建 FFmpeg 滤镜
  */
-function buildFilter (canvas: CanvasInfo, assPath: string): string {
+function buildFilter(canvas: CanvasInfo, assPath: string): string {
   const escaped = escapeWinPath(assPath)
   if (canvas.isVertical) {
     if (canvas.scale && canvas.scale !== 1 && canvas.scale < 1) {
@@ -425,7 +439,7 @@ function buildFilter (canvas: CanvasInfo, assPath: string): string {
 /**
  * 烧录抖音弹幕到视频
  */
-export async function burnDouyinDanmaku (
+export async function burnDouyinDanmaku(
   videoPath: string,
   danmakuList: DouyinDanmakuElem[],
   outputPath: string,
@@ -458,9 +472,7 @@ export async function burnDouyinDanmaku (
   const filter = buildFilter(canvas, assPath)
   const encoder = await detectEncoder(videoCodec)
   const encoderParams = getEncoderParams(encoder, sourceBitrate)
-  const result = await ffmpeg(
-    `-y -i "${videoPath}" -vf "${filter}" -r ${frameRate} ${encoderParams} -c:a copy "${outputPath}"`
-  )
+  const result = await ffmpeg(`-y -i "${videoPath}" -vf "${filter}" -r ${frameRate} ${encoderParams} -c:a copy "${outputPath}"`)
 
   Common.removeFile(assPath, true)
 

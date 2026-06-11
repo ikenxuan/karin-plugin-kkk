@@ -3,28 +3,28 @@ title: 动态照片解析
 description: 动态照片无水印解析与跨平台兼容
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
-import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+import { Callout } from 'fumadocs-ui/components/callout'
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion'
 
 插件在解析作品、动态或推送内容时，遇到 Live Photo / Motion Photo 资源，会按当前配置生成兼容的实况图文件，并可额外生成“仿 iPhone Live Photo”效果视频。
 
 ## 平台兼容性
 
-| 平台 | 存储方式 | 插件支持 | 说明 |
-|------|---------|:-------:|------|
-| **Google / Pixel** | 单文件（JPEG + MP4） | ✓ | 标准 Motion Photo 格式 |
-| **小米 HyperOS** | 单文件（JPEG + MP4） | ✓ | 兼容 Google 标准 + 小米扩展 |
-| **OPPO ColorOS** | 单文件（JPEG + MP4） | ✓ | 兼容 Google 标准 + OPPO 扩展 |
-| **华为/荣耀** | 单文件（JPEG + 标记） | ⚠️ | 理论支持，未经实测验证 |
-| **iPhone** | 双文件（HEIC + MOV） | ✗ | 独立存储，无法合成单文件 |
-| **vivo OriginOS** | 双文件（JPG + MP4） | ✗ | 独立存储，无法合成单文件 |
+| 平台               | 存储方式              | 插件支持 | 说明                         |
+| ------------------ | --------------------- | :------: | ---------------------------- |
+| **Google / Pixel** | 单文件（JPEG + MP4）  |    ✓     | 标准 Motion Photo 格式       |
+| **小米 HyperOS**   | 单文件（JPEG + MP4）  |    ✓     | 兼容 Google 标准 + 小米扩展  |
+| **OPPO ColorOS**   | 单文件（JPEG + MP4）  |    ✓     | 兼容 Google 标准 + OPPO 扩展 |
+| **华为/荣耀**      | 单文件（JPEG + 标记） |    ⚠️    | 理论支持，未经实测验证       |
+| **iPhone**         | 双文件（HEIC + MOV）  |    ✗     | 独立存储，无法合成单文件     |
+| **vivo OriginOS**  | 双文件（JPG + MP4）   |    ✗     | 独立存储，无法合成单文件     |
 
 <Callout type="info">
 当前默认组合是：
 
 - `livePhotoMode: video_and_livephoto`
 - `livePhotoSystem: oppo`
-</Callout>
+  </Callout>
 
 ## 使用方式
 
@@ -36,13 +36,9 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 4. 根据 `livePhotoSystem` 生成兼容不同相册系统的单文件图片
 5. 最终通过合并转发消息发送
 
-<Callout type="info">
-动态照片会以独立文件的形式出现在合并转发消息中，保存到相册后即可在支持的设备上播放。
-</Callout>
+<Callout type="info">动态照片会以独立文件的形式出现在合并转发消息中，保存到相册后即可在支持的设备上播放。</Callout>
 
-<Callout type="warn">
-**重要提示**：必须保存原图才能被设备正确识别为动态照片。如果保存压缩图，会丢失视频数据，只能看到静态图片。
-</Callout>
+<Callout type="warn">**重要提示**：必须保存原图才能被设备正确识别为动态照片。如果保存压缩图，会丢失视频数据，只能看到静态图片。</Callout>
 
 ## 配置选项
 
@@ -67,19 +63,17 @@ livePhotoSystem: oppo
 
 ### 可选值说明
 
-| 项目 | 可选值 | 说明 |
-|---|------|---------|
-| `livePhotoMode` | `video_and_livephoto` | 同时发送实况图和效果视频 |
-| `livePhotoMode` | `video_only` | 仅发送效果视频，适合只关心播放效果的场景 |
-| `livePhotoMode` | `livephoto_only` | 仅发送单文件实况图，性能开销更小 |
-| `livePhotoSystem` | `google` | Google 标准格式 |
-| `livePhotoSystem` | `xiaomi` | 小米兼容格式 |
-| `livePhotoSystem` | `oppo` | OPPO / OnePlus / realme 兼容格式，当前默认推荐 |
-| `livePhotoSystem` | `huawei_honor` | 华为 / 荣耀兼容格式，仍建议自行实机验证 |
+| 项目              | 可选值                | 说明                                           |
+| ----------------- | --------------------- | ---------------------------------------------- |
+| `livePhotoMode`   | `video_and_livephoto` | 同时发送实况图和效果视频                       |
+| `livePhotoMode`   | `video_only`          | 仅发送效果视频，适合只关心播放效果的场景       |
+| `livePhotoMode`   | `livephoto_only`      | 仅发送单文件实况图，性能开销更小               |
+| `livePhotoSystem` | `google`              | Google 标准格式                                |
+| `livePhotoSystem` | `xiaomi`              | 小米兼容格式                                   |
+| `livePhotoSystem` | `oppo`                | OPPO / OnePlus / realme 兼容格式，当前默认推荐 |
+| `livePhotoSystem` | `huawei_honor`        | 华为 / 荣耀兼容格式，仍建议自行实机验证        |
 
-<Callout type="info">
-如果你不确定选哪个系统，先用默认的 `oppo`；如果你更在意“尽量标准”，可以改回 `google`。
-</Callout>
+<Callout type="info">如果你不确定选哪个系统，先用默认的 `oppo`；如果你更在意“尽量标准”，可以改回 `google`。</Callout>
 
 ---
 
@@ -153,45 +147,25 @@ livePhotoSystem: oppo
 
 <Accordions>
   <Accordion title="Google 标准模式">
-    最通用的格式，兼容性最广。使用 Google Photos 定义的标准 XMP 命名空间。
-    
-    **适用设备**：
-    - Google Pixel 系列
-    - 部分三星设备
-    - 支持 Google Photos 的第三方应用
+    最通用的格式，兼容性最广。使用 Google Photos 定义的标准 XMP 命名空间。 **适用设备**： - Google Pixel 系列 -
+    部分三星设备 - 支持 Google Photos 的第三方应用
   </Accordion>
-  
-  <Accordion title="小米 HyperOS 模式">
-    在 Google 标准基础上添加小米特有的 XMP 扩展字段：
-    - `MiCamera:XMPMeta`：小米相册识别标记
-    - `GCamera:MicroVideo`：兼容旧版小米设备
-    
-    **适用设备**：
-    - 小米 / Redmi / POCO 系列（HyperOS）
-  </Accordion>
-  
-  <Accordion title="OPPO ColorOS 模式（当前默认推荐）">
-    在 Google 标准基础上添加 OPPO 特有的 XMP 扩展字段：
-    - `OpCamera:MotionPhotoOwner="oplus"`：OPPO 相册识别标记
-    - `OpCamera:OLivePhotoVersion`：动态照片版本号
-    - `OpCamera:VideoLength`：视频长度（字节）
-    
-    **适用设备**：
-    - OPPO / OnePlus / Realme 系列（ColorOS）
-  </Accordion>
-  
+
+<Accordion title="小米 HyperOS 模式">
+  在 Google 标准基础上添加小米特有的 XMP 扩展字段： - `MiCamera:XMPMeta`：小米相册识别标记 - `GCamera:MicroVideo`：兼容旧版小米设备
+  **适用设备**： - 小米 / Redmi / POCO 系列（HyperOS）
+</Accordion>
+
+<Accordion title="OPPO ColorOS 模式（当前默认推荐）">
+  在 Google 标准基础上添加 OPPO 特有的 XMP 扩展字段： - `OpCamera:MotionPhotoOwner="oplus"`：OPPO 相册识别标记 -
+  `OpCamera:OLivePhotoVersion`：动态照片版本号 - `OpCamera:VideoLength`：视频长度（字节） **适用设备**： - OPPO / OnePlus / Realme
+  系列（ColorOS）
+</Accordion>
+
   <Accordion title="华为/荣耀模式">
-    使用不同的实现方式，在文件末尾添加特殊标记而非 XMP 元数据：
-    ```
-    v2_f35              409:1000            LIVE_{timestamp}
-    ```
-    
-    **适用设备**：
-    - 华为 / 荣耀系列（HarmonyOS / MagicOS）
-    
-    <Callout type="warn">
-    此模式未经实测验证，可能存在兼容性问题。
-    </Callout>
+    使用不同的实现方式，在文件末尾添加特殊标记而非 XMP 元数据： ``` v2_f35 409:1000 LIVE_{timestamp}
+    ``` **适用设备**： - 华为 / 荣耀系列（HarmonyOS / MagicOS）
+    <Callout type="warn">此模式未经实测验证，可能存在兼容性问题。</Callout>
   </Accordion>
 </Accordions>
 

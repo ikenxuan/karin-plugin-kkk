@@ -83,7 +83,7 @@ export type EmojiType = 'EYES' | 'PROCESSING' | 'SUCCESS' | 'ERROR'
  * @param type 表情类型
  * @returns 表情 ID
  */
-export function getEmojiId (e: Message, type: EmojiType): string | number {
+export function getEmojiId(e: Message, type: EmojiType): string | number {
   const platform = e.bot?.adapter?.platform || 'other'
   const platformEmojis = PLATFORM_EMOJI_IDS[platform] || PLATFORM_EMOJI_IDS.other
   return platformEmojis[type]
@@ -102,11 +102,7 @@ export const EMOJI_IDS = PLATFORM_EMOJI_IDS.qq
  * @param isSet 是否设置表情（true=设置，false=取消），默认为 true
  * @returns 是否成功设置表情
  */
-export async function setEmojiReaction (
-  e: Message,
-  emojiId: string | number,
-  isSet: boolean = true
-): Promise<boolean> {
+export async function setEmojiReaction(e: Message, emojiId: string | number, isSet: boolean = true): Promise<boolean> {
   // 如果未启用表情回复功能，直接返回
   if (!Config.app.EmojiReply) {
     return false
@@ -116,7 +112,7 @@ export async function setEmojiReaction (
   if (e.isPrivate) {
     return false
   }
-  
+
   try {
     await e.bot.setMsgReaction(e.contact, e.messageId, emojiId, isSet)
     return true
@@ -134,7 +130,7 @@ export class EmojiReactionManager {
   private e: Message
   private emojiIds: Set<string | number> = new Set()
 
-  constructor (e: Message) {
+  constructor(e: Message) {
     this.e = e
   }
 
@@ -143,7 +139,7 @@ export class EmojiReactionManager {
    * @param type 表情类型
    * @returns 表情 ID
    */
-  private getPlatformEmojiId (type: EmojiType): string | number {
+  private getPlatformEmojiId(type: EmojiType): string | number {
     return getEmojiId(this.e, type)
   }
 
@@ -152,7 +148,7 @@ export class EmojiReactionManager {
    * @param emojiId 表情ID 或表情类型
    * @returns 实际的表情 ID
    */
-  private normalizeEmojiId (emojiId: string | number | EmojiType): string | number {
+  private normalizeEmojiId(emojiId: string | number | EmojiType): string | number {
     return typeof emojiId === 'string' && ['EYES', 'PROCESSING', 'SUCCESS', 'ERROR'].includes(emojiId)
       ? this.getPlatformEmojiId(emojiId as EmojiType)
       : emojiId
@@ -163,7 +159,7 @@ export class EmojiReactionManager {
    * @param emojiId 表情ID 或表情类型
    * @returns 是否成功
    */
-  async add (emojiId: string | number | EmojiType): Promise<boolean> {
+  async add(emojiId: string | number | EmojiType): Promise<boolean> {
     const actualEmojiId = this.normalizeEmojiId(emojiId)
     const success = await setEmojiReaction(this.e, actualEmojiId, true)
     if (success) {
@@ -177,7 +173,7 @@ export class EmojiReactionManager {
    * @param emojiId 表情ID 或表情类型
    * @returns 是否成功
    */
-  async remove (emojiId: string | number | EmojiType): Promise<boolean> {
+  async remove(emojiId: string | number | EmojiType): Promise<boolean> {
     const actualEmojiId = this.normalizeEmojiId(emojiId)
     const success = await setEmojiReaction(this.e, actualEmojiId, false)
     if (success) {
@@ -193,11 +189,15 @@ export class EmojiReactionManager {
    * @param delayMs 添加新表情后等待多少毫秒再移除旧表情，默认 2000ms
    * @returns 是否成功
    */
-  async replace (oldEmojiId: string | number | EmojiType, newEmojiId: string | number | EmojiType, delayMs: number = 2000): Promise<boolean> {
+  async replace(
+    oldEmojiId: string | number | EmojiType,
+    newEmojiId: string | number | EmojiType,
+    delayMs: number = 2000
+  ): Promise<boolean> {
     // 先添加新表情
     const addSuccess = await this.add(newEmojiId)
     // 等待指定时间
-    await new Promise(resolve => setTimeout(resolve, delayMs))
+    await new Promise((resolve) => setTimeout(resolve, delayMs))
     // 再移除旧表情
     await this.remove(oldEmojiId)
     return addSuccess
@@ -207,7 +207,7 @@ export class EmojiReactionManager {
    * 清除所有表情
    * @returns 成功清除的数量
    */
-  async clearAll (): Promise<number> {
+  async clearAll(): Promise<number> {
     let count = 0
     for (const emojiId of this.emojiIds) {
       const success = await setEmojiReaction(this.e, emojiId, false)
@@ -222,7 +222,7 @@ export class EmojiReactionManager {
    * @param keepEmojiIds 要保留的表情ID列表
    * @returns 移除的表情数量
    */
-  async keepOnly (keepEmojiIds: (string | number)[]): Promise<number> {
+  async keepOnly(keepEmojiIds: (string | number)[]): Promise<number> {
     const keepSet = new Set(keepEmojiIds)
     let removedCount = 0
 
@@ -246,22 +246,21 @@ export class EmojiReactionManager {
   /**
    * 获取当前所有表情ID
    */
-  getCurrentEmojiIds (): (string | number)[] {
+  getCurrentEmojiIds(): (string | number)[] {
     return Array.from(this.emojiIds)
   }
 
   /**
    * 检查是否有指定的表情
    */
-  has (emojiId: string | number): boolean {
+  has(emojiId: string | number): boolean {
     return this.emojiIds.has(emojiId)
   }
 
   /**
    * 获取当前表情数量
    */
-  count (): number {
+  count(): number {
     return this.emojiIds.size
   }
 }
-

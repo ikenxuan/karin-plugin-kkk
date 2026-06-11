@@ -1,12 +1,7 @@
 /**
  * Bot 管理 API
  */
-import {
-  createServerErrorResponse,
-  createSuccessResponse,
-  karin,
-  logger
-} from 'node-karin'
+import { createServerErrorResponse, createSuccessResponse, karin, logger } from 'node-karin'
 import type { RequestHandler } from 'node-karin/express'
 
 /**
@@ -40,14 +35,14 @@ export interface GroupDetailInfo extends GroupBriefInfo {
 }
 
 const getOnlineBotById = (botId: string) => {
-  return karin.getAllBotList().find(item => item.bot.account.selfId === botId)?.bot
+  return karin.getAllBotList().find((item) => item.bot.account.selfId === botId)?.bot
 }
 
 const getBotAvatar = async (bot: ReturnType<typeof getOnlineBotById>, botId: string) => {
   if (!bot) return ''
 
   try {
-    return await bot.getAvatarUrl(botId) || ''
+    return (await bot.getAvatarUrl(botId)) || ''
   } catch (e) {
     logger.warn(`[BotsAPI] 获取 Bot 头像失败 ${botId}:`, e)
     return ''
@@ -70,7 +65,7 @@ export const getBots: RequestHandler = async (_req, res) => {
 
       let avatar = ''
       try {
-        avatar = await bot.getAvatarUrl(bot.account.selfId) || ''
+        avatar = (await bot.getAvatarUrl(bot.account.selfId)) || ''
       } catch (e) {
         logger.warn(`[BotsAPI] 获取 Bot 头像失败 ${bot.account.selfId}:`, e)
       }
@@ -135,7 +130,7 @@ export const getBotGroups: RequestHandler = async (req, res) => {
     }
 
     const botList = karin.getAllBotList()
-    const botItem = botList.find(item => item.bot.account.selfId === botId)
+    const botItem = botList.find((item) => item.bot.account.selfId === botId)
 
     if (!botItem) {
       return createServerErrorResponse(res, 'Bot 不存在或不在线')
@@ -148,7 +143,7 @@ export const getBotGroups: RequestHandler = async (req, res) => {
     for (const group of groupList) {
       let avatar = ''
       try {
-        avatar = await bot.getGroupAvatarUrl(group.groupId) || ''
+        avatar = (await bot.getGroupAvatarUrl(group.groupId)) || ''
       } catch {
         // 忽略头像获取失败
       }
@@ -194,7 +189,7 @@ export const getBotGroupInfo: RequestHandler = async (req, res) => {
       const groupInfo = await bot.getGroupInfo(groupId)
       groupName = groupInfo?.groupName || groupName
       memberCount = groupInfo?.memberCount
-      groupAvatar = await bot.getGroupAvatarUrl(groupId) || ''
+      groupAvatar = (await bot.getGroupAvatarUrl(groupId)) || ''
     } catch (e) {
       logger.warn(`[BotsAPI] 获取群组信息失败 ${groupId}:`, e)
     }
@@ -243,8 +238,8 @@ export const getGroupsBatch: RequestHandler = async (req, res) => {
     const botList = karin.getAllBotList()
 
     for (const item of groups) {
-      const botItem = botList.find(b => b.bot.account.selfId === item.botId)
-      
+      const botItem = botList.find((b) => b.bot.account.selfId === item.botId)
+
       if (!botItem) {
         result.push({
           groupId: item.groupId,
@@ -269,8 +264,8 @@ export const getGroupsBatch: RequestHandler = async (req, res) => {
         if (groupInfo) {
           groupName = groupInfo.groupName || groupName
         }
-        groupAvatar = await bot.getGroupAvatarUrl(item.groupId) || ''
-        botAvatar = await bot.getAvatarUrl(item.botId) || ''
+        groupAvatar = (await bot.getGroupAvatarUrl(item.groupId)) || ''
+        botAvatar = (await bot.getAvatarUrl(item.botId)) || ''
       } catch (e) {
         logger.warn(`[BotsAPI] 获取群组信息失败 ${item.groupId}:`, e)
       }

@@ -67,19 +67,20 @@ export interface BilibiliDynamicBaseData {
 /**
  * B站普通动态组件属性接口
  */
-export interface BilibiliDynamicProps extends BaseComponentProps<BilibiliDynamicBaseData & {
-  /** 图文动态标题 */
-  title?: string
-  /** 动态文本内容（富文本文档） */
-  text: RichTextDocument | null
-  /** 图片URL数组 */
-  image_url: Array<{ image_src: string }>
-  /** 图片布局方式 */
-  imageLayout: string
-  /** 相关内容卡片 */
-  additional?: BilibiliAdditionalData
-}> {
-}
+export interface BilibiliDynamicProps extends BaseComponentProps<
+  BilibiliDynamicBaseData & {
+    /** 图文动态标题 */
+    title?: string
+    /** 动态文本内容（富文本文档） */
+    text: RichTextDocument | null
+    /** 图片URL数组 */
+    image_url: Array<{ image_src: string }>
+    /** 图片布局方式 */
+    imageLayout: string
+    /** 相关内容卡片 */
+    additional?: BilibiliAdditionalData
+  }
+> {}
 
 /**
  * B站预约卡片数据接口
@@ -150,7 +151,14 @@ export interface BilibiliUgcData {
  */
 export interface BilibiliAdditionalData {
   /** 卡片类型 */
-  type: 'ADDITIONAL_TYPE_RESERVE' | 'ADDITIONAL_TYPE_VOTE' | 'ADDITIONAL_TYPE_COMMON' | 'ADDITIONAL_TYPE_UGC' | 'ADDITIONAL_TYPE_GOODS' | 'ADDITIONAL_TYPE_UPOWER_LOTTERY' | 'ADDITIONAL_TYPE_NONE'
+  type:
+    | 'ADDITIONAL_TYPE_RESERVE'
+    | 'ADDITIONAL_TYPE_VOTE'
+    | 'ADDITIONAL_TYPE_COMMON'
+    | 'ADDITIONAL_TYPE_UGC'
+    | 'ADDITIONAL_TYPE_GOODS'
+    | 'ADDITIONAL_TYPE_UPOWER_LOTTERY'
+    | 'ADDITIONAL_TYPE_NONE'
   /** 预约数据 */
   reserve?: BilibiliReserveData
   /** 投票数据 */
@@ -228,17 +236,17 @@ export interface BilibiliDynamicFooterProps {
   useDarkTheme: boolean
 }
 
-
 /**
  * B站纯文动态组件属性接口
  */
-export interface BilibiliWordDynamicProps extends BaseComponentProps<BilibiliDynamicBaseData & {
-  /** 动态文本内容（富文本文档） */
-  text: RichTextDocument | null
-  /** 相关内容卡片 */
-  additional?: BilibiliAdditionalData
-}> {
-}
+export interface BilibiliWordDynamicProps extends BaseComponentProps<
+  BilibiliDynamicBaseData & {
+    /** 动态文本内容（富文本文档） */
+    text: RichTextDocument | null
+    /** 相关内容卡片 */
+    additional?: BilibiliAdditionalData
+  }
+> {}
 
 /**
  * B站纯文动态内容组件属性接口

@@ -169,8 +169,7 @@ export interface BangumiBilibiliData {
 /**
  * B站番剧组件属性接口
  */
-export interface BilibiliBangumiProps extends BaseComponentProps<BangumiBilibiliData> {
-}
+export interface BilibiliBangumiProps extends BaseComponentProps<BangumiBilibiliData> {}
 
 /**
  * 番剧头部组件属性接口

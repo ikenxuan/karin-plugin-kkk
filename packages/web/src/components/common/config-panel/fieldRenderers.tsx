@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react'
 import {
   Button,
   Card,
@@ -15,18 +14,13 @@ import {
   Tooltip
 } from '@heroui/react'
 import { Info } from 'lucide-react'
-import type { ConfigPanelLayoutClasses } from '../../../styles/desktopConfigPanel'
+import type { ReactNode } from 'react'
+
 import { getDisabledTooltip } from '../../../config/disabledRules'
+import type { ConfigPanelLayoutClasses } from '../../../styles/desktopConfigPanel'
 import type { ConfigType } from '../../../types/config'
 import { booleanText } from './options'
-import type {
-  ConfigDescription,
-  ConfigFieldRenderers,
-  ConfigHelp,
-  ConfigPath,
-  DeviceLayout,
-  SelectOption
-} from './types'
+import type { ConfigDescription, ConfigFieldRenderers, ConfigHelp, ConfigPath, DeviceLayout, SelectOption } from './types'
 import { getValue, includesValue, isConfigHelp, toNumber, toPathKey } from './utils'
 
 interface CreateConfigFieldRenderersArgs {
@@ -46,9 +40,8 @@ export const createConfigFieldRenderers = ({
 }: CreateConfigFieldRenderersArgs): ConfigFieldRenderers => {
   const renderHelp = (help: ConfigDescription) => {
     const normalizedHelp: ConfigHelp = isConfigHelp(help) ? help : { description: help }
-    const tooltipContent = device === 'mobile'
-      ? normalizedHelp.mobileContent ?? normalizedHelp.desktopContent
-      : normalizedHelp.desktopContent
+    const tooltipContent =
+      device === 'mobile' ? (normalizedHelp.mobileContent ?? normalizedHelp.desktopContent) : normalizedHelp.desktopContent
 
     return (
       <Description className="flex items-center gap-2">
@@ -80,9 +73,7 @@ export const createConfigFieldRenderers = ({
     if (device === 'mobile') {
       return (
         <Popover>
-          <Popover.Trigger className="w-full cursor-not-allowed">
-            {element}
-          </Popover.Trigger>
+          <Popover.Trigger className="w-full cursor-not-allowed">{element}</Popover.Trigger>
           <Popover.Content placement="bottom">
             <Popover.Dialog>
               <Popover.Arrow />
@@ -95,9 +86,7 @@ export const createConfigFieldRenderers = ({
 
     return (
       <Tooltip delay={0}>
-        <Tooltip.Trigger className="w-full cursor-not-allowed">
-          {element}
-        </Tooltip.Trigger>
+        <Tooltip.Trigger className="w-full cursor-not-allowed">{element}</Tooltip.Trigger>
         <Tooltip.Content showArrow placement="top">
           <Tooltip.Arrow />
           <div className="max-w-72">{tooltipMessage}</div>
@@ -108,9 +97,7 @@ export const createConfigFieldRenderers = ({
 
   const toggleArrayValue = (path: ConfigPath, value: string, selected: boolean) => {
     const currentValues = getValue<string[]>(config, path, [])
-    const nextValues = selected
-      ? Array.from(new Set([...currentValues, value]))
-      : currentValues.filter((item) => item !== value)
+    const nextValues = selected ? Array.from(new Set([...currentValues, value])) : currentValues.filter((item) => item !== value)
 
     updateConfigValue(path, nextValues)
   }
@@ -119,11 +106,7 @@ export const createConfigFieldRenderers = ({
     const selected = getValue<boolean>(config, path, false)
 
     const switchElement = (
-      <Switch
-        isDisabled={disabled}
-        isSelected={selected}
-        onChange={(isSelected) => updateConfigValue(path, isSelected)}
-      >
+      <Switch isDisabled={disabled} isSelected={selected} onChange={(isSelected) => updateConfigValue(path, isSelected)}>
         <Switch.Control>
           <Switch.Thumb />
         </Switch.Control>
@@ -139,7 +122,7 @@ export const createConfigFieldRenderers = ({
 
   const renderTextField: ConfigFieldRenderers['renderTextField'] = (path, label, help, options) => {
     const type = options?.type || 'text'
-    const value = String(getValue(config, path, type === 'number' ? options?.fallback ?? 0 : ''))
+    const value = String(getValue(config, path, type === 'number' ? (options?.fallback ?? 0) : ''))
     const error = validationErrors[toPathKey(path)]
     const disabled = options?.disabled ?? false
 
@@ -221,13 +204,7 @@ export const createConfigFieldRenderers = ({
     return wrapWithDisabledTooltip(selectElement, path, disabled)
   }
 
-  const renderCheckboxGroup: ConfigFieldRenderers['renderCheckboxGroup'] = (
-    path,
-    label,
-    help,
-    options,
-    disabled = false
-  ) => {
+  const renderCheckboxGroup: ConfigFieldRenderers['renderCheckboxGroup'] = (path, label, help, options, disabled = false) => {
     const values = getValue<string[]>(config, path, [])
 
     const groupElement = (

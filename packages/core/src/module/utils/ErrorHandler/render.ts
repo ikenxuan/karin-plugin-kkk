@@ -34,9 +34,14 @@ export const renderErrorImage = async (ctx: ErrorContext, opts: RenderErrorOptio
     error: {
       message: opts.errorMessage || error.message,
       name: opts.errorName || error.name,
-      stack: opts.stack || util.inspect(error, { depth: 10, colors: true, breakLength: 120, showHidden: true })
-        .replace(/\x1b\[90m/g, '\x1b[90;2m')
-        .replace(/\x1b\[32m/g, '\x1b[31m'),
+      stack:
+        opts.stack ||
+        util
+          .inspect(error, { depth: 10, colors: true, breakLength: 120, showHidden: true })
+          // oxlint-disable-next-line no-control-regex
+          .replace(/\x1b\[90m/g, '\x1b[90;2m')
+          // oxlint-disable-next-line no-control-regex
+          .replace(/\x1b\[32m/g, '\x1b[31m'),
       businessName: options.businessName
     },
     method: options.businessName,

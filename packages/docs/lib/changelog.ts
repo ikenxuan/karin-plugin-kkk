@@ -9,13 +9,13 @@ export type ChangelogData = {
   v2: ChangelogResult
   v1: ChangelogResult
   v0: ChangelogResult
-  all: Array<{ version: string, content: string }>
+  all: Array<{ version: string; content: string }>
 }
 
 /**
  * Parses changelog markdown content and extracts ranges of versions.
  */
-function range ({ data, startVersion, endVersion }: { data: string, startVersion: string, endVersion: string }): ChangelogResult {
+function range({ data, startVersion, endVersion }: { data: string; startVersion: string; endVersion: string }): ChangelogResult {
   const regex = /## \[(.*?)\]([\s\S]*?)(?=## \[|$)/g
   const changelog: Record<string, string> = {}
   for (const match of data.matchAll(regex)) {
@@ -27,9 +27,9 @@ function range ({ data, startVersion, endVersion }: { data: string, startVersion
 
   const keys = Object.keys(changelog)
 
-  const validVersions = keys.filter(v => semver.valid(v) || semver.valid(v + '.0') || semver.valid(v + '.0.0'))
+  const validVersions = keys.filter((v) => semver.valid(v) || semver.valid(v + '.0') || semver.valid(v + '.0.0'))
 
-  const inRangeVersions = validVersions.filter(v => {
+  const inRangeVersions = validVersions.filter((v) => {
     const vClean = semver.clean(v) || v
 
     if (startVersion === '3.0.0' && endVersion === '1.999.999') {
@@ -47,14 +47,14 @@ function range ({ data, startVersion, endVersion }: { data: string, startVersion
   inRangeVersions.sort((a, b) => semver.rcompare(a, b))
 
   return {
-    content: inRangeVersions.map(v => changelog[v]).join('\n'),
-    latest: inRangeVersions.length > 0 ? `v${inRangeVersions[0]}` : '',
+    content: inRangeVersions.map((v) => changelog[v]).join('\n'),
+    latest: inRangeVersions.length > 0 ? `v${inRangeVersions[0]}` : ''
   }
 }
 
-function parseAll ({ data }: { data: string }): Array<{ version: string, content: string }> {
+function parseAll({ data }: { data: string }): Array<{ version: string; content: string }> {
   const regex = /## \[(.*?)\]([\s\S]*?)(?=## \[|$)/g
-  const items: Array<{ version: string, content: string }> = []
+  const items: Array<{ version: string; content: string }> = []
   const seenVersions = new Set<string>()
 
   for (const match of data.matchAll(regex)) {
@@ -76,13 +76,12 @@ function parseAll ({ data }: { data: string }): Array<{ version: string, content
   return items
 }
 
-
-export async function getChangelog (): Promise<ChangelogData> {
+export async function getChangelog(): Promise<ChangelogData> {
   let content = ''
 
   const urls = [
     'https://cdn.jsdelivr.net/npm/karin-plugin-kkk/CHANGELOG.md',
-    'https://raw.githubusercontent.com/ikenxuan/karin-plugin-kkk/main/packages/core/CHANGELOG.md',
+    'https://raw.githubusercontent.com/ikenxuan/karin-plugin-kkk/main/packages/core/CHANGELOG.md'
   ]
 
   for (const url of urls) {
@@ -108,19 +107,19 @@ export async function getChangelog (): Promise<ChangelogData> {
   const v2 = range({
     data: content,
     startVersion: '3.0.0',
-    endVersion: '1.999.999',
+    endVersion: '1.999.999'
   })
 
   const v1 = range({
     data: content,
     startVersion: '1.999.999',
-    endVersion: '0.999.999',
+    endVersion: '0.999.999'
   })
 
   const v0 = range({
     data: content,
     startVersion: '0.999.999',
-    endVersion: '0.0.0-fallback',
+    endVersion: '0.0.0-fallback'
   })
 
   const all = parseAll({ data: content })

@@ -2,11 +2,7 @@
  * 配置管理 API
  * 提供配置的增删改查接口，供 APP 端使用
  */
-import {
-  createBadRequestResponse,
-  createServerErrorResponse,
-  createSuccessResponse
-} from 'node-karin'
+import { createBadRequestResponse, createServerErrorResponse, createSuccessResponse } from 'node-karin'
 import type { Request, Response } from 'node-karin/express'
 
 import { reloadAmagiConfig } from '@/module/utils/amagiClient'
@@ -72,13 +68,17 @@ export const updateAllConfig = async (req: Request, res: Response) => {
       reloadAmagiConfig()
     }
 
-    const allSuccess = results.every(r => r.success)
+    const allSuccess = results.every((r) => r.success)
     const updatedConfig = await Config.All()
 
-    return createSuccessResponse(res, {
-      config: updatedConfig,
-      results
-    }, allSuccess ? '所有配置更新成功' : '部分配置更新失败')
+    return createSuccessResponse(
+      res,
+      {
+        config: updatedConfig,
+        results
+      },
+      allSuccess ? '所有配置更新成功' : '部分配置更新失败'
+    )
   } catch (error: any) {
     return createServerErrorResponse(res, `配置更新失败: ${error.message}`)
   }

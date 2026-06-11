@@ -4,6 +4,7 @@
 
 import { Button } from '@heroui/react'
 import { Menu, Package, PanelLeftClose } from 'lucide-react'
+
 import ThemeSwitch from '../common/ThemeSwitch'
 
 interface TopBarProps {
@@ -25,14 +26,10 @@ const TopBar = ({ onToggleSidebar, sidebarCollapsed, currentMenuLabel }: TopBarP
           isIconOnly
           variant="ghost"
           onPress={onToggleSidebar}
-          aria-label={sidebarCollapsed ? "展开侧边栏" : "折叠侧边栏"}
+          aria-label={sidebarCollapsed ? '展开侧边栏' : '折叠侧边栏'}
           aria-expanded={!sidebarCollapsed}
         >
-          {sidebarCollapsed ? (
-            <Menu size={20} aria-hidden="true" />
-          ) : (
-            <PanelLeftClose size={20} aria-hidden="true" />
-          )}
+          {sidebarCollapsed ? <Menu size={20} aria-hidden="true" /> : <PanelLeftClose size={20} aria-hidden="true" />}
         </Button>
 
         {/* Logo 和标题 */}
@@ -42,9 +39,7 @@ const TopBar = ({ onToggleSidebar, sidebarCollapsed, currentMenuLabel }: TopBarP
             <h1 className="truncate text-lg font-semibold">KKK Config</h1>
           </>
         )}
-        {!sidebarCollapsed && (
-          <h1 className="truncate text-lg font-semibold">{currentMenuLabel || '配置管理面板'}</h1>
-        )}
+        {!sidebarCollapsed && <h1 className="truncate text-lg font-semibold">{currentMenuLabel || '配置管理面板'}</h1>}
       </div>
 
       <ThemeSwitch />

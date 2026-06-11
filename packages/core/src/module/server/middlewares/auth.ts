@@ -46,10 +46,13 @@ const reverseString = (str: string): string => {
  * @returns 解码后的字符串
  */
 const charOffsetDecode = (str: string, offset: number = 5): string => {
-  return str.split('').map(char => {
-    const code = char.charCodeAt(0)
-    return String.fromCharCode(code - offset)
-  }).join('')
+  return str
+    .split('')
+    .map((char) => {
+      const code = char.charCodeAt(0)
+      return String.fromCharCode(code - offset)
+    })
+    .join('')
 }
 
 /**
@@ -106,7 +109,8 @@ export const signatureVerificationMiddleware: RequestHandler = (req, res, next) 
     const requestTime = parseInt(timestamp)
     const timeDiff = Math.abs(currentTime - requestTime)
 
-    if (timeDiff > 5 * 60 * 1000) { // 5分钟
+    if (timeDiff > 5 * 60 * 1000) {
+      // 5分钟
       return createBadRequestResponse(res, '请求时间戳已过期')
     }
 
@@ -127,10 +131,7 @@ export const signatureVerificationMiddleware: RequestHandler = (req, res, next) 
     const signatureString = `${method}|${url}|${body}|${timestamp}|${nonce}`
 
     // 使用token作为密钥生成HMAC-SHA256签名
-    const expectedSignature = crypto
-      .createHmac('sha256', token)
-      .update(signatureString)
-      .digest('hex')
+    const expectedSignature = crypto.createHmac('sha256', token).update(signatureString).digest('hex')
 
     // 验证签名
     if (decodedSignature !== expectedSignature) {

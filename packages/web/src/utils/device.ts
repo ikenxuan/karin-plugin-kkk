@@ -19,9 +19,7 @@ export const getPageWidth = (): number => {
  * @param pageWidth 页面宽度
  * @returns 设备布局类型
  */
-export const detectDeviceByPageWidth = (
-  pageWidth: number = getPageWidth(),
-): DeviceLayout => {
+export const detectDeviceByPageWidth = (pageWidth: number = getPageWidth()): DeviceLayout => {
   return pageWidth <= mobilePageWidthBreakpoint ? 'mobile' : 'desktop'
 }
 
@@ -31,18 +29,9 @@ export const detectDeviceByPageWidth = (
  */
 export const hasMobileUserAgent = (): boolean => {
   const userAgent = navigator.userAgent.toLowerCase()
-  const mobileKeywords = [
-    'android',
-    'webos',
-    'iphone',
-    'ipad',
-    'ipod',
-    'blackberry',
-    'windows phone',
-    'mobile'
-  ]
+  const mobileKeywords = ['android', 'webos', 'iphone', 'ipad', 'ipod', 'blackberry', 'windows phone', 'mobile']
 
-  return mobileKeywords.some(keyword => userAgent.includes(keyword))
+  return mobileKeywords.some((keyword) => userAgent.includes(keyword))
 }
 
 /**

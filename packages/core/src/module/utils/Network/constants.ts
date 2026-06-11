@@ -55,14 +55,7 @@ export const RECOVERABLE_ERROR_CODES = [
 /**
  * 可恢复错误的关键词
  */
-export const RECOVERABLE_KEYWORDS = [
-  'aborted',
-  'timeout',
-  'network',
-  'ECONNRESET',
-  'socket hang up',
-  'connection reset'
-]
+export const RECOVERABLE_KEYWORDS = ['aborted', 'timeout', 'network', 'ECONNRESET', 'socket hang up', 'connection reset']
 
 /**
  * Chrome 版本数据地址
@@ -94,12 +87,12 @@ const buildUserAgent = (version: string): string =>
 const fetchLatestChromeVersion = async (url: string, proxyPrefix: string): Promise<string | null> => {
   try {
     const resp = await axios.get(url, { timeout: 15000 })
-    const version: unknown = (resp.data?.channels?.Stable?.version)
+    const version: unknown = resp.data?.channels?.Stable?.version
     return typeof version === 'string' && version.length > 0 ? version : null
   } catch {
     try {
       const resp = await axios.get(`${proxyPrefix}${url}`, { timeout: 15000 })
-      const version: unknown = (resp.data?.channels?.Stable?.version)
+      const version: unknown = resp.data?.channels?.Stable?.version
       return typeof version === 'string' && version.length > 0 ? version : null
     } catch {
       return null

@@ -6,4 +6,4 @@ globalThis.__kkkLoadStart ??= process.hrtime.bigint()
 
 import('./setup')
 
-export { } 
+export {}

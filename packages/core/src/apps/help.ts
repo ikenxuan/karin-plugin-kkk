@@ -6,7 +6,6 @@ import { Render, Root } from '@/module'
 import { Config } from '@/module/utils/Config'
 import { wrapWithErrorHandler } from '@/module/utils/ErrorHandler'
 
-
 type Role = 'master' | 'member'
 type RoleItem = { title: string; description: string; icon?: string | { name: string; color?: string }; roles?: Role[] }
 type RoleMenuGroup = {
@@ -135,75 +134,77 @@ const HELP_MENU_CONFIG: RoleMenuGroup[] = [
 
 const buildMenuForRole = (role: Role) => {
   const filterItems = (items: RoleItem[] = []) =>
-    items.filter(i => !i.roles || i.roles.includes(role))
-      .map(({ title, description, icon }) => ({ title, description, icon }))
+    items.filter((i) => !i.roles || i.roles.includes(role)).map(({ title, description, icon }) => ({ title, description, icon }))
 
-  return HELP_MENU_CONFIG
-    .map(group => {
-      const items = filterItems(group.items)
-      const subGroups = group.subGroups
-        ?.map(sg => ({ title: sg.title, items: filterItems(sg.items) }))
-        .filter(s => s.items.length > 0)
+  return HELP_MENU_CONFIG.map((group) => {
+    const items = filterItems(group.items)
+    const subGroups = group.subGroups?.map((sg) => ({ title: sg.title, items: filterItems(sg.items) })).filter((s) => s.items.length > 0)
 
-      return { title: group.title, items, subGroups }
-    })
-    .filter(g => (g.items.length > 0) || (g.subGroups && g.subGroups.length > 0))
+    return { title: group.title, items, subGroups }
+  }).filter((g) => g.items.length > 0 || (g.subGroups && g.subGroups.length > 0))
 }
 
 // 包装帮助命令
-const handleHelp = wrapWithErrorHandler(async (e) => {
-  const masters = config.master().filter(id => id !== 'console')
-  const isMaster = !!e.sender && masters.includes(e.sender.userId)
-  const role: Role = isMaster ? 'master' : 'member'
-  const menu = buildMenuForRole(role)
+const handleHelp = wrapWithErrorHandler(
+  async (e) => {
+    const masters = config.master().filter((id) => id !== 'console')
+    const isMaster = !!e.sender && masters.includes(e.sender.userId)
+    const role: Role = isMaster ? 'master' : 'member'
+    const menu = buildMenuForRole(role)
 
-  // 将 menu 转换为 list 供前端渲染
-  const list = menu.flatMap(group => {
-    const groupItems = group.items.map(item => ({
-      title: item.title,
-      description: item.description
-    }))
-    const subItems = group.subGroups?.flatMap(sg =>
-      sg.items.map(item => ({
+    // 将 menu 转换为 list 供前端渲染
+    const list = menu.flatMap((group) => {
+      const groupItems = group.items.map((item) => ({
         title: item.title,
         description: item.description
       }))
-    ) || []
-    return [...groupItems, ...subItems]
-  })
+      const subItems =
+        group.subGroups?.flatMap((sg) =>
+          sg.items.map((item) => ({
+            title: item.title,
+            description: item.description
+          }))
+        ) || []
+      return [...groupItems, ...subItems]
+    })
 
-  const img = await Render(e, 'other/help', {
-    title: 'KKK插件帮助页面',
-    menu,
-    list,
-    role
-  })
-  await e.reply(img)
-  return true
-}, {
-  businessName: 'KKK帮助'
-})
+    const img = await Render(e, 'other/help', {
+      title: 'KKK插件帮助页面',
+      menu,
+      list,
+      role
+    })
+    await e.reply(img)
+    return true
+  },
+  {
+    businessName: 'KKK帮助'
+  }
+)
 
 // 包装版本命令
-const handleVersion = wrapWithErrorHandler(async (e) => {
-  const changelogContent = fs.readFileSync(Root.pluginPath + '/CHANGELOG.md', 'utf8')
-  const forwardLogs = logs({
-    version: Root.pluginVersion,
-    data: changelogContent,
-    length: 10
-  })
+const handleVersion = wrapWithErrorHandler(
+  async (e) => {
+    const changelogContent = fs.readFileSync(Root.pluginPath + '/CHANGELOG.md', 'utf8')
+    const forwardLogs = logs({
+      version: Root.pluginVersion,
+      data: changelogContent,
+      length: 10
+    })
 
-  const img = await Render(e, 'other/changelog', {
-    markdown: forwardLogs,
-    Tip: false,
-    localVersion: '',
-    remoteVersion: ''
-  })
-  e.reply(img)
-  return true
-}, {
-  businessName: 'KKK版本'
-})
+    const img = await Render(e, 'other/changelog', {
+      markdown: forwardLogs,
+      Tip: false,
+      localVersion: '',
+      remoteVersion: ''
+    })
+    e.reply(img)
+    return true
+  },
+  {
+    businessName: 'KKK版本'
+  }
+)
 
 export const help = karin.command(/^#?kkk帮助$/, handleHelp, { name: 'kkk-帮助' })
 

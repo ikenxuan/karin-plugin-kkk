@@ -56,7 +56,8 @@ export const DouyinWeb = (all: ConfigType) => {
             }),
             components.input.number('subCommentLimit', {
               label: '次级评论解析数量',
-              description: '次级评论解析数量，当前逻辑不仅无法判断请求的来的评论的嵌套深度，而且「次级评论解析深度」会限制嵌套深度，超过深度的评论会被截断',
+              description:
+                '次级评论解析数量，当前逻辑不仅无法判断请求的来的评论的嵌套深度，而且「次级评论解析深度」会限制嵌套深度，超过深度的评论会被截断',
               defaultValue: all.douyin.subCommentLimit.toString(),
               rules: [{ min: 1, max: 20 }],
               isDisabled: !all.douyin.sendContent.includes('comment') || !all.douyin.switch

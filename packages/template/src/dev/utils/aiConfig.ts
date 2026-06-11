@@ -55,7 +55,7 @@ export const addProvider = (provider: Omit<AIProvider, 'id' | 'createdAt'>): AIP
 
 export const updateProvider = (id: string, patch: Partial<Omit<AIProvider, 'id' | 'createdAt'>>): void => {
   const config = getAIConfig()
-  const idx = config.providers.findIndex(p => p.id === id)
+  const idx = config.providers.findIndex((p) => p.id === id)
   if (idx === -1) return
   config.providers[idx] = { ...config.providers[idx], ...patch }
   saveAIConfig(config)
@@ -63,7 +63,7 @@ export const updateProvider = (id: string, patch: Partial<Omit<AIProvider, 'id' 
 
 export const removeProvider = (id: string): void => {
   const config = getAIConfig()
-  config.providers = config.providers.filter(p => p.id !== id)
+  config.providers = config.providers.filter((p) => p.id !== id)
   if (config.activeProviderId === id) {
     config.activeProviderId = config.providers[0]?.id ?? null
   }
@@ -79,7 +79,7 @@ export const setActiveProvider = (id: string | null): void => {
 export const getActiveProvider = (): AIProvider | null => {
   const config = getAIConfig()
   if (!config.activeProviderId) return null
-  return config.providers.find(p => p.id === config.activeProviderId) ?? null
+  return config.providers.find((p) => p.id === config.activeProviderId) ?? null
 }
 
 export const setDefaultPrompt = (prompt: string | undefined): void => {

@@ -44,8 +44,7 @@ export interface DouyinLiveProps extends BaseComponentProps<{
   total_favorited: string
   /** 是否有商品 */
   has_commerce_goods: boolean
-}> {
-}
+}> {}
 
 /**
  * 抖音直播用户信息组件属性接口

@@ -1,13 +1,14 @@
-'use client';
-import Link from 'fumadocs-core/link';
-import { Footer } from './Footer';
+'use client'
+import Link from 'fumadocs-core/link'
+
+import { Footer } from './Footer'
 
 function ChevronLeftIcon() {
   return (
     <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
     </svg>
-  );
+  )
 }
 
 function ChevronRightIcon() {
@@ -15,22 +16,22 @@ function ChevronRightIcon() {
     <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
     </svg>
-  );
+  )
 }
 
 interface NavItem {
-  name: string;
-  description?: string;
-  url: string;
+  name: string
+  description?: string
+  url: string
 }
 
 export interface DocsFooterProps {
-  prev?: NavItem;
-  next?: NavItem;
+  prev?: NavItem
+  next?: NavItem
 }
 
 function NavCard({ item, direction }: { item: NavItem; direction: 'prev' | 'next' }) {
-  const isNext = direction === 'next';
+  const isNext = direction === 'next'
 
   return (
     <Link
@@ -42,12 +43,10 @@ function NavCard({ item, direction }: { item: NavItem; direction: 'prev' | 'next
         {item.name}
       </span>
       {item.description && (
-        <span className={`text-fd-muted-foreground text-xs mt-1 ${isNext ? 'text-right' : ''}`}>
-          {item.description}
-        </span>
+        <span className={`text-fd-muted-foreground text-xs mt-1 ${isNext ? 'text-right' : ''}`}>{item.description}</span>
       )}
     </Link>
-  );
+  )
 }
 
 export function DocsFooter({ prev, next }: DocsFooterProps) {
@@ -61,5 +60,5 @@ export function DocsFooter({ prev, next }: DocsFooterProps) {
       )}
       <Footer />
     </>
-  );
+  )
 }

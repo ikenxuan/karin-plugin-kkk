@@ -34,5 +34,4 @@ export interface DouyinRecommendListProps extends BaseComponentProps<{
   author_douyin_id: string
   /** 分享链接 */
   share_url: string
-}> {
-}
+}> {}

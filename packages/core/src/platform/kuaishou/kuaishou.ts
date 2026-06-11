@@ -9,18 +9,20 @@ export class Kuaishou extends Base {
   e: Message
   type: KuaishouDataTypes[keyof KuaishouDataTypes]
   is_mp4: any
-  constructor (e: Message, iddata: ExtendedKuaishouOptionsType) {
+  constructor(e: Message, iddata: ExtendedKuaishouOptionsType) {
     super(e)
     this.e = e
     this.type = iddata?.type
   }
 
-  async KuaishouHandler (data: any) {
+  async KuaishouHandler(data: any) {
     if (data.VideoData.data.data.visionVideoDetail.status !== 1) {
       await this.e.reply('不支持解析的视频')
       return true
     }
-    Config.app.parseTip && await this.e.reply('检测到快手链接，开始解析')
+    if (Config.app.parseTip) {
+      this.e.reply('检测到快手链接，开始解析')
+    }
     const video_url = data.VideoData.data.data.visionVideoDetail.photo.photoUrl
     const transformedData = Object.entries(data.EmojiData.data.data.visionBaseEmoticons.iconUrls).map(([name, path]) => {
       return { name, url: `https:${path}` }
@@ -39,7 +41,13 @@ export class Kuaishou extends Base {
       likeCount: data.VideoData.data.data.visionVideoDetail.photo.likeCount
     })
     await this.e.reply(img)
-    await downloadVideo(this.e, { video_url, title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${data.VideoData.data.data.visionVideoDetail.photo.caption}.mp4` } })
+    await downloadVideo(this.e, {
+      video_url,
+      title: {
+        timestampTitle: `tmp_${Date.now()}.mp4`,
+        originTitle: `${data.VideoData.data.data.visionVideoDetail.photo.caption}.mp4`
+      }
+    })
     return true
   }
 }

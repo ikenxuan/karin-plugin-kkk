@@ -18,173 +18,188 @@ const reg = {
 }
 
 // 包装抖音处理函数
-const handleDouyin = wrapWithErrorHandler(async (e, next) => {
-  if (e.msg.startsWith('#测试')) {
-    return next()
-  }
-
-  // 判断是否为弹幕解析（通过 #弹幕解析 命令触发）
-  const forceBurnDanmaku = /^#?弹幕解析/.test(e.msg)
-
-  const urlMatch = e.msg.match(/(https?:\/\/[^\s]*\.(douyin|iesdouyin)\.com[^\s]*)/gi)
-  if (!urlMatch) {
-    logger.warn(`未能在消息中找到有效的抖音链接: ${e.msg}`)
-    return next()
-  }
-  const url = String(urlMatch[0])
-  const iddata = await getDouyinID(e, url)
-  await new DouYin(e, iddata, { forceBurnDanmaku }).DouyinHandler(iddata)
-  
-  // 记录解析统计
-  const groupId = e.isGroup ? (e.contact?.peer || '') : ''
-  const userId = e.userId || ''
-  if (groupId && userId) {
-    try {
-      const statisticsDB = await getStatisticsDB()
-      await statisticsDB.recordParse(groupId, userId, 'douyin')
-    } catch (error) {
-      logger.debug('[统计] 记录抖音解析统计失败:', error)
+const handleDouyin = wrapWithErrorHandler(
+  async (e, next) => {
+    if (e.msg.startsWith('#测试')) {
+      return next()
     }
+
+    // 判断是否为弹幕解析（通过 #弹幕解析 命令触发）
+    const forceBurnDanmaku = /^#?弹幕解析/.test(e.msg)
+
+    const urlMatch = e.msg.match(/(https?:\/\/[^\s]*\.(douyin|iesdouyin)\.com[^\s]*)/gi)
+    if (!urlMatch) {
+      logger.warn(`未能在消息中找到有效的抖音链接: ${e.msg}`)
+      return next()
+    }
+    const url = String(urlMatch[0])
+    const iddata = await getDouyinID(e, url)
+    await new DouYin(e, iddata, { forceBurnDanmaku }).DouyinHandler(iddata)
+
+    // 记录解析统计
+    const groupId = e.isGroup ? e.contact?.peer || '' : ''
+    const userId = e.userId || ''
+    if (groupId && userId) {
+      try {
+        const statisticsDB = await getStatisticsDB()
+        await statisticsDB.recordParse(groupId, userId, 'douyin')
+      } catch (error) {
+        logger.debug('[统计] 记录抖音解析统计失败:', error)
+      }
+    }
+
+    return
+  },
+  {
+    businessName: '抖音视频解析'
   }
-  
-  return
-}, {
-  businessName: '抖音视频解析'
-})
+)
 
 // 包装B站处理函数
-const handleBilibili = wrapWithErrorHandler(async (e, next) => {
-  e.msg = e.msg.replace(/\\/g, '') // 移除消息中的反斜杠
+const handleBilibili = wrapWithErrorHandler(
+  async (e, next) => {
+    e.msg = e.msg.replace(/\\/g, '') // 移除消息中的反斜杠
 
-  // 判断是否为弹幕解析（通过 #弹幕解析 命令触发）
-  const forceBurnDanmaku = /^#?弹幕解析/.test(e.msg)
+    // 判断是否为弹幕解析（通过 #弹幕解析 命令触发）
+    const forceBurnDanmaku = /^#?弹幕解析/.test(e.msg)
 
-  const urlRegex = /(https?:\/\/(?:(?:www\.|m\.|t\.)?bilibili\.com|b23\.tv|bili2233\.cn)\/[a-zA-Z0-9_\-.~:\/?#[\]@!$&'()*+,;=]+)/
-  const bvRegex = /^BV[1-9a-zA-Z]{10}$/
-  const avRegex = /^av\d+$/i
-  let url: string | null = null
-  const urlMatch = e.msg.match(urlRegex)
+    const urlRegex = /(https?:\/\/(?:(?:www\.|m\.|t\.)?bilibili\.com|b23\.tv|bili2233\.cn)\/[a-zA-Z0-9_\-.~:/?#[\]@!$&'()*+,;=]+)/
+    const bvRegex = /^BV[1-9a-zA-Z]{10}$/
+    const avRegex = /^av\d+$/i
+    let url: string | null = null
+    const urlMatch = e.msg.match(urlRegex)
 
-  if (urlMatch) {
-    url = urlMatch[0]
-  } else if (bvRegex.test(e.msg)) {
-    url = `https://www.bilibili.com/video/${e.msg}`
-  } else if (avRegex.test(e.msg)) {
-    url = `https://www.bilibili.com/video/${e.msg}`
-  }
-  if (!url) {
-    logger.warn(`未能在消息中找到有效的B站分享链接、BV号或AV号: ${e.msg}`)
-    return next()
-  }
-  const iddata = await getBilibiliID(url)
-  await new Bilibili(e, iddata, { forceBurnDanmaku }).BilibiliHandler(iddata)
-  
-  // 记录解析统计
-  const groupId = e.isGroup ? (e.contact?.peer || '') : ''
-  const userId = e.userId || ''
-  if (groupId && userId) {
-    try {
-      const statisticsDB = await getStatisticsDB()
-      await statisticsDB.recordParse(groupId, userId, 'bilibili')
-    } catch (error) {
-      logger.debug('[统计] 记录B站解析统计失败:', error)
+    if (urlMatch) {
+      url = urlMatch[0]
+    } else if (bvRegex.test(e.msg)) {
+      url = `https://www.bilibili.com/video/${e.msg}`
+    } else if (avRegex.test(e.msg)) {
+      url = `https://www.bilibili.com/video/${e.msg}`
     }
+    if (!url) {
+      logger.warn(`未能在消息中找到有效的B站分享链接、BV号或AV号: ${e.msg}`)
+      return next()
+    }
+    const iddata = await getBilibiliID(url)
+    await new Bilibili(e, iddata, { forceBurnDanmaku }).BilibiliHandler(iddata)
+
+    // 记录解析统计
+    const groupId = e.isGroup ? e.contact?.peer || '' : ''
+    const userId = e.userId || ''
+    if (groupId && userId) {
+      try {
+        const statisticsDB = await getStatisticsDB()
+        await statisticsDB.recordParse(groupId, userId, 'bilibili')
+      } catch (error) {
+        logger.debug('[统计] 记录B站解析统计失败:', error)
+      }
+    }
+
+    return
+  },
+  {
+    businessName: 'B站视频解析'
   }
-  
-  return
-}, {
-  businessName: 'B站视频解析'
-})
+)
 
 // 包装快手处理函数
-const handleKuaishou = wrapWithErrorHandler(async (e) => {
-  const kuaishouUrl = e.msg.replaceAll('\\', '').match(/(https:\/\/v\.kuaishou\.com\/\w+|https:\/\/www\.kuaishou\.com\/f\/[a-zA-Z0-9]+)/g)
-  const iddata = await getKuaishouID(String(kuaishouUrl))
-  const WorkData = await fetchKuaishouData(iddata.type, iddata)
-  await new Kuaishou(e, iddata).KuaishouHandler(WorkData)
-  
-  // 记录解析统计
-  const groupId = e.isGroup ? (e.contact?.peer || '') : ''
-  const userId = e.userId || ''
-  if (groupId && userId) {
-    try {
-      const statisticsDB = await getStatisticsDB()
-      await statisticsDB.recordParse(groupId, userId, 'kuaishou')
-    } catch (error) {
-      logger.debug('[统计] 记录快手解析统计失败:', error)
+const handleKuaishou = wrapWithErrorHandler(
+  async (e) => {
+    const kuaishouUrl = e.msg.replaceAll('\\', '').match(/(https:\/\/v\.kuaishou\.com\/\w+|https:\/\/www\.kuaishou\.com\/f\/[a-zA-Z0-9]+)/g)
+    const iddata = await getKuaishouID(String(kuaishouUrl))
+    const WorkData = await fetchKuaishouData(iddata.type, iddata)
+    await new Kuaishou(e, iddata).KuaishouHandler(WorkData)
+
+    // 记录解析统计
+    const groupId = e.isGroup ? e.contact?.peer || '' : ''
+    const userId = e.userId || ''
+    if (groupId && userId) {
+      try {
+        const statisticsDB = await getStatisticsDB()
+        await statisticsDB.recordParse(groupId, userId, 'kuaishou')
+      } catch (error) {
+        logger.debug('[统计] 记录快手解析统计失败:', error)
+      }
     }
+  },
+  {
+    businessName: '快手视频解析'
   }
-}, {
-  businessName: '快手视频解析'
-})
+)
 
 // 包装小红书处理函数
-const handleXiaohongshu = wrapWithErrorHandler(async (e, next) => {
-  const cleaned = e.msg.replaceAll('\\', '')
-  const m = cleaned.match(/https?:\/\/[^\s"'<>]+/)
-  const url = m?.[0]
-  if (!url) {
-    logger.warn(`未能在消息中找到有效链接: ${e.msg}`)
-    return next()
-  }
-  const iddata = await getXiaohongshuID(url)
-  await new Xiaohongshu(e, iddata).XiaohongshuHandler(iddata)
-  
-  // 记录解析统计
-  const groupId = e.isGroup ? (e.contact?.peer || '') : ''
-  const userId = e.userId || ''
-  if (groupId && userId) {
-    try {
-      const statisticsDB = await getStatisticsDB()
-      await statisticsDB.recordParse(groupId, userId, 'xiaohongshu')
-    } catch (error) {
-      logger.debug('[统计] 记录小红书解析统计失败:', error)
+const handleXiaohongshu = wrapWithErrorHandler(
+  async (e, next) => {
+    const cleaned = e.msg.replaceAll('\\', '')
+    const m = cleaned.match(/https?:\/\/[^\s"'<>]+/)
+    const url = m?.[0]
+    if (!url) {
+      logger.warn(`未能在消息中找到有效链接: ${e.msg}`)
+      return next()
     }
+    const iddata = await getXiaohongshuID(url)
+    await new Xiaohongshu(e, iddata).XiaohongshuHandler(iddata)
+
+    // 记录解析统计
+    const groupId = e.isGroup ? e.contact?.peer || '' : ''
+    const userId = e.userId || ''
+    if (groupId && userId) {
+      try {
+        const statisticsDB = await getStatisticsDB()
+        await statisticsDB.recordParse(groupId, userId, 'xiaohongshu')
+      } catch (error) {
+        logger.debug('[统计] 记录小红书解析统计失败:', error)
+      }
+    }
+
+    return
+  },
+  {
+    businessName: '小红书视频解析'
   }
-  
-  return
-}, {
-  businessName: '小红书视频解析'
-})
+)
 
 // 包装引用解析函数（支持 #解析 和 #弹幕解析）
-const handlePrefix = wrapWithErrorHandler(async (e, next) => {
-  const originalMsg = e.msg
-  e.msg = await Common.getReplyMessage(e)
-  
-  // 保留原始命令前缀，用于判断是否为弹幕解析
-  if (/^#?弹幕解析/.test(originalMsg)) {
-    e.msg = '#弹幕解析 ' + e.msg
+const handlePrefix = wrapWithErrorHandler(
+  async (e, next) => {
+    const originalMsg = e.msg
+    e.msg = await Common.getReplyMessage(e)
+
+    // 保留原始命令前缀，用于判断是否为弹幕解析
+    if (/^#?弹幕解析/.test(originalMsg)) {
+      e.msg = '#弹幕解析 ' + e.msg
+    }
+
+    // 检查是否是抖音 CDN 下载链接（推送配置中渲染的二维码）
+    if (reg.douyinCDN.test(e.msg)) {
+      // 这是一个 CDN 下载链接，需要直接下载而不是解析
+      logger.debug('检测到抖音 CDN 下载链接，直接下载视频')
+      const videoIdMatch = e.msg.match(/video_id=([^&]+)/)
+      const videoId = videoIdMatch ? videoIdMatch[1] : Date.now().toString()
+
+      await downloadVideo(e, {
+        video_url: e.msg,
+        title: {
+          timestampTitle: `tmp_${Date.now()}.mp4`,
+          originTitle: `抖音视频_${videoId}.mp4`
+        }
+      })
+      return true
+    } else if (reg.douyin.test(e.msg)) {
+      // 正常的抖音分享链接
+      return await handleDouyin(e, next)
+    } else if (reg.bilibili.test(e.msg)) {
+      return await handleBilibili(e, next)
+    } else if (reg.kuaishou.test(e.msg)) {
+      return await handleKuaishou(e, next)
+    } else if (reg.xiaohongshu.test(e.msg)) {
+      return await handleXiaohongshu(e, next)
+    }
+  },
+  {
+    businessName: '引用解析'
   }
-  
-  // 检查是否是抖音 CDN 下载链接（推送配置中渲染的二维码）
-  if (reg.douyinCDN.test(e.msg)) {
-    // 这是一个 CDN 下载链接，需要直接下载而不是解析
-    logger.debug('检测到抖音 CDN 下载链接，直接下载视频')
-    const videoIdMatch = e.msg.match(/video_id=([^&]+)/)
-    const videoId = videoIdMatch ? videoIdMatch[1] : Date.now().toString()
-    
-    await downloadVideo(e, {
-      video_url: e.msg,
-      title: { 
-        timestampTitle: `tmp_${Date.now()}.mp4`, 
-        originTitle: `抖音视频_${videoId}.mp4` 
-      }
-    })
-    return true
-  } else if (reg.douyin.test(e.msg)) {
-    // 正常的抖音分享链接
-    return await handleDouyin(e, next)
-  } else if (reg.bilibili.test(e.msg)) {
-    return await handleBilibili(e, next)
-  } else if (reg.kuaishou.test(e.msg)) {
-    return await handleKuaishou(e, next)
-  } else if (reg.xiaohongshu.test(e.msg)) {
-    return await handleXiaohongshu(e, next)
-  }
-}, {
-  businessName: '引用解析'
-})
+)
 
 // 注册命令
 const douyin = karin.command(reg.douyin, handleDouyin, {

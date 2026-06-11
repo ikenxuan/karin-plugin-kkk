@@ -68,7 +68,10 @@ export const GlowImage: React.FC<GlowImageProps> = ({
         if (!ctx) return
         ctx.drawImage(img, 0, 0, size, size)
         const data = ctx.getImageData(0, 0, size, size).data
-        let r = 0, g = 0, b = 0, count = 0
+        let r = 0,
+          g = 0,
+          b = 0,
+          count = 0
         for (let i = 0; i < data.length; i += 4) {
           const a = data[i + 3]
           if (a < 10) continue
@@ -123,9 +126,7 @@ export const GlowImage: React.FC<GlowImageProps> = ({
         alt={alt}
         className={imgClassName}
         style={{
-          filter: `drop-shadow(0 0 ${shadowRadius}px ${shadowColor}) drop-shadow(0 0 ${Math.round(
-            shadowRadius * 0.6
-          )}px ${shadowColor})`
+          filter: `drop-shadow(0 0 ${shadowRadius}px ${shadowColor}) drop-shadow(0 0 ${Math.round(shadowRadius * 0.6)}px ${shadowColor})`
         }}
       />
     )
@@ -210,13 +211,7 @@ type RealGlowTextProps = {
   spread?: number
 }
 
-export const RealGlowText: React.FC<RealGlowTextProps> = ({
-  children,
-  className,
-  levels = 4,
-  baseBlur = 6,
-  spread = 6
-}) => {
+export const RealGlowText: React.FC<RealGlowTextProps> = ({ children, className, levels = 4, baseBlur = 6, spread = 6 }) => {
   const textShadow = React.useMemo(() => {
     return Array.from({ length: levels }, (_, i) => {
       const blur = baseBlur + i * spread
@@ -268,9 +263,7 @@ export const GlowIcon: React.FC<GlowIconProps> = ({
     return Array.from({ length: glowLayers }, (_, i) => {
       const radius = glowRadius + i * glowSpread
       const opacity = Math.min(glowStrength * (1 - i * 0.2), 1)
-      const shadowColor = glowColor 
-        ? glowColor.replace(/rgb\(([^)]+)\)/, `rgba($1, ${opacity})`)
-        : `rgba(255, 255, 255, ${opacity})`
+      const shadowColor = glowColor ? glowColor.replace(/rgb\(([^)]+)\)/, `rgba($1, ${opacity})`) : `rgba(255, 255, 255, ${opacity})`
       return `drop-shadow(0 0 ${radius}px ${shadowColor})`
     }).join(' ')
   }, [glowColor, glowStrength, glowRadius, glowLayers, glowSpread])
@@ -305,16 +298,10 @@ type SimpleGlowIconProps = {
   glowIntensity?: 'light' | 'medium' | 'strong'
 }
 
-export const SimpleGlowIcon: React.FC<SimpleGlowIconProps> = ({
-  Icon,
-  iconProps = {},
-  className,
-  glowColor,
-  glowIntensity = 'medium'
-}) => {
+export const SimpleGlowIcon: React.FC<SimpleGlowIconProps> = ({ Icon, iconProps = {}, className, glowColor, glowIntensity = 'medium' }) => {
   const getGlowFilter = () => {
     const color = glowColor || 'currentColor'
-    
+
     switch (glowIntensity) {
       case 'light':
         return `drop-shadow(0 0 8px ${color}) drop-shadow(0 0 16px ${color})`
@@ -379,18 +366,18 @@ export const GlowBorderContainer: React.FC<GlowBorderContainerProps> = ({
   const generateBorderGradient = (position: string) => {
     // 解析辉光颜色的RGB值
     const glowRgbMatch = glowColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/)
-    
+
     const glowRgb = glowRgbMatch ? `${glowRgbMatch[1]}, ${glowRgbMatch[2]}, ${glowRgbMatch[3]}` : '245, 158, 11'
-    
+
     // 辉光颜色渐变层
     const maxGlow = `rgba(${glowRgb}, ${glowStrength})`
     const strongGlow = `rgba(${glowRgb}, ${glowStrength * 0.7})`
     const mediumGlow = `rgba(${glowRgb}, ${glowStrength * 0.4})`
     const weakGlow = `rgba(${glowRgb}, ${glowStrength * 0.15})`
-    
+
     // 光影扩散范围
     const maxInfluence = Math.round(lightInfluenceRange * 100)
-    
+
     switch (position) {
       case 'left-top':
         return `
@@ -552,10 +539,10 @@ export const SmartGlowBorder: React.FC<SmartGlowBorderProps> = ({
 }) => {
   const containerRef = React.useRef<HTMLDivElement>(null)
   const [detectedGlowColor, setDetectedGlowColor] = React.useState<string>('rgb(245, 158, 11)')
-  
+
   React.useEffect(() => {
     if (!enableDynamicGlow || glowColor) return
-    
+
     // 尝试从子元素中提取辉光颜色
     const container = containerRef.current
     if (container) {

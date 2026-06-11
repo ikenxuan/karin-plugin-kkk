@@ -8,27 +8,13 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "template": [
-        "../template/src/index.ts"
-      ],
-      "template/*": [
-        "../template/src/*"
-      ],
-      "@kkk/richtext": [
-        "../richtext"
-      ],
-      "@ikenxuan/amagi": [
-        "../amagi/packages/core/src/index.ts"
-      ],
-      "@ikenxuan/amagi/*": [
-        "../amagi/packages/core/src/*"
-      ],
-      "amagi/*": [
-        "../amagi/packages/core/src/*"
-      ]
+      "@/*": ["./src/*"],
+      "template": ["../template/src/index.ts"],
+      "template/*": ["../template/src/*"],
+      "@kkk/richtext": ["../richtext"],
+      "@ikenxuan/amagi": ["../amagi/packages/core/src/index.ts"],
+      "@ikenxuan/amagi/*": ["../amagi/packages/core/src/*"],
+      "amagi/*": ["../amagi/packages/core/src/*"]
     },
     "jsx": "react",
     "declaration": true,
@@ -41,21 +27,14 @@
     "pretty": true,
     "inlineSourceMap": false,
     "alwaysStrict": true,
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "noEmit": false,
     "strictPropertyInitialization": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "composite": true
   },
-  "include": [
-    "src/**/*.ts",
-    "vite.plugin/**/*.ts",
-    "eslint.config.ts",
-    "vite.config.ts",
-  ],
+  "include": ["src/**/*.ts", "vite.plugin/**/*.ts", "vite.config.ts"],
   "references": [
     {
       "path": "../richtext"
@@ -67,10 +46,5 @@
       "path": "../amagi/packages/core"
     }
   ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts",
-    "**/*.test.ts",
-    "**/*.d.ts"
-  ]
+  "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts", "**/*.d.ts"]
 }

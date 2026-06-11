@@ -1,5 +1,5 @@
-import type { ApiResponse } from '../types/api'
 import { authClient } from '../auth/request'
+import type { ApiResponse } from '../types/api'
 
 export interface BotInfo {
   id: string

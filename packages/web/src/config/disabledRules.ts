@@ -32,7 +32,7 @@ const isConfigRecord = (value: unknown): value is Record<string | number, unknow
 /**
  * 读取嵌套路径上的配置值
  */
-const getValue = <T,>(source: ConfigType | null, path: ConfigPath, fallback: T): T => {
+const getValue = <T>(source: ConfigType | null, path: ConfigPath, fallback: T): T => {
   if (!source) return fallback
 
   const result = path.reduce<unknown>((current, key) => {
@@ -780,7 +780,7 @@ export const disabledRules: DisabledRule[] = [
         message: '修改此配置项需要先将「画质偏好」改为「自动选择」'
       }
     ]
-  },
+  }
 ]
 
 /**
@@ -811,5 +811,3 @@ export const getDisabledTooltip = (config: ConfigType | null, path: ConfigPath):
 
   return ''
 }
-
-

@@ -1,9 +1,4 @@
 {
   "title": "其他",
-  "pages": [
-    "index",
-    "afdian",
-    "contribution",
-    "react-template"
-  ]
+  "pages": ["index", "afdian", "contribution", "react-template"]
 }

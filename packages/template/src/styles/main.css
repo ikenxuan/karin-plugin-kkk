@@ -1,4 +1,4 @@
-@import "@heroui/styles";
+@import '@heroui/styles';
 @import 'highlight.js/styles/github.css';
 @import 'highlight.js/styles/github-dark.css';
 @import './font.css';
@@ -16,11 +16,16 @@
 @source '../**/*.{js,ts,jsx,tsx,html}';
 
 @custom-variant dark {
-  &:is(.dark, .dark *:not(:is(.dark .light *, .dark [data-theme="light"] *)), [data-theme="dark"], [data-theme="dark"] *:not(:is([data-theme="dark"] .light *, [data-theme="dark"] [data-theme="light"] *))) {
+  &:is(
+    .dark,
+    .dark *:not(:is(.dark .light *, .dark [data-theme='light'] *)),
+    [data-theme='dark'],
+    [data-theme='dark'] *:not(:is([data-theme='dark'] .light *, [data-theme='dark'] [data-theme='light'] *))
+  ) {
     @slot;
   }
   @media (prefers-color-scheme: dark) {
-    &:not(:is(.light, .light *, [data-theme="light"], [data-theme="light"] *)) {
+    &:not(:is(.light, .light *, [data-theme='light'], [data-theme='light'] *)) {
       @slot;
     }
   }
@@ -66,7 +71,6 @@
 
 /* 全局主题工具类 */
 @layer utilities {
-
   /* 主题背景和文本 */
   .theme-bg {
     background-color: var(--theme-bg);
@@ -190,6 +194,8 @@
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    transition: color 0.3s ease, background-color 0.3s ease;
+    transition:
+      color 0.3s ease,
+      background-color 0.3s ease;
   }
 }

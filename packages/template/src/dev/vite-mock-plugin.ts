@@ -15,10 +15,10 @@ const dataDir = resolve(__dirname, '../dev-data')
  * @description 将 mock 服务器集成到 Vite 开发服务器中
  * @returns Vite 插件配置
  */
-export function mockApiPlugin (): Plugin {
+export function mockApiPlugin(): Plugin {
   return {
     name: 'mock-api',
-    configureServer (server) {
+    configureServer(server) {
       // 确保数据目录存在
       if (!existsSync(dataDir)) {
         mkdirSync(dataDir, { recursive: true })
@@ -30,7 +30,7 @@ export function mockApiPlugin (): Plugin {
        * @param componentId 组件ID
        * @returns 目录路径
        */
-      function getTemplateDataDir (platform: PlatformType, componentId: string): string {
+      function getTemplateDataDir(platform: PlatformType, componentId: string): string {
         const dir = join(dataDir, platform, componentId)
         if (!existsSync(dir)) {
           mkdirSync(dir, { recursive: true })
@@ -43,8 +43,8 @@ export function mockApiPlugin (): Plugin {
        * @param platform 平台类型
        * @returns 组件配置列表
        */
-      function getAvailableComponents (platform: PlatformType) {
-        const platformConfig = baseComponentConfigs.find(config => config.type === platform)
+      function getAvailableComponents(platform: PlatformType) {
+        const platformConfig = baseComponentConfigs.find((config) => config.type === platform)
         return platformConfig?.components || []
       }
 
@@ -55,7 +55,7 @@ export function mockApiPlugin (): Plugin {
        * @param filename 文件名
        * @returns 数据对象或null
        */
-      function readDataFile (platform: PlatformType, templateId: string, filename: string = 'default.json') {
+      function readDataFile(platform: PlatformType, templateId: string, filename: string = 'default.json') {
         const dir = getTemplateDataDir(platform, templateId)
         const filePath = join(dir, filename)
 
@@ -82,7 +82,7 @@ export function mockApiPlugin (): Plugin {
        * @param data 数据对象
        * @param filename 文件名
        */
-      function writeDataFile (platform: PlatformType, templateId: string, data: any, filename: string = 'default.json') {
+      function writeDataFile(platform: PlatformType, templateId: string, data: any, filename: string = 'default.json') {
         const dir = getTemplateDataDir(platform, templateId)
         const filePath = join(dir, filename)
         writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8')
@@ -94,15 +94,15 @@ export function mockApiPlugin (): Plugin {
        * @param templateId 模板ID
        * @returns 文件名列表
        */
-      function getAvailableDataFiles (platform: PlatformType, templateId: string): string[] {
+      function getAvailableDataFiles(platform: PlatformType, templateId: string): string[] {
         const dir = getTemplateDataDir(platform, templateId)
         try {
           const allFiles = readdirSync(dir)
-          const jsonFiles = allFiles.filter(file => file.endsWith('.json') && file !== 'versions.json')
+          const jsonFiles = allFiles.filter((file) => file.endsWith('.json') && file !== 'versions.json')
 
           // 分离 default.json 和其他文件
-          const defaultFile = jsonFiles.find(f => f === 'default.json')
-          const otherFiles = jsonFiles.filter(f => f !== 'default.json')
+          const defaultFile = jsonFiles.find((f) => f === 'default.json')
+          const otherFiles = jsonFiles.filter((f) => f !== 'default.json')
 
           // 对其他文件按时间倒序排列（新的在前）
           otherFiles.sort((a, b) => b.localeCompare(a))
@@ -119,7 +119,7 @@ export function mockApiPlugin (): Plugin {
        * @param req 请求对象
        * @returns Promise<string> 请求体内容
        */
-      function parseBody (req: any): Promise<string> {
+      function parseBody(req: any): Promise<string> {
         return new Promise((resolve) => {
           let body = ''
           req.on('data', (chunk: any) => {
@@ -135,7 +135,7 @@ export function mockApiPlugin (): Plugin {
        * 监听 dev-data 目录的文件变化
        * 当有新文件被创建或修改时，通知前端进行热更新
        */
-      function setupFileWatcher () {
+      function setupFileWatcher() {
         if (!existsSync(dataDir)) {
           return
         }
@@ -158,8 +158,8 @@ export function mockApiPlugin (): Plugin {
             }
           })
 
-            // 保存 watcher 引用以便后续可能的清理
-            ; (server as any).__devDataWatcher = watcher
+          // 保存 watcher 引用以便后续可能的清理
+          ;(server as any).__devDataWatcher = watcher
         } catch {
           // 文件监听错误不影响 API 正常运行
         }
@@ -180,14 +180,16 @@ export function mockApiPlugin (): Plugin {
             const platform = match[1] as PlatformType
             const components = getAvailableComponents(platform)
             res.setHeader('Content-Type', 'application/json')
-            res.end(JSON.stringify({
-              components: components.map(component => ({
-                id: component.id,
-                name: component.name,
-                description: component.description,
-                enabled: component.enabled
-              }))
-            }))
+            res.end(
+              JSON.stringify({
+                components: components.map((component) => ({
+                  id: component.id,
+                  name: component.name,
+                  description: component.description,
+                  enabled: component.enabled
+                }))
+              })
+            )
             return
           }
 
@@ -379,7 +381,7 @@ export function mockApiPlugin (): Plugin {
           // 构建请求头
           const headers: Record<string, string> = {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
+            Authorization: `Bearer ${apiKey}`
           }
 
           // Claude 使用 x-api-key 而不是 Authorization
@@ -444,10 +446,12 @@ export function mockApiPlugin (): Plugin {
           console.error('[AI Proxy] 代理请求失败:', error)
           res.statusCode = 500
           res.setHeader('Content-Type', 'application/json')
-          res.end(JSON.stringify({
-            error: 'AI 代理请求失败',
-            message: error instanceof Error ? error.message : String(error)
-          }))
+          res.end(
+            JSON.stringify({
+              error: 'AI 代理请求失败',
+              message: error instanceof Error ? error.message : String(error)
+            })
+          )
         }
       })
 

@@ -28,7 +28,7 @@ export const getDouyinDB = async (): Promise<DouyinDBBase> => {
   }
 
   if (douyinInitializing) {
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 100))
     return douyinDB!
   }
 
@@ -51,7 +51,7 @@ export const getBilibiliDB = async (): Promise<BilibiliDBBase> => {
   }
 
   if (bilibiliInitializing) {
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 100))
     return bilibiliDB!
   }
 
@@ -74,7 +74,7 @@ export const getStatisticsDB = async (): Promise<StatisticsDBBase> => {
   }
 
   if (statisticsInitializing) {
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 100))
     return statisticsDB!
   }
 
@@ -92,11 +92,7 @@ export const getStatisticsDB = async (): Promise<StatisticsDBBase> => {
  * @returns 初始化后的数据库实例
  */
 export const initAllDatabases = async () => {
-  const [douyin, bilibili, statistics] = await Promise.all([
-    getDouyinDB(),
-    getBilibiliDB(),
-    getStatisticsDB()
-  ])
+  const [douyin, bilibili, statistics] = await Promise.all([getDouyinDB(), getBilibiliDB(), getStatisticsDB()])
 
   return { douyinDB: douyin, bilibiliDB: bilibili, statisticsDB: statistics }
 }

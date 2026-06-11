@@ -1,4 +1,4 @@
-"use client"
+'use client'
 import React from 'react'
 
 /**
@@ -72,7 +72,10 @@ export const GlowImage: React.FC<GlowImageProps> = ({
         if (!ctx) return
         ctx.drawImage(img, 0, 0, size, size)
         const data = ctx.getImageData(0, 0, size, size).data
-        let r = 0, g = 0, b = 0, count = 0
+        let r = 0,
+          g = 0,
+          b = 0,
+          count = 0
         for (let i = 0; i < data.length; i += 4) {
           const a = data[i + 3]
           if (a < 10) continue
@@ -126,9 +129,7 @@ export const GlowImage: React.FC<GlowImageProps> = ({
         alt={alt}
         className={imgClassName}
         style={{
-          filter: `drop-shadow(0 0 ${shadowRadius}px ${shadowColor}) drop-shadow(0 0 ${Math.round(
-            shadowRadius * 0.6
-          )}px ${shadowColor})`
+          filter: `drop-shadow(0 0 ${shadowRadius}px ${shadowColor}) drop-shadow(0 0 ${Math.round(shadowRadius * 0.6)}px ${shadowColor})`
         }}
       />
     )

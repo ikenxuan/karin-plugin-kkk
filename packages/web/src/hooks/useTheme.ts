@@ -8,7 +8,7 @@ const ThemeProps = {
   light: 'light',
   dark: 'dark',
   system: 'system',
-  inverse: 'inverse',
+  inverse: 'inverse'
 } as const
 
 type StoredTheme = typeof ThemeProps.system | typeof ThemeProps.inverse
@@ -20,13 +20,9 @@ interface KarinThemeMessage {
   appliedTheme?: AppliedTheme
 }
 
-const isStoredTheme = (value: string | null): value is StoredTheme => (
-  value === ThemeProps.system || value === ThemeProps.inverse
-)
+const isStoredTheme = (value: string | null): value is StoredTheme => value === ThemeProps.system || value === ThemeProps.inverse
 
-const isAppliedTheme = (value: unknown): value is AppliedTheme => (
-  value === ThemeProps.light || value === ThemeProps.dark
-)
+const isAppliedTheme = (value: unknown): value is AppliedTheme => value === ThemeProps.light || value === ThemeProps.dark
 
 const isKarinThemeMessage = (value: unknown): value is KarinThemeMessage => {
   if (!value || typeof value !== 'object') return false
@@ -50,21 +46,12 @@ const readStoredTheme = (): StoredTheme => {
   return ThemeProps.system
 }
 
-const getSystemTheme = (): AppliedTheme => (
-  window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? ThemeProps.dark
-    : ThemeProps.light
-)
+const getSystemTheme = (): AppliedTheme => (window.matchMedia('(prefers-color-scheme: dark)').matches ? ThemeProps.dark : ThemeProps.light)
 
-const getInverseSystemTheme = (): AppliedTheme => (
-  window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? ThemeProps.light
-    : ThemeProps.dark
-)
+const getInverseSystemTheme = (): AppliedTheme =>
+  window.matchMedia('(prefers-color-scheme: dark)').matches ? ThemeProps.light : ThemeProps.dark
 
-const getAppliedTheme = (theme: StoredTheme): AppliedTheme => (
-  theme === ThemeProps.system ? getSystemTheme() : getInverseSystemTheme()
-)
+const getAppliedTheme = (theme: StoredTheme): AppliedTheme => (theme === ThemeProps.system ? getSystemTheme() : getInverseSystemTheme())
 
 const applyThemeClass = (theme: StoredTheme) => {
   return applyResolvedThemeClass(getAppliedTheme(theme))
@@ -129,12 +116,8 @@ export const useTheme = () => {
       if (!isKarinThemeMessage(event.data)) return
 
       const messageTheme = event.data.theme
-      const nextTheme: StoredTheme = isStoredTheme(messageTheme ?? null)
-        ? messageTheme as StoredTheme
-        : readStoredTheme()
-      const nextAppliedTheme = isAppliedTheme(event.data.appliedTheme)
-        ? event.data.appliedTheme
-        : getAppliedTheme(nextTheme)
+      const nextTheme: StoredTheme = isStoredTheme(messageTheme ?? null) ? (messageTheme as StoredTheme) : readStoredTheme()
+      const nextAppliedTheme = isAppliedTheme(event.data.appliedTheme) ? event.data.appliedTheme : getAppliedTheme(nextTheme)
 
       localStorage.setItem(themeStorageKey, nextTheme)
       setThemeState(nextTheme)
@@ -166,6 +149,6 @@ export const useTheme = () => {
     isInverse: theme === ThemeProps.inverse,
     setSystemTheme,
     setInverseTheme,
-    toggleTheme,
+    toggleTheme
   }
 }
