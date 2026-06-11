@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [2.34.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.33.0...v2.34.0) (2026-06-11)
+
+
+### ✨ 新功能
+
+* 使用自带的配置管理面板 ([#317](https://github.com/ikenxuan/karin-plugin-kkk/issues/317)) ([0cd3ecb](https://github.com/ikenxuan/karin-plugin-kkk/commit/0cd3ecb7856f80b07401871b68e4d3f8232071eb))
+
 ## [2.33.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.32.3...v2.33.0) (2026-06-04)
 
 
