@@ -1,13 +1,13 @@
 /// <reference types="node" />
 import { A as RichTextDocument } from "./index-B2QgJ0_6.mjs";
-import { EventEmitter } from "node:events";
+import { EventEmitter as EventEmitter$1 } from "node:events";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import React$1 from "react";
-import { EventEmitter as EventEmitter$1 } from "events";
+import { EventEmitter as EventEmitter$2 } from "events";
 import { Agent, ClientRequest, ClientRequestArgs, IncomingMessage, OutgoingHttpHeaders, Server } from "http";
+import { Server as Server$1 } from "https";
 import { createConnection } from "net";
 import { SecureContextOptions } from "tls";
-import { Server as Server$1 } from "https";
 import { URL } from "url";
 import { ZlibOptions } from "zlib";
 
@@ -1564,7 +1564,7 @@ type BufferLike = string | Buffer | DataView | number | ArrayBufferView | Uint8A
 } | {
   [Symbol.toPrimitive](hint: string): string;
 }; // WebSocket socket.
-declare class WebSocket extends EventEmitter$1 {
+declare class WebSocket extends EventEmitter$2 {
   /** The connection is not yet open. */
   static readonly CONNECTING: 0;
   /** The connection is open and ready to communicate. */
@@ -1810,7 +1810,9 @@ declare namespace WebSocket {
   }
 }
 //#endregion
-//#region ../../node_modules/.pnpm/node-karin@1.15.5/node_modules/node-karin/dist/index.d.ts
+//#region ../../node_modules/.pnpm/node-karin@1.16.1/node_modules/node-karin/dist/index.d.ts
+//#endregion
+//#region src/types/adapter/info.d.ts
 /**
  * 适配器所属平台
  * - `qq`: QQ
@@ -1891,7 +1893,8 @@ interface AdapterInfo$1 {
   connectTime: number;
   /** 鉴权秘钥 */
   secret: string | null;
-}
+} //#endregion
+//#region src/types/event/account.d.ts
 /**
  * 适配器账号信息
  */
