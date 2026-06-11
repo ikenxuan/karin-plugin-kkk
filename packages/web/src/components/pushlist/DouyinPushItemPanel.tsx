@@ -66,13 +66,12 @@ const DouyinPushItemPanel = ({ item, index, list, onChange, device }: DouyinPush
                 <TextField
                   fullWidth
                   isDisabled={disabled}
-                  isRequired
                   value={item.sec_uid}
                   onChange={(value) => updateItem({ sec_uid: value })}
                 >
                   <Label>sec_uid</Label>
-                  <Input placeholder="与抖音号二选一填写" />
-                  <Description>用户的 sec_uid，可从分享链接获取。与抖音号二选一必填</Description>
+                  <Input placeholder="选填，会根据抖音号自动获取" />
+                  <Description>用户的 sec_uid，可从分享链接获取。选填，推送时会自动获取</Description>
                 </TextField>
               </DisabledFieldHint>
 
@@ -85,8 +84,8 @@ const DouyinPushItemPanel = ({ item, index, list, onChange, device }: DouyinPush
                   onChange={(value) => updateItem({ short_id: value })}
                 >
                   <Label>抖音号</Label>
-                  <Input placeholder="与 sec_uid 二选一填写" />
-                  <Description>用户的抖音号（short_id）。与 sec_uid 二选一必填</Description>
+                  <Input placeholder="用户的抖音号" />
+                  <Description>用户的抖音号（short_id），必填</Description>
                 </TextField>
               </DisabledFieldHint>
             </div>

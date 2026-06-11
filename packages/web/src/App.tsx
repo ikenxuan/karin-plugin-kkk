@@ -31,7 +31,7 @@ const routePaths: Record<AppRoute, string> = {
   login: '/kkk/login',
   config: '/kkk/config',
   about: '/kkk/about',
-  'karin-config': '/kkk/karin-config'
+  'karin-config': '/kkk/assets/karin-config'
 }
 
 const routeMenuMap: Record<Exclude<AppRoute, 'login' | 'karin-config'>, MainMenuKey> = {

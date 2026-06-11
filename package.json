@@ -18,6 +18,7 @@
     "prepare": "husky",
     "postinstall": "pnpm --filter @ikenxuan/amagi run build",
     "sort": "pnpm -r sort",
+    "web": "pnpm --filter web run dev",
     "template": "pnpm --filter template run dev",
     "watch": "pnpm --filter karin-plugin-kkk run watch"
   },

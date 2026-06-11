@@ -87,7 +87,7 @@ export class DouYinpush extends Base {
     if (await this.checkremark()) return true
 
     // 检查并补全配置文件中缺失的字段
-    this.ensureConfigFields(Config.pushlist.douyin)
+    await this.ensureConfigFields(Config.pushlist.douyin)
 
     // 获取已注册的 bot 列表，过滤未注册的 bot
     const registeredBotIds = karin.getAllBotID()
@@ -110,12 +110,44 @@ export class DouYinpush extends Base {
    * 检查并补全配置文件中缺失的字段
    * @param pushList 推送配置列表
    */
-  private ensureConfigFields (pushList: douyinPushItem[]): void {
+  private async ensureConfigFields (pushList: douyinPushItem[]): Promise<void> {
     if (!pushList || pushList.length === 0) return
 
     let hasChanges = false
 
     for (const item of pushList) {
+      // 检查并补全 sec_uid 字段
+      if (!item.sec_uid && item.short_id) {
+        try {
+          logger.info(`自动获取用户 ${item.remark || item.short_id} 的 sec_uid`)
+          const searchResult = await this.amagi.douyin.fetcher.searchContent({
+            query: item.short_id,
+            type: 'user',
+            typeMode: 'strict'
+          })
+
+          // 在搜索结果中查找匹配的用户
+          let matchedUser = null
+          for (const userItem of searchResult.data.user_list) {
+            const currentDouyinId = userItem.user_info.unique_id || userItem.user_info.short_id
+            if (currentDouyinId === item.short_id) {
+              matchedUser = userItem.user_info
+              break
+            }
+          }
+
+          if (matchedUser?.sec_uid) {
+            item.sec_uid = matchedUser.sec_uid
+            hasChanges = true
+            logger.info(`已为 ${item.remark || item.short_id} 补全 sec_uid: ${item.sec_uid}`)
+          } else {
+            logger.warn(`无法获取用户 ${item.short_id} 的 sec_uid`)
+          }
+        } catch (error) {
+          logger.error(`获取 ${item.short_id} 的 sec_uid 失败: ${error}`)
+        }
+      }
+
       // 检查并补全 pushTypes 字段
       if (!item.pushTypes || item.pushTypes.length === 0) {
         item.pushTypes = ['post', 'live', 'favorite', 'recommend']
@@ -719,6 +751,12 @@ export class DouYinpush extends Base {
       const filteredUserList = userList.filter(item => item.switch !== false)
       for (const item of filteredUserList) {
         await common.sleep(2000)
+
+        if (!item.sec_uid) {
+          logger.warn(`用户 ${item.remark || item.short_id} 缺少 sec_uid，跳过`)
+          continue
+        }
+
         const sec_uid = item.sec_uid
         const pushTypes = item.pushTypes || ['post'] // 默认推送作品列表
 

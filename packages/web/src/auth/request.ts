@@ -22,7 +22,7 @@ interface LoginTokens {
   refreshToken: string
 }
 
-const kkkApiPrefix = '/api/kkk/v1'
+const kkkApiPrefix = '/kkk/v1'
 
 let refreshPromise: Promise<boolean> | null = null
 

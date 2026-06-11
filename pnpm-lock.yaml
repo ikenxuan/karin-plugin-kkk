@@ -134,7 +134,7 @@ importers:
         version: 9.1.7
       neostandard:
         specifier: ^0.12.1
-        version: 0.12.2(@typescript-eslint/utils@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.60.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)
+        version: 0.12.2(@typescript-eslint/utils@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)
       prettier:
         specifier: ^3.5.3
         version: 3.8.3
@@ -366,7 +366,7 @@ importers:
         version: 9.39.4(jiti@2.7.0)
       neostandard:
         specifier: ^0.12.1
-        version: 0.12.2(@typescript-eslint/utils@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)
+        version: 0.12.2(@typescript-eslint/utils@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.60.1(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)
       ws:
         specifier: ^8.18.2
         version: 8.20.1
@@ -1163,10 +1163,13 @@ importers:
     dependencies:
       '@heroui/styles':
         specifier: ^3.1.0
-        version: 3.1.0(tailwind-merge@3.6.0)(tailwindcss@4.3.0)
+        version: 3.1.0(tailwind-merge@3.4.0)(tailwindcss@4.3.0)
       axios:
         specifier: ^1.17.0
         version: 1.17.0
+      fast-deep-equal:
+        specifier: ^3.1.3
+        version: 3.1.3
     devDependencies:
       '@heroui/react':
         specifier: ^3.1.0
@@ -22186,6 +22189,24 @@ snapshots:
       - utf-8-validate
     optional: true
 
+  '@vitejs/devtools-kit@0.1.24(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(typescript@6.0.3)(vite@8.0.16)':
+    dependencies:
+      birpc: 4.0.0
+      devframe: 0.2.2(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(typescript@6.0.3)
+      logs-sdk: 0.0.6
+      mlly: 1.8.2
+      pathe: 2.0.3
+      perfect-debounce: 2.1.0
+      tinyexec: 1.2.4
+      vite: 8.0.16(@types/node@25.6.0)(@vitejs/devtools@0.1.24)(esbuild@0.28.0)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
+    transitivePeerDependencies:
+      - '@modelcontextprotocol/sdk'
+      - bufferutil
+      - crossws
+      - typescript
+      - utf-8-validate
+    optional: true
+
   '@vitejs/devtools-kit@0.1.24(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(typescript@6.0.3)(vite@8.0.16)':
     dependencies:
       birpc: 4.0.0
@@ -22195,7 +22216,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.1.0
       tinyexec: 1.2.4
-      vite: 8.0.16(@types/node@24.12.4)(@vitejs/devtools@0.1.24)(esbuild@0.28.0)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)
+      vite: 8.0.16(@types/node@25.6.0)(@vitejs/devtools@0.1.24)(esbuild@0.28.0)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
     transitivePeerDependencies:
       - '@modelcontextprotocol/sdk'
       - bufferutil
@@ -22233,7 +22254,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.1.0
       tinyexec: 1.2.3
-      vite: 8.0.16(@types/node@24.12.2)(@vitejs/devtools@0.3.1)(esbuild@0.28.0)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.21.0)(yaml@2.9.0)
+      vite: 8.0.16(@types/node@24.12.4)(@vitejs/devtools@0.3.1)(esbuild@0.28.0)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
     transitivePeerDependencies:
       - '@modelcontextprotocol/sdk'
       - bufferutil
@@ -22251,6 +22272,61 @@ snapshots:
       cac: 7.0.0
       d3-shape: 3.2.0
       devframe: 0.2.2(@modelcontextprotocol/sdk@1.29.0(zod@3.25.76))(typescript@6.0.3)
+      diff: 9.0.0
+      get-port-please: 3.2.0
+      h3: 2.0.1-rc.22
+      logs-sdk: 0.0.6
+      mlly: 1.8.2
+      mrmime: 2.0.1
+      p-limit: 7.3.0
+      pathe: 2.0.3
+      publint: 0.3.21
+      split2: 4.2.0
+      tinyglobby: 0.2.17
+      unconfig: 7.5.0
+      unstorage: 1.17.5
+      vue-virtual-scroller: 3.0.4(vue@3.5.35(typescript@6.0.3))
+      ws: 8.21.0
+    transitivePeerDependencies:
+      - '@azure/app-configuration'
+      - '@azure/cosmos'
+      - '@azure/data-tables'
+      - '@azure/identity'
+      - '@azure/keyvault-secrets'
+      - '@azure/storage-blob'
+      - '@capacitor/preferences'
+      - '@deno/kv'
+      - '@modelcontextprotocol/sdk'
+      - '@netlify/blobs'
+      - '@planetscale/database'
+      - '@pnpm/logger'
+      - '@upstash/redis'
+      - '@vercel/blob'
+      - '@vercel/functions'
+      - '@vercel/kv'
+      - aws4fetch
+      - bufferutil
+      - crossws
+      - db0
+      - idb-keyval
+      - ioredis
+      - typescript
+      - uploadthing
+      - utf-8-validate
+      - vite
+      - vue
+    optional: true
+
+  '@vitejs/devtools-rolldown@0.1.24(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.16)(vue@3.5.35(typescript@6.0.3))':
+    dependencies:
+      '@floating-ui/dom': 1.7.6
+      '@pnpm/read-project-manifest': 1001.2.6(@pnpm/logger@1001.0.1)
+      '@rolldown/debug': 1.0.3
+      '@vitejs/devtools-kit': 0.1.24(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(typescript@6.0.3)(vite@8.0.16)
+      birpc: 4.0.0
+      cac: 7.0.0
+      d3-shape: 3.2.0
+      devframe: 0.2.2(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(typescript@6.0.3)
       diff: 9.0.0
       get-port-please: 3.2.0
       h3: 2.0.1-rc.22
@@ -22499,6 +22575,51 @@ snapshots:
       - utf-8-validate
     optional: true
 
+  '@vitejs/devtools@0.1.24(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.16)':
+    dependencies:
+      '@vitejs/devtools-kit': 0.1.24(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(typescript@6.0.3)(vite@8.0.16)
+      '@vitejs/devtools-rolldown': 0.1.24(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.16)(vue@3.5.35(typescript@6.0.3))
+      birpc: 4.0.0
+      cac: 7.0.0
+      devframe: 0.2.2(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(typescript@6.0.3)
+      h3: 2.0.1-rc.22
+      logs-sdk: 0.0.6
+      mlly: 1.8.2
+      obug: 2.1.1
+      pathe: 2.0.3
+      perfect-debounce: 2.1.0
+      tinyexec: 1.2.4
+      vite: 8.0.16(@types/node@25.6.0)(@vitejs/devtools@0.1.24)(esbuild@0.28.0)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
+      vue: 3.5.35(typescript@6.0.3)
+      ws: 8.21.0
+    transitivePeerDependencies:
+      - '@azure/app-configuration'
+      - '@azure/cosmos'
+      - '@azure/data-tables'
+      - '@azure/identity'
+      - '@azure/keyvault-secrets'
+      - '@azure/storage-blob'
+      - '@capacitor/preferences'
+      - '@deno/kv'
+      - '@modelcontextprotocol/sdk'
+      - '@netlify/blobs'
+      - '@planetscale/database'
+      - '@pnpm/logger'
+      - '@upstash/redis'
+      - '@vercel/blob'
+      - '@vercel/functions'
+      - '@vercel/kv'
+      - aws4fetch
+      - bufferutil
+      - crossws
+      - db0
+      - idb-keyval
+      - ioredis
+      - typescript
+      - uploadthing
+      - utf-8-validate
+    optional: true
+
   '@vitejs/devtools@0.1.24(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.16)':
     dependencies:
       '@vitejs/devtools-kit': 0.1.24(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(typescript@6.0.3)(vite@8.0.16)
@@ -22513,7 +22634,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.1.0
       tinyexec: 1.2.4
-      vite: 8.0.16(@types/node@24.12.4)(@vitejs/devtools@0.1.24)(esbuild@0.28.0)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)
+      vite: 8.0.16(@types/node@25.6.0)(@vitejs/devtools@0.1.24)(esbuild@0.28.0)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vue: 3.5.35(typescript@6.0.3)
       ws: 8.21.0
     transitivePeerDependencies:
@@ -22604,7 +22725,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.1.0
       tinyexec: 1.2.3
-      vite: 8.0.16(@types/node@24.12.2)(@vitejs/devtools@0.3.1)(esbuild@0.28.0)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.21.0)(yaml@2.9.0)
+      vite: 8.0.16(@types/node@24.12.4)(@vitejs/devtools@0.3.1)(esbuild@0.28.0)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vue: 3.5.35(typescript@6.0.3)
       ws: 8.21.0
     transitivePeerDependencies:
@@ -24063,6 +24184,26 @@ snapshots:
       ws: 8.21.0
     optionalDependencies:
       '@modelcontextprotocol/sdk': 1.29.0(zod@3.25.76)
+    transitivePeerDependencies:
+      - bufferutil
+      - crossws
+      - typescript
+      - utf-8-validate
+    optional: true
+
+  devframe@0.2.2(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(typescript@6.0.3):
+    dependencies:
+      '@valibot/to-json-schema': 1.7.0(valibot@1.4.1(typescript@6.0.3))
+      birpc: 4.0.0
+      cac: 7.0.0
+      h3: 2.0.1-rc.22
+      logs-sdk: 0.0.6
+      mrmime: 2.0.1
+      pathe: 2.0.3
+      valibot: 1.4.1(typescript@6.0.3)
+      ws: 8.21.0
+    optionalDependencies:
+      '@modelcontextprotocol/sdk': 1.29.0(zod@4.3.6)
     transitivePeerDependencies:
       - bufferutil
       - crossws
@@ -30870,25 +31011,6 @@ snapshots:
       yaml: 2.9.0
     optional: true
 
-  vite@8.0.16(@types/node@24.12.2)(@vitejs/devtools@0.3.1)(esbuild@0.28.0)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.21.0)(yaml@2.9.0):
-    dependencies:
-      lightningcss: 1.32.0
-      picomatch: 4.0.4
-      postcss: 8.5.15
-      rolldown: 1.0.3
-      tinyglobby: 0.2.17
-    optionalDependencies:
-      '@types/node': 24.12.2
-      '@vitejs/devtools': 0.3.1(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(typescript@6.0.3)(vite@8.0.16)
-      esbuild: 0.28.0
-      fsevents: 2.3.3
-      jiti: 2.7.0
-      sass: 1.100.0
-      sass-embedded: 1.100.0
-      terser: 5.48.0
-      tsx: 4.21.0
-      yaml: 2.9.0
-
   vite@8.0.16(@types/node@24.12.4)(@vitejs/devtools@0.1.24)(esbuild@0.28.0)(jiti@1.21.7)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0):
     dependencies:
       lightningcss: 1.32.0
@@ -30955,7 +31077,7 @@ snapshots:
       tinyglobby: 0.2.17
     optionalDependencies:
       '@types/node': 25.6.0
-      '@vitejs/devtools': 0.1.24(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.16)
+      '@vitejs/devtools': 0.1.24(@modelcontextprotocol/sdk@1.29.0(zod@4.3.6))(@pnpm/logger@1001.0.1)(typescript@6.0.3)(vite@8.0.16)
       esbuild: 0.28.0
       fsevents: 2.3.3
       jiti: 2.7.0

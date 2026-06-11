@@ -1,6 +1,6 @@
-import fs from 'node:fs'
-import path from 'node:path'
-
+/**
+ * 主路由注册
+ */
 import Client, {
   createBilibiliRoutes,
   createDouyinRoutes,
@@ -12,11 +12,12 @@ import * as httpProxy from 'http-proxy-middleware'
 import { app as karinApp, checkPort, logger } from 'node-karin'
 import express from 'node-karin/express'
 
-import { Root } from '@/root'
+import { Config } from '@/module/utils/Config'
 
-import { Config } from '../utils/Config'
+import { API_V1_PREFIX, ASSETS_PREFIX, KKK_PREFIX, SSR_PREFIX } from '../constants/routes'
 import { apiRouter } from './api'
-import { getVideoRouter, videoPreviewEventsRouter, videoStreamRouter } from './router'
+import { ssrRouter } from './ssr'
+import { staticRouter } from './static'
 
 const server = express()
 const proxyOptions: httpProxy.Options = {
@@ -24,24 +25,8 @@ const proxyOptions: httpProxy.Options = {
   changeOrigin: true
 }
 
-const webDistPath = path.join(Root.pluginPath, 'lib', 'web')
-const webIndexPath = path.join(webDistPath, 'index.html')
-
-const sendWebIndex = (res: express.Response) => {
-  try {
-    const html = fs.readFileSync(webIndexPath, 'utf-8')
-    res.setHeader('Cache-Control', 'no-cache')
-    res.type('html').send(html)
-  } catch (error) {
-    const message = `[karin-plugin-kkk] Failed to read Web UI entry: ${webIndexPath}`
-    logger.error(error instanceof Error ? `${message}\n${error.stack ?? error.message}` : `${message}\n${String(error)}`)
-    res.status(500).type('text/plain').send(message)
-  }
-}
-
 server.use(cors.default())
 server.use('/', httpProxy.createProxyMiddleware(proxyOptions))
-// TODO: 后续将此反代放到 karin 中
 
 if (process.env.NODE_ENV !== 'test') {
   checkPort(3780).then((isOpen) => {
@@ -60,7 +45,7 @@ const app = express.Router()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-
+// Amagi API Server
 if (Config.app.APIServer && Config.app.APIServerMount) {
   app.use('/amagi/api/bilibili', createBilibiliRoutes(Config.cookies.bilibili))
   app.use('/amagi/api/douyin', createDouyinRoutes(Config.cookies.douyin))
@@ -78,32 +63,10 @@ if (Config.app.APIServer && Config.app.APIServerMount) {
   amagiServer.startServer(Config.app.APIServerPort)
 }
 
-// 视频流服务
-app.get('/stream/:filename', videoStreamRouter)
-app.get('/video/:filename', getVideoRouter)
-app.get('/video/:filename/events', videoPreviewEventsRouter)
+// 挂载子路由
+app.use(API_V1_PREFIX, apiRouter) // /kkk/v1/*
+app.use(SSR_PREFIX, ssrRouter) // /kkk/ssr/*
+app.use(ASSETS_PREFIX, staticRouter) // /kkk/assets/*
 
-// v1 API 路由
-app.use('/v1', apiRouter)
-
-const staticRouter = express.Router()
-const webStatic = express.static(webDistPath, {
-  redirect: false,
-  setHeaders: (res, filePath) => {
-    // HTML 不缓存，资源文件长期缓存，避免生产环境更新后入口仍旧命中旧版本。
-    if (filePath.endsWith('.html')) {
-      res.setHeader('Cache-Control', 'no-cache')
-      return
-    }
-    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
-  }
-})
-
-staticRouter.use(webStatic)
-staticRouter.use((_req, res) => {
-  sendWebIndex(res)
-})
-
-/** 将子路由挂载到主路由上 */
-karinApp.use('/kkk', staticRouter)
-karinApp.use('/api/kkk', app)
+// 挂载到 Karin 主路由
+karinApp.use(KKK_PREFIX, app)

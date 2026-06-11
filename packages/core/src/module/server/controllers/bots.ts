@@ -96,7 +96,7 @@ export const getBots: RequestHandler = async (_req, res) => {
  */
 export const getBotInfo: RequestHandler = async (req, res) => {
   try {
-    const { botId } = req.params
+    const botId = Array.isArray(req.params.botId) ? req.params.botId[0] : req.params.botId
 
     if (!botId) {
       return createServerErrorResponse(res, '缺少 botId 参数')
@@ -128,7 +128,7 @@ export const getBotInfo: RequestHandler = async (req, res) => {
  */
 export const getBotGroups: RequestHandler = async (req, res) => {
   try {
-    const { botId } = req.params
+    const botId = Array.isArray(req.params.botId) ? req.params.botId[0] : req.params.botId
 
     if (!botId) {
       return createServerErrorResponse(res, '缺少 botId 参数')
@@ -173,7 +173,8 @@ export const getBotGroups: RequestHandler = async (req, res) => {
  */
 export const getBotGroupInfo: RequestHandler = async (req, res) => {
   try {
-    const { botId, groupId } = req.params
+    const botId = Array.isArray(req.params.botId) ? req.params.botId[0] : req.params.botId
+    const groupId = Array.isArray(req.params.groupId) ? req.params.groupId[0] : req.params.groupId
 
     if (!botId || !groupId) {
       return createServerErrorResponse(res, '缺少 botId 或 groupId 参数')

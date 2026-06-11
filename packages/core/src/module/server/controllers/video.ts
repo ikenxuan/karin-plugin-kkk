@@ -1,5 +1,5 @@
 /**
- * 视频流服务路由
+ * 视频控制器
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -16,11 +16,8 @@ import { Config } from '@/module/utils/Config'
 
 /**
  * 视频文件流传输
- * GET /api/kkk/stream/:filename
- * @param req 请求对象。
- * @param res 响应对象。
  */
-export const videoStreamRouter: RequestHandler = (req, res) => {
+export const getVideoStream: RequestHandler = (req, res) => {
   const filenameParam = req.params.filename
   const filename = Array.isArray(filenameParam) ? filenameParam[0] : filenameParam
   if (!filename) {
@@ -44,7 +41,7 @@ export const videoStreamRouter: RequestHandler = (req, res) => {
       const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1
 
       if (start >= fileSize || end >= fileSize || start > end) {
-        res.status(416).send('Requested range not satisfiable')
+        res.status(416).send('请求范围不满足')
         return
       }
 
@@ -78,7 +75,7 @@ export const videoStreamRouter: RequestHandler = (req, res) => {
         logger.error(`读取视频文件流时出错 (Full): ${err.message}`)
         if (!res.headersSent) {
           try {
-            createNotFoundResponse(res, '读取视频文件时出错')
+            createNotFoundResponse(res, '读取视频文件失败')
           } catch (e) {
             logger.error('发送读取错误响应失败:', e)
             if (!res.writableEnded) {
@@ -97,7 +94,7 @@ export const videoStreamRouter: RequestHandler = (req, res) => {
     } else {
       logger.error(`处理视频数据请求时发生错误: ${error.message}`)
       if (!res.headersSent) {
-        createNotFoundResponse(res, '服务器内部错误')
+        createNotFoundResponse(res, '服务器错误')
       } else if (!res.writableEnded) {
         res.end()
       }
@@ -106,12 +103,9 @@ export const videoStreamRouter: RequestHandler = (req, res) => {
 }
 
 /**
- * 视频播放页面
- * GET /api/kkk/video/:filename
- * @param req 请求对象。
- * @param res 响应对象。
+ * 视频播放页面（SSR）
  */
-export const getVideoRouter: RequestHandler = (req, res) => {
+export const getVideoPage: RequestHandler = (req, res) => {
   const filenameParam = req.params.filename
   const filename = Array.isArray(filenameParam) ? filenameParam[0] : filenameParam
   if (!filename) {
@@ -124,7 +118,7 @@ export const getVideoRouter: RequestHandler = (req, res) => {
     return
   }
 
-  const videoDataUrl = `/api/kkk/stream/${encodeURIComponent(filename)}`
+  const videoDataUrl = `/kkk/v1/stream/${encodeURIComponent(filename)}`
   const previewInfo = Common.getVideoPreview(filename)
   const removeCache = previewInfo?.removeCache ?? Config.app.removeCache
   const createdAt = previewInfo?.createdAt ?? Date.now()
@@ -136,7 +130,7 @@ export const getVideoRouter: RequestHandler = (req, res) => {
     removeCache,
     createdAt,
     expireAt,
-    eventsUrl: `/api/kkk/video/${encodeURIComponent(filename)}/events`
+    eventsUrl: `/kkk/v1/video/${encodeURIComponent(filename)}/events`
   })
 
   res.setHeader('Cache-Control', 'no-cache')
@@ -145,12 +139,9 @@ export const getVideoRouter: RequestHandler = (req, res) => {
 }
 
 /**
- * 视频预览状态事件流。
- * 持续向前端推送剩余有效期与删除状态，并在预览失效后自动结束连接。
- * @param req 请求对象。
- * @param res 响应对象。
+ * 视频预览状态事件流（SSE）
  */
-export const videoPreviewEventsRouter: RequestHandler = (req, res) => {
+export const getVideoEvents: RequestHandler = (req, res) => {
   const filenameParam = req.params.filename
   const filename = Array.isArray(filenameParam) ? filenameParam[0] : filenameParam
   if (!filename) {
@@ -175,10 +166,6 @@ export const videoPreviewEventsRouter: RequestHandler = (req, res) => {
   res.flushHeaders?.()
 
   let timer: NodeJS.Timeout | null = null
-  /**
-   * 推送一次最新的预览状态到客户端。
-   * @returns 当前预览是否已被删除或失效。
-   */
   const sendPayload = () => {
     const currentInfo = Common.getVideoPreview(filename) ?? previewInfo
     const now = Date.now()

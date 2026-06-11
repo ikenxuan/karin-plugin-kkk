@@ -9,7 +9,7 @@ const getPreviewParams = (): PreviewParams => {
   const params = new URLSearchParams(window.location.search)
   const filename = params.get('filename') ?? previewDefaults.filename
   const filePath = params.get('filePath') ?? filename
-  const videoUrl = params.get('videoUrl') ?? `/api/kkk/stream/${encodeURIComponent(filename)}`
+  const videoUrl = params.get('videoUrl') ?? `/kkk/v1/stream/${encodeURIComponent(filename)}`
   const removeCache = parseBoolean(params.get('removeCache')) || previewDefaults.removeCache
   const createdAt = parseNumber(params.get('createdAt')) ?? Date.now()
   const expireAt = parseNumber(params.get('expireAt'))

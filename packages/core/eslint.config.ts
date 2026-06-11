@@ -3,6 +3,11 @@ import typescriptEslint from '@typescript-eslint/eslint-plugin'
 import parserTs from '@typescript-eslint/parser'
 import type { Linter } from 'eslint'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
+import { fileURLToPath } from 'node:url'
+import { dirname } from 'node:path'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const config: Linter.Config[] = [
   {
@@ -30,7 +35,12 @@ const config: Linter.Config[] = [
         sourceType: 'module',
         ecmaFeatures: {
           jsx: true
-        }
+        },
+        project: [
+          './tsconfig.json',
+          './packages/*/tsconfig.json'
+        ],
+        tsconfigRootDir: __dirname
       }
     },
     rules: {

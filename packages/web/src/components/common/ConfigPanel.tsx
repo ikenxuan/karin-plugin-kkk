@@ -6,6 +6,7 @@
 import { useEffect, useMemo, useRef, type FormEvent, type Key } from 'react'
 import { Button, Description, Form, Spinner, Tabs, Tooltip, toast } from '@heroui/react'
 import { useMemoizedFn, useRequest, useSetState, useUpdateEffect } from 'ahooks'
+import equal from 'fast-deep-equal'
 import gsap from 'gsap'
 import { RotateCcw, Save } from 'lucide-react'
 import { getConfig, saveConfig } from '../../api/config'
@@ -30,10 +31,10 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
   const panelRef = useRef<HTMLDivElement>(null)
   const [state, setPanelState] = useSetState({
     config: null as ConfigType | null,
-    savedSnapshot: '',
+    savedConfig: null as ConfigType | null,
     activeFile: 'cookies' as ConfigFileKey
   })
-  const { activeFile, config, savedSnapshot } = state
+  const { activeFile, config, savedConfig } = state
   const classes = useMemo(() => getLayoutClasses(device), [device])
   const controlSize = device === 'mobile' ? 'sm' : 'md'
 
@@ -41,7 +42,7 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
     onSuccess: (data) => {
       setPanelState({
         config: data,
-        savedSnapshot: JSON.stringify(data)
+        savedConfig: data
       })
     },
     onError: (error) => {
@@ -54,8 +55,8 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
   })
 
   const hasChanges = useMemo(() => {
-    return config ? JSON.stringify(config) !== savedSnapshot : false
-  }, [config, savedSnapshot])
+    return config && savedConfig ? !equal(config, savedConfig) : false
+  }, [config, savedConfig])
 
   const validationErrors = useMemo(() => {
     return validateConfig(config)
@@ -80,9 +81,8 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
     if (!config || hasValidationError) return
 
     const nextConfig = config
-    const nextSnapshot = JSON.stringify(nextConfig)
     const savePromise = submitConfig(nextConfig).then(() => {
-      setPanelState({ savedSnapshot: nextSnapshot })
+      setPanelState({ savedConfig: nextConfig })
     })
 
     toast.promise(savePromise, {

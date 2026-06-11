@@ -6,7 +6,7 @@ import { codeInspectorPlugin } from 'code-inspector-plugin'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/kkk/',
+  base: '/kkk/assets/',
   plugins: [
     react(),
     tailwindcss(),
@@ -25,7 +25,7 @@ export default defineConfig({
     host: true,
     port: 5176,
     proxy: {
-      '/api/kkk': {
+      '/kkk/v1': {
         target: 'http://localhost:7777',
         changeOrigin: true,
       },

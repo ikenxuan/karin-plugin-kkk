@@ -1,4 +1,4 @@
-import '@/module/server/Register'
+import '@/module/server'
 import '@/platform/bilibili/riskControl'
 
 import karin, { AdapterType, BOT_CONNECT, config, ImageElement, logger, Message, mkdirSync, SendMessage } from 'node-karin'
