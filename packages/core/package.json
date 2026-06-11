@@ -84,7 +84,7 @@
     "cors": "^2.8.6",
     "date-fns": "^4.4.0",
     "heic-decode": "^2.1.0",
-    "http-proxy-middleware": "4.0.0",
+    "http-proxy-middleware": "4.1.0",
     "jpeg-js": "^0.4.4",
     "template": "workspace:*",
     "tsdown": "^0.22.2",
@@ -123,5 +123,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-06-08T08:47:25.245Z"
+  "timestamp": "2026-06-11T07:36:05.399Z"
 }
