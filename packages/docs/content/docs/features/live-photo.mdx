@@ -24,7 +24,8 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion'
 
 - `livePhotoMode: video_and_livephoto`
 - `livePhotoSystem: oppo`
-  </Callout>
+
+</Callout>
 
 ## 使用方式
 
@@ -151,20 +152,28 @@ livePhotoSystem: oppo
     部分三星设备 - 支持 Google Photos 的第三方应用
   </Accordion>
 
-<Accordion title="小米 HyperOS 模式">
-  在 Google 标准基础上添加小米特有的 XMP 扩展字段： - `MiCamera:XMPMeta`：小米相册识别标记 - `GCamera:MicroVideo`：兼容旧版小米设备
-  **适用设备**： - 小米 / Redmi / POCO 系列（HyperOS）
-</Accordion>
-
-<Accordion title="OPPO ColorOS 模式（当前默认推荐）">
-  在 Google 标准基础上添加 OPPO 特有的 XMP 扩展字段： - `OpCamera:MotionPhotoOwner="oplus"`：OPPO 相册识别标记 -
-  `OpCamera:OLivePhotoVersion`：动态照片版本号 - `OpCamera:VideoLength`：视频长度（字节） **适用设备**： - OPPO / OnePlus / Realme
-  系列（ColorOS）
-</Accordion>
-
+  <Accordion title="小米 HyperOS 模式">
+    在 Google 标准基础上添加小米特有的 XMP 扩展字段： - `MiCamera:XMPMeta`：小米相册识别标记 - `GCamera:MicroVideo`：兼容旧版小米设备
+    **适用设备**： - 小米 / Redmi / POCO 系列（HyperOS）
+  </Accordion>
+  
+  <Accordion title="OPPO ColorOS 模式（当前默认推荐）">
+    在 Google 标准基础上添加 OPPO 特有的 XMP 扩展字段： - `OpCamera:MotionPhotoOwner="oplus"`：OPPO 相册识别标记 -
+    `OpCamera:OLivePhotoVersion`：动态照片版本号 - `OpCamera:VideoLength`：视频长度（字节） **适用设备**： - OPPO / OnePlus / Realme
+    系列（ColorOS）
+  </Accordion>
+  
   <Accordion title="华为/荣耀模式">
-    使用不同的实现方式，在文件末尾添加特殊标记而非 XMP 元数据： ``` v2_f35 409:1000 LIVE_{timestamp}
-    ``` **适用设备**： - 华为 / 荣耀系列（HarmonyOS / MagicOS）
+    使用不同的实现方式，在文件末尾添加特殊标记而非 XMP 元数据：
+    
+    ```
+    v2_f35 409:1000 LIVE_{timestamp}
+    ```
+    
+    **适用设备**：
+    
+    - 华为 / 荣耀系列（HarmonyOS / MagicOS）
+    
     <Callout type="warn">此模式未经实测验证，可能存在兼容性问题。</Callout>
   </Accordion>
 </Accordions>
