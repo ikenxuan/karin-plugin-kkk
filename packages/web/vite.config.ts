@@ -9,13 +9,13 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   base: '/kkk/assets/',
   plugins: [
-    react(),
-    tailwindcss(),
     codeInspectorPlugin({
       bundler: 'vite',
       showSwitch: true,
       hotKeys: ['shiftKey', 'altKey']
-    })
+    }),
+    react(),
+    tailwindcss()
   ],
   resolve: {
     alias: {
