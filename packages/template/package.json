@@ -33,7 +33,7 @@
     "sort": "sort-package-json"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.100.1",
+    "@anthropic-ai/sdk": "^0.104.1",
     "@heroui/react": "3.1.0",
     "@heroui/styles": "3.1.0",
     "@icons-pack/react-simple-icons": "^13.13.0",
@@ -63,9 +63,9 @@
     "@types/express": "5.0.6",
     "@types/js-beautify": "^1.14.3",
     "@types/lodash": "^4.17.24",
-    "@types/react": "19.2.16",
+    "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
-    "code-inspector-plugin": "^1.5.1",
+    "code-inspector-plugin": "^1.5.4",
     "cross-env": "10.1.0",
     "react-scan": "^0.5.7",
     "vite-plugin-checker": "^0.14.1"

@@ -1,14 +1,18 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 import Client, {
   createBilibiliRoutes,
   createDouyinRoutes,
   createKuaishouRoutes,
   createXiaohongshuRoutes
 } from '@ikenxuan/amagi'
-// import history from 'connect-history-api-fallback'
 import * as cors from 'cors'
 import * as httpProxy from 'http-proxy-middleware'
 import { app as karinApp, checkPort, logger } from 'node-karin'
 import express from 'node-karin/express'
+
+import { Root } from '@/root'
 
 import { Config } from '../utils/Config'
 import { apiRouter } from './api'
@@ -19,6 +23,22 @@ const proxyOptions: httpProxy.Options = {
   target: 'https://developer.huawei.com',
   changeOrigin: true
 }
+
+const webDistPath = path.join(Root.pluginPath, 'lib', 'web')
+const webIndexPath = path.join(webDistPath, 'index.html')
+
+const sendWebIndex = (res: express.Response) => {
+  try {
+    const html = fs.readFileSync(webIndexPath, 'utf-8')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.type('html').send(html)
+  } catch (error) {
+    const message = `[karin-plugin-kkk] Failed to read Web UI entry: ${webIndexPath}`
+    logger.error(error instanceof Error ? `${message}\n${error.stack ?? error.message}` : `${message}\n${String(error)}`)
+    res.status(500).type('text/plain').send(message)
+  }
+}
+
 server.use(cors.default())
 server.use('/', httpProxy.createProxyMiddleware(proxyOptions))
 // TODO: 后续将此反代放到 karin 中
@@ -66,38 +86,24 @@ app.get('/video/:filename/events', videoPreviewEventsRouter)
 // v1 API 路由
 app.use('/v1', apiRouter)
 
-// const staticRouter = express.Router()
+const staticRouter = express.Router()
+const webStatic = express.static(webDistPath, {
+  redirect: false,
+  setHeaders: (res, filePath) => {
+    // HTML 不缓存，资源文件长期缓存，避免生产环境更新后入口仍旧命中旧版本。
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache')
+      return
+    }
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+  }
+})
 
-// staticRouter.use(express.static(path.join(Root.pluginPath, 'lib', 'web_chunk'), {
-//   redirect: false,
-//   // 添加静态资源的缓存控制
-//   setHeaders: (res, path) => {
-//     if (path.endsWith('.html')) {
-//       res.setHeader('Cache-Control', 'no-cache')
-//     } else {
-//       res.setHeader('Cache-Control', 'public, max-age=31536000')
-//     }
-//   }
-// }))
-
-// 处理 SPA 路由（history fallback）
-// staticRouter.use(
-//   history({
-//     htmlAcceptHeaders: ['text/html', 'application/xhtml+xml'],
-//     rewrites: [
-//       {
-//         from: /^\/kkk\/(?!.*\.[a-zA-Z0-9]+$).*$/,
-//         to: '/kkk/index.html'
-//       }
-//     ],
-//     disableDotRule: true
-//   }) as httpProxy.RequestHandler
-// )
-
-// staticRouter.use(express.static(path.join(Root.pluginPath, 'lib', 'web_chunk'), {
-//   redirect: false
-// }))
+staticRouter.use(webStatic)
+staticRouter.use((_req, res) => {
+  sendWebIndex(res)
+})
 
 /** 将子路由挂载到主路由上 */
-// karinApp.use('/kkk', staticRouter)
+karinApp.use('/kkk', staticRouter)
 karinApp.use('/api/kkk', app)

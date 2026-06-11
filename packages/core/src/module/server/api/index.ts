@@ -8,7 +8,7 @@ import { bilibiliApiRouter } from '@/platform/bilibili/api'
 import { douyinApiRouter } from '@/platform/douyin/api'
 
 import { signatureVerificationMiddleware } from '../auth'
-import { getBotGroups, getBots, getGroupsBatch } from './bots'
+import { getBotGroupInfo, getBotGroups, getBotInfo, getBots, getGroupsBatch } from './bots'
 import {
   getAllConfig,
   getConfigModule,
@@ -17,7 +17,6 @@ import {
   updateConfigModule } from './config'
 import { getGroups } from './groups'
 import { resolveLink } from './link'
-import { getFullSchema, getModuleSchemaApi } from './schema'
 
 const apiRouter = express.Router()
 
@@ -26,7 +25,9 @@ const authMiddlewares = [authMiddleware, signatureVerificationMiddleware]
 
 // Bot 管理
 apiRouter.get('/bots', ...authMiddlewares, getBots)
+apiRouter.get('/bots/:botId', ...authMiddlewares, getBotInfo)
 apiRouter.get('/bots/:botId/groups', ...authMiddlewares, getBotGroups)
+apiRouter.get('/bots/:botId/groups/:groupId', ...authMiddlewares, getBotGroupInfo)
 
 // 群组管理
 apiRouter.get('/groups', ...authMiddlewares, getGroups)
@@ -44,10 +45,6 @@ apiRouter.put('/config/:module', ...authMiddlewares, updateConfigModule)
 apiRouter.post('/config/:module', ...authMiddlewares, updateConfigModule)
 apiRouter.patch('/config/:module', ...authMiddlewares, patchConfigItem)
 
-// 配置 Schema API
-apiRouter.get('/schema', ...authMiddlewares, getFullSchema)
-apiRouter.get('/schema/:module', ...authMiddlewares, getModuleSchemaApi)
-
 // 平台路由
 apiRouter.use('/platforms/douyin', ...authMiddlewares, douyinApiRouter)
 apiRouter.use('/platforms/bilibili', ...authMiddlewares, bilibiliApiRouter)
@@ -57,4 +54,3 @@ export * from './bots'
 export * from './config'
 export * from './groups'
 export * from './link'
-export * from './schema'
