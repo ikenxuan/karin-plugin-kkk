@@ -49,3 +49,43 @@ export const includesValue = (values: unknown, value: string): boolean => {
 export const isConfigHelp = (value: ConfigDescription): value is ConfigHelp => {
   return Boolean(value && typeof value === 'object' && 'description' in value)
 }
+
+/**
+ * 标准化配置对象中的数组字段，确保数组元素按固定顺序排列。
+ * 用于配置比较前的预处理，避免因数组顺序不同导致误判为配置变更。
+ */
+export const normalizeConfigArrays = (config: ConfigType): ConfigType => {
+  if (!config || typeof config !== 'object') return config
+
+  const normalized = structuredClone(config)
+
+  // 定义需要标准化的数组字段路径
+  const arrayFields: Array<{ path: ConfigPath; options: string[] }> = [
+    { path: ['bilibili', 'sendContent'], options: ['info', 'comment', 'video', 'image'] },
+    { path: ['bilibili', 'displayContent'], options: ['cover', 'title', 'author', 'stats', 'desc'] },
+    { path: ['douyin', 'sendContent'], options: ['info', 'comment', 'video', 'image'] },
+    { path: ['xiaohongshu', 'sendContent'], options: ['info', 'comment', 'video', 'image'] },
+    { path: ['kuaishou', 'sendContent'], options: ['info', 'comment', 'video', 'image'] }
+  ]
+
+  for (const { path, options } of arrayFields) {
+    const value = getValue<unknown>(normalized, path, null)
+    if (!Array.isArray(value)) continue
+
+    // 按照预定义的顺序重新排列数组
+    const sortedArray = options.filter((option) => value.includes(option))
+
+    // 更新配置
+    let current: ConfigRecord = normalized as unknown as ConfigRecord
+    for (let i = 0; i < path.length - 1; i++) {
+      const key = path[i]
+      if (!isConfigRecord(current[key])) {
+        current[key] = {}
+      }
+      current = current[key] as ConfigRecord
+    }
+    current[path[path.length - 1]] = sortedArray
+  }
+
+  return normalized
+}

@@ -18,7 +18,7 @@ import { getLayoutClasses } from './config-panel/layout'
 import { configFiles } from './config-panel/options'
 import ActiveConfigPage from './config-panel/pages/ActiveConfigPage'
 import type { ConfigFileKey, ConfigPath, DeviceLayout } from './config-panel/types'
-import { setValue } from './config-panel/utils'
+import { normalizeConfigArrays, setValue } from './config-panel/utils'
 import { validateConfig } from './config-panel/validation'
 
 type ConfigPanelVariant = 'standalone' | 'karin'
@@ -56,7 +56,11 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
   })
 
   const hasChanges = useMemo(() => {
-    return config && savedConfig ? !equal(config, savedConfig) : false
+    if (!config || !savedConfig) return false
+    // 标准化数组字段顺序后再比较，避免因顺序不同误判为配置变更
+    const normalizedConfig = normalizeConfigArrays(config)
+    const normalizedSavedConfig = normalizeConfigArrays(savedConfig)
+    return !equal(normalizedConfig, normalizedSavedConfig)
   }, [config, savedConfig])
 
   const validationErrors = useMemo(() => {
