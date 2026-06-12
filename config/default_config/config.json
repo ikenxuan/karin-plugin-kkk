@@ -1,0 +1,136 @@
+{
+  "amagi": {
+    "timeout": 30000,
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+    "proxy": {
+      "switch": false,
+      "host": "127.0.0.1",
+      "port": 7890,
+      "protocol": "http",
+      "auth": {
+        "username": "",
+        "password": ""
+      }
+    },
+    "cookies": {
+      "bilibili": "",
+      "douyin": "",
+      "kuaishou": "",
+      "xiaohongshu": ""
+    },
+    "APIServer": true,
+    "APIServerMount": true,
+    "APIServerPort": 4567
+  },
+  "app": {
+    "videoTool": true,
+    "priority": 800,
+    "removeCache": true,
+    "renderScale": 100,
+    "Theme": 0,
+    "RemoveWatermark": false,
+    "RenderWaitTime": 120,
+    "EmojiReply": true,
+    "parseTip": false,
+    "fakeForward": true,
+    "errorLogSendTo": ["trigger", "allMasters"],
+    "multiPageRender": true,
+    "multiPageHeight": 12000,
+    "livePhotoSystem": "oppo",
+    "livePhotoMode": "video_and_livephoto",
+    "qrLoginAddrType": "lan",
+    "qrLoginExternalAddr": "",
+    "videoSendMode": "base64",
+    "usefilelimit": false,
+    "filelimit": 2000,
+    "compress": false,
+    "compresstrigger": 200,
+    "compressvalue": 100,
+    "usegroupfile": false,
+    "groupfilevalue": 200,
+    "imageSendMode": "base64",
+    "downloadThrottle": false,
+    "downloadMaxSpeed": 10,
+    "downloadAutoReduce": false,
+    "downloadMinSpeed": 1,
+    "APIServer": true,
+    "APIServerPort": 4567,
+    "APIServerMount": true
+  },
+  "douyin": {
+    "switch": true,
+    "sendContent": ["info", "comment", "video"],
+    "numcomment": 3,
+    "subCommentLimit": 7,
+    "commentImageCollection": true,
+    "liveImageMergeMode": "continuous",
+    "videoQuality": "4k",
+    "maxAutoVideoSize": 1000,
+    "loginPerm": "master",
+    "videoInfoMode": "image",
+    "displayContent": ["author", "desc", "stats", "cover", "title"],
+    "burnDanmaku": false,
+    "danmakuArea": 0.5,
+    "danmakuFontSize": "medium",
+    "danmakuOpacity": 70,
+    "verticalMode": "standard",
+    "videoCodec": "h265",
+    "push": {
+      "switch": true,
+      "permission": "all",
+      "cron": "*/10 * * * *",
+      "parsedynamic": true,
+      "shareType": "web",
+      "pushVideoQuality": "4k",
+      "pushMaxAutoVideoSize": 1000
+    },
+    "subCommentDepth": 6,
+    "realCommentCount": false,
+    "textMode": false
+  },
+  "bilibili": {
+    "switch": true,
+    "sendContent": ["info", "video", "comment"],
+    "numcomment": 15,
+    "realCommentCount": false,
+    "commentImageCollection": true,
+    "videoQuality": 127,
+    "maxAutoVideoSize": 1000,
+    "loginPerm": "master",
+    "imageLayout": "auto",
+    "videoInfoMode": "image",
+    "displayContent": ["author", "stats", "cover", "title", "desc"],
+    "showDanmakuInVideoInfo": true,
+    "burnDanmaku": false,
+    "danmakuArea": 0.5,
+    "danmakuFontSize": "medium",
+    "danmakuOpacity": 70,
+    "verticalMode": "standard",
+    "videoCodec": "h265",
+    "push": {
+      "switch": true,
+      "permission": "all",
+      "cron": "*/10 * * * *",
+      "parsedynamic": true,
+      "pushVideoQuality": 120,
+      "pushMaxAutoVideoSize": 1000
+    }
+  },
+  "kuaishou": {
+    "switch": true,
+    "comment": true,
+    "numcomment": 10
+  },
+  "xiaohongshu": {
+    "switch": true,
+    "watermark": false,
+    "sendContent": ["comment", "info", "video", "image"],
+    "numcomment": 10,
+    "videoQuality": "4k",
+    "maxAutoVideoSize": 1000
+  },
+  "pushlist": {
+    "douyin": [],
+    "bilibili": []
+  }
+}
