@@ -24,7 +24,7 @@ const MobileContent = ({ activeMenu }: MobileContentProps) => {
       case 'about':
         return <AboutPanel />
       default:
-        return <ConfigPanel />
+        return <ConfigPanel device="mobile" />
     }
   }
 

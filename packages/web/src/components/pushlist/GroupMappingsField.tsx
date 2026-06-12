@@ -103,16 +103,14 @@ const GroupMappingsField = ({ value, disabled, itemLabel, device, onChange }: Gr
           </div>
         ) : null}
 
-        {drawerOpen ? (
-          <GroupMappingDrawer
-            device={device}
-            isOpen={drawerOpen}
-            mappings={mappings}
-            values={normalizedValues}
-            onApply={handleApply}
-            onOpenChange={setDrawerOpen}
-          />
-        ) : null}
+        <GroupMappingDrawer
+          device={device}
+          isOpen={drawerOpen}
+          mappings={mappings}
+          values={normalizedValues}
+          onApply={handleApply}
+          onOpenChange={setDrawerOpen}
+        />
       </div>
     </DisabledFieldHint>
   )

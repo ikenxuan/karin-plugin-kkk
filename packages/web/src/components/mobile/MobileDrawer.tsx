@@ -73,76 +73,77 @@ const MobileDrawer = ({ open, onClose, activeMenu, onMenuChange }: MobileDrawerP
   }, [open])
 
   return (
-    <Drawer
+    <Drawer.Backdrop
       isOpen={open}
+      isDismissable
+      className="backdrop-blur-sm"
       onOpenChange={(isOpen) => {
         if (!isOpen) onClose()
       }}
     >
-      <Drawer.Backdrop isDismissable className="backdrop-blur-sm">
-        <Drawer.Content placement="right">
-          <Drawer.Dialog className="px-4">
-            <Drawer.Header className="flex items-center justify-between pb-4">
-              <Drawer.CloseTrigger aria-label="关闭菜单" className="mr-2">
-                <X size={24} aria-hidden="true" />
-              </Drawer.CloseTrigger>
-            </Drawer.Header>
+      <Drawer.Content placement="right">
+        <Drawer.Dialog className="px-4">
+          <Drawer.Header className="flex items-center justify-between pb-4">
+            <Drawer.Heading className="text-lg font-semibold">菜单</Drawer.Heading>
+            <Drawer.CloseTrigger aria-label="关闭菜单" className="mr-2">
+              <X size={24} aria-hidden="true" />
+            </Drawer.CloseTrigger>
+          </Drawer.Header>
 
-            <Drawer.Body className="flex flex-col">
-              {/* 用户信息区 */}
-              <div className="shrink-0 pb-5">
-                <div className="flex items-center gap-3 px-1">
-                  <Avatar size="md">
-                    <Avatar.Image src={USER_AVATAR_URL} />
-                    <Avatar.Fallback>ikenxuan</Avatar.Fallback>
-                  </Avatar>
-                  <div className="flex min-w-0 flex-1 flex-col">
-                    <p className="truncate text-sm font-medium">炫炫</p>
-                    <p className="truncate text-xs text-muted">Super Admin</p>
-                  </div>
+          <Drawer.Body className="flex flex-col">
+            {/* 用户信息区 */}
+            <div className="shrink-0 pb-5">
+              <div className="flex items-center gap-3 px-1">
+                <Avatar size="md">
+                  <Avatar.Image src={USER_AVATAR_URL} />
+                  <Avatar.Fallback>ikenxuan</Avatar.Fallback>
+                </Avatar>
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <p className="truncate text-sm font-medium">炫炫</p>
+                  <p className="truncate text-xs text-muted">Super Admin</p>
                 </div>
               </div>
+            </div>
 
-              {/* 菜单列表 */}
-              <nav className="flex flex-1 flex-col gap-2 overflow-y-auto" aria-label="主导航">
-                {menuItems.map((item) => {
-                  const Icon = item.icon
-                  const isActive = activeMenu === item.id
+            {/* 菜单列表 */}
+            <nav className="flex flex-1 flex-col gap-2 overflow-y-auto" aria-label="主导航">
+              {menuItems.map((item) => {
+                const Icon = item.icon
+                const isActive = activeMenu === item.id
 
-                  return (
-                    <Button
-                      key={item.id}
-                      fullWidth
-                      className="justify-start"
-                      size="lg"
-                      variant={isActive ? 'tertiary' : 'ghost'}
-                      aria-label={item.label}
-                      aria-current={isActive ? 'page' : undefined}
-                      onPress={() => onMenuChange(item.id as MainMenuKey)}
-                    >
-                      <Icon size={20} className={cn('shrink-0 mr-3', !isActive && 'text-muted')} aria-hidden="true" />
-                      <span className={cn('truncate', isActive && 'font-semibold')}>{item.label}</span>
-                    </Button>
-                  )
-                })}
-              </nav>
+                return (
+                  <Button
+                    key={item.id}
+                    fullWidth
+                    className="justify-start"
+                    size="lg"
+                    variant={isActive ? 'tertiary' : 'ghost'}
+                    aria-label={item.label}
+                    aria-current={isActive ? 'page' : undefined}
+                    onPress={() => onMenuChange(item.id as MainMenuKey)}
+                  >
+                    <Icon size={20} className={cn('shrink-0 mr-3', !isActive && 'text-muted')} aria-hidden="true" />
+                    <span className={cn('truncate', isActive && 'font-semibold')}>{item.label}</span>
+                  </Button>
+                )
+              })}
+            </nav>
 
-              {/* 底部操作区域 */}
-              <div className="flex shrink-0 flex-col gap-2">
-                <Button fullWidth className="justify-start" size="lg" variant="ghost" aria-label="查看帮助文档" onPress={handleOpenDocs}>
-                  <HelpCircle size={20} className="shrink-0 mr-3 text-muted" aria-hidden="true" />
-                  <span className="truncate">帮助文档</span>
-                </Button>
-                <Button fullWidth className="justify-start" size="lg" variant="ghost" aria-label="登出" onPress={handleLogout}>
-                  <LogOut size={20} className="shrink-0 mr-3 text-muted" aria-hidden="true" />
-                  <span className="truncate">登出</span>
-                </Button>
-              </div>
-            </Drawer.Body>
-          </Drawer.Dialog>
-        </Drawer.Content>
-      </Drawer.Backdrop>
-    </Drawer>
+            {/* 底部操作区域 */}
+            <div className="flex shrink-0 flex-col gap-2">
+              <Button fullWidth className="justify-start" size="lg" variant="ghost" aria-label="查看帮助文档" onPress={handleOpenDocs}>
+                <HelpCircle size={20} className="shrink-0 mr-3 text-muted" aria-hidden="true" />
+                <span className="truncate">帮助文档</span>
+              </Button>
+              <Button fullWidth className="justify-start" size="lg" variant="ghost" aria-label="登出" onPress={handleLogout}>
+                <LogOut size={20} className="shrink-0 mr-3 text-muted" aria-hidden="true" />
+                <span className="truncate">登出</span>
+              </Button>
+            </div>
+          </Drawer.Body>
+        </Drawer.Dialog>
+      </Drawer.Content>
+    </Drawer.Backdrop>
   )
 }
 

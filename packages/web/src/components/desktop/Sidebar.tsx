@@ -54,7 +54,7 @@ const Sidebar = ({ collapsed, activeMenu, onMenuChange }: SidebarProps) => {
       <div className="shrink-0 px-4 pt-3 pb-2">
         <Popover>
           <Popover.Trigger aria-label="用户信息">
-            <button className="flex w-full items-center gap-3 rounded-lg p-2 transition-colors hover:bg-default-100">
+            <div className="flex w-full items-center gap-3 rounded-lg p-2 transition-colors hover:bg-default-100 cursor-pointer" tabIndex={0}>
               <Avatar size="lg">
                 <Avatar.Image src={USER_AVATAR_URL} />
                 <Avatar.Fallback>ikenxuan</Avatar.Fallback>
@@ -63,7 +63,7 @@ const Sidebar = ({ collapsed, activeMenu, onMenuChange }: SidebarProps) => {
                 <p className="truncate text-lg font-semibold">炫炫</p>
                 <p className="truncate text-md text-muted">Super Admin</p>
               </div>
-            </button>
+            </div>
           </Popover.Trigger>
           <Popover.Content className="w-60">
             <Popover.Dialog>

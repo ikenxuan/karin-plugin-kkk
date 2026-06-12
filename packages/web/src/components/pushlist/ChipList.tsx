@@ -35,10 +35,8 @@ const ChipList = ({ label, description, items, onAdd, onRemove, disabled = false
 
   return (
     <div className="space-y-2">
-      <Label>{label}</Label>
       <div className="flex gap-2">
         <TextField
-          aria-label={`输入${label}`}
           className="flex-1"
           isDisabled={disabled}
           isInvalid={Boolean(error)}
@@ -48,6 +46,7 @@ const ChipList = ({ label, description, items, onAdd, onRemove, disabled = false
             if (error) setError('')
           }}
         >
+          <Label>{label}</Label>
           <Input
             placeholder={`输入${label}`}
             onKeyDown={(event) => {

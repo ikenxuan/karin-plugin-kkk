@@ -149,7 +149,7 @@ const GroupMappingEditorDrawer = ({ isOpen, device, initialMapping, onOpenChange
             <Button size={device === 'mobile' ? 'sm' : 'md'} slot="close" variant="secondary">
               取消
             </Button>
-            <Button size={device === 'mobile' ? 'sm' : 'md'} isDisabled={!canConfirm} onPress={confirm}>
+            <Button size={device === 'mobile' ? 'sm' : 'md'} slot="close" isDisabled={!canConfirm} onPress={confirm}>
               {initialMapping ? '保存' : '添加'}
             </Button>
           </Drawer.Footer>

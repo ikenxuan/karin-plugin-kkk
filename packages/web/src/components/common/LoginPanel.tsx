@@ -45,7 +45,7 @@ const LoginPanel = ({ onLogin }: LoginPanelProps) => {
 
   return (
     <Surface className="flex min-h-screen items-center justify-center px-4 py-8">
-      <Card className="w-full max-w-[420px]">
+      <Card className="w-full max-w-105">
         <Card.Header className="gap-4 p-6">
           <KeyRound className="size-8 shrink-0" aria-hidden="true" />
           <div className="min-w-0">

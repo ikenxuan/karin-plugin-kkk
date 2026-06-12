@@ -24,7 +24,7 @@ const MainContent = ({ activeMenu }: MainContentProps) => {
       case 'about':
         return <AboutPanel />
       default:
-        return <ConfigPanel />
+        return <ConfigPanel device="desktop" />
     }
   }
 

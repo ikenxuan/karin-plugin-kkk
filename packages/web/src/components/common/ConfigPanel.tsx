@@ -9,6 +9,7 @@ import equal from 'fast-deep-equal'
 import gsap from 'gsap'
 import { RotateCcw, Save } from 'lucide-react'
 import { useEffect, useMemo, useRef, type FormEvent, type Key } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import { getConfig, saveConfig } from '../../api/config'
 import type { ConfigType } from '../../types/config'
@@ -21,19 +22,23 @@ import type { ConfigFileKey, ConfigPath, DeviceLayout } from './config-panel/typ
 import { normalizeConfigArrays, setValue } from './config-panel/utils'
 import { validateConfig } from './config-panel/validation'
 
-type ConfigPanelVariant = 'standalone' | 'karin'
-
 interface ConfigPanelProps {
   device?: DeviceLayout
-  variant?: ConfigPanelVariant
 }
 
-const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanelProps) => {
+const ConfigPanel = ({ device = 'desktop' }: ConfigPanelProps) => {
   const panelRef = useRef<HTMLDivElement>(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // 从 URL 查询参数获取当前配置文件，默认为 'amagi'
+  const fileParam = searchParams.get('file')
+  const isValidFile = fileParam && configFiles.some((f) => f.key === fileParam)
+  const initialActiveFile = (isValidFile ? fileParam : 'amagi') as ConfigFileKey
+
   const [state, setPanelState] = useSetState({
     config: null as ConfigType | null,
     savedConfig: null as ConfigType | null,
-    activeFile: 'amagi' as ConfigFileKey
+    activeFile: initialActiveFile as ConfigFileKey
   })
   const { activeFile, config, savedConfig } = state
   const classes = useMemo(() => getLayoutClasses(device), [device])
@@ -102,13 +107,24 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
   })
 
   const handleTabChange = useMemoizedFn((key: Key) => {
-    setPanelState({ activeFile: key as ConfigFileKey })
+    const newFile = key as ConfigFileKey
+    // 只更新 URL，让 useEffect 同步状态，避免双重渲染
+    setSearchParams({ file: newFile })
   })
 
   const handleFormSubmit = useMemoizedFn((event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     handleSave()
   })
+
+  useEffect(() => {
+    // 监听 URL 查询参数变化，同步到状态
+    const fileParam = searchParams.get('file')
+    const isValidFile = fileParam && configFiles.some((f) => f.key === fileParam)
+    if (isValidFile && fileParam !== activeFile) {
+      setPanelState({ activeFile: fileParam as ConfigFileKey })
+    }
+  }, [searchParams, activeFile, setPanelState])
 
   useEffect(() => {
     const container = panelRef.current?.querySelector<HTMLElement>('[data-config-tabs-scroll="true"]')
@@ -155,6 +171,20 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
     animateCurrentPanel()
   }, [activeFile])
 
+  const renderers = useMemo(
+    () =>
+      config
+        ? createConfigFieldRenderers({
+            config,
+            device,
+            classes,
+            validationErrors,
+            updateConfigValue
+          })
+        : ({} as ReturnType<typeof createConfigFieldRenderers>),
+    [config, device, classes, validationErrors, updateConfigValue]
+  )
+
   if (loading || !config) {
     return (
       <div className={`${classes.root} ${classes.loading}`}>
@@ -163,14 +193,6 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
       </div>
     )
   }
-
-  const renderers = createConfigFieldRenderers({
-    config,
-    device,
-    classes,
-    validationErrors,
-    updateConfigValue
-  })
 
   const actionControls = (
     <div className={classes.floatingActions}>
@@ -196,14 +218,12 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
 
   return (
     <div ref={panelRef} className={classes.root}>
-      {variant === 'standalone' ? (
-        <div className={classes.header}>
-          <div className={classes.headerCopy}>
-            <h2 className="text-2xl font-bold">配置管理</h2>
-            <Description>直接读取并写回 Karin 插件配置文件，未展示字段会原样保留。</Description>
-          </div>
+      <div className={classes.header}>
+        <div className={classes.headerCopy}>
+          <h2 className="text-2xl font-bold">配置管理</h2>
+          <Description>直接读取并写回 Karin 插件配置文件，未展示字段会原样保留。</Description>
         </div>
-      ) : null}
+      </div>
       <Form className={classes.form} onSubmit={handleFormSubmit}>
         <Tabs className="w-full min-w-0 max-w-full" selectedKey={activeFile} onSelectionChange={handleTabChange}>
           <Tabs.ListContainer className={classes.tabsListContainer} data-config-tabs-scroll="true" data-scrollbar="none">
@@ -222,6 +242,7 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
         <div className="relative min-w-0 max-w-full">
           {actionControls}
           <ActiveConfigPage
+            key={activeFile}
             activeFile={activeFile}
             classes={classes}
             config={config}

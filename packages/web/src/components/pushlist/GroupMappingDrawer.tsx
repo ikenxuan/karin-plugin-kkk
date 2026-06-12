@@ -94,12 +94,18 @@ const GroupMappingDrawer = ({ isOpen, values, mappings, device, onOpenChange, on
 
   const finish = () => {
     onApply(draft.values)
-    onOpenChange(false)
+  }
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      onApply(draft.values)
+    }
+    onOpenChange(open)
   }
 
   return (
     <>
-      <Drawer.Backdrop isOpen={isOpen} onOpenChange={onOpenChange} variant="blur">
+      <Drawer.Backdrop isOpen={isOpen} onOpenChange={handleOpenChange} variant="blur">
         <Drawer.Content placement={placement}>
           <Drawer.Dialog className={device === 'desktop' ? 'h-full w-130 max-w-[90vw]' : 'max-h-[84dvh]'}>
             <Drawer.Handle />
@@ -125,7 +131,7 @@ const GroupMappingDrawer = ({ isOpen, values, mappings, device, onOpenChange, on
               <Button size={device === 'mobile' ? 'sm' : 'md'} slot="close" variant="secondary">
                 取消
               </Button>
-              <Button size={device === 'mobile' ? 'sm' : 'md'} onPress={finish}>
+              <Button size={device === 'mobile' ? 'sm' : 'md'} slot="close" onPress={finish}>
                 完成
               </Button>
             </Drawer.Footer>
@@ -133,19 +139,17 @@ const GroupMappingDrawer = ({ isOpen, values, mappings, device, onOpenChange, on
         </Drawer.Content>
       </Drawer.Backdrop>
 
-      {editorOpen ? (
-        <GroupMappingEditorDrawer
-          key={editingValue || 'new'}
-          device={device}
-          initialMapping={editorInitialMapping}
-          isOpen={editorOpen}
-          onConfirm={writeTarget}
-          onOpenChange={(open) => {
-            setEditorOpen(open)
-            if (!open) setEditingValue(null)
-          }}
-        />
-      ) : null}
+      <GroupMappingEditorDrawer
+        key={editingValue || 'new'}
+        device={device}
+        initialMapping={editorInitialMapping}
+        isOpen={editorOpen}
+        onConfirm={writeTarget}
+        onOpenChange={(open) => {
+          setEditorOpen(open)
+          if (!open) setEditingValue(null)
+        }}
+      />
     </>
   )
 }

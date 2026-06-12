@@ -30,8 +30,7 @@ const MobileLayout = ({ activeMenu, onMenuChange }: MainLayoutProps) => {
     <Surface data-scrollbar="thin" className="flex min-h-screen flex-col">
       {/* 顶部栏 */}
       <header
-        className="sticky top-0 z-50 h-14 shrink-0 backdrop-blur-xs bg-white/60 
-             mask-[linear-gradient(to_bottom,black_40%,transparent_100%)]"
+        className="sticky top-0 z-50 h-14 shrink-0 backdrop-blur-xs mask-[linear-gradient(to_bottom,black_40%,transparent_100%)]"
       >
         <MobileTopBar onOpenDrawer={openDrawer} />
       </header>

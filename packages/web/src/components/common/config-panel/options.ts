@@ -77,7 +77,7 @@ export const booleanText = {
 }
 
 export const configFiles: Array<{ key: ConfigFileKey; label: string; description: string }> = [
-  { key: 'amagi', label: '解析库', description: '请求与 Cookies' },
+  { key: 'amagi', label: '接口库', description: '请求与 Cookies' },
   { key: 'app', label: '通用', description: '运行与交互' },
   { key: 'douyin', label: '抖音', description: '解析与推送' },
   { key: 'bilibili', label: '哔哩哔哩', description: '解析与推送' },

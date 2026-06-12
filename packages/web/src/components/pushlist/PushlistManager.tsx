@@ -67,7 +67,7 @@ export default function PushlistManager({ douyinList, bilibiliList, onDouyinChan
 
         <Tabs.Panel id="douyin">
           <div className="space-y-4 pt-4">
-            <Button className="w-full" variant="primary" onPress={() => onDouyinChange([...douyinList, createDouyinItem()])}>
+            <Button className="w-full" variant="primary" size="sm" onPress={() => onDouyinChange([...douyinList, createDouyinItem()])}>
               <Plus className="size-4" />
               <span>添加抖音推送项</span>
             </Button>

@@ -1,6 +1,7 @@
-import { cn, Description, ScrollShadow, Spinner, Surface, Toast } from '@heroui/react'
+import { Description, ScrollShadow, Spinner, Surface, Toast } from '@heroui/react'
 import { useMemoizedFn, useSetState } from 'ahooks'
 import { useEffect, type ComponentType } from 'react'
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import { authChangedEventName, hasAuthToken } from './auth/token'
 import ConfigPanel from './components/common/ConfigPanel'
@@ -22,69 +23,87 @@ const MobileApp = () => import('./layouts/MobileLayout')
 type RootState = {
   authenticated: boolean
   device: DeviceLayout
-  route: AppRoute
   LayoutComponent: ComponentType<MainLayoutProps> | null
 }
 
-type AppRoute = 'login' | 'config' | 'about' | 'karin-config'
-
-const routePaths: Record<AppRoute, string> = {
-  login: '/kkk/login',
-  config: '/kkk/config',
-  about: '/kkk/about',
-  'karin-config': '/kkk/assets/karin-config'
+const menuRouteMap: Record<MainMenuKey, string> = {
+  config: '/kkk/assets/config',
+  about: '/kkk/assets/about'
 }
 
-const routeMenuMap: Record<Exclude<AppRoute, 'login' | 'karin-config'>, MainMenuKey> = {
-  config: 'config',
-  about: 'about'
-}
-
-const menuRouteMap: Record<MainMenuKey, AppRoute> = {
-  config: 'config',
-  about: 'about'
-}
-
-const normalizePath = (path: string) => {
-  const nextPath = path.replace(/\/+$/, '')
-  return nextPath || '/'
-}
-
-const getRouteFromLocation = (): AppRoute => {
-  const pathname = normalizePath(window.location.pathname)
-
-  if (pathname === normalizePath(routePaths.login)) return 'login'
-  if (pathname === normalizePath(routePaths.about)) return 'about'
-  if (pathname === normalizePath(routePaths['karin-config'])) return 'karin-config'
-
-  return 'config'
+const routeMenuMap: Record<string, MainMenuKey> = {
+  '/kkk/assets/config': 'config',
+  '/kkk/assets/about': 'about'
 }
 
 /**
- * 根组件，负责登录态同步、设备检测和布局分发。
+ * 配置页面路由组件（独立渲染，支持 URL 查询参数）
  */
-const App = () => {
+const ConfigRoute = ({ device }: { device: DeviceLayout }) => {
+  return (
+    <Surface className="h-screen overflow-hidden">
+      <Toast.Provider placement="top" />
+      <ScrollShadow
+        hideScrollBar
+        className={`h-full px-3 py-3 sm:px-5 sm:py-4 ${
+          device === 'mobile'
+            ? 'data-[top-scroll=true]:mask-none data-[top-scroll=true]:[-webkit-mask-image:none] data-[top-bottom-scroll=true]:mask-[linear-gradient(180deg,black_calc(100%-var(--scroll-shadow-size)),transparent)] data-[top-bottom-scroll=true]:[-webkit-mask-image:linear-gradient(180deg,black_calc(100%-var(--scroll-shadow-size)),transparent)]'
+            : ''
+        }`}
+        size={56}
+      >
+        <ConfigPanel device={device} />
+      </ScrollShadow>
+    </Surface>
+  )
+}
+
+/**
+ * 主应用布局路由组件
+ */
+const MainAppRoutes = ({
+  LayoutComponent
+}: {
+  LayoutComponent: ComponentType<MainLayoutProps> | null
+}) => {
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  const activeMenu = routeMenuMap[location.pathname] || 'config'
+
+  const handleMenuChange = useMemoizedFn((menu: MainMenuKey) => {
+    navigate(menuRouteMap[menu])
+  })
+
+  if (!LayoutComponent) {
+    return (
+      <Surface className="flex min-h-screen items-center justify-center gap-4">
+        <Spinner size="sm" aria-label="正在加载布局" />
+        <Description>正在加载</Description>
+      </Surface>
+    )
+  }
+
+  return (
+    <div>
+      <Toast.Provider placement="top" />
+      <LayoutComponent activeMenu={activeMenu} onMenuChange={handleMenuChange} />
+    </div>
+  )
+}
+
+/**
+ * 认证路由包装器
+ */
+const AuthenticatedApp = () => {
   useTheme()
 
   const [state, setState] = useSetState<RootState>({
     authenticated: hasAuthToken(),
     device: detectDevice(),
-    route: getRouteFromLocation(),
     LayoutComponent: null as ComponentType<MainLayoutProps> | null
   })
-  const { authenticated, device, route, LayoutComponent } = state
-
-  const navigateToRoute = useMemoizedFn((nextRoute: AppRoute, replace = false) => {
-    const nextPath = routePaths[nextRoute]
-    const currentPath = normalizePath(window.location.pathname)
-
-    if (currentPath !== normalizePath(nextPath)) {
-      const method = replace ? 'replaceState' : 'pushState'
-      window.history[method](null, '', nextPath)
-    }
-
-    setState({ route: nextRoute })
-  })
+  const { authenticated, device, LayoutComponent } = state
 
   useEffect(() => {
     /**
@@ -102,28 +121,6 @@ const App = () => {
       window.removeEventListener('storage', handleAuthChange)
     }
   }, [setState])
-
-  useEffect(() => {
-    const handlePopState = () => {
-      setState({ route: getRouteFromLocation() })
-    }
-
-    window.addEventListener('popstate', handlePopState)
-
-    if (normalizePath(window.location.pathname) === '/kkk') {
-      navigateToRoute('config', true)
-    }
-
-    return () => {
-      window.removeEventListener('popstate', handlePopState)
-    }
-  }, [navigateToRoute, setState])
-
-  useEffect(() => {
-    if (authenticated && route === 'login') {
-      navigateToRoute('config', true)
-    }
-  }, [authenticated, navigateToRoute, route])
 
   /**
    * 同步页面宽度变化后的设备布局。
@@ -198,66 +195,38 @@ const App = () => {
    */
   const handleLogin = useMemoizedFn(() => {
     setState({ authenticated: true })
-    if (route === 'login') {
-      navigateToRoute('config', true)
-    }
-  })
-
-  const handleMenuChange = useMemoizedFn((menu: MainMenuKey) => {
-    navigateToRoute(menuRouteMap[menu])
   })
 
   if (!authenticated) {
-    return <LoginPanel onLogin={handleLogin} />
-  }
-
-  if (route === 'login') {
     return (
-      <Surface className="flex min-h-screen items-center justify-center gap-4">
-        <Spinner size="sm" aria-label="正在进入配置页" />
-        <Description>正在进入配置页</Description>
-      </Surface>
-    )
-  }
-
-  if (route === 'karin-config') {
-    return (
-      <Surface className="h-screen overflow-hidden">
-        <Toast.Provider placement="top" />
-        <ScrollShadow
-          hideScrollBar
-          className={cn(
-            'h-full px-3 py-3 sm:px-5 sm:py-4',
-            device === 'mobile' && [
-              'data-[top-scroll=true]:mask-none',
-              'data-[top-scroll=true]:[-webkit-mask-image:none]',
-              'data-[top-bottom-scroll=true]:mask-[linear-gradient(180deg,black_calc(100%-var(--scroll-shadow-size)),transparent)]',
-              'data-[top-bottom-scroll=true]:[-webkit-mask-image:linear-gradient(180deg,black_calc(100%-var(--scroll-shadow-size)),transparent)]'
-            ]
-          )}
-          size={56}
-        >
-          <ConfigPanel device={device} variant="karin" />
-        </ScrollShadow>
-      </Surface>
-    )
-  }
-
-  // 加载中状态
-  if (!LayoutComponent) {
-    return (
-      <Surface className="flex min-h-screen items-center justify-center gap-4">
-        <Spinner size="sm" aria-label="正在加载布局" />
-        <Description>正在加载</Description>
-      </Surface>
+      <Routes>
+        <Route path="/kkk/login" element={<LoginPanel onLogin={handleLogin} />} />
+        <Route path="*" element={<Navigate to="/kkk/login" replace />} />
+      </Routes>
     )
   }
 
   return (
-    <div>
-      <Toast.Provider placement="top" />
-      <LayoutComponent activeMenu={routeMenuMap[route]} onMenuChange={handleMenuChange} />
-    </div>
+    <Routes>
+      <Route path="/kkk/assets/karin-config" element={<ConfigRoute device={device} />} />
+      <Route path="/kkk/assets/config" element={<MainAppRoutes LayoutComponent={LayoutComponent} />} />
+      <Route path="/kkk/assets/about" element={<MainAppRoutes LayoutComponent={LayoutComponent} />} />
+      <Route path="/kkk/assets" element={<Navigate to="/kkk/assets/config" replace />} />
+      <Route path="/kkk" element={<Navigate to="/kkk/assets/config" replace />} />
+      <Route path="/kkk/login" element={<Navigate to="/kkk/assets/config" replace />} />
+      <Route path="*" element={<Navigate to="/kkk/assets/config" replace />} />
+    </Routes>
+  )
+}
+
+/**
+ * 根组件，负责登录态同步、设备检测和布局分发。
+ */
+const App = () => {
+  return (
+    <BrowserRouter>
+      <AuthenticatedApp />
+    </BrowserRouter>
   )
 }
 

@@ -509,17 +509,19 @@ const CronEditor = ({ value, onChange, disabled = false, device = 'desktop' }: C
 
   return (
     <div className="space-y-2">
-      <Label>定时任务表达式</Label>
-      <div className="flex gap-2">
-        <TextField fullWidth isDisabled value={value}>
-          <Input placeholder="*/10 * * * *" />
-        </TextField>
-        <Button isDisabled={disabled} variant="secondary" onPress={() => setIsOpen(true)}>
-          <Clock className="size-4" />
-          <span>编辑</span>
-        </Button>
+      <div className="flex gap-2 flex-col">
+        <div className="flex gap-2">
+          <TextField fullWidth isDisabled value={value}>
+            <Label className="sr-only">定时任务表达式</Label>
+            <Input placeholder="*/10 * * * *" aria-label="定时任务表达式" />
+          </TextField>
+          <Button isDisabled={disabled} variant="secondary" onPress={() => setIsOpen(true)}>
+            <Clock className="size-4" />
+            <span>编辑</span>
+          </Button>
+        </div>
+        <Description>当前：{value || '未设置'}</Description>
       </div>
-      <Description>当前：{value || '未设置'}</Description>
 
       <Drawer.Backdrop isOpen={isOpen} variant="blur" onOpenChange={setIsOpen}>
         <Drawer.Content placement={placement}>
