@@ -2,6 +2,37 @@
 
 # Changelog
 
+## [2.35.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.34.0...v2.35.0) (2026-06-12)
+
+
+### ✨ 新功能
+
+* 开发可视化 Cron 表达式编辑器组件 ([6e437b7](https://github.com/ikenxuan/karin-plugin-kkk/commit/6e437b7eba4e21f05a29849bb5dcd1e897d43ba6))
+
+
+### 🧰 其他更新
+
+* 移除部分无用代码 ([506234e](https://github.com/ikenxuan/karin-plugin-kkk/commit/506234e03b58bc9a346d39af7f866ceb23b97092))
+
+
+### ♻️ 代码重构
+
+* add configuration files for oxfmt and oxlint across multiple packages ([df2bb5e](https://github.com/ikenxuan/karin-plugin-kkk/commit/df2bb5edf96f858d959479286bb614915282a702))
+* Implement server module with API, config, bot management, and video streaming functionalities ([9cd7950](https://github.com/ikenxuan/karin-plugin-kkk/commit/9cd795074134355db56446fb73e1415677562282))
+* 合并部分配置 ([6e437b7](https://github.com/ikenxuan/karin-plugin-kkk/commit/6e437b7eba4e21f05a29849bb5dcd1e897d43ba6))
+* 更新日志信息，添加插件标识，优化主题更新逻辑，移除无用的 CSS 变体 ([51f76d8](https://github.com/ikenxuan/karin-plugin-kkk/commit/51f76d8f00818bbae8f5e0941a47d394ac1c7102))
+* 重构配置，由yaml迁移到json，载入自动迁移 ([6e437b7](https://github.com/ikenxuan/karin-plugin-kkk/commit/6e437b7eba4e21f05a29849bb5dcd1e897d43ba6))
+
+
+### 📦 依赖更新
+
+* deps update ([2fb9d6f](https://github.com/ikenxuan/karin-plugin-kkk/commit/2fb9d6f6188815410ac62847f8c1d72871fa17d7))
+
+
+### ⚙️ 配置变更
+
+* B站视频信息模板中封面的弹幕可选择关闭 ([6e437b7](https://github.com/ikenxuan/karin-plugin-kkk/commit/6e437b7eba4e21f05a29849bb5dcd1e897d43ba6))
+
 ## [2.34.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.33.0...v2.34.0) (2026-06-11)
 
 ### ✨ 新功能
