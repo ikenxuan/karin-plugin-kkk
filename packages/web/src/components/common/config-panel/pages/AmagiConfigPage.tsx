@@ -8,7 +8,7 @@ const AmagiConfigPage = ({ config, renderers }: ConfigPageProps) => {
 
   return (
     <>
-      {renderPageHeader('解析库配置', '解析库的 Cookies、请求、代理和 API 服务配置。保存后后端会重载解析库客户端。')}
+      {renderPageHeader('接口库配置', '接口库的 Cookies、请求、代理和 API 服务配置。保存后后端会重载接口库客户端。')}
       {renderSubSection(
         '平台 Cookies',
         <>

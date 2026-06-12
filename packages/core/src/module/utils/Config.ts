@@ -62,10 +62,10 @@ class Cfg {
         watch(this.jsonConfigPath, (old, now) => {
           // @ts-ignore
           if (old?.amagi !== now?.amagi) {
-            logger.debug('[Config] 检测到 amagi 配置变化，正在重载 Amagi Client...')
+            logger.debug('[karin-plugin-kkk][Config] 检测到 amagi 配置变化，正在重载 Amagi Client...')
             import('./amagiClient')
               .then(({ reloadAmagiConfig }) => reloadAmagiConfig())
-              .catch((error) => logger.error(`[Config] 重载 Amagi Client 失败: ${error}`))
+              .catch((error) => logger.error(`[karin-plugin-kkk][Config] 重载 Amagi Client 失败: ${error}`))
           }
         })
       }
@@ -171,11 +171,11 @@ class Cfg {
     // 同步到数据库
     if ('douyin' in config) {
       await this.syncFilterConfigToDb(config.douyin as douyinPushItem[], douyinDB, 'sec_uid')
-      logger.debug('已同步抖音过滤配置到数据库')
+      logger.debug('[karin-plugin-kkk][Config] 已同步抖音过滤配置到数据库')
     }
     if ('bilibili' in config) {
       await this.syncFilterConfigToDb(config.bilibili as bilibiliPushItem[], bilibiliDB, 'host_mid')
-      logger.debug('已同步B站过滤配置到数据库')
+      logger.debug('[karin-plugin-kkk][Config] 已同步B站过滤配置到数据库')
     }
     return true
   }
@@ -292,9 +292,9 @@ class Cfg {
 
       if (pushCfg?.bilibili) await bilibiliDB.syncConfigSubscriptions(pushCfg.bilibili)
       if (pushCfg?.douyin) await douyinDB.syncConfigSubscriptions(pushCfg.douyin)
-      logger.debug('[BilibiliDB] + [DouyinDB] 配置已同步到数据库')
+      logger.debug('[karin-plugin-kkk][BilibiliDB] + [DouyinDB] 配置已同步到数据库')
     } catch (error) {
-      logger.error('同步配置到数据库失败:', error)
+      logger.error('[karin-plugin-kkk]同步配置到数据库失败:', error)
     }
   }
 }
@@ -399,9 +399,9 @@ const migrateConfigFromYaml = () => {
       }
     }
 
-    logger.info(`[Config] YAML 配置已迁移到 config.json，备份保存在 ${backupDir}`)
+    logger.info(`[karin-plugin-kkk][Config] YAML 配置已迁移到 config.json，备份保存在 ${backupDir}`)
   } catch (error) {
-    logger.error(`[Config] YAML 迁移失败: ${error}`)
+    logger.error(`[karin-plugin-kkk][Config] YAML 迁移失败: ${error}`)
   }
 }
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 const themeStorageKey = 'theme'
 const themeChangedEventName = 'kkk-theme-changed'
@@ -69,6 +69,9 @@ export const useTheme = () => {
   const [theme, setThemeState] = useState<StoredTheme>(() => readStoredTheme())
   const [appliedTheme, setAppliedTheme] = useState<AppliedTheme>(() => getAppliedTheme(theme))
 
+  // 使用 ref 标记是否由 Karin 触发的更新，避免 useEffect 重新计算
+  const isKarinUpdateRef = useRef(false)
+
   const setTheme = useCallback((nextTheme: StoredTheme) => {
     localStorage.setItem(themeStorageKey, nextTheme)
     setThemeState(nextTheme)
@@ -89,7 +92,12 @@ export const useTheme = () => {
   }, [setTheme, theme])
 
   useEffect(() => {
-    setAppliedTheme(applyThemeClass(theme))
+    // 如果是 Karin 触发的更新，跳过重新计算
+    if (isKarinUpdateRef.current) {
+      isKarinUpdateRef.current = false
+    } else {
+      setAppliedTheme(applyThemeClass(theme))
+    }
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handleSystemThemeChange = () => {
@@ -98,6 +106,12 @@ export const useTheme = () => {
 
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key !== themeStorageKey) return
+
+      // 如果在 iframe 内，忽略 storage 事件，因为我们通过 postMessage 接收主题
+      // storage 事件在 iframe 和父窗口间会互相触发，导致循环
+      if (window.self !== window.top) {
+        return
+      }
 
       const nextTheme = readStoredTheme()
       setThemeState(nextTheme)
@@ -118,6 +132,9 @@ export const useTheme = () => {
       const messageTheme = event.data.theme
       const nextTheme: StoredTheme = isStoredTheme(messageTheme ?? null) ? (messageTheme as StoredTheme) : readStoredTheme()
       const nextAppliedTheme = isAppliedTheme(event.data.appliedTheme) ? event.data.appliedTheme : getAppliedTheme(nextTheme)
+
+      // 标记这是 Karin 的更新，让 useEffect 跳过重新计算
+      isKarinUpdateRef.current = true
 
       localStorage.setItem(themeStorageKey, nextTheme)
       setThemeState(nextTheme)
