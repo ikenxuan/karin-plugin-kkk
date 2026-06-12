@@ -5,8 +5,6 @@ import { logger } from 'node-karin'
 
 import { Config } from './Config'
 
-type AmagiClient = ReturnType<typeof Client>
-
 /**
  * Amagi 错误类，携带原始响应数据
  */
@@ -27,7 +25,7 @@ export class AmagiError extends Error {
 /** 解析库基类 */
 export class AmagiBase {
   /** 解析库实例 */
-  amagi: AmagiClient
+  amagi: ReturnType<typeof Client>
 
   constructor() {
     const client = this.createAmagiClient()
@@ -35,66 +33,39 @@ export class AmagiBase {
   }
 
   /** 创建解析库实例 */
-  protected createAmagiClient = (): AmagiClient => {
+  protected createAmagiClient = (): ReturnType<typeof Client> => {
+    const amagi = Config.amagi
     return Client({
-      cookies: {
-        douyin: Config.cookies.douyin,
-        bilibili: Config.cookies.bilibili,
-        kuaishou: Config.cookies.kuaishou,
-        xiaohongshu: Config.cookies.xiaohongshu
-      },
+      cookies: amagi.cookies || {},
       request: {
-        timeout: Config.request.timeout,
-        headers: { 'User-Agent': Config.request['User-Agent'] },
-        proxy: Config.request.proxy?.switch ? Config.request.proxy : false
+        timeout: amagi.timeout,
+        headers: { 'User-Agent': amagi['User-Agent'] },
+        proxy: amagi.proxy?.switch ? amagi.proxy : false
       }
     })
   }
 
   /**
    * 重载配置 - 重新创建 Amagi Client 实例
-   * 当配置文件中的 cookies 或 request 配置更新后，调用此方法使新配置生效
    */
   reloadConfig() {
     logger.debug('[AmagiClient] 检测到配置变化，正在重载...')
-
-    // 记录旧配置（用于调试）
-    const oldCookies = {
-      douyin: Config.cookies.douyin?.substring(0, 20) + '...',
-      bilibili: Config.cookies.bilibili?.substring(0, 20) + '...',
-      kuaishou: Config.cookies.kuaishou?.substring(0, 20) + '...',
-      xiaohongshu: Config.cookies.xiaohongshu?.substring(0, 20) + '...'
-    }
-
-    // 重新创建客户端实例
     const client = this.createAmagiClient()
     this.amagi = this.wrapAmagiClient(client)
-
-    // 记录新配置（用于调试）
-    const newCookies = {
-      douyin: Config.cookies.douyin?.substring(0, 20) + '...',
-      bilibili: Config.cookies.bilibili?.substring(0, 20) + '...',
-      kuaishou: Config.cookies.kuaishou?.substring(0, 20) + '...',
-      xiaohongshu: Config.cookies.xiaohongshu?.substring(0, 20) + '...'
-    }
-
     logger.debug('[AmagiClient] 配置重载完成')
-    logger.debug(`[AmagiClient] Cookie 变化对比:\n${util.inspect({ 旧配置: oldCookies, 新配置: newCookies }, { colors: true, depth: 2 })}`)
   }
 
   /** 包装解析库实例，递归代理所有嵌套对象的方法 */
-  protected wrapAmagiClient = (client: AmagiClient): AmagiClient => {
+  protected wrapAmagiClient = (client: ReturnType<typeof Client>): ReturnType<typeof Client> => {
     const createProxy = (target: any): any => {
       return new Proxy(target, {
         get(obj: any, prop: string | symbol) {
           const value = obj[prop]
 
-          // 如果是对象（非 null），递归代理
           if (value && typeof value === 'object' && !Array.isArray(value)) {
             return createProxy(value)
           }
 
-          // 如果是函数，包装它以检查返回值
           if (typeof value === 'function') {
             return async (...args: any[]) => {
               const result = await value.apply(obj, args)
@@ -111,7 +82,6 @@ export class AmagiBase {
                   return result
                 }
 
-                // 构建详细的错误消息
                 const errMessage = result.message || (result.error as any)?.amagiMessage || '请求失败'
                 const errorDetails = util.inspect(
                   { code: result.code, data: result.data, message: errMessage, error: result.error },
@@ -136,10 +106,7 @@ export class AmagiBase {
 }
 
 /**
- * 已知的软性错误码 — 这些接口响应属于正常业务边缘情况，不应中断执行流程。
- * 在 softFetch 中配置后，对应接口调用不会抛出异常，而是原样返回 Result，
- * 由业务代码根据 code 决定后续处理逻辑。
- *
+ * 软错误码常量
  * Bilibili:
  *   12061 - UP主已关闭评论区
  */
@@ -148,11 +115,8 @@ export const SOFT_ERROR_CODES = {
 } as const
 
 /**
- * 调用 amagi fetcher 方法，允许特定错误码不抛出异常而是以 Result 形式返回。
- * 用于处理已知的非致命接口响应（例如评论区已关闭）。
- * 业务代码收到返回值后，通过判断 result.code 决定继续解析还是返回提示。
- *
- * @param fn           - 经过代理包装的 amagi 方法调用
+ * 调用 amagi fetcher 方法，允许特定错误码不抛出异常而是以 Result 形式返回
+ * @param fn - 经过代理包装的 amagi 方法调用
  * @param allowedCodes - 不应抛出异常的错误码列表
  */
 export const softFetch = async <T>(fn: () => Promise<Result<T>>, allowedCodes: number[]): Promise<Result<T>> => {
@@ -172,53 +136,18 @@ export const softFetch = async <T>(fn: () => Promise<Result<T>>, allowedCodes: n
   }
 }
 
-/** 获取已初始化的解析库实例（单例） */
-const createLiveProxy = <T extends object>(getter: () => T): T => {
-  return new Proxy({} as T, {
-    get(_target, prop: string | symbol) {
-      const current = getter()
-      const value = Reflect.get(current, prop)
-
-      if (typeof value === 'function') {
-        return value.bind(current)
-      }
-
-      if (value && typeof value === 'object') {
-        return createLiveProxy(() => Reflect.get(getter(), prop) as T)
-      }
-
-      return value
-    }
-  })
-}
-
 const amagiClientInstance = new AmagiBase()
 
-/** 导出 Amagi Client 实例 */
-export const amagiClient = createLiveProxy(() => amagiClientInstance.amagi)
+const amagiClient = amagiClientInstance.amagi
 
-/**
- * 重载 Amagi 配置
- * 当 cookies 或 request 配置更新后调用此方法，使新配置立即生效
- * @example
- * ```typescript
- * // 更新配置后
- * await Config.Modify('cookies', 'douyin', newCookie)
- * reloadAmagiConfig() // 重载配置
- * ```
- */
 export const reloadAmagiConfig = () => {
   amagiClientInstance.reloadConfig()
 }
 
-/** B站 Fetcher 实例 */
 export const bilibiliFetcher = amagiClient.bilibili.fetcher
 
-/** 抖音 Fetcher 实例 */
 export const douyinFetcher = amagiClient.douyin.fetcher
 
-/** 快手 Fetcher 实例 */
 export const kuaishouFetcher = amagiClient.kuaishou.fetcher
 
-/** 小红书 Fetcher 实例 */
 export const xiaohongshuFetcher = amagiClient.xiaohongshu.fetcher

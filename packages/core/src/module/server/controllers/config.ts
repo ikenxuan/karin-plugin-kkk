@@ -50,8 +50,8 @@ export const updateAllConfig = async (req: Request, res: Response) => {
         const success = await Config.ModifyPro(moduleName, config)
         results.push({ module, success })
 
-        // cookies 与 request 会影响 amagi 客户端运行态，保存后需要立即重载。
-        if (success && (moduleName === 'cookies' || moduleName === 'request')) {
+        // amagi 配置变化需要重载客户端
+        if (success && moduleName === 'amagi') {
           needReloadAmagi = true
         }
       } catch (error: any) {

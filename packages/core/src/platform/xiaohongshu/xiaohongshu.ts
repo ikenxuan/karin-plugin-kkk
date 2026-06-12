@@ -52,7 +52,7 @@ export class Xiaohongshu extends Base {
   }
 
   async XiaohongshuHandler(data: XiaohongshuIdData) {
-    if (Config.cookies.xiaohongshu === '') {
+    if (Config.amagi.cookies.xiaohongshu === '') {
       throw new Error('我还没有小红书的 Cookies，暂时无法解析呢 ~')
     }
     if (Config.app.parseTip) {
@@ -137,7 +137,7 @@ export class Xiaohongshu extends Base {
             headers: {
               ...baseHeaders,
               Referer: 'https://www.xiaohongshu.com',
-              Cookie: Config.cookies.xiaohongshu
+              Cookie: Config.amagi.cookies.xiaohongshu
             } as downLoadFileOptions['headers']
           })
 
@@ -158,7 +158,7 @@ export class Xiaohongshu extends Base {
               headers: {
                 ...baseHeaders,
                 Referer: 'https://www.xiaohongshu.com',
-                Cookie: Config.cookies.xiaohongshu
+                Cookie: Config.amagi.cookies.xiaohongshu
               }
             })
 
@@ -190,7 +190,7 @@ export class Xiaohongshu extends Base {
                   logger.mark(`小红书实况图视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
                   temp.push({ filepath: filePath, totalBytes: 0 })
                   const videoPath =
-                    Config.upload.videoSendMode === 'base64'
+                    Config.app.videoSendMode === 'base64'
                       ? `base64://${fs.readFileSync(filePath).toString('base64')}`
                       : `file://${filePath}`
                   processedImages.push(segment.video(videoPath))
@@ -211,7 +211,7 @@ export class Xiaohongshu extends Base {
                   if (motionPhotoCreated) {
                     temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
                     const motionPhotoCover =
-                      Config.upload.imageSendMode === 'base64'
+                      Config.app.imageSendMode === 'base64'
                         ? `base64://${fs.readFileSync(motionPhotoCoverPath).toString('base64')}`
                         : `file://${motionPhotoCoverPath}`
                     processedImages.push(segment.image(motionPhotoCover))
@@ -301,7 +301,7 @@ export class Xiaohongshu extends Base {
             headers: {
               ...baseHeaders,
               Referer: 'https://www.xiaohongshu.com',
-              Cookie: Config.cookies.xiaohongshu
+              Cookie: Config.amagi.cookies.xiaohongshu
             }
           },
           {
@@ -407,7 +407,7 @@ export const xiaohongshuProcessVideos = (streamData: any, videoQuality: string, 
 
   // 如果是自动模式
   if (videoQuality === 'adapt') {
-    const sizeLimitBytes = (maxAutoVideoSize || Config.upload.filelimit) * 1024 * 1024
+    const sizeLimitBytes = (maxAutoVideoSize || Config.app.filelimit) * 1024 * 1024
 
     // 按画质优先级排序：4k > 2k > 1080p > 720p > 540p
     const qualityPriority = ['4k', '2k', '1080p', '720p', '540p']

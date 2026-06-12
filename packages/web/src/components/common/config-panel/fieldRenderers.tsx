@@ -14,7 +14,7 @@ import {
   Tooltip
 } from '@heroui/react'
 import { Info } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { Suspense, lazy, type ReactNode } from 'react'
 
 import { getDisabledTooltip } from '../../../config/disabledRules'
 import type { ConfigPanelLayoutClasses } from '../../../styles/desktopConfigPanel'
@@ -22,6 +22,8 @@ import type { ConfigType } from '../../../types/config'
 import { booleanText } from './options'
 import type { ConfigDescription, ConfigFieldRenderers, ConfigHelp, ConfigPath, DeviceLayout, SelectOption } from './types'
 import { getValue, includesValue, isConfigHelp, toNumber, toPathKey } from './utils'
+
+const CronEditor = lazy(() => import('../../pushlist/CronEditor'))
 
 interface CreateConfigFieldRenderersArgs {
   config: ConfigType
@@ -95,9 +97,20 @@ export const createConfigFieldRenderers = ({
     )
   }
 
-  const toggleArrayValue = (path: ConfigPath, value: string, selected: boolean) => {
+  const toggleArrayValue = (path: ConfigPath, value: string, selected: boolean, mutuallyExclusiveGroups?: string[][]) => {
     const currentValues = getValue<string[]>(config, path, [])
-    const nextValues = selected ? Array.from(new Set([...currentValues, value])) : currentValues.filter((item) => item !== value)
+    let nextValues = selected ? Array.from(new Set([...currentValues, value])) : currentValues.filter((item) => item !== value)
+
+    // 处理互斥规则
+    if (mutuallyExclusiveGroups && selected) {
+      // 找到当前值所属的互斥组
+      const currentGroup = mutuallyExclusiveGroups.find((group) => group.includes(value))
+      if (currentGroup) {
+        // 移除同组内的其他值
+        const othersInGroup = currentGroup.filter((v) => v !== value)
+        nextValues = nextValues.filter((v) => !othersInGroup.includes(v))
+      }
+    }
 
     updateConfigValue(path, nextValues)
   }
@@ -204,7 +217,14 @@ export const createConfigFieldRenderers = ({
     return wrapWithDisabledTooltip(selectElement, path, disabled)
   }
 
-  const renderCheckboxGroup: ConfigFieldRenderers['renderCheckboxGroup'] = (path, label, help, options, disabled = false) => {
+  const renderCheckboxGroup: ConfigFieldRenderers['renderCheckboxGroup'] = (
+    path,
+    label,
+    help,
+    options,
+    disabled = false,
+    mutuallyExclusiveGroups
+  ) => {
     const values = getValue<string[]>(config, path, [])
 
     const groupElement = (
@@ -219,7 +239,7 @@ export const createConfigFieldRenderers = ({
                 key={item.value}
                 isDisabled={disabled}
                 isSelected={selected}
-                onChange={(isSelected) => toggleArrayValue(path, item.value, isSelected)}
+                onChange={(isSelected) => toggleArrayValue(path, item.value, isSelected, mutuallyExclusiveGroups)}
               >
                 <Checkbox.Control>
                   <Checkbox.Indicator />
@@ -238,11 +258,26 @@ export const createConfigFieldRenderers = ({
     return wrapWithDisabledTooltip(groupElement, path, disabled)
   }
 
+  const renderCronField: ConfigFieldRenderers['renderCronField'] = (path, _label, _help, disabled = false) => {
+    const value = getValue<string>(config, path, '*/10 * * * *')
+
+    const cronElement = (
+      <div className={classes.field}>
+        <Suspense fallback={<div className="h-64 animate-pulse rounded-lg bg-muted/30" />}>
+          <CronEditor device={device} disabled={disabled} value={value} onChange={(nextValue) => updateConfigValue(path, nextValue)} />
+        </Suspense>
+      </div>
+    )
+
+    return wrapWithDisabledTooltip(cronElement, path, disabled)
+  }
+
   return {
     renderSwitch,
     renderTextField,
     renderSelectField,
     renderCheckboxGroup,
+    renderCronField,
     renderPageHeader: (title, description) => (
       <div className={`mb-6 ${device === 'mobile' ? 'pr-36' : ''}`} data-config-section>
         <h2 className="text-2xl font-bold">{title}</h2>

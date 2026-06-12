@@ -288,9 +288,9 @@ export const douyinLogin = async (e: Message) => {
                 }
 
                 logger.debug('开始保存 cookies...')
-                Config.Modify('cookies', 'douyin', cookieString)
+                Config.Modify('amagi', 'cookies.douyin', cookieString)
                 logger.debug('cookies 保存完成')
-                await e.reply('登录成功！用户登录凭证已保存至cookies.yaml', { reply: true })
+                await e.reply('登录成功！用户登录凭证已保存至配置', { reply: true })
 
                 // 批量撤回之前的消息
                 await Promise.all(

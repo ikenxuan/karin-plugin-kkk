@@ -12,7 +12,8 @@ import { getValue, includesValue } from '../utils'
 import type { ConfigPageProps } from './pageTypes'
 
 const DouyinConfigPage = ({ config, renderers, classes }: ConfigPageProps) => {
-  const { renderCheckboxGroup, renderPageHeader, renderSelectField, renderSubSection, renderSwitch, renderTextField } = renderers
+  const { renderCheckboxGroup, renderCronField, renderPageHeader, renderSelectField, renderSubSection, renderSwitch, renderTextField } =
+    renderers
   const appLivePhotoMode = getValue<string>(config, ['app', 'livePhotoMode'], 'video_and_livephoto')
   const douyinEnabled = getValue<boolean>(config, ['douyin', 'switch'], false)
   const douyinSendContent = getValue<string[]>(config, ['douyin', 'sendContent'], [])
@@ -180,9 +181,7 @@ const DouyinConfigPage = ({ config, renderers, classes }: ConfigPageProps) => {
             (value) => value,
             !douyinPushEnabled
           )}
-          {renderTextField(['douyin', 'push', 'cron'], '定时任务表达式', '定时推送的时间，格式为cron表达式（默认为每十分钟执行一次）。', {
-            disabled: !douyinPushEnabled
-          })}
+          {renderCronField(['douyin', 'push', 'cron'], '定时任务表达式', '定时推送的时间，支持可视化编辑或手动输入 cron 表达式。', !douyinPushEnabled)}
           {renderSwitch(['douyin', 'push', 'parsedynamic'], '作品解析', '触发推送时是否一同解析该作品。', !douyinPushEnabled)}
           {renderSelectField(
             ['douyin', 'push', 'shareType'],

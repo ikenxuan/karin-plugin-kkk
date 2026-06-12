@@ -91,7 +91,7 @@ const handleSetBilibiliPush = wrapWithErrorHandler(
     }
 
     // 原有的订阅逻辑
-    if (!Config.cookies.bilibili) {
+    if (!Config.amagi.cookies.bilibili) {
       await e.reply('\n请先配置B站Cookie', { at: true })
       return true
     }

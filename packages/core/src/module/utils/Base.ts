@@ -210,23 +210,23 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
   }
 
   // 判断是否需要压缩后再上传
-  if (Config.upload.compress && file.totalBytes > Config.upload.compresstrigger) {
+  if (Config.app.compress && file.totalBytes > Config.app.compresstrigger) {
     const Duration = await getMediaDuration(file.filepath)
     logger.warn(
       logger.yellow(
-        `视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.upload.compresstrigger} MB），正在进行压缩至${Config.upload.compressvalue} MB...`
+        `视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.app.compresstrigger} MB），正在进行压缩至${Config.app.compressvalue} MB...`
       )
     )
     const message = [
       segment.text(
-        `视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.upload.compresstrigger} MB），正在进行压缩至${Config.upload.compressvalue} MB...`
+        `视频大小 (${file.totalBytes} MB) 触发压缩条件（设定值：${Config.app.compresstrigger} MB），正在进行压缩至${Config.app.compressvalue} MB...`
       ),
       options?.message_id ? segment.reply(options.message_id) : segment.text('')
     ]
 
     const msg1 = await karin.sendMsg(selfId, contact, message)
     // 计算目标视频平均码率
-    const targetBitrate = Common.calculateBitrate(Config.upload.compresstrigger, Duration) * 0.75
+    const targetBitrate = Common.calculateBitrate(Config.app.compresstrigger, Duration) * 0.75
     // 执行压缩
     const startTime = Date.now()
     const outputPath = `${Common.tempDri.video}tmp_${Date.now()}.mp4`
@@ -248,10 +248,10 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
 
   // 判断是否使用群文件上传
   if (options) {
-    options.useGroupFile = Config.upload.usegroupfile && newFileSize > Config.upload.groupfilevalue
+    options.useGroupFile = Config.app.usegroupfile && newFileSize > Config.app.groupfilevalue
   }
 
-  if (Config.upload.videoSendMode === 'base64' && !options?.useGroupFile) {
+  if (Config.app.videoSendMode === 'base64' && !options?.useGroupFile) {
     const videoBuffer = fs.readFileSync(file.filepath)
     File = `base64://${videoBuffer.toString('base64')}`
     logger.mark(`已开启视频文件 base64转换 正在进行${logger.yellow('base64转换中')}...`)
@@ -328,11 +328,11 @@ export const downloadVideo = async (event: Message, downloadOpt: downloadFileOpt
   const fileSizeContent = extractTotalBytesFromHeaders(fileHeaders)
   const fileSizeInMB = (fileSizeContent / (1024 * 1024)).toFixed(2)
   const fileSize = parseInt(parseFloat(fileSizeInMB).toFixed(2))
-  if (fileSizeContent > 0 && Config.upload.usefilelimit && fileSize > Config.upload.filelimit) {
+  if (fileSizeContent > 0 && Config.app.usefilelimit && fileSize > Config.app.filelimit) {
     const message = segment.text(
       `视频：「${
         downloadOpt.title.originTitle ?? 'Error: 文件名获取失败'
-      }」大小 (${fileSizeInMB} MB) 超出最大限制（设定值：${Config.upload.filelimit} MB），已取消上传`
+      }」大小 (${fileSizeInMB} MB) 超出最大限制（设定值：${Config.app.filelimit} MB），已取消上传`
     )
     const selfId = event.selfId || (uploadOpt?.activeOption?.uin as string)
     const contact = event.contact || karin.contactGroup(uploadOpt?.activeOption?.group_id as string) || karin.contactFriend(selfId)
@@ -364,7 +364,7 @@ export const downloadFile = async (videoUrl: string, opt: downLoadFileOptions): 
   const startTime = Date.now()
 
   // 从配置中读取限速设置
-  const uploadConfig = Config.upload
+  const uploadConfig = Config.app
   const throttleConfig = {
     enabled: uploadConfig.downloadThrottle ?? false,
     maxSpeed: (uploadConfig.downloadMaxSpeed ?? 10) * 1024 * 1024, // MB/s -> bytes/s

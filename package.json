@@ -70,7 +70,7 @@
       "javascript-obfuscator",
       "jpegtran-bin",
       "mozjpeg",
-      "msw",
+      "msgpackr-extract",
       "optipng-bin",
       "pngquant-bin",
       "protobufjs",

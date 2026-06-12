@@ -1,13 +1,11 @@
 import type { ConfigFileKey } from '../types'
+import AmagiConfigPage from './AmagiConfigPage'
 import AppConfigPage from './AppConfigPage'
 import BilibiliConfigPage from './BilibiliConfigPage'
-import CookiesConfigPage from './CookiesConfigPage'
 import DouyinConfigPage from './DouyinConfigPage'
 import KuaishouConfigPage from './KuaishouConfigPage'
 import type { ConfigPageProps } from './pageTypes'
 import PushlistConfigPage from './PushlistConfigPage'
-import RequestConfigPage from './RequestConfigPage'
-import UploadConfigPage from './UploadConfigPage'
 import XiaohongshuConfigPage from './XiaohongshuConfigPage'
 
 interface ActiveConfigPageProps extends ConfigPageProps {
@@ -16,14 +14,10 @@ interface ActiveConfigPageProps extends ConfigPageProps {
 
 const ActiveConfigPage = (props: ActiveConfigPageProps) => {
   switch (props.activeFile) {
-    case 'cookies':
-      return <CookiesConfigPage {...props} />
+    case 'amagi':
+      return <AmagiConfigPage {...props} />
     case 'app':
       return <AppConfigPage {...props} />
-    case 'upload':
-      return <UploadConfigPage {...props} />
-    case 'request':
-      return <RequestConfigPage {...props} />
     case 'douyin':
       return <DouyinConfigPage {...props} />
     case 'bilibili':

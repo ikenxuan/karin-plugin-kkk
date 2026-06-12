@@ -77,12 +77,10 @@ export const booleanText = {
 }
 
 export const configFiles: Array<{ key: ConfigFileKey; label: string; description: string }> = [
-  { key: 'cookies', label: 'Cookies', description: '各平台 Cookie' },
-  { key: 'app', label: '应用', description: '运行与交互' },
-  { key: 'upload', label: '上传下载', description: '上传与限速' },
-  { key: 'request', label: '请求', description: 'UA 与代理' },
+  { key: 'amagi', label: '解析库', description: '请求与 Cookies' },
+  { key: 'app', label: '通用', description: '运行与交互' },
   { key: 'douyin', label: '抖音', description: '解析与推送' },
-  { key: 'bilibili', label: 'B站', description: '解析与推送' },
+  { key: 'bilibili', label: '哔哩哔哩', description: '解析与推送' },
   { key: 'kuaishou', label: '快手', description: '快手解析' },
   { key: 'xiaohongshu', label: '小红书', description: '小红书解析' },
   { key: 'pushlist', label: '推送列表', description: '订阅 JSON' }

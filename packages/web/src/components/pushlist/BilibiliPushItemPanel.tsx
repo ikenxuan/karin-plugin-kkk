@@ -32,7 +32,7 @@ const BilibiliPushItemPanel = ({ item, index, list, onChange, device }: Bilibili
         <Accordion.Trigger>
           <div className="flex flex-1 items-center gap-3">
             <div onClick={(event) => event.stopPropagation()} onPointerDown={(event) => event.stopPropagation()}>
-              <Switch isSelected={item.switch} onChange={(isSelected) => updateItem({ switch: isSelected })}>
+              <Switch aria-label="推送开关" isSelected={item.switch} onChange={(isSelected) => updateItem({ switch: isSelected })}>
                 <Switch.Control>
                   <Switch.Thumb />
                 </Switch.Control>

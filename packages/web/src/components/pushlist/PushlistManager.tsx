@@ -73,7 +73,7 @@ export default function PushlistManager({ douyinList, bilibiliList, onDouyinChan
             </Button>
 
             {douyinList.length > 0 ? (
-              <Accordion variant="surface">
+              <Accordion variant="surface" aria-label="抖音推送列表">
                 {douyinList.map((item, index) => (
                   <DouyinPushItemPanel key={index} device={device} index={index} item={item} list={douyinList} onChange={onDouyinChange} />
                 ))}
@@ -92,7 +92,7 @@ export default function PushlistManager({ douyinList, bilibiliList, onDouyinChan
             </Button>
 
             {bilibiliList.length > 0 ? (
-              <Accordion variant="surface">
+              <Accordion variant="surface" aria-label="B站推送列表">
                 {bilibiliList.map((item, index) => (
                   <BilibiliPushItemPanel
                     key={index}

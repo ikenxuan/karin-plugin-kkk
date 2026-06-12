@@ -41,7 +41,7 @@ export type { DouyinPushItem }
 const douyinBaseHeaders: downLoadFileOptions['headers'] = {
   ...baseHeaders,
   Referer: 'https://www.douyin.com',
-  Cookie: Config.cookies.douyin
+  Cookie: Config.amagi.cookies.douyin
 }
 
 export class DouYinpush extends Base {
@@ -56,7 +56,7 @@ export class DouYinpush extends Base {
   constructor(e = {} as Message, force: boolean = false) {
     super(e)
     this.headers!.Referer = 'https://www.douyin.com'
-    this.headers!.Cookie = Config.cookies.douyin
+    this.headers!.Cookie = Config.amagi.cookies.douyin
     this.force = force
   }
 
@@ -502,7 +502,7 @@ export class DouYinpush extends Base {
                         logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
                         temp.push({ filepath: filePath, totalBytes: 0 })
                         const videoPath =
-                          Config.upload.videoSendMode === 'base64'
+                          Config.app.videoSendMode === 'base64'
                             ? `base64://${fs.readFileSync(filePath).toString('base64')}`
                             : `file://${filePath}`
                         images.push(segment.video(videoPath))
@@ -523,7 +523,7 @@ export class DouYinpush extends Base {
                         if (motionPhotoCreated) {
                           temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
                           const motionPhotoCover =
-                            Config.upload.imageSendMode === 'base64'
+                            Config.app.imageSendMode === 'base64'
                               ? `base64://${fs.readFileSync(motionPhotoCoverPath).toString('base64')}`
                               : `file://${motionPhotoCoverPath}`
                           images.push(segment.image(motionPhotoCover))
@@ -664,7 +664,7 @@ export class DouYinpush extends Base {
                           logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
                           temp.push({ filepath: filePath, totalBytes: 0 })
                           const videoPath =
-                            Config.upload.videoSendMode === 'base64'
+                            Config.app.videoSendMode === 'base64'
                               ? `base64://${fs.readFileSync(filePath).toString('base64')}`
                               : `file://${filePath}`
                           processedImages.push(segment.video(videoPath))
@@ -685,7 +685,7 @@ export class DouYinpush extends Base {
                           if (motionPhotoCreated) {
                             temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
                             const motionPhotoCover =
-                              Config.upload.imageSendMode === 'base64'
+                              Config.app.imageSendMode === 'base64'
                                 ? `base64://${fs.readFileSync(motionPhotoCoverPath).toString('base64')}`
                                 : `file://${motionPhotoCoverPath}`
                             processedImages.push(segment.image(motionPhotoCover))

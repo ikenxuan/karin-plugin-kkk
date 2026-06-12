@@ -12,15 +12,6 @@ export interface appConfig {
   /** 渲染精度，可选值50~200，建议100。设置高精度会提高图片的精细度，过高可能会影响渲染与发送速度 */
   renderScale: number
 
-  /** 本地部署一个视频解析API服务，接口范围为本插件用到的所有，默认端口4567 */
-  APIServer: boolean
-
-  /** API服务端口 */
-  APIServerPort: number
-
-  /** API 服务是否挂载到 Karin 上，开启后监听端口为 Karin 的 http 端口，修改后需重启 */
-  APIServerMount: boolean
-
   /** 渲染图片的主题色，0为自动，1为浅色，2为深色 */
   Theme: number
 
@@ -78,4 +69,54 @@ export interface appConfig {
 
   /** 外部访问地址（当 qrLoginAddrType 为 'external' 时使用，可以是公网IP或域名） */
   qrLoginExternalAddr: string
+
+  // ============ 以下字段从 uploadConfig 合并 ============
+
+  /**
+   * 本地视频发送方式
+   * - 'file': 使用 file 协议发送本地视频（需 Karin 与协议端在同一系统）
+   * - 'base64': 转换为 base64 后发送（传输数据量增大约 30%，不在同一网络环境可能导致额外带宽成本）
+   */
+  videoSendMode: 'file' | 'base64'
+
+  /** 视频上传拦截，开启后会根据视频文件大小判断是否需要上传，需配置「视频拦截阈值」。 */
+  usefilelimit: boolean
+
+  /** 视频拦截阈值，视频文件大于该数值则直接结束任务，不会上传，单位: MB，「视频上传拦截」开启后才会生效。 */
+  filelimit: number
+
+  /** 压缩视频，开启后会将视频文件压缩后再上传，适合上传大文件，任务过程中会吃满CPU，对低配服务器不友好。需配置「压缩触发阈值」与「压缩后的值」 */
+  compress: boolean
+
+  /** 压缩触发阈值，触发视频压缩的阈值，单位：MB。当文件大小超过该值时，才会压缩视频，「压缩视频」开启后才会生效 */
+  compresstrigger: number
+
+  /** 压缩后的值，单位：MB。若视频文件大小大于「压缩触发阈值」的值，则会进行压缩至该值（±5%），「压缩视频」开启后才会生效 */
+  compressvalue: number
+
+  /** 群文件上传，使用群文件上传，开启后会将视频文件上传到群文件中，需配置「群文件上传阈值」 */
+  usegroupfile: boolean
+
+  /** 群文件上传阈值，当文件大小超过该值时将使用群文件上传，单位：MB，「使用群文件上传」开启后才会生效 */
+  groupfilevalue: number
+
+  /**
+   * 网络图片发送方式
+   * - 'url': 直接传递 HTTP 链接给上游下载（可能因上游网络问题导致下载超时）
+   * - 'file': 下载到本地使用 file 协议发送（需 Karin 与协议端在同一系统）
+   * - 'base64': 下载后转换为 base64 发送（传输数据量增大约 30%，不在同一网络环境可能导致额外带宽成本）
+   */
+  imageSendMode: 'url' | 'file' | 'base64'
+
+  /** 下载限速开关，开启后会限制下载速度，避免触发服务器风控导致连接被重置 */
+  downloadThrottle: boolean
+
+  /** 下载速度限制，单位：MB/s，0 表示不限速。建议设置为 5-20 之间，过高可能触发风控 */
+  downloadMaxSpeed: number
+
+  /** 断流自动降速，当检测到连接被重置时自动降低下载速度 */
+  downloadAutoReduce: boolean
+
+  /** 最低下载速度，单位：MB/s，自动降速时不会低于此值 */
+  downloadMinSpeed: number
 }

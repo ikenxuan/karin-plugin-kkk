@@ -52,8 +52,8 @@ export const bilibiliLogin = async (e: Message) => {
       cookieString = setCookieHeader || ''
     }
 
-    Config.Modify('cookies', 'bilibili', cookieString)
-    await e.reply('登录成功！用户登录凭证已保存至cookies.yaml', { reply: true })
+    Config.Modify('amagi', 'cookies.bilibili', cookieString)
+    await e.reply('登录成功！用户登录凭证已保存至配置', { reply: true })
     await recallMessages()
   }
 

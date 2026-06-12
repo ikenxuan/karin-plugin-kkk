@@ -6,7 +6,7 @@ const PushlistConfigPage = ({ config, device, renderers, updateConfigValue }: Co
 
   return (
     <>
-      {renderPageHeader('推送列表', '管理抖音与 B站的推送订阅。')}
+      {renderPageHeader('推送列表', '管理「抖音」与「哔哩哔哩」的推送订阅。')}
       <PushlistManager
         douyinList={(config.pushlist?.douyin as DouyinPushItem[]) || []}
         bilibiliList={(config.pushlist?.bilibili as BilibiliPushItem[]) || []}

@@ -33,7 +33,7 @@ export type NumberValidationRule = {
 
 export type DeviceLayout = 'desktop' | 'mobile'
 
-export type ConfigFileKey = 'cookies' | 'app' | 'upload' | 'request' | 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu' | 'pushlist'
+export type ConfigFileKey = 'amagi' | 'app' | 'douyin' | 'bilibili' | 'kuaishou' | 'xiaohongshu' | 'pushlist'
 
 export type ConfigDescription = ReactNode | ConfigHelp
 
@@ -55,7 +55,15 @@ export interface ConfigFieldRenderers {
     parser?: (value: string) => unknown,
     disabled?: boolean
   ) => ReactNode
-  renderCheckboxGroup: (path: ConfigPath, label: string, help: ConfigDescription, options: SelectOption[], disabled?: boolean) => ReactNode
+  renderCheckboxGroup: (
+    path: ConfigPath,
+    label: string,
+    help: ConfigDescription,
+    options: SelectOption[],
+    disabled?: boolean,
+    mutuallyExclusiveGroups?: string[][]
+  ) => ReactNode
+  renderCronField: (path: ConfigPath, label: string, help: ConfigDescription, disabled?: boolean) => ReactNode
   renderPageHeader: (title: string, description: string) => ReactNode
   renderSubSection: (title: string, children: ReactNode) => ReactNode
 }

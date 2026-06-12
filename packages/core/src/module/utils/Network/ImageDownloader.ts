@@ -54,7 +54,7 @@ export class ImageDownloader {
    * @returns 处理后的图片路径（HTTP URL / file:// 协议 / base64://）
    */
   async processImage(imageUrl: string, title?: string, index?: number): Promise<string> {
-    const mode = Config.upload.imageSendMode
+    const mode = Config.app.imageSendMode
 
     switch (mode) {
       case 'base64':

@@ -31,7 +31,7 @@ interface PushTypeFieldProps<T extends string> extends CommonDisabledFieldProps 
 
 export const PushTypeField = <T extends string>({ disabled, itemLabel, device, options, value, onChange }: PushTypeFieldProps<T>) => (
   <DisabledFieldHint disabled={disabled} device={device} message={`开启【${itemLabel}】的推送开关后才能编辑此字段`}>
-    <CheckboxGroup isDisabled={disabled} value={value} onChange={(values) => onChange(values as T[])}>
+    <CheckboxGroup aria-label="推送类型" isDisabled={disabled} value={value} onChange={(values) => onChange(values as T[])}>
       <Label>推送类型</Label>
       <Description>选择要推送的内容类型</Description>
       <div className={`mt-2 ${getPushlistGridClass(device)}`}>

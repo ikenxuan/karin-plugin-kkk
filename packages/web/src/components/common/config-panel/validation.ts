@@ -58,14 +58,14 @@ export const validateConfig = (config: ConfigType | null): Record<string, string
 
   const errors: Record<string, string> = {}
   const appLivePhotoMode = getValue<string>(config, ['app', 'livePhotoMode'], 'video_and_livephoto')
-  const appApiServerMount = getValue<boolean>(config, ['app', 'APIServerMount'], false)
-  const uploadVideoSendMode = getValue<string>(config, ['upload', 'videoSendMode'], 'file')
-  const uploadUseGroupFile = getValue<boolean>(config, ['upload', 'usegroupfile'], false)
-  const uploadUseFileLimit = getValue<boolean>(config, ['upload', 'usefilelimit'], false)
-  const uploadCompress = getValue<boolean>(config, ['upload', 'compress'], false)
-  const uploadDownloadThrottle = getValue<boolean>(config, ['upload', 'downloadThrottle'], false)
-  const uploadDownloadAutoReduce = getValue<boolean>(config, ['upload', 'downloadAutoReduce'], false)
-  const proxyEnabled = getValue<boolean>(config, ['request', 'proxy', 'switch'], false)
+  const amagiApiServerMount = getValue<boolean>(config, ['amagi', 'APIServerMount'], false)
+  const appVideoSendMode = getValue<string>(config, ['app', 'videoSendMode'], 'file')
+  const appUseGroupFile = getValue<boolean>(config, ['app', 'usegroupfile'], false)
+  const appUseFileLimit = getValue<boolean>(config, ['app', 'usefilelimit'], false)
+  const appCompress = getValue<boolean>(config, ['app', 'compress'], false)
+  const appDownloadThrottle = getValue<boolean>(config, ['app', 'downloadThrottle'], false)
+  const appDownloadAutoReduce = getValue<boolean>(config, ['app', 'downloadAutoReduce'], false)
+  const proxyEnabled = getValue<boolean>(config, ['amagi', 'proxy', 'switch'], false)
   const douyinEnabled = getValue<boolean>(config, ['douyin', 'switch'], false)
   const douyinSendContent = getValue<string[]>(config, ['douyin', 'sendContent'], [])
   const douyinBurnDanmaku = getValue<boolean>(config, ['douyin', 'burnDanmaku'], false)
@@ -97,47 +97,47 @@ export const validateConfig = (config: ConfigType | null): Record<string, string
       error: '请输入一个范围在 1000 到 20000 之间的数字'
     },
     {
-      path: ['app', 'APIServerPort'],
+      path: ['amagi', 'APIServerPort'],
       label: 'API服务端口',
       min: 1024,
       max: 65535,
-      disabled: appApiServerMount,
+      disabled: amagiApiServerMount,
       error: '请输入一个范围在 1024 到 65535 之间的数字'
     },
     {
-      path: ['upload', 'groupfilevalue'],
+      path: ['app', 'groupfilevalue'],
       label: '群文件上传阈值',
       min: 1,
-      disabled: !uploadUseGroupFile || uploadVideoSendMode === 'base64'
+      disabled: !appUseGroupFile || appVideoSendMode === 'base64'
     },
-    { path: ['upload', 'filelimit'], label: '视频拦截阈值', min: 1, disabled: !uploadUseFileLimit },
-    { path: ['upload', 'compresstrigger'], label: '压缩触发阈值', min: 1, disabled: !uploadCompress },
-    { path: ['upload', 'compressvalue'], label: '压缩后的值', min: 1, disabled: !uploadCompress },
+    { path: ['app', 'filelimit'], label: '视频拦截阈值', min: 1, disabled: !appUseFileLimit },
+    { path: ['app', 'compresstrigger'], label: '压缩触发阈值', min: 1, disabled: !appCompress },
+    { path: ['app', 'compressvalue'], label: '压缩后的值', min: 1, disabled: !appCompress },
     {
-      path: ['upload', 'downloadMaxSpeed'],
+      path: ['app', 'downloadMaxSpeed'],
       label: '最大下载速度',
       min: 1,
       max: 1000,
-      disabled: !uploadDownloadThrottle,
+      disabled: !appDownloadThrottle,
       error: '请输入一个范围在 1 到 1000 之间的数字'
     },
     {
-      path: ['upload', 'downloadMinSpeed'],
+      path: ['app', 'downloadMinSpeed'],
       label: '最低下载速度',
       min: 0.1,
       max: 100,
-      disabled: !uploadDownloadThrottle || !uploadDownloadAutoReduce,
+      disabled: !appDownloadThrottle || !appDownloadAutoReduce,
       error: '请输入一个范围在 0.1 到 100 之间的数字'
     },
     {
-      path: ['request', 'timeout'],
+      path: ['amagi', 'timeout'],
       label: '请求超时时间',
       min: 1000,
       max: 300000,
       error: '请输入一个范围在 1000 到 300000 之间的数字'
     },
     {
-      path: ['request', 'proxy', 'port'],
+      path: ['amagi', 'proxy', 'port'],
       label: '代理端口',
       min: 1,
       max: 65535,

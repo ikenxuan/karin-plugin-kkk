@@ -41,21 +41,21 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 // Amagi API Server
-if (Config.app.APIServer && Config.app.APIServerMount) {
-  app.use('/amagi/api/bilibili', createBilibiliRoutes(Config.cookies.bilibili))
-  app.use('/amagi/api/douyin', createDouyinRoutes(Config.cookies.douyin))
-  app.use('/amagi/api/kuaishou', createKuaishouRoutes(Config.cookies.kuaishou))
-  app.use('/amagi/api/xiaohongshu', createXiaohongshuRoutes(Config.cookies.xiaohongshu))
-} else if (Config.app.APIServer) {
+if (Config.amagi.APIServer && Config.amagi.APIServerMount) {
+  app.use('/amagi/api/bilibili', createBilibiliRoutes(Config.amagi.cookies.bilibili))
+  app.use('/amagi/api/douyin', createDouyinRoutes(Config.amagi.cookies.douyin))
+  app.use('/amagi/api/kuaishou', createKuaishouRoutes(Config.amagi.cookies.kuaishou))
+  app.use('/amagi/api/xiaohongshu', createXiaohongshuRoutes(Config.amagi.cookies.xiaohongshu))
+} else if (Config.amagi.APIServer) {
   const amagiServer = new Client({
     cookies: {
-      bilibili: Config.cookies.bilibili,
-      douyin: Config.cookies.douyin,
-      kuaishou: Config.cookies.kuaishou,
-      xiaohongshu: Config.cookies.xiaohongshu
+      bilibili: Config.amagi.cookies.bilibili,
+      douyin: Config.amagi.cookies.douyin,
+      kuaishou: Config.amagi.cookies.kuaishou,
+      xiaohongshu: Config.amagi.cookies.xiaohongshu
     }
   })
-  amagiServer.startServer(Config.app.APIServerPort)
+  amagiServer.startServer(Config.amagi.APIServerPort)
 }
 
 // 挂载子路由

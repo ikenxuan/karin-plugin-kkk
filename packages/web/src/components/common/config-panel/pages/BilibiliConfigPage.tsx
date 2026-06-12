@@ -12,7 +12,8 @@ import { getValue, includesValue } from '../utils'
 import type { ConfigPageProps } from './pageTypes'
 
 const BilibiliConfigPage = ({ config, renderers, classes }: ConfigPageProps) => {
-  const { renderCheckboxGroup, renderPageHeader, renderSelectField, renderSubSection, renderSwitch, renderTextField } = renderers
+  const { renderCheckboxGroup, renderCronField, renderPageHeader, renderSelectField, renderSubSection, renderSwitch, renderTextField } =
+    renderers
   const bilibiliEnabled = getValue<boolean>(config, ['bilibili', 'switch'], false)
   const bilibiliSendContent = getValue<string[]>(config, ['bilibili', 'sendContent'], [])
   const bilibiliBurnDanmaku = getValue<boolean>(config, ['bilibili', 'burnDanmaku'], false)
@@ -26,7 +27,7 @@ const BilibiliConfigPage = ({ config, renderers, classes }: ConfigPageProps) => 
 
   return (
     <>
-      {renderPageHeader('B站', 'B站解析、动态图片布局、弹幕和推送基础设置。')}
+      {renderPageHeader('哔哩哔哩', 'B站解析、动态图片布局、弹幕和推送基础设置。')}
       <div className={classes.topLevelFields} data-config-section>
         {renderSwitch(['bilibili', 'switch'], '解析开关', 'B站解析开关，此开关为单独开关。')}
         {renderCheckboxGroup(
@@ -107,6 +108,12 @@ const BilibiliConfigPage = ({ config, renderers, classes }: ConfigPageProps) => 
             displayContentOptions,
             !bilibiliEnabled || bilibiliVideoInfoMode === 'image'
           )}
+          {renderSwitch(
+            ['bilibili', 'showDanmakuInVideoInfo'],
+            '视频信息图片中显示弹幕',
+            '开启后在视频信息图片的封面区域显示热门弹幕。关闭后不会请求弹幕数据，可提升解析速度。仅「视频信息返回形式」为图片模式时生效。',
+            !bilibiliEnabled || bilibiliVideoInfoMode === 'text'
+          )}
         </>
       )}
       {renderSubSection(
@@ -175,9 +182,7 @@ const BilibiliConfigPage = ({ config, renderers, classes }: ConfigPageProps) => 
             (value) => value,
             !bilibiliPushEnabled
           )}
-          {renderTextField(['bilibili', 'push', 'cron'], '定时任务表达式', '定时推送的时间，格式为cron表达式（默认为每十分钟执行一次）。', {
-            disabled: !bilibiliPushEnabled
-          })}
+          {renderCronField(['bilibili', 'push', 'cron'], '定时任务表达式', '定时推送的时间，支持可视化编辑或手动输入 cron 表达式。', !bilibiliPushEnabled)}
           {renderSwitch(['bilibili', 'push', 'parsedynamic'], '作品解析', '触发推送时是否一同解析该作品。', !bilibiliPushEnabled)}
           {renderSelectField(
             ['bilibili', 'push', 'pushVideoQuality'],

@@ -266,7 +266,7 @@ export class DouYin extends Base {
                         logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
                         temp.push({ filepath: filePath, totalBytes: 0 })
                         const videoPath =
-                          Config.upload.videoSendMode === 'base64'
+                          Config.app.videoSendMode === 'base64'
                             ? `base64://${fs.readFileSync(filePath).toString('base64')}`
                             : `file://${filePath}`
                         processedImages.push(segment.video(videoPath))
@@ -287,7 +287,7 @@ export class DouYin extends Base {
                         if (motionPhotoCreated) {
                           temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
                           const motionPhotoCover =
-                            Config.upload.imageSendMode === 'base64'
+                            Config.app.imageSendMode === 'base64'
                               ? `base64://${fs.readFileSync(motionPhotoCoverPath).toString('base64')}`
                               : `file://${motionPhotoCoverPath}`
                           processedImages.push(segment.image(motionPhotoCover))
@@ -474,7 +474,7 @@ export class DouYin extends Base {
                       logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
                       temp.push({ filepath: filePath, totalBytes: 0 })
                       const videoPath =
-                        Config.upload.videoSendMode === 'base64'
+                        Config.app.videoSendMode === 'base64'
                           ? `base64://${fs.readFileSync(filePath).toString('base64')}`
                           : `file://${filePath}`
                       images.push(segment.video(videoPath))
@@ -494,7 +494,7 @@ export class DouYin extends Base {
                       if (motionPhotoCreated) {
                         temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
                         const motionPhotoCover =
-                          Config.upload.imageSendMode === 'base64'
+                          Config.app.imageSendMode === 'base64'
                             ? `base64://${fs.readFileSync(motionPhotoCoverPath).toString('base64')}`
                             : `file://${motionPhotoCoverPath}`
                         images.push(segment.image(motionPhotoCover))
@@ -826,7 +826,7 @@ export class DouYin extends Base {
                 await Common.removeFile(videoFile.filepath, true)
                 const stats = fs.statSync(filePath)
                 const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
-                if (fileSizeInMB > Config.upload.groupfilevalue) {
+                if (fileSizeInMB > Config.app.groupfilevalue) {
                   await uploadFile(this.e, { filepath: filePath, totalBytes: fileSizeInMB, originTitle: g_title || '' }, '', {
                     useGroupFile: true
                   })
@@ -1144,7 +1144,7 @@ export const douyinProcessVideos = (videos: dyVideo[], videoQuality: string, max
 
   // 如果是自动模式
   if (videoQuality === 'adapt') {
-    const sizeLimitBytes = (maxAutoVideoSize || Config.upload.filelimit) * 1024 * 1024
+    const sizeLimitBytes = (maxAutoVideoSize || Config.app.filelimit) * 1024 * 1024
 
     // 按画质优先级排序：4k > 2k > 1080p > 720p > 540p
     const qualityPriority = ['4k', '2k', '1080p', '720p', '540p']

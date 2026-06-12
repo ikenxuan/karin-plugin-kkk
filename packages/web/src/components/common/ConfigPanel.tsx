@@ -33,7 +33,7 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
   const [state, setPanelState] = useSetState({
     config: null as ConfigType | null,
     savedConfig: null as ConfigType | null,
-    activeFile: 'cookies' as ConfigFileKey
+    activeFile: 'amagi' as ConfigFileKey
   })
   const { activeFile, config, savedConfig } = state
   const classes = useMemo(() => getLayoutClasses(device), [device])
@@ -42,8 +42,8 @@ const ConfigPanel = ({ device = 'desktop', variant = 'standalone' }: ConfigPanel
   const { loading, run: fetchConfig } = useRequest(getConfig, {
     onSuccess: (data) => {
       setPanelState({
-        config: data,
-        savedConfig: data
+        config: structuredClone(data),
+        savedConfig: structuredClone(data)
       })
     },
     onError: (error) => {

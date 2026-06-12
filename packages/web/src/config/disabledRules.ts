@@ -83,19 +83,19 @@ export const disabledRules: DisabledRule[] = [
     ]
   },
   {
-    path: ['app', 'APIServerMount'],
+    path: ['amagi', 'APIServerMount'],
     rules: [
       {
-        condition: (cfg) => !getValue<boolean>(cfg, ['app', 'APIServer'], false),
+        condition: (cfg) => !getValue<boolean>(cfg, ['amagi', 'APIServer'], false),
         message: '修改此配置项需要先将「API 服务」打开'
       }
     ]
   },
   {
-    path: ['app', 'APIServerPort'],
+    path: ['amagi', 'APIServerPort'],
     rules: [
       {
-        condition: (cfg) => getValue<boolean>(cfg, ['app', 'APIServerMount'], true),
+        condition: (cfg) => getValue<boolean>(cfg, ['amagi', 'APIServerMount'], true),
         message: '修改此配置项需要先将「挂载到 Karin」关闭'
       }
     ]
@@ -112,90 +112,90 @@ export const disabledRules: DisabledRule[] = [
 
   // ==================== 上传下载配置 ====================
   {
-    path: ['upload', 'videoSendMode'],
+    path: ['app', 'videoSendMode'],
     rules: [
       {
-        condition: (cfg) => getValue<boolean>(cfg, ['upload', 'usegroupfile'], false),
+        condition: (cfg) => getValue<boolean>(cfg, ['app', 'usegroupfile'], false),
         message: '修改此配置项需要先将「群文件上传」关闭'
       }
     ]
   },
   {
-    path: ['upload', 'usegroupfile'],
+    path: ['app', 'usegroupfile'],
     rules: [
       {
-        condition: (cfg) => getValue<string>(cfg, ['upload', 'videoSendMode'], 'file') === 'base64',
+        condition: (cfg) => getValue<string>(cfg, ['app', 'videoSendMode'], 'file') === 'base64',
         message: '修改此配置项需要先将「本地视频发送方式」改为「File 协议」'
       }
     ]
   },
   {
-    path: ['upload', 'groupfilevalue'],
+    path: ['app', 'groupfilevalue'],
     rules: [
       {
-        condition: (cfg) => !getValue<boolean>(cfg, ['upload', 'usegroupfile'], false),
+        condition: (cfg) => !getValue<boolean>(cfg, ['app', 'usegroupfile'], false),
         message: '修改此配置项需要先将「群文件上传」打开'
       },
       {
-        condition: (cfg) => getValue<string>(cfg, ['upload', 'videoSendMode'], 'file') === 'base64',
+        condition: (cfg) => getValue<string>(cfg, ['app', 'videoSendMode'], 'file') === 'base64',
         message: '修改此配置项需要先将「本地视频发送方式」改为「File 协议」'
       }
     ]
   },
   {
-    path: ['upload', 'filelimit'],
+    path: ['app', 'filelimit'],
     rules: [
       {
-        condition: (cfg) => !getValue<boolean>(cfg, ['upload', 'usefilelimit'], false),
+        condition: (cfg) => !getValue<boolean>(cfg, ['app', 'usefilelimit'], false),
         message: '修改此配置项需要先将「视频上传拦截」打开'
       }
     ]
   },
   {
-    path: ['upload', 'compresstrigger'],
+    path: ['app', 'compresstrigger'],
     rules: [
       {
-        condition: (cfg) => !getValue<boolean>(cfg, ['upload', 'compress'], false),
+        condition: (cfg) => !getValue<boolean>(cfg, ['app', 'compress'], false),
         message: '修改此配置项需要先将「压缩视频」打开'
       }
     ]
   },
   {
-    path: ['upload', 'compressvalue'],
+    path: ['app', 'compressvalue'],
     rules: [
       {
-        condition: (cfg) => !getValue<boolean>(cfg, ['upload', 'compress'], false),
+        condition: (cfg) => !getValue<boolean>(cfg, ['app', 'compress'], false),
         message: '修改此配置项需要先将「压缩视频」打开'
       }
     ]
   },
   {
-    path: ['upload', 'downloadMaxSpeed'],
+    path: ['app', 'downloadMaxSpeed'],
     rules: [
       {
-        condition: (cfg) => !getValue<boolean>(cfg, ['upload', 'downloadThrottle'], false),
+        condition: (cfg) => !getValue<boolean>(cfg, ['app', 'downloadThrottle'], false),
         message: '修改此配置项需要先将「下载限速」打开'
       }
     ]
   },
   {
-    path: ['upload', 'downloadAutoReduce'],
+    path: ['app', 'downloadAutoReduce'],
     rules: [
       {
-        condition: (cfg) => !getValue<boolean>(cfg, ['upload', 'downloadThrottle'], false),
+        condition: (cfg) => !getValue<boolean>(cfg, ['app', 'downloadThrottle'], false),
         message: '修改此配置项需要先将「下载限速」打开'
       }
     ]
   },
   {
-    path: ['upload', 'downloadMinSpeed'],
+    path: ['app', 'downloadMinSpeed'],
     rules: [
       {
-        condition: (cfg) => !getValue<boolean>(cfg, ['upload', 'downloadThrottle'], false),
+        condition: (cfg) => !getValue<boolean>(cfg, ['app', 'downloadThrottle'], false),
         message: '修改此配置项需要先将「下载限速」打开'
       },
       {
-        condition: (cfg) => !getValue<boolean>(cfg, ['upload', 'downloadAutoReduce'], false),
+        condition: (cfg) => !getValue<boolean>(cfg, ['app', 'downloadAutoReduce'], false),
         message: '修改此配置项需要先将「断流自动降速」打开'
       }
     ]
@@ -203,46 +203,46 @@ export const disabledRules: DisabledRule[] = [
 
   // ==================== 请求配置 ====================
   {
-    path: ['request', 'proxy', 'protocol'],
+    path: ['amagi', 'proxy', 'protocol'],
     rules: [
       {
-        condition: (cfg) => !getValue<boolean>(cfg, ['request', 'proxy', 'switch'], false),
+        condition: (cfg) => !getValue<boolean>(cfg, ['amagi', 'proxy', 'switch'], false),
         message: '修改此配置项需要先将「代理开关」打开'
       }
     ]
   },
   {
-    path: ['request', 'proxy', 'host'],
+    path: ['amagi', 'proxy', 'host'],
     rules: [
       {
-        condition: (cfg) => !getValue<boolean>(cfg, ['request', 'proxy', 'switch'], false),
+        condition: (cfg) => !getValue<boolean>(cfg, ['amagi', 'proxy', 'switch'], false),
         message: '修改此配置项需要先将「代理开关」打开'
       }
     ]
   },
   {
-    path: ['request', 'proxy', 'port'],
+    path: ['amagi', 'proxy', 'port'],
     rules: [
       {
-        condition: (cfg) => !getValue<boolean>(cfg, ['request', 'proxy', 'switch'], false),
+        condition: (cfg) => !getValue<boolean>(cfg, ['amagi', 'proxy', 'switch'], false),
         message: '修改此配置项需要先将「代理开关」打开'
       }
     ]
   },
   {
-    path: ['request', 'proxy', 'auth', 'username'],
+    path: ['amagi', 'proxy', 'auth', 'username'],
     rules: [
       {
-        condition: (cfg) => !getValue<boolean>(cfg, ['request', 'proxy', 'switch'], false),
+        condition: (cfg) => !getValue<boolean>(cfg, ['amagi', 'proxy', 'switch'], false),
         message: '修改此配置项需要先将「代理开关」打开'
       }
     ]
   },
   {
-    path: ['request', 'proxy', 'auth', 'password'],
+    path: ['amagi', 'proxy', 'auth', 'password'],
     rules: [
       {
-        condition: (cfg) => !getValue<boolean>(cfg, ['request', 'proxy', 'switch'], false),
+        condition: (cfg) => !getValue<boolean>(cfg, ['amagi', 'proxy', 'switch'], false),
         message: '修改此配置项需要先将「代理开关」打开'
       }
     ]

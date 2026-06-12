@@ -32,7 +32,7 @@ const DouyinPushItemPanel = ({ item, index, list, onChange, device }: DouyinPush
         <Accordion.Trigger>
           <div className="flex flex-1 items-center gap-3">
             <div onClick={(event) => event.stopPropagation()} onPointerDown={(event) => event.stopPropagation()}>
-              <Switch isSelected={item.switch} onChange={(isSelected) => updateItem({ switch: isSelected })}>
+              <Switch aria-label="推送开关" isSelected={item.switch} onChange={(isSelected) => updateItem({ switch: isSelected })}>
                 <Switch.Control>
                   <Switch.Thumb />
                 </Switch.Control>
@@ -56,14 +56,6 @@ const DouyinPushItemPanel = ({ item, index, list, onChange, device }: DouyinPush
           <div className="space-y-4">
             <div className={getPushlistGridClass(device)}>
               <DisabledFieldHint disabled={disabled} device={device} message={disabledMessage}>
-                <TextField fullWidth isDisabled={disabled} value={item.sec_uid} onChange={(value) => updateItem({ sec_uid: value })}>
-                  <Label>sec_uid</Label>
-                  <Input placeholder="选填，会根据抖音号自动获取" />
-                  <Description>用户的 sec_uid，可从分享链接获取。选填，推送时会自动获取</Description>
-                </TextField>
-              </DisabledFieldHint>
-
-              <DisabledFieldHint disabled={disabled} device={device} message={disabledMessage}>
                 <TextField
                   fullWidth
                   isDisabled={disabled}
@@ -74,6 +66,14 @@ const DouyinPushItemPanel = ({ item, index, list, onChange, device }: DouyinPush
                   <Label>抖音号</Label>
                   <Input placeholder="用户的抖音号" />
                   <Description>用户的抖音号（short_id），必填</Description>
+                </TextField>
+              </DisabledFieldHint>
+
+              <DisabledFieldHint disabled={disabled} device={device} message={disabledMessage}>
+                <TextField fullWidth isDisabled={disabled} value={item.sec_uid} onChange={(value) => updateItem({ sec_uid: value })}>
+                  <Label>sec_uid</Label>
+                  <Input placeholder="选填，会根据抖音号自动获取" />
+                  <Description>用户的 sec_uid，可从分享链接获取。选填，推送时会自动获取</Description>
                 </TextField>
               </DisabledFieldHint>
             </div>

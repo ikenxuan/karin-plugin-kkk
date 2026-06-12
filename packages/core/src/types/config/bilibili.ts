@@ -51,6 +51,9 @@ export interface bilibiliConfig {
   /** 视频信息的内容，可选值：'cover'(封面)、'title'(标题)、'author'(作者)、'stats'(视频统计信息)、'desc'(简介)，数组为空则不显示任何内容 */
   displayContent: ('cover' | 'title' | 'author' | 'stats' | 'desc')[]
 
+  /** 视频信息图片中显示弹幕（仅「视频信息返回形式」为图片模式时生效，关闭后不会请求弹幕数据） */
+  showDanmakuInVideoInfo: boolean
+
   /** 弹幕烧录（将弹幕硬编码到视频画面中，需要重新编码视频） */
   burnDanmaku: boolean
 

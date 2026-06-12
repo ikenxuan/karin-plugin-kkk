@@ -84,7 +84,7 @@ type WillBePushList = Record<string, BilibiliPushItem>
 const bilibiliBaseHeaders: downLoadFileOptions['headers'] = {
   ...baseHeaders,
   Referer: 'https://www.bilibili.com',
-  Cookie: Config.cookies.bilibili
+  Cookie: Config.amagi.cookies.bilibili
 }
 
 export class Bilibilipush extends Base {
@@ -774,10 +774,10 @@ export class Bilibilipush extends Base {
                     playUrlData.data.data.dash.audio[0].base_url,
                     data[dynamicId].Dynamic_Data.modules.module_dynamic.major.archive.bvid
                   )
-                  if (Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit) && !Config.upload.compress) {
+                  if (Config.app.usefilelimit && Number(videoSize) > Number(Config.app.filelimit) && !Config.app.compress) {
                     await karin.sendMsg(botId, Contact, [
                       segment.text(
-                        `设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n视频太大了，还是去B站看吧~`
+                        `设定的最大上传大小为 ${Config.app.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n视频太大了，还是去B站看吧~`
                       ),
                       segment.reply(status.messageId)
                     ])
@@ -811,7 +811,7 @@ export class Bilibilipush extends Base {
 
                       const stats = fs.statSync(filePath)
                       const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
-                      if (fileSizeInMB > Config.upload.groupfilevalue) {
+                      if (fileSizeInMB > Config.app.groupfilevalue) {
                         // 使用文件上传
                         await uploadFile(
                           this.e,
@@ -895,7 +895,7 @@ export class Bilibilipush extends Base {
                           logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
                           temp.push({ filepath: filePath, totalBytes: 0 })
                           const videoPath =
-                            Config.upload.videoSendMode === 'base64'
+                            Config.app.videoSendMode === 'base64'
                               ? `base64://${fs.readFileSync(filePath).toString('base64')}`
                               : `file://${filePath}`
                           imgArray.push(segment.video(videoPath))
@@ -915,7 +915,7 @@ export class Bilibilipush extends Base {
                           if (motionPhotoCreated) {
                             temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
                             const motionPhotoCover =
-                              Config.upload.imageSendMode === 'base64'
+                              Config.app.imageSendMode === 'base64'
                                 ? `base64://${fs.readFileSync(motionPhotoCoverPath).toString('base64')}`
                                 : `file://${motionPhotoCoverPath}`
                             imgArray.push(segment.image(motionPhotoCover))

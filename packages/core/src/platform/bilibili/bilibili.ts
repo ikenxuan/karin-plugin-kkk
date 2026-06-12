@@ -76,7 +76,7 @@ export class Bilibili extends Base {
     this.downloadfilename = ''
     this.forceBurnDanmaku = options?.forceBurnDanmaku ?? false
     this.headers!.Referer = 'https://www.bilibili.com/'
-    this.headers!.Cookie = Config.cookies.bilibili
+    this.headers!.Cookie = Config.amagi.cookies.bilibili
   }
 
   async BilibiliHandler(iddata: BilibiliId): Promise<boolean | undefined> {
@@ -135,13 +135,16 @@ export class Bilibili extends Base {
               host_mid: infoData.data.data.owner.mid,
               typeMode: 'strict'
             })
-            // 获取弹幕并统计出现次数最多的几条，用于模板展示
-            const danmakuCid = iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid
-            const danmakuDuration = iddata.p
-              ? (infoData.data.data.pages[iddata.p - 1]?.duration ?? infoData.data.data.duration)
-              : infoData.data.data.duration
-            const infoDanmakuList = await this.fetchVideoDanmakuList(danmakuCid, danmakuDuration)
-            const hotDanmaku = getHotDanmaku(infoDanmakuList, 20)
+            // 获取弹幕并统计出现次数最多的几条，用于模板展示（仅当配置开启时）
+            let hotDanmaku: ReturnType<typeof getHotDanmaku> | undefined
+            if (Config.bilibili.showDanmakuInVideoInfo) {
+              const danmakuCid = iddata.p ? (infoData.data.data.pages[iddata.p - 1]?.cid ?? infoData.data.data.cid) : infoData.data.data.cid
+              const danmakuDuration = iddata.p
+                ? (infoData.data.data.pages[iddata.p - 1]?.duration ?? infoData.data.data.duration)
+                : infoData.data.data.duration
+              const infoDanmakuList = await this.fetchVideoDanmakuList(danmakuCid, danmakuDuration)
+              hotDanmaku = getHotDanmaku(infoDanmakuList, 20)
+            }
             const img = await Render(this.e, 'bilibili/videoInfo', {
               share_url: 'https://b23.tv/' + infoData.data.data.bvid,
               title: infoData.data.data.title,
@@ -265,9 +268,9 @@ export class Bilibili extends Base {
         }
 
         if (Config.bilibili.sendContent.some((content) => content === 'video')) {
-          if (Config.upload.usefilelimit && Number(videoSize) > Number(Config.upload.filelimit) && !Config.upload.compress) {
+          if (Config.app.usefilelimit && Number(videoSize) > Number(Config.app.filelimit) && !Config.app.compress) {
             this.e.reply(
-              `设定的最大上传大小为 ${Config.upload.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n` +
+              `设定的最大上传大小为 ${Config.app.filelimit}MB\n当前解析到的视频大小为 ${Number(videoSize)}MB\n` +
                 '视频太大了，还是去B站看吧~',
               { reply: true }
             )
@@ -462,7 +465,7 @@ export class Bilibili extends Base {
                         logger.mark(`视频文件重命名完成: ${outputPath.split('/').pop()} -> ${filePath.split('/').pop()}`)
                         temp.push({ filepath: filePath, totalBytes: 0 })
                         const videoPath =
-                          Config.upload.videoSendMode === 'base64'
+                          Config.app.videoSendMode === 'base64'
                             ? `base64://${fs.readFileSync(filePath).toString('base64')}`
                             : `file://${filePath}`
                         imgArray.push(segment.video(videoPath))
@@ -483,7 +486,7 @@ export class Bilibili extends Base {
                         if (motionPhotoCreated) {
                           temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
                           const motionPhotoCover =
-                            Config.upload.imageSendMode === 'base64'
+                            Config.app.imageSendMode === 'base64'
                               ? `base64://${fs.readFileSync(motionPhotoCoverPath).toString('base64')}`
                               : `file://${motionPhotoCoverPath}`
                           imgArray.push(segment.image(motionPhotoCover))
@@ -1239,7 +1242,7 @@ export class Bilibili extends Base {
 
             const stats = fs.statSync(filePath)
             const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
-            if (fileSizeInMB > Config.upload.groupfilevalue) {
+            if (fileSizeInMB > Config.app.groupfilevalue) {
               // 使用文件上传
               await uploadFile(this.e, { filepath: filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '', {
                 useGroupFile: true
@@ -1280,7 +1283,7 @@ export class Bilibili extends Base {
               await Common.removeFile(videoFile.filepath, true)
               const stats = fs.statSync(filePath)
               const fileSizeInMB = Number((stats.size / (1024 * 1024)).toFixed(2))
-              if (fileSizeInMB > Config.upload.groupfilevalue) {
+              if (fileSizeInMB > Config.app.groupfilevalue) {
                 await uploadFile(this.e, { filepath: filePath, totalBytes: fileSizeInMB, originTitle: this.downloadfilename }, '', {
                   useGroupFile: true
                 })
@@ -1669,7 +1672,7 @@ export const getvideosize = async (videourl: string, audiourl: string, bvid: str
       headers: {
         ...baseHeaders,
         Referer: `https://www.bilibili.com/video/${bvid}`,
-        Cookie: Config.cookies.bilibili
+        Cookie: Config.amagi.cookies.bilibili
       }
     }).getHeaders()
     const audioheaders = await new Networks({
@@ -1677,7 +1680,7 @@ export const getvideosize = async (videourl: string, audiourl: string, bvid: str
       headers: {
         ...baseHeaders,
         Referer: `https://www.bilibili.com/video/${bvid}`,
-        Cookie: Config.cookies.bilibili
+        Cookie: Config.amagi.cookies.bilibili
       }
     }).getHeaders()
 

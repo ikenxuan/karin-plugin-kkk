@@ -1,3 +1,4 @@
+import { amagiConfig } from './amagi'
 import { appConfig } from './app'
 import { bilibiliConfig } from './bilibili'
 import { cookiesConfig } from './cookies'
@@ -10,22 +11,31 @@ import { xiaohongshuConfig } from './xiaohongshu'
 
 /** 插件配置类型 */
 export interface ConfigType {
+  /** amagi 解析库配置 */
+  amagi: amagiConfig
   /** 插件应用设置 */
   app: appConfig
   /** bilibili 相关设置 */
   bilibili: bilibiliConfig
   /** 抖音相关设置 */
   douyin: douyinConfig
-  /** CK 相关设置 */
-  cookies: cookiesConfig
-  /** 推送列表 */
-  pushlist: pushlistConfig
-  /** 上传相关设置 */
-  upload: uploadConfig
   /** 快手相关设置 */
   kuaishou: kuaishouConfig
   /** 小红书相关设置 */
   xiaohongshu: xiaohongshuConfig
-  /** 解析库请求配置设置 */
-  request: requestConfig
+  /** 推送列表 */
+  pushlist: pushlistConfig
+}
+
+export type {
+  amagiConfig,
+  appConfig,
+  bilibiliConfig,
+  cookiesConfig,
+  douyinConfig,
+  kuaishouConfig,
+  pushlistConfig,
+  requestConfig,
+  uploadConfig,
+  xiaohongshuConfig
 }

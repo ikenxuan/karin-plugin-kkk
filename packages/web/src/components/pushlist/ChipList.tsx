@@ -38,6 +38,7 @@ const ChipList = ({ label, description, items, onAdd, onRemove, disabled = false
       <Label>{label}</Label>
       <div className="flex gap-2">
         <TextField
+          aria-label={`输入${label}`}
           className="flex-1"
           isDisabled={disabled}
           isInvalid={Boolean(error)}

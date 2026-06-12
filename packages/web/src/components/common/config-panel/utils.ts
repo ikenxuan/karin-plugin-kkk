@@ -22,7 +22,7 @@ export const getValue = <T>(source: ConfigType | null, path: ConfigPath, fallbac
 
 export const setValue = (source: ConfigType, path: ConfigPath, value: unknown): ConfigType => {
   const cloned = structuredClone(source)
-  let current: ConfigRecord = cloned as ConfigRecord
+  let current: ConfigRecord = cloned as unknown as ConfigRecord
 
   for (let index = 0; index < path.length - 1; index++) {
     const key = path[index]
