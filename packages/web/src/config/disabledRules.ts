@@ -581,6 +581,19 @@ export const disabledRules: DisabledRule[] = [
     ]
   },
   {
+    path: ['bilibili', 'showDanmakuInVideoInfo'],
+    rules: [
+      {
+        condition: (cfg) => !getValue<boolean>(cfg, ['bilibili', 'switch'], false),
+        message: '修改此配置项需要先将「解析开关」打开'
+      },
+      {
+        condition: (cfg) => getValue<string>(cfg, ['bilibili', 'videoInfoMode'], 'text') === 'text',
+        message: '修改此配置项需要先将「视频信息返回形式」改为「图片模式」'
+      }
+    ]
+  },
+  {
     path: ['bilibili', 'burnDanmaku'],
     rules: [
       {
