@@ -2,6 +2,34 @@
 
 # Changelog
 
+## [2.36.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.35.0...v2.36.0) (2026-06-19)
+
+
+### ✨ 新功能
+
+* **web:** 新增 ConfigDiffOverlay 与 ConfigDiffView 组件，用于配置变更预览 ([43015ac](https://github.com/ikenxuan/karin-plugin-kkk/commit/43015acfe53bc7d88ae4e9ffb6ad63cfef5a97f0))
+
+
+### 🐛 错误修复
+
+* 更新 @heroui/react 和 @heroui/styles 依赖版本，修复潜在兼容性问题 ([1afd730](https://github.com/ikenxuan/karin-plugin-kkk/commit/1afd730f781e9fe19eb65b77571e2a2772e1a5e1))
+* 渲染错误日志模板部分场景下中文字体无法加载 ([648bd10](https://github.com/ikenxuan/karin-plugin-kkk/commit/648bd101aff7b0155c86e67e97afe39a858c1095))
+
+
+### 💄 UI 优化
+
+* **douyin:** 使用官方统计图标 ([7c4cef0](https://github.com/ikenxuan/karin-plugin-kkk/commit/7c4cef0576ffd9abcc3f70a09e1785979fec56f1))
+
+
+### ♻️ 代码重构
+
+* 优化 Switch 和 Checkbox 组件的渲染结构，提升可读性 ([1afd730](https://github.com/ikenxuan/karin-plugin-kkk/commit/1afd730f781e9fe19eb65b77571e2a2772e1a5e1))
+
+
+### 📦 依赖更新
+
+* 更新 ([cf30ff8](https://github.com/ikenxuan/karin-plugin-kkk/commit/cf30ff8a7f004bd63b2a54982f44b0897417428b))
+
 ## [2.35.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.34.0...v2.35.0) (2026-06-12)
 
 
