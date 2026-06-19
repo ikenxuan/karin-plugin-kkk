@@ -13,8 +13,8 @@ import {
   TextField,
   Tooltip
 } from '@heroui/react'
-import { Info } from 'lucide-react'
-import { Suspense, lazy, type ReactNode } from 'react'
+import { Eye, EyeOff, Info } from 'lucide-react'
+import { Suspense, lazy, useState, type ComponentProps, type ReactNode } from 'react'
 
 import { getDisabledTooltip } from '../../../config/disabledRules'
 import type { ConfigPanelLayoutClasses } from '../../../styles/desktopConfigPanel'
@@ -24,6 +24,31 @@ import type { ConfigDescription, ConfigFieldRenderers, ConfigHelp, ConfigPath, D
 import { getValue, includesValue, isConfigHelp, toNumber, toPathKey } from './utils'
 
 const CronEditor = lazy(() => import('../../pushlist/CronEditor'))
+
+type PasswordInputProps = ComponentProps<typeof Input>
+
+const PasswordInput = ({ className, disabled, ...props }: PasswordInputProps) => {
+  const [isVisible, setIsVisible] = useState(false)
+  const toggleLabel = isVisible ? '隐藏密码' : '显示密码'
+
+  return (
+    <div className="relative w-full">
+      <Input {...props} className={`w-full pr-10 ${className ?? ''}`} type={isVisible ? 'text' : 'password'} />
+      <Button
+        isIconOnly
+        aria-label={toggleLabel}
+        className="absolute right-1 top-1/2 -translate-y-1/2"
+        isDisabled={disabled}
+        size="sm"
+        type="button"
+        variant="tertiary"
+        onPress={() => setIsVisible((visible) => !visible)}
+      >
+        {isVisible ? <EyeOff className="size-4" aria-hidden="true" /> : <Eye className="size-4" aria-hidden="true" />}
+      </Button>
+    </div>
+  )
+}
 
 interface CreateConfigFieldRenderersArgs {
   config: ConfigType
@@ -153,13 +178,24 @@ export const createConfigFieldRenderers = ({
         }}
       >
         <Label className="font-semibold">{label}</Label>
-        <Input
-          max={options?.max}
-          min={options?.min}
-          pattern={options?.pattern}
-          placeholder={options?.placeholder || label}
-          step={options?.step}
-        />
+        {type === 'password' ? (
+          <PasswordInput
+            disabled={disabled}
+            max={options?.max}
+            min={options?.min}
+            pattern={options?.pattern}
+            placeholder={options?.placeholder || label}
+            step={options?.step}
+          />
+        ) : (
+          <Input
+            max={options?.max}
+            min={options?.min}
+            pattern={options?.pattern}
+            placeholder={options?.placeholder || label}
+            step={options?.step}
+          />
+        )}
         {error ? <FieldError>{error}</FieldError> : renderHelp(help)}
       </TextField>
     )
