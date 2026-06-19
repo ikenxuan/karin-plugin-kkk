@@ -3,17 +3,18 @@
  * 配置项直接在前端硬编码，不依赖 Karin schema 数据。
  */
 
-import { Button, Description, Form, Spinner, Tabs, Tooltip, toast } from '@heroui/react'
+import { Button, Description, Form, Spinner, Tabs, Tooltip, toast, useOverlayState } from '@heroui/react'
 import { useMemoizedFn, useRequest, useSetState, useUpdateEffect } from 'ahooks'
 import equal from 'fast-deep-equal'
 import gsap from 'gsap'
-import { RotateCcw, Save } from 'lucide-react'
+import { GitCompare, RotateCcw, Save } from 'lucide-react'
 import { useEffect, useMemo, useRef, type FormEvent, type Key } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import { getConfig, saveConfig } from '../../api/config'
 import type { ConfigType } from '../../types/config'
 import { fadeInFrom, fadeInTo, getAnimationDuration, getStaggerDelay } from '../../utils/animations'
+import { ConfigDiffOverlay } from './config-panel/ConfigDiffOverlay'
 import { createConfigFieldRenderers } from './config-panel/fieldRenderers'
 import { getLayoutClasses } from './config-panel/layout'
 import { configFiles } from './config-panel/options'
@@ -29,6 +30,7 @@ interface ConfigPanelProps {
 const ConfigPanel = ({ device = 'desktop' }: ConfigPanelProps) => {
   const panelRef = useRef<HTMLDivElement>(null)
   const [searchParams, setSearchParams] = useSearchParams()
+  const diffState = useOverlayState()
 
   // 从 URL 查询参数获取当前配置文件，默认为 'amagi'
   const fileParam = searchParams.get('file')
@@ -208,6 +210,17 @@ const ConfigPanel = ({ device = 'desktop' }: ConfigPanelProps) => {
             重新读取
           </Tooltip.Content>
         </Tooltip>
+        <Tooltip delay={0}>
+          <Tooltip.Trigger aria-label="查看配置变更">
+            <Button isIconOnly size={controlSize} variant="secondary" isDisabled={!hasChanges} onPress={diffState.open}>
+              <GitCompare size={16} aria-hidden="true" />
+            </Button>
+          </Tooltip.Trigger>
+          <Tooltip.Content showArrow placement="bottom">
+            <Tooltip.Arrow />
+            查看变更
+          </Tooltip.Content>
+        </Tooltip>
         <Button size={controlSize} isDisabled={!saveActionActive} isPending={saving} onPress={handleSave} variant="primary">
           <Save size={16} aria-hidden="true" />
           <span>保存</span>
@@ -218,6 +231,13 @@ const ConfigPanel = ({ device = 'desktop' }: ConfigPanelProps) => {
 
   return (
     <div ref={panelRef} className={classes.root}>
+      <ConfigDiffOverlay
+        device={device}
+        original={savedConfig}
+        current={config}
+        isOpen={diffState.isOpen}
+        onOpenChange={diffState.setOpen}
+      />
       <div className={classes.header}>
         <div className={classes.headerCopy}>
           <h2 className="text-2xl font-bold">配置管理</h2>

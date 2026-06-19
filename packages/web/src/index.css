@@ -13,3 +13,109 @@
     color: var(--foreground);
   }
 }
+
+/*
+ * jsondiffpatch GitHub 风格 diff 主题。
+ * 亮色模式使用 GitHub 经典 diff 背景色，深色模式使用 GitHub dark 的暗色调。
+ * 修改项的红/绿两个值紧贴在一起，组成一个完整的圆角矩形，不使用删除线。
+ */
+html .jsondiffpatch-delta,
+html .jsondiffpatch-delta pre {
+  color: var(--foreground);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* 新增 / 修改后 */
+html .jsondiffpatch-added .jsondiffpatch-property-name,
+html .jsondiffpatch-added .jsondiffpatch-value pre,
+html .jsondiffpatch-modified .jsondiffpatch-right-value pre,
+html .jsondiffpatch-textdiff-added {
+  background: #dafbe1;
+  color: #1a7f37;
+  text-decoration: none;
+}
+
+/* 删除 / 修改前 */
+html .jsondiffpatch-deleted .jsondiffpatch-property-name,
+html .jsondiffpatch-deleted pre,
+html .jsondiffpatch-modified .jsondiffpatch-left-value pre,
+html .jsondiffpatch-textdiff-deleted {
+  background: #ffebe9;
+  color: #cf222e;
+  text-decoration: none;
+}
+
+/* 单个新增/删除值做成圆角块 */
+html .jsondiffpatch-added .jsondiffpatch-value pre,
+html .jsondiffpatch-deleted .jsondiffpatch-value pre,
+html .jsondiffpatch-added .jsondiffpatch-property-name,
+html .jsondiffpatch-deleted .jsondiffpatch-property-name,
+html .jsondiffpatch-textdiff-added,
+html .jsondiffpatch-textdiff-deleted,
+html .jsondiffpatch-moved .jsondiffpatch-moved-destination {
+  border-radius: 4px;
+}
+
+/* 修改项：红绿两个值贴在一起，组成一个整体圆角矩形，文字与边框留有空隙 */
+html .jsondiffpatch-modified .jsondiffpatch-property-name {
+  background: transparent;
+  color: var(--foreground);
+}
+
+html .jsondiffpatch-modified .jsondiffpatch-value {
+  display: inline-block;
+  margin: 0;
+}
+
+html .jsondiffpatch-modified .jsondiffpatch-left-value pre,
+html .jsondiffpatch-modified .jsondiffpatch-right-value pre {
+  border-radius: 0;
+  margin: 0;
+  padding: 0 4px;
+}
+
+html .jsondiffpatch-modified .jsondiffpatch-left-value pre {
+  border-radius: 4px 0 0 4px;
+}
+
+html .jsondiffpatch-modified .jsondiffpatch-right-value pre {
+  border-radius: 0 4px 4px 0;
+}
+
+html .jsondiffpatch-unchanged,
+html .jsondiffpatch-movedestination {
+  color: var(--muted);
+}
+
+html .jsondiffpatch-moved .jsondiffpatch-moved-destination {
+  background: #fff8c5;
+  color: #7d4e00;
+}
+
+html .jsondiffpatch-error {
+  background: var(--danger);
+  color: var(--danger-foreground);
+}
+
+/* 深色模式 */
+html.dark .jsondiffpatch-added .jsondiffpatch-property-name,
+html.dark .jsondiffpatch-added .jsondiffpatch-value pre,
+html.dark .jsondiffpatch-modified .jsondiffpatch-right-value pre,
+html.dark .jsondiffpatch-textdiff-added {
+  background: #0f2d1c;
+  color: #3fb950;
+}
+
+html.dark .jsondiffpatch-deleted .jsondiffpatch-property-name,
+html.dark .jsondiffpatch-deleted pre,
+html.dark .jsondiffpatch-modified .jsondiffpatch-left-value pre,
+html.dark .jsondiffpatch-textdiff-deleted {
+  background: #3c1518;
+  color: #f85149;
+}
+
+html.dark .jsondiffpatch-moved .jsondiffpatch-moved-destination {
+  background: #341a00;
+  color: #d29922;
+}
