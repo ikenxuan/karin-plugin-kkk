@@ -1,9 +1,10 @@
-import { Eye, FileVideo, Heart, MapPin, Monitor, ShoppingBag, UserPlus, Users } from 'lucide-react'
+import { Eye, FileVideo, MapPin, Monitor, ShoppingBag, UserPlus, Users } from 'lucide-react'
 import React from 'react'
 
 import type { DouyinLiveProps } from '../../../types/platforms/douyin'
 import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
+import { DouyinLikeIcon } from './Icons'
 
 const coverMaskStyle: React.CSSProperties = {
   maskImage: 'linear-gradient(to bottom, transparent 0%, black 0, black 28%, transparent 100%)',
@@ -102,7 +103,7 @@ const InfoSection: React.FC<{ data: DouyinLiveProps['data'] }> = ({ data }) => {
           {data.total_viewers}观看
         </span>
         <span className="flex items-center gap-1.5">
-          <Heart size={28} className="text-foreground/20" />
+          <DouyinLikeIcon size={28} />
           {data.like_count}点赞
         </span>
         {data.resolution && (
@@ -175,7 +176,7 @@ const BottomSection: React.FC<{ data: DouyinLiveProps['data'] }> = ({ data }) =>
           </div>
           <div className="flex flex-col gap-2 px-6 py-3 rounded-2xl bg-default/45">
             <div className="flex items-center gap-2">
-              <Heart size={28} />
+              <DouyinLikeIcon size={28} />
               <span className="text-foreground/40">获赞</span>
             </div>
             <span className="font-medium text-4xl select-text">{data.total_favorited}</span>

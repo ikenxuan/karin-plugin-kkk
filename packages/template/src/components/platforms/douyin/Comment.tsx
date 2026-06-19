@@ -2,13 +2,14 @@ import { createRichTextDocument, renderRichTextToReact } from '@kkk/richtext'
 import { PlayIcon } from '@phosphor-icons/react'
 import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
-import { CircleEllipsis, Heart, MessageCircle, Search, Share2, Star } from 'lucide-react'
+import { Search } from 'lucide-react'
 import React, { type ReactNode } from 'react'
 
 import type { DouyinCommentProps, DouyinSubComment } from '../../../types/platforms/douyin'
 import { cn } from '../../../utils/cn'
 import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
+import { DouyinCommentIcon, DouyinFavoriteIcon, DouyinLikeIcon, DouyinMoreIcon, DouyinShareIcon } from './Icons'
 
 const douyinMentionClassName = 'text-[#04498d] dark:text-[#face15]'
 const douyinSearchKeywordClassName = 'font-medium text-[#04498d] dark:text-[#face15]'
@@ -131,21 +132,21 @@ const VideoInfoHeader: React.FC<Omit<DouyinCommentProps['data'], 'CommentsData'>
           {/* 数据统计 */}
           <div className="grid grid-cols-2 gap-8">
             <div className="flex items-center gap-4 text-foreground/50">
-              <Heart size={48} />
+              <DouyinLikeIcon size={48} />
               <span className="text-5xl font-medium text-foreground/90">{formatDouyinCommentDiggCount(props.Statistics.digg_count)}</span>
             </div>
             <div className="flex items-center gap-4 text-foreground/50">
-              <MessageCircle size={48} />
+              <DouyinCommentIcon size={48} />
               <span className="text-5xl font-medium text-foreground/90">
                 {formatDouyinCommentDiggCount(props.Statistics.comment_count)}
               </span>
             </div>
             <div className="flex items-center gap-4 text-foreground/50">
-              <Share2 size={48} />
+              <DouyinShareIcon size={48} />
               <span className="text-5xl font-medium text-foreground/90">{formatDouyinCommentDiggCount(props.Statistics.share_count)}</span>
             </div>
             <div className="flex items-center gap-4 text-foreground/50">
-              <Star size={48} />
+              <DouyinFavoriteIcon size={48} />
               <span className="text-5xl font-medium text-foreground/90">
                 {formatDouyinCommentDiggCount(props.Statistics.collect_count)}
               </span>
@@ -292,7 +293,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
           <div className="flex flex-col mt-6 min-w-0">
             <div className="flex items-center h-12.5">
               <div className="flex items-center text-muted">
-                <CircleEllipsis size={45} className="mr-5" />
+                <DouyinMoreIcon size={45} className="mr-5" />
                 <span className="text-4xl font-medium tracking-wide">另外 {reply.hiddenCount} 条回复</span>
               </div>
             </div>
@@ -396,7 +397,7 @@ const ReplyItemComponent: React.FC<{ reply: ReplyNode; depth?: number; isLast?: 
                   <span className="text-4xl">{formatDouyinCommentTime(reply.create_time)}</span>
                   <span className="text-4xl">{reply.ip_label}</span>
                   <div className="flex gap-2 items-center">
-                    <Heart size={40} className="text-muted" />
+                    <DouyinLikeIcon size={40} />
                     <span className="text-4xl select-text">{formatDouyinCommentDiggCount(reply.digg_count)}</span>
                   </div>
                 </div>
@@ -496,7 +497,7 @@ const CommentItemComponent: React.FC<DouyinCommentProps['data']['CommentsData'][
                 <span className="text-4xl">{formatDouyinCommentTime(props.create_time)}</span>
                 <span className="text-4xl">{props.ip_label}</span>
                 <div className="flex gap-2 items-center transition-colors cursor-pointer">
-                  <Heart size={44} className="text-muted" />
+                  <DouyinLikeIcon size={44} />
                   <span className="text-4xl select-text">{formatDouyinCommentDiggCount(props.digg_count)}</span>
                 </div>
               </div>

@@ -1,14 +1,15 @@
 import { formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import React from 'react'
-import { AiFillHeart, AiFillPushpin, AiFillStar, AiOutlineVideoCamera } from 'react-icons/ai'
+import { AiFillPushpin, AiOutlineVideoCamera } from 'react-icons/ai'
 import { BiImage } from 'react-icons/bi'
-import { FaCommentDots, FaMusic, FaTiktok, FaUserGroup } from 'react-icons/fa6'
+import { FaMusic, FaTiktok, FaUserGroup } from 'react-icons/fa6'
 import { MdLightbulbOutline, MdLocationOn } from 'react-icons/md'
-import { RiShareForwardFill, RiUserFollowLine, RiVerifiedBadgeFill } from 'react-icons/ri'
+import { RiUserFollowLine, RiVerifiedBadgeFill } from 'react-icons/ri'
 
 import type { DouyinUserVideoListProps } from '../../../types/platforms/douyin/UserVideoList'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
+import { DouyinCommentIcon, DouyinFavoriteIcon, DouyinLikeIcon, DouyinShareIcon } from './Icons'
 
 /**
  * 格式化数字显示 (使用中文单位：万、亿)
@@ -98,19 +99,19 @@ const VideoCard: React.FC<{ video: DouyinUserVideoListProps['data']['videos'][nu
         <div className="mt-auto">
           <div className="grid grid-cols-2 gap-3 text-3xl">
             <div className="flex items-center gap-2 text-foreground/70">
-              <AiFillHeart size={34} />
+              <DouyinLikeIcon size={34} />
               <span>{formatCount(video.statistics.like_count)}</span>
             </div>
             <div className="flex items-center gap-2 text-foreground/70">
-              <FaCommentDots size={34} />
+              <DouyinCommentIcon size={34} />
               <span>{formatCount(video.statistics.comment_count)}</span>
             </div>
             <div className="flex items-center gap-2 text-foreground/70">
-              <AiFillStar size={34} />
+              <DouyinFavoriteIcon size={34} />
               <span>{formatCount(video.statistics.collect_count)}</span>
             </div>
             <div className="flex items-center gap-2 text-foreground/70">
-              <RiShareForwardFill size={34} />
+              <DouyinShareIcon size={34} />
               <span>{formatCount(video.statistics.share_count)}</span>
             </div>
           </div>
@@ -177,7 +178,7 @@ export const DouyinUserVideoList: React.FC<DouyinUserVideoListProps> = (prpos) =
                     <span className="font-medium text-4xl text-foreground"> {formatCount(prpos.data.user.follower_count)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <AiFillHeart size={28} className="text-muted" />
+                    <DouyinLikeIcon size={28} />
                     <span className="text-muted">获赞</span>
                     <span className="font-medium text-4xl  text-foreground"> {formatCount(prpos.data.user.total_favorited)}</span>
                   </div>

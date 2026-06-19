@@ -38,37 +38,6 @@
   @import 'highlight.js/styles/github-dark.css';
 }
 
-/* 全局主题变量 */
-:root {
-  /* 互动相关颜色 */
-  --heroui-like: #ff6b6b;
-  /* 点赞/喜欢 - 温暖的红色 */
-  --heroui-comment: #4dabf7;
-  /* 评论 - 友好的蓝色 */
-  --heroui-share: #51cf66;
-  /* 分享 - 积极的绿色 */
-  --heroui-view: #845ef7;
-  /* 观看/浏览 - 紫色 */
-  --heroui-follow: #ff8cc8;
-  /* 关注/粉丝 - 粉色 */
-
-  /* 状态相关颜色 */
-  --heroui-live: #ff6b35;
-  /* 直播 - 橙红色 */
-  --heroui-time: #868e96;
-  /* 时间 - 中性灰色 */
-  --heroui-tag: #ffd43b;
-  /* 标签/分类 - 黄色 */
-  --heroui-badge: #9775fa;
-  /* 徽章 - 紫色 */
-  --heroui-coin: #f59e0b;
-
-  /* 平台特色颜色增强 */
-  --heroui-bilibili-pink: #fb7299;
-  --heroui-douyin-cyan: #25f4ee;
-  --heroui-vip-gold: #ffb700;
-}
-
 /* 全局主题工具类 */
 @layer utilities {
   /* 主题背景和文本 */

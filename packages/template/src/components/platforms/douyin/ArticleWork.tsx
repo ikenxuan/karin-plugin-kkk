@@ -1,11 +1,12 @@
 import { format } from 'date-fns'
-import { Bookmark, Clock, Eye, Hash, Heart, Maximize, MessageCircle, Share2, Users } from 'lucide-react'
+import { Clock, Eye, Hash, Maximize, Users } from 'lucide-react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
 import type { DouyinArticleWorkProps } from '../../../types/platforms/douyin'
 import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
+import { DouyinCommentIcon, DouyinFavoriteIcon, DouyinLikeIcon, DouyinShareIcon } from './Icons'
 
 /**
  * 抖音Logo头部组件
@@ -107,22 +108,22 @@ const InfoSection: React.FC<DouyinArticleWorkProps> = (props) => {
     <div className="flex flex-col px-16 py-5">
       <div className="flex items-center gap-6 text-5xl text-muted font-light mb-2.5 select-text">
         <div className="flex gap-2 items-center">
-          <Heart className="w-11 h-11 text-like" />
+          <DouyinLikeIcon size={44} />
           <span>{props.data.dianzan}点赞</span>
         </div>
         <span>·</span>
         <div className="flex gap-2 items-center">
-          <MessageCircle className="w-11 h-11 text-comment" />
+          <DouyinCommentIcon size={44} />
           <span>{props.data.pinglun}评论</span>
         </div>
         <span>·</span>
         <div className="flex gap-2 items-center">
-          <Bookmark className="w-11 h-11" />
+          <DouyinFavoriteIcon size={44} />
           <span>{props.data.shouchang}收藏</span>
         </div>
         <span>·</span>
         <div className="flex gap-2 items-center">
-          <Share2 className="w-11 h-11 text-success" />
+          <DouyinShareIcon size={44} />
           <span>{props.data.share}分享</span>
         </div>
       </div>
@@ -163,7 +164,7 @@ const UserInfoSection: React.FC<DouyinArticleWorkProps> = (props) => {
       <div className="text-3xl flex gap-6 items-center text-foreground/70">
         <div className="flex flex-col gap-1 items-start px-6 py-3 rounded-2xl bg-surface">
           <div className="flex gap-1 items-center">
-            <Heart className="w-7 h-7 text-like" />
+            <DouyinLikeIcon size={28} />
             <span className="text-muted">获赞</span>
           </div>
           <div className="w-full h-px bg-border" />

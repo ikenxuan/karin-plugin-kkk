@@ -1,13 +1,14 @@
-import { Clapperboard, Hash, Heart, Radio, Sparkles, UserPlus, UsersRound } from 'lucide-react'
+import { Clapperboard, Hash, Radio, UserPlus, UsersRound } from 'lucide-react'
 import React from 'react'
 
 import type { DouyinUserListProps } from '../../../types/platforms/douyin/userlist'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
+import { DouyinLikeIcon, DouyinRecommendIcon } from './Icons'
 
 const pushTypeConfig: Record<string, { label: string; color: string; icon: React.ComponentType<any> }> = {
   post: { label: '作品更新', color: 'bg-accent/5 text-accent/80 border-accent/12', icon: Clapperboard },
-  favorite: { label: '喜欢列表', color: 'bg-[#d94f50]/5 text-[#b04546] border-[#d94f50]/12', icon: Heart },
-  recommend: { label: '推荐列表', color: 'bg-[#c9943a]/5 text-[#a07d30] border-[#c9943a]/12', icon: Sparkles },
+  favorite: { label: '喜欢列表', color: 'bg-[#d94f50]/5 text-[#b04546] border-[#d94f50]/12', icon: DouyinLikeIcon },
+  recommend: { label: '推荐列表', color: 'bg-[#c9943a]/5 text-[#a07d30] border-[#c9943a]/12', icon: DouyinRecommendIcon },
   live: { label: '直播状态', color: 'bg-[#3aa876]/5 text-[#2e8a5e] border-[#3aa876]/12', icon: Radio }
 }
 
@@ -96,7 +97,7 @@ const DouyinUserItem: React.FC<DouyinUserListProps['data']['renderOpt'][number]>
           <div className="flex-1 flex flex-col gap-2">
             {[
               { icon: UsersRound, value: props.fans, label: '粉丝' },
-              { icon: Heart, value: props.total_favorited, label: '获赞' },
+              { icon: DouyinLikeIcon, value: props.total_favorited, label: '获赞' },
               { icon: UserPlus, value: props.following_count, label: '关注' }
             ].map((item, index) => {
               const StatIcon = item.icon

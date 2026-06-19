@@ -1,12 +1,8 @@
 import { renderRichTextToReact } from '@kkk/richtext'
 import {
-  BookmarkIcon,
-  ChatIcon,
-  HeartIcon,
   MapPinIcon,
   MusicNoteIcon,
   PlayIcon,
-  ShareFatIcon,
   UserPlusIcon,
   UsersIcon,
   UsersThreeIcon
@@ -20,6 +16,7 @@ import type { DouyinVideoWorkProps } from '../../../types/platforms/douyin/video
 import { cn } from '../../../utils/cn'
 import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
+import { DouyinCommentIcon, DouyinFavoriteIcon, DouyinLikeIcon, DouyinShareIcon } from './Icons'
 
 type Props = Omit<DouyinVideoWorkProps, 'templateType' | 'templateName'>
 
@@ -187,10 +184,10 @@ const DouyinDynamicStatus: React.FC<Props> = (props) => {
   const { dianzan, pinglun, shouchang, share, ip_location, suggest_word } = props.data
   const renderTime = format(new Date(), 'yyyy-MM-dd HH:mm:ss')
   const stats = [
-    { icon: HeartIcon, value: dianzan, label: '点赞' },
-    { icon: ChatIcon, value: pinglun, label: '评论' },
-    { icon: BookmarkIcon, value: shouchang, label: '收藏' },
-    { icon: ShareFatIcon, value: share, label: '分享' }
+    { icon: DouyinLikeIcon, value: dianzan, label: '点赞' },
+    { icon: DouyinCommentIcon, value: pinglun, label: '评论' },
+    { icon: DouyinFavoriteIcon, value: shouchang, label: '收藏' },
+    { icon: DouyinShareIcon, value: share, label: '分享' }
   ]
 
   return (
@@ -202,7 +199,7 @@ const DouyinDynamicStatus: React.FC<Props> = (props) => {
             <React.Fragment key={stat.label}>
               {idx > 0 && <span>·</span>}
               <div className="flex gap-2 items-end">
-                <Icon size={50} weight="fill" className="mt-2" />
+                <Icon size={46} weight="fill" className="mt-2" />
                 <span className="font-medium">{stat.value}</span>
                 <span className="text-3xl font-light">{stat.label}</span>
               </div>
@@ -307,7 +304,7 @@ const DouyinCoCreatorList: React.FC<Props> = (props) => {
 const DouyinDynamicFooter: React.FC<Props> = (props) => {
   const { avater_url, username, 抖音号, 获赞, 关注, 粉丝, share_url, useDarkTheme } = props.data
   const stats = [
-    { icon: HeartIcon, iconSize: 36, label: '获赞', value: 获赞 },
+    { icon: DouyinLikeIcon, iconSize: 36, label: '获赞', value: 获赞 },
     { icon: UserPlusIcon, iconSize: 36, label: '关注', value: 关注 },
     { icon: UsersThreeIcon, iconSize: 36, label: '粉丝', value: 粉丝 }
   ]

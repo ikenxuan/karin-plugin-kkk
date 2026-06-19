@@ -1,8 +1,8 @@
-import { Heart, MessageCircle, Share2, Star } from 'lucide-react'
 import React, { useMemo } from 'react'
 
 import { DefaultLayout } from '../../../components/layouts/DefaultLayout'
 import type { DouyinVideoInfoProps } from '../../../types/platforms/douyin/videoInfo'
+import { DouyinCommentIcon, DouyinFavoriteIcon, DouyinLikeIcon, DouyinShareIcon } from './Icons'
 
 const formatNumber = (num: number): string => {
   if (num >= 100000000) return `${(num / 100000000).toFixed(1)}亿`
@@ -114,10 +114,10 @@ export const DouyinVideoInfo: React.FC<DouyinVideoInfoProps> = React.memo((props
 
             {/* 数据统计 */}
             <div className="flex items-center gap-14 shrink-0">
-              <StatItem icon={<Heart size={48} />} value={props.data.statistics.digg_count} />
-              <StatItem icon={<MessageCircle size={48} />} value={props.data.statistics.comment_count} />
-              <StatItem icon={<Star size={48} />} value={props.data.statistics.collect_count} />
-              <StatItem icon={<Share2 size={48} />} value={props.data.statistics.share_count} />
+              <StatItem icon={<DouyinLikeIcon size={48} />} value={props.data.statistics.digg_count} />
+              <StatItem icon={<DouyinCommentIcon size={48} />} value={props.data.statistics.comment_count} />
+              <StatItem icon={<DouyinFavoriteIcon size={48} />} value={props.data.statistics.collect_count} />
+              <StatItem icon={<DouyinShareIcon size={48} />} value={props.data.statistics.share_count} />
             </div>
           </div>
 

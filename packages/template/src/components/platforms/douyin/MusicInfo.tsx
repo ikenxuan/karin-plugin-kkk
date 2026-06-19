@@ -1,4 +1,4 @@
-import { Hash, Heart, Maximize, Music, QrCode, UserPlus, Users } from 'lucide-react'
+import { Hash, Maximize, Music, QrCode, UserPlus, Users } from 'lucide-react'
 import React from 'react'
 
 import type {
@@ -10,6 +10,7 @@ import type {
 } from '../../../types/platforms/douyin/musicinfo'
 import { generateQRCode } from '../../../utils/QRcode'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
+import { DouyinLikeIcon } from './Icons'
 
 /**
  * 抖音Logo头部组件
@@ -104,7 +105,7 @@ const MusicAuthorInfoSection: React.FC<MusicAuthorInfoProps> = ({
           <span>ID: {userShortId}</span>
         </div>
         <div className="flex gap-2 items-center">
-          <Heart className="w-8 h-8 text-like" />
+          <DouyinLikeIcon size={32} />
           <span>获赞: {totalFavorited}</span>
         </div>
         <div className="flex gap-2 items-center">
