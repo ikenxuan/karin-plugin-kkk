@@ -33,9 +33,11 @@ const DouyinPushItemPanel = ({ item, index, list, onChange, device }: DouyinPush
           <div className="flex flex-1 items-center gap-3">
             <div onClick={(event) => event.stopPropagation()} onPointerDown={(event) => event.stopPropagation()}>
               <Switch aria-label="推送开关" isSelected={item.switch} onChange={(isSelected) => updateItem({ switch: isSelected })}>
-                <Switch.Control>
-                  <Switch.Thumb />
-                </Switch.Control>
+                <Switch.Content>
+                  <Switch.Control>
+                    <Switch.Thumb />
+                  </Switch.Control>
+                </Switch.Content>
               </Switch>
             </div>
             <div className="flex flex-col gap-1">

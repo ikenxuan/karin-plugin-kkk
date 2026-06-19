@@ -210,33 +210,33 @@ const CronEditor = ({ value, onChange, disabled = false, device = 'desktop' }: C
           <Description className="mb-3">选择任务在每小时内的执行方式</Description>
           <div className="space-y-3">
             <Radio value="every">
-              <Radio.Control>
-                <Radio.Indicator />
-              </Radio.Control>
               <Radio.Content>
-                <Label>每分钟</Label>
-                <Description>每分钟执行一次（共 60 次/小时）</Description>
+                <Radio.Control>
+                  <Radio.Indicator />
+                </Radio.Control>
+                每分钟
               </Radio.Content>
+              <Description>每分钟执行一次（共 60 次/小时）</Description>
             </Radio>
 
             <Radio value="interval">
-              <Radio.Control>
-                <Radio.Indicator />
-              </Radio.Control>
               <Radio.Content>
-                <Label>间隔执行</Label>
-                <Description>按固定间隔分钟数执行</Description>
+                <Radio.Control>
+                  <Radio.Indicator />
+                </Radio.Control>
+                间隔执行
               </Radio.Content>
+              <Description>按固定间隔分钟数执行</Description>
             </Radio>
 
             <Radio value="specific">
-              <Radio.Control>
-                <Radio.Indicator />
-              </Radio.Control>
               <Radio.Content>
-                <Label>指定分钟</Label>
-                <Description>选择特定的分钟数执行</Description>
+                <Radio.Control>
+                  <Radio.Indicator />
+                </Radio.Control>
+                指定分钟
               </Radio.Content>
+              <Description>选择特定的分钟数执行</Description>
             </Radio>
           </div>
         </RadioGroup>
@@ -292,33 +292,33 @@ const CronEditor = ({ value, onChange, disabled = false, device = 'desktop' }: C
           <Description className="mb-3">选择任务在每天内的执行方式</Description>
           <div className="space-y-3">
             <Radio value="every">
-              <Radio.Control>
-                <Radio.Indicator />
-              </Radio.Control>
               <Radio.Content>
-                <Label>每小时</Label>
-                <Description>每小时执行一次（共 24 次/天）</Description>
+                <Radio.Control>
+                  <Radio.Indicator />
+                </Radio.Control>
+                每小时
               </Radio.Content>
+              <Description>每小时执行一次（共 24 次/天）</Description>
             </Radio>
 
             <Radio value="interval">
-              <Radio.Control>
-                <Radio.Indicator />
-              </Radio.Control>
               <Radio.Content>
-                <Label>间隔执行</Label>
-                <Description>按固定间隔小时数执行</Description>
+                <Radio.Control>
+                  <Radio.Indicator />
+                </Radio.Control>
+                间隔执行
               </Radio.Content>
+              <Description>按固定间隔小时数执行</Description>
             </Radio>
 
             <Radio value="specific">
-              <Radio.Control>
-                <Radio.Indicator />
-              </Radio.Control>
               <Radio.Content>
-                <Label>指定小时</Label>
-                <Description>选择特定的小时执行</Description>
+                <Radio.Control>
+                  <Radio.Indicator />
+                </Radio.Control>
+                指定小时
               </Radio.Content>
+              <Description>选择特定的小时执行</Description>
             </Radio>
           </div>
         </RadioGroup>
@@ -374,33 +374,33 @@ const CronEditor = ({ value, onChange, disabled = false, device = 'desktop' }: C
           <Description className="mb-3">选择任务在每月内的执行方式</Description>
           <div className="space-y-3">
             <Radio value="every">
-              <Radio.Control>
-                <Radio.Indicator />
-              </Radio.Control>
               <Radio.Content>
-                <Label>每天</Label>
-                <Description>每天执行一次</Description>
+                <Radio.Control>
+                  <Radio.Indicator />
+                </Radio.Control>
+                每天
               </Radio.Content>
+              <Description>每天执行一次</Description>
             </Radio>
 
             <Radio value="interval">
-              <Radio.Control>
-                <Radio.Indicator />
-              </Radio.Control>
               <Radio.Content>
-                <Label>间隔执行</Label>
-                <Description>按固定间隔天数执行</Description>
+                <Radio.Control>
+                  <Radio.Indicator />
+                </Radio.Control>
+                间隔执行
               </Radio.Content>
+              <Description>按固定间隔天数执行</Description>
             </Radio>
 
             <Radio value="specific">
-              <Radio.Control>
-                <Radio.Indicator />
-              </Radio.Control>
               <Radio.Content>
-                <Label>指定日期</Label>
-                <Description>选择特定的日期执行</Description>
+                <Radio.Control>
+                  <Radio.Indicator />
+                </Radio.Control>
+                指定日期
               </Radio.Content>
+              <Description>选择特定的日期执行</Description>
             </Radio>
           </div>
         </RadioGroup>
@@ -456,23 +456,23 @@ const CronEditor = ({ value, onChange, disabled = false, device = 'desktop' }: C
           <Description className="mb-3">选择任务在每周内的执行方式</Description>
           <div className="space-y-3">
             <Radio value="every">
-              <Radio.Control>
-                <Radio.Indicator />
-              </Radio.Control>
               <Radio.Content>
-                <Label>每周</Label>
-                <Description>每天都执行</Description>
+                <Radio.Control>
+                  <Radio.Indicator />
+                </Radio.Control>
+                每周
               </Radio.Content>
+              <Description>每天都执行</Description>
             </Radio>
 
             <Radio value="specific">
-              <Radio.Control>
-                <Radio.Indicator />
-              </Radio.Control>
               <Radio.Content>
-                <Label>指定星期</Label>
-                <Description>选择特定的星期执行</Description>
+                <Radio.Control>
+                  <Radio.Indicator />
+                </Radio.Control>
+                指定星期
               </Radio.Content>
+              <Description>选择特定的星期执行</Description>
             </Radio>
           </div>
         </RadioGroup>

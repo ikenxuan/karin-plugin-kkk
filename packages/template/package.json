@@ -33,8 +33,8 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.105.0",
-    "@heroui/react": "3.2.1",
-    "@heroui/styles": "3.2.1",
+    "@heroui/react": "3.1.0",
+    "@heroui/styles": "3.1.0",
     "@icons-pack/react-simple-icons": "^13.13.0",
     "@ikenxuan/qrcode": "^1.2.0",
     "@kkk/richtext": "workspace:*",

@@ -37,13 +37,13 @@ export const PushTypeField = <T extends string>({ disabled, itemLabel, device, o
       <div className={`mt-2 ${getPushlistGridClass(device)}`}>
         {options.map((option) => (
           <Checkbox key={option.value} value={option.value}>
-            <Checkbox.Control>
-              <Checkbox.Indicator />
-            </Checkbox.Control>
             <Checkbox.Content>
-              <Label>{option.label}</Label>
-              <Description>{option.description}</Description>
+              <Checkbox.Control>
+                <Checkbox.Indicator />
+              </Checkbox.Control>
+              {option.label}
             </Checkbox.Content>
+            <Description>{option.description}</Description>
           </Checkbox>
         ))}
       </div>

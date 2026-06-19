@@ -120,13 +120,13 @@ export const createConfigFieldRenderers = ({
 
     const switchElement = (
       <Switch isDisabled={disabled} isSelected={selected} onChange={(isSelected) => updateConfigValue(path, isSelected)}>
-        <Switch.Control>
-          <Switch.Thumb />
-        </Switch.Control>
         <Switch.Content>
-          <Label className="font-semibold">{label}</Label>
-          {renderHelp(help || (selected ? booleanText.enabled : booleanText.disabled))}
+          <Switch.Control>
+            <Switch.Thumb />
+          </Switch.Control>
+          <span className="font-semibold">{label}</span>
         </Switch.Content>
+        {renderHelp(help || (selected ? booleanText.enabled : booleanText.disabled))}
       </Switch>
     )
 
@@ -241,13 +241,13 @@ export const createConfigFieldRenderers = ({
                 isSelected={selected}
                 onChange={(isSelected) => toggleArrayValue(path, item.value, isSelected, mutuallyExclusiveGroups)}
               >
-                <Checkbox.Control>
-                  <Checkbox.Indicator />
-                </Checkbox.Control>
                 <Checkbox.Content>
-                  <Label>{item.label}</Label>
-                  {item.description ? <Description>{item.description}</Description> : null}
+                  <Checkbox.Control>
+                    <Checkbox.Indicator />
+                  </Checkbox.Control>
+                  {item.label}
                 </Checkbox.Content>
+                {item.description ? <Description>{item.description}</Description> : null}
               </Checkbox>
             )
           })}
