@@ -77,13 +77,18 @@ const convertAnsiToHtml = (text: string): string => {
 
   const escapeHtml = (str: string) =>
     str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;')
+  const formatLogContent = (content: string) =>
+    escapeHtml(content).replace(
+      /([\u3400-\u9fff\uf900-\ufaff\u3000-\u303f\uff00-\uffef]+)/g,
+      '<span class="font-[HarmonyOSHans-Regular]">$1</span>'
+    )
   const makeSpan = (content: string) => {
     const hasClass = currentStyles.classes.length > 0,
       hasInline = currentStyles.inlineColor
-    if (!hasClass && !hasInline) return escapeHtml(content)
+    if (!hasClass && !hasInline) return formatLogContent(content)
     const classAttr = hasClass ? ` class="${currentStyles.classes.join(' ')}"` : ''
     const styleAttr = hasInline ? ` style="color: ${currentStyles.inlineColor}"` : ''
-    return `<span${classAttr}${styleAttr}>${escapeHtml(content)}</span>`
+    return `<span${classAttr}${styleAttr}>${formatLogContent(content)}</span>`
   }
 
   while ((match = ansiRegex.exec(text)) !== null) {
