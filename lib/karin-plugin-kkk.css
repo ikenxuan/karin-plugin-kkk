@@ -17792,16 +17792,6 @@
     }
   }
 
-  .text-emerald-500\/80 {
-    color: #00bb7fcc;
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .text-emerald-500\/80 {
-      color: color-mix(in oklab, var(--color-emerald-500) 80%, transparent);
-    }
-  }
-
   .text-emerald-500\/90 {
     color: #00bb7fe6;
   }
@@ -18001,16 +17991,6 @@
   @supports (color: color-mix(in lab, red, red)) {
     .text-rose-500\/20 {
       color: color-mix(in oklab, var(--color-rose-500) 20%, transparent);
-    }
-  }
-
-  .text-rose-500\/80 {
-    color: #ff2357cc;
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .text-rose-500\/80 {
-      color: color-mix(in oklab, var(--color-rose-500) 80%, transparent);
     }
   }
 
@@ -23096,22 +23076,6 @@ code.hljs {
 .dark .hljs .hljs-deletion {
   color: #ffdcd7;
   background-color: #67060c;
-}
-
-:root {
-  --heroui-like: #ff6b6b;
-  --heroui-comment: #4dabf7;
-  --heroui-share: #51cf66;
-  --heroui-view: #845ef7;
-  --heroui-follow: #ff8cc8;
-  --heroui-live: #ff6b35;
-  --heroui-time: #868e96;
-  --heroui-tag: #ffd43b;
-  --heroui-badge: #9775fa;
-  --heroui-coin: #f59e0b;
-  --heroui-bilibili-pink: #fb7299;
-  --heroui-douyin-cyan: #25f4ee;
-  --heroui-vip-gold: #ffb700;
 }
 
 @property --tw-translate-x {
