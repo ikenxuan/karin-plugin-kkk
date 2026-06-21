@@ -28359,6 +28359,12 @@ declare const kuaishouUtils: kuaishouUtilsModel; //#endregion
 declare class xiaohongshuSign {
   private static client;
   /**
+   * 创建包含 web_session 的小红书 Web 端游客 Cookie。
+   *
+   * `requestConfig` 会透传到游客会话初始化请求，可用于配置代理、超时等传输参数。
+   */
+  static createGuestCookie(requestConfig?: AxiosRequestConfig): Promise<string>;
+  /**
    * 生成GET请求的X-S签名
    * @param path - API路径
    * @param a1Cookie - a1 cookie值
