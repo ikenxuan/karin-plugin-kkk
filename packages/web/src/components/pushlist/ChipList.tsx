@@ -48,6 +48,7 @@ const ChipList = ({ label, description, items, onAdd, onRemove, disabled = false
         >
           <Label>{label}</Label>
           <Input
+            variant="secondary"
             placeholder={`输入${label}`}
             onKeyDown={(event) => {
               if (event.key === 'Enter') {
