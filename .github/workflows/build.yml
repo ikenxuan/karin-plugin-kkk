@@ -77,7 +77,7 @@ jobs:
       - name: 🚀 执行版本发布检查
         if: github.event_name != 'workflow_dispatch' || inputs.run_mode != 'production'
         id: release-please
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           config-file: .release-please-config.json
