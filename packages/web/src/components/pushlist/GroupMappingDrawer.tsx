@@ -145,10 +145,7 @@ const GroupMappingDrawer = ({ isOpen, values, mappings, device, onOpenChange, on
         initialMapping={editorInitialMapping}
         isOpen={editorOpen}
         onConfirm={writeTarget}
-        onOpenChange={(open) => {
-          setEditorOpen(open)
-          if (!open) setEditingValue(null)
-        }}
+        onOpenChange={setEditorOpen}
       />
     </>
   )

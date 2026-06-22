@@ -66,7 +66,7 @@ const DouyinPushItemPanel = ({ item, index, list, onChange, device }: DouyinPush
                   onChange={(value) => updateItem({ short_id: value })}
                 >
                   <Label>抖音号</Label>
-                  <Input placeholder="用户的抖音号" />
+                  <Input placeholder="用户的抖音号" variant='secondary' />
                   <Description>用户的抖音号（short_id），必填</Description>
                 </TextField>
               </DisabledFieldHint>
@@ -74,7 +74,7 @@ const DouyinPushItemPanel = ({ item, index, list, onChange, device }: DouyinPush
               <DisabledFieldHint disabled={disabled} device={device} message={disabledMessage}>
                 <TextField fullWidth isDisabled={disabled} value={item.sec_uid} onChange={(value) => updateItem({ sec_uid: value })}>
                   <Label>sec_uid</Label>
-                  <Input placeholder="选填，会根据抖音号自动获取" />
+                  <Input placeholder="选填，会根据抖音号自动获取" variant='secondary' />
                   <Description>用户的 sec_uid，可从分享链接获取。选填，推送时会自动获取</Description>
                 </TextField>
               </DisabledFieldHint>
@@ -83,7 +83,7 @@ const DouyinPushItemPanel = ({ item, index, list, onChange, device }: DouyinPush
             <DisabledFieldHint disabled={disabled} device={device} message={disabledMessage}>
               <TextField fullWidth isDisabled={disabled} value={item.remark} onChange={(value) => updateItem({ remark: value })}>
                 <Label>备注名称</Label>
-                <Input placeholder="可选，用于识别该推送项" />
+                <Input placeholder="可选，用于识别该推送项" variant='secondary' />
                 <Description>方便识别的名称，如：博主昵称</Description>
               </TextField>
             </DisabledFieldHint>

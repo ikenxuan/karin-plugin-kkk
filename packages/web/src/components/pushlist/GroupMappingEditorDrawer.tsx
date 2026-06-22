@@ -22,6 +22,17 @@ const GroupMappingEditorDrawer = ({ isOpen, device, initialMapping, onOpenChange
   const [loadingGroups, setLoadingGroups] = useState(Boolean(initialMapping?.botId))
   const [error, setError] = useState('')
 
+  useEffect(() => {
+    if (!isOpen) return
+    setSelectedBotId(initialMapping?.botId || '')
+    setSelectedGroupId(initialMapping?.groupId || '')
+    setGroups([])
+    setBots([])
+    setLoadingBots(true)
+    setLoadingGroups(Boolean(initialMapping?.botId))
+    setError('')
+  }, [isOpen, initialMapping?.botId, initialMapping?.groupId])
+
   const selectedBot = useMemo(() => bots.find((bot) => bot.id === selectedBotId), [bots, selectedBotId])
   const selectedGroup = useMemo(() => groups.find((group) => group.id === selectedGroupId), [groups, selectedGroupId])
   const botOptions = useMemo(
@@ -91,7 +102,7 @@ const GroupMappingEditorDrawer = ({ isOpen, device, initialMapping, onOpenChange
   const title = initialMapping ? '编辑推送目标' : '添加推送目标'
 
   return (
-    <Drawer.Backdrop isOpen={isOpen} onOpenChange={onOpenChange} variant="blur">
+    <Drawer.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
       <Drawer.Content placement={placement}>
         <Drawer.Dialog className={device === 'desktop' ? 'h-full w-105 max-w-[90vw]' : 'max-h-[78dvh]'}>
           <Drawer.Handle />

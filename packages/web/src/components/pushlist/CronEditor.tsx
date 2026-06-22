@@ -205,7 +205,7 @@ const CronEditor = ({ value, onChange, disabled = false, device = 'desktop' }: C
   const renderMinuteTab = () => (
     <div className="space-y-4">
       <Surface className="p-4">
-        <RadioGroup aria-label="分钟类型" value={minuteType} onChange={(v) => setMinuteType(v as typeof minuteType)}>
+        <RadioGroup aria-label="分钟类型" variant='secondary' value={minuteType} onChange={(v) => setMinuteType(v as typeof minuteType)}>
           <Label className="text-base font-semibold">执行频率</Label>
           <Description className="mb-3">选择任务在每小时内的执行方式</Description>
           <div className="space-y-3">
@@ -245,7 +245,7 @@ const CronEditor = ({ value, onChange, disabled = false, device = 'desktop' }: C
       {minuteType === 'interval' && (
         <Surface className="p-4">
           <Label className="mb-2 text-base font-semibold">间隔设置</Label>
-          <NumberField minValue={1} maxValue={59} value={minuteInterval} onChange={setMinuteInterval}>
+          <NumberField variant='secondary' minValue={1} maxValue={59} value={minuteInterval} onChange={setMinuteInterval}>
             <Label>间隔（分钟）</Label>
             <NumberField.Group>
               <NumberField.DecrementButton />
@@ -287,7 +287,7 @@ const CronEditor = ({ value, onChange, disabled = false, device = 'desktop' }: C
   const renderHourTab = () => (
     <div className="space-y-4">
       <Surface className="p-4">
-        <RadioGroup aria-label="小时类型" value={hourType} onChange={(v) => setHourType(v as typeof hourType)}>
+        <RadioGroup aria-label="小时类型" variant='secondary' value={hourType} onChange={(v) => setHourType(v as typeof hourType)}>
           <Label className="text-base font-semibold">执行频率</Label>
           <Description className="mb-3">选择任务在每天内的执行方式</Description>
           <div className="space-y-3">
@@ -327,7 +327,7 @@ const CronEditor = ({ value, onChange, disabled = false, device = 'desktop' }: C
       {hourType === 'interval' && (
         <Surface className="p-4">
           <Label className="mb-2 text-base font-semibold">间隔设置</Label>
-          <NumberField minValue={1} maxValue={23} value={hourInterval} onChange={setHourInterval}>
+          <NumberField variant='secondary' minValue={1} maxValue={23} value={hourInterval} onChange={setHourInterval}>
             <Label>间隔（小时）</Label>
             <NumberField.Group>
               <NumberField.DecrementButton />
@@ -369,7 +369,7 @@ const CronEditor = ({ value, onChange, disabled = false, device = 'desktop' }: C
   const renderDayTab = () => (
     <div className="space-y-4">
       <Surface className="p-4">
-        <RadioGroup aria-label="日期类型" value={dayType} onChange={(v) => setDayType(v as typeof dayType)}>
+        <RadioGroup aria-label="日期类型" variant='secondary' value={dayType} onChange={(v) => setDayType(v as typeof dayType)}>
           <Label className="text-base font-semibold">执行频率</Label>
           <Description className="mb-3">选择任务在每月内的执行方式</Description>
           <div className="space-y-3">
@@ -409,7 +409,7 @@ const CronEditor = ({ value, onChange, disabled = false, device = 'desktop' }: C
       {dayType === 'interval' && (
         <Surface className="p-4">
           <Label className="mb-2 text-base font-semibold">间隔设置</Label>
-          <NumberField minValue={1} maxValue={31} value={dayInterval} onChange={setDayInterval}>
+          <NumberField variant='secondary' minValue={1} maxValue={31} value={dayInterval} onChange={setDayInterval}>
             <Label>间隔（天）</Label>
             <NumberField.Group>
               <NumberField.DecrementButton />
@@ -451,7 +451,7 @@ const CronEditor = ({ value, onChange, disabled = false, device = 'desktop' }: C
   const renderWeekTab = () => (
     <div className="space-y-4">
       <Surface className="p-4">
-        <RadioGroup aria-label="星期类型" value={weekType} onChange={(v) => setWeekType(v as typeof weekType)}>
+        <RadioGroup aria-label="星期类型" variant='secondary' value={weekType} onChange={(v) => setWeekType(v as typeof weekType)}>
           <Label className="text-base font-semibold">执行频率</Label>
           <Description className="mb-3">选择任务在每周内的执行方式</Description>
           <div className="space-y-3">

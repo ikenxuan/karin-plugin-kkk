@@ -41,7 +41,7 @@ const routeMenuMap: Record<string, MainMenuKey> = {
  */
 const ConfigRoute = ({ device }: { device: DeviceLayout }) => {
   return (
-    <Surface className="h-screen overflow-hidden">
+    <Surface className="h-screen overflow-hidden bg-background">
       <Toast.Provider placement="top" />
       <ScrollShadow
         hideScrollBar
