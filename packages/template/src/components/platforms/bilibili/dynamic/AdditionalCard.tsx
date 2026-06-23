@@ -30,11 +30,12 @@ export const BilibiliReserveCard: React.FC<{ reserve: NonNullable<BilibiliAdditi
         </div>
         <div className="shrink-0">
           <Button
-            className={`text-5xl font-normal px-8 py-5 h-auto min-w-0 ${
+            size="lg"
+            className={`font-normal scale-200 mr-15 rounded-xl ${
               reserve.buttonText === '已结束' ? 'bg-surface-secondary/70 text-muted' : 'bg-[#fb7299] text-white'
             }`}
           >
-            {reserve.buttonText !== '已结束' && <BellRing className="scale-180 mr-4" />}
+            {reserve.buttonText !== '已结束' && <BellRing size={330} />}
             {reserve.buttonText}
           </Button>
         </div>
