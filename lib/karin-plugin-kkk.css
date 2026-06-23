@@ -13306,6 +13306,10 @@
     margin-right: calc(var(--spacing) * 8);
   }
 
+  .mr-15 {
+    margin-right: calc(var(--spacing) * 15);
+  }
+
   .mr-18 {
     margin-right: calc(var(--spacing) * 18);
   }
@@ -14497,6 +14501,13 @@
     --tw-scale-x: 180%;
     --tw-scale-y: 180%;
     --tw-scale-z: 180%;
+    scale: var(--tw-scale-x) var(--tw-scale-y);
+  }
+
+  .scale-200 {
+    --tw-scale-x: 200%;
+    --tw-scale-y: 200%;
+    --tw-scale-z: 200%;
     scale: var(--tw-scale-x) var(--tw-scale-y);
   }
 
