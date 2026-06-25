@@ -49,8 +49,8 @@ const DouyinConfigPage = ({ config, renderers, classes }: ConfigPageProps) => {
           })}
           {renderTextField(
             ['douyin', 'subCommentLimit'],
-            '次级评论解析数量',
-            '次级评论解析数量，当前逻辑不仅无法判断请求的来的评论的嵌套深度，而且「次级评论解析深度」会限制嵌套深度，超过深度的评论会被截断。',
+            '子评论请求数量',
+            '单条主评论下请求的子评论总条数（含多层嵌套）。注意：UI中最多显示 6 层回复嵌套，超出部分会被隐藏；因实际嵌套深度不可预知，配置数量不代表最终可见数量。',
             { type: 'number', fallback: 5, min: 1, max: 20, disabled: commentDisabled }
           )}
           {renderSwitch(

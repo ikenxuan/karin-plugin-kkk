@@ -53,6 +53,11 @@ const validatePushList = (errors: Record<string, string>, key: 'douyin' | 'bilib
   }
 }
 
+/**
+ * 校验配置面板当前值，返回以配置路径为 key 的错误信息。
+ *
+ * @param config 当前编辑中的完整配置对象。
+ */
 export const validateConfig = (config: ConfigType | null): Record<string, string> => {
   if (!config) return {}
 

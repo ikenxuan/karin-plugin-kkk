@@ -241,7 +241,7 @@ const ConfigPanel = ({ device = 'desktop' }: ConfigPanelProps) => {
       <div className={classes.header}>
         <div className={classes.headerCopy}>
           <h2 className="text-2xl font-bold">配置管理</h2>
-          <Description>直接读取并写回 Karin 插件配置文件，未展示字段会原样保留。</Description>
+          <Description>用户偏好设置</Description>
         </div>
       </div>
       <Form className={classes.form} onSubmit={handleFormSubmit}>
