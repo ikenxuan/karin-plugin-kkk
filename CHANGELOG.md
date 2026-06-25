@@ -2,6 +2,20 @@
 
 # Changelog
 
+## [2.36.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.36.0...v2.36.1) (2026-06-25)
+
+
+### 🐛 错误修复
+
+* 手机展示配置页面时，底部弹窗改为覆盖全屏。 ([#324](https://github.com/ikenxuan/karin-plugin-kkk/issues/324)) ([b080398](https://github.com/ikenxuan/karin-plugin-kkk/commit/b0803985f88cb61b9acf447e38a7b5c87a76eb0b))
+* 配置面板优化部分布局 ([4e01d4d](https://github.com/ikenxuan/karin-plugin-kkk/commit/4e01d4da303167de22a99a69e39d3ae218be9133))
+* 重写配置页面的cron表达式编辑组件，使其配置完全小白化 [#320](https://github.com/ikenxuan/karin-plugin-kkk/issues/320) ([6571491](https://github.com/ikenxuan/karin-plugin-kkk/commit/6571491e3955c75a09674c51afe248345c64043b))
+
+
+### 💄 UI 优化
+
+* 优化B站预约卡片按钮布局 ([2f0e5f2](https://github.com/ikenxuan/karin-plugin-kkk/commit/2f0e5f29f125cec1032592943cdb915949954196))
+
 ## [2.36.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.35.0...v2.36.0) (2026-06-19)
 
 
