@@ -232,7 +232,6 @@ export default function DiffPage() {
 
   // 切换对比精度时清空缓存并重新计算
   useEffect(() => {
-    if (!result) return
     diffCacheRef.current.clear()
     computingFileRef.current = ''
     setResult((prev) => {
@@ -242,7 +241,7 @@ export default function DiffPage() {
         files: prev.files.map((f) => (f.status === 'unchanged' ? f : { ...f, rows: [], additions: 0, deletions: 0 }))
       }
     })
-  }, [diffGranularity, result])
+  }, [diffGranularity])
 
   // 按需计算当前选中文件的 diff（通过 Web Worker）
   useEffect(() => {
@@ -328,7 +327,7 @@ export default function DiffPage() {
   }
 
   return (
-    <div className="md:h-screen md:flex md:flex-col md:overflow-hidden bg-background">
+    <div className="md:h-screen md:min-h-0 md:flex md:flex-col md:overflow-hidden bg-background">
       {/* 顶部控制栏 */}
       <div className="shrink-0 px-6 py-4 flex flex-wrap items-end gap-4 bg-surface-secondary border-b border-border">
         {isMobile && result && (
@@ -463,11 +462,11 @@ export default function DiffPage() {
       {result ? (
         <>
           {isMobile && sidebarOpen && <div className="fixed inset-0 z-40 bg-black/50" onClick={() => setSidebarOpen(false)} />}
-          <div className="flex flex-col md:flex-row md:flex-1 md:overflow-hidden relative">
+          <div className="flex min-h-0 flex-col md:flex-row md:flex-1 md:overflow-hidden relative">
             {/* 左侧文件列表 */}
             <div
               className={cn(
-                'shrink-0 flex flex-col bg-background border-r border-border',
+                'min-h-0 shrink-0 flex flex-col bg-background border-r border-border',
                 isMobile && 'fixed inset-y-0 left-0 z-50 w-72 transition-transform duration-200 ease-out',
                 !isMobile && 'w-72',
                 isMobile && !sidebarOpen && '-translate-x-full'
@@ -493,7 +492,7 @@ export default function DiffPage() {
               </div>
 
               {/* 文件列表内容 - 可滚动，隐藏滚动条 */}
-              <div className="flex-1 overflow-y-auto no-scrollbar">
+              <div data-lenis-prevent className="min-h-0 flex-1 overflow-y-auto no-scrollbar">
                 <div className="py-1">
                   {sortedFiles.map((file) => (
                     <button
@@ -520,7 +519,7 @@ export default function DiffPage() {
             </div>
 
             {/* 右侧 diff 内容 */}
-            <div className="w-full h-dvh md:h-auto md:flex-1">
+            <div className="w-full min-h-0 min-w-0 h-dvh md:h-full md:flex-1">
               {selectedDiff ? (
                 <CodeDiffViewer data={selectedDiff} isMobile={isMobile} wrap={wrapEnabled} />
               ) : (

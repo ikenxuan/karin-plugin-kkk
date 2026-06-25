@@ -505,9 +505,14 @@ export const CodeDiffViewer = ({ data, isMobile = false, wrap = true }: CodeDiff
 
   if (isMobile) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex h-full min-h-0 flex-col">
         <div className="shrink-0 sticky top-0 z-10 bg-surface-secondary border-b border-border">{header}</div>
-        <div ref={scrollRef} className="flex-1 overflow-auto bg-background text-foreground" onMouseDown={handleMouseDown}>
+        <div
+          ref={scrollRef}
+          data-lenis-prevent
+          className="min-h-0 flex-1 overflow-auto bg-background text-foreground"
+          onMouseDown={handleMouseDown}
+        >
           {content}
         </div>
       </div>
@@ -515,7 +520,12 @@ export const CodeDiffViewer = ({ data, isMobile = false, wrap = true }: CodeDiff
   }
 
   return (
-    <div ref={scrollRef} className="h-full overflow-auto bg-background text-foreground" onMouseDown={handleMouseDown}>
+    <div
+      ref={scrollRef}
+      data-lenis-prevent
+      className="h-full min-h-0 overflow-auto bg-background text-foreground"
+      onMouseDown={handleMouseDown}
+    >
       <div className="bg-surface-secondary border-b border-border sticky top-0 z-10">{header}</div>
       {content}
     </div>
