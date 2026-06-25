@@ -319,7 +319,7 @@ export const createConfigFieldRenderers = ({
     renderPageHeader: (title, description) => (
       <div className={`mb-6 ${device === 'mobile' ? 'pr-36' : ''}`} data-config-section>
         <h2 className="text-2xl font-bold">{title}</h2>
-        <div className="mt-2.5">
+        <div className="mt-3">
           <Description>{description}</Description>
         </div>
       </div>

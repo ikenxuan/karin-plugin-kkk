@@ -1022,7 +1022,7 @@ const CronEditor = ({ value, onChange, disabled = false, device = 'desktop' }: C
         <div className="flex gap-2">
           <TextField fullWidth isDisabled value={value}>
             <Label className="sr-only">定时推送时间</Label>
-            <Input placeholder="*/10 * * * *" aria-label="定时任务表达式" />
+            <Input placeholder="*/10 * * * *" variant='secondary' aria-label="定时任务表达式" />
           </TextField>
           <Button isDisabled={disabled} variant="secondary" onPress={() => setIsOpen(true)}>
             <Clock className="size-4" aria-hidden="true" />

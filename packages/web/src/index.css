@@ -14,6 +14,14 @@
   }
 }
 
+@media (max-width: 767px) {
+  .drawer__dialog[data-placement='bottom'] {
+    height: var(--visual-viewport-height, 100dvh);
+    max-height: var(--visual-viewport-height, 100dvh);
+    border-radius: 0;
+  }
+}
+
 /*
  * jsondiffpatch GitHub 风格 diff 主题。
  * 亮色模式使用 GitHub 经典 diff 背景色，深色模式使用 GitHub dark 的暗色调。
