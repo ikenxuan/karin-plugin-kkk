@@ -70,7 +70,7 @@ const AppConfigPage = ({ config, renderers }: ConfigPageProps) => {
       {renderSubSection(
         '上传与下载设置',
         <>
-          <Surface className="p-4 mb-4 rounded-3xl" variant="secondary">
+          <Surface className="flex flex-col gap-5 p-4 mb-4 rounded-3xl" variant="secondary">
             {renderSelectField(
               ['app', 'videoSendMode'],
               '本地视频发送方式',
@@ -79,7 +79,7 @@ const AppConfigPage = ({ config, renderers }: ConfigPageProps) => {
                 {
                   label: 'File 协议（本地文件）',
                   value: 'file',
-                  description: '使用 file 协议发送本地视频，需 Karin 与协议端在同一系统'
+                  description: '使用 file 协议发送本地视频，需 Karin 与协议端在同一网络环境下'
                 },
                 {
                   label: 'Base64（编码传输）',
@@ -112,7 +112,7 @@ const AppConfigPage = ({ config, renderers }: ConfigPageProps) => {
             )}
           </Surface>
 
-          <Surface className="p-4 mb-4 rounded-3xl" variant="secondary">
+          <Surface className="flex flex-col gap-5 p-4 mb-4 rounded-3xl" variant="secondary">
             {renderSelectField(['app', 'imageSendMode'], '网络图片发送方式', '图片资源发送给协议端的方式。', [
               {
                 label: 'URL 链接（直接传递）',
@@ -122,7 +122,7 @@ const AppConfigPage = ({ config, renderers }: ConfigPageProps) => {
               {
                 label: 'File 协议（本地文件）',
                 value: 'file',
-                description: '下载到本地后使用 file 协议发送，需 Karin 与协议端在同一系统'
+                description: '下载到本地后使用 file 协议发送，需 Karin 与协议端在同一网络环境下'
               },
               {
                 label: 'Base64（编码传输）',
@@ -132,7 +132,7 @@ const AppConfigPage = ({ config, renderers }: ConfigPageProps) => {
             ])}
           </Surface>
 
-          <Surface className="p-4 mb-4 rounded-3xl" variant="secondary">
+          <Surface className="flex flex-col gap-5 p-4 mb-4 rounded-3xl" variant="secondary">
             {renderSwitch(['app', 'usefilelimit'], '视频上传拦截', '开启后会根据视频文件大小判断是否需要上传，需配置「视频拦截阈值」。')}
             {renderTextField(
               ['app', 'filelimit'],
@@ -159,7 +159,7 @@ const AppConfigPage = ({ config, renderers }: ConfigPageProps) => {
             )}
           </Surface>
 
-          <Surface className="p-4 rounded-3xl" variant="secondary">
+          <Surface className="flex flex-col gap-5 p-4 rounded-3xl" variant="secondary">
             {renderSwitch(
               ['app', 'downloadThrottle'],
               '下载限速',

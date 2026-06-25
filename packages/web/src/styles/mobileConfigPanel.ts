@@ -14,7 +14,7 @@ export const mobileConfigPanelClasses: ConfigPanelLayoutClasses = {
   actionControls:
     'flex w-fit h-11 p-1 items-center gap-2 rounded-full border border-default-200 bg-background/90 shadow-sm backdrop-blur-md',
   sectionHeader: 'p-1',
-  sectionContent: 'p-5',
+  sectionContent: 'p-0',
   fields: 'grid grid-cols-1 gap-5',
   field: 'flex min-w-0 flex-col gap-2',
   choiceGrid: 'grid grid-cols-1 gap-3',
