@@ -3,7 +3,7 @@
  * 配置项直接在前端硬编码，不依赖 Karin schema 数据。
  */
 
-import { Button, Description, Form, Spinner, Tabs, Tooltip, toast, useOverlayState } from '@heroui/react'
+import { Button, Form, Spinner, Tabs, Tooltip, toast, useOverlayState } from '@heroui/react'
 import { useMemoizedFn, useRequest, useSetState, useUpdateEffect } from 'ahooks'
 import equal from 'fast-deep-equal'
 import gsap from 'gsap'
@@ -238,12 +238,12 @@ const ConfigPanel = ({ device = 'desktop' }: ConfigPanelProps) => {
         isOpen={diffState.isOpen}
         onOpenChange={diffState.setOpen}
       />
-      <div className={classes.header}>
+      {/* <div className={classes.header}>
         <div className={classes.headerCopy}>
           <h2 className="text-2xl font-bold">配置管理</h2>
           <Description>用户偏好设置</Description>
         </div>
-      </div>
+      </div> */}
       <Form className={classes.form} onSubmit={handleFormSubmit}>
         <Tabs className="w-full min-w-0 max-w-full" selectedKey={activeFile} onSelectionChange={handleTabChange}>
           <Tabs.ListContainer className={classes.tabsListContainer} data-config-tabs-scroll="true" data-scrollbar="none">
