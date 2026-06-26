@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 
+import type { NoteComments, Result } from '@ikenxuan/amagi'
 import { format } from 'date-fns'
 import { common, type Message, segment } from 'node-karin'
 import { logger } from 'node-karin'
@@ -51,6 +52,47 @@ export class Xiaohongshu extends Base {
     this.type = iddata?.type
   }
 
+  private async fetchConfiguredNoteComments(data: XiaohongshuIdData): Promise<Result<NoteComments>> {
+    const targetCount = Math.max(1, Config.xiaohongshu.numcomment)
+    const firstPage = await this.amagi.xiaohongshu.fetcher.fetchNoteComments({
+      typeMode: 'strict',
+      note_id: data.note_id,
+      xsec_token: data.xsec_token
+    })
+
+    const comments = [...(firstPage.data.data.comments ?? [])]
+    let cursor = firstPage.data.data.cursor
+    let hasMore = firstPage.data.data.has_more
+    const seenCursors = new Set<string>()
+
+    while (comments.length < targetCount && hasMore && cursor && !seenCursors.has(cursor)) {
+      seenCursors.add(cursor)
+      const nextPage = await this.amagi.xiaohongshu.fetcher.fetchNoteComments({
+        typeMode: 'strict',
+        note_id: data.note_id,
+        cursor,
+        xsec_token: data.xsec_token
+      })
+
+      comments.push(...(nextPage.data.data.comments ?? []))
+      cursor = nextPage.data.data.cursor
+      hasMore = nextPage.data.data.has_more
+    }
+
+    return {
+      ...firstPage,
+      data: {
+        ...firstPage.data,
+        data: {
+          ...firstPage.data.data,
+          comments,
+          cursor,
+          has_more: hasMore
+        }
+      }
+    } as Result<NoteComments>
+  }
+
   async XiaohongshuHandler(data: XiaohongshuIdData) {
     if (Config.amagi.cookies.xiaohongshu === '') {
       throw new Error('我还没有小红书的 Cookies，暂时无法解析呢 ~')
@@ -85,11 +127,7 @@ export class Xiaohongshu extends Base {
 
     // 评论列表
     if (Config.xiaohongshu.sendContent.some((item) => item === 'comment')) {
-      const CommentData = await this.amagi.xiaohongshu.fetcher.fetchNoteComments({
-        typeMode: 'strict',
-        note_id: data.note_id,
-        xsec_token: data.xsec_token
-      })
+      const CommentData = await this.fetchConfiguredNoteComments(data)
 
       if (!CommentData.data.data.comments || CommentData.data.data.comments.length === 0) {
         await this.e.reply('这个笔记没有评论 ~')
