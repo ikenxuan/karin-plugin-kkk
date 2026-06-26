@@ -61,11 +61,7 @@ const ConfigRoute = ({ device }: { device: DeviceLayout }) => {
 /**
  * 主应用布局路由组件
  */
-const MainAppRoutes = ({
-  LayoutComponent
-}: {
-  LayoutComponent: ComponentType<MainLayoutProps> | null
-}) => {
+const MainAppRoutes = ({ LayoutComponent }: { LayoutComponent: ComponentType<MainLayoutProps> | null }) => {
   const location = useLocation()
   const navigate = useNavigate()
 

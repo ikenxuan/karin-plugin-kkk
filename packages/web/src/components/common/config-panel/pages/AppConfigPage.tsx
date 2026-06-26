@@ -183,20 +183,15 @@ const AppConfigPage = ({ config, renderers }: ConfigPageProps) => {
               '限速开关打开后生效。当检测到下载中断时，自动降低下载速度，避免再次触发风控。',
               !getValue<boolean>(config, ['app', 'downloadThrottle'], false)
             )}
-            {renderTextField(
-              ['app', 'downloadMinSpeed'],
-              '最低下载速度',
-              '断流降速开关打开后生效。单位：MB/s，自动降速的下限值。',
-              {
-                type: 'number',
-                fallback: 1,
-                min: 0.5,
-                max: 50,
-                disabled:
-                  !getValue<boolean>(config, ['app', 'downloadThrottle'], false) ||
-                  !getValue<boolean>(config, ['app', 'downloadAutoReduce'], false)
-              }
-            )}
+            {renderTextField(['app', 'downloadMinSpeed'], '最低下载速度', '断流降速开关打开后生效。单位：MB/s，自动降速的下限值。', {
+              type: 'number',
+              fallback: 1,
+              min: 0.5,
+              max: 50,
+              disabled:
+                !getValue<boolean>(config, ['app', 'downloadThrottle'], false) ||
+                !getValue<boolean>(config, ['app', 'downloadAutoReduce'], false)
+            })}
           </Surface>
         </>
       )}

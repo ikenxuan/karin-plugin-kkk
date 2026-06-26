@@ -4,76 +4,64 @@
 
 ## [2.36.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.36.0...v2.36.1) (2026-06-25)
 
-
 ### 🐛 错误修复
 
-* 手机展示配置页面时，底部弹窗改为覆盖全屏。 ([#324](https://github.com/ikenxuan/karin-plugin-kkk/issues/324)) ([b080398](https://github.com/ikenxuan/karin-plugin-kkk/commit/b0803985f88cb61b9acf447e38a7b5c87a76eb0b))
-* 配置面板优化部分布局 ([4e01d4d](https://github.com/ikenxuan/karin-plugin-kkk/commit/4e01d4da303167de22a99a69e39d3ae218be9133))
-* 重写配置页面的cron表达式编辑组件，使其配置完全小白化 [#320](https://github.com/ikenxuan/karin-plugin-kkk/issues/320) ([6571491](https://github.com/ikenxuan/karin-plugin-kkk/commit/6571491e3955c75a09674c51afe248345c64043b))
-
+- 手机展示配置页面时，底部弹窗改为覆盖全屏。 ([#324](https://github.com/ikenxuan/karin-plugin-kkk/issues/324)) ([b080398](https://github.com/ikenxuan/karin-plugin-kkk/commit/b0803985f88cb61b9acf447e38a7b5c87a76eb0b))
+- 配置面板优化部分布局 ([4e01d4d](https://github.com/ikenxuan/karin-plugin-kkk/commit/4e01d4da303167de22a99a69e39d3ae218be9133))
+- 重写配置页面的cron表达式编辑组件，使其配置完全小白化 [#320](https://github.com/ikenxuan/karin-plugin-kkk/issues/320) ([6571491](https://github.com/ikenxuan/karin-plugin-kkk/commit/6571491e3955c75a09674c51afe248345c64043b))
 
 ### 💄 UI 优化
 
-* 优化B站预约卡片按钮布局 ([2f0e5f2](https://github.com/ikenxuan/karin-plugin-kkk/commit/2f0e5f29f125cec1032592943cdb915949954196))
+- 优化B站预约卡片按钮布局 ([2f0e5f2](https://github.com/ikenxuan/karin-plugin-kkk/commit/2f0e5f29f125cec1032592943cdb915949954196))
 
 ## [2.36.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.35.0...v2.36.0) (2026-06-19)
 
-
 ### ✨ 新功能
 
-* **web:** 新增 ConfigDiffOverlay 与 ConfigDiffView 组件，用于配置变更预览 ([43015ac](https://github.com/ikenxuan/karin-plugin-kkk/commit/43015acfe53bc7d88ae4e9ffb6ad63cfef5a97f0))
-
+- **web:** 新增 ConfigDiffOverlay 与 ConfigDiffView 组件，用于配置变更预览 ([43015ac](https://github.com/ikenxuan/karin-plugin-kkk/commit/43015acfe53bc7d88ae4e9ffb6ad63cfef5a97f0))
 
 ### 🐛 错误修复
 
-* 更新 @heroui/react 和 @heroui/styles 依赖版本，修复潜在兼容性问题 ([1afd730](https://github.com/ikenxuan/karin-plugin-kkk/commit/1afd730f781e9fe19eb65b77571e2a2772e1a5e1))
-* 渲染错误日志模板部分场景下中文字体无法加载 ([648bd10](https://github.com/ikenxuan/karin-plugin-kkk/commit/648bd101aff7b0155c86e67e97afe39a858c1095))
-
+- 更新 @heroui/react 和 @heroui/styles 依赖版本，修复潜在兼容性问题 ([1afd730](https://github.com/ikenxuan/karin-plugin-kkk/commit/1afd730f781e9fe19eb65b77571e2a2772e1a5e1))
+- 渲染错误日志模板部分场景下中文字体无法加载 ([648bd10](https://github.com/ikenxuan/karin-plugin-kkk/commit/648bd101aff7b0155c86e67e97afe39a858c1095))
 
 ### 💄 UI 优化
 
-* **douyin:** 使用官方统计图标 ([7c4cef0](https://github.com/ikenxuan/karin-plugin-kkk/commit/7c4cef0576ffd9abcc3f70a09e1785979fec56f1))
-
+- **douyin:** 使用官方统计图标 ([7c4cef0](https://github.com/ikenxuan/karin-plugin-kkk/commit/7c4cef0576ffd9abcc3f70a09e1785979fec56f1))
 
 ### ♻️ 代码重构
 
-* 优化 Switch 和 Checkbox 组件的渲染结构，提升可读性 ([1afd730](https://github.com/ikenxuan/karin-plugin-kkk/commit/1afd730f781e9fe19eb65b77571e2a2772e1a5e1))
-
+- 优化 Switch 和 Checkbox 组件的渲染结构，提升可读性 ([1afd730](https://github.com/ikenxuan/karin-plugin-kkk/commit/1afd730f781e9fe19eb65b77571e2a2772e1a5e1))
 
 ### 📦 依赖更新
 
-* 更新 ([cf30ff8](https://github.com/ikenxuan/karin-plugin-kkk/commit/cf30ff8a7f004bd63b2a54982f44b0897417428b))
+- 更新 ([cf30ff8](https://github.com/ikenxuan/karin-plugin-kkk/commit/cf30ff8a7f004bd63b2a54982f44b0897417428b))
 
 ## [2.35.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.34.0...v2.35.0) (2026-06-12)
 
-
 ### ✨ 新功能
 
-* 开发可视化 Cron 表达式编辑器组件 ([6e437b7](https://github.com/ikenxuan/karin-plugin-kkk/commit/6e437b7eba4e21f05a29849bb5dcd1e897d43ba6))
-
+- 开发可视化 Cron 表达式编辑器组件 ([6e437b7](https://github.com/ikenxuan/karin-plugin-kkk/commit/6e437b7eba4e21f05a29849bb5dcd1e897d43ba6))
 
 ### 🧰 其他更新
 
-* 移除部分无用代码 ([506234e](https://github.com/ikenxuan/karin-plugin-kkk/commit/506234e03b58bc9a346d39af7f866ceb23b97092))
-
+- 移除部分无用代码 ([506234e](https://github.com/ikenxuan/karin-plugin-kkk/commit/506234e03b58bc9a346d39af7f866ceb23b97092))
 
 ### ♻️ 代码重构
 
-* add configuration files for oxfmt and oxlint across multiple packages ([df2bb5e](https://github.com/ikenxuan/karin-plugin-kkk/commit/df2bb5edf96f858d959479286bb614915282a702))
-* Implement server module with API, config, bot management, and video streaming functionalities ([9cd7950](https://github.com/ikenxuan/karin-plugin-kkk/commit/9cd795074134355db56446fb73e1415677562282))
-* 合并部分配置 ([6e437b7](https://github.com/ikenxuan/karin-plugin-kkk/commit/6e437b7eba4e21f05a29849bb5dcd1e897d43ba6))
-* 更新日志信息，添加插件标识，优化主题更新逻辑，移除无用的 CSS 变体 ([51f76d8](https://github.com/ikenxuan/karin-plugin-kkk/commit/51f76d8f00818bbae8f5e0941a47d394ac1c7102))
-* 重构配置，由yaml迁移到json，载入自动迁移 ([6e437b7](https://github.com/ikenxuan/karin-plugin-kkk/commit/6e437b7eba4e21f05a29849bb5dcd1e897d43ba6))
-
+- add configuration files for oxfmt and oxlint across multiple packages ([df2bb5e](https://github.com/ikenxuan/karin-plugin-kkk/commit/df2bb5edf96f858d959479286bb614915282a702))
+- Implement server module with API, config, bot management, and video streaming functionalities ([9cd7950](https://github.com/ikenxuan/karin-plugin-kkk/commit/9cd795074134355db56446fb73e1415677562282))
+- 合并部分配置 ([6e437b7](https://github.com/ikenxuan/karin-plugin-kkk/commit/6e437b7eba4e21f05a29849bb5dcd1e897d43ba6))
+- 更新日志信息，添加插件标识，优化主题更新逻辑，移除无用的 CSS 变体 ([51f76d8](https://github.com/ikenxuan/karin-plugin-kkk/commit/51f76d8f00818bbae8f5e0941a47d394ac1c7102))
+- 重构配置，由yaml迁移到json，载入自动迁移 ([6e437b7](https://github.com/ikenxuan/karin-plugin-kkk/commit/6e437b7eba4e21f05a29849bb5dcd1e897d43ba6))
 
 ### 📦 依赖更新
 
-* deps update ([2fb9d6f](https://github.com/ikenxuan/karin-plugin-kkk/commit/2fb9d6f6188815410ac62847f8c1d72871fa17d7))
-
+- deps update ([2fb9d6f](https://github.com/ikenxuan/karin-plugin-kkk/commit/2fb9d6f6188815410ac62847f8c1d72871fa17d7))
 
 ### ⚙️ 配置变更
 
-* B站视频信息模板中封面的弹幕可选择关闭 ([6e437b7](https://github.com/ikenxuan/karin-plugin-kkk/commit/6e437b7eba4e21f05a29849bb5dcd1e897d43ba6))
+- B站视频信息模板中封面的弹幕可选择关闭 ([6e437b7](https://github.com/ikenxuan/karin-plugin-kkk/commit/6e437b7eba4e21f05a29849bb5dcd1e897d43ba6))
 
 ## [2.34.0](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.33.0...v2.34.0) (2026-06-11)
 

@@ -181,7 +181,12 @@ const DouyinConfigPage = ({ config, renderers, classes }: ConfigPageProps) => {
             (value) => value,
             !douyinPushEnabled
           )}
-          {renderCronField(['douyin', 'push', 'cron'], '定时任务表达式', '定时推送的时间，支持可视化编辑或手动输入 cron 表达式。', !douyinPushEnabled)}
+          {renderCronField(
+            ['douyin', 'push', 'cron'],
+            '定时任务表达式',
+            '定时推送的时间，支持可视化编辑或手动输入 cron 表达式。',
+            !douyinPushEnabled
+          )}
           {renderSwitch(['douyin', 'push', 'parsedynamic'], '作品解析', '触发推送时是否一同解析该作品。', !douyinPushEnabled)}
           {renderSelectField(
             ['douyin', 'push', 'shareType'],

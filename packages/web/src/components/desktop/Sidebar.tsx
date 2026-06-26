@@ -54,7 +54,10 @@ const Sidebar = ({ collapsed, activeMenu, onMenuChange }: SidebarProps) => {
       <div className="shrink-0 px-4 pt-3 pb-2">
         <Popover>
           <Popover.Trigger aria-label="用户信息">
-            <div className="flex w-full items-center gap-3 rounded-lg p-2 transition-colors hover:bg-default-100 cursor-pointer" tabIndex={0}>
+            <div
+              className="flex w-full items-center gap-3 rounded-lg p-2 transition-colors hover:bg-default-100 cursor-pointer"
+              tabIndex={0}
+            >
               <Avatar size="lg">
                 <Avatar.Image src={USER_AVATAR_URL} />
                 <Avatar.Fallback>ikenxuan</Avatar.Fallback>

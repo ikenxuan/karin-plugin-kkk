@@ -41,6 +41,7 @@
     "@monaco-editor/react": "^4.7.0",
     "@pansy/watermark": "^2.3.0",
     "@phosphor-icons/react": "^2.1.10",
+    "@thesvg/icons": "^3.0.18",
     "@zumer/snapdom": "^2.12.9",
     "ahooks": "^3.9.7",
     "axios": "1.18.0",

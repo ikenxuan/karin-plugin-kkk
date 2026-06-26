@@ -16,7 +16,7 @@ interface DefaultLayoutProps extends Omit<BaseComponentProps<Record<string, any>
   /** 额外的CSS类名 */
   className?: string
   /** 渲染数据 */
-  data: Record<string, any>
+  data: Record<string, any> & { useDarkTheme: boolean }
   /** 版本信息 */
   version?: RenderRequest['version']
   /** 缩放比例，用于高清截图 */

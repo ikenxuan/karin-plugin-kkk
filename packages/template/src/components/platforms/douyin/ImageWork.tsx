@@ -1,13 +1,5 @@
 import { renderRichTextToReact } from '@kkk/richtext'
-import {
-  ImageIcon,
-  MapPinIcon,
-  MusicNoteIcon,
-  UserPlusIcon,
-  UsersIcon,
-  UsersThreeIcon,
-  VideoCameraIcon
-} from '@phosphor-icons/react'
+import { ImageIcon, MapPinIcon, MusicNoteIcon, UserPlusIcon, UsersIcon, UsersThreeIcon, VideoCameraIcon } from '@phosphor-icons/react'
 import { format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import { Clock3, Hash, Maximize } from 'lucide-react'

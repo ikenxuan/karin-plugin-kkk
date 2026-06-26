@@ -1,3 +1,10 @@
+import reactIcon from '@thesvg/icons/react'
+import sqliteIcon from '@thesvg/icons/sqlite'
+import tailwindCssIcon from '@thesvg/icons/tailwind-css'
+import tsdownIcon from '@thesvg/icons/tsdown'
+import typescriptIcon from '@thesvg/icons/typescript'
+import viteIcon from '@thesvg/icons/vite'
+import webAssemblyIcon from '@thesvg/icons/webassembly'
 import { CornerDownLeft } from 'lucide-react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
@@ -5,6 +12,7 @@ import rehypeHighlight from 'rehype-highlight'
 
 import type { ChangelogProps } from '../../../types/platforms/other/changelog'
 import { generateQRCode } from '../../../utils/QRcode'
+import { GlowImage } from '../../common/GlowImage'
 import { DefaultLayout } from '../../layouts/DefaultLayout'
 
 const InlineCalloutCode: React.FC<React.PropsWithChildren<{ className?: string }>> = ({ children, className }) => (
@@ -19,6 +27,18 @@ const InlineCalloutCode: React.FC<React.PropsWithChildren<{ className?: string }
   </span>
 )
 
+const toSvgDataUri = (svg: string): string => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+
+const techStackItems = [
+  { label: 'TypeScript', iconSrc: toSvgDataUri(typescriptIcon.svg) },
+  { label: 'SQLite', iconSrc: toSvgDataUri(sqliteIcon.svg) },
+  { label: 'React', iconSrc: toSvgDataUri(reactIcon.svg) },
+  { label: 'Tailwind CSS', iconSrc: toSvgDataUri(tailwindCssIcon.svg) },
+  { label: 'WebAssembly', iconSrc: toSvgDataUri(webAssemblyIcon.svg) },
+  { label: 'Vite', iconSrc: toSvgDataUri(viteIcon.svg) },
+  { label: 'tsdown', iconSrc: toSvgDataUri(tsdownIcon.svg) }
+] as const
+
 /**
  * 更新日志组件
  * @param props 组件属性
@@ -27,6 +47,7 @@ const InlineCalloutCode: React.FC<React.PropsWithChildren<{ className?: string }
 export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: boolean } }, 'templateType' | 'templateName'>> = React.memo(
   (props) => {
     const isDark = props.data.useDarkTheme ?? false
+    const isUpdateTip = props.data.Tip === true
     const share_url = (props as any).data?.share_url || ''
 
     const backgroundColors = isDark
@@ -126,7 +147,7 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
         </div>
 
         <div className="relative px-16 pt-5 pb-0 w-full max-w-none prose prose-lg prose-invert from-surface to-surface">
-          {props.data.Tip === true ? (
+          {isUpdateTip ? (
             <>
               {/* <div className="inline-block relative mt-20">
               <div className="absolute inset-0 bg-black rounded-2xl opacity-50 blur-xl translate-y-6 -z-10"></div>
@@ -265,7 +286,7 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
                   const isVersionLink = href?.includes('/compare/')
                   return (
                     <a
-                      className={`inline-flex gap-3 items-baseline cursor-pointer font-medium hover:underline ${isVersionLink ? 'text-success' : 'text-foreground/50'}`}
+                      className={`inline-flex gap-3 items-baseline cursor-pointer font-medium hover:underline ${isVersionLink ? 'text-foreground' : 'text-foreground/50'}`}
                       onClick={(e) => e.preventDefault()}
                       {...props}
                     >
@@ -296,22 +317,84 @@ export const Changelog: React.FC<Omit<ChangelogProps & { data: { useDarkTheme: b
           </div>
 
           {share_url && (
-            <div className="flex flex-col items-center gap-12 py-8">
-              <div className="w-120 h-auto">
-                <img src={generateQRCode(share_url, isDark)} alt="二维码" className="w-full h-full object-contain" />
-              </div>
-              <div className="text-4xl text-foreground/60">
-                <span>扫码查看实际运行代码从</span>
-                <span className="font-bold text-foreground/80"> v{props.data.localVersion}</span>
-                <span> 到 </span>
-                <span className="font-bold text-foreground/80"> v{props.data.remoteVersion}</span>
-                <span> 的差异</span>
-              </div>
-            </div>
+            <>
+              {isUpdateTip ? (
+                <div className="py-10">
+                  <div className="relative flex flex-col gap-8 overflow-hidden border-y border-muted/70 py-10">
+                    <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-foreground/20 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-foreground/20 to-transparent" />
+
+                    <div className="relative flex items-stretch gap-12">
+                      <div className="relative w-[36%] shrink-0">
+                        <div className="inline-flex items-center gap-4 rounded-full border border-border/60 bg-surface/40 px-5 py-2 text-[1.75em] font-semibold text-foreground/60">
+                          <span className="h-3 w-3 rounded-full bg-foreground/50" />
+                          <span>DIFF SCAN</span>
+                        </div>
+
+                        <div className="mt-4 w-100 rounded-3xl p-1">
+                          <img src={generateQRCode(share_url, isDark)} alt="二维码" className="w-full h-full rounded-2xl object-contain" />
+                        </div>
+                      </div>
+
+                      <div className="relative flex-1 py-2">
+                        <div className="flex items-end justify-between gap-8">
+                          <div>
+                            <div className="text-[1.65em] font-semibold tracking-[0.22em] text-foreground/45">PROJECT STACK</div>
+                            <div className="mt-2 text-[3.3em] font-black leading-none text-foreground/85">技术栈</div>
+                          </div>
+                          <div className="h-16 w-px bg-border/80" />
+                        </div>
+
+                        <div className="mt-8 grid grid-cols-4 gap-4">
+                          {techStackItems.map(({ iconSrc, label }) => (
+                            <div
+                              key={label}
+                              className="flex min-h-40 flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-surface/45 px-4 py-5 backdrop-blur-xs"
+                            >
+                              <GlowImage glowStrength={isDark ? 1 : 0} blurRadius={20}>
+                                <img
+                                  aria-hidden
+                                  src={iconSrc}
+                                  alt=""
+                                  draggable={false}
+                                  className="h-16 w-16 object-contain drop-shadow-lg"
+                                />
+                              </GlowImage>
+                              <span className="text-center text-[1.35em] font-bold leading-tight text-foreground/75">{label}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="text-4xl leading-relaxed text-foreground/60">
+                      <span>扫码查看实际运行代码从</span>
+                      <span className="font-bold text-foreground/80"> v{props.data.localVersion}</span>
+                      <span> 到 </span>
+                      <span className="font-bold text-foreground/80"> v{props.data.remoteVersion}</span>
+                      <span> 的差异</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-12 py-8">
+                  <div className="w-120 h-auto">
+                    <img src={generateQRCode(share_url, isDark)} alt="二维码" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="text-4xl text-foreground/60">
+                    <span>扫码查看实际运行代码从</span>
+                    <span className="font-bold text-foreground/80"> v{props.data.localVersion}</span>
+                    <span> 到 </span>
+                    <span className="font-bold text-foreground/80"> v{props.data.remoteVersion}</span>
+                    <span> 的差异</span>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           {/* 底部信息 */}
-          {props.data.Tip === true && props.data.buildTime && (
+          {isUpdateTip && props.data.buildTime && (
             <div className="flex gap-8 justify-center text-foreground/60">
               <div className="text-4xl">
                 更新频道:

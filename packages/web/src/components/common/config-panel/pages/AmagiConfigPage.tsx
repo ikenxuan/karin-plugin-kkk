@@ -21,9 +21,14 @@ const AmagiConfigPage = ({ config, renderers }: ConfigPageProps) => {
           {renderTextField(['amagi', 'cookies', 'kuaishou'], '快手 Cookies', '请输入你的快手Cookies，不输入则无法使用快手相关功能噢。', {
             type: 'password'
           })}
-          {renderTextField(['amagi', 'cookies', 'xiaohongshu'], '小红书 Cookies', '请输入你的小红书Cookies，不输入则无法使用小红书相关功能噢。', {
-            type: 'password'
-          })}
+          {renderTextField(
+            ['amagi', 'cookies', 'xiaohongshu'],
+            '小红书 Cookies',
+            '请输入你的小红书Cookies，不输入则无法使用小红书相关功能噢。',
+            {
+              type: 'password'
+            }
+          )}
         </>
       )}
       {renderSubSection(

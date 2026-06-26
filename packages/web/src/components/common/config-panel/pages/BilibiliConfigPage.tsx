@@ -182,7 +182,12 @@ const BilibiliConfigPage = ({ config, renderers, classes }: ConfigPageProps) => 
             (value) => value,
             !bilibiliPushEnabled
           )}
-          {renderCronField(['bilibili', 'push', 'cron'], '定时任务表达式', '定时推送的时间，支持可视化编辑或手动输入 cron 表达式。', !bilibiliPushEnabled)}
+          {renderCronField(
+            ['bilibili', 'push', 'cron'],
+            '定时任务表达式',
+            '定时推送的时间，支持可视化编辑或手动输入 cron 表达式。',
+            !bilibiliPushEnabled
+          )}
           {renderSwitch(['bilibili', 'push', 'parsedynamic'], '作品解析', '触发推送时是否一同解析该作品。', !bilibiliPushEnabled)}
           {renderSelectField(
             ['bilibili', 'push', 'pushVideoQuality'],

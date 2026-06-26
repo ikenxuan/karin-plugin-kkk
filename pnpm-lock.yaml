@@ -20,7 +20,7 @@ importers:
         version: link:packages/amagi/packages/core
       '@tailwindcss/vite':
         specifier: 4.3.1
-        version: 4.3.1(vite@8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(typescript@6.0.3)(vite@8.0.16))(esbuild@0.28.1)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(tsx@4.22.4)(yaml@2.9.0))
+        version: 4.3.1(vite@8.0.16)
       '@vitejs/plugin-react':
         specifier: 6.0.2
         version: 6.0.2(vite@8.0.16)
@@ -452,6 +452,9 @@ importers:
       '@phosphor-icons/react':
         specifier: ^2.1.10
         version: 2.1.10(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@thesvg/icons':
+        specifier: ^3.0.18
+        version: 3.0.18
       '@zumer/snapdom':
         specifier: ^2.12.9
         version: 2.12.9
@@ -555,7 +558,7 @@ importers:
         version: 6.0.2(react@19.2.7)
       '@tailwindcss/vite':
         specifier: 4.3.1
-        version: 4.3.1(vite@8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(typescript@6.0.3)(vite@8.0.16))(esbuild@0.28.1)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(tsx@4.22.4)(yaml@2.9.0))
+        version: 4.3.1(vite@8.0.16)
       ahooks:
         specifier: ^3.9.7
         version: 3.9.7(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -4684,6 +4687,10 @@ packages:
     peerDependencies:
       vite: 8.0.16
 
+  '@thesvg/icons@3.0.18':
+    resolution: {integrity: sha512-APzMPld6fdK5ReiPsbC9K1+bhjUmZTjIIGcIT63iBQj/VzijOXcbYfG89fsCiT+0MoKAl5WgbeDL7+BGTF8tUw==}
+    engines: {node: '>=18'}
+
   '@tootallnate/quickjs-emscripten@0.23.0':
     resolution: {integrity: sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==}
 
@@ -6021,8 +6028,8 @@ packages:
     resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
     engines: {node: '>=6'}
 
-  deslop-js@0.0.24:
-    resolution: {integrity: sha512-ygcRwJXCUedo+hN1L4Ysm7luo4VWOvKEz/kRKWMlFp5bAtTKeXo+8fk/hQaJKsJ/nfahiqkhlYTlrKIR/5nsQg==}
+  deslop-js@0.5.8:
+    resolution: {integrity: sha512-Vq9D2x4dAIW24zcH55DTrl3/vi13UNKfXgw0yj7ULTssZ6KOdw/oyBHtlvE94KFC9yYEhgFTrGjaqqZKvV9pwA==}
 
   destr@2.0.5:
     resolution: {integrity: sha512-ugFTXCtDZunbzasqBxrK93Ik/DRYsO6S/fedkWEMKqt04xZ4csmnmwGDBAb07QWNaGMAmnTIemsYZCksjATwsA==}
@@ -8304,8 +8311,8 @@ packages:
       vite-plus:
         optional: true
 
-  oxlint-plugin-react-doctor@0.5.7:
-    resolution: {integrity: sha512-LLOi7sQVMVPelbrds6R8po+S856Jc/y3AIiojSBc3x7Z6eeaYUlREJW2Fpfw//CSXpX0wq1XfStKIrFQFfL/ag==}
+  oxlint-plugin-react-doctor@0.5.8:
+    resolution: {integrity: sha512-L0jveKAMbqF1qAqA2Ksu8aH0/Q8FDQxLwXmHYgALa2XlsxEUuamJ+1Da2MhPWJ2ahn+ekFbnWK20qixxD+fw6A==}
     engines: {node: ^20.19.0 || >=22.13.0}
 
   oxlint@1.66.0:
@@ -8742,8 +8749,8 @@ packages:
       react: 19.2.7
       react-dom: 19.2.7
 
-  react-doctor@0.5.7:
-    resolution: {integrity: sha512-m+HhlAvV7xkiJfjyIrB8ZzLPDzG9XylQQEnH1CPifAsp1OEAfU3jT/1DomVlGQYcbuUNHcDYpALtWm6I+qFAPQ==}
+  react-doctor@0.5.8:
+    resolution: {integrity: sha512-gDXDQ+48KeFq2jkVgsUhQ67oQ+kUMdnIaA+YeS9VXXZFXSg9wxY5dDxurEpILSh8RwO06W8p6uCnTR+wn5B/GA==}
     engines: {node: ^20.19.0 || >=22.13.0}
     hasBin: true
 
@@ -14411,12 +14418,14 @@ snapshots:
       postcss: 8.5.15
       tailwindcss: 4.3.0
 
-  '@tailwindcss/vite@4.3.1(vite@8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(typescript@6.0.3)(vite@8.0.16))(esbuild@0.28.1)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(tsx@4.22.4)(yaml@2.9.0))':
+  '@tailwindcss/vite@4.3.1(vite@8.0.16)':
     dependencies:
       '@tailwindcss/node': 4.3.1
       '@tailwindcss/oxide': 4.3.1
       tailwindcss: 4.3.1
       vite: 8.0.16(@types/node@24.13.2)(@vitejs/devtools@0.3.3)(esbuild@0.28.1)(jiti@2.7.0)(sass-embedded@1.100.0)(sass@1.100.0)(tsx@4.22.4)(yaml@2.9.0)
+
+  '@thesvg/icons@3.0.18': {}
 
   '@tootallnate/quickjs-emscripten@0.23.0': {}
 
@@ -16042,7 +16051,7 @@ snapshots:
 
   dequal@2.0.3: {}
 
-  deslop-js@0.0.24:
+  deslop-js@0.5.8:
     dependencies:
       '@oxc-project/types': 0.132.0
       fast-glob: 3.3.3
@@ -18960,7 +18969,7 @@ snapshots:
       '@oxfmt/binding-win32-ia32-msvc': 0.55.0
       '@oxfmt/binding-win32-x64-msvc': 0.55.0
 
-  oxlint-plugin-react-doctor@0.5.7:
+  oxlint-plugin-react-doctor@0.5.8:
     dependencies:
       '@typescript-eslint/types': 8.61.0
       eslint-scope: 9.1.2
@@ -19500,19 +19509,19 @@ snapshots:
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
 
-  react-doctor@0.5.7(eslint@10.4.1(jiti@2.7.0)):
+  react-doctor@0.5.8(eslint@10.4.1(jiti@2.7.0)):
     dependencies:
       '@babel/code-frame': 7.29.7
       '@sentry/node': 10.57.0
       agent-install: 0.0.5
       conf: 15.1.0
       confbox: 0.2.4
-      deslop-js: 0.0.24
+      deslop-js: 0.5.8
       eslint-plugin-react-hooks: 7.1.1(eslint@10.4.1(jiti@2.7.0))
       jiti: 2.7.0
       magicast: 0.5.3
       oxlint: 1.66.0
-      oxlint-plugin-react-doctor: 0.5.7
+      oxlint-plugin-react-doctor: 0.5.8
       prompts: 2.4.2
       typescript: 6.0.3
       vscode-languageserver: 9.0.1
@@ -19649,7 +19658,7 @@ snapshots:
       preact: 10.29.2
       prompts: 2.4.2
       react: 19.2.7
-      react-doctor: 0.5.7(eslint@10.4.1(jiti@2.7.0))
+      react-doctor: 0.5.8(eslint@10.4.1(jiti@2.7.0))
       react-dom: 19.2.7(react@19.2.7)
       react-grab: 0.1.47(react@19.2.7)
     optionalDependencies:

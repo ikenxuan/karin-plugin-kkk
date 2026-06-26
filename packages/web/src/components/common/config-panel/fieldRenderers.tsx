@@ -33,7 +33,7 @@ const PasswordInput = ({ className, disabled, ...props }: PasswordInputProps) =>
 
   return (
     <div className="relative w-full">
-      <Input {...props} variant='secondary' className={`w-full pr-10 ${className ?? ''}`} type={isVisible ? 'text' : 'password'} />
+      <Input {...props} variant="secondary" className={`w-full pr-10 ${className ?? ''}`} type={isVisible ? 'text' : 'password'} />
       <Button
         isIconOnly
         aria-label={toggleLabel}
@@ -189,7 +189,7 @@ export const createConfigFieldRenderers = ({
           />
         ) : (
           <Input
-           variant='secondary'
+            variant="secondary"
             max={options?.max}
             min={options?.min}
             pattern={options?.pattern}
@@ -273,7 +273,7 @@ export const createConfigFieldRenderers = ({
             const selected = includesValue(values, item.value)
             return (
               <Checkbox
-                variant='secondary'
+                variant="secondary"
                 key={item.value}
                 isDisabled={disabled}
                 isSelected={selected}
