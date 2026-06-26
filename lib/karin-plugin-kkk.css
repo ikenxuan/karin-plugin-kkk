@@ -1022,6 +1022,18 @@
 }
 
 @layer base {
+  @supports (not ((-webkit-appearance: -apple-pay-button))) or (contain-intrinsic-size: 1px) {
+    ::placeholder {
+      color: currentColor;
+    }
+
+    @supports (color: color-mix(in lab, red, red)) {
+      ::placeholder {
+        color: color-mix(in oklab, currentcolor 50%, transparent);
+      }
+    }
+  }
+
   *, :after, :before, ::backdrop {
     box-sizing: border-box;
     border: 0 solid;
@@ -13961,6 +13973,10 @@
     min-height: calc(var(--spacing) * 39);
   }
 
+  .min-h-40 {
+    min-height: calc(var(--spacing) * 40);
+  }
+
   .min-h-115 {
     min-height: calc(var(--spacing) * 115);
   }
@@ -14283,6 +14299,10 @@
 
   .w-\[34\%\] {
     width: 34%;
+  }
+
+  .w-\[36\%\] {
+    width: 36%;
   }
 
   .w-\[39\%\] {
@@ -15189,6 +15209,11 @@
     border-width: 7px;
   }
 
+  .border-y {
+    border-block-style: var(--tw-border-style);
+    border-block-width: 1px;
+  }
+
   .border-t {
     border-top-style: var(--tw-border-style);
     border-top-width: 1px;
@@ -15360,6 +15385,16 @@
     }
   }
 
+  .border-border\/60 {
+    border-color: var(--border);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .border-border\/60 {
+      border-color: color-mix(in oklab, var(--border) 60%, transparent);
+    }
+  }
+
   .border-border\/70 {
     border-color: var(--border);
   }
@@ -15445,6 +15480,16 @@
   @supports (color: color-mix(in lab, red, red)) {
     .border-muted\/20 {
       border-color: color-mix(in oklab, var(--muted) 20%, transparent);
+    }
+  }
+
+  .border-muted\/70 {
+    border-color: var(--muted);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .border-muted\/70 {
+      border-color: color-mix(in oklab, var(--muted) 70%, transparent);
     }
   }
 
@@ -15782,6 +15827,16 @@
     background-color: var(--border-secondary);
   }
 
+  .bg-border\/80 {
+    background-color: var(--border);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-border\/80 {
+      background-color: color-mix(in oklab, var(--border) 80%, transparent);
+    }
+  }
+
   .bg-current {
     background-color: currentColor;
   }
@@ -15885,6 +15940,16 @@
   @supports (color: color-mix(in lab, red, red)) {
     .bg-foreground\/5 {
       background-color: color-mix(in oklab, var(--foreground) 5%, transparent);
+    }
+  }
+
+  .bg-foreground\/50 {
+    background-color: var(--foreground);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-foreground\/50 {
+      background-color: color-mix(in oklab, var(--foreground) 50%, transparent);
     }
   }
 
@@ -16428,6 +16493,21 @@
 
   .via-border {
     --tw-gradient-via: var(--border);
+    --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-via-stops);
+  }
+
+  .via-foreground\/20 {
+    --tw-gradient-via: var(--foreground);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .via-foreground\/20 {
+      --tw-gradient-via: color-mix(in oklab, var(--foreground) 20%, transparent);
+    }
+  }
+
+  .via-foreground\/20 {
     --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
     --tw-gradient-stops: var(--tw-gradient-via-stops);
   }
@@ -17133,6 +17213,18 @@
     font-size: 1.15em;
   }
 
+  .text-\[1\.35em\] {
+    font-size: 1.35em;
+  }
+
+  .text-\[1\.65em\] {
+    font-size: 1.65em;
+  }
+
+  .text-\[1\.75em\] {
+    font-size: 1.75em;
+  }
+
   .text-\[1\.75rem\] {
     font-size: 1.75rem;
   }
@@ -17163,6 +17255,10 @@
 
   .text-\[3\.2em\] {
     font-size: 3.2em;
+  }
+
+  .text-\[3\.3em\] {
+    font-size: 3.3em;
   }
 
   .text-\[4\.5rem\] {
@@ -17857,6 +17953,16 @@
     }
   }
 
+  .text-foreground\/45 {
+    color: var(--foreground);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .text-foreground\/45 {
+      color: color-mix(in oklab, var(--foreground) 45%, transparent);
+    }
+  }
+
   .text-foreground\/50 {
     color: var(--foreground);
   }
@@ -17904,6 +18010,16 @@
   @supports (color: color-mix(in lab, red, red)) {
     .text-foreground\/80 {
       color: color-mix(in oklab, var(--foreground) 80%, transparent);
+    }
+  }
+
+  .text-foreground\/85 {
+    color: var(--foreground);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .text-foreground\/85 {
+      color: color-mix(in oklab, var(--foreground) 85%, transparent);
     }
   }
 
