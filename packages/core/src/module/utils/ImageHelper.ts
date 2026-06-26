@@ -1,6 +1,10 @@
+import fs from 'node:fs'
+
+import { logger } from 'node-karin'
 import axios from 'node-karin/axios'
 
 import { Common } from './Common'
+import { Config } from './Config'
 import { ImageDownloader } from './Network'
 
 /**
@@ -65,4 +69,22 @@ export async function processImageUrl(imageUrl: string, title?: string, index?: 
 export async function processImageUrls(imageUrls: string[], title?: string): Promise<string[]> {
   const downloader = getImageDownloader()
   return await downloader.processImages(imageUrls, title)
+}
+
+/**
+ * 处理本地生成的图片文件。
+ *
+ * imageSendMode 的 url 只适用于已有 HTTP 图片；本地合成图没有可直接发送的公网 URL，
+ * 因此在 url 模式下回退到 base64，避免依赖 file 协议。
+ */
+export function processLocalImageFile(filePath: string): string {
+  const normalizedPath = filePath.replace(/\\/g, '/')
+  if (Config.app.imageSendMode !== 'file') {
+    if (Config.app.imageSendMode === 'url') {
+      logger.debug(`本地生成图片不支持 imageSendMode=url，已回退到 base64 发送: ${normalizedPath}`)
+    }
+    return `base64://${fs.readFileSync(normalizedPath).toString('base64')}`
+  }
+
+  return `file://${normalizedPath}`
 }

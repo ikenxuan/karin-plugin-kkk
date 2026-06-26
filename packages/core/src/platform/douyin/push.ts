@@ -20,6 +20,7 @@ import {
   fileInfo,
   loopVideoWithTransition,
   Networks,
+  processLocalImageFile,
   processImageUrl,
   Render
 } from '@/module'
@@ -522,10 +523,7 @@ export class DouYinpush extends Base {
                         })
                         if (motionPhotoCreated) {
                           temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
-                          const motionPhotoCover =
-                            Config.app.imageSendMode === 'base64'
-                              ? `base64://${fs.readFileSync(motionPhotoCoverPath).toString('base64')}`
-                              : `file://${motionPhotoCoverPath}`
+                          const motionPhotoCover = processLocalImageFile(motionPhotoCoverPath)
                           images.push(segment.image(motionPhotoCover))
                           hasPushedMotionPhotoCover = true
                         }
@@ -684,10 +682,7 @@ export class DouYinpush extends Base {
                           })
                           if (motionPhotoCreated) {
                             temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
-                            const motionPhotoCover =
-                              Config.app.imageSendMode === 'base64'
-                                ? `base64://${fs.readFileSync(motionPhotoCoverPath).toString('base64')}`
-                                : `file://${motionPhotoCoverPath}`
+                            const motionPhotoCover = processLocalImageFile(motionPhotoCoverPath)
                             processedImages.push(segment.image(motionPhotoCover))
                             hasPushedMotionPhotoCover = true
                           }

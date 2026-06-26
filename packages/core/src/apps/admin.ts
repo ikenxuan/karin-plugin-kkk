@@ -18,8 +18,8 @@ const handleCacheCleanup = wrapWithErrorHandler(
     const videoDeleted = removeOldFiles(Common.tempDri.video, twoHoursAgo)
     logger.debug(`${Common.tempDri.video} 目录下已删除 ${videoDeleted} 个文件`)
 
-    // 如果启用了本地下载图片，也清理图片缓存目录
-    if (Config.app.imageSendMode === 'file') {
+    // 需要本地落盘的图片模式也清理图片缓存目录
+    if (Config.app.imageSendMode !== 'url') {
       const imageDeleted = removeOldFiles(Common.tempDri.images, twoHoursAgo)
       logger.debug(`${Common.tempDri.images} 目录下已删除 ${imageDeleted} 个文件`)
     }

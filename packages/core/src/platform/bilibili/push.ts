@@ -20,6 +20,7 @@ import {
   fileInfo,
   loopVideoWithTransition,
   mergeVideoAudio,
+  processLocalImageFile,
   processImageUrl,
   Render,
   uploadFile
@@ -914,10 +915,7 @@ export class Bilibilipush extends Base {
                           })
                           if (motionPhotoCreated) {
                             temp.push({ filepath: motionPhotoCoverPath, totalBytes: 0 })
-                            const motionPhotoCover =
-                              Config.app.imageSendMode === 'base64'
-                                ? `base64://${fs.readFileSync(motionPhotoCoverPath).toString('base64')}`
-                                : `file://${motionPhotoCoverPath}`
+                            const motionPhotoCover = processLocalImageFile(motionPhotoCoverPath)
                             imgArray.push(segment.image(motionPhotoCover))
                             hasPushedMotionPhotoCover = true
                           }
