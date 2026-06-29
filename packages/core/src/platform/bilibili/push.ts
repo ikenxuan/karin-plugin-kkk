@@ -734,7 +734,7 @@ export class Bilibilipush extends Base {
               ? [
                   segment.button([
                     { text: '解析', callback: true, data: `#解析${parseUrl}` },
-                    { text: '弹幕解析', callback: true, data: `#弹幕解析${parseUrl}` }
+                    { text: '帮助', callback: true, data: `#kkk帮助` }
                   ])
                 ]
               : []

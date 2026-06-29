@@ -367,7 +367,7 @@ export class DouYinpush extends Base {
               ? [
                   segment.button([
                     { text: '解析', callback: true, data: `#解析${Detail_Data.share_url}` },
-                    { text: '弹幕解析', callback: true, data: `#弹幕解析${Detail_Data.share_url}` }
+                    { text: '帮助', callback: true, data: `#kkk帮助` }
                   ])
                 ]
               : []
