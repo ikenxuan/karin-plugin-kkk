@@ -74,7 +74,7 @@
   },
   "devDependencies": {
     "@ikenxuan/amagi": "workspace:*",
-    "@karinjs/adapter-qqbot": "2.0.0",
+    "@karinjs/adapter-qqbot": "https://pkg.pr.new/@karinjs/adapter-qqbot@e33e311",
     "@karinjs/plugin-adapter-discordbot": "https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687",
     "@karinjs/plugin-adapter-milky": "^1.3.0",
     "@karinjs/plugin-basic": "1.4.11",

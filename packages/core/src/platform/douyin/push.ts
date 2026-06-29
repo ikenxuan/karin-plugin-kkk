@@ -361,8 +361,19 @@ export class DouYinpush extends Base {
           eventWithBot.selfId = botId
           const watermarkedImg = img ? applyWatermarkToImages(img, this.e) : []
 
+          // 仅 QQ 官方机器人支持按钮：非直播作品在卡片末尾追加「解析」回调按钮，点击后下发 #解析 + 分享链接
+          const parseButton =
+            bot?.adapter?.name === 'QQ Official Bot' && pushItem.pushType !== 'live' && Detail_Data.share_url
+              ? [
+                  segment.button([
+                    { text: '解析', callback: true, data: `#解析${Detail_Data.share_url}` },
+                    { text: '弹幕解析', callback: true, data: `#弹幕解析${Detail_Data.share_url}` }
+                  ])
+                ]
+              : []
+
           // 发送消息
-          status = await karin.sendMsg(botId, Contact, [...watermarkedImg])
+          status = await karin.sendMsg(botId, Contact, [...watermarkedImg, ...parseButton])
 
           // 如果是直播推送，更新直播状态
           if (pushItem.pushType === 'live' && 'room_data' in pushItem.Detail_Data && status.message_id) {

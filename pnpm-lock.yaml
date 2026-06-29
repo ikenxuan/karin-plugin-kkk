@@ -203,8 +203,8 @@ importers:
         specifier: workspace:*
         version: link:../amagi/packages/core
       '@karinjs/adapter-qqbot':
-        specifier: 2.0.0
-        version: 2.0.0
+        specifier: https://pkg.pr.new/@karinjs/adapter-qqbot@e33e311
+        version: https://pkg.pr.new/@karinjs/adapter-qqbot@e33e311
       '@karinjs/plugin-adapter-discordbot':
         specifier: https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687
         version: https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687
@@ -1621,8 +1621,9 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@karinjs/adapter-qqbot@2.0.0':
-    resolution: {integrity: sha512-dTu6Sj6F0ZFUY7ajKA4e8WOcUBFPVKIsaZLKW2P0exVaRFumIzAmrwl0zTva9SkdH3ENecgZwFYh3n4k63Ijfg==}
+  '@karinjs/adapter-qqbot@https://pkg.pr.new/@karinjs/adapter-qqbot@e33e311':
+    resolution: {integrity: sha512-vPNXt9kYzd8kBJpH86KRiqnpzHQsARoXsSbWdjQnfMXgujKxzxekLaPpxUGOPrjhzvEv2EG9dJU06pgyQQha+w==, tarball: https://pkg.pr.new/@karinjs/adapter-qqbot@e33e311}
+    version: 2.0.0
 
   '@karinjs/art-template@1.1.0':
     resolution: {integrity: sha512-OKf0WZ61SAs9J/K19nzx1XtmLQKc+lbbxiP7AH34TLIM46L3/wSUybV2hcFl001B3zwRcUlrCOZgDlcxyVcScA==}
@@ -6581,6 +6582,10 @@ packages:
 
   form-data@4.0.5:
     resolution: {integrity: sha512-8RipRLol37bNs2bhoV67fiTEvdTrbMUYcFTiy3+wuuOnUog2QBHCZWXDRijWQfAkhBj2Uf5UnVaiWwA5vdd82w==}
+    engines: {node: '>= 6'}
+
+  form-data@4.0.6:
+    resolution: {integrity: sha512-vKatAh4SlVfgbv+YtmhiRjhEMJsYpsG1Y2rMQtR+SVSbytsSD1YGzDIcrAJmdFec88u/+VoGmxnl+80gL1tRCQ==}
     engines: {node: '>= 6'}
 
   formdata-polyfill@4.0.10:
@@ -11863,10 +11868,10 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@karinjs/adapter-qqbot@2.0.0':
+  '@karinjs/adapter-qqbot@https://pkg.pr.new/@karinjs/adapter-qqbot@e33e311':
     dependencies:
       '@karinjs/geturls': 1.0.2
-      form-data: 4.0.5
+      form-data: 4.0.6
       image-size: 2.0.2
       qrcode: 1.5.4
       silk-wasm: 3.7.1
@@ -16795,6 +16800,14 @@ snapshots:
   for-in@1.0.2: {}
 
   form-data@4.0.5:
+    dependencies:
+      asynckit: 0.4.0
+      combined-stream: 1.0.8
+      es-set-tostringtag: 2.1.0
+      hasown: 2.0.4
+      mime-types: 2.1.35
+
+  form-data@4.0.6:
     dependencies:
       asynckit: 0.4.0
       combined-stream: 1.0.8

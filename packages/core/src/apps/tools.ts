@@ -163,7 +163,10 @@ const handleXiaohongshu = wrapWithErrorHandler(
 const handlePrefix = wrapWithErrorHandler(
   async (e, next) => {
     const originalMsg = e.msg
-    e.msg = await Common.getReplyMessage(e)
+    const replyMsg = await Common.getReplyMessage(e)
+
+    // 优先使用引用消息内容；无引用时回退到命令本身去掉前缀后的内容
+    e.msg = replyMsg || originalMsg.replace(/^#?(解析|kkk解析|弹幕解析)\s*/, '')
 
     // 保留原始命令前缀，用于判断是否为弹幕解析
     if (/^#?弹幕解析/.test(originalMsg)) {

@@ -727,7 +727,19 @@ export class Bilibilipush extends Base {
           eventWithBot.selfId = botId
           const watermarkedImg = img ? applyWatermarkToImages(img, this.e) : []
 
-          status = await karin.sendMsg(botId, Contact, [...watermarkedImg])
+          // 仅 QQ 官方机器人支持按钮：非直播动态在卡片末尾追加「解析」回调按钮，点击后下发 #解析 + 动态/视频地址
+          const parseUrl = buildParseUrl(data[dynamicId])
+          const parseButton =
+            bot?.adapter?.name === 'QQ Official Bot' && parseUrl
+              ? [
+                  segment.button([
+                    { text: '解析', callback: true, data: `#解析${parseUrl}` },
+                    { text: '弹幕解析', callback: true, data: `#弹幕解析${parseUrl}` }
+                  ])
+                ]
+              : []
+
+          status = await karin.sendMsg(botId, Contact, [...watermarkedImg, ...parseButton])
           if (Config.bilibili.push.parsedynamic && status.messageId) {
             switch (data[dynamicId].dynamic_type) {
               case 'DYNAMIC_TYPE_AV': {
@@ -1189,6 +1201,11 @@ export class Bilibilipush extends Base {
         // 将新的 group_id 添加到该 host_mid 对应的数组中
         existingItem.group_id.push(`${groupId}:${botId}`)
 
+        // 确保 pushTypes 字段存在，如果不存在则补全为全部推送类型
+        if (!existingItem.pushTypes || existingItem.pushTypes.length === 0) {
+          existingItem.pushTypes = [...allBilibiliPushTypes]
+        }
+
         // 保存配置到文件
         Config.Modify('pushlist', 'bilibili', config.bilibili)
         await this.e.reply(`群：${groupInfo.groupName}(${groupId})\n添加成功！${data.data.card.name}\nUID：${host_mid}`)
@@ -1205,7 +1222,8 @@ export class Bilibilipush extends Base {
         switch: true,
         host_mid,
         group_id: [`${groupId}:${botId}`],
-        remark: data.data.card.name
+        remark: data.data.card.name,
+        pushTypes: [...allBilibiliPushTypes]
       })
 
       // 保存配置到文件
@@ -1357,6 +1375,25 @@ export class Bilibilipush extends Base {
 const br = (data: string): string => {
   // 使用正则表达式将所有换行符替换为<br>
   return (data = data.replace(/\n/g, '<br>'))
+}
+
+/**
+ * 根据动态类型构造用于「解析」按钮的地址。
+ * 视频动态使用 BV 视频地址，其余动态使用动态地址；直播动态返回空字符串（不追加按钮）。
+ * @param PushItem 推送项
+ * @returns 解析地址，无法解析时返回空字符串
+ */
+const buildParseUrl = (PushItem: BilibiliPushItem): string => {
+  switch (PushItem.dynamic_type) {
+    case DynamicType.AV: {
+      const bvid = PushItem.Dynamic_Data.modules.module_dynamic.major?.archive?.bvid
+      return bvid ? `https://www.bilibili.com/video/${bvid}` : ''
+    }
+    case DynamicType.LIVE_RCMD:
+      return ''
+    default:
+      return `https://t.bilibili.com/${PushItem.Dynamic_Data.id_str}`
+  }
 }
 
 /**
