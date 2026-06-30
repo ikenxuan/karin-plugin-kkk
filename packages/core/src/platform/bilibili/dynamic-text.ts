@@ -23,7 +23,7 @@ import {
   type RichTextInlineStyle,
   type RichTextNode
 } from '@kkk/richtext'
-import { logger } from 'node-karin'
+import { logger, segment, type ElementTypes } from 'node-karin'
 
 /**
  * 用户名元数据，用于传递 VIP 状态和颜色信息
@@ -719,4 +719,186 @@ export const buildBilibiliArticleRichText = (
     return parseHtmlContentToRichText(content)
   }
   return createRichTextDocument([], { platform: 'bilibili' })
+}
+
+type RichTextForwardMessageOptions = {
+  title?: string
+  summary?: string
+  shareUrl?: string
+  imageResolver?: (src: string, index: number) => Promise<string> | string
+}
+
+const MAX_FORWARD_TEXT_LENGTH = 1800
+
+const normalizeForwardText = (text: string): string => {
+  return text
+    .replace(/\r\n/g, '\n')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
+const splitForwardText = (text: string): string[] => {
+  const chunks: string[] = []
+  let rest = text
+
+  while (rest.length > MAX_FORWARD_TEXT_LENGTH) {
+    let splitAt = rest.lastIndexOf('\n\n', MAX_FORWARD_TEXT_LENGTH)
+    if (splitAt < MAX_FORWARD_TEXT_LENGTH / 2) {
+      splitAt = rest.lastIndexOf('\n', MAX_FORWARD_TEXT_LENGTH)
+    }
+    if (splitAt < MAX_FORWARD_TEXT_LENGTH / 2) {
+      splitAt = MAX_FORWARD_TEXT_LENGTH
+    }
+
+    const chunk = rest.slice(0, splitAt).trim()
+    if (chunk) chunks.push(chunk)
+    rest = rest.slice(splitAt).trim()
+  }
+
+  if (rest) chunks.push(rest)
+  return chunks
+}
+
+const formatRichTextLink = (text: string, url?: string): string => {
+  if (!url || url === text) return text
+  return `${text} (${url})`
+}
+
+const inlineRichTextNodeToText = (node: RichTextNode): string => {
+  switch (node.type) {
+    case 'text':
+    case 'mention':
+    case 'searchKeyword':
+    case 'topic':
+    case 'at':
+    case 'lottery':
+    case 'vote':
+    case 'viewPicture':
+    case 'hashtag':
+      return node.text
+    case 'emoji':
+      return node.name
+    case 'webLink':
+      return formatRichTextLink(node.text, node.jumpUrl)
+    case 'lineBreak':
+      return '\n'
+    default:
+      return ''
+  }
+}
+
+/**
+ * 将共享富文本文档转换为 Karin 消息段。
+ *
+ * 这里用于专栏正文的合并转发：文本节点保留为 text，图片节点保留为 image，
+ * 让用户在客户端里能按原文顺序查看图文内容，而不是只能看渲染长图。
+ */
+export const buildBilibiliRichTextForwardMessage = async (
+  document: RichTextDocument,
+  options: RichTextForwardMessageOptions = {}
+): Promise<ElementTypes[]> => {
+  const elements: ElementTypes[] = []
+  let textBuffer = ''
+  let imageIndex = 0
+
+  const appendText = (text: string) => {
+    if (!text) return
+    textBuffer += text
+  }
+
+  const ensureBlockBreak = () => {
+    if (!textBuffer) return
+    if (textBuffer.endsWith('\n\n')) return
+    textBuffer += textBuffer.endsWith('\n') ? '\n' : '\n\n'
+  }
+
+  const flushText = () => {
+    const text = normalizeForwardText(textBuffer)
+    textBuffer = ''
+    for (const chunk of splitForwardText(text)) {
+      elements.push(segment.text(chunk))
+    }
+  }
+
+  const appendChildren = async (nodes: RichTextNode[]) => {
+    for (const node of nodes) {
+      await appendNode(node)
+    }
+  }
+
+  const appendImage = async (src: string, caption?: string) => {
+    flushText()
+    const imageUrl = options.imageResolver ? await options.imageResolver(src, imageIndex) : src
+    imageIndex += 1
+    elements.push(segment.image(imageUrl))
+    if (caption) {
+      appendText(caption)
+      ensureBlockBreak()
+    }
+  }
+
+  const appendNode = async (node: RichTextNode): Promise<void> => {
+    const inlineText = inlineRichTextNodeToText(node)
+    if (inlineText) {
+      appendText(inlineText)
+      return
+    }
+
+    switch (node.type) {
+      case 'heading':
+      case 'paragraph':
+      case 'blockquote':
+      case 'listItem':
+        ensureBlockBreak()
+        await appendChildren(node.nodes)
+        ensureBlockBreak()
+        break
+      case 'image':
+        if (node.src) {
+          await appendImage(node.src, node.caption)
+        }
+        break
+      case 'list':
+        ensureBlockBreak()
+        for (const [index, item] of node.items.entries()) {
+          appendText(node.ordered ? `${index + 1}. ` : '- ')
+          await appendChildren(item.nodes)
+          appendText('\n')
+        }
+        ensureBlockBreak()
+        break
+      case 'codeBlock':
+        ensureBlockBreak()
+        appendText(node.content)
+        ensureBlockBreak()
+        break
+      case 'linkCard':
+        ensureBlockBreak()
+        appendText(formatRichTextLink(node.title, node.url))
+        ensureBlockBreak()
+        break
+      case 'horizontalRule':
+        ensureBlockBreak()
+        appendText('---')
+        ensureBlockBreak()
+        break
+      default:
+        break
+    }
+  }
+
+  const headerLines: string[] = []
+  if (options.title) headerLines.push(`标题：${options.title}`)
+  if (options.summary) headerLines.push(`简介：${options.summary}`)
+  if (options.shareUrl) headerLines.push(`链接：${options.shareUrl}`)
+  if (headerLines.length > 0) {
+    appendText(headerLines.join('\n'))
+    ensureBlockBreak()
+  }
+
+  await appendChildren(document.nodes)
+  flushText()
+
+  return elements
 }

@@ -27,17 +27,11 @@ import {
 } from '@/module'
 import { bilibiliFetcher } from '@/module/utils/amagiClient'
 import { Config } from '@/module/utils/Config'
-import {
-  bilibiliProcessVideos,
-  extractArticleImages,
-  generateDecorationCard,
-  getvideosize,
-  parseAdditionalCard,
-  TimeFormatter
-} from '@/platform/bilibili'
+import { bilibiliProcessVideos, generateDecorationCard, getvideosize, parseAdditionalCard, TimeFormatter } from '@/platform/bilibili'
 import {
   buildBilibiliArticleRichText,
   buildBilibiliDynamicRichText,
+  buildBilibiliRichTextForwardMessage,
   buildBilibiliVideoDescRichText,
   getUsernameMetadata
 } from '@/platform/bilibili/dynamic-text'
@@ -243,6 +237,12 @@ export class Bilibilipush extends Base {
       }
       let send_video = true
       let img: ImageElement[] = []
+      let articleForwardPayload: {
+        body: ReturnType<typeof buildBilibiliArticleRichText>
+        title?: string
+        summary?: string
+        shareUrl?: string
+      } | null = null
       this.injectBotToEventForRender(data[dynamicId].targets)
 
       if (!skip) {
@@ -662,6 +662,16 @@ export class Bilibilipush extends Base {
             const articleData = articleInfoBase.data.data
             // 提取专栏正文内容
             const articleContent = articleInfo.data.data
+            const body = buildBilibiliArticleRichText(articleContent.opus, articleContent.content, Common.useDarkTheme())
+            const shareUrl = articleContent.dyn_id_str
+              ? `https://www.bilibili.com/opus/${articleContent.dyn_id_str}`
+              : `https://www.bilibili.com/read/cv${articleContent.id}`
+            articleForwardPayload = {
+              body,
+              title: articleData.title,
+              summary: articleData.summary,
+              shareUrl
+            }
 
             // 构建渲染数据
             img = await Render(
@@ -686,15 +696,13 @@ export class Bilibilipush extends Base {
                 words: articleData.words || 0,
 
                 // 专栏正文内容（richtext 格式）
-                body: buildBilibiliArticleRichText(articleContent.opus, articleContent.content, Common.useDarkTheme()),
+                body,
 
                 // 统计信息
                 stats: articleData.stats,
                 render_time: TimeFormatter.now(),
                 // 分享链接
-                share_url: articleContent.dyn_id_str
-                  ? `https://www.bilibili.com/opus/${articleContent.dyn_id_str}`
-                  : `https://www.bilibili.com/read/cv${articleContent.id}`,
+                share_url: shareUrl,
                 dynamicTYPE: '专栏动态推送'
               },
               { skipWatermark: true }
@@ -976,25 +984,39 @@ export class Bilibilipush extends Base {
                 break
               }
               case 'DYNAMIC_TYPE_ARTICLE': {
-                const articleInfo = await this.amagi.bilibili.fetcher.fetchArticleContent({
-                  id: data[dynamicId].Dynamic_Data.basic.rid_str,
-                  typeMode: 'strict'
-                })
-                // 提取所有图片
-                const messageElements: ImageElement[] = []
-                const articleImages = extractArticleImages(articleInfo.data.data)
-                const title = articleInfo.data.data.title || 'bilibili_article'
-                for (const [index, item] of articleImages.entries()) {
-                  const imageUrl = await processImageUrl(item, title, index)
-                  messageElements.push(segment.image(imageUrl))
+                let payload = articleForwardPayload
+                if (!payload) {
+                  const articleInfoBase = await this.amagi.bilibili.fetcher.fetchArticleInfo({
+                    id: data[dynamicId].Dynamic_Data.basic.rid_str,
+                    typeMode: 'strict'
+                  })
+                  const articleInfo = await this.amagi.bilibili.fetcher.fetchArticleContent({
+                    id: data[dynamicId].Dynamic_Data.basic.rid_str,
+                    typeMode: 'strict'
+                  })
+                  const articleContent = articleInfo.data.data
+                  payload = {
+                    body: buildBilibiliArticleRichText(articleContent.opus, articleContent.content, Common.useDarkTheme()),
+                    title: articleInfoBase.data.data.title,
+                    summary: articleInfoBase.data.data.summary,
+                    shareUrl: articleContent.dyn_id_str
+                      ? `https://www.bilibili.com/opus/${articleContent.dyn_id_str}`
+                      : `https://www.bilibili.com/read/cv${articleContent.id}`
+                  }
                 }
 
-                if (messageElements.length === 1) bot.sendMsg(Contact, messageElements)
-                if (messageElements.length > 1) {
+                const title = payload.title || 'bilibili_article'
+                const messageElements = await buildBilibiliRichTextForwardMessage(payload.body, {
+                  title: payload.title,
+                  summary: payload.summary,
+                  shareUrl: payload.shareUrl,
+                  imageResolver: (src, index) => processImageUrl(src, title, index)
+                })
+                if (messageElements.length > 0) {
                   const forwardMsg = common.makeForward(messageElements, botId, bot.account.name)
                   await bot.sendForwardMsg(Contact, forwardMsg, {
-                    source: '图片合集',
-                    summary: `查看${messageElements.length}张图片消息`,
+                    source: '专栏内容',
+                    summary: `查看${messageElements.length}条专栏内容`,
                     prompt: 'B站专栏动态解析结果',
                     news: [{ text: '点击查看解析结果' }]
                   })

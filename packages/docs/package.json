@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "cross-env NODE_ENV=production next build",
+    "build": "cross-env NODE_ENV=production tsc && next build",
     "dev": "next dev -p 5175",
     "postinstall": "fumadocs-mdx",
     "lint": "oxlint",

@@ -16,7 +16,7 @@ import {
 } from '@ikenxuan/amagi'
 import { format, formatDistanceToNow, fromUnixTime } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
-import karin, { common, ElementTypes, ImageElement, logger, Message, segment, SendMessage } from 'node-karin'
+import karin, { common, ElementTypes, logger, Message, segment, SendMessage } from 'node-karin'
 import type { BilibiliForwardOriginalContentProps } from 'template/types/platforms/bilibili/dynamic/forward'
 import { DecorationCardData } from 'template/types/platforms/bilibili/dynamic/normal'
 
@@ -46,6 +46,7 @@ import { type BiliDanmakuElem, burnBiliDanmaku, getHotDanmaku, mergeAndBurnBili 
 import {
   buildBilibiliArticleRichText,
   buildBilibiliDynamicRichText,
+  buildBilibiliRichTextForwardMessage,
   buildBilibiliVideoDescRichText,
   getUsernameMetadata
 } from '@/platform/bilibili/dynamic-text'
@@ -915,42 +916,26 @@ export class Bilibili extends Base {
             // 构建富文本文档
             const body = buildBilibiliArticleRichText(articleContent.opus, articleContent.content, Common.useDarkTheme())
 
-            // 从富文本文档中提取所有图片
-            const extractImagesFromBody = (nodes: any[]): string[] => {
-              const images: string[] = []
-              for (const node of nodes) {
-                if (node.type === 'image' && node.src) {
-                  images.push(node.src)
-                }
-                if (node.nodes) {
-                  images.push(...extractImagesFromBody(node.nodes))
-                }
-                if (node.items) {
-                  images.push(...extractImagesFromBody(node.items))
-                }
-              }
-              return images
-            }
-
-            // 提取所有图片
-            const messageElements: ImageElement[] = []
-            const articleImages = extractImagesFromBody(body.nodes)
             const title = articleData.title || 'bilibili_article'
-            for (const [index, item] of articleImages.entries()) {
-              const imageUrl = await processImageUrl(item, title, index)
-              messageElements.push(segment.image(imageUrl))
-            }
+            const shareUrl = articleContent.dyn_id_str
+              ? `https://www.bilibili.com/opus/${articleContent.dyn_id_str}`
+              : `https://www.bilibili.com/read/cv${articleContent.id}`
 
-            if (messageElements.length === 1) this.e.reply(messageElements[0])
-            if (messageElements.length > 1) {
+            const messageElements = await buildBilibiliRichTextForwardMessage(body, {
+              title: articleData.title,
+              summary: articleData.summary,
+              shareUrl,
+              imageResolver: (src, index) => processImageUrl(src, title, index)
+            })
+            if (messageElements.length > 0) {
               const forwardMsg = common.makeForward(
                 messageElements,
                 Config.app.fakeForward ? this.e.sender.userId : this.e.bot.account.selfId,
                 Config.app.fakeForward ? this.e.sender.nick : this.e.bot.account.name
               )
               await this.e.bot.sendForwardMsg(this.e.contact, forwardMsg, {
-                source: '图片合集',
-                summary: `查看${messageElements.length}张图片消息`,
+                source: '专栏内容',
+                summary: `查看${messageElements.length}条专栏内容`,
                 prompt: 'B站专栏动态解析结果',
                 news: [{ text: '点击查看解析结果' }]
               })
@@ -977,9 +962,7 @@ export class Bilibili extends Base {
               stats: articleData.stats,
               render_time: TimeFormatter.now(),
               // 分享链接
-              share_url: articleContent.dyn_id_str
-                ? `https://www.bilibili.com/opus/${articleContent.dyn_id_str}`
-                : `https://www.bilibili.com/read/cv${articleContent.id}`,
+              share_url: shareUrl,
               dynamicTYPE: '专栏动态解析',
 
               // 用户统计信息
