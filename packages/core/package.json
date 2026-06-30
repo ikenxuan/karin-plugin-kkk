@@ -74,17 +74,18 @@
   },
   "devDependencies": {
     "@ikenxuan/amagi": "workspace:*",
-    "@karinjs/adapter-qqbot": "https://pkg.pr.new/@karinjs/adapter-qqbot@e33e311",
+    "@karinjs/adapter-qqbot": "2.1.0",
     "@karinjs/plugin-adapter-discordbot": "https://pkg.pr.new/@karinjs/plugin-adapter-discordbot@1feb687",
     "@karinjs/plugin-adapter-milky": "^1.3.0",
     "@karinjs/plugin-basic": "1.4.11",
     "@karinjs/plugin-ffmpeg": "^0.1.3",
     "@karinjs/plugin-puppeteer": "^2.3.1",
     "@kkk/richtext": "workspace:*",
+    "@tailwindcss/vite": "4.3.2",
     "@types/cors": "^2.8.19",
     "@types/express": "5.0.6",
     "@types/heic-decode": "^2.0.0",
-    "cookie": "^1.1.1",
+    "@vitejs/plugin-react": "^6.0.3",
     "cors": "^2.8.6",
     "date-fns": "^4.4.0",
     "heic-decode": "^2.1.0",
@@ -123,5 +124,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-06-26T00:28:51.466Z"
+  "timestamp": "2026-06-30T03:56:00.519Z"
 }
