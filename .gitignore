@@ -30,11 +30,4 @@ packages/next-web/
 
 # AI Agent
 .agents/
-.codex/
 .claude/
-.trae/
-.kiro/
-.shared/
-
-# 设计文档和实现计划（由 AI 生成，不纳入版本控制）
-docs/superpowers/
