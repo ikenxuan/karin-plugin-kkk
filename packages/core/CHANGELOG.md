@@ -2,6 +2,32 @@
 
 # Changelog
 
+## [2.36.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.36.1...v2.36.2) (2026-06-30)
+
+
+### 🐛 错误修复
+
+* paginate xiaohongshu comments by configured count ([#326](https://github.com/ikenxuan/karin-plugin-kkk/issues/326)) ([c36f057](https://github.com/ikenxuan/karin-plugin-kkk/commit/c36f057e3a5bc9d6decc34a8a189542dbce2e420))
+* 优化B站专栏内容的转发消息构建逻辑 [#200](https://github.com/ikenxuan/karin-plugin-kkk/issues/200) ([0622299](https://github.com/ikenxuan/karin-plugin-kkk/commit/06222999bc00419d5ce4b4a778bccf1c9e62e8a3))
+* 推送图片适配一下qqbot ([5814058](https://github.com/ikenxuan/karin-plugin-kkk/commit/5814058cb701ae23622422205521f26513d3cc07))
+* 推送图片适配一下qqbot ([1334b12](https://github.com/ikenxuan/karin-plugin-kkk/commit/1334b12da92d272d5e1f7957b540bb217ecc2f80))
+* 未配置哔哩哔哩ck时，视频路径错误 ([05e7c2a](https://github.com/ikenxuan/karin-plugin-kkk/commit/05e7c2a7342888026840a3bcca82a4aeeb8651ca))
+
+
+### 💄 UI 优化
+
+* 优化更新日志图片 ([d3d192b](https://github.com/ikenxuan/karin-plugin-kkk/commit/d3d192b8455d971b9d9dbdf866e3979d47d6fb85))
+
+
+### 📦 依赖更新
+
+* 依赖更新 ([a40515c](https://github.com/ikenxuan/karin-plugin-kkk/commit/a40515cf6571a42235b26351a256d2e358254ea1))
+
+
+### 💯 细节优化
+
+* 优化本地图片处理逻辑，兼容性提高 ([931bf8d](https://github.com/ikenxuan/karin-plugin-kkk/commit/931bf8d299613eba0ea58277bc01aaf2a0f9380b))
+
 ## [2.36.1](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.36.0...v2.36.1) (2026-06-25)
 
 ### 🐛 错误修复
