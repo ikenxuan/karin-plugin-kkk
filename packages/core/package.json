@@ -69,7 +69,7 @@
   },
   "dependencies": {
     "@ikenxuan/qrcode": "1.2.0",
-    "@ikenxuan/watermark": "1.1.6",
+    "@ikenxuan/watermark": "1.3.0",
     "fingerprint-injector": "^2.1.82"
   },
   "devDependencies": {
@@ -124,5 +124,5 @@
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts"
   },
-  "timestamp": "2026-06-30T10:21:30.485Z"
+  "timestamp": "2026-07-04T07:08:23.716Z"
 }
