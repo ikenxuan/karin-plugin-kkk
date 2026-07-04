@@ -386,33 +386,29 @@ export class DouYinpush extends Base {
             logger.debug(`开始解析作品，类型为：${getWorkTypeDisplayName(workTypeInfo)}`)
             // 如果新作品是视频
             if (workTypeInfo.isVideo) {
-              try {
-                /** 默认视频下载地址 */
-                let downloadUrl = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
-                // 根据配置文件自动选择分辨率
-                logger.debug(`开始排除不符合条件的视频分辨率；\n
+              /** 默认视频下载地址 */
+              let downloadUrl = `https://aweme.snssdk.com/aweme/v1/play/?video_id=${Detail_Data.video.play_addr.uri}&ratio=1080p&line=0`
+              // 根据配置文件自动选择分辨率
+              logger.debug(`开始排除不符合条件的视频分辨率；\n
                     共拥有${logger.yellow(Detail_Data.video.bit_rate.length)}个视频源\n
                     视频ID：${logger.green(Detail_Data.aweme_id)}\n
                     分享链接：${logger.green(Detail_Data.share_url)}
                     `)
-                const videoObj = douyinProcessVideos(Detail_Data.video.bit_rate, Config.douyin.videoQuality)
-                logger.debug('获取精确下载地址')
-                downloadUrl = await new Networks({
-                  url: videoObj[0].play_addr.url_list[0],
-                  headers: douyinBaseHeaders
-                }).getLongLink()
-                // 下载视频
-                await downloadVideo(
-                  this.e,
-                  {
-                    video_url: downloadUrl,
-                    title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${Detail_Data.desc}.mp4` }
-                  },
-                  { active: true, activeOption: { uin: botId, group_id: groupId } }
-                )
-              } catch (error) {
-                throw new Error(`下载视频失败: ${error}`)
-              }
+              const videoObj = douyinProcessVideos(Detail_Data.video.bit_rate, Config.douyin.videoQuality)
+              logger.debug('获取精确下载地址')
+              downloadUrl = await new Networks({
+                url: videoObj[0].play_addr.url_list[0],
+                headers: douyinBaseHeaders
+              }).getLongLink()
+              // 下载视频
+              await downloadVideo(
+                this.e,
+                {
+                  video_url: downloadUrl,
+                  title: { timestampTitle: `tmp_${Date.now()}.mp4`, originTitle: `${Detail_Data.desc}.mp4` }
+                },
+                { active: true, activeOption: { uin: botId, group_id: groupId } }
+              )
             } else if (workTypeInfo.isImage && iddata.type === 'one_work') {
               // 如果新作品是图集或合辑
               // 判断是否为合辑（is_slides）
