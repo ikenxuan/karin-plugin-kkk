@@ -1810,7 +1810,7 @@ declare namespace WebSocket {
   }
 }
 //#endregion
-//#region ../../node_modules/.pnpm/node-karin@1.16.1/node_modules/node-karin/dist/index.d.ts
+//#region ../../node_modules/.pnpm/node-karin@1.16.2/node_modules/node-karin/dist/index.d.ts
 //#endregion
 //#region src/types/adapter/info.d.ts
 /**
