@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@ikenxuan/amagi": "workspace:*",
-    "node-karin": "1.16.1"
+    "node-karin": "1.16.2"
   },
   "devDependencies": {
     "@kkk/cli": "workspace:*",
