@@ -1,6 +1,19 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 import { defineConfig } from 'node-karin'
 
 import { Root } from '@/module'
+
+const resolveRealPath = (value: string) => {
+  try {
+    return fs.realpathSync.native(value)
+  } catch {
+    return path.resolve(value)
+  }
+}
+
+const isLocalDevelopment = process.env.NODE_ENV === 'development' && resolveRealPath(Root.pluginPath) === resolveRealPath(process.cwd())
 
 export const webConfig = defineConfig({
   info: {
@@ -26,7 +39,7 @@ export const webConfig = defineConfig({
     ]
   },
   page: {
-    url: process.env.NODE_ENV === 'development' ? 'http://localhost:5176/kkk/assets/karin-config' : '/kkk/assets/karin-config',
+    url: isLocalDevelopment ? 'http://localhost:5176/kkk/assets/karin-config' : '/kkk/assets/karin-config',
     title: 'kkk插件配置管理',
     description: '使用 kkk 插件自带的配置管理页面'
   }
