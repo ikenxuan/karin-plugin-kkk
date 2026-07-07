@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "build": "kkk build core web",
-    "build:all": "kkk build core docs template",
+    "build:all": "kkk build core web docs",
     "build:core": "kkk build core",
     "build:docs": "kkk build docs",
     "build:template": "kkk build template",
