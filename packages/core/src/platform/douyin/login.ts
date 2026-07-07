@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import { platform } from 'node:os'
 import path from 'node:path'
 
-import { scan } from '@ikenxuan/qrcode'
+import { scanSync } from '@ikenxuan/qrcode'
 import { snapka } from '@karinjs/plugin-puppeteer'
 import { newInjectedPage } from 'fingerprint-injector'
 import { karin, karinPathTemp, logger, Message } from 'node-karin'
@@ -570,7 +570,7 @@ const waitQrcode = async (page: Page): Promise<{ url: string | null; originalIma
     }
 
     // 使用 QRCodeScanner 解析二维码
-    const qrContent = scan(imageBuffer)
+    const qrContent = scanSync(imageBuffer)
 
     if (qrContent) {
       logger.mark('二维码解码成功:', qrContent)

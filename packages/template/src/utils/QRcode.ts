@@ -1,4 +1,4 @@
-import { generate } from '@ikenxuan/qrcode'
+import { generateSync } from '@ikenxuan/qrcode'
 
 /**
  * Generates a QR code image in base64 format for the given text.
@@ -8,7 +8,7 @@ import { generate } from '@ikenxuan/qrcode'
  * @return {string} The base64-encoded QR code image.
  */
 export const generateQRCode = (text: string, useDarkTheme: boolean = false) => {
-  const base64 = generate(
+  const base64 = generateSync(
     {
       data: text,
       size: 1000,

@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { scan } from '@ikenxuan/qrcode'
+import { scanSync } from '@ikenxuan/qrcode'
 import { createNotFoundResponse, logger, type Message } from 'node-karin'
 import axios from 'node-karin/axios'
 import type { Response } from 'node-karin/express'
@@ -74,7 +74,7 @@ class Tools {
       logger.debug(`检测到${source}为图片，尝试识别二维码...`)
       const response = await axios.get(imageUrl, { responseType: 'arraybuffer' })
       const buffer = Buffer.from(response.data)
-      const qrContent = scan(buffer)
+      const qrContent = scanSync(buffer)
       const patterns = [
         /(https?:\/\/)?(www|v|jx|m|jingxuan)\.(douyin|iesdouyin)\.com/i, // 抖音分享链接
         /https:\/\/aweme\.snssdk\.com\/aweme\/v1\/play/i, // 抖音 CDN 下载链接
