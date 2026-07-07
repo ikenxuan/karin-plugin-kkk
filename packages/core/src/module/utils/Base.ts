@@ -268,7 +268,7 @@ export const uploadFile = async (event: Message, file: fileInfo, videoUrl: strin
       } else {
         // 不是群文件
         logger.mark(`${logger.blue('主动消息:')} 视频大小: ${newFileSize.toFixed(1)}MB 正在通过${logger.yellow('karin.sendMsg')}回复...`)
-        const status = await karin.sendMsg(selfId, contact, [segment.video(File)])
+        const status = await karin.sendMsg(selfId, contact, [segment.video(File)], { retryCount: 0 })
         sendStatus = status.messageId ? true : false
       }
     } else {
