@@ -2,6 +2,23 @@
 
 # Changelog
 
+## [2.36.3](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.36.2...v2.36.3) (2026-07-07)
+
+
+### 🐛 错误修复
+
+* 1 ([b33a64f](https://github.com/ikenxuan/karin-plugin-kkk/commit/b33a64fda635534e194e78cfad779506a4063875))
+* **core:** 优化本地开发环境判断 ([#328](https://github.com/ikenxuan/karin-plugin-kkk/issues/328)) ([3a4ba32](https://github.com/ikenxuan/karin-plugin-kkk/commit/3a4ba32a649e7bbf9e146136d705425606f9ac14))
+* **douyin:** 移除部分错误捕获 ([2a924d1](https://github.com/ikenxuan/karin-plugin-kkk/commit/2a924d1e32111d2db71271e3bb457bea379f47c7))
+* 主动消息默认重试次数改为0 ([e0779bf](https://github.com/ikenxuan/karin-plugin-kkk/commit/e0779bf6b118ef0ca8c201c4ca821793b9abc102))
+* 依赖缺失 ([0e7fd57](https://github.com/ikenxuan/karin-plugin-kkk/commit/0e7fd5719355c084f753b06aee2b1638cebd2da2))
+* 更新 @ikenxuan/qrcode 依赖至 1.4.0，并使用同步方法解析二维码 ([edf1db5](https://github.com/ikenxuan/karin-plugin-kkk/commit/edf1db5d0e0245358fa1daac132a5a19ae023caf))
+
+
+### 📦 依赖更新
+
+* update ([6458627](https://github.com/ikenxuan/karin-plugin-kkk/commit/64586271d96f71c6b45444a3bae59ea180cabe49))
+
 ## [2.36.2](https://github.com/ikenxuan/karin-plugin-kkk/compare/v2.36.1...v2.36.2) (2026-06-30)
 
 
